@@ -260,18 +260,17 @@ namespace Iofaodel {
       const Ioss::GroupingEntity & grouping_entity,
       const Ioss::Field & field)
   {
-    auto region_name = region.name();
-    if(region_name.empty()) {
-      region_name="UNNAMED";
+    std::string grouping_entity_name; 
+    if( grouping_entity.type() == Ioss::EntityType::REGION ) {
+      grouping_entity_name = ""; 
+    } else {
+      grouping_entity_name = "/Name/" + grouping_entity.name();
     }
-    auto grouping_entity_name = grouping_entity.name();
-    if(grouping_entity_name.empty()) {
-      grouping_entity_name="UNNAMED";
-    }
+
     return kelpie::Key(
         std::to_string(rank),
         "/State/" + std::to_string(region.get_current_state()) +
-        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+        "/Entity/" + grouping_entity.type_string() + grouping_entity_name +
         "/Field/RoleType/" + to_string(field.get_role()) +
         "/BasicType/" + to_string(field.get_type()) +
         "/Name/" + field.get_name()
@@ -283,18 +282,17 @@ namespace Iofaodel {
       const Ioss::GroupingEntity & grouping_entity,
       const Ioss::Property & property)
   {
-    auto region_name = region.name();
-    if(region_name.empty()) {
-      region_name="UNNAMED";
+    std::string grouping_entity_name; 
+    if( grouping_entity.type() == Ioss::EntityType::REGION ) {
+      grouping_entity_name = ""; 
+    } else {
+      grouping_entity_name = "/Name/" + grouping_entity.name();
     }
-    auto grouping_entity_name = grouping_entity.name();
-    if(grouping_entity_name.empty()) {
-      grouping_entity_name="UNNAMED";
-    }
+
     return kelpie::Key(
         std::to_string(rank),
         "/State/" + std::to_string(region.get_current_state()) +
-        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+        "/Entity/" + grouping_entity.type_string() + grouping_entity_name +
         "/Property/BasicType/" + to_string(property.get_type()) + "/Name/" + property.get_name()
         );
   }
@@ -303,18 +301,17 @@ namespace Iofaodel {
       const Ioss::Region & region,
       const Ioss::GroupingEntity & grouping_entity)
   {
-    auto region_name = region.name();
-    if(region_name.empty()) {
-      region_name="UNNAMED";
+    std::string grouping_entity_name; 
+    if( grouping_entity.type() == Ioss::EntityType::REGION ) {
+      grouping_entity_name = ""; 
+    } else {
+      grouping_entity_name = "/Name/" + grouping_entity.name();
     }
-    auto grouping_entity_name = grouping_entity.name();
-    if(grouping_entity_name.empty()) {
-      grouping_entity_name="UNNAMED";
-    }
+
     return kelpie::Key(
         std::to_string(rank),
         "/State/" + std::to_string(region.get_current_state()) +
-        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name
+        "/Entity/" + grouping_entity.type_string() + grouping_entity_name
         );
   }
 
@@ -338,18 +335,17 @@ namespace Iofaodel {
       const Ioss::Region & region,
       const Ioss::GroupingEntity & grouping_entity)
   {
-    auto region_name = region.name();
-    if(region_name.empty()) {
-      region_name="UNNAMED";
+    std::string grouping_entity_name; 
+    if( grouping_entity.type() == Ioss::EntityType::REGION ) {
+      grouping_entity_name = ""; 
+    } else {
+      grouping_entity_name = "/Name/" + grouping_entity.name();
     }
-    auto grouping_entity_name = grouping_entity.name();
-    if(grouping_entity_name.empty()) {
-      grouping_entity_name="UNNAMED";
-    }
+
     return kelpie::Key(
         std::to_string(rank),
         "/State/" + std::to_string(region.get_current_state()) +
-        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name
+        "/Entity/" + grouping_entity.type_string() + grouping_entity_name
         + "*"
         );
   }
@@ -361,18 +357,17 @@ namespace Iofaodel {
       const Ioss::Region & region,
       const Ioss::GroupingEntity & grouping_entity)
   {
-    auto region_name = region.name();
-    if(region_name.empty()) {
-      region_name="UNNAMED";
+    std::string grouping_entity_name; 
+    if( grouping_entity.type() == Ioss::EntityType::REGION ) {
+      grouping_entity_name = ""; 
+    } else {
+      grouping_entity_name = "/Name/" + grouping_entity.name();
     }
-    auto grouping_entity_name = grouping_entity.name();
-    if(grouping_entity_name.empty()) {
-      grouping_entity_name="UNNAMED";
-    }
+
     return kelpie::Key(
         std::to_string(rank),
         "/State/" + std::to_string(region.get_current_state()) +
-        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+        "/Entity/" + grouping_entity.type_string() + grouping_entity_name +
         "/Property/*"
         );
   }
@@ -385,15 +380,17 @@ namespace Iofaodel {
       const std::string & property_type,
       const std::string & property_name)
   {
-    auto region_name = region.name();
-    if(region_name.empty()) {
-      region_name="UNNAMED";
+    std::string grouping_entity_name; 
+    if( entity_type == "Region" ) {
+      grouping_entity_name = ""; 
+    } else {
+      grouping_entity_name = "/Name/" + entity_name;
     }
 
     return kelpie::Key(
         std::to_string(rank),
         "/State/" + std::to_string(region.get_current_state()) +
-        "/Entity/" + entity_type + "/Name/" + entity_name +
+        "/Entity/" + entity_type + grouping_entity_name +
         "/Property/BasicType/" + property_type + "/Name/" + property_name
         );
   }
@@ -403,18 +400,17 @@ namespace Iofaodel {
       const Ioss::Region & region,
       const Ioss::GroupingEntity & grouping_entity)
   {
-    auto region_name = region.name();
-    if(region_name.empty()) {
-      region_name="UNNAMED";
+    std::string grouping_entity_name; 
+    if( grouping_entity.type() == Ioss::EntityType::REGION ) {
+      grouping_entity_name = ""; 
+    } else {
+      grouping_entity_name = "/Name/" + grouping_entity.name();
     }
-    auto grouping_entity_name = grouping_entity.name();
-    if(grouping_entity_name.empty()) {
-      grouping_entity_name="UNNAMED";
-    }
+
     return kelpie::Key(
         std::to_string(rank),
         "/State/" + std::to_string(region.get_current_state()) +
-        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+        "/Entity/" + grouping_entity.type_string() + grouping_entity_name +
         "/Field/*"
         );
   }
@@ -428,18 +424,17 @@ namespace Iofaodel {
     // state it should be reading keys for.  This is required to allow Iofaodel::DatabaseIO to 
     // identify the TRANSIENT fields in the Faodel key structure.
 
-    auto region_name = region.name();
-    if(region_name.empty()) {
-      region_name="UNNAMED";
+    std::string grouping_entity_name; 
+    if( grouping_entity.type() == Ioss::EntityType::REGION ) {
+      grouping_entity_name = ""; 
+    } else {
+      grouping_entity_name = "/Name/" + grouping_entity.name();
     }
-    auto grouping_entity_name = grouping_entity.name();
-    if(grouping_entity_name.empty()) {
-      grouping_entity_name="UNNAMED";
-    }
+
     return kelpie::Key(
         std::to_string(rank),
         "/State/" + std::to_string(state) + 
-        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+        "/Entity/" + grouping_entity.type_string() + grouping_entity_name +
         "/Field/*"
         );
   }
@@ -536,7 +531,7 @@ namespace Iofaodel {
     std::set<std::string> names;
     for(auto k : keys)
     {
-      std::string front("Entity/" + target + "/Name/");
+      std::string front("Entity/" + target);
       auto begin = k.K2().find(front);
       if(begin != std::string::npos) {
 
