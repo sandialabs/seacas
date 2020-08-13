@@ -192,7 +192,7 @@ a separate license:
 | [Catch2](https://github.com/catchorg/Catch2) | `packages/seacas/libraries/ioss/src/catch.hpp` | [Boost](http://www.boost.org/LICENSE_1_0.txt) |
 | [{fmt}](https://github.com/fmtlib/fmt) | `packages/seacas/libraries/ioss/src/fmt` | [BSD-2-Clause](https://github.com/fmtlib/fmt/blob/master/LICENSE.rst) |
 ## Ubuntu
-There is a [PPA](https://launchpad.net/~nschloe/+archive/ubuntu/seacas-nightly/) available for SEACAS that is updated nightly from SEACAS `master`. Anyone using Ubuntu can now just add the PPA and do
+[Not updated since 2017-11-30] There is a [PPA](https://launchpad.net/~nschloe/+archive/ubuntu/seacas-nightly/) available for SEACAS that is updated nightly from SEACAS `master`. Anyone using Ubuntu can now just add the PPA and do
 ```
 sudo add-apt-repository ppa:nschloe/seacas-nightly
 sudo apt-get update
