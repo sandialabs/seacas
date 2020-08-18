@@ -12,7 +12,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="classIoss_1_1GetLongOption.html" target="_top" xlink:title="A database of program command line and environment variable options and methods for manipulating them...">
+<g id="a_node1"><a xlink:href="$classIoss_1_1GetLongOption.html" xlink:title="A database of program command line and environment variable options and methods for manipulating them...">
 <polygon fill="white" stroke="black" points="0,-0.5 0,-19.5 107,-19.5 107,-0.5 0,-0.5"/>
 <text text-anchor="middle" x="53.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Ioss::GetLongOption</text>
 </a>

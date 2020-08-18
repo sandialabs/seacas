@@ -12,7 +12,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="classIoss_1_1Property.html" target="_top" xlink:title="A named value that has a known type.">
+<g id="a_node1"><a xlink:href="$classIoss_1_1Property.html" xlink:title="A named value that has a known type.">
 <polygon fill="white" stroke="black" points="0,-0.5 0,-19.5 78,-19.5 78,-0.5 0,-0.5"/>
 <text text-anchor="middle" x="39" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Ioss::Property</text>
 </a>

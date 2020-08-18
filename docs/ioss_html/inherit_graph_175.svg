@@ -12,7 +12,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="classtsl_1_1bhopscotch__map_1_1KeySelect.html" target="_top" xlink:title=" ">
+<g id="a_node1"><a xlink:href="$classtsl_1_1bhopscotch__map_1_1KeySelect.html" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-0.5 0,-63.5 168,-63.5 168,-0.5 0,-0.5"/>
 <text text-anchor="start" x="8" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">tsl::bhopscotch_map</text>
 <text text-anchor="start" x="8" y="-40.5" font-family="Helvetica,sans-Serif" font-size="10.00">&lt; Key, T, Hash, KeyEqual,</text>

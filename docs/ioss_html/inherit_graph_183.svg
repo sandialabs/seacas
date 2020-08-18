@@ -21,7 +21,7 @@
 <!-- Node0 -->
 <g id="node2" class="node">
 <title>Node0</title>
-<g id="a_node2"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html" target="_top" xlink:title=" ">
+<g id="a_node2"><a xlink:href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html" xlink:title=" ">
 <polygon fill="white" stroke="black" points="111,-83 111,-157 336,-157 336,-83 111,-83"/>
 <text text-anchor="start" x="119" y="-145" font-family="Helvetica,sans-Serif" font-size="10.00">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="119" y="-134" font-family="Helvetica,sans-Serif" font-size="10.00">_hash::hopscotch_hash</text>
@@ -41,7 +41,7 @@
 <!-- Node187 -->
 <g id="node3" class="node">
 <title>Node187</title>
-<g id="a_node3"><a xlink:href="classtsl_1_1detail__robin__hash_1_1robin__hash.html" target="_top" xlink:title=" ">
+<g id="a_node3"><a xlink:href="$classtsl_1_1detail__robin__hash_1_1robin__hash.html" xlink:title=" ">
 <polygon fill="white" stroke="black" points="153.5,-0.5 153.5,-63.5 293.5,-63.5 293.5,-0.5 153.5,-0.5"/>
 <text text-anchor="start" x="161.5" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">tsl::detail_robin_hash</text>
 <text text-anchor="start" x="161.5" y="-40.5" font-family="Helvetica,sans-Serif" font-size="10.00">::robin_hash&lt; ValueType,</text>

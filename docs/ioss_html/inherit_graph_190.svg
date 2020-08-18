@@ -12,7 +12,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits_3_01MinBits_00_01typename_38eb39da08c68efde66083547ec62577.html" target="_top" xlink:title=" ">
+<g id="a_node1"><a xlink:href="$classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits_3_01MinBits_00_01typename_38eb39da08c68efde66083547ec62577.html" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-0.5 0,-74.5 131,-74.5 131,-0.5 0,-0.5"/>
 <text text-anchor="start" x="8" y="-62.5" font-family="Helvetica,sans-Serif" font-size="10.00">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="8" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">_hash::smallest_type</text>
