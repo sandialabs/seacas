@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
     if (from_term) {
       fmt::print(fg(fmt::terminal_color::magenta), "\n");
       const char *cinput = getline_int("COMMAND> ");
-      if (cinput[0] == '\0') {
+      if (cinput && cinput[0] == '\0') {
         break;
       }
       if (cinput) {
@@ -963,7 +963,12 @@ namespace {
       assem = region.get_assembly(tokens[1]);
       if (assem == nullptr) {
         // New assembly...
-        assem      = new Ioss::Assembly(region.get_database(), tokens[1]);
+        assem = new Ioss::Assembly(region.get_database(), tokens[1]);
+        if (assem == nullptr) {
+          fmt::print(stderr, fg(fmt::color::red),
+                     "ERROR: Unable to create or access assembly '{}'.\n", tokens[1]);
+          return false;
+        }
         auto my_id = get_next_assembly_id(region);
         assem->property_add(Ioss::Property("id", my_id));
         assem->property_add(Ioss::Property("created", 1));
