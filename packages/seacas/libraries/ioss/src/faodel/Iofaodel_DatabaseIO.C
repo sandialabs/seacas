@@ -1200,47 +1200,50 @@ mpisyncstart.enable true
   int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
       void *data, size_t data_size) const
   {
+    // Field::raw_count() should be the same for all mesh_model_coords* fields. It refers to
+    // the number of types of type SCALAR or VECTOR_3D etc.
+    // The number of double values is the raw_count() * Field::raw_storage().component_count()
       if(field.get_name() == "mesh_model_coordinates" &&
          field.get_role() == Ioss::Field::RoleType::MESH) {
 
-        auto data_size = field.get_size() / this->spatial_dimension(); 
+        size_t num_to_get = field.verify(data_size);
+        auto component_data_size = field.get_size() / this->spatial_dimension(); 
         double * data_ptr = static_cast<double*>(data);
+        // The role for all mesh_model_coords should be Ioss::Field::RoleType::MESH
+        auto role = field.get_role();
 
         auto dim = this->spatial_dimension();
-        std::vector<double> data_x(field.raw_count());  
-        std::vector<double> data_y((dim > 1) ? field.raw_count() : 0);
-        std::vector<double> data_z((dim > 2) ? field.raw_count() : 0);
+        std::vector<double> data_x(num_to_get);  
+        std::vector<double> data_y((dim > 1) ? num_to_get : 0);
+        std::vector<double> data_z((dim > 2) ? num_to_get : 0);
 
         {
             auto field_x = Ioss::Field("mesh_model_coordinates_x", field.get_type(),
-                                       field.raw_storage(), field.get_role(),
-                                       field.raw_count());
-            this->get_field_internal(*nb, field_x, &data_x[0], data_size);
+                                       "scalar", role, num_to_get);
+            this->get_field_internal(*nb, field_x, &data_x[0], component_data_size);
         }
 
         if(dim > 1) {
             auto field_y = Ioss::Field("mesh_model_coordinates_y", field.get_type(),
-                                       field.raw_storage(), field.get_role(),
-                                       field.raw_count());
-            auto data_y = std::vector<double>(field.raw_count());  
-            this->get_field_internal(*nb, field_y, &data_y[0], data_size);
+                                       "scalar", role, num_to_get);
+            this->get_field_internal(*nb, field_y, &data_y[0], component_data_size);
         }
         
         if(dim > 2) {
             auto field_z = Ioss::Field("mesh_model_coordinates_z", field.get_type(),
-                                       field.raw_storage(), field.get_role(),
-                                       field.raw_count());
-            auto data_z = std::vector<double>(field.raw_count());  
-            this->get_field_internal(*nb, field_z, &data_z[0], data_size);
+                                       "scalar", role, num_to_get);
+            this->get_field_internal(*nb, field_z, &data_z[0], component_data_size);
         }
-        
+
+       
+        size_t index(0);
         for(auto id(0); id<field.raw_count(); ++id)
         {
-            data_ptr[id] = data_x[id]; 
+            data_ptr[index++] = data_x[id]; 
             if(dim>1)
-                data_ptr[id+1] = data_y[id]; 
-            if(dim>1)
-                data_ptr[id+2] = data_z[id]; 
+                data_ptr[index++] = data_y[id]; 
+            if(dim>2)
+                data_ptr[index++] = data_z[id]; 
         }
       }
       else
