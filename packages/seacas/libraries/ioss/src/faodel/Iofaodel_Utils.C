@@ -531,7 +531,7 @@ namespace Iofaodel {
     std::set<std::string> names;
     for(auto k : keys)
     {
-      std::string front("Entity/" + target);
+      std::string front("Entity/" + target + "/Name/");
       auto begin = k.K2().find(front);
       if(begin != std::string::npos) {
 
