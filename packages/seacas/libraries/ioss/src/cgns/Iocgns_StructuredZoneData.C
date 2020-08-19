@@ -270,11 +270,11 @@ namespace Iocgns {
       work1 = ord1 * m_ordinal[0] * m_ordinal[2];
       work2 = ord2 * m_ordinal[0] * m_ordinal[1];
       if (m_lineOrdinal == 0 || m_ordinal[0] == 1)
-	work0 = 0;
+        work0 = 0;
       if (m_lineOrdinal == 1 || m_ordinal[1] == 1)
-	work1 = 0;
+        work1 = 0;
       if (m_lineOrdinal == 2 || m_ordinal[2] == 1)
-	work2 = 0;
+        work2 = 0;
       enforce_1cell_constraint = false;
     }
 
@@ -296,7 +296,7 @@ namespace Iocgns {
     int ordinal = min_ordinal;
 
     // One more check to try to produce more "squarish" decompositions.
-    // Check the ratio of max ordinal to selected min_ordinal and if > 1.5 (hueristic), choose the
+    // Check the ratio of max ordinal to selected min_ordinal and if > 1.5 (heuristic), choose the
     // max ordinal instead.
     int max_ordinal    = -1;
     int max_ordinal_sz = 0;
@@ -311,7 +311,8 @@ namespace Iocgns {
       ordinal = max_ordinal;
     }
 
-    if ((m_ordinal[ordinal] <= enforce_1cell_constraint ? 1 : 0) || (work0 == 0 && work1 == 0 && work2 == 0)) {
+    if ((m_ordinal[ordinal] <= enforce_1cell_constraint ? 1 : 0) ||
+        (work0 == 0 && work1 == 0 && work2 == 0)) {
       return std::make_pair(nullptr, nullptr);
     }
 
@@ -460,7 +461,7 @@ namespace Iocgns {
           m_zoneConnectivity.insert(m_zoneConnectivity.end(), new_zgc.begin(), new_zgc.end());
           new_zgc.clear();
         }
-        // Filter out all zgc that do not contain any faces unless needed fo maintain original zgc
+        // Filter out all zgc that do not contain any faces unless needed to maintain original zgc
         // reconstruction...
         m_zoneConnectivity.erase(
             std::remove_if(m_zoneConnectivity.begin(), m_zoneConnectivity.end(),
