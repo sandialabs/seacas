@@ -1201,9 +1201,10 @@ mpisyncstart.enable true
       void *data, size_t data_size) const
   {
       if(field.get_name() == "mesh_model_coordinates" &&
-         field.get_roel() == Ioss::Field:RoleType::MESH) {
+         field.get_role() == Ioss::Field::RoleType::MESH) {
 
         auto data_size = field.get_size() / this->spatial_dimension(); 
+        double * data_ptr = static_cast<double*>(data);
 
         auto dim = this->spatial_dimension();
         std::vector<double> data_x(field.raw_count());  
@@ -1214,7 +1215,7 @@ mpisyncstart.enable true
             auto field_x = Ioss::Field("mesh_model_coordinates_x", field.get_type(),
                                        field.raw_storage(), field.get_role(),
                                        field.raw_count());
-            this->get_field_internal(*reg, field_x, &data_x[0], data_size);
+            this->get_field_internal(*nb, field_x, &data_x[0], data_size);
         }
 
         if(dim > 1) {
@@ -1222,7 +1223,7 @@ mpisyncstart.enable true
                                        field.raw_storage(), field.get_role(),
                                        field.raw_count());
             auto data_y = std::vector<double>(field.raw_count());  
-            this->get_field_internal(*reg, field_y, &data_y[0], data_size);
+            this->get_field_internal(*nb, field_y, &data_y[0], data_size);
         }
         
         if(dim > 2) {
@@ -1230,16 +1231,16 @@ mpisyncstart.enable true
                                        field.raw_storage(), field.get_role(),
                                        field.raw_count());
             auto data_z = std::vector<double>(field.raw_count());  
-            this->get_field_internal(*reg, field_z, &data_z[0], data_size);
+            this->get_field_internal(*nb, field_z, &data_z[0], data_size);
         }
         
-        for(auto id(0); id<field.raw_count(); ++i)
+        for(auto id(0); id<field.raw_count(); ++id)
         {
-            data[id] = data_x[id]; 
+            data_ptr[id] = data_x[id]; 
             if(dim>1)
-                data[id+1] = data_y[id]; 
+                data_ptr[id+1] = data_y[id]; 
             if(dim>1)
-                data[id+2] = data_z[id]; 
+                data_ptr[id+2] = data_z[id]; 
         }
       }
       else
