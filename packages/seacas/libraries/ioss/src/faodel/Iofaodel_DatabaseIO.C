@@ -1200,7 +1200,50 @@ mpisyncstart.enable true
   int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
       void *data, size_t data_size) const
   {
-    return get_field_internal(*nb, field, data, data_size);;
+      if(field.get_name() == "mesh_model_coordinates" &&
+         field.get_roel() == Ioss::Field:RoleType::MESH) {
+
+        auto data_size = field.get_size() / this->spatial_dimension(); 
+
+        auto dim = this->spatial_dimension();
+        std::vector<double> data_x(field.raw_count());  
+        std::vector<double> data_y((dim > 1) ? field.raw_count() : 0);
+        std::vector<double> data_z((dim > 2) ? field.raw_count() : 0);
+
+        {
+            auto field_x = Ioss::Field("mesh_model_coordinates_x", field.get_type(),
+                                       field.raw_storage(), field.get_role(),
+                                       field.raw_count());
+            this->get_field_internal(*reg, field_x, &data_x[0], data_size);
+        }
+
+        if(dim > 1) {
+            auto field_y = Ioss::Field("mesh_model_coordinates_y", field.get_type(),
+                                       field.raw_storage(), field.get_role(),
+                                       field.raw_count());
+            auto data_y = std::vector<double>(field.raw_count());  
+            this->get_field_internal(*reg, field_y, &data_y[0], data_size);
+        }
+        
+        if(dim > 2) {
+            auto field_z = Ioss::Field("mesh_model_coordinates_z", field.get_type(),
+                                       field.raw_storage(), field.get_role(),
+                                       field.raw_count());
+            auto data_z = std::vector<double>(field.raw_count());  
+            this->get_field_internal(*reg, field_z, &data_z[0], data_size);
+        }
+        
+        for(auto id(0); id<field.raw_count(); ++i)
+        {
+            data[id] = data_x[id]; 
+            if(dim>1)
+                data[id+1] = data_y[id]; 
+            if(dim>1)
+                data[id+2] = data_z[id]; 
+        }
+      }
+      else
+        return get_field_internal(*nb, field, data, data_size);;
   }
   int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *nb, const Ioss::Field &field,
       void *data, size_t data_size) const
