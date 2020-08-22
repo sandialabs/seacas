@@ -1552,17 +1552,11 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   }
 #endif
 
-  // !!!! DEBUG !!!!
-  printf("**** TRANSFER blocks\n");
-  fflush(stdout);
   transfer_edgeblocks(region, output_region, options, rank);
   transfer_faceblocks(region, output_region, options, rank);
   transfer_elementblocks(region, output_region, options, rank);
   transfer_structuredblocks(region, output_region, options, rank);
 
-  // !!!! DEBUG !!!!
-  printf("**** TRANSFER sets\n");
-  fflush(stdout);
   transfer_nodesets(region, output_region, options, rank);
   transfer_edgesets(region, output_region, options, rank);
   transfer_facesets(region, output_region, options, rank);
@@ -1604,9 +1598,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
   transfer_commsets(region, output_region, options, rank);
 
-  // !!!! DEBUG !!!!
-  printf("**** TRANSFER frames\n");
-  fflush(stdout);
   transfer_coordinate_frames(region, output_region);
   transfer_blobs(region, output_region, options, rank);
 
@@ -1639,10 +1630,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     dbi->progress("TRANSFERRING MESH FIELD DATA ... ");
 
-    // !!!! DEBUG !!!!
-    printf("**** OUTPUT region begin\n");
-    fflush(stdout);
-
     // Model defined, now fill in the model data...
     output_region.begin_mode(Ioss::STATE_MODEL);
 
@@ -1650,9 +1637,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     // Transfer MESH field_data from input to output...
     bool node_major = output_region.node_major();
 
-    // !!!! DEBUG !!!!
-    printf("**** TRANSFER element_blocks fields\n");
-    fflush(stdout);
     if (!node_major) {
       transfer_field_data(region.get_element_blocks(), output_region, data_pool, Ioss::Field::MESH,
                           options);
@@ -1660,9 +1644,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
                           Ioss::Field::ATTRIBUTE, options);
     }
 
-    // !!!! DEBUG !!!!
-    printf("**** TRANSFER node_blocks fields\n");
-    fflush(stdout);
     if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
       transfer_field_data(region.get_node_blocks(), output_region, data_pool, Ioss::Field::MESH,
                           options);
@@ -1670,9 +1651,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
                           Ioss::Field::ATTRIBUTE, options);
     }
 
-    // !!!! DEBUG !!!!
-    printf("**** TRANSFER element_blocks fields\n");
-    fflush(stdout);
     if (node_major) {
       transfer_field_data(region.get_element_blocks(), output_region, data_pool, Ioss::Field::MESH,
                           options);
@@ -1680,26 +1658,16 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
                           Ioss::Field::ATTRIBUTE, options);
     }
 
-    // !!!! DEBUG !!!!
-    printf("**** TRANSFER structured_blocks fields\n");
-    fflush(stdout);
-
     // Structured Blocks -- Contain a NodeBlock that also needs its field data transferred...
     const auto &sbs = region.get_structured_blocks();
     for (const auto &isb : sbs) {
       const std::string &name = isb->name();
-      // !!!! DEBUG !!!!
-      printf("**** TRANSFER structured_blocks fields (NAME = %s)\n", name.c_str());
-      fflush(stdout);
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DEBUG(), "{}, ", name);
       }
       // Find matching output structured block
       Ioss::StructuredBlock *osb = output_region.get_structured_block(name);
       if (osb != nullptr) {
-        // !!!! DEBUG !!!!
-        printf("**** TRANSFER structured_blocks fields (NAME = %s) : StructuredBlock ==> StructuredBlock\n", name.c_str());
-        fflush(stdout);
         transfer_field_data(isb, osb, data_pool, Ioss::Field::MESH, options);
         transfer_field_data(isb, osb, data_pool, Ioss::Field::ATTRIBUTE, options);
 
@@ -1709,9 +1677,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
           fmt::print(Ioss::DEBUG(), "NB: {}, ", inb.name());
         }
 
-        // !!!! DEBUG !!!!
-        printf("**** TRANSFER structured_blocks fields (NAME = %s) : NodeBlock ==> NodeBlock\n", name.c_str());
-        fflush(stdout);
         transfer_field_data(&inb, &onb, data_pool, Ioss::Field::MESH, options);
         transfer_field_data(&inb, &onb, data_pool, Ioss::Field::ATTRIBUTE, options);
       }
@@ -1736,9 +1701,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::ATTRIBUTE,
                         options);
 
-    // !!!! DEBUG !!!!
-    printf("**** TRANSFER sets fields\n");
-    fflush(stdout);
     transfer_field_data(region.get_nodesets(), output_region, data_pool, Ioss::Field::MESH,
                         options);
     transfer_field_data(region.get_nodesets(), output_region, data_pool, Ioss::Field::ATTRIBUTE,
@@ -1765,10 +1727,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
                         options);
     transfer_field_data(region.get_commsets(), output_region, data_pool, Ioss::Field::COMMUNICATION,
                         options);
-
-    // !!!! DEBUG !!!!
-    printf("**** TRANSFER side_sets fields\n");
-    fflush(stdout);
 
     // Side Sets
     if (region.mesh_type() == Ioss::MeshType::UNSTRUCTURED) {
@@ -2468,12 +2426,6 @@ namespace {
     // --sll 21aug20
     if( ige->type() == Ioss::NODEBLOCK && ige->name().find("_nodes") != std::string::npos ) {
       return;
-    }
-
-    if( ige->type() == Ioss::NODEBLOCK ) {
-      // !!!! DEBUG !!!!
-      printf("*** [transfer_field_data] Transfer NODEBLOCK (%s)\n", ige->name().c_str());
-      fflush(stdout);
     }
 
     // Iterate through the TRANSIENT-role fields of the input
