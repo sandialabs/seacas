@@ -568,10 +568,7 @@ void IossApplication::openInputIOSSDatabase() {
     }
       
 
-#if 0
     Ioss::DatabaseIO * dbi = Ioss::IOFactory::create(this->iossDatabaseType,
-#endif
-    dbi = Ioss::IOFactory::create(this->iossDatabaseType,
         this->getFileName(), Ioss::READ_RESTART,
             (MPI_Comm)MPI_COMM_WORLD, inputProperties);
     if (dbi == nullptr || !dbi->ok(true)) {
