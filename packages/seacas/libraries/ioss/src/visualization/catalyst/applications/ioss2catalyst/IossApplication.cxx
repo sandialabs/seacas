@@ -12,6 +12,15 @@
 #include <fstream>
 #include <iomanip>
 #include <cstdlib>
+#include <ctime>
+#include <chrono>
+#include <sys/time.h>
+#include <sys/resource.h>
+
+using hrclock = std::chrono::high_resolution_clock;
+hrclock::time_point global_start;
+bool suppress_timer_output = false;
+struct rusage usage;
 
 IossApplication::IossApplication(const std::string& appName,
     const std::string& fileTypeName, const std::string& iossDatabaseType,
@@ -61,12 +70,23 @@ void IossApplication::initialize(const std::string& appName,
     this->catalystStopTimeStep = 0;
     this->useCatalystStopTimeStep = false;
     this->faodelParams = "";
+
+    global_start = hrclock::now();
 }
 
 IossApplication::~IossApplication() {
     if (this->inputIOSSRegion) {
         delete this->inputIOSSRegion;
     }
+    if( not suppress_timer_output ) {
+      getrusage( RUSAGE_SELF, &usage );
+      std::cout << "global time (us): "
+		<< std::setprecision( 10 )
+		<< std::chrono::duration_cast< std::chrono::microseconds >( hrclock::now() - global_start ).count()
+		<< " ru_maxrss (MB): " << usage.ru_maxrss * 1024
+		<< std::endl;
+    }
+      
 }
 
 void IossApplication::runApplication() {
@@ -126,7 +146,7 @@ void IossApplication::finalizeMPI() {
 void IossApplication::processCommandLine(int argc, char **argv) {
     int c;
     char *cvalue = NULL;
-    while ((c = getopt (argc, argv, "a:b:cf:hi:mnp:rs:")) != -1) {
+    while ((c = getopt (argc, argv, "a:b:cf:hi:mnp:qrs:")) != -1) {
         char *cvalue = nullptr;
         switch(c) {
             case 'a':
@@ -161,6 +181,9 @@ void IossApplication::processCommandLine(int argc, char **argv) {
                 cvalue = optarg;
                 this->setPhactoriInputScript(cvalue);
                 break;
+	case 'q':
+	  suppress_timer_output = true;
+	  break;
             case 'r':
                 this->printIOSSReport = true;
                 break;
@@ -431,6 +454,8 @@ void IossApplication::printUsageMessage() {
 
     um += "-h print this usage message and exit program\n\n";
 
+    um += "-q suppress timer output\n\n";
+
     um += "-i <file> run Catalyst with Phactori input JSON given in <file>.";
     um += "\n\n";
 
@@ -547,6 +572,9 @@ Ioss::Region * IossApplication::getInputIOSSRegion() {
 }
 
 void IossApplication::openInputIOSSDatabase() {
+
+  hrclock::time_point then = hrclock::now();
+
     Ioss::PropertyManager inputProperties;
     if (this->decomposedMeshExists()) {
         inputProperties.add(Ioss::Property("DECOMPOSITION_METHOD", "external"));
@@ -577,6 +605,15 @@ void IossApplication::openInputIOSSDatabase() {
         this->exitApplicationFailure();
     }
     this->inputIOSSRegion = new Ioss::Region(dbi);
+
+    if( not suppress_timer_output ) {
+      getrusage( RUSAGE_SELF, &usage );
+      std::cout << "openInputIOSSDatabase (us) "
+		<< std::setprecision( 10 )
+		<< std::chrono::duration_cast< std::chrono::microseconds >( hrclock::now() - then).count()
+		<< " ru_maxrss (MB): " << (usage.ru_maxrss * 1024)
+		<< std::endl;
+    }
 }
 
 std::string IossApplication::getPhactoriDefaultJSON() {
@@ -593,6 +630,8 @@ std::string IossApplication::getPhactoriDefaultJSON() {
 }
 
 void IossApplication::copyInputIOSSDatabaseOnRank() {
+
+  hrclock::time_point then = hrclock::now();
     std::string fn = this->copyOutputDatabaseName + "." + this->fileTypeSuffix;
     Ioss::PropertyManager outputProperties;
     outputProperties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
@@ -618,10 +657,21 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
     Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
 
     delete outputRegion;
+    if( not suppress_timer_output ) {
+      getrusage( RUSAGE_SELF, &usage );
+      std::cout << "IossApplication::copyInputIOSSDatabaseOnRank (us) "
+		<< std::setprecision( 10 )
+		<< std::chrono::duration_cast< std::chrono::microseconds>( hrclock::now() - then ).count()
+		<< " ru_maxrss (MB): " << (usage.ru_maxrss * 1024)
+		<< std::endl;
+    }
+
 }
 
 void IossApplication::callCatalystIOSSDatabaseOnRank() {
     Ioss::PropertyManager outputProperties;
+
+    hrclock::time_point then = hrclock::now();
 
     if (this->usePhactoriInputScriptON()) {
         outputProperties.add(Ioss::Property("PHACTORI_INPUT_SYNTAX_SCRIPT",
@@ -686,4 +736,12 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
     Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
 
     delete outputRegion;
+    if( not suppress_timer_output ) {
+      getrusage( RUSAGE_SELF, &usage );
+      std::cout << "IossApplication::callCatalystIOSSDatabaseOnRank (us) "
+		<< std::setprecision( 10 )
+		<< std::chrono::duration_cast< std::chrono::microseconds>( hrclock::now() - then ).count()
+		<< " ru_maxrss (MB): " << (usage.ru_maxrss * 1024)
+		<< std::endl;
+    }
 }
