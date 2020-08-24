@@ -83,7 +83,7 @@ IossApplication::~IossApplication() {
       std::cout << "global time (us): "
 		<< std::setprecision( 10 )
 		<< std::chrono::duration_cast< std::chrono::microseconds >( hrclock::now() - global_start ).count()
-		<< " ru_maxrss (MB): " << usage.ru_maxrss * 1024
+		<< " ru_maxrss (KB): " << usage.ru_maxrss
 		<< std::endl;
     }
       
@@ -611,7 +611,7 @@ void IossApplication::openInputIOSSDatabase() {
       std::cout << "openInputIOSSDatabase (us) "
 		<< std::setprecision( 10 )
 		<< std::chrono::duration_cast< std::chrono::microseconds >( hrclock::now() - then).count()
-		<< " ru_maxrss (MB): " << (usage.ru_maxrss * 1024)
+		<< " ru_maxrss (KB): " << (usage.ru_maxrss)
 		<< std::endl;
     }
 }
@@ -662,7 +662,7 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
       std::cout << "IossApplication::copyInputIOSSDatabaseOnRank (us) "
 		<< std::setprecision( 10 )
 		<< std::chrono::duration_cast< std::chrono::microseconds>( hrclock::now() - then ).count()
-		<< " ru_maxrss (MB): " << (usage.ru_maxrss * 1024)
+		<< " ru_maxrss (KB): " << (usage.ru_maxrss)
 		<< std::endl;
     }
 
@@ -741,7 +741,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
       std::cout << "IossApplication::callCatalystIOSSDatabaseOnRank (us) "
 		<< std::setprecision( 10 )
 		<< std::chrono::duration_cast< std::chrono::microseconds>( hrclock::now() - then ).count()
-		<< " ru_maxrss (MB): " << (usage.ru_maxrss * 1024)
+		<< " ru_maxrss (KB): " << (usage.ru_maxrss)
 		<< std::endl;
     }
 }
