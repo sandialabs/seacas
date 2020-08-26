@@ -3,7 +3,7 @@ from ctypes import *
 import os
 
 """
-exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.16 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 2 Version)
 
 Copyright(C) 1999-2020 National Technology & Engineering Solutions
@@ -15,12 +15,12 @@ See packages/seacas/LICENSE for details
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.15 (seacas-py2)"
+EXODUS_PY_VERSION = "1.16 (seacas-py2)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.15 (seacas-py2), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.16 (seacas-py2), a python wrapper of some of the exodus library.
 
-Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
+Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
 Contract DE-NA0003525 with NTESS, the U.S. Government retains certain
 rights in this software.
@@ -435,13 +435,12 @@ class exodus:
           return value(s):
             <exodus>  exo_copy  the copy
         """
-        fileId = EXODUS_LIB.ex_create_int(fileName, EX_NOCLOBBER,
+        i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
+        fileId = EXODUS_LIB.ex_create_int(fileName, EX_NOCLOBBER|i64Status,
                                           byref(self.comp_ws),
                                           byref(self.io_ws),
                                           EX_API_VERSION_NODOT)
 
-        i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
-        EXODUS_LIB.ex_set_int64_status(fileId, i64Status)
 
         self.__copy_file(fileId, include_transient)
         EXODUS_LIB.ex_close(fileId)
