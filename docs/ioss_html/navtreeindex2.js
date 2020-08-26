@@ -1,6 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"Ioss__ElementTopology_8h.html#acc1610b8e37168350b478a07112dffcfa38b464161bf5019798797584babd0433":[5,0,0,63,4,3],
 "Ioss__ElementTopology_8h.html#acc1610b8e37168350b478a07112dffcfa42bd365c1ecdb0302894b3ff434de056":[5,0,0,63,4,7],
 "Ioss__ElementTopology_8h.html#acc1610b8e37168350b478a07112dffcfa58c9566f3c750ce7147b045fdd14202b":[5,0,0,63,4,8],
 "Ioss__ElementTopology_8h.html#acc1610b8e37168350b478a07112dffcfa696b031073e74bf2cb98e5ef201d4aa3":[5,0,0,63,4,0],
@@ -249,5 +248,6 @@ var NAVTREEINDEX2 =
 "Ioss__NodeBlock_8C.html":[5,0,0,111],
 "Ioss__NodeBlock_8h.html":[5,0,0,112],
 "Ioss__NodeBlock_8h_source.html":[5,0,0,112],
-"Ioss__NodeSet_8C.html":[5,0,0,113]
+"Ioss__NodeSet_8C.html":[5,0,0,113],
+"Ioss__NodeSet_8h.html":[5,0,0,114]
 };

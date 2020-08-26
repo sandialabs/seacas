@@ -9,6 +9,5 @@ var Ioex__Internals_8C =
     [ "get_type", "Ioex__Internals_8C.html#a584658147dc76be7d85c531a8ef9e6e4", null ],
     [ "output_names", "Ioex__Internals_8C.html#a96588464f4001bb15ac2ad8ed3efb160", null ],
     [ "put_id_array", "Ioex__Internals_8C.html#a97c399d159544979f324e07bd2f173b5", null ],
-    [ "put_int_array", "Ioex__Internals_8C.html#ab12673581d25b84f67be8eaa9149497f", null ],
-    [ "EX_NOERR", "Ioex__Internals_8C.html#aba29f682f3cf4a65feffc6467097bf0e", null ]
+    [ "put_int_array", "Ioex__Internals_8C.html#ab12673581d25b84f67be8eaa9149497f", null ]
 ];
