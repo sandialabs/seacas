@@ -1,5 +1,5 @@
 """
-exodus.py v 1.19.2 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.19.3 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,12 +70,12 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.19.2 (seacas-py3)"
+EXODUS_PY_VERSION = "1.19.3 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.19.2 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.19.3 (seacas-py3), a python wrapper of some of the exodus library.
 
-Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
+Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
 Contract DE-NA0003525 with NTESS, the U.S. Government retains certain
 rights in this software.
@@ -808,13 +808,11 @@ class exodus:
         -------
         exo_copy : exodus object
         """
-        fileId = EXODUS_LIB.ex_create_int(fileName.encode('ascii'), EX_NOCLOBBER,
+        i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
+        fileId = EXODUS_LIB.ex_create_int(fileName.encode('ascii'), EX_NOCLOBBER|i64Status,
                                           ctypes.byref(self.comp_ws),
                                           ctypes.byref(self.io_ws),
                                           EX_API_VERSION_NODOT)
-
-        i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
-        EXODUS_LIB.ex_set_int64_status(fileId, i64Status)
 
         self.__copy_file(fileId, include_transient)
         EXODUS_LIB.ex_close(fileId)
