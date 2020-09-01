@@ -71,25 +71,19 @@ void IossApplication::initialize(const std::string& appName,
     this->useCatalystStopTimeStep = false;
     this->faodelParams = "";
 
-    global_start = hrclock::now();
+
 }
 
 IossApplication::~IossApplication() {
     if (this->inputIOSSRegion) {
         delete this->inputIOSSRegion;
     }
-    if( not suppress_timer_output ) {
-      getrusage( RUSAGE_SELF, &usage );
-      std::cout << "global time (us): "
-		<< std::setprecision( 10 )
-		<< std::chrono::duration_cast< std::chrono::microseconds >( hrclock::now() - global_start ).count()
-		<< " ru_maxrss (KB): " << usage.ru_maxrss
-		<< std::endl;
-    }
-      
+
 }
 
 void IossApplication::runApplication() {
+    global_start = hrclock::now();
+
     this->checkForOnlyOneCatalystOutputPath();
     Ioss::Init::Initializer io;
     this->openInputIOSSDatabase();
@@ -103,6 +97,14 @@ void IossApplication::runApplication() {
     }
 
     this->callCatalystIOSSDatabaseOnRank();
+    if( myRank == 0 ) {
+      getrusage( RUSAGE_SELF, &usage );
+      std::cout << "global time (us): "
+		<< std::setprecision( 10 )
+		<< std::chrono::duration_cast< std::chrono::microseconds >( hrclock::now() - global_start ).count()
+		<< " ru_maxrss (KB): " << usage.ru_maxrss
+		<< std::endl;
+    }
 
     this->exitApplicationSuccess();
 }
@@ -605,8 +607,7 @@ void IossApplication::openInputIOSSDatabase() {
         this->exitApplicationFailure();
     }
     this->inputIOSSRegion = new Ioss::Region(dbi);
-
-    if( not suppress_timer_output ) {
+    if( isRankZero() ) {
       getrusage( RUSAGE_SELF, &usage );
       std::cout << "openInputIOSSDatabase (us) "
 		<< std::setprecision( 10 )
@@ -657,7 +658,7 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
     Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
 
     delete outputRegion;
-    if( not suppress_timer_output ) {
+    if( isRankZero() ) {
       getrusage( RUSAGE_SELF, &usage );
       std::cout << "IossApplication::copyInputIOSSDatabaseOnRank (us) "
 		<< std::setprecision( 10 )
@@ -736,7 +737,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
     Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
 
     delete outputRegion;
-    if( not suppress_timer_output ) {
+    if( isRankZero() ) {
       getrusage( RUSAGE_SELF, &usage );
       std::cout << "IossApplication::callCatalystIOSSDatabaseOnRank (us) "
 		<< std::setprecision( 10 )
@@ -744,4 +745,5 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
 		<< " ru_maxrss (KB): " << (usage.ru_maxrss)
 		<< std::endl;
     }
+
 }
