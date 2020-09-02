@@ -174,7 +174,8 @@ int ex__check_file_type(const char *path, int *type)
 
     if (!(fp = fopen(path, "r"))) {
       char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Could not open file '%s', errno = %d.", path, errno);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Could not open file '%s', error = %s.", path,
+               strerror(errno));
       ex_err(__func__, errmsg, EX_WRONGFILETYPE);
       EX_FUNC_LEAVE(EX_FATAL);
     }
@@ -182,8 +183,8 @@ int ex__check_file_type(const char *path, int *type)
     fclose(fp);
     if (i != 1) {
       char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: Could not read magic data from file '%s', errno = %d.", path, errno);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Could not read magic data from file '%s', err = %s.",
+               path, strerror(errno));
       ex_err(__func__, errmsg, EX_WRONGFILETYPE);
       EX_FUNC_LEAVE(EX_FATAL);
     }
