@@ -173,12 +173,19 @@ int ex__check_file_type(const char *path, int *type)
     int   i;
 
     if (!(fp = fopen(path, "r"))) {
-      EX_FUNC_LEAVE(errno);
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Could not open file '%s', errno = %d.", path, errno);
+      ex_err(__func__, errmsg, EX_WRONGFILETYPE);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     i = fread(magic, MAGIC_NUMBER_LEN, 1, fp);
     fclose(fp);
     if (i != 1) {
-      EX_FUNC_LEAVE(errno);
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: Could not read magic data from file '%s', errno = %d.", path, errno);
+      ex_err(__func__, errmsg, EX_WRONGFILETYPE);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -196,6 +203,15 @@ int ex__check_file_type(const char *path, int *type)
     else if (magic[3] == '\005') {
       *type = 4; /* cdf5 (including pnetcdf) file */
     }
+  }
+  if (*type == 0) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(
+        errmsg, MAX_ERR_LENGTH,
+        "ERROR: Could not recognize %s as a valid Exodus/NetCDF file variant.  Magic value is '%s'",
+        path, magic);
+    ex_err(__func__, errmsg, EX_WRONGFILETYPE);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);
 }
