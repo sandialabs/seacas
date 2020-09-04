@@ -66,6 +66,13 @@ then
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
 
+  if [ "$COMPILER" == "nvidia" ]
+  then
+      CXX="nvcc -x c++"
+      CC=nvcc
+      FC=gfortran
+  fi
+
   if [ "$COMPILER" == "clang" ]
   then
       CXX=/opt/local/bin/clang++-mp-8.0
