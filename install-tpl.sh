@@ -267,7 +267,7 @@ then
     if [ "${H5VERSION}" == "V18" ]; then
 	hdf_version="1.8.21"
     elif [ "${H5VERSION}" == "V110" ]; then
-	hdf_version="1.10.6"
+	hdf_version="1.10.7"
     elif [ "${H5VERSION}" == "V112" ]; then
 	hdf_version="1.12.0"
     else
