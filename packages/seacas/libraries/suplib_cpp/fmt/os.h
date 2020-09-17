@@ -18,7 +18,6 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>  // for strtod_l
-#include <memory>
 
 #if defined __APPLE__ || defined(__FreeBSD__)
 #  include <xlocale.h>  // for LC_NUMERIC_MASK on OS X
@@ -30,7 +29,8 @@
 #if FMT_HAS_INCLUDE("winapifamily.h")
 #  include <winapifamily.h>
 #endif
-#if (FMT_HAS_INCLUDE(<fcntl.h>) || defined(__APPLE__)) && \
+#if (FMT_HAS_INCLUDE(<fcntl.h>) || defined(__APPLE__) || \
+     defined(__linux__)) &&                              \
     (!defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
 #  include <fcntl.h>  // for O_RDONLY
 #  define FMT_USE_FCNTL 1
@@ -279,7 +279,8 @@ class file {
     RDONLY = FMT_POSIX(O_RDONLY),  // Open for reading only.
     WRONLY = FMT_POSIX(O_WRONLY),  // Open for writing only.
     RDWR = FMT_POSIX(O_RDWR),      // Open for reading and writing.
-    CREATE = FMT_POSIX(O_CREAT)    // Create if the file doesn't exist.
+    CREATE = FMT_POSIX(O_CREAT),   // Create if the file doesn't exist.
+    APPEND = FMT_POSIX(O_APPEND)   // Open in append mode.
   };
 
   // Constructs a file object which doesn't represent any file.
@@ -357,7 +358,7 @@ struct buffer_size {
 
 struct ostream_params {
   int oflag = file::WRONLY | file::CREATE;
-  size_t buffer_size = BUFSIZ;
+  size_t buffer_size = BUFSIZ > 32768 ? BUFSIZ : 32768;
 
   ostream_params() {}
 
@@ -380,38 +381,30 @@ static constexpr detail::buffer_size buffer_size;
 class ostream : private detail::buffer<char> {
  private:
   file file_;
-  size_t buffer_size_;
-  std::unique_ptr<char[]> buffer_;
-
-  char* move_buffer(ostream&& other) {
-    buffer_ = std::move(other.buffer_);
-    buffer_size_ = other.buffer_size_;
-    return buffer_.get();
-  }
 
   void flush() {
     if (size() == 0) return;
-    file_.write(buffer_.get(), size());
+    file_.write(data(), size());
     clear();
   }
 
   void grow(size_t) final;
 
   ostream(cstring_view path, const detail::ostream_params& params)
-      : file_(path, params.oflag),
-        buffer_size_(params.buffer_size),
-        buffer_(new char[params.buffer_size]) {
-    set(buffer_.get(), params.buffer_size);
+      : file_(path, params.oflag) {
+    set(new char[params.buffer_size], params.buffer_size);
   }
 
  public:
   ostream(ostream&& other)
-      : file_(std::move(other.file_)),
-        buffer_size_(other.buffer_size_),
-        buffer_(std::move(other.buffer_)) {
-    other.clear();
+      : detail::buffer<char>(other.data(), other.size(), other.capacity()),
+        file_(std::move(other.file_)) {
+    other.set(nullptr, 0);
   }
-  ~ostream() { flush(); }
+  ~ostream() {
+    flush();
+    delete[] data();
+  }
 
   template <typename... T>
   friend ostream output_file(cstring_view path, T... params);
@@ -430,7 +423,7 @@ class ostream : private detail::buffer<char> {
 /**
   Opens a file for writing. Supported parameters passed in `params`:
   * ``<integer>``: Output flags (``file::WRONLY | file::CREATE`` by default)
-  * ``buffer_size=<integer>``: Output buffer size (``BUFSIZ`` by default)
+  * ``buffer_size=<integer>``: Output buffer size
  */
 template <typename... T>
 inline ostream output_file(cstring_view path, T... params) {

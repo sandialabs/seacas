@@ -24,7 +24,7 @@
 #define FMT_DEPRECATED_N_SPECIFIER
 
 // The fmt library version in the form major * 10000 + minor * 100 + patch.
-#define FMT_VERSION 70002
+#define FMT_VERSION 70003
 
 #ifdef __clang__
 #  define FMT_CLANG_VERSION (__clang_major__ * 100 + __clang_minor__)
@@ -63,6 +63,7 @@
 #  define FMT_MSC_VER 0
 #  define FMT_SUPPRESS_MSC_WARNING(n)
 #endif
+
 #ifdef __has_feature
 #  define FMT_HAS_FEATURE(x) __has_feature(x)
 #else
@@ -70,7 +71,7 @@
 #endif
 
 #if defined(__has_include) && !defined(__INTELLISENSE__) && \
-    !(FMT_ICC_VERSION && FMT_ICC_VERSION < 1600)
+    (!FMT_ICC_VERSION || FMT_ICC_VERSION >= 1600)
 #  define FMT_HAS_INCLUDE(x) __has_include(x)
 #else
 #  define FMT_HAS_INCLUDE(x) 0
@@ -105,7 +106,7 @@
 #endif
 
 #ifndef FMT_OVERRIDE
-#  if FMT_HAS_FEATURE(cxx_override) || \
+#  if FMT_HAS_FEATURE(cxx_override_control) || \
       (FMT_GCC_VERSION >= 408 && FMT_HAS_GXX_CXX11) || FMT_MSC_VER >= 1900
 #    define FMT_OVERRIDE override
 #  else
@@ -304,7 +305,8 @@ template <typename T> struct std_string_view {};
 
 #ifdef FMT_USE_INT128
 // Do nothing.
-#elif defined(__SIZEOF_INT128__) && !FMT_NVCC && !(FMT_CLANG_VERSION && FMT_MSC_VER)
+#elif defined(__SIZEOF_INT128__) && !FMT_NVCC && \
+    !(FMT_CLANG_VERSION && FMT_MSC_VER)
 #  define FMT_USE_INT128 1
 using int128_t = __int128_t;
 using uint128_t = __uint128_t;
@@ -562,8 +564,9 @@ class basic_format_parse_context : private ErrorHandler {
   using iterator = typename basic_string_view<Char>::iterator;
 
   explicit constexpr basic_format_parse_context(
-      basic_string_view<Char> format_str, ErrorHandler eh = {})
-      : ErrorHandler(eh), format_str_(format_str), next_arg_id_(0) {}
+      basic_string_view<Char> format_str, ErrorHandler eh = {},
+      int next_arg_id = 0)
+      : ErrorHandler(eh), format_str_(format_str), next_arg_id_(next_arg_id) {}
 
   /**
     Returns an iterator to the beginning of the format string range being
@@ -771,13 +774,13 @@ class iterator_buffer : public Traits, public buffer<T> {
   T data_[buffer_size];
 
  protected:
-  void grow(size_t) final {
+  void grow(size_t) final FMT_OVERRIDE {
     if (this->size() == buffer_size) flush();
   }
   void flush();
 
  public:
-  explicit iterator_buffer(OutputIt out, size_t n = 0)
+  explicit iterator_buffer(OutputIt out, size_t n = buffer_size)
       : Traits(n),
         buffer<T>(data_, 0, n < size_t(buffer_size) ? n : size_t(buffer_size)),
         out_(out) {}
@@ -792,7 +795,7 @@ class iterator_buffer : public Traits, public buffer<T> {
 
 template <typename T> class iterator_buffer<T*, T> : public buffer<T> {
  protected:
-  void grow(size_t) final {}
+  void grow(size_t) final FMT_OVERRIDE {}
 
  public:
   explicit iterator_buffer(T* out, size_t = 0) : buffer<T>(out, 0, ~size_t()) {}
@@ -810,7 +813,7 @@ class iterator_buffer<std::back_insert_iterator<Container>,
   Container& container_;
 
  protected:
-  void grow(size_t capacity) final {
+  void grow(size_t capacity) final FMT_OVERRIDE {
     container_.resize(capacity);
     this->set(&container_[0], capacity);
   }
@@ -833,7 +836,7 @@ template <typename T = char> class counting_buffer : public buffer<T> {
   size_t count_ = 0;
 
  protected:
-  void grow(size_t) final {
+  void grow(size_t) final FMT_OVERRIDE {
     if (this->size() != buffer_size) return;
     count_ += this->size();
     this->clear();
@@ -849,11 +852,22 @@ template <typename T = char> class counting_buffer : public buffer<T> {
 // It is used to reduce symbol sizes for the common case.
 template <typename T>
 class buffer_appender : public std::back_insert_iterator<buffer<T>> {
+  using base = std::back_insert_iterator<buffer<T>>;
+
  public:
-  explicit buffer_appender(buffer<T>& buf)
-      : std::back_insert_iterator<buffer<T>>(buf) {}
-  buffer_appender(std::back_insert_iterator<buffer<T>> it)
-      : std::back_insert_iterator<buffer<T>>(it) {}
+  explicit buffer_appender(buffer<T>& buf) : base(buf) {}
+  buffer_appender(base it) : base(it) {}
+
+  buffer_appender& operator++() {
+    base::operator++();
+    return *this;
+  }
+
+  buffer_appender operator++(int) {
+    buffer_appender tmp = *this;
+    ++*this;
+    return tmp;
+  }
 };
 
 // Maps an output iterator into a buffer.

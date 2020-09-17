@@ -23,14 +23,14 @@
 #endif
 
 #ifdef _WIN32
-#  if !defined(NOMINMAX) && !defined(WIN32_LEAN_AND_MEAN)
+#  if defined(FMT_BIG_WIN) || defined(NOMINMAX)
+#    include <windows.h>
+#  else
 #    define NOMINMAX
 #    define WIN32_LEAN_AND_MEAN
 #    include <windows.h>
 #    undef WIN32_LEAN_AND_MEAN
 #    undef NOMINMAX
-#  else
-#    include <windows.h>
 #  endif
 #  include <io.h>
 #endif
@@ -79,8 +79,8 @@ inline int fmt_snprintf(char* buffer, size_t size, const char* format, ...) {
 //   ERANGE - buffer is not large enough to store the error message
 //   other  - failure
 // Buffer should be at least of size 1.
-FMT_FUNC int safe_strerror(int error_code, char*& buffer,
-                           size_t buffer_size) FMT_NOEXCEPT {
+inline int safe_strerror(int error_code, char*& buffer,
+                         size_t buffer_size) FMT_NOEXCEPT {
   FMT_ASSERT(buffer != nullptr && buffer_size != 0, "invalid buffer");
 
   class dispatcher {
@@ -173,8 +173,8 @@ FMT_FUNC void report_error(format_func func, int error_code,
 }
 
 // A wrapper around fwrite that throws on error.
-FMT_FUNC void fwrite_fully(const void* ptr, size_t size, size_t count,
-                           FILE* stream) {
+inline void fwrite_fully(const void* ptr, size_t size, size_t count,
+                         FILE* stream) {
   size_t written = std::fwrite(ptr, size, count, stream);
   if (written < count) FMT_THROW(system_error(errno, "cannot write to file"));
 }
@@ -263,13 +263,6 @@ const typename basic_data<T>::digit_pair basic_data<T>::digits[] = {
 template <typename T>
 const char basic_data<T>::hex_digits[] = "0123456789abcdef";
 
-template <typename T>
-const uint16_t basic_data<T>::bsr2log10[] = {
-    1,  1,  1,  2,  2,  2,  3,  3,  3,  4,  4,  4,  4,  5,  5,  5,
-    6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  9,  9,  9,  10, 10, 10,
-    10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 15, 15,
-    15, 16, 16, 16, 16, 17, 17, 17, 18, 18, 18, 19, 19, 19, 19, 20};
-
 #define FMT_POWERS_OF_10(factor)                                             \
   factor * 10, (factor)*100, (factor)*1000, (factor)*10000, (factor)*100000, \
       (factor)*1000000, (factor)*10000000, (factor)*100000000,               \
@@ -281,12 +274,12 @@ const uint64_t basic_data<T>::powers_of_10_64[] = {
     10000000000000000000ULL};
 
 template <typename T>
-const uint32_t basic_data<T>::zero_or_powers_of_10_32[] = {0,
+const uint32_t basic_data<T>::zero_or_powers_of_10_32[] = {0, 0,
                                                            FMT_POWERS_OF_10(1)};
 
 template <typename T>
 const uint64_t basic_data<T>::zero_or_powers_of_10_64[] = {
-    0, FMT_POWERS_OF_10(1), FMT_POWERS_OF_10(1000000000ULL),
+    0, 0, FMT_POWERS_OF_10(1), FMT_POWERS_OF_10(1000000000ULL),
     10000000000000000000ULL};
 
 // Normalized 64-bit significands of pow(10, k), for k = -348, -340, ..., 340.
@@ -370,6 +363,10 @@ class fp {
  private:
   using significand_type = uint64_t;
 
+  template <typename Float>
+  using is_supported_float = bool_constant<sizeof(Float) == sizeof(uint64_t) ||
+                                           sizeof(Float) == sizeof(uint32_t)>;
+
  public:
   significand_type f;
   int e;
@@ -392,32 +389,35 @@ class fp {
   template <typename Double> explicit fp(Double d) { assign(d); }
 
   // Assigns d to this and return true iff predecessor is closer than successor.
-  template <typename Double, FMT_ENABLE_IF(sizeof(Double) == sizeof(uint64_t))>
-  bool assign(Double d) {
-    // Assume double is in the format [sign][exponent][significand].
-    using limits = std::numeric_limits<Double>;
+  template <typename Float, FMT_ENABLE_IF(is_supported_float<Float>::value)>
+  bool assign(Float d) {
+    // Assume float is in the format [sign][exponent][significand].
+    using limits = std::numeric_limits<Float>;
+    const int float_significand_size = limits::digits - 1;
     const int exponent_size =
-        bits<Double>::value - double_significand_size - 1;  // -1 for sign
-    const uint64_t significand_mask = implicit_bit - 1;
+        bits<Float>::value - float_significand_size - 1;  // -1 for sign
+    const uint64_t float_implicit_bit = 1ULL << float_significand_size;
+    const uint64_t significand_mask = float_implicit_bit - 1;
     const uint64_t exponent_mask = (~0ULL >> 1) & ~significand_mask;
     const int exponent_bias = (1 << exponent_size) - limits::max_exponent - 1;
-    auto u = bit_cast<uint64_t>(d);
+    constexpr bool is_double = sizeof(Float) == sizeof(uint64_t);
+    auto u = bit_cast<conditional_t<is_double, uint64_t, uint32_t>>(d);
     f = u & significand_mask;
     int biased_e =
-        static_cast<int>((u & exponent_mask) >> double_significand_size);
+        static_cast<int>((u & exponent_mask) >> float_significand_size);
     // Predecessor is closer if d is a normalized power of 2 (f == 0) other than
     // the smallest normalized number (biased_e > 1).
     bool is_predecessor_closer = f == 0 && biased_e > 1;
     if (biased_e != 0)
-      f += implicit_bit;
+      f += float_implicit_bit;
     else
       biased_e = 1;  // Subnormals use biased exponent 1 (min exponent).
-    e = biased_e - exponent_bias - double_significand_size;
+    e = biased_e - exponent_bias - float_significand_size;
     return is_predecessor_closer;
   }
 
-  template <typename Double, FMT_ENABLE_IF(sizeof(Double) != sizeof(uint64_t))>
-  bool assign(Double) {
+  template <typename Float, FMT_ENABLE_IF(!is_supported_float<Float>::value)>
+  bool assign(Float) {
     *this = fp();
     return false;
   }
@@ -871,8 +871,7 @@ FMT_ALWAYS_INLINE digits::result grisu_gen_digits(fp value, uint64_t error,
       FMT_ASSERT(false, "invalid number of digits");
     }
     --exp;
-    uint64_t remainder =
-        (static_cast<uint64_t>(integral) << -one.e) + fractional;
+    auto remainder = (static_cast<uint64_t>(integral) << -one.e) + fractional;
     result = handler.on_digit(static_cast<char>('0' + digit),
                               data::powers_of_10_64[exp] << -one.e, remainder,
                               error, exp, true);
@@ -882,8 +881,7 @@ FMT_ALWAYS_INLINE digits::result grisu_gen_digits(fp value, uint64_t error,
   for (;;) {
     fractional *= 10;
     error *= 10;
-    char digit =
-        static_cast<char>('0' + static_cast<char>(fractional >> -one.e));
+    char digit = static_cast<char>('0' + (fractional >> -one.e));
     fractional &= one.f - 1;
     --exp;
     result = handler.on_digit(digit, one.f, fractional, error, exp, false);
@@ -920,6 +918,7 @@ struct fixed_handler {
                           uint64_t error, int, bool integral) {
     FMT_ASSERT(remainder < divisor, "");
     buf[size++] = digit;
+    if (!integral && error >= remainder) return digits::error;
     if (size < precision) return digits::more;
     if (!integral) {
       // Check if error * 2 < divisor with overflow prevention.
@@ -991,7 +990,8 @@ struct grisu_shortest_handler {
 // Floating-Point Printout ((FPP)^2) algorithm by Steele & White:
 // https://fmt.dev/p372-steele.pdf.
 template <typename Double>
-void fallback_format(Double d, buffer<char>& buf, int& exp10) {
+void fallback_format(Double d, int num_digits, bool binary32, buffer<char>& buf,
+                     int& exp10) {
   bigint numerator;    // 2 * R in (FPP)^2.
   bigint denominator;  // 2 * S in (FPP)^2.
   // lower and upper are differences between value and corresponding boundaries.
@@ -1002,8 +1002,9 @@ void fallback_format(Double d, buffer<char>& buf, int& exp10) {
   // Shift numerator and denominator by an extra bit or two (if lower boundary
   // is closer) to make lower and upper integers. This eliminates multiplication
   // by 2 during later computations.
-  // TODO: handle float
-  int shift = value.assign(d) ? 2 : 1;
+  const bool is_predecessor_closer =
+      binary32 ? value.assign(static_cast<float>(d)) : value.assign(d);
+  int shift = is_predecessor_closer ? 2 : 1;
   uint64_t significand = value.f << shift;
   if (value.e >= 0) {
     numerator.assign(significand);
@@ -1038,39 +1039,79 @@ void fallback_format(Double d, buffer<char>& buf, int& exp10) {
       upper = &upper_store;
     }
   }
-  if (!upper) upper = &lower;
   // Invariant: value == (numerator / denominator) * pow(10, exp10).
-  bool even = (value.f & 1) == 0;
-  int num_digits = 0;
-  char* data = buf.data();
-  for (;;) {
-    int digit = numerator.divmod_assign(denominator);
-    bool low = compare(numerator, lower) - even < 0;  // numerator <[=] lower.
-    // numerator + upper >[=] pow10:
-    bool high = add_compare(numerator, *upper, denominator) + even > 0;
-    data[num_digits++] = static_cast<char>('0' + digit);
-    if (low || high) {
-      if (!low) {
-        ++data[num_digits - 1];
-      } else if (high) {
-        int result = add_compare(numerator, numerator, denominator);
-        // Round half to even.
-        if (result > 0 || (result == 0 && (digit % 2) != 0))
+  if (num_digits < 0) {
+    // Generate the shortest representation.
+    if (!upper) upper = &lower;
+    bool even = (value.f & 1) == 0;
+    num_digits = 0;
+    char* data = buf.data();
+    for (;;) {
+      int digit = numerator.divmod_assign(denominator);
+      bool low = compare(numerator, lower) - even < 0;  // numerator <[=] lower.
+      // numerator + upper >[=] pow10:
+      bool high = add_compare(numerator, *upper, denominator) + even > 0;
+      data[num_digits++] = static_cast<char>('0' + digit);
+      if (low || high) {
+        if (!low) {
           ++data[num_digits - 1];
+        } else if (high) {
+          int result = add_compare(numerator, numerator, denominator);
+          // Round half to even.
+          if (result > 0 || (result == 0 && (digit % 2) != 0))
+            ++data[num_digits - 1];
+        }
+        buf.try_resize(to_unsigned(num_digits));
+        exp10 -= num_digits - 1;
+        return;
       }
-      buf.try_resize(to_unsigned(num_digits));
-      exp10 -= num_digits - 1;
+      numerator *= 10;
+      lower *= 10;
+      if (upper != &lower) *upper *= 10;
+    }
+  }
+  // Generate the given number of digits up to the maximum possible number of
+  // significant digits in an IEEE754 double.
+  const int max_double_digits = 767;
+  if (num_digits > max_double_digits) num_digits = max_double_digits;
+  exp10 -= num_digits - 1;
+  if (num_digits == 0) {
+    buf.try_resize(1);
+    denominator *= 10;
+    buf[0] = add_compare(numerator, numerator, denominator) > 0 ? '1' : '0';
+    return;
+  }
+  buf.try_resize(to_unsigned(num_digits));
+  for (int i = 0; i < num_digits - 1; ++i) {
+    int digit = numerator.divmod_assign(denominator);
+    buf[i] = static_cast<char>('0' + digit);
+    numerator *= 10;
+  }
+  int digit = numerator.divmod_assign(denominator);
+  auto result = add_compare(numerator, numerator, denominator);
+  if (result > 0 || (result == 0 && (digit % 2) != 0)) {
+    if (digit == 9) {
+      const auto overflow = '0' + 10;
+      buf[num_digits - 1] = overflow;
+      // Propagate the carry.
+      for (int i = num_digits - 1; i > 0 && buf[i] == overflow; --i) {
+        buf[i] = '0';
+        ++buf[i - 1];
+      }
+      if (buf[0] == overflow) {
+        buf[0] = '0';
+        ++exp10;
+      }
       return;
     }
-    numerator *= 10;
-    lower *= 10;
-    if (upper != &lower) *upper *= 10;
+    ++digit;
   }
+  buf[num_digits - 1] = static_cast<char>('0' + digit);
 }
 
 // Formats value using the Grisu algorithm
 // (https://www.cs.tufts.edu/~nr/cs257/archive/florian-loitsch/printf.pdf)
-// if T is a IEEE754 binary32 or binary64 and snprintf otherwise.
+// if T is an IEEE754 binary32 or binary64 and snprintf otherwise.
 template <typename T>
 int format_float(T value, int precision, float_specs specs, buffer<char>& buf) {
   static_assert(!std::is_same<T, float>::value, "");
@@ -1117,21 +1158,23 @@ int format_float(T value, int precision, float_specs specs, buffer<char>& buf) {
                          boundaries.upper - boundaries.lower, exp, handler);
     if (result == digits::error) {
       exp += handler.size - cached_exp10 - 1;
-      fallback_format(value, buf, exp);
+      fallback_format(value, -1, specs.binary32, buf, exp);
       return exp;
     }
     buf.try_resize(to_unsigned(handler.size));
   } else {
-    if (precision > 17) return snprintf_float(value, precision, specs, buf);
     fp normalized = normalize(fp(value));
     const auto cached_pow = get_cached_power(
         min_exp - (normalized.e + fp::significand_size), cached_exp10);
     normalized = normalized * cached_pow;
     fixed_handler handler{buf.data(), 0, precision, -cached_exp10, fixed};
-    if (grisu_gen_digits(normalized, 1, exp, handler) == digits::error)
-      return snprintf_float(value, precision, specs, buf);
+    if (grisu_gen_digits(normalized, 1, exp, handler) == digits::error) {
+      exp += handler.size - cached_exp10 - 1;
+      fallback_format(value, handler.precision, specs.binary32, buf, exp);
+      return exp;
+    }
     int num_digits = handler.size;
-    if (!fixed) {
+    if (!fixed && !specs.showpoint) {
       // Remove trailing zeros.
       while (num_digits > 0 && buf[num_digits - 1] == '0') {
         --num_digits;
@@ -1264,7 +1307,7 @@ int snprintf_float(T value, int precision, float_specs specs,
  * occurs, this pointer will be a guess that depends on the particular
  * error, but it will always advance at least one byte.
  */
-FMT_FUNC const char* utf8_decode(const char* buf, uint32_t* c, int* e) {
+inline const char* utf8_decode(const char* buf, uint32_t* c, int* e) {
   static const char lengths[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                  1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
                                  0, 0, 2, 2, 2, 2, 3, 3, 4, 0};
