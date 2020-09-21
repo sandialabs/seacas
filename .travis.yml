@@ -50,7 +50,7 @@ matrix:
     - compiler: clang
       env: APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF
 
-before_install:
+before_install: travis_wait 
   # C++14
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
@@ -67,7 +67,7 @@ before_install:
   - sudo apt-get -y install libz-dev
   - sudo apt-get -y install python3
   - cmake --version
-  - travis_wait GNU_PARALLEL=OFF ./install-tpl.sh  >& install-tpl.out
+  - GNU_PARALLEL=OFF ./install-tpl.sh  >& install-tpl.out
 
 before_script:
 
