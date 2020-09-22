@@ -14,7 +14,6 @@
 * [Trilinos](#trilinos)
 * [SPACK](#spack)
 * [License](#license)
-* [Ubuntu](#ubuntu)
 * [Contact information](#contact-information)
 * NOTE: The old imake-based build has been removed.
 
@@ -48,22 +47,27 @@ manually as detailed in
 |-----------------|:---------------:|:-------:|-------------|
 | INSTALL_PATH    | path to install | pwd | Root of install path; default is current location |
 | COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build |
-| JOBS            | {count}|  2      | Number of "jobs" used for simultaneous compiles |
-| FORCE           | YES, NO | NO  | Force downloading and building even if lib is already installed. |
-| DOWNLOAD        | YES, NO | YES |  Should TPLs be downloaded. |
-| BUILD           | YES, NO | YES | Should TPLs be built and installed. |
-| SHARED          | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
 | MPI             | ON, OFF | OFF | If ON, then build parallel capability |
-| CRAY            | YES, NO | NO  | Is this a Cray system (special parallel options) |
-| NEEDS_ZLIB      | YES, NO | NO  | If system does not have zlib installed, download and install it. |
-| CGNS            | YES, NO | YES | Should CGNS TPL be built.  |
+| FORCE           | YES, NO | NO  | Force downloading and building even if lib is already installed. |
+| BUILD           | YES, NO | YES | Should TPLs be built and installed. |
+| DOWNLOAD        | YES, NO | YES | Should TPLs be downloaded. |
+| USE_PROXY       | YES, NO | NO  | Sandia specific -- use proxy when downloading tar files |
+| DEBUG           | YES, NO | NO  | Build debug executable; default is optimized
+| SHARED          | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
+| CRAY            | ON, OFF | ON  | Is this a Cray system (special parallel options) |
+| NEEDS_ZLIB      | YES, NO | NO  | If system does not have zlib installed, download and install it (HDF5 compression). |
+| NEEDS_SZIP      | YES, NO | NO  | If system does not have szip installed, download and install it (HDF5 compression). |
 | USE\_64BIT\_INT | YES, NO | NO  | In CGNS, enable 64-bit integers |
-| MATIO           | YES, NO | YES | Should matio TPL be built. |
-| ADIOS2          | YES, NO | NO  | Should adios2 TPL be built. |
-| KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
-| GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
-| H5VERSION       | V110, V18 | V110 | Use HDF5-1.10.X or HDF5-1.8.X |
-| JOBS            | # | 2 | Used in `make -j #` |
+| CGNS            | ON, OFF | ON  | Should CGNS TPL be built.  |
+| MATIO           | ON, OFF | ON  | Should matio TPL be built. |
+| METIS           | ON, OFF | OFF | Should metis TPL be built (parallel decomposition). |
+| PARMETIS        | ON, OFF | OFF | Should parmetis TPL be built (parallel decomposition). |
+| ADIOS2          | ON, OFF | OFF | Should adios2 TPL be built. |
+| KOKKOS          | ON, OFF | OFF | Should Kokkos TPL be built. |
+| GNU_PARALLEL    | ON, OFF | ON  | Should GNU parallel script be built. |
+| H5VERSION       | V12, V110, V18 | V110 | Use HDF5-1.12.X, HDF5-1.10.X or HDF5-1.8.X |
+| BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
+| JOBS            | {count}|  2      | Number of "jobs" used for simultaneous compiles |
 | SUDO            | "" or sudo | "" | If need to be superuser to install |
   * NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
   * The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
@@ -191,18 +195,6 @@ a separate license:
 | [Tessil Hash](https://github.com/Tessil/) | `packages/seacas/libraries/ioss/src/hash` |  [MIT](https://opensource.org/licenses/MIT) |
 | [Catch2](https://github.com/catchorg/Catch2) | `packages/seacas/libraries/ioss/src/catch.hpp` | [Boost](http://www.boost.org/LICENSE_1_0.txt) |
 | [{fmt}](https://github.com/fmtlib/fmt) | `packages/seacas/libraries/ioss/src/fmt` | [BSD-2-Clause](https://github.com/fmtlib/fmt/blob/master/LICENSE.rst) |
-## Ubuntu
-[Not updated since 2017-11-30] There is a [PPA](https://launchpad.net/~nschloe/+archive/ubuntu/seacas-nightly/) available for SEACAS that is updated nightly from SEACAS `master`. Anyone using Ubuntu can now just add the PPA and do
-```
-sudo add-apt-repository ppa:nschloe/seacas-nightly
-sudo apt-get update
-```
-and then
-```
-sudo apt-get install seacas-bin
-```
-to get the SEACAS binaries. You can also install 'libseacas-dev' or 'libseacas0'. This is provided by Nico Schlömer.
-
 ## Contact information
 
  Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
