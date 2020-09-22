@@ -74,7 +74,6 @@ if [ "$CRAY" == "ON" ]
 then
     USE_SHARED="OFF"
 else
-    SHARED="${SHARED:-ON}"
     USE_SHARED="${SHARED}"
 fi
 
@@ -85,7 +84,7 @@ fi
 rm -f config.cache
 
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
-         -DBUILD_SHARED_LIBS:BOOL=${SHARED} \
+         -DBUILD_SHARED_LIBS:BOOL=${USE_SHARED} \
          -DBUILD_TESTING:BOOL=OFF \
          -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} \
 	 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
