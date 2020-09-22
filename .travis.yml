@@ -67,8 +67,7 @@ before_install:
   - sudo apt-get -y install libz-dev
   - sudo apt-get -y install python3
   - cmake --version
-  - GNU_PARALLEL=OFF CGNS=OFF NETCDF=OFF PNETCDF=OFF ./install-tpl.sh >& install-hdf5.out
-  - GNU_PARALLEL=OFF ./install-tpl.sh 
+  - GNU_PARALLEL=OFF ./install-tpl.sh  > install-hdf5.out
 
 before_script:
 
