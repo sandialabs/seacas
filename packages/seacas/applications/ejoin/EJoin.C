@@ -999,7 +999,7 @@ namespace {
   {
     for (const auto &pm : part_mesh) {
       Ioss::NameList fields;
-      pm->field_describe(Ioss::Field::TRANSIENT, &fields);
+      pm->field_describe(Ioss::Field::REDUCTION, &fields);
       for (const auto &field : fields) {
         std::vector<double> data;
         pm->get_field_data(field, data);
@@ -1286,7 +1286,7 @@ namespace {
     }
     for (const auto &pm : part_mesh) {
       Ioss::NameList fields;
-      pm->field_describe(Ioss::Field::TRANSIENT, &fields);
+      pm->field_describe(Ioss::Field::REDUCTION, &fields);
       for (const auto &field_name : fields) {
         if (valid_variable(field_name, 0, variable_list)) {
           Ioss::Field field = pm->get_field(field_name);
