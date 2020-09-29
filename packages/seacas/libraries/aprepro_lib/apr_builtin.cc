@@ -87,14 +87,6 @@ namespace SEAMS {
     return timer;
   }
 
-  double do_version()
-  {
-    std::string version = aprepro->version();
-    auto        tokens  = tokenize(version, " ");
-    double      ver     = std::stod(tokens[0]);
-    return ver;
-  }
-
   // DO_INT:  Calculate integer nearest to zero from value
   double do_int(double x)
   {
@@ -503,6 +495,13 @@ namespace SEAMS {
   double do_cols(const array *arr) { return arr->cols; }
 
   // --------------------------STRING FUNCTIONS------------------------
+  const char *do_version()
+  {
+    char *tmp;
+    new_string(aprepro->version().c_str(), &tmp);
+    return tmp;
+  }
+
   const char *do_get_date()
   {
     char *       tmp;
