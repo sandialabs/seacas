@@ -18,6 +18,8 @@
 namespace SEAMS {
   init arith_0_fncts[] = {
       {"seconds", do_time, "seconds()", "Seconds since epoch (useful for srand())."},
+      {"version", do_version, "version()",
+       "Return the current version major.minor as a floating point value."},
       {nullptr, nullptr, nullptr, nullptr}};
 
   init_d arith_fncts[] = {
