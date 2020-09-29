@@ -63,12 +63,8 @@
 
 // Transitioning from treating global variables as Ioss::Field::TRANSIENT
 // to Ioss::Field::REDUCTION.  To get the old behavior, define the value
-// below to '1'.  Not sure if how new behavior will affect STK and Trilinos...
-#if defined(BUILT_IN_SIERRA)
-#define GLOBALS_ARE_TRANSIENT 1
-#else
+// below to '1'.
 #define GLOBALS_ARE_TRANSIENT 0
-#endif
 
 // ========================================================================
 // Static internal helper functions
