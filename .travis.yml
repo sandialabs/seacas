@@ -32,6 +32,9 @@ matrix:
       env: MPI=ON H5VERSION=V110 USE_64BIT_INT=OFF
     - compiler: gcc
       arch: amd64
+      env: MPI=ON H5VERSION=V120 USE_64BIT_INT=ON
+    - compiler: gcc
+      arch: amd64
       env: MPI=ON H5VERSION=V18 USE_64BIT_INT=ON
     - compiler: clang
       env: MPI=ON THREADSAFE=ON H5VERSION=V18 FORTRAN=OFF
@@ -58,10 +61,10 @@ before_install:
     if [ -n "$MPI" ]; then 
        sudo apt-get -y install -q mpich libmpich-dev
     else
-       sudo apt-get -y install g++-7
-       sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
-       sudo apt-get -y install gfortran-7
-       sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 90
+       sudo apt-get -y install g++-9
+       sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 90
+       sudo apt-get -y install gfortran-9
+       sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-9 90
     fi
   - sudo apt-get -y install cmake
   - sudo apt-get -y install libz-dev
