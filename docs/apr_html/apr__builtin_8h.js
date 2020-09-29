@@ -108,5 +108,6 @@ var apr__builtin_8h =
     [ "do_toupper", "apr__builtin_8h.html#a9f2740ff3e1e7c19ea51e6012e8286e9", null ],
     [ "do_transpose", "apr__builtin_8h.html#ae281320dbd0625fd80bcc66abed12356", null ],
     [ "do_Units", "apr__builtin_8h.html#a0006d397eeb4158d75c33aa2e40026bc", null ],
+    [ "do_version", "apr__builtin_8h.html#aa43bd3bff724149ba623a1532fa2dcac", null ],
     [ "do_word_count", "apr__builtin_8h.html#a8c7c911b8d3dcf548afb75166de22de2", null ]
 ];

@@ -122,9 +122,10 @@ var searchData=
   ['do_5ftoupper_233',['do_toupper',['../namespaceSEAMS.html#a9f2740ff3e1e7c19ea51e6012e8286e9',1,'SEAMS']]],
   ['do_5ftranspose_234',['do_transpose',['../namespaceSEAMS.html#ae281320dbd0625fd80bcc66abed12356',1,'SEAMS']]],
   ['do_5funits_235',['do_Units',['../namespaceSEAMS.html#a0006d397eeb4158d75c33aa2e40026bc',1,'SEAMS']]],
-  ['do_5fword_5fcount_236',['do_word_count',['../namespaceSEAMS.html#a8c7c911b8d3dcf548afb75166de22de2',1,'SEAMS']]],
-  ['doincludesubstitution_237',['doIncludeSubstitution',['../classSEAMS_1_1Aprepro.html#ac9d218175f7f6d64031d8d4afa699bbd',1,'SEAMS::Aprepro']]],
-  ['doloopsubstitution_238',['doLoopSubstitution',['../classSEAMS_1_1Aprepro.html#a9b781d8b5e0f382f5086e5988fc2200d',1,'SEAMS::Aprepro']]],
-  ['dumpsym_239',['dumpsym',['../classSEAMS_1_1Aprepro.html#afdf0d99b2cc6ecf9d59c8ee7f8538bcd',1,'SEAMS::Aprepro::dumpsym(const char *type, bool doInternal) const'],['../classSEAMS_1_1Aprepro.html#a1ef7e22068dcfb877b55f1698490d9f7',1,'SEAMS::Aprepro::dumpsym(int type, bool doInternal) const'],['../classSEAMS_1_1Aprepro.html#a5df6bca4d3dfb01f268c7a315c65ab1e',1,'SEAMS::Aprepro::dumpsym(int type, const char *pre, bool doInternal) const']]],
-  ['dumpvars_240',['dumpvars',['../structSEAMS_1_1aprepro__options.html#a21a037ae8f97df9f1e7cd4d55cc7f8fb',1,'SEAMS::aprepro_options']]]
+  ['do_5fversion_236',['do_version',['../namespaceSEAMS.html#aa43bd3bff724149ba623a1532fa2dcac',1,'SEAMS']]],
+  ['do_5fword_5fcount_237',['do_word_count',['../namespaceSEAMS.html#a8c7c911b8d3dcf548afb75166de22de2',1,'SEAMS']]],
+  ['doincludesubstitution_238',['doIncludeSubstitution',['../classSEAMS_1_1Aprepro.html#ac9d218175f7f6d64031d8d4afa699bbd',1,'SEAMS::Aprepro']]],
+  ['doloopsubstitution_239',['doLoopSubstitution',['../classSEAMS_1_1Aprepro.html#a9b781d8b5e0f382f5086e5988fc2200d',1,'SEAMS::Aprepro']]],
+  ['dumpsym_240',['dumpsym',['../classSEAMS_1_1Aprepro.html#afdf0d99b2cc6ecf9d59c8ee7f8538bcd',1,'SEAMS::Aprepro::dumpsym(const char *type, bool doInternal) const'],['../classSEAMS_1_1Aprepro.html#a1ef7e22068dcfb877b55f1698490d9f7',1,'SEAMS::Aprepro::dumpsym(int type, bool doInternal) const'],['../classSEAMS_1_1Aprepro.html#a5df6bca4d3dfb01f268c7a315c65ab1e',1,'SEAMS::Aprepro::dumpsym(int type, const char *pre, bool doInternal) const']]],
+  ['dumpvars_241',['dumpvars',['../structSEAMS_1_1aprepro__options.html#a21a037ae8f97df9f1e7cd4d55cc7f8fb',1,'SEAMS::aprepro_options']]]
 ];

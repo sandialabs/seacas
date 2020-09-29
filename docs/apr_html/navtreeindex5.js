@@ -1,5 +1,7 @@
 var NAVTREEINDEX5 =
 {
+"structtrmclr_1_1Attribute.html#a051e1f64f2984ea4eff7e459ac996f41ae3ddb9e48ee17adfc8487c9bc8fed556":[1,0,1,0,1],
+"structtrmclr_1_1Attribute.html#a051e1f64f2984ea4eff7e459ac996f41ae5d4593a8ba72b93ddaa5b1a52b89c5d":[1,0,1,0,2],
 "structtrmclr_1_1Attribute.html#a478a99cf561e026a56a59cae6a0bc7b1":[1,0,1,0,7],
 "structtrmclr_1_1Background.html":[1,0,1,1],
 "structtrmclr_1_1Background.html#a284dd0e41b212c19068f67f50ab4d139a132d36bee55e3a6f79d7d708e3738395":[1,0,1,1,8],
