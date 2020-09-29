@@ -76,7 +76,7 @@ namespace SEAMS {
     cleanup_memory();
   }
 
-  std::string Aprepro::version() const { return version_string; }
+  std::string Aprepro::version() { return version_string; }
 
   void Aprepro::clear_results()
   {

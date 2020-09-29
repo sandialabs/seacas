@@ -498,7 +498,7 @@ namespace SEAMS {
   const char *do_version()
   {
     char *tmp;
-    new_string(aprepro->version().c_str(), &tmp);
+    new_string(SEAMS::Aprepro::version().c_str(), &tmp);
     return tmp;
   }
 
