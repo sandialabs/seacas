@@ -4667,22 +4667,22 @@ void ParallelDatabaseIO::output_node_map() const
     int ierr;
     if (!nodeMap.map().empty() && !nodeGlobalImplicitMap.empty()) {
 
-    if (int_byte_size_api() == 4) {
-      std::vector<int> file_ids;
-      file_ids.reserve(locally_owned_count);
-      check_node_owning_processor_data(nodeOwningProcessor, locally_owned_count);
-      filter_owned_nodes(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
-      ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
-                                   locally_owned_count, file_ids.data());
-    }
-    else {
-      std::vector<int64_t> file_ids;
-      file_ids.reserve(locally_owned_count);
-      check_node_owning_processor_data(nodeOwningProcessor, locally_owned_count);
-      filter_owned_nodes(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
-      ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
-                                   locally_owned_count, file_ids.data());
-    }
+      if (int_byte_size_api() == 4) {
+        std::vector<int> file_ids;
+        file_ids.reserve(locally_owned_count);
+        check_node_owning_processor_data(nodeOwningProcessor, locally_owned_count);
+        filter_owned_nodes(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
+        ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
+                                     locally_owned_count, file_ids.data());
+      }
+      else {
+        std::vector<int64_t> file_ids;
+        file_ids.reserve(locally_owned_count);
+        check_node_owning_processor_data(nodeOwningProcessor, locally_owned_count);
+        filter_owned_nodes(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
+        ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
+                                     locally_owned_count, file_ids.data());
+      }
     }
     else {
       ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
