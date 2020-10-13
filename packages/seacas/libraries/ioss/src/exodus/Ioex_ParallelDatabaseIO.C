@@ -4657,7 +4657,7 @@ void ParallelDatabaseIO::output_node_map() const
   // the metadata has been written to the output database AND if
   // the nodeMap.map and nodeGlobalImplicitMap are defined.
 
-  if (metaDataWritten && !nodeMap.map().empty() && !nodeGlobalImplicitMap.empty()) {
+  if (metaDataWritten) {
     const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
     assert(node_blocks[0]->property_exists("processor_offset"));
     assert(node_blocks[0]->property_exists("locally_owned_count"));
@@ -4665,6 +4665,8 @@ void ParallelDatabaseIO::output_node_map() const
     size_t locally_owned_count = node_blocks[0]->get_property("locally_owned_count").get_int();
 
     int ierr;
+    if (!nodeMap.map().empty() && !nodeGlobalImplicitMap.empty()) {
+
     if (int_byte_size_api() == 4) {
       std::vector<int> file_ids;
       file_ids.reserve(locally_owned_count);
@@ -4680,6 +4682,11 @@ void ParallelDatabaseIO::output_node_map() const
       filter_owned_nodes(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
       ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
                                    locally_owned_count, file_ids.data());
+    }
+    }
+    else {
+      ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
+                                   locally_owned_count, nullptr);
     }
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
