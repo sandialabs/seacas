@@ -34,6 +34,7 @@ namespace glob {
     UNION,
   };
 
+  // From cppreference.com
   template <class T, class U = T> const T exchange(T &obj, U &&new_value)
   {
     T old_value = std::move(obj);
