@@ -399,7 +399,7 @@ namespace glob {
     StateGroup(Automata<charT> &states, Type type,
                std::vector<std::unique_ptr<Automata<charT>>> &&automatas)
         : State<charT>(StateType::GROUP, states), type_{type}, automatas_{std::move(automatas)},
-          match_one_{false}
+								 match_one_{false}
     {
     }
 
@@ -479,6 +479,7 @@ namespace glob {
         break;
       }
       }
+      return std::tuple<size_t, size_t>(0,0);
     }
 
     std::tuple<size_t, size_t> NextNeg(const String<charT> &str, size_t pos)
@@ -1375,7 +1376,7 @@ namespace glob {
       AstNode<charT> *  union_node = group_node->GetGlob();
       std::vector<std::unique_ptr<Automata<charT>>> automatas = ExecUnion(union_node);
 
-      typename StateGroup<charT>::Type state_group_type;
+      typename StateGroup<charT>::Type state_group_type{};
       switch (group_node->GetGroupType()) {
       case GroupNode<charT>::GroupType::BASIC:
         state_group_type = StateGroup<charT>::Type::BASIC;
