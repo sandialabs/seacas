@@ -87,6 +87,9 @@ check_valid_yes_no NEEDS_ZLIB
 NEEDS_SZIP=${NEEDS_SZIP:-NO}
 check_valid_yes_no NEEDS_SZIP
 
+USE_AEC=${USE_AEC:-NO}
+check_valid_yes_no USE_AEC
+
 KOKKOS=${KOKKOS:-OFF}
 check_valid_on_off KOKKOS
 
@@ -159,6 +162,7 @@ if [ $# -gt 0 ]; then
 	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
 	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
 	echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
+	echo "   USE_AEC      = ${USE_AEC}"
 	echo "   KOKKOS       = ${KOKKOS}"
 	echo "   BB           = ${BB}"
 	echo "   ADIOS2       = ${ADIOS2}"
@@ -179,6 +183,49 @@ check_exec wget
 
 if [ "$NEEDS_SZIP" == "YES" ]
 then
+if [ "$USE_AEC" == "YES" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
+    then
+	echo "${txtgrn}+++ SZIP (via libaec library)${txtrst}"
+        szip_version="1.0.4"
+
+	cd $ACCESS
+	cd TPL
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf libaec-${szip_version}
+            rm -rf v-${szip_version}.tar.gz
+            wget --no-check-certificate https://github.com/MathisRosenhauer/libaec/archive/v${szip_version}.tar.gz
+            tar -xzf v${szip_version}.tar.gz
+            rm -rf v${szip_version}.tar.gz
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd libaec-${szip_version}
+            mkdir build
+            cd build
+
+            cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} -DCMAKE_BUILD_TYPE=Release ..
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 "${txtred}couldn\'t configure libaec(szip). exiting.${txtrst}"
+		exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 "${txtred}couldn\'t build libaec(szip). exiting.${txtrst}"
+		exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
+    fi
+else
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ SZIP${txtrst}"
@@ -217,7 +264,7 @@ then
 	echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
-
+fi
 
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
