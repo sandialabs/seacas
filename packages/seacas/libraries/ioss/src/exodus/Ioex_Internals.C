@@ -1838,12 +1838,13 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
     int_type = NC_INT64;
   }
 
-  for (size_t i = 0; i < assemblies.size(); i++) {
-    char *numentryptr = DIM_NUM_ENTITY_ASSEMBLY(assemblies[i].id);
+  size_t max_name_length = 0;
+  for (const auto &assembly : assemblies) {
+    char *numentryptr = DIM_NUM_ENTITY_ASSEMBLY(assembly.id);
 
     /* define dimensions and variables */
     int dimid;
-    status = nc_def_dim(exodusFilePtr, numentryptr, assemblies[i].entityCount, &dimid);
+    status = nc_def_dim(exodusFilePtr, numentryptr, assembly.entityCount, &dimid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define number of entities in assembly in file id {}",
@@ -1855,7 +1856,7 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
     /* create variable array in which to store the entry lists */
     int entlst_id;
     dims[0] = dimid;
-    if ((status = nc_def_var(exodusFilePtr, VAR_ENTITY_ASSEMBLY(assemblies[i].id), int_type, 1,
+    if ((status = nc_def_var(exodusFilePtr, VAR_ENTITY_ASSEMBLY(assembly.id), int_type, 1,
                              dims, &entlst_id)) != NC_NOERR) {
       errmsg = fmt::format("Error: failed to define entity assembly variable in file id {}",
                            exodusFilePtr);
@@ -1865,11 +1866,11 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
     ex__compress_variable(exodusFilePtr, entlst_id, 1);
 
     if (ex_int64_status(exodusFilePtr) & EX_IDS_INT64_DB) {
-      long long tmp = assemblies[i].id;
+      long long tmp = assembly.id;
       status = nc_put_att_longlong(exodusFilePtr, entlst_id, EX_ATTRIBUTE_ID, NC_INT64, 1, &tmp);
     }
     else {
-      int id = assemblies[i].id;
+      int id = assembly.id;
       status = nc_put_att_int(exodusFilePtr, entlst_id, EX_ATTRIBUTE_ID, NC_INT, 1, &id);
     }
     if (status != NC_NOERR) {
@@ -1880,7 +1881,7 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
       return (EX_FATAL);
     }
 
-    int type = assemblies[i].type;
+    int type = assembly.type;
     status   = nc_put_att_int(exodusFilePtr, entlst_id, EX_ATTRIBUTE_TYPE, NC_INT, 1, &type);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
@@ -1891,7 +1892,7 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
     }
 
     status = nc_put_att_text(exodusFilePtr, entlst_id, EX_ATTRIBUTE_NAME,
-                             assemblies[i].name.size() + 1, assemblies[i].name.c_str());
+                             assembly.name.size() + 1, assembly.name.c_str());
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define '{}' attribute to file id {}",
@@ -1899,9 +1900,12 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    if (assembly.name.size() > max_name_length) {
+      max_name_length = assembly.name.size();
+    }
 
     {
-      char *contains = ex_name_of_object(assemblies[i].type);
+      char *contains = ex_name_of_object(assembly.type);
       status         = nc_put_att_text(exodusFilePtr, entlst_id, EX_ATTRIBUTE_TYPENAME,
                                strlen(contains) + 1, contains);
       if (status != NC_NOERR) {
@@ -1919,6 +1923,7 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
       file->assembly_count++;
     }
   }
+  ex__update_max_name_length(exodusFilePtr, max_name_length);
   return EX_NOERR;
 }
 
@@ -1940,6 +1945,7 @@ int Internals::put_metadata(const std::vector<Blob> &blobs)
     return (EX_FATAL);
   }
 
+  size_t max_name_length = 0;
   for (const auto &blob : blobs) {
     char *numentryptr = DIM_NUM_VALUES_BLOB(blob.id);
 
@@ -1988,7 +1994,11 @@ int Internals::put_metadata(const std::vector<Blob> &blobs)
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    if (blob.name.length() > max_name_length) {
+      max_name_length = blob.name.length();
+    }
   }
+  ex__update_max_name_length(exodusFilePtr, max_name_length);
   return (EX_NOERR);
 }
 
@@ -4008,10 +4018,10 @@ int Internals::put_non_define_data(const std::vector<SideSet> &sidesets)
 namespace {
   template <typename T> size_t get_max_name_length(const std::vector<T> &entities, size_t old_max)
   {
-    for (size_t i = 0; i < entities.size(); i++) {
-      old_max = std::max(old_max, entities[i].name.size());
-    }
-    return (old_max);
+   for (const auto &entity : entities) {
+      old_max = std::max(old_max, entity.name.size());
+   }
+   return (old_max);
   }
 
   template <typename T>
