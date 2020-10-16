@@ -558,34 +558,40 @@ namespace Ioex {
 
     if (nassem > 0) {
       std::vector<ex_assembly> assemblies(nassem);
+      int max_name_length = ex_inquire_int(m_exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      for (auto &assembly : assemblies) {
+        assembly.name = new char[max_name_length + 1];
+      }
+
       int                      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
 
       // Now allocate space for member list and get assemblies again...
-      for (int i = 0; i < nassem; i++) {
-        assemblies[i].entity_list = new int64_t[assemblies[i].entity_count];
+      for (auto &assembly : assemblies) {
+        assembly.entity_list = new int64_t[assembly.entity_count];
       }
+
       ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
 
-      for (int i = 0; i < nassem; i++) {
+      for (const auto &assembly : assemblies) {
         Ioss::Assembly *assem =
-            new Ioss::Assembly(get_region()->get_database(), assemblies[i].name);
-        assem->property_add(Ioss::Property("id", assemblies[i].id));
+            new Ioss::Assembly(get_region()->get_database(), assembly.name);
+        assem->property_add(Ioss::Property("id", assembly.id));
         get_region()->add(assem);
       }
 
       // Now iterate again and populate member lists...
-      for (int i = 0; i < nassem; i++) {
-        Ioss::Assembly *assem = get_region()->get_assembly(assemblies[i].name);
+      for (const auto &assembly : assemblies) {
+        Ioss::Assembly *assem = get_region()->get_assembly(assembly.name);
         assert(assem != nullptr);
-        auto type = Ioex::map_exodus_type(assemblies[i].type);
-        for (int j = 0; j < assemblies[i].entity_count; j++) {
-          auto *ge = get_region()->get_entity(assemblies[i].entity_list[j], type);
+        auto type = Ioex::map_exodus_type(assembly.type);
+        for (int j = 0; j < assembly.entity_count; j++) {
+          auto *ge = get_region()->get_entity(assembly.entity_list[j], type);
           if (ge != nullptr) {
             assem->add(ge);
           }
@@ -593,14 +599,14 @@ namespace Ioex {
             std::ostringstream errmsg;
             fmt::print(errmsg,
                        "Error: Failed to find entity of type {} with id {} for Assembly {}.\n",
-                       type, assemblies[i].entity_list[j], assem->name());
+                       type, assembly.entity_list[j], assem->name());
             IOSS_ERROR(errmsg);
           }
         }
-        SMART_ASSERT(assem->member_count() == (size_t)assemblies[i].entity_count)
-        (assem->member_count())(assemblies[i].entity_count);
+        SMART_ASSERT(assem->member_count() == (size_t)assembly.entity_count)
+        (assem->member_count())(assembly.entity_count);
 
-        add_mesh_reduction_fields(EX_ASSEMBLY, assemblies[i].id, assem);
+        add_mesh_reduction_fields(EX_ASSEMBLY, assembly.id, assem);
         // Check for additional variables.
         int attribute_count = assem->get_property("attribute_count").get_int();
         add_attribute_fields(EX_ASSEMBLY, assem, attribute_count, "Assembly");
@@ -614,6 +620,10 @@ namespace Ioex {
         for (const auto &assembly : assemblies) {
           m_reductionValues[EX_ASSEMBLY][assembly.id].resize(size);
         }
+      }
+      for (auto &assembly : assemblies) {
+	delete [] assembly.entity_list;
+	delete [] assembly.name;
       }
     }
   }
