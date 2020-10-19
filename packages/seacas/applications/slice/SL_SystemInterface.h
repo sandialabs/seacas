@@ -95,6 +95,8 @@ public:
   bool netcdf4_{false};
   bool netcdf5_{false};
   bool disableFieldRecognition_{false};
+  bool szip_{false};
+  bool zlib_{true};
 
 private:
   bool contig_{false};

@@ -1453,11 +1453,18 @@ namespace {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
     }
 
-    if (interFace.compressionLevel_ > 0 || interFace.shuffle_) {
+    if (interFace.compressionLevel_ > 0 || interFace.shuffle_ || interFace.szip_) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
       properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compressionLevel_));
       properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interFace.shuffle_)));
+      if (interFace.szip_) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
+      }
+      else if (interFace.zlib_) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      }
     }
+
     if (interFace.ints64Bit_) {
       properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));

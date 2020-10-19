@@ -134,6 +134,9 @@ void ex_print_config(void)
 #if NC_RELAX_COORD_BOUND
   fprintf(stderr, "\t\tRELAX_COORD_BOUND defined\n");
 #endif
+#if defined(NC_COMPACT)
+  fprintf(stderr, "\t\tNC_COMPACT defined\n");
+#endif
 #if defined(NC_HAVE_META_H)
   fprintf(stderr, "\t\tNC_HAVE_META_H defined\n");
 #endif
@@ -1757,7 +1760,7 @@ void ex__compress_variable(int exoid, int varid, int type)
 
         /* const int NC_SZIP_EC = 4; */       /* Selects entropy coding method for szip. */
         const int NC_SZIP_NN            = 32; /* Selects nearest neighbor coding method for szip. */
-        const int SZIP_PIXELS_PER_BLOCK = 16; /* Even and <= 32; typical values are 8, 10, 16, 32 */
+        const int SZIP_PIXELS_PER_BLOCK = 32; /* Even and <= 32; valid values are 8, 10, 16, 32 */
         nc_def_var_szip(exoid, varid, NC_SZIP_NN, SZIP_PIXELS_PER_BLOCK);
 #else
         char errmsg[MAX_ERR_LENGTH];

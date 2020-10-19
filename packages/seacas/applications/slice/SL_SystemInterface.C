@@ -110,6 +110,16 @@ void SystemInterface::enroll_options()
                   "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
                   nullptr);
 
+  options_.enroll(
+      "zlib", GetLongOption::NoValue,
+      "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
+      nullptr);
+
+  options_.enroll(
+      "szip", GetLongOption::NoValue,
+      "Use SZip compression. [exodus only, enables netcdf-4]",
+      nullptr);
+
   options_.enroll("compress", GetLongOption::MandatoryValue,
                   "Specify the hdf5 compression level [0..9] to be used on the output file.",
                   nullptr);
@@ -279,6 +289,16 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   shuffle_ = (options_.retrieve("shuffle") != nullptr);
+
+  if (options_.retrieve("szip") != nullptr) {
+    szip_ = true;
+    zlib_ = false;
+  }
+  zlib_ = (options_.retrieve("zlib") != nullptr);
+
+  if (szip_ && zlib_) {
+    fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+  }
 
   {
     const char *temp = options_.retrieve("compress");
