@@ -616,15 +616,16 @@ namespace {
                  "\t\tQuickStart: https://www.regular-expressions.info/quickstart.html\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "glob")) {
-      fmt::print("\n\tGlob help (used in ASSEMBLY GLOB and LIST GLOB and ATTRIBUTE LIST GLOB options)\n"
-		 "\t\t?(pattern-list)   Matches zero or one occurrence of the given patterns\n"
-		 "\t\t*(pattern-list)   Matches zero or more occurrences of the given patterns\n"
-		 "\t\t+(pattern-list)   Matches one or more occurrences of the given patterns\n"
-		 "\t\t@(pattern-list)   Matches one of the given patterns\n"
-		 "\t\t!(pattern-list)   Matches anything except one of the given patterns\n"
-		 "\tGlob Examples\n"
-		 "\t\tblock*    : All names that start with 'block'\n"
-		 "\t\t[A-Z]*    : All names that start with a capital letter\n");
+      fmt::print(
+          "\n\tGlob help (used in ASSEMBLY GLOB and LIST GLOB and ATTRIBUTE LIST GLOB options)\n"
+          "\t\t?(pattern-list)   Matches zero or one occurrence of the given patterns\n"
+          "\t\t*(pattern-list)   Matches zero or more occurrences of the given patterns\n"
+          "\t\t+(pattern-list)   Matches one or more occurrences of the given patterns\n"
+          "\t\t@(pattern-list)   Matches one of the given patterns\n"
+          "\t\t!(pattern-list)   Matches anything except one of the given patterns\n"
+          "\tGlob Examples\n"
+          "\t\tblock*    : All names that start with 'block'\n"
+          "\t\t[A-Z]*    : All names that start with a capital letter\n");
     }
   }
 

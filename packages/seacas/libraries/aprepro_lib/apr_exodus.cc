@@ -23,6 +23,34 @@ namespace {
   {
     return strncmp(pre, str, strlen(pre)) == 0;
   }
+
+  std::string entity_type_name(ex_entity_type ent_type)
+  {
+    switch (ent_type) {
+    case EX_ELEM_BLOCK: return "block_";
+    case EX_NODE_SET: return "nodeset_";
+    case EX_SIDE_SET: return "sideset_";
+    default: return "invalid_";
+    }
+  }
+
+  void add_name(int exoid, ex_entity_type ent_type, int64_t id, char *name, std::string &names)
+  {
+    std::string str_name;
+    ex_get_name(exoid, ent_type, id, name);
+    if (name[0] == '\0') {
+      str_name = entity_type_name(ent_type) + std::to_string(id);
+    }
+    else {
+      str_name = name;
+    }
+
+    if (names.length() > 0) {
+      names += ",";
+    }
+    names += str_name;
+  }
+
 } // namespace
 
 namespace SEAMS {
@@ -204,7 +232,7 @@ namespace SEAMS {
     // The Scheme Is:
     // -- 'ex_block_ids' Is an array of the element block ids. (ex_block_count, 1)
     // -- 'ex_block_info' is an array of the element block info (id, num_elem, num_node_per_element,
-    // num_attrib) for each block (ex_block_count,4)
+    // num_attrib,num_entity_attribute) for each block (ex_block_count,5)
     // -- 'ex_nodeset_ids'
     // -- 'ex_nodeset_info'
     // -- 'ex_sideset_ids'
@@ -216,7 +244,7 @@ namespace SEAMS {
 
     if (num_elemblks > 0) {
       auto array_data       = new array(num_elemblks, 1);
-      auto array_block_info = new array(num_elemblks, 4);
+      auto array_block_info = new array(num_elemblks, 5);
 
       std::vector<int64_t> ids(num_elemblks);
       ex_get_ids(exoid, EX_ELEM_BLOCK, ids.data());
@@ -232,26 +260,19 @@ namespace SEAMS {
       int64_t idx = 0;
       for (int64_t i = 0; i < num_elemblks; i++) {
         ex_get_block(exoid, EX_ELEM_BLOCK, ids[i], type, &nel, &nnel, nullptr, nullptr, &natr);
+        int eatr = ex_get_attribute_count(exoid, EX_ELEM_BLOCK, ids[i]); // Entity Attributes
         array_data->data[i]           = ids[i];
         array_block_info->data[idx++] = ids[i];
         array_block_info->data[idx++] = nel;
         array_block_info->data[idx++] = nnel;
         array_block_info->data[idx++] = natr;
-
-        ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
-        if (name[0] == '\0') {
-          str_name = "block_" + std::to_string(ids[i]);
-        }
-        else {
-          str_name = name;
-        }
+        array_block_info->data[idx++] = eatr;
 
         if (i > 0) {
           topology += ",";
-          names += ",";
         }
         topology += type;
-        names += str_name;
+        add_name(exoid, EX_ELEM_BLOCK, ids[i], name, names);
       }
 
       topology = LowerCase(topology);
@@ -264,7 +285,7 @@ namespace SEAMS {
     // Nodesets...
     if (num_nodesets > 0) {
       auto array_data     = new array(num_nodesets, 1);
-      auto array_set_info = new array(num_nodesets, 3);
+      auto array_set_info = new array(num_nodesets, 4);
 
       std::vector<int64_t> ids(num_nodesets);
       ex_get_ids(exoid, EX_NODE_SET, ids.data());
@@ -275,23 +296,14 @@ namespace SEAMS {
         int64_t num_entry;
         int64_t num_dist;
         ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_entry, &num_dist);
+        int num_eatr = ex_get_attribute_count(exoid, EX_NODE_SET, ids[i]); // Entity Attributes
         array_data->data[i]         = ids[i];
         array_set_info->data[idx++] = ids[i];
         array_set_info->data[idx++] = num_entry;
         array_set_info->data[idx++] = num_dist;
+        array_set_info->data[idx++] = num_eatr;
 
-        ex_get_name(exoid, EX_NODE_SET, ids[i], name);
-        if (name[0] == '\0') {
-          str_name = "nodeset_" + std::to_string(ids[i]);
-        }
-        else {
-          str_name = name;
-        }
-
-        if (i > 0) {
-          names += ",";
-        }
-        names += str_name;
+        add_name(exoid, EX_NODE_SET, ids[i], name, names);
       }
 
       aprepro->add_variable("ex_nodeset_names", names);
@@ -302,7 +314,7 @@ namespace SEAMS {
     // Sidesets...
     if (num_sidesets > 0) {
       auto array_data     = new array(num_sidesets, 1);
-      auto array_set_info = new array(num_sidesets, 3);
+      auto array_set_info = new array(num_sidesets, 4);
 
       std::vector<int64_t> ids(num_sidesets);
       ex_get_ids(exoid, EX_SIDE_SET, ids.data());
@@ -313,23 +325,14 @@ namespace SEAMS {
         int64_t num_entry;
         int64_t num_dist;
         ex_get_set_param(exoid, EX_SIDE_SET, ids[i], &num_entry, &num_dist);
+        int num_eatr = ex_get_attribute_count(exoid, EX_SIDE_SET, ids[i]); // Entity Attributes
         array_data->data[i]         = ids[i];
         array_set_info->data[idx++] = ids[i];
         array_set_info->data[idx++] = num_entry;
         array_set_info->data[idx++] = num_dist;
+        array_set_info->data[idx++] = num_eatr;
 
-        ex_get_name(exoid, EX_SIDE_SET, ids[i], name);
-        if (name[0] == '\0') {
-          str_name = "sideset_" + std::to_string(ids[i]);
-        }
-        else {
-          str_name = name;
-        }
-
-        if (i > 0) {
-          names += ",";
-        }
-        names += str_name;
+        add_name(exoid, EX_SIDE_SET, ids[i], name, names);
       }
 
       aprepro->add_variable("ex_sideset_names", names);
