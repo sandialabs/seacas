@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Iocgns__Utils_8C.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Iocgns__Utils_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-62 0,-81 122,-81 122,-62 0,-62"/>
 <text text-anchor="middle" x="61" y="-69" font-family="Helvetica,sans-Serif" font-size="10.00">src/cgns/Iocgns_Utils.C</text>
 </a>
@@ -36,7 +36,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$Ioss__Node_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="Ioss__Node_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="140.5,-62 140.5,-81 231.5,-81 231.5,-62 140.5,-62"/>
 <text text-anchor="middle" x="186" y="-69" font-family="Helvetica,sans-Serif" font-size="10.00">src/Ioss_Node.C</text>
 </a>
@@ -51,7 +51,7 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="$Ioss__StandardElementTypes_8h.html" xlink:title=" ">
+<g id="a_node4"><a xlink:href="Ioss__StandardElementTypes_8h.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="250,-56.5 250,-86.5 382,-86.5 382,-56.5 250,-56.5"/>
 <text text-anchor="start" x="258" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/Ioss_StandardElement</text>
 <text text-anchor="middle" x="316" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00">Types.h</text>
@@ -67,7 +67,7 @@
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="$Ioss__Initializer_8C.html" xlink:title=" ">
+<g id="a_node5"><a xlink:href="Ioss__Initializer_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="263,-0.5 263,-19.5 369,-19.5 369,-0.5 263,-0.5"/>
 <text text-anchor="middle" x="316" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/Ioss_Initializer.C</text>
 </a>

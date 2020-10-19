@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$classIoss_1_1VariableType.html" xlink:title="A generic variable type.">
+<g id="a_node2"><a xlink:href="classIoss_1_1VariableType.html" target="_top" xlink:title="A generic variable type.">
 <polygon fill="white" stroke="black" points="10,-56.5 10,-75.5 107,-75.5 107,-56.5 10,-56.5"/>
 <text text-anchor="middle" x="58.5" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00">Ioss::VariableType</text>
 </a>

@@ -22,7 +22,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Utst__structured__decomp__herron_8C.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Utst__structured__decomp__herron_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-0.5 0,-30.5 125,-30.5 125,-0.5 0,-0.5"/>
 <text text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/utest/Utst_structured</text>
 <text text-anchor="middle" x="62.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_decomp_herron.C</text>
@@ -38,7 +38,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$Utst__structured__decomp__rocket_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="Utst__structured__decomp__rocket_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="143,-0.5 143,-30.5 268,-30.5 268,-0.5 143,-0.5"/>
 <text text-anchor="start" x="151" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/utest/Utst_structured</text>
 <text text-anchor="middle" x="205.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_decomp_rocket.C</text>

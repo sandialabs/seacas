@@ -22,7 +22,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Iogn__DatabaseIO_8C.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Iogn__DatabaseIO_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-0.5 0,-30.5 98,-30.5 98,-0.5 0,-0.5"/>
 <text text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/generated/Iogn</text>
 <text text-anchor="middle" x="49" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_DatabaseIO.C</text>
@@ -38,7 +38,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$Ionit__Initializer_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="Ionit__Initializer_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="116,-6 116,-25 238,-25 238,-6 116,-6"/>
 <text text-anchor="middle" x="177" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">src/init/Ionit_Initializer.C</text>
 </a>

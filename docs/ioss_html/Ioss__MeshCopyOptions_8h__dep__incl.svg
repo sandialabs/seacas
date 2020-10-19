@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Ioss__Utils_8C.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Ioss__Utils_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-0.5 0,-19.5 88,-19.5 88,-0.5 0,-0.5"/>
 <text text-anchor="middle" x="44" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/Ioss_Utils.C</text>
 </a>
@@ -36,7 +36,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$io__shell_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="io__shell_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="106.5,-0.5 106.5,-19.5 207.5,-19.5 207.5,-0.5 106.5,-0.5"/>
 <text text-anchor="middle" x="157" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/main/io_shell.C</text>
 </a>

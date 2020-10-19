@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Ioex__DatabaseIO_8C.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Ioex__DatabaseIO_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-6 0,-25 155,-25 155,-6 0,-6"/>
 <text text-anchor="middle" x="77.5" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">src/exodus/Ioex_DatabaseIO.C</text>
 </a>
@@ -36,7 +36,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$Ioex__IOFactory_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="Ioex__IOFactory_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="173.5,-6 173.5,-25 317.5,-25 317.5,-6 173.5,-6"/>
 <text text-anchor="middle" x="245.5" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">src/exodus/Ioex_IOFactory.C</text>
 </a>
@@ -51,7 +51,7 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="$UnitTestIofxDatabaseIO_8C.html" xlink:title=" ">
+<g id="a_node4"><a xlink:href="UnitTestIofxDatabaseIO_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="335.5,-0.5 335.5,-30.5 467.5,-30.5 467.5,-0.5 335.5,-0.5"/>
 <text text-anchor="start" x="343.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/unit_tests/UnitTestIofx</text>
 <text text-anchor="middle" x="401.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">DatabaseIO.C</text>

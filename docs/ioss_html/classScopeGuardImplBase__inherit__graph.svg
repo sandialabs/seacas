@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$classObjScopeGuardImpl0.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="classObjScopeGuardImpl0.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="158,-284.5 158,-314.5 268,-314.5 268,-284.5 158,-284.5"/>
 <text text-anchor="start" x="166" y="-302.5" font-family="Helvetica,sans-Serif" font-size="10.00">ObjScopeGuardImpl0</text>
 <text text-anchor="middle" x="213" y="-291.5" font-family="Helvetica,sans-Serif" font-size="10.00">&lt; Obj, MemFun &gt;</text>
@@ -37,7 +37,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$classObjScopeGuardImpl1.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="classObjScopeGuardImpl1.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="157,-235.5 157,-265.5 269,-265.5 269,-235.5 157,-235.5"/>
 <text text-anchor="start" x="165" y="-253.5" font-family="Helvetica,sans-Serif" font-size="10.00">ObjScopeGuardImpl1</text>
 <text text-anchor="middle" x="213" y="-242.5" font-family="Helvetica,sans-Serif" font-size="10.00">&lt; Obj, MemFun, P1 &gt;</text>
@@ -53,7 +53,7 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="$classObjScopeGuardImpl2.html" xlink:title=" ">
+<g id="a_node4"><a xlink:href="classObjScopeGuardImpl2.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="148,-186.5 148,-216.5 278,-216.5 278,-186.5 148,-186.5"/>
 <text text-anchor="start" x="156" y="-204.5" font-family="Helvetica,sans-Serif" font-size="10.00">ObjScopeGuardImpl2</text>
 <text text-anchor="middle" x="213" y="-193.5" font-family="Helvetica,sans-Serif" font-size="10.00">&lt; Obj, MemFun, P1, P2 &gt;</text>
@@ -69,7 +69,7 @@
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="$classScopeGuardImpl0.html" xlink:title=" ">
+<g id="a_node5"><a xlink:href="classScopeGuardImpl0.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="153.5,-148 153.5,-167 272.5,-167 272.5,-148 153.5,-148"/>
 <text text-anchor="middle" x="213" y="-155" font-family="Helvetica,sans-Serif" font-size="10.00">ScopeGuardImpl0&lt; F &gt;</text>
 </a>
@@ -84,7 +84,7 @@
 <!-- Node6 -->
 <g id="node6" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="$classScopeGuardImpl1.html" xlink:title=" ">
+<g id="a_node6"><a xlink:href="classScopeGuardImpl1.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="157.5,-98.5 157.5,-128.5 268.5,-128.5 268.5,-98.5 157.5,-98.5"/>
 <text text-anchor="start" x="165.5" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00">ScopeGuardImpl1&lt; F,</text>
 <text text-anchor="middle" x="213" y="-105.5" font-family="Helvetica,sans-Serif" font-size="10.00"> P1 &gt;</text>
@@ -100,7 +100,7 @@
 <!-- Node7 -->
 <g id="node7" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="$classScopeGuardImpl2.html" xlink:title=" ">
+<g id="a_node7"><a xlink:href="classScopeGuardImpl2.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="157.5,-49.5 157.5,-79.5 268.5,-79.5 268.5,-49.5 157.5,-49.5"/>
 <text text-anchor="start" x="165.5" y="-67.5" font-family="Helvetica,sans-Serif" font-size="10.00">ScopeGuardImpl2&lt; F,</text>
 <text text-anchor="middle" x="213" y="-56.5" font-family="Helvetica,sans-Serif" font-size="10.00"> P1, P2 &gt;</text>
@@ -116,7 +116,7 @@
 <!-- Node8 -->
 <g id="node8" class="node">
 <title>Node8</title>
-<g id="a_node8"><a xlink:href="$classScopeGuardImpl3.html" xlink:title=" ">
+<g id="a_node8"><a xlink:href="classScopeGuardImpl3.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="157.5,-0.5 157.5,-30.5 268.5,-30.5 268.5,-0.5 157.5,-0.5"/>
 <text text-anchor="start" x="165.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">ScopeGuardImpl3&lt; F,</text>
 <text text-anchor="middle" x="213" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00"> P1, P2, P3 &gt;</text>

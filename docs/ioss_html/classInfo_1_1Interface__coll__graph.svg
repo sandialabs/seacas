@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$classIoss_1_1GetLongOption.html" xlink:title="A database of program command line and environment variable options and methods for manipulating them...">
+<g id="a_node2"><a xlink:href="classIoss_1_1GetLongOption.html" target="_top" xlink:title="A database of program command line and environment variable options and methods for manipulating them...">
 <polygon fill="white" stroke="black" points="0,-67.5 0,-86.5 107,-86.5 107,-67.5 0,-67.5"/>
 <text text-anchor="middle" x="53.5" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">Ioss::GetLongOption</text>
 </a>
@@ -37,7 +37,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$structIoss_1_1GetLongOption_1_1Cell.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="structIoss_1_1GetLongOption_1_1Cell.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-145.5 0,-175.5 107,-175.5 107,-145.5 0,-145.5"/>
 <text text-anchor="start" x="8" y="-163.5" font-family="Helvetica,sans-Serif" font-size="10.00">Ioss::GetLongOption</text>
 <text text-anchor="middle" x="53.5" y="-152.5" font-family="Helvetica,sans-Serif" font-size="10.00">::Cell</text>

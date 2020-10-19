@@ -22,7 +22,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Ionit__Initializer_8C.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Ionit__Initializer_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-6 0,-25 122,-25 122,-6 0,-6"/>
 <text text-anchor="middle" x="61" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">src/init/Ionit_Initializer.C</text>
 </a>
@@ -37,7 +37,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$Iovs__IOFactory_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="Iovs__IOFactory_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="140.5,-0.5 140.5,-30.5 249.5,-30.5 249.5,-0.5 140.5,-0.5"/>
 <text text-anchor="start" x="148.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/visualization/Iovs</text>
 <text text-anchor="middle" x="195" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_IOFactory.C</text>

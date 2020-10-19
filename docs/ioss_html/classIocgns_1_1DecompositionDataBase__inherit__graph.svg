@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$classIocgns_1_1DecompositionData.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="classIocgns_1_1DecompositionData.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="11.5,-0.5 11.5,-30.5 149.5,-30.5 149.5,-0.5 11.5,-0.5"/>
 <text text-anchor="start" x="19.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">Iocgns::DecompositionData</text>
 <text text-anchor="middle" x="80.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">&lt; INT &gt;</text>

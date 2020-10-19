@@ -24,7 +24,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="15.5,-89.5 15.5,-130.5 143.5,-130.5 143.5,-89.5 15.5,-89.5"/>
 <text text-anchor="start" x="23.5" y="-118.5" font-family="Helvetica,sans-Serif" font-size="10.00">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="23.5" y="-107.5" font-family="Helvetica,sans-Serif" font-size="10.00">_hash::hopscotch_bucket</text>

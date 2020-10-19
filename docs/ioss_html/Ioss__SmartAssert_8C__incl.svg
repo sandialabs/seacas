@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Ioss__SmartAssert_8h.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Ioss__SmartAssert_8h.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="108,-56.5 108,-75.5 212,-75.5 212,-56.5 108,-56.5"/>
 <text text-anchor="middle" x="160" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00">Ioss_SmartAssert.h</text>
 </a>

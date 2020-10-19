@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Ioex__SuperElement_8C.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Ioex__SuperElement_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-0.5 0,-19.5 164,-19.5 164,-0.5 0,-0.5"/>
 <text text-anchor="middle" x="82" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/exodus/Ioex_SuperElement.C</text>
 </a>
@@ -36,7 +36,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$Utst__superelement_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="Utst__superelement_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="182.5,-0.5 182.5,-19.5 333.5,-19.5 333.5,-0.5 182.5,-0.5"/>
 <text text-anchor="middle" x="258" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/utest/Utst_superelement.C</text>
 </a>

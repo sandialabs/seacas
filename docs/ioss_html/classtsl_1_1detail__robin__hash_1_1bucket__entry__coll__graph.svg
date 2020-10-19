@@ -23,7 +23,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$classtsl_1_1detail__robin__hash_1_1bucket__entry__hash.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="classtsl_1_1detail__robin__hash_1_1bucket__entry__hash.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-78.5 0,-108.5 170,-108.5 170,-78.5 0,-78.5"/>
 <text text-anchor="start" x="8" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">tsl::detail_robin_hash</text>
 <text text-anchor="middle" x="85" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">::bucket_entry_hash&lt; StoreHash &gt;</text>

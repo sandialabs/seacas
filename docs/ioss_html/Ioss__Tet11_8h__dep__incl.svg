@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Ioss__StandardElementTypes_8h.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Ioss__StandardElementTypes_8h.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-56.5 0,-86.5 132,-86.5 132,-56.5 0,-56.5"/>
 <text text-anchor="start" x="8" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/Ioss_StandardElement</text>
 <text text-anchor="middle" x="66" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00">Types.h</text>
@@ -37,7 +37,7 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="$Ioss__Tet11_8C.html" xlink:title=" ">
+<g id="a_node4"><a xlink:href="Ioss__Tet11_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="150,-62 150,-81 242,-81 242,-62 150,-62"/>
 <text text-anchor="middle" x="196" y="-69" font-family="Helvetica,sans-Serif" font-size="10.00">src/Ioss_Tet11.C</text>
 </a>
@@ -52,7 +52,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$Ioss__Initializer_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="Ioss__Initializer_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="13,-0.5 13,-19.5 119,-19.5 119,-0.5 13,-0.5"/>
 <text text-anchor="middle" x="66" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/Ioss_Initializer.C</text>
 </a>

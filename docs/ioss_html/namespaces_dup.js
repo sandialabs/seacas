@@ -121,6 +121,7 @@ var namespaces_dup =
     [ "anonymous_namespace{Utst_sort.C}", "namespaceanonymous__namespace_02Utst__sort_8C_03.html", null ],
     [ "anonymous_namespace{Utst_structured_decomp.C}", "namespaceanonymous__namespace_02Utst__structured__decomp_8C_03.html", null ],
     [ "anonymous_namespace{volume.C}", "namespaceanonymous__namespace_02volume_8C_03.html", null ],
+    [ "glob", "namespaceglob.html", null ],
     [ "Info", "namespaceInfo.html", null ],
     [ "Ioad", "namespaceIoad.html", null ],
     [ "Iocgns", "namespaceIocgns.html", "namespaceIocgns" ],

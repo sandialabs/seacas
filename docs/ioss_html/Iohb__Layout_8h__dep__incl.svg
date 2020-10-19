@@ -22,7 +22,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Iohb__DatabaseIO_8C.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Iohb__DatabaseIO_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-0.5 0,-30.5 95,-30.5 95,-0.5 0,-0.5"/>
 <text text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/heartbeat/Iohb</text>
 <text text-anchor="middle" x="47.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_DatabaseIO.C</text>
@@ -38,7 +38,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$Iohb__Layout_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="Iohb__Layout_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="113,-0.5 113,-30.5 208,-30.5 208,-0.5 113,-0.5"/>
 <text text-anchor="start" x="121" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/heartbeat/Iohb</text>
 <text text-anchor="middle" x="160.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_Layout.C</text>

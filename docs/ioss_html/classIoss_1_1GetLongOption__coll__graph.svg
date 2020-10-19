@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$structIoss_1_1GetLongOption_1_1Cell.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="structIoss_1_1GetLongOption_1_1Cell.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-78.5 0,-108.5 107,-108.5 107,-78.5 0,-78.5"/>
 <text text-anchor="start" x="8" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">Ioss::GetLongOption</text>
 <text text-anchor="middle" x="53.5" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">::Cell</text>

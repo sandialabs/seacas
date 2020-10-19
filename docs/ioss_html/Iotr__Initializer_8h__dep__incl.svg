@@ -22,7 +22,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Ionit__Initializer_8C.html" xlink:title=" ">
+<g id="a_node2"><a xlink:href="Ionit__Initializer_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="0,-6 0,-25 122,-25 122,-6 0,-6"/>
 <text text-anchor="middle" x="61" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">src/init/Ionit_Initializer.C</text>
 </a>
@@ -37,7 +37,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="$Iotr__Initializer_8C.html" xlink:title=" ">
+<g id="a_node3"><a xlink:href="Iotr__Initializer_8C.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="140,-0.5 140,-30.5 232,-30.5 232,-0.5 140,-0.5"/>
 <text text-anchor="start" x="148" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/transform/Iotr</text>
 <text text-anchor="middle" x="186" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_Initializer.C</text>
