@@ -100,10 +100,8 @@ void Excn::SystemInterface::enroll_options()
       "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
       nullptr);
 
-  options_.enroll(
-      "szip", GetLongOption::NoValue,
-      "Use SZip compression. [exodus only, enables netcdf-4]",
-      nullptr);
+  options_.enroll("szip", GetLongOption::NoValue,
+                  "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);
 
   options_.enroll("compress_data", GetLongOption::MandatoryValue,
                   "The output database will be written using compression (netcdf-4 mode only).\n"

@@ -292,11 +292,11 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
     properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level()));
     properties.add(Ioss::Property("COMPRESSION_SHUFFLE", true));
     if (interFace.szip()) {
-        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
-      }
+      properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
+    }
     else if (interFace.zlib()) {
-        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
-      }
+      properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+    }
   }
 
   properties.add(Ioss::Property("FLUSH_INTERVAL", 0));

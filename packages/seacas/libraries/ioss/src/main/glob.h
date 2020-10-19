@@ -399,7 +399,7 @@ namespace glob {
     StateGroup(Automata<charT> &states, Type type,
                std::vector<std::unique_ptr<Automata<charT>>> &&automatas)
         : State<charT>(StateType::GROUP, states), type_{type}, automatas_{std::move(automatas)},
-								 match_one_{false}
+          match_one_{false}
     {
     }
 
@@ -479,7 +479,7 @@ namespace glob {
         break;
       }
       }
-      return std::tuple<size_t, size_t>(0,0);
+      return std::tuple<size_t, size_t>(0, 0);
     }
 
     std::tuple<size_t, size_t> NextNeg(const String<charT> &str, size_t pos)
