@@ -232,7 +232,7 @@ namespace SEAMS {
     // The Scheme Is:
     // -- 'ex_block_ids' Is an array of the element block ids. (ex_block_count, 1)
     // -- 'ex_block_info' is an array of the element block info (id, num_elem, num_node_per_element,
-    // num_attrib,num_entity_attribute) for each block (ex_block_count,5)
+    // num_attrib) for each block (ex_block_count,4)
     // -- 'ex_nodeset_ids'
     // -- 'ex_nodeset_info'
     // -- 'ex_sideset_ids'
@@ -244,7 +244,7 @@ namespace SEAMS {
 
     if (num_elemblks > 0) {
       auto array_data       = new array(num_elemblks, 1);
-      auto array_block_info = new array(num_elemblks, 5);
+      auto array_block_info = new array(num_elemblks, 4);
 
       std::vector<int64_t> ids(num_elemblks);
       ex_get_ids(exoid, EX_ELEM_BLOCK, ids.data());
@@ -260,13 +260,11 @@ namespace SEAMS {
       int64_t idx = 0;
       for (int64_t i = 0; i < num_elemblks; i++) {
         ex_get_block(exoid, EX_ELEM_BLOCK, ids[i], type, &nel, &nnel, nullptr, nullptr, &natr);
-        int eatr = ex_get_attribute_count(exoid, EX_ELEM_BLOCK, ids[i]); // Entity Attributes
         array_data->data[i]           = ids[i];
         array_block_info->data[idx++] = ids[i];
         array_block_info->data[idx++] = nel;
         array_block_info->data[idx++] = nnel;
         array_block_info->data[idx++] = natr;
-        array_block_info->data[idx++] = eatr;
 
         if (i > 0) {
           topology += ",";
@@ -285,7 +283,7 @@ namespace SEAMS {
     // Nodesets...
     if (num_nodesets > 0) {
       auto array_data     = new array(num_nodesets, 1);
-      auto array_set_info = new array(num_nodesets, 4);
+      auto array_set_info = new array(num_nodesets, 3);
 
       std::vector<int64_t> ids(num_nodesets);
       ex_get_ids(exoid, EX_NODE_SET, ids.data());
@@ -296,12 +294,10 @@ namespace SEAMS {
         int64_t num_entry;
         int64_t num_dist;
         ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_entry, &num_dist);
-        int num_eatr = ex_get_attribute_count(exoid, EX_NODE_SET, ids[i]); // Entity Attributes
         array_data->data[i]         = ids[i];
         array_set_info->data[idx++] = ids[i];
         array_set_info->data[idx++] = num_entry;
         array_set_info->data[idx++] = num_dist;
-        array_set_info->data[idx++] = num_eatr;
 
         add_name(exoid, EX_NODE_SET, ids[i], name, names);
       }
@@ -314,7 +310,7 @@ namespace SEAMS {
     // Sidesets...
     if (num_sidesets > 0) {
       auto array_data     = new array(num_sidesets, 1);
-      auto array_set_info = new array(num_sidesets, 4);
+      auto array_set_info = new array(num_sidesets, 3);
 
       std::vector<int64_t> ids(num_sidesets);
       ex_get_ids(exoid, EX_SIDE_SET, ids.data());
@@ -325,12 +321,10 @@ namespace SEAMS {
         int64_t num_entry;
         int64_t num_dist;
         ex_get_set_param(exoid, EX_SIDE_SET, ids[i], &num_entry, &num_dist);
-        int num_eatr = ex_get_attribute_count(exoid, EX_SIDE_SET, ids[i]); // Entity Attributes
         array_data->data[i]         = ids[i];
         array_set_info->data[idx++] = ids[i];
         array_set_info->data[idx++] = num_entry;
         array_set_info->data[idx++] = num_dist;
-        array_set_info->data[idx++] = num_eatr;
 
         add_name(exoid, EX_SIDE_SET, ids[i], name, names);
       }
