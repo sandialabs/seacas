@@ -36,6 +36,8 @@ public:
   bool   ignore_element_ids() const { return ignoreElementIds_; }
 
   int compression_level() const { return compressionLevel_; }
+    bool zlib() const {return zlib_;}
+    bool szip() const {return szip_;}
   int step_min() const { return stepMin_; }
   int step_max() const { return stepMax_; }
   int step_interval() const { return stepInterval_; }
@@ -93,6 +95,8 @@ private:
   bool ints64bit_{false};
   bool useNetcdf4_{false};
   bool ignoreElementIds_{false};
+  bool         zlib_{true};
+  bool         szip_{false};
 
   std::string blockPrefix_{std::string("p")};
 

@@ -287,10 +287,16 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
     properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
   }
 
-  if (interFace.compression_level() > 0) {
+  if (interFace.compression_level() > 0 || interFace.szip()) {
     properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
     properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level()));
     properties.add(Ioss::Property("COMPRESSION_SHUFFLE", true));
+    if (interFace.szip()) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
+      }
+    else if (interFace.zlib()) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      }
   }
 
   properties.add(Ioss::Property("FLUSH_INTERVAL", 0));
