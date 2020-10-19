@@ -191,7 +191,7 @@ then
         szip_version="1.0.4"
 
 	cd $ACCESS
-	cd TPL
+	cd TPL/szip
 	if [ "$DOWNLOAD" == "YES" ]
 	then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -209,7 +209,8 @@ then
             mkdir build
             cd build
 
-            cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} -DCMAKE_BUILD_TYPE=Release ..
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
+
             if [[ $? != 0 ]]
             then
 		echo 1>&2 "${txtred}couldn\'t configure libaec(szip). exiting.${txtrst}"
@@ -232,7 +233,7 @@ else
         szip_version="2.1.1"
 
 	cd $ACCESS
-	cd TPL
+	cd TPL/szip
 	if [ "$DOWNLOAD" == "YES" ]
 	then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -438,7 +439,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
-	git checkout v4.7.4
+#	git checkout v4.7.4
         if [ -d build ]
         then
             rm -rf build
