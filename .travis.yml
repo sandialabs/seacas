@@ -29,10 +29,10 @@ matrix:
       env: MPI=ON H5VERSION=V18 USE_64BIT_INT=OFF
     - compiler: gcc
       arch: amd64
-      env: MPI=ON H5VERSION=V110 USE_64BIT_INT=OFF NEEDS_SZIP=YES USE_AEC=YES VERBOSE=1
+      env: MPI=ON H5VERSION=V110 USE_64BIT_INT=OFF 
     - compiler: gcc
       arch: amd64
-      env: MPI=ON H5VERSION=V110 USE_64BIT_INT=OFF NEEDS_SZIP=YES  VERBOSE=1
+      env: MPI=ON H5VERSION=V110 USE_64BIT_INT=OFF
     - compiler: gcc
       arch: amd64
       env: MPI=ON H5VERSION=V112 USE_64BIT_INT=ON
@@ -40,7 +40,7 @@ matrix:
       arch: amd64
       env: MPI=ON H5VERSION=V18 USE_64BIT_INT=ON
     - compiler: clang
-      env: MPI=ON THREADSAFE=ON H5VERSION=V18 FORTRAN=OFF
+      env: MPI=ON THREADSAFE=ON H5VERSION=V18 FORTRAN=OFF  NEEDS_SZIP=YES
     - compiler: gcc
       env: KOKKOS=ON
     - compiler: gcc
@@ -54,7 +54,7 @@ matrix:
     - compiler: gcc
       env: MPI=ON ADIOS2=ON
     - compiler: clang
-      env: APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF
+      env: APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF NEEDS_SZIP=YES USE_AEC=YES
 
 before_install: 
   # C++14
