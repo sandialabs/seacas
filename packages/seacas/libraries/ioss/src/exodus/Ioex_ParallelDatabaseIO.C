@@ -2603,14 +2603,8 @@ int64_t ParallelDatabaseIO::write_attribute_field(ex_entity_type type, const Ios
   assert(offset - 1 + field.raw_storage()->component_count() <=
          ge->get_property("attribute_count").get_int());
 
-  size_t proc_offset = 0;
-  if (ge->property_exists("processor_offset")) {
-    proc_offset = ge->get_property("processor_offset").get_int();
-  }
-  ssize_t file_count = num_entity;
-  if (ge->property_exists("locally_owned_count")) {
-    file_count = ge->get_property("locally_owned_count").get_int();
-  }
+  size_t proc_offset = ge->get_optional_property("_processor_offset", 0);
+  ssize_t file_count = ge->get_optional_property("locally_owned_count", num_entity);
 
   Ioss::Field::BasicType ioss_type = field.get_type();
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
@@ -3267,14 +3261,8 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const 
 {
   size_t num_to_get = field.verify(data_size);
 
-  size_t proc_offset = 0;
-  if (nb->property_exists("processor_offset")) {
-    proc_offset = nb->get_property("processor_offset").get_int();
-  }
-  size_t file_count = num_to_get;
-  if (nb->property_exists("locally_owned_count")) {
-    file_count = nb->get_property("locally_owned_count").get_int();
-  }
+  size_t proc_offset = nb->get_optional_property("_processor_offset", 0);
+  size_t file_count =  nb->get_optional_property("locally_owned_count", num_to_get);
 
   Ioss::Field::RoleType role = field.get_role();
 
@@ -3540,14 +3528,8 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
   int64_t               my_element_count = eb->entity_count();
   Ioss::Field::RoleType role             = field.get_role();
 
-  size_t proc_offset = 0;
-  if (eb->property_exists("processor_offset")) {
-    proc_offset = eb->get_property("processor_offset").get_int();
-  }
-  size_t file_count = num_to_get;
-  if (eb->property_exists("locally_owned_count")) {
-    file_count = eb->get_property("locally_owned_count").get_int();
-  }
+  size_t proc_offset = eb->get_optional_property("_processor_offset", 0);
+  size_t file_count = eb->get_optional_property("locally_owned_count", num_to_get);
 
   if (role == Ioss::Field::MESH) {
     // Handle the MESH fields required for an ExodusII file model.
@@ -4008,14 +3990,8 @@ void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */,
       }
 
       // Write the variable...
-      size_t proc_offset = 0;
-      if (nb->property_exists("processor_offset")) {
-        proc_offset = nb->get_property("processor_offset").get_int();
-      }
-      size_t file_count = num_out;
-      if (nb->property_exists("locally_owned_count")) {
-        file_count = nb->get_property("locally_owned_count").get_int();
-      }
+      size_t proc_offset = nb->get_optional_property("_processor_offset", 0);
+      size_t file_count =  nb->get_optional_property("locally_owned_count", num_out);
 
       check_node_owning_processor_data(nodeOwningProcessor, file_count);
       filter_owned_nodes(nodeOwningProcessor, myProcessor, temp.data());
@@ -4118,14 +4094,8 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
       }
 
       // Write the variable...
-      size_t proc_offset = 0;
-      if (ge->property_exists("processor_offset")) {
-        proc_offset = ge->get_property("processor_offset").get_int();
-      }
-      size_t file_count = count;
-      if (ge->property_exists("locally_owned_count")) {
-        file_count = ge->get_property("locally_owned_count").get_int();
-      }
+      size_t proc_offset = ge->get_optional_property("_processor_offset", 0);
+      size_t file_count =  ge->get_optional_property("locally_owned_count", count);
 
       int64_t id = Ioex::get_id(ge, type, &ids_);
       int     ierr;
@@ -4173,14 +4143,8 @@ int64_t ParallelDatabaseIO::put_Xset_field_internal(ex_entity_type type, const I
     std::vector<int64_t> i64data;
     std::vector<double>  dbldata;
 
-    size_t proc_offset = 0;
-    if (ns->property_exists("processor_offset")) {
-      proc_offset = ns->get_property("processor_offset").get_int();
-    }
-    size_t file_count = num_to_get;
-    if (ns->property_exists("locally_owned_count")) {
-      file_count = ns->get_property("locally_owned_count").get_int();
-    }
+    size_t proc_offset = ns->get_optional_property("_processor_offset", 0);
+    size_t file_count =  ns->get_optional_property("locally_owned_count", num_to_get);
 
     if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
       // Map node id from global node id to local node id.
@@ -4400,10 +4364,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const 
 
       size_t index = 0;
 
-      size_t proc_offset = 0;
-      if (fb->property_exists("processor_offset")) {
-        proc_offset = fb->get_property("processor_offset").get_int();
-      }
+      size_t proc_offset = fb->get_optional_property("_processor_offset", 0);
 
       if (field.get_type() == Ioss::Field::INTEGER) {
         Ioss::IntVector element(num_to_get);
