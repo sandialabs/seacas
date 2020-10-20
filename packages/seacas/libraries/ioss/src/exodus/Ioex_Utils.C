@@ -697,7 +697,7 @@ namespace Ioex {
     ge->property_describe(Ioss::Property::Origin::ATTRIBUTE, &properties);
 
     auto type = Ioex::map_exodus_type(ge->type());
-    auto id   = (ge->property_exists("id")) ? ge->get_property("id").get_int() : 0;
+    auto id   = ge->get_optional_property("id", 0);
 
     double  rval = 0.0;
     int64_t ival = 0;

@@ -110,12 +110,7 @@ Assembly::Assembly(const Ioss::Assembly &other)
     name = other.name();
   }
 
-  if (other.property_exists("id")) {
-    id = other.get_property("id").get_int();
-  }
-  else {
-    id = 1;
-  }
+  id = other.get_optional_property("id", 1);
   entityCount    = other.member_count();
   attributeCount = other.get_property("attribute_count").get_int();
   type           = Ioex::map_exodus_type(other.get_member_type());
@@ -146,12 +141,7 @@ Blob::Blob(const Ioss::Blob &other)
     name = other.name();
   }
 
-  if (other.property_exists("id")) {
-    id = other.get_property("id").get_int();
-  }
-  else {
-    id = 1;
-  }
+  id = other.get_optional_property("id", 1);
   entityCount    = other.entity_count();
   attributeCount = other.get_property("attribute_count").get_int();
 }
@@ -174,12 +164,7 @@ NodeBlock::NodeBlock(const Ioss::NodeBlock &other)
     name = other.name();
   }
 
-  if (other.property_exists("id")) {
-    id = other.get_property("id").get_int();
-  }
-  else {
-    id = 1;
-  }
+  id = other.get_optional_property("id", 1);
   entityCount = other.entity_count();
   if (other.property_exists("locally_owned_count")) {
     localOwnedCount = other.get_property("locally_owned_count").get_int();
@@ -373,12 +358,7 @@ NodeSet::NodeSet(const Ioss::NodeSet &other)
 
   id          = other.get_property("id").get_int();
   entityCount = other.entity_count();
-  if (other.property_exists("locally_owned_count")) {
-    localOwnedCount = other.get_property("locally_owned_count").get_int();
-  }
-  else {
-    localOwnedCount = entityCount;
-  }
+  localOwnedCount = other.get_optional_property("locally_owned_count", entityCount);
   attributeCount = other.get_property("attribute_count").get_int();
   dfCount        = other.get_property("distribution_factor_count").get_int();
   if (dfCount > 0 && dfCount != entityCount) {
