@@ -54,7 +54,7 @@ matrix:
     - compiler: gcc
       env: MPI=ON ADIOS2=ON
     - compiler: clang
-      env: APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF NEEDS_SZIP=YES USE_AEC=YES
+      env: APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF NEEDS_SZIP=YES
 
 before_install: 
   # C++14
@@ -73,7 +73,7 @@ before_install:
   - sudo apt-get -y install libz-dev
   - sudo apt-get -y install python3
   - cmake --version
-  - GNU_PARALLEL=OFF ./install-tpl.sh
+  - GNU_PARALLEL=OFF ./install-tpl.sh > hdf5-build.out
 
 before_script:
 
