@@ -662,7 +662,7 @@ namespace Ioex {
           offset = (per_proc + 1) * extra + per_proc * (myProcessor - extra);
         }
         Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, count);
-        blob->property_add(Ioss::Property("processor_offset", (int64_t)offset));
+        blob->property_add(Ioss::Property("_processor_offset", (int64_t)offset));
         blob->property_add(Ioss::Property("global_size", (int64_t)bl.num_entry));
 #else
         Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, bl.num_entry);
