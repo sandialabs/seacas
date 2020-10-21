@@ -450,7 +450,7 @@ namespace {
   {
     int64_t num_elem = eb->entity_count();
 
-    std::string type       = eb->get_property("topology_type").get_string();
+    std::string type       = eb->topology()->name();
     int64_t     num_attrib = eb->get_property("attribute_count").get_int();
     fmt::print("\n{} id: {:6d}, topology: {:>10s}, {:14n} elements, {:3d} attributes.\n", name(eb),
                id(eb), type, num_elem, num_attrib);

@@ -2150,6 +2150,7 @@ namespace Ioex {
 
         if (type_match(type, "shell") || type_match(type, "trishell")) {
           if (attribute_count == block->get_property("topology_node_count").get_int()) {
+
             att_name = "nodal_thickness";
 
             std::string storage = fmt::format("Real[{}]", attribute_count);

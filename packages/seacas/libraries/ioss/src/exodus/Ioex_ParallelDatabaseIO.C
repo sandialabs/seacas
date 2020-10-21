@@ -1198,7 +1198,7 @@ namespace Ioex {
       }
 
       int64_t id               = block->get_property("id").get_int();
-      int     element_nodes    = block->get_property("topology_node_count").get_int();
+      int     element_nodes    = block->topology()->number_nodes();
       int64_t my_element_count = block->entity_count();
       int     order            = block->get_property("iblk").get_int();
       if (int_byte_size_api() == 8) {
@@ -1965,7 +1965,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb,
     // (The 'genesis' portion)
 
     if (field.get_name() == "connectivity" || field.get_name() == "connectivity_raw") {
-      int element_nodes = eb->get_property("topology_node_count").get_int();
+      int element_nodes = eb->topology()->number_nodes();
       assert(field.raw_storage()->component_count() == element_nodes);
 
       int order = eb->get_property("iblk").get_int();
@@ -2088,7 +2088,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const 
     // (The 'genesis' portion)
 
     if (field.get_name() == "connectivity") {
-      int face_nodes = eb->get_property("topology_node_count").get_int();
+      int face_nodes = eb->topology()->number_nodes();
       assert(field.raw_storage()->component_count() == face_nodes);
 
       // The connectivity is stored in a 1D array.
@@ -2111,7 +2111,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const 
     else if (field.get_name() == "connectivity_raw") {
       // "connectivity_raw" has nodes in local id space (1-based)
       assert(field.raw_storage()->component_count() ==
-             eb->get_property("topology_node_count").get_int());
+             eb->topology()->number_nodes());
 
       // The connectivity is stored in a 1D array.
       // The face_node index varies fastet
@@ -2162,7 +2162,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const 
     // (The 'genesis' portion)
 
     if (field.get_name() == "connectivity") {
-      int edge_nodes = eb->get_property("topology_node_count").get_int();
+      int edge_nodes = eb->topology()->number_nodes();
       assert(field.raw_storage()->component_count() == edge_nodes);
 
       // The connectivity is stored in a 1D array.
@@ -2175,7 +2175,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const 
     else if (field.get_name() == "connectivity_raw") {
       // "connectivity_raw" has nodes in local id space (1-based)
       assert(field.raw_storage()->component_count() ==
-             eb->get_property("topology_node_count").get_int());
+             eb->topology()->number_nodes());
 
       // The connectivity is stored in a 1D array.
       // The edge_node index varies fastet
@@ -3599,7 +3599,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
     // (The 'genesis' portion)
     if (field.get_name() == "connectivity") {
       // Map element connectivity from global node id to local node id.
-      int element_nodes = eb->get_property("topology_node_count").get_int();
+      int element_nodes = eb->topology()->number_nodes();
 
       // Maps global to local
       nodeMap.reverse_map_data(data, field, num_to_get * element_nodes);
@@ -3640,7 +3640,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
     }
     else if (field.get_name() == "connectivity_raw") {
       // Element connectivity is already in local node id, map local to "global_implicit"
-      int element_nodes = eb->get_property("topology_node_count").get_int();
+      int element_nodes = eb->topology()->number_nodes();
       if (int_byte_size_api() == 4) {
         map_local_to_global_implicit(reinterpret_cast<int *>(data), num_to_get * element_nodes,
                                      nodeGlobalImplicitMap);
@@ -3777,7 +3777,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceBlock *eb, const 
     if (field.get_name() == "connectivity") {
       if (my_face_count > 0) {
         // Map face connectivity from global node id to local node id.
-        int face_nodes = eb->get_property("topology_node_count").get_int();
+        int face_nodes = eb->topology()->number_nodes();
         nodeMap.reverse_map_data(data, field, num_to_get * face_nodes);
         ierr = ex_put_conn(get_file_pointer(), EX_FACE_BLOCK, id, data, nullptr, nullptr);
         if (ierr < 0) {
@@ -3844,7 +3844,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::EdgeBlock *eb, const 
     if (field.get_name() == "connectivity") {
       if (my_edge_count > 0) {
         // Map edge connectivity from global node id to local node id.
-        int edge_nodes = eb->get_property("topology_node_count").get_int();
+        int edge_nodes = eb->topology()->number_nodes();
         nodeMap.reverse_map_data(data, field, num_to_get * edge_nodes);
         ierr = ex_put_conn(get_file_pointer(), EX_EDGE_BLOCK, id, data, nullptr, nullptr);
         if (ierr < 0) {

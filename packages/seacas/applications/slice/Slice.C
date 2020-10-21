@@ -1507,7 +1507,7 @@ namespace {
       auto & ebs = region.get_element_blocks();
       size_t bc  = ebs.size();
       for (size_t b = 0; b < bc; b++) {
-        std::string type = ebs[b]->get_property("topology_type").get_string();
+        std::string type = ebs[b]->topology()->name();
         auto *eb = new Ioss::ElementBlock(proc_region[p]->get_database(), ebs[b]->name(), type,
                                           proc_elem_block_cnt[b][p]);
         proc_region[p]->add(eb);
