@@ -578,7 +578,7 @@ namespace {
         if (debug) {
           fmt::print(stderr, "{}, ", name);
         }
-        std::string type     = eb->get_property("topology_type").get_string();
+        std::string type     = eb->topology()->name();
         size_t      num_elem = eb->entity_count();
         total_elements += num_elem;
 
@@ -629,8 +629,8 @@ namespace {
           if (debug) {
             fmt::print(stderr, "{}, ", fbname);
           }
-          std::string fbtype   = fb->get_property("topology_type").get_string();
-          std::string partype  = fb->get_property("parent_topology_type").get_string();
+          std::string fbtype   = fb->topology()->name();
+          std::string partype  = fb->parent_element_topology()->name();
           size_t      num_side = fb->entity_count();
           total_sides += num_side;
 

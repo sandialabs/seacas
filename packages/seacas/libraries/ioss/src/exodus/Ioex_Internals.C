@@ -197,10 +197,10 @@ EdgeBlock::EdgeBlock(const Ioss::EdgeBlock &other)
 
   id             = other.get_property("id").get_int();
   entityCount    = other.entity_count();
-  nodesPerEntity = other.get_property("topology_node_count").get_int();
+  nodesPerEntity = other.topology()->number_nodes();
   attributeCount = other.get_property("attribute_count").get_int();
 
-  std::string el_type = other.get_property("topology_type").get_string();
+  std::string el_type = other.topology()->name();
   if (other.property_exists("original_topology_type")) {
     el_type = other.get_property("original_topology_type").get_string();
   }
@@ -239,7 +239,7 @@ FaceBlock::FaceBlock(const Ioss::FaceBlock &other)
 
   id             = other.get_property("id").get_int();
   entityCount    = other.entity_count();
-  nodesPerEntity = other.get_property("topology_node_count").get_int();
+  nodesPerEntity = other.topology()->number_nodes();
   if (other.field_exists("connectivty_edge")) {
     edgesPerEntity = other.get_field("connectivity_edge").raw_storage()->component_count();
   }
@@ -248,7 +248,7 @@ FaceBlock::FaceBlock(const Ioss::FaceBlock &other)
   }
   attributeCount = other.get_property("attribute_count").get_int();
 
-  std::string el_type = other.get_property("topology_type").get_string();
+  std::string el_type = other.topology()->name();
   if (other.property_exists("original_topology_type")) {
     el_type = other.get_property("original_topology_type").get_string();
   }
@@ -288,7 +288,7 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
 
   id             = other.get_property("id").get_int();
   entityCount    = other.entity_count();
-  nodesPerEntity = other.get_property("topology_node_count").get_int();
+  nodesPerEntity = other.topology()->number_nodes();
 
   if (other.field_exists("connectivity_edge")) {
     edgesPerEntity = other.get_field("connectivity_edge").raw_storage()->component_count();
@@ -306,7 +306,7 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
 
   attributeCount      = other.get_property("attribute_count").get_int();
   offset_             = other.get_offset();
-  std::string el_type = other.get_property("topology_type").get_string();
+  std::string el_type = other.topology()->name();
   if (other.property_exists("original_topology_type")) {
     el_type = other.get_property("original_topology_type").get_string();
   }

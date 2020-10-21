@@ -492,8 +492,8 @@ namespace {
       const Ioss::SideBlockContainer &fbs  = ss->get_side_blocks();
       for (auto fb : fbs) {
         const std::string &fbname   = fb->name();
-        std::string        fbtype   = fb->get_property("topology_type").get_string();
-        std::string        partype  = fb->get_property("parent_topology_type").get_string();
+        std::string        fbtype   = fb->topology()->name();
+        std::string        partype  = fb->parent_element_topology()->name();
         size_t             num_side = fb->entity_count();
         total_sides += num_side;
 

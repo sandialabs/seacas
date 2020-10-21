@@ -882,7 +882,7 @@ namespace {
         if (debug) {
           DO_OUTPUT << name << ", ";
         }
-        std::string type  = iblock->get_property("topology_type").get_string();
+        std::string type  = iblock->topology()->name();
         size_t      count = iblock->entity_count();
         total_entities += count;
 
@@ -938,8 +938,8 @@ namespace {
         if (debug) {
           DO_OUTPUT << fbname << ", ";
         }
-        std::string fbtype   = fb->get_property("topology_type").get_string();
-        std::string partype  = fb->get_property("parent_topology_type").get_string();
+        std::string fbtype   = fb->topology()->name();
+        std::string partype  = fb->parent_element_topology()->name();
         size_t      num_side = fb->entity_count();
         total_sides += num_side;
 
