@@ -5371,22 +5371,23 @@ void DatabaseIO::gather_communication_metadata(Ioex::CommunicationMetaData *meta
     meta->globalNodes    = 1; // Just need a nonzero value.
     meta->globalElements = 1; // Just need a nonzero value.
 
-    meta->globalNodes = get_region()->get_optional_property("global_node_count", 1);
-    meta->globalElements = get_region()->get_optional_property("global_element_count", 1);
-    meta->globalElementBlocks = get_region()->get_optional_property("global_element_block_count",
-								    get_region()->get_element_blocks().size());
+    meta->globalNodes         = get_region()->get_optional_property("global_node_count", 1);
+    meta->globalElements      = get_region()->get_optional_property("global_element_count", 1);
+    meta->globalElementBlocks = get_region()->get_optional_property(
+        "global_element_block_count", get_region()->get_element_blocks().size());
     meta->globalNodeSets = get_region()->get_optional_property("global_node_set_count",
-							       get_region()->get_nodesets().size());
+                                                               get_region()->get_nodesets().size());
     meta->globalSideSets = get_region()->get_optional_property("global_side_set_count",
-							       get_region()->get_sidesets().size());
+                                                               get_region()->get_sidesets().size());
 
     // ========================================================================
     // Load balance parameters (NEMESIS, p15)
-    meta->nodesInternal    = get_region()->get_optional_property("internal_node_count", nodeCount);
-    meta->nodesBorder      = get_region()->get_optional_property("border_node_count", 0);
-    meta->nodesExternal    = 0; // Shadow nodes == 0 for now
-    meta->elementsInternal = get_region()->get_optional_property("internal_element_count", elementCount);
-    meta->elementsBorder   = get_region()->get_optional_property("border_element_count", 0);
+    meta->nodesInternal = get_region()->get_optional_property("internal_node_count", nodeCount);
+    meta->nodesBorder   = get_region()->get_optional_property("border_node_count", 0);
+    meta->nodesExternal = 0; // Shadow nodes == 0 for now
+    meta->elementsInternal =
+        get_region()->get_optional_property("internal_element_count", elementCount);
+    meta->elementsBorder = get_region()->get_optional_property("border_element_count", 0);
 
     const Ioss::CommSetContainer &comm_sets = get_region()->get_commsets();
     for (auto &cs : comm_sets) {
