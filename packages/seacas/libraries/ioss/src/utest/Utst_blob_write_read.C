@@ -180,8 +180,8 @@ void write_blob()
       const size_t size = blob->entity_count();
 
       // Get the global size and offset of this blob on this rank...
-      size_t gl_size  = blob->get_property("global_size").get_int();
-      size_t p_offset = blob->get_property("_processor_offset").get_int();
+      size_t gl_size  = blob->get_optional_property("global_size", size);
+      size_t p_offset = blob->get_optional_property("_processor_offset", 0);
 
       // Get the fields that are defined on this blob...
       Ioss::NameList fields;
@@ -268,12 +268,8 @@ bool read_blob()
       // Get the global size and offset of this blob on this rank...
       // These are only needed for the comparison, not needed to just read data.
       size_t size     = blob->entity_count();
-      size_t gl_size  = size;
-      size_t p_offset = 0;
-      if (par_size > 1) {
-        gl_size  = blob->get_property("global_size").get_int(); // Just used to generate data...
-        p_offset = blob->get_property("_processor_offset").get_int(); // Just used to generate data...
-      }
+      size_t gl_size  = blob->get_optional_property("global_size", size);
+      size_t p_offset = blob->get_optional_property("_processor_offset", 0);
 
       const auto &fields = all_fields[idx];
       for (const auto &field : fields) {
