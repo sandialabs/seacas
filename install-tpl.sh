@@ -248,7 +248,11 @@ else
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd szip-${szip_version}
-            ./configure --prefix=${INSTALL_PATH}
+            mkdir build
+            cd build
+
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
+
             if [[ $? != 0 ]]
             then
 		echo 1>&2 ${txtred}couldn\'t configure szip. exiting.${txtrst}
@@ -349,10 +353,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
-        if [ -d build ]
-        then
-            rm -rf build
-        fi
+        rm -rf build
         mkdir build
         cd build
 	CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
@@ -440,10 +441,7 @@ then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
 #	git checkout v4.7.4
-        if [ -d build ]
-        then
-            rm -rf build
-        fi
+        rm -rf build
         mkdir build
         cd build
         CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
@@ -652,10 +650,7 @@ then
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd kokkos-${kokkos_version}
-            if [ -d build ]
-            then
-                rm -rf build
-            fi
+            rm -rf build
             mkdir build
             cd build
             CUDA=${CUDA} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash ../../runcmake.sh
@@ -697,10 +692,7 @@ then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2
 	    git checkout v2.5.0
-            if [ -d build ]
-            then
-                rm -rf build
-            fi
+            rm -rf build
             mkdir build
             cd build
             SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
@@ -742,10 +734,7 @@ then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd googletest
 	    git checkout release-1.8.1
-            if [ -d build ]
-            then
-                rm -rf build
-            fi
+            rm -rf build
             mkdir build
             cd build
             SHARED=${SHARED} DEBUG=${DEBUG} bash -x ../../runcmake.sh
