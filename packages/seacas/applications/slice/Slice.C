@@ -243,7 +243,7 @@ namespace {
     auto & ebs   = region.get_element_blocks();
     for (const auto &eb : ebs) {
       size_t element_count = eb->entity_count();
-      size_t element_nodes = eb->get_property("topology_node_count").get_int();
+      size_t element_nodes = eb->topology()->number_nodes();
       sum += element_count * element_nodes;
       count += element_count;
     }
@@ -257,7 +257,7 @@ namespace {
     for (const auto &eb : ebs) {
       eb->get_field_data("connectivity_raw", connectivity);
       size_t element_count = eb->entity_count();
-      size_t element_nodes = eb->get_property("topology_node_count").get_int();
+      size_t element_nodes = eb->topology()->number_nodes();
 
       size_t el = 0;
       for (size_t j = 0; j < element_count; j++) {
@@ -1191,13 +1191,13 @@ namespace {
     for (size_t b = 0; b < block_count; b++) {
       std::vector<std::vector<INT>> connectivity(processor_count);
       size_t                        element_count = ebs[b]->entity_count();
-      size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
+      size_t element_nodes = ebs[b]->topology()->number_nodes();
       size_t block_id      = ebs[b]->get_property("id").get_int();
 
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         const auto &pebs           = proc_region[p]->get_element_blocks();
         size_t      pelement_count = pebs[b]->entity_count();
-        size_t      pelement_nodes = pebs[b]->get_property("topology_node_count").get_int();
+        size_t      pelement_nodes = pebs[b]->topology()->number_nodes();
         connectivity[p].reserve(pelement_count * pelement_nodes); // Use reserve, not resize
       }
 
@@ -1323,7 +1323,7 @@ namespace {
     for (size_t b = 0; b < block_count; b++) {
       std::vector<INT> glob_conn;
       size_t           element_count = ebs[b]->entity_count();
-      size_t           element_nodes = ebs[b]->get_property("topology_node_count").get_int();
+      size_t           element_nodes = ebs[b]->topology()->number_nodes();
       size_t           block_id      = ebs[b]->get_property("id").get_int();
 
       // Do a 'partial_count' elements at a time...
