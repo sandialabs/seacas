@@ -253,61 +253,65 @@ namespace {
 
   void update_processor_offset_property(Ioss::Region *region, const Ioex::Mesh &mesh)
   {
-  const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
-  if (!node_blocks.empty()) {
-    node_blocks[0]->property_add(Ioss::Property("_processor_offset", mesh.nodeblocks[0].procOffset));
-  }
-  const Ioss::EdgeBlockContainer &edge_blocks = region->get_edge_blocks();
-  for (size_t i = 0; i < edge_blocks.size(); i++) {
-    edge_blocks[i]->property_add(Ioss::Property("_processor_offset", mesh.edgeblocks[i].procOffset));
-  }
-  const Ioss::FaceBlockContainer &face_blocks = region->get_face_blocks();
-  for (size_t i = 0; i < face_blocks.size(); i++) {
-    face_blocks[i]->property_add(Ioss::Property("_processor_offset", mesh.faceblocks[i].procOffset));
-  }
-
-  int64_t                            offset         = 0; // Offset into global element map...
-  const Ioss::ElementBlockContainer &element_blocks = region->get_element_blocks();
-  for (size_t i = 0; i < element_blocks.size(); i++) {
-    element_blocks[i]->property_add(Ioss::Property("global_map_offset", offset));
-    offset += mesh.elemblocks[i].entityCount;
-    element_blocks[i]->property_add(
-        Ioss::Property("_processor_offset", mesh.elemblocks[i].procOffset));
-  }
-
-  const Ioss::NodeSetContainer &nodesets = region->get_nodesets();
-  for (size_t i = 0; i < nodesets.size(); i++) {
-    nodesets[i]->property_add(Ioss::Property("_processor_offset", mesh.nodesets[i].procOffset));
-  }
-  const Ioss::EdgeSetContainer &edgesets = region->get_edgesets();
-  for (size_t i = 0; i < edgesets.size(); i++) {
-    edgesets[i]->property_add(Ioss::Property("_processor_offset", mesh.edgesets[i].procOffset));
-  }
-  const Ioss::FaceSetContainer &facesets = region->get_facesets();
-  for (size_t i = 0; i < facesets.size(); i++) {
-    facesets[i]->property_add(Ioss::Property("_processor_offset", mesh.facesets[i].procOffset));
-  }
-  const Ioss::ElementSetContainer &elementsets = region->get_elementsets();
-  for (size_t i = 0; i < facesets.size(); i++) {
-    elementsets[i]->property_add(Ioss::Property("_processor_offset", mesh.elemsets[i].procOffset));
-  }
-
-  const Ioss::SideSetContainer &ssets = region->get_sidesets();
-  for (size_t i = 0; i < ssets.size(); i++) {
-    ssets[i]->property_add(Ioss::Property("_processor_offset", mesh.sidesets[i].procOffset));
-    ssets[i]->property_add(Ioss::Property("processor_df_offset", mesh.sidesets[i].dfProcOffset));
-
-    // Propagate down to owned sideblocks...
-    const Ioss::SideBlockContainer &side_blocks = ssets[i]->get_side_blocks();
-    for (auto &block : side_blocks) {
-      block->property_add(Ioss::Property("_processor_offset", mesh.sidesets[i].procOffset));
-      block->property_add(Ioss::Property("processor_df_offset", mesh.sidesets[i].dfProcOffset));
+    const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
+    if (!node_blocks.empty()) {
+      node_blocks[0]->property_add(
+          Ioss::Property("_processor_offset", mesh.nodeblocks[0].procOffset));
     }
-  }
-  const auto &blobs = region->get_blobs();
-  for (size_t i = 0; i < blobs.size(); i++) {
-    blobs[i]->property_add(Ioss::Property("_processor_offset", mesh.blobs[i].procOffset));
-  }
+    const Ioss::EdgeBlockContainer &edge_blocks = region->get_edge_blocks();
+    for (size_t i = 0; i < edge_blocks.size(); i++) {
+      edge_blocks[i]->property_add(
+          Ioss::Property("_processor_offset", mesh.edgeblocks[i].procOffset));
+    }
+    const Ioss::FaceBlockContainer &face_blocks = region->get_face_blocks();
+    for (size_t i = 0; i < face_blocks.size(); i++) {
+      face_blocks[i]->property_add(
+          Ioss::Property("_processor_offset", mesh.faceblocks[i].procOffset));
+    }
+
+    int64_t                            offset         = 0; // Offset into global element map...
+    const Ioss::ElementBlockContainer &element_blocks = region->get_element_blocks();
+    for (size_t i = 0; i < element_blocks.size(); i++) {
+      element_blocks[i]->property_add(Ioss::Property("global_map_offset", offset));
+      offset += mesh.elemblocks[i].entityCount;
+      element_blocks[i]->property_add(
+          Ioss::Property("_processor_offset", mesh.elemblocks[i].procOffset));
+    }
+
+    const Ioss::NodeSetContainer &nodesets = region->get_nodesets();
+    for (size_t i = 0; i < nodesets.size(); i++) {
+      nodesets[i]->property_add(Ioss::Property("_processor_offset", mesh.nodesets[i].procOffset));
+    }
+    const Ioss::EdgeSetContainer &edgesets = region->get_edgesets();
+    for (size_t i = 0; i < edgesets.size(); i++) {
+      edgesets[i]->property_add(Ioss::Property("_processor_offset", mesh.edgesets[i].procOffset));
+    }
+    const Ioss::FaceSetContainer &facesets = region->get_facesets();
+    for (size_t i = 0; i < facesets.size(); i++) {
+      facesets[i]->property_add(Ioss::Property("_processor_offset", mesh.facesets[i].procOffset));
+    }
+    const Ioss::ElementSetContainer &elementsets = region->get_elementsets();
+    for (size_t i = 0; i < facesets.size(); i++) {
+      elementsets[i]->property_add(
+          Ioss::Property("_processor_offset", mesh.elemsets[i].procOffset));
+    }
+
+    const Ioss::SideSetContainer &ssets = region->get_sidesets();
+    for (size_t i = 0; i < ssets.size(); i++) {
+      ssets[i]->property_add(Ioss::Property("_processor_offset", mesh.sidesets[i].procOffset));
+      ssets[i]->property_add(Ioss::Property("processor_df_offset", mesh.sidesets[i].dfProcOffset));
+
+      // Propagate down to owned sideblocks...
+      const Ioss::SideBlockContainer &side_blocks = ssets[i]->get_side_blocks();
+      for (auto &block : side_blocks) {
+        block->property_add(Ioss::Property("_processor_offset", mesh.sidesets[i].procOffset));
+        block->property_add(Ioss::Property("processor_df_offset", mesh.sidesets[i].dfProcOffset));
+      }
+    }
+    const auto &blobs = region->get_blobs();
+    for (size_t i = 0; i < blobs.size(); i++) {
+      blobs[i]->property_add(Ioss::Property("_processor_offset", mesh.blobs[i].procOffset));
+    }
   }
 } // namespace
 
@@ -2662,8 +2666,8 @@ int64_t ParallelDatabaseIO::write_attribute_field(ex_entity_type type, const Ios
   assert(offset - 1 + field.raw_storage()->component_count() <=
          ge->get_property("attribute_count").get_int());
 
-  size_t proc_offset = ge->get_optional_property("_processor_offset", 0);
-  ssize_t file_count = ge->get_optional_property("locally_owned_count", num_entity);
+  size_t  proc_offset = ge->get_optional_property("_processor_offset", 0);
+  ssize_t file_count  = ge->get_optional_property("locally_owned_count", num_entity);
 
   Ioss::Field::BasicType ioss_type = field.get_type();
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
@@ -3321,7 +3325,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const 
   size_t num_to_get = field.verify(data_size);
 
   size_t proc_offset = nb->get_optional_property("_processor_offset", 0);
-  size_t file_count =  nb->get_optional_property("locally_owned_count", num_to_get);
+  size_t file_count  = nb->get_optional_property("locally_owned_count", num_to_get);
 
   Ioss::Field::RoleType role = field.get_role();
 
@@ -3588,7 +3592,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
   Ioss::Field::RoleType role             = field.get_role();
 
   size_t proc_offset = eb->get_optional_property("_processor_offset", 0);
-  size_t file_count = eb->get_optional_property("locally_owned_count", num_to_get);
+  size_t file_count  = eb->get_optional_property("locally_owned_count", num_to_get);
 
   if (role == Ioss::Field::MESH) {
     // Handle the MESH fields required for an ExodusII file model.
@@ -4050,7 +4054,7 @@ void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */,
 
       // Write the variable...
       size_t proc_offset = nb->get_optional_property("_processor_offset", 0);
-      size_t file_count =  nb->get_optional_property("locally_owned_count", num_out);
+      size_t file_count  = nb->get_optional_property("locally_owned_count", num_out);
 
       check_node_owning_processor_data(nodeOwningProcessor, file_count);
       filter_owned_nodes(nodeOwningProcessor, myProcessor, temp.data());
@@ -4154,7 +4158,7 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
 
       // Write the variable...
       size_t proc_offset = ge->get_optional_property("_processor_offset", 0);
-      size_t file_count =  ge->get_optional_property("locally_owned_count", count);
+      size_t file_count  = ge->get_optional_property("locally_owned_count", count);
 
       int64_t id = Ioex::get_id(ge, type, &ids_);
       int     ierr;
@@ -4203,7 +4207,7 @@ int64_t ParallelDatabaseIO::put_Xset_field_internal(ex_entity_type type, const I
     std::vector<double>  dbldata;
 
     size_t proc_offset = ns->get_optional_property("_processor_offset", 0);
-    size_t file_count =  ns->get_optional_property("locally_owned_count", num_to_get);
+    size_t file_count  = ns->get_optional_property("locally_owned_count", num_to_get);
 
     if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
       // Map node id from global node id to local node id.
@@ -4589,7 +4593,6 @@ void ParallelDatabaseIO::write_meta_data()
   output_node_map();
 
   output_other_meta_data();
-
 }
 
 void ParallelDatabaseIO::create_implicit_global_map() const

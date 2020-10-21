@@ -121,9 +121,9 @@ namespace {
 
       if (old_ge != nullptr &&
           !(old_ge->type() == Ioss::SIDEBLOCK || old_ge->type() == Ioss::SIDESET)) {
-        std::string filename = region->get_database()->get_filename();
-        int64_t     id1      = entity->get_optional_property(id_str(), 0);
-        int64_t     id2      = old_ge->get_optional_property(id_str(), 0);
+        std::string        filename = region->get_database()->get_filename();
+        int64_t            id1      = entity->get_optional_property(id_str(), 0);
+        int64_t            id2      = old_ge->get_optional_property(id_str(), 0);
         std::ostringstream errmsg;
         fmt::print(errmsg,
                    "ERROR: There are multiple blocks or sets with the same name defined in the "
@@ -1536,8 +1536,8 @@ namespace Ioss {
       if (old_ge != nullptr && ge != old_ge) {
         if (!((old_ge->type() == SIDEBLOCK && ge->type() == SIDESET) ||
               (ge->type() == SIDEBLOCK && old_ge->type() == SIDESET))) {
-          ssize_t old_id = old_ge->get_optional_property(id_str(), -1);
-          ssize_t new_id = ge->get_optional_property(id_str(), -1);
+          ssize_t            old_id = old_ge->get_optional_property(id_str(), -1);
+          ssize_t            new_id = ge->get_optional_property(id_str(), -1);
           std::ostringstream errmsg;
           fmt::print(errmsg,
                      "\n\nERROR: Duplicate names detected.\n"

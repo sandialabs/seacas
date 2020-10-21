@@ -563,7 +563,7 @@ namespace Ioex {
         assembly.name = new char[max_name_length + 1];
       }
 
-      int                      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
+      int ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -579,8 +579,7 @@ namespace Ioex {
       }
 
       for (const auto &assembly : assemblies) {
-        Ioss::Assembly *assem =
-            new Ioss::Assembly(get_region()->get_database(), assembly.name);
+        Ioss::Assembly *assem = new Ioss::Assembly(get_region()->get_database(), assembly.name);
         assem->property_add(Ioss::Property("id", assembly.id));
         get_region()->add(assem);
       }
@@ -622,8 +621,8 @@ namespace Ioex {
         }
       }
       for (auto &assembly : assemblies) {
-	delete [] assembly.entity_list;
-	delete [] assembly.name;
+        delete[] assembly.entity_list;
+        delete[] assembly.name;
       }
     }
   }

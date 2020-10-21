@@ -175,7 +175,6 @@ namespace Ioss {
     void property_update(const std::string &property, int64_t value) const;
     void property_update(const std::string &property, const std::string &value) const;
 
-
     // ========================================================================
     //                                FIELDS
     // ========================================================================
@@ -336,7 +335,8 @@ inline Ioss::Property Ioss::GroupingEntity::get_property(const std::string &prop
   return properties.get(property_name);
 }
 
-inline int64_t Ioss::GroupingEntity::get_optional_property(const std::string &property_name, int64_t optional_value) const
+inline int64_t Ioss::GroupingEntity::get_optional_property(const std::string &property_name,
+                                                           int64_t            optional_value) const
 {
   return properties.get_optional(property_name, optional_value);
 }
