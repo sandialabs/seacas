@@ -74,6 +74,7 @@ before_install:
   - sudo apt-get -y install python3
   - cmake --version
   - GNU_PARALLEL=OFF ./install-tpl.sh > hdf5-build.out
+  - ls -l lib
 
 before_script:
 
