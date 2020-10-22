@@ -909,6 +909,8 @@ int Internals::write_meta_data(Mesh &mesh)
     maximumNameLength = get_max_name_length(mesh.facesets, maximumNameLength);
     maximumNameLength = get_max_name_length(mesh.elemsets, maximumNameLength);
     maximumNameLength = get_max_name_length(mesh.sidesets, maximumNameLength);
+    maximumNameLength = get_max_name_length(mesh.blobs, maximumNameLength);
+    maximumNameLength = get_max_name_length(mesh.assemblies, maximumNameLength);
 
     Redefine the_database(exodusFilePtr);
     // Set the database to NOFILL mode.  Only writes values we want written...
@@ -1915,7 +1917,6 @@ int Internals::put_metadata(const std::vector<Blob> &blobs)
     return (EX_FATAL);
   }
 
-  size_t max_name_length = 0;
   for (const auto &blob : blobs) {
     char *numentryptr = DIM_NUM_VALUES_BLOB(blob.id);
 
@@ -1964,11 +1965,7 @@ int Internals::put_metadata(const std::vector<Blob> &blobs)
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
-    if (blob.name.length() > max_name_length) {
-      max_name_length = blob.name.length();
-    }
   }
-  ex__update_max_name_length(exodusFilePtr, max_name_length);
   return (EX_NOERR);
 }
 
@@ -2762,13 +2759,8 @@ int Internals::put_non_define_data(const std::vector<Blob> &blobs)
 
 int Internals::put_non_define_data(const std::vector<Assembly> &assemblies)
 {
-  size_t max_name_length = 0;
   for (const auto &assembly : assemblies) {
     int status = EX_NOERR;
-    if (assembly.name.size() > max_name_length) {
-      max_name_length = assembly.name.size();
-    }
-
     if (!assembly.memberIdList.empty()) {
       int entlst_id = 0;
       if ((status = nc_inq_varid(exodusFilePtr, VAR_ENTITY_ASSEMBLY(assembly.id), &entlst_id)) !=
@@ -2790,7 +2782,6 @@ int Internals::put_non_define_data(const std::vector<Assembly> &assemblies)
       }
     }
   }
-  ex__update_max_name_length(exodusFilePtr, max_name_length);
   return EX_NOERR;
 }
 
