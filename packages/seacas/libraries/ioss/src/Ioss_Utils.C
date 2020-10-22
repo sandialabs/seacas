@@ -979,10 +979,7 @@ size_t Ioss::Utils::get_hwm_memory_info()
 
 bool Ioss::Utils::block_is_omitted(Ioss::GroupingEntity *block)
 {
-  bool omitted = false;
-  if (block->property_exists("omitted")) {
-    omitted = (block->get_property("omitted").get_int() == 1);
-  }
+  bool omitted = block->get_optional_property("omitted", 0) == 1;
   return omitted;
 }
 

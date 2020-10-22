@@ -200,11 +200,8 @@ namespace {
     fmt::print(out_stream, "];\n");
 
     // Get number of timesteps...
-    int num_steps = 0;
-    if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
-      num_steps = region.get_property("state_count").get_int();
-    }
-    else {
+    int num_steps = region.get_optional_property("state_count", 0);
+    if (num_steps == 0) {
       fmt::print(out_stream, "GENESIS file -- no time steps written\n");
       return false;
     }

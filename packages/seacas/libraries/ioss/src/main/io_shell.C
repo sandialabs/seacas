@@ -257,11 +257,7 @@ namespace {
       options.reverse           = interFace.reverse;
       options.add_proc_id       = interFace.add_processor_id_field;
 
-      size_t ts_count = 0;
-      if (region.property_exists("state_count") &&
-          region.get_property("state_count").get_int() > 0) {
-        ts_count = region.get_property("state_count").get_int();
-      }
+      size_t ts_count = region.get_optional_property("state_count", 0);
 
       int flush_interval = interFace.flush_interval; // Default is zero -- do not flush until end
       properties.add(Ioss::Property("FLUSH_INTERVAL", flush_interval));

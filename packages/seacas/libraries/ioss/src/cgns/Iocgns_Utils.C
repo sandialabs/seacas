@@ -852,11 +852,7 @@ void Iocgns::Utils::output_assembly(int file_ptr, const Ioss::Assembly *assembly
   int fam  = 0;
   CGERR(cg_family_write(file_ptr, base, assembly->name().c_str(), &fam));
 
-  int64_t id = 0;
-  if (assembly->property_exists("id")) {
-    id = assembly->get_property("id").get_int();
-  }
-
+  int64_t id = assembly->get_optional_property("id", 0);
   CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
   CGERR(cg_descriptor_write("FamVC_TypeId", "0"));
   CGERR(cg_descriptor_write("FamVC_TypeName", "Unspecified"));
@@ -1045,10 +1041,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       bocotype = (CG_BCType_t)ss->get_property("bc_type").get_int();
     }
 
-    int64_t id = fam;
-    if (ss->property_exists("id")) {
-      id = ss->get_property("id").get_int();
-    }
+    int64_t id = ss->get_optional_property("id", fam);
 
     CGERR(cg_fambc_write(file_ptr, base, fam, "FamBC", bocotype, &bc_index));
     CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));

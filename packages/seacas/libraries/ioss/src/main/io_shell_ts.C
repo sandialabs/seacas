@@ -532,8 +532,8 @@ namespace {
         dbi->progress("DEFINING TRANSIENT FIELDS ... ");
       }
 
-      if (region.property_exists("state_count") &&
-          region.get_property("state_count").get_int() > 0) {
+      int step_count = region.get_optional_property("state_count", 0);
+      if (step_count > 0) {
         if (!interFace.debug) {
           DO_OUTPUT << "\n Number of time steps on database     =" << std::setw(12)
                     << region.get_property("state_count").get_int() << "\n\n";
@@ -609,8 +609,6 @@ namespace {
       output_region.begin_mode(Ioss::STATE_TRANSIENT);
       // Get the timesteps from the input database.  Step through them
       // and transfer fields to output database...
-
-      int step_count = region.get_property("state_count").get_int();
 
       for (int istep = 1; istep <= step_count; istep++) {
         double time = region.get_state_time(istep);
