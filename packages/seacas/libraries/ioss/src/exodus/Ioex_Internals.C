@@ -4260,6 +4260,7 @@ namespace {
       return EX_NOERR;
     }
 
+    int         sixty_four_kb = 64 * 1024;
     int         dimid = 0;
     int         varid = 0;
     int         dim[2];
@@ -4290,10 +4291,13 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
-    ex__set_compact_storage(exoid, varid);
+    if (count * 4 < sixty_four_kb) {
+      ex__set_compact_storage(exoid, varid);
+    }
 
     // id array:
     int ids_type = get_type(exoid, EX_IDS_INT64_DB);
+    int ids_size = ids_type == NC_INT ? 4 : 8;
     status       = nc_def_var(exoid, id_var, ids_type, 1, dim, &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
@@ -4301,7 +4305,9 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
-    ex__set_compact_storage(exoid, varid);
+    if (count * ids_size < sixty_four_kb) {
+      ex__set_compact_storage(exoid, varid);
+    }
 
     // store property name as attribute of property array variable
     status = nc_put_att_text(exoid, varid, ATT_PROP_NAME, 3, "ID");
@@ -4312,7 +4318,6 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
-    ex__set_compact_storage(exoid, varid);
 
     if (name_var != nullptr) {
       dim[0] = dimid;
