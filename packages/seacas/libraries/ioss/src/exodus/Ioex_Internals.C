@@ -166,12 +166,7 @@ NodeBlock::NodeBlock(const Ioss::NodeBlock &other)
 
   id          = other.get_optional_property("id", 1);
   entityCount = other.entity_count();
-  if (other.property_exists("locally_owned_count")) {
-    localOwnedCount = other.get_property("locally_owned_count").get_int();
-  }
-  else {
-    localOwnedCount = entityCount;
-  }
+  localOwnedCount = other.get_optional_property("locally_owned_count", entityCount);
   attributeCount = other.get_property("attribute_count").get_int();
   procOffset     = 0;
 }
