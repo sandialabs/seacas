@@ -38,7 +38,7 @@ namespace Ioss {
     bool exists(const std::string &property_name) const;
 
     Property get(const std::string &property_name) const;
-    int64_t  get_optional(const std::string &property_name, int64_t optional_value = 0) const;
+    int64_t  get_optional(const std::string &property_name, int64_t optional_value) const;
 
     // Returns the names of all properties
     int describe(NameList *names) const;
