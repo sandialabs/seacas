@@ -166,7 +166,7 @@ namespace Ioss {
     void     property_erase(const std::string &property_name);
     bool     property_exists(const std::string &property_name) const;
     Property get_property(const std::string &property_name) const;
-    int64_t  get_optional_property(const std::string &property, int64_t optional_value = 0) const;
+    int64_t  get_optional_property(const std::string &property, int64_t optional_value) const;
     int      property_describe(NameList *names) const;
     int      property_describe(Ioss::Property::Origin origin, NameList *names) const;
     size_t   property_count() const;
