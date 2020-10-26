@@ -14,10 +14,7 @@
 #include <string>
 #include <utility>
 
-Ioss::PropertyManager::PropertyManager(const PropertyManager &from)
-    : m_properties(from.m_properties)
-{
-}
+Ioss::PropertyManager::PropertyManager(const PropertyManager &from) = default;
 
 Ioss::PropertyManager::~PropertyManager()
 {

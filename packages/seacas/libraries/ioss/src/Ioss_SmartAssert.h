@@ -56,7 +56,7 @@ class assert_context
   using string = std::string;
 
 public:
-  assert_context() : line_(0), level_(lvl_debug) {}
+  assert_context() : level_(lvl_debug) {}
 
   // where the assertion failed: file & line
   void set_file_line(const char *file, int line)
