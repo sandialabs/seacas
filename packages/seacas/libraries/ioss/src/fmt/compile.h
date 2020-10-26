@@ -444,7 +444,8 @@ template <typename Char, typename T, int N> struct spec_field {
   OutputIt format(OutputIt out, const Args&... args) const {
     // This ensures that the argument type is convertile to `const T&`.
     const T& arg = get<N>(args...);
-    const auto& vargs = make_format_args(args...);
+    const auto& vargs =
+        make_format_args<basic_format_context<OutputIt, Char>>(args...);
     basic_format_context<OutputIt, Char> ctx(out, vargs);
     return fmt.format(arg, ctx);
   }
@@ -666,10 +667,11 @@ OutputIt format_to(OutputIt out, const S&, const Args&... args) {
   return format_to(out, compiled, args...);
 }
 
-template <
-    typename OutputIt, typename CompiledFormat, typename... Args,
-    FMT_ENABLE_IF(detail::is_output_iterator<OutputIt>::value&& std::is_base_of<
-                  detail::basic_compiled_format, CompiledFormat>::value)>
+template <typename OutputIt, typename CompiledFormat, typename... Args,
+          FMT_ENABLE_IF(detail::is_output_iterator<
+                        OutputIt, typename CompiledFormat::char_type>::value&&
+                            std::is_base_of<detail::basic_compiled_format,
+                                            CompiledFormat>::value)>
 format_to_n_result<OutputIt> format_to_n(OutputIt out, size_t n,
                                          const CompiledFormat& cf,
                                          const Args&... args) {
