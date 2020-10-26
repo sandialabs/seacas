@@ -35,7 +35,7 @@ namespace {
   int zoltan_num_dim(void *data, int *ierr)
   {
     // Return dimensionality of coordinate data.
-    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+    auto *zdata = (Iocgns::DecompositionDataBase *)(data);
 
     *ierr = ZOLTAN_OK;
     return zdata->spatial_dimension();
@@ -44,7 +44,7 @@ namespace {
   int zoltan_num_obj(void *data, int *ierr)
   {
     // Return number of objects (element count) on this processor...
-    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+    auto *zdata = (Iocgns::DecompositionDataBase *)(data);
 
     *ierr = ZOLTAN_OK;
     return zdata->decomp_elem_count();
@@ -54,7 +54,7 @@ namespace {
                        ZOLTAN_ID_PTR lids, int wdim, float *wgts, int *ierr)
   {
     // Return list of object IDs, both local and global.
-    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+    auto *zdata = (Iocgns::DecompositionDataBase *)(data);
 
     // At the time this is called, we don't have much information
     // These routines are the ones that are developing that
@@ -76,7 +76,7 @@ namespace {
       std::iota(gids, gids + element_count, element_offset);
     }
     else if (ngid_ent == 2) {
-      int64_t *global_ids = (int64_t *)gids;
+      auto *global_ids = (int64_t *)gids;
       std::iota(global_ids, global_ids + element_count, element_offset);
     }
     else {
@@ -90,7 +90,7 @@ namespace {
                    int *ierr)
   {
     // Return coordinates for objects.
-    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+    auto *zdata = (Iocgns::DecompositionDataBase *)(data);
 
     std::copy(zdata->centroids().begin(), zdata->centroids().end(), &geom[0]);
 

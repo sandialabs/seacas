@@ -27,11 +27,10 @@ namespace Ioss {
 
   struct ZoneConnectivity
   {
-    ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
-                     int donor_zone, const Ioss::IJK_t p_transform, const Ioss::IJK_t range_beg,
-                     const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
-                     const Ioss::IJK_t donor_end, const Ioss::IJK_t owner_offset = IJK_t(),
-                     const Ioss::IJK_t donor_offset = IJK_t())
+    ZoneConnectivity(std::string name, int owner_zone, std::string donor_name, int donor_zone,
+                     Ioss::IJK_t p_transform, Ioss::IJK_t range_beg, Ioss::IJK_t range_end,
+                     Ioss::IJK_t donor_beg, Ioss::IJK_t donor_end,
+                     Ioss::IJK_t owner_offset = IJK_t(), Ioss::IJK_t donor_offset = IJK_t())
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
           m_ownerRangeEnd(std::move(range_end)), m_ownerOffset(std::move(owner_offset)),
@@ -43,10 +42,10 @@ namespace Ioss {
       m_isActive        = has_faces();
     }
 
-    ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
-                     int donor_zone, const Ioss::IJK_t p_transform, const Ioss::IJK_t range_beg,
-                     const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
-                     const Ioss::IJK_t donor_end, bool owns_nodes, bool from_decomp)
+    ZoneConnectivity(std::string name, int owner_zone, std::string donor_name, int donor_zone,
+                     Ioss::IJK_t p_transform, Ioss::IJK_t range_beg, Ioss::IJK_t range_end,
+                     Ioss::IJK_t donor_beg, Ioss::IJK_t donor_end, bool owns_nodes,
+                     bool from_decomp)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
           m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),

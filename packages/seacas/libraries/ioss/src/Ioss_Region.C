@@ -176,6 +176,7 @@ namespace {
     std::vector<size_t> hashes;
 
     size_t which = 1;
+    hashes.reserve(entities.size());
     for (const auto &entity : entities) {
       hashes.push_back(compute_hash(entity, which++));
     }
@@ -324,8 +325,7 @@ namespace Ioss {
    *
    */
   Region::Region(DatabaseIO *iodatabase, const std::string &my_name)
-      : GroupingEntity(iodatabase, my_name, 1), currentState(-1), stateCount(0),
-        modelDefined(false), transientDefined(false)
+      : GroupingEntity(iodatabase, my_name, 1)
   {
     SMART_ASSERT(iodatabase != nullptr);
     iodatabase->set_region(this);
@@ -1636,7 +1636,7 @@ namespace Ioss {
   {
     IOSS_FUNC_ENTER(m_);
     size_t size = aliases.size();
-    for (auto alias_pair : aliases_) {
+    for (const auto &alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
       if (base == my_name) {
@@ -2433,7 +2433,7 @@ namespace Ioss {
     // Iterate through list, [ returns <alias, base_entity_name> ], if
     // 'base_entity_name' is defined on the restart file, add 'alias' as
     // an alias for it...
-    for (auto alias_pair : aliases_) {
+    for (const auto &alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
       if (alias != base && to->get_entity(base) != nullptr) {
@@ -2482,7 +2482,7 @@ namespace Ioss {
    */
   void Region::synchronize_id_and_name(const Region *from, bool sync_attribute_field_names)
   {
-    for (auto alias_pair : aliases_) {
+    for (const auto &alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
 
@@ -2573,7 +2573,7 @@ namespace Ioss {
       }
     }
 
-    for (auto alias_pair : aliases_) {
+    for (const auto &alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
 
