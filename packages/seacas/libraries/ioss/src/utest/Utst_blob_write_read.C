@@ -253,8 +253,6 @@ bool read_blob()
     all_red_fields.push_back(red_fields);
   }
 
-  size_t par_size = dbi->util().parallel_size();
-
   bool diff = false;
   for (size_t step = 1; step <= ts_count; step++) {
     region.begin_state(step);
