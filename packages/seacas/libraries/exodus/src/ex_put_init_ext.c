@@ -116,8 +116,8 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
     int int_type = NC_INT;
     int int_size = 4;
     if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
-      int_type     = NC_INT64;
-      int int_size = 8;
+      int_type = NC_INT64;
+      int_size = 8;
     }
 
     if ((status = nc_def_var(exoid, id_array_dim_name, int_type, 1, dim, &varid)) != NC_NOERR) {
