@@ -54,10 +54,10 @@ namespace {
       auto mm = std::minmax_element(df.begin(), df.end());
       fmt::print("{}Distribution Factors: ", prefix);
       if (*mm.first == *mm.second) {
-        fmt::print("all values = {}\n", *mm.first);
+        fmt::print("all values = {:#}\n", *mm.first);
       }
       else {
-        fmt::print("minimum value = {}, maximum value = {}\n", *mm.first, *mm.second);
+        fmt::print("minimum value = {:#}, maximum value = {:#}\n", *mm.first, *mm.second);
       }
     }
   }
