@@ -890,7 +890,7 @@ void Iocgns::Utils::output_assembly(int file_ptr, const Ioss::Assembly *assembly
         // specifies what assembly they are in.  Currently, the way
         // CGNS represents assemblies limits membership to at most one
         // assembly.
-        Ioss::GroupingEntity *new_mem = const_cast<Ioss::GroupingEntity *>(mem);
+        auto *new_mem = const_cast<Ioss::GroupingEntity *>(mem);
         new_mem->property_add(Ioss::Property("assembly", assembly->name()));
       }
     }
@@ -1545,7 +1545,7 @@ int Iocgns::Utils::find_solution_index(int cgns_file_ptr, int base, int zone, in
         // Try to decode the step from the FlowSolution_t name.
         // If `db_name` does not have `Step` or `step` in name,
         // then don't search
-        if (strcasestr(db_name, "step") != NULL) {
+        if (strcasestr(db_name, "step") != nullptr) {
           int nstep = extract_trailing_int(db_name);
           if (nstep == step) {
             return i + 1;
@@ -2301,7 +2301,7 @@ void Iocgns::Utils::set_line_decomposition(int cgns_file_ptr, const std::string 
     CGCHECKNP(cg_family_read(cgns_file_ptr, base, family, name, &num_bc, &num_geo));
     if (num_bc > 0) {
       Ioss::Utils::fixup_name(name);
-      families.push_back(name);
+      families.emplace_back(name);
     }
   }
 
@@ -2691,7 +2691,7 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
       }
 
       std::vector<std::pair<int, Iocgns::StructuredZoneData *>> active;
-      active.push_back(std::make_pair(split_cnt, zone));
+      active.emplace_back(split_cnt, zone);
       do {
         assert(!active.empty());
         split_cnt = active.back().first;
@@ -2714,8 +2714,8 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
               new_zones.push_back(children.first);
               new_zones.push_back(children.second);
               new_zone_id += 2;
-              active.push_back(std::make_pair(split_cnt - max_power_2, children.second));
-              active.push_back(std::make_pair(max_power_2, children.first));
+              active.emplace_back(split_cnt - max_power_2, children.second);
+              active.emplace_back(max_power_2, children.first);
               num_active++;
             }
           }
@@ -2728,9 +2728,8 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
     }
   }
   else {
-    for (size_t i = 0; i < zones.size(); i++) {
-      auto zone       = zones[i];
-      int  num_active = 0;
+    for (auto zone : zones) {
+      int num_active = 0;
       if (zone->work() <= max_avg) {
         // This zone is already in `new_zones`; just skip doing anything else with it.
       }
@@ -2750,14 +2749,14 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
             new_zones.push_back(children.second);
             new_zone_id += 2;
             num_active++;
-            active.push_back(std::make_pair(split_cnt, children.second));
+            active.emplace_back(split_cnt, children.second);
           }
           else {
-            active.push_back(std::make_pair(split_cnt, zone));
+            active.emplace_back(split_cnt, zone);
           }
         }
         else {
-          active.push_back(std::make_pair(split_cnt, zone));
+          active.emplace_back(split_cnt, zone);
         }
 
         // The work remaining on this zone should be approximately
@@ -2787,8 +2786,8 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
                 new_zones.push_back(children.first);
                 new_zones.push_back(children.second);
                 new_zone_id += 2;
-                active.push_back(std::make_pair(split_cnt - max_power_2, children.second));
-                active.push_back(std::make_pair(max_power_2, children.first));
+                active.emplace_back(split_cnt - max_power_2, children.second);
+                active.emplace_back(max_power_2, children.first);
                 num_active++;
               }
             }

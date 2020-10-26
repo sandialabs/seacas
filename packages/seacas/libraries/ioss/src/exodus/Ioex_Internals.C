@@ -164,11 +164,11 @@ NodeBlock::NodeBlock(const Ioss::NodeBlock &other)
     name = other.name();
   }
 
-  id          = other.get_optional_property("id", 1);
-  entityCount = other.entity_count();
+  id              = other.get_optional_property("id", 1);
+  entityCount     = other.entity_count();
   localOwnedCount = other.get_optional_property("locally_owned_count", entityCount);
-  attributeCount = other.get_property("attribute_count").get_int();
-  procOffset     = 0;
+  attributeCount  = other.get_property("attribute_count").get_int();
+  procOffset      = 0;
 }
 
 NodeBlock &NodeBlock::operator=(const NodeBlock &other)
@@ -4251,9 +4251,9 @@ namespace {
       return EX_NOERR;
     }
 
-    int         sixty_four_kb = 64 * 1024;
-    int         dimid = 0;
-    int         varid = 0;
+    size_t      sixty_four_kb = 64 * 1024;
+    int         dimid         = 0;
+    int         varid         = 0;
     int         dim[2];
     int         namestrdim = 0;
     std::string errmsg;

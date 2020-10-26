@@ -244,9 +244,9 @@ namespace Iocgns {
       ratio = 1.0 / ratio;
     }
 
-    size_t ord0 = size_t((double)m_ordinal[0] * ratio + 0.5);
-    size_t ord1 = size_t((double)m_ordinal[1] * ratio + 0.5);
-    size_t ord2 = size_t((double)m_ordinal[2] * ratio + 0.5);
+    auto ord0 = size_t((double)m_ordinal[0] * ratio + 0.5);
+    auto ord1 = size_t((double)m_ordinal[1] * ratio + 0.5);
+    auto ord2 = size_t((double)m_ordinal[2] * ratio + 0.5);
 
     size_t work0 = ord0 * m_ordinal[1] * m_ordinal[2];
     size_t work1 = ord1 * m_ordinal[0] * m_ordinal[2];

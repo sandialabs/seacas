@@ -50,8 +50,8 @@ namespace Iocgns {
 
   struct ZoneBC
   {
-    ZoneBC(const std::string &bc_name, std::array<cgsize_t, 2> &point_range)
-        : name(bc_name), range_beg(point_range[0]), range_end(point_range[1])
+    ZoneBC(std::string bc_name, std::array<cgsize_t, 2> &point_range)
+        : name(std::move(bc_name)), range_beg(point_range[0]), range_end(point_range[1])
     {
     }
 

@@ -579,7 +579,7 @@ namespace Ioex {
       }
 
       for (const auto &assembly : assemblies) {
-        Ioss::Assembly *assem = new Ioss::Assembly(get_region()->get_database(), assembly.name);
+        auto *assem = new Ioss::Assembly(get_region()->get_database(), assembly.name);
         assem->property_add(Ioss::Property("id", assembly.id));
         get_region()->add(assem);
       }
@@ -664,7 +664,7 @@ namespace Ioex {
         blob->property_add(Ioss::Property("_processor_offset", (int64_t)offset));
         blob->property_add(Ioss::Property("global_size", (int64_t)bl.num_entry));
 #else
-        Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, bl.num_entry);
+        auto *blob = new Ioss::Blob(get_region()->get_database(), bl.name, bl.num_entry);
 #endif
         blob->property_add(Ioss::Property("id", bl.id));
         get_region()->add(blob);
@@ -1008,9 +1008,9 @@ namespace Ioex {
     Ioss::Field::BasicType ioss_type = field.get_type();
     assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
            ioss_type == Ioss::Field::INT64 || ioss_type == Ioss::Field::COMPLEX);
-    double * rvar   = static_cast<double *>(variables);
-    int *    ivar   = static_cast<int *>(variables);
-    int64_t *ivar64 = static_cast<int64_t *>(variables);
+    auto *rvar   = static_cast<double *>(variables);
+    auto *ivar   = static_cast<int *>(variables);
+    auto *ivar64 = static_cast<int64_t *>(variables);
 
     auto id = ge->get_optional_property("id", 0);
 
@@ -1089,9 +1089,9 @@ namespace Ioex {
     Ioss::Field::BasicType ioss_type = field.get_type();
     assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
            ioss_type == Ioss::Field::INT64);
-    double * rvar   = static_cast<double *>(variables);
-    int *    ivar   = static_cast<int *>(variables);
-    int64_t *i64var = static_cast<int64_t *>(variables);
+    auto *rvar   = static_cast<double *>(variables);
+    auto *ivar   = static_cast<int *>(variables);
+    auto *i64var = static_cast<int64_t *>(variables);
 
     // get number of components, cycle through each component
     // and add suffix to base 'field_name'.  Look up index
@@ -2468,7 +2468,7 @@ namespace Ioex {
         for (auto &block : side_blocks) {
           // Add  "*_offset" properties to specify at what offset
           // the data for this block appears in the containing set.
-          Ioss::SideBlock *new_block = const_cast<Ioss::SideBlock *>(block);
+          auto *new_block = const_cast<Ioss::SideBlock *>(block);
           new_block->property_add(Ioss::Property("set_offset", entity_count));
           new_block->property_add(Ioss::Property("set_df_offset", df_count));
 
@@ -2481,7 +2481,7 @@ namespace Ioex {
           entity_count += block->entity_count();
           df_count += block->get_property("distribution_factor_count").get_int();
         }
-        Ioss::SideSet *new_entity = const_cast<Ioss::SideSet *>(set);
+        auto *new_entity = const_cast<Ioss::SideSet *>(set);
         new_entity->property_add(Ioss::Property("entity_count", entity_count));
         new_entity->property_add(Ioss::Property("distribution_factor_count", df_count));
       }

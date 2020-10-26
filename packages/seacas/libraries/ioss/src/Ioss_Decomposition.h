@@ -13,7 +13,7 @@
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_PropertyManager.h>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <map>
 #include <string>
 #include <vector>

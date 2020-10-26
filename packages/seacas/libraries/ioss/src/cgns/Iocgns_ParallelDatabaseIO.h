@@ -14,11 +14,11 @@
 #include <Ioss_Map.h>        // for Map
 #include <Ioss_MeshType.h>
 #include <Ioss_State.h> // for State
+#include <cstddef>      // for size_t
+#include <cstdint>      // for int64_t
 #include <iostream>     // for ostream
 #include <memory>
-#include <stddef.h> // for size_t
-#include <stdint.h> // for int64_t
-#include <string>   // for string
+#include <string> // for string
 
 #include <cgns/Iocgns_DecompositionData.h>
 #include <cgns/Iocgns_Defines.h>
@@ -57,7 +57,7 @@ namespace Iocgns {
                        Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                        const Ioss::PropertyManager &props);
 
-    ~ParallelDatabaseIO();
+    ~ParallelDatabaseIO() override;
 
     const std::string get_format() const override { return "CGNS"; }
 
