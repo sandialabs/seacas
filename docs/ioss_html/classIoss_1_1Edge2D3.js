@@ -1,8 +1,8 @@
 var classIoss_1_1Edge2D3 =
 [
     [ "~Edge2D3", "classIoss_1_1Edge2D3.html#a0c52dcdaad375e3a97d519476c52f0d7", null ],
-    [ "Edge2D3", "classIoss_1_1Edge2D3.html#ae684bcf74a0332739b6278f80636faa4", null ],
     [ "Edge2D3", "classIoss_1_1Edge2D3.html#ab3a5977bf006ed0658c933ed18e10c7c", null ],
+    [ "Edge2D3", "classIoss_1_1Edge2D3.html#ae684bcf74a0332739b6278f80636faa4", null ],
     [ "edge_connectivity", "classIoss_1_1Edge2D3.html#abd91d20e8d4e5c1cdfeca0747cadaf0e", null ],
     [ "edge_type", "classIoss_1_1Edge2D3.html#a193a2e8d18ecb4be7eb6ae81134008c3", null ],
     [ "element_connectivity", "classIoss_1_1Edge2D3.html#a2bd838674c140282df5d2648886a7504", null ],

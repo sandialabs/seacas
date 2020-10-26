@@ -1,8 +1,8 @@
 var classIoss_1_1Edge4 =
 [
     [ "~Edge4", "classIoss_1_1Edge4.html#a79e960709e159e7db7497da40a7d3444", null ],
-    [ "Edge4", "classIoss_1_1Edge4.html#a1ff6719bb1436863314a3ad03d73b285", null ],
     [ "Edge4", "classIoss_1_1Edge4.html#af357e24ea0716778178446f522ccc7c6", null ],
+    [ "Edge4", "classIoss_1_1Edge4.html#a1ff6719bb1436863314a3ad03d73b285", null ],
     [ "edge_connectivity", "classIoss_1_1Edge4.html#a267e97fdb53e7059520949da8d70ced4", null ],
     [ "edge_type", "classIoss_1_1Edge4.html#a4d54f17da969ce51d6eb6a0e72d5d82e", null ],
     [ "element_connectivity", "classIoss_1_1Edge4.html#ae702157a305a00c360741698b08ba05c", null ],

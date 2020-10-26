@@ -97,9 +97,9 @@ $(document).ready(function(){initNavTree('classassert__context.html',''); initRe
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a397b3a2c5794902b6940b52e8d3f6cb1"><td class="memItemLeft" align="right" valign="top">typedef std::pair&lt; <a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a>, <a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a397b3a2c5794902b6940b52e8d3f6cb1">val_and_str</a></td></tr>
-<tr class="separator:a397b3a2c5794902b6940b52e8d3f6cb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a417ec21090a1c55b637eeb488cd02c7e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a417ec21090a1c55b637eeb488cd02c7e">vals_array</a> = std::vector&lt; <a class="el" href="classassert__context.html#a397b3a2c5794902b6940b52e8d3f6cb1">val_and_str</a> &gt;</td></tr>
+<tr class="memitem:add90187a00accc3b9dcbe827b651a82a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#add90187a00accc3b9dcbe827b651a82a">val_and_str</a> = std::pair&lt; <a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a>, <a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a> &gt;</td></tr>
+<tr class="separator:add90187a00accc3b9dcbe827b651a82a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a417ec21090a1c55b637eeb488cd02c7e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a417ec21090a1c55b637eeb488cd02c7e">vals_array</a> = std::vector&lt; <a class="el" href="classassert__context.html#add90187a00accc3b9dcbe827b651a82a">val_and_str</a> &gt;</td></tr>
 <tr class="separator:a417ec21090a1c55b637eeb488cd02c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -138,13 +138,13 @@ Private Types</h2></td></tr>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a145c17882d3547fb1aeabbd16baf5b0e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a145c17882d3547fb1aeabbd16baf5b0e">file_</a> {}</td></tr>
 <tr class="separator:a145c17882d3547fb1aeabbd16baf5b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a684d425ba921edd8eae2b3861736522f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a684d425ba921edd8eae2b3861736522f">line_</a></td></tr>
+<tr class="memitem:a684d425ba921edd8eae2b3861736522f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a684d425ba921edd8eae2b3861736522f">line_</a> {0}</td></tr>
 <tr class="separator:a684d425ba921edd8eae2b3861736522f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e45ead83962e1fc26c0cbd868609190"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a5e45ead83962e1fc26c0cbd868609190">expr_</a> {}</td></tr>
 <tr class="separator:a5e45ead83962e1fc26c0cbd868609190"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af08440cab73376c9822819ecfc920e78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classassert__context.html#a417ec21090a1c55b637eeb488cd02c7e">vals_array</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#af08440cab73376c9822819ecfc920e78">vals_</a> {}</td></tr>
 <tr class="separator:af08440cab73376c9822819ecfc920e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a085ac80280d0e2f0898d0e149d2a6fc6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a085ac80280d0e2f0898d0e149d2a6fc6">level_</a></td></tr>
+<tr class="memitem:a085ac80280d0e2f0898d0e149d2a6fc6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a085ac80280d0e2f0898d0e149d2a6fc6">level_</a> {<a class="el" href="Ioss__SmartAssert_8h.html#a06fc87d81c62e9abb8790b6e5713c55baa4a22485b46e3407434f1093e42867d4">lvl_debug</a>}</td></tr>
 <tr class="separator:a085ac80280d0e2f0898d0e149d2a6fc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2770004e73fb5c0fd55b63ebbd4049d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classassert__context.html#a2770004e73fb5c0fd55b63ebbd4049d4">msg_</a> {}</td></tr>
 <tr class="separator:a2770004e73fb5c0fd55b63ebbd4049d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,14 +172,14 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a397b3a2c5794902b6940b52e8d3f6cb1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a397b3a2c5794902b6940b52e8d3f6cb1">&#9670;&nbsp;</a></span>val_and_str</h2>
+<a id="add90187a00accc3b9dcbe827b651a82a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add90187a00accc3b9dcbe827b651a82a">&#9670;&nbsp;</a></span>val_and_str</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::pair&lt;<a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a>, <a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a>&gt; <a class="el" href="classassert__context.html#a397b3a2c5794902b6940b52e8d3f6cb1">assert_context::val_and_str</a></td>
+          <td class="memname">using <a class="el" href="classassert__context.html#add90187a00accc3b9dcbe827b651a82a">assert_context::val_and_str</a> =  std::pair&lt;<a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a>, <a class="el" href="classassert__context.html#aa5ac7d40fe79ff7bd3454645d5240cf2">string</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -193,7 +193,7 @@ Private Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classassert__context.html#a417ec21090a1c55b637eeb488cd02c7e">assert_context::vals_array</a> =  std::vector&lt;<a class="el" href="classassert__context.html#a397b3a2c5794902b6940b52e8d3f6cb1">val_and_str</a>&gt;</td>
+          <td class="memname">using <a class="el" href="classassert__context.html#a417ec21090a1c55b637eeb488cd02c7e">assert_context::vals_array</a> =  std::vector&lt;<a class="el" href="classassert__context.html#add90187a00accc3b9dcbe827b651a82a">val_and_str</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -582,7 +582,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int assert_context::level_</td>
+          <td class="memname">int assert_context::level_ {<a class="el" href="Ioss__SmartAssert_8h.html#a06fc87d81c62e9abb8790b6e5713c55baa4a22485b46e3407434f1093e42867d4">lvl_debug</a>}</td>
         </tr>
       </table>
   </td>
@@ -604,7 +604,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int assert_context::line_</td>
+          <td class="memname">int assert_context::line_ {0}</td>
         </tr>
       </table>
   </td>

@@ -101,8 +101,7 @@ $(document).ready(function(){initNavTree('structAssert.html',''); initResizable(
 <div class="dynheader">
 Collaboration diagram for Assert:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structAssert__coll__graph.svg" width="248" height="130"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structAssert__coll__graph.svg" width="248" height="130"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -156,8 +155,8 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
 Private Types</h2></td></tr>
-<tr class="memitem:a1ae311975c9ed1f4d3514502230233aa"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; int, <a class="el" href="structAssert.html#ab36604bbe4b03959d8c6fde0655428c6">assert_func</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAssert.html#a1ae311975c9ed1f4d3514502230233aa">handlers_collection</a></td></tr>
-<tr class="separator:a1ae311975c9ed1f4d3514502230233aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3232e8452049ec4464328e8b9f4bd3e1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAssert.html#a3232e8452049ec4464328e8b9f4bd3e1">handlers_collection</a> = std::map&lt; int, <a class="el" href="structAssert.html#ab36604bbe4b03959d8c6fde0655428c6">assert_func</a> &gt;</td></tr>
+<tr class="separator:a3232e8452049ec4464328e8b9f4bd3e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -168,7 +167,7 @@ Private Member Functions</h2></td></tr>
 Static Private Member Functions</h2></td></tr>
 <tr class="memitem:a6707f5538bb0bd13eed019ada6c375e9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structAssert.html#ab36604bbe4b03959d8c6fde0655428c6">assert_func</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAssert.html#a6707f5538bb0bd13eed019ada6c375e9">logger</a> ()</td></tr>
 <tr class="separator:a6707f5538bb0bd13eed019ada6c375e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d25d98d37ad3f261275039e17bce90a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structAssert.html#a1ae311975c9ed1f4d3514502230233aa">handlers_collection</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAssert.html#a5d25d98d37ad3f261275039e17bce90a">handlers</a> ()</td></tr>
+<tr class="memitem:a5d25d98d37ad3f261275039e17bce90a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structAssert.html#a3232e8452049ec4464328e8b9f4bd3e1">handlers_collection</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAssert.html#a5d25d98d37ad3f261275039e17bce90a">handlers</a> ()</td></tr>
 <tr class="separator:a5d25d98d37ad3f261275039e17bce90a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba605e9b8a9801b9b2ff951380c13ab0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structAssert.html#ab36604bbe4b03959d8c6fde0655428c6">assert_func</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAssert.html#aba605e9b8a9801b9b2ff951380c13ab0">get_handler</a> (int nLevel)</td></tr>
 <tr class="separator:aba605e9b8a9801b9b2ff951380c13ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -195,8 +194,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a1ae311975c9ed1f4d3514502230233aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ae311975c9ed1f4d3514502230233aa">&#9670;&nbsp;</a></span>handlers_collection</h2>
+<a id="a3232e8452049ec4464328e8b9f4bd3e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3232e8452049ec4464328e8b9f4bd3e1">&#9670;&nbsp;</a></span>handlers_collection</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -205,7 +204,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::map&lt;int, <a class="el" href="structAssert.html#ab36604bbe4b03959d8c6fde0655428c6">assert_func</a>&gt; <a class="el" href="structAssert.html#a1ae311975c9ed1f4d3514502230233aa">Assert::handlers_collection</a></td>
+          <td class="memname">using <a class="el" href="structAssert.html#a3232e8452049ec4464328e8b9f4bd3e1">Assert::handlers_collection</a> =  std::map&lt;int, <a class="el" href="structAssert.html#ab36604bbe4b03959d8c6fde0655428c6">assert_func</a>&gt;</td>
         </tr>
       </table>
   </td>
@@ -435,7 +434,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="structAssert.html#a1ae311975c9ed1f4d3514502230233aa">handlers_collection</a>&amp; Assert::handlers </td>
+          <td class="memname">static <a class="el" href="structAssert.html#a3232e8452049ec4464328e8b9f4bd3e1">handlers_collection</a>&amp; Assert::handlers </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

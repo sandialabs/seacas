@@ -1,7 +1,7 @@
 var structIoss_1_1ZoneConnectivity =
 [
-    [ "ZoneConnectivity", "structIoss_1_1ZoneConnectivity.html#acbc4ff26a62d30995e349b033ef9a0e3", null ],
-    [ "ZoneConnectivity", "structIoss_1_1ZoneConnectivity.html#add79ce95a8448d9a13490aa2ee999033", null ],
+    [ "ZoneConnectivity", "structIoss_1_1ZoneConnectivity.html#a1ff3047d92927c80ed455799812c19f8", null ],
+    [ "ZoneConnectivity", "structIoss_1_1ZoneConnectivity.html#aa4fbacc7655fb51ceacc7ab53ebd0e3f", null ],
     [ "ZoneConnectivity", "structIoss_1_1ZoneConnectivity.html#a374359cb8c91d73f57bcc2aa3970ee5d", null ],
     [ "get_range", "structIoss_1_1ZoneConnectivity.html#a8c5d5830acdf51cd180f50c2426fac29", null ],
     [ "get_shared_node_count", "structIoss_1_1ZoneConnectivity.html#a6c2f2742f6438ea43c28ec596211e1f5", null ],

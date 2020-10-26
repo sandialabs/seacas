@@ -1,7 +1,7 @@
 var structAssert =
 [
     [ "assert_func", "structAssert.html#ab36604bbe4b03959d8c6fde0655428c6", null ],
-    [ "handlers_collection", "structAssert.html#a1ae311975c9ed1f4d3514502230233aa", null ],
+    [ "handlers_collection", "structAssert.html#a3232e8452049ec4464328e8b9f4bd3e1", null ],
     [ "Assert", "structAssert.html#a1546fa240ed153e2c32c5d25c7e48520", null ],
     [ "Assert", "structAssert.html#adaa87581828d0263f25744cdded3dc04", null ],
     [ "~Assert", "structAssert.html#af9011a637bfaa99605af4b775be54e07", null ],
