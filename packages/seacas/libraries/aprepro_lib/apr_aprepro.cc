@@ -94,7 +94,7 @@ namespace SEAMS {
 
     if (!ap_options.include_file.empty()) {
       stateImmutable = true;
-      echo           = 0;
+      echo           = false;
       scanner->add_include_file(ap_options.include_file, true);
     }
 
@@ -140,7 +140,7 @@ namespace SEAMS {
 
     if (!ap_options.include_file.empty()) {
       stateImmutable = true;
-      echo           = 0;
+      echo           = false;
       stringScanner->add_include_file(ap_options.include_file, true);
     }
 
