@@ -63,7 +63,7 @@ Ioss::SideSet::SideSet(Ioss::DatabaseIO *io_database, const std::string &my_name
 Ioss::SideSet::SideSet(const Ioss::SideSet &other) : Ioss::GroupingEntity(other)
 {
   for (const auto &block : other.sideBlocks) {
-    Ioss::SideBlock *sb = new Ioss::SideBlock(*block);
+    auto *sb = new Ioss::SideBlock(*block);
     add(sb);
   }
 }

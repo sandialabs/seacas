@@ -32,10 +32,9 @@ namespace Ioss {
                      Ioss::IJK_t donor_beg, Ioss::IJK_t donor_end,
                      Ioss::IJK_t owner_offset = IJK_t(), Ioss::IJK_t donor_offset = IJK_t())
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-          m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
-          m_ownerRangeEnd(std::move(range_end)), m_ownerOffset(std::move(owner_offset)),
-          m_donorRangeBeg(std::move(donor_beg)), m_donorRangeEnd(std::move(donor_end)),
-          m_donorOffset(std::move(donor_offset)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
+          m_transform(p_transform), m_ownerRangeBeg(range_beg), m_ownerRangeEnd(range_end),
+          m_ownerOffset(owner_offset), m_donorRangeBeg(donor_beg), m_donorRangeEnd(donor_end),
+          m_donorOffset(donor_offset), m_ownerZone(owner_zone), m_donorZone(donor_zone)
     {
       assert(is_valid());
       m_ownsSharedNodes = m_ownerZone < m_donorZone || m_donorZone == -1;
@@ -47,10 +46,9 @@ namespace Ioss {
                      Ioss::IJK_t donor_beg, Ioss::IJK_t donor_end, bool owns_nodes,
                      bool from_decomp)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-          m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
-          m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
-          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
-          m_ownsSharedNodes(owns_nodes), m_fromDecomp(from_decomp)
+          m_transform(p_transform), m_ownerRangeBeg(range_beg), m_ownerRangeEnd(range_end),
+          m_donorRangeBeg(donor_beg), m_donorRangeEnd(donor_end), m_ownerZone(owner_zone),
+          m_donorZone(donor_zone), m_ownsSharedNodes(owns_nodes), m_fromDecomp(from_decomp)
     {
       // This constructor typically called from decomposition process.
       assert(is_valid());
