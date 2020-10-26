@@ -545,13 +545,13 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a02a90301a030cc48469ca1f9eec85a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa708c651db3d8b0fd56bad6c3b906703"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a089f9d23b46bc02131c42189f3cac2e6">StateTimeContainer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#aa708c651db3d8b0fd56bad6c3b906703">stateTimes</a></td></tr>
 <tr class="separator:aa708c651db3d8b0fd56bad6c3b906703"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5477c55cb002422eb5e890857c690c6e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a5477c55cb002422eb5e890857c690c6e">currentState</a></td></tr>
+<tr class="memitem:a5477c55cb002422eb5e890857c690c6e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a5477c55cb002422eb5e890857c690c6e">currentState</a> {-1}</td></tr>
 <tr class="separator:a5477c55cb002422eb5e890857c690c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa784dd58b6a1d52e39993aa0cc501bbe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#aa784dd58b6a1d52e39993aa0cc501bbe">stateCount</a></td></tr>
+<tr class="memitem:aa784dd58b6a1d52e39993aa0cc501bbe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#aa784dd58b6a1d52e39993aa0cc501bbe">stateCount</a> {0}</td></tr>
 <tr class="separator:aa784dd58b6a1d52e39993aa0cc501bbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e412bf98f5de4090e8de8f897dd73a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a4e412bf98f5de4090e8de8f897dd73a4">modelDefined</a></td></tr>
+<tr class="memitem:a4e412bf98f5de4090e8de8f897dd73a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a4e412bf98f5de4090e8de8f897dd73a4">modelDefined</a> {false}</td></tr>
 <tr class="separator:a4e412bf98f5de4090e8de8f897dd73a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a83a2dc8e982f149df10b16738f9c52"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a5a83a2dc8e982f149df10b16738f9c52">transientDefined</a></td></tr>
+<tr class="memitem:a5a83a2dc8e982f149df10b16738f9c52"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a5a83a2dc8e982f149df10b16738f9c52">transientDefined</a> {false}</td></tr>
 <tr class="separator:a5a83a2dc8e982f149df10b16738f9c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
@@ -3351,7 +3351,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Ioss::Region::currentState</td>
+          <td class="memname">int Ioss::Region::currentState {-1}</td>
         </tr>
       </table>
   </td>
@@ -3505,7 +3505,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool Ioss::Region::modelDefined</td>
+          <td class="memname">bool Ioss::Region::modelDefined {false}</td>
         </tr>
       </table>
   </td>
@@ -3593,7 +3593,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Ioss::Region::stateCount</td>
+          <td class="memname">int Ioss::Region::stateCount {0}</td>
         </tr>
       </table>
   </td>
@@ -3659,7 +3659,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool Ioss::Region::transientDefined</td>
+          <td class="memname">bool Ioss::Region::transientDefined {false}</td>
         </tr>
       </table>
   </td>
