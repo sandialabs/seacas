@@ -163,7 +163,7 @@ namespace Iocgns {
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                void *data, size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::SideBlock *fb, const Ioss::Field &field, void *data,
+    int64_t put_field_internal(const Ioss::SideBlock *sb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -194,7 +194,7 @@ namespace Iocgns {
 
     // ID Mapping functions.
     const Ioss::Map &get_map(entity_type type) const;
-    const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, int64_t file_offset,
+    const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entity_count, int64_t file_offset,
                              int64_t file_count, entity_type type) const;
 
     int64_t handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get,

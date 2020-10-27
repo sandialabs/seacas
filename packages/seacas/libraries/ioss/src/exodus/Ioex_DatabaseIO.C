@@ -200,9 +200,7 @@ namespace Ioex {
         if (abort_if_error) {
           IOSS_ERROR(errmsg);
         }
-        else {
-          Ioss::WARNING() << errmsg.str();
-        }
+        Ioss::WARNING() << errmsg.str();
         return false;
       }
       return true; // At least on this processor...
@@ -1149,7 +1147,7 @@ namespace Ioex {
       std::string save_type = X_type;
       std::string type =
           Ioss::Utils::fixup_type(X_type, nodes_per_X, spatialDimension - rank_offset);
-      if (local_X_count[iblk] == 0 && type == "") {
+      if (local_X_count[iblk] == 0 && type.empty()) {
         // For an empty block, exodus does not store the X
         // type information and returns "nullptr" If there are no
         // Xs on any processors for this block, it will have
@@ -1167,7 +1165,7 @@ namespace Ioex {
         }
       }
 
-      if (type == "null" || type == "") {
+      if (type == "null" || type.empty()) {
         // If we have no idea what the topology type for an empty
         // X block is, call it "unknown"
         type = "unknown";
@@ -1231,7 +1229,7 @@ namespace Ioex {
       // Maintain block order on output database...
       block->property_add(Ioss::Property("original_block_order", used_blocks++));
 
-      if (save_type != "null" && save_type != "") {
+      if (save_type != "null" && save_type.empty()) {
         block->property_update("original_topology_type", save_type);
       }
 
@@ -1269,7 +1267,7 @@ namespace Ioex {
       if (!blockOmissions.empty()) {
         for (const auto &name : blockOmissions) {
           auto block = get_region()->get_element_block(name);
-          if (block) {
+          if (block != nullptr) {
             block->property_add(Ioss::Property(std::string("omitted"), 1));
           }
         }
@@ -1662,7 +1660,7 @@ namespace Ioex {
               side_block_name = side_set_name;
             }
             else {
-              if (sid == "") {
+              if (sid.empty()) {
                 side_block_name = Ioss::Utils::encode_entity_name(side_block_name, id);
               }
               else {
@@ -1876,7 +1874,7 @@ void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string 
           filtered = Ioex::filter_node_list(active_node_index, nodeConnectivityStatus);
           set_params[ins].num_entry = active_node_index.size();
         }
-        auto Xset  = new T(this, Xset_name, set_params[ins].num_entry);
+        auto *Xset = new T(this, Xset_name, set_params[ins].num_entry);
         Xsets[ins] = Xset;
         Xset->property_add(Ioss::Property("id", id));
         Xset->property_add(Ioss::Property("guid", util().generate_guid(id)));
@@ -3421,7 +3419,7 @@ int64_t DatabaseIO::write_attribute_field(ex_entity_type type, const Ioss::Field
       for (int i = 0; i < comp_count; i++) {
         size_t offset = i;
         if (ioss_type == Ioss::Field::REAL) {
-          double *rdata = static_cast<double *>(data);
+          auto *rdata = static_cast<double *>(data);
           extract_data(local_data, rdata, num_entity, comp_count, offset);
         }
         else if (ioss_type == Ioss::Field::INTEGER) {
@@ -3490,7 +3488,7 @@ int64_t DatabaseIO::read_attribute_field(ex_entity_type type, const Ioss::Field 
       // then push that into the user-supplied data block...
       std::vector<double> local_data(num_entity);
       int                 comp_count = field.raw_storage()->component_count();
-      double *            rdata      = static_cast<double *>(data);
+      auto *              rdata      = static_cast<double *>(data);
       for (int i = 0; i < comp_count; i++) {
         int ierr = ex_get_one_attr(get_file_pointer(), type, id, offset + i, local_data.data());
         if (ierr < 0) {
@@ -3582,7 +3580,7 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
         }
       }
       else if (field.get_type() == Ioss::Field::REAL) {
-        double *rvar = static_cast<double *>(data);
+        auto *rvar = static_cast<double *>(data);
         for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
           rvar[j] = temp[k++];
         }
@@ -3657,7 +3655,7 @@ int64_t DatabaseIO::read_ss_transient_field(const Ioss::Field &field, int64_t id
       }
     }
     else if (field.get_type() == Ioss::Field::REAL) {
-      double *rvar = static_cast<double *>(variables);
+      auto *rvar = static_cast<double *>(variables);
       for (size_t k = 0; k < my_side_count; k++) {
         if (is_valid_side[k] == 1) {
           rvar[j] = temp[k];
@@ -3993,24 +3991,24 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
 
       if (role == Ioss::Field::MESH) {
         if (field.get_name() == "mesh_model_coordinates_x") {
-          double *rdata = static_cast<double *>(data);
-          int     ierr  = ex_put_coord(get_file_pointer(), rdata, nullptr, nullptr);
+          auto *rdata = static_cast<double *>(data);
+          int   ierr  = ex_put_coord(get_file_pointer(), rdata, nullptr, nullptr);
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
         }
 
         else if (field.get_name() == "mesh_model_coordinates_y") {
-          double *rdata = static_cast<double *>(data);
-          int     ierr  = ex_put_coord(get_file_pointer(), nullptr, rdata, nullptr);
+          auto *rdata = static_cast<double *>(data);
+          int   ierr  = ex_put_coord(get_file_pointer(), nullptr, rdata, nullptr);
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
         }
 
         else if (field.get_name() == "mesh_model_coordinates_z") {
-          double *rdata = static_cast<double *>(data);
-          int     ierr  = ex_put_coord(get_file_pointer(), nullptr, nullptr, rdata);
+          auto *rdata = static_cast<double *>(data);
+          int   ierr  = ex_put_coord(get_file_pointer(), nullptr, nullptr, rdata);
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
@@ -4033,7 +4031,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
           }
 
           // Cast 'data' to correct size -- double
-          double *rdata = static_cast<double *>(data);
+          auto *rdata = static_cast<double *>(data);
 
           size_t index = 0;
           for (size_t i = 0; i < num_to_get; i++) {
@@ -4695,7 +4693,7 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
   Ioss::Map *map       = nullptr;
   ssize_t    eb_offset = 0;
   if (ge->type() == Ioss::ELEMENTBLOCK) {
-    const Ioss::ElementBlock *elb = dynamic_cast<const Ioss::ElementBlock *>(ge);
+    const auto *elb = dynamic_cast<const Ioss::ElementBlock *>(ge);
     Ioss::Utils::check_dynamic_cast(elb);
     eb_offset = elb->get_offset();
     map       = &elemMap;

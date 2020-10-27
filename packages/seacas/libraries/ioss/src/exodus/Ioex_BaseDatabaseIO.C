@@ -316,7 +316,7 @@ namespace Ioex {
     return m_exodusFilePtr;
   }
 
-  bool BaseDatabaseIO::ok__(bool write_message, std::string *error_msg, int *bad_count) const
+  bool BaseDatabaseIO::ok__(bool write_message, std::string *error_message, int *bad_count) const
   {
     // For input, we try to open the existing file.
 
@@ -338,12 +338,13 @@ namespace Ioex {
     bool abort_if_error = false;
     bool is_ok;
     if (is_input()) {
-      is_ok = open_input_file(write_message, error_msg, bad_count, abort_if_error);
+      is_ok = open_input_file(write_message, error_message, bad_count, abort_if_error);
     }
     else {
       // See if file exists... Don't overwrite (yet) it it exists.
       bool overwrite = false;
-      is_ok = handle_output_file(write_message, error_msg, bad_count, overwrite, abort_if_error);
+      is_ok =
+          handle_output_file(write_message, error_message, bad_count, overwrite, abort_if_error);
       // Close all open files...
       if (m_exodusFilePtr >= 0) {
         ex_close(m_exodusFilePtr);
@@ -392,9 +393,7 @@ namespace Ioex {
                  get_filename());
       IOSS_ERROR(errmsg);
     }
-    else {
-      success = true;
-    }
+    success = true;
     return success;
   }
 
@@ -422,10 +421,8 @@ namespace Ioex {
                    get_filename());
         IOSS_ERROR(errmsg);
       }
-      else {
-        m_exodusFilePtr = exoid;
-        success         = true;
-      }
+      m_exodusFilePtr = exoid;
+      success         = true;
     }
     return success;
   }
@@ -440,7 +437,7 @@ namespace Ioex {
 
     size_t num_qa_records = qaRecords.size() / 4;
 
-    auto qa = new qa_element[num_qa_records + 1];
+    auto *qa = new qa_element[num_qa_records + 1];
     for (size_t i = 0; i < num_qa_records + 1; i++) {
       for (int j = 0; j < 4; j++) {
         qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
@@ -945,7 +942,7 @@ namespace Ioex {
   namespace {
     // common
     template <typename T>
-    void generate_block_truth_table(VariableNameMap &variables, Ioss::IntVector &truth_table,
+    void generate_block_truth_table(const VariableNameMap &variables, Ioss::IntVector &truth_table,
                                     std::vector<T *> &blocks, char field_suffix_separator)
     {
       size_t block_count = blocks.size();
@@ -1596,34 +1593,34 @@ namespace Ioex {
 
       const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
       assert(node_blocks.size() <= 1);
-      internal_write_results_metadata(EX_NODE_BLOCK, node_blocks, glob_index);
+      internal_write_results_metadata(EX_NODE_BLOCK, node_blocks);
 
       const Ioss::EdgeBlockContainer &edge_blocks = get_region()->get_edge_blocks();
-      internal_write_results_metadata(EX_EDGE_BLOCK, edge_blocks, glob_index);
+      internal_write_results_metadata(EX_EDGE_BLOCK, edge_blocks);
 
       const Ioss::FaceBlockContainer &face_blocks = get_region()->get_face_blocks();
-      internal_write_results_metadata(EX_FACE_BLOCK, face_blocks, glob_index);
+      internal_write_results_metadata(EX_FACE_BLOCK, face_blocks);
 
       const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
-      internal_write_results_metadata(EX_ELEM_BLOCK, element_blocks, glob_index);
+      internal_write_results_metadata(EX_ELEM_BLOCK, element_blocks);
 
       const Ioss::NodeSetContainer &nodesets = get_region()->get_nodesets();
-      internal_write_results_metadata(EX_NODE_SET, nodesets, glob_index);
+      internal_write_results_metadata(EX_NODE_SET, nodesets);
 
       const Ioss::EdgeSetContainer &edgesets = get_region()->get_edgesets();
-      internal_write_results_metadata(EX_EDGE_SET, edgesets, glob_index);
+      internal_write_results_metadata(EX_EDGE_SET, edgesets);
 
       const Ioss::FaceSetContainer &facesets = get_region()->get_facesets();
-      internal_write_results_metadata(EX_FACE_SET, facesets, glob_index);
+      internal_write_results_metadata(EX_FACE_SET, facesets);
 
       const Ioss::ElementSetContainer &elementsets = get_region()->get_elementsets();
-      internal_write_results_metadata(EX_ELEM_SET, elementsets, glob_index);
+      internal_write_results_metadata(EX_ELEM_SET, elementsets);
 
       const auto &blobs = get_region()->get_blobs();
-      internal_write_results_metadata(EX_BLOB, blobs, glob_index);
+      internal_write_results_metadata(EX_BLOB, blobs);
 
       const auto &assemblies = get_region()->get_assemblies();
-      internal_write_results_metadata(EX_ASSEMBLY, assemblies, glob_index);
+      internal_write_results_metadata(EX_ASSEMBLY, assemblies);
 
       {
         int                           index    = 0;
@@ -1705,7 +1702,7 @@ namespace Ioex {
   // common
   template <typename T>
   void BaseDatabaseIO::internal_write_results_metadata(ex_entity_type   type,
-                                                       std::vector<T *> entities, int &glob_index)
+                                                       std::vector<T *> entities)
   {
     int index     = 0;
     int red_index = 0;
@@ -2664,9 +2661,7 @@ namespace {
               block->name(), field_name, __func__);
           IOSS_ERROR(errmsg);
         }
-        else {
-          attributes[i] = 1;
-        }
+        attributes[i] = 1;
       }
     }
 

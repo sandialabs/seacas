@@ -2184,8 +2184,9 @@ namespace Iocgns {
           CGCHECKM(cgp_field_write_data(get_file_pointer(), base, zone,
                                         m_currentCellCenterSolutionIndex, cgns_field, range_min,
                                         range_max, cgns_data.data()));
-          if (i == 0)
+          if (i == 0) {
             Utils::set_field_index(field, cgns_field, CG_CellCenter);
+          }
         }
       }
     }

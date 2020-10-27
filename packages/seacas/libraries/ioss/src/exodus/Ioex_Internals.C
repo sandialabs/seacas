@@ -1302,7 +1302,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
   }
   {
     struct ex__file_item *file = ex__find_file_item(exodusFilePtr);
-    if (file) {
+    if (file != nullptr) {
       file->time_varid = varid;
     }
   }
@@ -1892,7 +1892,7 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
 
     /* Increment assembly count */
     struct ex__file_item *file = ex__find_file_item(exodusFilePtr);
-    if (file) {
+    if (file != nullptr) {
       file->assembly_count++;
     }
   }
