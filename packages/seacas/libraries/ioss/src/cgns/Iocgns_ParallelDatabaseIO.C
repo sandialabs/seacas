@@ -712,7 +712,7 @@ namespace Iocgns {
       // Iterate r_nodes list to find duplicate nodes...
       auto             delta = min + pm.parallel_rank() * per_proc;
       std::vector<int> dup_nodes(per_proc);
-      for (auto r_node : r_nodes) {
+      for (auto &r_node : r_nodes) {
         auto n = r_node - delta;
         assert(n < per_proc);
         dup_nodes[n]++;
@@ -740,7 +740,7 @@ namespace Iocgns {
 
       // This generates the position of each owned node in this zone consistent
       // over all processors that this zone is active on.
-      for (auto u_node : u_nodes) {
+      for (auto &u_node : u_nodes) {
         if (u_node > 0) {
           u_node = ++local_node_offset; // 1-based local node id for all owned nodes.
         }
