@@ -92,7 +92,7 @@ namespace Iocgns {
     void get_element_field(int filePtr, int solution_index, int blk_seq, int field_index,
                            double *data) const;
 
-    void get_node_field(int filePtr, int solution_index, int field_index, double *data) const;
+    void get_node_field(int filePtr, int step, int field_index, double *data) const;
 
     void get_node_entity_proc_data(void *entity_proc, const Ioss::MapContainer &node_map,
                                    bool do_map) const;
@@ -180,7 +180,7 @@ namespace Iocgns {
     void get_element_field(int filePtr, int solution_index, int blk_seq, int field_index,
                            double *data) const;
 
-    void get_node_field(int filePtr, int solution_index, int field_index, double *data) const;
+    void get_node_field(int filePtr, int step, int field_offset, double *data) const;
 
     size_t get_commset_node_size() const override
     {
@@ -232,7 +232,7 @@ namespace Iocgns {
       m_decomposition.get_element_block_communication(m_elementBlocks);
     }
 
-    void generate_adjacency_list(int fileId, Ioss::Decomposition<INT> &decomposition);
+    void generate_adjacency_list(int filePtr, Ioss::Decomposition<INT> &decomposition);
 
     void calculate_element_centroids(int filePtr, std::vector<double> &centroids);
 

@@ -64,11 +64,11 @@ namespace {
 
     *ierr = ZOLTAN_OK;
 
-    if (lids) {
+    if (lids != nullptr) {
       std::iota(lids, lids + element_count, 0);
     }
 
-    if (wdim) {
+    if (wdim != 0) {
       std::fill(wgts, wgts + element_count, 1.0);
     }
 
@@ -82,7 +82,6 @@ namespace {
     else {
       *ierr = ZOLTAN_FATAL;
     }
-    return;
   }
 
   void zoltan_geom(void *data, int /* ngid_ent */, int /* nlid_ent */, int /* nobj */,
@@ -95,7 +94,6 @@ namespace {
     std::copy(zdata->centroids().begin(), zdata->centroids().end(), &geom[0]);
 
     *ierr = ZOLTAN_OK;
-    return;
   }
 #endif
 

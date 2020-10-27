@@ -307,7 +307,7 @@ namespace Ioex {
       if (!succeed) {
         // Need to remove the property so it doesn't cause problems
         // later...
-        Ioss::GroupingEntity *new_entity = const_cast<Ioss::GroupingEntity *>(entity);
+        auto *new_entity = const_cast<Ioss::GroupingEntity *>(entity);
         new_entity->property_erase(id_prop);
         assert(!entity->property_exists(id_prop));
       }
@@ -393,7 +393,7 @@ namespace Ioex {
 
     // 'id' is a unique id for this entity type...
     idset->insert(std::make_pair(static_cast<int>(type), id));
-    Ioss::GroupingEntity *new_entity = const_cast<Ioss::GroupingEntity *>(entity);
+    auto *new_entity = const_cast<Ioss::GroupingEntity *>(entity);
     new_entity->property_add(Ioss::Property(id_prop, id));
     new_entity->property_update("guid", entity->get_database()->util().generate_guid(id));
     return id;
@@ -485,6 +485,12 @@ namespace Ioex {
     }
     db_has_name = false;
     return Ioss::Utils::encode_entity_name(basename, id);
+  }
+
+  void exodus_error(int exoid, int lineno, const char *function, const char *filename)
+  {
+    std::string empty{};
+    exodus_error(exoid, lineno, function, filename, empty);
   }
 
   void exodus_error(int exoid, int lineno, const char *function, const char *filename,

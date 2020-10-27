@@ -46,7 +46,7 @@
 extern char hdf5_access[64];
 
 namespace {
-  size_t global_to_zone_local_idx(size_t i, const Ioss::Map *block_map, Ioss::Map &nodeMap,
+  size_t global_to_zone_local_idx(size_t i, const Ioss::Map *block_map, const Ioss::Map &nodeMap,
                                   bool isParallel)
   {
     auto global = block_map->map()[i + 1]; // 1-based index over all nodes in model (all procs)
