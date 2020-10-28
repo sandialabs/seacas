@@ -45,7 +45,7 @@ namespace glob {
   template <class charT> class State
   {
   public:
-    State(StateType type, Automata<charT> &states) : type_{type}, states_{states} {}
+  State(StateType type, Automata<charT> &states) : type_(type), states_(states) {}
 
     virtual ~State() = default;
 
