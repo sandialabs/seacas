@@ -248,10 +248,11 @@ else
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd szip-${szip_version}
-            mkdir build
-            cd build
+            # mkdir build
+            # cd build
 
-            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
+	    ./configure --prefix=${INSTALL_PATH}
+            # CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
 
             if [[ $? != 0 ]]
             then
