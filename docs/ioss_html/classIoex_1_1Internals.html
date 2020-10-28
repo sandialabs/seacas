@@ -86,6 +86,7 @@ $(document).ready(function(){initNavTree('classIoex_1_1Internals.html',''); init
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-static-methods">Static Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classIoex_1_1Internals-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -108,22 +109,20 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adde3f4788bbbde05ec9a3aba7581a498"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae844888ccff55267133ba91b9f836e33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoex_1_1Internals.html">Internals</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#ae844888ccff55267133ba91b9f836e33">operator=</a> (const <a class="el" href="classIoex_1_1Internals.html">Internals</a> &amp;from)=delete</td></tr>
 <tr class="separator:ae844888ccff55267133ba91b9f836e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d35871182f3f1cc642670c8b1ba7656"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a8d35871182f3f1cc642670c8b1ba7656">initialize_state_file</a> (<a class="el" href="classIoex_1_1Mesh.html">Mesh</a> &amp;mesh, const ex_var_params &amp;var_params, const std::string &amp;base_file_name)</td></tr>
-<tr class="separator:a8d35871182f3f1cc642670c8b1ba7656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87b30554c9f06f81b42d881700409240"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a87b30554c9f06f81b42d881700409240">initialize_state_file</a> (<a class="el" href="classIoex_1_1Mesh.html">Mesh</a> &amp;mesh, const ex_var_params &amp;var_params, const std::string &amp;base_filename)</td></tr>
+<tr class="separator:a87b30554c9f06f81b42d881700409240"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8878ed6cd2c8043a80d8e6395fba3392"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a8878ed6cd2c8043a80d8e6395fba3392">write_meta_data</a> (<a class="el" href="classIoex_1_1Mesh.html">Mesh</a> &amp;mesh)</td></tr>
 <tr class="separator:a8878ed6cd2c8043a80d8e6395fba3392"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a304d0af8584e331254e09ae93bb6456f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a304d0af8584e331254e09ae93bb6456f">update_assembly_data</a> (int filePtr, std::vector&lt; <a class="el" href="structIoex_1_1Assembly.html">Assembly</a> &gt; &amp;assemblies, int stage=0)</td></tr>
-<tr class="separator:a304d0af8584e331254e09ae93bb6456f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00ee2654262898a6de865ac61f04f6fa"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a00ee2654262898a6de865ac61f04f6fa">update_assembly_data</a> (int exoid, std::vector&lt; <a class="el" href="structIoex_1_1Assembly.html">Assembly</a> &gt; &amp;assemblies, int stage=0)</td></tr>
+<tr class="separator:a00ee2654262898a6de865ac61f04f6fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99a79a201293c287e804803873d5e34e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a99a79a201293c287e804803873d5e34e">copy_database</a> (int in_file, int out_file, bool transient_also=true)</td></tr>
 <tr class="separator:a99a79a201293c287e804803873d5e34e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a9ac0a7de832353f0b262ff5ee7ba9c95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a9ac0a7de832353f0b262ff5ee7ba9c95">get_global_counts</a> (<a class="el" href="classIoex_1_1Mesh.html">Mesh</a> &amp;mesh)</td></tr>
-<tr class="separator:a9ac0a7de832353f0b262ff5ee7ba9c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61371093f085ba4b132f14f13f105b14"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a61371093f085ba4b132f14f13f105b14">put_metadata</a> (const <a class="el" href="classIoex_1_1Mesh.html">Mesh</a> &amp;mesh, const <a class="el" href="structIoex_1_1CommunicationMetaData.html">CommunicationMetaData</a> &amp;comm)</td></tr>
 <tr class="separator:a61371093f085ba4b132f14f13f105b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5fd4cb9d08d3ae79435235f58fe9c20f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a5fd4cb9d08d3ae79435235f58fe9c20f">put_metadata</a> (const std::vector&lt; <a class="el" href="structIoex_1_1Assembly.html">Assembly</a> &gt; &amp;assemblies)</td></tr>
@@ -174,6 +173,11 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a2ab05802d60b88e3ef2e8eb366bc2303"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a2e3842a35da4c4f8b222cdb7820299"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a4a2e3842a35da4c4f8b222cdb7820299">max_name_length</a> () const</td></tr>
 <tr class="separator:a4a2e3842a35da4c4f8b222cdb7820299"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
+Static Private Member Functions</h2></td></tr>
+<tr class="memitem:a9ac0a7de832353f0b262ff5ee7ba9c95"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a9ac0a7de832353f0b262ff5ee7ba9c95">get_global_counts</a> (<a class="el" href="classIoex_1_1Mesh.html">Mesh</a> &amp;mesh)</td></tr>
+<tr class="separator:a9ac0a7de832353f0b262ff5ee7ba9c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -315,15 +319,15 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a8d35871182f3f1cc642670c8b1ba7656"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d35871182f3f1cc642670c8b1ba7656">&#9670;&nbsp;</a></span>initialize_state_file()</h2>
+<a id="a87b30554c9f06f81b42d881700409240"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87b30554c9f06f81b42d881700409240">&#9670;&nbsp;</a></span>initialize_state_file()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -344,7 +348,7 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>base_file_name</em>&#160;</td>
+          <td class="paramname"><em>base_filename</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1131,8 +1135,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a304d0af8584e331254e09ae93bb6456f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a304d0af8584e331254e09ae93bb6456f">&#9670;&nbsp;</a></span>update_assembly_data()</h2>
+<a id="a00ee2654262898a6de865ac61f04f6fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00ee2654262898a6de865ac61f04f6fa">&#9670;&nbsp;</a></span>update_assembly_data()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1144,7 +1148,7 @@ Private Attributes</h2></td></tr>
           <td class="memname">void Internals::update_assembly_data </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>filePtr</em>, </td>
+          <td class="paramname"><em>exoid</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

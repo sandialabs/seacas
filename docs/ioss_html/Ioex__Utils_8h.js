@@ -9,6 +9,7 @@ var Ioex__Utils_8h =
     [ "add_map_fields", "Ioex__Utils_8h.html#a831b92f5ced06b2f4f1e98f5ce6e8b95", null ],
     [ "check_processor_info", "Ioex__Utils_8h.html#abf3f04de406da6dea14a72db3b2a0a73", null ],
     [ "decode_surface_name", "Ioex__Utils_8h.html#a41e58490b4273d52830e63aa52ec98a6", null ],
+    [ "exodus_error", "Ioex__Utils_8h.html#ae674c963847563118ee3da63beada506", null ],
     [ "exodus_error", "Ioex__Utils_8h.html#a7697aeff911a70745bd170f5259fd686", null ],
     [ "extract_id", "Ioex__Utils_8h.html#a39b40ec83074201d642348d2d7d9938d", null ],
     [ "filter_element_list", "Ioex__Utils_8h.html#a971038a7f4069ad89af4a2df7346136d", null ],

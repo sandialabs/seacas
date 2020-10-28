@@ -162,8 +162,8 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"><span class="preprocessor">#ifdef PARALLEL_AWARE_EXODUS</span></div>
 <div class="line">  <span class="keywordtype">double</span> t1 = MPI_Wtime();</div>
 <div class="line"><span class="preprocessor">#else</span></div>
-<div class="line">  clock_t ctime     = clock();</div>
-<div class="line">  <span class="keywordtype">double</span>  t1        = ctime / (double)CLOCKS_PER_SEC;</div>
+<div class="line">  clock_t ctime = clock();</div>
+<div class="line">  <span class="keywordtype">double</span>  t1    = ctime / (double)CLOCKS_PER_SEC;</div>
 <div class="line"><span class="preprocessor">#endif</span></div>
 <div class="line">  <span class="keywordflow">return</span> t1;</div>
 <div class="line">}</div>
@@ -227,8 +227,8 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">  MPI_Comm_rank(MPI_COMM_WORLD, &amp;rank);</div>
 <div class="line">  MPI_Comm_size(MPI_COMM_WORLD, &amp;num_domains);</div>
 <div class="line"><span class="preprocessor">#else</span></div>
-<div class="line">  rank              = 0;</div>
-<div class="line">  num_domains       = 1;</div>
+<div class="line">  rank        = 0;</div>
+<div class="line">  num_domains = 1;</div>
 <div class="line"><span class="preprocessor">#endif</span></div>
 <div class="line">  <span class="comment">/*</span></div>
 <div class="line"><span class="comment">   *    Processor 0: parse the command line arguments.</span></div>
@@ -747,7 +747,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"><span class="preprocessor">#ifdef PARALLEL_AWARE_EXODUS</span></div>
 <div class="line">  MPI_Allreduce(&amp;file_size, &amp;glob_file_size, 1, MPI_LONG, MPI_SUM, MPI_COMM_WORLD);</div>
 <div class="line"><span class="preprocessor">#else</span></div>
-<div class="line">  glob_file_size    = file_size;</div>
+<div class="line">  glob_file_size = file_size;</div>
 <div class="line"><span class="preprocessor">#endif</span></div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (rank == 0) {</div>
@@ -1229,7 +1229,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"><span class="preprocessor">#ifdef PARALLEL_AWARE_EXODUS</span></div>
 <div class="line">  MPI_Allreduce(&amp;file_size, &amp;glob_file_size, 1, MPI_LONG, MPI_SUM, MPI_COMM_WORLD);</div>
 <div class="line"><span class="preprocessor">#else</span></div>
-<div class="line">  glob_file_size    = file_size;</div>
+<div class="line">  glob_file_size = file_size;</div>
 <div class="line"><span class="preprocessor">#endif</span></div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (rank == 0) {</div>
