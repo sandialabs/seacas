@@ -408,7 +408,7 @@ namespace Ioex {
     static void copy_database(int in_file, int out_file, bool transient_also = true);
 
   private:
-    static void get_global_counts(Mesh &mesh);
+    void get_global_counts(Mesh &mesh);
 
     int put_metadata(const Mesh &mesh, const CommunicationMetaData &comm);
     int put_metadata(const std::vector<Assembly> &assemblies);
