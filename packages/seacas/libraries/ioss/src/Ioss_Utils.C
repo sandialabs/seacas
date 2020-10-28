@@ -871,7 +871,7 @@ std::string Ioss::Utils::platform_information()
       fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
                   sys_info.release, sys_info.version, sys_info.machine);
 #else
-  std::string                 info = "Node: Unknown, OS: Unknown, Machine: Unknown";
+  std::string info = "Node: Unknown, OS: Unknown, Machine: Unknown";
 #endif
   return info;
 }

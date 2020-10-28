@@ -1886,10 +1886,10 @@ namespace Iocgns {
             assert(local >= 0 && local < (int64_t)num_to_get);
             blk_data[j] = rdata[local * comp_count + i];
           }
-          std::string var_name = (comp_count > 1) ? var_type->label_name(field.get_name(), i + 1,
+          std::string var_name   = (comp_count > 1) ? var_type->label_name(field.get_name(), i + 1,
                                                                          field_suffix_separator)
-                                                  : field.get_name();
-          int cgns_field = 0;
+                                                    : field.get_name();
+          int         cgns_field = 0;
           CGCHECKM(cgp_field_write(get_file_pointer(), base, zone, m_currentVertexSolutionIndex,
                                    CG_RealDouble, var_name.c_str(), &cgns_field));
 

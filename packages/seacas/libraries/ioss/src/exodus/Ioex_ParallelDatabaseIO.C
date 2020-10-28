@@ -2110,8 +2110,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const 
     }
     else if (field.get_name() == "connectivity_raw") {
       // "connectivity_raw" has nodes in local id space (1-based)
-      assert(field.raw_storage()->component_count() ==
-             eb->topology()->number_nodes());
+      assert(field.raw_storage()->component_count() == eb->topology()->number_nodes());
 
       // The connectivity is stored in a 1D array.
       // The face_node index varies fastet
@@ -2174,8 +2173,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const 
     }
     else if (field.get_name() == "connectivity_raw") {
       // "connectivity_raw" has nodes in local id space (1-based)
-      assert(field.raw_storage()->component_count() ==
-             eb->topology()->number_nodes());
+      assert(field.raw_storage()->component_count() == eb->topology()->number_nodes());
 
       // The connectivity is stored in a 1D array.
       // The edge_node index varies fastet
