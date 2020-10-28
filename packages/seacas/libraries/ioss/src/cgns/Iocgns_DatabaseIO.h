@@ -206,7 +206,7 @@ namespace Iocgns {
 
     mutable std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     mutable std::vector<size_t>
-                                                          m_bcOffset; // The BC Section element offsets in unstructured output.
+        m_bcOffset; // The BC Section element offsets in unstructured output.
     mutable std::vector<double>                           m_timesteps;
     std::vector<CGNSIntVector>                            m_blockLocalNodeMap;
     std::map<std::string, int>                            m_zoneNameMap;

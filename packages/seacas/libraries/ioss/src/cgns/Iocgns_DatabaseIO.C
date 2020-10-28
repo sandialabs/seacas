@@ -295,8 +295,11 @@ namespace {
 #if IOSS_DEBUG_OUTPUT
             const auto b = blocks[br];
             fmt::print(Ioss::DEBUG(), "Min {}: {} {} ({} {} {})  [{}]\n",
-                       (ijk == 0 ? 'i' : ijk == 1 ? 'j' : 'k'), b.name, b.face_adj[ijk], b.range[0],
-                       b.range[1], b.range[2], b.face_adj.to_string('.', '+'));
+                       (ijk == 0   ? 'i'
+                        : ijk == 1 ? 'j'
+                                   : 'k'),
+                       b.name, b.face_adj[ijk], b.range[0], b.range[1], b.range[2],
+                       b.face_adj.to_string('.', '+'));
 #endif
             br = adjacent_block(blocks[br], ijk + 3, proc_block_map);
             if (++iter > end - begin) {
@@ -306,8 +309,11 @@ namespace {
                          "ERROR: CGNS: Block '{}' is in infinite loop calculating processor "
                          "adjacencies for direction "
                          "'{}' on processors {} and {}.  Check decomposition.",
-                         blocks[bb].name, (ijk == 0 ? 'i' : ijk == 1 ? 'j' : 'k'), blocks[bp].proc,
-                         blocks[br].proc);
+                         blocks[bb].name,
+                         (ijk == 0   ? 'i'
+                          : ijk == 1 ? 'j'
+                                     : 'k'),
+                         blocks[bp].proc, blocks[br].proc);
               IOSS_ERROR(errmsg);
             }
           } while (br >= 0);
