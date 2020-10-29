@@ -267,7 +267,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
              "ERROR: failed to open %s for read/write. Either the file "
              "does not exist,\n\tor there is a permission or file format "
              "issue.",
-             path, type);
+             path);
     ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
