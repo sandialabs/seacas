@@ -16,7 +16,7 @@
 #include <vector>       // for vector
 
 namespace Excn {
-  typedef std::vector<std::pair<std::string, int>> StringIdVector;
+  using StringIdVector = std::vector<std::pair<std::string, int>>;
 
   class SystemInterface
   {

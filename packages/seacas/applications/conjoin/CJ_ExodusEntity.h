@@ -132,7 +132,7 @@ namespace Excn {
     }
   };
 
-  typedef std::pair<int, int> Side;
+  using Side = std::pair<int, int>;
   template <typename INT> struct SideSet
   {
     SideSet() = default;

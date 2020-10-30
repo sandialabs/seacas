@@ -2355,10 +2355,10 @@ namespace {
       // Now get the sideset elements/sides. Ignoring DF for now...
       for (size_t ss = 0; ss < set_ids.size(); ss++) {
         // This is maximum possible size; will probably be reduced by duplicate elimination...
-        typedef std::vector<std::pair<INT, INT>> ElemSideMap;
-        ElemSideMap                              elem_side(glob_ssets[ss].sideCount);
-        int                                      ss_id  = glob_ssets[ss].id;
-        size_t                                   offset = 0;
+        using ElemSideMap = std::vector<std::pair<INT, INT>>;
+        ElemSideMap elem_side(glob_ssets[ss].sideCount);
+        int         ss_id  = glob_ssets[ss].id;
+        size_t      offset = 0;
 
         size_t lss = glob_ssets[ss].position_;
         for (size_t p = 0; p < part_count; p++) {
