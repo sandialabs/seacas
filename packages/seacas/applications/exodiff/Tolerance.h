@@ -6,7 +6,7 @@
 #ifndef TOLERANCE_H
 #define TOLERANCE_H
 
-#include "map.h" // for MAP_TYPE_enum
+#include "map.h"
 #include <cmath>
 
 // See http://realtimecollisiondetection.net/blog/?p=89 for a
