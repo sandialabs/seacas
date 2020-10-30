@@ -106,8 +106,8 @@ namespace {
 #endif
   }
 
-  typedef std::set<std::pair<Ioss::EntityType, int64_t>> EntityIdSet;
-  EntityIdSet                                            id_set;
+  using EntityIdSet = std::set<std::pair<Ioss::EntityType, int64_t>>;
+  EntityIdSet id_set;
 
   void set_id(Ioss::GroupingEntity *old_ge, Ioss::GroupingEntity *new_ge)
   {
