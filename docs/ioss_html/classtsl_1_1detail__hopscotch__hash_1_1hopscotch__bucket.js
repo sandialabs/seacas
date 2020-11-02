@@ -19,7 +19,7 @@ var classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket =
     [ "remove_value", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#aebff2fef640b913e76b3e31fcf4d58fb", null ],
     [ "set_empty", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#ad4997662d86d72a65ad39f297417c56b", null ],
     [ "set_overflow", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#afb93ae4ada7f6c825002ef7236b4c651", null ],
-    [ "set_value_of_empty_bucket", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#a60d7757715f9aacdeace0573b8c2c3bd", null ],
+    [ "set_value_of_empty_bucket", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#aa97cad4ed97d9b1dbcd165a384ddee7b", null ],
     [ "swap_value_into_empty_bucket", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#aad084f464937d2fa0fe12e26476a7ac5", null ],
     [ "toggle_neighbor_presence", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#ab4d64758ab896d3fc2c118e3b0629f49", null ],
     [ "truncate_hash", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#a2ae5dfddec638773974725d97ae14934", null ],
