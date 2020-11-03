@@ -1361,6 +1361,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
     }
     cntr++;
   }
+  EX_FUNC_LEAVE(EX_FATAL);
 }
 
 /*!

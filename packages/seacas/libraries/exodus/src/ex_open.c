@@ -281,7 +281,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to add maximum_name_length attribute in file id %d", exoid);
           ex_err_fn(exoid, __func__, errmsg, status);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       }
 

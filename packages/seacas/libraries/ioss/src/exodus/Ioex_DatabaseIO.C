@@ -5363,9 +5363,6 @@ void DatabaseIO::gather_communication_metadata(Ioex::CommunicationMetaData *meta
   }
 
   if (isSerialParallel || meta->processorCount > 0) {
-    meta->globalNodes    = 1; // Just need a nonzero value.
-    meta->globalElements = 1; // Just need a nonzero value.
-
     meta->globalNodes         = get_region()->get_optional_property("global_node_count", 1);
     meta->globalElements      = get_region()->get_optional_property("global_element_count", 1);
     meta->globalElementBlocks = get_region()->get_optional_property(
