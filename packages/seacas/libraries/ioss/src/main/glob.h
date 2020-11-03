@@ -310,6 +310,7 @@ namespace glob {
   {
   public:
     SetItem() = default;
+    virtual ~SetItem() = default;
 
     virtual bool Check(charT c) const = 0;
   };
