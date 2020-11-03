@@ -329,7 +329,7 @@ nc_type nc_flt_code(int exoid)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for nc_flt_code().", exoid);
     ex_err(__func__, errmsg, EX_BADFILEID);
-    return ((nc_type)-1);
+    EX_FUNC_LEAVE((nc_type)-1);
   }
   EX_FUNC_LEAVE(file->netcdf_type_code);
 }

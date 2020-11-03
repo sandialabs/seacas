@@ -45,7 +45,7 @@ namespace glob {
   template <class charT> class State
   {
   public:
-  State(StateType type, Automata<charT> &states) : type_(type), states_(states) {}
+    State(StateType type, Automata<charT> &states) : type_(type), states_(states) {}
 
     virtual ~State() = default;
 
@@ -170,7 +170,7 @@ namespace glob {
       return vec;
     }
 
-    template <class T, typename... Args> size_t NewState(Args &&... args)
+    template <class T, typename... Args> size_t NewState(Args &&...args)
     {
       size_t state_pos = states_.size();
       auto   state     = std::unique_ptr<State<charT>>(new T(*this, std::forward<Args>(args)...));
@@ -626,7 +626,7 @@ namespace glob {
     friend std::ostream &operator<<(std::ostream &stream, const Token<charU> &token);
 
     TokenKind kind_;
-    charT     value_;
+    charT     value_{};
   };
 
   template <class charT>
@@ -1425,7 +1425,7 @@ namespace glob {
       return vec_automatas;
     }
 
-    template <class T, typename... Args> void NewState(Automata<charT> &automata, Args &&... args)
+    template <class T, typename... Args> void NewState(Automata<charT> &automata, Args &&...args)
     {
       current_state_ = automata.template NewState<T>(std::forward<Args>(args)...);
       if (preview_state_ >= 0) {

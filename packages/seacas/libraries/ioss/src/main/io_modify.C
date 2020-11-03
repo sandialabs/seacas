@@ -1015,12 +1015,7 @@ namespace {
       assem = region.get_assembly(tokens[1]);
       if (assem == nullptr) {
         // New assembly...
-        assem = new Ioss::Assembly(region.get_database(), tokens[1]);
-        if (assem == nullptr) {
-          fmt::print(stderr, fg(fmt::color::red),
-                     "ERROR: Unable to create or access assembly '{}'.\n", tokens[1]);
-          return false;
-        }
+        assem      = new Ioss::Assembly(region.get_database(), tokens[1]);
         auto my_id = get_next_assembly_id(region);
         assem->property_add(Ioss::Property("id", my_id));
         assem->property_add(Ioss::Property("created", 1));
@@ -1036,7 +1031,6 @@ namespace {
     }
 
     if (assem == nullptr) {
-
       fmt::print(stderr, fg(fmt::color::red), "ERROR: Unable to create or access assembly '{}'.\n",
                  tokens[1]);
       return false;

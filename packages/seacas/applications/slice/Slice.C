@@ -1191,8 +1191,8 @@ namespace {
     for (size_t b = 0; b < block_count; b++) {
       std::vector<std::vector<INT>> connectivity(processor_count);
       size_t                        element_count = ebs[b]->entity_count();
-      size_t element_nodes = ebs[b]->topology()->number_nodes();
-      size_t block_id      = ebs[b]->get_property("id").get_int();
+      size_t                        element_nodes = ebs[b]->topology()->number_nodes();
+      size_t                        block_id      = ebs[b]->get_property("id").get_int();
 
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         const auto &pebs           = proc_region[p]->get_element_blocks();
@@ -1514,7 +1514,6 @@ namespace {
       }
     }
 
-    start = seacas_timer();
     // Now that we have the elements on each processor and the element
     // blocks those elements are in, can generate the node to proc list...
     start = seacas_timer();
