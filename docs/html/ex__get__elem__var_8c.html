@@ -166,22 +166,22 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>As an example, the following code segment will read the var_index-th element variable at one time step stored in an exodus file :</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> *ids, num_elem_blk, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, *num_elem_in_block,</div>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> *ids, num_elem_blk, error, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, *num_elem_in_block,</div>
 <div class="line">    step, var_ind;</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">float</span> *var_vals;</div>
 <div class="line"> </div>
 <div class="line">ids = (<span class="keywordtype">int</span> *) calloc(num_elem_blk, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a93999c6ef6831cc64be11f7ae6053a3f">ex_get_elem_blk_ids</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, ids);</div>
+<div class="line">error = <a class="code" href="exodusII_8h.html#a93999c6ef6831cc64be11f7ae6053a3f">ex_get_elem_blk_ids</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, ids);</div>
 <div class="line"> </div>
 <div class="line">step = 1; \comment{read at the first time step}</div>
 <div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_elem_blk; i++) {</div>
 <div class="line">   var_vals = (<span class="keywordtype">float</span> *) calloc (num_elem_in_block[i], <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
-<div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a198ab1789b2c3b9291fc9be75d9ff65a">ex_get_elem_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, step, var_ind, ids[i],</div>
+<div class="line">   error = <a class="code" href="exodusII_8h.html#a198ab1789b2c3b9291fc9be75d9ff65a">ex_get_elem_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, step, var_ind, ids[i],</div>
 <div class="line">                            num_elem_in_block[i], var_vals);</div>
 <div class="line"> </div>
 <div class="line">\comment{Using non-deprecated <span class="keyword">function</span>:}</div>
-<div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, step, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, var_ind, ids[i],</div>
+<div class="line">   error = <a class="code" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, step, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, var_ind, ids[i],</div>
 <div class="line">                            num_elem_in_block[i], var_vals);</div>
 <div class="line"> </div>
 <div class="line">   free (var_values);</div>
@@ -192,7 +192,6 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aexodusII_8h_html_a93999c6ef6831cc64be11f7ae6053a3f"><div class="ttname"><a href="exodusII_8h.html#a93999c6ef6831cc64be11f7ae6053a3f">ex_get_elem_blk_ids</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_get_elem_blk_ids(int exoid, void_int *ids)</div><div class="ttdef"><b>Definition:</b> ex_get_elem_blk_ids.c:48</div></div>
-<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:71</div></div>
 <div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:740</div></div>
 <div class="ttc" id="agroup__ResultsData_html_ga200c0e240277523c735987a7bb69cf20"><div class="ttname"><a href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var</a></div><div class="ttdeci">int ex_get_var(int exoid, int time_step, ex_entity_type var_type, int var_index, ex_entity_id obj_id, int64_t num_entry_this_obj, void *var_vals)</div><div class="ttdef"><b>Definition:</b> ex_get_var.c:68</div></div>
 <div class="ttc" id="aexodusII_8h_html_a198ab1789b2c3b9291fc9be75d9ff65a"><div class="ttname"><a href="exodusII_8h.html#a198ab1789b2c3b9291fc9be75d9ff65a">ex_get_elem_var</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_get_elem_var(int exoid, int time_step, int elem_var_index, ex_entity_id elem_blk_id, int64_t num_elem_this_blk, void *elem_var_vals)</div><div class="ttdef"><b>Definition:</b> ex_get_elem_var.c:84</div></div>

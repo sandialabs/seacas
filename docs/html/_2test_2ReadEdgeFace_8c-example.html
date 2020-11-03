@@ -204,10 +204,10 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* *** NEW API *** */</span></div>
 <div class="line">  <span class="keywordflow">for</span> (i = 0; i &lt; <span class="keyword">sizeof</span>(obj_types) / <span class="keyword">sizeof</span>(obj_types[0]); ++i) {</div>
-<div class="line">    <span class="keywordtype">int</span> *<a name="a58"></a><a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a> = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> *truth_tab = 0;</div>
 <div class="line">    have_var_names = 0;</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a59"></a><a class="code" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire</a>(exoid, obj_sizes[i], &amp;nids, 0, 0),</div>
+<div class="line">    <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a58"></a><a class="code" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire</a>(exoid, obj_sizes[i], &amp;nids, 0, 0),</div>
 <div class="line">            <span class="stringliteral">&quot;Object ID list size could not be determined.\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (!nids) {</div>
@@ -220,22 +220,22 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">    ids       = (<span class="keywordtype">int</span> *)malloc(nids * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
 <div class="line">    obj_names = (<span class="keywordtype">char</span> **)malloc(nids * <span class="keyword">sizeof</span>(<span class="keywordtype">char</span> *));</div>
 <div class="line">    <span class="keywordflow">for</span> (obj = 0; obj &lt; nids; ++obj) {</div>
-<div class="line">      obj_names[obj] = (<span class="keywordtype">char</span> *)malloc((<a name="a60"></a><a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1) * <span class="keyword">sizeof</span>(char));</div>
+<div class="line">      obj_names[obj] = (<span class="keywordtype">char</span> *)malloc((<a name="a59"></a><a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1) * <span class="keyword">sizeof</span>(char));</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a61"></a><a class="code" href="group__ModelDescription.html#gad1f33f5a3b24a7e8bc700053aff4c7d1">ex_get_ids</a>(exoid, obj_types[i], ids), <span class="stringliteral">&quot;Could not read object ids.\n&quot;</span>);</div>
-<div class="line">    <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a62"></a><a class="code" href="group__ModelDescription.html#ga6f6ca07ae03a41bafda400917ba9b8b7">ex_get_names</a>(exoid, obj_types[i], obj_names), <span class="stringliteral">&quot;Could not read object ids.\n&quot;</span>);</div>
+<div class="line">    <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a60"></a><a class="code" href="group__ModelDescription.html#gad1f33f5a3b24a7e8bc700053aff4c7d1">ex_get_ids</a>(exoid, obj_types[i], ids), <span class="stringliteral">&quot;Could not read object ids.\n&quot;</span>);</div>
+<div class="line">    <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a61"></a><a class="code" href="group__ModelDescription.html#ga6f6ca07ae03a41bafda400917ba9b8b7">ex_get_names</a>(exoid, obj_types[i], obj_names), <span class="stringliteral">&quot;Could not read object ids.\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> ((OBJECT_IS_BLOCK(i)) || (OBJECT_IS_SET(i))) {</div>
 <div class="line">      <span class="keywordtype">int</span> *tp;</div>
-<div class="line">      <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a63"></a><a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(exoid, obj_types[i], &amp;num_vars),</div>
+<div class="line">      <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a62"></a><a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(exoid, obj_types[i], &amp;num_vars),</div>
 <div class="line">              <span class="stringliteral">&quot;Could not read number of variables.\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">      <span class="keywordflow">if</span> (num_vars &amp;&amp; num_timesteps &gt; 0) {</div>
-<div class="line">        <a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a> = (<span class="keywordtype">int</span> *)malloc(num_vars * nids * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
-<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a64"></a><a class="code" href="group__ResultsData.html#ga90ac12b9e78cbb4305f07d27cffeb780">ex_get_truth_table</a>(exoid, obj_types[i], nids, num_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>),</div>
+<div class="line">        truth_tab = (<span class="keywordtype">int</span> *)malloc(num_vars * nids * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a63"></a><a class="code" href="group__ResultsData.html#ga90ac12b9e78cbb4305f07d27cffeb780">ex_get_truth_table</a>(exoid, obj_types[i], nids, num_vars, truth_tab),</div>
 <div class="line">                <span class="stringliteral">&quot;Could not read truth table.\n&quot;</span>);</div>
-<div class="line">        tp = <a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>;</div>
+<div class="line">        tp = truth_tab;</div>
 <div class="line">        fprintf(stdout, <span class="stringliteral">&quot;Truth:&quot;</span>);</div>
 <div class="line">        <span class="keywordflow">for</span> (obj = 0; obj &lt; nids; ++obj) {</div>
 <div class="line">          <span class="keywordflow">for</span> (j = 0; j &lt; num_vars; ++j, ++tp) {</div>
@@ -250,7 +250,7 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">          var_names[j] = (<span class="keywordtype">char</span> *)malloc((<a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1) * <span class="keyword">sizeof</span>(char));</div>
 <div class="line">        }</div>
 <div class="line"> </div>
-<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a65"></a><a class="code" href="group__ResultsData.html#ga91a1893c2e7278baa3cf9d0c89875a0b">ex_get_variable_names</a>(exoid, obj_types[i], num_vars, var_names),</div>
+<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a64"></a><a class="code" href="group__ResultsData.html#ga91a1893c2e7278baa3cf9d0c89875a0b">ex_get_variable_names</a>(exoid, obj_types[i], num_vars, var_names),</div>
 <div class="line">                <span class="stringliteral">&quot;Could not read variable names.\n&quot;</span>);</div>
 <div class="line">        have_var_names = 1;</div>
 <div class="line">      }</div>
@@ -276,7 +276,7 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">        <span class="keywordtype">int</span>  ctr;</div>
 <div class="line">        <span class="keywordtype">int</span>  num_attrs;</div>
 <div class="line">        <span class="keywordflow">if</span> (obj_types[i] == <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>) {</div>
-<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a66"></a><a class="code" href="group__ModelDescription.html#gabc6e9887581be7b2966db32d998ca648">ex_get_block</a>(exoid, obj_types[i], ids[obj], 0, itmp, itmp + 1, itmp + 2, itmp + 3,</div>
+<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a65"></a><a class="code" href="group__ModelDescription.html#gabc6e9887581be7b2966db32d998ca648">ex_get_block</a>(exoid, obj_types[i], ids[obj], 0, itmp, itmp + 1, itmp + 2, itmp + 3,</div>
 <div class="line">                               &amp;num_attrs),</div>
 <div class="line">                  <span class="stringliteral">&quot;Could not read block params.\n&quot;</span>);</div>
 <div class="line">          fprintf(stdout,</div>
@@ -295,7 +295,7 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">        nconn       = itmp[1] ? (<span class="keywordtype">int</span> *)malloc(itmp[1] * num_entries * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>)) : 0;</div>
 <div class="line">        econn       = itmp[2] ? (<span class="keywordtype">int</span> *)malloc(itmp[2] * num_entries * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>)) : 0;</div>
 <div class="line">        fconn       = itmp[3] ? (<span class="keywordtype">int</span> *)malloc(itmp[3] * num_entries * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>)) : 0;</div>
-<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a67"></a><a class="code" href="group__ModelDescription.html#gaeeccbb525d582741af06a06aa275c5fe">ex_get_conn</a>(exoid, obj_types[i], ids[obj], nconn, econn, fconn),</div>
+<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a66"></a><a class="code" href="group__ModelDescription.html#gaeeccbb525d582741af06a06aa275c5fe">ex_get_conn</a>(exoid, obj_types[i], ids[obj], nconn, econn, fconn),</div>
 <div class="line">                <span class="stringliteral">&quot;Could not read connectivity.\n&quot;</span>);</div>
 <div class="line">        <span class="keywordflow">for</span> (ele = 0; ele &lt; num_entries; ++ele) {</div>
 <div class="line">          <span class="keywordflow">for</span> (ctr = 0; ctr &lt; itmp[1]; ++ctr) {</div>
@@ -328,9 +328,9 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">            attr_names[j] = (<span class="keywordtype">char</span> *)malloc((<a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1) * <span class="keyword">sizeof</span>(char));</div>
 <div class="line">          }</div>
 <div class="line"> </div>
-<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a68"></a><a class="code" href="group__ModelDescription.html#gadd3ac6317bf78162bdc37554c080c1dd">ex_get_attr_names</a>(exoid, obj_types[i], ids[obj], attr_names),</div>
+<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a67"></a><a class="code" href="group__ModelDescription.html#gadd3ac6317bf78162bdc37554c080c1dd">ex_get_attr_names</a>(exoid, obj_types[i], ids[obj], attr_names),</div>
 <div class="line">                  <span class="stringliteral">&quot;Could not read attributes names.\n&quot;</span>);</div>
-<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a69"></a><a class="code" href="group__ModelDescription.html#ga2b1eea67e34b3167bd22febc06081d11">ex_get_attr</a>(exoid, obj_types[i], ids[obj], attr),</div>
+<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a68"></a><a class="code" href="group__ModelDescription.html#ga2b1eea67e34b3167bd22febc06081d11">ex_get_attr</a>(exoid, obj_types[i], ids[obj], attr),</div>
 <div class="line">                  <span class="stringliteral">&quot;Could not read attribute values.\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">          fprintf(stdout, <span class="stringliteral">&quot;\n      Attributes:\n      ID &quot;</span>);</div>
@@ -359,14 +359,14 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">        <span class="keywordtype">int</span> *   set_entry;</div>
 <div class="line">        <span class="keywordtype">int</span> *   set_extra;</div>
 <div class="line">        <span class="keywordtype">double</span> *set_df;</div>
-<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a70"></a><a class="code" href="group__ModelDescription.html#ga712b89d54676bfeab4244ac674416ff5">ex_get_set_param</a>(exoid, obj_types[i], ids[obj], &amp;num_entries, &amp;num_df),</div>
+<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a69"></a><a class="code" href="group__ModelDescription.html#ga712b89d54676bfeab4244ac674416ff5">ex_get_set_param</a>(exoid, obj_types[i], ids[obj], &amp;num_entries, &amp;num_df),</div>
 <div class="line">                <span class="stringliteral">&quot;Could not read set parameters.\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">        set_entry = (<span class="keywordtype">int</span> *)malloc(num_entries * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
 <div class="line">        set_extra = (obj_types[i] != <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a> &amp;&amp; obj_types[i] != <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>)</div>
 <div class="line">                        ? (<span class="keywordtype">int</span> *)malloc(num_entries * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>))</div>
 <div class="line">                        : 0;</div>
-<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a71"></a><a class="code" href="group__ModelDescription.html#ga48604d23fc30d70620e1255823e4ff50">ex_get_set</a>(exoid, obj_types[i], ids[obj], set_entry, set_extra),</div>
+<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a70"></a><a class="code" href="group__ModelDescription.html#ga48604d23fc30d70620e1255823e4ff50">ex_get_set</a>(exoid, obj_types[i], ids[obj], set_entry, set_extra),</div>
 <div class="line">                <span class="stringliteral">&quot;Could not read set.\n&quot;</span>);</div>
 <div class="line">        fprintf(stdout, <span class="stringliteral">&quot;Entries: %3d Distribution factors: %3d\n&quot;</span>, num_entries, num_df);</div>
 <div class="line">        <span class="keywordflow">if</span> (set_extra) {</div>
@@ -384,7 +384,7 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line"> </div>
 <div class="line">        set_df = num_df ? (<span class="keywordtype">double</span> *)malloc(num_df * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)) : 0;</div>
 <div class="line">        <span class="keywordflow">if</span> (set_df) {</div>
-<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a72"></a><a class="code" href="group__ModelDescription.html#gaba37d22e5d2ec3ac13323c9e7e289812">ex_get_set_dist_fact</a>(exoid, obj_types[i], ids[obj], set_df),</div>
+<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a71"></a><a class="code" href="group__ModelDescription.html#gaba37d22e5d2ec3ac13323c9e7e289812">ex_get_set_dist_fact</a>(exoid, obj_types[i], ids[obj], set_df),</div>
 <div class="line">                  <span class="stringliteral">&quot;Could not read set distribution factors.\n&quot;</span>);</div>
 <div class="line">          fprintf(stdout, <span class="stringliteral">&quot;\n    Distribution factors:\n&quot;</span>);</div>
 <div class="line">          <span class="keywordflow">for</span> (j = 0; j &lt; num_df; ++j) {</div>
@@ -405,7 +405,7 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">        <span class="keywordflow">if</span> (num_entries) {</div>
 <div class="line">          fprintf(stdout, <span class="stringliteral">&quot;Entries: %3d\n                :&quot;</span>, num_entries);</div>
 <div class="line">          map = (<span class="keywordtype">int</span> *)malloc(num_entries * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
-<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a73"></a><a class="code" href="group__ModelDescription.html#ga43acc64ccdd809b172c2d642f1956281">ex_get_num_map</a>(exoid, obj_types[i], ids[obj], map), <span class="stringliteral">&quot;Could not read map.\n&quot;</span>);</div>
+<div class="line">          <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a72"></a><a class="code" href="group__ModelDescription.html#ga43acc64ccdd809b172c2d642f1956281">ex_get_num_map</a>(exoid, obj_types[i], ids[obj], map), <span class="stringliteral">&quot;Could not read map.\n&quot;</span>);</div>
 <div class="line">          <span class="keywordflow">for</span> (j = 0; j &lt; num_entries; ++j) {</div>
 <div class="line">            fprintf(stdout, <span class="stringliteral">&quot; %d&quot;</span>, map[j]);</div>
 <div class="line">          }</div>
@@ -423,13 +423,13 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">        entry_vals = (<span class="keywordtype">double</span> *)malloc(num_entries * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
 <div class="line">        <span class="keywordflow">for</span> (j = 0; j &lt; num_vars; ++j) {</div>
 <div class="line">          <span class="keywordtype">int</span> k;</div>
-<div class="line">          <span class="keywordflow">if</span> (!<a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>[num_vars * obj + j]) {</div>
+<div class="line">          <span class="keywordflow">if</span> (!truth_tab[num_vars * obj + j]) {</div>
 <div class="line">            <span class="keywordflow">continue</span>;</div>
 <div class="line">          }</div>
 <div class="line"> </div>
 <div class="line">          fprintf(stdout, <span class="stringliteral">&quot;      Variable: %s&quot;</span>, var_names[j]);</div>
 <div class="line">          <span class="keywordflow">for</span> (ti = 1; ti &lt;= num_timesteps; ++ti) {</div>
-<div class="line">            <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a74"></a><a class="code" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var</a>(exoid, ti, obj_types[i], 1 + j, ids[obj], num_entries, entry_vals),</div>
+<div class="line">            <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a73"></a><a class="code" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var</a>(exoid, ti, obj_types[i], 1 + j, ids[obj], num_entries, entry_vals),</div>
 <div class="line">                    <span class="stringliteral">&quot;Could not read variable values.\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">            fprintf(stdout, <span class="stringliteral">&quot;\n       @t%d &quot;</span>, ti);</div>
@@ -457,7 +457,7 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line"><span class="comment">         * general since</span></div>
 <div class="line"><span class="comment">         * NULL truth table entries may mean the referenced elements don&#39;t have variable values.</span></div>
 <div class="line"><span class="comment">         */</span></div>
-<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a75"></a><a class="code" href="group__ResultsData.html#ga65af6a2020057488a89b28238993562b">ex_get_var_time</a>(exoid, obj_types[i], j + 1, itmp[1], 1, num_timesteps, entry_vals),</div>
+<div class="line">        <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a74"></a><a class="code" href="group__ResultsData.html#ga65af6a2020057488a89b28238993562b">ex_get_var_time</a>(exoid, obj_types[i], j + 1, itmp[1], 1, num_timesteps, entry_vals),</div>
 <div class="line">                <span class="stringliteral">&quot;Could not read variable over time.\n&quot;</span>);</div>
 <div class="line">        fprintf(stdout, <span class="stringliteral">&quot;    Variable over time: %s  Entry: %3d &quot;</span>, var_names[j], itmp[1]);</div>
 <div class="line">        <span class="keywordflow">for</span> (ti = 1; ti &lt;= num_timesteps; ++ti) {</div>
@@ -474,7 +474,7 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">      }</div>
 <div class="line">      free(var_names);</div>
 <div class="line">    }</div>
-<div class="line">    free(<a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>);</div>
+<div class="line">    free(truth_tab);</div>
 <div class="line">    free(ids);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">for</span> (obj = 0; obj &lt; nids; ++obj) {</div>
@@ -485,7 +485,7 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">    fprintf(stdout, <span class="stringliteral">&quot;\n&quot;</span>);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a76"></a><a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid), <span class="stringliteral">&quot;Unable to close database.\n&quot;</span>);</div>
+<div class="line">  <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a75"></a><a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid), <span class="stringliteral">&quot;Unable to close database.\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
@@ -502,7 +502,6 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="ttc" id="aexodusII_8h_html_adc9d1455c2876b67d008e02c1e9df8dca24ae47a56c774e941681fef0239b93d6"><div class="ttname"><a href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca24ae47a56c774e941681fef0239b93d6">EX_INQ_EDGE</a></div><div class="ttdeci">@ EX_INQ_EDGE</div><div class="ttdef"><b>Definition:</b> exodusII.h:162</div></div>
 <div class="ttc" id="astructex__init__params_html_aab62ab1d8e6bd13f2db73bad2bcf82a2"><div class="ttname"><a href="structex__init__params.html#aab62ab1d8e6bd13f2db73bad2bcf82a2">ex_init_params::num_dim</a></div><div class="ttdeci">int64_t num_dim</div><div class="ttdef"><b>Definition:</b> exodusII.h:328</div></div>
 <div class="ttc" id="aexodusII_8h_html_adc9d1455c2876b67d008e02c1e9df8dca01920d23fe84ee4b720a7bc6202a69f9"><div class="ttname"><a href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca01920d23fe84ee4b720a7bc6202a69f9">EX_INQ_ELS_LEN</a></div><div class="ttdeci">@ EX_INQ_ELS_LEN</div><div class="ttdef"><b>Definition:</b> exodusII.h:177</div></div>
-<div class="ttc" id="aex__put__elem__var__tab_8c_html_a99e6183f76c10251a43dd7f8389d68df"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a></div><div class="ttdeci">truth_tab</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:64</div></div>
 <div class="ttc" id="agroup__Utilities_html_ga1b8122836266615fd2795736dc21e2ae"><div class="ttname"><a href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a></div><div class="ttdeci">int64_t ex_inquire_int(int exoid, ex_inquiry req_info)</div><div class="ttdef"><b>Definition:</b> ex_inquire.c:951</div></div>
 <div class="ttc" id="agroup__ResultsData_html_ga90ac12b9e78cbb4305f07d27cffeb780"><div class="ttname"><a href="group__ResultsData.html#ga90ac12b9e78cbb4305f07d27cffeb780">ex_get_truth_table</a></div><div class="ttdeci">int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_var, int *var_tab)</div><div class="ttdef"><b>Definition:</b> ex_get_truth_table.c:37</div></div>
 <div class="ttc" id="astructex__init__params_html_ad6ccfe48dfc6359a0f8e8af5287f60e0"><div class="ttname"><a href="structex__init__params.html#ad6ccfe48dfc6359a0f8e8af5287f60e0">ex_init_params::num_edge_maps</a></div><div class="ttdeci">int64_t num_edge_maps</div><div class="ttdef"><b>Definition:</b> exodusII.h:342</div></div>

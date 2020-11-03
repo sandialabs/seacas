@@ -167,7 +167,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>For example, the following coding will read the values of the var_index-th element variable for element number 2 from the first time step to the last time step:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, num_time_steps, var_index, elem_num,</div>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> error, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, num_time_steps, var_index, elem_num,</div>
 <div class="line">    beg_time, end_time;</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">float</span> *var_values;</div>
@@ -184,11 +184,11 @@ Functions</h2></td></tr>
 <div class="line">beg_time =  1;</div>
 <div class="line">end_time = -1;</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aef4a484cda94fe6edec2e05febc2abcd">ex_get_elem_var_time</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, var_index, elem_num,</div>
+<div class="line">error = <a class="code" href="exodusII_8h.html#aef4a484cda94fe6edec2e05febc2abcd">ex_get_elem_var_time</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, var_index, elem_num,</div>
 <div class="line">                              beg_time, end_time, var_values);</div>
 <div class="line"> </div>
 <div class="line">\comment{Using non-deprecated <span class="keyword">function</span>:}</div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aef4a484cda94fe6edec2e05febc2abcd">ex_get_elem_var_time</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, var_index, elem_num,</div>
+<div class="line">error = <a class="code" href="exodusII_8h.html#aef4a484cda94fe6edec2e05febc2abcd">ex_get_elem_var_time</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, var_index, elem_num,</div>
 <div class="line">                              beg_time, end_time, var_values);</div>
 </div><!-- fragment --> 
 </div>
@@ -197,7 +197,6 @@ Functions</h2></td></tr>
 </div><!-- doc-content -->
 <div class="ttc" id="agroup__Utilities_html_ga1b8122836266615fd2795736dc21e2ae"><div class="ttname"><a href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a></div><div class="ttdeci">int64_t ex_inquire_int(int exoid, ex_inquiry req_info)</div><div class="ttdef"><b>Definition:</b> ex_inquire.c:951</div></div>
 <div class="ttc" id="aexodusII_8h_html_aef4a484cda94fe6edec2e05febc2abcd"><div class="ttname"><a href="exodusII_8h.html#aef4a484cda94fe6edec2e05febc2abcd">ex_get_elem_var_time</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_get_elem_var_time(int exoid, int elem_var_index, int64_t elem_number, int beg_time_step, int end_time_step, void *elem_var_vals)</div><div class="ttdef"><b>Definition:</b> ex_get_elem_var_time.c:112</div></div>
-<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:71</div></div>
 <div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:740</div></div>
 <div class="ttc" id="aexodusII_8h_html_adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631"><div class="ttname"><a href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a></div><div class="ttdeci">@ EX_INQ_TIME</div><div class="ttdef"><b>Definition:</b> exodusII.h:151</div></div>
 <div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a></div><div class="ttdeci">@ EX_ELEM_BLOCK</div><div class="ttdef"><b>Definition:</b> exodusII.h:252</div></div>

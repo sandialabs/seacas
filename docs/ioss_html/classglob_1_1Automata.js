@@ -10,7 +10,7 @@ var classglob_1_1Automata =
     [ "GetNumStates", "classglob_1_1Automata.html#a9ebd4b553a6e9e2daa6b73e7a7afc93d", null ],
     [ "GetState", "classglob_1_1Automata.html#a533941f209dd8e835ff91142721d73b2", null ],
     [ "GetState", "classglob_1_1Automata.html#a04e462e6735706209c30e51711413ed7", null ],
-    [ "NewState", "classglob_1_1Automata.html#a1ff37d82b32d9876b10c03add10baa01", null ],
+    [ "NewState", "classglob_1_1Automata.html#a9eb4d3128b407fdf4e8b090aae6e1145", null ],
     [ "operator=", "classglob_1_1Automata.html#affb13c018e79b6de31bce99ef8f8b685", null ],
     [ "operator=", "classglob_1_1Automata.html#a6f51529cc3cf9436b42f21be2c66661d", null ],
     [ "ResetStates", "classglob_1_1Automata.html#a0ff6841504e4e2b0444b1c25a7a7c42c", null ],

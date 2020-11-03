@@ -626,7 +626,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_pnm(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span> iproc, j, <a name="a13"></a><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, j1 = 0;</div>
+<div class="line">  <span class="keywordtype">int</span> iproc, j, error, j1 = 0;</div>
 <div class="line">  <span class="keywordtype">int</span> node_mapi[NINTN], node_mapb[NBORN], node_mape[NEXTN];</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
@@ -642,9 +642,9 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line">      ;</div>
 <div class="line">    }</div>
 <div class="line">    j1    = 0;</div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a14"></a><a class="code" href="group__ModelDescription.html#gabf401f3d6f9903875a25ff6e2ae6c3cf">ex_put_processor_node_maps</a>(fileid, node_mapi, node_mapb, node_mape, iproc);</div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">      <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">    error = <a name="a13"></a><a class="code" href="group__ModelDescription.html#gabf401f3d6f9903875a25ff6e2ae6c3cf">ex_put_processor_node_maps</a>(fileid, node_mapi, node_mapb, node_mape, iproc);</div>
+<div class="line">    <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">      <span class="keywordflow">return</span> error;</div>
 <div class="line">    }</div>
 <div class="line">  }</div>
 <div class="line"> </div>
@@ -654,7 +654,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_pem(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span> iproc, j, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, j1 = 0;</div>
+<div class="line">  <span class="keywordtype">int</span> iproc, j, error, j1 = 0;</div>
 <div class="line">  <span class="keywordtype">int</span> elem_mapi[NINTE], elem_mapb[NBORE];</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
@@ -667,9 +667,9 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line">      ;</div>
 <div class="line">    }</div>
 <div class="line">    j1    = 0;</div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a15"></a><a class="code" href="group__ModelDescription.html#gaafdeb8dc48988e581cee185e439c9c5f">ex_put_processor_elem_maps</a>(fileid, elem_mapi, elem_mapb, iproc);</div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">      <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">    error = <a name="a14"></a><a class="code" href="group__ModelDescription.html#gaafdeb8dc48988e581cee185e439c9c5f">ex_put_processor_elem_maps</a>(fileid, elem_mapi, elem_mapb, iproc);</div>
+<div class="line">    <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">      <span class="keywordflow">return</span> error;</div>
 <div class="line">    }</div>
 <div class="line">  }</div>
 <div class="line"> </div>
@@ -679,7 +679,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_pcmp(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span> i, iproc, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> i, iproc, error;</div>
 <div class="line">  <span class="keywordtype">int</span> node_map_ids[NNCMAP], node_map_node_cnts[NNCMAP];</div>
 <div class="line">  <span class="keywordtype">int</span> elem_map_ids[NECMAP], elem_map_elem_cnts[NECMAP];</div>
 <div class="line"> </div>
@@ -696,10 +696,10 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line">      elem_map_elem_cnts[i] = ECNTCM;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a16"></a><a class="code" href="group__ModelDescription.html#ga12a96d0c1af9f03ee4f82d05dbe5546a">ex_put_cmap_params</a>(fileid, node_map_node_cnts, node_map_ids, elem_map_elem_cnts,</div>
+<div class="line">    error = <a name="a15"></a><a class="code" href="group__ModelDescription.html#ga12a96d0c1af9f03ee4f82d05dbe5546a">ex_put_cmap_params</a>(fileid, node_map_node_cnts, node_map_ids, elem_map_elem_cnts,</div>
 <div class="line">                               elem_map_ids, iproc);</div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">      <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">    <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">      <span class="keywordflow">return</span> error;</div>
 <div class="line">    }</div>
 <div class="line">  }</div>
 <div class="line"> </div>
@@ -709,7 +709,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_pncm(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span> i, iproc, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> i, iproc, error;</div>
 <div class="line">  <span class="keywordtype">int</span> node_map_ids[NNCMAP], node_ids[NCNTCM], proc_ids[NCNTCM];</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
@@ -724,9 +724,9 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">for</span> (i = 0; i &lt; NNCMAP; i++) {</div>
-<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a17"></a><a class="code" href="group__ModelDescription.html#gac0cc77c3159c314d1b3276fc38793a49">ex_put_node_cmap</a>(fileid, node_map_ids[i], node_ids, proc_ids, iproc);</div>
-<div class="line">      <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">        <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">      error = <a name="a16"></a><a class="code" href="group__ModelDescription.html#gac0cc77c3159c314d1b3276fc38793a49">ex_put_node_cmap</a>(fileid, node_map_ids[i], node_ids, proc_ids, iproc);</div>
+<div class="line">      <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">        <span class="keywordflow">return</span> error;</div>
 <div class="line">      }</div>
 <div class="line">    }</div>
 <div class="line">  }</div>
@@ -737,7 +737,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_pecm(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span> i, iproc, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> i, iproc, error;</div>
 <div class="line">  <span class="keywordtype">int</span> elem_map_ids[NECMAP], elem_ids[ECNTCM], side_ids[ECNTCM];</div>
 <div class="line">  <span class="keywordtype">int</span> proc_ids[ECNTCM];</div>
 <div class="line"> </div>
@@ -754,9 +754,9 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">for</span> (i = 0; i &lt; NECMAP; i++) {</div>
-<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a18"></a><a class="code" href="group__ModelDescription.html#ga0a4dab0afa672ee7ad4d416b7d227bb5">ex_put_elem_cmap</a>(fileid, elem_map_ids[i], elem_ids, side_ids, proc_ids, iproc);</div>
-<div class="line">      <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">        <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">      error = <a name="a17"></a><a class="code" href="group__ModelDescription.html#ga0a4dab0afa672ee7ad4d416b7d227bb5">ex_put_elem_cmap</a>(fileid, elem_map_ids[i], elem_ids, side_ids, proc_ids, iproc);</div>
+<div class="line">      <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">        <span class="keywordflow">return</span> error;</div>
 <div class="line">      }</div>
 <div class="line">    }</div>
 <div class="line">  }</div>
@@ -767,14 +767,14 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_giinf(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span>  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, nproc, nprocf;</div>
+<div class="line">  <span class="keywordtype">int</span>  error, nproc, nprocf;</div>
 <div class="line">  <span class="keywordtype">char</span> ftype[2];</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a19"></a><a class="code" href="group__ModelDescription.html#ga15d22291d3a9eeec038b833e21314024">ex_get_init_info</a>(fileid, &amp;nproc, &amp;nprocf, ftype);</div>
+<div class="line">  error = <a name="a18"></a><a class="code" href="group__ModelDescription.html#ga15d22291d3a9eeec038b833e21314024">ex_get_init_info</a>(fileid, &amp;nproc, &amp;nprocf, ftype);</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">    <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">    <span class="keywordflow">return</span> error;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (nproc != NPROC) {</div>
@@ -794,16 +794,16 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="keywordtype">int</span> ne_test_ginig(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> error;</div>
 <div class="line">  <span class="keywordtype">int</span> num_nodes_g, num_elems_g, num_elem_blks_g, num_ns_g, num_ss_g;</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a20"></a><a class="code" href="group__ModelDescription.html#ga4edb26795b49c719a260e27a4fa56822">ex_get_init_global</a>(fileid, &amp;num_nodes_g, &amp;num_elems_g, &amp;num_elem_blks_g, &amp;num_ns_g,</div>
+<div class="line">  error = <a name="a19"></a><a class="code" href="group__ModelDescription.html#ga4edb26795b49c719a260e27a4fa56822">ex_get_init_global</a>(fileid, &amp;num_nodes_g, &amp;num_elems_g, &amp;num_elem_blks_g, &amp;num_ns_g,</div>
 <div class="line">                             &amp;num_ss_g);</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">    <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">    <span class="keywordflow">return</span> error;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (num_nodes_g != NNG) {</div>
@@ -829,15 +829,15 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="keywordtype">int</span> ne_test_gelbid(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordtype">int</span> i, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> i, error;</div>
 <div class="line">  <span class="keywordtype">int</span> el_blk_ids[NEBG], el_blk_cnt[NEBG];</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a21"></a><a class="code" href="group__ModelDescription.html#ga6d17f5066410d9474d3f67e810ec3d5b">ex_get_eb_info_global</a>(fileid, el_blk_ids, el_blk_cnt);</div>
+<div class="line">  error = <a name="a20"></a><a class="code" href="group__ModelDescription.html#ga6d17f5066410d9474d3f67e810ec3d5b">ex_get_eb_info_global</a>(fileid, el_blk_ids, el_blk_cnt);</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">    <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">    <span class="keywordflow">return</span> error;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (i = 0; i &lt; NEBG; i++) {</div>
@@ -856,15 +856,15 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="keywordtype">int</span> ne_test_gnsp(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordtype">int</span> i, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> i, error;</div>
 <div class="line">  <span class="keywordtype">int</span> global_ids[NNSG], global_n_cnts[NNSG], global_df_cnts[NNSG];</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a22"></a><a class="code" href="group__ModelDescription.html#gadf5ebba4eae5481a192827f453ca7a33">ex_get_ns_param_global</a>(fileid, global_ids, global_n_cnts, global_df_cnts);</div>
+<div class="line">  error = <a name="a21"></a><a class="code" href="group__ModelDescription.html#gadf5ebba4eae5481a192827f453ca7a33">ex_get_ns_param_global</a>(fileid, global_ids, global_n_cnts, global_df_cnts);</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">    <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">    <span class="keywordflow">return</span> error;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (i = 0; i &lt; NNSG; i++) {</div>
@@ -886,15 +886,15 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="keywordtype">int</span> ne_test_gssp(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordtype">int</span> i, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> i, error;</div>
 <div class="line">  <span class="keywordtype">int</span> global_ids[NSSG], global_e_cnts[NSSG], global_df_cnts[NSSG];</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a23"></a><a class="code" href="group__ModelDescription.html#gae65ecebe1e9746a211d3228472f0c807">ex_get_ss_param_global</a>(fileid, global_ids, global_e_cnts, global_df_cnts);</div>
+<div class="line">  error = <a name="a22"></a><a class="code" href="group__ModelDescription.html#gae65ecebe1e9746a211d3228472f0c807">ex_get_ss_param_global</a>(fileid, global_ids, global_e_cnts, global_df_cnts);</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">    <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">    <span class="keywordflow">return</span> error;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (i = 0; i &lt; NSSG; i++) {</div>
@@ -916,17 +916,17 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="keywordtype">int</span> ne_test_glbp(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordtype">int</span> iproc, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> iproc, error;</div>
 <div class="line">  <span class="keywordtype">int</span> nintn, nborn, nextn, ninte, nbore, nncmap, necmap;</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (iproc = 0; iproc &lt; NPROCF; iproc++) {</div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a24"></a><a class="code" href="group__ModelDescription.html#ga9007d001325fc02e5e7e96cce728f0e6">ex_get_loadbal_param</a>(fileid, &amp;nintn, &amp;nborn, &amp;nextn, &amp;ninte, &amp;nbore, &amp;nncmap, &amp;necmap,</div>
+<div class="line">    error = <a name="a23"></a><a class="code" href="group__ModelDescription.html#ga9007d001325fc02e5e7e96cce728f0e6">ex_get_loadbal_param</a>(fileid, &amp;nintn, &amp;nborn, &amp;nextn, &amp;ninte, &amp;nbore, &amp;nncmap, &amp;necmap,</div>
 <div class="line">                                 iproc);</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">      <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">    <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">      <span class="keywordflow">return</span> error;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (nintn != NINTN) {</div>
@@ -958,16 +958,16 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_gnm(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span> iproc, j, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, j1 = 0;</div>
+<div class="line">  <span class="keywordtype">int</span> iproc, j, error, j1 = 0;</div>
 <div class="line">  <span class="keywordtype">int</span> node_mapi[NINTN], node_mapb[NBORN], node_mape[NEXTN];</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (iproc = 0; iproc &lt; NPROCF; iproc++) {</div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a25"></a><a class="code" href="group__ModelDescription.html#ga732f9044cbc752cd76a4c40a1e588a52">ex_get_processor_node_maps</a>(fileid, node_mapi, node_mapb, node_mape, iproc);</div>
+<div class="line">    error = <a name="a24"></a><a class="code" href="group__ModelDescription.html#ga732f9044cbc752cd76a4c40a1e588a52">ex_get_processor_node_maps</a>(fileid, node_mapi, node_mapb, node_mape, iproc);</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">      <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">    <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">      <span class="keywordflow">return</span> error;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">for</span> (j = 0; j &lt; NINTN; j++) {</div>
@@ -995,17 +995,17 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_gem(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span> iproc, j, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, j1 = 0;</div>
+<div class="line">  <span class="keywordtype">int</span> iproc, j, error, j1 = 0;</div>
 <div class="line">  <span class="keywordtype">int</span> elem_mapi[NINTE], elem_mapb[NBORE];</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*-----------------------------Execution Begins-----------------------------*/</span></div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (iproc = 0; iproc &lt; NPROCF; iproc++) {</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a26"></a><a class="code" href="group__ModelDescription.html#ga366ed2be7f20a941091f9afc8021d6fb">ex_get_processor_elem_maps</a>(fileid, elem_mapi, elem_mapb, iproc);</div>
+<div class="line">    error = <a name="a25"></a><a class="code" href="group__ModelDescription.html#ga366ed2be7f20a941091f9afc8021d6fb">ex_get_processor_elem_maps</a>(fileid, elem_mapi, elem_mapb, iproc);</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">      <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">    <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">      <span class="keywordflow">return</span> error;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">for</span> (j = 0; j &lt; NINTE; j++) {</div>
@@ -1027,7 +1027,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_gncm(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span> i, j, iproc, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> i, j, iproc, error;</div>
 <div class="line">  <span class="keywordtype">int</span> node_map_ids[NNCMAP], node_map_cnts[NNCMAP];</div>
 <div class="line">  <span class="keywordtype">int</span> node_ids[NCNTCM], proc_ids[NCNTCM];</div>
 <div class="line"> </div>
@@ -1035,17 +1035,17 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (iproc = 0; iproc &lt; NPROCF; iproc++) {</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a27"></a><a class="code" href="group__ModelDescription.html#gad30901557b051888e64db80524838a90">ex_get_cmap_params</a>(fileid, node_map_ids, node_map_cnts, NULL, NULL, iproc);</div>
+<div class="line">    error = <a name="a26"></a><a class="code" href="group__ModelDescription.html#gad30901557b051888e64db80524838a90">ex_get_cmap_params</a>(fileid, node_map_ids, node_map_cnts, NULL, NULL, iproc);</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">      <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">    <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">      <span class="keywordflow">return</span> error;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">for</span> (i = 0; i &lt; NNCMAP; i++) {</div>
-<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a28"></a><a class="code" href="group__ModelDescription.html#gafde319de5641ae802d523fc63f7e1174">ex_get_node_cmap</a>(fileid, node_map_ids[i], node_ids, proc_ids, iproc);</div>
+<div class="line">      error = <a name="a27"></a><a class="code" href="group__ModelDescription.html#gafde319de5641ae802d523fc63f7e1174">ex_get_node_cmap</a>(fileid, node_map_ids[i], node_ids, proc_ids, iproc);</div>
 <div class="line"> </div>
-<div class="line">      <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">        <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">      <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">        <span class="keywordflow">return</span> error;</div>
 <div class="line">      }</div>
 <div class="line"> </div>
 <div class="line">      <span class="keywordflow">for</span> (j = 0; j &lt; NCNTCM; j++) {</div>
@@ -1065,7 +1065,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"><span class="comment">/*****************************************************************************/</span></div>
 <div class="line"><span class="keywordtype">int</span> ne_test_gecm(<span class="keywordtype">int</span> fileid)</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">int</span> i, j, iproc, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">  <span class="keywordtype">int</span> i, j, iproc, error;</div>
 <div class="line">  <span class="keywordtype">int</span> elem_ids[ECNTCM], elem_map_cnts[NECMAP], proc_ids[ECNTCM];</div>
 <div class="line">  <span class="keywordtype">int</span> side_ids[ECNTCM], elem_map_ids[NECMAP];</div>
 <div class="line"> </div>
@@ -1073,17 +1073,17 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (iproc = 0; iproc &lt; NPROCF; iproc++) {</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gad30901557b051888e64db80524838a90">ex_get_cmap_params</a>(fileid, NULL, NULL, elem_map_ids, elem_map_cnts, iproc);</div>
+<div class="line">    error = <a class="code" href="group__ModelDescription.html#gad30901557b051888e64db80524838a90">ex_get_cmap_params</a>(fileid, NULL, NULL, elem_map_ids, elem_map_cnts, iproc);</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">      <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">    <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">      <span class="keywordflow">return</span> error;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">for</span> (i = 0; i &lt; NECMAP; i++) {</div>
-<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a29"></a><a class="code" href="group__ModelDescription.html#ga6dc4d4ad0b072807fca45c05e68638df">ex_get_elem_cmap</a>(fileid, elem_map_ids[i], elem_ids, side_ids, proc_ids, iproc);</div>
+<div class="line">      error = <a name="a28"></a><a class="code" href="group__ModelDescription.html#ga6dc4d4ad0b072807fca45c05e68638df">ex_get_elem_cmap</a>(fileid, elem_map_ids[i], elem_ids, side_ids, proc_ids, iproc);</div>
 <div class="line"> </div>
-<div class="line">      <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> &lt; 0) {</div>
-<div class="line">        <span class="keywordflow">return</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>;</div>
+<div class="line">      <span class="keywordflow">if</span> (error &lt; 0) {</div>
+<div class="line">        <span class="keywordflow">return</span> error;</div>
 <div class="line">      }</div>
 <div class="line"> </div>
 <div class="line">      <span class="keywordflow">for</span> (j = 0; j &lt; ECNTCM; j++) {</div>
@@ -1127,7 +1127,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line">    num_elem_cmaps[iproc] = NECMAP;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">return</span> (<a name="a30"></a><a class="code" href="group__ModelDescription.html#gacac29bcc7ddf2b1c0538a6754c07c0c6">ex_put_loadbal_param_cc</a>(fileid, num_int_nodes, num_bor_nodes, num_ext_nodes,</div>
+<div class="line">  <span class="keywordflow">return</span> (<a name="a29"></a><a class="code" href="group__ModelDescription.html#gacac29bcc7ddf2b1c0538a6754c07c0c6">ex_put_loadbal_param_cc</a>(fileid, num_int_nodes, num_bor_nodes, num_ext_nodes,</div>
 <div class="line">                                  num_int_elems, num_bor_elems, num_node_cmaps, num_elem_cmaps));</div>
 <div class="line">}</div>
 <div class="line"> </div>
@@ -1162,7 +1162,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="line">    emap_proc_ptr[iproc + 1] = emap_proc_ptr[iproc] + NECMAP;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordflow">return</span> (<a name="a31"></a><a class="code" href="group__ModelDescription.html#gaed235e0e2fea4319cc2586db5009506c">ex_put_cmap_params_cc</a>(fileid, nmap_ids, nmap_n_cnts, nmap_proc_ptr, emap_ids, emap_e_cnts,</div>
+<div class="line">  <span class="keywordflow">return</span> (<a name="a30"></a><a class="code" href="group__ModelDescription.html#gaed235e0e2fea4319cc2586db5009506c">ex_put_cmap_params_cc</a>(fileid, nmap_ids, nmap_n_cnts, nmap_proc_ptr, emap_ids, emap_e_cnts,</div>
 <div class="line">                                emap_proc_ptr));</div>
 <div class="line">}</div>
 </div><!-- fragment --> </div><!-- contents -->
@@ -1173,7 +1173,6 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="ttc" id="agroup__ModelDescription_html_gac0cc77c3159c314d1b3276fc38793a49"><div class="ttname"><a href="group__ModelDescription.html#gac0cc77c3159c314d1b3276fc38793a49">ex_put_node_cmap</a></div><div class="ttdeci">int ex_put_node_cmap(int exoid, ex_entity_id map_id, void_int *node_ids, void_int *proc_ids, int processor)</div><div class="ttdef"><b>Definition:</b> ex_put_node_cmap.c:33</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga04480bc7f03d463ebd190a7086a5852d"><div class="ttname"><a href="group__ModelDescription.html#ga04480bc7f03d463ebd190a7086a5852d">ex_put_init_global</a></div><div class="ttdeci">int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int64_t num_elem_blks_g, int64_t num_node_sets_g, int64_t num_side_sets_g)</div><div class="ttdef"><b>Definition:</b> ex_put_init_global.c:41</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga0a4dab0afa672ee7ad4d416b7d227bb5"><div class="ttname"><a href="group__ModelDescription.html#ga0a4dab0afa672ee7ad4d416b7d227bb5">ex_put_elem_cmap</a></div><div class="ttdeci">int ex_put_elem_cmap(int exoid, ex_entity_id map_id, void_int *elem_ids, void_int *side_ids, void_int *proc_ids, int processor)</div><div class="ttdef"><b>Definition:</b> ex_put_elem_cmap.c:33</div></div>
-<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:71</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gad30901557b051888e64db80524838a90"><div class="ttname"><a href="group__ModelDescription.html#gad30901557b051888e64db80524838a90">ex_get_cmap_params</a></div><div class="ttdeci">int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_node_cnts, void_int *elem_cmap_ids, void_int *elem_cmap_elem_cnts, int processor)</div><div class="ttdef"><b>Definition:</b> ex_get_cmap_params.c:38</div></div>
 <div class="ttc" id="agroup__FileVars_html_gad8792dfd3a757cb160760cfe83b549f8"><div class="ttname"><a href="group__FileVars.html#gad8792dfd3a757cb160760cfe83b549f8">EX_NETCDF4</a></div><div class="ttdeci">#define EX_NETCDF4</div><div class="ttdef"><b>Definition:</b> exodusII.h:98</div></div>
 <div class="ttc" id="agroup__Utilities_html_ga9a940cd55241b5c5e7960a123d79c94c"><div class="ttname"><a href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open</a></div><div class="ttdeci">#define ex_open(path, mode, comp_ws, io_ws, version)</div><div class="ttdef"><b>Definition:</b> exodusII.h:479</div></div>
@@ -1198,7 +1197,7 @@ $(document).ready(function(){initNavTree('_2test_2test_nemesis_8c-example.html',
 <div class="ttc" id="agroup__ModelDescription_html_ga732f9044cbc752cd76a4c40a1e588a52"><div class="ttname"><a href="group__ModelDescription.html#ga732f9044cbc752cd76a4c40a1e588a52">ex_get_processor_node_maps</a></div><div class="ttdeci">int ex_get_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_mapb, void_int *node_mape, int processor)</div><div class="ttdef"><b>Definition:</b> ex_get_processor_node_maps.c:32</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga4edb26795b49c719a260e27a4fa56822"><div class="ttname"><a href="group__ModelDescription.html#ga4edb26795b49c719a260e27a4fa56822">ex_get_init_global</a></div><div class="ttdeci">int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g, void_int *num_elem_blks_g, void_int *num_node_sets_g, void_int *num_side_sets_g)</div><div class="ttdef"><b>Definition:</b> ex_get_init_global.c:63</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga4d038d8e160f3969d3eb407e29e296a8"><div class="ttname"><a href="group__ModelDescription.html#ga4d038d8e160f3969d3eb407e29e296a8">ex_put_ns_param_global</a></div><div class="ttdeci">int ex_put_ns_param_global(int exoid, void_int *global_ids, void_int *node_cnts, void_int *df_cnts)</div><div class="ttdef"><b>Definition:</b> ex_put_ns_param_global.c:32</div></div>
-<div class="ttc" id="aexodusII_8h_html_af1f4f3b83e65c1415d915910a48463ea"><div class="ttname"><a href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a></div><div class="ttdeci">char * ex_copy_string(char *dest, char const *source, size_t elements)</div><div class="ttdef"><b>Definition:</b> ex_utils.c:2289</div></div>
+<div class="ttc" id="aexodusII_8h_html_af1f4f3b83e65c1415d915910a48463ea"><div class="ttname"><a href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a></div><div class="ttdeci">char * ex_copy_string(char *dest, char const *source, size_t elements)</div><div class="ttdef"><b>Definition:</b> ex_utils.c:2290</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga6d17f5066410d9474d3f67e810ec3d5b"><div class="ttname"><a href="group__ModelDescription.html#ga6d17f5066410d9474d3f67e810ec3d5b">ex_get_eb_info_global</a></div><div class="ttdeci">int ex_get_eb_info_global(int exoid, void_int *el_blk_ids, void_int *el_blk_cnts)</div><div class="ttdef"><b>Definition:</b> ex_get_eb_info_global.c:28</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

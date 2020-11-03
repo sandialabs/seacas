@@ -170,7 +170,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following coding will write out all of the element variables for a single time step n to an open exodus file :</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_ele_vars, num_elem_blk, *num_elem_in_block,<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>,</div>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_ele_vars, num_elem_blk, *num_elem_in_block,error,</div>
 <div class="line">    <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, *ebids;</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">float</span> *elem_var_vals;</div>
@@ -186,11 +186,11 @@ Functions</h2></td></tr>
 <div class="line">            elem_var_vals[m] = 10.0;</div>
 <div class="line">         }</div>
 <div class="line"> </div>
-<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#acdd0a32434145c29ba3de7a2c81fa23d">ex_put_elem_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, k, ebids[j],</div>
+<div class="line">      error = <a class="code" href="exodusII_8h.html#acdd0a32434145c29ba3de7a2c81fa23d">ex_put_elem_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, k, ebids[j],</div>
 <div class="line">                               num_elem_in_block[j], elem_var_vals);</div>
 <div class="line"> </div>
 <div class="line">      \comment{Using non-deprecated <span class="keyword">function</span>:}</div>
-<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, k, ebids[j],</div>
+<div class="line">      error = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, k, ebids[j],</div>
 <div class="line">                               num_elem_in_block[j], elem_var_vals);</div>
 <div class="line"> </div>
 <div class="line">      free (elem_var_vals);</div>
@@ -201,7 +201,6 @@ Functions</h2></td></tr>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:71</div></div>
 <div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:740</div></div>
 <div class="ttc" id="aexodusII_8h_html_acdd0a32434145c29ba3de7a2c81fa23d"><div class="ttname"><a href="exodusII_8h.html#acdd0a32434145c29ba3de7a2c81fa23d">ex_put_elem_var</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_put_elem_var(int exoid, int time_step, int elem_var_index, ex_entity_id elem_blk_id, int64_t num_elem_this_blk, const void *elem_var_vals)</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var.c:114</div></div>
 <div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a></div><div class="ttdeci">@ EX_ELEM_BLOCK</div><div class="ttdef"><b>Definition:</b> exodusII.h:252</div></div>

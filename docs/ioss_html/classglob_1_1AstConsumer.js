@@ -11,7 +11,7 @@ var classglob_1_1AstConsumer =
     [ "ExecStar", "classglob_1_1AstConsumer.html#a0984122b3642084a7739ec86155d4a4b", null ],
     [ "ExecUnion", "classglob_1_1AstConsumer.html#a572541b12c0fd80545aeff33d5616956", null ],
     [ "GenAutomata", "classglob_1_1AstConsumer.html#af52c25a1a8f21d1ea97f45745958a350", null ],
-    [ "NewState", "classglob_1_1AstConsumer.html#aeb0c579e46bbbd7a34667b41b34f30d7", null ],
+    [ "NewState", "classglob_1_1AstConsumer.html#afcbcbae2394da5f4abba889c257f6cbc", null ],
     [ "ProcessSetItem", "classglob_1_1AstConsumer.html#acba41f846b57af77a34907b8b315d625", null ],
     [ "ProcessSetItems", "classglob_1_1AstConsumer.html#a87711a480080dd2c51cf4fef09cda309", null ],
     [ "current_state_", "classglob_1_1AstConsumer.html#a9c0448dfad1bb60412088cd6ed3f661e", null ],

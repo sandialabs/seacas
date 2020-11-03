@@ -164,7 +164,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>For example, the following code segment will read the values of the first nodal variable for node number one for all time steps stored in the data file:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_time_steps, var_index, node_num, beg_time, end_time, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_time_steps, var_index, node_num, beg_time, end_time, error, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div>
 <div class="line"><span class="keywordtype">float</span> *var_values;</div>
 <div class="line"> </div>
 <div class="line">\comment{determine how many time steps are stored}</div>
@@ -174,7 +174,7 @@ Functions</h2></td></tr>
 <div class="line">var_values = (<span class="keywordtype">float</span> *) calloc (num_time_steps, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
 <div class="line"> </div>
 <div class="line">var_index = 1; node_num = 1; beg_time = 1; end_time = -1;</div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga65af6a2020057488a89b28238993562b">ex_get_var_time</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, var_index, node_num, beg_time,</div>
+<div class="line">error = <a class="code" href="group__ResultsData.html#ga65af6a2020057488a89b28238993562b">ex_get_var_time</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, var_index, node_num, beg_time,</div>
 <div class="line">                              end_time, var_values);</div>
 </div><!-- fragment --> 
 </div>
@@ -182,7 +182,6 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="agroup__Utilities_html_ga1b8122836266615fd2795736dc21e2ae"><div class="ttname"><a href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a></div><div class="ttdeci">int64_t ex_inquire_int(int exoid, ex_inquiry req_info)</div><div class="ttdef"><b>Definition:</b> ex_inquire.c:951</div></div>
-<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:71</div></div>
 <div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:740</div></div>
 <div class="ttc" id="agroup__ResultsData_html_ga65af6a2020057488a89b28238993562b"><div class="ttname"><a href="group__ResultsData.html#ga65af6a2020057488a89b28238993562b">ex_get_var_time</a></div><div class="ttdeci">int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t id, int beg_time_step, int end_time_step, void *var_vals)</div><div class="ttdef"><b>Definition:</b> ex_get_var_time.c:44</div></div>
 <div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a></div><div class="ttdeci">@ EX_NODAL</div><div class="ttdef"><b>Definition:</b> exodusII.h:245</div></div>

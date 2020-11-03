@@ -167,7 +167,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>For example, the following code segment will initialize an element block with an ID of 10, write out the connectivity array, and write out the element attributes array:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> id, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, num_elem_in_blk, num_nodes_per_elem, *connect, num_attr;</div>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> id, error, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, num_elem_in_blk, num_nodes_per_elem, *connect, num_attr;</div>
 <div class="line"><span class="keywordtype">float</span> *attrib;</div>
 <div class="line"> </div>
 <div class="line">\comment{write element block parameters}</div>
@@ -176,7 +176,7 @@ Functions</h2></td></tr>
 <div class="line">num_nodes_per_elem = 4;   \comment{elements are 4-node shells}</div>
 <div class="line">num_attr = 1;             \comment{one attribute per element}</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a8203562a4606a04c2724ac3220da17d0">ex_put_elem_block</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="keywordtype">id</span>, <span class="stringliteral">&quot;SHELL&quot;</span>, num_elem_in_blk,</div>
+<div class="line">error = <a class="code" href="exodusII_8h.html#a8203562a4606a04c2724ac3220da17d0">ex_put_elem_block</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="keywordtype">id</span>, <span class="stringliteral">&quot;SHELL&quot;</span>, num_elem_in_blk,</div>
 <div class="line">                          num_nodes_per_elem, num_attr);</div>
 <div class="line"> </div>
 <div class="line">\comment{write element connectivity}</div>
@@ -188,7 +188,7 @@ Functions</h2></td></tr>
 <div class="line">\comment{nodes <span class="keywordflow">for</span> second element}</div>
 <div class="line">connect[4] = 5; connect[5] = 6; connect[6] = 7; connect[7] = 8;</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a2b23ce59a7d3dc80c32e828c21062101">ex_put_elem_conn</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="keywordtype">id</span>, connect);</div>
+<div class="line">error = <a class="code" href="exodusII_8h.html#a2b23ce59a7d3dc80c32e828c21062101">ex_put_elem_conn</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="keywordtype">id</span>, connect);</div>
 <div class="line"> </div>
 <div class="line">\comment{write element block attributes}</div>
 <div class="line">attrib = (<span class="keywordtype">float</span> *) calloc (num_attr*num_elem_in_blk, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
@@ -199,20 +199,19 @@ Functions</h2></td></tr>
 <div class="line">   }</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aa4ba9756d0331b3eabe73cd07adec4c3">ex_put_elem_attr</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="keywordtype">id</span>, attrib);</div>
+<div class="line">error = <a class="code" href="exodusII_8h.html#aa4ba9756d0331b3eabe73cd07adec4c3">ex_put_elem_attr</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="keywordtype">id</span>, attrib);</div>
 <div class="line"> </div>
 <div class="line">\comment{Same result <span class="keyword">using</span> non-deprecated code}</div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gad98c043e0e089bcb7a4f6662f96f7822">ex_put_block</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>, <span class="stringliteral">&quot;SHELL&quot;</span>, num_elem_in_blk,</div>
+<div class="line">error = <a class="code" href="group__ModelDescription.html#gad98c043e0e089bcb7a4f6662f96f7822">ex_put_block</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>, <span class="stringliteral">&quot;SHELL&quot;</span>, num_elem_in_blk,</div>
 <div class="line">                          num_nodes_per_elem, 0, 0, num_attr);</div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>, connect);</div>
-<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>, attrib);</div>
+<div class="line">error = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>, connect);</div>
+<div class="line">error = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>, attrib);</div>
 </div><!-- fragment --> 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="agroup__ModelDescription_html_gad98c043e0e089bcb7a4f6662f96f7822"><div class="ttname"><a href="group__ModelDescription.html#gad98c043e0e089bcb7a4f6662f96f7822">ex_put_block</a></div><div class="ttdeci">int ex_put_block(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const char *entry_descrip, int64_t num_entries_this_blk, int64_t num_nodes_per_entry, int64_t num_edges_per_entry, int64_t num_faces_per_entry, int64_t num_attr_per_entry)</div><div class="ttdef"><b>Definition:</b> ex_put_block.c:47</div></div>
-<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:71</div></div>
 <div class="ttc" id="aexodusII_8h_html_a2b23ce59a7d3dc80c32e828c21062101"><div class="ttname"><a href="exodusII_8h.html#a2b23ce59a7d3dc80c32e828c21062101">ex_put_elem_conn</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_put_elem_conn(int exoid, ex_entity_id elem_blk_id, const void_int *connect)</div><div class="ttdef"><b>Definition:</b> ex_put_elem_conn.c:41</div></div>
 <div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:740</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga359b6d011348ed04746217e67612f3c1"><div class="ttname"><a href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a></div><div class="ttdeci">int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const void_int *node_conn, const void_int *elem_edge_conn, const void_int *elem_face_conn)</div><div class="ttdef"><b>Definition:</b> ex_put_conn.c:44</div></div>
