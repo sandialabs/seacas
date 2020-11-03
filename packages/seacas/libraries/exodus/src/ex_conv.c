@@ -146,9 +146,11 @@ int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
    *
    * \param is_parallel   1 if parallel file; 0 if serial
    *
-   * \param is_hdf5      1 if parallel netcdf-4 mode; 0 if not.
+   * \param is_hdf5       1 if parallel netcdf-4 mode; 0 if not.
    *
    * \param is_pnetcdf    1 if parallel PNetCDF file; 0 if not.
+   *
+   * \param is_write      1 if output file; 0 if readonly
    *
    * word size parameters are specified in bytes. valid values are 0, 4, and 8:
    */
