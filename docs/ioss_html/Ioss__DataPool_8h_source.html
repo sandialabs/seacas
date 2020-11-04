@@ -93,41 +93,39 @@ $(document).ready(function(){initNavTree('Ioss__DataPool_8h_source.html',''); in
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// See packages/seacas/LICENSE for details</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="structDataPool.html">    8</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structDataPool.html">DataPool</a></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  {</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    <span class="comment">// Data space shared by most field input/output routines...</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="structDataPool.html#a96e50a9e2506e5a95fc95fbfd22d4903">   11</a></span>&#160;    std::vector&lt;char&gt;    <a class="code" href="structDataPool.html#a96e50a9e2506e5a95fc95fbfd22d4903">data</a>;</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="structDataPool.html#a1ff16631e32e71d9e6112c0bc4ad57aa">   12</a></span>&#160;    std::vector&lt;int&gt;     <a class="code" href="structDataPool.html#a1ff16631e32e71d9e6112c0bc4ad57aa">data_int</a>;</div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="structDataPool.html#a528eebfdfe192c190ab1690a9d4f7a1a">   13</a></span>&#160;    std::vector&lt;int64_t&gt; <a class="code" href="structDataPool.html#a528eebfdfe192c190ab1690a9d4f7a1a">data_int64</a>;</div>
-<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="structDataPool.html#a272fbb99b23b928461835630418b0bad">   14</a></span>&#160;    std::vector&lt;double&gt;  <a class="code" href="structDataPool.html#a272fbb99b23b928461835630418b0bad">data_double</a>;</div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="structDataPool.html#ad39daccb3fa5f1dbbc24f7a011ac0551">   15</a></span>&#160;    std::vector&lt;Complex&gt; <a class="code" href="structDataPool.html#ad39daccb3fa5f1dbbc24f7a011ac0551">data_complex</a>;</div>
+<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="structDataPool.html">    8</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structDataPool.html">DataPool</a></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  <span class="comment">// Data space shared by most field input/output routines...</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="structDataPool.html#a96e50a9e2506e5a95fc95fbfd22d4903">   11</a></span>&#160;  std::vector&lt;char&gt;    <a class="code" href="structDataPool.html#a96e50a9e2506e5a95fc95fbfd22d4903">data</a>;</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="structDataPool.html#a1ff16631e32e71d9e6112c0bc4ad57aa">   12</a></span>&#160;  std::vector&lt;int&gt;     <a class="code" href="structDataPool.html#a1ff16631e32e71d9e6112c0bc4ad57aa">data_int</a>;</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="structDataPool.html#a528eebfdfe192c190ab1690a9d4f7a1a">   13</a></span>&#160;  std::vector&lt;int64_t&gt; <a class="code" href="structDataPool.html#a528eebfdfe192c190ab1690a9d4f7a1a">data_int64</a>;</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="structDataPool.html#a272fbb99b23b928461835630418b0bad">   14</a></span>&#160;  std::vector&lt;double&gt;  <a class="code" href="structDataPool.html#a272fbb99b23b928461835630418b0bad">data_double</a>;</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="structDataPool.html#ad39daccb3fa5f1dbbc24f7a011ac0551">   15</a></span>&#160;  std::vector&lt;Complex&gt; <a class="code" href="structDataPool.html#ad39daccb3fa5f1dbbc24f7a011ac0551">data_complex</a>;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#ifdef SEACAS_HAVE_KOKKOS</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    Kokkos::View&lt;char *&gt;    data_view_char;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    Kokkos::View&lt;int *&gt;     data_view_int;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    Kokkos::View&lt;int64_t *&gt; data_view_int64;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    Kokkos::View&lt;double *&gt;  data_view_double;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="comment">// Kokkos::View&lt;Kokkos_Complex *&gt; data_view_complex cannot be a global variable,</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="comment">// Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="comment">// have type std::complex entities.</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    Kokkos::View&lt;char **&gt;    data_view_2D_char;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    Kokkos::View&lt;int **&gt;     data_view_2D_int;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    Kokkos::View&lt;int64_t **&gt; data_view_2D_int64;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    Kokkos::View&lt;double **&gt;  data_view_2D_double;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="comment">// Kokkos::View&lt;Kokkos_Complex **&gt; data_view_2D_complex cannot be a global variable,</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="comment">// Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="comment">// have type std::complex entities.</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    Kokkos::View&lt;char **, Kokkos::LayoutRight, Kokkos::HostSpace&gt; data_view_2D_char_layout_space;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    Kokkos::View&lt;int **, Kokkos::LayoutRight, Kokkos::HostSpace&gt;  data_view_2D_int_layout_space;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    Kokkos::View&lt;int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace&gt;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        data_view_2D_int64_layout_space;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    Kokkos::View&lt;double **, Kokkos::LayoutRight, Kokkos::HostSpace&gt;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        data_view_2D_double_layout_space;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="comment">// Kokkos::View&lt;Kokkos_Complex **, Kokkos::LayoutRight, Kokkos::HostSpace&gt;</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="comment">// data_view_2D_complex_layout_space cannot be a global variable,</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="comment">// Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="comment">// have type std::complex entities.</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  };</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  Kokkos::View&lt;char *&gt;    data_view_char;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  Kokkos::View&lt;int *&gt;     data_view_int;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  Kokkos::View&lt;int64_t *&gt; data_view_int64;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  Kokkos::View&lt;double *&gt;  data_view_double;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="comment">// Kokkos::View&lt;Kokkos_Complex *&gt; data_view_complex cannot be a global variable,</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="comment">// Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="comment">// have type std::complex entities.</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  Kokkos::View&lt;char **&gt;    data_view_2D_char;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  Kokkos::View&lt;int **&gt;     data_view_2D_int;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  Kokkos::View&lt;int64_t **&gt; data_view_2D_int64;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  Kokkos::View&lt;double **&gt;  data_view_2D_double;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="comment">// Kokkos::View&lt;Kokkos_Complex **&gt; data_view_2D_complex cannot be a global variable,</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="comment">// Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="comment">// have type std::complex entities.</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  Kokkos::View&lt;char **, Kokkos::LayoutRight, Kokkos::HostSpace&gt;    data_view_2D_char_layout_space;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  Kokkos::View&lt;int **, Kokkos::LayoutRight, Kokkos::HostSpace&gt;     data_view_2D_int_layout_space;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  Kokkos::View&lt;int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace&gt; data_view_2D_int64_layout_space;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  Kokkos::View&lt;double **, Kokkos::LayoutRight, Kokkos::HostSpace&gt;  data_view_2D_double_layout_space;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="comment">// Kokkos::View&lt;Kokkos_Complex **, Kokkos::LayoutRight, Kokkos::HostSpace&gt;</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="comment">// data_view_2D_complex_layout_space cannot be a global variable,</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="comment">// Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="comment">// have type std::complex entities.</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;};</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="astructDataPool_html_a272fbb99b23b928461835630418b0bad"><div class="ttname"><a href="structDataPool.html#a272fbb99b23b928461835630418b0bad">DataPool::data_double</a></div><div class="ttdeci">std::vector&lt; double &gt; data_double</div><div class="ttdef"><b>Definition:</b> Ioss_DataPool.h:14</div></div>
