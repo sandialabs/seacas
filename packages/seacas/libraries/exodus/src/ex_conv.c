@@ -108,7 +108,7 @@ int ex__check_valid_file_id(int exoid, const char *func)
 }
 
 int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
-                  int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf, int is_write)
+                  int int64_status, bool is_parallel, bool is_hdf5, bool is_pnetcdf, bool is_write)
 {
   char                  errmsg[MAX_ERR_LENGTH];
   struct ex__file_item *new_file;

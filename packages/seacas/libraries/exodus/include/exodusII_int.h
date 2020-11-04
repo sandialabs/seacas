@@ -15,6 +15,8 @@
 #ifndef EXODUS_II_INT_HDR
 #define EXODUS_II_INT_HDR
 
+#include <stdbool.h>
+
 #include "exodus_config.h"
 
 #if defined(EXODUS_THREADSAFE)
@@ -756,7 +758,7 @@ char *ex__name_red_var_of_object(ex_entity_type /*obj_type*/, int /*indx*/);
 char *ex__name_of_map(ex_entity_type /*map_type*/, int /*map_index*/);
 
 int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
-                  int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf, int is_write);
+                  int int64_status, bool is_parallel, bool is_hdf5, bool is_pnetcdf, bool is_write);
 
 void ex__conv_exit(int exoid);
 

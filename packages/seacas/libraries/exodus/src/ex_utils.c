@@ -2132,12 +2132,12 @@ int ex__handle_mode(unsigned int my_mode, int is_parallel, int run_version)
 int ex__populate_header(int exoid, const char *path, int my_mode, int is_parallel, int *comp_ws,
                         int *io_ws)
 {
-  int status;
-  int old_fill;
-  int lio_ws;
-  int filesiz    = 1;
-  int is_hdf5    = 0;
-  int is_pnetcdf = 0;
+  int  status;
+  int  old_fill;
+  int  lio_ws;
+  int  filesiz    = 1;
+  bool is_hdf5    = false;
+  bool is_pnetcdf = false;
 
   float version;
   char  errmsg[MAX_ERR_LENGTH];
@@ -2180,11 +2180,12 @@ int ex__populate_header(int exoid, const char *path, int my_mode, int is_paralle
   nc_inq_format_extended(exoid, &format, &mode);
 
   if (format & NC_FORMAT_PNETCDF) {
-    is_pnetcdf = 1;
+    is_pnetcdf = true;
+    ;
   }
 
   if (format & NC_FORMAT_NC_HDF5) {
-    is_hdf5 = 1;
+    is_hdf5 = true;
   }
 
   if (ex__conv_init(exoid, comp_ws, io_ws, 0, int64_status, is_parallel, is_hdf5, is_pnetcdf,
