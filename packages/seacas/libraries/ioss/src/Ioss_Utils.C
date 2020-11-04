@@ -2268,8 +2268,8 @@ namespace {
   {
     const auto &css = region.get_commsets();
     for (const auto &ics : css) {
-      const std::string &name = ics->name();
       if (options.debug && rank == 0) {
+        const std::string &name = ics->name();
         fmt::print(Ioss::DEBUG(), "{}, ", name);
       }
       auto cs = new Ioss::CommSet(*ics);

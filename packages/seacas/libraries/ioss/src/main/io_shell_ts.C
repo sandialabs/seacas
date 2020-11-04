@@ -634,7 +634,6 @@ namespace {
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
     const auto &nbs = region.get_node_blocks();
-    size_t      id  = 1;
     for (const auto &inb : nbs) {
       const std::string &name = inb->name();
       if (debug) {
@@ -648,10 +647,8 @@ namespace {
                   << "\n";
       }
 
-      auto nb = new Ioss::NodeBlock(output_region.get_database(), name, num_nodes, degree);
+      auto nb = new Ioss::NodeBlock(*inb);
       output_region.add(nb);
-
-      transfer_properties(inb, nb);
 
       if (output_region.get_database()->needs_shared_node_information()) {
         // If the "owning_processor" field exists on the input
@@ -669,10 +666,6 @@ namespace {
           nb->put_field_data("owning_processor", data.data(), isize);
         }
       }
-
-      transfer_fields(inb, nb, Ioss::Field::MESH);
-      transfer_fields(inb, nb, Ioss::Field::ATTRIBUTE);
-      ++id;
     }
     if (debug) {
       DO_OUTPUT << '\n';
@@ -793,11 +786,8 @@ namespace {
         size_t      count = iblock->entity_count();
         total_entities += count;
 
-        auto block = new T(output_region.get_database(), name, type, count);
+        auto block = new T(*iblock);
         output_region.add(block);
-        transfer_properties(iblock, block);
-        transfer_fields(iblock, block, Ioss::Field::MESH);
-        transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (!debug) {
         DO_OUTPUT << " Number of " << std::setw(14) << (*blocks.begin())->type_string()
@@ -838,29 +828,20 @@ namespace {
         DO_OUTPUT << name << ", ";
       }
 
-      auto        surf = new Ioss::SideSet(output_region.get_database(), name);
-      const auto &fbs  = ss->get_side_blocks();
-      for (const auto &fb : fbs) {
-        const std::string &fbname = fb->name();
-        if (debug) {
-          DO_OUTPUT << fbname << ", ";
-        }
-        std::string fbtype   = fb->topology()->name();
-        std::string partype  = fb->parent_element_topology()->name();
-        size_t      num_side = fb->entity_count();
-        total_sides += num_side;
-
-        auto block =
-            new Ioss::SideBlock(output_region.get_database(), fbname, fbtype, partype, num_side);
-        surf->add(block);
-        transfer_properties(fb, block);
-        transfer_fields(fb, block, Ioss::Field::MESH);
-        transfer_fields(fb, block, Ioss::Field::ATTRIBUTE);
-      }
-      transfer_properties(ss, surf);
-      transfer_fields(ss, surf, Ioss::Field::MESH);
-      transfer_fields(ss, surf, Ioss::Field::ATTRIBUTE);
+      auto surf = new Ioss::SideSet(*ss);
       output_region.add(surf);
+
+      // Fix up the optional 'owner_block' in copied SideBlocks...
+      const auto &fbs = ss->get_side_blocks();
+      for (const auto &ifb : fbs) {
+        if (ifb->parent_block() != nullptr) {
+          auto  fb_name = ifb->parent_block()->name();
+          auto *parent  = dynamic_cast<Ioss::EntityBlock *>(output_region.get_entity(fb_name));
+
+          auto *ofb = surf->get_side_block(ifb->name());
+          ofb->set_parent_block(parent);
+        }
+      }
     }
     if (!debug) {
       DO_OUTPUT << " Number of        SideSets            =" << std::setw(12) << fss.size() << "\t"
@@ -883,11 +864,8 @@ namespace {
         }
         size_t count = set->entity_count();
         total_entities += count;
-        auto o_set = new T(output_region.get_database(), name, count);
+        auto o_set = new T(*set);
         output_region.add(o_set);
-        transfer_properties(set, o_set);
-        transfer_fields(set, o_set, Ioss::Field::MESH);
-        transfer_fields(set, o_set, Ioss::Field::ATTRIBUTE);
       }
 
       if (!debug) {
@@ -929,18 +907,12 @@ namespace {
   {
     const auto &css = region.get_commsets();
     for (const auto &ics : css) {
-      const std::string &name = ics->name();
       if (debug) {
+        const std::string &name = ics->name();
         DO_OUTPUT << name << ", ";
       }
-      std::string type  = ics->get_property("entity_type").get_string();
-      size_t      count = ics->entity_count();
-      auto        cs    = new Ioss::CommSet(output_region.get_database(), name, type, count);
+      auto cs = new Ioss::CommSet(*ics);
       output_region.add(cs);
-      transfer_properties(ics, cs);
-      transfer_fields(ics, cs, Ioss::Field::MESH);
-      transfer_fields(ics, cs, Ioss::Field::ATTRIBUTE);
-      transfer_fields(ics, cs, Ioss::Field::COMMUNICATION);
     }
     if (debug) {
       DO_OUTPUT << '\n';
