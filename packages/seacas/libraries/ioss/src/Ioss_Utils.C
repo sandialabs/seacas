@@ -238,16 +238,16 @@ namespace {
     }
   }
 
-  template <typename T> 
-    size_t calculate_maximum_field_size(const std::vector<T> &entities, size_t max_field_size)
+  template <typename T>
+  size_t calculate_maximum_field_size(const std::vector<T> &entities, size_t max_field_size)
   {
     size_t max_size = max_field_size;
     for (const auto &entity : entities) {
       Ioss::NameList fields;
       entity->field_describe(&fields);
       for (const auto &field_name : fields) {
-	Ioss::Field field = entity->get_field(field_name);
-	max_size = std::max(field.get_size(), max_size);
+        Ioss::Field field = entity->get_field(field_name);
+        max_size          = std::max(field.get_size(), max_size);
       }
     }
     return max_size;
@@ -256,9 +256,9 @@ namespace {
   size_t calculate_maximum_field_size(const Ioss::Region &region)
   {
     size_t max_field_size = 0;
-    max_field_size = calculate_maximum_field_size(region.get_node_blocks(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_edge_blocks(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_face_blocks(), max_field_size);
+    max_field_size        = calculate_maximum_field_size(region.get_node_blocks(), max_field_size);
+    max_field_size        = calculate_maximum_field_size(region.get_edge_blocks(), max_field_size);
+    max_field_size        = calculate_maximum_field_size(region.get_face_blocks(), max_field_size);
     max_field_size = calculate_maximum_field_size(region.get_element_blocks(), max_field_size);
     max_field_size = calculate_maximum_field_size(region.get_sidesets(), max_field_size);
     max_field_size = calculate_maximum_field_size(region.get_nodesets(), max_field_size);
@@ -1524,7 +1524,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
   Ioss::DatabaseIO *dbi = region.get_database();
 
-  int rank = dbi->util().parallel_rank();
+  int rank  = dbi->util().parallel_rank();
   int nproc = dbi->util().parallel_size();
 
   bool appending = output_region.get_database()->open_create_behavior() == Ioss::DB_APPEND;
@@ -1540,6 +1540,9 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
         std::ostringstream errmsg;
         fmt::print(errmsg, "ERROR: Could not put output region into define model state\n");
         IOSS_ERROR(errmsg);
+      }
+      else {
+        std::exit(EXIT_FAILURE);
       }
     }
 
