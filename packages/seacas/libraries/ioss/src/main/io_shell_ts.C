@@ -179,9 +179,10 @@ int main(int argc, char *argv[])
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
 #ifdef SEACAS_HAVE_MPI
-    int64_t             min, max, avg;
-    Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
+    int64_t min, max, avg;
+    int64_t hwmin, hwmax, hwavg;
     parallel.memory_stats(min, max, avg);
+    parallel.hwm_memory_stats(hwmin, hwmax, hwavg);
     if (rank == 0) {
       fmt::print(stderr, "\n\tCurrent Memory: {:n}M  {:n}M  {:n}M\n", min / MiB, max / MiB,
                  avg / MiB);
