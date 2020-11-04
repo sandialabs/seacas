@@ -571,6 +571,21 @@ INCLUDE(${CMAKE_CURRENT_LIST_DIR}/TribitsCTestDriverCoreHelpers.cmake)
 #     (e.g. ``${PROJECT_NAME}_ENABLE_SECONDARY_TESTED_CODE=FALSE``.  The
 #     default value is empty "".
 #
+#  ``${PROJECT_NAME}_PACKAGE_ENABLES_FILE=<filepath>``
+#
+#    A file that is expected to define a set to `set()` statements to enable a
+#    set of packages.  The set of packages enabled will determine what
+#    packages are specifically processed and tested (according to other
+#    options as well).  NOTE: To get this set of enables passed to inner
+#    configure, also list this file in the inner configure cache variable
+#    `${PROJECT_NAME}_CONFIGURE_OPTIONS_FILE`_ (see passing such options
+#    through in `Setting variables in the inner CMake configure
+#    (TRIBITS_CTEST_DRIVER())`_).  This is used instead of the variable
+#    ``${PROJECT_NAME}_PACKAGES`` to specify the set of packages to enable and
+#    test.  (If both ``${PROJECT_NAME}_PACKAGES`` and
+#    ``${PROJECT_NAME}_PACKAGE_ENABLES_FILE`` are both set, then a fatal error
+#    will occur.  The default value is empty "".
+#
 #   .. _${PROJECT_NAME}_ENABLE_ALL_FORWARD_DEP_PACKAGES:
 #
 #   ``${PROJECT_NAME}_ENABLE_ALL_FORWARD_DEP_PACKAGES=[TRUE|FALSE]``
@@ -1013,15 +1028,15 @@ INCLUDE(${CMAKE_CURRENT_LIST_DIR}/TribitsCTestDriverCoreHelpers.cmake)
 #
 #     Determines the model for build.  This value is passed in as the first
 #     argument to the built-in CTest function ``CTEST_START()``.  Valid values
-#     include ``Nightly``, ``Continuous``, and ``Experimental``.  As far a
+#     include ``Nightly``, ``Continuous``, and ``Experimental``.  As far as
 #     CTest is concerned, the only real impact this CTest "Model" has is on
-#     setting the time stamp in the build stamp (which is stored in the file
-#     ``Testing/TAG``).  For the model ``Nightly``, the time stamp in the
+#     setting the time stamp in the build stamp field (which is stored in the
+#     file ``Testing/TAG``).  For the model ``Nightly``, the time stamp in the
 #     build stamp is taken from the variable ``CTEST_NIGHTLY_START_TIME`` read
 #     in from the file `<projectDir>/CTestConfig.cmake`_ file.  Otherwise, the
 #     time stamp used is the current build start time.  (The reason this is
 #     significant is that builds on CDash that have the same site, buildname,
-#     and buildstamp are considered the same build and will combine results.)
+#     and build stamp are considered the same build and will combine results.)
 #     This also defines the default value for `${PROJECT_NAME}_TRACK`_ (see
 #     below) as well as defines the default value for
 #     ``${PROJECT_NAME}_ENABLE_KNOWN_EXTERNAL_REPOS_TYPE``.  The default value
@@ -1039,11 +1054,10 @@ INCLUDE(${CMAKE_CURRENT_LIST_DIR}/TribitsCTestDriverCoreHelpers.cmake)
 #     However, if ``CTEST_TEST_TYPE==Experimental`` (or ``EXPERIMENTAL``),
 #     then ``${PROJECT_NAME}_TRACK`` is forced to ``Experimental``, even if it
 #     was set to a different value.  The default value can also be set in the
-#     ctest -S driver script itself by setting by setting
-#     ``SET(${PROJECT_NAME}_TRACK <cdash-group>)``.  And, of course, if the
-#     environment variable ``export <Project>_TRACK=<cdash-group>`` is set,
-#     then that value will be used for the CDash Track/Group to submit results
-#     to.
+#     ctest -S driver script itself by setting ``SET(${PROJECT_NAME}_TRACK
+#     <cdash-group>)``.  And, of course, if the environment variable ``export
+#     <Project>_TRACK=<cdash-group>`` is set, then that value will be used for
+#     the CDash Track/Group to submit results to.
 #
 #   .. _CTEST_SITE:
 #
@@ -1697,6 +1711,21 @@ FUNCTION(TRIBITS_CTEST_DRIVER)
   # available).  This will override any disabled packages but not those
   # disabled by ${PROJECT_NAME}_EXCLUDE_PACKAGES.
   SET_DEFAULT_AND_FROM_ENV( ${PROJECT_NAME}_PACKAGES "" )
+
+  # Also allow the package enables to be set in a CMake fragment file
+  SET_DEFAULT_AND_FROM_ENV( ${PROJECT_NAME}_PACKAGE_ENABLES_FILE "" )
+
+  IF (
+      (NOT "${${PROJECT_NAME}_PACKAGES}" STREQUAL "")
+      AND
+      (NOT "${${PROJECT_NAME}_PACKAGE_ENABLES_FILE}" STREQUAL "")
+    )
+    MESSAGE(FATAL_ERROR "ERROR: Both"
+      " ${PROJECT_NAME}_PACKAGES and ${PROJECT_NAME}_PACKAGE_ENABLES_FILE"
+      " cannot be non-empty!  Set one or the other to select the set of"
+      " packages to be processed/tested.")
+  ENDIF()
+
   SET(${PROJECT_NAME}_PACKAGES_USER_SELECTED ${${PROJECT_NAME}_PACKAGES})
   SPLIT("${${PROJECT_NAME}_PACKAGES_USER_SELECTED}" ","
     ${PROJECT_NAME}_PACKAGES_USER_SELECTED)
@@ -1705,6 +1734,7 @@ FUNCTION(TRIBITS_CTEST_DRIVER)
   # backward compatibility of this CTest script but we want to let
   # ${PROJECT_NAME}_PACKAGES always be the full set of packages as defined by
   # the basic readin process.
+
 
   # Set the file that the extra repos will be read from
   #
@@ -2120,7 +2150,6 @@ FUNCTION(TRIBITS_CTEST_DRIVER)
       "\n***\n")
     ENABLE_ONLY_MODIFIED_PACKAGES()
   ENDIF()
-
 
   MESSAGE(
     "\n***"
