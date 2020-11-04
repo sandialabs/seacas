@@ -23,7 +23,7 @@ namespace IOShell {
     Interface();
     ~Interface();
 
-    bool parse_options(int argc, char **argv);
+    bool parse_options(int argc, char **argv, int my_processor);
 
     //! Dumps representation of data in this class to cerr
 

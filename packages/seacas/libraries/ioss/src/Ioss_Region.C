@@ -547,7 +547,7 @@ namespace Ioss {
     fmt::print(
         strm,
         "\n Database: {0}\n"
-        " Mesh Type = {1}, {39}\n\n"
+        " Mesh Type = {1}, {39}\n"
         "                      {38:{24}s}\t                 {38:{23}s}\t Variables : Transient / Reduction\n"
         " Spatial dimensions = {2:{24}n}\t                 {38:{23}s}\t Global     = {26:{25}n}\t{44:{25}n}\n"
         " Node blocks        = {7:{24}n}\t Nodes         = {3:{23}n}\t Nodal      = {27:{25}n}\t{45:{25}n}\n"

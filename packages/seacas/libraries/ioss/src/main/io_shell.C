@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 #endif
 
   IOShell::Interface interFace;
-  bool               success = interFace.parse_options(argc, argv);
+  bool               success = interFace.parse_options(argc, argv, rank);
   if (!success) {
     exit(EXIT_FAILURE);
   }
@@ -293,6 +293,7 @@ namespace {
 
         // Do normal copy...
         Ioss::Utils::copy_database(region, output_region, options);
+
         if (mem_stats) {
           dbo->release_memory();
         }
