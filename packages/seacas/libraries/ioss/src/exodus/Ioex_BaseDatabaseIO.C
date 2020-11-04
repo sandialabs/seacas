@@ -7,6 +7,7 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_IOFactory.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_SerializeIO.h>
 #include <Ioss_SurfaceSplit.h>
@@ -30,6 +31,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <tokenize.h>
 #include <utility>
 #include <vector>
 
@@ -496,12 +498,22 @@ namespace Ioex {
       Ioss::Utils::input_file(filename, &input_lines, max_line_length);
     }
 
+    // Get configuration information for IOSS library.
+    // Split into strings and remove empty lines...
+    std::string config = Ioss::IOFactory::show_configuration();
+    std::replace(std::begin(config), std::end(config), '\t', ' ');
+    auto lines = Ioss::tokenize(config, "\n");
+    lines.erase(std::remove_if(lines.begin(), lines.end(),
+                               [](const std::string &line) { return line == ""; }),
+                lines.end());
+
     // See if the client added any "information_records"
     size_t info_rec_size = informationRecords.size();
     size_t in_lines      = input_lines.size();
     size_t qa_lines      = 2; // Platform info and Version info...
+    size_t config_lines  = lines.size();
 
-    size_t total_lines = in_lines + qa_lines + info_rec_size;
+    size_t total_lines = in_lines + qa_lines + info_rec_size + config_lines;
 
     char **info = Ioss::Utils::get_name_array(
         total_lines, max_line_length); // 'total_lines' pointers to char buffers
@@ -519,6 +531,10 @@ namespace Ioex {
     // Copy "information_records" property data ...
     for (size_t j = 0; j < informationRecords.size(); j++, i++) {
       Ioss::Utils::copy_string(info[i], informationRecords[j], max_line_length + 1);
+    }
+
+    for (size_t j = 0; j < lines.size(); j++, i++) {
+      Ioss::Utils::copy_string(info[i], lines[j], max_line_length + 1);
     }
 
     int ierr = ex_put_info(get_file_pointer(), total_lines, info);
