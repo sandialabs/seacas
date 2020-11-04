@@ -300,7 +300,7 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 }
 
-bool IOShell::Interface::parse_options(int argc, char **argv)
+bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 {
   // Get options from environment variable also...
   char *options = getenv("IO_SHELL_OPTIONS");
@@ -319,10 +319,12 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("help") != nullptr) {
+    if (my_processor == 0) {
     options_.usage(std::cerr);
     fmt::print(stderr, "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.\n\n");
     fmt::print(stderr, "\t->->-> Send email to gdsjaar@sandia.gov for {} support.<-<-<-\n",
                options_.program_name());
+    }
     exit(EXIT_SUCCESS);
   }
 
@@ -353,7 +355,9 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   zlib = (options_.retrieve("zlib") != nullptr);
 
   if (szip && zlib) {
-    fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+    if (my_processor == 0) {
+      fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+    }
     return false;
   }
 
@@ -533,13 +537,15 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 #endif
 
       if (data_storage_type == 0) {
-        fmt::print(stderr, "ERROR: Option data_storage must be one of\n");
+	if (my_processor == 0) {
+	  fmt::print(stderr, "ERROR: Option data_storage must be one of\n");
 #ifdef SEACAS_HAVE_KOKKOS
-        fmt::print(stderr, "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or "
-                           "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE\n");
+	  fmt::print(stderr, "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or "
+		     "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE\n");
 #else
-        fmt::print(stderr, "       POINTER, or STD_VECTOR\n");
+	  fmt::print(stderr, "       POINTER, or STD_VECTOR\n");
 #endif
+	}
         return false;
       }
     }
@@ -588,6 +594,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("copyright") != nullptr) {
+    if (my_processor == 0) {
     fmt::print(stderr, "\n"
                        "Copyright(C) 1999-2017 National Technology & Engineering Solutions\n"
                        "of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with\n"
@@ -615,6 +622,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
                        "THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"
                        "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
                        "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n");
+    }
     exit(EXIT_SUCCESS);
   }
 
@@ -626,7 +634,9 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     outputFile = argv[option_index];
   }
   else {
-    fmt::print(stderr, "\nERROR: input and output filename not specified\n\n");
+    if (my_processor == 0) {
+      fmt::print(stderr, "\nERROR: input and output filename not specified\n\n");
+    }
     return false;
   }
 

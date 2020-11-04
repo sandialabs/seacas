@@ -83,8 +83,6 @@ std::string   Ioss::Utils::m_preWarningText = "\nIOSS WARNING: ";
 namespace {
   auto initial_time = std::chrono::high_resolution_clock::now();
 
-  size_t max_field_size = 0;
-
   struct DataPool
   {
     // Data space shared by most field input/output routines...
@@ -238,6 +236,40 @@ namespace {
     if (curr_token != "") {
       tokens.push_back(curr_token);
     }
+  }
+
+  template <typename T> 
+    size_t calculate_maximum_field_size(const std::vector<T> &entities, size_t max_field_size)
+  {
+    size_t max_size = max_field_size;
+    for (const auto &entity : entities) {
+      Ioss::NameList fields;
+      entity->field_describe(&fields);
+      for (const auto &field_name : fields) {
+	Ioss::Field field = entity->get_field(field_name);
+	max_size = std::max(field.get_size(), max_size);
+      }
+    }
+    return max_size;
+  }
+
+  size_t calculate_maximum_field_size(const Ioss::Region &region)
+  {
+    size_t max_field_size = 0;
+    max_field_size = calculate_maximum_field_size(region.get_node_blocks(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_edge_blocks(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_face_blocks(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_element_blocks(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_sidesets(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_nodesets(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_edgesets(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_facesets(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_elementsets(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_commsets(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_structured_blocks(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_assemblies(), max_field_size);
+    max_field_size = calculate_maximum_field_size(region.get_blobs(), max_field_size);
+    return max_field_size;
   }
 
 } // namespace
@@ -1493,6 +1525,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   Ioss::DatabaseIO *dbi = region.get_database();
 
   int rank = dbi->util().parallel_rank();
+  int nproc = dbi->util().parallel_size();
 
   bool appending = output_region.get_database()->open_create_behavior() == Ioss::DB_APPEND;
 
@@ -1514,6 +1547,9 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     transfer_properties(&region, &output_region);
     transfer_qa_info(region, output_region);
 
+    if (rank == 0) {
+      fmt::print(std::cout, "\n\n Input Region summary for rank 0:\n");
+    }
     transfer_nodeblock(region, output_region, data_pool, options, rank);
 
 #ifdef SEACAS_HAVE_MPI
@@ -1554,12 +1590,14 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
     dbi->progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
 
+    // Minimize number of times that we grow the memory buffer used for transferring field data.
+    size_t max_field_size = calculate_maximum_field_size(region);
     if (options.verbose && rank == 0) {
-      fmt::print(Ioss::DEBUG(), "Maximum Field size = {:n} bytes.\n", max_field_size);
+      fmt::print(Ioss::DEBUG(), "\n Maximum Field size = {:n} bytes.\n", max_field_size);
     }
     data_pool.data.resize(max_field_size);
     if (options.verbose && rank == 0) {
-      fmt::print(Ioss::DEBUG(), "Resize finished...\n");
+      fmt::print(Ioss::DEBUG(), " Resize finished...\n");
     }
 
     if (options.debug && rank == 0) {
@@ -1726,7 +1764,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
   if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
     if (options.verbose && rank == 0) {
-      fmt::print(Ioss::DEBUG(), "\nNumber of time steps on database = {}\n\n",
+      fmt::print(Ioss::DEBUG(), "\n Number of time steps on database = {}\n",
                  region.get_property("state_count").get_int());
     }
 
@@ -1888,7 +1926,10 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   dbi->progress("END STATE_TRANSIENT (end) ... ");
   Ioss::Utils::clear(data_pool.data);
 
-  output_region.output_summary(std::cout);
+  if (rank == 0) {
+    fmt::print(std::cout, "\n\n Output Region summary for rank 0:");
+    output_region.output_summary(std::cout);
+  }
 }
 
 namespace {
@@ -2292,9 +2333,6 @@ namespace {
     // whose names begin with the prefix
     for (const auto &field_name : fields) {
       Ioss::Field field = ige->get_field(field_name);
-      if (field.get_size() > max_field_size) {
-        max_field_size = field.get_size();
-      }
       if (field_name != "ids" && !oge->field_exists(field_name) &&
           Ioss::Utils::substr_equal(prefix, field_name)) {
         // If the field does not already exist, add it to the output node block
