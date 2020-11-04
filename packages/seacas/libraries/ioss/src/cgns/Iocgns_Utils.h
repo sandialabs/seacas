@@ -302,7 +302,7 @@ namespace Iocgns {
                             double load_balance, int proc_rank, int proc_count, bool verbose);
     static void   assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,
                                         std::vector<size_t> &work_vector, bool verbose);
-    static void   show_config();
+    static std::string show_config();
 
     template <typename INT>
     static void generate_block_faces(Ioss::ElementTopology *topo, size_t num_elem,
