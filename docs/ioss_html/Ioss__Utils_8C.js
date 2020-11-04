@@ -1,6 +1,5 @@
 var Ioss__Utils_8C =
 [
-    [ "DataPool", "structanonymous__namespace_02Ioss__Utils_8C_03_1_1DataPool.html", "structanonymous__namespace_02Ioss__Utils_8C_03_1_1DataPool" ],
     [ "_POSIX_SOURCE", "Ioss__Utils_8C.html#ac3d144aa01e765a1fae62ab5491c7cc1", null ],
     [ "add_proc_id", "Ioss__Utils_8C.html#a46459f38d1ba7837b3127cd61238c7a2", null ],
     [ "calculate_maximum_field_size", "Ioss__Utils_8C.html#a224f82b0e1983c6561f33f725b5a9a40", null ],

@@ -66,6 +66,9 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     ] ],
     [ "Ioss_DatabaseIO.C", "Ioss__DatabaseIO_8C.html", "Ioss__DatabaseIO_8C" ],
     [ "Ioss_DatabaseIO.h", "Ioss__DatabaseIO_8h.html", "Ioss__DatabaseIO_8h" ],
+    [ "Ioss_DataPool.h", "Ioss__DataPool_8h.html", [
+      [ "DataPool", "structDataPool.html", "structDataPool" ]
+    ] ],
     [ "Ioss_DataSize.h", "Ioss__DataSize_8h.html", "Ioss__DataSize_8h" ],
     [ "Ioss_DBUsage.h", "Ioss__DBUsage_8h.html", "Ioss__DBUsage_8h" ],
     [ "Ioss_Decomposition.C", "Ioss__Decomposition_8C.html", "Ioss__Decomposition_8C" ],
