@@ -197,10 +197,12 @@ namespace {
       Ioss::Region region(dbi, "region_1");
 
       if (region.mesh_type() == Ioss::MeshType::HYBRID) {
-        fmt::print(stderr,
-                   "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
-                   "'Structured' mesh is supported at this time.\n",
-                   region.mesh_type_string());
+        if (rank == 0) {
+          fmt::print(stderr,
+                     "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
+                     "'Structured' mesh is supported at this time.\n",
+                     region.mesh_type_string());
+        }
         return;
       }
 
