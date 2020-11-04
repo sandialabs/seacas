@@ -15,15 +15,17 @@
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Transform.h>
 #include <Ioss_Utils.h>
+#include <fmt/format.h>
+
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <pthread.h>
-#include <stddef.h>
-#include <stdlib.h>
 #include <string>
 #ifndef _MSC_VER
 #include <sys/times.h>
@@ -137,7 +139,9 @@ namespace {
                                     const std::string &       field_name,
                                     const IOShell::Interface &interFace);
 
-  void file_copy(IOShell::Interface &interFace);
+  void file_copy(IOShell::Interface &interFace, int rank);
+
+  Ioss::PropertyManager set_properties(IOShell::Interface &interFace);
 
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
@@ -151,9 +155,11 @@ namespace {
 
 int main(int argc, char *argv[])
 {
+  int num_proc = 1;
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
@@ -164,7 +170,7 @@ int main(int argc, char *argv[])
 #endif
 
   IOShell::Interface interFace;
-  bool               success = interFace.parse_options(argc, argv);
+  bool               success = interFace.parse_options(argc, argv, rank);
   if (!success) {
     exit(EXIT_FAILURE);
   }
@@ -177,17 +183,34 @@ int main(int argc, char *argv[])
   std::string in_file  = interFace.inputFile[0];
   std::string out_file = interFace.outputFile;
 
-  DO_OUTPUT << "Input:    '" << in_file << "', Type: " << interFace.inFiletype << '\n';
-  DO_OUTPUT << "Output:   '" << out_file << "', Type: " << interFace.outFiletype << '\n';
-  DO_OUTPUT << '\n';
+  if (rank == 0 && !interFace.quiet) {
+    fmt::print(stderr,
+               "Input:    '{}', Type: {}\n"
+               "Output:   '{}', Type: {}\n\n",
+               in_file, interFace.inFiletype, out_file, interFace.outFiletype);
+  }
 
 #ifdef SEACAS_HAVE_KOKKOS
-  DO_OUTPUT << "Kokkos default execution space configuration:\n";
+  if (rank == 0)
+    fmt::print(stderr, "Kokkos default execution space configuration:\n");
   Kokkos::DefaultExecutionSpace::print_configuration(std::cerr, false);
-  DO_OUTPUT << "\n";
+  if (rank == 0)
+    fmt::print(stderr, "\n");
 #endif
 
-  file_copy(interFace);
+  double begin = Ioss::Utils::timer();
+  file_copy(interFace, rank);
+  double end = Ioss::Utils::timer();
+
+  if (rank == 0 && !interFace.quiet) {
+    if (num_proc > 1) {
+      fmt::print(stderr, "\n\n\tTotal Execution time = {:.5} seconds on {} processors.\n",
+                 end - begin, num_proc);
+    }
+    else {
+      fmt::print(stderr, "\n\n\tTotal Execution time = {:.5} seconds.\n", end - begin);
+    }
+  }
 
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
@@ -195,93 +218,35 @@ int main(int argc, char *argv[])
     int64_t             min, max, avg;
     Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
     parallel.memory_stats(min, max, avg);
-    DO_OUTPUT << "\n\tCurrent Memory: " << min / MiB << "M  " << max / MiB << "M  " << avg / MiB
-              << "M\n";
-
-    parallel.hwm_memory_stats(min, max, avg);
-    DO_OUTPUT << "\n\tHigh Water Memory: " << min / MiB << "M  " << max / MiB << "M  " << avg / MiB
-              << "M\n";
+    if (rank == 0) {
+      fmt::print(stderr, "\n\tCurrent Memory: {:n}M  {:n}M  {:n}M\n", min / MiB, max / MiB,
+                 avg / MiB);
+      fmt::print(stderr, "\tHigh Water Memory: {:n}M  {:n}M  {:n}M\n", hwmin / MiB, hwmax / MiB,
+                 hwavg / MiB);
+    }
 #else
     int64_t mem = Ioss::Utils::get_memory_info();
     int64_t hwm = Ioss::Utils::get_hwm_memory_info();
-    DO_OUTPUT << "\n\tCurrent Memory:    " << mem / MiB << "M\n"
-              << "\n\tHigh Water Memory: " << hwm / MiB << "M\n";
+    if (rank == 0) {
+      fmt::print(stderr,
+                 "\n\tCurrent Memory:    {:n}M\n"
+                 "\tHigh Water Memory: {:n}M\n",
+                 mem / MiB, hwm / MiB);
+    }
 #endif
   }
-  DO_OUTPUT << "\n" << codename << " execution successful.\n";
+  if (rank == 0) {
+    fmt::print(stderr, "\n{} execution successful.\n", codename);
+  }
 
   return EXIT_SUCCESS;
 }
 
 namespace {
-  void file_copy(IOShell::Interface &interFace)
+  void file_copy(IOShell::Interface &interFace, int rank)
   {
-    Ioss::PropertyManager properties;
-    if (interFace.ints_64_bit) {
-      properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
-      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
-    }
+    Ioss::PropertyManager properties = set_properties(interFace);
 
-    if (interFace.ints_32_bit) {
-      properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
-    }
-
-    if (interFace.reals_32_bit) {
-      properties.add(Ioss::Property("REAL_SIZE_DB", 4));
-    }
-
-    if (interFace.in_memory_read) {
-      properties.add(Ioss::Property("MEMORY_READ", 1));
-    }
-
-    if (interFace.in_memory_write) {
-      properties.add(Ioss::Property("MEMORY_WRITE", 1));
-    }
-
-    if (interFace.compression_level > 0 || interFace.shuffle) {
-      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
-      properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level));
-      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interFace.shuffle)));
-    }
-
-    if (interFace.compose_output == "default") {
-      if (interFace.outFiletype == "cgns") {
-        properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
-        properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
-      }
-      else {
-        properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
-        properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
-      }
-    }
-    else if (interFace.compose_output == "external") {
-      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
-      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
-    }
-    else if (interFace.compose_output != "none") {
-      properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
-      properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
-    }
-
-    if (interFace.netcdf4) {
-      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
-    }
-
-    if (interFace.inputFile.size() > 1) {
-      properties.add(Ioss::Property("ENABLE_FILE_GROUPS", 1));
-    }
-
-    if (interFace.debug) {
-      properties.add(Ioss::Property("LOGGING", 1));
-    }
-
-    if (interFace.memory_statistics) {
-      properties.add(Ioss::Property("ENABLE_TRACING", true));
-    }
-
-    if (!interFace.decomp_method.empty()) {
-      properties.add(Ioss::Property("DECOMPOSITION_METHOD", interFace.decomp_method));
-    }
     bool first = true;
     for (const auto &inpfile : interFace.inputFile) {
       Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
@@ -306,8 +271,10 @@ namespace {
       if (!interFace.groupName.empty()) {
         bool success = dbi->open_group(interFace.groupName);
         if (!success) {
-          DO_OUTPUT << "ERROR: Unable to open group '" << interFace.groupName << "' in file '"
-                    << inpfile << "\n";
+          if (rank == 0) {
+            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
+                       interFace.groupName, inpfile);
+          }
           return;
         }
       }
@@ -316,8 +283,12 @@ namespace {
       Ioss::Region region(dbi, "region_1");
 
       if (region.mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
-        DO_OUTPUT << "\nERROR: io_shell does not support '" << region.mesh_type_string()
-                  << "' meshes.  Only 'Unstructured' mesh is supported at this time.\n";
+        if (rank == 0) {
+          fmt::print(stderr,
+                     "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' mesh is "
+                     "supported at this time.\n",
+                     region.mesh_type_string());
+        }
         return;
       }
 
@@ -743,32 +714,6 @@ namespace {
       DO_OUTPUT << '\n';
     }
   }
-
-#if 0
-  template <typename T>
-  void transfer_fields(const std::vector<T *> &entities, Ioss::Region &output_region,
-                       Ioss::Field::RoleType role, const IOShell::Interface &interFace)
-  {
-    for (const auto &entity : entities) {
-      const std::string &name = entity->name();
-      if (interFace.debug) {
-        DO_OUTPUT << name << ", ";
-      }
-
-      // Find the corresponding output entity...
-      Ioss::GroupingEntity *oeb = output_region.get_entity(name, entity->type());
-      if (oeb != nullptr) {
-        transfer_fields(entity, oeb, role);
-        if (interFace.do_transform_fields) {
-          transform_fields(entity, oeb, role);
-        }
-      }
-    }
-    if (interFace.debug) {
-      DO_OUTPUT << '\n';
-    }
-  }
-#endif
 
   struct param
   {
@@ -1639,5 +1584,96 @@ namespace {
         ns->property_add(Ioss::Property("locally_owned_count", owned));
       }
     }
+  }
+
+  Ioss::PropertyManager set_properties(IOShell::Interface &interFace)
+  {
+    Ioss::PropertyManager properties;
+
+    if (interFace.ints_64_bit) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
+      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
+    }
+
+    if (interFace.ints_32_bit) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+    }
+
+    if (interFace.reals_32_bit) {
+      properties.add(Ioss::Property("REAL_SIZE_DB", 4));
+    }
+
+    if (interFace.in_memory_read) {
+      properties.add(Ioss::Property("MEMORY_READ", 1));
+    }
+
+    if (interFace.in_memory_write) {
+      properties.add(Ioss::Property("MEMORY_WRITE", 1));
+    }
+
+    if (interFace.compression_level > 0 || interFace.shuffle || interFace.szip) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+      properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level));
+      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interFace.shuffle)));
+
+      if (interFace.szip) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
+      }
+      else if (interFace.zlib) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      }
+    }
+
+    if (interFace.compose_output == "default") {
+      if (interFace.outFiletype == "cgns") {
+        properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
+        properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+      }
+      else {
+        properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
+        properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
+      }
+    }
+    else if (interFace.compose_output == "external") {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
+    }
+    else if (interFace.compose_output != "none") {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+    }
+
+    if (interFace.file_per_state) {
+      properties.add(Ioss::Property("FILE_PER_STATE", "YES"));
+    }
+
+    if (interFace.netcdf4) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    }
+
+    if (interFace.netcdf5) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
+    }
+
+    if (interFace.inputFile.size() > 1) {
+      properties.add(Ioss::Property("ENABLE_FILE_GROUPS", 1));
+    }
+
+    if (interFace.debug) {
+      properties.add(Ioss::Property("LOGGING", 1));
+    }
+
+    if (interFace.memory_statistics) {
+      properties.add(Ioss::Property("ENABLE_TRACING", 1));
+    }
+
+    if (!interFace.decomp_method.empty()) {
+      properties.add(Ioss::Property("DECOMPOSITION_METHOD", interFace.decomp_method));
+    }
+
+    if (interFace.retain_empty_blocks) {
+      properties.add(Ioss::Property("RETAIN_EMPTY_BLOCKS", "YES"));
+    }
+    return properties;
   }
 } // namespace
