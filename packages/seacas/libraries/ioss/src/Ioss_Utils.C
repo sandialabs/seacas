@@ -1524,8 +1524,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
   Ioss::DatabaseIO *dbi = region.get_database();
 
-  int rank  = dbi->util().parallel_rank();
-  int nproc = dbi->util().parallel_size();
+  int rank = dbi->util().parallel_rank();
 
   bool appending = output_region.get_database()->open_create_behavior() == Ioss::DB_APPEND;
 
