@@ -7,7 +7,7 @@ var ex__conv_8c =
     [ "ex__check_valid_file_id", "group__Internal.html#gaabfb3fb7bba8d5ee9c0eb07fbabf9b93", null ],
     [ "ex__comp_ws", "group__Utilities.html#ga092f2df32cf25d0010e953a9b64bdc96", null ],
     [ "ex__conv_exit", "group__Internal.html#ga56bb1fc426b3aec7290100a9be5c1f04", null ],
-    [ "ex__conv_init", "group__Internal.html#ga005d2803bbd41ee72a0816872c443bb5", null ],
+    [ "ex__conv_init", "group__Internal.html#gaf4c4ea9eafed93693b958a86be8aa783", null ],
     [ "ex__find_file_item", "group__Internal.html#ga01b3768d8802bad4dde5f39d95a285d4", null ],
     [ "ex__is_parallel", "group__Utilities.html#ga06b40abd0ddd2274a9a420417d806ea3", null ],
     [ "ex_int64_status", "group__Utilities.html#gaf576fc80741a1f568148eaf0cec76b86", null ],

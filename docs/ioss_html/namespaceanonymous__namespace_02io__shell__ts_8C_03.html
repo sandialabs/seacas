@@ -146,8 +146,10 @@ Functions</h2></td></tr>
 <tr class="separator:a27fe8171802cc5fa6716bc23ddacf0b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b11c704342d5542bcbfe08afe733e97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__shell__ts_8C_03.html#a2b11c704342d5542bcbfe08afe733e97">transfer_field_data_internal</a> (<a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *ige, <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *oge, const std::string &amp;field_name, const <a class="el" href="classIOShell_1_1Interface.html">IOShell::Interface</a> &amp;interFace)</td></tr>
 <tr class="separator:a2b11c704342d5542bcbfe08afe733e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a749f0d131ff9e7102f1220fcc35d7369"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__shell__ts_8C_03.html#a749f0d131ff9e7102f1220fcc35d7369">file_copy</a> (<a class="el" href="classIOShell_1_1Interface.html">IOShell::Interface</a> &amp;interFace)</td></tr>
-<tr class="separator:a749f0d131ff9e7102f1220fcc35d7369"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae165fe87327e3ca8091f5d08cd898265"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__shell__ts_8C_03.html#ae165fe87327e3ca8091f5d08cd898265">file_copy</a> (<a class="el" href="classIOShell_1_1Interface.html">IOShell::Interface</a> &amp;interFace, int <a class="el" href="namespaceanonymous__namespace_02io__shell__ts_8C_03.html#a906cd60117c80f679aac473ca1c33fc7">rank</a>)</td></tr>
+<tr class="separator:ae165fe87327e3ca8091f5d08cd898265"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25bd89102a1f74e33bfe2cb75e864464"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__shell__ts_8C_03.html#a25bd89102a1f74e33bfe2cb75e864464">set_properties</a> (<a class="el" href="classIOShell_1_1Interface.html">IOShell::Interface</a> &amp;interFace)</td></tr>
+<tr class="separator:a25bd89102a1f74e33bfe2cb75e864464"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a6a798fb748692a5fe5567671e6d078"><td class="memTemplParams" colspan="2">template&lt;typename INT &gt; </td></tr>
 <tr class="memitem:a0a6a798fb748692a5fe5567671e6d078"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__shell__ts_8C_03.html#a0a6a798fb748692a5fe5567671e6d078">set_owned_node_count</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, int my_processor, <a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> dummy)</td></tr>
 <tr class="separator:a0a6a798fb748692a5fe5567671e6d078"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,8 +176,8 @@ Variables</h2></td></tr>
 <tr class="separator:a45674dbf2f24e8a4b6aff3b216e3d9f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a749f0d131ff9e7102f1220fcc35d7369"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a749f0d131ff9e7102f1220fcc35d7369">&#9670;&nbsp;</a></span>file_copy()</h2>
+<a id="ae165fe87327e3ca8091f5d08cd898265"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae165fe87327e3ca8091f5d08cd898265">&#9670;&nbsp;</a></span>file_copy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -184,8 +186,18 @@ Variables</h2></td></tr>
           <td class="memname">void anonymous_namespace{io_shell_ts.C}::file_copy </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classIOShell_1_1Interface.html">IOShell::Interface</a> &amp;&#160;</td>
-          <td class="paramname"><em>interFace</em></td><td>)</td>
+          <td class="paramname"><em>interFace</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -222,6 +234,24 @@ template&lt;typename INT &gt; </div>
           <td></td>
           <td>)</td>
           <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a25bd89102a1f74e33bfe2cb75e864464"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25bd89102a1f74e33bfe2cb75e864464">&#9670;&nbsp;</a></span>set_properties()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> anonymous_namespace{io_shell_ts.C}::set_properties </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classIOShell_1_1Interface.html">IOShell::Interface</a> &amp;&#160;</td>
+          <td class="paramname"><em>interFace</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">

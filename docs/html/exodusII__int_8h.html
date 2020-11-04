@@ -93,7 +93,8 @@ $(document).ready(function(){initNavTree('exodusII__int_8h.html',''); initResiza
 <div class="title">exodusII_int.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;exodus_config.h&quot;</code><br />
+<div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
+<code>#include &quot;exodus_config.h&quot;</code><br />
 <code>#include &quot;netcdf.h&quot;</code><br />
 <code>#include &lt;inttypes.h&gt;</code><br />
 <code>#include &lt;assert.h&gt;</code><br />
@@ -821,8 +822,8 @@ Functions</h2></td></tr>
 <tr class="separator:gaa73acfd362243764c63086e6a26867a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac5d53509f50b814eff016b208d1529dd"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#gac5d53509f50b814eff016b208d1529dd">ex__name_of_map</a> (<a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a>, int)</td></tr>
 <tr class="separator:gac5d53509f50b814eff016b208d1529dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga005d2803bbd41ee72a0816872c443bb5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga005d2803bbd41ee72a0816872c443bb5">ex__conv_init</a> (int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize, int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf, int is_write)</td></tr>
-<tr class="separator:ga005d2803bbd41ee72a0816872c443bb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf4c4ea9eafed93693b958a86be8aa783"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#gaf4c4ea9eafed93693b958a86be8aa783">ex__conv_init</a> (int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize, int int64_status, bool is_parallel, bool is_hdf5, bool is_pnetcdf, bool is_write)</td></tr>
+<tr class="separator:gaf4c4ea9eafed93693b958a86be8aa783"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga56bb1fc426b3aec7290100a9be5c1f04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga56bb1fc426b3aec7290100a9be5c1f04">ex__conv_exit</a> (int exoid)</td></tr>
 <tr class="separator:ga56bb1fc426b3aec7290100a9be5c1f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0bcb99c4a23dde165c0a75e9acfb3d55"><td class="memItemLeft" align="right" valign="top">nc_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga0bcb99c4a23dde165c0a75e9acfb3d55">nc_flt_code</a> (int exoid)</td></tr>

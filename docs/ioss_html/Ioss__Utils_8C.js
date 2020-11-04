@@ -3,6 +3,8 @@ var Ioss__Utils_8C =
     [ "DataPool", "structanonymous__namespace_02Ioss__Utils_8C_03_1_1DataPool.html", "structanonymous__namespace_02Ioss__Utils_8C_03_1_1DataPool" ],
     [ "_POSIX_SOURCE", "Ioss__Utils_8C.html#ac3d144aa01e765a1fae62ab5491c7cc1", null ],
     [ "add_proc_id", "Ioss__Utils_8C.html#a46459f38d1ba7837b3127cd61238c7a2", null ],
+    [ "calculate_maximum_field_size", "Ioss__Utils_8C.html#a224f82b0e1983c6561f33f725b5a9a40", null ],
+    [ "calculate_maximum_field_size", "Ioss__Utils_8C.html#a5fa4cb8bb8019d521093a9a8705961f0", null ],
     [ "define_field", "Ioss__Utils_8C.html#af221385fb78d9efeb911ee7caa72a854", null ],
     [ "field_tokenize", "Ioss__Utils_8C.html#aacef5984425e3cbd3a5fc1d5f76c2b34", null ],
     [ "get_next_field", "Ioss__Utils_8C.html#ae3be9a9f721e0866b475151c770156f4", null ],
@@ -38,6 +40,5 @@ var Ioss__Utils_8C =
     [ "transfer_structuredblocks", "Ioss__Utils_8C.html#a4ec8f68aa3bb8904bd84839a42d249a9", null ],
     [ "two_letter_hash", "Ioss__Utils_8C.html#aee56b66fd87b59d8c5bc374cf8c9821e", null ],
     [ "initial_time", "Ioss__Utils_8C.html#ae24a2c84c80473618ac9b809c81af59d", null ],
-    [ "max_field_size", "Ioss__Utils_8C.html#addc09de33512ee282ede36ff15b7e00e", null ],
     [ "tab64", "Ioss__Utils_8C.html#a1e554e962ed09c738da4ed28a47052bc", null ]
 ];
