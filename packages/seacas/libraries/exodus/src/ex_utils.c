@@ -152,7 +152,7 @@ const char *ex_config(void)
   assert(j < 2048);
   return buffer;
 }
-void ex_print_config(void) { fprintf(stderr, ex_config()); }
+void ex_print_config(void) { fprintf(stderr, "%s\n", ex_config()); }
 
 /*!
   \ingroup Utilities
