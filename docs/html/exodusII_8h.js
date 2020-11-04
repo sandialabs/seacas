@@ -196,6 +196,7 @@ var exodusII_8h =
     ] ],
     [ "ex_add_attr", "group__ModelDescription.html#ga7d542c319e25ff419dfc70c85caff460", null ],
     [ "ex_close", "group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff", null ],
+    [ "ex_config", "group__Utilities.html#gaf3ed2756fa964a65d584ab71f9c136aa", null ],
     [ "ex_copy", "group__Utilities.html#gae4f66d79971313449a2522ab6df73acc", null ],
     [ "ex_copy_string", "exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea", null ],
     [ "ex_copy_transient", "group__Utilities.html#ga4c18291e0af54b68dd8de44480dc79c1", null ],

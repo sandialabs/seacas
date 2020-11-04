@@ -8,6 +8,6 @@ var classIoss_1_1IOFactory =
     [ "describe", "classIoss_1_1IOFactory.html#ac6a0e3b2b3ce1db1012305d09b8795b1", null ],
     [ "make_IO", "classIoss_1_1IOFactory.html#adfb4d2f81aa33957ccb29cafbc65cd62", null ],
     [ "registry", "classIoss_1_1IOFactory.html#a8f26688aabfc730890100ea8a6491586", null ],
-    [ "show_config", "classIoss_1_1IOFactory.html#ac137c41a5bbc6ecc53aebcb693218b7d", null ],
-    [ "show_configuration", "classIoss_1_1IOFactory.html#a2d6c5fafa4d43523390333086d65aa29", null ]
+    [ "show_config", "classIoss_1_1IOFactory.html#aa2943b097f8432d893c79dd9eb383696", null ],
+    [ "show_configuration", "classIoss_1_1IOFactory.html#a6e06ef9b9e92a216a66393ab99635f2c", null ]
 ];

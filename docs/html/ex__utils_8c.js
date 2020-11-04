@@ -33,6 +33,7 @@ var ex__utils_8c =
     [ "ex__set_compact_storage", "group__Internal.html#ga3117e278aceec23768137b88d4016a09", null ],
     [ "ex__trim", "group__Internal.html#ga72b40a2080a24437041089d1ca10d6a1", null ],
     [ "ex__update_max_name_length", "group__Utilities.html#gaf94a8a293630c4c13ff878e5f6ebde1f", null ],
+    [ "ex_config", "group__Utilities.html#gaf3ed2756fa964a65d584ab71f9c136aa", null ],
     [ "ex_copy_string", "ex__utils_8c.html#af1f4f3b83e65c1415d915910a48463ea", null ],
     [ "ex_get_num_props", "group__Utilities.html#gaf5d7d2d496640993b1c6fe395532e1bc", null ],
     [ "ex_header_size", "group__Utilities.html#ga5cf345127f80e3bcf813194c15d97030", null ],

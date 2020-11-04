@@ -90,6 +90,7 @@ var dir_e4ecc912d2d9b5596a92f119b427736e =
     [ "ex_get_truth_table.c", "ex__get__truth__table_8c.html", "ex__get__truth__table_8c" ],
     [ "ex_get_var.c", "ex__get__var_8c.html", "ex__get__var_8c" ],
     [ "ex_get_var_time.c", "ex__get__var__time_8c.html", "ex__get__var__time_8c" ],
+    [ "ex_get_variable_attribute.c", "ex__get__variable__attribute_8c.html", "ex__get__variable__attribute_8c" ],
     [ "ex_get_variable_name.c", "ex__get__variable__name_8c.html", "ex__get__variable__name_8c" ],
     [ "ex_get_variable_names.c", "ex__get__variable__names_8c.html", "ex__get__variable__names_8c" ],
     [ "ex_get_variable_param.c", "ex__get__variable__param_8c.html", "ex__get__variable__param_8c" ],

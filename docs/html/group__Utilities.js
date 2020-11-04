@@ -10,6 +10,7 @@ var group__Utilities =
     [ "ex__reset_error_status", "group__Utilities.html#ga9339fa5714993b24028454297ee90129", null ],
     [ "ex__update_max_name_length", "group__Utilities.html#gaf94a8a293630c4c13ff878e5f6ebde1f", null ],
     [ "ex_close", "group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff", null ],
+    [ "ex_config", "group__Utilities.html#gaf3ed2756fa964a65d584ab71f9c136aa", null ],
     [ "ex_copy", "group__Utilities.html#gae4f66d79971313449a2522ab6df73acc", null ],
     [ "ex_copy_transient", "group__Utilities.html#ga4c18291e0af54b68dd8de44480dc79c1", null ],
     [ "ex_create_int", "group__Utilities.html#gaaea5bc36c6f151eacbe5fb9d23eb22a5", null ],

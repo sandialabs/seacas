@@ -120,8 +120,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a5ee0077157270d9b88148a0ae63b971c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#a5ee0077157270d9b88148a0ae63b971c">clean</a> ()</td></tr>
 <tr class="memdesc:a5ee0077157270d9b88148a0ae63b971c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty method.  <a href="classIoss_1_1IOFactory.html#a5ee0077157270d9b88148a0ae63b971c">More...</a><br /></td></tr>
 <tr class="separator:a5ee0077157270d9b88148a0ae63b971c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d6c5fafa4d43523390333086d65aa29"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#a2d6c5fafa4d43523390333086d65aa29">show_configuration</a> ()</td></tr>
-<tr class="separator:a2d6c5fafa4d43523390333086d65aa29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e06ef9b9e92a216a66393ab99635f2c"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#a6e06ef9b9e92a216a66393ab99635f2c">show_configuration</a> ()</td></tr>
+<tr class="separator:a6e06ef9b9e92a216a66393ab99635f2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -129,8 +129,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a623a721215c8032ccdcde06a379637fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfb4d2f81aa33957ccb29cafbc65cd62"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classIoss_1_1DatabaseIO.html">DatabaseIO</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#adfb4d2f81aa33957ccb29cafbc65cd62">make_IO</a> (const std::string &amp;filename, <a class="el" href="namespaceIoss.html#a4ec41517502e82a7291184cd7b68b34f">DatabaseUsage</a> db_usage, <a class="el" href="Ioss__CodeTypes_8h.html#a161d2f0d69c09838316e4ea9a74f02d7">MPI_Comm</a> communicator, const <a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;properties) const =0</td></tr>
 <tr class="separator:adfb4d2f81aa33957ccb29cafbc65cd62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac137c41a5bbc6ecc53aebcb693218b7d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#ac137c41a5bbc6ecc53aebcb693218b7d">show_config</a> () const</td></tr>
-<tr class="separator:ac137c41a5bbc6ecc53aebcb693218b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2943b097f8432d893c79dd9eb383696"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#aa2943b097f8432d893c79dd9eb383696">show_config</a> () const</td></tr>
+<tr class="separator:aa2943b097f8432d893c79dd9eb383696"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
@@ -438,8 +438,8 @@ Static Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac137c41a5bbc6ecc53aebcb693218b7d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac137c41a5bbc6ecc53aebcb693218b7d">&#9670;&nbsp;</a></span>show_config()</h2>
+<a id="aa2943b097f8432d893c79dd9eb383696"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2943b097f8432d893c79dd9eb383696">&#9670;&nbsp;</a></span>show_config()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -448,7 +448,7 @@ Static Private Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Ioss::IOFactory::show_config </td>
+          <td class="memname">virtual std::string Ioss::IOFactory::show_config </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -461,12 +461,12 @@ Static Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classIoex_1_1IOFactory.html#afab71c577f77214d025fe85ea905f1ad">Ioex::IOFactory</a>, <a class="el" href="classIocgns_1_1IOFactory.html#a3a00ddb2e03651dbd8127b5d1c6b23d9">Iocgns::IOFactory</a>, and <a class="el" href="classIoad_1_1IOFactory.html#a7ce27c01268b4d96267789b6aa5e2961">Ioad::IOFactory</a>.</p>
+<p>Reimplemented in <a class="el" href="classIoex_1_1IOFactory.html#a4764cced6606afbdca7cfe65cb5d913b">Ioex::IOFactory</a>, <a class="el" href="classIocgns_1_1IOFactory.html#a039d928365eae3653d728fc1151f30fa">Iocgns::IOFactory</a>, and <a class="el" href="classIoad_1_1IOFactory.html#a7ce27c01268b4d96267789b6aa5e2961">Ioad::IOFactory</a>.</p>
 
 </div>
 </div>
-<a id="a2d6c5fafa4d43523390333086d65aa29"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d6c5fafa4d43523390333086d65aa29">&#9670;&nbsp;</a></span>show_configuration()</h2>
+<a id="a6e06ef9b9e92a216a66393ab99635f2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e06ef9b9e92a216a66393ab99635f2c">&#9670;&nbsp;</a></span>show_configuration()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -475,7 +475,7 @@ Static Private Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Ioss::IOFactory::show_configuration </td>
+          <td class="memname">std::string Ioss::IOFactory::show_configuration </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
