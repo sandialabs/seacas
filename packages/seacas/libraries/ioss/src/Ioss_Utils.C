@@ -8,6 +8,7 @@
 #include <Ioss_Blob.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_CommSet.h>
+#include <Ioss_DataPool.h>
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
@@ -82,42 +83,6 @@ std::string   Ioss::Utils::m_preWarningText = "\nIOSS WARNING: ";
 // For copy_database...
 namespace {
   auto initial_time = std::chrono::high_resolution_clock::now();
-
-  struct DataPool
-  {
-    // Data space shared by most field input/output routines...
-    std::vector<char>    data;
-    std::vector<int>     data_int;
-    std::vector<int64_t> data_int64;
-    std::vector<double>  data_double;
-    std::vector<Complex> data_complex;
-#ifdef SEACAS_HAVE_KOKKOS
-    Kokkos::View<char *>    data_view_char;
-    Kokkos::View<int *>     data_view_int;
-    Kokkos::View<int64_t *> data_view_int64;
-    Kokkos::View<double *>  data_view_double;
-    // Kokkos::View<Kokkos_Complex *> data_view_complex cannot be a global variable,
-    // Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
-    // have type std::complex entities.
-    Kokkos::View<char **>    data_view_2D_char;
-    Kokkos::View<int **>     data_view_2D_int;
-    Kokkos::View<int64_t **> data_view_2D_int64;
-    Kokkos::View<double **>  data_view_2D_double;
-    // Kokkos::View<Kokkos_Complex **> data_view_2D_complex cannot be a global variable,
-    // Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
-    // have type std::complex entities.
-    Kokkos::View<char **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_char_layout_space;
-    Kokkos::View<int **, Kokkos::LayoutRight, Kokkos::HostSpace>  data_view_2D_int_layout_space;
-    Kokkos::View<int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace>
-        data_view_2D_int64_layout_space;
-    Kokkos::View<double **, Kokkos::LayoutRight, Kokkos::HostSpace>
-        data_view_2D_double_layout_space;
-    // Kokkos::View<Kokkos_Complex **, Kokkos::LayoutRight, Kokkos::HostSpace>
-    // data_view_2D_complex_layout_space cannot be a global variable,
-    // Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
-    // have type std::complex entities.
-#endif
-  };
 
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank);
 
