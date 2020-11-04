@@ -525,7 +525,8 @@ EXODUS_EXPORT int64_t     ex_inquire_int(int exoid, ex_inquiry req_info);
 EXODUS_EXPORT int         ex_int64_status(int exoid);
 EXODUS_EXPORT int         ex_set_int64_status(int exoid, int mode);
 
-EXODUS_EXPORT void ex_print_config(void);
+EXODUS_EXPORT void        ex_print_config(void);
+EXODUS_EXPORT const char *ex_config(void);
 
 EXODUS_EXPORT int ex_set_max_name_length(int exoid, int length);
 

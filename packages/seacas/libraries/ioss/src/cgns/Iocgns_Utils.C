@@ -2870,43 +2870,50 @@ std::vector<Iocgns::ZoneBC> Iocgns::Utils::parse_zonebc_sideblocks(int cgns_file
 extern "C" int H5get_libversion(unsigned *, unsigned *, unsigned *);
 #endif
 
-void Iocgns::Utils::show_config()
+std::string Iocgns::Utils::show_config()
 {
-  fmt::print(Ioss::OUTPUT(), "\tCGNS Library Version: {}\n", CGNS_DOTVERS);
+  std::stringstream config;
+  fmt::print(config, "\tCGNS Library Version: {}\n", CGNS_DOTVERS);
 #if CG_BUILD_64BIT
-  fmt::print(Ioss::OUTPUT(), "\t\tDefault integer size is 64-bit.\n");
+  fmt::print(config, "\t\tDefault integer size is 64-bit.\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tDefault integer size is 32-bit.\n");
+  fmt::print(config, "\t\tDefault integer size is 32-bit.\n");
 #endif
 #if defined(CGNS_SCOPE_ENUMS)
-  fmt::print(Ioss::OUTPUT(), "\t\tScoped Enums enabled\n");
+  fmt::print(config, "\t\tScoped Enums enabled\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tScoped Enums NOT enabled\n");
+  fmt::print(config, "\t\tScoped Enums NOT enabled\n");
+#endif
+#if defined(CG_COMPACT)
+  fmt::print(config, "\t\tCompact Storage enabled\n");
+#else
+  fmt::print(config, "\t\tCompact Storage NOT enabled\n");
 #endif
 #if CG_BUILD_PARALLEL
-  fmt::print(Ioss::OUTPUT(), "\t\tParallel enabled\n");
+  fmt::print(config, "\t\tParallel enabled\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tParallel NOT enabled\n");
+  fmt::print(config, "\t\tParallel NOT enabled\n");
 #endif
 #if CG_BUILD_HDF5
   unsigned major;
   unsigned minor;
   unsigned release;
   H5get_libversion(&major, &minor, &release);
-  fmt::print(Ioss::OUTPUT(), "\t\tHDF5 enabled ({}.{}.{})\n", major, minor, release);
+  fmt::print(config, "\t\tHDF5 enabled ({}.{}.{})\n", major, minor, release);
 #else
 #error "Not defined..."
 #endif
 #if HDF5_HAVE_COLL_METADATA
-  fmt::print(Ioss::OUTPUT(), "\t\tUsing HDF5 Collective Metadata.\n");
+  fmt::print(config, "\t\tUsing HDF5 Collective Metadata.\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tHDF5 Collective Metadata NOT Available.\n");
+  fmt::print(config, "\t\tHDF5 Collective Metadata NOT Available.\n");
 #endif
 #if HDF5_HAVE_MULTI_DATASET
-  fmt::print(Ioss::OUTPUT(), "\t\tHDF5 Multi-Dataset Available.\n\n");
+  fmt::print(config, "\t\tHDF5 Multi-Dataset Available.\n\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tHDF5 Multi-Dataset NOT Available.\n\n");
+  fmt::print(config, "\t\tHDF5 Multi-Dataset NOT Available.\n\n");
 #endif
+  return config.str();
 }
 
 namespace {
