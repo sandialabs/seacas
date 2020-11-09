@@ -51,9 +51,7 @@
 #define EXODUS_RELEASE_DATE "September 2, 2020"
 
 #define EX_API_VERS 8.08f
-
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
-
 #define EX_VERS EX_API_VERS
 
 /* Retained for backward compatibility */
