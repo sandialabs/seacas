@@ -1029,7 +1029,15 @@ namespace Ioex {
       return;
     }
 
-    bool retain_empty_blocks = false;
+    // If the model contains assemblies, we want to retain the empty blocks since the blocks
+    // might be in an assembly.  This is typically the case when an application is running
+    // in parallel, but is telling IOSS that it is "serial" (MPI_COMM_SELF) and taking care
+    // of synchronization at the app level instead of down here...
+    bool retain_empty_blocks = m_groupCount[EX_ASSEMBLY] > 0;
+
+    // The application can override this setting using the `RETAIN_EMPTY_BLOCKS` property.
+    // This can either set to TRUE or FALSE...  Note that `retain_empty_blocks` will not be
+    // changed unless the property exists.
     Ioss::Utils::check_set_bool_property(properties, "RETAIN_EMPTY_BLOCKS", retain_empty_blocks);
 
     Ioss::Int64Vector X_block_ids(m_groupCount[entity_type]);
