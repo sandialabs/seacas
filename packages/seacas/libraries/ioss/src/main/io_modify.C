@@ -20,7 +20,6 @@
 #include <utility>
 #include <vector>
 
-#include <glob.h>
 
 #include <Ionit_Initializer.h>
 #include <Ioss_Assembly.h>
@@ -40,6 +39,7 @@
 #include <Ioss_Field.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_Getline.h>
+#include <Ioss_Glob.h>
 #include <Ioss_GroupingEntity.h>
 #include <Ioss_IOFactory.h>
 #include <Ioss_NodeBlock.h>
