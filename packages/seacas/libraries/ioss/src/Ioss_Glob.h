@@ -1,5 +1,5 @@
-#ifndef GLOB_CPP_H
-#define GLOB_CPP_H
+#ifndef IOSS_GLOB_CPP_H
+#define IOSS_GLOB_CPP_H
 
 #include <memory>
 #include <string>
@@ -1693,4 +1693,4 @@ namespace glob {
 
 } // namespace glob
 
-#endif // GLOB_CPP_H
+#endif // IOSS_GLOB_CPP_H

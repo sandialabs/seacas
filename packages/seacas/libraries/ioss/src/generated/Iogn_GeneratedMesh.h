@@ -475,7 +475,7 @@ namespace Iogn {
     size_t                               numX{0}, numY{0}, numZ{0};
     size_t                               myNumZ{0}, myStartZ{0};
 
-    size_t processorCount{1};
+    size_t processorCount{0};
     size_t myProcessor{0};
 
     size_t                             timestepCount{0};

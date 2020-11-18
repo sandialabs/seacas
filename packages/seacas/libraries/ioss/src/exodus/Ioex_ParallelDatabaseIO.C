@@ -4638,7 +4638,7 @@ void ParallelDatabaseIO::output_node_map() const
     size_t processor_offset    = node_blocks[0]->get_property("_processor_offset").get_int();
     size_t locally_owned_count = node_blocks[0]->get_property("locally_owned_count").get_int();
 
-    int ierr;
+    int ierr = 0;
     if (!nodeMap.map().empty() && !nodeGlobalImplicitMap.empty()) {
 
       if (int_byte_size_api() == 4) {
@@ -4659,8 +4659,10 @@ void ParallelDatabaseIO::output_node_map() const
       }
     }
     else {
-      ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
-                                   locally_owned_count, nullptr);
+      if (locally_owned_count == 0) {
+	ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
+				     locally_owned_count, nullptr);
+      }
     }
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
