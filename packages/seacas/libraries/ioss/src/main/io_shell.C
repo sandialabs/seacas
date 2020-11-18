@@ -31,7 +31,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "5.1";
+  std::string version = "5.2";
 
   bool mem_stats = false;
 
@@ -258,6 +258,7 @@ namespace {
       options.delay             = interFace.timestep_delay;
       options.reverse           = interFace.reverse;
       options.add_proc_id       = interFace.add_processor_id_field;
+      options.boundary_sideset  = interFace.boundary_sideset;
 
       size_t ts_count = region.get_optional_property("state_count", 0);
 

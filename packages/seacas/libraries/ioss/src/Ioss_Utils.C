@@ -9,6 +9,7 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_DataPool.h>
+#include <Ioss_FaceGenerator.h>
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
@@ -1541,6 +1542,34 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     transfer_elemsets(region, output_region, options, rank);
 
     transfer_sidesets(region, output_region, options, rank);
+
+    std::vector<Ioss::Face> boundary;
+    if (options.boundary_sideset) {
+      Ioss::FaceGenerator face_generator(region);
+      face_generator.generate_faces((int64_t)0, false);
+
+      // Get vector of all boundary faces which will be output as the skin...
+      auto &faces = face_generator.faces("ALL");
+      for (auto &face : faces) {
+        if (face.elementCount_ == 1) {
+          boundary.push_back(face);
+        }
+      }
+
+      // Get topology of the sideset faces. Using just block[0] since for what we are doing, doesn't
+      // really matter.
+      const auto &blocks    = region.get_element_blocks();
+      auto        topo      = blocks[0]->topology();
+      auto        elem_topo = topo->name();
+      auto        face_topo = topo->boundary_type(0)->name();
+
+      auto ss = new Ioss::SideSet(output_region.get_database(), "boundary");
+      output_region.add(ss);
+      auto sb = new Ioss::SideBlock(output_region.get_database(), "boundary", face_topo, elem_topo,
+                                    boundary.size());
+      ss->add(sb);
+    }
+
     transfer_commsets(region, output_region, options, rank);
 
     transfer_coordinate_frames(region, output_region);
@@ -1704,6 +1733,22 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       }
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DEBUG(), "\n");
+      }
+
+      if (options.boundary_sideset) {
+        auto *ss = output_region.get_sideset("boundary");
+        if (ss != nullptr) {
+          auto sb = ss->get_side_block("boundary");
+
+          // Get element/local_face data...
+          std::vector<int64_t> el_side;
+          el_side.reserve(boundary.size() * 2);
+          for (const auto &face : boundary) {
+            el_side.push_back(face.element[0] / 10);
+            el_side.push_back(face.element[0] % 10 + 1);
+          }
+          sb->put_field_data("element_side", el_side);
+        }
       }
     }
     if (options.debug && rank == 0) {
