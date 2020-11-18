@@ -238,6 +238,18 @@ namespace {
     return max_field_size;
   }
 
+  template <typename INT>
+  void output_boundary_sideset(Ioss::SideBlock *sb, const std::vector<Ioss::Face> &boundary,
+                               INT /* dummy */)
+  {
+    std::vector<INT> el_side;
+    el_side.reserve(boundary.size() * 2);
+    for (const auto &face : boundary) {
+      el_side.push_back(face.element[0] / 10);
+      el_side.push_back(face.element[0] % 10 + 1);
+    }
+    sb->put_field_data("element_side", el_side);
+  }
 } // namespace
 
 void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t length)
@@ -1546,7 +1558,12 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     std::vector<Ioss::Face> boundary;
     if (options.boundary_sideset) {
       Ioss::FaceGenerator face_generator(region);
-      face_generator.generate_faces((int64_t)0, false);
+      if (region.get_database()->int_byte_size_api() == 4) {
+        face_generator.generate_faces((int)0, false);
+      }
+      else {
+        face_generator.generate_faces((int64_t)0, false);
+      }
 
       // Get vector of all boundary faces which will be output as the skin...
       auto &faces = face_generator.faces("ALL");
@@ -1739,15 +1756,12 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
         auto *ss = output_region.get_sideset("boundary");
         if (ss != nullptr) {
           auto sb = ss->get_side_block("boundary");
-
-          // Get element/local_face data...
-          std::vector<int64_t> el_side;
-          el_side.reserve(boundary.size() * 2);
-          for (const auto &face : boundary) {
-            el_side.push_back(face.element[0] / 10);
-            el_side.push_back(face.element[0] % 10 + 1);
+          if (output_region.get_database()->int_byte_size_api() == 4) {
+            output_boundary_sideset(sb, boundary, (int)0);
           }
-          sb->put_field_data("element_side", el_side);
+          else {
+            output_boundary_sideset(sb, boundary, (int64_t)0);
+          }
         }
       }
     }
