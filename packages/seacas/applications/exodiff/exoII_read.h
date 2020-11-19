@@ -36,6 +36,7 @@ public:
   explicit ExoII_Read(const std::string &fname);
   virtual ~ExoII_Read();
   const ExoII_Read &operator=(const ExoII_Read &) = delete;
+  ExoII_Read(const ExoII_Read &)                  = delete;
 
   // File operations:
 
@@ -217,9 +218,6 @@ protected:
   // Internal methods:
 
   void Get_Init_Data(); // Gets bunch of initial data.
-
-private:
-  ExoII_Read(const ExoII_Read &) = delete;
 };
 
 template <typename INT> inline INT ExoII_Read<INT>::Node_Map(size_t node_num) const

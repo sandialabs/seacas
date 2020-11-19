@@ -163,7 +163,7 @@ void Ioss::Field::check_type(BasicType the_type) const
   }
 }
 
-void Ioss::Field::reset_count(size_t new_count)
+void Ioss::Field::reset_count(size_t new_count) const
 {
   if (transCount_ == rawCount_) {
     transCount_ = new_count;
@@ -172,7 +172,7 @@ void Ioss::Field::reset_count(size_t new_count)
   size_     = 0;
 }
 
-void Ioss::Field::reset_type(Ioss::Field::BasicType new_type)
+void Ioss::Field::reset_type(Ioss::Field::BasicType new_type) const
 {
   type_ = new_type;
   size_ = 0;

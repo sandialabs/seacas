@@ -176,7 +176,7 @@ Ioss::Property Ioss::GroupingEntity::get_implicit_property(const std::string &my
  *  \param[in] new_field The field to add
  *
  */
-void Ioss::GroupingEntity::field_add(Ioss::Field new_field)
+void Ioss::GroupingEntity::field_add(const Ioss::Field &new_field)
 {
   size_t field_size = new_field.raw_count();
 

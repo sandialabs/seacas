@@ -28,7 +28,7 @@ namespace {
                  std::vector<std::string> &varlist);
 } // namespace
 
-template <typename INT> ExoII_Read<INT>::ExoII_Read() {}
+template <typename INT> ExoII_Read<INT>::ExoII_Read() = default;
 
 template <typename INT> ExoII_Read<INT>::ExoII_Read(const std::string &fname) : file_name(fname) {}
 

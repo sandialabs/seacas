@@ -12,8 +12,8 @@
  *
  */
 
-#ifndef EXODUS_II_INT_HDR
-#define EXODUS_II_INT_HDR
+#ifndef EXODUSII_INT_H
+#define EXODUSII_INT_H
 
 #include <stdbool.h>
 
