@@ -2737,7 +2737,9 @@ int Internals::put_non_define_data(const std::vector<Blob> &blobs)
   int status;
   int entlst_id;
 
+  size_t name_length = 0;
   for (const auto &blob : blobs) {
+    name_length = std::max(name_length, blob.name.length());
     if ((status = nc_inq_varid(exodusFilePtr, VAR_ENTITY_BLOB(blob.id), &entlst_id)) != NC_NOERR) {
       std::string errmsg =
           fmt::format("Error: failed to locate entity list array for blob {} in file id {}",
@@ -2754,13 +2756,17 @@ int Internals::put_non_define_data(const std::vector<Blob> &blobs)
       return (EX_FATAL);
     }
   }
+  ex__update_max_name_length(exodusFilePtr, name_length);
   return EX_NOERR;
 }
 
 int Internals::put_non_define_data(const std::vector<Assembly> &assemblies)
 {
+  size_t name_length = 0;
   for (const auto &assembly : assemblies) {
     int status = EX_NOERR;
+    name_length = std::max(name_length, assembly.name.length());
+
     if (!assembly.memberIdList.empty()) {
       int entlst_id = 0;
       if ((status = nc_inq_varid(exodusFilePtr, VAR_ENTITY_ASSEMBLY(assembly.id), &entlst_id)) !=
@@ -2782,6 +2788,7 @@ int Internals::put_non_define_data(const std::vector<Assembly> &assemblies)
       }
     }
   }
+  ex__update_max_name_length(exodusFilePtr, name_length);
   return EX_NOERR;
 }
 
