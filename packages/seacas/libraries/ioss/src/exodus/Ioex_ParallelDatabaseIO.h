@@ -255,6 +255,8 @@ namespace Ioex {
     mutable std::map<const Ioss::GroupingEntity *, Ioss::Int64Vector> nodesetOwnedNodes;
 
     mutable bool metaDataWritten{false};
+    mutable bool nodeGlobalImplicitMapDefined{false};
+    mutable bool elemGlobalImplicitMapDefined{false};
   };
 } // namespace Ioex
 #endif

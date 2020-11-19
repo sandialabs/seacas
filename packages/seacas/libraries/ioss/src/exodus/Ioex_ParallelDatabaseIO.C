@@ -364,6 +364,8 @@ namespace Ioex {
     Ioss::Utils::clear(nodeOwningProcessor);
     Ioss::Utils::clear(nodeGlobalImplicitMap);
     Ioss::Utils::clear(elemGlobalImplicitMap);
+    nodeGlobalImplicitMapDefined = false;
+    elemGlobalImplicitMapDefined = false;
     nodesetOwnedNodes.clear();
     try {
       decomp.reset();
@@ -3950,6 +3952,7 @@ int64_t ParallelDatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, voi
     for (size_t i = 0; i < count; i++) {
       elemGlobalImplicitMap[eb_offset + i] = offset + i + 1;
     }
+    elemGlobalImplicitMapDefined = true;
   }
 
   elemMap.set_size(elementCount);
@@ -4609,6 +4612,7 @@ void ParallelDatabaseIO::create_implicit_global_map() const
   compose.create_implicit_global_map(nodeOwningProcessor, nodeGlobalImplicitMap, nodeMap,
                                      &locally_owned_count, &processor_offset);
 
+  nodeGlobalImplicitMapDefined = true;
   const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
   if (!node_blocks[0]->property_exists("locally_owned_count")) {
     node_blocks[0]->property_add(Ioss::Property("locally_owned_count", locally_owned_count));
@@ -4639,7 +4643,7 @@ void ParallelDatabaseIO::output_node_map() const
     size_t locally_owned_count = node_blocks[0]->get_property("locally_owned_count").get_int();
 
     int ierr = 0;
-    if (!nodeMap.map().empty() && !nodeGlobalImplicitMap.empty()) {
+    if (nodeMap.defined() && nodeGlobalImplicitMapDefined) {
 
       if (int_byte_size_api() == 4) {
         std::vector<int> file_ids;
@@ -4656,12 +4660,6 @@ void ParallelDatabaseIO::output_node_map() const
         filter_owned_nodes(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
         ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
                                      locally_owned_count, file_ids.data());
-      }
-    }
-    else {
-      if (locally_owned_count == 0) {
-	ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
-				     locally_owned_count, nullptr);
       }
     }
     if (ierr < 0) {
