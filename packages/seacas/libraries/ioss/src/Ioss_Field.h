@@ -127,8 +127,8 @@ namespace Ioss {
     size_t get_index() const { return index_; }
     void   set_index(size_t index) const { index_ = index; }
 
-    void reset_count(size_t new_count) const;  // new number of items in field
-    void reset_type(BasicType new_type) const; // new type of items in field.
+    void reset_count(size_t new_count);  // new number of items in field
+    void reset_type(BasicType new_type); // new type of items in field.
 
     // Verify that data_size is valid.  Return value is the maximum
     // number of entities to get ('RawCount')
@@ -148,13 +148,13 @@ namespace Ioss {
   private:
     std::string name_;
 
-    mutable size_t rawCount_{};   // Count of items in field before transformation
-    mutable size_t transCount_{}; // Count of items in field after transformed
-    mutable size_t size_{};       // maximum data size (in bytes) required to hold entire field
+    size_t         rawCount_{};   // Count of items in field before transformation
+    size_t         transCount_{}; // Count of items in field after transformed
+    size_t         size_{};       // maximum data size (in bytes) required to hold entire field
     mutable size_t index_{}; // Optional flag that can be used by a client to indicate an ordering.
                              // Unused by field itself.
-    mutable BasicType type_{INVALID};
-    RoleType          role_{INTERNAL};
+    BasicType type_{INVALID};
+    RoleType  role_{INTERNAL};
 
     const VariableType *rawStorage_{};   // Storage type of raw field
     const VariableType *transStorage_{}; // Storage type after transformation
