@@ -107,7 +107,8 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
-                  "Specify the hdf5 compression level [0..9] to be used on the output file.",
+                  "Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used "
+                  "on the output file.",
                   nullptr);
 
   options_.enroll(
@@ -368,6 +369,38 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     const char *temp = options_.retrieve("compress");
     if (temp != nullptr) {
       compression_level = std::strtol(temp, nullptr, 10);
+
+      if (zlib) {
+        if (compression_level < 0 || compression_level > 9) {
+          if (my_processor == 0) {
+            fmt::print(stderr,
+                       "ERROR: Bad compression level {}, valid value is between 0 and 9 inclusive "
+                       "for gzip compression.\n",
+                       compression_level);
+          }
+          return false;
+        }
+      }
+      else if (szip) {
+        if (compression_level % 2 != 0) {
+          if (my_processor == 0) {
+            fmt::print(
+                stderr,
+                "ERROR: Bad compression level {}. Must be an even value for szip compression.\n",
+                compression_level);
+          }
+          return false;
+        }
+        if (compression_level < 4 || compression_level > 32) {
+          if (my_processor == 0) {
+            fmt::print(stderr,
+                       "ERROR: Bad compression level {}, valid value is between 4 and 32 inclusive "
+                       "for szip compression.\n",
+                       compression_level);
+          }
+          return false;
+        }
+      }
     }
   }
 

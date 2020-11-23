@@ -688,9 +688,9 @@ struct ex__file_item
   unsigned int assembly_count;
   unsigned int blob_count;
   unsigned int
-      compression_algorithm : 2; /**< GZIP/ZLIB, SZIP, more may be supported by NetCDF soon */
-  unsigned int
-      compression_level : 4; /**< 0 (disabled) to 9 (maximum) compression level; NetCDF-4 only */
+      compression_algorithm : 2;      /**< GZIP/ZLIB, SZIP, more may be supported by NetCDF soon */
+  unsigned int compression_level : 6; /**< 0 (disabled) to 9 (maximum) compression level for
+                                         gzip, 4..32 and even for szip; NetCDF-4 only */
   unsigned int user_compute_wordsize : 1; /**< 0 for 4 byte or 1 for 8 byte reals */
   unsigned int shuffle : 1;               /**< 1 true, 0 false */
   unsigned int

@@ -597,6 +597,33 @@ namespace Ioex {
       ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
 
       // Check properties handled post-create/open...
+      if (properties.exists("COMPRESSION_METHOD")) {
+        auto method                    = properties.get("COMPRESSION_METHOD").get_string();
+        method                         = Ioss::Utils::lowercase(method);
+        ex_compression_type exo_method = EX_COMPRESS_ZLIB;
+        if (method == "zlib" || method == "libz" || method == "gzip") {
+          exo_method = EX_COMPRESS_ZLIB;
+        }
+        else if (method == "szip") {
+#if defined(NC_HAS_SZIP_WRITE)
+          exo_method = EX_COMPRESS_SZIP;
+#else
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WARNING(), "The NetCDF library does not have SZip compression enabled."
+                                        " 'zlib' will be used instead.\n\n");
+          }
+#endif
+        }
+        else {
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WARNING(),
+                       "Unrecognized compression method specified: '{}'."
+                       " 'zlib' will be used instead.\n\n",
+                       method);
+          }
+        }
+        ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_TYPE, exo_method);
+      }
       if (properties.exists("COMPRESSION_LEVEL")) {
         int comp_level = properties.get("COMPRESSION_LEVEL").get_int();
         ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_LEVEL, comp_level);
@@ -4612,7 +4639,7 @@ void ParallelDatabaseIO::create_implicit_global_map() const
   compose.create_implicit_global_map(nodeOwningProcessor, nodeGlobalImplicitMap, nodeMap,
                                      &locally_owned_count, &processor_offset);
 
-  nodeGlobalImplicitMapDefined = true;
+  nodeGlobalImplicitMapDefined                = true;
   const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
   if (!node_blocks[0]->property_exists("locally_owned_count")) {
     node_blocks[0]->property_add(Ioss::Property("locally_owned_count", locally_owned_count));

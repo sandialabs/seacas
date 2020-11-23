@@ -382,14 +382,6 @@ namespace Ioex {
       ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
 
       // Check properties handled post-create/open...
-      if (properties.exists("COMPRESSION_LEVEL")) {
-        int comp_level = properties.get("COMPRESSION_LEVEL").get_int();
-        ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_LEVEL, comp_level);
-      }
-      if (properties.exists("COMPRESSION_SHUFFLE")) {
-        int shuffle = properties.get("COMPRESSION_SHUFFLE").get_int();
-        ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_SHUFFLE, shuffle);
-      }
       if (properties.exists("COMPRESSION_METHOD")) {
         auto method                    = properties.get("COMPRESSION_METHOD").get_string();
         method                         = Ioss::Utils::lowercase(method);
@@ -412,6 +404,16 @@ namespace Ioex {
                      method);
         }
         ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_TYPE, exo_method);
+      }
+
+      if (properties.exists("COMPRESSION_LEVEL")) {
+        int comp_level = properties.get("COMPRESSION_LEVEL").get_int();
+        ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_LEVEL, comp_level);
+      }
+
+      if (properties.exists("COMPRESSION_SHUFFLE")) {
+        int shuffle = properties.get("COMPRESSION_SHUFFLE").get_int();
+        ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_SHUFFLE, shuffle);
       }
     }
     ex_opts(app_opt_val); // Reset back to what it was.
