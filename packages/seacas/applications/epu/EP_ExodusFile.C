@@ -312,15 +312,14 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   }
 
   if (si.compress_data() > 0 || si.szip()) {
-    ex_set_option(outputId_, EX_OPT_COMPRESSION_LEVEL, si.compress_data());
-    ex_set_option(outputId_, EX_OPT_COMPRESSION_SHUFFLE, 1);
-
     if (si.szip()) {
       ex_set_option(outputId_, EX_OPT_COMPRESSION_TYPE, EX_COMPRESS_SZIP);
     }
     else if (si.zlib()) {
       ex_set_option(outputId_, EX_OPT_COMPRESSION_TYPE, EX_COMPRESS_ZLIB);
     }
+    ex_set_option(outputId_, EX_OPT_COMPRESSION_LEVEL, si.compress_data());
+    ex_set_option(outputId_, EX_OPT_COMPRESSION_SHUFFLE, 1);
   }
 
   // EPU Can add a name of "processor_id_epu" which is 16 characters long.
