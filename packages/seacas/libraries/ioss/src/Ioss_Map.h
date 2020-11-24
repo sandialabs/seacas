@@ -13,6 +13,16 @@
 #include <string>  // for string
 #include <utility> // for pair
 #include <vector>  // for vector
+
+#define USE_ROBIN
+#if defined USE_STD
+#include <unordered_map>
+#elif defined USE_HOPSCOTCH
+#include <hash/hopscotch_map.h>
+#elif defined USE_ROBIN
+#include <hash/robin_map.h>
+#endif
+
 namespace Ioss {
   class Field;
 } // namespace Ioss
@@ -20,8 +30,15 @@ namespace Ioss {
 namespace Ioss {
 
   using MapContainer        = std::vector<int64_t>;
-  using IdPair              = std::pair<int64_t, int64_t>;
-  using ReverseMapContainer = std::vector<IdPair>;
+#if defined USE_STD
+  using ReverseMapContainer = std::unordered_map<int64_t, int64_t>;
+#elif defined USE_HOPSCOTCH
+  using ReverseMapContainer = tsl::hopscotch_map<int64_t, int64_t>;
+  // using ReverseMapContainer = tsl::hopscotch_pg_map<int64_t, int64_t>;
+#elif defined USE_ROBIN
+  using ReverseMapContainer = tsl::robin_map<int64_t, int64_t>;
+  // using ReverseMapContainer = tsl::robin_pg_map<int64_t, int64_t>;
+#endif
 
   class Map
   {
@@ -82,7 +99,6 @@ namespace Ioss {
     int64_t global_to_local__(int64_t global, bool must_exist = true) const;
     void    build_reorder_map__(int64_t start, int64_t count);
     void    build_reverse_map__(int64_t num_to_get, int64_t offset);
-    void    verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map);
 
 #if defined(IOSS_THREADSAFE)
     mutable std::mutex m_;
