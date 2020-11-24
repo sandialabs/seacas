@@ -274,7 +274,7 @@ namespace {
         conn[3]            = check_faces[i + 4];
         size_t     element = check_faces[i + 5];
         Ioss::Face face(id, conn);
-        auto       face_iter = faces.find(face);
+        auto       face_iter = faces.find(face, face.hashId_);
         if (face_iter != faces.end()) {
           // we have a match... This is a shared interior face
           (*face_iter).add_element(element); // Already has face multiplied in.
