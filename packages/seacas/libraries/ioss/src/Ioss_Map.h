@@ -29,7 +29,7 @@ namespace Ioss {
 
 namespace Ioss {
 
-  using MapContainer        = std::vector<int64_t>;
+  using MapContainer = std::vector<int64_t>;
 #if defined USE_STD
   using ReverseMapContainer = std::unordered_map<int64_t, int64_t>;
 #elif defined USE_HOPSCOTCH

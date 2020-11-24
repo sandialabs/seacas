@@ -191,9 +191,9 @@ namespace Iohb {
     bool        appendOutput{false};
     bool        addTimeField{false};
 
-    bool        initialized_{false};
-    bool        streamNeedsDelete{false};
-    Format      fileFormat { Format::DEFAULT };
+    bool   initialized_{false};
+    bool   streamNeedsDelete{false};
+    Format fileFormat{Format::DEFAULT};
   };
 } // namespace Iohb
 #endif // IOSS_Iohb_DatabaseIO_h

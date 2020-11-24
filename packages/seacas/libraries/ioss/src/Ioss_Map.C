@@ -123,14 +123,14 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     for (size_t i = 1; i < m_map.size(); i++) {
       if (m_map[i] != 0) {
         bool ok = m_reverse.insert({m_map[i], i}).second;
-	if (!ok) {
-	  std::ostringstream errmsg;
-	  fmt::print(errmsg,
-		     "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
-		     "       Global id {3} assigned to local {0}s {4} and {5}.\n",
-		     m_entityType, m_myProcessor, m_filename, m_map[i], i, m_reverse[m_map[i]]);
-	  IOSS_ERROR(errmsg);
-	}
+        if (!ok) {
+          std::ostringstream errmsg;
+          fmt::print(errmsg,
+                     "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
+                     "       Global id {3} assigned to local {0}s {4} and {5}.\n",
+                     m_entityType, m_myProcessor, m_filename, m_map[i], i, m_reverse[m_map[i]]);
+          IOSS_ERROR(errmsg);
+        }
       }
     }
   }
@@ -138,15 +138,15 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     m_reverse.reserve(m_reverse.size() + num_to_get);
     for (int64_t i = 0; i < num_to_get; i++) {
       int64_t local_id = offset + i + 1;
-      bool ok = m_reverse.insert({m_map[local_id], local_id}).second;
+      bool    ok       = m_reverse.insert({m_map[local_id], local_id}).second;
       if (!ok) {
-	std::ostringstream errmsg;
-	fmt::print(errmsg,
-		   "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
-		   "       Global id {3} assigned to local {0}s {4} and {5}.\n",
-		   m_entityType, m_myProcessor, m_filename, m_map[local_id], local_id,
-		   m_reverse[m_map[local_id]]);
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        fmt::print(errmsg,
+                   "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
+                   "       Global id {3} assigned to local {0}s {4} and {5}.\n",
+                   m_entityType, m_myProcessor, m_filename, m_map[local_id], local_id,
+                   m_reverse[m_map[local_id]]);
+        IOSS_ERROR(errmsg);
       }
 
       if (m_map[local_id] <= 0) {
