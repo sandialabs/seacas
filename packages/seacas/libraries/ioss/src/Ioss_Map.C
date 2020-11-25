@@ -129,13 +129,15 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
       int64_t local_id = offset + i + 1;
       bool    ok       = m_reverse.insert({m_map[local_id], local_id}).second;
       if (!ok) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
-                   "       Global id {3} assigned to local {0}s {4} and {5}.\n",
-                   m_entityType, m_myProcessor, m_filename, m_map[local_id], local_id,
-                   m_reverse[m_map[local_id]]);
-        IOSS_ERROR(errmsg);
+	if (local_id != m_reverse[m_map[local_id]]) {
+	  std::ostringstream errmsg;
+	  fmt::print(errmsg,
+		     "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
+		     "       Global id {3} assigned to local {0}s {4} and {5}.\n",
+		     m_entityType, m_myProcessor, m_filename, m_map[local_id], local_id,
+		     m_reverse[m_map[local_id]]);
+	  IOSS_ERROR(errmsg);
+	}
       }
 
       if (m_map[local_id] <= 0) {
