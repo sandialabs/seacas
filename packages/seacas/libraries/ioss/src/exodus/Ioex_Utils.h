@@ -18,10 +18,10 @@
 #include <string>
 #include <vector>
 
-#define USE_HOPSCOTCH
-#if defined USE_HOPSCOTCH
+#define EXU_USE_HOPSCOTCH
+#if defined EXU_USE_HOPSCOTCH
 #include <hash/hopscotch_map.h>
-#elif defined USE_ROBIN
+#elif defined EXU_USE_ROBIN
 #include <hash/robin_map.h>
 #endif
 
@@ -56,9 +56,9 @@ namespace Ioex {
     { return std::hash<std::string>{}(name_topo.first) + std::hash<size_t>{}((size_t)name_topo.second); }
   };
 
-#if defined USE_HOPSCOTCH
+#if defined EXU_USE_HOPSCOTCH
   using TopologyMap = tsl::hopscotch_map<NameTopoKey, int, NameTopoKeyHash>;
-#elif defined USE_ROBIN
+#elif defined EXU_USE_ROBIN
   using TopologyMap = tsl::robin_map<NameTopoKey, int, NameTopoKeyHash>;
 #else
   // This is the original method that was used in IOSS prior to using hopscotch or robin map.

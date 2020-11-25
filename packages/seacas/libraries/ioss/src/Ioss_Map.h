@@ -13,12 +13,12 @@
 #include <string>  // for string
 #include <vector>  // for vector
 
-#define USE_HOPSCOTCH
-#if defined USE_STD
+#define MAP_USE_HOPSCOTCH
+#if defined MAP_USE_STD
 #include <unordered_map>
-#elif defined USE_HOPSCOTCH
+#elif defined MAP_USE_HOPSCOTCH
 #include <hash/bhopscotch_map.h>
-#elif defined USE_ROBIN
+#elif defined MAP_USE_ROBIN
 #include <hash/robin_map.h>
 #endif
 
@@ -29,14 +29,14 @@ namespace Ioss {
 namespace Ioss {
 
   using MapContainer = std::vector<int64_t>;
-#if defined USE_STD
+#if defined MAP_USE_STD
   using ReverseMapContainer = std::unordered_map<int64_t, int64_t>;
-#elif defined USE_HOPSCOTCH
+#elif defined MAP_USE_HOPSCOTCH
   // The `b` variant requires less-than-comparable key, but is faster
   using ReverseMapContainer = tsl::bhopscotch_map<int64_t, int64_t>;
   // using ReverseMapContainer = tsl::hopscotch_map<int64_t, int64_t>;
   // using ReverseMapContainer = tsl::hopscotch_pg_map<int64_t, int64_t>;
-#elif defined USE_ROBIN
+#elif defined MAP_USE_ROBIN
   using ReverseMapContainer = tsl::robin_map<int64_t, int64_t>;
   // using ReverseMapContainer = tsl::robin_pg_map<int64_t, int64_t>;
 #endif

@@ -12,12 +12,12 @@
 #include <cassert>
 #include <cstddef> // for size_t
 
-#define USE_ROBIN
-#if defined USE_STD
+#define FG_USE_ROBIN
+#if defined FG_USE_STD
 #include <unordered_set>
-#elif defined USE_HOPSCOTCH
+#elif defined FG_USE_HOPSCOTCH
 #include <hash/hopscotch_set.h>
-#elif defined USE_ROBIN
+#elif defined FG_USE_ROBIN
 #include <hash/robin_set.h>
 #endif
 
@@ -94,12 +94,12 @@ namespace Ioss {
     }
   };
 
-#if defined USE_STD
+#if defined FG_USE_STD
   using FaceUnorderedSet = std::unordered_set<Face, FaceHash, FaceEqual>;
-#elif defined USE_HOPSCOTCH
+#elif defined FG_USE_HOPSCOTCH
   using FaceUnorderedSet = tsl::hopscotch_set<Face, FaceHash, FaceEqual>;
   // using FaceUnorderedSet = tsl::hopscotch_pg_set<Face, FaceHash, FaceEqual>;
-#elif defined USE_ROBIN
+#elif defined FG_USE_ROBIN
   using FaceUnorderedSet = tsl::robin_set<Face, FaceHash, FaceEqual>;
   // using FaceUnorderedSet = tsl::robin_pg_set<Face, FaceHash, FaceEqual>;
 #endif
