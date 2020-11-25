@@ -441,7 +441,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
-#	git checkout v4.7.4
+	git checkout v4.7.4
         rm -rf build
         mkdir build
         cd build
