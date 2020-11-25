@@ -27,6 +27,13 @@
 #include <zoltan_cpp.h>
 #endif
 
+#define USE_HOPSCOTCH
+#if defined USE_HOPSCOTCH
+#include <hash/hopscotch_map.h>
+#elif defined USE_ROBIN
+#include <hash/robin_map.h>
+#endif
+
 namespace Ioss {
   const std::vector<std::string> &valid_decomp_methods();
 
@@ -176,7 +183,7 @@ namespace Ioss {
       // global_index is 1-based index into global list of elements [1..global_node_count]
       // return value is 1-based index into local list of elements on this
       // processor (ioss-decomposition)
-      typename std::map<INT, INT>::const_iterator I = elemGTL.find(global_index);
+      auto I = elemGTL.find(global_index);
       assert(I != elemGTL.end());
       return I->second;
     }
@@ -644,7 +651,15 @@ namespace Ioss {
 
     // Note that nodeGTL is a sorted vector.
     std::vector<INT>   nodeGTL; // Convert from global index to local index (1-based)
+
+#if defined USE_HOPSCOTCH
+    tsl::hopscotch_map<INT, INT> elemGTL; // Convert from global index to local index (1-based)
+#elif defined USE_ROBIN
+    tsl::robin_map<INT, INT> elemGTL; // Convert from global index to local index (1-based)
+#else
+  // This is the original method that was used in IOSS prior to using hopscotch or robin map.
     std::map<INT, INT> elemGTL; // Convert from global index to local index (1-based)
+#endif
   };
 } // namespace Ioss
 #endif
