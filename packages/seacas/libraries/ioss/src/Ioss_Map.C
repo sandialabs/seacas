@@ -9,7 +9,6 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h> // for IOSS_ERROR
-#include <algorithm>    // for adjacent_find, lower_bound, etc
 #include <cstddef>      // for size_t
 #include <fmt/ostream.h>
 #include <iterator> // for insert_iterator, inserter
@@ -17,7 +16,6 @@
 #include <sstream>
 #include <string>
 #include <sys/types.h> // for ssize_t
-#include <utility>     // for pair, make_pair
 #include <vector>      // for vector, vector<>::iterator, etc
 
 namespace {
@@ -101,16 +99,7 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
 
 void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
 {
-  // Stored as a sorted vector of <global_id, local_id> pairs...
-  // To build incrementally:
-  // 0. PRE: reverseElementMap is sorted, size >= 0.
-  // 1. Build vector of current ids. -- new_ids
-  // 2. Sort that vector.
-  // 3. Copy reverseElementMap to old_ids, empty reverseElementMap.
-  // 4. Merge old_ids and new_ids to reverseElementMap.
-  // 5. Check for duplicate global_ids...
-
-  // Build a vector containing the current ids...
+  // Stored as an unordered map -- key:global_id, value:local_id
   if (is_sequential()) {
     return;
   }
