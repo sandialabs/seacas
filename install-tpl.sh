@@ -62,8 +62,8 @@ check_valid_yes_no SHARED
 BB=${BB:-NO}
 check_valid_yes_no BB
 
-CRAY=${CRAY:-NO}
-check_valid_yes_no CRAY
+CRAY=${CRAY:-OFF}
+check_valid_on_off CRAY
 
 # Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
 CGNS=${CGNS:-ON}
@@ -86,6 +86,9 @@ check_valid_yes_no NEEDS_ZLIB
 
 NEEDS_SZIP=${NEEDS_SZIP:-NO}
 check_valid_yes_no NEEDS_SZIP
+
+USE_AEC=${USE_AEC:-NO}
+check_valid_yes_no USE_AEC
 
 KOKKOS=${KOKKOS:-OFF}
 check_valid_on_off KOKKOS
@@ -159,6 +162,7 @@ if [ $# -gt 0 ]; then
 	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
 	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
 	echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
+	echo "   USE_AEC      = ${USE_AEC}"
 	echo "   KOKKOS       = ${KOKKOS}"
 	echo "   BB           = ${BB}"
 	echo "   ADIOS2       = ${ADIOS2}"
@@ -179,13 +183,57 @@ check_exec wget
 
 if [ "$NEEDS_SZIP" == "YES" ]
 then
+if [ "$USE_AEC" == "YES" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
+    then
+	echo "${txtgrn}+++ SZIP (via libaec library)${txtrst}"
+        szip_version="1.0.4"
+
+	cd $ACCESS
+	cd TPL/szip
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf libaec-${szip_version}
+            rm -rf v-${szip_version}.tar.gz
+            wget --no-check-certificate https://github.com/MathisRosenhauer/libaec/archive/v${szip_version}.tar.gz
+            tar -xzf v${szip_version}.tar.gz
+            rm -rf v${szip_version}.tar.gz
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd libaec-${szip_version}
+            mkdir build
+            cd build
+
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
+
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 "${txtred}couldn\'t configure libaec(szip). exiting.${txtrst}"
+		exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 "${txtred}couldn\'t build libaec(szip). exiting.${txtrst}"
+		exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
+    fi
+else
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ SZIP${txtrst}"
         szip_version="2.1.1"
 
 	cd $ACCESS
-	cd TPL
+	cd TPL/szip
 	if [ "$DOWNLOAD" == "YES" ]
 	then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -200,7 +248,12 @@ then
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd szip-${szip_version}
-            ./configure --prefix=${INSTALL_PATH}
+            # mkdir build
+            # cd build
+
+	    ./configure --prefix=${INSTALL_PATH}
+            # CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
+
             if [[ $? != 0 ]]
             then
 		echo 1>&2 ${txtred}couldn\'t configure szip. exiting.${txtrst}
@@ -217,7 +270,7 @@ then
 	echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
-
+fi
 
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
@@ -267,7 +320,7 @@ then
     if [ "${H5VERSION}" == "V18" ]; then
 	hdf_version="1.8.21"
     elif [ "${H5VERSION}" == "V110" ]; then
-	hdf_version="1.10.6"
+	hdf_version="1.10.7"
     elif [ "${H5VERSION}" == "V112" ]; then
 	hdf_version="1.12.0"
     else
@@ -285,8 +338,13 @@ then
 	if [ "${H5VERSION}" == "V18" ]
 	then
 	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar.bz2
-	else
+	elif [ "${H5VERSION}" == "V110" ]; then
 	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+	elif [ "${H5VERSION}" == "V112" ]; then
+	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+	else
+	    echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
+	    exit 1
 	fi
         tar -jxf hdf5-${hdf_version}.tar.bz2
         rm -f hdf5-${hdf_version}.tar.bz2
@@ -296,7 +354,11 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
-        CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
+        rm -rf build
+        mkdir build
+        cd build
+	CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
+	#CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
@@ -380,10 +442,7 @@ then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
 	git checkout v4.7.4
-        if [ -d build ]
-        then
-            rm -rf build
-        fi
+        rm -rf build
         mkdir build
         cd build
         CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
@@ -592,10 +651,7 @@ then
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd kokkos-${kokkos_version}
-            if [ -d build ]
-            then
-                rm -rf build
-            fi
+            rm -rf build
             mkdir build
             cd build
             CUDA=${CUDA} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash ../../runcmake.sh
@@ -637,10 +693,7 @@ then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2
 	    git checkout v2.5.0
-            if [ -d build ]
-            then
-                rm -rf build
-            fi
+            rm -rf build
             mkdir build
             cd build
             SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
@@ -682,10 +735,7 @@ then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd googletest
 	    git checkout release-1.8.1
-            if [ -d build ]
-            then
-                rm -rf build
-            fi
+            rm -rf build
             mkdir build
             cd build
             SHARED=${SHARED} DEBUG=${DEBUG} bash -x ../../runcmake.sh

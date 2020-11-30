@@ -1,9 +1,9 @@
 /*
- * Copyright(C) 2010-2017, 2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
- * See packages/seacas/LICENSE for details.
+ * See packages/seacas/LICENSE for details
  */
 // concatenates EXODUS/GENESIS output from parallel processors to a single file
 
@@ -35,6 +35,7 @@
 #include <exodusII.h>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <Windows.h>
 #undef IN
 #undef OUT
@@ -723,9 +724,13 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     // must check for zero length blocks
     get_element_blocks(part_count, local_mesh, global, blocks, glob_blocks);
 
+    bool map_element_ids = interFace.map_element_ids();
+    if (interFace.subcycle() >= 0) {
+      map_element_ids = false;
+    }
     std::vector<INT> global_element_map(global.elementCount);
     build_reverse_element_map(local_element_to_global, local_mesh, blocks, glob_blocks, &global,
-                              part_count, global_element_map, interFace.map_element_ids());
+                              part_count, global_element_map, map_element_ids);
 
     //
     //    NOTE:  Node set/side set information can be different for each processor
@@ -1765,8 +1770,7 @@ namespace {
     for (int b = 0; b < global_num_blocks; b++) {
 
       if (debug_level & 4) {
-        fmt::print(stderr,
-                   "\nOutput element block info for...\n"
+        fmt::print("\nOutput element block info for...\n"
                    "Block {}, Id = {}, Name = '{}', Elements = {:12n}, Nodes/element = {}, "
                    "Attributes = {}\n"
                    "B{}:\t",
@@ -1801,7 +1805,7 @@ namespace {
         if (blocks[p][b].entity_count() > 0) { // non-zero length block
 
           if (debug_level & 4) {
-            fmt::print(stderr, "#");
+            fmt::print("#");
           }
           size_t maximum_nodes = blocks[p][b].entity_count();
           maximum_nodes *= blocks[p][b].nodesPerElement;
@@ -1859,7 +1863,7 @@ namespace {
 
         } // end if blocks[p][b].entity_count() (non-zero length block)
         else if (debug_level & 4) {
-          fmt::print(stderr, ".");
+          fmt::print(".");
         }
       } // end for p=0..part_count-1
 
@@ -1883,7 +1887,7 @@ namespace {
         delete[] attributes[b];
       } // end for b=0..global_num_blocks-1
       if (debug_level & 4) {
-        fmt::print(stderr, "\n");
+        fmt::print("\n");
       }
     }
     fmt::print("\n");

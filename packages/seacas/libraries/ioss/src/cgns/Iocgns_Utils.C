@@ -1,34 +1,8 @@
-// Copyright(C) 1999-2018, 2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//
-//     * Redistributions in binary form must reproduce the above
-//       copyright notice, this list of conditions and the following
-//       disclaimer in the documentation and/or other materials provided
-//       with the distribution.
-//
-//     * Neither the name of NTESS nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// See packages/seacas/LICENSE for details
 
 #include <cgns/Iocgns_Defines.h>
 
@@ -878,11 +852,7 @@ void Iocgns::Utils::output_assembly(int file_ptr, const Ioss::Assembly *assembly
   int fam  = 0;
   CGERR(cg_family_write(file_ptr, base, assembly->name().c_str(), &fam));
 
-  int64_t id = 0;
-  if (assembly->property_exists("id")) {
-    id = assembly->get_property("id").get_int();
-  }
-
+  int64_t id = assembly->get_optional_property("id", 0);
   CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
   CGERR(cg_descriptor_write("FamVC_TypeId", "0"));
   CGERR(cg_descriptor_write("FamVC_TypeName", "Unspecified"));
@@ -920,7 +890,7 @@ void Iocgns::Utils::output_assembly(int file_ptr, const Ioss::Assembly *assembly
         // specifies what assembly they are in.  Currently, the way
         // CGNS represents assemblies limits membership to at most one
         // assembly.
-        Ioss::GroupingEntity *new_mem = const_cast<Ioss::GroupingEntity *>(mem);
+        auto *new_mem = const_cast<Ioss::GroupingEntity *>(mem);
         new_mem->property_add(Ioss::Property("assembly", assembly->name()));
       }
     }
@@ -1071,10 +1041,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       bocotype = (CG_BCType_t)ss->get_property("bc_type").get_int();
     }
 
-    int64_t id = fam;
-    if (ss->property_exists("id")) {
-      id = ss->get_property("id").get_int();
-    }
+    int64_t id = ss->get_optional_property("id", fam);
 
     CGERR(cg_fambc_write(file_ptr, base, fam, "FamBC", bocotype, &bc_index));
     CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
@@ -1474,9 +1441,14 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, int base_ptr, Ios
   const auto &nblocks                 = region->get_node_blocks();
   const auto &nblock                  = nblocks[0];
   bool        global_has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
+  bool        is_file_per_state       = (base_ptr >= 0);
 
+  // IF the `base_ptr` is positive, then we are in file-per-state option.
+  // `file_ptr` points to the linked-to file where the state data is being
+  // written and `base_ptr` points to the "base" file which has the mesh
+  // metadata and links to the solution data "state" files.
   std::string linked_file_name;
-  if (base_ptr >= 0) {
+  if (is_file_per_state) {
     linked_file_name = region->get_database()->get_filename();
   }
 
@@ -1486,7 +1458,7 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, int base_ptr, Ios
     int base = block->get_property("base").get_int();
     int zone = get_db_zone(block);
     if (has_nodal_fields) {
-      if (base_ptr >= 0) {
+      if (is_file_per_state) {
         // We are using file-per-state and we need to add a link from the base file (base_ptr)
         // to the state file (file_ptr).
         CGERR(cg_goto(base_ptr, base, "Zone_t", zone, "end"));
@@ -1501,7 +1473,7 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, int base_ptr, Ios
       CGERR(cg_descriptor_write("Step", step.c_str()));
     }
     if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
-      if (base_ptr >= 0) {
+      if (is_file_per_state) {
         // We are using file-per-state and we need to add a link from the base file (base_ptr)
         // to the state file (file_ptr).
         CGERR(cg_goto(base_ptr, base, "Zone_t", zone, "end"));
@@ -1573,7 +1545,7 @@ int Iocgns::Utils::find_solution_index(int cgns_file_ptr, int base, int zone, in
         // Try to decode the step from the FlowSolution_t name.
         // If `db_name` does not have `Step` or `step` in name,
         // then don't search
-        if (strcasestr(db_name, "step") != NULL) {
+        if (strcasestr(db_name, "step") != nullptr) {
           int nstep = extract_trailing_int(db_name);
           if (nstep == step) {
             return i + 1;
@@ -2329,7 +2301,7 @@ void Iocgns::Utils::set_line_decomposition(int cgns_file_ptr, const std::string 
     CGCHECKNP(cg_family_read(cgns_file_ptr, base, family, name, &num_bc, &num_geo));
     if (num_bc > 0) {
       Ioss::Utils::fixup_name(name);
-      families.push_back(name);
+      families.emplace_back(name);
     }
   }
 
@@ -2574,6 +2546,13 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
   // On first entry, work_vector will be all zeros.  To avoid any
   // searching, assign the first `nproc` zones to the `nproc` entries
   // in `work_vector`.  Avoids searching...
+  if (zones.size() < work_vector.size()) {
+    std::ostringstream errmsg;
+    fmt::print(errmsg,
+               "IOCGNS error: Could not decompose mesh across {} processors based on constraints.",
+               work_vector.size());
+    IOSS_ERROR(errmsg);
+  }
   assert(zones.size() >= work_vector.size());
   size_t i = 0;
   for (; i < work_vector.size(); i++) {
@@ -2627,6 +2606,8 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
 size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
                                 double load_balance, int proc_rank, int proc_count, bool verbose)
 {
+  auto original_zones(zones); // In case we need to call this again...
+
   auto   new_zones(zones);
   size_t new_zone_id = zones.size() + 1;
 
@@ -2710,7 +2691,7 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
       }
 
       std::vector<std::pair<int, Iocgns::StructuredZoneData *>> active;
-      active.push_back(std::make_pair(split_cnt, zone));
+      active.emplace_back(split_cnt, zone);
       do {
         assert(!active.empty());
         split_cnt = active.back().first;
@@ -2733,8 +2714,8 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
               new_zones.push_back(children.first);
               new_zones.push_back(children.second);
               new_zone_id += 2;
-              active.push_back(std::make_pair(split_cnt - max_power_2, children.second));
-              active.push_back(std::make_pair(max_power_2, children.first));
+              active.emplace_back(split_cnt - max_power_2, children.second);
+              active.emplace_back(max_power_2, children.first);
               num_active++;
             }
           }
@@ -2747,9 +2728,8 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
     }
   }
   else {
-    for (size_t i = 0; i < zones.size(); i++) {
-      auto zone       = zones[i];
-      int  num_active = 0;
+    for (auto zone : zones) {
+      int num_active = 0;
       if (zone->work() <= max_avg) {
         // This zone is already in `new_zones`; just skip doing anything else with it.
       }
@@ -2769,14 +2749,14 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
             new_zones.push_back(children.second);
             new_zone_id += 2;
             num_active++;
-            active.push_back(std::make_pair(split_cnt, children.second));
+            active.emplace_back(split_cnt, children.second);
           }
           else {
-            active.push_back(std::make_pair(split_cnt, zone));
+            active.emplace_back(split_cnt, zone);
           }
         }
         else {
-          active.push_back(std::make_pair(split_cnt, zone));
+          active.emplace_back(split_cnt, zone);
         }
 
         // The work remaining on this zone should be approximately
@@ -2806,8 +2786,8 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
                 new_zones.push_back(children.first);
                 new_zones.push_back(children.second);
                 new_zone_id += 2;
-                active.push_back(std::make_pair(split_cnt - max_power_2, children.second));
-                active.push_back(std::make_pair(max_power_2, children.first));
+                active.emplace_back(split_cnt - max_power_2, children.second);
+                active.emplace_back(max_power_2, children.first);
                 num_active++;
               }
             }
@@ -2821,9 +2801,29 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
     }
   }
   std::swap(new_zones, zones);
-  if (zones.size() < (size_t)proc_count && load_balance > 1.05) {
+  size_t active = std::count_if(zones.begin(), zones.end(),
+                                [](const Iocgns::StructuredZoneData *z) { return z->is_active(); });
+
+  if (active < (size_t)proc_count && load_balance > 1.05) {
     // Tighten up the load_balance factor to get some decomposition going...
     double new_load_balance = (1.0 + load_balance) / 2.0;
+
+    // If any of the original zones were split the first time we called this routine,
+    // we need to delete the zones created via splitting.
+    // Also reset the parent zone to not have any children...
+    for (auto &zone : zones) {
+      if (!zone->is_active()) {
+        zone->m_child1 = nullptr;
+        zone->m_child2 = nullptr;
+      }
+      if (zone->m_adam != zone) {
+        // Created via a split; delete...
+        delete zone;
+      }
+    }
+
+    // Revert `zones` back to original version (with no zones split)
+    zones       = original_zones;
     new_zone_id = pre_split(zones, avg_work, new_load_balance, proc_rank, proc_count, verbose);
   }
   return new_zone_id;
@@ -2870,43 +2870,50 @@ std::vector<Iocgns::ZoneBC> Iocgns::Utils::parse_zonebc_sideblocks(int cgns_file
 extern "C" int H5get_libversion(unsigned *, unsigned *, unsigned *);
 #endif
 
-void Iocgns::Utils::show_config()
+std::string Iocgns::Utils::show_config()
 {
-  fmt::print(Ioss::OUTPUT(), "\tCGNS Library Version: {}\n", CGNS_DOTVERS);
+  std::stringstream config;
+  fmt::print(config, "\tCGNS Library Version: {}\n", CGNS_DOTVERS);
 #if CG_BUILD_64BIT
-  fmt::print(Ioss::OUTPUT(), "\t\tDefault integer size is 64-bit.\n");
+  fmt::print(config, "\t\tDefault integer size is 64-bit.\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tDefault integer size is 32-bit.\n");
+  fmt::print(config, "\t\tDefault integer size is 32-bit.\n");
 #endif
 #if defined(CGNS_SCOPE_ENUMS)
-  fmt::print(Ioss::OUTPUT(), "\t\tScoped Enums enabled\n");
+  fmt::print(config, "\t\tScoped Enums enabled\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tScoped Enums NOT enabled\n");
+  fmt::print(config, "\t\tScoped Enums NOT enabled\n");
+#endif
+#if defined(CG_COMPACT)
+  fmt::print(config, "\t\tCompact Storage enabled\n");
+#else
+  fmt::print(config, "\t\tCompact Storage NOT enabled\n");
 #endif
 #if CG_BUILD_PARALLEL
-  fmt::print(Ioss::OUTPUT(), "\t\tParallel enabled\n");
+  fmt::print(config, "\t\tParallel enabled\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tParallel NOT enabled\n");
+  fmt::print(config, "\t\tParallel NOT enabled\n");
 #endif
 #if CG_BUILD_HDF5
   unsigned major;
   unsigned minor;
   unsigned release;
   H5get_libversion(&major, &minor, &release);
-  fmt::print(Ioss::OUTPUT(), "\t\tHDF5 enabled ({}.{}.{})\n", major, minor, release);
+  fmt::print(config, "\t\tHDF5 enabled ({}.{}.{})\n", major, minor, release);
 #else
 #error "Not defined..."
 #endif
 #if HDF5_HAVE_COLL_METADATA
-  fmt::print(Ioss::OUTPUT(), "\t\tUsing HDF5 Collective Metadata.\n");
+  fmt::print(config, "\t\tUsing HDF5 Collective Metadata.\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tHDF5 Collective Metadata NOT Available.\n");
+  fmt::print(config, "\t\tHDF5 Collective Metadata NOT Available.\n");
 #endif
 #if HDF5_HAVE_MULTI_DATASET
-  fmt::print(Ioss::OUTPUT(), "\t\tHDF5 Multi-Dataset Available.\n\n");
+  fmt::print(config, "\t\tHDF5 Multi-Dataset Available.\n\n");
 #else
-  fmt::print(Ioss::OUTPUT(), "\t\tHDF5 Multi-Dataset NOT Available.\n\n");
+  fmt::print(config, "\t\tHDF5 Multi-Dataset NOT Available.\n\n");
 #endif
+  return config.str();
 }
 
 namespace {

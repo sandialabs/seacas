@@ -1,9 +1,8 @@
-// Copyright(C) 2008-2017, 2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-//
 
 #ifndef EXO_ENTITY_H
 #define EXO_ENTITY_H
@@ -17,10 +16,10 @@
 #if EX_API_VERS_NODOT > 467
 using EXOTYPE = ex_entity_type;
 #else
-typedef int EXOTYPE;
+using EXOTYPE = int;
 #endif
 #else
-typedef int EXOTYPE;
+using EXOTYPE = int;
 #endif
 
 template <typename INT> class ExoII_Read;

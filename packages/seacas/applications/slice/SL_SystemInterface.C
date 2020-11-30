@@ -1,35 +1,8 @@
-// Copyright(C) 2016-2017, 2020 National Technology & Engineering Solutions of
-// Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-// * Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//
-// * Redistributions in binary form must reproduce the above
-//   copyright notice, this list of conditions and the following
-//   disclaimer in the documentation and/or other materials provided
-//   with the distribution.
-//
-// * Neither the name of NTESS nor the names of its
-//   contributors may be used to endorse or promote products derived
-//   from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+// See packages/seacas/LICENSE for details
 #include "SL_SystemInterface.h"
 
 #include <algorithm>
@@ -45,12 +18,6 @@
 #include <SL_tokenize.h>
 #include <copyright.h>
 #include <fmt/format.h>
-
-#if defined(__PUMAGON__)
-#define NPOS (size_t) - 1
-#else
-#define NPOS std::string::npos
-#endif
 
 namespace {
   int  get_free_descriptor_count();
@@ -142,6 +109,14 @@ void SystemInterface::enroll_options()
   options_.enroll("shuffle", GetLongOption::NoValue,
                   "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
                   nullptr);
+
+  options_.enroll(
+      "zlib", GetLongOption::NoValue,
+      "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
+      nullptr);
+
+  options_.enroll("szip", GetLongOption::NoValue,
+                  "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);
 
   options_.enroll("compress", GetLongOption::MandatoryValue,
                   "Specify the hdf5 compression level [0..9] to be used on the output file.",
@@ -313,6 +288,16 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   shuffle_ = (options_.retrieve("shuffle") != nullptr);
 
+  if (options_.retrieve("szip") != nullptr) {
+    szip_ = true;
+    zlib_ = false;
+  }
+  zlib_ = (options_.retrieve("zlib") != nullptr);
+
+  if (szip_ && zlib_) {
+    fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+  }
+
   {
     const char *temp = options_.retrieve("compress");
     if (temp != nullptr) {
@@ -456,7 +441,7 @@ namespace {
     return s;
   }
 
-  typedef std::vector<std::string> StringVector;
+  using StringVector = std::vector<std::string>;
   bool string_id_sort(const std::pair<std::string, int> &t1, const std::pair<std::string, int> &t2)
   {
     return t1.first < t2.first || (!(t2.first < t1.first) && t1.second < t2.second);

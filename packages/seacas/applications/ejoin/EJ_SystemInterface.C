@@ -1,3 +1,8 @@
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+//
+// See packages/seacas/LICENSE for details
 
 #include "EJ_SystemInterface.h"
 #include "EJ_Version.h"  // for qainfo
@@ -176,6 +181,14 @@ void SystemInterface::enroll_options()
 
   options_.enroll("64-bit", GetLongOption::NoValue,
                   "True if forcing the use of 64-bit integers for the output file", nullptr);
+
+  options_.enroll(
+      "zlib", GetLongOption::NoValue,
+      "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
+      nullptr);
+
+  options_.enroll("szip", GetLongOption::NoValue,
+                  "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);
 
   options_.enroll(
       "compress", GetLongOption::MandatoryValue,
@@ -392,6 +405,16 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("64-bit") != nullptr) {
     ints64bit_ = true;
+  }
+
+  if (options_.retrieve("szip") != nullptr) {
+    szip_ = true;
+    zlib_ = false;
+  }
+  zlib_ = (options_.retrieve("zlib") != nullptr);
+
+  if (szip_ && zlib_) {
+    fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
   }
 
   {

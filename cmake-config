@@ -66,6 +66,13 @@ then
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
 
+  if [ "$COMPILER" == "nvidia" ]
+  then
+      CXX="nvcc -x c++"
+      CC=nvcc
+      FC=gfortran
+  fi
+
   if [ "$COMPILER" == "clang" ]
   then
       CXX=/opt/local/bin/clang++-mp-8.0
@@ -87,8 +94,8 @@ then
   # When building:  "scan-build make -j8"
   if [ "$COMPILER" == "analyzer" ]
   then
-      CXX=/opt/local/libexec/llvm-8.0/libexec/c++-analyzer
-      CC=/opt/local/libexec/llvm-8.0/libexec/ccc-analyzer
+      CXX=/opt/local/libexec/llvm-9.0/libexec/c++-analyzer
+      CC=/opt/local/libexec/llvm-9.0/libexec/ccc-analyzer
       FC=gfortran
       CFLAGS="-Wall -Wunused"
       CXXFLAGS="-Wall -Wunused"

@@ -1,34 +1,8 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//
-//     * Redistributions in binary form must reproduce the above
-//       copyright notice, this list of conditions and the following
-//       disclaimer in the documentation and/or other materials provided
-//       with the distribution.
-//
-//     * Neither the name of NTESS nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// See packages/seacas/LICENSE for details
 
 #include <Ioss_Field.h>
 #include <Ioss_Transform.h>
@@ -90,8 +64,8 @@ Ioss::Field::Field() { rawStorage_ = transStorage_ = Ioss::VariableType::factory
  */
 Ioss::Field::Field(std::string name, const Ioss::Field::BasicType type, const std::string &storage,
                    const Ioss::Field::RoleType role, size_t value_count, size_t index)
-    : name_(std::move(name)), rawCount_(value_count), transCount_(value_count), size_(0),
-      index_(index), type_(type), role_(role)
+    : name_(std::move(name)), rawCount_(value_count), transCount_(value_count), index_(index),
+      type_(type), role_(role)
 {
   rawStorage_ = transStorage_ = Ioss::VariableType::factory(storage);
   size_                       = internal_get_size(type_, rawCount_, rawStorage_);
@@ -180,7 +154,7 @@ void Ioss::Field::check_type(BasicType the_type) const
       // If Ioss created the field by reading the database, it may
       // think the field is a real but it is really an integer.  Make
       // sure that the field type is correct here...
-      Ioss::Field *new_this = const_cast<Ioss::Field *>(this);
+      auto *new_this = const_cast<Ioss::Field *>(this);
       new_this->reset_type(the_type);
     }
     else {
@@ -208,8 +182,8 @@ void Ioss::Field::reset_type(Ioss::Field::BasicType new_type)
 size_t Ioss::Field::get_size() const
 {
   if (size_ == 0) {
-    Ioss::Field *new_this = const_cast<Ioss::Field *>(this);
-    new_this->size_       = internal_get_size(type_, rawCount_, rawStorage_);
+    auto *new_this  = const_cast<Ioss::Field *>(this);
+    new_this->size_ = internal_get_size(type_, rawCount_, rawStorage_);
 
     new_this->transCount_   = rawCount_;
     new_this->transStorage_ = rawStorage_;

@@ -1,34 +1,8 @@
-// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//
-//     * Redistributions in binary form must reproduce the above
-//       copyright notice, this list of conditions and the following
-//       disclaimer in the documentation and/or other materials provided
-//       with the distribution.
-//
-//     * Neither the name of NTESS nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// See packages/seacas/LICENSE for details
 
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
@@ -90,24 +64,25 @@ namespace {
     return nullptr;
   }
 
-  template <typename T> size_t get_variable_count(const std::vector<T> &entities)
+  template <typename T>
+  size_t internal_get_variable_count(const std::vector<T> &entities, Ioss::Field::RoleType role)
   {
     Ioss::NameList names;
     for (auto ent : entities) {
-      ent->field_describe(Ioss::Field::TRANSIENT, &names);
+      ent->field_describe(role, &names);
     }
     Ioss::Utils::uniquify(names);
     return names.size();
   }
 
+  template <typename T> size_t get_variable_count(const std::vector<T> &entities)
+  {
+    return internal_get_variable_count(entities, Ioss::Field::TRANSIENT);
+  }
+
   template <typename T> size_t get_reduction_variable_count(const std::vector<T> &entities)
   {
-    Ioss::NameList names;
-    for (auto ent : entities) {
-      ent->field_describe(Ioss::Field::REDUCTION, &names);
-    }
-    Ioss::Utils::uniquify(names);
-    return names.size();
+    return internal_get_variable_count(entities, Ioss::Field::REDUCTION);
   }
 
   template <typename T> int64_t get_entity_count(const std::vector<T> &entities)
@@ -147,18 +122,12 @@ namespace {
       if (old_ge != nullptr &&
           !(old_ge->type() == Ioss::SIDEBLOCK || old_ge->type() == Ioss::SIDESET)) {
         std::string        filename = region->get_database()->get_filename();
+        int64_t            id1      = entity->get_optional_property(id_str(), 0);
+        int64_t            id2      = old_ge->get_optional_property(id_str(), 0);
         std::ostringstream errmsg;
-        int64_t            id1 = 0;
-        int64_t            id2 = 0;
-        if (entity->property_exists(id_str())) {
-          id1 = entity->get_property(id_str()).get_int();
-        }
-        if (old_ge->property_exists(id_str())) {
-          id2 = old_ge->get_property(id_str()).get_int();
-        }
         fmt::print(errmsg,
                    "ERROR: There are multiple blocks or sets with the same name defined in the "
-                   "exodus file '{}'.\n"
+                   "database file '{}'.\n"
                    "\tBoth {} {} and {} {} are named '{}'.  All names must be unique.",
                    filename, entity->type_string(), id1, old_ge->type_string(), id2, name);
         IOSS_ERROR(errmsg);
@@ -207,6 +176,7 @@ namespace {
     std::vector<size_t> hashes;
 
     size_t which = 1;
+    hashes.reserve(entities.size());
     for (const auto &entity : entities) {
       hashes.push_back(compute_hash(entity, which++));
     }
@@ -355,8 +325,7 @@ namespace Ioss {
    *
    */
   Region::Region(DatabaseIO *iodatabase, const std::string &my_name)
-      : GroupingEntity(iodatabase, my_name, 1), currentState(-1), stateCount(0),
-        modelDefined(false), transientDefined(false)
+      : GroupingEntity(iodatabase, my_name, 1)
   {
     SMART_ASSERT(iodatabase != nullptr);
     iodatabase->set_region(this);
@@ -545,17 +514,17 @@ namespace Ioss {
     size_t num_blob_vars = get_variable_count(get_blobs());
 
     size_t num_glo_red_vars  = field_count(Ioss::Field::REDUCTION);
-    size_t num_nod_red_vars  = get_variable_count(get_node_blocks());
-    size_t num_edg_red_vars  = get_variable_count(get_edge_blocks());
-    size_t num_fac_red_vars  = get_variable_count(get_face_blocks());
-    size_t num_ele_red_vars  = get_variable_count(get_element_blocks());
-    size_t num_str_red_vars  = get_variable_count(get_structured_blocks());
-    size_t num_ns_red_vars   = get_variable_count(get_nodesets());
-    size_t num_es_red_vars   = get_variable_count(get_edgesets());
-    size_t num_fs_red_vars   = get_variable_count(get_facesets());
-    size_t num_els_red_vars  = get_variable_count(get_elementsets());
+    size_t num_nod_red_vars  = get_reduction_variable_count(get_node_blocks());
+    size_t num_edg_red_vars  = get_reduction_variable_count(get_edge_blocks());
+    size_t num_fac_red_vars  = get_reduction_variable_count(get_face_blocks());
+    size_t num_ele_red_vars  = get_reduction_variable_count(get_element_blocks());
+    size_t num_str_red_vars  = get_reduction_variable_count(get_structured_blocks());
+    size_t num_ns_red_vars   = get_reduction_variable_count(get_nodesets());
+    size_t num_es_red_vars   = get_reduction_variable_count(get_edgesets());
+    size_t num_fs_red_vars   = get_reduction_variable_count(get_facesets());
+    size_t num_els_red_vars  = get_reduction_variable_count(get_elementsets());
     size_t num_asm_red_vars  = get_reduction_variable_count(get_assemblies());
-    size_t num_blob_red_vars = get_variable_count(get_blobs());
+    size_t num_blob_red_vars = get_reduction_variable_count(get_blobs());
 
     size_t                       num_ss_vars = 0;
     const Ioss::SideSetContainer fss         = get_sidesets();
@@ -578,7 +547,7 @@ namespace Ioss {
     fmt::print(
         strm,
         "\n Database: {0}\n"
-        " Mesh Type = {1}, {39}\n\n"
+        " Mesh Type = {1}, {39}\n"
         "                      {38:{24}s}\t                 {38:{23}s}\t Variables : Transient / Reduction\n"
         " Spatial dimensions = {2:{24}n}\t                 {38:{23}s}\t Global     = {26:{25}n}\t{44:{25}n}\n"
         " Node blocks        = {7:{24}n}\t Nodes         = {3:{23}n}\t Nodal      = {27:{25}n}\t{45:{25}n}\n"
@@ -1567,15 +1536,8 @@ namespace Ioss {
       if (old_ge != nullptr && ge != old_ge) {
         if (!((old_ge->type() == SIDEBLOCK && ge->type() == SIDESET) ||
               (ge->type() == SIDEBLOCK && old_ge->type() == SIDESET))) {
-          ssize_t old_id = -1;
-          ssize_t new_id = -1;
-          if (old_ge->property_exists(id_str())) {
-            old_id = old_ge->get_property(id_str()).get_int();
-          }
-          if (ge->property_exists(id_str())) {
-            new_id = ge->get_property(id_str()).get_int();
-          }
-
+          ssize_t            old_id = old_ge->get_optional_property(id_str(), -1);
+          ssize_t            new_id = ge->get_optional_property(id_str(), -1);
           std::ostringstream errmsg;
           fmt::print(errmsg,
                      "\n\nERROR: Duplicate names detected.\n"
@@ -1674,7 +1636,7 @@ namespace Ioss {
   {
     IOSS_FUNC_ENTER(m_);
     size_t size = aliases.size();
-    for (auto alias_pair : aliases_) {
+    for (const auto &alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
       if (base == my_name) {
@@ -2471,7 +2433,7 @@ namespace Ioss {
     // Iterate through list, [ returns <alias, base_entity_name> ], if
     // 'base_entity_name' is defined on the restart file, add 'alias' as
     // an alias for it...
-    for (auto alias_pair : aliases_) {
+    for (const auto &alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
       if (alias != base && to->get_entity(base) != nullptr) {
@@ -2520,7 +2482,7 @@ namespace Ioss {
    */
   void Region::synchronize_id_and_name(const Region *from, bool sync_attribute_field_names)
   {
-    for (auto alias_pair : aliases_) {
+    for (const auto &alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
 
@@ -2611,7 +2573,7 @@ namespace Ioss {
       }
     }
 
-    for (auto alias_pair : aliases_) {
+    for (const auto &alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
 

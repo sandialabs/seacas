@@ -75,7 +75,7 @@ IF (Netcdf_ALLOW_PREFIND)
       "True if netcdf enables netcdf-4")
     set(TPL_Netcdf_Enables_PNetcdf ${NetCDF_NEEDS_PNetCDF} CACHE BOOL
       "True if netcdf enables pnetcdf")
-    set(TPL_Netcdf_PARALLEL ${NetCDF_PARALLEL} CACHE INTERNAL
+    set(TPL_Netcdf_PARALLEL ${NetCDF_PARALLEL} CACHE BOOL
       "True if netcdf compiled with parallel enabled")
     set(TPL_Netcdf_LIBRARY_DIRS ${_hdf5_LIBRARY_SEARCH_DIRS} CACHE PATH
       "${DOCSTR} library files")

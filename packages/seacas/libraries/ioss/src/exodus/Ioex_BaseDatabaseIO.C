@@ -1,38 +1,13 @@
-// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//
-//     * Redistributions in binary form must reproduce the above
-//       copyright notice, this list of conditions and the following
-//       disclaimer in the documentation and/or other materials provided
-//       with the distribution.
-//
-//     * Neither the name of NTESS nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// See packages/seacas/LICENSE for details
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_IOFactory.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_SerializeIO.h>
 #include <Ioss_SurfaceSplit.h>
@@ -56,6 +31,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <tokenize.h>
 #include <utility>
 #include <vector>
 
@@ -89,12 +65,8 @@
 
 // Transitioning from treating global variables as Ioss::Field::TRANSIENT
 // to Ioss::Field::REDUCTION.  To get the old behavior, define the value
-// below to '1'.  Not sure if how new behavior will affect STK and Trilinos...
-#if defined(BUILT_IN_SIERRA)
-#define GLOBALS_ARE_TRANSIENT 1
-#else
+// below to '1'.
 #define GLOBALS_ARE_TRANSIENT 0
-#endif
 
 // ========================================================================
 // Static internal helper functions
@@ -242,7 +214,7 @@ namespace Ioex {
 
   void BaseDatabaseIO::set_int_byte_size_api(Ioss::DataSize size) const
   {
-    if (exodusFilePtr > 0) {
+    if (m_exodusFilePtr > 0) {
       int old_status = ex_int64_status(get_file_pointer());
       if (size == 8) {
         ex_set_int64_status(get_file_pointer(), EX_ALL_INT64_API | old_status);
@@ -252,7 +224,7 @@ namespace Ioex {
         if ((old_status & EX_ALL_INT64_API) != 0) {
           old_status &= ~EX_ALL_INT64_API;
           assert(!(old_status & EX_ALL_INT64_API));
-          ex_set_int64_status(exodusFilePtr, old_status);
+          ex_set_int64_status(m_exodusFilePtr, old_status);
         }
       }
     }
@@ -302,7 +274,7 @@ namespace Ioex {
   {
     // Returns the file_pointer used to access the file on disk.
     // Checks that the file is open and if not, opens it first.
-    if (exodusFilePtr < 0) {
+    if (m_exodusFilePtr < 0) {
       bool write_message  = true;
       bool abort_if_error = true;
       if (is_input()) {
@@ -314,24 +286,24 @@ namespace Ioex {
       }
 
       if (!m_groupName.empty()) {
-        ex_get_group_id(exodusFilePtr, m_groupName.c_str(), &exodusFilePtr);
+        ex_get_group_id(m_exodusFilePtr, m_groupName.c_str(), &m_exodusFilePtr);
       }
     }
-    assert(exodusFilePtr >= 0);
+    assert(m_exodusFilePtr >= 0);
     fileExists = true;
-    return exodusFilePtr;
+    return m_exodusFilePtr;
   }
 
   int BaseDatabaseIO::free_file_pointer() const
   {
-    if (exodusFilePtr != -1) {
+    if (m_exodusFilePtr != -1) {
       bool do_timer = false;
       if (isParallel) {
         Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
       }
       double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
-      ex_close(exodusFilePtr);
+      ex_close(m_exodusFilePtr);
       closeDW();
       if (do_timer && isParallel) {
         double t_end    = Ioss::Utils::timer();
@@ -341,12 +313,12 @@ namespace Ioex {
         }
       }
     }
-    exodusFilePtr = -1;
+    m_exodusFilePtr = -1;
 
-    return exodusFilePtr;
+    return m_exodusFilePtr;
   }
 
-  bool BaseDatabaseIO::ok__(bool write_message, std::string *error_msg, int *bad_count) const
+  bool BaseDatabaseIO::ok__(bool write_message, std::string *error_message, int *bad_count) const
   {
     // For input, we try to open the existing file.
 
@@ -368,16 +340,17 @@ namespace Ioex {
     bool abort_if_error = false;
     bool is_ok;
     if (is_input()) {
-      is_ok = open_input_file(write_message, error_msg, bad_count, abort_if_error);
+      is_ok = open_input_file(write_message, error_message, bad_count, abort_if_error);
     }
     else {
       // See if file exists... Don't overwrite (yet) it it exists.
       bool overwrite = false;
-      is_ok = handle_output_file(write_message, error_msg, bad_count, overwrite, abort_if_error);
+      is_ok =
+          handle_output_file(write_message, error_message, bad_count, overwrite, abort_if_error);
       // Close all open files...
-      if (exodusFilePtr >= 0) {
-        ex_close(exodusFilePtr);
-        exodusFilePtr = -1;
+      if (m_exodusFilePtr >= 0) {
+        ex_close(m_exodusFilePtr);
+        m_exodusFilePtr = -1;
       }
     }
     return is_ok;
@@ -385,25 +358,25 @@ namespace Ioex {
 
   void BaseDatabaseIO::finalize_file_open() const
   {
-    assert(exodusFilePtr >= 0);
+    assert(m_exodusFilePtr >= 0);
     // Check byte-size of integers stored on the database...
-    if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
+    if ((ex_int64_status(m_exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
       if (myProcessor == 0) {
         fmt::print(Ioss::OUTPUT(),
                    "IOSS: Input database contains 8-byte integers. Setting Ioss to use "
                    "8-byte integers.\n");
       }
-      ex_set_int64_status(exodusFilePtr, EX_ALL_INT64_API);
+      ex_set_int64_status(m_exodusFilePtr, EX_ALL_INT64_API);
       set_int_byte_size_api(Ioss::USE_INT64_API);
     }
 
     // Check for maximum name length used on the input file.
-    int max_name_length = ex_inquire_int(exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+    int max_name_length = ex_inquire_int(m_exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
     if (max_name_length > maximumNameLength) {
       maximumNameLength = max_name_length;
     }
 
-    ex_set_max_name_length(exodusFilePtr, maximumNameLength);
+    ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
   }
 
   bool BaseDatabaseIO::open_group__(const std::string &group_name)
@@ -414,17 +387,15 @@ namespace Ioex {
     int exoid = get_file_pointer();
 
     m_groupName = group_name;
-    ex_get_group_id(exoid, m_groupName.c_str(), &exodusFilePtr);
+    ex_get_group_id(exoid, m_groupName.c_str(), &m_exodusFilePtr);
 
-    if (exodusFilePtr < 0) {
+    if (m_exodusFilePtr < 0) {
       std::ostringstream errmsg;
       fmt::print(errmsg, "ERROR: Could not open group named '{}' in file '{}'.\n", m_groupName,
                  get_filename());
       IOSS_ERROR(errmsg);
     }
-    else {
-      success = true;
-    }
+    success = true;
     return success;
   }
 
@@ -452,10 +423,8 @@ namespace Ioex {
                    get_filename());
         IOSS_ERROR(errmsg);
       }
-      else {
-        exodusFilePtr = exoid;
-        success       = true;
-      }
+      m_exodusFilePtr = exoid;
+      success         = true;
     }
     return success;
   }
@@ -470,7 +439,7 @@ namespace Ioex {
 
     size_t num_qa_records = qaRecords.size() / 4;
 
-    auto qa = new qa_element[num_qa_records + 1];
+    auto *qa = new qa_element[num_qa_records + 1];
     for (size_t i = 0; i < num_qa_records + 1; i++) {
       for (int j = 0; j < 4; j++) {
         qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
@@ -529,12 +498,22 @@ namespace Ioex {
       Ioss::Utils::input_file(filename, &input_lines, max_line_length);
     }
 
+    // Get configuration information for IOSS library.
+    // Split into strings and remove empty lines...
+    std::string config = Ioss::IOFactory::show_configuration();
+    std::replace(std::begin(config), std::end(config), '\t', ' ');
+    auto lines = Ioss::tokenize(config, "\n");
+    lines.erase(std::remove_if(lines.begin(), lines.end(),
+                               [](const std::string &line) { return line == ""; }),
+                lines.end());
+
     // See if the client added any "information_records"
     size_t info_rec_size = informationRecords.size();
     size_t in_lines      = input_lines.size();
     size_t qa_lines      = 2; // Platform info and Version info...
+    size_t config_lines  = lines.size();
 
-    size_t total_lines = in_lines + qa_lines + info_rec_size;
+    size_t total_lines = in_lines + qa_lines + info_rec_size + config_lines;
 
     char **info = Ioss::Utils::get_name_array(
         total_lines, max_line_length); // 'total_lines' pointers to char buffers
@@ -552,6 +531,10 @@ namespace Ioex {
     // Copy "information_records" property data ...
     for (size_t j = 0; j < informationRecords.size(); j++, i++) {
       Ioss::Utils::copy_string(info[i], informationRecords[j], max_line_length + 1);
+    }
+
+    for (size_t j = 0; j < lines.size(); j++, i++) {
+      Ioss::Utils::copy_string(info[i], lines[j], max_line_length + 1);
     }
 
     int ierr = ex_put_info(get_file_pointer(), total_lines, info);
@@ -588,34 +571,39 @@ namespace Ioex {
 
     if (nassem > 0) {
       std::vector<ex_assembly> assemblies(nassem);
-      int                      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
+      int max_name_length = ex_inquire_int(m_exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      for (auto &assembly : assemblies) {
+        assembly.name = new char[max_name_length + 1];
+      }
+
+      int ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
 
       // Now allocate space for member list and get assemblies again...
-      for (int i = 0; i < nassem; i++) {
-        assemblies[i].entity_list = new int64_t[assemblies[i].entity_count];
+      for (auto &assembly : assemblies) {
+        assembly.entity_list = new int64_t[assembly.entity_count];
       }
+
       ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
 
-      for (int i = 0; i < nassem; i++) {
-        Ioss::Assembly *assem =
-            new Ioss::Assembly(get_region()->get_database(), assemblies[i].name);
-        assem->property_add(Ioss::Property("id", assemblies[i].id));
+      for (const auto &assembly : assemblies) {
+        auto *assem = new Ioss::Assembly(get_region()->get_database(), assembly.name);
+        assem->property_add(Ioss::Property("id", assembly.id));
         get_region()->add(assem);
       }
 
       // Now iterate again and populate member lists...
-      for (int i = 0; i < nassem; i++) {
-        Ioss::Assembly *assem = get_region()->get_assembly(assemblies[i].name);
+      for (const auto &assembly : assemblies) {
+        Ioss::Assembly *assem = get_region()->get_assembly(assembly.name);
         assert(assem != nullptr);
-        auto type = Ioex::map_exodus_type(assemblies[i].type);
-        for (int j = 0; j < assemblies[i].entity_count; j++) {
-          auto *ge = get_region()->get_entity(assemblies[i].entity_list[j], type);
+        auto type = Ioex::map_exodus_type(assembly.type);
+        for (int j = 0; j < assembly.entity_count; j++) {
+          auto *ge = get_region()->get_entity(assembly.entity_list[j], type);
           if (ge != nullptr) {
             assem->add(ge);
           }
@@ -623,14 +611,14 @@ namespace Ioex {
             std::ostringstream errmsg;
             fmt::print(errmsg,
                        "Error: Failed to find entity of type {} with id {} for Assembly {}.\n",
-                       type, assemblies[i].entity_list[j], assem->name());
+                       type, assembly.entity_list[j], assem->name());
             IOSS_ERROR(errmsg);
           }
         }
-        SMART_ASSERT(assem->member_count() == (size_t)assemblies[i].entity_count)
-        (assem->member_count())(assemblies[i].entity_count);
+        SMART_ASSERT(assem->member_count() == (size_t)assembly.entity_count)
+        (assem->member_count())(assembly.entity_count);
 
-        add_mesh_reduction_fields(EX_ASSEMBLY, assemblies[i].id, assem);
+        add_mesh_reduction_fields(EX_ASSEMBLY, assembly.id, assem);
         // Check for additional variables.
         int attribute_count = assem->get_property("attribute_count").get_int();
         add_attribute_fields(EX_ASSEMBLY, assem, attribute_count, "Assembly");
@@ -645,6 +633,10 @@ namespace Ioex {
           m_reductionValues[EX_ASSEMBLY][assembly.id].resize(size);
         }
       }
+      for (auto &assembly : assemblies) {
+        delete[] assembly.entity_list;
+        delete[] assembly.name;
+      }
     }
   }
 
@@ -656,7 +648,7 @@ namespace Ioex {
 
     if (nblob > 0) {
       std::vector<ex_blob> blobs(nblob);
-      int max_name_length = ex_inquire_int(exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      int max_name_length = ex_inquire_int(m_exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
       for (auto &bl : blobs) {
         bl.name = new char[max_name_length + 1];
       }
@@ -682,10 +674,10 @@ namespace Ioex {
           offset = (per_proc + 1) * extra + per_proc * (myProcessor - extra);
         }
         Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, count);
-        blob->property_add(Ioss::Property("processor_offset", (int64_t)offset));
+        blob->property_add(Ioss::Property("_processor_offset", (int64_t)offset));
         blob->property_add(Ioss::Property("global_size", (int64_t)bl.num_entry));
 #else
-        Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, bl.num_entry);
+        auto *blob = new Ioss::Blob(get_region()->get_database(), bl.name, bl.num_entry);
 #endif
         blob->property_add(Ioss::Property("id", bl.id));
         get_region()->add(blob);
@@ -966,7 +958,7 @@ namespace Ioex {
   namespace {
     // common
     template <typename T>
-    void generate_block_truth_table(VariableNameMap &variables, Ioss::IntVector &truth_table,
+    void generate_block_truth_table(const VariableNameMap &variables, Ioss::IntVector &truth_table,
                                     std::vector<T *> &blocks, char field_suffix_separator)
     {
       size_t block_count = blocks.size();
@@ -1029,11 +1021,11 @@ namespace Ioex {
     Ioss::Field::BasicType ioss_type = field.get_type();
     assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
            ioss_type == Ioss::Field::INT64 || ioss_type == Ioss::Field::COMPLEX);
-    double * rvar   = static_cast<double *>(variables);
-    int *    ivar   = static_cast<int *>(variables);
-    int64_t *ivar64 = static_cast<int64_t *>(variables);
+    auto *rvar   = static_cast<double *>(variables);
+    auto *ivar   = static_cast<int *>(variables);
+    auto *ivar64 = static_cast<int64_t *>(variables);
 
-    auto id = (ge->property_exists("id")) ? ge->get_property("id").get_int() : 0;
+    auto id = ge->get_optional_property("id", 0);
 
     // Note that if the field's basic type is COMPLEX, then each component of
     // the VariableType is a complex variable consisting of a real and
@@ -1105,14 +1097,14 @@ namespace Ioex {
   {
     const Ioss::VariableType *var_type = field.raw_storage();
 
-    auto id = (ge->property_exists("id")) ? ge->get_property("id").get_int() : 0;
+    auto id = ge->get_optional_property("id", 0);
 
     Ioss::Field::BasicType ioss_type = field.get_type();
     assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
            ioss_type == Ioss::Field::INT64);
-    double * rvar   = static_cast<double *>(variables);
-    int *    ivar   = static_cast<int *>(variables);
-    int64_t *i64var = static_cast<int64_t *>(variables);
+    auto *rvar   = static_cast<double *>(variables);
+    auto *ivar   = static_cast<int *>(variables);
+    auto *i64var = static_cast<int64_t *>(variables);
 
     // get number of components, cycle through each component
     // and add suffix to base 'field_name'.  Look up index
@@ -1617,34 +1609,34 @@ namespace Ioex {
 
       const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
       assert(node_blocks.size() <= 1);
-      internal_write_results_metadata(EX_NODE_BLOCK, node_blocks, glob_index);
+      internal_write_results_metadata(EX_NODE_BLOCK, node_blocks);
 
       const Ioss::EdgeBlockContainer &edge_blocks = get_region()->get_edge_blocks();
-      internal_write_results_metadata(EX_EDGE_BLOCK, edge_blocks, glob_index);
+      internal_write_results_metadata(EX_EDGE_BLOCK, edge_blocks);
 
       const Ioss::FaceBlockContainer &face_blocks = get_region()->get_face_blocks();
-      internal_write_results_metadata(EX_FACE_BLOCK, face_blocks, glob_index);
+      internal_write_results_metadata(EX_FACE_BLOCK, face_blocks);
 
       const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
-      internal_write_results_metadata(EX_ELEM_BLOCK, element_blocks, glob_index);
+      internal_write_results_metadata(EX_ELEM_BLOCK, element_blocks);
 
       const Ioss::NodeSetContainer &nodesets = get_region()->get_nodesets();
-      internal_write_results_metadata(EX_NODE_SET, nodesets, glob_index);
+      internal_write_results_metadata(EX_NODE_SET, nodesets);
 
       const Ioss::EdgeSetContainer &edgesets = get_region()->get_edgesets();
-      internal_write_results_metadata(EX_EDGE_SET, edgesets, glob_index);
+      internal_write_results_metadata(EX_EDGE_SET, edgesets);
 
       const Ioss::FaceSetContainer &facesets = get_region()->get_facesets();
-      internal_write_results_metadata(EX_FACE_SET, facesets, glob_index);
+      internal_write_results_metadata(EX_FACE_SET, facesets);
 
       const Ioss::ElementSetContainer &elementsets = get_region()->get_elementsets();
-      internal_write_results_metadata(EX_ELEM_SET, elementsets, glob_index);
+      internal_write_results_metadata(EX_ELEM_SET, elementsets);
 
       const auto &blobs = get_region()->get_blobs();
-      internal_write_results_metadata(EX_BLOB, blobs, glob_index);
+      internal_write_results_metadata(EX_BLOB, blobs);
 
       const auto &assemblies = get_region()->get_assemblies();
-      internal_write_results_metadata(EX_ASSEMBLY, assemblies, glob_index);
+      internal_write_results_metadata(EX_ASSEMBLY, assemblies);
 
       {
         int                           index    = 0;
@@ -1726,7 +1718,7 @@ namespace Ioex {
   // common
   template <typename T>
   void BaseDatabaseIO::internal_write_results_metadata(ex_entity_type   type,
-                                                       std::vector<T *> entities, int &glob_index)
+                                                       std::vector<T *> entities)
   {
     int index     = 0;
     int red_index = 0;
@@ -1742,7 +1734,7 @@ namespace Ioex {
     size_t value_size = m_reductionVariables[type].size();
 #endif
     for (const auto &entity : entities) {
-      auto id = (entity->property_exists("id")) ? entity->get_property("id").get_int() : 0;
+      auto id = entity->get_optional_property("id", 0);
       m_reductionValues[type][id].resize(value_size);
     }
 
@@ -2171,6 +2163,7 @@ namespace Ioex {
 
         if (type_match(type, "shell") || type_match(type, "trishell")) {
           if (attribute_count == block->get_property("topology_node_count").get_int()) {
+
             att_name = "nodal_thickness";
 
             std::string storage = fmt::format("Real[{}]", attribute_count);
@@ -2305,9 +2298,9 @@ namespace Ioex {
     if (region->mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
-		 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
-		 "       Only 'Unstructured' is supported at this time.\n",
-		 region->mesh_type_string());
+                 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
+                 "       Only 'Unstructured' is supported at this time.\n",
+                 region->mesh_type_string());
       IOSS_ERROR(errmsg);
     }
 
@@ -2406,13 +2399,15 @@ namespace Ioex {
       }
       m_groupCount[EX_ELEM_BLOCK] = element_blocks.size();
 
-      // Set "global_entity_count" property on all blocks.
-      // Used to skip output on "globally" empty blocks.
-      Ioss::Int64Vector global_counts(element_counts.size());
-      util().global_count(element_counts, global_counts);
-      size_t idx = 0;
-      for (auto &element_block : element_blocks) {
-        element_block->property_add(Ioss::Property("global_entity_count", global_counts[idx++]));
+      if (isParallel) {
+        // Set "global_entity_count" property on all blocks.
+        // Used to skip output on "globally" empty blocks.
+        Ioss::Int64Vector global_counts(element_counts.size());
+        util().global_count(element_counts, global_counts);
+        size_t idx = 0;
+        for (auto &element_block : element_blocks) {
+          element_block->property_add(Ioss::Property("global_entity_count", global_counts[idx++]));
+        }
       }
     }
 
@@ -2486,7 +2481,7 @@ namespace Ioex {
         for (auto &block : side_blocks) {
           // Add  "*_offset" properties to specify at what offset
           // the data for this block appears in the containing set.
-          Ioss::SideBlock *new_block = const_cast<Ioss::SideBlock *>(block);
+          auto *new_block = const_cast<Ioss::SideBlock *>(block);
           new_block->property_add(Ioss::Property("set_offset", entity_count));
           new_block->property_add(Ioss::Property("set_df_offset", df_count));
 
@@ -2494,12 +2489,12 @@ namespace Ioex {
           // the id of the sideblock must be the same as the sideset
           // id.
           new_block->property_update("id", id);
-          new_block->property_update("guid", util().generate_guid(1));
+          new_block->property_update("guid", util().generate_guid(id));
 
           entity_count += block->entity_count();
           df_count += block->get_property("distribution_factor_count").get_int();
         }
-        Ioss::SideSet *new_entity = const_cast<Ioss::SideSet *>(set);
+        auto *new_entity = const_cast<Ioss::SideSet *>(set);
         new_entity->property_add(Ioss::Property("entity_count", entity_count));
         new_entity->property_add(Ioss::Property("distribution_factor_count", df_count));
       }
@@ -2682,9 +2677,7 @@ namespace {
               block->name(), field_name, __func__);
           IOSS_ERROR(errmsg);
         }
-        else {
-          attributes[i] = 1;
-        }
+        attributes[i] = 1;
       }
     }
 

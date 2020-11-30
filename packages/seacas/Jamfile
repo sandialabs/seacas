@@ -1,29 +1,9 @@
 #---------------------------------------------------------------
-# Copyright (c) 2006--2017, National Technology & Engineering Solutions
+# Copyright(C) 1999-2020 National Technology & Engineering Solutions
 # of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 # NTESS, the U.S. Government retains certain rights in this software.
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#     * Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in the
-#       documentation and/or other materials provided with the distribution.
-#     * Neither the name of NTESS nor the names of its contributors may
-#       be used to endorse or promote products derived from this
-#       software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# See packages/seacas/LICENSE for details
 #---------------------------------------------------------------
 
 #
@@ -127,8 +107,8 @@ local installed-end-user-files =
   $(seacas-root)/scripts/decomp
   $(seacas-root)/scripts/grope
   $(seacas-root)/scripts/fastq
-  /tpl/netcdf//ncdump
-  /tpl/netcdf//ncgen
+  /tpl/netcdf-c//ncdump
+  /tpl/netcdf-c//ncgen
   /tpl/matio//matdump
   /tpl/hdf5//h5diff
   /tpl/hdf5//h5dump
@@ -309,7 +289,7 @@ lib ioex
     ]
     ioss
     exodus
-    /tpl/netcdf//netcdf
+    /tpl/netcdf-c//netcdf
     /tpl/trilinos//zoltan
     /tpl/parmetis//parmetis
   :
@@ -513,6 +493,7 @@ obj blot_main : $(seacas-root)/applications/blot/blot.f
   : <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -527,6 +508,7 @@ obj fastq_main : $(seacas-root)/applications/fastq/fastq.f
   : <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -545,7 +527,7 @@ lib exodus
         [ glob $(seacas-root)/libraries/exodus/src/*.c ]
         [ glob $(seacas-root)/libraries/exodus/src/deprecated/*.c ]
     ]
-    /tpl/netcdf//netcdf
+    /tpl/netcdf-c//netcdf
   : <define>BUILT_IN_SIERRA
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
@@ -576,11 +558,13 @@ lib exodus
 obj addrwrap : $(seacas-root)/libraries/exodus_for/src/addrwrap.F
   : <toolset>gcc:<fflags>-fcray-pointer
     <toolset>clang:<fflags>-fcray-pointer
+    <toolset>armhpc:<fflags>-fcray-pointer
     <toolset>nvidia:<fflags>-fcray-pointer
     <toolset>darwin:<fflags>-fcray-pointer
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -614,6 +598,7 @@ lib exodus_for
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -635,6 +620,7 @@ lib exodus_for
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -740,6 +726,7 @@ lib suplib
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -761,6 +748,7 @@ lib suplib
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -857,6 +845,7 @@ lib plt
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -878,6 +867,7 @@ lib plt
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -910,6 +900,7 @@ lib svdi_cdr
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -931,6 +922,7 @@ lib svdi_cdr
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -973,6 +965,7 @@ lib svdi_cgi
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -994,6 +987,7 @@ lib svdi_cgi
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1023,6 +1017,7 @@ obj vdx11cps : $(seacas-root)/libraries/svdi/vdi_drivers/vdx11cps.F
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1036,6 +1031,7 @@ obj vdicps_dual : $(seacas-root)/libraries/svdi/vdi_drivers/vdicps_dual.f
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1049,6 +1045,7 @@ obj svdi_cgi_cps : $(seacas-root)/libraries/svdi/vdi_drivers/vdicps.f
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1079,6 +1076,7 @@ lib blotlib
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1095,6 +1093,7 @@ lib blotlib
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1125,6 +1124,7 @@ lib fastqlib
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1141,6 +1141,7 @@ lib fastqlib
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1173,6 +1174,7 @@ lib mapvarlib
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1194,6 +1196,7 @@ lib mapvarlib
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1226,6 +1229,7 @@ lib supes
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1247,6 +1251,7 @@ lib supes
     <toolset>darwin,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>gcc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>clang,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
+    <toolset>armhpc,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>nvidia,<address-model>64:<fflags>"-fdefault-real-8 -fdefault-integer-8"
     <toolset>intel,<address-model>64:<fflags>"-r8 -i8"
     <toolset>pgi,<address-model>64:<fflags>"-r8 -i8"
@@ -1268,7 +1273,7 @@ lib aprepro_lib
         ]
     ]
     exodus
-    /tpl/netcdf//netcdf
+    /tpl/netcdf-c//netcdf
   : <define>EXODUS_SUPPORT
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
@@ -1368,7 +1373,7 @@ exe conjoin
     suplib_cpp
     suplib_c
     exodus
-    /tpl/netcdf//netcdf
+    /tpl/netcdf-c//netcdf
   : <include>$(seacas-root)/applications/conjoin
     <tag>@utility-exec-tag
   :
@@ -1400,7 +1405,7 @@ exe epu
     suplib_cpp
     suplib_c
     exodus
-    /tpl/netcdf//netcdf
+    /tpl/netcdf-c//netcdf
   : <include>$(seacas-root)/applications/epu
     <tag>@utility-exec-tag
   ;
@@ -1732,7 +1737,7 @@ exe Utst_database_io
   :
   [ glob $(seacas-root)/libraries/ioss/src/unit_tests/*.C ]
     ioinit
-    /tpl/netcdf//netcdf
+    /tpl/netcdf-c//netcdf
     /tpl/gtest//gtest
   : <tag>@utility-exec-tag
   ;

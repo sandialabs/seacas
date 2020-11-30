@@ -1,3 +1,8 @@
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+//
+// See packages/seacas/LICENSE for details
 
 #include "CJ_SystemInterface.h"
 #include "CJ_Version.h"  // for qainfo
@@ -66,6 +71,14 @@ void Excn::SystemInterface::enroll_options()
                   "Sort the input files on the minimum timestep time in the file. "
                   "Default is to process files in the order they appear on the command line.",
                   nullptr);
+
+  options_.enroll(
+      "zlib", GetLongOption::NoValue,
+      "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
+      nullptr);
+
+  options_.enroll("szip", GetLongOption::NoValue,
+                  "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);
 
   options_.enroll(
       "compress", GetLongOption::MandatoryValue,
@@ -267,6 +280,16 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   ignoreCoordinates_ = options_.retrieve("ignore_coordinate_check") != nullptr;
   omitNodesets_      = options_.retrieve("omit_nodesets") != nullptr;
   omitSidesets_      = options_.retrieve("omit_sidesets") != nullptr;
+
+  if (options_.retrieve("szip") != nullptr) {
+    szip_ = true;
+    zlib_ = false;
+  }
+  zlib_ = (options_.retrieve("zlib") != nullptr);
+
+  if (szip_ && zlib_) {
+    fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+  }
 
   {
     const char *temp = options_.retrieve("compress");

@@ -1,36 +1,9 @@
 /*
- * Copyright (c) 2005-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *
- *     * Neither the name of NTESS nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * See packages/seacas/LICENSE for details
  */
 
 /*****************************************************************************
@@ -39,8 +12,8 @@
  *
  *****************************************************************************/
 
-#ifndef EXODUS_II_HDR
-#define EXODUS_II_HDR
+#ifndef EXODUSII_H
+#define EXODUSII_H
 
 #include "exodus_config.h"
 
@@ -72,15 +45,13 @@
 #endif
 
 /* EXODUS version number */
-#define EXODUS_VERSION "8.06"
+#define EXODUS_VERSION "8.08"
 #define EXODUS_VERSION_MAJOR 8
-#define EXODUS_VERSION_MINOR 06
-#define EXODUS_RELEASE_DATE "May 27, 2020"
+#define EXODUS_VERSION_MINOR 8
+#define EXODUS_RELEASE_DATE "September 2, 2020"
 
-#define EX_API_VERS 8.06f
-
+#define EX_API_VERS 8.08f
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
-
 #define EX_VERS EX_API_VERS
 
 /* Retained for backward compatibility */
@@ -114,27 +85,27 @@ extern "C" {
  */
 /* Modes for ex_open */
 #define EX_WRITE 0x0001 /**< ex_open(): open existing file for appending. */
-#define EX_READ 0x0002  /**< ex_open(): open file for reading (default) */
+#define EX_READ 0x0002 /**< ex_open(): open file for reading (default) */
 
-#define EX_NOCLOBBER 0x0004            /**< Don't overwrite existing database, default */
-#define EX_CLOBBER 0x0008              /**< Overwrite existing database if it exists */
-#define EX_NORMAL_MODEL 0x0010         /**< disable mods that permit storage of larger models */
-#define EX_64BIT_OFFSET 0x0020         /**< enable mods that permit storage of larger models */
+#define EX_NOCLOBBER 0x0004 /**< Don't overwrite existing database, default */
+#define EX_CLOBBER 0x0008 /**< Overwrite existing database if it exists */
+#define EX_NORMAL_MODEL 0x0010 /**< disable mods that permit storage of larger models */
+#define EX_64BIT_OFFSET 0x0020 /**< enable mods that permit storage of larger models */
 #define EX_LARGE_MODEL EX_64BIT_OFFSET /**< enable mods that permit storage of larger models */
 #define EX_64BIT_DATA 0x400000 /**< CDF-5 format: classic model but 64 bit dimensions and sizes */
-#define EX_NETCDF4 0x0040      /**< use the hdf5-based netcdf4 output */
-#define EX_NOSHARE 0x0080      /**< Do not open netcdf file in "share" mode */
-#define EX_SHARE 0x0100        /**< Do open netcdf file in "share" mode */
-#define EX_NOCLASSIC 0x0200    /**< Do not force netcdf to classic mode in netcdf4 mode */
+#define EX_NETCDF4 0x0040 /**< use the hdf5-based netcdf4 output */
+#define EX_NOSHARE 0x0080 /**< Do not open netcdf file in "share" mode */
+#define EX_SHARE 0x0100 /**< Do open netcdf file in "share" mode */
+#define EX_NOCLASSIC 0x0200 /**< Do not force netcdf to classic mode in netcdf4 mode */
 
 #define EX_DISKLESS 0x100000 /**< Experimental */
-#define EX_MMAP 0x200000     /**< Experimental */
+#define EX_MMAP 0x200000 /**< Experimental */
 
 /* Need to distinguish between storage on database (DB in name) and
    passed through the API functions (API in name).
 */
 #define EX_MAPS_INT64_DB 0x0400 /**< All maps (id, order, ...) store int64_t values */
-#define EX_IDS_INT64_DB 0x0800  /**< All entity ids (sets, blocks, maps) are int64_t values */
+#define EX_IDS_INT64_DB 0x0800 /**< All entity ids (sets, blocks, maps) are int64_t values */
 #define EX_BULK_INT64_DB                                                                           \
   0x1000 /**< All integer bulk data (local indices, counts, maps); not ids                         \
           */
@@ -142,7 +113,7 @@ extern "C" {
   (EX_MAPS_INT64_DB | EX_IDS_INT64_DB | EX_BULK_INT64_DB) /**< All of the above... */
 
 #define EX_MAPS_INT64_API 0x2000 /**< All maps (id, order, ...) store int64_t values */
-#define EX_IDS_INT64_API 0x4000  /**< All entity ids (sets, blocks, maps) are int64_t values */
+#define EX_IDS_INT64_API 0x4000 /**< All entity ids (sets, blocks, maps) are int64_t values */
 #define EX_BULK_INT64_API                                                                          \
   0x8000 /**< All integer bulk data (local indices, counts, maps); not ids */
 #define EX_INQ_INT64_API 0x10000 /**< Integers passed to/from ex_inquire() are int64_t */
@@ -157,74 +128,74 @@ extern "C" {
 
 /** @}*/
 
-/*! \sa ex_inquire() */
+/*! \sa ex_inquire() All inquiries return an integer of the current database integer size unless
+ * otherwise noted. */
 enum ex_inquiry {
-  EX_INQ_FILE_TYPE    = 1,  /**< inquire EXODUS file type*/
-  EX_INQ_API_VERS     = 2,  /**< inquire API version number */
-  EX_INQ_DB_VERS      = 3,  /**< inquire database version number */
-  EX_INQ_TITLE        = 4,  /**< inquire database title     */
-  EX_INQ_DIM          = 5,  /**< inquire number of dimensions */
-  EX_INQ_NODES        = 6,  /**< inquire number of nodes    */
-  EX_INQ_ELEM         = 7,  /**< inquire number of elements */
-  EX_INQ_ELEM_BLK     = 8,  /**< inquire number of element blocks */
-  EX_INQ_NODE_SETS    = 9,  /**< inquire number of node sets*/
-  EX_INQ_NS_NODE_LEN  = 10, /**< inquire length of node set node list */
-  EX_INQ_SIDE_SETS    = 11, /**< inquire number of side sets*/
-  EX_INQ_SS_NODE_LEN  = 12, /**< inquire length of side set node list */
-  EX_INQ_SS_ELEM_LEN  = 13, /**< inquire length of side set element list */
-  EX_INQ_QA           = 14, /**< inquire number of QA records */
-  EX_INQ_INFO         = 15, /**< inquire number of info records */
-  EX_INQ_TIME         = 16, /**< inquire number of time steps in the database */
-  EX_INQ_EB_PROP      = 17, /**< inquire number of element block properties */
-  EX_INQ_NS_PROP      = 18, /**< inquire number of node set properties */
-  EX_INQ_SS_PROP      = 19, /**< inquire number of side set properties */
-  EX_INQ_NS_DF_LEN    = 20, /**< inquire length of node set distribution factor list*/
-  EX_INQ_SS_DF_LEN    = 21, /**< inquire length of side set distribution factor list*/
-  EX_INQ_LIB_VERS     = 22, /**< inquire API Lib vers number*/
-  EX_INQ_EM_PROP      = 23, /**< inquire number of element map properties */
-  EX_INQ_NM_PROP      = 24, /**< inquire number of node map properties */
-  EX_INQ_ELEM_MAP     = 25, /**< inquire number of element maps */
-  EX_INQ_NODE_MAP     = 26, /**< inquire number of node maps*/
-  EX_INQ_EDGE         = 27, /**< inquire number of edges    */
-  EX_INQ_EDGE_BLK     = 28, /**< inquire number of edge blocks */
-  EX_INQ_EDGE_SETS    = 29, /**< inquire number of edge sets   */
-  EX_INQ_ES_LEN       = 30, /**< inquire length of concat edge set edge list       */
-  EX_INQ_ES_DF_LEN    = 31, /**< inquire length of concat edge set dist factor list*/
-  EX_INQ_EDGE_PROP    = 32, /**< inquire number of properties stored per edge block    */
-  EX_INQ_ES_PROP      = 33, /**< inquire number of properties stored per edge set      */
-  EX_INQ_FACE         = 34, /**< inquire number of faces */
-  EX_INQ_FACE_BLK     = 35, /**< inquire number of face blocks */
-  EX_INQ_FACE_SETS    = 36, /**< inquire number of face sets */
-  EX_INQ_FS_LEN       = 37, /**< inquire length of concat face set face list */
-  EX_INQ_FS_DF_LEN    = 38, /**< inquire length of concat face set dist factor list*/
-  EX_INQ_FACE_PROP    = 39, /**< inquire number of properties stored per face block */
-  EX_INQ_FS_PROP      = 40, /**< inquire number of properties stored per face set */
-  EX_INQ_ELEM_SETS    = 41, /**< inquire number of element sets */
-  EX_INQ_ELS_LEN      = 42, /**< inquire length of concat element set element list       */
-  EX_INQ_ELS_DF_LEN   = 43, /**< inquire length of concat element set dist factor list*/
-  EX_INQ_ELS_PROP     = 44, /**< inquire number of properties stored per elem set      */
-  EX_INQ_EDGE_MAP     = 45, /**< inquire number of edge maps                     */
-  EX_INQ_FACE_MAP     = 46, /**< inquire number of face maps                     */
-  EX_INQ_COORD_FRAMES = 47, /**< inquire number of coordinate frames */
-  EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH =
-      48,                              /**< inquire size of MAX_NAME_LENGTH dimension on database */
-  EX_INQ_DB_MAX_USED_NAME_LENGTH = 49, /**< inquire size of MAX_NAME_LENGTH dimension on database */
-  EX_INQ_MAX_READ_NAME_LENGTH    = 50, /**< inquire client-specified max size of returned names */
+  EX_INQ_FILE_TYPE                  = 1,  /**< EXODUS file type (deprecated) */
+  EX_INQ_API_VERS                   = 2,  /**< API version number (float) */
+  EX_INQ_DB_VERS                    = 3,  /**< database version number (float) */
+  EX_INQ_TITLE                      = 4,  /**< database title. MAX_LINE_LENGTH+1 char* size */
+  EX_INQ_DIM                        = 5,  /**< number of dimensions */
+  EX_INQ_NODES                      = 6,  /**< number of nodes    */
+  EX_INQ_ELEM                       = 7,  /**< number of elements */
+  EX_INQ_ELEM_BLK                   = 8,  /**< number of element blocks */
+  EX_INQ_NODE_SETS                  = 9,  /**< number of node sets*/
+  EX_INQ_NS_NODE_LEN                = 10, /**< length of node set node list */
+  EX_INQ_SIDE_SETS                  = 11, /**< number of side sets*/
+  EX_INQ_SS_NODE_LEN                = 12, /**< length of side set node list */
+  EX_INQ_SS_ELEM_LEN                = 13, /**< length of side set element list */
+  EX_INQ_QA                         = 14, /**< number of QA records */
+  EX_INQ_INFO                       = 15, /**< number of info records */
+  EX_INQ_TIME                       = 16, /**< number of time steps in the database */
+  EX_INQ_EB_PROP                    = 17, /**< number of element block properties */
+  EX_INQ_NS_PROP                    = 18, /**< number of node set properties */
+  EX_INQ_SS_PROP                    = 19, /**< number of side set properties */
+  EX_INQ_NS_DF_LEN                  = 20, /**< length of node set distribution factor list*/
+  EX_INQ_SS_DF_LEN                  = 21, /**< length of side set distribution factor list*/
+  EX_INQ_LIB_VERS                   = 22, /**< API Lib vers number (float) */
+  EX_INQ_EM_PROP                    = 23, /**< number of element map properties */
+  EX_INQ_NM_PROP                    = 24, /**< number of node map properties */
+  EX_INQ_ELEM_MAP                   = 25, /**< number of element maps */
+  EX_INQ_NODE_MAP                   = 26, /**< number of node maps*/
+  EX_INQ_EDGE                       = 27, /**< number of edges    */
+  EX_INQ_EDGE_BLK                   = 28, /**< number of edge blocks */
+  EX_INQ_EDGE_SETS                  = 29, /**< number of edge sets   */
+  EX_INQ_ES_LEN                     = 30, /**< length of concat edge set edge list       */
+  EX_INQ_ES_DF_LEN                  = 31, /**< length of concat edge set dist factor list*/
+  EX_INQ_EDGE_PROP                  = 32, /**< number of properties stored per edge block    */
+  EX_INQ_ES_PROP                    = 33, /**< number of properties stored per edge set      */
+  EX_INQ_FACE                       = 34, /**< number of faces */
+  EX_INQ_FACE_BLK                   = 35, /**< number of face blocks */
+  EX_INQ_FACE_SETS                  = 36, /**< number of face sets */
+  EX_INQ_FS_LEN                     = 37, /**< length of concat face set face list */
+  EX_INQ_FS_DF_LEN                  = 38, /**< length of concat face set dist factor list*/
+  EX_INQ_FACE_PROP                  = 39, /**< number of properties stored per face block */
+  EX_INQ_FS_PROP                    = 40, /**< number of properties stored per face set */
+  EX_INQ_ELEM_SETS                  = 41, /**< number of element sets */
+  EX_INQ_ELS_LEN                    = 42, /**< length of concat element set element list       */
+  EX_INQ_ELS_DF_LEN                 = 43, /**< length of concat element set dist factor list*/
+  EX_INQ_ELS_PROP                   = 44, /**< number of properties stored per elem set      */
+  EX_INQ_EDGE_MAP                   = 45, /**< number of edge maps                     */
+  EX_INQ_FACE_MAP                   = 46, /**< number of face maps                     */
+  EX_INQ_COORD_FRAMES               = 47, /**< number of coordinate frames */
+  EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH = 48, /**< size of MAX_NAME_LENGTH dimension on database */
+  EX_INQ_DB_MAX_USED_NAME_LENGTH    = 49, /**< size of MAX_NAME_LENGTH dimension on database */
+  EX_INQ_MAX_READ_NAME_LENGTH       = 50, /**< client-specified max size of returned names */
 
-  EX_INQ_DB_FLOAT_SIZE    = 51, /**< inquire size of floating-point values stored on database */
-  EX_INQ_NUM_CHILD_GROUPS = 52, /**< inquire number of groups contained in this (exoid) group */
-  EX_INQ_GROUP_PARENT =
-      53, /**< inquire id of parent of this (exoid) group; returns exoid if at root */
+  EX_INQ_DB_FLOAT_SIZE    = 51, /**< size of floating-point values stored on database */
+  EX_INQ_NUM_CHILD_GROUPS = 52, /**< number of groups contained in this (exoid) group */
+  EX_INQ_GROUP_PARENT     = 53, /**< id of parent of this (exoid) group; returns exoid if at root */
   EX_INQ_GROUP_ROOT =
-      54, /**< inquire id of root group "/" of this (exoid) group; returns exoid if at root */
-  EX_INQ_GROUP_NAME_LEN      = 55, /**< inquire length of name of group exoid */
-  EX_INQ_GROUP_NAME          = 56, /**< inquire name of group exoid. "/" returned for root group */
-  EX_INQ_FULL_GROUP_NAME_LEN = 57, /**< inquire length of full path name of this (exoid) group */
-  EX_INQ_FULL_GROUP_NAME = 58, /**< inquire full "/"-separated path name of this (exoid) group */
-  EX_INQ_THREADSAFE      = 59, /**< Returns 1 if library is thread-safe; 0 otherwise */
-  EX_INQ_ASSEMBLY        = 60, /**< inquire number of assemblies */
-  EX_INQ_BLOB            = 61, /**< inquire number of blobs */
-  EX_INQ_INVALID         = -1
+      54, /**< id of root group "/" of this (exoid) group; returns exoid if at root */
+  EX_INQ_GROUP_NAME_LEN = 55, /**< length of name of group exoid */
+  EX_INQ_GROUP_NAME =
+      56, /**< name of group exoid. "/" returned for root group (char* GROUP_NAME_LEN+1 size) */
+  EX_INQ_FULL_GROUP_NAME_LEN = 57, /**< length of full path name of this (exoid) group */
+  EX_INQ_FULL_GROUP_NAME     = 58, /**< full "/"-separated path name of this (exoid) group */
+  EX_INQ_THREADSAFE          = 59, /**< Returns 1 if library is thread-safe; 0 otherwise */
+  EX_INQ_ASSEMBLY            = 60, /**< number of assemblies */
+  EX_INQ_BLOB                = 61, /**< number of blobs */
+  EX_INQ_INVALID             = -1
 };
 
 typedef enum ex_inquiry ex_inquiry;
@@ -552,7 +523,8 @@ EXODUS_EXPORT int64_t     ex_inquire_int(int exoid, ex_inquiry req_info);
 EXODUS_EXPORT int         ex_int64_status(int exoid);
 EXODUS_EXPORT int         ex_set_int64_status(int exoid, int mode);
 
-EXODUS_EXPORT void ex_print_config(void);
+EXODUS_EXPORT void        ex_print_config(void);
+EXODUS_EXPORT const char *ex_config(void);
 
 EXODUS_EXPORT int ex_set_max_name_length(int exoid, int length);
 
@@ -1793,26 +1765,26 @@ EXODUS_EXPORT int ex_get_idx(int         exoid,       /**< NetCDF/Exodus file ID
  * \defgroup ErrorReturnCodes Error return codes - #exerrval return values
  * @{
  */
-#define EX_MEMFAIL 1000       /**< memory allocation failure flag def       */
-#define EX_BADFILEMODE 1001   /**< bad file mode def                        */
-#define EX_BADFILEID 1002     /**< bad file id def                          */
+#define EX_MEMFAIL 1000 /**< memory allocation failure flag def       */
+#define EX_BADFILEMODE 1001 /**< bad file mode def                        */
+#define EX_BADFILEID 1002 /**< bad file id def                          */
 #define EX_WRONGFILETYPE 1003 /**< wrong file type for function             */
-#define EX_LOOKUPFAIL 1004    /**< id table lookup failed                   */
-#define EX_BADPARAM 1005      /**< bad parameter passed                     */
-#define EX_INTERNAL 1006      /**< internal logic error                     */
-#define EX_DUPLICATEID 1007   /**< duplicate id found                       */
+#define EX_LOOKUPFAIL 1004 /**< id table lookup failed                   */
+#define EX_BADPARAM 1005 /**< bad parameter passed                     */
+#define EX_INTERNAL 1006 /**< internal logic error                     */
+#define EX_DUPLICATEID 1007 /**< duplicate id found                       */
 #define EX_DUPLICATEOPEN 1008 /**< duplicate open                           */
-#define EX_MSG -1000          /**< message print code - no error implied    */
-#define EX_PRTLASTMSG -1001   /**< print last error message msg code        */
-#define EX_NOTROOTID -1002    /**< file id is not the root id; it is a subgroup id */
-#define EX_LASTERR -1003      /**< in ex_err, use existing err_num value */
-#define EX_NULLENTITY -1006   /**< null entity found                        */
-#define EX_NOENTITY -1007     /**< no entities of that type on database    */
-#define EX_NOTFOUND -1008     /**< could not find requested variable on database */
+#define EX_MSG -1000 /**< message print code - no error implied    */
+#define EX_PRTLASTMSG -1001 /**< print last error message msg code        */
+#define EX_NOTROOTID -1002 /**< file id is not the root id; it is a subgroup id */
+#define EX_LASTERR -1003 /**< in ex_err, use existing err_num value */
+#define EX_NULLENTITY -1006 /**< null entity found                        */
+#define EX_NOENTITY -1007 /**< no entities of that type on database    */
+#define EX_NOTFOUND -1008 /**< could not find requested variable on database */
 
 #define EX_FATAL -1 /**< fatal error flag def                     */
-#define EX_NOERR 0  /**< no error flag def                        */
-#define EX_WARN 1   /**< warning flag def                         */
+#define EX_NOERR 0 /**< no error flag def                        */
+#define EX_WARN 1 /**< warning flag def                         */
 /** @} */
 
 #ifdef __cplusplus

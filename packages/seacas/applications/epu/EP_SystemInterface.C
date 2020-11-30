@@ -1,36 +1,9 @@
 /*
- * Copyright(C) 2010-2017 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *
- *     * Neither the name of NTESS nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * See packages/seacas/LICENSE for details
  */
 #include "EP_SystemInterface.h"
 #include "EP_Version.h"  // for qainfo
@@ -88,10 +61,6 @@ void Excn::SystemInterface::enroll_options()
   options_.enroll("output_extension", GetLongOption::MandatoryValue,
                   "Exodus database extension for the output file", nullptr);
 
-  options_.enroll("offset", GetLongOption::MandatoryValue, "Raid Offset", nullptr);
-
-  options_.enroll("raid_count", GetLongOption::MandatoryValue, "Number of raids", "0");
-
   options_.enroll("processor_count", GetLongOption::MandatoryValue, "Number of processors", "1");
 
   options_.enroll("current_directory", GetLongOption::MandatoryValue, "Current Directory", ".");
@@ -126,9 +95,17 @@ void Excn::SystemInterface::enroll_options()
   options_.enroll("64", GetLongOption::NoValue,
                   "The output database will be written in the 64-bit integer mode", nullptr);
 
+  options_.enroll(
+      "zlib", GetLongOption::NoValue,
+      "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
+      nullptr);
+
+  options_.enroll("szip", GetLongOption::NoValue,
+                  "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);
+
   options_.enroll("compress_data", GetLongOption::MandatoryValue,
                   "The output database will be written using compression (netcdf-4 mode only).\n"
-                  "\t\tValue ranges from 0 (no compression) to 9 (max compression) inclusive.",
+                  "\t\tValue ranges from 0..9 for zlib/gzip or even values 4..32 for szip.",
                   nullptr);
 
   options_.enroll("steps", GetLongOption::MandatoryValue,
@@ -271,20 +248,6 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   }
 
   {
-    const char *temp = options_.retrieve("offset");
-    if (temp != nullptr) {
-      raidOffset_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("raid_count");
-    if (temp != nullptr) {
-      raidCount_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
     const char *temp = options_.retrieve("processor_count");
     if (temp != nullptr) {
       processorCount_ = strtol(temp, nullptr, 10);
@@ -405,6 +368,16 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("64") != nullptr) {
     intIs64Bit_ = true;
+  }
+
+  if (options_.retrieve("szip") != nullptr) {
+    szip_ = true;
+    zlib_ = false;
+  }
+  zlib_ = (options_.retrieve("zlib") != nullptr);
+
+  if (szip_ && zlib_) {
+    fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
   }
 
   {

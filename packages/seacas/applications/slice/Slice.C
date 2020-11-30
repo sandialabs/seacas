@@ -1,35 +1,8 @@
-// Copyright(C) 2016-2017, 2020 National Technology & Engineering Solutions of
-// Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-// * Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//
-// * Redistributions in binary form must reproduce the above
-//   copyright notice, this list of conditions and the following
-//   disclaimer in the documentation and/or other materials provided
-//   with the distribution.
-//
-// * Neither the name of NTESS nor the names of its
-//   contributors may be used to endorse or promote products derived
-//   from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+// See packages/seacas/LICENSE for details
 
 #include <SL_SystemInterface.h>
 #include <SL_tokenize.h>
@@ -270,7 +243,7 @@ namespace {
     auto & ebs   = region.get_element_blocks();
     for (const auto &eb : ebs) {
       size_t element_count = eb->entity_count();
-      size_t element_nodes = eb->get_property("topology_node_count").get_int();
+      size_t element_nodes = eb->topology()->number_nodes();
       sum += element_count * element_nodes;
       count += element_count;
     }
@@ -284,7 +257,7 @@ namespace {
     for (const auto &eb : ebs) {
       eb->get_field_data("connectivity_raw", connectivity);
       size_t element_count = eb->entity_count();
-      size_t element_nodes = eb->get_property("topology_node_count").get_int();
+      size_t element_nodes = eb->topology()->number_nodes();
 
       size_t el = 0;
       for (size_t j = 0; j < element_count; j++) {
@@ -1218,13 +1191,13 @@ namespace {
     for (size_t b = 0; b < block_count; b++) {
       std::vector<std::vector<INT>> connectivity(processor_count);
       size_t                        element_count = ebs[b]->entity_count();
-      size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
-      size_t block_id      = ebs[b]->get_property("id").get_int();
+      size_t                        element_nodes = ebs[b]->topology()->number_nodes();
+      size_t                        block_id      = ebs[b]->get_property("id").get_int();
 
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         const auto &pebs           = proc_region[p]->get_element_blocks();
         size_t      pelement_count = pebs[b]->entity_count();
-        size_t      pelement_nodes = pebs[b]->get_property("topology_node_count").get_int();
+        size_t      pelement_nodes = pebs[b]->topology()->number_nodes();
         connectivity[p].reserve(pelement_count * pelement_nodes); // Use reserve, not resize
       }
 
@@ -1241,7 +1214,7 @@ namespace {
 
           ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
                               nullptr);
-          progress("\tpartial_conn: " + std::to_string(beg) + " " + std::to_string(count));
+          progress(fmt::format("\tpartial_conn-- start: {:L}\tcount: {:L}", beg, count));
 
           size_t el = 0;
           for (size_t j = 0; j < count; j++) {
@@ -1350,7 +1323,7 @@ namespace {
     for (size_t b = 0; b < block_count; b++) {
       std::vector<INT> glob_conn;
       size_t           element_count = ebs[b]->entity_count();
-      size_t           element_nodes = ebs[b]->get_property("topology_node_count").get_int();
+      size_t           element_nodes = ebs[b]->topology()->number_nodes();
       size_t           block_id      = ebs[b]->get_property("id").get_int();
 
       // Do a 'partial_count' elements at a time...
@@ -1366,7 +1339,7 @@ namespace {
 
           ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
                               nullptr);
-          progress("\tpartial_conn: " + std::to_string(beg) + " " + std::to_string(count));
+          progress(fmt::format("\tpartial_conn-- start: {:L}\tcount: {:L}", beg, count));
 
           size_t el = 0;
           for (size_t j = 0; j < count; j++) {
@@ -1436,7 +1409,7 @@ namespace {
     }
     // Output histogram..
     fmt::print(stderr, "Processor count per node histogram:\n");
-    for (size_t i = 0; i < proc_histo.size(); i++) {
+    for (size_t i = 1; i < proc_histo.size(); i++) {
       if (proc_histo[i] > 0) {
         fmt::print(stderr, "\tNodes on {:2n} processors = {:12n}\t({:2})%\n", i, proc_histo[i],
                    (proc_histo[i] * 100 + node_count / 2) / node_count);
@@ -1480,11 +1453,18 @@ namespace {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
     }
 
-    if (interFace.compressionLevel_ > 0 || interFace.shuffle_) {
+    if (interFace.compressionLevel_ > 0 || interFace.shuffle_ || interFace.szip_) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
       properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compressionLevel_));
       properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interFace.shuffle_)));
+      if (interFace.szip_) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
+      }
+      else if (interFace.zlib_) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      }
     }
+
     if (interFace.ints64Bit_) {
       properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
@@ -1527,14 +1507,13 @@ namespace {
       auto & ebs = region.get_element_blocks();
       size_t bc  = ebs.size();
       for (size_t b = 0; b < bc; b++) {
-        std::string type = ebs[b]->get_property("topology_type").get_string();
+        std::string type = ebs[b]->topology()->name();
         auto *eb = new Ioss::ElementBlock(proc_region[p]->get_database(), ebs[b]->name(), type,
                                           proc_elem_block_cnt[b][p]);
         proc_region[p]->add(eb);
       }
     }
 
-    start = seacas_timer();
     // Now that we have the elements on each processor and the element
     // blocks those elements are in, can generate the node to proc list...
     start = seacas_timer();

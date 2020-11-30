@@ -1,35 +1,8 @@
-// Copyright(C) 2008-2017, 2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//
-//     * Redistributions in binary form must reproduce the above
-//       copyright notice, this list of conditions and the following
-//       disclaimer in the documentation and/or other materials provided
-//       with the distribution.
-//
-//     * Neither the name of NTESS nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+// See packages/seacas/LICENSE for details
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
@@ -135,7 +108,7 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
 
 double To_Double(const std::string &str_val);
 
-double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type);
+double FileDiff(double v1, double v2, ToleranceMode type);
 
 void Die_TS(double ts);
 
@@ -263,7 +236,8 @@ namespace {
       if (file.Time(i) <= time) {
         tbef = i;
       }
-      else if (interFace.time_tol.type != IGNORE_ && !interFace.time_tol.Diff(time, file.Time(i))) {
+      else if (interFace.time_tol.type != ToleranceMode::IGNORE_ &&
+               !interFace.time_tol.Diff(time, file.Time(i))) {
         tbef = i;
       }
       else {
@@ -351,7 +325,7 @@ int main(int argc, char *argv[])
     interFace.elmt_att_do_all_flag = true;
     interFace.ns_var_do_all_flag   = true;
     interFace.ss_var_do_all_flag   = true;
-    interFace.map_flag             = FILE_ORDER;
+    interFace.map_flag             = MapType::FILE_ORDER;
     interFace.quiet_flag           = false;
   }
 
@@ -510,14 +484,14 @@ namespace {
     // into file2.  Similarly with elmt_map.
     INT *node_map = nullptr;
     INT *elmt_map = nullptr;
-    if (interFace.map_flag == DISTANCE) {
+    if (interFace.map_flag == MapType::DISTANCE) {
       Compute_Maps(node_map, elmt_map, file1, file2);
     }
-    else if (interFace.map_flag == PARTIAL) {
+    else if (interFace.map_flag == MapType::PARTIAL) {
       // Same as distance, but ok if not all nodes/elements are matched
       Compute_Partial_Maps(node_map, elmt_map, file1, file2);
     }
-    else if (interFace.map_flag == USE_FILE_IDS) {
+    else if (interFace.map_flag == MapType::USE_FILE_IDS) {
       if (!interFace.ignore_maps) {
         // Node/element X in file 1 matches node/element X in file 2 no matter what order they are
         // in
@@ -533,7 +507,7 @@ namespace {
         std::iota(elmt_map, elmt_map + num_elem, 0);
       }
     }
-    else if (interFace.map_flag == FILE_ORDER) {
+    else if (interFace.map_flag == MapType::FILE_ORDER) {
       // Match by implicit ordering... IDs in that ordering must match (checked later)
       size_t num_nodes = file1.Num_Nodes();
       node_map         = new INT[num_nodes];
@@ -567,8 +541,9 @@ namespace {
       node_id_map = file1.Get_Node_Map();
       elem_id_map = file1.Get_Elmt_Map();
       if (!interFace.summary_flag) {
-        bool diff = Compare_Maps(file1, file2, node_map, elmt_map, interFace.map_flag == PARTIAL);
-        if (diff && (interFace.map_flag == FILE_ORDER)) {
+        bool diff =
+            Compare_Maps(file1, file2, node_map, elmt_map, interFace.map_flag == MapType::PARTIAL);
+        if (diff && (interFace.map_flag == MapType::FILE_ORDER)) {
           fmt::print(stderr,
                      "exodiff: Exiting due to node/element mismatch with `-match_file_order` "
                      "option enabled.\n");
@@ -653,7 +628,7 @@ namespace {
     int min_num_times = file1.Num_Times();
 
     MinMaxData mm_time;
-    mm_time.type = MinMaxData::mm_time;
+    mm_time.type = ToleranceType::mm_time;
     std::vector<MinMaxData> mm_glob;
     std::vector<MinMaxData> mm_node;
     std::vector<MinMaxData> mm_elmt;
@@ -666,37 +641,37 @@ namespace {
       if ((n = interFace.glob_var_names.size()) > 0) {
         mm_glob.resize(n);
         for (int i = 0; i < n; i++) {
-          mm_glob[i].type = MinMaxData::mm_global;
+          mm_glob[i].type = ToleranceType::mm_global;
         }
       }
       if ((n = interFace.node_var_names.size()) > 0) {
         mm_node.resize(n);
         for (int i = 0; i < n; i++) {
-          mm_node[i].type = MinMaxData::mm_nodal;
+          mm_node[i].type = ToleranceType::mm_nodal;
         }
       }
       if ((n = interFace.elmt_var_names.size()) > 0) {
         mm_elmt.resize(n);
         for (int i = 0; i < n; i++) {
-          mm_elmt[i].type = MinMaxData::mm_element;
+          mm_elmt[i].type = ToleranceType::mm_element;
         }
       }
       if ((n = interFace.elmt_att_names.size()) > 0) {
         mm_eatt.resize(n);
         for (int i = 0; i < n; i++) {
-          mm_eatt[i].type = MinMaxData::mm_elematt;
+          mm_eatt[i].type = ToleranceType::mm_elematt;
         }
       }
       if ((n = interFace.ns_var_names.size()) > 0) {
         mm_ns.resize(n);
         for (int i = 0; i < n; i++) {
-          mm_ns[i].type = MinMaxData::mm_nodeset;
+          mm_ns[i].type = ToleranceType::mm_nodeset;
         }
       }
       if ((n = interFace.ss_var_names.size()) > 0) {
         mm_ss.resize(n);
         for (int i = 0; i < n; i++) {
-          mm_ss[i].type = MinMaxData::mm_sideset;
+          mm_ss[i].type = ToleranceType::mm_sideset;
         }
       }
     }
@@ -941,8 +916,8 @@ namespace {
 
       // Make sure there is an operation to perform (compare times, variables, ...)
       if (!interFace.ignore_steps) {
-        if ((min_num_times == 0 && interFace.coord_tol.type == IGNORE_) ||
-            (min_num_times > 0 && interFace.time_tol.type == IGNORE_ &&
+        if ((min_num_times == 0 && interFace.coord_tol.type == ToleranceMode::IGNORE_) ||
+            (min_num_times > 0 && interFace.time_tol.type == ToleranceMode::IGNORE_ &&
              interFace.glob_var_names.empty() && interFace.node_var_names.empty() &&
              interFace.elmt_var_names.empty() && interFace.elmt_att_names.empty() &&
              interFace.ns_var_names.empty() && interFace.ss_var_names.empty())) {
@@ -983,7 +958,7 @@ namespace {
         diff_flag = true;
       }
     }
-    else if (interFace.map_flag == PARTIAL) {
+    else if (interFace.map_flag == MapType::PARTIAL) {
       DIFF_OUT("\nexodiff: Files are the same (partial match selected)\n", fmt::color::green);
     }
     else {
@@ -1012,19 +987,19 @@ namespace {
     return diff_flag;
   }
 } // namespace
-double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type)
+double FileDiff(double v1, double v2, ToleranceMode type)
 {
-  if (type == IGNORE_) { // ignore
+  if (type == ToleranceMode::IGNORE_) { // ignore
     return 0.0;
   }
-  if (type == RELATIVE_) { // relative diff
+  if (type == ToleranceMode::RELATIVE_) { // relative diff
     if (v1 == 0.0 && v2 == 0.0) {
       return 0.0;
     }
     double max = fabs(v1) < fabs(v2) ? fabs(v2) : fabs(v1);
     return (v1 - v2) / max;
   }
-  if (type == COMBINED_) {
+  if (type == ToleranceMode::COMBINED_) {
     // if (Abs(x - y) <= Max(absTol, relTol * Max(Abs(x), Abs(y))))
     // In the current implementation, absTol == relTol;
     // In summary, use abs tolerance if both values are less than 1.0;
@@ -1034,17 +1009,17 @@ double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type)
     double tol = 1.0 < max ? max : 1.0;
     return fabs(v1 - v2) / tol;
   }
-  else if (type == ABSOLUTE_) {
+  else if (type == ToleranceMode::ABSOLUTE_) {
     return (v1 - v2);
   }
-  else if (type == EIGEN_REL_) { // relative diff
+  else if (type == ToleranceMode::EIGEN_REL_) { // relative diff
     if (v1 == 0.0 && v2 == 0.0) {
       return 0.0;
     }
     double max = fabs(v1) < fabs(v2) ? fabs(v2) : fabs(v1);
     return (fabs(v1) - fabs(v2)) / max;
   }
-  else if (type == EIGEN_COM_) {
+  else if (type == ToleranceMode::EIGEN_COM_) {
     // if (Abs(x - y) <= Max(absTol, relTol * Max(Abs(x), Abs(y))))
     // In the current implementation, absTol == relTol;
     // In summary, use abs tolerance if both values are less than 1.0;
@@ -1054,7 +1029,7 @@ double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type)
     double tol = 1.0 < max ? max : 1.0;
     return fabs(fabs(v1) - fabs(v2)) / tol;
   }
-  else if (type == EIGEN_ABS_) {
+  else if (type == ToleranceMode::EIGEN_ABS_) {
     return (fabs(v1) - fabs(v2));
   }
   else {
@@ -1142,7 +1117,7 @@ const double *get_nodal_values(ExoII_Read<INT> &filen, int time_step, size_t idx
 
     if (vals != nullptr) {
       if (Invalid_Values(vals, filen.Num_Nodes())) {
-        Error(fmt::format("NaN found for variable '{}' in file {}\n", name, fno));
+        Error(fmt::format("NaN found for nodal variable '{}' in file {}\n", name, fno));
         *diff_flag = true;
       }
     }
@@ -1160,7 +1135,7 @@ const double *get_nodal_values(ExoII_Read<INT> &filen, const TimeInterp &t, size
 
     if (vals != nullptr) {
       if (Invalid_Values(vals, filen.Num_Nodes())) {
-        Error(fmt::format("NaN found for variable '{}' in file {}\n", name, fno));
+        Error(fmt::format("NaN found for nodal variable '{}' in file {}\n", name, fno));
         *diff_flag = true;
       }
     }
@@ -1191,7 +1166,7 @@ void do_diffs(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int time_step1, co
     *diff_flag = true;
   }
 
-  if (interFace.map_flag != PARTIAL) {
+  if (interFace.map_flag != MapType::PARTIAL) {
     // Nodeset variables.
     if (diff_nodeset(file1, file2, time_step1, t2, out_file_id, node_id_map, mm_ns, var_vals)) {
       *diff_flag = true;
@@ -1287,12 +1262,12 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
     }
 
     if (Invalid_Values(&vals1[idx1], 1)) {
-      Error(fmt::format("NaN found for variable '{}' in file 1\n", name));
+      Error(fmt::format("NaN found for global variable '{}' in file 1\n", name));
       diff_flag = true;
     }
 
     if (Invalid_Values(&vals2[idx2], 1)) {
-      Error(fmt::format("NaN found for variable '{}' in file 2\n", name));
+      Error(fmt::format("NaN found for global variable '{}' in file 2\n", name));
       diff_flag = true;
     }
 
@@ -1497,12 +1472,12 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
     SMART_ASSERT(evals != nullptr);
   }
 
+  int name_length = max_string_length(interFace.elmt_var_names) + 1;
+
   if (out_file_id < 0 && !interFace.quiet_flag && !interFace.summary_flag &&
       !interFace.elmt_var_names.empty()) {
     fmt::print("Element variables:\n");
   }
-
-  int name_length = max_string_length(interFace.elmt_var_names) + 1;
 
   for (unsigned e_idx = 0; e_idx < interFace.elmt_var_names.size(); ++e_idx) {
     const std::string &name = (interFace.elmt_var_names)[e_idx];
@@ -1564,8 +1539,8 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       }
 
       if (Invalid_Values(vals1, eblock1->Size())) {
-        Error(
-            fmt::format("NaN found for variable '{}' in block {}, file 1\n", name, eblock1->Id()));
+        Error(fmt::format("NaN found for element variable '{}' in block {}, file 1\n", name,
+                          eblock1->Id()));
         diff_flag = true;
       }
 
@@ -1592,7 +1567,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         }
 
         if (Invalid_Values(vals2, eblock2->Size())) {
-          Error(fmt::format("NaN found for variable '{}' in block {}, file 2\n", name,
+          Error(fmt::format("NaN found for element variable '{}' in block {}, file 2\n", name,
                             eblock2->Id()));
           diff_flag = true;
         }
@@ -1732,6 +1707,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
     for (size_t b = 0; b < file1.Num_Node_Sets(); ++b) {
       Node_Set<INT> *nset1 = file1.Get_Node_Set_by_Index(b);
+      SMART_ASSERT(nset1 != nullptr);
       if (nset1->Size() == 0) {
         continue;
       }
@@ -1748,8 +1724,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         else {
           nset2 = file2.Get_Node_Set_by_Id(id);
         }
-        SMART_ASSERT(nset2 != nullptr);
-        if (!nset2->is_valid_var(vidx2)) {
+        if (nset2 == nullptr || !nset2->is_valid_var(vidx2)) {
           continue;
         }
       }
@@ -1765,8 +1740,8 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       }
 
       if (Invalid_Values(vals1, nset1->Size())) {
-        Error(
-            fmt::format("NAN found for variable '{}' in nodeset {}, file 1.\n", name, nset1->Id()));
+        Error(fmt::format("NAN found for nodeset variable '{}' in nodeset {}, file 1.\n", name,
+                          nset1->Id()));
         diff_flag = true;
       }
 
@@ -1785,7 +1760,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         }
 
         if (Invalid_Values(vals2, nset2->Size())) {
-          Error(fmt::format("NAN found for variable '{}' in nodeset {}, file 2.\n", name,
+          Error(fmt::format("NAN found for nodeset variable '{}' in nodeset {}, file 2.\n", name,
                             nset2->Id()));
           diff_flag = true;
         }
@@ -1896,7 +1871,6 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       !interFace.ss_var_names.empty()) {
     fmt::print("Sideset variables:\n");
   }
-  Norm norm;
 
   for (unsigned e_idx = 0; e_idx < interFace.ss_var_names.size(); ++e_idx) {
     const std::string &name  = (interFace.ss_var_names)[e_idx];
@@ -1911,6 +1885,8 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
     }
 
     DiffData max_diff;
+    Norm     norm;
+
     for (size_t b = 0; b < file1.Num_Side_Sets(); ++b) {
       Side_Set<INT> *sset1 = file1.Get_Side_Set_by_Index(b);
       SMART_ASSERT(sset1 != nullptr);
@@ -1945,8 +1921,8 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       }
 
       if (Invalid_Values(vals1, sset1->Size())) {
-        Error(
-            fmt::format("NaN found for variable '{}' in sideset {}, file 1.\n", name, sset1->Id()));
+        Error(fmt::format("NaN found for sideset variable '{}' in sideset {}, file 1.\n", name,
+                          sset1->Id()));
         diff_flag = true;
       }
 
@@ -1964,7 +1940,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         }
 
         if (Invalid_Values(vals2, sset2->Size())) {
-          Error(fmt::format("NaN found for variable '{}' in sideset {}, file 2.\n", name,
+          Error(fmt::format("NaN found for sideset variable '{}' in sideset {}, file 2.\n", name,
                             sset2->Id()));
           diff_flag = true;
         }

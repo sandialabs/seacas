@@ -39,8 +39,8 @@
 
 #
 # First, set up the variables for the (backward-compatible) TriBITS way of
-# finding CGNS.  These are used in case FIND_PACKAGE(CGNS ...) is not
-# called or does not find CGNS.  Also, these variables need to be non-null
+# finding Netcdf.  These are used in case FIND_PACKAGE(NetCDF ...) is not
+# called or does not find NetCDF.  Also, these variables need to be non-null
 # in order to trigger the right behavior in the function
 # TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES().
 #
@@ -52,7 +52,7 @@ SET(REQUIRED_HEADERS cgnslib.h)
 SET(REQUIRED_LIBS_NAMES cgns)
 
 #
-# Second, search for CGNS components (if allowed) using the standard
+# Second, search for Netcdf components (if allowed) using the standard
 # FIND_PACKAGE(CGNS ...).
 #
 TRIBITS_TPL_ALLOW_PRE_FIND_PACKAGE(CGNS  CGNS_ALLOW_PREFIND)
