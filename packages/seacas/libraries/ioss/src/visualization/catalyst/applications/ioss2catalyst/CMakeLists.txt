@@ -13,7 +13,10 @@ TARGET_INCLUDE_DIRECTORIES(ioss2catalyst
         ${CMAKE_CURRENT_BINARY_DIR})
 
 TARGET_LINK_LIBRARIES(ioss2catalyst
+    PUBLIC
+        libpython3.7m.so
     PRIVATE
+        -L${SEACAS_INSTALL_DIR}/lib
         Ionit
         Ioss
         VTK::mpi)
