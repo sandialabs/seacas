@@ -134,12 +134,12 @@ namespace {
   ex_entity_type exodus_object_type(const Excn::ObjectType &epu_type)
   {
     switch (epu_type) {
-    case Excn::EBLK: return EX_ELEM_BLOCK;
-    case Excn::SSET: return EX_SIDE_SET;
-    case Excn::NSET: return EX_NODE_SET;
+    case Excn::ObjectType::EBLK: return EX_ELEM_BLOCK;
+    case Excn::ObjectType::SSET: return EX_SIDE_SET;
+    case Excn::ObjectType::NSET: return EX_NODE_SET;
     default:
       throw std::runtime_error("Invalid Object Type in exodus_object_type: " +
-                               std::to_string(epu_type));
+                               std::to_string(static_cast<int>(epu_type)));
     }
   }
 
@@ -196,6 +196,7 @@ namespace {
   void put_global_info(const Excn::Mesh &global);
   void get_put_qa(int id, int id_out);
   void get_put_coordinate_names(int in, int out, int dimensionality);
+  void get_put_assemblies(int in, int out, Excn::Mesh &global);
 
   template <typename T> void get_put_coordinate_frames(int id, int id_out, T float_or_double);
 
@@ -622,6 +623,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     local_mesh[p].blockCount     = exodus.num_elem_blk;
     local_mesh[p].nodesetCount   = exodus.num_node_sets;
     local_mesh[p].sidesetCount   = exodus.num_side_sets;
+    local_mesh[p].assemblyCount  = exodus.num_assembly;
     local_mesh[p].title          = exodus.title;
 
     if (local_mesh[p].nodeCount > 0 && non_zero_node_count == -1) {
@@ -631,18 +633,24 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     if (p == 0) {
       global.title          = mytitle;
       global.dimensionality = local_mesh[p].dimensionality;
-      global.blockCount     = local_mesh[p].count(EBLK);
-      global.nodesetCount   = local_mesh[p].count(NSET);
-      global.sidesetCount   = local_mesh[p].count(SSET);
+      global.blockCount     = local_mesh[p].count(Excn::ObjectType::EBLK);
+      global.nodesetCount   = local_mesh[p].count(Excn::ObjectType::NSET);
+      global.sidesetCount   = local_mesh[p].count(Excn::ObjectType::SSET);
+      global.assemblyCount  = local_mesh[p].count(Excn::ObjectType::ASSM);
     }
     else {
       SMART_ASSERT(global.dimensionality == local_mesh[p].dimensionality);
-      SMART_ASSERT(global.count(EBLK) == local_mesh[p].count(EBLK));
+      SMART_ASSERT(global.count(Excn::ObjectType::EBLK) ==
+                   local_mesh[p].count(Excn::ObjectType::EBLK));
+      SMART_ASSERT(global.count(Excn::ObjectType::ASSM) ==
+                   local_mesh[p].count(Excn::ObjectType::ASSM));
       if (!interFace.omit_nodesets()) {
-        SMART_ASSERT(global.count(NSET) == local_mesh[p].count(NSET));
+        SMART_ASSERT(global.count(Excn::ObjectType::NSET) ==
+                     local_mesh[p].count(Excn::ObjectType::NSET));
       }
       if (!interFace.omit_sidesets()) {
-        SMART_ASSERT(global.count(SSET) == local_mesh[p].count(SSET));
+        SMART_ASSERT(global.count(Excn::ObjectType::SSET) ==
+                     local_mesh[p].count(Excn::ObjectType::SSET));
       }
     }
 
@@ -670,7 +678,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
   }
 
   // Need these throughout run, so declare outside of this block...
-  std::vector<Block>              glob_blocks(global.count(EBLK));
+  std::vector<Block>              glob_blocks(global.count(Excn::ObjectType::EBLK));
   std::vector<std::vector<Block>> blocks(part_count);
 
   std::vector<SideSet<INT>>              glob_ssets;
@@ -739,7 +747,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     if (!interFace.omit_sidesets()) {
       LOG("\n**** GET SIDE SETS *****\n");
       get_sideset_metadata(part_count, sidesets, glob_ssets);
-      if (global.count(SSET) != glob_ssets.size()) {
+      if (global.count(Excn::ObjectType::SSET) != glob_ssets.size()) {
         fmt::print("\nWARNING: Invalid sidesets will not be written to output database.\n");
         global.sidesetCount = glob_ssets.size();
       }
@@ -751,7 +759,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       LOG("\n**** GET NODE SETS *****\n");
       get_nodesets(part_count, global.nodeCount, local_node_to_global, nodesets, glob_nsets,
                    float_or_double);
-      if (global.count(NSET) != glob_nsets.size()) {
+      if (global.count(Excn::ObjectType::NSET) != glob_nsets.size()) {
         fmt::print("\nWARNING: Invalid nodesets will not be written to output database.\n");
         global.nodesetCount = glob_nsets.size();
       }
@@ -831,6 +839,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
 
       exodus.write_meta_data(global, glob_blocks, glob_nsets, glob_ssets, comm_data);
 
+      get_put_assemblies(ExodusFile(0), ExodusFile::output(), global);
+
       // Output bulk mesh data....
       put_nodesets(glob_nsets);
 
@@ -879,11 +889,11 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
   //  NOTE: it is assumed that every processor has the same global, nodal,
   //        and element lists
 
-  Variables global_vars(GLOBAL);
-  Variables nodal_vars(NODE);
-  Variables element_vars(EBLK);
-  Variables nodeset_vars(NSET);
-  Variables sideset_vars(SSET);
+  Variables global_vars(Excn::ObjectType::GLOBAL);
+  Variables nodal_vars(Excn::ObjectType::NODE);
+  Variables element_vars(Excn::ObjectType::EBLK);
+  Variables nodeset_vars(Excn::ObjectType::NSET);
+  Variables sideset_vars(Excn::ObjectType::SSET);
 
   element_vars.addProcessorId = interFace.add_processor_id_field();
 
@@ -928,14 +938,17 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
           nodeset_vars.count(OUT) + sideset_vars.count(OUT) >
       0) {
 
-    std::vector<int> elem_truth_table(global.truthTable[EBLK].size());
+    std::vector<int> elem_truth_table(
+        global.truthTable[static_cast<int>(Excn::ObjectType::EBLK)].size());
     create_output_truth_table(global, glob_blocks, element_vars, elem_truth_table);
 
     if (!interFace.append()) {
       error = ex_put_all_var_param(
           ExodusFile::output(), global_vars.count(OUT), nodal_vars.count(OUT),
           element_vars.count(OUT), elem_truth_table.data(), nodeset_vars.count(OUT),
-          global.truthTable[NSET].data(), sideset_vars.count(OUT), global.truthTable[SSET].data());
+          global.truthTable[static_cast<int>(Excn::ObjectType::NSET)].data(),
+          sideset_vars.count(OUT),
+          global.truthTable[static_cast<int>(Excn::ObjectType::SSET)].data());
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -1367,6 +1380,31 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
 }
 
 namespace {
+  void get_put_assemblies(int in, int out, Excn::Mesh &global)
+  {
+    if (global.assemblyCount > 0) {
+      std::vector<ex_assembly> assemblies(global.assemblyCount);
+      for (int i = 0; i < global.assemblyCount; i++) {
+        assemblies[i].name        = nullptr;
+        assemblies[i].entity_list = nullptr;
+      }
+      ex_get_assemblies(in, assemblies.data());
+
+      for (int i = 0; i < global.assemblyCount; i++) {
+        assemblies[i].entity_list = new int64_t[assemblies[i].entity_count];
+      }
+
+      // Now get the assembly entity lists...
+      ex_get_assemblies(in, assemblies.data());
+      ex_put_assemblies(out, assemblies.size(), assemblies.data());
+
+      for (int i = 0; i < global.assemblyCount; i++) {
+        delete[] assemblies[i].entity_list;
+        free(assemblies[i].name);
+      }
+    }
+  }
+
   template <typename T> void get_put_coordinate_frames(int id, int id_out, T /* float_or_double */)
   {
     int num_frames = ex_inquire_int(id, EX_INQ_COORD_FRAMES);
@@ -1633,14 +1671,14 @@ namespace {
     LOG("\n\n**** GET BLOCK INFORMATION (INCL. ELEMENT ATTRIBUTES) ****\n");
 
     for (int ip = 0; ip < part_count; ip++) {
-      blocks[ip].resize(local_mesh[ip].count(EBLK));
+      blocks[ip].resize(local_mesh[ip].count(Excn::ObjectType::EBLK));
     }
 
     if (rank == 0) {
-      fmt::print("Global block count = {}\n", global.count(EBLK));
+      fmt::print("Global block count = {}\n", global.count(Excn::ObjectType::EBLK));
     }
 
-    ExodusIdVector block_id(global.count(EBLK));
+    ExodusIdVector block_id(global.count(Excn::ObjectType::EBLK));
 
     int error = 0;
     for (int p = 0; p < part_count; p++) {
@@ -1653,7 +1691,7 @@ namespace {
 
       // Check that the block id ordering is consistent among files...
       if (p > 0) {
-        for (size_t b = 0; b < global.count(EBLK); b++) {
+        for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
           if (blocks[0][b].id != block_id[b]) {
             std::ostringstream errmsg;
             fmt::print(errmsg,
@@ -1674,7 +1712,7 @@ namespace {
         }
       }
 
-      for (size_t b = 0; b < global.count(EBLK); b++) {
+      for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
         if ((debug_level & 4) != 0U) {
           fmt::print("Block {}, Id = {}", b, block_id[b]);
         }
@@ -1744,7 +1782,7 @@ namespace {
     // Convert block_offset from elements/block/processor to true offset
     for (int p = 0; p < part_count; p++) {
       size_t sum = 0;
-      for (size_t b = 0; b < global.count(EBLK); b++) {
+      for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
         size_t save          = blocks[p][b].offset_;
         blocks[p][b].offset_ = sum;
         sum += save;
@@ -2356,11 +2394,13 @@ namespace {
                  " Number of coordinates per node       = {:15n}\n"
                  " Number of nodes                      = {:15n}\n"
                  " Number of elements                   = {:15n}\n"
-                 " Number of element blocks             = {:15n}\n\n"
+                 " Number of element blocks             = {:15n}\n"
+                 " Number of assemblies                 = {:15n}\n\n"
                  " Number of nodal point sets           = {:15n}\n"
                  " Number of element side sets          = {:15n}\n\n",
                  global.title, global.dimensionality, global.nodeCount, global.elementCount,
-                 global.count(EBLK), global.count(NSET), global.count(SSET));
+                 global.count(Excn::ObjectType::EBLK), global.count(Excn::ObjectType::ASSM),
+                 global.count(Excn::ObjectType::NSET), global.count(Excn::ObjectType::SSET));
     }
     int id_out = ExodusFile::output();
     get_put_qa(ExodusFile(0), id_out);
@@ -2864,7 +2904,7 @@ namespace {
                               int step, int variable, std::vector<T> &proc)
   {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
-    for (size_t b = 0; b < global.count(EBLK); b++) {
+    for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
       proc.resize(glob_blocks[b].entity_count());
       for (int p = 0; p < part_count; p++) {
         size_t boffset       = blocks[p][b].offset_;
@@ -2953,7 +2993,7 @@ namespace {
           // variable truly exists for the block that the user specified.
           for (size_t b = 0; b < global.count(vars.objectType); b++) {
             int truth_table_loc = (b * vars.count(OUT)) + out_position;
-            global.truthTable[vars.objectType][truth_table_loc] *= -1;
+            global.truthTable[static_cast<int>(vars.objectType)][truth_table_loc] *= -1;
           }
         }
         // Find out which block corresponds to the specified id.
@@ -2975,14 +3015,14 @@ namespace {
         }
 
         int truth_table_loc = block * vars.count(OUT) + out_position;
-        if (global.truthTable[vars.objectType][truth_table_loc] == 0) {
+        if (global.truthTable[static_cast<int>(vars.objectType)][truth_table_loc] == 0) {
           std::ostringstream errmsg;
           fmt::print(errmsg, "ERROR: (EPU) Variable '{}' does not exist on block {}.\n",
                      variable_name.first, variable_name.second);
           throw std::runtime_error(errmsg.str());
         }
         else {
-          global.truthTable[vars.objectType][truth_table_loc] = 1;
+          global.truthTable[static_cast<int>(vars.objectType)][truth_table_loc] = 1;
         }
       }
     }
@@ -2990,8 +3030,8 @@ namespace {
     // reset truth table values that may be negative
     int output_truth_table_length = vars.count(OUT) * global.count(vars.objectType);
     for (int j = 0; j < output_truth_table_length; j++) {
-      if (global.truthTable[vars.objectType][j] < 0) {
-        global.truthTable[vars.objectType][j] = 0;
+      if (global.truthTable[static_cast<int>(vars.objectType)][j] < 0) {
+        global.truthTable[static_cast<int>(vars.objectType)][j] = 0;
       }
     }
   }
@@ -3011,22 +3051,24 @@ namespace {
 
     if (output_truth_table_length) {
 
-      global.truthTable[object_type].resize(output_truth_table_length);
-      std::fill(global.truthTable[object_type].begin(), global.truthTable[object_type].end(), 0);
+      global.truthTable[static_cast<int>(object_type)].resize(output_truth_table_length);
+      std::fill(global.truthTable[static_cast<int>(object_type)].begin(),
+                global.truthTable[static_cast<int>(object_type)].end(), 0);
 
       // For each input exodus file, get it's truth table and fill
       // in the location in the output truth table...
 
-      bool is_sidenodeset = vars.objectType == NSET || vars.objectType == SSET;
-      int  part_count     = local.size();
+      bool is_sidenodeset =
+          vars.objectType == Excn::ObjectType::NSET || vars.objectType == Excn::ObjectType::SSET;
+      int part_count = local.size();
       for (int p = 0; p < part_count; p++) {
         ExodusFile id(p);
 
         if (vars.count(IN) > 0) { // Could be zero if add_processor_id
           // is the only variable...
-          local[p].truthTable[object_type].resize(input_truth_table_length);
+          local[p].truthTable[static_cast<int>(object_type)].resize(input_truth_table_length);
           int error = ex_get_truth_table(id, vars.type(), global.count(object_type), vars.count(IN),
-                                         local[p].truthTable[object_type].data());
+                                         local[p].truthTable[static_cast<int>(object_type)].data());
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -3043,22 +3085,24 @@ namespace {
               int ko = (b * vars.count(OUT)) + vars.index_[j] - 1;
               SMART_ASSERT(ko < output_truth_table_length);
               SMART_ASSERT(ki < input_truth_table_length);
-              global.truthTable[object_type][ko] += local[p].truthTable[object_type][ki];
+              global.truthTable[static_cast<int>(object_type)][ko] +=
+                  local[p].truthTable[static_cast<int>(object_type)][ki];
             }
           }
           if (vars.addProcessorId) {
             int ko = (b * vars.count(OUT)) + vars.count(OUT) - 1;
             SMART_ASSERT(ko < output_truth_table_length);
-            global.truthTable[object_type][ko] = 1;
+            global.truthTable[static_cast<int>(object_type)][ko] = 1;
           }
         }
       }
 
       // reset truth table values that may be greater than 1
       for (int j = 0; j < output_truth_table_length; j++) {
-        SMART_ASSERT(global.truthTable[object_type][j] >= 0)(global.truthTable[object_type][j]);
-        if (global.truthTable[object_type][j] > 0) {
-          global.truthTable[object_type][j] = 1;
+        SMART_ASSERT(global.truthTable[static_cast<int>(object_type)][j] >= 0)
+        (global.truthTable[static_cast<int>(object_type)][j]);
+        if (global.truthTable[static_cast<int>(object_type)][j] > 0) {
+          global.truthTable[static_cast<int>(object_type)][j] = 1;
         }
       }
 
@@ -3067,7 +3111,7 @@ namespace {
         int k = 0;
         for (size_t b = 0; b < global.count(object_type); b++) {
           for (int j = 0; j < vars.count(OUT); j++) {
-            fmt::print("{}", global.truthTable[object_type][k++]);
+            fmt::print("{}", global.truthTable[static_cast<int>(object_type)][k++]);
           }
           fmt::print("\n");
         }
@@ -3242,7 +3286,7 @@ namespace {
         // zero out master array
         for (size_t b = 0; b < global.count(vars.objectType); b++) {
           int output_truth_table_loc = (b * vars.count(OUT)) + ivar;
-          if (global.truthTable[vars.objectType][output_truth_table_loc]) {
+          if (global.truthTable[static_cast<int>(vars.objectType)][output_truth_table_loc]) {
             std::fill(&master_values[ivar][b][0],
                       &master_values[ivar][b][glob_sets[b].entity_count()], T(0.0));
           }
@@ -3315,8 +3359,9 @@ namespace {
                           std::vector<T> &values, int part_count, int time_step,
                           const std::vector<std::vector<INT>> &local_element_to_global)
   {
-    int  error          = 0;
-    bool is_sidenodeset = vars.objectType == NSET || vars.objectType == SSET;
+    int  error = 0;
+    bool is_sidenodeset =
+        vars.objectType == Excn::ObjectType::NSET || vars.objectType == Excn::ObjectType::SSET;
 
     for (int p = 0; p < part_count; p++) {
       ExodusFile id(p);
@@ -3335,13 +3380,14 @@ namespace {
             }
             int output_truth_table_loc = (b * vars.count(OUT)) + ivar;
             int input_truth_table_loc  = (bin * vars.count(IN)) + i;
-            if (global.truthTable[vars.objectType][output_truth_table_loc] &&
+            if (global.truthTable[static_cast<int>(vars.objectType)][output_truth_table_loc] &&
                 local_sets[p][b].entity_count() > 0) {
 
               T *    iv_block_mev = master_values[ivar][b];
               size_t entity_count = local_sets[p][b].entity_count();
 
-              if (local_mesh[p].truthTable[vars.objectType][input_truth_table_loc] > 0) {
+              if (local_mesh[p]
+                      .truthTable[static_cast<int>(vars.objectType)][input_truth_table_loc] > 0) {
                 error = ex_get_var(id, time_step + 1, exodus_object_type(vars.objectType), i + 1,
                                    local_sets[p][b].id, entity_count, values.data());
                 if (error < 0) {
@@ -3349,16 +3395,16 @@ namespace {
                 }
 
                 switch (vars.objectType) {
-                case EBLK:
+                case Excn::ObjectType::EBLK:
                   map_element_vars(local_sets[p][b].offset_, global_sets[b].offset_, entity_count,
                                    values, iv_block_mev, proc_loc_elem_to_global);
                   break;
 
-                case SSET:
+                case Excn::ObjectType::SSET:
                   map_sideset_vars(local_sets[p][b].offset_, entity_count, values, iv_block_mev);
                   break;
 
-                case NSET:
+                case Excn::ObjectType::NSET:
                   map_nodeset_vars(local_sets[p][b], entity_count, global_sets[b].entity_count(),
                                    values, iv_block_mev);
                   break;
@@ -3383,7 +3429,7 @@ namespace {
         for (size_t b = 0; b < global.count(vars.objectType); b++) {
           int truth_table_loc = (b * vars.count(OUT)) + ivar;
 
-          if (global.truthTable[vars.objectType][truth_table_loc]) {
+          if (global.truthTable[static_cast<int>(vars.objectType)][truth_table_loc]) {
             int error =
                 ex_put_var(id_out, time_step, exodus_object_type(vars.objectType), ivar + 1,
                            glob_sets[b].id, glob_sets[b].entity_count(), master_values[ivar][b]);
@@ -3407,7 +3453,7 @@ namespace {
         master_values[ivar] = new T *[global.count(vars.objectType)];
         for (size_t b = 0; b < global.count(vars.objectType); b++) {
           int output_truth_table_loc = (b * vars.count(OUT)) + ivar;
-          if (global.truthTable[vars.objectType][output_truth_table_loc] &&
+          if (global.truthTable[static_cast<int>(vars.objectType)][output_truth_table_loc] &&
               glob_sets[b].entity_count() > 0) {
             master_values[ivar][b] = new T[glob_sets[b].entity_count()];
           }
@@ -3443,9 +3489,10 @@ namespace {
       int bout = global_sets[b].position_;
       SMART_ASSERT(bout >= 0);
       for (int j = 0; j < vars.count(OUT); j++) {
-        int inp_ttable_loc          = (b * vars.count(OUT)) + j;
-        int out_ttable_loc          = (bout * vars.count(OUT)) + j;
-        truth_table[out_ttable_loc] = global.truthTable[vars.objectType][inp_ttable_loc];
+        int inp_ttable_loc = (b * vars.count(OUT)) + j;
+        int out_ttable_loc = (bout * vars.count(OUT)) + j;
+        truth_table[out_ttable_loc] =
+            global.truthTable[static_cast<int>(vars.objectType)][inp_ttable_loc];
       }
     }
   }
@@ -3464,7 +3511,7 @@ namespace {
     }
 
     for (int p = 0; p < part_count; p++) {
-      for (size_t b = 0; b < global.count(EBLK); b++) {
+      for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
         if (blocks[p][b].entity_count() > max_ent) {
           max_ent = blocks[p][b].entity_count();
         }
@@ -3473,7 +3520,7 @@ namespace {
 
     // Nodesets...
     for (int p = 0; p < part_count; p++) {
-      for (size_t b = 0; b < global.count(NSET); b++) {
+      for (size_t b = 0; b < global.count(Excn::ObjectType::NSET); b++) {
         if (nodesets[p][b].entity_count() > max_ent) {
           max_ent = nodesets[p][b].entity_count();
         }
@@ -3482,7 +3529,7 @@ namespace {
 
     // Sidesets...
     for (int p = 0; p < part_count; p++) {
-      for (size_t b = 0; b < global.count(SSET); b++) {
+      for (size_t b = 0; b < global.count(Excn::ObjectType::SSET); b++) {
         if (sidesets[p][b].entity_count() > max_ent) {
           max_ent = sidesets[p][b].entity_count();
         }
