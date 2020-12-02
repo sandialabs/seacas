@@ -171,7 +171,7 @@ int ex__check_file_type(const char *path, int *type)
 
 #define MAGIC_NUMBER_LEN 4
 
-  char magic[MAGIC_NUMBER_LEN];
+  char magic[MAGIC_NUMBER_LEN + 1];
   EX_FUNC_ENTER();
 
   *type = 0;
@@ -188,7 +188,8 @@ int ex__check_file_type(const char *path, int *type)
       ex_err(__func__, errmsg, EX_WRONGFILETYPE);
       EX_FUNC_LEAVE(EX_FATAL);
     }
-    i = fread(magic, MAGIC_NUMBER_LEN, 1, fp);
+    i                       = fread(magic, MAGIC_NUMBER_LEN, 1, fp);
+    magic[MAGIC_NUMBER_LEN] = '\0';
     fclose(fp);
     if (i != 1) {
       char errmsg[MAX_ERR_LENGTH];
