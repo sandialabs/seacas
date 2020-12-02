@@ -14,7 +14,7 @@
 #include <vector>
 
 namespace Excn {
-  enum InOut { IN = 1, OUT = 2 };
+  enum class InOut { IN = 1, OUT = 2 };
 
   using IntVector = std::vector<int>;
 
@@ -27,12 +27,12 @@ namespace Excn {
                    otype == Excn::ObjectType::GLOBAL);
     }
 
-    int count(InOut in_out = IN) const
+    int count(InOut in_out = InOut::IN) const
     {
       int ret_val = 0;
       switch (in_out) {
-      case IN: ret_val = index_.size() - (addProcessorId ? 1 : 0); break;
-      case OUT: ret_val = outputCount; break;
+      case InOut::IN: ret_val = index_.size() - (addProcessorId ? 1 : 0); break;
+      case InOut::OUT: ret_val = outputCount; break;
       }
       return ret_val;
     }
