@@ -100,8 +100,10 @@ const char *ex_config(void)
     j += sprintf(buffer + j, "\t\tHDF5 enabled (%u.%u.%u)\n", major, minor, release);
   }
   j += sprintf(buffer + j, "\t\tZlib Compression (read/write) enabled\n");
-#if defined(NC_HAS_SZIP_WRITE)
+#if NC_HAS_SZIP_WRITE
   j += sprintf(buffer + j, "\t\tSZip Compression (read/write) enabled\n");
+#else
+  j += sprintf(buffer + j, "\t\tSZip Compression (read/write) NOT enabled\n");
 #endif
 #endif
 #endif
@@ -142,7 +144,7 @@ const char *ex_config(void)
 #if defined(NC_HAVE_META_H)
   j += sprintf(buffer + j, "\t\tNC_HAVE_META_H defined\n");
 #endif
-#if defined(NC_HAS_NC2)
+#if NC_HAS_NC2
   j += sprintf(buffer + j, "\t\tAPI Version 2 support enabled\n");
 #else
   j += sprintf(buffer + j, "\t\tAPI Version 2 support NOT enabled\n");
@@ -171,7 +173,7 @@ int ex__check_file_type(const char *path, int *type)
 
 #define MAGIC_NUMBER_LEN 4
 
-  char magic[MAGIC_NUMBER_LEN + 1];
+  char magic[MAGIC_NUMBER_LEN];
   EX_FUNC_ENTER();
 
   *type = 0;
@@ -1760,7 +1762,7 @@ void ex__compress_variable(int exoid, int varid, int type)
         }
       }
       else if (file->compression_algorithm == EX_COMPRESS_SZIP) {
-#if defined(NC_HAS_SZIP_WRITE)
+#if NC_HAS_SZIP_WRITE
         /* See: https://support.hdfgroup.org/doc_resource/SZIP/ and
                 https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetSzip
            for details on SZIP library and parameters.

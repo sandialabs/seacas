@@ -589,10 +589,10 @@ class hopscotch_hash : private Hash, private KeyEqual, private GrowthPolicy {
   template <
       class OC = OverflowContainer,
       typename std::enable_if<!has_key_compare<OC>::value>::type* = nullptr>
-  hopscotch_hash(size_type bucket_count, const Hash& p_hash,
+  hopscotch_hash(size_type bucket_count, const Hash& hash,
                  const KeyEqual& equal, const Allocator& alloc,
                  float max_load_factor)
-      : Hash(p_hash),
+      : Hash(hash),
         KeyEqual(equal),
         GrowthPolicy(bucket_count),
         m_buckets_data(alloc),
@@ -626,10 +626,10 @@ class hopscotch_hash : private Hash, private KeyEqual, private GrowthPolicy {
   template <
       class OC = OverflowContainer,
       typename std::enable_if<has_key_compare<OC>::value>::type* = nullptr>
-  hopscotch_hash(size_type bucket_count, const Hash& hash,
+  hopscotch_hash(size_type bucket_count, const Hash& p_hash,
                  const KeyEqual& equal, const Allocator& alloc,
                  float max_load_factor, const typename OC::key_compare& comp)
-      : Hash(hash),
+      : Hash(p_hash),
         KeyEqual(equal),
         GrowthPolicy(bucket_count),
         m_buckets_data(alloc),
