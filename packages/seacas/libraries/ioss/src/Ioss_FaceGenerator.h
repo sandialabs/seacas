@@ -16,9 +16,9 @@
 #if defined FG_USE_STD
 #include <unordered_set>
 #elif defined FG_USE_HOPSCOTCH
-#include <hash/hopscotch_set.h>
+#include <hopscotch_set.h>
 #elif defined FG_USE_ROBIN
-#include <hash/robin_set.h>
+#include <robin_set.h>
 #endif
 
 #include <utility>

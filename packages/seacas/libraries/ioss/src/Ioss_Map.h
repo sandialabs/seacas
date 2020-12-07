@@ -17,9 +17,9 @@
 #if defined MAP_USE_STD
 #include <unordered_map>
 #elif defined MAP_USE_HOPSCOTCH
-#include <hash/bhopscotch_map.h>
+#include <bhopscotch_map.h>
 #elif defined MAP_USE_ROBIN
-#include <hash/robin_map.h>
+#include <robin_map.h>
 #endif
 
 namespace Ioss {

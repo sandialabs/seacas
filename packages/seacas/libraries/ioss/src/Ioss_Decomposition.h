@@ -29,9 +29,9 @@
 
 #define DC_USE_HOPSCOTCH
 #if defined DC_USE_HOPSCOTCH
-#include <hash/hopscotch_map.h>
+#include <hopscotch_map.h>
 #elif defined DC_USE_ROBIN
-#include <hash/robin_map.h>
+#include <robin_map.h>
 #endif
 
 namespace Ioss {

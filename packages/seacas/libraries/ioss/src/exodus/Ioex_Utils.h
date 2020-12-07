@@ -20,9 +20,9 @@
 
 #define EXU_USE_HOPSCOTCH
 #if defined EXU_USE_HOPSCOTCH
-#include <hash/hopscotch_map.h>
+#include <hopscotch_map.h>
 #elif defined EXU_USE_ROBIN
-#include <hash/robin_map.h>
+#include <robin_map.h>
 #endif
 
 // Contains code that is common between the file-per-processor and
