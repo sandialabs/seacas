@@ -64,6 +64,40 @@ extern char *ncmpi_inq_libvers();
   \ingroup Utilities
   \undoc
 */
+#if !defined(NC_HAS_CDF5)
+#define NC_HAS_CDF5 0
+#endif
+#if !defined(NC_HAS_HDF5)
+#define NC_HAS_HDF5 0
+#endif
+#if !defined(NC_HAS_SZIP_WRITE)
+#define NC_HAS_SZIP_WRITE 0
+#endif
+#if !defined(NC_HAS_PARALLEL)
+#define NC_HAS_PARALLEL 0
+#endif
+#if !defined(NC_HAS_PARALLEL4)
+#define NC_HAS_PARALLEL4 0
+#endif
+#if !defined(NC_HAS_PAR_FILTERS)
+#define NC_HAS_PAR_FILTERS 0
+#endif
+#if !defined(NC_HAS_PNETCDF)
+#define NC_HAS_PNETCDF 0
+#endif
+#if !defined(NC_HAS_ERANGE_FILL)
+#define NC_HAS_ERANGE_FILL 0
+#endif
+#if !defined(NC_RELAX_COORD_BOUND)
+#define NC_RELAX_COORD_BOUND 0
+#endif
+#if !defined(NC_HAS_NC2)
+#define NC_HAS_NC2 0
+#endif
+#if !defined(NC_HAS_DISKLESS)
+#define NC_HAS_DISKLESS 0
+#endif
+
 const char *ex_config(void)
 {
   static char buffer[2048];
