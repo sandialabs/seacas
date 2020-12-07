@@ -100,7 +100,7 @@ const char *ex_config(void)
     j += sprintf(buffer + j, "\t\tHDF5 enabled (%u.%u.%u)\n", major, minor, release);
   }
   j += sprintf(buffer + j, "\t\tZlib Compression (read/write) enabled\n");
-#if NC_HAS_SZIP_WRITE
+#if NC_HAS_SZIP_WRITE == 1
   j += sprintf(buffer + j, "\t\tSZip Compression (read/write) enabled\n");
 #else
   j += sprintf(buffer + j, "\t\tSZip Compression (read/write) NOT enabled\n");
@@ -1762,7 +1762,7 @@ void ex__compress_variable(int exoid, int varid, int type)
         }
       }
       else if (file->compression_algorithm == EX_COMPRESS_SZIP) {
-#if NC_HAS_SZIP_WRITE
+#if NC_HAS_SZIP_WRITE == 1
         /* See: https://support.hdfgroup.org/doc_resource/SZIP/ and
                 https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetSzip
            for details on SZIP library and parameters.
