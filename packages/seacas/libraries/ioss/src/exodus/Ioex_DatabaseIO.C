@@ -390,7 +390,7 @@ namespace Ioex {
           exo_method = EX_COMPRESS_ZLIB;
         }
         else if (method == "szip") {
-#if NC_HAS_SZIP_WRITE
+#if defined(NC_HAS_SZIP_WRITE) && NC_HAS_SZIP_WRITE == 1
           exo_method = EX_COMPRESS_SZIP;
 #else
           fmt::print(Ioss::WARNING(), "The NetCDF library does not have SZip compression enabled."

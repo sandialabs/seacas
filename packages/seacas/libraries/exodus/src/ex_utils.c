@@ -51,12 +51,12 @@ static char  ret_string[10 * (MAX_VAR_NAME_LENGTH + 1)];
 static char *cur_string = &ret_string[0];
 
 #ifndef _MSC_VER
-#if NC_HAS_HDF5
+#if defined(NC_HAS_HDF5) && NC_HAS_HDF5 == 1
 extern int H5get_libversion(unsigned *, unsigned *, unsigned *);
 #endif
 #endif
 
-#if NC_HAS_PNETCDF
+#if defined(NC_HAS_PNETCDF) && NC_HAS_PNETCDF == 1
 extern char *ncmpi_inq_libvers();
 #endif
 
@@ -89,18 +89,18 @@ const char *ex_config(void)
 #else
   j += sprintf(buffer + j, "\tNetCDF Version < 4.3.3\n");
 #endif
-#if NC_HAS_CDF5
+#if defined(NC_HAS_CDF5) && NC_HAS_CDF5 == 1
   j += sprintf(buffer + j, "\t\tCDF5 enabled\n");
 #endif
 #ifndef _MSC_VER
-#if NC_HAS_HDF5
+#if defined(NC_HAS_HDF5) && NC_HAS_HDF5 == 1
   {
     unsigned major, minor, release;
     H5get_libversion(&major, &minor, &release);
     j += sprintf(buffer + j, "\t\tHDF5 enabled (%u.%u.%u)\n", major, minor, release);
   }
   j += sprintf(buffer + j, "\t\tZlib Compression (read/write) enabled\n");
-#if NC_HAS_SZIP_WRITE
+#if defined(NC_HAS_SZIP_WRITE) && NC_HAS_SZIP_WRITE == 1
   j += sprintf(buffer + j, "\t\tSZip Compression (read/write) enabled\n");
 #else
   j += sprintf(buffer + j, "\t\tSZip Compression (read/write) NOT enabled\n");
@@ -108,21 +108,21 @@ const char *ex_config(void)
 #endif
 #endif
 #if defined(PARALLEL_AWARE_EXODUS)
-#if NC_HAS_PARALLEL
+#if defined(NC_HAS_PARALLEL) && NC_HAS_PARALLEL == 1
   j += sprintf(buffer + j, "\t\tParallel IO enabled via HDF5 and/or PnetCDF\n");
 #else
   j += sprintf(buffer + j,
                "\t\tParallel IO *NOT* enabled via HDF5 and/or PnetCDF (PROBABLY A BUILD ERROR!)\n");
 #endif
-#if NC_HAS_PARALLEL4
+#if defined(NC_HAS_PARALLEL4) && NC_HAS_PARALLEL4 == 1
   j += sprintf(buffer + j, "\t\tParallel IO enabled via HDF5\n");
 #else
   j += sprintf(buffer + j, "\t\tParallel IO *NOT* enabled via HDF5\n");
 #endif
-#if NC_HAS_PAR_FILTERS
+#if defined(NC_HAS_PAR_FILTERS) && NC_HAS_PAR_FILTERS == 1
   j += sprintf(buffer + j, "\t\tParallel IO supports filters\n");
 #endif
-#if NC_HAS_PNETCDF
+#if defined(NC_HAS_PNETCDF) && NC_HAS_PNETCDF == 1
   {
     char *libver = ncmpi_inq_libvers();
     j += sprintf(buffer + j, "\t\tParallel IO enabled via PnetCDF (%s)\n", libver);
@@ -132,10 +132,10 @@ const char *ex_config(void)
 #endif
 #endif /* PARALLEL_AWARE_EXODUS */
 
-#if NC_HAS_ERANGE_FILL
+#if defined(NC_HAS_ERANGE_FILL) && NC_HAS_ERANGE_FILL == 1
   j += sprintf(buffer + j, "\t\tERANGE_FILL support\n");
 #endif
-#if NC_RELAX_COORD_BOUND
+#if defined(NC_RELAX_COORD_BOUND) && NC_RELAX_COORD_BOUND == 1
   j += sprintf(buffer + j, "\t\tRELAX_COORD_BOUND defined\n");
 #endif
 #if defined(NC_COMPACT)
@@ -144,7 +144,7 @@ const char *ex_config(void)
 #if defined(NC_HAVE_META_H)
   j += sprintf(buffer + j, "\t\tNC_HAVE_META_H defined\n");
 #endif
-#if NC_HAS_NC2
+#if defined(NC_HAS_NC2) && NC_HAS_NC2 == 1
   j += sprintf(buffer + j, "\t\tAPI Version 2 support enabled\n");
 #else
   j += sprintf(buffer + j, "\t\tAPI Version 2 support NOT enabled\n");
@@ -190,8 +190,7 @@ int ex__check_file_type(const char *path, int *type)
       ex_err(__func__, errmsg, EX_WRONGFILETYPE);
       EX_FUNC_LEAVE(EX_FATAL);
     }
-    i                       = fread(magic, MAGIC_NUMBER_LEN, 1, fp);
-    magic[MAGIC_NUMBER_LEN] = '\0';
+    i = fread(magic, MAGIC_NUMBER_LEN, 1, fp);
     fclose(fp);
     if (i != 1) {
       char errmsg[MAX_ERR_LENGTH];
@@ -1741,7 +1740,7 @@ void ex__set_compact_storage(int exoid, int varid)
 */
 void ex__compress_variable(int exoid, int varid, int type)
 {
-#if NC_HAS_HDF5
+#if defined(NC_HAS_HDF5) && NC_HAS_HDF5 == 1
   struct ex__file_item *file = ex__find_file_item(exoid);
 
   if (!file) {
@@ -1762,7 +1761,7 @@ void ex__compress_variable(int exoid, int varid, int type)
         }
       }
       else if (file->compression_algorithm == EX_COMPRESS_SZIP) {
-#if NC_HAS_SZIP_WRITE
+#if defined(NC_HAS_SZIP_WRITE) && NC_HAS_SZIP_WRITE == 1
         /* See: https://support.hdfgroup.org/doc_resource/SZIP/ and
                 https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetSzip
            for details on SZIP library and parameters.
@@ -1839,7 +1838,7 @@ int ex__handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   char       errmsg[MAX_ERR_LENGTH];
   int        nc_mode      = 0;
   static int netcdf4_mode = -1;
-#if NC_HAS_CDF5
+#if defined(NC_HAS_CDF5) && NC_HAS_CDF5 == 1
   static int netcdf5_mode = -1;
 #endif
 
@@ -2123,7 +2122,7 @@ int ex__handle_mode(unsigned int my_mode, int is_parallel, int run_version)
     nc_mode |= NC_NOCLOBBER;
   }
 
-#if NC_HAS_DISKLESS
+#if defined(NC_HAS_DISKLESS) && NC_HAS_DISKLESS == 1
   /* Use of diskless (in-memory) and parallel is not tested... */
   if (my_mode & EX_DISKLESS) {
     nc_mode |= NC_DISKLESS;
