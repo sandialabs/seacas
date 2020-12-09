@@ -782,12 +782,12 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
                                  "rerun epu with the -64 option.\n\n");
       }
 
-      if (!interFace.use_netcdf4()) {
+      if (!interFace.use_netcdf4() && !interFace.use_netcdf5()) {
         // Check size required to store coordinates and connectivity
         if (global.nodeCount * 8 >= fourBill) {
           fmt::print(
               stderr,
-              "\nINFO: Output file requires NetCDF-4 format. Setting this automatically.\n\n");
+              "\nINFO: Output file requires NetCDF-4 format or NetCDF-5. Setting NetCDF-4 automatically.\n\n");
           interFace.set_use_netcdf4();
         }
 
@@ -797,7 +797,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
           if (element_count * nnpe * 4 >= fourBill) {
             fmt::print(
                 stderr,
-                "\nINFO: Output file requires NetCDF-4 format. Setting this automatically.\n\n");
+		"\nINFO: Output file requires NetCDF-4 format or NetCDF-5. Setting NetCDF-4 automatically.\n\n");
             interFace.set_use_netcdf4();
             break;
           }
