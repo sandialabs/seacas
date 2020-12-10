@@ -15,14 +15,14 @@ extern "C" {
 
 #include <cassert> // for assert
 #include <cstddef> // for size_t
-#include <cstdio> // for nullptr
+#include <cstdio>  // for nullptr
 #include <cstdlib> // for exit, EXIT_FAILURE
 #include <cstring> // for strlen
 #include <fmt/format.h>
 #include <netcdf.h> // for NC_NOERR, nc_def_var, etc
-#include <ostream> // for operator<<, etc
-#include <string> // for string, operator==, etc
-#include <vector> // for vector
+#include <ostream>  // for operator<<, etc
+#include <string>   // for string, operator==, etc
+#include <vector>   // for vector
 
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
@@ -2764,7 +2764,7 @@ int Internals::put_non_define_data(const std::vector<Assembly> &assemblies)
 {
   size_t name_length = 0;
   for (const auto &assembly : assemblies) {
-    int status = EX_NOERR;
+    int status  = EX_NOERR;
     name_length = std::max(name_length, assembly.name.length());
 
     if (!assembly.memberIdList.empty()) {

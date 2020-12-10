@@ -5189,19 +5189,18 @@ int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
           Ioss::IntVector side(num_to_get);
           int *           el_side = reinterpret_cast<int *>(data);
 
-	  try {
-	    for (size_t i = 0; i < num_to_get; i++) {
-	      element[i] = elemMap.global_to_local(el_side[index++]);
-	      side[i]    = el_side[index++] + side_offset;
-	    }
-	  }
-	  catch (const std::runtime_error &x) {
-	    std::ostringstream errmsg;
-	    fmt::print(errmsg,
-		       "{}On SideBlock `{}` while outputting field `elem_side`\n",
-		       x.what(), fb->name());
-	    IOSS_ERROR(errmsg);
-	  }
+          try {
+            for (size_t i = 0; i < num_to_get; i++) {
+              element[i] = elemMap.global_to_local(el_side[index++]);
+              side[i]    = el_side[index++] + side_offset;
+            }
+          }
+          catch (const std::runtime_error &x) {
+            std::ostringstream errmsg;
+            fmt::print(errmsg, "{}On SideBlock `{}` while outputting field `elem_side`\n", x.what(),
+                       fb->name());
+            IOSS_ERROR(errmsg);
+          }
 
           int ierr = ex_put_partial_set(get_file_pointer(), EX_SIDE_SET, id, offset + 1,
                                         entity_count, element.data(), side.data());
@@ -5214,19 +5213,18 @@ int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
           Ioss::Int64Vector side(num_to_get);
           auto *            el_side = reinterpret_cast<int64_t *>(data);
 
-	  try {
-          for (size_t i = 0; i < num_to_get; i++) {
-            element[i] = elemMap.global_to_local(el_side[index++]);
-            side[i]    = el_side[index++] + side_offset;
+          try {
+            for (size_t i = 0; i < num_to_get; i++) {
+              element[i] = elemMap.global_to_local(el_side[index++]);
+              side[i]    = el_side[index++] + side_offset;
+            }
           }
-	  }
-	  catch (const std::runtime_error &x) {
-	    std::ostringstream errmsg;
-	    fmt::print(errmsg,
-		       "{}On SideBlock `{}` while outputting field `elem_side`\n",
-		       x.what(), fb->name());
-	    IOSS_ERROR(errmsg);
-	  }
+          catch (const std::runtime_error &x) {
+            std::ostringstream errmsg;
+            fmt::print(errmsg, "{}On SideBlock `{}` while outputting field `elem_side`\n", x.what(),
+                       fb->name());
+            IOSS_ERROR(errmsg);
+          }
 
           int ierr = ex_put_partial_set(get_file_pointer(), EX_SIDE_SET, id, offset + 1,
                                         entity_count, element.data(), side.data());
