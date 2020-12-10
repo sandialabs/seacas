@@ -479,9 +479,9 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
     fmt::print(errmsg,
                "ERROR: Ioss Mapping routines detected {0} with global id equal to {1} returns a "
                "local id of {2} which is\n"
-               "larger than the local {0} count on processor {3}, filename '{4}'.\n"
+               "larger than the local {0} count {5} on processor {3}, filename '{4}'.\n"
                "This should not happen, please report.\n",
-               m_entityType, global, local, m_myProcessor, m_filename);
+               m_entityType, global, local, m_myProcessor, m_filename, m_map.size()-1);
     IOSS_ERROR(errmsg);
   }
   else if (local <= 0 && must_exist) {
