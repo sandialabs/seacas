@@ -1835,9 +1835,32 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   output_region.begin_mode(Ioss::STATE_TRANSIENT);
   // Get the timesteps from the input database.  Step through them
   // and transfer fields to output database...
-
   int step_count = region.get_property("state_count").get_int();
 
+  // If user specified a list of times to transfer to output database, 
+  // process the list and find the times on the input database that are
+  // closest to the times in the list.
+  std::vector<int> selected_steps{};
+  if (!options.selected_times.empty()) {
+    int selected_step = 0;
+    for (auto time : options.selected_times) {
+      double diff = std::numeric_limits<double>::max();
+      for (int step = 1; step <= step_count; step++) {
+	double db_time = region.get_state_time(step);
+	double cur_diff = std::abs(db_time - time);
+	if ( cur_diff < diff) {
+	  diff = std::abs(db_time - time);
+	  selected_step = step;
+	}
+      }
+      if (selected_step > 0) {
+	selected_steps.push_back(selected_step);
+      }
+    }
+    Ioss::Utils::uniquify(selected_steps);
+  }
+
+  int selected_step = 0;
   for (int istep = 1; istep <= step_count; istep++) {
     double time = region.get_state_time(istep);
     if (time < options.minimum_time) {
@@ -1845,6 +1868,18 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     if (time > options.maximum_time) {
       break;
+    }
+    if (!selected_steps.empty()) {
+      if (selected_step >= selected_steps.size()) {
+	break;
+      }
+      if (istep != selected_steps[selected_step]) {
+	continue;
+      }
+      selected_step++;
+      if (options.debug && rank == 0) {
+	fmt::print(Ioss::DEBUG(), "\nSelecting Step {} ({} of {})\n", istep, selected_step, selected_steps.size());
+      }
     }
 
     int ostep = output_region.add_state(time);

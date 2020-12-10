@@ -10,6 +10,8 @@
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Utils.h"      // for Utils
 #include "shell_interface.h"
+#include "tokenize.h"
+
 #include <cctype>  // for tolower
 #include <cstddef> // for nullptr
 #include <cstdlib> // for exit, strtod, EXIT_SUCCESS, etc
@@ -37,7 +39,7 @@ namespace {
   }
 } // namespace
 
-IOShell::Interface::Interface() { enroll_options(); }
+IOShell::Interface::Interface(const std::string &app_version): version(app_version) { enroll_options(); }
 
 IOShell::Interface::~Interface() = default;
 
@@ -228,6 +230,9 @@ void IOShell::Interface::enroll_options()
   options_.enroll("Minimum_Time", Ioss::GetLongOption::MandatoryValue,
                   "Minimum time on input database to transfer to output database", nullptr);
 
+  options_.enroll("select_times", Ioss::GetLongOption::MandatoryValue,
+		  "comma-separated list of times that should be transferred to output database", nullptr);
+
   options_.enroll("append_after_time", Ioss::GetLongOption::MandatoryValue,
                   "add steps on input database after specified time on output database", nullptr);
 
@@ -333,7 +338,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   }
 
   if (options_.retrieve("version") != nullptr) {
-    // Version is printed up front, just exit...
+    fmt::print(stderr, "Version: {}\n", version);
     exit(0);
   }
 
@@ -599,6 +604,18 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     const char *temp = options_.retrieve("Minimum_Time");
     if (temp != nullptr) {
       minimum_time = std::strtod(temp, nullptr);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("select_times");
+    if (temp != nullptr) {
+      auto time_str = Ioss::tokenize(std::string(temp), ",");
+      for (const auto &str : time_str) {
+	auto time = std::stod(str);
+	selected_times.push_back(time);
+      }
+      std::sort(selected_times.begin(), selected_times.end());
     }
   }
 
