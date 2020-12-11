@@ -1,6 +1,5 @@
 #include "Iofaodel_FieldSerialization.h"
 #include "Iofaodel_Utils.h"
-#include <Iofaodel_Serialize.h>
 
 #ifdef NDEBUG
 #undef NDEBUG

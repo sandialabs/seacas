@@ -31,7 +31,29 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Iofaodel_Utils.h"
-#include "Iofaodel_Serialize.h"
+
+#include <Ioss_CommSet.h>
+#include <Ioss_DatabaseIO.h>
+#include <Ioss_DatabaseIO.h> // for DatabaseIO
+#include <Ioss_EdgeBlock.h>
+#include <Ioss_EdgeSet.h>
+#include <Ioss_ElementBlock.h>
+#include <Ioss_ElementSet.h>
+#include <Ioss_FaceBlock.h>
+#include <Ioss_FaceSet.h>
+#include <Ioss_Field.h>   // for Region
+#include <Ioss_GroupingEntity.h>
+#include <Ioss_IOFactory.h>
+#include <Ioss_NodeBlock.h>
+#include <Ioss_NodeSet.h>
+#include <Ioss_Property.h>   // for Region
+#include <Ioss_Region.h>
+#include <Ioss_Region.h>   // for Region
+#include <Ioss_SideBlock.h>
+#include <Ioss_SideSet.h>
+#include <Ioss_State.h>      // for State
+#include <Ioss_StructuredBlock.h>
+
 #include <sstream>
 #include "cereal/archives/portable_binary.hpp"
 #include "cereal/types/vector.hpp"
