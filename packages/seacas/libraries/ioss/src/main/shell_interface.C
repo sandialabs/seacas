@@ -39,7 +39,10 @@ namespace {
   }
 } // namespace
 
-IOShell::Interface::Interface(const std::string &app_version): version(app_version) { enroll_options(); }
+IOShell::Interface::Interface(const std::string &app_version) : version(app_version)
+{
+  enroll_options();
+}
 
 IOShell::Interface::~Interface() = default;
 
@@ -231,7 +234,12 @@ void IOShell::Interface::enroll_options()
                   "Minimum time on input database to transfer to output database", nullptr);
 
   options_.enroll("select_times", Ioss::GetLongOption::MandatoryValue,
-		  "comma-separated list of times that should be transferred to output database", nullptr);
+                  "comma-separated list of times that should be transferred to output database",
+                  nullptr);
+
+  options_.enroll("delete_timesteps", Ioss::GetLongOption::NoValue,
+                  "Do not transfer any timesteps or transient data to the output database",
+                  nullptr);
 
   options_.enroll("append_after_time", Ioss::GetLongOption::MandatoryValue,
                   "add steps on input database after specified time on output database", nullptr);
@@ -267,7 +275,7 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll("retain_empty_blocks", Ioss::GetLongOption::NoValue,
                   "If any empty element blocks on input file, keep them and write to output file.\n"
-                  "\t\tDefault is to ignore empty blocks. based on basename and suffix.",
+                  "\t\tDefault is to ignore empty blocks.",
                   nullptr);
 
 #ifdef SEACAS_HAVE_KOKKOS
@@ -296,10 +304,6 @@ void IOShell::Interface::enroll_options()
   options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
                   "Do not lowercase variable names and replace spaces with underscores.\n"
                   "\t\tVariable names are left as they appear in the input mesh file",
-                  nullptr);
-
-  options_.enroll("delete_timesteps", Ioss::GetLongOption::NoValue,
-                  "Do not transfer any timesteps or transient data to the output database",
                   nullptr);
 
   options_.enroll("boundary_sideset", Ioss::GetLongOption::NoValue,
@@ -612,8 +616,8 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     if (temp != nullptr) {
       auto time_str = Ioss::tokenize(std::string(temp), ",");
       for (const auto &str : time_str) {
-	auto time = std::stod(str);
-	selected_times.push_back(time);
+        auto time = std::stod(str);
+        selected_times.push_back(time);
       }
       std::sort(selected_times.begin(), selected_times.end());
     }
