@@ -198,12 +198,6 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 #endif
 
-  options_.enroll("file_per_state", Ioss::GetLongOption::NoValue,
-                  "put transient data for each timestep in separate file (EXPERIMENTAL)", nullptr);
-
-  options_.enroll("reverse", Ioss::GetLongOption::NoValue,
-                  "define CGNS zones in reverse order. Used for testing (TEST)", nullptr);
-
   options_.enroll(
       "split_times", Ioss::GetLongOption::MandatoryValue,
       "If non-zero, then put <$val> timesteps in each file. Then close file and start new file.",
@@ -291,6 +285,14 @@ void IOShell::Interface::enroll_options()
                   "POINTER");
 #endif
 
+  options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
+                  "Do not lowercase variable names and replace spaces with underscores.\n"
+                  "\t\tVariable names are left as they appear in the input mesh file",
+                  nullptr);
+
+  options_.enroll("boundary_sideset", Ioss::GetLongOption::NoValue,
+                  "Output a sideset for all boundary faces of the model", nullptr);
+
   options_.enroll(
       "memory_read", Ioss::GetLongOption::NoValue,
       "EXPERIMENTAL: file read into memory by netcdf library; ioss accesses memory version",
@@ -301,13 +303,11 @@ void IOShell::Interface::enroll_options()
       "EXPERIMENTAL: file written to memory, netcdf library streams to disk at file close",
       nullptr);
 
-  options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
-                  "Do not lowercase variable names and replace spaces with underscores.\n"
-                  "\t\tVariable names are left as they appear in the input mesh file",
-                  nullptr);
+  options_.enroll("file_per_state", Ioss::GetLongOption::NoValue,
+                  "put transient data for each timestep in separate file (EXPERIMENTAL)", nullptr);
 
-  options_.enroll("boundary_sideset", Ioss::GetLongOption::NoValue,
-                  "Output a sideset for all boundary faces of the model (EXPERIMENTAL)", nullptr);
+  options_.enroll("reverse", Ioss::GetLongOption::NoValue,
+                  "define CGNS zones in reverse order. Used for testing (TEST)", nullptr);
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue, "Show copyright and license data.",
                   nullptr);
