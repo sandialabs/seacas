@@ -275,6 +275,7 @@ namespace {
   void get_element_blocks(int part_count, const std::vector<Excn::Mesh> &local_mesh,
                           const Excn::Mesh &global, std::vector<std::vector<Excn::Block>> &blocks,
                           std::vector<Excn::Block> &glob_blocks);
+
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part,
                           std::vector<std::vector<Excn::Block>> &blocks,
@@ -282,6 +283,13 @@ namespace {
                           const std::vector<std::vector<INT>> &  local_node_to_global,
                           const std::vector<std::vector<INT>> &  local_element_to_global,
                           T                                      float_or_double);
+
+  template <typename T, typename INT>
+  void put_element_blocks(int part_count, int start_part,
+                          std::vector<std::vector<Excn::Block>> &blocks,
+                          std::vector<Excn::Block> &             glob_blocks,
+                          const std::vector<std::vector<INT>> &  local_node_to_global,
+                          T /* float_or_double */);
 
   template <typename INT> void put_nodesets(std::vector<Excn::NodeSet<INT>> &glob_sets);
 
@@ -785,9 +793,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       if (!interFace.use_netcdf4() && !interFace.use_netcdf5()) {
         // Check size required to store coordinates and connectivity
         if (global.nodeCount * 8 >= fourBill) {
-          fmt::print(
-              stderr,
-              "\nINFO: Output file requires NetCDF-4 format or NetCDF-5. Setting NetCDF-4 automatically.\n\n");
+          fmt::print(stderr, "\nINFO: Output file requires NetCDF-4 format or NetCDF-5. Setting "
+                             "NetCDF-4 automatically.\n\n");
           interFace.set_use_netcdf4();
         }
 
@@ -795,9 +802,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
           int64_t element_count = block.entity_count();
           int64_t nnpe          = block.nodesPerElement;
           if (element_count * nnpe * 4 >= fourBill) {
-            fmt::print(
-                stderr,
-		"\nINFO: Output file requires NetCDF-4 format or NetCDF-5. Setting NetCDF-4 automatically.\n\n");
+            fmt::print(stderr, "\nINFO: Output file requires NetCDF-4 format or NetCDF-5. Setting "
+                               "NetCDF-4 automatically.\n\n");
             interFace.set_use_netcdf4();
             break;
           }
@@ -866,8 +872,14 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       // Needed on glory writing to Lustre or we end up with empty maps...
       ex_update(ExodusFile::output());
 
-      put_element_blocks(part_count, start_part, blocks, glob_blocks, local_node_to_global,
-                         local_element_to_global, float_or_double);
+      if (interFace.map_element_ids()) {
+        put_element_blocks(part_count, start_part, blocks, glob_blocks, local_node_to_global,
+                           local_element_to_global, float_or_double);
+      }
+      else {
+        put_element_blocks(part_count, start_part, blocks, glob_blocks, local_node_to_global,
+                           float_or_double);
+      }
     }
 
     get_put_sidesets(part_count, local_element_to_global, sidesets, glob_ssets, interFace);
@@ -1935,6 +1947,105 @@ namespace {
     delete[] attributes;
   }
 
+  template <typename T, typename INT>
+  void put_element_blocks(int part_count, int start_part, std::vector<std::vector<Block>> &blocks,
+                          std::vector<Block> &                 glob_blocks,
+                          const std::vector<std::vector<INT>> &local_node_to_global,
+                          T /* float_or_double */)
+  {
+    // This variant of `put_element_blocks` is used in the case of
+    // `nomap` and uses much less memory (but may be slower).  It
+    // relies on the fact that with `nomap`, a the elements for a
+    // block in a parts are all contiguous in the output file, so we
+    // can read them, map the nodes, and then output them using a
+    // partial write function and they don't need to be mapped into a
+    // global array (which also does not need to be allocated).  Phase
+    // 1 of a "low-memory" option for epu.
+
+    SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
+    int global_num_blocks = glob_blocks.size();
+
+    LOG("\nReading and Writing element connectivity & attributes (Low Memory Method)\n");
+
+    for (int b = 0; b < global_num_blocks; b++) {
+
+      if (debug_level & 4) {
+        fmt::print("\nOutput element block info for...\n"
+                   "Block {}, Id = {}, Name = '{}', Elements = {:12n}, Nodes/element = {}, "
+                   "Attributes = {}\n",
+                   b, glob_blocks[b].id, glob_blocks[b].name_, glob_blocks[b].entity_count(),
+                   glob_blocks[b].nodesPerElement, glob_blocks[b].attributeCount);
+      }
+
+      int id_out = ExodusFile::output(); // output file identifier
+
+      size_t part_block_offset = 1;
+      for (int p = 0; p < part_count; p++) {
+        ExodusFile id(p);
+
+        if (blocks[p][b].entity_count() > 0) { // non-zero length block
+          size_t           node_count = blocks[p][b].entity_count() * blocks[p][b].nodesPerElement;
+          std::vector<INT> local_linkage(node_count);
+
+          ex_entity_id bid = blocks[p][b].id;
+          int error = ex_get_conn(id, EX_ELEM_BLOCK, bid, local_linkage.data(), nullptr, nullptr);
+          if (error < 0) {
+            fmt::print(
+                stderr,
+                "ERROR: (EPU) Cannot get element block connectivity for block {} on part {}.\n",
+                bid, p + start_part);
+            exodus_error(__LINE__);
+          }
+
+          size_t                  element_count           = blocks[p][b].entity_count();
+          size_t                  npe                     = blocks[p][b].nodesPerElement;
+          const std::vector<INT> &proc_loc_node_to_global = local_node_to_global[p];
+
+          size_t pos = 0;
+          for (size_t e = 0; e < element_count; e++) {
+            for (size_t n = 0; n < npe; n++) {
+              size_t node          = proc_loc_node_to_global[local_linkage[pos] - 1];
+              local_linkage[pos++] = node + 1;
+            }
+          }
+
+          if (debug_level & 4) {
+            fmt::print(stderr, "part, block, offset, count = {} {} {} {}\n", p, bid,
+                       part_block_offset, element_count);
+          }
+          error = ex_put_partial_conn(id_out, EX_ELEM_BLOCK, bid, part_block_offset, element_count,
+                                      local_linkage.data(), nullptr, nullptr);
+          if (error < 0) {
+            fmt::print(stderr,
+                       "ERROR: (EPU) Cannot output element block connectivity for block {} on part "
+                       "{} (offset = {}, count = {}).\n",
+                       bid, p + start_part, part_block_offset, element_count);
+            exodus_error(__LINE__);
+          }
+
+          // Get attributes list,  if it exists
+          if (blocks[p][b].attributeCount > 0) {
+            size_t         max_attr = blocks[p][b].entity_count() * blocks[p][b].attributeCount;
+            std::vector<T> local_attr(max_attr);
+
+            error = ex_get_attr(id, EX_ELEM_BLOCK, blocks[p][b].id, local_attr.data());
+            if (error < 0) {
+              exodus_error(__LINE__);
+            }
+
+            error = ex_put_partial_attr(id_out, EX_ELEM_BLOCK, bid, part_block_offset,
+                                        element_count, local_attr.data());
+            if (error < 0) {
+              exodus_error(__LINE__);
+            }
+          }
+          part_block_offset += element_count;
+
+        } // end if blocks[p][b].entity_count() (non-zero length block)
+      }   // end for p=0..part_count-1
+    }
+  }
+
   template <typename INT>
   void build_reverse_element_map(std::vector<std::vector<INT>> &  local_element_to_global,
                                  const std::vector<Mesh> &        local_mesh,
@@ -1953,11 +2064,10 @@ namespace {
     global_element_map.resize(tot_size);
 
     {
-      int    error  = 0;
       size_t offset = 0;
       for (int p = 0; p < part_count; p++) {
         ExodusFile id(p);
-        error = ex_get_id_map(id, EX_ELEM_MAP, global_element_numbers[p].data());
+        int        error = ex_get_id_map(id, EX_ELEM_MAP, global_element_numbers[p].data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
