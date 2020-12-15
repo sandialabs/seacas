@@ -881,7 +881,7 @@ std::string Ioss::Utils::platform_information()
       fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
                   sys_info.release, sys_info.version, sys_info.machine);
 #else
-  std::string                 info = "Node: Unknown, OS: Unknown, Machine: Unknown";
+  std::string info = "Node: Unknown, OS: Unknown, Machine: Unknown";
 #endif
   return info;
 }
@@ -1837,7 +1837,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   // and transfer fields to output database...
   int step_count = region.get_property("state_count").get_int();
 
-  // If user specified a list of times to transfer to output database, 
+  // If user specified a list of times to transfer to output database,
   // process the list and find the times on the input database that are
   // closest to the times in the list.
   std::vector<int> selected_steps{};
@@ -1846,15 +1846,15 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     for (auto time : options.selected_times) {
       double diff = std::numeric_limits<double>::max();
       for (int step = 1; step <= step_count; step++) {
-	double db_time = region.get_state_time(step);
-	double cur_diff = std::abs(db_time - time);
-	if ( cur_diff < diff) {
-	  diff = std::abs(db_time - time);
-	  selected_step = step;
-	}
+        double db_time  = region.get_state_time(step);
+        double cur_diff = std::abs(db_time - time);
+        if (cur_diff < diff) {
+          diff          = std::abs(db_time - time);
+          selected_step = step;
+        }
       }
       if (selected_step > 0) {
-	selected_steps.push_back(selected_step);
+        selected_steps.push_back(selected_step);
       }
     }
     Ioss::Utils::uniquify(selected_steps);
@@ -1870,15 +1870,16 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       break;
     }
     if (!selected_steps.empty()) {
-      if (selected_step >= selected_steps.size()) {
-	break;
+      if ((size_t)selected_step >= selected_steps.size()) {
+        break;
       }
       if (istep != selected_steps[selected_step]) {
-	continue;
+        continue;
       }
       selected_step++;
       if (options.debug && rank == 0) {
-	fmt::print(Ioss::DEBUG(), "\nSelecting Step {} ({} of {})\n", istep, selected_step, selected_steps.size());
+        fmt::print(Ioss::DEBUG(), "\nSelecting Step {} ({} of {})\n", istep, selected_step,
+                   selected_steps.size());
       }
     }
 
