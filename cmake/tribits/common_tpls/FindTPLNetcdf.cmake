@@ -45,10 +45,6 @@
 # TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES().
 #
 
-if (${CMAKE_VERSION} GREATER "3.13")
-     cmake_policy(SET CMP0074 NEW)
-endif()
-
 SET(REQUIRED_HEADERS netcdf.h)
 SET(REQUIRED_LIBS_NAMES netcdf)
 
@@ -99,30 +95,3 @@ TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( Netcdf
 # variables TPL_Netcdf_INCLUDE_DIRS and TPL_Netcdf_LIBRARIES and then print
 # them out (and set some other standard variables as well).  This is the final
 # "hook" into the TriBITS TPL system.
-
-# If the `find_package(NetCDF)` is not run, then this may not be set
-# Need to determine how this is set in the library that is being used...
-
-if ("${TPL_Netcdf_PARALLEL}" STREQUAL "")  
-   ASSERT_DEFINED(TPL_Netcdf_INCLUDE_DIRS)
-   find_path(meta_path
-      NAMES "netcdf_meta.h"
-      HINTS ${TPL_Netcdf_INCLUDE_DIRS}
-      NO_DEFAULT_PATH)
-
-   if (meta_path)
-      # Search meta for NC_HAS_PARALLEL setting...
-      # Note that there is both NC_HAS_PARALLEL and NC_HAS_PARALLEL4, only want first...
-      file(STRINGS "${meta_path}/netcdf_meta.h" netcdf_par_string REGEX "NC_HAS_PARALLEL ")
-      string(REGEX MATCH "[01]" netcdf_par_val "${netcdf_par_string}")
-      if (netcdf_par_val EQUAL 1)
-         set(TPL_Netcdf_PARALLEL True CACHE INTERNAL 
-	     "True if netcdf compiled with parallel enabled")
-      endif()
-   endif()
-   if ("${TPL_Netcdf_PARALLEL}" STREQUAL "")  
-      set(TPL_Netcdf_PARALLEL False CACHE INTERNAL 
-          "True if netcdf compiled with parallel enabled")
-   endif()
-endif()
-message(STATUS "TPL_Netcdf_PARALLEL is ${TPL_Netcdf_PARALLEL}")
