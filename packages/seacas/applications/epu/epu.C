@@ -571,6 +571,7 @@ template <typename T, typename INT>
 int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T float_or_double,
         INT /*unused*/)
 {
+  double execution_time = seacas_timer();
   SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
 
   if (rank == 0) {
@@ -1389,7 +1390,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
   if (subcycles > 2) {
     fmt::print("{}/{} ", cycle + 1, subcycles);
   }
-  fmt::print("\n******* END *******\n");
+  fmt::print("\n\nTotal Execution Time = {:.2f} seconds.\n******* END *******\n", seacas_timer() - execution_time);
   return (0);
 }
 
