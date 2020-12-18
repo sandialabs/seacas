@@ -812,7 +812,9 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       }
     }
     // Create the output file...
-    ExodusFile::create_output(interFace, cycle);
+    if (!ExodusFile::create_output(interFace, cycle)) {
+      throw std::runtime_error("ERROR: (EPU) Problem creating output file.\n");
+    }
 
     // EPU assumes IDS are always passed through the API as 64-bit ints.
     SMART_ASSERT(ex_int64_status(ExodusFile::output()) & EX_IDS_INT64_API);
