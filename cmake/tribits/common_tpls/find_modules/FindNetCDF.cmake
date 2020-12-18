@@ -341,7 +341,7 @@ else()
         set(NetCDF_BINARY_DIR "${NetCDF_BINARY_DIR}" CACHE PATH "Path to search for NetCDF tools")
     endif()
 
-    set(netcdf_bin_names "ncdump")
+    set(netcdf_bin_names "ncdump" "ncdump.exe")
     if (NetCDF_BINARY_DIR)
 
         if (EXISTS "${NetCDF_BINARY_DIR}")
@@ -369,7 +369,7 @@ else()
 
                 find_path(NetCDF_BINARY_DIR
                           NAMES ${netcdf_bin_names}
-                          HINTS ${NetCDF_ROOT}/bin
+                          HINTS ${NetCDF_ROOT}
                           PATH_SUFFIXES ${netcdf_bin_suffixes}
                           NO_DEFAULT_PATH)
 
