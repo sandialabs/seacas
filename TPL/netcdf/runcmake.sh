@@ -35,6 +35,12 @@ then
    LOCAL_ZLIB="-DZLIB_INCLUDE_DIR:PATH=${INSTALL_PATH}/include -DZLIB_LIBRARY:FILEPATH=${INSTALL_PATH}/lib/libz.${LD_EXT}"
 fi
 
+NEEDS_SZIP="${NEEDS_SZIP:-NO}"
+if [ "$NEEDS_SZIP" == "YES" ]
+then
+   LOCAL_SZIP="-DSZIP_INCLUDE_DIR:PATH=${INSTALL_PATH}/include -DSZIP_LIBRARY:FILEPATH=${INSTALL_PATH}/lib/libsz.${LD_EXT}"
+fi
+
 MPI="${MPI:-OFF}"
 if [ "$MPI" == "ON" ] && [ "$CRAY" = "ON" ]
 then
@@ -82,6 +88,7 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DENABLE_DAP:BOOL=OFF \
          -DENABLE_V2_API:BOOL=OFF \
          ${LOCAL_ZLIB} \
+         ${LOCAL_SZIP} \
          ${EXTRA_DEPS} \
          -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
          -DHDF5_C_LIBRARY:PATH=${INSTALL_PATH}/lib/libhdf5.${LD_EXT} \
