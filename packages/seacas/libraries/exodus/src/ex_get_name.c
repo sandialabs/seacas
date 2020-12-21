@@ -11,9 +11,9 @@
  *
  * entry conditions -
  *   input parameters:
- *       int     exoid          exodus file id
- *       const char *type       entity type - M, E, S
- *       int     entity_id      id of entity name to read
+ *       int            exoid      exodus file id
+ *       ex_entity_type obj_type   object type -- EX_ELEM_BLOCK, ...
+ *       int            entity_id  id of entity name to read
  *
  * exit conditions -
  *       char*   name           ptr to name
