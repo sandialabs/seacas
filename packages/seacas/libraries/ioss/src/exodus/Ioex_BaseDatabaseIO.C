@@ -1205,12 +1205,12 @@ namespace Ioex {
     switch (state) {
     case Ioss::STATE_DEFINE_MODEL:
       if (!is_input()) {
-	write_meta_data(open_create_behavior() == Ioss::DB_APPEND);
+        write_meta_data(open_create_behavior() == Ioss::DB_APPEND);
       }
       break;
     case Ioss::STATE_DEFINE_TRANSIENT:
       if (!is_input()) {
-	write_results_metadata(true, open_create_behavior() == Ioss::DB_APPEND);
+        write_results_metadata(true, open_create_behavior() == Ioss::DB_APPEND);
       }
       break;
     default: // ignore everything else...
@@ -1654,66 +1654,66 @@ namespace Ioex {
     }
 
     if (!appending) {
-    ex_var_params exo_params{};
+      ex_var_params exo_params{};
 #if GLOBALS_ARE_TRANSIENT
-    exo_params.num_glob = m_variables[EX_GLOBAL].size();
+      exo_params.num_glob = m_variables[EX_GLOBAL].size();
 #else
-    exo_params.num_glob = m_reductionVariables[EX_GLOBAL].size();
+      exo_params.num_glob = m_reductionVariables[EX_GLOBAL].size();
 #endif
-    exo_params.num_node  = m_variables[EX_NODE_BLOCK].size();
-    exo_params.num_edge  = m_variables[EX_EDGE_BLOCK].size();
-    exo_params.num_face  = m_variables[EX_FACE_BLOCK].size();
-    exo_params.num_elem  = m_variables[EX_ELEM_BLOCK].size();
-    exo_params.num_nset  = m_variables[EX_NODE_SET].size();
-    exo_params.num_eset  = m_variables[EX_EDGE_SET].size();
-    exo_params.num_fset  = m_variables[EX_FACE_SET].size();
-    exo_params.num_sset  = m_variables[EX_SIDE_SET].size();
-    exo_params.num_elset = m_variables[EX_ELEM_SET].size();
+      exo_params.num_node  = m_variables[EX_NODE_BLOCK].size();
+      exo_params.num_edge  = m_variables[EX_EDGE_BLOCK].size();
+      exo_params.num_face  = m_variables[EX_FACE_BLOCK].size();
+      exo_params.num_elem  = m_variables[EX_ELEM_BLOCK].size();
+      exo_params.num_nset  = m_variables[EX_NODE_SET].size();
+      exo_params.num_eset  = m_variables[EX_EDGE_SET].size();
+      exo_params.num_fset  = m_variables[EX_FACE_SET].size();
+      exo_params.num_sset  = m_variables[EX_SIDE_SET].size();
+      exo_params.num_elset = m_variables[EX_ELEM_SET].size();
 
-    exo_params.edge_var_tab  = m_truthTable[EX_EDGE_BLOCK].data();
-    exo_params.face_var_tab  = m_truthTable[EX_FACE_BLOCK].data();
-    exo_params.elem_var_tab  = m_truthTable[EX_ELEM_BLOCK].data();
-    exo_params.nset_var_tab  = m_truthTable[EX_NODE_SET].data();
-    exo_params.eset_var_tab  = m_truthTable[EX_EDGE_SET].data();
-    exo_params.fset_var_tab  = m_truthTable[EX_FACE_SET].data();
-    exo_params.sset_var_tab  = m_truthTable[EX_SIDE_SET].data();
-    exo_params.elset_var_tab = m_truthTable[EX_ELEM_SET].data();
+      exo_params.edge_var_tab  = m_truthTable[EX_EDGE_BLOCK].data();
+      exo_params.face_var_tab  = m_truthTable[EX_FACE_BLOCK].data();
+      exo_params.elem_var_tab  = m_truthTable[EX_ELEM_BLOCK].data();
+      exo_params.nset_var_tab  = m_truthTable[EX_NODE_SET].data();
+      exo_params.eset_var_tab  = m_truthTable[EX_EDGE_SET].data();
+      exo_params.fset_var_tab  = m_truthTable[EX_FACE_SET].data();
+      exo_params.sset_var_tab  = m_truthTable[EX_SIDE_SET].data();
+      exo_params.elset_var_tab = m_truthTable[EX_ELEM_SET].data();
 
-    if (isParallel) {
-      // Check consistency among all processors.  They should all
-      // have the same number of each variable type...
-      // The called function will throw an exception if the counts differ.
-      check_variable_consistency(exo_params, myProcessor, get_filename(), util());
-    }
-
-    {
-      Ioss::SerializeIO serializeIO__(this);
-
-      int ierr = ex_put_all_var_param_ext(get_file_pointer(), &exo_params);
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      if (isParallel) {
+        // Check consistency among all processors.  They should all
+        // have the same number of each variable type...
+        // The called function will throw an exception if the counts differ.
+        check_variable_consistency(exo_params, myProcessor, get_filename(), util());
       }
 
-      // Blob and Assembly not supported in ex_put_all_var_param_ext...
-      if (!m_variables[EX_BLOB].empty()) {
-        ierr = ex_put_variable_param(get_file_pointer(), EX_BLOB, m_variables[EX_BLOB].size());
+      {
+        Ioss::SerializeIO serializeIO__(this);
+
+        int ierr = ex_put_all_var_param_ext(get_file_pointer(), &exo_params);
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
         }
-      }
-      if (!m_variables[EX_ASSEMBLY].empty()) {
-        ierr =
-            ex_put_variable_param(get_file_pointer(), EX_ASSEMBLY, m_variables[EX_ASSEMBLY].size());
-        if (ierr < 0) {
-          Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+
+        // Blob and Assembly not supported in ex_put_all_var_param_ext...
+        if (!m_variables[EX_BLOB].empty()) {
+          ierr = ex_put_variable_param(get_file_pointer(), EX_BLOB, m_variables[EX_BLOB].size());
+          if (ierr < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+          }
+        }
+        if (!m_variables[EX_ASSEMBLY].empty()) {
+          ierr = ex_put_variable_param(get_file_pointer(), EX_ASSEMBLY,
+                                       m_variables[EX_ASSEMBLY].size());
+          if (ierr < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+          }
+        }
+
+        for (const auto &type : exodus_types) {
+          output_results_names(type, m_variables[type], false);
+          output_results_names(type, m_reductionVariables[type], true);
         }
       }
-
-      for (const auto &type : exodus_types) {
-        output_results_names(type, m_variables[type], false);
-        output_results_names(type, m_reductionVariables[type], true);
-      }
-    }
     }
   }
 

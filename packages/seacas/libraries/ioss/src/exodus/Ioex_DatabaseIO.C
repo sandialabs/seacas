@@ -5351,10 +5351,10 @@ void DatabaseIO::write_meta_data(bool appending)
 
     if (!appending) {
       if (!properties.exists("OMIT_QA_RECORDS")) {
-	put_qa();
+        put_qa();
       }
       if (!properties.exists("OMIT_INFO_RECORDS")) {
-	put_info();
+        put_info();
       }
 
       // Write the metadata to the exodus file...
@@ -5362,7 +5362,7 @@ void DatabaseIO::write_meta_data(bool appending)
       int             ierr = data.write_meta_data(mesh);
 
       if (ierr < 0) {
-	Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
       output_other_meta_data();
     }

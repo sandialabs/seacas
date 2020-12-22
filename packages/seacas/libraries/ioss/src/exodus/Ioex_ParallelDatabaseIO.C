@@ -340,9 +340,10 @@ namespace Ioex {
         Ioss::FileInfo file = Ioss::FileInfo(get_filename());
         fileExists          = file.exists();
         if (fileExists && myProcessor == 0) {
-	  fmt::print(Ioss::WARNING(), "Appending to existing database in parallel single-file "
-		     "output mode is a new capability; please check results carefully. File '{}'",
-		     get_filename());
+          fmt::print(Ioss::WARNING(),
+                     "Appending to existing database in parallel single-file "
+                     "output mode is a new capability; please check results carefully. File '{}'",
+                     get_filename());
         }
       }
     }
@@ -4616,7 +4617,6 @@ void ParallelDatabaseIO::write_meta_data(bool appending)
     if (!properties.exists("OMIT_INFO_RECORDS")) {
       put_info();
     }
-
 
     // Write the metadata to the exodusII file...
     Ioex::Internals data(get_file_pointer(), maximumNameLength, util());

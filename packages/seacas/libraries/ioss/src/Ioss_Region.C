@@ -336,8 +336,8 @@ namespace Ioss {
       iodatabase->read_meta_data();
       Region::end_mode(STATE_DEFINE_MODEL);
       if (iodatabase->open_create_behavior() != Ioss::DB_APPEND) {
-	modelDefined     = true;
-	transientDefined = true;
+        modelDefined     = true;
+        transientDefined = true;
         Region::begin_mode(STATE_READONLY);
       }
     }
