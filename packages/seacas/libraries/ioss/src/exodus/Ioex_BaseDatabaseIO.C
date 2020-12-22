@@ -1204,13 +1204,13 @@ namespace Ioex {
     assert(state == dbState);
     switch (state) {
     case Ioss::STATE_DEFINE_MODEL:
-      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
-        write_meta_data();
+      if (!is_input()) {
+	write_meta_data(open_create_behavior() == Ioss::DB_APPEND);
       }
       break;
     case Ioss::STATE_DEFINE_TRANSIENT:
-      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
-        write_results_metadata();
+      if (!is_input()) {
+	write_results_metadata(true, open_create_behavior() == Ioss::DB_APPEND);
       }
       break;
     default: // ignore everything else...
@@ -1285,7 +1285,7 @@ namespace Ioex {
       Ioss::Utils::copy_string(the_title, "IOSS Default Output Title");
     }
 
-    Ioex::Mesh mesh(spatialDimension, the_title, !usingParallelIO);
+    Ioex::Mesh mesh(spatialDimension, the_title, util(), !usingParallelIO);
     mesh.populate(get_region());
 
     // Write the metadata to the exodus file...
@@ -1307,7 +1307,7 @@ namespace Ioex {
       if (get_file_per_state()) {
         // Close current file; create new file and output transient metadata...
         open_state_file(state);
-        write_results_metadata(false);
+        write_results_metadata(false, false);
       }
       int ierr = ex_put_time(get_file_pointer(), get_database_step(state), &time);
       if (ierr < 0) {
@@ -1595,7 +1595,7 @@ namespace Ioex {
   }
 
   // common
-  void BaseDatabaseIO::write_results_metadata(bool gather_data)
+  void BaseDatabaseIO::write_results_metadata(bool gather_data, bool appending)
   {
     if (gather_data) {
       int glob_index = 0;
@@ -1653,6 +1653,7 @@ namespace Ioex {
       }
     }
 
+    if (!appending) {
     ex_var_params exo_params{};
 #if GLOBALS_ARE_TRANSIENT
     exo_params.num_glob = m_variables[EX_GLOBAL].size();
@@ -1712,6 +1713,7 @@ namespace Ioex {
         output_results_names(type, m_variables[type], false);
         output_results_names(type, m_reductionVariables[type], true);
       }
+    }
     }
   }
 

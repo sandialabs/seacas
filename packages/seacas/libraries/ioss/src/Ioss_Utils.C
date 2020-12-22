@@ -1505,10 +1505,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
   int rank = dbi->util().parallel_rank();
 
-  bool appending = output_region.get_database()->open_create_behavior() == Ioss::DB_APPEND;
-
-  if (!appending) {
-
     if (options.debug && rank == 0) {
       fmt::print(Ioss::DEBUG(), "DEFINING MODEL ... \n");
     }
@@ -1522,6 +1518,10 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       else {
         std::exit(EXIT_FAILURE);
       }
+    }
+
+    if (rank == 0) {
+      fmt::print(std::cout, "\n\n Input Region summary for rank 0:\n");
     }
 
     // Get all properties of input database...
@@ -1614,6 +1614,9 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       fmt::print(Ioss::DEBUG(), " Resize finished...\n");
     }
 
+    bool appending = output_region.get_database()->open_create_behavior() == Ioss::DB_APPEND;
+
+    if (!appending) {
     if (options.debug && rank == 0) {
       fmt::print(Ioss::DEBUG(), "TRANSFERRING MESH FIELD DATA ...\n");
     }
@@ -1771,6 +1774,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     dbi->progress("END STATE_MODEL... ");
     output_region.end_mode(Ioss::STATE_MODEL);
+    }
 
     if (options.add_proc_id) {
       Ioss::Utils::clear(data_pool.data);
@@ -1782,7 +1786,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       Ioss::Utils::clear(data_pool.data);
       return;
     }
-  } // !appending
 
   if (options.debug && rank == 0) {
     fmt::print(Ioss::DEBUG(), "DEFINING TRANSIENT FIELDS ... \n");
@@ -2019,7 +2022,7 @@ namespace {
         fmt::print(Ioss::DEBUG(), " Number of Coordinates per Node = {:14n}\n", degree);
         fmt::print(Ioss::DEBUG(), " Number of Nodes                = {:14n}\n", num_nodes);
       }
-      auto nb = new Ioss::NodeBlock(*inb);
+      auto *nb = new Ioss::NodeBlock(*inb);
       output_region.add(nb);
 
       if (output_region.get_database()->needs_shared_node_information()) {

@@ -215,6 +215,9 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
   }
 
   if (in_define_mode) {
+    if (changed) {
+      m_reverse.clear();
+    }
     build_reverse_map__(count, offset);
   }
   else if (changed) {

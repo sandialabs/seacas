@@ -469,6 +469,18 @@ namespace Ioex {
       return;
     }
 
+    // APPENDING:
+    // There is an assumption that the writing process (mesh, vars) is
+    // the same for the original run that created this database and
+    // for this run which is appending to the database so the defining
+    // of the output database should be the same except we don't write
+    // anything since it is already there.  We do need the number of
+    // steps though...
+    if (open_create_behavior() == Ioss::DB_APPEND) {
+      get_step_times__();
+      return;
+    }
+
     {
       Ioss::SerializeIO serializeIO__(this);
 
@@ -5314,7 +5326,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
   return num_to_get;
 }
 
-void DatabaseIO::write_meta_data()
+void DatabaseIO::write_meta_data(bool appending)
 {
   Ioss::Region *region = get_region();
   common_write_meta_data();
@@ -5331,28 +5343,29 @@ void DatabaseIO::write_meta_data()
   }
 
   bool       file_per_processor = true;
-  Ioex::Mesh mesh(spatialDimension, the_title, file_per_processor);
+  Ioex::Mesh mesh(spatialDimension, the_title, util(), file_per_processor);
   {
     Ioss::SerializeIO serializeIO__(this);
-    if (!properties.exists("OMIT_QA_RECORDS")) {
-      put_qa();
-    }
-    if (!properties.exists("OMIT_INFO_RECORDS")) {
-      put_info();
-    }
-
     mesh.populate(region);
     gather_communication_metadata(&mesh.comm);
 
-    // Write the metadata to the exodus file...
-    Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
-    int             ierr = data.write_meta_data(mesh);
+    if (!appending) {
+      if (!properties.exists("OMIT_QA_RECORDS")) {
+	put_qa();
+      }
+      if (!properties.exists("OMIT_INFO_RECORDS")) {
+	put_info();
+      }
 
-    if (ierr < 0) {
-      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      // Write the metadata to the exodus file...
+      Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
+      int             ierr = data.write_meta_data(mesh);
+
+      if (ierr < 0) {
+	Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+      output_other_meta_data();
     }
-
-    output_other_meta_data();
   }
 }
 
