@@ -351,20 +351,23 @@ TRIBITS_ADD_ADVANCED_TEST(cgns_Q2_bc_no_parents_to_exodus
   XHOSTTYPE Windows
   )
 
+IF (disabled)
+# This requires a patched version of NetCDF.  Once the PR is accepted, the test will be reenabled.
 TRIBITS_ADD_ADVANCED_TEST(exodus_append
-   TEST_0 EXEC io_shell ARGS --Maximum_Time=0.055 ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g base.g
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${JOIN_ARG} --Maximum_Time=0.055 ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g base.g
      NUM_MPI_PROCS 1-4
      NOEXEPREFIX NOEXESUFFIX
    TEST_1 EXEC io_shell ARGS --Minimum_Time=0.055 ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g append.g
+     NUM_MPI_PROCS 1
+     NOEXEPREFIX NOEXESUFFIX
+   TEST_2 EXEC io_shell ARGS ${DECOMP_ARG} ${JOIN_ARG} --append_after_time 0.055 append.g base.g
      NUM_MPI_PROCS 1-4
      NOEXEPREFIX NOEXESUFFIX
-   TEST_2 EXEC io_shell ARGS --append_after_time 0.055 append.g base.g
-     NUM_MPI_PROCS 1-4
-     NOEXEPREFIX NOEXESUFFIX
-   TEST_3 CMND ${SEACAS_EXODIFF_BINARY} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g base.g
+   TEST_3 CMND ${SEACAS_EXODIFF_BINARY} ARGS -map ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g base.g
      NUM_MPI_PROCS 1
   COMM mpi serial
   )
+endif()
 
 if ( CGNS_CGNSDIFF_BINARY )
 TRIBITS_ADD_ADVANCED_TEST(cgns_Q2_parents_no_parent_compare_random_decomp
