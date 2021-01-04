@@ -22,91 +22,90 @@ function check_exec()
     command -v ${var} >/dev/null 2>&1 || { echo >&2 "${txtred}---${var} is required, but is not currently in path.  Aborting TPL Install.${txtrst}"; exit 1; }
 }
 
-function check_valid_yes_no()
+function check_valid()
 {
-    local var=$1
-    if ! [ "${!var}" == "YES" ] && ! [ "${!var}" == "NO" ]; then
-    echo "${txtred}Invalid value for $var (${!var}) -- Must be YES or NO${txtrst}"
+    if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ]; then
+	echo "YES"
+	return 1
+    fi
+    if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ]; then
+	echo "NO"
+	return 1
+    fi
+    echo "${txtred}Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF${txtrst}"
     exit 1
-fi
-}
-
-function check_valid_on_off()
-{
-    local var=$1
-    if ! [ "${!var}" == "ON" ] && ! [ "${!var}" == "OFF" ]; then
-    echo "${txtred}Invalid value for $var (${!var}) -- Must be ON or OFF${txtrst}"
-    exit 1
-fi
 }
 
 #By default, download and then install.
 DOWNLOAD=${DOWNLOAD:-YES}
-check_valid_yes_no DOWNLOAD
+DOWNLOAD=`check_valid DOWNLOAD`
 
 BUILD=${BUILD:-YES}
-check_valid_yes_no BUILD
+BUILD=`check_valid BUILD`
 
 # Force downloading and installation even if the TPL already exists in lib/include
 FORCE=${FORCE:-NO}
-check_valid_yes_no FORCE
+FORCE=`check_valid FORCE`
 
 DEBUG=${DEBUG:-NO}
-check_valid_yes_no DEBUG
+DEBUG=`check_valid DEBUG`
 
 # Shared libraries or static libraries?
 SHARED=${SHARED:-YES}
-check_valid_yes_no SHARED
+SHARED=`check_valid SHARED`
 
 # Enable Burst-Buffer support in PnetCDF?
 BB=${BB:-NO}
-check_valid_yes_no BB
+BB=`check_valid BB`
 
-CRAY=${CRAY:-OFF}
-check_valid_on_off CRAY
+CRAY=${CRAY:-NO}
+CRAY=`check_valid CRAY`
 
 # Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
-CGNS=${CGNS:-ON}
-check_valid_on_off CGNS
+CGNS=${CGNS:-YES}
+CGNS=`check_valid CGNS`
 
-MATIO=${MATIO:-ON}
-check_valid_on_off MATIO
+MATIO=${MATIO:-YES}
+MATIO=`check_valid MATIO`
 
-METIS=${METIS:-OFF}
-check_valid_on_off METIS
+METIS=${METIS:-NO}
+METIS=`check_valid METIS`
 
-PARMETIS=${PARMETIS:-OFF}
-check_valid_on_off PARMETIS
+PARMETIS=${PARMETIS:-NO}
+PARMETIS=`check_valid PARMETIS`
 
-GNU_PARALLEL=${GNU_PARALLEL:-ON}
-check_valid_on_off GNU_PARALLEL
+GNU_PARALLEL=${GNU_PARALLEL:-YES}
+GNU_PARALLEL=`check_valid GNU_PARALLEL`
 
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
-check_valid_yes_no NEEDS_ZLIB
+NEEDS_ZLIB=`check_valid NEEDS_ZLIB`
 
 NEEDS_SZIP=${NEEDS_SZIP:-NO}
-check_valid_yes_no NEEDS_SZIP
+NEEDS_SZIP=`check_valid NEEDS_SZIP`
 
 USE_AEC=${USE_AEC:-NO}
-check_valid_yes_no USE_AEC
+USE_AEC=`check_valid USE_AEC`
 
-KOKKOS=${KOKKOS:-OFF}
-check_valid_on_off KOKKOS
+KOKKOS=${KOKKOS:-NO}
+KOKKOS=`check_valid KOKKOS`
 
 H5VERSION=${H5VERSION:-V110}
-ADIOS2=${ADIOS2:-OFF}
-check_valid_on_off ADIOS2
 
-GTEST=${GTEST:-OFF}
+ADIOS2=${ADIOS2:-NO}
+ADIOS2=`check_valid ADIOS2`
 
-MPI=${MPI:-OFF}
-check_valid_on_off MPI
+GTEST=${GTEST:-NO}
+GTEST=`check_valid GTEST`
+
+MPI=${MPI:-NO}
+MPI=`check_valid MPI`
 
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
 VERBOSE=${VERBOSE:-1}
+
 USE_PROXY=${USE_PROXY:-NO}
-check_valid_yes_no USE_PROXY
+USE_PROXY=`check_valid USE_PROXY`
 
 if [ "${USE_PROXY}" == "YES" ]
 then
@@ -118,12 +117,12 @@ pwd
 export ACCESS=$(pwd)
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
+if [ "$MPI" == "YES" ] && [ "$CRAY" == "YES" ]
 then
     CC=cc; export CC
     CFLAGS=-static; export CFLAGS
     SHARED=NO
-elif [ "$MPI" == "ON" ]
+elif [ "$MPI" == "YES" ]
 then
     CC=mpicc; export CC
 fi
@@ -168,7 +167,7 @@ if [ $# -gt 0 ]; then
 	echo "   ADIOS2       = ${ADIOS2}"
 	echo "   GTEST        = ${GTEST}"
 	echo ""
-	echo "   SUDO         = ${SUDO}"
+	echo "   SUDO         = ${SUDO} (empty unless need superuser permission via 'sudo')" 
 	echo "   JOBS         = ${JOBS}"
 	echo "   VERBOSE      = ${VERBOSE}"
 	echo "${txtrst}"
@@ -375,7 +374,7 @@ else
     echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
 # =================== INSTALL PnetCDF if parallel build ===============
-if [ "$MPI" == "ON" ]
+if [ "$MPI" == "YES" ]
 then
     # PnetCDF currently only builds static library...
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
@@ -407,7 +406,7 @@ then
             fi
 
 
-            if [ "$CRAY" == "ON" ]
+            if [ "$CRAY" == "YES" ]
             then
                 make -j${JOBS} LDFLAGS=-all-static && ${SUDO} make install
             else
@@ -463,7 +462,7 @@ else
     echo "${txtylw}+++ NetCDF already installed.  Skipping download and installation.${txtrst}"
 fi
 # =================== INSTALL CGNS ===============
-if [ "$CGNS" == "ON" ]
+if [ "$CGNS" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
@@ -506,7 +505,7 @@ then
 fi
 
 # =================== INSTALL METIS  ===============
-if [ "$METIS" == "ON" ]
+if [ "$METIS" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.a ]
     then
@@ -548,7 +547,7 @@ fi
 
 
 # =================== INSTALL PARMETIS  ===============
-if [ "$PARMETIS" == "ON" ] && [ "$MPI" == "ON" ]
+if [ "$PARMETIS" == "YES" ] && [ "$MPI" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libparmetis.a ]
     then
@@ -586,7 +585,7 @@ fi
 
 
 # =================== INSTALL MATIO  ===============
-if [ "$MATIO" == "ON" ]
+if [ "$MATIO" == "YES" ]
 then
     # Check that aclocal, automake, autoconf exist...
     check_exec aclocal
@@ -629,7 +628,7 @@ then
 fi
 
 # =================== INSTALL KOKKOS  ===============
-if [ "$KOKKOS" == "ON" ]
+if [ "$KOKKOS" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
     then
@@ -674,7 +673,7 @@ then
 fi
 
 # =================== INSTALL ADIOS2  ===============
-if [ "$ADIOS2" == "ON" ]
+if [ "$ADIOS2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2.${LD_EXT} ]
     then
@@ -716,7 +715,7 @@ then
 fi
 
 # =================== INSTALL gtest  ===============
-if [ "$GTEST" == "ON" ]
+if [ "$GTEST" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libgtest.${LD_EXT} ]
     then
@@ -758,7 +757,7 @@ then
 fi
 
 # =================== INSTALL PARALLEL  ===============
-if [ "$GNU_PARALLEL" == "ON" ]
+if [ "$GNU_PARALLEL" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/bin/env_parallel ]
     then

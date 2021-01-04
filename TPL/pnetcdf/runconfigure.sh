@@ -7,16 +7,16 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-if [ "$BB" == "ON" ]
+if [ "$BB" == "YES" ]
 then
    USE_BB="--enable-burst-buffering"
 fi
    
-if [ "$CRAY" == "ON" ]
+if [ "$CRAY" == "YES" ]
 then
     USE_SHARED="--disable-shared"
 else
-    SHARED="${SHARED:-ON}"
+    SHARED="${SHARED:-YES}"
     if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
     then
 	USE_SHARED="--enable-shared"
@@ -26,7 +26,7 @@ else
 fi
 
 rm -f config.cache
-if [ "$CRAY" == "ON" ]
+if [ "$CRAY" == "YES" ]
 then
   CC=cc
 else

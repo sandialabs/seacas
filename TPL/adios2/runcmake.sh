@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 EXTRA_ARGS=$@
 
-MPI="${MPI:-OFF}"
+MPI="${MPI:-NO}"
 
 echo "MPI set to ${MPI}"
 
@@ -12,13 +12,13 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
 
-if [ "$MPI" == "ON" ] && [ "$CRAY" = "ON" ]
+if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
   export CXX=cxx
-elif [ "$MPI" == "ON" ]
+elif [ "$MPI" == "YES" ]
 then
   export CC=mpicc
   export CXX=mpicxx

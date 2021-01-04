@@ -7,7 +7,7 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
   USE_SHARED="1"
@@ -15,17 +15,17 @@ else
   USE_SHARED="0"
 fi
 
-MPI="${MPI:-ON}"
-if [ "$MPI" == "ON" ]
+MPI="${MPI:-YES}"
+if [ "$MPI" == "YES" ]
 then
-  if [ "$CRAY" == "ON" ]
+  if [ "$CRAY" == "YES" ]
   then
     export CC=cc
   else
     export CC=mpicc
   fi
 else
-   echo "MPI Must be ON"
+   echo "MPI Must be YES"
    exit 1
 fi
 

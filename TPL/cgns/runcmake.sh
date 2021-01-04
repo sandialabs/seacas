@@ -2,9 +2,9 @@
 EXTRA_ARGS=$@
 
 #MPI="${MPI:-ON}"
-MPI="${MPI:-OFF}"
+MPI="${MPI:-NO}"
 
-USE_64BIT_INT="${USE_64BIT_INT:-ON}"
+USE_64BIT_INT="${USE_64BIT_INT:-YES}"
 
 echo "MPI set to ${MPI}"
 
@@ -15,7 +15,7 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
 DEBUG="${DEBUG:-NO}"
 
 if [ "$DEBUG" == "YES" ]
@@ -25,9 +25,9 @@ else
   BUILD_TYPE="RELEASE"
 fi
 
-if [ "$MPI" == "ON" ]
+if [ "$MPI" == "YES" ]
 then
-  if [ "$CRAY" == "ON" ]
+  if [ "$CRAY" == "YES" ]
   then
     export CC=cc
   else

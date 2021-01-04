@@ -1,5 +1,4 @@
 #! /usr/bin/env bash
-
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../../..; pwd)
@@ -15,7 +14,7 @@ else
   BUILD_TYPE="RELEASE"
 fi
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
   OS=$(uname -s)
@@ -41,11 +40,11 @@ then
    LOCAL_SZIP="-DSZIP_INCLUDE_DIR:PATH=${INSTALL_PATH}/include -DSZIP_LIBRARY:FILEPATH=${INSTALL_PATH}/lib/libsz.${LD_EXT}"
 fi
 
-MPI="${MPI:-OFF}"
-if [ "$MPI" == "ON" ] && [ "$CRAY" = "ON" ]
+MPI="${MPI:-NO}"
+if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
-elif [ "$MPI" == "ON" ]
+elif [ "$MPI" == "YES" ]
 then
   export CC=mpicc
 else

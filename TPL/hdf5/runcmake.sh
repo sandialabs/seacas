@@ -17,7 +17,7 @@ else
   BUILD_TYPE="Release"
 fi
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
   OS=$(uname -s)
@@ -44,10 +44,10 @@ then
 fi
 
 MPI="${MPI:-OFF}"
-if [ "$MPI" == "ON" ] && [ "$CRAY" = "ON" ]
+if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
-elif [ "$MPI" == "ON" ]
+elif [ "$MPI" == "YES" ]
 then
   export CC=mpicc
 else
@@ -70,9 +70,9 @@ else
   fi
 fi
 
-if [ "$CRAY" == "ON" ]
+if [ "$CRAY" == "YES" ]
 then
-    USE_SHARED="OFF"
+    USE_SHARED="NO"
 else
     USE_SHARED="${SHARED}"
 fi
