@@ -65,7 +65,7 @@ manually as detailed in
 | ADIOS2          | ON, OFF | OFF | Should adios2 TPL be built. |
 | KOKKOS          | ON, OFF | OFF | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | ON, OFF | ON  | Should GNU parallel script be built. |
-| H5VERSION       | V12, V110, V18 | V110 | Use HDF5-1.12.X, HDF5-1.10.X or HDF5-1.8.X |
+| H5VERSION       | V112, V110, V18 | V110 | Use HDF5-1.12.X, HDF5-1.10.X or HDF5-1.8.X |
 | BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
 | JOBS            | {count}|  2      | Number of "jobs" used for simultaneous compiles |
 | SUDO            | "" or sudo | "" | If need to be superuser to install |
