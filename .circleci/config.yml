@@ -4,7 +4,6 @@ jobs:
   build_macos:
     macos:
       xcode: 12.3.0
-
     environment:
       GNU_PARALLEL: OFF
     steps:
