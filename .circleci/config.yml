@@ -54,8 +54,6 @@ jobs:
       image: "ubuntu-2004:202010-01"
     environment:
       GNU_PARALLEL: OFF
-      COMPILER: clang
-      MPI: YES
     steps:
       - checkout
       - run:
@@ -66,7 +64,7 @@ jobs:
           command: 'sudo apt-get -y install -q mpich libmpich-dev'
       - run:
           name: Installing Third-Party Libraries
-          command: './install-tpl.sh'
+          command: 'MPI=ON ./install-tpl.sh'
       - run:
           name: Configure
           command: 'mkdir build && cd build && ../cmake-config'
