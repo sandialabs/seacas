@@ -84,4 +84,3 @@ workflows:
       - build_serial_gcc
       - build_serial_clang
       - build_parallel
-      - build_macos
