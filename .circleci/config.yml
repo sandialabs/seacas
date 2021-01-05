@@ -1,26 +1,6 @@
 version: 2.1
 
 jobs:
-  build_macos:
-    macos:
-      xcode: 12.3.0
-    environment:
-      GNU_PARALLEL: OFF
-    steps:
-      - checkout
-      - run: xcodebuild -version
-      - run:
-          name: Installing Third-Party Libraries
-          command: './install-tpl.sh'
-      - run:
-          name: Configure
-          command: 'mkdir build && cd build && ../cmake-config'
-      - run:
-          name: Build
-          command: 'pwd && cmake --build build'
-      - run:
-          name: Test
-          command: 'cd build && ctest -V'
 
   build_serial_gcc:
     machine:
