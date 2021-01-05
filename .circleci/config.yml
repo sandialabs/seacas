@@ -22,7 +22,6 @@ jobs:
           name: Test
           command: 'cd build && ctest -V'
 
-jobs:
   build_serial_gcc:
     machine:
       image: "ubuntu-2004:202010-01"
