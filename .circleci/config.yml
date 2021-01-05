@@ -11,7 +11,7 @@ jobs:
       - checkout
       - run:
           name: Installing GCC
-          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
+          command: 'sudo apt-get update && sudo apt-get install -y gcc-10 g++-10 gfortran-10'
       - run:
           name: Installing Third-Party Libraries
           command: './install-tpl.sh'
@@ -60,7 +60,7 @@ jobs:
       - checkout
       - run:
           name: Installing GCC
-          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
+          command: 'sudo apt-get update && sudo apt-get install -y gcc-10 g++-10 gfortran-10'
       - run:
           name: Install MPI
           command: 'sudo apt-get -y install -q mpich libmpich-dev'
