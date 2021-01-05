@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build:
+  build_serial:
     machine:
       image: "ubuntu-2004:202010-01"
     steps:
@@ -22,3 +22,36 @@ jobs:
           name: Test
           command: 'cd build && ctest -VV'
 
+  build_parallel:
+    machine:
+      image: "ubuntu-2004:202010-01"
+    steps:
+      - checkout
+      - run:
+          name: Installing GCC
+          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
+      - run:
+          name: Installing GCC
+          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
+      - run:
+          name: Install MPI
+          command: 'sudo apt-get -y install -q mpich libmpich-dev'
+      - run:
+          name: Installing Third-Party Libraries      
+          command: 'MPI=ON GNU_PARALLEL=OFF ./install-tpl.sh'
+      - run:
+          name: Configure
+          command: 'mkdir build && cd build && ../cmake-config'
+      - run:
+          name: Build
+          command: 'pwd && cmake --build build'
+      - run:
+          name: Test
+          command: 'cd build && ctest -VV'
+
+workflows:
+  version: 2
+  build_all:
+    jobs:
+      - build_serial
+      - build_parallel
