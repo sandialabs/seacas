@@ -35,7 +35,7 @@ jobs:
       - checkout
       - run:
           name: Installing Clang
-          command: 'sudo apt-get update && sudo apt-get install -y llvm clang gfortran-10 && clang --version'
+          command: 'sudo apt-get update && sudo apt-get install -y llvm clang gcc-10 gfortran-10 && clang --version'
       - run:
           name: Installing Third-Party Libraries
           command: './install-tpl.sh'
