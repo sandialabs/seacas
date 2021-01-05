@@ -20,9 +20,9 @@ public:
   Edge_Block(int file_id, size_t id, size_t ne);
   ~Edge_Block() override;
 
-  size_t              Edge_Index(size_t position) const;
+  size_t Edge_Index(size_t position) const;
 
-  int    Check_State() const;
+  int Check_State() const;
 
 private:
   Edge_Block(const Edge_Block &);                  // Not written.
@@ -35,7 +35,7 @@ private:
   const char *label() const override { return "Edgeblock"; }
   const char *short_label() const override { return "edgeblock"; }
 
-  mutable INT *   edgeIndex{nullptr};
+  mutable INT *edgeIndex{nullptr};
 
   std::string elmt_type;
   int         num_edges_per_elmt;

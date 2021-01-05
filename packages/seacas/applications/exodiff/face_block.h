@@ -20,9 +20,9 @@ public:
   Face_Block(int file_id, size_t id, size_t ne);
   ~Face_Block() override;
 
-  size_t              Face_Index(size_t position) const;
+  size_t Face_Index(size_t position) const;
 
-  int    Check_State() const;
+  int Check_State() const;
 
 private:
   Face_Block(const Face_Block &);                  // Not written.
@@ -35,7 +35,7 @@ private:
   const char *label() const override { return "Faceblock"; }
   const char *short_label() const override { return "faceblock"; }
 
-  mutable INT *   faceIndex{nullptr};
+  mutable INT *faceIndex{nullptr};
 
   std::string elmt_type;
   int         num_faces_per_elmt;

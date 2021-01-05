@@ -5,14 +5,14 @@
 // See packages/seacas/LICENSE for details
 
 #include "ED_SystemInterface.h" // for SystemInterface, etc
+#include "edge_block.h"         // for Edge_Block
 #include "exoII_read.h"
-#include "exo_block.h" // for Exo_Block
-#include "exodusII.h"  // for ex_init_params, ex_opts, etc
+#include "exo_block.h"  // for Exo_Block
+#include "exodusII.h"   // for ex_init_params, ex_opts, etc
+#include "face_block.h" // for Face_Block
 #include "fmt/ostream.h"
 #include "node_set.h"     // for Node_Set
 #include "side_set.h"     // for Side_Set
-#include "edge_block.h"   // for Edge_Block
-#include "face_block.h"   // for Face_Block
 #include "smart_assert.h" // for SMART_ASSERT, Assert, etc
 #include "stringx.h"      // for chop_whitespace
 #include "util.h"         // for free_name_array, etc
@@ -334,7 +334,8 @@ Side_Set<INT> *ExoII_Read<INT>::Get_Side_Set_by_Name(const std::string &name) co
   return nullptr;
 }
 
-template <typename INT> Edge_Block<INT> *ExoII_Read<INT>::Get_Edge_Block_by_Id(size_t block_id) const
+template <typename INT>
+Edge_Block<INT> *ExoII_Read<INT>::Get_Edge_Block_by_Id(size_t block_id) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_edge_blocks; i++) {
@@ -357,7 +358,8 @@ Edge_Block<INT> *ExoII_Read<INT>::Get_Edge_Block_by_Name(const std::string &name
   return nullptr;
 }
 
-template <typename INT> Face_Block<INT> *ExoII_Read<INT>::Get_Face_Block_by_Id(size_t block_id) const
+template <typename INT>
+Face_Block<INT> *ExoII_Read<INT>::Get_Face_Block_by_Id(size_t block_id) const
 {
   SMART_ASSERT(Check_State());
   for (size_t i = 0; i < num_face_blocks; i++) {
@@ -1201,7 +1203,8 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
 
   //  **************  RESULTS info  ***************  //
 
-  int num_global_vars, num_nodal_vars, num_elmt_vars, num_ns_vars, num_ss_vars, num_edge_vars, num_face_vars;
+  int num_global_vars, num_nodal_vars, num_elmt_vars, num_ns_vars, num_ss_vars, num_edge_vars,
+      num_face_vars;
 
   err = ex_get_variable_param(file_id, EX_GLOBAL, &num_global_vars);
   if (err < 0) {
@@ -1257,8 +1260,8 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
                       "\tnum edgeblock vars = {}\n"
                       "\tnum faceblock vars = {}\n"
                       " ... Aborting...\n",
-                      num_global_vars, num_nodal_vars, num_elmt_vars, 
-                      num_ns_vars, num_ss_vars, num_edge_vars, num_face_vars));
+                      num_global_vars, num_nodal_vars, num_elmt_vars, num_ns_vars, num_ss_vars,
+                      num_edge_vars, num_face_vars));
     exit(1);
   }
 

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -21,15 +21,15 @@
 #include "MinMaxData.h"
 #include "Norm.h"
 #include "Tolerance.h"
+#include "edge_block.h"
 #include "exoII_read.h"
 #include "exo_block.h"
 #include "exodiff.h"
 #include "exodusII.h"
+#include "face_block.h"
 #include "map.h"
 #include "node_set.h"
 #include "side_set.h"
-#include "edge_block.h"
-#include "face_block.h"
 #include "smart_assert.h"
 #include "stringx.h"
 #include "util.h"
@@ -131,9 +131,8 @@ template <typename INT>
 void do_diffs(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int time_step1, const TimeInterp &t2,
               int out_file_id, std::vector<MinMaxData> &mm_glob, std::vector<MinMaxData> &mm_node,
               std::vector<MinMaxData> &mm_elmt, std::vector<MinMaxData> &mm_ns,
-              std::vector<MinMaxData> &mm_ss, 
-              std::vector<MinMaxData> &mm_eb, std::vector<MinMaxData> &mm_fb,
-              INT *node_map, const INT *node_id_map, INT *elmt_map,
+              std::vector<MinMaxData> &mm_ss, std::vector<MinMaxData> &mm_eb,
+              std::vector<MinMaxData> &mm_fb, INT *node_map, const INT *node_id_map, INT *elmt_map,
               const INT *elem_id_map, Exo_Block<INT> **blocks2, double *var_vals, bool *diff_flag);
 
 template <typename INT>
@@ -277,9 +276,9 @@ namespace {
                "Sideset = {15}, Times = {16}\n\n",
                prefix, fi.realpath(), file.Title(), file.Dimension(), file.Num_Elmt_Blocks(),
                file.Num_Nodes(), file.Num_Elmts(), file.Num_Node_Sets(), file.Num_Side_Sets(),
-               file.Num_EB_Vars(), file.Num_FB_Vars(),
-               file.Num_Global_Vars(), file.Num_Nodal_Vars(), file.Num_Elmt_Vars(),
-               file.Num_NS_Vars(), file.Num_SS_Vars(), file.Num_Times(), count);
+               file.Num_EB_Vars(), file.Num_FB_Vars(), file.Num_Global_Vars(),
+               file.Num_Nodal_Vars(), file.Num_Elmt_Vars(), file.Num_NS_Vars(), file.Num_SS_Vars(),
+               file.Num_Times(), count);
   }
 
   std::string buf;
@@ -756,8 +755,8 @@ namespace {
         }
       }
 
-      do_diffs(file1, file2, ts1, t2, out_file_id, mm_glob, mm_node, mm_elmt, mm_ns, mm_ss, mm_eb, mm_fb,
-               node_map, node_id_map, elmt_map, elem_id_map, blocks2, var_vals, &diff_flag);
+      do_diffs(file1, file2, ts1, t2, out_file_id, mm_glob, mm_node, mm_elmt, mm_ns, mm_ss, mm_eb,
+               mm_fb, node_map, node_id_map, elmt_map, elem_id_map, blocks2, var_vals, &diff_flag);
     }
     else {
 
@@ -947,8 +946,9 @@ namespace {
           continue;
         }
 
-        do_diffs(file1, file2, time_step1, t2, out_file_id, mm_glob, mm_node, mm_elmt, mm_ns, mm_ss, mm_eb, mm_fb,
-                 node_map, node_id_map, elmt_map, elem_id_map, blocks2, var_vals, &diff_flag);
+        do_diffs(file1, file2, time_step1, t2, out_file_id, mm_glob, mm_node, mm_elmt, mm_ns, mm_ss,
+                 mm_eb, mm_fb, node_map, node_id_map, elmt_map, elem_id_map, blocks2, var_vals,
+                 &diff_flag);
 
       } // End of time step loop.
 
@@ -967,7 +967,7 @@ namespace {
     }
 
     if (interFace.summary_flag) {
-      output_summary(file1, mm_time, mm_glob, mm_node, mm_elmt, mm_ns, mm_ss, mm_eb, mm_fb, 
+      output_summary(file1, mm_time, mm_glob, mm_node, mm_elmt, mm_ns, mm_ss, mm_eb, mm_fb,
                      node_id_map, elem_id_map);
     }
     else if (out_file_id >= 0) {
@@ -1186,9 +1186,8 @@ template <typename INT>
 void do_diffs(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int time_step1, const TimeInterp &t2,
               int out_file_id, std::vector<MinMaxData> &mm_glob, std::vector<MinMaxData> &mm_node,
               std::vector<MinMaxData> &mm_elmt, std::vector<MinMaxData> &mm_ns,
-              std::vector<MinMaxData> &mm_ss, 
-              std::vector<MinMaxData> &mm_eb, std::vector<MinMaxData> &mm_fb,
-              INT *node_map, const INT *node_id_map, INT *elmt_map,
+              std::vector<MinMaxData> &mm_ss, std::vector<MinMaxData> &mm_eb,
+              std::vector<MinMaxData> &mm_fb, INT *node_map, const INT *node_id_map, INT *elmt_map,
               const INT *elem_id_map, Exo_Block<INT> **blocks2, double *var_vals, bool *diff_flag)
 {
   if (diff_globals(file1, file2, time_step1, t2, out_file_id, mm_glob, var_vals)) {
@@ -1229,7 +1228,7 @@ void do_diffs(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int time_step1, co
     }
   }
   else {
-    if (!interFace.ns_var_names.empty() || !interFace.ss_var_names.empty() || 
+    if (!interFace.ns_var_names.empty() || !interFace.ss_var_names.empty() ||
         !interFace.eb_var_names.empty() || !interFace.fb_var_names.empty()) {
       fmt::print("WARNING: nodeset, sideset, edge block and face block variables not (yet) "
                  "compared for partial map\n");
@@ -2232,7 +2231,8 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
 
 template <typename INT>
 bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, const INT *id_map, std::vector<MinMaxData> &mm_eb, double *vals)
+                    int out_file_id, const INT *id_map, std::vector<MinMaxData> &mm_eb,
+                    double *vals)
 {
   bool diff_flag = false;
 
@@ -2266,7 +2266,7 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       Edge_Block<INT> *eblock1 = file1.Get_Edge_Block_by_Index(b);
       SMART_ASSERT(eblock1 != nullptr);
       if (eblock1->Size() == 0) {
-          std::cout << "eblock1->Size() == 0...continuing..." << std::endl;
+        std::cout << "eblock1->Size() == 0...continuing..." << std::endl;
         continue;
       }
       if (!eblock1->is_valid_var(vidx1)) {
@@ -2316,8 +2316,8 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
 
         if (Invalid_Values(vals2, eblock2->Size())) {
-          Error(fmt::format("NaN found for edgeblock variable '{}' in edgeblock {}, file 2.\n", name,
-                            eblock2->Id()));
+          Error(fmt::format("NaN found for edgeblock variable '{}' in edgeblock {}, file 2.\n",
+                            name, eblock2->Id()));
           diff_flag = true;
         }
       }
@@ -2359,8 +2359,8 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
           norm.add_value(vals1[ind1], v2);
         }
         if (out_file_id >= 0) {
-          ex_put_var(out_file_id, t2.step1, EX_EDGE_BLOCK, e_idx + 1, eblock1->Id(), eblock1->Size(),
-                     vals);
+          ex_put_var(out_file_id, t2.step1, EX_EDGE_BLOCK, e_idx + 1, eblock1->Id(),
+                     eblock1->Size(), vals);
         }
       }
       else {
@@ -2411,7 +2411,8 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
 
 template <typename INT>
 bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, const INT *id_map, std::vector<MinMaxData> &mm_fb, double *vals)
+                    int out_file_id, const INT *id_map, std::vector<MinMaxData> &mm_fb,
+                    double *vals)
 {
   bool diff_flag = false;
 
@@ -2494,8 +2495,8 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
 
         if (Invalid_Values(vals2, fblock2->Size())) {
-          Error(fmt::format("NaN found for faceblock variable '{}' in faceblock {}, file 2.\n", name,
-                            fblock2->Id()));
+          Error(fmt::format("NaN found for faceblock variable '{}' in faceblock {}, file 2.\n",
+                            name, fblock2->Id()));
           diff_flag = true;
         }
       }
@@ -2537,8 +2538,8 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
           norm.add_value(vals1[ind1], v2);
         }
         if (out_file_id >= 0) {
-          ex_put_var(out_file_id, t2.step1, EX_FACE_BLOCK, f_idx + 1, fblock1->Id(), fblock1->Size(),
-                     vals);
+          ex_put_var(out_file_id, t2.step1, EX_FACE_BLOCK, f_idx + 1, fblock1->Id(),
+                     fblock1->Size(), vals);
         }
       }
       else {
@@ -2571,11 +2572,9 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       }
 
       if (!interFace.quiet_flag) {
-        Face_Block<INT> *fblock = file1.Get_Face_Block_by_Id(max_diff.blk);
         buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, face {})",
                           name, name_length, interFace.fb_var[f_idx].abrstr(), max_diff.val1,
-                          max_diff.val2, max_diff.diff, max_diff.blk,
-                          id_map[max_diff.id]);
+                          max_diff.val2, max_diff.diff, max_diff.blk, id_map[max_diff.id]);
         DIFF_OUT(buf);
       }
       else {
@@ -2860,10 +2859,9 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
     for (i = 0; i < n; ++i) {
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},b{},e{}\tmax: {:15.8g} @ t{},b{}"
                  ",e{}\n",
-                 ((interFace.eb_var_names)[i]), name_length, mm_eb[i].min_val, 
-                 mm_eb[i].min_step, mm_eb[i].min_blk, elem_id_map[mm_eb[i].min_id],
-                 mm_eb[i].max_val, mm_eb[i].max_step, mm_eb[i].max_blk,
-                 elem_id_map[mm_eb[i].max_id]);
+                 ((interFace.eb_var_names)[i]), name_length, mm_eb[i].min_val, mm_eb[i].min_step,
+                 mm_eb[i].min_blk, elem_id_map[mm_eb[i].min_id], mm_eb[i].max_val,
+                 mm_eb[i].max_step, mm_eb[i].max_blk, elem_id_map[mm_eb[i].max_id]);
     }
   }
   else {
@@ -2877,10 +2875,9 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
     for (i = 0; i < n; ++i) {
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},b{},e{}\tmax: {:15.8g} @ t{},b{}"
                  ",e{}\n",
-                 ((interFace.fb_var_names)[i]), name_length, mm_fb[i].min_val, 
-                 mm_fb[i].min_step, mm_fb[i].min_blk, elem_id_map[mm_fb[i].min_id],
-                 mm_fb[i].max_val, mm_fb[i].max_step, mm_fb[i].max_blk,
-                 elem_id_map[mm_fb[i].max_id]);
+                 ((interFace.fb_var_names)[i]), name_length, mm_fb[i].min_val, mm_fb[i].min_step,
+                 mm_fb[i].min_blk, elem_id_map[mm_fb[i].min_id], mm_fb[i].max_val,
+                 mm_fb[i].max_step, mm_fb[i].max_blk, elem_id_map[mm_fb[i].max_id]);
     }
   }
   else {

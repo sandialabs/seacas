@@ -10,10 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define EX_TEST_GOLD_FILENAME    "edge-face-gold.exo"
+#define EX_TEST_GOLD_FILENAME "edge-face-gold.exo"
 #define EX_TEST_NO_DIFF_FILENAME "edge-face-no-diff.exo"
-#define EX_TEST_EDGE_DIFF_FILENAME    "edge-diff.exo"
-#define EX_TEST_FACE_DIFF_FILENAME    "face-diff.exo"
+#define EX_TEST_EDGE_DIFF_FILENAME "edge-diff.exo"
+#define EX_TEST_FACE_DIFF_FILENAME "face-diff.exo"
 
 /* ======== Coordinates and connectivity ========= */
 double coordsX[] = {0., 0., 0., 0., 3., 3., 3., 3., -3., -3., -3., -3.};
@@ -474,8 +474,8 @@ int create_gold_file(int argc, char *argv[])
             "Unable to write element result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_EDGE_BLOCK, 2),
             "Unable to write edge result variable parameters.\n");
-//    EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 2),
-//            "Unable to write face result variable parameters.\n");
+    //    EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 2),
+    //            "Unable to write face result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 1),
             "Unable to write face result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_FACE_SET, 1),
@@ -493,7 +493,8 @@ int create_gold_file(int argc, char *argv[])
   EXCHECK(ex_put_variable_name(exoid, EX_EDGE_BLOCK, 2, "GAMMA2"),
           "Unable to write variable name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 1, "PHI"), "Unable to write variable name.\n");
-//  EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 2, "PHI"), "Unable to write variable name.\n");
+  //  EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 2, "PHI"), "Unable to write variable
+  //  name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_ELEM_BLOCK, 1, "EPSTRN"),
           "Unable to write variable name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_FACE_SET, 1, "PHI0"), "Unable to write variable name.\n");
@@ -510,8 +511,8 @@ int create_gold_file(int argc, char *argv[])
           "Unable to write edge block 1 var 2.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 1, 500, 2, vals_face_var1fb1[0]),
           "Unable to write face block 1 var 1.\n");
-//  EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[0]),
-//          "Unable to write face block 3 var 1.\n");
+  //  EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[0]),
+  //          "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 1, 700, 8, vals_face_var1fb3[0]),
           "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_ELEM_BLOCK, 1, 200, 2, vals_elem_var1eb1[0]),
@@ -529,8 +530,8 @@ int create_gold_file(int argc, char *argv[])
           "Unable to write edge block 1 var 2.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 1, 500, 2, vals_face_var1fb1[1]),
           "Unable to write face block 1 var 1.\n");
-//  EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[1]),
-//          "Unable to write face block 3 var 1.\n");
+  //  EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[1]),
+  //          "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 1, 700, 8, vals_face_var1fb3[1]),
           "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_ELEM_BLOCK, 1, 200, 2, vals_elem_var1eb1[1]),
@@ -870,8 +871,8 @@ int create_no_diff_file(int argc, char *argv[])
             "Unable to write element result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_EDGE_BLOCK, 2),
             "Unable to write edge result variable parameters.\n");
-//    EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 2),
-//            "Unable to write face result variable parameters.\n");
+    //    EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 2),
+    //            "Unable to write face result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 1),
             "Unable to write face result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_FACE_SET, 1),
@@ -889,7 +890,8 @@ int create_no_diff_file(int argc, char *argv[])
   EXCHECK(ex_put_variable_name(exoid, EX_EDGE_BLOCK, 2, "GAMMA2"),
           "Unable to write variable name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 1, "PHI"), "Unable to write variable name.\n");
-//  EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 2, "PHI"), "Unable to write variable name.\n");
+  //  EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 2, "PHI"), "Unable to write variable
+  //  name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_ELEM_BLOCK, 1, "EPSTRN"),
           "Unable to write variable name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_FACE_SET, 1, "PHI0"), "Unable to write variable name.\n");
@@ -906,8 +908,8 @@ int create_no_diff_file(int argc, char *argv[])
           "Unable to write edge block 1 var 2.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 1, 500, 2, vals_face_var1fb1[0]),
           "Unable to write face block 1 var 1.\n");
-//  EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[0]),
-//          "Unable to write face block 3 var 1.\n");
+  //  EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[0]),
+  //          "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 1, 700, 8, vals_face_var1fb3[0]),
           "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_ELEM_BLOCK, 1, 200, 2, vals_elem_var1eb1[0]),
@@ -925,8 +927,8 @@ int create_no_diff_file(int argc, char *argv[])
           "Unable to write edge block 1 var 2.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 1, 500, 2, vals_face_var1fb1[1]),
           "Unable to write face block 1 var 1.\n");
-//  EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[1]),
-//          "Unable to write face block 3 var 1.\n");
+  //  EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[1]),
+  //          "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 1, 700, 8, vals_face_var1fb3[1]),
           "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_ELEM_BLOCK, 1, 200, 2, vals_elem_var1eb1[1]),
@@ -1266,8 +1268,8 @@ int create_edge_block_diff_file(int argc, char *argv[])
             "Unable to write element result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_EDGE_BLOCK, 2),
             "Unable to write edge result variable parameters.\n");
-//    EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 2),
-//            "Unable to write face result variable parameters.\n");
+    //    EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 2),
+    //            "Unable to write face result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 1),
             "Unable to write face result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_FACE_SET, 1),
@@ -1285,7 +1287,8 @@ int create_edge_block_diff_file(int argc, char *argv[])
   EXCHECK(ex_put_variable_name(exoid, EX_EDGE_BLOCK, 2, "GAMMA2"),
           "Unable to write variable name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 1, "PHI"), "Unable to write variable name.\n");
-//  EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 2, "PHI"), "Unable to write variable name.\n");
+  //  EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 2, "PHI"), "Unable to write variable
+  //  name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_ELEM_BLOCK, 1, "EPSTRN"),
           "Unable to write variable name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_FACE_SET, 1, "PHI0"), "Unable to write variable name.\n");
@@ -1302,8 +1305,8 @@ int create_edge_block_diff_file(int argc, char *argv[])
           "Unable to write edge block 1 var 2.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 1, 500, 2, vals_face_var1fb1[0]),
           "Unable to write face block 1 var 1.\n");
-//  EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[0]),
-//          "Unable to write face block 3 var 1.\n");
+  //  EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[0]),
+  //          "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 1, 700, 8, vals_face_var1fb3[0]),
           "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_ELEM_BLOCK, 1, 200, 2, vals_elem_var1eb1[0]),
@@ -1321,8 +1324,8 @@ int create_edge_block_diff_file(int argc, char *argv[])
           "Unable to write edge block 1 var 2.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 1, 500, 2, vals_face_var1fb1[1]),
           "Unable to write face block 1 var 1.\n");
-//  EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[1]),
-//          "Unable to write face block 3 var 1.\n");
+  //  EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[1]),
+  //          "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 1, 700, 8, vals_face_var1fb3[1]),
           "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_ELEM_BLOCK, 1, 200, 2, vals_elem_var1eb1[1]),
@@ -1662,8 +1665,8 @@ int create_face_block_diff_file(int argc, char *argv[])
             "Unable to write element result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_EDGE_BLOCK, 2),
             "Unable to write edge result variable parameters.\n");
-//    EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 2),
-//            "Unable to write face result variable parameters.\n");
+    //    EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 2),
+    //            "Unable to write face result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_FACE_BLOCK, 1),
             "Unable to write face result variable parameters.\n");
     EXCHECK(ex_put_variable_param(exoid, EX_FACE_SET, 1),
@@ -1681,7 +1684,8 @@ int create_face_block_diff_file(int argc, char *argv[])
   EXCHECK(ex_put_variable_name(exoid, EX_EDGE_BLOCK, 2, "GAMMA2"),
           "Unable to write variable name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 1, "PHI"), "Unable to write variable name.\n");
-//  EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 2, "PHI"), "Unable to write variable name.\n");
+  //  EXCHECK(ex_put_variable_name(exoid, EX_FACE_BLOCK, 2, "PHI"), "Unable to write variable
+  //  name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_ELEM_BLOCK, 1, "EPSTRN"),
           "Unable to write variable name.\n");
   EXCHECK(ex_put_variable_name(exoid, EX_FACE_SET, 1, "PHI0"), "Unable to write variable name.\n");
@@ -1698,8 +1702,8 @@ int create_face_block_diff_file(int argc, char *argv[])
           "Unable to write edge block 1 var 2.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 1, 500, 2, diff_vals_face_var1fb1[0]),
           "Unable to write face block 1 var 1.\n");
-//  EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[0]),
-//          "Unable to write face block 3 var 1.\n");
+  //  EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[0]),
+  //          "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_FACE_BLOCK, 1, 700, 8, vals_face_var1fb3[0]),
           "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 1, EX_ELEM_BLOCK, 1, 200, 2, vals_elem_var1eb1[0]),
@@ -1717,8 +1721,8 @@ int create_face_block_diff_file(int argc, char *argv[])
           "Unable to write edge block 1 var 2.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 1, 500, 2, diff_vals_face_var1fb1[1]),
           "Unable to write face block 1 var 1.\n");
-//  EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[1]),
-//          "Unable to write face block 3 var 1.\n");
+  //  EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 2, 700, 8, vals_face_var1fb3[1]),
+  //          "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_FACE_BLOCK, 1, 700, 8, vals_face_var1fb3[1]),
           "Unable to write face block 3 var 1.\n");
   EXCHECK(ex_put_var(exoid, 2, EX_ELEM_BLOCK, 1, 200, 2, vals_elem_var1eb1[1]),
@@ -1741,18 +1745,22 @@ int create_face_block_diff_file(int argc, char *argv[])
 }
 
 #if !defined(USING_CMAKE)
-int main(int argc, char *argv[]) 
-{ 
+int main(int argc, char *argv[])
+{
   int rc = 0;
-  rc = create_gold_file(argc, argv);
-  if (rc != 0) return rc;
+  rc     = create_gold_file(argc, argv);
+  if (rc != 0)
+    return rc;
   rc = create_no_diff_file(argc, argv);
-  if (rc != 0) return rc;
+  if (rc != 0)
+    return rc;
   rc = create_edge_block_diff_file(argc, argv);
-  if (rc != 0) return rc;
+  if (rc != 0)
+    return rc;
   rc = create_face_block_diff_file(argc, argv);
-  if (rc != 0) return rc;
-  
+  if (rc != 0)
+    return rc;
+
   return 0;
 }
 #endif

@@ -36,7 +36,8 @@ namespace {
   template <typename INT>
   bool Check_Elmt_Block_Params(const Exo_Block<INT> *block1, const Exo_Block<INT> *block2);
   template <typename INT>
-    bool Check_Elmt_Block_Connectivity(Exo_Block<INT> *block1, Exo_Block<INT> *block2, const INT *elmt_map, size_t element_offset);
+  bool Check_Elmt_Block_Connectivity(Exo_Block<INT> *block1, Exo_Block<INT> *block2,
+                                     const INT *elmt_map, size_t element_offset);
   bool close_compare(const std::string &st1, const std::string &st2);
 } // namespace
 
@@ -188,7 +189,7 @@ namespace {
   template <typename INT>
   bool Check_Elmt_Block(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *elmt_map)
   {
-    bool is_same = true;
+    bool   is_same        = true;
     size_t element_offset = 0; // Basically file-local to block-local mapping...
     // Verify that element blocks match in the two files...
     for (size_t b = 0; b < file1.Num_Elmt_Blocks(); ++b) {
@@ -215,9 +216,9 @@ namespace {
             else {
               // Only do this check if Check_Elmt_Block_Params does not fail.
               // TODO(gdsjaar): Pass in node_map and node_id_map...
-	      if (!Check_Elmt_Block_Connectivity(block1, block2, elmt_map, element_offset)) {
-		is_same = false;
-	      }
+              if (!Check_Elmt_Block_Connectivity(block1, block2, elmt_map, element_offset)) {
+                is_same = false;
+              }
             }
           }
         }
@@ -228,8 +229,9 @@ namespace {
   }
 
   template <typename INT>
-    bool Check_Elmt_Block_Connectivity(Exo_Block<INT> *block1, Exo_Block<INT> *block2, const INT *elmt_map, size_t element_offset)
-    {
+  bool Check_Elmt_Block_Connectivity(Exo_Block<INT> *block1, Exo_Block<INT> *block2,
+                                     const INT *elmt_map, size_t element_offset)
+  {
 
     bool is_same = true;
     SMART_ASSERT(block1 != nullptr && block2 != nullptr);
@@ -247,36 +249,37 @@ namespace {
       SMART_ASSERT(node_count == block2->Size() * block2->Num_Nodes_per_Elmt());
 
       for (size_t e = 0; e < node_count; ++e) {
-	if (conn1[e] != conn2[e]) {
-	  size_t elem = e / block2->Num_Nodes_per_Elmt();
-	  size_t node = e % block2->Num_Nodes_per_Elmt();
-	  Error(fmt::format(".. Connectivities in block id {} are not the same.\n"
-			    "                  First difference is node {} of local element {}\n",
-			    block1->Id(), node + 1, elem + 1));
-	  is_same = false;
-	  break;
-	}
+        if (conn1[e] != conn2[e]) {
+          size_t elem = e / block2->Num_Nodes_per_Elmt();
+          size_t node = e % block2->Num_Nodes_per_Elmt();
+          Error(fmt::format(".. Connectivities in block id {} are not the same.\n"
+                            "                  First difference is node {} of local element {}\n",
+                            block1->Id(), node + 1, elem + 1));
+          is_same = false;
+          break;
+        }
       }
     }
     else if (elmt_map != nullptr) {
       size_t num_element = block1->Size();
-      size_t nnpe = block1->Num_Nodes_per_Elmt();
+      size_t nnpe        = block1->Num_Nodes_per_Elmt();
       for (size_t e1 = 0; is_same && e1 < num_element; e1++) {
-	for (size_t n = 0; is_same && n < nnpe; ++n) {
-	  size_t off1 = e1 * nnpe + n;
-	  size_t e2 = elmt_map[element_offset + e1];
-	  if (e2 >= 0) { // If doing partial map, not all elements have a match
-	    e2 -= element_offset;
-	    size_t off2 = e2 * nnpe + n;
-	    if (conn1[off1] != conn2[off2]) {
-	      Error(fmt::format(".. Connectivities in block id {} are not the same.\n"
-				"                  First difference is node {} of local element {} (file1) {} (file2)\n",
-				block1->Id(), n + 1, e1 + 1, e2 + 1));
-	      is_same = false;
-	      break;
-	    }
-	  }
-	}
+        for (size_t n = 0; is_same && n < nnpe; ++n) {
+          size_t off1 = e1 * nnpe + n;
+          size_t e2   = elmt_map[element_offset + e1];
+          if (e2 >= 0) { // If doing partial map, not all elements have a match
+            e2 -= element_offset;
+            size_t off2 = e2 * nnpe + n;
+            if (conn1[off1] != conn2[off2]) {
+              Error(fmt::format(".. Connectivities in block id {} are not the same.\n"
+                                "                  First difference is node {} of local element {} "
+                                "(file1) {} (file2)\n",
+                                block1->Id(), n + 1, e1 + 1, e2 + 1));
+              is_same = false;
+              break;
+            }
+          }
+        }
       }
     }
 

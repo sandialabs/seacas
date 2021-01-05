@@ -208,10 +208,10 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
           fmt::print("No Sideset Distribution Factors on either file.\n");
         }
       }
-      output_compare_names("Edgeblock", interFace.eb_var_names, interFace.eb_var, file1.Num_EB_Vars(),
-                           file2.Num_EB_Vars());
-      output_compare_names("Faceblock", interFace.fb_var_names, interFace.fb_var, file1.Num_FB_Vars(),
-                           file2.Num_FB_Vars());
+      output_compare_names("Edgeblock", interFace.eb_var_names, interFace.eb_var,
+                           file1.Num_EB_Vars(), file2.Num_EB_Vars());
+      output_compare_names("Faceblock", interFace.fb_var_names, interFace.fb_var,
+                           file1.Num_FB_Vars(), file2.Num_FB_Vars());
     }
   }
 
@@ -231,13 +231,13 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
                     interFace.quiet_flag, diff_found);
 
   std::vector<int> eb_truth_tab;
-  build_truth_table(EX_EDGE_BLOCK, "Edgeblock", interFace.eb_var_names, file1.Num_Edge_Blocks(), file1,
-                    file2, file1.EB_Var_Names(), file2.EB_Var_Names(), eb_truth_tab,
+  build_truth_table(EX_EDGE_BLOCK, "Edgeblock", interFace.eb_var_names, file1.Num_Edge_Blocks(),
+                    file1, file2, file1.EB_Var_Names(), file2.EB_Var_Names(), eb_truth_tab,
                     interFace.quiet_flag, diff_found);
 
   std::vector<int> fb_truth_tab;
-  build_truth_table(EX_FACE_BLOCK, "Faceblock", interFace.fb_var_names, file1.Num_Face_Blocks(), file1,
-                    file2, file1.FB_Var_Names(), file2.FB_Var_Names(), fb_truth_tab,
+  build_truth_table(EX_FACE_BLOCK, "Faceblock", interFace.fb_var_names, file1.Num_Face_Blocks(),
+                    file1, file2, file1.FB_Var_Names(), file2.FB_Var_Names(), fb_truth_tab,
                     interFace.quiet_flag, diff_found);
 
   // Put out the concatenated variable parameters here and then

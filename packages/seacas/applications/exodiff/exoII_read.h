@@ -86,14 +86,14 @@ public:
   const std::vector<std::string> &EB_Var_Names() const { return eb_vars; }
   const std::vector<std::string> &FB_Var_Names() const { return fb_vars; }
 
-  const std::string &             Global_Var_Name(int index) const;
-  const std::string &             Nodal_Var_Name(int index) const;
-  const std::string &             Elmt_Var_Name(int index) const;
-  const std::string &             Elmt_Att_Name(int index) const;
-  const std::string &             NS_Var_Name(int index) const;
-  const std::string &             SS_Var_Name(int index) const;
-  const std::string &             EB_Var_Name(int index) const;
-  const std::string &             FB_Var_Name(int index) const;
+  const std::string &Global_Var_Name(int index) const;
+  const std::string &Nodal_Var_Name(int index) const;
+  const std::string &Elmt_Var_Name(int index) const;
+  const std::string &Elmt_Att_Name(int index) const;
+  const std::string &NS_Var_Name(int index) const;
+  const std::string &SS_Var_Name(int index) const;
+  const std::string &EB_Var_Name(int index) const;
+  const std::string &FB_Var_Name(int index) const;
 
   // Element blocks:
   size_t Num_Elmt_Blocks() const { return num_elmt_blocks; }
@@ -208,11 +208,11 @@ protected:
   float                    api_version{0.0};
   int                      io_word_size{0}; // Note: The "compute word size" is always 8.
 
-  Exo_Block<INT> *eblocks{nullptr}; // Array.
-  Node_Set<INT> * nsets{nullptr};   // Array.
-  Side_Set<INT> * ssets{nullptr};   // Array.
-  Edge_Block<INT> * edge_blocks{nullptr};   // Array.
-  Face_Block<INT> * face_blocks{nullptr};   // Array.
+  Exo_Block<INT> * eblocks{nullptr};     // Array.
+  Node_Set<INT> *  nsets{nullptr};       // Array.
+  Side_Set<INT> *  ssets{nullptr};       // Array.
+  Edge_Block<INT> *edge_blocks{nullptr}; // Array.
+  Face_Block<INT> *face_blocks{nullptr}; // Array.
 
   double *nodes{nullptr}; // Matrix;  dimension by num_nodes (row major form).
                           //          I.e., all x's then all y's, etc.
