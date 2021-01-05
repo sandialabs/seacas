@@ -35,7 +35,7 @@ jobs:
       - checkout
       - run:
           name: Installing Clang
-          command: 'sudo apt-get update && sudo apt-get install -y llvm clang gcc-10 gfortran-10 && clang --version'
+          command: 'sudo apt-get update && sudo apt-get install -y llvm clang gcc-9 g++-9 gfortran-9 && clang --version'
       - run:
           name: Installing Third-Party Libraries
           command: './install-tpl.sh'
@@ -55,7 +55,7 @@ jobs:
     environment:
       GNU_PARALLEL: OFF
       COMPILER: clang
-      MPI: ON
+      MPI: YES
     steps:
       - checkout
       - run:
