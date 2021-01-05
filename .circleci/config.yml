@@ -10,9 +10,6 @@ jobs:
           name: Installing GCC
           command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
       - run:
-          name: Install CMAKE
-          command: 'sudo apt-get update && sudo apt-get install -y cmake'
-      - run:
           name: Installing Third-Party Libraries      
           command: 'GNU_PARALLEL=OFF ./install-tpl.sh'
       - run:
