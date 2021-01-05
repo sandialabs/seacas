@@ -1,17 +1,18 @@
 version: 2.1
 
 jobs:
-  build_serial_gcc:
-    machine:
-      image: "ubuntu-2004:202010-01"
+  build_macos:
+    macos:
+      xcode: 12.3.0
+
+    environment:
+      GNU_PARALLEL: OFF
     steps:
       - checkout
-      - run:
-          name: Installing GCC
-          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
+      - run: xcodebuild -version
       - run:
           name: Installing Third-Party Libraries
-          command: 'GNU_PARALLEL=OFF ./install-tpl.sh'
+          command: './install-tpl.sh'
       - run:
           name: Configure
           command: 'mkdir build && cd build && ../cmake-config'
@@ -20,40 +21,65 @@ jobs:
           command: 'pwd && cmake --build build'
       - run:
           name: Test
-          command: 'cd build && ctest -VV'
+          command: 'cd build && ctest -V'
 
-  build_serial_clang:
+jobs:
+  build_serial_gcc:
     machine:
       image: "ubuntu-2004:202010-01"
-    steps:
-      - checkout
-      - run:
-          name: Installing Clang
-          command: 'sudo apt-get update && sudo apt-get install -y llvm clang && clang --version'
-      - run:
-          name: Installing GFortran
-          command: 'sudo apt-get update && sudo apt-get install -y gfortran-9'
-      - run:
-          name: Installing Third-Party Libraries
-          command: 'COMPILER=clang GNU_PARALLEL=OFF ./install-tpl.sh'
-      - run:
-          name: Configure
-          command: 'mkdir build && cd build && COMPILER=clang ../cmake-config'
-      - run:
-          name: Build
-          command: 'pwd && cmake --build build'
-      - run:
-          name: Test
-          command: 'cd build && ctest -VV'
-
-  build_parallel:
-    machine:
-      image: "ubuntu-2004:202010-01"
+    environment:
+      GNU_PARALLEL: OFF
     steps:
       - checkout
       - run:
           name: Installing GCC
           command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
+      - run:
+          name: Installing Third-Party Libraries
+          command: './install-tpl.sh'
+      - run:
+          name: Configure
+          command: 'mkdir build && cd build && ../cmake-config'
+      - run:
+          name: Build
+          command: 'pwd && cmake --build build'
+      - run:
+          name: Test
+          command: 'cd build && ctest -V'
+
+  build_serial_clang:
+    machine:
+      image: "ubuntu-2004:202010-01"
+    environment:
+      GNU_PARALLEL: OFF
+      COMPILER: clang
+    steps:
+      - checkout
+      - run:
+          name: Installing Clang
+          command: 'sudo apt-get update && sudo apt-get install -y llvm clang gfortran-10 && clang --version'
+      - run:
+          name: Installing Third-Party Libraries
+          command: './install-tpl.sh'
+      - run:
+          name: Configure
+          command: 'mkdir build && cd build && ../cmake-config'
+      - run:
+          name: Build
+          command: 'pwd && cmake --build build'
+      - run:
+          name: Test
+          command: 'cd build && ctest -V'
+
+  build_parallel:
+    machine:
+      image: "ubuntu-2004:202010-01"
+    environment:
+      GNU_PARALLEL: OFF
+      COMPILER: clang
+      MPI: ON
+    steps:
+      - checkout
       - run:
           name: Installing GCC
           command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
@@ -62,7 +88,7 @@ jobs:
           command: 'sudo apt-get -y install -q mpich libmpich-dev'
       - run:
           name: Installing Third-Party Libraries
-          command: 'MPI=ON GNU_PARALLEL=OFF ./install-tpl.sh'
+          command: './install-tpl.sh'
       - run:
           name: Configure
           command: 'mkdir build && cd build && ../cmake-config'
@@ -71,7 +97,7 @@ jobs:
           command: 'pwd && cmake --build build'
       - run:
           name: Test
-          command: 'cd build && ctest -VV'
+          command: 'cd build && ctest -V'
 
 workflows:
   version: 2
@@ -80,3 +106,4 @@ workflows:
       - build_serial_gcc
       - build_serial_clang
       - build_parallel
+      - build_macos
