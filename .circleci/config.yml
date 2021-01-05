@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build_serial:
+  build_serial_gcc:
     machine:
       image: "ubuntu-2004:202010-01"
     steps:
@@ -10,11 +10,32 @@ jobs:
           name: Installing GCC
           command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
       - run:
-          name: Installing Third-Party Libraries      
+          name: Installing Third-Party Libraries
           command: 'GNU_PARALLEL=OFF ./install-tpl.sh'
       - run:
           name: Configure
           command: 'mkdir build && cd build && ../cmake-config'
+      - run:
+          name: Build
+          command: 'pwd && cmake --build build'
+      - run:
+          name: Test
+          command: 'cd build && ctest -VV'
+
+  build_serial_clang:
+    machine:
+      image: "ubuntu-2004:202010-01"
+    steps:
+      - checkout
+      - run:
+          name: Installing Clang
+          command: 'sudo apt-get remove clang && sudo apt-get install clang-3.4 libclang-common-3.4-dev libllvm3.4=1:3.4-1ubuntu3~precise2'
+      - run:
+          name: Installing Third-Party Libraries
+          command: 'COMPILER=clang GNU_PARALLEL=OFF ./install-tpl.sh'
+      - run:
+          name: Configure
+          command: 'mkdir build && cd build && COMPILER=clang ../cmake-config'
       - run:
           name: Build
           command: 'pwd && cmake --build build'
@@ -37,7 +58,7 @@ jobs:
           name: Install MPI
           command: 'sudo apt-get -y install -q mpich libmpich-dev'
       - run:
-          name: Installing Third-Party Libraries      
+          name: Installing Third-Party Libraries
           command: 'MPI=ON GNU_PARALLEL=OFF ./install-tpl.sh'
       - run:
           name: Configure
@@ -53,5 +74,6 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - build_serial
+      - build_serial_gcc
+      - build_serial_clang
       - build_parallel
