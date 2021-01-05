@@ -7,14 +7,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Installing SUDO
-          command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
-      - run:
           name: Installing GCC
-          command: 'apt-get update && apt-get install -y gcc-9 g++-9 gfortran-9'
+          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 gfortran-9'
       - run:
           name: Install CMAKE
-          command: 'apt-get update && sudo apt-get install -y cmake'
+          command: 'sudo apt-get update && sudo apt-get install -y cmake'
       - run:
           name: Installing Third-Party Libraries      
           command: 'GNU_PARALLEL=OFF ./install-tpl.sh'
