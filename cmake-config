@@ -97,9 +97,9 @@ then
 
   if [ "$COMPILER" == "clang" ]
   then
-      CXX=/opt/local/bin/clang++-mp-8.0
-      CC=clang-mp-8.0
-      FC=gfortran-mp-7
+      CXX=clang++
+      CC=clang
+      FC=gfortran
       CFLAGS="-Wall -Wunused -pedantic"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
