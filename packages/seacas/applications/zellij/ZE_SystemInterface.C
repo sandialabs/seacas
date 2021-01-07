@@ -63,6 +63,17 @@ void SystemInterface::enroll_options()
       "Specify the hdf5 (netcdf4) compression level [0..9] to be used on the output file.",
       nullptr);
 
+  options_.enroll("debug", GetLongOption::MandatoryValue,
+                  "debug level (values are or'd)\n"
+                  "\t\t  1 = timing information.\n"
+                  "\t\t  4 = Verbose Element block information.\n"
+                  "\t\t  8 = Check consistent nodal coordinates between parts.\n"
+                  "\t\t 16 = Verbose Sideset information.\n"
+                  "\t\t 32 = Verbose Nodeset information.\n"
+                  "\t\t 64 = put exodus library into verbose mode.\n"
+                  "\t\t128 = Check consistent global field values between parts.",
+                  "0");
+
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
 }
 
@@ -85,6 +96,12 @@ bool SystemInterface::parse_options(int argc, char **argv)
     exit(0);
   }
 
+  {
+    const char *temp = options_.retrieve("debug");
+    if (temp != nullptr) {
+      debugLevel_ = strtol(temp, nullptr, 10);
+    }
+  }
   if (options_.retrieve("copyright") != nullptr) {
     fmt::print("{}", copyright("2010-2019"));
     exit(EXIT_SUCCESS);

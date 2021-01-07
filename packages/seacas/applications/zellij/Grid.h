@@ -18,14 +18,15 @@
 //  * grid(index) -- return database information at i,j location corresponding to `index`
 //  * max number of element blocks in a unit_cell mesh
 //  * range of x, y size of unit_cell mesh. (assumes unit_cell minx, miny == 0.0)
-//  * Ti, Tj, Tk -- size of regular mesh on boundary of unit_cell (? may need 3 K values for
+//  * Ti, Tj, Tk -- size of regular mesh on boundary of unit_cell (? may need the 3 `Tk` values for
 //  padding)
 //  * std::vector<GridEntry> m_grid -- contains database information...
 
 class Grid
 {
 public:
-  Grid(size_t extent_i, size_t extent_j) : m_gridI(extent_i), m_gridJ(extent_j)
+  Grid(std::unique_ptr<Ioss::Region> &region, size_t extent_i, size_t extent_j)
+      : m_region(std::move(region)), m_gridI(extent_i), m_gridJ(extent_j)
   {
     m_grid.resize(m_gridI * m_gridJ);
   }
@@ -43,10 +44,15 @@ public:
 
   void initialize(size_t i, size_t j, std::shared_ptr<Ioss::Region> region);
   void finalize();
+  void output_model();
 
 private:
-  size_t                 m_gridI{0};
-  size_t                 m_gridJ{0};
-  std::vector<GridEntry> m_grid{};
+  void output_nodal_coordinates();
+  void output_block_connectivity();
+
+  std::unique_ptr<Ioss::Region> m_region;
+  std::vector<GridEntry>        m_grid{};
+  size_t                        m_gridI{0};
+  size_t                        m_gridJ{0};
 };
 #endif

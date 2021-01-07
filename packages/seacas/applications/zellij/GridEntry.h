@@ -32,6 +32,7 @@ class GridEntry
 {
 public:
   std::pair<double, double> get_coordinate_range(enum Axis) const;
+  void                      initialize(size_t i, size_t j, std::shared_ptr<Ioss::Region> region);
 
   std::shared_ptr<Ioss::Region> m_region;
   size_t                        m_i{0};

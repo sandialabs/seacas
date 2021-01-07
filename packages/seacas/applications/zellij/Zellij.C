@@ -13,7 +13,7 @@
 #include <exception>
 #include <iterator>
 #include <limits>
-#include <map>
+#include <memory>
 #include <numeric>
 #include <set>
 #include <string>
@@ -131,7 +131,11 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   else {
     ex_opts(0);
   }
+  ex_opts(EX_VERBOSE | EX_DEBUG);
 
+  if (debug_level & 1) {
+    fmt::print(stderr, "{}", time_stamp(tsFormat));
+  }
   int          int_byte_size = (interFace.ints64bit()) ? 8 : 4;
   size_t       part_count    = interFace.inputFiles_.size();
   RegionVector unit_cells(part_count);
@@ -148,6 +152,7 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
 
     dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
 
+    int_byte_size = 8;
     if (int_byte_size == 8) {
       dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
     }
@@ -160,6 +165,11 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
     unit_cells[p]->output_summary(std::cerr);
   }
 
+  if (debug_level & 1) {
+    fmt::print(stderr, "{}", time_stamp(tsFormat));
+  }
+
+  // At this point, can begin to define the output database...
   Ioss::PropertyManager properties = parse_properties(interFace, INT(0));
 
   Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
@@ -167,21 +177,13 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   if (dbo == nullptr || !dbo->ok(true)) {
     std::exit(EXIT_FAILURE);
   }
-
-  // NOTE: 'output_region' owns 'dbo' pointer at this time
-  Ioss::Region output_region(dbo, "ejoin_output_region");
-
-  output_region.begin_mode(Ioss::STATE_DEFINE_MODEL);
-
-  output_region.property_add(Ioss::Property("code_name", qainfo[0]));
-  output_region.property_add(Ioss::Property("code_version", qainfo[2]));
-
-  if (debug_level & 1) {
-    fmt::print(stderr, "{}", time_stamp(tsFormat));
-  }
+  std::unique_ptr<Ioss::Region> output_region(new Ioss::Region(dbo, "zellij_output_region"));
+  output_region->begin_mode(Ioss::STATE_DEFINE_MODEL);
+  output_region->property_add(Ioss::Property("code_name", qainfo[0]));
+  output_region->property_add(Ioss::Property("code_version", qainfo[2]));
 
   // Now that we have the unit cells, we can start to place them in the overall grid...
-  Grid grid(interFace.grid_i(), interFace.grid_j());
+  Grid grid(output_region, interFace.grid_i(), interFace.grid_j());
 
   // Until get a method of inputting the mapping of unit cells to the
   // IxJ grid, we will just distribute them round-robin so have something to test...
@@ -199,108 +201,27 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   // and the global node and element counts... (TODO: Parallel decomposition)
   //
   // Iterate through the grid starting with (0,0) and accumulate node and element counts...
+  if (debug_level & 1) {
+    fmt::print(stderr, "{} Finalize\n", time_stamp(tsFormat));
+  }
+
   grid.finalize();
 
-#if 0
-  INT node_offset    = 0;
-  INT element_offset = 0;
-  for (auto &pm : unit_cells) {
-    pm->property_add(Ioss::Property("node_offset", node_offset));
-    pm->property_add(Ioss::Property("element_offset", element_offset));
-    INT local_node_count = pm->get_property("node_count").get_int();
-    INT local_elem_count = pm->get_property("element_count").get_int();
-    node_offset += local_node_count;
-    element_offset += local_elem_count;
+  if (debug_level & 1) {
+    fmt::print(stderr, "{} Output Model\n", time_stamp(tsFormat));
   }
+  grid.output_model();
 
-  INT              node_count = node_offset; // Sum of nodes in part meshes.
-  std::vector<INT> local_node_map(node_count);
-  std::vector<INT> global_node_map;
-
-  node_count    = global_node_map.size();
-  size_t merged = local_node_map.size() - global_node_map.size();
-  if (merged > 0) {
-    fmt::print("*** {:n} Nodes were merged/omitted.\n", merged);
+  if (debug_level & 1) {
+    fmt::print(stderr, "{} Done\n", time_stamp(tsFormat));
   }
-
-// Verify nodemap...
-#ifndef NDEBUG
-  std::vector<int> glob(node_count);
-  for (auto id : local_node_map) {
-    if (id >= 0) {
-      glob[id] = 1;
-    }
-  }
-  for (int i : glob) {
-    SMART_ASSERT(i == 1);
-  }
-#endif
-
-  // Transfer some common data...
-  output_region.property_add(unit_cells[0]->get_property("title"));
-
-  // Define a node block...
-  std::string block_name        = "nodeblock_1";
-  int         spatial_dimension = unit_cells[0]->get_property("spatial_dimension").get_int();
-  auto        block =
-      new Ioss::NodeBlock(output_region.get_database(), block_name, node_count, spatial_dimension);
-  block->property_add(Ioss::Property("id", 1));
-
-  output_region.add(block);
-
-  // Add element blocks, nodesets, sidesets
-  for (size_t p = 0; p < part_count; p++) {
-    transfer_elementblock(unit_cells[p], output_region, false);
-    if (!interFace.omit_nodesets()) {
-      transfer_nodesets(unit_cells[p], output_region, false);
-    }
-    if (!interFace.omit_sidesets()) {
-      transfer_sidesets(unit_cells[p], output_region, false);
-    }
-  }
-
-  if (!interFace.information_record_parts().empty()) {
-    const std::vector<int> &info_parts = interFace.information_record_parts();
-    if (info_parts[0] == 0) {
-      // Transfer info records from all parts...
-      for (const auto &pm : unit_cells) {
-        const StringVector &info = pm->get_information_records();
-        output_region.add_information_records(info);
-      }
-    }
-    else {
-      for (int info_part : info_parts) {
-        const StringVector &info = unit_cells[info_part - 1]->get_information_records();
-        output_region.add_information_records(info);
-      }
-    }
-  }
-
-  output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
-
-  output_region.begin_mode(Ioss::STATE_MODEL);
-
-  output_nodeblock(output_region, unit_cells, local_node_map, global_node_map);
-  output_elementblock(output_region, unit_cells, local_node_map, local_element_map,
-                      interFace.ignore_element_ids());
-  output_nodal_nodeset(output_region, unit_cells, interFace, local_node_map);
-
-  if (!interFace.omit_nodesets()) {
-    output_nodeset(output_region, unit_cells, local_node_map);
-  }
-  if (!interFace.omit_sidesets()) {
-    output_sideset(output_region, unit_cells, local_element_map);
-  }
-
-  output_region.end_mode(Ioss::STATE_MODEL);
-#endif
 
   /*************************************************************************/
   // EXIT program
   if (debug_level & 1) {
     fmt::print(stderr, "{}", time_stamp(tsFormat));
   }
-  output_region.output_summary(std::cout);
+
   double end = Ioss::Utils::timer();
   fmt::print("******* END *******\n");
   fmt::print(stderr, "\nTotal Execution time     = {:.5} seconds.\n", end - begin);

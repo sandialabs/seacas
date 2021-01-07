@@ -8,6 +8,17 @@
 #include <Ioss_NodeBlock.h>
 #include <algorithm>
 
+void GridEntry::initialize(size_t i, size_t j, std::shared_ptr<Ioss::Region> region)
+{
+  m_i      = i;
+  m_j      = j;
+  m_region = region;
+
+  size_t element_block_count = m_region->get_property("element_block_count").get_int();
+  m_globalElementIdOffset.resize(element_block_count);
+  m_localElementIdOffset.resize(element_block_count);
+}
+
 std::pair<double, double> GridEntry::get_coordinate_range(enum Axis axis) const
 {
   auto                nb = m_region->get_node_blocks()[0];
