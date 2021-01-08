@@ -5,23 +5,13 @@
 // See packages/seacas/LICENSE for details
 
 #include "ZE_SystemInterface.h"
-#include "ZE_Version.h"  // for qainfo
-#include "ZE_vector3d.h" // for vector3d
-#include <SL_tokenize.h> // for tokenize
-#include <algorithm>     // for sort, find, transform
-#include <cctype>        // for tolower
+#include "ZE_Version.h" // for qainfo
+
 #include <copyright.h>
 #include <cstddef> // for size_t
 #include <cstdlib> // for exit, strtod, strtoul, abs, etc
-#include <cstring> // for strchr, strlen
 #include <fmt/format.h>
-#include <iosfwd>  // for ostream
-#include <utility> // for pair, make_pair
-#include <vector>  // for vector
-
-namespace {
-  void parse_grid(const char *temp, int *gridI_, int *gridJ_);
-}
+#include <iosfwd> // for ostream
 
 SystemInterface::SystemInterface() { enroll_options(); }
 
@@ -35,11 +25,11 @@ void SystemInterface::enroll_options()
 
   options_.enroll("version", GetLongOption::NoValue, "Print version and exit", nullptr);
 
+  options_.enroll("lattice", GetLongOption::MandatoryValue,
+                  "Name of file to read lattice definition from.", "");
+
   options_.enroll("output", GetLongOption::MandatoryValue, "Name of output file to create",
                   "zellij-out.e");
-
-  options_.enroll("grid", GetLongOption::MandatoryValue,
-                  "size (IxJ) of grid in which to place template databases", "");
 
   options_.enroll("netcdf4", GetLongOption::NoValue,
                   "Create output database using the HDF5-based "
@@ -102,23 +92,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
       debugLevel_ = strtol(temp, nullptr, 10);
     }
   }
+
   if (options_.retrieve("copyright") != nullptr) {
     fmt::print("{}", copyright("2010-2019"));
     exit(EXIT_SUCCESS);
-  }
-
-  // Parse remaining options as directory paths.
-  // Note that inputFiles_.size() is the number of parts which can be used in
-  // parsing of other options...
-
-  if (option_index < argc) {
-    while (option_index < argc) {
-      inputFiles_.emplace_back(argv[option_index++]);
-    }
-  }
-  else {
-    fmt::print(stderr, "\nERROR: no files specified\n\n");
-    return false;
   }
 
   // Get options from environment variable also...
@@ -140,9 +117,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   {
-    const char *temp = options_.retrieve("grid");
+    const char *temp = options_.retrieve("lattice");
     if (temp != nullptr) {
-      parse_grid(temp, &gridI_, &gridJ_);
+      lattice_ = temp;
     }
   }
 
@@ -176,19 +153,3 @@ void SystemInterface::show_version()
              "\t(Version: {}) Modified: {}\n",
              qainfo[2], qainfo[1]);
 }
-
-namespace {
-  void parse_grid(const char *token_string, int *gridI, int *gridJ)
-  {
-    *gridI = 0;
-    *gridJ = 0;
-
-    auto var_list = SLIB::tokenize(token_string, "xX");
-    if (!var_list.empty()) {
-      *gridI = std::stoi(var_list[0]);
-      if (var_list.size() >= 2) {
-        *gridJ = std::stoi(var_list[1]);
-      }
-    }
-  }
-} // namespace

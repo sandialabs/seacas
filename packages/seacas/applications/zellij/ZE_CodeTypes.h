@@ -7,7 +7,7 @@
 #define ZE_CodeTypes_H
 
 #include <Ioss_Region.h>
-#include <set>
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,12 +20,6 @@
 #endif
 #endif
 
-using IntVector = std::vector<int>;
-using IdMap     = std::vector<int>;
-
-using RealVector     = std::vector<double>;
-using StringIdVector = std::vector<std::pair<std::string, size_t>>;
-using StringVector   = std::vector<std::string>;
-using RegionVector   = std::vector<std::shared_ptr<Ioss::Region>>;
-using Omissions      = std::vector<StringVector>;
+using RegionMap    = std::map<std::string, std::shared_ptr<Ioss::Region>>;
+using StringVector = std::vector<std::string>;
 #endif

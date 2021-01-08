@@ -23,10 +23,9 @@ public:
 
   int debug() const { return debugLevel_; }
 
-  bool ints64bit() const { return ints64bit_; }
-  bool use_netcdf4() const { return useNetcdf4_; }
-  int  grid_i() const { return gridI_; }
-  int  grid_j() const { return gridJ_; }
+  std::string lattice() const { return lattice_; }
+  bool        ints64bit() const { return ints64bit_; }
+  bool        use_netcdf4() const { return useNetcdf4_; }
 
   int  compression_level() const { return compressionLevel_; }
   bool zlib() const { return zlib_; }
@@ -35,21 +34,19 @@ public:
   static void show_version();
 
   // Make this private eventually...
-  StringVector inputFiles_;
-  std::string  outputName_;
+  std::string outputName_;
 
 private:
   void enroll_options();
 
   GetLongOption options_; //!< Options parsing
 
-  int  gridI_{0};
-  int  gridJ_{0};
-  int  debugLevel_{0};
-  int  compressionLevel_{0};
-  bool ints64bit_{false};
-  bool useNetcdf4_{false};
-  bool zlib_{true};
-  bool szip_{false};
+  std::string lattice_{};
+  int         debugLevel_{0};
+  int         compressionLevel_{0};
+  bool        ints64bit_{false};
+  bool        useNetcdf4_{false};
+  bool        zlib_{true};
+  bool        szip_{false};
 };
 #endif

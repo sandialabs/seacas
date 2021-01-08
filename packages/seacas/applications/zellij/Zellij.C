@@ -11,6 +11,7 @@
 #include <cstring>
 #include <ctime>
 #include <exception>
+#include <fstream>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -26,6 +27,7 @@
 
 #include "add_to_log.h"
 #include "fmt/ostream.h"
+#include "tokenize.h"
 
 #include <exodusII.h>
 
@@ -36,6 +38,7 @@
 
 #include "Grid.h"
 #include "GridEntry.h"
+#include "ZE_CodeTypes.h"
 #include "ZE_SystemInterface.h"
 #include "ZE_Version.h"
 
@@ -44,11 +47,12 @@
 #endif
 
 namespace {
-  template <typename INT>
-  Ioss::PropertyManager parse_properties(SystemInterface &interFace, INT int_size)
+  Grid define_lattice(RegionMap &unit_cells, SystemInterface &interFace);
+
+  Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size)
   {
     Ioss::PropertyManager properties;
-    if (sizeof(int_size) == 8) {
+    if (int_size == 8) {
       properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
     }
@@ -71,9 +75,6 @@ namespace {
     return properties;
   }
 
-  void        transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                                  Ioss::Field::RoleType role, const std::string &prefix = "",
-                                  bool transfer_connectivity = true);
   std::string time_stamp(const std::string &format);
 } // namespace
 
@@ -136,65 +137,12 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   if (debug_level & 1) {
     fmt::print(stderr, "{}", time_stamp(tsFormat));
   }
-  int          int_byte_size = (interFace.ints64bit()) ? 8 : 4;
-  size_t       part_count    = interFace.inputFiles_.size();
-  RegionVector unit_cells(part_count);
-  for (size_t p = 0; p < part_count; p++) {
-    Ioss::DatabaseIO *dbi = Ioss::IOFactory::create("exodus", interFace.inputFiles_[p],
-                                                    Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
-    if (dbi == nullptr || !dbi->ok(true)) {
-      std::exit(EXIT_FAILURE);
-    }
 
-    if (dbi->int_byte_size_api() > int_byte_size) {
-      int_byte_size = dbi->int_byte_size_api();
-    }
-
-    dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
-
-    int_byte_size = 8;
-    if (int_byte_size == 8) {
-      dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
-    }
-
-    // Generate a name for the region based on the part number...
-    std::string name = "Region_" + std::to_string(p + 1);
-    // NOTE: region owns database pointer at this time...
-    unit_cells[p] = std::make_shared<Ioss::Region>(dbi, name);
-    fmt::print(stderr, "\nUnit_Cell {}:", p);
-    unit_cells[p]->output_summary(std::cerr);
-  }
+  RegionMap unit_cells;
+  auto      grid = define_lattice(unit_cells, interFace);
 
   if (debug_level & 1) {
     fmt::print(stderr, "{}", time_stamp(tsFormat));
-  }
-
-  // At this point, can begin to define the output database...
-  Ioss::PropertyManager properties = parse_properties(interFace, INT(0));
-
-  Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
-      "exodus", interFace.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
-  if (dbo == nullptr || !dbo->ok(true)) {
-    std::exit(EXIT_FAILURE);
-  }
-  std::unique_ptr<Ioss::Region> output_region(new Ioss::Region(dbo, "zellij_output_region"));
-  output_region->begin_mode(Ioss::STATE_DEFINE_MODEL);
-  output_region->property_add(Ioss::Property("code_name", qainfo[0]));
-  output_region->property_add(Ioss::Property("code_version", qainfo[2]));
-
-  // Now that we have the unit cells, we can start to place them in the overall grid...
-  Grid grid(output_region, interFace.grid_i(), interFace.grid_j());
-
-  // Until get a method of inputting the mapping of unit cells to the
-  // IxJ grid, we will just distribute them round-robin so have something to test...
-  size_t uidx = 0;
-  size_t II   = grid.II();
-  size_t JJ   = grid.JJ();
-  for (size_t j = 0; j < JJ; j++) {
-    for (size_t i = 0; i < II; i++) {
-      size_t index = uidx++ % unit_cells.size();
-      grid.initialize(i, j, unit_cells[index]);
-    }
   }
 
   // All unit cells have been mapped into the IxJ grid, now calculate all node / element offsets
@@ -250,194 +198,122 @@ namespace {
     return std::string("[ERROR]");
   }
 
-  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                           Ioss::Field::RoleType role, const std::string &prefix,
-                           bool transfer_connectivity)
+  std::shared_ptr<Ioss::Region> create_input_region(const std::string &key, std::string filename)
   {
+    // Check that 'filename' does not contain a starting/ending double quote...
+    filename.erase(remove(filename.begin(), filename.end(), '\"'), filename.end());
+    Ioss::DatabaseIO *dbi =
+        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
+    if (dbi == nullptr || !dbi->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
+
+    dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
+    dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+
+    // Generate a name for the region based on the key...
+    std::string name = "Region_" + key;
+    // NOTE: region owns database pointer at this time...
+    return std::make_shared<Ioss::Region>(dbi, name);
   }
 
-  template <typename INT>
-  void output_nodeblock(Ioss::Region &output_region, RegionVector &unit_cells,
-                        const std::vector<INT> &local_node_map, std::vector<INT> &global_node_map)
+  std::unique_ptr<Ioss::Region> create_output_region(SystemInterface &interFace)
   {
-    Ioss::NodeBlock *onb = output_region.get_node_blocks()[0];
-    SMART_ASSERT(onb != nullptr);
+    // At this point, can begin to define the output database...
+    Ioss::PropertyManager properties = parse_properties(interFace, 8);
 
-    onb->put_field_data("ids", global_node_map);
-
-    int spatial_dimension = output_region.get_property("spatial_dimension").get_int();
-    std::vector<double> coord(global_node_map.size() * spatial_dimension);
-    for (const auto &pm : unit_cells) {
-      Ioss::NodeBlock *nb = pm->get_node_blocks()[0];
-      SMART_ASSERT(nb != nullptr);
-      std::vector<double> coordinates;
-      nb->get_field_data("mesh_model_coordinates", coordinates);
-      size_t node_count = nb->entity_count();
-      size_t offset     = pm->get_property("node_offset").get_int();
-      for (size_t i = 0; i < node_count; i++) {
-        ssize_t glob_pos = local_node_map[i + offset];
-        if (glob_pos >= 0) {
-          coord[glob_pos * spatial_dimension + 0] = coordinates[i * spatial_dimension + 0];
-          coord[glob_pos * spatial_dimension + 1] = coordinates[i * spatial_dimension + 1];
-          coord[glob_pos * spatial_dimension + 2] = coordinates[i * spatial_dimension + 2];
-        }
-      }
+    Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
+        "exodus", interFace.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
+    if (dbo == nullptr || !dbo->ok(true)) {
+      std::exit(EXIT_FAILURE);
     }
-    onb->put_field_data("mesh_model_coordinates", coord);
+    std::unique_ptr<Ioss::Region> output_region(new Ioss::Region(dbo, "zellij_output_region"));
+    output_region->begin_mode(Ioss::STATE_DEFINE_MODEL);
+    output_region->property_add(Ioss::Property("code_name", qainfo[0]));
+    output_region->property_add(Ioss::Property("code_version", qainfo[2]));
+    return output_region;
   }
 
-  template <typename INT>
-  void output_elementblock(Ioss::Region &output_region, RegionVector &unit_cells,
-                           const std::vector<INT> &local_node_map,
-                           const std::vector<INT> &local_element_map, bool ignore_element_ids)
+  Grid define_lattice(RegionMap &unit_cells, SystemInterface &interFace)
   {
+    std::string filename = interFace.lattice();
 
-    const Ioss::ElementBlockContainer &ebs = output_region.get_element_blocks();
+    std::ifstream input(filename, std::ios::in);
+    bool          in_dictionary{false};
+    bool          in_lattice{false};
 
-    size_t           element_count = output_region.get_property("element_count").get_int();
-    std::vector<INT> ids(element_count);
+    std::string line;
+    while (getline(input, line)) {
+      if (line.empty()) {
+        continue;
+      }
 
-    if (ignore_element_ids) {
-      // Just generate 1..numel ids (much faster for large models)
-      std::iota(ids.begin(), ids.end(), 1);
-    }
-    else {
-      // Try to maintain the original element ids if possible...
-      generate_element_ids(unit_cells, local_element_map, ids);
-    }
-    size_t element_offset = 0;
-    for (auto eb : ebs) {
-      eb->put_field_data("ids", &ids[element_offset], ids.size() * sizeof(int));
-      element_offset += eb->entity_count();
-    }
-
-    SMART_ASSERT(element_offset == element_count);
-
-    // Connectivity...
-    for (const auto &pm : unit_cells) {
-      const Ioss::ElementBlockContainer &iebs        = pm->get_element_blocks();
-      size_t                             node_offset = pm->get_property("node_offset").get_int();
-
-      for (auto ieb : iebs) {
-        std::string         name = pm->name() + "_" + ieb->name();
-        Ioss::ElementBlock *oeb  = output_region.get_element_block(name);
-        if (oeb == nullptr) {
-          name = ieb->name();
-          oeb  = output_region.get_element_block(name);
-        }
-        if (oeb != nullptr) {
-          std::vector<INT> connectivity;
-          ieb->get_field_data("connectivity_raw", connectivity);
-
-          SMART_ASSERT(ieb->entity_count() == oeb->entity_count());
-          for (auto &node : connectivity) {
-            // connectivity is in part-local node ids [1..num_node]
-            // loc_node = the position of node in the local [0..num_node)
-            // local_node_map[node_offset+loc_node] gives the position of this node in the global
-            // list
-            size_t loc_node = node - 1;
-            SMART_ASSERT(node_offset + loc_node < local_node_map.size());
-            ssize_t gpos = local_node_map[node_offset + loc_node];
-            if (gpos >= 0) {
-              node = gpos + 1;
-            }
-          }
-          oeb->put_field_data("connectivity_raw", connectivity);
-          transfer_field_data(ieb, oeb, Ioss::Field::ATTRIBUTE);
-        }
+      auto tokens = Ioss::tokenize(line, " ");
+      if (tokens[0] == "BEGIN_DICTIONARY") {
+        assert(!in_lattice && !in_dictionary);
+        in_dictionary = true;
+      }
+      else if (tokens[0] == "END_DICTIONARY") {
+        assert(!in_lattice && in_dictionary);
+        in_dictionary = false;
+      }
+      else if (in_dictionary) {
+        assert(tokens.size() == 2);
+        auto region           = create_input_region(tokens[0], tokens[1]);
+        unit_cells[tokens[0]] = region;
+      }
+      else if (tokens[0] == "BEGIN_LATTICE") {
+        assert(!in_lattice && !in_dictionary);
+        in_lattice = true;
+        break;
       }
     }
-  }
 
-  template <typename INT>
-  void output_nodeset(Ioss::Region &output_region, RegionVector &unit_cells,
-                      const std::vector<INT> &local_node_map)
-  {
-    if (output_region.get_nodesets().empty()) {
-      return;
+    if (!in_lattice) {
+      // ERROR -- file ended before lattice definition...
     }
 
-    for (const auto &pm : unit_cells) {
-      size_t                        node_offset = pm->get_property("node_offset").get_int();
-      const Ioss::NodeSetContainer &ins         = pm->get_nodesets();
-      for (auto in : ins) {
-        std::vector<INT> nodelist;
-        in->get_field_data("ids", nodelist);
+    // Tokenize line to get I J K size of lattice
+    fmt::print("Lattice Line: {}\n", line);
+    auto tokens = Ioss::tokenize(line, " ");
+    assert(tokens[0] == "BEGIN_LATTICE");
+    assert(tokens.size() == 4);
+    int II = std::stoi(tokens[1]);
+    int JJ = std::stoi(tokens[2]);
+    int KK = std::stoi(tokens[3]);
+    assert(KK == 1);
 
-        std::string    name = pm->name() + "_" + in->name();
-        Ioss::NodeSet *ons  = output_region.get_nodeset(name);
-        if (ons == nullptr) {
-          name = in->name();
-          ons  = output_region.get_nodeset(name);
+    auto output_region = create_output_region(interFace);
+    Grid grid(output_region, II, JJ);
+
+    int row{0};
+    while (getline(input, line)) {
+      if (line.empty()) {
+        continue;
+      }
+
+      auto tokens = Ioss::tokenize(line, " ");
+      if (tokens[0] == "END_LATTICE") {
+        assert(in_lattice && !in_dictionary);
+        in_lattice = false;
+        // Check row count to make sure matches 'I' size of lattice
+        assert(row == II);
+        break;
+      }
+      else if (in_lattice) {
+        // TODO: Currently assumes that each row in the lattice is defined on a single row;
+        //       This will need to be relaxed since a lattice of 5000x5000 would result in
+        //       lines that are too long and would be easier to split a row over multiple lines...
+        assert(tokens.size() == grid.JJ());
+
+        size_t col = 0;
+        for (auto &key : tokens) {
+          auto region = unit_cells[key];
+          grid.initialize(row, col++, region);
         }
-        SMART_ASSERT(ons != nullptr)(name);
-        SMART_ASSERT(in->entity_count() == ons->entity_count());
-
-        // This needs to make sure that the nodelist comes back as local id (1..numnodes)
-        for (auto &node : nodelist) {
-          size_t  loc_node = pm->node_global_to_local(node, true) - 1;
-          ssize_t gpos     = local_node_map[node_offset + loc_node];
-          if (gpos >= 0) {
-            node = gpos + 1;
-          }
-        }
-        ons->put_field_data("ids", nodelist);
-
-        std::vector<double> df;
-        in->get_field_data("distribution_factors", df);
-        ons->put_field_data("distribution_factors", df);
+        row++;
       }
     }
-  }
-
-  template <typename INT>
-  void output_sideset(Ioss::Region &output_region, RegionVector &unit_cells,
-                      const std::vector<INT> &local_element_map)
-  {
-    const Ioss::SideSetContainer &os = output_region.get_sidesets();
-
-    Ioss::SideBlockContainer out_eb;
-    // Put all output side blocks in the same list...
-    for (auto oss : os) {
-      const Ioss::SideBlockContainer &obs = oss->get_side_blocks();
-      std::copy(obs.begin(), obs.end(), std::back_inserter(out_eb));
-    }
-
-    // Assuming (with checks) that the output side blocks will be
-    // iterated in same order as input side blocks...
-    Ioss::SideBlockContainer::const_iterator II = out_eb.begin();
-
-    for (const auto &pm : unit_cells) {
-      size_t element_offset = pm->get_property("element_offset").get_int();
-
-      const Ioss::SideSetContainer &is = pm->get_sidesets();
-      for (auto iss : is) {
-        const Ioss::SideBlockContainer &ebs = iss->get_side_blocks();
-
-        for (auto eb : ebs) {
-          SMART_ASSERT((eb->name() == (*II)->name()) ||
-                       (pm->name() + "_" + eb->name() == (*II)->name()))
-          (eb->name())((*II)->name());
-          SMART_ASSERT(eb->entity_count() == (*II)->entity_count());
-          std::vector<INT> elem_side_list;
-          eb->get_field_data("element_side_raw", elem_side_list);
-
-          // The 'elem_side_list' contains
-          // (local_element_position,side_ordinal) pairs. The
-          // 'local_element_position' is 1-based offset in the
-          // current part.  Need to map to its location in the
-          // output region...
-          for (size_t i = 0; i < elem_side_list.size();
-               i += 2) { // just get the elem part of the pair...
-            size_t  local_position = elem_side_list[i] - 1;
-            ssize_t gpos           = local_element_map[element_offset + local_position];
-            SMART_ASSERT(gpos >= 0)(gpos)(i); // Inactive elements should be filtered by Ioss
-            elem_side_list[i] = gpos + 1;
-          }
-          (*II)->put_field_data("element_side_raw", elem_side_list);
-          ++II;
-        }
-      }
-    }
+    return grid;
   }
 } // namespace
