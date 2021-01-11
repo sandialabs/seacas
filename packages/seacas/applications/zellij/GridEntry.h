@@ -39,8 +39,8 @@ public:
   size_t                        m_j{0};
   int64_t                       m_globalNodeIdOffset{0};
   int64_t                       m_localNodeIdOffset{0};
-  std::vector<int64_t>          m_globalElementIdOffset{0};
-  std::vector<int64_t>          m_localElementIdOffset{0};
+  std::map<std::string, size_t> m_globalElementIdOffset;
+  std::map<std::string, size_t> m_localElementIdOffset;
   double                        m_offX{0.0};
   double                        m_offY{0.0};
   int                           m_rank{0};

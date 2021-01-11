@@ -259,13 +259,15 @@ namespace {
       }
       else if (in_dictionary) {
         SMART_ASSERT(tokens.size() == 2)(tokens.size())(line);
-	if (unit_cells.find(tokens[0]) != unit_cells.end()) {
-	  fmt::print("\nERROR: There is a duplicate `unit cell` ({}) in the lattice dictionary.\n\n", tokens[0]);
-	  exit(EXIT_FAILURE);
-	}
+        if (unit_cells.find(tokens[0]) != unit_cells.end()) {
+          fmt::print(
+              "\nERROR: There is a duplicate `unit cell` ({}) in the lattice dictionary.\n\n",
+              tokens[0]);
+          exit(EXIT_FAILURE);
+        }
 
-        auto region           = create_input_region(tokens[0], tokens[1]);
-	SMART_ASSERT(region != nullptr)(tokens[0])(tokens[1]);
+        auto region = create_input_region(tokens[0], tokens[1]);
+        SMART_ASSERT(region != nullptr)(tokens[0])(tokens[1]);
         unit_cells[tokens[0]] = region;
       }
       else if (tokens[0] == "BEGIN_LATTICE") {
@@ -313,8 +315,15 @@ namespace {
 
         size_t col = 0;
         for (auto &key : tokens) {
+          if (unit_cells.find(key) == unit_cells.end()) {
+            fmt::print("\nERROR: In row {}, column {}, the lattice specifies a unit cell ({}) that "
+                       "has not been defined.\n\n",
+                       row + 1, col + 1, key);
+            exit(EXIT_FAILURE);
+          }
+
           auto region = unit_cells[key];
-	  SMART_ASSERT(region != nullptr)(row)(col)(key);
+          SMART_ASSERT(region != nullptr)(row)(col)(key);
           grid.initialize(row, col++, region);
         }
         row++;

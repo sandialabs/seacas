@@ -27,12 +27,18 @@ void Grid::finalize()
   auto x_range = get_cell(0, 0).get_coordinate_range(Axis::X);
   auto y_range = get_cell(0, 0).get_coordinate_range(Axis::Y);
 
-  // Assume all unit cells have same element block count (TODO: verify assumption)
-  size_t element_block_count =
-      get_cell(0, 0).m_region->get_property("element_block_count").get_int();
-  std::vector<size_t> element_block_elem_count(element_block_count);
-  size_t              global_node_count = 0;
-  size_t              global_elem_count = 0;
+  // Not all unit cells have the same element blocks and the output
+  // grid will contain the union of the element blocks on each unit
+  // cell...
+  //
+  // While finalizing the cells, we will create this union for use in
+  // the output region.  Would be quicker to do iteration on unit_cell
+  // map which is smaller, but for now do it here and see if becomes
+  // bottleneck.
+  std::map<std::string, Ioss::ElementBlock *> output_element_blocks;
+  std::map<std::string, size_t>               element_block_elem_count;
+  size_t                                      global_node_count = 0;
+  size_t                                      global_elem_count = 0;
 
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
@@ -42,22 +48,24 @@ void Grid::finalize()
       SMART_ASSERT(cell.m_region != nullptr)(i)(j);
       global_node_count += cell.m_region->get_property("node_count").get_int();
 
-      cell.m_globalElementIdOffset.resize(element_block_count);
-      cell.m_localElementIdOffset.resize(element_block_count);
       const auto &element_blocks = cell.m_region->get_element_blocks();
-      assert(element_blocks.size() == element_block_count);
-
-      for (size_t blk = 0; blk < element_block_count; blk++) {
+      for (const auto *block : element_blocks) {
+        auto &blk                         = block->name();
         cell.m_globalElementIdOffset[blk] = element_block_elem_count[blk];
         cell.m_localElementIdOffset[blk]  = element_block_elem_count[blk];
 
-        const auto *block = element_blocks[blk];
         element_block_elem_count[blk] += block->entity_count();
         global_elem_count += block->entity_count();
-#if 0
-	fmt::print("i, j, blk, offset, block_count, global_count: {} {} {} {} {} {}\n",
-		   i, j, blk, cell.m_globalElementIdOffset[blk], element_block_elem_count[blk], global_elem_count);
+#if 1
+        fmt::print("i, j, blk, offset, block_count, global_count: {} {} {} {} {} {}\n", i, j, blk,
+                   cell.m_globalElementIdOffset[blk], element_block_elem_count[blk],
+                   global_elem_count);
 #endif
+
+        // Create output element block if does not exist yet...
+        if (output_element_blocks.find(blk) == output_element_blocks.end()) {
+          output_element_blocks[blk] = new Ioss::ElementBlock(*block);
+        }
       }
 
       cell.m_offX = (x_range.second - x_range.first) * i;
@@ -77,13 +85,10 @@ void Grid::finalize()
 
   m_region->add(block);
 
-  // Define Element Blocks... (Copy from cell(0,0))
-  const auto &element_blocks = get_cell(0, 0).m_region->get_element_blocks();
-  for (size_t blk = 0; blk < element_block_count; blk++) {
-    const auto *block  = element_blocks[blk];
-    auto        oblock = new Ioss::ElementBlock(*block);
-    oblock->property_update("entity_count", element_block_elem_count[blk]);
-    m_region->add(oblock);
+  for (auto &blk : output_element_blocks) {
+    auto *block = blk.second;
+    block->property_update("entity_count", element_block_elem_count[block->name()]);
+    m_region->add(block);
   }
   m_region->end_mode(Ioss::STATE_DEFINE_MODEL);
 
@@ -139,18 +144,17 @@ void Grid::output_block_connectivity()
     for (size_t i = 0; i < II(); i++) {
       auto cell   = get_cell(i, j);
       auto blocks = cell.m_region->get_element_blocks();
-      for (size_t blk = 0; blk < blocks.size(); blk++) {
-        auto *block = blocks[blk];
+      for (const auto *block : blocks) {
         block->get_field_data("connectivity_raw", connect);
         std::for_each(connect.begin(), connect.end(),
                       [&cell](int64_t &node) { node += cell.m_globalNodeIdOffset; });
 
-        auto start = cell.m_globalElementIdOffset[blk] + 1;
+        auto start = cell.m_globalElementIdOffset[block->name()] + 1;
         auto count = block->entity_count();
         auto id    = block->get_property("id").get_int();
 #if 0
         fmt::print(stderr, "i, j, blk, id, start, count: {} {} {} {} {} {}\n", 
-		i, j, blk, id, start, count);
+		   i, j, block->name(), id, start, count);
 #endif
         ex_put_partial_conn(exoid, EX_ELEM_BLOCK, id, start, count, connect.data(), nullptr,
                             nullptr);
