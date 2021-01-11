@@ -43,7 +43,7 @@ then
    LOCAL_SZIP="-DHDF5_ENABLE_SZIP_SUPPORT:BOOL=${NEEDS_SZIP} -DSZIP_INCLUDE_DIR:PATH=${INSTALL_PATH}/include -DSZIP_LIBRARY:FILEPATH=${INSTALL_PATH}/lib/libsz.${LD_EXT}"
 fi
 
-MPI="${MPI:-OFF}"
+MPI="${MPI:-NO}"
 if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
