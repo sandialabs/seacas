@@ -29,8 +29,8 @@ else
    exit 1
 fi
 
-METIS_PATH=${ACCESS}/TPL/metis/metis-5.1.0
-make config cc=${CC} prefix=${INSTALL_PATH} shared=${USE_SHARED} metis_path=${METIS_PATH} gklib_path=${METIS_PATH}/GKlib
+METIS_PATH=${ACCESS}/TPL/metis/METIS-5.1.0.1
+make config cc=${CC} prefix=${INSTALL_PATH} shared=${USE_SHARED} metis_path=${METIS_PATH}/src gklib_path=${METIS_PATH}/src/GKlib
 
 echo ""
 echo "         MPI: ${MPI}"

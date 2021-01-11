@@ -68,11 +68,16 @@ CGNS=`check_valid CGNS`
 MATIO=${MATIO:-YES}
 MATIO=`check_valid MATIO`
 
+PARMETIS=${PARMETIS:-NO}
+PARMETIS=`check_valid PARMETIS`
+
 METIS=${METIS:-NO}
 METIS=`check_valid METIS`
 
-PARMETIS=${PARMETIS:-NO}
-PARMETIS=`check_valid PARMETIS`
+if [ "$PARMETIS" == "YES" ] 
+then
+    METIS="YES"
+fi
 
 GNU_PARALLEL=${GNU_PARALLEL:-YES}
 GNU_PARALLEL=`check_valid GNU_PARALLEL`
@@ -158,6 +163,8 @@ if [ $# -gt 0 ]; then
 	echo "   H5VERSION    = ${H5VERSION}"
 	echo "   CGNS         = ${CGNS}"
 	echo "   MATIO        = ${MATIO}"
+	echo "   METIS        = ${METIS}"
+	echo "   PARMETIS     = ${PARMETIS}"
 	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
 	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
 	echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
@@ -517,23 +524,23 @@ then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf metis-5.1.0
             rm -f metis-5.1.0.tar.gz
-            wget --no-check-certificate https://github.com/scivision/METIS/raw/master/metis-5.1.0.tar.gz
-	    tar zxvf metis-5.1.0.tar.gz
+            wget --no-check-certificate https://github.com/scivision/METIS/archive/v5.1.0.1.tar.gz
+	    tar zxvf v5.1.0.1.tar.gz
 	fi
 
 	if [ "$BUILD" == "YES" ]
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd metis-5.1.0
-	    sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' include/metis.h > tmp
-	    mv tmp include/metis.h
+            cd METIS-5.1.0.1
+	    sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' src/include/metis.h > tmp
+	    mv tmp src/include/metis.h
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure Metis. exiting.${txtrst}
                 exit 1
             fi
-            make -j${JOBS} && ${SUDO} make install
+            cd build; make -j${JOBS} && ${SUDO} make install
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t build Metis. exiting.${txtrst}
