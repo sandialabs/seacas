@@ -8,6 +8,7 @@
 #include <Ioss_ElementBlock.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_Region.h>
+#include <Ioss_SmartAssert.h>
 #include <exodusII.h>
 #include <fmt/format.h>
 
@@ -17,6 +18,7 @@ void Grid::initialize(size_t i, size_t j, std::shared_ptr<Ioss::Region> region)
   cell.m_i      = i;
   cell.m_j      = j;
   cell.m_region = region;
+  SMART_ASSERT(region != nullptr)(i)(j);
 }
 
 void Grid::finalize()
@@ -37,6 +39,7 @@ void Grid::finalize()
       auto &cell                = get_cell(i, j);
       cell.m_globalNodeIdOffset = global_node_count;
       cell.m_localNodeIdOffset  = global_node_count;
+      SMART_ASSERT(cell.m_region != nullptr)(i)(j);
       global_node_count += cell.m_region->get_property("node_count").get_int();
 
       cell.m_globalElementIdOffset.resize(element_block_count);

@@ -258,8 +258,14 @@ namespace {
         in_dictionary = false;
       }
       else if (in_dictionary) {
-        assert(tokens.size() == 2);
+        SMART_ASSERT(tokens.size() == 2)(tokens.size())(line);
+	if (unit_cells.find(tokens[0]) != unit_cells.end()) {
+	  fmt::print("\nERROR: There is a duplicate `unit cell` ({}) in the lattice dictionary.\n\n", tokens[0]);
+	  exit(EXIT_FAILURE);
+	}
+
         auto region           = create_input_region(tokens[0], tokens[1]);
+	SMART_ASSERT(region != nullptr)(tokens[0])(tokens[1]);
         unit_cells[tokens[0]] = region;
       }
       else if (tokens[0] == "BEGIN_LATTICE") {
@@ -274,10 +280,9 @@ namespace {
     }
 
     // Tokenize line to get I J K size of lattice
-    fmt::print("Lattice Line: {}\n", line);
     auto tokens = Ioss::tokenize(line, " ");
-    assert(tokens[0] == "BEGIN_LATTICE");
-    assert(tokens.size() == 4);
+    SMART_ASSERT(tokens[0] == "BEGIN_LATTICE")(tokens[0])(line);
+    SMART_ASSERT(tokens.size() == 4)(tokens.size())(line);
     int II = std::stoi(tokens[1]);
     int JJ = std::stoi(tokens[2]);
     int KK = std::stoi(tokens[3]);
@@ -297,18 +302,19 @@ namespace {
         assert(in_lattice && !in_dictionary);
         in_lattice = false;
         // Check row count to make sure matches 'I' size of lattice
-        assert(row == II);
+        SMART_ASSERT(row == II)(row)(II);
         break;
       }
       else if (in_lattice) {
         // TODO: Currently assumes that each row in the lattice is defined on a single row;
         //       This will need to be relaxed since a lattice of 5000x5000 would result in
         //       lines that are too long and would be easier to split a row over multiple lines...
-        assert(tokens.size() == grid.JJ());
+        SMART_ASSERT(tokens.size() == grid.JJ())(tokens.size())(grid.JJ());
 
         size_t col = 0;
         for (auto &key : tokens) {
           auto region = unit_cells[key];
+	  SMART_ASSERT(region != nullptr)(row)(col)(key);
           grid.initialize(row, col++, region);
         }
         row++;
