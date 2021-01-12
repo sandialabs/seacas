@@ -23,7 +23,7 @@
 #include <memory>
 #include <utility>
 
-#include <Ioss_Region.h>
+#include "UnitCell.h"
 
 // Each entry in grid will have the following information:
 enum class Axis { X, Y, Z };
@@ -32,9 +32,21 @@ class GridEntry
 {
 public:
   std::pair<double, double> get_coordinate_range(enum Axis) const;
-  void                      initialize(size_t i, size_t j, std::shared_ptr<Ioss::Region> region);
+  void                      initialize(size_t i, size_t j, std::shared_ptr<UnitCell> region);
 
-  std::shared_ptr<Ioss::Region> m_region;
+  bool has_neighbor_i() const { return m_i > 0; }
+  bool has_neighbor_j() const { return m_j > 0; }
+
+  // Number of nodes that will be added to global node count when this cell is added to
+  // grid -- accounts for coincident nodes if cell has neighbor(s)
+  size_t added_node_count() const;
+
+  std::vector<int> categorize_nodes() const
+  {
+    return m_unitCell->categorize_nodes(has_neighbor_i(), has_neighbor_j());
+  }
+
+  std::shared_ptr<UnitCell>     m_unitCell;
   size_t                        m_i{0};
   size_t                        m_j{0};
   int64_t                       m_globalNodeIdOffset{0};

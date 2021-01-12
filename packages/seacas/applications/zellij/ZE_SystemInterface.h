@@ -6,12 +6,8 @@
 #ifndef ZE_SystemInterface_h
 #define ZE_SystemInterface_h
 
-#include "GetLongOpt.h"   // for GetLongOption
-#include "ZE_CodeTypes.h" // for StringIdVector, Omissions, etc
-#include "ZE_vector3d.h"  // for vector3d
-#include <climits>        // for INT_MAX
-#include <string>         // for string
-#include <vector>         // for vector
+#include "GetLongOpt.h" // for GetLongOption
+#include <string>       // for string
 
 class SystemInterface
 {

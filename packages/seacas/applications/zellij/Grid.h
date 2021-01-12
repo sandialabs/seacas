@@ -42,7 +42,7 @@ public:
   size_t     JJ() const { return m_gridJ; }
   size_t     size() const { return m_gridI * m_gridJ; }
 
-  void initialize(size_t i, size_t j, std::shared_ptr<Ioss::Region> region);
+  void initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell);
   void finalize();
   void output_model();
 

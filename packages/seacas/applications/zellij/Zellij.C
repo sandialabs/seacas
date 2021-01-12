@@ -3,20 +3,13 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#include <cctype>
-#include <cfloat>
-#include <cmath>
-#include <cstdio>
 #include <cstdlib>
-#include <cstring>
-#include <ctime>
 #include <exception>
 #include <fstream>
 #include <iterator>
 #include <limits>
 #include <memory>
 #include <numeric>
-#include <set>
 #include <string>
 #ifndef _MSC_VER
 #include <sys/times.h>
@@ -38,7 +31,7 @@
 
 #include "Grid.h"
 #include "GridEntry.h"
-#include "ZE_CodeTypes.h"
+#include "UnitCell.h"
 #include "ZE_SystemInterface.h"
 #include "ZE_Version.h"
 
@@ -47,7 +40,7 @@
 #endif
 
 namespace {
-  Grid define_lattice(RegionMap &unit_cells, SystemInterface &interFace);
+  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace);
 
   Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size)
   {
@@ -138,8 +131,8 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
     fmt::print(stderr, "{}", time_stamp(tsFormat));
   }
 
-  RegionMap unit_cells;
-  auto      grid = define_lattice(unit_cells, interFace);
+  UnitCellMap unit_cells;
+  auto        grid = define_lattice(unit_cells, interFace);
 
   if (debug_level & 1) {
     fmt::print(stderr, "{}", time_stamp(tsFormat));
@@ -221,6 +214,7 @@ namespace {
   {
     // At this point, can begin to define the output database...
     Ioss::PropertyManager properties = parse_properties(interFace, 8);
+    properties.add(Ioss::Property("OMIT_NUM_MAPS", 1));
 
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
         "exodus", interFace.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
@@ -234,7 +228,7 @@ namespace {
     return output_region;
   }
 
-  Grid define_lattice(RegionMap &unit_cells, SystemInterface &interFace)
+  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace)
   {
     std::string filename = interFace.lattice();
 
@@ -268,7 +262,7 @@ namespace {
 
         auto region = create_input_region(tokens[0], tokens[1]);
         SMART_ASSERT(region != nullptr)(tokens[0])(tokens[1]);
-        unit_cells[tokens[0]] = region;
+        unit_cells.emplace(tokens[0], std::make_shared<UnitCell>(region));
       }
       else if (tokens[0] == "BEGIN_LATTICE") {
         assert(!in_lattice && !in_dictionary);
@@ -303,14 +297,32 @@ namespace {
       if (tokens[0] == "END_LATTICE") {
         assert(in_lattice && !in_dictionary);
         in_lattice = false;
+
         // Check row count to make sure matches 'I' size of lattice
-        SMART_ASSERT(row == II)(row)(II);
+        if (row != II) {
+          fmt::print("\nERROR: Only {} rows of the {} x {} lattice were defined.\n\n", row, II, JJ);
+          exit(EXIT_FAILURE);
+        }
         break;
       }
       else if (in_lattice) {
         // TODO: Currently assumes that each row in the lattice is defined on a single row;
         //       This will need to be relaxed since a lattice of 5000x5000 would result in
         //       lines that are too long and would be easier to split a row over multiple lines...
+        if (tokens.size() != grid.JJ()) {
+          fmt::print(
+              "\nERROR: Line {} of the lattice definition has {} entries.  It should have {}.\n\n",
+              row + 1, tokens.size(), grid.JJ());
+          exit(EXIT_FAILURE);
+        }
+
+        if (row >= II) {
+          fmt::print("\nERROR: There are too many rows in the lattice definition. The lattice is "
+                     "{} x {}.\n\n",
+                     grid.II(), grid.JJ());
+          exit(EXIT_FAILURE);
+        }
+
         SMART_ASSERT(tokens.size() == grid.JJ())(tokens.size())(grid.JJ());
 
         size_t col = 0;
@@ -322,9 +334,9 @@ namespace {
             exit(EXIT_FAILURE);
           }
 
-          auto region = unit_cells[key];
-          SMART_ASSERT(region != nullptr)(row)(col)(key);
-          grid.initialize(row, col++, region);
+          auto &unit_cell = unit_cells[key];
+          SMART_ASSERT(unit_cell->m_region != nullptr)(row)(col)(key);
+          grid.initialize(row, col++, unit_cell);
         }
         row++;
       }

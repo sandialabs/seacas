@@ -12,13 +12,13 @@
 #include <exodusII.h>
 #include <fmt/format.h>
 
-void Grid::initialize(size_t i, size_t j, std::shared_ptr<Ioss::Region> region)
+void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
 {
-  auto &cell    = get_cell(i, j);
-  cell.m_i      = i;
-  cell.m_j      = j;
-  cell.m_region = region;
-  SMART_ASSERT(region != nullptr)(i)(j);
+  auto &cell      = get_cell(i, j);
+  cell.m_i        = i;
+  cell.m_j        = j;
+  cell.m_unitCell = unit_cell;
+  SMART_ASSERT(unit_cell->m_region != nullptr)(i)(j);
 }
 
 void Grid::finalize()
@@ -45,10 +45,15 @@ void Grid::finalize()
       auto &cell                = get_cell(i, j);
       cell.m_globalNodeIdOffset = global_node_count;
       cell.m_localNodeIdOffset  = global_node_count;
-      SMART_ASSERT(cell.m_region != nullptr)(i)(j);
-      global_node_count += cell.m_region->get_property("node_count").get_int();
+      SMART_ASSERT(cell.m_unitCell->m_region != nullptr)(i)(j);
+      auto new_nodes = cell.added_node_count();
+#if 1
+      fmt::print("i, j, node_offset, added_nodes: {} {} {} {}\n", i, j, global_node_count,
+                 new_nodes);
+#endif
+      global_node_count += new_nodes;
 
-      const auto &element_blocks = cell.m_region->get_element_blocks();
+      const auto &element_blocks = cell.m_unitCell->m_region->get_element_blocks();
       for (const auto *block : element_blocks) {
         auto &blk                         = block->name();
         cell.m_globalElementIdOffset[blk] = element_block_elem_count[blk];
@@ -114,7 +119,7 @@ void Grid::output_nodal_coordinates()
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto  cell = get_cell(i, j);
-      auto *nb   = cell.m_region->get_node_blocks()[0];
+      auto *nb   = cell.m_unitCell->m_region->get_node_blocks()[0];
       nb->get_field_data("mesh_model_coordinates_x", coord_x);
       nb->get_field_data("mesh_model_coordinates_y", coord_y);
       nb->get_field_data("mesh_model_coordinates_z", coord_z);
@@ -126,8 +131,22 @@ void Grid::output_nodal_coordinates()
         std::for_each(coord_y.begin(), coord_y.end(), [&cell](double &d) { d += cell.m_offY; });
       }
 
+      // Filter coordinates down to only "new nodes"...
+      if (cell.has_neighbor_i() || cell.has_neighbor_j()) {
+        auto   categorized_nodes = cell.categorize_nodes();
+        size_t nn                = 0;
+        for (size_t n = 0; n < categorized_nodes.size(); n++) {
+          if (categorized_nodes[n] == 0) {
+            coord_x[nn] = coord_x[n];
+            coord_y[nn] = coord_y[n];
+            coord_z[nn] = coord_z[n];
+            nn++;
+          }
+        }
+      }
+
       auto start = cell.m_globalNodeIdOffset + 1;
-      auto count = nb->entity_count();
+      auto count = cell.added_node_count();
       ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
     }
   }
@@ -139,11 +158,13 @@ void Grid::output_block_connectivity()
   // now...
   int exoid = m_region->get_database()->get_file_pointer();
 
+  // TODO: Correctly renumber based on shared nodes between neighboring grid entries...
+
   std::vector<int64_t> connect;
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto cell   = get_cell(i, j);
-      auto blocks = cell.m_region->get_element_blocks();
+      auto blocks = cell.m_unitCell->m_region->get_element_blocks();
       for (const auto *block : blocks) {
         block->get_field_data("connectivity_raw", connect);
         std::for_each(connect.begin(), connect.end(),

@@ -8,8 +8,8 @@ INCLUDE_DIRECTORIES(
 SET(HEADERS "")
 SET(SOURCES Grid.C
 	    GridEntry.C
+	    UnitCell.C
 	    ZE_SystemInterface.C
-	    ZE_vector3d.C
 	    Zellij.C)
 
 TRIBITS_ADD_EXECUTABLE(
