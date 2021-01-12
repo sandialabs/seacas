@@ -284,6 +284,9 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   else if (si.use_netcdf4()) {
     mode |= EX_NETCDF4;
   }
+  else if (si.use_netcdf5()) {
+    mode |= EX_64BIT_DATA;
+  }
   else if (ex_large_model(fileids_[0]) == 1) {
     mode |= EX_LARGE_MODEL;
   }

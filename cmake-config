@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+ #! /usr/bin/env bash
 
 if [ "${TRAVIS}" == "true" ]
 then
@@ -18,11 +18,31 @@ fi
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
+function check_valid()
+{
+    if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ]; then
+	echo "YES"
+	return 1
+    fi
+    if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ]; then
+	echo "NO"
+	return 1
+    fi
+    echo "Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF"
+    exit 1
+}
 ### Possible subset of what is built ---
-APPLICATIONS=${APPLICATIONS:-ON}
-LEGACY=${LEGACY:-ON}
-FORTRAN=${FORTRAN:-ON}
-ZOLTAN=${ZOLTAN:-ON}
+APPLICATIONS=${APPLICATIONS:-YES}
+APPLICATIONS=`check_valid APPLICATIONS`
+
+LEGACY=${LEGACY:-YES}
+LEGACY=`check_valid LEGACY`
+
+FORTRAN=${FORTRAN:-YES}
+FORTRAN=`check_valid FORTRAN`
+
+ZOLTAN=${ZOLTAN:-YES}
+ZOLTAN=`check_valid ZOLTAN`
 
 ### Python Version...
 PYTHON_VER=${PYTHON_VER:-"3.0"}
@@ -33,14 +53,16 @@ then
   netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
   if [ "${netcdf_parallel}" == "yes" ]
   then
-      MPI=ON
+      MPI=YES
   else
-      MPI=OFF
+      MPI=NO
   fi
 fi
-echo "MPI set to ${MPI}"
 
-if [ "${MPI}" == "OFF" ]
+MPI=`check_valid MPI`
+echo "${txtgrn}MPI set to ${MPI}${txtrst}"
+
+if [ "${MPI}" == "NO" ]
 then
   ### Change this to point to the compilers you want to use
     ## Travis build (and others) set this to EXTERNAL to set
@@ -75,9 +97,9 @@ then
 
   if [ "$COMPILER" == "clang" ]
   then
-      CXX=/opt/local/bin/clang++-mp-8.0
-      CC=clang-mp-8.0
-      FC=gfortran-mp-7
+      CXX=clang++
+      CC=clang
+      FC=gfortran
       CFLAGS="-Wall -Wunused -pedantic"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
@@ -99,7 +121,7 @@ then
       FC=gfortran
       CFLAGS="-Wall -Wunused"
       CXXFLAGS="-Wall -Wunused"
-      FORTRAN="OFF"
+      FORTRAN="NO"
   fi
 
   if [ "$COMPILER" == "ibm" ]
@@ -108,10 +130,9 @@ then
       CC=xlc
       FC=xlf
   fi
-
 fi
 
-if [ "${APPLICATIONS}" == "ON" ] && [ "${LEGACY}" == "ON" ]
+if [ "${APPLICATIONS}" == "YES" ] && [ "${LEGACY}" == "YES" ]
 then
      SUBSET_OPTIONS="-DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
                      -DSEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
@@ -126,7 +147,7 @@ else
 		     -DSEACASProj_ENABLE_SEACASExodus_for:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASExoIIv2for32:BOOL=ON"
 
-if [ "${APPLICATIONS}" == "ON" ]
+if [ "${APPLICATIONS}" == "YES" ]
 then
      SUBSET_OPTIONS="${SUBSET_OPTIONS} \
                      -DSEACASProj_ENABLE_SEACASAprepro:BOOL=ON \
@@ -141,14 +162,14 @@ then
                      -DSEACASProj_ENABLE_SEACASNemslice:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASNemspread:BOOL=ON"
 
-     if [ "${FORTRAN}" == "ON" ]
+     if [ "${FORTRAN}" == "YES" ]
 	then
 	    SUBSET_OPTIONS="${SUBSET_OPTIONS} \
             		  -DSEACASProj_ENABLE_SEACASExplore:BOOL=ON \
 			  -DSEACASProj_ENABLE_SEACASGrepos:BOOL=ON"
      fi
 
-elif [ "${LEGACY}" == "ON" ] && [ "${FORTRAN}" == "ON" ]
+elif [ "${LEGACY}" == "YES" ] && [ "${FORTRAN}" == "YES" ]
 then
      SUBSET_OPTIONS="${SUBSET_OPTIONS} \
                      -DSEACASProj_ENABLE_SEACASAlgebra:BOOL=ON \
@@ -175,7 +196,8 @@ GENERATOR=${GENERATOR:-"Unix Makefiles"}
 # -DCMAKE_Fortran_FLAGS="-qfixed=72" \
 # -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
+SHARED=`check_valid SHARED`
 
 ### Switch for Debug or Release build:
 ### Check that both `DEBUG` and `BUILD_TYPE` are not set
@@ -203,13 +225,16 @@ fi
 
 
 ### If you do not have the X11 developer package on your system
-### which provides X11/Xlib.h and the libX11, then change the "ON"
-### below to "OFF". It will disable blot and fastq
-HAVE_X11=${X11:-ON}
+### which provides X11/Xlib.h and the libX11, then change the "YES"
+### below to "NO". It will disable blot and fastq
+HAVE_X11=${HAVE_X11:-YES}
+HAVE_X11=`check_valid HAVE_X11`
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
-THREADSAFE=${THREADSAFE:-OFF}
-if [ "$THREADSAFE" == "ON" ] ; then
+THREADSAFE=${THREADSAFE:-NO}
+THREADSAFE=`check_valid THREADSAFE`
+
+if [ "$THREADSAFE" == "YES" ] ; then
   THREAD_SAFE_OPT="-DSEACASProj_EXTRA_LINK_FLAGS=-lpthread"
 fi
 
@@ -235,9 +260,9 @@ function check_enable()
     local path=$1
     if [ -e "${path}" ]
     then
-	echo "ON"
+	echo "YES"
     else
-	echo "OFF"
+	echo "NO"
     fi
 }
 
@@ -262,7 +287,7 @@ HAVE_PARMETIS=$(check_enable "${METIS_PATH}/include/parmetis.h")
 OMIT_DEPRECATED=${OMIT_DEPRECATED:-NO}
 
 # BUG needs to work with cray too.
-if [ "${MPI}" == "ON" ] && [ "${CRAY}" == "ON" ]
+if [ "${MPI}" == "YES" ] && [ "${CRAY}" == "YES" ]
 then
    MPI_EXEC=$(which srun)
    MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-n"
@@ -270,10 +295,10 @@ then
    CC=cc
    FC=ftn
    MPI_BIN=$(dirname $(which ${CC}))
-   SHARED=OFF
-elif [ "${MPI}" == "ON" ]
+   SHARED=NO
+elif [ "${MPI}" == "YES" ]
 then
-   if [ "${USE_SRUN}" == "ON" ]
+   if [ "${USE_SRUN}" == "YES" ]
    then
        MPI_EXEC=$(which srun)
        MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-N"
@@ -289,7 +314,7 @@ then
 fi
 
 OS=$(uname -s)
-if [ "$SHARED" == "ON" ]
+if [ "$SHARED" == "YES" ]
 then
     if [ "$OS" == "Darwin" ] ; then
 	LD_EXT="dylib"
@@ -300,7 +325,7 @@ else
     LD_EXT="a"
 fi
 
-if [ "${HAVE_KOKKOS}" == "ON" ]
+if [ "${HAVE_KOKKOS}" == "YES" ]
 then
     KOKKOS_SYMBOLS="-DKOKKOS_SRC_PATH:PATH=${INSTALL_PATH}/TPL/kokkos/kokkos \
 		    -DTPL_Kokkos_LIBRARY_DIRS:PATH=${KOKKOS_PATH}/lib \
@@ -308,7 +333,7 @@ then
 		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkos.${LD_EXT}"
 fi
 
-if [ "${HAVE_DATAWAREHOUSE}" == "ON" ]
+if [ "${HAVE_DATAWAREHOUSE}" == "YES" ]
 then
     DW_SYMBOLS="-DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATAWAREHOUSE} \
                 -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
@@ -322,18 +347,22 @@ else
 fi
 
 # Only run doxygen if me and on master branch...
-DOXYGEN=${DOXYGEN:-OFF}
-if [[ "$DOXYGEN" == "OFF" && "$OS" == "Darwin" && "$MPI" == "OFF" ]] ; then
+DOXYGEN=${DOXYGEN:-NO}
+DOXYGEN=`check_valid DOXYGEN`
+
+if [[ "$DOXYGEN" == "NO" && "$OS" == "Darwin" && "$MPI" == "NO" ]] ; then
     branch=$(git branch |grep \* |cut -c3-)
     USER=$(id -nu)
     if [ "$USER" == "gdsjaar" ] && [ "$branch" == "master" ]; then
-	DOXYGEN=ON
+	DOXYGEN=YES
     fi
 fi
 
 FC=${FC:-gfortran}
 
 EXTRA_WARNINGS=${EXTRA_WARNINGS:-NO}
+EXTRA_WARNINGS=`check_valid EXTRA_WARNINGS`
+
 SANITIZER=${SANITIZER:-NO}
 
 if [ "$SANITIZER" != "NO" ] ; then
@@ -348,6 +377,7 @@ if [ "$SANITIZER" != "NO" ] ; then
 #sanitizer=safe-stack  #: safe stack protection against stack-based memory corruption errors.
 SANITIZE="-fsanitize=${SANITIZER} -fno-omit-frame-pointer -fPIC"
 fi
+
 ### You can add these below if you want more verbosity...
 #-D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
 #-D SEACASProj_VERBOSE_CONFIGURE=ON \
@@ -358,7 +388,7 @@ fi
 #-D GENERATE_FLEX_FILES=ON \
 #-D GENERATE_BISON_FILES=ON \
 
-if [ "$EXTRA_WARNINGS" == "YES" ] ; then
+if [ "${EXTRA_WARNINGS}" == "YES" ]; then
 ### Additional gcc warnings:
 if [ "$COMPILER" == "gnu" ]
 then

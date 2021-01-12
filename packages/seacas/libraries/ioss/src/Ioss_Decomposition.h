@@ -29,9 +29,9 @@
 
 #define DC_USE_HOPSCOTCH
 #if defined DC_USE_HOPSCOTCH
-#include <hash/hopscotch_map.h>
+#include <hopscotch_map.h>
 #elif defined DC_USE_ROBIN
-#include <hash/robin_map.h>
+#include <robin_map.h>
 #endif
 
 namespace Ioss {
@@ -650,14 +650,14 @@ namespace Ioss {
     std::vector<INT> m_nodeDist;
 
     // Note that nodeGTL is a sorted vector.
-    std::vector<INT>   nodeGTL; // Convert from global index to local index (1-based)
+    std::vector<INT> nodeGTL; // Convert from global index to local index (1-based)
 
 #if defined DC_USE_HOPSCOTCH
     tsl::hopscotch_pg_map<INT, INT> elemGTL; // Convert from global index to local index (1-based)
 #elif defined DC_USE_ROBIN
     tsl::robin_pg_map<INT, INT> elemGTL; // Convert from global index to local index (1-based)
 #else
-  // This is the original method that was used in IOSS prior to using hopscotch or robin map.
+    // This is the original method that was used in IOSS prior to using hopscotch or robin map.
     std::map<INT, INT> elemGTL; // Convert from global index to local index (1-based)
 #endif
   };

@@ -8,7 +8,7 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
 
 COMPILER="${COMPILER:-gnu}"
 if [ "$COMPILER" == "gnu" ]

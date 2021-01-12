@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 EXTRA_ARGS=$@
 
-MPI="${MPI:-OFF}"
-CUDA="${CUDA:-OFF}"
+MPI="${MPI:-NO}"
+CUDA="${CUDA:-NO}"
 
 if [ "$CUDA" == "ON" ] || [ "$CUDA" == "YES" ] ; then
     if [ "X$CUDA_PATH" == "X" ] ; then
@@ -22,13 +22,13 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
 
-if [ "$MPI" == "ON" ] && [ "$CRAY" = "ON" ]
+if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
   export CXX=cxx
-elif [ "$MPI" == "ON" ]
+elif [ "$MPI" == "YES" ]
 then
   export CC=mpicc
   export CXX=mpicxx
@@ -61,7 +61,7 @@ CPPFLAGS="-DNDEBUG"; export CPPFLAGS
 
 rm -f CMakeCache.txt
 
-if [ "$CUDA" == "ON" ]
+if [ "$CUDA" == "YES" ]
 then
     export "OMPI_CXX=../config/nvcc_wrapper"
     export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1

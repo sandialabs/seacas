@@ -367,10 +367,10 @@ else()
   if ( NOT HDF5_NO_HDF5_CMAKE )
 
     # Call find package only looking for CMake config files
-    find_package(HDF5 
-                 HINTS ${_hdf5_INCLUDE_SEARCH_DIRS} ${_hdf5_LIBRARY_SEARCH_DIRS}
-                 QUIET
-                 NO_MODULE)
+    find_package(HDF5
+      HINTS ${HDF5_ROOT}/cmake/hdf5
+      QUIET
+      NO_MODULE)
 
     # If located a HDF5 configuration file
     if (HDF5_FOUND)
@@ -593,6 +593,7 @@ if ( NOT HDF5_FIND_QUIETLY )
   message(STATUS "\tHDF5_TOOLS_FOUND: ${HDF5_TOOLS_FOUND}")
 
 endif()
+
 # For compatability with TriBITS:
 set(TPL_HDF5_LIBRARY_DIRS ${_hdf5_LIBRARY_SEARCH_DIRS})
 set(TPL_HDF5_LIBRARIES ${HDF5_LIBRARIES})
@@ -602,3 +603,4 @@ find_package_handle_standard_args( HDF5 DEFAULT_MESSAGE
                                    HDF5_INCLUDE_DIRS
                                    HDF5_LIBRARIES
                                    HDF5_VERSION)
+

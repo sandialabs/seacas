@@ -507,7 +507,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       Gen_Error(0, "fatal: insufficient memory");
       goto cleanup;
     }
-    start_proc = 0; /* counter to keep track of proccessors for each group */
+    start_proc = 0; /* counter to keep track of processors for each group */
   }
 
   /*
