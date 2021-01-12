@@ -7,7 +7,7 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
   USE_SHARED="1"
@@ -15,22 +15,22 @@ else
   USE_SHARED="0"
 fi
 
-MPI="${MPI:-ON}"
-if [ "$MPI" == "ON" ]
+MPI="${MPI:-YES}"
+if [ "$MPI" == "YES" ]
 then
-  if [ "$CRAY" == "ON" ]
+  if [ "$CRAY" == "YES" ]
   then
     export CC=cc
   else
     export CC=mpicc
   fi
 else
-   echo "MPI Must be ON"
+   echo "MPI Must be YES"
    exit 1
 fi
 
-METIS_PATH=${ACCESS}/TPL/metis/metis-5.1.0
-make config cc=${CC} prefix=${INSTALL_PATH} shared=${USE_SHARED} metis_path=${METIS_PATH} gklib_path=${METIS_PATH}/GKlib
+METIS_PATH=${ACCESS}/TPL/metis/METIS-5.1.0.1
+make config cc=${CC} prefix=${INSTALL_PATH} shared=${USE_SHARED} metis_path=${METIS_PATH}/src gklib_path=${METIS_PATH}/src/GKlib
 
 echo ""
 echo "         MPI: ${MPI}"

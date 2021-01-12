@@ -20,9 +20,9 @@
 
 #define EXU_USE_HOPSCOTCH
 #if defined EXU_USE_HOPSCOTCH
-#include <hash/hopscotch_map.h>
+#include <hopscotch_map.h>
 #elif defined EXU_USE_ROBIN
-#include <hash/robin_map.h>
+#include <robin_map.h>
 #endif
 
 // Contains code that is common between the file-per-processor and
@@ -38,7 +38,7 @@ namespace Ioex {
   using SideSetSet  = std::set<std::string>;
   using SideSetMap  = std::map<std::string, const std::string, std::less<const std::string>>;
 
-  using NameTopoKey = std::pair<std::string, const Ioss::ElementTopology*>;
+  using NameTopoKey = std::pair<std::string, const Ioss::ElementTopology *>;
   struct NameTopoKeyCompare
   {
     bool operator()(const NameTopoKey &lhs, const NameTopoKey &rhs) const
@@ -53,7 +53,10 @@ namespace Ioex {
   struct NameTopoKeyHash
   {
     size_t operator()(const NameTopoKey &name_topo) const
-    { return std::hash<std::string>{}(name_topo.first) + std::hash<size_t>{}((size_t)name_topo.second); }
+    {
+      return std::hash<std::string>{}(name_topo.first) +
+             std::hash<size_t>{}((size_t)name_topo.second);
+    }
   };
 
 #if defined EXU_USE_HOPSCOTCH
@@ -62,10 +65,8 @@ namespace Ioex {
   using TopologyMap = tsl::robin_map<NameTopoKey, int, NameTopoKeyHash>;
 #else
   // This is the original method that was used in IOSS prior to using hopscotch or robin map.
-  using TopologyMap =
-      std::map<NameTopoKey, int, NameTopoKeyCompare>;
+  using TopologyMap = std::map<NameTopoKey, int, NameTopoKeyCompare>;
 #endif
-
 
   const char *Version();
   bool        check_processor_info(int exodusFilePtr, int processor_count, int processor_id);

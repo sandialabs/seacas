@@ -339,14 +339,11 @@ namespace Ioex {
         // Append to file if it already exists -- See if the file exists.
         Ioss::FileInfo file = Ioss::FileInfo(get_filename());
         fileExists          = file.exists();
-        if (fileExists) {
-          std::ostringstream errmsg;
-          fmt::print(
-              errmsg,
-              "ERROR: Cannot reliably append to an existing database in parallel single-file "
-              "output mode. File '{}'",
-              get_filename());
-          IOSS_ERROR(errmsg);
+        if (fileExists && myProcessor == 0) {
+          fmt::print(Ioss::WARNING(),
+                     "Appending to existing database in parallel single-file "
+                     "output mode is a new capability; please check results carefully. File '{}'",
+                     get_filename());
         }
       }
     }
@@ -605,7 +602,10 @@ namespace Ioex {
           exo_method = EX_COMPRESS_ZLIB;
         }
         else if (method == "szip") {
-#if defined(NC_HAS_SZIP_WRITE)
+#if !defined(NC_HAS_SZIP_WRITE)
+#define NC_HAS_SZIP_WRITE 0
+#endif
+#if NC_HAS_SZIP_WRITE
           exo_method = EX_COMPRESS_SZIP;
 #else
           if (myProcessor == 0) {
@@ -667,6 +667,19 @@ namespace Ioex {
   {
     int exoid = get_file_pointer(); // get_file_pointer() must be called first.
 
+    // APPENDING:
+    // If parallel (single file, not fpp), we have assumptions
+    // that the writing process (ranks, mesh, decomp, vars) is the
+    // same for the original run that created this database and
+    // for this run which is appending to the database so the
+    // defining of the output database should be the same except
+    // we don't write anything since it is already there.  We do
+    // need the number of steps though...
+    if (open_create_behavior() == Ioss::DB_APPEND) {
+      get_step_times__();
+      return;
+    }
+
     if (int_byte_size_api() == 8) {
       decomp = std::unique_ptr<DecompositionDataBase>(
           new DecompositionData<int64_t>(properties, util().communicator()));
@@ -708,6 +721,11 @@ namespace Ioex {
     handle_groups();
 
     add_region_fields();
+
+    if (!is_input() && open_create_behavior() == Ioss::DB_APPEND) {
+      get_map(EX_NODE_BLOCK);
+      get_map(EX_ELEM_BLOCK);
+    }
   }
 
   void ParallelDatabaseIO::read_region()
@@ -4572,7 +4590,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const 
   return num_to_get;
 }
 
-void ParallelDatabaseIO::write_meta_data()
+void ParallelDatabaseIO::write_meta_data(bool appending)
 {
   Ioss::Region *region = get_region();
   common_write_meta_data();
@@ -4589,16 +4607,16 @@ void ParallelDatabaseIO::write_meta_data()
   }
 
   bool       file_per_processor = false;
-  Ioex::Mesh mesh(spatialDimension, the_title, file_per_processor);
-  {
+  Ioex::Mesh mesh(spatialDimension, the_title, util(), file_per_processor);
+  mesh.populate(region);
+
+  if (!appending) {
     if (!properties.exists("OMIT_QA_RECORDS")) {
       put_qa();
     }
     if (!properties.exists("OMIT_INFO_RECORDS")) {
       put_info();
     }
-
-    mesh.populate(region);
 
     // Write the metadata to the exodusII file...
     Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
@@ -4617,10 +4635,10 @@ void ParallelDatabaseIO::write_meta_data()
   // processor begins...
   update_processor_offset_property(region, mesh);
 
-  // Output node map...
-  output_node_map();
-
-  output_other_meta_data();
+  if (!appending) {
+    output_node_map();
+    output_other_meta_data();
+  }
 }
 
 void ParallelDatabaseIO::create_implicit_global_map() const

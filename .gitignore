@@ -110,6 +110,7 @@ SNTools.project
 *.settings
 *ioss.doxygen.warn
 *ioss.tags
+SEACASProjRepoVersion.txt
 TPL/adios2/ADIOS2/
 TPL/cgns/CGNS/
 TPL/data-warehouse-release
@@ -119,8 +120,8 @@ TPL/hdf5/hdf5-*/
 TPL/kokkos/kokkos
 TPL/kokkos/kokkos-*
 TPL/matio/matio/
-TPL/metis/metis-5.1.0/
-TPL/metis/metis-5.1.0.tar.gz
+TPL/metis/metis-5.1.0.1/
+TPL/metis/v5.1.0.1.tar.gz
 TPL/netcdf/netcdf-c/
 TPL/parallel/parallel-*/
 TPL/parallel/parallel-*.tar.bz2

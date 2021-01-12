@@ -21,6 +21,16 @@
 
 #if defined(NC_HAVE_META_H)
 #include "netcdf_meta.h"
+
+/* Bug in some versions of NetCDF where the netcdf_meta.h define of NC_HAS_SZIP_WRITE is bad */
+#if !defined(NC_HAS_SZIP_WRITE)
+#error "Undefined"
+#define NC_HAS_SZIP_WRITE 0
+#elif ~(~NC_HAS_SZIP_WRITE + 0) == 0 && ~(~NC_HAS_SZIP_WRITE + 1) == 1
+#undef NC_HAS_SZIP_WRITE
+#define NC_HAS_SZIP_WRITE 0
+#endif
+
 #if NC_HAS_PARALLEL
 #ifndef PARALLEL_AWARE_EXODUS
 #define PARALLEL_AWARE_EXODUS

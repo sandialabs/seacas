@@ -12,20 +12,20 @@ H5VERSION=${H5VERSION:-V110}
 NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
-   ZLIB_ON_OFF="--with-zlib=${INSTALL_PATH}"
+   ZLIB_YES_NO="--with-zlib=${INSTALL_PATH}"
 fi
 
 NEEDS_SZIP="${NEEDS_SZIP:-NO}"
 if [ "$NEEDS_SZIP" == "YES" ]
 then
-   SZIP_ON_OFF="--with-szlib=${INSTALL_PATH}"
+   SZIP_YES_NO="--with-szlib=${INSTALL_PATH}"
 fi
 
-MPI="${MPI:-OFF}"
-if [ "$MPI" == "ON" ]
+MPI="${MPI:-NO}"
+if [ "$MPI" == "YES" ]
 then
-  PARALLEL_ON_OFF="--enable-parallel"
-  if [ "$CRAY" == "ON" ]
+  PARALLEL_YES_NO="--enable-parallel"
+  if [ "$CRAY" == "YES" ]
   then
     export CC=cc
   else
@@ -34,7 +34,7 @@ then
     mpiexec --version
   fi
 else
-  PARALLEL_ON_OFF="--disable-parallel"
+  PARALLEL_YES_NO="--disable-parallel"
   COMPILER="${COMPILER:-gnu}"
   if [ "$COMPILER" == "gnu" ]
   then
@@ -72,11 +72,11 @@ rm -f config.cache
 FC=''; export FC
 F90=''; export F90
 
-if [ "$CRAY" == "ON" ]
+if [ "$CRAY" == "YES" ]
 then
     USE_SHARED="--disable-shared"
 else
-    SHARED="${SHARED:-ON}"
+    SHARED="${SHARED:-YES}"
     if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
     then
 	USE_SHARED="--enable-shared"
@@ -87,9 +87,9 @@ fi
 
 if [ "${H5VERSION}" == "V18" ]
 then
-    ./configure --prefix=${INSTALL_PATH} ${ZLIB_ON_OFF} ${SZIP_ON_OFF} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
+    ./configure --prefix=${INSTALL_PATH} ${ZLIB_YES_NO} ${SZIP_YES_NO} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_YES_NO} --enable-static-exec $1
 else
-    ./configure --prefix=${INSTALL_PATH} ${ZLIB_ON_OFF} ${SZIP_ON_OFF} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
+    ./configure --prefix=${INSTALL_PATH} ${ZLIB_YES_NO} ${SZIP_YES_NO} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_YES_NO} --with-default-api-version=v18 --enable-static-exec $1
 fi
 
 echo ""

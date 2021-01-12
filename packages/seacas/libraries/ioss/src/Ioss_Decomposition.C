@@ -997,20 +997,20 @@ namespace Ioss {
     elemGTL.reserve(localElementMap.size() + m_importPreLocalElemIndex + importElementMap.size());
 #endif
     for (size_t i = 0; i < localElementMap.size(); i++) {
-      size_t global_index   = localElementMap[i] + m_elementOffset + 1;
-      size_t local_index    = i + m_importPreLocalElemIndex + 1;
+      size_t global_index = localElementMap[i] + m_elementOffset + 1;
+      size_t local_index  = i + m_importPreLocalElemIndex + 1;
       elemGTL.insert({global_index, local_index});
     }
 
     for (size_t i = 0; i < m_importPreLocalElemIndex; i++) {
-      size_t global_index   = importElementMap[i] + 1;
-      size_t local_index    = i + 1;
+      size_t global_index = importElementMap[i] + 1;
+      size_t local_index  = i + 1;
       elemGTL.insert({global_index, local_index});
     }
 
     for (size_t i = m_importPreLocalElemIndex; i < importElementMap.size(); i++) {
-      size_t global_index   = importElementMap[i] + 1;
-      size_t local_index    = localElementMap.size() + i + 1;
+      size_t global_index = importElementMap[i] + 1;
+      size_t local_index  = localElementMap.size() + i + 1;
       elemGTL.insert({global_index, local_index});
     }
     show_progress("build_global_to_local_elem_map end");

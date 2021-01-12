@@ -72,6 +72,16 @@ void Build_Variable_Names(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, bool *
   build_variable_names("sideset", interFace.ss_var_names, interFace.ss_var,
                        interFace.ss_var_default, interFace.ss_var_do_all_flag, file1.SS_Var_Names(),
                        file2.SS_Var_Names(), diff_found);
+
+  // Build (and compare) edgeblock variable names.
+  build_variable_names("edgeblock", interFace.eb_var_names, interFace.eb_var,
+                       interFace.eb_var_default, interFace.eb_var_do_all_flag, file1.EB_Var_Names(),
+                       file2.EB_Var_Names(), diff_found);
+
+  // Build (and compare) faceblock variable names.
+  build_variable_names("faceblock", interFace.fb_var_names, interFace.fb_var,
+                       interFace.fb_var_default, interFace.fb_var_do_all_flag, file1.FB_Var_Names(),
+                       file2.FB_Var_Names(), diff_found);
 }
 
 template <typename INT>
@@ -134,6 +144,8 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
       output_diff_names("Element Attribute", interFace.elmt_att_names);
       output_diff_names("Nodeset", interFace.ns_var_names);
       output_diff_names("Sideset", interFace.ss_var_names);
+      output_diff_names("Edgeblock", interFace.eb_var_names);
+      output_diff_names("Faceblock", interFace.fb_var_names);
     }
     else { // The files are to be compared .. echo additional info.
       if (Tolerance::use_old_floor) {
@@ -196,6 +208,10 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
           fmt::print("No Sideset Distribution Factors on either file.\n");
         }
       }
+      output_compare_names("Edgeblock", interFace.eb_var_names, interFace.eb_var,
+                           file1.Num_EB_Vars(), file2.Num_EB_Vars());
+      output_compare_names("Faceblock", interFace.fb_var_names, interFace.fb_var,
+                           file1.Num_FB_Vars(), file2.Num_FB_Vars());
     }
   }
 
@@ -214,6 +230,16 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
                     file2, file1.SS_Var_Names(), file2.SS_Var_Names(), ss_truth_tab,
                     interFace.quiet_flag, diff_found);
 
+  std::vector<int> eb_truth_tab;
+  build_truth_table(EX_EDGE_BLOCK, "Edgeblock", interFace.eb_var_names, file1.Num_Edge_Blocks(),
+                    file1, file2, file1.EB_Var_Names(), file2.EB_Var_Names(), eb_truth_tab,
+                    interFace.quiet_flag, diff_found);
+
+  std::vector<int> fb_truth_tab;
+  build_truth_table(EX_FACE_BLOCK, "Faceblock", interFace.fb_var_names, file1.Num_Face_Blocks(),
+                    file1, file2, file1.FB_Var_Names(), file2.FB_Var_Names(), fb_truth_tab,
+                    interFace.quiet_flag, diff_found);
+
   // Put out the concatenated variable parameters here and then
   // put out the names....
   if (out_file_id >= 0) {
@@ -227,6 +253,8 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
     output_exodus_names(out_file_id, EX_ELEM_BLOCK, interFace.elmt_var_names);
     output_exodus_names(out_file_id, EX_NODE_SET, interFace.ns_var_names);
     output_exodus_names(out_file_id, EX_SIDE_SET, interFace.ss_var_names);
+    output_exodus_names(out_file_id, EX_EDGE_BLOCK, interFace.eb_var_names);
+    output_exodus_names(out_file_id, EX_FACE_BLOCK, interFace.fb_var_names);
   }
   return out_file_id;
 }

@@ -129,15 +129,15 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
       int64_t local_id = offset + i + 1;
       bool    ok       = m_reverse.insert({m_map[local_id], local_id}).second;
       if (!ok) {
-	if (local_id != m_reverse[m_map[local_id]]) {
-	  std::ostringstream errmsg;
-	  fmt::print(errmsg,
-		     "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
-		     "       Global id {3} assigned to local {0}s {4} and {5}.\n",
-		     m_entityType, m_myProcessor, m_filename, m_map[local_id], local_id,
-		     m_reverse[m_map[local_id]]);
-	  IOSS_ERROR(errmsg);
-	}
+        if (local_id != m_reverse[m_map[local_id]]) {
+          std::ostringstream errmsg;
+          fmt::print(errmsg,
+                     "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
+                     "       Global id {3} assigned to local {0}s {4} and {5}.\n",
+                     m_entityType, m_myProcessor, m_filename, m_map[local_id], local_id,
+                     m_reverse[m_map[local_id]]);
+          IOSS_ERROR(errmsg);
+        }
       }
 
       if (m_map[local_id] <= 0) {
@@ -215,6 +215,9 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
   }
 
   if (in_define_mode) {
+    if (changed) {
+      m_reverse.clear();
+    }
     build_reverse_map__(count, offset);
   }
   else if (changed) {
@@ -479,9 +482,9 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
     fmt::print(errmsg,
                "ERROR: Ioss Mapping routines detected {0} with global id equal to {1} returns a "
                "local id of {2} which is\n"
-               "larger than the local {0} count on processor {3}, filename '{4}'.\n"
+               "larger than the local {0} count {5} on processor {3}, filename '{4}'.\n"
                "This should not happen, please report.\n",
-               m_entityType, global, local, m_myProcessor, m_filename);
+               m_entityType, global, local, m_myProcessor, m_filename, m_map.size() - 1);
     IOSS_ERROR(errmsg);
   }
   else if (local <= 0 && must_exist) {
