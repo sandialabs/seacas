@@ -382,22 +382,8 @@ else()
       set(HDF5_IS_PARALLEL  ${HDF5_ENABLE_PARALLEL})
       set(HDF5_INCLUDE_DIRS ${HDF5_INCLUDE_DIR})
 
-      # Loop through each possible target and 
-      # build the HDF5_LIBRARIES.
-      # Target names set by the HDF5 configuration file
-      set(HDF5_LIBRARIES)
-
-      foreach( _component ${HDF5_VALID_COMPONENTS} )
-        set(target ${HDF5_${_component}_TARGET})
-	if ( TARGET ${target} )
-	  set(HDF5_${_component}_LIBRARY ${target})
-	  list(APPEND HDF5_LIBRARIES ${HDF5_${_component}_LIBRARY})
-	endif()  
-      endforeach()
-
-      # Define HDF5_C_LIBRARIES to contain hdf5 and hdf5_hl C libraries
-      set(HDF5_C_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_CLIBRARY})
-      
+      set(HDF5_LIBRARIES "${HDF5_EXPORT_LIBRARIES}")
+      set(HDF5_C_LIBRARIES "${HDF5_LIBRARIES}")
 
     endif(HDF5_FOUND)  
     
