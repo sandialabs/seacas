@@ -4,6 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <numeric>
+
 #include "Grid.h"
 #include <Ioss_ElementBlock.h>
 #include <Ioss_NodeBlock.h>
@@ -11,6 +13,10 @@
 #include <Ioss_SmartAssert.h>
 #include <exodusII.h>
 #include <fmt/format.h>
+
+namespace {
+  std::vector<int64_t> generate_node_map(Grid &grid, const GridEntry &cell);
+}
 
 void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
 {
@@ -47,7 +53,7 @@ void Grid::finalize()
       cell.m_localNodeIdOffset  = global_node_count;
       SMART_ASSERT(cell.m_unitCell->m_region != nullptr)(i)(j);
       auto new_nodes = cell.added_node_count();
-#if 1
+#if defined(ZELLIJ_DEBUG)
       fmt::print("i, j, node_offset, added_nodes: {} {} {} {}\n", i, j, global_node_count,
                  new_nodes);
 #endif
@@ -61,7 +67,8 @@ void Grid::finalize()
 
         element_block_elem_count[blk] += block->entity_count();
         global_elem_count += block->entity_count();
-#if 1
+
+#if defined(ZELLIJ_DEBUG)
         fmt::print("i, j, blk, offset, block_count, global_count: {} {} {} {} {} {}\n", i, j, blk,
                    cell.m_globalElementIdOffset[blk], element_block_elem_count[blk],
                    global_elem_count);
@@ -163,19 +170,20 @@ void Grid::output_block_connectivity()
   std::vector<int64_t> connect;
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
-      auto cell   = get_cell(i, j);
-      auto blocks = cell.m_unitCell->m_region->get_element_blocks();
+      auto &cell     = get_cell(i, j);
+      auto  node_map = generate_node_map(*this, cell);
+      auto  blocks   = cell.m_unitCell->m_region->get_element_blocks();
       for (const auto *block : blocks) {
         block->get_field_data("connectivity_raw", connect);
-        std::for_each(connect.begin(), connect.end(),
-                      [&cell](int64_t &node) { node += cell.m_globalNodeIdOffset; });
-
+        for (size_t i = 0; i < connect.size(); i++) {
+          connect[i] = node_map[connect[i]];
+        }
         auto start = cell.m_globalElementIdOffset[block->name()] + 1;
         auto count = block->entity_count();
         auto id    = block->get_property("id").get_int();
-#if 0
-        fmt::print(stderr, "i, j, blk, id, start, count: {} {} {} {} {} {}\n", 
-		   i, j, block->name(), id, start, count);
+#if defined(ZELLIJ_DEBUG)
+        fmt::print(stderr, "i, j, blk, id, start, count: {} {} {} {} {} {}\n", i, j, block->name(),
+                   id, start, count);
 #endif
         ex_put_partial_conn(exoid, EX_ELEM_BLOCK, id, start, count, connect.data(), nullptr,
                             nullptr);
@@ -183,3 +191,88 @@ void Grid::output_block_connectivity()
     }
   }
 }
+
+namespace {
+  std::vector<int64_t> generate_node_map(Grid &grid, const GridEntry &cell)
+  {
+    // Generate a "map" from nodes in the input connectivity to the
+    // output connectivity in global nodes.  If no neighbors, then
+    // this would just be adding `cell.m_globalNodeIdOffset` to each
+    // connectivity entry.
+
+    // Size is node_count + 1 to handle the 1-based connectivity values.
+    size_t cell_node_count = cell.m_unitCell->m_region->get_property("node_count").get_int();
+    std::vector<int64_t> map(cell_node_count + 1);
+    if (!(cell.has_neighbor_i() || cell.has_neighbor_j())) {
+      std::iota(map.begin(), map.end(), cell.m_globalNodeIdOffset);
+    }
+    else {
+      // At least one neighboring cell.
+      // Generate map for the "non-neighbored" nodes (not contiguous with a neighbor cell)
+      auto categorized_nodes = cell.categorize_nodes();
+      SMART_ASSERT(categorized_nodes.size() == cell_node_count)
+      (categorized_nodes.size())(cell_node_count);
+      size_t offset = cell.m_globalNodeIdOffset + 1;
+      for (size_t n = 0; n < cell_node_count; n++) {
+        if (categorized_nodes[n] == 0) {
+          map[n + 1] = offset++;
+        }
+      }
+    }
+
+    if (cell.has_neighbor_i()) {
+      const auto &neighbor = grid.get_cell(cell.m_i - 1, cell.m_j);
+      // Get the neighbor cell...
+      // iterate my unit cell's min_I_face() nodes to get index into map
+      // At this index, set value to neighbor cells max_I_nodes() node
+      for (size_t i = 0; i < cell.m_unitCell->min_I_face.size(); i++) {
+        auto idx = cell.m_unitCell->min_I_face[i] + 1;
+        auto val = neighbor.max_I_nodes[i];
+        map[idx] = val;
+      }
+
+      // Can now clean out the neighbors max_I_nodes list since this
+      // is the only cell that can use the data...
+      Ioss::Utils::clear(neighbor.max_I_nodes);
+    }
+
+    if (cell.has_neighbor_j()) {
+      const auto &neighbor = grid.get_cell(cell.m_i, cell.m_j - 1);
+      for (size_t i = 0; i < cell.m_unitCell->min_J_face.size(); i++) {
+        auto idx = cell.m_unitCell->min_J_face[i] + 1;
+        auto val = neighbor.max_J_nodes[i];
+        map[idx] = val;
+      }
+      Ioss::Utils::clear(neighbor.max_J_nodes);
+    }
+
+    // Now that we have the node map for this cell, we need to save the mappings for the max_I and
+    // max_J faces and max_I-max_J edge for use by later neighbors...
+    cell.max_I_nodes.resize(cell.m_unitCell->max_I_face.size());
+    for (size_t i = 0; i < cell.m_unitCell->max_I_face.size(); i++) {
+      auto idx            = cell.m_unitCell->max_I_face[i] + 1;
+      auto val            = map[idx];
+      cell.max_I_nodes[i] = val;
+    }
+#if defined(ZELLIJ_DEBUG)
+    fmt::print("\nCell {} {}\n", cell.m_i, cell.m_j);
+    fmt::print("max_I_nodes: {}\n", fmt::join(cell.max_I_nodes, " "));
+#endif
+    cell.max_J_nodes.resize(cell.m_unitCell->max_J_face.size());
+    for (size_t i = 0; i < cell.m_unitCell->max_J_face.size(); i++) {
+      auto idx            = cell.m_unitCell->max_J_face[i] + 1;
+      auto val            = map[idx];
+      cell.max_J_nodes[i] = val;
+    }
+#if defined(ZELLIJ_DEBUG)
+    fmt::print("max_J_nodes: {}\n", fmt::join(cell.max_J_nodes, " "));
+#endif
+    // Iterate the connectivity and set connect[i] = map[connect[i]]
+    grid.m_region->get_database()->progress(
+        fmt::format("Generate Node Map Cell({}, {})", cell.m_i, cell.m_j));
+#if defined(ZELLIJ_DEBUG)
+    fmt::print("           MAP: {}\n", fmt::join(map, " "));
+#endif
+    return map;
+  }
+} // namespace

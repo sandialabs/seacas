@@ -50,8 +50,8 @@ namespace {
                        const std::vector<double> &coord_i)
   {
     std::sort(face_nodes.begin(), face_nodes.end(), [&coord_j, &coord_i](size_t a, size_t b) {
-      return coord_i[a] < coord_i[b] ||
-             (approx_equal(coord_i[a], coord_i[b]) && coord_j[a] < coord_j[b]);
+      return float(coord_i[a]) < float(coord_i[b]) ||
+             (approx_equal(coord_i[a], coord_i[b]) && float(coord_j[a]) < float(coord_j[b]));
     });
   }
 } // namespace
@@ -82,13 +82,22 @@ UnitCell::UnitCell(std::shared_ptr<Ioss::Region> region) : m_region(region)
   sort_face_nodes(min_J_face, coord_z, coord_x);
   sort_face_nodes(max_J_face, coord_z, coord_x);
 
+#if defined(ZELLIJ_DEBUG)
   // Output each set of nodes --
-  if (min_I_face.size() <= 20) {
+  if (min_I_face.size() <= 200) {
     fmt::print("\nSORTED:\n");
     fmt::print("Min I: {}\n\n", fmt::join(min_I_face, " "));
     fmt::print("Max I: {}\n\n", fmt::join(max_I_face, " "));
     fmt::print("Min J: {}\n\n", fmt::join(min_J_face, " "));
     fmt::print("Max J: {}\n\n", fmt::join(max_J_face, " "));
+  }
+#endif
+
+  for (size_t i = 0; i < min_I_face.size(); i++) {
+    auto minI = min_I_face[i];
+    auto maxI = max_I_face[i];
+    SMART_ASSERT(approx_equal(coord_y[minI], coord_y[maxI]))(coord_y[minI])(coord_y[maxI]);
+    SMART_ASSERT(approx_equal(coord_z[minI], coord_z[maxI]))(coord_z[minI])(coord_z[maxI]);
   }
 
   // Determine 'K' -- size of minI_minJ corner list.
@@ -112,9 +121,10 @@ UnitCell::UnitCell(std::shared_ptr<Ioss::Region> region) : m_region(region)
   cell_II = min_J_face.size() / cell_KK;
   cell_JJ = min_I_face.size() / cell_KK;
 
-  fmt::print("The minI face contains {} nodes\n", min_I_face.size());
-  fmt::print("The minJ face contains {} nodes\n", min_J_face.size());
-  fmt::print("The calculated cell shape is {} x {} x {}\n", cell_II, cell_JJ, cell_KK);
+  fmt::print("\nFor UnitCell {}:\n", m_region->name());
+  fmt::print("\tThe minI face contains {} nodes\n", min_I_face.size());
+  fmt::print("\tThe minJ face contains {} nodes\n", min_J_face.size());
+  fmt::print("\tThe calculated cell shape is {} x {} x {}\n", cell_II, cell_JJ, cell_KK);
 }
 
 std::vector<int> UnitCell::categorize_nodes(bool neighbor_i, bool neighbor_j) const

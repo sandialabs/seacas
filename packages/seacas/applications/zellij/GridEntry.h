@@ -46,6 +46,9 @@ public:
     return m_unitCell->categorize_nodes(has_neighbor_i(), has_neighbor_j());
   }
 
+  mutable std::vector<int64_t> max_I_nodes;
+  mutable std::vector<int64_t> max_J_nodes;
+
   std::shared_ptr<UnitCell>     m_unitCell;
   size_t                        m_i{0};
   size_t                        m_j{0};

@@ -50,9 +50,12 @@ private:
   void output_nodal_coordinates();
   void output_block_connectivity();
 
+public:
   std::unique_ptr<Ioss::Region> m_region;
-  std::vector<GridEntry>        m_grid{};
-  size_t                        m_gridI{0};
-  size_t                        m_gridJ{0};
+
+private:
+  std::vector<GridEntry> m_grid{};
+  size_t                 m_gridI{0};
+  size_t                 m_gridJ{0};
 };
 #endif

@@ -287,7 +287,7 @@ namespace {
     auto output_region = create_output_region(interFace);
     Grid grid(output_region, II, JJ);
 
-    int row{0};
+    size_t row{0};
     while (getline(input, line)) {
       if (line.empty()) {
         continue;
@@ -299,7 +299,7 @@ namespace {
         in_lattice = false;
 
         // Check row count to make sure matches 'I' size of lattice
-        if (row != II) {
+        if (row != grid.JJ()) {
           fmt::print("\nERROR: Only {} rows of the {} x {} lattice were defined.\n\n", row, II, JJ);
           exit(EXIT_FAILURE);
         }
@@ -309,21 +309,21 @@ namespace {
         // TODO: Currently assumes that each row in the lattice is defined on a single row;
         //       This will need to be relaxed since a lattice of 5000x5000 would result in
         //       lines that are too long and would be easier to split a row over multiple lines...
-        if (tokens.size() != grid.JJ()) {
+        if (tokens.size() != grid.II()) {
           fmt::print(
               "\nERROR: Line {} of the lattice definition has {} entries.  It should have {}.\n\n",
-              row + 1, tokens.size(), grid.JJ());
+              row + 1, tokens.size(), grid.II());
           exit(EXIT_FAILURE);
         }
 
-        if (row >= II) {
+        if (row >= grid.JJ()) {
           fmt::print("\nERROR: There are too many rows in the lattice definition. The lattice is "
                      "{} x {}.\n\n",
                      grid.II(), grid.JJ());
           exit(EXIT_FAILURE);
         }
 
-        SMART_ASSERT(tokens.size() == grid.JJ())(tokens.size())(grid.JJ());
+        SMART_ASSERT(tokens.size() == grid.II())(tokens.size())(grid.II());
 
         size_t col = 0;
         for (auto &key : tokens) {
@@ -336,7 +336,7 @@ namespace {
 
           auto &unit_cell = unit_cells[key];
           SMART_ASSERT(unit_cell->m_region != nullptr)(row)(col)(key);
-          grid.initialize(row, col++, unit_cell);
+          grid.initialize(col++, row, unit_cell);
         }
         row++;
       }
