@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -5345,6 +5345,17 @@ void DatabaseIO::write_meta_data(bool appending)
   bool       file_per_processor = true;
   Ioex::Mesh mesh(spatialDimension, the_title, util(), file_per_processor);
   {
+    bool omit_maps = false;
+    Ioss::Utils::check_set_bool_property(properties, "OMIT_EXODUS_NUM_MAPS", omit_maps);
+    if (omit_maps) {
+      // Used for special cases only -- typically very large meshes with *known* 1..count maps
+      // and workarounds that avoid calling the "ids" put_field calls.
+      mesh.use_node_map = false;
+      mesh.use_elem_map = false;
+      mesh.use_face_map = false;
+      mesh.use_edge_map = false;
+    }
+
     Ioss::SerializeIO serializeIO__(this);
     mesh.populate(region);
     gather_communication_metadata(&mesh.comm);

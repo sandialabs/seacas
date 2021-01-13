@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1318,24 +1318,26 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
 
     // Define the node map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numnoddim;
-    status  = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims, &varid);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      if (status == NC_ENAMEINUSE) {
-        errmsg =
-            fmt::format("Error: node numbering map already exists in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+    if (mesh.use_node_map) {
+      int dims[1];
+      dims[0] = numnoddim;
+      status  = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims, &varid);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        if (status == NC_ENAMEINUSE) {
+          errmsg =
+              fmt::format("Error: node numbering map already exists in file id {}", exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        else {
+          errmsg = fmt::format("Error: failed to create node numbering map array in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        return (EX_FATAL);
       }
-      else {
-        errmsg = fmt::format("Error: failed to create node numbering map array in file id {}",
-                             exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      }
-      return (EX_FATAL);
+      ex__compress_variable(exodusFilePtr, varid, 1);
     }
-    ex__compress_variable(exodusFilePtr, varid, 1);
   }
 
   if (!mesh.nodeblocks.empty() && mesh.nodeblocks[0].attributeCount > 0) {
@@ -1396,25 +1398,27 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
 
     // Define the element map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numelemdim;
-    varid   = 0;
-    status  = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims, &varid);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      if (status == NC_ENAMEINUSE) {
-        errmsg =
-            fmt::format("Error: element numbering map already exists in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+    if (mesh.use_elem_map) {
+      int dims[1];
+      dims[0] = numelemdim;
+      varid   = 0;
+      status  = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims, &varid);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        if (status == NC_ENAMEINUSE) {
+          errmsg = fmt::format("Error: element numbering map already exists in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        else {
+          errmsg = fmt::format("Error: failed to create element numbering map in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        return (EX_FATAL);
       }
-      else {
-        errmsg = fmt::format("Error: failed to create element numbering map in file id {}",
-                             exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      }
-      return (EX_FATAL);
+      ex__compress_variable(exodusFilePtr, varid, 1);
     }
-    ex__compress_variable(exodusFilePtr, varid, 1);
   }
 
   size_t face_count = 0;
@@ -1433,23 +1437,25 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
 
     // Define the face map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numfacedim;
-    varid   = 0;
-    status  = nc_def_var(exodusFilePtr, VAR_FACE_NUM_MAP, map_type, 1, dims, &varid);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      if (status == NC_ENAMEINUSE) {
-        errmsg =
-            fmt::format("Error: face numbering map already exists in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+    if (mesh.use_face_map) {
+      int dims[1];
+      dims[0] = numfacedim;
+      varid   = 0;
+      status  = nc_def_var(exodusFilePtr, VAR_FACE_NUM_MAP, map_type, 1, dims, &varid);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        if (status == NC_ENAMEINUSE) {
+          errmsg =
+              fmt::format("Error: face numbering map already exists in file id {}", exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        else {
+          errmsg = fmt::format("Error: failed to create face numbering map in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        return (EX_FATAL);
       }
-      else {
-        errmsg =
-            fmt::format("Error: failed to create face numbering map in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      }
-      return (EX_FATAL);
     }
   }
 
@@ -1469,23 +1475,25 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
 
     // Define the edge map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numedgedim;
-    varid   = 0;
-    status  = nc_def_var(exodusFilePtr, VAR_EDGE_NUM_MAP, map_type, 1, dims, &varid);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      if (status == NC_ENAMEINUSE) {
-        errmsg =
-            fmt::format("Error: edge numbering map already exists in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+    if (mesh.use_edge_map) {
+      int dims[1];
+      dims[0] = numedgedim;
+      varid   = 0;
+      status  = nc_def_var(exodusFilePtr, VAR_EDGE_NUM_MAP, map_type, 1, dims, &varid);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        if (status == NC_ENAMEINUSE) {
+          errmsg =
+              fmt::format("Error: edge numbering map already exists in file id {}", exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        else {
+          errmsg = fmt::format("Error: failed to create edge numbering map in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        return (EX_FATAL);
       }
-      else {
-        errmsg =
-            fmt::format("Error: failed to create edge numbering map in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      }
-      return (EX_FATAL);
     }
   }
 
