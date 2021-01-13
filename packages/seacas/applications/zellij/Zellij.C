@@ -214,7 +214,7 @@ namespace {
   {
     // At this point, can begin to define the output database...
     Ioss::PropertyManager properties = parse_properties(interFace, 8);
-    properties.add(Ioss::Property("OMIT_NUM_MAPS", 1));
+    properties.add(Ioss::Property("OMIT_EXODUS_NUM_MAPS", 1));
 
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
         "exodus", interFace.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
