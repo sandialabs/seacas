@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -23,6 +23,7 @@ namespace Ioss {
   class ParallelUtils
   {
   public:
+    ParallelUtils() = default;
     explicit ParallelUtils(MPI_Comm the_communicator);
     ~ParallelUtils() = default;
 
@@ -119,7 +120,7 @@ namespace Ioss {
     void progress(const std::string &output) const;
 
   private:
-    MPI_Comm communicator_;
+    MPI_Comm communicator_{MPI_COMM_WORLD};
   };
 
 #ifdef SEACAS_HAVE_MPI
