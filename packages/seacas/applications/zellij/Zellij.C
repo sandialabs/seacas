@@ -272,7 +272,12 @@ namespace {
         }
       }
       else if (in_dictionary) {
-        SMART_ASSERT(tokens.size() == 2)(tokens.size())(line);
+        if (tokens.size() != 2) {
+          fmt::print("\nERROR: There are {} entries on a lattice dictionary line; there should be "
+                     "only 2:\n\t'{}'.\n\n",
+                     tokens.size(), line);
+          exit(EXIT_FAILURE);
+        }
         if (unit_cells.find(tokens[0]) != unit_cells.end()) {
           fmt::print(
               "\nERROR: There is a duplicate `unit cell` ({}) in the lattice dictionary.\n\n",
@@ -281,7 +286,14 @@ namespace {
         }
 
         auto region = create_input_region(tokens[0], tokens[1], interFace.ints32bit());
-        SMART_ASSERT(region != nullptr)(tokens[0])(tokens[1]);
+
+        if (region == nullptr) {
+          fmt::print(
+              "\nERROR: Unable to open the database '{}' associated with the unit cell '{}'.\n\n",
+              tokens[1], tokens[0]);
+          exit(EXIT_FAILURE);
+        }
+
         unit_cells.emplace(tokens[0], std::make_shared<UnitCell>(region));
         if (debug_level & 2) {
           pu.progress(fmt::format("\tCreated Unit Cell {}", tokens[0]));
@@ -301,6 +313,15 @@ namespace {
     // Tokenize line to get I J K size of lattice
     auto tokens = Ioss::tokenize(line, " ");
     SMART_ASSERT(tokens[0] == "BEGIN_LATTICE")(tokens[0])(line);
+
+    if (tokens.size() != 4) {
+      fmt::print("\nERROR: The 'BEGIN_LATTICE' line has incorrect syntax.  It should be "
+                 "'BEGIN_LATTICE I J K'\n"
+                 "\tThe line was '{}'\n\n",
+                 line);
+      exit(EXIT_FAILURE);
+    }
+
     SMART_ASSERT(tokens.size() == 4)(tokens.size())(line);
     int II = std::stoi(tokens[1]);
     int JJ = std::stoi(tokens[2]);
@@ -346,7 +367,12 @@ namespace {
           exit(EXIT_FAILURE);
         }
 
-        SMART_ASSERT(tokens.size() == grid.II())(tokens.size())(grid.II());
+        if (tokens.size() != grid.II()) {
+          fmt::print("\nERROR: In row {}, there is an incorrect number of entries.  There should "
+                     "be {}, but found {}.\n",
+                     row + 1, grid.II(), tokens.size());
+          exit(EXIT_FAILURE);
+        }
 
         size_t col = 0;
         for (auto &key : tokens) {
