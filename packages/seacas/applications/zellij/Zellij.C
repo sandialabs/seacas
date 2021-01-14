@@ -54,6 +54,10 @@ namespace {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
     }
 
+    if (interFace.use_netcdf5()) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
+    }
+
     if (interFace.compression_level() > 0 || interFace.szip()) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
       properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level()));
@@ -95,11 +99,11 @@ int main(int argc, char *argv[])
     }
 
     double time = 0.0;
-    if (interFace.ints64bit()) {
-      time = zellij(interFace, static_cast<int64_t>(0));
+    if (interFace.ints32bit()) {
+      time = zellij(interFace, 0);
     }
     else {
-      time = zellij(interFace, 0);
+      time = zellij(interFace, static_cast<int64_t>(0));
     }
 
     add_to_log(argv[0], time);
@@ -119,13 +123,12 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
 
   debug_level = interFace.debug();
 
-  if ((debug_level & 64) != 0U) {
+  if ((debug_level & 8) != 0U) {
     ex_opts(EX_VERBOSE | EX_DEBUG);
   }
   else {
     ex_opts(0);
   }
-  ex_opts(EX_VERBOSE | EX_DEBUG);
 
   if (debug_level & 1) {
     fmt::print(stderr, "{}", time_stamp(tsFormat));
@@ -151,7 +154,7 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   if (debug_level & 1) {
     fmt::print(stderr, "{} Output Model\n", time_stamp(tsFormat));
   }
-  grid.output_model();
+  grid.output_model((INT)0);
 
   if (debug_level & 1) {
     fmt::print(stderr, "{} Done\n", time_stamp(tsFormat));
@@ -191,7 +194,8 @@ namespace {
     return std::string("[ERROR]");
   }
 
-  std::shared_ptr<Ioss::Region> create_input_region(const std::string &key, std::string filename)
+  std::shared_ptr<Ioss::Region> create_input_region(const std::string &key, std::string filename,
+                                                    bool ints_32_bits)
   {
     // Check that 'filename' does not contain a starting/ending double quote...
     filename.erase(remove(filename.begin(), filename.end(), '\"'), filename.end());
@@ -202,7 +206,12 @@ namespace {
     }
 
     dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
-    dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+    if (ints_32_bits) {
+      dbi->set_int_byte_size_api(Ioss::USE_INT32_API);
+    }
+    else {
+      dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+    }
 
     // Generate a name for the region based on the key...
     std::string name = "Region_" + key;
@@ -213,8 +222,12 @@ namespace {
   std::unique_ptr<Ioss::Region> create_output_region(SystemInterface &interFace)
   {
     // At this point, can begin to define the output database...
-    Ioss::PropertyManager properties = parse_properties(interFace, 8);
+    int                   int_size   = interFace.ints32bit() ? 4 : 8;
+    Ioss::PropertyManager properties = parse_properties(interFace, int_size);
     properties.add(Ioss::Property("OMIT_EXODUS_NUM_MAPS", 1));
+    if (debug_level & 2) {
+      properties.add(Ioss::Property("ENABLE_TRACING", 1));
+    }
 
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
         "exodus", interFace.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
@@ -230,6 +243,10 @@ namespace {
 
   Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace)
   {
+    Ioss::ParallelUtils pu{MPI_COMM_WORLD};
+    if (debug_level & 2) {
+      pu.progress("Defining Unit Cells...");
+    }
     std::string filename = interFace.lattice();
 
     std::ifstream input(filename, std::ios::in);
@@ -250,6 +267,9 @@ namespace {
       else if (tokens[0] == "END_DICTIONARY") {
         assert(!in_lattice && in_dictionary);
         in_dictionary = false;
+        if (debug_level & 2) {
+          pu.progress("Unit Cells Defined...");
+        }
       }
       else if (in_dictionary) {
         SMART_ASSERT(tokens.size() == 2)(tokens.size())(line);
@@ -260,9 +280,12 @@ namespace {
           exit(EXIT_FAILURE);
         }
 
-        auto region = create_input_region(tokens[0], tokens[1]);
+        auto region = create_input_region(tokens[0], tokens[1], interFace.ints32bit());
         SMART_ASSERT(region != nullptr)(tokens[0])(tokens[1]);
         unit_cells.emplace(tokens[0], std::make_shared<UnitCell>(region));
+        if (debug_level & 2) {
+          pu.progress(fmt::format("\tCreated Unit Cell {}", tokens[0]));
+        }
       }
       else if (tokens[0] == "BEGIN_LATTICE") {
         assert(!in_lattice && !in_dictionary);

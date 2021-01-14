@@ -32,13 +32,22 @@ void SystemInterface::enroll_options()
                   "zellij-out.e");
 
   options_.enroll("netcdf4", GetLongOption::NoValue,
-                  "Create output database using the HDF5-based "
-                  "netcdf which allows for up to 2.1 GB "
-                  "nodes and elements",
+                  "Output database will be a netcdf4 "
+                  "hdf5-based file instead of the "
+                  "classical netcdf file format",
                   nullptr);
 
+  options_.enroll("netcdf5", GetLongOption::NoValue,
+                  "Output database will be a netcdf5 (CDF5) "
+                  "file instead of the classical netcdf file format",
+                  nullptr);
+
+  options_.enroll("32-bit", GetLongOption::NoValue,
+                  "True if forcing the use of 32-bit integers for the output file", nullptr);
+
   options_.enroll("64-bit", GetLongOption::NoValue,
-                  "True if forcing the use of 64-bit integers for the output file", nullptr);
+                  "True if forcing the use of 64-bit integers for the output file (default)",
+                  nullptr);
 
   options_.enroll(
       "zlib", GetLongOption::NoValue,
@@ -48,20 +57,17 @@ void SystemInterface::enroll_options()
   options_.enroll("szip", GetLongOption::NoValue,
                   "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);
 
-  options_.enroll(
-      "compress", GetLongOption::MandatoryValue,
-      "Specify the hdf5 (netcdf4) compression level [0..9] to be used on the output file.",
-      nullptr);
+  options_.enroll("compress", GetLongOption::MandatoryValue,
+                  "Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used "
+                  "on the output file.",
+                  nullptr);
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
                   "\t\t  1 = timing information.\n"
+                  "\t\t  2 = memory information.\n"
                   "\t\t  4 = Verbose Element block information.\n"
-                  "\t\t  8 = Check consistent nodal coordinates between parts.\n"
-                  "\t\t 16 = Verbose Sideset information.\n"
-                  "\t\t 32 = Verbose Nodeset information.\n"
-                  "\t\t 64 = put exodus library into verbose mode.\n"
-                  "\t\t128 = Check consistent global field values between parts.",
+                  "\t\t  8 = put exodus library into verbose mode.\n",
                   "0");
 
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
@@ -123,8 +129,21 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  useNetcdf4_ = options_.retrieve("netcdf4") != nullptr;
-  ints64bit_  = options_.retrieve("64-bit") != nullptr;
+  if (options_.retrieve("netcdf4") != nullptr) {
+    useNetcdf4_ = true;
+    useNetcdf5_ = false;
+  }
+
+  if (options_.retrieve("netcdf5") != nullptr) {
+    useNetcdf5_ = true;
+    useNetcdf4_ = false;
+  }
+
+  // Default to 64...
+  ints32bit_ = options_.retrieve("32-bit") != nullptr;
+  if (options_.retrieve("64-bit") != nullptr) {
+    ints32bit_ = false;
+  }
 
   if (options_.retrieve("szip") != nullptr) {
     szip_ = true;

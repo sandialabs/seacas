@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "GridEntry.h"
+#include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
 
 // `grid` stores the data for the tesselation of size `IxJ`
@@ -44,17 +45,22 @@ public:
 
   void initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell);
   void finalize();
-  void output_model();
+
+  template <typename INT> void output_model(INT /*dummy*/);
+
+  const Ioss::ParallelUtils &util() const { return m_pu; }
 
 private:
   void output_nodal_coordinates();
-  void output_block_connectivity();
+
+  template <typename INT> void output_block_connectivity(INT /*dummy*/);
 
 public:
   std::unique_ptr<Ioss::Region> m_region;
 
 private:
   std::vector<GridEntry> m_grid{};
+  Ioss::ParallelUtils    m_pu{MPI_COMM_WORLD};
   size_t                 m_gridI{0};
   size_t                 m_gridJ{0};
 };

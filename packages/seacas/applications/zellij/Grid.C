@@ -14,8 +14,11 @@
 #include <exodusII.h>
 #include <fmt/format.h>
 
+extern unsigned int debug_level;
+
 namespace {
-  std::vector<int64_t> generate_node_map(Grid &grid, const GridEntry &cell);
+  template <typename INT>
+  std::vector<INT> generate_node_map(Grid &grid, const GridEntry &cell, INT /*dummy*/);
 }
 
 void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
@@ -30,6 +33,10 @@ void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
 void Grid::finalize()
 {
   // All unit_cells have same X, Y (and Z) extent.  Only need X and Y
+  if (debug_level & 2) {
+    util().progress(__func__);
+  }
+
   auto x_range = get_cell(0, 0).get_coordinate_range(Axis::X);
   auto y_range = get_cell(0, 0).get_coordinate_range(Axis::Y);
 
@@ -84,6 +91,9 @@ void Grid::finalize()
       cell.m_offY = (y_range.second - y_range.first) * j;
 
       cell.m_consistent = true;
+      if (debug_level & 2) {
+        util().progress(fmt::format("\tCell({}, {})", i, j));
+      }
     }
   }
 
@@ -107,10 +117,13 @@ void Grid::finalize()
   m_region->output_summary(std::cerr);
 }
 
-void Grid::output_model()
+template void Grid::output_model(int64_t);
+template void Grid::output_model(int);
+
+template <typename INT> void Grid::output_model(INT /*dummy*/)
 {
   output_nodal_coordinates();
-  output_block_connectivity();
+  output_block_connectivity(INT(0));
 }
 
 void Grid::output_nodal_coordinates()
@@ -123,6 +136,9 @@ void Grid::output_nodal_coordinates()
   std::vector<double> coord_y;
   std::vector<double> coord_z;
 
+  if (debug_level & 2) {
+    util().progress(__func__);
+  }
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto  cell = get_cell(i, j);
@@ -157,9 +173,12 @@ void Grid::output_nodal_coordinates()
       ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
     }
   }
+  if (debug_level & 2) {
+    util().progress("\tEnd");
+  }
 }
 
-void Grid::output_block_connectivity()
+template <typename INT> void Grid::output_block_connectivity(INT /*dummy*/)
 {
   // IOSS does not support partial field output at this time, so need to use raw exodus calls for
   // now...
@@ -167,11 +186,11 @@ void Grid::output_block_connectivity()
 
   // TODO: Correctly renumber based on shared nodes between neighboring grid entries...
 
-  std::vector<int64_t> connect;
+  std::vector<INT> connect;
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell     = get_cell(i, j);
-      auto  node_map = generate_node_map(*this, cell);
+      auto  node_map = generate_node_map(*this, cell, INT(0));
       auto  blocks   = cell.m_unitCell->m_region->get_element_blocks();
       for (const auto *block : blocks) {
         block->get_field_data("connectivity_raw", connect);
@@ -188,12 +207,17 @@ void Grid::output_block_connectivity()
         ex_put_partial_conn(exoid, EX_ELEM_BLOCK, id, start, count, connect.data(), nullptr,
                             nullptr);
       }
+      if (debug_level & 2) {
+        util().progress(fmt::format("Generated Node Map / Output Connectivity for Cell({}, {})",
+                                    cell.m_i, cell.m_j));
+      }
     }
   }
 }
 
 namespace {
-  std::vector<int64_t> generate_node_map(Grid &grid, const GridEntry &cell)
+  template <typename INT>
+  std::vector<INT> generate_node_map(Grid &grid, const GridEntry &cell, INT /*dummy*/)
   {
     // Generate a "map" from nodes in the input connectivity to the
     // output connectivity in global nodes.  If no neighbors, then
@@ -202,7 +226,7 @@ namespace {
 
     // Size is node_count + 1 to handle the 1-based connectivity values.
     size_t cell_node_count = cell.m_unitCell->m_region->get_property("node_count").get_int();
-    std::vector<int64_t> map(cell_node_count + 1);
+    std::vector<INT> map(cell_node_count + 1);
     if (!(cell.has_neighbor_i() || cell.has_neighbor_j())) {
       std::iota(map.begin(), map.end(), cell.m_globalNodeIdOffset);
     }
@@ -248,28 +272,31 @@ namespace {
 
     // Now that we have the node map for this cell, we need to save the mappings for the max_I and
     // max_J faces and max_I-max_J edge for use by later neighbors...
-    cell.max_I_nodes.resize(cell.m_unitCell->max_I_face.size());
-    for (size_t i = 0; i < cell.m_unitCell->max_I_face.size(); i++) {
-      auto idx            = cell.m_unitCell->max_I_face[i] + 1;
-      auto val            = map[idx];
-      cell.max_I_nodes[i] = val;
-    }
+    // Check whether cell has neighbors on max_I or max_J faces...
+    if (cell.m_i + 1 < grid.II()) {
+      cell.max_I_nodes.resize(cell.m_unitCell->max_I_face.size());
+      for (size_t i = 0; i < cell.m_unitCell->max_I_face.size(); i++) {
+        auto idx            = cell.m_unitCell->max_I_face[i] + 1;
+        auto val            = map[idx];
+        cell.max_I_nodes[i] = val;
+      }
 #if defined(ZELLIJ_DEBUG)
-    fmt::print("\nCell {} {}\n", cell.m_i, cell.m_j);
-    fmt::print("max_I_nodes: {}\n", fmt::join(cell.max_I_nodes, " "));
+      fmt::print("\nCell {} {}\n", cell.m_i, cell.m_j);
+      fmt::print("max_I_nodes: {}\n", fmt::join(cell.max_I_nodes, " "));
 #endif
-    cell.max_J_nodes.resize(cell.m_unitCell->max_J_face.size());
-    for (size_t i = 0; i < cell.m_unitCell->max_J_face.size(); i++) {
-      auto idx            = cell.m_unitCell->max_J_face[i] + 1;
-      auto val            = map[idx];
-      cell.max_J_nodes[i] = val;
     }
+
+    if (cell.m_j + 1 < grid.JJ()) {
+      cell.max_J_nodes.resize(cell.m_unitCell->max_J_face.size());
+      for (size_t i = 0; i < cell.m_unitCell->max_J_face.size(); i++) {
+        auto idx            = cell.m_unitCell->max_J_face[i] + 1;
+        auto val            = map[idx];
+        cell.max_J_nodes[i] = val;
+      }
 #if defined(ZELLIJ_DEBUG)
-    fmt::print("max_J_nodes: {}\n", fmt::join(cell.max_J_nodes, " "));
+      fmt::print("max_J_nodes: {}\n", fmt::join(cell.max_J_nodes, " "));
 #endif
-    // Iterate the connectivity and set connect[i] = map[connect[i]]
-    grid.m_region->get_database()->progress(
-        fmt::format("Generate Node Map Cell({}, {})", cell.m_i, cell.m_j));
+    }
 #if defined(ZELLIJ_DEBUG)
     fmt::print("           MAP: {}\n", fmt::join(map, " "));
 #endif

@@ -20,8 +20,9 @@ public:
   int debug() const { return debugLevel_; }
 
   std::string lattice() const { return lattice_; }
-  bool        ints64bit() const { return ints64bit_; }
+  bool        ints32bit() const { return ints32bit_; }
   bool        use_netcdf4() const { return useNetcdf4_; }
+  bool        use_netcdf5() const { return useNetcdf5_; }
 
   int  compression_level() const { return compressionLevel_; }
   bool zlib() const { return zlib_; }
@@ -40,8 +41,9 @@ private:
   std::string lattice_{};
   int         debugLevel_{0};
   int         compressionLevel_{0};
-  bool        ints64bit_{false};
+  bool        ints32bit_{false};
   bool        useNetcdf4_{false};
+  bool        useNetcdf5_{false};
   bool        zlib_{true};
   bool        szip_{false};
 };
