@@ -131,14 +131,14 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   }
 
   if (debug_level & 1) {
-    fmt::print(stderr, "{}", time_stamp(tsFormat));
+    fmt::print(stderr, "{} Begin Execution\n", time_stamp(tsFormat));
   }
 
   UnitCellMap unit_cells;
   auto        grid = define_lattice(unit_cells, interFace);
 
   if (debug_level & 1) {
-    fmt::print(stderr, "{}", time_stamp(tsFormat));
+    fmt::print(stderr, "{} Lattice Defined\n", time_stamp(tsFormat));
   }
 
   // All unit cells have been mapped into the IxJ grid, now calculate all node / element offsets
@@ -146,7 +146,7 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   //
   // Iterate through the grid starting with (0,0) and accumulate node and element counts...
   if (debug_level & 1) {
-    fmt::print(stderr, "{} Finalize\n", time_stamp(tsFormat));
+    fmt::print(stderr, "{} Finalize Lattice\n", time_stamp(tsFormat));
   }
 
   grid.finalize();
@@ -155,10 +155,6 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
     fmt::print(stderr, "{} Output Model\n", time_stamp(tsFormat));
   }
   grid.output_model((INT)0);
-
-  if (debug_level & 1) {
-    fmt::print(stderr, "{} Done\n", time_stamp(tsFormat));
-  }
 
   /*************************************************************************/
   // EXIT program
@@ -169,6 +165,8 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   double end = Ioss::Utils::timer();
   fmt::print("******* END *******\n");
   fmt::print(stderr, "\nTotal Execution time     = {:.5} seconds.\n", end - begin);
+  double hwm = (double)Ioss::Utils::get_hwm_memory_info() / 1024.0 / 1024.0;
+  fmt::print(stderr, "High-Water Memory Use    = {:.3} MiBytes.\n", hwm);
   return (end - begin);
 }
 
@@ -330,6 +328,9 @@ namespace {
 
     auto output_region = create_output_region(interFace);
     Grid grid(output_region, II, JJ);
+
+    fmt::print("\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
+	       unit_cells.size(), II, JJ, KK);
 
     size_t row{0};
     while (getline(input, line)) {

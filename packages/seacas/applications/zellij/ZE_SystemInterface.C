@@ -64,9 +64,9 @@ void SystemInterface::enroll_options()
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
-                  "\t\t  1 = timing information.\n"
+                  "\t\t  1 = time stamp information.\n"
                   "\t\t  2 = memory information.\n"
-                  "\t\t  4 = Verbose Element block information.\n"
+                  "\t\t  4 = Verbose Unit Cell information.\n"
                   "\t\t  8 = put exodus library into verbose mode.\n",
                   "0");
 

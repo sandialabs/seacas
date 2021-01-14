@@ -12,6 +12,8 @@
 #include "Ioss_SmartAssert.h"
 #include "fmt/format.h"
 
+extern unsigned int debug_level;
+
 namespace {
   bool approx_equal(double A, double B)
   {
@@ -121,10 +123,12 @@ UnitCell::UnitCell(std::shared_ptr<Ioss::Region> region) : m_region(region)
   cell_II = min_J_face.size() / cell_KK;
   cell_JJ = min_I_face.size() / cell_KK;
 
-  fmt::print("\nFor UnitCell {}:\n", m_region->name());
-  fmt::print("\tThe minI face contains {} nodes\n", min_I_face.size());
-  fmt::print("\tThe minJ face contains {} nodes\n", min_J_face.size());
-  fmt::print("\tThe calculated cell shape is {} x {} x {}\n", cell_II, cell_JJ, cell_KK);
+  if (debug_level & 4) {
+    fmt::print("\nUnitCell {}:\n", m_region->name());
+    fmt::print("\tThe minI face contains {} nodes\n", min_I_face.size());
+    fmt::print("\tThe minJ face contains {} nodes\n", min_J_face.size());
+    fmt::print("\tThe calculated cell shape is {} x {} x {}\n", cell_II, cell_JJ, cell_KK);
+  }
 }
 
 std::vector<int> UnitCell::categorize_nodes(bool neighbor_i, bool neighbor_j) const
