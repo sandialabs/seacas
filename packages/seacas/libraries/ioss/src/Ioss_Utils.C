@@ -891,10 +891,14 @@ size_t Ioss::Utils::get_memory_info()
   // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
   size_t memory_usage = 0;
 #if defined(_WIN32)
+#if 0
   /* Windows -------------------------------------------------- */
   PROCESS_MEMORY_COUNTERS info;
   GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
   memory_usage = (size_t)info.WorkingSetSize;
+#else
+  memory_usage = 0;
+#endif
 
 #elif defined(__APPLE__) && defined(__MACH__)
   kern_return_t               error;
