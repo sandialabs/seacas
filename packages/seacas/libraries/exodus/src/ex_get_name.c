@@ -43,10 +43,10 @@ int ex_get_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, char
   }
 
   switch (obj_type) {
-  case EX_ASSEMBLY: ;
+  case EX_ASSEMBLY: {
     ex_assembly assembly = {entity_id, name};
     return ex_get_assembly(exoid, &assembly);
-
+  }
   case EX_ELEM_BLOCK: vobj = VAR_NAME_EL_BLK; break;
   case EX_EDGE_BLOCK: vobj = VAR_NAME_ED_BLK; break;
   case EX_FACE_BLOCK: vobj = VAR_NAME_FA_BLK; break;
