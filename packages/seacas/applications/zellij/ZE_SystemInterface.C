@@ -19,7 +19,7 @@ SystemInterface::~SystemInterface() = default;
 
 void SystemInterface::enroll_options()
 {
-  options_.usage("[options] list_of_files_to_join");
+  options_.usage("[options] -lattice <lattice_definition_file>");
 
   options_.enroll("help", GetLongOption::NoValue, "Print this summary and exit", nullptr);
 
