@@ -186,7 +186,6 @@ namespace ExoModules {
       int64_t             block = (int)get<0>(sect);
 
       int64_t                nodes_per_elem{0};
-      int64_t                num_elems{0};
       std::unique_ptr<int[]> elemCon;
       int                    retvalue{0};
 
@@ -197,7 +196,6 @@ namespace ExoModules {
         }
       }
 
-      num_elems      = (int)thisBlock.size();
       nodes_per_elem = (int)get<2>(thisBlock[0]);
 
       int n = nodes_per_elem == 4 ? 0 : 1;

@@ -48,9 +48,7 @@ namespace ExoModules {
     vector<gridType>    gridList;
     vector<elementType> elementList;
 
-    // The minus one is to support the
-    // zero terminations...
-    char modelTitle[MAX_LINE_LENGTH - 1]{'\0'};
+    char modelTitle[MAX_LINE_LENGTH]{'\0'};
 
     int exoFileID;
 
