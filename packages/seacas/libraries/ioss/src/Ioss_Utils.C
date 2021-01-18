@@ -959,10 +959,14 @@ size_t Ioss::Utils::get_hwm_memory_info()
   // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
   size_t memory_usage = 0;
 #if defined(_WIN32)
+#if 0
   /* Windows -------------------------------------------------- */
   PROCESS_MEMORY_COUNTERS info;
   GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
   memory_usage = (size_t)info.PeakWorkingSetSize;
+#else
+  memory_usage = 0;
+#endif
 
 #elif (defined(_AIX) || defined(__TOS__AIX__)) ||                                                  \
     (defined(__sun__) || defined(__sun) || defined(sun) && (defined(__SVR4) || defined(__svr4__)))
