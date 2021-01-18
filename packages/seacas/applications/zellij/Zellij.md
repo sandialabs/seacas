@@ -18,17 +18,17 @@ in the grid or lattice containing one of the unit cell template
 meshes.
 
 * [Execution](#execution)
-* [Lattice Description File Format](#Lattice Description File Format)
-  * [Unit Cell Dictionary](#Unit Cell Dictionary)
-  * [Unit Cell Template Mesh Requirements](#Unit Cell Template Mesh Requirements)
-* [Execution Complexity](#Execution Complexity)
-  * [Memory Complexity](#Memory Complexity)
-  * [Execution Time Complexity](#Execution Time Complexity)
-  * [Efficiency at the NetCDF level](#Efficiency at the NetCDF level)
-  * [Format](#Format)
-  * [Integer Size](#Integer Size)
-  * [Compression](#Compression)
-  * [Recommendations](#Recommendations)
+* [Lattice Description File Format](#lattice-description-file-format)
+  * [Unit Cell Dictionary](#unit-cell-dictionary)
+  * [Unit Cell Template Mesh Requirements](#unit-cell-template-mesh-requirements)
+* [Execution Complexity](#execution-complexity)
+  * [Memory Complexity](#memory-complexity)
+  * [Execution Time Complexity](#execution-time-complexity)
+  * [Efficiency at the NetCDF level](#efficiency-at-the-netcdf-level)
+  * [Format](#format)
+  * [Integer Size](#integer-size)
+  * [Compression](#compression)
+  * [Recommendations](#recommendations)
 * [TODO](#TODO)
 
 
