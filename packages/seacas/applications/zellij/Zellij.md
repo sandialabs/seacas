@@ -47,7 +47,7 @@ usage: zellij [options] -lattice <lattice_definition_file>
 	-help (Print this summary and exit)
 	-version (Print version and exit)
 	-lattice <$val> (Name of file to read lattice definition from.)
-	-output <$val> (Name of output file to create)
+	-output <$val> (Name of output file to create. Default is `zellij-out.e`)
 	-netcdf3 (Output database will be a netcdf3 native classical netcdf file format (32-bit only))
 	-netcdf4 (Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format (default))
 	-netcdf5 (Output database will be a netcdf5 (CDF5) file instead of the classical netcdf file format)
@@ -69,6 +69,8 @@ usage: zellij [options] -lattice <lattice_definition_file>
 	->->-> Send email to gdsjaar@sandia.gov for zellij support.<-<-<-
 ```
 The only required option is `-lattice` followed by the name of the file containing the lattice description.  The other options are used to specify compression of the output file; the format of the output file; or to request additional debug output.
+
+If the `-output <filename>` option is not specified, then the output mesh will be named `zellij-out.e`.
 
 ## Lattice Description File Format
 The format of the lattice description file is fairly simple, but is also very rigid.  There are two sections of the file -- the _unit cell_ dictionary and the _lattice_ definition.

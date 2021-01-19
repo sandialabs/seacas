@@ -28,8 +28,8 @@ void SystemInterface::enroll_options()
   options_.enroll("lattice", GetLongOption::MandatoryValue,
                   "Name of file to read lattice definition from.", "");
 
-  options_.enroll("output", GetLongOption::MandatoryValue, "Name of output file to create",
-                  "zellij-out.e");
+  options_.enroll("output", GetLongOption::MandatoryValue,
+                  "Name of output file to create. Default is `zellij-out.e`", "zellij-out.e");
 
   options_.enroll("netcdf3", GetLongOption::NoValue,
                   "Output database will be a netcdf3 "
