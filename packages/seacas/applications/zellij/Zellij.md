@@ -239,7 +239,7 @@ For minimal overhead, it is recommended that:
   * The integer size of the output mesh can be specified using the `-32` or `-64` options.  
   * The `-64` option is the default.
 
-It is most efficient if the format and integer size of the input mesh matches the output mesh.  The format of the input meshes can be converted using the `io_shell` application with the `-netcdf4` and `-64` or `-32` options.
+It is most efficient if the format and integer size of the input mesh matches the output mesh.  The format of the input meshes can be converted using the `io_shell` application with the `-netcdf4` and `-64` or `-32` options. The format and integer size of a mesh can be queried using the `exo_format` application.
          
 For illustration, here is the execution time for several runs with different format and integer size.  In all cases, the input and output mesh sizes are the same:
 
