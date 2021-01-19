@@ -12,7 +12,7 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
 
-// `grid` stores the data for the tesselation of size `IxJ`
+// `grid` stores the data for the tessellation of size `IxJ`
 //  * gridI -- extent in I direction
 //  * gridJ -- extend in J direction
 //  * grid(i,j) -- return database information at i,j location

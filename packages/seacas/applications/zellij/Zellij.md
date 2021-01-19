@@ -67,7 +67,7 @@ zellij [options] -lattice <lattice_definition_file>
 
 	->->-> Send email to gdsjaar@sandia.gov for zellij support.<-<-<-
 ```
-The only required option is `-lattice` followed by the name of the file containing the lattice description.  The other options are used to specify compression of the output file; the format of the output file; or to request additional debug ouput.
+The only required option is `-lattice` followed by the name of the file containing the lattice description.  The other options are used to specify compression of the output file; the format of the output file; or to request additional debug output.
 
 ## Lattice Description File Format
 The format of the lattice description file is fairly simple, but is also very rigid.  There are two sections of the file -- the _unit cell_ dictionary and the _lattice_ definition.
@@ -89,7 +89,7 @@ END_DICTIONARY
 ```
 The unit cell dictionary must appear before the lattice definition in the lattice description file.
 
-If an error is detected during the parsing of the unit cell dictionary, the code will ouptut an error message and terminate.  Errors can be incorrect syntax, missing unit cell template meshes, duplicate keys, or problems reading the mesh description from a unit cell template mesh.  The unit cell template mesh file is accessed and partially read at the time that zellij parses the corresponding unit cell dictionary line.
+If an error is detected during the parsing of the unit cell dictionary, the code will output an error message and terminate.  Errors can be incorrect syntax, missing unit cell template meshes, duplicate keys, or problems reading the mesh description from a unit cell template mesh.  The unit cell template mesh file is accessed and partially read at the time that zellij parses the corresponding unit cell dictionary line.
 
 ### Lattice Definition
 
@@ -101,7 +101,7 @@ The last line of the lattice definition is the line `END_LATTICE`.  When that li
 
 Between the `BEGIN_LATTICE` and `END_LATTICE` are `{j}` lines with `{i}` entries per line.  The entries are any of the _key_s that were specified in the unit cell dictionary.  
 
-As an example, here is a valid lattice defintion using the keys of the example dictionary from the previous section:
+As an example, here is a valid lattice definition using the keys of the example dictionary from the previous section:
 
 ```
 BEGIN_LATTICE 5  5  1
@@ -117,7 +117,7 @@ Although the lattice is typically symmetric and square, this is not a requiremen
 
 If an error is detected during the parsing of the _lattice_, the code will output an error message and terminate.  Errors can include invalid keys, incorrect number of lattice definition lines, or incorrect number of keys on a definition line.
 
-Note that zellij does not require that the unit cell keys be numeric; the following example shows a different method for specifying the same lattice definiton file as the previous example:
+Note that zellij does not require that the unit cell keys be numeric; the following example shows a different method for specifying the same lattice definition file as the previous example:
 
 ```
 BEGIN_DICTIONARY
@@ -217,9 +217,9 @@ For a large model, the majority of the execution time is related to:
 The Exodus format which is used for the unit cell template meshes and the output mesh uses the NetCDF library for on-disk storage.  There are several variants of the NetCDF on-disk storage including the format: `netcdf3`, `netcdf4`, and `netcdf5` and the integer size (32-bit integers or 64-bit integers).  Although these details are usually transparent to the user, they can affect the execution time especially when very large meshes are being processed.
 
 #### Format
-The `netcdf3` format is the original native NetCDF format.  At the time the library was being developed, the `byte endianess` of data stored on disk was not standard among the computes in use at that time and the NetCDF developers had to pick an `endianess` for the data.  They picked the XDR standard which stood for _eXternal Data Representation_ which was used for communicating between different computer systems.  Regretfully, the representation used by XDR turned out to be opposite of the representation used by (almost?) all systems in use today, so each read and write of data in the `netcdf3` format results in a translation of the endianess.  This translation is very fast, but is overhead that would not be needed if the on-disk format was the opposite representation.  This representation is also used by the `netcdf5` format.  
+The `netcdf3` format is the original native NetCDF format.  At the time the library was being developed, the `byte endianness` of data stored on disk was not standard among the computes in use at that time and the NetCDF developers had to pick an `endianness` for the data.  They picked the XDR standard which stood for _eXternal Data Representation_ which was used for communicating between different computer systems.  Regretfully, the representation used by XDR turned out to be opposite of the representation used by (almost?) all systems in use today, so each read and write of data in the `netcdf3` format results in a translation of the endianness.  This translation is very fast, but is overhead that would not be needed if the on-disk format was the opposite representation.  This representation is also used by the `netcdf5` format.  
 
-However, the NetCDF `netcdf4` format is based on using the HDF5 library to manage the underlying data format on disk and it can read and write data using the native endianess of the system on which the data is being read and written and therefore does not incur the cost of transforming the data's endianess.
+However, the NetCDF `netcdf4` format is based on using the HDF5 library to manage the underlying data format on disk and it can read and write data using the native endianness of the system on which the data is being read and written and therefore does not incur the cost of transforming the data's endianness.
 
 #### Integer Size
 By default, most current mesh generators will output a mesh using 32-bit integer data.  This is sufficient to represent a mesh with up to approximately 2.1 billion nodes and elements.  
