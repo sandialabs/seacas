@@ -31,10 +31,15 @@ void SystemInterface::enroll_options()
   options_.enroll("output", GetLongOption::MandatoryValue, "Name of output file to create",
                   "zellij-out.e");
 
+  options_.enroll("netcdf3", GetLongOption::NoValue,
+                  "Output database will be a netcdf3 "
+                  "native classical netcdf file format (32-bit only)",
+                  nullptr);
+
   options_.enroll("netcdf4", GetLongOption::NoValue,
                   "Output database will be a netcdf4 "
                   "hdf5-based file instead of the "
-                  "classical netcdf file format",
+                  "classical netcdf file format (default)",
                   nullptr);
 
   options_.enroll("netcdf5", GetLongOption::NoValue,
@@ -129,20 +134,26 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
+  // Default to 64...
+  ints32bit_ = options_.retrieve("32-bit") != nullptr;
+  if (options_.retrieve("64-bit") != nullptr) {
+    ints32bit_ = false;
+  }
+
+  if (options_.retrieve("netcdf3") != nullptr) {
+    ints32bit_  = true;
+    useNetcdf4_ = false;
+    useNetcdf5_ = false;
+  }
+
   if (options_.retrieve("netcdf4") != nullptr) {
     useNetcdf4_ = true;
     useNetcdf5_ = false;
   }
 
   if (options_.retrieve("netcdf5") != nullptr) {
-    useNetcdf5_ = true;
     useNetcdf4_ = false;
-  }
-
-  // Default to 64...
-  ints32bit_ = options_.retrieve("32-bit") != nullptr;
-  if (options_.retrieve("64-bit") != nullptr) {
-    ints32bit_ = false;
+    useNetcdf5_ = true;
   }
 
   if (options_.retrieve("szip") != nullptr) {

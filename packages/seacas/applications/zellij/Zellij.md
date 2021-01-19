@@ -41,14 +41,15 @@ zellij -help
 
 Zellij
 	(A code for tiling 1 or more template databases into a single output database.)
-	(Version: 0.0.6) Modified: 2021/01/14
+	(Version: 0.0.64) Modified: 2021/01/18
 
-zellij [options] -lattice <lattice_definition_file>
+usage: zellij [options] -lattice <lattice_definition_file>
 	-help (Print this summary and exit)
 	-version (Print version and exit)
 	-lattice <$val> (Name of file to read lattice definition from.)
 	-output <$val> (Name of output file to create)
-	-netcdf4 (Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format)
+	-netcdf3 (Output database will be a netcdf3 native classical netcdf file format (32-bit only))
+	-netcdf4 (Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format (default))
 	-netcdf5 (Output database will be a netcdf5 (CDF5) file instead of the classical netcdf file format)
 	-32-bit (True if forcing the use of 32-bit integers for the output file)
 	-64-bit (True if forcing the use of 64-bit integers for the output file (default))

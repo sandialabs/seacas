@@ -42,7 +42,7 @@ private:
   int         debugLevel_{0};
   int         compressionLevel_{0};
   bool        ints32bit_{false};
-  bool        useNetcdf4_{false};
+  bool        useNetcdf4_{true};
   bool        useNetcdf5_{false};
   bool        zlib_{true};
   bool        szip_{false};
