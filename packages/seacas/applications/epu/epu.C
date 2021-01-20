@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -1392,7 +1392,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
   if (subcycles > 2) {
     fmt::print("{}/{} ", cycle + 1, subcycles);
   }
-  fmt::print("\n\nTotal Execution Time = {:.2f} seconds.\n******* END *******\n", seacas_timer() - execution_time);
+  fmt::print("\n\nTotal Execution Time = {:.2f} seconds.\n******* END *******\n",
+             seacas_timer() - execution_time);
   return (0);
 }
 
@@ -1770,7 +1771,7 @@ namespace {
           glob_blocks[b].elementCount += temp_block.num_entry;
           glob_blocks[b].nodesPerElement = temp_block.num_nodes_per_entry;
           glob_blocks[b].attributeCount  = temp_block.num_attribute;
-          glob_blocks[b].position_       = b;
+          glob_blocks[b].position_       = (int)b;
           copy_string(glob_blocks[b].elType, temp_block.topology);
         }
 

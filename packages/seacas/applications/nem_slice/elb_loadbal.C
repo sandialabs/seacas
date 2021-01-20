@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -46,8 +46,8 @@
 
 int ilog2i(size_t n)
 {
-  size_t       i  = 0;
-  unsigned int n1 = n;
+  size_t i  = 0;
+  size_t n1 = n;
   while ((n1 >>= 1) != 0U) {
     ++i;
   }
@@ -1051,7 +1051,7 @@ namespace {
     size_t           num_found = 0;
 
     std::vector<int> list_ptr;
-    int              end;
+    size_t           end;
 
     /*
      * look for discontinuities in the graph
@@ -1135,7 +1135,7 @@ namespace {
                   ;
                 }
                 size_t distance = 1;
-                for (int i = graph->start[ecnt]; i < end; i++) {
+                for (size_t i = graph->start[ecnt]; i < end; i++) {
                   int proc2 = lb->vertex2proc[graph->adj[i] - 1];
                   assert(proc2 < machine->num_procs);
                   if (proc2 == proc) {
@@ -1165,7 +1165,7 @@ namespace {
                   else {
                     end = graph->nadj;
                   }
-                  for (int i = graph->start[ecnt]; i < end; i++) {
+                  for (size_t i = graph->start[ecnt]; i < end; i++) {
                     int proc2 = lb->vertex2proc[graph->adj[i] - 1];
                     assert(proc2 < machine->num_procs);
                     if (proc2 == proc) {

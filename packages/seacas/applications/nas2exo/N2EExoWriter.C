@@ -226,7 +226,7 @@ namespace ExoModules {
       // C++ 11 support
       elemCon.reset(new int[nodes_per_elem * thisBlock.size()]());
 
-      unsigned numNodesCopied{0};
+      int64_t numNodesCopied{0};
 
       for (elementType elem : thisBlock) {
 

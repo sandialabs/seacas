@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -569,8 +569,8 @@ namespace {
 
   bool close_compare(const std::string &st1, const std::string &st2)
   {
-    unsigned len1 = st1.size();
-    unsigned len2 = st2.size();
+    auto len1 = st1.size();
+    auto len2 = st2.size();
 
     // Check that digits (if any) at end of names match
     while ((isdigit(st1[len1 - 1]) != 0) && (isdigit(st2[len2 - 1]) != 0)) {
