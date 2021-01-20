@@ -60,8 +60,9 @@ usage: zellij [options] -lattice <lattice_definition_file>
 		  1 = time stamp information.
 		  2 = memory information.
 		  4 = Verbose Unit Cell information.
-		  8 = put exodus library into verbose mode.
-)
+		  8 = verbose output of Grid finalization calculations.
+		 16 = put exodus library into verbose mode.
+
 	-copyright (Show copyright and license data.)
 
 	Can also set options via ZELLIJ_OPTIONS environment variable.

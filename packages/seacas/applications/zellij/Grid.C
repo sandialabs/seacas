@@ -32,11 +32,11 @@ void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
 
 void Grid::finalize()
 {
-  // All unit_cells have same X, Y (and Z) extent.  Only need X and Y
   if (debug_level & 2) {
     util().progress(__func__);
   }
 
+  // All unit_cells have same X, Y (and Z) extent.  Only need X and Y
   auto x_range = get_cell(0, 0).get_coordinate_range(Axis::X);
   auto y_range = get_cell(0, 0).get_coordinate_range(Axis::Y);
 
@@ -60,10 +60,10 @@ void Grid::finalize()
       cell.m_localNodeIdOffset  = global_node_count;
       SMART_ASSERT(cell.m_unitCell->m_region != nullptr)(i)(j);
       auto new_nodes = cell.added_node_count();
-#if defined(ZELLIJ_DEBUG)
-      fmt::print("i, j, node_offset, added_nodes: {} {} {} {}\n", i, j, global_node_count,
-                 new_nodes);
-#endif
+      if (debug_level & 8) {
+        fmt::print("i, j, node_offset, added_nodes: {} {} {} {}\n", i, j, global_node_count,
+                   new_nodes);
+      }
       global_node_count += new_nodes;
 
       const auto &element_blocks = cell.m_unitCell->m_region->get_element_blocks();
@@ -75,11 +75,11 @@ void Grid::finalize()
         element_block_elem_count[blk] += block->entity_count();
         global_elem_count += block->entity_count();
 
-#if defined(ZELLIJ_DEBUG)
-        fmt::print("i, j, blk, offset, block_count, global_count: {} {} {} {} {} {}\n", i, j, blk,
-                   cell.m_globalElementIdOffset[blk], element_block_elem_count[blk],
-                   global_elem_count);
-#endif
+        if (debug_level & 8) {
+          fmt::print("i, j, blk, offset, block_count, global_count: {} {} {} {} {} {}\n", i, j, blk,
+                     cell.m_globalElementIdOffset[blk], element_block_elem_count[blk],
+                     global_elem_count);
+        }
 
         // Create output element block if does not exist yet...
         if (output_element_blocks.find(blk) == output_element_blocks.end()) {
@@ -87,8 +87,8 @@ void Grid::finalize()
         }
       }
 
-      cell.m_offX = (x_range.second - x_range.first) * i;
-      cell.m_offY = (y_range.second - y_range.first) * j;
+      cell.m_offX = (x_range.second - x_range.first) * (double)i;
+      cell.m_offY = (y_range.second - y_range.first) * (double)j;
 
       cell.m_consistent = true;
       if (debug_level & 2) {
@@ -99,13 +99,14 @@ void Grid::finalize()
 
   // Define the output database...
   // Define a node block...
-  std::string block_name        = "nodeblock_1";
-  int         spatial_dimension = 3;
-  auto        block = new Ioss::NodeBlock(m_region->get_database(), block_name, global_node_count,
-                                   spatial_dimension);
-  block->property_add(Ioss::Property("id", 1));
-
-  m_region->add(block);
+  {
+    std::string block_name        = "nodeblock_1";
+    int         spatial_dimension = 3;
+    auto        block = new Ioss::NodeBlock(m_region->get_database(), block_name, global_node_count,
+                                     spatial_dimension);
+    block->property_add(Ioss::Property("id", 1));
+    m_region->add(block);
+  }
 
   for (auto &blk : output_element_blocks) {
     auto *block = blk.second;
@@ -194,16 +195,16 @@ template <typename INT> void Grid::output_block_connectivity(INT /*dummy*/)
       auto  blocks   = cell.m_unitCell->m_region->get_element_blocks();
       for (const auto *block : blocks) {
         block->get_field_data("connectivity_raw", connect);
-        for (size_t i = 0; i < connect.size(); i++) {
-          connect[i] = node_map[connect[i]];
+        for (size_t k = 0; k < connect.size(); k++) {
+          connect[k] = node_map[connect[k]];
         }
         auto start = cell.m_globalElementIdOffset[block->name()] + 1;
         auto count = block->entity_count();
         auto id    = block->get_property("id").get_int();
-#if defined(ZELLIJ_DEBUG)
-        fmt::print(stderr, "i, j, blk, id, start, count: {} {} {} {} {} {}\n", i, j, block->name(),
-                   id, start, count);
-#endif
+        if (debug_level & 8) {
+          fmt::print(stderr, "i, j, blk, id, start, count: {} {} {} {} {} {}\n", i, j,
+                     block->name(), id, start, count);
+        }
         ex_put_partial_conn(exoid, EX_ELEM_BLOCK, id, start, count, connect.data(), nullptr,
                             nullptr);
       }
@@ -236,7 +237,7 @@ namespace {
       auto categorized_nodes = cell.categorize_nodes();
       SMART_ASSERT(categorized_nodes.size() == cell_node_count)
       (categorized_nodes.size())(cell_node_count);
-      size_t offset = cell.m_globalNodeIdOffset + 1;
+      INT offset = (INT)cell.m_globalNodeIdOffset + 1;
       for (size_t n = 0; n < cell_node_count; n++) {
         if (categorized_nodes[n] == 0) {
           map[n + 1] = offset++;
@@ -252,7 +253,7 @@ namespace {
       for (size_t i = 0; i < cell.m_unitCell->min_I_face.size(); i++) {
         auto idx = cell.m_unitCell->min_I_face[i] + 1;
         auto val = neighbor.max_I_nodes[i];
-        map[idx] = val;
+        map[idx] = (INT)val;
       }
 
       // Can now clean out the neighbors max_I_nodes list since this
@@ -265,7 +266,7 @@ namespace {
       for (size_t i = 0; i < cell.m_unitCell->min_J_face.size(); i++) {
         auto idx = cell.m_unitCell->min_J_face[i] + 1;
         auto val = neighbor.max_J_nodes[i];
-        map[idx] = val;
+        map[idx] = (INT)val;
       }
       Ioss::Utils::clear(neighbor.max_J_nodes);
     }
@@ -280,10 +281,10 @@ namespace {
         auto val            = map[idx];
         cell.max_I_nodes[i] = val;
       }
-#if defined(ZELLIJ_DEBUG)
-      fmt::print("\nCell {} {}\n", cell.m_i, cell.m_j);
-      fmt::print("max_I_nodes: {}\n", fmt::join(cell.max_I_nodes, " "));
-#endif
+      if (debug_level & 8) {
+        fmt::print("\nCell {} {}\n", cell.m_i, cell.m_j);
+        fmt::print("max_I_nodes: {}\n", fmt::join(cell.max_I_nodes, " "));
+      }
     }
 
     if (cell.m_j + 1 < grid.JJ()) {
@@ -293,13 +294,13 @@ namespace {
         auto val            = map[idx];
         cell.max_J_nodes[i] = val;
       }
-#if defined(ZELLIJ_DEBUG)
-      fmt::print("max_J_nodes: {}\n", fmt::join(cell.max_J_nodes, " "));
-#endif
+      if (debug_level & 8) {
+        fmt::print("max_J_nodes: {}\n", fmt::join(cell.max_J_nodes, " "));
+      }
     }
-#if defined(ZELLIJ_DEBUG)
-    fmt::print("           MAP: {}\n", fmt::join(map, " "));
-#endif
+    if (debug_level & 8) {
+      fmt::print("           MAP: {}\n", fmt::join(map, " "));
+    }
     return map;
   }
 } // namespace

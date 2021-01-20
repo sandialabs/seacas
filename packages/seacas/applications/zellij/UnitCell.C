@@ -84,16 +84,14 @@ UnitCell::UnitCell(std::shared_ptr<Ioss::Region> region) : m_region(region)
   sort_face_nodes(min_J_face, coord_z, coord_x);
   sort_face_nodes(max_J_face, coord_z, coord_x);
 
-#if defined(ZELLIJ_DEBUG)
-  // Output each set of nodes --
-  if (min_I_face.size() <= 200) {
+  if (debug_level & 4) {
+    // Output each set of nodes --
     fmt::print("\nSORTED:\n");
     fmt::print("Min I: {}\n\n", fmt::join(min_I_face, " "));
     fmt::print("Max I: {}\n\n", fmt::join(max_I_face, " "));
     fmt::print("Min J: {}\n\n", fmt::join(min_J_face, " "));
     fmt::print("Max J: {}\n\n", fmt::join(max_J_face, " "));
   }
-#endif
 
   for (size_t i = 0; i < min_I_face.size(); i++) {
     auto minI = min_I_face[i];

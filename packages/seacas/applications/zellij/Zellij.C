@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "add_to_log.h"
+#include "fmt/chrono.h"
 #include "fmt/ostream.h"
 #include "tokenize.h"
 
@@ -177,19 +178,10 @@ namespace {
       return std::string("");
     }
 
-    const int   length = 256;
-    static char time_string[length];
-
-    time_t     calendar_time = time(nullptr);
-    struct tm *local_time    = localtime(&calendar_time);
-
-    int error = strftime(time_string, length, format.c_str(), local_time);
-    if (error != 0) {
-      time_string[length - 1] = '\0';
-      return std::string(time_string);
-    }
-
-    return std::string("[ERROR]");
+    time_t      calendar_time = std::time(nullptr);
+    struct tm * local_time    = std::localtime(&calendar_time);
+    std::string time_string   = fmt::format(format, *local_time);
+    return time_string;
   }
 
   std::shared_ptr<Ioss::Region> create_input_region(const std::string &key, std::string filename,
@@ -330,7 +322,7 @@ namespace {
     Grid grid(output_region, II, JJ);
 
     fmt::print("\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
-	       unit_cells.size(), II, JJ, KK);
+               unit_cells.size(), II, JJ, KK);
 
     size_t row{0};
     while (getline(input, line)) {
@@ -338,7 +330,7 @@ namespace {
         continue;
       }
 
-      auto tokens = Ioss::tokenize(line, " ");
+      tokens = Ioss::tokenize(line, " ");
       if (tokens[0] == "END_LATTICE") {
         assert(in_lattice && !in_dictionary);
         in_lattice = false;

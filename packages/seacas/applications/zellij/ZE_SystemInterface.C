@@ -72,7 +72,8 @@ void SystemInterface::enroll_options()
                   "\t\t  1 = time stamp information.\n"
                   "\t\t  2 = memory information.\n"
                   "\t\t  4 = Verbose Unit Cell information.\n"
-                  "\t\t  8 = put exodus library into verbose mode.\n",
+                  "\t\t  8 = verbose output of Grid finalization calculations.\n"
+                  "\t\t 16 = put exodus library into verbose mode.\n",
                   "0");
 
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);

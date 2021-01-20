@@ -26,42 +26,50 @@
 class Grid
 {
 public:
+  //! Create an empty grid of size `extent_i` x `extent_j`.  The output mesh will
+  //! be written to the exodus database in the Ioss::Region `region`
   Grid(std::unique_ptr<Ioss::Region> &region, size_t extent_i, size_t extent_j)
       : m_region(std::move(region)), m_gridI(extent_i), m_gridJ(extent_j)
   {
     m_grid.resize(m_gridI * m_gridJ);
   }
 
-  GridEntry &get_cell(int i, int j)
+  //! Return a reference to the GridEntry cell at location `(i,j)`.
+  //! Does not check that `i` and `j` are in bounds.
+  GridEntry &get_cell(size_t i, size_t j)
   {
     size_t idx = i * m_gridJ + j;
-    return get_cell(idx);
+    return m_grid[idx];
   }
 
-  GridEntry &get_cell(int index) { return m_grid[index]; }
-  size_t     II() const { return m_gridI; }
-  size_t     JJ() const { return m_gridJ; }
-  size_t     size() const { return m_gridI * m_gridJ; }
+  //! Return `I` extent of the grid / lattice
+  size_t II() const { return m_gridI; }
+  //! Return `J` extent of the grid / lattice
+  size_t JJ() const { return m_gridJ; }
+  //! Return total number of cells in the grid / lattice
+  size_t size() const { return m_gridI * m_gridJ; }
 
+  //! Create a GridEntry object referencing the UnitCell `unit_cell` at location `(i,j)`
   void initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell);
+
+  //! Once all GridEntry objects have been initialized, Determine the coordinate extents and
+  //! offsets of each cell, the size of the output mesh, the node and element id offsets
+  //! for each cell, the number of nodes and elements in the output mesh and initialize
+  //! the output mesh.
   void finalize();
 
+  //! Output node coordinates and element block connectivities for the output mesh.
   template <typename INT> void output_model(INT /*dummy*/);
 
-  const Ioss::ParallelUtils &util() const { return m_pu; }
-
 private:
-  void output_nodal_coordinates();
-
+  const Ioss::ParallelUtils &  util() const { return m_pu; }
+  void                         output_nodal_coordinates();
   template <typename INT> void output_block_connectivity(INT /*dummy*/);
 
-public:
   std::unique_ptr<Ioss::Region> m_region;
-
-private:
-  std::vector<GridEntry> m_grid{};
-  Ioss::ParallelUtils    m_pu{MPI_COMM_WORLD};
-  size_t                 m_gridI{0};
-  size_t                 m_gridJ{0};
+  std::vector<GridEntry>        m_grid{};
+  Ioss::ParallelUtils           m_pu{MPI_COMM_WORLD};
+  size_t                        m_gridI{0};
+  size_t                        m_gridJ{0};
 };
 #endif
