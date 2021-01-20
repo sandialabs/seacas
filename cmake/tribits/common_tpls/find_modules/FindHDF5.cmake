@@ -383,6 +383,12 @@ else()
       set(HDF5_INCLUDE_DIRS ${HDF5_INCLUDE_DIR})
 
       set(HDF5_LIBRARIES "${HDF5_EXPORT_LIBRARIES}")
+      if (HDF5_IS_PARALLEL)
+        find_package(MPI)
+        if (MPI_C_FOUND)
+          set(HDF5_LIBRARIES ${HDF5_LIBRARIES} MPI::MPI_C)
+        endif()
+      endif()
       set(HDF5_C_LIBRARIES "${HDF5_LIBRARIES}")
 
     endif(HDF5_FOUND)  
