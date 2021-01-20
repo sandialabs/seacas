@@ -18,6 +18,7 @@
 #include <Ioss_Region.h>
 
 #include <algorithm>
+#include <numeric>
 #include <chrono>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
