@@ -266,7 +266,7 @@ namespace {
       for (size_t e1 = 0; is_same && e1 < num_element; e1++) {
         for (size_t n = 0; is_same && n < nnpe; ++n) {
           size_t off1 = e1 * nnpe + n;
-          size_t e2   = elmt_map[element_offset + e1];
+          auto   e2   = elmt_map[element_offset + e1];
           if (e2 >= 0) { // If doing partial map, not all elements have a match
             e2 -= element_offset;
             size_t off2 = e2 * nnpe + n;
