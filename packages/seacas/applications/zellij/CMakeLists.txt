@@ -9,6 +9,7 @@ SET(HEADERS "")
 SET(SOURCES Grid.C
 	    GridEntry.C
 	    UnitCell.C
+	    Decompose.C
 	    ZE_SystemInterface.C
 	    Zellij.C)
 

@@ -67,6 +67,26 @@ void SystemInterface::enroll_options()
                   "on the output file.",
                   nullptr);
 
+  options_.enroll("ranks", GetLongOption::MandatoryValue,
+                  "Number of ranks to decompose mesh across\n", "1");
+
+  options_.enroll(
+      "rcb", GetLongOption::NoValue,
+      "Use recursive coordinate bisection method to decompose the input mesh in a parallel run.",
+      nullptr);
+  options_.enroll(
+      "rib", GetLongOption::NoValue,
+      "Use recursive inertial bisection method to decompose the input mesh in a parallel run.",
+      nullptr);
+
+  options_.enroll(
+      "hsfc", GetLongOption::NoValue,
+      "Use hilbert space-filling curve method to decompose the input mesh in a parallel run.",
+      nullptr);
+
+  options_.enroll("ranks", GetLongOption::MandatoryValue,
+                  "Number of ranks to decompose mesh across\n", "1");
+
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
                   "\t\t  1 = time stamp information.\n"
@@ -74,7 +94,7 @@ void SystemInterface::enroll_options()
                   "\t\t  4 = Verbose Unit Cell information.\n"
                   "\t\t  8 = verbose output of Grid finalization calculations.\n"
                   "\t\t 16 = put exodus library into verbose mode.\n",
-                  "0");
+                  "\t\t 32 = Verbose decomposition information.\n", "0");
 
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
 }
@@ -96,6 +116,25 @@ bool SystemInterface::parse_options(int argc, char **argv)
   if (options_.retrieve("version") != nullptr) {
     // Version is printed up front, just exit...
     exit(0);
+  }
+
+  if (options_.retrieve("rcb") != nullptr) {
+    decompMethod_ = "RCB";
+  }
+
+  if (options_.retrieve("rib") != nullptr) {
+    decompMethod_ = "RIB";
+  }
+
+  if (options_.retrieve("hsfc") != nullptr) {
+    decompMethod_ = "HSFC";
+  }
+
+  {
+    const char *temp = options_.retrieve("ranks");
+    if (temp != nullptr) {
+      ranks_ = strtol(temp, nullptr, 10);
+    }
   }
 
   {
