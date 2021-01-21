@@ -408,7 +408,7 @@ namespace {
       eb->get_field_data("connectivity", conn);
 
       // Connectivity is in global id space; change to local...
-      for (size_t i = 0; i < num_elem * num_node_per_elem; i++) {
+      for (int64_t i = 0; i < num_elem * num_node_per_elem; i++) {
         int local = region.node_global_to_local(conn[i]);
         conn[i]   = local - 1;
       }

@@ -106,7 +106,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
   // that contain it. Then check if the column is all on one partition
   // - if not, fix it
 
-  for (int i = 0; i < nel; i++) {
+  for (size_t i = 0; i < nel; i++) {
     if (processed_flag[i])
       continue;
 
