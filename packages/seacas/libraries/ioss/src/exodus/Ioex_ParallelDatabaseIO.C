@@ -29,7 +29,6 @@
 #include <numeric>
 #include <set>
 #include <string>
-#include <sys/select.h>
 #include <tokenize.h>
 #include <unistd.h>
 #include <utility>
@@ -450,12 +449,14 @@ namespace Ioex {
     // create an ifdef'd version of the fix which is only applied to the
     // buggy mpiio code.  Therefore, we always do chdir call.  Maybe in several
     // years, we can remove this code and everything will work...
+
+#ifndef _WIN32
     Ioss::FileInfo file(filename);
     std::string    path = file.pathname();
     filename            = file.tailname();
-
     char *current_cwd = getcwd(nullptr, 0);
     chdir(path.c_str());
+#endif
 
     bool do_timer = false;
     Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
@@ -473,8 +474,10 @@ namespace Ioex {
       }
     }
 
+#ifndef _WIN32
     chdir(current_cwd);
     std::free(current_cwd);
+#endif
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
 
@@ -542,12 +545,13 @@ namespace Ioex {
 
     std::string filename = get_dwname();
 
+#ifndef _WIN32
     Ioss::FileInfo file(filename);
     std::string    path = file.pathname();
     filename            = file.tailname();
-
     char *current_cwd = getcwd(nullptr, 0);
     chdir(path.c_str());
+#endif
 
     bool do_timer = false;
     Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
@@ -585,8 +589,10 @@ namespace Ioex {
       }
     }
 
+#ifndef _WIN32
     chdir(current_cwd);
     std::free(current_cwd);
+#endif
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
 

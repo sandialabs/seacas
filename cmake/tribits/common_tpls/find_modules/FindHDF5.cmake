@@ -373,7 +373,7 @@ else()
       NO_MODULE)
 
     # If located a HDF5 configuration file
-    if (HDF5_FOUND)
+    if (HDF5_CONFIG)
 
       message(STATUS "Found CMake configuration file HDF5 ( directory ${HDF5_ROOT} )")
 
@@ -382,24 +382,24 @@ else()
       set(HDF5_IS_PARALLEL  ${HDF5_ENABLE_PARALLEL})
       set(HDF5_INCLUDE_DIRS ${HDF5_INCLUDE_DIR})
 
-      # Loop through each possible target and 
-      # build the HDF5_LIBRARIES.
-      # Target names set by the HDF5 configuration file
-      set(HDF5_LIBRARIES)
-
-      foreach( _component ${HDF5_VALID_COMPONENTS} )
-        set(target ${HDF5_${_component}_TARGET})
-	if ( TARGET ${target} )
-	  set(HDF5_${_component}_LIBRARY ${target})
-	  list(APPEND HDF5_LIBRARIES ${HDF5_${_component}_LIBRARY})
-	endif()  
+      foreach(HDF5_TARGET_SUFFIX shared static)
+        if (TARGET hdf5_hl-${HDF5_TARGET_SUFFIX})
+          set(HDF5_LIBRARIES ${HDF5_LIBRARIES} hdf5_hl-${HDF5_TARGET_SUFFIX})
+        endif()
+        if (TARGET hdf5-${HDF5_TARGET_SUFFIX})
+          set(HDF5_LIBRARIES ${HDF5_LIBRARIES} hdf5-${HDF5_TARGET_SUFFIX})
+          break()
+        endif()
       endforeach()
+      if (HDF5_IS_PARALLEL)
+        find_package(MPI)
+        if (MPI_C_FOUND)
+          set(HDF5_LIBRARIES ${HDF5_LIBRARIES} MPI::MPI_C)
+        endif()
+      endif()
+      set(HDF5_C_LIBRARIES "${HDF5_LIBRARIES}")
 
-      # Define HDF5_C_LIBRARIES to contain hdf5 and hdf5_hl C libraries
-      set(HDF5_C_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_CLIBRARY})
-      
-
-    endif(HDF5_FOUND)  
+    endif(HDF5_CONFIG)
     
   endif(NOT HDF5_NO_HDF5_CMAKE)
 

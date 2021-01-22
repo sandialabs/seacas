@@ -47,6 +47,7 @@
 // For memory utilities...
 #if defined(_WIN32)
 #include <windows.h>
+#include <psapi.h>
 #undef max
 
 #elif defined(__unix__) || defined(__unix) || defined(unix) ||                                     \
