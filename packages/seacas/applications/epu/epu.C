@@ -165,6 +165,41 @@ namespace {
     names = nullptr;
   }
 
+  int case_compare(const char *s1, const char *s2);
+  int case_compare(const std::string &s1, const std::string &s2);
+
+  template <typename INT>
+  void get_id_map(int exoid, ex_entity_type type, ex_inquiry inq_type, std::vector<INT> &ids)
+  {
+    // Check whether there is a "original_global_id_map" map on
+    // the database. If so, use it instead of the "elem_num_map".
+    bool map_read  = false;
+    int  map_count = ex_inquire_int(exoid, inq_type);
+    if (map_count > 0) {
+      char **names = get_name_array(map_count, Excn::ExodusFile::max_name_length());
+      int    error = ex_get_names(exoid, type, names);
+      if (error < 0) {
+        exodus_error(__LINE__);
+      }
+
+      if (map_count == 1 && case_compare(names[0], "original_global_id_map") == 0) {
+        error = ex_get_num_map(exoid, type, 1, ids.data());
+        if (error < 0) {
+          exodus_error(__LINE__);
+        }
+        map_read = true;
+      }
+      free_name_array(names, map_count);
+    }
+
+    if (!map_read) {
+      int error = ex_get_id_map(exoid, type, ids.data());
+      if (error < 0) {
+        exodus_error(__LINE__);
+      }
+    }
+  }
+
   template <typename INT> bool is_sequential(std::vector<INT> &map)
   {
     for (size_t i = 0; i < map.size(); i++) {
@@ -317,7 +352,6 @@ namespace {
                                std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
                                std::vector<std::vector<Excn::SideSet<INT>>> &sidesets);
 
-  int case_compare(const std::string &s1, const std::string &s2);
 } // namespace
 
 using namespace Excn;
@@ -2071,10 +2105,7 @@ namespace {
       size_t offset = 0;
       for (int p = 0; p < part_count; p++) {
         ExodusFile id(p);
-        int        error = ex_get_id_map(id, EX_ELEM_MAP, global_element_numbers[p].data());
-        if (error < 0) {
-          exodus_error(__LINE__);
-        }
+        get_id_map(id, EX_ELEM_MAP, EX_INQ_ELEM_MAP, global_element_numbers[p]);
         std::copy(global_element_numbers[p].begin(), global_element_numbers[p].end(),
                   &global_element_map[offset]);
         offset += local_mesh[p].elementCount;
@@ -2156,10 +2187,7 @@ namespace {
       for (int p = 0; p < part_count; p++) {
         size_t element_count = local_mesh[p].elementCount;
         element_map.resize(element_count);
-        int error = ex_get_id_map(ExodusFile(p), EX_ELEM_MAP, element_map.data());
-        if (error < 0) {
-          exodus_error(__LINE__);
-        }
+        get_id_map(ExodusFile(p), EX_ELEM_MAP, EX_INQ_ELEM_MAP, element_map);
 
         for (size_t e = 0; e < element_count; e++) {
           gpos                     = local_element_to_global[p][e];
@@ -2252,13 +2280,9 @@ namespace {
     global_node_map.resize(tot_size);
 
     size_t offset = 0;
-    int    error  = 0;
     for (int p = 0; p < part_count; p++) {
       ExodusFile id(p);
-      error = ex_get_id_map(id, EX_NODE_MAP, global_node_numbers[p].data());
-      if (error < 0) {
-        exodus_error(__LINE__);
-      }
+      get_id_map(id, EX_NODE_MAP, EX_INQ_NODE_MAP, global_node_numbers[p]);
       std::copy(global_node_numbers[p].begin(), global_node_numbers[p].end(),
                 &global_node_map[offset]);
       offset += local_mesh[p].nodeCount;
@@ -3237,10 +3261,10 @@ namespace {
     }
   }
 
-  int case_compare(const std::string &s1, const std::string &s2)
+  int case_compare(const char *s1, const char *s2)
   {
-    const char *c1 = s1.c_str();
-    const char *c2 = s2.c_str();
+    const char *c1 = s1;
+    const char *c2 = s2;
     for (;;) {
       if (::toupper(*c1) != ::toupper(*c2)) {
         return (::toupper(*c1) - ::toupper(*c2));
@@ -3251,6 +3275,11 @@ namespace {
       c1++;
       c2++;
     }
+  }
+
+  int case_compare(const std::string &s1, const std::string &s2)
+  {
+    return case_compare(s1.c_str(), s2.c_str());
   }
 
   void add_info_record(char *info_record, int size)
