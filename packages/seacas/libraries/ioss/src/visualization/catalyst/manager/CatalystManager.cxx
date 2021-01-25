@@ -37,7 +37,7 @@
 #include "vtkCPDataDescription.h"
 #include "vtkCPInputDataDescription.h"
 #include "vtkCPProcessor.h"
-#include "vtkCPPythonScriptPipeline.h"
+#include "vtkCPPythonPipeline.h"
 #include "../exodus/CatalystExodusMesh.h"
 #include "../cgns/CatalystCGNSMesh.h"
 #include "vtkMultiBlockDataSet.h"
@@ -47,6 +47,7 @@
 #include "vtkStringArray.h"
 #include "vtkIntArray.h"
 #include <sstream>
+#include <fstream>
 #include <vtksys/SystemInformation.hxx>
 #include "vtkXMLPMultiBlockDataWriter.h"
 #include "vtkTrivialProducer.h"
@@ -153,7 +154,7 @@ void CatalystManager::initCatalystLogging(CatalystMeshInit& cmInit) {
       std::string s(cmInit.resultsOutputFilename);
       if (mpic && mpic->GetNumberOfProcesses() > 1) {
         if (mpic->GetLocalProcessId() == 0) {
-          ofstream logfile;
+          std::ofstream logfile;
           logfile.open((s + ".catalyst.log").c_str(), ios::out | ios::trunc);
           logfile << "# ELAPSED TIME (S)"
                   << ",PROC MEM USED - MIN (KiB)"
@@ -170,7 +171,7 @@ void CatalystManager::initCatalystLogging(CatalystMeshInit& cmInit) {
         }
       }
       else {
-        ofstream logfile;
+        std::ofstream logfile;
         logfile.open((s + ".catalyst.log").c_str(), ios::out | ios::trunc);
         logfile << "# ELAPSED TIME (S)"
                 << ",PROC MEM USED (KiB)"
@@ -185,14 +186,20 @@ void CatalystManager::initCatalystPipeline(CatalystMeshInit& cmInit,
     vtkMultiBlockDataSet* mbds) {
 
     CatalystPipelineState catPipeState;
-    catPipeState.pipeline = vtkCPPythonScriptPipeline::New();
+    catPipeState.pipeline = vtkCPPythonPipeline::CreateAndInitializePipeline(
+        cmInit.catalystPythonFilename.c_str());
+    if(catPipeState.pipeline == nullptr) {
+        std::cerr << "Unable to initialize ParaView Catalyst with python script "
+            << cmInit.catalystPythonFilename << std::endl;
+        return;
+    }
 
-    catPipeState.dataDescription = vtkCPDataDescription::New();
+    catPipeState.dataDescription = vtkSmartPointer<vtkCPDataDescription>::New();
     catPipeState.dataDescription->AddInput("input");
     catPipeState.dataDescription->\
         GetInputDescriptionByName("input")->SetGrid(mbds);
 
-    catPipeState.meshWriter = new CatalystMeshWriter();
+    catPipeState.meshWriter = std::make_shared<CatalystMeshWriter>();
     if (cmInit.writeCatalystMeshOneFile) {
         catPipeState.meshWriter->setOutputCatalystMeshOneFilePrefix(\
             cmInit.catalystMeshOneFilePrefix);
@@ -241,20 +248,10 @@ void CatalystManager::initCatalystPipeline(CatalystMeshInit& cmInit,
     sa->Delete();
     ec->Delete();
     em->Delete();
-
-    if (this->pipelines[cmInit.resultsOutputFilename]\
-        .pipeline->Initialize(cmInit.catalystPythonFilename.c_str()) == 0) {
-      std::cerr << "Unable to initialize ParaView Catalyst with python script "
-                << cmInit.catalystPythonFilename << std::endl;
-      this->DeletePipeline(cmInit.resultsOutputFilename.c_str());
-    }
 }
 
 void CatalystManager::DeletePipeline(const char *results_output_filename) {
     if (this->pipelines.find(results_output_filename) != this->pipelines.end()) {
-      this->pipelines[results_output_filename].pipeline->Delete();
-      this->pipelines[results_output_filename].dataDescription->Delete();
-      delete this->pipelines[results_output_filename].meshWriter;
       this->pipelines.erase(results_output_filename);
     }
 
@@ -284,11 +281,10 @@ void CatalystManager::PerformCoProcessing(const char *results_output_filename,
       error_and_warning_codes.clear();
       error_and_warning_messages.clear();
 
-      vtkCPPythonScriptPipeline *pl = this->\
+      vtkCPPythonPipeline *pl = this->\
           pipelines[results_output_filename].pipeline;
       vtkCPDataDescription * dataDescription = this->\
           pipelines[results_output_filename].dataDescription;
-      pl->Register(0);
       this->coProcessor->AddPipeline(pl);
       this->coProcessor->CoProcess(dataDescription);
 
@@ -318,7 +314,6 @@ void CatalystManager::PerformCoProcessing(const char *results_output_filename,
       }
 
       this->coProcessor->RemoveAllPipelines();
-      pl->Delete();
     }
 }
 
@@ -373,7 +368,7 @@ void CatalystManager::WriteToLogFile(const char *results_output_filename) {
         mpic->Reduce(logData, recvBufferSum, vtkCommunicator::SUM_OP, 0);
 
         if (mpic->GetLocalProcessId() == 0) {
-          ofstream logfile;
+          std::ofstream logfile;
           logfile.open((s + ".catalyst.log").c_str(), ios::out | ios::app);
           for (int i = 0; i < logData->GetNumberOfTuples(); i++) {
             double min[3];
@@ -395,7 +390,7 @@ void CatalystManager::WriteToLogFile(const char *results_output_filename) {
         recvBufferSum->Delete();
       }
       else {
-        ofstream logfile;       
+        std::ofstream logfile;       
         logfile.open((s + ".catalyst.log").c_str(), ios::out | ios::app);
         for (int i = 0; i < logData->GetNumberOfTuples(); i++) {
           double data[3]; 
@@ -414,7 +409,7 @@ bool CatalystManager::writeMeshON(const char *results_output_filename) {
     if (this->pipelines.find(results_output_filename)
         != this->pipelines.end()) {
 
-        CatalystMeshWriter * mw = this->pipelines[results_output_filename]\
+        auto mw = this->pipelines[results_output_filename]\
             .meshWriter;
         return mw->outputCatalystMeshOneFileON() ||
             mw->outputCatalystMeshFilePerProcON();
@@ -428,7 +423,7 @@ void CatalystManager::writeMesh(const char *results_output_filename) {
 
         vtkCPDataDescription * dataDescription = this->\
             pipelines[results_output_filename].dataDescription;
-        CatalystMeshWriter * mw = this->pipelines[results_output_filename]\
+        auto mw = this->pipelines[results_output_filename]\
             .meshWriter;
         vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(\
             dataDescription->GetInputDescriptionByName("input")->GetGrid());

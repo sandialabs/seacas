@@ -37,10 +37,11 @@
 #include "CatalystManagerBase.h"
 #include <map>
 #include <time.h>
+#include <vtkSmartPointer.h>
 
 class coProcessor;
 class vtkDoubleArray;
-class vtkCPPythonScriptPipeline;
+class vtkCPPythonPipeline;
 class vtkCPDataDescription;
 class vtkCPProcessor;
 class vtkMultiBlockDataSet;
@@ -97,9 +98,9 @@ public:
 private:
 
     struct CatalystPipelineState {
-        vtkCPPythonScriptPipeline * pipeline;
-        vtkCPDataDescription * dataDescription;
-        CatalystMeshWriter * meshWriter;
+        vtkSmartPointer<vtkCPPythonPipeline> pipeline;
+        vtkSmartPointer<vtkCPDataDescription> dataDescription;
+        std::shared_ptr<CatalystMeshWriter> meshWriter;
     };
 
     typedef std::pair<clock_t, clock_t> TimerPair;
