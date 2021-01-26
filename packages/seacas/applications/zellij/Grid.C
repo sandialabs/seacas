@@ -100,6 +100,7 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
   output_nodal_coordinates();
   output_block_connectivity(INT(0));
   if (parallel_size() > 1) {
+    output_node_map(INT(0));
     output_element_map(INT(0));
   }
 }
@@ -205,13 +206,46 @@ template <typename INT> void Grid::output_block_connectivity(INT /*dummy*/)
   }
 }
 
+template <typename INT> void Grid::output_node_map(INT /*dummy*/)
+{
+  // IOSS does not support partial field output at this time, so need to use raw exodus calls for
+  // now...
+  int last_rank = -1;
+  int exoid     = 0;
+  for (size_t j = 0; j < JJ(); j++) {
+    for (size_t i = 0; i < II(); i++) {
+      auto &cell = get_cell(i, j);
+
+      auto rank = cell.m_rank;
+      if (rank != last_rank) {
+        exoid     = output_region(rank)->get_database()->get_file_pointer();
+        last_rank = rank;
+      }
+
+      auto start = cell.m_localNodeIdOffset + 1;
+      auto count = cell.added_node_count();
+
+      auto             gid = cell.m_globalNodeIdOffset + 1;
+      std::vector<INT> map(count);
+      std::iota(map.begin(), map.end(), gid);
+
+      ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, map.data());
+
+      if (debug_level & 2) {
+        util().progress(fmt::format("Generated Node Map for Rank {}, Cell({}, {}): start {}, count "
+                                    "{}, global_id_start {}\n",
+                                    rank, cell.m_i, cell.m_j, start, count, gid));
+      }
+    }
+  }
+}
+
 template <typename INT> void Grid::output_element_map(INT /*dummy*/)
 {
   // IOSS does not support partial field output at this time, so need to use raw exodus calls for
   // now...
-  int              last_rank = -1;
-  int              exoid     = 0;
-  std::vector<INT> map;
+  int last_rank = -1;
+  int exoid     = 0;
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
@@ -229,7 +263,8 @@ template <typename INT> void Grid::output_element_map(INT /*dummy*/)
         auto count = block->entity_count();
         auto id    = block->get_property("id").get_int();
 
-        auto gid = cell.m_globalElementIdOffset[block->name()] + 1;
+        auto             gid = cell.m_globalElementIdOffset[block->name()] + 1;
+        std::vector<INT> map(count);
         std::iota(map.begin(), map.end(), gid);
 
         if (debug_level & 8) {

@@ -70,6 +70,7 @@ private:
   void                         output_nodal_coordinates();
   template <typename INT> void output_block_connectivity(INT /*dummy*/);
   template <typename INT> void output_element_map(INT /*dummy*/);
+  template <typename INT> void output_node_map(INT /*dummy*/);
 
   std::vector<std::unique_ptr<Ioss::Region>> m_outputRegions;
   std::vector<GridEntry>                     m_grid{};
