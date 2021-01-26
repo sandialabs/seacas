@@ -7,18 +7,36 @@
 #include <numeric>
 
 #include "Grid.h"
+#include "ZE_SystemInterface.h"
+#include "ZE_Version.h"
 #include <Ioss_ElementBlock.h>
+#include <Ioss_IOFactory.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_Region.h>
 #include <Ioss_SmartAssert.h>
+
 #include <exodusII.h>
 #include <fmt/format.h>
 
 extern unsigned int debug_level;
+bool                equivalence_nodes = true;
 
 namespace {
   template <typename INT>
-  std::vector<INT> generate_node_map(Grid &grid, const GridEntry &cell, INT /*dummy*/);
+  std::vector<INT>      generate_node_map(Grid &grid, const GridEntry &cell, INT /*dummy*/);
+  Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
+
+  void set_coordinate_offsets(Grid &grid);
+  void handle_nodes(Grid &grid);
+  void handle_elements(Grid &grid);
+} // namespace
+
+Grid::Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j)
+    : m_gridI(extent_i), m_gridJ(extent_j), m_parallelSize(interFace.ranks())
+{
+  m_grid.resize(m_gridI * m_gridJ);
+  create_output_regions(interFace);
+  equivalence_nodes = interFace.equivalence_nodes();
 }
 
 void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
@@ -30,92 +48,48 @@ void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
   SMART_ASSERT(unit_cell->m_region != nullptr)(i)(j);
 }
 
+void Grid::create_output_regions(SystemInterface &interFace)
+{
+  m_outputRegions.reserve(interFace.ranks());
+
+  // Define the output database(s)...
+  int                   int_size   = interFace.ints32bit() ? 4 : 8;
+  Ioss::PropertyManager properties = parse_properties(interFace, int_size);
+  if (parallel_size() == 1) {
+    properties.add(Ioss::Property("OMIT_EXODUS_NUM_MAPS", 1));
+  }
+  if (debug_level & 2) {
+    properties.add(Ioss::Property("ENABLE_TRACING", 1));
+  }
+
+  for (int i = 0; i < interFace.ranks(); i++) {
+    std::string outfile = Ioss::Utils::decode_filename(interFace.outputName_, i, interFace.ranks());
+    Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
+                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
+    if (dbo == nullptr || !dbo->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
+    m_outputRegions.emplace_back(new Ioss::Region(dbo, "zellij_output_region"));
+    output_region(i)->begin_mode(Ioss::STATE_DEFINE_MODEL);
+    output_region(i)->property_add(Ioss::Property("code_name", qainfo[0]));
+    output_region(i)->property_add(Ioss::Property("code_version", qainfo[2]));
+  }
+}
+
 void Grid::finalize()
 {
   if (debug_level & 2) {
     util().progress(__func__);
   }
 
-  // All unit_cells have same X, Y (and Z) extent.  Only need X and Y
-  auto x_range = get_cell(0, 0).get_coordinate_range(Axis::X);
-  auto y_range = get_cell(0, 0).get_coordinate_range(Axis::Y);
+  set_coordinate_offsets(*this);
+  handle_nodes(*this);
+  handle_elements(*this);
 
-  // Not all unit cells have the same element blocks and the output
-  // grid will contain the union of the element blocks on each unit
-  // cell...
-  //
-  // While finalizing the cells, we will create this union for use in
-  // the output region.  Would be quicker to do iteration on unit_cell
-  // map which is smaller, but for now do it here and see if becomes
-  // bottleneck.
-  std::map<std::string, Ioss::ElementBlock *> output_element_blocks;
-  std::map<std::string, size_t>               element_block_elem_count;
-  size_t                                      global_node_count = 0;
-  size_t                                      global_elem_count = 0;
-
-  for (size_t j = 0; j < JJ(); j++) {
-    for (size_t i = 0; i < II(); i++) {
-      auto &cell                = get_cell(i, j);
-      cell.m_globalNodeIdOffset = global_node_count;
-      cell.m_localNodeIdOffset  = global_node_count;
-      SMART_ASSERT(cell.m_unitCell->m_region != nullptr)(i)(j);
-      auto new_nodes = cell.added_node_count();
-      if (debug_level & 8) {
-        fmt::print("i, j, node_offset, added_nodes: {} {} {} {}\n", i, j, global_node_count,
-                   new_nodes);
-      }
-      global_node_count += new_nodes;
-
-      const auto &element_blocks = cell.m_unitCell->m_region->get_element_blocks();
-      for (const auto *block : element_blocks) {
-        auto &blk                         = block->name();
-        cell.m_globalElementIdOffset[blk] = element_block_elem_count[blk];
-        cell.m_localElementIdOffset[blk]  = element_block_elem_count[blk];
-
-        element_block_elem_count[blk] += block->entity_count();
-        global_elem_count += block->entity_count();
-
-        if (debug_level & 8) {
-          fmt::print("i, j, blk, offset, block_count, global_count: {} {} {} {} {} {}\n", i, j, blk,
-                     cell.m_globalElementIdOffset[blk], element_block_elem_count[blk],
-                     global_elem_count);
-        }
-
-        // Create output element block if does not exist yet...
-        if (output_element_blocks.find(blk) == output_element_blocks.end()) {
-          output_element_blocks[blk] = new Ioss::ElementBlock(*block);
-        }
-      }
-
-      cell.m_offX = (x_range.second - x_range.first) * (double)i;
-      cell.m_offY = (y_range.second - y_range.first) * (double)j;
-
-      cell.m_consistent = true;
-      if (debug_level & 2) {
-        util().progress(fmt::format("\tCell({}, {})", i, j));
-      }
-    }
+  for (int i = 0; i < m_parallelSize; i++) {
+    output_region(i)->end_mode(Ioss::STATE_DEFINE_MODEL);
+    output_region(i)->output_summary(std::cerr);
   }
-
-  // Define the output database...
-  // Define a node block...
-  {
-    std::string block_name        = "nodeblock_1";
-    int         spatial_dimension = 3;
-    auto        block = new Ioss::NodeBlock(m_region->get_database(), block_name, global_node_count,
-                                     spatial_dimension);
-    block->property_add(Ioss::Property("id", 1));
-    m_region->add(block);
-  }
-
-  for (auto &blk : output_element_blocks) {
-    auto *block = blk.second;
-    block->property_update("entity_count", element_block_elem_count[block->name()]);
-    m_region->add(block);
-  }
-  m_region->end_mode(Ioss::STATE_DEFINE_MODEL);
-
-  m_region->output_summary(std::cerr);
 }
 
 template void Grid::output_model(int64_t);
@@ -125,14 +99,15 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
 {
   output_nodal_coordinates();
   output_block_connectivity(INT(0));
+  if (parallel_size() > 1) {
+    output_element_map(INT(0));
+  }
 }
 
 void Grid::output_nodal_coordinates()
 {
   // IOSS does not support partial field output at this time, so need to use raw exodus calls for
   // now...
-  int exoid = m_region->get_database()->get_file_pointer();
-
   std::vector<double> coord_x;
   std::vector<double> coord_y;
   std::vector<double> coord_z;
@@ -140,10 +115,19 @@ void Grid::output_nodal_coordinates()
   if (debug_level & 2) {
     util().progress(__func__);
   }
+  int last_rank = -1;
+  int exoid     = 0;
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
-      auto  cell = get_cell(i, j);
-      auto *nb   = cell.m_unitCell->m_region->get_node_blocks()[0];
+      auto cell = get_cell(i, j);
+
+      auto rank = cell.m_rank;
+      if (rank != last_rank) {
+        exoid     = output_region(rank)->get_database()->get_file_pointer();
+        last_rank = rank;
+      }
+
+      auto *nb = cell.m_unitCell->m_region->get_node_blocks()[0];
       nb->get_field_data("mesh_model_coordinates_x", coord_x);
       nb->get_field_data("mesh_model_coordinates_y", coord_y);
       nb->get_field_data("mesh_model_coordinates_z", coord_z);
@@ -156,7 +140,7 @@ void Grid::output_nodal_coordinates()
       }
 
       // Filter coordinates down to only "new nodes"...
-      if (cell.has_neighbor_i() || cell.has_neighbor_j()) {
+      if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
         auto   categorized_nodes = cell.categorize_nodes();
         size_t nn                = 0;
         for (size_t n = 0; n < categorized_nodes.size(); n++) {
@@ -169,7 +153,7 @@ void Grid::output_nodal_coordinates()
         }
       }
 
-      auto start = cell.m_globalNodeIdOffset + 1;
+      auto start = cell.m_localNodeIdOffset + 1;
       auto count = cell.added_node_count();
       ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
     }
@@ -183,22 +167,27 @@ template <typename INT> void Grid::output_block_connectivity(INT /*dummy*/)
 {
   // IOSS does not support partial field output at this time, so need to use raw exodus calls for
   // now...
-  int exoid = m_region->get_database()->get_file_pointer();
-
-  // TODO: Correctly renumber based on shared nodes between neighboring grid entries...
-
+  int              last_rank = -1;
+  int              exoid     = 0;
   std::vector<INT> connect;
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
-      auto &cell     = get_cell(i, j);
-      auto  node_map = generate_node_map(*this, cell, INT(0));
-      auto  blocks   = cell.m_unitCell->m_region->get_element_blocks();
+      auto &cell = get_cell(i, j);
+
+      auto rank = cell.m_rank;
+      if (rank != last_rank) {
+        exoid     = output_region(rank)->get_database()->get_file_pointer();
+        last_rank = rank;
+      }
+
+      auto node_map = generate_node_map(*this, cell, INT(0));
+      auto blocks   = cell.m_unitCell->m_region->get_element_blocks();
       for (const auto *block : blocks) {
         block->get_field_data("connectivity_raw", connect);
         for (size_t k = 0; k < connect.size(); k++) {
           connect[k] = node_map[connect[k]];
         }
-        auto start = cell.m_globalElementIdOffset[block->name()] + 1;
+        auto start = cell.m_localElementIdOffset[block->name()] + 1;
         auto count = block->entity_count();
         auto id    = block->get_property("id").get_int();
         if (debug_level & 8) {
@@ -216,7 +205,158 @@ template <typename INT> void Grid::output_block_connectivity(INT /*dummy*/)
   }
 }
 
+template <typename INT> void Grid::output_element_map(INT /*dummy*/)
+{
+  // IOSS does not support partial field output at this time, so need to use raw exodus calls for
+  // now...
+  int              last_rank = -1;
+  int              exoid     = 0;
+  std::vector<INT> map;
+  for (size_t j = 0; j < JJ(); j++) {
+    for (size_t i = 0; i < II(); i++) {
+      auto &cell = get_cell(i, j);
+
+      auto rank = cell.m_rank;
+      if (rank != last_rank) {
+        exoid     = output_region(rank)->get_database()->get_file_pointer();
+        last_rank = rank;
+      }
+
+      auto blocks = cell.m_unitCell->m_region->get_element_blocks();
+      for (const auto *block : blocks) {
+
+        auto start = cell.m_localElementIdOffset[block->name()] + 1;
+        auto count = block->entity_count();
+        auto id    = block->get_property("id").get_int();
+
+        auto gid = cell.m_globalElementIdOffset[block->name()] + 1;
+        std::iota(map.begin(), map.end(), gid);
+
+        if (debug_level & 8) {
+          fmt::print(stderr,
+                     "rank: i, j, blk, id, start, count, global_start: {}: {} {} {} {} {} {} {}\n",
+                     rank, i, j, block->name(), id, start, count, gid);
+        }
+        ex_put_partial_id_map(exoid, EX_ELEM_MAP, start, count, map.data());
+      }
+      if (debug_level & 2) {
+        util().progress(fmt::format("Generated Element Map for Rank {}, Cell({}, {})", rank,
+                                    cell.m_i, cell.m_j));
+      }
+    }
+  }
+}
+
 namespace {
+  void handle_elements(Grid &grid)
+  {
+    // Not all unit cells have the same element blocks and the output
+    // grid will contain the union of the element blocks on each unit
+    // cell...
+    //
+    // While finalizing the cells, we will create this union for use in
+    // the output region.  Would be quicker to do iteration on unit_cell
+    // map which is smaller, but for now do it here and see if becomes
+    // bottleneck.
+
+    std::map<std::string, std::unique_ptr<Ioss::ElementBlock>> output_element_blocks;
+    std::vector<std::map<std::string, size_t>> element_block_elem_count(grid.parallel_size());
+    std::map<std::string, size_t>              global_element_block_elem_count;
+
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        auto &cell = grid.get_cell(i, j);
+        auto  rank = cell.rank();
+
+        const auto &element_blocks = cell.m_unitCell->m_region->get_element_blocks();
+        for (const auto *block : element_blocks) {
+          auto &blk                         = block->name();
+          cell.m_globalElementIdOffset[blk] = global_element_block_elem_count[blk];
+          cell.m_localElementIdOffset[blk]  = element_block_elem_count[rank][blk];
+
+          element_block_elem_count[rank][blk] += block->entity_count();
+          global_element_block_elem_count[blk] += block->entity_count();
+
+          if (debug_level & 8) {
+            fmt::print("rank, i, j, blk, loffset, goffset, block_count: {}: {} {} {} {} {} {}\n",
+                       rank, i, j, blk, cell.m_localElementIdOffset[blk],
+                       cell.m_globalElementIdOffset[blk], element_block_elem_count[rank][blk]);
+          }
+
+          // Create output element block if does not exist yet...
+          if (output_element_blocks.find(blk) == output_element_blocks.end()) {
+            output_element_blocks.emplace(blk, new Ioss::ElementBlock(*block));
+          }
+        }
+      }
+    }
+
+    // Define the element blocks in the output database...
+    for (int rank = 0; rank < grid.parallel_size(); rank++) {
+      for (auto &blk : output_element_blocks) {
+        auto *block = new Ioss::ElementBlock(*blk.second.get());
+        block->property_update("entity_count", element_block_elem_count[rank][block->name()]);
+        grid.output_region(rank)->add(block);
+        if (debug_level & 8) {
+          fmt::print("rank, blk, element_count: {}: {} {}\n", rank, block->name(),
+                     block->entity_count());
+        }
+      }
+    }
+  }
+
+  void handle_nodes(Grid &grid)
+  {
+    size_t              global_node_count = 0;
+    std::vector<size_t> local_node_count(grid.parallel_size());
+
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        auto &cell                = grid.get_cell(i, j);
+        auto  rank                = cell.rank();
+        cell.m_globalNodeIdOffset = global_node_count;
+        cell.m_localNodeIdOffset  = local_node_count[rank];
+        SMART_ASSERT(cell.m_unitCell->m_region != nullptr)(i)(j);
+        auto new_nodes = cell.added_node_count();
+        if (debug_level & 8) {
+          fmt::print("rank: i, j, node_offset, added_nodes: {}: {} {} {} {}\n", rank, i, j,
+                     local_node_count[rank], new_nodes);
+        }
+        local_node_count[rank] += new_nodes;
+        global_node_count += new_nodes;
+      }
+    }
+    // Define the output database node block...
+    for (int i = 0; i < grid.parallel_size(); i++) {
+      std::string block_name        = "nodeblock_1";
+      int         spatial_dimension = 3;
+      auto        block = new Ioss::NodeBlock(grid.output_region(i)->get_database(), block_name,
+                                       local_node_count[i], spatial_dimension);
+      block->property_add(Ioss::Property("id", 1));
+      grid.output_region(i)->add(block);
+    }
+  }
+
+  void set_coordinate_offsets(Grid &grid)
+  {
+    // All unit_cells have same X, Y (and Z) extent.  Only need X and Y
+    auto x_range = grid.get_cell(0, 0).get_coordinate_range(Axis::X);
+    auto y_range = grid.get_cell(0, 0).get_coordinate_range(Axis::Y);
+
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        auto &cell  = grid.get_cell(i, j);
+        cell.m_offX = (x_range.second - x_range.first) * (double)i;
+        cell.m_offY = (y_range.second - y_range.first) * (double)j;
+
+        cell.m_consistent = true;
+        if (debug_level & 2) {
+          grid.util().progress(fmt::format("\tCell({}, {})", i, j));
+        }
+      }
+    }
+  }
+
   template <typename INT>
   std::vector<INT> generate_node_map(Grid &grid, const GridEntry &cell, INT /*dummy*/)
   {
@@ -228,8 +368,8 @@ namespace {
     // Size is node_count + 1 to handle the 1-based connectivity values.
     size_t cell_node_count = cell.m_unitCell->m_region->get_property("node_count").get_int();
     std::vector<INT> map(cell_node_count + 1);
-    if (!(cell.has_neighbor_i() || cell.has_neighbor_j())) {
-      std::iota(map.begin(), map.end(), cell.m_globalNodeIdOffset);
+    if (!equivalence_nodes || !(cell.has_neighbor_i() || cell.has_neighbor_j())) {
+      std::iota(map.begin(), map.end(), cell.m_localNodeIdOffset);
     }
     else {
       // At least one neighboring cell.
@@ -245,7 +385,7 @@ namespace {
       }
     }
 
-    if (cell.has_neighbor_i()) {
+    if (equivalence_nodes && cell.has_neighbor_i()) {
       const auto &neighbor = grid.get_cell(cell.m_i - 1, cell.m_j);
       // Get the neighbor cell...
       // iterate my unit cell's min_I_face() nodes to get index into map
@@ -261,7 +401,7 @@ namespace {
       Ioss::Utils::clear(neighbor.max_I_nodes);
     }
 
-    if (cell.has_neighbor_j()) {
+    if (equivalence_nodes && cell.has_neighbor_j()) {
       const auto &neighbor = grid.get_cell(cell.m_i, cell.m_j - 1);
       for (size_t i = 0; i < cell.m_unitCell->min_J_face.size(); i++) {
         auto idx = cell.m_unitCell->min_J_face[i] + 1;
@@ -274,7 +414,7 @@ namespace {
     // Now that we have the node map for this cell, we need to save the mappings for the max_I and
     // max_J faces and max_I-max_J edge for use by later neighbors...
     // Check whether cell has neighbors on max_I or max_J faces...
-    if (cell.m_i + 1 < grid.II()) {
+    if (equivalence_nodes && (cell.m_i + 1 < grid.II())) {
       cell.max_I_nodes.resize(cell.m_unitCell->max_I_face.size());
       for (size_t i = 0; i < cell.m_unitCell->max_I_face.size(); i++) {
         auto idx            = cell.m_unitCell->max_I_face[i] + 1;
@@ -287,7 +427,7 @@ namespace {
       }
     }
 
-    if (cell.m_j + 1 < grid.JJ()) {
+    if (equivalence_nodes && (cell.m_j + 1 < grid.JJ())) {
       cell.max_J_nodes.resize(cell.m_unitCell->max_J_face.size());
       for (size_t i = 0; i < cell.m_unitCell->max_J_face.size(); i++) {
         auto idx            = cell.m_unitCell->max_J_face[i] + 1;
@@ -303,4 +443,35 @@ namespace {
     }
     return map;
   }
+
+  Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size)
+  {
+    Ioss::PropertyManager properties;
+    if (int_size == 8) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
+      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
+    }
+
+    if (interFace.use_netcdf4()) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    }
+
+    if (interFace.use_netcdf5()) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
+    }
+
+    if (interFace.compression_level() > 0 || interFace.szip()) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+      properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level()));
+      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", true));
+      if (interFace.szip()) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
+      }
+      else if (interFace.zlib()) {
+        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      }
+    }
+    return properties;
+  }
+
 } // namespace

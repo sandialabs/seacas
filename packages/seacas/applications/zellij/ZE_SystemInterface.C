@@ -67,9 +67,6 @@ void SystemInterface::enroll_options()
                   "on the output file.",
                   nullptr);
 
-  options_.enroll("ranks", GetLongOption::MandatoryValue,
-                  "Number of ranks to decompose mesh across\n", "1");
-
   options_.enroll(
       "rcb", GetLongOption::NoValue,
       "Use recursive coordinate bisection method to decompose the input mesh in a parallel run.",
@@ -85,7 +82,10 @@ void SystemInterface::enroll_options()
       nullptr);
 
   options_.enroll("ranks", GetLongOption::MandatoryValue,
-                  "Number of ranks to decompose mesh across\n", "1");
+                  "Number of ranks to decompose mesh across", "1");
+
+  options_.enroll("separate_cells", GetLongOption::NoValue,
+                  "Do not equivalence the nodes betweeen adjacent unit cells.", nullptr);
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
@@ -93,8 +93,9 @@ void SystemInterface::enroll_options()
                   "\t\t  2 = memory information.\n"
                   "\t\t  4 = Verbose Unit Cell information.\n"
                   "\t\t  8 = verbose output of Grid finalization calculations.\n"
-                  "\t\t 16 = put exodus library into verbose mode.\n",
-                  "\t\t 32 = Verbose decomposition information.\n", "0");
+                  "\t\t 16 = put exodus library into verbose mode.\n"
+                  "\t\t 32 = Verbose decomposition information.",
+                  "0");
 
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
 }
@@ -129,6 +130,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
   if (options_.retrieve("hsfc") != nullptr) {
     decompMethod_ = "HSFC";
   }
+
+  equivalenceNodes_ = options_.retrieve("separate_cells") == nullptr;
 
   {
     const char *temp = options_.retrieve("ranks");

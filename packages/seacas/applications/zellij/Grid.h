@@ -23,16 +23,14 @@
 //  padding)
 //  * std::vector<GridEntry> m_grid -- contains database information...
 
+class SystemInterface;
+
 class Grid
 {
 public:
   //! Create an empty grid of size `extent_i` x `extent_j`.  The output mesh will
   //! be written to the exodus database in the Ioss::Region `region`
-  Grid(std::unique_ptr<Ioss::Region> &region, size_t extent_i, size_t extent_j)
-      : m_region(std::move(region)), m_gridI(extent_i), m_gridJ(extent_j)
-  {
-    m_grid.resize(m_gridI * m_gridJ);
-  }
+  Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j);
 
   //! Return a reference to the GridEntry cell at location `(i,j)`.
   //! Does not check that `i` and `j` are in bounds.
@@ -48,6 +46,7 @@ public:
   size_t JJ() const { return m_gridJ; }
   //! Return total number of cells in the grid / lattice
   size_t size() const { return m_gridI * m_gridJ; }
+  int    parallel_size() const { return m_parallelSize; }
 
   //! Create a GridEntry object referencing the UnitCell `unit_cell` at location `(i,j)`
   void initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell);
@@ -61,15 +60,22 @@ public:
   //! Output node coordinates and element block connectivities for the output mesh.
   template <typename INT> void output_model(INT /*dummy*/);
 
+  const Ioss::ParallelUtils &util() const { return m_pu; }
+
+  Ioss::Region *output_region(int rank = 0) { return m_outputRegions[rank].get(); }
+
 private:
-  const Ioss::ParallelUtils &  util() const { return m_pu; }
+  void create_output_regions(SystemInterface &interFace);
+
   void                         output_nodal_coordinates();
   template <typename INT> void output_block_connectivity(INT /*dummy*/);
+  template <typename INT> void output_element_map(INT /*dummy*/);
 
-  std::unique_ptr<Ioss::Region> m_region;
-  std::vector<GridEntry>        m_grid{};
-  Ioss::ParallelUtils           m_pu{MPI_COMM_WORLD};
-  size_t                        m_gridI{0};
-  size_t                        m_gridJ{0};
+  std::vector<std::unique_ptr<Ioss::Region>> m_outputRegions;
+  std::vector<GridEntry>                     m_grid{};
+  Ioss::ParallelUtils                        m_pu{MPI_COMM_WORLD};
+  size_t                                     m_gridI{0};
+  size_t                                     m_gridJ{0};
+  int                                        m_parallelSize{1};
 };
 #endif

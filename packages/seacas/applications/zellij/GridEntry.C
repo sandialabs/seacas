@@ -8,6 +8,8 @@
 #include <Ioss_NodeBlock.h>
 #include <algorithm>
 
+extern bool equivalence_nodes;
+
 void GridEntry::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
 {
   m_i        = i;
@@ -33,16 +35,18 @@ size_t GridEntry::added_node_count() const
   // If no neighbors (to -I, -J), then all nodes would be added...
   auto count = m_unitCell->m_region->get_property("node_count").get_int();
 
-  if (has_neighbor_i()) {
-    count -= (m_unitCell->cell_JJ * m_unitCell->cell_KK);
-  }
+  if (equivalence_nodes) {
+    if (has_neighbor_i()) {
+      count -= (m_unitCell->cell_JJ * m_unitCell->cell_KK);
+    }
 
-  if (has_neighbor_j()) {
-    count -= (m_unitCell->cell_II * m_unitCell->cell_KK);
-  }
+    if (has_neighbor_j()) {
+      count -= (m_unitCell->cell_II * m_unitCell->cell_KK);
+    }
 
-  if (has_neighbor_i() && has_neighbor_j()) {
-    count += m_unitCell->cell_KK;
+    if (has_neighbor_i() && has_neighbor_j()) {
+      count += m_unitCell->cell_KK;
+    }
   }
   return count;
 }

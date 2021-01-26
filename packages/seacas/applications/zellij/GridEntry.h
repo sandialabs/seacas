@@ -44,6 +44,9 @@ public:
   //! grid -- accounts for coincident nodes if this cell has neighbor(s)
   size_t added_node_count() const;
 
+  //! The mpi rank that this cell will be on in a parallel run.
+  int rank() const { return m_rank; }
+
   //! Create a vector of `node_count` length which has the following values:
   //! * 0: Node that is not shared with any "lower" neighbors.
   //! * 1: Node on `min_I` face

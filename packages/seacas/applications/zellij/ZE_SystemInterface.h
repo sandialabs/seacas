@@ -30,7 +30,8 @@ public:
   bool zlib() const { return zlib_; }
   bool szip() const { return szip_; }
 
-  int ranks() const { return ranks_; }
+  int  ranks() const { return ranks_; }
+  bool equivalence_nodes() const { return equivalenceNodes_; }
 
   static void show_version();
 
@@ -52,5 +53,6 @@ private:
   bool        useNetcdf5_{false};
   bool        zlib_{true};
   bool        szip_{false};
+  bool        equivalenceNodes_{true};
 };
 #endif

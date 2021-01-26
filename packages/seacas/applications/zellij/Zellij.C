@@ -35,7 +35,6 @@
 #include "GridEntry.h"
 #include "UnitCell.h"
 #include "ZE_SystemInterface.h"
-#include "ZE_Version.h"
 
 #ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
@@ -43,36 +42,6 @@
 
 namespace {
   Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace);
-
-  Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size)
-  {
-    Ioss::PropertyManager properties;
-    if (int_size == 8) {
-      properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
-      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
-    }
-
-    if (interFace.use_netcdf4()) {
-      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
-    }
-
-    if (interFace.use_netcdf5()) {
-      properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
-    }
-
-    if (interFace.compression_level() > 0 || interFace.szip()) {
-      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
-      properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level()));
-      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", true));
-      if (interFace.szip()) {
-        properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
-      }
-      else if (interFace.zlib()) {
-        properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
-      }
-    }
-    return properties;
-  }
 
   std::string time_stamp(const std::string &format);
 } // namespace
@@ -212,28 +181,6 @@ namespace {
     return std::make_shared<Ioss::Region>(dbi, name);
   }
 
-  std::unique_ptr<Ioss::Region> create_output_region(SystemInterface &interFace)
-  {
-    // At this point, can begin to define the output database...
-    int                   int_size   = interFace.ints32bit() ? 4 : 8;
-    Ioss::PropertyManager properties = parse_properties(interFace, int_size);
-    properties.add(Ioss::Property("OMIT_EXODUS_NUM_MAPS", 1));
-    if (debug_level & 2) {
-      properties.add(Ioss::Property("ENABLE_TRACING", 1));
-    }
-
-    Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
-        "exodus", interFace.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
-    if (dbo == nullptr || !dbo->ok(true)) {
-      std::exit(EXIT_FAILURE);
-    }
-    std::unique_ptr<Ioss::Region> output_region(new Ioss::Region(dbo, "zellij_output_region"));
-    output_region->begin_mode(Ioss::STATE_DEFINE_MODEL);
-    output_region->property_add(Ioss::Property("code_name", qainfo[0]));
-    output_region->property_add(Ioss::Property("code_version", qainfo[2]));
-    return output_region;
-  }
-
   Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace)
   {
     Ioss::ParallelUtils pu{MPI_COMM_WORLD};
@@ -321,8 +268,7 @@ namespace {
     int KK = std::stoi(tokens[3]);
     assert(KK == 1);
 
-    auto output_region = create_output_region(interFace);
-    Grid grid(output_region, II, JJ);
+    Grid grid(interFace, II, JJ);
 
     fmt::print("\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
                unit_cells.size(), II, JJ, KK);
