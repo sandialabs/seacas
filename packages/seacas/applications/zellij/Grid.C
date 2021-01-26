@@ -97,15 +97,17 @@ template void Grid::output_model(int);
 
 template <typename INT> void Grid::output_model(INT /*dummy*/)
 {
-  output_nodal_coordinates();
-  output_block_connectivity(INT(0));
-  if (parallel_size() > 1) {
-    output_node_map(INT(0));
-    output_element_map(INT(0));
+  for (int rank = 0; rank < parallel_size(); rank++) {
+    output_nodal_coordinates(rank);
+    output_block_connectivity(rank, INT(0));
+    if (parallel_size() > 1) {
+      output_node_map(rank, INT(0));
+      output_element_map(rank, INT(0));
+    }
   }
 }
 
-void Grid::output_nodal_coordinates()
+void Grid::output_nodal_coordinates(int rank)
 {
   // IOSS does not support partial field output at this time, so need to use raw exodus calls for
   // now...
@@ -116,16 +118,18 @@ void Grid::output_nodal_coordinates()
   if (debug_level & 2) {
     util().progress(__func__);
   }
-  int last_rank = -1;
-  int exoid     = 0;
+
+  // This ordering results in `parallel_size() * II() * JJ()` iterations instead of
+  // `II() * JJ()`, but should be faster overall since it outputs to the same file
+  // for all of the inner 2 for loops instead of potentially switching files every
+  // iteration.  This will also work better if need to limit number of open files
+  // or if want to limit to a specific range of ranks...
+  int exoid = output_region(rank)->get_database()->get_file_pointer();
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto cell = get_cell(i, j);
-
-      auto rank = cell.m_rank;
-      if (rank != last_rank) {
-        exoid     = output_region(rank)->get_database()->get_file_pointer();
-        last_rank = rank;
+      if (cell.m_rank != rank) {
+        continue;
       }
 
       auto *nb = cell.m_unitCell->m_region->get_node_blocks()[0];
@@ -164,21 +168,20 @@ void Grid::output_nodal_coordinates()
   }
 }
 
-template <typename INT> void Grid::output_block_connectivity(INT /*dummy*/)
+template <typename INT> void Grid::output_block_connectivity(int rank, INT /*dummy*/)
 {
-  // IOSS does not support partial field output at this time, so need to use raw exodus calls for
-  // now...
-  int              last_rank = -1;
-  int              exoid     = 0;
+  // This ordering results in `parallel_size() * II() * JJ()` iterations instead of
+  // `II() * JJ()`, but should be faster overall since it outputs to the same file
+  // for all of the inner 2 for loops instead of potentially switching files every
+  // iteration.  This will also work better if need to limit number of open files
+  // or if want to limit to a specific range of ranks...
   std::vector<INT> connect;
+  int              exoid = output_region(rank)->get_database()->get_file_pointer();
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-
-      auto rank = cell.m_rank;
-      if (rank != last_rank) {
-        exoid     = output_region(rank)->get_database()->get_file_pointer();
-        last_rank = rank;
+      if (cell.m_rank != rank) {
+        continue;
       }
 
       auto node_map = generate_node_map(*this, cell, INT(0));
@@ -206,20 +209,19 @@ template <typename INT> void Grid::output_block_connectivity(INT /*dummy*/)
   }
 }
 
-template <typename INT> void Grid::output_node_map(INT /*dummy*/)
+template <typename INT> void Grid::output_node_map(int rank, INT /*dummy*/)
 {
-  // IOSS does not support partial field output at this time, so need to use raw exodus calls for
-  // now...
-  int last_rank = -1;
-  int exoid     = 0;
+  // This ordering results in `parallel_size() * II() * JJ()` iterations instead of
+  // `II() * JJ()`, but should be faster overall since it outputs to the same file
+  // for all of the inner 2 for loops instead of potentially switching files every
+  // iteration.  This will also work better if need to limit number of open files
+  // or if want to limit to a specific range of ranks...
+  int exoid = output_region(rank)->get_database()->get_file_pointer();
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-
-      auto rank = cell.m_rank;
-      if (rank != last_rank) {
-        exoid     = output_region(rank)->get_database()->get_file_pointer();
-        last_rank = rank;
+      if (cell.m_rank != rank) {
+        continue;
       }
 
       auto start = cell.m_localNodeIdOffset + 1;
@@ -240,43 +242,58 @@ template <typename INT> void Grid::output_node_map(INT /*dummy*/)
   }
 }
 
-template <typename INT> void Grid::output_element_map(INT /*dummy*/)
+template <typename INT> void Grid::output_element_map(int rank, INT /*dummy*/)
 {
-  // IOSS does not support partial field output at this time, so need to use raw exodus calls for
-  // now...
-  int last_rank = -1;
-  int exoid     = 0;
+  // This ordering results in `parallel_size() * II() * JJ()` iterations instead of
+  // `II() * JJ()`, but should be faster overall since it outputs to the same file
+  // for all of the inner 2 for loops instead of potentially switching files every
+  // iteration.  This will also work better if need to limit number of open files
+  // or if want to limit to a specific range of ranks...
+  int exoid = output_region(rank)->get_database()->get_file_pointer();
+
+  auto output_blocks = output_region(rank)->get_element_blocks();
+
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-
-      auto rank = cell.m_rank;
-      if (rank != last_rank) {
-        exoid     = output_region(rank)->get_database()->get_file_pointer();
-        last_rank = rank;
+      if (cell.m_rank != rank) {
+        continue;
       }
 
-      auto blocks = cell.m_unitCell->m_region->get_element_blocks();
-      for (const auto *block : blocks) {
+      // This is the element block offset for the "single output file"
+      // for the block being output For example, if the total mesh has
+      // 3 blocks, with 100, 200, 100 elements, then the element block
+      // offset would be 0, 100, 300 (Ioss::ElementBlock::get_offset())
+      size_t global_id_offset = 0;
 
-        auto start = cell.m_localElementIdOffset[block->name()] + 1;
-        auto count = block->entity_count();
-        auto id    = block->get_property("id").get_int();
+      for (const auto *output_element_block : output_blocks) {
+        auto *block = cell.m_unitCell->m_region->get_element_block(output_element_block->name());
+        if (block != nullptr) {
 
-        auto             gid = cell.m_globalElementIdOffset[block->name()] + 1;
-        std::vector<INT> map(count);
-        std::iota(map.begin(), map.end(), gid);
+          auto             gid = cell.m_globalElementIdOffset[block->name()] + 1 + global_id_offset;
+          auto             element_count = block->entity_count();
+          std::vector<INT> map(element_count);
 
-        if (debug_level & 8) {
-          fmt::print(stderr,
-                     "rank: i, j, blk, id, start, count, global_start: {}: {} {} {} {} {} {} {}\n",
-                     rank, i, j, block->name(), id, start, count, gid);
+          std::iota(map.begin(), map.end(), gid);
+
+          auto output_block_offset = output_element_block->get_offset();
+
+          // This cells element block ids start this far into the portion of the map for this
+          // element block
+          auto local_offset = cell.m_localElementIdOffset[block->name()];
+
+          auto start = output_block_offset + local_offset + 1;
+          ex_put_partial_id_map(exoid, EX_ELEM_MAP, start, element_count, map.data());
+
+          fmt::print("Rank {}: Cell({}, {}), Block {}, start {}, element_count {}, gid {}\n", rank,
+                     i, j, block->name(), start, element_count, gid);
         }
-        ex_put_partial_id_map(exoid, EX_ELEM_MAP, start, count, map.data());
-      }
-      if (debug_level & 2) {
-        util().progress(fmt::format("Generated Element Map for Rank {}, Cell({}, {})", rank,
-                                    cell.m_i, cell.m_j));
+        // If we were outputting a single file, then this element
+        // block in that file would have this many elements.
+
+        auto global_block_element_count =
+            output_element_block->get_property("global_entity_count").get_int();
+        global_id_offset += global_block_element_count;
       }
     }
   }
@@ -326,11 +343,22 @@ namespace {
       }
     }
 
+    // Calculate values needed to set the "global_entity_count" property on the output element
+    // blocks.
+    std::map<const std::string, int64_t> global_block_element_count;
+    for (auto &blk : output_element_blocks) {
+      for (int rank = 0; rank < grid.parallel_size(); rank++) {
+        auto *block = blk.second.get();
+        global_block_element_count[block->name()] += element_block_elem_count[rank][block->name()];
+      }
+    }
+
     // Define the element blocks in the output database...
     for (int rank = 0; rank < grid.parallel_size(); rank++) {
       for (auto &blk : output_element_blocks) {
         auto *block = new Ioss::ElementBlock(*blk.second.get());
         block->property_update("entity_count", element_block_elem_count[rank][block->name()]);
+        block->property_update("global_entity_count", global_block_element_count[block->name()]);
         grid.output_region(rank)->add(block);
         if (debug_level & 8) {
           fmt::print("rank, blk, element_count: {}: {} {}\n", rank, block->name(),
