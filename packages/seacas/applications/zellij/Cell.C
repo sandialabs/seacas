@@ -4,20 +4,20 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "GridEntry.h"
+#include "Cell.h"
 #include <Ioss_NodeBlock.h>
 #include <algorithm>
 
 extern bool equivalence_nodes;
 
-void GridEntry::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
+void Cell::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
 {
   m_i        = i;
   m_j        = j;
   m_unitCell = unit_cell;
 }
 
-std::pair<double, double> GridEntry::get_coordinate_range(enum Axis axis) const
+std::pair<double, double> Cell::get_coordinate_range(enum Axis axis) const
 {
   if (axis == Axis::X) {
     return m_unitCell->minmax_x;
@@ -30,7 +30,7 @@ std::pair<double, double> GridEntry::get_coordinate_range(enum Axis axis) const
 
 // Number of nodes that will be added to global node count when this cell is added to
 // grid -- accounts for coincident nodes if cell has neighbor(s)
-size_t GridEntry::added_node_count() const
+size_t Cell::added_node_count() const
 {
   // If no neighbors (to -I, -J), then all nodes would be added...
   auto count = m_unitCell->m_region->get_property("node_count").get_int();

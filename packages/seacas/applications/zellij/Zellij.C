@@ -30,9 +30,8 @@
 #include <Ioss_SubSystem.h>
 #include <Ioss_Transform.h>
 
-#include "Decompose.h"
+#include "Cell.h"
 #include "Grid.h"
-#include "GridEntry.h"
 #include "UnitCell.h"
 #include "ZE_SystemInterface.h"
 
@@ -112,7 +111,7 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
     fmt::print(stderr, "{} Lattice Defined\n", time_stamp(tsFormat));
   }
 
-  decompose_grid(grid, interFace.ranks(), interFace.decomp_method());
+  grid.decompose(interFace.ranks(), interFace.decomp_method());
 
   // All unit cells have been mapped into the IxJ grid, now calculate all node / element offsets
   // and the global node and element counts... (TODO: Parallel decomposition)

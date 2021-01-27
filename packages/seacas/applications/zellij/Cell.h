@@ -3,10 +3,10 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#ifndef ZE_GridEntry_H
-#define ZE_GridEntry_H
+#ifndef ZE_Cell_H
+#define ZE_Cell_H
 //
-// `GridEntry`:
+// `Cell`:
 //  -- for each location:
 //     -- i,j location (could be calculated, but easier if entry knows it...)
 //     -- reference to unit_cell region
@@ -28,7 +28,7 @@
 // Each entry in grid will have the following information:
 enum class Axis { X, Y, Z };
 
-class GridEntry
+class Cell
 {
 public:
   std::pair<double, double> get_coordinate_range(enum Axis) const;
@@ -40,12 +40,34 @@ public:
   //! True if this cell has a neighbor "below it" (lower j)
   bool has_neighbor_j() const { return m_j > 0; }
 
+  //! True if this cell has a processor boundary to its "left" (lower i)
+  //! Note that cell cannot compute this, but is "told" this during decomposition
+  //! of the owning `Grid`
+  bool processor_boundary_i() const;
+
+  //! True if this cell has a processor boundary "below it" (lower j)
+  //! Note that cell cannot compute this, but is "told" this during decomposition
+  //! of the owning `Grid`
+  bool processor_boundary_j() const;
+
   //! Number of nodes that will be added to global node count when this cell is added to
   //! grid -- accounts for coincident nodes if this cell has neighbor(s)
   size_t added_node_count() const;
 
   //! The mpi rank that this cell will be on in a parallel run.
   int rank() const { return m_rank; }
+  int rankI() const { return m_rankI; }
+  int rankJ() const { return m_rankJ; }
+
+  //! The mpi rank that this cell will be on in a parallel run.
+  void set_rank(int my_rank)
+  {
+    m_rank  = my_rank;
+    m_rankI = my_rank;
+    m_rankJ = my_rank;
+  }
+  void set_rankI(int my_rank) { m_rankI = my_rank; }
+  void set_rankJ(int my_rank) { m_rankJ = my_rank; }
 
   //! Create a vector of `node_count` length which has the following values:
   //! * 0: Node that is not shared with any "lower" neighbors.
@@ -89,8 +111,17 @@ public:
   //! UnitCell to place it in the correct global location of the
   //! output mesh
   double m_offY{0.0};
-  int    m_rank{0};
+
+private:
+  //! The MPI rank that will be operating on this cell.
+  int m_rank{0};
+  //! The rank of the cell to the left (lower I); matches `m_rank` if no neighbor
+  int m_rankI{0};
+  //! The rank of the cell below (lower J); matches `m_rank` if no neighbor
+  int m_rankJ{0};
+
   //! True if `Grid.finalize()` has been run on this cell / entry.
+public:
   bool m_consistent{false};
 };
 

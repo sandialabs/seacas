@@ -7,7 +7,7 @@ INCLUDE_DIRECTORIES(
 
 SET(HEADERS "")
 SET(SOURCES Grid.C
-	    GridEntry.C
+	    Cell.C
 	    UnitCell.C
 	    Decompose.C
 	    ZE_SystemInterface.C

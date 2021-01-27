@@ -6,6 +6,8 @@
 
 #ifndef ZE_Decompose_H
 #define ZE_Decompose_H
+#include <string>
+
 class Grid;
 void decompose_grid(Grid &grid, size_t ranks, const std::string &method);
 #endif

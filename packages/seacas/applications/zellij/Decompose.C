@@ -213,18 +213,8 @@ void decompose_grid(Grid &grid, size_t ranks, const std::string &method)
   idx = 0;
   for (size_t j = 0; j < grid.JJ(); j++) {
     for (size_t i = 0; i < grid.II(); i++) {
-      auto &cell  = grid.get_cell(i, j);
-      cell.m_rank = zparts[idx++];
-    }
-  }
-
-  if (debug_level & 32) {
-    idx = 0;
-    for (size_t j = 0; j < grid.JJ(); j++) {
-      for (size_t i = 0; i < grid.II(); i++) {
-        fmt::print(" {}", zparts[idx++]);
-      }
-      fmt::print("\n");
+      auto &cell = grid.get_cell(i, j);
+      cell.set_rank(zparts[idx++]);
     }
   }
 

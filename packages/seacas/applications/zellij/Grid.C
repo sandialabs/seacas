@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "Decompose.h"
 #include "Grid.h"
 #include "ZE_SystemInterface.h"
 #include "ZE_Version.h"
@@ -23,7 +24,7 @@ bool                equivalence_nodes = true;
 
 namespace {
   template <typename INT>
-  std::vector<INT>      generate_node_map(Grid &grid, const GridEntry &cell, INT /*dummy*/);
+  std::vector<INT>      generate_node_map(Grid &grid, const Cell &cell, INT /*dummy*/);
   Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
 
   void set_coordinate_offsets(Grid &grid);
@@ -73,6 +74,43 @@ void Grid::create_output_regions(SystemInterface &interFace)
     output_region(i)->begin_mode(Ioss::STATE_DEFINE_MODEL);
     output_region(i)->property_add(Ioss::Property("code_name", qainfo[0]));
     output_region(i)->property_add(Ioss::Property("code_version", qainfo[2]));
+  }
+}
+
+void Grid::decompose(size_t ranks, const std::string &method)
+{
+  decompose_grid(*this, ranks, method);
+
+  // Now iterate the cells and tell each cell whether it is on a processor
+  // boundary with its "left" or "lower" neighboring cell.
+  for (size_t j = 0; j < JJ(); j++) {
+    auto left = get_cell(0, j);
+    for (size_t i = 1; i < II(); i++) {
+      auto &cell = get_cell(i, j);
+      cell.set_rankI(left.rank());
+      left = cell;
+    }
+  }
+
+  for (size_t i = 0; i < II(); i++) {
+    auto below = get_cell(i, 0);
+    for (size_t j = 1; j < JJ(); j++) {
+      auto &cell = get_cell(i, j);
+      cell.set_rankJ(below.rank());
+      below = cell;
+    }
+  }
+
+  if (debug_level & 32) {
+    for (size_t j = 0; j < JJ(); j++) {
+      for (size_t i = 0; i < II(); i++) {
+        const auto &cell  = get_cell(i, j);
+        auto        left  = cell.rank() != cell.rankI() ? '<' : ' ';
+        auto        below = cell.rank() != cell.rankJ() ? '^' : ' ';
+        fmt::print(" {}{}{}", left, cell.rank(), below);
+      }
+      fmt::print("\n");
+    }
   }
 }
 
@@ -127,8 +165,8 @@ void Grid::output_nodal_coordinates(int rank)
   int exoid = output_region(rank)->get_database()->get_file_pointer();
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
-      auto cell = get_cell(i, j);
-      if (cell.m_rank != rank) {
+      const auto &cell = get_cell(i, j);
+      if (cell.rank() != rank) {
         continue;
       }
 
@@ -180,7 +218,7 @@ template <typename INT> void Grid::output_block_connectivity(int rank, INT /*dum
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-      if (cell.m_rank != rank) {
+      if (cell.rank() != rank) {
         continue;
       }
 
@@ -220,7 +258,7 @@ template <typename INT> void Grid::output_node_map(int rank, INT /*dummy*/)
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-      if (cell.m_rank != rank) {
+      if (cell.rank() != rank) {
         continue;
       }
 
@@ -256,7 +294,7 @@ template <typename INT> void Grid::output_element_map(int rank, INT /*dummy*/)
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-      if (cell.m_rank != rank) {
+      if (cell.rank() != rank) {
         continue;
       }
 
@@ -380,6 +418,7 @@ namespace {
         cell.m_globalNodeIdOffset = global_node_count;
         cell.m_localNodeIdOffset  = local_node_count[rank];
         SMART_ASSERT(cell.m_unitCell->m_region != nullptr)(i)(j);
+
         auto new_nodes = cell.added_node_count();
         if (debug_level & 8) {
           fmt::print("rank: i, j, node_offset, added_nodes: {}: {} {} {} {}\n", rank, i, j,
@@ -421,7 +460,7 @@ namespace {
   }
 
   template <typename INT>
-  std::vector<INT> generate_node_map(Grid &grid, const GridEntry &cell, INT /*dummy*/)
+  std::vector<INT> generate_node_map(Grid &grid, const Cell &cell, INT /*dummy*/)
   {
     // Generate a "map" from nodes in the input connectivity to the
     // output connectivity in global nodes.  If no neighbors, then

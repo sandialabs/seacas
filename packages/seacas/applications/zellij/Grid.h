@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include "GridEntry.h"
+#include "Cell.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
 
@@ -21,7 +21,7 @@
 //  * range of x, y size of unit_cell mesh. (assumes unit_cell minx, miny == 0.0)
 //  * Ti, Tj, Tk -- size of regular mesh on boundary of unit_cell (? may need the 3 `Tk` values for
 //  padding)
-//  * std::vector<GridEntry> m_grid -- contains database information...
+//  * std::vector<Cell> m_grid -- contains database information...
 
 class SystemInterface;
 
@@ -32,9 +32,9 @@ public:
   //! be written to the exodus database in the Ioss::Region `region`
   Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j);
 
-  //! Return a reference to the GridEntry cell at location `(i,j)`.
+  //! Return a reference to the Cell cell at location `(i,j)`.
   //! Does not check that `i` and `j` are in bounds.
-  GridEntry &get_cell(size_t i, size_t j)
+  Cell &get_cell(size_t i, size_t j)
   {
     size_t idx = i * m_gridJ + j;
     return m_grid[idx];
@@ -48,14 +48,16 @@ public:
   size_t size() const { return m_gridI * m_gridJ; }
   int    parallel_size() const { return m_parallelSize; }
 
-  //! Create a GridEntry object referencing the UnitCell `unit_cell` at location `(i,j)`
+  //! Create a Cell object referencing the UnitCell `unit_cell` at location `(i,j)`
   void initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell);
 
-  //! Once all GridEntry objects have been initialized, Determine the coordinate extents and
+  //! Once all Cell objects have been initialized, Determine the coordinate extents and
   //! offsets of each cell, the size of the output mesh, the node and element id offsets
   //! for each cell, the number of nodes and elements in the output mesh and initialize
   //! the output mesh.
   void finalize();
+
+  void decompose(size_t ranks, const std::string &method);
 
   //! Output node coordinates and element block connectivities for the output mesh.
   template <typename INT> void output_model(INT /*dummy*/);
@@ -73,7 +75,7 @@ private:
   template <typename INT> void output_node_map(int rank, INT /*dummy*/);
 
   std::vector<std::unique_ptr<Ioss::Region>> m_outputRegions;
-  std::vector<GridEntry>                     m_grid{};
+  std::vector<Cell>                          m_grid{};
   Ioss::ParallelUtils                        m_pu{MPI_COMM_WORLD};
   size_t                                     m_gridI{0};
   size_t                                     m_gridJ{0};
