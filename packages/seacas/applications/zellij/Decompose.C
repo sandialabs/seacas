@@ -214,7 +214,7 @@ void decompose_grid(Grid &grid, size_t ranks, const std::string &method)
   for (size_t j = 0; j < grid.JJ(); j++) {
     for (size_t i = 0; i < grid.II(); i++) {
       auto &cell = grid.get_cell(i, j);
-      cell.set_rank(zparts[idx++]);
+      cell.set_rank(Loc::C, zparts[idx++]);
     }
   }
 

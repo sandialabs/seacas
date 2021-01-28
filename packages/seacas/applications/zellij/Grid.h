@@ -68,6 +68,7 @@ public:
 
 private:
   void create_output_regions(SystemInterface &interFace);
+  void categorize_processor_boundaries();
 
   void                         output_nodal_coordinates(int rank);
   template <typename INT> void output_block_connectivity(int rank, INT /*dummy*/);

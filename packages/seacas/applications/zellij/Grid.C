@@ -81,23 +81,49 @@ void Grid::decompose(size_t ranks, const std::string &method)
 {
   decompose_grid(*this, ranks, method);
 
-  // Now iterate the cells and tell each cell whether it is on a processor
-  // boundary with its "left" or "lower" neighboring cell.
-  for (size_t j = 0; j < JJ(); j++) {
-    auto left = get_cell(0, j);
-    for (size_t i = 1; i < II(); i++) {
-      auto &cell = get_cell(i, j);
-      cell.set_rankI(left.rank());
-      left = cell;
-    }
-  }
+  categorize_processor_boundaries();
+}
 
-  for (size_t i = 0; i < II(); i++) {
-    auto below = get_cell(i, 0);
-    for (size_t j = 1; j < JJ(); j++) {
+void Grid::categorize_processor_boundaries()
+{
+  // Now iterate the cells and tell each cell the rank of all neighboring cells...
+  // boundary with its "left" or "lower" neighboring cell.
+
+  for (size_t j = 0; j < JJ(); j++) {
+    for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-      cell.set_rankJ(below.rank());
-      below = cell;
+      if (i > 0) {
+        auto &left = get_cell(i - 1, j);
+        cell.set_rank(Loc::L, left.rank(Loc::C));
+        if (j > 0) {
+          auto &BL = get_cell(i - 1, j - 1);
+          cell.set_rank(Loc::BL, BL.rank(Loc::C));
+        }
+        if (j < JJ() - 1) {
+          auto &TL = get_cell(i - 1, j + 1);
+          cell.set_rank(Loc::TL, TL.rank(Loc::C));
+        }
+      }
+      if (i < II() - 1) {
+        auto &right = get_cell(i + 1, j);
+        cell.set_rank(Loc::R, right.rank(Loc::C));
+        if (j > 0) {
+          auto &BR = get_cell(i + 1, j - 1);
+          cell.set_rank(Loc::BR, BR.rank(Loc::C));
+        }
+        if (j < JJ() - 1) {
+          auto &TR = get_cell(i + 1, j + 1);
+          cell.set_rank(Loc::TR, TR.rank(Loc::C));
+        }
+      }
+      if (j > 0) {
+        auto &B = get_cell(i, j - 1);
+        cell.set_rank(Loc::B, B.rank(Loc::C));
+      }
+      if (j < JJ() - 1) {
+        auto &T = get_cell(i, j + 1);
+        cell.set_rank(Loc::T, T.rank(Loc::C));
+      }
     }
   }
 
@@ -105,9 +131,9 @@ void Grid::decompose(size_t ranks, const std::string &method)
     for (size_t j = 0; j < JJ(); j++) {
       for (size_t i = 0; i < II(); i++) {
         const auto &cell  = get_cell(i, j);
-        auto        left  = cell.rank() != cell.rankI() ? '<' : ' ';
-        auto        below = cell.rank() != cell.rankJ() ? '^' : ' ';
-        fmt::print(" {}{}{}", left, cell.rank(), below);
+        auto        left  = cell.processor_boundary(Loc::L) ? '<' : ' ';
+        auto        below = cell.processor_boundary(Loc::B) ? '^' : ' ';
+        fmt::print(" {}{}{}", left, cell.rank(Loc::C), below);
       }
       fmt::print("\n");
     }
@@ -147,8 +173,6 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
 
 void Grid::output_nodal_coordinates(int rank)
 {
-  // IOSS does not support partial field output at this time, so need to use raw exodus calls for
-  // now...
   std::vector<double> coord_x;
   std::vector<double> coord_y;
   std::vector<double> coord_z;
@@ -166,7 +190,7 @@ void Grid::output_nodal_coordinates(int rank)
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       const auto &cell = get_cell(i, j);
-      if (cell.rank() != rank) {
+      if (cell.rank(Loc::C) != rank) {
         continue;
       }
 
@@ -175,6 +199,7 @@ void Grid::output_nodal_coordinates(int rank)
       nb->get_field_data("mesh_model_coordinates_y", coord_y);
       nb->get_field_data("mesh_model_coordinates_z", coord_z);
 
+      // Apply coordinate offsets to all nodes...
       if (cell.m_offX != 0.0) {
         std::for_each(coord_x.begin(), coord_x.end(), [&cell](double &d) { d += cell.m_offX; });
       }
@@ -184,7 +209,8 @@ void Grid::output_nodal_coordinates(int rank)
 
       // Filter coordinates down to only "new nodes"...
       if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
-        auto   categorized_nodes = cell.categorize_nodes();
+        auto   mode              = parallel_size() > 1 ? Mode::PROCESSOR : Mode::GLOBAL;
+        auto   categorized_nodes = cell.categorize_nodes(mode);
         size_t nn                = 0;
         for (size_t n = 0; n < categorized_nodes.size(); n++) {
           if (categorized_nodes[n] == 0) {
@@ -197,7 +223,7 @@ void Grid::output_nodal_coordinates(int rank)
       }
 
       auto start = cell.m_localNodeIdOffset + 1;
-      auto count = cell.added_node_count();
+      auto count = cell.added_node_count(Mode::PROCESSOR);
       ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
     }
   }
@@ -218,7 +244,7 @@ template <typename INT> void Grid::output_block_connectivity(int rank, INT /*dum
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-      if (cell.rank() != rank) {
+      if (cell.rank(Loc::C) != rank) {
         continue;
       }
 
@@ -258,12 +284,12 @@ template <typename INT> void Grid::output_node_map(int rank, INT /*dummy*/)
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-      if (cell.rank() != rank) {
+      if (cell.rank(Loc::C) != rank) {
         continue;
       }
 
       auto start = cell.m_localNodeIdOffset + 1;
-      auto count = cell.added_node_count();
+      auto count = cell.added_node_count(Mode::PROCESSOR);
 
       auto             gid = cell.m_globalNodeIdOffset + 1;
       std::vector<INT> map(count);
@@ -294,7 +320,7 @@ template <typename INT> void Grid::output_element_map(int rank, INT /*dummy*/)
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
-      if (cell.rank() != rank) {
+      if (cell.rank(Loc::C) != rank) {
         continue;
       }
 
@@ -356,7 +382,7 @@ namespace {
     for (size_t j = 0; j < grid.JJ(); j++) {
       for (size_t i = 0; i < grid.II(); i++) {
         auto &cell = grid.get_cell(i, j);
-        auto  rank = cell.rank();
+        auto  rank = cell.rank(Loc::C);
 
         const auto &element_blocks = cell.m_unitCell->m_region->get_element_blocks();
         for (const auto *block : element_blocks) {
@@ -414,18 +440,19 @@ namespace {
     for (size_t j = 0; j < grid.JJ(); j++) {
       for (size_t i = 0; i < grid.II(); i++) {
         auto &cell                = grid.get_cell(i, j);
-        auto  rank                = cell.rank();
+        auto  rank                = cell.rank(Loc::C);
         cell.m_globalNodeIdOffset = global_node_count;
         cell.m_localNodeIdOffset  = local_node_count[rank];
         SMART_ASSERT(cell.m_unitCell->m_region != nullptr)(i)(j);
 
-        auto new_nodes = cell.added_node_count();
+        auto new_global_nodes    = cell.added_node_count(Mode::GLOBAL);
+        auto new_processor_nodes = cell.added_node_count(Mode::PROCESSOR);
         if (debug_level & 8) {
-          fmt::print("rank: i, j, node_offset, added_nodes: {}: {} {} {} {}\n", rank, i, j,
-                     local_node_count[rank], new_nodes);
+          fmt::print("rank: i, j, node_offset, added_nodes: {}: {} {} {} {} {}\n", rank, i, j,
+                     local_node_count[rank], new_global_nodes, new_processor_nodes);
         }
-        local_node_count[rank] += new_nodes;
-        global_node_count += new_nodes;
+        local_node_count[rank] += new_processor_nodes;
+        global_node_count += new_global_nodes;
       }
     }
     // Define the output database node block...
@@ -476,7 +503,8 @@ namespace {
     else {
       // At least one neighboring cell.
       // Generate map for the "non-neighbored" nodes (not contiguous with a neighbor cell)
-      auto categorized_nodes = cell.categorize_nodes();
+      auto mode              = grid.parallel_size() > 1 ? Mode::PROCESSOR : Mode::GLOBAL;
+      auto categorized_nodes = cell.categorize_nodes(mode);
       SMART_ASSERT(categorized_nodes.size() == cell_node_count)
       (categorized_nodes.size())(cell_node_count);
       INT offset = (INT)cell.m_globalNodeIdOffset + 1;
