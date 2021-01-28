@@ -25,12 +25,6 @@ TRIBITS_ADD_LIBRARY(
   SOURCES ${SOURCES}
   )
 
-TARGET_INCLUDE_DIRECTORIES(
-  exodus_for
-  PUBLIC
-  ${CMAKE_INSTALL_PREFIX}/include
-  ${TPL_Netcdf_INCLUDE_DIRS}
-  )
 
 # Many users of the SEACAS installations still want a static exodus library...
 if (SEACASExodus_ENABLE_STATIC)

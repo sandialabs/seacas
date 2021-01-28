@@ -74,13 +74,6 @@ IF (MINGW)
   target_link_libraries(Ioss psapi)
 ENDIF ()
 
-TARGET_INCLUDE_DIRECTORIES(
-  Ioss
-  PUBLIC
-  ${CMAKE_INSTALL_PREFIX}/include
-  ${TPL_CGNS_INCLUDE_DIRS}
-  ${TPL_Kokkos_INCLUDE_DIRS}
-  )
 
 
 if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
