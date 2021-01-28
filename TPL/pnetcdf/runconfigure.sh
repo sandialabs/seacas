@@ -12,17 +12,12 @@ then
    USE_BB="--enable-burst-buffering"
 fi
    
-if [ "$CRAY" == "YES" ]
+SHARED="${SHARED:-YES}"
+if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
-    USE_SHARED="--disable-shared"
+    USE_SHARED="--enable-shared"
 else
-    SHARED="${SHARED:-YES}"
-    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
-    then
-	USE_SHARED="--enable-shared"
-    else
-	USE_SHARED="--disable-shared"
-    fi
+    USE_SHARED="--disable-shared"
 fi
 
 rm -f config.cache

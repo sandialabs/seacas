@@ -196,7 +196,15 @@ GENERATOR=${GENERATOR:-"Unix Makefiles"}
 # -DCMAKE_Fortran_FLAGS="-qfixed=72" \
 # -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
 
-SHARED="${SHARED:-YES}"
+CRAY="${CRAY:-NO}"
+CRAY=`check_valid CRAY`
+
+if [ "${CRAY}" == "YES" ]
+then
+    SHARED="${SHARED:-NO}"
+else
+    SHARED="${SHARED:-YES}"
+fi
 SHARED=`check_valid SHARED`
 
 ### Switch for Debug or Release build:
@@ -483,6 +491,7 @@ echo "        MPI: ${MPI}"
 echo "     SHARED: ${SHARED}"
 echo " BUILD_TYPE: ${BUILD_TYPE}"
 echo " THREADSAFE: ${THREADSAFE}"
+echo "       CRAY: ${CRAY}"
 echo " PYTHON_VER: ${PYTHON_VER}"
 echo " "
 echo "     NETCDF: ${HAVE_NETCDF}"
