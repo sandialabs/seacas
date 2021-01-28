@@ -341,7 +341,7 @@ then
 		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkos.${LD_EXT}"
 fi
 
-if [ "$HAVE_FAODEL" == "ON" ]
+if [ "$HAVE_FAODEL" == "YES" ]
 then
   FAODEL_SYMBOLS=" -D TPL_ENABLE_Faodel:BOOL=${HAVE_FAODEL} \
     -D Faodel_ROOT:PATH=${FAODEL_PATH} \

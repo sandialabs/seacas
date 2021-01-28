@@ -28,7 +28,7 @@ if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
   export CXX=CC
-elif [ "$MPI" == "ON" ]
+elif [ "$MPI" == "YES" ]
 then
   export CC=mpicc
   export CXX=mpicxx

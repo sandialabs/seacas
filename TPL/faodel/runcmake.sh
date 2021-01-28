@@ -7,8 +7,8 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-SHARED="${SHARED:-ON}"
-if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
+SHARED="${SHARED:-YES}"
+if [[ "$SHARED" == "YES" ]]
 then
   OS=`uname -s`
   if [ "$OS" = "Darwin" ] ; then
@@ -21,11 +21,12 @@ else
   EXTRA_DEPS="-DNC_EXTRA_DEPS=-ldl\;-lz"
 fi
 
-MPI="${MPI:-OFF}"
-if [ "$MPI" == "ON" ] && [ "$CRAY" = "ON" ]
+MPI="${MPI:-NO}"
+if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
-elif [ "$MPI" == "ON" ]
+  export CXX=CC
+elif [ "$MPI" == "YES" ]
 then
   export CC=mpicc
   export CXX=mpicxx
@@ -56,8 +57,7 @@ fi
 
 if [ "X$BOOST_ROOT" == "X" ] ; then
   BOOST_ROOT=$(cd ../../../..; pwd)
-  echo "Faodel requires Boost for:" atomic log log_setup serialization
-  echo "  atomic log log_setup serialization"
+  echo "Faodel requires these Boost packages: atomic log log_setup serialization"
   echo "Please set BOOST_ROOT."
   exit 0
 fi

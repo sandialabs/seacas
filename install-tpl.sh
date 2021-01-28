@@ -95,9 +95,9 @@ KOKKOS=${KOKKOS:-NO}
 KOKKOS=`check_valid KOKKOS`
 
 H5VERSION=${H5VERSION:-V110}
-FAODEL=${FAODEL:-OFF}
-ADIOS2=${ADIOS2:-OFF}
-check_valid_on_off ADIOS2
+
+FAODEL=${FAODEL:-NO}
+FAODEL=`check_valid FAODEL`
 
 ADIOS2=${ADIOS2:-NO}
 ADIOS2=`check_valid ADIOS2`
@@ -810,7 +810,7 @@ then
 fi
 
 # =================== INSTALL FAODEL ===============
-if [ "$FAODEL" == "ON" ]
+if [ "$FAODEL" == "YES" ]
 then
   if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.a ]
   then
@@ -822,7 +822,7 @@ then
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
       rm -rf faodel*
-      git clone git@gitlab.sandia.gov:faodel/faodel
+      git clone git@github.com:faodel/faodel.git
     fi
 
     if [ "$BUILD" == "YES" ]
@@ -851,7 +851,7 @@ then
 fi
 
 # =================== INSTALL CEREAL ===============
-if [ "$FAODEL" == "ON" ]
+if [ "$FAODEL" == "YES" ]
 then
   # Currently, the FAODEL backend requires cereal, so if Faodel is enabled, we'll install cereal, too.
   if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
