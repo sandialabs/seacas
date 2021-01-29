@@ -35,21 +35,22 @@
 #define __CATALYST_CGNS_MESH_H
 
 #include "CatalystCGNSMeshBase.h"
+#include "CatalystManager.h"
 #include <vector>
 #include <map>
 
-namespace Iovs {
-    class CatalystManager;
-}
 class vtkMultiBlockDataSet;
 
 namespace Iovs_cgns {
 
 class CatalystCGNSMesh : public CatalystCGNSMeshBase {
 
+    using CatalystPipelineInfo = Iovs::CatalystManager::CatalystPipelineInfo;
+
 public:
 
-    CatalystCGNSMesh(Iovs::CatalystManager *cm);
+    CatalystCGNSMesh(Iovs::CatalystManager *cm,
+        CatalystPipelineInfo& catalystPipelineInfo);
 
     ~CatalystCGNSMesh();
 
@@ -80,9 +81,6 @@ public:
                                double* data,
                                int size);
 
-    const std::string& getCatalystPipelineName();
-    void SetCatalystPipelineName(const std::string& value);
-
     vtkMultiBlockDataSet* getMultiBlockDataSet();
 
 private:
@@ -109,9 +107,9 @@ private:
 
     vtkMultiBlockDataSet* multiBlock = nullptr;
     Iovs::CatalystManager* catManager = nullptr;
-    std::string catalystPipelineName;
     bool writeCatalystMesh;
     std::string catalystMeshFilePrefix;
+    CatalystPipelineInfo catalystPipelineInfo;
 };
 
 } // namespace Iovs_cgns

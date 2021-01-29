@@ -34,7 +34,6 @@
 #include "CatalystMeshWriter.h"
 #include "PhactoriParserInterface.h"
 #include "vtkDoubleArray.h"
-#include "vtkCPDataDescription.h"
 #include "vtkCPInputDataDescription.h"
 #include "vtkCPProcessor.h"
 #include "vtkCPPythonPipeline.h"
@@ -56,63 +55,55 @@
 namespace Iovs {
 
 CatalystManager::CatalystManager() {
-    this->coProcessor = nullptr;
-    this->catalystOutputIDNumber = 0;
-    this->catalystOutputReferenceCount = 0;
+    coProcessor = nullptr;
+    catalystOutputIDNumber = 0;
+    catalystOutputReferenceCount = 0;
 }
 
 CatalystManager::~CatalystManager() {
 }
 
 int CatalystManager::getCatalystOutputIDNumber() {
-    return this->catalystOutputIDNumber;
+    return catalystOutputIDNumber;
 }
 
 void CatalystManager::initializeIfNeeded() {
-    if (!this->canCoProcess()) {
-        this->coProcessor = vtkCPProcessor::New();
-        this->coProcessor->Initialize();
-        this->catalystOutputReferenceCount = 0;
+    if (!canCoProcess()) {
+        coProcessor = vtkCPProcessor::New();
+        coProcessor->Initialize();
+        catalystOutputReferenceCount = 0;
     }
 }
 
 void CatalystManager::finalizeIfNeeded() {
-    if (this->canCoProcess()) {
-        this->coProcessor->Delete();
-        this->coProcessor = nullptr;
+    if (canCoProcess()) {
+        coProcessor->Delete();
+        coProcessor = nullptr;
     }
 }
 
 bool CatalystManager::canCoProcess() {
-    return this->coProcessor != nullptr;
+    return coProcessor != nullptr;
 }
 
 void CatalystManager::incrementOutputCounts() {
-    this->catalystOutputIDNumber++;
-    this->catalystOutputReferenceCount++;
+    catalystOutputIDNumber++;
+    catalystOutputReferenceCount++;
 }
 
 std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
     CatalystManager::createCatalystExodusMesh(CatalystExodusMeshInit& cmInit) {
 
-    this->initializeIfNeeded();
-    Iovs_exodus::CatalystExodusMesh * cem = nullptr;
+    initializeIfNeeded();
+    CatalystPipelineInfo cpi = createCatalystPipelineInfo(cmInit);
 
-    if (this->pipelines.find(cmInit.resultsOutputFilename) ==
-        this->pipelines.end()) {
+    Iovs_exodus::CatalystExodusMesh* cem =
+        new Iovs_exodus::CatalystExodusMesh(this, cpi);
+    cem->SetUnderscoreVectors(cmInit.underScoreVectors);
+    cem->SetApplyDisplacements(cmInit.applyDisplacements);
 
-        if (cmInit.enableLogging) {
-            this->initCatalystLogging(cmInit);
-        }
+    registerMeshInPipeline(cmInit, cem->getMultiBlockDataSet(), cpi);
 
-        cem = new Iovs_exodus::CatalystExodusMesh(this);
-        cem->SetCatalystPipelineName(cmInit.resultsOutputFilename);
-        cem->SetUnderscoreVectors(cmInit.underScoreVectors);
-        cem->SetApplyDisplacements(cmInit.applyDisplacements);
-        this->initCatalystPipeline(cmInit, cem->getMultiBlockDataSet());
-    }
-
-    this->incrementOutputCounts();
     return std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>(
         dynamic_cast<Iovs_exodus::CatalystExodusMeshBase*>(cem));
 }
@@ -120,42 +111,83 @@ std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
 std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>
     CatalystManager::createCatalystCGNSMesh(CatalystMeshInit& cmInit) {
 
-    this->initializeIfNeeded();
-    Iovs_cgns::CatalystCGNSMesh * cgm = nullptr;
+    initializeIfNeeded();
+    CatalystPipelineInfo cpi = createCatalystPipelineInfo(cmInit);
 
-    if (this->pipelines.find(cmInit.resultsOutputFilename) ==\
-        this->pipelines.end()) {
+    Iovs_cgns::CatalystCGNSMesh* cgm =
+        new Iovs_cgns::CatalystCGNSMesh(this, cpi);
 
-        if (cmInit.enableLogging) {
-            this->initCatalystLogging(cmInit);
-        }
+    registerMeshInPipeline(cmInit, cgm->getMultiBlockDataSet(), cpi);
 
-        cgm = new Iovs_cgns::CatalystCGNSMesh(this);
-        cgm->SetCatalystPipelineName(cmInit.resultsOutputFilename);
-        this->initCatalystPipeline(cmInit, cgm->getMultiBlockDataSet());
-    }
-
-    this->incrementOutputCounts();
     return std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>(
         dynamic_cast<Iovs_cgns::CatalystCGNSMeshBase*>(cgm));
 }
 
-void CatalystManager::initCatalystLogging(CatalystMeshInit& cmInit) {
+CatalystManager::CatalystPipelineInfo
+CatalystManager::createCatalystPipelineInfo(
+    CatalystMeshInit& cmInit) {
 
-      TimerPair       tp = std::make_pair(clock(), clock());
-      vtkDoubleArray *da = vtkDoubleArray::New();
+    CatalystPipelineInfo cpi;
+    cpi.catalystPipelineID = getCatalystPipelineID(cmInit);
+    cpi.catalystInputName = cmInit.catalystInputName;
+    return cpi;
+}
+
+CatalystManager::CatalystPipelineID CatalystManager::getCatalystPipelineID(
+    CatalystMeshInit& cmInit) {
+
+    CatalystManager::CatalystPipelineID id = catalystOutputIDNumber;
+    bool doIncrementOutputCounts = true;
+
+    if (cmInit.enableCatalystMultiInputPipeline) {
+        std::string pn = cmInit.catalystMultiInputPipelineName;
+        if (multiInputPipelines.find(pn) == multiInputPipelines.end()) {
+            multiInputPipelines[pn] = catalystOutputIDNumber;
+        }
+        else {
+            doIncrementOutputCounts = false;
+        }
+        id = multiInputPipelines[pn];
+    }
+
+    if (doIncrementOutputCounts) {
+        incrementOutputCounts();
+    }
+    return id;
+}
+
+void CatalystManager::registerMeshInPipeline(CatalystMeshInit& cmInit,
+    vtkMultiBlockDataSet* mbds, const CatalystPipelineInfo& cpi) {
+
+    if (pipelines.find(cpi.catalystPipelineID) == pipelines.end()) {
+        initCatalystPipeline(cmInit, mbds, cpi);
+        if (cmInit.enableLogging) {
+            initCatalystLogging(cpi);
+        }
+    }
+    else {
+        addInputToPipeline(mbds, cpi);
+    }
+}
+
+void CatalystManager::initCatalystLogging(const CatalystPipelineInfo& cpi) {
+
+      CatalystPipelineID id = cpi.catalystPipelineID;
+      std::string logFileName = cpi.getLogFileName();
+
+      TimerPair tp = std::make_pair(clock(), clock());
+      vtkDoubleArray* da = vtkDoubleArray::New();
       da->SetNumberOfComponents(3);
       LoggingPair lp = std::make_pair(tp, da);
-      this->logging[cmInit.resultsOutputFilename] = lp;
+      this->logging[id] = lp;
 
       vtkProcessModule *pm = vtkProcessModule::GetProcessModule();
       vtkMPIController *mpic = vtkMPIController::SafeDownCast(
           pm->GetGlobalController());
-      std::string s(cmInit.resultsOutputFilename);
       if (mpic && mpic->GetNumberOfProcesses() > 1) {
         if (mpic->GetLocalProcessId() == 0) {
           std::ofstream logfile;
-          logfile.open((s + ".catalyst.log").c_str(), ios::out | ios::trunc);
+          logfile.open(logFileName, ios::out | ios::trunc);
           logfile << "# ELAPSED TIME (S)"
                   << ",PROC MEM USED - MIN (KiB)"
                   << ",PROC MEM USED - MAX (KiB)"
@@ -172,7 +204,7 @@ void CatalystManager::initCatalystLogging(CatalystMeshInit& cmInit) {
       }
       else {
         std::ofstream logfile;
-        logfile.open((s + ".catalyst.log").c_str(), ios::out | ios::trunc);
+        logfile.open(logFileName, ios::out | ios::trunc);
         logfile << "# ELAPSED TIME (S)"
                 << ",PROC MEM USED (KiB)"
                 << ",HOST MEM USED (KiB)"
@@ -183,40 +215,42 @@ void CatalystManager::initCatalystLogging(CatalystMeshInit& cmInit) {
 }
 
 void CatalystManager::initCatalystPipeline(CatalystMeshInit& cmInit,
-    vtkMultiBlockDataSet* mbds) {
+    vtkMultiBlockDataSet* mbds, const CatalystPipelineInfo& cpi) {
 
-    CatalystPipelineState catPipeState;
-    catPipeState.pipeline = vtkCPPythonPipeline::CreateAndInitializePipeline(
-        cmInit.catalystPythonFilename.c_str());
-    if(catPipeState.pipeline == nullptr) {
+    CatalystPipelineID id = cpi.catalystPipelineID;
+
+    pipelines[id].getPipeline() =
+        vtkCPPythonPipeline::CreateAndInitializePipeline(
+            cmInit.catalystPythonFilename.c_str());
+    if(pipelines[id].getPipeline() == nullptr) {
         std::cerr << "Unable to initialize ParaView Catalyst with python script "
             << cmInit.catalystPythonFilename << std::endl;
         return;
     }
 
-    catPipeState.dataDescription = vtkSmartPointer<vtkCPDataDescription>::New();
-    catPipeState.dataDescription->AddInput("input");
-    catPipeState.dataDescription->\
-        GetInputDescriptionByName("input")->SetGrid(mbds);
+    pipelines[id].getDataDescription() =
+        vtkSmartPointer<vtkCPDataDescription>::New();
+    pipelines[id].getDataDescription()->AddInput(cpi.catalystInputName.c_str());
+    pipelines[id].getDataDescription()->GetInputDescriptionByName(
+        cpi.catalystInputName.c_str())->SetGrid(mbds);
 
-    catPipeState.meshWriter = std::make_shared<CatalystMeshWriter>();
+    pipelines[id].getMeshWriter() =
+        std::make_shared<CatalystMeshWriter>();
     if (cmInit.writeCatalystMeshOneFile) {
-        catPipeState.meshWriter->setOutputCatalystMeshOneFilePrefix(\
+        pipelines[id].getMeshWriter()->setOutputCatalystMeshOneFilePrefix(
             cmInit.catalystMeshOneFilePrefix);
     }
     if (cmInit.writeCatalystMeshFilePerProc) {
-        catPipeState.meshWriter->setOutputCatalystMeshFilePerProcPrefix(\
+        pipelines[id].getMeshWriter()->setOutputCatalystMeshFilePerProcPrefix(
             cmInit.catalystMeshFilePerProcPrefix);
     }
 
-    this->pipelines[cmInit.resultsOutputFilename] = catPipeState;
-
-    vtkFieldData *  fd = vtkFieldData::New();
-    vtkStringArray *sa = vtkStringArray::New();
+    vtkFieldData* fd = vtkFieldData::New();
+    vtkStringArray* sa = vtkStringArray::New();
     sa->SetName("catalyst_sierra_data");
-    vtkIntArray *ec = vtkIntArray::New();
+    vtkIntArray* ec = vtkIntArray::New();
     ec->SetName("catalyst_sierra_error_codes");
-    vtkStringArray *em = vtkStringArray::New();
+    vtkStringArray* em = vtkStringArray::New();
     em->SetName("catalyst_sierra_error_messages");
     sa->InsertNextValue(cmInit.catalystBlockJSON);
     sa->InsertNextValue(cmInit.catalystSeparatorCharacter);
@@ -242,192 +276,228 @@ void CatalystManager::initCatalystPipeline(CatalystMeshInit& cmInit,
     fd->AddArray(sa);
     fd->AddArray(ec);
     fd->AddArray(em);
-    this->pipelines[cmInit.resultsOutputFilename]\
-        .dataDescription->SetUserData(fd);
+    pipelines[id].getDataDescription()->SetUserData(fd);
+
     fd->Delete();
     sa->Delete();
     ec->Delete();
     em->Delete();
 }
 
-void CatalystManager::DeletePipeline(const char *results_output_filename) {
-    if (this->pipelines.find(results_output_filename) != this->pipelines.end()) {
-      this->pipelines.erase(results_output_filename);
-    }
+void CatalystManager::addInputToPipeline(vtkMultiBlockDataSet* mbds,
+    const CatalystPipelineInfo& cpi) {
 
-    if (this->logging.find(results_output_filename) != this->logging.end()) {
-      this->logging[results_output_filename].second->Delete();
-      this->logging.erase(results_output_filename);
-    }
-    this->catalystOutputReferenceCount--;
-    this->finalizeIfNeeded();
+    CatalystPipelineID id = cpi.catalystPipelineID;
+
+    pipelines[id].getDataDescription()->AddInput(cpi.catalystInputName.c_str());
+    pipelines[id].getDataDescription()->GetInputDescriptionByName(
+        cpi.catalystInputName.c_str())->SetGrid(mbds);
 }
 
-void CatalystManager::PerformCoProcessing(const char *results_output_filename,
-                                          std::vector<int> & error_and_warning_codes,
-                                          std::vector<std::string> & error_and_warning_messages) {
+void CatalystManager::DeletePipeline(const CatalystPipelineInfo& cpi) {
 
-    if (this->pipelines.find(results_output_filename) != this->pipelines.end()) {
-  
-      if (this->writeMeshON(results_output_filename)) {
-          this->writeMesh(results_output_filename);
-          return;
-      }
+    CatalystPipelineID id = cpi.catalystPipelineID;
 
-      if (!this->canCoProcess()) {
-        return;
-      }
-
-      error_and_warning_codes.clear();
-      error_and_warning_messages.clear();
-
-      vtkCPPythonPipeline *pl = this->\
-          pipelines[results_output_filename].pipeline;
-      vtkCPDataDescription * dataDescription = this->\
-          pipelines[results_output_filename].dataDescription;
-      this->coProcessor->AddPipeline(pl);
-      this->coProcessor->CoProcess(dataDescription);
-
-      vtkFieldData *fd = this->pipelines[results_output_filename]\
-          .dataDescription->GetUserData();
-      vtkIntArray * ec =
-          vtkIntArray::SafeDownCast(fd->GetAbstractArray("catalyst_sierra_error_codes"));
-      vtkStringArray *em =
-          vtkStringArray::SafeDownCast(fd->GetAbstractArray("catalyst_sierra_error_messages"));
-
-      if (ec && em && ec->GetNumberOfTuples() > 0 && em->GetNumberOfTuples() > 0 &&
-          ec->GetNumberOfTuples() == em->GetNumberOfTuples()) {
-        for (int i = 0; i < ec->GetNumberOfTuples(); i++) {
-          error_and_warning_codes.push_back(ec->GetValue(i));
-          error_and_warning_messages.push_back(em->GetValue(i));
+    if (pipelines.find(id) != pipelines.end()) {
+        if(!pipelines[id].canDeletePipeline()) {
+            return;
         }
-        fd->RemoveArray("catalyst_sierra_error_codes");
-        fd->RemoveArray("catalyst_sierra_error_messages");
-        vtkIntArray *ec = vtkIntArray::New();
-        ec->SetName("catalyst_sierra_error_codes");
-        vtkStringArray *em = vtkStringArray::New();
-        em->SetName("catalyst_sierra_error_messages");
-        fd->AddArray(ec);
-        fd->AddArray(em);
-        ec->Delete();
-        em->Delete();
-      }
+        pipelines.erase(id);
+    }
 
-      this->coProcessor->RemoveAllPipelines();
+    if (logging.find(id) != logging.end()) {
+        logging[id].second->Delete();
+        logging.erase(id);
+    }
+
+    catalystOutputReferenceCount--;
+    finalizeIfNeeded();
+}
+
+void CatalystManager::PerformCoProcessing(
+    std::vector<int> & error_and_warning_codes,
+        std::vector<std::string> & error_and_warning_messages,
+            const CatalystPipelineInfo& cpi) {
+
+    CatalystPipelineID id = cpi.catalystPipelineID;
+
+    if (pipelines.find(id) != pipelines.end()) {
+  
+        if (writeMeshON(cpi)) {
+            writeMesh(cpi);
+            return;
+        }
+
+        if (!canCoProcess()) {
+            return;
+        }
+
+        error_and_warning_codes.clear();
+        error_and_warning_messages.clear();
+
+        if(!pipelines[id].canPerformCoProcessing()) {
+            return;
+        }
+
+        vtkCPPythonPipeline* pl = pipelines[id].getPipeline();
+        vtkCPDataDescription* dataDescription =
+            pipelines[id].getDataDescription();
+        coProcessor->AddPipeline(pl);
+        coProcessor->CoProcess(dataDescription);
+
+        vtkFieldData* fd = pipelines[id].getDataDescription()->GetUserData();
+        vtkIntArray* ec = vtkIntArray::SafeDownCast(
+            fd->GetAbstractArray("catalyst_sierra_error_codes"));
+        vtkStringArray* em = vtkStringArray::SafeDownCast(
+            fd->GetAbstractArray("catalyst_sierra_error_messages"));
+
+        if (ec && em && ec->GetNumberOfTuples() > 0 &&
+            em->GetNumberOfTuples() > 0 && ec->GetNumberOfTuples() ==
+                em->GetNumberOfTuples()) {
+
+            for (int i = 0; i < ec->GetNumberOfTuples(); i++) {
+                error_and_warning_codes.push_back(ec->GetValue(i));
+                error_and_warning_messages.push_back(em->GetValue(i));
+            }
+            fd->RemoveArray("catalyst_sierra_error_codes");
+            fd->RemoveArray("catalyst_sierra_error_messages");
+            vtkIntArray* ec = vtkIntArray::New();
+            ec->SetName("catalyst_sierra_error_codes");
+            vtkStringArray* em = vtkStringArray::New();
+            em->SetName("catalyst_sierra_error_messages");
+            fd->AddArray(ec);
+            fd->AddArray(em);
+            ec->Delete();
+            em->Delete();
+        }
+        coProcessor->RemoveAllPipelines();
     }
 }
 
 void CatalystManager::SetTimeData(double currentTime, int timeStep,
-                                  const char *results_output_filename) {
-    if (this->pipelines.find(results_output_filename) != this->pipelines.end()) {
-      this->pipelines[results_output_filename].dataDescription->\
-          SetTimeData(currentTime, timeStep);
+    const CatalystPipelineInfo& cpi) {
+
+    CatalystPipelineID id = cpi.catalystPipelineID;
+
+    if (pipelines.find(id) != pipelines.end()) {
+        if(!pipelines[id].canSetTimeData()) {
+            return;
+        }
+        pipelines[id].getDataDescription()->SetTimeData(currentTime, timeStep);
     }
 }
 
 void CatalystManager::logMemoryUsageAndTakeTimerReading(
-    const char *results_output_filename) {
-    if (this->logging.find(results_output_filename) != this->logging.end()) {
-      vtksys::SystemInformation sysInfo;
-      vtkProcessModule *        pm   = vtkProcessModule::GetProcessModule();
-      vtkMPIController *        mpic = vtkMPIController::SafeDownCast(pm->GetGlobalController());
-      double                    measurements[3];
-      measurements[0]   = sysInfo.GetProcMemoryUsed() * (1.0 / 1024.0); // Store in MB
-      measurements[1]   = sysInfo.GetHostMemoryUsed() * (1.0 / 1024.0);
-      clock_t last_time = this->logging[results_output_filename].first.second;
-      measurements[2]   = double(clock() - last_time) / (double)CLOCKS_PER_SEC;
-      this->logging[results_output_filename].first.second = clock();
-      this->logging[results_output_filename].second->InsertNextTuple(measurements);
+    const CatalystPipelineInfo& cpi) {
+
+    CatalystPipelineID id = cpi.catalystPipelineID;
+
+    if (this->logging.find(id) != this->logging.end()) {
+        vtksys::SystemInformation sysInfo;
+        vtkProcessModule* pm = vtkProcessModule::GetProcessModule();
+        vtkMPIController* mpic = vtkMPIController::SafeDownCast(
+            pm->GetGlobalController());
+        double measurements[3];
+        measurements[0] = sysInfo.GetProcMemoryUsed() * (1.0 / 1024.0); // Store in MB
+        measurements[1] = sysInfo.GetHostMemoryUsed() * (1.0 / 1024.0);
+        clock_t last_time = this->logging[id].first.second;
+        measurements[2] = double(clock()-last_time)/(double)CLOCKS_PER_SEC;
+        this->logging[id].first.second = clock();
+        this->logging[id].second->InsertNextTuple(measurements);
     }
 }
 
-void CatalystManager::WriteToLogFile(const char *results_output_filename) {
-    if (this->logging.find(results_output_filename) != this->logging.end()) {
-      vtkProcessModule *pm      = vtkProcessModule::GetProcessModule();
-      vtkMPIController *mpic    = vtkMPIController::SafeDownCast(pm->GetGlobalController());
-      vtkDoubleArray *  logData = this->logging[results_output_filename].second;
-      std::string       s(results_output_filename);
-      clock_t           begin_time = this->logging[results_output_filename].first.first;
-      if (mpic && mpic->GetNumberOfProcesses() > 1) {
-        vtkDoubleArray *recvBufferMin = vtkDoubleArray::New();
-        vtkDoubleArray *recvBufferMax = vtkDoubleArray::New();
-        vtkDoubleArray *recvBufferSum = vtkDoubleArray::New();
-        if (mpic->GetLocalProcessId() == 0) {
-          recvBufferMin->SetNumberOfComponents(3);
-          recvBufferMin->SetNumberOfTuples(logData->GetNumberOfTuples());
+void CatalystManager::WriteToLogFile(const CatalystPipelineInfo& cpi) {
 
-          recvBufferMax->SetNumberOfComponents(3);
-          recvBufferMax->SetNumberOfTuples(logData->GetNumberOfTuples());
+    CatalystPipelineID id = cpi.catalystPipelineID;
+    std::string logFileName = cpi.getLogFileName();
 
-          recvBufferSum->SetNumberOfComponents(3);
-          recvBufferSum->SetNumberOfTuples(logData->GetNumberOfTuples());
+    if (this->logging.find(id) != this->logging.end()) {
+        vtkProcessModule* pm = vtkProcessModule::GetProcessModule();
+        vtkMPIController* mpic = vtkMPIController::SafeDownCast(
+            pm->GetGlobalController());
+        vtkDoubleArray* logData = this->logging[id].second;
+        clock_t begin_time = this->logging[id].first.first;
+        if (mpic && mpic->GetNumberOfProcesses() > 1) {
+            vtkDoubleArray *recvBufferMin = vtkDoubleArray::New();
+            vtkDoubleArray *recvBufferMax = vtkDoubleArray::New();
+            vtkDoubleArray *recvBufferSum = vtkDoubleArray::New();
+            if (mpic->GetLocalProcessId() == 0) {
+                recvBufferMin->SetNumberOfComponents(3);
+                recvBufferMin->SetNumberOfTuples(logData->GetNumberOfTuples());
+
+                recvBufferMax->SetNumberOfComponents(3);
+                recvBufferMax->SetNumberOfTuples(logData->GetNumberOfTuples());
+
+                recvBufferSum->SetNumberOfComponents(3);
+                recvBufferSum->SetNumberOfTuples(logData->GetNumberOfTuples());
+            }
+
+            mpic->Reduce(logData, recvBufferMin, vtkCommunicator::MIN_OP, 0);
+            mpic->Reduce(logData, recvBufferMax, vtkCommunicator::MAX_OP, 0);
+            mpic->Reduce(logData, recvBufferSum, vtkCommunicator::SUM_OP, 0);
+
+            if (mpic->GetLocalProcessId() == 0) {
+                std::ofstream logfile;
+                logfile.open(logFileName, ios::out | ios::app);
+                for (int i = 0; i < logData->GetNumberOfTuples(); i++) {
+                    double min[3];
+                    double max[3];
+                    double sum[3];
+                    recvBufferMin->GetTuple(i, min);
+                    recvBufferMax->GetTuple(i, max);
+                    recvBufferSum->GetTuple(i, sum);
+                    logfile << double(clock() - begin_time) / (double)CLOCKS_PER_SEC
+                        << "," << min[0] << "," << max[0] << ","
+                        << sum[0] / (double)mpic->GetNumberOfProcesses()
+                        << "," << min[1] << "," << max[1] << ","
+                        << sum[1] / (double)mpic->GetNumberOfProcesses()
+                        << "," << min[2] << "," << max[2] << ","
+                        << sum[2] / (double)mpic->GetNumberOfProcesses() << "\n";
+                }
+                logfile.close();
+            }
+            recvBufferMin->Delete();
+            recvBufferMax->Delete();
+            recvBufferSum->Delete();
         }
-
-        mpic->Reduce(logData, recvBufferMin, vtkCommunicator::MIN_OP, 0);
-        mpic->Reduce(logData, recvBufferMax, vtkCommunicator::MAX_OP, 0);
-        mpic->Reduce(logData, recvBufferSum, vtkCommunicator::SUM_OP, 0);
-
-        if (mpic->GetLocalProcessId() == 0) {
-          std::ofstream logfile;
-          logfile.open((s + ".catalyst.log").c_str(), ios::out | ios::app);
-          for (int i = 0; i < logData->GetNumberOfTuples(); i++) {
-            double min[3];
-            double max[3];
-            double sum[3];
-            recvBufferMin->GetTuple(i, min);
-            recvBufferMax->GetTuple(i, max);
-            recvBufferSum->GetTuple(i, sum);
-            logfile << double(clock() - begin_time) / (double)CLOCKS_PER_SEC << "," << min[0] << ","
-                    << max[0] << "," << sum[0] / (double)mpic->GetNumberOfProcesses() << ","
-                    << min[1] << "," << max[1] << ","
-                    << sum[1] / (double)mpic->GetNumberOfProcesses() << "," << min[2] << ","
-                    << max[2] << "," << sum[2] / (double)mpic->GetNumberOfProcesses() << "\n";
-          }
-          logfile.close();
+        else {
+            std::ofstream logfile;       
+            logfile.open(logFileName, ios::out | ios::app);
+            for (int i = 0; i < logData->GetNumberOfTuples(); i++) {
+                double data[3]; 
+                logData->GetTuple(i, data);
+                logfile << double(clock() - begin_time) / CLOCKS_PER_SEC
+                        << "," << data[0] << "," << data[1] << ","
+                        << data[2] << "\n";
+            }
+            logfile.close();
         }
-        recvBufferMin->Delete();
-        recvBufferMax->Delete();
-        recvBufferSum->Delete();
-      }
-      else {
-        std::ofstream logfile;       
-        logfile.open((s + ".catalyst.log").c_str(), ios::out | ios::app);
-        for (int i = 0; i < logData->GetNumberOfTuples(); i++) {
-          double data[3]; 
-          logData->GetTuple(i, data);
-          logfile << double(clock() - begin_time) / CLOCKS_PER_SEC << "," << data[0] << ","
-                  << data[1] << "," << data[2] << "\n";
-        }
-        logfile.close();
-      }
-      logData->SetNumberOfTuples(0);
+        logData->SetNumberOfTuples(0);
     }
 }
 
-bool CatalystManager::writeMeshON(const char *results_output_filename) {
+bool CatalystManager::writeMeshON(const CatalystPipelineInfo& cpi) {
 
-    if (this->pipelines.find(results_output_filename)
-        != this->pipelines.end()) {
+    CatalystPipelineID id = cpi.catalystPipelineID;
 
-        auto mw = this->pipelines[results_output_filename]\
-            .meshWriter;
+    if (pipelines.find(id) != pipelines.end()) {
+        auto mw = pipelines[id].getMeshWriter();
         return mw->outputCatalystMeshOneFileON() ||
             mw->outputCatalystMeshFilePerProcON();
     }
 }
 
-void CatalystManager::writeMesh(const char *results_output_filename) {
+void CatalystManager::writeMesh(const CatalystPipelineInfo& cpi) {
 
-    if (this->pipelines.find(results_output_filename)
-        != this->pipelines.end()) {
+    CatalystPipelineID id = cpi.catalystPipelineID;
 
-        vtkCPDataDescription * dataDescription = this->\
-            pipelines[results_output_filename].dataDescription;
-        auto mw = this->pipelines[results_output_filename]\
-            .meshWriter;
-        vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(\
-            dataDescription->GetInputDescriptionByName("input")->GetGrid());
-        int timeStep = dataDescription->GetTimeStep();
+    if (pipelines.find(id) != pipelines.end()) {
+        auto mw = pipelines[id].getMeshWriter();
+        vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(
+            pipelines[id].getDataDescription()->GetInputDescriptionByName(
+                cpi.catalystInputName.c_str())->GetGrid());
+        int timeStep = pipelines[id].getDataDescription()->GetTimeStep();
         if (mw->outputCatalystMeshOneFileON()) {
             mw->writeCatalystMeshOneFile(mbds, timeStep);
         }

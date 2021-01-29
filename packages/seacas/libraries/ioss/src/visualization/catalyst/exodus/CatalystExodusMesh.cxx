@@ -17,7 +17,10 @@
 
 namespace Iovs_exodus {
 
-CatalystExodusMesh::CatalystExodusMesh(Iovs::CatalystManager *cm) {
+CatalystExodusMesh::CatalystExodusMesh(Iovs::CatalystManager *cm,
+    CatalystPipelineInfo& catalystPipelineInfo) {
+
+    this->catalystPipelineInfo = catalystPipelineInfo;
     this->multiBlock = vtkMultiBlockDataSet::New();
     this->catManager = cm;
     this->global_points = nullptr;
@@ -77,26 +80,17 @@ bool CatalystExodusMesh::SetApplyDisplacements(bool status) {
     this->ApplyDisplacements = status;
 }
 
-const std::string& CatalystExodusMesh::getCatalystPipelineName() {
-    return this->catalystPipelineName;
-}
-
-void CatalystExodusMesh::SetCatalystPipelineName(const std::string& value) {
-    this->catalystPipelineName = value;
-}
-
 void CatalystExodusMesh::PerformCoProcessing(
     std::vector<int> &error_and_warning_codes,
         std::vector<std::string> &error_and_warning_messages) {
 
-    this->catManager->PerformCoProcessing(
-       this->catalystPipelineName.c_str(),
-           error_and_warning_codes, error_and_warning_messages);
+    this->catManager->PerformCoProcessing(error_and_warning_codes,
+        error_and_warning_messages, catalystPipelineInfo);
 }
 
 void CatalystExodusMesh::SetTimeData(double currentTime, int timeStep) {
     this->catManager->SetTimeData(currentTime, timeStep,
-        this->catalystPipelineName.c_str());
+        catalystPipelineInfo);
 }
 
 void CatalystExodusMesh::CreateGlobalVariable(
@@ -1024,7 +1018,7 @@ void CatalystExodusMesh::ReleaseMemory() {
     this->global_elem_id_map.clear();
     this->global_point_id_to_global_elem_id.clear();
 
-    this->catManager->WriteToLogFile(this->catalystPipelineName.c_str());
+    this->catManager->WriteToLogFile(catalystPipelineInfo);
 }
 
 void CatalystExodusMesh::ReleaseMemoryInternal(vtkMultiBlockDataSet *eb) {     
@@ -1082,11 +1076,11 @@ void CatalystExodusMesh::ReleaseMemoryInternal(vtkMultiBlockDataSet *eb) {
 
 void CatalystExodusMesh::logMemoryUsageAndTakeTimerReading() {
     this->catManager->logMemoryUsageAndTakeTimerReading(
-        this->catalystPipelineName.c_str());
+        catalystPipelineInfo);
 }
 
 void CatalystExodusMesh::Delete() {
-    this->catManager->DeletePipeline(this->catalystPipelineName.c_str());
+    this->catManager->DeletePipeline(catalystPipelineInfo);
 }
 
 void CatalystExodusMesh::ContainsVector(std::vector<std::string> &component_names,

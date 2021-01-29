@@ -13,9 +13,12 @@
 
 namespace Iovs_cgns {
 
-CatalystCGNSMesh::CatalystCGNSMesh(Iovs::CatalystManager *cm) {
+CatalystCGNSMesh::CatalystCGNSMesh(Iovs::CatalystManager *cm,
+    CatalystPipelineInfo& catalystPipelineInfo) {
+
     this->multiBlock = vtkMultiBlockDataSet::New();
     this->catManager = cm;
+    this->catalystPipelineInfo = catalystPipelineInfo;
     vtkMultiBlockDataSet* b = vtkMultiBlockDataSet::New();
     this->multiBlock->SetBlock(BASES_BLOCK_ID, b);
     this->multiBlock->GetMetaData(BASES_BLOCK_ID)->Set(
@@ -32,25 +35,17 @@ vtkMultiBlockDataSet* CatalystCGNSMesh::getMultiBlockDataSet() {
     return this->multiBlock;
 }
 
-const std::string& CatalystCGNSMesh::getCatalystPipelineName() {
-    return this->catalystPipelineName;
-}
-
-void CatalystCGNSMesh::SetCatalystPipelineName(const std::string& value) {
-    this->catalystPipelineName = value;
-}
-
 void CatalystCGNSMesh::PerformCoProcessing(
     std::vector<int> &error_and_warning_codes,
         std::vector<std::string> &error_and_warning_messages) {
 
-    this->catManager->PerformCoProcessing(this->catalystPipelineName.c_str(),
-        error_and_warning_codes, error_and_warning_messages);
+    this->catManager->PerformCoProcessing(error_and_warning_codes,
+        error_and_warning_messages, catalystPipelineInfo);
 }
 
 void CatalystCGNSMesh::SetTimeData(double currentTime, int timeStep) {
     this->catManager->SetTimeData(currentTime, timeStep,
-        this->catalystPipelineName.c_str());
+        catalystPipelineInfo);
 }
 
 void CatalystCGNSMesh::ReleaseMemory() {
@@ -58,11 +53,11 @@ void CatalystCGNSMesh::ReleaseMemory() {
 
 void CatalystCGNSMesh::logMemoryUsageAndTakeTimerReading() {
     this->catManager->logMemoryUsageAndTakeTimerReading(
-        this->catalystPipelineName.c_str());
+        catalystPipelineInfo);
 }
 
 void CatalystCGNSMesh::Delete() {
-    this->catManager->DeletePipeline(this->catalystPipelineName.c_str());
+    this->catManager->DeletePipeline(catalystPipelineInfo);
 }
 
 void CatalystCGNSMesh::CreateBase(int base_id, const std::string& base_name) {

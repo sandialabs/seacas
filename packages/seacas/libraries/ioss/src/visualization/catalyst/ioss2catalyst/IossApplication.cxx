@@ -5,6 +5,7 @@
 #include <Ionit_Initializer.h>
 #include <Ioss_Utils.h>
 #include <Ioss_MeshCopyOptions.h>
+#include <Ioss_FileInfo.h>
 #include <mpi.h>
 #include <cstdlib>
 #include <iostream>
@@ -13,10 +14,8 @@
 #include <iomanip>
 #include <cstdlib>
 
-IossApplication::IossApplication(const std::string& appName,
-    const std::string& fileTypeName, const std::string& iossDatabaseType,
-        const std::string& fileTypeSuffix) {
-    this->initialize(appName, fileTypeName, iossDatabaseType, fileTypeSuffix);
+IossApplication::IossApplication() {
+    this->initialize();
     this->initializeMPI();
     setenv("CATALYST_ADAPTER_INSTALL_DIR", CATALYST_PLUGIN_BUILD_DIR, false);
     std::string pluginLibPath = std::string(CATALYST_PLUGIN_BUILD_DIR) +\
@@ -24,20 +23,14 @@ IossApplication::IossApplication(const std::string& appName,
     setenv("CATALYST_PLUGIN", pluginLibPath.c_str(), false);
 }
 
-IossApplication::IossApplication(int argc, char **argv,
-    const std::string& appName, const std::string& fileTypeName,
-        const std::string& iossDatabaseType,
-            const std::string& fileTypeSuffix) {
-    this->initialize(appName, fileTypeName, iossDatabaseType, fileTypeSuffix);
+IossApplication::IossApplication(int argc, char **argv) {
+    this->initialize();
     this->initializeMPI(argc, argv);
     this->processCommandLine(argc, argv);
     setenv("CATALYST_ADAPTER_INSTALL_DIR", CATALYST_PLUGIN_INSTALL_DIR, false);
 }
 
-void IossApplication::initialize(const std::string& appName,
-        const std::string& fileTypeName,
-            const std::string& iossDatabaseType,
-                const std::string& fileTypeSuffix) {
+void IossApplication::initialize() {
     this->myRank = 0;
     this->numRanks = 1;
     this->printIOSSReport = false;
@@ -45,10 +38,6 @@ void IossApplication::initialize(const std::string& appName,
     this->writeCatalystMeshOneFile = false;
     this->writeCatalystMeshFilePerProc = false;
     this->fileName = "";
-    this->applicationName = appName;
-    this->fileTypeName = fileTypeName;
-    this->fileTypeSuffix = fileTypeSuffix;
-    this->iossDatabaseType = iossDatabaseType;
     this->inputIOSSRegion = nullptr;
     this->usePhactoriInputScript = false;
     this->usePhactoriInputJSON = false;
@@ -259,10 +248,6 @@ void IossApplication::checkForOnlyOneCatalystOutputPath() {
     }
 }
 
-std::string& IossApplication::getApplicationName() {
-    return this->applicationName;
-}
-
 std::string& IossApplication::getFileName() {
     return this->fileName;
 }
@@ -368,60 +353,26 @@ void IossApplication::setCatalystStopTimeStep(int timeStep) {
 }
 
 void IossApplication::printUsageMessage() {
-    std::string fn = this->copyOutputDatabaseName + "." + this->fileTypeSuffix;
+    std::string um = "\nUSAGE\n\n" + applicationName;
 
-    std::string um = "\nUSAGE\n\n" + this->applicationName;
-    um += " [-h] [-a n] [-b n]";
-    um += " [-cr | -m | -n | -i file | -p file | -s file] FILE\n\n";
+    um += " [OPTIONS] [OUTPUT OPTIONS] <FILE>\n\n";
 
     um += "DESCRIPTION\n\n";
-    um += "Read input " + this->fileTypeName;
-    um += " file(s) and send mesh to ParaView Catalyst";
+    um += "Read input file(s) and write to ParaView Catalyst using IOSS";
 
-    um += "\n\nEXAMPLES\n\n";
-
-    um += "mpiexec -np 1 " + this->applicationName + " -h\n";
-    um += "    Print usage message and exit program.";
-    um += "\n\n";
-
-    um += "mpiexec -np 4 " + this->applicationName + " -c -r file.";
-    um += this->fileTypeSuffix + "\n";
-    um += "    Output copy of input mesh and IOSS region report.";
-    um += "\n\n";
-
-    um += "mpiexec -np 4 " + this->applicationName + " file.";
-    um += this->fileTypeSuffix + "\n";
-    um += "    Run Catalyst with default Phactori JSON script to produce\n";
-    um += "    eight axis aligned external camera images of the input mesh.";
-    um += "\n\n";
-
-    um += "mpiexec -np 4 " + this->applicationName + " -m file.";
-    um += this->fileTypeSuffix + "\n";
-    um += "    Output mesh representation for Catalyst.\n\n";
-
-    um += "mpiexec -np 4 " + this->applicationName + " -i file.json file.";
-    um += this->fileTypeSuffix + "\n";
-    um += "    Run Catalyst with Phactori JSON input from file.json.\n\n";
-
-    um += "mpiexec -np 4 " + this->applicationName + " -p file.txt file.";
-    um += this->fileTypeSuffix + "\n";
-    um += "    Run Catalyst with Phactori command syntax input from file.txt.";
-    um += "\n\n";
-
-    um += "mpiexec -np 4 " + this->applicationName + " -s file.py file.";
-    um += this->fileTypeSuffix + "\n";
-    um += "    Run Catalyst with ParaView exported Python script in file.py.";
- 
     um += "\n\nOPTIONS\n\n";
 
     um += "-a <n> call Catalyst starting at time-step n (starts at 1).\n\n";
 
     um += "-b <n> call Catalyst stopping at time-step n.\n\n";
 
+    um += "-h print usage message and exit program\n\n";
+
+    um += "OUTPUT OPTIONS are mutually exclusive\n\n";
+    um += " [-cr | -m | -n | -i file | -p file | -s file]\n\n";
+
     um += "-c copy input file(s) to one file per processor with output \n";
     um += "   filename(s) prefix " + this->copyOutputDatabaseName + "\n\n";
-
-    um += "-h print this usage message and exit program\n\n";
 
     um += "-i <file> run Catalyst with Phactori input JSON given in <file>.";
     um += "\n\n";
@@ -446,14 +397,41 @@ void IossApplication::printUsageMessage() {
     um += "-s <file> run Catalyst with a ParaView exported Python script\n";
     um += "   given in <file>";
 
-    um += "\n\nFILE\n\n";
-    um += this->fileTypeName + " input file name for a single file ";
-    um += "(file_name." + this->fileTypeSuffix + ").\n\n";
+    um += "\n\nEXAMPLES\n\n";
 
-    std::string sfn = "file_name." + this->fileTypeSuffix;
-    um += this->fileTypeName + " file name prefix for multiple files ";
-    um += "(file_name for\n    split files: " + sfn + ".2.0, " + sfn;
-    um += ".2.1).\n\n";
+    um += "mpiexec -np 1 " + applicationName + " -h\n";
+    um += "    Print usage message and exit program.";
+    um += "\n\n";
+
+    um += "mpiexec -np 4 " + applicationName + " -c -r file\n";
+    um += "    Output copy of input mesh and IOSS region report.";
+    um += "\n\n";
+
+    um += "mpiexec -np 4 " + applicationName + " file\n";
+    um += "    Run Catalyst with default Phactori JSON script to produce\n";
+    um += "    eight axis aligned external camera images of the input mesh.";
+    um += "\n\n";
+
+    um += "mpiexec -np 4 " + applicationName + " -m file\n";
+    um += "    Output mesh representation for Catalyst.\n\n";
+
+    um += "mpiexec -np 4 " + applicationName + " -i file.json file\n";
+    um += "    Run Catalyst with Phactori JSON input from file.json.\n\n";
+
+    um += "mpiexec -np 4 " + applicationName + " -p file.txt file\n";
+    um += "    Run Catalyst with Phactori command syntax input from file.txt.";
+    um += "\n\n";
+
+    um += "mpiexec -np 4 " + applicationName + " -s file.py file\n";
+    um += "    Run Catalyst with ParaView exported Python script in file.py.";
+ 
+    um += "\n\nFILE\n\n";
+    um += "Exodus or CGNS input file name for a single file\n";
+    um += " (file_name.ex2 or file_name.cgns)\n\n";
+
+    um += "Exodus or CGNS file name prefix for multiple files\n";
+    um += " (file_name.cgns.2.0, file_name.cgns.2.1 or \n";
+    um += "  file_name.ex2.2.0, file_name.ex2.2.1)\n\n";
     this->printMessage(um);
 }
 
@@ -541,12 +519,12 @@ void IossApplication::openInputIOSSDatabase() {
         inputProperties.add(Ioss::Property("DECOMPOSITION_METHOD", "rib"));
     }
 
-    Ioss::DatabaseIO * dbi = Ioss::IOFactory::create(this->iossDatabaseType,
-        this->getFileName(), Ioss::READ_RESTART,
+    Ioss::DatabaseIO * dbi = Ioss::IOFactory::create(
+        getIOSSDatabaseTypeFromFile(), this->getFileName(), Ioss::READ_RESTART,
             (MPI_Comm)MPI_COMM_WORLD, inputProperties);
     if (dbi == nullptr || !dbi->ok(true)) {
-        this->printErrorMessage("Unable to open input " +\
-            this->fileTypeName + " file(s) " + this->getFileName());
+        this->printErrorMessage("Unable to open input file(s) " +
+            this->getFileName());
         this->exitApplicationFailure();
     }
     this->inputIOSSRegion = new Ioss::Region(dbi);
@@ -566,15 +544,15 @@ std::string IossApplication::getPhactoriDefaultJSON() {
 }
 
 void IossApplication::copyInputIOSSDatabaseOnRank() {
-    std::string fn = this->copyOutputDatabaseName + "." + this->fileTypeSuffix;
+    std::string fn = this->copyOutputDatabaseName + "." + getFileSuffix();
     Ioss::PropertyManager outputProperties;
     outputProperties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
-    Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(this->iossDatabaseType,
-        fn, Ioss::WRITE_RESULTS, (MPI_Comm)MPI_COMM_WORLD,
-               outputProperties);
+    Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(
+        getIOSSDatabaseTypeFromFile(), fn, Ioss::WRITE_RESULTS,
+            (MPI_Comm) MPI_COMM_WORLD, outputProperties);
     if (dbo == nullptr || !dbo->ok(true)) {
-        this->printErrorMessage("Unable to open output " +\
-            this->fileTypeName + " file(s) " + fn);
+        this->printErrorMessage("Unable to open output file(s) " +
+            fn);
         this->exitApplicationFailure();
     }
 
@@ -624,11 +602,10 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
     }
 
     outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME",
-        this->applicationName));
+        applicationName));
 
     std::string catalystDatabaseType = "catalyst_exodus";
-    if (this->iossDatabaseType == "cgns" ||
-        this->applicationName == "faodel2catalyst_cgns") {
+    if (getIOSSDatabaseTypeFromFile() == "cgns") {
         catalystDatabaseType = "catalyst_cgns";
     }
 
@@ -659,4 +636,28 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
     Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
 
     delete outputRegion;
+}
+
+std::string IossApplication::getIOSSDatabaseTypeFromFile() {
+    Ioss::FileInfo file(this->fileName);
+    auto extension = file.extension();
+    if (extension == "e" || extension == "g" ||
+        extension == "gen" || extension == "exo") {
+      return "exodus";
+    }
+    else if (extension == "cgns") {
+      return "cgns";
+    }
+    else {
+      return "exodus";
+    }
+}
+
+std::string IossApplication::getFileSuffix() {
+    if(getIOSSDatabaseTypeFromFile() == "exodus") {
+        return "ex2";
+    }
+    else {
+        return "cgns";
+    }
 }

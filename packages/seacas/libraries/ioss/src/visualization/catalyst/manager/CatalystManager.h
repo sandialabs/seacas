@@ -38,11 +38,11 @@
 #include <map>
 #include <time.h>
 #include <vtkSmartPointer.h>
+#include "vtkCPDataDescription.h"
 
 class coProcessor;
 class vtkDoubleArray;
 class vtkCPPythonPipeline;
-class vtkCPDataDescription;
 class vtkCPProcessor;
 class vtkMultiBlockDataSet;
 
@@ -54,11 +54,15 @@ class CatalystManager : public CatalystManagerBase {
 
 public:
 
+    using CatalystPipelineID = unsigned int;
+    using CatalystInputName = std::string;
+    using CatalystMultiInputPipelineName = std::string;
+
     CatalystManager();
     ~CatalystManager();
 
-    void parsePhactoriFile(const std::string &filepath,
-        ParseResult & pres);
+    void parsePhactoriFile(const std::string& filepath,
+        ParseResult& pres);
 
     std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
         createCatalystExodusMesh(CatalystExodusMeshInit& cmInit);
@@ -68,36 +72,101 @@ public:
 
     int getCatalystOutputIDNumber();
 
+    struct CatalystPipelineInfo {
+        CatalystPipelineID catalystPipelineID;
+        CatalystInputName catalystInputName;
+        std::string getLogFileName() const {
+            return catalystInputName + "_" +\
+                std::to_string(catalystPipelineID) + "_catalyst.log";
+        }
+    };
+
     // Description:
     // Deletes pipeline with name results_output_filename and any associated
     // logging data.
-    void DeletePipeline(const char *results_output_filename);
+    void DeletePipeline(const CatalystPipelineInfo& cpi);
 
     // Description:
     // Calls the ParaView Catalyst pipeline to run co-processing for this time iteration.
-    void PerformCoProcessing(const char *results_output_filename,
-                             std::vector<int> & error_and_warning_codes,
-                             std::vector<std::string> & error_and_warning_messages);
+    void PerformCoProcessing(std::vector<int>& error_and_warning_codes,
+        std::vector<std::string>& error_and_warning_messages,
+            const CatalystPipelineInfo& cpi);
 
     // Description:
     // Sets time data for this ParaView Catalyst co-processing iteration.
     // currentTime is the current Ioss simulation time and timeStep is
     // the current time iteration count.
     void SetTimeData(double currentTime, int timeStep,
-                     const char *results_output_filename);
+        const CatalystPipelineInfo& cpi);
 
     // Description:
     // Collects memory usage information from all processors and
     // writes the min, max, and mean to the log file.  Also writes the
     // min, max, and mean of the elapsed time since this method was
     // last called.
-    void logMemoryUsageAndTakeTimerReading(const char *results_output_filename);
+    void logMemoryUsageAndTakeTimerReading(
+        const CatalystPipelineInfo& cpi);
 
-    void WriteToLogFile(const char *results_output_filename);
+    void WriteToLogFile(const CatalystPipelineInfo& cpi);
 
 private:
 
-    struct CatalystPipelineState {
+    class CatalystPipelineState {
+    public: 
+        CatalystPipelineState() {
+            performCoProcessingCount = 0;
+            deletePipelineCount = 0;
+            setTimeDataCount = 0;
+        }
+
+        vtkSmartPointer<vtkCPPythonPipeline>& getPipeline() {
+            return pipeline;
+        }
+
+        vtkSmartPointer<vtkCPDataDescription>& getDataDescription() {
+            return dataDescription;
+        }
+
+        std::shared_ptr<CatalystMeshWriter>& getMeshWriter() {
+            return meshWriter;
+        }
+
+        bool canPerformCoProcessing() {
+            return canDoOperation(performCoProcessingCount);
+        }
+
+        bool canDeletePipeline() {
+            return canDoOperation(deletePipelineCount);
+        }
+
+        bool canSetTimeData() {
+            return canDoOperation(setTimeDataCount);
+        }
+
+    private:
+        bool canDoOperation(unsigned int& operationCount) {
+            bool retVal = true;
+            operationCount++;
+            if (operationCount == getNumberOfInputs()) {
+                operationCount = 0;
+            }
+            else {
+                retVal = false;
+            }
+            return retVal;
+        }
+
+        unsigned int getNumberOfInputs() {
+            unsigned int retVal = 0;
+            if (getDataDescription() != nullptr) {
+                retVal = getDataDescription()->GetNumberOfInputDescriptions();
+            }
+            return retVal;
+        }
+
+        unsigned int performCoProcessingCount;
+        unsigned int deletePipelineCount;
+        unsigned int setTimeDataCount;
         vtkSmartPointer<vtkCPPythonPipeline> pipeline;
         vtkSmartPointer<vtkCPDataDescription> dataDescription;
         std::shared_ptr<CatalystMeshWriter> meshWriter;
@@ -106,25 +175,35 @@ private:
     typedef std::pair<clock_t, clock_t> TimerPair;
     typedef std::pair<TimerPair, vtkDoubleArray *> LoggingPair;
 
-    CatalystManager(const CatalystManager &) = delete;
-    CatalystManager &operator=(const CatalystManager &) = delete;
+    CatalystManager(const CatalystManager&) = delete;
+    CatalystManager &operator=(const CatalystManager&) = delete;
 
     void initializeIfNeeded();
     void finalizeIfNeeded();
     bool canCoProcess();
     void incrementOutputCounts();
-    bool writeMeshON(const char *results_output_filename);
-    void writeMesh(const char *results_output_filename);
+    bool writeMeshON(const CatalystPipelineInfo& cpi);
+    void writeMesh(const CatalystPipelineInfo& cpi);
+    CatalystPipelineID getCatalystPipelineID(CatalystMeshInit& cmInit);
 
-    void initCatalystLogging(CatalystMeshInit& cmInit);
+    void initCatalystLogging(const CatalystPipelineInfo& cpi);
     void initCatalystPipeline(CatalystMeshInit& cmInit,
-        vtkMultiBlockDataSet* mbds);
+        vtkMultiBlockDataSet* mbds,
+            const CatalystPipelineInfo& cpi);
+    void addInputToPipeline(vtkMultiBlockDataSet* mbds,
+        const CatalystPipelineInfo& cpi);
+    CatalystPipelineInfo createCatalystPipelineInfo(
+        CatalystMeshInit& cmInit);
+    void registerMeshInPipeline(CatalystMeshInit& cmInit,
+        vtkMultiBlockDataSet* mbds, const CatalystPipelineInfo& cpi);
 
-    int catalystOutputIDNumber;
-    int catalystOutputReferenceCount;
-    vtkCPProcessor * coProcessor;
-    std::map<std::string, CatalystPipelineState> pipelines;
-    std::map<std::string, LoggingPair> logging;
+    CatalystPipelineID catalystOutputIDNumber;
+    CatalystPipelineID catalystOutputReferenceCount;
+    vtkCPProcessor* coProcessor;
+    std::map<CatalystPipelineID, CatalystPipelineState> pipelines;
+    std::map<CatalystPipelineID, LoggingPair> logging;
+    std::map<CatalystMultiInputPipelineName, CatalystPipelineID>
+        multiInputPipelines;
 };
 
 extern "C" {

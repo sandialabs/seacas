@@ -35,12 +35,10 @@
 #define __CATALYST_EXODUS_MESH_H
 
 #include "CatalystExodusMeshBase.h"
+#include "CatalystManager.h"
 #include <map>
 #include <vector>
 
-namespace Iovs {
-    class CatalystManager;
-}
 class vtkMultiBlockDataSet;
 class vtkVariant;
 class vtkPoints;
@@ -49,14 +47,17 @@ namespace Iovs_exodus {
 
 class CatalystExodusMesh : public CatalystExodusMeshBase {
 
+    using CatalystPipelineInfo = Iovs::CatalystManager::CatalystPipelineInfo;
+
 public:
 
-    CatalystExodusMesh(Iovs::CatalystManager *cm);
+    CatalystExodusMesh(Iovs::CatalystManager *cm,
+        CatalystPipelineInfo& catalystPipelineInfo);
 
     ~CatalystExodusMesh();
 
     void PerformCoProcessing(std::vector<int> &error_and_warning_codes,
-                             std::vector<std::string> &error_and_warning_messages);
+        std::vector<std::string> &error_and_warning_messages);
 
     void SetTimeData(double currentTime, int timeStep);
 
@@ -129,9 +130,6 @@ public:
     // file reader.
     bool ApplyDisplacementsON();
     bool SetApplyDisplacements(bool status);
-
-    const std::string& getCatalystPipelineName();
-    void SetCatalystPipelineName(const std::string& value);
 
     vtkMultiBlockDataSet* getMultiBlockDataSet();
 
@@ -229,9 +227,9 @@ private:
 
     vtkMultiBlockDataSet* multiBlock = nullptr;
     Iovs::CatalystManager* catManager = nullptr;
-    std::string catalystPipelineName;
     bool UnderscoreVectors;
     bool ApplyDisplacements;
+    CatalystPipelineInfo catalystPipelineInfo;
 };
 
 } // namespace Iovs_exodus

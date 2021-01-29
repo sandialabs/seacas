@@ -8,16 +8,9 @@
 class IossApplication {
 public:
 
-    IossApplication(int argc, char **argv,
-        const std::string& appName,
-            const std::string& fileTypeName,
-                const std::string& iossDatabaseType,
-                    const std::string& fileTypeSuffix);
+    IossApplication(int argc, char **argv);
 
-    IossApplication(const std::string& appName,
-        const std::string& fileTypeName,
-            const std::string& iossDatabaseType,
-                const std::string& fileTypeSuffix);
+    IossApplication();
 
     ~IossApplication();
 
@@ -60,7 +53,6 @@ public:
     bool isRankZero();
     bool isSerial();
     bool decomposedMeshExists();
-    std::string& getApplicationName();
     std::string& getFileName();
     Ioss::Region * getInputIOSSRegion();
     void copyInputIOSSDatabaseOnRank();
@@ -71,11 +63,7 @@ public:
     void exitApplicationFailure();
 
 private:
-    IossApplication();
-    void initialize(const std::string& appName,
-        const std::string& fileTypeName,
-            const std::string& iossDatabaseType,
-                const std::string& fileTypeSuffix);
+    void initialize();
     void callCatalystIOSSDatabaseOnRank();
     void openInputIOSSDatabase();
     void processCommandLine(int argc, char **argv);
@@ -87,6 +75,8 @@ private:
     void checkForOnlyOneCatalystOutputPath();
     void getStartStopTimeSteps(int numTimeSteps, int & startTimeStep,
         int & stopTimeStep);
+    std::string getIOSSDatabaseTypeFromFile();
+    std::string getFileSuffix();
     std::string getParallelFileName();
     std::string getPhactoriDefaultJSON();
     int myRank;
@@ -106,13 +96,10 @@ private:
     std::string phactoriInputJSONFilePath;
     std::string paraViewExportedScriptFilePath;
     std::string fileName;
-    std::string applicationName;
-    std::string fileTypeName;
-    std::string fileTypeSuffix;
-    std::string iossDatabaseType;
     std::string copyOutputDatabaseName = "iossDatabaseCopy";
     std::string outputCatalystMeshFileName = "iossDatabaseCatalystMesh";
     std::string iossReportFileName = "IossRegionReport";
+    const std::string applicationName = "ioss2catalyst";
     Ioss::Region * inputIOSSRegion;
 
 #if defined(__APPLE__)

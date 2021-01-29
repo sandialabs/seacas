@@ -121,6 +121,7 @@ namespace Iovs_exodus {
   bool DatabaseIO::begin_state__(int state, double time)
   {
     Ioss::SerializeIO serializeIO__(this);
+    this->catExoMesh->ReleaseMemory();
 
     if (!this->globalNodeAndElementIDsCreated) {
       this->create_global_node_and_element_ids();
@@ -139,7 +140,6 @@ namespace Iovs_exodus {
     this->catExoMesh->logMemoryUsageAndTakeTimerReading();
     this->catExoMesh->PerformCoProcessing(error_codes, error_messages);
     this->catExoMesh->logMemoryUsageAndTakeTimerReading();
-    this->catExoMesh->ReleaseMemory();
     Iovs::Utils::getInstance().reportCatalystErrorMessages(
         error_codes, error_messages, this->parallel_rank());
 

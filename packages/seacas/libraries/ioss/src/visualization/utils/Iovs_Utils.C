@@ -201,6 +201,19 @@ namespace Iovs {
             cmInit.catalystOutputDirectory = props\
                 .get("CATALYST_OUTPUT_DIRECTORY").get_string();
         }
+
+        cmInit.catalystInputName = "input";
+        if (props.exists("CATALYST_INPUT_NAME")) {
+            cmInit.catalystInputName = props\
+                .get("CATALYST_INPUT_NAME").get_string();
+        }
+
+        cmInit.enableCatalystMultiInputPipeline = false;
+        if (props.exists("CATALYST_MULTI_INPUT_PIPELINE_NAME")) {
+            cmInit.enableCatalystMultiInputPipeline = true;
+            cmInit.catalystMultiInputPipelineName = props\
+                .get("CATALYST_MULTI_INPUT_PIPELINE_NAME").get_string();
+        }
     }
 
     std::string Utils::getRestartTag(const std::string & databaseFilename) {
@@ -365,7 +378,7 @@ namespace Iovs {
     std::string Utils::getCatalystAdapterInstallDirectory() {
         std::string catalystInsDir = "";
         if (getenv("CATALYST_ADAPTER_INSTALL_DIR") != nullptr) {
-            std::string catalystInsDir = getenv("CATALYST_ADAPTER_INSTALL_DIR");
+            catalystInsDir = getenv("CATALYST_ADAPTER_INSTALL_DIR");
 
             if (!fileExists(catalystInsDir)) {
                 std::ostringstream errmsg;
@@ -374,8 +387,8 @@ namespace Iovs {
                        << "Unable to find ParaView catalyst dynamic library.\n";
                 IOSS_ERROR(errmsg);
             }
-            return catalystInsDir;
         }
+        return catalystInsDir;
     }
 
     void Utils::checkDbUsage(Ioss::DatabaseUsage db_usage) {

@@ -91,6 +91,7 @@ namespace Iovs_cgns {
     
     bool DatabaseIO::begin_state__(int state, double time)
     {
+      this->catCGNSMesh->ReleaseMemory();
       this->catCGNSMesh->SetTimeData(time, state - 1);
       return true;
     }
@@ -103,7 +104,6 @@ namespace Iovs_cgns {
       this->catCGNSMesh->logMemoryUsageAndTakeTimerReading();
       this->catCGNSMesh->PerformCoProcessing(error_codes, error_messages);
       this->catCGNSMesh->logMemoryUsageAndTakeTimerReading();
-      this->catCGNSMesh->ReleaseMemory();
       Iovs::Utils::getInstance().reportCatalystErrorMessages(
           error_codes, error_messages, this->parallel_rank());
       return true;

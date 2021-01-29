@@ -82,6 +82,9 @@ public:
         std::string resultsOutputFilename;
         std::string catalystOutputDirectory;
         std::vector<std::string> catalystData;
+        std::string catalystInputName;
+        std::string catalystMultiInputPipelineName;
+        bool enableCatalystMultiInputPipeline;
     };
 
     virtual std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>
