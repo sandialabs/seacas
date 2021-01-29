@@ -87,8 +87,9 @@ namespace Ioss {
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
     /* COMPARE two ZoneConnectivity objects  */
-    bool operator!=(const Ioss::ZoneConnectivity &rhs) const;
     bool operator==(const Ioss::ZoneConnectivity &rhs) const;
+    bool operator!=(const Ioss::ZoneConnectivity &rhs) const;
+    bool equal(const Ioss::ZoneConnectivity &rhs) const;
 
     bool is_from_decomp() const { return m_fromDecomp; }
     bool is_active() const { return m_isActive && has_faces(); }

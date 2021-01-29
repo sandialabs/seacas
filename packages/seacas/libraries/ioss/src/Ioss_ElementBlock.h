@@ -42,6 +42,7 @@ namespace Ioss {
     AxisAlignedBoundingBox get_bounding_box() const;
     bool operator==(Ioss::ElementBlock &rhs);
     bool operator!=(Ioss::ElementBlock &rhs);
+    bool equal(Ioss::ElementBlock &rhs);
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

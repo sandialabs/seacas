@@ -58,3 +58,7 @@ bool Ioss::NodeSet::operator!=(const NodeSet &rhs)
   return !(*this == rhs);
 }
 
+bool Ioss::NodeSet::equal(const NodeSet &rhs)
+{
+  return Ioss::EntitySet::equal( rhs );
+}

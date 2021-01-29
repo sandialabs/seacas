@@ -63,3 +63,7 @@ bool Ioss::CommSet::operator==(const Ioss::CommSet &rhs) {
 bool Ioss::CommSet::operator!=(const Ioss::CommSet &rhs) {
   return !(*this == rhs);
 }
+
+bool Ioss::CommSet::equal(const Ioss::CommSet &rhs) {
+  return Ioss::GroupingEntity::equal( rhs );
+}

@@ -47,6 +47,7 @@ namespace Ioss {
     // COMPARE EdgeSets
     bool operator==(const EdgeSet &);
     bool operator!=(const EdgeSet &);
+    bool equal(const EdgeSet &);
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

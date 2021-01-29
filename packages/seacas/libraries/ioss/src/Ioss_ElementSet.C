@@ -61,3 +61,7 @@ bool Ioss::ElementSet::operator!=(const ElementSet &rhs)
   return !(*this == rhs);
 }
 
+bool Ioss::ElementSet::equal(const ElementSet &rhs)
+{
+  return Ioss::EntitySet::equal( rhs );
+}

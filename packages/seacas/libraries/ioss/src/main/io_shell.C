@@ -535,9 +535,9 @@ namespace {
 
       bool result = Ioss::Utils::compare_database(input_region, output_region, options);
       if( result ) {
-        printf("DATABASES are EQUAL\n");
+        fmt::print(stderr, "DATABASES are EQUAL\n");
       } else {
-        printf("DATABASES are NOT equal\n");
+        fmt::print(stderr, "DATABASES are NOT equal\n");
       }
     } // loop over input files
   }

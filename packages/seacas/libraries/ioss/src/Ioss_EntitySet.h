@@ -39,6 +39,7 @@ namespace Ioss {
     Property   get_implicit_property(const std::string &my_name) const override = 0;
     bool operator==(const EntitySet &); 
     bool operator!=(const EntitySet &); 
+    bool equal(const EntitySet &); 
 
   protected:
     EntitySet(DatabaseIO *io_database, const std::string &my_name, size_t entity_cnt);

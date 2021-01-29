@@ -89,116 +89,78 @@ namespace Ioss {
   bool ZoneConnectivity::operator==(const Ioss::ZoneConnectivity &rhs) const
   {
     if( this->m_connectionName != rhs.m_connectionName ) {
-      printf("ZoneConnectivity : m_connectionName MISMATCH (%s vs %s)\n",
-             this->m_connectionName.c_str(), rhs.m_connectionName.c_str());
       return false;
     }
 
     if( this->m_donorName != rhs.m_donorName ) {
-      printf("ZoneConnectivity : m_donorName MISMATCH (%s vs %s)\n", 
-             this->m_donorName.c_str(), rhs.m_donorName.c_str());
       return false;
     }
 
     if( this->m_transform != rhs.m_transform ) {
-      printf("ZoneConnectivity : m_transform MISMATCH!  (%d:%d:%d vs %d:%d:%d)\n", 
-             IJK_list(this->m_transform), IJK_list(rhs.m_transform));
       return false;
     }
 
     if( this->m_ownerRangeBeg != rhs.m_ownerRangeBeg ) {
-      printf("ZoneConnectivity : m_ownerRangeBeg MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
-             IJK_list(this->m_ownerRangeBeg), IJK_list(rhs.m_ownerRangeBeg));
       return false;
     }
 
     if( this->m_ownerRangeEnd != rhs.m_ownerRangeEnd ) {
-      printf("ZoneConnectivity : m_ownerRangeEnd MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
-             IJK_list(this->m_ownerRangeEnd), IJK_list(rhs.m_ownerRangeEnd));
       return false;
     }
 
     if( this->m_ownerOffset != rhs.m_ownerOffset ) {
-      printf("ZoneConnectivity : m_ownerOffset MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
-             IJK_list(this->m_ownerOffset), IJK_list(rhs.m_ownerOffset));
       return false;
     }
 
     if( this->m_donorRangeBeg != rhs.m_donorRangeBeg ) {
-      printf("ZoneConnectivity : m_donorRangeBeg MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
-             IJK_list(this->m_donorRangeBeg), IJK_list(rhs.m_donorRangeBeg));
       return false;
     }
 
     if( this->m_donorRangeEnd != rhs.m_donorRangeEnd ) {
-      printf("ZoneConnectivity : m_donorRangeEnd MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
-             IJK_list(this->m_donorRangeEnd), IJK_list(rhs.m_donorRangeEnd));
       return false;
     }
 
     if( this->m_donorOffset != rhs.m_donorOffset ) {
-      printf("ZoneConnectivity : m_donorOffset MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
-             IJK_list(this->m_donorOffset), IJK_list(rhs.m_donorOffset));
       return false;
     }
 
     if( this->m_ownerGUID != rhs.m_ownerGUID ) {
-      printf("ZoneConnectivity : m_ownerGUID MISMATCH (%ld vs %ld)\n", 
-             this->m_ownerGUID, rhs.m_ownerGUID);
       return false;
     }
 
     if( this->m_donorGUID != rhs.m_donorGUID ) {
-      printf("ZoneConnectivity : m_donorGUID MISMATCH (%ld vs %ld)\n", 
-             this->m_donorGUID, rhs.m_donorGUID);
       return false;
     }
 
     if( this->m_ownerZone != rhs.m_ownerZone ) {
-      printf("ZoneConnectivity : m_ownerZone MISMATCH (%d vs %d)\n", 
-             this->m_ownerZone, rhs.m_ownerZone);
       return false;
     }
 
     if( this->m_donorZone != rhs.m_donorZone ) {
-      printf("ZoneConnectivity : m_donorZone MISMATCH (%d vs %d)\n", 
-             this->m_donorZone, rhs.m_donorZone);
       return false;
     }
 
     if( this->m_ownerProcessor != rhs.m_ownerProcessor ) {
-      printf("ZoneConnectivity : m_ownerProcessor MISMATCH (%d vs %d)\n", 
-             this->m_ownerProcessor, rhs.m_ownerProcessor);
       return false;
     }
 
     if( this->m_donorProcessor != rhs.m_donorProcessor ) {
-      printf("ZoneConnectivity : m_donorProcessor MISMATCH (%d vs %d)\n", 
-             this->m_donorProcessor, rhs.m_donorProcessor);
       return false;
     }
 
     if( this->m_sameRange != rhs.m_sameRange ) {
-      printf("ZoneConnectivity : m_sameRange MISMATCH (%s vs %s)\n", 
-             this->m_sameRange ? "True" : "False", rhs.m_sameRange ? "True" : "False");
       return false;
     }
 
     if( this->m_ownsSharedNodes != rhs.m_ownsSharedNodes ) {
-      printf("ZoneConnectivity : m_ownsSharedNodes MISMATCH (%s vs %s)\n", 
-             this->m_ownsSharedNodes ? "True" : "False", rhs.m_ownsSharedNodes ? "True" : "False");
       return false;
     }
 
     if( this->m_fromDecomp != rhs.m_fromDecomp ) {
-      printf("ZoneConnectivity : m_fromDecomp MISMATCH (%s vs %s)\n", 
-             this->m_fromDecomp ? "True" : "False", rhs.m_fromDecomp ? "True" : "False");
       return false;
     }
 
     if( this->m_isActive != rhs.m_isActive ) {
-      printf("ZoneConnectivity : m_isActive MISMATCH (%s vs %s)\n", 
-             this->m_isActive ? "True" : "False", rhs.m_isActive ? "True" : "False");
       return false;
     }
     return true;
@@ -207,6 +169,124 @@ namespace Ioss {
   bool ZoneConnectivity::operator!=(const Ioss::ZoneConnectivity &rhs) const
   {
     return !(*this == rhs);
+  }
+
+  bool ZoneConnectivity::equal(const Ioss::ZoneConnectivity &rhs) const
+  {
+    if( this->m_connectionName != rhs.m_connectionName ) {
+      fmt::print(stderr, "ZoneConnectivity : m_connectionName MISMATCH (%s vs %s)\n",
+                 this->m_connectionName.c_str(), rhs.m_connectionName.c_str());
+      return false;
+    }
+
+    if( this->m_donorName != rhs.m_donorName ) {
+      fmt::print(stderr, "ZoneConnectivity : m_donorName MISMATCH (%s vs %s)\n", 
+                 this->m_donorName.c_str(), rhs.m_donorName.c_str());
+      return false;
+    }
+
+    if( this->m_transform != rhs.m_transform ) {
+      fmt::print(stderr, "ZoneConnectivity : m_transform MISMATCH!  (%d:%d:%d vs %d:%d:%d)\n", 
+                 IJK_list(this->m_transform), IJK_list(rhs.m_transform));
+      return false;
+    }
+
+    if( this->m_ownerRangeBeg != rhs.m_ownerRangeBeg ) {
+      fmt::print(stderr, "ZoneConnectivity : m_ownerRangeBeg MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
+                 IJK_list(this->m_ownerRangeBeg), IJK_list(rhs.m_ownerRangeBeg));
+      return false;
+    }
+
+    if( this->m_ownerRangeEnd != rhs.m_ownerRangeEnd ) {
+      fmt::print(stderr, "ZoneConnectivity : m_ownerRangeEnd MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
+                 IJK_list(this->m_ownerRangeEnd), IJK_list(rhs.m_ownerRangeEnd));
+      return false;
+    }
+
+    if( this->m_ownerOffset != rhs.m_ownerOffset ) {
+      fmt::print(stderr, "ZoneConnectivity : m_ownerOffset MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
+                 IJK_list(this->m_ownerOffset), IJK_list(rhs.m_ownerOffset));
+      return false;
+    }
+
+    if( this->m_donorRangeBeg != rhs.m_donorRangeBeg ) {
+      fmt::print(stderr, "ZoneConnectivity : m_donorRangeBeg MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
+                 IJK_list(this->m_donorRangeBeg), IJK_list(rhs.m_donorRangeBeg));
+      return false;
+    }
+
+    if( this->m_donorRangeEnd != rhs.m_donorRangeEnd ) {
+      fmt::print(stderr, "ZoneConnectivity : m_donorRangeEnd MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
+                 IJK_list(this->m_donorRangeEnd), IJK_list(rhs.m_donorRangeEnd));
+      return false;
+    }
+
+    if( this->m_donorOffset != rhs.m_donorOffset ) {
+      fmt::print(stderr, "ZoneConnectivity : m_donorOffset MISMATCH (%d:%d:%d vs %d:%d:%d)\n", 
+                 IJK_list(this->m_donorOffset), IJK_list(rhs.m_donorOffset));
+      return false;
+    }
+
+    if( this->m_ownerGUID != rhs.m_ownerGUID ) {
+      fmt::print(stderr, "ZoneConnectivity : m_ownerGUID MISMATCH (%ld vs %ld)\n", 
+                 this->m_ownerGUID, rhs.m_ownerGUID);
+      return false;
+    }
+
+    if( this->m_donorGUID != rhs.m_donorGUID ) {
+      fmt::print(stderr, "ZoneConnectivity : m_donorGUID MISMATCH (%ld vs %ld)\n", 
+                 this->m_donorGUID, rhs.m_donorGUID);
+      return false;
+    }
+
+    if( this->m_ownerZone != rhs.m_ownerZone ) {
+      fmt::print(stderr, "ZoneConnectivity : m_ownerZone MISMATCH (%d vs %d)\n", 
+                 this->m_ownerZone, rhs.m_ownerZone);
+      return false;
+    }
+
+    if( this->m_donorZone != rhs.m_donorZone ) {
+      fmt::print(stderr, "ZoneConnectivity : m_donorZone MISMATCH (%d vs %d)\n", 
+                 this->m_donorZone, rhs.m_donorZone);
+      return false;
+    }
+
+    if( this->m_ownerProcessor != rhs.m_ownerProcessor ) {
+      fmt::print(stderr, "ZoneConnectivity : m_ownerProcessor MISMATCH (%d vs %d)\n", 
+                 this->m_ownerProcessor, rhs.m_ownerProcessor);
+      return false;
+    }
+
+    if( this->m_donorProcessor != rhs.m_donorProcessor ) {
+      fmt::print(stderr, "ZoneConnectivity : m_donorProcessor MISMATCH (%d vs %d)\n", 
+                 this->m_donorProcessor, rhs.m_donorProcessor);
+      return false;
+    }
+
+    if( this->m_sameRange != rhs.m_sameRange ) {
+      fmt::print(stderr, "ZoneConnectivity : m_sameRange MISMATCH (%s vs %s)\n", 
+                 this->m_sameRange ? "True" : "False", rhs.m_sameRange ? "True" : "False");
+      return false;
+    }
+
+    if( this->m_ownsSharedNodes != rhs.m_ownsSharedNodes ) {
+      fmt::print(stderr, "ZoneConnectivity : m_ownsSharedNodes MISMATCH (%s vs %s)\n", 
+                 this->m_ownsSharedNodes ? "True" : "False", rhs.m_ownsSharedNodes ? "True" : "False");
+      return false;
+    }
+
+    if( this->m_fromDecomp != rhs.m_fromDecomp ) {
+      fmt::print(stderr, "ZoneConnectivity : m_fromDecomp MISMATCH (%s vs %s)\n", 
+                 this->m_fromDecomp ? "True" : "False", rhs.m_fromDecomp ? "True" : "False");
+      return false;
+    }
+
+    if( this->m_isActive != rhs.m_isActive ) {
+      fmt::print(stderr, "ZoneConnectivity : m_isActive MISMATCH (%s vs %s)\n", 
+                 this->m_isActive ? "True" : "False", rhs.m_isActive ? "True" : "False");
+      return false;
+    }
+    return true;
   }
 
   bool ZoneConnectivity::has_faces() const

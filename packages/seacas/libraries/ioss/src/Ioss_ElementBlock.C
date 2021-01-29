@@ -75,4 +75,9 @@ namespace Ioss {
   {
     return !(*this == rhs);
   }
+
+  bool ElementBlock::equal(ElementBlock &rhs)
+  {
+    return EntityBlock::equal( rhs );
+  }
 } // namespace Ioss

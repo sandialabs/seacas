@@ -62,6 +62,7 @@ namespace Ioss {
     size_t get_face_count() const;
 
     bool operator==(const Ioss::BoundaryCondition &rhs) const;
+    bool equal(const Ioss::BoundaryCondition &rhs) const;
 
     std::string m_bcName{};
     std::string m_famName{};
@@ -301,8 +302,9 @@ namespace Ioss {
     }
 
     /* COMPARE two StructuredBlocks */
-    bool operator!=(const Ioss::StructuredBlock &rhs) const;
     bool operator==(const Ioss::StructuredBlock &rhs) const;
+    bool operator!=(const Ioss::StructuredBlock &rhs) const;
+    bool equal(const Ioss::StructuredBlock &rhs) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

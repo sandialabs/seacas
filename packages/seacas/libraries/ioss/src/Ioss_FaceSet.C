@@ -61,3 +61,8 @@ bool Ioss::FaceSet::operator!=(const FaceSet &rhs)
 {
   return !(*this == rhs);
 }
+
+bool Ioss::FaceSet::equal(const FaceSet &rhs)
+{
+  return Ioss::EntitySet::equal( rhs );
+}

@@ -47,6 +47,7 @@ namespace Ioss {
     // COMPARE ElementSets
     bool operator==(const ElementSet &); 
     bool operator!=(const ElementSet &);
+    bool equal(const ElementSet &); 
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

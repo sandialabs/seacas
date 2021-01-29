@@ -180,7 +180,7 @@ bool Ioss::SideSet::operator==(const SideSet &rhs)
   for( auto &lhs_side_block : lhs_side_blocks ) { 
     std::vector<SideBlock *>::iterator it; 
     for( it = rhs_side_blocks.begin(); it != rhs_side_blocks.end(); it++ ) { 
-      if( (*(*it)).equal(*lhs_side_block) ) break;
+      if( (*(*it)).operator==(*lhs_side_block) ) break;
     }   
 
     if( it == rhs_side_blocks.end() ) { 

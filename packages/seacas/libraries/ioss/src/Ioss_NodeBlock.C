@@ -102,3 +102,7 @@ bool Ioss::NodeBlock::operator!=(const Ioss::NodeBlock &rhs)
   return !(*this == rhs);
 }
 
+bool Ioss::NodeBlock::equal(const Ioss::NodeBlock &rhs)
+{
+  return Ioss::EntityBlock::equal( rhs );
+}

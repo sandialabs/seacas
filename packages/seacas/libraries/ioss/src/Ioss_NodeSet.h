@@ -43,6 +43,7 @@ namespace Ioss {
 
     bool operator==(const NodeSet &); 
     bool operator!=(const NodeSet &);
+    bool equal(const NodeSet &); 
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

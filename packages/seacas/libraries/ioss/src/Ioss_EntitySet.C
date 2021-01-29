@@ -51,3 +51,8 @@ bool Ioss::EntitySet::operator!=(const EntitySet &rhs)
 {
   return !(*this == rhs);
 }
+
+bool Ioss::EntitySet::equal(const EntitySet &rhs)
+{
+  return Ioss::GroupingEntity::equal( rhs );
+}

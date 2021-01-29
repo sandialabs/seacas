@@ -59,6 +59,7 @@ namespace Ioss {
 
     bool operator!=(const Ioss::NodeBlock &rhs);
     bool operator==(const Ioss::NodeBlock &rhs);
+    bool equal(const Ioss::NodeBlock &rhs);
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

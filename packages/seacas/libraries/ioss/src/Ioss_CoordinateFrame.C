@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_CoordinateFrame.h>
+#include <fmt/ostream.h>
 
 namespace Ioss {
   CoordinateFrame::CoordinateFrame(int64_t my_id, char my_tag, const double *point_list)
@@ -27,25 +28,14 @@ namespace Ioss {
   bool Ioss::CoordinateFrame::operator==(const Ioss::CoordinateFrame &rhs) const
   {
     if( this->id_ != rhs.id_ ) { 
-      printf("CoordinateFrame : ID mismatch (%ld vs. %ld)\n", this->id_, rhs.id_);
       return false;
     }   
 
     if( this->pointList_ != rhs.pointList_ ) { 
-      printf("CoordinateFrame : Point list mismatch ([ ");
-      for( auto &point : this->pointList_ ) { 
-        printf("%f ", point);
-      }   
-      printf("] vs [");
-      for( auto &point : rhs.pointList_ ) { 
-        printf("%f ", point);
-      }   
-      printf("])\n");
       return false;
     }   
 
     if( this->id_ != rhs.id_ ) { 
-      printf("CoordinateFrame : TAG mismatch (%d vs. %d)\n", this->tag_, rhs.tag_);
       return false;
     }   
 
@@ -56,4 +46,33 @@ namespace Ioss {
   {
     return !(*this == rhs);
   }
+
+  bool Ioss::CoordinateFrame::equal(const Ioss::CoordinateFrame &rhs) const
+  {
+    if( this->id_ != rhs.id_ ) { 
+      fmt::print(stderr, "CoordinateFrame : ID mismatch (%ld vs. %ld)\n", this->id_, rhs.id_);
+      return false;
+    }   
+
+    if( this->pointList_ != rhs.pointList_ ) { 
+      fmt::print(stderr, "CoordinateFrame : Point list mismatch ([ ");
+      for( auto &point : this->pointList_ ) { 
+        fmt::print(stderr, "%f ", point);
+      }   
+      fmt::print(stderr, "] vs [");
+      for( auto &point : rhs.pointList_ ) { 
+        fmt::print(stderr, "%f ", point);
+      }   
+      fmt::print(stderr, "])\n");
+      return false;
+    }   
+
+    if( this->id_ != rhs.id_ ) { 
+      fmt::print(stderr, "CoordinateFrame : TAG mismatch (%d vs. %d)\n", this->tag_, rhs.tag_);
+      return false;
+    }   
+
+    return true;
+  }
+
 } // namespace Ioss

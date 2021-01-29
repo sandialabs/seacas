@@ -28,6 +28,7 @@ namespace Ioss {
 
     bool operator!=(const Ioss::CoordinateFrame &rhs) const;
     bool operator==(const Ioss::CoordinateFrame &rhs) const;
+    bool equal(const Ioss::CoordinateFrame &rhs) const;
 
   private:
     std::vector<double> pointList_{};

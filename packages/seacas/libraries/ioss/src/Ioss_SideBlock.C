@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include <fmt/ostream.h>
 
 #include "Ioss_FieldManager.h"
 #include "Ioss_ParallelUtils.h"
@@ -152,42 +153,21 @@ int Ioss::SideBlock::get_consistent_side_number() const
   return consistentSideNumber;
 }
 
-bool Ioss::SideBlock::equal(const Ioss::SideBlock &rhs)
-{
-  if( this->parentTopology_ != rhs.parentTopology_ ) { 
-    return false;
-  }
-
-  if( this->blockMembership != rhs.blockMembership ) { 
-    return false;
-  }
-
-  if( this->consistentSideNumber != rhs.consistentSideNumber ) { 
-    return false;
-  }
-
-  return Ioss::EntityBlock::equal( rhs );
-}
-
 bool Ioss::SideBlock::operator==(const Ioss::SideBlock &rhs)
 {
   if( this->parentTopology_ != rhs.parentTopology_ ) { 
-    printf("SideBlock: parentTopology_ mismatch\n");
     return false;
   }
 
   if( this->blockMembership != rhs.blockMembership ) { 
-    printf("SideBlock: blockMembership mismatch\n");
     return false;
   }
 
   if( this->consistentSideNumber != rhs.consistentSideNumber ) { 
-    printf("SideBlock: consistentSideNumber mismatch (%d vs. %d)\n",
-           this->consistentSideNumber, rhs.consistentSideNumber);
     return false;
   }
 
-  return Ioss::EntityBlock::equal( rhs );
+  return Ioss::EntityBlock::operator==( rhs );
 }
 
 bool Ioss::SideBlock::operator!=(const Ioss::SideBlock &rhs)
@@ -195,3 +175,23 @@ bool Ioss::SideBlock::operator!=(const Ioss::SideBlock &rhs)
   return !(*this == rhs);
 }
 
+bool Ioss::SideBlock::equal(const Ioss::SideBlock &rhs)
+{
+  if( this->parentTopology_ != rhs.parentTopology_ ) { 
+    fmt::print(stderr, "SideBlock: parentTopology_ mismatch\n");
+    return false;
+  }
+
+  if( this->blockMembership != rhs.blockMembership ) { 
+    fmt::print(stderr, "SideBlock: blockMembership mismatch\n");
+    return false;
+  }
+
+  if( this->consistentSideNumber != rhs.consistentSideNumber ) { 
+    fmt::print(stderr, "SideBlock: consistentSideNumber mismatch (%d vs. %d)\n",
+               this->consistentSideNumber, rhs.consistentSideNumber);
+    return false;
+  }
+
+  return Ioss::EntityBlock::equal( rhs );
+}

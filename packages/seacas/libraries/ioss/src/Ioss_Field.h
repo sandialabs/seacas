@@ -97,8 +97,9 @@ namespace Ioss {
     // Compare two fields (used for STL container)
     bool operator<(const Field &other) const;
 
-    bool operator!=(Ioss::Field rhs);
     bool operator==(Ioss::Field rhs);
+    bool operator!=(Ioss::Field rhs);
+    bool equal(Ioss::Field rhs);
 
     ~Field();
 

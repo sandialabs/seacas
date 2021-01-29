@@ -41,6 +41,7 @@ namespace Ioss {
 
     bool operator!=(const Ioss::CommSet &rhs);
     bool operator==(const Ioss::CommSet &rhs);
+    bool equal(const Ioss::CommSet &rhs);
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

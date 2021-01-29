@@ -62,3 +62,8 @@ bool Ioss::EdgeSet::operator!=(const EdgeSet &rhs)
   return !(*this == rhs);
 }
 
+bool Ioss::EdgeSet::equal(const EdgeSet &rhs)
+{
+  return Ioss::EntitySet::equal( rhs );
+}
+
