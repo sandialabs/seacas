@@ -15,8 +15,8 @@
 #include <cstdlib>
 
 IossApplication::IossApplication() {
-    this->initialize();
-    this->initializeMPI();
+    initialize();
+    initializeMPI();
     setenv("CATALYST_ADAPTER_INSTALL_DIR", CATALYST_PLUGIN_BUILD_DIR, false);
     std::string pluginLibPath = std::string(CATALYST_PLUGIN_BUILD_DIR) +\
         std::string("/") + CATALYST_PLUGIN_DYNAMIC_LIBRARY;
@@ -24,86 +24,91 @@ IossApplication::IossApplication() {
 }
 
 IossApplication::IossApplication(int argc, char **argv) {
-    this->initialize();
-    this->initializeMPI(argc, argv);
-    this->processCommandLine(argc, argv);
+    initialize();
+    initializeMPI(argc, argv);
+    processCommandLine(argc, argv);
     setenv("CATALYST_ADAPTER_INSTALL_DIR", CATALYST_PLUGIN_INSTALL_DIR, false);
 }
 
 void IossApplication::initialize() {
-    this->myRank = 0;
-    this->numRanks = 1;
-    this->printIOSSReport = false;
-    this->copyDatabase = false;
-    this->writeCatalystMeshOneFile = false;
-    this->writeCatalystMeshFilePerProc = false;
-    this->fileName = "";
-    this->inputIOSSRegion = nullptr;
-    this->usePhactoriInputScript = false;
-    this->usePhactoriInputJSON = false;
-    this->useParaViewExportedScript = false;
-    this->phactoriInputScriptFilePath = "";
-    this->phactoriInputJSONFilePath = "";
-    this->paraViewExportedScriptFilePath = "";
-    this->catalystStartTimeStep = 0;
-    this->useCatalystStartTimeStep = false;
-    this->catalystStopTimeStep = 0;
-    this->useCatalystStopTimeStep = false;
+    myRank = 0;
+    numRanks = 1;
+    printIOSSReport = false;
+    copyDatabase = false;
+    writeCatalystMeshOneFile = false;
+    writeCatalystMeshFilePerProc = false;
+    fileName = "";
+    inputIOSSRegion = nullptr;
+    usePhactoriInputScript = false;
+    usePhactoriInputJSON = false;
+    useParaViewExportedScript = false;
+    phactoriInputScriptFilePath = "";
+    phactoriInputJSONFilePath = "";
+    paraViewExportedScriptFilePath = "";
+    catalystStartTimeStep = 0;
+    useCatalystStartTimeStep = false;
+    catalystStopTimeStep = 0;
+    useCatalystStopTimeStep = false;
+    forceCGNSOutput = false;
+    forceExodusOutput = false;
+    useIOSSInputDBType = false;
+    iossInputDBType = "";
 }
 
 IossApplication::~IossApplication() {
-    if (this->inputIOSSRegion) {
-        delete this->inputIOSSRegion;
+    if (inputIOSSRegion) {
+        delete inputIOSSRegion;
     }
 }
 
 void IossApplication::runApplication() {
-    this->checkForOnlyOneCatalystOutputPath();
+    checkForOnlyOneCatalystOutputPath();
+    checkForOnlyOneCatalystOutputType();
     Ioss::Init::Initializer io;
-    this->openInputIOSSDatabase();
+    openInputIOSSDatabase();
 
-    if (this->printIOSSRegionReportON()) {
-        this->printIOSSRegionReportForRank();
+    if (printIOSSRegionReportON()) {
+        printIOSSRegionReportForRank();
     }
 
-    if (this->outputCopyOfInputDatabaseON()) {
-        this->copyInputIOSSDatabaseOnRank();
+    if (outputCopyOfInputDatabaseON()) {
+        copyInputIOSSDatabaseOnRank();
     }
 
-    this->callCatalystIOSSDatabaseOnRank();
+    callCatalystIOSSDatabaseOnRank();
 
-    this->exitApplicationSuccess();
+    exitApplicationSuccess();
 }
 
 int IossApplication::getMyRank() {
-    return this->myRank;
+    return myRank;
 }
 
 int IossApplication::getNumRanks() {
-    return this->numRanks;
+    return numRanks;
 }
 
 bool IossApplication::isRankZero() {
-    return this->myRank == 0;
+    return myRank == 0;
 }
 
 bool IossApplication::isSerial() {
-    return this->numRanks == 1;
+    return numRanks == 1;
 }
 
 void IossApplication::initializeMPI() {
     MPI_Init(nullptr, nullptr);
-    this->initMPIRankAndSize();
+    initMPIRankAndSize();
 }
 
 void IossApplication::initializeMPI(int argc, char **argv) {
     MPI_Init(&argc, &argv);
-    this->initMPIRankAndSize();
+    initMPIRankAndSize();
 }
 
 void IossApplication::initMPIRankAndSize() {
-    MPI_Comm_rank(MPI_COMM_WORLD, &this->myRank);
-    MPI_Comm_size(MPI_COMM_WORLD, &this->numRanks);
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+    MPI_Comm_size(MPI_COMM_WORLD, &numRanks);
 }
 
 void IossApplication::finalizeMPI() {
@@ -113,95 +118,105 @@ void IossApplication::finalizeMPI() {
 void IossApplication::processCommandLine(int argc, char **argv) {
     int c;
     char *cvalue = NULL;
-    while ((c = getopt (argc, argv, "a:b:chi:mnp:rs:")) != -1) {
+    while ((c = getopt(argc, argv, "a:b:cd:e:hi:mnp:rs:")) != -1) {
         char *cvalue = nullptr;
         switch(c) {
             case 'a':
                 cvalue = optarg;
-                this->setCatalystStartTimeStep(atoi(cvalue));
+                setCatalystStartTimeStep(atoi(cvalue));
                 break;
             case 'b':
                 cvalue = optarg;
-                this->setCatalystStopTimeStep(atoi(cvalue));
+                setCatalystStopTimeStep(atoi(cvalue));
                 break;
             case 'c':
-                this->copyDatabase = true;
+                copyDatabase = true;
+                break;
+            case 'd':
+                cvalue = optarg;
+                setForceExodusOutput(true);
+                setIOSSInputDBType(cvalue);
+                break;
+            case 'e':
+                cvalue = optarg;
+                setForceCGNSOutput(true);
+                setIOSSInputDBType(cvalue);
                 break;
             case 'h':
-                this->printUsageMessage();
-                this->exitApplicationSuccess();
+                printUsageMessage();
+                exitApplicationSuccess();
                 break;
             case 'i':
                 cvalue = optarg;
-                this->setPhactoriInputJSON(cvalue);
+                setPhactoriInputJSON(cvalue);
                 break;
             case 'm':
-                this->setOutputCatalystMeshOneFile(true);
+                setOutputCatalystMeshOneFile(true);
                 break;
             case 'n':
-                this->setOutputCatalystMeshFilePerProc(true);
+                setOutputCatalystMeshFilePerProc(true);
                 break;
             case 'p':
                 cvalue = optarg;
-                this->setPhactoriInputScript(cvalue);
+                setPhactoriInputScript(cvalue);
                 break;
             case 'r':
-                this->printIOSSReport = true;
+                printIOSSReport = true;
                 break;
             case 's':
                 cvalue = optarg;
-                this->setParaViewExportedScript(cvalue);
+                setParaViewExportedScript(cvalue);
                 break;
             case '?':
-                this->printErrorMessage("Unknown command line option -"\
+                printErrorMessage("Unknown command line option -"\
                     + std::string(1, c) + "\n");
-                this->printUsageMessage();
-                this->exitApplicationFailure();
+                printUsageMessage();
+                exitApplicationFailure();
                 break;
             default:
-                this->printUsageMessage();
-                this->exitApplicationFailure();
+                printUsageMessage();
+                exitApplicationFailure();
                 break;
         }
     }
 
     if (optind == argc) {
-        this->printErrorMessage("No input filename given on command line");
-        this->printUsageMessage();
-        this->exitApplicationFailure();
+        printErrorMessage("No input filename given on command line");
+        printUsageMessage();
+        exitApplicationFailure();
     }
     else if (optind != argc-1) {
-        this->printErrorMessage("Expected one argument for input filename. " +\
+        printErrorMessage("Expected one argument for input filename. " +\
             std::string("Got multiple arguments."));
-        this->printUsageMessage();
-        this->exitApplicationFailure();
+        printUsageMessage();
+        exitApplicationFailure();
     }
     else {
-        this->fileName = argv[optind];
+        fileName = argv[optind];
     }
 }
 
 void IossApplication::getStartStopTimeSteps(int numTimeSteps,
     int & startTimeStep, int & stopTimeStep) {
 
-    if (this->useCatalystStartTimeStepON()) {
-        startTimeStep = this->getCatalystStartTimeStep();
+    if (useCatalystStartTimeStepON()) {
+        startTimeStep = getCatalystStartTimeStep();
         if (startTimeStep < 1 ||
             startTimeStep > numTimeSteps) {
-            this->printErrorMessage("Start time-step out of range");
-            this->exitApplicationFailure();
+            printErrorMessage("Start time-step out of range");
+            exitApplicationFailure();
         }
     }
     else {
         startTimeStep = 1;
     }
 
-    if (this->useCatalystStopTimeStepON()) {
-        stopTimeStep = this->getCatalystStopTimeStep();
+    if (useCatalystStopTimeStepON()) {
+        stopTimeStep = getCatalystStopTimeStep();
         if (stopTimeStep < 1 ||
             stopTimeStep > numTimeSteps) {
-            this->printErrorMessage("Stop time-step out of range");
-            this->exitApplicationFailure();
+            printErrorMessage("Stop time-step out of range");
+            exitApplicationFailure();
         }
     }
     else {
@@ -209,147 +224,184 @@ void IossApplication::getStartStopTimeSteps(int numTimeSteps,
     }
 
     if (startTimeStep > stopTimeStep) {
-        this->printErrorMessage("Start time-step > stop time-step.");
-        this->exitApplicationFailure();
+        printErrorMessage("Start time-step > stop time-step.");
+        exitApplicationFailure();
     }
 }
 
 void IossApplication::checkForOnlyOneCatalystOutputPath() {
 
     int numTimesCatalystCalled = 0;
-    if(this->usePhactoriInputScriptON()) {
+    if(usePhactoriInputScriptON()) {
         numTimesCatalystCalled++;
     }
-    if(this->usePhactoriInputJSONON()) {
+    if(usePhactoriInputJSONON()) {
         numTimesCatalystCalled++;
     }
-    if(this->outputCatalystMeshOneFileON()) {
+    if(outputCatalystMeshOneFileON()) {
         numTimesCatalystCalled++;
     }
-    if(this->outputCatalystMeshFilePerProcON()) {
+    if(outputCatalystMeshFilePerProcON()) {
         numTimesCatalystCalled++;
     }
-    if(this->useParaViewExportedScriptON()) {
+    if(useParaViewExportedScriptON()) {
         numTimesCatalystCalled++;
     }
 
     if(numTimesCatalystCalled > 1) {
-        this->printErrorMessage("Catalyst called with more than one option.");
-        this->printUsageMessage();
-        this->exitApplicationFailure();
+        printErrorMessage("Catalyst called with more than one option.");
+        printUsageMessage();
+        exitApplicationFailure();
     }
 
     if(numTimesCatalystCalled == 1 &&
-        (this->printIOSSRegionReportON() ||
-            this->outputCopyOfInputDatabaseON())) {
-        this->printErrorMessage("Catalyst called with report output.");
-        this->printUsageMessage();
-        this->exitApplicationFailure();
+        (printIOSSRegionReportON() ||
+            outputCopyOfInputDatabaseON())) {
+        printErrorMessage("Catalyst called with report output.");
+        printUsageMessage();
+        exitApplicationFailure();
+    }
+}
+
+void IossApplication::checkForOnlyOneCatalystOutputType() {
+    if(forceCGNSOutputON() && forceExodusOutputON()) {
+        printErrorMessage("Both CGNS and Exodus Catalyst output requested.");
+        printUsageMessage();
+        exitApplicationFailure();
     }
 }
 
 std::string& IossApplication::getFileName() {
-    return this->fileName;
+    return fileName;
 }
 
 bool IossApplication::printIOSSRegionReportON() {
-    return this->printIOSSReport;
+    return printIOSSReport;
 }
 
 void IossApplication::setPrintIOSSRegionReport(bool status) {
-    this->printIOSSReport = status;
+    printIOSSReport = status;
 }
 
 bool IossApplication::outputCopyOfInputDatabaseON() {
-    return this->copyDatabase;
+    return copyDatabase;
 }
 
 void IossApplication::setOutputCopyOfInputDatabase(bool status) {
-    this->copyDatabase = status;
+    copyDatabase = status;
 }
 
 bool IossApplication::outputCatalystMeshOneFileON() {
-    return this->writeCatalystMeshOneFile;
+    return writeCatalystMeshOneFile;
 }
 
 bool IossApplication::setOutputCatalystMeshOneFile(bool status) {
-    this->writeCatalystMeshOneFile = status;
+    writeCatalystMeshOneFile = status;
 }
 
 bool IossApplication::outputCatalystMeshFilePerProcON() {
-    return this->writeCatalystMeshFilePerProc;
+    return writeCatalystMeshFilePerProc;
 }
 
 bool IossApplication::setOutputCatalystMeshFilePerProc(bool status) {
-    this->writeCatalystMeshFilePerProc = status;
+    writeCatalystMeshFilePerProc = status;
 }
 
 bool IossApplication::usePhactoriInputScriptON() {
-    return this->usePhactoriInputScript;
+    return usePhactoriInputScript;
 }
 
 std::string IossApplication::getPhactoriInputScript() {
-    return this->phactoriInputScriptFilePath;
+    return phactoriInputScriptFilePath;
 }
 
 void IossApplication::setPhactoriInputScript(
     const std::string& scriptFilePath) {
-    this->phactoriInputScriptFilePath = scriptFilePath;
-    this->usePhactoriInputScript = true;
+    phactoriInputScriptFilePath = scriptFilePath;
+    usePhactoriInputScript = true;
 }
 
 bool IossApplication::usePhactoriInputJSONON() {
-    return this->usePhactoriInputJSON;
+    return usePhactoriInputJSON;
 }
 
 std::string IossApplication::getPhactoriInputJSON() {
-    return this->phactoriInputJSONFilePath;
+    return phactoriInputJSONFilePath;
 }
 
 void IossApplication::setPhactoriInputJSON(
     const std::string& jsonFilePath) {
-    this->phactoriInputJSONFilePath = jsonFilePath;
-    this->usePhactoriInputJSON = true;
+    phactoriInputJSONFilePath = jsonFilePath;
+    usePhactoriInputJSON = true;
 }
 
 bool IossApplication::useParaViewExportedScriptON() {
-    return this->useParaViewExportedScript;
+    return useParaViewExportedScript;
 }
 
 std::string IossApplication::getParaViewExportedScript() {
-    return this->paraViewExportedScriptFilePath;
+    return paraViewExportedScriptFilePath;
 }
 
 void IossApplication::setParaViewExportedScript(
     const std::string& exportedScriptFilePath) {
-    this->paraViewExportedScriptFilePath = exportedScriptFilePath;
-    this->useParaViewExportedScript = true;
+    paraViewExportedScriptFilePath = exportedScriptFilePath;
+    useParaViewExportedScript = true;
 }
 
 bool IossApplication::useCatalystStartTimeStepON() {
-    return this->useCatalystStartTimeStep;
+    return useCatalystStartTimeStep;
 }
 
 int IossApplication::getCatalystStartTimeStep() {
-    return this->catalystStartTimeStep;
+    return catalystStartTimeStep;
 }
 
 void IossApplication::setCatalystStartTimeStep(int timeStep) {
-    this->catalystStartTimeStep = timeStep;
-    this->useCatalystStartTimeStep = true;
+    catalystStartTimeStep = timeStep;
+    useCatalystStartTimeStep = true;
 }
 
 bool IossApplication::useCatalystStopTimeStepON() {
-    return this->useCatalystStopTimeStep;
+    return useCatalystStopTimeStep;
 }
 
 int IossApplication::getCatalystStopTimeStep() {
-    return this->catalystStopTimeStep;
+    return catalystStopTimeStep;
 }
 
 void IossApplication::setCatalystStopTimeStep(int timeStep) {
-    this->catalystStopTimeStep = timeStep;
-    this->useCatalystStopTimeStep = true;
+    catalystStopTimeStep = timeStep;
+    useCatalystStopTimeStep = true;
+}
+
+bool IossApplication::forceCGNSOutputON() {
+    return forceCGNSOutput;
+}
+
+bool IossApplication::setForceCGNSOutput(bool status) {
+    forceCGNSOutput = status;
+}
+
+bool IossApplication::forceExodusOutputON() {
+    return forceExodusOutput;
+}
+
+bool IossApplication::setForceExodusOutput(bool status) {
+    forceExodusOutput = status;
+}
+
+bool IossApplication::useIOSSInputDBTypeON() {
+    return useIOSSInputDBType;
+}
+
+std::string IossApplication::getIOSSInputDBType() {
+    return iossInputDBType;
+}
+
+void IossApplication::setIOSSInputDBType(const std::string& dbType) {
+    iossInputDBType = dbType;
+    useIOSSInputDBType = true;
 }
 
 void IossApplication::printUsageMessage() {
@@ -366,25 +418,28 @@ void IossApplication::printUsageMessage() {
 
     um += "-b <n> call Catalyst stopping at time-step n.\n\n";
 
+    um += "[-d | -e] <db_type> Force IOSS input database type to db_type\n";
+    um += "   -d for catalyst_exodus output or -e for catalyst_cgns output\n\n";
+
     um += "-h print usage message and exit program\n\n";
 
-    um += "OUTPUT OPTIONS are mutually exclusive\n\n";
-    um += " [-cr | -m | -n | -i file | -p file | -s file]\n\n";
+    um += "OUTPUT OPTIONS\n\n";
+    um += " [-cr | -m | -n | -i <file> | -p <file> | -s <file>]\n\n";
 
     um += "-c copy input file(s) to one file per processor with output \n";
-    um += "   filename(s) prefix " + this->copyOutputDatabaseName + "\n\n";
+    um += "   filename(s) prefix " + copyOutputDatabaseName + "\n\n";
 
     um += "-i <file> run Catalyst with Phactori input JSON given in <file>.";
     um += "\n\n";
 
     um += "-m output Catalyst mesh representation of input file(s)\n";
     um += "   each time-step to a single file for all processors with output\n";
-    um += "   filename " + this->outputCatalystMeshFileName + "_time_<n>.vtm";
+    um += "   filename " + outputCatalystMeshFileName + "_time_<n>.vtm";
     um += "\n\n";
 
     um += "-n output Catalyst mesh representation of input file(s)\n";
     um += "   each time-step to a file for each processor with output\n";
-    um += "   filename " + this->outputCatalystMeshFileName;
+    um += "   filename " + outputCatalystMeshFileName;
     um += "_proc_<p>_time_<n>.vtm\n\n";
 
     um += "-p <file> run Catalyst with Phactori input command syntax given\n";
@@ -392,7 +447,7 @@ void IossApplication::printUsageMessage() {
 
     um += "-r print IOSS region report for input file(s) to one file\n";
     um += "   per processor with output filename(s) prefix ";
-    um += this->iossReportFileName + "\n\n";
+    um += iossReportFileName + "\n\n";
 
     um += "-s <file> run Catalyst with a ParaView exported Python script\n";
     um += "   given in <file>";
@@ -403,66 +458,66 @@ void IossApplication::printUsageMessage() {
     um += "    Print usage message and exit program.";
     um += "\n\n";
 
-    um += "mpiexec -np 4 " + applicationName + " -c -r file\n";
+    um += "mpiexec -np 4 " + applicationName + " -c -r <FILE>\n";
     um += "    Output copy of input mesh and IOSS region report.";
     um += "\n\n";
 
-    um += "mpiexec -np 4 " + applicationName + " file\n";
+    um += "mpiexec -np 4 " + applicationName + " <FILE>\n";
     um += "    Run Catalyst with default Phactori JSON script to produce\n";
     um += "    eight axis aligned external camera images of the input mesh.";
     um += "\n\n";
 
-    um += "mpiexec -np 4 " + applicationName + " -m file\n";
+    um += "mpiexec -np 4 " + applicationName + " -m <FILE>\n";
     um += "    Output mesh representation for Catalyst.\n\n";
 
-    um += "mpiexec -np 4 " + applicationName + " -i file.json file\n";
+    um += "mpiexec -np 4 " + applicationName + " -i file.json <FILE>\n";
     um += "    Run Catalyst with Phactori JSON input from file.json.\n\n";
 
-    um += "mpiexec -np 4 " + applicationName + " -p file.txt file\n";
+    um += "mpiexec -np 4 " + applicationName + " -p file.txt <FILE>\n";
     um += "    Run Catalyst with Phactori command syntax input from file.txt.";
     um += "\n\n";
 
-    um += "mpiexec -np 4 " + applicationName + " -s file.py file\n";
+    um += "mpiexec -np 4 " + applicationName + " -s file.py <FILE>\n";
     um += "    Run Catalyst with ParaView exported Python script in file.py.";
  
     um += "\n\nFILE\n\n";
-    um += "Exodus or CGNS input file name for a single file\n";
-    um += " (file_name.ex2 or file_name.cgns)\n\n";
+    um += "Exodus or CGNS input file name for a single file\n\n";
+    um += "   (file_name.ex2 or file_name.cgns)\n\n";
 
-    um += "Exodus or CGNS file name prefix for multiple files\n";
-    um += " (file_name.cgns.2.0, file_name.cgns.2.1 or \n";
-    um += "  file_name.ex2.2.0, file_name.ex2.2.1)\n\n";
-    this->printMessage(um);
+    um += "Exodus or CGNS file name prefix for multiple files\n\n";
+    um += "   (file_name.cgns for file_name.cgns.2.0, file_name.cgns.2.1)\n";
+    um += "   (file_name.ex2 for file_name.ex2.2.0, file_name.ex2.2.1)\n\n";
+    printMessage(um);
 }
 
 void IossApplication::exitApplicationSuccess() {
-    this->finalizeMPI();
+    finalizeMPI();
     std::exit(EXIT_SUCCESS);
 }
 
 void IossApplication::exitApplicationFailure() {
-    this->finalizeMPI();
+    finalizeMPI();
     std::exit(EXIT_FAILURE);
 }
 
 void IossApplication::printMessage(const std::string& message) {
-    if (this->isRankZero()) {
+    if (isRankZero()) {
         std::cout << message;
     }
 }
 
 void IossApplication::printErrorMessage(const std::string& message) {
-    if (this->isRankZero()) {
+    if (isRankZero()) {
         std::cerr << "\nERROR: " << message << "\n";
     }
 }
 
 void IossApplication::printIOSSRegionReportForRank() {
-    std::string fn = this->iossReportFileName + "." +\
-        std::to_string(this->getNumRanks()) + "." +\
-            std::to_string(this->getMyRank()) + ".txt";
+    std::string fn = iossReportFileName + "." +\
+        std::to_string(getNumRanks()) + "." +\
+            std::to_string(getMyRank()) + ".txt";
     std::ofstream ofs (fn, std::ofstream::out);
-    Ioss::Region * region = this->getInputIOSSRegion();
+    Ioss::Region * region = getInputIOSSRegion();
 
     ofs << ioss_region_report::region_report(*region) << "\n";
     auto state_count = region->get_property("state_count").get_int();
@@ -476,15 +531,15 @@ void IossApplication::printIOSSRegionReportForRank() {
 }
 
 std::string IossApplication::getParallelFileName() {
-    if (this->isSerial()) {
-      return this->getFileName();
+    if (isSerial()) {
+      return getFileName();
     }
 
     std::stringstream nameStream;
-    const int numZeroes = std::ceil(log10(double(this->getNumRanks())));
+    const int numZeroes = std::ceil(log10(double(getNumRanks())));
 
-    nameStream << this->getFileName() << "." << this->getNumRanks()
-        << "." << std::setfill('0') << std::setw(numZeroes) << this->getMyRank();
+    nameStream << getFileName() << "." << getNumRanks()
+        << "." << std::setfill('0') << std::setw(numZeroes) << getMyRank();
 
     return nameStream.str();
 }
@@ -492,8 +547,8 @@ std::string IossApplication::getParallelFileName() {
 bool IossApplication::decomposedMeshExists() {
   int status = 0;
 
-  if (this->isRankZero()) {
-      std::string parallelFilename = this->getParallelFileName();
+  if (isRankZero()) {
+      std::string parallelFilename = getParallelFileName();
       std::ifstream fstream(parallelFilename);
       if (fstream.good()) {
           status = 1;
@@ -507,12 +562,12 @@ bool IossApplication::decomposedMeshExists() {
 }
 
 Ioss::Region * IossApplication::getInputIOSSRegion() {
-    return this->inputIOSSRegion;
+    return inputIOSSRegion;
 }
 
 void IossApplication::openInputIOSSDatabase() {
     Ioss::PropertyManager inputProperties;
-    if (this->decomposedMeshExists()) {
+    if (decomposedMeshExists()) {
         inputProperties.add(Ioss::Property("DECOMPOSITION_METHOD", "external"));
     }
     else {
@@ -520,14 +575,14 @@ void IossApplication::openInputIOSSDatabase() {
     }
 
     Ioss::DatabaseIO * dbi = Ioss::IOFactory::create(
-        getIOSSDatabaseTypeFromFile(), this->getFileName(), Ioss::READ_RESTART,
+        getIOSSDatabaseType(), getFileName(), Ioss::READ_RESTART,
             (MPI_Comm)MPI_COMM_WORLD, inputProperties);
     if (dbi == nullptr || !dbi->ok(true)) {
-        this->printErrorMessage("Unable to open input file(s) " +
-            this->getFileName());
-        this->exitApplicationFailure();
+        printErrorMessage("Unable to open input file(s) " +
+            getFileName());
+        exitApplicationFailure();
     }
-    this->inputIOSSRegion = new Ioss::Region(dbi);
+    inputIOSSRegion = new Ioss::Region(dbi);
 }
 
 std::string IossApplication::getPhactoriDefaultJSON() {
@@ -544,19 +599,19 @@ std::string IossApplication::getPhactoriDefaultJSON() {
 }
 
 void IossApplication::copyInputIOSSDatabaseOnRank() {
-    std::string fn = this->copyOutputDatabaseName + "." + getFileSuffix();
+    std::string fn = copyOutputDatabaseName + "." + getFileSuffix();
     Ioss::PropertyManager outputProperties;
     outputProperties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
     Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(
-        getIOSSDatabaseTypeFromFile(), fn, Ioss::WRITE_RESULTS,
+        getIOSSDatabaseType(), fn, Ioss::WRITE_RESULTS,
             (MPI_Comm) MPI_COMM_WORLD, outputProperties);
     if (dbo == nullptr || !dbo->ok(true)) {
-        this->printErrorMessage("Unable to open output file(s) " +
+        printErrorMessage("Unable to open output file(s) " +
             fn);
-        this->exitApplicationFailure();
+        exitApplicationFailure();
     }
 
-    Ioss::Region * inputRegion = this->getInputIOSSRegion();
+    Ioss::Region * inputRegion = getInputIOSSRegion();
     Ioss::Region * outputRegion = new Ioss::Region(dbo, inputRegion->name());
 
     auto state_count = inputRegion->get_property("state_count").get_int();
@@ -574,57 +629,52 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
 void IossApplication::callCatalystIOSSDatabaseOnRank() {
     Ioss::PropertyManager outputProperties;
 
-    if (this->usePhactoriInputScriptON()) {
+    if (usePhactoriInputScriptON()) {
         outputProperties.add(Ioss::Property("PHACTORI_INPUT_SYNTAX_SCRIPT",
-            this->getPhactoriInputScript()));
+            getPhactoriInputScript()));
     }
-    else if (this->usePhactoriInputJSONON()) {
+    else if (usePhactoriInputJSONON()) {
         outputProperties.add(Ioss::Property("PHACTORI_JSON_SCRIPT",
-            this->getPhactoriInputJSON()));
+            getPhactoriInputJSON()));
     }
-    else if (this->useParaViewExportedScriptON()) {
+    else if (useParaViewExportedScriptON()) {
         outputProperties.add(Ioss::Property("CATALYST_SCRIPT",
-            this->getParaViewExportedScript()));
+            getParaViewExportedScript()));
     }
-    else if (this->outputCatalystMeshOneFileON()) {
+    else if (outputCatalystMeshOneFileON()) {
         outputProperties.add(Ioss::Property(
             "WRITE_CATALYST_MESH_ONE_FILE_WITH_PREFIX",
-                this->outputCatalystMeshFileName));
+                outputCatalystMeshFileName));
     }
-    else if (this->outputCatalystMeshFilePerProcON()) {
+    else if (outputCatalystMeshFilePerProcON()) {
         outputProperties.add(Ioss::Property(
             "WRITE_CATALYST_MESH_FILE_PER_PROC_WITH_PREFIX",
-                this->outputCatalystMeshFileName));
+                outputCatalystMeshFileName));
     }
     else {
         outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_JSON_STRING",
-            this->getPhactoriDefaultJSON()));
+            getPhactoriDefaultJSON()));
     }
 
     outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME",
         applicationName));
 
-    std::string catalystDatabaseType = "catalyst_exodus";
-    if (getIOSSDatabaseTypeFromFile() == "cgns") {
-        catalystDatabaseType = "catalyst_cgns";
-    }
-
-    Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(catalystDatabaseType,
+    Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(getCatalystDatabaseType(),
         "catalyst", Ioss::WRITE_RESULTS, (MPI_Comm)MPI_COMM_WORLD,
                outputProperties);
     if (dbo == nullptr || !dbo->ok(true)) {
-        this->printErrorMessage("Unable to open catalyst database");
-        this->exitApplicationFailure();
+        printErrorMessage("Unable to open catalyst database");
+        exitApplicationFailure();
     }
 
-    Ioss::Region * inputRegion = this->getInputIOSSRegion();
+    Ioss::Region * inputRegion = getInputIOSSRegion();
     Ioss::Region * outputRegion = new Ioss::Region(dbo, inputRegion->name());
 
     auto state_count = inputRegion->get_property("state_count").get_int();
 
     int startTimeStep;
     int stopTimeStep;
-    this->getStartStopTimeSteps(state_count, startTimeStep, stopTimeStep);
+    getStartStopTimeSteps(state_count, startTimeStep, stopTimeStep);
 
     double min_time = inputRegion->get_state_time(startTimeStep);
     double max_time = inputRegion->get_state_time(stopTimeStep);
@@ -638,8 +688,16 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
     delete outputRegion;
 }
 
+std::string IossApplication::getIOSSDatabaseType() {
+    std::string retVal = getIOSSDatabaseTypeFromFile();
+    if (useIOSSInputDBTypeON()) {
+        retVal = getIOSSInputDBType();
+    }
+    return retVal;
+}
+
 std::string IossApplication::getIOSSDatabaseTypeFromFile() {
-    Ioss::FileInfo file(this->fileName);
+    Ioss::FileInfo file(fileName);
     auto extension = file.extension();
     if (extension == "e" || extension == "g" ||
         extension == "gen" || extension == "exo") {
@@ -654,10 +712,27 @@ std::string IossApplication::getIOSSDatabaseTypeFromFile() {
 }
 
 std::string IossApplication::getFileSuffix() {
-    if(getIOSSDatabaseTypeFromFile() == "exodus") {
+    std::string dbType = getIOSSDatabaseType();
+    if (dbType == "exodus") {
         return "ex2";
     }
-    else {
+    else if (dbType == "cgns") {
         return "cgns";
     }
+    else {
+        return dbType;
+    }
+}
+
+std::string IossApplication::getCatalystDatabaseType() {
+    std::string retVal = "catalyst_exodus";
+    if (!forceExodusOutputON()) {
+        if (getIOSSDatabaseType() == "cgns") {
+            retVal = "catalyst_cgns";
+        }
+        if (forceCGNSOutputON()) {
+            retVal = "catalyst_cgns";
+        }
+    }
+    return retVal;
 }

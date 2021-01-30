@@ -28,6 +28,16 @@ public:
     bool outputCatalystMeshFilePerProcON();
     bool setOutputCatalystMeshFilePerProc(bool status);
 
+    bool forceCGNSOutputON();
+    bool setForceCGNSOutput(bool status);
+
+    bool forceExodusOutputON();
+    bool setForceExodusOutput(bool status);
+
+    bool useIOSSInputDBTypeON();
+    std::string getIOSSInputDBType();
+    void setIOSSInputDBType(const std::string& dbType);
+
     bool usePhactoriInputScriptON();
     std::string getPhactoriInputScript();
     void setPhactoriInputScript(const std::string& scriptFilePath);
@@ -73,9 +83,12 @@ private:
     void finalizeMPI();
     void printUsageMessage();
     void checkForOnlyOneCatalystOutputPath();
+    void checkForOnlyOneCatalystOutputType();
     void getStartStopTimeSteps(int numTimeSteps, int & startTimeStep,
         int & stopTimeStep);
     std::string getIOSSDatabaseTypeFromFile();
+    std::string getIOSSDatabaseType();
+    std::string getCatalystDatabaseType();
     std::string getFileSuffix();
     std::string getParallelFileName();
     std::string getPhactoriDefaultJSON();
@@ -92,6 +105,10 @@ private:
     bool usePhactoriInputScript;
     bool usePhactoriInputJSON;
     bool useParaViewExportedScript;
+    bool forceCGNSOutput; 
+    bool forceExodusOutput; 
+    bool useIOSSInputDBType;
+    std::string iossInputDBType;
     std::string phactoriInputScriptFilePath;
     std::string phactoriInputJSONFilePath;
     std::string paraViewExportedScriptFilePath;
