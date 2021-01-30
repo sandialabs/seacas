@@ -779,8 +779,8 @@ mpisyncstart.enable true
 
       if(ctor_properties.size() != property_names.size())
       {
-        printf("[ERROR] Unable to reconstruct StructuredBlock (%s): FOUND %ld of %ld properties\n", 
-               entity_name.c_str(), ctor_properties.size(), property_names.size());
+        fmt::print(stderr, "[ERROR] Unable to reconstruct StructuredBlock (%s): FOUND %ld of %ld properties\n", 
+                   entity_name.c_str(), ctor_properties.size(), property_names.size());
         return;
       }
 
@@ -1063,7 +1063,6 @@ mpisyncstart.enable true
         pool.Need( parent_property_key, &parent_property_ldo );
         Ioss::Property parent_topo_property = this->read_property(parent_property_ldo);
         
-        
         auto sideblock = new Ioss::SideBlock(this, sideblock_name, topo_property.get_string(),
                                              parent_topo_property.get_string(), entity_count);
         
@@ -1131,12 +1130,12 @@ mpisyncstart.enable true
       }
 
       if( !have_entity_type ) {
-        printf("[ERROR] Unable to reconstruct CommSet (entity_type NOT found)\n");
+        fmt::print(stderr, "[ERROR] Unable to reconstruct CommSet (entity_type NOT found)\n");
         return;
       }
 
       if( !have_entity_count ) {
-        printf("[ERROR] Unable to reconstruct CommSet (entity_count NOT found)\n");
+        fmt::print(stderr, "[ERROR] Unable to reconstruct CommSet (entity_count NOT found)\n");
         return;
       }
 
