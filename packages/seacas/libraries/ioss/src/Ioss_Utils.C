@@ -2256,10 +2256,7 @@ namespace {
       size_t total_entities = 0;
       for (const auto &set : sets) {
         const std::string &name = set->name();
-#if 0
         if (options.debug && rank == 0) {
-#endif
-        if (rank == 0) {
           fmt::print(stderr, "{}, ", name);
         }
         size_t count = set->entity_count();
@@ -2268,18 +2265,12 @@ namespace {
         output_region.add(o_set);
       }
 
-#if 0
       if (options.verbose && rank == 0) {
-#endif
-      if (rank == 0) {
         fmt::print(stderr, " Number of {:20s} = {:14n}", (*sets.begin())->type_string() + "s",
                    sets.size());
         fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
       }
-#if 0
       if (options.debug && rank == 0) {
-#endif
-      if (rank == 0) {
         fmt::print(stderr, "\n");
       }
     }
