@@ -779,7 +779,7 @@ mpisyncstart.enable true
 
       if(ctor_properties.size() != property_names.size())
       {
-        fmt::print(stderr, "[ERROR] Unable to reconstruct StructuredBlock (%s): FOUND %ld of %ld properties\n", 
+        fmt::print(stderr, "[ERROR] Unable to reconstruct StructuredBlock ({}): FOUND {} of {} properties\n", 
                    entity_name.c_str(), ctor_properties.size(), property_names.size());
         return;
       }
