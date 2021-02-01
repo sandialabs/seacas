@@ -4,11 +4,17 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Cell.h"
-#include <Ioss_NodeBlock.h>
-#include <algorithm>
+#include <numeric>
 
-extern bool equivalence_nodes;
+#include "Cell.h"
+
+#include <Ioss_NodeBlock.h>
+#include <Ioss_SmartAssert.h>
+#include <algorithm>
+#include <fmt/format.h>
+
+extern unsigned int debug_level;
+extern bool         equivalence_nodes;
 
 void Cell::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
 {
@@ -16,12 +22,9 @@ void Cell::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
   m_j        = j;
   m_unitCell = unit_cell;
   m_ranks[0] = 0;
-  if (m_i > 0) {
-    m_ranks[4] = 0;
-  }
-  if (m_j > 0) {
-    m_ranks[2] = 0;
-  }
+  m_ranks[4] = m_i > 0 ? 0 : -1;
+  m_ranks[2] = m_j > 0 ? 0 : -1;
+  m_ranks[1] = (m_i > 0 && m_j > 0) ? 0 : -1;
 }
 
 std::pair<double, double> Cell::get_coordinate_range(enum Axis axis) const
@@ -105,4 +108,101 @@ std::vector<int> Cell::categorize_nodes(enum Mode mode) const
     }
   }
   return nodes;
+}
+
+template std::vector<int64_t> Cell::generate_global_node_map(Mode, int64_t) const;
+template std::vector<int>     Cell::generate_global_node_map(Mode, int) const;
+
+template <typename INT>
+std::vector<INT> Cell::generate_global_node_map(Mode mode, INT /*dummy*/) const
+{
+  // Size is node_count + 1 to handle the 1-based connectivity values.
+  size_t           cell_node_count = m_unitCell->m_region->get_property("node_count").get_int();
+  std::vector<INT> map(cell_node_count + 1);
+
+  if (!equivalence_nodes || !(has_neighbor_i() || has_neighbor_j())) {
+    std::iota(map.begin(), map.end(), m_localNodeIdOffset);
+  }
+  else {
+    // At least one neighboring cell.
+    // Generate map for the "non-neighbored" nodes (not contiguous with a neighbor cell)
+    auto categorized_nodes = categorize_nodes(mode);
+    SMART_ASSERT(categorized_nodes.size() == cell_node_count)
+    (categorized_nodes.size())(cell_node_count);
+    INT offset = (INT)m_globalNodeIdOffset + 1;
+    for (size_t n = 0; n < cell_node_count; n++) {
+      if (categorized_nodes[n] == 0) {
+        map[n + 1] = offset++;
+      }
+    }
+  }
+
+  if (equivalence_nodes && has_neighbor_i()) {
+    // Get the neighbor cell...
+    // iterate my unit cell's min_I_face() nodes to get index into map
+    // At this index, set value to this cells min_I_nodes() node
+    // which was created by the neighbor when he was processed...
+    SMART_ASSERT(min_I_nodes.size() == m_unitCell->min_I_face.size())
+    (m_i)(m_j)(min_I_nodes.size())(m_unitCell->min_I_face.size());
+
+    for (size_t i = 0; i < m_unitCell->min_I_face.size(); i++) {
+      auto idx = m_unitCell->min_I_face[i] + 1;
+      auto val = min_I_nodes[i];
+      map[idx] = (INT)val;
+    }
+
+    // Can now clean out the `min_I_nodes` list since the data will no longer be needed.
+    //    Ioss::Utils::clear(min_I_nodes);
+  }
+
+  if (equivalence_nodes && has_neighbor_j()) {
+    SMART_ASSERT(min_J_nodes.size() == m_unitCell->min_J_face.size())
+    (m_i)(m_j)(min_J_nodes.size())(m_unitCell->min_J_face.size());
+
+    for (size_t i = 0; i < m_unitCell->min_J_face.size(); i++) {
+      auto idx = m_unitCell->min_J_face[i] + 1;
+      auto val = min_J_nodes[i];
+      map[idx] = (INT)val;
+    }
+    // Ioss::Utils::clear(min_J_nodes);
+  }
+  return map;
+}
+
+template void Cell::populate_neighbor_min_i(const std::vector<int64_t> &map,
+                                            const Cell &                neighbor) const;
+template void Cell::populate_neighbor_min_j(const std::vector<int64_t> &map,
+                                            const Cell &                neighbor) const;
+template void Cell::populate_neighbor_min_i(const std::vector<int> &map,
+                                            const Cell &            neighbor) const;
+template void Cell::populate_neighbor_min_j(const std::vector<int> &map,
+                                            const Cell &            neighbor) const;
+
+template <typename INT>
+void Cell::populate_neighbor_min_i(const std::vector<INT> &map, const Cell &neighbor) const
+{
+  neighbor.min_I_nodes.resize(m_unitCell->max_I_face.size());
+  for (size_t i = 0; i < m_unitCell->max_I_face.size(); i++) {
+    auto idx                = m_unitCell->max_I_face[i] + 1;
+    auto val                = map[idx];
+    neighbor.min_I_nodes[i] = val;
+  }
+  if (debug_level & 8) {
+    fmt::print("\nCell {} {}\n", neighbor.m_i, neighbor.m_j);
+    fmt::print("min_I_nodes: {}\n", fmt::join(neighbor.min_I_nodes, " "));
+  }
+}
+
+template <typename INT>
+void Cell::populate_neighbor_min_j(const std::vector<INT> &map, const Cell &neighbor) const
+{
+  neighbor.min_J_nodes.resize(m_unitCell->max_J_face.size());
+  for (size_t i = 0; i < m_unitCell->max_J_face.size(); i++) {
+    auto idx                = m_unitCell->max_J_face[i] + 1;
+    auto val                = map[idx];
+    neighbor.min_J_nodes[i] = val;
+  }
+  if (debug_level & 8) {
+    fmt::print("min_J_nodes: {}\n", fmt::join(neighbor.min_J_nodes, " "));
+  }
 }

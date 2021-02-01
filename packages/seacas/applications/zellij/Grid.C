@@ -24,7 +24,7 @@ bool                equivalence_nodes = true;
 
 namespace {
   template <typename INT>
-  std::vector<INT>      generate_node_map(Grid &grid, const Cell &cell, INT /*dummy*/);
+  std::vector<INT>      generate_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/);
   Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
 
   void set_coordinate_offsets(Grid &grid);
@@ -248,7 +248,7 @@ template <typename INT> void Grid::output_block_connectivity(int rank, INT /*dum
         continue;
       }
 
-      auto node_map = generate_node_map(*this, cell, INT(0));
+      auto node_map = generate_node_map(*this, cell, Mode::PROCESSOR, INT(0));
       auto blocks   = cell.m_unitCell->m_region->get_element_blocks();
       for (const auto *block : blocks) {
         block->get_field_data("connectivity_raw", connect);
@@ -291,16 +291,21 @@ template <typename INT> void Grid::output_node_map(int rank, INT /*dummy*/)
       auto start = cell.m_localNodeIdOffset + 1;
       auto count = cell.added_node_count(Mode::PROCESSOR);
 
-      auto             gid = cell.m_globalNodeIdOffset + 1;
-      std::vector<INT> map(count);
-      std::iota(map.begin(), map.end(), gid);
-
-      ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, map.data());
+      if (parallel_size() == 1) {
+        auto             gid = cell.m_globalNodeIdOffset + 1;
+        std::vector<INT> map(count);
+        std::iota(map.begin(), map.end(), gid);
+        ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, map.data());
+      }
+      else {
+        auto map = generate_node_map(*this, cell, Mode::GLOBAL, INT(0));
+        ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, map.data());
+      }
 
       if (debug_level & 2) {
         util().progress(fmt::format("Generated Node Map for Rank {}, Cell({}, {}): start {}, count "
-                                    "{}, global_id_start {}\n",
-                                    rank, cell.m_i, cell.m_j, start, count, gid));
+                                    "{}\n",
+                                    rank, cell.m_i, cell.m_j, start, count));
       }
     }
   }
@@ -487,89 +492,30 @@ namespace {
   }
 
   template <typename INT>
-  std::vector<INT> generate_node_map(Grid &grid, const Cell &cell, INT /*dummy*/)
+  std::vector<INT> generate_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/)
   {
     // Generate a "map" from nodes in the input connectivity to the
     // output connectivity in global nodes.  If no neighbors, then
     // this would just be adding `cell.m_globalNodeIdOffset` to each
     // connectivity entry.
 
-    // Size is node_count + 1 to handle the 1-based connectivity values.
-    size_t cell_node_count = cell.m_unitCell->m_region->get_property("node_count").get_int();
-    std::vector<INT> map(cell_node_count + 1);
-    if (!equivalence_nodes || !(cell.has_neighbor_i() || cell.has_neighbor_j())) {
-      std::iota(map.begin(), map.end(), cell.m_localNodeIdOffset);
-    }
-    else {
-      // At least one neighboring cell.
-      // Generate map for the "non-neighbored" nodes (not contiguous with a neighbor cell)
-      auto mode              = grid.parallel_size() > 1 ? Mode::PROCESSOR : Mode::GLOBAL;
-      auto categorized_nodes = cell.categorize_nodes(mode);
-      SMART_ASSERT(categorized_nodes.size() == cell_node_count)
-      (categorized_nodes.size())(cell_node_count);
-      INT offset = (INT)cell.m_globalNodeIdOffset + 1;
-      for (size_t n = 0; n < cell_node_count; n++) {
-        if (categorized_nodes[n] == 0) {
-          map[n + 1] = offset++;
-        }
-      }
+    std::vector<INT> map = cell.generate_global_node_map(mode, INT(0));
+    if (debug_level & 8) {
+      fmt::print("           MAP: {}\n", fmt::join(map, " "));
     }
 
-    if (equivalence_nodes && cell.has_neighbor_i()) {
-      const auto &neighbor = grid.get_cell(cell.m_i - 1, cell.m_j);
-      // Get the neighbor cell...
-      // iterate my unit cell's min_I_face() nodes to get index into map
-      // At this index, set value to neighbor cells max_I_nodes() node
-      for (size_t i = 0; i < cell.m_unitCell->min_I_face.size(); i++) {
-        auto idx = cell.m_unitCell->min_I_face[i] + 1;
-        auto val = neighbor.max_I_nodes[i];
-        map[idx] = (INT)val;
-      }
-
-      // Can now clean out the neighbors max_I_nodes list since this
-      // is the only cell that can use the data...
-      Ioss::Utils::clear(neighbor.max_I_nodes);
-    }
-
-    if (equivalence_nodes && cell.has_neighbor_j()) {
-      const auto &neighbor = grid.get_cell(cell.m_i, cell.m_j - 1);
-      for (size_t i = 0; i < cell.m_unitCell->min_J_face.size(); i++) {
-        auto idx = cell.m_unitCell->min_J_face[i] + 1;
-        auto val = neighbor.max_J_nodes[i];
-        map[idx] = (INT)val;
-      }
-      Ioss::Utils::clear(neighbor.max_J_nodes);
-    }
-
-    // Now that we have the node map for this cell, we need to save the mappings for the max_I and
-    // max_J faces and max_I-max_J edge for use by later neighbors...
-    // Check whether cell has neighbors on max_I or max_J faces...
+    // Now that we have the node map for this cell, we need to save
+    // the mappings for the max_I and max_J faces and max_I-max_J edge
+    // for use by later neighbors...  Check whether cell has neighbors
+    // on max_I or max_J faces...
     if (equivalence_nodes && (cell.m_i + 1 < grid.II())) {
-      cell.max_I_nodes.resize(cell.m_unitCell->max_I_face.size());
-      for (size_t i = 0; i < cell.m_unitCell->max_I_face.size(); i++) {
-        auto idx            = cell.m_unitCell->max_I_face[i] + 1;
-        auto val            = map[idx];
-        cell.max_I_nodes[i] = val;
-      }
-      if (debug_level & 8) {
-        fmt::print("\nCell {} {}\n", cell.m_i, cell.m_j);
-        fmt::print("max_I_nodes: {}\n", fmt::join(cell.max_I_nodes, " "));
-      }
+      const auto &neighbor = grid.get_cell(cell.m_i + 1, cell.m_j);
+      cell.populate_neighbor_min_i(map, neighbor);
     }
 
     if (equivalence_nodes && (cell.m_j + 1 < grid.JJ())) {
-      cell.max_J_nodes.resize(cell.m_unitCell->max_J_face.size());
-      for (size_t i = 0; i < cell.m_unitCell->max_J_face.size(); i++) {
-        auto idx            = cell.m_unitCell->max_J_face[i] + 1;
-        auto val            = map[idx];
-        cell.max_J_nodes[i] = val;
-      }
-      if (debug_level & 8) {
-        fmt::print("max_J_nodes: {}\n", fmt::join(cell.max_J_nodes, " "));
-      }
-    }
-    if (debug_level & 8) {
-      fmt::print("           MAP: {}\n", fmt::join(map, " "));
+      const auto &neighbor = grid.get_cell(cell.m_i, cell.m_j + 1);
+      cell.populate_neighbor_min_j(map, neighbor);
     }
     return map;
   }
