@@ -188,7 +188,7 @@ bool Ioss::SideBlock::equal(const Ioss::SideBlock &rhs)
   }
 
   if( this->consistentSideNumber != rhs.consistentSideNumber ) { 
-    fmt::print(stderr, "SideBlock: consistentSideNumber mismatch (%d vs. %d)\n",
+    fmt::print(stderr, "SideBlock: consistentSideNumber mismatch ({} vs. {})\n",
                this->consistentSideNumber, rhs.consistentSideNumber);
     return false;
   }

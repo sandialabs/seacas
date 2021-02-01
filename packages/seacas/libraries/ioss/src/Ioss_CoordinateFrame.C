@@ -50,25 +50,25 @@ namespace Ioss {
   bool Ioss::CoordinateFrame::equal(const Ioss::CoordinateFrame &rhs) const
   {
     if( this->id_ != rhs.id_ ) { 
-      fmt::print(stderr, "CoordinateFrame : ID mismatch (%ld vs. %ld)\n", this->id_, rhs.id_);
+      fmt::print(stderr, "CoordinateFrame : ID mismatch ({} vs. {})\n", this->id_, rhs.id_);
       return false;
     }   
 
     if( this->pointList_ != rhs.pointList_ ) { 
       fmt::print(stderr, "CoordinateFrame : Point list mismatch ([ ");
       for( auto &point : this->pointList_ ) { 
-        fmt::print(stderr, "%f ", point);
+        fmt::print(stderr, "{} ", point);
       }   
       fmt::print(stderr, "] vs [");
       for( auto &point : rhs.pointList_ ) { 
-        fmt::print(stderr, "%f ", point);
+        fmt::print(stderr, "{} ", point);
       }   
       fmt::print(stderr, "])\n");
       return false;
     }   
 
     if( this->id_ != rhs.id_ ) { 
-      fmt::print(stderr, "CoordinateFrame : TAG mismatch (%d vs. %d)\n", this->tag_, rhs.tag_);
+      fmt::print(stderr, "CoordinateFrame : TAG mismatch ({} vs. {})\n", this->tag_, rhs.tag_);
       return false;
     }   
 

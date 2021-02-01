@@ -112,7 +112,7 @@ bool Ioss::EntityBlock::equal(const Ioss::EntityBlock &rhs) const
   }
 
   if( this->idOffset != rhs.idOffset ) {
-    fmt::print(stderr, "EntityBlock: idOffset mismatch (%ld vs. %ld)\n", this->idOffset, rhs.idOffset);
+    fmt::print(stderr, "EntityBlock: idOffset mismatch ({} vs. {})\n", this->idOffset, rhs.idOffset);
     return false;
   }
 

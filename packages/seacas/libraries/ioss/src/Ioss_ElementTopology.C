@@ -333,12 +333,12 @@ bool Ioss::ElementTopology::operator!=(const Ioss::ElementTopology &rhs)
 bool Ioss::ElementTopology::equal(const Ioss::ElementTopology &rhs)
 {
   if( this->name_.compare(rhs.name_) != 0 ) { 
-    fmt::print(stderr, "Element Topology: NAME mismatch (%s vs. %s)\n", this->name_.c_str(), rhs.name_.c_str());
+    fmt::print(stderr, "Element Topology: NAME mismatch ({} vs. {})\n", this->name_.c_str(), rhs.name_.c_str());
     return false;
   }
 
   if( this->masterElementName_.compare(rhs.masterElementName_) != 0 ) { 
-    fmt::print(stderr, "Element Topology: MASTER ELEMENT NAME mismatch (%s vs. %s)\n", 
+    fmt::print(stderr, "Element Topology: MASTER ELEMENT NAME mismatch ({} vs. {})\n", 
                this->masterElementName_.c_str(), rhs.masterElementName_.c_str());
     return false;
   }
