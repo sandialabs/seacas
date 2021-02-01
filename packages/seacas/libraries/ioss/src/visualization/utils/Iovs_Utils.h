@@ -79,14 +79,14 @@ namespace Iovs {
     void reportCatalystErrorMessages(const std::vector<int> & error_codes,
         const std::vector<std::string> & error_messages, int myRank);
 
+    CatalystManagerBase& getCatalystManager();
+
   private:
 
     Utils();
     ~Utils();
     Utils(const Utils &) = delete;
     Utils &operator=(const Utils &) = delete;
-
-    CatalystManagerBase& getCatalystManager();
 
     CatalystManagerBase* catalystManager = nullptr;
 

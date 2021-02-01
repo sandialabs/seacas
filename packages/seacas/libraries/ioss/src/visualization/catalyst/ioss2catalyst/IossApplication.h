@@ -1,9 +1,11 @@
 #ifndef Ioss_Application_h
 #define Ioss_Application_h
 
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_Region.h>
 #include <string>
+
+namespace Ioss {
+    class Region;
+}
 
 class IossApplication {
 public:
@@ -121,10 +123,10 @@ private:
 
 #if defined(__APPLE__)
     const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY =\
-        "libParaViewCatalystIossAdapter.dylib";
+        "libcatalystioss.dylib";
 #else
     const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY =\
-        "libParaViewCatalystIossAdapter.so";
+        "libcatalystioss.so";
 #endif
 
 };

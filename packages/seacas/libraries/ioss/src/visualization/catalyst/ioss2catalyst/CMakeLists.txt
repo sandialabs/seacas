@@ -23,7 +23,7 @@ ADD_EXECUTABLE(ioss2catalyst main.cxx)
 TARGET_LINK_LIBRARIES(ioss2catalyst
     PRIVATE
         catalystiossapp
-        VTK::mpi)
+        MPI::MPI_C)
 
 INSTALL(TARGETS ioss2catalyst RUNTIME DESTINATION bin)
 INSTALL(TARGETS catalystiossapp LIBRARY DESTINATION lib)

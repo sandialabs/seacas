@@ -56,6 +56,9 @@ public:
     virtual void parsePhactoriFile(const std::string &filepath,
         ParseResult & pres) = 0;
 
+    virtual void parsePhactoriString(const std::string &phactori,
+        ParseResult & pres) = 0;
+
     virtual int getCatalystOutputIDNumber() = 0;
 
     // Parameters:

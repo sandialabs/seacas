@@ -64,6 +64,9 @@ public:
     void parsePhactoriFile(const std::string& filepath,
         ParseResult& pres);
 
+    void parsePhactoriString(const std::string& phactori,
+        ParseResult& pres);
+
     std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
         createCatalystExodusMesh(CatalystExodusMeshInit& cmInit);
 

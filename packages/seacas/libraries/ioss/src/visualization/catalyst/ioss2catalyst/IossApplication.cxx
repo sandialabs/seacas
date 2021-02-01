@@ -1,6 +1,8 @@
 #include "IossApplication.h"
 #include "IossRegionReport.h"
 #include "CatalystPluginPaths.h"
+#include <Ioss_DatabaseIO.h>
+#include <Ioss_Region.h>
 #include <Ioss_IOFactory.h>
 #include <Ionit_Initializer.h>
 #include <Ioss_Utils.h>

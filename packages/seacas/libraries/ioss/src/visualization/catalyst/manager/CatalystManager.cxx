@@ -516,6 +516,15 @@ void CatalystManager::parsePhactoriFile(const std::string &filepath,
     pres.parseFailed = pinfo.parseFailed;
 }
 
+void CatalystManager::parsePhactoriString(const std::string& phactori,
+        ParseResult& pres) {
+
+    PhactoriParserInterface::ParseInfo pinfo;
+    PhactoriParserInterface::parseString(phactori, pinfo);
+    pres.jsonParseResult = pinfo.jsonParseResult;
+    pres.parseFailed = pinfo.parseFailed;
+}
+
 extern "C" {
     CatalystManagerBase* CreateCatalystManagerInstance() {
         CatalystManager* p = new CatalystManager();
