@@ -39,7 +39,7 @@ inline const std::string IOSS_SYM_TENSOR() { return std::string("sym_tensor_33")
 /* #undef SEACAS_HAVE_KOKKOS */
 #define SEACAS_HAVE_EXODUS
 #define SEACAS_HAVE_CGNS
-#define SEACAS_HAVE_FAODEL
+/* #undef SEACAS_HAVE_FAODEL */
 #define SEACAS_HAVE_PAMGEN
 #else
 #include <SEACASIoss_config.h>
