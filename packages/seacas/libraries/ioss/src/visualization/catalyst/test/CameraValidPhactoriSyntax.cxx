@@ -28,6 +28,20 @@ CatalystTestFixture::cameraValidPhactoriSyntax = {
        end imageset
      end
      )"
+    },
+
+    {"CameraLookDirection",
+     R"(
+     begin catalyst
+       begin camera fooCamera
+         look direction = 1 2 3
+       end camera
+       begin imageset fooImageset
+         camera = fooCamera
+         image size = 800 450
+       end imageset
+     end
+     )"
     }
 
 };
