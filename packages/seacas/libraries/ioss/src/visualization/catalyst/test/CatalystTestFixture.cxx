@@ -1,5 +1,5 @@
 #include "CatalystTestFixture.h"
-#include <catch2/catch.hpp>
+#include "catch.hpp"
 #include <Iovs_Utils.h>
 #include "vtk_jsoncpp.h"
 
