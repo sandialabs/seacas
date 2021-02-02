@@ -2267,7 +2267,7 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       Edge_Block<INT> *eblock1 = file1.Get_Edge_Block_by_Index(b);
       SMART_ASSERT(eblock1 != nullptr);
       if (eblock1->Size() == 0) {
-        std::cout << "eblock1->Size() == 0...continuing..." << std::endl;
+        std::cout << "eblock1->Size() == 0 ...continuing...\n";
         continue;
       }
       if (!eblock1->is_valid_var(vidx1)) {
