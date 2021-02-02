@@ -220,7 +220,8 @@ template <typename INT> std::vector<INT> Cell::generate_node_map(Mode mode, INT 
       }
     }
   }
-  // Can now clean out the `min_I_nodes` and `min_J_nodes` lists since the data will no longer be needed.
+  // Can now clean out the `min_I_nodes` and `min_J_nodes` lists since the data will no longer be
+  // needed.
   Ioss::Utils::clear(min_I_nodes);
   Ioss::Utils::clear(min_J_nodes);
 
