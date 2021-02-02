@@ -9,5 +9,5 @@
 #include <string>
 
 class Grid;
-void decompose_grid(Grid &grid, size_t ranks, const std::string &method);
+void decompose_grid(Grid &grid, int ranks, const std::string &method);
 #endif

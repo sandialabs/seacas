@@ -7,6 +7,7 @@
 #include "zoltan.h"       // for Zoltan_Set_Param, etc
 #include "zoltan_types.h" // for ZOLTAN_ID_PTR*, ZOLTAN_OK, etc
 
+#include <algorithm>
 #include <fmt/format.h>
 #include <vector>
 
@@ -108,7 +109,7 @@ namespace {
     *ierr = ZOLTAN_OK;
   }
 } // namespace
-void decompose_grid(Grid &grid, size_t ranks, const std::string &method)
+void decompose_grid(Grid &grid, int ranks, const std::string &method)
 {
   /* Function to allow Zoltan to compute decomposition using RCB.
    * Assuming running Zoltan in serial (as nem_slice is serial).
@@ -116,23 +117,64 @@ void decompose_grid(Grid &grid, size_t ranks, const std::string &method)
    * match what is needed in part array above.
    */
 
-  struct Zoltan_Struct *zz;
-  int                   zngid_ent;
-  int                   znlid_ent; /* Useful output from Zoltan_LB_Partition */
-  int                   znobj;
-  ZOLTAN_ID_PTR         zgids;
-  ZOLTAN_ID_PTR         zlids;  /* Useful output from Zoltan_LB_Partition */
-  int *                 zprocs; /* Useful output from Zoltan_LB_Partition */
-  int *                 zparts; /* Useful output from Zoltan_LB_Partition */
-  ZOLTAN_ID_PTR         dummy1;
-  ZOLTAN_ID_PTR         dummy2; /* Empty output from Zoltan_LB_Partition */
-  int                   dummy0;
-  int *                 dummy3 = nullptr;
-  int *                 dummy4 = nullptr;
+  if (method == "CYCLIC") {
+    int rank = 0;
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        auto &cell = grid.get_cell(i, j);
+        cell.set_rank(Loc::C, rank++);
+        if (rank >= ranks) {
+          rank = 0;
+        }
+      }
+    }
+    return;
+  }
 
-  float       ver;
-  std::string str;
-  int         changes;
+  else if (method == "LINEAR") {
+    int cells_per_rank = (grid.JJ() * grid.II()) / ranks;
+    int extra          = (grid.JJ() * grid.II()) % ranks;
+    int rank           = 0;
+    int k              = 0;
+    int add_one        = extra-- > 0 ? 1 : 0;
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        auto &cell = grid.get_cell(i, j);
+        cell.set_rank(Loc::C, rank);
+        if (++k >= cells_per_rank + add_one) {
+          rank++;
+          k       = 0;
+          add_one = extra-- > 0 ? 1 : 0;
+        }
+      }
+    }
+    return;
+  }
+
+  else if (method == "RANDOM") {
+    std::vector<int> rank_vec(grid.size());
+    int              rank = 0;
+    size_t           k    = 0;
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        rank_vec[k++] = rank++;
+        if (rank >= ranks) {
+          rank = 0;
+        }
+      }
+    }
+
+    std::random_shuffle(rank_vec.begin(), rank_vec.end());
+
+    k = 0;
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        auto &cell = grid.get_cell(i, j);
+        cell.set_rank(Loc::C, rank_vec[k++]);
+      }
+    }
+    return;
+  }
 
   std::vector<float> x(grid.size());
   std::vector<float> y(grid.size());
@@ -167,12 +209,17 @@ void decompose_grid(Grid &grid, size_t ranks, const std::string &method)
   Zoltan_Data.z    = nullptr;
 
   /* Initialize Zoltan */
-  int    argc = 0;
-  char **argv = nullptr;
+  int           argc   = 0;
+  char **       argv   = nullptr;
+  ZOLTAN_ID_PTR zgids  = nullptr;
+  ZOLTAN_ID_PTR zlids  = nullptr; /* Useful output from Zoltan_LB_Partition */
+  int *         zprocs = nullptr; /* Useful output from Zoltan_LB_Partition */
+  int *         zparts = nullptr; /* Useful output from Zoltan_LB_Partition */
 
-  int ierr;
-  ZCHECK(Zoltan_Initialize(argc, argv, &ver));
-  zz = Zoltan_Create(MPI_COMM_WORLD);
+  int   ierr = 0;
+  float ver  = 0.0;
+  Zoltan_Initialize(argc, argv, &ver);
+  struct Zoltan_Struct *zz = Zoltan_Create(MPI_COMM_WORLD);
 
   /* Register Callback functions */
   /* Using global Zoltan_Data; could register it here instead as data field. */
@@ -186,11 +233,13 @@ void decompose_grid(Grid &grid, size_t ranks, const std::string &method)
                        reinterpret_cast<ZOLTAN_VOID_FN *>(zoltan_geom), nullptr));
 
   /* Set parameters for Zoltan */
-  str = fmt::format("{}", ranks);
+  {
+    std::string str = fmt::format("{}", ranks);
+    ZCHECK(Zoltan_Set_Param(zz, "NUM_GLOBAL_PARTITIONS", str.c_str()));
+    ZCHECK(Zoltan_Set_Param(zz, "LB_METHOD", method.c_str()));
+  }
   ZCHECK(Zoltan_Set_Param(zz, "DEBUG_LEVEL", "0"));
-  ZCHECK(Zoltan_Set_Param(zz, "NUM_GLOBAL_PARTITIONS", str.c_str()));
   ZCHECK(Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "0"));
-  ZCHECK(Zoltan_Set_Param(zz, "LB_METHOD", method.c_str()));
   ZCHECK(Zoltan_Set_Param(zz, "REMAP", "0"));
   ZCHECK(Zoltan_Set_Param(zz, "RETURN_LISTS", "PARTITION_ASSIGNMENTS"));
   if (Zoltan_Data.vwgt != nullptr) {
@@ -199,22 +248,34 @@ void decompose_grid(Grid &grid, size_t ranks, const std::string &method)
   ZCHECK(Zoltan_Set_Param(zz, "RCB_RECTILINEAR_BLOCKS", "1"));
 
   /* Call partitioner */
-  fmt::print(" Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver), method);
-  ZCHECK(Zoltan_LB_Partition(zz, &changes, &zngid_ent, &znlid_ent, &dummy0, &dummy1, &dummy2,
-                             &dummy3, &dummy4, &znobj, &zgids, &zlids, &zprocs, &zparts));
+  {
+    fmt::print(" Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver), method);
+    int           zngid_ent = 0;
+    int           znlid_ent = 0; /* Useful output from Zoltan_LB_Partition */
+    int           znobj     = 0;
+    ZOLTAN_ID_PTR dummy1    = nullptr;
+    ZOLTAN_ID_PTR dummy2    = nullptr; /* Empty output from Zoltan_LB_Partition */
+    int           dummy0    = 0;
+    int *         dummy3    = nullptr;
+    int *         dummy4    = nullptr;
+    int           changes   = 0;
 
-  /* Sanity check */
-  if (grid.size() != static_cast<size_t>(znobj)) {
-    fmt::print(stderr, "Sanity check failed; ndot {} != znobj {}.\n", grid.size(),
-               static_cast<size_t>(znobj));
-    goto End;
-  }
+    ZCHECK(Zoltan_LB_Partition(zz, &changes, &zngid_ent, &znlid_ent, &dummy0, &dummy1, &dummy2,
+                               &dummy3, &dummy4, &znobj, &zgids, &zlids, &zprocs, &zparts));
 
-  idx = 0;
-  for (size_t j = 0; j < grid.JJ(); j++) {
-    for (size_t i = 0; i < grid.II(); i++) {
-      auto &cell = grid.get_cell(i, j);
-      cell.set_rank(Loc::C, zparts[idx++]);
+    /* Sanity check */
+    if (grid.size() != static_cast<size_t>(znobj)) {
+      fmt::print(stderr, "Sanity check failed; ndot {} != znobj {}.\n", grid.size(),
+                 static_cast<size_t>(znobj));
+      goto End;
+    }
+
+    idx = 0;
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        auto &cell = grid.get_cell(i, j);
+        cell.set_rank(Loc::C, zparts[idx++]);
+      }
     }
   }
 

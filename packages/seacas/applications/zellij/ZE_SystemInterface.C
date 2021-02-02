@@ -81,6 +81,22 @@ void SystemInterface::enroll_options()
       "Use hilbert space-filling curve method to decompose the input mesh in a parallel run.",
       nullptr);
 
+  options_.enroll("linear", GetLongOption::NoValue,
+                  "Use the linear method to decompose the input mesh in a parallel run.\n"
+                  "\t\tElements in order first n/p to proc 0, next to proc 1.",
+                  nullptr);
+
+  options_.enroll("cyclic", GetLongOption::NoValue,
+                  "Use the cyclic method to decompose the input mesh in a parallel run.\n"
+                  "\t\tElements handed out to id % proc_count",
+                  nullptr);
+
+  options_.enroll("random", GetLongOption::NoValue,
+                  "Use the random method to decompose the input mesh in a parallel run.\n"
+                  "\t\tElements assigned randomly to processors in a way that preserves balance\n"
+                  "\t\t(do *not* use for a real run)",
+                  nullptr);
+
   options_.enroll("ranks", GetLongOption::MandatoryValue,
                   "Number of ranks to decompose mesh across", "1");
 
@@ -129,6 +145,18 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("hsfc") != nullptr) {
     decompMethod_ = "HSFC";
+  }
+
+  if (options_.retrieve("linear") != nullptr) {
+    decompMethod_ = "LINEAR";
+  }
+
+  if (options_.retrieve("cyclic") != nullptr) {
+    decompMethod_ = "CYCLIC";
+  }
+
+  if (options_.retrieve("random") != nullptr) {
+    decompMethod_ = "RANDOM";
   }
 
   equivalenceNodes_ = options_.retrieve("separate_cells") == nullptr;

@@ -44,7 +44,7 @@ private:
   GetLongOption options_; //!< Options parsing
 
   std::string lattice_{};
-  std::string decompMethod_{"RCB"};
+  std::string decompMethod_{"HSFC"};
   int         debugLevel_{0};
   int         compressionLevel_{0};
   int         ranks_{1};
