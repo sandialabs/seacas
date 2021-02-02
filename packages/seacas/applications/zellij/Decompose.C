@@ -109,64 +109,24 @@ namespace {
     *ierr = ZOLTAN_OK;
   }
 } // namespace
+
 void decompose_grid(Grid &grid, int ranks, const std::string &method)
 {
-  /* Function to allow Zoltan to compute decomposition using RCB.
-   * Assuming running Zoltan in serial (as nem_slice is serial).
-   * Return PARTITION_ASSIGNMENTS from Zoltan_LB_Partition; they should
-   * match what is needed in part array above.
-   */
-
-  if (method == "CYCLIC") {
-    int rank = 0;
-    for (size_t j = 0; j < grid.JJ(); j++) {
-      for (size_t i = 0; i < grid.II(); i++) {
-        auto &cell = grid.get_cell(i, j);
-        cell.set_rank(Loc::C, rank++);
-        if (rank >= ranks) {
-          rank = 0;
-        }
-      }
-    }
-    return;
-  }
-
-  else if (method == "LINEAR") {
-    int cells_per_rank = (grid.JJ() * grid.II()) / ranks;
-    int extra          = (grid.JJ() * grid.II()) % ranks;
-    int rank           = 0;
-    int k              = 0;
-    int add_one        = extra-- > 0 ? 1 : 0;
-    for (size_t j = 0; j < grid.JJ(); j++) {
-      for (size_t i = 0; i < grid.II(); i++) {
-        auto &cell = grid.get_cell(i, j);
-        cell.set_rank(Loc::C, rank);
-        if (++k >= cells_per_rank + add_one) {
-          rank++;
-          k       = 0;
-          add_one = extra-- > 0 ? 1 : 0;
-        }
-      }
-    }
-    return;
-  }
-
-  else if (method == "RANDOM") {
+  if (method == "CYCLIC" || method == "LINEAR" || method == "RANDOM") {
     std::vector<int> rank_vec(grid.size());
-    int              rank = 0;
-    size_t           k    = 0;
-    for (size_t j = 0; j < grid.JJ(); j++) {
-      for (size_t i = 0; i < grid.II(); i++) {
-        rank_vec[k++] = rank++;
-        if (rank >= ranks) {
-          rank = 0;
-        }
-      }
+
+    // Generate a "cyclic" vector 0, 1, 2, ... ranks-1, 0, 1, ...
+    std::generate(rank_vec.begin(), rank_vec.end(),
+                  [n = 0, ranks]() mutable { return n++ % ranks; });
+
+    if (method == "LINEAR") {
+      std::sort(rank_vec.begin(), rank_vec.end());
+    }
+    else if (method == "RANDOM") {
+      std::random_shuffle(rank_vec.begin(), rank_vec.end());
     }
 
-    std::random_shuffle(rank_vec.begin(), rank_vec.end());
-
-    k = 0;
+    size_t k = 0;
     for (size_t j = 0; j < grid.JJ(); j++) {
       for (size_t i = 0; i < grid.II(); i++) {
         auto &cell = grid.get_cell(i, j);
@@ -176,6 +136,7 @@ void decompose_grid(Grid &grid, int ranks, const std::string &method)
     return;
   }
 
+  // Below here are Zoltan decompositions...
   std::vector<float> x(grid.size());
   std::vector<float> y(grid.size());
   std::vector<int>   w(grid.size());
