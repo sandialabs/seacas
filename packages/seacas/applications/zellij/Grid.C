@@ -24,11 +24,7 @@ bool                equivalence_nodes = true;
 
 namespace {
   template <typename INT>
-  std::vector<INT> generate_global_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/);
-
-  template <typename INT>
-  std::vector<INT> generate_processor_node_map(Grid &grid, const Cell &cell, Mode mode,
-                                               INT /*dummy*/);
+  std::vector<INT> generate_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/);
 
   Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
 
@@ -170,12 +166,25 @@ template void Grid::output_model(int);
 // -- Need connectivity
 template <typename INT> void Grid::output_model(INT /*dummy*/)
 {
-  for (size_t j = 0; j < JJ(); j++) {
-    for (size_t i = 0; i < II(); i++) {
-      auto &cell = get_cell(i, j);
-      output_nodal_coordinates(cell);
+  // Coordinates do not depend on order of operations, so can do these
+  // a rank at a time which can be more efficient once we exceed
+  // maximum number of open files...  Also easier to parallelize...
+  for (int r = 0; r < parallel_size(); r++) {
+    for (size_t j = 0; j < JJ(); j++) {
+      for (size_t i = 0; i < II(); i++) {
+        auto &cell = get_cell(i, j);
+        if (cell.rank(Loc::C) == r) {
+          output_nodal_coordinates(cell);
+        }
+      }
     }
   }
+
+  // All the rest of these depend on progressing through the cells in
+  // correct order so that can pass information correctly from cell to
+  // cell.  Need to figure out how to eliminate this ordering so can
+  // parallelize...
+
   for (size_t j = 0; j < JJ(); j++) {
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
@@ -248,7 +257,7 @@ template <typename INT> void Grid::output_block_connectivity(Cell &cell, INT /*d
   int rank  = cell.rank(Loc::C);
   int exoid = output_region(rank)->get_database()->get_file_pointer();
 
-  auto             node_map = generate_processor_node_map(*this, cell, Mode::PROCESSOR, INT(0));
+  auto             node_map = generate_node_map(*this, cell, Mode::PROCESSOR, INT(0));
   auto             blocks   = cell.m_unitCell->m_region->get_element_blocks();
   std::vector<INT> connect;
   for (const auto *block : blocks) {
@@ -286,7 +295,7 @@ template <typename INT> void Grid::output_node_map(const Cell &cell, INT /*dummy
     ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, map.data());
   }
   else {
-    auto map = generate_global_node_map(*this, cell, Mode::GLOBAL, INT(0));
+    auto map = generate_node_map(*this, cell, Mode::GLOBAL, INT(0));
 
     // Filter nodes down to only "new nodes"...
     if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
@@ -300,7 +309,9 @@ template <typename INT> void Grid::output_node_map(const Cell &cell, INT /*dummy
         }
       }
     }
-    fmt::print("Cell({}, {}), start {}, count {}\n", cell.m_i, cell.m_j, start, count);
+    if (debug_level & 8) {
+      fmt::print("Cell({}, {}), start {}, count {}\n", cell.m_i, cell.m_j, start, count);
+    }
     ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, &map[1]);
   }
 
@@ -343,8 +354,10 @@ template <typename INT> void Grid::output_element_map(Cell &cell, INT /*dummy*/)
       auto start = output_block_offset + local_offset + 1;
       ex_put_partial_id_map(exoid, EX_ELEM_MAP, start, element_count, map.data());
 
-      fmt::print("Rank {}: Cell({}, {}), Block {}, start {}, element_count {}, gid {}\n", rank,
-                 cell.m_i, cell.m_j, block->name(), start, element_count, gid);
+      if (debug_level & 8) {
+        fmt::print("Rank {}: Cell({}, {}), Block {}, start {}, element_count {}, gid {}\n", rank,
+                   cell.m_i, cell.m_j, block->name(), start, element_count, gid);
+      }
     }
     // If we were outputting a single file, then this element
     // block in that file would have this many elements.
@@ -479,38 +492,7 @@ namespace {
   }
 
   template <typename INT>
-  std::vector<INT> generate_global_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/)
-  {
-    // Generate a "map" from nodes in the input connectivity to the
-    // output connectivity in global nodes.  If no neighbors, then
-    // this would just be adding `cell.m_globalNodeIdOffset` to each
-    // connectivity entry.
-
-    std::vector<INT> map = cell.generate_node_map(mode, INT(0));
-    if (debug_level & 8) {
-      fmt::print("Cell({},{}) GLOBAL MAP: {}\n", cell.m_i, cell.m_j, fmt::join(map, " "));
-    }
-
-    // Now that we have the node map for this cell, we need to save
-    // the mappings for the max_I and max_J faces and max_I-max_J edge
-    // for use by later neighbors...  Check whether cell has neighbors
-    // on max_I or max_J faces...
-    if (equivalence_nodes && (cell.m_i + 1 < grid.II())) {
-      const auto &neighbor = grid.get_cell(cell.m_i + 1, cell.m_j);
-      cell.populate_neighbor_min_i(map, neighbor);
-    }
-
-    if (equivalence_nodes && (cell.m_j + 1 < grid.JJ())) {
-      const auto &neighbor = grid.get_cell(cell.m_i, cell.m_j + 1);
-      cell.populate_neighbor_min_j(map, neighbor);
-    }
-
-    return map;
-  }
-
-  template <typename INT>
-  std::vector<INT> generate_processor_node_map(Grid &grid, const Cell &cell, Mode mode,
-                                               INT /*dummy*/)
+  std::vector<INT> generate_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/)
   {
     // Generate a "map" from nodes in the input connectivity to the
     // output connectivity in global nodes.  If no neighbors, then
@@ -527,25 +509,30 @@ namespace {
     // for use by later neighbors...  Check whether cell has neighbors
     // on max_I or max_J faces...
     if (equivalence_nodes) {
-      if (cell.rank(Loc::C) == cell.rank(Loc::R) && (cell.m_i + 1 < grid.II())) {
+      if ((mode == Mode::GLOBAL ||
+           (mode == Mode::PROCESSOR && cell.rank(Loc::C) == cell.rank(Loc::R))) &&
+          (cell.m_i + 1 < grid.II())) {
         const auto &neighbor = grid.get_cell(cell.m_i + 1, cell.m_j);
-        cell.populate_neighbor_min_i(map, neighbor);
+        cell.populate_neighbor(Loc::L, map, neighbor);
       }
 
-      if (cell.rank(Loc::C) == cell.rank(Loc::T) && (cell.m_j + 1 < grid.JJ())) {
+      if ((mode == Mode::GLOBAL ||
+           (mode == Mode::PROCESSOR && cell.rank(Loc::C) == cell.rank(Loc::T))) &&
+          (cell.m_j + 1 < grid.JJ())) {
         const auto &neighbor = grid.get_cell(cell.m_i, cell.m_j + 1);
-        cell.populate_neighbor_min_j(map, neighbor);
+        cell.populate_neighbor(Loc::B, map, neighbor);
       }
 
-      if (cell.processor_boundary(Loc::L) && (cell.rank(Loc::TL) == cell.rank(Loc::C))) {
-	const auto &tl_corner = grid.get_cell(cell.m_i - 1, cell.m_j + 1); 
-	cell.populate_neighbor_br(map, tl_corner);
-      }
-      // Now the other "corner case"
-      if (cell.processor_boundary(Loc::R) && (cell.rank(Loc::TR) == cell.rank(Loc::C))) {
-	const auto &tr_corner = grid.get_cell(cell.m_i + 1, cell.m_j + 1); 
-	cell.populate_neighbor_bl(map, tr_corner);
-	fmt::print("Cell({},{}): Populate TR\n", cell.m_i, cell.m_j);
+      if (mode == Mode::PROCESSOR) {
+        if (cell.processor_boundary(Loc::L) && (cell.rank(Loc::TL) == cell.rank(Loc::C))) {
+          const auto &tl_corner = grid.get_cell(cell.m_i - 1, cell.m_j + 1);
+          cell.populate_neighbor(Loc::BR, map, tl_corner);
+        }
+        // Now the other "corner case"
+        if (cell.processor_boundary(Loc::R) && (cell.rank(Loc::TR) == cell.rank(Loc::C))) {
+          const auto &tr_corner = grid.get_cell(cell.m_i + 1, cell.m_j + 1);
+          cell.populate_neighbor(Loc::BL, map, tr_corner);
+        }
       }
     }
     return map;

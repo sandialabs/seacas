@@ -76,7 +76,8 @@ size_t Cell::added_node_count(enum Mode mode) const
       // Now the "corner case" ;-) If there is a processor boundary below, but the cell to the BL is
       // on the same rank as this cell, then we have already counted the IJ-line nodes, so need to
       // subtract that count...
-      if (processor_boundary(Loc::B) && processor_boundary(Loc::L) && rank(Loc::BL) == rank(Loc::C)) {
+      if (processor_boundary(Loc::B) && processor_boundary(Loc::L) &&
+          rank(Loc::BL) == rank(Loc::C)) {
         count -= m_unitCell->cell_KK;
       }
 
@@ -84,7 +85,6 @@ size_t Cell::added_node_count(enum Mode mode) const
       if (processor_boundary(Loc::B) && rank(Loc::BR) == rank(Loc::C)) {
         count -= m_unitCell->cell_KK;
       }
-
     }
   }
   return count;
@@ -149,7 +149,6 @@ template <typename INT> std::vector<INT> Cell::generate_node_map(Mode mode, INT 
     // At least one neighboring cell and the nodes are being equivalenced
     // Generate map for the "non-neighbored" nodes (not contiguous with a neighbor cell)
     auto categorized_nodes = categorize_nodes(mode);
-    fmt::print("Cell({},{}) CATEGORY: {}\n", m_i, m_j, fmt::join(categorized_nodes, " "));
     SMART_ASSERT(categorized_nodes.size() == cell_node_count)
     (categorized_nodes.size())(cell_node_count);
     offset++; // To deal with 1-based node numbers.
@@ -160,34 +159,32 @@ template <typename INT> std::vector<INT> Cell::generate_node_map(Mode mode, INT 
     }
   }
 
-  if (equivalence_nodes && has_neighbor_i() && (mode == Mode::GLOBAL || (mode == Mode::PROCESSOR && rank(Loc::C) == rank(Loc::L)))) {
-      // Get the neighbor cell...
-      // iterate my unit cell's min_I_face() nodes to get index into map
-      // At this index, set value to this cells min_I_nodes() node
-      // which was created by the neighbor when he was processed...
-      SMART_ASSERT(min_I_nodes.size() == m_unitCell->min_I_face.size())
-      (m_i)(m_j)(min_I_nodes.size())(m_unitCell->min_I_face.size());
+  if (equivalence_nodes && has_neighbor_i() &&
+      (mode == Mode::GLOBAL || (mode == Mode::PROCESSOR && rank(Loc::C) == rank(Loc::L)))) {
+    // Get the neighbor cell...
+    // iterate my unit cell's min_I_face() nodes to get index into map
+    // At this index, set value to this cells min_I_nodes() node
+    // which was created by the neighbor when he was processed...
+    SMART_ASSERT(min_I_nodes.size() == m_unitCell->min_I_face.size())
+    (m_i)(m_j)(min_I_nodes.size())(m_unitCell->min_I_face.size());
 
-      for (size_t i = 0; i < m_unitCell->min_I_face.size(); i++) {
-        auto idx = m_unitCell->min_I_face[i] + 1;
-        auto val = min_I_nodes[i];
-        map[idx] = (INT)val;
-      }
-
-      // Can now clean out the `min_I_nodes` list since the data will no longer be needed.
-      //    Ioss::Utils::clear(min_I_nodes);
+    for (size_t i = 0; i < m_unitCell->min_I_face.size(); i++) {
+      auto idx = m_unitCell->min_I_face[i] + 1;
+      auto val = min_I_nodes[i];
+      map[idx] = (INT)val;
+    }
   }
 
-  if (equivalence_nodes && has_neighbor_j() && (mode == Mode::GLOBAL || (mode == Mode::PROCESSOR && rank(Loc::C) == rank(Loc::B)))) {
-      SMART_ASSERT(min_J_nodes.size() == m_unitCell->min_J_face.size())
-      (m_i)(m_j)(min_J_nodes.size())(m_unitCell->min_J_face.size());
+  if (equivalence_nodes && has_neighbor_j() &&
+      (mode == Mode::GLOBAL || (mode == Mode::PROCESSOR && rank(Loc::C) == rank(Loc::B)))) {
+    SMART_ASSERT(min_J_nodes.size() == m_unitCell->min_J_face.size())
+    (m_i)(m_j)(min_J_nodes.size())(m_unitCell->min_J_face.size());
 
-      for (size_t i = 0; i < m_unitCell->min_J_face.size(); i++) {
-        auto idx = m_unitCell->min_J_face[i] + 1;
-        auto val = min_J_nodes[i];
-        map[idx] = (INT)val;
-      }
-      // Ioss::Utils::clear(min_J_nodes);
+    for (size_t i = 0; i < m_unitCell->min_J_face.size(); i++) {
+      auto idx = m_unitCell->min_J_face[i] + 1;
+      auto val = min_J_nodes[i];
+      map[idx] = (INT)val;
+    }
   }
 
   if (mode == Mode::PROCESSOR) {
@@ -202,99 +199,99 @@ template <typename INT> std::vector<INT> Cell::generate_node_map(Mode mode, INT 
         auto idx = m_unitCell->min_J_face[i] + 1;
         auto val = min_J_nodes[i];
         map[idx] = (INT)val;
-	fmt::print("In corner case BL: {} {}\n", idx, val);
+        if (debug_level & 32) {
+          fmt::print("In corner case BL: {} {}\n", idx, val);
+        }
       }
     }
     // Now the other "corner case"
     if (processor_boundary(Loc::B) && rank(Loc::BR) == rank(Loc::C)) {
       // Want KK() nodes -- First KK of max_i and Last KK of min_j.  But since they match, can
       // "unzero" max_i[0..KK)
-      auto KK = m_unitCell->cell_KK;
+      auto KK       = m_unitCell->cell_KK;
       auto j_offset = min_J_nodes.size() - KK;
-      fmt::print("Corner Case unit cell: {}\n", fmt::join(m_unitCell->min_J_face, " "));
       for (size_t i = 0; i < KK; i++) {
-	auto idx                = m_unitCell->min_J_face[j_offset + i] + 1;
-	auto val                = min_J_nodes[j_offset + i];
-	map[idx] = (INT)val;
-	fmt::print("In corner case BR: {} {} {}\n", idx, val, j_offset + i);
+        auto idx = m_unitCell->min_J_face[j_offset + i] + 1;
+        auto val = min_J_nodes[j_offset + i];
+        map[idx] = (INT)val;
+        if (debug_level & 32) {
+          fmt::print("In corner case BR: {} {} {}\n", idx, val, j_offset + i);
+        }
       }
     }
   }
+  // Can now clean out the `min_I_nodes` and `min_J_nodes` lists since the data will no longer be needed.
+  Ioss::Utils::clear(min_I_nodes);
+  Ioss::Utils::clear(min_J_nodes);
+
   return map;
 }
 
-template void Cell::populate_neighbor_min_i(const std::vector<int64_t> &map,
-                                            const Cell &                neighbor) const;
-template void Cell::populate_neighbor_min_j(const std::vector<int64_t> &map,
-                                            const Cell &                neighbor) const;
-template void Cell::populate_neighbor_min_i(const std::vector<int> &map,
-                                            const Cell &            neighbor) const;
-template void Cell::populate_neighbor_min_j(const std::vector<int> &map,
-                                            const Cell &            neighbor) const;
+template void Cell::populate_neighbor(Loc location, const std::vector<int64_t> &map,
+                                      const Cell &neighbor) const;
+template void Cell::populate_neighbor(Loc location, const std::vector<int> &map,
+                                      const Cell &neighbor) const;
 
 template <typename INT>
-void Cell::populate_neighbor_min_i(const std::vector<INT> &map, const Cell &neighbor) const
+void Cell::populate_neighbor(Loc location, const std::vector<INT> &map, const Cell &neighbor) const
 {
-  neighbor.min_I_nodes.resize(m_unitCell->max_I_face.size());
-  for (size_t i = 0; i < m_unitCell->max_I_face.size(); i++) {
-    auto idx                = m_unitCell->max_I_face[i] + 1;
-    auto val                = map[idx];
-    neighbor.min_I_nodes[i] = val;
-  }
-  if (debug_level & 8) {
-    fmt::print("\nCell {} {}\n", neighbor.m_i, neighbor.m_j);
-    fmt::print("min_I_nodes: {}\n", fmt::join(neighbor.min_I_nodes, " "));
-  }
-}
+  switch (location) {
+  case Loc::L:
+    neighbor.min_I_nodes.resize(m_unitCell->max_I_face.size());
+    for (size_t i = 0; i < m_unitCell->max_I_face.size(); i++) {
+      auto idx                = m_unitCell->max_I_face[i] + 1;
+      auto val                = map[idx];
+      neighbor.min_I_nodes[i] = val;
+    }
+    if (debug_level & 8) {
+      fmt::print("\nCell {} {}\n", neighbor.m_i, neighbor.m_j);
+      fmt::print("min_I_nodes: {}\n", fmt::join(neighbor.min_I_nodes, " "));
+    }
+    break;
 
-template <typename INT>
-void Cell::populate_neighbor_min_j(const std::vector<INT> &map, const Cell &neighbor) const
-{
-  neighbor.min_J_nodes.resize(m_unitCell->max_J_face.size());
-  for (size_t i = 0; i < m_unitCell->max_J_face.size(); i++) {
-    auto idx                = m_unitCell->max_J_face[i] + 1;
-    auto val                = map[idx];
-    neighbor.min_J_nodes[i] = val;
-  }
-  if (debug_level & 8) {
-    fmt::print("min_J_nodes: {}\n", fmt::join(neighbor.min_J_nodes, " "));
-  }
-}
+  case Loc::B:
+    neighbor.min_J_nodes.resize(m_unitCell->max_J_face.size());
+    for (size_t i = 0; i < m_unitCell->max_J_face.size(); i++) {
+      auto idx                = m_unitCell->max_J_face[i] + 1;
+      auto val                = map[idx];
+      neighbor.min_J_nodes[i] = val;
+    }
+    if (debug_level & 8) {
+      fmt::print("min_J_nodes: {}\n", fmt::join(neighbor.min_J_nodes, " "));
+    }
+    break;
 
+  case Loc::BR: {
+    neighbor.min_J_nodes.resize(m_unitCell->max_J_face.size());
+    auto KK       = m_unitCell->cell_KK;
+    auto j_offset = neighbor.min_J_nodes.size() - KK;
+    for (size_t i = 0; i < KK; i++) {
+      auto idx                           = m_unitCell->max_J_face[i] + 1;
+      auto val                           = map[idx];
+      neighbor.min_J_nodes[j_offset + i] = val;
+      if (debug_level & 32) {
+        fmt::print("BR: {} {} {}\n", idx, val, j_offset + i);
+      }
+    }
+  } break;
 
-template void Cell::populate_neighbor_br(const std::vector<int64_t> &map,
-                                            const Cell &                neighbor) const;
-template void Cell::populate_neighbor_bl(const std::vector<int64_t> &map,
-                                            const Cell &                neighbor) const;
-template void Cell::populate_neighbor_br(const std::vector<int> &map,
-                                            const Cell &            neighbor) const;
-template void Cell::populate_neighbor_bl(const std::vector<int> &map,
-                                            const Cell &            neighbor) const;
+  case Loc::BL: {
+    neighbor.min_J_nodes.resize(m_unitCell->max_J_face.size());
+    auto KK       = m_unitCell->cell_KK;
+    auto j_offset = neighbor.min_J_nodes.size() - KK;
+    for (size_t i = 0; i < KK; i++) {
+      auto idx                = m_unitCell->max_J_face[j_offset + i] + 1;
+      auto val                = map[idx];
+      neighbor.min_J_nodes[i] = val;
+      if (debug_level & 32) {
+        fmt::print("BL: {} {} {}\n", idx, val, j_offset + i);
+      }
+    }
+  } break;
 
-template <typename INT>
-void Cell::populate_neighbor_br(const std::vector<INT> &map, const Cell &neighbor) const
-{
-  neighbor.min_J_nodes.resize(m_unitCell->max_J_face.size());
-  auto KK = m_unitCell->cell_KK;
-  auto j_offset = neighbor.min_J_nodes.size() - KK;
-  for (size_t i = 0; i < KK; i++) {
-    auto idx                = m_unitCell->max_J_face[i] + 1;
-    auto val                = map[idx];
-    neighbor.min_J_nodes[j_offset + i] = val;
-    fmt::print("BR: {} {} {}\n", idx, val, j_offset+i);
-  }
-}
-
-template <typename INT>
-void Cell::populate_neighbor_bl(const std::vector<INT> &map, const Cell &neighbor) const
-{
-  neighbor.min_J_nodes.resize(m_unitCell->max_J_face.size());
-  auto KK = m_unitCell->cell_KK;
-  auto j_offset = neighbor.min_J_nodes.size() - KK;
-  for (size_t i = 0; i < KK; i++) {
-    auto idx                = m_unitCell->max_J_face[j_offset + i] + 1;
-    auto val                = map[idx];
-    neighbor.min_J_nodes[i] = val;
-    fmt::print("BL: {} {} {}\n", idx, val, j_offset+i);
+  default:
+    fmt::print(stderr, "\nINTERNAL ERROR: Unhandled direction in populate_neighbor(): {}\n",
+               location);
+    exit(EXIT_FAILURE);
   }
 }
