@@ -70,10 +70,10 @@ private:
   void create_output_regions(SystemInterface &interFace);
   void categorize_processor_boundaries();
 
-  void                         output_nodal_coordinates(int rank);
-  template <typename INT> void output_block_connectivity(int rank, INT /*dummy*/);
-  template <typename INT> void output_element_map(int rank, INT /*dummy*/);
-  template <typename INT> void output_node_map(int rank, INT /*dummy*/);
+  void                         output_nodal_coordinates(const Cell &cell);
+  template <typename INT> void output_block_connectivity(Cell &cell, INT /*dummy*/);
+  template <typename INT> void output_element_map(Cell &cell, INT /*dummy*/);
+  template <typename INT> void output_node_map(const Cell &cell, INT /*dummy*/);
 
   std::vector<std::unique_ptr<Ioss::Region>> m_outputRegions;
   std::vector<Cell>                          m_grid{};

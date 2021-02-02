@@ -24,7 +24,12 @@ bool                equivalence_nodes = true;
 
 namespace {
   template <typename INT>
-  std::vector<INT>      generate_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/);
+  std::vector<INT> generate_global_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/);
+
+  template <typename INT>
+  std::vector<INT> generate_processor_node_map(Grid &grid, const Cell &cell, Mode mode,
+                                               INT /*dummy*/);
+
   Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
 
   void set_coordinate_offsets(Grid &grid);
@@ -159,212 +164,194 @@ void Grid::finalize()
 template void Grid::output_model(int64_t);
 template void Grid::output_model(int);
 
+// Coordinates now correct
+// Element map correct
+// Node map now correct
+// -- Need connectivity
 template <typename INT> void Grid::output_model(INT /*dummy*/)
 {
-  for (int rank = 0; rank < parallel_size(); rank++) {
-    output_nodal_coordinates(rank);
-    output_block_connectivity(rank, INT(0));
-    if (parallel_size() > 1) {
-      output_node_map(rank, INT(0));
-      output_element_map(rank, INT(0));
+  for (size_t j = 0; j < JJ(); j++) {
+    for (size_t i = 0; i < II(); i++) {
+      auto &cell = get_cell(i, j);
+      output_nodal_coordinates(cell);
+    }
+  }
+  for (size_t j = 0; j < JJ(); j++) {
+    for (size_t i = 0; i < II(); i++) {
+      auto &cell = get_cell(i, j);
+      output_block_connectivity(cell, INT(0));
+    }
+  }
+
+  if (parallel_size() > 1) {
+    for (size_t j = 0; j < JJ(); j++) {
+      for (size_t i = 0; i < II(); i++) {
+        auto &cell = get_cell(i, j);
+        output_node_map(cell, INT(0));
+        output_element_map(cell, INT(0));
+      }
     }
   }
 }
 
-void Grid::output_nodal_coordinates(int rank)
+void Grid::output_nodal_coordinates(const Cell &cell)
 {
-  std::vector<double> coord_x;
-  std::vector<double> coord_y;
-  std::vector<double> coord_z;
-
   if (debug_level & 2) {
     util().progress(__func__);
   }
 
-  // This ordering results in `parallel_size() * II() * JJ()` iterations instead of
-  // `II() * JJ()`, but should be faster overall since it outputs to the same file
-  // for all of the inner 2 for loops instead of potentially switching files every
-  // iteration.  This will also work better if need to limit number of open files
-  // or if want to limit to a specific range of ranks...
+  int rank  = cell.rank(Loc::C);
   int exoid = output_region(rank)->get_database()->get_file_pointer();
-  for (size_t j = 0; j < JJ(); j++) {
-    for (size_t i = 0; i < II(); i++) {
-      const auto &cell = get_cell(i, j);
-      if (cell.rank(Loc::C) != rank) {
-        continue;
-      }
 
-      auto *nb = cell.m_unitCell->m_region->get_node_blocks()[0];
-      nb->get_field_data("mesh_model_coordinates_x", coord_x);
-      nb->get_field_data("mesh_model_coordinates_y", coord_y);
-      nb->get_field_data("mesh_model_coordinates_z", coord_z);
+  auto *              nb = cell.m_unitCell->m_region->get_node_blocks()[0];
+  std::vector<double> coord_x;
+  std::vector<double> coord_y;
+  std::vector<double> coord_z;
 
-      // Apply coordinate offsets to all nodes...
-      if (cell.m_offX != 0.0) {
-        std::for_each(coord_x.begin(), coord_x.end(), [&cell](double &d) { d += cell.m_offX; });
-      }
-      if (cell.m_offY != 0.0) {
-        std::for_each(coord_y.begin(), coord_y.end(), [&cell](double &d) { d += cell.m_offY; });
-      }
+  nb->get_field_data("mesh_model_coordinates_x", coord_x);
+  nb->get_field_data("mesh_model_coordinates_y", coord_y);
+  nb->get_field_data("mesh_model_coordinates_z", coord_z);
 
-      // Filter coordinates down to only "new nodes"...
-      if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
-        auto   mode              = parallel_size() > 1 ? Mode::PROCESSOR : Mode::GLOBAL;
-        auto   categorized_nodes = cell.categorize_nodes(mode);
-        size_t nn                = 0;
-        for (size_t n = 0; n < categorized_nodes.size(); n++) {
-          if (categorized_nodes[n] == 0) {
-            coord_x[nn] = coord_x[n];
-            coord_y[nn] = coord_y[n];
-            coord_z[nn] = coord_z[n];
-            nn++;
-          }
-        }
-      }
+  // Apply coordinate offsets to all nodes...
+  if (cell.m_offX != 0.0) {
+    std::for_each(coord_x.begin(), coord_x.end(), [&cell](double &d) { d += cell.m_offX; });
+  }
+  if (cell.m_offY != 0.0) {
+    std::for_each(coord_y.begin(), coord_y.end(), [&cell](double &d) { d += cell.m_offY; });
+  }
 
-      auto start = cell.m_localNodeIdOffset + 1;
-      auto count = cell.added_node_count(Mode::PROCESSOR);
-      ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
+  // Filter coordinates down to only "new nodes"...
+  if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
+    auto   mode              = parallel_size() > 1 ? Mode::PROCESSOR : Mode::GLOBAL;
+    auto   categorized_nodes = cell.categorize_nodes(mode);
+    size_t nn                = 0;
+    for (size_t n = 0; n < categorized_nodes.size(); n++) {
+      if (categorized_nodes[n] == 0) {
+        coord_x[nn] = coord_x[n];
+        coord_y[nn] = coord_y[n];
+        coord_z[nn] = coord_z[n];
+        nn++;
+      }
     }
   }
+
+  auto start = cell.m_localNodeIdOffset + 1;
+  auto count = cell.added_node_count(Mode::PROCESSOR);
+  ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
   if (debug_level & 2) {
     util().progress("\tEnd");
   }
 }
 
-template <typename INT> void Grid::output_block_connectivity(int rank, INT /*dummy*/)
+template <typename INT> void Grid::output_block_connectivity(Cell &cell, INT /*dummy*/)
 {
-  // This ordering results in `parallel_size() * II() * JJ()` iterations instead of
-  // `II() * JJ()`, but should be faster overall since it outputs to the same file
-  // for all of the inner 2 for loops instead of potentially switching files every
-  // iteration.  This will also work better if need to limit number of open files
-  // or if want to limit to a specific range of ranks...
-  std::vector<INT> connect;
-  int              exoid = output_region(rank)->get_database()->get_file_pointer();
-  for (size_t j = 0; j < JJ(); j++) {
-    for (size_t i = 0; i < II(); i++) {
-      auto &cell = get_cell(i, j);
-      if (cell.rank(Loc::C) != rank) {
-        continue;
-      }
-
-      auto node_map = generate_node_map(*this, cell, Mode::PROCESSOR, INT(0));
-      auto blocks   = cell.m_unitCell->m_region->get_element_blocks();
-      for (const auto *block : blocks) {
-        block->get_field_data("connectivity_raw", connect);
-        for (size_t k = 0; k < connect.size(); k++) {
-          connect[k] = node_map[connect[k]];
-        }
-        auto start = cell.m_localElementIdOffset[block->name()] + 1;
-        auto count = block->entity_count();
-        auto id    = block->get_property("id").get_int();
-        if (debug_level & 8) {
-          fmt::print(stderr, "i, j, blk, id, start, count: {} {} {} {} {} {}\n", i, j,
-                     block->name(), id, start, count);
-        }
-        ex_put_partial_conn(exoid, EX_ELEM_BLOCK, id, start, count, connect.data(), nullptr,
-                            nullptr);
-      }
-      if (debug_level & 2) {
-        util().progress(fmt::format("Generated Node Map / Output Connectivity for Cell({}, {})",
-                                    cell.m_i, cell.m_j));
-      }
-    }
-  }
-}
-
-template <typename INT> void Grid::output_node_map(int rank, INT /*dummy*/)
-{
-  // This ordering results in `parallel_size() * II() * JJ()` iterations instead of
-  // `II() * JJ()`, but should be faster overall since it outputs to the same file
-  // for all of the inner 2 for loops instead of potentially switching files every
-  // iteration.  This will also work better if need to limit number of open files
-  // or if want to limit to a specific range of ranks...
+  int rank  = cell.rank(Loc::C);
   int exoid = output_region(rank)->get_database()->get_file_pointer();
-  for (size_t j = 0; j < JJ(); j++) {
-    for (size_t i = 0; i < II(); i++) {
-      auto &cell = get_cell(i, j);
-      if (cell.rank(Loc::C) != rank) {
-        continue;
-      }
 
-      auto start = cell.m_localNodeIdOffset + 1;
-      auto count = cell.added_node_count(Mode::PROCESSOR);
-
-      if (parallel_size() == 1) {
-        auto             gid = cell.m_globalNodeIdOffset + 1;
-        std::vector<INT> map(count);
-        std::iota(map.begin(), map.end(), gid);
-        ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, map.data());
-      }
-      else {
-        auto map = generate_node_map(*this, cell, Mode::GLOBAL, INT(0));
-        ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, map.data());
-      }
-
-      if (debug_level & 2) {
-        util().progress(fmt::format("Generated Node Map for Rank {}, Cell({}, {}): start {}, count "
-                                    "{}\n",
-                                    rank, cell.m_i, cell.m_j, start, count));
-      }
+  auto             node_map = generate_processor_node_map(*this, cell, Mode::PROCESSOR, INT(0));
+  auto             blocks   = cell.m_unitCell->m_region->get_element_blocks();
+  std::vector<INT> connect;
+  for (const auto *block : blocks) {
+    block->get_field_data("connectivity_raw", connect);
+    for (size_t k = 0; k < connect.size(); k++) {
+      connect[k] = node_map[connect[k]];
     }
+    auto start = cell.m_localElementIdOffset[block->name()] + 1;
+    auto count = block->entity_count();
+    auto id    = block->get_property("id").get_int();
+    if (debug_level & 8) {
+      fmt::print(stderr, "i, j, blk, id, start, count: {} {} {} {} {} {}\n", cell.m_i, cell.m_j,
+                 block->name(), id, start, count);
+    }
+    ex_put_partial_conn(exoid, EX_ELEM_BLOCK, id, start, count, connect.data(), nullptr, nullptr);
+  }
+  if (debug_level & 2) {
+    util().progress(fmt::format("Generated Node Map / Output Connectivity for Cell({}, {})",
+                                cell.m_i, cell.m_j));
   }
 }
 
-template <typename INT> void Grid::output_element_map(int rank, INT /*dummy*/)
+template <typename INT> void Grid::output_node_map(const Cell &cell, INT /*dummy*/)
 {
-  // This ordering results in `parallel_size() * II() * JJ()` iterations instead of
-  // `II() * JJ()`, but should be faster overall since it outputs to the same file
-  // for all of the inner 2 for loops instead of potentially switching files every
-  // iteration.  This will also work better if need to limit number of open files
-  // or if want to limit to a specific range of ranks...
+  int rank  = cell.rank(Loc::C);
+  int exoid = output_region(rank)->get_database()->get_file_pointer();
+
+  auto start = cell.m_localNodeIdOffset + 1;
+  auto count = cell.added_node_count(Mode::PROCESSOR);
+
+  if (parallel_size() == 1) {
+    auto             gid = cell.m_globalNodeIdOffset + 1;
+    std::vector<INT> map(count);
+    std::iota(map.begin(), map.end(), gid);
+    ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, map.data());
+  }
+  else {
+    auto map = generate_global_node_map(*this, cell, Mode::GLOBAL, INT(0));
+
+    // Filter nodes down to only "new nodes"...
+    if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
+      auto   mode              = Mode::PROCESSOR;
+      auto   categorized_nodes = cell.categorize_nodes(mode);
+      size_t nn                = 0;
+      for (size_t n = 0; n < categorized_nodes.size(); n++) {
+        if (categorized_nodes[n] == 0) {
+          map[nn + 1] = map[n + 1];
+          nn++;
+        }
+      }
+    }
+    fmt::print("Cell({}, {}), start {}, count {}\n", cell.m_i, cell.m_j, start, count);
+    ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, &map[1]);
+  }
+
+  if (debug_level & 2) {
+    util().progress(fmt::format("Generated Node Map for Rank {}, Cell({}, {}): start {}, count "
+                                "{}\n",
+                                rank, cell.m_i, cell.m_j, start, count));
+  }
+}
+
+template <typename INT> void Grid::output_element_map(Cell &cell, INT /*dummy*/)
+{
+  int rank  = cell.rank(Loc::C);
   int exoid = output_region(rank)->get_database()->get_file_pointer();
 
   auto output_blocks = output_region(rank)->get_element_blocks();
 
-  for (size_t j = 0; j < JJ(); j++) {
-    for (size_t i = 0; i < II(); i++) {
-      auto &cell = get_cell(i, j);
-      if (cell.rank(Loc::C) != rank) {
-        continue;
-      }
+  // This is the element block offset for the "single output file"
+  // for the block being output For example, if the total mesh has
+  // 3 blocks, with 100, 200, 100 elements, then the element block
+  // offset would be 0, 100, 300 (Ioss::ElementBlock::get_offset())
+  size_t global_id_offset = 0;
 
-      // This is the element block offset for the "single output file"
-      // for the block being output For example, if the total mesh has
-      // 3 blocks, with 100, 200, 100 elements, then the element block
-      // offset would be 0, 100, 300 (Ioss::ElementBlock::get_offset())
-      size_t global_id_offset = 0;
+  for (const auto *output_element_block : output_blocks) {
+    auto *block = cell.m_unitCell->m_region->get_element_block(output_element_block->name());
+    if (block != nullptr) {
 
-      for (const auto *output_element_block : output_blocks) {
-        auto *block = cell.m_unitCell->m_region->get_element_block(output_element_block->name());
-        if (block != nullptr) {
+      auto             gid = cell.m_globalElementIdOffset[block->name()] + 1 + global_id_offset;
+      auto             element_count = block->entity_count();
+      std::vector<INT> map(element_count);
 
-          auto             gid = cell.m_globalElementIdOffset[block->name()] + 1 + global_id_offset;
-          auto             element_count = block->entity_count();
-          std::vector<INT> map(element_count);
+      std::iota(map.begin(), map.end(), gid);
 
-          std::iota(map.begin(), map.end(), gid);
+      auto output_block_offset = output_element_block->get_offset();
 
-          auto output_block_offset = output_element_block->get_offset();
+      // This cells element block ids start this far into the portion of the map for this
+      // element block
+      auto local_offset = cell.m_localElementIdOffset[block->name()];
 
-          // This cells element block ids start this far into the portion of the map for this
-          // element block
-          auto local_offset = cell.m_localElementIdOffset[block->name()];
+      auto start = output_block_offset + local_offset + 1;
+      ex_put_partial_id_map(exoid, EX_ELEM_MAP, start, element_count, map.data());
 
-          auto start = output_block_offset + local_offset + 1;
-          ex_put_partial_id_map(exoid, EX_ELEM_MAP, start, element_count, map.data());
-
-          fmt::print("Rank {}: Cell({}, {}), Block {}, start {}, element_count {}, gid {}\n", rank,
-                     i, j, block->name(), start, element_count, gid);
-        }
-        // If we were outputting a single file, then this element
-        // block in that file would have this many elements.
-
-        auto global_block_element_count =
-            output_element_block->get_property("global_entity_count").get_int();
-        global_id_offset += global_block_element_count;
-      }
+      fmt::print("Rank {}: Cell({}, {}), Block {}, start {}, element_count {}, gid {}\n", rank,
+                 cell.m_i, cell.m_j, block->name(), start, element_count, gid);
     }
+    // If we were outputting a single file, then this element
+    // block in that file would have this many elements.
+
+    auto global_block_element_count =
+        output_element_block->get_property("global_entity_count").get_int();
+    global_id_offset += global_block_element_count;
   }
 }
 
@@ -492,16 +479,16 @@ namespace {
   }
 
   template <typename INT>
-  std::vector<INT> generate_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/)
+  std::vector<INT> generate_global_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/)
   {
     // Generate a "map" from nodes in the input connectivity to the
     // output connectivity in global nodes.  If no neighbors, then
     // this would just be adding `cell.m_globalNodeIdOffset` to each
     // connectivity entry.
 
-    std::vector<INT> map = cell.generate_global_node_map(mode, INT(0));
+    std::vector<INT> map = cell.generate_node_map(mode, INT(0));
     if (debug_level & 8) {
-      fmt::print("           MAP: {}\n", fmt::join(map, " "));
+      fmt::print("Cell({},{}) GLOBAL MAP: {}\n", cell.m_i, cell.m_j, fmt::join(map, " "));
     }
 
     // Now that we have the node map for this cell, we need to save
@@ -516,6 +503,50 @@ namespace {
     if (equivalence_nodes && (cell.m_j + 1 < grid.JJ())) {
       const auto &neighbor = grid.get_cell(cell.m_i, cell.m_j + 1);
       cell.populate_neighbor_min_j(map, neighbor);
+    }
+
+    return map;
+  }
+
+  template <typename INT>
+  std::vector<INT> generate_processor_node_map(Grid &grid, const Cell &cell, Mode mode,
+                                               INT /*dummy*/)
+  {
+    // Generate a "map" from nodes in the input connectivity to the
+    // output connectivity in global nodes.  If no neighbors, then
+    // this would just be adding `cell.m_globalNodeIdOffset` to each
+    // connectivity entry.
+
+    std::vector<INT> map = cell.generate_node_map(mode, INT(0));
+    if (debug_level & 8) {
+      fmt::print("Cell({},{}) PROCESSOR MAP: {}\n", cell.m_i, cell.m_j, fmt::join(map, " "));
+    }
+
+    // Now that we have the node map for this cell, we need to save
+    // the mappings for the max_I and max_J faces and max_I-max_J edge
+    // for use by later neighbors...  Check whether cell has neighbors
+    // on max_I or max_J faces...
+    if (equivalence_nodes) {
+      if (cell.rank(Loc::C) == cell.rank(Loc::R) && (cell.m_i + 1 < grid.II())) {
+        const auto &neighbor = grid.get_cell(cell.m_i + 1, cell.m_j);
+        cell.populate_neighbor_min_i(map, neighbor);
+      }
+
+      if (cell.rank(Loc::C) == cell.rank(Loc::T) && (cell.m_j + 1 < grid.JJ())) {
+        const auto &neighbor = grid.get_cell(cell.m_i, cell.m_j + 1);
+        cell.populate_neighbor_min_j(map, neighbor);
+      }
+
+      if (cell.processor_boundary(Loc::L) && (cell.rank(Loc::TL) == cell.rank(Loc::C))) {
+	const auto &tl_corner = grid.get_cell(cell.m_i - 1, cell.m_j + 1); 
+	cell.populate_neighbor_br(map, tl_corner);
+      }
+      // Now the other "corner case"
+      if (cell.processor_boundary(Loc::R) && (cell.rank(Loc::TR) == cell.rank(Loc::C))) {
+	const auto &tr_corner = grid.get_cell(cell.m_i + 1, cell.m_j + 1); 
+	cell.populate_neighbor_bl(map, tr_corner);
+	fmt::print("Cell({},{}): Populate TR\n", cell.m_i, cell.m_j);
+      }
     }
     return map;
   }
