@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <tuple>
 
 namespace ExoModules {
 
@@ -161,8 +162,7 @@ namespace ExoModules {
       std::vector<elementType> thisBlock;
       int64_t                  block = (int)std::get<0>(sect);
 
-      int64_t nodes_per_elem{0};
-      int     retvalue{0};
+      int                    retvalue{0};
 
       for (const elementType &elem : this->elementList) {
 
@@ -171,7 +171,7 @@ namespace ExoModules {
         }
       }
 
-      nodes_per_elem = (int)std::get<2>(thisBlock[0]);
+      int64_t nodes_per_elem = (int)std::get<2>(thisBlock[0]);
 
       int n = nodes_per_elem == 4 ? 0 : 1;
 
@@ -187,12 +187,13 @@ namespace ExoModules {
       }
       this->writtenBlocks++;
 
-      size_t numNodesCopied{0};
-
       std::vector<int> elemCon(nodes_per_elem * thisBlock.size());
+
+      int64_t numNodesCopied{0};
+
       for (const elementType &elem : thisBlock) {
 
-        const N2EGridPtList &pts{std::get<3>(elem)};
+	const N2EModules::N2EGridPtList  &pts{std::get<3>(elem)};
         std::copy(pts.v, pts.v + nodes_per_elem, elemCon.data() + numNodesCopied);
         numNodesCopied += nodes_per_elem;
       }

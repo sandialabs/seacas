@@ -11,6 +11,7 @@
 #define INCLUDE_N2EDATATYPES_H_
 
 #include <exodusII.h>
+#include <cstring>
 #include <string>
 #include <tuple>
 
