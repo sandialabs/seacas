@@ -113,18 +113,6 @@ namespace Iovs_cgns {
 
     void DatabaseIO::write_meta_data()
     {
-/*
-      if (this->pvcca == nullptr) {
-        this->pvcca = Iovs::Utils::getInstance()\
-            .createParaViewCatalystCGNSAdapterInstance();
-
-        std::string ps = Iovs::Utils::getInstance()\
-            .getCatalystPythonDriverPath();
-
-        this->pvcca->CreateNewPipeline(ps.c_str(), ps.c_str());
-      }
-*/
-
       this->catCGNSMesh->CreateBase(0, "Base");
       const auto &structured_blocks = this->get_region()->get_structured_blocks();
       int base = 0;
@@ -144,10 +132,6 @@ namespace Iovs_cgns {
       size_t zone = sb->get_property("zone").get_int();
       size_t node_count = sb->get_property("node_count").get_int();
       size_t num_to_get = field.verify(data_size);
-/*
-      size_t rmin[3] = {0, 0, 0};
-      size_t rmax[3] = {0, 0, 0};
-*/
 
       auto var_type               = field.transformed_storage();
       int  comp_count             = var_type->component_count();
@@ -157,34 +141,6 @@ namespace Iovs_cgns {
       if(node_count == num_to_get) {
         is_cell_field = false;
       }
-
-/*
-      if(is_cell_field) {
-        if (num_to_get > 0) {
-          rmin[0] = sb->get_property("offset_i").get_int() + 1;
-          rmin[1] = sb->get_property("offset_j").get_int() + 1;
-          rmin[2] = sb->get_property("offset_k").get_int() + 1;
-
-          rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
-          rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
-          rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
-        }
-      }
-      else if(num_to_get == node_count) {
-        if (num_to_get > 0) {
-          rmin[0] = sb->get_property("offset_i").get_int() + 1;
-          rmin[1] = sb->get_property("offset_j").get_int() + 1;
-          rmin[2] = sb->get_property("offset_k").get_int() + 1;
-
-          rmax[0] = rmin[0] + sb->get_property("ni").get_int();
-          rmax[1] = rmin[1] + sb->get_property("nj").get_int();
-          rmax[2] = rmin[2] + sb->get_property("nk").get_int();
-        }
-      }
-
-      assert(num_to_get == 0 || num_to_get == (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) *
-                                                  (rmax[2] - rmin[2] + 1));
-*/
 
       double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
