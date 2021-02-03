@@ -92,8 +92,12 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
           }
         }
         x2[e] = sum_x / static_cast<double>(num_nodes_per_elmt);
-	y2[e] = sum_y / static_cast<double>(num_nodes_per_elmt);
-	z2[e] = sum_z / static_cast<double>(num_nodes_per_elmt);
+	if (dim > 1) {
+	  y2[e] = sum_y / static_cast<double>(num_nodes_per_elmt);
+	}
+	if (dim > 2) {
+	  z2[e] = sum_z / static_cast<double>(num_nodes_per_elmt);
+	}
 
         ++e;
       }
@@ -1046,7 +1050,7 @@ template <typename INT> double Find_Min_Coord_Sep(ExoII_Read<INT> &file)
 }
 
 template <typename INT>
-bool Compare_Maps_Internal(const INT *entity_map, bool partial_flag, const INT *entity_id_map1, const INT *entity_id_map2, size_t num_entities1, 
+bool Compare_Maps_Internal(const INT *entity_map, bool partial_flag, const INT *entity_id_map1, const INT *entity_id_map2, size_t num_entities1,
 			   size_t num_entities2, const char *type)
 {
   bool diff       = false;
