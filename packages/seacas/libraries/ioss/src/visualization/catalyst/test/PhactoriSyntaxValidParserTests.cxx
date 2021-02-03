@@ -14,3 +14,11 @@ TEST_CASE_METHOD(CatalystTestFixture,
         cameraValidPhactoriSyntax["CameraLookAtAbsolutePoint"],
             cameraValidPhactoriJSON["CameraLookAtAbsolutePoint"]);
 }
+
+TEST_CASE_METHOD(CatalystTestFixture,
+    "CameraLookDirection", "[parser valid]") {
+    checkPhactoriStringValidParse(
+        cameraValidPhactoriSyntax["CameraLookDirection"],
+            cameraValidPhactoriJSON["CameraLookDirection"]);
+}
+

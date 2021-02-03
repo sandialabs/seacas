@@ -29,6 +29,20 @@ CatalystTestFixture::cameraValidPhactoriJSON = {
      "onoff criteria blocks" : {},
      "experimental blocks" : {}
      })"
+    },
+
+    {"CameraLookDirection",
+     R"({
+    "camera blocks": {"fooCamera":{"camera type":"camera","look direction": [1.0, 2.0, 3.0]}},
+    "representation blocks": {},
+    "imageset blocks": {"fooImageset":{"camera":"fooCamera","image size":[800,450]}},
+     "operation blocks": {},
+     "scatter plot blocks": {},
+     "plot over time blocks": {},
+     "visual marker blocks" : {},
+     "onoff criteria blocks" : {},
+     "experimental blocks" : {}
+     })"
     }
 
 };
