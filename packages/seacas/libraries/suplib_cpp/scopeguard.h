@@ -46,10 +46,10 @@ protected:
     }
   }
 
-  mutable bool dismissed_;
+  mutable bool dismissed_{false};
 
 public:
-  ScopeGuardImplBase() : dismissed_(false) {}
+  ScopeGuardImplBase() {}
   void Dismiss() const { dismissed_ = true; }
 };
 
