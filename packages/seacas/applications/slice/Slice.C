@@ -1002,7 +1002,7 @@ namespace {
     progress("\tReserve processor coordinate vectors");
 
     Ioss::DatabaseIO *db    = region.get_database();
-    Ioex::DatabaseIO *ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
+    auto *            ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
 
     size_t node_count = region.get_property("node_count").get_int();
 
@@ -1090,7 +1090,7 @@ namespace {
     std::vector<std::vector<double>> coordinates(processor_count);
 
     Ioss::DatabaseIO *db    = region.get_database();
-    Ioex::DatabaseIO *ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
+    auto *            ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
 
     size_t node_count = region.get_property("node_count").get_int();
 
@@ -1183,7 +1183,7 @@ namespace {
     size_t processor_count = proc_region.size();
 
     Ioss::DatabaseIO *db    = region.get_database();
-    Ioex::DatabaseIO *ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
+    auto *            ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
 
     std::vector<INT> glob_conn;
     size_t           offset = 0;
@@ -1224,9 +1224,9 @@ namespace {
                 connectivity[p].push_back(glob_conn[el++]);
               }
             }
-	    else {
-	      el += element_nodes;
-	    }
+            else {
+              el += element_nodes;
+            }
           }
           offset += count;
         }
@@ -1242,9 +1242,9 @@ namespace {
               connectivity[p].push_back(glob_conn[el++]);
             }
           }
-	  else {
-	    el += element_nodes;
-	  }
+          else {
+            el += element_nodes;
+          }
         }
         offset += element_count;
       }
@@ -1319,7 +1319,7 @@ namespace {
 
     size_t            sum_on_proc_count = 0;
     Ioss::DatabaseIO *db                = region.get_database();
-    Ioex::DatabaseIO *ex_db             = dynamic_cast<Ioex::DatabaseIO *>(db);
+    auto *            ex_db             = dynamic_cast<Ioex::DatabaseIO *>(db);
 
     auto & ebs         = region.get_element_blocks();
     size_t block_count = ebs.size();

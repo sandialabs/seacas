@@ -57,8 +57,8 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
 
   // Create storage for midpoints.
   auto *  x2 = new double[num_elmts];
-  double *y2 = dim > 1 ? new double [num_elmts] : nullptr;
-  double *z2 = dim > 2 ? new double [num_elmts] : nullptr;
+  double *y2 = dim > 1 ? new double[num_elmts] : nullptr;
+  double *z2 = dim > 2 ? new double[num_elmts] : nullptr;
 
   // Load coordinates for file 2 and get pointers to them.
   file2.Load_Nodal_Coordinates();
@@ -78,10 +78,10 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
       size_t                num_elmts_in_block = block->Size();
       size_t                num_nodes_per_elmt = block->Num_Nodes_per_Elmt();
       for (size_t i = 0; i < num_elmts_in_block; ++i) {
-        const INT *conn = block->Connectivity(i); // Connectivity for element i.
-        double sum_x           = 0.0;
-        double sum_y           = 0.0;
-        double sum_z           = 0.0;
+        const INT *conn  = block->Connectivity(i); // Connectivity for element i.
+        double     sum_x = 0.0;
+        double     sum_y = 0.0;
+        double     sum_z = 0.0;
         for (size_t j = 0; j < num_nodes_per_elmt; ++j) {
           sum_x += x2_f[conn[j] - 1];
           if (dim > 1) {
@@ -92,12 +92,12 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
           }
         }
         x2[e] = sum_x / static_cast<double>(num_nodes_per_elmt);
-	if (dim > 1) {
-	  y2[e] = sum_y / static_cast<double>(num_nodes_per_elmt);
-	}
-	if (dim > 2) {
-	  z2[e] = sum_z / static_cast<double>(num_nodes_per_elmt);
-	}
+        if (dim > 1) {
+          y2[e] = sum_y / static_cast<double>(num_nodes_per_elmt);
+        }
+        if (dim > 2) {
+          z2[e] = sum_z / static_cast<double>(num_nodes_per_elmt);
+        }
 
         ++e;
       }
@@ -165,7 +165,8 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
       }
 
       // Locate midpoint in sorted array.
-      INT sort_idx = Find(mid_x, mid_y, mid_z, x2, y2, z2, id, num_elmts, dim, interFace.ignore_dups);
+      INT sort_idx =
+          Find(mid_x, mid_y, mid_z, x2, y2, z2, id, num_elmts, dim, interFace.ignore_dups);
 
       if (sort_idx < 0) {
         Error(fmt::format("Files are different (couldn't match element {} from block {} from first "
@@ -473,7 +474,8 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
       }
 
       // Locate midpoint in sorted array.
-      INT sort_idx = Find(mid_x, mid_y, mid_z, x2, y2, z2, id2, num_elmts2, dim, interFace.ignore_dups);
+      INT sort_idx =
+          Find(mid_x, mid_y, mid_z, x2, y2, z2, id2, num_elmts2, dim, interFace.ignore_dups);
       if (sort_idx < 0) {
         unmatched++;
         if (first && interFace.show_unmatched) {
@@ -959,7 +961,7 @@ namespace {
 
   double find_range(const double *x, size_t num_nodes)
   {
-    auto range = std::minmax_element(x, x+num_nodes);
+    auto range = std::minmax_element(x, x + num_nodes);
     return *range.second - *range.first;
   }
 } // namespace
@@ -1050,8 +1052,9 @@ template <typename INT> double Find_Min_Coord_Sep(ExoII_Read<INT> &file)
 }
 
 template <typename INT>
-bool Compare_Maps_Internal(const INT *entity_map, bool partial_flag, const INT *entity_id_map1, const INT *entity_id_map2, size_t num_entities1,
-			   size_t num_entities2, const char *type)
+bool Compare_Maps_Internal(const INT *entity_map, bool partial_flag, const INT *entity_id_map1,
+                           const INT *entity_id_map2, size_t num_entities1, size_t num_entities2,
+                           const char *type)
 {
   bool diff       = false;
   int  warn_count = 0;
@@ -1061,10 +1064,10 @@ bool Compare_Maps_Internal(const INT *entity_map, bool partial_flag, const INT *
       // There is a map between file1 and file2, but all entities are
       // used in both files.
       for (size_t i = 0; i < num_entities1; i++) {
-	auto idx = entity_map[i];
-	if (idx >= num_entities2) {
-	  continue;
-	}
+        size_t idx = entity_map[i];
+        if (idx >= num_entities2) {
+          continue;
+        }
         if (entity_id_map1[i] != entity_id_map2[idx]) {
           if (!(entity_id_map2[idx] == 0 &&
                 partial_flag)) { // Don't output diff if non-matched and partial
@@ -1088,7 +1091,7 @@ bool Compare_Maps_Internal(const INT *entity_map, bool partial_flag, const INT *
     // No entity mapping between file1 and file2 -- do a straight compare.
     for (size_t i = 0; i < num_entities1; i++) {
       if (i >= num_entities2) {
-	break;
+        break;
       }
       if (entity_id_map1[i] != entity_id_map2[i]) {
         if (!(entity_id_map2[i] == 0 &&
@@ -1128,7 +1131,8 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
   const INT *node_id_map1 = file1.Get_Node_Map();
   const INT *node_id_map2 = file2.Get_Node_Map();
 
-  bool diff_nodes = Compare_Maps_Internal(node_map, partial_flag, node_id_map1, node_id_map2, num_nodes1, num_nodes2, "node");
+  bool diff_nodes = Compare_Maps_Internal(node_map, partial_flag, node_id_map1, node_id_map2,
+                                          num_nodes1, num_nodes2, "node");
   file2.Free_Node_Map();
 
   size_t num_elmts1 = file1.Num_Elmts();
@@ -1140,7 +1144,8 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
   const INT *elem_id_map1 = file1.Get_Elmt_Map();
   const INT *elem_id_map2 = file2.Get_Elmt_Map();
 
-  bool diff_elems = Compare_Maps_Internal(elmt_map, partial_flag, elem_id_map1, elem_id_map2, num_elmts1, num_elmts2, "element");
+  bool diff_elems = Compare_Maps_Internal(elmt_map, partial_flag, elem_id_map1, elem_id_map2,
+                                          num_elmts1, num_elmts2, "element");
 
   file2.Free_Elmt_Map();
 
