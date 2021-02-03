@@ -25,21 +25,42 @@ namespace Ioss {
   const double *CoordinateFrame::axis_3_point() const { return &pointList_[3]; }
   const double *CoordinateFrame::plane_1_3_point() const { return &pointList_[6]; }
 
-  bool Ioss::CoordinateFrame::operator==(const Ioss::CoordinateFrame &rhs) const
+  bool Ioss::CoordinateFrame::equal_(const Ioss::CoordinateFrame &rhs, bool quiet) const
   {
     if( this->id_ != rhs.id_ ) { 
+      if( !quiet ) {
+        fmt::print(stderr, "CoordinateFrame : ID mismatch ({} vs. {})\n", this->id_, rhs.id_);
+      }
       return false;
     }   
 
     if( this->pointList_ != rhs.pointList_ ) { 
+      if( !quiet ) {
+        fmt::print(stderr, "CoordinateFrame : Point list mismatch ([ ");
+        for( auto &point : this->pointList_ ) { 
+          fmt::print(stderr, "{} ", point);
+        }   
+        fmt::print(stderr, "] vs [");
+        for( auto &point : rhs.pointList_ ) { 
+          fmt::print(stderr, "{} ", point);
+        }   
+        fmt::print(stderr, "])\n");
+      }
       return false;
     }   
 
     if( this->id_ != rhs.id_ ) { 
+      if( !quiet ) {
+        fmt::print(stderr, "CoordinateFrame : TAG mismatch ({} vs. {})\n", this->tag_, rhs.tag_);
+      }
       return false;
     }   
 
     return true;
+  }
+  bool Ioss::CoordinateFrame::operator==(const Ioss::CoordinateFrame &rhs) const
+  {
+    return equal_(rhs, true);
   }
 
   bool Ioss::CoordinateFrame::operator!=(const Ioss::CoordinateFrame &rhs) const
@@ -49,30 +70,7 @@ namespace Ioss {
 
   bool Ioss::CoordinateFrame::equal(const Ioss::CoordinateFrame &rhs) const
   {
-    if( this->id_ != rhs.id_ ) { 
-      fmt::print(stderr, "CoordinateFrame : ID mismatch ({} vs. {})\n", this->id_, rhs.id_);
-      return false;
-    }   
-
-    if( this->pointList_ != rhs.pointList_ ) { 
-      fmt::print(stderr, "CoordinateFrame : Point list mismatch ([ ");
-      for( auto &point : this->pointList_ ) { 
-        fmt::print(stderr, "{} ", point);
-      }   
-      fmt::print(stderr, "] vs [");
-      for( auto &point : rhs.pointList_ ) { 
-        fmt::print(stderr, "{} ", point);
-      }   
-      fmt::print(stderr, "])\n");
-      return false;
-    }   
-
-    if( this->id_ != rhs.id_ ) { 
-      fmt::print(stderr, "CoordinateFrame : TAG mismatch ({} vs. {})\n", this->tag_, rhs.tag_);
-      return false;
-    }   
-
-    return true;
+    return equal_(rhs, false);
   }
 
 } // namespace Ioss

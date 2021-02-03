@@ -93,6 +93,8 @@ namespace Ioss {
                                     size_t data_size) const override;
 
   private:
+    bool equal_(const SideBlock &, bool quiet);
+
     const SideSet *    owner_{nullptr};
     ElementTopology *  parentTopology_{nullptr}; // Topology of parent element (if any)
     const EntityBlock *parentBlock_{nullptr};

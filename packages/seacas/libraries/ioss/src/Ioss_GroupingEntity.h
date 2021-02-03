@@ -287,6 +287,7 @@ namespace Ioss {
 
   private:
     void verify_field_exists(const std::string &field_name, const std::string &inout) const;
+    bool equal_(const GroupingEntity &rhs, bool quiet) const;
 
     std::string entityName{};
 

@@ -80,22 +80,34 @@ Ioss::Property Ioss::EntityBlock::get_implicit_property(const std::string &my_na
   return Ioss::GroupingEntity::get_implicit_property(my_name);
 }
 
-bool Ioss::EntityBlock::operator==(const Ioss::EntityBlock &rhs) const
+bool Ioss::EntityBlock::equal_(const Ioss::EntityBlock &rhs, bool quiet) const
 {
   /* COMPARE element topologies */
   if( *(this->topology_) != *(rhs.topology_) ) {
+    if( !quiet ) {
+      fmt::print(stderr, "EntityBlock: TOPOLOGY mismatch\n");
+    }
     return false;
   }
 
   if( this->idOffset != rhs.idOffset ) {
+    if( !quiet ) {
+      fmt::print(stderr, "EntityBlock: idOffset mismatch ({} vs. {})\n", this->idOffset, rhs.idOffset);
+    }
     return false;
   }
 
-  if( Ioss::GroupingEntity::operator!=( rhs ) ) {
+  if( !Ioss::GroupingEntity::equal( rhs ) ) {
+    if( !quiet ) {
+      fmt::print(stderr, "EntityBlock: GroupingEntity mismatch\n");
+    }
     return false;
   }
+}
 
-  return true;
+bool Ioss::EntityBlock::operator==(const Ioss::EntityBlock &rhs) const
+{
+  return equal_(rhs, true);
 }
 
 bool Ioss::EntityBlock::operator!=(const Ioss::EntityBlock &rhs) const
@@ -105,21 +117,5 @@ bool Ioss::EntityBlock::operator!=(const Ioss::EntityBlock &rhs) const
 
 bool Ioss::EntityBlock::equal(const Ioss::EntityBlock &rhs) const
 {
-  /* COMPARE element topologies */
-  if( *(this->topology_) != *(rhs.topology_) ) {
-    fmt::print(stderr, "EntityBlock: TOPOLOGY mismatch\n");
-    return false;
-  }
-
-  if( this->idOffset != rhs.idOffset ) {
-    fmt::print(stderr, "EntityBlock: idOffset mismatch ({} vs. {})\n", this->idOffset, rhs.idOffset);
-    return false;
-  }
-
-  if( !Ioss::GroupingEntity::equal( rhs ) ) {
-    fmt::print(stderr, "EntityBlock: GroupingEntity mismatch\n");
-    return false;
-  }
-
-  return true;
+  return equal_(rhs, false);
 }

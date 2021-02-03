@@ -102,6 +102,9 @@ namespace Ioss {
 
   protected:
     size_t idOffset{0};
+
+  private:
+    bool equal_(const Ioss::EntityBlock &rhs, bool quiet) const;
   };
 } // namespace Ioss
 #endif

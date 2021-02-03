@@ -79,6 +79,9 @@ namespace Ioss {
     }
 
     friend std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc);
+
+  private:
+    bool equal_(const Ioss::BoundaryCondition &rhs, bool quiet) const;
   };
 
   class DatabaseIO;
@@ -314,6 +317,7 @@ namespace Ioss {
                                     size_t data_size) const override;
 
   private:
+    bool equal_(const Ioss::StructuredBlock &rhs, bool quiet) const;
     int m_ni{};
     int m_nj{};
     int m_nk{};

@@ -328,25 +328,44 @@ void Ioss::GroupingEntity::property_update(const std::string &property,
   }
 }
 
-bool Ioss::GroupingEntity::operator==(const Ioss::GroupingEntity &rhs) const
+bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, bool quiet) const
 {
   if( this->entityName.compare(rhs.entityName) != 0 ) { 
+    if( !quiet ) {
+      fmt::print(stderr, "GroupingEntity: entityName mismatch ({} vs. {})\n", 
+             this->entityName.c_str(), rhs.entityName.c_str());
+    }
     return false;
   }
 
   if( this->entityCount != rhs.entityCount ) { 
+    if( !quiet ) {
+      fmt::print(stderr, "GroupingEntity: entityCount mismatch ([] vs. [])\n", 
+                 this->entityCount, rhs.entityCount);
+    }
     return false;
   }
 
   if( this->attributeCount != rhs.attributeCount ) { 
+    if( !quiet ) {
+      fmt::print(stderr, "GroupingEntity: attributeCount mismatch ([] vs. [])\n", 
+             this->attributeCount, rhs.attributeCount);
+    }
     return false;
   }
 
   if( this->entityState != rhs.entityState ) { 
+    if( !quiet ) {
+      fmt::print(stderr, "GroupingEntity: entityState mismatch ([] vs. [])\n", 
+                 this->entityState, rhs.entityState);
+    }
     return false;
   }
 
   if( this->hash_ != rhs.hash_ ) { 
+    if( !quiet ) {
+      fmt::print(stderr, "GroupingEntity: hash_ mismatch ({} vs. {})\n", this->hash_, rhs.hash_);
+    }
     return false;
   }
 
@@ -355,21 +374,45 @@ bool Ioss::GroupingEntity::operator==(const Ioss::GroupingEntity &rhs) const
   this->properties.describe(&lhs_properties);
   rhs.properties.describe(&rhs_properties);
 
-  if( lhs_properties.size() != rhs_properties.size() ) { 
-    return false;
+  if( !quiet && lhs_properties.size() != rhs_properties.size() ) { 
+    fmt::print(stderr, "GroupingEntity: NUMBER of properties are different ({} vs. {})\n",
+           lhs_properties.size(), rhs_properties.size());
   }
 
   for( auto &lhs_property : lhs_properties ) { 
     auto it = std::find(rhs_properties.begin(), rhs_properties.end(), lhs_property);
     if( it == rhs_properties.end() ) { 
+      if( !quiet ) {
+        fmt::print(stderr, "WARNING: GroupingEntity: INPUT property ({}) not found in OUTPUT\n", 
+               lhs_property.c_str());
+      }
       continue;
     }   
 
     if( this->properties.get(lhs_property) != rhs.properties.get(lhs_property) ) { 
       // EMPIRICALLY, different representations (e.g., CGNS vs. Exodus) of the same mesh 
       // can have different values for the "original_block_order" property.
-      if( lhs_property.compare("original_block_order") != 0 ) { 
+      if( lhs_property.compare("original_block_order") == 0 ) { 
+        if( !quiet ) {
+          fmt::print(stderr, "WARNING: values for \"original_block_order\" DIFFER ({} vs. {})\n",
+                     this->properties.get(lhs_property).get_int(), 
+                     rhs.properties.get(lhs_property).get_int());
+        }
+      } else {
+        if( !quiet ) {
+          fmt::print(stderr, "GroupingEntity: PROPERTY ({}) mismatch\n", lhs_property.c_str());
+        }
         return false;
+      }   
+    }
+  }
+      
+  if( !quiet ) {
+    for( auto &rhs_property : rhs_properties ) { 
+      auto it = std::find(lhs_properties.begin(), lhs_properties.end(), rhs_property);
+      if( it == lhs_properties.end() ) { 
+        fmt::print(stderr, "WARNING: GroupingEntity: OUTPUT property ({}) not found in INPUT\n", 
+               rhs_property.c_str());
       }   
     }
   }
@@ -380,16 +423,32 @@ bool Ioss::GroupingEntity::operator==(const Ioss::GroupingEntity &rhs) const
   rhs.fields.describe(&rhs_fields);
 
   if( lhs_fields.size() != rhs_fields.size() ) {
+    if( !quiet ) {
+      fmt::print(stderr, "GroupingEntity: NUMBER of fields are different ({} vs. {})\n",
+             lhs_fields.size(), rhs_fields.size());
+    }
     return false;
   }
 
   for( auto &field: lhs_fields ) {
-    if( this->fields.get(field) != rhs.fields.get(field) ) {
-      return false;
+    if( !quiet ) {
+      if( !this->fields.get(field).equal(rhs.fields.get(field)) ) {
+        fmt::print(stderr, "GroupingEntity: FIELD ({}) mismatch\n", field.c_str());
+        return false;
+      }
+    } else {
+      if( this->fields.get(field) != rhs.fields.get(field) ) {
+        return false;
+      }
     }
   }
 
   return true;
+}
+
+bool Ioss::GroupingEntity::operator==(const Ioss::GroupingEntity &rhs) const
+{
+  return equal_(rhs, true);
 }
 
 bool Ioss::GroupingEntity::operator!=(const Ioss::GroupingEntity &rhs) const
@@ -399,90 +458,5 @@ bool Ioss::GroupingEntity::operator!=(const Ioss::GroupingEntity &rhs) const
 
 bool Ioss::GroupingEntity::equal(const Ioss::GroupingEntity &rhs) const
 {
-  if( this->entityName.compare(rhs.entityName) != 0 ) { 
-    fmt::print(stderr, "GroupingEntity: entityName mismatch ({} vs. {})\n", 
-           this->entityName.c_str(), rhs.entityName.c_str());
-    return false;
-  }
-
-  if( this->entityCount != rhs.entityCount ) { 
-    fmt::print(stderr, "GroupingEntity: entityCount mismatch ([] vs. [])\n", this->entityCount, rhs.entityCount);
-    return false;
-  }
-
-  if( this->attributeCount != rhs.attributeCount ) { 
-    fmt::print(stderr, "GroupingEntity: attributeCount mismatch ([] vs. [])\n", 
-           this->attributeCount, rhs.attributeCount);
-    return false;
-  }
-
-  if( this->entityState != rhs.entityState ) { 
-    fmt::print(stderr, "GroupingEntity: entityState mismatch ([] vs. [])\n", this->entityState, rhs.entityState);
-    return false;
-  }
-
-  if( this->hash_ != rhs.hash_ ) { 
-    fmt::print(stderr, "GroupingEntity: hash_ mismatch ({} vs. {})\n", this->hash_, rhs.hash_);
-    return false;
-  }
-
-  /* COMPARE properties */
-  Ioss::NameList lhs_properties, rhs_properties;
-  this->properties.describe(&lhs_properties);
-  rhs.properties.describe(&rhs_properties);
-
-  if( lhs_properties.size() != rhs_properties.size() ) { 
-    fmt::print(stderr, "GroupingEntity: NUMBER of properties are different ({} vs. {})\n",
-           lhs_properties.size(), rhs_properties.size());
-  }
-
-  for( auto &lhs_property : lhs_properties ) { 
-    auto it = std::find(rhs_properties.begin(), rhs_properties.end(), lhs_property);
-    if( it == rhs_properties.end() ) { 
-      fmt::print(stderr, "WARNING: GroupingEntity: INPUT property ({}) not found in OUTPUT\n", 
-             lhs_property.c_str());
-      continue;
-    }   
-
-    if( this->properties.get(lhs_property) != rhs.properties.get(lhs_property) ) { 
-      // EMPIRICALLY, different representations (e.g., CGNS vs. Exodus) of the same mesh 
-      // can have different values for the "original_block_order" property.
-      if( lhs_property.compare("original_block_order") == 0 ) { 
-        fmt::print(stderr, "WARNING: values for \"original_block_order\" DIFFER ({} vs. {})\n",
-        this->properties.get(lhs_property).get_int(), 
-        rhs.properties.get(lhs_property).get_int());
-      } else {
-        fmt::print(stderr, "GroupingEntity: PROPERTY ({}) mismatch\n", lhs_property.c_str());
-        return false;
-      }   
-    }
-  }
-      
-  for( auto &rhs_property : rhs_properties ) { 
-    auto it = std::find(lhs_properties.begin(), lhs_properties.end(), rhs_property);
-    if( it == lhs_properties.end() ) { 
-      fmt::print(stderr, "WARNING: GroupingEntity: OUTPUT property ({}) not found in INPUT\n", 
-             rhs_property.c_str());
-    }   
-  }
-      
-  /* COMPARE fields */
-  Ioss::NameList lhs_fields, rhs_fields;
-  this->fields.describe(&lhs_fields);
-  rhs.fields.describe(&rhs_fields);
-
-  if( lhs_fields.size() != rhs_fields.size() ) {
-    fmt::print(stderr, "GroupingEntity: NUMBER of fields are different ({} vs. {})\n",
-           lhs_fields.size(), rhs_fields.size());
-    return false;
-  }
-
-  for( auto &field: lhs_fields ) {
-    if( this->fields.get(field) != rhs.fields.get(field) ) {
-      fmt::print(stderr, "GroupingEntity: FIELD ({}) mismatch\n", field.c_str());
-      return false;
-    }
-  }
-
-  return true;
+  return equal_(rhs, false);
 }

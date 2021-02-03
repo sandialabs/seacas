@@ -239,33 +239,56 @@ bool Ioss::Field::transform(void *data)
   return true;
 }
 
-bool Ioss::Field::operator==(Ioss::Field rhs)
+bool Ioss::Field::equal_(Ioss::Field rhs, bool quiet)
 {
   if( Ioss::Utils::str_equal(this->name_, rhs.name_) == false ) {
+    if( !quiet ) {
+      fmt::print(stderr, "FIELD name mismatch ({} v. {})\n", this->name_.c_str(), rhs.name_.c_str());
+    }
     return false;
   }
 
   if( this->type_ != rhs.type_ ) { 
+    if( !quiet ) {
+      fmt::print(stderr, "FIELD type mismatch ({} v. {})\n", this->type_, rhs.type_);
+    }
     return false;
   }
 
   if( this->role_ != rhs.role_ ) { 
+    if( !quiet ) {
+      fmt::print(stderr, "FIELD role mismatch ({} v. {})\n", this->role_, rhs.role_);
+    }
     return false;
   }
 
   if( this->rawCount_ != rhs.rawCount_ ) { 
+    if( !quiet ) {
+      fmt::print(stderr, "FIELD rawCount mismatch ({} v. {})\n", this->rawCount_, rhs.rawCount_);
+    }
     return false;
   }
 
   if( this->transCount_ != rhs.transCount_ ) { 
+    if( !quiet ) {
+      fmt::print(stderr, "FIELD transCount mismatch ({} v. {})\n", this->transCount_, rhs.transCount_);
+    }
     return false;
   }
 
   if( this->get_size() != rhs.get_size() ) {
+    if( !quiet ) {
+      fmt::print(stderr, "FIELD size mismatch ({} v. {})\n", this->get_size(), rhs.get_size());
+    }
     return false;
   }
 
   return true;
+}
+
+bool Ioss::Field::operator==(Ioss::Field rhs)
+{
+  return equal_(rhs, true);
 }
 
 bool Ioss::Field::operator!=(Ioss::Field rhs)
@@ -275,37 +298,7 @@ bool Ioss::Field::operator!=(Ioss::Field rhs)
 
 bool Ioss::Field::equal(Ioss::Field rhs)
 {
-  if( Ioss::Utils::str_equal(this->name_, rhs.name_) == false ) {
-    fmt::print(stderr, "FIELD name mismatch ({} v. {})\n", this->name_.c_str(), rhs.name_.c_str());
-    return false;
-  }
-
-  if( this->type_ != rhs.type_ ) { 
-    fmt::print(stderr, "FIELD type mismatch ({} v. {})\n", this->type_, rhs.type_);
-    return false;
-  }
-
-  if( this->role_ != rhs.role_ ) { 
-    fmt::print(stderr, "FIELD role mismatch ({} v. {})\n", this->role_, rhs.role_);
-    return false;
-  }
-
-  if( this->rawCount_ != rhs.rawCount_ ) { 
-    fmt::print(stderr, "FIELD rawCount mismatch ({} v. {})\n", this->rawCount_, rhs.rawCount_);
-    return false;
-  }
-
-  if( this->transCount_ != rhs.transCount_ ) { 
-    fmt::print(stderr, "FIELD transCount mismatch ({} v. {})\n", this->transCount_, rhs.transCount_);
-    return false;
-  }
-
-  if( this->get_size() != rhs.get_size() ) {
-    fmt::print(stderr, "FIELD size mismatch ({} v. {})\n", this->get_size(), rhs.get_size());
-    return false;
-  }
-
-  return true;
+  return equal_(rhs, false);
 }
 
 namespace {
