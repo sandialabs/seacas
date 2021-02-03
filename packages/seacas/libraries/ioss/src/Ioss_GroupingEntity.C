@@ -374,9 +374,12 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, bool quiet) c
   this->properties.describe(&lhs_properties);
   rhs.properties.describe(&rhs_properties);
 
-  if( !quiet && lhs_properties.size() != rhs_properties.size() ) { 
-    fmt::print(stderr, "GroupingEntity: NUMBER of properties are different ({} vs. {})\n",
-           lhs_properties.size(), rhs_properties.size());
+  if( lhs_properties.size() != rhs_properties.size() ) { 
+    if( !quiet ){
+      fmt::print(stderr, "GroupingEntity: NUMBER of properties are different ({} vs. {})\n",
+             lhs_properties.size(), rhs_properties.size());
+    }
+    return false;
   }
 
   for( auto &lhs_property : lhs_properties ) { 

@@ -321,29 +321,6 @@ namespace Ioss {
   }
   bool BoundaryCondition::operator==(const Ioss::BoundaryCondition &rhs) const
   {
-#if 0
-    if( this->m_bcName != rhs.m_bcName )
-    {
-        return false;
-    }
-
-    if( this->m_famName != rhs.m_famName )
-    {
-        return false;
-    }
-
-    if( this->m_rangeBeg != rhs.m_rangeBeg )
-    {
-        return false;
-    }
-
-    if( this->m_rangeEnd != rhs.m_rangeEnd )
-    {
-        return false;
-    }
-
-    return true;
-#endif
     return equal_(rhs, true);
   }
 

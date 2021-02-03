@@ -103,6 +103,8 @@ bool Ioss::EntityBlock::equal_(const Ioss::EntityBlock &rhs, bool quiet) const
     }
     return false;
   }
+
+  return true;
 }
 
 bool Ioss::EntityBlock::operator==(const Ioss::EntityBlock &rhs) const
