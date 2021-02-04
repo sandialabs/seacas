@@ -52,12 +52,25 @@ public:
   //! different than the rank of this cell...
   bool processor_boundary(enum Loc loc) const
   {
-    return m_ranks[(int)loc] >= 0 && (m_ranks[0] != m_ranks[(int)loc]);
+    return m_ranks[(int)loc] >= 0 && (m_ranks[(int)Loc::C] != m_ranks[(int)loc]);
   }
 
   //! Number of nodes that will be added to global node count when this cell is added to
   //! grid -- accounts for coincident nodes if this cell has neighbor(s)
   size_t added_node_count(enum Mode mode) const;
+
+  //! Number of nodes that this cell adds to the processor boundary node count.
+  //! Assumes that cells are processed in "order", so accounts for corner nodes
+  //! shared with another cell...
+  //! Note that a node shared by more than one processor (e.g. a corner node) counts
+  //! for each processor it is shared with.
+  size_t processor_boundary_node_count() const;
+
+  template <typename INT>
+  void populate_node_communication_map(const std::vector<INT> &node_map, std::vector<INT> &nodes,
+                                       std::vector<INT> &procs) const;
+
+  std::array<int, 9> categorize_processor_boundary_nodes(int rank) const;
 
   //! The mpi rank that this cell, or the neighboring cells, will be on in a parallel run.
   int rank(enum Loc loc) const { return m_ranks[(int)loc]; }
@@ -98,6 +111,13 @@ public:
 
   int64_t m_globalNodeIdOffset{0};
   int64_t m_localNodeIdOffset{0};
+
+  //! The offset into the commincation node output array for this cell in the file associated with
+  //! the rank that this cell is on. Set by handle_communications() in Grid.C.
+  mutable size_t m_communicationNodeOffset{0};
+
+  //! The number of node/proc pairs that this cell adds to the communication node map.
+  mutable size_t m_communicationNodeCount{0};
 
   std::map<std::string, size_t> m_globalElementIdOffset;
   std::map<std::string, size_t> m_localElementIdOffset;

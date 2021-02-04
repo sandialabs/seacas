@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <fmt/format.h>
+#include <random>
 #include <vector>
 
 #include "Grid.h"
@@ -123,7 +124,8 @@ void decompose_grid(Grid &grid, int ranks, const std::string &method)
       std::sort(rank_vec.begin(), rank_vec.end());
     }
     else if (method == "RANDOM") {
-      std::random_shuffle(rank_vec.begin(), rank_vec.end());
+      unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+      std::shuffle(rank_vec.begin(), rank_vec.end(), std::default_random_engine(seed));
     }
 
     size_t k = 0;

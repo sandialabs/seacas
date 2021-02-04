@@ -70,8 +70,11 @@ private:
   void create_output_regions(SystemInterface &interFace);
   void categorize_processor_boundaries();
 
-  void                         output_nodal_coordinates(const Cell &cell);
-  template <typename INT> void output_block_connectivity(Cell &cell, INT /*dummy*/);
+  void output_nodal_coordinates(const Cell &cell);
+  template <typename INT>
+  void output_block_connectivity(Cell &cell, const std::vector<INT> &node_map);
+  template <typename INT>
+  void output_nodal_communication_map(Cell &cell, const std::vector<INT> &node_map);
   template <typename INT> void output_element_map(Cell &cell, INT /*dummy*/);
   template <typename INT> void output_node_map(const Cell &cell, INT /*dummy*/);
 
