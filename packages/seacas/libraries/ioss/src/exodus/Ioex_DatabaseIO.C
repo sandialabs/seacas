@@ -2911,7 +2911,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
                 entity_proc[j++] = pros[i];
               }
             }
-            else {
+            else { // "entity_processor_raw"
               for (int64_t i = 0; i < entity_count; i++) {
                 entity_proc[j++] = ents[i];
                 entity_proc[j++] = pros[i];
@@ -2933,7 +2933,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
                 entity_proc[j++] = pros[i];
               }
             }
-            else {
+            else { // "entity_processor_raw"
               for (int64_t i = 0; i < entity_count; i++) {
                 entity_proc[j++] = ents[i];
                 entity_proc[j++] = pros[i];
