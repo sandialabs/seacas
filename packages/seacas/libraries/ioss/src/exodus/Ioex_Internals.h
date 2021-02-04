@@ -378,6 +378,7 @@ namespace Ioex {
     bool use_elem_map{true};
     bool use_face_map{true};
     bool use_edge_map{true};
+    bool full_nemesis_data{true};
 
     std::vector<Assembly> assemblies{};
     std::vector<Blob>     blobs{};
@@ -430,7 +431,7 @@ namespace Ioex {
 
     int put_metadata(const std::vector<SideSet> &sidesets, bool count_only = false);
 
-    int put_non_define_data(const CommunicationMetaData &comm);
+    int put_non_define_data(const CommunicationMetaData &comm, bool minimal_nemesis_data);
     int put_non_define_data(const std::vector<Assembly> &assemblies);
     int put_non_define_data(const std::vector<Blob> &blobs);
     int put_non_define_data(const std::vector<NodeBlock> &nodeblocks);

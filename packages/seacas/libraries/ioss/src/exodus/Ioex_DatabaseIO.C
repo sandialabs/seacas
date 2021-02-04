@@ -5356,6 +5356,13 @@ void DatabaseIO::write_meta_data(bool appending)
       mesh.use_edge_map = false;
     }
 
+    bool minimal_nemesis = false;
+    Ioss::Utils::check_set_bool_property(properties, "MINIMAL_NEMESIS_DATA", minimal_nemesis);
+    if (minimal_nemesis) {
+      // Only output the node communication map data... This is all that stk/sierra needs
+      mesh.full_nemesis_data = false;
+    }
+
     Ioss::SerializeIO serializeIO__(this);
     mesh.populate(region);
     gather_communication_metadata(&mesh.comm);
