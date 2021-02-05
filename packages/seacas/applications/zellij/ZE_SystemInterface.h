@@ -30,7 +30,18 @@ public:
   bool zlib() const { return zlib_; }
   bool szip() const { return szip_; }
 
-  int  ranks() const { return ranks_; }
+  int ranks() const { return ranks_; }
+  int start_rank() const { return startRank_; }
+  int rank_count() const
+  {
+    if ((rankCount_ == 0) || (startRank_ + rankCount_ > ranks_)) {
+      return ranks_ - startRank_;
+    }
+    else {
+      return rankCount_;
+    }
+  }
+
   bool equivalence_nodes() const { return equivalenceNodes_; }
 
   static void show_version();
@@ -48,6 +59,8 @@ private:
   int         debugLevel_{0};
   int         compressionLevel_{0};
   int         ranks_{1};
+  int         startRank_{0};
+  int         rankCount_{0};
   bool        ints32bit_{false};
   bool        useNetcdf4_{true};
   bool        useNetcdf5_{false};

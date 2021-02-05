@@ -122,12 +122,14 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
     fmt::print(stderr, "{} Finalize Lattice\n", time_stamp(tsFormat));
   }
 
-  grid.finalize();
+  int start_rank = interFace.start_rank();
+  int rank_count = interFace.rank_count();
+  grid.finalize(start_rank, rank_count);
 
   if (debug_level & 1) {
     fmt::print(stderr, "{} Output Model\n", time_stamp(tsFormat));
   }
-  grid.output_model((INT)0);
+  grid.output_model(start_rank, rank_count, (INT)0);
 
   /*************************************************************************/
   // EXIT program

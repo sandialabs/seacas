@@ -22,6 +22,7 @@ meshes.
   * [Unit Cell Dictionary](#unit-cell-dictionary)
   * [Unit Cell Template Mesh Requirements](#unit-cell-template-mesh-requirements)
 * [Parallel Execution](#parallel-execution)
+  * [Partial Parallel Output Mode](#partial-parallel-output-mode)
 * [Execution Complexity](#execution-complexity)
   * [Memory Complexity](#memory-complexity)
   * [Execution Time Complexity](#execution-time-complexity)
@@ -42,7 +43,7 @@ zellij -help
 
 Zellij
 	(A code for tiling 1 or more template databases into a single output database.)
-	(Version: 0.9.0) Modified: 2021/02/05
+	(Version: 0.9.1) Modified: 2021/02/05
 
 usage: zellij [options] -lattice <lattice_definition_file>
 	-help (Print this summary and exit)
@@ -68,7 +69,9 @@ usage: zellij [options] -lattice <lattice_definition_file>
 		Elements assigned randomly to processors in a way that preserves balance
 		(do *not* use for a real run))
 	-ranks <$val> (Number of ranks to decompose mesh across)
-	-separate_cells (Do not equivalence the nodes betweeen adjacent unit cells.)
+	-start_rank <$val> (In partial output mode, start outputting decomposed files at this rank)
+	-rank_count <$val> (In partial output mode, output this number of ranks)
+	-separate_cells (Do not equivalence the nodes between adjacent unit cells.)
 	-debug <$val> (debug level (values are or'd)
 		  1 = time stamp information.
 		  2 = memory information.
@@ -204,6 +207,18 @@ element counts.
 The `-linear`, `-cyclic`, and `-random` methods are typically used for
 debugging and testing Zellij and should not be used in a production
 run, especially the `-random` method.
+
+### Partial Parallel Output Mode
+There is a _partial parallel output_ mode in which you can tell Zellij to only output a portion of the parallel decomposed files.  This is selected with the `-start_rank <rank>` and `-rank_count <count>` options.  In this case, Zellij will only output the ranks from `rank` up to `rank+count-1`.  For example, if you run `zellij -ranks 10 -start_rank 5 -rank_count 3`, then zellij would output files for ranks 5, 6, and 7.  This is somewhat inefficient since zellij will do many of the calculations for all ranks and only output the specified ranks; however, it does allow you to run multiple copies of zellij simultaneously.  For example, you could run:
+```
+ zellij -ranks 16 --start_rank  0 --rank_count 4
+ zellij -ranks 16 --start_rank  4 --rank_count 4
+ zellij -ranks 16 --start_rank  8 --rank_count 4
+ zellij -ranks 16 --start_rank 12 --rank_count 4
+``
+simultaneously and all 16 files should be output faster than running a single execution that wrote all of the files.
+
+At some time in the future, this will be able to be handled automatically using `mpiexec -np 4 ...` and zellij will automatically divide up the work among the 4 mpi ranks.
 
 ## Execution Complexity
 

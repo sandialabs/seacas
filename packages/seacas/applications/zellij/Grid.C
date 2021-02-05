@@ -30,9 +30,9 @@ namespace {
   Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
 
   void   set_coordinate_offsets(Grid &grid);
-  size_t handle_nodes(Grid &grid);
-  size_t handle_elements(Grid &grid);
-  void   handle_communications(Grid &grid);
+  size_t handle_elements(Grid &grid, int start_rank, int rank_count);
+  size_t handle_nodes(Grid &grid, int start_rank, int rank_count);
+  void   handle_communications(Grid &grid, int start_rank, int rank_count);
 } // namespace
 
 Grid::Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j)
@@ -57,7 +57,7 @@ void Grid::create_output_regions(SystemInterface &interFace)
   if (debug_level & 2) {
     util().progress(__func__);
   }
-  m_outputRegions.reserve(interFace.ranks());
+  m_outputRegions.resize(interFace.ranks());
 
   // Define the output database(s)...
   int                   int_size   = interFace.ints32bit() ? 4 : 8;
@@ -71,14 +71,17 @@ void Grid::create_output_regions(SystemInterface &interFace)
     properties.add(Ioss::Property("ENABLE_TRACING", 1));
   }
 
-  for (int i = 0; i < interFace.ranks(); i++) {
+  int start_rank = interFace.start_rank();
+  int rank_count = interFace.rank_count();
+  for (int i = start_rank; i < start_rank + rank_count; i++) {
     std::string outfile = Ioss::Utils::decode_filename(interFace.outputName_, i, interFace.ranks());
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
                                                     (MPI_Comm)MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
-    m_outputRegions.emplace_back(new Ioss::Region(dbo, "zellij_output_region"));
+    m_outputRegions[i] =
+        std::unique_ptr<Ioss::Region>(new Ioss::Region(dbo, "zellij_output_region"));
     output_region(i)->begin_mode(Ioss::STATE_DEFINE_MODEL);
     output_region(i)->property_add(Ioss::Property("code_name", qainfo[0]));
     output_region(i)->property_add(Ioss::Property("code_version", qainfo[2]));
@@ -154,18 +157,18 @@ void Grid::categorize_processor_boundaries()
   }
 }
 
-void Grid::finalize()
+void Grid::finalize(int start_rank, int rank_count)
 {
   if (debug_level & 2) {
     util().progress(__func__);
   }
 
   set_coordinate_offsets(*this);
-  auto node_count    = handle_nodes(*this);
-  auto element_count = handle_elements(*this);
-  handle_communications(*this);
+  auto node_count    = handle_nodes(*this, start_rank, rank_count);
+  auto element_count = handle_elements(*this, start_rank, rank_count);
+  handle_communications(*this, start_rank, rank_count);
 
-  for (int i = 0; i < m_parallelSize; i++) {
+  for (int i = start_rank; i < start_rank + rank_count; i++) {
     output_region(i)->end_mode(Ioss::STATE_DEFINE_MODEL);
     if (debug_level & 64) {
       output_region(i)->output_summary(std::cerr);
@@ -174,11 +177,11 @@ void Grid::finalize()
   fmt::print("                {:n} Nodes; {:n} Elements.\n", node_count, element_count);
 }
 
-template void Grid::output_model(int64_t);
-template void Grid::output_model(int);
+template void Grid::output_model(int start_rank, int num_ranks, int64_t);
+template void Grid::output_model(int start_rank, int num_ranks, int);
 
 // Write the output database(s) for all ranks...
-template <typename INT> void Grid::output_model(INT /*dummy*/)
+template <typename INT> void Grid::output_model(int start_rank, int num_ranks, INT /*dummy*/)
 {
   if (debug_level & 2) {
     util().progress(__func__);
@@ -186,7 +189,7 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
   // Coordinates do not depend on order of operations, so can do these
   // a rank at a time which can be more efficient once we exceed
   // maximum number of open files...  Also easier to parallelize...
-  for (int r = 0; r < parallel_size(); r++) {
+  for (int r = start_rank; r < start_rank + num_ranks; r++) {
     for (size_t j = 0; j < JJ(); j++) {
       for (size_t i = 0; i < II(); i++) {
         auto &cell = get_cell(i, j);
@@ -209,9 +212,9 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
     for (size_t i = 0; i < II(); i++) {
       auto &cell     = get_cell(i, j);
       auto  node_map = generate_node_map(*this, cell, Mode::PROCESSOR, INT(0));
-      output_block_connectivity(cell, node_map);
+      output_block_connectivity(cell, node_map, start_rank, num_ranks);
       if (parallel_size() > 1) {
-        output_nodal_communication_map(cell, node_map);
+        output_nodal_communication_map(cell, node_map, start_rank, num_ranks);
       }
     }
   }
@@ -223,8 +226,8 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
     for (size_t j = 0; j < JJ(); j++) {
       for (size_t i = 0; i < II(); i++) {
         auto &cell = get_cell(i, j);
-        output_node_map(cell, INT(0));
-        output_element_map(cell, INT(0));
+        output_node_map(cell, start_rank, num_ranks, INT(0));
+        output_element_map(cell, start_rank, num_ranks, INT(0));
       }
     }
     if (debug_level & 2) {
@@ -276,68 +279,74 @@ void Grid::output_nodal_coordinates(const Cell &cell)
 }
 
 template <typename INT>
-void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_map)
+void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_map, int start_rank,
+                                     int num_ranks)
 {
-  int rank  = cell.rank(Loc::C);
-  int exoid = output_region(rank)->get_database()->get_file_pointer();
+  int rank = cell.rank(Loc::C);
+  if (rank >= start_rank && rank < start_rank + num_ranks) {
+    int exoid = output_region(rank)->get_database()->get_file_pointer();
 
-  auto             blocks = cell.m_unitCell->m_region->get_element_blocks();
-  std::vector<INT> connect;
-  for (const auto *block : blocks) {
-    block->get_field_data("connectivity_raw", connect);
-    for (size_t k = 0; k < connect.size(); k++) {
-      connect[k] = node_map[connect[k]];
+    auto             blocks = cell.m_unitCell->m_region->get_element_blocks();
+    std::vector<INT> connect;
+    for (const auto *block : blocks) {
+      block->get_field_data("connectivity_raw", connect);
+      for (size_t k = 0; k < connect.size(); k++) {
+        connect[k] = node_map[connect[k]];
+      }
+      auto start = cell.m_localElementIdOffset[block->name()] + 1;
+      auto count = block->entity_count();
+      auto id    = block->get_property("id").get_int();
+      if (debug_level & 8) {
+        fmt::print(stderr, "Rank: {}, Cell({}, {}), Block {}, id {}, start {}, count {}\n", rank,
+                   cell.m_i, cell.m_j, block->name(), id, start, count);
+      }
+      ex_put_partial_conn(exoid, EX_ELEM_BLOCK, id, start, count, connect.data(), nullptr, nullptr);
     }
-    auto start = cell.m_localElementIdOffset[block->name()] + 1;
-    auto count = block->entity_count();
-    auto id    = block->get_property("id").get_int();
-    if (debug_level & 8) {
-      fmt::print(stderr, "Rank: {}, Cell({}, {}), Block {}, id {}, start {}, count {}\n", rank,
-                 cell.m_i, cell.m_j, block->name(), id, start, count);
-    }
-    ex_put_partial_conn(exoid, EX_ELEM_BLOCK, id, start, count, connect.data(), nullptr, nullptr);
-  }
 
-  if (debug_level & 2) {
-    util().progress(fmt::format("Generated Node Map / Output Connectivity for Cell({}, {})",
-                                cell.m_i, cell.m_j));
+    if (debug_level & 2) {
+      util().progress(fmt::format("Generated Node Map / Output Connectivity for Cell({}, {})",
+                                  cell.m_i, cell.m_j));
+    }
   }
 }
 
 template <typename INT>
-void Grid::output_nodal_communication_map(Cell &cell, const std::vector<INT> &node_map)
+void Grid::output_nodal_communication_map(Cell &cell, const std::vector<INT> &node_map,
+                                          int start_rank, int num_ranks)
 {
   // The `node_map` has the processor-local node ids for all nodes on this cell.
   // Note that the `node_map` starts at index 1 in the vector...
   // Need to check the boundaries of the cell and determine which boundaries are on a different rank
   // and output the nodes and processors to the communication map.
-  std::vector<INT> nodes;
-  std::vector<INT> procs;
-  cell.populate_node_communication_map(node_map, nodes, procs);
+  int rank = cell.rank(Loc::C);
+  if (rank >= start_rank && rank < start_rank + num_ranks) {
+    std::vector<INT> nodes;
+    std::vector<INT> procs;
+    cell.populate_node_communication_map(node_map, nodes, procs);
 
-  int rank  = cell.rank(Loc::C);
-  int exoid = output_region(rank)->get_database()->get_file_pointer();
+    int exoid = output_region(rank)->get_database()->get_file_pointer();
 
-  auto start = cell.m_communicationNodeOffset + 1;
-  auto count = cell.m_communicationNodeCount;
+    auto start = cell.m_communicationNodeOffset + 1;
+    auto count = cell.m_communicationNodeCount;
 
-  ex_put_partial_node_cmap(exoid, 1, start, count, nodes.data(), procs.data(), rank);
+    ex_put_partial_node_cmap(exoid, 1, start, count, nodes.data(), procs.data(), rank);
 
-  if (debug_level & 32) {
-    fmt::print(stderr, "Rank: {}, Cell({}, {}), Node Comm Map: start {}, count {}\n", rank,
-               cell.m_i, cell.m_j, start, count);
-  }
+    if (debug_level & 32) {
+      fmt::print(stderr, "Rank: {}, Cell({}, {}), Node Comm Map: start {}, count {}\n", rank,
+                 cell.m_i, cell.m_j, start, count);
+    }
 
-  if (debug_level & 2) {
-    util().progress(
-        fmt::format("Output Nodal Communication Map for Cell({}, {})", cell.m_i, cell.m_j));
+    if (debug_level & 2) {
+      util().progress(
+          fmt::format("Output Nodal Communication Map for Cell({}, {})", cell.m_i, cell.m_j));
+    }
   }
 }
 
-template <typename INT> void Grid::output_node_map(const Cell &cell, INT /*dummy*/)
+template <typename INT>
+void Grid::output_node_map(const Cell &cell, int start_rank, int num_ranks, INT /*dummy*/)
 {
-  int rank  = cell.rank(Loc::C);
-  int exoid = output_region(rank)->get_database()->get_file_pointer();
+  int rank = cell.rank(Loc::C);
 
   auto start = cell.m_localNodeIdOffset + 1;
   auto count = cell.added_node_count(Mode::PROCESSOR);
@@ -346,27 +355,32 @@ template <typename INT> void Grid::output_node_map(const Cell &cell, INT /*dummy
     auto             gid = cell.m_globalNodeIdOffset + 1;
     std::vector<INT> map(count);
     std::iota(map.begin(), map.end(), gid);
+    int exoid = output_region(rank)->get_database()->get_file_pointer();
     ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, map.data());
   }
   else {
     auto map = generate_node_map(*this, cell, Mode::GLOBAL, INT(0));
 
-    // Filter nodes down to only "new nodes"...
-    if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
-      auto   mode              = Mode::PROCESSOR;
-      auto   categorized_nodes = cell.categorize_nodes(mode);
-      size_t nn                = 0;
-      for (size_t n = 0; n < categorized_nodes.size(); n++) {
-        if (categorized_nodes[n] == 0) {
-          map[nn + 1] = map[n + 1];
-          nn++;
+    if (rank >= start_rank && rank < start_rank + num_ranks) {
+
+      // Filter nodes down to only "new nodes"...
+      if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
+        auto   mode              = Mode::PROCESSOR;
+        auto   categorized_nodes = cell.categorize_nodes(mode);
+        size_t nn                = 0;
+        for (size_t n = 0; n < categorized_nodes.size(); n++) {
+          if (categorized_nodes[n] == 0) {
+            map[nn + 1] = map[n + 1];
+            nn++;
+          }
         }
       }
+      if (debug_level & 8) {
+        fmt::print("Cell({}, {}), start {}, count {}\n", cell.m_i, cell.m_j, start, count);
+      }
+      int exoid = output_region(rank)->get_database()->get_file_pointer();
+      ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, &map[1]);
     }
-    if (debug_level & 8) {
-      fmt::print("Cell({}, {}), start {}, count {}\n", cell.m_i, cell.m_j, start, count);
-    }
-    ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, &map[1]);
   }
 
   if (debug_level & 2) {
@@ -376,53 +390,56 @@ template <typename INT> void Grid::output_node_map(const Cell &cell, INT /*dummy
   }
 }
 
-template <typename INT> void Grid::output_element_map(Cell &cell, INT /*dummy*/)
+template <typename INT>
+void Grid::output_element_map(Cell &cell, int start_rank, int num_ranks, INT /*dummy*/)
 {
-  int rank  = cell.rank(Loc::C);
-  int exoid = output_region(rank)->get_database()->get_file_pointer();
+  int rank = cell.rank(Loc::C);
+  if (rank >= start_rank && rank < start_rank + num_ranks) {
+    int exoid = output_region(rank)->get_database()->get_file_pointer();
 
-  auto output_blocks = output_region(rank)->get_element_blocks();
+    auto output_blocks = output_region(rank)->get_element_blocks();
 
-  // This is the element block offset for the "single output file"
-  // for the block being output For example, if the total mesh has
-  // 3 blocks, with 100, 200, 100 elements, then the element block
-  // offset would be 0, 100, 300 (Ioss::ElementBlock::get_offset())
-  size_t global_id_offset = 0;
+    // This is the element block offset for the "single output file"
+    // for the block being output For example, if the total mesh has
+    // 3 blocks, with 100, 200, 100 elements, then the element block
+    // offset would be 0, 100, 300 (Ioss::ElementBlock::get_offset())
+    size_t global_id_offset = 0;
 
-  for (const auto *output_element_block : output_blocks) {
-    auto *block = cell.m_unitCell->m_region->get_element_block(output_element_block->name());
-    if (block != nullptr) {
+    for (const auto *output_element_block : output_blocks) {
+      auto *block = cell.m_unitCell->m_region->get_element_block(output_element_block->name());
+      if (block != nullptr) {
 
-      auto             gid = cell.m_globalElementIdOffset[block->name()] + 1 + global_id_offset;
-      auto             element_count = block->entity_count();
-      std::vector<INT> map(element_count);
+        auto             gid = cell.m_globalElementIdOffset[block->name()] + 1 + global_id_offset;
+        auto             element_count = block->entity_count();
+        std::vector<INT> map(element_count);
 
-      std::iota(map.begin(), map.end(), gid);
+        std::iota(map.begin(), map.end(), gid);
 
-      auto output_block_offset = output_element_block->get_offset();
+        auto output_block_offset = output_element_block->get_offset();
 
-      // This cells element block ids start this far into the portion of the map for this
-      // element block
-      auto local_offset = cell.m_localElementIdOffset[block->name()];
+        // This cells element block ids start this far into the portion of the map for this
+        // element block
+        auto local_offset = cell.m_localElementIdOffset[block->name()];
 
-      auto start = output_block_offset + local_offset + 1;
-      ex_put_partial_id_map(exoid, EX_ELEM_MAP, start, element_count, map.data());
+        auto start = output_block_offset + local_offset + 1;
+        ex_put_partial_id_map(exoid, EX_ELEM_MAP, start, element_count, map.data());
 
-      if (debug_level & 8) {
-        fmt::print("Rank {}: Cell({}, {}), Block {}, start {}, element_count {}, gid {}\n", rank,
-                   cell.m_i, cell.m_j, block->name(), start, element_count, gid);
+        if (debug_level & 8) {
+          fmt::print("Rank {}: Cell({}, {}), Block {}, start {}, element_count {}, gid {}\n", rank,
+                     cell.m_i, cell.m_j, block->name(), start, element_count, gid);
+        }
       }
+      // If we were outputting a single file, then this element
+      // block in that file would have this many elements.
+      auto global_block_element_count =
+          output_element_block->get_property("global_entity_count").get_int();
+      global_id_offset += global_block_element_count;
     }
-    // If we were outputting a single file, then this element
-    // block in that file would have this many elements.
-    auto global_block_element_count =
-        output_element_block->get_property("global_entity_count").get_int();
-    global_id_offset += global_block_element_count;
   }
 }
 
 namespace {
-  size_t handle_elements(Grid &grid)
+  size_t handle_elements(Grid &grid, int start_rank, int rank_count)
   {
     // Not all unit cells have the same element blocks and the output
     // grid will contain the union of the element blocks on each unit
@@ -478,7 +495,7 @@ namespace {
     }
 
     // Define the element blocks in the output database...
-    for (int rank = 0; rank < grid.parallel_size(); rank++) {
+    for (int rank = start_rank; rank < start_rank + rank_count; rank++) {
       for (auto &blk : output_element_blocks) {
         auto *block = new Ioss::ElementBlock(*blk.second.get());
         block->property_update("entity_count", element_block_elem_count[rank][block->name()]);
@@ -493,7 +510,7 @@ namespace {
     return global_element_count;
   }
 
-  size_t handle_nodes(Grid &grid)
+  size_t handle_nodes(Grid &grid, int start_rank, int rank_count)
   {
     size_t              global_node_count = 0;
     std::vector<size_t> local_node_count(grid.parallel_size());
@@ -517,7 +534,7 @@ namespace {
       }
     }
     // Define the output database node block...
-    for (int i = 0; i < grid.parallel_size(); i++) {
+    for (int i = start_rank; i < start_rank + rank_count; i++) {
       std::string block_name        = "nodeblock_1";
       int         spatial_dimension = 3;
       auto        block = new Ioss::NodeBlock(grid.output_region(i)->get_database(), block_name,
@@ -528,7 +545,7 @@ namespace {
     return global_node_count;
   }
 
-  void handle_communications(Grid &grid)
+  void handle_communications(Grid &grid, int start_rank, int rank_count)
   {
     // Need to determine the number of nodes on the processor
     // boundaries for each output database and create a CommSet...
@@ -548,7 +565,7 @@ namespace {
     }
 
     // Now add communication sets to all output databases...
-    for (int rank = 0; rank < grid.parallel_size(); rank++) {
+    for (int rank = start_rank; rank < start_rank + rank_count; rank++) {
       auto *cs = new Ioss::CommSet(grid.output_region(rank)->get_database(), "commset_node", "node",
                                    bnode[rank]);
       grid.output_region(rank)->add(cs);

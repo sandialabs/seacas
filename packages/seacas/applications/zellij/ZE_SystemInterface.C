@@ -76,10 +76,10 @@ void SystemInterface::enroll_options()
       "Use recursive inertial bisection method to decompose the input mesh in a parallel run.",
       nullptr);
 
-  options_.enroll(
-      "hsfc", GetLongOption::NoValue,
-      "Use hilbert space-filling curve method to decompose the input mesh in a parallel run.",
-      nullptr);
+  options_.enroll("hsfc", GetLongOption::NoValue,
+                  "Use hilbert space-filling curve method to decompose the input mesh in a "
+                  "parallel run. [default]",
+                  nullptr);
 
   options_.enroll("linear", GetLongOption::NoValue,
                   "Use the linear method to decompose the input mesh in a parallel run.\n"
@@ -100,8 +100,14 @@ void SystemInterface::enroll_options()
   options_.enroll("ranks", GetLongOption::MandatoryValue,
                   "Number of ranks to decompose mesh across", "1");
 
+  options_.enroll("start_rank", GetLongOption::MandatoryValue,
+                  "In partial output mode, start outputting decomposed files at this rank", "0");
+
+  options_.enroll("rank_count", GetLongOption::MandatoryValue,
+                  "In partial output mode, output this number of ranks", "0");
+
   options_.enroll("separate_cells", GetLongOption::NoValue,
-                  "Do not equivalence the nodes betweeen adjacent unit cells.", nullptr);
+                  "Do not equivalence the nodes between adjacent unit cells.", nullptr);
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
@@ -166,6 +172,20 @@ bool SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("ranks");
     if (temp != nullptr) {
       ranks_ = strtol(temp, nullptr, 10);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("start_rank");
+    if (temp != nullptr) {
+      startRank_ = strtol(temp, nullptr, 10);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("rank_count");
+    if (temp != nullptr) {
+      rankCount_ = strtol(temp, nullptr, 10);
     }
   }
 

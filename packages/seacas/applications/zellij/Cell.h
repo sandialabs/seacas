@@ -41,7 +41,7 @@ public:
   //! True if this cell has a neighbor "below it" (lower j)
   bool has_neighbor_j() const { return m_j > 0; }
 
-  //! Return neigbor information for each possible direction.
+  //! Return neighbor information for each possible direction.
   //! This is only valid after `grid.decompose()` has been called
   bool has_neighbor(enum Loc loc) const { return m_ranks[(int)loc] != -1; }
 
