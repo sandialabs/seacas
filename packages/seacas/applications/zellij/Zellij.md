@@ -21,6 +21,7 @@ meshes.
 * [Lattice Description File Format](#lattice-description-file-format)
   * [Unit Cell Dictionary](#unit-cell-dictionary)
   * [Unit Cell Template Mesh Requirements](#unit-cell-template-mesh-requirements)
+* [Parallel Execution](#parallel-execution)
 * [Execution Complexity](#execution-complexity)
   * [Memory Complexity](#memory-complexity)
   * [Execution Time Complexity](#execution-time-complexity)
@@ -41,7 +42,7 @@ zellij -help
 
 Zellij
 	(A code for tiling 1 or more template databases into a single output database.)
-	(Version: 0.0.64) Modified: 2021/01/18
+	(Version: 0.9.0) Modified: 2021/02/05
 
 usage: zellij [options] -lattice <lattice_definition_file>
 	-help (Print this summary and exit)
@@ -56,13 +57,26 @@ usage: zellij [options] -lattice <lattice_definition_file>
 	-zlib (Use the Zlib / libz compression method if compression is enabled (default) [exodus only].)
 	-szip (Use SZip compression. [exodus only, enables netcdf-4])
 	-compress <$val> (Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used on the output file.)
+	-rcb (Use recursive coordinate bisection method to decompose the input mesh in a parallel run.)
+	-rib (Use recursive inertial bisection method to decompose the input mesh in a parallel run.)
+	-hsfc (Use hilbert space-filling curve method to decompose the input mesh in a parallel run. [default])
+	-linear (Use the linear method to decompose the input mesh in a parallel run.
+		Elements in order first n/p to proc 0, next to proc 1.)
+	-cyclic (Use the cyclic method to decompose the input mesh in a parallel run.
+		Elements handed out to id % proc_count)
+	-random (Use the random method to decompose the input mesh in a parallel run.
+		Elements assigned randomly to processors in a way that preserves balance
+		(do *not* use for a real run))
+	-ranks <$val> (Number of ranks to decompose mesh across)
+	-separate_cells (Do not equivalence the nodes betweeen adjacent unit cells.)
 	-debug <$val> (debug level (values are or'd)
 		  1 = time stamp information.
 		  2 = memory information.
 		  4 = Verbose Unit Cell information.
 		  8 = verbose output of Grid finalization calculations.
 		 16 = put exodus library into verbose mode.
-
+		 32 = Verbose decomposition information.
+		 64 = Verbose output database summary information.)
 	-copyright (Show copyright and license data.)
 
 	Can also set options via ZELLIJ_OPTIONS environment variable.
@@ -156,6 +170,40 @@ The output mesh will contain the union of all element blocks existing on the inp
 * unit cell `0004` has element blocks `10 20 100 200`
 
 The output mesh will have element blocks `1 2 10 20 100 200`
+
+## Parallel Execution
+Zellij can produce a mesh decomposed into a file-per-rank for use in a
+parallel analysis application.  Note that Zellij itself is run
+serially.  The main option that tells Zellij to produce the decomposed
+files is `-ranks <number_of_ranks>`.  If this is specified, then
+Zellij will create `number_of_ranks` individual files each containing
+a portion of the complete model.  The files will have the information
+needed by a parallel application to read the data and set up the
+correct communication paths and identify the nodes that are shared
+across processor boundaries.
+
+The decomposition method can also be specified.  This determines the
+algorithm that is used to break the lattice into `number_of_ranks`
+pieces each with approximately the same computational complexity.  The
+decomposition methods are:
+
+* `-rcb` Use recursive coordinate bisection method to decompose the input mesh in a parallel run.
+* `-rib` Use recursive inertial bisection method to decompose the input mesh in a parallel run.
+* `-hsfc` Use hilbert space-filling curve method to decompose the input mesh in a parallel run.
+* `-linear` Use the linear method to decompose the input mesh in a parallel run. Elements in order first `n/p` to proc 0, next to proc 1.
+* `-cyclic` Use the cyclic method to decompose the input mesh in a parallel run.	Elements handed out to `id % proc_count`.
+* `-random` Use the random method to decompose the input mesh in a parallel run.	Elements are assigned randomly to processors in a way that preserves balance (do *not* use for a real run))
+
+The `-hsfc` method is the default if no other decomposition method is
+specified. Note that the decomposition occurs at the _grid_ level so
+the elements of each grid cell will not be split across multiple ranks.  The grid
+cells are weighted by the number of elements in the cell which should
+produce a balanced decomposition if there are unit cells of varying
+element counts.
+
+The `-linear`, `-cyclic`, and `-random` methods are typically used for
+debugging and testing Zellij and should not be used in a production
+run, especially the `-random` method.
 
 ## Execution Complexity
 
@@ -266,6 +314,6 @@ The output mesh in this case consisted of 37.3 million elements and 38.5 million
 
 ## TODO
 
+* Manage number of open files.
 * Parallel Support
-  * Serial Execution with Parallel file output
   * Parallel Execution with Parallel file output
