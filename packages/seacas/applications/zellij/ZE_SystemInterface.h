@@ -32,15 +32,7 @@ public:
 
   int ranks() const { return ranks_; }
   int start_rank() const { return startRank_; }
-  int rank_count() const
-  {
-    if ((rankCount_ == 0) || (startRank_ + rankCount_ > ranks_)) {
-      return ranks_ - startRank_;
-    }
-    else {
-      return rankCount_;
-    }
-  }
+  int rank_count() const { return rankCount_; }
 
   bool equivalence_nodes() const { return equivalenceNodes_; }
 

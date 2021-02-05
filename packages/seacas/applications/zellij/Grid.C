@@ -76,7 +76,7 @@ void Grid::create_output_regions(SystemInterface &interFace)
   for (int i = start_rank; i < start_rank + rank_count; i++) {
     std::string outfile = Ioss::Utils::decode_filename(interFace.outputName_, i, interFace.ranks());
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
-                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
+                                                    (MPI_Comm)MPI_COMM_SELF, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }

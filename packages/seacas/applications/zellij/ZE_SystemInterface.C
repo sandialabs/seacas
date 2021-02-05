@@ -7,6 +7,7 @@
 #include "ZE_SystemInterface.h"
 #include "ZE_Version.h" // for qainfo
 
+#include <Ioss_ParallelUtils.h>
 #include <copyright.h>
 #include <cstddef> // for size_t
 #include <cstdlib> // for exit, strtod, strtoul, abs, etc
@@ -263,6 +264,26 @@ bool SystemInterface::parse_options(int argc, char **argv)
     if (temp != nullptr) {
       compressionLevel_ = std::strtol(temp, nullptr, 10);
     }
+  }
+
+  // Adjust start_rank and rank_count if running in parallel...
+  Ioss::ParallelUtils pu{MPI_COMM_WORLD};
+  if (pu.parallel_size() > 1) {
+    auto size          = pu.parallel_size();
+    auto ranks_per_mpi = ranks_ / size;
+    auto extra         = ranks_ % size;
+
+    auto my_rank = pu.parallel_rank();
+    if (my_rank < extra) {
+      startRank_ = (ranks_per_mpi + 1) * my_rank;
+    }
+    else {
+      startRank_ = (ranks_per_mpi + 1) * extra + ranks_per_mpi * (my_rank - extra);
+    }
+    rankCount_ = ranks_per_mpi + (my_rank < extra ? 1 : 0);
+  }
+  if ((rankCount_ == 0) || (startRank_ + rankCount_ > ranks_)) {
+    rankCount_ = ranks_ - startRank_;
   }
 
   return true;

@@ -40,7 +40,7 @@
 #endif
 
 namespace {
-  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace);
+  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu);
 
   std::string time_stamp(const std::string &format);
 } // namespace
@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
 {
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
+
 #endif
 
   try {
@@ -90,7 +91,8 @@ int main(int argc, char *argv[])
 
 template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
 {
-  double begin = Ioss::Utils::timer();
+  double              begin = Ioss::Utils::timer();
+  Ioss::ParallelUtils pu{MPI_COMM_WORLD};
 
   debug_level = interFace.debug();
 
@@ -106,7 +108,7 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   }
 
   UnitCellMap unit_cells;
-  auto        grid = define_lattice(unit_cells, interFace);
+  auto        grid = define_lattice(unit_cells, interFace, pu);
 
   if (debug_level & 1) {
     fmt::print(stderr, "{} Lattice Defined\n", time_stamp(tsFormat));
@@ -163,7 +165,7 @@ namespace {
     // Check that 'filename' does not contain a starting/ending double quote...
     filename.erase(remove(filename.begin(), filename.end(), '\"'), filename.end());
     Ioss::DatabaseIO *dbi =
-        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
+        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_SELF);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -182,9 +184,8 @@ namespace {
     return std::make_shared<Ioss::Region>(dbi, name);
   }
 
-  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace)
+  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu)
   {
-    Ioss::ParallelUtils pu{MPI_COMM_WORLD};
     if (debug_level & 2) {
       pu.progress("Defining Unit Cells...");
     }
