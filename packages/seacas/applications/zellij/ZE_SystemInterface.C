@@ -110,7 +110,8 @@ void SystemInterface::enroll_options()
                   "\t\t  4 = Verbose Unit Cell information.\n"
                   "\t\t  8 = verbose output of Grid finalization calculations.\n"
                   "\t\t 16 = put exodus library into verbose mode.\n"
-                  "\t\t 32 = Verbose decomposition information.",
+                  "\t\t 32 = Verbose decomposition information.\n"
+                  "\t\t 64 = Verbose output database summary information.",
                   "0");
 
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);

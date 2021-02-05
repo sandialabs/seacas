@@ -136,7 +136,7 @@ private:
   //!  6 7 8    TL T TR
   //!  4 0 5     L C R
   //!  1 2 3    BL B BR
-  std::array<int, 9> m_ranks{0, -1, -1, -1, -1, -1, -1, -1, -1};
+  std::array<int, 9> m_ranks{{0, -1, -1, -1, -1, -1, -1, -1, -1}};
 
   //! True if `Grid.finalize()` has been run on this cell / entry.
 public:

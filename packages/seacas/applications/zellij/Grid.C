@@ -29,10 +29,10 @@ namespace {
 
   Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
 
-  void set_coordinate_offsets(Grid &grid);
-  void handle_nodes(Grid &grid);
-  void handle_elements(Grid &grid);
-  void handle_communications(Grid &grid);
+  void   set_coordinate_offsets(Grid &grid);
+  size_t handle_nodes(Grid &grid);
+  size_t handle_elements(Grid &grid);
+  void   handle_communications(Grid &grid);
 } // namespace
 
 Grid::Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j)
@@ -161,14 +161,17 @@ void Grid::finalize()
   }
 
   set_coordinate_offsets(*this);
-  handle_nodes(*this);
-  handle_elements(*this);
+  auto node_count    = handle_nodes(*this);
+  auto element_count = handle_elements(*this);
   handle_communications(*this);
 
   for (int i = 0; i < m_parallelSize; i++) {
     output_region(i)->end_mode(Ioss::STATE_DEFINE_MODEL);
-    output_region(i)->output_summary(std::cerr);
+    if (debug_level & 64) {
+      output_region(i)->output_summary(std::cerr);
+    }
   }
+  fmt::print("                {:n} Nodes; {:n} Elements.\n", node_count, element_count);
 }
 
 template void Grid::output_model(int64_t);
@@ -193,6 +196,9 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
       }
     }
   }
+  if (debug_level & 2) {
+    util().progress("\tEnd Nodal Coordinate Output");
+  }
 
   // All the rest of these depend on progressing through the cells in
   // correct order so that can pass information correctly from cell to
@@ -209,6 +215,9 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
       }
     }
   }
+  if (debug_level & 2) {
+    util().progress("\tEnd Nodal Communication Map Output");
+  }
 
   if (parallel_size() > 1) {
     for (size_t j = 0; j < JJ(); j++) {
@@ -217,6 +226,9 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
         output_node_map(cell, INT(0));
         output_element_map(cell, INT(0));
       }
+    }
+    if (debug_level & 2) {
+      util().progress("\tEnd Node/Element Map Output");
     }
   }
 }
@@ -261,9 +273,6 @@ void Grid::output_nodal_coordinates(const Cell &cell)
   auto start = cell.m_localNodeIdOffset + 1;
   auto count = cell.added_node_count(Mode::PROCESSOR);
   ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
-  if (debug_level & 2) {
-    util().progress("\tEnd");
-  }
 }
 
 template <typename INT>
@@ -413,7 +422,7 @@ template <typename INT> void Grid::output_element_map(Cell &cell, INT /*dummy*/)
 }
 
 namespace {
-  void handle_elements(Grid &grid)
+  size_t handle_elements(Grid &grid)
   {
     // Not all unit cells have the same element blocks and the output
     // grid will contain the union of the element blocks on each unit
@@ -458,11 +467,13 @@ namespace {
 
     // Calculate values needed to set the "global_entity_count" property on the output element
     // blocks.
+    size_t                               global_element_count = 0;
     std::map<const std::string, int64_t> global_block_element_count;
     for (auto &blk : output_element_blocks) {
       for (int rank = 0; rank < grid.parallel_size(); rank++) {
         auto *block = blk.second.get();
         global_block_element_count[block->name()] += element_block_elem_count[rank][block->name()];
+        global_element_count += element_block_elem_count[rank][block->name()];
       }
     }
 
@@ -479,9 +490,10 @@ namespace {
         }
       }
     }
+    return global_element_count;
   }
 
-  void handle_nodes(Grid &grid)
+  size_t handle_nodes(Grid &grid)
   {
     size_t              global_node_count = 0;
     std::vector<size_t> local_node_count(grid.parallel_size());
@@ -513,6 +525,7 @@ namespace {
       block->property_add(Ioss::Property("id", 1));
       grid.output_region(i)->add(block);
     }
+    return global_node_count;
   }
 
   void handle_communications(Grid &grid)

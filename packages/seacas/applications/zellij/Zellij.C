@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
     else {
       time = zellij(interFace, static_cast<int64_t>(0));
     }
+    fmt::print(stderr, "\n Zellij execution successful.\n");
 
     add_to_log(argv[0], time);
 
@@ -135,10 +136,9 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   }
 
   double end = Ioss::Utils::timer();
-  fmt::print("******* END *******\n");
-  fmt::print(stderr, "\nTotal Execution time     = {:.5} seconds.\n", end - begin);
+  fmt::print(stderr, "\n Total Execution time     = {:.5} seconds.\n", end - begin);
   double hwm = (double)Ioss::Utils::get_hwm_memory_info() / 1024.0 / 1024.0;
-  fmt::print(stderr, "High-Water Memory Use    = {:.3} MiBytes.\n", hwm);
+  fmt::print(stderr, " High-Water Memory Use    = {:.3} MiBytes.\n", hwm);
   return (end - begin);
 }
 
