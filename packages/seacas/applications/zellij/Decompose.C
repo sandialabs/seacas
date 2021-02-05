@@ -113,6 +113,10 @@ namespace {
 
 void decompose_grid(Grid &grid, int ranks, const std::string &method)
 {
+  if (ranks == 1) {
+    return;
+  }
+
   if (method == "CYCLIC" || method == "LINEAR" || method == "RANDOM") {
     std::vector<int> rank_vec(grid.size());
 
