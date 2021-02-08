@@ -21,7 +21,7 @@ namespace {
 int main(int argc, char *argv[])
 {
 
-  auto startTime = std::chrono::high_resolution_clock::now();
+  auto startTime = std::chrono::steady_clock::now();
 
   std::string inFile;
   std::string outFile;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     std::cerr << "Output file already exists.  This utility\ndoes not clobber existing files.";
   }
 
-  auto                                      readStart = std::chrono::high_resolution_clock::now();
+  auto                                      readStart = std::chrono::steady_clock::now();
   std::unique_ptr<NasModules::N2ENasReader> reader(new NasModules::N2ENasReader(inFile));
   if (!reader->processFile()) {
 
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
         << "Unable to process the BDF file.  Check the file and\nthe permissions.  Bailing out.\n";
     return EXIT_FAILURE;
   }
-  auto readEnd = std::chrono::high_resolution_clock::now();
+  auto readEnd = std::chrono::steady_clock::now();
 
   size_t readNodes    = reader->getNumberGridPts();
   size_t readElements = reader->getNumberElems();
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
             << std::chrono::duration_cast<std::chrono::milliseconds>(readEnd - readStart).count()
             << "ms\n\n\n";
 
-  auto                     writeStart = std::chrono::high_resolution_clock::now();
+  auto                     writeStart = std::chrono::steady_clock::now();
   ExoModules::N2EExoWriter writer;
 
   if (!writer.createDB(outFile)) {
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     std::cerr << "Rerun utility. Do not use files from failed writes in calculations.";
     return EXIT_FAILURE;
   }
-  auto writeEnd = std::chrono::high_resolution_clock::now();
+  auto writeEnd = std::chrono::steady_clock::now();
 
   size_t blocksOut = writer.getBlocksOut();
   size_t nodesOut  = writer.getNodesOut();
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
             << std::chrono::duration_cast<std::chrono::milliseconds>(writeEnd - writeStart).count()
             << "ms\n\n\n";
 
-  auto endTime = std::chrono::high_resolution_clock::now();
+  auto endTime = std::chrono::steady_clock::now();
 
   std::cout << "Total Run time: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count()

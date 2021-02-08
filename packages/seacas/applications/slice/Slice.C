@@ -62,10 +62,10 @@ size_t partial_count = 1000000000;
 namespace {
   void progress(const std::string &output)
   {
-    static auto start = std::chrono::high_resolution_clock::now();
+    static auto start = std::chrono::steady_clock::now();
 
     if ((debug_level & 1) != 0) {
-      auto                          now  = std::chrono::high_resolution_clock::now();
+      auto                          now  = std::chrono::steady_clock::now();
       std::chrono::duration<double> diff = now - start;
       fmt::print(stderr, " [{:.2f} - {:L}]\t{}\n", diff.count(), Ioss::Utils::get_memory_info(),
                  output);
