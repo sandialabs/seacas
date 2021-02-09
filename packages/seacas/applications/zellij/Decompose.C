@@ -148,17 +148,12 @@ void decompose_grid(Grid &grid, int ranks, const std::string &method)
   std::vector<int>   w(grid.size());
 
   // Get coordinates of each cell centroid... (actually origin of cell)
-
-  // All unit_cells have same X, Y (and Z) extent.  Only need X and Y
-  auto x_range = grid.get_cell(0, 0).get_coordinate_range(Axis::X);
-  auto y_range = grid.get_cell(0, 0).get_coordinate_range(Axis::Y);
-
   size_t idx = 0;
   for (size_t j = 0; j < grid.JJ(); j++) {
     for (size_t i = 0; i < grid.II(); i++) {
       auto &cell = grid.get_cell(i, j);
-      x[idx]     = float((x_range.second - x_range.first) * (float)i);
-      y[idx]     = float((y_range.second - y_range.first) * (float)j);
+      x[idx]     = cell.m_offX;
+      y[idx]     = cell.m_offY;
 
       const auto &element_blocks = cell.m_unitCell->m_region->get_element_blocks();
       for (const auto *block : element_blocks) {
@@ -200,12 +195,12 @@ void decompose_grid(Grid &grid, int ranks, const std::string &method)
                        reinterpret_cast<ZOLTAN_VOID_FN *>(zoltan_geom), nullptr));
 
   /* Set parameters for Zoltan */
+  ZCHECK(Zoltan_Set_Param(zz, "DEBUG_LEVEL", "0"));
   {
     std::string str = fmt::format("{}", ranks);
     ZCHECK(Zoltan_Set_Param(zz, "NUM_GLOBAL_PARTITIONS", str.c_str()));
     ZCHECK(Zoltan_Set_Param(zz, "LB_METHOD", method.c_str()));
   }
-  ZCHECK(Zoltan_Set_Param(zz, "DEBUG_LEVEL", "0"));
   ZCHECK(Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "0"));
   ZCHECK(Zoltan_Set_Param(zz, "REMAP", "0"));
   ZCHECK(Zoltan_Set_Param(zz, "RETURN_LISTS", "PARTITION_ASSIGNMENTS"));

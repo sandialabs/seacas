@@ -46,7 +46,7 @@ namespace {
   std::string time_stamp(const std::string &format);
 } // namespace
 
-std::string  tsFormat    = "[%H:%M:%S] ";
+std::string  tsFormat    = "[{:%H:%M:%S}]";
 unsigned int debug_level = 0;
 
 template <typename INT> double zellij(SystemInterface &interFace, INT dummy);
@@ -116,29 +116,33 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
     fmt::print(stderr, "{} Lattice Defined\n", time_stamp(tsFormat));
   }
 
+  grid.set_coordinate_offsets();
+
   grid.decompose(interFace.ranks(), interFace.decomp_method());
+  if (debug_level & 1) {
+    fmt::print(stderr, "{} Lattice Decomposed\n", time_stamp(tsFormat));
+  }
 
   // All unit cells have been mapped into the IxJ grid, now calculate all node / element offsets
   // and the global node and element counts... (TODO: Parallel decomposition)
   //
   // Iterate through the grid starting with (0,0) and accumulate node and element counts...
-  if (debug_level & 1) {
-    fmt::print(stderr, "{} Finalize Lattice\n", time_stamp(tsFormat));
-  }
-
   int start_rank = interFace.start_rank();
   int rank_count = interFace.rank_count();
   grid.finalize(start_rank, rank_count);
-
   if (debug_level & 1) {
-    fmt::print(stderr, "{} Output Model\n", time_stamp(tsFormat));
+    fmt::print(stderr, "{} Lattice Finalized\n", time_stamp(tsFormat));
   }
+
   grid.output_model(start_rank, rank_count, (INT)0);
+  if (debug_level & 1) {
+    fmt::print(stderr, "{} Model Output\n", time_stamp(tsFormat));
+  }
 
   /*************************************************************************/
   // EXIT program
   if (debug_level & 1) {
-    fmt::print(stderr, "{}", time_stamp(tsFormat));
+    fmt::print(stderr, "{} Execution Complete\n", time_stamp(tsFormat));
   }
 
   double end = Ioss::Utils::timer();
@@ -194,9 +198,14 @@ namespace {
     std::string filename = interFace.lattice();
 
     std::ifstream input(filename, std::ios::in);
-    bool          in_dictionary{false};
-    bool          in_lattice{false};
+    if (!input.is_open()) {
+      fmt::print(stderr, fmt::fg(fmt::color::red),
+                 "\nERROR: Could not open/access lattice file '{}'\n", filename);
+      exit(EXIT_FAILURE);
+    }
 
+    bool        in_dictionary{false};
+    bool        in_lattice{false};
     std::string line;
     while (getline(input, line)) {
       if (line.empty()) {
@@ -217,7 +226,7 @@ namespace {
       }
       else if (in_dictionary) {
         if (tokens.size() != 2) {
-          fmt::print(fmt::fg(fmt::color::red),
+          fmt::print(stderr, fmt::fg(fmt::color::red),
                      "\nERROR: There are {} entries on a lattice dictionary line; there should be "
                      "only 2:\n\t'{}'.\n\n",
                      tokens.size(), line);
@@ -225,7 +234,7 @@ namespace {
         }
         if (unit_cells.find(tokens[0]) != unit_cells.end()) {
           fmt::print(
-              fmt::fg(fmt::color::red),
+              stderr, fmt::fg(fmt::color::red),
               "\nERROR: There is a duplicate `unit cell` ({}) in the lattice dictionary.\n\n",
               tokens[0]);
           exit(EXIT_FAILURE);
@@ -235,7 +244,7 @@ namespace {
 
         if (region == nullptr) {
           fmt::print(
-              fmt::fg(fmt::color::red),
+              stderr, fmt::fg(fmt::color::red),
               "\nERROR: Unable to open the database '{}' associated with the unit cell '{}'.\n\n",
               tokens[1], tokens[0]);
           exit(EXIT_FAILURE);
@@ -262,7 +271,7 @@ namespace {
     SMART_ASSERT(tokens[0] == "BEGIN_LATTICE")(tokens[0])(line);
 
     if (tokens.size() != 4) {
-      fmt::print(fmt::fg(fmt::color::red),
+      fmt::print(stderr, fmt::fg(fmt::color::red),
                  "\nERROR: The 'BEGIN_LATTICE' line has incorrect syntax.  It should be "
                  "'BEGIN_LATTICE I J K'\n"
                  "\tThe line was '{}'\n\n",
@@ -278,7 +287,7 @@ namespace {
 
     Grid grid(interFace, II, JJ);
 
-    fmt::print("\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
+    fmt::print(stderr, "\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
                unit_cells.size(), II, JJ, KK);
 
     size_t row{0};
@@ -294,7 +303,7 @@ namespace {
 
         // Check row count to make sure matches 'I' size of lattice
         if (row != grid.JJ()) {
-          fmt::print(fmt::fg(fmt::color::red),
+          fmt::print(stderr, fmt::fg(fmt::color::red),
                      "\nERROR: Only {} rows of the {} x {} lattice were defined.\n\n", row, II, JJ);
           exit(EXIT_FAILURE);
         }
@@ -306,14 +315,14 @@ namespace {
         //       lines that are too long and would be easier to split a row over multiple lines...
         if (tokens.size() != grid.II()) {
           fmt::print(
-              fmt::fg(fmt::color::red),
+              stderr, fmt::fg(fmt::color::red),
               "\nERROR: Line {} of the lattice definition has {} entries.  It should have {}.\n\n",
               row + 1, tokens.size(), grid.II());
           exit(EXIT_FAILURE);
         }
 
         if (row >= grid.JJ()) {
-          fmt::print(fmt::fg(fmt::color::red),
+          fmt::print(stderr, fmt::fg(fmt::color::red),
                      "\nERROR: There are too many rows in the lattice definition. The lattice is "
                      "{} x {}.\n\n",
                      grid.II(), grid.JJ());
@@ -321,7 +330,7 @@ namespace {
         }
 
         if (tokens.size() != grid.II()) {
-          fmt::print(fmt::fg(fmt::color::red),
+          fmt::print(stderr, fmt::fg(fmt::color::red),
                      "\nERROR: In row {}, there is an incorrect number of entries.  There should "
                      "be {}, but found {}.\n",
                      row + 1, grid.II(), tokens.size());
@@ -331,7 +340,7 @@ namespace {
         size_t col = 0;
         for (auto &key : tokens) {
           if (unit_cells.find(key) == unit_cells.end()) {
-            fmt::print(fmt::fg(fmt::color::red),
+            fmt::print(stderr, fmt::fg(fmt::color::red),
                        "\nERROR: In row {}, column {}, the lattice specifies a unit cell ({}) that "
                        "has not been defined.\n\n",
                        row + 1, col + 1, key);

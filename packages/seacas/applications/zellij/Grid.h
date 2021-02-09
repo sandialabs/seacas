@@ -48,8 +48,14 @@ public:
   size_t size() const { return m_gridI * m_gridJ; }
   int    parallel_size() const { return m_parallelSize; }
 
+  //! Are nodes at the boundaries of the unit cells equivalenced.
+  bool equivalence_nodes() const { return m_equivalenceNodes; }
+
   //! Create a Cell object referencing the UnitCell `unit_cell` at location `(i,j)`
   void initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell);
+
+  //! Specify the X and Y location of each grid cell in the overall grid space.
+  void set_coordinate_offsets();
 
   //! Once all Cell objects have been initialized, Determine the coordinate extents and
   //! offsets of each cell, the size of the output mesh, the node and element id offsets
@@ -88,5 +94,6 @@ private:
   size_t                                     m_gridI{0};
   size_t                                     m_gridJ{0};
   int                                        m_parallelSize{1};
+  bool                                       m_equivalenceNodes{true};
 };
 #endif

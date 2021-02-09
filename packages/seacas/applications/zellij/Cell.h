@@ -57,7 +57,7 @@ public:
 
   //! Number of nodes that will be added to global node count when this cell is added to
   //! grid -- accounts for coincident nodes if this cell has neighbor(s)
-  size_t added_node_count(enum Mode mode) const;
+  size_t added_node_count(enum Mode mode, bool equivalence_nodes) const;
 
   //! Number of nodes that this cell adds to the processor boundary node count.
   //! Assumes that cells are processed in "order", so accounts for corner nodes
@@ -70,6 +70,10 @@ public:
   void populate_node_communication_map(const std::vector<INT> &node_map, std::vector<INT> &nodes,
                                        std::vector<INT> &procs) const;
 
+  //! Returns a `std::array<int,9>` which categorizes whether the cells at each location are on the
+  //! same rank as `rank`. A value of `1` means the cell at that location is on the same rank; a
+  //! value of `0` means it is on a different rank. Used to determine which nodes have already been
+  //! accounted for on this rank and which this cell will add to the processor-local count.
   std::array<int, 9> categorize_processor_boundary_nodes(int rank) const;
 
   //! The mpi rank that this cell, or the neighboring cells, will be on in a parallel run.
@@ -86,7 +90,8 @@ public:
   //! If `mode == PROCESSOR`, then modify due to processor boundaries...
   std::vector<int> categorize_nodes(enum Mode mode) const;
 
-  template <typename INT> std::vector<INT> generate_node_map(Mode mode, INT /*dummy*/) const;
+  template <typename INT>
+  std::vector<INT> generate_node_map(Mode mode, bool equivalance_nodes, INT /*dummy*/) const;
 
   template <typename INT>
   void populate_neighbor(Loc location, const std::vector<INT> &map, const Cell &neighbor) const;
@@ -137,10 +142,6 @@ private:
   //!  4 0 5     L C R
   //!  1 2 3    BL B BR
   std::array<int, 9> m_ranks{{0, -1, -1, -1, -1, -1, -1, -1, -1}};
-
-  //! True if `Grid.finalize()` has been run on this cell / entry.
-public:
-  bool m_consistent{false};
 };
 
 #endif

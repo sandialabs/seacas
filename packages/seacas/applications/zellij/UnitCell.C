@@ -93,12 +93,14 @@ UnitCell::UnitCell(std::shared_ptr<Ioss::Region> region) : m_region(region)
     fmt::print("Max J: {}\n\n", fmt::join(max_J_face, " "));
   }
 
+#ifndef NDEBUG
   for (size_t i = 0; i < min_I_face.size(); i++) {
     auto minI = min_I_face[i];
     auto maxI = max_I_face[i];
     SMART_ASSERT(approx_equal(coord_y[minI], coord_y[maxI]))(coord_y[minI])(coord_y[maxI]);
     SMART_ASSERT(approx_equal(coord_z[minI], coord_z[maxI]))(coord_z[minI])(coord_z[maxI]);
   }
+#endif
 
   // Determine 'K' -- size of minI_minJ corner list.
   cell_KK = 0;
@@ -106,6 +108,7 @@ UnitCell::UnitCell(std::shared_ptr<Ioss::Region> region) : m_region(region)
     if (min_I_face[cell_KK] != min_J_face[cell_KK]) {
       break;
     }
+
 #ifndef NDEBUG
     // Checking that we get the same on the maxI_maxJ corner...
     size_t i_x = max_I_face.size() - 1 - cell_KK;

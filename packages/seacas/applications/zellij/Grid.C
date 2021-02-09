@@ -21,7 +21,6 @@
 #include <fmt/ostream.h>
 
 extern unsigned int debug_level;
-bool                equivalence_nodes = true;
 
 namespace {
   void output_summary(Ioss::Region *region, std::ostream &strm)
@@ -38,27 +37,46 @@ namespace {
 
   Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
 
-  void   set_coordinate_offsets(Grid &grid);
   size_t handle_elements(Grid &grid, int start_rank, int rank_count);
   size_t handle_nodes(Grid &grid, int start_rank, int rank_count);
   void   handle_communications(Grid &grid, int start_rank, int rank_count);
 } // namespace
 
 Grid::Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j)
-    : m_gridI(extent_i), m_gridJ(extent_j), m_parallelSize(interFace.ranks())
+    : m_gridI(extent_i), m_gridJ(extent_j), m_parallelSize(interFace.ranks()),
+      m_equivalenceNodes(interFace.equivalence_nodes())
 {
   m_grid.resize(m_gridI * m_gridJ);
   create_output_regions(interFace);
-  equivalence_nodes = interFace.equivalence_nodes();
 }
 
 void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
 {
-  auto &cell      = get_cell(i, j);
-  cell.m_i        = i;
-  cell.m_j        = j;
-  cell.m_unitCell = unit_cell;
+  auto &cell = get_cell(i, j);
+  cell.initialize(i, j, unit_cell);
   SMART_ASSERT(unit_cell->m_region != nullptr)(i)(j);
+}
+
+void Grid::set_coordinate_offsets()
+{
+  // All unit_cells have same X, Y (and Z) extent.  Only need X and Y
+  auto x_range = get_cell(0, 0).get_coordinate_range(Axis::X);
+  auto y_range = get_cell(0, 0).get_coordinate_range(Axis::Y);
+  auto delta_x = x_range.second - x_range.first;
+  auto delta_y = y_range.second - y_range.first;
+
+  for (size_t j = 0; j < JJ(); j++) {
+    for (size_t i = 0; i < II(); i++) {
+      auto &cell  = get_cell(i, j);
+      cell.m_offX = delta_x * (double)i;
+      cell.m_offY = delta_y * (double)j;
+
+      if (debug_level & 2) {
+        util().progress(
+            fmt::format("\tCell({}, {}) X = {}, Y = {}", i, j, cell.m_offX, cell.m_offY));
+      }
+    }
+  }
 }
 
 void Grid::create_output_regions(SystemInterface &interFace)
@@ -68,7 +86,6 @@ void Grid::create_output_regions(SystemInterface &interFace)
   }
   m_outputRegions.resize(interFace.ranks());
 
-  // Define the output database(s)...
   int                   int_size   = interFace.ints32bit() ? 4 : 8;
   Ioss::PropertyManager properties = parse_properties(interFace, int_size);
   if (parallel_size() == 1) {
@@ -83,6 +100,7 @@ void Grid::create_output_regions(SystemInterface &interFace)
   int start_rank = interFace.start_rank();
   int rank_count = interFace.rank_count();
   for (int i = start_rank; i < start_rank + rank_count; i++) {
+    // Define the output database(s)...
     std::string outfile = Ioss::Utils::decode_filename(interFace.outputName_, i, interFace.ranks());
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
                                                     (MPI_Comm)MPI_COMM_SELF, properties);
@@ -112,6 +130,7 @@ void Grid::categorize_processor_boundaries()
   if (debug_level & 2) {
     util().progress(__func__);
   }
+
   // Now iterate the cells and tell each cell the rank of all neighboring cells...
   // boundary with its "left" or "lower" neighboring cell.
 
@@ -154,12 +173,13 @@ void Grid::categorize_processor_boundaries()
   }
 
   if (debug_level & 32) {
+    auto width = Ioss::Utils::number_width(parallel_size());
     for (size_t j = 0; j < JJ(); j++) {
       for (size_t i = 0; i < II(); i++) {
         const auto &cell  = get_cell(i, j);
         auto        left  = cell.processor_boundary(Loc::L) ? '<' : ' ';
         auto        below = cell.processor_boundary(Loc::B) ? '^' : ' ';
-        fmt::print(" {}{}{}", left, cell.rank(Loc::C), below);
+        fmt::print(" {0}{1:{3}}{2}", left, cell.rank(Loc::C), below, width);
       }
       fmt::print("\n");
     }
@@ -172,7 +192,6 @@ void Grid::finalize(int start_rank, int rank_count)
     util().progress(__func__);
   }
 
-  set_coordinate_offsets(*this);
   auto node_count    = handle_nodes(*this, start_rank, rank_count);
   auto element_count = handle_elements(*this, start_rank, rank_count);
   handle_communications(*this, start_rank, rank_count);
@@ -268,7 +287,7 @@ void Grid::output_nodal_coordinates(const Cell &cell)
   }
 
   // Filter coordinates down to only "new nodes"...
-  if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
+  if (m_equivalenceNodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
     auto   mode              = parallel_size() > 1 ? Mode::PROCESSOR : Mode::GLOBAL;
     auto   categorized_nodes = cell.categorize_nodes(mode);
     size_t nn                = 0;
@@ -283,7 +302,7 @@ void Grid::output_nodal_coordinates(const Cell &cell)
   }
 
   auto start = cell.m_localNodeIdOffset + 1;
-  auto count = cell.added_node_count(Mode::PROCESSOR);
+  auto count = cell.added_node_count(Mode::PROCESSOR, m_equivalenceNodes);
   ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
 }
 
@@ -358,7 +377,7 @@ void Grid::output_node_map(const Cell &cell, int start_rank, int num_ranks, INT 
   int rank = cell.rank(Loc::C);
 
   auto start = cell.m_localNodeIdOffset + 1;
-  auto count = cell.added_node_count(Mode::PROCESSOR);
+  auto count = cell.added_node_count(Mode::PROCESSOR, m_equivalenceNodes);
 
   if (parallel_size() == 1) {
     auto             gid = cell.m_globalNodeIdOffset + 1;
@@ -373,7 +392,7 @@ void Grid::output_node_map(const Cell &cell, int start_rank, int num_ranks, INT 
     if (rank >= start_rank && rank < start_rank + num_ranks) {
 
       // Filter nodes down to only "new nodes"...
-      if (equivalence_nodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
+      if (m_equivalenceNodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
         auto   mode              = Mode::PROCESSOR;
         auto   categorized_nodes = cell.categorize_nodes(mode);
         size_t nn                = 0;
@@ -485,7 +504,8 @@ namespace {
 
           // Create output element block if does not exist yet...
           if (output_element_blocks.find(blk) == output_element_blocks.end()) {
-            output_element_blocks.emplace(blk, new Ioss::ElementBlock(*block));
+            output_element_blocks.emplace(
+                blk, std::make_unique<Ioss::ElementBlock>(Ioss::ElementBlock(*block)));
           }
         }
       }
@@ -532,8 +552,8 @@ namespace {
         cell.m_localNodeIdOffset  = local_node_count[rank];
         SMART_ASSERT(cell.m_unitCell->m_region != nullptr)(i)(j);
 
-        auto new_global_nodes    = cell.added_node_count(Mode::GLOBAL);
-        auto new_processor_nodes = cell.added_node_count(Mode::PROCESSOR);
+        auto new_global_nodes    = cell.added_node_count(Mode::GLOBAL, grid.equivalence_nodes());
+        auto new_processor_nodes = cell.added_node_count(Mode::PROCESSOR, grid.equivalence_nodes());
         if (debug_level & 8) {
           fmt::print("rank: i, j, node_offset, added_nodes: {}: {} {} {} {} {}\n", rank, i, j,
                      local_node_count[rank], new_global_nodes, new_processor_nodes);
@@ -581,26 +601,6 @@ namespace {
     }
   }
 
-  void set_coordinate_offsets(Grid &grid)
-  {
-    // All unit_cells have same X, Y (and Z) extent.  Only need X and Y
-    auto x_range = grid.get_cell(0, 0).get_coordinate_range(Axis::X);
-    auto y_range = grid.get_cell(0, 0).get_coordinate_range(Axis::Y);
-
-    for (size_t j = 0; j < grid.JJ(); j++) {
-      for (size_t i = 0; i < grid.II(); i++) {
-        auto &cell  = grid.get_cell(i, j);
-        cell.m_offX = (x_range.second - x_range.first) * (double)i;
-        cell.m_offY = (y_range.second - y_range.first) * (double)j;
-
-        cell.m_consistent = true;
-        if (debug_level & 2) {
-          grid.util().progress(fmt::format("\tCell({}, {})", i, j));
-        }
-      }
-    }
-  }
-
   template <typename INT>
   std::vector<INT> generate_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/)
   {
@@ -609,7 +609,7 @@ namespace {
     // this would just be adding `cell.m_globalNodeIdOffset` to each
     // connectivity entry.
 
-    std::vector<INT> map = cell.generate_node_map(mode, INT(0));
+    std::vector<INT> map = cell.generate_node_map(mode, grid.equivalence_nodes(), INT(0));
     if (debug_level & 8) {
       fmt::print("Cell({},{}) PROCESSOR MAP: {}\n", cell.m_i, cell.m_j, fmt::join(map, " "));
     }
@@ -618,7 +618,7 @@ namespace {
     // the mappings for the max_I and max_J faces and max_I-max_J edge
     // for use by later neighbors...  Check whether cell has neighbors
     // on max_I or max_J faces...
-    if (equivalence_nodes) {
+    if (grid.equivalence_nodes()) {
       if ((mode == Mode::GLOBAL ||
            (mode == Mode::PROCESSOR && cell.rank(Loc::C) == cell.rank(Loc::R))) &&
           (cell.m_i + 1 < grid.II())) {

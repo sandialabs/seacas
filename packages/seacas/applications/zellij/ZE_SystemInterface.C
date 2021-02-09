@@ -113,11 +113,11 @@ void SystemInterface::enroll_options()
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
-                  "\t\t  1 = time stamp information.\n"
-                  "\t\t  2 = memory information.\n"
+                  "\t\t  1 = Time stamp information.\n"
+                  "\t\t  2 = Memory information.\n"
                   "\t\t  4 = Verbose Unit Cell information.\n"
-                  "\t\t  8 = verbose output of Grid finalization calculations.\n"
-                  "\t\t 16 = put exodus library into verbose mode.\n"
+                  "\t\t  8 = Verbose output of Grid finalization calculations.\n"
+                  "\t\t 16 = Put exodus library into verbose mode.\n"
                   "\t\t 32 = Verbose decomposition information.\n"
                   "\t\t 64 = Verbose output database summary information.",
                   "0");

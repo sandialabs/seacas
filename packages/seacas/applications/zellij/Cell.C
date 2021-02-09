@@ -14,9 +14,11 @@
 #include <fmt/format.h>
 
 extern unsigned int debug_level;
-extern bool         equivalence_nodes;
 
 namespace {
+  // Iterate over the interior nodes on the specified face.  Skips
+  // the corner nodes on the I-J intersections.  Processes I-K and
+  // J-K corners.
   template <typename INT>
   void process_face_nodes(const std::vector<INT> &node_map, std::vector<INT> &nodes,
                           std::vector<INT> &procs, const std::vector<int64_t> &face_nodes,
@@ -29,6 +31,7 @@ namespace {
     }
   }
 
+  // Iterate over the specified corner nodes.
   template <typename INT>
   void process_corner_nodes(const std::vector<INT> &node_map, std::vector<INT> &nodes,
                             std::vector<INT> &procs, const std::vector<int64_t> &face_nodes,
@@ -50,6 +53,8 @@ namespace {
     }
   }
 
+  // Return a vector (possibly empty) of the ranks of the cells that surround this
+  // cell.  Includes the rank that this cell is on (cell_ranks[0]).
   std::vector<int> get_shared_ranks(const std::array<int, 9> &cell_ranks)
   {
     std::vector<int> ranks(9);
@@ -58,7 +63,7 @@ namespace {
     // Set all `-1` (non-neighbor) values to match center rank...
     for (auto &r : ranks) {
       if (r == -1) {
-        r = cell_ranks[0];
+        r = cell_ranks[(int)Loc::C];
       }
     }
     Ioss::Utils::uniquify(ranks);
@@ -71,10 +76,13 @@ void Cell::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
   m_i        = i;
   m_j        = j;
   m_unitCell = unit_cell;
-  m_ranks[0] = 0;
-  m_ranks[4] = m_i > 0 ? 0 : -1;
-  m_ranks[2] = m_j > 0 ? 0 : -1;
-  m_ranks[1] = (m_i > 0 && m_j > 0) ? 0 : -1;
+
+  // These are not necessarily the correct ranks, but at this point can determine
+  // Whether this cell is surrounded by other cells, or is on the boundary.
+  set_rank(Loc::C, 0);
+  set_rank(Loc::L, m_i > 0 ? 0 : -1);
+  set_rank(Loc::B, m_j > 0 ? 0 : -1);
+  set_rank(Loc::BL, (m_i > 0 && m_j > 0) ? 0 : -1);
 }
 
 std::pair<double, double> Cell::get_coordinate_range(enum Axis axis) const
@@ -90,7 +98,7 @@ std::pair<double, double> Cell::get_coordinate_range(enum Axis axis) const
 
 // Number of nodes that will be added to global node count when this cell is added to
 // grid -- accounts for coincident nodes if cell has neighbor(s)
-size_t Cell::added_node_count(enum Mode mode) const
+size_t Cell::added_node_count(enum Mode mode, bool equivalence_nodes) const
 {
   // If no neighbors (to -I, -J), then all nodes would be added...
   auto count = m_unitCell->m_region->get_property("node_count").get_int();
@@ -140,80 +148,76 @@ size_t Cell::added_node_count(enum Mode mode) const
   return count;
 }
 
-std::array<int, 9> Cell::categorize_processor_boundary_nodes(int rank) const
+std::array<int, 9> Cell::categorize_processor_boundary_nodes(int the_rank) const
 {
   // Create a "unit cell" to categorize processor boundary nodes...
   std::array<int, 9> bnd_nodes{0};
 
   // Bottom...
-  if (m_ranks[(int)Loc::B] == rank) {
+  if (rank(Loc::B) == the_rank) {
     bnd_nodes[(int)Loc::B] = 1;
-    if ((m_ranks[(int)Loc::BL] != m_ranks[(int)Loc::C]) &&
-        (m_ranks[(int)Loc::L] != m_ranks[(int)Loc::C])) {
+    if ((rank(Loc::BL) != rank(Loc::C)) && (rank(Loc::L) != rank(Loc::C))) {
       bnd_nodes[(int)Loc::BL] = 1;
     }
-    if (m_ranks[(int)Loc::BR] != m_ranks[(int)Loc::C]) {
+    if (rank(Loc::BR) != rank(Loc::C)) {
       bnd_nodes[(int)Loc::BR] = 1;
     }
   }
 
   // Left
-  if (m_ranks[(int)Loc::L] == rank) {
+  if (rank(Loc::L) == the_rank) {
     bnd_nodes[(int)Loc::L]  = 1;
     bnd_nodes[(int)Loc::TL] = 1;
-    if ((m_ranks[(int)Loc::BL] != m_ranks[(int)Loc::C]) &&
-        (m_ranks[(int)Loc::B] != m_ranks[(int)Loc::C])) {
+    if ((rank(Loc::BL) != rank(Loc::C)) && (rank(Loc::B) != rank(Loc::C))) {
       bnd_nodes[(int)Loc::BL] = 1;
     }
   }
 
   // Top
-  if (m_ranks[(int)Loc::T] == rank) {
+  if (rank(Loc::T) == the_rank) {
     bnd_nodes[(int)Loc::T]  = 1;
     bnd_nodes[(int)Loc::TR] = 1;
-    if (m_ranks[(int)Loc::L] != m_ranks[(int)Loc::C]) {
+    if (rank(Loc::L) != rank(Loc::C)) {
       bnd_nodes[(int)Loc::TL] = 1;
     }
   }
 
   // Right
-  if (m_ranks[(int)Loc::R] == rank) {
+  if (rank(Loc::R) == the_rank) {
     bnd_nodes[(int)Loc::R]  = 1;
     bnd_nodes[(int)Loc::TR] = 1;
-    if ((m_ranks[(int)Loc::BR] != m_ranks[(int)Loc::C]) &&
-        (m_ranks[(int)Loc::B] != m_ranks[(int)Loc::C])) {
+    if ((rank(Loc::BR) != rank(Loc::C)) && (rank(Loc::B) != rank(Loc::C))) {
       bnd_nodes[(int)Loc::BR] = 1;
     }
   }
 
   // Bottom Left
-  if (m_ranks[(int)Loc::BL] == rank) {
-    // If left and bottom *don't* match rank, then need to add this node
-    if ((m_ranks[(int)Loc::L] != rank) && (m_ranks[(int)Loc::B] != rank) &&
-        (m_ranks[(int)Loc::L] != m_ranks[(int)Loc::C]) &&
-        (m_ranks[(int)Loc::B] != m_ranks[(int)Loc::C])) {
+  if (rank(Loc::BL) == the_rank) {
+    // If left and bottom *don't* match the_rank, then need to add this node
+    if ((rank(Loc::L) != the_rank) && (rank(Loc::B) != the_rank) &&
+        (rank(Loc::L) != rank(Loc::C)) && (rank(Loc::B) != rank(Loc::C))) {
       bnd_nodes[(int)Loc::BL] = 1;
     }
   }
 
   // Bottom Right
-  if (m_ranks[(int)Loc::BR] == rank) {
-    // If bottom *doesn't* match rank, then need to add this node
-    if ((m_ranks[(int)Loc::B] != rank) && (m_ranks[(int)Loc::B] != m_ranks[(int)Loc::C])) {
+  if (rank(Loc::BR) == the_rank) {
+    // If bottom *doesn't* match the_rank, then need to add this node
+    if ((rank(Loc::B) != the_rank) && (rank(Loc::B) != rank(Loc::C))) {
       bnd_nodes[(int)Loc::BR] = 1;
     }
   }
 
   // Top Left
-  if (m_ranks[(int)Loc::TL] == rank) {
-    // If left *doesn't* match rank, then need to add this node
-    if ((m_ranks[(int)Loc::L] != rank) && (m_ranks[(int)Loc::L] != m_ranks[(int)Loc::C])) {
+  if (rank(Loc::TL) == the_rank) {
+    // If left *doesn't* match the_rank, then need to add this node
+    if ((rank(Loc::L) != the_rank) && (rank(Loc::L) != rank(Loc::C))) {
       bnd_nodes[(int)Loc::TL] = 1;
     }
   }
 
   // Top Right
-  if (m_ranks[(int)Loc::TR] == rank) {
+  if (rank(Loc::TR) == the_rank) {
     bnd_nodes[(int)Loc::TR] = 1;
   }
 
@@ -234,14 +238,14 @@ size_t Cell::processor_boundary_node_count() const
   // Skip center.
   size_t b_count = 0;
   for (int i = 0; i < (int)ranks.size(); i++) {
-    auto rank = ranks[i];
-    if (rank == m_ranks[0]) {
+    auto the_rank = ranks[i];
+    if (the_rank == rank(Loc::C)) {
       continue;
     }
 
     // a "unit cell" categorizing processor boundary nodes...
     // Size is 9.  Value is '1' if nodes at this location are shared with rank `rank`
-    auto bnd_nodes = categorize_processor_boundary_nodes(rank);
+    auto bnd_nodes = categorize_processor_boundary_nodes(the_rank);
 
     // Now count how many nodes we have added...
     // Edges (B, T, L, R) without corners
@@ -284,48 +288,51 @@ void Cell::populate_node_communication_map(const std::vector<INT> &node_map,
 
   auto KK = m_unitCell->cell_KK;
 
-  for (int i = 0; i < (int)ranks.size(); i++) {
-    auto rank = ranks[i];
-    if (rank == m_ranks[0]) {
+  for (auto shared_rank : ranks) {
+    if (shared_rank == rank(Loc::C)) {
       continue;
     }
 
     // a "unit cell" categorizing processor boundary nodes...
     // Size is 9.  Value is '1' if nodes at this location are shared with rank `rank`
-    auto bnd_nodes = categorize_processor_boundary_nodes(rank);
+    auto bnd_nodes = categorize_processor_boundary_nodes(shared_rank);
 
     // Handle Edges, but skip nodes on corners.  They are handled later.
     if (bnd_nodes[(int)Loc::B] == 1) {
-      process_face_nodes(node_map, nodes, procs, m_unitCell->min_J_face, KK, rank);
+      process_face_nodes(node_map, nodes, procs, m_unitCell->min_J_face, KK, shared_rank);
     }
 
     if (bnd_nodes[(int)Loc::T] == 1) {
-      process_face_nodes(node_map, nodes, procs, m_unitCell->max_J_face, KK, rank);
+      process_face_nodes(node_map, nodes, procs, m_unitCell->max_J_face, KK, shared_rank);
     }
 
     if (bnd_nodes[(int)Loc::L] == 1) {
-      process_face_nodes(node_map, nodes, procs, m_unitCell->min_I_face, KK, rank);
+      process_face_nodes(node_map, nodes, procs, m_unitCell->min_I_face, KK, shared_rank);
     }
 
     if (bnd_nodes[(int)Loc::R] == 1) {
-      process_face_nodes(node_map, nodes, procs, m_unitCell->max_I_face, KK, rank);
+      process_face_nodes(node_map, nodes, procs, m_unitCell->max_I_face, KK, shared_rank);
     }
 
     // Now the corners...
     if (bnd_nodes[(int)Loc::BL] == 1) {
-      process_corner_nodes(node_map, nodes, procs, m_unitCell->min_J_face, KK, rank, Loc::BL);
+      process_corner_nodes(node_map, nodes, procs, m_unitCell->min_J_face, KK, shared_rank,
+                           Loc::BL);
     }
 
     if (bnd_nodes[(int)Loc::BR] == 1) {
-      process_corner_nodes(node_map, nodes, procs, m_unitCell->min_J_face, KK, rank, Loc::BR);
+      process_corner_nodes(node_map, nodes, procs, m_unitCell->min_J_face, KK, shared_rank,
+                           Loc::BR);
     }
 
     if (bnd_nodes[(int)Loc::TL] == 1) {
-      process_corner_nodes(node_map, nodes, procs, m_unitCell->max_J_face, KK, rank, Loc::TL);
+      process_corner_nodes(node_map, nodes, procs, m_unitCell->max_J_face, KK, shared_rank,
+                           Loc::TL);
     }
 
     if (bnd_nodes[(int)Loc::TR] == 1) {
-      process_corner_nodes(node_map, nodes, procs, m_unitCell->max_J_face, KK, rank, Loc::TR);
+      process_corner_nodes(node_map, nodes, procs, m_unitCell->max_J_face, KK, shared_rank,
+                           Loc::TR);
     }
   }
   SMART_ASSERT(nodes.size() == procs.size())(nodes.size())(procs.size());
@@ -373,10 +380,11 @@ std::vector<int> Cell::categorize_nodes(enum Mode mode) const
   return nodes;
 }
 
-template std::vector<int64_t> Cell::generate_node_map(Mode, int64_t) const;
-template std::vector<int>     Cell::generate_node_map(Mode, int) const;
+template std::vector<int64_t> Cell::generate_node_map(Mode, bool, int64_t) const;
+template std::vector<int>     Cell::generate_node_map(Mode, bool, int) const;
 
-template <typename INT> std::vector<INT> Cell::generate_node_map(Mode mode, INT /*dummy*/) const
+template <typename INT>
+std::vector<INT> Cell::generate_node_map(Mode mode, bool equivalence_nodes, INT /*dummy*/) const
 {
   // Size is node_count + 1 to handle the 1-based connectivity values.
   size_t           cell_node_count = m_unitCell->m_region->get_property("node_count").get_int();
