@@ -91,7 +91,6 @@ if(USE_TRIBITS)
     SOURCES ${SOURCES}
   )
 
-
 if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
    # add a target to generate API documentation with Doxygen
    if(SEACASProj_ENABLE_DOXYGEN)

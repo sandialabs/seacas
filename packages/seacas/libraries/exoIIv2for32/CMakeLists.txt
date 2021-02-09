@@ -17,7 +17,6 @@ TRIBITS_ADD_LIBRARY(
   SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/exo_jack_32.c
   )
 
-
 # Many users of the SEACAS installations still want a static exodus library...
 if (SEACASExodus_ENABLE_STATIC)
     ADD_LIBRARY(

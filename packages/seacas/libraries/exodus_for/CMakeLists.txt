@@ -25,7 +25,6 @@ TRIBITS_ADD_LIBRARY(
   SOURCES ${SOURCES}
   )
 
-
 # Many users of the SEACAS installations still want a static exodus library...
 if (SEACASExodus_ENABLE_STATIC)
    ADD_LIBRARY(
