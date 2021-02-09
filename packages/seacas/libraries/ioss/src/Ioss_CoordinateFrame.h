@@ -9,7 +9,6 @@
 
 #include <cstdint> // for int64_t
 #include <vector>  // for vector
-#include <stdio.h>   // for printf
 
 namespace Ioss {
   class DatabaseIO;
