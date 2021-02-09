@@ -280,7 +280,7 @@ void Cell::populate_node_communication_map(const std::vector<INT> &node_map,
 
   // Get list of ranks that this cell shares nodes with...
   auto ranks = get_shared_ranks(m_ranks);
-  assert(ranks.size() > 1);
+  SMART_ASSERT(ranks.size() > 1);
 
   auto KK = m_unitCell->cell_KK;
 

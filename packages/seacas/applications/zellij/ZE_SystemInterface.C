@@ -11,6 +11,7 @@
 #include <copyright.h>
 #include <cstddef> // for size_t
 #include <cstdlib> // for exit, strtod, strtoul, abs, etc
+#include <fmt/color.h>
 #include <fmt/format.h>
 #include <iosfwd> // for ostream
 
@@ -256,7 +257,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
   zlib_ = (options_.retrieve("zlib") != nullptr);
 
   if (szip_ && zlib_) {
-    fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+    fmt::print(stderr, fmt::fg(fmt::color::red),
+               "\nERROR: Only one of 'szip' or 'zlib' can be specified.\n");
   }
 
   {
@@ -286,12 +288,21 @@ bool SystemInterface::parse_options(int argc, char **argv)
     rankCount_ = ranks_ - startRank_;
   }
 
-  return true;
+  if (lattice().empty()) {
+    fmt::print(stderr, fmt::fg(fmt::color::red),
+               "\nERROR: Missing specification of lattice file.\n");
+    options_.usage();
+    return false;
+  }
+  else {
+    return true;
+  }
 }
 
 void SystemInterface::show_version()
 {
-  fmt::print("Zellij\n"
+  fmt::print(fmt::fg(fmt::color::cyan),
+             "Zellij\n"
              "\t(A code for tiling 1 or more template databases into a single output database.)\n"
              "\t(Version: {}) Modified: {}\n",
              qainfo[2], qainfo[1]);

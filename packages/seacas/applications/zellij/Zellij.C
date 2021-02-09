@@ -20,6 +20,7 @@
 
 #include "add_to_log.h"
 #include "fmt/chrono.h"
+#include "fmt/color.h"
 #include "fmt/ostream.h"
 #include "tokenize.h"
 
@@ -65,7 +66,8 @@ int main(int argc, char *argv[])
     bool            ok = interFace.parse_options(argc, argv);
 
     if (!ok) {
-      fmt::print(stderr, "\nERROR: Problems parsing command line arguments.\n\n");
+      fmt::print(stderr, fmt::fg(fmt::color::red),
+                 "\nERROR: Problems parsing command line arguments.\n\n");
       exit(EXIT_FAILURE);
     }
 
@@ -85,7 +87,7 @@ int main(int argc, char *argv[])
 #endif
   }
   catch (std::exception &e) {
-    fmt::print(stderr, "ERROR: Standard exception: {}\n", e.what());
+    fmt::print(stderr, fmt::fg(fmt::color::red), "ERROR: Standard exception: {}\n", e.what());
   }
 }
 
@@ -203,11 +205,11 @@ namespace {
 
       auto tokens = Ioss::tokenize(line, " ");
       if (tokens[0] == "BEGIN_DICTIONARY") {
-        assert(!in_lattice && !in_dictionary);
+        SMART_ASSERT(!in_lattice && !in_dictionary);
         in_dictionary = true;
       }
       else if (tokens[0] == "END_DICTIONARY") {
-        assert(!in_lattice && in_dictionary);
+        SMART_ASSERT(!in_lattice && in_dictionary);
         in_dictionary = false;
         if (debug_level & 2) {
           pu.progress("Unit Cells Defined...");
@@ -215,13 +217,15 @@ namespace {
       }
       else if (in_dictionary) {
         if (tokens.size() != 2) {
-          fmt::print("\nERROR: There are {} entries on a lattice dictionary line; there should be "
+          fmt::print(fmt::fg(fmt::color::red),
+                     "\nERROR: There are {} entries on a lattice dictionary line; there should be "
                      "only 2:\n\t'{}'.\n\n",
                      tokens.size(), line);
           exit(EXIT_FAILURE);
         }
         if (unit_cells.find(tokens[0]) != unit_cells.end()) {
           fmt::print(
+              fmt::fg(fmt::color::red),
               "\nERROR: There is a duplicate `unit cell` ({}) in the lattice dictionary.\n\n",
               tokens[0]);
           exit(EXIT_FAILURE);
@@ -231,6 +235,7 @@ namespace {
 
         if (region == nullptr) {
           fmt::print(
+              fmt::fg(fmt::color::red),
               "\nERROR: Unable to open the database '{}' associated with the unit cell '{}'.\n\n",
               tokens[1], tokens[0]);
           exit(EXIT_FAILURE);
@@ -242,7 +247,7 @@ namespace {
         }
       }
       else if (tokens[0] == "BEGIN_LATTICE") {
-        assert(!in_lattice && !in_dictionary);
+        SMART_ASSERT(!in_lattice && !in_dictionary);
         in_lattice = true;
         break;
       }
@@ -257,7 +262,8 @@ namespace {
     SMART_ASSERT(tokens[0] == "BEGIN_LATTICE")(tokens[0])(line);
 
     if (tokens.size() != 4) {
-      fmt::print("\nERROR: The 'BEGIN_LATTICE' line has incorrect syntax.  It should be "
+      fmt::print(fmt::fg(fmt::color::red),
+                 "\nERROR: The 'BEGIN_LATTICE' line has incorrect syntax.  It should be "
                  "'BEGIN_LATTICE I J K'\n"
                  "\tThe line was '{}'\n\n",
                  line);
@@ -268,7 +274,7 @@ namespace {
     int II = std::stoi(tokens[1]);
     int JJ = std::stoi(tokens[2]);
     int KK = std::stoi(tokens[3]);
-    assert(KK == 1);
+    SMART_ASSERT(KK == 1);
 
     Grid grid(interFace, II, JJ);
 
@@ -283,12 +289,13 @@ namespace {
 
       tokens = Ioss::tokenize(line, " ");
       if (tokens[0] == "END_LATTICE") {
-        assert(in_lattice && !in_dictionary);
+        SMART_ASSERT(in_lattice && !in_dictionary);
         in_lattice = false;
 
         // Check row count to make sure matches 'I' size of lattice
         if (row != grid.JJ()) {
-          fmt::print("\nERROR: Only {} rows of the {} x {} lattice were defined.\n\n", row, II, JJ);
+          fmt::print(fmt::fg(fmt::color::red),
+                     "\nERROR: Only {} rows of the {} x {} lattice were defined.\n\n", row, II, JJ);
           exit(EXIT_FAILURE);
         }
         break;
@@ -299,20 +306,23 @@ namespace {
         //       lines that are too long and would be easier to split a row over multiple lines...
         if (tokens.size() != grid.II()) {
           fmt::print(
+              fmt::fg(fmt::color::red),
               "\nERROR: Line {} of the lattice definition has {} entries.  It should have {}.\n\n",
               row + 1, tokens.size(), grid.II());
           exit(EXIT_FAILURE);
         }
 
         if (row >= grid.JJ()) {
-          fmt::print("\nERROR: There are too many rows in the lattice definition. The lattice is "
+          fmt::print(fmt::fg(fmt::color::red),
+                     "\nERROR: There are too many rows in the lattice definition. The lattice is "
                      "{} x {}.\n\n",
                      grid.II(), grid.JJ());
           exit(EXIT_FAILURE);
         }
 
         if (tokens.size() != grid.II()) {
-          fmt::print("\nERROR: In row {}, there is an incorrect number of entries.  There should "
+          fmt::print(fmt::fg(fmt::color::red),
+                     "\nERROR: In row {}, there is an incorrect number of entries.  There should "
                      "be {}, but found {}.\n",
                      row + 1, grid.II(), tokens.size());
           exit(EXIT_FAILURE);
@@ -321,7 +331,8 @@ namespace {
         size_t col = 0;
         for (auto &key : tokens) {
           if (unit_cells.find(key) == unit_cells.end()) {
-            fmt::print("\nERROR: In row {}, column {}, the lattice specifies a unit cell ({}) that "
+            fmt::print(fmt::fg(fmt::color::red),
+                       "\nERROR: In row {}, column {}, the lattice specifies a unit cell ({}) that "
                        "has not been defined.\n\n",
                        row + 1, col + 1, key);
             exit(EXIT_FAILURE);

@@ -18,12 +18,21 @@
 #include <Ioss_SmartAssert.h>
 
 #include <exodusII.h>
-#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 extern unsigned int debug_level;
 bool                equivalence_nodes = true;
 
 namespace {
+  void output_summary(Ioss::Region *region, std::ostream &strm)
+  {
+    int64_t nodes    = region->get_property("node_count").get_int();
+    int64_t elements = region->get_property("element_count").get_int();
+
+    fmt::print(strm, " Database: {}\tNodes = {:n};\tElements = {:n}\n",
+               region->get_database()->get_filename(), nodes, elements);
+  }
+
   template <typename INT>
   std::vector<INT> generate_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/);
 
@@ -171,7 +180,7 @@ void Grid::finalize(int start_rank, int rank_count)
   for (int i = start_rank; i < start_rank + rank_count; i++) {
     output_region(i)->end_mode(Ioss::STATE_DEFINE_MODEL);
     if (debug_level & 64) {
-      output_region(i)->output_summary(std::cerr);
+      output_summary(output_region(i), std::cerr);
     }
   }
   fmt::print("                {:n} Nodes; {:n} Elements.\n", node_count, element_count);
