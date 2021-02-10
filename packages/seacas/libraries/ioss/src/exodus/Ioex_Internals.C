@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1088,7 +1088,7 @@ int Internals::write_meta_data(Mesh &mesh)
   }
 
   // NON-Define mode output...
-  if ((ierr = put_non_define_data(mesh.comm)) != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.comm, mesh.full_nemesis_data)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
@@ -1318,24 +1318,26 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
 
     // Define the node map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numnoddim;
-    status  = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims, &varid);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      if (status == NC_ENAMEINUSE) {
-        errmsg =
-            fmt::format("Error: node numbering map already exists in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+    if (mesh.use_node_map) {
+      int dims[1];
+      dims[0] = numnoddim;
+      status  = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims, &varid);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        if (status == NC_ENAMEINUSE) {
+          errmsg =
+              fmt::format("Error: node numbering map already exists in file id {}", exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        else {
+          errmsg = fmt::format("Error: failed to create node numbering map array in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        return (EX_FATAL);
       }
-      else {
-        errmsg = fmt::format("Error: failed to create node numbering map array in file id {}",
-                             exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      }
-      return (EX_FATAL);
+      ex__compress_variable(exodusFilePtr, varid, 1);
     }
-    ex__compress_variable(exodusFilePtr, varid, 1);
   }
 
   if (!mesh.nodeblocks.empty() && mesh.nodeblocks[0].attributeCount > 0) {
@@ -1396,25 +1398,27 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
 
     // Define the element map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numelemdim;
-    varid   = 0;
-    status  = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims, &varid);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      if (status == NC_ENAMEINUSE) {
-        errmsg =
-            fmt::format("Error: element numbering map already exists in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+    if (mesh.use_elem_map) {
+      int dims[1];
+      dims[0] = numelemdim;
+      varid   = 0;
+      status  = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims, &varid);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        if (status == NC_ENAMEINUSE) {
+          errmsg = fmt::format("Error: element numbering map already exists in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        else {
+          errmsg = fmt::format("Error: failed to create element numbering map in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        return (EX_FATAL);
       }
-      else {
-        errmsg = fmt::format("Error: failed to create element numbering map in file id {}",
-                             exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      }
-      return (EX_FATAL);
+      ex__compress_variable(exodusFilePtr, varid, 1);
     }
-    ex__compress_variable(exodusFilePtr, varid, 1);
   }
 
   size_t face_count = 0;
@@ -1433,23 +1437,25 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
 
     // Define the face map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numfacedim;
-    varid   = 0;
-    status  = nc_def_var(exodusFilePtr, VAR_FACE_NUM_MAP, map_type, 1, dims, &varid);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      if (status == NC_ENAMEINUSE) {
-        errmsg =
-            fmt::format("Error: face numbering map already exists in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+    if (mesh.use_face_map) {
+      int dims[1];
+      dims[0] = numfacedim;
+      varid   = 0;
+      status  = nc_def_var(exodusFilePtr, VAR_FACE_NUM_MAP, map_type, 1, dims, &varid);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        if (status == NC_ENAMEINUSE) {
+          errmsg =
+              fmt::format("Error: face numbering map already exists in file id {}", exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        else {
+          errmsg = fmt::format("Error: failed to create face numbering map in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        return (EX_FATAL);
       }
-      else {
-        errmsg =
-            fmt::format("Error: failed to create face numbering map in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      }
-      return (EX_FATAL);
     }
   }
 
@@ -1469,23 +1475,25 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
 
     // Define the edge map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numedgedim;
-    varid   = 0;
-    status  = nc_def_var(exodusFilePtr, VAR_EDGE_NUM_MAP, map_type, 1, dims, &varid);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      if (status == NC_ENAMEINUSE) {
-        errmsg =
-            fmt::format("Error: edge numbering map already exists in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+    if (mesh.use_edge_map) {
+      int dims[1];
+      dims[0] = numedgedim;
+      varid   = 0;
+      status  = nc_def_var(exodusFilePtr, VAR_EDGE_NUM_MAP, map_type, 1, dims, &varid);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        if (status == NC_ENAMEINUSE) {
+          errmsg =
+              fmt::format("Error: edge numbering map already exists in file id {}", exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        else {
+          errmsg = fmt::format("Error: failed to create edge numbering map in file id {}",
+                               exodusFilePtr);
+          ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        }
+        return (EX_FATAL);
       }
-      else {
-        errmsg =
-            fmt::format("Error: failed to create edge numbering map in file id {}", exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      }
-      return (EX_FATAL);
     }
   }
 
@@ -1668,74 +1676,76 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
 
     // Internal Node status
-    status = conditional_define_variable(exodusFilePtr, VAR_INT_N_STAT, dimid_npf, &nodeMapVarID[0],
-                                         NC_INT);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
-    }
+    if (mesh.full_nemesis_data) {
+      status = conditional_define_variable(exodusFilePtr, VAR_INT_N_STAT, dimid_npf,
+                                           &nodeMapVarID[0], NC_INT);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
 
-    // Border node status
-    status = conditional_define_variable(exodusFilePtr, VAR_BOR_N_STAT, dimid_npf, &nodeMapVarID[1],
-                                         NC_INT);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
-    }
+      // Border node status
+      status = conditional_define_variable(exodusFilePtr, VAR_BOR_N_STAT, dimid_npf,
+                                           &nodeMapVarID[1], NC_INT);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
 
-    // External Node status
-    status = conditional_define_variable(exodusFilePtr, VAR_EXT_N_STAT, dimid_npf, &nodeMapVarID[2],
-                                         NC_INT);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
-    }
+      // External Node status
+      status = conditional_define_variable(exodusFilePtr, VAR_EXT_N_STAT, dimid_npf,
+                                           &nodeMapVarID[2], NC_INT);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
 
-    // Define the variable IDs for the elemental status vectors
-    // Internal elements
-    status = conditional_define_variable(exodusFilePtr, VAR_INT_E_STAT, dimid_npf,
-                                         &elementMapVarID[0], NC_INT);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
-    }
+      // Define the variable IDs for the elemental status vectors
+      // Internal elements
+      status = conditional_define_variable(exodusFilePtr, VAR_INT_E_STAT, dimid_npf,
+                                           &elementMapVarID[0], NC_INT);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
 
-    // Border elements
-    status = conditional_define_variable(exodusFilePtr, VAR_BOR_E_STAT, dimid_npf,
-                                         &elementMapVarID[1], NC_INT);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
-    }
+      // Border elements
+      status = conditional_define_variable(exodusFilePtr, VAR_BOR_E_STAT, dimid_npf,
+                                           &elementMapVarID[1], NC_INT);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
 
-    // Define variable for the internal element information
-    status = define_variable(exodusFilePtr, comm.elementsInternal, DIM_NUM_INT_ELEMS,
-                             VAR_ELEM_MAP_INT, bulk_type);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
-    }
+      // Define variable for the internal element information
+      status = define_variable(exodusFilePtr, comm.elementsInternal, DIM_NUM_INT_ELEMS,
+                               VAR_ELEM_MAP_INT, bulk_type);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
 
-    // Define variable for the border element information
-    status = define_variable(exodusFilePtr, comm.elementsBorder, DIM_NUM_BOR_ELEMS,
-                             VAR_ELEM_MAP_BOR, bulk_type);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
-    }
+      // Define variable for the border element information
+      status = define_variable(exodusFilePtr, comm.elementsBorder, DIM_NUM_BOR_ELEMS,
+                               VAR_ELEM_MAP_BOR, bulk_type);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
 
-    // Define variable for vector of internal FEM node IDs
-    status = define_variable(exodusFilePtr, comm.nodesInternal, DIM_NUM_INT_NODES, VAR_NODE_MAP_INT,
-                             bulk_type);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
-    }
+      // Define variable for vector of internal FEM node IDs
+      status = define_variable(exodusFilePtr, comm.nodesInternal, DIM_NUM_INT_NODES,
+                               VAR_NODE_MAP_INT, bulk_type);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
 
-    // Define variable for vector of border FEM node IDs
-    status = define_variable(exodusFilePtr, comm.nodesBorder, DIM_NUM_BOR_NODES, VAR_NODE_MAP_BOR,
-                             bulk_type);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
-    }
+      // Define variable for vector of border FEM node IDs
+      status = define_variable(exodusFilePtr, comm.nodesBorder, DIM_NUM_BOR_NODES, VAR_NODE_MAP_BOR,
+                               bulk_type);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
 
-    // Define dimension for vector of external FEM node IDs
-    status = define_variable(exodusFilePtr, comm.nodesExternal, DIM_NUM_EXT_NODES, VAR_NODE_MAP_EXT,
-                             bulk_type);
-    if (status != EX_NOERR) {
-      return (EX_FATAL);
+      // Define dimension for vector of external FEM node IDs
+      status = define_variable(exodusFilePtr, comm.nodesExternal, DIM_NUM_EXT_NODES,
+                               VAR_NODE_MAP_EXT, bulk_type);
+      if (status != EX_NOERR) {
+        return (EX_FATAL);
+      }
     }
 
     // Add the nodal communication map count
@@ -1772,22 +1782,24 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
       ecnt_cmap += elem.entityCount;
     }
 
-    {
-      const char *  vars[]  = {VAR_E_COMM_IDS, VAR_E_COMM_STAT, VAR_E_COMM_DATA_IDX, nullptr};
-      const nc_type types[] = {ids_type, NC_INT, bulk_type};
+    if (mesh.full_nemesis_data) {
+      {
+        const char *  vars[]  = {VAR_E_COMM_IDS, VAR_E_COMM_STAT, VAR_E_COMM_DATA_IDX, nullptr};
+        const nc_type types[] = {ids_type, NC_INT, bulk_type};
 
-      status = define_variables(exodusFilePtr, static_cast<int>(comm.elementMap.size()),
-                                DIM_NUM_E_CMAPS, vars, types);
-      if (status != EX_NOERR) {
-        return (EX_FATAL);
+        status = define_variables(exodusFilePtr, static_cast<int>(comm.elementMap.size()),
+                                  DIM_NUM_E_CMAPS, vars, types);
+        if (status != EX_NOERR) {
+          return (EX_FATAL);
+        }
       }
-    }
-    {
-      const char *  vars[]  = {VAR_E_COMM_EIDS, VAR_E_COMM_PROC, VAR_E_COMM_SIDS, nullptr};
-      const nc_type types[] = {ids_type, NC_INT, bulk_type};
-      status = define_variables(exodusFilePtr, ecnt_cmap, DIM_ECNT_CMAP, vars, types);
-      if (status != EX_NOERR) {
-        return (EX_FATAL);
+      {
+        const char *  vars[]  = {VAR_E_COMM_EIDS, VAR_E_COMM_PROC, VAR_E_COMM_SIDS, nullptr};
+        const nc_type types[] = {ids_type, NC_INT, bulk_type};
+        status = define_variables(exodusFilePtr, ecnt_cmap, DIM_ECNT_CMAP, vars, types);
+        if (status != EX_NOERR) {
+          return (EX_FATAL);
+        }
       }
     }
   }
@@ -2522,7 +2534,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks, bool count_onl
   return (EX_NOERR);
 }
 
-int Internals::put_non_define_data(const CommunicationMetaData &comm)
+int Internals::put_non_define_data(const CommunicationMetaData &comm, bool full_nemesis_data)
 {
   // Metadata that must be written outside of define mode...
   if (comm.outputNemesis) {
@@ -2552,59 +2564,61 @@ int Internals::put_non_define_data(const CommunicationMetaData &comm)
     int    nmstat;
     size_t start[1];
 
-    nmstat = comm.nodesInternal == 0 ? 0 : 1;
-    status = nc_put_var_int(exodusFilePtr, nodeMapVarID[0], &nmstat);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to output status for internal node map in file ID {}",
-                           exodusFilePtr);
-      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      return (EX_FATAL);
-    }
+    if (full_nemesis_data) {
+      nmstat = comm.nodesInternal == 0 ? 0 : 1;
+      status = nc_put_var_int(exodusFilePtr, nodeMapVarID[0], &nmstat);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        errmsg = fmt::format("Error: failed to output status for internal node map in file ID {}",
+                             exodusFilePtr);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        return (EX_FATAL);
+      }
 
-    nmstat = comm.nodesBorder == 0 ? 0 : 1;
-    status = nc_put_var_int(exodusFilePtr, nodeMapVarID[1], &nmstat);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to output status for border node map in file ID {}",
-                           exodusFilePtr);
-      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      return (EX_FATAL);
-    }
+      nmstat = comm.nodesBorder == 0 ? 0 : 1;
+      status = nc_put_var_int(exodusFilePtr, nodeMapVarID[1], &nmstat);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        errmsg = fmt::format("Error: failed to output status for border node map in file ID {}",
+                             exodusFilePtr);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        return (EX_FATAL);
+      }
 
-    nmstat = comm.nodesExternal == 0 ? 0 : 1;
-    status = nc_put_var_int(exodusFilePtr, nodeMapVarID[2], &nmstat);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to output status for external node map in file ID {}",
-                           exodusFilePtr);
-      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      return (EX_FATAL);
-    }
+      nmstat = comm.nodesExternal == 0 ? 0 : 1;
+      status = nc_put_var_int(exodusFilePtr, nodeMapVarID[2], &nmstat);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        errmsg = fmt::format("Error: failed to output status for external node map in file ID {}",
+                             exodusFilePtr);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        return (EX_FATAL);
+      }
 
-    nmstat = comm.elementsInternal == 0 ? 0 : 1;
-    status = nc_put_var_int(exodusFilePtr, elementMapVarID[0], &nmstat);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to output status for internal elem map in file ID {}",
-                           exodusFilePtr);
-      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      return (EX_FATAL);
-    }
+      nmstat = comm.elementsInternal == 0 ? 0 : 1;
+      status = nc_put_var_int(exodusFilePtr, elementMapVarID[0], &nmstat);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        errmsg = fmt::format("Error: failed to output status for internal elem map in file ID {}",
+                             exodusFilePtr);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        return (EX_FATAL);
+      }
 
-    nmstat = comm.elementsBorder == 0 ? 0 : 1;
-    status = nc_put_var_int(exodusFilePtr, elementMapVarID[1], &nmstat);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to output status for border elem map in file ID {}",
-                           exodusFilePtr);
-      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-      return (EX_FATAL);
+      nmstat = comm.elementsBorder == 0 ? 0 : 1;
+      status = nc_put_var_int(exodusFilePtr, elementMapVarID[1], &nmstat);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        errmsg = fmt::format("Error: failed to output status for border elem map in file ID {}",
+                             exodusFilePtr);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        return (EX_FATAL);
+      }
     }
 
     size_t ncnt_cmap = 0;
-    for (const auto &elem : comm.nodeMap) {
-      ncnt_cmap += elem.entityCount;
+    for (const auto &nmap : comm.nodeMap) {
+      ncnt_cmap += nmap.entityCount;
     }
 
     if (!comm.nodeMap.empty() && ncnt_cmap > 0) {
