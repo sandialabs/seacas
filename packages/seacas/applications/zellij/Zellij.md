@@ -210,12 +210,14 @@ run, especially the `-random` method.
 
 ### Partial Parallel Output Mode
 There is a _partial parallel output_ mode in which you can tell Zellij to only output a portion of the parallel decomposed files.  This is selected with the `-start_rank <rank>` and `-rank_count <count>` options.  In this case, Zellij will only output the ranks from `rank` up to `rank+count-1`.  For example, if you run `zellij -ranks 10 -start_rank 5 -rank_count 3`, then zellij would output files for ranks 5, 6, and 7.  This is somewhat inefficient since zellij will do many of the calculations for all ranks and only output the specified ranks; however, it does allow you to run multiple copies of zellij simultaneously.  For example, you could run:
+
 ```
  zellij -ranks 16 --start_rank  0 --rank_count 4
  zellij -ranks 16 --start_rank  4 --rank_count 4
  zellij -ranks 16 --start_rank  8 --rank_count 4
  zellij -ranks 16 --start_rank 12 --rank_count 4
-``
+```
+
 simultaneously and all 16 files should be output faster than running a single execution that wrote all of the files.
 
 At some time in the future, this will be able to be handled automatically using `mpiexec -np 4 ...` and zellij will automatically divide up the work among the 4 mpi ranks.
