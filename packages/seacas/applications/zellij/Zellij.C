@@ -60,6 +60,11 @@ int main(int argc, char *argv[])
 
   try {
     SystemInterface::show_version();
+#ifdef SEACAS_HAVE_MPI
+    fmt::print("\tParallel Capability Enabled.\n");
+#else
+    fmt::print("\tParallel Capability Not Enabled.\n");
+#endif
     Ioss::Init::Initializer io;
 
     SystemInterface interFace;
