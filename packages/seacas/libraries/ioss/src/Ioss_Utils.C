@@ -2257,7 +2257,7 @@ namespace {
       for (const auto &set : sets) {
         const std::string &name = set->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
         size_t count = set->entity_count();
         total_entities += count;
@@ -2266,12 +2266,12 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}", (*sets.begin())->type_string() + "s",
-                   sets.size());
-        fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}",
+                   (*sets.begin())->type_string() + "s", sets.size());
+        fmt::print(Ioss::DEBUG(), "\tLength of entity list = {:14n}\n", total_entities);
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
   }
@@ -2284,7 +2284,7 @@ namespace {
       for (const auto &assm : assem) {
         const std::string &name = assm->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
 
         // NOTE: Can't totally use the copy constructor as it will
@@ -2306,10 +2306,10 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
   }
@@ -2323,7 +2323,7 @@ namespace {
       for (const auto &blob : blobs) {
         const std::string &name = blob->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
         size_t count = blob->entity_count();
         total_entities += count;
@@ -2332,9 +2332,9 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}", (*blobs.begin())->type_string() + "s",
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}", (*blobs.begin())->type_string() + "s",
                    blobs.size());
-        fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
+        fmt::print(Ioss::DEBUG(), "\tLength of entity list = {:14n}\n", total_entities);
       }
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DEBUG(), "\n");
@@ -2445,16 +2445,13 @@ namespace {
       // 'connectivity' field, but it is only interesting on the
       // Ioss::ElementBlock class. On the other classes, it just
       // generates overhead...
-
       if (field_name == "connectivity" && ige->type() != Ioss::ELEMENTBLOCK) {
         continue;
       }
       if (field_name == "ids") {
         continue;
       }
-
-      if ((prefix.empty() ||
-           std::strncmp(prefix.c_str(), field_name.c_str(), prefix.length()) == 0)) {
+      if (Ioss::Utils::substr_equal(prefix, field_name)) {
         assert(oge->field_exists(field_name));
         transfer_field_data_internal(ige, oge, pool, field_name, options);
       }
