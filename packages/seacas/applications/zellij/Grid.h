@@ -88,6 +88,8 @@ private:
   template <typename INT>
   void output_node_map(const Cell &cell, int start_rank, int num_ranks, INT /*dummy*/);
 
+  template <typename INT> void output_surfaces(Cell &cell, INT /*dummy*/);
+
   std::vector<std::unique_ptr<Ioss::Region>> m_outputRegions;
   std::vector<Cell>                          m_grid{};
   Ioss::ParallelUtils                        m_pu{MPI_COMM_WORLD};

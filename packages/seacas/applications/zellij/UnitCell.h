@@ -61,6 +61,10 @@ public:
   size_t cell_II{};
   size_t cell_JJ{};
   size_t cell_KK{};
+
+  //! Specifies whether there is a surface on the min_I, max_I, min_J, max_J face
+  //! and if there is, the name of the surface.  If name is empty(), then no surface.
+  std::array<std::string, 4> has_surface{};
   ///@}
 };
 

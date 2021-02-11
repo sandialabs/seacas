@@ -189,6 +189,10 @@ namespace {
       dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
     }
 
+    // Splitting surfaces by element block makes it easier to transform the input
+    // element id into the output element ids.
+    dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+
     // Generate a name for the region based on the key...
     std::string name = "Region_" + key;
     // NOTE: region owns database pointer at this time...

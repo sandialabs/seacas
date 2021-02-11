@@ -127,10 +127,15 @@ public:
   std::map<std::string, size_t> m_globalElementIdOffset;
   std::map<std::string, size_t> m_localElementIdOffset;
 
+  //! For each surface/sideset, this is the offset into the output element/face lists
+  //! for this cells data. 0-based. Indexed by surface name.
+  std::map<std::string, size_t> m_localSurfaceOffset;
+
   //! The offset that must be added to the `x` coordinates of the
   //! UnitCell to place it in the correct global location of the
   //! output mesh
   double m_offX{0.0};
+
   //! The offset that must be added to the `y` coordinates of the
   //! UnitCell to place it in the correct global location of the
   //! output mesh

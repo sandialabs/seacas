@@ -15,6 +15,8 @@
 #include <Ioss_IOFactory.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_Region.h>
+#include <Ioss_SideBlock.h>
+#include <Ioss_SideSet.h>
 #include <Ioss_SmartAssert.h>
 
 #include <exodusII.h>
@@ -40,6 +42,7 @@ namespace {
   size_t handle_elements(Grid &grid, int start_rank, int rank_count);
   size_t handle_nodes(Grid &grid, int start_rank, int rank_count);
   void   handle_communications(Grid &grid, int start_rank, int rank_count);
+  void   handle_surfaces(Grid &grid, int start_rank, int rank_count);
 } // namespace
 
 Grid::Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j)
@@ -195,6 +198,7 @@ void Grid::finalize(int start_rank, int rank_count)
   auto node_count    = handle_nodes(*this, start_rank, rank_count);
   auto element_count = handle_elements(*this, start_rank, rank_count);
   handle_communications(*this, start_rank, rank_count);
+  handle_surfaces(*this, start_rank, rank_count);
 
   for (int i = start_rank; i < start_rank + rank_count; i++) {
     output_region(i)->end_mode(Ioss::STATE_DEFINE_MODEL);
@@ -229,6 +233,23 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
   }
   if (debug_level & 2) {
     util().progress("\tEnd Nodal Coordinate Output");
+  }
+
+  // Surfaces do not depend on order of operations, so can do these
+  // a rank at a time which can be more efficient once we exceed
+  // maximum number of open files...  Also easier to parallelize...
+  for (int r = start_rank; r < start_rank + num_ranks; r++) {
+    for (size_t j = 0; j < JJ(); j++) {
+      for (size_t i = 0; i < II(); i++) {
+        auto &cell = get_cell(i, j);
+        if (cell.rank(Loc::C) == r) {
+          output_surfaces(cell, INT(0));
+        }
+      }
+    }
+  }
+  if (debug_level & 2) {
+    util().progress("\tEnd Surface Output");
   }
 
   // All the rest of these depend on progressing through the cells in
@@ -306,6 +327,52 @@ void Grid::output_nodal_coordinates(const Cell &cell)
   ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
 }
 
+template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
+{
+  int rank  = cell.rank(Loc::C);
+  int exoid = output_region(rank)->get_database()->get_file_pointer();
+
+  // Get the surfaces on this cell...
+  auto &surfaces = cell.m_unitCell->m_region->get_sidesets();
+  for (const auto *surface : surfaces) {
+
+    // Find corresponding surface on output mesh...
+    auto *osurf = output_region(rank)->get_sideset(surface->name());
+    SMART_ASSERT(osurf != nullptr);
+    auto &oblocks = osurf->get_side_blocks();
+    SMART_ASSERT(oblocks.size() == 1);
+
+    std::vector<INT> elements;
+    std::vector<INT> faces;
+    elements.reserve(oblocks[0]->entity_count());
+    faces.reserve(oblocks[0]->entity_count());
+
+    auto &blocks = surface->get_side_blocks();
+    for (const auto *block : blocks) {
+      // Get the element/face pairs for the SideBlock in this surface...
+      std::vector<INT> element_side;
+      block->get_field_data("element_side_raw", element_side);
+
+      // Now separate the element and the face into different vectors and
+      // update the element number to match the elements in this cell...
+      const auto *parent = block->parent_element_block();
+      SMART_ASSERT(parent != nullptr);
+      size_t element_offset = cell.m_localElementIdOffset[parent->name()];
+
+      size_t entity_count = block->entity_count();
+      for (size_t i = 0; i < entity_count; i++) {
+        elements.push_back(element_side[2 * i + 0] + element_offset);
+        faces.push_back(element_side[2 * i + 1]);
+      }
+    }
+
+    auto id    = osurf->get_property("id").get_int();
+    auto start = cell.m_localSurfaceOffset[osurf->name()];
+    auto count = elements.size();
+    ex_put_partial_set(exoid, EX_SIDE_SET, id, start + 1, count, elements.data(), faces.data());
+  }
+}
+
 template <typename INT>
 void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_map, int start_rank,
                                      int num_ranks)
@@ -314,7 +381,7 @@ void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_ma
   if (rank >= start_rank && rank < start_rank + num_ranks) {
     int exoid = output_region(rank)->get_database()->get_file_pointer();
 
-    auto             blocks = cell.m_unitCell->m_region->get_element_blocks();
+    auto &           blocks = cell.m_unitCell->m_region->get_element_blocks();
     std::vector<INT> connect;
     for (const auto *block : blocks) {
       block->get_field_data("connectivity_raw", connect);
@@ -598,6 +665,71 @@ namespace {
       auto *cs = new Ioss::CommSet(grid.output_region(rank)->get_database(), "commset_node", "node",
                                    bnode[rank]);
       grid.output_region(rank)->add(cs);
+    }
+  }
+
+  void handle_surfaces(Grid &grid, int start_rank, int rank_count)
+  {
+    // Not all unit cells have the same surfaces and the output
+    // grid will contain the union of the surfaces on each unit
+    // cell that has a surface on the boundary of the output mesh.
+    //
+    // While finalizing the cells, we will create this union for use in
+    // the output region.  Would be quicker to do iteration on unit_cell
+    // map which is smaller, but for now do it here and see if becomes
+    // bottleneck.
+    std::map<std::string, std::unique_ptr<Ioss::SideSet>> output_surfaces;
+    std::map<std::string, size_t>                         global_surface_face_count;
+
+    // Per rank...
+    std::vector<std::map<std::string, size_t>> surface_face_count(grid.parallel_size());
+    std::vector<std::map<std::string, size_t>> local_surface_offset(grid.parallel_size());
+
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        auto &cell = grid.get_cell(i, j);
+        auto  rank = cell.rank(Loc::C);
+
+        const auto &surfaces = cell.m_unitCell->m_region->get_sidesets();
+        for (const auto *surface : surfaces) {
+          auto &surf                      = surface->name();
+          cell.m_localSurfaceOffset[surf] = local_surface_offset[rank][surf];
+
+          auto &blocks = surface->get_side_blocks();
+          for (const auto *blk : blocks) {
+            surface_face_count[rank][surf] += blk->entity_count();
+            global_surface_face_count[surf] += blk->entity_count();
+            local_surface_offset[rank][surf] += blk->entity_count();
+          }
+
+          // Create output surface if does not exist yet...
+          if (output_surfaces.find(surf) == output_surfaces.end()) {
+            output_surfaces.emplace(surf, std::make_unique<Ioss::SideSet>(Ioss::SideSet(*surface)));
+          }
+        }
+      }
+    }
+
+    // Define the surfaces in the output database...
+    for (int rank = start_rank; rank < start_rank + rank_count; rank++) {
+      for (auto &surf : output_surfaces) {
+        auto *surface = new Ioss::SideSet(*surf.second.get());
+        auto &blocks  = surface->get_side_blocks();
+        for (auto &block : blocks) {
+          block->property_update("entity_count", surface_face_count[rank][surface->name()]);
+          block->property_update("global_entity_count", global_surface_face_count[surface->name()]);
+          block->property_update("distribution_factor_count", 0);
+
+          // Update parent block if it exists.  Otherwise will point to unit cell..
+          if (block->parent_block() != nullptr) {
+            auto  name = block->parent_block()->name();
+            auto *parent =
+                dynamic_cast<Ioss::EntityBlock *>(grid.output_region(rank)->get_entity(name));
+            block->set_parent_block(parent);
+          }
+        }
+        grid.output_region(rank)->add(surface);
+      }
     }
   }
 
