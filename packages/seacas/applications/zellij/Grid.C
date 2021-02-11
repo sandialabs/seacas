@@ -287,10 +287,9 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
 
 void Grid::output_nodal_coordinates(const Cell &cell)
 {
-  int rank  = cell.rank(Loc::C);
-  int exoid = output_region(rank)->get_database()->get_file_pointer();
+  int rank = cell.rank(Loc::C);
 
-  auto *              nb = cell.m_unitCell->m_region->get_node_blocks()[0];
+  auto *              nb = cell.region()->get_node_blocks()[0];
   std::vector<double> coord_x;
   std::vector<double> coord_y;
   std::vector<double> coord_z;
@@ -322,9 +321,13 @@ void Grid::output_nodal_coordinates(const Cell &cell)
     }
   }
 
+  int  exoid = output_region(rank)->get_database()->get_file_pointer();
   auto start = cell.m_localNodeIdOffset + 1;
   auto count = cell.added_node_count(Mode::PROCESSOR, m_equivalenceNodes);
   ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
+  if (m_minimizeOpenFiles) {
+    output_region(rank)->get_database()->closeDatabase();
+  }
 }
 
 template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
@@ -333,7 +336,7 @@ template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
   int exoid = output_region(rank)->get_database()->get_file_pointer();
 
   // Get the surfaces on this cell...
-  auto &surfaces = cell.m_unitCell->m_region->get_sidesets();
+  auto &surfaces = cell.region()->get_sidesets();
   for (const auto *surface : surfaces) {
 
     // Find corresponding surface on output mesh...
@@ -371,6 +374,9 @@ template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
     auto count = elements.size();
     ex_put_partial_set(exoid, EX_SIDE_SET, id, start + 1, count, elements.data(), faces.data());
   }
+  if (m_minimizeOpenFiles) {
+    output_region(rank)->get_database()->closeDatabase();
+  }
 }
 
 template <typename INT>
@@ -381,7 +387,7 @@ void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_ma
   if (rank >= start_rank && rank < start_rank + num_ranks) {
     int exoid = output_region(rank)->get_database()->get_file_pointer();
 
-    auto &           blocks = cell.m_unitCell->m_region->get_element_blocks();
+    auto &           blocks = cell.region()->get_element_blocks();
     std::vector<INT> connect;
     for (const auto *block : blocks) {
       block->get_field_data("connectivity_raw", connect);
@@ -401,6 +407,9 @@ void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_ma
     if (debug_level & 2) {
       util().progress(fmt::format("Generated Node Map / Output Connectivity for Cell({}, {})",
                                   cell.m_i, cell.m_j));
+    }
+    if (m_minimizeOpenFiles) {
+      output_region(rank)->get_database()->closeDatabase();
     }
   }
 }
@@ -425,6 +434,10 @@ void Grid::output_nodal_communication_map(Cell &cell, const std::vector<INT> &no
     auto count = cell.m_communicationNodeCount;
 
     ex_put_partial_node_cmap(exoid, 1, start, count, nodes.data(), procs.data(), rank);
+
+    if (m_minimizeOpenFiles) {
+      output_region(rank)->get_database()->closeDatabase();
+    }
 
     if (debug_level & 32) {
       fmt::print(stderr, "Rank: {}, Cell({}, {}), Node Comm Map: start {}, count {}\n", rank,
@@ -475,6 +488,9 @@ void Grid::output_node_map(const Cell &cell, int start_rank, int num_ranks, INT 
       }
       int exoid = output_region(rank)->get_database()->get_file_pointer();
       ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, &map[1]);
+      if (m_minimizeOpenFiles) {
+        output_region(rank)->get_database()->closeDatabase();
+      }
     }
   }
 
@@ -501,7 +517,7 @@ void Grid::output_element_map(Cell &cell, int start_rank, int num_ranks, INT /*d
     size_t global_id_offset = 0;
 
     for (const auto *output_element_block : output_blocks) {
-      auto *block = cell.m_unitCell->m_region->get_element_block(output_element_block->name());
+      auto *block = cell.region()->get_element_block(output_element_block->name());
       if (block != nullptr) {
 
         auto             gid = cell.m_globalElementIdOffset[block->name()] + 1 + global_id_offset;
@@ -530,6 +546,9 @@ void Grid::output_element_map(Cell &cell, int start_rank, int num_ranks, INT /*d
           output_element_block->get_property("global_entity_count").get_int();
       global_id_offset += global_block_element_count;
     }
+    if (m_minimizeOpenFiles) {
+      output_region(rank)->get_database()->closeDatabase();
+    }
   }
 }
 
@@ -554,7 +573,7 @@ namespace {
         auto &cell = grid.get_cell(i, j);
         auto  rank = cell.rank(Loc::C);
 
-        const auto &element_blocks = cell.m_unitCell->m_region->get_element_blocks();
+        const auto &element_blocks = cell.region()->get_element_blocks();
         for (const auto *block : element_blocks) {
           auto &blk                         = block->name();
           cell.m_globalElementIdOffset[blk] = global_element_block_elem_count[blk];
@@ -617,7 +636,7 @@ namespace {
         auto  rank                = cell.rank(Loc::C);
         cell.m_globalNodeIdOffset = global_node_count;
         cell.m_localNodeIdOffset  = local_node_count[rank];
-        SMART_ASSERT(cell.m_unitCell->m_region != nullptr)(i)(j);
+        SMART_ASSERT(cell.region() != nullptr)(i)(j);
 
         auto new_global_nodes    = cell.added_node_count(Mode::GLOBAL, grid.equivalence_nodes());
         auto new_processor_nodes = cell.added_node_count(Mode::PROCESSOR, grid.equivalence_nodes());
@@ -690,7 +709,7 @@ namespace {
         auto &cell = grid.get_cell(i, j);
         auto  rank = cell.rank(Loc::C);
 
-        const auto &surfaces = cell.m_unitCell->m_region->get_sidesets();
+        const auto &surfaces = cell.region()->get_sidesets();
         for (const auto *surface : surfaces) {
           auto &surf                      = surface->name();
           cell.m_localSurfaceOffset[surf] = local_surface_offset[rank][surf];

@@ -35,6 +35,7 @@ public:
   int rank_count() const { return rankCount_; }
 
   bool equivalence_nodes() const { return equivalenceNodes_; }
+  bool minimize_open_files() const { return minimizeOpenFiles_; }
 
   static void show_version();
 
@@ -59,5 +60,6 @@ private:
   bool        zlib_{true};
   bool        szip_{false};
   bool        equivalenceNodes_{true};
+  bool        minimizeOpenFiles_{false};
 };
 #endif

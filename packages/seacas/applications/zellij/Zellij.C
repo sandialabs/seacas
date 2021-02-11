@@ -41,6 +41,27 @@
 #endif
 
 namespace {
+  int get_free_descriptor_count()
+  {
+// Returns maximum number of files that one process can have open
+// at one time. (POSIX)
+#if defined(_WIN32)
+    int fdmax = _getmaxstdio();
+#else
+    int fdmax = sysconf(_SC_OPEN_MAX);
+    if (fdmax == -1) {
+      // POSIX indication that there is no limit on open files...
+      fdmax = INT_MAX;
+    }
+#endif
+    // File descriptors are assigned in order (0,1,2,3,...) on a per-process
+    // basis.
+
+    // Assume that we have stdin, stdout, stderr files (3 total).
+
+    return fdmax - 3;
+  }
+
   Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu);
 
   std::string time_stamp(const std::string &format);
@@ -296,8 +317,20 @@ namespace {
 
     Grid grid(interFace, II, JJ);
 
+    size_t open_files = get_free_descriptor_count();
+    fmt::print("\n Maximum Open File Count = {}\n", get_free_descriptor_count());
+    if (interFace.minimize_open_files() ||
+        (unit_cells.size() + interFace.rank_count() > open_files)) {
+      grid.minimize_open_files();
+      fmt::print(stderr, " Setting `minimize_open_files` mode.\n");
+    }
+
     fmt::print(stderr, "\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
                unit_cells.size(), II, JJ, KK);
+    if (interFace.ranks() > 1) {
+      fmt::print(stderr, "         \tRanks: {:n}, Outputting {:n} ranks starting at rank {:n}.\n",
+                 interFace.ranks(), interFace.rank_count(), interFace.start_rank());
+    }
 
     size_t row{0};
     while (getline(input, line)) {

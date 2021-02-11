@@ -72,6 +72,8 @@ public:
 
   Ioss::Region *output_region(int rank = 0) { return m_outputRegions[rank].get(); }
 
+  void minimize_open_files() { m_minimizeOpenFiles = true; }
+
 private:
   void create_output_regions(SystemInterface &interFace);
   void categorize_processor_boundaries();
@@ -97,5 +99,6 @@ private:
   size_t                                     m_gridJ{0};
   int                                        m_parallelSize{1};
   bool                                       m_equivalenceNodes{true};
+  bool                                       m_minimizeOpenFiles{false};
 };
 #endif

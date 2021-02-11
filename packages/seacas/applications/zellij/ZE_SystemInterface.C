@@ -111,6 +111,12 @@ void SystemInterface::enroll_options()
   options_.enroll("separate_cells", GetLongOption::NoValue,
                   "Do not equivalence the nodes between adjacent unit cells.", nullptr);
 
+  options_.enroll("minimize_open_files", GetLongOption::NoValue,
+                  "Close files after accessing them to avoid issues with too many open files.\n"
+                  "\t\tShould not need to use this option unless you get an error message "
+                  "indicating this issue.",
+                  nullptr);
+
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
                   "\t\t  1 = Time stamp information.\n"
@@ -168,7 +174,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
     decompMethod_ = "RANDOM";
   }
 
-  equivalenceNodes_ = options_.retrieve("separate_cells") == nullptr;
+  equivalenceNodes_  = options_.retrieve("separate_cells") == nullptr;
+  minimizeOpenFiles_ = options_.retrieve("minimize_open_files") != nullptr;
 
   {
     const char *temp = options_.retrieve("ranks");
