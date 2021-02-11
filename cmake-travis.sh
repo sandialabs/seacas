@@ -50,7 +50,7 @@ function check_enable()
 HAVE_NETCDF=$(check_enable "${NETCDF_PATH}/include/netcdf.h")
 HAVE_MATIO=$(check_enable "${MATIO_PATH}/include/matio.h")
 HAVE_CGNS=$(check_enable "${CGNS_PATH}/include/cgnslib.h")
-HAVE_FAODEL=$(check_enable "${CGNS_PATH}/include/faodel/faodelConfig.h")
+HAVE_FAODEL=$(check_enable "${FAODEL_PATH}/include/faodel/faodelConfig.h")
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
