@@ -46,8 +46,8 @@
 
 // For memory utilities...
 #if defined(_WIN32)
-#include <windows.h>
 #include <psapi.h>
+#include <windows.h>
 #undef max
 
 #elif defined(__unix__) || defined(__unix) || defined(unix) ||                                     \
@@ -2287,7 +2287,7 @@ namespace {
       for (const auto &assm : assem) {
         const std::string &name = assm->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
 
         // NOTE: Can't totally use the copy constructor as it will
@@ -2309,10 +2309,10 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
   }
@@ -2326,7 +2326,7 @@ namespace {
       for (const auto &blob : blobs) {
         const std::string &name = blob->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
         size_t count = blob->entity_count();
         total_entities += count;
@@ -2335,9 +2335,9 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}", (*blobs.begin())->type_string() + "s",
-                   blobs.size());
-        fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}",
+                   (*blobs.begin())->type_string() + "s", blobs.size());
+        fmt::print(Ioss::DEBUG(), "\tLength of entity list = {:14n}\n", total_entities);
       }
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DEBUG(), "\n");
