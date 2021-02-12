@@ -43,11 +43,11 @@ namespace Ioss {
     Property get_implicit_property(const std::string &my_name) const override;
 
     void block_membership(std::vector<std::string> &block_membership) override;
-  
+
     // COMPARE ElementSets
-    bool operator==(const ElementSet &); 
+    bool operator==(const ElementSet &);
     bool operator!=(const ElementSet &);
-    bool equal(const ElementSet &); 
+    bool equal(const ElementSet &);
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

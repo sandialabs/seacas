@@ -85,21 +85,21 @@ bool Ioss::EntityBlock::equal_(const Ioss::EntityBlock &rhs, bool quiet) const
   /* COMPARE element topologies */
   if( *(this->topology_) != *(rhs.topology_) ) {
     if( !quiet ) {
-      fmt::print(stderr, "EntityBlock: TOPOLOGY mismatch\n");
+      fmt::print(Ioss::DEBUG(), "EntityBlock: TOPOLOGY mismatch\n");
     }
     return false;
   }
 
   if( this->idOffset != rhs.idOffset ) {
     if( !quiet ) {
-      fmt::print(stderr, "EntityBlock: idOffset mismatch ({} vs. {})\n", this->idOffset, rhs.idOffset);
+      fmt::print(Ioss::DEBUG(), "EntityBlock: idOffset mismatch ({} vs. {})\n", this->idOffset, rhs.idOffset);
     }
     return false;
   }
 
   if( !Ioss::GroupingEntity::equal( rhs ) ) {
     if( !quiet ) {
-      fmt::print(stderr, "EntityBlock: GroupingEntity mismatch\n");
+      fmt::print(Ioss::DEBUG(), "EntityBlock: GroupingEntity mismatch\n");
     }
     return false;
   }

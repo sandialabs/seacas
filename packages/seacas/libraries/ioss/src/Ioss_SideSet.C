@@ -177,16 +177,16 @@ bool Ioss::SideSet::operator==(const SideSet &rhs)
   std::vector<SideBlock *> rhs_side_blocks = rhs.sideBlocks;
 
   // COMPARE SideBlocks
-  for( auto &lhs_side_block : lhs_side_blocks ) { 
-    std::vector<SideBlock *>::iterator it; 
-    for( it = rhs_side_blocks.begin(); it != rhs_side_blocks.end(); it++ ) { 
+  for( auto &lhs_side_block : lhs_side_blocks ) {
+    std::vector<SideBlock *>::iterator it;
+    for( it = rhs_side_blocks.begin(); it != rhs_side_blocks.end(); it++ ) {
       if( (*(*it)).operator==(*lhs_side_block) ) break;
-    }   
+    }
 
-    if( it == rhs_side_blocks.end() ) { 
+    if( it == rhs_side_blocks.end() ) {
       // NO match for this side block
       return false;
-    }   
+    }
 
     rhs_side_blocks.erase(it);
   }
@@ -195,16 +195,16 @@ bool Ioss::SideSet::operator==(const SideSet &rhs)
   std::vector<std::string> lhs_block_membership = this->blockMembership;
   std::vector<std::string> rhs_block_membership = rhs.blockMembership;
 
-  for( auto &lhs_block_member : lhs_block_membership ) { 
-    std::vector<std::string>::iterator it; 
-    for( it = rhs_block_membership.begin(); it != rhs_block_membership.end(); it++ ) { 
+  for( auto &lhs_block_member : lhs_block_membership ) {
+    std::vector<std::string>::iterator it;
+    for( it = rhs_block_membership.begin(); it != rhs_block_membership.end(); it++ ) {
       if( (*it).compare(lhs_block_member) == 0 ) break;
-    }   
+    }
 
-    if( it == rhs_block_membership.end() ) { 
+    if( it == rhs_block_membership.end() ) {
       // NO match for this side block
       return false;
-    }   
+    }
 
     rhs_block_membership.erase(it);
   }

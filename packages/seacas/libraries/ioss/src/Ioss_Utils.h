@@ -500,7 +500,7 @@ namespace Ioss {
     static void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
                               const std::string &header, const std::string &suffix = "\n\t",
                               bool print_empty = false);
- 
+
     // Compare the mesh in 'input_region' to 'output_region'.  Behavior can be controlled
     // via options in 'options'
     static bool compare_database(Ioss::Region &input_region, Ioss::Region &output_region,

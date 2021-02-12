@@ -15,7 +15,7 @@
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
-#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include <algorithm>
 #include <cstddef>
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   std::string out_file = interFace.outputFile;
 
   if (rank == 0 && !interFace.quiet) {
-    fmt::print(stderr,
+    fmt::print(Ioss::DEBUG(),
                "Input:    '{}', Type: {}\n"
                "Output:   '{}', Type: {}\n\n",
                in_file, interFace.inFiletype, out_file, interFace.outFiletype);
@@ -82,24 +82,24 @@ int main(int argc, char *argv[])
 
 #ifdef SEACAS_HAVE_KOKKOS
   if (rank == 0)
-    fmt::print(stderr, "Kokkos default execution space configuration:\n");
+    fmt::print(Ioss::DEBUG(), "Kokkos default execution space configuration:\n");
   Kokkos::DefaultExecutionSpace::print_configuration(std::cerr, false);
   if (rank == 0)
-    fmt::print(stderr, "\n");
+    fmt::print(Ioss::DEBUG(), "\n");
 #endif
 
   double begin = Ioss::Utils::timer();
 
   try {
-    if( interFace.compare == false ) { 
+    if( interFace.compare == false ) {
       file_copy(interFace, rank);
-    } else { 
+    } else {
       file_compare(interFace, rank);
-    }   
+    }
   }
   catch (std::exception &e) {
     if (rank == 0) {
-      fmt::print(stderr, "\n{}\n\nio_shell terminated due to exception\n", e.what());
+      fmt::print(Ioss::DEBUG(), "\n{}\n\nio_shell terminated due to exception\n", e.what());
     }
     exit(EXIT_FAILURE);
   }
@@ -112,11 +112,11 @@ int main(int argc, char *argv[])
 
   if (rank == 0 && !interFace.quiet) {
     if (num_proc > 1) {
-      fmt::print(stderr, "\n\n\tTotal Execution time = {:.5} seconds on {} processors.\n",
+      fmt::print(Ioss::DEBUG(), "\n\n\tTotal Execution time = {:.5} seconds on {} processors.\n",
                  end - begin, num_proc);
     }
     else {
-      fmt::print(stderr, "\n\n\tTotal Execution time = {:.5} seconds.\n", end - begin);
+      fmt::print(Ioss::DEBUG(), "\n\n\tTotal Execution time = {:.5} seconds.\n", end - begin);
     }
   }
   if (mem_stats) {
@@ -127,16 +127,16 @@ int main(int argc, char *argv[])
     parallel.memory_stats(min, max, avg);
     parallel.hwm_memory_stats(hwmin, hwmax, hwavg);
     if (rank == 0) {
-      fmt::print(stderr, "\n\tCurrent Memory: {:n}M  {:n}M  {:n}M\n", min / MiB, max / MiB,
+      fmt::print(Ioss::DEBUG(), "\n\tCurrent Memory: {:n}M  {:n}M  {:n}M\n", min / MiB, max / MiB,
                  avg / MiB);
-      fmt::print(stderr, "\tHigh Water Memory: {:n}M  {:n}M  {:n}M\n", hwmin / MiB, hwmax / MiB,
+      fmt::print(Ioss::DEBUG(), "\tHigh Water Memory: {:n}M  {:n}M  {:n}M\n", hwmin / MiB, hwmax / MiB,
                  hwavg / MiB);
     }
 #else
     int64_t mem = Ioss::Utils::get_memory_info();
     int64_t hwm = Ioss::Utils::get_hwm_memory_info();
     if (rank == 0) {
-      fmt::print(stderr,
+      fmt::print(Ioss::DEBUG(),
                  "\n\tCurrent Memory:    {:n}M\n"
                  "\tHigh Water Memory: {:n}M\n",
                  mem / MiB, hwm / MiB);
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 #endif
   }
   if (rank == 0) {
-    fmt::print(stderr, "\n{} execution successful.\n", codename);
+    fmt::print(Ioss::DEBUG(), "\n{} execution successful.\n", codename);
   }
   return EXIT_SUCCESS;
 }
@@ -193,7 +193,7 @@ namespace {
         bool success = dbi->open_group(interFace.groupName);
         if (!success) {
           if (rank == 0) {
-            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
+            fmt::print(Ioss::DEBUG(), "ERROR: Unable to open group '{}' in file '{}'\n",
                        interFace.groupName, inpfile);
           }
           return;
@@ -205,7 +205,7 @@ namespace {
 
       if (region.mesh_type() == Ioss::MeshType::HYBRID) {
         if (rank == 0) {
-          fmt::print(stderr,
+          fmt::print(Ioss::DEBUG(),
                      "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
                      "'Structured' mesh is supported at this time.\n",
                      region.mesh_type_string());
@@ -352,10 +352,10 @@ namespace {
 
           if (rank == 0 && !interFace.quiet) {
             if (step_min == step_max) {
-              fmt::print(stderr, "\tWriting step {:n} to {}\n", step_min + 1, filename);
+              fmt::print(Ioss::DEBUG(), "\tWriting step {:n} to {}\n", step_min + 1, filename);
             }
             else {
-              fmt::print(stderr, "\tWriting steps {:n}..{:n} to {}\n", step_min + 1, step_max + 1,
+              fmt::print(Ioss::DEBUG(), "\tWriting steps {:n}..{:n} to {}\n", step_min + 1, step_max + 1,
                          filename);
             }
           }
@@ -430,7 +430,7 @@ namespace {
         bool success = dbi->open_group(interFace.groupName);
         if (!success) {
           if (rank == 0) {
-            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
+            fmt::print(Ioss::DEBUG(), "ERROR: Unable to open group '{}' in file '{}'\n",
                        interFace.groupName, inpfile);
           }
           return;
@@ -441,7 +441,7 @@ namespace {
       Ioss::Region input_region(dbi, "region_1");
 
       if (input_region.mesh_type() == Ioss::MeshType::HYBRID) {
-        fmt::print(stderr,
+        fmt::print(Ioss::DEBUG(),
                    "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
                    "'Structured' mesh is supported at this time.\n",
                    input_region.mesh_type_string());
@@ -492,7 +492,7 @@ namespace {
         bool success = dbo->open_group(interFace.groupName);
         if (!success) {
           if (rank == 0) {
-            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
+            fmt::print(Ioss::DEBUG(), "ERROR: Unable to open group '{}' in file '{}'\n",
                        interFace.groupName, inpfile);
           }
           return;
@@ -503,7 +503,7 @@ namespace {
       Ioss::Region output_region(dbo, "region_2");
 
       if (output_region.mesh_type() == Ioss::MeshType::HYBRID) {
-        fmt::print(stderr,
+        fmt::print(Ioss::DEBUG(),
                    "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
                    "'Structured' mesh is supported at this time.\n",
                    output_region.mesh_type_string());
@@ -535,9 +535,9 @@ namespace {
 
       bool result = Ioss::Utils::compare_database(input_region, output_region, options);
       if( result ) {
-        fmt::print(stderr, "DATABASES are EQUAL\n");
+        fmt::print(Ioss::DEBUG(), "DATABASES are EQUAL\n");
       } else {
-        fmt::print(stderr, "DATABASES are NOT equal\n");
+        fmt::print(Ioss::DEBUG(), "DATABASES are NOT equal\n");
       }
     } // loop over input files
   }

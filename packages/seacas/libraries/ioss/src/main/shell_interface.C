@@ -323,7 +323,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   char *options = getenv("IO_SHELL_OPTIONS");
   if (options != nullptr) {
     fmt::print(
-        stderr,
+        Ioss::DEBUG(),
         "\nThe following options were specified via the IO_SHELL_OPTIONS environment variable:\n"
         "\t{}\n\n",
         options);
@@ -338,15 +338,15 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   if (options_.retrieve("help") != nullptr) {
     if (my_processor == 0) {
       options_.usage(std::cerr);
-      fmt::print(stderr, "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.\n\n");
-      fmt::print(stderr, "\t->->-> Send email to gdsjaar@sandia.gov for {} support.<-<-<-\n",
+      fmt::print(Ioss::DEBUG(), "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.\n\n");
+      fmt::print(Ioss::DEBUG(), "\t->->-> Send email to gdsjaar@sandia.gov for {} support.<-<-<-\n",
                  options_.program_name());
     }
     exit(EXIT_SUCCESS);
   }
 
   if (options_.retrieve("version") != nullptr) {
-    fmt::print(stderr, "Version: {}\n", version);
+    fmt::print(Ioss::DEBUG(), "Version: {}\n", version);
     exit(0);
   }
 
@@ -373,7 +373,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
   if (szip && zlib) {
     if (my_processor == 0) {
-      fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+      fmt::print(Ioss::DEBUG(), "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
     }
     return false;
   }
@@ -387,7 +387,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
       if (zlib) {
         if (compression_level < 0 || compression_level > 9) {
           if (my_processor == 0) {
-            fmt::print(stderr,
+            fmt::print(Ioss::DEBUG(),
                        "ERROR: Bad compression level {}, valid value is between 0 and 9 inclusive "
                        "for gzip compression.\n",
                        compression_level);
@@ -399,7 +399,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
         if (compression_level % 2 != 0) {
           if (my_processor == 0) {
             fmt::print(
-                stderr,
+                Ioss::DEBUG(),
                 "ERROR: Bad compression level {}. Must be an even value for szip compression.\n",
                 compression_level);
           }
@@ -407,7 +407,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
         }
         if (compression_level < 4 || compression_level > 32) {
           if (my_processor == 0) {
-            fmt::print(stderr,
+            fmt::print(Ioss::DEBUG(),
                        "ERROR: Bad compression level {}, valid value is between 4 and 32 inclusive "
                        "for szip compression.\n",
                        compression_level);
@@ -589,12 +589,12 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
       if (data_storage_type == 0) {
         if (my_processor == 0) {
-          fmt::print(stderr, "ERROR: Option data_storage must be one of\n");
+          fmt::print(Ioss::DEBUG(), "ERROR: Option data_storage must be one of\n");
 #ifdef SEACAS_HAVE_KOKKOS
-          fmt::print(stderr, "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or "
+          fmt::print(Ioss::DEBUG(), "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or "
                              "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE\n");
 #else
-          fmt::print(stderr, "       POINTER, or STD_VECTOR\n");
+          fmt::print(Ioss::DEBUG(), "       POINTER, or STD_VECTOR\n");
 #endif
         }
         return false;
@@ -658,7 +658,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
   if (options_.retrieve("copyright") != nullptr) {
     if (my_processor == 0) {
-      fmt::print(stderr,
+      fmt::print(Ioss::DEBUG(),
                  "\n"
                  "Copyright(C) 1999-2017 National Technology & Engineering Solutions\n"
                  "of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with\n"
@@ -699,7 +699,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   }
   else {
     if (my_processor == 0) {
-      fmt::print(stderr, "\nERROR: input and output filename not specified\n\n");
+      fmt::print(Ioss::DEBUG(), "\nERROR: input and output filename not specified\n\n");
     }
     return false;
   }

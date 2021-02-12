@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_CoordinateFrame.h>
+#include <Ioss_Utils.h>
 #include <fmt/ostream.h>
 
 namespace Ioss {
@@ -27,34 +28,34 @@ namespace Ioss {
 
   bool Ioss::CoordinateFrame::equal_(const Ioss::CoordinateFrame &rhs, bool quiet) const
   {
-    if( this->id_ != rhs.id_ ) { 
+    if( this->id_ != rhs.id_ ) {
       if( !quiet ) {
-        fmt::print(stderr, "CoordinateFrame : ID mismatch ({} vs. {})\n", this->id_, rhs.id_);
+        fmt::print(Ioss::DEBUG(), "CoordinateFrame : ID mismatch ({} vs. {})\n", this->id_, rhs.id_);
       }
       return false;
-    }   
+    }
 
-    if( this->pointList_ != rhs.pointList_ ) { 
+    if( this->pointList_ != rhs.pointList_ ) {
       if( !quiet ) {
-        fmt::print(stderr, "CoordinateFrame : Point list mismatch ([ ");
-        for( auto &point : this->pointList_ ) { 
-          fmt::print(stderr, "{} ", point);
-        }   
-        fmt::print(stderr, "] vs [");
-        for( auto &point : rhs.pointList_ ) { 
-          fmt::print(stderr, "{} ", point);
-        }   
-        fmt::print(stderr, "])\n");
+        fmt::print(Ioss::DEBUG(), "CoordinateFrame : Point list mismatch ([ ");
+        for( auto &point : this->pointList_ ) {
+          fmt::print(Ioss::DEBUG(), "{} ", point);
+        }
+        fmt::print(Ioss::DEBUG(), "] vs [");
+        for( auto &point : rhs.pointList_ ) {
+          fmt::print(Ioss::DEBUG(), "{} ", point);
+        }
+        fmt::print(Ioss::DEBUG(), "])\n");
       }
       return false;
-    }   
+    }
 
-    if( this->id_ != rhs.id_ ) { 
+    if( this->id_ != rhs.id_ ) {
       if( !quiet ) {
-        fmt::print(stderr, "CoordinateFrame : TAG mismatch ({} vs. {})\n", this->tag_, rhs.tag_);
+        fmt::print(Ioss::DEBUG(), "CoordinateFrame : TAG mismatch ({} vs. {})\n", this->tag_, rhs.tag_);
       }
       return false;
-    }   
+    }
 
     return true;
   }
