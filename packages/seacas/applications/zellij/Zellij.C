@@ -343,7 +343,7 @@ namespace {
         SMART_ASSERT(in_lattice && !in_dictionary);
         in_lattice = false;
 
-        // Check row count to make sure matches 'I' size of lattice
+        // Check row count to make sure matches 'J' size of lattice
         if (row != grid.JJ()) {
           fmt::print(stderr, fmt::fg(fmt::color::red),
                      "\nERROR: Only {} rows of the {} x {} lattice were defined.\n\n", row, II, JJ);
