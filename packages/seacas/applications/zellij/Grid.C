@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "Cell.h"
 #include "Decompose.h"
 #include "Grid.h"
 #include "ZE_SystemInterface.h"
@@ -325,7 +326,11 @@ void Grid::output_nodal_coordinates(const Cell &cell)
   auto start = cell.m_localNodeIdOffset + 1;
   auto count = cell.added_node_count(Mode::PROCESSOR, m_equivalenceNodes);
   ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
-  if (m_minimizeOpenFiles) {
+
+  if (minimize_open_files() & 1) {
+    cell.region()->get_database()->closeDatabase();
+  }
+  if (minimize_open_files() & 2) {
     output_region(rank)->get_database()->closeDatabase();
   }
 }
@@ -374,7 +379,10 @@ template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
     auto count = elements.size();
     ex_put_partial_set(exoid, EX_SIDE_SET, id, start + 1, count, elements.data(), faces.data());
   }
-  if (m_minimizeOpenFiles) {
+  if (minimize_open_files() & 1) {
+    cell.region()->get_database()->closeDatabase();
+  }
+  if (minimize_open_files() & 2) {
     output_region(rank)->get_database()->closeDatabase();
   }
 }
@@ -408,7 +416,10 @@ void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_ma
       util().progress(fmt::format("Generated Node Map / Output Connectivity for Cell({}, {})",
                                   cell.m_i, cell.m_j));
     }
-    if (m_minimizeOpenFiles) {
+    if (minimize_open_files() & 1) {
+      cell.region()->get_database()->closeDatabase();
+    }
+    if (minimize_open_files() & 2) {
       output_region(rank)->get_database()->closeDatabase();
     }
   }
@@ -435,7 +446,7 @@ void Grid::output_nodal_communication_map(Cell &cell, const std::vector<INT> &no
 
     ex_put_partial_node_cmap(exoid, 1, start, count, nodes.data(), procs.data(), rank);
 
-    if (m_minimizeOpenFiles) {
+    if (minimize_open_files() & 2) {
       output_region(rank)->get_database()->closeDatabase();
     }
 
@@ -488,7 +499,7 @@ void Grid::output_node_map(const Cell &cell, int start_rank, int num_ranks, INT 
       }
       int exoid = output_region(rank)->get_database()->get_file_pointer();
       ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, &map[1]);
-      if (m_minimizeOpenFiles) {
+      if (minimize_open_files() & 2) {
         output_region(rank)->get_database()->closeDatabase();
       }
     }
@@ -546,7 +557,7 @@ void Grid::output_element_map(Cell &cell, int start_rank, int num_ranks, INT /*d
           output_element_block->get_property("global_entity_count").get_int();
       global_id_offset += global_block_element_count;
     }
-    if (m_minimizeOpenFiles) {
+    if (minimize_open_files() & 2) {
       output_region(rank)->get_database()->closeDatabase();
     }
   }

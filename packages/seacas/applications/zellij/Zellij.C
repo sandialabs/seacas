@@ -281,6 +281,11 @@ namespace {
         }
 
         unit_cells.emplace(tokens[0], std::make_shared<UnitCell>(region));
+        if (interFace.minimize_open_files() == Minimize::UNIT ||
+            interFace.minimize_open_files() == Minimize::ALL) {
+          unit_cells[tokens[0]]->m_region->get_database()->closeDatabase();
+        }
+
         if (debug_level & 2) {
           pu.progress(fmt::format("\tCreated Unit Cell {}", tokens[0]));
         }
@@ -319,10 +324,26 @@ namespace {
 
     size_t open_files = get_free_descriptor_count();
     fmt::print("\n Maximum Open File Count = {}\n", get_free_descriptor_count());
-    if (interFace.minimize_open_files() ||
+    if (interFace.minimize_open_files() != Minimize::NONE ||
         (unit_cells.size() + interFace.rank_count() > open_files)) {
-      grid.minimize_open_files();
-      fmt::print(stderr, " Setting `minimize_open_files` mode.\n");
+      unsigned int mode = (unsigned)interFace.minimize_open_files();
+      if (unit_cells.size() + interFace.rank_count() > open_files) {
+        if (unit_cells.size() > (size_t)interFace.rank_count()) {
+          mode |= 1;
+        }
+        else {
+          mode |= 2;
+        }
+      }
+      if (unit_cells.size() > open_files) {
+        mode |= 1;
+      }
+      if ((size_t)interFace.rank_count() > open_files) {
+        mode |= 2;
+      }
+      grid.set_minimize_open_files(mode);
+      std::array<std::string, 4> smode{"NONE", "UNIT", "OUTPUT", "ALL"};
+      fmt::print(stderr, " Setting `minimize_open_files` mode to {}.\n", smode[mode]);
     }
 
     fmt::print(stderr, "\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",

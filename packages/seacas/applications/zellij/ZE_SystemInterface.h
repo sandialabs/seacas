@@ -9,6 +9,8 @@
 #include "GetLongOpt.h" // for GetLongOption
 #include <string>       // for string
 
+enum class Minimize { NONE = 0, UNIT = 1, OUTPUT = 2, ALL = 3 };
+
 class SystemInterface
 {
 public:
@@ -34,8 +36,8 @@ public:
   int start_rank() const { return startRank_; }
   int rank_count() const { return rankCount_; }
 
-  bool equivalence_nodes() const { return equivalenceNodes_; }
-  bool minimize_open_files() const { return minimizeOpenFiles_; }
+  bool     equivalence_nodes() const { return equivalenceNodes_; }
+  Minimize minimize_open_files() const { return minimizeOpenFiles_; }
 
   static void show_version();
 
@@ -47,19 +49,19 @@ private:
 
   GetLongOption options_; //!< Options parsing
 
-  std::string lattice_{};
-  std::string decompMethod_{"HSFC"};
-  int         debugLevel_{0};
-  int         compressionLevel_{0};
-  int         ranks_{1};
-  int         startRank_{0};
-  int         rankCount_{0};
-  bool        ints32bit_{false};
-  bool        useNetcdf4_{true};
-  bool        useNetcdf5_{false};
-  bool        zlib_{true};
-  bool        szip_{false};
-  bool        equivalenceNodes_{true};
-  bool        minimizeOpenFiles_{false};
+  std::string   lattice_{};
+  std::string   decompMethod_{"HSFC"};
+  int           debugLevel_{0};
+  int           compressionLevel_{0};
+  int           ranks_{1};
+  int           startRank_{0};
+  int           rankCount_{0};
+  bool          ints32bit_{false};
+  bool          useNetcdf4_{true};
+  bool          useNetcdf5_{false};
+  bool          zlib_{true};
+  bool          szip_{false};
+  bool          equivalenceNodes_{true};
+  enum Minimize minimizeOpenFiles_ { Minimize::NONE };
 };
 #endif

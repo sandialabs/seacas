@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 
+#include "Cell.h"
 #include "Grid.h"
 #include "Ioss_ElementBlock.h"
 

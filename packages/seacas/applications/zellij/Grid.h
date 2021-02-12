@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "Cell.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
 
@@ -24,6 +23,8 @@
 //  * std::vector<Cell> m_grid -- contains database information...
 
 class SystemInterface;
+class UnitCell;
+class Cell;
 
 class Grid
 {
@@ -72,7 +73,8 @@ public:
 
   Ioss::Region *output_region(int rank = 0) { return m_outputRegions[rank].get(); }
 
-  void minimize_open_files() { m_minimizeOpenFiles = true; }
+  unsigned int minimize_open_files() { return m_minimizeOpenFiles; }
+  void         set_minimize_open_files(unsigned int mode) { m_minimizeOpenFiles = mode; }
 
 private:
   void create_output_regions(SystemInterface &interFace);
@@ -99,6 +101,6 @@ private:
   size_t                                     m_gridJ{0};
   int                                        m_parallelSize{1};
   bool                                       m_equivalenceNodes{true};
-  bool                                       m_minimizeOpenFiles{false};
+  unsigned int                               m_minimizeOpenFiles{0}; // 1: Unit, 2: output, 3: all
 };
 #endif

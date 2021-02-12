@@ -111,11 +111,14 @@ void SystemInterface::enroll_options()
   options_.enroll("separate_cells", GetLongOption::NoValue,
                   "Do not equivalence the nodes between adjacent unit cells.", nullptr);
 
-  options_.enroll("minimize_open_files", GetLongOption::NoValue,
-                  "Close files after accessing them to avoid issues with too many open files.\n"
-                  "\t\tShould not need to use this option unless you get an error message "
-                  "indicating this issue.",
-                  nullptr);
+  options_.enroll(
+      "minimize_open_files", GetLongOption::OptionalValue,
+      "Close files after accessing them to avoid issues with too many open files.\n"
+      "\t\tIf argument is 'output' then close output, if 'unit' then close unit cells;\n"
+      "\t\tif 'all' or no argument close all.\n"
+      "\t\tShould not need to use this option unless you get an error message "
+      "indicating this issue.",
+      nullptr, "all");
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
@@ -174,8 +177,25 @@ bool SystemInterface::parse_options(int argc, char **argv)
     decompMethod_ = "RANDOM";
   }
 
-  equivalenceNodes_  = options_.retrieve("separate_cells") == nullptr;
-  minimizeOpenFiles_ = options_.retrieve("minimize_open_files") != nullptr;
+  equivalenceNodes_ = options_.retrieve("separate_cells") == nullptr;
+  {
+    const char *temp = options_.retrieve("minimize_open_files");
+    if (temp != nullptr) {
+      auto mode = Ioss::Utils::lowercase(temp);
+      if (mode == "all") {
+        minimizeOpenFiles_ = Minimize::ALL;
+      }
+      else if (mode == "unit") {
+        minimizeOpenFiles_ = Minimize::UNIT;
+      }
+      else if (mode == "output") {
+        minimizeOpenFiles_ = Minimize::OUTPUT;
+      }
+      else if (mode == "none") {
+        minimizeOpenFiles_ = Minimize::NONE;
+      }
+    }
+  }
 
   {
     const char *temp = options_.retrieve("ranks");
