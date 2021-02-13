@@ -1,22 +1,29 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#ifndef Iodw_DatabaseIO_h
-#define Iodw_DatabaseIO_h
+#ifndef Iofaodel_DatabaseIO_h
+#define Iofaodel_DatabaseIO_h
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>    // for DatabaseUsage
 #include <Ioss_DatabaseIO.h> // for DatabaseIO
 #include <Ioss_IOFactory.h>  // for IOFactory
 #include <Ioss_Map.h>        // for Map
+#include <Ioss_Region.h>   // for Region
 #include <Ioss_State.h>      // for State
+#include <Ioss_VariableType.h>   // for VariableType
 #include <cstddef>           // for size_t
 #include <cstdint>           // for int64_t
 #include <string>            // for string
 #include <vector>            // for vector
+#include <atomic>            // for atomic
+
+#include "faodel-common/Common.hh"
+#include "kelpie/Kelpie.hh"
+
 
 namespace Ioss {
   class CommSet;
@@ -40,7 +47,9 @@ namespace Ioss {
 
 /** \brief A namespace for the pamgen database format.
  */
-namespace Iodw {
+namespace Iofaodel {
+
+
   class IOFactory : public Ioss::IOFactory
   {
   public:
@@ -52,6 +61,7 @@ namespace Iodw {
                               MPI_Comm communicator, const Ioss::PropertyManager &properties) const;
   };
 
+
   class DatabaseIO : public Ioss::DatabaseIO
   {
   public:
@@ -61,8 +71,11 @@ namespace Iodw {
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
     ~DatabaseIO();
 
+    // TODO what should this be for Faodel?
+    int int_byte_size_db() const override { return sizeof(int); }
+
     // Check capabilities of input/output database...  Returns an
-    // unsigned int with the supported Ioss::EntityTypes or'ed
+    // unsigned int with the supported Ioss::EntityType or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
     // database supports that type (e.g. return_value & Ioss::FACESET)
     unsigned entity_field_support() const override { return 0; }
@@ -81,27 +94,47 @@ namespace Iodw {
     void compute_block_membership(Ioss::SideBlock *         efblock,
                                   std::vector<std::string> &block_membership) const;
 
+    const std::string get_format() const override;
+
   private:
+    bool put_properties() const;
+
+    void finalize_database() const override;
+
     void read_meta_data__() override;
 
-    bool begin__(Ioss::State state) override { return false; };
-    bool end__(Ioss::State state) override { return false; };
+
+    bool begin_state__(int /* state */, double /* time */) override;
+    bool end_state__(int /* state */, double /* time */) override;
+
+    bool begin__(Ioss::State state) override { dbState = state; return true;};
+    bool end__(Ioss::State state) override { dbState = Ioss::STATE_UNKNOWN; return true;};
 
     void read_region();
+    void read_entity_properties(kelpie::ObjectCapacities oc, Ioss::GroupingEntity & entity);
+    Ioss::Property read_property(lunasa::DataObject &ldo);
+    void read_entity_fields(kelpie::ObjectCapacities oc, Ioss::GroupingEntity & entity);
+
     void read_communication_metadata();
+
 
     /*
      * TODO identify all the get_*{blocks|sets} needed here
      */
+    void get_step_times__() override;
+
     void get_edgeblocks();
     void get_elemblocks();
     void get_faceblocks();
     void get_nodeblocks();
+    void get_structuredblocks();
 
     void get_edgesets();
     void get_elemsets();
     void get_facesets();
     void get_nodesets();
+    void get_sidesets();
+    void get_commsets();
 
     int get_side_connectivity(const Ioss::SideBlock *fb, int id, int side_count, int *fconnect,
                               size_t data_size) const;
@@ -137,6 +170,10 @@ namespace Iodw {
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                void *data, size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::Assembly *a, const Ioss::Field &field,
+                               void *data, size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::Blob *b, const Ioss::Field &field,
+                               void *data, size_t data_size) const override;
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
@@ -163,6 +200,11 @@ namespace Iodw {
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                void *data, size_t data_size) const override;
+    int64_t put_field_internal(const Ioss::Assembly *a, const Ioss::Field &field,
+                               void *data, size_t data_size) const override;
+    int64_t put_field_internal(const Ioss::Blob *b, const Ioss::Field &field,
+                               void *data, size_t data_size) const override;
+
 
     std::string databaseTitle;
 
@@ -173,6 +215,10 @@ namespace Iodw {
     int nodesetCount;
     int sidesetCount;
 
+    // KEEP track of how many instances of this object exist, since each implicitly
+    // relies on a running instance of Faodel.
+    static std::atomic<int> instanceCount;
+
     // Communication Set Data
     Ioss::IntVector nodeCmapIds;
     Ioss::IntVector nodeCmapNodeCnts;
@@ -180,6 +226,19 @@ namespace Iodw {
     Ioss::IntVector elemCmapElemCnts;
     int             commsetNodeCount;
     int             commsetElemCount;
+
+    // Faodel helpers
+    int64_t get_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &field,
+        void *data, size_t data_size) const;
+
+    int64_t put_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &field,
+        void *data, size_t data_size) const;
+
+    mutable kelpie::Pool pool;
+    faodel::Configuration faodel_config;
+
+    using PropertyPair = std::pair<std::string, bool>;
+    std::vector<PropertyPair> property_publish_state;
   };
-} // namespace Iodw
-#endif // Iodw_DatabaseIO_h
+} // namespace Iofaodel
+#endif // Iofaodel_DatabaseIO_h
