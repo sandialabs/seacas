@@ -52,15 +52,9 @@ ADD_LIBRARY(${PVCSA_LIBRARY_NAME} SHARED manager/CatalystManager.cxx
 TARGET_LINK_LIBRARIES(${PVCSA_LIBRARY_NAME}
     INTERFACE
       VTK::PythonUsed
-    PUBLIC
-      phactori_parser
     PRIVATE
-      ParaView::PythonCatalyst
-      VTK::CommonDataModel
-      VTK::CommonExecutionModel
-      VTK::ParallelMPI
-      VTK::IOParallelXML
-      VTK::IOXML)
+      phactori_parser
+      ParaView::PythonCatalyst)
 
 OPTION(BUILD_IOSS_2_CATALYST_APPLICATION
     "Build ioss2catalyst application" OFF)
