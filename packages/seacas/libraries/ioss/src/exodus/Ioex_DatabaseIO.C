@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -2911,7 +2911,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
                 entity_proc[j++] = pros[i];
               }
             }
-            else {
+            else { // "entity_processor_raw"
               for (int64_t i = 0; i < entity_count; i++) {
                 entity_proc[j++] = ents[i];
                 entity_proc[j++] = pros[i];
@@ -2933,7 +2933,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
                 entity_proc[j++] = pros[i];
               }
             }
-            else {
+            else { // "entity_processor_raw"
               for (int64_t i = 0; i < entity_count; i++) {
                 entity_proc[j++] = ents[i];
                 entity_proc[j++] = pros[i];
@@ -5345,6 +5345,24 @@ void DatabaseIO::write_meta_data(bool appending)
   bool       file_per_processor = true;
   Ioex::Mesh mesh(spatialDimension, the_title, util(), file_per_processor);
   {
+    bool omit_maps = false;
+    Ioss::Utils::check_set_bool_property(properties, "OMIT_EXODUS_NUM_MAPS", omit_maps);
+    if (omit_maps) {
+      // Used for special cases only -- typically very large meshes with *known* 1..count maps
+      // and workarounds that avoid calling the "ids" put_field calls.
+      mesh.use_node_map = false;
+      mesh.use_elem_map = false;
+      mesh.use_face_map = false;
+      mesh.use_edge_map = false;
+    }
+
+    bool minimal_nemesis = false;
+    Ioss::Utils::check_set_bool_property(properties, "MINIMAL_NEMESIS_DATA", minimal_nemesis);
+    if (minimal_nemesis) {
+      // Only output the node communication map data... This is all that stk/sierra needs
+      mesh.full_nemesis_data = false;
+    }
+
     Ioss::SerializeIO serializeIO__(this);
     mesh.populate(region);
     gather_communication_metadata(&mesh.comm);

@@ -26,7 +26,7 @@ the HDF5 team added an option that makes it possible for the library
 to create files readable by those applications. This flag is currently
 being used by NetCDF, but not CGNS.  Therefore, you should only use
 hdf5-1.10.3 or later if you are only using NetCDF, or if you do not
-need compatability with applications using an HDF5-1.8.X version.
+need compatibility with applications using an HDF5-1.8.X version.
 
 The hdf5 library is used for the netcdf4 capability in netcdf which in
 turn is used by exodus.  The netcdf4 capability is typically used for
@@ -47,7 +47,7 @@ create or read models of this size, you do not have to build hdf5.
    * `make && make install`
 
 ## NetCDF
-The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required if using verions prior to 4.5.1.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
+The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required if using versions prior to 4.5.1.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
  * Download the latest netcdf-c release from <https://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
 

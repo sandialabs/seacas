@@ -46,8 +46,8 @@
 
 // For memory utilities...
 #if defined(_WIN32)
-#include <windows.h>
 #include <psapi.h>
+#include <windows.h>
 #undef max
 
 #elif defined(__unix__) || defined(__unix) || defined(unix) ||                                     \
@@ -290,11 +290,14 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   // Examples: basename.8.1, basename.64.03, basename.128.001
 
   // Create a std::string containing the total number of processors
-  size_t proc_width = number_width(num_processors);
+  if (num_processors > 1) {
+    size_t proc_width = number_width(num_processors);
 
-  std::string decoded_filename =
-      fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);
-  return decoded_filename;
+    std::string decoded_filename =
+        fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);
+    return decoded_filename;
+  }
+  return filename;
 }
 
 size_t Ioss::Utils::get_number(const std::string &suffix)
@@ -882,7 +885,7 @@ std::string Ioss::Utils::platform_information()
       fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
                   sys_info.release, sys_info.version, sys_info.machine);
 #else
-  std::string info = "Node: Unknown, OS: Unknown, Machine: Unknown";
+  std::string                 info = "Node: Unknown, OS: Unknown, Machine: Unknown";
 #endif
   return info;
 }
@@ -2332,8 +2335,8 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}", (*blobs.begin())->type_string() + "s",
-                   blobs.size());
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}",
+                   (*blobs.begin())->type_string() + "s", blobs.size());
         fmt::print(Ioss::DEBUG(), "\tLength of entity list = {:14n}\n", total_entities);
       }
       if (options.debug && rank == 0) {

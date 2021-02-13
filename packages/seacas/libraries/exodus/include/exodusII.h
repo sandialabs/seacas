@@ -54,12 +54,12 @@
 #endif
 
 /* EXODUS version number */
-#define EXODUS_VERSION "8.09"
+#define EXODUS_VERSION "8.10"
 #define EXODUS_VERSION_MAJOR 8
-#define EXODUS_VERSION_MINOR 9
-#define EXODUS_RELEASE_DATE "September 2, 2020"
+#define EXODUS_VERSION_MINOR 10
+#define EXODUS_RELEASE_DATE "February 3, 2021"
 
-#define EX_API_VERS 8.09f
+#define EX_API_VERS 8.10f
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
 #define EX_VERS EX_API_VERS
 
@@ -1139,6 +1139,14 @@ EXODUS_EXPORT int ex_put_node_cmap(int          exoid,    /**< NetCDF/Exodus fil
                                    void_int *   node_ids, /**< FEM node IDs */
                                    void_int *   proc_ids, /**< Processor IDs */
                                    int          processor /**< This processor ID */
+);
+
+EXODUS_EXPORT int ex_put_partial_node_cmap(int          exoid,  /**< NetCDF/Exodus file ID */
+                                           ex_entity_id map_id, /**< Nodal comm map ID */
+                                           int64_t start_node, int64_t num_nodes,
+                                           void_int *node_ids, /**< FEM node IDs */
+                                           void_int *proc_ids, /**< Processor IDs */
+                                           int       processor /**< This processor ID */
 );
 
 EXODUS_EXPORT int ex_get_elem_cmap(int          exoid,    /**< NetCDF/Exodus file ID */
