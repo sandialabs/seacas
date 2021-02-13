@@ -16,7 +16,9 @@ public:
 
     ~IossApplication();
 
-    void runApplication();
+    void runApplicationWithFakeCommandLine(int argc, char **argv);
+
+    void runApplication(bool exitProgramAfterRun = true);
  
     bool printIOSSRegionReportON();
     void setPrintIOSSRegionReport(bool status);
@@ -71,7 +73,7 @@ public:
     void printMessage(const std::string& message);
     void printErrorMessage(const std::string& message);
     void printIOSSRegionReportForRank();
-    void exitApplicationSuccess();
+    void exitApplicationSuccess(bool exitProgram);
     void exitApplicationFailure();
 
 private:

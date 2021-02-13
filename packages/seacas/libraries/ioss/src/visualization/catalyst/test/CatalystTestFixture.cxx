@@ -11,6 +11,10 @@ CatalystTestFixture::~CatalystTestFixture() {
 
 }
 
+void CatalystTestFixture::runApplicationWithFakeCommandLine(int argc, char**argv) {
+  ioapp.runApplicationWithFakeCommandLine(argc, argv);
+}
+
 void CatalystTestFixture::checkPhactoriStringValidParse(
     const std::string& phactoriSyntax, const std::string& parsedJSONResult) {
 

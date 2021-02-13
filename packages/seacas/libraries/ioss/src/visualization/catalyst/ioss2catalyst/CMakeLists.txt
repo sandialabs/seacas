@@ -17,7 +17,8 @@ TARGET_LINK_LIBRARIES(catalystiossapp
         -L${SEACAS_INSTALL_DIR}/lib
         Ionit
         Ioss
-        MPI::MPI_C)
+        MPI::MPI_C
+        ${Python3_LIBRARY})
 
 ADD_EXECUTABLE(ioss2catalyst main.cxx)
 TARGET_LINK_LIBRARIES(ioss2catalyst

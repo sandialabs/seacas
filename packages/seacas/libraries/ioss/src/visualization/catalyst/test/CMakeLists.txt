@@ -6,6 +6,8 @@ INCLUDE(Catch)
 INCLUDE_DIRECTORIES("../ioss2catalyst/")
 INCLUDE_DIRECTORIES(Catch2)
 
+FILE(COPY test_data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 ADD_LIBRARY(catalystiosstest SHARED
             CatalystTestFixture.cxx
             CameraInvalidPhactoriSyntax.cxx
@@ -20,13 +22,24 @@ TARGET_LINK_LIBRARIES(catalystiosstest
 ADD_EXECUTABLE(PhactoriSyntaxValidParserTests
                PhactoriSyntaxValidParserTests.cxx)
 TARGET_LINK_LIBRARIES(PhactoriSyntaxValidParserTests
-                      catalystiosstest)
+                      catalystiosstest
+                      ${Python3_LIBRARY})
 CATCH_DISCOVER_TESTS(PhactoriSyntaxValidParserTests
                      TEST_PREFIX "Parser_Valid_")
 
 ADD_EXECUTABLE(PhactoriSyntaxInvalidParserTests
                PhactoriSyntaxInvalidParserTests.cxx)
 TARGET_LINK_LIBRARIES(PhactoriSyntaxInvalidParserTests
-                      catalystiosstest)
+                      catalystiosstest
+                      ${Python3_LIBRARY})
 CATCH_DISCOVER_TESTS(PhactoriSyntaxInvalidParserTests
                      TEST_PREFIX "Parser_Invalid_")
+
+ADD_EXECUTABLE(ExodusToCatalystToScriptTests
+               ExodusToCatalystToScriptTests.cxx)
+TARGET_LINK_LIBRARIES(ExodusToCatalystToScriptTests
+                      catalystiosstest
+                      ${Python3_LIBRARY})
+CATCH_DISCOVER_TESTS(ExodusToCatalystToScriptTests
+                     TEST_PREFIX "Exodus_2_Script_")
+

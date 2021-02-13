@@ -15,6 +15,8 @@ public:
 
     void checkPhactoriStringInvalidParse(const std::string& phactoriSyntax);
 
+    void runApplicationWithFakeCommandLine(int argc, char**argv);
+
     static std::map<std::string, std::string> cameraInvalidPhactoriSyntax;
     static std::map<std::string, std::string> cameraValidPhactoriSyntax;
     static std::map<std::string, std::string> cameraValidPhactoriJSON;
