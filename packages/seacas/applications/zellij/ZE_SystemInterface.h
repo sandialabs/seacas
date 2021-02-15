@@ -35,6 +35,7 @@ public:
   int ranks() const { return ranks_; }
   int start_rank() const { return startRank_; }
   int rank_count() const { return rankCount_; }
+  bool subcycle() const { return subcycle_; }
 
   bool     equivalence_nodes() const { return equivalenceNodes_; }
   Minimize minimize_open_files() const { return minimizeOpenFiles_; }
@@ -62,6 +63,7 @@ private:
   bool          zlib_{true};
   bool          szip_{false};
   bool          equivalenceNodes_{true};
+  bool          subcycle_{false};
   enum Minimize minimizeOpenFiles_ { Minimize::NONE };
 };
 #endif

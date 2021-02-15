@@ -150,19 +150,37 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   }
 
   // All unit cells have been mapped into the IxJ grid, now calculate all node / element offsets
-  // and the global node and element counts... (TODO: Parallel decomposition)
+  // and the global node and element counts...
   //
   // Iterate through the grid starting with (0,0) and accumulate node and element counts...
+  int end_rank   = interFace.ranks();
   int start_rank = interFace.start_rank();
   int rank_count = interFace.rank_count();
-  grid.finalize(start_rank, rank_count);
-  if (debug_level & 1) {
-    fmt::print(stderr, "{} Lattice Finalized\n", time_stamp(tsFormat));
+  bool subcycle = interFace.subcycle();
+
+  if (subcycle) {
+    start_rank = 0;
+    end_rank = interFace.ranks();
+  }
+  else {
+    end_rank = interFace.rank_count();
   }
 
-  grid.output_model(start_rank, rank_count, (INT)0);
-  if (debug_level & 1) {
-    fmt::print(stderr, "{} Model Output\n", time_stamp(tsFormat));
+  for (int begin = start_rank; begin < end_rank; begin += rank_count) {
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Processing Ranks {} to {}\n", time_stamp(tsFormat), 
+		 begin, begin + rank_count - 1);
+    }
+    
+    grid.process(interFace, begin, rank_count);
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Lattice Processing Finalized\n", time_stamp(tsFormat));
+    }
+    
+    grid.output_model(begin, rank_count, (INT)0);
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Model Output\n", time_stamp(tsFormat));
+    }
   }
 
   /*************************************************************************/

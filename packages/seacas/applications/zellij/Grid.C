@@ -51,7 +51,6 @@ Grid::Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j)
       m_equivalenceNodes(interFace.equivalence_nodes())
 {
   m_grid.resize(m_gridI * m_gridJ);
-  create_output_regions(interFace);
 }
 
 void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
@@ -83,7 +82,7 @@ void Grid::set_coordinate_offsets()
   }
 }
 
-void Grid::create_output_regions(SystemInterface &interFace)
+void Grid::create_output_regions(SystemInterface &interFace, int start_rank, int num_ranks)
 {
   if (debug_level & 2) {
     util().progress(__func__);
@@ -101,9 +100,7 @@ void Grid::create_output_regions(SystemInterface &interFace)
     properties.add(Ioss::Property("ENABLE_TRACING", 1));
   }
 
-  int start_rank = interFace.start_rank();
-  int rank_count = interFace.rank_count();
-  for (int i = start_rank; i < start_rank + rank_count; i++) {
+  for (int i = start_rank; i < start_rank + num_ranks; i++) {
     // Define the output database(s)...
     std::string outfile = Ioss::Utils::decode_filename(interFace.outputName_, i, interFace.ranks());
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
@@ -116,6 +113,11 @@ void Grid::create_output_regions(SystemInterface &interFace)
     output_region(i)->begin_mode(Ioss::STATE_DEFINE_MODEL);
     output_region(i)->property_add(Ioss::Property("code_name", qainfo[0]));
     output_region(i)->property_add(Ioss::Property("code_version", qainfo[2]));
+
+    if (interFace.minimize_open_files() == Minimize::OUTPUT ||
+	interFace.minimize_open_files() == Minimize::ALL) {
+      output_region(i)->get_database()->closeDatabase();
+    }
   }
 }
 
@@ -190,11 +192,13 @@ void Grid::categorize_processor_boundaries()
   }
 }
 
-void Grid::finalize(int start_rank, int rank_count)
+void Grid::process(SystemInterface &interFace, int start_rank, int rank_count)
 {
   if (debug_level & 2) {
     util().progress(__func__);
   }
+
+  create_output_regions(interFace, start_rank, rank_count);
 
   auto node_count    = handle_nodes(*this, start_rank, rank_count);
   auto element_count = handle_elements(*this, start_rank, rank_count);

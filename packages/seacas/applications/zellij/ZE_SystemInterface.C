@@ -111,6 +111,10 @@ void SystemInterface::enroll_options()
   options_.enroll("separate_cells", GetLongOption::NoValue,
                   "Do not equivalence the nodes between adjacent unit cells.", nullptr);
 
+  options_.enroll("subcycle", GetLongOption::NoValue,
+		  "Process cells in groups of '-rank_count'.  Helps minimize open files,\n"
+		  "\t\tbut is faster than only having a single file open.", nullptr);
+
   options_.enroll(
       "minimize_open_files", GetLongOption::OptionalValue,
       "Close files after accessing them to avoid issues with too many open files.\n"
@@ -176,6 +180,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
   if (options_.retrieve("random") != nullptr) {
     decompMethod_ = "RANDOM";
   }
+
+  subcycle_ = (options_.retrieve("subcycle") != nullptr);
 
   equivalenceNodes_ = options_.retrieve("separate_cells") == nullptr;
   {

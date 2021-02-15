@@ -62,7 +62,7 @@ public:
   //! offsets of each cell, the size of the output mesh, the node and element id offsets
   //! for each cell, the number of nodes and elements in the output mesh and initialize
   //! the output mesh.
-  void finalize(int start_rank, int rank_count);
+  void process(SystemInterface &interFace, int start_rank, int rank_count);
 
   void decompose(size_t ranks, const std::string &method);
 
@@ -77,7 +77,7 @@ public:
   void         set_minimize_open_files(unsigned int mode) { m_minimizeOpenFiles = mode; }
 
 private:
-  void create_output_regions(SystemInterface &interFace);
+  void create_output_regions(SystemInterface &interFace, int start_rank, int num_ranks);
   void categorize_processor_boundaries();
 
   void output_nodal_coordinates(const Cell &cell);
