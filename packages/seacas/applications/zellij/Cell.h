@@ -35,6 +35,9 @@ public:
   std::pair<double, double> get_coordinate_range(enum Axis) const;
   void                      initialize(size_t i, size_t j, std::shared_ptr<UnitCell> region);
 
+  //! Provide access to the UnitCell that this cell uses.
+  std::shared_ptr<UnitCell> unit() const { return m_unitCell; }
+
   //! Provide access to the Ioss::Region in the unit_cell that this cell uses.
   std::shared_ptr<Ioss::Region> region() const { return m_unitCell->m_region; }
 

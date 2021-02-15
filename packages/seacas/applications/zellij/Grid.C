@@ -44,6 +44,7 @@ namespace {
   size_t handle_nodes(Grid &grid, int start_rank, int rank_count);
   void   handle_communications(Grid &grid, int start_rank, int rank_count);
   void   handle_surfaces(Grid &grid, int start_rank, int rank_count);
+  void   generate_surfaces(Grid &grid, int start_rank, int rank_count);
 } // namespace
 
 Grid::Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j)
@@ -115,7 +116,7 @@ void Grid::create_output_regions(SystemInterface &interFace, int start_rank, int
     output_region(i)->property_add(Ioss::Property("code_version", qainfo[2]));
 
     if (interFace.minimize_open_files() == Minimize::OUTPUT ||
-	interFace.minimize_open_files() == Minimize::ALL) {
+        interFace.minimize_open_files() == Minimize::ALL) {
       output_region(i)->get_database()->closeDatabase();
     }
   }
@@ -204,6 +205,7 @@ void Grid::process(SystemInterface &interFace, int start_rank, int rank_count)
   auto element_count = handle_elements(*this, start_rank, rank_count);
   handle_communications(*this, start_rank, rank_count);
   handle_surfaces(*this, start_rank, rank_count);
+  generate_surfaces(*this, start_rank, rank_count);
 
   for (int i = start_rank; i < start_rank + rank_count; i++) {
     output_region(i)->end_mode(Ioss::STATE_DEFINE_MODEL);
@@ -339,6 +341,52 @@ void Grid::output_nodal_coordinates(const Cell &cell)
   }
 }
 
+template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*dummy*/)
+{
+  auto generated_ijk = get_generated_sidesets();
+  if (generated_ijk == 0) {
+    return;
+  }
+
+  int   rank       = cell.rank(Loc::C);
+  auto &block_name = cell.unit()->boundary_element_block_name;
+
+  std::array<int, 6> boundary_rank{
+      cell.rank(Loc::L), cell.rank(Loc::R), cell.rank(Loc::B), cell.rank(Loc::T), -1, -1};
+  std::array<enum Flg, 6> boundary_flag{Flg::MIN_I, Flg::MAX_I, Flg::MIN_J,
+                                        Flg::MAX_J, Flg::MIN_K, Flg::MAX_K};
+
+  int exoid = output_region(rank)->get_database()->get_file_pointer();
+
+  for (int face = 0; face < 6; face++) {
+    if ((generated_ijk & (unsigned)boundary_flag[face]) && boundary_rank[face] == -1) {
+      // Find surface on output mesh...
+      auto *osurf = output_region(rank)->get_sideset(generated_surface_names[face]);
+      SMART_ASSERT(osurf != nullptr);
+      auto &oblocks = osurf->get_side_blocks();
+      SMART_ASSERT(oblocks.size() == 1)(oblocks.size());
+
+      auto             count = cell.unit()->boundary_faces[face].size();
+      std::vector<INT> elements;
+      std::vector<INT> faces;
+      elements.reserve(count);
+      faces.reserve(count);
+
+      size_t element_offset = cell.m_localElementIdOffset[block_name];
+
+      for (size_t i = 0; i < count; i++) {
+        auto el_side = cell.unit()->boundary_faces[face][i];
+        elements.push_back(el_side / 10 + element_offset);
+        faces.push_back(el_side % 10 + 1);
+      }
+
+      auto id    = osurf->get_property("id").get_int();
+      auto start = cell.m_localSurfaceOffset[generated_surface_names[face]];
+      ex_put_partial_set(exoid, EX_SIDE_SET, id, start + 1, count, elements.data(), faces.data());
+    }
+  }
+}
+
 template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
 {
   int rank  = cell.rank(Loc::C);
@@ -352,7 +400,8 @@ template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
     auto *osurf = output_region(rank)->get_sideset(surface->name());
     SMART_ASSERT(osurf != nullptr);
     auto &oblocks = osurf->get_side_blocks();
-    SMART_ASSERT(oblocks.size() == 1);
+    SMART_ASSERT(oblocks.size() == 1)
+    (oblocks.size())(surface->name())(oblocks[0]->name())(oblocks[1]->name());
 
     std::vector<INT> elements;
     std::vector<INT> faces;
@@ -383,6 +432,9 @@ template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
     auto count = elements.size();
     ex_put_partial_set(exoid, EX_SIDE_SET, id, start + 1, count, elements.data(), faces.data());
   }
+
+  output_generated_surfaces(cell, INT(0));
+
   if (minimize_open_files() & 1) {
     cell.region()->get_database()->closeDatabase();
   }
@@ -763,6 +815,66 @@ namespace {
           }
         }
         grid.output_region(rank)->add(surface);
+      }
+    }
+  }
+
+  void generate_surfaces(Grid &grid, int start_rank, int rank_count)
+  {
+    // The user may have requested that sidesets on one or more
+    // of the models boundary surfaces (min i,j,k and/or max i,j,k)
+    // be automatically generated (they don't exist on the input
+    // unit cells).  Handle those sidesets here.
+
+    auto generated_ijk = grid.get_generated_sidesets();
+    if (generated_ijk == 0) {
+      return;
+    }
+
+    std::array<size_t, 6> global_surface_face_count{};
+
+    // Per rank...
+    std::vector<std::array<size_t, 6>> surface_face_count(grid.parallel_size());
+    std::vector<std::array<size_t, 6>> local_surface_offset(grid.parallel_size());
+
+    std::array<enum Flg, 6> boundary_flag{Flg::MIN_I, Flg::MAX_I, Flg::MIN_J,
+                                          Flg::MAX_J, Flg::MIN_K, Flg::MAX_K};
+
+    for (size_t j = 0; j < grid.JJ(); j++) {
+      for (size_t i = 0; i < grid.II(); i++) {
+        auto &             cell = grid.get_cell(i, j);
+        auto               rank = cell.rank(Loc::C);
+        std::array<int, 6> boundary_rank{
+            cell.rank(Loc::L), cell.rank(Loc::R), cell.rank(Loc::B), cell.rank(Loc::T), -1, -1};
+
+        for (int face = 0; face < 6; face++) {
+          if ((generated_ijk & (unsigned)boundary_flag[face]) && boundary_rank[face] == -1) {
+            cell.m_localSurfaceOffset[grid.generated_surface_names[face]] =
+                local_surface_offset[rank][face];
+
+            auto count = cell.unit()->boundary_faces[face].size();
+            global_surface_face_count[face] += count;
+            surface_face_count[rank][face] += count;
+            local_surface_offset[rank][face] += count;
+          }
+        }
+      }
+    }
+
+    // Define the surfaces in the output database...
+    for (int rank = start_rank; rank < start_rank + rank_count; rank++) {
+      for (size_t i = 0; i < 6; i++) {
+        if (global_surface_face_count[i] > 0) {
+          auto *surface = new Ioss::SideSet(grid.output_region(rank)->get_database(),
+                                            grid.generated_surface_names[i]);
+          auto *block   = new Ioss::SideBlock(grid.output_region(rank)->get_database(),
+                                            grid.generated_surface_names[i], "quad4", "hex8",
+                                            surface_face_count[rank][i]);
+          block->property_update("global_entity_count", global_surface_face_count[i]);
+          block->property_update("distribution_factor_count", 0);
+          surface->add(block);
+          grid.output_region(rank)->add(surface);
+        }
       }
     }
   }

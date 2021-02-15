@@ -75,6 +75,11 @@ public:
 
   unsigned int minimize_open_files() { return m_minimizeOpenFiles; }
   void         set_minimize_open_files(unsigned int mode) { m_minimizeOpenFiles = mode; }
+  void         set_generated_sidesets(unsigned int sidesets) { m_generatedSideSets = sidesets; }
+  unsigned int get_generated_sidesets() { return m_generatedSideSets; }
+
+  std::array<std::string, 6> generated_surface_names{"min_i", "max_i", "min_j",
+                                                     "max_j", "min_k", "max_k"};
 
 private:
   void create_output_regions(SystemInterface &interFace, int start_rank, int num_ranks);
@@ -93,6 +98,7 @@ private:
   void output_node_map(const Cell &cell, int start_rank, int num_ranks, INT /*dummy*/);
 
   template <typename INT> void output_surfaces(Cell &cell, INT /*dummy*/);
+  template <typename INT> void output_generated_surfaces(Cell &cell, INT /*dummy*/);
 
   std::vector<std::unique_ptr<Ioss::Region>> m_outputRegions;
   std::vector<Cell>                          m_grid{};
@@ -102,5 +108,6 @@ private:
   int                                        m_parallelSize{1};
   bool                                       m_equivalenceNodes{true};
   unsigned int                               m_minimizeOpenFiles{0}; // 1: Unit, 2: output, 3: all
+  unsigned int                               m_generatedSideSets{0};
 };
 #endif

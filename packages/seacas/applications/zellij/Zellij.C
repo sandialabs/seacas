@@ -62,6 +62,9 @@ namespace {
     return fdmax - 3;
   }
 
+  unsigned int which_sidesets(const std::string &sideset_string);
+  void         generate_sidesets(UnitCellMap &unit_cells, unsigned int which);
+
   Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu);
 
   std::string time_stamp(const std::string &format);
@@ -142,6 +145,12 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
     fmt::print(stderr, "{} Lattice Defined\n", time_stamp(tsFormat));
   }
 
+  auto generate_sset = which_sidesets(interFace.sideset_surfaces());
+  if (generate_sset != 0) {
+    generate_sidesets(unit_cells, generate_sset);
+    grid.set_generated_sidesets(generate_sset);
+  }
+
   grid.set_coordinate_offsets();
 
   grid.decompose(interFace.ranks(), interFace.decomp_method());
@@ -153,14 +162,14 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   // and the global node and element counts...
   //
   // Iterate through the grid starting with (0,0) and accumulate node and element counts...
-  int end_rank   = interFace.ranks();
-  int start_rank = interFace.start_rank();
-  int rank_count = interFace.rank_count();
-  bool subcycle = interFace.subcycle();
+  int  end_rank   = interFace.ranks();
+  int  start_rank = interFace.start_rank();
+  int  rank_count = interFace.rank_count();
+  bool subcycle   = interFace.subcycle();
 
   if (subcycle) {
     start_rank = 0;
-    end_rank = interFace.ranks();
+    end_rank   = interFace.ranks();
   }
   else {
     end_rank = interFace.rank_count();
@@ -168,15 +177,15 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
 
   for (int begin = start_rank; begin < end_rank; begin += rank_count) {
     if (debug_level & 1) {
-      fmt::print(stderr, "{} Processing Ranks {} to {}\n", time_stamp(tsFormat), 
-		 begin, begin + rank_count - 1);
+      fmt::print(stderr, "{} Processing Ranks {} to {}\n", time_stamp(tsFormat), begin,
+                 begin + rank_count - 1);
     }
-    
+
     grid.process(interFace, begin, rank_count);
     if (debug_level & 1) {
       fmt::print(stderr, "{} Lattice Processing Finalized\n", time_stamp(tsFormat));
     }
-    
+
     grid.output_model(begin, rank_count, (INT)0);
     if (debug_level & 1) {
       fmt::print(stderr, "{} Model Output\n", time_stamp(tsFormat));
@@ -236,6 +245,39 @@ namespace {
     std::string name = "Region_" + key;
     // NOTE: region owns database pointer at this time...
     return std::make_shared<Ioss::Region>(dbi, name);
+  }
+
+  unsigned int which_sidesets(const std::string &sideset_string)
+  {
+    unsigned generate = 0;
+    for (const auto &c : sideset_string) {
+      if (c == 'x' || c == 'i') {
+        generate |= (unsigned)Flg::MIN_I;
+      }
+      if (c == 'y' || c == 'j') {
+        generate |= (unsigned)Flg::MIN_J;
+      }
+      if (c == 'z' || c == 'k') {
+        generate |= (unsigned)Flg::MIN_K;
+      }
+      if (c == 'X' || c == 'I') {
+        generate |= (unsigned)Flg::MAX_I;
+      }
+      if (c == 'Y' || c == 'J') {
+        generate |= (unsigned)Flg::MAX_J;
+      }
+      if (c == 'Z' || c == 'K') {
+        generate |= (unsigned)Flg::MAX_K;
+      }
+    }
+    return generate;
+  }
+
+  void generate_sidesets(UnitCellMap &unit_cells, unsigned int which_sidesets)
+  {
+    for (auto &unit_cell : unit_cells) {
+      unit_cell.second->generate_boundary_faces(which_sidesets);
+    }
   }
 
   Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu)

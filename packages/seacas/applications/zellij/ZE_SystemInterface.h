@@ -23,6 +23,7 @@ public:
 
   std::string lattice() const { return lattice_; }
   std::string decomp_method() const { return decompMethod_; }
+  std::string sideset_surfaces() const { return sidesetSurfaces_; }
 
   bool ints32bit() const { return ints32bit_; }
   bool use_netcdf4() const { return useNetcdf4_; }
@@ -32,9 +33,9 @@ public:
   bool zlib() const { return zlib_; }
   bool szip() const { return szip_; }
 
-  int ranks() const { return ranks_; }
-  int start_rank() const { return startRank_; }
-  int rank_count() const { return rankCount_; }
+  int  ranks() const { return ranks_; }
+  int  start_rank() const { return startRank_; }
+  int  rank_count() const { return rankCount_; }
   bool subcycle() const { return subcycle_; }
 
   bool     equivalence_nodes() const { return equivalenceNodes_; }
@@ -52,6 +53,7 @@ private:
 
   std::string   lattice_{};
   std::string   decompMethod_{"HSFC"};
+  std::string   sidesetSurfaces_{};
   int           debugLevel_{0};
   int           compressionLevel_{0};
   int           ranks_{1};

@@ -12,6 +12,9 @@
 
 #include "Ioss_Region.h"
 
+enum class Bnd { MIN_I = 0, MAX_I = 1, MIN_J = 2, MAX_J = 3, MIN_K = 4, MAX_K = 5 };
+enum class Flg { MIN_I = 1, MAX_I = 4, MIN_J = 2, MAX_J = 8, MIN_K = 16, MAX_K = 32 };
+
 class UnitCell
 {
 public:
@@ -23,7 +26,9 @@ public:
   //! * 1: Node on `min_I` face
   //! * 2: Node on `min_J` face
   //! * 3: Node on `min_I-min_J` line
-  std::vector<int> categorize_nodes(bool neighbor_i, bool neighbor_j) const;
+  //! If `all_faces` is true, then also categorize the max_I (4) and max_J (8) faces and don't
+  //! consider neighbors (want all boundaries marked).
+  std::vector<int> categorize_nodes(bool neighbor_i, bool neighbor_j, bool all_faces = false) const;
 
   std::shared_ptr<Ioss::Region> m_region{nullptr};
 
@@ -50,6 +55,14 @@ public:
   std::pair<double, double> minmax_y{};
   ///@}
 
+  void generate_boundary_faces(unsigned int which_faces);
+
+  //! The name of the element block which contains the elements on the
+  //! surface of this unit cell.  Only populated if boundary sidesets
+  //! are being generated.
+  std::string                         boundary_element_block_name{};
+  std::array<std::vector<int64_t>, 6> boundary_faces{};
+
   ///@{
   //! The outer boundary of a UnitCell has a
   //! structured-configuration of the boundary faces on the non-K
@@ -61,10 +74,6 @@ public:
   size_t cell_II{};
   size_t cell_JJ{};
   size_t cell_KK{};
-
-  //! Specifies whether there is a surface on the min_I, max_I, min_J, max_J face
-  //! and if there is, the name of the surface.  If name is empty(), then no surface.
-  std::array<std::string, 4> has_surface{};
   ///@}
 };
 

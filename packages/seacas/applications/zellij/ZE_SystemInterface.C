@@ -112,8 +112,21 @@ void SystemInterface::enroll_options()
                   "Do not equivalence the nodes between adjacent unit cells.", nullptr);
 
   options_.enroll("subcycle", GetLongOption::NoValue,
-		  "Process cells in groups of '-rank_count'.  Helps minimize open files,\n"
-		  "\t\tbut is faster than only having a single file open.", nullptr);
+                  "Process cells in groups of '-rank_count'.  Helps minimize open files,\n"
+                  "\t\tbut is faster than only having a single file open.",
+                  nullptr);
+
+  options_.enroll("generate_sidesets", GetLongOption::MandatoryValue,
+                  "Which surfaces on the output mesh should have sidesets generated,\n"
+                  "\t\t Valid options are:\n"
+                  "\t\t 'x' or 'i' for surface on minimum X coordinate,\n"
+                  "\t\t 'y' or 'j' for surface on minimum Y coordinate,\n"
+                  "\t\t 'z' or 'k' for surface on minimum Z coordinate,\n"
+                  "\t\t 'Z' or 'I' for surface on maximum X coordinate,\n"
+                  "\t\t 'Y' or 'J' for surface on maximum Y coordinate,\n"
+                  "\t\t 'Z' or 'K' for surface on maximum Z coordinate,\n"
+                  "\t\t For example `xyXY` would generate sideset on min/max X and Y surfaces.",
+                  "");
 
   options_.enroll(
       "minimize_open_files", GetLongOption::OptionalValue,
@@ -126,14 +139,14 @@ void SystemInterface::enroll_options()
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
-                  "\t\t  1 = Time stamp information.\n"
-                  "\t\t  2 = Memory information.\n"
-                  "\t\t  4 = Verbose Unit Cell information.\n"
-                  "\t\t  8 = Verbose output of Grid finalization calculations.\n"
-                  "\t\t 16 = Put exodus library into verbose mode.\n"
-                  "\t\t 32 = Verbose decomposition information.\n"
-                  "\t\t 64 = Verbose output database summary information.",
-                  "0");
+                  "\t\t   1 = Time stamp information.\n"
+                  "\t\t   2 = Memory information.\n"
+                  "\t\t   4 = Verbose Unit Cell information.\n"
+                  "\t\t   8 = Verbose output of Grid finalization calculations.\n"
+                  "\t\t  16 = Put exodus library into verbose mode.\n"
+                  "\t\t  32 = Verbose decomposition information.\n"
+                  "\t\t  64 = Verbose output database summary information.",
+                  "\t\t 128 = Verbose sideset generation information.", "0");
 
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
 }
@@ -258,6 +271,13 @@ bool SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("lattice");
     if (temp != nullptr) {
       lattice_ = temp;
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("generate_sidesets");
+    if (temp != nullptr) {
+      sidesetSurfaces_ = temp;
     }
   }
 

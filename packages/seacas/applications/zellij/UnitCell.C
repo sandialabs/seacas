@@ -7,6 +7,8 @@
 #include "UnitCell.h"
 #include <vector>
 
+#include "Ioss_ElementBlock.h"
+#include "Ioss_FaceGenerator.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_Region.h"
 #include "Ioss_SmartAssert.h"
@@ -15,6 +17,19 @@
 extern unsigned int debug_level;
 
 namespace {
+  bool on_boundary(Flg ijk, const Ioss::Face &face, std::vector<int> &categorized_nodes)
+  {
+    int result = (unsigned int)ijk & categorized_nodes[face.connectivity_[0] - 1] &
+                 categorized_nodes[face.connectivity_[1] - 1] &
+                 categorized_nodes[face.connectivity_[2] - 1] &
+                 categorized_nodes[face.connectivity_[3] - 1];
+    //    fmt::print("{} {} {} {}\n", categorized_nodes[face.connectivity_[0]-1],
+    //    categorized_nodes[face.connectivity_[1]-1],
+    //	       categorized_nodes[face.connectivity_[2]-1],
+    // categorized_nodes[face.connectivity_[3]-1]);
+    return result != 0;
+  }
+
   bool approx_equal(double A, double B)
   {
     double maxRelDiff = std::numeric_limits<float>::epsilon();
@@ -132,7 +147,7 @@ UnitCell::UnitCell(std::shared_ptr<Ioss::Region> region) : m_region(region)
   }
 }
 
-std::vector<int> UnitCell::categorize_nodes(bool neighbor_i, bool neighbor_j) const
+std::vector<int> UnitCell::categorize_nodes(bool neighbor_i, bool neighbor_j, bool all_faces) const
 {
   // Create a vector of `node_count` length which has the following values:
   // 0: Node that is not shared with any neighbors.
@@ -143,16 +158,91 @@ std::vector<int> UnitCell::categorize_nodes(bool neighbor_i, bool neighbor_j) co
   auto             node_count = m_region->get_property("node_count").get_int();
   std::vector<int> node_category(node_count);
 
-  if (neighbor_i) {
+  if (neighbor_i || all_faces) {
     for (auto node : min_I_face) {
-      node_category[node] = 1;
+      node_category[node] = (int)Flg::MIN_I;
     }
   }
 
-  if (neighbor_j) {
+  if (neighbor_j || all_faces) {
     for (auto node : min_J_face) {
-      node_category[node] += 2;
+      node_category[node] += (int)Flg::MIN_J;
+    }
+  }
+
+  if (all_faces) {
+    for (auto node : max_I_face) {
+      node_category[node] += (int)Flg::MAX_I;
+    }
+
+    for (auto node : max_J_face) {
+      node_category[node] += (int)Flg::MAX_J;
     }
   }
   return node_category;
+}
+
+void UnitCell::generate_boundary_faces(unsigned int which_faces)
+{
+  Ioss::FaceGenerator face_generator(*m_region);
+  bool                block_by_block = false;
+  bool                local_ids      = true;
+  if (m_region->get_database()->int_byte_size_api() == 4) {
+    face_generator.generate_faces((int)0, block_by_block, local_ids);
+  }
+  else {
+    face_generator.generate_faces((int64_t)0, block_by_block, local_ids);
+  }
+
+  // Get vector of all boundary faces which need to be categorized into
+  // which face of the unit cell they are on
+  auto categorized_nodes = categorize_nodes(false, false, true);
+  if (debug_level & 128) {
+    fmt::print("Node Category: {}\n", fmt::join(categorized_nodes, " "));
+  }
+
+  std::array<enum Flg, 6> boundary_flag{Flg::MIN_I, Flg::MAX_I, Flg::MIN_J,
+                                        Flg::MAX_J, Flg::MIN_K, Flg::MAX_K};
+  auto &                  faces = face_generator.faces("ALL");
+  for (auto &face : faces) {
+    if (face.elementCount_ == 1) {
+      for (int i = 0; i < 6; i++) {
+        if ((which_faces & (unsigned)boundary_flag[i]) &&
+            on_boundary(boundary_flag[i], face, categorized_nodes)) {
+          if (debug_level & 128) {
+            fmt::print("Element {}, Side {} is on boundary {}\n", face.element[0] / 10,
+                       face.element[0] % 10, i);
+          }
+          boundary_faces[i].push_back(face.element[0]);
+          break;
+        }
+      }
+    }
+  }
+
+  for (int i = 0; i < 6; i++) {
+    if ((which_faces & (unsigned)boundary_flag[i]) && boundary_element_block_name.empty()) {
+      auto element                = boundary_faces[i][0] / 10;
+      boundary_element_block_name = m_region->get_element_block(element)->name();
+      break;
+    }
+  }
+
+  if (which_faces & (unsigned)Flg::MIN_I) {
+    SMART_ASSERT(boundary_faces[(int)Bnd::MIN_I].size() == (cell_JJ - 1) * (cell_KK - 1))
+    (boundary_faces[(int)Bnd::MIN_I].size())(cell_JJ - 1)(cell_KK - 1);
+  }
+  if (which_faces & (unsigned)Flg::MAX_I) {
+    SMART_ASSERT(boundary_faces[(int)Bnd::MAX_I].size() == (cell_JJ - 1) * (cell_KK - 1))
+    (boundary_faces[(int)Bnd::MAX_I].size())(cell_JJ - 1)(cell_KK - 1);
+  }
+
+  if (which_faces & (unsigned)Flg::MIN_J) {
+    SMART_ASSERT(boundary_faces[(int)Bnd::MIN_J].size() == (cell_II - 1) * (cell_KK - 1))
+    (boundary_faces[(int)Bnd::MIN_J].size())(cell_II - 1)(cell_KK - 1);
+  }
+  if (which_faces & (unsigned)Flg::MAX_J) {
+    SMART_ASSERT(boundary_faces[(int)Bnd::MAX_J].size() == (cell_II - 1) * (cell_KK - 1))
+    (boundary_faces[(int)Bnd::MAX_J].size())(cell_II - 1)(cell_KK - 1);
+  }
 }
