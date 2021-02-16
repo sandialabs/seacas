@@ -27,6 +27,7 @@
 #include <exodusII.h>
 
 #include <Ionit_Initializer.h>
+#include <Ioss_ParallelUtils.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_Transform.h>
@@ -82,13 +83,18 @@ int main(int argc, char *argv[])
 
 #endif
 
+  Ioss::ParallelUtils pu{MPI_COMM_WORLD};
+  int                 my_rank = pu.parallel_rank();
+
   try {
-    SystemInterface::show_version();
+    if (my_rank == 0) {
+      SystemInterface::show_version();
 #ifdef SEACAS_HAVE_MPI
-    fmt::print("\tParallel Capability Enabled.\n");
+      fmt::print("\tParallel Capability Enabled.\n");
 #else
-    fmt::print("\tParallel Capability Not Enabled.\n");
+      fmt::print("\tParallel Capability Not Enabled.\n");
 #endif
+    }
     Ioss::Init::Initializer io;
 
     SystemInterface interFace;
@@ -107,9 +113,11 @@ int main(int argc, char *argv[])
     else {
       time = zellij(interFace, static_cast<int64_t>(0));
     }
-    fmt::print(stderr, "\n Zellij execution successful.\n");
 
-    add_to_log(argv[0], time);
+    if (my_rank == 0) {
+      fmt::print(stderr, "\n Zellij execution successful.\n");
+      add_to_log(argv[0], time);
+    }
 
 #ifdef SEACAS_HAVE_MPI
     MPI_Finalize();
@@ -199,9 +207,11 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   }
 
   double end = Ioss::Utils::timer();
-  fmt::print(stderr, "\n Total Execution time     = {:.5} seconds.\n", end - begin);
   double hwm = (double)Ioss::Utils::get_hwm_memory_info() / 1024.0 / 1024.0;
-  fmt::print(stderr, " High-Water Memory Use    = {:.3} MiBytes.\n", hwm);
+  if (pu.parallel_rank() == 0) {
+    fmt::print(stderr, "\n Total Execution time     = {:.5} seconds.\n", end - begin);
+    fmt::print(stderr, " High-Water Memory Use    = {:.3} MiBytes.\n", hwm);
+  }
   return (end - begin);
 }
 
@@ -282,6 +292,8 @@ namespace {
 
   Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu)
   {
+    int my_rank = pu.parallel_rank();
+
     if (debug_level & 2) {
       pu.progress("Defining Unit Cells...");
     }
@@ -383,7 +395,9 @@ namespace {
     Grid grid(interFace, II, JJ);
 
     size_t open_files = get_free_descriptor_count();
-    fmt::print("\n Maximum Open File Count = {}\n", get_free_descriptor_count());
+    if (my_rank == 0) {
+      fmt::print("\n Maximum Open File Count = {}\n", get_free_descriptor_count());
+    }
     if (interFace.minimize_open_files() != Minimize::NONE ||
         (unit_cells.size() + interFace.rank_count() > open_files)) {
       unsigned int mode = (unsigned)interFace.minimize_open_files();
@@ -403,14 +417,19 @@ namespace {
       }
       grid.set_minimize_open_files(mode);
       std::array<std::string, 4> smode{"NONE", "UNIT", "OUTPUT", "ALL"};
-      fmt::print(stderr, " Setting `minimize_open_files` mode to {}.\n", smode[mode]);
+      if (my_rank == 0) {
+        fmt::print(stderr, " Setting `minimize_open_files` mode to {}.\n", smode[mode]);
+      }
     }
 
-    fmt::print(stderr, "\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
-               unit_cells.size(), II, JJ, KK);
+    if (my_rank == 0) {
+      fmt::print(stderr, "\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
+                 unit_cells.size(), II, JJ, KK);
+    }
     if (interFace.ranks() > 1) {
-      fmt::print(stderr, "         \tRanks: {:n}, Outputting {:n} ranks starting at rank {:n}.\n",
-                 interFace.ranks(), interFace.rank_count(), interFace.start_rank());
+      fmt::print(stderr,
+                 "         \t[{}] Ranks: {:n}, Outputting {:n} ranks starting at rank {:n}.\n",
+                 my_rank, interFace.ranks(), interFace.rank_count(), interFace.start_rank());
     }
 
     size_t row{0};
