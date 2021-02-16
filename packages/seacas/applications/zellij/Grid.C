@@ -395,8 +395,6 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
         for (auto &face : bnd_faces) {
           elements.push_back(face / 10 + element_offset + global_offset);
           faces.push_back(face % 10 + 1);
-          fmt::print("Element {}, Face {}, Cell({}, {}), Block: {},  {} {}\n", elements.back(),
-                     faces.back(), cell.m_i, cell.m_j, block_name, element_offset, global_offset);
         }
       }
 
