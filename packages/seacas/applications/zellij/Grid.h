@@ -78,8 +78,8 @@ public:
   void         set_generated_sidesets(unsigned int sidesets) { m_generatedSideSets = sidesets; }
   unsigned int get_generated_sidesets() { return m_generatedSideSets; }
 
-  std::array<std::string, 6> generated_surface_names{"min_i", "max_i", "min_j",
-                                                     "max_j", "min_k", "max_k"};
+  std::array<std::string, 6> generated_surface_names{
+      {"min_i", "max_i", "min_j", "max_j", "min_k", "max_k"}};
 
 private:
   void create_output_regions(SystemInterface &interFace, int start_rank, int num_ranks);
@@ -107,6 +107,7 @@ private:
   size_t                                     m_gridJ{0};
   int                                        m_parallelSize{1};
   bool                                       m_equivalenceNodes{true};
+  bool                                       m_useInternalSidesets{true};
   unsigned int                               m_minimizeOpenFiles{0}; // 1: Unit, 2: output, 3: all
   unsigned int                               m_generatedSideSets{0};
 };

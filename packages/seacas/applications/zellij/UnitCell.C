@@ -30,6 +30,17 @@ namespace {
     return result != 0;
   }
 
+  Ioss::ElementBlock *get_element_block(int64_t elem_id, std::shared_ptr<Ioss::Region> &region)
+  {
+    static Ioss::ElementBlock *block = nullptr;
+
+    if (block == nullptr || !block->contains(elem_id)) {
+      block = region->get_element_block(elem_id);
+      assert(block != nullptr);
+    }
+    return block;
+  }
+
   bool approx_equal(double A, double B)
   {
     double maxRelDiff = std::numeric_limits<float>::epsilon();
@@ -206,31 +217,38 @@ void UnitCell::generate_boundary_faces(unsigned int which_faces)
   auto &                  faces = face_generator.faces("ALL");
   for (auto &face : faces) {
     if (face.elementCount_ == 1) {
+      auto *block        = get_element_block(face.element[0] / 10, m_region);
+      auto  block_offset = block->get_offset();
       for (int i = 0; i < 6; i++) {
         if ((which_faces & (unsigned)boundary_flag[i]) &&
             on_boundary(boundary_flag[i], face, categorized_nodes)) {
+
+          // Complexity:  The `face.element[0]` is 10 * local_element_id + face.
+          // We need to convert that to the offset within the element block
+          // For example, if we have two element blocks with 100 elements each, then
+          // local_element_id 128 would be the 28 element in the second element block
+          // and we would need to store '28 * 10 + face' instead of '128 * 10 + face'
+          // so when we process this element later, we can correctly calculate the
+          // local_element_id in the output file...
+          auto unit_local_element_id = face.element[0] / 10;
+          auto face_ordinal          = face.element[0] % 10;
+          auto unit_block_location   = (unit_local_element_id - block_offset) * 10 + face_ordinal;
+
           if (debug_level & 128) {
-            fmt::print("Element {}, Side {} is on boundary {}\n", face.element[0] / 10,
-                       face.element[0] % 10, i);
+            fmt::print("Element {}, Side {} is on boundary {}\n", unit_block_location / 10,
+                       unit_block_location % 10, i);
           }
-          boundary_faces[i].push_back(face.element[0]);
+          boundary_blocks[i].m_faces[block->name()].push_back(unit_block_location);
           break;
         }
       }
     }
   }
 
-  for (int i = 0; i < 6; i++) {
-    if ((which_faces & (unsigned)boundary_flag[i]) && boundary_element_block_name.empty()) {
-      auto element                = boundary_faces[i][0] / 10;
-      boundary_element_block_name = m_region->get_element_block(element)->name();
-      break;
-    }
-  }
-
+#if 0
   if (which_faces & (unsigned)Flg::MIN_I) {
     SMART_ASSERT(boundary_faces[(int)Bnd::MIN_I].size() == (cell_JJ - 1) * (cell_KK - 1))
-    (boundary_faces[(int)Bnd::MIN_I].size())(cell_JJ - 1)(cell_KK - 1);
+    (boundary_blocks[(int)Bnd::MIN_I].size())(cell_JJ - 1)(cell_KK - 1);
   }
   if (which_faces & (unsigned)Flg::MAX_I) {
     SMART_ASSERT(boundary_faces[(int)Bnd::MAX_I].size() == (cell_JJ - 1) * (cell_KK - 1))
@@ -245,4 +263,5 @@ void UnitCell::generate_boundary_faces(unsigned int which_faces)
     SMART_ASSERT(boundary_faces[(int)Bnd::MAX_J].size() == (cell_II - 1) * (cell_KK - 1))
     (boundary_faces[(int)Bnd::MAX_J].size())(cell_II - 1)(cell_KK - 1);
   }
+#endif
 }

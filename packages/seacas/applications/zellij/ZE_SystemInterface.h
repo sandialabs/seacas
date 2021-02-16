@@ -24,6 +24,7 @@ public:
   std::string lattice() const { return lattice_; }
   std::string decomp_method() const { return decompMethod_; }
   std::string sideset_surfaces() const { return sidesetSurfaces_; }
+  bool        ignore_internal_sidesets() const { return ignoreInternalSidesets_; }
 
   bool ints32bit() const { return ints32bit_; }
   bool use_netcdf4() const { return useNetcdf4_; }
@@ -66,6 +67,7 @@ private:
   bool          szip_{false};
   bool          equivalenceNodes_{true};
   bool          subcycle_{false};
+  bool          ignoreInternalSidesets_{false};
   enum Minimize minimizeOpenFiles_ { Minimize::NONE };
 };
 #endif

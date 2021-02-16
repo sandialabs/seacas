@@ -15,6 +15,25 @@
 enum class Bnd { MIN_I = 0, MAX_I = 1, MIN_J = 2, MAX_J = 3, MIN_K = 4, MAX_K = 5 };
 enum class Flg { MIN_I = 1, MAX_I = 4, MIN_J = 2, MAX_J = 8, MIN_K = 16, MAX_K = 32 };
 
+struct GeneratedSideBlock
+{
+  //! List of faces (10*element_offset + face) in this SideBlock
+  //! indexed by element block name...
+  //!
+  //! Note that the `element_offset` is the 1-based index of the
+  //! element within the element block that it is a member of
+  std::map<std::string, std::vector<int64_t>> m_faces;
+
+  size_t size() const
+  {
+    size_t count = 0;
+    for (auto &faces : m_faces) {
+      count += faces.second.size();
+    }
+    return count;
+  }
+};
+
 class UnitCell
 {
 public:
@@ -57,11 +76,7 @@ public:
 
   void generate_boundary_faces(unsigned int which_faces);
 
-  //! The name of the element block which contains the elements on the
-  //! surface of this unit cell.  Only populated if boundary sidesets
-  //! are being generated.
-  std::string                         boundary_element_block_name{};
-  std::array<std::vector<int64_t>, 6> boundary_faces{};
+  std::array<GeneratedSideBlock, 6> boundary_blocks{};
 
   ///@{
   //! The outer boundary of a UnitCell has a

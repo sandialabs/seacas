@@ -116,6 +116,9 @@ void SystemInterface::enroll_options()
                   "\t\tbut is faster than only having a single file open.",
                   nullptr);
 
+  options_.enroll("ignore_sidesets", GetLongOption::NoValue,
+                  "Do not copy any sidesets in the unit cells to the output file.", nullptr);
+
   options_.enroll("generate_sidesets", GetLongOption::MandatoryValue,
                   "Which surfaces on the output mesh should have sidesets generated,\n"
                   "\t\t Valid options are:\n"
@@ -273,6 +276,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
       lattice_ = temp;
     }
   }
+
+  ignoreInternalSidesets_ = options_.retrieve("ignore_sidesets") != nullptr;
 
   {
     const char *temp = options_.retrieve("generate_sidesets");

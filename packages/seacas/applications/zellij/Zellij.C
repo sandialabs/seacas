@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     }
 
     if (my_rank == 0) {
-      fmt::print(stderr, "\n Zellij execution successful.\n");
+      fmt::print("\n Zellij execution successful.\n");
       add_to_log(argv[0], time);
     }
 
@@ -209,8 +209,8 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   double end = Ioss::Utils::timer();
   double hwm = (double)Ioss::Utils::get_hwm_memory_info() / 1024.0 / 1024.0;
   if (pu.parallel_rank() == 0) {
-    fmt::print(stderr, "\n Total Execution time     = {:.5} seconds.\n", end - begin);
-    fmt::print(stderr, " High-Water Memory Use    = {:.3} MiBytes.\n", hwm);
+    fmt::print("\n Total Execution time     = {:.5} seconds.\n", end - begin);
+    fmt::print(" High-Water Memory Use    = {:.3} MiBytes.\n", hwm);
   }
   return (end - begin);
 }
@@ -418,17 +418,16 @@ namespace {
       grid.set_minimize_open_files(mode);
       std::array<std::string, 4> smode{"NONE", "UNIT", "OUTPUT", "ALL"};
       if (my_rank == 0) {
-        fmt::print(stderr, " Setting `minimize_open_files` mode to {}.\n", smode[mode]);
+        fmt::print(" Setting `minimize_open_files` mode to {}.\n", smode[mode]);
       }
     }
 
     if (my_rank == 0) {
-      fmt::print(stderr, "\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
+      fmt::print("\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
                  unit_cells.size(), II, JJ, KK);
     }
     if (interFace.ranks() > 1) {
-      fmt::print(stderr,
-                 "         \t[{}] Ranks: {:n}, Outputting {:n} ranks starting at rank {:n}.\n",
+      fmt::print("         \t[{}] Ranks: {:n}, Outputting {:n} ranks starting at rank {:n}.\n",
                  my_rank, interFace.ranks(), interFace.rank_count(), interFace.start_rank());
     }
 

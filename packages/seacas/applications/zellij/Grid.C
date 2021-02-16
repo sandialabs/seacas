@@ -49,7 +49,8 @@ namespace {
 
 Grid::Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j)
     : m_gridI(extent_i), m_gridJ(extent_j), m_parallelSize(interFace.ranks()),
-      m_equivalenceNodes(interFace.equivalence_nodes())
+      m_equivalenceNodes(interFace.equivalence_nodes()),
+      m_useInternalSidesets(!interFace.ignore_internal_sidesets())
 {
   m_grid.resize(m_gridI * m_gridJ);
 }
@@ -204,7 +205,9 @@ void Grid::process(SystemInterface &interFace, int start_rank, int rank_count)
   auto node_count    = handle_nodes(*this, start_rank, rank_count);
   auto element_count = handle_elements(*this, start_rank, rank_count);
   handle_communications(*this, start_rank, rank_count);
-  handle_surfaces(*this, start_rank, rank_count);
+  if (m_useInternalSidesets) {
+    handle_surfaces(*this, start_rank, rank_count);
+  }
   generate_surfaces(*this, start_rank, rank_count);
 
   for (int i = start_rank; i < start_rank + rank_count; i++) {
@@ -237,6 +240,9 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
         }
       }
     }
+    if (minimize_open_files() & 2) {
+      output_region(r)->get_database()->closeDatabase();
+    }
   }
   if (debug_level & 2) {
     util().progress("\tEnd Nodal Coordinate Output");
@@ -250,9 +256,15 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
       for (size_t i = 0; i < II(); i++) {
         auto &cell = get_cell(i, j);
         if (cell.rank(Loc::C) == r) {
-          output_surfaces(cell, INT(0));
+          if (m_useInternalSidesets) {
+            output_surfaces(cell, INT(0));
+          }
+          output_generated_surfaces(cell, INT(0));
         }
       }
+    }
+    if (minimize_open_files() & 2) {
+      output_region(r)->get_database()->closeDatabase();
     }
   }
   if (debug_level & 2) {
@@ -336,9 +348,6 @@ void Grid::output_nodal_coordinates(const Cell &cell)
   if (minimize_open_files() & 1) {
     cell.region()->get_database()->closeDatabase();
   }
-  if (minimize_open_files() & 2) {
-    output_region(rank)->get_database()->closeDatabase();
-  }
 }
 
 template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*dummy*/)
@@ -348,8 +357,7 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
     return;
   }
 
-  int   rank       = cell.rank(Loc::C);
-  auto &block_name = cell.unit()->boundary_element_block_name;
+  int rank = cell.rank(Loc::C);
 
   std::array<int, 6> boundary_rank{
       cell.rank(Loc::L), cell.rank(Loc::R), cell.rank(Loc::B), cell.rank(Loc::T), -1, -1};
@@ -366,18 +374,30 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
       auto &oblocks = osurf->get_side_blocks();
       SMART_ASSERT(oblocks.size() == 1)(oblocks.size());
 
-      auto             count = cell.unit()->boundary_faces[face].size();
+      auto             boundary = cell.unit()->boundary_blocks[face];
+      auto             count    = boundary.size();
       std::vector<INT> elements;
       std::vector<INT> faces;
       elements.reserve(count);
       faces.reserve(count);
 
-      size_t element_offset = cell.m_localElementIdOffset[block_name];
+      for (auto &block_faces : boundary.m_faces) {
+        auto &block_name = block_faces.first;
+        auto &bnd_faces  = block_faces.second;
 
-      for (size_t i = 0; i < count; i++) {
-        auto el_side = cell.unit()->boundary_faces[face][i];
-        elements.push_back(el_side / 10 + element_offset);
-        faces.push_back(el_side % 10 + 1);
+        // This is the offset within this element block -- i.e., the 'element_offsetth' element in
+        // this block.
+        size_t element_offset = cell.m_localElementIdOffset[block_name];
+        // This is the offset of the elements in this element block within all of the elements in
+        // the output file.
+        size_t global_offset = output_region(rank)->get_element_block(block_name)->get_offset();
+
+        for (auto &face : bnd_faces) {
+          elements.push_back(face / 10 + element_offset + global_offset);
+          faces.push_back(face % 10 + 1);
+          fmt::print("Element {}, Face {}, Cell({}, {}), Block: {},  {} {}\n", elements.back(),
+                     faces.back(), cell.m_i, cell.m_j, block_name, element_offset, global_offset);
+        }
       }
 
       auto id    = osurf->get_property("id").get_int();
@@ -400,8 +420,6 @@ template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
     auto *osurf = output_region(rank)->get_sideset(surface->name());
     SMART_ASSERT(osurf != nullptr);
     auto &oblocks = osurf->get_side_blocks();
-    SMART_ASSERT(oblocks.size() == 1)
-    (oblocks.size())(surface->name())(oblocks[0]->name())(oblocks[1]->name());
 
     std::vector<INT> elements;
     std::vector<INT> faces;
@@ -418,11 +436,22 @@ template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
       // update the element number to match the elements in this cell...
       const auto *parent = block->parent_element_block();
       SMART_ASSERT(parent != nullptr);
+
+      // This is the offset of the elements in the unit cell parent element block
+      size_t unit_block_offset = parent->get_offset();
+
+      // This is the offset within this element block -- i.e., the 'element_offsetth' element in
+      // this block.
       size_t element_offset = cell.m_localElementIdOffset[parent->name()];
+      // This is the offset of the elements in this element block within all of the elements in the
+      // output file.
+      size_t global_offset = output_region(rank)->get_element_block(parent->name())->get_offset();
 
       size_t entity_count = block->entity_count();
       for (size_t i = 0; i < entity_count; i++) {
-        elements.push_back(element_side[2 * i + 0] + element_offset);
+        auto element        = element_side[2 * i + 0];
+        auto output_element = element - unit_block_offset + element_offset + global_offset;
+        elements.push_back(output_element);
         faces.push_back(element_side[2 * i + 1]);
       }
     }
@@ -433,13 +462,8 @@ template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
     ex_put_partial_set(exoid, EX_SIDE_SET, id, start + 1, count, elements.data(), faces.data());
   }
 
-  output_generated_surfaces(cell, INT(0));
-
   if (minimize_open_files() & 1) {
     cell.region()->get_database()->closeDatabase();
-  }
-  if (minimize_open_files() & 2) {
-    output_region(rank)->get_database()->closeDatabase();
   }
 }
 
@@ -799,21 +823,14 @@ namespace {
     // Define the surfaces in the output database...
     for (int rank = start_rank; rank < start_rank + rank_count; rank++) {
       for (auto &surf : output_surfaces) {
-        auto *surface = new Ioss::SideSet(*surf.second.get());
-        auto &blocks  = surface->get_side_blocks();
-        for (auto &block : blocks) {
-          block->property_update("entity_count", surface_face_count[rank][surface->name()]);
-          block->property_update("global_entity_count", global_surface_face_count[surface->name()]);
-          block->property_update("distribution_factor_count", 0);
-
-          // Update parent block if it exists.  Otherwise will point to unit cell..
-          if (block->parent_block() != nullptr) {
-            auto  name = block->parent_block()->name();
-            auto *parent =
-                dynamic_cast<Ioss::EntityBlock *>(grid.output_region(rank)->get_entity(name));
-            block->set_parent_block(parent);
-          }
-        }
+        auto *surface =
+            new Ioss::SideSet(grid.output_region(rank)->get_database(), surf.second->name());
+        auto *block =
+            new Ioss::SideBlock(grid.output_region(rank)->get_database(), surf.second->name(),
+                                "quad4", "hex8", surface_face_count[rank][surface->name()]);
+        surface->add(block);
+        block->property_update("global_entity_count", global_surface_face_count[surface->name()]);
+        block->property_update("distribution_factor_count", 0);
         grid.output_region(rank)->add(surface);
       }
     }
@@ -852,7 +869,7 @@ namespace {
             cell.m_localSurfaceOffset[grid.generated_surface_names[face]] =
                 local_surface_offset[rank][face];
 
-            auto count = cell.unit()->boundary_faces[face].size();
+            auto count = cell.unit()->boundary_blocks[face].size();
             global_surface_face_count[face] += count;
             surface_face_count[rank][face] += count;
             local_surface_offset[rank][face] += count;
