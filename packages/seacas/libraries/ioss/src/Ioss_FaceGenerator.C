@@ -30,7 +30,7 @@
 #define USE_MURMUR
 //#define USE_RANDOM
 
-#define DO_TIMING 1
+#define DO_TIMING 0
 
 #if defined(__GNUC__) && __GNUC__ >= 7 && !__INTEL_COMPILER
 #define FALL_THROUGH [[gnu::fallthrough]]
