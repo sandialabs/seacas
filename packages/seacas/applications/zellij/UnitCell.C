@@ -193,6 +193,28 @@ std::vector<int> UnitCell::categorize_nodes(bool neighbor_i, bool neighbor_j, bo
   return node_category;
 }
 
+void UnitCell::categorize_z_nodes(std::vector<int> &categorized_nodes)
+{
+  std::vector<double> coord_z;
+
+  auto *nb = m_region->get_node_blocks()[0];
+  nb->get_field_data("mesh_model_coordinates_z", coord_z);
+
+  const auto z_min_max_it = std::minmax_element(coord_z.begin(), coord_z.end());
+  auto       minmax_z     = std::make_pair(*z_min_max_it.first, *z_min_max_it.second);
+
+  std::vector<int64_t> min_K_face;
+  std::vector<int64_t> max_K_face;
+  gather_face_nodes(coord_z, minmax_z, min_K_face, max_K_face);
+
+  for (auto node : min_K_face) {
+    categorized_nodes[node] += (int)Flg::MIN_K;
+  }
+  for (auto node : max_K_face) {
+    categorized_nodes[node] += (int)Flg::MAX_K;
+  }
+}
+
 void UnitCell::generate_boundary_faces(unsigned int which_faces)
 {
   Ioss::FaceGenerator face_generator(*m_region);
@@ -208,6 +230,8 @@ void UnitCell::generate_boundary_faces(unsigned int which_faces)
   // Get vector of all boundary faces which need to be categorized into
   // which face of the unit cell they are on
   auto categorized_nodes = categorize_nodes(false, false, true);
+  categorize_z_nodes(categorized_nodes);
+
   if (debug_level & 128) {
     fmt::print("Node Category: {}\n", fmt::join(categorized_nodes, " "));
   }
@@ -245,23 +269,21 @@ void UnitCell::generate_boundary_faces(unsigned int which_faces)
     }
   }
 
-#if 0
   if (which_faces & (unsigned)Flg::MIN_I) {
-    SMART_ASSERT(boundary_faces[(int)Bnd::MIN_I].size() == (cell_JJ - 1) * (cell_KK - 1))
+    SMART_ASSERT(boundary_blocks[(int)Bnd::MIN_I].size() == (cell_JJ - 1) * (cell_KK - 1))
     (boundary_blocks[(int)Bnd::MIN_I].size())(cell_JJ - 1)(cell_KK - 1);
   }
   if (which_faces & (unsigned)Flg::MAX_I) {
-    SMART_ASSERT(boundary_faces[(int)Bnd::MAX_I].size() == (cell_JJ - 1) * (cell_KK - 1))
-    (boundary_faces[(int)Bnd::MAX_I].size())(cell_JJ - 1)(cell_KK - 1);
+    SMART_ASSERT(boundary_blocks[(int)Bnd::MAX_I].size() == (cell_JJ - 1) * (cell_KK - 1))
+    (boundary_blocks[(int)Bnd::MAX_I].size())(cell_JJ - 1)(cell_KK - 1);
   }
 
   if (which_faces & (unsigned)Flg::MIN_J) {
-    SMART_ASSERT(boundary_faces[(int)Bnd::MIN_J].size() == (cell_II - 1) * (cell_KK - 1))
-    (boundary_faces[(int)Bnd::MIN_J].size())(cell_II - 1)(cell_KK - 1);
+    SMART_ASSERT(boundary_blocks[(int)Bnd::MIN_J].size() == (cell_II - 1) * (cell_KK - 1))
+    (boundary_blocks[(int)Bnd::MIN_J].size())(cell_II - 1)(cell_KK - 1);
   }
   if (which_faces & (unsigned)Flg::MAX_J) {
-    SMART_ASSERT(boundary_faces[(int)Bnd::MAX_J].size() == (cell_II - 1) * (cell_KK - 1))
-    (boundary_faces[(int)Bnd::MAX_J].size())(cell_II - 1)(cell_KK - 1);
+    SMART_ASSERT(boundary_blocks[(int)Bnd::MAX_J].size() == (cell_II - 1) * (cell_KK - 1))
+    (boundary_blocks[(int)Bnd::MAX_J].size())(cell_II - 1)(cell_KK - 1);
   }
-#endif
 }

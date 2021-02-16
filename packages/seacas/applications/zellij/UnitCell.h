@@ -76,6 +76,9 @@ public:
 
   void generate_boundary_faces(unsigned int which_faces);
 
+  //! Used by `generate_boundary_faces()` to categorize nodes on the +/- Z faces of unit cell.
+  void categorize_z_nodes(std::vector<int> &categorized_nodes);
+
   std::array<GeneratedSideBlock, 6> boundary_blocks{};
 
   ///@{
