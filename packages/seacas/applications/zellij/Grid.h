@@ -10,7 +10,7 @@
 
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
-#include "ZE_Systeminterface.h"
+#include "ZE_SystemInterface.h"
 
 // `grid` stores the data for the tessellation of size `IxJ`
 //  * gridI -- extent in I direction
