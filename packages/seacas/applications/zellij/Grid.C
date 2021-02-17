@@ -4,7 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <cstdlib>
 #include <numeric>
+#include <unistd.h>
 
 #include "Cell.h"
 #include "Decompose.h"
@@ -21,17 +23,108 @@
 #include <Ioss_SmartAssert.h>
 
 #include <exodusII.h>
+#include <fmt/chrono.h>
+#include <fmt/color.h>
 #include <fmt/ostream.h>
 
 extern unsigned int debug_level;
 
 namespace {
+  std::string tsFormat = "[{:%H:%M:%S}]";
+  std::string time_stamp(const std::string &format)
+  {
+    if (format == "") {
+      return std::string("");
+    }
+
+    time_t      calendar_time = std::time(nullptr);
+    struct tm * local_time    = std::localtime(&calendar_time);
+    std::string time_string   = fmt::format(format, *local_time);
+    return time_string;
+  }
+
+  int get_free_descriptor_count()
+  {
+// Returns maximum number of files that one process can have open
+// at one time. (POSIX)
+#if defined(_WIN32)
+    int fdmax = _getmaxstdio();
+#else
+    int fdmax = sysconf(_SC_OPEN_MAX);
+    if (fdmax == -1) {
+      // POSIX indication that there is no limit on open files...
+      fdmax = INT_MAX;
+    }
+#endif
+    // File descriptors are assigned in order (0,1,2,3,...) on a per-process
+    // basis.
+
+    // Assume that we have stdin, stdout, stderr files (3 total).
+
+    return fdmax - 3;
+  }
+
+  unsigned int which_sidesets(const std::string &sideset_string)
+  {
+    unsigned generate = 0;
+    for (const auto &c : sideset_string) {
+      if (c == 'x' || c == 'i') {
+        generate |= (unsigned)Flg::MIN_I;
+      }
+      if (c == 'y' || c == 'j') {
+        generate |= (unsigned)Flg::MIN_J;
+      }
+      if (c == 'z' || c == 'k') {
+        generate |= (unsigned)Flg::MIN_K;
+      }
+      if (c == 'X' || c == 'I') {
+        generate |= (unsigned)Flg::MAX_I;
+      }
+      if (c == 'Y' || c == 'J') {
+        generate |= (unsigned)Flg::MAX_J;
+      }
+      if (c == 'Z' || c == 'K') {
+        generate |= (unsigned)Flg::MAX_K;
+      }
+    }
+    return generate;
+  }
+
+  std::shared_ptr<Ioss::Region> create_input_region(const std::string &key, std::string filename,
+                                                    bool ints_32_bits)
+  {
+    // Check that 'filename' does not contain a starting/ending double quote...
+    filename.erase(remove(filename.begin(), filename.end(), '\"'), filename.end());
+    Ioss::DatabaseIO *dbi =
+        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_SELF);
+    if (dbi == nullptr || !dbi->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
+
+    dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
+    if (ints_32_bits) {
+      dbi->set_int_byte_size_api(Ioss::USE_INT32_API);
+    }
+    else {
+      dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+    }
+
+    // Splitting surfaces by element block makes it easier to transform the input
+    // element id into the output element ids.
+    dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+
+    // Generate a name for the region based on the key...
+    std::string name = "Region_" + key;
+    // NOTE: region owns database pointer at this time...
+    return std::make_shared<Ioss::Region>(dbi, name);
+  }
+
   void output_summary(Ioss::Region *region, std::ostream &strm)
   {
     int64_t nodes    = region->get_property("node_count").get_int();
     int64_t elements = region->get_property("element_count").get_int();
 
-    fmt::print(strm, " Database: {}\tNodes = {:n};\tElements = {:n}\n",
+    fmt::print(strm, " Database: {}\tNodes = {:n} \tElements = {:n}\n",
                region->get_database()->get_filename(), nodes, elements);
   }
 
@@ -47,19 +140,74 @@ namespace {
   void   generate_surfaces(Grid &grid, int start_rank, int rank_count);
 } // namespace
 
-Grid::Grid(SystemInterface &interFace, size_t extent_i, size_t extent_j)
-    : m_gridI(extent_i), m_gridJ(extent_j), m_parallelSize(interFace.ranks()),
-      m_equivalenceNodes(interFace.equivalence_nodes()),
-      m_useInternalSidesets(!interFace.ignore_internal_sidesets())
+Grid::Grid(SystemInterface &interFace)
+    : m_parallelSize(interFace.ranks()), m_rankCount(interFace.rank_count()),
+      m_startRank(interFace.start_rank()), m_equivalenceNodes(interFace.equivalence_nodes()),
+      m_useInternalSidesets(!interFace.ignore_internal_sidesets()),
+      m_subCycle(interFace.subcycle()), m_minimizeOpenFiles(interFace.minimize_open_files()),
+      m_generatedSideSets(which_sidesets(interFace.sideset_surfaces()))
 {
+}
+
+void Grid::set_extent(size_t extent_i, size_t extent_j, size_t /* unused */)
+{
+  m_gridI = extent_i;
+  m_gridJ = extent_j;
   m_grid.resize(m_gridI * m_gridJ);
 }
 
-void Grid::initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell)
+bool Grid::initialize(size_t i, size_t j, const std::string &key)
 {
+  if (unit_cells().find(key) == unit_cells().end()) {
+    return false;
+  }
+  auto &unit_cell = unit_cells()[key];
+  SMART_ASSERT(unit_cell->m_region != nullptr)(i)(j)(key);
+
   auto &cell = get_cell(i, j);
   cell.initialize(i, j, unit_cell);
-  SMART_ASSERT(unit_cell->m_region != nullptr)(i)(j);
+  return true;
+}
+
+void Grid::add_unit_cell(const std::string &key, const std::string &unit_filename, bool ints32bit)
+{
+  static size_t open_files = get_free_descriptor_count();
+  if (!minimize_open_files(Minimize::UNIT) && unit_cells().size() >= open_files) {
+    // Just hit the limit...  Close all previous unit_cell files and set the minimize_open_files
+    // behavior to UNIT.
+    for (auto &unit_cell : m_unitCells) {
+      unit_cell.second->m_region->get_database()->closeDatabase();
+    }
+    fmt::print(stderr, fmt::fg(fmt::color::yellow),
+               "\nWARNING: Number of unit cells exceeds open file limit. Setting "
+               "'mimimize_open_file' mode to UNIT.\n\n");
+    m_minimizeOpenFiles = Minimize((unsigned)m_minimizeOpenFiles | (unsigned)Minimize::UNIT);
+  }
+
+  if (unit_cells().find(key) != unit_cells().end()) {
+    fmt::print(stderr, fmt::fg(fmt::color::red),
+               "\nERROR: There is a duplicate `unit cell` ({}) in the lattice dictionary.\n\n",
+               key);
+    exit(EXIT_FAILURE);
+  }
+
+  auto region = create_input_region(key, unit_filename, ints32bit);
+
+  if (region == nullptr) {
+    fmt::print(stderr, fmt::fg(fmt::color::red),
+               "\nERROR: Unable to open the database '{}' associated with the unit cell '{}'.\n\n",
+               unit_filename, key);
+    exit(EXIT_FAILURE);
+  }
+
+  unit_cells().emplace(key, std::make_shared<UnitCell>(region));
+  if (minimize_open_files(Minimize::UNIT)) {
+    unit_cells()[key]->m_region->get_database()->closeDatabase();
+  }
+
+  if (debug_level & 2) {
+    m_pu.progress(fmt::format("\tCreated Unit Cell {}", key));
+  }
 }
 
 void Grid::set_coordinate_offsets()
@@ -84,7 +232,7 @@ void Grid::set_coordinate_offsets()
   }
 }
 
-void Grid::create_output_regions(SystemInterface &interFace, int start_rank, int num_ranks)
+void Grid::create_output_regions(SystemInterface &interFace)
 {
   if (debug_level & 2) {
     util().progress(__func__);
@@ -102,9 +250,9 @@ void Grid::create_output_regions(SystemInterface &interFace, int start_rank, int
     properties.add(Ioss::Property("ENABLE_TRACING", 1));
   }
 
-  for (int i = start_rank; i < start_rank + num_ranks; i++) {
+  for (int i = m_startRank; i < m_startRank + m_rankCount; i++) {
     // Define the output database(s)...
-    std::string outfile = Ioss::Utils::decode_filename(interFace.outputName_, i, interFace.ranks());
+    std::string outfile   = Ioss::Utils::decode_filename(interFace.outputName_, i, m_parallelSize);
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
                                                     (MPI_Comm)MPI_COMM_SELF, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
@@ -123,12 +271,12 @@ void Grid::create_output_regions(SystemInterface &interFace, int start_rank, int
   }
 }
 
-void Grid::decompose(size_t ranks, const std::string &method)
+void Grid::decompose(const std::string &method)
 {
   if (debug_level & 2) {
     util().progress(__func__);
   }
-  decompose_grid(*this, ranks, method);
+  decompose_grid(*this, m_parallelSize, method);
 
   categorize_processor_boundaries();
 }
@@ -194,36 +342,83 @@ void Grid::categorize_processor_boundaries()
   }
 }
 
-void Grid::process(SystemInterface &interFace, int start_rank, int rank_count)
+void Grid::generate_sidesets()
+{
+  if (m_generatedSideSets != 0) {
+    for (auto &unit_cell : m_unitCells) {
+      unit_cell.second->generate_boundary_faces(m_generatedSideSets);
+    }
+  }
+}
+
+void Grid::internal_process()
 {
   if (debug_level & 2) {
     util().progress(__func__);
   }
-
-  create_output_regions(interFace, start_rank, rank_count);
-
-  auto node_count    = handle_nodes(*this, start_rank, rank_count);
-  auto element_count = handle_elements(*this, start_rank, rank_count);
-  handle_communications(*this, start_rank, rank_count);
+  auto node_count    = handle_nodes(*this, m_startRank, m_rankCount);
+  auto element_count = handle_elements(*this, m_startRank, m_rankCount);
+  handle_communications(*this, m_startRank, m_rankCount);
   if (m_useInternalSidesets) {
-    handle_surfaces(*this, start_rank, rank_count);
+    handle_surfaces(*this, m_startRank, m_rankCount);
   }
-  generate_surfaces(*this, start_rank, rank_count);
+  generate_surfaces(*this, m_startRank, m_rankCount);
 
-  for (int i = start_rank; i < start_rank + rank_count; i++) {
+  for (int i = m_startRank; i < m_startRank + m_rankCount; i++) {
     output_region(i)->end_mode(Ioss::STATE_DEFINE_MODEL);
     if (debug_level & 64) {
       output_summary(output_region(i), std::cerr);
     }
   }
-  fmt::print("                {:n} Nodes; {:n} Elements.\n", node_count, element_count);
+  if (util().parallel_rank() == 0) {
+    fmt::print("                {:n} Nodes; {:n} Elements.\n", node_count, element_count);
+  }
 }
 
-template void Grid::output_model(int start_rank, int num_ranks, int64_t);
-template void Grid::output_model(int start_rank, int num_ranks, int);
+template void Grid::process(SystemInterface &, int64_t);
+template void Grid::process(SystemInterface &, int);
+
+template <typename INT> void Grid::process(SystemInterface &interFace, INT /* dummy */)
+{
+  bool subcycle   = m_subCycle;
+  int  start_rank = m_startRank;
+  int  rank_count = m_rankCount;
+  int  end_rank   = subcycle ? m_parallelSize : m_startRank + m_rankCount;
+
+  if (end_rank > m_parallelSize) {
+    end_rank    = m_parallelSize;
+    m_rankCount = m_parallelSize - m_startRank;
+  }
+
+  for (int begin = start_rank; begin < end_rank; begin += rank_count) {
+    m_startRank = begin;
+    if (m_startRank + m_rankCount > m_parallelSize) {
+      m_rankCount = m_parallelSize - m_startRank;
+    }
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Processing Ranks {} to {}\n", time_stamp(tsFormat), begin,
+                 begin + rank_count - 1);
+    }
+
+    create_output_regions(interFace);
+
+    internal_process();
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Lattice Processing Finalized\n", time_stamp(tsFormat));
+    }
+
+    output_model(INT(0));
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Model Output\n", time_stamp(tsFormat));
+    }
+  }
+}
+
+template void Grid::output_model(int64_t);
+template void Grid::output_model(int);
 
 // Write the output database(s) for all ranks...
-template <typename INT> void Grid::output_model(int start_rank, int num_ranks, INT /*dummy*/)
+template <typename INT> void Grid::output_model(INT /*dummy*/)
 {
   if (debug_level & 2) {
     util().progress(__func__);
@@ -231,7 +426,7 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
   // Coordinates do not depend on order of operations, so can do these
   // a rank at a time which can be more efficient once we exceed
   // maximum number of open files...  Also easier to parallelize...
-  for (int r = start_rank; r < start_rank + num_ranks; r++) {
+  for (int r = m_startRank; r < m_startRank + m_rankCount; r++) {
     for (size_t j = 0; j < JJ(); j++) {
       for (size_t i = 0; i < II(); i++) {
         auto &cell = get_cell(i, j);
@@ -240,7 +435,7 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
         }
       }
     }
-    if (minimize_open_files() & 2) {
+    if (minimize_open_files(Minimize::OUTPUT)) {
       output_region(r)->get_database()->closeDatabase();
     }
   }
@@ -251,7 +446,7 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
   // Surfaces do not depend on order of operations, so can do these
   // a rank at a time which can be more efficient once we exceed
   // maximum number of open files...  Also easier to parallelize...
-  for (int r = start_rank; r < start_rank + num_ranks; r++) {
+  for (int r = m_startRank; r < m_startRank + m_rankCount; r++) {
     for (size_t j = 0; j < JJ(); j++) {
       for (size_t i = 0; i < II(); i++) {
         auto &cell = get_cell(i, j);
@@ -263,7 +458,7 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
         }
       }
     }
-    if (minimize_open_files() & 2) {
+    if (minimize_open_files(Minimize::OUTPUT)) {
       output_region(r)->get_database()->closeDatabase();
     }
   }
@@ -280,9 +475,9 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
     for (size_t i = 0; i < II(); i++) {
       auto &cell     = get_cell(i, j);
       auto  node_map = generate_node_map(*this, cell, Mode::PROCESSOR, INT(0));
-      output_block_connectivity(cell, node_map, start_rank, num_ranks);
+      output_block_connectivity(cell, node_map);
       if (parallel_size() > 1) {
-        output_nodal_communication_map(cell, node_map, start_rank, num_ranks);
+        output_nodal_communication_map(cell, node_map);
       }
     }
   }
@@ -294,8 +489,8 @@ template <typename INT> void Grid::output_model(int start_rank, int num_ranks, I
     for (size_t j = 0; j < JJ(); j++) {
       for (size_t i = 0; i < II(); i++) {
         auto &cell = get_cell(i, j);
-        output_node_map(cell, start_rank, num_ranks, INT(0));
-        output_element_map(cell, start_rank, num_ranks, INT(0));
+        output_node_map(cell, INT(0));
+        output_element_map(cell, INT(0));
       }
     }
     if (debug_level & 2) {
@@ -345,7 +540,7 @@ void Grid::output_nodal_coordinates(const Cell &cell)
   auto count = cell.added_node_count(Mode::PROCESSOR, m_equivalenceNodes);
   ex_put_partial_coord(exoid, start, count, coord_x.data(), coord_y.data(), coord_z.data());
 
-  if (minimize_open_files() & 1) {
+  if (minimize_open_files(Minimize::UNIT)) {
     cell.region()->get_database()->closeDatabase();
   }
 }
@@ -460,17 +655,16 @@ template <typename INT> void Grid::output_surfaces(Cell &cell, INT /*dummy*/)
     ex_put_partial_set(exoid, EX_SIDE_SET, id, start + 1, count, elements.data(), faces.data());
   }
 
-  if (minimize_open_files() & 1) {
+  if (minimize_open_files(Minimize::UNIT)) {
     cell.region()->get_database()->closeDatabase();
   }
 }
 
 template <typename INT>
-void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_map, int start_rank,
-                                     int num_ranks)
+void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_map)
 {
   int rank = cell.rank(Loc::C);
-  if (rank >= start_rank && rank < start_rank + num_ranks) {
+  if (rank >= m_startRank && rank < m_startRank + m_rankCount) {
     int exoid = output_region(rank)->get_database()->get_file_pointer();
 
     auto &           blocks = cell.region()->get_element_blocks();
@@ -494,25 +688,24 @@ void Grid::output_block_connectivity(Cell &cell, const std::vector<INT> &node_ma
       util().progress(fmt::format("Generated Node Map / Output Connectivity for Cell({}, {})",
                                   cell.m_i, cell.m_j));
     }
-    if (minimize_open_files() & 1) {
+    if (minimize_open_files(Minimize::UNIT)) {
       cell.region()->get_database()->closeDatabase();
     }
-    if (minimize_open_files() & 2) {
+    if (minimize_open_files(Minimize::OUTPUT)) {
       output_region(rank)->get_database()->closeDatabase();
     }
   }
 }
 
 template <typename INT>
-void Grid::output_nodal_communication_map(Cell &cell, const std::vector<INT> &node_map,
-                                          int start_rank, int num_ranks)
+void Grid::output_nodal_communication_map(Cell &cell, const std::vector<INT> &node_map)
 {
   // The `node_map` has the processor-local node ids for all nodes on this cell.
   // Note that the `node_map` starts at index 1 in the vector...
   // Need to check the boundaries of the cell and determine which boundaries are on a different rank
   // and output the nodes and processors to the communication map.
   int rank = cell.rank(Loc::C);
-  if (rank >= start_rank && rank < start_rank + num_ranks) {
+  if (rank >= m_startRank && rank < m_startRank + m_rankCount) {
     std::vector<INT> nodes;
     std::vector<INT> procs;
     cell.populate_node_communication_map(node_map, nodes, procs);
@@ -524,7 +717,7 @@ void Grid::output_nodal_communication_map(Cell &cell, const std::vector<INT> &no
 
     ex_put_partial_node_cmap(exoid, 1, start, count, nodes.data(), procs.data(), rank);
 
-    if (minimize_open_files() & 2) {
+    if (minimize_open_files(Minimize::OUTPUT)) {
       output_region(rank)->get_database()->closeDatabase();
     }
 
@@ -540,8 +733,7 @@ void Grid::output_nodal_communication_map(Cell &cell, const std::vector<INT> &no
   }
 }
 
-template <typename INT>
-void Grid::output_node_map(const Cell &cell, int start_rank, int num_ranks, INT /*dummy*/)
+template <typename INT> void Grid::output_node_map(const Cell &cell, INT /*dummy*/)
 {
   int rank = cell.rank(Loc::C);
 
@@ -558,7 +750,7 @@ void Grid::output_node_map(const Cell &cell, int start_rank, int num_ranks, INT 
   else {
     auto map = generate_node_map(*this, cell, Mode::GLOBAL, INT(0));
 
-    if (rank >= start_rank && rank < start_rank + num_ranks) {
+    if (rank >= m_startRank && rank < m_startRank + m_rankCount) {
 
       // Filter nodes down to only "new nodes"...
       if (m_equivalenceNodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
@@ -577,7 +769,7 @@ void Grid::output_node_map(const Cell &cell, int start_rank, int num_ranks, INT 
       }
       int exoid = output_region(rank)->get_database()->get_file_pointer();
       ex_put_partial_id_map(exoid, EX_NODE_MAP, start, count, &map[1]);
-      if (minimize_open_files() & 2) {
+      if (minimize_open_files(Minimize::OUTPUT)) {
         output_region(rank)->get_database()->closeDatabase();
       }
     }
@@ -590,11 +782,10 @@ void Grid::output_node_map(const Cell &cell, int start_rank, int num_ranks, INT 
   }
 }
 
-template <typename INT>
-void Grid::output_element_map(Cell &cell, int start_rank, int num_ranks, INT /*dummy*/)
+template <typename INT> void Grid::output_element_map(Cell &cell, INT /*dummy*/)
 {
   int rank = cell.rank(Loc::C);
-  if (rank >= start_rank && rank < start_rank + num_ranks) {
+  if (rank >= m_startRank && rank < m_startRank + m_rankCount) {
     int exoid = output_region(rank)->get_database()->get_file_pointer();
 
     auto output_blocks = output_region(rank)->get_element_blocks();
@@ -635,9 +826,62 @@ void Grid::output_element_map(Cell &cell, int start_rank, int num_ranks, INT /*d
           output_element_block->get_property("global_entity_count").get_int();
       global_id_offset += global_block_element_count;
     }
-    if (minimize_open_files() & 2) {
+    if (minimize_open_files(Minimize::OUTPUT)) {
       output_region(rank)->get_database()->closeDatabase();
     }
+  }
+}
+
+void Grid::handle_file_count()
+{
+  // If the user has specified a 'minimize_open_files' behavior on the command line,
+  // honor that mode here.  Note that we have already processed the unit cells and
+  // if the unit cell count exceeds the open file limit, then that code has already
+  // automatically set the minimize_open_files to include UNIT...
+  if (m_minimizeOpenFiles == Minimize::ALL) {
+    return;
+  }
+
+  size_t open_files = get_free_descriptor_count();
+  if (util().parallel_rank() == 0) {
+    fmt::print("\n Maximum Open File Count = {}\n", get_free_descriptor_count());
+  }
+
+  auto unit_cell_size = unit_cells().size();
+  if (minimize_open_files(Minimize::UNIT)) {
+    unit_cell_size = 1; // There will only be a single unit cell file open at a time.
+  }
+
+  if (unit_cell_size + m_rankCount > open_files) {
+    // Too many files, need to close some of them after accessing...
+    // We have already checked the unit_cell() size earlier.
+    // If user has specified 'minimize_open_files == OUTPUT', then honor that...
+    if (minimize_open_files(Minimize::OUTPUT)) {
+      return;
+    }
+
+    // Have decision on whether to keep all unit_files open
+    // and reduce open output files further, or to close
+    // unit files and have more output files open...
+    int output_open = open_files - (int)unit_cell_size;
+    if (output_open < (int)(.2 * m_rankCount)) {
+      // Close the unit files.  Prefer to have output files open instead.
+      m_minimizeOpenFiles = Minimize((unsigned)m_minimizeOpenFiles | (unsigned)Minimize::UNIT);
+      unit_cell_size      = 1;
+    }
+
+    // Set the rank count to the number of files left after subtracting off 'unit_cell_size'
+    // and set the 'subcycle' mode.
+    auto max_rank_count = open_files - unit_cell_size;
+    if (max_rank_count < (size_t)m_rankCount) {
+      m_rankCount = max_rank_count;
+    }
+    m_subCycle = true;
+  }
+
+  if (util().parallel_rank() == 0 && m_minimizeOpenFiles != Minimize::NONE) {
+    std::array<std::string, 4> smode{"NONE", "UNIT", "OUTPUT", "ALL"};
+    fmt::print(" Setting `minimize_open_files` mode to {}.\n", smode[(int)m_minimizeOpenFiles]);
   }
 }
 

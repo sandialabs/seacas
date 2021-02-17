@@ -329,6 +329,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
   // Adjust start_rank and rank_count if running in parallel...
   Ioss::ParallelUtils pu{MPI_COMM_WORLD};
   if (pu.parallel_size() > 1) {
+    if (subcycle_) {
+      fmt::print(stderr, fmt::fg(fmt::color::yellow),
+                 "\nWARNING: The `subcycle` option is ignored if running in parallel.\n");
+      subcycle_ = false;
+    }
     auto size          = pu.parallel_size();
     auto ranks_per_mpi = ranks_ / size;
     auto extra         = ranks_ % size;

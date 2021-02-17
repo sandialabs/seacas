@@ -3,7 +3,6 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#include <cstdlib>
 #include <exception>
 #include <fstream>
 #include <iterator>
@@ -15,7 +14,6 @@
 #include <sys/times.h>
 #include <sys/utsname.h>
 #endif
-#include <unistd.h>
 #include <vector>
 
 #include "add_to_log.h"
@@ -42,31 +40,7 @@
 #endif
 
 namespace {
-  int get_free_descriptor_count()
-  {
-// Returns maximum number of files that one process can have open
-// at one time. (POSIX)
-#if defined(_WIN32)
-    int fdmax = _getmaxstdio();
-#else
-    int fdmax = sysconf(_SC_OPEN_MAX);
-    if (fdmax == -1) {
-      // POSIX indication that there is no limit on open files...
-      fdmax = INT_MAX;
-    }
-#endif
-    // File descriptors are assigned in order (0,1,2,3,...) on a per-process
-    // basis.
-
-    // Assume that we have stdin, stdout, stderr files (3 total).
-
-    return fdmax - 3;
-  }
-
-  unsigned int which_sidesets(const std::string &sideset_string);
-  void         generate_sidesets(UnitCellMap &unit_cells, unsigned int which);
-
-  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu);
+  Grid define_lattice(SystemInterface &interFace, Ioss::ParallelUtils &pu);
 
   std::string time_stamp(const std::string &format);
 } // namespace
@@ -146,22 +120,12 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
     fmt::print(stderr, "{} Begin Execution\n", time_stamp(tsFormat));
   }
 
-  UnitCellMap unit_cells;
-  auto        grid = define_lattice(unit_cells, interFace, pu);
+  auto grid = define_lattice(interFace, pu);
 
-  if (debug_level & 1) {
-    fmt::print(stderr, "{} Lattice Defined\n", time_stamp(tsFormat));
-  }
-
-  auto generate_sset = which_sidesets(interFace.sideset_surfaces());
-  if (generate_sset != 0) {
-    generate_sidesets(unit_cells, generate_sset);
-    grid.set_generated_sidesets(generate_sset);
-  }
-
+  grid.generate_sidesets();
   grid.set_coordinate_offsets();
+  grid.decompose(interFace.decomp_method());
 
-  grid.decompose(interFace.ranks(), interFace.decomp_method());
   if (debug_level & 1) {
     fmt::print(stderr, "{} Lattice Decomposed\n", time_stamp(tsFormat));
   }
@@ -170,35 +134,7 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   // and the global node and element counts...
   //
   // Iterate through the grid starting with (0,0) and accumulate node and element counts...
-  int  end_rank   = interFace.ranks();
-  int  start_rank = interFace.start_rank();
-  int  rank_count = interFace.rank_count();
-  bool subcycle   = interFace.subcycle();
-
-  if (subcycle) {
-    start_rank = 0;
-    end_rank   = interFace.ranks();
-  }
-  else {
-    end_rank = interFace.rank_count();
-  }
-
-  for (int begin = start_rank; begin < end_rank; begin += rank_count) {
-    if (debug_level & 1) {
-      fmt::print(stderr, "{} Processing Ranks {} to {}\n", time_stamp(tsFormat), begin,
-                 begin + rank_count - 1);
-    }
-
-    grid.process(interFace, begin, rank_count);
-    if (debug_level & 1) {
-      fmt::print(stderr, "{} Lattice Processing Finalized\n", time_stamp(tsFormat));
-    }
-
-    grid.output_model(begin, rank_count, (INT)0);
-    if (debug_level & 1) {
-      fmt::print(stderr, "{} Model Output\n", time_stamp(tsFormat));
-    }
-  }
+  grid.process(interFace, (INT)0);
 
   /*************************************************************************/
   // EXIT program
@@ -228,71 +164,11 @@ namespace {
     return time_string;
   }
 
-  std::shared_ptr<Ioss::Region> create_input_region(const std::string &key, std::string filename,
-                                                    bool ints_32_bits)
-  {
-    // Check that 'filename' does not contain a starting/ending double quote...
-    filename.erase(remove(filename.begin(), filename.end(), '\"'), filename.end());
-    Ioss::DatabaseIO *dbi =
-        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_SELF);
-    if (dbi == nullptr || !dbi->ok(true)) {
-      std::exit(EXIT_FAILURE);
-    }
-
-    dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
-    if (ints_32_bits) {
-      dbi->set_int_byte_size_api(Ioss::USE_INT32_API);
-    }
-    else {
-      dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
-    }
-
-    // Splitting surfaces by element block makes it easier to transform the input
-    // element id into the output element ids.
-    dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
-
-    // Generate a name for the region based on the key...
-    std::string name = "Region_" + key;
-    // NOTE: region owns database pointer at this time...
-    return std::make_shared<Ioss::Region>(dbi, name);
-  }
-
-  unsigned int which_sidesets(const std::string &sideset_string)
-  {
-    unsigned generate = 0;
-    for (const auto &c : sideset_string) {
-      if (c == 'x' || c == 'i') {
-        generate |= (unsigned)Flg::MIN_I;
-      }
-      if (c == 'y' || c == 'j') {
-        generate |= (unsigned)Flg::MIN_J;
-      }
-      if (c == 'z' || c == 'k') {
-        generate |= (unsigned)Flg::MIN_K;
-      }
-      if (c == 'X' || c == 'I') {
-        generate |= (unsigned)Flg::MAX_I;
-      }
-      if (c == 'Y' || c == 'J') {
-        generate |= (unsigned)Flg::MAX_J;
-      }
-      if (c == 'Z' || c == 'K') {
-        generate |= (unsigned)Flg::MAX_K;
-      }
-    }
-    return generate;
-  }
-
-  void generate_sidesets(UnitCellMap &unit_cells, unsigned int which_sidesets)
-  {
-    for (auto &unit_cell : unit_cells) {
-      unit_cell.second->generate_boundary_faces(which_sidesets);
-    }
-  }
-
-  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu)
+  Grid define_lattice(SystemInterface &interFace, Ioss::ParallelUtils &pu)
   {
     int my_rank = pu.parallel_rank();
+
+    Grid grid(interFace);
 
     if (debug_level & 2) {
       pu.progress("Defining Unit Cells...");
@@ -334,33 +210,8 @@ namespace {
                      tokens.size(), line);
           exit(EXIT_FAILURE);
         }
-        if (unit_cells.find(tokens[0]) != unit_cells.end()) {
-          fmt::print(
-              stderr, fmt::fg(fmt::color::red),
-              "\nERROR: There is a duplicate `unit cell` ({}) in the lattice dictionary.\n\n",
-              tokens[0]);
-          exit(EXIT_FAILURE);
-        }
 
-        auto region = create_input_region(tokens[0], tokens[1], interFace.ints32bit());
-
-        if (region == nullptr) {
-          fmt::print(
-              stderr, fmt::fg(fmt::color::red),
-              "\nERROR: Unable to open the database '{}' associated with the unit cell '{}'.\n\n",
-              tokens[1], tokens[0]);
-          exit(EXIT_FAILURE);
-        }
-
-        unit_cells.emplace(tokens[0], std::make_shared<UnitCell>(region));
-        if (interFace.minimize_open_files() == Minimize::UNIT ||
-            interFace.minimize_open_files() == Minimize::ALL) {
-          unit_cells[tokens[0]]->m_region->get_database()->closeDatabase();
-        }
-
-        if (debug_level & 2) {
-          pu.progress(fmt::format("\tCreated Unit Cell {}", tokens[0]));
-        }
+        grid.add_unit_cell(tokens[0], tokens[1], interFace.ints32bit());
       }
       else if (tokens[0] == "BEGIN_LATTICE") {
         SMART_ASSERT(!in_lattice && !in_dictionary);
@@ -392,45 +243,19 @@ namespace {
     int KK = std::stoi(tokens[3]);
     SMART_ASSERT(KK == 1);
 
-    Grid grid(interFace, II, JJ);
-
-    size_t open_files = get_free_descriptor_count();
-    if (my_rank == 0) {
-      fmt::print("\n Maximum Open File Count = {}\n", get_free_descriptor_count());
-    }
-    if (interFace.minimize_open_files() != Minimize::NONE ||
-        (unit_cells.size() + interFace.rank_count() > open_files)) {
-      unsigned int mode = (unsigned)interFace.minimize_open_files();
-      if (unit_cells.size() + interFace.rank_count() > open_files) {
-        if (unit_cells.size() > (size_t)interFace.rank_count()) {
-          mode |= 1;
-        }
-        else {
-          mode |= 2;
-        }
-      }
-      if (unit_cells.size() > open_files) {
-        mode |= 1;
-      }
-      if ((size_t)interFace.rank_count() > open_files) {
-        mode |= 2;
-      }
-      grid.set_minimize_open_files(mode);
-      std::array<std::string, 4> smode{"NONE", "UNIT", "OUTPUT", "ALL"};
-      if (my_rank == 0) {
-        fmt::print(" Setting `minimize_open_files` mode to {}.\n", smode[mode]);
-      }
-    }
+    grid.set_extent(II, JJ, KK);
+    grid.handle_file_count();
 
     if (my_rank == 0) {
       fmt::print("\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
-                 unit_cells.size(), II, JJ, KK);
+                 grid.unit_cells().size(), II, JJ, KK);
     }
     if (interFace.ranks() > 1) {
       fmt::print("         \t[{}] Ranks: {:n}, Outputting {:n} ranks starting at rank {:n}.\n",
                  my_rank, interFace.ranks(), interFace.rank_count(), interFace.start_rank());
     }
 
+    // Now process the lattice portion of the lattice file...
     size_t row{0};
     while (getline(input, line)) {
       if (line.empty()) {
@@ -480,20 +305,19 @@ namespace {
 
         size_t col = 0;
         for (auto &key : tokens) {
-          if (unit_cells.find(key) == unit_cells.end()) {
+          if (!grid.initialize(col++, row, key)) {
             fmt::print(stderr, fmt::fg(fmt::color::red),
                        "\nERROR: In row {}, column {}, the lattice specifies a unit cell ({}) that "
                        "has not been defined.\n\n",
                        row + 1, col + 1, key);
             exit(EXIT_FAILURE);
           }
-
-          auto &unit_cell = unit_cells[key];
-          SMART_ASSERT(unit_cell->m_region != nullptr)(row)(col)(key);
-          grid.initialize(col++, row, unit_cell);
         }
         row++;
       }
+    }
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Lattice Defined\n", time_stamp(tsFormat));
     }
     return grid;
   }
