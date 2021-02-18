@@ -6,15 +6,11 @@
 #include <exception>
 #include <fstream>
 #include <iterator>
-#include <limits>
-#include <memory>
-#include <numeric>
 #include <string>
 #ifndef _MSC_VER
 #include <sys/times.h>
 #include <sys/utsname.h>
 #endif
-#include <vector>
 
 #include "add_to_log.h"
 #include "fmt/chrono.h"
@@ -27,12 +23,9 @@
 #include <Ionit_Initializer.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_SmartAssert.h>
-#include <Ioss_SubSystem.h>
-#include <Ioss_Transform.h>
+#include <Ioss_Utils.h>
 
-#include "Cell.h"
 #include "Grid.h"
-#include "UnitCell.h"
 #include "ZE_SystemInterface.h"
 
 #ifdef SEACAS_HAVE_MPI

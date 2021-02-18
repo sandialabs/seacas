@@ -8,8 +8,10 @@
 
 #include <vector>
 
+#include "Cell.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Region.h"
+#include "UnitCell.h"
 #include "ZE_SystemInterface.h"
 
 // `grid` stores the data for the tessellation of size `IxJ`
@@ -22,10 +24,6 @@
 //  * Ti, Tj, Tk -- size of regular mesh on boundary of unit_cell (? may need the 3 `Tk` values for
 //  padding)
 //  * std::vector<Cell> m_grid -- contains database information...
-
-class SystemInterface;
-class UnitCell;
-class Cell;
 
 class Grid
 {

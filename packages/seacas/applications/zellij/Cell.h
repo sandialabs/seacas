@@ -29,6 +29,7 @@
 enum class Axis { X, Y, Z };
 enum class Mode { GLOBAL, PROCESSOR };
 enum class Loc { C = 0, BL, B, BR, L, R, TL, T, TR };
+
 class Cell
 {
 public:
