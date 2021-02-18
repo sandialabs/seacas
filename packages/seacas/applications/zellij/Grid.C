@@ -26,6 +26,7 @@
 #include <fmt/chrono.h>
 #include <fmt/color.h>
 #include <fmt/ostream.h>
+#include <tokenize.h>
 
 extern unsigned int debug_level;
 
@@ -60,8 +61,31 @@ namespace {
     // basis.
 
     // Assume that we have stdin, stdout, stderr files (3 total).
-
     return fdmax - 3;
+  }
+
+  int axis_index(const std::string &axis_str)
+  {
+    char axis = axis_str[0];
+    if (axis == 'x' || axis == 'i') {
+      return 0;
+    }
+    if (axis == 'X' || axis == 'I') {
+      return 1;
+    }
+    if (axis == 'y' || axis == 'j') {
+      return 2;
+    }
+    if (axis == 'Y' || axis == 'J') {
+      return 3;
+    }
+    if (axis == 'z' || axis == 'k') {
+      return 4;
+    }
+    if (axis == 'Z' || axis == 'K') {
+      return 5;
+    }
+    return -1;
   }
 
   unsigned int which_sidesets(const std::string &sideset_string)
@@ -147,6 +171,7 @@ Grid::Grid(SystemInterface &interFace)
       m_subCycle(interFace.subcycle()), m_minimizeOpenFiles(interFace.minimize_open_files()),
       m_generatedSideSets(which_sidesets(interFace.sideset_surfaces()))
 {
+  set_sideset_names(interFace.sideset_names());
 }
 
 void Grid::set_extent(size_t extent_i, size_t extent_j, size_t /* unused */)
@@ -268,6 +293,37 @@ void Grid::create_output_regions(SystemInterface &interFace)
         interFace.minimize_open_files() == Minimize::ALL) {
       output_region(i)->get_database()->closeDatabase();
     }
+  }
+}
+
+void Grid::set_sideset_names(const std::string &names)
+{
+  // 'names' is a string of the form "Axis:name,Axis:name, ..."
+  // For example "x:left,y:top,X:right,Y:bottom"
+  // Parse the list and only update the names specified in the list...
+
+  if (names.empty()) {
+    return;
+  }
+
+  auto tokens = Ioss::tokenize(names, ",");
+  for (auto &token : tokens) {
+    auto axis  = token.substr(0, 1);
+    bool valid = axis.find_first_not_of("ijkIJKxyzXYZ") == std::string::npos;
+    if (!valid) {
+      fmt::print(stderr, fmt::fg(fmt::color::red),
+                 "\nERROR: Invalid axis '{}' specified for sideset name.  Valid is one of "
+                 "'ijkIJKxyzXYZ'.\n\n",
+                 axis);
+      exit(EXIT_FAILURE);
+    }
+
+    // Now get the name...
+    auto ss_name = token.substr(2);
+
+    // Update the name in the list of generated sideset names...
+    auto index                     = axis_index(axis);
+    generated_surface_names[index] = ss_name;
   }
 }
 

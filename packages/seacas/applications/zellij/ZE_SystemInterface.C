@@ -125,11 +125,21 @@ void SystemInterface::enroll_options()
                   "\t\t 'x' or 'i' for surface on minimum X coordinate,\n"
                   "\t\t 'y' or 'j' for surface on minimum Y coordinate,\n"
                   "\t\t 'z' or 'k' for surface on minimum Z coordinate,\n"
-                  "\t\t 'Z' or 'I' for surface on maximum X coordinate,\n"
+                  "\t\t 'X' or 'I' for surface on maximum X coordinate,\n"
                   "\t\t 'Y' or 'J' for surface on maximum Y coordinate,\n"
                   "\t\t 'Z' or 'K' for surface on maximum Z coordinate,\n"
                   "\t\t For example `xyXY` would generate sideset on min/max X and Y surfaces.",
                   "");
+
+  options_.enroll(
+      "sideset_names", GetLongOption::MandatoryValue,
+      "Specify names for one or more of the generated sidesets.\n"
+      "\t\t Form is `axis:name,axis:name,...`\n"
+      "\t\t where 'axis' is one of 'ijkIJKxyzXYZ', and 'name' is the name of the sideset.\n"
+      "\t\t The default names are 'min_i', 'max_i', 'min_j', 'max_j', 'min_k', 'max_k'.\n"
+      "\t\t For example `x:left,X:right` would name the sidesets on the min x and max X faces "
+      "'left' and 'right'.",
+      "");
 
   options_.enroll(
       "minimize_open_files", GetLongOption::OptionalValue,
@@ -283,6 +293,13 @@ bool SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("generate_sidesets");
     if (temp != nullptr) {
       sidesetSurfaces_ = temp;
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("sideset_names");
+    if (temp != nullptr) {
+      sidesetNames_ = temp;
     }
   }
 

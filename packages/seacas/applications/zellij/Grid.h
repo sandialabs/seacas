@@ -90,6 +90,8 @@ public:
   bool         minimize_open_files(Minimize type) { return (int)m_minimizeOpenFiles & int(type); }
   unsigned int get_generated_sidesets() { return m_generatedSideSets; }
 
+  void set_sideset_names(const std::string &names);
+
   std::array<std::string, 6> generated_surface_names{
       {"min_i", "max_i", "min_j", "max_j", "min_k", "max_k"}};
 

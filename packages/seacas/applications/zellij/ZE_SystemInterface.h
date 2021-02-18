@@ -24,6 +24,7 @@ public:
   std::string lattice() const { return lattice_; }
   std::string decomp_method() const { return decompMethod_; }
   std::string sideset_surfaces() const { return sidesetSurfaces_; }
+  std::string sideset_names() const { return sidesetNames_; }
   bool        ignore_internal_sidesets() const { return ignoreInternalSidesets_; }
 
   bool ints32bit() const { return ints32bit_; }
@@ -55,6 +56,7 @@ private:
   std::string   lattice_{};
   std::string   decompMethod_{"HSFC"};
   std::string   sidesetSurfaces_{};
+  std::string   sidesetNames_{};
   int           debugLevel_{0};
   int           compressionLevel_{0};
   int           ranks_{1};
