@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -68,7 +68,7 @@ namespace Ioss {
    * \returns 1 if successful, 0 if unsuccessful.
    */
   int GetLongOption::enroll(const char *const opt, const OptType t, const char *const desc,
-                            const char *const val, const char *const optval)
+                            const char *const val, const char *const optval, bool extra_line)
   {
     if (enroll_done != 0) {
       return 0;
@@ -81,6 +81,7 @@ namespace Ioss {
     c->value       = val;
     c->opt_value   = optval;
     c->next        = nullptr;
+    c->extra_line  = extra_line;
 
     if (last == nullptr) {
       table = last = c;
@@ -369,6 +370,9 @@ namespace Ioss {
         fmt::print(outfile, " [$val]");
       }
       fmt::print(outfile, " ({})\n", t->description);
+      if (t->extra_line) {
+        fmt::print(outfile, "\n");
+      }
     }
     outfile.flush();
   }

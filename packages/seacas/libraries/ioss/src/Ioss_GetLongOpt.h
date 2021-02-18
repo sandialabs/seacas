@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -26,19 +26,16 @@ namespace Ioss {
   private:
     struct Cell
     {
-      const char *option;      // option name
-      OptType     type;        // option type
-      const char *description; // a description of option
-      const char *value;       // value of option (string)
-      const char *opt_value;   // If optional value and value not entered, assign opt_value to value
-      Cell *      next;        // pointer to the next cell
+      const char *option{nullptr};      // option name
+      OptType     type{NoValue};        // option type
+      const char *description{nullptr}; // a description of option
+      const char *value{nullptr};       // value of option (string)
+      const char *opt_value{
+          nullptr};        // If optional value and value not entered, assign opt_value to value
+      Cell *next{nullptr}; // pointer to the next cell
+      bool  extra_line{false};
 
-      Cell()
-      {
-        option = description = value = opt_value = nullptr;
-        next                                     = nullptr;
-        type                                     = NoValue;
-      }
+      Cell() = default;
     };
 
   private:
@@ -62,7 +59,7 @@ namespace Ioss {
     int parse(char *str, char *p);
 
     int         enroll(const char *opt, OptType t, const char *desc, const char *val,
-                       const char *optval = nullptr);
+                       const char *optval = nullptr, bool extra_line = false);
     const char *retrieve(const char *opt) const;
     const char *program_name() const;
 
