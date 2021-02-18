@@ -21,6 +21,8 @@ public:
     static std::map<std::string, std::string> cameraValidPhactoriSyntax;
     static std::map<std::string, std::string> cameraValidPhactoriJSON;
 
+    void checkTestOutputFileExists(const char *fileName);
+
 private:
     IossApplication ioapp;
 };

@@ -43,3 +43,11 @@ TARGET_LINK_LIBRARIES(ExodusToCatalystToScriptTests
 CATCH_DISCOVER_TESTS(ExodusToCatalystToScriptTests
                      TEST_PREFIX "Exodus_2_Script_")
 
+ADD_EXECUTABLE(CgnsToCatalystToScriptTests
+               CgnsToCatalystToScriptTests.cxx)
+TARGET_LINK_LIBRARIES(CgnsToCatalystToScriptTests
+                      catalystiosstest
+                      ${Python3_LIBRARY})
+CATCH_DISCOVER_TESTS(CgnsToCatalystToScriptTests
+                     TEST_PREFIX "Cgns_2_Script_")
+

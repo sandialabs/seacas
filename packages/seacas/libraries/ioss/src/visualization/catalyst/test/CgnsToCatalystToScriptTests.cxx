@@ -3,15 +3,15 @@
 #include "catch.hpp"
 
 TEST_CASE_METHOD(CatalystTestFixture,
-    "SimpleBlockCrushTest1", "[exodus to catalyst script]") {
+    "SimpleHiFireTest1", "[cgns to catalyst script]") {
     char *myArgv[4] = {
      "ioss2catalyst",
      "-i",
-     "test_data/test1.json",
-     "test_data/block_crush_1.e"
+     "test_data/test2.json",
+     "test_data/aero_blunt_wedge_test3.cgns"
     };
     int myArgc = 4;
     runApplicationWithFakeCommandLine(myArgc, myArgv);
-    checkTestOutputFileExists("CatalystOutput/test1.0010.png");
+    checkTestOutputFileExists("CatalystOutput/test2.0000.png");
 }
 

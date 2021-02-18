@@ -51,3 +51,14 @@ void CatalystTestFixture::checkPhactoriStringInvalidParse(
         phactoriSyntax, pres);
     REQUIRE(pres.parseFailed);
 }
+
+void CatalystTestFixture::checkTestOutputFileExists(const char *fileName) {
+    FILE *fp = fopen(fileName, "r");
+    bool outputFileExists = false;
+    if (fp != NULL) {
+      outputFileExists = true;
+      fclose(fp);
+    }
+    REQUIRE(outputFileExists);
+}
+
