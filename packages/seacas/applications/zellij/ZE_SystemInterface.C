@@ -122,12 +122,12 @@ void SystemInterface::enroll_options()
   options_.enroll("generate_sidesets", GetLongOption::MandatoryValue,
                   "Which surfaces on the output mesh should have sidesets generated,\n"
                   "\t\t Valid options are:\n"
-                  "\t\t 'x' or 'i' for surface on minimum X coordinate,\n"
-                  "\t\t 'y' or 'j' for surface on minimum Y coordinate,\n"
-                  "\t\t 'z' or 'k' for surface on minimum Z coordinate,\n"
-                  "\t\t 'X' or 'I' for surface on maximum X coordinate,\n"
-                  "\t\t 'Y' or 'J' for surface on maximum Y coordinate,\n"
-                  "\t\t 'Z' or 'K' for surface on maximum Z coordinate,\n"
+                  "\t\t 'x' or 'i' for surface on minimum X coordinate, default name = `min_i`\n"
+                  "\t\t 'y' or 'j' for surface on minimum Y coordinate, default name = `min_j`\n"
+                  "\t\t 'z' or 'k' for surface on minimum Z coordinate, default name = `min_k`\n"
+                  "\t\t 'X' or 'I' for surface on maximum X coordinate, default name = `max_i`\n"
+                  "\t\t 'Y' or 'J' for surface on maximum Y coordinate, default name = `max_j`\n"
+                  "\t\t 'Z' or 'K' for surface on maximum Z coordinate, default name = `max_k`\n"
                   "\t\t For example `xyXY` would generate sideset on min/max X and Y surfaces.",
                   "");
 
