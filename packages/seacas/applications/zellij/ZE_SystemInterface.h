@@ -6,8 +6,8 @@
 #ifndef ZE_SystemInterface_h
 #define ZE_SystemInterface_h
 
-#include "GetLongOpt.h" // for GetLongOption
-#include <string>       // for string
+#include "Ioss_GetLongOpt.h" // for GetLongOption
+#include <string>            // for string
 
 enum class Minimize { NONE = 0, UNIT = 1, OUTPUT = 2, ALL = 3 };
 
@@ -51,7 +51,7 @@ public:
 private:
   void enroll_options();
 
-  GetLongOption options_; //!< Options parsing
+  Ioss::GetLongOption options_; //!< Options parsing
 
   std::string   lattice_{};
   std::string   decompMethod_{"HSFC"};
