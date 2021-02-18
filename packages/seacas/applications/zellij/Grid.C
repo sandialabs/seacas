@@ -30,6 +30,41 @@
 
 extern unsigned int debug_level;
 
+#if __cplusplus == 201103L
+// From: https://stackoverflow.com/questions/17902405/how-to-implement-make-unique-function-in-c11
+namespace std {
+  template <class T> struct _Unique_if
+  {
+    typedef unique_ptr<T> _Single_object;
+  };
+
+  template <class T> struct _Unique_if<T[]>
+  {
+    typedef unique_ptr<T[]> _Unknown_bound;
+  };
+
+  template <class T, size_t N> struct _Unique_if<T[N]>
+  {
+    typedef void _Known_bound;
+  };
+
+  template <class T, class... Args>
+  typename _Unique_if<T>::_Single_object make_unique(Args &&...args)
+  {
+    return unique_ptr<T>(new T(std::forward<Args>(args)...));
+  }
+
+  template <class T> typename _Unique_if<T>::_Unknown_bound make_unique(size_t n)
+  {
+    typedef typename remove_extent<T>::type U;
+    return unique_ptr<T>(new U[n]());
+  }
+
+  template <class T, class... Args>
+  typename _Unique_if<T>::_Known_bound make_unique(Args &&...) = delete;
+} // namespace std
+#endif
+
 namespace {
   std::string tsFormat = "[{:%H:%M:%S}]";
   std::string time_stamp(const std::string &format)
@@ -114,49 +149,15 @@ namespace {
     return generate;
   }
 
+  Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
+
   std::shared_ptr<Ioss::Region> create_input_region(const std::string &key, std::string filename,
-                                                    bool ints_32_bits)
-  {
-    // Check that 'filename' does not contain a starting/ending double quote...
-    filename.erase(remove(filename.begin(), filename.end(), '\"'), filename.end());
-    Ioss::DatabaseIO *dbi =
-        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_SELF);
-    if (dbi == nullptr || !dbi->ok(true)) {
-      std::exit(EXIT_FAILURE);
-    }
-
-    dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
-    if (ints_32_bits) {
-      dbi->set_int_byte_size_api(Ioss::USE_INT32_API);
-    }
-    else {
-      dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
-    }
-
-    // Splitting surfaces by element block makes it easier to transform the input
-    // element id into the output element ids.
-    dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
-
-    // Generate a name for the region based on the key...
-    std::string name = "Region_" + key;
-    // NOTE: region owns database pointer at this time...
-    return std::make_shared<Ioss::Region>(dbi, name);
-  }
-
-  void output_summary(Ioss::Region *region, std::ostream &strm)
-  {
-    int64_t nodes    = region->get_property("node_count").get_int();
-    int64_t elements = region->get_property("element_count").get_int();
-
-    fmt::print(strm, " Database: {}\tNodes = {:n} \tElements = {:n}\n",
-               region->get_database()->get_filename(), nodes, elements);
-  }
+                                                    bool ints_32_bits);
 
   template <typename INT>
   std::vector<INT> generate_node_map(Grid &grid, const Cell &cell, Mode mode, INT /*dummy*/);
 
-  Ioss::PropertyManager parse_properties(SystemInterface &interFace, int int_size);
-
+  void   output_summary(Ioss::Region *region, std::ostream &strm);
   size_t handle_elements(Grid &grid, int start_rank, int rank_count);
   size_t handle_nodes(Grid &grid, int start_rank, int rank_count);
   void   handle_communications(Grid &grid, int start_rank, int rank_count);
@@ -1269,6 +1270,44 @@ namespace {
       }
     }
     return properties;
+  }
+
+  std::shared_ptr<Ioss::Region> create_input_region(const std::string &key, std::string filename,
+                                                    bool ints_32_bits)
+  {
+    // Check that 'filename' does not contain a starting/ending double quote...
+    filename.erase(remove(filename.begin(), filename.end(), '\"'), filename.end());
+    Ioss::DatabaseIO *dbi =
+        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_SELF);
+    if (dbi == nullptr || !dbi->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
+
+    dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
+    if (ints_32_bits) {
+      dbi->set_int_byte_size_api(Ioss::USE_INT32_API);
+    }
+    else {
+      dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+    }
+
+    // Splitting surfaces by element block makes it easier to transform the input
+    // element id into the output element ids.
+    dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+
+    // Generate a name for the region based on the key...
+    std::string name = "Region_" + key;
+    // NOTE: region owns database pointer at this time...
+    return std::make_shared<Ioss::Region>(dbi, name);
+  }
+
+  void output_summary(Ioss::Region *region, std::ostream &strm)
+  {
+    int64_t nodes    = region->get_property("node_count").get_int();
+    int64_t elements = region->get_property("element_count").get_int();
+
+    fmt::print(strm, " Database: {}\tNodes = {:n} \tElements = {:n}\n",
+               region->get_database()->get_filename(), nodes, elements);
   }
 
 } // namespace

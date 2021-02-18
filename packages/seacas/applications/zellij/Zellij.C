@@ -80,6 +80,15 @@ int main(int argc, char *argv[])
       exit(EXIT_FAILURE);
     }
 
+    debug_level = interFace.debug();
+
+    if ((debug_level & 8) != 0U) {
+      ex_opts(EX_VERBOSE | EX_DEBUG);
+    }
+    else {
+      ex_opts(0);
+    }
+
     double time = 0.0;
     if (interFace.ints32bit()) {
       time = zellij(interFace, 0);
@@ -106,15 +115,6 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
 {
   double              begin = Ioss::Utils::timer();
   Ioss::ParallelUtils pu{MPI_COMM_WORLD};
-
-  debug_level = interFace.debug();
-
-  if ((debug_level & 8) != 0U) {
-    ex_opts(EX_VERBOSE | EX_DEBUG);
-  }
-  else {
-    ex_opts(0);
-  }
 
   if (debug_level & 1) {
     fmt::print(stderr, "{} Begin Execution\n", time_stamp(tsFormat));
