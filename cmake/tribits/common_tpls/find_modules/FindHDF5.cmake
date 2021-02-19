@@ -22,7 +22,7 @@
 # ************************************************************************
 #
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016 Sandia Corporation
+#                    Copyright 2016, 2021 Sandia Corporation
 #
 # Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 # the U.S. Government retains certain rights in this software.
@@ -394,7 +394,7 @@ else()
       if (HDF5_IS_PARALLEL)
         find_package(MPI)
         if (MPI_C_FOUND)
-          set(HDF5_LIBRARIES ${HDF5_LIBRARIES} MPI::MPI_C)
+          set(HDF5_LIBRARIES ${HDF5_LIBRARIES} ${MPI_C_LIBRARIES})
         endif()
       endif()
       set(HDF5_C_LIBRARIES "${HDF5_LIBRARIES}")
