@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     }
     Ioss::Init::Initializer io;
 
-    SystemInterface interFace;
+    SystemInterface interFace(my_rank);
     bool            ok = interFace.parse_options(argc, argv);
 
     if (!ok) {

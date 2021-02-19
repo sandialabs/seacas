@@ -14,7 +14,7 @@ enum class Minimize { NONE = 0, UNIT = 1, OUTPUT = 2, ALL = 3 };
 class SystemInterface
 {
 public:
-  SystemInterface();
+  SystemInterface(int my_rank = 0);
   ~SystemInterface();
 
   bool parse_options(int argc, char **argv);
@@ -57,6 +57,7 @@ private:
   std::string   decompMethod_{"HSFC"};
   std::string   sidesetSurfaces_{};
   std::string   sidesetNames_{};
+  int           myRank_{0};
   int           debugLevel_{0};
   int           compressionLevel_{0};
   int           ranks_{1};

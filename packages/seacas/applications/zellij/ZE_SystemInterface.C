@@ -15,7 +15,7 @@
 #include <fmt/format.h>
 #include <iosfwd> // for ostream
 
-SystemInterface::SystemInterface() { enroll_options(); }
+SystemInterface::SystemInterface(int my_rank) : myRank_(my_rank) { enroll_options(); }
 
 SystemInterface::~SystemInterface() = default;
 
@@ -174,9 +174,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("help") != nullptr) {
-    options_.usage();
-    fmt::print("\n\tCan also set options via ZELLIJ_OPTIONS environment variable.\n"
-               "\n\t->->-> Send email to gdsjaar@sandia.gov for zellij support.<-<-<-\n");
+    if (myRank_ == 0) {
+      options_.usage();
+      fmt::print("\n\tCan also set options via ZELLIJ_OPTIONS environment variable.\n"
+                 "\n\t->->-> Send email to gdsjaar@sandia.gov for zellij support.<-<-<-\n");
+    }
     exit(EXIT_SUCCESS);
   }
 
@@ -260,17 +262,21 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("copyright") != nullptr) {
-    fmt::print("{}", copyright("2021"));
+    if (myRank_ == 0) {
+      fmt::print("{}", copyright("2021"));
+    }
     exit(EXIT_SUCCESS);
   }
 
   // Get options from environment variable also...
   char *options = getenv("ZELLIJ_OPTIONS");
   if (options != nullptr) {
-    fmt::print(
-        "\nThe following options were specified via the ZELLIJ_OPTIONS environment variable:\n"
-        "\t{}\n\n",
-        options);
+    if (myRank_ == 0) {
+      fmt::print(
+          "\nThe following options were specified via the ZELLIJ_OPTIONS environment variable:\n"
+          "\t{}\n\n",
+          options);
+    }
     options_.parse(options, options_.basename(*argv));
   }
 
@@ -333,8 +339,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
   zlib_ = (options_.retrieve("zlib") != nullptr);
 
   if (szip_ && zlib_) {
-    fmt::print(stderr, fmt::fg(fmt::color::red),
-               "\nERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+    if (myRank_ == 0) {
+      fmt::print(stderr, fmt::fg(fmt::color::red),
+                 "\nERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+    }
   }
 
   {
@@ -348,8 +356,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
   Ioss::ParallelUtils pu{MPI_COMM_WORLD};
   if (pu.parallel_size() > 1) {
     if (subcycle_) {
-      fmt::print(stderr, fmt::fg(fmt::color::yellow),
-                 "\nWARNING: The `subcycle` option is ignored if running in parallel.\n");
+      if (myRank_ == 0) {
+        fmt::print(stderr, fmt::fg(fmt::color::yellow),
+                   "\nWARNING: The `subcycle` option is ignored if running in parallel.\n");
+      }
       subcycle_ = false;
     }
     auto size          = pu.parallel_size();
@@ -370,9 +380,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   if (lattice().empty()) {
-    fmt::print(stderr, fmt::fg(fmt::color::red),
-               "\nERROR: Missing specification of lattice file.\n");
-    options_.usage();
+    if (myRank_ == 0) {
+      fmt::print(stderr, fmt::fg(fmt::color::red),
+                 "\nERROR: Missing specification of lattice file.\n");
+      options_.usage();
+    }
     return false;
   }
   else {
