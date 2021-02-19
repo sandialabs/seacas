@@ -175,8 +175,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
-    fmt::print(stderr, "\n\tCan also set options via ZELLIJ_OPTIONS environment variable.\n"
-                       "\n\t->->-> Send email to gdsjaar@sandia.gov for zellij support.<-<-<-\n");
+    fmt::print("\n\tCan also set options via ZELLIJ_OPTIONS environment variable.\n"
+               "\n\t->->-> Send email to gdsjaar@sandia.gov for zellij support.<-<-<-\n");
     exit(EXIT_SUCCESS);
   }
 
@@ -268,7 +268,6 @@ bool SystemInterface::parse_options(int argc, char **argv)
   char *options = getenv("ZELLIJ_OPTIONS");
   if (options != nullptr) {
     fmt::print(
-        stderr,
         "\nThe following options were specified via the ZELLIJ_OPTIONS environment variable:\n"
         "\t{}\n\n",
         options);
