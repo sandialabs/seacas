@@ -51,3 +51,5 @@ TARGET_LINK_LIBRARIES(CgnsToCatalystToScriptTests
 CATCH_DISCOVER_TESTS(CgnsToCatalystToScriptTests
                      TEST_PREFIX "Cgns_2_Script_")
 
+ADD_SUBDIRECTORY(PhactoriTest)
+
