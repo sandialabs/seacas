@@ -3,7 +3,7 @@
 #include "catch.hpp"
 
 TEST_CASE_METHOD(CatalystTestFixture,
-    "SimpleHiFireTest1", "[cgns to catalyst script]") {
+    "SimpleAeroBluntWedgeCgnsTest1", "[cgns to catalyst script]") {
     char *myArgv[4] = {
      "ioss2catalyst",
      "-i",
