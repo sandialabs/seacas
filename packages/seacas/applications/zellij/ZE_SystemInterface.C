@@ -95,7 +95,7 @@ void SystemInterface::enroll_options()
                   "\t\t 'X' or 'I' for surface on maximum X coordinate, default name = `max_i`\n"
                   "\t\t 'Y' or 'J' for surface on maximum Y coordinate, default name = `max_j`\n"
                   "\t\t 'Z' or 'K' for surface on maximum Z coordinate, default name = `max_k`\n"
-                  "\t\t For example `xyXY` would generate sideset on min/max X and Y surfaces.",
+                  "\t\t For example `xyXY` would generate sidesets on min/max X and Y surfaces.",
                   "");
 
   options_.enroll(
@@ -104,8 +104,8 @@ void SystemInterface::enroll_options()
       "\t\t Form is `axis:name,axis:name,...`\n"
       "\t\t where 'axis' is one of 'ijkIJKxyzXYZ', and 'name' is the name of the sideset.\n"
       "\t\t The default names are 'min_i', 'max_i', 'min_j', 'max_j', 'min_k', 'max_k'.\n"
-      "\t\t For example `x:left,X:right` would name the sidesets on the min x and max X faces "
-      "'left' and 'right'.",
+      "\t\t For example `x:left,X:right` would name the sideset on the min x face 'left' and the "
+      "max X face 'right'.",
       "", nullptr, true);
 
   options_.enroll("netcdf3", Ioss::GetLongOption::NoValue,
@@ -131,10 +131,10 @@ void SystemInterface::enroll_options()
                   "True if forcing the use of 64-bit integers for the output file (default)",
                   nullptr, nullptr, true);
 
-  options_.enroll(
-      "zlib", Ioss::GetLongOption::NoValue,
-      "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
-      nullptr);
+  options_.enroll("zlib", Ioss::GetLongOption::NoValue,
+                  "Use the Zlib / libz compression method if compression is enabled "
+                  "(default) [exodus only].",
+                  nullptr);
 
   options_.enroll("szip", Ioss::GetLongOption::NoValue,
                   "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);

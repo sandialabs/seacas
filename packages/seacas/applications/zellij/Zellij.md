@@ -24,25 +24,9 @@ meshes.
 Executing zellij with the `-help` option will result in output similar to the following:
 
 ```
-zellij -help
-
 usage: zellij [options] -lattice <lattice_definition_file>
-	-help (Print this summary and exit)
-	-version (Print version and exit)
-
-	-lattice <$val> (Name of file to read lattice definition from.)
+	-lattice <$val> (Name of file to read lattice definition from. [required])
 	-output <$val> (Name of output file to create. Default is `zellij-out.e`)
-
-	-netcdf3 (Output database will be a netcdf3 native classical netcdf file format (32-bit only))
-	-netcdf4 (Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format (default))
-	-netcdf5 (Output database will be a netcdf5 (CDF5) file instead of the classical netcdf file format)
-
-	-32-bit (True if forcing the use of 32-bit integers for the output file)
-	-64-bit (True if forcing the use of 64-bit integers for the output file (default))
-
-	-zlib (Use the Zlib / libz compression method if compression is enabled (default) [exodus only].)
-	-szip (Use SZip compression. [exodus only, enables netcdf-4])
-	-compress <$val> (Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used on the output file.)
 
 	-rcb (Use recursive coordinate bisection method to decompose the input mesh in a parallel run.)
 	-rib (Use recursive inertial bisection method to decompose the input mesh in a parallel run.)
@@ -57,11 +41,13 @@ usage: zellij [options] -lattice <lattice_definition_file>
 
 	-ranks <$val> (Number of ranks to decompose mesh across)
 	-start_rank <$val> (In partial output mode, start outputting decomposed files at this rank)
-	-rank_count <$val> (In partial output mode, output this number of ranks)
+	-rank_count <$val> (In partial output or subcycle modes, output this number of ranks)
 	-subcycle (Process cells in groups of '-rank_count'.  Helps minimize open files,
 		but is faster than only having a single file open.)
-
-	-separate_cells (Do not equivalence the nodes between adjacent unit cells.)
+	-minimize_open_files [$val] (Close files after accessing them to avoid issues with too many open files.
+		If argument is 'output' then close output, if 'unit' then close unit cells;
+		if 'all' or no argument close all.
+		Should not need to use this option unless you get an error message indicating this issue.)
 
 	-ignore_sidesets (Do not copy any sidesets in the unit cells to the output file.)
 	-generate_sidesets <$val> (Which surfaces on the output mesh should have sidesets generated,
@@ -79,11 +65,20 @@ usage: zellij [options] -lattice <lattice_definition_file>
 		 The default names are 'min_i', 'max_i', 'min_j', 'max_j', 'min_k', 'max_k'.
 		 For example `x:left,X:right` would name the sidesets on the min x and max X faces 'left' and 'right'.)
 
-	-minimize_open_files [$val] (Close files after accessing them to avoid issues with too many open files.
-		If argument is 'OUTPUT' then close output, if 'UNIT' then close unit cells;
-		if 'ALL' or no argument close all.
-		Should not need to use this option unless you get an error message indicating this issue.)
+	-netcdf3 (Output database will be a netcdf3 native classical netcdf file format (32-bit only))
+	-netcdf4 (Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format (default))
+	-netcdf5 (Output database will be a netcdf5 (CDF5) file instead of the classical netcdf file format)
 
+	-32-bit (True if forcing the use of 32-bit integers for the output file)
+	-64-bit (True if forcing the use of 64-bit integers for the output file (default))
+
+	-zlib (Use the Zlib / libz compression method if compression is enabled (default) [exodus only].)
+	-szip (Use SZip compression. [exodus only, enables netcdf-4])
+	-compress <$val> (Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used on the output file.)
+
+	-separate_cells (Do not equivalence the nodes between adjacent unit cells.)
+	-help (Print this summary and exit)
+	-version (Print version and exit)
 	-debug <$val> (debug level (values are or'd)
 		   1 = Time stamp information.
 		   2 = Memory information.
@@ -92,7 +87,6 @@ usage: zellij [options] -lattice <lattice_definition_file>
 		  16 = Put exodus library into verbose mode.
 		  32 = Verbose decomposition information.
 		  64 = Verbose output database summary information.)
-
 	-copyright (Show copyright and license data.)
 
 	Can also set options via ZELLIJ_OPTIONS environment variable.
@@ -273,7 +267,7 @@ simultaneously and all 16 files should be output faster than running a single ex
 If Zellij is compiled with parallel capability enabled (This is shown at the beginning of the `-help` output or the version
 information output when zellij begins executing as `Parallel Capability Enabled`), then you can run Zellij in parallel using the
 normal `mpiexec -np <#> zellij <normal zellij options>` command.  In this case, there will be `#` copies of zellij running
-simulataneously and each copy will divide up the output files and work among each process/copy.
+simultaneously and each copy will divide up the output files and work among each process/copy.
 
 For example, if you run `mpiexec -np 8 zellij -ranks 1024 -latice lattice.txt`, then there will be 8 copies of zellij running
 and each will output `1024/8 = 128` output files.
