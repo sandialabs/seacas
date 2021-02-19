@@ -30,42 +30,6 @@ void SystemInterface::enroll_options()
                   "Name of output file to create. Default is `zellij-out.e`", "zellij-out.e",
                   nullptr, true);
 
-  options_.enroll("netcdf3", Ioss::GetLongOption::NoValue,
-                  "Output database will be a netcdf3 "
-                  "native classical netcdf file format (32-bit only)",
-                  nullptr);
-
-  options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
-                  "Output database will be a netcdf4 "
-                  "hdf5-based file instead of the "
-                  "classical netcdf file format (default)",
-                  nullptr);
-
-  options_.enroll("netcdf5", Ioss::GetLongOption::NoValue,
-                  "Output database will be a netcdf5 (CDF5) "
-                  "file instead of the classical netcdf file format",
-                  nullptr, nullptr, true);
-
-  options_.enroll("32-bit", Ioss::GetLongOption::NoValue,
-                  "True if forcing the use of 32-bit integers for the output file", nullptr);
-
-  options_.enroll("64-bit", Ioss::GetLongOption::NoValue,
-                  "True if forcing the use of 64-bit integers for the output file (default)",
-                  nullptr, nullptr, true);
-
-  options_.enroll(
-      "zlib", Ioss::GetLongOption::NoValue,
-      "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
-      nullptr);
-
-  options_.enroll("szip", Ioss::GetLongOption::NoValue,
-                  "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);
-
-  options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
-                  "Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used "
-                  "on the output file.",
-                  nullptr, nullptr, true);
-
   options_.enroll(
       "rcb", Ioss::GetLongOption::NoValue,
       "Use recursive coordinate bisection method to decompose the input mesh in a parallel run.",
@@ -143,6 +107,42 @@ void SystemInterface::enroll_options()
       "\t\t For example `x:left,X:right` would name the sidesets on the min x and max X faces "
       "'left' and 'right'.",
       "", nullptr, true);
+
+  options_.enroll("netcdf3", Ioss::GetLongOption::NoValue,
+                  "Output database will be a netcdf3 "
+                  "native classical netcdf file format (32-bit only)",
+                  nullptr);
+
+  options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
+                  "Output database will be a netcdf4 "
+                  "hdf5-based file instead of the "
+                  "classical netcdf file format (default)",
+                  nullptr);
+
+  options_.enroll("netcdf5", Ioss::GetLongOption::NoValue,
+                  "Output database will be a netcdf5 (CDF5) "
+                  "file instead of the classical netcdf file format",
+                  nullptr, nullptr, true);
+
+  options_.enroll("32-bit", Ioss::GetLongOption::NoValue,
+                  "True if forcing the use of 32-bit integers for the output file", nullptr);
+
+  options_.enroll("64-bit", Ioss::GetLongOption::NoValue,
+                  "True if forcing the use of 64-bit integers for the output file (default)",
+                  nullptr, nullptr, true);
+
+  options_.enroll(
+      "zlib", Ioss::GetLongOption::NoValue,
+      "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
+      nullptr);
+
+  options_.enroll("szip", Ioss::GetLongOption::NoValue,
+                  "Use SZip compression. [exodus only, enables netcdf-4]", nullptr);
+
+  options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
+                  "Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used "
+                  "on the output file.",
+                  nullptr, nullptr, true);
 
   options_.enroll("separate_cells", Ioss::GetLongOption::NoValue,
                   "Do not equivalence the nodes between adjacent unit cells.", nullptr);

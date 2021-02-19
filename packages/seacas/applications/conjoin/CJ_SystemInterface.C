@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -34,7 +34,7 @@ void Excn::SystemInterface::enroll_options()
   options_.enroll("version", GetLongOption::NoValue, "Print version and exit", nullptr);
 
   options_.enroll("output", GetLongOption::MandatoryValue, "Name of output file to create",
-                  "conjoin-out.e");
+                  "conjoin-out.e", nullptr, true);
 
   options_.enroll("alive_value", GetLongOption::MandatoryValue,
                   "Value (1 or 0) to indicate that an element is alive, default = 0", "0");
@@ -56,7 +56,7 @@ void Excn::SystemInterface::enroll_options()
   options_.enroll("nodal_status_variable", GetLongOption::MandatoryValue,
                   "Name to use as nodal status variable;\n\t\tmust not exist on input files.\n"
                   "\t\tIf NONE, then not created. Default = node_status",
-                  "node_status");
+                  "node_status", nullptr, true);
 
   options_.enroll("netcdf4", GetLongOption::NoValue,
                   "Create output database using the HDF5-based "
@@ -66,11 +66,6 @@ void Excn::SystemInterface::enroll_options()
 
   options_.enroll("64-bit", GetLongOption::NoValue,
                   "True if forcing the use of 64-bit integers for the output file", nullptr);
-
-  options_.enroll("sort_times", GetLongOption::NoValue,
-                  "Sort the input files on the minimum timestep time in the file. "
-                  "Default is to process files in the order they appear on the command line.",
-                  nullptr);
 
   options_.enroll(
       "zlib", GetLongOption::NoValue,
@@ -82,12 +77,17 @@ void Excn::SystemInterface::enroll_options()
 
   options_.enroll(
       "compress", GetLongOption::MandatoryValue,
-      "Specify the hdf5 (netcdf4) compression level [0..9] to be used on the output file.",
-      nullptr);
+      "Specify the hdf5 (netcdf4) compression level [0..9] to be used on the output file.", nullptr,
+      nullptr, true);
+
+  options_.enroll("sort_times", GetLongOption::NoValue,
+                  "Sort the input files on the minimum timestep time in the file.\n"
+                  "\t\tDefault is to process files in the order they appear on the command line.",
+                  nullptr);
 
   options_.enroll("ignore_coordinate_check", GetLongOption::NoValue,
-                  "Do not use nodal coordinates to determine if node in part 1 same as node in "
-                  "other parts; use ids only.\n"
+                  "Do not use nodal coordinates to determine if node in part 1 same as node in\n"
+                  "\t\tother parts; use ids only.\n"
                   "\t\tUse only if you know that the ids are consistent for all parts",
                   nullptr);
 
@@ -95,7 +95,7 @@ void Excn::SystemInterface::enroll_options()
                   "Don't transfer nodesets to output file.", nullptr);
 
   options_.enroll("omit_sidesets", GetLongOption::NoValue,
-                  "Don't transfer sidesets to output file.", nullptr);
+                  "Don't transfer sidesets to output file.", nullptr, nullptr, true);
 
   options_.enroll("gvar", GetLongOption::MandatoryValue,
                   "Comma-separated list of global variables to be joined or ALL or NONE.", nullptr);
@@ -114,8 +114,8 @@ void Excn::SystemInterface::enroll_options()
                   nullptr);
 
   options_.enroll("ssetvar", GetLongOption::MandatoryValue,
-                  "Comma-separated list of sideset variables to be joined or ALL or NONE.",
-                  nullptr);
+                  "Comma-separated list of sideset variables to be joined or ALL or NONE.", nullptr,
+                  nullptr, true);
 
   options_.enroll(
       "interpart_minimum_time_delta", GetLongOption::MandatoryValue,
