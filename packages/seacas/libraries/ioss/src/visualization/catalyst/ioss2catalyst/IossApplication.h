@@ -16,9 +16,9 @@ public:
 
     ~IossApplication();
 
-    void runApplicationWithFakeCommandLine(int argc, char **argv);
+    void runApplication();
 
-    void runApplication(bool exitProgramAfterRun = true);
+    int getApplicationExitCode();
  
     bool printIOSSRegionReportON();
     void setPrintIOSSRegionReport(bool status);
@@ -62,21 +62,25 @@ public:
     int getCatalystStopTimeStep();
     void setCatalystStopTimeStep(int timeStep);
 
+    std::string& getFileName();
+    void setFileName(const std::string& name);
+
+private:
+
     int getMyRank();
     int getNumRanks();
     bool isRankZero();
     bool isSerial();
     bool decomposedMeshExists();
-    std::string& getFileName();
     Ioss::Region * getInputIOSSRegion();
     void copyInputIOSSDatabaseOnRank();
     void printMessage(const std::string& message);
     void printErrorMessage(const std::string& message);
     void printIOSSRegionReportForRank();
-    void exitApplicationSuccess(bool exitProgram);
+    void exitApplicationSuccess();
     void exitApplicationFailure();
+    void exitApplication();
 
-private:
     void initialize();
     void callCatalystIOSSDatabaseOnRank();
     void openInputIOSSDatabase();
@@ -112,6 +116,8 @@ private:
     bool forceCGNSOutput; 
     bool forceExodusOutput; 
     bool useIOSSInputDBType;
+    bool hasCommandLineArguments;
+    int applicationExitCode;
     std::string iossInputDBType;
     std::string phactoriInputScriptFilePath;
     std::string phactoriInputJSONFilePath;

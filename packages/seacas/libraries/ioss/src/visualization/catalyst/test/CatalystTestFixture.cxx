@@ -1,6 +1,7 @@
 #include "CatalystTestFixture.h"
 #include "catch.hpp"
 #include <Iovs_Utils.h>
+#include <cstdlib>
 #include "vtk_jsoncpp.h"
 
 CatalystTestFixture::CatalystTestFixture() {
@@ -11,8 +12,13 @@ CatalystTestFixture::~CatalystTestFixture() {
 
 }
 
-void CatalystTestFixture::runApplicationWithFakeCommandLine(int argc, char**argv) {
-  ioapp.runApplicationWithFakeCommandLine(argc, argv);
+void CatalystTestFixture::runPhactoriJSONTest(
+    const std::string& jsonFile, const std::string& inputFile) {
+
+    ioapp.setPhactoriInputJSON(jsonFile);
+    ioapp.setFileName(inputFile);
+    ioapp.runApplication();
+    REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
 }
 
 void CatalystTestFixture::checkPhactoriStringValidParse(

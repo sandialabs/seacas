@@ -18,16 +18,10 @@
 
 IossApplication::IossApplication() {
     initialize();
-    initializeMPI();
     setenv("CATALYST_ADAPTER_INSTALL_DIR", CATALYST_PLUGIN_BUILD_DIR, false);
     std::string pluginLibPath = std::string(CATALYST_PLUGIN_BUILD_DIR) +\
         std::string("/") + CATALYST_PLUGIN_DYNAMIC_LIBRARY;
     setenv("CATALYST_PLUGIN", pluginLibPath.c_str(), false);
-}
-
-void IossApplication::runApplicationWithFakeCommandLine(int argc, char **argv) {
-    processCommandLine(argc, argv);
-    runApplication(false);
 }
 
 IossApplication::IossApplication(int argc, char **argv) {
@@ -60,6 +54,8 @@ void IossApplication::initialize() {
     forceExodusOutput = false;
     useIOSSInputDBType = false;
     iossInputDBType = "";
+    hasCommandLineArguments = false;
+    applicationExitCode = EXIT_SUCCESS;
 }
 
 IossApplication::~IossApplication() {
@@ -68,7 +64,7 @@ IossApplication::~IossApplication() {
     }
 }
 
-void IossApplication::runApplication(bool exitProgramAfterRun) {
+void IossApplication::runApplication() {
     checkForOnlyOneCatalystOutputPath();
     checkForOnlyOneCatalystOutputType();
     Ioss::Init::Initializer io;
@@ -84,7 +80,11 @@ void IossApplication::runApplication(bool exitProgramAfterRun) {
 
     callCatalystIOSSDatabaseOnRank();
 
-    exitApplicationSuccess(exitProgramAfterRun);
+    exitApplicationSuccess();
+}
+
+int IossApplication::getApplicationExitCode() {
+    return applicationExitCode;
 }
 
 int IossApplication::getMyRank() {
@@ -123,6 +123,8 @@ void IossApplication::finalizeMPI() {
 }
 
 void IossApplication::processCommandLine(int argc, char **argv) {
+    hasCommandLineArguments = true;
+
     int c;
     char *cvalue = NULL;
     while ((c = getopt(argc, argv, "a:b:cd:e:hi:mnp:rs:")) != -1) {
@@ -151,7 +153,7 @@ void IossApplication::processCommandLine(int argc, char **argv) {
                 break;
             case 'h':
                 printUsageMessage();
-                exitApplicationSuccess(true);
+                exitApplicationSuccess();
                 break;
             case 'i':
                 cvalue = optarg;
@@ -280,6 +282,10 @@ void IossApplication::checkForOnlyOneCatalystOutputType() {
 
 std::string& IossApplication::getFileName() {
     return fileName;
+}
+
+void IossApplication::setFileName(const std::string& name) {
+    fileName = name;
 }
 
 bool IossApplication::printIOSSRegionReportON() {
@@ -497,16 +503,23 @@ void IossApplication::printUsageMessage() {
     printMessage(um);
 }
 
-void IossApplication::exitApplicationSuccess(bool exitProgram) {
-    finalizeMPI();
-    if (exitProgram) {
-        std::exit(EXIT_SUCCESS);
+void IossApplication::exitApplicationSuccess() {
+    applicationExitCode = EXIT_SUCCESS;
+    if(hasCommandLineArguments) {
+        exitApplication();
     }
 }
 
 void IossApplication::exitApplicationFailure() {
+    applicationExitCode = EXIT_FAILURE;
+    if(hasCommandLineArguments) {
+        exitApplication();
+    }
+}
+
+void IossApplication::exitApplication() {
     finalizeMPI();
-    std::exit(EXIT_FAILURE);
+    std::exit(getApplicationExitCode());
 }
 
 void IossApplication::printMessage(const std::string& message) {
