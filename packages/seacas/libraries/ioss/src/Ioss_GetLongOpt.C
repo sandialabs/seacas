@@ -7,6 +7,7 @@
 /* S Manoharan. Advanced Computer Research Institute. Lyon. France */
 #include <Ioss_GetLongOpt.h>
 #include <cstring>
+#include <fmt/color.h>
 #include <fmt/ostream.h>
 
 namespace Ioss {
@@ -358,22 +359,51 @@ namespace Ioss {
    */
   void GetLongOption::usage(std::ostream &outfile) const
   {
-    Cell *t;
+    // The API of `usage` specifies an `ostream` for the output location. However,
+    // the fmt::print color options do not work with an ostream and instead
+    // want a FILE*.  To give formatting in the usage message, we convert the
+    // ostream to a FILE* if it is std::cout or std::cerr; otherwise use the old
+    // non-formatted version...
+    FILE *out = nullptr;
+    if (&outfile == &std::cout) {
+      out = stdout;
+    }
+    else if (&outfile == &std::cerr) {
+      out = stderr;
+    }
 
-    fmt::print(outfile, "\nusage: {} {}\n", pname, ustring);
-    for (t = table; t != nullptr; t = t->next) {
-      fmt::print(outfile, "\t{}{}", optmarker, t->option);
-      if (t->type == GetLongOption::MandatoryValue) {
-        fmt::print(outfile, " <$val>");
-      }
-      else if (t->type == GetLongOption::OptionalValue) {
-        fmt::print(outfile, " [$val]");
-      }
-      fmt::print(outfile, " ({})\n", t->description);
-      if (t->extra_line) {
-        fmt::print(outfile, "\n");
+    if (out != nullptr) {
+      fmt::print(out, fmt::emphasis::bold, "\nusage: {} {}\n", pname, ustring);
+      for (Cell *t = table; t != nullptr; t = t->next) {
+        fmt::print(out, fmt::emphasis::bold, "\t{}{}", optmarker, t->option);
+        if (t->type == GetLongOption::MandatoryValue) {
+          fmt::print(out, fmt::emphasis::italic | fmt::emphasis::bold, " <$val>");
+        }
+        else if (t->type == GetLongOption::OptionalValue) {
+          fmt::print(out, fmt::emphasis::italic | fmt::emphasis::bold, " [$val]");
+        }
+        fmt::print(out, " ({})\n", t->description);
+        if (t->extra_line) {
+          fmt::print(out, "\n");
+        }
       }
     }
-    outfile.flush();
+    else {
+      fmt::print(outfile, "\nusage: {} {}\n", pname, ustring);
+      for (Cell *t = table; t != nullptr; t = t->next) {
+        fmt::print(outfile, "\t{}{}", optmarker, t->option);
+        if (t->type == GetLongOption::MandatoryValue) {
+          fmt::print(outfile, " <$val>");
+        }
+        else if (t->type == GetLongOption::OptionalValue) {
+          fmt::print(outfile, " [$val]");
+        }
+        fmt::print(outfile, " ({})\n", t->description);
+        if (t->extra_line) {
+          fmt::print(outfile, "\n");
+        }
+      }
+      outfile.flush();
+    }
   }
 } // namespace Ioss
