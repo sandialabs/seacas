@@ -511,11 +511,11 @@ else()
     # libraries for the purposes of exporting
 
     set(HDF5_LIBRARIES)
-#    foreach (_component ${HDF5_VALID_COMPONENTS})
-#      if ( TARGET ${HDF5_${_component}_TARGET} )
-#	list(APPEND HDF5_LIBRARIES ${_HDF5_${_component}_LIBRARY})
-#      endif()
-#    endforeach()
+    foreach (_component ${HDF5_VALID_COMPONENTS})
+      if ( TARGET ${HDF5_${_component}_TARGET} )
+	list(APPEND HDF5_LIBRARIES ${_HDF5_${_component}_LIBRARY})
+      endif()
+    endforeach()
     list(APPEND HDF5_LIBRARIES ${HDF5_LINK_LIBRARIES})      
 
   endif(NOT HDF5_LIBRARIES)
