@@ -25,8 +25,8 @@ IossApplication::IossApplication() {
 }
 
 IossApplication::IossApplication(int argc, char **argv) {
-    initialize();
     initializeMPI(argc, argv);
+    initialize();
     processCommandLine(argc, argv);
     setenv("CATALYST_ADAPTER_INSTALL_DIR", CATALYST_PLUGIN_INSTALL_DIR, false);
 }
@@ -56,6 +56,7 @@ void IossApplication::initialize() {
     iossInputDBType = "";
     hasCommandLineArguments = false;
     applicationExitCode = EXIT_SUCCESS;
+    initMPIRankAndSize();
 }
 
 IossApplication::~IossApplication() {
@@ -103,14 +104,8 @@ bool IossApplication::isSerial() {
     return numRanks == 1;
 }
 
-void IossApplication::initializeMPI() {
-    MPI_Init(nullptr, nullptr);
-    initMPIRankAndSize();
-}
-
 void IossApplication::initializeMPI(int argc, char **argv) {
     MPI_Init(&argc, &argv);
-    initMPIRankAndSize();
 }
 
 void IossApplication::initMPIRankAndSize() {

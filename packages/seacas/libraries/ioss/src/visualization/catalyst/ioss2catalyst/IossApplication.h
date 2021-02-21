@@ -85,7 +85,6 @@ private:
     void callCatalystIOSSDatabaseOnRank();
     void openInputIOSSDatabase();
     void processCommandLine(int argc, char **argv);
-    void initializeMPI();
     void initializeMPI(int argc, char **argv);
     void initMPIRankAndSize();
     void finalizeMPI();

@@ -3,6 +3,7 @@
 #define CatalystTestFixture_h
 
 #include "IossApplication.h"
+#include "vtk_jsoncpp.h"
 #include <map>
 
 class CatalystTestFixture {
@@ -11,9 +12,11 @@ public:
     ~CatalystTestFixture();
 
     void checkPhactoriStringValidParse(const std::string& phactoriSyntax,
-        const std::string& parsedJSONResult);
+        const Json::Value& parsedJSONResult);
 
     void checkPhactoriStringInvalidParse(const std::string& phactoriSyntax);
+   
+    Json::Value getDefaultPhactoriJSON();
 
     void runPhactoriJSONTest(const std::string& jsonFile,
         const std::string& inputFile);

@@ -2,7 +2,6 @@
 #include "catch.hpp"
 #include <Iovs_Utils.h>
 #include <cstdlib>
-#include "vtk_jsoncpp.h"
 
 CatalystTestFixture::CatalystTestFixture() {
 
@@ -22,7 +21,7 @@ void CatalystTestFixture::runPhactoriJSONTest(
 }
 
 void CatalystTestFixture::checkPhactoriStringValidParse(
-    const std::string& phactoriSyntax, const std::string& parsedJSONResult) {
+    const std::string& phactoriSyntax, const Json::Value& parsedJSONResult) {
 
     Iovs::CatalystManagerBase::ParseResult pres;
     Iovs::Utils::getInstance().getCatalystManager().parsePhactoriString(
@@ -32,7 +31,6 @@ void CatalystTestFixture::checkPhactoriStringValidParse(
     Json::CharReaderBuilder builder {};
     auto reader = std::unique_ptr<Json::CharReader>( builder.newCharReader() );
     Json::Value parseRoot {};
-    Json::Value goldRoot {};
     std::string errors {};
 
     auto parseWorked = reader->parse(pres.jsonParseResult.c_str(),
@@ -40,13 +38,7 @@ void CatalystTestFixture::checkPhactoriStringValidParse(
             &parseRoot, &errors );
  
     REQUIRE(parseWorked);
-
-    reader->parse(parsedJSONResult.c_str(),
-        parsedJSONResult.c_str() + parsedJSONResult.length(),
-            &goldRoot, &errors );
-
-    REQUIRE(parseWorked);
-    REQUIRE(parseRoot == goldRoot);
+    REQUIRE(parseRoot == parsedJSONResult);
 }
 
 void CatalystTestFixture::checkPhactoriStringInvalidParse(
@@ -56,6 +48,20 @@ void CatalystTestFixture::checkPhactoriStringInvalidParse(
     Iovs::Utils::getInstance().getCatalystManager().parsePhactoriString(
         phactoriSyntax, pres);
     REQUIRE(pres.parseFailed);
+}
+
+Json::Value CatalystTestFixture::getDefaultPhactoriJSON() {
+    Json::Value defPhac;
+    defPhac["camera blocks"] = Json::objectValue;
+    defPhac["representation blocks"] = Json::objectValue;
+    defPhac["operation blocks"] = Json::objectValue;
+    defPhac["imageset blocks"] = Json::objectValue;
+    defPhac["scatter plot blocks"] = Json::objectValue;
+    defPhac["plot over time blocks"] = Json::objectValue;
+    defPhac["onoff criteria blocks"] = Json::objectValue;
+    defPhac["visual marker blocks"] = Json::objectValue;
+    defPhac["experimental blocks"] = Json::objectValue;
+    return defPhac;
 }
 
 void CatalystTestFixture::checkTestOutputFileExists(const char *fileName) {
