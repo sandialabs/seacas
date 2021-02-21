@@ -1,4 +1,5 @@
 #include "CatalystTestFixture.h"
+#include "TestDataDirectoryPath.h"
 #include "catch.hpp"
 #include <Iovs_Utils.h>
 #include <cstdlib>
@@ -14,8 +15,9 @@ CatalystTestFixture::~CatalystTestFixture() {
 void CatalystTestFixture::runPhactoriJSONTest(
     const std::string& jsonFile, const std::string& inputFile) {
 
-    ioapp.setPhactoriInputJSON(jsonFile);
-    ioapp.setFileName(inputFile);
+    std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
+    ioapp.setPhactoriInputJSON(td + jsonFile);
+    ioapp.setFileName(td + inputFile);
     ioapp.runApplication();
     REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
 }
