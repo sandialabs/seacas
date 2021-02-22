@@ -336,6 +336,8 @@ then
 	hdf_version="1.10.7"
     elif [ "${H5VERSION}" == "V112" ]; then
 	hdf_version="1.12.0"
+    elif [ "${H5VERSION}" == "develop" ]; then
+	hdf_version="develop"
     else
 	echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
 	exit 1
@@ -355,12 +357,17 @@ then
 	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
 	elif [ "${H5VERSION}" == "V112" ]; then
 	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+	elif [ "${H5VERSION}" == "develop" ]; then
+	    git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
 	else
 	    echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
 	    exit 1
 	fi
-        tar -jxf hdf5-${hdf_version}.tar.bz2
-        rm -f hdf5-${hdf_version}.tar.bz2
+	if [ "${H5VERSION}" != "develop" ]
+	then
+            tar -jxf hdf5-${hdf_version}.tar.bz2
+            rm -f hdf5-${hdf_version}.tar.bz2
+	fi
     fi
 
     if [ "$BUILD" == "YES" ]
