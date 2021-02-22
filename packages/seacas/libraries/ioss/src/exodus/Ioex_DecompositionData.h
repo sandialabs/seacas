@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -33,9 +33,9 @@ namespace Ioex {
   class DecompositionDataBase
   {
   public:
-    DecompositionDataBase(MPI_Comm comm) : comm_(comm), m_processor(0), m_processorCount(0) {}
+    DecompositionDataBase(MPI_Comm comm) : comm_(comm) {}
 
-    virtual ~DecompositionDataBase() {}
+    virtual ~DecompositionDataBase()            = default;
     virtual int    int_size() const             = 0;
     virtual void   decompose_model(int filePtr) = 0;
     virtual size_t ioss_node_count() const      = 0;
@@ -54,8 +54,8 @@ namespace Ioex {
 
     MPI_Comm comm_;
 
-    int m_processor;
-    int m_processorCount;
+    int m_processor{0};
+    int m_processorCount{0};
 
     std::vector<Ioss::BlockDecompositionData> el_blocks;
     std::vector<Ioss::SetDecompositionData>   node_sets;
@@ -97,7 +97,7 @@ namespace Ioex {
   {
   public:
     DecompositionData(const Ioss::PropertyManager &props, MPI_Comm communicator);
-    ~DecompositionData() {}
+    ~DecompositionData() = default;
 
     int int_size() const { return sizeof(INT); }
 
