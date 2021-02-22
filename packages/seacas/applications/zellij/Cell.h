@@ -24,6 +24,7 @@
 #include <utility>
 
 #include "UnitCell.h"
+//! \file
 
 // Each entry in grid will have the following information:
 enum class Axis { X, Y, Z };

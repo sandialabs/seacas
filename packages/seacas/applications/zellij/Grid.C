@@ -28,6 +28,8 @@
 #include <fmt/ostream.h>
 #include <tokenize.h>
 
+//! \file
+
 extern unsigned int debug_level;
 
 #if __cplusplus == 201103L

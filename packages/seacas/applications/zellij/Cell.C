@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <fmt/format.h>
 
+//! \file
 extern unsigned int debug_level;
 
 namespace {

@@ -32,6 +32,8 @@
 #include <mpi.h>
 #endif
 
+//! \file
+
 namespace {
   Grid define_lattice(SystemInterface &interFace, Ioss::ParallelUtils &pu);
 

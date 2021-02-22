@@ -14,17 +14,18 @@
 #include "UnitCell.h"
 #include "ZE_SystemInterface.h"
 
-// `grid` stores the data for the tessellation of size `IxJ`
-//  * gridI -- extent in I direction
-//  * gridJ -- extend in J direction
-//  * grid(i,j) -- return database information at i,j location
-//  * grid(index) -- return database information at i,j location corresponding to `index`
-//  * max number of element blocks in a unit_cell mesh
-//  * range of x, y size of unit_cell mesh. (assumes unit_cell minx, miny == 0.0)
-//  * Ti, Tj, Tk -- size of regular mesh on boundary of unit_cell (? may need the 3 `Tk` values for
-//  padding)
-//  * std::vector<Cell> m_grid -- contains database information...
+//! \file
 
+//! `grid` stores the data for the tessellation of size `IxJ`
+//!  * gridI -- extent in I direction
+//!  * gridJ -- extend in J direction
+//!  * grid(i,j) -- return database information at i,j location
+//!  * grid(index) -- return database information at i,j location corresponding to `index`
+//!  * max number of element blocks in a unit_cell mesh
+//!  * range of x, y size of unit_cell mesh. (assumes unit_cell minx, miny == 0.0)
+//!  * Ti, Tj, Tk -- size of regular mesh on boundary of unit_cell (? may need the 3 `Tk` values for
+//!  padding)
+//!  * std::vector<Cell> m_grid -- contains database information...
 class Grid
 {
 public:

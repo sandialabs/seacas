@@ -15,6 +15,8 @@
 #include <fmt/format.h>
 #include <iosfwd> // for ostream
 
+//! \file
+
 SystemInterface::SystemInterface(int my_rank) : myRank_(my_rank) { enroll_options(); }
 
 SystemInterface::~SystemInterface() = default;

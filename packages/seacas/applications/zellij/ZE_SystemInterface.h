@@ -9,6 +9,8 @@
 #include "Ioss_GetLongOpt.h" // for GetLongOption
 #include <string>            // for string
 
+//! \file
+
 enum class Minimize { NONE = 0, UNIT = 1, OUTPUT = 2, ALL = 3 };
 
 class SystemInterface
