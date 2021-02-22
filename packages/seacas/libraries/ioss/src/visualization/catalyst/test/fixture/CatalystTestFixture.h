@@ -16,12 +16,15 @@ public:
 
     void checkPhactoriStringInvalidParse(const std::string& phactoriSyntax);
    
-    Json::Value getDefaultPhactoriJSON();
-
     void runPhactoriJSONTest(const std::string& jsonFile,
         const std::string& inputFile);
 
     void checkTestOutputFileExists(const char *fileName);
+
+    Json::Value getDefaultPhactoriJSON();
+
+    Json::Value getDefaultCameraJSON();
+    Json::Value getDefaultCameraParallelProjectionJSON();
 
 private:
     IossApplication ioapp;

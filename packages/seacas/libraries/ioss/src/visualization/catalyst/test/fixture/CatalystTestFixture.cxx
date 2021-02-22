@@ -66,6 +66,56 @@ Json::Value CatalystTestFixture::getDefaultPhactoriJSON() {
     return defPhac;
 }
 
+Json::Value CatalystTestFixture::getDefaultCameraJSON() {
+    Json::Value camera;
+    camera["camera type"] = "camera";
+
+    Json::Value imageSet;
+    imageSet["camera"] = "fooCamera";
+    imageSet["image size"][0] = 800;
+    imageSet["image size"][1] = 450;
+
+    Json::Value dj = getDefaultPhactoriJSON();
+    dj["camera blocks"]["fooCamera"] = camera;
+    dj["imageset blocks"]["fooImageset"] = imageSet;
+    return dj;
+}
+
+Json::Value CatalystTestFixture::getDefaultCameraParallelProjectionJSON() {
+    Json::Value camParallel;
+    camParallel["camera type"] = "camera";
+    camParallel["projection type"] = "parallel";
+    camParallel["look direction"][0] = -5.0;
+    camParallel["look direction"][1] = -1.0;
+    camParallel["look direction"][2] = -1.0;
+
+    Json::Value camPerspective;
+    camPerspective["camera type"] = "camera";
+    camPerspective["projection type"] = "perspective";
+    camPerspective["look direction"][0] = -5.0;
+    camPerspective["look direction"][1] = -1.0;
+    camPerspective["look direction"][2] = -1.0;
+
+    Json::Value isParallel;
+    isParallel["camera"] = "parallel_projection_cam1";
+    isParallel["image size"][0] = 800;
+    isParallel["image size"][1] = 450;
+    isParallel["image basename"] = "parallel_projection_is1.";
+
+    Json::Value isPerspective;
+    isPerspective["camera"] = "perspective_projection_cam1";
+    isPerspective["image size"][0] = 800;
+    isPerspective["image size"][1] = 450;
+    isPerspective["image basename"] = "perspective_projection_is1.";
+
+    Json::Value dj = getDefaultPhactoriJSON();
+    dj["camera blocks"]["parallel_projection_cam1"] = camParallel;
+    dj["camera blocks"]["perspective_projection_cam1"] = camPerspective;
+    dj["imageset blocks"]["parallel_projection_is1"] = isParallel;
+    dj["imageset blocks"]["perspective_projection_is1"] = isPerspective;
+    return dj;
+}
+
 void CatalystTestFixture::checkTestOutputFileExists(const char *fileName) {
     FILE *fp = fopen(fileName, "r");
     bool outputFileExists = false;
