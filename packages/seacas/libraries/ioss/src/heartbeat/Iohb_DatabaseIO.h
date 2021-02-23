@@ -7,6 +7,7 @@
 #ifndef IOSS_Iohb_DatabaseIO_h
 #define IOSS_Iohb_DatabaseIO_h
 
+#include "Iohb_Layout.h"
 #include "Ioss_State.h" // for State
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>    // for DatabaseUsage
@@ -17,7 +18,6 @@
 #include <iostream>          // for ostream
 #include <string>            // for string
 namespace Iohb {
-  class Layout;
   class CommSet;
   class EdgeBlock;
   class EdgeSet;
