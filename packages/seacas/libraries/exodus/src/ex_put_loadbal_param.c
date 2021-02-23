@@ -99,6 +99,7 @@ int ex_put_loadbal_param(int exoid, int64_t num_int_nodes, int64_t num_bor_nodes
 
   /* Output the file version */
   if ((status = ex__put_nemesis_version(exoid)) < 0) {
+    ex__leavedef(exoid, __func__);
     EX_FUNC_LEAVE(status);
   }
 
