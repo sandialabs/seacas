@@ -31,9 +31,9 @@ namespace Ioss {
       const char *description{nullptr}; // a description of option
       const char *value{nullptr};       // value of option (string)
       const char *opt_value{
-          nullptr};        // If optional value and value not entered, assign opt_value to value
-      Cell *next{nullptr}; // pointer to the next cell
-      bool  extra_line{false};
+          nullptr};            // If optional value and value not entered, assign opt_value to value
+      Cell *next{nullptr};     // pointer to the next cell
+      bool  extra_line{false}; // True if `usage()` should output extra line at end of entry
 
       Cell() = default;
     };

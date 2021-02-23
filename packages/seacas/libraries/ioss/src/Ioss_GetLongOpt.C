@@ -66,6 +66,7 @@ namespace Ioss {
    * \param[in] desc A short description of the option.
    * \param[in] val The option value.
    * \param[in] optval The default value.
+   * \param[in] extra_line True to output blank line in `usage()` output after this entry.
    * \returns 1 if successful, 0 if unsuccessful.
    */
   int GetLongOption::enroll(const char *const opt, const OptType t, const char *const desc,
