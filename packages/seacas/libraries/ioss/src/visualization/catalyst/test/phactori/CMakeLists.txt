@@ -10,19 +10,19 @@ function(generatePhactoriUnitTests)
     test_PhactoriDataArtifactMetaDataControl
   )
 
-  set(TriggerViewTestDirectory
-    ${CMAKE_CURRENT_BINARY_DIR}/TriggerViewTests)
+  set(PhactoriTestDirectory
+    ${CMAKE_CURRENT_BINARY_DIR}/PhactoriTests)
 
-  set(TriggerViewUnitTestsDirectory
-    ${TriggerViewTestDirectory}/UnitTests)
+  set(PhactoriUnitTestsDirectory
+    ${PhactoriTestDirectory}/UnitTests)
 
-  file(MAKE_DIRECTORY ${TriggerViewUnitTestsDirectory})
+  file(MAKE_DIRECTORY ${PhactoriUnitTestsDirectory})
 
-  createTriggerViewUnitTests("${PhactoriClassUnitTests}"
-    ${TriggerViewUnitTestsDirectory})
+  createPhactoriUnitTests("${PhactoriClassUnitTests}"
+    ${PhactoriUnitTestsDirectory})
 endfunction()
 
-function(createTriggerViewUnitTests Modules TVUnitTestDir)
+function(createPhactoriUnitTests Modules PhctrUnitTestDir)
   set (CURRENT_PYTHON_PATH $ENV{PYTHONPATH})
   ####set (LOCAL_PARAVIEW_VAR $ENV{PARAVIEW_ROOT})
   set (LOCAL_PARAVIEW_VAR ${PARAVIEW_INSTALL_DIR})
@@ -33,7 +33,7 @@ function(createTriggerViewUnitTests Modules TVUnitTestDir)
     add_test(NAME Phactori-Unit-${OnePhactoriClassTest}
       COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${PHACTORI_DIR}:${CURRENT_PYTHON_PATH}
         ${PVBATCH_EXECUTABLE} ${PHACTORI_OPERATION_DIR}/${OnePhactoriClassTest}.py
-        WORKING_DIRECTORY ${TVUnitTestDir}
+        WORKING_DIRECTORY ${PhctrUnitTestDir}
     )
   endforeach()
 endfunction()
