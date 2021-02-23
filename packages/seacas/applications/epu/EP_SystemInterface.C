@@ -44,17 +44,12 @@ void Excn::SystemInterface::enroll_options()
 
   options_.enroll("help", GetLongOption::NoValue, "Print this summary and exit", nullptr);
 
-  options_.enroll("version", GetLongOption::NoValue, "Print version and exit", nullptr);
+  options_.enroll("version", GetLongOption::NoValue, "Print version and exit", nullptr, nullptr,
+                  true);
 
   options_.enroll("auto", GetLongOption::NoValue,
                   "Automatically set Root, Proc, Ext from filename 'Root/basename.ext.#p.00'.",
                   nullptr);
-  options_.enroll("map", GetLongOption::NoValue,
-                  "Map element ids to original order if possible [default]", nullptr);
-
-  options_.enroll("nomap", GetLongOption::NoValue, "Do not map element ids to original order",
-                  nullptr);
-
   options_.enroll("extension", GetLongOption::MandatoryValue,
                   "Exodus database extension for the input files", "e");
 
@@ -68,28 +63,62 @@ void Excn::SystemInterface::enroll_options()
   options_.enroll("Root_directory", GetLongOption::MandatoryValue, "Root directory", nullptr);
 
   options_.enroll("Subdirectory", GetLongOption::MandatoryValue,
-                  "subdirectory containing input exodusII files", nullptr);
+                  "subdirectory containing input exodusII files", nullptr, nullptr, true);
 
-  options_.enroll("width", GetLongOption::MandatoryValue, "Width of output screen, default = 80",
+  options_.enroll("subcycle", GetLongOption::OptionalValue,
+                  "Subcycle. Create $val subparts if $val is specified.\n"
+                  "\t\tOtherwise, create multiple parts each of size 'Part_count'.\n"
+                  "\t\tThe subparts can then be joined by a subsequent run of epu.\n"
+                  "\t\tUseful if the maximum number of open files is less\n"
+                  "\t\tthan the processor count.",
+                  nullptr, "0");
+
+  options_.enroll("join_subcycles", GetLongOption::NoValue,
+                  "If -subcycle is specified, then after the subcycle files are processed,\n"
+                  "\t\trun epu one more time and join the subcycle files into a single file.",
                   nullptr);
 
-  options_.enroll("add_processor_id", GetLongOption::NoValue,
-                  "Add 'processor_id' element variable to the output file", nullptr);
+  options_.enroll("Part_count", GetLongOption::MandatoryValue,
+                  "How many pieces (files) of the model should be joined.", "0");
+
+  options_.enroll("start_part", GetLongOption::MandatoryValue, "Start with piece {n} (file)", "0");
+
+  options_.enroll("cycle", GetLongOption::MandatoryValue,
+                  "Cycle number. If subcycle # is specified, then only execute\n"
+                  "\t\tcycle $val ($val < #).  The cycle number is 0-based.",
+                  "-1");
+
+  options_.enroll("keep_temporary", GetLongOption::NoValue,
+                  "If -join_subcycles is specified, then after joining the subcycle files,\n"
+                  "\t\tthey are automatically deleted unless -keep_temporary is specified.",
+                  nullptr);
+
+  options_.enroll(
+      "add_nodal_communication_map", GetLongOption::NoValue,
+      "In subcycle mode, add the `nodal communication map` data to the output files.\n"
+      "\t\tThe resulting files can then be used as input to a subsequent analysis (N to M)",
+      nullptr, nullptr, true);
+
+  options_.enroll("map", GetLongOption::NoValue,
+                  "Map element ids to original order if possible [default]", nullptr);
+
+  options_.enroll("nomap", GetLongOption::NoValue, "Do not map element ids to original order",
+                  nullptr, nullptr, true);
 
   options_.enroll("netcdf4", GetLongOption::NoValue,
-                  "Create output database using the HDF5-based "
-                  "netcdf which allows for up to 2.1 GB "
+                  "Output database uses HDF5-based netcdf which allows for up to 2.1 billion "
                   "nodes/elements",
                   nullptr);
 
   options_.enroll("netcdf5", GetLongOption::NoValue,
-                  "Create output database using the PnetCDF-based "
-                  "netcdf 5 format which allows for up to 2.1 GB "
+                  "Output database uses PnetCDF netcdf 5 format which allows for up to 2.1 billion "
                   "nodes/elements",
                   nullptr);
 
   options_.enroll("64", GetLongOption::NoValue,
-                  "The output database will be written in the 64-bit integer mode", nullptr);
+                  "The output database will be written in the 64-bit integer mode which allows\n"
+                  "\t\tfor more than 2.1 billion nodes/elements",
+                  nullptr, nullptr, true);
 
   options_.enroll(
       "zlib", GetLongOption::NoValue,
@@ -102,7 +131,7 @@ void Excn::SystemInterface::enroll_options()
   options_.enroll("compress_data", GetLongOption::MandatoryValue,
                   "The output database will be written using compression (netcdf-4 mode only).\n"
                   "\t\tValue ranges from 0..9 for zlib/gzip or even values 4..32 for szip.",
-                  nullptr);
+                  nullptr, nullptr, true);
 
   options_.enroll("append", GetLongOption::NoValue,
                   "Append to database instead of opening a new database.\n"
@@ -113,48 +142,10 @@ void Excn::SystemInterface::enroll_options()
                   "Specify subset of timesteps to transfer to output file.\n"
                   "\t\tFormat is beg:end:step. 1:10:2 --> 1,3,5,7,9\n"
                   "\t\tEnter LAST for last step",
-                  "1:");
+                  "1:", nullptr, true);
 
-  options_.enroll("Part_count", GetLongOption::MandatoryValue,
-                  "How many pieces (files) of the model should be joined.", "0");
-
-  options_.enroll("start_part", GetLongOption::MandatoryValue, "Start with piece {n} (file)", "0");
-
-  options_.enroll("subcycle", GetLongOption::OptionalValue,
-                  "Subcycle. Create $val subparts if $val is specified.\n"
-                  "\t\tOtherwise, create multiple parts each of size 'Part_count'.\n"
-                  "\t\tThe subparts can then be joined by a subsequent run of epu.\n"
-                  "\t\tUseful if the maximum number of open files is less\n"
-                  "\t\tthan the processor count.",
-                  nullptr, "0");
-
-  options_.enroll("cycle", GetLongOption::MandatoryValue,
-                  "Cycle number. If subcycle # is specified, then only execute\n"
-                  "\t\tcycle $val ($val < #).  The cycle number is 0-based.",
-                  "-1");
-
-  options_.enroll("join_subcycles", GetLongOption::NoValue,
-                  "If -subcycle is specified, then after the subcycle files are processed,\n"
-                  "\t\trun epu one more time and join the subcycle files into a single file.",
-                  nullptr);
-
-  options_.enroll("keep_temporary", GetLongOption::NoValue,
-                  "If -join_subcycles is specified, then after joining the subcycle files, they "
-                  "are automatically\n"
-                  "\t\tdeleted unless -keep_temporary is specified.",
-                  nullptr);
-
-  options_.enroll(
-      "add_nodal_communication_map", GetLongOption::NoValue,
-      "In subcycle mode, add the `nodal communication map` data to the output files.\n"
-      "\t\tThe resulting files can then be used as input to a subsequent analysis (N to M)",
-      nullptr);
-
-  options_.enroll("sum_shared_nodes", GetLongOption::NoValue,
-                  "The nodal results data on all shared nodes (nodes on processor boundaries)\n"
-                  "\t\twill be the sum of the individual nodal results data on each shared node.\n"
-                  "\t\tThe default behavior assumes that the values are equal.",
-                  nullptr);
+  options_.enroll("add_processor_id", GetLongOption::NoValue,
+                  "Add 'processor_id' element variable to the output file", nullptr);
 
   options_.enroll("gvar", GetLongOption::MandatoryValue,
                   "Comma-separated list of global variables to be joined or ALL or NONE.", nullptr);
@@ -180,16 +171,12 @@ void Excn::SystemInterface::enroll_options()
                   "Don't transfer nodesets to output file.", nullptr);
 
   options_.enroll("omit_sidesets", GetLongOption::NoValue,
-                  "Don't transfer sidesets to output file.", nullptr);
+                  "Don't transfer sidesets to output file.", nullptr, nullptr, true);
 
-  options_.enroll("output_shared_nodes", GetLongOption::NoValue,
-                  "Output list of shared nodes and the processors they are shared with.", nullptr);
-
-  options_.enroll("max_open_files", GetLongOption::MandatoryValue,
-                  "For testing auto subcycle only.  Sets file limit that triggers auto subcycling.",
-                  "0");
-
-  options_.enroll("large_model", GetLongOption::NoValue, "(deprecated; use netcdf4 instead)",
+  options_.enroll("sum_shared_nodes", GetLongOption::NoValue,
+                  "The nodal results data on all shared nodes (nodes on processor boundaries)\n"
+                  "\t\twill be the sum of the individual nodal results data on each shared node.\n"
+                  "\t\tThe default behavior assumes that the values are equal.",
                   nullptr);
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
@@ -203,6 +190,20 @@ void Excn::SystemInterface::enroll_options()
                   "\t\t 64 = put exodus library into verbose mode.\n"
                   "\t\t128 = Check consistent global field values between processors.",
                   "0");
+
+  options_.enroll(
+      "output_shared_nodes", GetLongOption::NoValue,
+      "[Debugging] Output list of shared nodes and the processors they are shared with.", nullptr);
+
+  options_.enroll("width", GetLongOption::MandatoryValue, "Width of output screen, default = 80",
+                  nullptr);
+
+  options_.enroll("max_open_files", GetLongOption::MandatoryValue,
+                  "For testing auto subcycle only.  Sets file limit that triggers auto subcycling.",
+                  "0");
+
+  options_.enroll("large_model", GetLongOption::NoValue, "[deprecated; use netcdf4 instead]",
+                  nullptr);
 
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
 }
