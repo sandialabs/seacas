@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -144,6 +144,12 @@ void Excn::SystemInterface::enroll_options()
                   "\t\tdeleted unless -keep_temporary is specified.",
                   nullptr);
 
+  options_.enroll(
+      "add_nodal_communication_map", GetLongOption::NoValue,
+      "In subcycle mode, add the `nodal communication map` data to the output files.\n"
+      "\t\tThe resulting files can then be used as input to a subsequent analysis (N to M)",
+      nullptr);
+
   options_.enroll("sum_shared_nodes", GetLongOption::NoValue,
                   "The nodal results data on all shared nodes (nodes on processor boundaries)\n"
                   "\t\twill be the sum of the individual nodal results data on each shared node.\n"
@@ -183,8 +189,7 @@ void Excn::SystemInterface::enroll_options()
                   "For testing auto subcycle only.  Sets file limit that triggers auto subcycling.",
                   "0");
 
-  options_.enroll("large_model", GetLongOption::NoValue,
-                  "(deprecated; use netcdf4 instead)",
+  options_.enroll("large_model", GetLongOption::NoValue, "(deprecated; use netcdf4 instead)",
                   nullptr);
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
@@ -350,12 +355,8 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     parse_variable_names(temp, &ssetVarNames_);
   }
 
-  if (options_.retrieve("add_processor_id") != nullptr) {
-    addProcessorId_ = true;
-  }
-  else {
-    addProcessorId_ = false;
-  }
+  addProcessorId_           = options_.retrieve("add_processor_id") != nullptr;
+  addNodalCommunicationMap_ = options_.retrieve("add_nodal_communication_map") != nullptr;
 
   if (options_.retrieve("large_model") != nullptr) {
     useNetcdf4_ = true;
@@ -363,21 +364,10 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
                "\nWARNING: the -large_model option is deprecated; please use -netcdf4 instead.\n");
   }
 
-  if (options_.retrieve("netcdf4") != nullptr) {
-    useNetcdf4_ = true;
-  }
-
-  if (options_.retrieve("netcdf5") != nullptr) {
-    useNetcdf5_ = true;
-  }
-
-  if (options_.retrieve("append") != nullptr) {
-    append_ = true;
-  }
-
-  if (options_.retrieve("64") != nullptr) {
-    intIs64Bit_ = true;
-  }
+  useNetcdf4_ = options_.retrieve("netcdf4") != nullptr;
+  useNetcdf5_ = options_.retrieve("netcdf5") != nullptr;
+  append_     = options_.retrieve("append") != nullptr;
+  intIs64Bit_ = options_.retrieve("64") != nullptr;
 
   if (options_.retrieve("szip") != nullptr) {
     szip_ = true;
@@ -396,13 +386,8 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  if (options_.retrieve("sum_shared_nodes") != nullptr) {
-    sumSharedNodes_ = true;
-  }
-
-  if (options_.retrieve("append") != nullptr) {
-    append_ = true;
-  }
+  sumSharedNodes_ = options_.retrieve("sum_shared_nodes") != nullptr;
+  append_         = options_.retrieve("append") != nullptr;
 
   {
     const char *temp = options_.retrieve("subcycle");
@@ -418,13 +403,8 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  if (options_.retrieve("join_subcycles") != nullptr) {
-    subcycleJoin_ = true;
-  }
-
-  if (options_.retrieve("keep_temporary") != nullptr) {
-    keepTemporary_ = true;
-  }
+  subcycleJoin_  = options_.retrieve("join_subcycles") != nullptr;
+  keepTemporary_ = options_.retrieve("keep_temporary") != nullptr;
 
   if (options_.retrieve("map") != nullptr) {
     mapIds_ = true;
@@ -434,23 +414,9 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     mapIds_ = false;
   }
 
-  if (options_.retrieve("omit_nodesets") != nullptr) {
-    omitNodesets_ = true;
-  }
-  else {
-    omitNodesets_ = false;
-  }
-
-  if (options_.retrieve("omit_sidesets") != nullptr) {
-    omitSidesets_ = true;
-  }
-  else {
-    omitSidesets_ = false;
-  }
-
-  if (options_.retrieve("output_shared_nodes") != nullptr) {
-    outputSharedNodes_ = true;
-  }
+  omitNodesets_      = options_.retrieve("omit_nodesets") != nullptr;
+  omitSidesets_      = options_.retrieve("omit_sidesets") != nullptr;
+  outputSharedNodes_ = options_.retrieve("output_shared_nodes") != nullptr;
 
   if (options_.retrieve("copyright") != nullptr) {
     if (myRank_ == 0) {

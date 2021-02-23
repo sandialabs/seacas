@@ -215,15 +215,23 @@ namespace {
   {
     if (out.empty())
       return 0;
+    size_t i    = 1;
     size_t pos  = 1;
     T      oldv = out[0];
-    for (size_t i = 1; i < out.size(); ++i) {
+    for (; i < out.size(); ++i) {
       T newv   = out[i];
       out[pos] = newv;
       pos += (newv != oldv);
       oldv = newv;
     }
     return pos;
+  }
+
+  template <typename T> static void uniquify(std::vector<T> &vec)
+  {
+    std::sort(vec.begin(), vec.end());
+    vec.resize(unique(vec));
+    vec.shrink_to_fit();
   }
 
   void compress_white_space(char *str);
@@ -244,6 +252,12 @@ namespace {
   void get_coordinates(int id, int dimensionality, size_t num_nodes,
                        const std::vector<std::vector<INT>> &local_node_to_global, int proc,
                        std::vector<T> &x, std::vector<T> &y, std::vector<T> &z);
+
+  template <typename INT>
+  void get_put_nodal_communication_map(Excn::Mesh &global, int start_part, int part_count,
+                                       std::vector<Excn::Mesh> &            local_mesh,
+                                       const std::vector<std::vector<INT>> &local_node_to_global,
+                                       const std::vector<int> &processor_map, int output_processor);
 
   StringVector get_exodus_variable_names(int id, ex_entity_type elType, int var_count);
 
@@ -927,6 +941,22 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     LOG("\n\n**** GET COORDINATE INFO ****\n");
     get_put_coordinates(global, part_count, local_mesh, local_node_to_global, (T)0.0);
     LOG("Wrote coordinate information...\n");
+  }
+
+  if (interFace.add_nodal_communication_map() && interFace.subcycle() > 0) {
+    LOG("\n\n**** GET NODAL COMMUNICATION MAP INFO ****\n");
+    // Need a mapping from processors in the original mesh parts to
+    // processors in the subcycle output...
+    auto proc_count = interFace.processor_count();
+
+    std::vector<int> processor_map(proc_count);
+    auto             orig_part_count = interFace.part_count();
+    for (int i = 0; i < proc_count; i++) {
+      processor_map[i] = i / orig_part_count;
+    }
+    get_put_nodal_communication_map(global, start_part, part_count, local_mesh,
+                                    local_node_to_global, processor_map, cycle);
+    LOG("Wrote nodal communication map information...\n");
   }
 
   // ####################TRANSIENT DATA SECTION###########################
@@ -1622,6 +1652,85 @@ namespace {
     free_name_array(coordinate_names, dimensionality);
   }
 
+  template <typename INT>
+  void get_put_nodal_communication_map(Excn::Mesh &global, int start_part, int part_count,
+                                       std::vector<Excn::Mesh> &            local_mesh,
+                                       const std::vector<std::vector<INT>> &local_node_to_global,
+                                       const std::vector<int> &processor_map, int output_processor)
+  {
+    int                              error = 0;
+    std::vector<std::pair<INT, int>> node_cmap;
+    for (int p = 0; p < part_count; p++) {
+      INT num_int_nodes, num_bor_nodes, num_ext_nodes, num_int_elems, num_bor_elems;
+      INT num_node_cmaps, num_elem_cmaps;
+      ex_get_loadbal_param(ExodusFile(p), &num_int_nodes, &num_bor_nodes, &num_ext_nodes,
+                           &num_int_elems, &num_bor_elems, &num_node_cmaps, &num_elem_cmaps, p);
+
+      std::vector<INT> nodeCmapIds(num_node_cmaps);
+      std::vector<INT> nodeCmapNodeCnts(num_node_cmaps);
+      ex_get_cmap_params(ExodusFile(p), nodeCmapIds.data(), nodeCmapNodeCnts.data(), nullptr,
+                         nullptr, p);
+
+      int64_t my_node_count =
+          std::accumulate(nodeCmapNodeCnts.begin(), nodeCmapNodeCnts.end(), int64_t(0));
+      std::vector<INT> nodes(my_node_count);
+      std::vector<INT> procs(my_node_count);
+
+      int64_t cm_offset = 0;
+      for (INT i = 0; i < num_node_cmaps; i++) {
+        ex_get_node_cmap(ExodusFile(p), nodeCmapIds[i], &nodes[cm_offset], &procs[cm_offset], p);
+        cm_offset += nodeCmapNodeCnts[i];
+      }
+      for (size_t i = 0; i < nodes.size(); i++) {
+        auto output_proc = processor_map[procs[i]];
+        if (output_proc != output_processor) {
+          node_cmap.emplace_back(local_node_to_global[p][nodes[i] - 1] + 1,
+                                 processor_map[procs[i]]);
+        }
+      }
+    } // end for p=0..part_count
+    uniquify(node_cmap);
+
+    std::vector<INT> gnodes;
+    std::vector<INT> gprocs;
+    gnodes.reserve(node_cmap.size());
+    gprocs.reserve(node_cmap.size());
+
+    for (auto &np : node_cmap) {
+      gnodes.push_back(np.first);
+      gprocs.push_back(np.second);
+    }
+
+    // NOTE: This is inefficient in general since going in and out of define mode.
+    //       Would be better to do this at file-creation time, but this encapsulates all
+    //       code related to node communication map output to this routine...
+
+    // Write out nodal communication map information
+    error = ex_put_init_info(ExodusFile::output(), processor_map.back(), 1, (char *)"P");
+    if (error < 0) {
+      exodus_error(__LINE__);
+    }
+
+    error = ex_put_loadbal_param(ExodusFile::output(), 0, 0, 0, 0, 0, 1, 0, output_processor);
+    if (error < 0) {
+      exodus_error(__LINE__);
+    }
+
+    std::array<INT, 1> ids{1};
+    std::array<INT, 1> cnts{(INT)gnodes.size()};
+    error = ex_put_cmap_params(ExodusFile::output(), ids.data(), cnts.data(), nullptr, nullptr,
+                               output_processor);
+    if (error < 0) {
+      exodus_error(__LINE__);
+    }
+
+    error =
+        ex_put_node_cmap(ExodusFile::output(), 1, gnodes.data(), gprocs.data(), output_processor);
+    if (error < 0) {
+      exodus_error(__LINE__);
+    }
+  }
+
   template <typename T, typename INT>
   void get_coordinates(int id, int dimensionality, size_t num_nodes,
                        const std::vector<std::vector<INT>> &local_node_to_global, int proc,
@@ -1693,7 +1802,7 @@ namespace {
         y[node] = local_y[i];
       }
     }
-    else {
+    else { // dimensionality == 1
       if (debug_level & 8) {
         for (size_t i = 0; i < num_nodes; i++) {
           size_t node = local_node_to_global[proc][i];
