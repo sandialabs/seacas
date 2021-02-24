@@ -281,6 +281,7 @@ namespace {
       }
     }
     else if (elmt_map != nullptr) {
+      auto   offset2     = block2->offset();
       size_t num_element = block1->Size();
       size_t nnpe        = block1->Num_Nodes_per_Elmt();
       for (size_t e1 = 0; is_same && e1 < num_element; e1++) {
@@ -288,7 +289,7 @@ namespace {
           size_t off1 = e1 * nnpe + n;
           auto   e2   = elmt_map[element_offset + e1];
           if (e2 >= 0) { // If doing partial map, not all elements have a match
-            e2 -= element_offset;
+            e2 -= offset2;
             size_t off2   = e2 * nnpe + n;
             auto   n1     = conn1[off1];
             auto   map_n1 = node_map != nullptr ? node_map[n1 - 1] + 1 : n1;
