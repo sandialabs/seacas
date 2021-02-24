@@ -8,6 +8,7 @@
 // concatenates EXODUS/GENESIS output from parallel processors to a single file
 
 #include <algorithm>
+#include <array>
 #include <cfloat>
 #include <climits>
 #include <cmath>
