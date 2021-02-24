@@ -268,18 +268,20 @@ namespace {
   template <typename INT> void output_init(ExoII_Read<INT> &file, int count, const char *prefix)
   {
     FileInfo fi(file.File_Name());
-    fmt::print("{0}  FILE {15}: {1}\n"
-               "{0}   Title: {2}\n"
-               "{0}          Dim = {3}, Nodes = {5}, Elements = {6},\n"
-	       "{0}          Element Blocks = {4}, Face Blocks = {10}, Edge Blocks = {9}, Nodesets = {7}, "
-               "Sidesets = {8}\n"
-               "{0}    Vars: Global = {11}, Nodal = {12}, Element = {13}, Face = {17}, Edge = {18}, Nodeset = {14}, "
-               "Sideset = {15}, Times = {16}\n\n",
-               prefix, fi.realpath(), file.Title(), file.Dimension(), file.Num_Elmt_Blocks(),
-               file.Num_Nodes(), file.Num_Elmts(), file.Num_Node_Sets(), file.Num_Side_Sets(),
-               file.Num_Edge_Blocks(), file.Num_Face_Blocks(), file.Num_Global_Vars(),
-               file.Num_Nodal_Vars(), file.Num_Elmt_Vars(), file.Num_NS_Vars(), file.Num_SS_Vars(),
-               file.Num_Times(), file.Num_FB_Vars(), file.Num_EB_Vars());
+    fmt::print(
+        "{0}  FILE {19}: {1}\n"
+        "{0}   Title: {2}\n"
+        "{0}          Dim = {3}, Nodes = {5}, Elements = {6},\n"
+        "{0}          Element Blocks = {4}, Face Blocks = {10}, Edge Blocks = {9}, Nodesets = {7}, "
+        "Sidesets = {8}\n"
+        "{0}    Vars: Global = {11}, Nodal = {12}, Element = {13}, Face = {17}, Edge = {18}, "
+        "Nodeset = {14}, "
+        "Sideset = {15}, Times = {16}\n\n",
+        prefix, fi.realpath(), file.Title(), file.Dimension(), file.Num_Elmt_Blocks(),
+        file.Num_Nodes(), file.Num_Elmts(), file.Num_Node_Sets(), file.Num_Side_Sets(),
+        file.Num_Edge_Blocks(), file.Num_Face_Blocks(), file.Num_Global_Vars(),
+        file.Num_Nodal_Vars(), file.Num_Elmt_Vars(), file.Num_NS_Vars(), file.Num_SS_Vars(),
+        file.Num_Times(), file.Num_FB_Vars(), file.Num_EB_Vars(), count);
   }
 
   std::string buf;
