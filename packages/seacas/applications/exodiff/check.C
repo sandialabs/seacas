@@ -38,8 +38,7 @@ namespace {
   bool Check_Elmt_Block_Params(const Exo_Block<INT> *block1, const Exo_Block<INT> *block2);
   template <typename INT>
   bool Check_Elmt_Block_Connectivity(Exo_Block<INT> *block1, Exo_Block<INT> *block2,
-                                     const INT *elmt_map, const INT *node_map,
-                                     size_t element_offset);
+                                     const INT *elmt_map, const INT *node_map);
   bool close_compare(const std::string &st1, const std::string &st2);
 } // namespace
 
@@ -192,8 +191,7 @@ namespace {
   bool Check_Elmt_Block(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *elmt_map,
                         const INT *node_map)
   {
-    bool   is_same        = true;
-    size_t element_offset = 0; // Basically file-local to block-local mapping...
+    bool is_same = true;
     // Verify that element blocks match in the two files...
     for (size_t b = 0; b < file1.Num_Elmt_Blocks(); ++b) {
       Exo_Block<INT> *block1 = file1.Get_Elmt_Block_by_Index(b);
@@ -219,23 +217,20 @@ namespace {
             else {
               // Only do this check if Check_Elmt_Block_Params does not fail.
               // TODO(gdsjaar): Pass in node_map and node_id_map...
-              if (!Check_Elmt_Block_Connectivity(block1, block2, elmt_map, node_map,
-                                                 element_offset)) {
+              if (!Check_Elmt_Block_Connectivity(block1, block2, elmt_map, node_map)) {
                 is_same = false;
               }
             }
           }
         }
       }
-      element_offset += block1->Size();
     }
     return is_same;
   }
 
   template <typename INT>
   bool Check_Elmt_Block_Connectivity(Exo_Block<INT> *block1, Exo_Block<INT> *block2,
-                                     const INT *elmt_map, const INT *node_map,
-                                     size_t element_offset)
+                                     const INT *elmt_map, const INT *node_map)
   {
 
     bool is_same = true;
@@ -281,13 +276,14 @@ namespace {
       }
     }
     else if (elmt_map != nullptr) {
+      auto   offset1     = block1->offset();
       auto   offset2     = block2->offset();
       size_t num_element = block1->Size();
       size_t nnpe        = block1->Num_Nodes_per_Elmt();
       for (size_t e1 = 0; is_same && e1 < num_element; e1++) {
         for (size_t n = 0; is_same && n < nnpe; ++n) {
           size_t off1 = e1 * nnpe + n;
-          auto   e2   = elmt_map[element_offset + e1];
+          auto   e2   = elmt_map[offset1 + e1];
           if (e2 >= 0) { // If doing partial map, not all elements have a match
             e2 -= offset2;
             size_t off2   = e2 * nnpe + n;
