@@ -278,38 +278,23 @@ void SystemInterface::enroll_options()
       nullptr, "usage");
 
   options_.enroll("Help", GetLongOption::NoValue, "Print this summary and exit.\n", nullptr);
+  options_.enroll("file", GetLongOption::MandatoryValue,
+                  "Use the given file to specify the variables to be considered and to\n"
+                  "\t\twhat tolerances. Enter \"-help file\" for the syntax of the command file",
+                  nullptr);
+  options_.enroll("summary", GetLongOption::NoValue,
+                  "Produce a summary in exodiff input format.\n"
+                  "\t\tThis will create output with max/min statistics on the data in the format\n"
+                  "\t\tof an exodiff input file.",
+                  nullptr, nullptr, true);
 
+  // Tolerance options...
   options_.enroll("tolerance", GetLongOption::MandatoryValue,
                   "Overrides the default tolerance of 1.0E-6.", "1.0E-6");
 
   options_.enroll("Floor", GetLongOption::MandatoryValue,
                   "Overrides the default floor tolerance of 0.0.", "0.0");
 
-  options_.enroll("coordinate_tolerance", GetLongOption::MandatoryValue,
-                  "Overrides the default coordinate comparison tolerance of 1.0E-6.", "1.0E-6");
-
-  options_.enroll("TimeStepOffset", GetLongOption::MandatoryValue,
-                  "Timestep 'x+offset' in first file matches timestep 'x' in second file.",
-                  nullptr);
-  options_.enroll("TA", GetLongOption::NoValue,
-                  "Automatic determination of timestep offset -- end at same step.", nullptr);
-  options_.enroll(
-      "TM", GetLongOption::NoValue,
-      "Automatic determination of timestep offset -- closest match to first step on file2.",
-      nullptr);
-  options_.enroll("interpolate", GetLongOption::NoValue,
-                  "Interpolate times on file2 to match times on file1.", nullptr);
-  options_.enroll(
-      "final_time_tolerance", GetLongOption::MandatoryValue,
-      "Tolerance on matching of final times on database when interpolate option specified\n."
-      "\t\tIf final times do not match within this tolerance, files are different.",
-      nullptr);
-  options_.enroll("quiet", GetLongOption::NoValue,
-                  "Quiet.  Only errors will be sent to stdout.  Comparison mode will echo\n"
-                  "\t\t\"exodiff: Files are the same.\" or \"exodiff: Files are different.\"",
-                  nullptr);
-
-  // Tolerance type options...
   options_.enroll("absolute", GetLongOption::NoValue,
                   "Default tolerance is absolute difference. |a-b| > tolerance", nullptr);
   options_.enroll("relative", GetLongOption::NoValue,
@@ -335,91 +320,22 @@ void SystemInterface::enroll_options()
                   nullptr);
   options_.enroll("ignore", GetLongOption::NoValue,
                   "Default tolerance is ignored (turn off all checking by default).", nullptr);
+  options_.enroll("coordinate_tolerance", GetLongOption::MandatoryValue,
+                  "Overrides the default coordinate comparison tolerance of 1.0E-6.", "1.0E-6",
+                  nullptr, true);
 
-  options_.enroll("show_all_diffs", GetLongOption::NoValue,
-                  "Show all differences for all variables, not just the maximum.", nullptr);
-
-  options_.enroll("map", GetLongOption::NoValue,
-                  "Invokes a matching algorithm to create a mapping between the\n"
-                  "\t\tnodes and elements of the two files.  The topology must still be\n"
-                  "\t\tthe same (within tolerance), but can be ordered differently.",
-                  nullptr);
-  options_.enroll("partial", GetLongOption::NoValue,
-                  "Invokes a matching algorithm similar to the -m option.  However \n"
-                  "\t\tthis option ignores unmatched nodes and elements.  This allows \n"
-                  "\t\tcomparison of files that only partially overlap.",
-                  nullptr);
-  options_.enroll("match_ids", GetLongOption::NoValue,
-                  "Invokes a matching algorithm using the node and element global id\n"
-                  "\t\tmaps in the two files.",
-                  nullptr);
-  options_.enroll("match_file_order", GetLongOption::NoValue,
-                  "Verifies that node and element ids match and are in same order\n"
-                  "\t\tin the two files.",
-                  nullptr);
-  options_.enroll("match_by_name", GetLongOption::NoValue,
-                  "Match element blocks, nodesets, and sidesets by name instead of by id.",
-                  nullptr);
-  options_.enroll("show_unmatched", GetLongOption::NoValue,
-                  "If the -partial switch used, print the elements that did not match.", nullptr);
-  options_.enroll("dumpmap", GetLongOption::NoValue,
-                  "If the -map switch used, print the resulting node and element maps.", nullptr);
-  options_.enroll("nsmap", GetLongOption::NoValue,
-                  "Creates a map between the nodeset nodes in the two files\n"
-                  "\t\tif they include the same nodes, but are in different order.",
-                  nullptr);
-  options_.enroll("ssmap", GetLongOption::NoValue,
-                  "Creates a map between the sideset faces in the two files\n"
-                  "\t\tif they include the same sides, but are in different order.",
-                  nullptr);
-  options_.enroll("no_nsmap", GetLongOption::NoValue,
-                  "Compare nodeset nodes based on file order only", nullptr);
-  options_.enroll("no_ssmap", GetLongOption::NoValue,
-                  "Compare sideset faces based on file order only", nullptr);
   options_.enroll("pedantic", GetLongOption::NoValue, "Be more picky about what is a difference.",
                   nullptr);
-  options_.enroll("short", GetLongOption::NoValue,
-                  "Short block type compare.  Forces element block type strings to\n"
-                  "\t\tbe compared only up to the shortest string length.  For example,\n"
-                  "\t\t\"HEX\" and \"HEX8\" will be considered the same. (default)",
+  options_.enroll("quiet", GetLongOption::NoValue,
+                  "Quiet.  Only errors will be sent to stdout.  Comparison mode will echo\n"
+                  "\t\t\"exodiff: Files are the same.\" or \"exodiff: Files are different.\"",
                   nullptr);
-  options_.enroll("no_short", GetLongOption::NoValue,
-                  "Do not do short block type compare.  Forces element block\n"
-                  "\t\ttype strings to fully match. For example, \"HEX\" and \"HEX8\"\n"
-                  "\t\twill be considered different.",
-                  nullptr);
-  options_.enroll("ignore_case", GetLongOption::NoValue,
-                  "Ignore case.  Variable names are compared case in-sensitive (default).",
-                  nullptr);
-  options_.enroll("case_sensitive", GetLongOption::NoValue,
-                  "Variable names are compared case sensitive.", nullptr);
-  options_.enroll("ignore_maps", GetLongOption::NoValue,
-                  "Output node and element diff summaries using file local implicit ids\n"
-                  "\t\tinstead of global ids.",
-                  nullptr);
-  options_.enroll("ignore_nans", GetLongOption::NoValue, "Don't check data for NaNs", nullptr);
-  options_.enroll("ignore_dups", GetLongOption::NoValue,
-                  "If two elements/nodes are in the same location in match or partial\n"
-                  "                  match case, just return first match instead of aborting.",
-                  nullptr);
-  options_.enroll("ignore_attributes", GetLongOption::NoValue,
-                  "Don't compare element attribute values.", nullptr);
-  options_.enroll("ignore_sideset_df", GetLongOption::NoValue,
-                  "Don't compare sideset distribution factors.", nullptr);
+  options_.enroll("show_all_diffs", GetLongOption::NoValue,
+                  "Show all differences for all variables, not just the maximum.", nullptr, nullptr,
+                  true);
+
   options_.enroll("ignore_steps", GetLongOption::NoValue,
                   "Don't compare any transient data; compare mesh only.", nullptr);
-  options_.enroll("64-bit", GetLongOption::NoValue,
-                  "True if forcing the use of 64-bit integers for the output file", nullptr);
-  options_.enroll("nosymmetric_name_check", GetLongOption::NoValue,
-                  "No symmetric variable name checking.  By default, a warning will\n"
-                  "\t\tbe produced if a name that is not to be excluded is contained\n"
-                  "\t\tin the second file given on the command line but not the first.\n"
-                  "\t\tThis \"symmetric\" check can be turned off with this option.",
-                  nullptr);
-  options_.enroll("allow_name_mismatch", GetLongOption::NoValue,
-                  "Allow a variable name that is in the first database to not be in the\n"
-                  "\t\tsecond database",
-                  nullptr);
   options_.enroll(
       "x", GetLongOption::MandatoryValue,
       "Exclude time steps.  Does not consider the time steps given in the list of integers.\n"
@@ -445,18 +361,113 @@ void SystemInterface::enroll_options()
                   "\t\tExample: '-explicit 42:last' to match step 42 on database 1 with last step "
                   "on database 2",
                   nullptr);
+  options_.enroll("TimeStepOffset", GetLongOption::MandatoryValue,
+                  "Timestep 'x+offset' in first file matches timestep 'x' in second file.",
+                  nullptr);
+  options_.enroll("TA", GetLongOption::NoValue,
+                  "Automatic determination of timestep offset -- end at same step.", nullptr);
+  options_.enroll(
+      "TM", GetLongOption::NoValue,
+      "Automatic determination of timestep offset -- closest match to first step on file2.",
+      nullptr);
+  options_.enroll("interpolate", GetLongOption::NoValue,
+                  "Interpolate times on file2 to match times on file1.", nullptr);
+  options_.enroll(
+      "final_time_tolerance", GetLongOption::MandatoryValue,
+      "Tolerance on matching of final times on database when interpolate option specified\n."
+      "\t\tIf final times do not match within this tolerance, files are different.",
+      nullptr, nullptr, true);
+
+  options_.enroll("map", GetLongOption::NoValue,
+                  "Invokes a matching algorithm to create a mapping between the\n"
+                  "\t\tnodes and elements of the two files.  The topology must still be\n"
+                  "\t\tthe same (within tolerance), but can be ordered differently.",
+                  nullptr);
+  options_.enroll("dumpmap", GetLongOption::NoValue,
+                  "If the -map switch used, print the resulting node and element maps.", nullptr);
+  options_.enroll("partial", GetLongOption::NoValue,
+                  "Invokes a matching algorithm similar to the -m option.  However \n"
+                  "\t\tthis option ignores unmatched nodes and elements.  This allows \n"
+                  "\t\tcomparison of files that only partially overlap.",
+                  nullptr);
+  options_.enroll("show_unmatched", GetLongOption::NoValue,
+                  "If the -partial switch used, print the elements that did not match.", nullptr);
+  options_.enroll("ignore_dups", GetLongOption::NoValue,
+                  "If two elements/nodes are in the same location in map or partial\n"
+                  "                  map case, just return first match instead of aborting.",
+                  nullptr);
+  options_.enroll("match_ids", GetLongOption::NoValue,
+                  "Invokes a matching algorithm using the node and element global id\n"
+                  "\t\tmaps in the two files.",
+                  nullptr);
+  options_.enroll("match_file_order", GetLongOption::NoValue,
+                  "Verifies that node and element ids match and are in same order\n"
+                  "\t\tin the two files.",
+                  nullptr);
+  options_.enroll("match_by_name", GetLongOption::NoValue,
+                  "Match element blocks, nodesets, and sidesets by name instead of by id.",
+                  nullptr);
+  options_.enroll("nsmap", GetLongOption::NoValue,
+                  "Creates a map between the nodeset nodes in the two files\n"
+                  "\t\tif they include the same nodes, but are in different order.",
+                  nullptr);
+  options_.enroll("ssmap", GetLongOption::NoValue,
+                  "Creates a map between the sideset faces in the two files\n"
+                  "\t\tif they include the same sides, but are in different order.",
+                  nullptr);
+  options_.enroll("no_nsmap", GetLongOption::NoValue,
+                  "Compare nodeset nodes based on file order only", nullptr);
+  options_.enroll("no_ssmap", GetLongOption::NoValue,
+                  "Compare sideset faces based on file order only", nullptr, nullptr, true);
+
+  options_.enroll("short", GetLongOption::NoValue,
+                  "Short block type compare.  Forces element block type strings to\n"
+                  "\t\tbe compared only up to the shortest string length.  For example,\n"
+                  "\t\t\"HEX\" and \"HEX8\" will be considered the same. (default)",
+                  nullptr);
+  options_.enroll("no_short", GetLongOption::NoValue,
+                  "Do not do short block type compare.  Forces element block\n"
+                  "\t\ttype strings to fully match. For example, \"HEX\" and \"HEX8\"\n"
+                  "\t\twill be considered different.",
+                  nullptr);
+  options_.enroll("ignore_case", GetLongOption::NoValue,
+                  "Ignore case.  Variable names are compared case in-sensitive (default).",
+                  nullptr);
+  options_.enroll("case_sensitive", GetLongOption::NoValue,
+                  "Variable names are compared case sensitive.", nullptr);
+  options_.enroll("nosymmetric_name_check", GetLongOption::NoValue,
+                  "No symmetric variable name checking.  By default, a warning will\n"
+                  "\t\tbe produced if a name that is not to be excluded is contained\n"
+                  "\t\tin the second file given on the command line but not the first.\n"
+                  "\t\tThis \"symmetric\" check can be turned off with this option.",
+                  nullptr);
+  options_.enroll("allow_name_mismatch", GetLongOption::NoValue,
+                  "Allow a variable name that is in the first database to not be in the\n"
+                  "\t\tsecond database",
+                  nullptr, nullptr, true);
+
+  options_.enroll("ignore_maps", GetLongOption::NoValue,
+                  "Output node and element diff summaries using file local implicit ids\n"
+                  "\t\tinstead of global ids.",
+                  nullptr);
+  options_.enroll("ignore_nans", GetLongOption::NoValue, "Don't check data for NaNs", nullptr);
+  options_.enroll("ignore_attributes", GetLongOption::NoValue,
+                  "Don't compare element attribute values.", nullptr);
+  options_.enroll("ignore_sideset_df", GetLongOption::NoValue,
+                  "Don't compare sideset distribution factors.", nullptr, nullptr, true);
+
   options_.enroll("norms", GetLongOption::NoValue,
                   "Calculate L1 and L2 norms of variable differences and output if > 0.0", nullptr);
   options_.enroll("l2norms", GetLongOption::NoValue,
                   "Calculate L2 norm of variable differences and output if > 0.0", nullptr);
   options_.enroll("l1norms", GetLongOption::NoValue,
                   "Calculate L1 norm of variable differences and output if > 0.0", nullptr);
+
   options_.enroll("status", GetLongOption::NoValue,
                   "Return exit status of 2 if the files are different. (default).", nullptr);
   options_.enroll("ignore_status", GetLongOption::NoValue,
                   "The exit status is always zero unless an error occurs.", nullptr);
-  options_.enroll("maxnames", GetLongOption::MandatoryValue, "[deprecated -- no longer needed]",
-                  "1000");
+
   options_.enroll(
       "max_warnings", GetLongOption::MandatoryValue,
       "Maximum number of warnings to output during element/node matching process.  Default 100.",
@@ -466,10 +477,8 @@ void SystemInterface::enroll_options()
                   "\t\tOLD: ignore if |a-b| < floor.\n"
                   "\t\tNEW: ignore if |a| < floor && |b| < floor.",
                   nullptr);
-  options_.enroll("summary", GetLongOption::NoValue,
-                  "Produce a summary in exodiff input format.\n"
-                  "\t\tThis will create output with max/min statistics on the data in the format\n"
-                  "\t\tof an exodiff input file.",
+  options_.enroll("64-bit", GetLongOption::NoValue,
+                  "True if forcing the use of 64-bit integers for the output file in summary mode",
                   nullptr);
   options_.enroll("min_coordinate_separation", GetLongOption::NoValue,
                   "In summary mode, calculate the minimum distance between any two nodes", nullptr);
@@ -477,10 +486,8 @@ void SystemInterface::enroll_options()
                   nullptr);
   options_.enroll("version", GetLongOption::NoValue, "Output code version", nullptr);
 
-  options_.enroll("file", GetLongOption::MandatoryValue,
-                  "Use the given file to specify the variables to be considered and to\n"
-                  "\t\twhat tolerances. Enter \"-help file\" for the syntax of the command file",
-                  nullptr);
+  options_.enroll("maxnames", GetLongOption::MandatoryValue, "[deprecated -- no longer needed]",
+                  "1000");
   options_.enroll("m", GetLongOption::NoValue, "Backward-compatible option for -map", nullptr);
   options_.enroll("p", GetLongOption::NoValue, "Backward-compatible option for -partial.", nullptr);
   options_.enroll("s", GetLongOption::NoValue, "Backward-compatible option for -short", nullptr);
@@ -519,6 +526,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("Help") != nullptr) {
     options_.usage();
+    fmt::print("\n\t\tCan also set options via EXODIFF_OPTIONS environment variable.\n");
+    fmt::print("\t\t->->-> Send email to gdsjaar@sandia.gov for exodiff support.<-<-<-\n");
     exit(EXIT_SUCCESS);
   }
 
@@ -528,7 +537,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("copyright") != nullptr) {
-    fmt::print("{}", copyright("2008-2019"));
+    fmt::print("{}", copyright("2008-2021"));
     exit(EXIT_SUCCESS);
   }
 
@@ -1729,16 +1738,16 @@ namespace {
         "specified),\n"
         "           All other comparisons are also case insensitive. Abbreviations can be used. "
         "\n"
-        "         - All comparisons use the compiled default of relative 1.e-6 for\n"
+        "         - All comparisons use the default of relative 1.e-6 for\n"
         "           variables and absolute 1.e-6 for coordinates.  This is overridden\n"
         "           with the DEFAULT TOLERANCE line.  The DEFAULT TOLERANCE values\n"
         "           are overridden by the values given on the VARIABLES line and apply\n"
         "           only to those variables.  Each variable can override all values\n"
         "           by following its name with a value.\n"
         "         - A variable name must start with a tab character.  Only those\n"
-        "           variables listed will be considered.  The NOT symbol \"!\" means\n"
-        "           do not include this variable.  Mixing non-! and ! is not allowed\n"
-        "           without the \"(all)\" specifier, e.g.:\n\n"
+        "           variables listed will be considered (unless \"(all)\") specified.\n"
+        "           The NOT symbol \"!\" means do not include this variable.\n"
+        "           Mixing non-! and ! is not allowed without the \"(all)\" specifier, e.g.:\n\n"
         "                NODAL VARIABLES (all) absolute 1.E-8\n"
         "                <tab> DISPLX\n"
         "                <tab> !VELX\n"
@@ -1747,50 +1756,39 @@ namespace {
         "           with a \"!\" symbol.\n"
         "         - If a variable type (e.g. NODAL VARIABLES) is not specified, no\n"
         "           variables of that type will be considered.\n"
-        "         - The command line option to set the maximum number of exodus \n"
-        "           names can be set with MAX NAMES <int>.  Note:  THIS OPTION MUST\n"
-        "           APPEAR BEFORE THE VARIABLE BLOCKS ARE READ!\n"
-        "         - The time step exclusion option can be used in the input file with\n"
-        "           the syntax \"EXCLUDE TIMES <list>\", where <list> has the same\n"
-        "           format as in the command line.\n"
-        "         - The matching algorithm, \"-m\", can be turned on from the input file\n"
-        "           with the APPLY MATCHING keyword on a separate line.\n"
-        "         - The nodeset matching algorithm, \"-nsmap\", can be turned on from the\n"
-        "           input file with the NODESET MATCH keyword on a separate line.\n"
-        "         - The sideset matching algorithm, \"-ssmap\", can be turned on from the\n"
-        "           input file with the SIDESET MATCH keyword on a separate line.\n"
-        "         - The short block type compare option, \"-s\", can be turned on with the\n"
-        "           SHORT BLOCKS keyword.\n"
-        "         - The no short compare option, \"-no_short\", can be turned on with the\n"
-        "           NO SHORT BLOCKS keyword.\n"
-        "         - The case_sensitive option, \"-case_sensitive\", can be turned on with the\n"
-        "           CASE SENSITIVE keyword.\n"
-        "         - The ignore case option, \"-i\", can be turned on with the\n"
-        "           IGNORE CASE keyword. (default behavior now)\n"
-        "         - The ignore maps option, \"-ignore_maps\", can be turned on with the\n"
-        "           IGNORE MAPS keyword.\n"
-        "         - The ignore nans option, \"-ignore_nans\", can be turned on with the\n"
-        "           IGNORE NANS keyword.\n"
-        "         - The ignore dups option, \"-ignore_dups\", can be turned on with the\n"
-        "           IGNORE DUPLICATES keyword.\n"
-        "         - The time step offset option, \"-T\", can be turned on with the \n"
-        "           STEP OFFSET keyword.\n"
-        "         - The automatic time step offset option, \"-TA\", can be turned\n"
-        "           on with the STEP OFFSET AUTOMATIC keyword.\n"
-        "         - The automatic time step offset option, \"-TM\", can be turned\n"
-        "           on with the STEP OFFSET MATCH keyword.\n"
-        "         - The interpolation option, \"-interpolate\", can be turned\n"
-        "           on with the INTERPOLATE keyword.\n"
-        "         - The final time tolerance, \"-final_time_tolerance <tol>\", can be turned\n"
-        "           on with the FINAL TIME TOLERANCE keyword.\n"
-        "         - The calculation of the L2 norm of differences \"-norms\", can be turned\n"
-        "           on with the CALCULATE NORMS keyword.\n"
-        "         - The exit status return option, \"-stat\", can be turned on with the \n"
-        "           RETURN STATUS keyword.\n"
-        "         - The ignore exit status return option, \"-ignore_status\", can be turned on "
-        "with the \n"
-        "           IGNORE STATUS keyword.\n"
-        "         - The pedantic compare option, \"-pedantic\", can be turned on with the \n"
-        "           PEDANTIC keyword.\n\n");
+        "\n"
+        "  Other Keywords:\n"
+        "         - EXCLUDE TIMES <list>: \"-exclude\" Specify the time step exclusion option.\n"
+        "               <list> has the same format as in the command line option.\n"
+        "         - APPLY MATCHING: \"-map\" matching algorithm.\n"
+        "         - NODESET MATCH: \"-nsmap\", nodeset mapping algorithm.\n"
+        "         - SIDESET MATCH: \"-ssmap\", sideset mapping algorithm.\n"
+        "         - SHORT BLOCKS: \"-short\", short block type compare.\n"
+        "         - NO SHORT BLOCKS: \"-no_short\", do not do short block type compare.\n"
+        "         - CASE_SENSITIVE: \"-case_sensitive\", variable names are compared case "
+        "sensitive.\n"
+        "         - IGNORE CASE: \"-ignore_case\", variable names compared case insensitive "
+        "[default].\n"
+        "         - IGNORE MAPS: \"-ignore_maps\", use local implicit instead of global ids.\n"
+        "         - IGNORE NANS: \"-ignore_nans\", do not check data for NaNs\n"
+        "         - IGNORE DUPLICATES: \"-ignore_dups\", ignore two elements/nodes in same "
+        "position...\n"
+        "         - STEP OFFSET <val>: \"-TimeStepOffset\", timestep 'val+offset' in file1 matches "
+        "'val' in file2.\n"
+        "         - STEP OFFSET AUTOMATIC: \"-TA\", automatic determination of timestep offset, "
+        "end at same step.\n"
+        "         - STEP OFFSET MATCH: \"-TM\", automatic determination of timestep offset, start "
+        "at same step.\n"
+        "         - INTERPOLATE: \"-interpolate\", interpolate times on file2 to match times on "
+        "file1.\n"
+        "         - FINAL TIME TOLERANCE <tol>: \"-final_time_tolerance <tol>\", used with "
+        "interpolation.\n"
+        "         - CALCULATE NORMS: \"-norms\", calculate L1 and L2 norms of variable differences "
+        "and output if > 0.0.\n"
+        "         - RETURN STATUS: \"-stat\", return exit status of 2 if the files are different. "
+        "(default).\n"
+        "         - IGNORE STATUS: \"-ignore_status\", exit status is always zero unless an error "
+        "occurs.\n"
+        "         - PEDANTIC: \"-pedantic\", be more picky about what is a difference.\n\n");
   }
 } // namespace
