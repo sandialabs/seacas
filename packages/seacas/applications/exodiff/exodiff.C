@@ -291,7 +291,6 @@ namespace {
 
 int main(int argc, char *argv[])
 {
-  interFace.Set_Max_Names(DEFAULT_MAX_NUMBER_OF_NAMES);
   bool ok = interFace.parse_options(argc, argv);
 
   if (!ok) {
@@ -404,80 +403,6 @@ namespace {
       serr = file2.Open_File();
       if (!serr.empty()) {
         Error(fmt::format("{}\n", serr));
-        exit(1);
-      }
-    }
-
-    // Check that the maximum number of names has not been exceeded...
-    if (file1.Num_Global_Vars() > interFace.max_number_of_names ||
-        file1.Num_Nodal_Vars() > interFace.max_number_of_names ||
-        file1.Num_NS_Vars() > interFace.max_number_of_names ||
-        file1.Num_SS_Vars() > interFace.max_number_of_names ||
-        file1.Num_EB_Vars() > interFace.max_number_of_names ||
-        file1.Num_FB_Vars() > interFace.max_number_of_names ||
-        file1.Num_Elmt_Vars() > interFace.max_number_of_names) {
-      size_t max = file1.Num_Global_Vars();
-      if (file1.Num_Nodal_Vars() > max) {
-        max = file1.Num_Nodal_Vars();
-      }
-      if (file1.Num_NS_Vars() > max) {
-        max = file1.Num_NS_Vars();
-      }
-      if (file1.Num_SS_Vars() > max) {
-        max = file1.Num_SS_Vars();
-      }
-      if (file1.Num_EB_Vars() > max) {
-        max = file1.Num_EB_Vars();
-      }
-      if (file1.Num_FB_Vars() > max) {
-        max = file1.Num_FB_Vars();
-      }
-      if (file1.Num_Elmt_Vars() > max) {
-        max = file1.Num_Elmt_Vars();
-      }
-
-      fmt::print("exodiff: Number of names in file 1 ({}) is larger than "
-                 "current limit of {}.  To increase, use \"-maxnames <int>\" on the command "
-                 "line or \"MAX NAMES <int>\" in the command file.  "
-                 "Aborting...\n",
-                 max, interFace.max_number_of_names);
-      exit(1);
-    }
-
-    // Check that the maximum number of names has not been exceeded...
-    if (!interFace.summary_flag) {
-      if (file2.Num_Global_Vars() > interFace.max_number_of_names ||
-          file2.Num_Nodal_Vars() > interFace.max_number_of_names ||
-          file2.Num_NS_Vars() > interFace.max_number_of_names ||
-          file2.Num_SS_Vars() > interFace.max_number_of_names ||
-          file1.Num_EB_Vars() > interFace.max_number_of_names ||
-          file1.Num_FB_Vars() > interFace.max_number_of_names ||
-          file2.Num_Elmt_Vars() > interFace.max_number_of_names) {
-        size_t max = file2.Num_Global_Vars();
-        if (file2.Num_Nodal_Vars() > max) {
-          max = file2.Num_Nodal_Vars();
-        }
-        if (file2.Num_NS_Vars() > max) {
-          max = file2.Num_NS_Vars();
-        }
-        if (file2.Num_SS_Vars() > max) {
-          max = file2.Num_SS_Vars();
-        }
-        if (file2.Num_EB_Vars() > max) {
-          max = file2.Num_EB_Vars();
-        }
-        if (file2.Num_FB_Vars() > max) {
-          max = file2.Num_FB_Vars();
-        }
-        if (file2.Num_Elmt_Vars() > max) {
-          max = file2.Num_Elmt_Vars();
-        }
-
-        fmt::print("exodiff: Number of names in file 2 ({}) is larger than "
-                   "current limit of {}.  To increase, use \"-maxnames <int>\" on the command "
-                   "line or \"MAX NAMES <int>\" in the command file.  "
-                   "Aborting...\n",
-                   max, interFace.max_number_of_names);
         exit(1);
       }
     }

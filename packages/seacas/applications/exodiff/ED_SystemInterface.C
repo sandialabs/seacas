@@ -34,7 +34,7 @@ namespace {
 
   std::string Parse_Variables(std::string xline, std::ifstream &cmd_file, bool &all_flag,
                               Tolerance &def_tol, std::vector<std::string> &names,
-                              std::vector<Tolerance> &toler, int max_names);
+                              std::vector<Tolerance> &toler);
 
   bool str_equal(const std::string &s1, const std::string &s2)
   {
@@ -455,9 +455,7 @@ void SystemInterface::enroll_options()
                   "Return exit status of 2 if the files are different. (default).", nullptr);
   options_.enroll("ignore_status", GetLongOption::NoValue,
                   "The exit status is always zero unless an error occurs.", nullptr);
-  options_.enroll("maxnames", GetLongOption::MandatoryValue,
-                  "There is a compiled limit of 1000 exodus names.\n"
-                  "\t\tThis option allows the maximum number to be changed.",
+  options_.enroll("maxnames", GetLongOption::MandatoryValue, "[deprecated -- no longer needed]",
                   "1000");
   options_.enroll(
       "max_warnings", GetLongOption::MandatoryValue,
@@ -492,19 +490,6 @@ void SystemInterface::enroll_options()
                   nullptr);
   options_.enroll("T", GetLongOption::MandatoryValue,
                   "Backward-compatible option for -TimeStepOffset", nullptr);
-}
-
-void SystemInterface::Set_Max_Names(int size)
-{
-  max_number_of_names = size;
-  glob_var.resize(max_number_of_names, default_tol);
-  node_var.resize(max_number_of_names, default_tol);
-  elmt_var.resize(max_number_of_names, default_tol);
-  elmt_att.resize(max_number_of_names, default_tol);
-  ns_var.resize(max_number_of_names, default_tol);
-  ss_var.resize(max_number_of_names, default_tol);
-  eb_var.resize(max_number_of_names, default_tol);
-  fb_var.resize(max_number_of_names, default_tol);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)
@@ -842,18 +827,6 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   {
-    const char *temp = options_.retrieve("maxnames");
-    if (temp != nullptr) {
-      errno   = 0;
-      int tmp = atoi(temp);
-      SMART_ASSERT(errno == 0);
-      if (tmp > 0) {
-        Set_Max_Names(tmp);
-      }
-    }
-  }
-
-  {
     const char *temp = options_.retrieve("max_warnings");
     if (temp != nullptr) {
       errno        = 0;
@@ -995,21 +968,7 @@ void SystemInterface::Parse_Command_File()
         default_tol_specified = 1;
       }
       else if (abbreviation(tok1, "max", 3) && abbreviation(tok2, "names", 3)) {
-        std::string tok = extract_token(xline, " \n\t=");
-        if (tok != "" && tok[0] != '#') {
-          errno   = 0;
-          int tmp = std::stoi(tok);
-          SMART_ASSERT(errno == 0);
-          if (tmp > 0) {
-            Set_Max_Names(tmp);
-          }
-        }
-        else {
-          Error(" expected an integer "
-                "after the \"MAX NAMES\" keyword.  "
-                "Aborting...\n");
-          exit(1);
-        }
+        ; // Ignored -- no longer needed.
       }
       else if (abbreviation(tok1, "final", 3) && abbreviation(tok2, "time", 3)) {
         tok3 = extract_token(xline, " \t");
@@ -1250,7 +1209,7 @@ void SystemInterface::Parse_Command_File()
       else if (abbreviation(tok1, "global", 4) && abbreviation(tok2, "variables", 3)) {
         glob_var_default = default_tol;
         xline            = Parse_Variables(xline, cmd_file, glob_var_do_all_flag, glob_var_default,
-                                glob_var_names, glob_var, max_number_of_names);
+                                glob_var_names, glob_var);
 
         Check_Parsed_Names(glob_var_names, glob_var_do_all_flag);
 
@@ -1266,7 +1225,7 @@ void SystemInterface::Parse_Command_File()
       else if (abbreviation(tok1, "nodal", 4) && abbreviation(tok2, "variables", 3)) {
         node_var_default = default_tol;
         xline            = Parse_Variables(xline, cmd_file, node_var_do_all_flag, node_var_default,
-                                node_var_names, node_var, max_number_of_names);
+                                node_var_names, node_var);
 
         Check_Parsed_Names(node_var_names, node_var_do_all_flag);
 
@@ -1282,7 +1241,7 @@ void SystemInterface::Parse_Command_File()
       else if (abbreviation(tok1, "element", 4) && abbreviation(tok2, "variables", 3)) {
         elmt_var_default = default_tol;
         xline            = Parse_Variables(xline, cmd_file, elmt_var_do_all_flag, elmt_var_default,
-                                elmt_var_names, elmt_var, max_number_of_names);
+                                elmt_var_names, elmt_var);
 
         Check_Parsed_Names(elmt_var_names, elmt_var_do_all_flag);
 
@@ -1298,7 +1257,7 @@ void SystemInterface::Parse_Command_File()
       else if (tok1 == "nodeset" && abbreviation(tok2, "variables", 3)) {
         ns_var_default = default_tol;
         xline = Parse_Variables(xline, cmd_file, ns_var_do_all_flag, ns_var_default, ns_var_names,
-                                ns_var, max_number_of_names);
+                                ns_var);
 
         Check_Parsed_Names(ns_var_names, ns_var_do_all_flag);
 
@@ -1314,7 +1273,7 @@ void SystemInterface::Parse_Command_File()
       else if (abbreviation(tok1, "sideset", 4) && abbreviation(tok2, "variables", 3)) {
         ss_var_default = default_tol;
         xline = Parse_Variables(xline, cmd_file, ss_var_do_all_flag, ss_var_default, ss_var_names,
-                                ss_var, max_number_of_names);
+                                ss_var);
 
         Check_Parsed_Names(ss_var_names, ss_var_do_all_flag);
 
@@ -1414,7 +1373,7 @@ void SystemInterface::Parse_Command_File()
       else if (abbreviation(tok1, "edgeblock", 4) && abbreviation(tok2, "variables", 3)) {
         eb_var_default = default_tol;
         xline = Parse_Variables(xline, cmd_file, eb_var_do_all_flag, eb_var_default, eb_var_names,
-                                eb_var, max_number_of_names);
+                                eb_var);
 
         Check_Parsed_Names(eb_var_names, eb_var_do_all_flag);
 
@@ -1429,7 +1388,7 @@ void SystemInterface::Parse_Command_File()
       else if (abbreviation(tok1, "faceblock", 4) && abbreviation(tok2, "variables", 3)) {
         fb_var_default = default_tol;
         xline = Parse_Variables(xline, cmd_file, fb_var_do_all_flag, fb_var_default, fb_var_names,
-                                fb_var, max_number_of_names);
+                                fb_var);
 
         Check_Parsed_Names(fb_var_names, fb_var_do_all_flag);
 
@@ -1444,7 +1403,7 @@ void SystemInterface::Parse_Command_File()
       else if (abbreviation(tok1, "element", 4) && abbreviation(tok2, "attributes", 3)) {
         elmt_att_default = default_tol;
         xline            = Parse_Variables(xline, cmd_file, elmt_att_do_all_flag, elmt_att_default,
-                                elmt_att_names, elmt_att, max_number_of_names);
+                                elmt_att_names, elmt_att);
 
         Check_Parsed_Names(elmt_att_names, elmt_att_do_all_flag);
 
@@ -1470,11 +1429,12 @@ void SystemInterface::Parse_Command_File()
 namespace {
   std::string Parse_Variables(std::string xline, std::ifstream &cmd_file, bool &all_flag,
                               Tolerance &def_tol, std::vector<std::string> &names,
-                              std::vector<Tolerance> &toler, int max_names)
+                              std::vector<Tolerance> &toler)
   {
     char line[256];
 
-    toler[0] = def_tol;
+    toler.clear();
+    names.clear();
 
     std::string tok = extract_token(xline, " \n\t=,");
     to_lower(tok);
@@ -1608,10 +1568,6 @@ namespace {
       }
     }
 
-    for (int i = 0; i < max_names; ++i) {
-      toler[i] = def_tol;
-    }
-
     cmd_file.getline(line, 256);
     xline = line;
     while (!cmd_file.eof()) {
@@ -1626,28 +1582,22 @@ namespace {
           continue; // Found tab but no name given.
         }
 
-        int idx = names.size();
-        if (idx >= max_names) {
-          Error(fmt::format("Number of names in tabbed list is larger than current limit of {}."
-                            "  To increase, use \"-maxnames <int>\" on the command line or \"MAX "
-                            "NAMES <int>\" in the command "
-                            "file.  Aborting...\n",
-                            max_names));
-          exit(1);
-        }
-
         if (tok[0] == '!') {
           // A "!" in front of a name means to exclude the name so no
           // need to look for difference type and tolerance.
           std::string tmp = tok;
           if (extract_token(tmp, "!") != "") {
             names.push_back(tok);
+            toler.push_back(def_tol);
           }
           cmd_file.getline(line, 256);
           xline = line;
           continue;
         }
+
+        int idx = names.size();
         names.push_back(tok);
+        toler.push_back(def_tol);
 
         tok = extract_token(xline);
         to_lower(tok);
