@@ -17,7 +17,7 @@ void CatalystTestFixture::runPhactoriJSONTest(
 
     std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
     ioapp.setPhactoriInputJSON(td + jsonFile);
-    ioapp.setFileName(td + inputFile);
+    ioapp.addFileName(td + inputFile);
     ioapp.runApplication();
     REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
 }

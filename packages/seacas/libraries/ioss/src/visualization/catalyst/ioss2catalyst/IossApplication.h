@@ -2,6 +2,7 @@
 #define Ioss_Application_h
 
 #include <string>
+#include <vector>
 
 namespace Ioss {
     class Region;
@@ -62,8 +63,9 @@ public:
     int getCatalystStopTimeStep();
     void setCatalystStopTimeStep(int timeStep);
 
-    std::string& getFileName();
-    void setFileName(const std::string& name);
+    std::string& getFileName(int ndx);
+    int getNumberOfFileNames();
+    void addFileName(const std::string& name);
 
 private:
 
@@ -71,19 +73,21 @@ private:
     int getNumRanks();
     bool isRankZero();
     bool isSerial();
-    bool decomposedMeshExists();
-    Ioss::Region * getInputIOSSRegion();
+    bool decomposedMeshExists(int ndx);
+    int getNumberOfInputIOSSRegions();
+    Ioss::Region * getInputIOSSRegion(int ndx);
     void copyInputIOSSDatabaseOnRank();
     void printMessage(const std::string& message);
     void printErrorMessage(const std::string& message);
-    void printIOSSRegionReportForRank();
+    void printIOSSRegionReportsForRank();
     void exitApplicationSuccess();
     void exitApplicationFailure();
     void exitApplication();
 
     void initialize();
     void callCatalystIOSSDatabaseOnRank();
-    void openInputIOSSDatabase();
+    void openInputIOSSDatabase(int ndx);
+    void openInputIOSSDatabases();
     void processCommandLine(int argc, char **argv);
     void initializeMPI(int argc, char **argv);
     void initMPIRankAndSize();
@@ -93,11 +97,11 @@ private:
     void checkForOnlyOneCatalystOutputType();
     void getStartStopTimeSteps(int numTimeSteps, int & startTimeStep,
         int & stopTimeStep);
-    std::string getIOSSDatabaseTypeFromFile();
-    std::string getIOSSDatabaseType();
-    std::string getCatalystDatabaseType();
-    std::string getFileSuffix();
-    std::string getParallelFileName();
+    std::string getIOSSDatabaseTypeFromFile(int ndx);
+    std::string getIOSSDatabaseType(int ndx);
+    std::string getCatalystDatabaseType(int ndx);
+    std::string getFileSuffix(int ndx);
+    std::string getParallelFileName(int ndx);
     std::string getPhactoriDefaultJSON();
     int myRank;
     int numRanks;
@@ -121,12 +125,12 @@ private:
     std::string phactoriInputScriptFilePath;
     std::string phactoriInputJSONFilePath;
     std::string paraViewExportedScriptFilePath;
-    std::string fileName;
+    std::vector<std::string> fileName;
     std::string copyOutputDatabaseName = "iossDatabaseCopy";
     std::string outputCatalystMeshFileName = "iossDatabaseCatalystMesh";
     std::string iossReportFileName = "IossRegionReport";
     const std::string applicationName = "ioss2catalyst";
-    Ioss::Region * inputIOSSRegion;
+    std::vector<Ioss::Region *> inputIOSSRegion;
 
 #if defined(__APPLE__)
     const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY =\

@@ -38,8 +38,8 @@ void IossApplication::initialize() {
     copyDatabase = false;
     writeCatalystMeshOneFile = false;
     writeCatalystMeshFilePerProc = false;
-    fileName = "";
-    inputIOSSRegion = nullptr;
+    //fileName = "";
+    //inputIOSSRegion = nullptr;
     usePhactoriInputScript = false;
     usePhactoriInputJSON = false;
     useParaViewExportedScript = false;
@@ -53,15 +53,20 @@ void IossApplication::initialize() {
     forceCGNSOutput = false;
     forceExodusOutput = false;
     useIOSSInputDBType = false;
-    iossInputDBType = "";
+    //iossInputDBType = "";
     hasCommandLineArguments = false;
     applicationExitCode = EXIT_SUCCESS;
     initMPIRankAndSize();
 }
 
 IossApplication::~IossApplication() {
-    if (inputIOSSRegion) {
-        delete inputIOSSRegion;
+    int ii;
+    int numRegions = inputIOSSRegion.size();
+    for (ii=0; ii<numRegions; ii++) {
+        if(inputIOSSRegion[ii] != nullptr) {
+            delete inputIOSSRegion[ii];
+            inputIOSSRegion[ii] = nullptr;
+        }
     }
 }
 
@@ -69,10 +74,10 @@ void IossApplication::runApplication() {
     checkForOnlyOneCatalystOutputPath();
     checkForOnlyOneCatalystOutputType();
     Ioss::Init::Initializer io;
-    openInputIOSSDatabase();
+    openInputIOSSDatabases();
 
     if (printIOSSRegionReportON()) {
-        printIOSSRegionReportForRank();
+        printIOSSRegionReportsForRank();
     }
 
     if (outputCopyOfInputDatabaseON()) {
@@ -196,7 +201,8 @@ void IossApplication::processCommandLine(int argc, char **argv) {
         exitApplicationFailure();
     }
     else {
-        fileName = argv[optind];
+        //fileName = argv[optind];
+        addFileName(argv[optind]);
     }
 }
 
@@ -275,12 +281,21 @@ void IossApplication::checkForOnlyOneCatalystOutputType() {
     }
 }
 
-std::string& IossApplication::getFileName() {
-    return fileName;
+int IossApplication::getNumberOfFileNames() {
+  return fileName.size();
 }
 
-void IossApplication::setFileName(const std::string& name) {
-    fileName = name;
+std::string& IossApplication::getFileName(int ndx) {
+    if (ndx >= fileName.size()) {
+        printErrorMessage("getFileName called with ndx too large.");
+        printUsageMessage();
+        exitApplicationFailure();
+    }
+    return fileName[ndx];
+}
+
+void IossApplication::addFileName(const std::string& name) {
+    fileName.push_back(name);
 }
 
 bool IossApplication::printIOSSRegionReportON() {
@@ -529,43 +544,54 @@ void IossApplication::printErrorMessage(const std::string& message) {
     }
 }
 
-void IossApplication::printIOSSRegionReportForRank() {
+void IossApplication::printIOSSRegionReportsForRank() {
     std::string fn = iossReportFileName + "." +\
         std::to_string(getNumRanks()) + "." +\
             std::to_string(getMyRank()) + ".txt";
     std::ofstream ofs (fn, std::ofstream::out);
-    Ioss::Region * region = getInputIOSSRegion();
+    Ioss::Region * region;
 
-    ofs << ioss_region_report::region_report(*region) << "\n";
-    auto state_count = region->get_property("state_count").get_int();
-    for(auto state=1; state <= state_count; ++state) {
-        region->begin_state(state);
+    int ii;
+    int numRegions = getNumberOfInputIOSSRegions();
+
+    for (ii=0;ii<numRegions;ii++) {
+        region = getInputIOSSRegion(ii);
+
+        ofs << "begin region report for region with index " <<
+            std::to_string(ii) << "\n";
         ofs << ioss_region_report::region_report(*region) << "\n";
-        region->end_state(state);
+        auto state_count = region->get_property("state_count").get_int();
+        for(auto state=1; state <= state_count; ++state) {
+            region->begin_state(state);
+            ofs << ioss_region_report::region_report(*region) << "\n";
+            region->end_state(state);
+        }
+        ofs << "end region report for region with index " <<
+            std::to_string(ii) << "\n";
     }
 
     ofs.close();
 }
 
-std::string IossApplication::getParallelFileName() {
+std::string IossApplication::getParallelFileName(int ndx) {
     if (isSerial()) {
-      return getFileName();
+      return getFileName(ndx);
     }
 
     std::stringstream nameStream;
     const int numZeroes = std::ceil(log10(double(getNumRanks())));
 
-    nameStream << getFileName() << "." << getNumRanks()
+    nameStream << getFileName(ndx) << "." << getNumRanks()
         << "." << std::setfill('0') << std::setw(numZeroes) << getMyRank();
 
     return nameStream.str();
 }
 
-bool IossApplication::decomposedMeshExists() {
+bool IossApplication::decomposedMeshExists(int ndx) {
   int status = 0;
 
   if (isRankZero()) {
-      std::string parallelFilename = getParallelFileName();
+      std::string parallelFilename = getParallelFileName(ndx);
       std::ifstream fstream(parallelFilename);
       if (fstream.good()) {
           status = 1;
@@ -578,13 +604,21 @@ bool IossApplication::decomposedMeshExists() {
   return status == 1;
 }
 
-Ioss::Region * IossApplication::getInputIOSSRegion() {
-    return inputIOSSRegion;
+int IossApplication::getNumberOfInputIOSSRegions() {
+  return inputIOSSRegion.size();
 }
 
-void IossApplication::openInputIOSSDatabase() {
+Ioss::Region * IossApplication::getInputIOSSRegion(int ndx) {
+    if (ndx >= inputIOSSRegion.size() ) {
+        printErrorMessage("getInputIOSSRegion called with ndx too large.");
+        printUsageMessage();
+    }
+    return inputIOSSRegion[ndx];
+}
+
+void IossApplication::openInputIOSSDatabase(int ndx) {
     Ioss::PropertyManager inputProperties;
-    if (decomposedMeshExists()) {
+    if (decomposedMeshExists(ndx)) {
         inputProperties.add(Ioss::Property("DECOMPOSITION_METHOD", "external"));
     }
     else {
@@ -592,14 +626,22 @@ void IossApplication::openInputIOSSDatabase() {
     }
 
     Ioss::DatabaseIO * dbi = Ioss::IOFactory::create(
-        getIOSSDatabaseType(), getFileName(), Ioss::READ_RESTART,
+        getIOSSDatabaseType(ndx), getFileName(ndx), Ioss::READ_RESTART,
             (MPI_Comm)MPI_COMM_WORLD, inputProperties);
     if (dbi == nullptr || !dbi->ok(true)) {
         printErrorMessage("Unable to open input file(s) " +
-            getFileName());
+            getFileName(ndx));
         exitApplicationFailure();
     }
-    inputIOSSRegion = new Ioss::Region(dbi);
+    inputIOSSRegion.push_back(new Ioss::Region(dbi));
+}
+
+void IossApplication::openInputIOSSDatabases() {
+    int numInputIossDatabases = getNumberOfFileNames();
+    int ii;
+    for (ii=0; ii<numInputIossDatabases; ii++) {
+        openInputIOSSDatabase(ii);
+    }
 }
 
 std::string IossApplication::getPhactoriDefaultJSON() {
@@ -616,11 +658,11 @@ std::string IossApplication::getPhactoriDefaultJSON() {
 }
 
 void IossApplication::copyInputIOSSDatabaseOnRank() {
-    std::string fn = copyOutputDatabaseName + "." + getFileSuffix();
+    std::string fn = copyOutputDatabaseName + "." + getFileSuffix(0);
     Ioss::PropertyManager outputProperties;
     outputProperties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
     Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(
-        getIOSSDatabaseType(), fn, Ioss::WRITE_RESULTS,
+        getIOSSDatabaseType(0), fn, Ioss::WRITE_RESULTS,
             (MPI_Comm) MPI_COMM_WORLD, outputProperties);
     if (dbo == nullptr || !dbo->ok(true)) {
         printErrorMessage("Unable to open output file(s) " +
@@ -628,7 +670,7 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
         exitApplicationFailure();
     }
 
-    Ioss::Region * inputRegion = getInputIOSSRegion();
+    Ioss::Region * inputRegion = getInputIOSSRegion(0);
     Ioss::Region * outputRegion = new Ioss::Region(dbo, inputRegion->name());
 
     auto state_count = inputRegion->get_property("state_count").get_int();
@@ -676,7 +718,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
     outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME",
         applicationName));
 
-    Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(getCatalystDatabaseType(),
+    Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(getCatalystDatabaseType(0),
         "catalyst", Ioss::WRITE_RESULTS, (MPI_Comm)MPI_COMM_WORLD,
                outputProperties);
     if (dbo == nullptr || !dbo->ok(true)) {
@@ -684,7 +726,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
         exitApplicationFailure();
     }
 
-    Ioss::Region * inputRegion = getInputIOSSRegion();
+    Ioss::Region * inputRegion = getInputIOSSRegion(0);
     Ioss::Region * outputRegion = new Ioss::Region(dbo, inputRegion->name());
 
     auto state_count = inputRegion->get_property("state_count").get_int();
@@ -705,16 +747,21 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
     delete outputRegion;
 }
 
-std::string IossApplication::getIOSSDatabaseType() {
-    std::string retVal = getIOSSDatabaseTypeFromFile();
+std::string IossApplication::getIOSSDatabaseType(int ndx) {
+    std::string retVal = getIOSSDatabaseTypeFromFile(ndx);
     if (useIOSSInputDBTypeON()) {
         retVal = getIOSSInputDBType();
     }
     return retVal;
 }
 
-std::string IossApplication::getIOSSDatabaseTypeFromFile() {
-    Ioss::FileInfo file(fileName);
+std::string IossApplication::getIOSSDatabaseTypeFromFile(int ndx) {
+    if (ndx >= fileName.size()) {
+        printErrorMessage("getIOSSDatabaseTypeFromFile called with ndx too large.");
+        printUsageMessage();
+        exitApplicationFailure();
+    }
+    Ioss::FileInfo file(fileName[ndx]);
     auto extension = file.extension();
     if (extension == "e" || extension == "g" ||
         extension == "gen" || extension == "exo") {
@@ -728,8 +775,8 @@ std::string IossApplication::getIOSSDatabaseTypeFromFile() {
     }
 }
 
-std::string IossApplication::getFileSuffix() {
-    std::string dbType = getIOSSDatabaseType();
+std::string IossApplication::getFileSuffix(int ndx) {
+    std::string dbType = getIOSSDatabaseType(ndx);
     if (dbType == "exodus") {
         return "ex2";
     }
@@ -741,10 +788,10 @@ std::string IossApplication::getFileSuffix() {
     }
 }
 
-std::string IossApplication::getCatalystDatabaseType() {
+std::string IossApplication::getCatalystDatabaseType(int ndx) {
     std::string retVal = "catalyst_exodus";
     if (!forceExodusOutputON()) {
-        if (getIOSSDatabaseType() == "cgns") {
+        if (getIOSSDatabaseType(ndx) == "cgns") {
             retVal = "catalyst_cgns";
         }
         if (forceCGNSOutputON()) {
