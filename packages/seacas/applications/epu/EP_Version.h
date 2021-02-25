@@ -10,8 +10,8 @@
 
 static char const *qainfo[] = {
     "epu --  E Pluribus Unum",
-    "2021/01/21",
-    "5.01",
+    "2021/01/25",
+    "5.02",
 };
 
 #endif // SEACAS_Version_h

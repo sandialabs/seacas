@@ -463,6 +463,11 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     return false;
   }
 
+  // If subcycle is specified, but not part_count, then calculate partCount_
+  if (partCount_ <= 0 && subcycle_ > 0) {
+    partCount_ = processorCount_ / subcycle_;
+  }
+
   return true;
 }
 

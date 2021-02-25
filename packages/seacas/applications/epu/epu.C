@@ -1707,7 +1707,7 @@ namespace {
     //       code related to node communication map output to this routine...
 
     // Write out nodal communication map information
-    error = ex_put_init_info(ExodusFile::output(), processor_map.back(), 1, (char *)"P");
+    error = ex_put_init_info(ExodusFile::output(), processor_map.back() + 1, 1, (char *)"P");
     if (error < 0) {
       exodus_error(__LINE__);
     }
