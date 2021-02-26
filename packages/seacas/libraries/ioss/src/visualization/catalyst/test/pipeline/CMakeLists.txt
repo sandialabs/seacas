@@ -14,6 +14,11 @@ ADD_EXECUTABLE(TwoGridsToCatalystToScriptTests
 TARGET_LINK_LIBRARIES(TwoGridsToCatalystToScriptTests
                       catalystiosstest)
 
+ADD_EXECUTABLE(TwoGridsToCatalystToScriptTests2
+               TwoGridsToCatalystToScriptTests2.cxx)
+TARGET_LINK_LIBRARIES(TwoGridsToCatalystToScriptTests2
+                      catalystiosstest)
+
 addCatalystTest("Exodus_Catalyst_Script" "1;4"
     ${CMAKE_CURRENT_BINARY_DIR}/ExodusToCatalystToScriptTests "")
 
@@ -22,4 +27,8 @@ addCatalystTest("CGNS_Catalyst_Script" "1;4"
 
 addCatalystTest("Two_Grids_Catalyst_Script" "1;4"
     ${CMAKE_CURRENT_BINARY_DIR}/TwoGridsToCatalystToScriptTests "")
+
+addCatalystTest("Two_Grids_Catalyst_Script2" "1;4"
+    ${CMAKE_CURRENT_BINARY_DIR}/TwoGridsToCatalystToScriptTests2 "")
+
 

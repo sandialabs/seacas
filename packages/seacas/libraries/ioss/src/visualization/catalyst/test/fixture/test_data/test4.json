@@ -7,7 +7,7 @@
 "imageset blocks":{
   "is_test2":{
     "camera":"camxyz1",
-    "image basedirectory":"CatalystOutput",
+    "image basedirectory":"CatalystOutput_test4",
     "image basename":"test4."
   }
 },
