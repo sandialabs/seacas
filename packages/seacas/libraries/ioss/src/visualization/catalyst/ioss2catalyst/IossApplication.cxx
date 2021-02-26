@@ -22,6 +22,11 @@
 #include <iomanip>
 #include <cstdlib>
 
+#include <random>
+std::random_device myrd9;     // only used once to initialise (seed) engine
+std::mt19937 rng(myrd9());    // random-number engine used (Mersenne-Twister in this case)
+std::uniform_int_distribution<int> myuni9(0,1000000000); // guaranteed unbiased
+
 IossApplication::IossApplication() {
     initialize();
     setenv("CATALYST_ADAPTER_INSTALL_DIR", CATALYST_PLUGIN_BUILD_DIR, false);
@@ -715,6 +720,10 @@ void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid() {
     int ii;
 
     //create a Ioss::DatabaseIO instance for each grid 
+    char mytmpnm[256];
+    int imyRandomInt = myuni9(rng);
+    snprintf(mytmpnm, 256, "catalyst_%d", imyRandomInt);
+
     for (ii=0;ii<numInputRegions;ii++) {
         Ioss::PropertyManager *newProps = new(Ioss::PropertyManager);
         SetUpDefaultProperties(newProps);
@@ -724,7 +733,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid() {
             gGridInputNames[ii%5]));
         outputProps.push_back(newProps);
         Ioss::DatabaseIO *newDbo = Ioss::IOFactory::create(getCatalystDatabaseType(ii),
-            "catalyst", Ioss::WRITE_RESULTS, (MPI_Comm)MPI_COMM_WORLD,
+            mytmpnm, Ioss::WRITE_RESULTS, (MPI_Comm)MPI_COMM_WORLD,
                    *newProps);
         outputDbs.push_back(newDbo);
     }

@@ -11,29 +11,29 @@ TEST_CASE_METHOD(CatalystTestFixture,
     "TwoGridInputTest1_cgns_ex2", "[cgns to catalyst script]") {
 
     runPhactoriJSONTestTwoGrid("test3.json", "aero_blunt_wedge_test3.cgns",  "block_crush_1.ex2");
-    checkTestOutputFileExists("CatalystOutput/test3.0000.png");
+    checkTestOutputFileExists("CatalystOutput_test3/test3.0000.png");
 }
 
 /*
 TEST_CASE_METHOD(CatalystTestFixture,
     "TwoGridInputTest2_ex2_cgns", "[cgns to catalyst script]") {
 
-    runPhactoriJSONTestTwoGrid("test2.json", "block_crush_1.ex2", "aero_blunt_wedge_test3.cgns");
-    checkTestOutputFileExists("CatalystOutput/test3.0000.png");
+    runPhactoriJSONTestTwoGrid("test4.json", "block_crush_1.ex2", "aero_blunt_wedge_test3.cgns");
+    checkTestOutputFileExists("CatalystOutput_test4/test4.0000.png");
 }
 
 TEST_CASE_METHOD(CatalystTestFixture,
     "TwoGridInputTest3_cgns_cgns", "[cgns to catalyst script]") {
 
-    runPhactoriJSONTestTwoGrid("test2.json", "aero_blunt_wedge_test3.cgns", "aero_blunt_wedge_test3.cgns");
-    checkTestOutputFileExists("CatalystOutput/test3.0000.png");
+    runPhactoriJSONTestTwoGrid("test5.json", "aero_blunt_wedge_test3.cgns", "aero_blunt_wedge_test3.cgns");
+    checkTestOutputFileExists("CatalystOutput_test5/test5.0000.png");
 }
 
 TEST_CASE_METHOD(CatalystTestFixture,
     "TwoGridInputTest4_ex2_ex2", "[cgns to catalyst script]") {
 
-    runPhactoriJSONTestTwoGrid("test2.json", "block_crush_1.ex2", "block_crush_1.ex2");
-    checkTestOutputFileExists("CatalystOutput/test3.0000.png");
+    runPhactoriJSONTestTwoGrid("test6.json", "block_crush_1.ex2", "block_crush_1.ex2");
+    checkTestOutputFileExists("CatalystOutput/test6.0000.png");
 }
 */
 
