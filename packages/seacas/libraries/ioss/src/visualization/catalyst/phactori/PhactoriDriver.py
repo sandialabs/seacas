@@ -2,7 +2,77 @@
 # of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 # NTESS, the U.S. Government retains certain rights in this software.
 #
-# See packages/seacas/LICENSE for details
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     * Redistributions in binary form must reproduce the above
+#       copyright notice, this list of conditions and the following
+#       disclaimer in the documentation and/or other materials provided
+#       with the distribution.
+#
+#     * Neither the name of NTESS nor the names of its
+#       contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+try: paraview.simple
+except: from paraview.simple import *
+
+from paraview import coprocessing
+
+# ----------------------- Pipeline definition -----------------------
+
+#from phactori import *
+######phactori.py inserted here by PhactoriCombineToOneFile.py
+
+# Copyright(C) 1999-2020 National Technology & Engineering Solutions
+# of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+# NTESS, the U.S. Government retains certain rights in this software.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     * Redistributions in binary form must reproduce the above
+#       copyright notice, this list of conditions and the following
+#       disclaimer in the documentation and/or other materials provided
+#       with the distribution.
+#
+#     * Neither the name of NTESS nor the names of its
+#       contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
 
 #these settings allow us to specify a particular json format (or bccolli.py)
 #text file to use as the phactori visualization setup file.
@@ -13,6 +83,10 @@ global gUseHardwiredJsonScriptFile
 gUseHardwiredJsonScriptFile = None
 #gUseHardwiredJsonScriptFile = "myscript1.json"
 #gUseHardwiredJsonScriptFile = "sparc_phactori_catalyst_insitu.json"
+
+def setgUseHardwiredJsonScriptFile(inScriptFileName):
+  global gUseHardwiredJsonScriptFile
+  gUseHardwiredJsonScriptFile = inScriptFileName
 
 global gRenderingEnabled
 gRenderingEnabled = True
@@ -67,6 +141,20 @@ global TestUserDataForBypassScriptCompletedFlag
 TestUserDataForBypassScriptCompletedFlag = False
 
 global bccolli_controls
+
+global gCameraTestMode
+gCameraTestMode = 0
+global gSkipWriteImageForTests
+gSkipWriteImageForTests = False
+
+def SetCameraTestMode(onOffSetting):
+  gCameraTestMode = onOffSetting
+
+import os
+if "PHACTORI_TEST_CAMERA_MODE" in os.environ:
+  if os.environ["PHACTORI_TEST_CAMERA_MODE"] == "on":
+    gSkipWriteImageForTests = True
+    gCameraTestMode = 1
 
 def HandleJsonScriptLoadProcessZero(catalyst_script_extra_file):
   if PhactoriDbg():
@@ -177,6 +265,7 @@ catalyst_script_default_string_json = '' \
 '  "camxyz1":{"camera type":"camera","look direction":[-1,-1,-1],"look at relative distance":0.8},\n' \
 '  "camxyz2":{"camera type":"camera","look direction":[1,1,1],"look at relative distance":0.8},\n' \
 '  "camxyz3":{"camera type":"camera","look direction":[0.7,-0.3,-1],"look at relative distance":0.8},\n' \
+'  "camxyz4":{"camera type":"camera","look direction":[0.3,-0.3,-1],"look at relative distance":1.0},\n' \
 '  "camz3_nosezoom3":{\n' \
 '    "camera type":"camera",\n' \
 '    "look direction":[0,0,1],\n' \
@@ -185,109 +274,167 @@ catalyst_script_default_string_json = '' \
 '  }\n' \
 '},\n' \
 '"representation blocks":{\n' \
+'  "rep_velocity_x":{ "color by scalar":"velocity_1", "variable type":"element"},\n' \
 '  "rep_velocity_y":{ "color by scalar":"velocity_2", "variable type":"element"},\n' \
+'  "rep_velocity_z":{ "color by scalar":"velocity_3", "variable type":"element"},\n' \
+'  "rep_pressure":{ "color by scalar":"pressure", "variable type":"element"},\n' \
+'  "rep_density":{ "color by scalar":"density", "variable type":"element"},\n' \
+'  "rep_temperature":{ "color by scalar":"temperature", "variable type":"element"},\n' \
+'  "rep_Ma":{ "color by scalar":"Ma", "variable type":"element"},\n' \
 '  "rep_pressure_0_15000":{ "color by scalar":"pressure", "variable type":"element", "color legend maximum range":[0.0, 15000.0]}\n' \
 '},\n' \
 '"imageset blocks":{\n' \
-'  "is_velocity_y_camxyz1":{\n' \
+'  "is_Ma_camz2":{\n' \
+'    "camera":"camz2",\n' \
+'    "representation":"rep_Ma",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"Ma_camz2."\n' \
+'  },\n' \
+'  "is_Ma_camxyz1":{\n' \
 '    "camera":"camxyz1",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"velocity_y_camxyz1."\n' \
+'    "image basename":"Ma_camxyz1."\n' \
 '  },\n' \
-'  "is_velocity_y_camxyz2":{\n' \
+'  "is_Ma_camxyz2":{\n' \
 '    "camera":"camxyz2",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"velocity_y_camxyz2."\n' \
+'    "image basename":"Ma_camxyz2."\n' \
 '  },\n' \
-'  "is_xyslice_minz_1_velocity_y":{\n' \
+'  "is_xyslice_minz_1_Ma":{\n' \
 '    "camera":"camz1",\n' \
 '    "operation":"xyslice_minz_1",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"xyslice_minz_1_velocity_y."\n' \
+'    "image basename":"xyslice_minz_1_Ma."\n' \
 '  },\n' \
-'  "is_xyslice_midz_1_velocity_y":{\n' \
+'  "is_xyslice_midz_1_Ma":{\n' \
 '    "camera":"camz1",\n' \
 '    "operation":"xyslice_midz_1",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"xyslice_midz_1_velocity_y."\n' \
+'    "image basename":"xyslice_midz_1_Ma."\n' \
 '  },\n' \
-'  "is_xyslice_maxz_1_velocity_y":{\n' \
+'  "is_xyslice_maxz_1_Ma":{\n' \
 '    "camera":"camz1",\n' \
 '    "operation":"xyslice_maxz_1",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"xyslice_maxz_1_velocity_y."\n' \
+'    "image basename":"xyslice_maxz_1_Ma."\n' \
 '  },\n' \
-'  "is_yzslice_minx_1_velocity_y":{\n' \
+'  "is_yzslice_minx_1_Ma":{\n' \
 '    "camera":"camx1",\n' \
 '    "operation":"yzslice_minx_1",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"yzslice_minx_1_velocity_y."\n' \
+'    "image basename":"yzslice_minx_1_Ma."\n' \
 '  },\n' \
-'  "is_yzslice_midx_1_velocity_y":{\n' \
+'  "is_yzslice_midx_1_Ma":{\n' \
 '    "camera":"camx1",\n' \
 '    "operation":"yzslice_midx_1",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"yzslice_midx_1_velocity_y."\n' \
+'    "image basename":"yzslice_midx_1_Ma."\n' \
 '  },\n' \
-'  "is_yzslice_maxx_1_velocity_y":{\n' \
+'  "is_yzslice_maxx_1_Ma":{\n' \
 '    "camera":"camx1",\n' \
 '    "operation":"yzslice_maxx_1",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"yzslice_maxx_1_velocity_y."\n' \
+'    "image basename":"yzslice_maxx_1_Ma."\n' \
 '  },\n' \
-'  "is_xzslice_miny_1_velocity_y":{\n' \
+'  "is_xzslice_miny_1_Ma":{\n' \
 '    "camera":"camy1",\n' \
 '    "operation":"xzslice_miny_1",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"xzslice_miny_1_velocity_y."\n' \
+'    "image basename":"xzslice_miny_1_Ma."\n' \
 '  },\n' \
-'  "is_xzslice_midy_1_velocity_y":{\n' \
+'  "is_xzslice_midy_1_Ma":{\n' \
 '    "camera":"camy1",\n' \
 '    "operation":"xzslice_midy_1",\n' \
-'    "representation":"rep_velocity_y",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"xzslice_midy_1_velocity_y."\n' \
+'    "image basename":"xzslice_midy_1_Ma."\n' \
 '  },\n' \
-'  "is_xzslice_maxy_1_velocity_y":{\n' \
+'  "is_xzslice_maxy_1_Ma":{\n' \
 '    "camera":"camy1",\n' \
 '    "operation":"xzslice_maxy_1",\n' \
+'    "representation":"rep_Ma",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"xzslice_maxy_1_Ma."\n' \
+'  },\n' \
+'  "is_wall_surface_cells_Ma_1":{\n' \
+'    "camera":"camxyz4",\n' \
+'    "operation":"find_wall_surface_cells",\n' \
+'    "representation":"rep_Ma",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"wall_surface_cells_Ma."\n' \
+'  },\n' \
+'  "is_wall_surface_cells_velocity_x_1":{\n' \
+'    "camera":"camxyz4",\n' \
+'    "operation":"find_wall_surface_cells",\n' \
+'    "representation":"rep_velocity_x",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"wall_surface_cells_velocity_x."\n' \
+'  },\n' \
+'  "is_wall_surface_cells_velocity_y_1":{\n' \
+'    "camera":"camxyz4",\n' \
+'    "operation":"find_wall_surface_cells",\n' \
 '    "representation":"rep_velocity_y",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"xzslice_maxy_1_velocity_y."\n' \
+'    "image basename":"wall_surface_cells_velocity_y."\n' \
 '  },\n' \
-'  "is_three_slices_pressure_1":{\n' \
+'  "is_wall_surface_cells_velocity_z_1":{\n' \
+'    "camera":"camxyz4",\n' \
+'    "operation":"find_wall_surface_cells",\n' \
+'    "representation":"rep_velocity_z",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"wall_surface_cells_velocity_z."\n' \
+'  },\n' \
+'  "is_wall_surface_cells_pressure_1":{\n' \
+'    "camera":"camxyz4",\n' \
+'    "operation":"find_wall_surface_cells",\n' \
+'    "representation":"rep_pressure",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"wall_surface_cells_pressure."\n' \
+'  },\n' \
+'  "is_wall_surface_cells_density_1":{\n' \
+'    "camera":"camxyz4",\n' \
+'    "operation":"find_wall_surface_cells",\n' \
+'    "representation":"rep_density",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"wall_surface_cells_density."\n' \
+'  },\n' \
+'  "is_wall_surface_cells_temperature_1":{\n' \
+'    "camera":"camxyz4",\n' \
+'    "operation":"find_wall_surface_cells",\n' \
+'    "representation":"rep_temperature",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"wall_surface_cells_temperature."\n' \
+'  },\n' \
+'  "is_three_slices_Ma_1":{\n' \
 '    "camera":"camxyz3",\n' \
 '    "operation":"group_xyslice_minz_1_yzslice_midx_1_xzslice_midy_1",\n' \
-'    "representation":"rep_pressure_0_15000",\n' \
+'    "representation":"rep_Ma",\n' \
 '    "image basedirectory":"CatalystOutput",\n' \
-'    "image basename":"three_slices_pressure_1."\n' \
+'    "image basename":"three_slices_Ma_1."\n' \
 '  }\n' \
 '},\n' \
 '"operation blocks":{\n' \
 '  "xyslice_minz_1":{\n' \
-'    "type":"slice",\n' \
-'    "cut type":"crinkle",\n' \
+'    "type":"slicewithplane",\n' \
 '    "plane normal":[0.0, 0.0, 1.0],\n' \
 '    "relative point on plane":[0.0, 0.0, -0.499999]\n' \
 '  },\n' \
 '  "xyslice_midz_1":{\n' \
-'    "type":"slice",\n' \
-'    "cut type":"crinkle",\n' \
+'    "type":"slicewithplane",\n' \
 '    "plane normal":[0.0, 0.0, 1.0],\n' \
 '    "relative point on plane":[0.0, 0.0, 0.0]\n' \
 '  },\n' \
 '  "xyslice_maxz_1":{\n' \
-'    "type":"slice",\n' \
-'    "cut type":"crinkle",\n' \
+'    "type":"slicewithplane",\n' \
 '    "plane normal":[0.0, 0.0, 1.0],\n' \
 '    "relative point on plane":[0.0, 0.0, 0.499999]\n' \
 '  },\n' \
@@ -307,20 +454,17 @@ catalyst_script_default_string_json = '' \
 '    "basename":"xyslice_maxz_1"\n' \
 '  },\n' \
 '  "yzslice_minx_1":{\n' \
-'    "type":"slice",\n' \
-'    "cut type":"crinkle",\n' \
+'    "type":"slicewithplane",\n' \
 '    "plane normal":[1.0, 0.0, 0.0],\n' \
 '    "relative point on plane":[-0.499999, 0.0, 0.0]\n' \
 '  },\n' \
 '  "yzslice_midx_1":{\n' \
-'    "type":"slice",\n' \
-'    "cut type":"crinkle",\n' \
+'    "type":"slicewithplane",\n' \
 '    "plane normal":[1.0, 0.0, 0.0],\n' \
 '    "relative point on plane":[0.0, 0.0, 0.0]\n' \
 '  },\n' \
 '  "yzslice_maxx_1":{\n' \
-'    "type":"slice",\n' \
-'    "cut type":"crinkle",\n' \
+'    "type":"slicewithplane",\n' \
 '    "plane normal":[1.0, 0.0, 0.0],\n' \
 '    "relative point on plane":[0.499999, 0.0, 0.0]\n' \
 '  },\n' \
@@ -340,20 +484,17 @@ catalyst_script_default_string_json = '' \
 '    "basename":"yzslice_maxx_1"\n' \
 '  },\n' \
 '  "xzslice_miny_1":{\n' \
-'    "type":"slice",\n' \
-'    "cut type":"crinkle",\n' \
+'    "type":"slicewithplane",\n' \
 '    "plane normal":[0.0, 1.0, 0.0],\n' \
 '    "relative point on plane":[0.0, -0.499999, 0.0]\n' \
 '  },\n' \
 '  "xzslice_midy_1":{\n' \
-'    "type":"slice",\n' \
-'    "cut type":"crinkle",\n' \
+'    "type":"slicewithplane",\n' \
 '    "plane normal":[0.0, 1.0, 0.0],\n' \
 '    "relative point on plane":[0.0, 0.0, 0.0]\n' \
 '  },\n' \
 '  "xzslice_maxy_1":{\n' \
-'    "type":"slice",\n' \
-'    "cut type":"crinkle",\n' \
+'    "type":"slicewithplane",\n' \
 '    "plane normal":[0.0, 1.0, 0.0],\n' \
 '    "relative point on plane":[0.0, 0.499999, 0.0]\n' \
 '  },\n' \
@@ -371,6 +512,20 @@ catalyst_script_default_string_json = '' \
 '    "type":"vtkdataexport",\n' \
 '    "input":"xzslice_maxy_1",\n' \
 '    "basename":"xzslice_maxy_1"\n' \
+'  },\n' \
+'  "mark_cells_for_surface_extraction":{\n' \
+'    "type":"markcellsurfacestatus2"\n' \
+'  },\n' \
+'  "find_wall_surface_cells":{\n' \
+'    "type":"threshold",\n' \
+'    "input":"mark_cells_for_surface_extraction",\n' \
+'    "variable scalar":"surfacestatus",\n' \
+'    "keep between":[11,100]\n' \
+'  },\n' \
+'  "vtm_out_wall_surface_cells":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"find_wall_surface_cells",\n' \
+'    "basename":"wall_surface_cells"\n' \
 '  },\n' \
 '  "group_xyslice_minz_1_yzslice_midx_1_xzslice_midy_1":{\n' \
 '    "type":"group",\n' \
@@ -1720,6 +1875,941 @@ def vecMultiplyAdd(inVecA, inVecB, inMM):
   return [inVecA[0] + inMM * inVecB[0],
           inVecA[1] + inMM * inVecB[1],
           inVecA[2] + inMM * inVecB[2]]
+
+def GetPhactoriVectorLibraryProgrammableFilterLines(pfLns):
+  pfLns.append("def vecDotProduct(inVecA, inVecB):\n")
+  pfLns.append("  return inVecA[0] * inVecB[0] + inVecA[1] * inVecB[1] + inVecA[2] * inVecB[2]\n")
+  pfLns.append("def vecCrossProduct(inVecA, inVecB):\n")
+  pfLns.append("  return [inVecA[1] * inVecB[2] - inVecA[2] * inVecB[1],\n")
+  pfLns.append("          inVecA[2] * inVecB[0] - inVecA[0] * inVecB[2],\n")
+  pfLns.append("          inVecA[0] * inVecB[1] - inVecA[1] * inVecB[0]]\n")
+  pfLns.append("def vecCrossProduct2(outVec, inVecA, inVecB):\n")
+  pfLns.append("  outVec[0] = inVecA[1] * inVecB[2] - inVecA[2] * inVecB[1]\n")
+  pfLns.append("  outVec[1] = inVecA[2] * inVecB[0] - inVecA[0] * inVecB[2]\n")
+  pfLns.append("  outVec[2] = inVecA[0] * inVecB[1] - inVecA[1] * inVecB[0]\n")
+  pfLns.append("def vecCopy(destinationVec, sourceVec):\n")
+  pfLns.append("  destinationVec[0] = sourceVec[0]\n")
+  pfLns.append("  destinationVec[1] = sourceVec[1]\n")
+  pfLns.append("  destinationVec[2] = sourceVec[2]\n")
+  pfLns.append("def vecMagnitude(inVec):\n")
+  pfLns.append("  xx = inVec[0]\n")
+  pfLns.append("  yy = inVec[1]\n")
+  pfLns.append("  zz = inVec[2]\n")
+  pfLns.append("  return math.sqrt(xx*xx + yy*yy + zz*zz)\n")
+  pfLns.append("def vecMagnitudeSquared(inVec):\n")
+  pfLns.append("  xx = inVec[0]\n")
+  pfLns.append("  yy = inVec[1]\n")
+  pfLns.append("  zz = inVec[2]\n")
+  pfLns.append("  return xx*xx + yy*yy + zz*zz\n")
+  pfLns.append("def vecNormalizeWithSmallCheck(inVec, smallValue, smallNormal):\n")
+  pfLns.append("  xx = inVec[0]\n")
+  pfLns.append("  yy = inVec[1]\n")
+  pfLns.append("  zz = inVec[2]\n")
+  pfLns.append("  mag = math.sqrt(xx*xx + yy*yy + zz*zz)\n")
+  pfLns.append("  if mag <= smallValue:\n")
+  pfLns.append("    return smallNormal\n")
+  pfLns.append("  else:\n")
+  pfLns.append("    return [xx/mag, yy/mag, zz/mag]\n")
+  pfLns.append("def vecNormalize(inVec):\n")
+  pfLns.append("  xx = inVec[0]\n")
+  pfLns.append("  yy = inVec[1]\n")
+  pfLns.append("  zz = inVec[2]\n")
+  pfLns.append("  mag = math.sqrt(xx*xx + yy*yy + zz*zz)\n")
+  pfLns.append("  return [xx/mag, yy/mag, zz/mag]\n")
+  pfLns.append("def vecNormalize2(outVec, inVec):\n")
+  pfLns.append("  xx = inVec[0]\n")
+  pfLns.append("  yy = inVec[1]\n")
+  pfLns.append("  zz = inVec[2]\n")
+  pfLns.append("  mag = math.sqrt(xx*xx + yy*yy + zz*zz)\n")
+  pfLns.append("  outVec[0] = xx/mag\n")
+  pfLns.append("  outVec[1] = yy/mag\n")
+  pfLns.append("  outVec[2] = zz/mag\n")
+  pfLns.append("def vecFromAToB(inVecA, inVecB):\n")
+  pfLns.append("  return [inVecB[0] - inVecA[0], inVecB[1] - inVecA[1], inVecB[2] - inVecA[2]]\n")
+  pfLns.append("def vecDistanceSquared(inPtA, inPtB):\n")
+  pfLns.append("  ddx = inPtA[0] - inPtB[0]\n")
+  pfLns.append("  ddy = inPtA[1] - inPtB[1]\n")
+  pfLns.append("  ddz = inPtA[2] - inPtB[2]\n")
+  pfLns.append("  return ddx*ddx + ddy*ddy + ddz*ddz\n")
+  pfLns.append("def vecDistance(inPtA, inPtB):\n")
+  pfLns.append("  return math.sqrt(vecDistanceSquared(inPtA, inPtB))\n")
+  pfLns.append("def vecAdd(inVecA, inVecB):\n")
+  pfLns.append("  return [inVecA[0]+inVecB[0],inVecA[1]+inVecB[1],inVecA[2]+inVecB[2]]\n")
+  pfLns.append("def vecScale(inScale, inVec):\n")
+  pfLns.append("  return [inScale*inVec[0], inScale*inVec[1], inScale*inVec[2]]\n")
+  pfLns.append("def vecMultiplyAdd(inVecA, inVecB, inMM):\n")
+  pfLns.append("  return [inVecA[0] + inMM * inVecB[0],\n")
+  pfLns.append("          inVecA[1] + inMM * inVecB[1],\n")
+  pfLns.append("          inVecA[2] + inMM * inVecB[2]]\n")
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriVtkCellOperations import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+def PhactoriCalculateFaceArea(inInputCsData, targetFace):
+  numFaceEdges = targetFace.GetNumberOfEdges()
+  if numFaceEdges >= 3:
+    #assumes convex polygons, weird answer if not
+    retVal = 0.0
+    ptIds = targetFace.GetPointIds()
+    ptA = inInputCsData.GetPoint(ptIds.GetId(0))
+    ptB = inInputCsData.GetPoint(ptIds.GetId(1))
+    vecAB = vecFromAToB(ptA, ptB)
+    for ii in range(2, numFaceEdges):
+      ptC = inInputCsData.GetPoint(ptIds.GetId(ii))
+      vecAC = vecFromAToB(ptA, ptC)
+      ABxAC = vecCrossProduct(vecAB, vecAC)
+      retVal += vecMagnitude(ABxAC)
+      vecAB = vecAC
+    retVal *= 0.5
+  else:
+    #two or fewer vertices
+    retVal = 0.0
+  return retVal
+
+def PhactoriCalculateCellFaceAreas(inInputCsData, oneCell):
+  faceAreaList = []
+  numFaces = oneCell.GetNumberOfFaces()
+  for faceNdx in range(0, numFaces):
+    gsfslTestFace = oneCell.GetFace(faceNdx)
+    faceAreaList.append(PhactoriCalculateFaceArea(inInputCsData, gsfslTestFace))
+  return faceAreaList
+
+def PhactoriCalculateCellFaceAreasAndSort(inInputCsData, oneCell):
+  faceAreasByIndex = PhactoriCalculateCellFaceAreas(inInputCsData, oneCell)
+  faceAreasSorted = sorted(faceAreasByIndex)
+  return faceAreasByIndex, faceAreasSorted
+
+class PhactoriCountCellsTouchingFaceData:
+  def __init__(self, inInputCsData):
+    self.PerFaceData = {}
+    self.vtkGrid = inInputCsData
+    self.totalNumFaces = 0
+    self.totalNumFacesWithOneCellTouching = 0
+    self.totalNumFacesWithTwoCellsTouching = 0
+    self.totalNumFacesWith3plCellsTouching = 0
+
+  def DoCountForAllCellsInBlock(self):
+    numCells = self.vtkGrid.GetNumberOfCells()
+    for ii in range(0, numCells):
+      self.DoCountForOneCell(ii)
+
+  def DoCountForOneCell(self, cellIndex):
+    oneCell = self.vtkGrid.GetCell(cellIndex)
+    numFaces = oneCell.GetNumberOfFaces()
+    for jj in range(0, numFaces):
+      self.DoCountForOneFace(oneCell, cellIndex, jj)
+
+  def GetFaceHash(self, oneFace):
+    #for now we use the average of all face points to uniquely identify the
+    #face; we could use all indices of the face but that is more complex
+    #and we couldn't match up faces across block/processor boundaries
+    #however, it's possible that average of vertices may fail in some
+    #circumstances and we could use the x/y/z of all the vertices if necessary
+    faceHash = [0.0, 0.0, 0.0]
+    numFacePoints = oneFace.GetNumberOfPoints()
+    facePointIds = oneFace.GetPointIds()
+    facePointIds2 = []
+    for kk in range(0, numFacePoints):
+      facePointIds2.append(facePointIds.GetId(kk))
+    facePointIds2 = sorted(facePointIds2)
+    for pointId in facePointIds2:
+      oneFacePoint = self.vtkGrid.GetPoint(pointId)
+      faceHash[0] += oneFacePoint[0]
+      faceHash[1] += oneFacePoint[1]
+      faceHash[2] += oneFacePoint[2]
+    return faceHash
+
+  def DoCountForOneFace(self, oneCell, cellIndex, faceIndex):
+    oneFace = oneCell.GetFace(faceIndex)
+    faceHash = self.GetFaceHash(oneFace)
+    self.IncrementCellTouchingFaceCount(faceHash, cellIndex, faceIndex)
+
+  def IncrementCellTouchingFaceCount(self, faceHash, cellIndex, faceIndex):
+
+    if faceHash[0] not in self.PerFaceData:
+      self.PerFaceData[faceHash[0]] = {}
+    facelvl1 = self.PerFaceData[faceHash[0]]
+    if faceHash[1] not in facelvl1:
+      facelvl1[faceHash[1]] = {}
+    facelvl2 = facelvl1[faceHash[1]]
+    if faceHash[2] not in facelvl2:
+      facelvl2[faceHash[2]] = [1, cellIndex, faceIndex, -1, -1]
+      self.totalNumFaces += 1
+      self.totalNumFacesWithOneCellTouching += 1
+    else:
+      facelvl3 = facelvl2[faceHash[2]]
+      if facelvl3[0] == 1:
+        self.totalNumFacesWithOneCellTouching -= 1
+        self.totalNumFacesWithTwoCellsTouching += 1
+      elif facelvl3[0] == 2:
+        self.totalNumFacesWithTwoCellsTouching -= 1
+        self.totalNumFacesWith3plCellsTouching += 1
+      facelvl3[0] += 1
+      facelvl3[3] = cellIndex
+      facelvl3[4] = faceIndex
+
+  def GetNumberOfCellsTouchingFace(self, oneFace):
+    faceHash = self.GetFaceHash(oneFace)
+    returnCount = self.PerFaceData[faceHash[0]][faceHash[1]][faceHash[2]][0]
+    return returnCount
+
+  def GetNumberOfCellsTouchingEachFaceOfOneCell(self, oneCellIndex):
+    oneCell = self.vtkGrid.GetCell(oneCellIndex)
+    returnCountPerFace = []
+    numFaces = oneCell.GetNumberOfFaces()
+    for ii in range(0, numFaces):
+      oneFace = oneCell.GetFace(ii)
+      returnCountPerFace.append(self.GetNumberOfCellsTouchingFace(oneFace))
+    return returnCountPerFace
+
+  def GetListOfExteriorFacesOnCell(self, oneCell):
+    returnExteriorFaceIndices = []
+    numFaces = oneCell.GetNumberOfFaces()
+    for ii in range(0, numFaces):
+      oneFace = oneCell.GetFace(ii)
+      if self.GetNumberOfCellsTouchingFace(oneFace) == 1:
+        returnExteriorFaceIndices.append(ii)
+    return returnExteriorFaceIndices
+
+  def GetListOfExteriorFacesOnCellByIndex(self, cellIndex):
+    return self.GetListOfExteriorFacesOnCell(self.vtkGrid.GetCell(cellIndex))
+
+def PhactoriCountCellTouchingEachFace(inInputCsData):
+  "goes through each cell, and for each cell goes through each face, and for\n     each of those faces creates/locates a count for that face and increments\n     it. Purpose is to find cells with faces that don't neighbor other cells\n  "
+  countCellsTouchingEachFace = PhactoriCountCellsTouchingFaceData(inInputCsData)
+  countCellsTouchingEachFace.DoCountForAllCellsInBlock()
+  if PhactoriDbg(100):
+    cctef = countCellsTouchingEachFace
+    myDebugPrint3("PhactoriCountCellTouchingEachFace:" + \
+      "\nnum cells in block:      " + str(inInputCsData.GetNumberOfCells()) + \
+      "\nnum faces:               " + str(cctef.totalNumFaces) + \
+      "\nnum faces with 1 cell:   " + str(cctef.totalNumFacesWithOneCellTouching) + \
+      "\nnum faces with 2 cells:  " + str(cctef.totalNumFacesWithTwoCellsTouching) + \
+      "\nnum faces with 3+ cells: " + str(cctef.totalNumFacesWith3plCellsTouching) + "\n")
+   
+  return countCellsTouchingEachFace
+  
+def PhactoriCountCellTouchingEachPoint(inInputCsData):
+  numCells = inInputCsData.GetNumberOfCells()
+  numPoints = inInputCsData.GetNumberOfPoints()
+  cellsTouchingPointCount = [0] * numPoints
+  for ii in range(0, numCells):
+    oneCell = inInputCsData.GetCell(ii)
+    cellPointIds = oneCell.GetPointIds()
+    numCellPoints = oneCell.GetNumberOfPoints()
+    for jj in range(0, numCellPoints):
+      oneCellPointId = cellPointIds.GetId(jj)
+      cellsTouchingPointCount[oneCellPointId] += 1
+  return cellsTouchingPointCount
+
+def PhactoriSurfaceCornerCellFaceFacesExterior(oneFace, cellsTouchingPointCount):
+  numFacePoints = oneFace.GetNumberOfPoints()
+  facePointIds = oneFace.GetPointIds()
+  numOutsideVertices = 0
+  for ii in range(0, numFacePoints):
+    if cellsTouchingPointCount[facePointIds.GetId(ii)] <= 1:
+      return True
+  return False
+
+def PhactoriIsOutsideCornerHexCellFaceMaxAreaFace(oneCell, indexFaceListSize,
+  sortedFaceSizeList, cellsTouchingPointCount, TestNthLargestFace = 2):
+  #faces with 4 2 2 0 need to be tested
+  numFaces = oneCell.GetNumberOfFaces()
+  for faceIndex in range(0, numFaces):
+    oneFace = oneCell.GetFace(faceIndex)
+    if PhactoriSurfaceCornerCellFaceFacesExterior(oneFace, cellsTouchingPointCount):
+      if indexFaceListSize[faceIndex] >= sortedFaceSizeList[-TestNthLargestFace]:
+        #this cell is facing the big area cell side
+        return True
+  return False
+
+def PhactoriSurfaceEdgeHexCellFaceFacesExterior(oneFace, cellsTouchingPointCount):
+  numFacePoints = oneFace.GetNumberOfPoints()
+  facePointIds = oneFace.GetPointIds()
+  numOutsideVertices = 0
+  for ii in range(0, numFacePoints):
+    if cellsTouchingPointCount[facePointIds.GetId(ii)] <= 2:
+      numOutsideVertices += 1
+  return (numOutsideVertices >= 2)
+
+def PhactoriIsOutsideEdgeHexCellFaceMaxAreaFace(oneCell,
+  indexFaceListSize, sortedFaceSizeList, cellsTouchingPointCount,
+  TestNthLargestFace = 2):
+  #faces with 4 4 2 2 need to be tested
+  numFaces = oneCell.GetNumberOfFaces()
+  #test cell flatness
+  for faceIndex in range(0, numFaces):
+    oneFace = oneCell.GetFace(faceIndex)
+    if PhactoriSurfaceEdgeHexCellFaceFacesExterior(oneFace, cellsTouchingPointCount):
+      if indexFaceListSize[faceIndex] >= sortedFaceSizeList[-TestNthLargestFace]:
+        #this cell is exterior and facing the big area cell side
+        return True
+  return False
+
+def PhactoriIsOutsideSurfaceHexCellFaceMaxAreaFace(oneCell,
+  indexFaceListSize, sortedFaceSizeList, cellsTouchingPointCount,
+  TestNthLargestFace = 2):
+  #find face which face faces exterior
+  numFaces = oneCell.GetNumberOfFaces()
+  for faceIndex in range(0, numFaces):
+    oneFace = oneCell.GetFace(faceIndex)
+    numFacePoints = oneFace.GetNumberOfPoints()
+    facePtNdxs = oneFace.GetPointIds()
+    outsideFaceIndex = -1
+    for jj in range(0, numFacePoints):
+      outsideFaceIndex = faceIndex
+      ptNdx = facePtNdxs.GetId(jj)
+      if cellsTouchingPointCount[ptNdx] != 4:
+        outsideFaceIndex = -1
+        #this is not the outward facing face
+        break
+    if outsideFaceIndex >= 0:
+      #this is the outward facing face
+      break
+  if outsideFaceIndex < 0:
+    #shouldn't happen, didn't find face with all 4's
+    myDebugPrint3AndException("outsideFaceIndex < 0 error\n")
+    return False
+  #now see if this outward facing face is one of the Nth largest
+  if indexFaceListSize[outsideFaceIndex] >= sortedFaceSizeList[-TestNthLargestFace]:
+    return True
+  else:
+    return False
+
+def PhactoriFindSurfaceStatusForOneCellUsingFaceInfo(inInputCsData,
+  inCellIndex, countCellsTouchingEachFace, flatnessTestRatio = 100.0,
+  TestNthLargestFace = 2):
+  oneCell = inInputCsData.GetCell(inCellIndex)
+  exteriorFaceList = countCellsTouchingEachFace.GetListOfExteriorFacesOnCell(oneCell)
+  numExteriorFaces = len(exteriorFaceList)
+  if numExteriorFaces == 0:
+    #interior cell
+    retStatus = 1
+  else:
+    #surface cell (surface, edge, or corner)
+    #test cell flatness
+    indexFaceListSize, sortedFaceSizeList = PhactoriCalculateCellFaceAreasAndSort(inInputCsData, oneCell)
+    flatnessRatio = sortedFaceSizeList[-1] / sortedFaceSizeList[0]
+    cellIsFlat = (flatnessRatio >= flatnessTestRatio)
+    #see if any of the exterior faces are the biggest
+    outsideFaceIsMaxAreaFace = False
+    for outsideFaceIndex in exteriorFaceList:
+      if indexFaceListSize[outsideFaceIndex] >= sortedFaceSizeList[-TestNthLargestFace]:
+        outsideFaceIsMaxAreaFace = True
+        break
+    if numExteriorFaces == 1:
+      #outside surface, not edge or corner
+      if outsideFaceIsMaxAreaFace:
+        if cellIsFlat:
+          retStatus = 11
+        else:
+          retStatus = 8
+      else:
+        if cellIsFlat:
+          retStatus = 5
+        else:
+          retStatus = 2
+    elif numExteriorFaces == 2:
+      #outside edge, not corner
+      if outsideFaceIsMaxAreaFace:
+        if cellIsFlat:
+          retStatus = 12
+        else:
+          retStatus = 9
+      else:
+        if cellIsFlat:
+          retStatus = 6
+        else:
+          retStatus = 3
+    else:
+      #outside surface corner
+      if outsideFaceIsMaxAreaFace:
+        if cellIsFlat:
+          retStatus = 13
+        else:
+          retStatus = 10
+      else:
+        if cellIsFlat:
+          retStatus = 7
+        else:
+          retStatus = 4
+  return retStatus
+
+
+def PhactoriFindSurfaceStatusForOneCell(inInputCsData, inCellIndex,
+      cellsTouchingPointCount, flatnessTestRatio = 100.0):
+  oneCell = inInputCsData.GetCell(inCellIndex)
+
+  #cells with all 8 are interior
+  #cells with 4 and 8 are outside surface
+  #cells with 2 (and no 0) are outside edge
+  #cells with 1 are corner
+
+  #not currently handling inside edge (there are count 6 cells) or inside
+  #corner (there are count 7 cells)
+
+  #if cell is outside surface (4 and 8), if the face which is all 4 is the
+  #largest or second largest area, then it is on the surface we want
+
+  #if the cell is edge (2 4 8), there should be two sides which are 2 2 4 4
+  #if either of these sides is the second or largest area then it is on the
+  #surface we want.
+
+  #if the cell is corner, there should be three sides which are 0 2 2 4
+  #if any of these sides is the second or largest area then it is on the
+  #surface we want
+
+  numPoints = oneCell.GetNumberOfPoints()
+  pointIds = oneCell.GetPointIds()
+  minCtpc = 9
+  for ii in range(0, numPoints):
+    testCtpc = cellsTouchingPointCount[pointIds.GetId(ii)]
+    if testCtpc < minCtpc:
+      minCtpc = testCtpc
+
+  #if inCellIndex == 172065:
+  if inCellIndex == 5056:
+    debugFlag = 100
+  else:
+    debugFlag = 25
+  if minCtpc >= 8:
+    #interior cell
+    retStatus = 1
+  else:
+    #surface cell (surface, edge, or corner)
+    #test cell flatness
+    indexFaceListSize, sortedFaceSizeList = PhactoriCalculateCellFaceAreasAndSort(inInputCsData, oneCell)
+    flatnessRatio = sortedFaceSizeList[-1] / sortedFaceSizeList[0]
+    cellIsFlat = (flatnessRatio >= flatnessTestRatio)
+    if minCtpc >= 4:
+      #outside surface, not edge or corner
+      outsideFaceIsMaxAreaFace = PhactoriIsOutsideSurfaceHexCellFaceMaxAreaFace(
+        oneCell, indexFaceListSize, sortedFaceSizeList,
+        cellsTouchingPointCount)
+      if outsideFaceIsMaxAreaFace:
+        if cellIsFlat:
+          retStatus = 11
+        else:
+          retStatus = 8
+      else:
+        if cellIsFlat:
+          retStatus = 5
+        else:
+          retStatus = 2
+    elif minCtpc >= 2:
+      #outside surface edge, not corner
+      outsideFaceIsMaxAreaFace = PhactoriIsOutsideEdgeHexCellFaceMaxAreaFace(
+        oneCell, indexFaceListSize, sortedFaceSizeList,
+        cellsTouchingPointCount)
+      if outsideFaceIsMaxAreaFace:
+        if cellIsFlat:
+          retStatus = 12
+        else:
+          retStatus = 9
+      else:
+        if cellIsFlat:
+          retStatus = 6
+        else:
+          retStatus = 3
+    elif minCtpc >= 1:
+      #outside surface corner
+      outsideFaceIsMaxAreaFace = PhactoriIsOutsideCornerHexCellFaceMaxAreaFace(
+        oneCell, indexFaceListSize, sortedFaceSizeList, cellsTouchingPointCount)
+      if outsideFaceIsMaxAreaFace:
+        if cellIsFlat:
+          retStatus = 13
+        else:
+          retStatus = 10
+      else:
+        if cellIsFlat:
+          retStatus = 7
+        else:
+          retStatus = 4
+    else:
+      #should not get here
+      myDebugPrint3AndException("bad minCtpc error\n")
+      retStatus = -1
+
+  return retStatus
+
+def PhactoriGetCellEdgeVector(inInputCsData, oneFaceOrCell, edgeIndex):
+  oneFaceEdgePointIds = oneFaceOrCell.GetEdge(edgeIndex).GetPointIds()
+  ptA = inInputCsData.GetPoint(oneFaceEdgePointIds.GetId(0))
+  ptB = inInputCsData.GetPoint(oneFaceEdgePointIds.GetId(1))
+  retVec = vecFromAToB(ptA,ptB)
+  return retVec
+
+def PhactoriFindFaceNormal(inInputCsData, oneFace):
+  facePointIds = oneFace.GetPointIds()
+  #maybe should work harder to find good normal
+  ptA = inInputCsData.GetPoint(facePointIds.GetId(0))
+  ptB = inInputCsData.GetPoint(facePointIds.GetId(1))
+  ptC = inInputCsData.GetPoint(facePointIds.GetId(2))
+  vecAB = vecFromAToB(ptA, ptB)
+  vecBC = vecFromAToB(ptB, ptC)
+  retNormalVec = vecCrossProduct(vecBC, vecAB)
+  vecNormalize2(retNormalVec, retNormalVec)
+  return retNormalVec
+
+def PhactoriFindLargestCellFaceNormal(inInputCsData, oneCell):
+  indexFaceListSize, sortedFaceSizeList = PhactoriCalculateCellFaceAreasAndSort(inInputCsData, oneCell)
+  biggestFaceSize = sortedFaceSizeList[-1]
+  for faceForNormalIndex in range(0, len(indexFaceListSize)):
+    if indexFaceListSize[faceForNormalIndex] == biggestFaceSize:
+      break
+  faceForNormal = oneCell.GetFace(faceForNormalIndex)
+  retNormalVec = PhactoriFindFaceNormal(inInputCsData, faceForNormal)
+  return retNormalVec
+
+def PhactoriFindSelectedAngleBetweenEdgeAndCellNormal(inInputCsData, oneCell,
+  compareNormal, paramUseSmallestAngle, paramOffsetIndex):
+  edgeCompareDotProdList = []
+  numEdges = oneCell.GetNumberOfEdges()
+  for ii in range(0, numEdges):
+    oneEdgeVec = PhactoriGetCellEdgeVector(inInputCsData, oneCell, ii)
+    vecNormalize2(oneEdgeVec, oneEdgeVec)
+    edgeCompareDotProd = abs(vecDotProduct(compareNormal, oneEdgeVec))
+    edgeCompareDotProdList.append(edgeCompareDotProd)
+  
+  sortedEdgeCompareDotProdList = sorted(edgeCompareDotProdList)
+
+  if paramUseSmallestAngle:
+    outputIndex = max(0, numEdges - 1 - paramOffsetIndex)
+  else:
+    outputIndex = min(paramOffsetIndex, numEdges - 1)
+
+  outputAngle = 90.0 - math.degrees(math.acos(sortedEdgeCompareDotProdList[outputIndex]))
+  return outputAngle
+
+def DebugPrintPhactoriFindHeightOfCell(inInputCsData, oneCell, compareNormal):
+  if PhactoriDbg(100):
+    dbght = []
+    dbglen = []
+    dbgretHeight = -1.0 
+    dbgretHeightIndex = -1
+    for ii in range(0, numCellEdges):
+      oneCellEdgeVec = PhactoriGetCellEdgeVector(inInputCsData, oneCell, ii)
+      dp1 = vecDotProduct(oneCellEdgeVec, compareNormal)
+      projectedVec = vecScale(dp1, compareNormal)
+      oneCellEdgeHeight = vecMagnitude(projectedVec)
+      dbght.append(oneCellEdgeHeight)
+      dbglen.append(vecMagnitude(oneCellEdgeVec))
+      if oneCellEdgeHeight > dbgretHeight:
+        dbgretHeight = oneCellEdgeHeight
+        dbgretHeightIndex = ii
+    #how many edges before projection are longer than the height edge, and
+    #is the height edge one of the four shortest
+    myDebugPrint3("cell height: " + str(dbgretHeight) + "  index: " + \
+      str(dbgretHeightIndex) + "  edgelen: " + str(dbglen[dbgretHeightIndex]) + "\n")
+    myDebugPrint3("all edge length, height pairs:\n")
+    numLonger = 0
+    for ii in range(0, numCellEdges):
+      if dbglen[ii] >= dbglen[dbgretHeightIndex]:
+        numLonger += 1
+      myDebugPrint3(str(ii) + ": " + str(dbglen[ii]) + ", " + str(dbght[ii]) + "\n")
+    myDebugPrint3("num edges longer than cell height edge: " + str(numLonger) + "\n")
+
+def PhactoriFindHeightOfCell(inInputCsData, oneCell, compareNormal):
+  #do we need to discard eight longest sides, or will they project to less
+  #than the four shortest sides?
+  numCellEdges = oneCell.GetNumberOfEdges()
+
+  retHeight = -1.0 
+  for ii in range(0, numCellEdges):
+    #get edge vectory and project on to normal vector (which is unit length)
+    #and find magnitude
+    oneCellEdgeVec = PhactoriGetCellEdgeVector(inInputCsData, oneCell, ii)
+    dp1 = vecDotProduct(oneCellEdgeVec, compareNormal)
+    projectedVec = vecScale(dp1, compareNormal)
+    oneCellEdgeHeight = vecMagnitude(projectedVec)
+    if oneCellEdgeHeight > retHeight:
+      retHeight = oneCellEdgeHeight
+  #if PhactoriDbg(100):
+  #  DebugPrintPhactoriFindHeightOfCell(inInputCsData, oneCell, compareNormal)
+  return retHeight
+
+def PhactoriFindCellEdgeAngleMetricsForOneCell(inInputCsData, inCellIndex,
+      paramUseSmallestAngle, paramOffsetIndex):
+  oneCell = inInputCsData.GetCell(inCellIndex)
+  numEdges = oneCell.GetNumberOfEdges()
+  if numEdges < 6:
+    return 90.0, 0.0
+  if oneCell.GetNumberOfFaces() < 4:
+    return 90.0, 0.0
+
+  compareNormal = PhactoriFindLargestCellFaceNormal(inInputCsData, oneCell)
+  retAngle = PhactoriFindSelectedAngleBetweenEdgeAndCellNormal(inInputCsData,
+    oneCell, compareNormal, paramUseSmallestAngle, paramOffsetIndex)
+  retHeight = PhactoriFindHeightOfCell(inInputCsData, oneCell, compareNormal)
+  return retAngle, retHeight
+
+def GetPhactoriVtkCellOperationsProgrammableFilterLines(pfLns):
+  pfLns.append("def PhactoriCalculateFaceArea(inInputCsData, targetFace):\n")
+  pfLns.append("  numFaceEdges = targetFace.GetNumberOfEdges()\n")
+  pfLns.append("  if numFaceEdges >= 3:\n")
+  pfLns.append("    retVal = 0.0\n")
+  pfLns.append("    ptIds = targetFace.GetPointIds()\n")
+  pfLns.append("    ptA = inInputCsData.GetPoint(ptIds.GetId(0))\n")
+  pfLns.append("    ptB = inInputCsData.GetPoint(ptIds.GetId(1))\n")
+  pfLns.append("    vecAB = vecFromAToB(ptA, ptB)\n")
+  pfLns.append("    for ii in range(2, numFaceEdges):\n")
+  pfLns.append("      ptC = inInputCsData.GetPoint(ptIds.GetId(ii))\n")
+  pfLns.append("      vecAC = vecFromAToB(ptA, ptC)\n")
+  pfLns.append("      ABxAC = vecCrossProduct(vecAB, vecAC)\n")
+  pfLns.append("      retVal += vecMagnitude(ABxAC)\n")
+  pfLns.append("      vecAB = vecAC\n")
+  pfLns.append("    retVal *= 0.5\n")
+  pfLns.append("  else:\n")
+  pfLns.append("    retVal = 0.0\n")
+  pfLns.append("  return retVal\n")
+  pfLns.append("def PhactoriCalculateCellFaceAreas(inInputCsData, oneCell):\n")
+  pfLns.append("  faceAreaList = []\n")
+  pfLns.append("  numFaces = oneCell.GetNumberOfFaces()\n")
+  pfLns.append("  for faceNdx in range(0, numFaces):\n")
+  pfLns.append("    gsfslTestFace = oneCell.GetFace(faceNdx)\n")
+  pfLns.append("    faceAreaList.append(PhactoriCalculateFaceArea(inInputCsData, gsfslTestFace))\n")
+  pfLns.append("  return faceAreaList\n")
+  pfLns.append("def PhactoriCalculateCellFaceAreasAndSort(inInputCsData, oneCell):\n")
+  pfLns.append("  faceAreasByIndex = PhactoriCalculateCellFaceAreas(inInputCsData, oneCell)\n")
+  pfLns.append("  faceAreasSorted = sorted(faceAreasByIndex)\n")
+  pfLns.append("  return faceAreasByIndex, faceAreasSorted\n")
+  pfLns.append("class PhactoriCountCellsTouchingFaceData:\n")
+  pfLns.append("  def __init__(self, inInputCsData):\n")
+  pfLns.append("    self.PerFaceData = {}\n")
+  pfLns.append("    self.vtkGrid = inInputCsData\n")
+  pfLns.append("    self.totalNumFaces = 0\n")
+  pfLns.append("    self.totalNumFacesWithOneCellTouching = 0\n")
+  pfLns.append("    self.totalNumFacesWithTwoCellsTouching = 0\n")
+  pfLns.append("    self.totalNumFacesWith3plCellsTouching = 0\n")
+  pfLns.append("  def DoCountForAllCellsInBlock(self):\n")
+  pfLns.append("    numCells = self.vtkGrid.GetNumberOfCells()\n")
+  pfLns.append("    for ii in range(0, numCells):\n")
+  pfLns.append("      self.DoCountForOneCell(ii)\n")
+  pfLns.append("  def DoCountForOneCell(self, cellIndex):\n")
+  pfLns.append("    oneCell = self.vtkGrid.GetCell(cellIndex)\n")
+  pfLns.append("    numFaces = oneCell.GetNumberOfFaces()\n")
+  pfLns.append("    for jj in range(0, numFaces):\n")
+  pfLns.append("      self.DoCountForOneFace(oneCell, cellIndex, jj)\n")
+  pfLns.append("  def GetFaceHash(self, oneFace):\n")
+  pfLns.append("    faceHash = [0.0, 0.0, 0.0]\n")
+  pfLns.append("    numFacePoints = oneFace.GetNumberOfPoints()\n")
+  pfLns.append("    facePointIds = oneFace.GetPointIds()\n")
+  pfLns.append("    facePointIds2 = []\n")
+  pfLns.append("    for kk in range(0, numFacePoints):\n")
+  pfLns.append("      facePointIds2.append(facePointIds.GetId(kk))\n")
+  pfLns.append("    facePointIds2 = sorted(facePointIds2)\n")
+  pfLns.append("    for pointId in facePointIds2:\n")
+  pfLns.append("      oneFacePoint = self.vtkGrid.GetPoint(pointId)\n")
+  pfLns.append("      faceHash[0] += oneFacePoint[0]\n")
+  pfLns.append("      faceHash[1] += oneFacePoint[1]\n")
+  pfLns.append("      faceHash[2] += oneFacePoint[2]\n")
+  pfLns.append("    return faceHash\n")
+  pfLns.append("  def DoCountForOneFace(self, oneCell, cellIndex, faceIndex):\n")
+  pfLns.append("    oneFace = oneCell.GetFace(faceIndex)\n")
+  pfLns.append("    faceHash = self.GetFaceHash(oneFace)\n")
+  pfLns.append("    self.IncrementCellTouchingFaceCount(faceHash, cellIndex, faceIndex)\n")
+  pfLns.append("  def IncrementCellTouchingFaceCount(self, faceHash, cellIndex, faceIndex):\n")
+  pfLns.append("    if faceHash[0] not in self.PerFaceData:\n")
+  pfLns.append("      self.PerFaceData[faceHash[0]] = {}\n")
+  pfLns.append("    facelvl1 = self.PerFaceData[faceHash[0]]\n")
+  pfLns.append("    if faceHash[1] not in facelvl1:\n")
+  pfLns.append("      facelvl1[faceHash[1]] = {}\n")
+  pfLns.append("    facelvl2 = facelvl1[faceHash[1]]\n")
+  pfLns.append("    if faceHash[2] not in facelvl2:\n")
+  pfLns.append("      facelvl2[faceHash[2]] = [1, cellIndex, faceIndex, -1, -1]\n")
+  pfLns.append("      self.totalNumFaces += 1\n")
+  pfLns.append("      self.totalNumFacesWithOneCellTouching += 1\n")
+  pfLns.append("    else:\n")
+  pfLns.append("      facelvl3 = facelvl2[faceHash[2]]\n")
+  pfLns.append("      if facelvl3[0] == 1:\n")
+  pfLns.append("        self.totalNumFacesWithOneCellTouching -= 1\n")
+  pfLns.append("        self.totalNumFacesWithTwoCellsTouching += 1\n")
+  pfLns.append("      elif facelvl3[0] == 2:\n")
+  pfLns.append("        self.totalNumFacesWithTwoCellsTouching -= 1\n")
+  pfLns.append("        self.totalNumFacesWith3plCellsTouching += 1\n")
+  pfLns.append("      facelvl3[0] += 1\n")
+  pfLns.append("      facelvl3[3] = cellIndex\n")
+  pfLns.append("      facelvl3[4] = faceIndex\n")
+  pfLns.append("  def GetNumberOfCellsTouchingFace(self, oneFace):\n")
+  pfLns.append("    faceHash = self.GetFaceHash(oneFace)\n")
+  pfLns.append("    returnCount = self.PerFaceData[faceHash[0]][faceHash[1]][faceHash[2]][0]\n")
+  pfLns.append("    return returnCount\n")
+  pfLns.append("  def GetNumberOfCellsTouchingEachFaceOfOneCell(self, oneCellIndex):\n")
+  pfLns.append("    oneCell = self.vtkGrid.GetCell(oneCellIndex)\n")
+  pfLns.append("    returnCountPerFace = []\n")
+  pfLns.append("    numFaces = oneCell.GetNumberOfFaces()\n")
+  pfLns.append("    for ii in range(0, numFaces):\n")
+  pfLns.append("      oneFace = oneCell.GetFace(ii)\n")
+  pfLns.append("      returnCountPerFace.append(self.GetNumberOfCellsTouchingFace(oneFace))\n")
+  pfLns.append("    return returnCountPerFace\n")
+  pfLns.append("  def GetListOfExteriorFacesOnCell(self, oneCell):\n")
+  pfLns.append("    returnExteriorFaceIndices = []\n")
+  pfLns.append("    numFaces = oneCell.GetNumberOfFaces()\n")
+  pfLns.append("    for ii in range(0, numFaces):\n")
+  pfLns.append("      oneFace = oneCell.GetFace(ii)\n")
+  pfLns.append("      if self.GetNumberOfCellsTouchingFace(oneFace) == 1:\n")
+  pfLns.append("        returnExteriorFaceIndices.append(ii)\n")
+  pfLns.append("    return returnExteriorFaceIndices\n")
+  pfLns.append("  def GetListOfExteriorFacesOnCellByIndex(self, cellIndex):\n")
+  pfLns.append("    return self.GetListOfExteriorFacesOnCell(self.vtkGrid.GetCell(cellIndex))\n")
+  pfLns.append("def PhactoriCountCellTouchingEachFace(inInputCsData):\n")
+  pfLns.append("  countCellsTouchingEachFace = PhactoriCountCellsTouchingFaceData(inInputCsData)\n")
+  pfLns.append("  countCellsTouchingEachFace.DoCountForAllCellsInBlock()\n")
+  pfLns.append("  return countCellsTouchingEachFace\n")
+  pfLns.append("def PhactoriCountCellTouchingEachPoint(inInputCsData):\n")
+  pfLns.append("  numCells = inInputCsData.GetNumberOfCells()\n")
+  pfLns.append("  numPoints = inInputCsData.GetNumberOfPoints()\n")
+  pfLns.append("  cellsTouchingPointCount = [0] * numPoints\n")
+  pfLns.append("  for ii in range(0, numCells):\n")
+  pfLns.append("    oneCell = inInputCsData.GetCell(ii)\n")
+  pfLns.append("    cellPointIds = oneCell.GetPointIds()\n")
+  pfLns.append("    numCellPoints = oneCell.GetNumberOfPoints()\n")
+  pfLns.append("    for jj in range(0, numCellPoints):\n")
+  pfLns.append("      oneCellPointId = cellPointIds.GetId(jj)\n")
+  pfLns.append("      cellsTouchingPointCount[oneCellPointId] += 1\n")
+  pfLns.append("  return cellsTouchingPointCount\n")
+  pfLns.append("def PhactoriSurfaceCornerCellFaceFacesExterior(oneFace, cellsTouchingPointCount):\n")
+  pfLns.append("  numFacePoints = oneFace.GetNumberOfPoints()\n")
+  pfLns.append("  facePointIds = oneFace.GetPointIds()\n")
+  pfLns.append("  numOutsideVertices = 0\n")
+  pfLns.append("  for ii in range(0, numFacePoints):\n")
+  pfLns.append("    if cellsTouchingPointCount[facePointIds.GetId(ii)] <= 1:\n")
+  pfLns.append("      return True\n")
+  pfLns.append("  return False\n")
+  pfLns.append("def PhactoriIsOutsideCornerHexCellFaceMaxAreaFace(oneCell, indexFaceListSize,\n")
+  pfLns.append("  sortedFaceSizeList, cellsTouchingPointCount, TestNthLargestFace = 2):\n")
+  pfLns.append("  numFaces = oneCell.GetNumberOfFaces()\n")
+  pfLns.append("  for faceIndex in range(0, numFaces):\n")
+  pfLns.append("    oneFace = oneCell.GetFace(faceIndex)\n")
+  pfLns.append("    if PhactoriSurfaceCornerCellFaceFacesExterior(oneFace, cellsTouchingPointCount):\n")
+  pfLns.append("      if indexFaceListSize[faceIndex] >= sortedFaceSizeList[-TestNthLargestFace]:\n")
+  pfLns.append("        return True\n")
+  pfLns.append("  return False\n")
+  pfLns.append("def PhactoriSurfaceEdgeHexCellFaceFacesExterior(oneFace, cellsTouchingPointCount):\n")
+  pfLns.append("  numFacePoints = oneFace.GetNumberOfPoints()\n")
+  pfLns.append("  facePointIds = oneFace.GetPointIds()\n")
+  pfLns.append("  numOutsideVertices = 0\n")
+  pfLns.append("  for ii in range(0, numFacePoints):\n")
+  pfLns.append("    if cellsTouchingPointCount[facePointIds.GetId(ii)] <= 2:\n")
+  pfLns.append("      numOutsideVertices += 1\n")
+  pfLns.append("  return (numOutsideVertices >= 2)\n")
+  pfLns.append("def PhactoriIsOutsideEdgeHexCellFaceMaxAreaFace(oneCell,\n")
+  pfLns.append("  indexFaceListSize, sortedFaceSizeList, cellsTouchingPointCount,\n")
+  pfLns.append("  TestNthLargestFace = 2):\n")
+  pfLns.append("  numFaces = oneCell.GetNumberOfFaces()\n")
+  pfLns.append("  for faceIndex in range(0, numFaces):\n")
+  pfLns.append("    oneFace = oneCell.GetFace(faceIndex)\n")
+  pfLns.append("    if PhactoriSurfaceEdgeHexCellFaceFacesExterior(oneFace, cellsTouchingPointCount):\n")
+  pfLns.append("      if indexFaceListSize[faceIndex] >= sortedFaceSizeList[-TestNthLargestFace]:\n")
+  pfLns.append("        return True\n")
+  pfLns.append("  return False\n")
+  pfLns.append("def PhactoriIsOutsideSurfaceHexCellFaceMaxAreaFace(oneCell,\n")
+  pfLns.append("  indexFaceListSize, sortedFaceSizeList, cellsTouchingPointCount,\n")
+  pfLns.append("  TestNthLargestFace = 2):\n")
+  pfLns.append("  numFaces = oneCell.GetNumberOfFaces()\n")
+  pfLns.append("  for faceIndex in range(0, numFaces):\n")
+  pfLns.append("    oneFace = oneCell.GetFace(faceIndex)\n")
+  pfLns.append("    numFacePoints = oneFace.GetNumberOfPoints()\n")
+  pfLns.append("    facePtNdxs = oneFace.GetPointIds()\n")
+  pfLns.append("    outsideFaceIndex = -1\n")
+  pfLns.append("    for jj in range(0, numFacePoints):\n")
+  pfLns.append("      outsideFaceIndex = faceIndex\n")
+  pfLns.append("      ptNdx = facePtNdxs.GetId(jj)\n")
+  pfLns.append("      if cellsTouchingPointCount[ptNdx] != 4:\n")
+  pfLns.append("        outsideFaceIndex = -1\n")
+  pfLns.append("        break\n")
+  pfLns.append("    if outsideFaceIndex >= 0:\n")
+  pfLns.append("      break\n")
+  pfLns.append("  if outsideFaceIndex < 0:\n")
+  pfLns.append("    return False\n")
+  pfLns.append("  if indexFaceListSize[outsideFaceIndex] >= sortedFaceSizeList[-TestNthLargestFace]:\n")
+  pfLns.append("    return True\n")
+  pfLns.append("  else:\n")
+  pfLns.append("    return False\n")
+  pfLns.append("def PhactoriFindSurfaceStatusForOneCellUsingFaceInfo(inInputCsData,\n")
+  pfLns.append("  inCellIndex, countCellsTouchingEachFace, flatnessTestRatio = 100.0,\n")
+  pfLns.append("  TestNthLargestFace = 2):\n")
+  pfLns.append("  oneCell = inInputCsData.GetCell(inCellIndex)\n")
+  pfLns.append("  exteriorFaceList = countCellsTouchingEachFace.GetListOfExteriorFacesOnCell(oneCell)\n")
+  pfLns.append("  numExteriorFaces = len(exteriorFaceList)\n")
+  pfLns.append("  if numExteriorFaces == 0:\n")
+  pfLns.append("    retStatus = 1\n")
+  pfLns.append("  else:\n")
+  pfLns.append("    indexFaceListSize, sortedFaceSizeList = PhactoriCalculateCellFaceAreasAndSort(inInputCsData, oneCell)\n")
+  pfLns.append("    flatnessRatio = sortedFaceSizeList[-1] / sortedFaceSizeList[0]\n")
+  pfLns.append("    cellIsFlat = (flatnessRatio >= flatnessTestRatio)\n")
+  pfLns.append("    outsideFaceIsMaxAreaFace = False\n")
+  pfLns.append("    for outsideFaceIndex in exteriorFaceList:\n")
+  pfLns.append("      if indexFaceListSize[outsideFaceIndex] >= sortedFaceSizeList[-TestNthLargestFace]:\n")
+  pfLns.append("        outsideFaceIsMaxAreaFace = True\n")
+  pfLns.append("        break\n")
+  pfLns.append("    if numExteriorFaces == 1:\n")
+  pfLns.append("      if outsideFaceIsMaxAreaFace:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 11\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 8\n")
+  pfLns.append("      else:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 5\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 2\n")
+  pfLns.append("    elif numExteriorFaces == 2:\n")
+  pfLns.append("      if outsideFaceIsMaxAreaFace:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 12\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 9\n")
+  pfLns.append("      else:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 6\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 3\n")
+  pfLns.append("    else:\n")
+  pfLns.append("      if outsideFaceIsMaxAreaFace:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 13\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 10\n")
+  pfLns.append("      else:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 7\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 4\n")
+  pfLns.append("  return retStatus\n")
+  pfLns.append("def PhactoriFindSurfaceStatusForOneCell(inInputCsData, inCellIndex,\n")
+  pfLns.append("      cellsTouchingPointCount, flatnessTestRatio = 100.0):\n")
+  pfLns.append("  oneCell = inInputCsData.GetCell(inCellIndex)\n")
+  pfLns.append("  numPoints = oneCell.GetNumberOfPoints()\n")
+  pfLns.append("  pointIds = oneCell.GetPointIds()\n")
+  pfLns.append("  minCtpc = 9\n")
+  pfLns.append("  for ii in range(0, numPoints):\n")
+  pfLns.append("    testCtpc = cellsTouchingPointCount[pointIds.GetId(ii)]\n")
+  pfLns.append("    if testCtpc < minCtpc:\n")
+  pfLns.append("      minCtpc = testCtpc\n")
+  pfLns.append("  if inCellIndex == 5056:\n")
+  pfLns.append("    debugFlag = 100\n")
+  pfLns.append("  else:\n")
+  pfLns.append("    debugFlag = 25\n")
+  pfLns.append("  if minCtpc >= 8:\n")
+  pfLns.append("    retStatus = 1\n")
+  pfLns.append("  else:\n")
+  pfLns.append("    indexFaceListSize, sortedFaceSizeList = PhactoriCalculateCellFaceAreasAndSort(inInputCsData, oneCell)\n")
+  pfLns.append("    flatnessRatio = sortedFaceSizeList[-1] / sortedFaceSizeList[0]\n")
+  pfLns.append("    cellIsFlat = (flatnessRatio >= flatnessTestRatio)\n")
+  pfLns.append("    if minCtpc >= 4:\n")
+  pfLns.append("      outsideFaceIsMaxAreaFace = PhactoriIsOutsideSurfaceHexCellFaceMaxAreaFace(\n")
+  pfLns.append("        oneCell, indexFaceListSize, sortedFaceSizeList,\n")
+  pfLns.append("        cellsTouchingPointCount)\n")
+  pfLns.append("      if outsideFaceIsMaxAreaFace:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 11\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 8\n")
+  pfLns.append("      else:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 5\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 2\n")
+  pfLns.append("    elif minCtpc >= 2:\n")
+  pfLns.append("      outsideFaceIsMaxAreaFace = PhactoriIsOutsideEdgeHexCellFaceMaxAreaFace(\n")
+  pfLns.append("        oneCell, indexFaceListSize, sortedFaceSizeList,\n")
+  pfLns.append("        cellsTouchingPointCount)\n")
+  pfLns.append("      if outsideFaceIsMaxAreaFace:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 12\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 9\n")
+  pfLns.append("      else:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 6\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 3\n")
+  pfLns.append("    elif minCtpc >= 1:\n")
+  pfLns.append("      outsideFaceIsMaxAreaFace = PhactoriIsOutsideCornerHexCellFaceMaxAreaFace(\n")
+  pfLns.append("        oneCell, indexFaceListSize, sortedFaceSizeList, cellsTouchingPointCount)\n")
+  pfLns.append("      if outsideFaceIsMaxAreaFace:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 13\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 10\n")
+  pfLns.append("      else:\n")
+  pfLns.append("        if cellIsFlat:\n")
+  pfLns.append("          retStatus = 7\n")
+  pfLns.append("        else:\n")
+  pfLns.append("          retStatus = 4\n")
+  pfLns.append("    else:\n")
+  pfLns.append("      retStatus = -1\n")
+  pfLns.append("  return retStatus\n")
+  pfLns.append("def PhactoriGetCellEdgeVector(inInputCsData, oneFaceOrCell, edgeIndex):\n")
+  pfLns.append("  oneFaceEdgePointIds = oneFaceOrCell.GetEdge(edgeIndex).GetPointIds()\n")
+  pfLns.append("  ptA = inInputCsData.GetPoint(oneFaceEdgePointIds.GetId(0))\n")
+  pfLns.append("  ptB = inInputCsData.GetPoint(oneFaceEdgePointIds.GetId(1))\n")
+  pfLns.append("  retVec = vecFromAToB(ptA,ptB)\n")
+  pfLns.append("  return retVec\n")
+  pfLns.append("def PhactoriFindFaceNormal(inInputCsData, oneFace):\n")
+  pfLns.append("  facePointIds = oneFace.GetPointIds()\n")
+  pfLns.append("  ptA = inInputCsData.GetPoint(facePointIds.GetId(0))\n")
+  pfLns.append("  ptB = inInputCsData.GetPoint(facePointIds.GetId(1))\n")
+  pfLns.append("  ptC = inInputCsData.GetPoint(facePointIds.GetId(2))\n")
+  pfLns.append("  vecAB = vecFromAToB(ptA, ptB)\n")
+  pfLns.append("  vecBC = vecFromAToB(ptB, ptC)\n")
+  pfLns.append("  retNormalVec = vecCrossProduct(vecBC, vecAB)\n")
+  pfLns.append("  vecNormalize2(retNormalVec, retNormalVec)\n")
+  pfLns.append("  return retNormalVec\n")
+  pfLns.append("def PhactoriFindLargestCellFaceNormal(inInputCsData, oneCell):\n")
+  pfLns.append("  indexFaceListSize, sortedFaceSizeList = PhactoriCalculateCellFaceAreasAndSort(inInputCsData, oneCell)\n")
+  pfLns.append("  biggestFaceSize = sortedFaceSizeList[-1]\n")
+  pfLns.append("  for faceForNormalIndex in range(0, len(indexFaceListSize)):\n")
+  pfLns.append("    if indexFaceListSize[faceForNormalIndex] == biggestFaceSize:\n")
+  pfLns.append("      break\n")
+  pfLns.append("  faceForNormal = oneCell.GetFace(faceForNormalIndex)\n")
+  pfLns.append("  retNormalVec = PhactoriFindFaceNormal(inInputCsData, faceForNormal)\n")
+  pfLns.append("  return retNormalVec\n")
+  pfLns.append("def PhactoriFindSelectedAngleBetweenEdgeAndCellNormal(inInputCsData, oneCell,\n")
+  pfLns.append("  compareNormal, paramUseSmallestAngle, paramOffsetIndex):\n")
+  pfLns.append("  edgeCompareDotProdList = []\n")
+  pfLns.append("  numEdges = oneCell.GetNumberOfEdges()\n")
+  pfLns.append("  for ii in range(0, numEdges):\n")
+  pfLns.append("    oneEdgeVec = PhactoriGetCellEdgeVector(inInputCsData, oneCell, ii)\n")
+  pfLns.append("    vecNormalize2(oneEdgeVec, oneEdgeVec)\n")
+  pfLns.append("    edgeCompareDotProd = abs(vecDotProduct(compareNormal, oneEdgeVec))\n")
+  pfLns.append("    edgeCompareDotProdList.append(edgeCompareDotProd)\n")
+  pfLns.append("  sortedEdgeCompareDotProdList = sorted(edgeCompareDotProdList)\n")
+  pfLns.append("  if paramUseSmallestAngle:\n")
+  pfLns.append("    outputIndex = max(0, numEdges - 1 - paramOffsetIndex)\n")
+  pfLns.append("  else:\n")
+  pfLns.append("    outputIndex = min(paramOffsetIndex, numEdges - 1)\n")
+  pfLns.append("  outputAngle = 90.0 - math.degrees(math.acos(sortedEdgeCompareDotProdList[outputIndex]))\n")
+  pfLns.append("  return outputAngle\n")
+  pfLns.append("def PhactoriFindHeightOfCell(inInputCsData, oneCell, compareNormal):\n")
+  pfLns.append("  numCellEdges = oneCell.GetNumberOfEdges()\n")
+  pfLns.append("  retHeight = -1.0 \n")
+  pfLns.append("  for ii in range(0, numCellEdges):\n")
+  pfLns.append("    oneCellEdgeVec = PhactoriGetCellEdgeVector(inInputCsData, oneCell, ii)\n")
+  pfLns.append("    dp1 = vecDotProduct(oneCellEdgeVec, compareNormal)\n")
+  pfLns.append("    projectedVec = vecScale(dp1, compareNormal)\n")
+  pfLns.append("    oneCellEdgeHeight = vecMagnitude(projectedVec)\n")
+  pfLns.append("    if oneCellEdgeHeight > retHeight:\n")
+  pfLns.append("      retHeight = oneCellEdgeHeight\n")
+  pfLns.append("  return retHeight\n")
+  pfLns.append("def PhactoriFindCellEdgeAngleMetricsForOneCell(inInputCsData, inCellIndex,\n")
+  pfLns.append("      paramUseSmallestAngle, paramOffsetIndex):\n")
+  pfLns.append("  oneCell = inInputCsData.GetCell(inCellIndex)\n")
+  pfLns.append("  numEdges = oneCell.GetNumberOfEdges()\n")
+  pfLns.append("  if numEdges < 6:\n")
+  pfLns.append("    return 90.0, 0.0\n")
+  pfLns.append("  if oneCell.GetNumberOfFaces() < 4:\n")
+  pfLns.append("    return 90.0, 0.0\n")
+  pfLns.append("  compareNormal = PhactoriFindLargestCellFaceNormal(inInputCsData, oneCell)\n")
+  pfLns.append("  retAngle = PhactoriFindSelectedAngleBetweenEdgeAndCellNormal(inInputCsData,\n")
+  pfLns.append("    oneCell, compareNormal, paramUseSmallestAngle, paramOffsetIndex)\n")
+  pfLns.append("  retHeight = PhactoriFindHeightOfCell(inInputCsData, oneCell, compareNormal)\n")
+  pfLns.append("  return retAngle, retHeight\n")
+
 #phactori_combine_to_single_python_file_subpiece_end_1
 
 #phactori_combine_to_single_python_file_parent_1
@@ -1763,6 +2853,17 @@ def DebugPrintBlockName(csData, blockIndex):
         #myDebugPrint3("oneBlockMetaData: " + str(oneBlockMetaData) + "\n")
         theBlockName = oneBlockMetaData.Get(vtk.vtkCompositeDataSet.NAME())
         myDebugPrint3("block index, name: " + str(blockIndex) + ", " + str(theBlockName) + "\n")
+      else:
+        myDebugPrint3("oneBlockMetaData is None (1)\n")
+    else:
+      myDebugPrint3("this block is None, now check meta data\n")
+      oneBlockMetaData = csData.GetMetaData(blockIndex)
+      if oneBlockMetaData != None:
+        #myDebugPrint3("oneBlockMetaData: " + str(oneBlockMetaData) + "\n")
+        theBlockName = oneBlockMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+        myDebugPrint3("block index, name (2): " + str(blockIndex) + ", " + str(theBlockName) + "\n")
+      else:
+        myDebugPrint3("oneBlockMetaData is None (2)\n")
 
 def PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(inRecursionControlItem,  inPvFilter):
   "grab client side data object, and use that to do recursion"  
@@ -2632,6 +3733,97 @@ def SmartGetNumberOfProcesses():
   gLocalProcessId = globalController.GetLocalProcessId()
   gNumberOfProcesses = globalController.GetNumberOfProcesses()
   return gNumberOfProcesses
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriDataArtifactMetaDataControl import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class PhactoriDataArtifactMetaDataControl:
+  def __init__(self, myProcessId, numProcesses):
+    self.outputEnabled = True
+    self.artifactListCsvFileName = None
+    self.artifactListCsvFileHandle = None
+    self.artifactListTryOpenCount = 0
+    self.thisProcessIsWritingProcess = -1
+    if myProcessId == int(numProcesses/2):
+      self.thisProcessIsWritingProcess = 1
+    else:
+      self.thisProcessIsWritingProcess = 0
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriDataArtifactMetaDataControl:__init__ " + \
+        str(myProcessId) + ", " + str(numProcesses) + ", " + \
+        str(self.thisProcessIsWritingProcess) + "\n", 100)
+
+  def EnableOutput(self, onOff):
+    self.outputEnabled = onOff
+
+  def CloseFiles(self):
+    if self.artifactListCsvFileHandle != None:
+      self.artifactListCsvFileHandle.close()
+
+  def ThisProcessIsWritingProcess(self):
+    return self.thisProcessIsWritingProcess > 0
+
+  def DataArtifactOutputListOpen(self):
+    if self.artifactListCsvFileHandle == None:
+      if self.artifactListTryOpenCount > 0:
+        return False
+      self.artifactListTryOpenCount += 1
+      myNow = datetime.datetime.now()
+      myFormat = "%Y-%m-%d-%H:%M:%S"
+      self.artifactListCsvFileName = "DataArtifactList_" + myNow.strftime(myFormat) + ".csv"
+      self.artifactListCsvFileHandle = open(self.artifactListCsvFileName, "w")
+      if self.artifactListCsvFileHandle == None:
+        print("AddImageToDataArtifactOutputList: unable to open file:\n",
+          self.artifactListCsvFileName)
+        return False
+    return True
+
+  def CheckIfDoOutput(self):
+    if self.outputEnabled == False:
+      return False
+
+    if self.ThisProcessIsWritingProcess() == False:
+      return False
+
+    if self.DataArtifactOutputListOpen() == False:
+      return False
+
+    return True
+
+  def AddDataArtifactToDataArtifactOutputList(self, fileName):
+
+    if self.CheckIfDoOutput() == False:
+      return
+
+    myNow = datetime.datetime.now()
+    outDate = str(myNow)
+    outStr = fileName + "," + outDate + "\n"
+    self.artifactListCsvFileHandle.write(outStr)
+    self.artifactListCsvFileHandle.flush()
+
+  def AddDataExportToDataArtifactOutputList(self, fileName):
+    self.AddDataArtifactToDataArtifactOutputList(fileName)
+
+  def AddImageToDataArtifactOutputList(self, fileName):
+    self.AddDataArtifactToDataArtifactOutputList(fileName)
+
+if __name__ == '__main__':
+  pdamdc = PhactoriDataArtifactMetaDataControl(1,2)
+  pdamdc.AddImageToDataArtifactOutputList("CatalystOutput/test1.png")
+  pdamdc.AddDataExportToDataArtifactOutputList("CatalystVtkDataOutput/test2.vtm")
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+global gPhactoriDataArtifactTracker
+gPhactoriDataArtifactTracker = None
+
+def GetGlobalDataArtifactTracker():
+  global gPhactoriDataArtifactTracker
+  if gPhactoriDataArtifactTracker == None:
+    gPhactoriDataArtifactTracker = PhactoriDataArtifactMetaDataControl(
+      SmartGetLocalProcessId(), SmartGetNumberOfProcesses())
+  return gPhactoriDataArtifactTracker
 
 def UseMPIToFillInSharedListNPerProcess(
         inThisProcVtkArray, inCountPerProc, outVtkArray, vtkArrayTypeIndex):
@@ -3839,6 +5031,11 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
               'slice',
               PhactoriSliceOperation,
               operationParams)
+    elif operationParams['type'] == 'slicewithplane':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'slicewithplane',
+              PhactoriSliceWithPlaneOperation,
+              operationParams)
     elif operationParams['type'] == 'boxclip':
       ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
               'boxclip',
@@ -3894,6 +5091,8 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
               'vtkdataexport',
               PhactoriVtkDataExportOperation,
               operationParams)
+      newOperationBlock.mOperationSpecifics.\
+        SetPhactoriDataArtifactMetaDataControl(GetGlobalDataArtifactTracker())
     elif operationParams['type'] == 'exodusiiexport':
       ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
               'exodusiiexport',
@@ -3963,6 +5162,26 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
       ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
               'pointsource',
               PhactoriPointSource,
+              operationParams)
+    elif operationParams['type'] == 'planesource':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'planesource',
+              PhactoriPlaneSource,
+              operationParams)
+    elif operationParams['type'] == 'findcelledgelengths':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'findcelledgelengths',
+              PhactoriFindCellEdgeLengths,
+              operationParams)
+    elif operationParams['type'] == 'celledgeanglemetrics':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'celledgeanglemetrics',
+              PhactoriCellEdgeAngleMetrics,
+              operationParams)
+    elif operationParams['type'] == 'markcellsurfacestatus2':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'markcellsurfacestatus2',
+              PhactoriMarkCellSurfaceStatus2,
               operationParams)
     else:
       errStr = 'error!  in MakeFiltersFromViewMapOperationsC inOperationBlocksJson operation type is unrecognized ' + str(operationParams['type']) + '\n'
@@ -5027,6 +6246,8 @@ def ParseBlocksC(ioBlockSet, inBlocksJson, inBlockClass, inParseOneBlockMethod,
   return count
 
 class PhactoriUserPointInfo:
+  "user specified point: absolute, relative, at element, node, data value, etc."
+
   def __init__(self):
     #'absolute' or 'datasize relative' or 'element' or 'node'
     self.mPointType = "datasize relative"
@@ -5525,6 +6746,8 @@ class PhactoriOffAxisProjectionInfo:
 
 
 class PhactoriCameraBlock:
+  "camera control: look at point, look direction, camera/eye position, etc.\n\nPhactoriCameraBlock is the central class for controlling the camera (or eye)\npositioning for images. There are a number of ways the camera control can\nbe scripted in paraview.\n\nTo add a PhactoriCameraBlock to the incoming script, you add\na sub-block to the 'camera blocks' section of the data with the 'type'\nkey given a value of 'camera'. Next is a simple working script, followed by\na longer discussion of all the allowed controls.\n\n::\n\n  {\n    'camera blocks':{\n      'mycam1':{\n        'type':'camera',\n        'look direction':[-1.0, -2.0, -3.0]\n      }\n    },\n    'representation blocks':{'rep_tmprtr':{'color by scalar':'temperature'}},\n    'imageset blocks':{\n      'temperature_on_slice_1':{\n        'camera':'mycam1',\n        'representation':'rep_tmprtr',\n        'image basedirectory':'CatalystOutput',\n        'image basename':'threshold1_temperature.'\n      }\n    }\n  }\n\nThe simplest common usage of the camera is to specify a point to look at and\na direction in which to look. In this case the camera is positioned so that\nthe center of view looks along the specified look direction towards the\n'look at point'. If the user leaves the distance between the look at point\nand the camera position unspecified, the camera will automatically be placed\nfar enough away from the look at point so that the entire bounding box of\nthe mesh data is visible.\n\nThe user may specify the distance between the look at point and the camera\nposition by adding a 'look at absolute distance' key which will place the\ncamera an exact number of specified geometrical units (in model coordinates)\nfrom the look at point. A 'look at relative distance' key behaves more like\na zoom factor. A 'look at relative distance' of 0.25 will calculate the\ndefault distance (so the whole data bounding box is in view) but then\nmultiply that distance by 0.25, resulting in a camera postion which is four\ntimes closer to the look at point than the default.\n\nThe user also has the point to specify 'camera at point' to fix the camera\nat a 3D point. The user is allowed to specify two out of three of 'look at\npoint', 'camera at point', and 'look direction' but not all three. If only\none is specified another will receive a default value, and if none are\nspecified the camera takes on a default behavior with a look direction of\n[0.0, 0.0, -1.0] and a relative look at point of [0.0, 0.0, 0.0]. Also note\nthat if the user specifies the camera point and the look at point, the look\nat distance is implied and cannot be set.\n\nBoth the 'look at point' and the 'camera at point' are instances of the\nPhactoriUserPointInfo class. This class is documented separately, but\nbriefly this means that this point can be the expected absolute geometric\n3d point (e.g. [123.0, -37.9, 47.6]), a 'relative' point specified in\nterms of the data bounding box (e.g. [0.0, 0.0, 0.0] is the center of the\ndata bounding box), specified to reside at a node id or element id in the\nmesh (or at a specified offset therefrom), or at the location of the maximum\nor minimum of a data variable (e.g. pressure, temperature, velocity\nmagnitude). Note that in all cases except the 'absolute' case, the geometric\nposition of the point might be different depending on the mesh data.\n\nGenerally it is best to use 'look at relative point' and 'look direction' for\ninitial scripting (unless you happen to know exact geometric places of\ninterest, in which case 'look at absolute point' is better), and then create\nmore specific cameras to hone in on areas of interest or make steady views\nfor creating movies.\n\nRemember, look at the documentation for PhactoriUserPointInfo to get the\ndetails on the options for 'look at point' and 'camera at point', but a\nnumber of examples of camera usage follow:\n\nLooks in a direction [-1.0, -1.0, .1.0] at the default location, relative\npoint [0,0,0] which is the center of the bounding box of the data. Camera\nis positioned to show entire bounding box of data:\n\n::\n\n  'mycam2':{\n    'type':'camera',\n    'look direction':[-1.0, -1.0, -1.0]\n  }\n\nSame as above, but now 'zoomed in' to where the look at point to camera\npoint distance is one fourth of what it was in the previous case:\n\n::\n\n  'mycam3':{\n    'type':'camera',\n    'look direction':[-1.0, -1.0, -1.0],\n    'look at relative distance':0.25\n  }\n\nSame as above, but now we make the look at point on one of the corners of\nthe bounding box of the data (max X, min Y, maz Z)\n\n::\n\n  'mycam4':{\n    'type':'camera',\n    'look direction':[-1.0, -1.0, -1.0],\n    'look at relative point':[0.5, -0.5, 0.5]\n    'look at relative distance':0.25\n  }\n\nThe above will be a bit odd because the camera position calculation will\nstart by getting the whole bounding box in view, which will be just on\none side of the screen. It would work better to line the view up back\ntowards the center:\n\n::\n\n  'mycam5':{\n    'type':'camera',\n    'look direction':[-1.0, 1.0, -1.0],\n    'look at relative point':[0.5, -0.5, 0.5]\n    'look at relative distance':0.25\n  }\n\nNow an example where you know what geometric point you need to focus on,\nwhere there might be a tip or and edge or a bend or a stress point:\n\n::\n\n  'mycam6':{\n    'type':'camera',\n    'look direction':[-1.0, -1.0, -1.0],\n    'look at absolute point':[132.0, 145.125, -157.625]\n    'look at relative distance':0.25\n  }\n\nThis is similar to the above, but you have more precise control over what\nyou see in the camera, and the view won't change if the mesh is changing (as\nin a mechanics simulation):\n\n::\n\n  'mycam7':{\n    'type':'camera',\n    'look direction':[-1.0, -1.0, -1.0],\n    'look at absolute point':[132.0, 145.125, -157.625]\n    'look at absolute distance':55.0\n  }\n\nLook at a particular node (or element):\n\n::\n\n  'mycam8':{\n    'type':'camera',\n    'look direction':[-1.0, -1.0, -1.0],\n    'look at node':1942\n    'look at relative distance':0.25\n  }\n\nlook at a particular element, and put the camera at a certain distance and\ndirection from that element:\n\n::\n\n  'mycam9':{\n    'type':'camera',\n    'look at element':1942\n    'camera at element displaced':[1942, 5.0, 6.1, 7.2]\n  }\n\n  look at the point where pressure is maximum:\n\n:: \n\n  'mycam10':{\n    'type':'camera',\n    'look direction':[-1.0, -1.0, -1.0],\n    'look at max variable point':True,\n    'variable scalar':'pressure'\n  }\n\nFor other point options see PhactoriUserPointInfo\n\nYou also have the option to specify a type of 'multicamera8' in which you\nhave 8 look directions: two aliagned on each axis from both directions, plus\ntwo diagonals [-1.0, -1.0, -1.0] and [1.0, 1.0, 1.0]. You can still specify\na look at point and look at relative distance or look at abolute distance.\nIf you don't specify those you'll get a relative look at point of [0,0,0],\ncenter of the data bounding box, and a relative look at distance of 1.0 so\nall the data is visible from each angle.\n\nThe result is that when this camera is chosen by an imageset block the\nresult will be 8 images instead of 1:\n\n::\n\n  'mycam11':{\n    'type':'multicamera8',\n    'look at absolute point':[132.0, 145.125, -157.625]\n    'look at absolute distance':100.0\n  }\n\nEventually we plan to provide for\nlists of look at points and look directions so users may more tersely\nspecify many views of the same operation/representation setup.\n"
+
   def __init__(self):
     self.mName = ""
     self.mType = ""
@@ -6017,6 +7240,8 @@ class PhactoriOperationSpecifics:
 #from Operation.PhactoriThresholdOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriThresholdOperation(PhactoriOperationSpecifics):
+  "Threshold operation, phactori interface adapter to the catalyst filter\n\n  PhactoriThresholdOperation is the phactori manager for working with the\n  paraview/catalyst Threshold() operation and its paramters, providing\n  access and pipeline/input/output managment via the json, lexx/yacc, or soon\n  yaml interface. The user may specify a named input to the filter, with the\n  unnamed default being the incoming data mesh.\n\n  For detailed information on the Threshold filter from ParaView, see the\n  ParaView Documentation. The basic operation of the Threshold filter is to\n  extract all cells and points for which cell or point mesh variable (e.g.\n  pressure, temperature, vonmises, displacement) is inside a specified range.\n\n  To add a PhactoriThresholdOperation to the incoming script, you add\n  a sub-block to the 'operation blocks' section of the data with the 'type'\n  key given a value of 'threshold'. You also specify one of a range of values\n  to keep, a value below which to keep values above, or a value above which to\n  keep points/nodes. One complete but simple example\n  script:\n\n::\n\n  {\n    'camera blocks':{'mycam1':{'type':'camera', 'look direction':[1.0, 2.0, 3.0]}},\n    'representation blocks':{'rep_tmprtr':{'color by scalar':'temperature'}},\n    'imageset blocks':{\n      'temperature_on_slice_1':{\n        'operation':'mytempthrsh1',\n        'camera':'mycam1',\n        'representation':'rep_tmprtr',\n        'image basedirectory':'CatalystOutput',\n        'image basename':'threshold1_temperature.'\n      }\n    },\n    'operation blocks':{\n      'mytempthrsh1':{\n        'type':'threshold',\n        'variable scalar':'temperature',\n        'keep between':[10.0, 100.0]\n      }\n    }\n  }\n\nRather than 'keep between' with a min/max range you can also have 'keep above' with a single value or 'keep below' with a single value, e.g.\n\n::\n\n  'keep above': 100.0\n  or\n  'keep below': 10.0\n\n"
+
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     #self.mVariableName = None
@@ -7266,6 +8491,10 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
     #should be "vtkmultiblockdataset" or "vtkpolydata" or "vtkunstructureddata"
     self.mVtkDataType = "vtkmultiblockdataset"
     self.mVtkDataTypeExtention = ".vtm"
+    self.mDataArtifactLister = None
+
+  def SetPhactoriDataArtifactMetaDataControl(self, inDataArtifactLister):
+    self.mDataArtifactLister = inDataArtifactLister
 
   def ParseOutputFilenameParametersFromJson(self, inJson):
     self.mOutputFileBasename = getParameterFromBlock(inJson,
@@ -7386,6 +8615,9 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
     #  myDebugPrint3("multiblock info right before self.mWriter.Write (end):\n")
     #  BarrierLock("barrier lock before self.mWriter.Write")
     self.mWriter.Write()
+
+    if self.mDataArtifactLister != None:
+      self.mDataArtifactLister.AddDataExportToDataArtifactOutputList(outfilename)
 
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriVtkDataExportOperation." \
@@ -8680,7 +9912,8 @@ class PhactoriGhostCellsGeneratorOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriMergeBlocksOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriMergeBlocksOperation(PhactoriOperationSpecifics):
-  "manages MergeBlocks filter"
+  "merge blocks (MergeBlocks) operation, adapter to the catalyst filter\n\nPhactoriMergeBlocksOperation is the phactori manager for working with the\nParaView/Catalyst MergeBlocks() filter and its parameters, providing\naccess and pipeline/input/output managment via the json, lexx/yacc, or soon\nyaml interface. The user may specify a named input to the filter, with the\nunnamed default being the incoming data mesh.\n\nThe MergeBlocks filter combines all the elements from all blocks of a\nmultiblock dataset into a single block with one set of elemeeents and one set\nof points. The input is, e.g., a vtkMultiBlockDataset, and the output is\nusually an vtkUnstructuredGrid or vtkPoly. Sometimes other filters which are\nfailing will succeed when placed after a MergeBlocks filter.\n\nFor moree information on the MergeBlocks() filter from ParaView, see the\nParaView Documentation.\n\nTo control the MergeBlocks you have a section in the\n'operation blocks' section of the phactori control script which looks like:\n\n::\n\n    'operation blocks':{\n      'mymergeblocks1':{\n        'type':'mergeblocks'\n      }\n    }\n\nAs with other pipeline operations, you can add an\n'input':'other_op_name' line to place this after another operation in the\npipeline such as a clip or a slice or a contour.\n"
+
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
 
@@ -8829,7 +10062,8 @@ global gDuplicateNameCounter
 gDuplicateNameCounter = {}
 
 class PhactoriExtractBlockOperation(PhactoriOperationSpecifics):
-  "manages extract block filter, including creating flat block\n     indices list from list of block names"
+  "Extract Block operation, phactori interface adapter to the catalyst filter\nFor detailed information on the ExtractBlock() filter from ParaView, see the\nParaView Documentation. The basic operation of this filter is to take a list\nof block names and create a new mesh which includes only the blocks in the\nwhich have the names in the given list (and their children). Alternatively\nthe list can contain blocks to be excluded instead of included. The current\nParaView (5.8) implementation of this filter takes a list of block indices\nwhich can become inaccurate if the mesh structure is unexpected, so this\nPhactori adapter uses the block names to create the block index list at\nrun time rather than at script creation time.\n\nTo add a PhactoriExtractBlock to the incoming script, you add\na sub-block to the 'operation blocks' section of the data with the 'type'\nkey given a value of 'extractblock'. You also supply a list of block names\nwith a key of either 'include blocks' or 'exclude blocks'. One complete but\nsimple example script:\n\n::\n\n  {\n    'camera blocks':{'mycam1':{'type':'camera', 'look direction':[1.0, 2.0, 3.0]}},\n    'representation blocks':{'rep_tmprtr':{'color by scalar':'temperature'}},\n    'imageset blocks':{\n      'temperature_on_slice_1':{\n        'operation':'myincludeblocks1',\n        'camera':'mycam1',\n        'representation':'rep_tmprtr',\n        'image basedirectory':'CatalystOutput',\n        'image basename':'myincludeblocks1_temperature.'\n      }\n    },\n    'operation blocks':{\n      'myincludeblocks1':{\n        'type':'extractblock',\n        'include blocks':['blk-2', 'blk-3', 'blk-7']\n      }\n    }\n  }\n\nAs mentioned previously, you can specify 'exclude blocks' instead of\n'include blocks', but you may not specify both.\n\n"
+
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     #mIncludeblockList OR mExcludeBlockList will be filled in from parsing
@@ -9474,6 +10708,8 @@ class PhactoriIntegrateVariablesOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriContourOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriContourOperation(PhactoriOperationSpecifics):
+  "clip plane operation, adapter to the catalyst Contour filter\n\nPhactoriContourOperation is the phactori manager for working with the\nParaView/Catalyst Contour() filter and its parameters, providing\naccess and pipeline/input/output managment via the json, lexx/yacc, or soon\nyaml interface. The user may specify a named input to the filter, with the\nunnamed default being the incoming data mesh. i\n\nFor information on the Contour() filter from ParaView, see the ParaView\nDocumentation. The basic operation is to take a value and a variable and\ncalculate an iso surface in the mesh corresponding to the value and create\na 3D surface at that iso value. Multiple values can be specified in the same\noperation, resulting in multiple surface.\n\nThe user must specify the variable to be used and one or more isosurface\nvalues.\n\nTo add a PhactoriContourOperation to the incoming script, you add\na sub-block to the 'operation blocks' section of the data with the 'type'\nkey given a value of 'contour'. One complete but simple example script:\n\n::\n\n  {\n    'camera blocks':{'mycam1':{'type':'camera', 'look direction':[1.0, 2.0, 3.0]}},\n    'representation blocks':{'rep_tmprtr':{'color by scalar':'temperature'}},\n    'imageset blocks':{\n      'temperature_contour_1':{\n        'operation':'myclipwithplane1',\n        'camera':'mycam1',\n        'representation':'rep_tmprtr',\n        'image basedirectory':'CatalystOutput',\n        'image basename':'contour1_temperature.'\n      }\n    },\n    'operation blocks':{\n      'mycontour1':{\n        'type':'contour',\n        'variable scalar':'temperature',\n        'contour value':[100.0, 150.0, 200.0, 1000.0]\n      }\n    }\n\n\nAs an alternative to 'contour value' you are allowed to specify a key\n'contour value sequence' with a start value, a step value, and an end value.\nContour values will automatically be created from start, spacing by step,\nuntil a value greater than or equal to end is reached.  For example:\n\n\n::\n\n  'contour value sequence': [100.0, 200.0, 1100.0]\n\n\nwill get 100, 300, 500, 700, and 900. If it is 1101.0 for end, 1100.0 will\nalso be used.\n\n"
+
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.mVariableInfo = PhactoriVariableInfo()
@@ -9850,10 +11086,87 @@ class PhactoriSliceOperation(PhactoriPlaneOpBase):
 #phactori_combine_to_single_python_file_subpiece_end_1
 
 #phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriSliceWithPlaneOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriSliceWithPlaneOperation(PhactoriPlaneOpBase):
+  "slice with plane operation, adapter to the catalyst filter\n\nPhactoriSliceWithPlaneOperation is the phactori manager for working with the\nParaView/Catalyst SliceWithPlane() filter and its parameters, providing\naccess and pipeline/input/output managment via the json, lexx/yacc, or soon\nyaml interface. The user may specify a named input to the filter, with the\nunnamed default being the incoming data mesh.\n\nFor information on the SliceWithPlane() filter from ParaView, see the\nParaView Documentation.\n\nOur experience has been that as of ParaView 5.8 there are some mesh\ngeometries where the paraview Slice() filter with a plane slice type will\ncrash while SliceWithPlane() behaves correctly.\n\nThe user must define the plane with a point and normal or with three points.\nThere are defaults which will be used if the user does not supply some or\nall of the definition.  PhactoriSliceWithPlaneOperation is a child class of\nPhactoriPlaneOpBase, along with PhactoriSliceOperation and\nPhactoriClipPlaneOperation. Check the documentation for PhactoriPlaneOpBase\nfor the many options for defining the plane point(s), including absolute or\nrelative 3D points, dynamic data-driven point locations, or collocating with\nmesh nodes or elements (or offset therefrom).\n\nTo add a PhactoriSliceWithPlaneOperation to the incoming script, you add\na sub-block to the 'operation blocks' section of the data with the 'type'\nkey given a value of 'slicewithplane'. One complete but simple example\nscript:\n\n::\n\n  {\n    'camera blocks':{'myslicecam1':{'type':'camera', 'look direction':[1.0, 2.0, 3.0]}},\n    'representation blocks':{'rep_tmprtr':{'color by scalar':'temperature'}},\n    'imageset blocks':{\n      'temperature_on_slice_1':{\n        'operation':'myslicewithplane1',\n        'camera':'myslicecam1',\n        'representation':'rep_tmprtr',\n        'image basedirectory':'CatalystOutput',\n        'image basename':'slice1_temperature.'\n      }\n    },\n    'operation blocks':{\n      'myslicewithplane1':{\n        'type':'slicewithplane',\n        'relative point on plane':[0.1, -0.2, 0.3],\n        'plane normal':[1.0, 2.0, 3.0]\n      }\n    }\n  } \n\nthe plane normal does not need to be a unit vector: Phactori will normalize\nit for you (again, see PhactoriClipPlaneOperation)\n\nA minimalist example script using all default behavior will produce 8 images\nwith autogenerated names with 6 axis aligned views and 2 diagonal xyz views\ncolored by block index number (cylically).\n\n::\n\n  { 'camera blocks':{},\n    'representation blocks':{},\n    'imageset blocks':{'slice_1_imageset':{'operation':'myslicewithplane1'}},\n    'operation blocks':{'myslicewithplane1':{'type':'slicewithplane'}} }\n\n"
+
+  def CreateParaViewFilter(self, inInputFilter):
+
+    #don't need our own init code at this point, but this is how it would be
+    #added
+    #def __init__(self):
+    #    MySuperClass.__init__(self)
+
+    "create the slice plane filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriSliceWithPlaneOperation.CreateParaViewFilter entered\n', 100)
+    #info in block class should already be parsed and checked
+
+    savedActiveSource = GetActiveSource()
+
+    newParaViewFilter = SliceWithPlane(Input=inInputFilter)
+    newParaViewFilter.Plane = 'Plane'
+
+    self.UpdateSlice(inInputFilter, newParaViewFilter)
+
+    SetActiveSource(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriSliceWithPlaneOperation.CreateParaViewFilter returning\n', 100)
+
+    return newParaViewFilter
+
+  def DoUpdateDueToChangeInData(self, inIncomingPvFilter,
+      outOutgoingPvFilter):
+    "the PhactoriSliceWithPlaneOperation may need to update if the point on\n       the slice plane was tied to a node, element, or variable min/max\n       location"
+    if PhactoriDbg():
+      myDebugPrint3("PhactoriSliceWithPlaneOperation::"
+          "DoUpdateDueToChangeInData override executing\n")
+
+    if self.MayChangeWithData() == False:
+      if PhactoriDbg():
+        myDebugPrint3("PhactoriSliceWithPlanePlaneOperation::"
+            "DoUpdateDueToChangeInData returning (absolute point or points)\n")
+      return
+
+    self.UpdateSlice(inIncomingPvFilter, outOutgoingPvFilter)
+
+    if PhactoriDbg():
+      myDebugPrint3("PhactoriSliceWithPlanePlaneOperation::"
+          "DoUpdateDueToChangeInData override returning\n")
+
+  def UpdateSlice(self, inIncomingPvFilter, ioOutgoingPvFilter):
+    "using the current info on the slice, get all the paraview stuff\n       set up correctly"
+
+    if PhactoriDbg():
+      myDebugPrint3("PhactoriSliceWithPlanePlaneOperation::UpdateSlice entered\n")
+
+    originToUse = [0,0,0]
+    normalToUse = [0,1,0]
+    self.CalculateUpdatedOriginAndNormal(
+            inIncomingPvFilter, originToUse, normalToUse)
+
+    if PhactoriDbg():
+      myDebugPrint3('  updateslice using normal: ' + \
+              str(normalToUse) + '\n')
+    ioOutgoingPvFilter.Plane.Normal = normalToUse
+
+    if PhactoriDbg():
+      myDebugPrint3('  updateslice using origin: ' + str(originToUse) + '\n')
+    ioOutgoingPvFilter.Plane.Origin = originToUse
+
+    if PhactoriDbg():
+      myDebugPrint3("PhactoriSliceWithPlanePlaneOperation::UpdateSlice returning\n")
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
 #from Operation.PhactoriClipPlaneOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriClipPlaneOperation(PhactoriPlaneOpBase):
-  "clip plane operation, settings and handling of slice filter"
+  "clip plane operation, adapter to the catalyst filter\n\nPhactoriSliceWithPlaneOperation is the phactori manager for working with the\nParaView/Catalyst Clip() filter and its parameters, providing\naccess and pipeline/input/output managment via the json, lexx/yacc, or soon\nyaml interface. The user may specify a named input to the filter, with the\nunnamed default being the incoming data mesh. This class is confined to a\nParaView Clip operation with a clip type of plane. See\nPhactoriBoxClipOperation and PhactoriCylinderClipOperation for clipping with\na type of box and cylinder, and other classes may be added for other clip\ntypes.\n\nFor information on the Clip() filter from ParaView, see the ParaView\nDocumentation.\n\nThe user must define the plane with a point and normal or with three points.\nThere are defaults which will be used if the user does not supply some or\nall of the definition.  PhactoriClipPlaneOperation is a child class of\nPhactoriPlaneOpBase, along with PhactoriSliceWithPlaneOperation and\nPhactoriSliceOperation. Check the documentation for PhactoriPlaneOpBase\nfor the many options for defining the plane point(s), including absolute or\nrelative 3D points, dynamic data-driven point locations, or collocating with\nmesh nodes or elements (or offset therefrom).\n\nThe user may also choose to make a 'crinkle' or 'smooth' cut with the\n'cut type' key, defaulting to\nsmooth. A smooth cut makes a two dimentional plane, while a crinkle cut\nincludes all elements cut by the plane and creates no new elements which\nwere not in the original mesh. The user may also choose to keep either side\nof the plane by using the key 'side to keep' and setting to 'positive' or\n'negative'.\n\nTo add a PhactoriClipPlaneOperation to the incoming script, you add\na sub-block to the 'operation blocks' section of the data with the 'type'\nkey given a value of 'clip'. One complete but simple example\nscript:\n\n::\n\n  {\n    'camera blocks':{'myclipcam1':{'type':'camera', 'look direction':[1.0, 2.0, 3.0]}},\n    'representation blocks':{'rep_tmprtr':{'color by scalar':'temperature'}},\n    'imageset blocks':{\n      'temperature_clip_1':{\n        'operation':'myclipwithplane1',\n        'camera':'myclipcam1',\n        'representation':'rep_tmprtr',\n        'image basedirectory':'CatalystOutput',\n        'image basename':'clip1_temperature.'\n      }\n    },\n    'operation blocks':{\n      'myclipwithplane1':{\n        'type':'clip',\n        'cut type':'crinkle',\n        'side to keep':'negative',\n        'relative point on plane':[0.1, -0.2, 0.3],\n        'plane normal':[1.0, 2.0, 3.0]\n      }\n    }\n\nThe 'point on plane' is a PhactoriUserPointInfo instance, which means it can\nbe an absolute point, a relative point, a data point (at min or max of a data\narray), at a node/point, at an element/cell, or at a data min max or cell or\nelement but displaced by a vector. See the PhactoriUserPointInfo class for more\ndetailed info.\n\nFurther, the plane may also be define with three points instead of a point and\na normal. To use this format, omit the 'plane normal' and '... point on plane'\nkeys and instead have keys with 'point on plane A', 'point and plane B', and\n'point on plane C'. For example:\n\n::\n\n  'absolute point on plane A':[0.0, 1.0, 2.0],\n  'relative point on plane B':[0.0, 0.2, -0.3],\n  'relative point on plane C':[0.0, 0.0, -0.0],\n\n"
 
   def CreateParaViewFilter(self, inInputFilter):
 
@@ -10073,6 +11386,8 @@ class PhactoriCylinderClipOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriBoxClipOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriBoxClipOperation(PhactoriOperationSpecifics):
+  "clip operation with a clip type of 'box', adapter to the catalyst filter\n\nPhactori Adapter interface to the ParaView Clip filter with a clip type\nof 'box'. Refere to the ParaView documentation for extensive\ndocumentation of the clip filter.\n\nTo control the BoxClipOperation you have a section in the\n'operation blocks' section of the phactori control script which looks like:\n\n::\n\n    'operation blocks':{\n      'myboxclip1':{\n        'type':'boxclip',\n        'center at absolute point':[1.1, -2.2, 3.5],\n        'absolute extents':[5.0, 6.2, 7.3]\n      }\n    }\n\n'center at absolute point' may also be 'center at relative point' or\n'center at element' or 'center at node' or 'center at data point', as it is\na 'phactori use point'. 'absolute extents' may be 'relative extents' in\nwhich case the extents of the clip box are determined relative to the size\nof the bounding box of the data.\n\n"
+
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.mCenterPtInfo = PhactoriUserPointInfo()
@@ -10163,10 +11478,6 @@ class PhactoriBoxClipOperation(PhactoriOperationSpecifics):
     centerToUse = self.mCenterPtInfo.GetCurrentGeometricPointWithDisplacement(
         inInputFilter, viewBoundsArray, True)
 
-    newParaViewFilter.ClipType.Position = [centerToUse[0],
-        centerToUse[1],
-        centerToUse[2]]
-
     if PhactoriDbg():
       myDebugPrint3("  about to find extents--absolute or calced from relative\n")
     myViewBounds = viewBoundsArray[0]
@@ -10200,8 +11511,15 @@ class PhactoriBoxClipOperation(PhactoriOperationSpecifics):
     if PhactoriDbg():
       myDebugPrint3("  halfExtents: " + str(halfXExt) + ", " + str(halfYExt) + ", " + str(halfZExt) + "\n")
 
-    newParaViewFilter.ClipType.Bounds = [-halfXExt, halfXExt,
-        -halfYExt, halfYExt, -halfZExt, halfZExt]
+    #newParaViewFilter.ClipType.Position = [centerToUse[0],
+    #    centerToUse[1],
+    #    centerToUse[2]]
+    #newParaViewFilter.ClipType.Bounds = [-halfXExt, halfXExt,
+    #    -halfYExt, halfYExt, -halfZExt, halfZExt]
+    newParaViewFilter.ClipType.Position = [centerToUse[0] - halfXExt,
+        centerToUse[1] - halfYExt,
+        centerToUse[2] - halfZExt]
+    newParaViewFilter.ClipType.Length = [halfXExt * 2.0, halfYExt * 2.0, halfZExt * 2.0]
     newParaViewFilter.ClipType.Rotation = [self.mRotations[0],
         self.mRotations[1],
         self.mRotations[2]]
@@ -10479,7 +11797,8 @@ class PhactoriResampleWithDatasetOperation(PhactoriOperationSpecifics):
 
     savedActiveSource = GetActiveSource()
 
-    self.InternalParaViewFilterPtr = ResampleWithDataset(Input = inInputFilter, Source=paraviewResampleDataset)
+    #self.InternalParaViewFilterPtr = ResampleWithDataset(Input = inInputFilter, Source=paraviewResampleDataset)
+    self.InternalParaViewFilterPtr = ResampleWithDataset(SourceDataArrays = inInputFilter, DestinationMesh=paraviewResampleDataset)
     self.InternalParaViewFilterPtr.CellLocator = 'Static Cell Locator'
 
     self.DebugPrintInputPortAndOutputPortInfo("pre filter update 1\n")
@@ -10656,6 +11975,120 @@ class PhactoriPointSource(PhactoriOperationSpecifics):
 
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriPointSource.CreateParaViewFilter returning\n", 100)
+
+    return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriPlaneSource import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class PhactoriPlaneSource(PhactoriOperationSpecifics):
+  "Phactori interface to the ParaView Plane Geometric Source. Allows user to\n     specify a plane (rectangle) by 3 points in space and a tesselation\n     resolution in each dimension of the rectangle"
+
+  def __init__(self):
+    self.PlaneOrigin = [-0.5, -0.5, 0.0]
+    self.PlanePoint1 = [ 0.5, -0.5, 0.0]
+    self.PlanePoint2 = [-0.5,  0.5, 0.0]
+    self.PlaneXResolution = 1
+    self.PlaneYResolution = 1
+
+  def ParseParametersFromJson(self, inJson):
+    key1 = "origin"
+    if key1 in inJson:
+      self.PlaneOrigin = inJson[key1]
+      try:
+        if len(self.PlaneOrigin) != 3:
+          myDebugPrint3AndException(
+            "PhactoriPlaneSource:ParseParametersFromJson\n"
+            "bad 'origin', must be 3 number list list [1.1,2.3,-4.5]\n")
+      except:
+        myDebugPrint3AndException(
+          "PhactoriPlaneSource:ParseParametersFromJson\n"
+          "bad 'origin', must be 3 number list list [1.1,2.3,-4.5]\n")
+
+    key1 = "point1"
+    if key1 in inJson:
+      self.PlanePoint1 = inJson[key1]
+      try:
+        if len(self.PlanePoint1) != 3:
+          myDebugPrint3AndException(
+            "PhactoriPlaneSource:ParseParametersFromJson\n"
+            "bad 'point1', must be 3 number list list [1.1,2.3,-4.5]\n")
+      except:
+        myDebugPrint3AndException(
+          "PhactoriPlaneSource:ParseParametersFromJson\n"
+          "bad 'point1', must be 3 number list list [1.1,2.3,-4.5]\n")
+
+    key1 = "point2"
+    if key1 in inJson:
+      self.PlanePoint2 = inJson[key1]
+      try:
+        if len(self.PlanePoint2) != 3:
+          myDebugPrint3AndException(
+            "PhactoriPlaneSource:ParseParametersFromJson\n"
+            "bad 'point2', must be 3 number list list [1.1,2.3,-4.5]\n")
+      except:
+        myDebugPrint3AndException(
+          "PhactoriPlaneSource:ParseParametersFromJson\n"
+          "bad 'point2', must be 3 number list list [1.1,2.3,-4.5]\n")
+
+    key1 = "xresolution"
+    if key1 in inJson:
+      self.PlaneXResolution = inJson[key1]
+      if isinstance(self.PlaneXResolution, int):
+        if self.PlaneXResolution < 1:
+          myDebugPrint3AndException(
+            "PhactoriPlaneSource:ParseParametersFromJson\n"
+            "'xresolution' must be integer >= 1\n")
+      else:
+        myDebugPrint3AndException(
+          "PhactoriPlaneSource:ParseParametersFromJson\n"
+          "'xresolution' must be integer >= 1\n")
+
+    key1 = "yresolution"
+    if key1 in inJson:
+      self.PlaneYResolution = inJson[key1]
+      if isinstance(self.PlaneYResolution, int):
+        if self.PlaneYResolution < 1:
+          myDebugPrint3AndException(
+            "PhactoriPlaneSource:ParseParametersFromJson\n"
+            "'yresolution' must be integer >= 1\n")
+      else:
+        myDebugPrint3AndException(
+          "PhactoriPlaneSource:ParseParametersFromJson\n"
+          "'yresolution' must be integer >= 1\n")
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPlaneSource.CreateParaViewFilter entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    newParaViewFilter = Plane()
+
+    newParaViewFilter.Origin = self.PlaneOrigin
+    newParaViewFilter.Point1 = self.PlanePoint1
+    newParaViewFilter.Point2 = self.PlanePoint2
+    newParaViewFilter.XResolution = self.PlaneXResolution
+    newParaViewFilter.YResolution = self.PlaneYResolution
+
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+
+    SetActiveSource(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3(
+        "Origin: " + str(newParaViewFilter.Origin) + "\n" + \
+        "Point1: " + str(newParaViewFilter.Point1) + "\n" + \
+        "Point2: " + str(newParaViewFilter.Point2) + "\n" + \
+        "XResolution: " + str(newParaViewFilter.XResolution) + "\n" + \
+        "YResolution: " + str(newParaViewFilter.YResolution) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPlaneSource.CreateParaViewFilter returning\n", 100)
 
     return newParaViewFilter
 
@@ -14247,19 +15680,34 @@ class PhactoriExtractStructuredMultiBlock(PhactoriOperationSpecifics):
 
   def CreateIjkRangeFromSettingsForThisBlock(self, ijkJson, blockExtent):
 
+    rngFuncAllAbsolute = True
+    if "ijkrangefunction" in ijkJson:
+      rngFunc = ijkJson["ijkrangefunction"]
+      for ijksetting in rngFunc:
+        if ijksetting != 0:
+          rngFuncAllAbsolute = False
+          break
+    else:
+      #rngFuncAllAbsolute = True
+      rngFunc = [0,0,0,0,0,0]
+
+    if rngFuncAllAbsolute:
+      retIjkRange = ijkJson["ijkrange"] 
+      if PhactoriDbg(100):
+        myDebugPrint3("rngFunc is [0,0,0,0,0,0], all absolute, "
+          "so just return explicit ijkrange:\nretIjkRange: \n" + \
+          str(retIjkRange) + "\n")
+      return retIjkRange
+
     #return ijkJson["ijkrange"]
     if blockExtent == None:
-      return [0,-1,0,-1,0,-1]
+      if rngFuncAllAbsolute == False:
+        return [0,-1,0,-1,0,-1]
 
     if "ijkrange" in ijkJson:
       ijkRangeFromJson = ijkJson["ijkrange"] 
     else:
       ijkRangeFromJson = [0,0,0,0,0,0]
-
-    if "ijkrangefunction" in ijkJson:
-      rngFunc = ijkJson["ijkrangefunction"]
-    else:
-      rngFunc = [0,0,0,0,0,0]
 
     if PhactoriDbg(100):
       myDebugPrint3("ijkrange: " + str(ijkRangeFromJson) + "\n" + \
@@ -14300,7 +15748,7 @@ class PhactoriExtractStructuredMultiBlock(PhactoriOperationSpecifics):
         myDebugPrint3("return ijkrange had to be corrected because it was outside block extent"
           "\nblockExtent: " + str(blockExtent) + 
           "\nijkRangeFromJson: " + str(retIjkRange) + 
-          "\nrngFunc (from json): " + str(blockExtent) + 
+          "\nrngFunc (from json): " + str(rngFunc) + 
           "\nuncorrectedIjkRange: " + str(uncorrectedIjkRange) +
           "\nretIjkRange: " + str(retIjkRange) + "\n")
     else:
@@ -14308,7 +15756,7 @@ class PhactoriExtractStructuredMultiBlock(PhactoriOperationSpecifics):
         myDebugPrint3("return ijkrange did not need correction"
           "\nblockExtent: " + str(blockExtent) + 
           "\nijkRangeFromJson: " + str(retIjkRange) +
-          "\nrngFunc (from json): " + str(blockExtent) + 
+          "\nrngFunc (from json): " + str(rngFunc) + 
           "\nretIjkRange: " + str(retIjkRange) + "\n")
 
     return retIjkRange
@@ -14316,7 +15764,7 @@ class PhactoriExtractStructuredMultiBlock(PhactoriOperationSpecifics):
   
   def MakeExtractSubsetFilter(self, extractBlockFilter, oneBlockExtractSubsetJson, oneBlockExtents):
     if PhactoriDbg(100):
-      myDebugPrint3("MakeOneExtractBlockExtractSubsetFilterPair entered\n")
+      myDebugPrint3("MakeOneExtractBlockExtractSubsetFilter entered\n")
 
     #ijkrange = oneBlockExtractSubsetJson["ijkrange"]
     ijkrange = self.CreateIjkRangeFromSettingsForThisBlock(oneBlockExtractSubsetJson, oneBlockExtents)
@@ -14325,7 +15773,7 @@ class PhactoriExtractStructuredMultiBlock(PhactoriOperationSpecifics):
     extractSubset1.VOI = ijkrange
     UpdatePipelineWithCurrentTimeArgument(extractSubset1)
     if PhactoriDbg(100):
-      myDebugPrint3("MakeOneExtractBlockExtractSubsetFilterPair returning\n")
+      myDebugPrint3("MakeOneExtractBlockExtractSubsetFilter returning\n")
     return extractSubset1
 
   def MakeOneExtractBlockExtractSubsetFilterPair(self, inInputFilter, blockName, oneBlockExtractSubsetJson):
@@ -15696,6 +17144,709 @@ class PhactoriOperationBlock:
 
 #phactori_combine_to_single_python_file_subpiece_end_1
 
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriFindCellEdgeLengths import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class CellEdgeLengthCalculationParameters():
+  def __init__(self):
+    self.numPointsPerBlock = None
+    self.numCellsPerBlock = None
+    self.OutputingFromShortest = True
+    self.OutputShortestLongestIndex = 0
+
+  def Initialize(self, inOutputingFromShortest, inOutputShortestLongestIndex):
+    self.numPointsPerBlock = []
+    self.numCellsPerBlock = []
+    self.OutputingFromShortest = inOutputingFromShortest
+    self.OutputShortestLongestIndex = inOutputShortestLongestIndex
+
+class PhactoriFindCellEdgeLengths(PhactoriOperationSpecifics):
+  "experimental filter to find the lengths of the edges of cells in the mesh"
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.inPvFilter = None
+    self.pfcelProgrammableFilter = None
+    self.mProgFilterString = None
+    self.ProgrammableFilterOutputCellVariableName = "mincelledgelength"
+    self.OutputingFromShortest = True
+    self.OutputShortestLongestIndex = 0
+
+  def ParseParametersFromJson(self, inJson):
+
+    keyval3 = "output nth shortest edge"
+    keyval4 = "output nth longest edge"
+    if keyval3 in inJson:
+      self.OutputingFromShortest = True
+      self.OutputShortestLongestIndex = inJson[keyval3]
+    elif keyval4 in inJson:
+      self.OutputingFromShortest = False
+      self.OutputShortestLongestIndex = inJson[keyval3]
+    else:
+      self.OutputingFromShortest = True
+      self.OutputShortestLongestIndex = 0
+
+    keyval10 = "output cell variable name"
+    if keyval10 in inJson: 
+      self.ProgrammableFilterOutputCellVariableName = inJson[keyval10]
+
+  def CreateParaViewFilter(self, inInputFilter):
+    "create the MergeBlocks filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellEdgeLengths.CreateParaViewFilter "
+          "entered\n", 100)
+    self.inPvFilter = inInputFilter
+
+    savedActiveSource = GetActiveSource()
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    #SetActiveSource(newParaViewFilter)
+    #UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+    #SetActiveSource(savedActiveSource)
+
+    self.pfcelProgrammableFilter = ProgrammableFilter(Input = self.inPvFilter)
+    self.pfcelProgrammableFilter.CopyArrays = 1
+    self.CreateProgrammableFilterString()
+    self.pfcelProgrammableFilter.Script = self.mProgFilterString
+    self.pfcelProgrammableFilter.UpdatePipeline()
+
+    SetActiveSource(self.pfcelProgrammableFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellEdgeLengths.CreateParaViewFilter "
+          "returning\n", 100)
+
+    return self.pfcelProgrammableFilter
+
+  @staticmethod
+  def FindCellEdgeLengthsForOneCell(inInputCsData, inParameters, inCellIndex,
+        paramOutputingFromShortest, paramOutputShortestLongestIndex):
+    oneCell = inInputCsData.GetCell(inCellIndex)
+    #if PhactoriDbg(100):
+    #  myDebugPrint3("oneCell: " + str(oneCell) + "\n")
+    numEdges = oneCell.GetNumberOfEdges()
+    ptA = [0.0, 0.0, 0.0]
+    ptB = [0.0, 0.0, 0.0]
+    edgeLengthList = []
+    for ii in range(0, numEdges):
+      oneEdge = oneCell.GetEdge(ii)
+      edgePoints = oneEdge.GetPointIds()
+      ptAId = edgePoints.GetId(0)
+      ptBId = edgePoints.GetId(1)
+      inInputCsData.GetPoint(ptAId, ptA)
+      inInputCsData.GetPoint(ptBId, ptB)
+      edgeLength = vecDistance(ptA, ptB)
+      edgeLengthList.append(edgeLength)
+    sortedEdgeLengths = sorted(edgeLengthList)
+
+    if paramOutputingFromShortest:
+      outputIndex = min(paramOutputShortestLongestIndex, len(sortedEdgeLengths) - 1)
+    else:
+      outputIndex = max(0, len(sortedEdgeLengths) - 1 - paramOutputShortestLongestIndex)
+
+    if PhactoriDbg(100):
+      myDebugPrint3(
+        "shortest edge length: " + str(sortedEdgeLengths[0]) + "\n"
+        " longest edge length: " + str(sortedEdgeLengths[-1]) + "\n"
+        "  output edge length: " + str(sortedEdgeLengths[outputIndex]) + "\n"
+        " shortest/longest flag: " + str(paramOutputingFromShortest) + "\n"
+        "shortest/longest index: " + str(paramOutputShortestLongestIndex) + "\n"
+        "           outputIndex: " + str(outputIndex) + "\n")
+
+  @staticmethod
+  def FindCellEdgeLengthsForCellsInBlock(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("FindCellEdgeLengthsForCellsInBlock entered\n")
+
+    numCells = inInputCsData.GetNumberOfCells()
+    numPoints = inInputCsData.GetNumberOfPoints()
+    if PhactoriDbg(100):
+      myDebugPrint3("numCells: " + str(numCells) + \
+        "  numPoints: " + str(numPoints) + "\n")
+    inParameters.numCellsPerBlock.append(numCells)
+    inParameters.numPointsPerBlock.append(numPoints)
+
+    for ii in range(0, numCells):
+      if PhactoriDbg(100):
+        myDebugPrint3("cell index " + str(ii) + " of " + str(numCells) + "\n")
+      PhactoriFindCellEdgeLengths.FindCellEdgeLengthsForOneCell(
+        inInputCsData, inParameters, ii,
+        inParameters.OutputingFromShortest,
+        inParameters.OutputShortestLongestIndex)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("FindCellEdgeLengthsForCellsInBlock returning\n")
+
+  def ExportOperationData(self, datadescription):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellEdgeLengths.ExportOperationData entered\n",
+        100)
+
+    UpdatePipelineWithCurrentTimeArgument(self.inPvFilter)
+
+    #recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+    #recursionObj.mParameters = CellEdgeLengthCalculationParameters()
+    #recursionObj.mParameters.Initialize(self.OutputingFromShortest,
+    #  self.OutputShortestLongestIndex)
+    #recursionObj.mOperationToDoPerBlock = self.FindCellEdgeLengthsForCellsInBlock
+    #PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, self.inPvFilter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellEdgeLengths.ExportOperationData returning\n",
+        100)
+
+  def CreateProgrammableFilterString(self):
+
+    if self.mProgFilterString != None:
+      return
+
+    scriptLines = []
+
+    scriptLines.append("#print('test2')\n")
+
+    scriptLines.append("localLeafVisitCount = 0\n")
+
+    scriptLines.append("import math\n")
+    scriptLines.append("def FindEdgeLengthsForOneCell(inInputCsData, inCellIndex):\n")
+    scriptLines.append("  oneCell = inInputCsData.GetCell(inCellIndex)\n")
+    scriptLines.append("  numEdges = oneCell.GetNumberOfEdges()\n")
+    scriptLines.append("  ptA = [0.0, 0.0, 0.0]\n")
+    scriptLines.append("  ptB = [0.0, 0.0, 0.0]\n")
+    scriptLines.append("  edgeLengthList = []\n")
+    scriptLines.append("  for ii in range(0, numEdges):\n")
+    scriptLines.append("    oneEdge = oneCell.GetEdge(ii)\n")
+    scriptLines.append("    edgePoints = oneEdge.GetPointIds()\n")
+    scriptLines.append("    ptAId = edgePoints.GetId(0)\n")
+    scriptLines.append("    ptBId = edgePoints.GetId(1)\n")
+    scriptLines.append("    inInputCsData.GetPoint(ptAId, ptA)\n")
+    scriptLines.append("    inInputCsData.GetPoint(ptBId, ptB)\n")
+    scriptLines.append("    dx = ptB[0] - ptA[0]\n")
+    scriptLines.append("    dy = ptB[1] - ptA[1]\n")
+    scriptLines.append("    dz = ptB[2] - ptA[2]\n")
+    scriptLines.append("    edgeLength = dx*dx + dy*dy + dz*dz\n")
+    scriptLines.append("    edgeLengthList.append(edgeLength)\n")
+    scriptLines.append("  sortedEdgeLengths = sorted(edgeLengthList)\n")
+    pickIndexStr = str(self.OutputShortestLongestIndex)
+    if self.OutputingFromShortest:
+      scriptLines.append("  outputIndex = min("+pickIndexStr+", len(sortedEdgeLengths) - 1)\n")
+    else:
+      scriptLines.append("  outputIndex = max(0, len(sortedEdgeLengths) - 1 - "+pickIndexStr+")\n")
+
+    scriptLines.append("  returnEdgeLength = math.sqrt(sortedEdgeLengths[outputIndex])\n")
+    scriptLines.append("  return returnEdgeLength\n")
+
+    scriptLines.append("def flatten(input, output):\n")
+    scriptLines.append("    # Copy the cells etc.\n")
+    scriptLines.append("    output.ShallowCopy(input)\n")
+    scriptLines.append("    numPoints = input.GetNumberOfPoints()\n")
+    scriptLines.append("    celldata = output.GetCellData()\n")
+    scriptLines.append("    numCells = input.GetNumberOfCells()\n")
+    scriptLines.append("    #print(str(numCells))\n")
+    scriptLines.append("    ncda = vtk.vtkDoubleArray()\n")
+    scriptLines.append("    ncda.SetNumberOfTuples(numCells)\n")
+    scriptLines.append("    numTuples = ncda.GetNumberOfTuples()\n")
+    scriptLines.append("    for ii in range(0, numTuples):\n")
+    scriptLines.append("        ncda.SetValue(ii, -1.0)\n")
+    scriptLines.append("    for ii in range(0, numCells):\n")
+    scriptLines.append("      minEdgeLengthForCell = FindEdgeLengthsForOneCell(input, ii)\n")
+    scriptLines.append("      ncda.SetValue(ii, minEdgeLengthForCell)\n")
+    scriptLines.append("    ncda.SetName('" + self.ProgrammableFilterOutputCellVariableName + "')\n")
+    scriptLines.append("    #print(ncda.GetName())\n")
+    scriptLines.append("    celldata.AddArray(ncda)\n")
+
+    scriptLines.append("input = self.GetInputDataObject(0, 0)\n")
+    scriptLines.append("output = self.GetOutputDataObject(0)\n")
+
+    scriptLines.append("if input.IsA('vtkMultiBlockDataSet'):\n")
+    scriptLines.append("    output.CopyStructure(input)\n")
+    scriptLines.append("    iter = input.NewIterator()\n")
+    scriptLines.append("    iter.UnRegister(None)\n")
+    scriptLines.append("    iter.InitTraversal()\n")
+    scriptLines.append("    while not iter.IsDoneWithTraversal():\n")
+    scriptLines.append("        localLeafVisitCount += 1\n")
+    scriptLines.append("        curInput = iter.GetCurrentDataObject()\n")
+    scriptLines.append("        curOutput = curInput.NewInstance()\n")
+    scriptLines.append("        curOutput.UnRegister(None)\n")
+    scriptLines.append("        output.SetDataSet(iter, curOutput)\n")
+    scriptLines.append("        flatten(curInput, curOutput)\n")
+    scriptLines.append("        iter.GoToNextItem();\n")
+    scriptLines.append("else:\n")
+    scriptLines.append("  flatten(input, output)\n")
+
+    self.mProgFilterString = "".join(scriptLines)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellEdgeLengths constructed script:\n" + \
+        self.mProgFilterString)
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriCellEdgeAngleMetrics import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class CellEdgeAngleMetricParameters():
+  def __init__(self):
+    self.numPointsPerBlock = None
+    self.numCellsPerBlock = None
+    self.UseSmallestAngle = True
+    self.OffsetIndex = 0
+    self.AngleCellVariableName = "minedgenormalangle"
+    self.HeightCellVariableName = "cellheight"
+
+  def Initialize(self, inUseSmallestAngle, inOffsetIndex,
+      inAngleCellVariableName, inHeightCellVariableName):
+    self.numPointsPerBlock = []
+    self.numCellsPerBlock = []
+    self.UseSmallestAngle = inUseSmallestAngle
+    self.OffsetIndex = inOffsetIndex
+    self.AngleCellVariableName = inAngleCellVariableName
+    self.HeightCellVariableName = inHeightCellVariableName
+
+class PhactoriCellEdgeAngleMetrics(PhactoriOperationSpecifics):
+  "experimental filter to find the lengths of the edges of cells in the mesh"
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.inPvFilter = None
+    self.pfcelProgrammableFilter = None
+    self.mProgFilterString = None
+    self.OutputAngleCellVariableName = "minedgenormalangle"
+    self.OutputHeightCellVariableName = "cellheight"
+    self.UseSmallestAngle = True
+    self.OffsetIndex = 0
+    self.DoOperationInCreateParaViewMethod = True
+    self.CreateProgrammableFilter = False
+
+  def ParseParametersFromJson(self, inJson):
+
+    keyval3 = "output nth smallest angle"
+    keyval4 = "output nth largest angle"
+    if keyval3 in inJson:
+      self.UseSmallestAngle = True
+      self.OffsetIndex = inJson[keyval3]
+    elif keyval4 in inJson:
+      self.UseSmallestAngle = False
+      self.OffsetIndex = inJson[keyval3]
+    else:
+      self.UseSmallestAngle = True
+      self.OffsetIndex = 0
+
+    keyval10 = "output angle cell variable name"
+    if keyval10 in inJson: 
+      self.OutputAngleCellVariableName = inJson[keyval10]
+    keyval10 = "output height cell variable name"
+    if keyval10 in inJson: 
+      self.OutputHeightCellVariableName = inJson[keyval10]
+
+    keyval11 = "do operation in createparaview method"
+    if keyval11 in inJson:
+      self.DoOperationInCreateParaViewMethod = inJson[keyval11]
+
+    keyval12 = "create programmable filter"
+    if keyval12 in inJson:
+      self.CreateProgrammableFilter = inJson[keyval12]
+
+  def CreateParaViewFilter(self, inInputFilter):
+    "create the MergeBlocks filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriCellEdgeAngleMetrics.CreateParaViewFilter "
+          "entered\n", 100)
+    self.inPvFilter = inInputFilter
+
+    savedActiveSource = GetActiveSource()
+
+    UpdatePipelineWithCurrentTimeArgument(self.inPvFilter)
+
+    if self.DoOperationInCreateParaViewMethod:
+      if PhactoriDbg(100):
+        myDebugPrint3("point and cell array info before calculating metrics:")
+        RecursivelyPrintPointAndCellArrayInformation(self.inPvFilter)
+
+      recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+      recursionObj.mParameters = CellEdgeAngleMetricParameters()
+      recursionObj.mParameters.Initialize(self.UseSmallestAngle,
+        self.OffsetIndex,
+        self.OutputAngleCellVariableName,
+        self.OutputHeightCellVariableName)
+      recursionObj.mOperationToDoPerBlock = self.FindCellEdgeAngleMetricsInBlock
+      PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, self.inPvFilter)
+
+      UpdatePipelineWithCurrentTimeArgument(self.inPvFilter)
+
+      if PhactoriDbg(100):
+        myDebugPrint3("point and cell array info after calculating metrics:")
+        RecursivelyPrintPointAndCellArrayInformation(self.inPvFilter)
+
+    #SetActiveSource(newParaViewFilter)
+    #UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+
+    if self.CreateProgrammableFilter:
+      self.pfcelProgrammableFilter = ProgrammableFilter(Input = self.inPvFilter)
+      self.pfcelProgrammableFilter.CopyArrays = 1
+      self.CreateProgrammableFilterString()
+      self.pfcelProgrammableFilter.Script = self.mProgFilterString
+      self.pfcelProgrammableFilter.UpdatePipeline()
+
+    SetActiveSource(savedActiveSource)
+
+    if self.CreateProgrammableFilter:
+      if PhactoriDbg(100):
+        myDebugPrint3("PhactoriCellEdgeAngleMetrics.CreateParaViewFilter "
+          "returning programmable filter\n", 100)
+      return self.pfcelProgrammableFilter
+    else:
+      if PhactoriDbg(100):
+        myDebugPrint3("PhactoriCellEdgeAngleMetrics.CreateParaViewFilter "
+          "returning passthrough filter\n", 100)
+      return self.inPvFilter
+
+  @staticmethod
+  def FindCellEdgeAngleMetricsInBlock(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("FindCellEdgeAngleMetricsInBlock entered\n")
+
+    numCells = inInputCsData.GetNumberOfCells()
+    numPoints = inInputCsData.GetNumberOfPoints()
+    if PhactoriDbg(100):
+      myDebugPrint3("numCells: " + str(numCells) + \
+        "  numPoints: " + str(numPoints) + "\n")
+    inParameters.numCellsPerBlock.append(numCells)
+    inParameters.numPointsPerBlock.append(numPoints)
+
+    ncda = vtk.vtkDoubleArray()
+    ncda.SetNumberOfTuples(numCells)
+    ncda2 = vtk.vtkDoubleArray()
+    ncda2.SetNumberOfTuples(numCells)
+
+    outputAngles = []
+    outputHeights = []
+    for ii in range(0, numCells):
+      #if PhactoriDbg(100):
+      #  myDebugPrint3("cell index " + str(ii) + " of " + str(numCells) + "\n")
+      edgeAngle, cellHeight = PhactoriFindCellEdgeAngleMetricsForOneCell(inInputCsData, ii,
+        inParameters.UseSmallestAngle, inParameters.OffsetIndex)
+      outputAngles.append(edgeAngle)
+      outputHeights.append(cellHeight)
+      ncda.SetValue(ii, edgeAngle)
+      ncda2.SetValue(ii, cellHeight)
+
+    celldata = inInputCsData.GetCellData()
+    ncda.SetName(inParameters.AngleCellVariableName)
+    celldata.AddArray(ncda)
+    ncda2.SetName(inParameters.HeightCellVariableName)
+    celldata.AddArray(ncda2)
+    if PhactoriDbg(100):
+      myDebugPrint3("numCells: " + str(numCells) + "\n"
+        "inParameters.AngleCellVariableName: " + inParameters.AngleCellVariableName + "\n"
+        "inParameters.HeightCellVariableName: " + inParameters.HeightCellVariableName + "\n")
+      if numCells > 0:
+        myDebugPrint3("edgeAngle 0: " + str(ncda.GetValue(0)) + "\n")
+
+    if PhactoriDbg(100):
+      minOutputAngle = 91.0
+      minOutputAngleIndex = -1
+      maxOutputAngle = -1.0
+      maxOutputAngleIndex = -1
+      minHeight = 1e15
+      minHeightIndex = -1
+      maxHeight = -1.0
+      maxHeightIndex = -1
+      for ii in range(0, numCells):
+        edgeAngle = outputAngles[ii]
+        cellHeight = outputAngles[ii]
+        if edgeAngle < minOutputAngle:
+          minOutputAngle = edgeAngle
+          minOutputAngleIndex = ii
+        if edgeAngle > maxOutputAngle:
+          maxOutputAngle = edgeAngle
+          maxOutputAngleIndex = ii
+        if cellHeight < minHeight:
+          minHeight = cellHeight
+          minHeightIndex = ii
+        if cellHeight > maxHeight:
+          maxHeight = cellHeight
+          maxHeightIndex = ii
+      myDebugPrint3(
+        "minOutputAngle, index: " + str(minOutputAngle) + ", " + str(minOutputAngleIndex) + "\n" + \
+        "maxOutputAngle, index: " + str(maxOutputAngle) + ", " + str(maxOutputAngleIndex) + "\n" + \
+        "minHeight, index: " + str(minHeight) + ", " + str(minHeightIndex) + "\n" + \
+        "maxHeight, index: " + str(maxHeight) + ", " + str(maxHeightIndex) + "\n" + \
+        "FindCellEdgeAngleMetricsInBlock returning\n")
+    return outputAngles, outputHeights
+
+  def CreateProgrammableFilterString(self):
+
+    if self.mProgFilterString != None:
+      return
+
+    scriptLines = []
+
+    scriptLines.append("import math\n")
+    GetPhactoriVectorLibraryProgrammableFilterLines(scriptLines)
+    GetPhactoriVtkCellOperationsProgrammableFilterLines(scriptLines)
+
+    scriptLines.append("localLeafVisitCount = 0\n")
+    scriptLines.append("def flatten(input, output):\n")
+    scriptLines.append("    # Copy the cells etc.\n")
+    scriptLines.append("    output.ShallowCopy(input)\n")
+    scriptLines.append("    numPoints = input.GetNumberOfPoints()\n")
+    scriptLines.append("    celldata = output.GetCellData()\n")
+    scriptLines.append("    numCells = input.GetNumberOfCells()\n")
+    scriptLines.append("    #print(str(numCells))\n")
+    scriptLines.append("    ncda = vtk.vtkDoubleArray()\n")
+    scriptLines.append("    ncda.SetNumberOfTuples(numCells)\n")
+    scriptLines.append("    ncda2 = vtk.vtkDoubleArray()\n")
+    scriptLines.append("    ncda2.SetNumberOfTuples(numCells)\n")
+    scriptLines.append("    numTuples = ncda.GetNumberOfTuples()\n")
+    scriptLines.append("    for ii in range(0, numTuples):\n")
+    scriptLines.append("        ncda.SetValue(ii, -1.0)\n")
+    scriptLines.append("        ncda2.SetValue(ii, -1.0)\n")
+    scriptLines.append("    for ii in range(0, numCells):\n")
+    scriptLines.append("      cellAngle, cellHeight = PhactoriFindCellEdgeAngleMetricsForOneCell(input, ii, " + \
+      str(self.UseSmallestAngle) + ", " + str(self.OffsetIndex) + ")\n")
+    scriptLines.append("      ncda.SetValue(ii, cellAngle)\n")
+    scriptLines.append("      ncda2.SetValue(ii, cellHeight)\n")
+    scriptLines.append("    ncda.SetName('" + self.OutputAngleCellVariableName + "')\n")
+    scriptLines.append("    celldata.AddArray(ncda)\n")
+    scriptLines.append("    ncda2.SetName('" + self.OutputHeightCellVariableName + "')\n")
+    scriptLines.append("    celldata.AddArray(ncda2)\n")
+
+    scriptLines.append("input = self.GetInputDataObject(0, 0)\n")
+    scriptLines.append("output = self.GetOutputDataObject(0)\n")
+
+    scriptLines.append("if input.IsA('vtkMultiBlockDataSet'):\n")
+    scriptLines.append("    output.CopyStructure(input)\n")
+    scriptLines.append("    iter = input.NewIterator()\n")
+    scriptLines.append("    iter.UnRegister(None)\n")
+    scriptLines.append("    iter.InitTraversal()\n")
+    scriptLines.append("    while not iter.IsDoneWithTraversal():\n")
+    scriptLines.append("        localLeafVisitCount += 1\n")
+    scriptLines.append("        curInput = iter.GetCurrentDataObject()\n")
+    scriptLines.append("        curOutput = curInput.NewInstance()\n")
+    scriptLines.append("        curOutput.UnRegister(None)\n")
+    scriptLines.append("        output.SetDataSet(iter, curOutput)\n")
+    scriptLines.append("        flatten(curInput, curOutput)\n")
+    scriptLines.append("        iter.GoToNextItem();\n")
+    scriptLines.append("else:\n")
+    scriptLines.append("  flatten(input, output)\n")
+
+    self.mProgFilterString = "".join(scriptLines)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriCellEdgeAngleMetrics constructed script:\n" + \
+        self.mProgFilterString)
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriMarkCellSurfaceStatus2 import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class CellEdgeAngleMetricParameters():
+  def __init__(self):
+    self.numPointsPerBlock = None
+    self.numCellsPerBlock = None
+    self.UseSmallestAngle = True
+    self.OffsetIndex = 0
+    self.OutputCellVariableName = None
+
+  def Initialize(self, inUseSmallestAngle, inOffsetIndex, inCellVariableName):
+    self.numPointsPerBlock = []
+    self.numCellsPerBlock = []
+    self.UseSmallestAngle = inUseSmallestAngle
+    self.OffsetIndex = inOffsetIndex
+    self.OutputCellVariableName = inCellVariableName
+
+class PhactoriMarkCellSurfaceStatus2(PhactoriOperationSpecifics):
+  "experimental filter to find the lengths of the edges of cells in the mesh"
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.inPvFilter = None
+    self.pfcelProgrammableFilter = None
+    self.mProgFilterString = None
+    self.OutputCellVariableName = "surfacestatus"
+    self.UseSmallestAngle = True
+    self.OffsetIndex = 0
+    self.DoOperationInCreateParaViewMethod = True
+    self.CreateProgrammableFilter = False
+
+  def ParseParametersFromJson(self, inJson):
+
+    keyval3 = "output nth smallest angle"
+    keyval4 = "output nth largest angle"
+    if keyval3 in inJson:
+      self.UseSmallestAngle = True
+      self.OffsetIndex = inJson[keyval3]
+    elif keyval4 in inJson:
+      self.UseSmallestAngle = False
+      self.OffsetIndex = inJson[keyval3]
+    else:
+      self.UseSmallestAngle = True
+      self.OffsetIndex = 0
+
+    keyval10 = "output cell variable name"
+    if keyval10 in inJson: 
+      self.OutputCellVariableName = inJson[keyval10]
+
+    keyval11 = "do operation in createparaview method"
+    if keyval11 in inJson:
+      self.DoOperationInCreateParaViewMethod = inJson[keyval11]
+
+    keyval12 = "create programmable filter"
+    if keyval12 in inJson:
+      self.ProgrammableFilterOutputCellVariableName = inJson[keyval10]
+
+  def CreateParaViewFilter(self, inInputFilter):
+    "create the MergeBlocks filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriMarkCellSurfaceStatus2.CreateParaViewFilter "
+          "entered\n", 100)
+    self.inPvFilter = inInputFilter
+
+    savedActiveSource = GetActiveSource()
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    if self.DoOperationInCreateParaViewMethod:
+      if PhactoriDbg(100):
+        myDebugPrint3("make variable during CreateParaViewFilter\n", 100)
+      recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+      recursionObj.mParameters = CellEdgeAngleMetricParameters()
+      recursionObj.mParameters.Initialize(self.UseSmallestAngle,
+        self.OffsetIndex, self.OutputCellVariableName)
+      recursionObj.mOperationToDoPerBlock = self.MarkCellStatusInBlock
+      PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, self.inPvFilter)
+
+      UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+      if PhactoriDbg(100):
+        myDebugPrint3("done make variable during CreateParaViewFilter\n", 100)
+
+    if self.CreateProgrammableFilter:
+      self.pfcelProgrammableFilter = ProgrammableFilter(Input = self.inPvFilter)
+      self.pfcelProgrammableFilter.CopyArrays = 1
+      self.CreateProgrammableFilterString()
+      self.pfcelProgrammableFilter.Script = self.mProgFilterString
+      self.pfcelProgrammableFilter.UpdatePipeline()
+      UpdatePipelineWithCurrentTimeArgument(self.pfcelProgrammableFilter)
+      if PhactoriDbg(100):
+        myDebugPrint3("self.CreateProgrammableFilter true, created programmable filter\n", 100)
+
+    SetActiveSource(savedActiveSource)
+
+    if self.CreateProgrammableFilter:
+      if PhactoriDbg(100):
+        myDebugPrint3("PhactoriMarkCellSurfaceStatus2.CreateParaViewFilter "
+          "returning programmable filter\n", 100)
+      return self.pfcelProgrammableFilter
+    else:
+      if PhactoriDbg(100):
+        myDebugPrint3("PhactoriMarkCellSurfaceStatus2.CreateParaViewFilter "
+          "returning passthrough filter\n", 100)
+      return self.inPvFilter
+
+  @staticmethod
+  def MarkCellStatusInBlock(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("MarkCellStatusInBlock entered\n")
+
+    numCells = inInputCsData.GetNumberOfCells()
+
+    celldata = inInputCsData.GetCellData()
+
+    newCellArrayName = inParameters.OutputCellVariableName
+
+    inParameters.numCellsPerBlock.append(numCells)
+    ncda = vtk.vtkIntArray()
+    ncda.SetNumberOfTuples(numCells)
+
+    if numCells <= 0:
+      ncda.SetName(newCellArrayName)
+      celldata.AddArray(ncda)
+
+      if PhactoriDbg(100):
+        myDebugPrint3("numCells 0, MarkCellStatusInBlock returning 2\n")
+
+    #see how many cells are touching each point
+    cellsTouchingPointCount = PhactoriCountCellTouchingEachPoint(inInputCsData)
+
+    #see which cells have how many points with 8 or other cells
+    for ii in range(0, numCells):
+      #if PhactoriDbg(100):
+      #  myDebugPrint3("(b) cell index " + str(ii) + " of " + str(numCells) + "\n")
+      oneCellSurfaceStatus = PhactoriFindSurfaceStatusForOneCell(inInputCsData, ii,
+        cellsTouchingPointCount)
+      ncda.SetValue(ii, oneCellSurfaceStatus)
+
+    ncda.SetName(newCellArrayName)
+    celldata.AddArray(ncda)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("MarkCellStatusInBlock returning\n")
+
+  def CreateProgrammableFilterString(self):
+
+    if self.mProgFilterString != None:
+      return
+
+    scriptLines = []
+
+    scriptLines.append("import math\n")
+    GetPhactoriVectorLibraryProgrammableFilterLines(scriptLines)
+    GetPhactoriVtkCellOperationsProgrammableFilterLines(scriptLines)
+
+    scriptLines.append("localLeafVisitCount = 0\n")
+    scriptLines.append("def flatten(input, output):\n")
+    scriptLines.append("    # Copy the cells etc.\n")
+    scriptLines.append("    output.ShallowCopy(input)\n")
+    scriptLines.append("    celldata = output.GetCellData()\n")
+    scriptLines.append("    numCells = input.GetNumberOfCells()\n")
+    scriptLines.append("    ncda = vtk.vtkIntArray()\n")
+    scriptLines.append("    ncda.SetNumberOfTuples(numCells)\n")
+
+    #the first three of the next lines use face connections to find
+    #interior/surface/edge/corner cells, and the next three use point
+    #connections. Point connections create 1/3 the size intermediate data as
+    #face connectinos, but face connections should work with wedge cells too
+    #scriptLines.append("    cellsTouchingPointCount = PhactoriCountCellTouchingEachPoint(input)\n")
+    #scriptLines.append("    for ii in range(0, numCells):\n")
+    #scriptLines.append("      oneCellSurfaceStatus = PhactoriFindSurfaceStatusForOneCell(input, ii, cellsTouchingPointCount)\n")
+    scriptLines.append("    cellsTouchingEachFace = PhactoriCountCellTouchingEachFace(input)\n")
+    scriptLines.append("    for ii in range(0, numCells):\n")
+    scriptLines.append("      oneCellSurfaceStatus = PhactoriFindSurfaceStatusForOneCellUsingFaceInfo(input, ii, cellsTouchingEachFace)\n")
+
+    scriptLines.append("      ncda.SetValue(ii, oneCellSurfaceStatus)\n")
+    scriptLines.append("    ncda.SetName('" + self.OutputCellVariableName + "')\n")
+    scriptLines.append("    celldata.AddArray(ncda)\n")
+
+    scriptLines.append("input = self.GetInputDataObject(0, 0)\n")
+    scriptLines.append("output = self.GetOutputDataObject(0)\n")
+
+    scriptLines.append("if input.IsA('vtkMultiBlockDataSet'):\n")
+    scriptLines.append("    output.CopyStructure(input)\n")
+    scriptLines.append("    iter = input.NewIterator()\n")
+    scriptLines.append("    iter.UnRegister(None)\n")
+    scriptLines.append("    iter.InitTraversal()\n")
+    scriptLines.append("    while not iter.IsDoneWithTraversal():\n")
+    scriptLines.append("        localLeafVisitCount += 1\n")
+    scriptLines.append("        curInput = iter.GetCurrentDataObject()\n")
+    scriptLines.append("        curOutput = curInput.NewInstance()\n")
+    scriptLines.append("        curOutput.UnRegister(None)\n")
+    scriptLines.append("        output.SetDataSet(iter, curOutput)\n")
+    scriptLines.append("        flatten(curInput, curOutput)\n")
+    scriptLines.append("        iter.GoToNextItem();\n")
+    scriptLines.append("else:\n")
+    scriptLines.append("  flatten(input, output)\n")
+
+    self.mProgFilterString = "".join(scriptLines)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriMarkCellSurfaceStatus2 constructed script:\n" + \
+        self.mProgFilterString)
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
 class PhactoriTextAnnotationBlock(PhactoriOperationSpecifics):
   "represents manages one text annotation item (paraview Text source).\n     The idea is that we print a 2d text item on the window front to give\n     information to the user.  Notionally the text can change depending on\n     data (e.g. min/max/average values from an operation), but this is not\n     yet implemented.  Imagesets can selectively turn on any desired subset\n     of existing text annotations.  The position of the text annotation\n     on the window, the color can be set, the font size and family can be\n     chosen, and the bold/italic/shadow flags can be set"
   def __init__(self):
@@ -16566,6 +18717,7 @@ class PhactoriPlot1Base:
 
     WriteImage(fname, self.mSharedPvRenderView2,
         Magnification=1)
+    GetGlobalDataArtifactTracker().AddImageToDataArtifactOutputList(fname)
     #handle datetime naming extra work to avoid race condition
     if fnameRR != None:
       if SmartGetLocalProcessId() == 0:
@@ -16946,6 +19098,27 @@ class PhactoriImagesetBlock:
       myDebugPrint3("PhactoriImagesetBlock::WriteImages returning: " + \
           self.mName + "\n")
 
+  def WriteOutCameraInformationForTesting(self, fname):
+    if SmartGetLocalProcessId() != 0:
+      return
+    camfname = fname + ".test.camera.txt"
+    ff = open(camfname, "w")
+    if ff == None:
+      return
+    pvRv = self.mSharedPvRenderView2;
+    ff.write("{\n")
+    ff.write("'CameraPosition':" + str(pvRv.CameraPosition) + ",\n")
+    ff.write("'CameraFocalPoint': " + str(pvRv.CameraFocalPoint) + ",\n")
+    ff.write("'CameraParallelProjection': " + str(pvRv.CameraParallelProjection) + ",\n")
+    if pvRv.CameraParallelProjection == 0:
+      ff.write("'CameraParallelScale': -1.0,\n")
+    else:
+      ff.write("'CameraParallelScale': " + str(pvRv.CameraParallelScale) + ",\n")
+    ff.write("'CameraViewUp': " + str(pvRv.CameraViewUp) + ",\n")
+    ff.write("'CameraViewAngle': " + str(pvRv.CameraViewAngle) + "\n")
+    ff.write("}\n")
+    ff.close()
+
   def WriteImagesPassedOnOffFilter(self, datadescription):
     "write out the .png/.jpg/whatever images associated with this imageset\n       block for the current timestep/state.  Must loop through camera angles\n       and do a write for each one if necessary"
 
@@ -17013,8 +19186,16 @@ class PhactoriImagesetBlock:
 
         if PhactoriDbg():
           myDebugPrint3("calling WriteImage() " + fname + "\n")
-        WriteImage(fname, self.mSharedPvRenderView2,
-            Magnification=1)
+
+        global gCameraTestMode
+        if gCameraTestMode == 1:
+          self.WriteOutCameraInformationForTesting(fname)
+
+        global gSkipWriteImageForTests
+        if gSkipWriteImageForTests == False:
+          WriteImage(fname, self.mSharedPvRenderView2,
+              Magnification=1)
+          GetGlobalDataArtifactTracker().AddImageToDataArtifactOutputList(fname)
         if PhactoriDbg():
           myDebugPrint3("returned from WriteImage()\n")
         #handle datetime naming extra work to avoid race condition
@@ -19647,6 +21828,9 @@ def SetMinimumMaximumColorValues(inPvDataRepresentation,
       pv_4_3_PWF.ApplyPreset(inPhactoriRepresentation.mNameOfPresetToUse, False)
       #pv_4_3_LUT.ApplyPreset(inPhactoriRepresentation.mNameOfPresetToUse, True)
       #pv_4_3_PWF.ApplyPreset(inPhactoriRepresentation.mNameOfPresetToUse, True)
+      allRange = inMaximum - inMinimum
+      for ii in range(0, len(pv_4_3_LUT.RGBPoints), 4):
+        pv_4_3_LUT.RGBPoints[ii] = inMinimum + pv_4_3_LUT.RGBPoints[ii] * allRange
     else:
       pv_4_3_LUT = GetColorTransferFunction(inVariableName)
       if pv_4_3_LUT.Discretize != 1:
@@ -21574,6 +23758,12 @@ def FindThisProcessorMinMaxForVarRecurse1(inInputCsData, inVariableInfo, ioMinMa
       onePartition = inInputCsData.GetPartition(ii)
       if(onePartition != None):
         FindThisProcessorMinMaxForVarRecurse1(onePartition, inVariableInfo, ioMinMaxInfo)
+  elif icsdClassname == "vtkMultiPieceDataSet":
+    numPieces = inInputCsData.GetNumberOfPieces()
+    for ii in range(0, numPieces):
+      onePiece = inInputCsData.GetPiece(ii)
+      if(onePiece != None):
+        FindThisProcessorMinMaxForVarRecurse1(onePiece, inVariableInfo, ioMinMaxInfo)
   else:
     FindThisProcessorMinMaxForVarForOneBlock(inInputCsData, inVariableInfo, ioMinMaxInfo)
   #myDebugPrint3('FindThisProcessorMinMaxForVarRecurse1 returning\n', 100)
@@ -22452,7 +24642,7 @@ def UseReduceToGetMinMaxPairs(ioListOfMinMaxPairs):
     myDebugPrint3("UseReduceToGetMinMaxPairs entered\n", 100)
   pm = paraview.servermanager.vtkProcessModule.GetProcessModule()
   globalController = pm.GetGlobalController()
-  numPairs = len(ioListOfMinMaxPairs) / 2
+  numPairs = len(ioListOfMinMaxPairs) // 2
   localarray = vtk.vtkDoubleArray()
   localarray.SetNumberOfTuples(numPairs*2)
   # we negate mins so we can do a single MPI_MAX reduce

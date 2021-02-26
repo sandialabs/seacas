@@ -2588,7 +2588,7 @@ gPhactoriDataArtifactTracker = None
 
 def GetGlobalDataArtifactTracker():
   global gPhactoriDataArtifactTracker
-  if gPhactoriDataArtifactTracker == NULL:
+  if gPhactoriDataArtifactTracker == None:
     gPhactoriDataArtifactTracker = PhactoriDataArtifactMetaDataControl(
       SmartGetLocalProcessId(), SmartGetNumberOfProcesses())
   return gPhactoriDataArtifactTracker
@@ -9473,15 +9473,15 @@ class PhactoriImagesetBlock:
       return
     pvRv = self.mSharedPvRenderView2;
     ff.write("{\n")
-    ff.write("\"CameraPosition\":" + str(pvRv.CameraPosition) + ",\n")
-    ff.write("\"CameraFocalPoint\": " + str(pvRv.CameraFocalPoint) + ",\n")
-    ff.write("\"CameraParallelProjection\": " + str(pvRv.CameraParallelProjection) + ",\n")
+    ff.write(""""CameraPosition":""" + str(pvRv.CameraPosition) + ",\n")
+    ff.write(""""CameraFocalPoint": """ + str(pvRv.CameraFocalPoint) + ",\n")
+    ff.write(""""CameraParallelProjection": """ + str(pvRv.CameraParallelProjection) + ",\n")
     if pvRv.CameraParallelProjection == 0:
-      ff.write("\"CameraParallelScale\": -1.0,\n")
+      ff.write(""""CameraParallelScale": -1.0,\n""")
     else:
-      ff.write("\"CameraParallelScale\": " + str(pvRv.CameraParallelScale) + ",\n")
-    ff.write("\"CameraViewUp\": " + str(pvRv.CameraViewUp) + ",\n")
-    ff.write("\"CameraViewAngle\": " + str(pvRv.CameraViewAngle) + "\n")
+      ff.write(""""CameraParallelScale": """ + str(pvRv.CameraParallelScale) + ",\n")
+    ff.write(""""CameraViewUp": """ + str(pvRv.CameraViewUp) + ",\n")
+    ff.write(""""CameraViewAngle": """ + str(pvRv.CameraViewAngle) + "\n")
     ff.write("}\n")
     ff.close()
 
