@@ -628,7 +628,7 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
       auto &oblocks = osurf->get_side_blocks();
       SMART_ASSERT(oblocks.size() == 1)(oblocks.size());
 
-      auto             boundary = cell.unit()->boundary_blocks[face];
+      auto             & boundary = cell.unit()->boundary_blocks[face];
       auto             count    = boundary.size();
       std::vector<INT> elements;
       std::vector<INT> faces;

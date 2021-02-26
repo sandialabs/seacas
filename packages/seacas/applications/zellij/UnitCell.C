@@ -32,15 +32,15 @@ namespace {
     return result != 0;
   }
 
-  Ioss::ElementBlock *get_element_block(int64_t elem_id, std::shared_ptr<Ioss::Region> &region)
+  Ioss::ElementBlock *get_element_block(Ioss::ElementBlock *block, int64_t elem_id,
+					std::shared_ptr<Ioss::Region> &region)
   {
-    static Ioss::ElementBlock *block = nullptr;
-
+    auto new_block = block;
     if (block == nullptr || !block->contains(elem_id)) {
-      block = region->get_element_block(elem_id);
-      assert(block != nullptr);
+      new_block = region->get_element_block(elem_id);
+      assert(new_block != nullptr);
     }
-    return block;
+    return new_block;
   }
 
   bool approx_equal(double A, double B)
@@ -241,9 +241,10 @@ void UnitCell::generate_boundary_faces(unsigned int which_faces)
   std::array<enum Flg, 6> boundary_flag{Flg::MIN_I, Flg::MAX_I, Flg::MIN_J,
                                         Flg::MAX_J, Flg::MIN_K, Flg::MAX_K};
   auto &                  faces = face_generator.faces("ALL");
+  Ioss::ElementBlock *block = nullptr;
   for (auto &face : faces) {
     if (face.elementCount_ == 1) {
-      auto *block        = get_element_block(face.element[0] / 10, m_region);
+      block        = get_element_block(block, face.element[0] / 10, m_region);
       auto  block_offset = block->get_offset();
       for (int i = 0; i < 6; i++) {
         if ((which_faces & (unsigned)boundary_flag[i]) &&
@@ -261,8 +262,8 @@ void UnitCell::generate_boundary_faces(unsigned int which_faces)
           auto unit_block_location   = (unit_local_element_id - block_offset) * 10 + face_ordinal;
 
           if (debug_level & 128) {
-            fmt::print("Element {}, Side {} is on boundary {}\n", unit_block_location / 10,
-                       unit_block_location % 10, i);
+            fmt::print("Element {}, Side {} is on boundary {}, block {}\n", unit_block_location / 10,
+                       unit_block_location % 10, i, block->name());
           }
           boundary_blocks[i].m_faces[block->name()].push_back(unit_block_location);
           break;
