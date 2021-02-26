@@ -1,3 +1,8 @@
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+//
+// See packages/seacas/LICENSE for details
 
 #ifndef CatalystTestFixture_h
 #define CatalystTestFixture_h
@@ -18,6 +23,9 @@ public:
    
     void runPhactoriJSONTest(const std::string& jsonFile,
         const std::string& inputFile);
+
+    void runPhactoriJSONTestTwoGrid(const std::string& jsonFile,
+        const std::string& inputFileA, const std::string& inputFileB);
 
     void checkTestOutputFileExists(const char *fileName);
 

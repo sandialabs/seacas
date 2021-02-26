@@ -1,3 +1,9 @@
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+//
+// See packages/seacas/LICENSE for details
+
 #include "IossApplication.h"
 #include "IossRegionReport.h"
 #include "CatalystPluginPaths.h"
@@ -686,37 +692,129 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
 }
 
 void IossApplication::callCatalystIOSSDatabaseOnRank() {
-    Ioss::PropertyManager outputProperties;
+    if (getNumberOfInputIOSSRegions() < 2) {
+        callCatalystIOSSDatabaseOnRankOneGrid();
+    } else {
+        callCatalystIOSSDatabaseOnRankMultiGrid();
+    }
+}
 
+char * gGridInputNames[5] = {"input","inputB","inputC","inputD","inputE"};
+
+void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid() {
+    //create all the ioss database instances
+    //create the output region for each grid (one on each database)
+    //for each timestep
+    //  call copy_database for each timestep for each database
+ 
+    //assuming we can't share the property manager for now
+    int numInputRegions = getNumberOfInputIOSSRegions();
+    std::vector<Ioss::PropertyManager *> outputProps;
+    std::vector<Ioss::DatabaseIO *> outputDbs;
+    std::vector<Ioss::Region *> outputRegions;
+    int ii;
+
+    //create a Ioss::DatabaseIO instance for each grid 
+    for (ii=0;ii<numInputRegions;ii++) {
+        Ioss::PropertyManager *newProps = new(Ioss::PropertyManager);
+        SetUpDefaultProperties(newProps);
+        newProps->add(Ioss::Property("CATALYST_MULTI_INPUT_PIPELINE_NAME",
+            "multipipe1"));
+        newProps->add(Ioss::Property("CATALYST_INPUT_NAME",
+            gGridInputNames[ii%5]));
+        outputProps.push_back(newProps);
+        Ioss::DatabaseIO *newDbo = Ioss::IOFactory::create(getCatalystDatabaseType(ii),
+            "catalyst", Ioss::WRITE_RESULTS, (MPI_Comm)MPI_COMM_WORLD,
+                   *newProps);
+        outputDbs.push_back(newDbo);
+    }
+    //create an output Ioss::Region instance for each grid
+    for (ii=0;ii<numInputRegions;ii++) {
+        Ioss::Region * inputRegion = getInputIOSSRegion(ii);
+        Ioss::Region * outputRegion = new Ioss::Region(outputDbs[ii], inputRegion->name());
+        outputRegions.push_back(outputRegion);
+    }
+
+    //use the minimum number of steps from all regions as the overall number of steps
+    auto state_count = getInputIOSSRegion(0)->get_property("state_count").get_int();
+    for (ii=1;ii<numInputRegions;ii++) {
+        int oneRegionNumStates = getInputIOSSRegion(ii)->get_property("state_count").get_int();
+        if (oneRegionNumStates < state_count) {
+            state_count = oneRegionNumStates;
+        }
+    }
+    int startTimeStep;
+    int stopTimeStep;
+    getStartStopTimeSteps(state_count, startTimeStep, stopTimeStep);
+
+    //right now, copy_database can't be called repeatedly with different
+    //timesteps because it tries to create the Node block (and other stuff)
+    //each time. So we are only doing one timestep for testing at this point.
+    startTimeStep = stopTimeStep;
+
+    //for each timestep, call copy_database (one timestep) for each output
+    //database
+    int currentTimeStep;
+    for (currentTimeStep = startTimeStep;
+         currentTimeStep <= stopTimeStep;
+         currentTimeStep++) {
+    for (ii=0;ii<numInputRegions;ii++) {
+        Ioss::Region * inputRegion = getInputIOSSRegion(ii);
+        Ioss::Region * outputRegion = outputRegions[ii];
+    
+        double min_time = inputRegion->get_state_time(currentTimeStep);
+        double max_time = inputRegion->get_state_time(currentTimeStep);
+    
+        Ioss::MeshCopyOptions copyOptions;
+        copyOptions.data_storage_type = 1;
+        copyOptions.minimum_time = min_time;
+        copyOptions.maximum_time = max_time;
+        Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
+    }
+    }
+    for (ii=0;ii<numInputRegions;ii++) {
+        Ioss::Region * outputRegion = outputRegions[ii];
+        delete outputRegion;
+    }
+}
+
+void IossApplication::SetUpDefaultProperties(Ioss::PropertyManager *outputProperties) {
     if (usePhactoriInputScriptON()) {
-        outputProperties.add(Ioss::Property("PHACTORI_INPUT_SYNTAX_SCRIPT",
+        outputProperties->add(Ioss::Property("PHACTORI_INPUT_SYNTAX_SCRIPT",
             getPhactoriInputScript()));
     }
     else if (usePhactoriInputJSONON()) {
-        outputProperties.add(Ioss::Property("PHACTORI_JSON_SCRIPT",
+        outputProperties->add(Ioss::Property("PHACTORI_JSON_SCRIPT",
             getPhactoriInputJSON()));
     }
     else if (useParaViewExportedScriptON()) {
-        outputProperties.add(Ioss::Property("CATALYST_SCRIPT",
+        outputProperties->add(Ioss::Property("CATALYST_SCRIPT",
             getParaViewExportedScript()));
     }
     else if (outputCatalystMeshOneFileON()) {
-        outputProperties.add(Ioss::Property(
+        outputProperties->add(Ioss::Property(
             "WRITE_CATALYST_MESH_ONE_FILE_WITH_PREFIX",
                 outputCatalystMeshFileName));
     }
     else if (outputCatalystMeshFilePerProcON()) {
-        outputProperties.add(Ioss::Property(
+        outputProperties->add(Ioss::Property(
             "WRITE_CATALYST_MESH_FILE_PER_PROC_WITH_PREFIX",
                 outputCatalystMeshFileName));
     }
     else {
-        outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_JSON_STRING",
+        outputProperties->add(Ioss::Property("CATALYST_BLOCK_PARSE_JSON_STRING",
             getPhactoriDefaultJSON()));
     }
 
-    outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME",
+    outputProperties->add(Ioss::Property("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME",
         applicationName));
+
+}
+
+void IossApplication::callCatalystIOSSDatabaseOnRankOneGrid() {
+    Ioss::PropertyManager outputProperties;
+
+    SetUpDefaultProperties(&outputProperties);
 
     Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(getCatalystDatabaseType(0),
         "catalyst", Ioss::WRITE_RESULTS, (MPI_Comm)MPI_COMM_WORLD,

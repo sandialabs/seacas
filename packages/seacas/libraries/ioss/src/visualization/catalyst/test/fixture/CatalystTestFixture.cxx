@@ -1,3 +1,9 @@
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+//
+// See packages/seacas/LICENSE for details
+
 #include "CatalystTestFixture.h"
 #include "TestDataDirectoryPath.h"
 #include "catch.hpp"
@@ -18,6 +24,20 @@ void CatalystTestFixture::runPhactoriJSONTest(
     std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
     ioapp.setPhactoriInputJSON(td + jsonFile);
     ioapp.addFileName(td + inputFile);
+    ioapp.runApplication();
+    REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
+}
+
+void CatalystTestFixture::runPhactoriJSONTestTwoGrid(
+    const std::string& jsonFile, const std::string& inputFileA,
+    const std::string& inputFileB) {
+
+    std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
+    ioapp.setPhactoriInputJSON(td + jsonFile);
+    ioapp.addFileName(td + inputFileA);
+    ioapp.addFileName(td + inputFileB);
+    //ioapp.setOutputCatalystMeshOneFile(true);
+    //ioapp.setPrintIOSSRegionReport(true);
     ioapp.runApplication();
     REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
 }
