@@ -1609,8 +1609,8 @@ localCoProcessorReference = None
 
 global gMaxDebugPrintOutputLines
 global gDebugPrintOutputLineCount
-#gMaxDebugPrintOutputLines = 10000000
-gMaxDebugPrintOutputLines = 100
+gMaxDebugPrintOutputLines = 10000000
+#gMaxDebugPrintOutputLines = 100
 gDebugPrintOutputLineCount = 0
 
 #hacky debug printing to file mechanism
@@ -1649,8 +1649,8 @@ global gMdp3UseFileOutFlag
 gMdp3UseFileOutFlag = True
 global gMdp3PriorityRestriction
 #gMdp3PriorityRestriction = 150
-#gMdp3PriorityRestriction = 50
-gMdp3PriorityRestriction = 500
+gMdp3PriorityRestriction = 50
+#gMdp3PriorityRestriction = 500
 
 #priority nominally
 #100-very verbose info
@@ -5206,7 +5206,8 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
   #now construct each filter in pipeline, being careful to construct them in a valid order, which causes multiple passes through the set
   #first, mark all as uncreated
   for operationName, operationBlock in ioPipeAndViewsState.mOperationBlocks.items():
-    operationBlock.mHasBeenConstructed = False
+    if operationBlock.mHasBeenConstructed == None:
+      operationBlock.mHasBeenConstructed = False
 
   #we need to keep looping through the operation blocks until all have been constructed
   keepConstructing = True
@@ -16393,7 +16394,7 @@ class PhactoriOperationBlock:
     self.mName = ""
     self.mInputOperationName = None
     self.mType = ""
-    self.mHasBeenConstructed = False
+    self.mHasBeenConstructed = None
     self.mParaViewFilter = None
     #for keeping track of data bounds for this operation and only updating
     #it when necessary
@@ -19558,6 +19559,7 @@ class PhactoriPipeAndViewsState:
     #default operation for incoming input
     self.mIncomingDefaultOperation = PhactoriOperationBlock()
     self.mIncomingDefaultOperation.mName = "default incoming input"
+    self.mIncomingOperationList = []
     self.mOperationBlocks = {}
     self.mImagesetBlocks = {}
     self.mScatterPlotBlocks = {}
@@ -19579,6 +19581,7 @@ class PhactoriPipeAndViewsState:
     self.mOutputResultsBlockId = None
     self.mCurrentDatabaseDummyFileName = None
     self.mProducer = None
+    self.mIncomingGridProducerList = []
     self.mPipeAndViewsState = None
     self.mRemeshRestartTag = None
     self.mSeparatorString = '_'
@@ -25608,6 +25611,27 @@ def InitializePerPipeRoot(datadescription, inCoprocessor):
     gPhactoriPipeRootMap[outputResultBaseId] = newRoot
     gPipeAndViewsState = newRoot
     newRoot.mProducer = inCoprocessor.CreateProducer( datadescription, "input" )
+    if PhactoriDbg():
+      numInputGrids = datadescription.GetNumberOfInputDescriptions()
+      myDebugPrint3("numInputGrids: " + str(numInputGrids) + "\n");
+      for ii in range(0,numInputGrids):
+        print(str(ii) + ": " + str(datadescription.GetInputDescriptionName(ii)) + "\n")
+    numInputGrids = datadescription.GetNumberOfInputDescriptions()
+    newRoot.mIncomingDefaultOperation.mHasBeenConstructed = True
+    for ii in range(1,numInputGrids):
+      incomingInputName = datadescription.GetInputDescriptionName(ii)
+      newTrivialProducerForGrid = PVTrivialProducer()
+      theGrid = datadescription.GetInputDescription(ii).GetGrid()
+      newTrivialProducerForGrid.GetClientSideObject().SetOutput(theGrid)
+      newIncomingOperationBlock = PhactoriOperationBlock()
+      newIncomingOperationBlock.mName = incomingInputName
+      newIncomingOperationBlock.mParaViewFilter = newTrivialProducerForGrid
+      newIncomingOperationBlock.mHasBeenConstructed = True
+      newIncomingOperationBlock.mOperationSpecifics = PhactoriOperationSpecifics()
+      newRoot.mIncomingOperationList.append(newIncomingOperationBlock)
+      newRoot.mIncomingGridProducerList.append(newTrivialProducerForGrid)
+      newRoot.mOperationBlocks[newIncomingOperationBlock.mName] = newIncomingOperationBlock
+
     CreatePipelineFromDataDescription(datadescription)
     HandleRestartUpdateForOutputResultsBlock(newRoot)
 

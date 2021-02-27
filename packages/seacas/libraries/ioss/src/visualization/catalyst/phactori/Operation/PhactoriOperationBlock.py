@@ -74,7 +74,7 @@ class PhactoriOperationBlock:
     self.mName = ""
     self.mInputOperationName = None
     self.mType = ""
-    self.mHasBeenConstructed = False
+    self.mHasBeenConstructed = None
     self.mParaViewFilter = None
     #for keeping track of data bounds for this operation and only updating
     #it when necessary
