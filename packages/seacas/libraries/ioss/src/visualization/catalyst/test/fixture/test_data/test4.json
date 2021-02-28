@@ -5,10 +5,16 @@
 "representation blocks":{
 },
 "imageset blocks":{
-  "is_test2":{
+  "is_test4a":{
     "camera":"camxyz1",
     "image basedirectory":"CatalystOutput_test4",
-    "image basename":"test4."
+    "image basename":"test4_inputA."
+  },
+  "is_test4b":{
+    "operation":"inputB",
+    "camera":"camxyz1",
+    "image basedirectory":"CatalystOutput_test4",
+    "image basename":"test4_inputB."
   }
 },
 "operation blocks":{},

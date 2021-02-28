@@ -25618,6 +25618,7 @@ def InitializePerPipeRoot(datadescription, inCoprocessor):
         print(str(ii) + ": " + str(datadescription.GetInputDescriptionName(ii)) + "\n")
     numInputGrids = datadescription.GetNumberOfInputDescriptions()
     newRoot.mIncomingDefaultOperation.mHasBeenConstructed = True
+    defSrc = GetActiveSource();
     for ii in range(1,numInputGrids):
       incomingInputName = datadescription.GetInputDescriptionName(ii)
       newTrivialProducerForGrid = PVTrivialProducer()
@@ -25631,6 +25632,7 @@ def InitializePerPipeRoot(datadescription, inCoprocessor):
       newRoot.mIncomingOperationList.append(newIncomingOperationBlock)
       newRoot.mIncomingGridProducerList.append(newTrivialProducerForGrid)
       newRoot.mOperationBlocks[newIncomingOperationBlock.mName] = newIncomingOperationBlock
+    SetActiveSource(defSrc);
 
     CreatePipelineFromDataDescription(datadescription)
     HandleRestartUpdateForOutputResultsBlock(newRoot)

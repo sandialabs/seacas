@@ -11,7 +11,8 @@ TEST_CASE_METHOD(CatalystTestFixture,
     "TwoGridInputTest1_cgns_ex2", "[cgns to catalyst script]") {
 
     runPhactoriJSONTestTwoGrid("test3.json", "aero_blunt_wedge_test3.cgns", "block_crush_1.ex2");
-    checkTestOutputFileExists("CatalystOutput_test3/test3.0000.png");
+    checkTestOutputFileExists("CatalystOutput_test3/test3_inputA.0000.png");
+    checkTestOutputFileExists("CatalystOutput_test3/test3_inputB.0000.png");
 }
 
 /*
