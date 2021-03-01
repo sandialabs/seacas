@@ -69,11 +69,11 @@ namespace Ioss {
    * \param[in] optval The default value.
    * \returns 1 if successful, 0 if unsuccessful.
    */
-  int GetLongOption::enroll(const char *const opt, const OptType t, const char *const desc,
+  bool GetLongOption::enroll(const char *const opt, const OptType t, const char *const desc,
                             const char *const val, const char *const optval, bool extra_line)
   {
-    if (enroll_done != 0) {
-      return 0;
+    if (options_parsed) {
+      return false;
     }
 
     auto *c        = new Cell;
@@ -93,7 +93,7 @@ namespace Ioss {
       last       = c;
     }
 
-    return 1;
+    return true;
   }
 
   const char *GetLongOption::program_name() const { return pname == nullptr ? "[UNSET]" : pname; }
@@ -132,7 +132,7 @@ namespace Ioss {
     std::ostringstream multiple_match;
 
     pname       = basename(*argv);
-    enroll_done = 1;
+    options_parsed = true;
     if (argc-- <= 1) {
       return my_optind;
     }
@@ -152,7 +152,7 @@ namespace Ioss {
         tmptoken = ++token;
       }
 
-      while ((static_cast<int>(*tmptoken != 0) != 0) && *tmptoken != '=') {
+      while ( *tmptoken != '\0' && *tmptoken != '=') {
         ++tmptoken;
       }
       /* (tmptoken - token) is now equal to the command line option
@@ -236,7 +236,7 @@ namespace Ioss {
    */
   int GetLongOption::parse(char *const str, char *const p)
   {
-    enroll_done       = 1;
+    options_parsed       = true;
     char *      token = strtok(str, " \t");
     const char *name  = p != nullptr ? p : "GetLongOption";
 
@@ -248,7 +248,7 @@ namespace Ioss {
 
       char *ladtoken = nullptr; /* lookahead token */
       char *tmptoken = ++token;
-      while ((static_cast<int>(*tmptoken != 0) != 0) && *tmptoken != '=') {
+      while (*tmptoken != '\0' && *tmptoken != '=') {
         ++tmptoken;
       }
       /* (tmptoken - token) is now equal to the command line option
