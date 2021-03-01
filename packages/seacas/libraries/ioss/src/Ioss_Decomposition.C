@@ -299,12 +299,12 @@ namespace Ioss {
     show_progress(__func__);
     if (m_processor == 0) {
       fmt::print(Ioss::OUTPUT(),
-                 "\nIOSS: Using decomposition method '{}' for {:n} elements on {} processors.\n",
+                 "\nIOSS: Using decomposition method '{}' for {:n} elements on {} mpi ranks.\n",
                  m_method, m_globalElementCount, m_processorCount);
 
       if ((size_t)m_processorCount > m_globalElementCount) {
         fmt::print(Ioss::WARNING(),
-                   "Decomposing {} elements across {} processors will "
+                   "Decomposing {} elements across {} mpi ranks will "
                    "result in some processors with *NO* elements.\n",
                    m_globalElementCount, m_processorCount);
       }
