@@ -171,7 +171,7 @@ void Ioss::SideSet::block_membership(std::vector<std::string> &block_members)
   block_members = blockMembership;
 }
 
-bool Ioss::SideSet::operator==(const SideSet &rhs)
+bool Ioss::SideSet::operator==(const SideSet &rhs) const
 {
   std::vector<SideBlock *> lhs_side_blocks = this->sideBlocks;
   std::vector<SideBlock *> rhs_side_blocks = rhs.sideBlocks;
@@ -212,7 +212,7 @@ bool Ioss::SideSet::operator==(const SideSet &rhs)
   return true;
 }
 
-bool Ioss::SideSet::operator!=(const SideSet &rhs)
+bool Ioss::SideSet::operator!=(const SideSet &rhs) const
 {
   return !(*this == rhs);
 }

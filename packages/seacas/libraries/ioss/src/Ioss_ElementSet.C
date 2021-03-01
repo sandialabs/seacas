@@ -51,17 +51,17 @@ Ioss::Property Ioss::ElementSet::get_implicit_property(const std::string &my_nam
 
 void Ioss::ElementSet::block_membership(std::vector<std::string> & /*block_members*/) {}
 
-bool Ioss::ElementSet::operator==(const ElementSet &rhs)
+bool Ioss::ElementSet::operator==(const ElementSet &rhs) const
 {
   return Ioss::EntitySet::operator==( rhs );
 }
 
-bool Ioss::ElementSet::operator!=(const ElementSet &rhs)
+bool Ioss::ElementSet::operator!=(const ElementSet &rhs) const
 {
   return !(*this == rhs);
 }
 
-bool Ioss::ElementSet::equal(const ElementSet &rhs)
+bool Ioss::ElementSet::equal(const ElementSet &rhs) const
 {
   return Ioss::EntitySet::equal( rhs );
 }

@@ -97,9 +97,9 @@ namespace Ioss {
     // Compare two fields (used for STL container)
     bool operator<(const Field &other) const;
 
-    bool operator==(Ioss::Field rhs);
-    bool operator!=(Ioss::Field rhs);
-    bool equal(Ioss::Field rhs);
+    bool operator==(const Ioss::Field rhs) const;
+    bool operator!=(const Ioss::Field rhs) const;
+    bool equal(const Ioss::Field rhs) const;
 
     ~Field();
 
@@ -164,7 +164,7 @@ namespace Ioss {
     const VariableType *transStorage_{}; // Storage type after transformation
 
     std::vector<Transform *> transforms_;
-    bool equal_(Ioss::Field rhs, bool quiet);
+    bool equal_(const Ioss::Field rhs, bool quiet) const;
   };
 } // namespace Ioss
 #endif

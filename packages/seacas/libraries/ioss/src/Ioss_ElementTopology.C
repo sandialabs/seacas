@@ -312,7 +312,7 @@ Ioss::ElementTopology *Ioss::ElementTopology::boundary_type(int bnd_number) cons
   return nullptr;
 }
 
-bool Ioss::ElementTopology::equal_(const Ioss::ElementTopology &rhs, bool quiet)
+bool Ioss::ElementTopology::equal_(const Ioss::ElementTopology &rhs, bool quiet) const
 {
   if( this->name_.compare(rhs.name_) != 0 ) {
     if( !quiet ) {
@@ -333,17 +333,17 @@ bool Ioss::ElementTopology::equal_(const Ioss::ElementTopology &rhs, bool quiet)
   return true;
 }
 
-bool Ioss::ElementTopology::operator==(const Ioss::ElementTopology &rhs)
+bool Ioss::ElementTopology::operator==(const Ioss::ElementTopology &rhs) const
 {
   return equal_(rhs, true);
 }
 
-bool Ioss::ElementTopology::operator!=(const Ioss::ElementTopology &rhs)
+bool Ioss::ElementTopology::operator!=(const Ioss::ElementTopology &rhs) const
 {
   return !(*this == rhs);
 }
 
-bool Ioss::ElementTopology::equal(const Ioss::ElementTopology &rhs)
+bool Ioss::ElementTopology::equal(const Ioss::ElementTopology &rhs) const
 {
   return equal_(rhs, false);
 }

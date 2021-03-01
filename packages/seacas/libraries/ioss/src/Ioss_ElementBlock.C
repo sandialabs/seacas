@@ -66,17 +66,17 @@ namespace Ioss {
     return get_database()->get_bounding_box(this);
   }
 
-  bool ElementBlock::operator==(ElementBlock &rhs)
+  bool ElementBlock::operator==(const ElementBlock &rhs) const
   {
     return EntityBlock::operator==( rhs );
   }
 
-  bool Ioss::ElementBlock::operator!=(ElementBlock &rhs)
+  bool Ioss::ElementBlock::operator!=(const ElementBlock &rhs) const
   {
     return !(*this == rhs);
   }
 
-  bool ElementBlock::equal(ElementBlock &rhs)
+  bool ElementBlock::equal(const ElementBlock &rhs) const
   {
     return EntityBlock::equal( rhs );
   }

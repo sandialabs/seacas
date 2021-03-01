@@ -42,17 +42,17 @@ Ioss::Property Ioss::EntitySet::get_implicit_property(const std::string &my_name
   return Ioss::GroupingEntity::get_implicit_property(my_name);
 }
 
-bool Ioss::EntitySet::operator==(const EntitySet &rhs)
+bool Ioss::EntitySet::operator==(const EntitySet &rhs) const
 {
   return Ioss::GroupingEntity::operator==( rhs );
 }
 
-bool Ioss::EntitySet::operator!=(const EntitySet &rhs)
+bool Ioss::EntitySet::operator!=(const EntitySet &rhs) const
 {
   return !(*this == rhs);
 }
 
-bool Ioss::EntitySet::equal(const EntitySet &rhs)
+bool Ioss::EntitySet::equal(const EntitySet &rhs) const
 {
   return Ioss::GroupingEntity::equal( rhs );
 }

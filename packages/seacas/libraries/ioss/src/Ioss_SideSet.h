@@ -52,8 +52,8 @@ namespace Ioss {
     Property get_implicit_property(const std::string &my_name) const override;
 
     int max_parametric_dimension() const;
-    bool operator==(const SideSet &);
-    bool operator!=(const SideSet &);
+    bool operator==(const SideSet &) const;
+    bool operator!=(const SideSet &) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

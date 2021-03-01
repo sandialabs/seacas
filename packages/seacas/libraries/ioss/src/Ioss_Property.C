@@ -187,7 +187,7 @@ Ioss::Property &Ioss::Property::operator=(Ioss::Property rhs)
 }
 
 
-bool Ioss::Property::operator==(Ioss::Property rhs)
+bool Ioss::Property::operator==(const Ioss::Property rhs) const
 {
   if( this->name_.compare(rhs.name_) != 0 ) {
     return false;
@@ -237,7 +237,7 @@ bool Ioss::Property::operator==(Ioss::Property rhs)
   return true;
 }
 
-bool Ioss::Property::operator!=(Ioss::Property rhs)
+bool Ioss::Property::operator!=(const Ioss::Property rhs) const
 {
   return !(*this == rhs);
 }

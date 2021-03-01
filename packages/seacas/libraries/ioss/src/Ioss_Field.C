@@ -239,7 +239,7 @@ bool Ioss::Field::transform(void *data)
   return true;
 }
 
-bool Ioss::Field::equal_(Ioss::Field rhs, bool quiet)
+bool Ioss::Field::equal_(const Ioss::Field rhs, bool quiet) const
 {
   if( Ioss::Utils::str_equal(this->name_, rhs.name_) == false ) {
     if( !quiet ) {
@@ -286,17 +286,17 @@ bool Ioss::Field::equal_(Ioss::Field rhs, bool quiet)
   return true;
 }
 
-bool Ioss::Field::operator==(Ioss::Field rhs)
+bool Ioss::Field::operator==(const Ioss::Field rhs) const
 {
   return equal_(rhs, true);
 }
 
-bool Ioss::Field::operator!=(Ioss::Field rhs)
+bool Ioss::Field::operator!=(const Ioss::Field rhs) const
 {
   return !(*this == rhs);
 }
 
-bool Ioss::Field::equal(Ioss::Field rhs)
+bool Ioss::Field::equal(const Ioss::Field rhs) const
 {
   return equal_(rhs, false);
 }

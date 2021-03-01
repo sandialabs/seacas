@@ -48,17 +48,17 @@ Ioss::Property Ioss::NodeSet::get_implicit_property(const std::string &my_name) 
   return Ioss::GroupingEntity::get_implicit_property(my_name);
 }
 
-bool Ioss::NodeSet::operator==(const NodeSet &rhs)
+bool Ioss::NodeSet::operator==(const NodeSet &rhs) const
 {
   return Ioss::EntitySet::operator==( rhs );
 }
 
-bool Ioss::NodeSet::operator!=(const NodeSet &rhs)
+bool Ioss::NodeSet::operator!=(const NodeSet &rhs) const
 {
   return !(*this == rhs);
 }
 
-bool Ioss::NodeSet::equal(const NodeSet &rhs)
+bool Ioss::NodeSet::equal(const NodeSet &rhs) const
 {
   return Ioss::EntitySet::equal( rhs );
 }

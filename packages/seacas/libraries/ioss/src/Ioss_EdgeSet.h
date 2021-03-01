@@ -45,9 +45,9 @@ namespace Ioss {
     void block_membership(std::vector<std::string> &block_membership) override;
 
     // COMPARE EdgeSets
-    bool operator==(const EdgeSet &);
-    bool operator!=(const EdgeSet &);
-    bool equal(const EdgeSet &);
+    bool operator==(const EdgeSet &) const;
+    bool operator!=(const EdgeSet &) const;
+    bool equal(const EdgeSet &) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
