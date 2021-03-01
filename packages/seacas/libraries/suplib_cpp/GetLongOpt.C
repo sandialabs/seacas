@@ -11,29 +11,29 @@
 #include <fmt/ostream.h>
 #include <sstream>
 
-  /** \brief Create an empty options database.
-   *
-   * \param optmark The command line symbol designating options.
-   */
-  GetLongOption::GetLongOption(const char optmark) : optmarker(optmark)
-  {
-    ustring = "[valid options and arguments]";
-  }
+/** \brief Create an empty options database.
+ *
+ * \param optmark The command line symbol designating options.
+ */
+GetLongOption::GetLongOption(const char optmark) : optmarker(optmark)
+{
+  ustring = "[valid options and arguments]";
+}
 
-  /** \brief Frees dynamically allocated memory.
-   *
-   *  Frees memory for the private struct variables representing the options.
-   */
-  GetLongOption::~GetLongOption()
-  {
-    Cell *t = table;
+/** \brief Frees dynamically allocated memory.
+ *
+ *  Frees memory for the private struct variables representing the options.
+ */
+GetLongOption::~GetLongOption()
+{
+  Cell *t = table;
 
-    while (t != nullptr) {
-      Cell *tmp = t;
-      t         = t->next;
-      delete tmp;
-    }
+  while (t != nullptr) {
+    Cell *tmp = t;
+    t         = t->next;
+    delete tmp;
   }
+}
 
   /** \brief Extract the base file name from a full path.
    *
@@ -55,6 +55,35 @@
     return s;
   }
 
+/** \brief parse command line arguments
+ *
+ *  Set the values of options in the option table based on
+ *  the given command line arguments.
+ *
+ *  \param[in] argc Number of command line arguments passed in from main(int argc, char *argv[]).
+ *  \param[in] argv Command line arguments passed in from main(int argc, char *argv[]).
+ *  \returns Number of options processed, or -1 on failure.
+ *
+ */
+int GetLongOption::parse(int argc, char *const *argv)
+{
+  int my_optind = 1;
+
+  std::ostringstream multiple_match;
+
+  pname       = basename(*argv);
+  enroll_done = 1;
+  if (argc-- <= 1) {
+    return my_optind;
+=======
+  else {
+    ++s;
+  }
+  return s;
+>>>>>>> 95cdd6cffb (SUPLIB: Clean up option parsing)
+>>>>>>> 89c3767238 (SUPLIB: clang-format)
+  }
+
   /** \brief Enroll a command line option into the database.
    *
    *  Dynamically allocates memory for the option, sets its name
@@ -70,7 +99,7 @@
    * \returns 1 if successful, 0 if unsuccessful.
    */
   bool GetLongOption::enroll(const char *const opt, const OptType t, const char *const desc,
-                            const char *const val, const char *const optval, bool extra_line)
+                             const char *const val, const char *const optval, bool extra_line)
   {
     if (options_parsed) {
       return false;
@@ -129,7 +158,7 @@
   {
     int my_optind = 1;
 
-    pname       = basename(*argv);
+    pname          = basename(*argv);
     options_parsed = true;
     if (argc-- <= 1) {
       return my_optind;
@@ -150,7 +179,7 @@
         tmptoken = ++token;
       }
 
-      while ( *tmptoken != '\0' && *tmptoken != '=') {
+      while (*tmptoken != '\0' && *tmptoken != '=') {
         ++tmptoken;
       }
       /* (tmptoken - token) is now equal to the command line option
@@ -183,18 +212,18 @@
               pc          = t;
             }
             else {
-            // Multiple partial matches...Print warning
-            if (matchStatus == PartialMatch) {
-              // First time, print the message header and the first
-              // matched duplicate...
-              fmt::print(multiple_match, "ERROR: {}: Multiple matches found for option '{}{}'.\n",
-                         pname, optmarker, strtok(token, "= "));
-              fmt::print(multiple_match, "\t{}{}: {}\n", optmarker, pc->option, pc->description);
+              // Multiple partial matches...Print warning
+              if (matchStatus == PartialMatch) {
+                // First time, print the message header and the first
+                // matched duplicate...
+                fmt::print(multiple_match, "ERROR: {}: Multiple matches found for option '{}{}'.\n",
+                           pname, optmarker, strtok(token, "= "));
+                fmt::print(multiple_match, "\t{}{}: {}\n", optmarker, pc->option, pc->description);
+              }
+              fmt::print(multiple_match, "\t{}{}:{}\n", optmarker, t->option, t->description);
+              matchStatus = MultipleMatch;
             }
-            fmt::print(multiple_match, "\t{}{}:{}\n", optmarker, t->option, t->description);
-            matchStatus = MultipleMatch;
-	    }
-	  }
+          }
         } /* end if */
       }   /* end for */
 
@@ -214,12 +243,12 @@
         return -1; /* no match */
       }
       else if (matchStatus == MultipleMatch) {
-	std::cerr << multiple_match.str();
+        std::cerr << multiple_match.str();
         return -1; /* no match */
       }
     } /* end while */
-  return my_optind;
-}
+    return my_optind;
+  }
 
   /** \brief parse an argument string.
    *
@@ -233,7 +262,7 @@
    */
   int GetLongOption::parse(char *const str, char *const p)
   {
-    options_parsed       = true;
+    options_parsed    = true;
     char *      token = strtok(str, " \t");
     const char *name  = p != nullptr ? p : "GetLongOption";
 
@@ -305,7 +334,7 @@
      1  if the nexttoken was consumed
      ------------------------------------------------------------------- */
 
-  int GetLongOption::setcell(Cell *c, char *valtoken, char *nexttoken, const char *name)
+  int GetLongOption::setcell(Cell * c, char *valtoken, char *nexttoken, const char *name)
   {
     if (c == nullptr) {
       return -1;
@@ -357,7 +386,7 @@
    *
    *  \param[in] outfile The output stream to which the usage string is printed.
    */
-  void GetLongOption::usage(std::ostream &outfile) const
+  void GetLongOption::usage(std::ostream & outfile) const
   {
     // The API of `usage` specifies an `ostream` for the output location. However,
     // the fmt::print color options do not work with an ostream and instead
