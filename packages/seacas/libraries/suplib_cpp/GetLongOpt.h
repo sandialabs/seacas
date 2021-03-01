@@ -39,12 +39,12 @@ private:
   };
 
 private:
-  Cell *      table{nullptr};   // option table
-  const char *ustring{nullptr}; // usage message
-  char *      pname{nullptr};   // program basename
-  Cell *      last{nullptr};    // last entry in option table
-  int         enroll_done{0};   // finished enrolling
-  char        optmarker;        // option marker
+  Cell *      table{nullptr};        // option table
+  const char *ustring{nullptr};      // usage message
+  char *      pname{nullptr};        // program basename
+  Cell *      last{nullptr};         // last entry in option table
+  char        optmarker;             // option marker
+  bool        options_parsed{false}; // parsed options, cannot enroll anymore options
 
 private:
   int setcell(Cell *c, char *valtoken, char *nexttoken, const char *name);
@@ -58,7 +58,7 @@ public:
   int parse(int argc, char *const *argv);
   int parse(char *str, char *p);
 
-  int         enroll(const char *opt, OptType t, const char *desc, const char *val,
+  bool        enroll(const char *opt, OptType t, const char *desc, const char *val,
                      const char *optval = nullptr, bool extra_line = false);
   const char *retrieve(const char *opt) const;
   const char *program_name() const;
