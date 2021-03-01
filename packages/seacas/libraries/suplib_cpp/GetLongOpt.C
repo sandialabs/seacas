@@ -7,6 +7,7 @@
 /* S Manoharan. Advanced Computer Research Institute. Lyon. France */
 #include <GetLongOpt.h>
 #include <cstring>
+#include <sstream>
 #include <fmt/color.h>
 #include <fmt/ostream.h>
 
@@ -127,6 +128,8 @@ int GetLongOption::parse(int argc, char *const *argv)
 {
   int my_optind = 1;
 
+  std::ostringstream multiple_match;
+
   pname       = basename(*argv);
   enroll_done = 1;
   if (argc-- <= 1) {
@@ -185,11 +188,11 @@ int GetLongOption::parse(int argc, char *const *argv)
             if (matchStatus == PartialMatch) {
               // First time, print the message header and the first
               // matched duplicate...
-              fmt::print(stderr, "ERROR: {}: Multiple matches found for option '{}{}'.\n", pname,
+              fmt::print(multiple_match, "ERROR: {}: Multiple matches found for option '{}{}'.\n", pname,
                          optmarker, strtok(token, "= "));
-              fmt::print(stderr, "\t{}{}: {}\n", optmarker, pc->option, pc->description);
+              fmt::print(multiple_match, "\t{}{}: {}\n", optmarker, pc->option, pc->description);
             }
-            fmt::print(stderr, "\t{}{}:{}\n", optmarker, t->option, t->description);
+            fmt::print(multiple_match, "\t{}{}:{}\n", optmarker, t->option, t->description);
             matchStatus = MultipleMatch;
           }
         }
@@ -212,11 +215,11 @@ int GetLongOption::parse(int argc, char *const *argv)
       return -1; /* no match */
     }
     else if (matchStatus == MultipleMatch) {
+      std::cerr << multiple_match.str();
       return -1; /* no match */
     }
 
   } /* end while */
-
   return my_optind;
 }
 
