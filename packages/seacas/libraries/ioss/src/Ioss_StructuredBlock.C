@@ -184,10 +184,10 @@ namespace Ioss {
 
     auto block = new StructuredBlock(database, name(), index_dim, ijk, offset, ijk_glob);
 
-    block->m_zoneConnectivity   = m_zoneConnectivity;
-    block->m_boundaryConditions = m_boundaryConditions;
+    block->m_zoneConnectivity    = m_zoneConnectivity;
+    block->m_boundaryConditions  = m_boundaryConditions;
     block->m_blockLocalNodeIndex = m_blockLocalNodeIndex;
-    block->m_globalIdMap = m_globalIdMap;
+    block->m_globalIdMap         = m_globalIdMap;
 
     return block;
   }

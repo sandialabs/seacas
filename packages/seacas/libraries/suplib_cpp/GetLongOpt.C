@@ -7,9 +7,9 @@
 /* S Manoharan. Advanced Computer Research Institute. Lyon. France */
 #include <GetLongOpt.h>
 #include <cstring>
-#include <sstream>
 #include <fmt/color.h>
 #include <fmt/ostream.h>
+#include <sstream>
 
 /** \brief Create an empty options database.
  *
@@ -188,8 +188,8 @@ int GetLongOption::parse(int argc, char *const *argv)
             if (matchStatus == PartialMatch) {
               // First time, print the message header and the first
               // matched duplicate...
-              fmt::print(multiple_match, "ERROR: {}: Multiple matches found for option '{}{}'.\n", pname,
-                         optmarker, strtok(token, "= "));
+              fmt::print(multiple_match, "ERROR: {}: Multiple matches found for option '{}{}'.\n",
+                         pname, optmarker, strtok(token, "= "));
               fmt::print(multiple_match, "\t{}{}: {}\n", optmarker, pc->option, pc->description);
             }
             fmt::print(multiple_match, "\t{}{}:{}\n", optmarker, t->option, t->description);

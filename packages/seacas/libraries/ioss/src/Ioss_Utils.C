@@ -2427,7 +2427,7 @@ namespace {
     // NodeBlocks that belong to a StructuredBlock have no field data that needs to be transferred.
     // A permanent and comprehensive fix that handles this issue still needs to be developed.
     // --sll 21aug20
-    if( ige->type() == Ioss::NODEBLOCK && ige->name().find("_nodes") != std::string::npos ) {
+    if (ige->type() == Ioss::NODEBLOCK && ige->name().find("_nodes") != std::string::npos) {
       return;
     }
 
@@ -2525,9 +2525,7 @@ namespace {
     assert(pool.data.size() >= isize);
 
     switch (options.data_storage_type) {
-    case 1: 
-      ige->get_field_data(field_name, pool.data.data(), isize); 
-      break;
+    case 1: ige->get_field_data(field_name, pool.data.data(), isize); break;
     case 2:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         ige->get_field_data(field_name, pool.data);
@@ -2621,9 +2619,7 @@ namespace {
     }
 
     switch (options.data_storage_type) {
-    case 1: 
-      oge->put_field_data(field_name, pool.data.data(), isize); 
-      break;
+    case 1: oge->put_field_data(field_name, pool.data.data(), isize); break;
     case 2:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         oge->put_field_data(field_name, pool.data);

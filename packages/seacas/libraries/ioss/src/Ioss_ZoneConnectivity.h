@@ -27,8 +27,9 @@ namespace Ioss {
 
   struct ZoneConnectivity
   {
-    // cereal requires a default constuctor when de-serializing vectors of objects.  Because StructuredBlock 
-    // contains a vector of ZoneConnectivity objects, this default constructor is necessary.
+    // cereal requires a default constuctor when de-serializing vectors of objects.  Because
+    // StructuredBlock contains a vector of ZoneConnectivity objects, this default constructor is
+    // necessary.
     ZoneConnectivity() = default;
 
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
@@ -93,12 +94,11 @@ namespace Ioss {
                                // this connection.
     Ioss::IJK_t m_transform{}; // The transform.  In the same form as defined by CGNS
 
-    template<class Archive>
-    void serialize(Archive &archive)
-    {   
-      archive(m_connectionName, m_donorName, m_transform, m_ownerRangeBeg, m_ownerRangeEnd, 
-              m_ownerOffset, m_donorRangeBeg, m_donorRangeEnd, m_donorOffset, m_ownerGUID, 
-              m_donorGUID, m_ownerZone, m_donorZone, m_ownerProcessor, m_donorProcessor, 
+    template <class Archive> void serialize(Archive &archive)
+    {
+      archive(m_connectionName, m_donorName, m_transform, m_ownerRangeBeg, m_ownerRangeEnd,
+              m_ownerOffset, m_donorRangeBeg, m_donorRangeEnd, m_donorOffset, m_ownerGUID,
+              m_donorGUID, m_ownerZone, m_donorZone, m_ownerProcessor, m_donorProcessor,
               m_sameRange, m_ownsSharedNodes, m_fromDecomp, m_isActive);
     }
 

@@ -45,8 +45,9 @@ namespace Ioss {
     {
     }
 
-    // cereal requires a default constuctor when de-serializing vectors of objects.  Because StructuredBlock 
-    // contains a vector of BoundaryCondition objects, this default constructor is necessary.
+    // cereal requires a default constuctor when de-serializing vectors of objects.  Because
+    // StructuredBlock contains a vector of BoundaryCondition objects, this default constructor is
+    // necessary.
     BoundaryCondition() = default;
 
     BoundaryCondition(const BoundaryCondition &copy_from) = default;
@@ -69,13 +70,10 @@ namespace Ioss {
 
     mutable int m_face{-1};
 
-    template<class Archive>
-    void serialize(Archive &archive)
-    {   
+    template <class Archive> void serialize(Archive &archive)
+    {
       archive(m_bcName, m_famName, m_rangeBeg, m_rangeEnd, m_face);
     }
-
-    
 
     friend std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc);
   };
@@ -334,9 +332,8 @@ namespace Ioss {
     std::vector<size_t>                    m_blockLocalNodeIndex;
     std::vector<std::pair<size_t, size_t>> m_globalIdMap;
 
-    template<class Archive>
-    void serialize(Archive &archive)
-    {   
+    template <class Archive> void serialize(Archive &archive)
+    {
       archive(m_zoneConnectivity, m_boundaryConditions, m_blockLocalNodeIndex, m_globalIdMap);
     }
   };

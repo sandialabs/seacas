@@ -51,8 +51,8 @@ namespace {
   auto initial_time = std::chrono::steady_clock::now();
 
   void log_time(std::chrono::time_point<std::chrono::steady_clock> &start,
-                std::chrono::time_point<std::chrono::steady_clock> &finish,
-                int current_state, double state_time, bool is_input, bool single_proc_only,
+                std::chrono::time_point<std::chrono::steady_clock> &finish, int current_state,
+                double state_time, bool is_input, bool single_proc_only,
                 const Ioss::ParallelUtils &util);
 
   void log_field(const char *symbol, const Ioss::GroupingEntity *entity, const Ioss::Field &field,
@@ -1119,8 +1119,8 @@ namespace Ioss {
 
 namespace {
   void log_time(std::chrono::time_point<std::chrono::steady_clock> &start,
-                std::chrono::time_point<std::chrono::steady_clock> &finish,
-                int current_state, double state_time, bool is_input, bool single_proc_only,
+                std::chrono::time_point<std::chrono::steady_clock> &finish, int current_state,
+                double state_time, bool is_input, bool single_proc_only,
                 const Ioss::ParallelUtils &util)
   {
     std::vector<double> all_times;
