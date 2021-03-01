@@ -343,7 +343,7 @@ namespace Ioss {
         return 0;
       }
       else {
-        if (nexttoken != nullptr && nexttoken[0] != optmarker) {
+        if (nexttoken != nullptr) {
           c->value = nexttoken;
           return 1;
         }

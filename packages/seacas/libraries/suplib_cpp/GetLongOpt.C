@@ -342,7 +342,7 @@ int GetLongOption::setcell(Cell *c, char *valtoken, char *nexttoken, const char 
       return 0;
     }
     else {
-      if (nexttoken != nullptr && nexttoken[0] != optmarker) {
+      if (nexttoken != nullptr) {
         c->value = nexttoken;
         return 1;
       }
