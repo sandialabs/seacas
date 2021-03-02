@@ -6,6 +6,7 @@
 
 #include <Ionit_Initializer.h>
 #include <Ioss_CodeTypes.h>
+#include <Ioss_Compare.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_MeshType.h>
@@ -533,7 +534,7 @@ namespace {
       options.reverse           = interFace.reverse;
       options.add_proc_id       = interFace.add_processor_id_field;
 
-      bool result = Ioss::Utils::compare_database(input_region, output_region, options);
+      bool result = Ioss::Compare::compare_database(input_region, output_region, options);
       if( result ) {
         fmt::print(stderr, "DATABASES are EQUAL\n");
       } else {
