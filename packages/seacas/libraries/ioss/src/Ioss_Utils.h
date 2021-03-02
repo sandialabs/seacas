@@ -504,7 +504,7 @@ namespace Ioss {
     // Compare the mesh in 'input_region' to 'output_region'.  Behavior can be controlled
     // via options in 'options'
     static bool compare_database(Ioss::Region &input_region, Ioss::Region &output_region,
-                                 Ioss::MeshCopyOptions &options);
+                                 const Ioss::MeshCopyOptions &options);
 
   };
 

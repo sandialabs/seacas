@@ -142,46 +142,46 @@ namespace {
                                     DataPool &pool, const std::string &field_name,
                                     const Ioss::MeshCopyOptions &options);
 
-  bool compare_properties(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge);
-  bool compare_qa_info(Ioss::Region &in, Ioss::Region &out);
-  bool compare_nodeblock(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_properties(const Ioss::GroupingEntity *ige, const Ioss::GroupingEntity *oge);
+  bool compare_qa_info(const Ioss::Region &in, const Ioss::Region &out);
+  bool compare_nodeblock(const Ioss::Region &input_region, const Ioss::Region &output_region,
                          DataPool &pool, const Ioss::MeshCopyOptions &options);
-  bool compare_elementblocks(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_elementblocks(const Ioss::Region &input_region, const Ioss::Region &output_region,
                              const Ioss::MeshCopyOptions &options);
-  bool compare_edgeblocks(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_edgeblocks(const Ioss::Region &input_region, const Ioss::Region &output_region,
                           const Ioss::MeshCopyOptions &options);
-  bool compare_faceblocks(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_faceblocks(const Ioss::Region &input_region, const Ioss::Region &output_region,
                           const Ioss::MeshCopyOptions &options);
-  bool compare_structuredblocks(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_structuredblocks(const Ioss::Region &input_region, const Ioss::Region &output_region,
                                  const Ioss::MeshCopyOptions &options);
-  bool compare_nodesets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_nodesets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options);
-  bool compare_edgesets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_edgesets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options);
-  bool compare_facesets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_facesets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options);
-  bool compare_elemsets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_elemsets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options);
-  bool compare_sidesets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_sidesets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options);
-  bool compare_commsets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_commsets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options);
-  bool compare_coordinate_frames(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_coordinate_frames(const Ioss::Region &input_region, const Ioss::Region &output_region,
                                  const Ioss::MeshCopyOptions &options);
   template <typename T>
   bool compare_fields(const std::vector<T *> &in_entities, const std::vector<T *> &out_entities,
-                      Ioss::Field::RoleType role);
+                      const Ioss::Field::RoleType role);
 
-  bool compare_fields(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                      Ioss::Field::RoleType role);
+  bool compare_fields(const Ioss::GroupingEntity *ige, const Ioss::GroupingEntity *oge,
+                      const Ioss::Field::RoleType role);
   template <typename T>
   bool compare_field_data(const std::vector<T *> &in_entities, const std::vector<T *> &out_entities,
-                          DataPool &pool, Ioss::Field::RoleType role,
+                          DataPool &pool, const Ioss::Field::RoleType role,
                           const Ioss::MeshCopyOptions &options);
-  bool compare_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge, DataPool &pool,
-                          Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
+  bool compare_field_data(const Ioss::GroupingEntity *ige, const Ioss::GroupingEntity *oge, DataPool &pool,
+                          const Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
                           const std::string &prefix = "");
-  bool compare_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+  bool compare_field_data_internal(const Ioss::GroupingEntity *ige, const Ioss::GroupingEntity *oge,
                                    DataPool &in_pool, const std::string &field_name,
                                    const Ioss::MeshCopyOptions &options);
 
@@ -2053,7 +2053,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 }
 
 bool Ioss::Utils::compare_database(Ioss::Region &input_region, Ioss::Region &output_region,
-                                   Ioss::MeshCopyOptions &options)
+                                   const Ioss::MeshCopyOptions &options)
 {
   DataPool data_pool;
   bool rc;
@@ -3379,7 +3379,7 @@ namespace {
     }
   }
 
-  bool compare_properties(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge)
+  bool compare_properties(const Ioss::GroupingEntity *ige, const Ioss::GroupingEntity *oge)
   {
     Ioss::NameList ige_properties;
     ige->property_describe(&ige_properties);
@@ -3427,7 +3427,7 @@ namespace {
     return true;
   }
 
-  bool compare_qa_info(Ioss::Region &in, Ioss::Region &out)
+  bool compare_qa_info(const Ioss::Region &in, const Ioss::Region &out)
   {
     std::vector<std::string> in_information_records = in.get_information_records();
     std::vector<std::string> out_information_records = out.get_information_records();
@@ -3499,7 +3499,7 @@ namespace {
     return true;
   }
 
-  bool compare_nodeblock(Ioss::Region &input_region, Ioss::Region &output_region, DataPool &pool,
+  bool compare_nodeblock(const Ioss::Region &input_region, const Ioss::Region &output_region, DataPool &pool,
                          const Ioss::MeshCopyOptions &options)
   {
     Ioss::NodeBlockContainer in_nbs = input_region.get_node_blocks();
@@ -3565,7 +3565,7 @@ namespace {
     return  true;
   }
 
-  bool compare_elementblocks(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_elementblocks(const Ioss::Region &input_region, const Ioss::Region &output_region,
                              const Ioss::MeshCopyOptions &options)
   {
     const auto &in_ebs = input_region.get_element_blocks();
@@ -3577,7 +3577,7 @@ namespace {
     return true;
   }
 
-  bool compare_edgeblocks(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_edgeblocks(const Ioss::Region &input_region, const Ioss::Region &output_region,
                           const Ioss::MeshCopyOptions &options)
   {
     const auto &in_ebs = input_region.get_edge_blocks();
@@ -3589,7 +3589,7 @@ namespace {
     return true;
   }
 
-  bool compare_faceblocks(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_faceblocks(const Ioss::Region &input_region, const Ioss::Region &output_region,
                           const Ioss::MeshCopyOptions &options)
   {
     const auto &in_fbs = input_region.get_face_blocks();
@@ -3601,8 +3601,8 @@ namespace {
     return true;
   }
 
-  bool compare_structuredblocks(Ioss::Region &input_region, Ioss::Region &output_region,
-                                 const Ioss::MeshCopyOptions &options)
+  bool compare_structuredblocks(const Ioss::Region &input_region, const Ioss::Region &output_region,
+                                const Ioss::MeshCopyOptions &options)
   {
     auto in_blocks = input_region.get_structured_blocks();
     auto out_blocks_orig = output_region.get_structured_blocks();
@@ -3673,7 +3673,7 @@ namespace {
     return true;
   }
 
-  bool compare_nodesets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_nodesets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options)
   {
     const auto &in_nss = input_region.get_nodesets();
@@ -3686,7 +3686,7 @@ namespace {
     return rc;
   }
 
-  bool compare_edgesets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_edgesets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options)
   {
     const auto &in_ess = input_region.get_edgesets();
@@ -3699,7 +3699,7 @@ namespace {
     return rc;
   }
 
-  bool compare_facesets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_facesets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options)
   {
     const auto &in_fss = input_region.get_facesets();
@@ -3712,7 +3712,7 @@ namespace {
     return rc;
   }
 
-  bool compare_elemsets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_elemsets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options)
   {
     const auto &in_ess = input_region.get_elementsets();
@@ -3725,7 +3725,7 @@ namespace {
     return rc;
   }
 
-  bool compare_sidesets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_sidesets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options)
   {
     const auto &in_sss = input_region.get_sidesets();
@@ -3738,7 +3738,7 @@ namespace {
     return rc;
   }
 
-  bool compare_commsets(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_commsets(const Ioss::Region &input_region, const Ioss::Region &output_region,
                         const Ioss::MeshCopyOptions &options)
   {
     const auto &in_css = input_region.get_commsets();
@@ -3775,7 +3775,7 @@ namespace {
     return true;
   }
 
-  bool compare_coordinate_frames(Ioss::Region &input_region, Ioss::Region &output_region,
+  bool compare_coordinate_frames(const Ioss::Region &input_region, const Ioss::Region &output_region,
                                  const Ioss::MeshCopyOptions &options)
   {
     const auto &in_cfs = input_region.get_coordinate_frames();
@@ -3815,7 +3815,7 @@ namespace {
 
   template <typename T>
   bool compare_fields(const std::vector<T *> &in_entities, const std::vector<T *> &out_entities,
-                      Ioss::Field::RoleType role)
+                      const Ioss::Field::RoleType role)
   {
     if( in_entities.size() != out_entities.size() ) {
       fmt::print(Ioss::DEBUG(), "COMPARE fields : NUMBER of entities don't match (%ld vs. %ld)\n",
@@ -3842,8 +3842,8 @@ namespace {
     return true;
   }
 
-  bool compare_fields(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                      Ioss::Field::RoleType role)
+  bool compare_fields(const Ioss::GroupingEntity *ige, const Ioss::GroupingEntity *oge,
+                      const Ioss::Field::RoleType role)
   {
     // Check for transient fields...
     Ioss::NameList in_fields;
@@ -3873,7 +3873,7 @@ namespace {
 
   template <typename T>
   bool compare_field_data(const std::vector<T *> &in_entities, const std::vector<T *> &out_entities,
-                          DataPool &pool, Ioss::Field::RoleType role,
+                          DataPool &pool, const Ioss::Field::RoleType role,
                           const Ioss::MeshCopyOptions &options)
   {
     if( in_entities.size() != out_entities.size() ) {
@@ -3901,8 +3901,8 @@ namespace {
     return true;
   }
 
-  bool compare_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge, DataPool &pool,
-                          Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
+  bool compare_field_data(const Ioss::GroupingEntity *ige, const Ioss::GroupingEntity *oge, DataPool &pool,
+                          const Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
                           const std::string &prefix)
   {
     bool rc;
@@ -3952,7 +3952,7 @@ namespace {
     return true;
   }
 
-  bool compare_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+  bool compare_field_data_internal(const Ioss::GroupingEntity *ige, const Ioss::GroupingEntity *oge,
                                    DataPool &in_pool, const std::string &field_name,
                                    const Ioss::MeshCopyOptions &options)
   {
