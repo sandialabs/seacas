@@ -62,6 +62,7 @@ namespace Ioss {
     size_t get_face_count() const;
 
     bool operator==(const Ioss::BoundaryCondition &rhs) const;
+    bool operator!=(const Ioss::BoundaryCondition &rhs) const;
     bool equal(const Ioss::BoundaryCondition &rhs) const;
 
     std::string m_bcName{};

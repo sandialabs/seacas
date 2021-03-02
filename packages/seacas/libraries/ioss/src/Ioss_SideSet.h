@@ -54,6 +54,7 @@ namespace Ioss {
     int max_parametric_dimension() const;
     bool operator==(const SideSet &) const;
     bool operator!=(const SideSet &) const;
+    bool equal(const SideSet &) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
