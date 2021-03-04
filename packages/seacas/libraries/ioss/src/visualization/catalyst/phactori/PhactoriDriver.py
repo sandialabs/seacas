@@ -1609,8 +1609,8 @@ localCoProcessorReference = None
 
 global gMaxDebugPrintOutputLines
 global gDebugPrintOutputLineCount
-gMaxDebugPrintOutputLines = 10000000
-#gMaxDebugPrintOutputLines = 100
+#gMaxDebugPrintOutputLines = 10000000
+gMaxDebugPrintOutputLines = 100
 gDebugPrintOutputLineCount = 0
 
 #hacky debug printing to file mechanism
@@ -1649,8 +1649,8 @@ global gMdp3UseFileOutFlag
 gMdp3UseFileOutFlag = True
 global gMdp3PriorityRestriction
 #gMdp3PriorityRestriction = 150
-gMdp3PriorityRestriction = 50
-#gMdp3PriorityRestriction = 500
+#gMdp3PriorityRestriction = 50
+gMdp3PriorityRestriction = 500
 
 #priority nominally
 #100-very verbose info
@@ -21525,6 +21525,7 @@ def UseDataRangeForColorValues(inPvDataRepresentation, inRepresentation,
     else:
       datarange = datainformation.GetArray(localColorArrayName).GetRange(0)
       if PhactoriDbg():
+        myDebugPrint3("finding color legend datarange for " + str(localColorArrayName) + "\n")
         myDebugPrint3('  datarange: ' + str(datarange) + '\n')
 
   pm = paraview.servermanager.vtkProcessModule.GetProcessModule()
@@ -25536,6 +25537,29 @@ def WriteOutImagesTest(datadescription, coprocessor):
   global gPipeAndViewsState
   return gPipeAndViewsState.mImagesetOnOffFilter.TestDrawImagesThisCallback(gPipeAndViewsState)
 
+def CreateAllProducersFromAllInputDescriptions(datadescription, inCoprocessor, newRoot):
+  global gPipeAndViewsState
+  newRoot.mProducer = inCoprocessor.CreateProducer( datadescription, "input" )
+  newRoot.mIncomingDefaultOperation.mHasBeenConstructed = True
+  numInputGrids = datadescription.GetNumberOfInputDescriptions()
+  if PhactoriDbg():
+    myDebugPrint3("numInputGrids: " + str(numInputGrids) + "\n");
+    for ii in range(0,numInputGrids):
+      print(str(ii) + ": " + str(datadescription.GetInputDescriptionName(ii)) + "\n")
+  defSrc = GetActiveSource();
+  for ii in range(1,numInputGrids):
+    incomingInputName = datadescription.GetInputDescriptionName(ii)
+    newTrivialProducerForGrid = inCoprocessor.CreateProducer( datadescription, incomingInputName)
+    theGrid = datadescription.GetInputDescription(ii).GetGrid()
+    newIncomingOperationBlock = PhactoriOperationBlock()
+    newIncomingOperationBlock.mName = incomingInputName
+    newIncomingOperationBlock.mParaViewFilter = newTrivialProducerForGrid
+    newIncomingOperationBlock.mHasBeenConstructed = True
+    newIncomingOperationBlock.mOperationSpecifics = PhactoriOperationSpecifics()
+    newRoot.mIncomingOperationList.append(newIncomingOperationBlock)
+    newRoot.mIncomingGridProducerList.append(newTrivialProducerForGrid)
+    newRoot.mOperationBlocks[newIncomingOperationBlock.mName] = newIncomingOperationBlock
+  SetActiveSource(defSrc);
 
 def InitializePerPipeRoot(datadescription, inCoprocessor):
   if PhactoriDbg():
@@ -25610,29 +25634,7 @@ def InitializePerPipeRoot(datadescription, inCoprocessor):
     newRoot.mBlockIdForRestart = "restart." + str(len(gPhactoriPipeRootMap))
     gPhactoriPipeRootMap[outputResultBaseId] = newRoot
     gPipeAndViewsState = newRoot
-    newRoot.mProducer = inCoprocessor.CreateProducer( datadescription, "input" )
-    if PhactoriDbg():
-      numInputGrids = datadescription.GetNumberOfInputDescriptions()
-      myDebugPrint3("numInputGrids: " + str(numInputGrids) + "\n");
-      for ii in range(0,numInputGrids):
-        print(str(ii) + ": " + str(datadescription.GetInputDescriptionName(ii)) + "\n")
-    numInputGrids = datadescription.GetNumberOfInputDescriptions()
-    newRoot.mIncomingDefaultOperation.mHasBeenConstructed = True
-    defSrc = GetActiveSource();
-    for ii in range(1,numInputGrids):
-      incomingInputName = datadescription.GetInputDescriptionName(ii)
-      newTrivialProducerForGrid = PVTrivialProducer()
-      theGrid = datadescription.GetInputDescription(ii).GetGrid()
-      newTrivialProducerForGrid.GetClientSideObject().SetOutput(theGrid)
-      newIncomingOperationBlock = PhactoriOperationBlock()
-      newIncomingOperationBlock.mName = incomingInputName
-      newIncomingOperationBlock.mParaViewFilter = newTrivialProducerForGrid
-      newIncomingOperationBlock.mHasBeenConstructed = True
-      newIncomingOperationBlock.mOperationSpecifics = PhactoriOperationSpecifics()
-      newRoot.mIncomingOperationList.append(newIncomingOperationBlock)
-      newRoot.mIncomingGridProducerList.append(newTrivialProducerForGrid)
-      newRoot.mOperationBlocks[newIncomingOperationBlock.mName] = newIncomingOperationBlock
-    SetActiveSource(defSrc);
+    CreateAllProducersFromAllInputDescriptions(datadescription, inCoprocessor, newRoot)
 
     CreatePipelineFromDataDescription(datadescription)
     HandleRestartUpdateForOutputResultsBlock(newRoot)

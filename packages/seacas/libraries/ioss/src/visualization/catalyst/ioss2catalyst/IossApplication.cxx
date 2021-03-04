@@ -759,7 +759,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid() {
     //right now, copy_database can't be called repeatedly with different
     //timesteps because it tries to create the Node block (and other stuff)
     //each time. So we are only doing one timestep for testing at this point.
-    startTimeStep = stopTimeStep;
+    //startTimeStep = stopTimeStep;
 
     //for each timestep, call copy_database (one timestep) for each output
     //database
@@ -770,15 +770,29 @@ void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid() {
     for (ii=0;ii<numInputRegions;ii++) {
         Ioss::Region * inputRegion = getInputIOSSRegion(ii);
         Ioss::Region * outputRegion = outputRegions[ii];
-    
-        double min_time = inputRegion->get_state_time(currentTimeStep);
-        double max_time = inputRegion->get_state_time(currentTimeStep);
+        int thisRegionCurrentTimeStep = currentTimeStep;
+        int thisRegionStateCount = getInputIOSSRegion(ii)->get_property("state_count").get_int();
+        if (thisRegionCurrentTimeStep > thisRegionStateCount) {
+            thisRegionCurrentTimeStep = thisRegionStateCount;
+        }
+        double min_time = inputRegion->get_state_time(thisRegionCurrentTimeStep);
+        double max_time = inputRegion->get_state_time(thisRegionCurrentTimeStep);
     
         Ioss::MeshCopyOptions copyOptions;
         copyOptions.data_storage_type = 1;
         copyOptions.minimum_time = min_time;
         copyOptions.maximum_time = max_time;
-        Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
+        //Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
+        bool defineFlag;
+        if (currentTimeStep == startTimeStep) {
+            defineFlag = true;
+        } else {
+            defineFlag = false;
+        }
+        printf("region, ts1, ts2, time: %d, %d, %d, %f\n", ii, currentTimeStep,
+            thisRegionCurrentTimeStep, (float)max_time);
+        printf("defineFlag: %d\n", (int)defineFlag);
+        Ioss::Utils::copy_database2(*inputRegion, *outputRegion, copyOptions, defineFlag);
     }
     }
     for (ii=0;ii<numInputRegions;ii++) {
