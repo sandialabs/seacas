@@ -24,6 +24,11 @@ meshes.
 Executing zellij with the `-help` option will result in output similar to the following:
 
 ```
+Zellij
+	(A code for tiling 1 or more template databases into a single output database.)
+	(Version: 1.4.0) Modified: 2021/03/03
+	Parallel Capability Not Enabled.
+
 usage: zellij [options] -lattice <lattice_definition_file>
 	-lattice <$val> (Name of file to read lattice definition from. [required])
 	-output <$val> (Name of output file to create. Default is `zellij-out.e`)
@@ -44,6 +49,7 @@ usage: zellij [options] -lattice <lattice_definition_file>
 	-rank_count <$val> (In partial output or subcycle modes, output this number of ranks)
 	-subcycle (Process cells in groups of '-rank_count'.  Helps minimize open files,
 		but is faster than only having a single file open.)
+	-scale <$val> (Scale the output mesh coordinates by the specified value)
 	-minimize_open_files [$val] (Close files after accessing them to avoid issues with too many open files.
 		If argument is 'output' then close output, if 'unit' then close unit cells;
 		if 'all' or no argument close all.
@@ -58,12 +64,12 @@ usage: zellij [options] -lattice <lattice_definition_file>
 		 'X' or 'I' for surface on maximum X coordinate, default name = `max_i`
 		 'Y' or 'J' for surface on maximum Y coordinate, default name = `max_j`
 		 'Z' or 'K' for surface on maximum Z coordinate, default name = `max_k`
-		 For example `xyXY` would generate sideset on min/max X and Y surfaces.)
+		 For example `xyXY` would generate sidesets on min/max X and Y surfaces.)
 	-sideset_names <$val> (Specify names for one or more of the generated sidesets.
 		 Form is `axis:name,axis:name,...`
 		 where 'axis' is one of 'ijkIJKxyzXYZ', and 'name' is the name of the sideset.
 		 The default names are 'min_i', 'max_i', 'min_j', 'max_j', 'min_k', 'max_k'.
-		 For example `x:left,X:right` would name the sidesets on the min x and max X faces 'left' and 'right'.)
+		 For example `x:left,X:right` would name the sideset on the min x face 'left' and the max X face 'right'.)
 
 	-netcdf3 (Output database will be a netcdf3 native classical netcdf file format (32-bit only))
 	-netcdf4 (Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format (default))
