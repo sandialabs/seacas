@@ -265,10 +265,10 @@ void SystemInterface::show_version()
 
 void SystemInterface::enroll_options()
 {
-  options_.usage("[options] file1.exo file2.exo [diffile.exo]\n"
+  options_.usage("[options] file1.exo file2.exo [diffile.exo]                   \n"
                  "\tor:  exodiff -summary <file.exo> (create variable summary)  \n"
-                 "\tor:  exodiff [-help]             (usage)                    \n"
-                 "\tor:  exodiff [-version]\n");
+                 "\tor:  exodiff [-help] [tolerance|file] (usage)               \n"
+                 "\tor:  exodiff [-version]                                     \n");
 
   options_.enroll(
       "help", GetLongOption::OptionalValue,
@@ -277,7 +277,7 @@ void SystemInterface::enroll_options()
       "\t\t      \"-help tolerance\" for information on the supported tolerance options.",
       nullptr, "usage");
 
-  options_.enroll("Help", GetLongOption::NoValue, "Print this summary and exit.\n", nullptr);
+  options_.enroll("Help", GetLongOption::NoValue, "Print this summary and exit.", nullptr);
   options_.enroll("file", GetLongOption::MandatoryValue,
                   "Use the given file to specify the variables to be considered and to\n"
                   "\t\twhat tolerances. Enter \"-help file\" for the syntax of the command file",
