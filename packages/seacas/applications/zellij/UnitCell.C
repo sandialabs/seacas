@@ -25,15 +25,11 @@ namespace {
                  categorized_nodes[face.connectivity_[1] - 1] &
                  categorized_nodes[face.connectivity_[2] - 1] &
                  categorized_nodes[face.connectivity_[3] - 1];
-    //    fmt::print("{} {} {} {}\n", categorized_nodes[face.connectivity_[0]-1],
-    //    categorized_nodes[face.connectivity_[1]-1],
-    //	       categorized_nodes[face.connectivity_[2]-1],
-    // categorized_nodes[face.connectivity_[3]-1]);
     return result != 0;
   }
 
   Ioss::ElementBlock *get_element_block(Ioss::ElementBlock *block, int64_t elem_id,
-					std::shared_ptr<Ioss::Region> &region)
+                                        std::shared_ptr<Ioss::Region> &region)
   {
     auto new_block = block;
     if (block == nullptr || !block->contains(elem_id)) {
@@ -45,8 +41,8 @@ namespace {
 
   bool approx_equal(double A, double B)
   {
-    double maxRelDiff = std::numeric_limits<float>::epsilon();
-    double maxDiff    = 100.0 * maxRelDiff;
+    static double maxRelDiff = 1000.0 * std::numeric_limits<double>::epsilon();
+    static double maxDiff    = 100.0 * maxRelDiff;
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
@@ -241,11 +237,11 @@ void UnitCell::generate_boundary_faces(unsigned int which_faces)
   std::array<enum Flg, 6> boundary_flag{Flg::MIN_I, Flg::MAX_I, Flg::MIN_J,
                                         Flg::MAX_J, Flg::MIN_K, Flg::MAX_K};
   auto &                  faces = face_generator.faces("ALL");
-  Ioss::ElementBlock *block = nullptr;
+  Ioss::ElementBlock *    block = nullptr;
   for (auto &face : faces) {
     if (face.elementCount_ == 1) {
-      block        = get_element_block(block, face.element[0] / 10, m_region);
-      auto  block_offset = block->get_offset();
+      block             = get_element_block(block, face.element[0] / 10, m_region);
+      auto block_offset = block->get_offset();
       for (int i = 0; i < 6; i++) {
         if ((which_faces & (unsigned)boundary_flag[i]) &&
             on_boundary(boundary_flag[i], face, categorized_nodes)) {
@@ -262,8 +258,8 @@ void UnitCell::generate_boundary_faces(unsigned int which_faces)
           auto unit_block_location   = (unit_local_element_id - block_offset) * 10 + face_ordinal;
 
           if (debug_level & 128) {
-            fmt::print("Element {}, Side {} is on boundary {}, block {}\n", unit_block_location / 10,
-                       unit_block_location % 10, i, block->name());
+            fmt::print("Element {}, Side {} is on boundary {}, block {}\n",
+                       unit_block_location / 10, unit_block_location % 10, i, block->name());
           }
           boundary_blocks[i].m_faces[block->name()].push_back(unit_block_location);
           break;
