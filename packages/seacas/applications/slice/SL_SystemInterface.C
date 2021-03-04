@@ -42,19 +42,15 @@ SystemInterface::~SystemInterface() = default;
 
 void SystemInterface::enroll_options()
 {
-  options_.usage("[options] list_of_files_to_join");
+  options_.usage("[options] file_to_split");
 
   options_.enroll("help", GetLongOption::NoValue, "Print this summary and exit", nullptr);
 
-  options_.enroll("version", GetLongOption::NoValue, "Print version and exit", nullptr);
+  options_.enroll("in_type", GetLongOption::MandatoryValue,
+                  "File format for input mesh file (default = exodus)", "exodusii", nullptr, true);
 
   options_.enroll("processors", GetLongOption::MandatoryValue,
                   "Number of processors to decompose the mesh for", "1");
-
-  options_.enroll("debug", GetLongOption::MandatoryValue, "Debug level: 0, 1, 2, 4 or'd", "0");
-
-  options_.enroll("in_type", GetLongOption::MandatoryValue,
-                  "File format for input mesh file (default = exodus)", "exodusii");
 
   options_.enroll("method", GetLongOption::MandatoryValue,
                   "Decomposition method\n"
@@ -74,13 +70,16 @@ void SystemInterface::enroll_options()
                   "\t\tIf two integers (count proc), they specify that the next\n"
                   "\t\t\t'count' elements are on processor 'proc'",
                   nullptr);
+  options_.enroll("contiguous_decomposition", GetLongOption::NoValue,
+                  "If the input mesh is contiguous, create contiguous decompositions", nullptr,
+                  nullptr, true);
 
   options_.enroll("output_path", GetLongOption::MandatoryValue,
                   "Path to where decomposed files will be written.\n"
                   "\t\tThe string %P will be replaced with the processor count\n"
                   "\t\tThe string %M will be replaced with the decomposition method.\n"
                   "\t\tDefault is the location of the input mesh",
-                  nullptr);
+                  nullptr, nullptr, true);
 
   options_.enroll("Partial_read_count", GetLongOption::MandatoryValue,
                   "Split the coordinate and connetivity reads into a\n"
@@ -90,7 +89,7 @@ void SystemInterface::enroll_options()
   options_.enroll("max-files", GetLongOption::MandatoryValue,
                   "Specify maximum number of processor files to write at one time.\n"
                   "\t\tUsually use default value; this is typically used for debugging.",
-                  nullptr);
+                  nullptr, nullptr, true);
 
   options_.enroll("netcdf4", GetLongOption::NoValue,
                   "Output database will be a netcdf4 "
@@ -98,13 +97,13 @@ void SystemInterface::enroll_options()
                   "classical netcdf file format",
                   nullptr);
 
-  options_.enroll("64-bit", GetLongOption::NoValue, "Use 64-bit integers on output database",
-                  nullptr);
-
   options_.enroll("netcdf5", GetLongOption::NoValue,
                   "Output database will be a netcdf5 (CDF5) "
                   "file instead of the classical netcdf file format",
                   nullptr);
+
+  options_.enroll("64-bit", GetLongOption::NoValue, "Use 64-bit integers on output database",
+                  nullptr, nullptr, true);
 
   options_.enroll("shuffle", GetLongOption::NoValue,
                   "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
@@ -120,7 +119,13 @@ void SystemInterface::enroll_options()
 
   options_.enroll("compress", GetLongOption::MandatoryValue,
                   "Specify the hdf5 compression level [0..9] to be used on the output file.",
-                  nullptr);
+                  nullptr, nullptr, true);
+
+  options_.enroll("debug", GetLongOption::MandatoryValue, "Debug level: 0, 1, 2, 4 or'd", "0");
+
+  options_.enroll("version", GetLongOption::NoValue, "Print version and exit", nullptr);
+
+  options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
 
 #if 0
   options_.enroll("omit_blocks", GetLongOption::MandatoryValue,
@@ -157,10 +162,6 @@ void SystemInterface::enroll_options()
                   nullptr);
 
 #endif
-  options_.enroll("contiguous_decomposition", GetLongOption::NoValue,
-                  "If the input mesh is contiguous, create contiguous decompositions", nullptr);
-
-  options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)
@@ -187,7 +188,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("copyright") != nullptr) {
-    fmt::print("{}", copyright("2016-2019"));
+    fmt::print("{}", copyright("2016-2021"));
     exit(EXIT_SUCCESS);
   }
 
