@@ -119,6 +119,7 @@ private:
   Ioss::ParallelUtils                        m_pu{MPI_COMM_WORLD};
   size_t                                     m_gridI{0};
   size_t                                     m_gridJ{0};
+  double                                     m_scaleFactor{1.0};
   int                                        m_parallelSize{1}; //! Number of ranks to decompose for
   int          m_rankCount{1}; //! Number of ranks to process at a time.
   int          m_startRank{0}; //! Which rank to start outputting...

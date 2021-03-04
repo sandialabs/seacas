@@ -168,8 +168,9 @@ namespace {
 } // namespace
 
 Grid::Grid(SystemInterface &interFace)
-    : m_parallelSize(interFace.ranks()), m_rankCount(interFace.rank_count()),
-      m_startRank(interFace.start_rank()), m_equivalenceNodes(interFace.equivalence_nodes()),
+    : m_scaleFactor(interFace.scale_factor()), m_parallelSize(interFace.ranks()),
+      m_rankCount(interFace.rank_count()), m_startRank(interFace.start_rank()),
+      m_equivalenceNodes(interFace.equivalence_nodes()),
       m_useInternalSidesets(!interFace.ignore_internal_sidesets()),
       m_subCycle(interFace.subcycle()), m_minimizeOpenFiles(interFace.minimize_open_files()),
       m_generatedSideSets(which_sidesets(interFace.sideset_surfaces()))
@@ -579,6 +580,14 @@ void Grid::output_nodal_coordinates(const Cell &cell)
     std::for_each(coord_y.begin(), coord_y.end(), [&cell](double &d) { d += cell.m_offY; });
   }
 
+  // If there is a scale factor specified, apply to all nodes...
+  if (m_scaleFactor != 1.0) {
+    double scale = m_scaleFactor;
+    std::for_each(coord_x.begin(), coord_x.end(), [scale](double &d) { d *= scale; });
+    std::for_each(coord_y.begin(), coord_y.end(), [scale](double &d) { d *= scale; });
+    std::for_each(coord_z.begin(), coord_z.end(), [scale](double &d) { d *= scale; });
+  }
+
   // Filter coordinates down to only "new nodes"...
   if (m_equivalenceNodes && (cell.has_neighbor_i() || cell.has_neighbor_j())) {
     auto   mode              = parallel_size() > 1 ? Mode::PROCESSOR : Mode::GLOBAL;
@@ -628,7 +637,7 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
       auto &oblocks = osurf->get_side_blocks();
       SMART_ASSERT(oblocks.size() == 1)(oblocks.size());
 
-      auto             & boundary = cell.unit()->boundary_blocks[face];
+      auto &           boundary = cell.unit()->boundary_blocks[face];
       auto             count    = boundary.size();
       std::vector<INT> elements;
       std::vector<INT> faces;

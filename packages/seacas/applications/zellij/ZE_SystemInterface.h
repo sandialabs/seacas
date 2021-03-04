@@ -45,6 +45,8 @@ public:
   bool     equivalence_nodes() const { return equivalenceNodes_; }
   Minimize minimize_open_files() const { return minimizeOpenFiles_; }
 
+  double scale_factor() const { return scaleFactor_; }
+
   static void show_version();
 
   // Make this private eventually...
@@ -59,6 +61,7 @@ private:
   std::string   decompMethod_{"HSFC"};
   std::string   sidesetSurfaces_{};
   std::string   sidesetNames_{};
+  double        scaleFactor_{1.0};
   int           myRank_{0};
   int           debugLevel_{0};
   int           compressionLevel_{0};

@@ -76,6 +76,9 @@ void SystemInterface::enroll_options()
                   "\t\tbut is faster than only having a single file open.",
                   nullptr);
 
+  options_.enroll("scale", Ioss::GetLongOption::MandatoryValue,
+                  "Scale the output mesh coordinates by the specified value", "1");
+
   options_.enroll(
       "minimize_open_files", Ioss::GetLongOption::OptionalValue,
       "Close files after accessing them to avoid issues with too many open files.\n"
@@ -232,6 +235,13 @@ bool SystemInterface::parse_options(int argc, char **argv)
       else if (mode == "none") {
         minimizeOpenFiles_ = Minimize::NONE;
       }
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("scale");
+    if (temp != nullptr) {
+      scaleFactor_ = std::strtod(temp, nullptr);
     }
   }
 
