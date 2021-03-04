@@ -52,8 +52,6 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll("help", Ioss::GetLongOption::NoValue, "Print this summary and exit", nullptr);
 
-  options_.enroll("version", Ioss::GetLongOption::NoValue, "Print version and exit", nullptr);
-
   options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue,
                   "Database type for input file: generated"
 #if defined(SEACAS_HAVE_PAMGEN)
@@ -80,10 +78,7 @@ void IOShell::Interface::enroll_options()
                   " faodel"
 #endif
                   ".\n\t\tIf not specified, guess from extension or exodus is the default.",
-                  "unknown");
-  options_.enroll("extract_group", Ioss::GetLongOption::MandatoryValue,
-                  "Write the data from the specified group to the output file.", nullptr);
-
+                  "unknown", nullptr, true);
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue, "Use 64-bit integers on output database",
                   nullptr);
 
@@ -124,7 +119,7 @@ void IOShell::Interface::enroll_options()
   options_.enroll(
       "szip", Ioss::GetLongOption::NoValue,
       "Use the SZip library if compression is enabled. Not as portable as zlib [exodus only]",
-      nullptr);
+      nullptr, nullptr, true);
 
 #if defined(SEACAS_HAVE_MPI)
   options_.enroll(
@@ -195,8 +190,11 @@ void IOShell::Interface::enroll_options()
   options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
                   "Number of processors that can perform simultaneous IO operations in "
                   "a parallel run; 0 to disable",
-                  nullptr);
+                  nullptr, nullptr, true);
 #endif
+
+  options_.enroll("extract_group", Ioss::GetLongOption::MandatoryValue,
+                  "Write the data from the specified group to the output file.", nullptr);
 
   options_.enroll(
       "split_times", Ioss::GetLongOption::MandatoryValue,
@@ -208,18 +206,11 @@ void IOShell::Interface::enroll_options()
                   "then recycle filenames.",
                   nullptr);
 
+  options_.enroll("file_per_state", Ioss::GetLongOption::NoValue,
+                  "put transient data for each timestep in separate file (EXPERIMENTAL)", nullptr);
+
   options_.enroll("minimize_open_files", Ioss::GetLongOption::NoValue,
-                  "close output file after each timestep", nullptr);
-
-  options_.enroll("debug", Ioss::GetLongOption::NoValue, "turn on debugging output", nullptr);
-
-  options_.enroll("quiet", Ioss::GetLongOption::NoValue, "minimize output", nullptr);
-
-  options_.enroll("statistics", Ioss::GetLongOption::NoValue,
-                  "output parallel io timing statistics", nullptr);
-
-  options_.enroll("memory_statistics", Ioss::GetLongOption::NoValue,
-                  "output memory usage throughout code execution", nullptr);
+                  "close output file after each timestep", nullptr, nullptr, true);
 
   options_.enroll("Maximum_Time", Ioss::GetLongOption::MandatoryValue,
                   "Maximum time on input database to transfer to output database", nullptr);
@@ -241,16 +232,11 @@ void IOShell::Interface::enroll_options()
   options_.enroll("append_after_step", Ioss::GetLongOption::MandatoryValue,
                   "add steps on input database after specified step on output database", nullptr);
 
-  options_.enroll(
-      "delay", Ioss::GetLongOption::MandatoryValue,
-      "Sleep for <$val> seconds between timestep output to simulate application calculation time",
-      nullptr);
-
   options_.enroll("flush_interval", Ioss::GetLongOption::MandatoryValue,
                   "Specify the number of steps between database flushes.\n"
                   "\t\tIf not specified, then the default database-dependent setting is used.\n"
                   "\t\tA value of 0 disables flushing.",
-                  nullptr);
+                  nullptr, nullptr, true);
 
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
                   "Character used to separate a field suffix from the field basename\n"
@@ -267,31 +253,46 @@ void IOShell::Interface::enroll_options()
                   "\t\tOptions are: TOPOLOGY, BLOCK, NO_SPLIT",
                   "TOPOLOGY");
 
+  options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
+                  "Do not lowercase variable names and replace spaces with underscores.\n"
+                  "\t\tVariable names are left as they appear in the input mesh file",
+                  nullptr);
+
   options_.enroll("retain_empty_blocks", Ioss::GetLongOption::NoValue,
                   "If any empty element blocks on input file, keep them and write to output file.\n"
                   "\t\tDefault is to ignore empty blocks.",
                   nullptr);
+
+  options_.enroll("boundary_sideset", Ioss::GetLongOption::NoValue,
+                  "Output a sideset for all boundary faces of the model", nullptr);
+
+  options_.enroll(
+      "delay", Ioss::GetLongOption::MandatoryValue,
+      "Sleep for <$val> seconds between timestep output to simulate application calculation time",
+      nullptr);
 
 #ifdef SEACAS_HAVE_KOKKOS
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
                   "Data type used internally to store field data\n"
                   "\t\tOptions are: POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, "
                   "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE",
-                  "POINTER");
+                  "POINTER", nullptr, true);
 #else
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
                   "Data type used internally to store field data\n"
                   "\t\tOptions are: POINTER, STD_VECTOR",
-                  "POINTER");
+                  "POINTER", nullptr, true);
 #endif
 
-  options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
-                  "Do not lowercase variable names and replace spaces with underscores.\n"
-                  "\t\tVariable names are left as they appear in the input mesh file",
-                  nullptr);
+  options_.enroll("debug", Ioss::GetLongOption::NoValue, "turn on debugging output", nullptr);
 
-  options_.enroll("boundary_sideset", Ioss::GetLongOption::NoValue,
-                  "Output a sideset for all boundary faces of the model", nullptr);
+  options_.enroll("quiet", Ioss::GetLongOption::NoValue, "minimize output", nullptr);
+
+  options_.enroll("statistics", Ioss::GetLongOption::NoValue,
+                  "output parallel io timing statistics", nullptr);
+
+  options_.enroll("memory_statistics", Ioss::GetLongOption::NoValue,
+                  "output memory usage throughout code execution", nullptr);
 
   options_.enroll(
       "memory_read", Ioss::GetLongOption::NoValue,
@@ -303,11 +304,10 @@ void IOShell::Interface::enroll_options()
       "EXPERIMENTAL: file written to memory, netcdf library streams to disk at file close",
       nullptr);
 
-  options_.enroll("file_per_state", Ioss::GetLongOption::NoValue,
-                  "put transient data for each timestep in separate file (EXPERIMENTAL)", nullptr);
-
   options_.enroll("reverse", Ioss::GetLongOption::NoValue,
                   "define CGNS zones in reverse order. Used for testing (TEST)", nullptr);
+
+  options_.enroll("version", Ioss::GetLongOption::NoValue, "Print version and exit", nullptr);
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue, "Show copyright and license data.",
                   nullptr);
@@ -655,7 +655,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     if (my_processor == 0) {
       fmt::print(stderr,
                  "\n"
-                 "Copyright(C) 1999-2017 National Technology & Engineering Solutions\n"
+                 "Copyright(C) 1999-2021 National Technology & Engineering Solutions\n"
                  "of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with\n"
                  "NTESS, the U.S. Government retains certain rights in this software.\n\n"
                  "Redistribution and use in source and binary forms, with or without\n"
