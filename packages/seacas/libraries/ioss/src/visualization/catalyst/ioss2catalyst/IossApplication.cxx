@@ -792,7 +792,8 @@ void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid() {
         printf("region, ts1, ts2, time: %d, %d, %d, %f\n", ii, currentTimeStep,
             thisRegionCurrentTimeStep, (float)max_time);
         printf("defineFlag: %d\n", (int)defineFlag);
-        Ioss::Utils::copy_database2(*inputRegion, *outputRegion, copyOptions, defineFlag);
+        copyOptions.define_geometry = defineFlag;
+        Ioss::Utils::copy_database_v2(*inputRegion, *outputRegion, copyOptions);
     }
     }
     for (ii=0;ii<numInputRegions;ii++) {

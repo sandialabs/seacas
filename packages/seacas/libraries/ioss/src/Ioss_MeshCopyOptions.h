@@ -25,6 +25,12 @@ namespace Ioss {
     bool                reverse{false};     // Used for testing CGNS
     bool                add_proc_id{false}; // CGNS: Add proc_id field.
     bool boundary_sideset{false};           // Output a sideset of the boundary faces of the model
+
+    //only used by copy_database_v2; if false the copy process skips the
+    //defining of the mesh geometry and the defining of the field data, thus
+    //assuming it has already been done. Used for calling copy_database_v2
+    //multple times with different timestep ranges.
+    bool                define_geometry{true}; 
   };
 } // namespace Ioss
 #endif
