@@ -10,6 +10,7 @@
 #ifndef _GetLongOption_h_
 #define _GetLongOption_h_
 
+#include <cstdlib>
 #include <iostream>
 
 namespace Ioss {
@@ -73,6 +74,40 @@ namespace Ioss {
      *  \param[in] str The usage string.
      */
     void usage(const char *str) { ustring = str; }
+
+    template <class INT,
+              typename std::enable_if<std::is_integral<INT>::value, INT>::type * = nullptr>
+    INT get_option_value(const char *option_txt, INT default_value)
+    {
+      INT         value = default_value;
+      const char *temp  = retrieve(option_txt);
+      if (temp != nullptr) {
+        value = std::strtol(temp, nullptr, 10);
+      }
+      return value;
+    }
+
+    template <class DBL,
+              typename std::enable_if<std::is_floating_point<DBL>::value, DBL>::type * = nullptr>
+    DBL get_option_value(const char *option_txt, DBL default_value)
+    {
+      DBL         value = default_value;
+      const char *temp  = retrieve(option_txt);
+      if (temp != nullptr) {
+        value = std::strtod(temp, nullptr);
+      }
+      return value;
+    }
+
+    std::string get_option_value(const char *option_txt, const std::string &default_value)
+    {
+      auto        value = default_value;
+      const char *temp  = retrieve(option_txt);
+      if (temp != nullptr) {
+        value = temp;
+      }
+      return value;
+    }
   };
 } // namespace Ioss
 #endif /* _GetLongOption_h_ */
