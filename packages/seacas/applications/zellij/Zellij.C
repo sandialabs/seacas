@@ -238,6 +238,11 @@ namespace {
     int KK = std::stoi(tokens[3]);
     SMART_ASSERT(KK == 1);
 
+    if (interFace.repeat() > 1) {
+      II *= interFace.repeat();
+      JJ *= interFace.repeat();
+    }
+
     grid.set_extent(II, JJ, KK);
     grid.handle_file_count();
 
@@ -274,11 +279,11 @@ namespace {
         // TODO: Currently assumes that each row in the lattice is defined on a single row;
         //       This will need to be relaxed since a lattice of 5000x5000 would result in
         //       lines that are too long and would be easier to split a row over multiple lines...
-        if (tokens.size() != grid.II()) {
+        if (tokens.size() * interFace.repeat() != grid.II()) {
           fmt::print(
               stderr, fmt::fg(fmt::color::red),
               "\nERROR: Line {} of the lattice definition has {} entries.  It should have {}.\n\n",
-              row + 1, tokens.size(), grid.II());
+              row + 1, tokens.size() * interFace.repeat(), grid.II());
           exit(EXIT_FAILURE);
         }
 
@@ -290,25 +295,32 @@ namespace {
           exit(EXIT_FAILURE);
         }
 
-        if (tokens.size() != grid.II()) {
+        if (tokens.size() * interFace.repeat() != grid.II()) {
           fmt::print(stderr, fmt::fg(fmt::color::red),
                      "\nERROR: In row {}, there is an incorrect number of entries.  There should "
                      "be {}, but found {}.\n",
-                     row + 1, grid.II(), tokens.size());
+                     row + 1, grid.II(), tokens.size() * interFace.repeat());
           exit(EXIT_FAILURE);
         }
 
-        size_t col = 0;
-        for (auto &key : tokens) {
-          if (!grid.initialize(col++, row, key)) {
-            fmt::print(stderr, fmt::fg(fmt::color::red),
-                       "\nERROR: In row {}, column {}, the lattice specifies a unit cell ({}) that "
-                       "has not been defined.\n\n",
-                       row + 1, col + 1, key);
-            exit(EXIT_FAILURE);
+        auto repeat = interFace.repeat();
+        for (int j = 0; j < repeat; j++) {
+          size_t col = 0;
+          for (auto &key : tokens) {
+
+            for (int i = 0; i < repeat; i++) {
+              if (!grid.initialize(col++, row, key)) {
+                fmt::print(
+                    stderr, fmt::fg(fmt::color::red),
+                    "\nERROR: In row {}, column {}, the lattice specifies a unit cell ({}) that "
+                    "has not been defined.\n\n",
+                    row + 1, col + 1, key);
+                exit(EXIT_FAILURE);
+              }
+            }
           }
+          row++;
         }
-        row++;
       }
     }
     if (debug_level & 1) {

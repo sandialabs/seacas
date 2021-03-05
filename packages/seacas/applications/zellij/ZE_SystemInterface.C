@@ -152,6 +152,18 @@ void SystemInterface::enroll_options()
   options_.enroll("separate_cells", Ioss::GetLongOption::NoValue,
                   "Do not equivalence the nodes between adjacent unit cells.", nullptr);
 
+  options_.enroll(
+      "repeat", Ioss::GetLongOption::MandatoryValue,
+      "Each lattice entry will be used the specified number of times as will\n"
+      "\t\teach row in the lattice (for debugging). `-repeat 2` would double the lattice.",
+      "1");
+
+  options_.enroll(
+      "skip", Ioss::GetLongOption::MandatoryValue,
+      "Skip the specified number of lattice entries and rows. For example, -skip 1\n"
+      "\t\twould read every other entry on the row and every other row. (for debugging)",
+      "1");
+
   options_.enroll("help", Ioss::GetLongOption::NoValue, "Print this summary and exit", nullptr);
 
   options_.enroll("version", Ioss::GetLongOption::NoValue, "Print version and exit", nullptr);
@@ -219,6 +231,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   subcycle_ = (options_.retrieve("subcycle") != nullptr);
 
   equivalenceNodes_ = options_.retrieve("separate_cells") == nullptr;
+
   {
     const char *temp = options_.retrieve("minimize_open_files");
     if (temp != nullptr) {
@@ -238,40 +251,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  {
-    const char *temp = options_.retrieve("scale");
-    if (temp != nullptr) {
-      scaleFactor_ = std::strtod(temp, nullptr);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("ranks");
-    if (temp != nullptr) {
-      ranks_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("start_rank");
-    if (temp != nullptr) {
-      startRank_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("rank_count");
-    if (temp != nullptr) {
-      rankCount_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("debug");
-    if (temp != nullptr) {
-      debugLevel_ = strtol(temp, nullptr, 10);
-    }
-  }
+  scaleFactor_ = options_.get_option_value("scale", scaleFactor_);
+  ranks_       = options_.get_option_value("ranks", ranks_);
+  startRank_   = options_.get_option_value("start_rank", startRank_);
+  rankCount_   = options_.get_option_value("rank_count", rankCount_);
+  debugLevel_  = options_.get_option_value("debug", debugLevel_);
 
   if (options_.retrieve("copyright") != nullptr) {
     if (myRank_ == 0) {
@@ -292,35 +276,13 @@ bool SystemInterface::parse_options(int argc, char **argv)
     options_.parse(options, options_.basename(*argv));
   }
 
-  {
-    const char *temp = options_.retrieve("output");
-    if (temp != nullptr) {
-      outputName_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("lattice");
-    if (temp != nullptr) {
-      lattice_ = temp;
-    }
-  }
+  outputName_ = options_.get_option_value("output", outputName_);
+  lattice_    = options_.get_option_value("lattice", lattice_);
 
   ignoreInternalSidesets_ = options_.retrieve("ignore_sidesets") != nullptr;
 
-  {
-    const char *temp = options_.retrieve("generate_sidesets");
-    if (temp != nullptr) {
-      sidesetSurfaces_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("sideset_names");
-    if (temp != nullptr) {
-      sidesetNames_ = temp;
-    }
-  }
+  sidesetSurfaces_ = options_.get_option_value("generate_sidesets", sidesetSurfaces_);
+  sidesetNames_    = options_.get_option_value("sideset_names", sidesetNames_);
 
   // Default to 64...
   ints32bit_ = options_.retrieve("32-bit") != nullptr;
@@ -357,12 +319,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  {
-    const char *temp = options_.retrieve("compress");
-    if (temp != nullptr) {
-      compressionLevel_ = std::strtol(temp, nullptr, 10);
-    }
-  }
+  compressionLevel_ = options_.get_option_value("compress", compressionLevel_);
+
+  skip_   = options_.get_option_value("skip", skip_);
+  repeat_ = options_.get_option_value("repeat", repeat_);
 
   // Adjust start_rank and rank_count if running in parallel...
   Ioss::ParallelUtils pu{MPI_COMM_WORLD};

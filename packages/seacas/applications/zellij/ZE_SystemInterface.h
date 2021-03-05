@@ -47,6 +47,9 @@ public:
 
   double scale_factor() const { return scaleFactor_; }
 
+  int skip() const { return skip_; }
+  int repeat() const { return repeat_; }
+
   static void show_version();
 
   // Make this private eventually...
@@ -68,6 +71,8 @@ private:
   int           ranks_{1};
   int           startRank_{0};
   int           rankCount_{0};
+  int           skip_{0};
+  int           repeat_{1};
   bool          ints32bit_{false};
   bool          useNetcdf4_{true};
   bool          useNetcdf5_{false};
