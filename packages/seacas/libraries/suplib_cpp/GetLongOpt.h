@@ -10,6 +10,7 @@
 #ifndef _GetLongOption_h_
 #define _GetLongOption_h_
 
+#include <cstdlib>
 #include <iostream>
 
 /** \brief A database of program command line and environment variable options and methods for
@@ -30,9 +31,9 @@ private:
     const char *description{nullptr}; // a description of option
     const char *value{nullptr};       // value of option (string)
     const char *opt_value{
-        nullptr};        // If optional value and value not entered, assign opt_value to value
-    Cell *next{nullptr}; // pointer to the next cell
-    bool  extra_line{false};
+        nullptr};            // If optional value and value not entered, assign opt_value to value
+    Cell *next{nullptr};     // pointer to the next cell
+    bool  extra_line{false}; // True if `usage()` should output extra line at end of entry
 
     Cell() = default;
   };
@@ -72,5 +73,38 @@ public:
    *  \param[in] str The usage string.
    */
   void usage(const char *str) { ustring = str; }
+
+  template <class INT, typename std::enable_if<std::is_integral<INT>::value, INT>::type * = nullptr>
+  INT get_option_value(const char *option_txt, INT default_value)
+  {
+    INT         value = default_value;
+    const char *temp  = retrieve(option_txt);
+    if (temp != nullptr) {
+      value = std::strtol(temp, nullptr, 10);
+    }
+    return value;
+  }
+
+  template <class DBL,
+            typename std::enable_if<std::is_floating_point<DBL>::value, DBL>::type * = nullptr>
+  DBL get_option_value(const char *option_txt, DBL default_value)
+  {
+    DBL         value = default_value;
+    const char *temp  = retrieve(option_txt);
+    if (temp != nullptr) {
+      value = std::strtod(temp, nullptr);
+    }
+    return value;
+  }
+
+  std::string get_option_value(const char *option_txt, const std::string &default_value)
+  {
+    auto        value = default_value;
+    const char *temp  = retrieve(option_txt);
+    if (temp != nullptr) {
+      value = temp;
+    }
+    return value;
+  }
 };
 #endif /* _GetLongOption_h_ */
