@@ -26,6 +26,7 @@ public:
   size_t             processor_count() const { return processorCount_; }
   const std::string &decomposition_method() const { return decompMethod_; }
   const std::string &decomposition_file() const { return decompFile_; }
+  const std::string &decomposition_variable() const { return decompVariable_; }
   const std::string &output_path() const { return outputPath_; }
 
   int debug() const { return debugLevel_; }
@@ -77,6 +78,7 @@ private:
 
   std::string decompMethod_{"linear"};
   std::string decompFile_;
+  std::string decompVariable_;
   std::string outputPath_;
 
   size_t partialReadCount_{1000000000};

@@ -59,8 +59,14 @@ void SystemInterface::enroll_options()
                   "\t\t'random'   : Random distribution of elements, maintains balance\n"
                   "\t\t'rb'       : Metis multilevel recursive bisection\n"
                   "\t\t'kway'     : Metis multilevel k-way graph partitioning\n"
+                  "\t\t'variable' : Read element-processor assignment from an element variable\n"
+                  "\t\t'map'      : Read element-processor assignment from an element map\n"
                   "\t\t'file'     : Read element-processor assignment from file",
                   "linear");
+
+  options_.enroll("decomposition_variable", GetLongOption::MandatoryValue,
+                  "The element variable which File containing element to processor mapping\n",
+                  nullptr);
 
   options_.enroll("decomposition_file", GetLongOption::MandatoryValue,
                   "File containing element to processor mapping\n"
@@ -218,40 +224,12 @@ bool SystemInterface::parse_options(int argc, char **argv)
     options_.parse(options, options_.basename(*argv));
   }
 
-  {
-    const char *temp = options_.retrieve("processors");
-    processorCount_  = strtoul(temp, nullptr, 0);
-  }
-
-  {
-    const char *temp  = options_.retrieve("Partial_read_count");
-    partialReadCount_ = strtoul(temp, nullptr, 0);
-  }
-
-  {
-    const char *temp = options_.retrieve("max-files");
-    if (temp != nullptr) {
-      maxFiles_ = strtoul(temp, nullptr, 0);
-    }
-    else {
-      maxFiles_ = get_free_descriptor_count();
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("debug");
-    debugLevel_      = strtoul(temp, nullptr, 0);
-  }
-
-  {
-    const char *temp = options_.retrieve("in_type");
-    inputFormat_     = temp;
-  }
-
-  {
-    const char *temp = options_.retrieve("method");
-    decompMethod_    = temp;
-  }
+  processorCount_   = options_.get_option_value("processors", processorCount_);
+  partialReadCount_ = options_.get_option_value("Partial_read_count", partialReadCount_);
+  maxFiles_         = options_.get_option_value("max-files", get_free_descriptor_count());
+  debugLevel_       = options_.get_option_value("debug", debugLevel_);
+  inputFormat_      = options_.get_option_value("in_type", inputFormat_);
+  decompMethod_     = options_.get_option_value("method", decompMethod_);
 
   {
     if (decompMethod_ == "file") {
@@ -266,16 +244,22 @@ bool SystemInterface::parse_options(int argc, char **argv)
         return false;
       }
     }
-  }
-
-  {
-    const char *temp = options_.retrieve("output_path");
-    if (temp != nullptr) {
-      outputPath_ = temp;
+    else if (decompMethod_ == "variable") {
+      const char *temp = options_.retrieve("decomposition_variable");
+      if (temp != nullptr) {
+        decompVariable_ = temp;
+      }
+      else {
+        fmt::print(stderr, "\nThe 'variable' decompositon method was specified, but no element "
+                           "to processor mapping element variable was specified via the "
+                           "-decomposition_variable option\n");
+        return false;
+      }
     }
   }
 
-  ints64Bit_ = (options_.retrieve("64-bit") != nullptr);
+  outputPath_ = options_.get_option_value("output_path", outputPath_);
+  ints64Bit_  = (options_.retrieve("64-bit") != nullptr);
 
   if (options_.retrieve("netcdf4") != nullptr) {
     netcdf4_ = true;
@@ -299,12 +283,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
     fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
   }
 
-  {
-    const char *temp = options_.retrieve("compress");
-    if (temp != nullptr) {
-      compressionLevel_ = std::strtol(temp, nullptr, 10);
-    }
-  }
+  compressionLevel_ = options_.get_option_value("compress", compressionLevel_);
+  contig_           = options_.retrieve("contiguous_decomposition") != nullptr;
 
 #if 0
  {
@@ -344,19 +324,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
     parse_variable_names(temp, &ssetVarNames_);
   }
 
-  if (options_.retrieve("disable_field_recognition")) {
-    disableFieldRecognition_ = true;
-  } else {
-    disableFieldRecognition_ = false;
-  }
+  disableFieldRecognition_ = options_.retrieve("disable_field_recognition") != nullptr;
 #endif
 
-  if (options_.retrieve("contiguous_decomposition") != nullptr) {
-    contig_ = true;
-  }
-  else {
-    contig_ = false;
-  }
   return true;
 }
 
