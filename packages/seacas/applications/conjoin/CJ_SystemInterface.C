@@ -170,12 +170,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     exit(0);
   }
 
-  {
-    const char *temp = options_.retrieve("debug");
-    if (temp != nullptr) {
-      debugLevel_ = strtol(temp, nullptr, 10);
-    }
-  }
+  debugLevel_ = options_.get_option_value("debug", debugLevel_);
 
   {
     const char *temp = options_.retrieve("alive_value");
@@ -194,50 +189,16 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  {
-    const char *temp = options_.retrieve("interpart_minimum_time_delta");
-    if (temp != nullptr) {
-      interpartMinimumTimeDelta_ = strtod(temp, nullptr);
-    }
-  }
+  interpartMinimumTimeDelta_ =
+      options_.get_option_value("interpart_minimum_time_delta", interpartMinimumTimeDelta_);
+  elementStatusVariable_ =
+      options_.get_option_value("element_status_variable", elementStatusVariable_);
+  nodalStatusVariable_ = options_.get_option_value("nodal_status_variable", nodalStatusVariable_);
+  meshCombineStatusVariable_ =
+      options_.get_option_value("combine_status_variables", meshCombineStatusVariable_);
 
-  {
-    const char *temp = options_.retrieve("element_status_variable");
-    if (temp != nullptr) {
-      elementStatusVariable_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("nodal_status_variable");
-    if (temp != nullptr) {
-      nodalStatusVariable_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("combine_status_variables");
-    if (temp != nullptr) {
-      meshCombineStatusVariable_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("width");
-    if (temp != nullptr) {
-      screenWidth_ = strtol(temp, nullptr, 10);
-    }
-    else {
-      screenWidth_ = term_width();
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("output");
-    if (temp != nullptr) {
-      outputName_ = temp;
-    }
-  }
+  screenWidth_ = options_.get_option_value("width", term_width());
+  outputName_  = options_.get_option_value("output", outputName_);
 
   {
     const char *temp = options_.retrieve("gvar");
@@ -291,15 +252,10 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
   }
 
-  {
-    const char *temp = options_.retrieve("compress");
-    if (temp != nullptr) {
-      compressionLevel_ = std::strtol(temp, nullptr, 10);
-    }
-  }
+  compressionLevel_ = options_.get_option_value("compress", compressionLevel_);
 
   if (options_.retrieve("copyright") != nullptr) {
-    fmt::print("{}", copyright("2009-2019"));
+    fmt::print("{}", copyright("2009-2021"));
     exit(EXIT_SUCCESS);
   }
 
