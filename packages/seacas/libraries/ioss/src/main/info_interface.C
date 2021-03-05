@@ -198,62 +198,19 @@ bool Info::Interface::parse_options(int argc, char **argv)
     exit(0);
   }
 
-  if (options_.retrieve("check_node_status") != nullptr) {
-    checkNodeStatus_ = true;
-  }
+  checkNodeStatus_ = options_.retrieve("check_node_status") != nullptr;
+  adjacencies_     = options_.retrieve("adjacencies") != nullptr;
+  ints64Bit_       = options_.retrieve("64-bit") != nullptr;
+  computeVolume_   = options_.retrieve("compute_volume") != nullptr;
+  computeBBox_     = options_.retrieve("compute_bbox") != nullptr;
+  listGroups_      = options_.retrieve("list_groups") != nullptr;
+  useGenericNames_ = options_.retrieve("use_generic_names") != nullptr;
+  summary_         = options_.retrieve("summary") != nullptr;
+  showConfig_      = options_.retrieve("configuration") != nullptr;
 
-  if (options_.retrieve("adjacencies") != nullptr) {
-    adjacencies_ = true;
-  }
-
-  if (options_.retrieve("64-bit") != nullptr) {
-    ints64Bit_ = true;
-  }
-
-  if (options_.retrieve("compute_volume") != nullptr) {
-    computeVolume_ = true;
-  }
-
-  if (options_.retrieve("compute_bbox") != nullptr) {
-    computeBBox_ = true;
-  }
-
-  if (options_.retrieve("list_groups") != nullptr) {
-    listGroups_ = true;
-  }
-
-  if (options_.retrieve("use_generic_names") != nullptr) {
-    useGenericNames_ = true;
-  }
-
-  if (options_.retrieve("summary") != nullptr) {
-    summary_ = true;
-  }
-
-  if (options_.retrieve("configuration") != nullptr) {
-    showConfig_ = true;
-  }
-
-  {
-    const char *temp = options_.retrieve("db_type");
-    if (temp != nullptr) {
-      filetype_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("in_type");
-    if (temp != nullptr) {
-      filetype_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("group_name");
-    if (temp != nullptr) {
-      groupname_ = temp;
-    }
-  }
+  filetype_  = options_.get_option_value("db_type", filetype_);
+  filetype_  = options_.get_option_value("in_type", filetype_);
+  groupname_ = options_.get_option_value("group_name", groupname_);
 
   {
     const char *temp = options_.retrieve("surface_split_scheme");
@@ -273,9 +230,7 @@ bool Info::Interface::parse_options(int argc, char **argv)
     }
   }
 
-  if (options_.retrieve("disable_field_recognition") != nullptr) {
-    disableFieldRecognition_ = true;
-  }
+  disableFieldRecognition_ = options_.retrieve("disable_field_recognition") != nullptr;
 
   {
     const char *temp = options_.retrieve("field_suffix_separator");

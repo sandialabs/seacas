@@ -462,30 +462,14 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     decomp_method = "EXTERNAL";
   }
 
-  {
-    const char *temp = options_.retrieve("serialize_io_size");
-    if (temp != nullptr) {
-      serialize_io_size = std::strtol(temp, nullptr, 10);
-    }
-  }
+  serialize_io_size = options_.get_option_value("serialize_io_size", serialize_io_size);
 
 #endif
 
-  {
-    const char *temp = options_.retrieve("split_times");
-    if (temp != nullptr) {
-      split_times = std::strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("split_cyclic");
-    if (temp != nullptr) {
-      split_cyclic = std::strtol(temp, nullptr, 10);
-      if (split_cyclic > 26) {
-        split_cyclic = 26;
-      }
-    }
+  split_times  = options_.get_option_value("split_times", split_times);
+  split_cyclic = options_.get_option_value("split_cyclic", split_cyclic);
+  if (split_cyclic > 26) {
+    split_cyclic = 26;
   }
 
   minimize_open_files       = (options_.retrieve("minimize_open_files") != nullptr);
@@ -503,37 +487,16 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   retain_empty_blocks       = (options_.retrieve("retain_empty_blocks") != nullptr);
   boundary_sideset          = (options_.retrieve("boundary_sideset") != nullptr);
 
-  {
-    const char *temp = options_.retrieve("in_type");
-    if (temp != nullptr) {
-      inFiletype = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("out_type");
-    if (temp != nullptr) {
-      outFiletype = temp;
-    }
-  }
+  inFiletype  = options_.get_option_value("in_type", inFiletype);
+  outFiletype = options_.get_option_value("out_type", outFiletype);
 
 #if defined(SEACAS_HAVE_MPI)
   // Should be only for parallel-aware-exodus, but not sure yet how to avoid the coupling to get
   // that define here
-  {
-    const char *temp = options_.retrieve("compose");
-    if (temp != nullptr) {
-      compose_output = Ioss::Utils::lowercase(temp);
-    }
-  }
+  compose_output = options_.get_option_value("compose", compose_output);
 #endif
 
-  {
-    const char *temp = options_.retrieve("extract_group");
-    if (temp != nullptr) {
-      groupName = temp;
-    }
-  }
+  groupName = options_.get_option_value("extract_group", groupName);
 
   {
     const char *temp = options_.retrieve("field_suffix_separator");
@@ -597,19 +560,8 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     }
   }
 
-  {
-    const char *temp = options_.retrieve("Maximum_Time");
-    if (temp != nullptr) {
-      maximum_time = std::strtod(temp, nullptr);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("Minimum_Time");
-    if (temp != nullptr) {
-      minimum_time = std::strtod(temp, nullptr);
-    }
-  }
+  maximum_time = options_.get_option_value("Maximum_Time", maximum_time);
+  minimum_time = options_.get_option_value("Minimum_Time", minimum_time);
 
   {
     const char *temp = options_.retrieve("select_times");
@@ -623,33 +575,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     }
   }
 
-  {
-    const char *temp = options_.retrieve("append_after_time");
-    if (temp != nullptr) {
-      append_time = std::strtod(temp, nullptr);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("flush_interval");
-    if (temp != nullptr) {
-      flush_interval = std::strtod(temp, nullptr);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("delay");
-    if (temp != nullptr) {
-      timestep_delay = std::strtod(temp, nullptr);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("append_after_step");
-    if (temp != nullptr) {
-      append_step = std::strtol(temp, nullptr, 10);
-    }
-  }
+  append_time    = options_.get_option_value("append_after_time", append_time);
+  flush_interval = options_.get_option_value("flush_interval", flush_interval);
+  timestep_delay = options_.get_option_value("delay", timestep_delay);
+  append_step    = options_.get_option_value("append_after_step", append_step);
 
   if (options_.retrieve("copyright") != nullptr) {
     if (my_processor == 0) {

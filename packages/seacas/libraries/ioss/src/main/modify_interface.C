@@ -107,16 +107,8 @@ bool Modify::Interface::parse_options(int argc, char **argv)
     exit(0);
   }
 
-  if (options_.retrieve("allow_modifications") != nullptr) {
-    allowModification_ = true;
-  }
-
-  {
-    const char *temp = options_.retrieve("db_type");
-    if (temp != nullptr) {
-      filetype_ = temp;
-    }
-  }
+  allowModification_ = options_.retrieve("allow_modifications") != nullptr;
+  filetype_          = options_.get_option_value("db_type", filetype_);
 
   if (options_.retrieve("copyright") != nullptr) {
     fmt::print(stderr, "\n"
