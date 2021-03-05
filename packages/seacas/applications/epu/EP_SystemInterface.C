@@ -244,85 +244,18 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     return false;
   }
 
-  {
-    const char *temp = options_.retrieve("extension");
-    if (temp != nullptr) {
-      inExtension_ = temp;
-    }
-  }
+  inExtension_    = options_.get_option_value("extension", inExtension_);
+  outExtension_   = options_.get_option_value("output_extension", outExtension_);
+  processorCount_ = options_.get_option_value("processor_count", processorCount_);
+  partCount_      = options_.get_option_value("Part_count", partCount_);
+  startPart_      = options_.get_option_value("start_part", startPart_);
+  maxOpenFiles_   = options_.get_option_value("max_open_files", maxOpenFiles_);
+  cwd_            = options_.get_option_value("current_directory", cwd_);
+  rootDirectory_  = options_.get_option_value("Root_directory", rootDirectory_);
+  subDirectory_   = options_.get_option_value("Subdirectory", subDirectory_);
+  debugLevel_     = options_.get_option_value("debug", debugLevel_);
 
-  {
-    const char *temp = options_.retrieve("output_extension");
-    if (temp != nullptr) {
-      outExtension_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("processor_count");
-    if (temp != nullptr) {
-      processorCount_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("Part_count");
-    if (temp != nullptr) {
-      partCount_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("start_part");
-    if (temp != nullptr) {
-      startPart_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("max_open_files");
-    if (temp != nullptr) {
-      maxOpenFiles_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("current_directory");
-    if (temp != nullptr) {
-      cwd_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("Root_directory");
-    if (temp != nullptr) {
-      rootDirectory_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("Subdirectory");
-    if (temp != nullptr) {
-      subDirectory_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("debug");
-    if (temp != nullptr) {
-      debugLevel_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("width");
-    if (temp != nullptr) {
-      screenWidth_ = strtol(temp, nullptr, 10);
-    }
-    else {
-      screenWidth_ = term_width();
-    }
-  }
+  screenWidth_ = options_.get_option_value("width", term_width());
 
   {
     const char *temp = options_.retrieve("steps");
@@ -380,30 +313,13 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
   }
 
-  {
-    const char *temp = options_.retrieve("compress_data");
-    if (temp != nullptr) {
-      compressData_ = strtol(temp, nullptr, 10);
-    }
-  }
+  compressData_ = options_.get_option_value("compress_data", compressData_);
 
   sumSharedNodes_ = options_.retrieve("sum_shared_nodes") != nullptr;
   append_         = options_.retrieve("append") != nullptr;
 
-  {
-    const char *temp = options_.retrieve("subcycle");
-    if (temp != nullptr) {
-      subcycle_ = strtol(temp, nullptr, 10);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("cycle");
-    if (temp != nullptr) {
-      cycle_ = strtol(temp, nullptr, 10);
-    }
-  }
-
+  subcycle_      = options_.get_option_value("subcycle", subcycle_);
+  cycle_         = options_.get_option_value("cycle", cycle_);
   subcycleJoin_  = options_.retrieve("join_subcycles") != nullptr;
   keepTemporary_ = options_.retrieve("keep_temporary") != nullptr;
 
@@ -421,7 +337,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("copyright") != nullptr) {
     if (myRank_ == 0) {
-      fmt::print("{}", copyright("2010-2019"));
+      fmt::print("{}", copyright("2010-2021"));
     }
     return false;
   }
