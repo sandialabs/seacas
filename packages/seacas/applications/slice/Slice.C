@@ -56,8 +56,8 @@ using idx_t = int;
 extern double seacas_timer();
 int           debug_level = 0;
 
-// size_t partial_count = 100000;
-size_t partial_count = 1000000000;
+// size_t partial_count = 1'00'000;
+size_t partial_count = 1'000'000'000;
 
 namespace {
   void progress(const std::string &output)
@@ -1513,7 +1513,7 @@ namespace {
       proc_region[i] = new Ioss::Region(dbo);
       proc_region[i]->begin_mode(Ioss::STATE_DEFINE_MODEL);
       if (close_files) {
-	proc_region[i]->get_database()->closeDatabase();
+        proc_region[i]->get_database()->closeDatabase();
       }
     }
 

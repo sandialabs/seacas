@@ -90,7 +90,7 @@ void SystemInterface::enroll_options()
   options_.enroll("Partial_read_count", GetLongOption::MandatoryValue,
                   "Split the coordinate and connetivity reads into a\n"
                   "\t\tmaximum of this many nodes or elements at a time to reduce memory.",
-                  "1000000000");
+                  "1'000'000'000");
 
   options_.enroll("max-files", GetLongOption::MandatoryValue,
                   "Specify maximum number of processor files to write at one time.\n"
