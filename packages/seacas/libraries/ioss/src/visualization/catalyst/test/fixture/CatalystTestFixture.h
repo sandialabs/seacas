@@ -27,6 +27,9 @@ public:
     void runPhactoriJSONTestTwoGrid(const std::string& jsonFile,
         const std::string& inputFileA, const std::string& inputFileB);
 
+    void runParaViewGuiScriptTest(const std::string& pythonScript,
+        const std::string& inputFile);
+
     void checkTestOutputFileExists(const char *fileName);
 
     Json::Value getDefaultPhactoriJSON();

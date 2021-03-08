@@ -18,6 +18,15 @@ CatalystTestFixture::~CatalystTestFixture() {
 
 }
 
+void CatalystTestFixture::runParaViewGuiScriptTest(
+    const std::string& pythonScript, const std::string& inputFile) {
+    std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
+    ioapp.setParaViewExportedScript(td + pythonScript);
+    ioapp.addFileName(td + inputFile);
+    ioapp.runApplication();
+    REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
+}
+
 void CatalystTestFixture::runPhactoriJSONTest(
     const std::string& jsonFile, const std::string& inputFile) {
 
