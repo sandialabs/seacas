@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -60,12 +60,12 @@ void SystemInterface::enroll_options()
                   "\t\t'rb'       : Metis multilevel recursive bisection\n"
                   "\t\t'kway'     : Metis multilevel k-way graph partitioning\n"
                   "\t\t'variable' : Read element-processor assignment from an element variable\n"
-                  "\t\t'map'      : Read element-processor assignment from an element map\n"
                   "\t\t'file'     : Read element-processor assignment from file",
                   "linear");
 
   options_.enroll("decomposition_variable", GetLongOption::MandatoryValue,
-                  "The element variable which File containing element to processor mapping\n",
+                  "The element variable containing the element to processor mapping\n"
+                  "\t\twhen decomposition method 'variable' is specified.",
                   nullptr);
 
   options_.enroll("decomposition_file", GetLongOption::MandatoryValue,
@@ -88,9 +88,9 @@ void SystemInterface::enroll_options()
                   nullptr, nullptr, true);
 
   options_.enroll("Partial_read_count", GetLongOption::MandatoryValue,
-                  "Split the coordinate and connetivity reads into a\n"
+                  "Split the coordinate and connectivity reads into a\n"
                   "\t\tmaximum of this many nodes or elements at a time to reduce memory.",
-                  "1'000'000'000");
+                  "1000000000");
 
   options_.enroll("max-files", GetLongOption::MandatoryValue,
                   "Specify maximum number of processor files to write at one time.\n"
@@ -245,16 +245,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
       }
     }
     else if (decompMethod_ == "variable") {
-      const char *temp = options_.retrieve("decomposition_variable");
-      if (temp != nullptr) {
-        decompVariable_ = temp;
-      }
-      else {
-        fmt::print(stderr, "\nThe 'variable' decompositon method was specified, but no element "
-                           "to processor mapping element variable was specified via the "
-                           "-decomposition_variable option\n");
-        return false;
-      }
+      // If isn't specified, then default `processor_id` is used.
+      decompVariable_ = options_.get_option_value("decomposition_variable", decompVariable_);
     }
   }
 

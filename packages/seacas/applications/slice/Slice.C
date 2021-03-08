@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -60,6 +60,32 @@ int           debug_level = 0;
 size_t partial_count = 1'000'000'000;
 
 namespace {
+  template <typename INT>
+  void populate_proc_node(size_t count, size_t offset, size_t element_nodes,
+                          const std::vector<int> &elem_to_proc, std::vector<INT> &glob_conn,
+                          std::vector<std::vector<int>> &proc_node,
+                          std::vector<size_t> &          on_proc_count)
+  {
+    size_t el = 0;
+    for (size_t j = 0; j < count; j++) {
+      auto p = elem_to_proc[offset + j];
+      for (size_t k = 0; k < element_nodes; k++) {
+        INT  node   = glob_conn[el++] - 1;
+        bool exists = false;
+        for (size_t kk = 0; kk < proc_node[node].size(); kk++) {
+          if (proc_node[node][kk] == p) {
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) {
+          proc_node[node].push_back(p);
+          on_proc_count[p]++;
+        }
+      }
+    }
+  }
+
   void progress(const std::string &output)
   {
     static auto start = std::chrono::steady_clock::now();
@@ -374,18 +400,15 @@ namespace {
     }
 
     else if (interFace.decomposition_method() == "random") {
-      // Random...  Use linear method and then random_shuffle() the vector.
+      // Random...  Use scattered method and then random_shuffle() the vector.
       // Ensures that each processor has correct number of elements, but
       // they are randomly distributed.
-      size_t elem_beg = 0;
-      for (size_t proc = 0; proc < interFace.processor_count(); proc++) {
-        size_t add      = (proc < extra) ? 1 : 0;
-        size_t elem_end = elem_beg + elem_per_proc + add;
-
-        for (size_t elem = elem_beg; elem < elem_end; elem++) {
-          elem_to_proc.push_back(proc);
+      size_t proc = 0;
+      for (size_t elem = 0; elem < element_count; elem++) {
+        elem_to_proc.push_back(proc++);
+        if (proc >= interFace.processor_count()) {
+          proc = 0;
         }
-        elem_beg = elem_end;
       }
       std::random_device rd;
       std::mt19937       g(rd());
@@ -430,11 +453,13 @@ namespace {
       // 100 1
       // 0
       //
-      // Will assign element 1 to processor 0; followed by the next
-      // 100 elements to processor 1; followed by the next element
-      // (102) to processor 0.  The resulting decomposition will have
-      // 2 elements (1, 102) on processor 0 and 100 elements (2..101)
-      // on processor 1.
+      // Will assign:
+      // * element 1 to processor 0;
+      // * followed by the next 100 elements (2 to 101) to processor 1;
+      // * followed by the next element (102) to processor 0.
+      //
+      // The resulting decomposition will have 2 elements (1, 102) on
+      // processor 0 and 100 elements (2..101) on processor 1.
 
       const std::string &filename = interFace.decomposition_file();
       if (filename.empty()) {
@@ -1371,37 +1396,15 @@ namespace {
           ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
                               nullptr);
           progress(fmt::format("\tpartial_conn-- start: {:L}\tcount: {:L}", beg, count));
-
-          size_t el = 0;
-          for (size_t j = 0; j < count; j++) {
-            size_t p = elem_to_proc[offset + j];
-            for (size_t k = 0; k < element_nodes; k++) {
-              INT node = glob_conn[el++] - 1;
-              if (proc_node[node].empty() ||
-                  proc_node[node][proc_node[node].size() - 1] != static_cast<int>(p)) {
-                proc_node[node].push_back(p);
-                on_proc_count[p]++;
-              }
-            }
-          }
+          populate_proc_node(count, offset, element_nodes, elem_to_proc, glob_conn, proc_node,
+                             on_proc_count);
           offset += count;
         }
       }
       else {
         ebs[b]->get_field_data("connectivity_raw", glob_conn);
-
-        size_t el = 0;
-        for (size_t j = 0; j < element_count; j++) {
-          size_t p = elem_to_proc[offset + j];
-          for (size_t k = 0; k < element_nodes; k++) {
-            INT node = glob_conn[el++] - 1;
-            if (proc_node[node].empty() ||
-                proc_node[node][proc_node[node].size() - 1] != static_cast<int>(p)) {
-              proc_node[node].push_back(p);
-              on_proc_count[p]++;
-            }
-          }
-        }
+        populate_proc_node(element_count, offset, element_nodes, elem_to_proc, glob_conn, proc_node,
+                           on_proc_count);
         offset += element_count;
       }
     }
