@@ -605,26 +605,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  {
-    const char *temp = options_.retrieve("tolerance");
-    if (temp != nullptr) {
-      default_tol.value = To_Double(temp);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("coordinate_tolerance");
-    if (temp != nullptr) {
-      coord_tol.value = To_Double(temp);
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("Floor");
-    if (temp != nullptr) {
-      default_tol.floor = To_Double(temp);
-    }
-  }
+  default_tol.value    = options_.get_option_value("tolerance", default_tol.value);
+  coord_tol.value      = options_.get_option_value("coordinate_tolerance", coord_tol.value);
+  default_tol.floor    = options_.get_option_value("Floor", default_tol.floor);
+  final_time_tol.value = options_.get_option_value("final_time_tolerance", final_time_tol.value);
 
   {
     const char *temp = options_.retrieve("TimeStepOffset");
@@ -753,13 +737,6 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
   if (options_.retrieve("interpolate") != nullptr) {
     interpolating = true;
-  }
-
-  {
-    const char *temp = options_.retrieve("final_time_tolerance");
-    if (temp != nullptr) {
-      final_time_tol.value = To_Double(temp);
-    }
   }
 
   if (options_.retrieve("allow_name_mismatch") != nullptr) {
