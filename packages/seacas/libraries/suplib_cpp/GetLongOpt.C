@@ -5,35 +5,35 @@
 // See packages/seacas/LICENSE for details
 
 /* S Manoharan. Advanced Computer Research Institute. Lyon. France */
-#include <Ioss_GetLongOpt.h>
+#include <GetLongOpt.h>
 #include <cstring>
 #include <fmt/color.h>
 #include <fmt/ostream.h>
 #include <sstream>
 
-/** \brief Create an empty options database.
- *
- * \param optmark The command line symbol designating options.
- */
-GetLongOption::GetLongOption(const char optmark) : optmarker(optmark)
-{
-  ustring = "[valid options and arguments]";
-}
-
-/** \brief Frees dynamically allocated memory.
- *
- *  Frees memory for the private struct variables representing the options.
- */
-GetLongOption::~GetLongOption()
-{
-  Cell *t = table;
-
-  while (t != nullptr) {
-    Cell *tmp = t;
-    t         = t->next;
-    delete tmp;
+  /** \brief Create an empty options database.
+   *
+   * \param optmark The command line symbol designating options.
+   */
+  GetLongOption::GetLongOption(const char optmark) : optmarker(optmark)
+  {
+    ustring = "[valid options and arguments]";
   }
-}
+
+  /** \brief Frees dynamically allocated memory.
+   *
+   *  Frees memory for the private struct variables representing the options.
+   */
+  GetLongOption::~GetLongOption()
+  {
+    Cell *t = table;
+
+    while (t != nullptr) {
+      Cell *tmp = t;
+      t         = t->next;
+      delete tmp;
+    }
+  }
 
   /** \brief Extract the base file name from a full path.
    *
@@ -55,35 +55,6 @@ GetLongOption::~GetLongOption()
     return s;
   }
 
-/** \brief parse command line arguments
- *
- *  Set the values of options in the option table based on
- *  the given command line arguments.
- *
- *  \param[in] argc Number of command line arguments passed in from main(int argc, char *argv[]).
- *  \param[in] argv Command line arguments passed in from main(int argc, char *argv[]).
- *  \returns Number of options processed, or -1 on failure.
- *
- */
-int GetLongOption::parse(int argc, char *const *argv)
-{
-  int my_optind = 1;
-
-  std::ostringstream multiple_match;
-
-  pname       = basename(*argv);
-  enroll_done = 1;
-  if (argc-- <= 1) {
-    return my_optind;
-=======
-  else {
-    ++s;
-  }
-  return s;
->>>>>>> 95cdd6cffb (SUPLIB: Clean up option parsing)
->>>>>>> 89c3767238 (SUPLIB: clang-format)
-  }
-
   /** \brief Enroll a command line option into the database.
    *
    *  Dynamically allocates memory for the option, sets its name
@@ -95,11 +66,10 @@ int GetLongOption::parse(int argc, char *const *argv)
    * \param[in] desc A short description of the option.
    * \param[in] val The option value.
    * \param[in] optval The default value.
-   * \param[in] extra_line True to output blank line in `usage()` output after this entry.
    * \returns 1 if successful, 0 if unsuccessful.
    */
   bool GetLongOption::enroll(const char *const opt, const OptType t, const char *const desc,
-                             const char *const val, const char *const optval, bool extra_line)
+                            const char *const val, const char *const optval, bool extra_line)
   {
     if (options_parsed) {
       return false;
@@ -158,7 +128,9 @@ int GetLongOption::parse(int argc, char *const *argv)
   {
     int my_optind = 1;
 
-    pname          = basename(*argv);
+    std::ostringstream multiple_match;
+
+    pname       = basename(*argv);
     options_parsed = true;
     if (argc-- <= 1) {
       return my_optind;
@@ -179,7 +151,7 @@ int GetLongOption::parse(int argc, char *const *argv)
         tmptoken = ++token;
       }
 
-      while (*tmptoken != '\0' && *tmptoken != '=') {
+      while ( *tmptoken != '\0' && *tmptoken != '=') {
         ++tmptoken;
       }
       /* (tmptoken - token) is now equal to the command line option
@@ -246,6 +218,7 @@ int GetLongOption::parse(int argc, char *const *argv)
         std::cerr << multiple_match.str();
         return -1; /* no match */
       }
+
     } /* end while */
     return my_optind;
   }
@@ -262,7 +235,7 @@ int GetLongOption::parse(int argc, char *const *argv)
    */
   int GetLongOption::parse(char *const str, char *const p)
   {
-    options_parsed    = true;
+    options_parsed       = true;
     char *      token = strtok(str, " \t");
     const char *name  = p != nullptr ? p : "GetLongOption";
 
@@ -334,7 +307,7 @@ int GetLongOption::parse(int argc, char *const *argv)
      1  if the nexttoken was consumed
      ------------------------------------------------------------------- */
 
-  int GetLongOption::setcell(Cell * c, char *valtoken, char *nexttoken, const char *name)
+  int GetLongOption::setcell(Cell *c, char *valtoken, char *nexttoken, const char *name)
   {
     if (c == nullptr) {
       return -1;
@@ -369,7 +342,7 @@ int GetLongOption::parse(int argc, char *const *argv)
         return 0;
       }
       else {
-        if (nexttoken != nullptr && nexttoken[0] != optmarker) {
+        if (nexttoken != nullptr) {
           c->value = nexttoken;
           return 1;
         }
@@ -386,7 +359,7 @@ int GetLongOption::parse(int argc, char *const *argv)
    *
    *  \param[in] outfile The output stream to which the usage string is printed.
    */
-  void GetLongOption::usage(std::ostream & outfile) const
+  void GetLongOption::usage(std::ostream &outfile) const
   {
     // The API of `usage` specifies an `ostream` for the output location. However,
     // the fmt::print color options do not work with an ostream and instead
