@@ -86,7 +86,6 @@ namespace Ioss {
   }
 
 #define IJK_list(v) v[0],v[1],v[2]
-#define IJK_format "%d:%d:%d"
   bool ZoneConnectivity::equal_(const Ioss::ZoneConnectivity &rhs, bool quiet) const
   {
     if( this->m_connectionName != rhs.m_connectionName ) {
@@ -212,7 +211,7 @@ namespace Ioss {
     if( this->m_sameRange != rhs.m_sameRange ) {
       if( !quiet ) {
         fmt::print(Ioss::DEBUG(), "ZoneConnectivity : m_sameRange MISMATCH ({} vs {})\n",
-                   this->m_sameRange ? "True" : "False", rhs.m_sameRange ? "True" : "False");
+                   this->m_sameRange, rhs.m_sameRange);
       }
       return false;
     }
@@ -220,7 +219,7 @@ namespace Ioss {
     if( this->m_ownsSharedNodes != rhs.m_ownsSharedNodes ) {
       if( !quiet ) {
         fmt::print(Ioss::DEBUG(), "ZoneConnectivity : m_ownsSharedNodes MISMATCH ({} vs {})\n",
-                   this->m_ownsSharedNodes ? "True" : "False", rhs.m_ownsSharedNodes ? "True" : "False");
+                   this->m_ownsSharedNodes, rhs.m_ownsSharedNodes);
       }
       return false;
     }
@@ -228,7 +227,7 @@ namespace Ioss {
     if( this->m_fromDecomp != rhs.m_fromDecomp ) {
       if( !quiet ) {
         fmt::print(Ioss::DEBUG(), "ZoneConnectivity : m_fromDecomp MISMATCH ({} vs {})\n",
-                   this->m_fromDecomp ? "True" : "False", rhs.m_fromDecomp ? "True" : "False");
+                   this->m_fromDecomp, rhs.m_fromDecomp);
       }
       return false;
     }
@@ -236,7 +235,7 @@ namespace Ioss {
     if( this->m_isActive != rhs.m_isActive ) {
       if( !quiet ) {
         fmt::print(Ioss::DEBUG(), "ZoneConnectivity : m_isActive MISMATCH ({} vs {})\n",
-                   this->m_isActive ? "True" : "False", rhs.m_isActive ? "True" : "False");
+                   this->m_isActive, rhs.m_isActive);
       }
       return false;
     }

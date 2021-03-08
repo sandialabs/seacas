@@ -180,7 +180,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
                             data_pool, Ioss::Field::MESH, options);
     if( rc == false ) {
       fmt::print(Ioss::DEBUG(), "FIELD data (element blocks): MESH FIELD data mismatch (node_major = {})\n",
-                 node_major ? "TRUE" : "FALSE");
+                 node_major);
       return false;
     }
 
@@ -188,7 +188,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
                             data_pool, Ioss::Field::ATTRIBUTE, options);
     if( rc == false ) {
       fmt::print(Ioss::DEBUG(), "FIELD data (element blocks): ATTRIBUTE FIELD data mismatch (node_major = {})\n",
-                 node_major ? "TRUE" : "FALSE");
+                 node_major);
       return false;
     }
   }
@@ -1195,7 +1195,7 @@ namespace {
     if( ige_1->field_exists("ids") != ige_2->field_exists("ids") ) {
       fmt::print(Ioss::DEBUG(), "FIELD data: field MISMATCH --> "
                  "ige_1->field_exists(\"ids\") = {} / ige_2->field_exists(\"ids\") = {}\n",
-                 ige_1->field_exists("ids") ? "TRUE" : "FALSE", ige_2->field_exists("ids") ? "TRUE" : "FALSE");
+                 ige_1->field_exists("ids"), ige_2->field_exists("ids"));
       return false;
     }
 

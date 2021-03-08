@@ -92,10 +92,10 @@ int main(int argc, char *argv[])
   double begin = Ioss::Utils::timer();
 
   try {
-    if( interFace.compare == false ) {
-      file_copy(interFace, rank);
-    } else {
+    if( interFace.compare ) {
       file_compare(interFace, rank);
+    } else {
+      file_copy(interFace, rank);
     }
   }
   catch (std::exception &e) {

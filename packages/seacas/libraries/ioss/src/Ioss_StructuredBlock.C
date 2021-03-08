@@ -278,7 +278,6 @@ namespace Ioss {
   }
 
 #define IJK_list(v) v[0],v[1],v[2]
-#define IJK_format "%d:%d:%d"
   bool BoundaryCondition::equal_(const Ioss::BoundaryCondition &rhs, bool quiet) const
   {
     if( this->m_bcName != rhs.m_bcName )
@@ -302,7 +301,7 @@ namespace Ioss {
     if( this->m_rangeBeg != rhs.m_rangeBeg )
     {
       if( !quiet ) {
-        fmt::print(Ioss::DEBUG(), "BoundaryCondition: m_rangeBeg MISMATCH (" IJK_format ") vs. (" IJK_format ")\n",
+        fmt::print(Ioss::DEBUG(), "BoundaryCondition: m_rangeBeg MISMATCH ({}:{}:{} vs. {}:{}:{})\n",
                    IJK_list(this->m_rangeBeg), IJK_list(rhs.m_rangeBeg));
       }
       return false;
@@ -311,7 +310,7 @@ namespace Ioss {
     if( this->m_rangeEnd != rhs.m_rangeEnd )
     {
       if( !quiet ) {
-        fmt::print(Ioss::DEBUG(), "BoundaryCondition: m_rangeEnd MISMATCH (" IJK_format ") vs. (" IJK_format ")\n",
+        fmt::print(Ioss::DEBUG(), "BoundaryCondition: m_rangeEnd MISMATCH ({}:{}:{} vs. {}:{}:{})\n",
                    IJK_list(this->m_rangeEnd), IJK_list(rhs.m_rangeEnd));
       }
       return false;
