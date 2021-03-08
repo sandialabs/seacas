@@ -23,7 +23,8 @@ namespace Ioss {
 
     // Compare the mesh in 'input_region_1' to 'input_region_2'.  Behavior can be controlled
     // via options in 'options'
-    static bool compare_database(Ioss::Region &input_region_1, Ioss::Region &input_region_2,
+    static bool compare_database(Ioss::Region &input_region_1,
+                                 Ioss::Region &input_region_2,
                                  const Ioss::MeshCopyOptions &options);
 
   };
