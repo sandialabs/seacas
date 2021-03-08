@@ -2183,7 +2183,7 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       vidx2 = find_string(file2.EB_Var_Names(), name, interFace.nocase_var_names);
     }
     if (vidx1 < 0 || vidx2 < 0) {
-      Error(fmt::format("Unable to find edgeblock variable named '{}' on database.\n", name));
+      Error(fmt::format("Unable to find edge block variable named '{}' on database.\n", name));
       exit(1);
     }
 
@@ -2218,15 +2218,15 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       const double *vals1 = eblock1->Get_Results(vidx1);
 
       if (vals1 == nullptr) {
-        Error(fmt::format("Could not find variable '{}' in edgeblock {}, file 1.\n", name,
+        Error(fmt::format("Could not find variable '{}' in edge block {}, file 1.\n", name,
                           eblock1->Id()));
         diff_flag = true;
         continue;
       }
 
       if (Invalid_Values(vals1, eblock1->Size())) {
-        Error(fmt::format("NaN found for edgeblock variable '{}' in edgeblock {}, file 1.\n", name,
-                          eblock1->Id()));
+        Error(fmt::format("NaN found for edge block variable '{}' in edge block {}, file 1.\n",
+                          name, eblock1->Id()));
         diff_flag = true;
       }
 
@@ -2237,14 +2237,14 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         vals2 = eblock2->Get_Results(vidx2);
 
         if (vals2 == nullptr) {
-          Error(fmt::format("Could not find variable '{}' in edgeblock {}, file 2.\n", name,
+          Error(fmt::format("Could not find variable '{}' in edge block {}, file 2.\n", name,
                             eblock2->Id()));
           diff_flag = true;
           continue;
         }
 
         if (Invalid_Values(vals2, eblock2->Size())) {
-          Error(fmt::format("NaN found for edgeblock variable '{}' in edgeblock {}, file 2.\n",
+          Error(fmt::format("NaN found for edge block variable '{}' in edge block {}, file 2.\n",
                             name, eblock2->Id()));
           diff_flag = true;
         }
@@ -2274,9 +2274,9 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
             if (d > interFace.eb_var[e_idx].value) {
               diff_flag = true;
               buf       = fmt::format(
-                  "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, edge {})", name,
+                  "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (edge block {}, edge {})", name,
                   name_length, interFace.eb_var[e_idx].abrstr(), vals1[ind1], v2, d, eblock1->Id(),
-                  id_map[eblock1->Edge_Index(e)]);
+                  eblock1->Edge_Index(e));
               DIFF_OUT(buf);
             }
           }
@@ -2292,8 +2292,8 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
       }
       else {
-        buf = fmt::format("   {:<{}}     diff: edgeblock edge counts differ for edgeblock {}", name,
-                          name_length, eblock1->Id());
+        buf = fmt::format("   {:<{}}     diff: edge block edge counts differ for edge block {}",
+                          name, name_length, eblock1->Id());
         DIFF_OUT(buf);
         diff_flag = true;
       }
@@ -2322,10 +2322,10 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
 
       if (!interFace.quiet_flag) {
         Edge_Block<INT> *eblock = file1.Get_Edge_Block_by_Id(max_diff.blk);
-        buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, edge {})",
-                          name, name_length, interFace.eb_var[e_idx].abrstr(), max_diff.val1,
-                          max_diff.val2, max_diff.diff, max_diff.blk,
-                          id_map[eblock->Edge_Index(max_diff.id)]);
+        buf                     = fmt::format(
+            "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (edge block {}, edge {})", name,
+            name_length, interFace.eb_var[e_idx].abrstr(), max_diff.val1, max_diff.val2,
+            max_diff.diff, max_diff.blk, eblock->Edge_Index(max_diff.id));
         DIFF_OUT(buf);
       }
       else {
@@ -2363,7 +2363,7 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       vidx2 = find_string(file2.FB_Var_Names(), name, interFace.nocase_var_names);
     }
     if (vidx1 < 0 || vidx2 < 0) {
-      Error(fmt::format("Unable to find faceblock variable named '{}' on database.\n", name));
+      Error(fmt::format("Unable to find face block variable named '{}' on database.\n", name));
       exit(1);
     }
 
@@ -2397,15 +2397,15 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       const double *vals1 = fblock1->Get_Results(vidx1);
 
       if (vals1 == nullptr) {
-        Error(fmt::format("Could not find variable '{}' in faceblock {}, file 1.\n", name,
+        Error(fmt::format("Could not find variable '{}' in face block {}, file 1.\n", name,
                           fblock1->Id()));
         diff_flag = true;
         continue;
       }
 
       if (Invalid_Values(vals1, fblock1->Size())) {
-        Error(fmt::format("NaN found for faceblock variable '{}' in faceblock {}, file 1.\n", name,
-                          fblock1->Id()));
+        Error(fmt::format("NaN found for face block variable '{}' in face block {}, file 1.\n",
+                          name, fblock1->Id()));
         diff_flag = true;
       }
 
@@ -2416,14 +2416,14 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         vals2 = fblock2->Get_Results(vidx2);
 
         if (vals2 == nullptr) {
-          Error(fmt::format("Could not find variable '{}' in faceblock {}, file 2.\n", name,
+          Error(fmt::format("Could not find variable '{}' in face block {}, file 2.\n", name,
                             fblock2->Id()));
           diff_flag = true;
           continue;
         }
 
         if (Invalid_Values(vals2, fblock2->Size())) {
-          Error(fmt::format("NaN found for faceblock variable '{}' in faceblock {}, file 2.\n",
+          Error(fmt::format("NaN found for face block variable '{}' in face block {}, file 2.\n",
                             name, fblock2->Id()));
           diff_flag = true;
         }
@@ -2453,9 +2453,9 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
             if (d > interFace.fb_var[f_idx].value) {
               diff_flag = true;
               buf       = fmt::format(
-                  "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, face {})", name,
+                  "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (face block {}, face {})", name,
                   name_length, interFace.fb_var[f_idx].abrstr(), vals1[ind1], v2, d, fblock1->Id(),
-                  id_map[fblock1->Face_Index(f)]);
+                  fblock1->Face_Index(f));
               DIFF_OUT(buf);
             }
           }
@@ -2471,8 +2471,8 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
       }
       else {
-        buf = fmt::format("   {:<{}}     diff: faceblock face counts differ for faceblock {}", name,
-                          name_length, fblock1->Id());
+        buf = fmt::format("   {:<{}}     diff: face block face counts differ for face block {}",
+                          name, name_length, fblock1->Id());
         DIFF_OUT(buf);
         diff_flag = true;
       }
@@ -2500,9 +2500,10 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       }
 
       if (!interFace.quiet_flag) {
-        buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, face {})",
-                          name, name_length, interFace.fb_var[f_idx].abrstr(), max_diff.val1,
-                          max_diff.val2, max_diff.diff, max_diff.blk, id_map[max_diff.id]);
+        buf =
+            fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (face block {}, face {})",
+                        name, name_length, interFace.fb_var[f_idx].abrstr(), max_diff.val1,
+                        max_diff.val2, max_diff.diff, max_diff.blk, max_diff.id);
         DIFF_OUT(buf);
       }
       else {
