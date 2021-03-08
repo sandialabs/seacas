@@ -21,9 +21,9 @@ namespace Ioss {
     Compare()  = default;
     ~Compare() = default;
 
-    // Compare the mesh in 'input_region' to 'output_region'.  Behavior can be controlled
+    // Compare the mesh in 'input_region_1' to 'input_region_2'.  Behavior can be controlled
     // via options in 'options'
-    static bool compare_database(Ioss::Region &input_region, Ioss::Region &output_region,
+    static bool compare_database(Ioss::Region &input_region_1, Ioss::Region &input_region_2,
                                  const Ioss::MeshCopyOptions &options);
 
   };

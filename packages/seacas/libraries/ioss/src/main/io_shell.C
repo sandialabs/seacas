@@ -396,39 +396,40 @@ namespace {
     for (const auto &inpfile : interFace.inputFile) {
 
       //========================================================================
-      // INPUT Database...
+      // INPUT Database #1...
       //========================================================================
-      Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
-          interFace.inFiletype, inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
-      if (dbi == nullptr || !dbi->ok(true)) {
+      Ioss::DatabaseIO *dbi1 = Ioss::IOFactory::create(interFace.inFiletype, inpfile, 
+                                                       Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, 
+                                                       properties);
+      if (dbi1 == nullptr || !dbi1->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
 
       if (mem_stats) {
-        dbi->progress("Database Creation");
+        dbi1->progress("Database #1 Open");
       }
       if (!interFace.lower_case_variable_names) {
-        dbi->set_lower_case_variable_names(false);
+        dbi1->set_lower_case_variable_names(false);
       }
       if (interFace.outFiletype == "cgns") {
         // CGNS stores BCs (SideSets) on the zones which
         // correspond to element blocks.  If split input sideblocks
         // by element block, then output is much easier.
-        dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+        dbi1->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
       }
       else {
-        dbi->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
+        dbi1->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
       }
-      dbi->set_field_separator(interFace.fieldSuffixSeparator);
+      dbi1->set_field_separator(interFace.fieldSuffixSeparator);
 
-      dbi->set_field_recognition(!interFace.disable_field_recognition);
+      dbi1->set_field_recognition(!interFace.disable_field_recognition);
 
       if (interFace.ints_64_bit) {
-        dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+        dbi1->set_int_byte_size_api(Ioss::USE_INT64_API);
       }
 
       if (!interFace.groupName.empty()) {
-        bool success = dbi->open_group(interFace.groupName);
+        bool success = dbi1->open_group(interFace.groupName);
         if (!success) {
           if (rank == 0) {
             fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
@@ -438,59 +439,59 @@ namespace {
         }
       }
 
-      // NOTE: 'input_region' owns 'dbi' pointer at this time...
-      Ioss::Region input_region(dbi, "region_1");
+      // NOTE: 'input_region1' owns 'dbi1' pointer at this time...
+      Ioss::Region input_region1(dbi1, "region_1");
 
-      if (input_region.mesh_type() == Ioss::MeshType::HYBRID) {
+      if (input_region1.mesh_type() == Ioss::MeshType::HYBRID) {
         fmt::print(stderr,
                    "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
                    "'Structured' mesh is supported at this time.\n",
-                   input_region.mesh_type_string());
+                   input_region1.mesh_type_string());
         return;
       }
 
-      // Get integer size being used on the input file and propgate
-      // to output file...
-      int_byte_size_api = dbi->int_byte_size_api();
+      // Get integer size being used on input file #1 and set it in 
+      // the interFace.
+      int_byte_size_api = dbi1->int_byte_size_api();
       if (int_byte_size_api == 8) {
         interFace.ints_64_bit = true;
       }
 
       //========================================================================
-      // OUTPUT Database...
+      // INPUT Database #2...
       //========================================================================
-      Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(interFace.outFiletype, interFace.outputFile,
-                                                      Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD,
-                                                      properties);
-      if (dbo == nullptr || !dbo->ok(true)) {
+      Ioss::DatabaseIO *dbi2 = Ioss::IOFactory::create(interFace.outFiletype, interFace.outputFile,
+                                                       Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD,
+                                                       properties);
+      if (dbi2 == nullptr || !dbi2->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
 
       if (mem_stats) {
-        dbo->progress("Database Creation");
+        dbi2->progress("Database #2 Open");
       }
       if (!interFace.lower_case_variable_names) {
-        dbo->set_lower_case_variable_names(false);
+        dbi2->set_lower_case_variable_names(false);
       }
       if (interFace.outFiletype == "cgns") {
         // CGNS stores BCs (SideSets) on the zones which
         // correspond to element blocks.  If split input sideblocks
         // by element block, then output is much easier.
-        dbo->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+        dbi2->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
       }
       else {
-        dbo->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
+        dbi2->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
       }
-      dbo->set_field_separator(interFace.fieldSuffixSeparator);
+      dbi2->set_field_separator(interFace.fieldSuffixSeparator);
 
-      dbo->set_field_recognition(!interFace.disable_field_recognition);
+      dbi2->set_field_recognition(!interFace.disable_field_recognition);
 
       if (interFace.ints_64_bit) {
-        dbo->set_int_byte_size_api(Ioss::USE_INT64_API);
+        dbi2->set_int_byte_size_api(Ioss::USE_INT64_API);
       }
 
       if (!interFace.groupName.empty()) {
-        bool success = dbo->open_group(interFace.groupName);
+        bool success = dbi2->open_group(interFace.groupName);
         if (!success) {
           if (rank == 0) {
             fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
@@ -500,26 +501,26 @@ namespace {
         }
       }
 
-      // NOTE: 'output_region' owns 'dbo' pointer at this time...
-      Ioss::Region output_region(dbo, "region_2");
+      // NOTE: 'input_region2' owns 'dbi2' pointer at this time...
+      Ioss::Region input_region2(dbi2, "region_2");
 
-      if (output_region.mesh_type() == Ioss::MeshType::HYBRID) {
+      if (input_region2.mesh_type() == Ioss::MeshType::HYBRID) {
         fmt::print(stderr,
                    "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
                    "'Structured' mesh is supported at this time.\n",
-                   output_region.mesh_type_string());
+                   input_region2.mesh_type_string());
         return;
       }
 
-      // Get integer size being used on the input file and propgate
-      // to output file...
-      int_byte_size_api = dbo->int_byte_size_api();
+      // Get integer size being used on input file #1 and set it in 
+      // the interFace.
+      int_byte_size_api = dbi2->int_byte_size_api();
       if (int_byte_size_api == 8) {
         interFace.ints_64_bit = true;
       }
 
       //========================================================================
-      // COMPARE input and output databases...
+      // COMPARE the databases...
       //========================================================================
       Ioss::MeshCopyOptions options{};
       options.verbose           = !interFace.quiet;
@@ -534,7 +535,7 @@ namespace {
       options.reverse           = interFace.reverse;
       options.add_proc_id       = interFace.add_processor_id_field;
 
-      bool result = Ioss::Compare::compare_database(input_region, output_region, options);
+      bool result = Ioss::Compare::compare_database(input_region1, input_region2, options);
       if( result ) {
         fmt::print(stderr, "DATABASES are EQUAL\n");
       } else {
