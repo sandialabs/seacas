@@ -22,7 +22,7 @@
 # ************************************************************************
 #
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016 Sandia Corporation
+#                    Copyright 2016, 2021 Sandia Corporation
 #
 # Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 # the U.S. Government retains certain rights in this software.
@@ -394,7 +394,7 @@ else()
       if (HDF5_IS_PARALLEL)
         find_package(MPI)
         if (MPI_C_FOUND)
-          set(HDF5_LIBRARIES ${HDF5_LIBRARIES} MPI::MPI_C)
+          set(HDF5_LIBRARIES ${HDF5_LIBRARIES} ${MPI_C_LIBRARIES})
         endif()
       endif()
       set(HDF5_C_LIBRARIES "${HDF5_LIBRARIES}")
@@ -511,11 +511,11 @@ else()
     # libraries for the purposes of exporting
 
     set(HDF5_LIBRARIES)
-#    foreach (_component ${HDF5_VALID_COMPONENTS})
-#      if ( TARGET ${HDF5_${_component}_TARGET} )
-#	list(APPEND HDF5_LIBRARIES ${_HDF5_${_component}_LIBRARY})
-#      endif()
-#    endforeach()
+    foreach (_component ${HDF5_VALID_COMPONENTS})
+      if ( TARGET ${HDF5_${_component}_TARGET} )
+	list(APPEND HDF5_LIBRARIES ${_HDF5_${_component}_LIBRARY})
+      endif()
+    endforeach()
     list(APPEND HDF5_LIBRARIES ${HDF5_LINK_LIBRARIES})      
 
   endif(NOT HDF5_LIBRARIES)

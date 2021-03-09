@@ -57,15 +57,15 @@ fi
 HAVE_NETCDF=ON
 HAVE_CGNS=ON
 
-# NOTE: MATIO, and DATAWAREHOUSE TPLs  are currently not supported by SEMS.
-#       To use them you will need to install them following the directions in
+# NOTE: CGNS, MATIO, PNETCDF, and are currently not supported by SEMS.
+#       To use them you will need to install them following the directions in 
 #       README.md, enable them below, and add the appropriate defines below:
 #
 # -D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
 # -D TPL_Matio_INCLUDE_DIRS:PATH=${MATIO_PATH}/include \
 
 HAVE_MATIO=OFF
-HAVE_DATAWAREHOUSE=OFF
+HAVE_CGNS=OFF
 
 NETCDF_PATH=${SEMS_NETCDF_ROOT}
 HDF5_PATH=${SEMS_HDF5_ROOT}
@@ -117,13 +117,6 @@ then
   fi
 else
   KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
-fi
-
-if [ "HAVE_DATAWAREHOUSE" == "ON" ]
-then
-    DW_SYMBOLS="-DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATAWAREHOUSE} \
-                -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
-                -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
 
 rm -f CMakeCache.txt

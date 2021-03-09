@@ -24,16 +24,27 @@
 #include <utility>
 
 #include "UnitCell.h"
+//! \file
 
 // Each entry in grid will have the following information:
 enum class Axis { X, Y, Z };
 enum class Mode { GLOBAL, PROCESSOR };
 enum class Loc { C = 0, BL, B, BR, L, R, TL, T, TR };
+
 class Cell
 {
 public:
+  Cell() = default;
+  Cell(const Cell&) = default;
+
   std::pair<double, double> get_coordinate_range(enum Axis) const;
-  void                      initialize(size_t i, size_t j, std::shared_ptr<UnitCell> region);
+  void                      initialize(size_t i, size_t j, std::shared_ptr<UnitCell> unit_cell);
+
+  //! Provide access to the UnitCell that this cell uses.
+  std::shared_ptr<UnitCell> unit() const { return m_unitCell; }
+
+  //! Provide access to the Ioss::Region in the unit_cell that this cell uses.
+  std::shared_ptr<Ioss::Region> region() const { return m_unitCell->m_region; }
 
   //! True if this cell has a neighbor to its "left" (lower i)
   bool has_neighbor_i() const { return m_i > 0; }
@@ -106,9 +117,6 @@ public:
   //! Once this cell uses this information, it can clear out the vector.
   mutable std::vector<int64_t> min_J_nodes;
 
-  //! The UnitCell that occupies this location in the grid / latice
-  std::shared_ptr<UnitCell> m_unitCell;
-
   //! The `i` location of this entry in the grid
   size_t m_i{0};
   //! The `j` location of this entry in the grid
@@ -127,16 +135,24 @@ public:
   std::map<std::string, size_t> m_globalElementIdOffset;
   std::map<std::string, size_t> m_localElementIdOffset;
 
+  //! For each surface/sideset, this is the offset into the output element/face lists
+  //! for this cells data. 0-based. Indexed by surface name.
+  std::map<std::string, size_t> m_localSurfaceOffset;
+
   //! The offset that must be added to the `x` coordinates of the
   //! UnitCell to place it in the correct global location of the
   //! output mesh
   double m_offX{0.0};
+
   //! The offset that must be added to the `y` coordinates of the
   //! UnitCell to place it in the correct global location of the
   //! output mesh
   double m_offY{0.0};
 
 private:
+  //! The UnitCell that occupies this location in the grid / latice
+  std::shared_ptr<UnitCell> m_unitCell;
+
   //! The MPI ranks of all surrounding cells in order:
   //!  6 7 8    TL T TR
   //!  4 0 5     L C R

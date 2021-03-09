@@ -3,20 +3,14 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#include <cstdlib>
 #include <exception>
 #include <fstream>
 #include <iterator>
-#include <limits>
-#include <memory>
-#include <numeric>
 #include <string>
 #ifndef _MSC_VER
 #include <sys/times.h>
 #include <sys/utsname.h>
 #endif
-#include <unistd.h>
-#include <vector>
 
 #include "add_to_log.h"
 #include "fmt/chrono.h"
@@ -27,21 +21,21 @@
 #include <exodusII.h>
 
 #include <Ionit_Initializer.h>
+#include <Ioss_ParallelUtils.h>
 #include <Ioss_SmartAssert.h>
-#include <Ioss_SubSystem.h>
-#include <Ioss_Transform.h>
+#include <Ioss_Utils.h>
 
-#include "Cell.h"
 #include "Grid.h"
-#include "UnitCell.h"
 #include "ZE_SystemInterface.h"
 
 #ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
 #endif
 
+//! \file
+
 namespace {
-  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu);
+  Grid define_lattice(SystemInterface &interFace, Ioss::ParallelUtils &pu);
 
   std::string time_stamp(const std::string &format);
 } // namespace
@@ -58,22 +52,36 @@ int main(int argc, char *argv[])
 
 #endif
 
+  Ioss::ParallelUtils pu{MPI_COMM_WORLD};
+  int                 my_rank = pu.parallel_rank();
+
   try {
-    SystemInterface::show_version();
+    if (my_rank == 0) {
+      SystemInterface::show_version();
 #ifdef SEACAS_HAVE_MPI
-    fmt::print("\tParallel Capability Enabled.\n");
+      fmt::print("\tParallel Capability Enabled.\n");
 #else
-    fmt::print("\tParallel Capability Not Enabled.\n");
+      fmt::print("\tParallel Capability Not Enabled.\n");
 #endif
+    }
     Ioss::Init::Initializer io;
 
-    SystemInterface interFace;
+    SystemInterface interFace(my_rank);
     bool            ok = interFace.parse_options(argc, argv);
 
     if (!ok) {
       fmt::print(stderr, fmt::fg(fmt::color::red),
                  "\nERROR: Problems parsing command line arguments.\n\n");
       exit(EXIT_FAILURE);
+    }
+
+    debug_level = interFace.debug();
+
+    if ((debug_level & 8) != 0U) {
+      ex_opts(EX_VERBOSE | EX_DEBUG);
+    }
+    else {
+      ex_opts(0);
     }
 
     double time = 0.0;
@@ -83,9 +91,11 @@ int main(int argc, char *argv[])
     else {
       time = zellij(interFace, static_cast<int64_t>(0));
     }
-    fmt::print(stderr, "\n Zellij execution successful.\n");
 
-    add_to_log(argv[0], time);
+    if (my_rank == 0) {
+      fmt::print("\n Zellij execution successful.\n");
+      add_to_log(argv[0], time);
+    }
 
 #ifdef SEACAS_HAVE_MPI
     MPI_Finalize();
@@ -101,48 +111,25 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   double              begin = Ioss::Utils::timer();
   Ioss::ParallelUtils pu{MPI_COMM_WORLD};
 
-  debug_level = interFace.debug();
-
-  if ((debug_level & 8) != 0U) {
-    ex_opts(EX_VERBOSE | EX_DEBUG);
-  }
-  else {
-    ex_opts(0);
-  }
-
   if (debug_level & 1) {
     fmt::print(stderr, "{} Begin Execution\n", time_stamp(tsFormat));
   }
 
-  UnitCellMap unit_cells;
-  auto        grid = define_lattice(unit_cells, interFace, pu);
+  auto grid = define_lattice(interFace, pu);
 
-  if (debug_level & 1) {
-    fmt::print(stderr, "{} Lattice Defined\n", time_stamp(tsFormat));
-  }
-
+  grid.generate_sidesets();
   grid.set_coordinate_offsets();
+  grid.decompose(interFace.decomp_method());
 
-  grid.decompose(interFace.ranks(), interFace.decomp_method());
   if (debug_level & 1) {
     fmt::print(stderr, "{} Lattice Decomposed\n", time_stamp(tsFormat));
   }
 
   // All unit cells have been mapped into the IxJ grid, now calculate all node / element offsets
-  // and the global node and element counts... (TODO: Parallel decomposition)
+  // and the global node and element counts...
   //
   // Iterate through the grid starting with (0,0) and accumulate node and element counts...
-  int start_rank = interFace.start_rank();
-  int rank_count = interFace.rank_count();
-  grid.finalize(start_rank, rank_count);
-  if (debug_level & 1) {
-    fmt::print(stderr, "{} Lattice Finalized\n", time_stamp(tsFormat));
-  }
-
-  grid.output_model(start_rank, rank_count, (INT)0);
-  if (debug_level & 1) {
-    fmt::print(stderr, "{} Model Output\n", time_stamp(tsFormat));
-  }
+  grid.process(interFace, (INT)0);
 
   /*************************************************************************/
   // EXIT program
@@ -151,9 +138,11 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
   }
 
   double end = Ioss::Utils::timer();
-  fmt::print(stderr, "\n Total Execution time     = {:.5} seconds.\n", end - begin);
   double hwm = (double)Ioss::Utils::get_hwm_memory_info() / 1024.0 / 1024.0;
-  fmt::print(stderr, " High-Water Memory Use    = {:.3} MiBytes.\n", hwm);
+  if (pu.parallel_rank() == 0) {
+    fmt::print("\n Total Execution time     = {:.5} seconds.\n", end - begin);
+    fmt::print(" High-Water Memory Use    = {:.3} MiBytes.\n", hwm);
+  }
   return (end - begin);
 }
 
@@ -170,33 +159,12 @@ namespace {
     return time_string;
   }
 
-  std::shared_ptr<Ioss::Region> create_input_region(const std::string &key, std::string filename,
-                                                    bool ints_32_bits)
+  Grid define_lattice(SystemInterface &interFace, Ioss::ParallelUtils &pu)
   {
-    // Check that 'filename' does not contain a starting/ending double quote...
-    filename.erase(remove(filename.begin(), filename.end(), '\"'), filename.end());
-    Ioss::DatabaseIO *dbi =
-        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_SELF);
-    if (dbi == nullptr || !dbi->ok(true)) {
-      std::exit(EXIT_FAILURE);
-    }
+    int my_rank = pu.parallel_rank();
 
-    dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
-    if (ints_32_bits) {
-      dbi->set_int_byte_size_api(Ioss::USE_INT32_API);
-    }
-    else {
-      dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
-    }
+    Grid grid(interFace);
 
-    // Generate a name for the region based on the key...
-    std::string name = "Region_" + key;
-    // NOTE: region owns database pointer at this time...
-    return std::make_shared<Ioss::Region>(dbi, name);
-  }
-
-  Grid define_lattice(UnitCellMap &unit_cells, SystemInterface &interFace, Ioss::ParallelUtils &pu)
-  {
     if (debug_level & 2) {
       pu.progress("Defining Unit Cells...");
     }
@@ -237,28 +205,8 @@ namespace {
                      tokens.size(), line);
           exit(EXIT_FAILURE);
         }
-        if (unit_cells.find(tokens[0]) != unit_cells.end()) {
-          fmt::print(
-              stderr, fmt::fg(fmt::color::red),
-              "\nERROR: There is a duplicate `unit cell` ({}) in the lattice dictionary.\n\n",
-              tokens[0]);
-          exit(EXIT_FAILURE);
-        }
 
-        auto region = create_input_region(tokens[0], tokens[1], interFace.ints32bit());
-
-        if (region == nullptr) {
-          fmt::print(
-              stderr, fmt::fg(fmt::color::red),
-              "\nERROR: Unable to open the database '{}' associated with the unit cell '{}'.\n\n",
-              tokens[1], tokens[0]);
-          exit(EXIT_FAILURE);
-        }
-
-        unit_cells.emplace(tokens[0], std::make_shared<UnitCell>(region));
-        if (debug_level & 2) {
-          pu.progress(fmt::format("\tCreated Unit Cell {}", tokens[0]));
-        }
+        grid.add_unit_cell(tokens[0], tokens[1], interFace.ints32bit());
       }
       else if (tokens[0] == "BEGIN_LATTICE") {
         SMART_ASSERT(!in_lattice && !in_dictionary);
@@ -290,11 +238,24 @@ namespace {
     int KK = std::stoi(tokens[3]);
     SMART_ASSERT(KK == 1);
 
-    Grid grid(interFace, II, JJ);
+    if (interFace.repeat() > 1) {
+      II *= interFace.repeat();
+      JJ *= interFace.repeat();
+    }
 
-    fmt::print(stderr, "\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
-               unit_cells.size(), II, JJ, KK);
+    grid.set_extent(II, JJ, KK);
+    grid.handle_file_count();
 
+    if (my_rank == 0) {
+      fmt::print("\n Lattice:\tUnit Cells: {:n},\tGrid Size:  {:n} x {:n} x {:n}\n",
+                 grid.unit_cells().size(), II, JJ, KK);
+    }
+    if (interFace.ranks() > 1) {
+      fmt::print("         \t[{}] Ranks: {:n}, Outputting {:n} ranks starting at rank {:n}.\n",
+                 my_rank, interFace.ranks(), interFace.rank_count(), interFace.start_rank());
+    }
+
+    // Now process the lattice portion of the lattice file...
     size_t row{0};
     while (getline(input, line)) {
       if (line.empty()) {
@@ -306,7 +267,7 @@ namespace {
         SMART_ASSERT(in_lattice && !in_dictionary);
         in_lattice = false;
 
-        // Check row count to make sure matches 'I' size of lattice
+        // Check row count to make sure matches 'J' size of lattice
         if (row != grid.JJ()) {
           fmt::print(stderr, fmt::fg(fmt::color::red),
                      "\nERROR: Only {} rows of the {} x {} lattice were defined.\n\n", row, II, JJ);
@@ -318,11 +279,11 @@ namespace {
         // TODO: Currently assumes that each row in the lattice is defined on a single row;
         //       This will need to be relaxed since a lattice of 5000x5000 would result in
         //       lines that are too long and would be easier to split a row over multiple lines...
-        if (tokens.size() != grid.II()) {
+        if (tokens.size() * interFace.repeat() != grid.II()) {
           fmt::print(
               stderr, fmt::fg(fmt::color::red),
               "\nERROR: Line {} of the lattice definition has {} entries.  It should have {}.\n\n",
-              row + 1, tokens.size(), grid.II());
+              row + 1, tokens.size() * interFace.repeat(), grid.II());
           exit(EXIT_FAILURE);
         }
 
@@ -334,30 +295,36 @@ namespace {
           exit(EXIT_FAILURE);
         }
 
-        if (tokens.size() != grid.II()) {
+        if (tokens.size() * interFace.repeat() != grid.II()) {
           fmt::print(stderr, fmt::fg(fmt::color::red),
                      "\nERROR: In row {}, there is an incorrect number of entries.  There should "
                      "be {}, but found {}.\n",
-                     row + 1, grid.II(), tokens.size());
+                     row + 1, grid.II(), tokens.size() * interFace.repeat());
           exit(EXIT_FAILURE);
         }
 
-        size_t col = 0;
-        for (auto &key : tokens) {
-          if (unit_cells.find(key) == unit_cells.end()) {
-            fmt::print(stderr, fmt::fg(fmt::color::red),
-                       "\nERROR: In row {}, column {}, the lattice specifies a unit cell ({}) that "
-                       "has not been defined.\n\n",
-                       row + 1, col + 1, key);
-            exit(EXIT_FAILURE);
-          }
+        auto repeat = interFace.repeat();
+        for (int j = 0; j < repeat; j++) {
+          size_t col = 0;
+          for (auto &key : tokens) {
 
-          auto &unit_cell = unit_cells[key];
-          SMART_ASSERT(unit_cell->m_region != nullptr)(row)(col)(key);
-          grid.initialize(col++, row, unit_cell);
+            for (int i = 0; i < repeat; i++) {
+              if (!grid.initialize(col++, row, key)) {
+                fmt::print(
+                    stderr, fmt::fg(fmt::color::red),
+                    "\nERROR: In row {}, column {}, the lattice specifies a unit cell ({}) that "
+                    "has not been defined.\n\n",
+                    row + 1, col + 1, key);
+                exit(EXIT_FAILURE);
+              }
+            }
+          }
+          row++;
         }
-        row++;
       }
+    }
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Lattice Defined\n", time_stamp(tsFormat));
     }
     return grid;
   }

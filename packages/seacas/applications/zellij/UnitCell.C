@@ -7,18 +7,42 @@
 #include "UnitCell.h"
 #include <vector>
 
+#include "Ioss_ElementBlock.h"
+#include "Ioss_FaceGenerator.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_Region.h"
 #include "Ioss_SmartAssert.h"
 #include "fmt/format.h"
 
+//! \file
+
 extern unsigned int debug_level;
 
 namespace {
+  bool on_boundary(Flg ijk, const Ioss::Face &face, std::vector<int> &categorized_nodes)
+  {
+    int result = (unsigned int)ijk & categorized_nodes[face.connectivity_[0] - 1] &
+                 categorized_nodes[face.connectivity_[1] - 1] &
+                 categorized_nodes[face.connectivity_[2] - 1] &
+                 categorized_nodes[face.connectivity_[3] - 1];
+    return result != 0;
+  }
+
+  Ioss::ElementBlock *get_element_block(Ioss::ElementBlock *block, int64_t elem_id,
+                                        std::shared_ptr<Ioss::Region> &region)
+  {
+    auto new_block = block;
+    if (block == nullptr || !block->contains(elem_id)) {
+      new_block = region->get_element_block(elem_id);
+      assert(new_block != nullptr);
+    }
+    return new_block;
+  }
+
   bool approx_equal(double A, double B)
   {
-    double maxRelDiff = std::numeric_limits<float>::epsilon();
-    double maxDiff    = 100.0 * maxRelDiff;
+    static double maxRelDiff = 1000.0 * std::numeric_limits<double>::epsilon();
+    static double maxDiff    = 100.0 * maxRelDiff;
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
@@ -132,7 +156,7 @@ UnitCell::UnitCell(std::shared_ptr<Ioss::Region> region) : m_region(region)
   }
 }
 
-std::vector<int> UnitCell::categorize_nodes(bool neighbor_i, bool neighbor_j) const
+std::vector<int> UnitCell::categorize_nodes(bool neighbor_i, bool neighbor_j, bool all_faces) const
 {
   // Create a vector of `node_count` length which has the following values:
   // 0: Node that is not shared with any neighbors.
@@ -143,16 +167,122 @@ std::vector<int> UnitCell::categorize_nodes(bool neighbor_i, bool neighbor_j) co
   auto             node_count = m_region->get_property("node_count").get_int();
   std::vector<int> node_category(node_count);
 
-  if (neighbor_i) {
+  if (neighbor_i || all_faces) {
     for (auto node : min_I_face) {
-      node_category[node] = 1;
+      node_category[node] = (int)Flg::MIN_I;
     }
   }
 
-  if (neighbor_j) {
+  if (neighbor_j || all_faces) {
     for (auto node : min_J_face) {
-      node_category[node] += 2;
+      node_category[node] += (int)Flg::MIN_J;
+    }
+  }
+
+  if (all_faces) {
+    for (auto node : max_I_face) {
+      node_category[node] += (int)Flg::MAX_I;
+    }
+
+    for (auto node : max_J_face) {
+      node_category[node] += (int)Flg::MAX_J;
     }
   }
   return node_category;
+}
+
+void UnitCell::categorize_z_nodes(std::vector<int> &categorized_nodes)
+{
+  std::vector<double> coord_z;
+
+  auto *nb = m_region->get_node_blocks()[0];
+  nb->get_field_data("mesh_model_coordinates_z", coord_z);
+
+  const auto z_min_max_it = std::minmax_element(coord_z.begin(), coord_z.end());
+  auto       minmax_z     = std::make_pair(*z_min_max_it.first, *z_min_max_it.second);
+
+  std::vector<int64_t> min_K_face;
+  std::vector<int64_t> max_K_face;
+  gather_face_nodes(coord_z, minmax_z, min_K_face, max_K_face);
+
+  for (auto node : min_K_face) {
+    categorized_nodes[node] += (int)Flg::MIN_K;
+  }
+  for (auto node : max_K_face) {
+    categorized_nodes[node] += (int)Flg::MAX_K;
+  }
+}
+
+void UnitCell::generate_boundary_faces(unsigned int which_faces)
+{
+  Ioss::FaceGenerator face_generator(*m_region);
+  bool                block_by_block = false;
+  bool                local_ids      = true;
+  if (m_region->get_database()->int_byte_size_api() == 4) {
+    face_generator.generate_faces((int)0, block_by_block, local_ids);
+  }
+  else {
+    face_generator.generate_faces((int64_t)0, block_by_block, local_ids);
+  }
+
+  // Get vector of all boundary faces which need to be categorized into
+  // which face of the unit cell they are on
+  auto categorized_nodes = categorize_nodes(false, false, true);
+  categorize_z_nodes(categorized_nodes);
+
+  if (debug_level & 128) {
+    fmt::print("Node Category: {}\n", fmt::join(categorized_nodes, " "));
+  }
+
+  std::array<enum Flg, 6> boundary_flag{Flg::MIN_I, Flg::MAX_I, Flg::MIN_J,
+                                        Flg::MAX_J, Flg::MIN_K, Flg::MAX_K};
+  auto &                  faces = face_generator.faces("ALL");
+  Ioss::ElementBlock *    block = nullptr;
+  for (auto &face : faces) {
+    if (face.elementCount_ == 1) {
+      block             = get_element_block(block, face.element[0] / 10, m_region);
+      auto block_offset = block->get_offset();
+      for (int i = 0; i < 6; i++) {
+        if ((which_faces & (unsigned)boundary_flag[i]) &&
+            on_boundary(boundary_flag[i], face, categorized_nodes)) {
+
+          // Complexity:  The `face.element[0]` is 10 * local_element_id + face.
+          // We need to convert that to the offset within the element block
+          // For example, if we have two element blocks with 100 elements each, then
+          // local_element_id 128 would be the 28 element in the second element block
+          // and we would need to store '28 * 10 + face' instead of '128 * 10 + face'
+          // so when we process this element later, we can correctly calculate the
+          // local_element_id in the output file...
+          auto unit_local_element_id = face.element[0] / 10;
+          auto face_ordinal          = face.element[0] % 10;
+          auto unit_block_location   = (unit_local_element_id - block_offset) * 10 + face_ordinal;
+
+          if (debug_level & 128) {
+            fmt::print("Element {}, Side {} is on boundary {}, block {}\n",
+                       unit_block_location / 10, unit_block_location % 10, i, block->name());
+          }
+          boundary_blocks[i].m_faces[block->name()].push_back(unit_block_location);
+          break;
+        }
+      }
+    }
+  }
+
+  if (which_faces & (unsigned)Flg::MIN_I) {
+    SMART_ASSERT(boundary_blocks[(int)Bnd::MIN_I].size() == (cell_JJ - 1) * (cell_KK - 1))
+    (boundary_blocks[(int)Bnd::MIN_I].size())(cell_JJ - 1)(cell_KK - 1);
+  }
+  if (which_faces & (unsigned)Flg::MAX_I) {
+    SMART_ASSERT(boundary_blocks[(int)Bnd::MAX_I].size() == (cell_JJ - 1) * (cell_KK - 1))
+    (boundary_blocks[(int)Bnd::MAX_I].size())(cell_JJ - 1)(cell_KK - 1);
+  }
+
+  if (which_faces & (unsigned)Flg::MIN_J) {
+    SMART_ASSERT(boundary_blocks[(int)Bnd::MIN_J].size() == (cell_II - 1) * (cell_KK - 1))
+    (boundary_blocks[(int)Bnd::MIN_J].size())(cell_II - 1)(cell_KK - 1);
+  }
+  if (which_faces & (unsigned)Flg::MAX_J) {
+    SMART_ASSERT(boundary_blocks[(int)Bnd::MAX_J].size() == (cell_II - 1) * (cell_KK - 1))
+    (boundary_blocks[(int)Bnd::MAX_J].size())(cell_II - 1)(cell_KK - 1);
+  }
 }

@@ -34,7 +34,7 @@ PNETCDF_PATH=${ACCESS}
 MATIO_PATH=${ACCESS}
 HDF5_PATH=${ACCESS}
 CGNS_PATH=${ACCESS}
-DATAWAREHOUSE_PATH=${ACCESS}
+FAODEL_PATH=${ACCESS}
 
 function check_enable()
 {
@@ -50,7 +50,7 @@ function check_enable()
 HAVE_NETCDF=$(check_enable "${NETCDF_PATH}/include/netcdf.h")
 HAVE_MATIO=$(check_enable "${MATIO_PATH}/include/matio.h")
 HAVE_CGNS=$(check_enable "${CGNS_PATH}/include/cgnslib.h")
-HAVE_DATAWAREHOUSE=OFF
+HAVE_FAODEL=$(check_enable "${FAODEL_PATH}/include/faodel/faodelConfig.h")
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -93,11 +93,11 @@ else
   KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
 fi
 
-if [ "HAVE_DATAWAREHOUSE" == "ON" ]
+if [ "HAVE_FAODEL" == "ON" ]
 then
-    DW_SYMBOLS="-DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATAWAREHOUSE} \
-                -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
-                -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
+    DW_SYMBOLS="-DTPL_ENABLE_FAODEL:BOOL=${HAVE_FAODEL} \
+                -DFAODEL_LIBRARY_DIRS:PATH=${FAODEL_PATH}/lib \
+                -DFAODEL_INCLUDE_DIRS:PATH=${FAODEL_PATH}/include"
 fi
 
 rm -f CMakeCache.txt

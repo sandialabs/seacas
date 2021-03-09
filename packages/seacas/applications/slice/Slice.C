@@ -56,8 +56,8 @@ using idx_t = int;
 extern double seacas_timer();
 int           debug_level = 0;
 
-// size_t partial_count = 100000;
-size_t partial_count = 1000000000;
+// size_t partial_count = 1'00'000;
+size_t partial_count = 1'000'000'000;
 
 namespace {
   void progress(const std::string &output)
@@ -392,6 +392,31 @@ namespace {
       std::shuffle(elem_to_proc.begin(), elem_to_proc.end(), g);
     }
 
+    else if (interFace.decomposition_method() == "variable") {
+      const std::string &elem_variable = interFace.decomposition_variable();
+      if (elem_variable.empty()) {
+        fmt::print(stderr, "\nERROR: No element decomposition variable specified.\n");
+        exit(EXIT_FAILURE);
+      }
+      // Get all element blocks and cycle through each reading the
+      // values for the processor...
+      auto &blocks   = region.get_element_blocks();
+      auto  c_region = (Ioss::Region *)(&region);
+      c_region->begin_state(1);
+      for (const auto &block : blocks) {
+        if (!block->field_exists(elem_variable)) {
+          fmt::print(stderr, "\nERROR: Element variable '{}' does not exist on block {}.\n",
+                     elem_variable, block->name());
+          exit(EXIT_FAILURE);
+        }
+        std::vector<double> tmp_vals;
+        block->get_field_data(elem_variable, tmp_vals);
+        auto block_count = block->entity_count();
+        for (int64_t i = 0; i < block_count; i++) {
+          elem_to_proc.push_back((int)tmp_vals[i]);
+        }
+      }
+    }
     else if (interFace.decomposition_method() == "file") {
       // Read the element decomposition mapping from a file.  The
       // syntax of the file is an optional element count followed by
@@ -1476,6 +1501,7 @@ namespace {
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
     }
 
+    bool close_files = interFace.processor_count() + 1 > interFace.max_files();
     for (size_t i = 0; i < interFace.processor_count(); i++) {
       std::string outfile   = Ioss::Utils::decode_filename(nemfile, i, interFace.processor_count());
       Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
@@ -1486,6 +1512,9 @@ namespace {
 
       proc_region[i] = new Ioss::Region(dbo);
       proc_region[i]->begin_mode(Ioss::STATE_DEFINE_MODEL);
+      if (close_files) {
+        proc_region[i]->get_database()->closeDatabase();
+      }
     }
 
     double           start = seacas_timer();

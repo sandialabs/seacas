@@ -12,6 +12,33 @@
 
 #include "Ioss_Region.h"
 
+//! \file
+
+enum class Bnd { MIN_I = 0, MAX_I = 1, MIN_J = 2, MAX_J = 3, MIN_K = 4, MAX_K = 5 };
+enum class Flg { MIN_I = 1, MAX_I = 4, MIN_J = 2, MAX_J = 8, MIN_K = 16, MAX_K = 32 };
+
+struct GeneratedSideBlock
+{
+  //! List of faces (10*element_offset + face) in this SideBlock
+  //! indexed by element block name...
+  //!
+  //! Note that the `element_offset` is the 1-based index of the
+  //! element within the element block that it is a member of
+  GeneratedSideBlock() = default;
+  GeneratedSideBlock(const GeneratedSideBlock&) = delete;
+
+  std::map<std::string, std::vector<int64_t>> m_faces;
+
+  size_t size() const
+  {
+    size_t count = 0;
+    for (auto &faces : m_faces) {
+      count += faces.second.size();
+    }
+    return count;
+  }
+};
+
 class UnitCell
 {
 public:
@@ -23,7 +50,9 @@ public:
   //! * 1: Node on `min_I` face
   //! * 2: Node on `min_J` face
   //! * 3: Node on `min_I-min_J` line
-  std::vector<int> categorize_nodes(bool neighbor_i, bool neighbor_j) const;
+  //! If `all_faces` is true, then also categorize the max_I (4) and max_J (8) faces and don't
+  //! consider neighbors (want all boundaries marked).
+  std::vector<int> categorize_nodes(bool neighbor_i, bool neighbor_j, bool all_faces = false) const;
 
   std::shared_ptr<Ioss::Region> m_region{nullptr};
 
@@ -49,6 +78,13 @@ public:
   std::pair<double, double> minmax_x{};
   std::pair<double, double> minmax_y{};
   ///@}
+
+  void generate_boundary_faces(unsigned int which_faces);
+
+  //! Used by `generate_boundary_faces()` to categorize nodes on the +/- Z faces of unit cell.
+  void categorize_z_nodes(std::vector<int> &categorized_nodes);
+
+  std::array<GeneratedSideBlock, 6> boundary_blocks{};
 
   ///@{
   //! The outer boundary of a UnitCell has a

@@ -17,47 +17,22 @@ The lattice can be represented as a IxJ regular grid with each "cell"
 in the grid or lattice containing one of the unit cell template
 meshes.
 
-* [Execution](#execution)
-* [Lattice Description File Format](#lattice-description-file-format)
-  * [Unit Cell Dictionary](#unit-cell-dictionary)
-  * [Unit Cell Template Mesh Requirements](#unit-cell-template-mesh-requirements)
-* [Parallel Execution](#parallel-execution)
-  * [Partial Parallel Output Mode](#partial-parallel-output-mode)
-* [Execution Complexity](#execution-complexity)
-  * [Memory Complexity](#memory-complexity)
-  * [Execution Time Complexity](#execution-time-complexity)
-  * [Efficiency at the NetCDF level](#efficiency-at-the-netcdf-level)
-  * [Format](#format)
-  * [Integer Size](#integer-size)
-  * [Compression](#compression)
-  * [Recommendations](#recommendations)
-* [TODO](#TODO)
-
+[TOC]
 
 ## Execution
 
 Executing zellij with the `-help` option will result in output similar to the following:
 
 ```
-zellij -help
-
 Zellij
 	(A code for tiling 1 or more template databases into a single output database.)
-	(Version: 0.9.1) Modified: 2021/02/05
+	(Version: 1.4.0) Modified: 2021/03/03
+	Parallel Capability Not Enabled.
 
 usage: zellij [options] -lattice <lattice_definition_file>
-	-help (Print this summary and exit)
-	-version (Print version and exit)
-	-lattice <$val> (Name of file to read lattice definition from.)
+	-lattice <$val> (Name of file to read lattice definition from. [required])
 	-output <$val> (Name of output file to create. Default is `zellij-out.e`)
-	-netcdf3 (Output database will be a netcdf3 native classical netcdf file format (32-bit only))
-	-netcdf4 (Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format (default))
-	-netcdf5 (Output database will be a netcdf5 (CDF5) file instead of the classical netcdf file format)
-	-32-bit (True if forcing the use of 32-bit integers for the output file)
-	-64-bit (True if forcing the use of 64-bit integers for the output file (default))
-	-zlib (Use the Zlib / libz compression method if compression is enabled (default) [exodus only].)
-	-szip (Use SZip compression. [exodus only, enables netcdf-4])
-	-compress <$val> (Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used on the output file.)
+
 	-rcb (Use recursive coordinate bisection method to decompose the input mesh in a parallel run.)
 	-rib (Use recursive inertial bisection method to decompose the input mesh in a parallel run.)
 	-hsfc (Use hilbert space-filling curve method to decompose the input mesh in a parallel run. [default])
@@ -68,18 +43,56 @@ usage: zellij [options] -lattice <lattice_definition_file>
 	-random (Use the random method to decompose the input mesh in a parallel run.
 		Elements assigned randomly to processors in a way that preserves balance
 		(do *not* use for a real run))
+
 	-ranks <$val> (Number of ranks to decompose mesh across)
 	-start_rank <$val> (In partial output mode, start outputting decomposed files at this rank)
-	-rank_count <$val> (In partial output mode, output this number of ranks)
+	-rank_count <$val> (In partial output or subcycle modes, output this number of ranks)
+	-subcycle (Process cells in groups of '-rank_count'.  Helps minimize open files,
+		but is faster than only having a single file open.)
+	-scale <$val> (Scale the output mesh coordinates by the specified value)
+	-minimize_open_files [$val] (Close files after accessing them to avoid issues with too many open files.
+		If argument is 'output' then close output, if 'unit' then close unit cells;
+		if 'all' or no argument close all.
+		Should not need to use this option unless you get an error message indicating this issue.)
+
+	-ignore_sidesets (Do not copy any sidesets in the unit cells to the output file.)
+	-generate_sidesets <$val> (Which surfaces on the output mesh should have sidesets generated,
+		 Valid options are:
+		 'x' or 'i' for surface on minimum X coordinate, default name = `min_i`
+		 'y' or 'j' for surface on minimum Y coordinate, default name = `min_j`
+		 'z' or 'k' for surface on minimum Z coordinate, default name = `min_k`
+		 'X' or 'I' for surface on maximum X coordinate, default name = `max_i`
+		 'Y' or 'J' for surface on maximum Y coordinate, default name = `max_j`
+		 'Z' or 'K' for surface on maximum Z coordinate, default name = `max_k`
+		 For example `xyXY` would generate sidesets on min/max X and Y surfaces.)
+	-sideset_names <$val> (Specify names for one or more of the generated sidesets.
+		 Form is `axis:name,axis:name,...`
+		 where 'axis' is one of 'ijkIJKxyzXYZ', and 'name' is the name of the sideset.
+		 The default names are 'min_i', 'max_i', 'min_j', 'max_j', 'min_k', 'max_k'.
+		 For example `x:left,X:right` would name the sideset on the min x face 'left' and the max X face 'right'.)
+
+	-netcdf3 (Output database will be a netcdf3 native classical netcdf file format (32-bit only))
+	-netcdf4 (Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format (default))
+	-netcdf5 (Output database will be a netcdf5 (CDF5) file instead of the classical netcdf file format)
+
+	-32-bit (True if forcing the use of 32-bit integers for the output file)
+	-64-bit (True if forcing the use of 64-bit integers for the output file (default))
+
+	-zlib (Use the Zlib / libz compression method if compression is enabled (default) [exodus only].)
+	-szip (Use SZip compression. [exodus only, enables netcdf-4])
+	-compress <$val> (Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used on the output file.)
+
 	-separate_cells (Do not equivalence the nodes between adjacent unit cells.)
+	-help (Print this summary and exit)
+	-version (Print version and exit)
 	-debug <$val> (debug level (values are or'd)
-		  1 = time stamp information.
-		  2 = memory information.
-		  4 = Verbose Unit Cell information.
-		  8 = verbose output of Grid finalization calculations.
-		 16 = put exodus library into verbose mode.
-		 32 = Verbose decomposition information.
-		 64 = Verbose output database summary information.)
+		   1 = Time stamp information.
+		   2 = Memory information.
+		   4 = Verbose Unit Cell information.
+		   8 = Verbose output of Grid finalization calculations.
+		  16 = Put exodus library into verbose mode.
+		  32 = Verbose decomposition information.
+		  64 = Verbose output database summary information.)
 	-copyright (Show copyright and license data.)
 
 	Can also set options via ZELLIJ_OPTIONS environment variable.
@@ -174,6 +187,41 @@ The output mesh will contain the union of all element blocks existing on the inp
 
 The output mesh will have element blocks `1 2 10 20 100 200`
 
+## Sideset Handling
+By default, zellij will replicate any sidesets that are defined on the
+input unit cell meshes to the output mesh file.  The sidesets will
+have the same names and ids as the sidesets on the input unit cell
+meshes.  If you do not want the sidesets replicated, you can add the
+command line option `-ignore_sidesets` and any sidesets on the input
+unit cell meshes will be ignored.
+
+Zellij can also generate new sidesets on the boundaries of the output
+mesh via the command line option `-generate_sidesets <axes>` where
+`axes` is one or more letters specifying the face of the output mesh
+on which to generate a sideset.  Valid letters are `xyzXYZ` or
+`ijkIJK` which correspond to:
+
+ * `x` or `i` for surface on minimum X coordinate (default name = `min_i`)
+ * `y` or `j` for surface on minimum Y coordinate (default name = `min_j`)
+ * `z` or `k` for surface on minimum Z coordinate (default name = `min_k`)
+ * `X` or `I` for surface on maximum X coordinate (default name = `max_i`)
+ * `Y` or `J` for surface on maximum Y coordinate (default name = `max_j`)
+ * `Z` or `K` for surface on maximum Z coordinate (default name = `max_k`)
+
+For example `-generate_sidesets xyXY` would generate sideset on the
+surfaces corresponding to the minimum and maximum X and Y coordinates
+on the output mesh.
+
+By default, the generated sidesets will be named as shown in the list
+above.  The names can be changed with the `-sideset_names <arg>`
+command line option.  The syntax of `<arg>` is
+`axis:name,axis:name,...` where `axis` is one of `ijkIJK` or `xyzXYZ`
+and `name` is the name of the specified sideset.  For example,
+`-sideset_names x:left,X:right`  would name the sidesets on the
+minimum x and maximum X faces `left` and `right` respectively.  There
+will be an error if two or more sidesets have the same name.
+
+
 ## Parallel Execution
 Zellij can produce a mesh decomposed into a file-per-rank for use in a
 parallel analysis application.  Note that Zellij itself is run
@@ -220,11 +268,58 @@ There is a _partial parallel output_ mode in which you can tell Zellij to only o
 
 simultaneously and all 16 files should be output faster than running a single execution that wrote all of the files.
 
-At some time in the future, this will be able to be handled automatically using `mpiexec -np 4 ...` and zellij will automatically divide up the work among the 4 mpi ranks.
+### Parallel Capable Parallel Execution
+
+If Zellij is compiled with parallel capability enabled (This is shown at the beginning of the `-help` output or the version
+information output when zellij begins executing as `Parallel Capability Enabled`), then you can run Zellij in parallel using the
+normal `mpiexec -np <#> zellij <normal zellij options>` command.  In this case, there will be `#` copies of zellij running
+simultaneously and each copy will divide up the output files and work among each process/copy.
+
+For example, if you run `mpiexec -np 8 zellij -ranks 1024 -latice lattice.txt`, then there will be 8 copies of zellij running
+and each will output `1024/8 = 128` output files.
+
+### Maximum Open File Complications
+
+Most compute systems have a limit on the number of files that a program can have open simultaneously.  For many systems, this
+limit is 1024.  The files that zellij deals with are (1) the unit cell meshes and (2) the per-rank output files, and (3) the
+standard input, output, and error files. Because of this, it is somewhat easy for a zellij execution to exceed the open file
+limit.  Zellij attempts to handle this automatically using logic similar to:
+* If the unit cell count exceeds the open file limit, then close each unit cell after each access before opening the next unit
+cell mesh.
+* If the number of `-ranks` that zellij is creating exceeds the open file count, then determine how many output files can be
+open at one time (max_open = open file limit - 3 - number of unit cells open simultaneously) and run zellij in a `subcycle` mode
+where it is only writing to `max_open` files at one time.
+* If the `max_open` calculated in the above bullet is too small, then set the mode to only open a single unit cell mesh at a
+time and redo the calculation.
+* If all else fails, run with only a single unit cell file open and only a single output mesh rank file open.
+
+If the above logic fails and Zellij is unable to run without exceeding the open file count, you can specify the behavior
+manually using a combination of the `-minimize_open_files=<UNIT|OUTPUT|ALL>` option and the `-subcycle` and `-rank_count <#>`
+options.
+
+The options to `-minimize_open_files` are:
+
+* `UNIT` - only have a single unit cell mesh open at one time; close before accessing another unit cell mesh.
+* `OUTPUT` - only have a single output rank mesh file open at one time.
+* `ALL` - both of the above options.
+
+The `-subcycle` and `-rank_count <#>` options cause zellij to output `#` output files at a time and then cycle to the next `#`
+output files until all files have been output.  For example, `zellij -ranks 1024 -subcycle -rank_count 256` would do the
+following:
+
+* First cycle would output ranks 0 to 255,
+* Second cycle would output ranks 256 to 511,
+* Third cycle would output ranks 512 to 767,
+* Fourth cycle would output ranks 768 to 1023.
+
+In this mode, there will the `#` output files open simultaneously (unless
+`-minimize_open_files=OUTPUT|ALL` was specified also).  So the total number of open files will be `unit cell count + 3 + #` or
+`1 + 3 + #` if `-minimize_open_files=UNIT` was specified.
 
 ## Execution Complexity
 
-Zellij is intended to produce extremely large meshes and is therefore very concerned with both memory efficiency and execution time efficiency.
+Zellij is intended to produce extremely large meshes and is therefore very concerned with both memory efficiency and execution
+time efficiency.
 
 ### Memory Complexity
 
@@ -329,8 +424,3 @@ The fastest option is both input and output using 32-bit integers and the `netcd
 
 The output mesh in this case consisted of 37.3 million elements and 38.5 million nodes in a grid of 46 x 46 unit cells.  There were 56 unit cell template meshes.
 
-## TODO
-
-* Manage number of open files.
-* Parallel Support
-  * Parallel Execution with Parallel file output

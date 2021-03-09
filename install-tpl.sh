@@ -96,6 +96,9 @@ KOKKOS=`check_valid KOKKOS`
 
 H5VERSION=${H5VERSION:-V110}
 
+FAODEL=${FAODEL:-NO}
+FAODEL=`check_valid FAODEL`
+
 ADIOS2=${ADIOS2:-NO}
 ADIOS2=`check_valid ADIOS2`
 
@@ -126,6 +129,8 @@ if [ "$MPI" == "YES" ] && [ "$CRAY" == "YES" ]
 then
     CC=cc; export CC
     CFLAGS=-static; export CFLAGS
+    CXX=CC; export CXX
+    CXXFLAGS=-static; export CXXFLAGS
     SHARED=NO
 elif [ "$MPI" == "YES" ]
 then
@@ -149,6 +154,7 @@ if [ $# -gt 0 ]; then
 	echo "${txtcyn}Environment Variables used in the script and their default values:"
 	echo ""
 	echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
+        echo "   INSTALL_PATH = ${txtgrn}${INSTALL_PATH}${txtcyn}"
 	echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
 	echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm)"
 	echo "   MPI          = ${MPI} (Parallel Build?)"
@@ -171,6 +177,7 @@ if [ $# -gt 0 ]; then
 	echo "   USE_AEC      = ${USE_AEC}"
 	echo "   KOKKOS       = ${KOKKOS}"
 	echo "   BB           = ${BB}"
+	echo "   FAODEL       = ${FAODEL}"
 	echo "   ADIOS2       = ${ADIOS2}"
 	echo "   GTEST        = ${GTEST}"
 	echo ""
@@ -329,6 +336,8 @@ then
 	hdf_version="1.10.7"
     elif [ "${H5VERSION}" == "V112" ]; then
 	hdf_version="1.12.0"
+    elif [ "${H5VERSION}" == "develop" ]; then
+	hdf_version="develop"
     else
 	echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
 	exit 1
@@ -348,12 +357,17 @@ then
 	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
 	elif [ "${H5VERSION}" == "V112" ]; then
 	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+	elif [ "${H5VERSION}" == "develop" ]; then
+	    git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
 	else
 	    echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
 	    exit 1
 	fi
-        tar -jxf hdf5-${hdf_version}.tar.bz2
-        rm -f hdf5-${hdf_version}.tar.bz2
+	if [ "${H5VERSION}" != "develop" ]
+	then
+            tar -jxf hdf5-${hdf_version}.tar.bz2
+            rm -f hdf5-${hdf_version}.tar.bz2
+	fi
     fi
 
     if [ "$BUILD" == "YES" ]
@@ -800,6 +814,80 @@ then
     else
 	echo "${txtylw}+++ Parallel already installed.  Skipping download and installation.${txtrst}"
     fi
+fi
+
+# =================== INSTALL FAODEL ===============
+if [ "$FAODEL" == "YES" ]
+then
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.a ]
+  then
+    faodel_base="faodel"
+    echo "${txtgrn}+++ Faodel${txtrst}"
+    cd $ACCESS
+    cd TPL/faodel
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Downloading...${txtrst}"
+      rm -rf faodel*
+      git clone git@github.com:faodel/faodel.git
+    fi
+
+    if [ "$BUILD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+      mkdir ${faodel_base}/build
+      cd ${faodel_base}/build
+      echo "------------- ${faodel_base}"
+      echo "------------- $(pwd)"
+      MPI=${MPI} bash ../../runcmake.sh
+      if [[ $? != 0 ]]
+      then
+        echo 1>&2 ${txtred}couldn\'t configure faodel. exiting.${txtrst}
+        exit 1
+      fi
+      make -j${JOBS} && ${SUDO} make install
+      if [[ $? != 0 ]]
+      then
+        echo 1>&2 ${txtred}couldn\'t build faodel. exiting.${txtrst}
+        exit 1
+      fi
+    fi
+  else
+    echo "${txtylw}+++ Faodel already installed.  Skipping download and installation.${txtrst}"
+  fi
+fi
+
+# =================== INSTALL CEREAL ===============
+if [ "$FAODEL" == "YES" ]
+then
+  # Currently, the FAODEL backend requires cereal, so if Faodel is enabled, we'll install cereal, too.
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
+  then
+    cereal_base="cereal"
+    echo "${txtgrn}+++ Cereal${txtrst}"
+    cd $ACCESS
+    CEREAL_DIR="TPL/cereal"
+    if [ ! -d "${CEREAL_DIR}" ]; then 
+      mkdir ${CEREAL_DIR}
+    fi
+    cd ${CEREAL}
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Downloading...${txtrst}"
+      rm -rf cereal*
+      wget --no-check-certificate https://github.com/USCiLab/cereal/archive/v1.3.0.tar.gz
+      tar xzf v1.3.0.tar.gz
+      rm -f v1.3.0.tar.gz
+      cp -R cereal-1.3.0/include/cereal $INSTALL_PATH/include/
+    fi
+
+    if [ "$BUILD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+    fi
+  else
+    echo "${txtylw}+++ Cereal already installed.  Skipping download and installation.${txtrst}"
+  fi
 fi
 
 # ==================================

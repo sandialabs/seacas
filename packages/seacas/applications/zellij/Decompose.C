@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 
+#include "Cell.h"
 #include "Grid.h"
 #include "Ioss_ElementBlock.h"
 
@@ -155,7 +156,7 @@ void decompose_grid(Grid &grid, int ranks, const std::string &method)
       x[idx]     = cell.m_offX;
       y[idx]     = cell.m_offY;
 
-      const auto &element_blocks = cell.m_unitCell->m_region->get_element_blocks();
+      const auto &element_blocks = cell.region()->get_element_blocks();
       for (const auto *block : element_blocks) {
         w[idx] += block->entity_count();
       }

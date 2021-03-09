@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -55,6 +55,7 @@ namespace Excn {
     std::string root_dir() const { return rootDirectory_; }
     std::string sub_dir() const { return subDirectory_; }
 
+    bool add_nodal_communication_map() const { return addNodalCommunicationMap_; }
     bool add_processor_id_field() const { return addProcessorId_; }
     bool sum_shared_nodes() const { return sumSharedNodes_; }
     bool use_netcdf4() const { return useNetcdf4_; }
@@ -146,6 +147,7 @@ namespace Excn {
     bool         outputSharedNodes_{false};
     bool         auto_{false};
     bool         keepTemporary_{false};
+    bool         addNodalCommunicationMap_{false};
 
     StringIdVector globalVarNames_;
     StringIdVector nodeVarNames_;
