@@ -80,7 +80,7 @@ Ioss::Property Ioss::EntityBlock::get_implicit_property(const std::string &my_na
   return Ioss::GroupingEntity::get_implicit_property(my_name);
 }
 
-bool Ioss::EntityBlock::equal_(const Ioss::EntityBlock &rhs, bool quiet) const
+bool Ioss::EntityBlock::equal_(const Ioss::EntityBlock &rhs, const bool quiet) const
 {
   /* COMPARE element topologies */
   if( *(this->topology_) != *(rhs.topology_) ) {
@@ -97,7 +97,7 @@ bool Ioss::EntityBlock::equal_(const Ioss::EntityBlock &rhs, bool quiet) const
     return false;
   }
 
-  if( !Ioss::GroupingEntity::equal( rhs ) ) {
+  if( !Ioss::GroupingEntity::equal_( rhs, quiet ) ) {
     if( !quiet ) {
       fmt::print(Ioss::DEBUG(), "EntityBlock: GroupingEntity mismatch\n");
     }

@@ -63,6 +63,8 @@ namespace Ioss {
     int64_t internal_put_field_data(const Field &field, void *data,
                                     size_t data_size) const override;
 
+    bool equal_(const SideSet &rhs, const bool quiet) const;
+
   private:
     SideBlockContainer       sideBlocks;
     std::vector<std::string> blockMembership; // What element blocks do the

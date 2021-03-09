@@ -243,7 +243,7 @@ namespace Ioss {
 
     int64_t entity_count() const { return get_property("entity_count").get_int(); }
 
-
+    // COMPARE GroupingEntities
     bool operator!=(const GroupingEntity &rhs) const;
     bool operator==(const GroupingEntity &rhs) const;
     bool equal(const GroupingEntity &rhs) const;
@@ -285,9 +285,10 @@ namespace Ioss {
     mutable std::mutex m_;
 #endif
 
+    bool equal_(const GroupingEntity &rhs, const bool quiet) const;
+
   private:
     void verify_field_exists(const std::string &field_name, const std::string &inout) const;
-    bool equal_(const GroupingEntity &rhs, bool quiet) const;
 
     std::string entityName{};
 
