@@ -104,8 +104,9 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                                      Ioss::Region &input_region_2,
                                      const Ioss::MeshCopyOptions &options)
 {
-  DataPool data_pool;
+  bool overall_result = true;
   bool rc;
+  DataPool data_pool;
 
   Ioss::DatabaseIO *dbi = input_region_1.get_database();
   int input_rank = dbi->util().parallel_rank();
@@ -113,72 +114,72 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
   // COMPARE all properties of input database...
   if( compare_properties(&input_region_1, &input_region_2) == false ) {
     fmt::print(Ioss::OUTPUT(), "PROPERTIES mismatch ({})\n", input_region_1.name());
-    return false;
+    overall_result = false;
   }
 
   if( compare_qa_info(input_region_1, input_region_2) == false ) {
     fmt::print(Ioss::OUTPUT(), "QA INFO mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_nodeblock(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "NODEBLOCK mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_edgeblocks(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "EDGEBLOCK mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_faceblocks(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "FACEBLOCK mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_elementblocks(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "ELEMENTBLOCK mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_structuredblocks(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "STRUCTUREDBLOCK mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_nodesets(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "NODESET mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_edgesets(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "EDGESET mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_facesets(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "FACESET mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_elemsets(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "ELEMSET mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_sidesets(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "SIDESET mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_commsets(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "COMMSET mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   if( compare_coordinate_frames(input_region_1, input_region_2, options) == false ) {
     fmt::print(Ioss::OUTPUT(), "COORDINATE FRAME mismatch\n");
-    return false;
+    overall_result = false;
   }
 
   bool node_major = input_region_2.node_major();
@@ -193,7 +194,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
       fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH " (node_major = {})",
                  "element blocks",
                  node_major);
-      return false;
+    overall_result = false;
     }
 
     rc = compare_field_data(input_region_1.get_element_blocks(),
@@ -205,7 +206,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
       fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH " (node_major = {})",
                  "element blocks",
                  node_major);
-      return false;
+      overall_result = false;
     }
   }
 
@@ -219,7 +220,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                             options);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH, "node blocks");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_field_data(input_region_1.get_node_blocks(),
@@ -229,7 +230,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                             options);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH, "node blocks");
-      return false;
+      overall_result = false;
     }
   }
   if (node_major) {
@@ -242,7 +243,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
       fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH " (node_major = {})",
                  "element blocks",
                  node_major);
-      return false;
+      overall_result = false;
     }
 
     rc = compare_field_data(input_region_1.get_element_blocks(),
@@ -254,7 +255,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
       fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH " (node_major = {})",
                  "element blocks",
                  node_major);
-      return false;
+      overall_result = false;
     }
   }
 
@@ -265,7 +266,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH, "structured blocks");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_structured_blocks(),
@@ -275,7 +276,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH, "structured blocks");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_edge_blocks(),
@@ -285,7 +286,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH, "edge blocks");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_edge_blocks(),
@@ -295,7 +296,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH, "edge blocks");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_face_blocks(),
@@ -305,7 +306,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH, "face blocks");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_face_blocks(),
@@ -315,7 +316,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH, "face blocks");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_elementsets(),
@@ -325,7 +326,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH, "element sets");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_elementsets(),
@@ -335,7 +336,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH, "element sets");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_commsets(),
@@ -345,7 +346,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH, "comm sets");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_commsets(),
@@ -355,7 +356,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH, "comm sets");
-    return false;
+    overall_result = false;
   }
 
   rc = compare_field_data(input_region_1.get_commsets(),
@@ -365,7 +366,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                           options);
   if( rc == false ) {
     fmt::print(Ioss::OUTPUT(), COMMUNICATION_FIELD_VALUE_MISMATCH, "comm sets");
-    return false;
+    overall_result = false;
   }
 
   // Side Sets
@@ -392,19 +393,19 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
 
       if( it == in_fss_2.end() ) {
         fmt::print(Ioss::WARNING(), NOTFOUND_2, "SIDESET", name);
-        return false;
+        continue;
       }
 
       rc = compare_field_data(ifs, (*it), data_pool, Ioss::Field::MESH, options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH, "side sets");
-        return false;
+        overall_result = false;
       }
 
       rc = compare_field_data(ifs, (*it), data_pool, Ioss::Field::ATTRIBUTE, options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH, "side sets");
-        return false;
+        overall_result = false;
       }
 
       const auto &in_sbs_1 = ifs->get_side_blocks();
@@ -419,24 +420,25 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
         // Find matching output sideblock
         typename std::vector<Ioss::SideBlock *>::const_iterator iter;
         for(iter = in_sbs_2.begin(); iter != in_sbs_2.end(); iter++ ) {
-          if( sbname.compare((*iter)->name()) == 0 ) break;
+          if( sbname.compare((*iter)->name()) == 0 ) {
+            break;
+          }
         }
-
         if( iter == in_sbs_2.end() ) {
           fmt::print(Ioss::WARNING(), NOTFOUND_2, "SIDEBLOCK", name);
-          return false;
+          continue;
         }
 
         rc = compare_field_data(isb, (*iter), data_pool, Ioss::Field::MESH, options);
         if( rc == false ) {
           fmt::print(Ioss::OUTPUT(), MESH_FIELD_VALUE_MISMATCH, "side blocks");
-          return false;
+          overall_result = false;
         }
 
         rc = compare_field_data(isb, (*iter), data_pool, Ioss::Field::ATTRIBUTE, options);
         if( rc == false ) {
           fmt::print(Ioss::OUTPUT(), ATTRIBUTE_FIELD_VALUE_MISMATCH, "side blocks");
-          return false;
+          overall_result = false;
         }
       }
     }
@@ -460,7 +462,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "region");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_fields(input_region_1.get_node_blocks(),
@@ -468,7 +470,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "node blocks");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_fields(input_region_1.get_edge_blocks(),
@@ -476,7 +478,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "edge blocks");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_fields(input_region_1.get_face_blocks(),
@@ -484,7 +486,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "face blocks");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_fields(input_region_1.get_element_blocks(),
@@ -492,7 +494,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "element blocks");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_fields(input_region_1.get_structured_blocks(),
@@ -500,7 +502,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "structured blocks");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_fields(input_region_1.get_nodesets(),
@@ -508,7 +510,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "node sets");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_fields(input_region_1.get_edgesets(),
@@ -516,7 +518,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "edge sets");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_fields(input_region_1.get_facesets(),
@@ -524,7 +526,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "face sets");
-      return false;
+      overall_result = false;
     }
 
     rc = compare_fields(input_region_1.get_elementsets(),
@@ -532,7 +534,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                         Ioss::Field::TRANSIENT);
     if( rc == false ) {
       fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "element sets");
-      return false;
+      overall_result = false;
     }
 
     // Side Sets
@@ -545,28 +547,28 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
         // Find matching output sideset
         typename std::vector<Ioss::SideSet *>::const_iterator it;
         for(it = in_sss_2.begin(); it != in_sss_2.end(); it++ ) {
-          if( name.compare((*it)->name()) == 0 ) break;
+          if( name.compare((*it)->name()) == 0 ) {
+            break;
+          }
         }
-
         if( it == in_sss_2.end() ) {
           fmt::print(Ioss::WARNING(), NOTFOUND_2, "SIDESET", name);
-          return false;
+          continue;
         }
 
         {
           rc = compare_fields(iss, (*it), Ioss::Field::TRANSIENT);
           if( rc == false ) {
             fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "side sets");
-            return false;
+            overall_result = false;
           }
 
           const auto &in_sbs_1 = iss->get_side_blocks();
           const auto &in_sbs_2 = (*it)->get_side_blocks();
-
           if( in_sbs_1.size() != in_sbs_2.size() ) {
             fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "SIDEBLOCK",
                        in_sbs_1.size(), in_sbs_2.size());
-            return false;
+            continue;
           }
 
           for (const auto &isb : in_sbs_1) {
@@ -575,18 +577,19 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
 
             typename std::vector<Ioss::SideBlock *>::const_iterator iter;
             for(iter = in_sbs_2.begin(); iter != in_sbs_2.end(); iter++ ) {
-              if( sbname.compare((*iter)->name()) == 0 ) break;
+              if( sbname.compare((*iter)->name()) == 0 ) {
+                  break;
+              }
             }
-
             if( iter == in_sbs_2.end() ) {
               fmt::print(Ioss::WARNING(), NOTFOUND_2, "SIDEBLOCK", sbname);
-              return false;
+              continue;
             }
 
             rc = compare_fields(isb, (*iter), Ioss::Field::TRANSIENT);
             if( rc == false ) {
               fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "side blocks");
-              return false;
+              overall_result = false;
             }
           }
         }
@@ -623,7 +626,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                               options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "region", istep);
-        return false;
+        overall_result = false;
       }
 
       // This should have already been checked
@@ -637,7 +640,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                                 options);
         if( rc == false ) {
           fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "node blocks", istep);
-          return false;
+          overall_result = false;
         }
       }
 
@@ -648,7 +651,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                               options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "edge blocks", istep);
-        return false;
+        overall_result = false;
       }
 
       rc = compare_field_data(input_region_1.get_face_blocks(),
@@ -658,7 +661,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                               options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "face blocks", istep);
-        return false;
+        overall_result = false;
       }
 
       rc = compare_field_data(input_region_1.get_element_blocks(),
@@ -668,7 +671,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                               options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "element blocks", istep);
-        return false;
+        overall_result = false;
       }
 
       rc = compare_field_data(input_region_1.get_structured_blocks(),
@@ -678,7 +681,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                               options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "structured blocks", istep);
-        return false;
+        overall_result = false;
       }
 
       rc = compare_field_data(input_region_1.get_nodesets(),
@@ -688,7 +691,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                               options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "node sets", istep);
-        return false;
+        overall_result = false;
       }
 
       rc = compare_field_data(input_region_1.get_edgesets(),
@@ -698,7 +701,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                               options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "edge sets", istep);
-        return false;
+        overall_result = false;
       }
 
       rc = compare_field_data(input_region_1.get_facesets(),
@@ -708,7 +711,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                               options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "face sets", istep);
-        return false;
+        overall_result = false;
       }
 
       rc = compare_field_data(input_region_1.get_elementsets(),
@@ -718,7 +721,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
                               options);
       if( rc == false ) {
         fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "element sets", istep);
-        return false;
+        overall_result = false;
       }
 
       // Side Sets
@@ -734,28 +737,29 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
         // Find matching output sideset
         typename std::vector<Ioss::SideSet *>::const_iterator it;
         for(it = in_sss_2.begin(); it != in_sss_2.end(); it++ ) {
-          if( name.compare((*it)->name()) == 0 ) break;
+          if( name.compare((*it)->name()) == 0 ) {
+            break;
+          }
         }
 
         if( it == in_sss_2.end() ) {
           fmt::print(Ioss::WARNING(), NOTFOUND_2, "SIDESET", name);
-          return false;
+          continue;
         }
 
         {
           rc = compare_field_data(iss, (*it), data_pool, Ioss::Field::TRANSIENT, options);
           if( rc == false ) {
             fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "side sets");
-            return false;
+            overall_result = false;
           }
 
           const auto &in_sbs_1 = iss->get_side_blocks();
           const auto &in_sbs_2 = (*it)->get_side_blocks();
-
           if( in_sbs_1.size() != in_sbs_2.size() ) {
             fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "SIDEBLOCK",
                        in_sbs_1.size(), in_sbs_2.size());
-            return false;
+            continue;
           }
 
           for (const auto &isb : in_sbs_1) {
@@ -764,18 +768,19 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
 
             typename std::vector<Ioss::SideBlock *>::const_iterator iter;
             for(iter = in_sbs_2.begin(); iter != in_sbs_2.end(); iter++ ) {
-              if( sbname.compare((*iter)->name()) == 0 ) break;
+              if( sbname.compare((*iter)->name()) == 0 ) {
+                break;
+              }
             }
-
             if( iter == in_sbs_2.end() ) {
               fmt::print(Ioss::WARNING(), NOTFOUND_2, "SIDESET", name);
-              return false;
+              continue;
             }
 
             rc = compare_field_data(isb, (*iter), data_pool, Ioss::Field::TRANSIENT, options);
             if( rc == false ) {
               fmt::print(Ioss::OUTPUT(), TRANSIENT_FIELD_VALUE_MISMATCH, "side sets");
-              return false;
+              overall_result = false;
             }
           }
         }
@@ -784,12 +789,15 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
   }
 
   Ioss::Utils::clear(data_pool.data);
-  return true;
+
+  return overall_result;
 }
 
 namespace {
   bool compare_properties(const Ioss::GroupingEntity *ige_1, const Ioss::GroupingEntity *ige_2)
   {
+    bool overall_result = true;
+
     Ioss::NameList ige_properties_1;
     ige_1->property_describe(&ige_properties_1);
 
@@ -830,15 +838,17 @@ namespace {
                      property);
         }
 
-        return false;
+        overall_result = false;
       }
     }
 
-    return true;
+    return overall_result;
   }
 
   bool compare_qa_info(const Ioss::Region &input_region_1, const Ioss::Region &input_region_2)
   {
+    bool overall_result = true;
+
     std::vector<std::string> in_information_records_1 = input_region_1.get_information_records();
     std::vector<std::string> in_information_records_2 = input_region_2.get_information_records();
 
@@ -892,7 +902,7 @@ namespace {
       if( in_qa_record_1.compare(*it) != 0 ) {
         fmt::print(Ioss::OUTPUT(), VALUE_MISMATCH, "QA RECORD",
                    in_qa_record_1, (*it));
-        return false;
+        overall_result = false;
       }
     }
 
@@ -905,13 +915,15 @@ namespace {
       }
     }
 
-    return true;
+    return overall_result;
   }
 
   bool compare_nodeblock(const Ioss::Region &input_region_1,
                          const Ioss::Region &input_region_2,
                          const Ioss::MeshCopyOptions &options)
   {
+    bool overall_result = true;
+
     Ioss::NodeBlockContainer in_nbs_1 = input_region_1.get_node_blocks();
     Ioss::NodeBlockContainer in_nbs_2 = input_region_2.get_node_blocks();
 
@@ -931,16 +943,15 @@ namespace {
       if( it == in_nbs_2.end() ) {
         fmt::print(Ioss::WARNING(), NOTFOUND_2, "NODEBLOCK",
                    inb->name());
-        return false;
+        overall_result = false;
       }
 
       // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
       // inadvertently match against it again
       in_nbs_2.erase(it);
-
     }
 
-    return true;
+    return overall_result;
   }
 
   template <typename T>
@@ -948,6 +959,8 @@ namespace {
                       const std::vector<T *> &in_blocks_const_2,
                       const Ioss::MeshCopyOptions &options)
   {
+    bool overall_result = true;
+
     if( in_blocks_1.size() != in_blocks_const_2.size() ) {
       fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "BLOCK",
                  in_blocks_1.size(), in_blocks_const_2.size());
@@ -969,7 +982,7 @@ namespace {
         if( it == in_blocks_2.end() ) {
           fmt::print(Ioss::WARNING(), NOTFOUND_2, "BLOCK",
                      in_block_1->name());
-          return false;
+          overall_result = false;
         }
 
         // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
@@ -978,7 +991,7 @@ namespace {
       }
     }
 
-    return  true;
+    return  overall_result;
   }
 
   bool compare_elementblocks(const Ioss::Region &input_region_1,
@@ -1024,6 +1037,8 @@ namespace {
                                 const Ioss::Region &input_region_2,
                                 const Ioss::MeshCopyOptions &options)
   {
+    bool overall_result = true;
+
     auto in_blocks_1 = input_region_1.get_structured_blocks();
     auto in_blocks_orig_2 = input_region_2.get_structured_blocks();
 
@@ -1048,7 +1063,7 @@ namespace {
         if( it == in_blocks_2.end() ) {
           fmt::print(Ioss::WARNING(), NOTFOUND_2, "",
                      in_block_1->name());
-          return false;
+          overall_result = false;
         }
 
         // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
@@ -1057,7 +1072,7 @@ namespace {
       }
     }
 
-    return true;
+    return overall_result;
   }
 
   template <typename T>
@@ -1065,6 +1080,8 @@ namespace {
                     const std::vector<T *> &in_sets_const_2,
                     const Ioss::MeshCopyOptions &options)
   {
+    bool overall_result = true;
+
     if( in_sets_1.size() != in_sets_const_2.size() ) {
       fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "set",
                  in_sets_1.size(), in_sets_const_2.size());
@@ -1086,7 +1103,7 @@ namespace {
         if( it == in_sets_2.end() ) {
           fmt::print(Ioss::WARNING(), NOTFOUND_2, "set",
                      in_set_1->name());
-          return false;
+          overall_result = false;
         }
 
         // Just to be sure, remove the OUTPUT set from the container so that we don't
@@ -1095,7 +1112,7 @@ namespace {
       }
     }
 
-    return true;
+    return overall_result;
   }
 
   bool compare_nodesets(const Ioss::Region &input_region_1,
@@ -1172,6 +1189,8 @@ namespace {
                         const Ioss::Region &input_region_2,
                         const Ioss::MeshCopyOptions &options)
   {
+    bool overall_result = true;
+
     const auto &in_css_1 = input_region_1.get_commsets();
     const auto &in_css_orig_2 = input_region_2.get_commsets();
 
@@ -1196,7 +1215,7 @@ namespace {
         if( it == in_css_2.end() ) {
           fmt::print(Ioss::WARNING(), NOTFOUND_2, "COMMSET",
                      in_cs_1->name());
-          return false;
+          overall_result = false;
         }
 
         // Just to be sure, remove the OUTPUT set from the container so that we don't
@@ -1205,13 +1224,15 @@ namespace {
       }
     }
 
-    return true;
+    return overall_result;
   }
 
   bool compare_coordinate_frames(const Ioss::Region &input_region_1,
                                  const Ioss::Region &input_region_2,
                                  const Ioss::MeshCopyOptions &options)
   {
+    bool overall_result = true;
+
     const auto &in_cfs_1 = input_region_1.get_coordinate_frames();
     const auto &in_cfs_orig_2 = input_region_2.get_coordinate_frames();
 
@@ -1236,7 +1257,7 @@ namespace {
         if( it == in_cfs_2.end() ) {
           fmt::print(Ioss::WARNING(), NOTFOUND_2, "COORDINATE FRAME",
                      in_cf_1.id());
-          return false;
+          overall_result = false;
         }
 
         // Just to be sure, remove the OUTPUT set from the container so that we don't
@@ -1245,7 +1266,7 @@ namespace {
       }
     }
 
-    return true;
+    return overall_result;
   }
 
   template <typename T>
@@ -1253,6 +1274,8 @@ namespace {
                       const std::vector<T *> &in_entities_2,
                       const Ioss::Field::RoleType role)
   {
+    bool overall_result = true;
+
     if( in_entities_1.size() != in_entities_2.size() ) {
       fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "ENTITY",
                  in_entities_1.size(), in_entities_2.size());
@@ -1270,13 +1293,14 @@ namespace {
       }
       if( it == in_entities_2.end() ) {
         fmt::print(Ioss::WARNING(), NOTFOUND_2, "ENTITY", name);
-        return false;
+        overall_result = false;
+        continue;
       }
 
-      return compare_fields(in_entity_1, (*it), role);
+      overall_result &= compare_fields(in_entity_1, (*it), role);
     }
 
-    return true;
+    return overall_result;
   }
 
   bool compare_fields(const Ioss::GroupingEntity *ige_1,
@@ -1317,6 +1341,8 @@ namespace {
                           const Ioss::Field::RoleType role,
                           const Ioss::MeshCopyOptions &options)
   {
+    bool overall_result = true;
+
     if( in_entities_1.size() != in_entities_2.size() ) {
       fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "ENTITY",
                  in_entities_1.size(), in_entities_2.size());
@@ -1334,13 +1360,14 @@ namespace {
       }
       if( it == in_entities_2.end() ) {
         fmt::print(Ioss::WARNING(), NOTFOUND_2, "ENTITY", name);
-        return false;
+        overall_result = false;
+        continue;
       }
 
-      return compare_field_data(in_entity_1, (*it), pool, role, options);
+      overall_result &= compare_field_data(in_entity_1, (*it), pool, role, options);
     }
 
-    return true;
+    return overall_result;
   }
 
   bool compare_field_data(const Ioss::GroupingEntity *ige_1,
@@ -1350,7 +1377,7 @@ namespace {
                           const Ioss::MeshCopyOptions &options,
                           const std::string &prefix)
   {
-    bool rc;
+    bool overall_result = true;
 
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
@@ -1371,10 +1398,7 @@ namespace {
 
     if (role == Ioss::Field::MESH && ige_1->field_exists("ids")) {
       assert(ige_2->field_exists("ids"));
-      rc = compare_field_data_internal(ige_1, ige_2, pool, "ids", options);
-      if( rc == false ) {
-          return false;
-      }
+      overall_result &= compare_field_data_internal(ige_1, ige_2, pool, "ids", options);
     }
 
     for (const auto &field_name : in_state_fields_1) {
@@ -1391,14 +1415,11 @@ namespace {
       }
       if (Ioss::Utils::substr_equal(prefix, field_name)) {
         assert(ige_2->field_exists(field_name));
-        rc = compare_field_data_internal(ige_1, ige_2, pool, field_name, options);
-        if( rc == false ) {
-            return false;
-        }
+        overall_result &= compare_field_data_internal(ige_1, ige_2, pool, field_name, options);
       }
     }
 
-    return true;
+    return overall_result;
   }
 
   bool compare_field_data_internal(const Ioss::GroupingEntity *ige_1,
