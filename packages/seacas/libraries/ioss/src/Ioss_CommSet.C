@@ -56,14 +56,3 @@ Ioss::Property Ioss::CommSet::get_implicit_property(const std::string &my_name) 
   return Ioss::GroupingEntity::get_implicit_property(my_name);
 }
 
-bool Ioss::CommSet::operator==(const Ioss::CommSet &rhs) const {
-  return Ioss::GroupingEntity::operator==( rhs );
-}
-
-bool Ioss::CommSet::operator!=(const Ioss::CommSet &rhs) const {
-  return !(*this == rhs);
-}
-
-bool Ioss::CommSet::equal(const Ioss::CommSet &rhs) const {
-  return Ioss::GroupingEntity::equal( rhs );
-}

@@ -52,17 +52,3 @@ Ioss::Property Ioss::FaceSet::get_implicit_property(const std::string &my_name) 
 
 void Ioss::FaceSet::block_membership(std::vector<std::string> & /*block_members*/) {}
 
-bool Ioss::FaceSet::operator==(const FaceSet &rhs) const
-{
-  return Ioss::EntitySet::operator==( rhs );
-}
-
-bool Ioss::FaceSet::operator!=(const FaceSet &rhs) const
-{
-  return !(*this == rhs);
-}
-
-bool Ioss::FaceSet::equal(const FaceSet &rhs) const
-{
-  return Ioss::EntitySet::equal( rhs );
-}
