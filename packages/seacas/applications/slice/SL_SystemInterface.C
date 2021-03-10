@@ -52,21 +52,28 @@ void SystemInterface::enroll_options()
   options_.enroll("processors", GetLongOption::MandatoryValue,
                   "Number of processors to decompose the mesh for", "1");
 
-  options_.enroll("method", GetLongOption::MandatoryValue,
-                  "Decomposition method\n"
-                  "\t\t'linear'   : #elem/#proc to each processor\n"
-                  "\t\t'scattered': Shuffle elements to each processor (cyclic)\n"
-                  "\t\t'random'   : Random distribution of elements, maintains balance\n"
-                  "\t\t'rb'       : Metis multilevel recursive bisection\n"
-                  "\t\t'kway'     : Metis multilevel k-way graph partitioning\n"
-                  "\t\t'variable' : Read element-processor assignment from an element variable\n"
-                  "\t\t'file'     : Read element-processor assignment from file",
-                  "linear");
+  options_.enroll(
+      "method", GetLongOption::MandatoryValue,
+      "Decomposition method\n"
+      "\t\t'linear'   : #elem/#proc to each processor\n"
+      "\t\t'scattered': Shuffle elements to each processor (cyclic)\n"
+      "\t\t'random'   : Random distribution of elements, maintains balance\n"
+      "\t\t'rb'       : Metis multilevel recursive bisection\n"
+      "\t\t'kway'     : Metis multilevel k-way graph partitioning\n"
+      "\t\t'variable' : Read element-processor assignment from an element variable\n"
+      "\t\t'map'      : Read element-processor assignment from an element map [processor_id]\n"
+      "\t\t'file'     : Read element-processor assignment from file",
+      "linear");
 
-  options_.enroll("decomposition_variable", GetLongOption::MandatoryValue,
-                  "The element variable containing the element to processor mapping\n"
-                  "\t\twhen decomposition method 'variable' is specified.",
-                  nullptr);
+  options_.enroll(
+      "decomposition_name", GetLongOption::MandatoryValue,
+      "The name of the element variable (method = `variable`)\n"
+      "\t\tor element map (method = `map`) containing the element to processor mapping.\n"
+      "\t\tIf no name is specified, then `processor_id` will be used.\n"
+      "\t\tIf the name is followed by a ',' and an integer or 'auto', then\n"
+      "\t\tthe entries in the map will be divided by the integer value or\n"
+      "\t\t(if auto) by `int((max_entry+1)/proc_count)`.",
+      nullptr);
 
   options_.enroll("decomposition_file", GetLongOption::MandatoryValue,
                   "File containing element to processor mapping\n"
@@ -244,9 +251,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
         return false;
       }
     }
-    else if (decompMethod_ == "variable") {
+    else if (decompMethod_ == "variable" || decompMethod_ == "map") {
       // If isn't specified, then default `processor_id` is used.
-      decompVariable_ = options_.get_option_value("decomposition_variable", decompVariable_);
+      decompVariable_ = options_.get_option_value("decomposition_name", decompVariable_);
     }
   }
 

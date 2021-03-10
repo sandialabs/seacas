@@ -16,6 +16,7 @@
 #include <cassert>
 #include <exodus/Ioex_DatabaseIO.h>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <init/Ionit_Initializer.h>
 
 #include <exodusII.h>
@@ -60,24 +61,50 @@ int           debug_level = 0;
 size_t partial_count = 1'000'000'000;
 
 namespace {
+  int case_compare(const char *s1, const char *s2)
+  {
+    const char *c1 = s1;
+    const char *c2 = s2;
+    for (;;) {
+      if (::toupper(*c1) != ::toupper(*c2)) {
+        return (::toupper(*c1) - ::toupper(*c2));
+      }
+      if (*c1 == '\0') {
+        return 0;
+      }
+      c1++;
+      c2++;
+    }
+  }
+
+  void exodus_error(int lineno)
+  {
+    std::ostringstream errmsg;
+    fmt::print(
+        errmsg,
+        "Exodus error ({}) {} at line {} in file Slice.C. Please report to gdsjaar@sandia.gov "
+        "if you need help.",
+        exerrval, ex_strerror(exerrval), lineno);
+
+    ex_err(nullptr, nullptr, EX_PRTLASTMSG);
+    throw std::runtime_error(errmsg.str());
+  }
+
   template <typename INT>
   void populate_proc_node(size_t count, size_t offset, size_t element_nodes,
-                          const std::vector<int> &elem_to_proc, std::vector<INT> &glob_conn,
+                          const std::vector<int> &elem_to_proc, const std::vector<INT> &glob_conn,
                           std::vector<std::vector<int>> &proc_node,
                           std::vector<size_t> &          on_proc_count)
   {
+    // Determine which processor(s) each node is present on.
+    // Also count number of nodes on each processor.
     size_t el = 0;
     for (size_t j = 0; j < count; j++) {
       auto p = elem_to_proc[offset + j];
       for (size_t k = 0; k < element_nodes; k++) {
         INT  node   = glob_conn[el++] - 1;
-        bool exists = false;
-        for (size_t kk = 0; kk < proc_node[node].size(); kk++) {
-          if (proc_node[node][kk] == p) {
-            exists = true;
-            break;
-          }
-        }
+        bool exists = std::find(std::begin(proc_node[node]), std::end(proc_node[node]), p) !=
+                      std::end(proc_node[node]);
         if (!exists) {
           proc_node[node].push_back(p);
           on_proc_count[p]++;
@@ -100,7 +127,7 @@ namespace {
 
   void proc_progress(int p, int proc_count)
   {
-    if (((debug_level & 5) != 0) && ((proc_count <= 20) || ((p + 1) % (proc_count / 20) == 0))) {
+    if (((debug_level & 8) != 0) && ((proc_count <= 20) || ((p + 1) % (proc_count / 20) == 0))) {
       progress("\t\tProcessor " + std::to_string(p + 1));
     }
   }
@@ -439,6 +466,90 @@ namespace {
           elem_to_proc.push_back((int)tmp_vals[i]);
         }
       }
+    }
+    else if (interFace.decomposition_method() == "map") {
+      std::string map_name = interFace.decomposition_variable();
+      if (map_name.empty()) {
+        fmt::print(stderr, "\nERROR: No element decomposition map specified.\n");
+        exit(EXIT_FAILURE);
+      }
+
+      // If the "map_name" string contains a comma, then the value
+      // following the comma is either an integer "scale" which is
+      // divided into each entry in `elem_to_proc`, or it is the
+      // string "auto" which will automatically scale all values by
+      // the *integer* "max/processorCount"
+      //
+      // NOTE: integer division with *no* rounding is used.
+
+      int  iscale = 1;
+      auto pos    = map_name.find(",");
+      if (pos != std::string::npos) {
+        // Extract the string following the comma...
+        auto scale = map_name.substr(pos + 1);
+        if (scale == "AUTO" || scale == "auto") {
+          iscale = 0;
+        }
+        else {
+          iscale = std::stoi(scale);
+        }
+      }
+      map_name = map_name.substr(0, pos);
+
+      Ioss::DatabaseIO *db    = region.get_database();
+      auto *            ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
+      int               exoid = ex_db != nullptr ? ex_db->get_file_pointer() : 0;
+
+      bool map_read  = false;
+      int  map_count = ex_inquire_int(exoid, EX_INQ_ELEM_MAP);
+      if (map_count > 0) {
+        int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+        max_name_length     = max_name_length < 32 ? 32 : max_name_length;
+        char **names        = Ioss::Utils::get_name_array(map_count, max_name_length);
+        int    error        = ex_get_names(exoid, EX_ELEM_MAP, names);
+        if (error < 0) {
+          exodus_error(__LINE__);
+        }
+
+        for (int i = 0; i < map_count; i++) {
+          if (case_compare(names[i], map_name.c_str()) == 0) {
+            elem_to_proc.resize(element_count);
+            error = ex_get_num_map(exoid, EX_ELEM_MAP, i + 1, elem_to_proc.data());
+            if (error < 0) {
+              exodus_error(__LINE__);
+            }
+            map_read = true;
+            break;
+          }
+        }
+        Ioss::Utils::delete_name_array(names, map_count);
+      }
+
+      if (!map_read) {
+        fmt::print(stderr, "\nERROR: Element decomposition map '{}' could not be read from file.\n",
+                   map_name);
+        exit(EXIT_FAILURE);
+      }
+
+      // Do the scaling (integer division...)
+      if (iscale == 0) {
+        // Auto scaling was asked for.  Determine max entry in `elem_to_proc` and
+        // set the scale factor.
+        auto max_proc = *std::max_element(elem_to_proc.begin(), elem_to_proc.end());
+
+        iscale = (max_proc + 1) / interFace.processor_count();
+        fmt::print(" Element Processor Map automatic scaling factor = {}\n", iscale);
+
+        if (iscale == 0) {
+          fmt::print(stderr,
+                     "ERROR: Max value in element processor map is {} which is\n"
+                     "\tless than the processor count ({}). Scaling values is not possible.",
+                     max_proc, interFace.processor_count());
+          exit(EXIT_FAILURE);
+        }
+      }
+      std::transform(elem_to_proc.begin(), elem_to_proc.end(), elem_to_proc.begin(),
+                     [iscale](int p) { return p / iscale; });
     }
     else if (interFace.decomposition_method() == "file") {
       // Read the element decomposition mapping from a file.  The
