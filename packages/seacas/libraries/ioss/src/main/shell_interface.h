@@ -38,6 +38,7 @@ namespace IOShell {
     std::string              outFiletype{"unknown"};
     std::string              groupName;
     std::string              decomp_method;
+    std::string              decomp_map{"processor_id"};
     std::string              compose_output{"default"};
     double                   maximum_time{std::numeric_limits<double>::max()};
     double                   minimum_time{-std::numeric_limits<double>::max()};

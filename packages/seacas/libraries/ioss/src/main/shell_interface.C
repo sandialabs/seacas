@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -175,6 +175,18 @@ void IOShell::Interface::enroll_options()
                   "Use the random method to decompose the input mesh in a parallel run.\n"
                   "\t\tElements assigned randomly to processors in a way that preserves balance\n"
                   "\t\t(do *not* use for a real run)",
+                  nullptr);
+
+  options_.enroll("map", Ioss::GetLongOption::OptionalValue,
+                  "Read the decomposition data from the specified element map.\n"
+                  "\t\tIf no map name is specified, then `processor_id` will be used.\n"
+		  "\t\tIf the name is followed by a ',' and an integer or 'auto', then\n"
+		  "\t\tthe entries in the map will be divided by the integer value or\n"
+		  "\t\t(if auto) by `int((max_entry+1)/proc_count)`.",
+                  nullptr);
+
+  options_.enroll("variable", Ioss::GetLongOption::NoValue,
+                  "Not implemented yet (read decomp from element variable)",
                   nullptr);
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
@@ -448,6 +460,15 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
   if (options_.retrieve("linear") != nullptr) {
     decomp_method = "LINEAR";
+  }
+
+  if (options_.retrieve("map") != nullptr) {
+    decomp_method = "MAP";
+    decomp_map = options_.get_option_value("map", decomp_map);
+  }
+
+  if (options_.retrieve("variable") != nullptr) {
+    decomp_method = "VARIABLE";
   }
 
   if (options_.retrieve("cyclic") != nullptr) {
