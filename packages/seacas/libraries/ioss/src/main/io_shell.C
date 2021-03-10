@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -32,15 +32,32 @@
 
 namespace {
   std::string codename;
-  std::string version = "5.3";
+  std::string version = "6.0";
 
   bool mem_stats = false;
 
   void file_copy(IOShell::Interface &interFace, int rank);
   void file_compare(IOShell::Interface &interFace, int rank);
 
-
   Ioss::PropertyManager set_properties(IOShell::Interface &interFace);
+  Ioss::MeshCopyOptions set_mesh_copy_options(IOShell::Interface &interFace)
+  {
+    Ioss::MeshCopyOptions options{};
+    options.verbose           = !interFace.quiet;
+    options.memory_statistics = interFace.memory_statistics;
+    options.debug             = interFace.debug;
+    options.ints_64_bit       = interFace.ints_64_bit;
+    options.delete_timesteps  = interFace.delete_timesteps;
+    options.minimum_time      = interFace.minimum_time;
+    options.maximum_time      = interFace.maximum_time;
+    options.data_storage_type = interFace.data_storage_type;
+    options.delay             = interFace.timestep_delay;
+    options.reverse           = interFace.reverse;
+    options.add_proc_id       = interFace.add_processor_id_field;
+    options.boundary_sideset  = interFace.boundary_sideset;
+    options.ignore_qa_info    = interFace.ignore_qa_info;
+    return options;
+  }
 } // namespace
 
 int main(int argc, char *argv[])
@@ -75,10 +92,18 @@ int main(int argc, char *argv[])
   std::string out_file = interFace.outputFile;
 
   if (rank == 0 && !interFace.quiet) {
-    fmt::print(stderr,
-               "Input:    '{}', Type: {}\n"
-               "Output:   '{}', Type: {}\n\n",
-               in_file, interFace.inFiletype, out_file, interFace.outFiletype);
+    if (interFace.compare) {
+      fmt::print(stderr,
+                 "Input 1:   '{}', Type: {}\n"
+                 "Input 2:   '{}', Type: {}\n\n",
+                 in_file, interFace.inFiletype, out_file, interFace.outFiletype);
+    }
+    else {
+      fmt::print(stderr,
+                 "Input:    '{}', Type: {}\n"
+                 "Output:   '{}', Type: {}\n\n",
+                 in_file, interFace.inFiletype, out_file, interFace.outFiletype);
+    }
   }
 
 #ifdef SEACAS_HAVE_KOKKOS
@@ -92,9 +117,10 @@ int main(int argc, char *argv[])
   double begin = Ioss::Utils::timer();
 
   try {
-    if( interFace.compare ) {
+    if (interFace.compare) {
       file_compare(interFace, rank);
-    } else {
+    }
+    else {
       file_copy(interFace, rank);
     }
   }
@@ -254,20 +280,7 @@ namespace {
         properties.add(Ioss::Property("MINIMIZE_OPEN_FILES", "ON"));
       }
 
-      Ioss::MeshCopyOptions options{};
-      options.selected_times    = interFace.selected_times;
-      options.verbose           = !interFace.quiet;
-      options.memory_statistics = interFace.memory_statistics;
-      options.debug             = interFace.debug;
-      options.ints_64_bit       = interFace.ints_64_bit;
-      options.delete_timesteps  = interFace.delete_timesteps;
-      options.minimum_time      = interFace.minimum_time;
-      options.maximum_time      = interFace.maximum_time;
-      options.data_storage_type = interFace.data_storage_type;
-      options.delay             = interFace.timestep_delay;
-      options.reverse           = interFace.reverse;
-      options.add_proc_id       = interFace.add_processor_id_field;
-      options.boundary_sideset  = interFace.boundary_sideset;
+      Ioss::MeshCopyOptions options = set_mesh_copy_options(interFace);
 
       size_t ts_count = region.get_optional_property("state_count", 0);
 
@@ -392,15 +405,14 @@ namespace {
   void file_compare(IOShell::Interface &interFace, int rank)
   {
     Ioss::PropertyManager properties = set_properties(interFace);
-    int int_byte_size_api;
+    int                   int_byte_size_api;
     for (const auto &inpfile : interFace.inputFile) {
 
       //========================================================================
       // INPUT Database #1...
       //========================================================================
-      Ioss::DatabaseIO *dbi1 = Ioss::IOFactory::create(interFace.inFiletype, inpfile, 
-                                                       Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, 
-                                                       properties);
+      Ioss::DatabaseIO *dbi1 = Ioss::IOFactory::create(
+          interFace.inFiletype, inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
       if (dbi1 == nullptr || !dbi1->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
@@ -450,7 +462,7 @@ namespace {
         return;
       }
 
-      // Get integer size being used on input file #1 and set it in 
+      // Get integer size being used on input file #1 and set it in
       // the interFace.
       int_byte_size_api = dbi1->int_byte_size_api();
       if (int_byte_size_api == 8) {
@@ -460,9 +472,9 @@ namespace {
       //========================================================================
       // INPUT Database #2...
       //========================================================================
-      Ioss::DatabaseIO *dbi2 = Ioss::IOFactory::create(interFace.outFiletype, interFace.outputFile,
-                                                       Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD,
-                                                       properties);
+      Ioss::DatabaseIO *dbi2 =
+          Ioss::IOFactory::create(interFace.outFiletype, interFace.outputFile, Ioss::READ_MODEL,
+                                  (MPI_Comm)MPI_COMM_WORLD, properties);
       if (dbi2 == nullptr || !dbi2->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
@@ -512,7 +524,7 @@ namespace {
         return;
       }
 
-      // Get integer size being used on input file #1 and set it in 
+      // Get integer size being used on input file #1 and set it in
       // the interFace.
       int_byte_size_api = dbi2->int_byte_size_api();
       if (int_byte_size_api == 8) {
@@ -522,23 +534,13 @@ namespace {
       //========================================================================
       // COMPARE the databases...
       //========================================================================
-      Ioss::MeshCopyOptions options{};
-      options.verbose           = !interFace.quiet;
-      options.memory_statistics = interFace.memory_statistics;
-      options.debug             = interFace.debug;
-      options.ints_64_bit       = interFace.ints_64_bit;
-      options.delete_timesteps  = interFace.delete_timesteps;
-      options.minimum_time      = interFace.minimum_time;
-      options.maximum_time      = interFace.maximum_time;
-      options.data_storage_type = interFace.data_storage_type;
-      options.delay             = interFace.timestep_delay;
-      options.reverse           = interFace.reverse;
-      options.add_proc_id       = interFace.add_processor_id_field;
+      auto options = set_mesh_copy_options(interFace);
 
       bool result = Ioss::Compare::compare_database(input_region1, input_region2, options);
-      if( result ) {
+      if (result) {
         fmt::print(stderr, "\nDATABASES are EQUAL\n");
-      } else {
+      }
+      else {
         fmt::print(stderr, "\nDATABASES are NOT equal\n");
       }
     } // loop over input files
@@ -628,10 +630,9 @@ namespace {
     if (!interFace.decomp_method.empty()) {
       properties.add(Ioss::Property("DECOMPOSITION_METHOD", interFace.decomp_method));
       if (interFace.decomp_method == "MAP") {
-	properties.add(Ioss::Property("DECOMPOSITION_EXTRA", interFace.decomp_map));
+        properties.add(Ioss::Property("DECOMPOSITION_EXTRA", interFace.decomp_map));
       }
     }
-
 
     if (interFace.retain_empty_blocks) {
       properties.add(Ioss::Property("RETAIN_EMPTY_BLOCKS", "YES"));

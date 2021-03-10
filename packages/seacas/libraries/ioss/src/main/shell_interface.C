@@ -78,7 +78,13 @@ void IOShell::Interface::enroll_options()
                   " faodel"
 #endif
                   ".\n\t\tIf not specified, guess from extension or exodus is the default.",
-                  "unknown", nullptr, true);
+                  "unknown");
+  options_.enroll("compare", Ioss::GetLongOption::NoValue,
+                  "Compare the contents of the INPUT and OUTPUT files.", nullptr);
+  options_.enroll("ignore_qa_info", Ioss::GetLongOption::NoValue,
+                  "If comparing databases, do not compare the qa and info records.", nullptr,
+                  nullptr, true);
+
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue, "Use 64-bit integers on output database",
                   nullptr);
 
@@ -104,10 +110,6 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll("shuffle", Ioss::GetLongOption::NoValue,
                   "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
-                  nullptr);
-
- options_.enroll("compare", Ioss::GetLongOption::NoValue,
-                  "Compare the contents of the INPUT and OUTPUT files.",
                   nullptr);
 
   options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
@@ -184,14 +186,13 @@ void IOShell::Interface::enroll_options()
   options_.enroll("map", Ioss::GetLongOption::OptionalValue,
                   "Read the decomposition data from the specified element map.\n"
                   "\t\tIf no map name is specified, then `processor_id` will be used.\n"
-		  "\t\tIf the name is followed by a ',' and an integer or 'auto', then\n"
-		  "\t\tthe entries in the map will be divided by the integer value or\n"
-		  "\t\t(if auto) by `int((max_entry+1)/proc_count)`.",
+                  "\t\tIf the name is followed by a ',' and an integer or 'auto', then\n"
+                  "\t\tthe entries in the map will be divided by the integer value or\n"
+                  "\t\t(if auto) by `int((max_entry+1)/proc_count)`.",
                   nullptr);
 
   options_.enroll("variable", Ioss::GetLongOption::NoValue,
-                  "Not implemented yet (read decomp from element variable)",
-                  nullptr);
+                  "Not implemented yet (read decomp from element variable)", nullptr);
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
@@ -389,7 +390,8 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     }
     return false;
   }
-  compare = (options_.retrieve("compare") != nullptr);
+  compare        = (options_.retrieve("compare") != nullptr);
+  ignore_qa_info = (options_.retrieve("ignore_qa_info") != nullptr);
 
   {
     const char *temp = options_.retrieve("compress");
@@ -469,7 +471,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
   if (options_.retrieve("map") != nullptr) {
     decomp_method = "MAP";
-    decomp_map = options_.get_option_value("map", decomp_map);
+    decomp_map    = options_.get_option_value("map", decomp_map);
   }
 
   if (options_.retrieve("variable") != nullptr) {

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -94,6 +94,7 @@ namespace IOShell {
     bool add_processor_id_field{false};
     bool boundary_sideset{false};
     bool compare{false};
+    bool ignore_qa_info{false};
     char fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell
