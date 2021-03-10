@@ -942,10 +942,11 @@ namespace {
                    inb->name());
         overall_result = false;
       }
-
-      // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
-      // inadvertently match against it again
-      in_nbs_2.erase(it);
+      else {
+	// Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
+	// inadvertently match against it again
+	in_nbs_2.erase(it);
+      }
     }
 
     return overall_result;
@@ -981,10 +982,11 @@ namespace {
                      in_block_1->name());
           overall_result = false;
         }
-
-        // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
-        // inadvertently match against it again
-       in_blocks_2.erase(it);
+	else {
+	  // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
+	  // inadvertently match against it again
+	  in_blocks_2.erase(it);
+	}
       }
     }
 
@@ -1062,10 +1064,11 @@ namespace {
                      in_block_1->name());
           overall_result = false;
         }
-
-        // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
-        // inadvertently match against it again
-        in_blocks_2.erase(it);
+	else {
+	  // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
+	  // inadvertently match against it again
+	  in_blocks_2.erase(it);
+	}
       }
     }
 
@@ -1102,10 +1105,11 @@ namespace {
                      in_set_1->name());
           overall_result = false;
         }
-
-        // Just to be sure, remove the OUTPUT set from the container so that we don't
-        // inadvertently match against it again
-        in_sets_2.erase(it);
+	else {
+	  // Just to be sure, remove the OUTPUT set from the container so that we don't
+	  // inadvertently match against it again
+	  in_sets_2.erase(it);
+	}
       }
     }
 
@@ -1214,10 +1218,11 @@ namespace {
                      in_cs_1->name());
           overall_result = false;
         }
-
-        // Just to be sure, remove the OUTPUT set from the container so that we don't
-        // inadvertently match against it again
-        in_css_2.erase(it);
+	else {
+	  // Just to be sure, remove the OUTPUT set from the container so that we don't
+	  // inadvertently match against it again
+	  in_css_2.erase(it);
+	}
       }
     }
 
@@ -1256,10 +1261,11 @@ namespace {
                      in_cf_1.id());
           overall_result = false;
         }
-
-        // Just to be sure, remove the OUTPUT set from the container so that we don't
-        // inadvertently match against it again
-        in_cfs_2.erase(it);
+	else {
+	  // Just to be sure, remove the OUTPUT set from the container so that we don't
+	  // inadvertently match against it again
+	  in_cfs_2.erase(it);
+	}
       }
     }
 
@@ -1433,8 +1439,6 @@ namespace {
     if( isize != osize ) {
       fmt::print(Ioss::WARNING(), "FIELD size mismatch ({} vs. {})\n", isize, osize);
     }
-
-    int basic_type = ige_1->get_field(field_name).get_type();
 
     if (field_name == "mesh_model_coordinates_x") {
       return true;
