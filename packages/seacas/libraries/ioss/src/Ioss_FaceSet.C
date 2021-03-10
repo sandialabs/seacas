@@ -51,3 +51,4 @@ Ioss::Property Ioss::FaceSet::get_implicit_property(const std::string &my_name) 
 }
 
 void Ioss::FaceSet::block_membership(std::vector<std::string> & /*block_members*/) {}
+

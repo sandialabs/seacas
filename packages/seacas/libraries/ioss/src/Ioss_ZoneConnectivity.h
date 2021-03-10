@@ -86,6 +86,11 @@ namespace Ioss {
     std::vector<int>     get_range(int ordinal) const;
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
+    /* COMPARE two ZoneConnectivity objects  */
+    bool operator==(const Ioss::ZoneConnectivity &rhs) const;
+    bool operator!=(const Ioss::ZoneConnectivity &rhs) const;
+    bool equal(const Ioss::ZoneConnectivity &rhs) const;
+
     bool is_from_decomp() const { return m_fromDecomp; }
     bool is_active() const { return m_isActive && has_faces(); }
 
@@ -133,6 +138,9 @@ namespace Ioss {
     bool m_fromDecomp{false};
 
     bool m_isActive{true}; // True if non-zero range. That is, it has at least one face
+
+  private:
+    bool equal_(const Ioss::ZoneConnectivity &rhs, bool quiet) const;
   };
 } // namespace Ioss
 

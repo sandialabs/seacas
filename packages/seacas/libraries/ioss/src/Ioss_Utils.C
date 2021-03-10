@@ -2448,12 +2448,14 @@ namespace {
       // 'connectivity' field, but it is only interesting on the
       // Ioss::ElementBlock class. On the other classes, it just
       // generates overhead...
+
       if (field_name == "connectivity" && ige->type() != Ioss::ELEMENTBLOCK) {
         continue;
       }
       if (field_name == "ids") {
         continue;
       }
+
       if (Ioss::Utils::substr_equal(prefix, field_name)) {
         assert(oge->field_exists(field_name));
         transfer_field_data_internal(ige, oge, pool, field_name, options);

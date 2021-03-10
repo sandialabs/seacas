@@ -500,6 +500,7 @@ namespace Ioss {
     static void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
                               const std::string &header, const std::string &suffix = "\n\t",
                               bool print_empty = false);
+
   };
 
   inline std::ostream &OUTPUT() { return *Utils::m_outputStream; }

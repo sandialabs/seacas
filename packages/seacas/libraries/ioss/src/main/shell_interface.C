@@ -106,6 +106,10 @@ void IOShell::Interface::enroll_options()
                   "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
                   nullptr);
 
+ options_.enroll("compare", Ioss::GetLongOption::NoValue,
+                  "Compare the contents of the INPUT and OUTPUT files.",
+                  nullptr);
+
   options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
                   "Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used "
                   "on the output file.",
@@ -385,6 +389,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     }
     return false;
   }
+  compare = (options_.retrieve("compare") != nullptr);
 
   {
     const char *temp = options_.retrieve("compress");
