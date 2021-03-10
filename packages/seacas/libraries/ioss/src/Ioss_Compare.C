@@ -108,9 +108,6 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1,
   bool rc;
   DataPool data_pool;
 
-  Ioss::DatabaseIO *dbi = input_region_1.get_database();
-  int input_rank = dbi->util().parallel_rank();
-
   // COMPARE all properties of input database...
   if( compare_properties(&input_region_1, &input_region_2) == false ) {
     fmt::print(Ioss::OUTPUT(), "PROPERTIES mismatch ({})\n", input_region_1.name());
