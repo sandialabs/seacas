@@ -56,7 +56,8 @@ namespace Excn {
     std::string sub_dir() const { return subDirectory_; }
 
     bool add_nodal_communication_map() const { return addNodalCommunicationMap_; }
-    bool add_processor_id_field() const { return addProcessorId_; }
+    bool add_processor_id_field() const { return addProcessorIdField_; }
+    bool add_processor_id_map() const { return addProcessorIdMap_; }
     bool sum_shared_nodes() const { return sumSharedNodes_; }
     bool use_netcdf4() const { return useNetcdf4_; }
     bool use_netcdf5() const { return useNetcdf5_; }
@@ -135,7 +136,8 @@ namespace Excn {
     bool         zlib_{true};
     bool         szip_{false};
     bool         sumSharedNodes_{false};
-    bool         addProcessorId_{false};
+    bool         addProcessorIdField_{false};
+    bool         addProcessorIdMap_{false};
     bool         mapIds_{true};
     bool         omitNodesets_{false};
     bool         omitSidesets_{false};

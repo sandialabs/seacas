@@ -145,7 +145,16 @@ void Excn::SystemInterface::enroll_options()
                   "1:", nullptr, true);
 
   options_.enroll("add_processor_id", GetLongOption::NoValue,
-                  "Add 'processor_id' element variable to the output file", nullptr);
+                  "Add 'processor_id' element variable to the output file which shows the\n"
+                  "\t\tprocessor that an element was on in the decomposed mesh.\n"
+                  "\t\tCan be used by SLICE or auto-decomp to reproduce decomposition.",
+                  nullptr);
+
+  options_.enroll("add_map_processor_id", GetLongOption::NoValue,
+                  "Add 'processor_id' element map to the output file which shows the\n"
+                  "\t\tprocessor that an element was on in the decomposed mesh.\n"
+                  "\t\tCan be used by SLICE or auto-decomp to reproduce decomposition.",
+                  nullptr, nullptr, true);
 
   options_.enroll("gvar", GetLongOption::MandatoryValue,
                   "Comma-separated list of global variables to be joined or ALL or NONE.", nullptr);
@@ -289,7 +298,8 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     parse_variable_names(temp, &ssetVarNames_);
   }
 
-  addProcessorId_           = options_.retrieve("add_processor_id") != nullptr;
+  addProcessorIdField_      = options_.retrieve("add_processor_id") != nullptr;
+  addProcessorIdMap_        = options_.retrieve("add_map_processor_id") != nullptr;
   addNodalCommunicationMap_ = options_.retrieve("add_nodal_communication_map") != nullptr;
 
   if (options_.retrieve("large_model") != nullptr) {

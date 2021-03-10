@@ -353,6 +353,12 @@ namespace {
                    std::vector<std::vector<Excn::SideSet<INT>>> &sets,
                    std::vector<Excn::SideSet<INT>> &glob_ssets, Excn::SystemInterface &interFace);
 
+  template <typename INT>
+  void add_processor_map(int id_out, int part_count, int start_part, const Excn::Mesh &global,
+                         std::vector<std::vector<Excn::Block>> &blocks,
+                         const std::vector<Excn::Block> &       glob_blocks,
+                         const std::vector<std::vector<INT>> &  local_element_to_global);
+
   template <typename T, typename INT>
   void add_processor_variable(int id_out, int part_count, int start_part, const Excn::Mesh &global,
                               std::vector<std::vector<Excn::Block>> &blocks,
@@ -898,6 +904,11 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       exodus.write_meta_data(global, glob_blocks, glob_nsets, glob_ssets, comm_data);
 
       get_put_assemblies(ExodusFile(0), ExodusFile::output(), global);
+
+      if (interFace.add_processor_id_map()) {
+        add_processor_map(ExodusFile::output(), part_count, start_part, global, blocks, glob_blocks,
+                          local_element_to_global);
+      }
 
       // Output bulk mesh data....
       put_nodesets(glob_nsets);
@@ -3171,6 +3182,37 @@ namespace {
       if (error < 0) {
         exodus_error(__LINE__);
       }
+    }
+  }
+
+  template <typename INT>
+  void add_processor_map(int id_out, int part_count, int start_part, const Mesh &global,
+                         std::vector<std::vector<Block>> &    blocks,
+                         const std::vector<Block> &           glob_blocks,
+                         const std::vector<std::vector<INT>> &local_element_to_global)
+  {
+    std::vector<INT> proc(global.elementCount);
+
+    for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
+      proc.resize(glob_blocks[b].entity_count());
+      for (int p = 0; p < part_count; p++) {
+        size_t boffset       = blocks[p][b].offset_;
+        size_t element_count = blocks[p][b].entity_count();
+        for (size_t e = 0; e < element_count; e++) {
+          size_t global_elem_pos = local_element_to_global[p][(e + boffset)];
+          proc[global_elem_pos]  = p + start_part;
+        }
+      }
+    }
+
+    if (ex_put_map_param(id_out, 0, 1) < 0) {
+      exodus_error(__LINE__);
+    }
+    if (ex_put_num_map(id_out, EX_ELEM_MAP, 1, proc.data()) < 0) {
+      exodus_error(__LINE__);
+    }
+    if (ex_put_name(id_out, EX_ELEM_MAP, 1, "processor_id") < 0) {
+      exodus_error(__LINE__);
     }
   }
 
