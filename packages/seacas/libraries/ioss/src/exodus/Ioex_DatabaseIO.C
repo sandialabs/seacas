@@ -963,23 +963,27 @@ namespace Ioex {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
 
-          if (map_count == 1 && Ioss::Utils::str_equal(names[0], "original_global_id_map")) {
-            int error = 0;
-            if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-              Ioss::Int64Vector tmp_map(entity_map.size());
-              error = ex_get_num_map(get_file_pointer(), entity_type, 1, tmp_map.data());
-              if (error >= 0) {
-                entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
-                map_read = true;
+          for (int i = 0; i < map_count; i++) {
+            if (Ioss::Utils::str_equal(names[i], "original_global_id_map")) {
+              int error = 0;
+              if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
+                Ioss::Int64Vector tmp_map(entity_map.size());
+                error = ex_get_num_map(get_file_pointer(), entity_type, i + 1, tmp_map.data());
+                if (error >= 0) {
+                  entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
+                  map_read = true;
+                  break;
+                }
               }
-            }
-            else {
-              // Ioss stores as 64-bit, read as 32-bit and copy over...
-              Ioss::IntVector tmp_map(entity_map.size());
-              error = ex_get_num_map(get_file_pointer(), entity_type, 1, tmp_map.data());
-              if (error >= 0) {
-                entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
-                map_read = true;
+              else {
+                // Ioss stores as 64-bit, read as 32-bit and copy over...
+                Ioss::IntVector tmp_map(entity_map.size());
+                error = ex_get_num_map(get_file_pointer(), entity_type, i + 1, tmp_map.data());
+                if (error >= 0) {
+                  entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
+                  map_read = true;
+                  break;
+                }
               }
             }
           }
