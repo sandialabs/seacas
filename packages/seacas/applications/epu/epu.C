@@ -183,12 +183,15 @@ namespace {
         exodus_error(__LINE__);
       }
 
-      if (map_count == 1 && case_compare(names[0], "original_global_id_map") == 0) {
-        error = ex_get_num_map(exoid, type, 1, ids.data());
-        if (error < 0) {
-          exodus_error(__LINE__);
+      for (int i = 0; i < map_count; i++) {
+        if (case_compare(names[i], "original_global_id_map") == 0) {
+          error = ex_get_num_map(exoid, type, i + 1, ids.data());
+          if (error < 0) {
+            exodus_error(__LINE__);
+          }
+          map_read = true;
+          break;
         }
-        map_read = true;
       }
       free_name_array(names, map_count);
     }
