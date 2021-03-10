@@ -121,7 +121,7 @@ namespace Ioss {
     ElementTopology(std::string type, std::string master_elem_name, bool delete_me = false);
 
   private:
-    bool equal_(const Ioss::ElementTopology &rhs, bool quiet) const;
+    bool              equal_(const Ioss::ElementTopology &rhs, bool quiet) const;
     const std::string name_;
     const std::string masterElementName_;
 

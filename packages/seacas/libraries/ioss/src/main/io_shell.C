@@ -43,6 +43,7 @@ namespace {
   Ioss::MeshCopyOptions set_mesh_copy_options(IOShell::Interface &interFace)
   {
     Ioss::MeshCopyOptions options{};
+    options.selected_times    = interFace.selected_times;
     options.verbose           = !interFace.quiet;
     options.memory_statistics = interFace.memory_statistics;
     options.debug             = interFace.debug;

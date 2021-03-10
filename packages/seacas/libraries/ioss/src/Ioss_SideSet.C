@@ -177,13 +177,14 @@ bool Ioss::SideSet::equal_(const SideSet &rhs, const bool quiet) const
   std::vector<SideBlock *> rhs_side_blocks = rhs.sideBlocks;
 
   // COMPARE SideBlocks
-  for( auto &lhs_side_block : lhs_side_blocks ) {
+  for (auto &lhs_side_block : lhs_side_blocks) {
     std::vector<SideBlock *>::iterator it;
-    for( it = rhs_side_blocks.begin(); it != rhs_side_blocks.end(); it++ ) {
-      if( (*(*it)).operator==(*lhs_side_block) ) break;
+    for (it = rhs_side_blocks.begin(); it != rhs_side_blocks.end(); it++) {
+      if ((*(*it)).operator==(*lhs_side_block))
+        break;
     }
 
-    if( it == rhs_side_blocks.end() ) {
+    if (it == rhs_side_blocks.end()) {
       // NO match for this side block
       return false;
     }
@@ -195,13 +196,14 @@ bool Ioss::SideSet::equal_(const SideSet &rhs, const bool quiet) const
   std::vector<std::string> lhs_block_membership = this->blockMembership;
   std::vector<std::string> rhs_block_membership = rhs.blockMembership;
 
-  for( auto &lhs_block_member : lhs_block_membership ) {
+  for (auto &lhs_block_member : lhs_block_membership) {
     std::vector<std::string>::iterator it;
-    for( it = rhs_block_membership.begin(); it != rhs_block_membership.end(); it++ ) {
-      if( (*it).compare(lhs_block_member) == 0 ) break;
+    for (it = rhs_block_membership.begin(); it != rhs_block_membership.end(); it++) {
+      if ((*it).compare(lhs_block_member) == 0)
+        break;
     }
 
-    if( it == rhs_block_membership.end() ) {
+    if (it == rhs_block_membership.end()) {
       // NO match for this side block
       return false;
     }
@@ -212,17 +214,8 @@ bool Ioss::SideSet::equal_(const SideSet &rhs, const bool quiet) const
   return true;
 }
 
-bool Ioss::SideSet::operator==(const SideSet &rhs) const
-{
-    return equal_(rhs, false);
-}
+bool Ioss::SideSet::operator==(const SideSet &rhs) const { return equal_(rhs, false); }
 
-bool Ioss::SideSet::operator!=(const SideSet &rhs) const
-{
-  return !(*this == rhs);
-}
+bool Ioss::SideSet::operator!=(const SideSet &rhs) const { return !(*this == rhs); }
 
-bool Ioss::SideSet::equal(const SideSet &rhs) const
-{
-    return equal_(rhs, true);
-}
+bool Ioss::SideSet::equal(const SideSet &rhs) const { return equal_(rhs, true); }

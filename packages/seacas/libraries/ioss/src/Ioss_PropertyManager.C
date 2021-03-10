@@ -89,7 +89,7 @@ int64_t Ioss::PropertyManager::get_optional(const std::string &property_name,
 }
 
 std::string Ioss::PropertyManager::get_optional(const std::string &property_name,
-						const std::string &optional_value) const
+                                                const std::string &optional_value) const
 {
   IOSS_FUNC_ENTER(m_);
   auto iter = m_properties.find(property_name);

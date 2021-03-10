@@ -94,15 +94,12 @@ int64_t Ioss::NodeBlock::internal_put_field_data(const Ioss::Field &field, void 
 
 bool Ioss::NodeBlock::operator==(const Ioss::NodeBlock &rhs) const
 {
-  return Ioss::EntityBlock::operator==( rhs );
+  return Ioss::EntityBlock::operator==(rhs);
 }
 
-bool Ioss::NodeBlock::operator!=(const Ioss::NodeBlock &rhs) const
-{
-  return !(*this == rhs);
-}
+bool Ioss::NodeBlock::operator!=(const Ioss::NodeBlock &rhs) const { return !(*this == rhs); }
 
 bool Ioss::NodeBlock::equal(const Ioss::NodeBlock &rhs) const
 {
-  return Ioss::EntityBlock::equal( rhs );
+  return Ioss::EntityBlock::equal(rhs);
 }

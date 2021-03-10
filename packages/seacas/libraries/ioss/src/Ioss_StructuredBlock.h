@@ -319,9 +319,9 @@ namespace Ioss {
 
   private:
     bool equal_(const Ioss::StructuredBlock &rhs, bool quiet) const;
-    int m_ni{};
-    int m_nj{};
-    int m_nk{};
+    int  m_ni{};
+    int  m_nj{};
+    int  m_nk{};
 
     int m_offsetI{}; // Valid 'i' ordinal runs from m_offsetI+1 to m_offsetI+m_ni
     int m_offsetJ{};

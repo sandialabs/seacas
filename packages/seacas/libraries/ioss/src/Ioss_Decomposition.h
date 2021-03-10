@@ -549,12 +549,12 @@ namespace Ioss {
       }
     }
 
-    MPI_Comm    m_comm;
+    MPI_Comm            m_comm;
     Ioss::ParallelUtils m_pu;
-    int         m_processor{};
-    int         m_processorCount{};
-    std::string m_method{};
-    std::string m_decompExtra{};
+    int                 m_processor{};
+    int                 m_processorCount{};
+    std::string         m_method{};
+    std::string         m_decompExtra{};
 
     // Values for the file decomposition
     int    m_spatialDimension{3};

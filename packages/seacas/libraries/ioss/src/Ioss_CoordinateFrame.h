@@ -30,7 +30,7 @@ namespace Ioss {
     bool equal(const Ioss::CoordinateFrame &rhs) const;
 
   private:
-    bool equal_(const Ioss::CoordinateFrame &rhs, bool quiet) const;
+    bool                equal_(const Ioss::CoordinateFrame &rhs, bool quiet) const;
     std::vector<double> pointList_{};
     int64_t             id_{};
     char                tag_;

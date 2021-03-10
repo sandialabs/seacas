@@ -51,7 +51,7 @@ namespace Ioss {
     // An example would be 'element_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override;
 
-    int max_parametric_dimension() const;
+    int  max_parametric_dimension() const;
     bool operator==(const SideSet &) const;
     bool operator!=(const SideSet &) const;
     bool equal(const SideSet &) const;

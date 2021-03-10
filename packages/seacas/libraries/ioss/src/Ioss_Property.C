@@ -186,61 +186,56 @@ Ioss::Property &Ioss::Property::operator=(Ioss::Property rhs)
   return *this;
 }
 
-
 bool Ioss::Property::operator==(const Ioss::Property rhs) const
 {
-  if( this->name_.compare(rhs.name_) != 0 ) {
+  if (this->name_.compare(rhs.name_) != 0) {
     return false;
   }
 
-  if( this->type_ != rhs.type_) {
+  if (this->type_ != rhs.type_) {
     return false;
   }
 
-  switch( this->type_ ) {
-    case INVALID:
-      break;
-    case REAL:
-      double r_lhs, r_rhs;
-      this->get_value(&r_lhs);
-      rhs.get_value(&r_rhs);
-      if( r_lhs != r_rhs ) {
-        return false;
-      }
-      break;
-    case INTEGER:
-      int64_t i_lhs, i_rhs;
-      this->get_value(&i_lhs);
-      rhs.get_value(&i_rhs);
-      if( i_lhs != i_rhs ) {
-        return false;
-      }
-      break;
-    case POINTER:
-      void *p_lhs, *p_rhs;
-      this->get_value(p_lhs);
-      rhs.get_value(p_rhs);
-      if( p_lhs != p_rhs ) {
-        return false;
-      }
-      break;
-    case STRING:
-      std::string s_lhs, s_rhs;
-      this->get_value(&s_lhs);
-      rhs.get_value(&s_rhs);
-      if( s_lhs.compare(s_rhs) != 0 ) {
-        return false;
-      }
-      break;
+  switch (this->type_) {
+  case INVALID: break;
+  case REAL:
+    double r_lhs, r_rhs;
+    this->get_value(&r_lhs);
+    rhs.get_value(&r_rhs);
+    if (r_lhs != r_rhs) {
+      return false;
+    }
+    break;
+  case INTEGER:
+    int64_t i_lhs, i_rhs;
+    this->get_value(&i_lhs);
+    rhs.get_value(&i_rhs);
+    if (i_lhs != i_rhs) {
+      return false;
+    }
+    break;
+  case POINTER:
+    void *p_lhs, *p_rhs;
+    this->get_value(p_lhs);
+    rhs.get_value(p_rhs);
+    if (p_lhs != p_rhs) {
+      return false;
+    }
+    break;
+  case STRING:
+    std::string s_lhs, s_rhs;
+    this->get_value(&s_lhs);
+    rhs.get_value(&s_rhs);
+    if (s_lhs.compare(s_rhs) != 0) {
+      return false;
+    }
+    break;
   }
 
   return true;
 }
 
-bool Ioss::Property::operator!=(const Ioss::Property rhs) const
-{
-  return !(*this == rhs);
-}
+bool Ioss::Property::operator!=(const Ioss::Property rhs) const { return !(*this == rhs); }
 
 /** \brief Get the property value if it is of type STRING.
  *

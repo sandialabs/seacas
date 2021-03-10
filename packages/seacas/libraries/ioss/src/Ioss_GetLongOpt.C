@@ -70,7 +70,7 @@ namespace Ioss {
    * \returns 1 if successful, 0 if unsuccessful.
    */
   bool GetLongOption::enroll(const char *const opt, const OptType t, const char *const desc,
-                            const char *const val, const char *const optval, bool extra_line)
+                             const char *const val, const char *const optval, bool extra_line)
   {
     if (options_parsed) {
       return false;
@@ -131,7 +131,7 @@ namespace Ioss {
 
     std::ostringstream multiple_match;
 
-    pname       = basename(*argv);
+    pname          = basename(*argv);
     options_parsed = true;
     if (argc-- <= 1) {
       return my_optind;
@@ -152,7 +152,7 @@ namespace Ioss {
         tmptoken = ++token;
       }
 
-      while ( *tmptoken != '\0' && *tmptoken != '=') {
+      while (*tmptoken != '\0' && *tmptoken != '=') {
         ++tmptoken;
       }
       /* (tmptoken - token) is now equal to the command line option
@@ -236,7 +236,7 @@ namespace Ioss {
    */
   int GetLongOption::parse(char *const str, char *const p)
   {
-    options_parsed       = true;
+    options_parsed    = true;
     char *      token = strtok(str, " \t");
     const char *name  = p != nullptr ? p : "GetLongOption";
 

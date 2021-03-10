@@ -164,7 +164,7 @@ namespace Ioss {
     const VariableType *transStorage_{}; // Storage type after transformation
 
     std::vector<Transform *> transforms_;
-    bool equal_(const Ioss::Field rhs, bool quiet) const;
+    bool                     equal_(const Ioss::Field rhs, bool quiet) const;
   };
 } // namespace Ioss
 #endif
