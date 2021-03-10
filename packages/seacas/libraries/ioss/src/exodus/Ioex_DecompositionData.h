@@ -72,6 +72,8 @@ namespace Ioex {
     void get_block_connectivity(int filePtr, void *data, int64_t id, size_t blk_seq,
                                 size_t nnpe) const;
 
+    void read_elem_proc_map(int filePtr, void *data) const;
+
     void get_node_entity_proc_data(void *entity_proc, const Ioss::MapContainer &node_map,
                                    bool do_map) const;
 

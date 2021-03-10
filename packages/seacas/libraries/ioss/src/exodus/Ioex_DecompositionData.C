@@ -10,7 +10,6 @@
 #include <Ioss_ElementTopology.h> // for ElementTopology
 #include <Ioss_Field.h>           // for Field, etc
 #include <Ioss_Map.h>             // for Map, MapContainer
-#include <Ioss_ParallelUtils.h>   // for ParallelUtils, etc
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
@@ -175,6 +174,42 @@ namespace Ioex {
       m_decomposition.calculate_element_centroids(x, y, z);
     }
 
+    if (m_decomposition.m_method == "MAP") {
+      // Need to read and store the element_to_processor map data...
+      // Use `localElementMap` vector as temporary storage.  Will
+      // be overwritten/resized in `guided_decompose()`
+
+      auto pos = m_decomposition.m_decompExtra.find(",");
+      std::string map_name = m_decomposition.m_decompExtra.substr(0,pos);
+      bool map_read = false;
+      int  map_count = ex_inquire_int(filePtr, EX_INQ_ELEM_MAP);
+      if (map_count > 0) {
+	int max_name_length = ex_inquire_int(filePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+	max_name_length = max_name_length < 32 ? 32 : max_name_length;
+	char **names = Ioss::Utils::get_name_array(map_count, max_name_length);
+	ex_get_names(filePtr, EX_ELEM_MAP, names);
+
+	for (int i = 0; i < map_count; i++) {
+	  if (std::string(names[i]) == map_name) {
+	    m_decomposition.m_elementToProc.resize(decomp_elem_count());
+	    ex_get_partial_num_map(filePtr, EX_ELEM_MAP, i + 1,
+				   decomp_elem_offset()+ 1, decomp_elem_count(),
+				   m_decomposition.m_elementToProc.data());
+	    map_read = true;
+	    break;
+	  }
+	}
+	Ioss::Utils::delete_name_array(names, map_count);
+      }
+
+      if (!map_read) {
+	fmt::print(stderr, "\nERROR: Element decomposition map '{}' could not be read from file.\n",
+		   map_name);
+	exit(EXIT_FAILURE);
+      }
+
+    }
+
 #if !defined(NO_ZOLTAN_SUPPORT)
     float version = 0.0;
     Zoltan_Initialize(0, nullptr, &version);
@@ -210,8 +245,7 @@ namespace Ioex {
 
     if (m_decomposition.m_showHWM || m_decomposition.m_showProgress) {
       int64_t             min, max, avg;
-      Ioss::ParallelUtils pu(m_decomposition.m_comm);
-      pu.hwm_memory_stats(min, max, avg);
+      m_decomposition.m_pu.hwm_memory_stats(min, max, avg);
       int64_t MiB = 1024 * 1024;
       if (m_processor == 0) {
         fmt::print(Ioss::DEBUG(), "\n\tHigh Water Memory at end of Decomposition: {}M  {}M  {}M\n",
