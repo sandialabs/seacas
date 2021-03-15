@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -316,7 +316,7 @@ bool Ioss::ElementTopology::equal_(const Ioss::ElementTopology &rhs, bool quiet)
 {
   if (this->name_.compare(rhs.name_) != 0) {
     if (!quiet) {
-      fmt::print(Ioss::DEBUG(), "Element Topology: NAME mismatch ({} vs. {})\n",
+      fmt::print(Ioss::OUTPUT(), "Element Topology: NAME mismatch ({} vs. {})\n",
                  this->name_.c_str(), rhs.name_.c_str());
     }
     return false;
@@ -324,7 +324,7 @@ bool Ioss::ElementTopology::equal_(const Ioss::ElementTopology &rhs, bool quiet)
 
   if (this->masterElementName_.compare(rhs.masterElementName_) != 0) {
     if (!quiet) {
-      fmt::print(Ioss::DEBUG(), "Element Topology: MASTER ELEMENT NAME mismatch ({} vs. {})\n",
+      fmt::print(Ioss::OUTPUT(), "Element Topology: MASTER ELEMENT NAME mismatch ({} vs. {})\n",
                  this->masterElementName_.c_str(), rhs.masterElementName_.c_str());
     }
     return false;

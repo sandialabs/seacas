@@ -98,68 +98,68 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
 
   if (!options.ignore_qa_info) {
     if (compare_qa_info(input_region_1, input_region_2) == false) {
-      fmt::print(Ioss::OUTPUT(), "QA INFO mismatch\n");
+      fmt::print(Ioss::OUTPUT(), "\nQA INFO mismatch\n");
       overall_result = false;
     }
   }
 
   if (compare_nodeblock(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "NODEBLOCK mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nNODEBLOCK mismatch\n");
     overall_result = false;
   }
 
   if (compare_edgeblocks(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "EDGEBLOCK mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nEDGEBLOCK mismatch\n");
     overall_result = false;
   }
 
   if (compare_faceblocks(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "FACEBLOCK mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nFACEBLOCK mismatch\n");
     overall_result = false;
   }
 
   if (compare_elementblocks(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "ELEMENTBLOCK mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nELEMENTBLOCK mismatch\n");
     overall_result = false;
   }
 
   if (compare_structuredblocks(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "STRUCTUREDBLOCK mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nSTRUCTUREDBLOCK mismatch\n");
     overall_result = false;
   }
 
   if (compare_nodesets(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "NODESET mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nNODESET mismatch\n");
     overall_result = false;
   }
 
   if (compare_edgesets(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "EDGESET mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nEDGESET mismatch\n");
     overall_result = false;
   }
 
   if (compare_facesets(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "FACESET mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nFACESET mismatch\n");
     overall_result = false;
   }
 
   if (compare_elemsets(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "ELEMSET mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nELEMSET mismatch\n");
     overall_result = false;
   }
 
   if (compare_sidesets(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "SIDESET mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nSIDESET mismatch\n");
     overall_result = false;
   }
 
   if (compare_commsets(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "COMMSET mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nCOMMSET mismatch\n");
     overall_result = false;
   }
 
   if (compare_coordinate_frames(input_region_1, input_region_2, options) == false) {
-    fmt::print(Ioss::OUTPUT(), "COORDINATE FRAME mismatch\n");
+    fmt::print(Ioss::OUTPUT(), "\nCOORDINATE FRAME mismatch\n");
     overall_result = false;
   }
 
@@ -518,17 +518,15 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
     }
 
     int in_step_count_1 = input_region_1.get_property("state_count").get_int();
-    int in_step_count_2 = input_region_2.get_property("state_count").get_int();
 
     // This should have already been checked
-    assert(in_step_count_1 == in_step_count_2);
+    assert(in_step_count_1 == input_region_2.get_property("state_count").get_int());
 
     for (int istep = 1; istep <= in_step_count_1; istep++) {
       double in_time_1 = input_region_1.get_state_time(istep);
-      double in_time_2 = input_region_2.get_state_time(istep);
 
       // This should have already been checked
-      assert(in_time_1 == in_time_2);
+      assert(in_time_1 == input_region_2.get_state_time(istep));
 
       if (in_time_1 < options.minimum_time) {
         continue;
@@ -818,20 +816,14 @@ namespace {
     }
 
     for (const auto &inb : in_nbs_1) {
-      Ioss::NodeBlockContainer::iterator it;
-      for (it = in_nbs_2.begin(); it != in_nbs_2.end(); it++) {
-        if (*inb == *(*it)) {
-          break;
-        }
-      }
-      if (it == in_nbs_2.end()) {
+      auto *nb2 = input_region_2.get_node_block(inb->name());
+      if (nb2 == nullptr) {
         fmt::print(Ioss::WARNING(), NOTFOUND_2, "NODEBLOCK", inb->name());
         overall_result = false;
       }
-      else {
-        // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
-        // inadvertently match against it again
-        in_nbs_2.erase(it);
+      else if (!inb->equal(*nb2)) {
+        fmt::print(Ioss::OUTPUT(), "NODEBLOCK {} mismatch", inb->name());
+        overall_result = false;
       }
     }
 
@@ -884,7 +876,7 @@ namespace {
     const auto &in_ebs_1 = input_region_1.get_element_blocks();
     const auto &in_ebs_2 = input_region_2.get_element_blocks();
     if (compare_blocks(in_ebs_1, in_ebs_2, options) == false) {
-      fmt::print(Ioss::OUTPUT(), "ELEMENTBLOCKS mismatch\n");
+      fmt::print(Ioss::OUTPUT(), "\nELEMENTBLOCKS mismatch\n");
       return false;
     }
     return true;
@@ -896,7 +888,7 @@ namespace {
     const auto &in_ebs_1 = input_region_1.get_edge_blocks();
     const auto &in_ebs_2 = input_region_2.get_edge_blocks();
     if (compare_blocks(in_ebs_1, in_ebs_2, options) == false) {
-      fmt::print(Ioss::OUTPUT(), "EDGEBLOCKS mismatch\n");
+      fmt::print(Ioss::OUTPUT(), "\nEDGEBLOCKS mismatch\n");
       return false;
     }
     return true;
@@ -908,7 +900,7 @@ namespace {
     const auto &in_fbs_1 = input_region_1.get_face_blocks();
     const auto &in_fbs_2 = input_region_2.get_face_blocks();
     if (compare_blocks(in_fbs_1, in_fbs_2, options) == false) {
-      fmt::print(Ioss::OUTPUT(), "FACEBLOCKS mismatch\n");
+      fmt::print(Ioss::OUTPUT(), "\nFACEBLOCKS mismatch\n");
       return false;
     }
     return true;
@@ -1001,7 +993,7 @@ namespace {
     const auto &in_nss_2 = input_region_2.get_nodesets();
     bool        rc       = compare_sets(in_nss_1, in_nss_2, options);
     if (!rc) {
-      fmt::print(Ioss::OUTPUT(), "NODESET mismatch\n");
+      fmt::print(Ioss::OUTPUT(), "\nNODESET mismatch\n");
     }
 
     return rc;
@@ -1014,7 +1006,7 @@ namespace {
     const auto &in_ess_2 = input_region_2.get_edgesets();
     bool        rc       = compare_sets(in_ess_1, in_ess_2, options);
     if (!rc) {
-      fmt::print(Ioss::OUTPUT(), "EDGESET mismatch\n");
+      fmt::print(Ioss::OUTPUT(), "\nEDGESET mismatch\n");
     }
 
     return rc;
@@ -1027,7 +1019,7 @@ namespace {
     const auto &in_fss_2 = input_region_2.get_facesets();
     bool        rc       = compare_sets(in_fss_1, in_fss_2, options);
     if (!rc) {
-      fmt::print(Ioss::OUTPUT(), "FACESET mismatch\n");
+      fmt::print(Ioss::OUTPUT(), "\nFACESET mismatch\n");
     }
 
     return rc;
@@ -1040,7 +1032,7 @@ namespace {
     const auto &in_ess_2 = input_region_2.get_elementsets();
     bool        rc       = compare_sets(in_ess_1, in_ess_2, options);
     if (!rc) {
-      fmt::print(Ioss::OUTPUT(), "ELEMSET mismatch\n");
+      fmt::print(Ioss::OUTPUT(), "\nELEMSET mismatch\n");
     }
 
     return rc;
@@ -1053,7 +1045,7 @@ namespace {
     const auto &in_sss_2 = input_region_2.get_sidesets();
     bool        rc       = compare_sets(in_sss_1, in_sss_2, options);
     if (!rc) {
-      fmt::print(Ioss::OUTPUT(), "SIDESET mismatch\n");
+      fmt::print(Ioss::OUTPUT(), "\nSIDESET mismatch\n");
     }
 
     return rc;

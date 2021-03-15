@@ -222,6 +222,20 @@ bool Ioss::Property::operator==(const Ioss::Property rhs) const
       return false;
     }
     break;
+  case VEC_DOUBLE: {
+    auto rh = rhs.get_vec_double();
+    auto lh = get_vec_double();
+    if (lh != rh) {
+      return false;
+    }
+  } break;
+  case VEC_INTEGER: {
+    auto rh = rhs.get_vec_int();
+    auto lh = get_vec_int();
+    if (lh != rh) {
+      return false;
+    }
+  } break;
   case STRING:
     std::string s_lhs, s_rhs;
     this->get_value(&s_lhs);

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -30,7 +30,7 @@ namespace Ioss {
   {
     if (this->id_ != rhs.id_) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "CoordinateFrame : ID mismatch ({} vs. {})\n", this->id_,
+        fmt::print(Ioss::OUTPUT(), "CoordinateFrame : ID mismatch ({} vs. {})\n", this->id_,
                    rhs.id_);
       }
       return false;
@@ -38,22 +38,22 @@ namespace Ioss {
 
     if (this->pointList_ != rhs.pointList_) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "CoordinateFrame : Point list mismatch ([ ");
+        fmt::print(Ioss::OUTPUT(), "CoordinateFrame : Point list mismatch ([ ");
         for (auto &point : this->pointList_) {
-          fmt::print(Ioss::DEBUG(), "{} ", point);
+          fmt::print(Ioss::OUTPUT(), "{} ", point);
         }
-        fmt::print(Ioss::DEBUG(), "] vs [");
+        fmt::print(Ioss::OUTPUT(), "] vs [");
         for (auto &point : rhs.pointList_) {
-          fmt::print(Ioss::DEBUG(), "{} ", point);
+          fmt::print(Ioss::OUTPUT(), "{} ", point);
         }
-        fmt::print(Ioss::DEBUG(), "])\n");
+        fmt::print(Ioss::OUTPUT(), "])\n");
       }
       return false;
     }
 
     if (this->id_ != rhs.id_) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "CoordinateFrame : TAG mismatch ({} vs. {})\n", this->tag_,
+        fmt::print(Ioss::OUTPUT(), "CoordinateFrame : TAG mismatch ({} vs. {})\n", this->tag_,
                    rhs.tag_);
       }
       return false;

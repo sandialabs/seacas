@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -282,7 +282,7 @@ namespace Ioss {
   {
     if (this->m_bcName != rhs.m_bcName) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "BoundaryCondition: m_bcName MISMATCH ({} vs. {})\n",
+        fmt::print(Ioss::OUTPUT(), "BoundaryCondition: m_bcName MISMATCH ({} vs. {})\n",
                    this->m_bcName.c_str(), rhs.m_bcName.c_str());
       }
       return false;
@@ -290,7 +290,7 @@ namespace Ioss {
 
     if (this->m_famName != rhs.m_famName) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "BoundaryCondition: m_famName MISMATCH ({} vs. {})\n",
+        fmt::print(Ioss::OUTPUT(), "BoundaryCondition: m_famName MISMATCH ({} vs. {})\n",
                    this->m_famName.c_str(), rhs.m_famName.c_str());
       }
       return false;
@@ -298,7 +298,7 @@ namespace Ioss {
 
     if (this->m_rangeBeg != rhs.m_rangeBeg) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(),
+        fmt::print(Ioss::OUTPUT(),
                    "BoundaryCondition: m_rangeBeg MISMATCH ({}:{}:{} vs. {}:{}:{})\n",
                    IJK_list(this->m_rangeBeg), IJK_list(rhs.m_rangeBeg));
       }
@@ -307,7 +307,7 @@ namespace Ioss {
 
     if (this->m_rangeEnd != rhs.m_rangeEnd) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(),
+        fmt::print(Ioss::OUTPUT(),
                    "BoundaryCondition: m_rangeEnd MISMATCH ({}:{}:{} vs. {}:{}:{})\n",
                    IJK_list(this->m_rangeEnd), IJK_list(rhs.m_rangeEnd));
       }
@@ -330,7 +330,7 @@ namespace Ioss {
   {
     if (this->m_ni != rhs.m_ni || this->m_nj != rhs.m_nj || this->m_nk != rhs.m_nk) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: N mismatch ({}:{}:{} vs. {}:{}:{})\n",
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: N mismatch ({}:{}:{} vs. {}:{}:{})\n",
                    this->m_ni, this->m_nj, this->m_nk, rhs.m_ni, rhs.m_nj, rhs.m_nk);
       }
       return false;
@@ -339,7 +339,7 @@ namespace Ioss {
     if (this->m_offsetI != rhs.m_offsetI || this->m_offsetJ != rhs.m_offsetJ ||
         this->m_offsetK != rhs.m_offsetK) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: OFFSET mismatch ({}:{}:{} vs. {}:{}:{})\n",
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: OFFSET mismatch ({}:{}:{} vs. {}:{}:{})\n",
                    this->m_offsetI, this->m_offsetJ, this->m_offsetK, rhs.m_offsetI, rhs.m_offsetJ,
                    rhs.m_offsetK);
       }
@@ -349,7 +349,7 @@ namespace Ioss {
     if (this->m_niGlobal != rhs.m_niGlobal || this->m_njGlobal != rhs.m_njGlobal ||
         this->m_nkGlobal != rhs.m_nkGlobal) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: Global N mismatch ({}:{}:{} vs. {}:{}:{})\n",
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Global N mismatch ({}:{}:{} vs. {}:{}:{})\n",
                    this->m_niGlobal, this->m_njGlobal, this->m_nkGlobal, rhs.m_niGlobal,
                    rhs.m_njGlobal, rhs.m_nkGlobal);
       }
@@ -358,7 +358,7 @@ namespace Ioss {
 
     if (this->m_nodeOffset != rhs.m_nodeOffset) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: Node Offset mismatch ({} vs. {})\n",
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Node Offset mismatch ({} vs. {})\n",
                    this->m_nodeOffset, rhs.m_nodeOffset);
       }
       return false;
@@ -366,7 +366,7 @@ namespace Ioss {
 
     if (this->m_cellOffset != rhs.m_cellOffset) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: Cell Offset mismatch ({} vs. {})\n",
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Cell Offset mismatch ({} vs. {})\n",
                    this->m_cellOffset, rhs.m_cellOffset);
       }
       return false;
@@ -374,7 +374,7 @@ namespace Ioss {
 
     if (this->m_nodeGlobalOffset != rhs.m_nodeGlobalOffset) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: Node Global Offset mismatch ({} vs. {})\n",
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Node Global Offset mismatch ({} vs. {})\n",
                    this->m_nodeGlobalOffset, rhs.m_nodeGlobalOffset);
       }
       return false;
@@ -382,7 +382,7 @@ namespace Ioss {
 
     if (this->m_cellGlobalOffset != rhs.m_cellGlobalOffset) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: Cell Global Offset mismatch ({} vs. {})\n",
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Cell Global Offset mismatch ({} vs. {})\n",
                    this->m_cellGlobalOffset, rhs.m_cellGlobalOffset);
       }
       return false;
@@ -390,7 +390,7 @@ namespace Ioss {
 
     if (this->m_blockLocalNodeIndex != rhs.m_blockLocalNodeIndex) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(),
+        fmt::print(Ioss::OUTPUT(),
                    "StructuredBlock: Block Local Node Index mismatch ({} entries vs. {} entries)\n",
                    this->m_blockLocalNodeIndex.size(), rhs.m_blockLocalNodeIndex.size());
       }
@@ -401,7 +401,7 @@ namespace Ioss {
     // appear in the same order in two databases that are equivalent.
     if (this->m_globalIdMap != rhs.m_globalIdMap) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: Global ID Map mismatch\n");
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Global ID Map mismatch\n");
       }
       return false;
     }
@@ -410,7 +410,7 @@ namespace Ioss {
     // appear in the same order in two databases that are equivalent.
     if (this->m_zoneConnectivity != rhs.m_zoneConnectivity) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: Zone Connectivity mismatch (size {} vs {})\n",
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Zone Connectivity mismatch (size {} vs {})\n",
                    this->m_zoneConnectivity.size(), rhs.m_zoneConnectivity.size());
       }
       return false;
@@ -420,14 +420,14 @@ namespace Ioss {
     // appear in the same order in two databases that are equivalent.
     if (this->m_boundaryConditions != rhs.m_boundaryConditions) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: Boundary Conditions mismatch\n");
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Boundary Conditions mismatch\n");
       }
       return false;
     }
 
     if (!quiet) {
       if (!Ioss::EntityBlock::equal(rhs)) {
-        fmt::print(Ioss::DEBUG(), "StructuredBlock: EntityBlock mismatch\n");
+        fmt::print(Ioss::OUTPUT(), "StructuredBlock: EntityBlock mismatch\n");
         return false;
       }
     }

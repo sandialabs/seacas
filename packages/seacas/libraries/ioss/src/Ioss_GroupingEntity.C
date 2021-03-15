@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -332,7 +332,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
 {
   if (this->entityName.compare(rhs.entityName) != 0) {
     if (!quiet) {
-      fmt::print(Ioss::DEBUG(), "GroupingEntity: entityName mismatch ({} vs. {})\n",
+      fmt::print(Ioss::OUTPUT(), "GroupingEntity: entityName mismatch ({} vs. {})\n",
                  this->entityName.c_str(), rhs.entityName.c_str());
     }
     return false;
@@ -340,7 +340,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
 
   if (this->entityCount != rhs.entityCount) {
     if (!quiet) {
-      fmt::print(Ioss::DEBUG(), "GroupingEntity: entityCount mismatch ([] vs. [])\n",
+      fmt::print(Ioss::OUTPUT(), "GroupingEntity: entityCount mismatch ([] vs. [])\n",
                  this->entityCount, rhs.entityCount);
     }
     return false;
@@ -348,7 +348,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
 
   if (this->attributeCount != rhs.attributeCount) {
     if (!quiet) {
-      fmt::print(Ioss::DEBUG(), "GroupingEntity: attributeCount mismatch ([] vs. [])\n",
+      fmt::print(Ioss::OUTPUT(), "GroupingEntity: attributeCount mismatch ([] vs. [])\n",
                  this->attributeCount, rhs.attributeCount);
     }
     return false;
@@ -356,7 +356,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
 
   if (this->entityState != rhs.entityState) {
     if (!quiet) {
-      fmt::print(Ioss::DEBUG(), "GroupingEntity: entityState mismatch ([] vs. [])\n",
+      fmt::print(Ioss::OUTPUT(), "GroupingEntity: entityState mismatch ([] vs. [])\n",
                  this->entityState, rhs.entityState);
     }
     return false;
@@ -364,7 +364,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
 
   if (this->hash_ != rhs.hash_) {
     if (!quiet) {
-      fmt::print(Ioss::DEBUG(), "GroupingEntity: hash_ mismatch ({} vs. {})\n", this->hash_,
+      fmt::print(Ioss::OUTPUT(), "GroupingEntity: hash_ mismatch ({} vs. {})\n", this->hash_,
                  rhs.hash_);
     }
     return false;
@@ -377,7 +377,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
 
   if (lhs_properties.size() != rhs_properties.size()) {
     if (!quiet) {
-      fmt::print(Ioss::DEBUG(), "GroupingEntity: NUMBER of properties are different ({} vs. {})\n",
+      fmt::print(Ioss::OUTPUT(), "GroupingEntity: NUMBER of properties are different ({} vs. {})\n",
                  lhs_properties.size(), rhs_properties.size());
     }
     return false;
@@ -387,7 +387,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
     auto it = std::find(rhs_properties.begin(), rhs_properties.end(), lhs_property);
     if (it == rhs_properties.end()) {
       if (!quiet) {
-        fmt::print(Ioss::DEBUG(),
+        fmt::print(Ioss::OUTPUT(),
                    "WARNING: GroupingEntity: INPUT property ({}) not found in OUTPUT\n",
                    lhs_property.c_str());
       }
@@ -399,7 +399,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
       // can have different values for the "original_block_order" property.
       if (lhs_property.compare("original_block_order") == 0) {
         if (!quiet) {
-          fmt::print(Ioss::DEBUG(),
+          fmt::print(Ioss::OUTPUT(),
                      "WARNING: values for \"original_block_order\" DIFFER ({} vs. {})\n",
                      this->properties.get(lhs_property).get_int(),
                      rhs.properties.get(lhs_property).get_int());
@@ -407,7 +407,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
       }
       else {
         if (!quiet) {
-          fmt::print(Ioss::DEBUG(), "GroupingEntity: PROPERTY ({}) mismatch\n",
+          fmt::print(Ioss::OUTPUT(), "GroupingEntity: PROPERTY ({}) mismatch\n",
                      lhs_property.c_str());
         }
         return false;
@@ -419,7 +419,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
     for (auto &rhs_property : rhs_properties) {
       auto it = std::find(lhs_properties.begin(), lhs_properties.end(), rhs_property);
       if (it == lhs_properties.end()) {
-        fmt::print(Ioss::DEBUG(),
+        fmt::print(Ioss::OUTPUT(),
                    "WARNING: GroupingEntity: OUTPUT property ({}) not found in INPUT\n",
                    rhs_property.c_str());
       }
@@ -433,7 +433,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
 
   if (lhs_fields.size() != rhs_fields.size()) {
     if (!quiet) {
-      fmt::print(Ioss::DEBUG(), "GroupingEntity: NUMBER of fields are different ({} vs. {})\n",
+      fmt::print(Ioss::OUTPUT(), "GroupingEntity: NUMBER of fields are different ({} vs. {})\n",
                  lhs_fields.size(), rhs_fields.size());
     }
     return false;
@@ -442,7 +442,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
   for (auto &field : lhs_fields) {
     if (!quiet) {
       if (!this->fields.get(field).equal(rhs.fields.get(field))) {
-        fmt::print(Ioss::DEBUG(), "GroupingEntity: FIELD ({}) mismatch\n", field.c_str());
+        fmt::print(Ioss::OUTPUT(), "GroupingEntity: FIELD ({}) mismatch\n", field.c_str());
         return false;
       }
     }
