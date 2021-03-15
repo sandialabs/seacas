@@ -8,22 +8,21 @@
 #define Iofaodel_DatabaseIO_h
 
 #include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>    // for DatabaseUsage
-#include <Ioss_DatabaseIO.h> // for DatabaseIO
-#include <Ioss_IOFactory.h>  // for IOFactory
-#include <Ioss_Map.h>        // for Map
-#include <Ioss_Region.h>   // for Region
-#include <Ioss_State.h>      // for State
-#include <Ioss_VariableType.h>   // for VariableType
-#include <cstddef>           // for size_t
-#include <cstdint>           // for int64_t
-#include <string>            // for string
-#include <vector>            // for vector
-#include <atomic>            // for atomic
+#include <Ioss_DBUsage.h>      // for DatabaseUsage
+#include <Ioss_DatabaseIO.h>   // for DatabaseIO
+#include <Ioss_IOFactory.h>    // for IOFactory
+#include <Ioss_Map.h>          // for Map
+#include <Ioss_Region.h>       // for Region
+#include <Ioss_State.h>        // for State
+#include <Ioss_VariableType.h> // for VariableType
+#include <atomic>              // for atomic
+#include <cstddef>             // for size_t
+#include <cstdint>             // for int64_t
+#include <string>              // for string
+#include <vector>              // for vector
 
 #include "faodel-common/Common.hh"
 #include "kelpie/Kelpie.hh"
-
 
 namespace Ioss {
   class CommSet;
@@ -49,7 +48,6 @@ namespace Ioss {
  */
 namespace Iofaodel {
 
-
   class IOFactory : public Ioss::IOFactory
   {
   public:
@@ -60,7 +58,6 @@ namespace Iofaodel {
     Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
                               MPI_Comm communicator, const Ioss::PropertyManager &properties) const;
   };
-
 
   class DatabaseIO : public Ioss::DatabaseIO
   {
@@ -103,20 +100,26 @@ namespace Iofaodel {
 
     void read_meta_data__() override;
 
-
     bool begin_state__(int /* state */, double /* time */) override;
     bool end_state__(int /* state */, double /* time */) override;
 
-    bool begin__(Ioss::State state) override { dbState = state; return true;};
-    bool end__(Ioss::State state) override { dbState = Ioss::STATE_UNKNOWN; return true;};
+    bool begin__(Ioss::State state) override
+    {
+      dbState = state;
+      return true;
+    };
+    bool end__(Ioss::State state) override
+    {
+      dbState = Ioss::STATE_UNKNOWN;
+      return true;
+    };
 
     void read_region();
-    void read_entity_properties(kelpie::ObjectCapacities oc, Ioss::GroupingEntity & entity);
+    void read_entity_properties(kelpie::ObjectCapacities oc, Ioss::GroupingEntity &entity);
     Ioss::Property read_property(lunasa::DataObject &ldo);
-    void read_entity_fields(kelpie::ObjectCapacities oc, Ioss::GroupingEntity & entity);
+    void           read_entity_fields(kelpie::ObjectCapacities oc, Ioss::GroupingEntity &entity);
 
     void read_communication_metadata();
-
 
     /*
      * TODO identify all the get_*{blocks|sets} needed here
@@ -170,10 +173,10 @@ namespace Iofaodel {
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                void *data, size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::Assembly *a, const Ioss::Field &field,
-                               void *data, size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::Blob *b, const Ioss::Field &field,
-                               void *data, size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::Assembly *a, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::Blob *b, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
@@ -200,11 +203,10 @@ namespace Iofaodel {
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                void *data, size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::Assembly *a, const Ioss::Field &field,
-                               void *data, size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::Blob *b, const Ioss::Field &field,
-                               void *data, size_t data_size) const override;
-
+    int64_t put_field_internal(const Ioss::Assembly *a, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t put_field_internal(const Ioss::Blob *b, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
 
     std::string databaseTitle;
 
@@ -228,13 +230,13 @@ namespace Iofaodel {
     int             commsetElemCount;
 
     // Faodel helpers
-    int64_t get_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &field,
-        void *data, size_t data_size) const;
+    int64_t get_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &field, void *data,
+                               size_t data_size) const;
 
-    int64_t put_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &field,
-        void *data, size_t data_size) const;
+    int64_t put_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &field, void *data,
+                               size_t data_size) const;
 
-    mutable kelpie::Pool pool;
+    mutable kelpie::Pool  pool;
     faodel::Configuration faodel_config;
 
     using PropertyPair = std::pair<std::string, bool>;
