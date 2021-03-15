@@ -630,8 +630,8 @@ namespace {
 
     if (!interFace.decomp_method.empty()) {
       properties.add(Ioss::Property("DECOMPOSITION_METHOD", interFace.decomp_method));
-      if (interFace.decomp_method == "MAP") {
-        properties.add(Ioss::Property("DECOMPOSITION_EXTRA", interFace.decomp_map));
+      if (interFace.decomp_method == "MAP" || interFace.decomp_method == "VARIABLE") {
+        properties.add(Ioss::Property("DECOMPOSITION_EXTRA", interFace.decomp_extra));
       }
     }
 

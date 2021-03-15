@@ -191,8 +191,13 @@ void IOShell::Interface::enroll_options()
                   "\t\t(if auto) by `int((max_entry+1)/proc_count)`.",
                   nullptr);
 
-  options_.enroll("variable", Ioss::GetLongOption::NoValue,
-                  "Not implemented yet (read decomp from element variable)", nullptr);
+  options_.enroll("variable", Ioss::GetLongOption::OptionalValue,
+                  "Read the decomposition data from the specified element variable.\n"
+                  "\t\tIf no variable name is specified, then `processor_id` will be used.\n"
+                  "\t\tIf the name is followed by a ',' and an integer or 'auto', then\n"
+                  "\t\tthe entries in the variable will be divided by the integer value or\n"
+                  "\t\t(if auto) by `int((max_entry+1)/proc_count)`.",
+                  nullptr);
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
@@ -471,11 +476,12 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
   if (options_.retrieve("map") != nullptr) {
     decomp_method = "MAP";
-    decomp_map    = options_.get_option_value("map", decomp_map);
+    decomp_extra  = options_.get_option_value("map", decomp_extra);
   }
 
   if (options_.retrieve("variable") != nullptr) {
     decomp_method = "VARIABLE";
+    decomp_extra  = options_.get_option_value("variable", decomp_extra);
   }
 
   if (options_.retrieve("cyclic") != nullptr) {

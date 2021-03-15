@@ -170,7 +170,7 @@ namespace Ioss {
         m_processorCount(m_pu.parallel_size())
   {
     m_method = get_decomposition_method(props, m_processor);
-    if (m_method == "MAP") {
+    if (m_method == "MAP" || m_method == "VARIABLE") {
       m_decompExtra = props.get_optional("DECOMPOSITION_EXTRA", "processor_id");
     }
 
@@ -553,211 +553,144 @@ namespace Ioss {
   template <typename INT> void Decomposition<INT>::guided_decompose()
   {
     show_progress(__func__);
-    if (m_method == "MAP" || m_method == "VARIABLE") {
-      // - Read my portion of the map / variable.
-      // - count # of exports to each rank
-      // -- exportElementCount[proc]
-      // - share that with each rank -- becomes their import count
-      // - build list of exported elements (exportElementMap)
-      // - communicate to all proc -- becomes   importElementMap.
-      // Create `exportElementIndex` from `exportElementCount`
+    assert(m_method == "MAP" || m_method == "VARIABLE");
+    // - Read my portion of the map / variable.
+    // - count # of exports to each rank
+    // -- exportElementCount[proc]
+    // - share that with each rank -- becomes their import count
+    // - build list of exported elements (exportElementMap)
+    // - communicate to all proc -- becomes   importElementMap.
+    // Create `exportElementIndex` from `exportElementCount`
 
-      size_t           count = m_elementDist[m_processor + 1] - m_elementDist[m_processor];
-      std::vector<INT> element_to_proc(count);
+    std::string label;
+    if (m_method == "MAP") {
+      label = "map";
+    }
+    else {
+      label = "variable";
+    }
 
-      if (m_method == "MAP") {
-        // If the "m_decompExtra" string contains a comma, then the
-        // value following the comma is either an integer "scale"
-        // which is divided into each entry in m_elementToProc, or it
-        // is the string "auto" which will automatically scale all
-        // values by the *integer* "max/processorCount"
-        //
-        // NOTE: integer division with *no* rounding is used.
+    // If the "m_decompExtra" string contains a comma, then the
+    // value following the comma is either an integer "scale"
+    // which is divided into each entry in m_elementToProc, or it
+    // is the string "auto" which will automatically scale all
+    // values by the *integer* "max/processorCount"
+    //
+    // NOTE: integer division with *no* rounding is used.
 
-        // Get maximum value in the m_elementToProc map for use in scaling or verifying
-        auto local_max = *std::max_element(m_elementToProc.begin(), m_elementToProc.end());
-        auto max_proc  = m_pu.global_minmax(local_max, Ioss::ParallelUtils::DO_MAX);
+    // Get maximum value in the m_elementToProc vector for use in scaling or verifying
+    // `m_elementToProc` is populated in Ioex_Decomposition.C...
+    auto local_max = *std::max_element(m_elementToProc.begin(), m_elementToProc.end());
+    auto max_proc  = m_pu.global_minmax(local_max, Ioss::ParallelUtils::DO_MAX);
 
-        // [0..m_processorCount).
-        int  iscale = 1;
-        auto pos    = m_decompExtra.find(",");
-        if (pos != std::string::npos) {
-          // Extract the string following the comma...
-          auto scale = m_decompExtra.substr(pos + 1);
-          if (scale == "AUTO" || scale == "auto") {
-            iscale = (max_proc + 1) / m_processorCount;
-            if (m_processor == 0) {
-              fmt::print(Ioss::OUTPUT(),
-                         "IOSS: Element Processor Map automatic scaling factor = {}\n", iscale);
-            }
-            if (iscale == 0) {
-              std::ostringstream errmsg;
-              fmt::print(errmsg,
-                         "ERROR: Max value in element processor map is {} which is\n"
-                         "\tless than the processor count ({}). Scaling values is not possible.",
-                         max_proc, m_processorCount);
-              IOSS_ERROR(errmsg);
-            }
-          }
-          else {
-            iscale = std::stoi(scale);
-          }
-          // Do the scaling (integer division...)
-          std::transform(m_elementToProc.begin(), m_elementToProc.end(), m_elementToProc.begin(),
-                         [iscale](int p) { return p / iscale; });
-          max_proc /= iscale;
+    // [0..m_processorCount).
+    int  iscale = 1;
+    auto pos    = m_decompExtra.find(",");
+    if (pos != std::string::npos) {
+      // Extract the string following the comma...
+      auto scale = m_decompExtra.substr(pos + 1);
+      if (scale == "AUTO" || scale == "auto") {
+        iscale = (max_proc + 1) / m_processorCount;
+        if (m_processor == 0) {
+          fmt::print(Ioss::OUTPUT(), "IOSS: Element Processor {} automatic scaling factor = {}\n",
+                     label, iscale);
         }
-
-        // Check that values in the map are in range
-        if (max_proc < m_processorCount - 1) {
-          if (m_processor == 0) {
-            fmt::print(Ioss::WARNING(),
-                       "Max value in element processor map is {} which is\n"
-                       "\tless than the processor count ({}). Make sure this is correct.\n",
-                       max_proc, m_processorCount);
-          }
-        }
-        else if (max_proc >= m_processorCount) {
+        if (iscale == 0) {
           std::ostringstream errmsg;
           fmt::print(errmsg,
-                     "ERROR: The element processor map '{}' specifies a processor of {} which\n"
-                     "\tis not valid for a decomposition on {} processors.",
-                     m_decompExtra, max_proc, m_processorCount);
+                     "ERROR: Max value in element processor {} is {} which is\n"
+                     "\tless than the processor count ({}). Scaling values is not possible.",
+                     label, max_proc, m_processorCount);
           IOSS_ERROR(errmsg);
         }
-
-        // Finally... Do the decomposition...
-        // Count exports to each rank...
-        exportElementCount.resize(m_processorCount + 1);
-        exportElementIndex.resize(m_processorCount + 1);
-        importElementCount.resize(m_processorCount + 1);
-        importElementIndex.resize(m_processorCount + 1);
-
-        for (auto &proc : m_elementToProc) {
-          exportElementCount[proc]++;
-        }
-
-        size_t local = exportElementCount[m_processor];
-        localElementMap.reserve(local);
-        for (size_t i = 0; i < m_elementToProc.size(); i++) {
-          if (m_elementToProc[i] == m_processor) {
-            localElementMap.push_back(i);
-          }
-        }
-
-        exportElementCount[m_processor] = 0;
-#if IOSS_DEBUG_OUTPUT
-        fmt::print(Ioss::DEBUG(), "[{}] Export Count: {}\n", m_processor,
-                   fmt::join(exportElementCount, " "));
-#endif
-        MPI_Alltoall(exportElementCount.data(), 1, Ioss::mpi_type((INT)0),
-                     importElementCount.data(), 1, Ioss::mpi_type((INT)0), m_comm);
-        show_progress("\tguided_decompose Communication 1 finished");
-
-        // Now fill the vectors with the elements ...
-        size_t exp_size = std::accumulate(exportElementCount.begin(), exportElementCount.end(), 0);
-        exportElementMap.resize(exp_size);
-
-        std::copy(exportElementCount.begin(), exportElementCount.end(), exportElementIndex.begin());
-        Ioss::Utils::generate_index(exportElementIndex);
-
-        {
-          std::vector<INT> tmp_disp(exportElementIndex);
-          for (size_t i = 0; i < m_elementToProc.size(); i++) {
-            if (m_elementToProc[i] != m_processor) {
-              exportElementMap[tmp_disp[m_elementToProc[i]]++] = m_elementOffset + i;
-            }
-          }
-        }
-
-        m_elementToProc.clear();
-
-        size_t imp_size = std::accumulate(importElementCount.begin(), importElementCount.end(), 0);
-        importElementMap.resize(imp_size);
-        importElementIndex.resize(m_processorCount + 1);
-        std::copy(importElementCount.begin(), importElementCount.end(), importElementIndex.begin());
-        Ioss::Utils::generate_index(importElementIndex);
-
-        Ioss::MY_Alltoallv(exportElementMap, exportElementCount, exportElementIndex,
-                           importElementMap, importElementCount, importElementIndex, m_comm);
-        show_progress("\tguided_decompose Communication 2 finished");
-
-#if IOSS_DEBUG_OUTPUT
-        fmt::print(Ioss::DEBUG(), "Processor {}:\t{} local, {} imported and {} exported elements\n",
-                   m_processor, m_elementCount - exp_size, imp_size, exp_size);
-#endif
       }
       else {
-        // Just for experimentation...
-        // Shift half of the elements to the neighboring rank(s)
-        // If don't have neighbor on one side, elements stay here...
-        size_t import_low  = 0;
-        size_t import_high = 0;
-        size_t export_low  = 0;
-        size_t export_high = 0;
+        iscale = std::stoi(scale);
+      }
+      // Do the scaling (integer division...)
+      std::transform(m_elementToProc.begin(), m_elementToProc.end(), m_elementToProc.begin(),
+                     [iscale](int p) { return p / iscale; });
+      max_proc /= iscale;
+    }
 
-        size_t off_low  = 0;
-        size_t off_high = 0;
-        if (m_processor > 0) {
-          export_low       = count / 2;
-          size_t count_low = m_elementDist[m_processor] - m_elementDist[m_processor - 1];
-          import_low       = count_low / 2;
-          off_low          = m_elementOffset - count_low;
-        }
-        if (m_processor < m_processorCount - 1) {
-          export_high       = count / 2;
-          size_t count_high = m_elementDist[m_processor + 2] - m_elementDist[m_processor + 1];
-          import_high       = count_high / 2;
-          off_high          = m_elementOffset + count;
-        }
-
-        size_t retain = count - export_low - export_high;
-        localElementMap.resize(retain);
-        for (size_t i = 0; i < retain; i++) {
-          localElementMap[i] = export_low + i;
-        }
-
-        exportElementMap.resize(export_low + export_high);
-        size_t offset = m_elementOffset;
-        if (export_low == 0) {
-          offset += count - export_high;
-        }
-        std::iota(exportElementMap.begin(), exportElementMap.end(), offset);
-
-        exportElementCount.resize(m_processorCount + 1);
-        exportElementIndex.resize(m_processorCount + 1);
-        if (export_low > 0) {
-          exportElementCount[m_processor - 1] = export_low;
-          exportElementIndex[m_processor - 1] = export_low;
-        }
-        if (export_high > 0) {
-          exportElementCount[m_processor + 1] = export_high;
-          exportElementIndex[m_processor + 1] = export_high;
-        }
-        Ioss::Utils::generate_index(exportElementIndex);
-
-        // Will import the same number as we export (?)
-        importElementMap.resize(import_low + import_high);
-        off_low += import_low;
-        for (size_t i = 0; i < import_low; i++) {
-          importElementMap[i] = off_low++;
-        }
-        for (size_t i = 0; i < import_high; i++) {
-          importElementMap[import_low + i] = off_high++;
-        }
-        importElementCount.resize(m_processorCount + 1);
-        importElementIndex.resize(m_processorCount + 1);
-        if (import_low > 0) {
-          importElementCount[m_processor - 1] = import_low;
-          importElementIndex[m_processor - 1] = import_low;
-        }
-        if (import_high > 0) {
-          importElementCount[m_processor + 1] = import_high;
-          importElementIndex[m_processor + 1] = import_high;
-        }
-        Ioss::Utils::generate_index(importElementIndex);
+    // Check that values in the map/variable are in range
+    if (max_proc < m_processorCount - 1) {
+      if (m_processor == 0) {
+        fmt::print(Ioss::WARNING(),
+                   "Max value in element processor {} is {} which is\n"
+                   "\tless than the processor count ({}). Make sure this is correct.\n",
+                   label, max_proc, m_processorCount);
       }
     }
+    else if (max_proc >= m_processorCount) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: The element processor {} '{}' specifies a processor of {} which\n"
+                 "\tis not valid for a decomposition on {} processors.",
+                 label, m_decompExtra, max_proc, m_processorCount);
+      IOSS_ERROR(errmsg);
+    }
+
+    // Finally... Do the decomposition...
+    // Count exports to each rank...
+    exportElementCount.resize(m_processorCount + 1);
+    exportElementIndex.resize(m_processorCount + 1);
+    importElementCount.resize(m_processorCount + 1);
+    importElementIndex.resize(m_processorCount + 1);
+
+    for (auto &proc : m_elementToProc) {
+      exportElementCount[proc]++;
+    }
+
+    size_t local = exportElementCount[m_processor];
+    localElementMap.reserve(local);
+    for (size_t i = 0; i < m_elementToProc.size(); i++) {
+      if (m_elementToProc[i] == m_processor) {
+        localElementMap.push_back(i);
+      }
+    }
+
+    exportElementCount[m_processor] = 0;
+#if IOSS_DEBUG_OUTPUT
+    fmt::print(Ioss::DEBUG(), "[{}] Export Count: {}\n", m_processor,
+               fmt::join(exportElementCount, " "));
+#endif
+    MPI_Alltoall(exportElementCount.data(), 1, Ioss::mpi_type((INT)0), importElementCount.data(), 1,
+                 Ioss::mpi_type((INT)0), m_comm);
+    show_progress("\tguided_decompose Communication 1 finished");
+
+    // Now fill the vectors with the elements ...
+    size_t exp_size = std::accumulate(exportElementCount.begin(), exportElementCount.end(), 0);
+    exportElementMap.resize(exp_size);
+
+    std::copy(exportElementCount.begin(), exportElementCount.end(), exportElementIndex.begin());
+    Ioss::Utils::generate_index(exportElementIndex);
+
+    {
+      std::vector<INT> tmp_disp(exportElementIndex);
+      for (size_t i = 0; i < m_elementToProc.size(); i++) {
+        if (m_elementToProc[i] != m_processor) {
+          exportElementMap[tmp_disp[m_elementToProc[i]]++] = m_elementOffset + i;
+        }
+      }
+    }
+
+    m_elementToProc.clear();
+
+    size_t imp_size = std::accumulate(importElementCount.begin(), importElementCount.end(), 0);
+    importElementMap.resize(imp_size);
+    importElementIndex.resize(m_processorCount + 1);
+    std::copy(importElementCount.begin(), importElementCount.end(), importElementIndex.begin());
+    Ioss::Utils::generate_index(importElementIndex);
+
+    Ioss::MY_Alltoallv(exportElementMap, exportElementCount, exportElementIndex, importElementMap,
+                       importElementCount, importElementIndex, m_comm);
+    show_progress("\tguided_decompose Communication 2 finished");
+
+#if IOSS_DEBUG_OUTPUT
+    fmt::print(Ioss::DEBUG(), "Processor {}:\t{} local, {} imported and {} exported elements\n",
+               m_processor, m_elementCount - exp_size, imp_size, exp_size);
+#endif
   }
 
   template <typename INT> void Decomposition<INT>::simple_decompose()
