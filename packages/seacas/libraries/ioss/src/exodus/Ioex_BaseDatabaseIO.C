@@ -367,7 +367,7 @@ namespace Ioex {
         fmt::print(Ioss::OUTPUT(),
                    "IOSS: Input database contains 8-byte integers. Setting Ioss to use "
                    "8-byte integers.\n");
-	sixty_four_bit_message_output = true;
+        sixty_four_bit_message_output = true;
       }
       ex_set_int64_status(m_exodusFilePtr, EX_ALL_INT64_API);
       set_int_byte_size_api(Ioss::USE_INT64_API);

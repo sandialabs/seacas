@@ -452,7 +452,7 @@ namespace Ioex {
     Ioss::FileInfo file(filename);
     std::string    path = file.pathname();
     filename            = file.tailname();
-    char *current_cwd = getcwd(nullptr, 0);
+    char *current_cwd   = getcwd(nullptr, 0);
     chdir(path.c_str());
 #endif
 
@@ -547,7 +547,7 @@ namespace Ioex {
     Ioss::FileInfo file(filename);
     std::string    path = file.pathname();
     filename            = file.tailname();
-    char *current_cwd = getcwd(nullptr, 0);
+    char *current_cwd   = getcwd(nullptr, 0);
     chdir(path.c_str());
 #endif
 
@@ -2359,7 +2359,8 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideSet *fs, const Io
   size_t num_to_get = field.verify(data_size);
   if (field.get_name() == "ids") {
     // Do nothing, just handles an idiosyncrasy of the GroupingEntity
-    // However, make sure that the caller gets a consistent answer, i.e., don't leave the buffer full of junk
+    // However, make sure that the caller gets a consistent answer, i.e., don't leave the buffer
+    // full of junk
     memset(data, 0x00, data_size);
   }
   else {
