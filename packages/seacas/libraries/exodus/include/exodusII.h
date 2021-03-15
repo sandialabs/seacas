@@ -54,12 +54,12 @@
 #endif
 
 /* EXODUS version number */
-#define EXODUS_VERSION "8.10"
+#define EXODUS_VERSION "8.11"
 #define EXODUS_VERSION_MAJOR 8
-#define EXODUS_VERSION_MINOR 10
-#define EXODUS_RELEASE_DATE "February 3, 2021"
+#define EXODUS_VERSION_MINOR 11
+#define EXODUS_RELEASE_DATE "March 15, 2021"
 
-#define EX_API_VERS 8.10f
+#define EX_API_VERS 8.11f
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
 #define EX_VERS EX_API_VERS
 
@@ -204,6 +204,16 @@ enum ex_inquiry {
   EX_INQ_THREADSAFE          = 59, /**< Returns 1 if library is thread-safe; 0 otherwise */
   EX_INQ_ASSEMBLY            = 60, /**< number of assemblies */
   EX_INQ_BLOB                = 61, /**< number of blobs */
+  EX_INQ_NUM_NODE_VAR        = 62, /**< number of nodal variables */
+  EX_INQ_NUM_EDGE_BLOCK_VAR  = 63, /**< number of edge block variables */
+  EX_INQ_NUM_FACE_BLOCK_VAR  = 64, /**< number of face block variables */
+  EX_INQ_NUM_ELEM_BLOCK_VAR  = 65, /**< number of element block variables */
+  EX_INQ_NUM_NODE_SET_VAR    = 66, /**< number of node set variables */
+  EX_INQ_NUM_EDGE_SET_VAR    = 67, /**< number of edge set variables */
+  EX_INQ_NUM_FACE_SET_VAR    = 68, /**< number of face set variables */
+  EX_INQ_NUM_ELEM_SET_VAR    = 69, /**< number of element set variables */
+  EX_INQ_NUM_SIDE_SET_VAR    = 70, /**< number of sideset variables */
+  EX_INQ_NUM_GLOBAL_VAR      = 71, /**< number of global variables */
   EX_INQ_INVALID             = -1
 };
 
