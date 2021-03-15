@@ -198,7 +198,7 @@ are written a component at a time, otherwise write the old way as a single blob.
    }
 ```
 
-There are similar modifcations to the reading of the nodal coordinates
+There are similar modifications to the reading of the nodal coordinates
 and the reading of nodal variables. If interested in those functions, see the viewcvs URL
 listed above.
 

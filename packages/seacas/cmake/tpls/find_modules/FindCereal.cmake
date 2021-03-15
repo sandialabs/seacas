@@ -194,7 +194,7 @@ if ( NOT Cereal_FIND_QUIETLY )
   message(STATUS "\tCereal_INCLUDE_DIRS      = ${Cereal_INCLUDE_DIRS}")
 
 endif()
-# For compatability with TriBITS:
+# For compatibility with TriBITS:
 SET(DOCSTR "List of semi-colon separated paths to look for the TPL Cereal")
 
 set(TPL_Cereal_INCLUDE_DIRS ${Cereal_INCLUDE_DIRS} CACHE PATH ${DOCSTR})

@@ -45,7 +45,7 @@ namespace Ioss {
     {
     }
 
-    // cereal requires a default constuctor when de-serializing vectors of objects.  Because
+    // cereal requires a default constructor when de-serializing vectors of objects.  Because
     // StructuredBlock contains a vector of BoundaryCondition objects, this default constructor is
     // necessary.
     BoundaryCondition() = default;

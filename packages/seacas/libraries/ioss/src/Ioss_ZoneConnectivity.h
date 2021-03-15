@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -27,7 +27,7 @@ namespace Ioss {
 
   struct ZoneConnectivity
   {
-    // cereal requires a default constuctor when de-serializing vectors of objects.  Because
+    // cereal requires a default constructor when de-serializing vectors of objects.  Because
     // StructuredBlock contains a vector of ZoneConnectivity objects, this default constructor is
     // necessary.
     ZoneConnectivity() = default;

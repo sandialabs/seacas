@@ -85,11 +85,11 @@ IF (Faodel_ALLOW_PREFIND)
 
   IF (Faodel_FOUND)
     set(TPL_Faodel_INCLUDE_DIRS ${Faodel_INCLUDE_DIR} CACHE PATH
-      "List of semi-colon seprated list of directories containing Faodel header files")
+      "List of semi-colon separated list of directories containing Faodel header files")
     set(TPL_Faodel_LIBRARY_DIRS ${Faodel_LIBRARY_DIR} CACHE PATH
-      "List of semi-colon seprated list of directories containing Faodel library files")
+      "List of semi-colon separated list of directories containing Faodel library files")
     set(TPL_Faodel_LIBRARIES Faodel::kelpie CACHE PATH
-      "List of semi-colon seprated (full) paths to the Faodel libraries")
+      "List of semi-colon separated (full) paths to the Faodel libraries")
   ENDIF()
 
 ENDIF()

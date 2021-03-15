@@ -302,7 +302,7 @@ mpisyncstart.enable true
       for( auto structuredblock : structuredblocks ) {
         auto structuredblock_key = make_structuredblock_key(parallel_rank(), *(get_region()), *structuredblock);
 
-        /* PUBLISH the attirbutes of StructuredBlock */
+        /* PUBLISH the attributes of StructuredBlock */
         auto ldo = pack_structuredblock(*structuredblock);
         pool.Publish(structuredblock_key, ldo);
       }

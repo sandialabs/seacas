@@ -85,7 +85,7 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
 -----------------|:------:|-----------------------------------------------------------
  OMIT_QA_RECORDS | on/[off] | Do not output any QA records to the output database.
  OMIT_INFO_RECORDS | on/[off] | Do not output any INFO records to the output database. 
- RETAIN_EMPTY_BLOCKS | on/[off] | If an element block is completly empty (on all ranks) should it be written to the output database.
+ RETAIN_EMPTY_BLOCKS | on/[off] | If an element block is completely empty (on all ranks) should it be written to the output database.
  VARIABLE_NAME_CASE | upper/lower | Should all output field names be converted to uppercase or lowercase. Default is leave as is.
  FILE_TYPE             | [netcdf], netcdf4, netcdf-4, hdf5 | Underlying file type (bits on disk format)
  COMPRESSION_METHOD    | [zlib], szip | The compression method to use.  `szip` only available if HDF5 is built with that supported.
