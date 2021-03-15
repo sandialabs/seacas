@@ -99,6 +99,9 @@ class PhactoriResampleWithDatasetOperation(PhactoriOperationSpecifics):
 
     #self.InternalParaViewFilterPtr = ResampleWithDataset(Input = inInputFilter, Source=paraviewResampleDataset)
     self.InternalParaViewFilterPtr = ResampleWithDataset(SourceDataArrays = inInputFilter, DestinationMesh=paraviewResampleDataset)
+    self.InternalParaViewFilterPtr.PassCellArrays = 1
+    self.InternalParaViewFilterPtr.PassPointArrays = 1
+
     self.InternalParaViewFilterPtr.CellLocator = 'Static Cell Locator'
 
     self.DebugPrintInputPortAndOutputPortInfo("pre filter update 1\n")

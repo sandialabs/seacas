@@ -3809,6 +3809,21 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
               'aggregatedataset',
               PhactoriAggregateDatasetOperation,
               operationParams)
+    elif operationParams['type'] == 'createsegmentsnormaltocells':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'createsegmentsnormaltocells',
+              PhactoriCreateSegmentsNormalToCells,
+              operationParams)
+    elif operationParams['type'] == 'vectorproject':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'vectorproject',
+              PhactoriVectorProject,
+              operationParams)
+    elif operationParams['type'] == 'glyph':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'glyph',
+              PhactoriGlyphOperation,
+              operationParams)
     elif operationParams['type'] == 'triangulate':
       ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
               'triangulate',
@@ -7756,6 +7771,14 @@ from Operation.PhactoriSubdivideOperation import *
 #phactori_combine_to_single_python_file_parent_1
 from Operation.PhactoriAggregateDatasetOperation import *
 
+#phactori_combine_to_single_python_file_parent_1
+from Operation.PhactoriCreateSegmentsNormalToCells import *
+
+#phactori_combine_to_single_python_file_parent_1
+from Operation.PhactoriVectorProject import *
+
+#phactori_combine_to_single_python_file_parent_1
+from Operation.PhactoriGlyphOperation import *
 
 #phactori_combine_to_single_python_file_parent_1
 from Operation.PhactoriTriangulateOperation import *
@@ -7839,6 +7862,7 @@ class PhactoriPlaneOpBase(PhactoriOperationSpecifics):
 
       if 'plane normal' in inJson:
         self.mPlaneNormal = inJson['plane normal']
+        self.mPlaneNormal = vecNormalize(self.mPlaneNormal)
       else:
         self.mPlaneNormal = [0.0, 1.0, 0.0]
 
@@ -9546,12 +9570,14 @@ class PhactoriImagesetBlock:
             UpdatePipelineWithCurrentTimeArgument(onevisop.mParaViewFilter)
             onevisop.mParaViewFilter.ThresholdRange = svrng
             UpdatePipelineWithCurrentTimeArgument(onevisop.mParaViewFilter)
-            
+
         if PhactoriDbg():
           firstop = self.mVisibleOps[0]
           firstPvFilter = firstop.GetPvFilter()
           label1 = "before WriteImage() " + fname + "\n"
           DebugPrintCellAndPointArrayInfo(label1, firstPvFilter, 100)
+          myDebugPrint3("self.mPvDataRepresentation2.Representation:\n" + \
+            str(self.mPvDataRepresentation2.Representation) + "\n")
 
         if PhactoriDbg():
           myDebugPrint3("calling WriteImage() " + fname + "\n")
@@ -11668,6 +11694,8 @@ def ColorByVariableComponentOrMagnitudeXX(inParaViewDataRepresentation,
     if PhactoriDbg():
       myDebugPrint3("using ColorBy() to set color var " + \
         inVariableName + "  " + inVariableArrayType + " 1\n")
+      myDebugPrint3("inComponentOrMagnitude: " + str(inComponentOrMagnitude) \
+        + "\ninWhichComponent: " + str(inWhichComponent) + "\n")
     inParaViewDataRepresentation.RescaleTransferFunctionToDataRange(False)
     SafeColorBy(inParaViewDataRepresentation,
         (inVariableArrayType, inVariableName))

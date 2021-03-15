@@ -37,6 +37,7 @@ from Operation.test_PhactoriSampledCellInfo import *
 from Operation.test_PhactoriGeometricCellSampler1 import *
 from Operation.test_PhactoriVtkCellOperations import *
 from Operation.test_PhactoriDataArtifactMetaDataControl import *
+from Operation.test_PhactoriCreateSegmentsNormalToCells import *
 if __name__ == '__main__':
     unittest.main()
 
