@@ -200,9 +200,9 @@ namespace Ioex {
 
     ElemBlock(const ElemBlock &other)
         : name(other.name), id(other.id), entityCount(other.entityCount),
-          nodesPerEntity(other.nodesPerEntity), edgesPerEntity(other.edgesPerEntity),
-          facesPerEntity(other.facesPerEntity), attributeCount(other.attributeCount),
-          offset_(other.offset_), procOffset(other.procOffset)
+          globalEntityCount(other.globalEntityCount), nodesPerEntity(other.nodesPerEntity),
+          edgesPerEntity(other.edgesPerEntity), facesPerEntity(other.facesPerEntity),
+          attributeCount(other.attributeCount), offset_(other.offset_), procOffset(other.procOffset)
     {
       Ioss::Utils::copy_string(elType, other.elType);
     }
@@ -220,6 +220,7 @@ namespace Ioex {
     std::string name{};
     entity_id   id{0};
     int64_t     entityCount{0};
+    int64_t     globalEntityCount{0};
     int64_t     nodesPerEntity{0};
     int64_t     edgesPerEntity{0};
     int64_t     facesPerEntity{0};
@@ -239,6 +240,7 @@ namespace Ioex {
     std::string name{};
     entity_id   id{0};
     int64_t     entityCount{0};
+    int64_t     globalEntityCount{0};
     int64_t     localOwnedCount{0};
     int64_t     attributeCount{0};
     int64_t     dfCount{0};
@@ -304,6 +306,7 @@ namespace Ioex {
     std::string name{};
     entity_id   id{0};
     int64_t     entityCount{0};
+    int64_t     globalEntityCount{0};
     int64_t     dfCount{0};
     int64_t     procOffset{0};
     int64_t     dfProcOffset{0};
@@ -437,14 +440,14 @@ namespace Ioex {
     int put_non_define_data(const std::vector<NodeBlock> &nodeblocks);
     int put_non_define_data(const std::vector<EdgeBlock> &blocks);
     int put_non_define_data(const std::vector<FaceBlock> &blocks);
-    int put_non_define_data(const std::vector<ElemBlock> &blocks);
+    int put_non_define_data(const std::vector<ElemBlock> &blocks, bool output_global_data);
 
-    int put_non_define_data(const std::vector<NodeSet> &nodesets);
+    int put_non_define_data(const std::vector<NodeSet> &nodesets, bool output_global_data);
     int put_non_define_data(const std::vector<EdgeSet> &edgesets);
     int put_non_define_data(const std::vector<FaceSet> &facesets);
     int put_non_define_data(const std::vector<ElemSet> &elemsets);
 
-    int put_non_define_data(const std::vector<SideSet> &sidesets);
+    int put_non_define_data(const std::vector<SideSet> &sidesets, bool output_global_data);
 
     int max_name_length() const { return maximumNameLength; }
 

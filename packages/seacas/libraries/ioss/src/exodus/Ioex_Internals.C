@@ -63,6 +63,8 @@ namespace {
                                   nc_type type);
 
   int put_int_array(int exoid, const char *var_type, const std::vector<int> &array);
+  int put_int_array(int exoid, const char *var_type, const std::vector<int64_t> &array);
+
   int put_id_array(int exoid, const char *var_type, const std::vector<entity_id> &ids);
   int define_coordinate_vars(int exodusFilePtr, int64_t nodes, int node_dim, int dimension,
                              int dim_dim, int str_dim);
@@ -281,9 +283,10 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
     name = other.name();
   }
 
-  id             = other.get_property("id").get_int();
-  entityCount    = other.entity_count();
-  nodesPerEntity = other.topology()->number_nodes();
+  id                = other.get_property("id").get_int();
+  entityCount       = other.entity_count();
+  globalEntityCount = other.get_optional_property("global_entity_count", 0);
+  nodesPerEntity    = other.topology()->number_nodes();
 
   if (other.field_exists("connectivity_edge")) {
     edgesPerEntity = other.get_field("connectivity_edge").raw_storage()->component_count();
@@ -299,12 +302,10 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
     facesPerEntity = 0;
   }
 
-  attributeCount      = other.get_property("attribute_count").get_int();
-  offset_             = other.get_offset();
-  std::string el_type = other.topology()->name();
-  if (other.property_exists("original_topology_type")) {
-    el_type = other.get_property("original_topology_type").get_string();
-  }
+  attributeCount = other.get_property("attribute_count").get_int();
+  offset_        = other.get_offset();
+  std::string el_type =
+      other.get_optional_property("original_topology_type", other.topology()->name());
 
   Ioss::Utils::copy_string(elType, el_type);
 
@@ -321,15 +322,16 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
 
 ElemBlock &ElemBlock::operator=(const ElemBlock &other)
 {
-  name           = other.name;
-  id             = other.id;
-  entityCount    = other.entityCount;
-  nodesPerEntity = other.nodesPerEntity;
-  edgesPerEntity = other.edgesPerEntity;
-  facesPerEntity = other.facesPerEntity;
-  attributeCount = other.attributeCount;
-  offset_        = other.offset_;
-  procOffset     = other.procOffset;
+  name              = other.name;
+  id                = other.id;
+  entityCount       = other.entityCount;
+  globalEntityCount = other.globalEntityCount;
+  nodesPerEntity    = other.nodesPerEntity;
+  edgesPerEntity    = other.edgesPerEntity;
+  facesPerEntity    = other.facesPerEntity;
+  attributeCount    = other.attributeCount;
+  offset_           = other.offset_;
+  procOffset        = other.procOffset;
   Ioss::Utils::copy_string(elType, other.elType);
   return *this;
 }
@@ -351,11 +353,12 @@ NodeSet::NodeSet(const Ioss::NodeSet &other)
     name = other.name();
   }
 
-  id              = other.get_property("id").get_int();
-  entityCount     = other.entity_count();
-  localOwnedCount = other.get_optional_property("locally_owned_count", entityCount);
-  attributeCount  = other.get_property("attribute_count").get_int();
-  dfCount         = other.get_property("distribution_factor_count").get_int();
+  id                = other.get_property("id").get_int();
+  entityCount       = other.entity_count();
+  globalEntityCount = other.get_optional_property("global_entity_count", 0);
+  localOwnedCount   = other.get_optional_property("locally_owned_count", entityCount);
+  attributeCount    = other.get_property("attribute_count").get_int();
+  dfCount           = other.get_property("distribution_factor_count").get_int();
   if (dfCount > 0 && dfCount != entityCount) {
     dfCount = entityCount;
   }
@@ -445,6 +448,7 @@ SideSet::SideSet(const Ioss::SideBlock &other)
 
   id                         = other.get_property("id").get_int();
   entityCount                = other.entity_count();
+  globalEntityCount          = other.get_optional_property("global_entity_count", 0);
   dfCount                    = other.get_property("distribution_factor_count").get_int();
   const std::string &io_name = other.name();
 
@@ -467,6 +471,7 @@ SideSet::SideSet(const Ioss::SideSet &other)
 
   id                         = other.get_property("id").get_int();
   entityCount                = other.entity_count();
+  globalEntityCount          = other.get_optional_property("global_entity_count", 0);
   dfCount                    = other.get_property("distribution_factor_count").get_int();
   const std::string &io_name = other.name();
 
@@ -729,6 +734,7 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
     ex__compress_variable(exodusFilePtr, varid, 2);
   } // Exit redefine mode
 
+  bool output_global_data = (mesh.comm.outputNemesis && mesh.comm.processorCount > 1);
   if (var_params.num_edge > 0) {
     if ((ierr = put_non_define_data(mesh.edgeblocks)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
@@ -744,14 +750,14 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
   }
 
   if (var_params.num_elem > 0) {
-    if ((ierr = put_non_define_data(mesh.elemblocks)) != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.elemblocks, output_global_data)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.elemblocks, exodusFilePtr, EX_ELEM_BLOCK);
   }
 
   if (var_params.num_nset > 0) {
-    if ((ierr = put_non_define_data(mesh.nodesets)) != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.nodesets, output_global_data)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.nodesets, exodusFilePtr, EX_NODE_SET);
@@ -779,7 +785,7 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
   }
 
   if (var_params.num_sset > 0) {
-    if ((ierr = put_non_define_data(mesh.sidesets)) != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.sidesets, output_global_data)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.sidesets, exodusFilePtr, EX_SIDE_SET);
@@ -1088,6 +1094,8 @@ int Internals::write_meta_data(Mesh &mesh)
   }
 
   // NON-Define mode output...
+  bool output_global_data = (mesh.comm.outputNemesis && mesh.comm.processorCount > 1);
+
   if ((ierr = put_non_define_data(mesh.comm, mesh.full_nemesis_data)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
@@ -1100,11 +1108,11 @@ int Internals::write_meta_data(Mesh &mesh)
     EX_FUNC_LEAVE(ierr);
   }
 
-  if ((ierr = put_non_define_data(mesh.elemblocks)) != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.elemblocks, output_global_data)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  if ((ierr = put_non_define_data(mesh.nodesets)) != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.nodesets, output_global_data)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
@@ -1120,7 +1128,7 @@ int Internals::write_meta_data(Mesh &mesh)
     EX_FUNC_LEAVE(ierr);
   }
 
-  if ((ierr = put_non_define_data(mesh.sidesets)) != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.sidesets, output_global_data)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
@@ -2805,7 +2813,7 @@ int Internals::put_non_define_data(const std::vector<Assembly> &assemblies)
   return EX_NOERR;
 }
 
-int Internals::put_non_define_data(const std::vector<ElemBlock> &blocks)
+int Internals::put_non_define_data(const std::vector<ElemBlock> &blocks, bool output_global_data)
 {
   int num_elem_blk = static_cast<int>(blocks.size()); // Verified via assert earlier...
 
@@ -2818,6 +2826,20 @@ int Internals::put_non_define_data(const std::vector<ElemBlock> &blocks)
 
     if (put_id_array(exodusFilePtr, VAR_ID_EL_BLK, elem_blk_id) != NC_NOERR) {
       return (EX_FATAL);
+    }
+
+    if (output_global_data) {
+      if (put_id_array(exodusFilePtr, VAR_ELBLK_IDS_GLOBAL, elem_blk_id) != NC_NOERR) {
+        return (EX_FATAL);
+      }
+
+      std::vector<int64_t> counts(num_elem_blk);
+      for (int iblk = 0; iblk < num_elem_blk; iblk++) {
+        counts[iblk] = blocks[iblk].globalEntityCount;
+      }
+      if (put_int_array(exodusFilePtr, VAR_ELBLK_CNT_GLOBAL, counts) != NC_NOERR) {
+        return (EX_FATAL);
+      }
     }
 
     // Now, write the element block status array
@@ -3702,7 +3724,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
   return (EX_NOERR);
 }
 
-int Internals::put_non_define_data(const std::vector<NodeSet> &nodesets)
+int Internals::put_non_define_data(const std::vector<NodeSet> &nodesets, bool output_global_data)
 {
   if (nodesets.empty()) {
     return (EX_NOERR);
@@ -3717,6 +3739,20 @@ int Internals::put_non_define_data(const std::vector<NodeSet> &nodesets)
 
   if (put_id_array(exodusFilePtr, VAR_NS_IDS, nodeset_id) != NC_NOERR) {
     return (EX_FATAL);
+  }
+
+  if (output_global_data) {
+    if (put_id_array(exodusFilePtr, VAR_NS_IDS_GLOBAL, nodeset_id) != NC_NOERR) {
+      return (EX_FATAL);
+    }
+
+    std::vector<int64_t> counts(num_nodesets);
+    for (size_t iset = 0; iset < num_nodesets; iset++) {
+      counts[iset] = nodesets[iset].globalEntityCount;
+    }
+    if (put_int_array(exodusFilePtr, VAR_NS_NODE_CNT_GLOBAL, counts) != NC_NOERR) {
+      return (EX_FATAL);
+    }
   }
 
   // Now, write the status array
@@ -3972,7 +4008,7 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets, bool count_onl
   return (EX_NOERR);
 }
 
-int Internals::put_non_define_data(const std::vector<SideSet> &sidesets)
+int Internals::put_non_define_data(const std::vector<SideSet> &sidesets, bool output_global_data)
 {
   if (sidesets.empty()) {
     return (EX_NOERR);
@@ -3987,6 +4023,20 @@ int Internals::put_non_define_data(const std::vector<SideSet> &sidesets)
 
   if (put_id_array(exodusFilePtr, VAR_SS_IDS, sideset_id) != NC_NOERR) {
     return (EX_FATAL);
+  }
+
+  if (output_global_data) {
+    if (put_id_array(exodusFilePtr, VAR_SS_IDS_GLOBAL, sideset_id) != NC_NOERR) {
+      return (EX_FATAL);
+    }
+
+    std::vector<int64_t> counts(num_sidesets);
+    for (int iset = 0; iset < num_sidesets; iset++) {
+      counts[iset] = sidesets[iset].globalEntityCount;
+    }
+    if (put_int_array(exodusFilePtr, VAR_SS_SIDE_CNT_GLOBAL, counts) != NC_NOERR) {
+      return (EX_FATAL);
+    }
   }
 
   // Now, write the status array
@@ -4021,7 +4071,7 @@ namespace {
       for (size_t i = 0; i < entities.size(); i++) {
         names[i] = (char *)entities[i].name.c_str();
       }
-      return (ex_put_names(exoid, ent_type, &names[0]));
+      return (ex_put_names(exoid, ent_type, names.data()));
     }
     return (EX_NOERR);
   }
@@ -4131,7 +4181,31 @@ namespace {
       return (EX_FATAL);
     }
 
-    status = nc_put_var_int(exoid, var_id, &array[0]);
+    status = nc_put_var_int(exoid, var_id, array.data());
+    if (status != NC_NOERR) {
+      ex_opts(EX_VERBOSE);
+      errmsg = fmt::format("Error: failed to write {} array in file id {}", var_type, exoid);
+      ex_err_fn(exoid, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
+    }
+    return (EX_NOERR);
+  }
+
+  int put_int_array(int exoid, const char *var_type, const std::vector<int64_t> &array)
+  {
+    std::string errmsg;
+    int         var_id;
+    int         status;
+
+    status = nc_inq_varid(exoid, var_type, &var_id);
+    if (status != NC_NOERR) {
+      ex_opts(EX_VERBOSE);
+      errmsg = fmt::format("Error: failed to locate {} in file id {}", var_type, exoid);
+      ex_err_fn(exoid, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
+    }
+
+    status = nc_put_var_longlong(exoid, var_id, array.data());
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to write {} array in file id {}", var_type, exoid);
@@ -4157,7 +4231,7 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status = nc_put_var_longlong(exoid, var_id, (long long int *)&ids[0]);
+      status = nc_put_var_longlong(exoid, var_id, (long long int *)ids.data());
     }
     else {
       // Have entity_id (long long), need ints...
@@ -4170,7 +4244,7 @@ namespace {
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
-      status = nc_put_var_int(exoid, var_id, &int_ids[0]);
+      status = nc_put_var_int(exoid, var_id, int_ids.data());
     }
 
     if (status != NC_NOERR) {
