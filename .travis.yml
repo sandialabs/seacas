@@ -1,5 +1,7 @@
 sudo: required
 
+dist: focal
+  
 language: c++
 
 os:
