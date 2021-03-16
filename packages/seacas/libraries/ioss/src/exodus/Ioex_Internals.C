@@ -4205,7 +4205,7 @@ namespace {
       return (EX_FATAL);
     }
 
-    status = nc_put_var_longlong(exoid, var_id, array.data());
+    status = nc_put_var_longlong(exoid, var_id, (long long *)array.data());
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to write {} array in file id {}", var_type, exoid);
