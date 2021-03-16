@@ -584,33 +584,35 @@ namespace Ioss {
     auto max_proc  = m_pu.global_minmax(local_max, Ioss::ParallelUtils::DO_MAX);
 
     // [0..m_processorCount).
-    int  iscale = 1;
+    double scale = 1.0;
     auto pos    = m_decompExtra.find(",");
     if (pos != std::string::npos) {
       // Extract the string following the comma...
-      auto scale = m_decompExtra.substr(pos + 1);
-      if (scale == "AUTO" || scale == "auto") {
-        iscale = (max_proc + 1) / m_processorCount;
+      auto scale_str = m_decompExtra.substr(pos + 1);
+      if (scale_str == "AUTO" || scale_str == "auto") {
+        scale = double(max_proc + 1) / (double)m_processorCount;
         if (m_processor == 0) {
-          fmt::print(Ioss::OUTPUT(), "IOSS: Element Processor {} automatic scaling factor = {}\n",
-                     label, iscale);
-        }
-        if (iscale == 0) {
-          std::ostringstream errmsg;
-          fmt::print(errmsg,
-                     "ERROR: Max value in element processor {} is {} which is\n"
-                     "\tless than the processor count ({}). Scaling values is not possible.",
-                     label, max_proc, m_processorCount);
-          IOSS_ERROR(errmsg);
+          fmt::print(Ioss::OUTPUT(), "IOSS: Element Processor {} automatic scaling factor = {:.5}\n",
+                     label, scale);
         }
       }
       else {
-        iscale = std::stoi(scale);
+        scale = std::stod(scale_str);
       }
+
+      if (scale < 1.0) {
+	std::ostringstream errmsg;
+	fmt::print(errmsg,
+		   "ERROR: Processor {} scaling factor is {} which is not allowed.\n"
+		   "\tIt must be >= 1.0. Scaling values is not possible.",
+		   label, scale);
+	IOSS_ERROR(errmsg);
+      }
+
       // Do the scaling (integer division...)
       std::transform(m_elementToProc.begin(), m_elementToProc.end(), m_elementToProc.begin(),
-                     [iscale](int p) { return p / iscale; });
-      max_proc /= iscale;
+                     [scale](int p) { return int(double(p) / scale); });
+      max_proc = int(double(max_proc)/scale);
     }
 
     // Check that values in the map/variable are in range
