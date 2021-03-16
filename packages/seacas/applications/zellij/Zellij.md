@@ -26,7 +26,7 @@ Executing zellij with the `-help` option will result in output similar to the fo
 ```
 Zellij
 	(A code for tiling 1 or more template databases into a single output database.)
-	(Version: 1.4.0) Modified: 2021/03/03
+	(Version: 1.4.1) Modified: 2021/03/16
 	Parallel Capability Not Enabled.
 
 usage: zellij [options] -lattice <lattice_definition_file>
@@ -83,6 +83,10 @@ usage: zellij [options] -lattice <lattice_definition_file>
 	-compress <$val> (Specify the hdf5 zlib compression level [0..9] or szip [even, 4..32] to be used on the output file.)
 
 	-separate_cells (Do not equivalence the nodes between adjacent unit cells.)
+	-repeat <$val> (Each lattice entry will be used the specified number of times as will
+		each row in the lattice (for debugging). `-repeat 2` would double the lattice.)
+	-skip <$val> (Skip the specified number of lattice entries and rows. For example, -skip 1
+		would read every other entry on the row and every other row. (for debugging))
 	-help (Print this summary and exit)
 	-version (Print version and exit)
 	-debug <$val> (debug level (values are or'd)
@@ -92,7 +96,8 @@ usage: zellij [options] -lattice <lattice_definition_file>
 		   8 = Verbose output of Grid finalization calculations.
 		  16 = Put exodus library into verbose mode.
 		  32 = Verbose decomposition information.
-		  64 = Verbose output database summary information.)
+		  64 = Verbose output database summary information.
+		 128 = Verbose sideset generation information.)
 	-copyright (Show copyright and license data.)
 
 	Can also set options via ZELLIJ_OPTIONS environment variable.
