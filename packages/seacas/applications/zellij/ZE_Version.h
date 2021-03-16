@@ -8,7 +8,7 @@
 
 static char const *qainfo[] = {
     "zellij",
-    "2021/03/04",
+    "2021/03/16",
     "1.4.1",
 };
 

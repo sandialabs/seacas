@@ -281,9 +281,12 @@ void Grid::create_output_regions(SystemInterface &interFace)
 
   for (int i = m_startRank; i < m_startRank + m_rankCount; i++) {
     // Define the output database(s)...
-    std::string outfile   = Ioss::Utils::decode_filename(interFace.outputName_, i, m_parallelSize);
-    Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
-                                                    (MPI_Comm)MPI_COMM_SELF, properties);
+    if (m_parallelSize > 1) {
+      properties.add(Ioss::Property("processor_count", parallel_size()));
+      properties.add(Ioss::Property("my_processor", i));
+    }
+    Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
+        "exodus", interFace.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_SELF, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -1016,6 +1019,8 @@ namespace {
         auto *block = new Ioss::ElementBlock(*blk.second.get());
         block->property_update("entity_count", element_block_elem_count[rank][block->name()]);
         block->property_update("global_entity_count", global_block_element_count[block->name()]);
+        grid.output_region(rank)->property_add(
+            Ioss::Property("global_element_count", (int64_t)global_element_count));
         grid.output_region(rank)->add(block);
         if (debug_level & 8) {
           fmt::print("rank, blk, element_count: {}: {} {}\n", rank, block->name(),
@@ -1057,6 +1062,8 @@ namespace {
                                        local_node_count[i], spatial_dimension);
       block->property_add(Ioss::Property("id", 1));
       grid.output_region(i)->add(block);
+      grid.output_region(i)->property_add(
+          Ioss::Property("global_node_count", (int64_t)global_node_count));
     }
     return global_node_count;
   }
@@ -1140,6 +1147,7 @@ namespace {
                                 "quad4", "hex8", surface_face_count[rank][surface->name()]);
         surface->add(block);
         block->property_update("global_entity_count", global_surface_face_count[surface->name()]);
+        surface->property_update("global_entity_count", global_surface_face_count[surface->name()]);
         block->property_update("distribution_factor_count", 0);
         grid.output_region(rank)->add(surface);
       }
@@ -1197,6 +1205,7 @@ namespace {
           auto *block   = new Ioss::SideBlock(grid.output_region(rank)->get_database(),
                                             grid.generated_surface_names[i], "quad4", "hex8",
                                             surface_face_count[rank][i]);
+          surface->property_update("global_entity_count", global_surface_face_count[i]);
           block->property_update("global_entity_count", global_surface_face_count[i]);
           block->property_update("distribution_factor_count", 0);
           surface->add(block);
