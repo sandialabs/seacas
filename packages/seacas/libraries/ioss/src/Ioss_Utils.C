@@ -1567,6 +1567,8 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
   // Get the timesteps from the input database.  Step through them
   // and transfer fields to output database...
+  // `selected_steps` specifies whether an input step should be transferred
+  // to the output region based on values in `options`
   std::vector<int> selected_steps = get_selected_steps(region, options);
 
   int step_count = region.get_property("state_count").get_int();
