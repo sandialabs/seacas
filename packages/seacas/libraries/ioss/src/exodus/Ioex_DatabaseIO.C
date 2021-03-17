@@ -469,18 +469,6 @@ namespace Ioex {
       return;
     }
 
-    // APPENDING:
-    // There is an assumption that the writing process (mesh, vars) is
-    // the same for the original run that created this database and
-    // for this run which is appending to the database so the defining
-    // of the output database should be the same except we don't write
-    // anything since it is already there.  We do need the number of
-    // steps though...
-    if (open_create_behavior() == Ioss::DB_APPEND) {
-      get_step_times__();
-      return;
-    }
-
     {
       Ioss::SerializeIO serializeIO__(this);
 
