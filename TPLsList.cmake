@@ -26,7 +26,7 @@
 #
 #     Secondary Stable TPLs are those TPLs that are not required in order to
 #     be able to develop and test Trilinos before checkins but are none the
-#     less offically supported.  Support for SS TPLs is tested as part of the
+#     less officially supported.  Support for SS TPLs is tested as part of the
 #     nightly testing process.
 #
 #   TS: Tertiary Stable TPL
@@ -38,13 +38,13 @@
 #
 #   EX: Experimental TPL
 #
-#     Experimental TPLs are not offically supported.  They represent
+#     Experimental TPLs are not officially supported.  They represent
 #     experimental capabilities of Trilinos packages.  Support for EX TPLs is
 #     never tested as part of the main nightly testing process.  However,
 #     package developers are encouraged to set up their own nightly testing
 #     for their EX TPLs for their packages.
 #
-# The default enable for all TPLs is empty "" reguardless of the category.
+# The default enable for all TPLs is empty "" regardless of the category.
 # The idea is that the enabling of the TPL will be done by the package and
 # other enables that the user has to set.
 #
@@ -59,7 +59,6 @@ SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
   Pnetcdf         "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   Netcdf          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   CGNS            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
-  DataWarehouse   "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   DataWarp        "cmake/TPLs/"    SS
   METIS           "cmake/TPLs/"    TS
   ParMETIS        "cmake/TPLs/"    SS
@@ -68,6 +67,9 @@ SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
   X11             "cmake/TPLs/"    SS
   DLlib           "cmake/TPLs/"    ST
   CUDA            "cmake/TPLs/"    SS
+  fmt             "cmake/TPLs/"    SS
   Kokkos          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
+  Faodel          "${SEACAS_SOURCE_DIR}/cmake/tpls/"    SS
+  Cereal          "${SEACAS_SOURCE_DIR}/cmake/tpls/"    SS
   ADIOS2          "${SEACAS_SOURCE_DIR}/cmake/tpls/FindTPLADIOS2.cmake"    EX
   )

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -84,7 +84,7 @@ std::string   Ioss::Utils::m_preWarningText = "\nIOSS WARNING: ";
 
 // For copy_database...
 namespace {
-  auto initial_time = std::chrono::high_resolution_clock::now();
+  auto initial_time = std::chrono::steady_clock::now();
 
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank);
 
@@ -290,11 +290,14 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   // Examples: basename.8.1, basename.64.03, basename.128.001
 
   // Create a std::string containing the total number of processors
-  size_t proc_width = number_width(num_processors);
+  if (num_processors > 1) {
+    size_t proc_width = number_width(num_processors);
 
-  std::string decoded_filename =
-      fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);
-  return decoded_filename;
+    std::string decoded_filename =
+        fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);
+    return decoded_filename;
+  }
+  return filename;
 }
 
 size_t Ioss::Utils::get_number(const std::string &suffix)
@@ -882,7 +885,7 @@ std::string Ioss::Utils::platform_information()
       fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
                   sys_info.release, sys_info.version, sys_info.machine);
 #else
-  std::string info = "Node: Unknown, OS: Unknown, Machine: Unknown";
+  std::string                 info = "Node: Unknown, OS: Unknown, Machine: Unknown";
 #endif
   return info;
 }
@@ -892,10 +895,14 @@ size_t Ioss::Utils::get_memory_info()
   // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
   size_t memory_usage = 0;
 #if defined(_WIN32)
+#if 0
   /* Windows -------------------------------------------------- */
   PROCESS_MEMORY_COUNTERS info;
   GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
   memory_usage = (size_t)info.WorkingSetSize;
+#else
+  memory_usage = 0;
+#endif
 
 #elif defined(__APPLE__) && defined(__MACH__)
   kern_return_t               error;
@@ -956,10 +963,14 @@ size_t Ioss::Utils::get_hwm_memory_info()
   // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
   size_t memory_usage = 0;
 #if defined(_WIN32)
+#if 0
   /* Windows -------------------------------------------------- */
   PROCESS_MEMORY_COUNTERS info;
   GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
   memory_usage = (size_t)info.PeakWorkingSetSize;
+#else
+  memory_usage = 0;
+#endif
 
 #elif (defined(_AIX) || defined(__TOS__AIX__)) ||                                                  \
     (defined(__sun__) || defined(__sun) || defined(sun) && (defined(__SVR4) || defined(__svr4__)))
@@ -1122,7 +1133,7 @@ unsigned int Ioss::Utils::hash(const std::string &name)
 
 double Ioss::Utils::timer()
 {
-  auto now = std::chrono::high_resolution_clock::now();
+  auto now = std::chrono::steady_clock::now();
   return std::chrono::duration<double>(now - initial_time).count();
 }
 
@@ -2276,7 +2287,7 @@ namespace {
       for (const auto &assm : assem) {
         const std::string &name = assm->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
 
         // NOTE: Can't totally use the copy constructor as it will
@@ -2298,10 +2309,10 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
   }
@@ -2315,7 +2326,7 @@ namespace {
       for (const auto &blob : blobs) {
         const std::string &name = blob->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
         size_t count = blob->entity_count();
         total_entities += count;
@@ -2324,9 +2335,9 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}", (*blobs.begin())->type_string() + "s",
-                   blobs.size());
-        fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}",
+                   (*blobs.begin())->type_string() + "s", blobs.size());
+        fmt::print(Ioss::DEBUG(), "\tLength of entity list = {:14n}\n", total_entities);
       }
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DEBUG(), "\n");
@@ -2411,6 +2422,15 @@ namespace {
                            Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
                            const std::string &prefix)
   {
+    // !!!! WARNING !!!!  This is a hack.  It assumes that all NodeBlocks that have "_nodes" in
+    // their name belong to a StructuredBlock (m_nodeBlock).  Further, it assumes that the
+    // NodeBlocks that belong to a StructuredBlock have no field data that needs to be transferred.
+    // A permanent and comprehensive fix that handles this issue still needs to be developed.
+    // --sll 21aug20
+    if (ige->type() == Ioss::NODEBLOCK && ige->name().find("_nodes") != std::string::npos) {
+      return;
+    }
+
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
     Ioss::NameList state_fields;
@@ -2428,12 +2448,14 @@ namespace {
       // 'connectivity' field, but it is only interesting on the
       // Ioss::ElementBlock class. On the other classes, it just
       // generates overhead...
+
       if (field_name == "connectivity" && ige->type() != Ioss::ELEMENTBLOCK) {
         continue;
       }
       if (field_name == "ids") {
         continue;
       }
+
       if (Ioss::Utils::substr_equal(prefix, field_name)) {
         assert(oge->field_exists(field_name));
         transfer_field_data_internal(ige, oge, pool, field_name, options);

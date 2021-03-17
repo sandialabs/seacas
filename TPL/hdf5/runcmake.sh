@@ -70,13 +70,6 @@ else
   fi
 fi
 
-if [ "$CRAY" == "YES" ]
-then
-    USE_SHARED="NO"
-else
-    USE_SHARED="${SHARED}"
-fi
-
 # If using an XLF compiler on an IBM system, may need to add the following:
 # -DCMAKE_Fortran_FLAGS="-qfixed=72" \
 # -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
@@ -84,7 +77,7 @@ fi
 rm -f config.cache
 
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
-         -DBUILD_SHARED_LIBS:BOOL=${USE_SHARED} \
+         -DBUILD_SHARED_LIBS:BOOL=${SHARED} \
          -DBUILD_TESTING:BOOL=OFF \
          -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} \
 	 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \

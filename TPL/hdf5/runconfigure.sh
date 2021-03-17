@@ -72,17 +72,12 @@ rm -f config.cache
 FC=''; export FC
 F90=''; export F90
 
-if [ "$CRAY" == "YES" ]
+SHARED="${SHARED:-YES}"
+if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
-    USE_SHARED="--disable-shared"
+    USE_SHARED="--enable-shared"
 else
-    SHARED="${SHARED:-YES}"
-    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
-    then
-	USE_SHARED="--enable-shared"
-    else
-	USE_SHARED="--disable-shared"
-    fi
+    USE_SHARED="--disable-shared"
 fi
 
 if [ "${H5VERSION}" == "V18" ]

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -324,9 +324,8 @@ namespace {
     }
 
     if (do_all_flag) {
-      int n;
-      int name_length = var_names1.size();
-      for (n = 0; n < name_length; ++n) {
+      auto name_length = var_names1.size();
+      for (size_t n = 0; n < name_length; ++n) {
         const std::string &name = var_names1[n];
         if (!interFace.summary_flag &&
             find_string(var_names2, name, interFace.nocase_var_names) < 0) {
@@ -350,15 +349,15 @@ namespace {
         }
         if (find_string(names, name, interFace.nocase_var_names) < 0 &&
             find_string(x_list, name, interFace.nocase_var_names) < 0) {
-          int idx = names.size();
           names.push_back(name);
-          tols[idx] = default_tol;
+          tols.push_back(default_tol);
+          SMART_ASSERT(names.size() == tols.size())(names.size())(tols.size());
         }
       }
 
       if (!interFace.noSymmetricNameCheck) {
         name_length = var_names2.size();
-        for (n = 0; n < name_length; ++n) {
+        for (size_t n = 0; n < name_length; ++n) {
           const std::string &name = var_names2[n];
           if (!interFace.summary_flag &&
               find_string(var_names1, name, interFace.nocase_var_names) < 0) {
@@ -382,7 +381,8 @@ namespace {
     }
 
     std::vector<std::string> tmp_list;
-    for (unsigned n = 0; n < names.size(); ++n) {
+    std::vector<Tolerance>   tmp_tols;
+    for (size_t n = 0; n < names.size(); ++n) {
       std::string name = names[n];
       chop_whitespace(name);
       if (name[0] == '!') {
@@ -393,7 +393,7 @@ namespace {
       if (idx >= 0) {
         if (interFace.summary_flag ||
             find_string(var_names2, name, interFace.nocase_var_names) >= 0) {
-          tols[tmp_list.size()] = tols[n];
+          tmp_tols.push_back(tols[n]);
           tmp_list.push_back(var_names1[idx]);
         }
         else {
@@ -420,6 +420,8 @@ namespace {
       }
     }
     names = tmp_list;
+    tols  = tmp_tols;
+    SMART_ASSERT(names.size() == tols.size())(names.size())(tols.size());
   }
 
   template <typename INT>

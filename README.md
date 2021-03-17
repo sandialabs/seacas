@@ -46,7 +46,7 @@ manually as detailed in
 | Variable        | Values          | Default | Description |
 |-----------------|:---------------:|:-------:|-------------|
 | INSTALL_PATH    | path to install | pwd | Root of install path; default is current location |
-| COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build |
+| COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build. Must have C++-14 capability. |
 | MPI             | YES, NO | NO  | If YES, then build parallel capability |
 | FORCE           | YES, NO | NO  | Force downloading and building even if lib is already installed. |
 | BUILD           | YES, NO | YES | Should TPLs be built and installed. |
@@ -118,7 +118,7 @@ parallel version of the Ioss library.
 
 The only modification to the serial build described above is to make
 sure that the mpicc parallel C compiler is in your path and to add the
-`MPI=YES` argument to the `install-tpl.sh` script invokation when
+`MPI=YES` argument to the `install-tpl.sh` script invocation when
 building the TPLs.  For example:
 ```
    MPI=YES ./install-tpl.sh
@@ -165,7 +165,7 @@ cmake -DSEACAS_SOURCE_DIR_OVERRIDE:STRING=seacas/packages/seacas -DTrilinos_ENAB
 ## SPACK
 
 The SPACK package manager (https://spack.io/) can be used to install
-SEACAS and all depedent third-party libaries.  SEACAS is a supported
+SEACAS and all dependent third-party libraries.  SEACAS is a supported
 package in SPACK as of December 2018.
 
 ```

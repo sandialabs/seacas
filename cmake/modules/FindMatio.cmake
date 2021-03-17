@@ -195,7 +195,7 @@ if ( NOT Matio_FIND_QUIETLY )
   message(STATUS "\tMatio_LIBRARIES         = ${Matio_LIBRARIES}")
 
 endif()
-# For compatability with TriBITS:
+# For compatibility with TriBITS:
 SET(DOCSTR "List of semi-colon separated paths to look for the TPL Matio")
 
 set(TPL_Matio_LIBRARIES ${Matio_LIBRARIES} CACHE PATH ${DOCSTR})

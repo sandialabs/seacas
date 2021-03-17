@@ -19,6 +19,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION ${TRIBITS_CMAKE_MINIMUM_REQUIRED} FATAL_ERROR)
 # not in an include file :-(
 PROJECT(${PROJECT_NAME} NONE)
 
+if (${CMAKE_VERSION} GREATER_EQUAL "3.12")
+     cmake_policy(SET CMP0074 NEW)
+endif()
+
 #
 # B) Pull in the TriBITS system and execute
 #
@@ -37,10 +41,6 @@ SET(${PROJECT_NAME}_EXCLUDE_DISABLED_SUBPACKAGES_FROM_DISTRIBUTION_DEFAULT FALSE
 SET(TPL_ENABLE_Pthread OFF CACHE BOOL "")
 
 OPTION(SEACASProj_ENABLE_DOXYGEN "Enable Doxygen documentation creation." OFF)
-
-if (${CMAKE_VERSION} GREATER "3.13")
-     cmake_policy(SET CMP0074 NEW)
-endif()
 
 # Do all of the processing for this Tribits project
 TRIBITS_PROJECT()

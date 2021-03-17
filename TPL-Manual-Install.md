@@ -10,7 +10,7 @@ described in the previous section.
  * [MatIO](#matio) -- optional, required for exo2mat and mat2exo
  * [GNU Parallel](#gnu-parallel) -- optional
  * [CGNS](#cgns) -- experimental optional
- * [DataWarehouse](#data_warehouse) -- optional
+ * [Faodel](#faodel) -- optional
 
 ## Zoltan
 A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
@@ -26,7 +26,7 @@ the HDF5 team added an option that makes it possible for the library
 to create files readable by those applications. This flag is currently
 being used by NetCDF, but not CGNS.  Therefore, you should only use
 hdf5-1.10.3 or later if you are only using NetCDF, or if you do not
-need compatability with applications using an HDF5-1.8.X version.
+need compatibility with applications using an HDF5-1.8.X version.
 
 The hdf5 library is used for the netcdf4 capability in netcdf which in
 turn is used by exodus.  The netcdf4 capability is typically used for
@@ -47,7 +47,7 @@ create or read models of this size, you do not have to build hdf5.
    * `make && make install`
 
 ## NetCDF
-The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required if using verions prior to 4.5.1.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
+The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required if using versions prior to 4.5.1.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
  * Download the latest netcdf-c release from <https://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
 
@@ -144,41 +144,7 @@ Support for CGNS in the IOSS library is being added.  To use this capability, yo
      * `../../runconfigure.sh`
      * `make && make install`
 
-## DataWarehouse
-The Data Warehouse is a collection of data management tools that
-Sandia is currently developing to improve how datasets migrate between
-memory and storage resources in a distributed system. While the
-software is currently only available internally to Sandia, there will
-be an open source release of the tools during Fall of 2017. The Data
-Warehouse extensions to SEACAS are intended to serve as a placeholder
-for the upcoming release and are not intended for use by external
-developers at this time.
+#### Faodel
+Faodel is a collection of data management tools that Sandia is developing to improve how datasets migrate between memory and storage resources in a distributed system. For SEACAS Faodel support means adding a new backend to IOSS. This enables additional data storage capabilities and the chance to communicate data between execution spaces.
 
-The repository
-[data-warehouse-release](https://gitlab.sandia.gov/nessie-dev/data-warehouse-release)
-is a superbuild for the Data Warehouse tools and was created to make
-the build process as easy as possible. It includes the files
-INSTALL.md and INSTALL_TPL.md which contain instructions for building
-Data Warehouse and it's TPLs: Boost, googletest, libfabric, and libhio
-(optional). These builds are straightforward so a "runconfigure.sh"
-script is left to the end-user. Note that it's possible to supply your
-own build of these tools. Following the SEACAS pattern for building
-TPLs:
-
-```bash
-    cd TPL
-    git clone git@gitlab.sandia.gov:nessie-dev/data-warehouse-release.git
-    follow the instructions in INSTALL_TPL.md and then INSTALL.md
-    consider installing data-warehouse-release and it's TPLs to the directory set in  the $ACCESS env. var.
-```
-To build SEACAS with an installation of data-warehouse-release and
-it's TPLs, add the following lines to the list of cmake command
-arguments as found in the top-level `cmake-config` file. Where
-DataWarehouse_PATH in environment variable that contains the path to
-the top-level install directory for the Data Warehouse, and
-HAVE_DATA_WAREHOUSE={ON|OFF} is a variable defined in `cmake-config`.
-```bash
-    -DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATA_WAREHOUSE}           \
-    -DDataWarehouse_LIBRARY_DIRS:PATH=${DataWarehouse_PATH}/lib     \
-    -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include \
-```
+Faodel is available at [Faodel](https://github.com/faodel/faodel). And is build here as a SEACAS TPL.

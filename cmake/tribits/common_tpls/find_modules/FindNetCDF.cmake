@@ -3,7 +3,7 @@
 # ************************************************************************
 #
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016, 2020 Sandia Corporation
+#                    Copyright 2016, 2020, 2021 Sandia Corporation
 #
 # Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 # the U.S. Government retains certain rights in this software.
@@ -261,9 +261,10 @@ endif()
 if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
     MESSAGE(STATUS "\tNetCDF_ROOT is ${NetCDF_ROOT}")
     # First, try to get this information from an installed CMake config file
-    find_package(netCDF QUIET NO_MODULE)
+    find_package(netCDF QUIET HINTS ${NetCDF_ROOT} NO_MODULE)
     if (netCDF_CONFIG)
         # If we find an installed config file, it can tell us these things
+        MESSAGE(STATUS "\tnetCDF_CONFIG is ${netCDF_CONFIG}")
         set(NetCDF_NEEDS_HDF5 "${netCDF_HAS_HDF5}")
         set(NetCDF_VERSION "${netCDF_VERSION}")
         set(NetCDF_NEEDS_PNetCDF "${netCDF_HAS_PNETCDF}")

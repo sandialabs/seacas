@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -8,6 +8,7 @@
 // concatenates EXODUS/GENESIS output from parallel processors to a single file
 
 #include <algorithm>
+#include <array>
 #include <cfloat>
 #include <climits>
 #include <cmath>
@@ -165,6 +166,44 @@ namespace {
     names = nullptr;
   }
 
+  int case_compare(const char *s1, const char *s2);
+  int case_compare(const std::string &s1, const std::string &s2);
+
+  template <typename INT>
+  void get_id_map(int exoid, ex_entity_type type, ex_inquiry inq_type, std::vector<INT> &ids)
+  {
+    // Check whether there is a "original_global_id_map" map on
+    // the database. If so, use it instead of the "elem_num_map".
+    bool map_read  = false;
+    int  map_count = ex_inquire_int(exoid, inq_type);
+    if (map_count > 0) {
+      char **names = get_name_array(map_count, Excn::ExodusFile::max_name_length());
+      int    error = ex_get_names(exoid, type, names);
+      if (error < 0) {
+        exodus_error(__LINE__);
+      }
+
+      for (int i = 0; i < map_count; i++) {
+        if (case_compare(names[i], "original_global_id_map") == 0) {
+          error = ex_get_num_map(exoid, type, i + 1, ids.data());
+          if (error < 0) {
+            exodus_error(__LINE__);
+          }
+          map_read = true;
+          break;
+        }
+      }
+      free_name_array(names, map_count);
+    }
+
+    if (!map_read) {
+      int error = ex_get_id_map(exoid, type, ids.data());
+      if (error < 0) {
+        exodus_error(__LINE__);
+      }
+    }
+  }
+
   template <typename INT> bool is_sequential(std::vector<INT> &map)
   {
     for (size_t i = 0; i < map.size(); i++) {
@@ -180,15 +219,23 @@ namespace {
   {
     if (out.empty())
       return 0;
+    size_t i    = 1;
     size_t pos  = 1;
     T      oldv = out[0];
-    for (size_t i = 1; i < out.size(); ++i) {
+    for (; i < out.size(); ++i) {
       T newv   = out[i];
       out[pos] = newv;
       pos += (newv != oldv);
       oldv = newv;
     }
     return pos;
+  }
+
+  template <typename T> static void uniquify(std::vector<T> &vec)
+  {
+    std::sort(vec.begin(), vec.end());
+    vec.resize(unique(vec));
+    vec.shrink_to_fit();
   }
 
   void compress_white_space(char *str);
@@ -209,6 +256,12 @@ namespace {
   void get_coordinates(int id, int dimensionality, size_t num_nodes,
                        const std::vector<std::vector<INT>> &local_node_to_global, int proc,
                        std::vector<T> &x, std::vector<T> &y, std::vector<T> &z);
+
+  template <typename INT>
+  void get_put_nodal_communication_map(Excn::Mesh &global, int start_part, int part_count,
+                                       std::vector<Excn::Mesh> &            local_mesh,
+                                       const std::vector<std::vector<INT>> &local_node_to_global,
+                                       const std::vector<int> &processor_map, int output_processor);
 
   StringVector get_exodus_variable_names(int id, ex_entity_type elType, int var_count);
 
@@ -303,6 +356,12 @@ namespace {
                    std::vector<std::vector<Excn::SideSet<INT>>> &sets,
                    std::vector<Excn::SideSet<INT>> &glob_ssets, Excn::SystemInterface &interFace);
 
+  template <typename INT>
+  void add_processor_map(int id_out, int part_count, int start_part, const Excn::Mesh &global,
+                         std::vector<std::vector<Excn::Block>> &blocks,
+                         const std::vector<Excn::Block> &       glob_blocks,
+                         const std::vector<std::vector<INT>> &  local_element_to_global);
+
   template <typename T, typename INT>
   void add_processor_variable(int id_out, int part_count, int start_part, const Excn::Mesh &global,
                               std::vector<std::vector<Excn::Block>> &blocks,
@@ -317,7 +376,6 @@ namespace {
                                std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
                                std::vector<std::vector<Excn::SideSet<INT>>> &sidesets);
 
-  int case_compare(const std::string &s1, const std::string &s2);
 } // namespace
 
 using namespace Excn;
@@ -850,6 +908,11 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
 
       get_put_assemblies(ExodusFile(0), ExodusFile::output(), global);
 
+      if (interFace.add_processor_id_map()) {
+        add_processor_map(ExodusFile::output(), part_count, start_part, global, blocks, glob_blocks,
+                          local_element_to_global);
+      }
+
       // Output bulk mesh data....
       put_nodesets(glob_nsets);
 
@@ -893,6 +956,22 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     LOG("\n\n**** GET COORDINATE INFO ****\n");
     get_put_coordinates(global, part_count, local_mesh, local_node_to_global, (T)0.0);
     LOG("Wrote coordinate information...\n");
+  }
+
+  if (interFace.add_nodal_communication_map() && interFace.subcycle() > 0) {
+    LOG("\n\n**** GET NODAL COMMUNICATION MAP INFO ****\n");
+    // Need a mapping from processors in the original mesh parts to
+    // processors in the subcycle output...
+    auto proc_count = interFace.processor_count();
+
+    std::vector<int> processor_map(proc_count);
+    auto             orig_part_count = interFace.part_count();
+    for (int i = 0; i < proc_count; i++) {
+      processor_map[i] = i / orig_part_count;
+    }
+    get_put_nodal_communication_map(global, start_part, part_count, local_mesh,
+                                    local_node_to_global, processor_map, cycle);
+    LOG("Wrote nodal communication map information...\n");
   }
 
   // ####################TRANSIENT DATA SECTION###########################
@@ -1392,7 +1471,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
   if (subcycles > 2) {
     fmt::print("{}/{} ", cycle + 1, subcycles);
   }
-  fmt::print("\n\nTotal Execution Time = {:.2f} seconds.\n******* END *******\n", seacas_timer() - execution_time);
+  fmt::print("\n\nTotal Execution Time = {:.2f} seconds.\n******* END *******\n",
+             seacas_timer() - execution_time);
   return (0);
 }
 
@@ -1587,6 +1667,85 @@ namespace {
     free_name_array(coordinate_names, dimensionality);
   }
 
+  template <typename INT>
+  void get_put_nodal_communication_map(Excn::Mesh &global, int start_part, int part_count,
+                                       std::vector<Excn::Mesh> &            local_mesh,
+                                       const std::vector<std::vector<INT>> &local_node_to_global,
+                                       const std::vector<int> &processor_map, int output_processor)
+  {
+    int                              error = 0;
+    std::vector<std::pair<INT, int>> node_cmap;
+    for (int p = 0; p < part_count; p++) {
+      INT num_int_nodes, num_bor_nodes, num_ext_nodes, num_int_elems, num_bor_elems;
+      INT num_node_cmaps, num_elem_cmaps;
+      ex_get_loadbal_param(ExodusFile(p), &num_int_nodes, &num_bor_nodes, &num_ext_nodes,
+                           &num_int_elems, &num_bor_elems, &num_node_cmaps, &num_elem_cmaps, p);
+
+      std::vector<INT> nodeCmapIds(num_node_cmaps);
+      std::vector<INT> nodeCmapNodeCnts(num_node_cmaps);
+      ex_get_cmap_params(ExodusFile(p), nodeCmapIds.data(), nodeCmapNodeCnts.data(), nullptr,
+                         nullptr, p);
+
+      int64_t my_node_count =
+          std::accumulate(nodeCmapNodeCnts.begin(), nodeCmapNodeCnts.end(), int64_t(0));
+      std::vector<INT> nodes(my_node_count);
+      std::vector<INT> procs(my_node_count);
+
+      int64_t cm_offset = 0;
+      for (INT i = 0; i < num_node_cmaps; i++) {
+        ex_get_node_cmap(ExodusFile(p), nodeCmapIds[i], &nodes[cm_offset], &procs[cm_offset], p);
+        cm_offset += nodeCmapNodeCnts[i];
+      }
+      for (size_t i = 0; i < nodes.size(); i++) {
+        auto output_proc = processor_map[procs[i]];
+        if (output_proc != output_processor) {
+          node_cmap.emplace_back(local_node_to_global[p][nodes[i] - 1] + 1,
+                                 processor_map[procs[i]]);
+        }
+      }
+    } // end for p=0..part_count
+    uniquify(node_cmap);
+
+    std::vector<INT> gnodes;
+    std::vector<INT> gprocs;
+    gnodes.reserve(node_cmap.size());
+    gprocs.reserve(node_cmap.size());
+
+    for (auto &np : node_cmap) {
+      gnodes.push_back(np.first);
+      gprocs.push_back(np.second);
+    }
+
+    // NOTE: This is inefficient in general since going in and out of define mode.
+    //       Would be better to do this at file-creation time, but this encapsulates all
+    //       code related to node communication map output to this routine...
+
+    // Write out nodal communication map information
+    error = ex_put_init_info(ExodusFile::output(), processor_map.back() + 1, 1, (char *)"P");
+    if (error < 0) {
+      exodus_error(__LINE__);
+    }
+
+    error = ex_put_loadbal_param(ExodusFile::output(), 0, 0, 0, 0, 0, 1, 0, output_processor);
+    if (error < 0) {
+      exodus_error(__LINE__);
+    }
+
+    std::array<INT, 1> ids{1};
+    std::array<INT, 1> cnts{(INT)gnodes.size()};
+    error = ex_put_cmap_params(ExodusFile::output(), ids.data(), cnts.data(), nullptr, nullptr,
+                               output_processor);
+    if (error < 0) {
+      exodus_error(__LINE__);
+    }
+
+    error =
+        ex_put_node_cmap(ExodusFile::output(), 1, gnodes.data(), gprocs.data(), output_processor);
+    if (error < 0) {
+      exodus_error(__LINE__);
+    }
+  }
+
   template <typename T, typename INT>
   void get_coordinates(int id, int dimensionality, size_t num_nodes,
                        const std::vector<std::vector<INT>> &local_node_to_global, int proc,
@@ -1658,7 +1817,7 @@ namespace {
         y[node] = local_y[i];
       }
     }
-    else {
+    else { // dimensionality == 1
       if (debug_level & 8) {
         for (size_t i = 0; i < num_nodes; i++) {
           size_t node = local_node_to_global[proc][i];
@@ -1770,7 +1929,7 @@ namespace {
           glob_blocks[b].elementCount += temp_block.num_entry;
           glob_blocks[b].nodesPerElement = temp_block.num_nodes_per_entry;
           glob_blocks[b].attributeCount  = temp_block.num_attribute;
-          glob_blocks[b].position_       = b;
+          glob_blocks[b].position_       = (int)b;
           copy_string(glob_blocks[b].elType, temp_block.topology);
         }
 
@@ -2070,10 +2229,7 @@ namespace {
       size_t offset = 0;
       for (int p = 0; p < part_count; p++) {
         ExodusFile id(p);
-        int        error = ex_get_id_map(id, EX_ELEM_MAP, global_element_numbers[p].data());
-        if (error < 0) {
-          exodus_error(__LINE__);
-        }
+        get_id_map(id, EX_ELEM_MAP, EX_INQ_ELEM_MAP, global_element_numbers[p]);
         std::copy(global_element_numbers[p].begin(), global_element_numbers[p].end(),
                   &global_element_map[offset]);
         offset += local_mesh[p].elementCount;
@@ -2155,10 +2311,7 @@ namespace {
       for (int p = 0; p < part_count; p++) {
         size_t element_count = local_mesh[p].elementCount;
         element_map.resize(element_count);
-        int error = ex_get_id_map(ExodusFile(p), EX_ELEM_MAP, element_map.data());
-        if (error < 0) {
-          exodus_error(__LINE__);
-        }
+        get_id_map(ExodusFile(p), EX_ELEM_MAP, EX_INQ_ELEM_MAP, element_map);
 
         for (size_t e = 0; e < element_count; e++) {
           gpos                     = local_element_to_global[p][e];
@@ -2251,13 +2404,9 @@ namespace {
     global_node_map.resize(tot_size);
 
     size_t offset = 0;
-    int    error  = 0;
     for (int p = 0; p < part_count; p++) {
       ExodusFile id(p);
-      error = ex_get_id_map(id, EX_NODE_MAP, global_node_numbers[p].data());
-      if (error < 0) {
-        exodus_error(__LINE__);
-      }
+      get_id_map(id, EX_NODE_MAP, EX_INQ_NODE_MAP, global_node_numbers[p]);
       std::copy(global_node_numbers[p].begin(), global_node_numbers[p].end(),
                 &global_node_map[offset]);
       offset += local_mesh[p].nodeCount;
@@ -3039,6 +3188,37 @@ namespace {
     }
   }
 
+  template <typename INT>
+  void add_processor_map(int id_out, int part_count, int start_part, const Mesh &global,
+                         std::vector<std::vector<Block>> &    blocks,
+                         const std::vector<Block> &           glob_blocks,
+                         const std::vector<std::vector<INT>> &local_element_to_global)
+  {
+    std::vector<INT> proc(global.elementCount);
+
+    for (size_t b = 0; b < global.count(Excn::ObjectType::EBLK); b++) {
+      proc.resize(glob_blocks[b].entity_count());
+      for (int p = 0; p < part_count; p++) {
+        size_t boffset       = blocks[p][b].offset_;
+        size_t element_count = blocks[p][b].entity_count();
+        for (size_t e = 0; e < element_count; e++) {
+          size_t global_elem_pos = local_element_to_global[p][(e + boffset)];
+          proc[global_elem_pos]  = p + start_part;
+        }
+      }
+    }
+
+    if (ex_put_map_param(id_out, 0, 1) < 0) {
+      exodus_error(__LINE__);
+    }
+    if (ex_put_num_map(id_out, EX_ELEM_MAP, 1, proc.data()) < 0) {
+      exodus_error(__LINE__);
+    }
+    if (ex_put_name(id_out, EX_ELEM_MAP, 1, "processor_id") < 0) {
+      exodus_error(__LINE__);
+    }
+  }
+
   StringVector get_exodus_variable_names(int id, ex_entity_type elType, int var_count)
   {
     // Allocate space for variable names...
@@ -3236,10 +3416,10 @@ namespace {
     }
   }
 
-  int case_compare(const std::string &s1, const std::string &s2)
+  int case_compare(const char *s1, const char *s2)
   {
-    const char *c1 = s1.c_str();
-    const char *c2 = s2.c_str();
+    const char *c1 = s1;
+    const char *c2 = s2;
     for (;;) {
       if (::toupper(*c1) != ::toupper(*c2)) {
         return (::toupper(*c1) - ::toupper(*c2));
@@ -3250,6 +3430,11 @@ namespace {
       c1++;
       c2++;
     }
+  }
+
+  int case_compare(const std::string &s1, const std::string &s2)
+  {
+    return case_compare(s1.c_str(), s2.c_str());
   }
 
   void add_info_record(char *info_record, int size)

@@ -80,5 +80,4 @@ workflows:
   build_all:
     jobs:
       - build_serial_gcc
-      - build_serial_clang
       - build_parallel

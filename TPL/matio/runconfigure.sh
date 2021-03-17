@@ -43,17 +43,13 @@ CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 
 # Find hdf5 library...
 LDFLAGS="-L${INSTALL_PATH}/lib"; export LDFLAGS
-if [ "$CRAY" == "YES" ]
+
+SHARED="${SHARED:-YES}"
+if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
-    USE_SHARED="--disable-shared"
+    USE_SHARED="--enable-shared"
 else
-    SHARED="${SHARED:-YES}"
-    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
-    then
-	USE_SHARED="--enable-shared"
-    else
-	USE_SHARED="--disable-shared"
-    fi
+    USE_SHARED="--disable-shared"
 fi
 
 ./configure --with-hdf5=${INSTALL_PATH} --enable-mat73 ${USE_SHARED} --prefix=${INSTALL_PATH} $1
