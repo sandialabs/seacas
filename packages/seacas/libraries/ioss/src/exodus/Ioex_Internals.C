@@ -124,16 +124,6 @@ Assembly::Assembly(const Ioss::Assembly &other)
   }
 }
 
-Assembly &Assembly::operator=(const Assembly &other)
-{
-  name           = other.name;
-  id             = other.id;
-  entityCount    = other.entityCount;
-  attributeCount = other.attributeCount;
-  type           = other.type;
-  return *this;
-}
-
 Blob::Blob(const Ioss::Blob &other)
 {
   if (other.property_exists("db_name")) {
@@ -146,15 +136,6 @@ Blob::Blob(const Ioss::Blob &other)
   id             = other.get_optional_property("id", 1);
   entityCount    = other.entity_count();
   attributeCount = other.get_property("attribute_count").get_int();
-}
-
-Blob &Blob::operator=(const Blob &other)
-{
-  name           = other.name;
-  id             = other.id;
-  entityCount    = other.entityCount;
-  attributeCount = other.attributeCount;
-  return *this;
 }
 
 NodeBlock::NodeBlock(const Ioss::NodeBlock &other)
@@ -171,16 +152,6 @@ NodeBlock::NodeBlock(const Ioss::NodeBlock &other)
   localOwnedCount = other.get_optional_property("locally_owned_count", entityCount);
   attributeCount  = other.get_property("attribute_count").get_int();
   procOffset      = 0;
-}
-
-NodeBlock &NodeBlock::operator=(const NodeBlock &other)
-{
-  name           = other.name;
-  id             = other.id;
-  entityCount    = other.entityCount;
-  attributeCount = other.attributeCount;
-  procOffset     = other.procOffset;
-  return *this;
 }
 
 EdgeBlock::EdgeBlock(const Ioss::EdgeBlock &other)
@@ -204,25 +175,6 @@ EdgeBlock::EdgeBlock(const Ioss::EdgeBlock &other)
 
   Ioss::Utils::copy_string(elType, el_type);
   procOffset = 0;
-}
-
-EdgeBlock &EdgeBlock::operator=(const EdgeBlock &other)
-{
-  name           = other.name;
-  id             = other.id;
-  entityCount    = other.entityCount;
-  nodesPerEntity = other.nodesPerEntity;
-  attributeCount = other.attributeCount;
-  procOffset     = other.procOffset;
-  Ioss::Utils::copy_string(elType, other.elType);
-  return *this;
-}
-
-bool EdgeBlock::operator==(const EdgeBlock &other) const
-{
-  return name == other.name && id == other.id && entityCount == other.entityCount &&
-         nodesPerEntity == other.nodesPerEntity && attributeCount == other.attributeCount &&
-         procOffset == other.procOffset;
 }
 
 FaceBlock::FaceBlock(const Ioss::FaceBlock &other)
@@ -252,26 +204,6 @@ FaceBlock::FaceBlock(const Ioss::FaceBlock &other)
 
   Ioss::Utils::copy_string(elType, el_type);
   procOffset = 0;
-}
-
-FaceBlock &FaceBlock::operator=(const FaceBlock &other)
-{
-  name           = other.name;
-  id             = other.id;
-  entityCount    = other.entityCount;
-  nodesPerEntity = other.nodesPerEntity;
-  edgesPerEntity = other.edgesPerEntity;
-  attributeCount = other.attributeCount;
-  procOffset     = other.procOffset;
-  Ioss::Utils::copy_string(elType, other.elType);
-  return *this;
-}
-
-bool FaceBlock::operator==(const FaceBlock &other) const
-{
-  return name == other.name && id == other.id && entityCount == other.entityCount &&
-         nodesPerEntity == other.nodesPerEntity && edgesPerEntity == other.edgesPerEntity &&
-         attributeCount == other.attributeCount && procOffset == other.procOffset;
 }
 
 ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
@@ -320,30 +252,6 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
   procOffset = 0;
 }
 
-ElemBlock &ElemBlock::operator=(const ElemBlock &other)
-{
-  name              = other.name;
-  id                = other.id;
-  entityCount       = other.entityCount;
-  globalEntityCount = other.globalEntityCount;
-  nodesPerEntity    = other.nodesPerEntity;
-  edgesPerEntity    = other.edgesPerEntity;
-  facesPerEntity    = other.facesPerEntity;
-  attributeCount    = other.attributeCount;
-  offset_           = other.offset_;
-  procOffset        = other.procOffset;
-  Ioss::Utils::copy_string(elType, other.elType);
-  return *this;
-}
-
-bool ElemBlock::operator==(const ElemBlock &other) const
-{
-  return name == other.name && id == other.id && entityCount == other.entityCount &&
-         nodesPerEntity == other.nodesPerEntity && edgesPerEntity == other.edgesPerEntity &&
-         facesPerEntity == other.facesPerEntity && attributeCount == other.attributeCount &&
-         procOffset == other.procOffset && std::strcmp(elType, other.elType) == 0;
-}
-
 NodeSet::NodeSet(const Ioss::NodeSet &other)
 {
   if (other.property_exists("db_name")) {
@@ -365,12 +273,6 @@ NodeSet::NodeSet(const Ioss::NodeSet &other)
   procOffset = 0;
 }
 
-bool NodeSet::operator==(const NodeSet &other) const
-{
-  return id == other.id && entityCount == other.entityCount && dfCount == other.dfCount &&
-         name == other.name && procOffset == other.procOffset;
-}
-
 EdgeSet::EdgeSet(const Ioss::EdgeSet &other)
 {
   if (other.property_exists("db_name")) {
@@ -385,12 +287,6 @@ EdgeSet::EdgeSet(const Ioss::EdgeSet &other)
   attributeCount = other.get_property("attribute_count").get_int();
   dfCount        = other.get_property("distribution_factor_count").get_int();
   procOffset     = 0;
-}
-
-bool EdgeSet::operator==(const EdgeSet &other) const
-{
-  return id == other.id && entityCount == other.entityCount && dfCount == other.dfCount &&
-         procOffset == other.procOffset && name == other.name;
 }
 
 FaceSet::FaceSet(const Ioss::FaceSet &other)
@@ -409,12 +305,6 @@ FaceSet::FaceSet(const Ioss::FaceSet &other)
   procOffset     = 0;
 }
 
-bool FaceSet::operator==(const FaceSet &other) const
-{
-  return id == other.id && entityCount == other.entityCount && dfCount == other.dfCount &&
-         procOffset == other.procOffset && name == other.name;
-}
-
 ElemSet::ElemSet(const Ioss::ElementSet &other)
 {
   if (other.property_exists("db_name")) {
@@ -429,12 +319,6 @@ ElemSet::ElemSet(const Ioss::ElementSet &other)
   attributeCount = other.get_property("attribute_count").get_int();
   dfCount        = other.get_property("distribution_factor_count").get_int();
   procOffset     = 0;
-}
-
-bool ElemSet::operator==(const ElemSet &other) const
-{
-  return id == other.id && entityCount == other.entityCount && dfCount == other.dfCount &&
-         procOffset == other.procOffset && name == other.name;
 }
 
 SideSet::SideSet(const Ioss::SideBlock &other)
@@ -481,17 +365,6 @@ SideSet::SideSet(const Ioss::SideSet &other)
   }
   procOffset   = 0;
   dfProcOffset = 0;
-}
-
-bool SideSet::operator==(const SideSet &other) const
-{
-  return id == other.id && entityCount == other.entityCount && dfCount == other.dfCount &&
-         procOffset == other.procOffset && dfProcOffset == other.dfProcOffset && name == other.name;
-}
-
-bool CommunicationMap::operator==(const CommunicationMap &other) const
-{
-  return id == other.id && entityCount == other.entityCount && type == other.type;
 }
 
 Internals::Internals(int exoid, int maximum_name_length, const Ioss::ParallelUtils &util)
