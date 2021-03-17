@@ -39,6 +39,7 @@ DECOMPOSITION_METHOD | {method} | Decompose all input DB using `method`
 PARALLEL_CONSISTENCY | [on]/off | On if the client will call Ioss functions consistently on all processors. If off, then the auto-decomp and auto-join cannot be used.
 RETAIN_FREE_NODES | [on]/off | In auto-decomp, will nodes not connected to any elements be retained.
 LOAD_BALANCE_THRESHOLD | {real} [1.4] | CGNS-Structured only -- Load imbalance permitted Load on Proc / Avg Load
+DECOMPOSITION_EXTRA | {name},{multiplier} | Specify the name of the element map or variable used if the decomposition method is `map` or `variable`.  If it contains a comma, the value following the comma is used to scale (divide) the values in the map/variable.  If it is 'auto', then all values will be scaled by `max_value/processorCount`
 
 ### Valid values for Decomposition Method
 
@@ -53,6 +54,8 @@ kway_geom  | metis kway graph-based method with geometry speedup
 linear     | elements in order first n/p to proc 0, next to proc 1.
 cyclic     | elements handed out to id % proc_count
 random     | elements assigned randomly to processors in a way that preserves balance (do not use for a real run)
+map        | the specified element map contains the mapping of elements to processor. Uses 'processor_id' map by default; otherwise specify name with `DECOMPOSITION_EXTRA` property
+variable   | the specified element variable contains the mapping of elements to processor. Uses 'processor_id' variable by default; otherwise specify name with `DECOMPOSITION_EXTRA` property
 external   | Files are decomposed externally into a file-per-processor in a parallel run.
 
 ## Output File Composition -- Single File output from parallel run instead of file-per-processor
@@ -159,7 +162,7 @@ to:
 \section license License
 The IOSS library is licensed under the BSD open source license.
 
-     Copyright(C) 1999-2020 National Technology & Engineering Solutions
+     Copyright(C) 1999-2021 National Technology & Engineering Solutions
      of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
      NTESS, the U.S. Government retains certain rights in this software.
 
