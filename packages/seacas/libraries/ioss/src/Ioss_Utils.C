@@ -4,14 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Assembly.h>
-#include <Ioss_Blob.h>
 #include <Ioss_CodeTypes.h>
-#include <Ioss_CommSet.h>
-#include <Ioss_DataPool.h>
-#include <Ioss_FaceGenerator.h>
-#include <Ioss_MeshCopyOptions.h>
+#include <Ioss_SubSystem.h>
 #include <Ioss_Utils.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cctype>
@@ -19,11 +15,10 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <ctime>
 #include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <iomanip>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <tokenize.h>
@@ -72,10 +67,6 @@
 #include <spi/include/kernel/location.h>
 #include <spi/include/kernel/memory.h>
 #endif
-
-#include <Ioss_SubSystem.h>
-
-#include <fstream>
 
 std::ostream *Ioss::Utils::m_warningStream  = &std::cerr;
 std::ostream *Ioss::Utils::m_debugStream    = &std::cerr;
