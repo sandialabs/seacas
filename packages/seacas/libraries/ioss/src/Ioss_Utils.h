@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -10,6 +10,7 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Field.h>
 #include <Ioss_Property.h>
+#include <Ioss_Sort.h>
 #include <algorithm> // for sort, lower_bound, copy, etc
 #include <cassert>
 #include <cmath>
@@ -121,7 +122,7 @@ namespace Ioss {
       if (skip_first) {
         it++;
       }
-      std::sort(it, vec.end());
+      Ioss::sort(it, vec.end());
       vec.resize(unique(vec, skip_first));
       vec.shrink_to_fit();
     }

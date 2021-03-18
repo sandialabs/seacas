@@ -12,6 +12,7 @@
 #include <cgns/Iocgns_Defines.h>
 
 #include <Ioss_CodeTypes.h>
+#include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
 #include <cassert>
 #include <cgns/Iocgns_ParallelDatabaseIO.h>
@@ -101,7 +102,7 @@ namespace {
                 recv_count.data(), recv_off.data(), MPI_INT, 0, util.communicator());
 
     if (processor == 0) {
-      std::sort(I_nodes_recv.begin(), I_nodes_recv.end());
+      Ioss::sort(I_nodes_recv.begin(), I_nodes_recv.end());
     }
     return I_nodes_recv;
   }
