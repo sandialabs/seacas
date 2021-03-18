@@ -26,7 +26,6 @@ namespace Ioss {
   class Region;
   class SideBlock;
   class PropertyManager;
-  struct MeshCopyOptions;
 } // namespace Ioss
 
 #define IOSS_ERROR(errmsg) throw std::runtime_error((errmsg).str())
@@ -488,11 +487,6 @@ namespace Ioss {
      *  \param[in,out] region The region on which the nominal mesh is to be defined.
      */
     static void generate_history_mesh(Ioss::Region *region);
-
-    //! Copy the mesh in `region` to `output_region`.  Behavior can be controlled
-    //! via options in `options`
-    static void copy_database(Ioss::Region &region, Ioss::Region &output_region,
-                              Ioss::MeshCopyOptions &options);
 
     static void info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
                             const std::string &header, const std::string &suffix = "\n\t");
