@@ -15,6 +15,7 @@
 #include "Cell.h"
 #include "Grid.h"
 #include "Ioss_ElementBlock.h"
+#include "Ioss_Sort.h"
 
 extern unsigned int debug_level;
 
@@ -126,7 +127,7 @@ void decompose_grid(Grid &grid, int ranks, const std::string &method)
                   [n = 0, ranks]() mutable { return n++ % ranks; });
 
     if (method == "LINEAR") {
-      std::sort(rank_vec.begin(), rank_vec.end());
+      Ioss::sort(rank_vec.begin(), rank_vec.end());
     }
     else if (method == "RANDOM") {
       unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
