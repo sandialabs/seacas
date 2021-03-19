@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -84,9 +84,22 @@ std::string   Ioss::Utils::m_preWarningText = "\nIOSS WARNING: ";
 
 // For copy_database...
 namespace {
-  auto initial_time = std::chrono::high_resolution_clock::now();
+  auto initial_time = std::chrono::steady_clock::now();
 
+  std::vector<int> get_selected_steps(Ioss::Region &region, const Ioss::MeshCopyOptions &options);
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank);
+  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region &               region,
+                                                  const Ioss::MeshCopyOptions &options);
+  void define_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
+                    const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
+                    int rank);
+  void transfer_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &pool,
+                      const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
+                      int rank);
+  void define_transient_fields(Ioss::Region &region, Ioss::Region &output_region,
+                               const Ioss::MeshCopyOptions &options, int rank);
+  void transfer_step(Ioss::Region &region, Ioss::Region &output_region, DataPool &pool, int istep,
+                     const Ioss::MeshCopyOptions &options, int rank);
 
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, DataPool &pool,
                           const Ioss::MeshCopyOptions &options, int rank);
@@ -290,11 +303,14 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   // Examples: basename.8.1, basename.64.03, basename.128.001
 
   // Create a std::string containing the total number of processors
-  size_t proc_width = number_width(num_processors);
+  if (num_processors > 1) {
+    size_t proc_width = number_width(num_processors);
 
-  std::string decoded_filename =
-      fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);
-  return decoded_filename;
+    std::string decoded_filename =
+        fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);
+    return decoded_filename;
+  }
+  return filename;
 }
 
 size_t Ioss::Utils::get_number(const std::string &suffix)
@@ -882,7 +898,7 @@ std::string Ioss::Utils::platform_information()
       fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
                   sys_info.release, sys_info.version, sys_info.machine);
 #else
-  std::string info = "Node: Unknown, OS: Unknown, Machine: Unknown";
+  std::string                 info = "Node: Unknown, OS: Unknown, Machine: Unknown";
 #endif
   return info;
 }
@@ -892,10 +908,14 @@ size_t Ioss::Utils::get_memory_info()
   // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
   size_t memory_usage = 0;
 #if defined(_WIN32)
+#if 0
   /* Windows -------------------------------------------------- */
   PROCESS_MEMORY_COUNTERS info;
   GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
   memory_usage = (size_t)info.WorkingSetSize;
+#else
+  memory_usage = 0;
+#endif
 
 #elif defined(__APPLE__) && defined(__MACH__)
   kern_return_t               error;
@@ -956,10 +976,14 @@ size_t Ioss::Utils::get_hwm_memory_info()
   // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
   size_t memory_usage = 0;
 #if defined(_WIN32)
+#if 0
   /* Windows -------------------------------------------------- */
   PROCESS_MEMORY_COUNTERS info;
   GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
   memory_usage = (size_t)info.PeakWorkingSetSize;
+#else
+  memory_usage = 0;
+#endif
 
 #elif (defined(_AIX) || defined(__TOS__AIX__)) ||                                                  \
     (defined(__sun__) || defined(__sun) || defined(sun) && (defined(__SVR4) || defined(__svr4__)))
@@ -1122,7 +1146,7 @@ unsigned int Ioss::Utils::hash(const std::string &name)
 
 double Ioss::Utils::timer()
 {
-  auto now = std::chrono::high_resolution_clock::now();
+  auto now = std::chrono::steady_clock::now();
   return std::chrono::duration<double>(now - initial_time).count();
 }
 
@@ -1499,127 +1523,254 @@ void Ioss::Utils::info_property(const Ioss::GroupingEntity *ige, Ioss::Property:
 void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_region,
                                 Ioss::MeshCopyOptions &options)
 {
-  DataPool data_pool;
 
-  Ioss::DatabaseIO *dbi = region.get_database();
-
-  int rank = dbi->util().parallel_rank();
-
-  if (options.debug && rank == 0) {
-    fmt::print(Ioss::DEBUG(), "DEFINING MODEL ... \n");
-  }
-  dbi->progress("DEFINING MODEL");
-  if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
-    if (options.verbose) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Could not put output region into define model state\n");
-      IOSS_ERROR(errmsg);
-    }
-    else {
-      std::exit(EXIT_FAILURE);
-    }
-  }
-
-  if (rank == 0) {
-    fmt::print(std::cout, "\n\n Input Region summary for rank 0:\n");
-  }
-
-  // Get all properties of input database...
-  transfer_properties(&region, &output_region);
-  transfer_qa_info(region, output_region);
-
-  if (rank == 0) {
-    fmt::print(std::cout, "\n\n Input Region summary for rank 0:\n");
-  }
-  transfer_nodeblock(region, output_region, data_pool, options, rank);
-
-#ifdef SEACAS_HAVE_MPI
-  // This also assumes that the node order and count is the same for input
-  // and output regions... (This is checked during nodeset output)
-  if (output_region.get_database()->needs_shared_node_information()) {
-    if (options.ints_64_bit)
-      set_owned_node_count(region, rank, (int64_t)0);
-    else
-      set_owned_node_count(region, rank, (int)0);
-  }
-#endif
-
-  transfer_edgeblocks(region, output_region, options, rank);
-  transfer_faceblocks(region, output_region, options, rank);
-  transfer_elementblocks(region, output_region, options, rank);
-  transfer_structuredblocks(region, output_region, options, rank);
-
-  transfer_nodesets(region, output_region, options, rank);
-  transfer_edgesets(region, output_region, options, rank);
-  transfer_facesets(region, output_region, options, rank);
-  transfer_elemsets(region, output_region, options, rank);
-
-  transfer_sidesets(region, output_region, options, rank);
-
-  std::vector<Ioss::Face> boundary;
-  if (options.boundary_sideset) {
-    Ioss::FaceGenerator face_generator(region);
-    if (region.get_database()->int_byte_size_api() == 4) {
-      face_generator.generate_faces((int)0, false);
-    }
-    else {
-      face_generator.generate_faces((int64_t)0, false);
-    }
-
-    // Get vector of all boundary faces which will be output as the skin...
-    auto &faces = face_generator.faces("ALL");
-    for (auto &face : faces) {
-      if (face.elementCount_ == 1) {
-        boundary.push_back(face);
-      }
-    }
-
-    // Get topology of the sideset faces. Using just block[0] since for what we are doing, doesn't
-    // really matter.
-    const auto &blocks    = region.get_element_blocks();
-    auto        topo      = blocks[0]->topology();
-    auto        elem_topo = topo->name();
-    auto        face_topo = topo->boundary_type(0)->name();
-
-    auto ss = new Ioss::SideSet(output_region.get_database(), "boundary");
-    output_region.add(ss);
-    auto sb = new Ioss::SideBlock(output_region.get_database(), "boundary", face_topo, elem_topo,
-                                  boundary.size());
-    ss->add(sb);
-  }
-
-  transfer_commsets(region, output_region, options, rank);
-
-  transfer_coordinate_frames(region, output_region);
-  transfer_blobs(region, output_region, options, rank);
-
-  // This must be last...
-  transfer_assemblies(region, output_region, options, rank);
-
-  if (options.debug && rank == 0) {
-    fmt::print(Ioss::DEBUG(), "END STATE_DEFINE_MODEL...\n");
-  }
-  dbi->progress("END STATE_DEFINE_MODEL");
-
-  output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
-  dbi->progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
+  Ioss::DatabaseIO *dbi  = region.get_database();
+  int               rank = dbi->util().parallel_rank();
 
   // Minimize number of times that we grow the memory buffer used for transferring field data.
   size_t max_field_size = calculate_maximum_field_size(region);
   if (options.verbose && rank == 0) {
     fmt::print(Ioss::DEBUG(), "\n Maximum Field size = {:n} bytes.\n", max_field_size);
   }
+
+  DataPool data_pool;
   data_pool.data.resize(max_field_size);
   if (options.verbose && rank == 0) {
     fmt::print(Ioss::DEBUG(), " Resize finished...\n");
   }
 
   bool appending = output_region.get_database()->open_create_behavior() == Ioss::DB_APPEND;
-
   if (!appending) {
+    std::vector<Ioss::Face> boundary = generate_boundary_faces(region, options);
+    define_model(region, output_region, data_pool, boundary, options, rank);
+    transfer_model(region, output_region, data_pool, boundary, options, rank);
+
+    if (options.add_proc_id) {
+      Ioss::Utils::clear(data_pool.data);
+      add_proc_id(output_region, rank);
+      return;
+    }
+
+    if (options.delete_timesteps) {
+      Ioss::Utils::clear(data_pool.data);
+      return;
+    }
+  } // !appending
+
+  define_transient_fields(region, output_region, options, rank);
+
+  output_region.begin_mode(Ioss::STATE_TRANSIENT);
+  if (options.debug && rank == 0) {
+    fmt::print(Ioss::DEBUG(), "TRANSFERRING TRANSIENT FIELDS ... \n");
+  }
+  dbi->progress("TRANSFERRING TRANSIENT FIELDS... ");
+
+  // Get the timesteps from the input database.  Step through them
+  // and transfer fields to output database...
+  // `selected_steps` specifies whether an input step should be transferred
+  // to the output region based on values in `options`
+  std::vector<int> selected_steps = get_selected_steps(region, options);
+
+  int step_count = region.get_property("state_count").get_int();
+  for (int istep = 1; istep <= step_count; istep++) {
+    if (selected_steps[istep] == 1) {
+      transfer_step(region, output_region, data_pool, istep, options, rank);
+    }
+  }
+
+  if (options.debug && rank == 0) {
+    fmt::print(Ioss::DEBUG(), "END STATE_TRANSIENT... \n");
+  }
+  dbi->progress("END STATE_TRANSIENT (begin) ... ");
+
+  output_region.end_mode(Ioss::STATE_TRANSIENT);
+  dbi->progress("END STATE_TRANSIENT (end) ... ");
+  Ioss::Utils::clear(data_pool.data);
+
+  if (rank == 0) {
+    fmt::print(std::cout, "\n\n Output Region summary for rank 0:");
+    output_region.output_summary(std::cout);
+  }
+}
+
+namespace {
+  std::vector<int> get_selected_steps(Ioss::Region &region, const Ioss::MeshCopyOptions &options)
+  {
+    // This routine checks all steps of the input database and selects those which
+    // meet the requirements specified in `options`.  The returned (1-based) vector will have a
+    // value of `1` if the step is to be output and `0` if skipped.
+    int              step_count = region.get_property("state_count").get_int();
+    std::vector<int> selected_steps(step_count + 1);
+
+    // If user specified a list of times to transfer to output database,
+    // process the list and find the times on the input database that are
+    // closest to the times in the list.
+    if (!options.selected_times.empty()) {
+      int selected_step = 0;
+      for (auto time : options.selected_times) {
+        double diff = std::numeric_limits<double>::max();
+        for (int step = 1; step <= step_count; step++) {
+          double db_time  = region.get_state_time(step);
+          double cur_diff = std::abs(db_time - time);
+          if (cur_diff < diff) {
+            diff          = std::abs(db_time - time);
+            selected_step = step;
+          }
+        }
+        if (selected_step > 0) {
+          selected_steps[selected_step] = 1;
+        }
+      }
+    }
+    else {
+      // User did not select specific times to be output...
+      // Just select them all
+      for (int i = 1; i <= step_count; i++) {
+        selected_steps[i] = 1;
+      }
+    }
+
+    // Now, filter by min and max time...
+    for (int istep = 1; istep <= step_count; istep++) {
+      double time = region.get_state_time(istep);
+      if (time < options.minimum_time) {
+        selected_steps[istep] = 0;
+      }
+      if (time > options.maximum_time) {
+        selected_steps[istep] = 0;
+      }
+    }
+    return selected_steps;
+  }
+
+  template <typename T> void transfer_mesh_info(const T *input, T *output)
+  {
+    transfer_properties(input, output);
+    transfer_fields(input, output, Ioss::Field::MESH);
+    transfer_fields(input, output, Ioss::Field::ATTRIBUTE);
+    transfer_fields(input, output, Ioss::Field::MESH_REDUCTION);
+  }
+
+  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region &               region,
+                                                  const Ioss::MeshCopyOptions &options)
+  {
+    std::vector<Ioss::Face> boundary;
+    if (options.boundary_sideset) {
+      Ioss::FaceGenerator face_generator(region);
+      if (region.get_database()->int_byte_size_api() == 4) {
+        face_generator.generate_faces((int)0, false);
+      }
+      else {
+        face_generator.generate_faces((int64_t)0, false);
+      }
+
+      // Get vector of all boundary faces which will be output as the skin...
+      auto &faces = face_generator.faces("ALL");
+      for (auto &face : faces) {
+        if (face.elementCount_ == 1) {
+          boundary.push_back(face);
+        }
+      }
+    }
+    return boundary;
+  }
+
+  void define_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
+                    const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
+                    int rank)
+  {
+    if (options.debug && rank == 0) {
+      fmt::print(Ioss::DEBUG(), "DEFINING MODEL ... \n");
+    }
+    Ioss::DatabaseIO *dbi = region.get_database();
+    dbi->progress("DEFINING MODEL");
+    if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
+      if (options.verbose) {
+        std::ostringstream errmsg;
+        fmt::print(errmsg, "ERROR: Could not put output region into define model state\n");
+        IOSS_ERROR(errmsg);
+      }
+      else {
+        std::exit(EXIT_FAILURE);
+      }
+    }
+
+    if (rank == 0) {
+      fmt::print(std::cout, "\n\n Input Region summary for rank 0:\n");
+    }
+
+    // Get all properties of input database...
+    transfer_properties(&region, &output_region);
+    transfer_qa_info(region, output_region);
+
+    if (rank == 0) {
+      fmt::print(std::cout, "\n\n Input Region summary for rank 0:\n");
+    }
+    transfer_nodeblock(region, output_region, data_pool, options, rank);
+
+#ifdef SEACAS_HAVE_MPI
+    // This also assumes that the node order and count is the same for input
+    // and output regions... (This is checked during nodeset output)
+    if (output_region.get_database()->needs_shared_node_information()) {
+      if (options.ints_64_bit)
+        set_owned_node_count(region, rank, (int64_t)0);
+      else
+        set_owned_node_count(region, rank, (int)0);
+    }
+#endif
+
+    transfer_edgeblocks(region, output_region, options, rank);
+    transfer_faceblocks(region, output_region, options, rank);
+    transfer_elementblocks(region, output_region, options, rank);
+    transfer_structuredblocks(region, output_region, options, rank);
+
+    transfer_nodesets(region, output_region, options, rank);
+    transfer_edgesets(region, output_region, options, rank);
+    transfer_facesets(region, output_region, options, rank);
+    transfer_elemsets(region, output_region, options, rank);
+
+    transfer_sidesets(region, output_region, options, rank);
+
+    if (options.boundary_sideset) {
+      // Get topology of the sideset faces. Using just block[0] since for what we are doing, doesn't
+      // really matter.
+      const auto &blocks    = region.get_element_blocks();
+      auto        topo      = blocks[0]->topology();
+      auto        elem_topo = topo->name();
+      auto        face_topo = topo->boundary_type(0)->name();
+
+      auto ss = new Ioss::SideSet(output_region.get_database(), "boundary");
+      output_region.add(ss);
+      auto sb = new Ioss::SideBlock(output_region.get_database(), "boundary", face_topo, elem_topo,
+                                    boundary.size());
+      ss->add(sb);
+    }
+
+    transfer_commsets(region, output_region, options, rank);
+
+    transfer_coordinate_frames(region, output_region);
+    transfer_blobs(region, output_region, options, rank);
+
+    // This must be last...
+    transfer_assemblies(region, output_region, options, rank);
+
+    if (options.debug && rank == 0) {
+      fmt::print(Ioss::DEBUG(), "END STATE_DEFINE_MODEL...\n");
+    }
+    dbi->progress("END STATE_DEFINE_MODEL");
+
+    output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
+    dbi->progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
+  }
+
+  void transfer_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
+                      const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
+                      int rank)
+  {
     if (options.debug && rank == 0) {
       fmt::print(Ioss::DEBUG(), "TRANSFERRING MESH FIELD DATA ...\n");
     }
+    Ioss::DatabaseIO *dbi = region.get_database();
     dbi->progress("TRANSFERRING MESH FIELD DATA ... ");
 
     // Model defined, now fill in the model data...
@@ -1776,118 +1927,60 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     output_region.end_mode(Ioss::STATE_MODEL);
   }
 
-  if (options.add_proc_id) {
-    Ioss::Utils::clear(data_pool.data);
-    add_proc_id(output_region, rank);
-    return;
-  }
-
-  if (options.delete_timesteps) {
-    Ioss::Utils::clear(data_pool.data);
-    return;
-  }
-
-  if (options.debug && rank == 0) {
-    fmt::print(Ioss::DEBUG(), "DEFINING TRANSIENT FIELDS ... \n");
-  }
-  dbi->progress("DEFINING TRANSIENT FIELDS ... ");
-
-  if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
-    if (options.verbose && rank == 0) {
-      fmt::print(Ioss::DEBUG(), "\n Number of time steps on database = {}\n",
-                 region.get_property("state_count").get_int());
-    }
-
-    output_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
-
-    // NOTE: For most types, the fields are transferred from input to output
-    //       via the copy constructor.  The "special" ones are handled here.
-    // The below lines handle both methods of handling global variables...
-    transfer_fields(&region, &output_region, Ioss::Field::REDUCTION);
-    transfer_fields(&region, &output_region, Ioss::Field::TRANSIENT);
-
-    // Structured Blocks -- Contain a NodeBlock that also needs its fields transferred...
-    const auto &sbs = region.get_structured_blocks();
-    for (const auto &isb : sbs) {
-
-      // Find matching output structured block
-      const std::string &    name = isb->name();
-      Ioss::StructuredBlock *osb  = output_region.get_structured_block(name);
-      if (osb != nullptr) {
-        transfer_fields(isb, osb, Ioss::Field::TRANSIENT);
-        transfer_fields(isb, osb, Ioss::Field::REDUCTION);
-
-        auto &inb = isb->get_node_block();
-        auto &onb = osb->get_node_block();
-        transfer_fields(&inb, &onb, Ioss::Field::TRANSIENT);
-        transfer_fields(&inb, &onb, Ioss::Field::REDUCTION);
-      }
-    }
-
+  void define_transient_fields(Ioss::Region &region, Ioss::Region &output_region,
+                               const Ioss::MeshCopyOptions &options, int rank)
+  {
     if (options.debug && rank == 0) {
-      fmt::print(Ioss::DEBUG(), "END STATE_DEFINE_TRANSIENT... \n");
+      fmt::print(Ioss::DEBUG(), "DEFINING TRANSIENT FIELDS ... \n");
     }
-    dbi->progress("END STATE_DEFINE_TRANSIENT... ");
-    output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
-  }
 
-  if (options.debug && rank == 0) {
-    fmt::print(Ioss::DEBUG(), "TRANSFERRING TRANSIENT FIELDS ... \n");
-  }
-  dbi->progress("TRANSFERRING TRANSIENT FIELDS... ");
+    Ioss::DatabaseIO *dbi = region.get_database();
+    dbi->progress("DEFINING TRANSIENT FIELDS ... ");
 
-  output_region.begin_mode(Ioss::STATE_TRANSIENT);
-  // Get the timesteps from the input database.  Step through them
-  // and transfer fields to output database...
-  int step_count = region.get_property("state_count").get_int();
+    if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
+      if (options.verbose && rank == 0) {
+        fmt::print(Ioss::DEBUG(), "\n Number of time steps on database = {}\n",
+                   region.get_property("state_count").get_int());
+      }
 
-  // If user specified a list of times to transfer to output database,
-  // process the list and find the times on the input database that are
-  // closest to the times in the list.
-  std::vector<int> selected_steps{};
-  if (!options.selected_times.empty()) {
-    int selected_step = 0;
-    for (auto time : options.selected_times) {
-      double diff = std::numeric_limits<double>::max();
-      for (int step = 1; step <= step_count; step++) {
-        double db_time  = region.get_state_time(step);
-        double cur_diff = std::abs(db_time - time);
-        if (cur_diff < diff) {
-          diff          = std::abs(db_time - time);
-          selected_step = step;
+      output_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
+
+      // NOTE: For most types, the fields are transferred from input to output
+      //       via the copy constructor.  The "special" ones are handled here.
+      // The below lines handle both methods of handling global variables...
+      transfer_fields(&region, &output_region, Ioss::Field::REDUCTION);
+      transfer_fields(&region, &output_region, Ioss::Field::TRANSIENT);
+
+      // Structured Blocks -- Contain a NodeBlock that also needs its fields transferred...
+      const auto &sbs = region.get_structured_blocks();
+      for (const auto &isb : sbs) {
+
+        // Find matching output structured block
+        const std::string &    name = isb->name();
+        Ioss::StructuredBlock *osb  = output_region.get_structured_block(name);
+        if (osb != nullptr) {
+          transfer_fields(isb, osb, Ioss::Field::TRANSIENT);
+          transfer_fields(isb, osb, Ioss::Field::REDUCTION);
+
+          auto &inb = isb->get_node_block();
+          auto &onb = osb->get_node_block();
+          transfer_fields(&inb, &onb, Ioss::Field::TRANSIENT);
+          transfer_fields(&inb, &onb, Ioss::Field::REDUCTION);
         }
       }
-      if (selected_step > 0) {
-        selected_steps.push_back(selected_step);
-      }
-    }
-    Ioss::Utils::uniquify(selected_steps);
-  }
 
-  int selected_step = 0;
-  for (int istep = 1; istep <= step_count; istep++) {
-    double time = region.get_state_time(istep);
-    if (time < options.minimum_time) {
-      continue;
-    }
-    if (time > options.maximum_time) {
-      break;
-    }
-    if (!selected_steps.empty()) {
-      if ((size_t)selected_step >= selected_steps.size()) {
-        break;
-      }
-      if (istep != selected_steps[selected_step]) {
-        continue;
-      }
-      selected_step++;
       if (options.debug && rank == 0) {
-        fmt::print(Ioss::DEBUG(), "\nSelecting Step {} ({} of {})\n", istep, selected_step,
-                   selected_steps.size());
+        fmt::print(Ioss::DEBUG(), "END STATE_DEFINE_TRANSIENT... \n");
       }
+      dbi->progress("END STATE_DEFINE_TRANSIENT... ");
+      output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
     }
-
-    int ostep = output_region.add_state(time);
+  }
+  void transfer_step(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
+                     int istep, const Ioss::MeshCopyOptions &options, int rank)
+  {
+    double time  = region.get_state_time(istep);
+    int    ostep = output_region.add_state(time);
     show_step(istep, time, options, rank);
 
     output_region.begin_state(ostep);
@@ -1972,6 +2065,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     region.end_state(istep);
     output_region.end_state(ostep);
+
     if (options.delay > 0.0) {
 #ifndef _MSC_VER
       struct timespec delay;
@@ -1982,29 +2076,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       Sleep((int)(options.delay * 1000));
 #endif
     }
-  }
-  if (options.debug && rank == 0) {
-    fmt::print(Ioss::DEBUG(), "END STATE_TRANSIENT... \n");
-  }
-  dbi->progress("END STATE_TRANSIENT (begin) ... ");
-
-  output_region.end_mode(Ioss::STATE_TRANSIENT);
-  dbi->progress("END STATE_TRANSIENT (end) ... ");
-  Ioss::Utils::clear(data_pool.data);
-
-  if (rank == 0) {
-    fmt::print(std::cout, "\n\n Output Region summary for rank 0:");
-    output_region.output_summary(std::cout);
-  }
-}
-
-namespace {
-  template <typename T> void transfer_mesh_info(const T *input, T *output)
-  {
-    transfer_properties(input, output);
-    transfer_fields(input, output, Ioss::Field::MESH);
-    transfer_fields(input, output, Ioss::Field::ATTRIBUTE);
-    transfer_fields(input, output, Ioss::Field::MESH_REDUCTION);
   }
 
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, DataPool &pool,
@@ -2276,7 +2347,7 @@ namespace {
       for (const auto &assm : assem) {
         const std::string &name = assm->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
 
         // NOTE: Can't totally use the copy constructor as it will
@@ -2298,10 +2369,10 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
   }
@@ -2315,7 +2386,7 @@ namespace {
       for (const auto &blob : blobs) {
         const std::string &name = blob->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
         size_t count = blob->entity_count();
         total_entities += count;
@@ -2324,9 +2395,9 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}", (*blobs.begin())->type_string() + "s",
-                   blobs.size());
-        fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}",
+                   (*blobs.begin())->type_string() + "s", blobs.size());
+        fmt::print(Ioss::DEBUG(), "\tLength of entity list = {:14n}\n", total_entities);
       }
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DEBUG(), "\n");
@@ -2411,6 +2482,15 @@ namespace {
                            Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
                            const std::string &prefix)
   {
+    // !!!! WARNING !!!!  This is a hack.  It assumes that all NodeBlocks that have "_nodes" in
+    // their name belong to a StructuredBlock (m_nodeBlock).  Further, it assumes that the
+    // NodeBlocks that belong to a StructuredBlock have no field data that needs to be transferred.
+    // A permanent and comprehensive fix that handles this issue still needs to be developed.
+    // --sll 21aug20
+    if (ige->type() == Ioss::NODEBLOCK && ige->name().find("_nodes") != std::string::npos) {
+      return;
+    }
+
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
     Ioss::NameList state_fields;
@@ -2428,12 +2508,14 @@ namespace {
       // 'connectivity' field, but it is only interesting on the
       // Ioss::ElementBlock class. On the other classes, it just
       // generates overhead...
+
       if (field_name == "connectivity" && ige->type() != Ioss::ELEMENTBLOCK) {
         continue;
       }
       if (field_name == "ids") {
         continue;
       }
+
       if (Ioss::Utils::substr_equal(prefix, field_name)) {
         assert(oge->field_exists(field_name));
         transfer_field_data_internal(ige, oge, pool, field_name, options);

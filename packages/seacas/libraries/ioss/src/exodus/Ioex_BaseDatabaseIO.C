@@ -72,6 +72,8 @@
 // Static internal helper functions
 // ========================================================================
 namespace {
+  static bool sixty_four_bit_message_output = false;
+
   std::vector<ex_entity_type> exodus_types({EX_GLOBAL, EX_BLOB, EX_ASSEMBLY, EX_NODE_BLOCK,
                                             EX_EDGE_BLOCK, EX_FACE_BLOCK, EX_ELEM_BLOCK,
                                             EX_NODE_SET, EX_EDGE_SET, EX_FACE_SET, EX_ELEM_SET,
@@ -361,10 +363,11 @@ namespace Ioex {
     assert(m_exodusFilePtr >= 0);
     // Check byte-size of integers stored on the database...
     if ((ex_int64_status(m_exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
-      if (myProcessor == 0) {
+      if (myProcessor == 0 && !sixty_four_bit_message_output) {
         fmt::print(Ioss::OUTPUT(),
                    "IOSS: Input database contains 8-byte integers. Setting Ioss to use "
                    "8-byte integers.\n");
+        sixty_four_bit_message_output = true;
       }
       ex_set_int64_status(m_exodusFilePtr, EX_ALL_INT64_API);
       set_int_byte_size_api(Ioss::USE_INT64_API);

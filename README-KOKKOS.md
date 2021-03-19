@@ -43,7 +43,7 @@ If using CUDA as the backend, OpenMP can still be enabled.
 -D TPL_ENABLE_Pthread:Bool=OFF
 ```
 
-* If using CUDA as the Kokkos backend, some envionment variables need to be set. These can be set in your configure script, but then be sure to source the script rather than just running it so that your environment is correct when running `make`.
+* If using CUDA as the Kokkos backend, some environment variables need to be set. These can be set in your configure script, but then be sure to source the script rather than just running it so that your environment is correct when running `make`.
   ```bash
   export OMPI_CXX=<SEACAS-source-directory>/packages/kokkos/config/nvcc_wrapper
   export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1

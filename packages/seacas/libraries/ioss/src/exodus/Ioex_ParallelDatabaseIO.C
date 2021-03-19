@@ -5,7 +5,7 @@
 //    strange cases
 //
 //
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -29,7 +29,6 @@
 #include <numeric>
 #include <set>
 #include <string>
-#include <sys/select.h>
 #include <tokenize.h>
 #include <unistd.h>
 #include <utility>
@@ -349,8 +348,6 @@ namespace Ioex {
     }
   }
 
-  ParallelDatabaseIO::~ParallelDatabaseIO() = default;
-
   void ParallelDatabaseIO::release_memory__()
   {
     free_file_pointer();
@@ -450,12 +447,14 @@ namespace Ioex {
     // create an ifdef'd version of the fix which is only applied to the
     // buggy mpiio code.  Therefore, we always do chdir call.  Maybe in several
     // years, we can remove this code and everything will work...
+
+#ifndef _WIN32
     Ioss::FileInfo file(filename);
     std::string    path = file.pathname();
     filename            = file.tailname();
-
-    char *current_cwd = getcwd(nullptr, 0);
+    char *current_cwd   = getcwd(nullptr, 0);
     chdir(path.c_str());
+#endif
 
     bool do_timer = false;
     Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
@@ -473,8 +472,10 @@ namespace Ioex {
       }
     }
 
+#ifndef _WIN32
     chdir(current_cwd);
     std::free(current_cwd);
+#endif
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
 
@@ -542,12 +543,13 @@ namespace Ioex {
 
     std::string filename = get_dwname();
 
+#ifndef _WIN32
     Ioss::FileInfo file(filename);
     std::string    path = file.pathname();
     filename            = file.tailname();
-
-    char *current_cwd = getcwd(nullptr, 0);
+    char *current_cwd   = getcwd(nullptr, 0);
     chdir(path.c_str());
+#endif
 
     bool do_timer = false;
     Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
@@ -585,8 +587,10 @@ namespace Ioex {
       }
     }
 
+#ifndef _WIN32
     chdir(current_cwd);
     std::free(current_cwd);
+#endif
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
 
@@ -666,19 +670,6 @@ namespace Ioex {
   void ParallelDatabaseIO::read_meta_data__()
   {
     int exoid = get_file_pointer(); // get_file_pointer() must be called first.
-
-    // APPENDING:
-    // If parallel (single file, not fpp), we have assumptions
-    // that the writing process (ranks, mesh, decomp, vars) is the
-    // same for the original run that created this database and
-    // for this run which is appending to the database so the
-    // defining of the output database should be the same except
-    // we don't write anything since it is already there.  We do
-    // need the number of steps though...
-    if (open_create_behavior() == Ioss::DB_APPEND) {
-      get_step_times__();
-      return;
-    }
 
     if (int_byte_size_api() == 8) {
       decomp = std::unique_ptr<DecompositionDataBase>(
@@ -2350,11 +2341,14 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementSet *ns, const
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideSet *fs, const Ioss::Field &field,
-                                               void * /* data */, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
   if (field.get_name() == "ids") {
     // Do nothing, just handles an idiosyncrasy of the GroupingEntity
+    // However, make sure that the caller gets a consistent answer, i.e., don't leave the buffer
+    // full of junk
+    memset(data, 0x00, data_size);
   }
   else {
     num_to_get = Ioss::Utils::field_warning(fs, field, "input");

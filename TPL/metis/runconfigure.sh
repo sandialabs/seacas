@@ -45,13 +45,14 @@ else
   fi
 fi
 
-cmake -B build -DCMAKE_C_COMPILER:FILEPATH=${CC} \
+mkdir build
+cd build
+cmake -DCMAKE_C_COMPILER:FILEPATH=${CC} \
                -DBUILD_SHARED_LIBS:BOOL=${SHARED} \
                -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} \
-               -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+               -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ..
 
-cmake --build build ${PARALLEL}
-
+cd ..
 #make config cc=${CC} prefix=${INSTALL_PATH} shared=${USE_SHARED}
 
 echo ""
