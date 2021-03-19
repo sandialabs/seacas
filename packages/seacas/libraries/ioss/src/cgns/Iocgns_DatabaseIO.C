@@ -4,7 +4,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1481,9 +1481,6 @@ namespace Iocgns {
     }
 
     get_step_times__();
-    if (open_create_behavior() == Ioss::DB_APPEND) {
-      return;
-    }
 
     // ========================================================================
     // Get the number of sidesets in the mesh...

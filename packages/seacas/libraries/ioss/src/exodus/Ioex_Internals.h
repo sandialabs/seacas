@@ -72,12 +72,7 @@ namespace Ioex {
     NodeBlock(const NodeBlock &other) = default;
     explicit NodeBlock(const Ioss::NodeBlock &other);
 
-    NodeBlock &operator=(const NodeBlock &other);
-
     ~NodeBlock() = default;
-
-    bool operator==(const NodeBlock &) const;
-    bool operator!=(const NodeBlock &other) const { return !(*this == other); }
 
     std::string name{};
     entity_id   id{0};
@@ -92,13 +87,7 @@ namespace Ioex {
     Assembly()                      = default;
     Assembly(const Assembly &other) = default;
     explicit Assembly(const Ioss::Assembly &other);
-
-    Assembly &operator=(const Assembly &other);
-
     ~Assembly() = default;
-
-    bool operator==(const Assembly &) const;
-    bool operator!=(const Assembly &other) const { return !(*this == other); }
 
     std::string          name{};
     entity_id            id{0};
@@ -113,13 +102,7 @@ namespace Ioex {
     Blob()                  = default;
     Blob(const Blob &other) = default;
     explicit Blob(const Ioss::Blob &other);
-
-    Blob &operator=(const Blob &other);
-
     ~Blob() = default;
-
-    bool operator==(const Blob &) const;
-    bool operator!=(const Blob &other) const { return !(*this == other); }
 
     std::string name{};
     entity_id   id{0};
@@ -143,12 +126,7 @@ namespace Ioex {
 
     explicit EdgeBlock(const Ioss::EdgeBlock &other);
 
-    EdgeBlock &operator=(const EdgeBlock &other);
-
     ~EdgeBlock() = default;
-
-    bool operator==(const EdgeBlock & /*other*/) const;
-    bool operator!=(const EdgeBlock &other) const { return !(*this == other); }
 
     char        elType[MAX_STR_LENGTH + 1]{};
     std::string name{};
@@ -175,12 +153,7 @@ namespace Ioex {
 
     explicit FaceBlock(const Ioss::FaceBlock &other);
 
-    FaceBlock &operator=(const FaceBlock &other);
-
     ~FaceBlock() = default;
-
-    bool operator==(const FaceBlock & /*other*/) const;
-    bool operator!=(const FaceBlock &other) const { return !(*this == other); }
 
     char        elType[MAX_STR_LENGTH + 1]{};
     std::string name{};
@@ -209,12 +182,7 @@ namespace Ioex {
 
     explicit ElemBlock(const Ioss::ElementBlock &other);
 
-    ElemBlock &operator=(const ElemBlock &other);
-
     ~ElemBlock() = default;
-
-    bool operator==(const ElemBlock & /*other*/) const;
-    bool operator!=(const ElemBlock &other) const { return !(*this == other); }
 
     char        elType[MAX_STR_LENGTH + 1]{};
     std::string name{};
@@ -234,8 +202,6 @@ namespace Ioex {
     NodeSet()                     = default;
     NodeSet(const NodeSet &other) = default;
     explicit NodeSet(const Ioss::NodeSet &other);
-    bool operator==(const NodeSet & /*other*/) const;
-    bool operator!=(const NodeSet &other) const { return !(*this == other); }
 
     std::string name{};
     entity_id   id{0};
@@ -252,8 +218,6 @@ namespace Ioex {
     EdgeSet()                     = default;
     EdgeSet(const EdgeSet &other) = default;
     explicit EdgeSet(const Ioss::EdgeSet &other);
-    bool operator==(const EdgeSet & /*other*/) const;
-    bool operator!=(const EdgeSet &other) const { return !(*this == other); }
 
     std::string name{};
     entity_id   id{0};
@@ -268,8 +232,6 @@ namespace Ioex {
     FaceSet()                     = default;
     FaceSet(const FaceSet &other) = default;
     explicit FaceSet(const Ioss::FaceSet &other);
-    bool operator==(const FaceSet & /*other*/) const;
-    bool operator!=(const FaceSet &other) const { return !(*this == other); }
 
     std::string name{};
     entity_id   id{0};
@@ -284,8 +246,6 @@ namespace Ioex {
     ElemSet()                     = default;
     ElemSet(const ElemSet &other) = default;
     explicit ElemSet(const Ioss::ElementSet &other);
-    bool operator==(const ElemSet & /*other*/) const;
-    bool operator!=(const ElemSet &other) const { return !(*this == other); }
 
     std::string name{};
     entity_id   id{0};
@@ -300,8 +260,6 @@ namespace Ioex {
     SideSet() = default;
     explicit SideSet(const Ioss::SideBlock &other);
     explicit SideSet(const Ioss::SideSet &other);
-    bool operator==(const SideSet & /*other*/) const;
-    bool operator!=(const SideSet &other) const { return !(*this == other); }
 
     std::string name{};
     entity_id   id{0};
@@ -319,8 +277,6 @@ namespace Ioex {
         : id(the_id), entityCount(count), type(the_type)
     {
     }
-    bool      operator==(const CommunicationMap & /*other*/) const;
-    bool      operator!=(const CommunicationMap &other) const { return !(*this == other); }
     entity_id id{0};
     int64_t   entityCount{0};
     char      type{'U'}; // 'n' for node, 'e' for element

@@ -1151,12 +1151,14 @@ EXODUS_EXPORT int ex_put_node_cmap(int          exoid,    /**< NetCDF/Exodus fil
                                    int          processor /**< This processor ID */
 );
 
-EXODUS_EXPORT int ex_put_partial_node_cmap(int          exoid,  /**< NetCDF/Exodus file ID */
-                                           ex_entity_id map_id, /**< Nodal comm map ID */
-                                           int64_t start_node, int64_t num_nodes,
-                                           void_int *node_ids, /**< FEM node IDs */
-                                           void_int *proc_ids, /**< Processor IDs */
-                                           int       processor /**< This processor ID */
+EXODUS_EXPORT int
+ex_put_partial_node_cmap(int          exoid,            /**< NetCDF/Exodus file ID */
+                         ex_entity_id map_id,           /**< Nodal comm map ID */
+                         int64_t      start_entity_num, /**< Starting position to write to */
+                         int64_t      num_entities,     /**< Number of nodes to write */
+                         void_int *   node_ids,         /**< FEM node IDs */
+                         void_int *   proc_ids,         /**< Processor IDs */
+                         int          processor         /**< This processor ID */
 );
 
 EXODUS_EXPORT int ex_get_elem_cmap(int          exoid,    /**< NetCDF/Exodus file ID */
