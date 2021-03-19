@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 
 namespace Iovs {
+    std::string persistentLdLibraryPathEnvForCatalyst = "";
 
     Utils::Utils() {
         this->dlHandle = nullptr;
@@ -31,7 +32,12 @@ namespace Iovs {
         }
 #ifdef IOSS_DLOPEN_ENABLED
         if (this->dlHandle != nullptr) {
-            dlclose(this->dlHandle);
+            //when loading both libOSMesa.so and the plugin using dlopen,
+            //dlclose seg faults. Only call dlclose() if we only made one
+            //dlopen call
+            if (this->dlHandleLibOSMesa == nullptr) {
+                dlclose(this->dlHandle);
+            }
         }
 #endif
     }
@@ -263,9 +269,24 @@ namespace Iovs {
 
     void Utils::loadPluginLibrary() {
 
-        std::string pluginLibraryPath = this->getCatalystPluginPath();
+        std::string pluginLibraryPath;
+        bool callDlopenLibOSMesa;
+        std::string libOSMesaPath;
+
+        this->getCatalystPluginPath(pluginLibraryPath, callDlopenLibOSMesa,
+            libOSMesaPath);
 
 #ifdef IOSS_DLOPEN_ENABLED
+        if (callDlopenLibOSMesa) {
+            this->dlHandleLibOSMesa = dlopen(libOSMesaPath.c_str(),
+                RTLD_NOW | RTLD_GLOBAL);
+            if (this->dlHandleLibOSMesa == nullptr) {
+                throw std::runtime_error(dlerror());
+            }
+        }
+        else {
+          this->dlHandleLibOSMesa = nullptr;
+        }
         this->dlHandle = dlopen(pluginLibraryPath.c_str(),
             RTLD_NOW | RTLD_GLOBAL);
         if (this->dlHandle == nullptr) {
@@ -273,26 +294,55 @@ namespace Iovs {
         }
 #else
         this->dlHandle = nullptr;
+        this->dlHandleLibOSMesa = nullptr;
 #endif
     }
 
-    std::string Utils::getCatalystPluginPath() {
+    void Utils::getCatalystPluginPath(std::string &catalystPluginPath,
+        bool callDlopenLibOSMesa, std::string &libOSMesaPath) {
 
         if (getenv("CATALYST_PLUGIN") != nullptr) {
-            return getenv("CATALYST_PLUGIN");
+            catalystPluginPath = getenv("CATALYST_PLUGIN");
+            callDlopenLibOSMesa = false;
+            libOSMesaPath = CATALYST_LIB_OSMESA;
+            return;
         }
 
         std::string catalystInsDir =\
             this->getCatalystAdapterInstallDirectory();
 
         if(!catalystInsDir.empty()) {
-            return catalystInsDir +\
+            catalystPluginPath = catalystInsDir +\
                 std::string(CATALYST_INSTALL_LIB_DIR) +\
                     CATALYST_PLUGIN_DYNAMIC_LIBRARY;
+            callDlopenLibOSMesa = false;
+            libOSMesaPath = CATALYST_LIB_OSMESA;
+            return;
         }
-
-        return this->getSierraInstallDirectory() + "/" +\
+       
+        catalystPluginPath = this->getSierraInstallDirectory() + "/" +\
             std::string(CATALYST_PLUGIN_DYNAMIC_LIBRARY);
+        callDlopenLibOSMesa = true;
+        libOSMesaPath = this->getSierraInstallDirectory() + \
+            CATALYST_LIB_OSMESA_DIR + CATALYST_LIB_OSMESA;
+
+        //to avoid depending on name python-3.7, python-3.8, etc., we
+        //expect a link to the python directory inside the sierra catalyst
+        //install along CATALYST_PARAVIEW_PYTHON_ZIP_FILE
+        std::string paraviewPythonZipFile = this->getSierraInstallDirectory() +\
+            CATALYST_PARAVIEW_PYTHON_ZIP_FILE;
+        setPythonPathForParaViewPythonZipFile(paraviewPythonZipFile);
+    }
+
+    void Utils::setPythonPathForParaViewPythonZipFile(std::string &paraviewPythonZipFilePath) {
+    const char *existingPythonpath = getenv("PYTHONPATH");
+      if(existingPythonpath == nullptr) {
+        persistentLdLibraryPathEnvForCatalyst = paraviewPythonZipFilePath;
+      } else {
+        persistentLdLibraryPathEnvForCatalyst = paraviewPythonZipFilePath +
+          ":" + existingPythonpath;
+      }
+      setenv("PYTHONPATH", persistentLdLibraryPathEnvForCatalyst.c_str(), 1);
     }
 
     std::string Utils::getCatalystPythonDriverPath() {
@@ -334,17 +384,6 @@ namespace Iovs {
             IOSS_ERROR(errmsg);
         }
 
-        std::string sierraVersion;
-        if (getenv("SIERRA_VERSION") != nullptr) {
-            sierraVersion = getenv("SIERRA_VERSION");
-        }
-        else {
-            std::ostringstream errmsg;
-            errmsg << "Environment variable SIERRA_VERSION not set.\n"
-                << " Unable to find ParaView catalyst dynamic library.\n";
-            IOSS_ERROR(errmsg);
-        }
-
         char* cbuf = realpath(sierraInsDir.c_str(), nullptr);
         std::string sierraInsPath = cbuf;
         free(cbuf);
@@ -377,7 +416,7 @@ namespace Iovs {
         free(cdir);
 
         return sierraInsPath + "/" + CATALYST_PLUGIN_PATH + "/" +\
-            sierraSystem + "/" + sierraVersion;
+            sierraSystem + CATALYST_IOSS_CATALYST_PLUGIN_DIR;
     }
 
     std::string Utils::getCatalystAdapterInstallDirectory() {

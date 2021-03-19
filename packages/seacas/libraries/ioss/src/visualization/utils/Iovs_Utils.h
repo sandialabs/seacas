@@ -77,8 +77,10 @@ namespace Iovs {
     void broadCastStatusCode(bool & statusCode, const DatabaseInfo & dbinfo);
 
     void loadPluginLibrary();
+    void setPythonPathForParaViewPythonZipFile(std::string &paraviewPythonZipFilePath);
 
-    std::string getCatalystPluginPath();
+    void getCatalystPluginPath(std::string &catalystPluginPath,
+        bool callDlopenLibOSMesa, std::string &libOSMesaPath);
 
     std::string getSierraInstallDirectory();
 
@@ -87,6 +89,7 @@ namespace Iovs {
     void* getDlHandle();
 
     void* dlHandle = nullptr;
+    void* dlHandleLibOSMesa = nullptr;
 
 #if defined(__APPLE__)
     const char* CATALYST_PLUGIN_DYNAMIC_LIBRARY =\
@@ -101,6 +104,10 @@ namespace Iovs {
     const char* CATALYST_OUTPUT_DIRECTORY = "CatalystOutput";
     const char* CATALYST_INSTALL_LIB_DIR = "/lib/";
     const char* CATALYST_INSTALL_PHACTORI_DIR = "/phactori/";
+    const char* CATALYST_IOSS_CATALYST_PLUGIN_DIR = "/current_ioss_catalyst_plugin_version";
+    const char* CATALYST_LIB_OSMESA = "libOSMesa.so";
+    const char* CATALYST_LIB_OSMESA_DIR = "/current_paraview_install/lib/";
+    const char* CATALYST_PARAVIEW_PYTHON_ZIP_FILE = "/current_paraview_lib_python/site-packages/_paraview.zip";
   };
 
 } // namespace Iovs
