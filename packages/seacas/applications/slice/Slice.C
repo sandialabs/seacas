@@ -8,7 +8,9 @@
 #include <SL_tokenize.h>
 
 #include <Ioss_CodeTypes.h>
+#include <Ioss_CopyDatabase.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_MeshCopyOptions.h>
 #include <Ioss_Region.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
@@ -1714,6 +1716,8 @@ namespace {
                  proc_begin + proc_size - 1);
 
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+        Ioss::transfer_coordinate_frames(region, *proc_region[p]);
+        Ioss::transfer_assemblies(region, *proc_region[p], Ioss::MeshCopyOptions{}, 0);
         proc_region[p]->synchronize_id_and_name(&region);
         proc_region[p]->end_mode(Ioss::STATE_DEFINE_MODEL);
         proc_region[p]->begin_mode(Ioss::STATE_MODEL);
