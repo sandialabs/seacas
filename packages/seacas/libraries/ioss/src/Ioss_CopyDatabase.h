@@ -15,6 +15,15 @@ namespace Ioss {
   //! via options in `options`
   void copy_database(Ioss::Region &region, Ioss::Region &output_region,
                      Ioss::MeshCopyOptions &options);
+
+  void transfer_assemblies(Ioss::Region &region, Ioss::Region &output_region,
+                           const Ioss::MeshCopyOptions &options, int rank);
+
+  void transfer_blobs(Ioss::Region &region, Ioss::Region &output_region,
+                      const Ioss::MeshCopyOptions &options, int rank);
+
+  void transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region);
+
 } // namespace Ioss
 
 #endif

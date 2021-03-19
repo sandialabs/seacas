@@ -54,11 +54,6 @@ namespace {
                          const Ioss::MeshCopyOptions &options, int rank);
   void transfer_commsets(Ioss::Region &region, Ioss::Region &output_region,
                          const Ioss::MeshCopyOptions &options, int rank);
-  void transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region);
-  void transfer_assemblies(Ioss::Region &region, Ioss::Region &output_region,
-                           const Ioss::MeshCopyOptions &options, int rank);
-  void transfer_blobs(Ioss::Region &region, Ioss::Region &output_region,
-                      const Ioss::MeshCopyOptions &options, int rank);
 
   template <typename T>
   void transfer_fields(const std::vector<T *> &entities, Ioss::Region &output_region,
@@ -137,8 +132,82 @@ namespace {
   }
 } // namespace
 
+void Ioss::transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region)
+{
+  const Ioss::CoordinateFrameContainer &cf = region.get_coordinate_frames();
+  for (const auto &frame : cf) {
+    output_region.add(frame);
+  }
+}
+
+void Ioss::transfer_assemblies(Ioss::Region &region, Ioss::Region &output_region,
+                               const Ioss::MeshCopyOptions &options, int rank)
+{
+  const auto &assem = region.get_assemblies();
+  if (!assem.empty()) {
+    for (const auto &assm : assem) {
+      const std::string &name = assm->name();
+      if (options.debug && rank == 0) {
+        fmt::print(Ioss::DEBUG(), "{}, ", name);
+      }
+
+      // NOTE: Can't totally use the copy constructor as it will
+      // create a members list containing entities from input
+      // database.  We need corresponding entities from output
+      // database...
+      auto o_assem = new Ioss::Assembly(*assm);
+      o_assem->remove_members();
+
+      // Now, repopulate member list with corresponding entities from output database...
+      const auto &members = assm->get_members();
+      for (const auto &member : members) {
+        const auto *entity = output_region.get_entity(member->name(), member->type());
+        if (entity != nullptr) {
+          o_assem->add(entity);
+        }
+      }
+      output_region.add(o_assem);
+    }
+
+    if (options.verbose && rank == 0) {
+      fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
+    }
+    if (options.debug && rank == 0) {
+      fmt::print(Ioss::DEBUG(), "\n");
+    }
+  }
+}
+
+void Ioss::transfer_blobs(Ioss::Region &region, Ioss::Region &output_region,
+                          const Ioss::MeshCopyOptions &options, int rank)
+{
+  const auto &blobs = region.get_blobs();
+  if (!blobs.empty()) {
+    size_t total_entities = 0;
+    for (const auto &blob : blobs) {
+      const std::string &name = blob->name();
+      if (options.debug && rank == 0) {
+        fmt::print(Ioss::DEBUG(), "{}, ", name);
+      }
+      size_t count = blob->entity_count();
+      total_entities += count;
+      auto o_blob = new Ioss::Blob(*blob);
+      output_region.add(o_blob);
+    }
+
+    if (options.verbose && rank == 0) {
+      fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}", (*blobs.begin())->type_string() + "s",
+                 blobs.size());
+      fmt::print(Ioss::DEBUG(), "\tLength of entity list = {:14n}\n", total_entities);
+    }
+    if (options.debug && rank == 0) {
+      fmt::print(Ioss::DEBUG(), "\n");
+    }
+  }
+}
+
 void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
-			 Ioss::MeshCopyOptions &options)
+                         Ioss::MeshCopyOptions &options)
 {
 
   Ioss::DatabaseIO *dbi  = region.get_database();
@@ -956,72 +1025,6 @@ namespace {
     }
   }
 
-  void transfer_assemblies(Ioss::Region &region, Ioss::Region &output_region,
-                           const Ioss::MeshCopyOptions &options, int rank)
-  {
-    const auto &assem = region.get_assemblies();
-    if (!assem.empty()) {
-      for (const auto &assm : assem) {
-        const std::string &name = assm->name();
-        if (options.debug && rank == 0) {
-          fmt::print(Ioss::DEBUG(), "{}, ", name);
-        }
-
-        // NOTE: Can't totally use the copy constructor as it will
-        // create a members list containing entities from input
-        // database.  We need corresponding entities from output
-        // database...
-        auto o_assem = new Ioss::Assembly(*assm);
-        o_assem->remove_members();
-
-        // Now, repopulate member list with corresponding entities from output database...
-        const auto &members = assm->get_members();
-        for (const auto &member : members) {
-          const auto *entity = output_region.get_entity(member->name(), member->type());
-          if (entity != nullptr) {
-            o_assem->add(entity);
-          }
-        }
-        output_region.add(o_assem);
-      }
-
-      if (options.verbose && rank == 0) {
-        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n", "Assemblies", assem.size());
-      }
-      if (options.debug && rank == 0) {
-        fmt::print(Ioss::DEBUG(), "\n");
-      }
-    }
-  }
-
-  void transfer_blobs(Ioss::Region &region, Ioss::Region &output_region,
-                      const Ioss::MeshCopyOptions &options, int rank)
-  {
-    const auto &blobs = region.get_blobs();
-    if (!blobs.empty()) {
-      size_t total_entities = 0;
-      for (const auto &blob : blobs) {
-        const std::string &name = blob->name();
-        if (options.debug && rank == 0) {
-          fmt::print(Ioss::DEBUG(), "{}, ", name);
-        }
-        size_t count = blob->entity_count();
-        total_entities += count;
-        auto o_blob = new Ioss::Blob(*blob);
-        output_region.add(o_blob);
-      }
-
-      if (options.verbose && rank == 0) {
-        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}",
-                   (*blobs.begin())->type_string() + "s", blobs.size());
-        fmt::print(Ioss::DEBUG(), "\tLength of entity list = {:14n}\n", total_entities);
-      }
-      if (options.debug && rank == 0) {
-        fmt::print(Ioss::DEBUG(), "\n");
-      }
-    }
-  }
-
   void transfer_nodesets(Ioss::Region &region, Ioss::Region &output_region,
                          const Ioss::MeshCopyOptions &options, int rank)
   {
@@ -1064,14 +1067,6 @@ namespace {
     }
     if (options.debug && rank == 0) {
       fmt::print(Ioss::DEBUG(), "\n");
-    }
-  }
-
-  void transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region)
-  {
-    const Ioss::CoordinateFrameContainer &cf = region.get_coordinate_frames();
-    for (const auto &frame : cf) {
-      output_region.add(frame);
     }
   }
 
