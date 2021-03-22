@@ -25,9 +25,9 @@ namespace Iovs_cgns {
 
   private:
     IOFactory();
-    Ioss::DatabaseIO *make_IO(const std::string &filename,
-        Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-            const Ioss::PropertyManager &properties) const override;
+    Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
+                              MPI_Comm                     communicator,
+                              const Ioss::PropertyManager &properties) const override;
   };
 } // namespace Iovs_cgns
 #endif // Iovs_cgns_IOFactory_h

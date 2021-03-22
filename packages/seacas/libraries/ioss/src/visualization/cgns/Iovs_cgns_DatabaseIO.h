@@ -12,23 +12,19 @@
 
 namespace Iovs_cgns {
 
-    class DatabaseIO : public Ioss::DatabaseIO
-    {
-    public:
-      DatabaseIO(Ioss::Region *region, const std::string &filename,
-          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-              const Ioss::PropertyManager &props);
+  class DatabaseIO : public Ioss::DatabaseIO
+  {
+  public:
+    DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
+               MPI_Comm communicator, const Ioss::PropertyManager &props);
 
     ~DatabaseIO() override;
 
     const std::string get_format() const override { return "Embedded CGNS Visualization"; }
 
-    unsigned entity_field_support() const override
-    {
-      return Ioss::REGION;
-    }
+    unsigned entity_field_support() const override { return Ioss::REGION; }
 
-    int int_byte_size_db() const override { return int_byte_size_api(); }
+    int  int_byte_size_db() const override { return int_byte_size_api(); }
     void write_meta_data();
 
   private:
@@ -105,7 +101,7 @@ namespace Iovs_cgns {
     {
       return 0;
     }
-    int64_t get_field_internal(const Ioss::Assembly* /*sb*/, const Ioss::Field & /*field*/,
+    int64_t get_field_internal(const Ioss::Assembly * /*sb*/, const Ioss::Field & /*field*/,
                                void * /*data*/, size_t /*data_size*/) const override
     {
       return 0;
@@ -175,7 +171,7 @@ namespace Iovs_cgns {
     }
     int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                void *data, size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::Assembly* /*sb*/, const Ioss::Field & /*field*/,
+    int64_t put_field_internal(const Ioss::Assembly * /*sb*/, const Ioss::Field & /*field*/,
                                void * /*data*/, size_t /*data_size*/) const override
     {
       return 0;
@@ -191,4 +187,3 @@ namespace Iovs_cgns {
 } // namespace Iovs_cgns
 
 #endif
-

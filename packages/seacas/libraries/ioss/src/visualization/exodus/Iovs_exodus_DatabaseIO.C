@@ -23,42 +23,37 @@
 
 namespace { // Internal helper functions
   enum class entity_type { NODAL, ELEM_BLOCK, NODE_SET, SIDE_SET };
-  int64_t get_id(const Ioss::GroupingEntity *entity,
-      Iovs_exodus::EntityIdSet *idset);
-  bool    set_id(const Ioss::GroupingEntity *entity,
-      Iovs_exodus::EntityIdSet *idset);
+  int64_t get_id(const Ioss::GroupingEntity *entity, Iovs_exodus::EntityIdSet *idset);
+  bool    set_id(const Ioss::GroupingEntity *entity, Iovs_exodus::EntityIdSet *idset);
   int64_t extract_id(const std::string &name_id);
 } // End anonymous namespace
 
 namespace Iovs_exodus {
   int field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
-      const std::string &inout);
+                    const std::string &inout);
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
-      Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-          const Ioss::PropertyManager &props)
-      : Ioss::DatabaseIO(
-            region, Iovs::Utils::getInstance().getDatabaseOutputFilePath(\
-                filename, props),
-                    db_usage, communicator, props),
-        isInput(false), singleProcOnly(false), doLogging(false),
-        createSideSets(false), createNodeSets(false),
-        nodeBlockCount(0), elementBlockCount(0)
+                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+                         const Ioss::PropertyManager &props)
+      : Ioss::DatabaseIO(region,
+                         Iovs::Utils::getInstance().getDatabaseOutputFilePath(filename, props),
+                         db_usage, communicator, props),
+        isInput(false), singleProcOnly(false), doLogging(false), createSideSets(false),
+        createNodeSets(false), nodeBlockCount(0), elementBlockCount(0)
   {
 
     Iovs::Utils::DatabaseInfo dbinfo;
-    dbinfo.databaseFilename = this->DBFilename;
+    dbinfo.databaseFilename   = this->DBFilename;
     dbinfo.separatorCharacter = std::string(1, this->get_field_separator());
-    dbinfo.myRank = this->parallel_rank();
-    dbinfo.communicator = communicator;
+    dbinfo.myRank             = this->parallel_rank();
+    dbinfo.communicator       = communicator;
 
     Iovs::Utils::getInstance().checkDbUsage(db_usage);
     Iovs::Utils::getInstance().createDatabaseOutputFile(dbinfo);
-    dbState = Ioss::STATE_UNKNOWN;
+    dbState                              = Ioss::STATE_UNKNOWN;
     this->globalNodeAndElementIDsCreated = false;
 
-    this->catExoMesh = Iovs::Utils::getInstance()\
-        .createCatalystExodusMesh(dbinfo, props);
+    this->catExoMesh = Iovs::Utils::getInstance().createCatalystExodusMesh(dbinfo, props);
 
     if (props.exists("CATALYST_CREATE_NODE_SETS")) {
       this->createNodeSets = props.get("CATALYST_CREATE_NODE_SETS").get_int();
@@ -69,9 +64,7 @@ namespace Iovs_exodus {
     }
   }
 
-  DatabaseIO::~DatabaseIO() {
-      this->catExoMesh->Delete();
-  }
+  DatabaseIO::~DatabaseIO() { this->catExoMesh->Delete(); }
 
   bool DatabaseIO::begin__(Ioss::State state)
   {
@@ -95,8 +88,7 @@ namespace Iovs_exodus {
     assert(state == dbState);
     switch (state) {
     case Ioss::STATE_DEFINE_MODEL: write_meta_data(); break;
-    case Ioss::STATE_DEFINE_TRANSIENT:
-      break;
+    case Ioss::STATE_DEFINE_TRANSIENT: break;
     default: // ignore everything else...
       break;
     }
@@ -126,14 +118,14 @@ namespace Iovs_exodus {
 
   bool DatabaseIO::end_state__(int /*state*/, double /*time*/)
   {
-    Ioss::SerializeIO serializeIO__(this);
-    std::vector<int> error_codes;
+    Ioss::SerializeIO        serializeIO__(this);
+    std::vector<int>         error_codes;
     std::vector<std::string> error_messages;
     this->catExoMesh->logMemoryUsageAndTakeTimerReading();
     this->catExoMesh->PerformCoProcessing(error_codes, error_messages);
     this->catExoMesh->logMemoryUsageAndTakeTimerReading();
-    Iovs::Utils::getInstance().reportCatalystErrorMessages(
-        error_codes, error_messages, this->parallel_rank());
+    Iovs::Utils::getInstance().reportCatalystErrorMessages(error_codes, error_messages,
+                                                           this->parallel_rank());
 
     return true;
   }
@@ -149,8 +141,8 @@ namespace Iovs_exodus {
     for (I = element_blocks.begin(); I != element_blocks.end(); ++I) {
       int     bid       = get_id((*I), &ids_);
       int64_t eb_offset = (*I)->get_offset();
-      this->catExoMesh->CreateElementVariable(
-            component_names, bid, &this->elemMap.map()[eb_offset + 1]);
+      this->catExoMesh->CreateElementVariable(component_names, bid,
+                                              &this->elemMap.map()[eb_offset + 1]);
     }
 
     component_names.clear();
@@ -242,9 +234,9 @@ namespace Iovs_exodus {
 
       if (role == Ioss::Field::MESH) {
         if (field.get_name() == "mesh_model_coordinates") {
-          this->catExoMesh->InitializeGlobalPoints(
-                num_to_get, nb->get_property("component_degree").get_int(),
-                static_cast<double *>(data));
+          this->catExoMesh->InitializeGlobalPoints(num_to_get,
+                                                   nb->get_property("component_degree").get_int(),
+                                                   static_cast<double *>(data));
         }
         else if (field.get_name() == "ids") {
           // The ids coming in are the global ids; their position is the
@@ -345,15 +337,15 @@ namespace Iovs_exodus {
 
             if (ioss_type == Ioss::Field::INTEGER) {
               this->catExoMesh->CreateElementBlock(
-                    eb->name().c_str(), id, eb->get_property("topology_type").get_string(),
-                    element_nodes, num_to_get, &this->elemMap.map()[eb_offset + 1],
-                    static_cast<int *>(data));
+                  eb->name().c_str(), id, eb->get_property("topology_type").get_string(),
+                  element_nodes, num_to_get, &this->elemMap.map()[eb_offset + 1],
+                  static_cast<int *>(data));
             }
             else if (ioss_type == Ioss::Field::INT64) {
               this->catExoMesh->CreateElementBlock(
-                    eb->name().c_str(), id, eb->get_property("topology_type").get_string(),
-                    element_nodes, num_to_get, &this->elemMap.map()[eb_offset + 1],
-                    static_cast<int64_t *>(data));
+                  eb->name().c_str(), id, eb->get_property("topology_type").get_string(),
+                  element_nodes, num_to_get, &this->elemMap.map()[eb_offset + 1],
+                  static_cast<int64_t *>(data));
             }
           }
         }
@@ -674,12 +666,12 @@ namespace Iovs_exodus {
 
       if (field.get_type() == Ioss::Field::INTEGER) {
         this->nodeMap.reverse_map_data(data, field, num_to_get);
-        //this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get,
+        // this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get,
         //    static_cast<int *>(data));
       }
       else if (field.get_type() == Ioss::Field::INT64) {
         this->nodeMap.reverse_map_data(data, field, num_to_get);
-        //this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get,
+        // this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get,
         //    static_cast<int64_t *>(data));
       }
 
@@ -731,23 +723,23 @@ namespace Iovs_exodus {
           num_to_get          = 0;
         }
 
-	// const Ioss::SideSet *ebowner = eb->owner();
-          /*NOTE: Jeff Mauldin JAM 2015Oct8
-           CreateSideSet is called once for each block which the sideset
-           spans, and the eb->name() for the side set is the ebowner->name()
-           with additional characters to indicate which block we are doing.
-           The current implementation of the sierra/catalyst sideset
-           construction creates a single independent sideset and collects all
-           the nodes and elements from the side set from each block spanned
-           by the sideset into that single sideset.  It needs to have the
-           ebowner->name(), not the eb->name(), because that is the name
-           in the input deck for the sideset for reference for things like
-           extractblock.  It may become necessary at a later date to
-           pass in both ebowner->name() AND eb->name(), but for now we
-           are just passing in ebowner->name() to give us correct
-           functionality while not changing the function interface*/
-          //this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id, num_to_get,
-          //    &element[0], &side[0]);
+        // const Ioss::SideSet *ebowner = eb->owner();
+        /*NOTE: Jeff Mauldin JAM 2015Oct8
+         CreateSideSet is called once for each block which the sideset
+         spans, and the eb->name() for the side set is the ebowner->name()
+         with additional characters to indicate which block we are doing.
+         The current implementation of the sierra/catalyst sideset
+         construction creates a single independent sideset and collects all
+         the nodes and elements from the side set from each block spanned
+         by the sideset into that single sideset.  It needs to have the
+         ebowner->name(), not the eb->name(), because that is the name
+         in the input deck for the sideset for reference for things like
+         extractblock.  It may become necessary at a later date to
+         pass in both ebowner->name() AND eb->name(), but for now we
+         are just passing in ebowner->name() to give us correct
+         functionality while not changing the function interface*/
+        // this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id, num_to_get,
+        //    &element[0], &side[0]);
 
         if (!this->createSideSets) {
           num_to_get = css_save_num_to_get;
@@ -768,23 +760,23 @@ namespace Iovs_exodus {
           num_to_get          = 0;
         }
 
-	// const Ioss::SideSet *ebowner = eb->owner();
-          /*NOTE: Jeff Mauldin JAM 2015Oct8
-           CreateSideSet is called once for each block which the sideset
-           spans, and the eb->name() for the side set is the ebowner->name()
-           with additional characters to indicate which block we are doing.
-           The current implementation of the sierra/catalyst sideset
-           construction creates a single independent sideset and collects all
-           the nodes and elements from the side set from each block spanned
-           by the sideset into that single sideset.  It needs to have the
-           ebowner->name(), not the eb->name(), because that is the name
-           in the input deck for the sideset for reference for things like
-           extractblock.  It may become necessary at a later date to
-           pass in both ebowner->name() AND eb->name(), but for now we
-           are just passing in ebowner->name() to give us correct
-           functionality while not changing the function interface*/
-           //this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id,
-           //    num_to_get, &element[0], &side[0]);
+        // const Ioss::SideSet *ebowner = eb->owner();
+        /*NOTE: Jeff Mauldin JAM 2015Oct8
+         CreateSideSet is called once for each block which the sideset
+         spans, and the eb->name() for the side set is the ebowner->name()
+         with additional characters to indicate which block we are doing.
+         The current implementation of the sierra/catalyst sideset
+         construction creates a single independent sideset and collects all
+         the nodes and elements from the side set from each block spanned
+         by the sideset into that single sideset.  It needs to have the
+         ebowner->name(), not the eb->name(), because that is the name
+         in the input deck for the sideset for reference for things like
+         extractblock.  It may become necessary at a later date to
+         pass in both ebowner->name() AND eb->name(), but for now we
+         are just passing in ebowner->name() to give us correct
+         functionality while not changing the function interface*/
+        // this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id,
+        //    num_to_get, &element[0], &side[0]);
 
         if (!this->createSideSets) {
           num_to_get = css_save_num_to_get;
@@ -797,8 +789,8 @@ namespace Iovs_exodus {
 
 namespace {
 
-  int64_t get_id(const Ioss::GroupingEntity *entity,
-      Iovs_exodus::EntityIdSet *idset) {
+  int64_t get_id(const Ioss::GroupingEntity *entity, Iovs_exodus::EntityIdSet *idset)
+  {
     // Sierra uses names to refer to grouping entities; however,
     // exodusII requires integer ids.  When reading an exodusII file,
     // the DatabaseIO creates a name by concatenating the entity
@@ -857,8 +849,8 @@ namespace {
     return id;
   }
 
-  bool set_id(const Ioss::GroupingEntity *entity,
-      Iovs_exodus::EntityIdSet *idset) {
+  bool set_id(const Ioss::GroupingEntity *entity, Iovs_exodus::EntityIdSet *idset)
+  {
     // See description of 'get_id' function.  This function just primes
     // the idset with existing ids so that when we start generating ids,
     // we don't overwrite an existing one.
