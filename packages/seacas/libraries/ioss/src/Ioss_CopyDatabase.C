@@ -13,6 +13,11 @@
 
 #include <fmt/ostream.h>
 
+// For Sleep...
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 // For copy_database...
 namespace {
   auto initial_time = std::chrono::steady_clock::now();
