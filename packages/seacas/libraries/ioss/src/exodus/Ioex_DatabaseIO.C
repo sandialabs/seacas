@@ -5321,7 +5321,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
 void DatabaseIO::write_meta_data(bool appending)
 {
   Ioss::Region *region = get_region();
-  common_write_meta_data();
+  common_write_meta_data(appending);
 
   char the_title[max_line_length + 1];
 

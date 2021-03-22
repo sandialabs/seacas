@@ -10,7 +10,8 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
-#include <cstddef> // for size_t
+#include <cstddef>
+#include <map>
 
 #define FG_USE_ROBIN
 #if defined FG_USE_STD

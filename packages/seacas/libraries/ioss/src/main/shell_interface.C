@@ -8,7 +8,8 @@
 #include "Ioss_CodeTypes.h"
 #include "Ioss_FileInfo.h"
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
-#include "Ioss_Utils.h"      // for Utils
+#include "Ioss_Sort.h"
+#include "Ioss_Utils.h" // for Utils
 #include "shell_interface.h"
 #include "tokenize.h"
 
@@ -605,7 +606,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
         auto time = std::stod(str);
         selected_times.push_back(time);
       }
-      std::sort(selected_times.begin(), selected_times.end());
+      Ioss::sort(selected_times.begin(), selected_times.end());
     }
   }
 
