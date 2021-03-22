@@ -585,15 +585,15 @@ namespace Ioss {
 
     // [0..m_processorCount).
     double scale = 1.0;
-    auto pos    = m_decompExtra.find(",");
+    auto   pos   = m_decompExtra.find(",");
     if (pos != std::string::npos) {
       // Extract the string following the comma...
       auto scale_str = m_decompExtra.substr(pos + 1);
       if (scale_str == "AUTO" || scale_str == "auto") {
         scale = double(max_proc + 1) / (double)m_processorCount;
         if (m_processor == 0) {
-          fmt::print(Ioss::OUTPUT(), "IOSS: Element Processor {} automatic scaling factor = {:.5}\n",
-                     label, scale);
+          fmt::print(Ioss::OUTPUT(),
+                     "IOSS: Element Processor {} automatic scaling factor = {:.5}\n", label, scale);
         }
       }
       else {
@@ -601,18 +601,18 @@ namespace Ioss {
       }
 
       if (scale < 1.0) {
-	std::ostringstream errmsg;
-	fmt::print(errmsg,
-		   "ERROR: Processor {} scaling factor is {} which is not allowed.\n"
-		   "\tIt must be >= 1.0. Scaling values is not possible.",
-		   label, scale);
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        fmt::print(errmsg,
+                   "ERROR: Processor {} scaling factor is {} which is not allowed.\n"
+                   "\tIt must be >= 1.0. Scaling values is not possible.",
+                   label, scale);
+        IOSS_ERROR(errmsg);
       }
 
       // Do the scaling (integer division...)
       std::transform(m_elementToProc.begin(), m_elementToProc.end(), m_elementToProc.begin(),
                      [scale](int p) { return int(double(p) / scale); });
-      max_proc = int(double(max_proc)/scale);
+      max_proc = int(double(max_proc) / scale);
     }
 
     // Check that values in the map/variable are in range
@@ -1049,7 +1049,7 @@ namespace Ioss {
         export_map.emplace_back(std::make_pair(export_procs[i], export_global_ids[i]));
       }
 
-      std::sort(export_map.begin(), export_map.end());
+      Ioss::sort(export_map.begin(), export_map.end());
       exportElementMap.reserve(num_export);
       exportElementIndex.resize(m_processorCount + 1);
       exportElementCount.resize(m_processorCount + 1);
@@ -1076,7 +1076,7 @@ namespace Ioss {
         export_map.emplace_back(export_procs[i], export_glob[i]);
       }
 
-      std::sort(export_map.begin(), export_map.end());
+      Ioss::sort(export_map.begin(), export_map.end());
       exportElementMap.reserve(num_export);
       exportElementIndex.resize(m_processorCount + 1);
       exportElementCount.resize(m_processorCount + 1);
@@ -1345,8 +1345,8 @@ namespace Ioss {
       if (found_count > 0) {
         nodes.shrink_to_fit();
         localNodeMap.shrink_to_fit();
-        std::sort(nodes.begin(), nodes.end());
-        std::sort(localNodeMap.begin(), localNodeMap.end());
+        Ioss::sort(nodes.begin(), nodes.end());
+        Ioss::sort(localNodeMap.begin(), localNodeMap.end());
         for (int proc = m_processor + 1; proc < m_processorCount + 1; proc++) {
           nodeIndex[proc] += found_count;
         }
@@ -1406,7 +1406,7 @@ namespace Ioss {
         node_proc_list.push_back(std::make_pair(exportNodeMap[i], p));
       }
     }
-    std::sort(node_proc_list.begin(), node_proc_list.end());
+    Ioss::sort(node_proc_list.begin(), node_proc_list.end());
 
     std::vector<std::pair<INT, int>> shared_nodes;
     for (size_t i = 0; i < node_proc_list.size(); i++) {

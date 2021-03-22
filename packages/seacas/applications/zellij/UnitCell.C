@@ -12,6 +12,7 @@
 #include "Ioss_NodeBlock.h"
 #include "Ioss_Region.h"
 #include "Ioss_SmartAssert.h"
+#include "Ioss_Sort.h"
 #include "fmt/format.h"
 
 //! \file
@@ -75,7 +76,7 @@ namespace {
   void sort_face_nodes(std::vector<INT> &face_nodes, const std::vector<double> &coord_j,
                        const std::vector<double> &coord_i)
   {
-    std::sort(face_nodes.begin(), face_nodes.end(), [&coord_j, &coord_i](size_t a, size_t b) {
+    Ioss::sort(face_nodes.begin(), face_nodes.end(), [&coord_j, &coord_i](size_t a, size_t b) {
       return float(coord_i[a]) < float(coord_i[b]) ||
              (approx_equal(coord_i[a], coord_i[b]) && float(coord_j[a]) < float(coord_j[b]));
     });

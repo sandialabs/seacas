@@ -7,6 +7,7 @@
 #include <Ionit_Initializer.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Compare.h>
+#include <Ioss_CopyDatabase.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_MeshType.h>
@@ -318,7 +319,7 @@ namespace {
         }
 
         // Do normal copy...
-        Ioss::Utils::copy_database(region, output_region, options);
+        Ioss::copy_database(region, output_region, options);
 
         if (mem_stats) {
           dbo->release_memory();
@@ -388,7 +389,7 @@ namespace {
           output_region.property_add(Ioss::Property(std::string("code_name"), codename));
           output_region.property_add(Ioss::Property(std::string("code_version"), version));
 
-          Ioss::Utils::copy_database(region, output_region, options);
+          Ioss::copy_database(region, output_region, options);
           if (mem_stats) {
             dbo->release_memory();
           }

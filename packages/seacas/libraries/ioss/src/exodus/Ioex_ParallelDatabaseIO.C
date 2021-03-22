@@ -4587,7 +4587,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const 
 void ParallelDatabaseIO::write_meta_data(bool appending)
 {
   Ioss::Region *region = get_region();
-  common_write_meta_data();
+  common_write_meta_data(appending);
 
   char the_title[max_line_length + 1];
 

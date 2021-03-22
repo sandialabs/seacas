@@ -29,6 +29,9 @@
 #include <vector>
 
 #include "copy_string_cpp.h"
+#if !USE_STD_SORT
+#include "pdqsort.h"
+#endif
 // Enable SMART_ASSERT even in Release mode...
 #define SMART_ASSERT_DEBUG_MODE 1
 #include "smart_assert.h"
@@ -233,7 +236,11 @@ namespace {
 
   template <typename T> static void uniquify(std::vector<T> &vec)
   {
+#if USE_STD_SORT
     std::sort(vec.begin(), vec.end());
+#else
+    pdqsort(vec.begin(), vec.end());
+#endif
     vec.resize(unique(vec));
     vec.shrink_to_fit();
   }
@@ -2237,7 +2244,11 @@ namespace {
     }
 
     // Now, sort the global_element_map array.
+#if USE_STD_SORT
     std::sort(global_element_map.begin(), global_element_map.end());
+#else
+    pdqsort(global_element_map.begin(), global_element_map.end());
+#endif
 
     global->elementCount = global_element_map.size();
 
@@ -2413,7 +2424,11 @@ namespace {
     }
 
     // Now, sort the global_node_map array and remove duplicates...
+#if USE_STD_SORT
     std::sort(global_node_map.begin(), global_node_map.end());
+#else
+    pdqsort(global_node_map.begin(), global_node_map.end());
+#endif
     global_node_map.resize(unique(global_node_map));
     global_node_map.shrink_to_fit();
 

@@ -195,6 +195,7 @@ a separate license:
 | [Tessil Hash](https://github.com/Tessil/) | `packages/seacas/libraries/ioss/src/hash` |  [MIT](https://opensource.org/licenses/MIT) |
 | [Catch2](https://github.com/catchorg/Catch2) | `packages/seacas/libraries/ioss/src/catch.hpp` | [Boost](http://www.boost.org/LICENSE_1_0.txt) |
 | [{fmt}](https://github.com/fmtlib/fmt) | `packages/seacas/libraries/ioss/src/fmt` | [BSD-2-Clause](https://github.com/fmtlib/fmt/blob/master/LICENSE.rst) |
+| [pdqsort](https://github.com/orlp/pdqsort) | `packages/seacas/libraries/ioss/src` | [Zlib License](https://github.com/orlp/pdqsort/blob/master/license.txt) |
 ## Contact information
 
  Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
