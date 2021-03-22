@@ -270,7 +270,7 @@ namespace Iovs {
     void Utils::loadPluginLibrary() {
 
         std::string pluginLibraryPath;
-        bool callDlopenLibOSMesa;
+        bool callDlopenLibOSMesa{};
         std::string libOSMesaPath;
 
         this->getCatalystPluginPath(pluginLibraryPath, callDlopenLibOSMesa,
@@ -498,6 +498,9 @@ namespace Iovs {
     }
 
     void Utils::broadCastString(std::string & s, const DatabaseInfo & dbinfo) {
+  PAR_UNUSED(s);
+  PAR_UNUSED(dbinfo);
+#ifdef SEACAS_HAVE_MPI
         int size = s.size();
         MPI_Bcast(&size, 1, MPI_INT, 0, dbinfo.communicator);
         if (dbinfo.myRank != 0) {
@@ -505,13 +508,18 @@ namespace Iovs {
         }
         MPI_Bcast(const_cast<char*>(s.data()), size, MPI_CHAR, 0,
             dbinfo.communicator);
+#endif
     }
 
     void Utils::broadCastStatusCode(bool & statusCode,
         const DatabaseInfo & dbinfo) {
+  PAR_UNUSED(statusCode);
+  PAR_UNUSED(dbinfo);
+#ifdef SEACAS_HAVE_MPI
 
         int code = statusCode;
         MPI_Bcast(&code, 1, MPI_INT, 0, dbinfo.communicator);
         statusCode = code;
+#endif
     }
 } // namespace Iovs

@@ -7,6 +7,7 @@
 #include "IossApplication.h"
 #include "IossRegionReport.h"
 #include "CatalystPluginPaths.h"
+#include <Ioss_CopyDatabase.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_Region.h>
 #include <Ioss_IOFactory.h>
@@ -691,7 +692,7 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
     copyOptions.data_storage_type = 1;
     copyOptions.minimum_time = min_time;
     copyOptions.maximum_time = max_time;
-    Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
+    Ioss::copy_database(*inputRegion, *outputRegion, copyOptions);
 
     delete outputRegion;
 }
@@ -782,7 +783,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid() {
         copyOptions.data_storage_type = 1;
         copyOptions.minimum_time = min_time;
         copyOptions.maximum_time = max_time;
-        //Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
+        //Ioss::copy_database(*inputRegion, *outputRegion, copyOptions);
         bool defineFlag;
         if (currentTimeStep == startTimeStep) {
             defineFlag = true;
@@ -793,7 +794,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid() {
             thisRegionCurrentTimeStep, (float)max_time);
         printf("defineFlag: %d\n", (int)defineFlag);
         copyOptions.define_geometry = defineFlag;
-        Ioss::Utils::copy_database_v2(*inputRegion, *outputRegion, copyOptions);
+        Ioss::copy_database_v2(*inputRegion, *outputRegion, copyOptions);
     }
     }
     for (ii=0;ii<numInputRegions;ii++) {
@@ -864,7 +865,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRankOneGrid() {
     copyOptions.data_storage_type = 1;
     copyOptions.minimum_time = min_time;
     copyOptions.maximum_time = max_time;
-    Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
+    Ioss::copy_database(*inputRegion, *outputRegion, copyOptions);
 
     delete outputRegion;
 }

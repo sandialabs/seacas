@@ -665,7 +665,7 @@ namespace Iovs_exodus {
 
     if (num_to_get > 0 && (field.get_name() == "ids" || field.get_name() == "ids_raw")) {
 
-      int id = get_id(ns, &this->ids_);
+      // int id = get_id(ns, &this->ids_);
 
       if (!this->createNodeSets) {
         cns_save_num_to_get = num_to_get;
@@ -712,7 +712,7 @@ namespace Iovs_exodus {
     if ((field.get_name() == "element_side") || (field.get_name() == "element_side_raw")) {
       size_t side_offset = Ioss::Utils::get_side_offset(eb);
 
-      int id = get_id(eb, &this->ids_);
+      // int id = get_id(eb, &this->ids_);
 
       size_t index = 0;
 
@@ -731,7 +731,7 @@ namespace Iovs_exodus {
           num_to_get          = 0;
         }
 
-          const Ioss::SideSet *ebowner = eb->owner();
+	// const Ioss::SideSet *ebowner = eb->owner();
           /*NOTE: Jeff Mauldin JAM 2015Oct8
            CreateSideSet is called once for each block which the sideset
            spans, and the eb->name() for the side set is the ebowner->name()
@@ -768,7 +768,7 @@ namespace Iovs_exodus {
           num_to_get          = 0;
         }
 
-          const Ioss::SideSet *ebowner = eb->owner();
+	// const Ioss::SideSet *ebowner = eb->owner();
           /*NOTE: Jeff Mauldin JAM 2015Oct8
            CreateSideSet is called once for each block which the sideset
            spans, and the eb->name() for the side set is the ebowner->name()
