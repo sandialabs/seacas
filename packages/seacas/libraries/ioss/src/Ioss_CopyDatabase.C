@@ -364,7 +364,7 @@ namespace {
                                                   const Ioss::MeshCopyOptions &options)
   {
     std::vector<Ioss::Face> boundary;
-    if (options.boundary_sideset) {
+    if (options.define_geometry && options.boundary_sideset) {
       Ioss::FaceGenerator face_generator(region);
       if (region.get_database()->int_byte_size_api() == 4) {
         face_generator.generate_faces((int)0, false);
@@ -440,7 +440,7 @@ namespace {
 
     transfer_sidesets(region, output_region, options, rank);
 
-    if (options.boundary_sideset) {
+    if (options.define_geometry && options.boundary_sideset) {
       // Get topology of the sideset faces. Using just block[0] since for what we are doing, doesn't
       // really matter.
       const auto &blocks    = region.get_element_blocks();
@@ -616,7 +616,7 @@ namespace {
         fmt::print(Ioss::DEBUG(), "\n");
       }
 
-      if (options.boundary_sideset) {
+      if (options.define_geometry && options.boundary_sideset) {
         auto *ss = output_region.get_sideset("boundary");
         if (ss != nullptr) {
           auto sb = ss->get_side_block("boundary");
