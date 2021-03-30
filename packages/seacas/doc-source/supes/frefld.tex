@@ -97,7 +97,7 @@ few rules.
 \item A dollar sign (\$) indicates a comment.  All characters after and
    including the comment indicator are ignored.
 
-\item An asterisk (\last) indicates that the next input record/string will be
+\item An asterisk ($*$) indicates that the next input record/string will be
 treated as a continuation of the current line.  All characters after and
 including the continuation indicator on the current line are ignored.
 Multiple records/strings that are ''joined'' by continuation indicators
@@ -185,7 +185,7 @@ than to the standard output device as described above.
 If non-zero, the caller is responsible for opening/closing this unit.
 \end{argy}
 
-\begin{argy}{PROMPT}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{PROMPT}{CHARACTER$*$($*$)}{Read Only}
 Prompt string.  This string will be used to prompt for
 data from an interactive terminal and/or will be written
 as a prefix to the input line for echo.  If the string
@@ -234,7 +234,7 @@ RVALUE, and IVALUE contain specified values.\\ \hline \hline
 The dimension of this array must be at least MFIELD.
 \end{argy}
 
-\begin{argy}{CVALUE}{CHARACTER\last(\last) Array}{Write Only}
+\begin{argy}{CVALUE}{CHARACTER$*$($*$) Array}{Write Only}
 Character values of the data fields.  The data will be
 left-justified and either blank-filled or truncated.
 The value in this array is set blank for a null field.
@@ -268,7 +268,7 @@ The arguments to FFISTR are prescribed below.
      *             CVALUE, IVALUE, RVALUE )
 \end{verbatim}
 
-\begin{argy}{LINE}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{LINE}{CHARACTER$*$($*$)}{Read Only}
 Input string. This argument contains the data to be parsed.
 \end{argy}
 
@@ -309,7 +309,7 @@ RVALUE, and IVALUE contain specified values.\\ \hline \hline
 The dimension of this array must be at least MFIELD.
 \end{argy}
 
-\begin{argy}{CVALUE}{CHARACTER\last(\last) Array}{Write Only}
+\begin{argy}{CVALUE}{CHARACTER$*$($*$) Array}{Write Only}
 Character values of the data fields.  The data will be
 left-justified and either blank-filled or truncated.
 The value in this array is set blank for a null field.
@@ -465,7 +465,7 @@ than to the standard output device as described above.
 If non-zero, the caller is responsible for opening/closing this unit.
 \end{argy}
 
-\begin{argy}{PROMPT}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{PROMPT}{CHARACTER$*$($*$)}{Read Only}
 Prompt string.  This string will be used to prompt for
 data from an interactive terminal and/or will be written
 as a prefix to the input line for echo.  If the string
@@ -475,7 +475,7 @@ read under the AUTO feature are counted), will be
 generated.
 \end{argy}
 
-\begin{argy}{LINE}{CHARACTER\last(\last)}{Write Only}
+\begin{argy}{LINE}{CHARACTER$*$($*$)}{Write Only}
 Line of input.  This string will be blank-filled or
 truncated, if necessary.  The length of the string is
 set by the caller, but should not exceed 132.
@@ -503,7 +503,7 @@ The arguments to STRIPB are prescribed below.
 
 \verb+CALL STRIPB( STRING, ILEFT, IRIGHT )+
 
-\begin{argy}{STRING}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{STRING}{CHARACTER$*$($*$)}{Read Only}
 Any character string.
 \end{argy}
 
@@ -526,7 +526,7 @@ The arguments to QUOTED are prescribed below.
 
 \verb+CALL QUOTED ( STRING, ILEFT, IRIGHT )+
 
-\begin{argy}{STRING}{CHARACTER\last(\last)}{Read and Write}
+\begin{argy}{STRING}{CHARACTER$*$($*$)}{Read and Write}
 Any character string. On output, the first and last quotes are removed, and
 internal (repeated) quotes are converted to single quotes. If the trailing
 quote is omitted, then the remainder of the input record (excluding trailing

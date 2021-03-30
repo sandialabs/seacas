@@ -66,10 +66,10 @@ values, including negative numbers.
 The base arrays must comply with the following rules:
 \begin{enumerate}
 \item Numeric base arrays {\em must} be of type INTEGER, REAL, or LOGICAL.  Modified
-word length storage arrays such as INTEGER\last 2 or REAL\last 8 will result
+word length storage arrays such as INTEGER$*$ 2 or REAL$*$ 8 will result
 in invalid indexes with no error message.
 
-\item Character base arrays {\em must} be declared CHARACTER\last 1.
+\item Character base arrays {\em must} be declared CHARACTER$*$ 1.
 \end{enumerate}
 
 The following FORTRAN statements define valid base arrays:
@@ -117,7 +117,7 @@ This array is used as a base reference to all dynamically allocated
 numeric memory.
 \end{argy}
 
-\begin{argy}{CHRBAS}{CHARACTER\last 1 Array or Array Element}{Read Only}
+\begin{argy}{CHRBAS}{CHARACTER$*$ 1 Array or Array Element}{Read Only}
 This array is used as a base reference to all dynamically allocated
 character memory.
 \end{argy}
@@ -132,7 +132,7 @@ CALL MDRSRV (NAME, NEWIDX, NEWLEN)
 CALL MCRSRV (NAME, NEWIDX, NEWLEN)
 \end{verbatim}
 
-\begin{argy}{NAME}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{NAME}{CHARACTER$*$($*$)}{Read Only}
 This is the name of the new dynamic array. The memory manager will add this
 name to its internal dictionary; each array must have a unique name.  The
 first eight characters beginning with a nonblank are
@@ -164,7 +164,7 @@ CALL MDDEL (NAME)
 CALL MCDEL (NAME)
 \end{verbatim}
 
-\begin{argy}{NAME}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{NAME}{CHARACTER$*$($*$)}{Read Only}
 This is the name of the dynamic array which is to be deleted.  The array
 name must match an existing name in the dictionary and be of the correct
 type (numeric or character) for the operation. The first eight characters
@@ -174,6 +174,8 @@ significant.
 \end{argy}
 
 \subsection{Reserve Memory Block (MDGET/MCGET)}
+NOTE: This capability has been removed.  Calling \code{MDGET} or \code{MCGET} will have no affect.
+
 MDGET and MCGET reserve a contiguous block of memory without associating the
 block of memory with an array.  MxGET should be called prior to a
 series of calls to MxRSRV to improve efficiency and to reduce memory
@@ -190,6 +192,8 @@ for MDGET or character storage units for MCGET.
 \end{argy}
 
 \subsection{Release Unallocated Memory (MDGIVE/MCGIVE)}
+NOTE: This capability has been removed.  Calling \code{MDGIVE} or \code{MCGIVE} will have no affect.
+
 MxGIVE
 causes the memory manager to return unused storage to the operating
 system, if possible. MDGIVE and MCGIVE are synonyms.
@@ -241,17 +245,17 @@ MDEROR and MCEROR are synonyms.
   6 &  &  NAME ALREADY EXISTS IN DICTIONARY\\
   7 &  &  ILLEGAL LENGTH REQUEST\\
   8 &  &  UNKNOWN DATA TYPE\\
-  9 & \last&  DICTIONARY IS FULL\\
- 10 & \last&  VOID TABLE IS FULL\\
- 11 & \last&  MEMORY BLOCK TABLE IS FULL\\
- 12 & \last&  OVERLAPPING VOIDS - INTERNAL ERROR\\
- 13 & \last&  OVERLAPPING MEMORY BLOCKS - INTERNAL ERROR\\
- 14 & \last&  INVALID MEMORY BLOCK - EXTENSION LIBRARY ERROR\\
+  9 & $*$&  DICTIONARY IS FULL\\
+ 10 & $*$&  VOID TABLE IS FULL\\
+ 11 & $*$&  MEMORY BLOCK TABLE IS FULL\\
+ 12 & $*$&  OVERLAPPING VOIDS - INTERNAL ERROR\\
+ 13 & $*$&  OVERLAPPING MEMORY BLOCKS - INTERNAL ERROR\\
+ 14 & $*$&  INVALID MEMORY BLOCK - EXTENSION LIBRARY ERROR\\
  15 &  &  INVALID ERROR CODE\\
  16 &  &  INVALID INPUT NAME\\
  17 &  &  ILLEGAL CALL WHILE IN DEFER MODE\\
  18 &  &  NAME IS OF WRONG TYPE FOR OPERATION\\ \hline \hline
-\multicolumn{3}{c}{\last These are not user errors.}\\
+\multicolumn{3}{c}{$*$ These are not user errors.}\\
 \end{tabular}
 \end{table}
 
@@ -293,7 +297,7 @@ results when dynamic memory is used as a numeric type which is different
 from the type of the initialization datum.
 \end{argy}
 
-\begin{argy}{CHRDAT}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{CHRDAT}{CHARACTER$*$($*$)}{Read Only}
 This is the initialization data for new storage al\-lo\-cat\-ed with MCRSRV or
 extended with MCLONG. Only the first character of CHRDAT is used.
 \end{argy}
@@ -342,7 +346,7 @@ CALL MDNAME (NAME1, NAME2)
 CALL MCNAME (NAME1, NAME2)
 \end{verbatim}
 
-\begin{argy}{NAME1}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{NAME1}{CHARACTER$*$($*$)}{Read Only}
 This is the old name of the array.  The first eight characters after the
 first nonblank are
 used for comparison.
@@ -350,7 +354,7 @@ This comparison is case-insensitive and embedded blanks are
 significant.
 \end{argy}
 
-\begin{argy}{NAME2}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{NAME2}{CHARACTER$*$($*$)}{Read Only}
 This is the new name of the array.  The first eight characters starting
 from a nonblank are
 used for the new name.
@@ -369,7 +373,7 @@ CALL MDLONG (NAME, NEWIDX, NEWLEN)
 CALL MCLONG (NAME, NEWIDX, NEWLEN)
 \end{verbatim}
 
-\begin{argy}{NAME}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{NAME}{CHARACTER$*$($*$)}{Read Only}
 This is the name of the dynamic array which the user wishes to extend or
 shorten.
 \end{argy}
@@ -394,7 +398,7 @@ CALL MDFIND (NAME, NEWIDX, NEWLEN)
 CALL MCFIND (NAME, NEWIDX, NEWLEN)
 \end{verbatim}
 
-\begin{argy}{NAME}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{NAME}{CHARACTER$*$($*$)}{Read Only}
 This is the name of the dynamic array to be located.
 \end{argy}
 
@@ -472,6 +476,8 @@ memory manager.
 \end{argy}
 
 \subsection{Enable Deferred Memory Mode (MDWAIT/MCWAIT)} \label{sec:wait}
+NOTE: This capability has been removed.  Calling \code{MDWAIT} or \code{MCWAIT} will have no affect.
+
 MxWAIT enables the deferred memory mode of the memory manager. In
 this mode, any requests for additional memory with MxRSRV are
 satisfied only if a system call is not required. If a system call is
@@ -515,6 +521,8 @@ CALL MCWAIT ()
 \end{verbatim}
 
 \subsection{Execute Deferred Memory Requests (MDEXEC/MCEXEC)}
+NOTE: This capability has been removed.  Calling \code{MDEXEC} or \code{MCEXEC} will have no affect.
+
 MxEXEC causes all deferred mode memory requests to be satisfied
 with a single call to the operating system for the required memory. The
 deferred mode is also canceled. MDEXEC and MCEXEC are synonyms.
@@ -582,7 +590,7 @@ CALL MDPRNT (NAME, IUNIT, TYPE)
 CALL MCPRNT (NAME, IUNIT, NGRUP)
 \end{verbatim}
 
-\begin{argy}{NAME}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{NAME}{CHARACTER$*$($*$)}{Read Only}
 This is the name of the array to be printed.
 \end{argy}
 
@@ -590,7 +598,7 @@ This is the name of the array to be printed.
 This is the FORTRAN unit number of the output device.
 \end{argy}
 
-\begin{argy}{TYPE}{CHARACTER\last(\last)}{Read Only}
+\begin{argy}{TYPE}{CHARACTER$*$($*$)}{Read Only}
 TYPE indicates the data type of the data to be printed; "R" for REAL, or
 "I" for INTEGER.  Note that this is not necessarily the declared type of the
 base array.
@@ -598,7 +606,7 @@ base array.
 
 \begin{argy}{NGRUP}{INTEGER}{Read Only}
 NGRUP controls the number of characters that are grouped together without
-intervening spaces. Since the storage is declared as a CHARACTER\last 1
+intervening spaces. Since the storage is declared as a CHARACTER$*$ 1
 array, NGRUP allows the user to format the output consistent with longer
 character strings.
 \end{argy}

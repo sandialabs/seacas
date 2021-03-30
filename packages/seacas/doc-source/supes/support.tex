@@ -1,30 +1,23 @@
 \chapter{SUPPORT PROGRAMMER'S GUIDE} \label{sec:support}
 This chapter documents the internal architecture for SUPES.  It is intended
 to guide the maintenance of SUPES and support of SUPES on new operating
-systems.  The consequences of using the Skeleton FORTRAN extension library
-on the internal operation of SUPES is fully discussed.
-
+systems.
 
 \section{Free Field Input} The SUPES free field input system consists of
 four subroutines: FREFLD (section~\ref{sec:frefld}),
-FFISTR (section~\ref{sec:ffistr}), GETINP
+FFISTR (section~\ref{sec:ffistr}), \code{GETINP}
 (section~\ref{sec:getinp}), and STRIPB (section~\ref{sec:stripb}). All of
 these routines are written in fully standard ANSI FORTRAN.
 
 FREFLD calls the extension library routine EXUPCS
-(section~\ref{sec:exupcs}). If only the skeleton version of EXUPCS is
-available, case insensitivity of input data (rule~\ref{itm:case} of
-section~\ref{sec:syntax}) can not be guaranteed.
+(section~\ref{sec:exupcs}). 
 
-FFISTR is the input line parsing routine.
-It is called by FREFLD,
-but the user is free to call it independently.
-The input line may be of arbitrary length.
+FFISTR is the input line parsing routine.  It is called by FREFLD, but
+the user is free to call it independently.  The input line may be of
+arbitrary length.
 
-GETINP calls the extension library routine EXREAD
-(section~\ref{sec:exread}). If only the skeleton version of EXREAD is
-available, GETINP will not prompt nor guarantee echo when reading from the
-standard input device (KIN = 0).
+\code{GETINP} calls the extension library routine \code{EXREAD}
+(section~\ref{sec:exread}). 
 
 
 \subsection{Implementation Notes on FREFLD}
@@ -37,7 +30,7 @@ FREFLD is organized into five phases:
 \begin{enumerate}
 \item All the output arrays are initialized to their default values.
 
-\item The next input record is obtained via GETINP.  Processing of a
+\item The next input record is obtained via \code{GETINP}.  Processing of a
         continuation line begins with this phase.
 
 \item The effective portion of the input line is isolated by stripping any
@@ -54,7 +47,7 @@ FREFLD is organized into five phases:
 Upon leaving the main translation loop, the routine is restarted at phase 2
 if the continuation flag is set.
 
-The only errors returned by FREFLD are any returned from GETINP.
+The only errors returned by FREFLD are any returned from \code{GETINP}.
 
 A data field is left-justified to define a CHARACTER value, but must be
 right-justified to obtain a numeric value.  An internal READ is used to
@@ -155,7 +148,7 @@ Any call for memory (MDGET or MDRSRV) will be satisfied in one of two ways:
           used for the new array (MDRSRV).  In the case of MDGET, no further
           action is taken.
 
-\item An extension library call (EXMEMY) is made to get more memory from
+\item An extension library call (\code{EXMEMY}) is made to get more memory from
           the system.
 \end{enumerate}
 
@@ -168,7 +161,7 @@ A request to extend an array (MDLONG) is satisfied in one of three ways:
           memory, the array is moved to this location.  Note that the data
           is actually shifted and the pointer is updated.
 
-\item An extension library call (EXMEMY) is made to get more memory from
+\item An extension library call (\code{EXMEMY}) is made to get more memory from
           the system.
 \end{enumerate}
 
@@ -200,42 +193,6 @@ assumptions are:
 
 \item All dynamically allocated memory must remain fixed in relation to
           the base array.
-\end{enumerate}
-
-\subsection{Standard FORTRAN Implementation}
-
-If an installation does not yet support the extension library, it is still
-possible and advantageous to use the memory manager.  In this case, the
-memory manager will act as a dynamic allocator of static (already
-dimensioned) memory.  Codes which employ the memory manager therefore do not
-need to be rewritten, and codes under development can anticipate the
-implementation of the extension library.
-
-When the subprograms IXLNUM or EXMEMY of the extension library are not
-available, the following steps must be taken before using the memory
-manager:
-\begin{enumerate}
-\item Install the skeleton version of the extension library
-(Section~\ref{sec:skel}).
-
-\item Alter the memory manager subroutine MDINIT as follows:
-
-\underline{ORIGINAL}
-
-\verb+DIMENSION MYV(1)+
-
-\underline{ALTERED}
-\begin{verbatim}
-PARAMETER (MAXSIZ=1024)
-COMMON /EXTLIB/ MYV( MAXSIZ)
-\end{verbatim}
-
-\item Put the base vector in the user's program in the COMMON block
-          EXTLIB and dimension it consistently with the COMMON blocks in
-          EXMEMY and MDINIT.
-
-\item If more than 1024 numeric storage units are required, change the
-          parameter statement in MDINIT, EXMEMY and the user's program.
 \end{enumerate}
 
 \subsection{Test Program}
@@ -340,66 +297,32 @@ Among the advantages are:
       future port.
 
 \end{enumerate}
-Of course,
-these advantages do come at a cost.
-The FORTRAN--C interface must now be handled at the source level
-in the extension library.
-This is an extremely system dependent area.
-However,
-most systems do allow for such a scenario,
-and,
-accordingly,
-it tends to be documented quite extensively.
 
-The code should be well
-commented and references to appropriate system manuals should be included.
+Of course, these advantages do come at a cost.  The FORTRAN--C
+interface must now be handled at the source level in the extension
+library.  This is an extremely system dependent area.  However, most
+systems do allow for such a scenario, and, accordingly, it tends to be
+documented quite extensively.
 
-The original FORTRAN version of the skeleton library will
-continue to be part of the distribution.
-To use them,
-it is recommended that one start with the skeleton library routines and
-gradually add system dependent code to provide full capability.
-Examples are provided in the distribution in the form of
-the original source code for VAX/VMS and Cray CTSS with the CFTLIB
-FORTRAN run-time library.
-In fact,
-for the latter case that code represents the only method of implementation
-of SUPES.
-This is entirely due to the lack of a suitable FORTRAN-C interfacing scheme
-under that system.
-
-If this is the desired plan,
-it is suggested that extension library modules be implemented in the
-following order:
-\begin{enumerate}
-\item EXUPCS.  The skeleton version should be sufficient.
-
-\item EXTIME, EXDATE, EXCPUS, IXLNUM, and EXPARM.  These routines are
-        generally straightforward and can be accomplished simply with the
-        aid of the FORTRAN and/or C Run Time Library manuals for the
-        particular operating system.
-
-\item EXREAD, EXNAME, EXMEMY, and IXLCHR.  These routines require a more intimate
-        knowledge of the operating system.  A substantial set of system
-        documentation may be required to accomplish these tasks.
-\end{enumerate}
+The code should be well commented and references to appropriate system
+manuals should be included.
 
 \subsection{Implementation Notes for Modules}
-The format of the date for \underline{EXDATE} must be strictly observed.
+The format of the date for \code{EXDATE} must be strictly observed.
 Many systems supply a date service routine which formats the date in a
 different style. Conversion to the SUPES format should be straightforward.
 
 Most systems provide a time of day service routine which formats the time in
 the desired style.  Some systems also return fractional seconds which can
 easily be trimmed off.  In any case, the format specified by
-\underline{EXTIME} must be strictly observed.
+\code{EXTIME} must be strictly observed.
 
-\underline{EXCPUS} is intended to measure performance rather than cost.  The
+\code{EXCPUS} is intended to measure performance rather than cost.  The
 quantity returned by EXCPUS should be raw CPU seconds; any weighting for
 memory use or priority should be removed.  I/O time should be included only
 if it is performed by the CPU.
 
-The hardware ID string for \underline{EXPARM} should reflect both the
+The hardware ID string for \code{EXPARM} should reflect both the
 manufacturer and model of the processor.  For example, ``VAX 8600'' rather
 than just ``VAX'' allows the user to make sense of the CPU time returned by
 EXCPUS.
@@ -419,29 +342,25 @@ storage relationship.
 The proper value for IDAU should always be indicated in the reference manual
 for the compiler where it discusses Unformatted Direct Access files.
 
-The unit/file mode of \underline{EXNAME} should follow as closely as
+The unit/file mode of \code{EXNAME} should follow as closely as
 possible to whatever convention the particular operating system uses for
 connecting a FORTRAN I/O unit to a file at execution time.  This feature
 should be easy to implement on systems which support pre-connection.  Support
 for units 1-99 should be sufficient.
 
-The symbol mode feature of EXNAME should be designed to obtain messages from
+The symbol mode feature of \code{EXNAME} should be designed to obtain messages from
 the system level procedure which activates the program.  Eight characters
 per symbol is a reasonable limit.  Support for symbols 0-7 should be
 adequate.
 
-Support for EXNAME not only requires coding the routine itself, but also
+Support for \code{EXNAME} not only requires coding the routine itself, but also
 designing the system procedure level interface.  This interface should
-always be designed before coding EXNAME.  It should fit as cleanly as
+always be designed before coding \code{EXNAME}.  It should fit as cleanly as
 possible into normal techniques for writing procedures for the system.
 
-The skeleton version of \underline{EXUPCS} is designed to work on any system
-which supports lower case letters.  This routine will rarely require any
-change.
-
-\underline{EXREAD} must provide a prompt for an interactive device and
+\code{EXREAD} must provide a prompt for an interactive device and
 guarantee that input is echoed.  This requires a careful determination of
-the current execution environment.  For example, EXREAD must be able to
+the current execution environment.  For example, \code{EXREAD} must be able to
 handle input from a script file as well as from a terminal.  Any automatic
 echo service provided by the operating system should be employed wherever
 possible, as long as the user supplied prompt appears along with the input
@@ -449,15 +368,15 @@ data echo.
 
 In all instances,
 the C programming language provides a clean method for returning the
-address for \underline{IXLNUM}\@. In some cases it may be necessary to
+address for \code{IXLNUM}\@. In some cases it may be necessary to
 convert the address to numeric units.  For example, addresses on VMS must be
 divided by four to convert from bytes to numeric storage units.
 The same cannot necessarily be said for a character address
-as returned by \underline{IXLCHR}\@.
+as returned by \code{IXLCHR}\@.
 The reader is referred to the source file \verb+ixlchr.c+ for further details
 on how to attack this problem.
 
-\underline{EXMEMY} is the most crucial routine in the extension
+\code{\code{EXMEMY}} is the most crucial routine in the extension
 library---and one the primary reasons for choosing to do the extension
 library in C.
 As opposed to in the past,
@@ -470,19 +389,19 @@ In the current version of SUPES,
 memory is allocated in blocks of 512 bytes
 (a number which can be changed at compile time)
 to improve performance.
-EXMEMY should return the precise amount of
+\code{EXMEMY} should return the precise amount of
 memory allocated.
 Any memory that is given by the system,
 but not requested by the user is kept track of in a void table
 by the memory manager.
 So, it is generally unnecessary to keep track of memory
-blocks allocated via EXMEMY.
+blocks allocated via \code{EXMEMY}.
 
 \subsection{Extension Library Test Program}
 A short program which exercises all features of the SUPES extension
 library is available.  This program should be considered a starting point
 for testing a new implementation.  Other tests which more extensively
-exercise complex modules, such as EXMEMY, should be developed as needed.
+exercise complex modules, such as \code{EXMEMY}, should be developed as needed.
 An example session on a Sun 4/60 Workstation follows (with comments offset by
 an arrow, \verb+<--+):
 \begin{verbatim}
@@ -513,10 +432,10 @@ which SUPES is installed.  As a minimum, this supplement should include:
         program.  Individual copies of SUPES should never be propagated as
         this reduces the quality assurance level of SUPES.
 
-\item How to interface from the operating system to EXNAME for both unit/
+\item How to interface from the operating system to \code{EXNAME} for both unit/
         file mode and symbol mode.
 
-\item How to interface to EXREAD via an interactive device.  Information
+\item How to interface to \code{EXREAD} via an interactive device.  Information
         such as how to signal an end of file should be specified.
 \end{enumerate}
 
