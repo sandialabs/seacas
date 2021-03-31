@@ -288,20 +288,6 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   }
 }
 
-// Currently, this is only used for the Catalyst output option.
-// We need to see if we can unify this with `copy_database` and eliminate this version
-// Only current differences are:
-// 1. the use of `options.define_geometry`
-// 2. Does not support `options.boundary_sideset`
-
-void Ioss::copy_database_v2(Ioss::Region &region, Ioss::Region &output_region,
-                            Ioss::MeshCopyOptions &options)
-{
-  // TODO: See if this is truly still needed...
-  options.boundary_sideset = false;
-  copy_database(region, output_region, options);
-}
-
 namespace {
   std::vector<int> get_selected_steps(Ioss::Region &region, const Ioss::MeshCopyOptions &options)
   {
