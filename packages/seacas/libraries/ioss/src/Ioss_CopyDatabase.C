@@ -230,12 +230,12 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
     fmt::print(Ioss::DEBUG(), " Resize finished...\n");
   }
 
+  std::vector<Ioss::Face> boundary = generate_boundary_faces(region, options);
+  if (options.define_geometry) {
+    define_model(region, output_region, data_pool, boundary, options, rank);
+  }
   bool appending = output_region.get_database()->open_create_behavior() == Ioss::DB_APPEND;
   if (!appending) {
-    std::vector<Ioss::Face> boundary = generate_boundary_faces(region, options);
-    if (options.define_geometry) {
-      define_model(region, output_region, data_pool, boundary, options, rank);
-    }
     transfer_model(region, output_region, data_pool, boundary, options, rank);
 
     if (options.add_proc_id) {
