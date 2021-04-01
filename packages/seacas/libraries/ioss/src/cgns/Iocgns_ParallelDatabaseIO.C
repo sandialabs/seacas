@@ -384,6 +384,7 @@ namespace Iocgns {
     }
 
     get_step_times__();
+
     if (open_create_behavior() == Ioss::DB_APPEND) {
       return;
     }
