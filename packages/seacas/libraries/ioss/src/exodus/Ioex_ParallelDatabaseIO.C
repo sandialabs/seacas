@@ -671,6 +671,19 @@ namespace Ioex {
   {
     int exoid = get_file_pointer(); // get_file_pointer() must be called first.
 
+    // APPENDING:
+    // If parallel (single file, not fpp), we have assumptions
+    // that the writing process (ranks, mesh, decomp, vars) is the
+    // same for the original run that created this database and
+    // for this run which is appending to the database so the
+    // defining of the output database should be the same except
+    // we don't write anything since it is already there.  We do
+    // need the number of steps though...
+    if (open_create_behavior() == Ioss::DB_APPEND) {
+      get_step_times__();
+      return;
+    }
+
     if (int_byte_size_api() == 8) {
       decomp = std::unique_ptr<DecompositionDataBase>(
           new DecompositionData<int64_t>(properties, util().communicator()));
