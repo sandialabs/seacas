@@ -1,10 +1,4 @@
-\chapter{The EXODUS Database Format} \label{appx:exodus}
-
-The following code segment reads an EXODUS database. The first segment
-is the GENESIS database format. 
-
-\begin{verbatim}
-C   --Open the EXODUS database file
+C   --Open the GENESIS database file
 
       NDB = 9
       OPEN (UNIT=NDB, ..., STATUS='OLD', FORM='UNFORMATTED')
@@ -17,7 +11,7 @@ C      --TITLE - the title of the database (CHARACTER*80)
 C   --Read the database sizing parameters
 
       READ (NDB) NUMNP, NDIM, NUMEL, NELBLK,
-     &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSNL, NVERSN
+     &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSNL
 C      --NUMNP - the number of nodes
 C      --NDIM - the number of coordinates per node
 C      --NUMEL - the number of elements
@@ -27,7 +21,6 @@ C      --LNPSNL - the length of the node sets node list
 C      --NUMESS - the number of side sets
 C      --LESSEL - the length of the side sets element list
 C      --LESSNL - the length of the side sets node list
-C      --NVERSN - the file format version number
 
 C   --Read the nodal coordinates
 
@@ -36,9 +29,7 @@ C   --Read the nodal coordinates
 C   --Read the element order map (each element must be listed once)
 
       READ (NDB) (MAPEL(IEL), IEL=1,NUMEL)
-\end{verbatim}
-\newpage
-\begin{verbatim}
+
 C   --Read the element blocks
 
       DO 100 IEB = 1, NELBLK
@@ -63,9 +54,7 @@ C      --Read the attributes for all elements in this block
          READ (NDB) ((ATRIB(J,I), J=1,NATRIB, I=1,NUMELB)
 
   100 CONTINUE
-\end{verbatim}
-\newpage
-\begin{verbatim}
+
 C   --Read the node sets
 
       READ (NDB) (IDNPS(I), I=1,NUMNPS)
@@ -102,16 +91,13 @@ C      --LTEESS - the elements in all the side sets
 C      --LTNESS - the nodes in all the side sets
       READ (NDB) (FACESS(I), I=1,LESSNL)
 C      --FACESS - the factor for each node in LTNESS
-\end{verbatim}
-\newpage
 
-A valid GENESIS database may end at this point or at any point until the
-number of variables is read. 
+C ...A valid GENESIS database may end at this point or after any point
+C ...described below. 
 
-\begin{verbatim}
 C   --Read the QA header information
 
-      READ (NDB, END=900) NQAREC
+      READ (NDB, END=...) NQAREC
 C      --NQAREC - the number of QA records (must be at least 1)
 
       DO 110 IQA = 1, MAX(1,NQAREC)
@@ -125,7 +111,7 @@ C         --   4) analysis time (CHARACTER*8)
 
 C   --Read the optional header text
 
-      READ (NDB, END=900) NINFO
+      READ (NDB, END=...) NINFO
 C      --NINFO - the number of information records
 
       DO 120 I = 1, NINFO
@@ -137,84 +123,10 @@ C         --   developer wishes (CHARACTER*80)
 
 C   --Read the coordinate names
 
-      READ (NDB, END=900) (NAMECO(I), I=1,NDIM)
+      READ (NDB, END=...) (NAMECO(I), I=1,NDIM)
 C      --NAMECO - the coordinate names (CHARACTER*8)
 
 C   --Read the element type names
 
-      READ (NDB, END=900) (NAMELB(I), I=1,NELBLK)
+      READ (NDB, END=...) (NAMELB(I), I=1,NELBLK)
 C      --NAMELB - the element type names (CHARACTER*8)
-\end{verbatim}
-
-The GENESIS section of the database ends at this point. 
-
-\newpage
-\begin{verbatim}
-C   --Read the history, global, nodal, and element variable information
-
-      READ (NDB, END=900) NVARHI, NVARGL, NVARNP, NVAREL
-C      --NVARHI - the number of history variables
-C      --NVARGL - the number of global variables
-C      --NVARNP - the number of nodal variables
-C      --NVAREL - the number of element variables
-
-      READ (NDB)
-     &   (NAMEHV(I), I=1,NVARHI),
-     &   (NAMEGV(I), I=1,NVARGL),
-     &   (NAMENV(I), I=1,NVARNP),
-     &   (NAMEEV(I), I=1,NVAREL)
-C      --NAMEHI - the history variable names (CHARACTER*8)
-C      --NAMEGV - the global variable names (CHARACTER*8)
-C      --NAMENV - the nodal variable names (CHARACTER*8)
-C      --NAMEEV - the element variable names (CHARACTER*8)
-
-      READ (NDB) ((ISEVOK(I,J), I=1,NVAREL), J=1,NELBLK)
-C      --ISEVOK - the name truth table for the element blocks;
-C      --   ISEVOK(i,j) refers to variable i of element block j;
-C      --   the value is 0 if and only if data will NOT be output for
-C      --   variable i for element block j (otherwise the value is 1)
-\end{verbatim}
-\newpage
-\begin{verbatim}
-C   --Read the time steps
-
-  130 CONTINUE
-         READ (NDB, END=900) TIME, HISTFL
-C         --TIME - the time step value
-C         --HISTFL - the time step type flag:
-C         --   0.0 for all variables output ("whole" time step) else
-C         --   only history variables output ("history-only" time step)
-C
-         READ (NDB) (VALHV(IVAR), IVAR=1,NVARGL)
-C         --VALHV - the history values for the current time step
-
-         IF (HISTFL .EQ. 0.0) THEN
-            READ (NDB) (VALGV(IVAR), IVAR=1,NVARGL)
-C            --VALGV - the global values for the current time step
-
-            DO 140 IVAR = 1, NVARNP
-               READ (NDB) (VALNV(INP,IVAR), INP=1,NUMNP)
-C               --VALNV - the nodal variables at each node
-C               --   for the current time step
-  140       CONTINUE
-
-            DO 160 IBLK = 1, NELBLK
-               DO 150 IVAR = 1, NVAREL
-                  IF (ISEVOK(IVAR,IBLK) .NE. 0) THEN
-                     READ (NDB) (VALEV(IEL,IVAR,IBLK),
-     &                  IEL=1,NUMELB(IBLK))
-C                     --VALEV - the element variables at each element
-C                     --   for the current time step
-                  END IF
-  150          CONTINUE
-  160       CONTINUE
-         END IF
-
-C      --Handle time step data
-         ...
-      GOTO 130
-
-  900 CONTINUE
-C   --Handle end of file on database
-      ...
-\end{verbatim}

@@ -1,0 +1,70 @@
+\documentstyle[12pt,twoside,chapter]{sreport}
+%\includeonly{numerics,analytical,usersm,reference}
+%\includeonly{analytical,usersm}
+%\includeonly{header_sand}
+%\includeonly{reference}
+%\includeonly{numerics}
+%
+%  \makeatletter
+%  \typein[\@partlist]{Enter file(s) to process}
+%  \@partswtrue
+%  \makeatother
+%
+%
+\newcommand{\caps}[1]
+   {\uppercase{#1}\null}
+\newcommand{\cmd}[1]
+   {\mbox{\sf\uppercase{#1}}\null}
+\newcommand{\lcmd}[1]
+   {\mbox{\sf#1}\null}
+\newcommand{\param}[1]
+   {{\em #1}\null}
+\newcommand{\optparam}[1]
+   {[{\em #1\/}]\null}
+\newcommand{\bold}[1]
+   {{\bf #1}\null}
+%%\input{macro}
+\def\var#1{{\sf #1}}
+\def\SLAP{{\sf SLAP\-DOWN}}
+\def\EXO{{\sf EXODUS}}
+\def\dhline#1{\hline\multicolumn{#1}{c}{\vspace{-.15in}}\\ \hline} % Double HLINE 
+\def\KW#1{{\sf #1}} 
+\def\NEW#1{\marginalstar{\sf #1}}
+\def\N#1{\rlap{$^{#1}$}}
+\long\def\Q#1#2{\llap{$^{#1}$}#2}
+\def\REQ{\sf REQ}
+\def\dis{{\bf u}}
+\def\vel{{\bf \dot u}}
+\def\acc{{\bf \ddot u}}
+\def\fext{{\bf f}_{ext}}
+%%%%%
+%      REVISION MARKING AND FONT STYLE 
+%
+\def\N#1{\rlap{$^{#1}$}}
+%
+%%%%%%
+\begin{document}
+%
+%\include{header_sand}
+%\makeqnum
+\include{title}
+\tableofcontents
+\listoffigures
+\listoftables
+%
+% INCLUDE FILES
+%
+\include{intro}
+\include{analytical}
+\include{numerics}
+\include{aspect}
+\include{firsthit}
+\include{friction}
+\include{scal}
+\include{con}
+\include{reference}
+\appendix
+\include{usersm}
+\include{appb}
+%
+\end{document}
