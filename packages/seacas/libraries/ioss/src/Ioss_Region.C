@@ -1053,6 +1053,11 @@ namespace Ioss {
       structured_block->property_add(
           Ioss::Property(orig_block_order(), (int)structuredBlocks.size()));
       structuredBlocks.push_back(structured_block);
+
+      // This will possibly be overwritten at a later time when the block is output
+      // to the cgns file
+      structured_block->property_add(Ioss::Property("zone", (int)structuredBlocks.size()));
+      structured_block->property_add(Ioss::Property("base", 1));
       // Add name as alias to itself to simplify later uses...
       add_alias__(structured_block);
       return true;

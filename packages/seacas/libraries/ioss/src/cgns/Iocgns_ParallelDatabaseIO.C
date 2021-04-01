@@ -980,6 +980,9 @@ namespace Iocgns {
       if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
         write_meta_data();
       }
+      if (!is_input() && open_create_behavior() == Ioss::DB_APPEND) {
+        Utils::update_db_zone_property(m_cgnsFilePtr, get_region(), myProcessor, isParallel, true);
+      }
       break;
     case Ioss::STATE_MODEL:
       if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
