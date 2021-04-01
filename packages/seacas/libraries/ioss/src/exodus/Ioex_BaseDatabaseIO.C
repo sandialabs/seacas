@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1612,34 +1612,34 @@ namespace Ioex {
 
       const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
       assert(node_blocks.size() <= 1);
-      internal_write_results_metadata(EX_NODE_BLOCK, node_blocks);
+      internal_gather_results_metadata(EX_NODE_BLOCK, node_blocks);
 
       const Ioss::EdgeBlockContainer &edge_blocks = get_region()->get_edge_blocks();
-      internal_write_results_metadata(EX_EDGE_BLOCK, edge_blocks);
+      internal_gather_results_metadata(EX_EDGE_BLOCK, edge_blocks);
 
       const Ioss::FaceBlockContainer &face_blocks = get_region()->get_face_blocks();
-      internal_write_results_metadata(EX_FACE_BLOCK, face_blocks);
+      internal_gather_results_metadata(EX_FACE_BLOCK, face_blocks);
 
       const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
-      internal_write_results_metadata(EX_ELEM_BLOCK, element_blocks);
+      internal_gather_results_metadata(EX_ELEM_BLOCK, element_blocks);
 
       const Ioss::NodeSetContainer &nodesets = get_region()->get_nodesets();
-      internal_write_results_metadata(EX_NODE_SET, nodesets);
+      internal_gather_results_metadata(EX_NODE_SET, nodesets);
 
       const Ioss::EdgeSetContainer &edgesets = get_region()->get_edgesets();
-      internal_write_results_metadata(EX_EDGE_SET, edgesets);
+      internal_gather_results_metadata(EX_EDGE_SET, edgesets);
 
       const Ioss::FaceSetContainer &facesets = get_region()->get_facesets();
-      internal_write_results_metadata(EX_FACE_SET, facesets);
+      internal_gather_results_metadata(EX_FACE_SET, facesets);
 
       const Ioss::ElementSetContainer &elementsets = get_region()->get_elementsets();
-      internal_write_results_metadata(EX_ELEM_SET, elementsets);
+      internal_gather_results_metadata(EX_ELEM_SET, elementsets);
 
       const auto &blobs = get_region()->get_blobs();
-      internal_write_results_metadata(EX_BLOB, blobs);
+      internal_gather_results_metadata(EX_BLOB, blobs);
 
       const auto &assemblies = get_region()->get_assemblies();
-      internal_write_results_metadata(EX_ASSEMBLY, assemblies);
+      internal_gather_results_metadata(EX_ASSEMBLY, assemblies);
 
       {
         int                           index    = 0;
@@ -1722,8 +1722,8 @@ namespace Ioex {
 
   // common
   template <typename T>
-  void BaseDatabaseIO::internal_write_results_metadata(ex_entity_type   type,
-                                                       std::vector<T *> entities)
+  void BaseDatabaseIO::internal_gather_results_metadata(ex_entity_type   type,
+							std::vector<T *> entities)
   {
     int index     = 0;
     int red_index = 0;
