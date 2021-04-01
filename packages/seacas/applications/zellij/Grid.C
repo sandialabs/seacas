@@ -658,9 +658,9 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
         // the output file.
         size_t global_offset = output_region(rank)->get_element_block(block_name)->get_offset();
 
-        for (auto &face : bnd_faces) {
-          elements.push_back(face / 10 + element_offset + global_offset);
-          faces.push_back(face % 10 + 1);
+        for (auto &bface : bnd_faces) {
+          elements.push_back(bface / 10 + element_offset + global_offset);
+          faces.push_back(bface % 10 + 1);
         }
       }
 
