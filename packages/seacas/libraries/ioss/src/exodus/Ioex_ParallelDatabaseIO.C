@@ -335,7 +335,7 @@ namespace Ioex {
       // Check whether appending to or modifying existing file...
       if (open_create_behavior() == Ioss::DB_APPEND ||
           open_create_behavior() == Ioss::DB_APPEND_GROUP ||
-	  open_create_behavior() == Ioss::DB_MODIFY) {
+          open_create_behavior() == Ioss::DB_MODIFY) {
         // Append to file if it already exists -- See if the file exists.
         Ioss::FileInfo file = Ioss::FileInfo(get_filename());
         fileExists          = file.exists();

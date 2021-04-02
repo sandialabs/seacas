@@ -1598,7 +1598,8 @@ namespace Ioex {
   }
 
   // common
-  void BaseDatabaseIO::write_results_metadata(bool gather_data, Ioss::IfDatabaseExistsBehavior behavior)
+  void BaseDatabaseIO::write_results_metadata(bool                           gather_data,
+                                              Ioss::IfDatabaseExistsBehavior behavior)
   {
     if (gather_data) {
       int glob_index = 0;
@@ -1723,7 +1724,7 @@ namespace Ioex {
   // common
   template <typename T>
   void BaseDatabaseIO::internal_gather_results_metadata(ex_entity_type   type,
-							std::vector<T *> entities)
+                                                        std::vector<T *> entities)
   {
     int index     = 0;
     int red_index = 0;
@@ -2324,14 +2325,14 @@ namespace Ioex {
     {
       const auto &assemblies = region->get_assemblies();
       if (behavior != Ioss::DB_MODIFY) {
-      // Set ids of all entities that have "id" property...
-      for (auto &assem : assemblies) {
-        Ioex::set_id(assem, EX_ASSEMBLY, &ids_);
-      }
+        // Set ids of all entities that have "id" property...
+        for (auto &assem : assemblies) {
+          Ioex::set_id(assem, EX_ASSEMBLY, &ids_);
+        }
 
-      for (auto &assem : assemblies) {
-        Ioex::get_id(assem, EX_ASSEMBLY, &ids_);
-      }
+        for (auto &assem : assemblies) {
+          Ioex::get_id(assem, EX_ASSEMBLY, &ids_);
+        }
       }
       m_groupCount[EX_ASSEMBLY] = assemblies.size();
     }
@@ -2341,13 +2342,13 @@ namespace Ioex {
       const auto &blobs = region->get_blobs();
       // Set ids of all entities that have "id" property...
       if (behavior != Ioss::DB_MODIFY) {
-      for (auto &blob : blobs) {
-        Ioex::set_id(blob, EX_BLOB, &ids_);
-      }
+        for (auto &blob : blobs) {
+          Ioex::set_id(blob, EX_BLOB, &ids_);
+        }
 
-      for (auto &blob : blobs) {
-        Ioex::get_id(blob, EX_BLOB, &ids_);
-      }
+        for (auto &blob : blobs) {
+          Ioex::get_id(blob, EX_BLOB, &ids_);
+        }
       }
       m_groupCount[EX_BLOB] = blobs.size();
     }
@@ -2358,16 +2359,16 @@ namespace Ioex {
       assert(Ioss::Utils::check_block_order(edge_blocks));
       // Set ids of all entities that have "id" property...
       if (behavior != Ioss::DB_MODIFY) {
-      for (auto &edge_block : edge_blocks) {
-        Ioex::set_id(edge_block, EX_EDGE_BLOCK, &ids_);
-      }
+        for (auto &edge_block : edge_blocks) {
+          Ioex::set_id(edge_block, EX_EDGE_BLOCK, &ids_);
+        }
 
-      edgeCount = 0;
-      for (auto &edge_block : edge_blocks) {
-        edgeCount += edge_block->entity_count();
-        // Set ids of all entities that do not have "id" property...
-        Ioex::get_id(edge_block, EX_EDGE_BLOCK, &ids_);
-      }
+        edgeCount = 0;
+        for (auto &edge_block : edge_blocks) {
+          edgeCount += edge_block->entity_count();
+          // Set ids of all entities that do not have "id" property...
+          Ioex::get_id(edge_block, EX_EDGE_BLOCK, &ids_);
+        }
       }
       m_groupCount[EX_EDGE_BLOCK] = edge_blocks.size();
     }
@@ -2378,16 +2379,16 @@ namespace Ioex {
       assert(Ioss::Utils::check_block_order(face_blocks));
       // Set ids of all entities that have "id" property...
       if (behavior != Ioss::DB_MODIFY) {
-      for (auto &face_block : face_blocks) {
-        Ioex::set_id(face_block, EX_FACE_BLOCK, &ids_);
-      }
+        for (auto &face_block : face_blocks) {
+          Ioex::set_id(face_block, EX_FACE_BLOCK, &ids_);
+        }
 
-      faceCount = 0;
-      for (auto &face_block : face_blocks) {
-        faceCount += face_block->entity_count();
-        // Set ids of all entities that do not have "id" property...
-        Ioex::get_id(face_block, EX_FACE_BLOCK, &ids_);
-      }
+        faceCount = 0;
+        for (auto &face_block : face_blocks) {
+          faceCount += face_block->entity_count();
+          // Set ids of all entities that do not have "id" property...
+          Ioex::get_id(face_block, EX_FACE_BLOCK, &ids_);
+        }
       }
       m_groupCount[EX_FACE_BLOCK] = face_blocks.size();
     }
@@ -2397,10 +2398,10 @@ namespace Ioex {
       const Ioss::ElementBlockContainer &element_blocks = region->get_element_blocks();
       assert(Ioss::Utils::check_block_order(element_blocks));
       if (behavior != Ioss::DB_MODIFY) {
-      // Set ids of all entities that have "id" property...
-      for (auto &element_block : element_blocks) {
-        Ioex::set_id(element_block, EX_ELEM_BLOCK, &ids_);
-      }
+        // Set ids of all entities that have "id" property...
+        for (auto &element_block : element_blocks) {
+          Ioex::set_id(element_block, EX_ELEM_BLOCK, &ids_);
+        }
       }
       elementCount = 0;
       Ioss::Int64Vector element_counts;
@@ -2409,9 +2410,9 @@ namespace Ioex {
         elementCount += element_block->entity_count();
         element_counts.push_back(element_block->entity_count());
         // Set ids of all entities that do not have "id" property...
-	if (behavior != Ioss::DB_MODIFY) {
-	  Ioex::get_id(element_block, EX_ELEM_BLOCK, &ids_);
-	}
+        if (behavior != Ioss::DB_MODIFY) {
+          Ioex::get_id(element_block, EX_ELEM_BLOCK, &ids_);
+        }
       }
       m_groupCount[EX_ELEM_BLOCK] = element_blocks.size();
 
@@ -2431,13 +2432,13 @@ namespace Ioex {
     {
       const Ioss::NodeSetContainer &nodesets = region->get_nodesets();
       if (behavior != Ioss::DB_MODIFY) {
-      for (auto &set : nodesets) {
-        Ioex::set_id(set, EX_NODE_SET, &ids_);
-      }
+        for (auto &set : nodesets) {
+          Ioex::set_id(set, EX_NODE_SET, &ids_);
+        }
 
-      for (auto &set : nodesets) {
-        Ioex::get_id(set, EX_NODE_SET, &ids_);
-      }
+        for (auto &set : nodesets) {
+          Ioex::get_id(set, EX_NODE_SET, &ids_);
+        }
       }
       m_groupCount[EX_NODE_SET] = nodesets.size();
     }
@@ -2446,13 +2447,13 @@ namespace Ioex {
     {
       const Ioss::EdgeSetContainer &edgesets = region->get_edgesets();
       if (behavior != Ioss::DB_MODIFY) {
-      for (auto &set : edgesets) {
-        Ioex::set_id(set, EX_EDGE_SET, &ids_);
-      }
+        for (auto &set : edgesets) {
+          Ioex::set_id(set, EX_EDGE_SET, &ids_);
+        }
 
-      for (auto &set : edgesets) {
-        Ioex::get_id(set, EX_EDGE_SET, &ids_);
-      }
+        for (auto &set : edgesets) {
+          Ioex::get_id(set, EX_EDGE_SET, &ids_);
+        }
       }
       m_groupCount[EX_EDGE_SET] = edgesets.size();
     }
@@ -2461,13 +2462,13 @@ namespace Ioex {
     {
       const Ioss::FaceSetContainer &facesets = region->get_facesets();
       if (behavior != Ioss::DB_MODIFY) {
-      for (auto &set : facesets) {
-        Ioex::set_id(set, EX_FACE_SET, &ids_);
-      }
+        for (auto &set : facesets) {
+          Ioex::set_id(set, EX_FACE_SET, &ids_);
+        }
 
-      for (auto &set : facesets) {
-        Ioex::get_id(set, EX_FACE_SET, &ids_);
-      }
+        for (auto &set : facesets) {
+          Ioex::get_id(set, EX_FACE_SET, &ids_);
+        }
       }
       m_groupCount[EX_FACE_SET] = facesets.size();
     }
@@ -2476,13 +2477,13 @@ namespace Ioex {
     {
       const Ioss::ElementSetContainer &elementsets = region->get_elementsets();
       if (behavior != Ioss::DB_MODIFY) {
-      for (auto &set : elementsets) {
-        Ioex::set_id(set, EX_ELEM_SET, &ids_);
-      }
+        for (auto &set : elementsets) {
+          Ioex::set_id(set, EX_ELEM_SET, &ids_);
+        }
 
-      for (auto &set : elementsets) {
-        Ioex::get_id(set, EX_ELEM_SET, &ids_);
-      }
+        for (auto &set : elementsets) {
+          Ioex::get_id(set, EX_ELEM_SET, &ids_);
+        }
       }
       m_groupCount[EX_ELEM_SET] = elementsets.size();
     }
@@ -2491,15 +2492,15 @@ namespace Ioex {
     {
       const Ioss::SideSetContainer &ssets = region->get_sidesets();
       if (behavior != Ioss::DB_MODIFY) {
-      for (auto &set : ssets) {
-        Ioex::set_id(set, EX_SIDE_SET, &ids_);
-      }
+        for (auto &set : ssets) {
+          Ioex::set_id(set, EX_SIDE_SET, &ids_);
+        }
       }
       // Get entity counts for all face sets... Create SideSets.
       for (auto &set : ssets) {
-      if (behavior != Ioss::DB_MODIFY) {
-        Ioex::get_id(set, EX_SIDE_SET, &ids_);
-      }
+        if (behavior != Ioss::DB_MODIFY) {
+          Ioex::get_id(set, EX_SIDE_SET, &ids_);
+        }
         int64_t id           = set->get_property("id").get_int();
         int64_t entity_count = 0;
         int64_t df_count     = 0;
