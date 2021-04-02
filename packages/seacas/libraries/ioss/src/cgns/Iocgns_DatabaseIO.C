@@ -1488,10 +1488,6 @@ namespace Iocgns {
       return;
     }
 
-    if (open_create_behavior() == Ioss::DB_APPEND) {
-      return;
-    }
-
     // ========================================================================
     // Get the number of sidesets in the mesh...
     // Will be the 'families' that are of the type "FamilyBC_t"
