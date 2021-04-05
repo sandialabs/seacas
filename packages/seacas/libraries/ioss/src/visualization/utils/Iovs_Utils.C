@@ -5,7 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_Utils.h>
-#include <Iovs_Utils.h>
+#include <visualization/utils/Iovs_Utils.h>
 #include <cstring>
 #include <fstream>
 #include <iostream>
