@@ -43,7 +43,9 @@
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#if 0
 #include <psapi.h>
+#endif
 #include <windows.h>
 
 #elif defined(__unix__) || defined(__unix) || defined(unix) ||                                     \
