@@ -22,6 +22,9 @@
 
 extern unsigned int debug_level;
 
+
+namespace {
+#ifdef USE_ZOLTAN
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #define ZCHECK(funcall)                                                                            \
@@ -34,7 +37,6 @@ extern unsigned int debug_level;
     }                                                                                              \
   } while (0)
 
-namespace {
   /*****************************************************************************/
   /***** Global data structure used by Zoltan callbacks.                   *****/
   /***** Could implement Zoltan callbacks without global data structure,   *****/
@@ -114,6 +116,7 @@ namespace {
 
     *ierr = ZOLTAN_OK;
   }
+#endif
 } // namespace
 
 void decompose_grid(Grid &grid, int ranks, const std::string &method)
@@ -147,6 +150,7 @@ void decompose_grid(Grid &grid, int ranks, const std::string &method)
     return;
   }
 
+#ifdef USE_ZOLTAN
   // Below here are Zoltan decompositions...
   std::vector<float> x(grid.size());
   std::vector<float> y(grid.size());
@@ -254,4 +258,5 @@ End:
     MPI_Finalize();
     exit(-1);
   }
+#endif
 }
