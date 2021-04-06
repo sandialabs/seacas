@@ -32,6 +32,7 @@ install:
   - cmd: set INSTALL_LOC=%SRC_DIR%\install
   - cmd: set PATH=%PATH%;%MSYS2_BIN_LOCN%;%INSTALL_LOC%\bin;%INSTALL_LOC%\lib
   - cmd: vcpkg install netcdf-c
+  - cmd: vcpkg install cgns
   - cmd: vcpkg install matio
   - cmd: vcpkg integrate install
 
@@ -66,7 +67,7 @@ build_script:
      -DSEACASProj_HIDE_DEPRECATED_CODE:BOOL=ON ^
      -DSEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON ^
      -DTPL_ENABLE_ADIOS2:BOOL=OFF ^
-     -DTPL_ENABLE_CGNS:BOOL=OFF ^
+     -DTPL_ENABLE_CGNS:BOOL=ON ^
      -DTPL_ENABLE_Kokkos:BOOL=OFF ^
      -DTPL_ENABLE_MPI:BOOL=OFF ^
      -DTPL_ENABLE_Matio:BOOL=ON ^
