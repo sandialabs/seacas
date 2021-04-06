@@ -4,8 +4,11 @@
 //
 // See packages/seacas/LICENSE for details
 
+#ifdef USE_ZOLTAN
 #include "zoltan.h"       // for Zoltan_Set_Param, etc
 #include "zoltan_types.h" // for ZOLTAN_ID_PTR*, ZOLTAN_OK, etc
+#include <mpi.h>          // for MPI_Finalize, etc
+#endif
 
 #include <algorithm>
 #include <fmt/format.h>
