@@ -948,13 +948,15 @@ namespace SEAMS {
   array *do_make_array(double rows, double cols)
   {
     auto array_data = new array(rows, cols);
+    aprepro->array_allocations.push_back(array_data);
     return array_data;
   }
 
   array *do_make_array_init(double rows, double cols, double init)
   {
     auto array_data = new array(rows, cols);
-    int  isize      = (int)rows * int(cols);
+    aprepro->array_allocations.push_back(array_data);
+    int isize = (int)rows * int(cols);
     for (int i = 0; i < isize; i++) {
       array_data->data[i] = init;
     }
@@ -966,6 +968,7 @@ namespace SEAMS {
     int  i;
     int  isize      = size;
     auto array_data = new array(size, size);
+    aprepro->array_allocations.push_back(array_data);
 
     for (i = 0; i < isize; i++) {
       array_data->data[i * isize + i] = 1.0;
@@ -979,6 +982,7 @@ namespace SEAMS {
     // Values are linearly spaced from `init` to `final`
     int  isize      = count;
     auto array_data = new array(count, 1);
+    aprepro->array_allocations.push_back(array_data);
 
     double inc = (final - init) / (count - 1);
     for (int i = 0; i < isize; i++) {
@@ -991,6 +995,7 @@ namespace SEAMS {
   {
     int  i, j;
     auto array_data = new array(a->cols, a->rows);
+    aprepro->array_allocations.push_back(array_data);
 
     for (i = 0; i < a->rows; i++) {
       for (j = 0; j < a->cols; j++) {
@@ -1023,6 +1028,7 @@ namespace SEAMS {
       }
 
       auto array_data = new array(rows - rows_to_skip, cols);
+      aprepro->array_allocations.push_back(array_data);
 
       // Read file again storing entries in array_data->data
       file->clear();
@@ -1070,6 +1076,7 @@ namespace SEAMS {
       }
 
       auto array_data = new array(rows, cols);
+      aprepro->array_allocations.push_back(array_data);
 
       // Read file again storing entries in array_data->data
       file->clear();
@@ -1102,6 +1109,7 @@ namespace SEAMS {
   {
     auto tokens     = SEAMS::tokenize(string, delm);
     auto array_data = new array(tokens.size(), 1);
+    aprepro->array_allocations.push_back(array_data);
 
     int idx = 0;
     for (const auto &token : tokens) {

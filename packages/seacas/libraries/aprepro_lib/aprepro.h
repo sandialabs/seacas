@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-, 20212021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -40,6 +40,7 @@ namespace SEAMS {
     int                 cols{0};
 
     array(int r, int c) : rows(r), cols(c) { data.resize(r * c); }
+
     array()  = default;
     ~array() = default;
   };
@@ -277,6 +278,8 @@ namespace SEAMS {
     void dumpsym(const char *type, bool doInternal) const;
     void dumpsym(int type, bool doInternal) const;
     void dumpsym(int type, const char *pre, bool doInternal) const;
+
+    std::vector<array *> array_allocations{};
 
   private:
     void                  init_table(const char *comment);

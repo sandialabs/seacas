@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -77,6 +77,7 @@ namespace SEAMS {
   array *array_add(const array *a, const array *b)
   {
     auto array_data = new array(a->rows, a->cols);
+    aprepro->array_allocations.push_back(array_data);
     for (int i = 0; i < a->rows * a->cols; i++) {
       array_data->data[i] = a->data[i] + b->data[i];
     }
@@ -86,6 +87,7 @@ namespace SEAMS {
   array *array_sub(const array *a, const array *b)
   {
     auto array_data = new array(a->rows, a->cols);
+    aprepro->array_allocations.push_back(array_data);
 
     for (int i = 0; i < a->rows * a->cols; i++) {
       array_data->data[i] = a->data[i] - b->data[i];
@@ -96,6 +98,7 @@ namespace SEAMS {
   array *array_scale(const array *a, double s)
   {
     auto array_data = new array(a->rows, a->cols);
+    aprepro->array_allocations.push_back(array_data);
 
     for (int i = 0; i < a->rows * a->cols; i++) {
       array_data->data[i] = a->data[i] * s;
@@ -110,6 +113,7 @@ namespace SEAMS {
     int bc = b->cols;
 
     auto array_data = new array(a->rows, b->cols);
+    aprepro->array_allocations.push_back(array_data);
 
     for (int i = 0; i < b->cols; i++) {
       for (int j = 0; j < a->rows; j++) {

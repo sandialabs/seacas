@@ -24,7 +24,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.21 (2021/03/15)";
+  const char *       version_string = "5.22 (2021/04/13)";
 
   void output_copyright();
 
@@ -66,13 +66,16 @@ namespace SEAMS {
       for (symrec *ptr = sym_table[hashval]; ptr != nullptr;) {
         symrec *save = ptr;
         ptr          = ptr->next;
-        if (save->type == Parser::token::AVAR) {
-          delete save->value.avar;
-        }
         delete save;
       }
     }
     aprepro = nullptr;
+
+    for (auto &arr_mem : array_allocations) {
+      delete arr_mem;
+    }
+    array_allocations.clear();
+
     cleanup_memory();
   }
 
