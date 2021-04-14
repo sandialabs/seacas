@@ -732,8 +732,7 @@ namespace SEAMS {
           case 28:
 #line 187 "aprepro.yy"
           {
-            (yylhs.value.arrval) = new array(*((yystack_[0].value.tptr)->value.avar));
-            aprepro.array_allocations.push_back(yylhs.value.arrval);
+            (yylhs.value.arrval) = aprepro.make_array(*((yystack_[0].value.tptr)->value.avar));
           }
 #line 791 "apr_parser.cc"
           break;
