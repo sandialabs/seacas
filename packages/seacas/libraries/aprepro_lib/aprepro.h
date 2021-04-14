@@ -41,8 +41,9 @@ namespace SEAMS {
 
     array(int r, int c) : rows(r), cols(c) { data.resize(r * c); }
 
-    array()  = default;
-    ~array() = default;
+    array(const array &) = default;
+    array()              = default;
+    ~array()             = default;
   };
 
   struct symrec
@@ -279,11 +280,13 @@ namespace SEAMS {
     void dumpsym(int type, bool doInternal) const;
     void dumpsym(int type, const char *pre, bool doInternal) const;
 
-    std::vector<array *> array_allocations{};
+    array *make_array(int r, int c);
+    array *make_array(const array &from);
 
   private:
     void                  init_table(const char *comment);
     std::vector<symrec *> sym_table{};
+    std::vector<array *>  array_allocations{};
     std::ostringstream    parsingResults{};
 
     // Input stream used with parse_string_interactive

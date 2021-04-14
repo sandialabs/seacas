@@ -24,7 +24,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.22 (2021/04/13)";
+  const char *       version_string = "5.23 (2021/04/14)";
 
   void output_copyright();
 
@@ -527,6 +527,20 @@ namespace SEAMS {
       exit(EXIT_SUCCESS);
     }
     return ret_value;
+  }
+
+  array *Aprepro::make_array(int r, int c)
+  {
+    auto ptr = new array(r, c);
+    array_allocations.push_back(ptr);
+    return ptr;
+  }
+
+  array *Aprepro::make_array(const array &from)
+  {
+    auto ptr = new array(from);
+    array_allocations.push_back(ptr);
+    return ptr;
   }
 
   void Aprepro::add_variable(const std::string &sym_name, const std::string &sym_value,
