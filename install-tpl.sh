@@ -789,7 +789,7 @@ then
         then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf parallel-*
-            wget --no-check-certificate ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2
+            wget --no-check-certificate https://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2
             tar -jxf parallel-latest.tar.bz2
             rm -rf parallel-latest.tar.bz2
         fi
