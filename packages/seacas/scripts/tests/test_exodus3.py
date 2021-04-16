@@ -1,3 +1,12 @@
+"""
+Copyright(C) 1999-2021 National Technology & Engineering Solutions
+of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+NTESS, the U.S. Government retains certain rights in this software.
+
+See packages/seacas/LICENSE for details
+
+"""
+
 import unittest
 import sys
 import os
@@ -50,6 +59,27 @@ class MyTestCase(unittest.TestCase):
         root = exo.assembly(name='Root', type='assembly', id=100)
         root.entity_list = [100, 200, 300, 400]
         self.assertEqual(str(root), str(assemblies[0]))
+
+    def test_get_assemblies(self):
+        temp_exofile = exo.exodus("test-assembly.exo", mode='r')
+        assembly_ids = temp_exofile.get_ids("EX_ASSEMBLY")
+        assemblies = temp_exofile.get_assemblies(assembly_ids)
+        expected = [exo.assembly(name='Root', type='assembly', id=100),
+                    exo.assembly(name='Child2', type='element block', id=200),
+                    exo.assembly(name='Child3', type='element block', id=300),
+                    exo.assembly(name='Child4', type='element block', id=400),
+                    exo.assembly(name='NewAssembly', type='assembly', id=222),
+                    exo.assembly(name='FromPython', type='assembly', id=333)]
+        for i, x in enumerate(expected):
+            entity_lists = [[100, 200, 300, 400],
+                            [10, 11, 12, 13],
+                            [14, 15, 16],
+                            [10, 16],
+                            [100, 200, 300, 400],
+                            [100, 222]]
+            x.entity_list = entity_lists[i]
+        self.maxDiff=None
+        self.assertEqual(str(expected), str(assemblies))
 
     def test_add_assembly(self):
         new = exo.assembly(name='Unit_test', type='EX_ASSEMBLY', id=444)
