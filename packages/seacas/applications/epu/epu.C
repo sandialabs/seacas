@@ -1453,7 +1453,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     double time_per_step       = elapsed / time_step_out;
     double percentage_done     = (time_step_out * 100.0) / output_steps;
     double estimated_remaining = time_per_step * (output_steps - time_step_out);
-    fmt::print("Wrote step {:6n}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]    \r",
+    fmt::print("Wrote step {:6L}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]    \r",
                time_step + 1, time_val, percentage_done, format_time(elapsed),
                format_time(estimated_remaining));
     if (debug_level & 1) {
@@ -1779,7 +1779,7 @@ namespace {
           if (x[node] != FillValue && y[node] != FillValue && z[node] != FillValue) {
             if (x[node] != local_x[i] || y[node] != local_y[i] || z[node] != local_z[i]) {
               fmt::print(stderr,
-                         "\nWARNING: Node {:n} has different coordinates in at least two files.\n"
+                         "\nWARNING: Node {:L} has different coordinates in at least two files.\n"
                          "         cur value = {:14.6e} {:14.6e} {:14.6e}\n"
                          "         new value = {:14.6e} {:14.6e} {:14.6e} from processor {}\n",
                          node + 1, x[node], y[node], z[node], local_x[i], local_y[i], local_z[i],
@@ -1806,7 +1806,7 @@ namespace {
           if (x[node] != FillValue && y[node] != FillValue) {
             if (x[node] != local_x[i] || y[node] != local_y[i]) {
               fmt::print(stderr,
-                         "\nWARNING: Node {:n} has different coordinates in at least two files.\n"
+                         "\nWARNING: Node {:L} has different coordinates in at least two files.\n"
                          "         cur value = {:14.6e} {:14.6e}\n"
                          "         new value = {:14.6e} {:14.6e} from processor {}\n",
                          node + 1, x[node], y[node], local_x[i], local_y[i], proc);
@@ -1831,7 +1831,7 @@ namespace {
           if (x[node] != FillValue && y[node] != FillValue) {
             if (x[node] != local_x[i]) {
               fmt::print(stderr,
-                         "\nWARNING: Node {:n} has different coordinates in at least two files.\n"
+                         "\nWARNING: Node {:L} has different coordinates in at least two files.\n"
                          "         cur value = {:14.6e}\tnew value = {:14.6e} from processor {}\n",
                          node + 1, x[node], local_x[i], proc);
             }
@@ -1955,7 +1955,7 @@ namespace {
           free_name_array(names, temp_block.num_attribute);
         }
         if ((debug_level & 4) != 0U) {
-          fmt::print(", Name = '{}', Elements = {:12n}, Nodes/element = {}, Attributes = {}\n",
+          fmt::print(", Name = '{}', Elements = {:12L}, Nodes/element = {}, Attributes = {}\n",
                      blocks[p][b].name_, blocks[p][b].entity_count(), blocks[p][b].nodesPerElement,
                      blocks[p][b].attributeCount);
         }
@@ -1992,7 +1992,7 @@ namespace {
 
       if (debug_level & 4) {
         fmt::print("\nOutput element block info for...\n"
-                   "Block {}, Id = {}, Name = '{}', Elements = {:12n}, Nodes/element = {}, "
+                   "Block {}, Id = {}, Name = '{}', Elements = {:12L}, Nodes/element = {}, "
                    "Attributes = {}\n"
                    "B{}:\t",
                    b, glob_blocks[b].id, glob_blocks[b].name_, glob_blocks[b].entity_count(),
@@ -2140,7 +2140,7 @@ namespace {
 
       if (debug_level & 4) {
         fmt::print("\nOutput element block info for...\n"
-                   "Block {}, Id = {}, Name = '{}', Elements = {:12n}, Nodes/element = {}, "
+                   "Block {}, Id = {}, Name = '{}', Elements = {:12L}, Nodes/element = {}, "
                    "Attributes = {}\n",
                    b, glob_blocks[b].id, glob_blocks[b].name_, glob_blocks[b].entity_count(),
                    glob_blocks[b].nodesPerElement, glob_blocks[b].attributeCount);
@@ -2671,13 +2671,13 @@ namespace {
 
     if (rank == 0) {
       fmt::print(" Title: {}\n\n"
-                 " Number of coordinates per node       = {:15n}\n"
-                 " Number of nodes                      = {:15n}\n"
-                 " Number of elements                   = {:15n}\n"
-                 " Number of element blocks             = {:15n}\n"
-                 " Number of assemblies                 = {:15n}\n\n"
-                 " Number of nodal point sets           = {:15n}\n"
-                 " Number of element side sets          = {:15n}\n\n",
+                 " Number of coordinates per node       = {:15L}\n"
+                 " Number of nodes                      = {:15L}\n"
+                 " Number of elements                   = {:15L}\n"
+                 " Number of element blocks             = {:15L}\n"
+                 " Number of assemblies                 = {:15L}\n\n"
+                 " Number of nodal point sets           = {:15L}\n"
+                 " Number of element side sets          = {:15L}\n\n",
                  global.title, global.dimensionality, global.nodeCount, global.elementCount,
                  global.count(Excn::ObjectType::EBLK), global.count(Excn::ObjectType::ASSM),
                  global.count(Excn::ObjectType::NSET), global.count(Excn::ObjectType::SSET));
