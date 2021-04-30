@@ -15,8 +15,8 @@ jobs:
     strategy:
       matrix:
         hdf5: [ 1.10.7 ]
-	netcdf: [ 4.7.0 ]
-	cgns: [ 4.2.0 ]
+        netcdf: [ 4.7.0 ]
+        cgns: [ 4.2.0 ]
     steps:
 
       - uses: actions/checkout@v2
@@ -40,7 +40,7 @@ jobs:
         if: steps.cache-TPL.outputs.cache-hit != 'true'
         run: |
           set -x
-	  GNU_PARALLEL=OFF ./install-tpl.sh
+          GNU_PARALLEL=OFF ./install-tpl.sh
 
 ###
 # Fetch Cache
@@ -68,6 +68,6 @@ jobs:
       - name: Build 
         shell: bash -l {0}
         run: |
-	mkdir build
-	cd build 
-	make -j
+        mkdir build
+        cd build 
+        make -j
