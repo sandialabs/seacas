@@ -501,10 +501,9 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS
-            if ! [ -d build ]
-            then
-                mkdir build
-            fi
+            git checkout v4.2.0
+            rm -rf build
+            mkdir build
             cd build
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
