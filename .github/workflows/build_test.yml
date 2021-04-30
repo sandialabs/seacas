@@ -11,7 +11,7 @@ jobs:
   build-deps:
 
     runs-on: ubuntu-latest
-
+    
     strategy:
       matrix:
         hdf5: [ V18, V110, V112 ]
@@ -89,12 +89,12 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build 
-          make -j
+          make -j 4
         if: ${{ success() }}
 
       - name: Run Tests
         shell: bash -l {0}
         run: |
           cd build
-          ctest -j 8
+          ctest -j 4
         if: ${{ success() }}
