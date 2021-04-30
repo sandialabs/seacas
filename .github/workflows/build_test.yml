@@ -83,7 +83,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          sh ../cmake-config
+	            INSTALL_PATH=${HOME}/environments/${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
