@@ -2,7 +2,7 @@
 # Build hdf4, hdf5 dependencies and cache them in a combined directory.
 ###
 
-name: Run netCDF Tests
+name: Build and run SEACAS tests
 
 on: [pull_request]
 
