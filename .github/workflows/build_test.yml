@@ -40,7 +40,7 @@ jobs:
         if: steps.cache-TPL.outputs.cache-hit != 'true'
         run: |
           set -x
-          GNU_PARALLEL=OFF ./install-tpl.sh
+          GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
 
 ###
 # Fetch Cache
