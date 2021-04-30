@@ -14,8 +14,8 @@ jobs:
 
     strategy:
       matrix:
-        hdf5: [ 1.10.7 ]
-        netcdf: [ 4.7.0 ]
+        hdf5: [ V18 V110 V112 ]
+        netcdf: [ 4.8.0 ]
         cgns: [ 4.2.0 ]
     steps:
 
@@ -40,7 +40,7 @@ jobs:
         if: steps.cache-TPL.outputs.cache-hit != 'true'
         run: |
           set -x
-          GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          H5VERSION=${{ matrix.hdf5}} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
 
 ###
 # Fetch Cache
@@ -53,8 +53,8 @@ jobs:
 
     strategy:
       matrix:
-        hdf5: [ 1.10.7 ]
-        netcdf: [ 4.7.0 ]
+        hdf5: [ V18 V110 V112 ]
+        netcdf: [ 4.8.0 ]
         cgns: [ 4.2.0 ]
     steps:
 
@@ -90,4 +90,11 @@ jobs:
         run: |
           cd build 
           make -j
+        if: ${{ success() }}
 
+      - name: Run Tests
+        shell: bash -l {0}
+        run: |
+          cd build
+          ctest -j 8
+        if: ${{ success() }}
