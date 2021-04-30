@@ -68,6 +68,7 @@ jobs:
       - name: Build 
         shell: bash -l {0}
         run: |
-        mkdir build
-        cd build 
-        make -j
+          mkdir build
+          pushd build 
+          make -j
+          popd
