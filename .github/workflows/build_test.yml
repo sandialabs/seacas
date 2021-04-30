@@ -63,12 +63,14 @@ jobs:
 
       - name: Run cmake
         shell: bash -l {0}
-        run: ./cmake-config
+        run: |
+          mkdir build
+          cd build
+          sh ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
         run: |
-          mkdir build
-          pushd build 
+          cd build 
           make -j
-          popd
+
