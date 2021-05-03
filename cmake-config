@@ -312,7 +312,7 @@ then
        MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-N"
        MPI_BIN=$(dirname "${MPI_EXEC}")
    else
-       MPI_EXEC=$(which mpiexec) --oversubscribe
+       MPI_EXEC="mpiexec --oversubscribe"
        MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}"
        MPI_BIN=$(dirname "${MPI_EXEC}")
    fi
