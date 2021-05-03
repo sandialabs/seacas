@@ -14,7 +14,7 @@ jobs:
       COMPILER: ${{ matrix.compiler}}
       H5VERSION: ${{ matrix.hdf5}}
       GNU_PARALLEL: OFF
-      INSTALL_PATH: ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+      INSTALL_PATH: ${GITHUB_WORKSPACE}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
     runs-on: ubuntu-latest
     
@@ -57,7 +57,7 @@ jobs:
   
     env:
       COMPILER: ${{ matrix.compiler}}
-      INSTALL_PATH: ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+      INSTALL_PATH: ${GITHUB_WORKSPACE}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
     needs: build-deps
     runs-on: ubuntu-latest
@@ -85,7 +85,7 @@ jobs:
 
       - name: Check Cache
         shell: bash -l {0}
-        run: ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
+        run: ls ${GITHUB_WORKSPACE}/environments && ls ${GITHUB_WORKSPACE}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${GITHUB_WORKSPACE}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
 ###
 # Configure and build
