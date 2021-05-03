@@ -314,7 +314,6 @@ then
    else
        MPI_EXEC=$(which mpiexec)
        MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -DMPI_EXEC_DEFAULT_NUMPROCS:STRING=2 -DMPI_EXEC_MAX_NUMPROCS:STRING=2"
--D MPI_PRE_NUMPROCS_FLAGS=--oversubscribe"
        MPI_BIN=$(dirname "${MPI_EXEC}")
    fi
    CXX=mpicxx
