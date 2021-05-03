@@ -89,9 +89,9 @@ jobs:
           mkdir build
           cd build
           bash ../cmake-config
-	env:
+        env:
           COMPILER=${{ matrix.compiler}}
-	  INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Build 
         shell: bash -l {0}
