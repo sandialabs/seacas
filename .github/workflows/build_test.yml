@@ -46,7 +46,9 @@ jobs:
           COMPILER=${{ matrix.compiler}}
           H5VERSION=${{ matrix.hdf5}}
           GNU_PARALLEL=OFF
-          INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}###
+          INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+
+###
 # Fetch Cache
 ###
 
