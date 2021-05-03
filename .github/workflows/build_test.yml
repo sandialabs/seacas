@@ -10,6 +10,12 @@ jobs:
 
   build-deps:
 
+    env:
+      COMPILER: ${{ matrix.compiler}}
+      H5VERSION: ${{ matrix.hdf5}}
+      GNU_PARALLEL: OFF
+      INSTALL_PATH: ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+
     runs-on: ubuntu-latest
     
     strategy:
@@ -42,11 +48,6 @@ jobs:
         run: |
           set -x
           ./install-tpl.sh
-        env:
-          COMPILER=${{ matrix.compiler}}
-          H5VERSION=${{ matrix.hdf5}}
-          GNU_PARALLEL=OFF
-          INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
 ###
 # Fetch Cache
@@ -54,6 +55,10 @@ jobs:
 
   seacas-build:
   
+    env:
+      COMPILER: ${{ matrix.compiler}}
+      INSTALL_PATH: ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+
     needs: build-deps
     runs-on: ubuntu-latest
 
@@ -91,9 +96,6 @@ jobs:
           mkdir build
           cd build
           bash ../cmake-config
-        env:
-          COMPILER=${{ matrix.compiler}}
-          INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Build 
         shell: bash -l {0}
