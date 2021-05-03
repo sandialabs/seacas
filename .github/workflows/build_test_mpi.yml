@@ -27,7 +27,7 @@ jobs:
 
       - name: download-openmpi
         run: |
-	  wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz
+          wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz
           tar -xvf ./openmpi-4.1.1.tar.gz
           ./openmpi-4.1.1/configure --prefix="/home/${USER}/.openmpi"
           make -j
@@ -74,7 +74,7 @@ jobs:
 
       - name: download-openmpi
         run: |
-	  wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz
+          wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz
           tar -xvf ./openmpi-4.1.1.tar.gz
           ./openmpi-4.0.2/configure --prefix="/home/${USER}/.openmpi"
           make -j
