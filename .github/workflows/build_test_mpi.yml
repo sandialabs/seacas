@@ -97,4 +97,5 @@ jobs:
         run: |
           cd build
           ctest -j 4
+	  cat Testing/Temporary/LastTest.log
         if: ${{ success() }}
