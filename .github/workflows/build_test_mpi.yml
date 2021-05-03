@@ -36,8 +36,8 @@ jobs:
         ###
         # Installing TPL
         ###
-      - name: Cache TPL-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-        id: cache-TPL
+      - name: Cache TPL-mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+        id: cache-TPL-mpi
         uses: actions/cache@v2
         with:
           path: ~/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
@@ -81,11 +81,11 @@ jobs:
           sudo make install
 
       - name: Fetch TPL Cache
-        id: cache-TPL
+        id: cache-TPL-mpi
         uses: actions/cache@v2
         with:
           path: ~/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v2-${{ runner.os }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v1-mpi-${{ runner.os }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
