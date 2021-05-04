@@ -37,7 +37,7 @@ jobs:
 
       - name: Check Cache
         shell: bash -l {0}
-        run: echo ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
+        run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
       - name: Build TPL-mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -76,7 +76,7 @@ jobs:
 
       - name: Check Cache
         shell: bash -l {0}
-        run: echo ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
+        run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
 ###
 # Configure and build
