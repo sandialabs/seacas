@@ -36,12 +36,8 @@ jobs:
         if: steps.cache-TPL.outputs.cache-hit != 'true'
         run: |
           echo $HOME
-          set(mpi_yesno "NO")
-          if ("${{ matrix.compiler }}" STREQUAL "mpi")
-             set(mpi_yesno "YES")
-          endif()
           set -x
-          MPI=${mpi_yesno} COMPILER=${{ matrix.compiler }} H5VERSION=${{ matrix.hdf5}} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+	  COMPILER=${{ matrix.compiler }} H5VERSION=${{ matrix.hdf5}} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
           ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
 ###
@@ -85,13 +81,9 @@ jobs:
         shell: bash -l {0}
         run: |
           echo $HOME
-          set(mpi_yesno "NO")
-          if ("${{ matrix.compiler }}" STREQUAL "mpi")
-             set(mpi_yesno "YES")
-          endif()
           mkdir build
           cd build
-          MPI=${mpi_yesno} COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
+          COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}

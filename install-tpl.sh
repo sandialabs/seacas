@@ -16,6 +16,12 @@ txtrst=$(tput sgr0)       # Text reset
 # Which compiler to use?
 export COMPILER=${COMPILER:-gnu}
 
+if [ "$COMPILER" == "mpi" ]
+then
+    MPI="YES"
+    export COMPILER=gnu
+endif
+    
 function check_exec()
 {
     local var=$1
