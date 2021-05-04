@@ -56,12 +56,12 @@ jobs:
         cgns: [ 4.2.0 ]
         config: 
         - {
-            name: "Threadsafe ON",
+            name: "Threadsafe ON, No Fortran",
             os: ubuntu-latest,
             compiler: "gnu",
             debug: "NO",
             threadsafe: "YES",
-            fortran: "YES",
+            fortran: "NO",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
@@ -83,15 +83,15 @@ jobs:
             sanitizer: "undefined" # address, integer, thread, memory, undefined
           }
         - {
-            name: "No Fortran",
+            name: "No applications, legacy, or fortran",
             os: ubuntu-latest,
-            compiler: "gnu",
+            compiler: "clang",
             debug: "NO",
-            threadsafe: "YES",
-            fortran: "NO",
-            sanitizer: "NO" # address, integer, thread, memory, undefined
+            threadsafe: "NO",
+            fortran: "YES",
+            sanitizer: "undefined" # address, integer, thread, memory, undefined
+            extra: "APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF"
           }
-
     steps:
 
       - uses: actions/checkout@v2
@@ -120,7 +120,7 @@ jobs:
           echo $HOME
           mkdir build
           cd build
-          THREADSAFE=${{ matrix.config.threadsafe }} DEBUG=${{ matrix.config.debug }} FORTRAN=${{ matrix.config.fortran }} SANITIZER=${{ matrix.config.sanitizer }} COMPILER=${{ matrix.config.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
+          ${{ matrix.config.extra }} THREADSAFE=${{ matrix.config.threadsafe }} DEBUG=${{ matrix.config.debug }} FORTRAN=${{ matrix.config.fortran }} SANITIZER=${{ matrix.config.sanitizer }} COMPILER=${{ matrix.config.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
