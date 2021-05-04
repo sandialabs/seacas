@@ -62,6 +62,7 @@ jobs:
             debug: "NO",
             threadsafe: "YES",
             fortran: "NO",
+            extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
@@ -71,6 +72,7 @@ jobs:
             debug: "NO",
             threadsafe: "NO",
             fortran: "YES",
+            extra: "",
             sanitizer: "memory" # address, integer, thread, memory, undefined
           }
         - {
@@ -80,6 +82,7 @@ jobs:
             debug: "NO",
             threadsafe: "NO",
             fortran: "YES",
+            extra: "",
             sanitizer: "undefined" # address, integer, thread, memory, undefined
           }
         - {
@@ -89,8 +92,8 @@ jobs:
             debug: "NO",
             threadsafe: "NO",
             fortran: "YES",
+            extra: "APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF",
             sanitizer: "undefined" # address, integer, thread, memory, undefined
-            extra: "APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF"
           }
     steps:
 
