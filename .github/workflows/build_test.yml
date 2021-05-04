@@ -36,7 +36,7 @@ jobs:
         if: steps.cache-TPL.outputs.cache-hit != 'true'
         run: |
           echo $HOME
-          set(mpi_yesno "NO"
+          set(mpi_yesno "NO")
           if ("${{ matrix.compiler }}" STREQUAL "mpi")
              set(mpi_yesno "YES")
           endif()
@@ -85,7 +85,7 @@ jobs:
         shell: bash -l {0}
         run: |
           echo $HOME
-          set(mpi_yesno "NO"
+          set(mpi_yesno "NO")
           if ("${{ matrix.compiler }}" STREQUAL "mpi")
              set(mpi_yesno "YES")
           endif()
@@ -104,5 +104,5 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
-          ctest -j 4
+          ctest -j 4 --output-on-failure
         if: ${{ success() }}

@@ -146,5 +146,5 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
-          ctest -j 4
+          ctest -j 4 --output-on-failure
         if: ${{ success() }}
