@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: CMake Build Matrix
+name: SEACAS Variant builds
 
 # Controls when the action will run. Triggers the workflow on push
 on:  [ push, pull_request ]
@@ -73,15 +73,15 @@ jobs:
             threadsafe: "YES",
             fortran: "NO",
             extra: "",
-            sanitizer: "NO" # address, integer, thread, memory, undefined
+            sanitizer: "thread" # address, integer, thread, memory, undefined
           }
         - {
-            name: "Sanitize address",
+            name: "Sanitize address, no fortran",
             os: ubuntu-latest,
             compiler: "clang",
             debug: "NO",
             threadsafe: "NO",
-            fortran: "YES",
+            fortran: "NO",
             extra: "",
             sanitizer: "address" # address, integer, thread, memory, undefined
           }
