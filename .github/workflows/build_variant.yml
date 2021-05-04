@@ -12,7 +12,7 @@ jobs:
     
     strategy:
       matrix:
-        compiler: [ gnu clang ]
+        compiler: [ gnu, clang ]
         hdf5: [ V110 ]
         netcdf: [ 4.8.0 ]
         cgns: [ 4.2.0 ]
@@ -58,37 +58,37 @@ jobs:
         - {
             name: "Threadsafe ON",
             os: ubuntu-latest,
-            compiler: "gnu"
-            debug: "NO"
-            threadsafe: "YES"
-            fortran: "YES"
+            compiler: "gnu",
+            debug: "NO",
+            threadsafe: "YES",
+            fortran: "YES",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
             name: "Sanitize memory",
             os: ubuntu-latest,
-            compiler: "clang"
-            debug: "NO"
-            threadsafe: "NO"
-            fortran: "YES"
+            compiler: "clang",
+            debug: "NO",
+            threadsafe: "NO",
+            fortran: "YES",
             sanitizer: "memory" # address, integer, thread, memory, undefined
           }
         - {
             name: "Sanitize undefined",
             os: ubuntu-latest,
-            compiler: "clang"
-            debug: "NO"
-            threadsafe: "NO"
-            fortran: "YES"
+            compiler: "clang",
+            debug: "NO",
+            threadsafe: "NO",
+            fortran: "YES",
             sanitizer: "undefined" # address, integer, thread, memory, undefined
           }
         - {
             name: "No Fortran",
             os: ubuntu-latest,
-            compiler: "gnu"
-            debug: "NO"
-            threadsafe: "YES"
-            fortran: "NO"
+            compiler: "gnu",
+            debug: "NO",
+            threadsafe: "YES",
+            fortran: "NO",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
 
