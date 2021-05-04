@@ -14,6 +14,7 @@ jobs:
     
     strategy:
       matrix:
+    compiler: [ mpi ]
         hdf5: [ V18, V110, V112 ]
         netcdf: [ 4.8.0 ]
         cgns: [ 4.2.0 ]
@@ -28,22 +29,22 @@ jobs:
         ###
         # Installing TPL
         ###
-      - name: Cache TPL-mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+      - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         id: cache-TPL-mpi
         uses: actions/cache@v2
         with:
-          path: ~/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v1-mpi-${{ runner.os }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
-        run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
+        run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
-      - name: Build TPL-mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+      - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
         run: |
           set -x
-          MPI=YES H5VERSION=${{ matrix.hdf5}} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          MPI=YES H5VERSION=${{ matrix.hdf5}} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
 
 ###
 # Fetch Cache
@@ -71,12 +72,12 @@ jobs:
         id: cache-TPL-mpi
         uses: actions/cache@v2
         with:
-          path: ~/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v1-mpi-${{ runner.os }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
-        run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
+        run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
 ###
 # Configure and build
@@ -86,7 +87,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          NUMPROCS=2 INSTALL_PATH=${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
+          NUMPROCS=2 INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
