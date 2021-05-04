@@ -55,6 +55,7 @@ jobs:
 
     strategy:
       matrix:
+        compiler: [ mpi ]
         hdf5: [ V18, V110, V112 ]
         netcdf: [ 4.8.0 ]
         cgns: [ 4.2.0 ]
