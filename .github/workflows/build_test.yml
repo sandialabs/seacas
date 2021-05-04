@@ -1,8 +1,4 @@
-###
-# Build hdf4, hdf5 dependencies and cache them in a combined directory.
-###
-
-name: Build and run SEACAS tests
+name: Serial--Build and run SEACAS tests
 
 on: [ push, pull_request ]
 
