@@ -35,6 +35,9 @@ jobs:
           path: ~/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
           key: TPL-v1-mpi-${{ runner.os }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
+      - name: Check Cache
+        shell: bash -l {0}
+        run: echo ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
       - name: Build TPL-mpi-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
