@@ -56,6 +56,16 @@ jobs:
         cgns: [ 4.2.0 ]
         config: 
         - {
+            name: "Debug build",
+            os: ubuntu-latest,
+            compiler: "gnu",
+            debug: "YES",
+            threadsafe: "NO",
+            fortran: "YES",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
+        - {
             name: "Threadsafe ON, No Fortran",
             os: ubuntu-latest,
             compiler: "gnu",
@@ -66,14 +76,14 @@ jobs:
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
-            name: "Sanitize memory",
+            name: "Sanitize address",
             os: ubuntu-latest,
             compiler: "clang",
             debug: "NO",
             threadsafe: "NO",
             fortran: "YES",
             extra: "",
-            sanitizer: "memory" # address, integer, thread, memory, undefined
+            sanitizer: "address" # address, integer, thread, memory, undefined
           }
         - {
             name: "Sanitize undefined",
@@ -93,7 +103,7 @@ jobs:
             threadsafe: "NO",
             fortran: "YES",
             extra: "APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF",
-            sanitizer: "undefined" # address, integer, thread, memory, undefined
+            sanitizer: "NO" # address, integer, thread, memory, undefined
           }
     steps:
 
