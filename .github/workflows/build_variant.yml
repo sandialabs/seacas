@@ -120,7 +120,7 @@ jobs:
           echo $HOME
           mkdir build
           cd build
-          THREADSAFE=${{ matrix.config.threadsafe }} DEBUG=${{ matrix.config.debug }} FORTRAN=${{ matrix.config.fortran }} SANITIZER=${{ matrix.config.sanitizer }} HCOMPILER=${{ matrix.config.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
+          THREADSAFE=${{ matrix.config.threadsafe }} DEBUG=${{ matrix.config.debug }} FORTRAN=${{ matrix.config.fortran }} SANITIZER=${{ matrix.config.sanitizer }} COMPILER=${{ matrix.config.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
