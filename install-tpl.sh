@@ -20,7 +20,7 @@ if [ "$COMPILER" == "mpi" ]
 then
     MPI="YES"
     export COMPILER=gnu
-endif
+fi
     
 function check_exec()
 {
