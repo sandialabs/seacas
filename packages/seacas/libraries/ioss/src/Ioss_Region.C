@@ -613,8 +613,6 @@ namespace Ioss {
         Ioss::Utils::generate_history_mesh(this);
         set_state(new_state);
       }
-
-      IOSS_FUNC_ENTER(m_);
       success = db->begin(new_state);
     }
     return success;
@@ -664,12 +662,22 @@ namespace Ioss {
    */
   bool Region::end_mode(State current_state)
   {
-    IOSS_FUNC_ENTER(m_);
-    return end_mode__(current_state);
+    bool success = true;
+    {
+      IOSS_FUNC_ENTER(m_);
+      success = end_mode__(current_state);
+    }
+
+    // Pass the 'end state' message on to the database so it can do any
+    // cleanup/data checking/manipulations it needs to do.
+    success = get_database()->end(current_state);
+    begin_mode(STATE_CLOSED);
+    return success;
   }
 
   bool Region::end_mode__(State current_state)
   {
+    bool success = true;
     // Check that 'current_state' matches the current state of the
     // Region (that is, we are leaving the state we are in).
     if (get_state() != current_state) {
@@ -754,13 +762,6 @@ namespace Ioss {
     else if (current_state == STATE_DEFINE_TRANSIENT) {
       transientDefined = true;
     }
-
-    // Pass the 'end state' message on to the database so it can do any
-    // cleanup/data checking/manipulations it needs to do.
-    DatabaseIO *db      = get_database();
-    bool        success = db->end(current_state);
-
-    begin_mode__(STATE_CLOSED);
 
     return success;
   }

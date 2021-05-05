@@ -44,7 +44,7 @@
 #include "Ioss_SmartAssert.h"
 #include "Ioss_SubSystem.h"
 
-extern char hdf5_access[64];
+//extern char hdf5_access[64];
 
 namespace {
   size_t global_to_zone_local_idx(size_t i, const Ioss::Map *block_map, const Ioss::Map &nodeMap,
@@ -580,7 +580,7 @@ namespace Iocgns {
     if (m_cgnsFilePtr < 0) {
       if ((is_input() && properties.exists("MEMORY_READ")) ||
           (!is_input() && properties.exists("MEMORY_WRITE"))) {
-        Ioss::Utils::copy_string(hdf5_access, "PARALLEL");
+        ; //Ioss::Utils::copy_string(hdf5_access, "PARALLEL");
       }
 
       CGCHECKM(cg_set_file_type(CG_FILE_HDF5));
@@ -615,7 +615,7 @@ namespace Iocgns {
       check_valid_file_open(ierr);
       if ((is_input() && properties.exists("MEMORY_READ")) ||
           (!is_input() && properties.exists("MEMORY_WRITE"))) {
-        Ioss::Utils::copy_string(hdf5_access, "NATIVE");
+        ; //Ioss::Utils::copy_string(hdf5_access, "NATIVE");
       }
 
       if (properties.exists("INTEGER_SIZE_API")) {
