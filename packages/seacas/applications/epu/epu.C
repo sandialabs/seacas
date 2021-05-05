@@ -1916,12 +1916,12 @@ namespace {
 
         blocks[p][b].id = block_id[b];
         if (name[0] != '\0') {
-          blocks[p][b].name_ = &name[0];
+          blocks[p][b].name_ = name.data();
         }
         if (p == 0) {
           glob_blocks[b].id = block_id[b];
           if (name[0] != '\0') {
-            glob_blocks[b].name_ = &name[0];
+            glob_blocks[b].name_ = name.data();
           }
         }
 
@@ -2771,7 +2771,7 @@ namespace {
           exodus_error(__LINE__);
         }
         if (name[0] != '\0') {
-          nodesets[p][iset].name_ = &name[0];
+          nodesets[p][iset].name_ = name.data();
         }
 
         if (nodesets[p][iset].dfCount != 0 &&
@@ -2866,7 +2866,7 @@ namespace {
         // distFactors is a vector of 'char' to allow storage of either float or double.
         glob_sets[ns].distFactors.resize(glob_sets[ns].dfCount * ExodusFile::io_word_size());
 
-        T *    glob_df = (T *)(&glob_sets[ns].distFactors[0]);
+        T *    glob_df = (T *)(glob_sets[ns].distFactors.data());
         size_t j       = 0;
         for (size_t i = 1; i <= total_node_count; i++) {
           if (glob_ns_nodes[i] == 1) {
@@ -3033,14 +3033,14 @@ namespace {
           glob_ssets[i].dfCount += sets[p][i].dfCount;
 
           std::vector<char> name(Excn::ExodusFile::max_name_length() + 1);
-          error = ex_get_name(id, EX_SIDE_SET, sets[p][i].id, &name[0]);
+          error = ex_get_name(id, EX_SIDE_SET, sets[p][i].id, name.data());
           if (error < 0) {
             exodus_error(__LINE__);
           }
           if (name[0] != '\0') {
-            sets[p][i].name_ = &name[0];
+            sets[p][i].name_ = name.data();
             if (p == 0) {
-              glob_ssets[i].name_ = &name[0];
+              glob_ssets[i].name_ = name.data();
             }
           }
 
@@ -3154,14 +3154,14 @@ namespace {
       int exoid = ExodusFile::output(); // output file identifier
       for (auto &glob_sset : glob_ssets) {
         int error =
-            ex_put_set(exoid, EX_SIDE_SET, glob_sset.id, const_cast<INT *>(&glob_sset.elems[0]),
-                       const_cast<INT *>(&glob_sset.sides[0]));
+	  ex_put_set(exoid, EX_SIDE_SET, glob_sset.id, const_cast<INT *>(glob_sset.elems.data()),
+		     const_cast<INT *>(glob_sset.sides.data()));
         if (error < 0) {
           exodus_error(__LINE__);
         }
         if (glob_sset.dfCount > 0) {
           error = ex_put_set_dist_fact(exoid, EX_SIDE_SET, glob_sset.id,
-                                       reinterpret_cast<void *>(&glob_sset.distFactors[0]));
+                                       reinterpret_cast<void *>(glob_sset.distFactors.data()));
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -3617,7 +3617,7 @@ namespace {
                         T *global_values, const std::vector<INT> &proc_loc_elem_to_global)
   {
     // copy values to master element value information
-    T *local_values = &values[0];
+    T *local_values = values.data();
     for (size_t j = 0; j < entity_count; j++) {
       size_t global_block_pos         = proc_loc_elem_to_global[(j + loffset)] - goffset;
       global_values[global_block_pos] = local_values[j];
@@ -3629,7 +3629,7 @@ namespace {
                         T *global_values)
   {
     // copy values to master sideset value information
-    T *local_values = &values[0];
+    T *local_values = values.data();
     for (size_t j = 0; j < entity_count; j++) {
       global_values[j + loffset] = local_values[j];
     }
@@ -3648,7 +3648,7 @@ namespace {
                         double *global_values)
   {
     // copy values to master nodeset value information
-    double *local_values = &values[0];
+    double *local_values = values.data();
     for (size_t j = 0; j < entity_count; j++) {
       size_t global_loc = local_set.nodeOrderMap[j];
       SMART_ASSERT(global_loc < glob_entity_count);
@@ -3661,7 +3661,7 @@ namespace {
                         size_t glob_entity_count, std::vector<float> &values, float *global_values)
   {
     // copy values to master nodeset value information
-    float *local_values = &values[0];
+    float *local_values = values.data();
     for (size_t j = 0; j < entity_count; j++) {
       size_t global_loc = local_set.nodeOrderMap[j];
       SMART_ASSERT(global_loc < glob_entity_count);
