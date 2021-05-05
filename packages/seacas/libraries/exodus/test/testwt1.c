@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   int id, ebids[10], ids[10];
   int num_nodes_per_set[10], num_elem_per_set[10];
   int num_df_per_set[10];
-  int df_ind[10], node_ind[10], elem_ind[10];
+  int df_ind[2], node_ind[10], elem_ind[10];
   int num_qa_rec, num_info;
   int num_glo_vars, num_nod_vars, num_ele_vars;
   int whole_time_step, num_time_steps;

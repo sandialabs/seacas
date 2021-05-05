@@ -350,7 +350,7 @@ then
     -D Faodel_INCLUDE_DIRS:PATH=${FAODEL_PATH}/include/faodel \
     "
 fi
-    
+
 if [ "$OS" == "Darwin" ] ; then
   DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include"
 else
@@ -387,6 +387,9 @@ if [ "$SANITIZER" != "NO" ] ; then
 #sanitizer=cfi         #: control flow integrity checks. Requires -flto.
 #sanitizer=safe-stack  #: safe stack protection against stack-based memory corruption errors.
 SANITIZE="-fsanitize=${SANITIZER} -fno-omit-frame-pointer -fPIC"
+if [ "$SANITIZER" == "integer" ] ; then
+  SANITIZE="$SANITIZE -fno-sanitize=unsigned-integer-overflow"
+fi
 fi
 
 ### You can add these below if you want more verbosity...
