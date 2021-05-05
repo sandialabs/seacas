@@ -18,7 +18,8 @@ export COMPILER=${COMPILER:-gnu}
 
 if [ "$COMPILER" == "mpi" ]
 then
-    MPI="YES"
+    echo "Setting MPI=YES due to COMPILER=mpi"
+    export MPI="YES"
     export COMPILER=gnu
 fi
     
