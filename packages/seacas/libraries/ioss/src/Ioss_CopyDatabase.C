@@ -11,6 +11,8 @@
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_SubSystem.h>
 
+#include <limits>
+
 #include <fmt/ostream.h>
 
 // For Sleep...
