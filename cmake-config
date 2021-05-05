@@ -294,11 +294,13 @@ HAVE_PARMETIS=$(check_enable "${METIS_PATH}/include/parmetis.h")
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED=${OMIT_DEPRECATED:-NO}
 
+NUMPROCS=${NUMPROCS:-4}
+
 # BUG needs to work with cray too.
 if [ "${MPI}" == "YES" ] && [ "${CRAY}" == "YES" ]
 then
    MPI_EXEC=$(which srun)
-   MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-n"
+   MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-n  -DMPI_EXEC_DEFAULT_NUMPROCS:STRING=${NUMPROCS} -DMPI_EXEC_MAX_NUMPROCS:STRING=${NUMPROCS}"
    CXX=CC
    CC=cc
    FC=ftn
@@ -309,11 +311,11 @@ then
    if [ "${USE_SRUN}" == "YES" ]
    then
        MPI_EXEC=$(which srun)
-       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-N"
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-N  -DMPI_EXEC_DEFAULT_NUMPROCS:STRING=${NUMPROCS} -DMPI_EXEC_MAX_NUMPROCS:STRING=${NUMPROCS}"
        MPI_BIN=$(dirname "${MPI_EXEC}")
    else
        MPI_EXEC=$(which mpiexec)
-       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}"
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}  -DMPI_EXEC_DEFAULT_NUMPROCS:STRING=${NUMPROCS} -DMPI_EXEC_MAX_NUMPROCS:STRING=${NUMPROCS}"
        MPI_BIN=$(dirname "${MPI_EXEC}")
    fi
    CXX=mpicxx

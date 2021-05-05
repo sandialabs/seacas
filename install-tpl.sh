@@ -16,6 +16,12 @@ txtrst=$(tput sgr0)       # Text reset
 # Which compiler to use?
 export COMPILER=${COMPILER:-gnu}
 
+if [ "$COMPILER" == "mpi" ]
+then
+    MPI="YES"
+    export COMPILER=gnu
+fi
+    
 function check_exec()
 {
     local var=$1
@@ -501,10 +507,9 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS
-            if ! [ -d build ]
-            then
-                mkdir build
-            fi
+            git checkout v4.2.0
+            rm -rf build
+            mkdir build
             cd build
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
@@ -789,7 +794,7 @@ then
         then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf parallel-*
-            wget --no-check-certificate ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2
+            wget --no-check-certificate https://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2
             tar -jxf parallel-latest.tar.bz2
             rm -rf parallel-latest.tar.bz2
         fi

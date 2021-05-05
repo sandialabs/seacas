@@ -1,16 +1,37 @@
-\documentstyle[12pt,twoside,chapter]{sreport}
-%\includeonly{numerics,analytical,usersm,reference}
-%\includeonly{analytical,usersm}
-%\includeonly{header_sand}
-%\includeonly{reference}
-%\includeonly{numerics}
+\documentclass{report}
+\usepackage{sandcover}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{alltt}
+\usepackage{xfrac}
+\usepackage{calc}
+\usepackage{makeidx}
+\usepackage{amsmath,amssymb,amsfonts,textcomp}
+\usepackage{hyperref}
+%\usepackage{showkeys}
+\usepackage{longtable}
+\usepackage{bookmark}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=blue, urlcolor=blue}
+
+% \makeqnum sets ? to be an empty space the width of a roman ``0''
+% this can be used in tables where the numbers have different lengths
+% to line them up by the decimal point.      See TeXbook, p. 241 top
+\makeatletter
+\newdimen\@digitwd
+\setbox0=\hbox{\rm0}
+\@digitwd=\wd0
+{\catcode`?=\active\gdef?{\kern\@digitwd\relax}}
+\def\makeqnum{\catcode`?=13\relax}
+\def\makeqquest{\catcode`?=12\relax}
 %
-%  \makeatletter
-%  \typein[\@partlist]{Enter file(s) to process}
-%  \@partswtrue
-%  \makeatother
-%
-%
+% Use ``\eref{reference}'' instead of ``\ref{reference}'' to get the 
+%     reference in parentheses e.g. Equation (4.3.1)
+\def\eref#1{(\ref{#1})}
+\makeatother
+
+\def\SANDIA{Sandia National Laboratories, Albuquerque, NM}
+
 \newcommand{\caps}[1]
    {\uppercase{#1}\null}
 \newcommand{\cmd}[1]
@@ -21,8 +42,6 @@
    {{\em #1}\null}
 \newcommand{\optparam}[1]
    {[{\em #1\/}]\null}
-\newcommand{\bold}[1]
-   {{\bf #1}\null}
 %%\input{macro}
 \def\var#1{{\sf #1}}
 \def\SLAP{{\sf SLAP\-DOWN}}
@@ -61,7 +80,7 @@
 \include{firsthit}
 \include{friction}
 \include{scal}
-\include{con}
+\include{conclusions}
 \include{reference}
 \appendix
 \include{usersm}
