@@ -116,6 +116,16 @@ jobs:
             sanitizer: "undefined" # address, integer, thread, memory, undefined
           }
         - {
+            name: "Sanitize integer",
+            os: ubuntu-latest,
+            compiler: "clang",
+            debug: "YES",
+            threadsafe: "NO",
+            fortran: "NO",
+            extra: "",
+            sanitizer: "integer" # address, integer, thread, memory, undefined
+          }
+        - {
             name: "No applications, legacy, or fortran",
             os: ubuntu-latest,
             compiler: "clang",
