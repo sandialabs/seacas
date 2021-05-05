@@ -16,6 +16,8 @@ txtrst=$(tput sgr0)       # Text reset
 # Which compiler to use?
 export COMPILER=${COMPILER:-gnu}
 
+echo "Compiler set to ${COMPILER}"
+
 if [ "$COMPILER" == "mpi" ]
 then
     echo "Setting MPI=YES due to COMPILER=mpi"
