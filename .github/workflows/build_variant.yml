@@ -62,6 +62,8 @@ jobs:
             debug: "YES",
             threadsafe: "NO",
             fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -82,6 +84,8 @@ jobs:
             debug: "YES",
             threadsafe: "YES",
             fortran: "NO",
+            use_kokkos: "NO",
+            use_adios2: "NO",
             extra: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
           }
@@ -91,6 +95,8 @@ jobs:
             compiler: "mpi",
             debug: "YES",
             threadsafe: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
             fortran: "NO",
             extra: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
@@ -101,6 +107,8 @@ jobs:
             compiler: "clang",
             debug: "YES",
             threadsafe: "NO",
+            use_kokkos: "NO",
+            use_adios2: "NO",
             fortran: "NO",
             extra: "",
             sanitizer: "address" # address, integer, thread, memory, undefined
@@ -111,6 +119,8 @@ jobs:
             compiler: "clang",
             debug: "YES",
             threadsafe: "NO",
+            use_kokkos: "NO",
+            use_adios2: "NO",
             fortran: "YES",
             extra: "",
             sanitizer: "undefined" # address, integer, thread, memory, undefined
@@ -131,8 +141,34 @@ jobs:
             compiler: "clang",
             debug: "NO",
             threadsafe: "NO",
+            use_kokkos: "NO",
+            use_adios2: "NO",
             fortran: "YES",
-            extra: "APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "KOKKOS, parallel",
+            os: ubuntu-latest,
+            compiler: "mpi",
+            debug: "NO",
+            threadsafe: "NO",
+            use_kokkos: "YES",
+            use_adios2: "NO",
+            fortran: "YES",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "ADIOS2, parallel",
+            os: ubuntu-latest,
+            compiler: "mpi",
+            debug: "NO",
+            threadsafe: "NO",
+            use_kokkos: "NO",
+            use_adios2: "YES",
+            fortran: "YES",
+            extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
     steps:
@@ -154,6 +190,13 @@ jobs:
         shell: bash -l {0}
         run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
+      - name: install additional TPL
+        if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' }}
+        run: |
+          set -x
+          KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
+        
 ###
 # Configure and build
 ###
