@@ -56,9 +56,19 @@ jobs:
         cgns: [ 4.2.0 ]
         config: 
         - {
-            name: "Debug build",
+            name: "Debug serial build",
             os: ubuntu-latest,
             compiler: "gnu",
+            debug: "YES",
+            threadsafe: "NO",
+            fortran: "YES",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "Debug parallel build",
+            os: ubuntu-latest,
+            compiler: "mpi",
             debug: "YES",
             threadsafe: "NO",
             fortran: "YES",
@@ -69,6 +79,16 @@ jobs:
             name: "Threadsafe ON, No Fortran",
             os: ubuntu-latest,
             compiler: "gnu",
+            debug: "NO",
+            threadsafe: "YES",
+            fortran: "NO",
+            extra: "",
+            sanitizer: "thread" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "Threadsafe ON, Parallel, No Fortran",
+            os: ubuntu-latest,
+            compiler: "mpi",
             debug: "NO",
             threadsafe: "YES",
             fortran: "NO",
@@ -133,7 +153,7 @@ jobs:
           echo $HOME
           mkdir build
           cd build
-          ${{ matrix.config.extra }} THREADSAFE=${{ matrix.config.threadsafe }} DEBUG=${{ matrix.config.debug }} FORTRAN=${{ matrix.config.fortran }} SANITIZER=${{ matrix.config.sanitizer }} COMPILER=${{ matrix.config.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
+          NUMPROCS=2 ${{ matrix.config.extra }} THREADSAFE=${{ matrix.config.threadsafe }} DEBUG=${{ matrix.config.debug }} FORTRAN=${{ matrix.config.fortran }} SANITIZER=${{ matrix.config.sanitizer }} COMPILER=${{ matrix.config.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
