@@ -148,18 +148,6 @@ jobs:
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
-            name: "KOKKOS, parallel",
-            os: ubuntu-latest,
-            compiler: "mpi",
-            debug: "NO",
-            threadsafe: "NO",
-            use_kokkos: "YES",
-            use_adios2: "NO",
-            fortran: "YES",
-            extra: "",
-            sanitizer: "NO" # address, integer, thread, memory, undefined
-          }
-        - {
             name: "ADIOS2, parallel",
             os: ubuntu-latest,
             compiler: "mpi",
