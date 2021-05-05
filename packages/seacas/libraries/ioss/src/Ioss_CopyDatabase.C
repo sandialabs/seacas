@@ -11,18 +11,11 @@
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_SubSystem.h>
 
-#include <limits>
-
 #include <fmt/ostream.h>
 
 // For Sleep...
-#if defined(__IOSS_WINDOWS__)
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
-#undef IN
-#undef OUT
-#endif
+#include <chrono>
+#include <thread>
 
 // For copy_database...
 namespace {
@@ -790,14 +783,7 @@ namespace {
     output_region.end_state(ostep);
 
     if (options.delay > 0.0) {
-#ifndef _MSC_VER
-      struct timespec delay;
-      delay.tv_sec  = (int)options.delay;
-      delay.tv_nsec = (options.delay - delay.tv_sec) * 1'000'000'000L;
-      nanosleep(&delay, nullptr);
-#else
-      Sleep((int)(options.delay * 1'000));
-#endif
+      std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(options.delay * 1'000)));
     }
   }
 
