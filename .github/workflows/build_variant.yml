@@ -12,7 +12,7 @@ jobs:
     
     strategy:
       matrix:
-        compiler: [ gnu, clang ]
+        compiler: [ gnu, clang, mpi ]
         hdf5: [ V110 ]
         netcdf: [ 4.8.0 ]
         cgns: [ 4.2.0 ]
@@ -38,7 +38,7 @@ jobs:
         if: steps.cache-TPL.outputs.cache-hit != 'true'
         run: |
           set -x
-          H5VERSION=${{ matrix.hdf5}} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          COMPILER=${{ matrix.compiler }} H5VERSION=${{ matrix.hdf5}} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
           ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
 
@@ -182,7 +182,7 @@ jobs:
         if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' }}
         run: |
           set -x
-          KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
           ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
         
 ###
