@@ -81,7 +81,7 @@ class MyTestCase(unittest.TestCase):
         self.maxDiff=None
         self.assertEqual(str(expected), str(assemblies))
 
-    def test_add_assembly(self):
+    def test_put_assembly(self):
         new = exo.assembly(name='Unit_test', type='EX_ASSEMBLY', id=444)
         new.entity_list = [100, 222]
         self.temp_exofile.put_assembly(new)
@@ -119,6 +119,42 @@ class MyTestCase(unittest.TestCase):
         values = temp_exofile.get_reduction_variable_values('EX_ASSEMBLY', assemblies[5].id, 1)
         self.assertListEqual([0.00, 0.00, 0.00, 0.00], list(values))
 
+
+    def test_put_assemblies(self):
+        new = exo.assembly(name='Unit_test', type='EX_ASSEMBLY', id=444)
+        new.entity_list = [100, 222]
+        self.temp_exofile.put_assemblies([new])
+        self.temp_exofile.close()
+        temp_exofile = exo.exodus(self.temp_exo_path)
+        assembly_ids = temp_exofile.get_ids("EX_ASSEMBLY")
+        assemblies = [temp_exofile.get_assembly(assembly) for assembly in assembly_ids]
+        print(assemblies)
+        self.assertEqual(new.name, assemblies[6].name)
+        self.assertEqual('assembly', assemblies[6].type)
+        self.assertEqual(new.id, assemblies[6].id)
+        self.assertEqual(new.entity_list, assemblies[6].entity_list)
+
+
+    def test_put_assemblies_multiple_assemblies(self):
+        new = exo.assembly(name='Unit_test1', type='EX_ASSEMBLY', id=444)
+        new.entity_list = [100, 222]
+        new2 = exo.assembly(name='Unit_test2', type='EX_ASSEMBLY', id=448)
+        new2.entity_list = [102, 224]
+        self.temp_exofile.put_assemblies([new, new2])
+        self.temp_exofile.close()
+        temp_exofile = exo.exodus(self.temp_exo_path)
+        assembly_ids = temp_exofile.get_ids("EX_ASSEMBLY")
+        assemblies = [temp_exofile.get_assembly(assembly) for assembly in assembly_ids]
+        print(assemblies)
+        self.assertEqual(new.name, assemblies[6].name)
+        self.assertEqual('assembly', assemblies[6].type)
+        self.assertEqual(new.id, assemblies[6].id)
+        self.assertEqual(new.entity_list, assemblies[6].entity_list)
+
+        self.assertEqual(new2.name, assemblies[7].name)
+        self.assertEqual('assembly', assemblies[7].type)
+        self.assertEqual(new2.id, assemblies[7].id)
+        self.assertEqual(new2.entity_list, assemblies[7].entity_list)
 
 
 if __name__ == '__main__':
