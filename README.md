@@ -58,6 +58,7 @@ manually as detailed in
 | SHARED          | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
 | CRAY            | YES, NO | YES | Is this a Cray system (special parallel options) |
 | NEEDS_ZLIB      | YES, NO | NO  | If system does not have zlib installed, download and install it (HDF5 compression). |
+| USE\_ZLIB\_NG   | YES, NO | NO  | Should the improved [zlib-ng](https://github.com/zlib-ng/zlib-ng) library be used to provide ZLIB capability |
 | NEEDS_SZIP      | YES, NO | NO  | If system does not have szip installed, download and install it (HDF5 compression). |
 | USE\_64BIT\_INT | YES, NO | NO  | In CGNS, enable 64-bit integers |
 | CGNS            | YES, NO | YES | Should CGNS TPL be built.  |
