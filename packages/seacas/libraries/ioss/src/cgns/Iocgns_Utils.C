@@ -596,7 +596,7 @@ bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
 }
 
 namespace {
-#ifdef SEACAS_HAVE_MPI
+#if CG_BUILD_PARALLEL
   void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
   {
     assert(zgc_i.m_transform == zgc_j.m_transform);
@@ -640,7 +640,7 @@ namespace {
     // CGNS_MAX_NAME_LENGTH characters + 17 ints / connection.
 
     PAR_UNUSED(region);
-#ifdef SEACAS_HAVE_MPI
+#if CG_BUILD_PARALLEL
     const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH;
     const int INT_PER_ZGC   = 17;
     // Gather all to processor 0, consolidate, and then scatter back...
@@ -1024,7 +1024,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   std::string version = "IOSS: CGNS Writer version " + std::string{__DATE__} + ", " +
                         Ioss::Utils::platform_information();
 
-#ifdef SEACAS_HAVE_MPI
+#if CG_BUILD_PARALLEL
   if (is_parallel_io) {
     // Need to make sure the version string is the same on all
     // processors since they are all writing to the same file.  There
@@ -1079,7 +1079,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   size_t element_count = 0;
   for (const auto &eb : element_blocks) {
     int64_t local_count = eb->entity_count();
-#ifdef SEACAS_HAVE_MPI
+#if CG_BUILD_PARALLEL
     if (is_parallel_io) {
       int64_t start = 0;
       MPI_Exscan(&local_count, &start, 1, Ioss::mpi_type(start), MPI_SUM,
