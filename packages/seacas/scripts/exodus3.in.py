@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.3 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.20.4 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.3 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.4 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.3 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.4 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -2229,11 +2229,19 @@ class exodus:
 
     def put_assembly(self, assembly):
         """
-        reads the assembly parameters and assembly data for one assembly
+        writes the assembly parameters and assembly data for one assembly
         \param   exoid                   exodus file id
         \param  *assembly                ex_assembly structure
         """
         self.__ex_put_assembly(assembly)
+
+    def put_assemblies(self, assemblies):
+        """
+        writes the assembly parameters and assembly data for n assemblies
+        \param   exoid                   exodus file id
+        \param  *assembly                ex_assembly structure
+        """
+        self.__ex_put_assemblies(assemblies)
 
 
     # Blobs...
@@ -5087,18 +5095,32 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_assembly(self, assembly):
+        assem = self.setup_ctype_assembly(assembly)
+        EXODUS_LIB.ex_put_assembly(self.fileId, assem)
+
+    # --------------------------------------------------------------------
+
+    def __ex_put_assemblies(self, assemblies):
+        assembly_list = []
+        for assembly in assemblies:
+            assem = self.setup_ctype_assembly(assembly)
+            assembly_list.append(assem)
+        assems = (ex_assembly * len(assemblies))(*assembly_list)
+
+        EXODUS_LIB.ex_put_assemblies(self.fileId, len(assembly_list), assems)
+
+    def setup_ctype_assembly(self, assembly):
         obj_id = ctypes.c_longlong(assembly.id)
         assem = ex_assembly(id=obj_id)
-        ptr = ctypes.create_string_buffer(assembly.name.encode('ascii'), MAX_NAME_LENGTH+1)
+        ptr = ctypes.create_string_buffer(assembly.name.encode('ascii'), MAX_NAME_LENGTH + 1)
         assem.name = ctypes.cast(ptr, ctypes.c_char_p)
         assem.type = ctypes.c_int(get_entity_type(assembly.type))
         eptr = (ctypes.c_longlong * len(assembly.entity_list))()
         for i in range(len(assembly.entity_list)):
             eptr[i] = ctypes.c_longlong(assembly.entity_list[i])
-
         assem.entity_list = eptr
         assem.entity_count = len(assembly.entity_list)
-        EXODUS_LIB.ex_put_assembly(self.fileId, assem)
+        return assem
 
     # --------------------------------------------------------------------
 
