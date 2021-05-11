@@ -511,22 +511,22 @@ namespace Iocgns {
       CGCHECK2(cg_nconns(filePtr, base, zone, &nconn));
       for (int i = 0; i < nconn; i++) {
         char                      connectname[CGNS_MAX_NAME_LENGTH + 1];
-        CG_GridLocation_t         location;
-        CG_GridConnectivityType_t connect_type;
-        CG_PointSetType_t         ptset_type;
+        CGNS_ENUMT(GridLocation_t)         location;
+        CGNS_ENUMT(GridConnectivityType_t) connect_type;
+        CGNS_ENUMT(PointSetType_t)         ptset_type;
         cgsize_t                  npnts = 0;
         char                      donorname[CGNS_MAX_NAME_LENGTH + 1];
-        CG_ZoneType_t             donor_zonetype;
-        CG_PointSetType_t         donor_ptset_type;
-        CG_DataType_t             donor_datatype;
+        CGNS_ENUMT(ZoneType_t)             donor_zonetype;
+        CGNS_ENUMT(PointSetType_t)         donor_ptset_type;
+        CGNS_ENUMT(DataType_t)             donor_datatype;
         cgsize_t                  ndata_donor;
 
         CGCHECK2(cg_conn_info(filePtr, base, zone, i + 1, connectname, &location, &connect_type,
                               &ptset_type, &npnts, donorname, &donor_zonetype, &donor_ptset_type,
                               &donor_datatype, &ndata_donor));
 
-        if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList ||
-            donor_ptset_type != CG_PointListDonor) {
+        if (connect_type != CGNS_ENUMV(Abutting1to1) || ptset_type != CGNS_ENUMV(PointList) ||
+            donor_ptset_type != CGNS_ENUMV(PointListDonor)) {
           std::ostringstream errmsg;
           fmt::print(errmsg,
                      "ERROR: CGNS: Zone {} adjacency data is not correct type. Require "
@@ -641,7 +641,7 @@ namespace Iocgns {
       size_t last_blk_location = 0;
       for (int is = 1; is <= num_sections; is++) {
         char             section_name[CGNS_MAX_NAME_LENGTH + 1];
-        CG_ElementType_t e_type;
+        CGNS_ENUMT(ElementType_t) e_type;
         cgsize_t         el_start    = 0;
         cgsize_t         el_end      = 0;
         int              num_bndry   = 0;
@@ -1039,7 +1039,7 @@ namespace Iocgns {
     for (int zone = 1; zone <= num_zones; zone++) {
       end += m_zones[zone].m_nodeCount;
 
-      int solution_index = Utils::find_solution_index(filePtr, base, zone, step, CG_Vertex);
+      int solution_index = Utils::find_solution_index(filePtr, base, zone, step, CGNS_ENUMV(Vertex));
 
       cgsize_t start  = std::max(node_offset, beg);
       cgsize_t finish = std::min(end, node_offset + node_count);
