@@ -53,6 +53,24 @@
 #include <cgnslib.h>
 #endif
 
+#if defined(_WIN32)
+#include <algorithm>
+static std::string to_lower(std::string s)
+{
+  std::transform(s.begin(), s.end(), s.begin(),
+      [](unsigned char c){ return std::tolower(c); });
+  return s;
+}
+static const char* strcasestr(const char* haystack, const char* needle)
+{
+  std::string lneedle(to_lower(needle));
+  std::string lhaystack(to_lower(haystack));
+
+  auto pos = lhaystack.find(lneedle);
+  return pos != std::string::npos ? haystack + pos : nullptr;
+}
+#endif
+
 #define CGERR(funcall)                                                                             \
   if ((funcall) != CG_OK) {                                                                        \
     Iocgns::Utils::cgns_error(file_ptr, __FILE__, __func__, __LINE__, -1);                         \
