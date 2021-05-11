@@ -164,23 +164,29 @@ namespace Iocgns {
 
       switch (parent_topo->shape()) {
       case Ioss::ElementShape::HEX:
+        {
         static int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = hex_map[idata[2 * i + 1]];
         }
+        }
         break;
 
       case Ioss::ElementShape::TET:
+        {
         static int tet_map[] = {0, 4, 1, 2, 3};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = tet_map[idata[2 * i + 1]];
         }
+        }
         break;
 
       case Ioss::ElementShape::PYRAMID:
+        {
         static int pyr_map[] = {0, 5, 1, 2, 3, 4};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = pyr_map[idata[2 * i + 1]];
+        }
         }
         break;
 
@@ -206,23 +212,29 @@ namespace Iocgns {
 
       switch (parent_topo->shape()) {
       case Ioss::ElementShape::HEX:
+        {
         static int hex_map[] = {0, 2, 3, 4, 5, 1, 6};
         for (size_t i = 0; i < num_to_get; i++) {
           data[num_to_get * 2 + i] = hex_map[data[num_to_get * 2 + i]];
         }
+        }
         break;
 
       case Ioss::ElementShape::TET:
+        {
         static int tet_map[] = {0, 2, 3, 4, 1};
         for (size_t i = 0; i < num_to_get; i++) {
           data[num_to_get * 2 + i] = tet_map[data[num_to_get * 2 + i]];
         }
+        }
         break;
 
       case Ioss::ElementShape::PYRAMID:
+        {
         static int pyr_map[] = {0, 2, 3, 4, 5, 1};
         for (size_t i = 0; i < num_to_get; i++) {
           data[num_to_get * 2 + i] = pyr_map[data[num_to_get * 2 + i]];
+        }
         }
         break;
 
