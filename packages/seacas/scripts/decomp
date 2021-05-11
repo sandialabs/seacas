@@ -56,7 +56,7 @@ Other options:
 --processors #p    Specify number of processors (-p, -j)
 --root root_dir    Root directory to begin the path to on the separate disks (-R)
 --subdir sub_dir   Continuation of the path on the separate disks to the files (-S)
---spread_suffix x  Suffix for parallel files (default: meshfile suffix)
+--spread_suffix x  Suffix for parallel files (default: meshfile suffix) (-X)
 --64               Force creation of 64-bit integer decomposed files (-6)
    help-email: sierra-help@sandia.gov
 
