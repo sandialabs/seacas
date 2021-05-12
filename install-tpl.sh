@@ -317,17 +317,15 @@ then
 	    if [ "$DOWNLOAD" == "YES" ]
 	    then
 		echo "${txtgrn}+++ Downloading...${txtrst}"
-		rm -rf zlib-ng-${zlib_ng_version}
-		rm -rf ${zlib_ng_version}.tar.gz
-		wget --no-check-certificate https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${zlib_ng_version}.tar.gz
-		tar -xzf ${zlib_ng_version}.tar.gz
-		rm -rf ${zlib_ng_version}.tar.gz
+		rm -rf zlib-ng
+		git clone https://github.com/zlib-ng/zlib-ng
 	    fi
 
 	    if [ "$BUILD" == "YES" ]
 	    then
 		echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-		cd zlib-ng-${zlib_ng_version}
+		cd zlib-ng
+		git checkout ${zlib_ng_version}
 		rm -rf build
 		cmake -Bbuild -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} -DZLIB_COMPAT=YES .
 		if [[ $? != 0 ]]
