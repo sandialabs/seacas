@@ -146,7 +146,7 @@ if (TPL_ENABLE_MPI)
        DIRECTORY ../../../../applications/exodiff
        NOEXEPREFIX NOEXESUFFIX
        NUM_MPI_PROCS 1
-       
+
     COMM mpi serial
     )
 
@@ -381,7 +381,6 @@ TRIBITS_ADD_ADVANCED_TEST(cgns_Q2_bc_no_parents_to_exodus
   XHOSTTYPE Windows
   )
 
-IF (disabled)
 # This requires a patched version of NetCDF.  Once the PR is accepted, the test will be re-enabled.
 TRIBITS_ADD_ADVANCED_TEST(exodus_append
    TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${JOIN_ARG} --Maximum_Time=0.055 ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g base.g
@@ -397,10 +396,8 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_append
      DIRECTORY ../../../../applications/exodiff
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1
-     NUM_MPI_PROCS 1
   COMM mpi serial
   )
-endif()
 
 if ( CGNS_CGNSDIFF_BINARY )
 TRIBITS_ADD_ADVANCED_TEST(cgns_Q2_parents_no_parent_compare_random_decomp
