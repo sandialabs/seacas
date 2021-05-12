@@ -24,7 +24,7 @@ then
     export MPI="YES"
     export COMPILER=gnu
 fi
-    
+
 function check_exec()
 {
     local var=$1
@@ -83,7 +83,7 @@ PARMETIS=`check_valid PARMETIS`
 METIS=${METIS:-NO}
 METIS=`check_valid METIS`
 
-if [ "$PARMETIS" == "YES" ] 
+if [ "$PARMETIS" == "YES" ]
 then
     METIS="YES"
 fi
@@ -199,7 +199,7 @@ if [ $# -gt 0 ]; then
 	echo "   ADIOS2       = ${ADIOS2}"
 	echo "   GTEST        = ${GTEST}"
 	echo ""
-	echo "   SUDO         = ${SUDO} (empty unless need superuser permission via 'sudo')" 
+	echo "   SUDO         = ${SUDO} (empty unless need superuser permission via 'sudo')"
 	echo "   JOBS         = ${JOBS}"
 	echo "   VERBOSE      = ${VERBOSE}"
 	echo "${txtrst}"
@@ -515,7 +515,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
-	git checkout v4.7.4
+	git checkout v4.8.0
         rm -rf build
         mkdir build
         cd build
@@ -920,7 +920,7 @@ then
     echo "${txtgrn}+++ Cereal${txtrst}"
     cd $ACCESS
     CEREAL_DIR="TPL/cereal"
-    if [ ! -d "${CEREAL_DIR}" ]; then 
+    if [ ! -d "${CEREAL_DIR}" ]; then
       mkdir ${CEREAL_DIR}
     fi
     cd ${CEREAL}
