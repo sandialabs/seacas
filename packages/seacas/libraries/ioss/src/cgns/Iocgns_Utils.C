@@ -1086,7 +1086,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     CGERR(cg_fambc_write(file_ptr, base, fam, "FamBC", bocotype, &bc_index));
     CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
     CGERR(cg_descriptor_write("FamBC_TypeId", std::to_string(bocotype).c_str()));
-    CGERR(cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]));
+    CGERR(cg_descriptor_write("FamBC_TypeName", cg_BCTypeName(bocotype)));
     CGERR(cg_descriptor_write("FamBC_UserId", std::to_string(id).c_str()));
     CGERR(cg_descriptor_write("FamBC_UserName", ss->name().c_str()));
   }
@@ -1602,7 +1602,7 @@ int Iocgns::Utils::find_solution_index(int cgns_file_ptr, int base, int zone, in
 
   fmt::print(Ioss::WARNING(),
              "CGNS: Could not find valid solution index for step {}, zone {}, and location {}\n",
-             step, zone, GridLocationName[location]);
+             step, zone, cg_GridLocationName(location));
   return 0;
 }
 
