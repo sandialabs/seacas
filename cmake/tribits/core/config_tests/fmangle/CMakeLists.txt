@@ -37,7 +37,6 @@
 # ************************************************************************
 # @HEADER
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(fmangle C Fortran)
 ADD_DEFINITIONS(${COMMON_DEFS})
 SET(CMAKE_VERBOSE_MAKEFILE ON)
