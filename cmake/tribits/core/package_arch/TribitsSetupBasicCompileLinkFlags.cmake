@@ -90,7 +90,7 @@ MACRO(TRIBITS_SET_LANGUAGE_BUILDTYPE_FLAGS_OVERRIDE LANG BUILDTYPE)
   ENDIF()
 
   # NOTE: Above, we can't just let users set CMAKE_${LANG}_FLAGS_${BUILDTYPE}
-  # in the cache because CMake overrides it.  We have to add this override
+  # in the cache because CMake overrides it.  We have ot add this override
   # option to allow them to override it.
 
 ENDMACRO()
