@@ -5,7 +5,7 @@
 [![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
 [![Appveyor Build](https://ci.appveyor.com/api/projects/status/pis4gok72yh0wwfs/branch/master?svg=true)](https://ci.appveyor.com/project/gsjaardema/seacas/branch/master)
 [![Github Actions -- CI Serial](https://github.com/gsjaardema/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/gsjaardema/seacas)
-[![Github Actions -- CI Parallel](https://github.com/gsjaardema/seacas/actions/workflows/build_test_mpi.yml/badge.svg)](https://github.com/gsjaardema/seacas)
+[![Github Actions -- CI Variants](https://github.com/gsjaardema/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/gsjaardema/seacas)
 
 * [Get the sources](#get-the-sources)
 * [Build instructions](#build-instructions)
