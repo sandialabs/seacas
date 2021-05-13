@@ -157,9 +157,10 @@ namespace Ioex {
       : Ioex::BaseDatabaseIO(region, filename, db_usage, communicator, props)
   {
     if (!is_input()) {
-      // Check whether appending to existing file...
+      // Check whether appending to or modify existing file...
       if (open_create_behavior() == Ioss::DB_APPEND ||
-          open_create_behavior() == Ioss::DB_APPEND_GROUP) {
+          open_create_behavior() == Ioss::DB_APPEND_GROUP ||
+          open_create_behavior() == Ioss::DB_MODIFY) {
         // Append to file if it already exists -- See if the file exists.
         Ioss::FileInfo file = Ioss::FileInfo(decoded_filename());
         fileExists          = file.exists();
@@ -469,6 +470,18 @@ namespace Ioex {
       return;
     }
 
+    // APPENDING:
+    // There is an assumption that the writing process (mesh, vars) is
+    // the same for the original run that created this database and
+    // for this run which is appending to the database so the defining
+    // of the output database should be the same except we don't write
+    // anything since it is already there.  We do need the number of
+    // steps though...
+    if (open_create_behavior() == Ioss::DB_APPEND) {
+      get_step_times__();
+      return;
+    }
+
     {
       Ioss::SerializeIO serializeIO__(this);
 
@@ -745,7 +758,7 @@ namespace Ioex {
             // 0... Need better warnings which won't overload in the
             // worst case...
             fmt::print(Ioss::WARNING(),
-                       "Skipping step {:n} at time {} in database file\n\t{}.\n"
+                       "Skipping step {:L} at time {} in database file\n\t{}.\n"
                        "\tThe data for that step is possibly corrupt since the last time written "
                        "successfully was {}.\n",
                        i + 1, tsteps[i], get_filename(), last_time);
@@ -4756,7 +4769,7 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
 
     if (ierr < 0) {
       std::ostringstream extra_info;
-      fmt::print(extra_info, "Outputting field {} at step {:n} on {} {}.", field.get_name(), step,
+      fmt::print(extra_info, "Outputting field {} at step {:L} on {} {}.", field.get_name(), step,
                  ge->type_string(), ge->name());
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
     }
@@ -4819,7 +4832,7 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
 
       if (ierr < 0) {
         std::ostringstream extra_info;
-        fmt::print(extra_info, "Outputting component {} of field {} at step {:n} on {} {}.", i,
+        fmt::print(extra_info, "Outputting component {} of field {} at step {:L} on {} {}.", i,
                    field_name, step, ge->type_string(), ge->name());
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
       }
@@ -5318,10 +5331,10 @@ int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
   return num_to_get;
 }
 
-void DatabaseIO::write_meta_data(bool appending)
+void DatabaseIO::write_meta_data(Ioss::IfDatabaseExistsBehavior behavior)
 {
   Ioss::Region *region = get_region();
-  common_write_meta_data(appending);
+  common_write_meta_data(behavior);
 
   char the_title[max_line_length + 1];
 
@@ -5359,7 +5372,7 @@ void DatabaseIO::write_meta_data(bool appending)
     mesh.populate(region);
     gather_communication_metadata(&mesh.comm);
 
-    if (!appending) {
+    if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
       if (!properties.exists("OMIT_QA_RECORDS")) {
         put_qa();
       }

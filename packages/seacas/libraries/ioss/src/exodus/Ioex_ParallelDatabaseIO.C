@@ -332,9 +332,10 @@ namespace Ioex {
     }
 
     if (!is_input()) {
-      // Check whether appending to existing file...
+      // Check whether appending to or modifying existing file...
       if (open_create_behavior() == Ioss::DB_APPEND ||
-          open_create_behavior() == Ioss::DB_APPEND_GROUP) {
+          open_create_behavior() == Ioss::DB_APPEND_GROUP ||
+          open_create_behavior() == Ioss::DB_MODIFY) {
         // Append to file if it already exists -- See if the file exists.
         Ioss::FileInfo file = Ioss::FileInfo(get_filename());
         fileExists          = file.exists();
@@ -671,6 +672,19 @@ namespace Ioex {
   {
     int exoid = get_file_pointer(); // get_file_pointer() must be called first.
 
+    // APPENDING:
+    // If parallel (single file, not fpp), we have assumptions
+    // that the writing process (ranks, mesh, decomp, vars) is the
+    // same for the original run that created this database and
+    // for this run which is appending to the database so the
+    // defining of the output database should be the same except
+    // we don't write anything since it is already there.  We do
+    // need the number of steps though...
+    if (open_create_behavior() == Ioss::DB_APPEND) {
+      get_step_times__();
+      return;
+    }
+
     if (int_byte_size_api() == 8) {
       decomp = std::unique_ptr<DecompositionDataBase>(
           new DecompositionData<int64_t>(properties, util().communicator()));
@@ -872,7 +886,7 @@ namespace Ioex {
           // worst case...
           fmt::print(
               Ioss::WARNING(),
-              "Skipping step {:n} at time {} in database file\n\t{}.\nThe data for that step "
+              "Skipping step {:L} at time {} in database file\n\t{}.\nThe data for that step "
               "is possibly corrupt.\n",
               i + 1, tsteps[i], get_filename());
         }
@@ -4087,7 +4101,7 @@ void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */,
         fmt::print(errmsg,
                    "ERROR: Problem outputting nodal variable '{}' with index = {} to file '{}' on "
                    "processor {}\n"
-                   "\tShould have output {:n} values, but instead only output {:n} values.\n",
+                   "\tShould have output {:L} values, but instead only output {:L} values.\n",
                    var_name, var_index, get_filename(), myProcessor, nodeCount, num_out);
         IOSS_ERROR(errmsg);
       }
@@ -4221,7 +4235,7 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
 
       if (ierr < 0) {
         std::ostringstream extra_info;
-        fmt::print(extra_info, "Outputting component {} of field '{}' at step {:n} on {} '{}'.", i,
+        fmt::print(extra_info, "Outputting component {} of field '{}' at step {:L} on {} '{}'.", i,
                    field_name, step, ge->type_string(), ge->name());
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
       }
@@ -4584,10 +4598,10 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const 
   return num_to_get;
 }
 
-void ParallelDatabaseIO::write_meta_data(bool appending)
+void ParallelDatabaseIO::write_meta_data(Ioss::IfDatabaseExistsBehavior behavior)
 {
   Ioss::Region *region = get_region();
-  common_write_meta_data(appending);
+  common_write_meta_data(behavior);
 
   char the_title[max_line_length + 1];
 
@@ -4604,7 +4618,7 @@ void ParallelDatabaseIO::write_meta_data(bool appending)
   Ioex::Mesh mesh(spatialDimension, the_title, util(), file_per_processor);
   mesh.populate(region);
 
-  if (!appending) {
+  if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
     if (!properties.exists("OMIT_QA_RECORDS")) {
       put_qa();
     }
@@ -4629,7 +4643,7 @@ void ParallelDatabaseIO::write_meta_data(bool appending)
   // processor begins...
   update_processor_offset_property(region, mesh);
 
-  if (!appending) {
+  if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
     output_node_map();
     output_other_meta_data();
   }

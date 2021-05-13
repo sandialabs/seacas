@@ -9,18 +9,12 @@
 
 namespace Ioss {
   class Region;
-  class MeshCopyOptions;
+  struct MeshCopyOptions;
 
   //! Copy the mesh in `region` to `output_region`.  Behavior can be controlled
   //! via options in `options`
   void copy_database(Ioss::Region &region, Ioss::Region &output_region,
                      Ioss::MeshCopyOptions &options);
-
-  //! Same as copy_database, but pays attention to the define_geometry
-  //! variable in `options`. used to call multiple times with the same
-  //! database at different timestep ranges
-  void copy_database_v2(Ioss::Region &region, Ioss::Region &output_region,
-			Ioss::MeshCopyOptions &options);
 
   void transfer_assemblies(Ioss::Region &region, Ioss::Region &output_region,
                            const Ioss::MeshCopyOptions &options, int rank);

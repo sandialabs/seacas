@@ -8,8 +8,8 @@ C    See packages/seacas/LICENSE for details
       QAINFO(2) = '        '
       QAINFO(3) = '        '
 
-      QAINFO(2)(:8) = '20210216'
-      QAINFO(3)(:8) = '    3.08'
+      QAINFO(2)(:8) = '20210331'
+      QAINFO(3)(:8) = '    3.09'
 
 c..Dynamic dimensioning of block names+other changes
 c..compress output of distribution factors
@@ -75,3 +75,4 @@ c..Fix minmax to work more than once
 c..Work with experimental exodus (transient data only)
 c..Add select nodes sset {id}...
 c..Fix memory overrun in check routines
+c..Call MDFREE()

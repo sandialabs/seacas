@@ -161,18 +161,15 @@ as shown above.
 Basic configuration
 -------------------
 
-A few different approaches for configuring are given below but likely the most
-recommended one for complex environments is to use ``*.cmake`` fragment files
-passed in through the `<Project>_CONFIGURE_OPTIONS_FILE`_ option.
+A few different approaches for configuring are given below.
 
 a) Create a 'do-configure' script such as [Recommended]::
 
-    EXTRA_ARGS=$@
-    
+    #!/bin/bash
     cmake \
       -D CMAKE_BUILD_TYPE=DEBUG \
       -D <Project>_ENABLE_TESTS=ON \
-      $EXTRA_ARGS \
+      "$@" \
       ${SOURCE_BASE}
 
   and then run it with::
@@ -194,16 +191,15 @@ a) Create a 'do-configure' script such as [Recommended]::
 
 .. _<Project>_CONFIGURE_OPTIONS_FILE:
 
-b) Create a CMake file fragment and point to it [Recommended].
+b) Create a ``*.cmake`` file and point to it [Most Recommended].
 
   Create a do-configure script like::
 
-    EXTRA_ARGS=$@
-    
+    #!/bin/bash
     cmake \
       -D <Project>_CONFIGURE_OPTIONS_FILE=MyConfigureOptions.cmake \
       -D <Project>_ENABLE_TESTS=ON \
-      $EXTRA_ARGS \
+      "$@" \
       ${SOURCE_BASE}
      
   where MyConfigureOptions.cmake (in the current working directory) might look
@@ -286,10 +282,14 @@ b) Create a CMake file fragment and point to it [Recommended].
   and instead would have to the full variables names specific for a given
   project.
 
-  4) However, the ``*.cmake`` files specified by
+  4) Non-cache project-level varaibles can be set in a ``*.cmake`` file that
+  will impact the configuration.  When using the ``-C`` option, only varaibles
+  set with ``set(<varName> CACHE <TYPE> ...)`` will impact the configuration.
+
+  5) However, the ``*.cmake`` files specified by
   ``<Project>_CONFIGURE_OPTIONS_FILE`` will only get read in **after** the
   project's ``ProjectName.cmake`` and other ``SET()`` statements are called at
-  the top of the project's top-level ``CMakeLists.txt.` file.  So any CMake
+  the top of the project's top-level ``CMakeLists.txt`` file.  So any CMake
   cache variables that are set in this early CMake code will override cache
   defaults set in the included ``*.cmake`` file.  (This is why TriBITS
   projects must be careful **not** to set default values for cache variables
@@ -301,13 +301,23 @@ b) Create a CMake file fragment and point to it [Recommended].
   and carefully watch cache variable values actually set in the generated
   ``CMakeCache.txt`` file.
 
+  In other words, the context and impact of what get be set from a ``*.cmake``
+  file read in through the ``-C`` argument is more limited while the code
+  listed in the ``*.cmake`` file behaves just like regular CMake statements
+  executed in the project's top-level ``CMakeLists.txt`` file.
+
 c) Using the QT CMake configuration GUI:
 
   On systems where the QT CMake GUI is installed (e.g. Windows) the CMake GUI
   can be a nice way to configure <Project> (or just explore options) if you
   are a user.  To make your configuration easily repeatable, you might want to
   create a fragment file and just load it by setting
-  `<Project>_CONFIGURE_OPTIONS_FILE`_ (see above) in the GUI.
+  `<Project>_CONFIGURE_OPTIONS_FILE`_ in the GUI.
+
+Likely the most recommended approach to manage complex configurations is to
+use ``*.cmake`` fragment files passed in through the
+`<Project>_CONFIGURE_OPTIONS_FILE`_ option.  This offers the greatest
+flexibility and the ability to version-control the configuration settings.
 
 
 Selecting the list of packages to enable
@@ -631,7 +641,7 @@ However, on Linux systems, the observed algorithm appears to be:
 3. Search for the Fortran compiler with names like ``f90``, ``gfortran``,
    etc., but restrict the search to the same directory specified by base path
    to the C compiler given in the variable ``CMAKE_C_COMPILER``.  The first
-   compiler that is found is set to ``CMAKE_CXX_COMPILER``.
+   compiler that is found is set to ``CMAKE_Fortran_COMPILER``.
 
 **WARNING:** While this build-in CMake compiler search algorithm may seems
 reasonable, it fails to find the correct compilers in many cases for a non-MPI
@@ -671,26 +681,29 @@ typically ``"-g -O0"`` while ``CMAKE_CXX_FLAGS_RELEASE`` is typically
 ``-DCMAKE_CXX_FLAGS="-04"``, then this level gets overridden by the flags
 specified in ``CMAKE_<LANG>_FLAGS_BUILD`` or ``CMAKE_<LANG>_FLAGS_RELEASE``.
 
-Note that TriBITS will set defaults for ``CMAKE_<LANG>_FLAGS`` and
+TriBITS will set defaults for ``CMAKE_<LANG>_FLAGS`` and
 ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>``, which may be different that what
 raw CMake would set.  TriBITS provides a means for project and package
 developers and users to set and override these compiler flag variables
 globally and on a package-by-package basis.  Below, the facilities for
 manipulating compiler flags is described.
 
-Also, to see that the full set of compiler flags one has to actually build a
-target with, for example ``make VERBOSE=1`` (see `Building with verbose output
-without reconfiguring`_).  One can not just look at the cache variables for
+To see that the full set of compiler flags one has to actually build a target
+by running, for example, ``make VERBOSE=1 <target_name>`` (see `Building with
+verbose output without reconfiguring`_).  (NOTE: One can also see the exact
+set of flags used for each target in the generated ``build.ninja`` file when
+using the Ninja generator.) One cannot just look at the cache variables for
 ``CMAKE_<LANG>_FLAGS`` and ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` in the
-file ``CMakeCache.txt``.  These get overwritten and redefined by TriBITS in
-development as described below (see `Overriding CMAKE_BUILD_TYPE debug/release
-compiler options`_).
+file ``CMakeCache.txt`` and see the full set of flags are actaully being used.
+These varaibles can override the cache varables by TriBITS as project-level
+local non-cache varaibles as described below (see `Overriding CMAKE_BUILD_TYPE
+debug/release compiler options`_).
 
 The <Project> TriBITS CMake build system will set up default compile flags for
 GCC ('GNU') in development mode
 (i.e. ``<Project>_ENABLE_DEVELOPMENT_MODE=ON``) on order to help produce
 portable code.  These flags set up strong warning options and enforce language
-standards.  In release mode (i.e. ``<Project>_ENABLE_DEVELOPMENT_MODE=ON``),
+standards.  In release mode (i.e. ``<Project>_ENABLE_DEVELOPMENT_MODE=OFF``),
 these flags are not set.  These flags get set internally into the variables
 ``CMAKE_<LANG>_FLAGS`` (when processing packages, not at the global cache
 variable level) but the user can append flags that override these as described
@@ -938,15 +951,15 @@ generator)`_).
 
 .. _<Project>_WRITE_NINJA_MAKEFILES:
 
-In addition, for versions of CMake 3.7.0+, the TriBITS build system will, by
-default, generate Makefiles in every binary directory where there is a
-CMakeLists.txt file in the source tree.  These Makefiles have targets scoped
-to that subdirectory that use ``ninja`` to build targets in that subdirectory
-just like with the native CMake recursive ``-G"Unix Makefiles"`` generator.
-This allows one to ``cd`` into any binary directory and type ``make`` to build
-just the targets in that directory.  These TriBITS-generated Ninja makefiles
-also support ``help`` and ``help-objects`` targets making it easy to build
-individual executables, libraries and object files in any binary subdirectory.
+In addition, the TriBITS build system will, by default, generate Makefiles in
+every binary directory where there is a CMakeLists.txt file in the source
+tree.  These Makefiles have targets scoped to that subdirectory that use
+``ninja`` to build targets in that subdirectory just like with the native
+CMake recursive ``-G "Unix Makefiles"`` generator.  This allows one to ``cd``
+into any binary directory and type ``make`` to build just the targets in that
+directory.  These TriBITS-generated Ninja makefiles also support ``help`` and
+``help-objects`` targets making it easy to build individual executables,
+libraries and object files in any binary subdirectory.
 
 **WARNING:** Using ``make -j<N>`` with these TriBITS-generated Ninja Makefiles
 will **not** result in using ``<N>`` processes to build in parallel and will
@@ -959,10 +972,7 @@ The generation of these Ninja makefiles can be disabled by setting::
   -D<Project>_WRITE_NINJA_MAKEFILES=OFF
 
 (But these Ninja Makefiles get created very quickly even for a very large
-CMake project so there is usually little reason to not generate them.)  Trying
-to set ``-D<Project>_WRITE_NINJA_MAKEFILES=ON`` for versions of CMake older
-than 3.7.0 will not work since features were added to CMake 3.7.0+ that allow
-for the generation of these makefiles.
+CMake project so there is usually little reason to not generate them.)
 
 
 Limiting parallel compile and link jobs for Ninja builds
@@ -991,30 +1001,30 @@ NOTE: These options are ignored when using Makefiles or other CMake
 generators.  They only work for the Ninja generator.
 
 
-Enabling explicit template instantiation for C++
-------------------------------------------------
+Disabling explicit template instantiation for C++
+-------------------------------------------------
 
-To enable explicit template instantiation for C++ code for packages that
-support it, configure with::
+By default, support for optional explicit template instantiation (ETI) for C++
+code is enabled.  To disable support for optional ETI, configure with::
 
-  -D <Project>_ENABLE_EXPLICIT_INSTANTIATION=ON
+  -D <Project>_ENABLE_EXPLICIT_INSTANTIATION=OFF
 
 When ``OFF``, all packages that have templated C++ code will use implicit
-template instantiation.
+template instantiation (unless they have hard-coded usage of ETI).
 
-Explicit template instantiation can be enabled (``ON``) or disabled (``OFF``)
-for individual packages with::
-
+ETI can be enabled (``ON``) or disabled (``OFF``) for individual packages
+with::
 
   -D <TRIBITS_PACKAGE>_ENABLE_EXPLICIT_INSTANTIATION=[ON|OFF]
 
 The default value for ``<TRIBITS_PACKAGE>_ENABLE_EXPLICIT_INSTANTIATION`` is
 set by ``<Project>_ENABLE_EXPLICIT_INSTANTIATION``.
 
-For packages that support it, explicit template instantation can massively
-reduce the compile times for the C++ code involved.  To see what packages
-support explicit instantation just search the CMakeCache.txt file for
-variables with ``ENABLE_EXPLICIT_INSTANTIATION`` in the name.
+For packages that support it, explicit template instantiation can massively
+reduce the compile times for the C++ code involved and can even avoid compiler
+crashes in some cases.  To see what packages support explicit template
+instantiation, just search the CMakeCache.txt file for variables with
+``ENABLE_EXPLICIT_INSTANTIATION`` in the name.
 
 
 Disabling the Fortran compiler and all Fortran code
@@ -1349,10 +1359,6 @@ libraries.  The second flag tells cmake to locate static library versions of
 any required TPLs.  The third flag tells the auto-detection routines that
 search for extra required libraries (such as the mpi library and the gfortran
 library for gnu compilers) to locate static versions.
-
-NOTE: The flag ``<Project>_LINK_SEARCH_START_STATIC`` is only supported in
-cmake version 2.8.5 or higher.  The variable will be ignored in prior releases
-of cmake.
 
 
 Enabling the usage of resource files to reduce length of build lines
@@ -2298,12 +2304,10 @@ NOTES:
   for the ``CTEST_RESOURCE_SPEC_FILE`` cache variable was not added until
   CMake 3.18.)
 
-* A patched version of CMake 3.17 can be used to get built-in CMake/CTest
-  support for the ``CTEST_RESOURCE_SPEC_FILE`` cache variable, as installed
-  using the TriBITS-provided ``install-cmake.py`` command (using option
-  ``--cmake-version=3.17``, see `Installing CMake from source [developers and
-  experienced users]`_).  This avoids needing to explicitly pass the ctest
-  resource file to ``ctest`` at runtime for CMake/CTest versions [3.16, 3.18).
+* CMake versions 3.18+ can be used to get built-in CMake/CTest support for the
+  ``CTEST_RESOURCE_SPEC_FILE`` cache variable.  This avoids needing to
+  explicitly pass the ctest resource file to ``ctest`` at runtime for
+  CMake/CTest versions 3.17.z.
 
 * **WARNING:** This currently only works for a single node, not multiple
   nodes.  (CTest needs to be extended to work correctly for multiple nodes
@@ -2482,10 +2486,6 @@ If one really wants a clean slate, then try::
   $ rm -rf `ls | grep -v do-configure`
   $ ./do-configure [options]
 
-WARNING: Later versions of CMake (2.8.10.2+) require that you remove the
-top-level ``CMakeFiles/`` directory whenever you remove the ``CMakeCache.txt``
-file.
-
 
 Viewing configure errors
 -------------------------
@@ -2557,7 +2557,7 @@ This will generate the file ``<Project>Config.cmake`` for the project and the
 files ``<Package>Config.cmake`` for each enabled package in the build tree.
 In addition, this will install versions of these files into the install tree.
 
-To confiugre Makefile export files, configure with::
+To configure Makefile export files, configure with::
 
   -D <Project>_ENABLE_EXPORT_MAKEFILES=ON
 
@@ -3834,13 +3834,12 @@ This can be set in the CMake cache when configuring the project using::
 
 or when running the ``dashboard`` target with::
 
-  $ env <Project>_CTEST_DO_ALL_AT_ONCE=TRUE make dashbaord.
+  $ env <Project>_CTEST_DO_ALL_AT_ONCE=TRUE make dashboard.
 
 Using the ``dashboard`` target, one can also run coverage and memory testing
 and submit to CDash as described below.  But to take full advantage of the
 all-at-once mode and to have results displayed on CDash broken down
-package-by-package, one must be using CMake/CTest 3.10 or newer and be
-submitting to a newer CDash version (from about mid 2018 and newer).
+package-by-package, one must be submitting to a newer CDash version 3.0+.
 
 For submitting line coverage results, once you configure with
 ``-D<Project>_ENABLE_COVERAGE_TESTING=ON``, the environment variable
@@ -3916,3 +3915,5 @@ original configure state.  Even with the all-at-once mode, if one kills the
 with an invalid configuration of the project.  In these cases, one may need to
 configure from scratch to get back to the original state before calling ``make
 dashboard``.
+
+..  LocalWords:  templated instantiation Makefiles CMake

@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_DBUsage.h"                  // for DatabaseUsage
-#include "Ioss_IOFactory.h"                // for IOFactory
-#include <cstddef>                         // for nullptr
-#include <string>                          // for string
+#include "Ioss_DBUsage.h"   // for DatabaseUsage
+#include "Ioss_IOFactory.h" // for IOFactory
+#include <cstddef>          // for nullptr
+#include <string>           // for string
 #include <visualization/cgns/Iovs_cgns_DatabaseIO.h>
 #include <visualization/cgns/Iovs_cgns_IOFactory.h>
 namespace Ioss {
@@ -22,14 +22,13 @@ namespace Iovs_cgns {
     return &registerThis;
   }
 
-  IOFactory::IOFactory() : Ioss::IOFactory("catalyst_cgns") {
-  }
+  IOFactory::IOFactory() : Ioss::IOFactory("catalyst_cgns") {}
 
-  Ioss::DatabaseIO *IOFactory::make_IO(const std::string &filename,
-      Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-          const Ioss::PropertyManager &properties) const {
-      return new DatabaseIO(nullptr, filename, db_usage,
-          communicator, properties);
+  Ioss::DatabaseIO *IOFactory::make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
+                                       MPI_Comm                     communicator,
+                                       const Ioss::PropertyManager &properties) const
+  {
+    return new DatabaseIO(nullptr, filename, db_usage, communicator, properties);
   }
 
 } // namespace Iovs_cgns

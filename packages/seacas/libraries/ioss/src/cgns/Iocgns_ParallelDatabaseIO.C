@@ -3,7 +3,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -203,7 +203,8 @@ namespace Iocgns {
         }
         else {
           // Check whether appending to existing file...
-          if (open_create_behavior() == Ioss::DB_APPEND) {
+          if (open_create_behavior() == Ioss::DB_APPEND ||
+              open_create_behavior() == Ioss::DB_MODIFY) {
             // Append to file if it already exists -- See if the file exists.
             Ioss::FileInfo file = Ioss::FileInfo(decoded_filename());
             if (file.exists()) {
@@ -383,6 +384,10 @@ namespace Iocgns {
     }
 
     get_step_times__();
+
+    if (open_create_behavior() == Ioss::DB_APPEND) {
+      return;
+    }
 
     m_meshType = Utils::check_mesh_type(get_file_pointer());
 
@@ -977,17 +982,23 @@ namespace Iocgns {
     // Transitioning out of state 'state'
     switch (state) {
     case Ioss::STATE_DEFINE_MODEL:
-      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
+      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND &&
+          open_create_behavior() != Ioss::DB_MODIFY) {
         write_meta_data();
+      }
+      if (!is_input() && open_create_behavior() == Ioss::DB_APPEND) {
+        Utils::update_db_zone_property(m_cgnsFilePtr, get_region(), myProcessor, isParallel, true);
       }
       break;
     case Ioss::STATE_MODEL:
-      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
+      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND &&
+          open_create_behavior() != Ioss::DB_MODIFY) {
         write_adjacency_data();
       }
       break;
     case Ioss::STATE_DEFINE_TRANSIENT:
-      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
+      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND &&
+          open_create_behavior() != Ioss::DB_MODIFY) {
         write_results_meta_data();
       }
       break;

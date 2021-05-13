@@ -7,20 +7,21 @@
 #ifndef __CATALYST_CGNS_MESH_BASE_H
 #define __CATALYST_CGNS_MESH_BASE_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace Iovs_cgns {
 
-class CatalystCGNSMeshBase {
+  class CatalystCGNSMeshBase
+  {
 
-public:
-    CatalystCGNSMeshBase() {};
-    virtual ~CatalystCGNSMeshBase() {};
+  public:
+    CatalystCGNSMeshBase(){};
+    virtual ~CatalystCGNSMeshBase(){};
 
     // Description:
     // Calls the ParaView Catalyst pipeline to run co-processing for this time iteration.
-    virtual void PerformCoProcessing(std::vector<int> &error_and_warning_codes,
+    virtual void PerformCoProcessing(std::vector<int> &        error_and_warning_codes,
                                      std::vector<std::string> &error_and_warning_messages) = 0;
 
     // Description:
@@ -43,22 +44,13 @@ public:
 
     virtual void Delete() = 0;
 
-    virtual void CreateBase(int base_id,
-                            const std::string& base_name) = 0;
+    virtual void CreateBase(int base_id, const std::string &base_name) = 0;
 
-    virtual void AddStructuredZoneData(int base_id,
-                                       int zone_id,
-                                       const std::string& zone_name,
-                                       const std::string& data_name,
-                                       int ni,
-                                       int nj,
-                                       int nk,
-                                       int comp_count,
-                                       bool is_cell_field,
-                                       char field_suffix_separator,
-                                       double* data,
-                                       int size) = 0;
-};
+    virtual void AddStructuredZoneData(int base_id, int zone_id, const std::string &zone_name,
+                                       const std::string &data_name, int ni, int nj, int nk,
+                                       int comp_count, bool is_cell_field,
+                                       char field_suffix_separator, double *data, int size) = 0;
+  };
 
 } // namespace Iovs_cgns
 

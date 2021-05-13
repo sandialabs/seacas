@@ -25,9 +25,9 @@ namespace Iovs_exodus {
 
   private:
     IOFactory();
-    Ioss::DatabaseIO *make_IO(const std::string &filename,
-        Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-            const Ioss::PropertyManager &properties) const override;
+    Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
+                              MPI_Comm                     communicator,
+                              const Ioss::PropertyManager &properties) const override;
 
     /**
      * Call the sierra product registry and register all dependent third-party libraries

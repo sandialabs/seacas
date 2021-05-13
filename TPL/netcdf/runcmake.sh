@@ -90,9 +90,7 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          ${LOCAL_SZIP} \
          ${EXTRA_DEPS} \
          -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
-         -DHDF5_C_LIBRARY:PATH=${INSTALL_PATH}/lib/libhdf5.${LD_EXT} \
-         -DHDF5_HL_LIBRARY:PATH=${INSTALL_PATH}/lib/libhdf5_hl.${LD_EXT} \
-         -DHDF5_INCLUDE_DIR:PATH=${INSTALL_PATH}/include
+         -DHDF5_DIR:PATH=${INSTALL_PATH}/lib
 
 echo ""
 echo "         MPI: ${MPI}"

@@ -329,7 +329,8 @@ void Grid::set_sideset_names(const std::string &names)
     auto ss_name = token.substr(2);
 
     // Update the name in the list of generated sideset names...
-    auto index                     = axis_index(axis);
+    auto index = axis_index(axis);
+    SMART_ASSERT(index >= 0)(axis)(index);
     generated_surface_names[index] = ss_name;
   }
 }
@@ -434,7 +435,7 @@ void Grid::internal_process()
     }
   }
   if (util().parallel_rank() == 0) {
-    fmt::print("                {:n} Nodes; {:n} Elements.\n", node_count, element_count);
+    fmt::print("                {:L} Nodes; {:L} Elements.\n", node_count, element_count);
   }
 }
 
@@ -658,9 +659,9 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
         // the output file.
         size_t global_offset = output_region(rank)->get_element_block(block_name)->get_offset();
 
-        for (auto &face : bnd_faces) {
-          elements.push_back(face / 10 + element_offset + global_offset);
-          faces.push_back(face % 10 + 1);
+        for (auto &bface : bnd_faces) {
+          elements.push_back(bface / 10 + element_offset + global_offset);
+          faces.push_back(bface % 10 + 1);
         }
       }
 
@@ -1326,7 +1327,7 @@ namespace {
     int64_t nodes    = region->get_property("node_count").get_int();
     int64_t elements = region->get_property("element_count").get_int();
 
-    fmt::print(strm, " Database: {}\tNodes = {:n} \tElements = {:n}\n",
+    fmt::print(strm, " Database: {}\tNodes = {:L} \tElements = {:L}\n",
                region->get_database()->get_filename(), nodes, elements);
   }
 

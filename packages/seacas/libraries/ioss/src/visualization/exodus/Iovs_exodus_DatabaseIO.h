@@ -8,7 +8,6 @@
 #ifndef IOSS_Iovs_exodus_DatabaseIO_h
 #define IOSS_Iovs_exodus_DatabaseIO_h
 
-#include <visualization/utils/Iovs_Utils.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
@@ -28,15 +27,15 @@
 /** \brief A namespace for the visualization database format.
  */
 namespace Iovs_exodus {
+  class CatalystExodusMeshBase;
 
   typedef std::set<std::pair<int64_t, int64_t>> EntityIdSet;
 
   class DatabaseIO : public Ioss::DatabaseIO
   {
   public:
-    DatabaseIO(Ioss::Region *region, const std::string &filename,
-        Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-            const Ioss::PropertyManager &props);
+    DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
+               MPI_Comm communicator, const Ioss::PropertyManager &props);
 
     ~DatabaseIO() override;
 
@@ -51,7 +50,7 @@ namespace Iovs_exodus {
       return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::NODESET | Ioss::SIDESET | Ioss::SIDEBLOCK;
     }
 
-    //static int parseCatalystFile(const std::string &filepath, std::string &json_result);
+    // static int parseCatalystFile(const std::string &filepath, std::string &json_result);
 
     int int_byte_size_db() const override { return int_byte_size_api(); }
 
@@ -222,13 +221,13 @@ namespace Iovs_exodus {
     bool doLogging;      // True if logging field input/output
     bool createSideSets;
     bool createNodeSets;
-    int nodeBlockCount;
-    int elementBlockCount;
+    int  nodeBlockCount;
+    int  elementBlockCount;
 
     std::unique_ptr<CatalystExodusMeshBase> catExoMesh;
 
-    mutable bool globalNodeAndElementIDsCreated;
-    void create_global_node_and_element_ids() const;
+    mutable bool        globalNodeAndElementIDsCreated;
+    void                create_global_node_and_element_ids() const;
     mutable EntityIdSet ids_{};
   };
 } // namespace Iovs_exodus

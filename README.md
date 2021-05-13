@@ -4,6 +4,8 @@
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 [![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
 [![Appveyor Build](https://ci.appveyor.com/api/projects/status/pis4gok72yh0wwfs/branch/master?svg=true)](https://ci.appveyor.com/project/gsjaardema/seacas/branch/master)
+[![Github Actions -- CI Serial](https://github.com/gsjaardema/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/gsjaardema/seacas)
+[![Github Actions -- CI Variants](https://github.com/gsjaardema/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/gsjaardema/seacas)
 
 * [Get the sources](#get-the-sources)
 * [Build instructions](#build-instructions)
@@ -56,6 +58,7 @@ manually as detailed in
 | SHARED          | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
 | CRAY            | YES, NO | YES | Is this a Cray system (special parallel options) |
 | NEEDS_ZLIB      | YES, NO | NO  | If system does not have zlib installed, download and install it (HDF5 compression). |
+| USE\_ZLIB\_NG   | YES, NO | NO  | Should the improved [zlib-ng](https://github.com/zlib-ng/zlib-ng) library be used to provide ZLIB capability |
 | NEEDS_SZIP      | YES, NO | NO  | If system does not have szip installed, download and install it (HDF5 compression). |
 | USE\_64BIT\_INT | YES, NO | NO  | In CGNS, enable 64-bit integers |
 | CGNS            | YES, NO | YES | Should CGNS TPL be built.  |
