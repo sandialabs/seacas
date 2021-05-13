@@ -27,10 +27,6 @@ matrix:
     - compiler: clang
       env: SANITIZER="undefined" BUILD_TYPE=DEBUG CGNS=OFF FORTRAN=OFF
     - compiler: gcc
-      env: KOKKOS=ON
-    - compiler: gcc
-      env: KOKKOS=ON MPI=ON H5VERSION=V18
-    - compiler: gcc
       env: CGNS=OFF MPI=ON H5VERSION=V18
 
 before_install: 
