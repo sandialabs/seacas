@@ -7,8 +7,8 @@
 #ifndef __CATALYST_EXODUS_MESH_H
 #define __CATALYST_EXODUS_MESH_H
 
-#include "CatalystExodusMeshBase.h"
-#include "CatalystManager.h"
+#include <visualization/exodus/CatalystExodusMeshBase.h>
+#include <visualization/catalyst/manager/CatalystManager.h>
 #include <map>
 #include <vector>
 

@@ -7,8 +7,8 @@
 #ifndef __CATALYST_CGNS_MESH_H
 #define __CATALYST_CGNS_MESH_H
 
-#include "CatalystCGNSMeshBase.h"
-#include "CatalystManager.h"
+#include <visualization/cgns/CatalystCGNSMeshBase.h>
+#include <visualization/catalyst/manager/CatalystManager.h>
 #include <vector>
 #include <map>
 

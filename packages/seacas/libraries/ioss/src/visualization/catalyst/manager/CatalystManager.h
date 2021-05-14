@@ -7,7 +7,7 @@
 #ifndef __CATALYST_MANAGER_H
 #define __CATALYST_MANAGER_H
 
-#include "CatalystManagerBase.h"
+#include <visualization/utils/CatalystManagerBase.h>
 #include <map>
 #include <time.h>
 #include <vtkSmartPointer.h>
