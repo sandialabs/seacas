@@ -80,9 +80,9 @@ jobs:
 ###
       - name: Download Coverity Build Tool
         run: |
-          wget -q https://scan.coverity.com/download/cxx/linux64 --post-data "token=$TOKEN&project=ruby" -O cov-analysis-linux64.tar.gz
+          wget https://scan.coverity.com/download/linux64 --post-data "token=$TOKEN&project=gsjaardema%2Fseacas" -O coverity_tool.tgz
           mkdir cov-analysis-linux64
-          tar xzf cov-analysis-linux64.tar.gz --strip 1 -C cov-analysis-linux64
+          tar xzf coverity_tool.tgz --strip 1 -C cov-analysis-linux64
         env:
           TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
 
