@@ -1,6 +1,10 @@
 name: Build and run SEACAS tests
 
-on: [ push, pull_request ]
+on: 
+  push:
+    branches-ignore:
+      - 'coverity'
+  pull_request:
 
 jobs:
 
