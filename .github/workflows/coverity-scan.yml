@@ -104,6 +104,7 @@ jobs:
 
       - name: Submit the result to Coverity Scan
         run: |
+          tail cov-int/build-log.txt
           tar czvf seacas.tgz cov-int
           curl --data  project=seacas&token=$TOKEN&email=gsjaardema@gmail.com\
                        &url=seacas.tgz\
