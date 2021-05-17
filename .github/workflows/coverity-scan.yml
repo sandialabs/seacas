@@ -98,7 +98,7 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build 
-	  mkdir cov-int
+          mkdir cov-int
           ../cov-analysis-linux64/bin/cov-build --dir cov-int make -j 4
         if: ${{ success() }}
 
