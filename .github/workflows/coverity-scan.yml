@@ -80,7 +80,7 @@ jobs:
 ###
       - name: Download Coverity Build Tool
         run: |
-          wget https://scan.coverity.com/download/linux64 --post-data "token=$TOKEN&project=gsjaardema%2Fseacas" -O coverity_tool.tgz
+          wget -q https://scan.coverity.com/download/linux64 --post-data "token=$TOKEN&project=gsjaardema%2Fseacas" -O coverity_tool.tgz
           mkdir cov-analysis-linux64
           tar xzf coverity_tool.tgz --strip 1 -C cov-analysis-linux64
         env:
@@ -104,8 +104,11 @@ jobs:
 
       - name: Submit the result to Coverity Scan
         run: |
-          tail cov-int/build-log.txt
-          tar czvf seacas.tgz cov-int
+          pwd
+          ls -l
+          ls -l build
+          tail build/cov-int/build-log.txt
+          tar czvf seacas.tgz build/cov-int
           curl --data  project=seacas&token=$TOKEN&email=gsjaardema@gmail.com\
                        &url=seacas.tgz\
                        &version=master&description="Seacas Coverity Scan"\
