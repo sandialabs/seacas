@@ -92,7 +92,7 @@ jobs:
           echo $HOME
           mkdir build
           cd build
-          NUMPROCS=2 INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config coverity
+          ZOLTAN=NO INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config coverity
 
       - name: Build 
         shell: bash -l {0}
