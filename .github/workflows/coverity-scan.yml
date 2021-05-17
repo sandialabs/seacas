@@ -98,7 +98,8 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build 
-          cov-build --dir cov-int make -j 4
+	  mkdir cov-int
+          ../cov-analysis-linux64/bin/cov-build --dir cov-int make -j 4
         if: ${{ success() }}
 
       - name: Submit the result to Coverity Scan
