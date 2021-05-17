@@ -201,5 +201,5 @@ a separate license:
 | [pdqsort](https://github.com/orlp/pdqsort) | `packages/seacas/libraries/ioss/src` | [Zlib License](https://github.com/orlp/pdqsort/blob/master/license.txt) |
 ## Contact information
 
- Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
+ Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>).
 
