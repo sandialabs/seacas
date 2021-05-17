@@ -104,15 +104,16 @@ jobs:
 
       - name: Submit the result to Coverity Scan
         run: |
-          pwd
-          ls -l
-          ls -l build
-          tail build/cov-int/build-log.txt
-          tar czvf seacas.tgz build/cov-int
-          curl --data  project=seacas&token=$TOKEN&email=gsjaardema@gmail.com\
-                       &url=seacas.tgz\
-                       &version=master&description="Seacas Coverity Scan"\
-                       https://scan.coverity.com/builds
+          cd build
+          tail cov-int/build-log.txt
+          tar czf seacas.tgz cov-int
+          curl \
+             --form token="$TOKEN" \
+             --form email=gsjaardema@gmail.com \
+             --form file=@seacas.tgz \
+             --form version="master" \
+             --form description="SEACAS Github Actions Coverity Scan" \
+               https://scan.coverity.com/builds?project=gsjaardema%2Fseacas
         env:
           TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
         if: ${{ success() }}
