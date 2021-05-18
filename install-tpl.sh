@@ -310,7 +310,7 @@ then
 	if [ "$USE_ZLIB_NG" == "YES" ]
 	then
 	    echo "${txtgrn}+++ ZLIB-NG${txtrst}"
-            zlib_ng_version="2.0.2"
+            zlib_ng_version="develop"
 
 	    cd $ACCESS
 	    cd TPL
