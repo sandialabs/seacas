@@ -96,37 +96,43 @@ namespace {
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
 
   template <typename T>
-  size_t calculate_maximum_field_size(const std::vector<T> &entities, size_t max_field_size)
+  std::pair<size_t, std::string>
+  calculate_maximum_field_size(const std::vector<T> &          entities,
+                               std::pair<size_t, std::string> &max_field)
   {
-    size_t max_size = max_field_size;
+    size_t      max_size = max_field.first;
+    std::string max_name = max_field.second;
     for (const auto &entity : entities) {
       Ioss::NameList fields;
       entity->field_describe(&fields);
       for (const auto &field_name : fields) {
         Ioss::Field field = entity->get_field(field_name);
-        max_size          = std::max(field.get_size(), max_size);
+        if (field.get_size() > max_size) {
+          max_size = field.get_size();
+          max_name = field_name;
+        }
       }
     }
-    return max_size;
+    return std::make_pair(max_size, max_name);
   }
 
-  size_t calculate_maximum_field_size(const Ioss::Region &region)
+  std::pair<size_t, std::string> calculate_maximum_field_size(const Ioss::Region &region)
   {
-    size_t max_field_size = 0;
-    max_field_size        = calculate_maximum_field_size(region.get_node_blocks(), max_field_size);
-    max_field_size        = calculate_maximum_field_size(region.get_edge_blocks(), max_field_size);
-    max_field_size        = calculate_maximum_field_size(region.get_face_blocks(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_element_blocks(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_sidesets(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_nodesets(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_edgesets(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_facesets(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_elementsets(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_commsets(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_structured_blocks(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_assemblies(), max_field_size);
-    max_field_size = calculate_maximum_field_size(region.get_blobs(), max_field_size);
-    return max_field_size;
+    std::pair<size_t, std::string> max_field{};
+    max_field = calculate_maximum_field_size(region.get_node_blocks(), max_field);
+    max_field = calculate_maximum_field_size(region.get_edge_blocks(), max_field);
+    max_field = calculate_maximum_field_size(region.get_face_blocks(), max_field);
+    max_field = calculate_maximum_field_size(region.get_element_blocks(), max_field);
+    max_field = calculate_maximum_field_size(region.get_sidesets(), max_field);
+    max_field = calculate_maximum_field_size(region.get_nodesets(), max_field);
+    max_field = calculate_maximum_field_size(region.get_edgesets(), max_field);
+    max_field = calculate_maximum_field_size(region.get_facesets(), max_field);
+    max_field = calculate_maximum_field_size(region.get_elementsets(), max_field);
+    max_field = calculate_maximum_field_size(region.get_commsets(), max_field);
+    max_field = calculate_maximum_field_size(region.get_structured_blocks(), max_field);
+    max_field = calculate_maximum_field_size(region.get_assemblies(), max_field);
+    max_field = calculate_maximum_field_size(region.get_blobs(), max_field);
+    return max_field;
   }
 
   template <typename INT>
@@ -225,13 +231,14 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   int               rank = dbi->util().parallel_rank();
 
   // Minimize number of times that we grow the memory buffer used for transferring field data.
-  size_t max_field_size = calculate_maximum_field_size(region);
+  auto max_field = calculate_maximum_field_size(region);
   if (options.verbose && rank == 0) {
-    fmt::print(Ioss::DEBUG(), "\n Maximum Field size = {:L} bytes.\n", max_field_size);
+    fmt::print(Ioss::DEBUG(), "\n Maximum Field size = {:L} bytes for field '{}'.\n",
+               max_field.first, max_field.second);
   }
 
   DataPool data_pool;
-  data_pool.data.resize(max_field_size);
+  data_pool.data.resize(max_field.first);
   if (options.verbose && rank == 0) {
     fmt::print(Ioss::DEBUG(), " Resize finished...\n");
   }
