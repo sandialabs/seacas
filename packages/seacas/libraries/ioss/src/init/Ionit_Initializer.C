@@ -19,6 +19,10 @@
 #include <adios/Ioad_Initializer.h>
 #endif
 
+#if defined(SEACAS_HAVE_CATALYST2)
+#include <catalyst/Iocatalyst_Initializer.h>
+#endif
+
 #if defined(SEACAS_HAVE_PAMGEN)
 #include <pamgen/Iopg_DatabaseIO.h>
 #endif
@@ -86,6 +90,9 @@ namespace Ioss {
       Iotr::Initializer();
 #ifdef HAVE_SEACASIOSS_ADIOS2
       Ioad::Initializer(); // ADIOS2
+#endif
+#if defined(SEACAS_HAVE_CATALYST2)
+      Iocatalyst::Initializer(); // Catalyst 2
 #endif
     }
 
