@@ -72,5 +72,5 @@ SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
   Faodel          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
   Cereal          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
   ADIOS2          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/FindTPLADIOS2.cmake"    EX
+  Catalyst2       "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/FindTPLCatalyst2.cmake" EX
   )
-
