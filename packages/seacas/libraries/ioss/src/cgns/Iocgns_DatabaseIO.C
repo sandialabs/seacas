@@ -30,7 +30,9 @@
 #include <iostream>
 #include <numeric>
 #include <string>
+#ifndef _WIN32
 #include <sys/select.h>
+#endif
 #include <tokenize.h>
 #include <vector>
 
