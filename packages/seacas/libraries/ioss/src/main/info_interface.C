@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -10,6 +10,8 @@
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "fmt/ostream.h"
 #include "info_interface.h"
+#include "tokenize.h"
+
 #include <cstddef>  // for nullptr
 #include <cstdlib>  // for exit, EXIT_SUCCESS, getenv
 #include <iostream> // for operator<<, basic_ostream, etc
@@ -20,6 +22,22 @@ namespace {
   {
     Ioss::FileInfo file(filename);
     auto           extension = file.extension();
+
+    // If the extension is numeric, then we are probably dealing with a single file of a 
+    // set of FPP decomposed files (e.g. file.cgns.32.17).  In that case, we tokenize 
+    // with "." as delimiter and see if last two tokens are all digits and if there
+    // are at least 4 tokens (basename.extension.#proc.proc)...
+    bool all_dig = extension.find_first_not_of("0123456789") == std::string::npos;
+    if (all_dig) {
+      auto tokens = Ioss::tokenize(filename, ".");
+      if (tokens.size() >= 4) {
+	auto proc_count = tokens[tokens.size() - 2];
+	if (proc_count.find_first_not_of("0123456789") == std::string::npos) {
+	  extension = tokens[tokens.size() - 3];
+	}
+      }
+    }
+
     if (extension == "e" || extension == "g" || extension == "gen" || extension == "exo") {
       return "exodus";
     }
@@ -27,6 +45,7 @@ namespace {
       return "cgns";
     }
     else {
+
       // "exodus" is default...
       return "exodus";
     }

@@ -27,6 +27,22 @@ namespace {
   {
     Ioss::FileInfo file(filename);
     auto           extension = file.extension();
+
+    // If the extension is numeric, then we are probably dealing with a single file of a 
+    // set of FPP decomposed files (e.g. file.cgns.32.17).  In that case, we tokenize 
+    // with "." as delimiter and see if last two tokens are all digits and if there
+    // are at least 4 tokens (basename.extension.#proc.proc)...
+    bool all_dig = extension.find_first_not_of("0123456789") == std::string::npos;
+    if (all_dig) {
+      auto tokens = Ioss::tokenize(filename, ".");
+      if (tokens.size() >= 4) {
+	auto proc_count = tokens[tokens.size() - 2];
+	if (proc_count.find_first_not_of("0123456789") == std::string::npos) {
+	  extension = tokens[tokens.size() - 3];
+	}
+      }
+    }
+
     if (extension == "e" || extension == "g" || extension == "gen" || extension == "exo") {
       return "exodus";
     }
@@ -34,6 +50,7 @@ namespace {
       return "cgns";
     }
     else {
+
       // "exodus" is default...
       return "exodus";
     }
