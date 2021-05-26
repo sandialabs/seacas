@@ -116,6 +116,9 @@ namespace Ioss {
       }
     }
 
+    /** \brief guess file type from extension */
+    static std::string get_type_from_file(const std::string &filename);
+
     template <typename T> static void uniquify(std::vector<T> &vec, bool skip_first = false)
     {
       auto it = vec.begin();
