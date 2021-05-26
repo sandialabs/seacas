@@ -1238,7 +1238,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     std::set<std::string> zgc_names;
 
     for (const auto &zgc : sb->m_zoneConnectivity) {
-      if (zgc.is_valid() && zgc.is_active()) {
+      if (zgc.is_valid() && (zgc.is_active() || (!is_parallel && zgc.m_donorProcessor != zgc.m_ownerProcessor))) {
         int                     zgc_idx = 0;
         std::array<cgsize_t, 6> owner_range{{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
                                              zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0],
