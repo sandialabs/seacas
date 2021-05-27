@@ -1313,9 +1313,9 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
 {
   Ioss::FileInfo file(filename);
   auto           extension = file.extension();
-  
-  // If the extension is numeric, then we are probably dealing with a single file of a 
-  // set of FPP decomposed files (e.g. file.cgns.32.17).  In that case, we tokenize 
+
+  // If the extension is numeric, then we are probably dealing with a single file of a
+  // set of FPP decomposed files (e.g. file.cgns.32.17).  In that case, we tokenize
   // with "." as delimiter and see if last two tokens are all digits and if there
   // are at least 4 tokens (basename.extension.#proc.proc)...
   bool all_dig = extension.find_first_not_of("0123456789") == std::string::npos;
@@ -1324,7 +1324,7 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
     if (tokens.size() >= 4) {
       auto proc_count = tokens[tokens.size() - 2];
       if (proc_count.find_first_not_of("0123456789") == std::string::npos) {
-	extension = tokens[tokens.size() - 3];
+        extension = tokens[tokens.size() - 3];
       }
     }
   }
@@ -1336,7 +1336,6 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
     return "cgns";
   }
   else {
-    
     // "exodus" is default...
     return "exodus";
   }
