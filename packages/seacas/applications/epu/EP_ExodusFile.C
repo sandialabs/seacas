@@ -116,8 +116,7 @@ void Excn::ExodusFile::close_all()
     int   io_word_size_var = ioWordSize_;
     int   mode             = EX_READ;
     mode |= mode64bit_;
-    auto test  = outputFilename_ + "invalid";
-    int  exoid = ex_open(test.c_str(), mode, &cpu_word_size, &io_word_size_var, &version);
+    int exoid = ex_open(outputFilename_.c_str(), mode, &cpu_word_size, &io_word_size_var, &version);
     if (exoid < 0) {
       ex_get_err(nullptr, nullptr, &exoid);
       fmt::print(stderr, fmt::fg(fmt::color::red),
