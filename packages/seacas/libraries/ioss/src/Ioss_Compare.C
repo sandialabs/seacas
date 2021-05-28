@@ -15,7 +15,7 @@
 /* These messages indicate a structural difference between the files
  * being compared.  Use Ioss::WARNING().
  */
-#define COUNT_MISMATCH  "{} count mismatch ({} vs. {})"
+#define COUNT_MISMATCH "{} count mismatch ({} vs. {})"
 #define NOTFOUND_1 "{} ({}) not found in input #1"
 #define NOTFOUND_2 "{} ({}) not found in input #2"
 

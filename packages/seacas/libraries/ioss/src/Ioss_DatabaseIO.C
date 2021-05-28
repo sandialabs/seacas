@@ -227,7 +227,8 @@ namespace Ioss {
       }
     }
 
-    Utils::check_set_bool_property(properties, "LOWER_CASE_VARIABLE_NAMES"s, lowerCaseVariableNames);
+    Utils::check_set_bool_property(properties, "LOWER_CASE_VARIABLE_NAMES"s,
+                                   lowerCaseVariableNames);
     Utils::check_set_bool_property(properties, "USE_GENERIC_CANONICAL_NAMES"s,
                                    useGenericCanonicalName);
     Utils::check_set_bool_property(properties, "IGNORE_DATABASE_NAMES"s, ignoreDatabaseNames);
@@ -875,7 +876,7 @@ namespace Ioss {
       // Get contributions from other processors...
       // Get the communication map...
       Ioss::CommSet *css = get_region()->get_commset("commset_node"s);
-      Ioss::Utils::check_non_null(css, "communication map"s, "commset_node"s, __func__);
+      Ioss::Utils::check_non_null(css, "communication map", "commset_node"s, __func__);
       std::vector<std::pair<int, int>> proc_node;
       {
         std::vector<int> entity_processor;

@@ -498,10 +498,11 @@ namespace Ioss {
         {get_property("spatial_dimension"s).get_int(), get_property("node_block_count"s).get_int(),
          get_property("edge_block_count"s).get_int(), get_property("face_block_count"s).get_int(),
          get_property("element_block_count"s).get_int(),
-         get_property("structured_block_count"s).get_int(), get_property("node_set_count"s).get_int(),
-         get_property("edge_set_count"s).get_int(), get_property("face_set_count"s).get_int(),
-         get_property("element_set_count"s).get_int(), get_property("side_set_count"s).get_int(),
-         get_property("assembly_count"s).get_int(), get_property("blob_count"s).get_int(), num_ts});
+         get_property("structured_block_count"s).get_int(),
+         get_property("node_set_count"s).get_int(), get_property("edge_set_count"s).get_int(),
+         get_property("face_set_count"s).get_int(), get_property("element_set_count"s).get_int(),
+         get_property("side_set_count"s).get_int(), get_property("assembly_count"s).get_int(),
+         get_property("blob_count"s).get_int(), num_ts});
 
     // Global variables transitioning from TRANSIENT to REDUCTION..
     size_t num_glo_vars  = field_count(Ioss::Field::TRANSIENT);
