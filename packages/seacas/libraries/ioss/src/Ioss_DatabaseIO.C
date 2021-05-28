@@ -48,6 +48,8 @@ extern "C" {
 }
 #endif
 
+using namespace std::string_literals;
+
 namespace {
   auto initial_time = std::chrono::steady_clock::now();
 
@@ -186,53 +188,53 @@ namespace Ioss {
     // the contents and add to the 'properties' map.
     util_.add_environment_properties(properties);
 
-    Utils::check_set_bool_property(properties, "ENABLE_FIELD_RECOGNITION", enableFieldRecognition);
+    Utils::check_set_bool_property(properties, "ENABLE_FIELD_RECOGNITION"s, enableFieldRecognition);
 
-    if (properties.exists("FIELD_SUFFIX_SEPARATOR")) {
-      std::string tmp = properties.get("FIELD_SUFFIX_SEPARATOR").get_string();
+    if (properties.exists("FIELD_SUFFIX_SEPARATOR"s)) {
+      std::string tmp = properties.get("FIELD_SUFFIX_SEPARATOR"s).get_string();
       fieldSeparator  = tmp[0];
     }
 
-    if (properties.exists("INTEGER_SIZE_API")) {
-      int isize = properties.get("INTEGER_SIZE_API").get_int();
+    if (properties.exists("INTEGER_SIZE_API"s)) {
+      int isize = properties.get("INTEGER_SIZE_API"s).get_int();
       if (isize == 8) {
         set_int_byte_size_api(Ioss::USE_INT64_API);
       }
     }
 
-    if (properties.exists("SERIALIZE_IO")) {
-      int isize = properties.get("SERIALIZE_IO").get_int();
+    if (properties.exists("SERIALIZE_IO"s)) {
+      int isize = properties.get("SERIALIZE_IO"s).get_int();
       Ioss::SerializeIO::setGroupFactor(isize);
       if (isize > 0) {
         singleProcOnly = true;
       }
     }
 
-    if (properties.exists("CYCLE_COUNT")) {
-      cycleCount = properties.get("CYCLE_COUNT").get_int();
+    if (properties.exists("CYCLE_COUNT"s)) {
+      cycleCount = properties.get("CYCLE_COUNT"s).get_int();
     }
 
-    if (properties.exists("OVERLAY_COUNT")) {
-      overlayCount = properties.get("OVERLAY_COUNT").get_int();
+    if (properties.exists("OVERLAY_COUNT"s)) {
+      overlayCount = properties.get("OVERLAY_COUNT"s).get_int();
     }
 
-    Utils::check_set_bool_property(properties, "ENABLE_TRACING", m_enableTracing);
-    Utils::check_set_bool_property(properties, "TIME_STATE_INPUT_OUTPUT", m_timeStateInOut);
+    Utils::check_set_bool_property(properties, "ENABLE_TRACING"s, m_enableTracing);
+    Utils::check_set_bool_property(properties, "TIME_STATE_INPUT_OUTPUT"s, m_timeStateInOut);
     {
       bool logging;
-      if (Utils::check_set_bool_property(properties, "LOGGING", logging)) {
+      if (Utils::check_set_bool_property(properties, "LOGGING"s, logging)) {
         set_logging(logging);
       }
     }
 
-    Utils::check_set_bool_property(properties, "LOWER_CASE_VARIABLE_NAMES", lowerCaseVariableNames);
-    Utils::check_set_bool_property(properties, "USE_GENERIC_CANONICAL_NAMES",
+    Utils::check_set_bool_property(properties, "LOWER_CASE_VARIABLE_NAMES"s, lowerCaseVariableNames);
+    Utils::check_set_bool_property(properties, "USE_GENERIC_CANONICAL_NAMES"s,
                                    useGenericCanonicalName);
-    Utils::check_set_bool_property(properties, "IGNORE_DATABASE_NAMES", ignoreDatabaseNames);
+    Utils::check_set_bool_property(properties, "IGNORE_DATABASE_NAMES"s, ignoreDatabaseNames);
 
     {
       bool consistent;
-      if (Utils::check_set_bool_property(properties, "PARALLEL_CONSISTENCY", consistent)) {
+      if (Utils::check_set_bool_property(properties, "PARALLEL_CONSISTENCY"s, consistent)) {
         set_parallel_consistency(consistent);
       }
     }
@@ -277,11 +279,11 @@ namespace Ioss {
    */
   void DatabaseIO::set_field_separator(const char separator)
   {
-    if (properties.exists("FIELD_SUFFIX_SEPARATOR")) {
-      properties.erase("FIELD_SUFFIX_SEPARATOR");
+    if (properties.exists("FIELD_SUFFIX_SEPARATOR"s)) {
+      properties.erase("FIELD_SUFFIX_SEPARATOR"s);
     }
     char tmp[2] = {separator, '\0'};
-    properties.add(Property("FIELD_SUFFIX_SEPARATOR", tmp));
+    properties.add(Property("FIELD_SUFFIX_SEPARATOR"s, tmp));
     fieldSeparator = separator;
   }
 
@@ -297,15 +299,15 @@ namespace Ioss {
   {
     if (!is_input()) {
       bool set_dw = false;
-      Utils::check_set_bool_property(properties, "ENABLE_DATAWARP", set_dw);
+      Utils::check_set_bool_property(properties, "ENABLE_DATAWARP"s, set_dw);
       if (set_dw) {
         std::string bb_path;
         // Selected via `#DW jobdw type=scratch access_mode=striped`
-        util().get_environment("DW_JOB_STRIPED", bb_path, isParallel);
+        util().get_environment("DW_JOB_STRIPED"s, bb_path, isParallel);
 
         if (bb_path.empty()) { // See if using `private` mode...
           // Selected via `#DW jobdw type=scratch access_mode=private`
-          util().get_environment("DW_JOB_PRIVATE", bb_path, isParallel);
+          util().get_environment("DW_JOB_PRIVATE"s, bb_path, isParallel);
         }
         if (!bb_path.empty()) {
           usingDataWarp = true;
@@ -435,8 +437,8 @@ namespace Ioss {
   IfDatabaseExistsBehavior DatabaseIO::open_create_behavior() const
   {
     IfDatabaseExistsBehavior exists = DB_OVERWRITE;
-    if (properties.exists("APPEND_OUTPUT")) {
-      exists = static_cast<IfDatabaseExistsBehavior>(properties.get("APPEND_OUTPUT").get_int());
+    if (properties.exists("APPEND_OUTPUT"s)) {
+      exists = static_cast<IfDatabaseExistsBehavior>(properties.get("APPEND_OUTPUT"s).get_int());
     }
     return exists;
   }
@@ -447,9 +449,9 @@ namespace Ioss {
       if (isParallel) {
         decodedFilename = util().decode_filename(get_filename(), isParallel && !usingParallelIO);
       }
-      else if (properties.exists("processor_count") && properties.exists("my_processor")) {
-        int proc_count  = properties.get("processor_count").get_int();
-        int my_proc     = properties.get("my_processor").get_int();
+      else if (properties.exists("processor_count"s) && properties.exists("my_processor"s)) {
+        int proc_count  = properties.get("processor_count"s).get_int();
+        int my_proc     = properties.get("my_processor"s).get_int();
         decodedFilename = Ioss::Utils::decode_filename(get_filename(), my_proc, proc_count);
       }
       else {
@@ -517,11 +519,11 @@ namespace Ioss {
     // union
     // with duplicates
     //
-    create_groups("GROUP_SIDESET", SIDESET, "side", (SideSet *)nullptr);
-    create_groups("GROUP_NODESET", NODESET, "node", (NodeSet *)nullptr);
-    create_groups("GROUP_EDGESET", EDGESET, "edge", (EdgeSet *)nullptr);
-    create_groups("GROUP_FACESET", FACESET, "face", (FaceSet *)nullptr);
-    create_groups("GROUP_ELEMSET", ELEMENTSET, "elem", (ElementSet *)nullptr);
+    create_groups("GROUP_SIDESET"s, SIDESET, "side"s, (SideSet *)nullptr);
+    create_groups("GROUP_NODESET"s, NODESET, "node"s, (NodeSet *)nullptr);
+    create_groups("GROUP_EDGESET"s, EDGESET, "edge"s, (EdgeSet *)nullptr);
+    create_groups("GROUP_FACESET"s, FACESET, "face"s, (FaceSet *)nullptr);
+    create_groups("GROUP_ELEMSET"s, ELEMENTSET, "elem"s, (ElementSet *)nullptr);
   }
 
   template <typename T>
@@ -591,22 +593,22 @@ namespace Ioss {
           size_t  side_count = sbold->entity_count();
           auto    sbnew      = new SideBlock(this, sbold->name(), sbold->topology()->name(),
                                      sbold->parent_element_topology()->name(), side_count);
-          int64_t id         = sbold->get_property("id").get_int();
-          sbnew->property_add(Property("set_offset", entity_count));
-          sbnew->property_add(Property("set_df_offset", df_count));
-          sbnew->property_add(Property("id", id));
-          sbnew->property_add(Property("id", id));
-          sbnew->property_add(Property("guid", util().generate_guid(id)));
+          int64_t id         = sbold->get_property("id"s).get_int();
+          sbnew->property_add(Property("set_offset"s, entity_count));
+          sbnew->property_add(Property("set_df_offset"s, df_count));
+          sbnew->property_add(Property("id"s, id));
+          sbnew->property_add(Property("id"s, id));
+          sbnew->property_add(Property("guid"s, util().generate_guid(id)));
 
           new_set->add(sbnew);
 
-          size_t old_df_count = sbold->get_property("distribution_factor_count").get_int();
+          size_t old_df_count = sbold->get_property("distribution_factor_count"s).get_int();
           if (old_df_count > 0) {
-            std::string storage = "Real[";
+            std::string storage = "Real["s;
             storage += std::to_string(sbnew->topology()->number_nodes());
-            storage += "]";
+            storage += "]"s;
             sbnew->field_add(
-                Field("distribution_factors", Field::REAL, storage, Field::MESH, side_count));
+                Field("distribution_factors"s, Field::REAL, storage, Field::MESH, side_count));
           }
           entity_count += side_count;
           df_count += old_df_count;
@@ -746,7 +748,7 @@ namespace Ioss {
       if (all_sphere) {
         // If we end up here, the model either contains all spheres,
         // or there are no element blocks in the model...
-        const ElementTopology *ftopo = ElementTopology::factory("unknown");
+        const ElementTopology *ftopo = ElementTopology::factory("unknown"s);
         if (element_blocks.empty()) {
           side_topo.insert(std::make_pair(ftopo, ftopo));
         }
@@ -777,8 +779,8 @@ namespace Ioss {
     // Extract the computed block adjacency information for this
     // element block:
     int blk_position = 0;
-    if (eb->property_exists("original_block_order")) {
-      blk_position = eb->get_property("original_block_order").get_int();
+    if (eb->property_exists("original_block_order"s)) {
+      blk_position = eb->get_property("original_block_order"s).get_int();
     }
     else {
       for (const auto &leb : element_blocks) {
@@ -791,8 +793,8 @@ namespace Ioss {
 
     int lblk_position = -1;
     for (const auto &leb : element_blocks) {
-      if (leb->property_exists("original_block_order")) {
-        lblk_position = leb->get_property("original_block_order").get_int();
+      if (leb->property_exists("original_block_order"s)) {
+        lblk_position = leb->get_property("original_block_order"s).get_int();
       }
       else {
         lblk_position++;
@@ -834,8 +836,8 @@ namespace Ioss {
       Ioss::SerializeIO serializeIO__(this);
       int               blk_position = -1;
       for (Ioss::ElementBlock *eb : element_blocks) {
-        if (eb->property_exists("original_block_order")) {
-          blk_position = eb->get_property("original_block_order").get_int();
+        if (eb->property_exists("original_block_order"s)) {
+          blk_position = eb->get_property("original_block_order"s).get_int();
         }
         else {
           blk_position++;
@@ -843,7 +845,7 @@ namespace Ioss {
         int64_t my_element_count = eb->entity_count();
         if (int_byte_size_api() == 8) {
           std::vector<int64_t> conn;
-          eb->get_field_data("connectivity_raw", conn);
+          eb->get_field_data("connectivity_raw"s, conn);
           for (auto node : conn) {
             assert(node > 0 && node - 1 < nodeCount);
             node_used[node - 1] = blk_position + 1;
@@ -851,7 +853,7 @@ namespace Ioss {
         }
         else {
           std::vector<int> conn;
-          eb->get_field_data("connectivity_raw", conn);
+          eb->get_field_data("connectivity_raw"s, conn);
           for (auto node : conn) {
             assert(node > 0 && node - 1 < nodeCount);
             node_used[node - 1] = blk_position + 1;
@@ -872,12 +874,12 @@ namespace Ioss {
     if (isParallel) {
       // Get contributions from other processors...
       // Get the communication map...
-      Ioss::CommSet *css = get_region()->get_commset("commset_node");
-      Ioss::Utils::check_non_null(css, "communication map", "commset_node", __func__);
+      Ioss::CommSet *css = get_region()->get_commset("commset_node"s);
+      Ioss::Utils::check_non_null(css, "communication map"s, "commset_node"s, __func__);
       std::vector<std::pair<int, int>> proc_node;
       {
         std::vector<int> entity_processor;
-        css->get_field_data("entity_processor", entity_processor);
+        css->get_field_data("entity_processor"s, entity_processor);
         proc_node.reserve(entity_processor.size() / 2);
         for (size_t i = 0; i < entity_processor.size(); i += 2) {
           proc_node.emplace_back(entity_processor[i + 1], entity_processor[i]);
@@ -1078,9 +1080,9 @@ namespace Ioss {
       // Calculate the bounding boxes for all element blocks...
       std::vector<double> coordinates;
       Ioss::NodeBlock *   nb = get_region()->get_node_blocks()[0];
-      nb->get_field_data("mesh_model_coordinates", coordinates);
+      nb->get_field_data("mesh_model_coordinates"s, coordinates);
       ssize_t nnode = nb->entity_count();
-      ssize_t ndim  = nb->get_property("component_degree").get_int();
+      ssize_t ndim  = nb->get_property("component_degree"s).get_int();
 
       const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
       size_t                             nblock         = element_blocks.size();
@@ -1091,13 +1093,13 @@ namespace Ioss {
         double xmin, ymin, zmin, xmax, ymax, zmax;
         if (block->get_database()->int_byte_size_api() == 8) {
           std::vector<int64_t> connectivity;
-          block->get_field_data("connectivity_raw", connectivity);
+          block->get_field_data("connectivity_raw"s, connectivity);
           calc_bounding_box(ndim, nnode, coordinates, connectivity, xmin, ymin, zmin, xmax, ymax,
                             zmax);
         }
         else {
           std::vector<int> connectivity;
-          block->get_field_data("connectivity_raw", connectivity);
+          block->get_field_data("connectivity_raw"s, connectivity);
           calc_bounding_box(ndim, nnode, coordinates, connectivity, xmin, ymin, zmin, xmax, ymax,
                             zmax);
         }
@@ -1126,9 +1128,9 @@ namespace Ioss {
   AxisAlignedBoundingBox DatabaseIO::get_bounding_box(const Ioss::NodeBlock *nb) const
   {
     std::vector<double> coordinates;
-    nb->get_field_data("mesh_model_coordinates", coordinates);
+    nb->get_field_data("mesh_model_coordinates"s, coordinates);
     ssize_t nnode = nb->entity_count();
-    ssize_t ndim  = nb->get_property("component_degree").get_int();
+    ssize_t ndim  = nb->get_property("component_degree"s).get_int();
 
     double xmin, ymin, zmin, xmax, ymax, zmax;
     calc_bounding_box(ndim, nnode, coordinates, xmin, ymin, zmin, xmax, ymax, zmax);
@@ -1151,25 +1153,25 @@ namespace Ioss {
 
   AxisAlignedBoundingBox DatabaseIO::get_bounding_box(const Ioss::StructuredBlock *sb) const
   {
-    ssize_t ndim = sb->get_property("component_degree").get_int();
+    ssize_t ndim = sb->get_property("component_degree"s).get_int();
 
     std::pair<double, double> xx;
     std::pair<double, double> yy;
     std::pair<double, double> zz;
 
     std::vector<double> coordinates;
-    sb->get_field_data("mesh_model_coordinates_x", coordinates);
+    sb->get_field_data("mesh_model_coordinates_x"s, coordinates);
     auto x = std::minmax_element(coordinates.cbegin(), coordinates.cend());
     xx     = std::make_pair(*(x.first), *(x.second));
 
     if (ndim > 1) {
-      sb->get_field_data("mesh_model_coordinates_y", coordinates);
+      sb->get_field_data("mesh_model_coordinates_y"s, coordinates);
       auto y = std::minmax_element(coordinates.cbegin(), coordinates.cend());
       yy     = std::make_pair(*(y.first), *(y.second));
     }
 
     if (ndim > 2) {
-      sb->get_field_data("mesh_model_coordinates_z", coordinates);
+      sb->get_field_data("mesh_model_coordinates_z"s, coordinates);
       auto z = std::minmax_element(coordinates.cbegin(), coordinates.cend());
       zz     = std::make_pair(*(z.first), *(z.second));
     }
