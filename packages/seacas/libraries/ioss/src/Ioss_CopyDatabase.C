@@ -779,10 +779,10 @@ namespace {
 #ifndef _MSC_VER
       struct timespec delay;
       delay.tv_sec  = (int)options.delay;
-      delay.tv_nsec = (options.delay - delay.tv_sec) * 1000000000L;
+      delay.tv_nsec = (options.delay - delay.tv_sec) * 1'000'000'000L;
       nanosleep(&delay, nullptr);
 #else
-      Sleep((int)(options.delay * 1000));
+      Sleep((int)(options.delay * 1'000));
 #endif
     }
   }
