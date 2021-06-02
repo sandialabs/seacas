@@ -511,11 +511,17 @@ then
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
+    net_version="v4.8.0"
+#   net_version="master"
+
     if [ "$BUILD" == "YES" ]
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
-	git checkout v4.8.0
+	if [ "$net_version" != "master" ]
+	   then
+	       git checkout $net_version
+	fi
         rm -rf build
         mkdir build
         cd build
