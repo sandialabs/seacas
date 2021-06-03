@@ -162,7 +162,8 @@ IF ( NETCDF_NCDUMP_BINARY )
    NOEXEPREFIX
    NOEXESUFFIX
    NAME exodus_unit_tests
-   RUN_SERIAL
+   COMM mpi serial
+   NUM_MPI_PROCS 1
   )
 
   if ( TPL_Netcdf_Enables_Netcdf4 )
@@ -172,7 +173,8 @@ IF ( NETCDF_NCDUMP_BINARY )
      NOEXESUFFIX
      NAME exodus_unit_tests_nc4_env
      ARGS netcdf4
-     RUN_SERIAL
+     COMM mpi serial
+     NUM_MPI_PROCS 1
     )
 
     TRIBITS_ADD_TEST(
@@ -180,7 +182,8 @@ IF ( NETCDF_NCDUMP_BINARY )
      NOEXEPREFIX
      NOEXESUFFIX
      NAME exodus_nc4_unit_tests
-     RUN_SERIAL
+     COMM mpi serial
+     NUM_MPI_PROCS 1
     )
   endif()
 
@@ -191,7 +194,8 @@ IF ( NETCDF_NCDUMP_BINARY )
       NOEXESUFFIX
       NAME exodus_unit_tests_nc5_env
       ARGS netcdf5
-      RUN_SERIAL
+      COMM mpi serial
+      NUM_MPI_PROCS 1
     )
 #  endif()
    endif()
