@@ -2784,7 +2784,7 @@ namespace {
   std::string time_stamp(const std::string &format)
   {
     if (format == "") {
-      return std::string("");
+      return ""s;
     }
 
     time_t      calendar_time = std::time(nullptr);
