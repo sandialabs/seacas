@@ -645,8 +645,7 @@ namespace {
     Ioss::DatabaseIO *dbi = region.get_database();
     dbi->progress("DEFINING TRANSIENT FIELDS ... "s);
 
-    if (region.property_exists("state_count"s) &&
-        region.get_property("state_count"s).get_int() > 0) {
+    if (region.property_exists("state_count"s) && region.get_property("state_count"s).get_int() > 0) {
       if (options.verbose && rank == 0) {
         fmt::print(Ioss::DEBUG(), "\n Number of time steps on database = {}\n",
                    region.get_property("state_count"s).get_int());
@@ -1010,8 +1009,8 @@ namespace {
     }
 
     if (options.verbose && rank == 0 && !fss.empty()) {
-      fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14L}\n",
-                 (*fss.begin())->type_string() + "s"s, fss.size());
+      fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14L}\n", (*fss.begin())->type_string() + "s"s,
+                 fss.size());
       fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14L}\n",
                  (*fss.begin())->contains_string() + "s"s, total_sides);
     }
