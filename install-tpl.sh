@@ -134,8 +134,8 @@ USE_PROXY=`check_valid USE_PROXY`
 
 if [ "${USE_PROXY}" == "YES" ]
 then
-    export http_proxy="http://wwwproxy.sandia.gov:80"
-    export https_proxy="https://wwwproxy.sandia.gov:80"
+    export http_proxy="http://proxy.sandia.gov:80"
+    export https_proxy="https://proxy.sandia.gov:80"
 fi
 
 pwd
