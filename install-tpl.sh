@@ -511,8 +511,8 @@ then
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-    net_version="v4.8.0"
-#   net_version="master"
+#   net_version="v4.8.0"
+   net_version="master"
 
     if [ "$BUILD" == "YES" ]
     then
