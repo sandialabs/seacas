@@ -60,7 +60,7 @@ described in Section~\ref{sec:locate}.  If \cmd{ELEMENTS} is specified,
 the distance is measured to the element centroid.  In the descriptions
 of the \cmd{locate} options below, the $z$ coordinates are entered only
 for three-dimensional bodies.  \cmd{LOCATE} calculates distances only
-for the undeformed geometry irregardless of the setting of the
+for the undeformed geometry regardless of the setting of the
 \cmd{EXODUS} flag. 
 
 \cmdoption{\cmd{LOCATE \{NODES$|$ELEMENTS\} POINT} 
@@ -146,7 +146,7 @@ defined by the sideset \param{flag$_m$}.  If a node on the
 node and element numbers are output along with the connectivity array
 for the penetrated element. The algorithm and assumptions used in this
 calculation are described in Section~\ref{sec:overlap}.  \cmd{overlap}
-checks only the undeformed geometry irregardless of the setting of the
+checks only the undeformed geometry regardless of the setting of the
 \cmd{EXODUS} flag. 
 }
 
@@ -195,7 +195,7 @@ Section~\ref{sec:gap}.
 \cmddef{\cmdverb{AXISYMMETRIC} 
 } {
 \cmd{AXISYMMETRIC} informs \numbers\ that the two-dimensional body
-described in the \EXO\ database is axisymmetric.  All of the relavent
+described in the \EXO\ database is axisymmetric.  All of the relevant
 operational commands will calculate values based on an axisymmetric
 geometry.  This is the default for two-dimensional bodies.
 }
@@ -203,7 +203,7 @@ geometry.  This is the default for two-dimensional bodies.
 \cmddef{\cmdverb{PLANAR} or \cmdverb{PLANE}
 } {
 \cmd{PLANAR} informs \numbers\ that the two-dimensional body described
-in the \EXO\ database is planar or plane strain. All of the relavent
+in the \EXO\ database is planar or plane strain. All of the relevant
 operational commands will calculate values based on a planar geometry. 
 }
 
@@ -241,7 +241,7 @@ operational commands.
       \\ \default{all element blocks}
 } {
 selects the element blocks. The \param{block\_id} is the element block
-identifier displayed by the \cmd{LIST BLOCKS} command. The relavent
+identifier displayed by the \cmd{LIST BLOCKS} command. The relevant
 operational commands will only calculate values for the selected element
 blocks.
 } 
@@ -253,7 +253,7 @@ blocks.
       \\ \default{all materials}
 } {
 selects the element blocks with the material number corresponding to
-\param{material\_id}.  The relavent operational commands will only
+\param{material\_id}.  The relevant operational commands will only
 calculate values for the selected materials.
 }
 
