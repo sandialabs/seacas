@@ -54,7 +54,7 @@ manually as detailed in
 | DOWNLOAD        | YES, NO | YES | Should TPLs be downloaded. |
 | USE_PROXY       | YES, NO | NO  | Sandia specific -- use proxy when downloading tar files |
 | DEBUG           | YES, NO | NO  | Build debug executable; default is optimized
-| SHARED          | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
+| SHARED          | YES, NO | YES | Build shared libraries if YES, archive (.a) if NO |
 | CRAY            | YES, NO | YES | Is this a Cray system (special parallel options) |
 | NEEDS_ZLIB      | YES, NO | NO  | If system does not have zlib installed, download and install it (HDF5 compression). |
 | USE\_ZLIB\_NG   | YES, NO | NO  | Should the improved [zlib-ng](https://github.com/zlib-ng/zlib-ng) library be used to provide ZLIB capability |
@@ -69,7 +69,7 @@ manually as detailed in
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | H5VERSION       | V112, V110, V18 | V110 | Use HDF5-1.12.X, HDF5-1.10.X or HDF5-1.8.X |
 | BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
-| JOBS            | {count}|  2   | Number of "jobs" used for simultaneous compiles |
+| JOBS            | {count} |  2   | Number of "jobs" used for simultaneous compiles |
 | SUDO            | "" or sudo | "" | If need to be superuser to install |
   * NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
   * The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
@@ -99,16 +99,16 @@ to configure the SEACAS CMake build.
 | LEGACY          | YES, NO | YES  | Should the legacy SEACAS applications be built (see `cmake-config`) |
 | FORTRAN         | YES, NO | YES  | Should fortran libraries and applications be built (see `cmake-config`) |
 | ZOLTAN          | YES, NO | YES  | Should zoltan library and nem_slice be built |
-| PYTHON_VER      | 2.7 3.0 | 3.0 | Minimum version of python which should be found |
-| BUILD_TYPE      | debug, release| release | what type of build |
-| DEBUG           | -none- |      | If specified, then do a debug build. Can't be used with `BUILD_TYPE` |
+| PYTHON_VER      | 2.7 3.0 | 3.0  | Minimum version of python which should be found |
+| BUILD_TYPE      | debug, release | release | what type of build |
+| DEBUG           | -none-  |      | If specified, then do a debug build. Can't be used with `BUILD_TYPE` |
 | HAVE_X11        | YES, NO | YES  | Does the system have X11 libraries and include files; used for blot, fastq |
-| THREADSAFE      | YES, NO | NO | Compile a thread-safe IOSS and Exodus library |
-| USE_SRUN        | YES, NO | NO | If MPI enabled, then use srun instead of mpiexec to run parallel tests |
-| DOXYGEN         | YES, NO | NO | Run doxygen on several packages during build to generate documentation |
-| OMIT_DEPRECATED | YES, NO | NO  | Should the deprecated code be omitted; NO will enable deprecated code |
-| EXTRA_WARNINGS  | YES, NO | NO  | Build with extra warnings enabled; see list in `cmake-config` |
-| SANITIZER       | many    | NO  | If not NO, build using specified sanitizer; see list in `cmake-config` |
+| THREADSAFE      | YES, NO | NO   | Compile a thread-safe IOSS and Exodus library |
+| USE_SRUN        | YES, NO | NO   | If MPI enabled, then use srun instead of mpiexec to run parallel tests |
+| DOXYGEN         | YES, NO | NO   | Run doxygen on several packages during build to generate documentation |
+| OMIT_DEPRECATED | YES, NO | NO   | Should the deprecated code be omitted; NO will enable deprecated code |
+| EXTRA_WARNINGS  | YES, NO | NO   | Build with extra warnings enabled; see list in `cmake-config` |
+| SANITIZER       | many    | NO   | If not NO, build using specified sanitizer; see list in `cmake-config` |
 | GENERATOR       | many    | "Unix Makefiles" | what generator should CMake use; see cmake doc |
 * The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
 
@@ -130,7 +130,7 @@ parallel capability enabled (if applicable).  You can then continue
 with the steps outlined in the previous section.
 
 ## Testing
-There are a few unit tests for zoltan, exodus, and aprepro that can be run via `make test` if you configured with `-D SEACASProj_ENABLE_TESTS=YES`.
+There are a few unit tests for zoltan, exodus, ioss, and aprepro that can be run via `make test` or `ctest` if you configured with `-D SEACASProj_ENABLE_TESTS=YES`.
 
 There is also a system-level test that just verifies that the applications can read and write exodus files correctly.  This test runs off of the installed applications.  To run do:
 

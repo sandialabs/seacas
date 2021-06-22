@@ -16,7 +16,7 @@ described in the previous section.
 A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
 
 ## HDF5
-If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library.
+If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, or using CGNS, then you will need the hdf5 library.
 
 ### WARNING
 There are some issues with using HDF5-1.10.0 through HDF5-1.10.2 since
@@ -24,9 +24,7 @@ it will possibly create files which are unreadable by applications
 using an earlier version of the library.  As of HDF5-1.10.3 and later,
 the HDF5 team added an option that makes it possible for the library
 to create files readable by those applications. This flag is currently
-being used by NetCDF, but not CGNS.  Therefore, you should only use
-hdf5-1.10.3 or later if you are only using NetCDF, or if you do not
-need compatibility with applications using an HDF5-1.8.X version.
+being used by NetCDF and CGNS.
 
 The hdf5 library is used for the netcdf4 capability in netcdf which in
 turn is used by exodus.  The netcdf4 capability is typically used for
@@ -128,7 +126,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
  *  `make && make install`
 
 ## CGNS
-Support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and install the CGNS library:
+The IOSS library supports using CGNS for structured and unstructred meshes.  To use this capability, you will need to download and install the CGNS library:
 
   * Download CGNS via git:
     ```bash
@@ -137,14 +135,14 @@ Support for CGNS in the IOSS library is being added.  To use this capability, yo
     ```
 
   * Build using CMake.
-     * Modify `TPL/cgns/runconfigure.sh` to meet your environment
+     * Modify `TPL/cgns/runcmake.sh` to meet your environment
      * `cd CGNS`
      * `mkdir build`
      * `cd build`
-     * `../../runconfigure.sh`
+     * `../../runcmake.sh`
      * `make && make install`
 
 #### Faodel
 Faodel is a collection of data management tools that Sandia is developing to improve how datasets migrate between memory and storage resources in a distributed system. For SEACAS Faodel support means adding a new backend to IOSS. This enables additional data storage capabilities and the chance to communicate data between execution spaces.
 
-Faodel is available at [Faodel](https://github.com/faodel/faodel). And is build here as a SEACAS TPL.
+Faodel is available at [Faodel](https://github.com/faodel/faodel). And is built here as a SEACAS TPL.
