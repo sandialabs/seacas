@@ -330,7 +330,7 @@ namespace {
 
   template <typename INT>
   void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-                          std::vector<int> &elem_to_proc, INT dummy)
+                          std::vector<int> &elem_to_proc, INT /*dummy*/)
   {
     progress(__func__);
     // Populate the 'elem_to_proc' vector with a mapping from element to processor.

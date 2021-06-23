@@ -29,7 +29,7 @@
 #  define FMT_CLANG_VERSION 0
 #endif
 
-#if defined(__GNUC__) && !defined(__clang__)
+#if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #  define FMT_GCC_VERSION (__GNUC__ * 100 + __GNUC_MINOR__)
 #  define FMT_GCC_PRAGMA(arg) _Pragma(arg)
 #else
@@ -2728,6 +2728,8 @@ class format_string_checker {
   }
 };
 
+template <typename T> void ignore(const T&) {}
+
 template <typename... Args, typename S,
           enable_if_t<(is_compile_string<S>::value), int>>
 void check_format_string(S format_str) {
@@ -2736,7 +2738,7 @@ void check_format_string(S format_str) {
                                         remove_cvref_t<Args>...>;
   FMT_CONSTEXPR bool invalid_format =
       (parse_format_string<true>(s, checker(s, {})), true);
-  (void)invalid_format;
+  ignore(invalid_format);
 }
 
 template <typename Char>
