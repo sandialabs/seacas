@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.5 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.20.6 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.5 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.6 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.5 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.6 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -427,8 +427,10 @@ def get_entity_type(varType):
     """
     Map the exodus ex_entity_type flags to an integer value.
     """
-    return ex_entity_type[varType].value
-
+    try:
+        return ex_entity_type[varType].value
+    except KeyError:
+        return varType.value
 
 # init params struct
 class ex_init_params(ctypes.Structure):
@@ -1989,6 +1991,22 @@ class exodus:
         if self.__ex_get_reduction_variable_param(objType).value == 0:
             return []
         return self.__ex_get_reduction_variable_names(objType)
+
+    # --------------------------------------------------------------------
+
+    def get_reduction_variable_name(self, objType, varId):
+        """
+        get a single reduction variable name in the model for the specified object type and index.
+
+        >>> nar_name = exo.get_reduction_variable_name('EX_ASSEMBL"Y', 100)
+
+        Returns
+        -------
+              string  nvar_name
+        """
+        if self.__ex_get_reduction_variable_param(objType).value == 0:
+            return ""
+        return self.__ex_get_reduction_variable_name(objType, varId)
 
     # --------------------------------------------------------------------
 
@@ -5691,11 +5709,11 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_reduction_variable_name(self, varType, varId):
-        var_type = ctypes.c_int(varType)
+        var_type = ctypes.c_int(get_entity_type(varType))
         var_id = ctypes.c_int(varId)
         name = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_get_reduction_variable_name(self.fileId, var_type, var_id, name)
-        return name.decode('utf8')
+        return name.value.decode("utf8")
 
     # --------------------------------------------------------------------
 
