@@ -2729,7 +2729,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
     fmt::print("\nELEMENT VARIABLES relative 1.e-6 floor 0.0\n");
     name_length = max_string_length(interFace.elmt_var_names);
     for (i = 0; i < n; ++i) {
-      fmt::print("\t{:<{}}  # min: {} @ t{},b{},e{}\tmax: {} @ t{},b{}"
+      fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},b{},e{}\tmax: {:15.8g} @ t{},b{}"
                  ",e{}\n",
                  ((interFace.elmt_var_names)[i]), name_length, mm_elmt[i].min_val,
                  mm_elmt[i].min_step, mm_elmt[i].min_blk, elem_id_map[mm_elmt[i].min_id],
