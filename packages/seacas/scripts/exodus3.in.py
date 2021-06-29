@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.6 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.20.7 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.6 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.7 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.6 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.7 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -2159,8 +2159,95 @@ class exodus:
         return True
 
     # --------------------------------------------------------------------
+    def get_variable_values(self, objType, entityId, name, step):
+        """
+        get list of `objType` variable values for a specified object id
+        block, variable name, and time step
+
+        >>> evar_vals = exo.get_variable_values('EX_ELEM_BLOCK', elem_blk_id,
+        ...                                            evar_name, time_step)
+
+        Parameters
+        ----------
+        objType   : ex_entity_type
+            type of object being queried
+        entityId : int
+            id of the entity (block, set) *ID* (not *INDEX*)
+        name : string
+            name of variable
+        time_step : int
+            1-based index of time step
+
+        Returns
+        -------
+
+            if array_type == 'ctype':
+              <list<ctypes.c_double>>  evar_vals
+
+            if array_type == 'numpy':
+              <np_array<double>>  evar_vals
+        """
+        names = self.get_variable_names(objType)
+        var_id = names.index(name) + 1
+        numVals = 0;
+        if objType == 'EX_NODAL':
+            numVals = self.num_nodes()
+        elif objType == 'EX_ELEM_BLOCK':
+            numVals = self.num_elems_in_blk(entityId)
+        elif objType == 'EX_NODE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+        elif objType == 'EX_EDGE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+        elif objType == 'EX_FACE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+        elif objType == 'EX_SIDE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+
+        values = self.__ex_get_var(step, objType, var_id, entityId, numVals)
+        if self.use_numpy:
+            values = ctype_to_numpy(self, values)
+        return values
 
 
+    # --------------------------------------------------------------------
+    def put_variable_values(self, objType, entityId, name, step, values):
+        """
+        store a list of element variable values for a specified element
+        block, element variable name, and time step
+
+        >>> status = exo.put_variable_values('EX_ELEM_BLOCK', elem_blk_id,
+        ...             evar_name, time_step, evar_vals)
+
+        Parameters
+        ----------
+        entityId : int  entity *ID* (not *INDEX*)
+            <string>    name    name of variable
+            <int>          time_step    1-based index of time step
+            <list<float>>  values the variable values to be output
+
+        Returns
+        -------
+        status : bool
+            True = successful execution
+        """
+        names = self.get_variable_names(objType)
+        var_id = names.index(name) + 1
+        numVals = 0;
+        if objType == 'EX_NODAL':
+            numVals = self.num_nodes()
+        elif objType == 'EX_ELEM_BLOCK':
+            numVals = self.num_elems_in_blk(entityId)
+        elif objType == 'EX_NODE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+        elif objType == 'EX_EDGE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+        elif objType == 'EX_FACE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+        elif objType == 'EX_SIDE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+
+        self.__ex_put_var(step, objType, var_id, entityId, numVals, values)
+        return True
 
     # Attributes (meta-data attributes; not the per-element bulk-data kind)
     # --------------------------------------------------------------------
@@ -2791,12 +2878,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  evar_vals
         """
-        names = self.get_variable_names('EX_ELEM_BLOCK')
-        var_id = names.index(name) + 1
-        numVals = self.num_elems_in_blk(blockId)
-        values = self.__ex_get_var(step, 'EX_ELEM_BLOCK', var_id, blockId, numVals)
-        if self.use_numpy:
-            values = ctype_to_numpy(self, values)
+        values = self.get_variable_values('EX_ELEM_BLOCK', blockId, name, step)
         return values
 
     # --------------------------------------------------------------------
@@ -2861,10 +2943,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        names = self.get_variable_names('EX_ELEM_BLOCK')
-        var_id = names.index(name) + 1
-        numVals = self.num_elems_in_blk(blockId)
-        self.__ex_put_var(step, 'EX_ELEM_BLOCK', var_id, blockId, numVals, values)
+        self.put_variable_values('EX_ELEM_BLOCK', blockId, name, step, values)
         return True
 
     # --------------------------------------------------------------------
@@ -3415,14 +3494,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  nsvar_vals
         """
-        names = self.get_variable_names('EX_NODE_SET')
-        var_id = names.index(name) + 1
-
-        (numNodeInSet, _numDistFactInSet) = self.__ex_get_set_param('EX_NODE_SET', object_id)
-
-        values = self.__ex_get_var(step, 'EX_NODE_SET', var_id, object_id, numNodeInSet)
-        if self.use_numpy:
-            values = ctype_to_numpy(self, values)
+        values = self.get_variable_values('EX_NODE_SET', object_id, name, step)
         return values
 
     # --------------------------------------------------------------------
@@ -3485,10 +3557,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        names = self.get_variable_names('EX_NODE_SET')
-        var_id = names.index(name) + 1
-        (numSetNodes, _numSetDistFacts) = self.get_set_params('EX_NODE_SET', object_id)
-        self.__ex_put_var(step, 'EX_NODE_SET', var_id, object_id, numSetNodes, values)
+        self.put_variable_values('EX_NODE_SET', object_id, name, step, values)
         return True
 
     # --------------------------------------------------------------------
@@ -4126,14 +4195,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  ssvar_vals
         """
-        names = self.get_variable_names('EX_SIDE_SET')
-        var_id = names.index(name) + 1
-
-        (numSideInSet, _numDistFactInSet) = self.__ex_get_set_param('EX_SIDE_SET', object_id)
-
-        values = self.__ex_get_var(step, 'EX_SIDE_SET', var_id, object_id, numSideInSet)
-        if self.use_numpy:
-            values = ctype_to_numpy(self, values)
+        values = self.get_variable_values('EX_SIDE_SET', object_id, name, step)
         return values
 
     # --------------------------------------------------------------------
@@ -4194,10 +4256,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        names = self.get_variable_names('EX_SIDE_SET')
-        var_id = names.index(name) + 1
-        (numSetSides, _numSetDistFacts) = self.get_set_params('EX_SIDE_SET', object_id)
-        self.__ex_put_var(step, 'EX_SIDE_SET', var_id, object_id, numSetSides, values)
+        self.put_variable_values('EX_SIDE_SET', object_id, name, step, values)
         return True
 
     # --------------------------------------------------------------------
@@ -5652,7 +5711,7 @@ class exodus:
             var_type,
             var_id,
             block_id,
-            start_index, 
+            start_index,
             num_values,
             var_vals)
         return var_vals
@@ -6527,8 +6586,7 @@ def internal_transfer_variables(exoFrom, exo_to, obj_type, additionalVariables, 
     if nVars > 0:
         exo_to.set_variable_number(obj_type, nVars)
         origVarNames = exoFrom.get_variable_names(obj_type)
-        eVarNames = exoFrom.get_variable_names(obj_type)
-        eVarNames.extend(newVariableNames)
+        origVarNames.extend(newVariableNames)
         truthTable = []
         if nOrigVars > 0:
             truthTable = exoFrom.get_variable_truth_table(obj_type)
@@ -6547,17 +6605,17 @@ def internal_transfer_variables(exoFrom, exo_to, obj_type, additionalVariables, 
             truthTable = newTruth
         exo_to.set_variable_truth_table(obj_type, truthTable)
         for nameIndex in range(nVars):
-            VarName = eVarNames[nameIndex]
-            exo_to.put_variable_name(obj_type, VarName, nameIndex + 1)
+            varName = origVarNames[nameIndex]
+            exo_to.put_variable_name(obj_type, varName, nameIndex + 1)
         truthIndex = 0
         for blkId in blkIds:
-            for eVarName in origVarNames:
+            for origVarName in origVarNames:
                 if truthTable[truthIndex]:
                     for step in range(nSteps):
                         eValues = exoFrom.get_variable_values(obj_type, blkId,
-                                                              eVarName, step + 1)
+                                                              origVarName, step + 1)
                         exo_to.put_variable_values(obj_type, blkId,
-                                                   eVarName, step + 1, eValues)
+                                                   origVarName, step + 1, eValues)
                 truthIndex = truthIndex + 1
             truthIndex = truthIndex + nNewVars
 
