@@ -29,6 +29,8 @@
 #include <vector>
 
 #include "copy_string_cpp.h"
+
+#define USE_STD_SORT 1
 #if !USE_STD_SORT
 #include "pdqsort.h"
 #endif
@@ -239,6 +241,7 @@ namespace {
 
   template <typename T> static void uniquify(std::vector<T> &vec)
   {
+
 #if USE_STD_SORT
     std::sort(vec.begin(), vec.end());
 #else
@@ -1939,10 +1942,12 @@ namespace {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
     int global_num_blocks = glob_blocks.size();
 
-    std::vector<std::vector<INT>> linkage(global_num_blocks);
-    std::vector<std::vector<T>>   attributes(global_num_blocks);
-
     LOG("\nReading and Writing element connectivity & attributes\n");
+
+    std::vector<INT> linkage;
+    std::vector<T>   attributes;
+    std::vector<INT> local_linkage;
+    std::vector<T>   local_attr;
 
     for (int b = 0; b < global_num_blocks; b++) {
 
@@ -1955,15 +1960,10 @@ namespace {
                    glob_blocks[b].nodesPerElement, glob_blocks[b].attributeCount, b);
       }
 
-      size_t max_nodes = glob_blocks[b].entity_count();
-      max_nodes *= glob_blocks[b].nodesPerElement;
-
-      linkage[b].resize(max_nodes);
-      INT *block_linkage = linkage[b].data();
-
-      // Initialize attributes list, if it exists
-      attributes[b].resize(static_cast<size_t>(glob_blocks[b].attributeCount) *
-                           glob_blocks[b].entity_count());
+      size_t max_nodes = glob_blocks[b].entity_count() * glob_blocks[b].nodesPerElement;
+      linkage.resize(max_nodes);
+      attributes.resize(static_cast<size_t>(glob_blocks[b].attributeCount) *
+			glob_blocks[b].entity_count());
 
       int error = 0;
       for (int p = 0; p < part_count; p++) {
@@ -1979,7 +1979,7 @@ namespace {
           }
           size_t maximum_nodes = blocks[p][b].entity_count();
           maximum_nodes *= blocks[p][b].nodesPerElement;
-          std::vector<INT> local_linkage(maximum_nodes);
+          local_linkage.resize(maximum_nodes);
 
           ex_entity_id bid = blocks[p][b].id;
           error = ex_get_conn(id, EX_ELEM_BLOCK, bid, local_linkage.data(), nullptr, nullptr);
@@ -2003,15 +2003,15 @@ namespace {
             global_pos       = global_block_pos * npe;
 
             for (size_t n = 0; n < npe; n++) {
-              size_t node                 = proc_loc_node_to_global[local_linkage[pos++] - 1];
-              block_linkage[global_pos++] = node + 1;
+              size_t node           = proc_loc_node_to_global[local_linkage[pos++] - 1];
+              linkage[global_pos++] = node + 1;
             }
           }
 
           // Get attributes list,  if it exists
           if (blocks[p][b].attributeCount > 0) {
             size_t         max_attr = blocks[p][b].entity_count() * blocks[p][b].attributeCount;
-            std::vector<T> local_attr(max_attr);
+            local_attr.resize(max_attr);
 
             error = ex_get_attr(id, EX_ELEM_BLOCK, blocks[p][b].id, local_attr.data());
             if (error < 0) {
@@ -2026,7 +2026,7 @@ namespace {
               global_block_pos = local_element_to_global[p][(e + boffset)] - goffset;
               global_pos       = global_block_pos * att_count;
               for (size_t n = 0; n < att_count; n++) {
-                attributes[b][global_pos++] = local_attr[pos++];
+                attributes[global_pos++] = local_attr[pos++];
               }
             }
           }
@@ -2040,8 +2040,8 @@ namespace {
       // Write out block info
       int id_out = ExodusFile::output(); // output file identifier
 
-      if (!linkage[b].empty()) {
-        error = ex_put_conn(id_out, EX_ELEM_BLOCK, glob_blocks[b].id, linkage[b].data(), nullptr,
+      if (!linkage.empty()) {
+        error = ex_put_conn(id_out, EX_ELEM_BLOCK, glob_blocks[b].id, linkage.data(), nullptr,
                             nullptr);
         if (error < 0) {
           exodus_error(__LINE__);
@@ -2050,7 +2050,7 @@ namespace {
 
       // Write out attributes list if it exists
       if (glob_blocks[b].attributeCount > 0) {
-        error = ex_put_attr(id_out, EX_ELEM_BLOCK, glob_blocks[b].id, attributes[b].data());
+        error = ex_put_attr(id_out, EX_ELEM_BLOCK, glob_blocks[b].id, attributes.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
