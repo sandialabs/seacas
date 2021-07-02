@@ -1027,7 +1027,7 @@ const char *  temp_f;
 #pragma diag_suppress code_is_unreachable
 #endif
 
-#define MAX_IF_NESTING 64
+#define MAX_IF_NESTING 1024
 
 int    if_state[MAX_IF_NESTING]    = {0};     // INITIAL
 int    if_case_run[MAX_IF_NESTING] = {false}; /* Has any if or elseif condition executed */
