@@ -691,7 +691,18 @@ integer {D}+({E})?
     aprepro.outputStream.push(out);
   }
 
-  Scanner::~Scanner() {}
+  Scanner::~Scanner() {
+    while (aprepro.ap_file_list.size() > 1) {
+      auto kk = aprepro.ap_file_list.top();
+      if (kk.name != "STDIN") {
+	yyFlexLexer::yy_load_buffer_state();
+	delete yyin;
+	yyin = nullptr;
+      }
+      aprepro.ap_file_list.pop();
+      yyFlexLexer::yypop_buffer_state();
+    };
+  }
 
   void Scanner::add_include_file(const std::string &filename, bool must_exist)
   {

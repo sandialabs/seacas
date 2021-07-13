@@ -24,7 +24,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.25 (2021/07/02)";
+  const char *       version_string = "5.26 (2021/07/13)";
 
   void output_copyright();
 
@@ -288,8 +288,8 @@ namespace SEAMS {
     }
 
     /* If pointer still null, print error message */
-    if (pointer == nullptr || pointer->bad() || !pointer->good()) {
-      std::string err = "Can't open " + file;
+    if (pointer == nullptr || pointer->fail() || pointer->bad() || !pointer->good()) {
+      std::string err = "Can't open '" + file + "'. " + strerror(errno);
       error(err, false);
       delete pointer;
       pointer = nullptr;
