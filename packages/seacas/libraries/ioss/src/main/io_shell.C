@@ -63,6 +63,34 @@ namespace {
 } // namespace
 
 int main(int argc, char *argv[])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {
   int rank     = 0;
   int num_proc = 1;
