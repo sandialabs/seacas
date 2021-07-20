@@ -24,7 +24,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.26 (2021/07/13)";
+  const char *       version_string = "5.27 (2021/07/20)";
 
   void output_copyright();
 
@@ -54,6 +54,10 @@ namespace SEAMS {
   {
     if (!outputStream.empty()) {
       outputStream.top()->flush();
+    }
+
+    if (infoStream != &std::cout) {
+      delete infoStream;
     }
 
     if ((stringScanner != nullptr) && stringScanner != lexer) {
@@ -223,7 +227,7 @@ namespace SEAMS {
       return;
     }
 
-    bool              colorize = (infoStream == &std::cerr) && isatty(fileno(stderr));
+    bool              colorize = (infoStream == &std::cout) && isatty(fileno(stdout));
     std::stringstream ss;
     if (prefix) {
       if (colorize) {
@@ -442,6 +446,18 @@ namespace SEAMS {
     }
     else if (option == "--exit_on" || option == "-e") {
       ap_options.end_on_exit = true;
+    }
+    else if (option.find("--info") != std::string::npos) {
+      std::string value;
+
+      size_t index = option.find_first_of('=');
+      if (index != std::string::npos) {
+        value     = option.substr(index + 1);
+        auto info = open_file(value, "w");
+        if (info != nullptr) {
+          set_error_streams(nullptr, nullptr, info);
+        }
+      }
     }
     else if (option.find("--include") != std::string::npos || (option[1] == 'I')) {
       std::string value;
