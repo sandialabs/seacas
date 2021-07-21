@@ -56,9 +56,9 @@ namespace SEAMS {
       outputStream.top()->flush();
     }
 
-    if (infoStream != &std::cout) {
-      delete infoStream;
-    }
+    // May need to delete this if set via --info=filename command.
+    // May need a flag to determine this...
+    infoStream->flush();
 
     if ((stringScanner != nullptr) && stringScanner != lexer) {
       delete stringScanner;
