@@ -24,7 +24,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.27 (2021/07/20)";
+  const char *       version_string = "5.28 (2021/07/21)";
 
   void output_copyright();
 
@@ -452,11 +452,15 @@ namespace SEAMS {
 
       size_t index = option.find_first_of('=');
       if (index != std::string::npos) {
-        value     = option.substr(index + 1);
-        auto info = open_file(value, "w");
-        if (info != nullptr) {
-          set_error_streams(nullptr, nullptr, info);
-        }
+        value = option.substr(index + 1);
+      }
+      else {
+        value     = optional_value;
+        ret_value = 1;
+      }
+      auto info = open_file(value, "w");
+      if (info != nullptr) {
+        set_error_streams(nullptr, nullptr, info);
       }
     }
     else if (option.find("--include") != std::string::npos || (option[1] == 'I')) {
@@ -516,7 +520,7 @@ namespace SEAMS {
              "encountered\n"
           << " --errors_and_warnings_fatal or -F: Exit program with nonzero status if "
              "warnings are encountered\n"
-          << "--require_defined or -R: Tread undefined variable warnings as fatal\n"
+          << "--require_defined or -R: Treat undefined variable warnings as fatal\n"
           << "--one_based_index or -1: Array indexing is one-based (default = zero-based)\n"
           << "    --interactive or -i: Interactive use, no buffering           \n"
           << "    --include=P or -I=P: Include file or include path            \n"
@@ -527,8 +531,9 @@ namespace SEAMS {
           << "        --exit_on or -e: End when 'Exit|EXIT|exit' entered       \n"
           << "           --help or -h: Print this list                         \n"
           << "        --message or -M: Print INFO messages                     \n"
+          << "            --info=file: Output INFO messages (e.g. DUMP() output) to file.\n"
           << "      --nowarning or -W: Do not print WARN messages              \n"
-          << "  --comment=char or -c=char: Change comment character to 'char'      \n"
+          << "  --comment=char or -c=char: Change comment character to 'char'  \n"
           << "      --copyright or -C: Print copyright message                 \n"
           << "   --keep_history or -k: Keep a history of aprepro substitutions.\n"
           << "                         (not for general interactive use)       \n"
