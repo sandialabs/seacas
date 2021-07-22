@@ -24,9 +24,23 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.28 (2021/07/21)";
+  const char *       version_string = "5.29 (2021/07/22";
 
   void output_copyright();
+
+  std::string get_value(const std::string &option, const std::string &optional_value)
+  {
+    size_t      index = option.find_first_of('=');
+    std::string value;
+
+    if (index != std::string::npos) {
+      value = option.substr(index + 1);
+    }
+    else {
+      value = optional_value;
+    }
+    return value;
+  }
 
   unsigned hash_symbol(const char *symbol)
   {
@@ -448,32 +462,17 @@ namespace SEAMS {
       ap_options.end_on_exit = true;
     }
     else if (option.find("--info") != std::string::npos) {
-      std::string value;
+      std::string value = get_value(option, optional_value);
+      ret_value         = value == optional_value ? 1 : 0;
 
-      size_t index = option.find_first_of('=');
-      if (index != std::string::npos) {
-        value = option.substr(index + 1);
-      }
-      else {
-        value     = optional_value;
-        ret_value = 1;
-      }
       auto info = open_file(value, "w");
       if (info != nullptr) {
         set_error_streams(nullptr, nullptr, info);
       }
     }
     else if (option.find("--include") != std::string::npos || (option[1] == 'I')) {
-      std::string value;
-
-      size_t index = option.find_first_of('=');
-      if (index != std::string::npos) {
-        value = option.substr(index + 1);
-      }
-      else {
-        value     = optional_value;
-        ret_value = 1;
-      }
+      std::string value = get_value(option, optional_value);
+      ret_value         = value == optional_value ? 1 : 0;
 
       if (is_directory(value)) {
         ap_options.include_path = value;
@@ -493,14 +492,8 @@ namespace SEAMS {
         comment = option.substr(2);
       }
       else {
-        size_t index = option.find_first_of('=');
-        if (index != std::string::npos) {
-          comment = option.substr(index + 1);
-        }
-        else {
-          comment   = optional_value;
-          ret_value = 1;
-        }
+        comment   = get_value(option, optional_value);
+        ret_value = comment == optional_value ? 1 : 0;
       }
       symrec *ptr = getsym("_C_");
       if (ptr != nullptr) {
