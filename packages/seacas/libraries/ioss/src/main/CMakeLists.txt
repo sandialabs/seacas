@@ -590,9 +590,7 @@ TRIBITS_ADD_ADVANCED_TEST(pamgen_to_unstructured_cgns
   COMM mpi serial
   )
 ENDIF()
-endif()
 
-if (CGNS_CGNSDIFF_BINARY)
 TRIBITS_ADD_ADVANCED_TEST(structured_cgns_assembly_copy
    TEST_0 EXEC io_shell ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/assemblies.cgns assemblies-out.cgns
      NUM_MPI_PROCS 1-4
