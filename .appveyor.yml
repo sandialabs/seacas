@@ -7,7 +7,6 @@ environment:
       MSYS2_INSTALL_LOCN: C:\msys64
       MSYS2_BIN_LOCN: C:\msys64\usr\bin
       CMAKE_GENERATOR: "MinGW Makefiles"
-      SUPPRESSIONS: "/wd4478"
       VCPKG_DEFAULT_TRIPLET: "x64-windows"
       VCPKG_BUILD_TYPE: "release"
       LIB_ROOT: C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%
