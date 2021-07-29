@@ -175,7 +175,7 @@ namespace {
     ssize_t min_proc = -1;
     for (ssize_t i = 0; i < (ssize_t)work.size(); i++) {
       if (work[i] < min_work &&
-          proc_adam_map.find(std::make_pair(zone->m_adam->m_zone, i)) == proc_adam_map.end()) {
+          proc_adam_map.find(std::make_pair(zone->m_adam->m_zone, static_cast<int>(i))) == proc_adam_map.end()) {
         min_work = work[i];
         min_proc = i;
         if (min_work == 0) {
