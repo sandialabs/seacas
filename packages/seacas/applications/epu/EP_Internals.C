@@ -445,6 +445,13 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+
+    struct ex__file_item *file = ex__find_file_item(exodusFilePtr);
+    if (file) {
+      file->time_varid = varid;
+    }
+
+    ex__compress_variable(exodusFilePtr, varid, -2); /* don't compress, but do set collective io */
   }
 
   if (mesh.nodeCount > 0) {

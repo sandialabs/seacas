@@ -289,7 +289,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     struct ex__file_item *file = ex__find_file_item(exoid);
     file->time_varid           = temp;
   }
-  ex__compress_variable(exoid, temp, 2);
+  ex__compress_variable(exoid, temp, -2); /* Don't compress, but do set collective io */
 
   if (model->num_dim > 0) {
     if ((status = nc_def_dim(exoid, DIM_NUM_DIM, model->num_dim, &numdimdim)) != NC_NOERR) {

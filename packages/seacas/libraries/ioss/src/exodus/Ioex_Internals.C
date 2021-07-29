@@ -604,7 +604,7 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
       file->time_varid = varid;
     }
 
-    ex__compress_variable(exodusFilePtr, varid, 2);
+    ex__compress_variable(exodusFilePtr, varid, -2); /* don't compress, but do set collective io */
   } // Exit redefine mode
 
   bool output_global_data = (mesh.comm.outputNemesis && mesh.comm.processorCount > 1);

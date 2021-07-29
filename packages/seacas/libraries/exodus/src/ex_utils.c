@@ -1735,7 +1735,11 @@ void ex__set_compact_storage(int exoid, int varid)
 #endif
 }
 
-/* type = 1 for integer, 2 for real, 3 for character */
+/*
+ * type = 1 for integer, 2 for real, 3 for character
+ * If type < 0, then don't compress, but do set collective on parallel
+ */
+
 /*!
   \internal
   \undoc
@@ -1753,7 +1757,7 @@ void ex__compress_variable(int exoid, int varid, int type)
   }
   else {
     /* Compression only supported on HDF5 (NetCDF-4) files; Do not try to compress character data */
-    if (type != 3 && file->is_hdf5) {
+    if ((type == 1 || type == 2) && file->is_hdf5) {
       if (file->compression_algorithm == EX_COMPRESS_GZIP) {
         int deflate_level = file->compression_level;
         int compress      = 1;
@@ -1782,13 +1786,12 @@ void ex__compress_variable(int exoid, int varid, int type)
         ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
 #endif
       }
-
-#if defined(PARALLEL_AWARE_EXODUS)
-      if (file->is_parallel && file->is_hdf5) {
-        nc_var_par_access(exoid, varid, NC_COLLECTIVE);
-      }
-#endif
     }
+#if defined(PARALLEL_AWARE_EXODUS)
+    if (file->is_parallel) {
+      nc_var_par_access(exoid, varid, NC_COLLECTIVE);
+    }
+#endif
   }
 #endif
 }
