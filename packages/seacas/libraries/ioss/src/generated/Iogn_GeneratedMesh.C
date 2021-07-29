@@ -209,7 +209,7 @@ namespace Iogn {
           }
         }
       }
-      else if (option[0] == "nodeset") {
+      else if (option[0] == "nodeset" || option[0] == "nset") {
         // Option of the form  "nodeset:xXyYzZ"
         // The argument specifies whether there is a nodeset
         // at the location. 'x' is minX, 'X' is maxX, etc.
@@ -228,7 +228,7 @@ namespace Iogn {
           }
         }
       }
-      else if (option[0] == "sideset") {
+      else if (option[0] == "sideset" || option[0] == "sset") {
         // Option of the form  "sideset:xXyYzZ"
         // The argument specifies whether there is a sideset
         // at the location. 'x' is minX, 'X' is maxX, etc.
@@ -311,7 +311,7 @@ namespace Iogn {
         }
       }
 
-      else if (option[0] == "times") {
+      else if (option[0] == "times" || option[0] == "steps") {
         timestepCount = std::stoull(option[1]);
       }
 
