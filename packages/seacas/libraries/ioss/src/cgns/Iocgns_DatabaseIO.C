@@ -2274,7 +2274,7 @@ namespace Iocgns {
 
         // ========================================================================
         // Repetitive code for each coordinate direction; use a lambda to consolidate...
-        auto coord_lambda = [this, base, zone, &coord, rmin, rmax, phys_dimension, num_to_get,
+        auto coord_lambda = [this, base, zone, &coord, &rmin, &rmax, phys_dimension, num_to_get,
                              &rdata](const char *ord_name, int ordinate) {
           CGCHECKM(cg_coord_read(get_file_pointer(), base, zone, ord_name, CG_RealDouble, rmin,
                                  rmax, coord.data()));
