@@ -86,7 +86,7 @@ class MyTestCase(unittest.TestCase):
                             [100, 200, 300, 400],
                             [100, 222]]
             x.entity_list = entity_lists[i]
-        self.maxDiff=None
+        self.maxDiff = None
         self.assertEqual(str(expected), str(assemblies))
 
     def test_put_assembly(self):
@@ -151,7 +151,6 @@ class MyTestCase(unittest.TestCase):
         values = temp_exofile.get_reduction_variable_values('EX_ASSEMBLY', assemblies[5].id, 1)
         self.assertListEqual([0.00, 0.00, 0.00, 0.00], list(values))
 
-
     def test_put_assemblies(self):
         new = exo.assembly(name='Unit_test', type='EX_ASSEMBLY', id=444)
         new.entity_list = [100, 222]
@@ -164,7 +163,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(16, assemblies[6].type)
         self.assertEqual(new.id, assemblies[6].id)
         self.assertEqual(new.entity_list, assemblies[6].entity_list)
-
 
     def test_put_assemblies_multiple_assemblies(self):
         new = exo.assembly(name='Unit_test1', type='EX_ASSEMBLY', id=444)

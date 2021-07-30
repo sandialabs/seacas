@@ -2189,7 +2189,7 @@ class exodus:
         """
         names = self.get_variable_names(objType)
         var_id = names.index(name) + 1
-        numVals = 0;
+        numVals = 0
         if objType == 'EX_NODAL':
             numVals = self.num_nodes()
         elif objType == 'EX_ELEM_BLOCK':
@@ -2232,7 +2232,7 @@ class exodus:
         """
         names = self.get_variable_names(objType)
         var_id = names.index(name) + 1
-        numVals = 0;
+        numVals = 0
         if objType == 'EX_NODAL':
             numVals = self.num_nodes()
         elif objType == 'EX_ELEM_BLOCK':
@@ -5232,7 +5232,7 @@ class exodus:
 
                 attributes[att[i].name.decode('utf8')] = tmp_att
 
-        return attributes;
+        return attributes
 
     # --------------------------------------------------------------------
 
