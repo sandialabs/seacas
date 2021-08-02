@@ -44,7 +44,7 @@
 #    Control the search through PNetCDF_DIR or setting environment variable
 #    PNetCDF_ROOT to the PNetCDF installation prefix.
 #
-#    This module does not search default paths! 
+#    This module does not search default paths!
 #
 #    Following variables are set:
 #    PNetCDF_FOUND            (BOOL)       Flag indicating if PNetCDF was found
@@ -79,7 +79,7 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
       message(WARNING "The configuration parameter PNetCDF_DIR is deprecated."
                       " Please use PNetCDF_ROOT instead to define the NetCDF installation")
       set(PNetCDF_ROOT ${PNetCDF_DIR})
-    endif()  
+    endif()
 
     # Cache variables
     if(PNetCDF_ROOT)
@@ -94,7 +94,7 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
         set(PNetCDF_LIBRARY_DIR "${PNetCDF_LIBRARY_DIR}" CACHE PATH "Path to search for PNetCDF library files")
     endif()
 
-    
+
     # Search for include files
     # Search order preference:
     #  (1) PNetCDF_INCLUDE_DIR - check existence of path AND if the include files exist
@@ -120,7 +120,7 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
             set(PNetCDF_INCLUDE_DIR "PNetCDF_INCLUDE_DIR-NOTFOUND")
         endif()
 
-    else() 
+    else()
 
         set(pnetcdf_inc_suffixes "include")
         if(PNetCDF_ROOT)
@@ -136,7 +136,7 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
             else()
                  message(SEND_ERROR "PNetCDF_ROOT=${PNetCDF_ROOT} does not exist")
                  set(PNetCDF_INCLUDE_DIR "PNetCDF_INCLUDE_DIR-NOTFOUND")
-            endif()    
+            endif()
 
 
         else()
@@ -154,7 +154,7 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
         message(SEND_ERROR "Can not locate PNetCDF include directory")
     endif()
 
-    # Search for libraries 
+    # Search for libraries
     # Search order preference:
     #  (1) PNetCDF_LIBRARY_DIR - check existence of path AND if the include files exist
     #  (2) PNetCDF_ROOT/<lib,Lib>
@@ -174,7 +174,7 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
             set(PNetCDF_LIBRARY "PNetCDF_LIBRARY-NOTFOUND")
         endif()
 
-    else() 
+    else()
 
         if(PNetCDF_ROOT)
 
@@ -189,7 +189,7 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
             else()
                  message(SEND_ERROR "PNetCDF_ROOT=${PNetCDF_ROOT} does not exist")
                  set(PNetCDF_LIBRARY "PNetCDF_LIBRARY-NOTFOUND")
-            endif()    
+            endif()
 
 
         else()
@@ -197,20 +197,20 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
             find_library(PNetCDF_LIBRARY
                          NAMES pnetcdf
                          PATH_SUFFIXES ${pnetcdf_lib_suffixes})
-            
+
         endif()
 
     endif()
 
     if ( NOT PNetCDF_LIBRARY )
         message(SEND_ERROR "Can not locate PNetCDF library")
-    endif()    
-    
+    endif()
+
     # Define the LIBRARIES and INCLUDE_DORS
     set(PNetCDF_INCLUDE_DIRS ${PNetCDF_INCLUDE_DIR})
     set(PNetCDF_LIBRARIES    ${PNetCDF_CXX_LIBRARY} ${PNetCDF_LIBRARY})
 
-endif(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS )    
+endif(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS )
 
 # Send useful message if everything is found
 find_package_handle_standard_args(PNetCDF DEFAULT_MSG
@@ -233,7 +233,7 @@ if ( NOT PNetCDF_FIND_QUIETLY )
 
 endif()
 # For compatability with TriBITS:
-SET(DOCSTR "List of semi-colon separated paths to look for the TPL PNetCDF")
+set(DOCSTR "List of semi-colon separated paths to look for the TPL PNetCDF")
 
 set(TPL_PNetCDF_LIBRARIES ${PNetCDF_LIBRARIES} CACHE PATH ${DOCSTR})
 set(TPL_PNetCDF_INCLUDE_DIRS ${PNetCDF_INCLUDE_DIRS} CACHE PATH ${DOCSTR})

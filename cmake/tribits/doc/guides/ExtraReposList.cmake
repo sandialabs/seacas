@@ -1,4 +1,4 @@
-TRIBITS_PROJECT_DEFINE_EXTRA_REPOSITORIES(
+tribits_project_define_extra_repositories(
   ExtraRepo1  ""  GIT  someurl.com:/ExtraRepo1   ""          Continuous
   ExtraRepo2  packages/SomePackage/Blah  GIT  someurl2.com:/ExtraRepo2
                                                  NOPACKAGES  Nightly

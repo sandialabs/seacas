@@ -1,12 +1,14 @@
 .. Common references to other documents
 
-.. _Package Dependencies and Enable/Disable Logic: https://tribits.org/doc/TribitsDevelopersGuide.html l#package-dependencies-and-enable-disable-logic
+.. _TriBITS Users Guide and Reference: TribitsUsersGuide.html
 
-.. _TriBITS Dependency Handling Behaviors: https://tribits.org/doc/TribitsDevelopersGuide.html#tribits-dependency-handling-behaviors
+.. _Package Dependencies and Enable/Disable Logic: TribitsUsersGuide.html#package-dependencies-and-enable-disable-logic
 
-.. _TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES(): https://tribits.org/doc/TribitsDevelopersGuide.html#tribits-tpl-find-include-dirs-and-libraries
+.. _TriBITS Dependency Handling Behaviors: TribitsUsersGuide.html#tribits-dependency-handling-behaviors
 
-.. _TRIBITS_CTEST_DRIVER(): https://tribits.org/doc/TribitsDevelopersGuide.html#tribits-ctest-driver
+.. _tribits_tpl_find_include_dirs_and_libraries(): TribitsUsersGuide.html#tribits-tpl-find-include-dirs-and-libraries
+
+.. _tribits_ctest_driver(): TribitsUsersGuide.html#tribits-ctest-driver
 
 .. _Ninja: https://ninja-build.org
 
@@ -205,9 +207,9 @@ b) Create a ``*.cmake`` file and point to it [Most Recommended].
   where MyConfigureOptions.cmake (in the current working directory) might look
   like::
 
-    SET(CMAKE_BUILD_TYPE DEBUG CACHE STRING "Set in MyConfigureOptions.cmake")
-    SET(<Project>_ENABLE_CHECKED_STL ON CACHE BOOL "Set in MyConfigureOptions.cmake")
-    SET(BUILD_SHARED_LIBS ON CACHE BOOL "Set in MyConfigureOptions.cmake")
+    set(CMAKE_BUILD_TYPE DEBUG CACHE STRING "Set in MyConfigureOptions.cmake")
+    set(<Project>_ENABLE_CHECKED_STL ON CACHE BOOL "Set in MyConfigureOptions.cmake")
+    set(BUILD_SHARED_LIBS ON CACHE BOOL "Set in MyConfigureOptions.cmake")
     ...
 
   Using a configuration fragment ``*.cmake`` file allows for better reuse of
@@ -219,7 +221,7 @@ b) Create a ``*.cmake`` file and point to it [Most Recommended].
   reconfgure during a make (because it knows about the file and will check its
   time stamp, unlike when using ``-C <file-name>.cmake``, see below).
 
-  One can use the ``FORCE`` option in the ``SET()`` commands shown above and
+  One can use the ``FORCE`` option in the ``set()`` commands shown above and
   that will override any value of the options that might already be set.
   However, that will not allow the user to override the options on the CMake
   command-line using ``-D<VAR>=<value>`` so it is generally **not** desired to
@@ -277,7 +279,7 @@ b) Create a ``*.cmake`` file and point to it [Most Recommended].
 
   3) One can create and use parametrized ``*.cmake`` files that can be used
   with multiple TriBITS projects.  For example, one can have set statements
-  like ``SET(${PROJECT_NAME}_ENABLE_Fortran OFF ...)`` since ``PROJECT_NAME``
+  like ``set(${PROJECT_NAME}_ENABLE_Fortran OFF ...)`` since ``PROJECT_NAME``
   is known before the file is included.  One can't do that with ``cmake -C``
   and instead would have to the full variables names specific for a given
   project.
@@ -288,14 +290,14 @@ b) Create a ``*.cmake`` file and point to it [Most Recommended].
 
   5) However, the ``*.cmake`` files specified by
   ``<Project>_CONFIGURE_OPTIONS_FILE`` will only get read in **after** the
-  project's ``ProjectName.cmake`` and other ``SET()`` statements are called at
+  project's ``ProjectName.cmake`` and other ``set()`` statements are called at
   the top of the project's top-level ``CMakeLists.txt`` file.  So any CMake
   cache variables that are set in this early CMake code will override cache
   defaults set in the included ``*.cmake`` file.  (This is why TriBITS
   projects must be careful **not** to set default values for cache variables
   directly like this but instead should set indirect
   ``<Project>_<VarName>_DEFAULT`` non-cache variables.)  But when a
-  ``*.cmake`` file is read in using ``-C``, then the ``SET()`` statements in
+  ``*.cmake`` file is read in using ``-C``, then the ``set()`` statements in
   those files will get processed before any in the project's
   ``CMakeLists.txt`` file.  So be careful about this difference in behavior
   and carefully watch cache variable values actually set in the generated
@@ -441,7 +443,7 @@ take on the string enum values of ``"ON"``, ``"OFF"``, end empty ``""``.  An
 empty enable means that the TriBITS dependency system is allowed to decide if
 an enable should be turned on or off based on various logic.  The CMake GUI
 will enforce the values of ``"ON"``, ``"OFF"``, and empty ``""`` but it will
-not enforce this if you set the value on the command line or in a SET()
+not enforce this if you set the value on the command line or in a set()
 statement in an input ```*.cmake`` options files.  However, setting
 ``-DXXX_ENABLE_YYY=TRUE`` and ``-DXXX_ENABLE_YYY=FALSE`` is allowed and will
 be interpreted correctly..
@@ -1220,9 +1222,9 @@ c) **Setting up to run MPI programs:**
   the right program and options but you will have to override them in many
   cases.
 
-  MPI test and example executables are passed to CTest ``ADD_TEST()`` as::
+  MPI test and example executables are passed to CTest ``add_test()`` as::
 
-    ADD_TEST(
+    add_test(
       ${MPI_EXEC} ${MPI_EXEC_PRE_NUMPROCS_FLAGS}
       ${MPI_EXEC_NUMPROCS_FLAG} <NP>
       ${MPI_EXEC_POST_NUMPROCS_FLAGS}
@@ -1305,9 +1307,9 @@ To skip adding flags for OpenMP for ``<LANG>`` = ``C``, ``CXX``, or
 
 The single space " " will result in no flags getting added.  This is needed
 since one can't set the flags ``OpenMP_<LANG>_FLAGS`` to an empty string or
-the ``FIND_PACKAGE(OpenMP)`` command will fail.  Setting the variable
+the ``find_package(OpenMP)`` command will fail.  Setting the variable
 ``-DOpenMP_<LANG>_FLAGS_OVERRIDE= " "`` is the only way to enable OpenMP but
-skip adding the OpenMP flags provided by ``FIND_PACKAGE(OpenMP)``.
+skip adding the OpenMP flags provided by ``find_package(OpenMP)``.
 
 
 Building shared libraries
@@ -1493,20 +1495,20 @@ the full library paths when setting ``TPL_<TPLNAME>_LIBRARIES``.
 When the variables ``TPL_<TPLNAME>_INCLUDE_DIRS`` and
 ``TPL_<TPLNAME>_LIBRARIES`` are not specified, then most
 ``FindTPL<TPLNAME>.cmake`` modules use a default find operation.  Some will
-call ``FIND_PACKAGE(<TPLNAME>)`` internally by default and some may implement
+call ``find_package(<TPLNAME>)`` internally by default and some may implement
 the default find in some other way.  To know for sure, see the documentation
 for the specific TPL (e.g. looking in the ``FindTPL<TPLNAME>.cmake`` file to
 be sure).
 
 Most TPLs, however, use a standard system for finding include directories
 and/or libraries based on the function
-`TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES()`_.  These simple standard
+`tribits_tpl_find_include_dirs_and_libraries()`_.  These simple standard
 ``FindTPL<TPLNAME>.cmake`` modules specify a set of header files and/or
 libraries that must be found.  The directories where these header files and
 library files are looked for are specified using the CMake cache variables:
 
 * ``<TPLNAME>_INCLUDE_DIRS:PATH``: List of paths to search for header files
-  using ``FIND_FILE()`` for each header file, in order.
+  using ``find_file()`` for each header file, in order.
 
 * ``<TPLNAME>_LIBRARY_NAMES:STRING``: List of unadorned library names, in the
   order of the link line.  The platform-specific prefixes (e.g.. 'lib') and
@@ -1516,7 +1518,7 @@ library files are looked for are specified using the CMake cache variables:
   ``blas``.
 
 * ``<TPLNAME>_LIBRARY_DIRS:PATH``: The list of directories where the library
-  files will be searched for using ``FIND_LIBRARY()``, for each library, in
+  files will be searched for using ``find_library()``, for each library, in
   order.
 
 Most ``FindTPL<TPLNAME>.cmake`` modules will define a default set of libraries
@@ -1581,7 +1583,7 @@ shown in the CMake output::
 
   -- TPL_BLAS_LIBRARIES='/user/lib/libblas.so'
 
-(NOTE: The CMake ``FIND_LIBRARY()`` command that is used internally will
+(NOTE: The CMake ``find_library()`` command that is used internally will
 always select the shared library by default if both shared and static
 libraries are specified, unless told otherwise.  See `Building static
 libraries and executables`_ for more details about the handling of shared and
@@ -1612,7 +1614,7 @@ There are many cases where the list of libraries specified in the
 ``FindTPL<TPLNAME>.cmake`` module is not correct for the TPL that one wants to
 use or is present on the system.  In this case, one will need to set the CMake
 cache variable ``<TPLNAME>_LIBRARY_NAMES`` to tell the
-`TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES()`_ function what libraries to
+`tribits_tpl_find_include_dirs_and_libraries()`_ function what libraries to
 search for, and in what order.
 
 For example, the Intel Math Kernel Library (MKL) implementation for the BLAS
@@ -1644,7 +1646,7 @@ In this case, one could specify this with the following do-configure script::
     ...
     ${PROJECT_SOURCE_DIR}
 
-This would call ``FIND_LIBRARY()`` on each of the listed library names in
+This would call ``find_library()`` on each of the listed library names in
 these directories and would find them and list them in::
 
   -- TPL_BLAS_LIBRARIES='/usr/local/intel/Compiler/11.1/064/em64t/libmkl_intel_lp64.so;...'
@@ -2108,13 +2110,13 @@ arguments).
 Enable advanced test start and end times and timing blocks
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-For tests added using ``TRIBITS_ADD_ADVANCED_TEST()``, one can see start and
+For tests added using ``tribits_add_advanced_test()``, one can see start and
 end times for the tests and the timing for each ``TEST_<IDX>`` block in the
 detailed test output by configuring with::
 
   -D<Project>_SHOW_TEST_START_END_DATE_TIME=ON
 
-The implementation of this feature currently uses ``EXECUTE_PROCESS(date)``
+The implementation of this feature currently uses ``execute_process(date)``
 and therefore will only work on many (but perhaps not all) Linux/Unix/Mac
 systems and not native Windows systems.
 
@@ -2151,7 +2153,7 @@ NOTES:
 
 * Individual tests may have their timeout limit set on a test-by-test basis
   internally in the project's ``CMakeLists.txt`` files (see the ``TIMEOUT``
-  argument for ``TRIBITS_ADD_TEST()`` and ``TRIBITS_ADD_ADVANCED_TEST()``).
+  argument for ``tribits_add_test()`` and ``tribits_add_advanced_test()``).
   When this is the case, the global timeout set with ``DART_TESTING_TIMEOUT``
   has no impact on these individually set test timeouts.
 
@@ -2418,7 +2420,7 @@ flexibility in the specification of extra repos.  This is not needed for a
 basic configure of the project but is useful in generating version information
 using `<Project>_GENERATE_VERSION_DATE_FILES`_ and
 `<Project>_GENERATE_REPO_VERSION_FILE`_ as well as in automated testing using
-the ctest -S scripts with the ``TRIBITS_CTEST_DRIVER()`` function and the
+the ctest -S scripts with the ``tribits_ctest_driver()`` function and the
 ``checkin-test.py`` tool.
 
 The valid values of ``<Project>_ENABLE_KNOWN_EXTERNAL_REPOS_TYPE`` include
@@ -2537,7 +2539,7 @@ NOTES:
   command.
 
 * '''WARNING:''' Because this feature has to call the ``data`` using CMake's
-  ``EXECUTE_PROCESS()`` command, it can be expensive.  Therefore, this should
+  ``execute_process()`` command, it can be expensive.  Therefore, this should
   really only be turned on for large projects (where the extra overhead is
   small) or for smaller projects for extra informational purposes.
 
@@ -2700,7 +2702,7 @@ any missing packages and turn off all dependencies on these missing packages.
 
 Another type of checking is for optional inserted/external packages
 (e.g. packages who's source can optionally be included and is flagged with
-``TRIBITS_ALLOW_MISSING_EXTERNAL_PACKAGES()``).  Any of these package
+``tribits_allow_missing_external_packages()``).  Any of these package
 directories that are missing result in the packages being silently ignored by
 default.  However, notes on what missing packages are being ignored can
 printed by configuring with::
@@ -2844,7 +2846,7 @@ find the target name and then doing a find ``find . -name
 "*<some-file-base-name>*"`` to find the actual object file path always works.
 
 For this process to work correctly, you must be in the subdirectory where the
-``TRIBITS_ADD_LIBRARY()`` or ``TRIBITS_ADD_EXECUTABLE()`` command is called
+``tribits_add_library()`` or ``tribits_add_executable()`` command is called
 from its ``CMakeLists.txt`` file, otherwise the object file targets will not be
 listed by ``make help``.
 
@@ -3110,8 +3112,8 @@ here.
 Running all tests
 -----------------
 
-To run all of the defined tests (i.e. created using ``TRIBITS_ADD_TEST()`` or
-``TRIBITS_ADD_ADVANCED_TEST()``) use::
+To run all of the defined tests (i.e. created using ``tribits_add_test()`` or
+``tribits_add_advanced_test()``) use::
 
   $ ctest -j<N>
 
@@ -3757,7 +3759,7 @@ Dashboard submissions
 
 All TriBITS projects have built-in support for submitting configure, build,
 and test results to CDash using the custom ``dashbaord`` target.  This uses
-the `TRIBITS_CTEST_DRIVER()`_ function internally set up to work correctly
+the `tribits_ctest_driver()`_ function internally set up to work correctly
 from an existing binary directory with a valid initial configure.  The few of
 the advantages of using the custom TriBITS-enabled ``dashboard`` target over
 just using the standard ``ctest -D Experimental`` command are:
@@ -3767,7 +3769,7 @@ just using the standard ``ctest -D Experimental`` command are:
 
 * Additional notes files will be uploaded to the build on CDash.
 
-For more details, see `TRIBITS_CTEST_DRIVER()`_.
+For more details, see `tribits_ctest_driver()`_.
 
 To use the ``dashboard`` target, first, configure as normal but add cache vars
 for the the build and test parallel levels with::
@@ -3779,13 +3781,14 @@ test and submit with::
 
   $ make dashboard
 
-This invokes the `TRIBITS_CTEST_DRIVER()`_ function to do an experimental
-build for all of the packages that you have enabled tests.  (The packages that
-are implicitly enabled due to package dependencies are not directly processed
-and no rows on CDash will be show up for those packages.)
+This invokes a ``ctest -S`` script that calls the `tribits_ctest_driver()`_
+function to do an experimental build for all of the enabled packages for which
+you have enabled tests.  (The packages that are implicitly enabled due to
+package dependencies are not directly processed and no rows on CDash will be
+show up for those packages.)
 
-NOTE: This generates a lot of output, so it is typically better to pipe this
-to a file with::
+**NOTE:** This target generates a lot of output, so it is typically better to
+pipe this to a file with::
 
   $ make dashboard &> make.dashboard.out
 
@@ -3793,63 +3796,113 @@ and then watch that file in another terminal with::
 
   $ tail -f make.dashboard.out
 
-There are a number of options that you can set in the cache and/or in the
-environment to control what this script does.  For the full set of options,
-see `TRIBITS_CTEST_DRIVER()`_.  To see the full list of options, and their
-default values, one can run with::
 
-  $ env CTEST_DO_SUBMIT=FALSE CTEST_DEPENDENCY_HANDLING_UNIT_TESTING=TRUE \
+Setting options to change behavior of 'dashboard' target
+--------------------------------------------------------
+
+There are a number of options that you can set in the cache and/or in the
+environment to control what this script does.  Several options must be set in
+the cache in the CMake configure of the project such as the CDash sites where
+results are submitted to with the vars ``CTEST_DROP_METHOD``,
+``CTEST_DROP_SITE``, ``CTEST_DROP_LOCATION``,
+``TRIBITS_2ND_CTEST_DROP_LOCATION``, and ``TRIBITS_2ND_CTEST_DROP_SITE``.
+Other options that control the behavior of the ``dashboard`` target must be
+set in the env when calling ``make dashboard``.  For the full set of options
+that control the ``dashboard`` target, see `tribits_ctest_driver()`_.  To see
+the full list of options, and their default values, one can run with::
+
+  $ env CTEST_DEPENDENCY_HANDLING_UNIT_TESTING=TRUE \
     make dashboard
 
 This will print the options with their default values and then do a sort of
 mock running of the CTest driver script and point out what it will do with the
 given setup.
 
-One option one might what to set is the build name with::
+Any of the vars that are forwarded to the ``ctest -S`` invocation will be
+shown in the STDOUT of the ``make dashboard`` invocation on the line::
 
-  $ env CTEST_BUILD_NAME=MyBuild make dashboard
+  Running: env [vars passed through env] <path>/ctest ... -S ...
 
-After this finishes running, look for the build 'MyBuild' (or whatever build
-name you used above) in the <Project> CDash dashboard (the CDash URL is
-printed at the end of STDOUT).  It is useful to set ``CTEST_BUILD_NAME`` to
-some unique name to make it easier to find your results in the CDash
-dashboard.  If one does not set ``CTEST_BUILD_NAME``, the name of the binary
-directory is used instead by default (which may not be very descriptive if it
-called ``BUILD`` or something like that).
+Any variables passed through the ``env`` command listed there in ``[vars
+passed through env ]`` can only be changed by setting cache variables in the
+CMake project and can't be overridden in the env when invoking the
+``dashboard`` target.  For example, the variable ``CTEST_DO_SUBMIT`` is
+forwarded to the ``ctest -S`` invocation and can't be overridden with::
+
+  $ env CTEST_DO_SUBMIT=OFF make dashboard
+
+Instead, to change this value, one must reconfigure and then run as::
+
+  $ cmake CTEST_DO_SUBMIT=OFF .
+  $ make dashboard
+
+But any variable that is not listed in ``[vars passed through env ]`` in the
+printed out ``ctest -S`` command that are read in by `tribits_ctest_driver()`_
+can be set in the env by calling::
+
+  $ env [other vars read by tribits_ctest_driver()] make dashboard
+
+To know that these vars are picked up, grep the STDOUT from ``make dashboard``
+for lines containing::
+
+  -- ENV_<var_name>=
+
+That way, you will know the var was pick up and read correctly.
+
+
+Common options and use cases for the 'dashboard' target
+-------------------------------------------------------
+
+What follows are suggestions on how to use the ``dashboard`` target for
+different use cases.
+
+One option that is useful to set is the build name on CDash at configure time
+with::
+
+  -DCTEST_BUILD_NAME=MyBuild
+
+After ``make dashboard`` finishes running, look for the build 'MyBuild' (or
+whatever build name you used above) in the <Project> CDash dashboard (the
+CDash URL is printed at the end of STDOUT).  It is useful to set
+``CTEST_BUILD_NAME`` to some unique name to make it easier to find your
+results on the CDash dashboard.  If one does not set ``CTEST_BUILD_NAME``,
+then the name of the binary directory is used instead by default (which may
+not be very descriptive if it called something like ``BUILD``).
 
 If there is already a valid configure and build and one does not want to
-submit configure and build results to CDash, then one can run with::
+reconfigure and rebuild or submit configure and build results then one can run
+with::
 
-  $ env CTEST_BUILD_NAME=<build-name> CTEST_DO_CONFIGURE=OFF CTEST_DO_BUILD=OFF \
+  $ env CTEST_DO_CONFIGURE=OFF CTEST_DO_BUILD=OFF \
     make dashboard
 
-which will only run the enabled tests and submit results to the CDash build
-``<build-name>``.
+This will only run the enabled pre-built tests and submit test results to
+CDash.  (But is usually good to reconfigure and rebuild and submit those
+results to CDash as well in order to define more context for the test
+results.)
 
 The configure, builds, and submits are either done package-by-package or
-all-at-once as controlled by the varaible ``<Project>_CTEST_DO_ALL_AT_ONCE``.
+all-at-once as controlled by the variable ``<Project>_CTEST_DO_ALL_AT_ONCE``.
 This can be set in the CMake cache when configuring the project using::
 
   -D<Project>_CTEST_DO_ALL_AT_ONCE=TRUE
-
-or when running the ``dashboard`` target with::
-
-  $ env <Project>_CTEST_DO_ALL_AT_ONCE=TRUE make dashboard.
 
 Using the ``dashboard`` target, one can also run coverage and memory testing
 and submit to CDash as described below.  But to take full advantage of the
 all-at-once mode and to have results displayed on CDash broken down
 package-by-package, one must be submitting to a newer CDash version 3.0+.
 
-For submitting line coverage results, once you configure with
-``-D<Project>_ENABLE_COVERAGE_TESTING=ON``, the environment variable
-``CTEST_DO_COVERAGE_TESTING=TRUE`` is automatically set by the target
-``dashboard`` so you don't have to set this yourself.  Then when you run the
-``dashboard`` target, it will automatically submit coverage results to CDash
-as well.
+For submitting line coverage results, configure with::
+
+  -D<Project>_ENABLE_COVERAGE_TESTING=ON
+
+and the environment variable ``CTEST_DO_COVERAGE_TESTING=TRUE`` is
+automatically set by the target ``dashboard`` so you don't have to set this
+yourself.  Then, when you run the ``dashboard`` target, it will automatically
+submit coverage results to CDash as well.
 
 Doing memory checking running the enabled tests with Valgrind requires that
-you set ``CTEST_DO_MEMORY_TESTING=TRUE`` with the 'env' command when running
+you set ``CTEST_DO_MEMORY_TESTING=TRUE`` with the ``env`` command when running
 the ``dashboard`` target as::
 
   $ env CTEST_DO_MEMORY_TESTING=TRUE make dashboard
@@ -3869,38 +3922,60 @@ The CMake cache variable ``<Project>_DASHBOARD_CTEST_ARGS`` can be set on the
 cmake configure line in order to pass additional arguments to ``ctest -S``
 when invoking the package-by-package CTest driver.  For example::
 
-  -D<Project>_DASHBOARD_CTEST_ARGS="-VV"
+  -D<Project>_DASHBOARD_CTEST_ARGS="-VV" \
 
-will set verbose output with CTest.
+will set very verbose output with CTest that includes the STDOUT for every
+test run.  (The default args are ``-V`` which shows which tests are run but
+not the test STDOUT.)
+
+
+Changing the CDash sites for the 'dashboard' target
+---------------------------------------------------
+
+As described above in `Setting options to change behavior of 'dashboard'
+target`_, one can change the location where configure, build, and test results
+are submitted to one more two CDash sites.  For well-structured TriBITS CMake
+projects defining a flexible ``CTestConfig.cmake`` file, the location of the
+main CDash site can be changed by configuring with::
+
+  -DCTEST_DROP_SITE="some-site.com" \
+  -DCTEST_DROP_LOCATION="/cdash/submit.php?project=<Project>" \
 
 .. _TRIBITS_2ND_CTEST_DROP_SITE:
 .. _TRIBITS_2ND_CTEST_DROP_LOCATION:
 
-Also note that one can submit results to a second CDash site as well by
-setting::
+Also note that one can submit results to a second CDash site by configuring
+with::
 
-  $ env \
-    TRIBITS_2ND_CTEST_DROP_SITE=<second-site> \
-    TRIBITS_2ND_CTEST_DROP_LOCATION=<second-location> \
-    ... \
-    make dashboard
+  -DTRIBITS_2ND_CTEST_DROP_SITE="<second-site>" \
+  -DTRIBITS_2ND_CTEST_DROP_LOCATION="<second-location>" \
 
 If left the same as ``CTEST_DROP_SITE`` or ``CTEST_DROP_LOCATION``, then
-``TRIBITS_2ND_CTEST_DROP_SITE`` and ``TRIBITS_2ND_CTEST_DROP_LOCATION`` can be
-left empty "" and the defaults will be used.  However, the user must set at
+``TRIBITS_2ND_CTEST_DROP_SITE`` and ``TRIBITS_2ND_CTEST_DROP_LOCATION``,
+respectively, can be left empty "" and the defaults will be used.  For
+example, to submit to an experimental CDash site on the same machine, one
+would configure with::
+
+  -DTRIBITS_2ND_CTEST_DROP_LOCATION="/testing/cdash/submit.php?project=<Project>"
+
+and ``CTEST_DROP_SITE`` would be used for ``TRIBITS_2ND_CTEST_DROP_SITE``
+since ``TRIBITS_2ND_CTEST_DROP_SITE`` is empty.  This is a common use case
+when upgrading to a new CDash installation or testing new features for CDash
+before impacting the existing CDash site.  (However, the user must set at
 least one of these variables to non-empty in order to trigger the second
-submit.  For example, to submit to an experimental CDash site on the same
-machine, one would run::
+submit.)
 
-  $ env TRIBITS_2ND_CTEST_DROP_LOCATION="/testing/cdash/submit.php?project=<Project>" \
-    ... \
-    make dashboard
+**NOTE:** If the project is already set up to submit to a second CDash site
+and one wants to turn that off, one can configure with::
 
-and ``TRIBITS_2ND_CTEST_DROP_SITE`` would be used for ``CTEST_DROP_SITE``.
-This is a common use case when upgrading to a new CDash installation or
-testing new features for CDash before impacting the existing CDash site.
+  -DTRIBITS_2ND_CTEST_DROP_SITE=OFF \
+  -DTRIBITS_2ND_CTEST_DROP_LOCATION=OFF \
 
-Finally, note in package-by-package mode
+
+Configuring from scratch needed if 'dashboard' target aborts early
+------------------------------------------------------------------
+
+Finally, note that in package-by-package mode
 (i.e. ``<Project>_CTEST_DO_ALL_AT_ONCE=FALSE``) that if one kills the ``make
 dashboard`` target before it completes, then one must reconfigure from scratch
 in order to get the build directory back into the same state before the

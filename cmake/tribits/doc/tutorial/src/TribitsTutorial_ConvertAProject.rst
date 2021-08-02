@@ -86,21 +86,21 @@ package directory.  In that CmakeLists.txt file you need to have a few
 commands if you follow this list, you will be well on your way to a
 Tribits package.
 
-1. TRIBITS_PACKAGE(<package_name>) - must be called before you add any
+1. tribits_package(<package_name>) - must be called before you add any
    targets you want to build in this package.  It is a good idea to
    make it the first line in the top level CMakLists.txt file
 #. Add subdirectories 
 #. Identify your source files 
-#. Add targets to be built using TRIBITS_ADD_LIBRARY(),
-   TRIBITS_ADD_EXECUTABLE(), and TRIBITS_ADD_TEST()
-#. TRIBITS_PACKAGE_POSTPROCESS() - do not add any new targets or
+#. Add targets to be built using tribits_add_library(),
+   tribits_add_executable(), and tribits_add_test()
+#. tribits_package_postprocess() - do not add any new targets or
    include new directories after this command.  This should be the
    last line in the file
 
 You will also need to define any dependencies this package may have on
 other packages in the project.  This is done in a File called
 Dependencies.camke in a cmake directory.  All that is required in this
-file is a call to TRIBITS_PACKAGE_DEFINE_DEPENDENCIES().  Even if the
+file is a call to tribits_package_define_dependencies().  Even if the
 package does not depand on another you still need to have this.
 
 
@@ -114,23 +114,23 @@ top level file::
   #
   # A) Define the package
   #
-  TRIBITS_PACKAGE( ExamplePackageName )
+  tribits_package( ExamplePackageName )
 
   #
   # B) Set up package-specific options
   #
-  SET(example_srcs example.cpp)
-  SET(example_headers example.h)
+  set(example_srcs example.cpp)
+  set(example_headers example.h)
 
   #
   # C) Add the libraries, tests, and examples
   #
-  TRIBITS_ADD_LIBRARY(library_name SOURCES ${example_srcs} HEADERS ${example_headers})
+  tribits_add_library(library_name SOURCES ${example_srcs} HEADERS ${example_headers})
 
   #
   # D) Do standard post processing
   #
-  TRIBITS_PACKAGE_POSTPROCESS()
+  tribits_package_postprocess()
 
 You may have source files grouped together into files used to build
 the target(s) and files used to build tests of the targets.  Suppose
@@ -142,35 +142,35 @@ example.  So you would have something like::
   #  
   # A) Define the package
   #
-  TRIBITS_PACKAGE( SimpleCxx  ENABLE_SHADOWING_WARNINGS  CLEANED )
+  tribits_package( SimpleCxx  ENABLE_SHADOWING_WARNINGS  CLEANED )
 
   #
   # B) Add the libraries, tests, and examples
   #
-  ADD_SUBDIRECTORY(src)
-  TRIBITS_ADD_TEST_DIRECTORIES(test)
+  add_subdirectory(src)
+  tribits_add_test_directories(test)
   
   #
   # C) Do standard post processing
   #
-  TRIBITS_PACKAGE_POSTPROCESS()
+  tribits_package_postprocess()
 
 In this case you would also have a CMakeLists.txt file in the src/
 directory that looks like.  Note there are no calls to
-TRIBITS_PACKAGE() or TRIBITS_PACKAGE_POSTPROCESS() in this lower level
+tribits_package() or tribits_package_postprocess() in this lower level
 CMakeLists file.  These functions must be called in the top level
 CMakLists file but not in any others ::
 
   #
   # A) Set up package-specific options
   #
-  SET(example_srcs example.cpp)
-  SET(example_headers example.h)
+  set(example_srcs example.cpp)
+  set(example_headers example.h)
 
   #
   # B) Add the libraries, tests, and examples
   #
-  TRIBITS_ADD_LIBRARY(library_name SOURCES ${example_srcs} HEADERS ${example_headers})
+  tribits_add_library(library_name SOURCES ${example_srcs} HEADERS ${example_headers})
 
 
 Examples of Dependencies.cmake files
@@ -179,18 +179,18 @@ Examples of Dependencies.cmake files
 In Addition to the CMakeLists files described above, you will also
 need to tell Tribits about the dependencies this package has on other
 packages.  This is done through a call to
-TRIBITS_PACKAGE_DEFINE_DEPENDENCIES() in a package's
+tribits_package_define_dependencies() in a package's
 Dependencies.camke file. If there are no dependencies then this file
-will contain a call to TRIBITS_PACKAGE_DEFINE_DEPENDENCIES() with no
+will contain a call to tribits_package_define_dependencies() with no
 arguments::
 
   # Dependencies.camke 
-  TRIBITS_PACKAGE_DEFINE_DEPENDENCIES()
+  tribits_package_define_dependencies()
 
 Suppose this package has an optional and a required dependency on
 other packagages then the call would look something like::
 
-  TRIBITS_PACKAGE_DEFINE_DEPENDENCIES(
+  tribits_package_define_dependencies(
     LIB_REQUIRED_TPLS  name_of_required_package
     LIB_OPTIONAL_TPLS  name_of_otional_package
     )
@@ -200,14 +200,14 @@ Linking libraries
 -----------------
 
 If you are building more than one target in a package you may be
-accustomed to calling TARGET_LINK_LIBRARY() to tell camke to build the
+accustomed to calling target_link_library() to tell camke to build the
 target against some library.  If the library is being built in the
 same package as your target, you do not need to do this because
 Tribits will automatically link against any libraies built in the same
 package.  Additionally you do not need to do this for targets built in
 other packages because tribits will link against any libraries built
 in packages that the current package depends on.  If you are calling
-TARGET_LINK_LIBRARY() then it is either redundant, or it indicates
+target_link_library() then it is either redundant, or it indicates
 there is a dependancy that needs to be defined in the
 Dependencies.camke file of your package.  
 
@@ -275,7 +275,7 @@ ProjectName.cmake
 This file simply needs to set the variable PROJECT_NAME.  For
 example::
 
-  SET(PROJECT_NAME Your_Project_Name)
+  set(PROJECT_NAME Your_Project_Name)
 
 you may also want to do other stuff in here (ask Ross What?/why?)
 
@@ -285,9 +285,9 @@ PackageList.cmake
 
 Here you will define all of the packages in the project with a name, a
 location, and some options.  This is done with a call to
-TRIBITS_REPOSITORY_DEFINE_PACKAGES().  For example::
+tribits_repository_define_packages().  For example::
 
-  TRIBITS_REPOSITORY_DEFINE_PACKAGES(
+  tribits_repository_define_packages(
     TriBitsPackageA      packages/package_a         PT
     TribitsPackageB      packages/package_b         PT
   )
@@ -321,11 +321,11 @@ Package Maturity (Defaults to UM) (ask Ross what this is? to include?)
 - UM
 
 In this file you may also choose to call
-TRIBITS_DISABLE_PACKAGE_ON_PLATFORMS() if you have packages that you
+tribits_disable_package_on_platforms() if you have packages that you
 know will not work on certain platform and you want to disable them on
 those platforms::
 
-  TRIBITS_DISABLE_PACKAGE_ON_PLATFORMS(package_name
+  tribits_disable_package_on_platforms(package_name
     platform_0 platform_1 ...
   )
 
@@ -338,10 +338,10 @@ TPLsList.cmake
 
 Here you will define all of the tpls in the project.  The function
 call is very similar to defining packages above. You do this by
-calling TRIBITS_REPOSITORY_DEFINE_TPLs() with a name, a path to a tpl
+calling tribits_repository_define_tpls() with a name, a path to a tpl
 cmake find module, and a classification for each tpl.  For example::
 
- TRIBITS_REPOSITORY_DEFINE_TPLS(
+ tribits_repository_define_tpls(
    MPI  "${${PROJECT_NAME}_TRIBITS_DIR}/core/std_tpls/FindTPLMPI.cmake"  PT
    SomeTplA   "cmake/tpls/"         PT
    SomeTplB   "cmkae/tpls/"         PT
@@ -373,11 +373,11 @@ Version.cmake
 
 This file just contains version infromation for the code example::
 
-  SET(${REPOSITORY_NAME}_VERSION 1.1)
-  SET(${REPOSITORY_NAME}_MAJOR_VERSION 01)
-  SET(${REPOSITORY_NAME}_MAJOR_MINOR_VERSION 010100)
-  SET(${REPOSITORY_NAME}_VERSION_STRING "1.1 (Dev)")
-  SET(${REPOSITORY_NAME}_ENABLE_DEVELOPMENT_MODE_DEFAULT ON) # Change to 'OFF' for a release
+  set(${REPOSITORY_NAME}_VERSION 1.1)
+  set(${REPOSITORY_NAME}_MAJOR_VERSION 01)
+  set(${REPOSITORY_NAME}_MAJOR_MINOR_VERSION 010100)
+  set(${REPOSITORY_NAME}_VERSION_STRING "1.1 (Dev)")
+  set(${REPOSITORY_NAME}_ENABLE_DEVELOPMENT_MODE_DEFAULT ON) # Change to 'OFF' for a release
 
 CMakeList.txt
 -------------
@@ -389,32 +389,32 @@ repository) You will also be able to specify if packages are turned
 on/off by default. Here is the order of commandsthat you should have
 in this project level CMakeLists file:
 
-1. CMAKE_MINIMUM_VERSION() - set the minimum version of cmake required
+1. cmake_minimum_version() - set the minimum version of cmake required
    for this project o build.  If you try and run with a lower version
    then there wil be an error. You cannot specify a version lower than
    3.17.0
-#. Include ProjectNmae.cmake and call PROJECT() with argument PROJECT_NAME
+#. Include ProjectNmae.cmake and call project() with argument PROJECT_NAME
 #. specify the directory to tribits and include TriBITS.cmake
 #. specify which packages are turned on/off by default
-#. call TRIBITS_PROJECT()
+#. call tribits_project()
 
 Here is an examlpe of a project CMakeLists::
 
   # Deefine your minimum CMake version
-  CMAKE_MINIMUM_REQUIRED(VERSION 3.17.0 FATAL_ERROR)
+  cmake_minimum_required(VERSION 3.17.0 FATAL_ERROR)
 
   # Define your project name and set up major project options
-  INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/ProjectName.cmake")
-  PROJECT(${PROJECT_NAME} NONE)
+  include("${CMAKE_CURRENT_SOURCE_DIR}/ProjectName.cmake")
+  project(${PROJECT_NAME} NONE)
 
   # Pull in the TriBITS system and execute
-  SET(${PROJECT_NAME}_TRIBITS_DIR
+  set(${PROJECT_NAME}_TRIBITS_DIR
      "${CMAKE_CURRENT_LIST_DIR}/../.."  CACHE  STRING
     "TriBITS base directory (default assumes in TriBITS source tree)")
-  INCLUDE("${${PROJECT_NAME}_TRIBITS_DIR}/TriBITS.cmake")
+  include("${${PROJECT_NAME}_TRIBITS_DIR}/TriBITS.cmake")
 
   # Do all of the processing for this Tribits project
-  TRIBITS_PROJECT()
+  tribits_project()
 
 
 
@@ -428,11 +428,11 @@ by your project by adding the extra repositories in a file
 "<projectDir>/cmake/ExtraRepositoriesList.cmake" which sets up the
 repositories with a call to::
 
-  TRIBITS_PROJECT_DEFINE_EXTRA_REPOSITORIES()
+  tribits_project_define_extra_repositories()
 
 such as ::
 
-  TRIBITS_PROJECT_DEFINE_EXTRA_REPOSITORIES(
+  tribits_project_define_extra_repositories(
    <REPO_NAME> <REPO_DIR> <REPO_VCTYPE> <REPO_URL> <REPO_PACKSTAT> <REPO_CLASSIFICATION>
     ...
   )

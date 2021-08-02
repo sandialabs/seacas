@@ -37,18 +37,18 @@
 # ************************************************************************
 # @HEADER
 
-INCLUDE(AssertDefined)
-INCLUDE(AppendStringVarWithSep)
+include(AssertDefined)
+include(AppendStringVarWithSep)
 
 #
-# @FUNCTION: PRINT_NONEMPTY_VAR_WITH_SPACES()
+# @FUNCTION: print_nonempty_var_with_spaces()
 #
 # Print a defined variable giving its name then value printed with spaces
 # instead of ``';'`` but only if it is not empty.
 #
 # Usage::
 #
-#    PRINT_NONEMPTY_VAR_WITH_SPACES(<varName>  <printedVarInOut>)
+#    print_nonempty_var_with_spaces(<varName>  <printedVarInOut>)
 #
 # Prints the variable as::
 #
@@ -58,11 +58,11 @@ INCLUDE(AppendStringVarWithSep)
 # touched. If however, the varible ``$<printedVarInOut>`` is not ``TRUE`` on
 # input, then it is set to ``TRUE`` on output.
 #
-FUNCTION(PRINT_NONEMPTY_VAR_WITH_SPACES  VARIBLE_NAME  PRINTED_VAR_OUT)
-  ASSERT_DEFINED(VARIBLE_NAME)
-  IF (NOT "${${VARIBLE_NAME}}" STREQUAL "")
-    STRING(REPLACE ";" " " OUTSTR "${${VARIBLE_NAME}}")
-    MESSAGE("-- ${VARIBLE_NAME}: ${OUTSTR}")
-    SET(${PRINTED_VAR_OUT} TRUE PARENT_SCOPE)
-  ENDIF()
-ENDFUNCTION()
+function(print_nonempty_var_with_spaces  VARIBLE_NAME  PRINTED_VAR_OUT)
+  assert_defined(VARIBLE_NAME)
+  if (NOT "${${VARIBLE_NAME}}" STREQUAL "")
+    string(REPLACE ";" " " OUTSTR "${${VARIBLE_NAME}}")
+    message("-- ${VARIBLE_NAME}: ${OUTSTR}")
+    set(${PRINTED_VAR_OUT} TRUE PARENT_SCOPE)
+  endif()
+endfunction()

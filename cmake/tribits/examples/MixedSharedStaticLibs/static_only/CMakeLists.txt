@@ -1,8 +1,8 @@
-TRIBITS_SUBPACKAGE(StaticOnly)
+tribits_subpackage(StaticOnly)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-TRIBITS_ADD_LIBRARY(
+tribits_add_library(
   static_only_lib
   STATIC
   HEADERS StaticOnly.hpp
@@ -13,4 +13,4 @@ TRIBITS_ADD_LIBRARY(
   # to link a static library against an upstream shared library but the
   # opposite is not true.
 
-TRIBITS_SUBPACKAGE_POSTPROCESS()
+tribits_subpackage_postprocess()

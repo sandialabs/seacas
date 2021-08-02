@@ -44,7 +44,7 @@ project in PackageList.cmake and a couple TPLs defined in
 TPLsList.cmake.  Recall that the package definitions looks like the
 following::
 
-  TRIBITS_REPOSITORY_DEFINE_PACKAGES(
+  tribits_repository_define_packages(
     NameOfPackageA     location/of/packageA        <options>
     NameOfPackageB     path/to/packageB            <options>
   )
@@ -52,12 +52,12 @@ following::
 you must specify the name of the package and where it is located.
 Each package must contain a CmakeLists.cmake file and a
 Dependencies.cmake file.  The CmakeLists file defines targets for this
-package and must begin with a call to TRIBITS_PACKAGE() and end with
-a call to TRIBITS_PACKAGE_POSTPROCESS().  
+package and must begin with a call to tribits_package() and end with
+a call to tribits_package_postprocess().  
 
 Tribits TPLs are defined similarly in TPLsList.cmake::
 
-  TRIBITS_REPOSITORY_DEFINE_TPLS(
+  tribits_repository_define_tpls(
     NameOfTPL-1     location/of/TPL-1        <options>
     NameOfTPL-2     path/to/TPL-2            <options>
   )
