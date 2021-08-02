@@ -53,7 +53,7 @@
 #
 
 SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
-  gtest           "cmake/TPLs/"    EX
+  GTest           "cmake/TPLs/"    PT
   Zlib            "cmake/TPLs/"    SS
   HDF5            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   Pnetcdf         "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
