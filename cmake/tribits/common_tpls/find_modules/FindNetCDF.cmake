@@ -70,7 +70,7 @@ if ( NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )
 
     # Do nothing. Variables are set. No need to search again
 
-else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
+else()
 
     # If NetCDF_ROOT was defined in the environment, use it.
     # Definition from the command line will take precedence.
@@ -237,7 +237,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
     # Define the LIBRARIES and INCLUDE_DORS
     set(NetCDF_INCLUDE_DIRS ${NetCDF_INCLUDE_DIR})
     set(NetCDF_LIBRARIES    ${NetCDF_CXX_LIBRARY} ${NetCDF_C_LIBRARY})
-endif(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )
+endif()
 
 # Parallel check here
 if ( NetCDF_INCLUDE_DIR )
@@ -387,9 +387,7 @@ else()
                       PATH_SUFFIXES ${netcdf_bin_suffixes})
 
         endif()
-
     endif()
-
 
     if ( NOT NetCDF_BINARY_DIR )
         message(STATUS "Can not locate NetCDF bin directory")

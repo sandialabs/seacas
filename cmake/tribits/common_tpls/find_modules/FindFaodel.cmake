@@ -110,7 +110,7 @@ if ( Faodel_LIBRARIES AND Faodel_INCLUDE_DIRS )
 
   # Do nothing. Variables are set. No need to search again
 
-else(Faodel_LIBRARIES AND Faodel_INCLUDE_DIRS)
+else()
 
   # Cache variables
   if(Faodel_ROOT)
@@ -241,7 +241,7 @@ else(Faodel_LIBRARIES AND Faodel_INCLUDE_DIRS)
   set(Faodel_INCLUDE_DIRS ${Faodel_INCLUDE_DIR})
   set(Faodel_LIBRARIES    ${Faodel_CXX_LIBRARY} ${Faodel_LIBRARY})
 
-endif(Faodel_LIBRARIES AND Faodel_INCLUDE_DIRS )    
+endif()
 
 
 # Send useful message if everything is found
@@ -269,7 +269,7 @@ if ( NOT Faodel_FIND_QUIETLY )
 
 endif()
 # For compatability with TriBITS:
-SET(DOCSTR "List of semi-colon separated paths to look for the TPL Faodel")
+set(DOCSTR "List of semi-colon separated paths to look for the TPL Faodel")
 
 set(TPL_Faodel_LIBRARIES ${Faodel_LIBRARIES} CACHE PATH ${DOCSTR})
 set(TPL_Faodel_INCLUDE_DIRS ${Faodel_INCLUDE_DIRS} CACHE PATH ${DOCSTR})
