@@ -69,7 +69,8 @@ SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
   CUDA            "cmake/TPLs/"    SS
   fmt             "cmake/TPLs/"    SS
   Kokkos          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
-  Faodel          "${PACKAGE_SOURCE_DIR}/cmake/tpls/"    SS
-  Cereal          "${PACKAGE_SOURCE_DIR}/cmake/tpls/"    SS
-  ADIOS2          "${PACKAGE_SOURCE_DIR}/cmake/tpls/FindTPLADIOS2.cmake"    EX
+  Faodel          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
+  Cereal          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
+  ADIOS2          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/FindTPLADIOS2.cmake"    EX
   )
+
