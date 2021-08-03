@@ -60,6 +60,7 @@ namespace Iovs {
 
   CatalystManagerBase *Utils::createCatalystManagerInstance()
   {
+#ifdef IOSS_DLOPEN_ENABLED
     void *dlh = this->getDlHandle();
 
     if (!dlh) {
@@ -78,6 +79,9 @@ namespace Iovs {
                                "'CreateCatalystManagerInstance'");
     }
     return (*mkr)();
+#else
+    return nullptr;
+#endif
   }
 
   std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
