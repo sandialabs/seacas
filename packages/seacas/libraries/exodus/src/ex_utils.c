@@ -299,8 +299,8 @@ void ex__update_max_name_length(int exoid, int length)
   \internal
   \undoc
 */
-int ex__put_names(int exoid, int varid, size_t num_names, char **names, ex_entity_type obj_type,
-                  const char *subtype, const char *routine)
+int ex__put_names(int exoid, int varid, size_t num_names, char *const *names,
+                  ex_entity_type obj_type, const char *subtype, const char *routine)
 {
   EX_FUNC_ENTER();
   if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {

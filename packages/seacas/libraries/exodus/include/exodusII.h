@@ -520,7 +520,7 @@ EXODUS_EXPORT int ex_get_group_ids(int parent_id, int *num_groups, int *group_id
 EXODUS_EXPORT int ex_get_info(int exoid, char **info);
 
 EXODUS_EXPORT int ex_get_qa(int exoid, char *qa_record[][4]);
-EXODUS_EXPORT int ex_put_info(int exoid, int num_info, char *info[]);
+EXODUS_EXPORT int ex_put_info(int exoid, int num_info, char *const info[]);
 
 EXODUS_EXPORT int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4]);
 
@@ -596,7 +596,7 @@ EXODUS_EXPORT int ex_put_variable_name(int exoid, ex_entity_type obj_type, int v
                                        const char *var_name);
 
 EXODUS_EXPORT int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars,
-                                        char *var_names[]);
+                                        char *const var_names[]);
 
 EXODUS_EXPORT int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars);
 
@@ -604,7 +604,7 @@ EXODUS_EXPORT int ex_put_reduction_variable_name(int exoid, ex_entity_type obj_t
                                                  const char *var_name);
 
 EXODUS_EXPORT int ex_put_reduction_variable_names(int exoid, ex_entity_type obj_type, int num_vars,
-                                                  char *var_names[]);
+                                                  char *const var_names[]);
 
 EXODUS_EXPORT int ex_put_reduction_variable_param(int exoid, ex_entity_type obj_type, int num_vars);
 
@@ -780,11 +780,12 @@ EXODUS_EXPORT int ex_get_attr_param(int exoid, ex_entity_type obj_type, ex_entit
                                     int *num_attrs);
 
 EXODUS_EXPORT int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id,
-                                           char *elem_type[], const void_int *num_elem_this_blk,
+                                           char *const     elem_type[],
+                                           const void_int *num_elem_this_blk,
                                            const void_int *num_nodes_per_elem,
                                            const void_int *num_attr_this_blk, int define_maps);
 
-EXODUS_EXPORT int ex_put_coord_names(int exoid, char *coord_names[]);
+EXODUS_EXPORT int ex_put_coord_names(int exoid, char *const coord_names[]);
 
 EXODUS_EXPORT int ex_put_coord(int exoid, const void *x_coor, const void *y_coor,
                                const void *z_coor);
@@ -818,7 +819,7 @@ EXODUS_EXPORT int ex_put_map_param(int exoid, int num_node_maps, int num_elem_ma
 EXODUS_EXPORT int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id,
                               const char *name);
 
-EXODUS_EXPORT int ex_put_names(int exoid, ex_entity_type obj_type, char *names[]);
+EXODUS_EXPORT int ex_put_names(int exoid, ex_entity_type obj_type, char *const names[]);
 
 EXODUS_EXPORT int ex_put_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
                                           int64_t start_num, int64_t num_ent, int attrib_index,
