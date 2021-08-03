@@ -18,7 +18,6 @@
 #ifndef _WIN32
 #include <libgen.h>
 #endif
-
 #include <sys/stat.h>
 
 #ifdef _WIN32
@@ -416,7 +415,6 @@ namespace Iovs {
       bname = basename(dname);
       dname = dirname(dname);
     }
-#endif
 
     if (strcmp(bname, "sierra") == 0) {
       sierraInsPath = dname;
@@ -424,6 +422,7 @@ namespace Iovs {
 
     free(cbase);
     free(cdir);
+#endif
 
     return sierraInsPath + "/" + CATALYST_PLUGIN_PATH + "/" + sierraSystem +
            CATALYST_IOSS_CATALYST_PLUGIN_DIR;
