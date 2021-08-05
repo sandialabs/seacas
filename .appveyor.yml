@@ -44,7 +44,7 @@ build: off
 build_script:
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
+  - cmd: cmake .. -G "%CMAKE_MINGW_GENERATOR%" ^
      -DBUILD_SHARED_LIBS:BOOL=OFF ^
      -DCMAKE_BUILD_TYPE=Release ^
      -DCMAKE_CXX_FLAGS="%SUPPRESSIONS% /EHsc" ^
