@@ -58,6 +58,9 @@
   }
 
 #ifdef _WIN32
+#ifdef _MSC_VER
+#define strncasecmp strnicmp
+#endif
 char *strcasestr(char *haystack, const char *needle)
 {
   char *c;
