@@ -71,7 +71,7 @@ if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
    if(SEACASProj_ENABLE_DOXYGEN)
      find_package(Doxygen)
      if(DOXYGEN_FOUND)
-       add_custom_command(TARGET exodus POST_BUILD
+       add_custom_command(TARGET exodus_doxygen POST_BUILD
           COMMAND ${DOXYGEN_EXECUTABLE} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
           WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
           COMMENT "Generating Exodus API documentation with Doxygen" VERBATIM
