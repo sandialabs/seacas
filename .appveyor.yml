@@ -6,15 +6,13 @@ environment:
       CONDA_INSTALL_LOCN: C:\\Miniconda-x64
       MSYS2_INSTALL_LOCN: C:\msys64
       MSYS2_BIN_LOCN: C:\msys64\usr\bin
-      CMAKE_GENERATOR: "Ninja"
-      CMAKE_MINGW_GENERATOR: "MinGW Makefiles"
+      CMAKE_GENERATOR: "Visual Studio 16 2019"
+      SUPPRESSIONS: "/wd4478"
       VCPKG_DEFAULT_TRIPLET: "x64-windows"
       VCPKG_BUILD_TYPE: "release"
       LIB_ROOT: C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%
       MINGW_DIR: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin
       
-#      SUPPRESSIONS: "/wd4478"
-
 platform:
     - x64
 
@@ -48,6 +46,8 @@ build_script:
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
      -DBUILD_SHARED_LIBS:BOOL=OFF ^
      -DCMAKE_BUILD_TYPE=Release ^
+     -DCMAKE_CXX_FLAGS="%SUPPRESSIONS% /EHsc" ^
+     -DCMAKE_C_FLAGS="%SUPPRESSIONS%" ^
      -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
      -DHDF5_ROOT:PATH=%LIB_ROOT% ^
      -DMatio_INCLUDE_DIRS:PATH=%LIB_ROOT%\include ^
@@ -65,7 +65,6 @@ build_script:
      -DSEACASProj_ENABLE_Zoltan:BOOL=OFF ^
      -DSEACASProj_HIDE_DEPRECATED_CODE:BOOL=ON ^
      -DSEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON ^
-     -DSEACASExodus_ENABLE_STATIC=OFF ^
      -DTPL_ENABLE_ADIOS2:BOOL=OFF ^
      -DTPL_ENABLE_CGNS:BOOL=OFF ^
      -DTPL_ENABLE_Kokkos:BOOL=OFF ^
