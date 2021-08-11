@@ -48,8 +48,6 @@ build_script:
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
      -DBUILD_SHARED_LIBS:BOOL=OFF ^
      -DCMAKE_BUILD_TYPE=Release ^
-     -DCMAKE_CXX_FLAGS="%SUPPRESSIONS% /EHsc" ^
-     -DCMAKE_C_FLAGS="%SUPPRESSIONS%" ^
      -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
      -DHDF5_ROOT:PATH=%LIB_ROOT% ^
      -DMatio_INCLUDE_DIRS:PATH=%LIB_ROOT%\include ^
