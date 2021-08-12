@@ -2253,11 +2253,8 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks, bool count_onl
         return (EX_FATAL);
       }
       ex__compress_variable(exodusFilePtr, connid, 1);
-    }
 
-    {
       // store element type as attribute of connectivity variable
-      int connid = 0;
       status     = nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
                                static_cast<int>(std::strlen(blocks[iblk].elType)) + 1,
                                blocks[iblk].elType);
