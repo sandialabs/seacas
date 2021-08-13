@@ -12,13 +12,14 @@ import sys
 import os
 import tempfile
 import ctypes
+from contextlib import contextmanager
 
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 sys.path.append(os.path.join(path, "lib"))
 import exodus as exo
 
 
-class MyTestCase(unittest.TestCase):
+class TestAssemblies(unittest.TestCase):
 
     def setUp(self):
         exofile = exo.exodus("test-assembly.exo", mode='r')
@@ -183,6 +184,44 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(16, assemblies[7].type)
         self.assertEqual(new2.id, assemblies[7].id)
         self.assertEqual(new2.entity_list, assemblies[7].entity_list)
+
+
+class TestExodusUtilities(unittest.TestCase):
+    def setUp(self):
+        self.tempdir = tempfile.TemporaryDirectory()
+
+    def tearDown(self):
+        self.tempdir.cleanup()
+
+    def test_basename(self):
+        self.assertEqual("test", exo.basename("test.e"))
+        self.assertEqual("fake/path/to/test", exo.basename("fake/path/to/test.e"))
+
+    def test_getExodusVersion(self):
+        include_path = os.path.join(self.tempdir.name, "include")
+        os.makedirs(include_path)
+        with open(os.path.join(include_path, "exodusII.h"), 'w') as fptr:
+            fptr.write("#define EXODUS_VERSION_MAJOR 1\n")
+            fptr.write("#define EXODUS_VERSION_MINOR 22\n")
+        with swap_ACCESS_value(self.tempdir.name):
+            self.assertEqual(122, exo.getExodusVersion())
+
+    def test_getExodusVersion_not_found(self):
+        include_path = os.path.join(self.tempdir.name, "include")
+        os.makedirs(include_path)
+        with open(os.path.join(include_path, "exodusII.h"), 'w') as fptr:
+            fptr.write("#define NOT_EXODUS_VERSION 1\n")
+            fptr.write("#define ALSO_NOT_EXODUS_VERSION 22\n")
+        with swap_ACCESS_value(self.tempdir.name):
+            self.assertEqual(0, exo.getExodusVersion())
+
+
+@contextmanager
+def swap_ACCESS_value(new_access_value):
+    old_value = exo.ACCESS
+    exo.ACCESS = new_access_value
+    yield
+    exo.ACCESS = old_value
 
 
 if __name__ == '__main__':
