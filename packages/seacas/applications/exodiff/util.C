@@ -51,7 +51,23 @@ namespace {
   }
 } // namespace
 
+void Error(std::ostringstream &x)
+{
+  std::ostringstream out;
+  fmt::print(out, "exodiff: ERROR: {}", x.str());
+  ERR_OUT(out);
+  exit(EXIT_FAILURE);
+}
+
 void Error(const std::string &x)
+{
+  std::ostringstream out;
+  fmt::print(out, "exodiff: ERROR: {}", x);
+  ERR_OUT(out);
+  exit(EXIT_FAILURE);
+}
+
+void Warning(const std::string &x)
 {
   std::ostringstream out;
   fmt::print(out, "exodiff: ERROR: {}", x);

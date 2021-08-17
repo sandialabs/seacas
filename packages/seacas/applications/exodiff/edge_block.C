@@ -46,7 +46,6 @@ template <typename INT> void Edge_Block<INT>::entity_load_params()
   if (err < 0) {
     Error("Edge_Block<INT>::entity_load_params(): Failed to get edge"
           " block parameters!  Aborting...\n");
-    exit(1);
   }
 
   numEntity          = block.num_entry;
@@ -62,7 +61,6 @@ template <typename INT> void Edge_Block<INT>::entity_load_params()
         "\tnum attributes     = {}\n"
         " ... Aborting...\n",
         numEntity, num_edges_per_elmt, num_attr));
-    exit(1);
   }
 }
 
