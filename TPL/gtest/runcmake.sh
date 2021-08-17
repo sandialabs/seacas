@@ -10,23 +10,7 @@ INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 SHARED="${SHARED:-YES}"
 
-COMPILER="${COMPILER:-gnu}"
-if [ "$COMPILER" == "gnu" ]
-then
-  export CC=gcc
-fi
-if [ "$COMPILER" == "clang" ]
-then
-  export CC=clang
-fi
-if [ "$COMPILER" == "intel" ]
-then
-  export CC=icc
-fi
-if [ "$COMPILER" == "ibm" ]
-then
-  export CC=xlc
-fi
+. ${ACCESS}/TPL/compiler.sh
 
 CFLAGS="-I${INSTALL_PATH}/include"; export CFLAGS
 CPPFLAGS="-DNDEBUG"; export CPPFLAGS

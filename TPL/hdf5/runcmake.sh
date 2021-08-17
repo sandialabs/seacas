@@ -43,32 +43,7 @@ then
    LOCAL_SZIP="-DHDF5_ENABLE_SZIP_SUPPORT:BOOL=${NEEDS_SZIP} -DSZIP_INCLUDE_DIR:PATH=${INSTALL_PATH}/include -DSZIP_LIBRARY:FILEPATH=${INSTALL_PATH}/lib/libsz.${LD_EXT}"
 fi
 
-MPI="${MPI:-NO}"
-if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
-then
-  export CC=cc
-elif [ "$MPI" == "YES" ]
-then
-  export CC=mpicc
-else
-  COMPILER="${COMPILER:-gnu}"
-  if [ "$COMPILER" == "gnu" ]
-  then
-      export CC=gcc
-  fi
-  if [ "$COMPILER" == "clang" ]
-  then
-      export CC=clang
-  fi
-  if [ "$COMPILER" == "intel" ]
-  then
-      export CC=icc
-  fi
-  if [ "$COMPILER" == "ibm" ]
-  then
-      export CC=xlc
-  fi
-fi
+. ${ACCESS}/TPL/compiler.sh
 
 # If using an XLF compiler on an IBM system, may need to add the following:
 # -DCMAKE_Fortran_FLAGS="-qfixed=72" \

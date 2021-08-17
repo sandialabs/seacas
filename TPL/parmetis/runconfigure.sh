@@ -16,18 +16,11 @@ else
 fi
 
 MPI="${MPI:-YES}"
-if [ "$MPI" == "YES" ]
-then
-  if [ "$CRAY" == "YES" ]
-  then
-    export CC=cc
-  else
-    export CC=mpicc
-  fi
-else
+if [ "$MPI" != "YES" ]
    echo "MPI Must be YES"
    exit 1
 fi
+. ${ACCESS}/TPL/compiler.sh
 
 METIS_PATH=${ACCESS}/TPL/metis/METIS-5.1.0.1
 make config cc=${CC} prefix=${INSTALL_PATH} shared=${USE_SHARED} metis_path=${METIS_PATH}/src gklib_path=${METIS_PATH}/src/GKlib

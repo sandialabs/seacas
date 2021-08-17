@@ -7,37 +7,10 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-MPI="${MPI:-NO}"
-if [ "$MPI" == "YES" ]
-then
-  if [ "$CRAY" == "YES" ]
-  then
-    export CC=cc
-  else
-    export CC=mpicc
-  fi
-else
-  COMPILER="${COMPILER:-gnu}"
-  if [ "$COMPILER" == "gnu" ]
-  then
-      export CC=gcc
-  fi
-  if [ "$COMPILER" == "clang" ]
-  then
-      export CC=clang
-  fi
-  if [ "$COMPILER" == "intel" ]
-  then
-      export CC=icc
-  fi
-  if [ "$COMPILER" == "ibm" ]
-  then
-      export CC=xlc
-  fi
-fi
+. ${ACCESS}/TPL/compiler.sh
 
 rm -f config.cache
-CC="${CC}"; export CC
+
 CFLAGS="-I${INSTALL_PATH}/include"; export CFLAGS
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 

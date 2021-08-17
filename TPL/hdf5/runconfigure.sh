@@ -21,38 +21,7 @@ then
    SZIP_YES_NO="--with-szlib=${INSTALL_PATH}"
 fi
 
-MPI="${MPI:-NO}"
-if [ "$MPI" == "YES" ]
-then
-  PARALLEL_YES_NO="--enable-parallel"
-  if [ "$CRAY" == "YES" ]
-  then
-    export CC=cc
-  else
-    export CC=mpicc
-    echo "Checking MPI Version -- "
-    mpiexec --version
-  fi
-else
-  PARALLEL_YES_NO="--disable-parallel"
-  COMPILER="${COMPILER:-gnu}"
-  if [ "$COMPILER" == "gnu" ]
-  then
-      export CC=gcc
-  fi
-  if [ "$COMPILER" == "clang" ]
-  then
-      export CC=clang
-  fi
-  if [ "$COMPILER" == "intel" ]
-  then
-      export CC=icc
-  fi
-  if [ "$COMPILER" == "ibm" ]
-  then
-      export CC=xlc
-  fi
-fi
+. ${ACCESS}/TPL/compiler.sh
 
 DEBUG="${DEBUG:-NO}"
 if [ "$DEBUG" == "YES" ]

@@ -14,37 +14,7 @@ INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 SHARED="${SHARED:-YES}"
 
-if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
-then
-  export CC=cc
-  export CXX=cxx
-elif [ "$MPI" == "YES" ]
-then
-  export CC=mpicc
-  export CXX=mpicxx
-else
-  COMPILER="${COMPILER:-gnu}"
-  if [ "$COMPILER" == "gnu" ]
-  then
-      export CC=gcc
-      export CXX=g++
-  fi
-  if [ "$COMPILER" == "clang" ]
-  then
-      export CC=clang
-      export CXX=clang++
-  fi
-  if [ "$COMPILER" == "intel" ]
-  then
-      export CC=icc
-      export CXX=icpc
-  fi
-  if [ "$COMPILER" == "ibm" ]
-  then
-      export CC=xlc
-      export CXX=xlC
-  fi
-fi
+. ${ACCESS}/TPL/compiler.sh
 
 CFLAGS="-I${INSTALL_PATH}/include"; export CFLAGS
 CPPFLAGS="-DNDEBUG"; export CPPFLAGS

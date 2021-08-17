@@ -15,35 +15,7 @@ else
   USE_SHARED="0"
 fi
 
-MPI="${MPI:-NO}"
-if [ "$MPI" == "YES" ]
-then
-  export PARALLEL="--parallel"
-  if [ "$CRAY" == "YES" ]
-  then
-    export CC=cc
-  else
-    export CC=mpicc
-  fi
-else
-  COMPILER="${COMPILER:-gnu}"
-  if [ "$COMPILER" == "gnu" ]
-  then
-      export CC=gcc
-  fi
-  if [ "$COMPILER" == "clang" ]
-  then
-      export CC=clang
-  fi
-  if [ "$COMPILER" == "intel" ]
-  then
-      export CC=icc
-  fi
-  if [ "$COMPILER" == "ibm" ]
-  then
-      export CC=xlc
-  fi
-fi
+. ${ACCESS}/TPL/compiler.sh
 
 mkdir build
 cd build
