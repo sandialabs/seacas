@@ -350,7 +350,7 @@ template <typename T> inline auto make_checked(T* p, size_t) -> T* { return p; }
 // Attempts to reserve space for n extra characters in the output range.
 // Returns a pointer to the reserved range or a reference to it.
 template <typename Container, FMT_ENABLE_IF(is_contiguous<Container>::value)>
-#if FMT_CLANG_VERSION >= 307 && !FMT_ICC_VERSION
+#if FMT_CLANG_VERSION >= 307 && !FMT_ICC_VERSION && !__ibmxl__
 __attribute__((no_sanitize("undefined")))
 #endif
 inline auto
