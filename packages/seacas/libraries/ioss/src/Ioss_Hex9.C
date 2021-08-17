@@ -80,7 +80,7 @@ int Ioss::Hex9::parametric_dimension() const { return 3; }
 int Ioss::Hex9::spatial_dimension() const { return 3; }
 int Ioss::Hex9::order() const { return 1; }
 
-int Ioss::Hex9::number_corner_nodes() const { return Constants::nnode; }
+int Ioss::Hex9::number_corner_nodes() const { return 8; }
 int Ioss::Hex9::number_nodes() const { return Constants::nnode; }
 int Ioss::Hex9::number_edges() const { return Constants::nedge; }
 int Ioss::Hex9::number_faces() const { return Constants::nface; }
