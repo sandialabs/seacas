@@ -80,12 +80,6 @@ void Print_Banner(const char *prefix)
              prefix, Date());
 }
 
-// TODO(gdsjaar):  - copy node & side sets
-
-//        - copy node & element maps
-//        - copy coordinate variable names (instead of always using X,Y,Z)
-//        - more checks on success of Exodus calls
-
 // Issues: - When mapping element numbers, blocks are irrelevant.  Problem is
 //           the variables that are determined to be stored in each file are
 //           NOT independent of blocks .. in fact, that is how it determines
@@ -291,17 +285,17 @@ namespace {
     fmt::print(
         "{0}  FILE {19}: {1}\n"
         "{0}   Title: {2}\n"
-        "{0}          Dim = {3}, Nodes = {5}, Elements = {6},\n"
+        "{0}          Dim = {3}, Nodes = {5}, Elements = {6}, Faces = {20}, Edges = {21}\n"
         "{0}          Element Blocks = {4}, Face Blocks = {10}, Edge Blocks = {9}, Nodesets = {7}, "
         "Sidesets = {8}\n"
         "{0}    Vars: Global = {11}, Nodal = {12}, Element = {13}, Face = {17}, Edge = {18}, "
-        "Nodeset = {14}, "
-        "Sideset = {15}, Times = {16}\n\n",
+        "Nodeset = {14}, Sideset = {15}, Times = {16}\n\n",
         prefix, fi.realpath(), file.Title(), file.Dimension(), file.Num_Element_Blocks(),
         file.Num_Nodes(), file.Num_Elements(), file.Num_Node_Sets(), file.Num_Side_Sets(),
         file.Num_Edge_Blocks(), file.Num_Face_Blocks(), file.Num_Global_Vars(),
         file.Num_Nodal_Vars(), file.Num_Element_Vars(), file.Num_NS_Vars(), file.Num_SS_Vars(),
-        file.Num_Times(), file.Num_FB_Vars(), file.Num_EB_Vars(), count);
+        file.Num_Times(), file.Num_FB_Vars(), file.Num_EB_Vars(), count, file.Num_Faces(),
+        file.Num_Edges());
   }
 
   std::string buf;
@@ -563,6 +557,12 @@ namespace {
       }
       if (file1.Num_Elements() > max_ent) {
         max_ent = file1.Num_Elements();
+      }
+      if (file1.Num_Faces() > max_ent) {
+        max_ent = file1.Num_Faces();
+      }
+      if (file1.Num_Edges() > max_ent) {
+        max_ent = file1.Num_Edges();
       }
 
       var_vals.resize(max_ent);
@@ -2896,8 +2896,8 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},b{},e{}\tmax: {:15.8g} @ t{},b{}"
                  ",e{}\n",
                  ((interFace.eb_var_names)[i]), name_length, mm_eb[i].min_val, mm_eb[i].min_step,
-                 mm_eb[i].min_blk, elem_id_map[mm_eb[i].min_id], mm_eb[i].max_val,
-                 mm_eb[i].max_step, mm_eb[i].max_blk, elem_id_map[mm_eb[i].max_id]);
+                 mm_eb[i].min_blk, mm_eb[i].min_id + 1, mm_eb[i].max_val, mm_eb[i].max_step,
+                 mm_eb[i].max_blk, mm_eb[i].max_id + 1);
     }
   }
   else {
@@ -2909,11 +2909,11 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
     fmt::print("\nFACE BLOCK VARIABLES relative 1.e-6 floor 0.0\n");
     name_length = max_string_length(interFace.fb_var_names);
     for (i = 0; i < n; ++i) {
-      fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},b{},e{}\tmax: {:15.8g} @ t{},b{}"
-                 ",e{}\n",
+      fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},b{},f{}\tmax: {:15.8g} @ t{},b{}"
+                 ",f{}\n",
                  ((interFace.fb_var_names)[i]), name_length, mm_fb[i].min_val, mm_fb[i].min_step,
-                 mm_fb[i].min_blk, elem_id_map[mm_fb[i].min_id], mm_fb[i].max_val,
-                 mm_fb[i].max_step, mm_fb[i].max_blk, elem_id_map[mm_fb[i].max_id]);
+                 mm_fb[i].min_blk, mm_fb[i].min_id + 1, mm_fb[i].max_val, mm_fb[i].max_step,
+                 mm_fb[i].max_blk, mm_fb[i].max_id + 1);
     }
   }
   else {

@@ -956,6 +956,8 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   dimension       = info.num_dim;
   num_nodes       = info.num_nodes;
   num_elmts       = info.num_elem;
+  num_faces       = info.num_face;
+  num_edges       = info.num_edge;
   num_elmt_blocks = info.num_elem_blk;
   num_node_sets   = info.num_node_sets;
   num_side_sets   = info.num_side_sets;
