@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -57,6 +57,8 @@ public:
   int                Dimension() const { return dimension; }
   size_t             Num_Nodes() const { return num_nodes; }
   size_t             Num_Elements() const { return num_elmts; }
+  size_t             Num_Faces() const { return num_faces; }
+  size_t             Num_Edges() const { return num_edges; }
   size_t             Num_Node_Sets() const { return num_node_sets; }
   size_t             Num_Side_Sets() const { return num_side_sets; }
   size_t             Num_Edge_Blocks() const { return num_edge_blocks; }
@@ -194,6 +196,8 @@ protected:
   size_t                   num_nodes{0};
   int                      dimension{0};
   size_t                   num_elmts{0};
+  size_t                   num_faces{0};
+  size_t                   num_edges{0};
   size_t                   num_elmt_blocks{0};
   size_t                   num_node_sets{0};
   size_t                   num_side_sets{0};
