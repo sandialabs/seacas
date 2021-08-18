@@ -26,12 +26,7 @@ Edge_Block<INT>::Edge_Block(int file_id, size_t id, size_t ne) : Exo_Entity(file
   SMART_ASSERT(id > 0);
 }
 
-template <typename INT> Edge_Block<INT>::~Edge_Block()
-{
-  SMART_ASSERT(Check_State());
-
-  delete[] edgeIndex;
-}
+template <typename INT> Edge_Block<INT>::~Edge_Block() { SMART_ASSERT(Check_State()); }
 
 template <typename INT> EXOTYPE Edge_Block<INT>::exodus_type() const { return EX_EDGE_BLOCK; }
 
@@ -64,31 +59,16 @@ template <typename INT> void Edge_Block<INT>::entity_load_params()
   }
 }
 
-template <typename INT> void Edge_Block<INT>::load_edges(const INT *elmt_map) const
-{
-  if ((edgeIndex == nullptr) && numEntity > 0) {
-    edgeIndex = new INT[numEntity];
-    SMART_ASSERT(edgeIndex != nullptr);
-
-    for (size_t i = 0; i < numEntity; i++) {
-      edgeIndex[i] = i;
-    }
-    SMART_ASSERT(Check_State());
-  }
-}
-
 template <typename INT> size_t Edge_Block<INT>::Edge_Index(size_t position) const
 {
-  load_edges();
   SMART_ASSERT(position < numEntity);
-  return edgeIndex[position];
+  return position;
 }
 
 template <typename INT> int Edge_Block<INT>::Check_State() const
 {
   SMART_ASSERT(id_ >= EX_INVALID_ID);
   SMART_ASSERT(!(id_ == EX_INVALID_ID && numEntity > 0));
-  SMART_ASSERT(!(id_ == EX_INVALID_ID && edgeIndex));
 
   return 1;
 }

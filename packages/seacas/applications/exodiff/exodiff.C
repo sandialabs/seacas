@@ -1210,6 +1210,36 @@ const double *get_validated_variable(Exo_Entity *entity, int step, int vidx,
   return vals;
 }
 
+const double *get_validated_variable(Exo_Entity *entity, const TimeInterp &t2, int vidx,
+                                     const std::string &name, bool *diff_flag)
+{
+  if (entity == nullptr) {
+    return nullptr;
+  }
+  if (entity->Size() == 0) {
+    return nullptr;
+  }
+  if (!entity->is_valid_var(vidx)) {
+    return nullptr;
+  }
+
+  entity->Load_Results(t2.step1, t2.step2, t2.proportion, vidx);
+  const double *vals = entity->Get_Results(vidx);
+  if (vals == nullptr) {
+    Warning(fmt::format("Could not find variable '{}' in {} {}, file 2.\n", name,
+                        entity->short_label(), entity->Id()));
+    *diff_flag = true;
+    return vals;
+  }
+
+  if (Invalid_Values(vals, entity->Size())) {
+    Warning(fmt::format("NaN found for variable '{}' in {} {}, file 2.\n", name,
+                        entity->short_label(), entity->Id()));
+    *diff_flag = true;
+  }
+  return vals;
+}
+
 template <typename INT>
 bool summarize_element(ExoII_Read<INT> &file, int step, const std::vector<INT> &elmt_map,
                        std::vector<MinMaxData> &mm_elmt)
@@ -1459,6 +1489,20 @@ void do_summaries(ExoII_Read<INT> &file, int time_step, std::vector<MinMaxData> 
   }
 }
 
+void output_norms(Norm &norm, const std::string &name, size_t name_length)
+{
+  if (interFace.doL1Norm && norm.diff(1) > 0.0) {
+    buf = fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
+                      name_length, norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
+    DIFF_OUT(buf, fmt::color::green);
+  }
+  if (interFace.doL2Norm && norm.diff(2) > 0.0) {
+    buf = fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
+                      name_length, norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
+    DIFF_OUT(buf, fmt::color::green);
+  }
+}
+
 template <typename INT>
 bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
                   int out_file_id, std::vector<double> &gvals)
@@ -1649,18 +1693,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, cons
       }
     } // End of node iteration...
 
-    if (interFace.doL1Norm && norm.diff(1) > 0.0) {
-      buf =
-          fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
-                      name_length, norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
-      DIFF_OUT(buf, fmt::color::green);
-    }
-    if (interFace.doL2Norm && norm.diff(2) > 0.0) {
-      buf =
-          fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
-                      name_length, norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
-      DIFF_OUT(buf, fmt::color::green);
-    }
+    output_norms(norm, name, name_length);
 
     if (max_diff.diff > interFace.node_var[n_idx].value) {
       diff_flag = true;
@@ -1770,20 +1803,9 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         else {
           eblock2 = file2.Get_Element_Block_by_Id(id);
         }
-        eblock2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
-        vals2 = eblock2->Get_Results(vidx2);
-
+        vals2 = get_validated_variable(eblock2, t2, vidx2, name, &diff_flag);
         if (vals2 == nullptr) {
-          Warning(fmt::format("Could not find element variable '{}' in block {}, file 2.\n", name,
-                              eblock2->Id()));
-          diff_flag = true;
           continue;
-        }
-
-        if (Invalid_Values(vals2, eblock2->Size())) {
-          Warning(fmt::format("NaN found for element variable '{}' in block {}, file 2\n", name,
-                              eblock2->Id()));
-          diff_flag = true;
         }
       }
 
@@ -1810,7 +1832,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
             if (blocks2[bl_idx.first]->is_valid_var(vidx2)) {
               auto *tmp = blocks2[bl_idx.first]->Get_Results(vidx2);
               if (tmp != nullptr) {
-                v2 = [bl_idx.second]; // Get value from file 2.
+                v2 = tmp[bl_idx.second]; // Get value from file 2.
               }
               else {
                 v2 = vals1[e]; // Should never happen...
@@ -1858,18 +1880,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
     } // End of element block loop.
 
-    if (interFace.doL1Norm && norm.diff(1) > 0.0) {
-      buf =
-          fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
-                      name_length, norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
-      DIFF_OUT(buf, fmt::color::green);
-    }
-    if (interFace.doL2Norm && norm.diff(2) > 0.0) {
-      buf =
-          fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
-                      name_length, norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
-      DIFF_OUT(buf, fmt::color::green);
-    }
+    output_norms(norm, name, name_length);
 
     if (max_diff.diff > interFace.elmt_var[e_idx].value) {
       diff_flag = true;
@@ -1930,25 +1941,9 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       else {
         nset2 = file2.Get_Node_Set_by_Id(id);
       }
-      if (nset2 == nullptr || !nset2->is_valid_var(vidx2)) {
-        continue;
-      }
-
-      // Without mapping, get result for this nset
-      nset2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
-      const double *vals2 = nset2->Get_Results(vidx2);
-
+      const double *vals2 = get_validated_variable(nset2, t2, vidx2, name, &diff_flag);
       if (vals2 == nullptr) {
-        Warning(fmt::format("Could not find variable '{}' in nodeset {}, file 2.\n", name,
-                            nset2->Id()));
-        diff_flag = true;
         continue;
-      }
-
-      if (Invalid_Values(vals2, nset2->Size())) {
-        Warning(fmt::format("NAN found for nodeset variable '{}' in nodeset {}, file 2.\n", name,
-                            nset2->Id()));
-        diff_flag = true;
       }
 
       size_t ncount = nset1->Size();
@@ -1994,18 +1989,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       nset2->Free_Results();
     } // End of nodeset loop.
 
-    if (interFace.doL1Norm && norm.diff(1) > 0.0) {
-      buf =
-          fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
-                      name_length, norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
-      DIFF_OUT(buf, fmt::color::green);
-    }
-    if (interFace.doL2Norm && norm.diff(2) > 0.0) {
-      buf =
-          fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
-                      name_length, norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
-      DIFF_OUT(buf, fmt::color::green);
-    }
+    output_norms(norm, name, name_length);
 
     if (max_diff.diff > interFace.ns_var[e_idx].value) {
       diff_flag = true;
@@ -2069,25 +2053,9 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       else {
         sset2 = file2.Get_Side_Set_by_Id(sset1->Id());
       }
-      if (sset2 == nullptr || !sset2->is_valid_var(vidx2)) {
-        continue;
-      }
-
-      const double *vals2 = nullptr;
-      sset2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
-      vals2 = sset2->Get_Results(vidx2);
-
+      const double *vals2 = get_validated_variable(sset2, t2, vidx2, name, &diff_flag);
       if (vals2 == nullptr) {
-        Warning(fmt::format("Could not find variable '{}' in sideset {}, file 2.\n", name,
-                            sset2->Id()));
-        diff_flag = true;
         continue;
-      }
-
-      if (Invalid_Values(vals2, sset2->Size())) {
-        Warning(fmt::format("NaN found for sideset variable '{}' in sideset {}, file 2.\n", name,
-                            sset2->Id()));
-        diff_flag = true;
       }
 
       size_t ecount = sset1->Size();
@@ -2135,18 +2103,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
     if (max_diff.diff > interFace.ss_var[e_idx].value) {
       diff_flag = true;
 
-      if (interFace.doL1Norm && norm.diff(1) > 0.0) {
-        buf = fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}",
-                          name, name_length, norm.diff(1), norm.left(1), norm.right(1),
-                          norm.relative(1));
-        DIFF_OUT(buf, fmt::color::green);
-      }
-      if (interFace.doL2Norm && norm.diff(2) > 0.0) {
-        buf = fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}",
-                          name, name_length, norm.diff(2), norm.left(2), norm.right(2),
-                          norm.relative(2));
-        DIFF_OUT(buf, fmt::color::green);
-      }
+      output_norms(norm, name, name_length);
 
       if (!interFace.quiet_flag) {
         Side_Set<INT> *sset = file1.Get_Side_Set_by_Id(max_diff.blk);
@@ -2339,12 +2296,8 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
 
     for (size_t b = 0; b < file1.Num_Edge_Blocks(); ++b) {
       Edge_Block<INT> *eblock1 = file1.Get_Edge_Block_by_Index(b);
-      SMART_ASSERT(eblock1 != nullptr);
-      if (eblock1->Size() == 0) {
-        std::cout << "eblock1->Size() == 0 ...continuing...\n";
-        continue;
-      }
-      if (!eblock1->is_valid_var(vidx1)) {
+      const double *   vals1   = get_validated_variable(eblock1, step1, vidx1, name, &diff_flag);
+      if (vals1 == nullptr) {
         continue;
       }
 
@@ -2355,41 +2308,9 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       else {
         eblock2 = file2.Get_Edge_Block_by_Id(eblock1->Id());
       }
-      if (eblock2 == nullptr || !eblock2->is_valid_var(vidx2)) {
-        continue;
-      }
-
-      eblock1->Load_Results(step1, vidx1);
-      const double *vals1 = eblock1->Get_Results(vidx1);
-
-      if (vals1 == nullptr) {
-        Warning(fmt::format("Could not find variable '{}' in edge block {}, file 1.\n", name,
-                            eblock1->Id()));
-        diff_flag = true;
-        continue;
-      }
-
-      if (Invalid_Values(vals1, eblock1->Size())) {
-        Warning(fmt::format("NaN found for edge block variable '{}' in edge block {}, file 1.\n",
-                            name, eblock1->Id()));
-        diff_flag = true;
-      }
-
-      const double *vals2 = nullptr;
-      eblock2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
-      vals2 = eblock2->Get_Results(vidx2);
-
+      const double *vals2 = get_validated_variable(eblock2, t2, vidx2, name, &diff_flag);
       if (vals2 == nullptr) {
-        Warning(fmt::format("Could not find variable '{}' in edge block {}, file 2.\n", name,
-                            eblock2->Id()));
-        diff_flag = true;
         continue;
-      }
-
-      if (Invalid_Values(vals2, eblock2->Size())) {
-        Warning(fmt::format("NaN found for edge block variable '{}' in edge block {}, file 2.\n",
-                            name, eblock2->Id()));
-        diff_flag = true;
       }
 
       size_t ecount = eblock1->Size();
@@ -2437,18 +2358,7 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
     if (max_diff.diff > interFace.eb_var[e_idx].value) {
       diff_flag = true;
 
-      if (interFace.doL1Norm && norm.diff(1) > 0.0) {
-        buf = fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}",
-                          name, name_length, norm.diff(1), norm.left(1), norm.right(1),
-                          norm.relative(1));
-        DIFF_OUT(buf, fmt::color::green);
-      }
-      if (interFace.doL2Norm && norm.diff(2) > 0.0) {
-        buf = fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}",
-                          name, name_length, norm.diff(2), norm.left(2), norm.right(2),
-                          norm.relative(2));
-        DIFF_OUT(buf, fmt::color::green);
-      }
+      output_norms(norm, name, name_length);
 
       if (!interFace.quiet_flag) {
         Edge_Block<INT> *eblock = file1.Get_Edge_Block_by_Id(max_diff.blk);
@@ -2496,11 +2406,8 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
 
     for (size_t b = 0; b < file1.Num_Face_Blocks(); ++b) {
       Face_Block<INT> *fblock1 = file1.Get_Face_Block_by_Index(b);
-      SMART_ASSERT(fblock1 != nullptr);
-      if (fblock1->Size() == 0) {
-        continue;
-      }
-      if (!fblock1->is_valid_var(vidx1)) {
+      const double *   vals1   = get_validated_variable(fblock1, step1, vidx1, name, &diff_flag);
+      if (vals1 == nullptr) {
         continue;
       }
 
@@ -2511,41 +2418,9 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
       else {
         fblock2 = file2.Get_Face_Block_by_Id(fblock1->Id());
       }
-      if (fblock2 == nullptr || !fblock2->is_valid_var(vidx2)) {
-        continue;
-      }
-
-      fblock1->Load_Results(step1, vidx1);
-      const double *vals1 = fblock1->Get_Results(vidx1);
-
-      if (vals1 == nullptr) {
-        Warning(fmt::format("Could not find variable '{}' in face block {}, file 1.\n", name,
-                            fblock1->Id()));
-        diff_flag = true;
-        continue;
-      }
-
-      if (Invalid_Values(vals1, fblock1->Size())) {
-        Warning(fmt::format("NaN found for face block variable '{}' in face block {}, file 1.\n",
-                            name, fblock1->Id()));
-        diff_flag = true;
-      }
-
-      const double *vals2 = nullptr;
-      fblock2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
-      vals2 = fblock2->Get_Results(vidx2);
-
+      const double *vals2 = get_validated_variable(fblock2, t2, vidx2, name, &diff_flag);
       if (vals2 == nullptr) {
-        Warning(fmt::format("Could not find variable '{}' in face block {}, file 2.\n", name,
-                            fblock2->Id()));
-        diff_flag = true;
         continue;
-      }
-
-      if (Invalid_Values(vals2, fblock2->Size())) {
-        Warning(fmt::format("NaN found for face block variable '{}' in face block {}, file 2.\n",
-                            name, fblock2->Id()));
-        diff_flag = true;
       }
 
       size_t fcount = fblock1->Size();
@@ -2593,18 +2468,7 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
     if (max_diff.diff > interFace.fb_var[f_idx].value) {
       diff_flag = true;
 
-      if (interFace.doL1Norm && norm.diff(1) > 0.0) {
-        buf = fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}",
-                          name, name_length, norm.diff(1), norm.left(1), norm.right(1),
-                          norm.relative(1));
-        DIFF_OUT(buf, fmt::color::green);
-      }
-      if (interFace.doL2Norm && norm.diff(2) > 0.0) {
-        buf = fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}",
-                          name, name_length, norm.diff(2), norm.left(2), norm.right(2),
-                          norm.relative(2));
-        DIFF_OUT(buf, fmt::color::green);
-      }
+      output_norms(norm, name, name_length);
 
       if (!interFace.quiet_flag) {
         buf =
@@ -2739,18 +2603,7 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &         f
         ++global_elmt_index;
       }
 
-      if (interFace.doL1Norm && norm.diff(1) > 0.0) {
-        buf = fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}",
-                          name, name_length, norm.diff(1), norm.left(1), norm.right(1),
-                          norm.relative(1));
-        DIFF_OUT(buf, fmt::color::green);
-      }
-      if (interFace.doL2Norm && norm.diff(2) > 0.0) {
-        buf = fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}",
-                          name, name_length, norm.diff(2), norm.left(2), norm.right(2),
-                          norm.relative(2));
-        DIFF_OUT(buf, fmt::color::green);
-      }
+      output_norms(norm, name, name_length);
 
       if (max_diff.diff > interFace.elmt_att[tol_idx].value) {
         diff_flag = true;
