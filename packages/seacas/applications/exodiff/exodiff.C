@@ -1808,8 +1808,13 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
             auto bl_idx = file2.Global_to_Block_Local(elmt_map[global_elmt_index] + 1);
             SMART_ASSERT(blocks2[bl_idx.first] != nullptr);
             if (blocks2[bl_idx.first]->is_valid_var(vidx2)) {
-              v2 = blocks2[bl_idx.first]->Get_Results(
-                  vidx2)[bl_idx.second]; // Get value from file 2.
+              auto *tmp = blocks2[bl_idx.first]->Get_Results(vidx2);
+              if (tmp != nullptr) {
+                v2 = [bl_idx.second]; // Get value from file 2.
+              }
+              else {
+                v2 = vals1[e]; // Should never happen...
+              }
             }
             else {
               // Easiest from logic standpoint to just set v2 equal to v1 at
