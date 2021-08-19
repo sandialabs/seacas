@@ -298,6 +298,14 @@ namespace {
         file.Num_Edges());
   }
 
+  void initialize(std::vector<MinMaxData> &mm_entity, size_t size, const ToleranceType &ttype)
+  {
+    mm_entity.resize(size);
+    for (auto &mm : mm_entity) {
+      mm.type = ttype;
+    }
+  }
+
   template <typename INT> bool exodiff(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2);
 } // namespace
 
@@ -603,55 +611,14 @@ namespace {
     std::vector<MinMaxData> mm_fb;
 
     if (interFace.summary_flag) {
-      int n;
-      if ((n = interFace.glob_var_names.size()) > 0) {
-        mm_glob.resize(n);
-        for (int i = 0; i < n; i++) {
-          mm_glob[i].type = ToleranceType::mm_global;
-        }
-      }
-      if ((n = interFace.node_var_names.size()) > 0) {
-        mm_node.resize(n);
-        for (int i = 0; i < n; i++) {
-          mm_node[i].type = ToleranceType::mm_nodal;
-        }
-      }
-      if ((n = interFace.elmt_var_names.size()) > 0) {
-        mm_elmt.resize(n);
-        for (int i = 0; i < n; i++) {
-          mm_elmt[i].type = ToleranceType::mm_element;
-        }
-      }
-      if ((n = interFace.elmt_att_names.size()) > 0) {
-        mm_eatt.resize(n);
-        for (int i = 0; i < n; i++) {
-          mm_eatt[i].type = ToleranceType::mm_elematt;
-        }
-      }
-      if ((n = interFace.ns_var_names.size()) > 0) {
-        mm_ns.resize(n);
-        for (int i = 0; i < n; i++) {
-          mm_ns[i].type = ToleranceType::mm_nodeset;
-        }
-      }
-      if ((n = interFace.ss_var_names.size()) > 0) {
-        mm_ss.resize(n);
-        for (int i = 0; i < n; i++) {
-          mm_ss[i].type = ToleranceType::mm_sideset;
-        }
-      }
-      if ((n = interFace.eb_var_names.size()) > 0) {
-        mm_eb.resize(n);
-        for (int i = 0; i < n; i++) {
-          mm_eb[i].type = ToleranceType::mm_edgeblock;
-        }
-      }
-      if ((n = interFace.fb_var_names.size()) > 0) {
-        mm_fb.resize(n);
-        for (int i = 0; i < n; i++) {
-          mm_fb[i].type = ToleranceType::mm_faceblock;
-        }
-      }
+      initialize(mm_glob, interFace.glob_var_names.size(), ToleranceType::mm_global);
+      initialize(mm_node, interFace.node_var_names.size(), ToleranceType::mm_nodal);
+      initialize(mm_elmt, interFace.elmt_var_names.size(), ToleranceType::mm_element);
+      initialize(mm_eatt, interFace.elmt_att_names.size(), ToleranceType::mm_elematt);
+      initialize(mm_ns, interFace.ns_var_names.size(), ToleranceType::mm_nodeset);
+      initialize(mm_ss, interFace.ss_var_names.size(), ToleranceType::mm_sideset);
+      initialize(mm_eb, interFace.eb_var_names.size(), ToleranceType::mm_edgeblock);
+      initialize(mm_fb, interFace.fb_var_names.size(), ToleranceType::mm_faceblock);
     }
     else {
       min_num_times =
