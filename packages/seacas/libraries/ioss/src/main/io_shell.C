@@ -540,10 +540,10 @@ namespace {
 
       bool result = Ioss::Compare::compare_database(input_region1, input_region2, options);
       if (result) {
-        fmt::print(stderr, "\nDATABASES are EQUAL\n");
+        fmt::print(stderr, "\n\nDATABASES are EQUAL");
       }
       else {
-        fmt::print(stderr, "\nDATABASES are NOT equal\n");
+        fmt::print(stderr, "\n\nDATABASES are NOT equal");
       }
     } // loop over input files
   }

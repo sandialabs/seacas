@@ -16,10 +16,6 @@
 // ========================================================================
 
 namespace {
-
-  // Data space shared by most field input/output routines...
-  std::vector<char> data;
-
   void info_nodeblock(Ioss::Region &region, const Info::Interface &interFace);
   void info_edgeblock(Ioss::Region &region);
   void info_faceblock(Ioss::Region &region);
