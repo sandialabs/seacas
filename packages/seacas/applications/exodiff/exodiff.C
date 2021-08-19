@@ -298,8 +298,6 @@ namespace {
         file.Num_Edges());
   }
 
-  std::string buf;
-
   template <typename INT> bool exodiff(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2);
 } // namespace
 
@@ -691,9 +689,10 @@ namespace {
                      ts2);
         }
         else {
-          buf = fmt::format("  --------- Explicit Time step File 1: {}, {:13.7e} ~ File 2: {}, "
-                            "{:13.7e} ---------",
-                            ts1, file1.Time(ts1), ts2, t2.time);
+          std::string buf =
+              fmt::format("  --------- Explicit Time step File 1: {}, {:13.7e} ~ File 2: {}, "
+                          "{:13.7e} ---------",
+                          ts1, file1.Time(ts1), ts2, t2.time);
           DIFF_OUT(buf, fmt::color::green);
         }
       }
@@ -814,6 +813,7 @@ namespace {
         }
         else if (out_file_id < 0) {
           if (!interFace.quiet_flag) {
+            std::string buf;
             if (interFace.interpolating) {
               if (t2.step1 == -1) {
                 buf = fmt::format(
@@ -1489,16 +1489,18 @@ void do_summaries(ExoII_Read<INT> &file, int time_step, std::vector<MinMaxData> 
   }
 }
 
-void output_norms(Norm &norm, const std::string &name, size_t name_length)
+void output_norms(Norm &norm, const std::string &name)
 {
   if (interFace.doL1Norm && norm.diff(1) > 0.0) {
-    buf = fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
-                      name_length, norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
+    std::string buf =
+        fmt::format("   {:<{}} L1 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
+                    name_length(), norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
     DIFF_OUT(buf, fmt::color::green);
   }
   if (interFace.doL2Norm && norm.diff(2) > 0.0) {
-    buf = fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
-                      name_length, norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
+    std::string buf =
+        fmt::format("   {:<{}} L2 norm of diff={:14.7e} ({:11.5e} ~ {:11.5e}) rel={:14.7e}", name,
+                    name_length(), norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
     DIFF_OUT(buf, fmt::color::green);
   }
 }
@@ -1545,7 +1547,6 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
   // -------------------------------------------------------------------
   // Determine if any diffs and output to terminal
-  int name_length = max_string_length(file1.Global_Var_Names()) + 1;
   if (!interFace.quiet_flag && !interFace.glob_var_names.empty()) {
     fmt::print("Global variables:\n");
   }
@@ -1571,9 +1572,10 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       diff_flag = true;
 
       if (!interFace.quiet_flag) {
-        buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (FAILED)", name,
-                          name_length, interFace.glob_var[out_idx].abrstr(), vals1[idx1],
-                          vals2[idx2], interFace.glob_var[out_idx].Delta(vals1[idx1], vals2[idx2]));
+        std::string buf =
+            fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (FAILED)", name,
+                        name_length(), interFace.glob_var[out_idx].abrstr(), vals1[idx1],
+                        vals2[idx2], interFace.glob_var[out_idx].Delta(vals1[idx1], vals2[idx2]));
         DIFF_OUT(buf);
       }
       else {
@@ -1642,8 +1644,6 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, cons
   if (!interFace.quiet_flag && !interFace.node_var_names.empty()) {
     fmt::print("Nodal variables:\n");
   }
-  int name_length = max_string_length(file1.Nodal_Var_Names()) + 1;
-
   for (unsigned n_idx = 0; n_idx < interFace.node_var_names.size(); ++n_idx) {
     const std::string &name = (interFace.node_var_names)[n_idx];
     int idx1 = find_string(file1.Nodal_Var_Names(), name, interFace.nocase_var_names);
@@ -1679,10 +1679,10 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, cons
         double d  = interFace.node_var[n_idx].Delta(vals1[n], vals2[n2]);
         if (interFace.show_all_diffs) {
           if (d > interFace.node_var[n_idx].value) {
-            diff_flag = true;
-            buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (node {})", name,
-                              name_length, interFace.node_var[n_idx].abrstr(), vals1[n], vals2[n2],
-                              d, id_map[n]);
+            diff_flag       = true;
+            std::string buf = fmt::format(
+                "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (node {})", name, name_length(),
+                interFace.node_var[n_idx].abrstr(), vals1[n], vals2[n2], d, id_map[n]);
             DIFF_OUT(buf);
           }
         }
@@ -1693,14 +1693,15 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, cons
       }
     } // End of node iteration...
 
-    output_norms(norm, name, name_length);
+    output_norms(norm, name);
 
     if (max_diff.diff > interFace.node_var[n_idx].value) {
       diff_flag = true;
       if (!interFace.quiet_flag) {
-        buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (node {})", name,
-                          name_length, interFace.node_var[n_idx].abrstr(), max_diff.val1,
-                          max_diff.val2, max_diff.diff, id_map[max_diff.id]);
+        std::string buf =
+            fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (node {})", name,
+                        name_length(), interFace.node_var[n_idx].abrstr(), max_diff.val1,
+                        max_diff.val2, max_diff.diff, id_map[max_diff.id]);
         DIFF_OUT(buf);
       }
       else {
@@ -1725,8 +1726,6 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
   if (out_file_id >= 0) {
     SMART_ASSERT(!evals.empty());
   }
-
-  int name_length = max_string_length(interFace.elmt_var_names) + 1;
 
   if (out_file_id < 0 && !interFace.quiet_flag && !interFace.elmt_var_names.empty()) {
     fmt::print("Element variables:\n");
@@ -1851,10 +1850,10 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
           else if (interFace.show_all_diffs) {
             double d = interFace.elmt_var[e_idx].Delta(vals1[e], v2);
             if (d > interFace.elmt_var[e_idx].value) {
-              diff_flag = true;
-              buf       = fmt::format(
+              diff_flag       = true;
+              std::string buf = fmt::format(
                   "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, elmt {})", name,
-                  name_length, interFace.elmt_var[e_idx].abrstr(), vals1[e], v2, d, block_id,
+                  name_length(), interFace.elmt_var[e_idx].abrstr(), vals1[e], v2, d, block_id,
                   id_map[global_elmt_index]);
               DIFF_OUT(buf);
             }
@@ -1880,15 +1879,16 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
     } // End of element block loop.
 
-    output_norms(norm, name, name_length);
+    output_norms(norm, name);
 
     if (max_diff.diff > interFace.elmt_var[e_idx].value) {
       diff_flag = true;
 
       if (!interFace.quiet_flag) {
-        buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, elmt {})",
-                          name, name_length, interFace.elmt_var[e_idx].abrstr(), max_diff.val1,
-                          max_diff.val2, max_diff.diff, max_diff.blk, id_map[max_diff.id]);
+        std::string buf =
+            fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, elmt {})",
+                        name, name_length(), interFace.elmt_var[e_idx].abrstr(), max_diff.val1,
+                        max_diff.val2, max_diff.diff, max_diff.blk, id_map[max_diff.id]);
         DIFF_OUT(buf);
       }
       else {
@@ -1909,8 +1909,6 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
   if (out_file_id >= 0) {
     SMART_ASSERT(!vals.empty());
   }
-
-  int name_length = max_string_length(file1.NS_Var_Names()) + 1;
 
   if (out_file_id < 0 && !interFace.quiet_flag && !interFace.ns_var_names.empty()) {
     fmt::print("Nodeset variables:\n");
@@ -1959,9 +1957,9 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
             double d = interFace.ns_var[e_idx].Delta(vals1[idx1], vals2[idx2]);
             if (d > interFace.ns_var[e_idx].value) {
               diff_flag = true;
-              buf =
+              std::string buf =
                   fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})",
-                              name, name_length, interFace.ns_var[e_idx].abrstr(), vals1[idx1],
+                              name, name_length(), interFace.ns_var[e_idx].abrstr(), vals1[idx1],
                               vals2[idx2], d, nset1->Id(), e);
               DIFF_OUT(buf);
             }
@@ -1979,8 +1977,9 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         }
       }
       else {
-        buf = fmt::format("   {:<{}}     diff: nodeset node counts differ for nodeset {}", name,
-                          name_length, nset1->Id());
+        std::string buf =
+            fmt::format("   {:<{}}     diff: nodeset node counts differ for nodeset {}", name,
+                        name_length(), nset1->Id());
         DIFF_OUT(buf);
         diff_flag = true;
       }
@@ -1989,17 +1988,17 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       nset2->Free_Results();
     } // End of nodeset loop.
 
-    output_norms(norm, name, name_length);
+    output_norms(norm, name);
 
     if (max_diff.diff > interFace.ns_var[e_idx].value) {
       diff_flag = true;
 
       if (!interFace.quiet_flag) {
         Node_Set<INT> *nset = file1.Get_Node_Set_by_Id(max_diff.blk);
-        buf =
-            fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})", name,
-                        name_length, interFace.ns_var[e_idx].abrstr(), max_diff.val1, max_diff.val2,
-                        max_diff.diff, max_diff.blk, id_map[nset->Node_Id(max_diff.id) - 1]);
+        std::string    buf  = fmt::format(
+            "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, node {})", name,
+            name_length(), interFace.ns_var[e_idx].abrstr(), max_diff.val1, max_diff.val2,
+            max_diff.diff, max_diff.blk, id_map[nset->Node_Id(max_diff.id) - 1]);
         DIFF_OUT(buf);
       }
       else {
@@ -2019,8 +2018,6 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
   if (out_file_id >= 0) {
     SMART_ASSERT(!vals.empty());
   }
-
-  int name_length = max_string_length(file1.SS_Var_Names()) + 1;
 
   if (out_file_id < 0 && !interFace.quiet_flag && !interFace.ss_var_names.empty()) {
     fmt::print("Sideset variables:\n");
@@ -2070,10 +2067,10 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
           else if (interFace.show_all_diffs) {
             double d = interFace.ss_var[e_idx].Delta(vals1[ind1], vals2[ind2]);
             if (d > interFace.ss_var[e_idx].value) {
-              diff_flag = true;
-              buf       = fmt::format(
+              diff_flag       = true;
+              std::string buf = fmt::format(
                   "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}.{})", name,
-                  name_length, interFace.ss_var[e_idx].abrstr(), vals1[ind1], vals2[ind2], d,
+                  name_length(), interFace.ss_var[e_idx].abrstr(), vals1[ind1], vals2[ind2], d,
                   sset1->Id(), id_map[sset1->Side_Id(e).first - 1], (int)sset1->Side_Id(e).second);
               DIFF_OUT(buf);
             }
@@ -2090,8 +2087,9 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         }
       }
       else {
-        buf = fmt::format("   {:<{}}     diff: sideset side counts differ for sideset {}", name,
-                          name_length, sset1->Id());
+        std::string buf =
+            fmt::format("   {:<{}}     diff: sideset side counts differ for sideset {}", name,
+                        name_length(), sset1->Id());
         DIFF_OUT(buf);
         diff_flag = true;
       }
@@ -2103,15 +2101,15 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
     if (max_diff.diff > interFace.ss_var[e_idx].value) {
       diff_flag = true;
 
-      output_norms(norm, name, name_length);
+      output_norms(norm, name);
 
       if (!interFace.quiet_flag) {
         Side_Set<INT> *sset = file1.Get_Side_Set_by_Id(max_diff.blk);
-        buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}.{})",
-                          name, name_length, interFace.ss_var[e_idx].abrstr(), max_diff.val1,
-                          max_diff.val2, max_diff.diff, max_diff.blk,
-                          id_map[sset->Side_Id(max_diff.id).first - 1],
-                          (int)sset->Side_Id(max_diff.id).second);
+        std::string    buf  = fmt::format(
+            "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}.{})", name,
+            name_length(), interFace.ss_var[e_idx].abrstr(), max_diff.val1, max_diff.val2,
+            max_diff.diff, max_diff.blk, id_map[sset->Side_Id(max_diff.id).first - 1],
+            (int)sset->Side_Id(max_diff.id).second);
         DIFF_OUT(buf);
       }
       else {
@@ -2220,12 +2218,12 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
           if (interFace.show_all_diffs) {
             double d = interFace.ss_df_tol.Delta(v1, v2);
             if (d > interFace.ss_df_tol.value) {
-              diff_flag = true;
-              buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}"
-                                ".{}-{})",
-                                name, name_length, interFace.ss_df_tol.abrstr(), v1, v2, d,
-                                sset1->Id(), id_map[sset1->Side_Id(e).first - 1],
-                                (int)sset1->Side_Id(e).second, (int)i + 1);
+              diff_flag       = true;
+              std::string buf = fmt::format(
+                  "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}"
+                  ".{}-{})",
+                  name, name_length, interFace.ss_df_tol.abrstr(), v1, v2, d, sset1->Id(),
+                  id_map[sset1->Side_Id(e).first - 1], (int)sset1->Side_Id(e).second, (int)i + 1);
               DIFF_OUT(buf);
             }
           }
@@ -2237,8 +2235,8 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
       }
     }
     else {
-      buf = fmt::format("   {:<{}}     diff: sideset side counts differ for sideset {}", name,
-                        name_length, sset1->Id());
+      std::string buf = fmt::format("   {:<{}}     diff: sideset side counts differ for sideset {}",
+                                    name, name_length, sset1->Id());
       DIFF_OUT(buf);
       diff_flag = true;
     }
@@ -2252,7 +2250,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
 
     if (!interFace.quiet_flag) {
       Side_Set<INT> *sset = file1.Get_Side_Set_by_Id(max_diff.blk);
-      buf =
+      std::string    buf =
           fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (set {}, side {}.{})", name,
                       name_length, interFace.ss_df_tol.abrstr(), max_diff.val1, max_diff.val2,
                       max_diff.diff, max_diff.blk, id_map[sset->Side_Id(max_diff.id).first - 1],
@@ -2276,8 +2274,6 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
   if (out_file_id >= 0) {
     SMART_ASSERT(!vals.empty());
   }
-
-  int name_length = max_string_length(file1.EB_Var_Names()) + 1;
 
   if (out_file_id < 0 && !interFace.quiet_flag && !interFace.eb_var_names.empty()) {
     fmt::print("Edge Block variables:\n");
@@ -2325,11 +2321,11 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
           else if (interFace.show_all_diffs) {
             double d = interFace.eb_var[e_idx].Delta(vals1[ind1], vals2[ind2]);
             if (d > interFace.eb_var[e_idx].value) {
-              diff_flag = true;
-              buf       = fmt::format(
+              diff_flag       = true;
+              std::string buf = fmt::format(
                   "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (edge block {}, edge {})", name,
-                  name_length, interFace.eb_var[e_idx].abrstr(), vals1[ind1], vals2[ind2], d,
-                  eblock1->Id(), eblock1->Edge_Index(e));
+                  name_length(), interFace.eb_var[e_idx].abrstr(), vals1[ind1], vals2[ind2], d,
+                  eblock1->Id(), eblock1->Edge_Index(e) + 1);
               DIFF_OUT(buf);
             }
           }
@@ -2345,8 +2341,9 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
       }
       else {
-        buf = fmt::format("   {:<{}}     diff: edge block edge counts differ for edge block {}",
-                          name, name_length, eblock1->Id());
+        std::string buf =
+            fmt::format("   {:<{}}     diff: edge block edge counts differ for edge block {}", name,
+                        name_length(), eblock1->Id());
         DIFF_OUT(buf);
         diff_flag = true;
       }
@@ -2358,14 +2355,14 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
     if (max_diff.diff > interFace.eb_var[e_idx].value) {
       diff_flag = true;
 
-      output_norms(norm, name, name_length);
+      output_norms(norm, name);
 
       if (!interFace.quiet_flag) {
         Edge_Block<INT> *eblock = file1.Get_Edge_Block_by_Id(max_diff.blk);
-        buf                     = fmt::format(
+        std::string      buf    = fmt::format(
             "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (edge block {}, edge {})", name,
-            name_length, interFace.eb_var[e_idx].abrstr(), max_diff.val1, max_diff.val2,
-            max_diff.diff, max_diff.blk, eblock->Edge_Index(max_diff.id));
+            name_length(), interFace.eb_var[e_idx].abrstr(), max_diff.val1, max_diff.val2,
+            max_diff.diff, max_diff.blk, eblock->Edge_Index(max_diff.id) + 1);
         DIFF_OUT(buf);
       }
       else {
@@ -2386,8 +2383,6 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
   if (out_file_id >= 0) {
     SMART_ASSERT(!vals.empty());
   }
-
-  int name_length = max_string_length(file1.FB_Var_Names()) + 1;
 
   if (out_file_id < 0 && !interFace.quiet_flag && !interFace.fb_var_names.empty()) {
     fmt::print("Face Block variables:\n");
@@ -2435,11 +2430,11 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
           else if (interFace.show_all_diffs) {
             double d = interFace.fb_var[f_idx].Delta(vals1[ind1], vals2[ind2]);
             if (d > interFace.fb_var[f_idx].value) {
-              diff_flag = true;
-              buf       = fmt::format(
+              diff_flag       = true;
+              std::string buf = fmt::format(
                   "   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (face block {}, face {})", name,
-                  name_length, interFace.fb_var[f_idx].abrstr(), vals1[ind1], vals2[ind2], d,
-                  fblock1->Id(), fblock1->Face_Index(f));
+                  name_length(), interFace.fb_var[f_idx].abrstr(), vals1[ind1], vals2[ind2], d,
+                  fblock1->Id(), fblock1->Face_Index(f) + 1);
               DIFF_OUT(buf);
             }
           }
@@ -2455,8 +2450,9 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
       }
       else {
-        buf = fmt::format("   {:<{}}     diff: face block face counts differ for face block {}",
-                          name, name_length, fblock1->Id());
+        std::string buf =
+            fmt::format("   {:<{}}     diff: face block face counts differ for face block {}", name,
+                        name_length(), fblock1->Id());
         DIFF_OUT(buf);
         diff_flag = true;
       }
@@ -2468,13 +2464,13 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
     if (max_diff.diff > interFace.fb_var[f_idx].value) {
       diff_flag = true;
 
-      output_norms(norm, name, name_length);
+      output_norms(norm, name);
 
       if (!interFace.quiet_flag) {
-        buf =
+        std::string buf =
             fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (face block {}, face {})",
-                        name, name_length, interFace.fb_var[f_idx].abrstr(), max_diff.val1,
-                        max_diff.val2, max_diff.diff, max_diff.blk, max_diff.id);
+                        name, name_length(), interFace.fb_var[f_idx].abrstr(), max_diff.val1,
+                        max_diff.val2, max_diff.diff, max_diff.blk, max_diff.id + 1);
         DIFF_OUT(buf);
       }
       else {
@@ -2520,7 +2516,6 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &         f
       fmt::print("Element attributes:\n");
     }
 
-    int name_length = max_string_length(eblock1->Attribute_Names()) + 1;
     for (int idx1 = 0; idx1 < eblock1->attr_count(); idx1++) {
       size_t global_elmt_index = global_elmt_offset;
 
@@ -2588,9 +2583,9 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &         f
           double d = interFace.elmt_att[tol_idx].Delta(vals1[e], vals2[e]);
           if (d > interFace.elmt_att[tol_idx].value) {
             diff_flag = true;
-            buf =
+            std::string buf =
                 fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, elmt {})",
-                            name, name_length, interFace.elmt_att[tol_idx].abrstr(), vals1[e],
+                            name, name_length(), interFace.elmt_att[tol_idx].abrstr(), vals1[e],
                             vals2[e], d, block_id, id_map[global_elmt_index]);
             DIFF_OUT(buf);
           }
@@ -2603,15 +2598,16 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &         f
         ++global_elmt_index;
       }
 
-      output_norms(norm, name, name_length);
+      output_norms(norm, name);
 
       if (max_diff.diff > interFace.elmt_att[tol_idx].value) {
         diff_flag = true;
 
         if (!interFace.quiet_flag) {
-          buf = fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, elmt {})",
-                            name, name_length, interFace.elmt_att[tol_idx].abrstr(), max_diff.val1,
-                            max_diff.val2, max_diff.diff, max_diff.blk, id_map[max_diff.id]);
+          std::string buf =
+              fmt::format("   {:<{}} {} diff: {:14.7e} ~ {:14.7e} ={:12.5e} (block {}, elmt {})",
+                          name, name_length(), interFace.elmt_att[tol_idx].abrstr(), max_diff.val1,
+                          max_diff.val2, max_diff.diff, max_diff.blk, id_map[max_diff.id]);
           DIFF_OUT(buf);
         }
         else {
@@ -2634,7 +2630,6 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
                     std::vector<MinMaxData> &mm_eb, std::vector<MinMaxData> &mm_fb,
                     const INT *node_id_map, const INT *elem_id_map)
 {
-  int name_length = 0;
   int i;
   int n;
 
@@ -2663,10 +2658,9 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
   n = interFace.glob_var_names.size();
   if (n > 0) {
     fmt::print("GLOBAL VARIABLES relative 1.e-6 floor 0.0\n");
-    name_length = max_string_length(interFace.glob_var_names);
     for (i = 0; i < n; ++i) {
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{}\tmax: {:15.8g} @ t{}\n",
-                 ((interFace.glob_var_names)[i]), name_length, mm_glob[i].min_val,
+                 ((interFace.glob_var_names)[i]), name_length(), mm_glob[i].min_val,
                  mm_glob[i].min_step, mm_glob[i].max_val, mm_glob[i].max_step);
     }
   }
@@ -2677,10 +2671,9 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
   n = interFace.node_var_names.size();
   if (n > 0 && file1.Num_Nodes() > 0) {
     fmt::print("\nNODAL VARIABLES relative 1.e-6 floor 0.0\n");
-    name_length = max_string_length(interFace.node_var_names);
     for (i = 0; i < n; ++i) {
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},n{}\tmax: {:15.8g} @ t{},n{}\n",
-                 ((interFace.node_var_names)[i]), name_length, mm_node[i].min_val,
+                 ((interFace.node_var_names)[i]), name_length(), mm_node[i].min_val,
                  mm_node[i].min_step, node_id_map[mm_node[i].min_id], mm_node[i].max_val,
                  mm_node[i].max_step, node_id_map[mm_node[i].max_id]);
     }
@@ -2692,11 +2685,10 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
   n = interFace.elmt_var_names.size();
   if (n > 0 && file1.Num_Elements() > 0) {
     fmt::print("\nELEMENT VARIABLES relative 1.e-6 floor 0.0\n");
-    name_length = max_string_length(interFace.elmt_var_names);
     for (i = 0; i < n; ++i) {
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},b{},e{}\tmax: {:15.8g} @ t{},b{}"
                  ",e{}\n",
-                 ((interFace.elmt_var_names)[i]), name_length, mm_elmt[i].min_val,
+                 ((interFace.elmt_var_names)[i]), name_length(), mm_elmt[i].min_val,
                  mm_elmt[i].min_step, mm_elmt[i].min_blk, elem_id_map[mm_elmt[i].min_id],
                  mm_elmt[i].max_val, mm_elmt[i].max_step, mm_elmt[i].max_blk,
                  elem_id_map[mm_elmt[i].max_id]);
@@ -2709,13 +2701,12 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
   n = interFace.ns_var_names.size();
   if (n > 0) {
     fmt::print("\nNODESET VARIABLES relative 1.e-6 floor 0.0\n");
-    name_length = max_string_length(interFace.ns_var_names);
     for (i = 0; i < n; ++i) {
       Node_Set<INT> *nsmin = file1.Get_Node_Set_by_Id(mm_ns[i].min_blk);
       Node_Set<INT> *nsmax = file1.Get_Node_Set_by_Id(mm_ns[i].max_blk);
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},s{},n{}\tmax: {:15.8g} @ t{},s{}"
                  ",n{}\n",
-                 ((interFace.ns_var_names)[i]), name_length, mm_ns[i].min_val, mm_ns[i].min_step,
+                 ((interFace.ns_var_names)[i]), name_length(), mm_ns[i].min_val, mm_ns[i].min_step,
                  mm_ns[i].min_blk, node_id_map[nsmin->Node_Id(mm_ns[i].min_id) - 1],
                  mm_ns[i].max_val, mm_ns[i].max_step, mm_ns[i].max_blk,
                  node_id_map[nsmax->Node_Id(mm_ns[i].max_id) - 1]);
@@ -2728,7 +2719,6 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
   n = interFace.ss_var_names.size();
   if (n > 0) {
     fmt::print("\nSIDESET VARIABLES relative 1.e-6 floor 0.0\n");
-    name_length = max_string_length(interFace.ss_var_names);
     for (i = 0; i < n; ++i) {
       Side_Set<INT> *     ssmin    = file1.Get_Side_Set_by_Id(mm_ss[i].min_blk);
       Side_Set<INT> *     ssmax    = file1.Get_Side_Set_by_Id(mm_ss[i].max_blk);
@@ -2736,7 +2726,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
       std::pair<INT, INT> max_side = ssmax->Side_Id(mm_ss[i].max_id);
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},s{},f{}.{}\tmax: {:15.8g} @ t{},s{}"
                  ",f{}.{}\n",
-                 ((interFace.ss_var_names)[i]), name_length, mm_ss[i].min_val, mm_ss[i].min_step,
+                 ((interFace.ss_var_names)[i]), name_length(), mm_ss[i].min_val, mm_ss[i].min_step,
                  mm_ss[i].min_blk, elem_id_map[min_side.first - 1], min_side.second,
                  mm_ss[i].max_val, mm_ss[i].max_step, mm_ss[i].max_blk,
                  elem_id_map[max_side.first - 1], max_side.second);
@@ -2749,11 +2739,10 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
   n = interFace.eb_var_names.size();
   if (n > 0) {
     fmt::print("\nEDGE BLOCK VARIABLES relative 1.e-6 floor 0.0\n");
-    name_length = max_string_length(interFace.eb_var_names);
     for (i = 0; i < n; ++i) {
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},b{},e{}\tmax: {:15.8g} @ t{},b{}"
                  ",e{}\n",
-                 ((interFace.eb_var_names)[i]), name_length, mm_eb[i].min_val, mm_eb[i].min_step,
+                 ((interFace.eb_var_names)[i]), name_length(), mm_eb[i].min_val, mm_eb[i].min_step,
                  mm_eb[i].min_blk, mm_eb[i].min_id + 1, mm_eb[i].max_val, mm_eb[i].max_step,
                  mm_eb[i].max_blk, mm_eb[i].max_id + 1);
     }
@@ -2765,11 +2754,10 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
   n = interFace.fb_var_names.size();
   if (n > 0) {
     fmt::print("\nFACE BLOCK VARIABLES relative 1.e-6 floor 0.0\n");
-    name_length = max_string_length(interFace.fb_var_names);
     for (i = 0; i < n; ++i) {
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},b{},f{}\tmax: {:15.8g} @ t{},b{}"
                  ",f{}\n",
-                 ((interFace.fb_var_names)[i]), name_length, mm_fb[i].min_val, mm_fb[i].min_step,
+                 ((interFace.fb_var_names)[i]), name_length(), mm_fb[i].min_val, mm_fb[i].min_step,
                  mm_fb[i].min_blk, mm_fb[i].min_id + 1, mm_fb[i].max_val, mm_fb[i].max_step,
                  mm_fb[i].max_blk, mm_fb[i].max_id + 1);
     }

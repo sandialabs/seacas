@@ -153,9 +153,10 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
         DIFF_OUT(info, fmt::color::yellow);
       }
       if (interFace.coord_tol.type != ToleranceMode::IGNORE_) {
-        fmt::print("\nNodal coordinates will be compared .. tol: {:8g} ({}), floor: {:8g}\n",
-                   interFace.coord_tol.value, interFace.coord_tol.typestr(),
-                   interFace.coord_tol.floor);
+        fmt::print(
+            "\nNodal coordinates will be compared:\n   {:<{}} tol: {:8g} ({}), floor: {:8g}\n",
+            "...", name_length(), interFace.coord_tol.value, interFace.coord_tol.typestr(),
+            interFace.coord_tol.floor);
       }
       else {
         std::ostringstream info;
@@ -164,8 +165,8 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
       }
 
       if (interFace.time_tol.type != ToleranceMode::IGNORE_) {
-        fmt::print("Time step values will be compared  .. tol: {:8g} ({}), floor: {:8g}\n",
-                   interFace.time_tol.value, interFace.time_tol.typestr(),
+        fmt::print("Time step values will be compared:\n   {:<{}} tol: {:8g} ({}), floor: {:8g}\n",
+                   "...", name_length(), interFace.time_tol.value, interFace.time_tol.typestr(),
                    interFace.time_tol.floor);
       }
       else {
@@ -193,9 +194,10 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
                            file2.Num_SS_Vars());
       if (!interFace.ignore_sideset_df && interFace.ss_df_tol.type != ToleranceMode::IGNORE_ &&
           file1.Num_Side_Sets() > 0 && file2.Num_Side_Sets() > 0) {
-        fmt::print(
-            "Sideset Distribution Factors will be compared .. tol: {:8g} ({}), floor: {:8g}\n",
-            interFace.ss_df_tol.value, interFace.ss_df_tol.typestr(), interFace.ss_df_tol.floor);
+        fmt::print("Sideset Distribution Factors will be compared:\n   {:<{}} tol: {:8g} ({}), "
+                   "floor: {:8g}\n",
+                   "...", name_length(), interFace.ss_df_tol.value, interFace.ss_df_tol.typestr(),
+                   interFace.ss_df_tol.floor);
       }
       else {
         if (interFace.ignore_sideset_df || interFace.ss_df_tol.type == ToleranceMode::IGNORE_) {
@@ -278,12 +280,12 @@ namespace {
       fmt::print("{} variables to be compared:\n", type);
       for (unsigned v = 0; v < names.size(); ++v) {
         if (v == 0) {
-          fmt::print("{:<32} tol: {:8g} ({}), floor: {:8g}\n", names[v], tol[v].value,
-                     tol[v].typestr(), tol[v].floor);
+          fmt::print("   {:<{}} tol: {:8g} ({}), floor: {:8g}\n", names[v], name_length(),
+                     tol[v].value, tol[v].typestr(), tol[v].floor);
         }
         else {
-          fmt::print("{:<32}      {:8g} ({}),        {:8g}\n", names[v], tol[v].value,
-                     tol[v].typestr(), tol[v].floor);
+          fmt::print("   {:<{}}      {:8g} ({}),        {:8g}\n", names[v], name_length(),
+                     tol[v].value, tol[v].typestr(), tol[v].floor);
         }
       }
     }
