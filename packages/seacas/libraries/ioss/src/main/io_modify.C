@@ -996,11 +996,8 @@ namespace {
       handle_list(tokens, region, true);
       return false;
     }
-    else {
-      fmt::print(stderr, fg(fmt::color::red), "ERROR: Unrecognized attribute command.\n");
-      handle_help("attribute");
-      return false;
-    }
+    fmt::print(stderr, fg(fmt::color::red), "ERROR: Unrecognized attribute command.\n");
+    handle_help("attribute");
     return false;
   }
 
