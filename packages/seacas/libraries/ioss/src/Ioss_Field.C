@@ -243,29 +243,28 @@ bool Ioss::Field::equal_(const Ioss::Field rhs, bool quiet) const
 {
   if (Ioss::Utils::str_equal(this->name_, rhs.name_) == false) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "FIELD name mismatch ({} v. {})\n", this->name_.c_str(),
-                 rhs.name_.c_str());
+      fmt::print(Ioss::OUTPUT(), "\n\tFIELD name mismatch ({} v. {})", this->name_, rhs.name_);
     }
     return false;
   }
 
   if (this->type_ != rhs.type_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "FIELD type mismatch ({} v. {})\n", this->type_, rhs.type_);
+      fmt::print(Ioss::OUTPUT(), "\n\tFIELD type mismatch ({} v. {})", this->type_, rhs.type_);
     }
     return false;
   }
 
   if (this->role_ != rhs.role_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "FIELD role mismatch ({} v. {})\n", this->role_, rhs.role_);
+      fmt::print(Ioss::OUTPUT(), "\n\tFIELD role mismatch ({} v. {})", this->role_, rhs.role_);
     }
     return false;
   }
 
   if (this->rawCount_ != rhs.rawCount_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "FIELD rawCount mismatch ({} v. {})\n", this->rawCount_,
+      fmt::print(Ioss::OUTPUT(), "\n\tFIELD rawCount mismatch ({} v. {})", this->rawCount_,
                  rhs.rawCount_);
     }
     return false;
@@ -273,7 +272,7 @@ bool Ioss::Field::equal_(const Ioss::Field rhs, bool quiet) const
 
   if (this->transCount_ != rhs.transCount_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "FIELD transCount mismatch ({} v. {})\n", this->transCount_,
+      fmt::print(Ioss::OUTPUT(), "\n\tFIELD transCount mismatch ({} v. {})", this->transCount_,
                  rhs.transCount_);
     }
     return false;
@@ -281,7 +280,7 @@ bool Ioss::Field::equal_(const Ioss::Field rhs, bool quiet) const
 
   if (this->get_size() != rhs.get_size()) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "FIELD size mismatch ({} v. {})\n", this->get_size(),
+      fmt::print(Ioss::OUTPUT(), "\n\tFIELD size mismatch ({} v. {})", this->get_size(),
                  rhs.get_size());
     }
     return false;
