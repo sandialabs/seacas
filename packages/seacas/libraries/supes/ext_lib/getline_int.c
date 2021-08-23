@@ -183,7 +183,7 @@ static void search_back(int new_search); /* look back for current string */
 static void search_forw(int new_search); /* look forw for current string */
 static void gl_beep(void);               /* try to play a system beep sound */
 
-static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize, int tabtab);
+static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize);
 
 static char *copy_string(char *dest, char const *source, long int elements)
 {
@@ -731,7 +731,7 @@ char *getline_int(char *prompt)
         if (gl_completion_proc) {
           tmp                        = gl_pos;
           gl_buf[sizeof(gl_buf) - 1] = '\0';
-          loc = gl_do_tab_completion(gl_buf, &tmp, sizeof(gl_buf), (lastch == '\t'));
+          loc = gl_do_tab_completion(gl_buf, &tmp, sizeof(gl_buf));
           gl_buf[sizeof(gl_buf) - 1] = '\0';
           if (loc >= 0 || tmp != gl_pos)
             gl_fixup(gl_prompt, /* loc */ -2, tmp);
@@ -1537,7 +1537,7 @@ static void gl_beep(void)
 #endif
 } /* gl_beep */
 
-static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize, int tabtab)
+static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
 {
   char * startp;
   size_t startoff, amt;
