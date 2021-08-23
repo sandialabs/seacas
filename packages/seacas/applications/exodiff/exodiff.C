@@ -1289,9 +1289,6 @@ bool summarize_sideset(ExoII_Read<INT> &file, int step, std::vector<MinMaxData> 
       Error(fmt::format("Unable to find sideset variable named '{}' on database.\n", name));
     }
 
-    DiffData max_diff;
-    Norm     norm;
-
     for (size_t b = 0; b < file.Num_Side_Sets(); ++b) {
       Side_Set<INT> *sset = file.Get_Side_Set_by_Index(b);
 
