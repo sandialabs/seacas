@@ -1063,39 +1063,31 @@ namespace {
   }
 
   template <typename T>
-  bool compare_blocks(const std::vector<T *> &in_blocks_1,
-                      const std::vector<T *> &in_blocks_const_2,
+  bool compare_blocks(const std::vector<T *> &in_blocks_1, const std::vector<T *> &    in_blocks_2,
                       const Ioss::MeshCopyOptions & /* options */, std::ostringstream &buf)
   {
     bool overall_result = true;
 
-    if (in_blocks_1.size() != in_blocks_const_2.size()) {
-      fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "BLOCK", in_blocks_1.size(),
-                 in_blocks_const_2.size());
+    if (in_blocks_1.size() != in_blocks_2.size()) {
+      fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "BLOCK", in_blocks_1.size(), in_blocks_2.size());
       return false;
     }
 
-    // COPY the const input vector so that we remove elements as they're matched without
-    // affecting the original data structure.
-    std::vector<T *> in_blocks_2 = in_blocks_const_2;
-
-    if (!in_blocks_1.empty()) {
-      for (const auto &in_block_1 : in_blocks_1) {
-        typename std::vector<T *>::iterator it;
-        for (it = in_blocks_2.begin(); it != in_blocks_2.end(); it++) {
-          if (*(*it) == *in_block_1) {
-            break;
+    for (const auto &in_block_1 : in_blocks_1) {
+      const auto &name  = in_block_1->name();
+      bool        found = false;
+      for (const auto &in_block_2 : in_blocks_2) {
+        if (in_block_2->name() == name) {
+          found = true;
+          if (!in_block_1->equal(*in_block_2)) {
+            overall_result = false;
           }
+          break;
         }
-        if (it == in_blocks_2.end()) {
-          fmt::print(Ioss::WARNING(), NOTFOUND_2, "BLOCK", in_block_1->name());
-          overall_result = false;
-        }
-        else {
-          // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
-          // inadvertently match against it again
-          in_blocks_2.erase(it);
-        }
+      }
+      if (!found) {
+        fmt::print(Ioss::WARNING(), NOTFOUND_2, "BLOCK", in_block_1->name());
+        overall_result = false;
       }
     }
     return overall_result;
@@ -1157,23 +1149,21 @@ namespace {
       return false;
     }
 
-    if (!in_blocks_1.empty()) {
-      for (const auto &in_block_1 : in_blocks_1) {
-        std::vector<Ioss::StructuredBlock *>::iterator it;
-        for (it = in_blocks_2.begin(); it != in_blocks_2.end(); it++) {
-          if (*(*it) == *in_block_1) {
-            break;
+    for (const auto &in_block_1 : in_blocks_1) {
+      const auto &name  = in_block_1->name();
+      bool        found = false;
+      for (const auto &in_block_2 : in_blocks_2) {
+        if (in_block_2->name() == name) {
+          found = true;
+          if (!in_block_1->equal(*in_block_2)) {
+            overall_result = false;
           }
+          break;
         }
-        if (it == in_blocks_2.end()) {
-          fmt::print(Ioss::WARNING(), NOTFOUND_2, "", in_block_1->name());
-          overall_result = false;
-        }
-        else {
-          // Just to be sure, remove the OUTPUT nodeblock from the container so that we don't
-          // inadvertently match against it again
-          in_blocks_2.erase(it);
-        }
+      }
+      if (!found) {
+        fmt::print(Ioss::WARNING(), NOTFOUND_2, "", in_block_1->name());
+        overall_result = false;
       }
     }
     return overall_result;
@@ -1196,20 +1186,22 @@ namespace {
 
     if (!in_sets_1.empty()) {
       for (const auto &in_set_1 : in_sets_1) {
-        typename std::vector<T *>::iterator it;
-        for (it = in_sets_2.begin(); it != in_sets_2.end(); it++) {
-          if (*(*it) == *in_set_1) {
+        const auto &name = in_set_1->name();
+        // find a set in `in_sets_2` with the same name.
+        // if found, compare for equality...
+        bool found = false;
+        for (const auto &in_set_2 : in_sets_2) {
+          if (in_set_2->name() == name) {
+            found = true;
+            if (!in_set_1->equal(*in_set_2)) {
+              overall_result = false;
+            }
             break;
           }
         }
-        if (it == in_sets_2.end()) {
+        if (!found) {
           fmt::print(Ioss::WARNING(), NOTFOUND_2, "set", in_set_1->name());
           overall_result = false;
-        }
-        else {
-          // Just to be sure, remove the OUTPUT set from the container so that we don't
-          // inadvertently match against it again
-          in_sets_2.erase(it);
         }
       }
     }
@@ -1283,43 +1275,16 @@ namespace {
   }
 
   bool compare_commsets(const Ioss::Region &input_region_1, const Ioss::Region &input_region_2,
-                        const Ioss::MeshCopyOptions & /* options */, std::ostringstream &buf)
+                        const Ioss::MeshCopyOptions &options, std::ostringstream &buf)
   {
-    bool overall_result = true;
+    const auto &in_css_1 = input_region_1.get_commsets();
+    const auto &in_css_2 = input_region_2.get_commsets();
 
-    const auto &in_css_1      = input_region_1.get_commsets();
-    const auto &in_css_orig_2 = input_region_2.get_commsets();
-
-    if (in_css_1.size() != in_css_orig_2.size()) {
-      fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "COMMSET", in_css_1.size(), in_css_orig_2.size());
-      return false;
+    bool rc = compare_sets(in_css_1, in_css_2, options, buf);
+    if (!rc) {
+      fmt::print(buf, "\nCOMMSET mismatch\n");
     }
-
-    // COPY the const input vector so that we remove elements as they're matched without
-    // affecting the original data structure.
-    std::vector<Ioss::CommSet *> in_css_2 = in_css_orig_2;
-
-    if (!in_css_1.empty()) {
-      for (const auto &in_cs_1 : in_css_1) {
-        typename std::vector<Ioss::CommSet *>::iterator it;
-        for (it = in_css_2.begin(); it != in_css_2.end(); it++) {
-          if (*(*it) == *in_cs_1) {
-            break;
-          }
-        }
-        if (it == in_css_2.end()) {
-          fmt::print(Ioss::WARNING(), NOTFOUND_2, "COMMSET", in_cs_1->name());
-          overall_result = false;
-        }
-        else {
-          // Just to be sure, remove the OUTPUT set from the container so that we don't
-          // inadvertently match against it again
-          in_css_2.erase(it);
-        }
-      }
-    }
-
-    return overall_result;
+    return rc;
   }
 
   bool compare_coordinate_frames(const Ioss::Region &input_region_1,
@@ -1329,39 +1294,31 @@ namespace {
   {
     bool overall_result = true;
 
-    const auto &in_cfs_1      = input_region_1.get_coordinate_frames();
-    const auto &in_cfs_orig_2 = input_region_2.get_coordinate_frames();
+    const auto &in_cfs_1 = input_region_1.get_coordinate_frames();
+    const auto &in_cfs_2 = input_region_2.get_coordinate_frames();
 
-    if (in_cfs_1.size() != in_cfs_orig_2.size()) {
+    if (in_cfs_1.size() != in_cfs_2.size()) {
       fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "COORDINATE FRAME", in_cfs_1.size(),
-                 in_cfs_orig_2.size());
+                 in_cfs_2.size());
       return false;
     }
 
-    // COPY the const input vector so that we remove elements as they're matched without
-    // affecting the original data structure.
-    std::vector<Ioss::CoordinateFrame> in_cfs_2 = in_cfs_orig_2;
-
-    if (!in_cfs_1.empty()) {
-      for (const auto &in_cf_1 : in_cfs_1) {
-        typename std::vector<Ioss::CoordinateFrame>::iterator it;
-        for (it = in_cfs_2.begin(); it != in_cfs_2.end(); it++) {
-          if ((*it) == in_cf_1) {
-            break;
+    for (const auto &in_cf_1 : in_cfs_1) {
+      bool found = false;
+      for (const auto &in_cf_2 : in_cfs_2) {
+        if (in_cf_1.id() == in_cf_2.id()) {
+          found = true;
+          if (!in_cf_1.equal(in_cf_2)) {
+            overall_result = false;
           }
-        }
-        if (it == in_cfs_2.end()) {
-          fmt::print(Ioss::WARNING(), NOTFOUND_2, "COORDINATE FRAME", in_cf_1.id());
-          overall_result = false;
-        }
-        else {
-          // Just to be sure, remove the OUTPUT set from the container so that we don't
-          // inadvertently match against it again
-          in_cfs_2.erase(it);
+          break;
         }
       }
+      if (!found) {
+        fmt::print(Ioss::WARNING(), NOTFOUND_2, "COORDINATE FRAME", in_cf_1.id());
+        overall_result = false;
+      }
     }
-
     return overall_result;
   }
 

@@ -239,7 +239,7 @@ bool Ioss::Field::transform(void *data)
   return true;
 }
 
-bool Ioss::Field::equal_(const Ioss::Field rhs, bool quiet) const
+bool Ioss::Field::equal_(const Ioss::Field &rhs, bool quiet) const
 {
   if (Ioss::Utils::str_equal(this->name_, rhs.name_) == false) {
     if (!quiet) {
@@ -289,11 +289,11 @@ bool Ioss::Field::equal_(const Ioss::Field rhs, bool quiet) const
   return true;
 }
 
-bool Ioss::Field::operator==(const Ioss::Field rhs) const { return equal_(rhs, true); }
+bool Ioss::Field::operator==(const Ioss::Field &rhs) const { return equal_(rhs, true); }
 
-bool Ioss::Field::operator!=(const Ioss::Field rhs) const { return !(*this == rhs); }
+bool Ioss::Field::operator!=(const Ioss::Field &rhs) const { return !(*this == rhs); }
 
-bool Ioss::Field::equal(const Ioss::Field rhs) const { return equal_(rhs, false); }
+bool Ioss::Field::equal(const Ioss::Field &rhs) const { return equal_(rhs, false); }
 
 namespace {
   size_t internal_get_size(Ioss::Field::BasicType type, size_t count,

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -97,9 +97,9 @@ namespace Ioss {
     // Compare two fields (used for STL container)
     bool operator<(const Field &other) const;
 
-    bool operator==(const Ioss::Field rhs) const;
-    bool operator!=(const Ioss::Field rhs) const;
-    bool equal(const Ioss::Field rhs) const;
+    bool operator==(const Ioss::Field &rhs) const;
+    bool operator!=(const Ioss::Field &rhs) const;
+    bool equal(const Ioss::Field &rhs) const;
 
     ~Field();
 
@@ -164,7 +164,7 @@ namespace Ioss {
     const VariableType *transStorage_{}; // Storage type after transformation
 
     std::vector<Transform *> transforms_;
-    bool                     equal_(const Ioss::Field rhs, bool quiet) const;
+    bool                     equal_(const Ioss::Field &rhs, bool quiet) const;
   };
 } // namespace Ioss
 #endif
