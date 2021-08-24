@@ -33,16 +33,16 @@ function check_valid()
 }
 ### Possible subset of what is built ---
 APPLICATIONS=${APPLICATIONS:-YES}
-APPLICATIONS=`check_valid APPLICATIONS`
+APPLICATIONS=$(check_valid APPLICATIONS)
 
 LEGACY=${LEGACY:-YES}
-LEGACY=`check_valid LEGACY`
+LEGACY=$(check_valid LEGACY)
 
 FORTRAN=${FORTRAN:-YES}
-FORTRAN=`check_valid FORTRAN`
+FORTRAN=$(check_valid FORTRAN)
 
 ZOLTAN=${ZOLTAN:-YES}
-ZOLTAN=`check_valid ZOLTAN`
+ZOLTAN=$(check_valid ZOLTAN)
 
 ### Python Version...
 PYTHON_VER=${PYTHON_VER:-"3.0"}
@@ -59,7 +59,7 @@ then
   fi
 fi
 
-MPI=`check_valid MPI`
+MPI=$(check_valid MPI)
 echo "${txtgrn}MPI set to ${MPI}${txtrst}"
 
 if [ "${MPI}" == "NO" ]
@@ -71,9 +71,9 @@ then
 
   if [ "$COMPILER" == "gnu" ]
   then
-      CXX=g++
-      CC=gcc
-      FC=gfortran
+      CXX=g++-mp-11
+      CC=gcc-mp-11
+      FC=gfortran-mp-11
       CFLAGS="-Wall -Wunused -pedantic -std=c11"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
@@ -197,7 +197,7 @@ GENERATOR=${GENERATOR:-"Unix Makefiles"}
 # -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
 
 CRAY="${CRAY:-NO}"
-CRAY=`check_valid CRAY`
+CRAY=$(check_valid CRAY)
 
 if [ "${CRAY}" == "YES" ]
 then
@@ -205,7 +205,7 @@ then
 else
     SHARED="${SHARED:-YES}"
 fi
-SHARED=`check_valid SHARED`
+SHARED=$(check_valid SHARED)
 
 ### Switch for Debug or Release build:
 ### Check that both `DEBUG` and `BUILD_TYPE` are not set
@@ -236,11 +236,11 @@ fi
 ### which provides X11/Xlib.h and the libX11, then change the "YES"
 ### below to "NO". It will disable blot and fastq
 HAVE_X11=${HAVE_X11:-YES}
-HAVE_X11=`check_valid HAVE_X11`
+HAVE_X11=$(check_valid HAVE_X11)
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-NO}
-THREADSAFE=`check_valid THREADSAFE`
+THREADSAFE=$(check_valid THREADSAFE)
 
 if [ "$THREADSAFE" == "YES" ] ; then
   THREAD_SAFE_OPT="-DSEACASProj_EXTRA_LINK_FLAGS=-lpthread"
@@ -359,7 +359,7 @@ fi
 
 # Only run doxygen if me and on master branch...
 DOXYGEN=${DOXYGEN:-NO}
-DOXYGEN=`check_valid DOXYGEN`
+DOXYGEN=$(check_valid DOXYGEN)
 
 if [[ "$DOXYGEN" == "NO" && "$OS" == "Darwin" && "$MPI" == "NO" ]] ; then
     branch=$(git branch |grep \* |cut -c3-)
@@ -372,7 +372,7 @@ fi
 FC=${FC:-gfortran}
 
 EXTRA_WARNINGS=${EXTRA_WARNINGS:-NO}
-EXTRA_WARNINGS=`check_valid EXTRA_WARNINGS`
+EXTRA_WARNINGS=$(check_valid EXTRA_WARNINGS)
 
 SANITIZER=${SANITIZER:-NO}
 

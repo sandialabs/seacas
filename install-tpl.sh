@@ -47,41 +47,41 @@ function check_valid()
 
 #By default, download and then install.
 DOWNLOAD=${DOWNLOAD:-YES}
-DOWNLOAD=`check_valid DOWNLOAD`
+DOWNLOAD=$(check_valid DOWNLOAD)
 
 BUILD=${BUILD:-YES}
-BUILD=`check_valid BUILD`
+BUILD=$(check_valid BUILD)
 
 # Force downloading and installation even if the TPL already exists in lib/include
 FORCE=${FORCE:-NO}
-FORCE=`check_valid FORCE`
+FORCE=$(check_valid FORCE)
 
 DEBUG=${DEBUG:-NO}
-DEBUG=`check_valid DEBUG`
+DEBUG=$(check_valid DEBUG)
 
 # Shared libraries or static libraries?
 SHARED=${SHARED:-YES}
-SHARED=`check_valid SHARED`
+SHARED=$(check_valid SHARED)
 
 # Enable Burst-Buffer support in PnetCDF?
 BB=${BB:-NO}
-BB=`check_valid BB`
+BB=$(check_valid BB)
 
 CRAY=${CRAY:-NO}
-CRAY=`check_valid CRAY`
+CRAY=$(check_valid CRAY)
 
 # Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
 CGNS=${CGNS:-YES}
-CGNS=`check_valid CGNS`
+CGNS=$(check_valid CGNS)
 
 MATIO=${MATIO:-YES}
-MATIO=`check_valid MATIO`
+MATIO=$(check_valid MATIO)
 
 PARMETIS=${PARMETIS:-NO}
-PARMETIS=`check_valid PARMETIS`
+PARMETIS=$(check_valid PARMETIS)
 
 METIS=${METIS:-NO}
-METIS=`check_valid METIS`
+METIS=$(check_valid METIS)
 
 if [ "$PARMETIS" == "YES" ]
 then
@@ -89,10 +89,10 @@ then
 fi
 
 GNU_PARALLEL=${GNU_PARALLEL:-YES}
-GNU_PARALLEL=`check_valid GNU_PARALLEL`
+GNU_PARALLEL=$(check_valid GNU_PARALLEL)
 
 USE_ZLIB_NG=${USE_ZLIB_NG:-NO}
-USE_ZLIB_NG=`check_valid USE_ZLIB_NG`
+USE_ZLIB_NG=$(check_valid USE_ZLIB_NG)
 
 if [ "${USE_ZLIB_NG}" == "YES" ]
 then
@@ -100,37 +100,37 @@ then
 fi
 
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
-NEEDS_ZLIB=`check_valid NEEDS_ZLIB`
+NEEDS_ZLIB=$(check_valid NEEDS_ZLIB)
 
 NEEDS_SZIP=${NEEDS_SZIP:-NO}
-NEEDS_SZIP=`check_valid NEEDS_SZIP`
+NEEDS_SZIP=$(check_valid NEEDS_SZIP)
 
 USE_AEC=${USE_AEC:-NO}
-USE_AEC=`check_valid USE_AEC`
+USE_AEC=$(check_valid USE_AEC)
 
 KOKKOS=${KOKKOS:-NO}
-KOKKOS=`check_valid KOKKOS`
+KOKKOS=$(check_valid KOKKOS)
 
 H5VERSION=${H5VERSION:-V110}
 
 FAODEL=${FAODEL:-NO}
-FAODEL=`check_valid FAODEL`
+FAODEL=$(check_valid FAODEL)
 
 ADIOS2=${ADIOS2:-NO}
-ADIOS2=`check_valid ADIOS2`
+ADIOS2=$(check_valid ADIOS2)
 
 GTEST=${GTEST:-NO}
-GTEST=`check_valid GTEST`
+GTEST=$(check_valid GTEST)
 
 MPI=${MPI:-NO}
-MPI=`check_valid MPI`
+MPI=$(check_valid MPI)
 
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
 VERBOSE=${VERBOSE:-1}
 
 USE_PROXY=${USE_PROXY:-NO}
-USE_PROXY=`check_valid USE_PROXY`
+USE_PROXY=$(check_valid USE_PROXY)
 
 if [ "${USE_PROXY}" == "YES" ]
 then
