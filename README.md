@@ -6,17 +6,17 @@
 [![Github Actions -- CI Serial](https://github.com/gsjaardema/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/gsjaardema/seacas)
 [![Github Actions -- CI Variants](https://github.com/gsjaardema/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/gsjaardema/seacas)
 
-* [Get the sources](#get-the-sources)
-* [Build instructions](#build-instructions)
-* [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
-* [Parallel Build](#parallel-build)
-* [Testing](#testing)
-* [Exodus](#exodus)
-* [Trilinos](#trilinos)
-* [SPACK](#spack)
-* [License](#license)
-* [Contact information](#contact-information)
-* NOTE: The old imake-based build has been removed.
+*  [Get the sources](#get-the-sources)
+*  [Build instructions](#build-instructions)
+*  [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
+*  [Parallel Build](#parallel-build)
+*  [Testing](#testing)
+*  [Exodus](#exodus)
+*  [Trilinos](#trilinos)
+*  [SPACK](#spack)
+*  [License](#license)
+*  [Contact information](#contact-information)
+*  NOTE: The old imake-based build has been removed.
 
 ## Get the sources
 ```
@@ -26,7 +26,8 @@ This will create a directory that will be referred to as _seacas_ in
 the instructions that follow. You can rename this directory to any
 other name you desire. Set an environment variable pointing to this
 location by doing:
-```
+
+```sh
 cd seacas && export ACCESS=`pwd`
 ```
 
@@ -41,8 +42,8 @@ libraries using the `install-tpl.sh` script, or you can install them
 manually as detailed in
 [TPL-Manual-Install.md](TPL-Manual-Install.md).
 
-  * To use the script, simply type `./install-tpl.sh`
-  * The default behavior can be modified via a few environment variables:
+*  To use the script, simply type `./install-tpl.sh`
+*  The default behavior can be modified via a few environment variables:
 
 | Variable        | Values          | Default | Description |
 |-----------------|:---------------:|:-------:|-------------|
@@ -71,23 +72,23 @@ manually as detailed in
 | BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
 | JOBS            | {count} |  2   | Number of "jobs" used for simultaneous compiles |
 | SUDO            | "" or sudo | "" | If need to be superuser to install |
-  * NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
-  * The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
+*  NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
+*  The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
 
 ## Configure, Build, and Install SEACAS
 At this time, you should have all external TPL libraries built and
 installed into `${ACCESS}/lib` and `${ACCESS}/include`. You are now ready
 to configure the SEACAS CMake build.
 
-* `cd $ACCESS`
-* `mkdir build`
-* `cd build`
-* edit the `${ACCESS}cmake-config` file and adjust compilers and other settings as needed.
-* enter the command `../cmake-config` and cmake should configure everything for the build.
-* `make && make install`
-* If everything works, your applications should be in `${ACCESS}/bin`
-* To install in a different location, do `INSTALL_PATH={path_to_install} ../cmake-config`
-* The default behavior can be modified via a few environment variables:
+*  `cd $ACCESS`
+*  `mkdir build`
+*  `cd build`
+*  edit the `${ACCESS}cmake-config` file and adjust compilers and other settings as needed.
+*  enter the command `../cmake-config` and cmake should configure everything for the build.
+*  `make && make install`
+*  If everything works, your applications should be in `${ACCESS}/bin`
+*  To install in a different location, do `INSTALL_PATH={path_to_install} ../cmake-config`
+*  The default behavior can be modified via a few environment variables:
 
 | Variable        | Values          | Default | Description |
 |-----------------|:---------------:|:-------:|-------------|
@@ -110,7 +111,7 @@ to configure the SEACAS CMake build.
 | EXTRA_WARNINGS  | YES, NO | NO   | Build with extra warnings enabled; see list in `cmake-config` |
 | SANITIZER       | many    | NO   | If not NO, build using specified sanitizer; see list in `cmake-config` |
 | GENERATOR       | many    | "Unix Makefiles" | what generator should CMake use; see cmake doc |
-* The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
+*  The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
 
 ## Parallel Build
 
@@ -122,7 +123,7 @@ The only modification to the serial build described above is to make
 sure that the mpicc parallel C compiler is in your path and to add the
 `MPI=YES` argument to the `install-tpl.sh` script invocation when
 building the TPLs.  For example:
-```
+```sh
    MPI=YES ./install-tpl.sh
 ```
 This will download all requested libraries and build them with
@@ -134,19 +135,19 @@ There are a few unit tests for zoltan, exodus, ioss, and aprepro that can be run
 
 There is also a system-level test that just verifies that the applications can read and write exodus files correctly.  This test runs off of the installed applications.  To run do:
 
-* `make install`
-* `cd ../SEACAS-Test`
-* `make clean; make`
+*  `make install`
+*  `cd ../SEACAS-Test`
+*  `make clean; make`
 
 This will run through several of the SEACAS applications creating a mesh (exodus file) and then performing various manipulations on the mesh.  If the test runs successfully, there is some hope that everything has built and is running correctly.
 
 ## Exodus
 If you only want the exodus library, then follow most of the above instructions with the following exceptions:
 
-* Clone entire source tree as above. (There used to be a zip file, but difficult to keep up-to-date)
-* You only need the netcdf and optionally hdf5 libraries
-* Use the `cmake-exodus` file instead of `cmake-config`.
-* This will build, by default, a shared exodus library and also install the exodus.py and exomerge.py Python interfaces.
+*  Clone entire source tree as above. (There used to be a zip file, but difficult to keep up-to-date)
+*  You only need the netcdf and optionally hdf5 libraries
+*  Use the `cmake-exodus` file instead of `cmake-config`.
+*  This will build, by default, a shared exodus library and also install the exodus.py and exomerge.py Python interfaces.
 
 ## Trilinos
 
@@ -157,7 +158,7 @@ code in Trilinos.  The steps are to directly pull SEACAS from github
 under Trilinos and then build SEACAS under Trilinos with that version
 using `SEACAS_SOURCE_DIR_OVERRIDE`.  Here is how you do it:
 
-```
+```sh
 cd Trilinos/
 git clone https://github.com/gsjaardema/seacas.git
 cd BUILD/
@@ -170,7 +171,7 @@ The SPACK package manager (https://spack.io/) can be used to install
 SEACAS and all dependent third-party libraries.  SEACAS is a supported
 package in SPACK as of December 2018.
 
-```
+```sh
 git clone https://github.com/spack/spack.git
 . spack/share/spack/setup-env.sh
 spack install seacas~mpi   # Serial build (most common)

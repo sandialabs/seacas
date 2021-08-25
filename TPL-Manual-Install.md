@@ -3,14 +3,14 @@ are required to build SEACAS. You can build the libraries manually as
 detailed below, or you can use the `install-tpl.sh` script as
 described in the previous section.
 
- * [Zoltan](#zoltan) -- required, supplied
- * [HDF5](#hdf5) -- optional
- * [NetCDF](#netcdf) -- required with possible modifications
- * [Kokkos](#kokkos) -- optional
- * [MatIO](#matio) -- optional, required for exo2mat and mat2exo
- * [GNU Parallel](#gnu-parallel) -- optional
- * [CGNS](#cgns) -- experimental optional
- * [Faodel](#faodel) -- optional
+*  [Zoltan](#zoltan) -- required, supplied
+*  [HDF5](#hdf5) -- optional
+*  [NetCDF](#netcdf) -- required with possible modifications
+*  [Kokkos](#kokkos) -- optional
+*  [MatIO](#matio) -- optional, required for exo2mat and mat2exo
+*  [GNU Parallel](#gnu-parallel) -- optional
+*  [CGNS](#cgns) -- experimental optional
+*  [Faodel](#faodel) -- optional
 
 ## Zoltan
 A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
@@ -31,29 +31,29 @@ turn is used by exodus.  The netcdf4 capability is typically used for
 large models (>150 million elements); if you are not planning to
 create or read models of this size, you do not have to build hdf5.
 
-   * Download HDF5 from either:
-     * <https://www.hdfgroup.org/HDF5/release/obtain5.html> for HDF5-1.10.X or
-     * <https://support.hdfgroup.org/HDF5/release/obtain518.html> for HDF5-1.8.X
+*  Download HDF5 from either:
+  *  <https://www.hdfgroup.org/HDF5/release/obtain5.html> for HDF5-1.10.X or
+  *  <https://support.hdfgroup.org/HDF5/release/obtain518.html> for HDF5-1.8.X
 
-   * Download to `seacas/TPL/hdf5` and untar it
+*  Download to `seacas/TPL/hdf5` and untar it
 
-   * `cd` to that directory and enter the command:
+*  `cd` to that directory and enter the command:
      ```bash
      sh ../runconfigure.sh
      ```
 
-   * `make && make install`
+*  `make && make install`
 
 ## NetCDF
 The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required if using versions prior to 4.5.1.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
- * Download the latest netcdf-c release from <https://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
+*  Download the latest netcdf-c release from <https://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
 
- * `cd TPL/netcdf`
+*  `cd TPL/netcdf`
 
- * `tar zxvf netcdf-4.6.1.tar.gz`
+*  `tar zxvf netcdf-4.6.1.tar.gz`
 
- * If the version is *prior* to 4.5.1, then you need to modify the
+*  If the version is *prior* to 4.5.1, then you need to modify the
    following defines in
    seacas/TPL/netcdf/netcdf-4.6.1/include/netcdf.h.  Versions *4.5.1 or
    later* do not check these limits and can be run unmodified.
@@ -62,60 +62,57 @@ The most recent released version is recommended. For use with Exodus, some local
    #define NC_MAX_VARS     524288   /* max variables per file */
    ```
 
- * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF
+*  If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF
 _4` to `OFF`
 
- * `cd netcdf-4.6.1` and enter the command:
+*  `cd netcdf-4.6.1` and enter the command:
    ```bash
    mkdir build
    cd build
    sh ../../runcmake.sh
    ```
 
- * `make && make install`
+*  `make && make install`
 
 ## Kokkos
 The most recent released version is recommended. 
 
- * Download the latest Kokkos release from <https://github.com/kokkos/kokkos/releases> and put it inside `seacas/TPL/kokkos`
+*  Download the latest Kokkos release from <https://github.com/kokkos/kokkos/releases> and put it inside `seacas/TPL/kokkos`
 
- * `cd TPL/kokkos`
+*  `cd TPL/kokkos`
 
- * `tar zxvf 2.8.0.tar.gz`
+*  `tar zxvf 2.8.0.tar.gz`
 
- * `cd kokkos-2.8.0` and enter the command:
+*  `cd kokkos-2.8.0` and enter the command:
    ```bash
    mkdir build
    cd build
    sh ../../runcmake.sh
    ```
 
- * The default `runcmake.sh` will only build the `serial` device. Modify build options to tailor for your system as documented in the Kokkos documentation.
+*  The default `runcmake.sh` will only build the `serial` device. Modify build options to tailor for your system as documented in the Kokkos documentation.
 
- * `make && make install`
+*  `make && make install`
 
 ## MatIO
 The MatIO library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a MATLAB binary file.  To use this do:
 
- * Download matio via git:
-
- * `cd TPL/matio`
-
- * `git clone https://github.com/tbeu/matio.git`
-
- * `cd matio` and enter the command:
+*  Download matio via git:
+*  `cd TPL/matio`
+*  `git clone https://github.com/tbeu/matio.git`
+*  `cd matio` and enter the command:
    ```bash
    ./autogen.sh
    sh ../runconfigure.sh
    ```
 
- * `make && make install`
+*  `make && make install`
 
 ## GNU Parallel
 
 GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:
 
- * Download the most recent version of the library from <ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2>.
+*  Download the most recent version of the library from <ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2>.
    ```bash
    cd TPL/parallel
    tar jxvf /path/to/parallel-latest.tar.bz2
@@ -123,24 +120,24 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
    sh ../runconfigure.sh
    ```
 
- *  `make && make install`
+*  `make && make install`
 
 ## CGNS
 The IOSS library supports using CGNS for structured and unstructred meshes.  To use this capability, you will need to download and install the CGNS library:
 
-  * Download CGNS via git:
+*  Download CGNS via git:
     ```bash
     cd TPL/cgns
     git clone https://github.com/CGNS/CGNS.git
     ```
 
-  * Build using CMake.
-     * Modify `TPL/cgns/runcmake.sh` to meet your environment
-     * `cd CGNS`
-     * `mkdir build`
-     * `cd build`
-     * `../../runcmake.sh`
-     * `make && make install`
+*  Build using CMake.
+  *  Modify `TPL/cgns/runcmake.sh` to meet your environment
+  *  `cd CGNS`
+  *  `mkdir build`
+  *  `cd build`
+  *  `../../runcmake.sh`
+  *  `make && make install`
 
 #### Faodel
 Faodel is a collection of data management tools that Sandia is developing to improve how datasets migrate between memory and storage resources in a distributed system. For SEACAS Faodel support means adding a new backend to IOSS. This enables additional data storage capabilities and the chance to communicate data between execution spaces.
