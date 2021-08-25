@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -31,12 +31,6 @@
   }
 
 /*! \cond INTERNAL */
-struct ncdim
-{ /* dimension */
-  char   name[MAX_VAR_NAME_LENGTH];
-  size_t size;
-};
-
 struct ncvar
 { /* variable */
   char    name[MAX_VAR_NAME_LENGTH];
@@ -807,10 +801,9 @@ void update_structs(int out_exoid)
 /*! \internal */
 void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct ex__list_item **ctr_list)
 {
-  int64_t i;
   int64_t number = ex_inquire_int(out_exoid, inqcode);
   if (number > 0) {
-    for (i = 0; i < number; i++) {
+    for (int64_t i = 0; i < number; i++) {
       ex__inc_file_item(out_exoid, ctr_list);
     }
   }

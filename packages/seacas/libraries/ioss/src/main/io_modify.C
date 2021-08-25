@@ -501,10 +501,8 @@ namespace {
     }
   }
 
-  void set_db_properties(const Modify::Interface &interFace, Ioss::DatabaseIO *dbi)
+  void set_db_properties(const Modify::Interface & /* interFace */, Ioss::DatabaseIO *dbi)
   {
-    std::string inpfile = interFace.filename();
-
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
