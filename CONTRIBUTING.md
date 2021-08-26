@@ -4,11 +4,9 @@
   *   Sign on (via web) to https://github.com/gsjaardema/seacas
   *   Make sure you are signed in to github
   *   Click on the 'Fork' button near the top right of the page.
-
 *   Clone your fork of seacas with 
   *   `git clone git@github.com:<username>/seacas`.
   *   Or: `git clone https://github.com/<username>/seacas`
-
 *   Each time you clone your fork, 
   *   `git remote add upstream git@github.com:gsjaardema/seacas` to add the original seacas repository as the `upstream` remote.
   *   Or: `git remote add upstream https://github.com/gsjaardema/seacas'
@@ -62,12 +60,15 @@ though there are others that are equally valid.
 When your changes are ready to be integrated into seacas' `master` branch:
 
 *   Push your local feature branch up to your fork with `git push -u origin <branchName>`.
+
 *   Navigate to your fork of seacas on GitHub and create a new pull request:
+
   *   Be sure you choose:
     *   base fork:  `gsjaardema/seacas`
     *   base:  `master`
     *   head fork:  `<username>/seacas`
     *   compare:  `<branchName>`
+
   *   On the new pull request creation page, you'll notice the *Description* field will be pre-populated with some text.  Follow the instructions in that template to give us as much information as you can such that we can review and approve the issue as soon as is practicable.
 
 ### Feedback

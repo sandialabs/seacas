@@ -8,12 +8,6 @@ fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 SHARED="${SHARED:-YES}"
-if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
-then
-  USE_SHARED="1"
-else
-  USE_SHARED="0"
-fi
 
 . ${ACCESS}/TPL/compiler.sh
 
@@ -25,7 +19,6 @@ cmake -DCMAKE_C_COMPILER:FILEPATH=${CC} \
                -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ..
 
 cd ..
-#make config cc=${CC} prefix=${INSTALL_PATH} shared=${USE_SHARED}
 
 echo ""
 echo "         MPI: ${MPI}"

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -262,16 +262,15 @@ int ex_set_max_name_length(int exoid, int length)
 */
 void ex__update_max_name_length(int exoid, int length)
 {
-  int status;
-  int db_length = 0;
-  int rootid    = exoid & EX_FILE_ID_MASK;
-
   EX_FUNC_ENTER();
   if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_VOID();
   }
 
   /* Get current value of the maximum_name_length attribute... */
+  int status;
+  int db_length = 0;
+  int rootid    = exoid & EX_FILE_ID_MASK;
   if ((status = nc_get_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &db_length)) != NC_NOERR) {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
@@ -371,9 +370,6 @@ int ex__put_names(int exoid, int varid, size_t num_names, char *const *names,
 int ex__put_name(int exoid, int varid, size_t index, const char *name, ex_entity_type obj_type,
                  const char *subtype, const char *routine)
 {
-  int    status;
-  size_t start[2], count[2];
-
   if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -382,9 +378,10 @@ int ex__put_name(int exoid, int varid, size_t index, const char *name, ex_entity
   size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
   if (name != NULL && *name != '\0') {
-    int too_long = 0;
-    start[0]     = index;
-    start[1]     = 0;
+    size_t start[2], count[2];
+    int    too_long = 0;
+    start[0]        = index;
+    start[1]        = 0;
 
     count[0] = 1;
     count[1] = strlen(name) + 1;
@@ -399,6 +396,7 @@ int ex__put_name(int exoid, int varid, size_t index, const char *name, ex_entity
       too_long = 1;
     }
 
+    int status;
     if ((status = nc_put_vara_text(exoid, varid, start, count, name)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s name in file id %d",
@@ -761,12 +759,11 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   char *   id_dim     = NULL;
   char *   stat_table = NULL;
   int      varid, dimid;
-  size_t   dim_len, j;
+  size_t   dim_len;
   int64_t  i;
   int64_t *id_vals   = NULL;
   int *    stat_vals = NULL;
 
-  static bool           filled     = false;
   static bool           sequential = false;
   struct ex__obj_stats *tmp_stats;
   int                   status;
@@ -927,8 +924,8 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     }
 
     /* check if values in stored arrays are filled with non-zeroes */
-    filled     = true;
-    sequential = true;
+    bool filled = true;
+    sequential  = true;
     for (i = 0; i < dim_len; i++) {
       if (id_vals[i] != i + 1) {
         sequential = false;
@@ -1004,7 +1001,7 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       }
     }
     else {
-      for (j = 0; j < dim_len; j++) {
+      for (size_t j = 0; j < dim_len; j++) {
         stat_vals[j] = 1;
       }
     }

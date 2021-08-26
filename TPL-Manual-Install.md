@@ -32,6 +32,7 @@ large models (>150 million elements); if you are not planning to
 create or read models of this size, you do not have to build hdf5.
 
 *  Download HDF5 from either:
+
   *  <https://www.hdfgroup.org/HDF5/release/obtain5.html> for HDF5-1.10.X or
   *  <https://support.hdfgroup.org/HDF5/release/obtain518.html> for HDF5-1.8.X
 
@@ -139,7 +140,7 @@ The IOSS library supports using CGNS for structured and unstructred meshes.  To 
   *  `../../runcmake.sh`
   *  `make && make install`
 
-#### Faodel
+## Faodel
 Faodel is a collection of data management tools that Sandia is developing to improve how datasets migrate between memory and storage resources in a distributed system. For SEACAS Faodel support means adding a new backend to IOSS. This enables additional data storage capabilities and the chance to communicate data between execution spaces.
 
 Faodel is available at [Faodel](https://github.com/faodel/faodel). And is built here as a SEACAS TPL.

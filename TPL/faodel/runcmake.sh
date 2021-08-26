@@ -7,20 +7,6 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
-SHARED="${SHARED:-YES}"
-if [[ "$SHARED" == "YES" ]]
-then
-  OS=$(uname -s)
-  if [ "$OS" = "Darwin" ] ; then
-    LD_EXT="dylib"
-  else
-    LD_EXT="so"
-  fi
-else
-  LD_EXT="a"
-  EXTRA_DEPS="-DNC_EXTRA_DEPS=-ldl\;-lz"
-fi
-
 . ${ACCESS}/TPL/compiler.sh
 
 if [ "X$BOOST_ROOT" == "X" ] ; then

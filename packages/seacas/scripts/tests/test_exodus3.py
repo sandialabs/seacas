@@ -146,7 +146,6 @@ class TestAssemblies(unittest.TestCase):
 
     def test_get_reduction_variable_values_assembly_no_values(self):
         temp_exofile = exo.exodus("test-assembly.exo", mode='r')
-        times = temp_exofile.get_times()
         assembly_ids = temp_exofile.get_ids("EX_ASSEMBLY")
         assemblies = [temp_exofile.get_assembly(assembly) for assembly in assembly_ids]
         values = temp_exofile.get_reduction_variable_values('EX_ASSEMBLY', assemblies[5].id, 1)

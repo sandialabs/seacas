@@ -288,13 +288,17 @@ Most compute systems have a limit on the number of files that a program can have
 limit is 1024.  The files that zellij deals with are (1) the unit cell meshes and (2) the per-rank output files, and (3) the
 standard input, output, and error files. Because of this, it is somewhat easy for a zellij execution to exceed the open file
 limit.  Zellij attempts to handle this automatically using logic similar to:
+
 *  If the unit cell count exceeds the open file limit, then close each unit cell after each access before opening the next unit
 cell mesh.
+
 *  If the number of `-ranks` that zellij is creating exceeds the open file count, then determine how many output files can be
 open at one time (max_open = open file limit - 3 - number of unit cells open simultaneously) and run zellij in a `subcycle` mode
 where it is only writing to `max_open` files at one time.
+
 *  If the `max_open` calculated in the above bullet is too small, then set the mode to only open a single unit cell mesh at a
 time and redo the calculation.
+
 *  If all else fails, run with only a single unit cell file open and only a single output mesh rank file open.
 
 If the above logic fails and Zellij is unable to run without exceeding the open file count, you can specify the behavior
