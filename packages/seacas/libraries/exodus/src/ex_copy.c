@@ -175,11 +175,11 @@ int ex_copy_transient(int in_exoid, int out_exoid)
 int cpy_variable_data(int in_exoid, int out_exoid, int in_large, int mesh_only)
 {
   int          nvars; /* number of variables */
-  bool         is_filtered;
-  struct ncvar var; /* variable */
+  struct ncvar var;   /* variable */
 
   EXCHECKI(nc_inq(in_exoid, NULL, &nvars, NULL, NULL));
   for (int varid = 0; varid < nvars; varid++) {
+    bool is_filtered;
     EXCHECKI(nc_inq_var(in_exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts));
     if ((strcmp(var.name, VAR_QA_TITLE) == 0) || (strcmp(var.name, VAR_INFO) == 0)) {
       is_filtered = true;
@@ -216,14 +216,14 @@ int cpy_variables(int in_exoid, int out_exoid, int in_large, int mesh_only)
 {
   int          nvars;    /* number of variables */
   int          recdimid; /* id of unlimited dimension */
-  bool         is_filtered = false;
-  struct ncvar var; /* variable */
+  struct ncvar var;      /* variable */
 
   EXCHECKI(nc_inq(in_exoid, NULL, &nvars, NULL, &recdimid));
   for (int varid = 0; varid < nvars; varid++) {
 
     EXCHECKI(nc_inq_var(in_exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts));
 
+    bool is_filtered;
     if ((strcmp(var.name, VAR_QA_TITLE) == 0) || (strcmp(var.name, VAR_INFO) == 0)) {
       is_filtered = true;
     }
@@ -261,7 +261,6 @@ int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
   int    recdimid;   /* id of unlimited dimension */
   int    dimid;      /* dimension id */
   int    dim_out_id; /* dimension id */
-  bool   is_filtered = false;
   char   dim_nm[NC_MAX_NAME];
   size_t dim_sz;
 
@@ -273,6 +272,7 @@ int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
     /* If the dimension isn't one we specifically don't want
      * to copy (ie, number of QA or INFO records) and it
      * hasn't been defined, copy it */
+    bool is_filtered;
     if (strcmp(dim_nm, DIM_NUM_QA) == 0 || strcmp(dim_nm, DIM_NUM_INFO) == 0 ||
         strcmp(dim_nm, DIM_N4) == 0 || strcmp(dim_nm, DIM_STR) == 0 ||
         strcmp(dim_nm, DIM_LIN) == 0) {
@@ -422,14 +422,6 @@ int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
 /*! \internal */
 int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_large)
 {
-  const char *routine = NULL;
-  size_t      spatial_dim;
-  int         nbr_dim;
-  int         temp;
-
-  int dim_out_id[2];
-  int var_out_id = -1;
-
   /* Handle easiest situation first: in_large matches out_large (1) */
   if (in_large == 1) {
     return cpy_var_def(in_id, out_id, rec_dim_id, var_nm); /* OK */
@@ -439,6 +431,9 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
      option is that in_large == 0 and out_large == 1.  Also will need
      the spatial dimension, so get that now.
    */
+  int         temp;
+  size_t      spatial_dim;
+  const char *routine = NULL;
   ex__get_dimension(in_id, DIM_NUM_DIM, "dimension", &spatial_dim, &temp, routine);
 
   /* output file will have coordx, coordy, coordz (if 3d).  See if
@@ -457,12 +452,14 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
   }
 
   /* Get dimid of the num_nodes dimension in output file... */
+  int dim_out_id[2];
   EXCHECKI(nc_inq_dimid(out_id, DIM_NUM_NODES, &dim_out_id[0]));
 
   /* Define the variables in the output file */
 
   /* Define according to the EXODUS file's IO_word_size */
-  nbr_dim = 1;
+  int nbr_dim    = 1;
+  int var_out_id = -1;
   EXCHECKI(nc_def_var(out_id, VAR_COORD_X, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
   ex__compress_variable(out_id, var_out_id, 2);
   if (spatial_dim > 1) {

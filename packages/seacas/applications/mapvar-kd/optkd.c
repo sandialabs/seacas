@@ -35,6 +35,7 @@
 
 #include <float.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -299,10 +300,8 @@ void KDKILLTREE()
 void optInRegion(optkdNode *P, int Dimension, real *Points, int N, real *xmin, real *xmax,
                  int *found, int *count)
 {
-  int InsideRange;
-
   for (int index = P->lopt; index <= P->hipt; index++) {
-    InsideRange = 1;
+    bool InsideRange = true;
 
     if (Dimension == 3) {
       int inval = perm[index];
@@ -310,14 +309,14 @@ void optInRegion(optkdNode *P, int Dimension, real *Points, int N, real *xmin, r
           Points[1 * N + inval] < xmin[1] || Points[1 * N + inval] > xmax[1] ||
           Points[2 * N + inval] < xmin[2] ||
           Points[2 * N + inval] > xmax[2]) { /* P is not in the region */
-        InsideRange = 0;
+        InsideRange = false;
       }
     }
     else {
       for (int dc = 0; dc < Dimension; dc++) {
         if (Points[dc * N + perm[index]] < xmin[dc] ||
             Points[dc * N + perm[index]] > xmax[dc]) { /* P is not in the region */
-          InsideRange = 0;
+          InsideRange = false;
           break;
         }
       }
