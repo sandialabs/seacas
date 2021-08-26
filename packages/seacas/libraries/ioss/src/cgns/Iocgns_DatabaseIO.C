@@ -4,7 +4,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1312,7 +1312,6 @@ namespace Iocgns {
     if (zone > 1) { // Donor zone is always lower numbered, so zone 1 has no donor zone.
       int nconn = 0;
       CGCHECKM(cg_nconns(get_file_pointer(), base, zone, &nconn));
-      cgsize_t num_shared = 0;
       for (int i = 0; i < nconn; i++) {
         char                      connectname[CGNS_MAX_NAME_LENGTH + 1];
         CG_GridLocation_t         location;
@@ -1353,7 +1352,6 @@ namespace Iocgns {
         // A "previous" zone will have a lower zone number this this zone...
         auto donor_iter = m_zoneNameMap.find(donorname);
         if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
-          num_shared += npnts;
 #if IOSS_DEBUG_OUTPUT
           fmt::print("Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
 #endif

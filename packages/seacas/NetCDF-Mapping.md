@@ -40,25 +40,19 @@ used in an Exodus file.
   *  #ndim coordinates (1,2,3)
 
 *  Each block adds 1 + 2*#attr_on_block + #var_on_block
-
 *  Each set adds 2 + 2*#attr_on_set + #var_on_set
-
 *  Each sideset add 3 + 2*#attr_on_sset + #var_on_sset
-
 *  Each map adds 1
 
 ## Example
 If we have an exodus file with:
 *  Nodes
-
 *  5 Element blocks
   *  4 transient variables per element block
   *  2 attributes per element block
-
 *  4 Node Sets
   *  Distribution Factors defined on each set
   *  3 transient variables
-
 *  3 Side Sets
   *  Distribution Factors defined on each set
   *  2 transient variables

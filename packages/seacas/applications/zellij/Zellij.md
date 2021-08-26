@@ -242,12 +242,12 @@ algorithm that is used to break the lattice into `number_of_ranks`
 pieces each with approximately the same computational complexity.  The
 decomposition methods are:
 
-*  `-rcb` Use recursive coordinate bisection method to decompose the input mesh in a parallel run.
-*  `-rib` Use recursive inertial bisection method to decompose the input mesh in a parallel run.
-*  `-hsfc` Use hilbert space-filling curve method to decompose the input mesh in a parallel run.
-*  `-linear` Use the linear method to decompose the input mesh in a parallel run. Elements in order first `n/p` to proc 0, next to proc 1.
-*  `-cyclic` Use the cyclic method to decompose the input mesh in a parallel run.	Elements handed out to `id % proc_count`.
-*  `-random` Use the random method to decompose the input mesh in a parallel run.	Elements are assigned randomly to processors in a way that preserves balance (do _not_ use for a real run))
+*   `-rcb` Use recursive coordinate bisection method to decompose the input mesh in a parallel run.
+*   `-rib` Use recursive inertial bisection method to decompose the input mesh in a parallel run.
+*   `-hsfc` Use hilbert space-filling curve method to decompose the input mesh in a parallel run.
+*   `-linear` Use the linear method to decompose the input mesh in a parallel run. Elements in order first `n/p` to proc 0, next to proc 1.
+*   `-cyclic` Use the cyclic method to decompose the input mesh in a parallel run.	Elements handed out to `id % proc_count`.
+*   `-random` Use the random method to decompose the input mesh in a parallel run.	Elements are assigned randomly to processors in a way that preserves balance (do _not_ use for a real run))
 
 The `-hsfc` method is the default if no other decomposition method is
 specified. Note that the decomposition occurs at the _grid_ level so
