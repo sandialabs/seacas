@@ -66,6 +66,7 @@ manually as detailed in
 | METIS           | YES, NO | NO  | Should metis TPL be built (parallel decomposition). |
 | PARMETIS        | YES, NO | NO  | Should parmetis TPL be built (parallel decomposition). |
 | ADIOS2          | YES, NO | NO  | Should adios2 TPL be built. |
+| CATALYST2       | YES, NO | NO  | Should catalyst 2 TPL be built. |
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | H5VERSION       | V112, V110, V18 | V110 | Use HDF5-1.12.X, HDF5-1.10.X or HDF5-1.8.X |

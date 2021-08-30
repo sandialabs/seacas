@@ -119,6 +119,9 @@ FAODEL=$(check_valid FAODEL)
 ADIOS2=${ADIOS2:-NO}
 ADIOS2=$(check_valid ADIOS2)
 
+CATALYST2=${CATALYST2:-NO}
+CATALYST2=$(check_valid CATALYST2)
+
 GTEST=${GTEST:-NO}
 GTEST=$(check_valid GTEST)
 
@@ -197,6 +200,7 @@ if [ $# -gt 0 ]; then
 	echo "   BB           = ${BB}"
 	echo "   FAODEL       = ${FAODEL}"
 	echo "   ADIOS2       = ${ADIOS2}"
+	echo "   CATALYST2    = ${CATALYST2}"
 	echo "   GTEST        = ${GTEST}"
 	echo ""
 	echo "   SUDO         = ${SUDO} (empty unless need superuser permission via 'sudo')"
@@ -791,6 +795,48 @@ then
         fi
     else
         echo "${txtylw}+++ ADIOS2 already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+# =================== INSTALL CATALYST2  ===============
+if [ "$CATALYST2" == "YES" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatalyst.${LD_EXT} ]
+    then
+        echo "${txtgrn}+++ Catalyst2${txtrst}"
+        cd $ACCESS
+        cd TPL/catalyst2
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf catalyst
+            git clone https://gitlab.kitware.com/paraview/catalyst.git
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd catalyst
+	          git checkout master #todo: a specific version
+            rm -rf build
+            mkdir build
+            cd build
+            SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure cmake for Catalyst2. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make "VERBOSE=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build Catalyst2. exiting.${txtrst}
+                exit 1
+            fi
+        fi
+    else
+        echo "${txtylw}+++ Catalyst2 already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 

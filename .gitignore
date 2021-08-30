@@ -132,4 +132,5 @@ TPL/pnetcdf/parallel-netcdf-*/
 TPL/pnetcdf/pnetcdf-*.tar.gz
 TPL/pnetcdf/pnetcdf-*/
 TPL/faodel/faodel*/
+TPL/catalyst2/catalyst/
 build/
