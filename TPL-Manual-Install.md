@@ -34,6 +34,7 @@ create or read models of this size, you do not have to build hdf5.
 *  Download HDF5 from either:
 
   *  <https://www.hdfgroup.org/HDF5/release/obtain5.html> for HDF5-1.10.X or
+
   *  <https://support.hdfgroup.org/HDF5/release/obtain518.html> for HDF5-1.8.X
 
 *  Download to `seacas/TPL/hdf5` and untar it
@@ -99,8 +100,11 @@ The most recent released version is recommended.
 The MatIO library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a MATLAB binary file.  To use this do:
 
 *  Download matio via git:
+
 *  `cd TPL/matio`
+
 *  `git clone https://github.com/tbeu/matio.git`
+
 *  `cd matio` and enter the command:
    ```bash
    ./autogen.sh
@@ -133,11 +137,17 @@ The IOSS library supports using CGNS for structured and unstructred meshes.  To 
     ```
 
 *  Build using CMake.
+
   *  Modify `TPL/cgns/runcmake.sh` to meet your environment
+
   *  `cd CGNS`
+
   *  `mkdir build`
+
   *  `cd build`
+
   *  `../../runcmake.sh`
+
   *  `make && make install`
 
 ## Faodel

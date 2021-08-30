@@ -893,16 +893,14 @@ static void ap_gl_addchar(int c)
 static void ap_gl_yank(void)
 /* adds the kill buffer to the input buffer at current location */
 {
-  int i, len;
-
-  len = strlen(ap_gl_killbuf);
+  int len = strlen(ap_gl_killbuf);
   if (len > 0) {
     if (ap_gl_overwrite == 0) {
       if (ap_gl_cnt + len >= AP_GL_BUF_SIZE - 1)
         ap_gl_error("\n*** Error: getline(): input buffer overflow\n");
-      for (i = ap_gl_cnt; i >= ap_gl_pos; i--)
+      for (int i = ap_gl_cnt; i >= ap_gl_pos; i--)
         ap_gl_buf[i + len] = ap_gl_buf[i];
-      for (i = 0; i < len; i++)
+      for (int i = 0; i < len; i++)
         ap_gl_buf[ap_gl_pos + i] = ap_gl_killbuf[i];
       ap_gl_fixup(ap_gl_prompt, ap_gl_pos, ap_gl_pos + len);
     }
@@ -912,7 +910,7 @@ static void ap_gl_yank(void)
           ap_gl_error("\n*** Error: getline(): input buffer overflow\n");
         ap_gl_buf[ap_gl_pos + len] = 0;
       }
-      for (i = 0; i < len; i++)
+      for (int i = 0; i < len; i++)
         ap_gl_buf[ap_gl_pos + i] = ap_gl_killbuf[i];
       ap_gl_extent = len;
       ap_gl_fixup(ap_gl_prompt, ap_gl_pos, ap_gl_pos + len);
@@ -925,10 +923,8 @@ static void ap_gl_yank(void)
 static void ap_gl_transpose(void)
 /* switch character under cursor and to left of cursor */
 {
-  int c;
-
   if (ap_gl_pos > 0 && ap_gl_cnt > ap_gl_pos) {
-    c                        = ap_gl_buf[ap_gl_pos - 1];
+    int c                    = ap_gl_buf[ap_gl_pos - 1];
     ap_gl_buf[ap_gl_pos - 1] = ap_gl_buf[ap_gl_pos];
     ap_gl_buf[ap_gl_pos]     = (char)c;
     ap_gl_extent             = 2;
@@ -1005,7 +1001,6 @@ static void ap_gl_killword(int direction)
   int pos      = ap_gl_pos;
   int startpos = ap_gl_pos;
   int tmp;
-  int i;
 
   if (direction > 0) { /* forward */
     while (pos < ap_gl_cnt && !isspace(ap_gl_buf[pos]))
@@ -1033,7 +1028,7 @@ static void ap_gl_killword(int direction)
   if (isspace(ap_gl_killbuf[pos - startpos - 1]))
     ap_gl_killbuf[pos - startpos - 1] = '\0';
   ap_gl_fixup(ap_gl_prompt, -1, startpos);
-  for (i = 0, tmp = pos - startpos; i < tmp; i++)
+  for (int i = 0, tmp = pos - startpos; i < tmp; i++)
     ap_gl_del(0, 0);
 } /* ap_gl_killword */
 
@@ -1203,10 +1198,9 @@ static void ap_gl_fixup(const char *prompt, int change, int cursor)
 static int ap_gl_tab(char *buf, int offset, int *loc, size_t bufsize)
 /* default tab handler, acts like tabstops every 8 cols */
 {
-  int i, count, len;
-
-  len   = strlen(buf);
-  count = 8 - (offset + *loc) % 8;
+  int len   = strlen(buf);
+  int count = 8 - (offset + *loc) % 8;
+  int i;
   for (i = len; i >= *loc; i--)
     if (i + count < (int)bufsize)
       buf[i + count] = buf[i];
@@ -1230,28 +1224,25 @@ static char  hist_empty_elem[2] = "";
 
 static void hist_init(void)
 {
-  int i;
-
   hist_buf[0] = hist_empty_elem;
-  for (i = 1; i < HIST_SIZE; i++)
+  for (int i = 1; i < HIST_SIZE; i++)
     hist_buf[i] = (char *)0;
 }
 
 void ap_gl_histadd(char *buf)
 {
   static char *prev = 0;
-  char *       p    = buf;
-  int          len;
 
   /* in case we call ap_gl_histadd() before we call getline() */
   if (ap_gl_init_done < 0) { /* -1 only on startup */
     hist_init();
     ap_gl_init_done = 0;
   }
+  char *p = buf;
   while (*p == ' ' || *p == '\t' || *p == '\n')
     p++;
   if (*p) {
-    len = strlen(buf);
+    int len = strlen(buf);
     if (strchr(p, '\n')) /* previously line already has NL stripped */
       len--;
     if ((prev == 0) || ((int)strlen(prev) != len) || strncmp(prev, buf, (size_t)len) != 0) {
@@ -1326,21 +1317,17 @@ static char *hist_save(char *p)
 
 void ap_gl_histsavefile(const char *const path)
 {
-  FILE *      fp;
-  const char *p;
-  int         i, j;
-
-  fp = fopen(path,
+  FILE *fp = fopen(path,
 #if defined(__windows__) || defined(MSDOS)
-             "wt"
+                   "wt"
 #else
-             "w"
+                   "w"
 #endif
   );
   if (fp != NULL) {
-    for (i = 2; i < HIST_SIZE; i++) {
-      j = (hist_pos + i) % HIST_SIZE;
-      p = hist_buf[j];
+    for (int i = 2; i < HIST_SIZE; i++) {
+      int         j = (hist_pos + i) % HIST_SIZE;
+      const char *p = hist_buf[j];
       if ((p == NULL) || (*p == '\0'))
         continue;
       fprintf(fp, "%s\n", p);
@@ -1351,17 +1338,15 @@ void ap_gl_histsavefile(const char *const path)
 
 void ap_gl_histloadfile(const char *const path)
 {
-  FILE *fp;
-  char  line[256];
-
-  fp = fopen(path,
+  FILE *fp = fopen(path,
 #if defined(__windows__) || defined(MSDOS)
-             "rt"
+                   "rt"
 #else
-             "r"
+                   "r"
 #endif
   );
   if (fp != NULL) {
+    char line[256];
     memset(line, 0, sizeof(line));
     while (fgets(line, sizeof(line) - 2, fp) != NULL) {
       ap_gl_histadd(line);
@@ -1413,8 +1398,6 @@ static void search_update(int c)
 
 static void search_addchar(int c)
 {
-  char *loc;
-
   search_update(c);
   if (c < 0) {
     if (search_pos > 0) {
@@ -1426,6 +1409,7 @@ static void search_addchar(int c)
     }
     copy_string(ap_gl_buf, hist_buf[hist_pos], AP_GL_BUF_SIZE);
   }
+  char *loc;
   if ((loc = strstr(ap_gl_buf, search_string)) != 0) {
     ap_gl_fixup(search_prompt, 0, loc - ap_gl_buf);
   }
@@ -1455,7 +1439,7 @@ static void search_term(void)
 static void search_back(int new_search)
 {
   int   found = 0;
-  char *p, *loc;
+  char *loc;
 
   search_forw_flg = 0;
   if (ap_gl_search_mode == 0) {
@@ -1467,7 +1451,7 @@ static void search_back(int new_search)
   }
   else if (search_pos > 0) {
     while (!found) {
-      p = hist_prev();
+      char *p = hist_prev();
       if (*p == 0) { /* not found, done looking */
         ap_gl_buf[0] = 0;
         ap_gl_fixup(search_prompt, 0, 0);
@@ -1490,7 +1474,7 @@ static void search_back(int new_search)
 static void search_forw(int new_search)
 {
   int   found = 0;
-  char *p, *loc;
+  char *loc;
 
   search_forw_flg = 1;
   if (ap_gl_search_mode == 0) {
@@ -1502,7 +1486,7 @@ static void search_forw(int new_search)
   }
   else if (search_pos > 0) {
     while (!found) {
-      p = hist_next();
+      char *p = hist_next();
       if (*p == 0) { /* not found, done looking */
         ap_gl_buf[0] = 0;
         ap_gl_fixup(search_prompt, 0, 0);
@@ -1744,12 +1728,9 @@ void ap_gl_tab_completion(ap_gl_tab_completion_proc proc)
 #ifndef _StrFindLocalPathDelim
 static char *_StrRFindLocalPathDelim(const char *src) /* TODO: optimize */
 {
-  const char *last;
-  int         c;
-
-  last = NULL;
+  const char *last = NULL;
   for (;;) {
-    c = *src++;
+    int c = *src++;
     if (c == '\0')
       break;
     if (IsLocalPathDelim(c))
@@ -1762,15 +1743,6 @@ static char *_StrRFindLocalPathDelim(const char *src) /* TODO: optimize */
 
 void ap_gl_set_home_dir(const char *homedir)
 {
-  size_t len;
-#ifdef __windows__
-  const char *homedrive, *homepath;
-  char        wdir[64];
-#else
-  struct passwd *pw;
-  char *         cp;
-#endif
-
   if (ap_gl_home_dir != NULL) {
     free(ap_gl_home_dir);
     ap_gl_home_dir = NULL;
@@ -1778,10 +1750,10 @@ void ap_gl_set_home_dir(const char *homedir)
 
   if (homedir == NULL) {
 #ifdef __windows__
-    homedrive = getenv("HOMEDRIVE");
-    homepath  = getenv("HOMEPATH");
+    const char *homedrive = getenv("HOMEDRIVE");
+    const char *homepath  = getenv("HOMEPATH");
     if ((homedrive != NULL) && (homepath != NULL)) {
-      len            = strlen(homedrive) + strlen(homepath) + 1;
+      size_t len     = strlen(homedrive) + strlen(homepath) + 1;
       ap_gl_home_dir = (char *)malloc(len);
       if (ap_gl_home_dir != NULL) {
         copy_string(ap_gl_home_dir, homedrive, len);
@@ -1790,6 +1762,7 @@ void ap_gl_set_home_dir(const char *homedir)
       }
     }
 
+    char wdir[64];
     wdir[0] = '\0';
     if (GetWindowsDirectory(wdir, sizeof(wdir) - 1) < 1)
       (void)copy_string(wdir, ".", sizeof(wdir));
@@ -1799,13 +1772,13 @@ void ap_gl_set_home_dir(const char *homedir)
     }
     homedir = wdir;
 #else
-    cp = (char *)getlogin();
+    char *cp = (char *)getlogin();
     if (cp == NULL) {
       cp = (char *)getenv("LOGNAME");
       if (cp == NULL)
         cp = (char *)getenv("USER");
     }
-    pw = NULL;
+    struct passwd *pw = NULL;
     if (cp != NULL)
       pw = getpwnam(cp);
     if (pw == NULL)
@@ -1816,7 +1789,7 @@ void ap_gl_set_home_dir(const char *homedir)
 #endif
   }
 
-  len            = strlen(homedir) + /* NUL */ 1;
+  size_t len     = strlen(homedir) + /* NUL */ 1;
   ap_gl_home_dir = (char *)malloc(len);
   if (ap_gl_home_dir != NULL) {
     memcpy(ap_gl_home_dir, homedir, len);

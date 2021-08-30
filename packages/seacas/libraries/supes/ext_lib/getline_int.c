@@ -398,13 +398,11 @@ static int gl_getcx(int tlen)
 
 static int gl_getcx(int tlen)
 {
-  int i, c;
-
-  c = (-2);
+  int c = (-2);
   tlen -= 2; /* Adjust for 200ms overhead */
   if (tlen < 1)
     tlen = 1;
-  for (i = 0; i < tlen; i++) {
+  for (int i = 0; i < tlen; i++) {
     if (_kbhit()) {
       c = (int)_getch();
       if ((c == 0) || (c == 0xE0)) {
@@ -963,10 +961,9 @@ static void gl_del(int loc, int killsave)
  *     0 : delete character under cursor
  */
 {
-  int i, j;
-
   if ((loc == -1 && gl_pos > 0) || (loc == 0 && gl_pos < gl_cnt)) {
-    for (j = 0, i = gl_pos + loc; i < gl_cnt; i++) {
+    int j = 0;
+    for (int i = gl_pos + loc; i < gl_cnt; i++) {
       if ((j == 0) && (killsave != 0) && (gl_vi_mode != 0)) {
         gl_killbuf[0] = gl_buf[i];
         gl_killbuf[1] = '\0';
@@ -1469,7 +1466,7 @@ static void search_back(int new_search)
 static void search_forw(int new_search)
 {
   int   found = 0;
-  char *p, *loc;
+  char *loc;
 
   search_forw_flg = 1;
   if (gl_search_mode == 0) {
@@ -1481,7 +1478,7 @@ static void search_forw(int new_search)
   }
   else if (search_pos > 0) {
     while (!found) {
-      p = hist_next();
+      char *p = hist_next();
       if (*p == 0) { /* not found, done looking */
         gl_buf[0] = 0;
         gl_fixup(search_prompt, 0, 0);
@@ -1512,18 +1509,9 @@ static void gl_beep(void)
 
 static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
 {
-  char * startp;
-  size_t startoff, amt;
-  int    ntoalloc, nused, nalloced, i;
-  char **newgl_matchlist;
-  char * strtoadd, *strtoadd1;
-  int    addquotes;
-  size_t mlen, glen;
-  int    allmatch;
-  char * curposp;
-  size_t lenaftercursor;
-  int    wasateol;
-  char   ellipsessave[4];
+  int  i;
+  int  allmatch;
+  char ellipsessave[4];
 
   /* Zero out the rest of the buffer, so we can move stuff around
    * and know we'll still be NUL-terminated.
@@ -1531,9 +1519,9 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
   size_t llen = strlen(buf);
   memset(buf + llen, 0, bufsize - llen);
   bufsize -= 4; /* leave room for a NUL, space, and two quotes. */
-  curposp        = buf + *loc;
-  wasateol       = (*curposp == '\0');
-  lenaftercursor = llen - (curposp - buf);
+  char * curposp        = buf + *loc;
+  int    wasateol       = (*curposp == '\0');
+  size_t lenaftercursor = llen - (curposp - buf);
   if (gl_ellipses_during_completion != 0) {
     memcpy(ellipsessave, curposp, (size_t)4);
     memcpy(curposp, "... ", (size_t)4);
@@ -1575,6 +1563,7 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
     }
   }
 
+  char *startp;
   if (qstart != NULL)
     startp = qstart + 1;
   else if (lastspacestart != NULL)
@@ -1582,8 +1571,8 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
   else
     startp = buf;
 
-  cp   = startp;
-  mlen = (curposp - cp);
+  cp          = startp;
+  size_t mlen = (curposp - cp);
 
   matchpfx = (char *)malloc(mlen + 1);
   memcpy(matchpfx, cp, mlen);
@@ -1591,16 +1580,16 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
 
 #define GL_COMPLETE_VECTOR_BLOCK_SIZE 64
 
-  nused           = 0;
-  ntoalloc        = GL_COMPLETE_VECTOR_BLOCK_SIZE;
-  newgl_matchlist = (char **)malloc((size_t)(sizeof(char *) * (ntoalloc + 1)));
+  int    nused           = 0;
+  int    ntoalloc        = GL_COMPLETE_VECTOR_BLOCK_SIZE;
+  char **newgl_matchlist = (char **)malloc((size_t)(sizeof(char *) * (ntoalloc + 1)));
   if (newgl_matchlist == NULL) {
     free(matchpfx);
     gl_beep();
     return 0;
   }
   gl_matchlist = newgl_matchlist;
-  nalloced     = ntoalloc;
+  int nalloced = ntoalloc;
   for (i = nused; i <= nalloced; i++)
     gl_matchlist[i] = NULL;
 
@@ -1637,13 +1626,13 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
   }
 
   /* We now have an array strings, whose last element is NULL. */
-  strtoadd  = NULL;
-  strtoadd1 = NULL;
-  amt       = 0;
+  char * strtoadd  = NULL;
+  char * strtoadd1 = NULL;
+  size_t amt       = 0;
 
-  addquotes = (gl_filename_quoting_desired > 0) ||
-              ((gl_filename_quoting_desired < 0) &&
-               (gl_completion_proc == gl_local_filename_completion_proc));
+  int addquotes = (gl_filename_quoting_desired > 0) ||
+                  ((gl_filename_quoting_desired < 0) &&
+                   (gl_completion_proc == gl_local_filename_completion_proc));
 
   if (nused == 1) {
     /* Exactly one match. */
@@ -1651,7 +1640,7 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
   }
   else if ((nused > 1) && (mlen > 0)) {
     /* Find the greatest amount that matches. */
-    glen = 1;
+    size_t glen = 1;
     for (glen = 1;; glen++) {
       allmatch = 1;
       for (i = 1; i < nused; i++) {
@@ -1680,8 +1669,8 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
         *startp++ = (char)qmode;
       }
     }
-    startoff = (size_t)(startp - buf);
-    amt      = strlen(strtoadd);
+    size_t startoff = (size_t)(startp - buf);
+    amt             = strlen(strtoadd);
     if ((amt + startoff + lenaftercursor) >= bufsize)
       amt = bufsize - (amt + startoff + lenaftercursor);
     memmove(curposp + amt - mlen, curposp, lenaftercursor + 1 /* NUL */);
