@@ -38,7 +38,6 @@ used in an Exodus file.
   *  ids of each entity type (block set)
   *  status of each entity type (block set)
   *  #ndim coordinates (1,2,3)
-
 *  Each block adds 1 + 2*#attr_on_block + #var_on_block
 *  Each set adds 2 + 2*#attr_on_set + #var_on_set
 *  Each sideset add 3 + 2*#attr_on_sset + #var_on_sset

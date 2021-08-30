@@ -24,14 +24,12 @@ The three elements have the following geometry:
   *   Face 3: quadrilateral with nodes 6, 2, 4, 8
   *   Face 4: quadrilateral with nodes 8, 4, 1, 5
   *   Face 5: quadrilateral with nodes 1, 2, 6, 5
-
 *   Element 2: 5 faces.
   *   Face 6: triangle with nodes 5, 8, 7
   *   Face 7: triangle with nodes 1, 3, 4
   *   Face 8: quadrilateral with nodes 7, 8, 4, 3
   *   Face 9: quadrilateral with nodes 7, 3, 1, 5
   *   Face 4: quadrilateral with nodes 8, 4, 1, 5 (shared with element 1)
-
 *   Element 3: 7 faces.
   *   Face  8: quadrilateral with nodes 7, 8, 4, 3 (shared with element 2)
   *   Face 10: pentagonal with nodes 8, 4, 14, 10, 12
@@ -70,7 +68,6 @@ The Exodus model is created via the following calls:
   ~~~~
 
 *   Coordinate output is normal...
-
 *   Define the face block.
   ~~~~C
    block_name = "face_block_1";

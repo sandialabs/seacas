@@ -37,6 +37,7 @@ support, you do not have to build hdf5.
 *  untar it, creating a directory will will refer to as `hdf5-X.X.X`
 
 *  `cd` to that directory and enter the command:
+
   *  Serial:
        ```bash
        ./configure --prefix=${WHERE_TO_INSTALL} --enable-shared --enable-production --enable-debug=no --enable-static-exec

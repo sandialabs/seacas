@@ -35,12 +35,6 @@ rm -f CMakeCache.txt
 
 if [ "$OS" == "Darwin" ] ; then
   RPATH="-D CMAKE_MACOSX_RPATH:BOOL=ON -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib"
-  if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
-  then
-      LD_EXT="dylib"
-  else
-      LD_EXT="a"
-  fi
 fi
 
 cmake \

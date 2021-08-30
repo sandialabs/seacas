@@ -922,7 +922,6 @@ then
   # Currently, the FAODEL backend requires cereal, so if Faodel is enabled, we'll install cereal, too.
   if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
   then
-    cereal_base="cereal"
     echo "${txtgrn}+++ Cereal${txtrst}"
     cd $ACCESS
     CEREAL_DIR="TPL/cereal"
