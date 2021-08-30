@@ -84,19 +84,6 @@ namespace {
                                    const Ioss::GroupingEntity *ige_2, DataPool &in_pool,
                                    const std::string &          field_name,
                                    const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
-  std::string type_string(const Ioss::Field &field)
-  {
-    switch (field.get_type()) {
-    case Ioss::Field::REAL: return std::string("real");
-    case Ioss::Field::INTEGER: return std::string("integer");
-    case Ioss::Field::INT64: return std::string("64-bit integer");
-    case Ioss::Field::COMPLEX: return std::string("complex");
-    case Ioss::Field::STRING: return std::string("string");
-    case Ioss::Field::CHARACTER: return std::string("char");
-    case Ioss::Field::INVALID: return std::string("invalid");
-    default: return std::string("internal error");
-    }
-  }
 } // namespace
 
 bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region &input_region_2,
@@ -1582,7 +1569,7 @@ namespace {
                                   field.raw_count(), field_name, buf);
       default:
         fmt::print(Ioss::WARNING(), "Field data_storage type {} not recognized for field {}.",
-                   type_string(field), field_name);
+                   field.type_string(), field_name);
         return false;
       }
     } break;
