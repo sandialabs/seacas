@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -498,9 +498,36 @@ void write_exo_mesh(int debug, char *file_name, INT map_origin, INT num_nodes, I
     /* Extract the local x and y coordinates */
     if (num_domains > 1) {
       if (loc_num_nodes > loc_node_size) {
-        loc_xcoords   = realloc(loc_xcoords, loc_num_nodes * sizeof(realtyp));
-        loc_ycoords   = realloc(loc_ycoords, loc_num_nodes * sizeof(realtyp));
-        loc_zcoords   = realloc(loc_zcoords, loc_num_nodes * sizeof(realtyp));
+        realtyp *tmpx = realloc(loc_xcoords, loc_num_nodes * sizeof(realtyp));
+        if (tmpx == NULL) {
+          free(loc_xcoords);
+          fprintf(stderr, "error realloc'ing loc_xcoords\n");
+          ex_close(exoid);
+          exit(-1);
+        }
+        {
+          loc_xcoords = tmpx;
+        }
+        realtyp *tmpy = realloc(loc_ycoords, loc_num_nodes * sizeof(realtyp));
+        if (tmpy == NULL) {
+          free(loc_ycoords);
+          fprintf(stderr, "error realloc'ing loc_ycoords\n");
+          ex_close(exoid);
+          exit(-1);
+        }
+        {
+          loc_ycoords = tmpy;
+        }
+        realtyp *tmpz = realloc(loc_zcoords, loc_num_nodes * sizeof(realtyp));
+        if (tmpz == NULL) {
+          free(loc_zcoords);
+          fprintf(stderr, "error realloc'ing loc_zcoords\n");
+          ex_close(exoid);
+          exit(-1);
+        }
+        {
+          loc_zcoords = tmpz;
+        }
         loc_node_size = loc_num_nodes;
       }
 
