@@ -43,13 +43,13 @@ namespace Iocatalyst {
   {
     std::stringstream config;
     fmt::print(config, "\tCatalyst Library Version: {}\n", CATALYST_VERSION);
-    fmt::print(config, "\tCatalyst ABI Version: {}\n", CATALYST_ABI_VERSION);
+    fmt::print(config, "\t\tCatalyst ABI Version: {}\n", CATALYST_ABI_VERSION);
 
     conduit_cpp::Node node;
     catalyst_about(conduit_cpp::c_node(&node));
     auto implementation = node.has_path("catalyst/implementation") ?
       node["catalyst/implementation"].as_string() : std::string("stub");
-    fmt::print(config, "\t Implementation: {}\n", implementation.c_str());
+    fmt::print(config, "\t\tImplementation: {}\n\n", implementation.c_str());
     return config.str();
   }
 } // namespace Iocatalyst
