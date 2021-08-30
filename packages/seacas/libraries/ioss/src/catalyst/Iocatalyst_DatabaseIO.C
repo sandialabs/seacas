@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -45,7 +45,9 @@ namespace Iocatalyst {
 
   namespace detail {
 
-    class FieldNonExistent {};
+    class FieldNonExistent
+    {
+    };
 
     template <typename GroupingEntityT>
     GroupingEntityT *createEntityGroup(const conduit_cpp::Node &node, Ioss::DatabaseIO *dbase);
@@ -92,6 +94,7 @@ namespace Iocatalyst {
     conduit_cpp::Node Root;
     conduit_cpp::Node DBNode;
     mutable Ioss::Map NodeMap;
+
   public:
     conduit_cpp::Node &databaseNode() { return this->DBNode; }
     void               setDatabaseNode(conduit_node *c_node)
@@ -209,6 +212,9 @@ namespace Iocatalyst {
                                        num_to_get * num_components);
           }
           break;
+        default:
+          fmt::print(stderr, "ERROR in {} {}: {} ({}), unsupported field type: {}\n", __func__,
+                     containerName, field.get_name(), num_to_get, field.type_string());
         }
       }
       fmt::print(stderr, "put_field {}: {} ({})\n", containerName, field.get_name(), num_to_get);
@@ -223,9 +229,9 @@ namespace Iocatalyst {
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
         auto path = containerName + "/" + groupName + "/fields/" + field.get_name() + "/value";
-        if (!this->DBNode.has_path(path))
-        {
-          throw detail::FieldNonExistent();;
+        if (!this->DBNode.has_path(path)) {
+          throw detail::FieldNonExistent();
+          ;
         }
         const auto &&node = this->DBNode[path];
         switch (field.get_type()) {
@@ -248,29 +254,31 @@ namespace Iocatalyst {
           std::copy_n(reinterpret_cast<const char *>(node.element_ptr(0)),
                       num_to_get * num_components, reinterpret_cast<char *>(data));
           break;
+        default:
+          fmt::print(stderr, "ERROR in {} {}: {} ({}), unsupported field type: {}\n", __func__,
+                     containerName, field.get_name(), num_to_get, field.type_string());
         }
       }
       fmt::print(stderr, "get_field {}: {} ({})\n", containerName, field.get_name(), num_to_get);
       return num_to_get;
     }
 
-    Ioss::Map& get_node_map(const Ioss::DatabaseIO* dbase) const
+    Ioss::Map &get_node_map(const Ioss::DatabaseIO *dbase) const
     {
-      if (this->NodeMap.defined())
-      {
+      if (this->NodeMap.defined()) {
         return this->NodeMap;
       }
 
-      auto &&idsNode = this->DBNode["node_blocks/nodeblock_1/fields/ids"];
-      auto node_ids =  const_cast<void*>(idsNode["value"].element_ptr(0));
+      auto &&idsNode  = this->DBNode["node_blocks/nodeblock_1/fields/ids"];
+      auto   node_ids = const_cast<void *>(idsNode["value"].element_ptr(0));
       this->NodeMap.set_size(idsNode["count"].as_int64());
-      if (idsNode["type"].as_int8() ==  Ioss::Field::BasicType::INT32)
-      {
-        this->NodeMap.set_map(reinterpret_cast<int32_t*>(node_ids), idsNode["count"].as_int64(), 0);
+      if (idsNode["type"].as_int8() == Ioss::Field::BasicType::INT32) {
+        this->NodeMap.set_map(reinterpret_cast<int32_t *>(node_ids), idsNode["count"].as_int64(),
+                              0);
       }
-      if (idsNode["type"].as_int8() ==  Ioss::Field::BasicType::INT64)
-      {
-        this->NodeMap.set_map(reinterpret_cast<int64_t*>(node_ids), idsNode["count"].as_int64(), 0);
+      if (idsNode["type"].as_int8() == Ioss::Field::BasicType::INT64) {
+        this->NodeMap.set_map(reinterpret_cast<int64_t *>(node_ids), idsNode["count"].as_int64(),
+                              0);
       }
 
       this->NodeMap.set_defined(true);
@@ -502,6 +510,10 @@ namespace Iocatalyst {
       case Ioss::STATE_TRANSIENT: break;
 
       case Ioss::STATE_LAST_ENTRY: break;
+      case Ioss::STATE_UNKNOWN:
+      case Ioss::STATE_INVALID:
+      case Ioss::STATE_READONLY:
+      case Ioss::STATE_CLOSED: break;
       }
     }
 
@@ -666,36 +678,31 @@ namespace Iocatalyst {
                                          void *data, size_t data_size) const
   {
     auto &impl = (*this->Impl.get());
-    try
-    {
-    return impl.getField("element_blocks", eb, field, data, data_size);
+    try {
+      return impl.getField("element_blocks", eb, field, data, data_size);
     }
-    catch (detail::FieldNonExistent&)
-    {
-      if (field.get_name() == "connectivity_raw")
-      {
+    catch (detail::FieldNonExistent &) {
+      if (field.get_name() == "connectivity_raw") {
         // maybe the data has 'connectivity' provided, so we convert it to 'connectivity_raw'.
         auto count = this->get_field_internal(eb, eb->get_field("connectivity"), data, data_size);
-        if (count <= 0)
-        {
+        if (count <= 0) {
           return count;
         }
 
-        impl.get_node_map(this).reverse_map_data(data, field,
-            field.verify(data_size) * field.raw_storage()->component_count());
+        impl.get_node_map(this).reverse_map_data(
+            data, field, field.verify(data_size) * field.raw_storage()->component_count());
         return count;
       }
-      else if (field.get_name() == "connectivity")
-      {
+      else if (field.get_name() == "connectivity") {
         // maybe the data has 'connectivity_raw' is provided, so we convert it to 'connectivity.
-        auto count = this->get_field_internal(eb, eb->get_field("connectivity_raw"), data, data_size);
-        if (count <= 0)
-        {
+        auto count =
+            this->get_field_internal(eb, eb->get_field("connectivity_raw"), data, data_size);
+        if (count <= 0) {
           return count;
         }
 
-        impl.get_node_map(this).map_data(data, field,
-            field.verify(data_size) * field.raw_storage()->component_count());
+        impl.get_node_map(this).map_data(
+            data, field, field.verify(data_size) * field.raw_storage()->component_count());
         return count;
       }
       return -1;
