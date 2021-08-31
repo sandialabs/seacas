@@ -2385,9 +2385,6 @@ void F2C(exgcssc, EXGCSSC)(int *idexo, int *side_set_node_cnt_list, int *ierr)
 void F2C(exgfrm, EXGFRM)(int *idexo, int *nframeo, void_int *cfids, real *coord, int *tags,
                          int *ierr)
 {
-  int   i;
-  char *ctags = NULL;
-
   /* Determine number of coordinate frames stored in file */
   int nframe = ex_inquire_int(*idexo, EX_INQ_COORD_FRAMES);
   if (nframe < 0) {
@@ -2401,6 +2398,7 @@ void F2C(exgfrm, EXGFRM)(int *idexo, int *nframeo, void_int *cfids, real *coord,
   }
   /* Create array of characters to store tags... */
   if (nframe > 0) {
+    char *ctags = NULL;
     if (!(ctags = calloc(nframe, sizeof(char)))) {
       *ierr = EX_MEMFAIL;
       return;
@@ -2412,7 +2410,7 @@ void F2C(exgfrm, EXGFRM)(int *idexo, int *nframeo, void_int *cfids, real *coord,
       return;
     }
     /* Convert character tags back to integer tags for fortran */
-    for (i = 0; i < nframe; i++) {
+    for (int i = 0; i < nframe; i++) {
       if (ctags[i] == 'R' || ctags[i] == 'r') {
         tags[i] = EX_CF_RECTANGULAR;
       }
@@ -2613,12 +2611,10 @@ void F2C(exgnnm, EXGNNM)(int *idexo, void_int *node_map, int *ierr)
 void F2C(exgvnm, EXGVNM)(int *idexo, char *var_type, int *var_index, char *var_name, int *ierr,
                          int var_typelen, int var_namelen)
 {
-  char *sptr; /* ptr to temp staging space for string */
-  int   slen;
   *ierr                   = 0; /* default no error */
   ex_entity_type obj_type = ex_var_type_to_ex_entity_type(*var_type);
 
-  slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
+  int slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
   if (slen < 0) {
     *ierr = EX_FATAL;
     return;
@@ -2628,6 +2624,7 @@ void F2C(exgvnm, EXGVNM)(int *idexo, char *var_type, int *var_index, char *var_n
     slen = var_namelen;
   }
   /* Allocate staging space for the variable name */
+  char *sptr; /* ptr to temp staging space for string */
   if (!(sptr = malloc((slen + 1) * sizeof(char)))) {
     *ierr = EX_MEMFAIL;
     return;
@@ -2718,12 +2715,10 @@ void F2C(expnnm, EXPNNM)(int *idexo, void_int *node_map, int *ierr)
 void F2C(expvnm, EXPVNM)(int *idexo, char *var_type, int *var_index, char *var_name, int *ierr,
                          int var_typelen, int var_namelen)
 {
-  char *sptr; /* ptr to temp staging space for string */
-  int   slen;
   *ierr                   = 0; /* default no error */
   ex_entity_type obj_type = ex_var_type_to_ex_entity_type(*var_type);
 
-  slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH); /* max str size */
+  int slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH); /* max str size */
   if (slen < 0) {
     *ierr = EX_FATAL;
     return;
@@ -2733,6 +2728,7 @@ void F2C(expvnm, EXPVNM)(int *idexo, char *var_type, int *var_index, char *var_n
     slen = var_namelen;
   }
   /* Allocate staging space for the variable name */
+  char *sptr; /* ptr to temp staging space for string */
   if (!(sptr = (char *)malloc((slen + 1) * sizeof(char)))) {
     *ierr = EX_MEMFAIL;
     return;
@@ -2757,8 +2753,6 @@ void F2C(exgii, EXGII)(int *idne, int *nproc, int *nproc_in_f, char *ftype, int 
                        size_t ftypelen)
 {
   size_t slen = 1;
-  char * file_type;
-
   /* WARNING: ftypelen SHOULD be 1, but may not be depending on how
               the Fortran programmer passed it. It is best at
               this time to hard code it per NEPII spec. */
@@ -2772,7 +2766,7 @@ void F2C(exgii, EXGII)(int *idne, int *nproc, int *nproc_in_f, char *ftype, int 
     slen = ftypelen;
   }
 
-  file_type = (char *)malloc((slen + 1) * sizeof(char));
+  char *file_type = (char *)malloc((slen + 1) * sizeof(char));
 
   if ((*ierr = ex_get_init_info(*idne, nproc, nproc_in_f, file_type)) != 0) {
     char errmsg[MAX_ERR_LENGTH];
@@ -2795,29 +2789,26 @@ void F2C(exgii, EXGII)(int *idne, int *nproc, int *nproc_in_f, char *ftype, int 
 void F2C(expii, EXPII)(int *idne, int *nproc, int *nproc_in_f, char *ftype, int *ierr,
                        size_t ftypelen)
 {
-
-  char errmsg[MAX_ERR_LENGTH];
-
   size_t slen = 1;
-  char * file_type;
-
   /* WARNING: ftypelen SHOULD be 1, but may not be depending on how
               the Fortran programmer passed it. It is best at
               this time to hard code it per NEPII spec. */
   if (ftypelen != 1) {
     slen = ftypelen;
 #if defined(EXODUS_STRING_LENGTH_WARNING)
+    char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: file type string length is %lu in file id %d\n",
              ftypelen, *idne);
     ex_err_fn(*idne, __func__, errmsg, EX_MSG);
 #endif
   }
 
-  file_type = (char *)malloc((slen + 1) * sizeof(char));
+  char *file_type = (char *)malloc((slen + 1) * sizeof(char));
 
   ex_fstrncpy(file_type, ftype, slen);
 
   if ((*ierr = ex_put_init_info(*idne, *nproc, *nproc_in_f, file_type)) != 0) {
+    char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "Error: failed to put initial information in file id %d",
              *idne);
     ex_err_fn(*idne, __func__, errmsg, EX_MSG);

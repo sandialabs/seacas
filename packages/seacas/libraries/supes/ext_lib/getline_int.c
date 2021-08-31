@@ -1626,9 +1626,8 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
   }
 
   /* We now have an array strings, whose last element is NULL. */
-  char * strtoadd  = NULL;
-  char * strtoadd1 = NULL;
-  size_t amt       = 0;
+  char *strtoadd  = NULL;
+  char *strtoadd1 = NULL;
 
   int addquotes = (gl_filename_quoting_desired > 0) ||
                   ((gl_filename_quoting_desired < 0) &&
@@ -1670,7 +1669,7 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize)
       }
     }
     size_t startoff = (size_t)(startp - buf);
-    amt             = strlen(strtoadd);
+    size_t amt      = strlen(strtoadd);
     if ((amt + startoff + lenaftercursor) >= bufsize)
       amt = bufsize - (amt + startoff + lenaftercursor);
     memmove(curposp + amt - mlen, curposp, lenaftercursor + 1 /* NUL */);

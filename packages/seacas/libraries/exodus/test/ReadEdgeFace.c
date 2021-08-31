@@ -54,7 +54,7 @@ int obj_sizeinq[] = {EX_INQ_EDGE,
                      -1,
                      -1};
 
-#define OBJECT_IS_BLOCK(i) (((i) >= 0) && ((i) < 3))
+#define OBJECT_IS_BLOCK(i) (((i) < 3))
 #define OBJECT_IS_SET(i) (((i) > 2) && ((i) < 8))
 
 int cReadEdgeFace(int argc, char **argv)
@@ -105,7 +105,7 @@ int cReadEdgeFace(int argc, char **argv)
   int num_timesteps = ex_inquire_int(exoid, EX_INQ_TIME);
 
   /* *** NEW API *** */
-  for (int i = 0; i < sizeof(obj_types) / sizeof(obj_types[0]); ++i) {
+  for (size_t i = 0; i < sizeof(obj_types) / sizeof(obj_types[0]); ++i) {
     int *truth_tab      = 0;
     int  have_var_names = 0;
 

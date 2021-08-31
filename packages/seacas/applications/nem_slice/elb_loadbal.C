@@ -1128,14 +1128,13 @@ namespace {
             for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
               int proc = lb->vertex2proc[ecnt];
               assert(proc < machine->num_procs);
-              size_t end = 0;
               if (proc == pcnt) {
+                size_t end = 0;
                 if (ecnt < (mesh->num_elems - 1)) {
                   end = graph->start[ecnt + 1];
                 }
                 else {
                   end = graph->nadj;
-                  ;
                 }
                 size_t distance = 1;
                 for (size_t i = graph->start[ecnt]; i < end; i++) {

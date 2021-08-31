@@ -333,9 +333,8 @@ int main(int argc, char *argv[])
   feenableexcept(FE_DIVBYZERO | FE_OVERFLOW | FE_INVALID);
 #endif
 
-  std::string file1_name   = interFace.file1;
-  std::string file2_name   = interFace.file2;
-  std::string diffile_name = interFace.diff_file;
+  std::string file1_name = interFace.file1;
+  std::string file2_name = interFace.file2;
 
   if (interFace.summary_flag && file1_name == "") {
     Error(fmt::format("Summary option specified but an exodus "
@@ -344,7 +343,6 @@ int main(int argc, char *argv[])
 
   if (interFace.summary_flag) {
     file2_name                     = "";
-    diffile_name                   = "";
     interFace.glob_var_do_all_flag = true;
     interFace.node_var_do_all_flag = true;
     interFace.elmt_var_do_all_flag = true;
