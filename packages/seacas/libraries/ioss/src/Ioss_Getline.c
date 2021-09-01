@@ -1756,7 +1756,7 @@ void io_gl_set_home_dir(const char *homedir)
     const char *homedrive = getenv("HOMEDRIVE");
     const char *homepath  = getenv("HOMEPATH");
     if ((homedrive != NULL) && (homepath != NULL)) {
-      len            = strlen(homedrive) + strlen(homepath) + 1;
+      size_t len            = strlen(homedrive) + strlen(homepath) + 1;
       io_gl_home_dir = (char *)malloc(len);
       if (io_gl_home_dir != NULL) {
         copy_string(io_gl_home_dir, homedrive, len);
@@ -2023,7 +2023,7 @@ char *io_gl_local_filename_completion_proc(const char *start, int idx)
 
     if ((filepfxlen == 0) || (strnicmp(name, filepfx, filepfxlen) == 0)) {
       /* match */
-      len = strlen(name);
+      size_t len = strlen(name);
       cp  = (char *)malloc(filepfxoffset + len + 4 /* spare */ + 1 /* NUL */);
       *cp = '\0';
       if (filepfxoffset > 0)
