@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 
   char *coord_names[3], *qa_record[2][4], *info[3], *var_names[10];
   char  title[MAX_LINE_LENGTH + 1], elem_type[MAX_STR_LENGTH + 1];
-  char *cdum = 0;
+  char *cdum = NULL;
   char *prop_names[3];
   char *map_names[3];
 

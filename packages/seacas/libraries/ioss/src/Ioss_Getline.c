@@ -1398,8 +1398,6 @@ static void search_update(int c)
 
 static void search_addchar(int c)
 {
-  char *loc = NULL;
-
   search_update(c);
   if (c < 0) {
     if (search_pos > 0) {
@@ -1411,6 +1409,8 @@ static void search_addchar(int c)
     }
     copy_string(io_gl_buf, hist_buf[hist_pos], IO_GL_BUF_SIZE);
   }
+
+  char *loc = NULL;
   if ((loc = strstr(io_gl_buf, search_string)) != NULL) {
     io_gl_fixup(search_prompt, 0, loc - io_gl_buf);
   }
@@ -1439,9 +1439,6 @@ static void search_term(void)
 
 static void search_back(int new_search)
 {
-  int   found = 0;
-  char *p, *loc;
-
   search_forw_flg = 0;
   if (io_gl_search_mode == 0) {
     search_last = hist_pos = hist_last;
@@ -1451,8 +1448,10 @@ static void search_back(int new_search)
     io_gl_fixup(search_prompt, 0, 0);
   }
   else if (search_pos > 0) {
+    int found = 0;
     while (!found) {
-      p = hist_prev();
+      char *loc;
+      char *p = hist_prev();
       if (*p == 0) { /* not found, done looking */
         io_gl_buf[0] = 0;
         io_gl_fixup(search_prompt, 0, 0);
@@ -2016,8 +2015,8 @@ char *io_gl_local_filename_completion_proc(const char *start, int idx)
     if ((filepfxlen == 0) || (strnicmp(name, filepfx, filepfxlen) == 0)) {
       /* match */
       size_t len = strlen(name);
-      cp  = (char *)malloc(filepfxoffset + len + 4 /* spare */ + 1 /* NUL */);
-      *cp = '\0';
+      cp         = (char *)malloc(filepfxoffset + len + 4 /* spare */ + 1 /* NUL */);
+      *cp        = '\0';
       if (filepfxoffset > 0)
         memcpy(cp, start, filepfxoffset);
       memcpy(cp + filepfxoffset, name, len + 1);

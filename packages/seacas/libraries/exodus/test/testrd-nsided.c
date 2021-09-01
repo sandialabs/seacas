@@ -63,7 +63,7 @@ int main(int argc, char **argv)
   char *elem_type[10];
   char  name[MAX_STR_LENGTH + 1];
   char  title[MAX_LINE_LENGTH + 1];
-  char *cdum = 0;
+  char *cdum = NULL;
   char *prop_names[3];
 
   CPU_word_size = 0; /* sizeof(float) */

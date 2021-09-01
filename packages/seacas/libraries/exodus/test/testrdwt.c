@@ -53,7 +53,7 @@ int main(int argc, char **argv)
   char *coord_names[3], *qa_record[2][4], *info[3];
   char  title[MAX_LINE_LENGTH + 1], elem_type[MAX_STR_LENGTH + 1];
   char *prop_names[3];
-  char *cdum = 0;
+  char *cdum = NULL;
 
   /* Specify compute and i/o word size */
 

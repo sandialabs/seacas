@@ -42,7 +42,7 @@ int main(int argc, char **argv)
   float version;
 
   char *var_names[10];
-  char *cdum = 0;
+  char *cdum = NULL;
 
   CPU_word_size = 0; /* sizeof(float) */
   IO_word_size  = 0; /* use what is stored in file */
