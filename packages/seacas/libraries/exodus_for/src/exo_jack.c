@@ -312,7 +312,7 @@ void F2C(expqa, EXPQA)(int *idexo, int *num_qa_records, char *qa_record, int *ie
   for (int i = 0; i < *num_qa_records; i++) {
     for (int ii = 0; ii < alen; ii++) {
       *(sptr + iii) = malloc((slen + 1) * sizeof(char));
-      if (*(sptr + iii) == 0) {
+      if (*(sptr + iii) == NULL) {
         free(sptr); /* free up array ptr space */
         *ierr = EX_MEMFAIL;
         snprintf(errmsg, MAX_ERR_LENGTH,
@@ -382,7 +382,7 @@ void F2C(exgqa, EXGQA)(int *idexo, char *qa_record, int *ierr, int qa_recordlen)
   for (i = 0; i < num_qa_records; i++) { /* pointer allocation loop */
     for (ii = 0; ii < alen; ii++) {
       *(sptr + iii) = malloc((slen + 1) * sizeof(char));
-      if (*(sptr + iii) == 0) {
+      if (*(sptr + iii) == NULL) {
         free(sptr);
         *ierr = EX_MEMFAIL;
         return;
@@ -390,7 +390,7 @@ void F2C(exgqa, EXGQA)(int *idexo, char *qa_record, int *ierr, int qa_recordlen)
       iii++; /* bump char array pointer */
     }
   }
-  *(sptr + iii) = 0; /* null out last pointer */
+  *(sptr + iii) = NULL; /* null out last pointer */
 
   /* do Exodus C call to get qa records */
   if (ex_get_qa(*idexo, (void *)sptr) == EX_FATAL) {
@@ -451,7 +451,7 @@ void F2C(expinf, EXPINF)(int *idexo, int *num_info, char *info, int *ierr, int i
     ex_fstrncpy(*(aptr + i), info + i * infolen, slen); /* copy string into
                                                          * buffer */
   }
-  *(aptr + i) = 0; /* null out last ptr */
+  *(aptr + i) = NULL; /* null out last ptr */
   if (ex_put_info(*idexo, *num_info, aptr) == EX_FATAL) {
     *ierr = EX_FATAL;
     free(sptr); /* Free up string staging area */
@@ -507,9 +507,9 @@ void F2C(exginf, EXGINF)(int *idexo, char *info, int *ierr, int infolen)
   for (i = 0; i < num_info; i++) { /* Put pointers to the info records in ptr
                                     * array */
     *(aptr + i) = sptr + i * (slen + 1);
-  }                /* put ptr in string ptr
-                    * array */
-  *(aptr + i) = 0; /* null out last pointer */
+  }                   /* put ptr in string ptr
+                       * array */
+  *(aptr + i) = NULL; /* null out last pointer */
 
   /* Do exodus call to get info records */
   if (ex_get_info(*idexo, aptr) == EX_FATAL) {
@@ -597,7 +597,7 @@ void F2C(expcon, EXPCON)(int *idexo, char *coord_names, int *ierr, int coord_nam
     /* copy fortran string into allocated space */
     ex_fstrncpy(*(aptr + i), coord_names + i * coord_nameslen, slen);
   }
-  *(aptr + i) = 0; /* set last pointer to null */
+  *(aptr + i) = NULL; /* set last pointer to null */
 
   if (ex_put_coord_names(*idexo, aptr) == EX_FATAL) {
     *ierr = EX_FATAL;
@@ -2432,7 +2432,6 @@ void F2C(exgfrm, EXGFRM)(int *idexo, int *nframeo, void_int *cfids, real *coord,
 void F2C(expfrm, EXPFRM)(int *idexo, int *nframe, void_int *cfids, real *coord, int *tags,
                          int *ierr)
 {
-  int   i;
   char *ctags = NULL;
 
   /* Create array of characters to store tags... */
@@ -2442,7 +2441,7 @@ void F2C(expfrm, EXPFRM)(int *idexo, int *nframe, void_int *cfids, real *coord, 
       return;
     }
     /* Convert fortran integer tags to C API character tags */
-    for (i = 0; i < *nframe; i++) {
+    for (int i = 0; i < *nframe; i++) {
       if (tags[i] == EX_CF_RECTANGULAR) {
         ctags[i] = 'R';
       }

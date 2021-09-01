@@ -1255,7 +1255,7 @@ static char *hist_prev(void)
   char *p    = NULL;
   int   next = (hist_pos - 1 + HIST_SIZE) % HIST_SIZE;
 
-  if (hist_buf[hist_pos] != 0 && next != hist_last) {
+  if (hist_buf[hist_pos] != NULL && next != hist_last) {
     hist_pos = next;
     p        = hist_buf[hist_pos];
   }
@@ -1275,7 +1275,7 @@ static char *hist_next(void)
     hist_pos = (hist_pos + 1) % HIST_SIZE;
     p        = hist_buf[hist_pos];
   }
-  if (p == 0) {
+  if (p == NULL) {
     p = hist_empty_elem;
     gl_beep();
   }

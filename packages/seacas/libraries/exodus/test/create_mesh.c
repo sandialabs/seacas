@@ -679,6 +679,11 @@ void write_exo_mesh(int debug, char *file_name, INT map_origin, INT num_nodes, I
         sprintf(var_name[j], "element_field_%" PRId64, j + 1);
       }
       err = ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_element_fields, var_name);
+      if (err) {
+        fprintf(stderr, "after ex_put_variable_names, error = %d\n", err);
+        ex_close(exoid);
+        exit(-1);
+      }
       for (j = 0; j < num_element_fields; j++) {
         free(var_name[j]);
       }

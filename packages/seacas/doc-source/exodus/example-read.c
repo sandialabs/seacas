@@ -41,8 +41,8 @@ int main(int argc, char **argv)
 
   cdum = 0;
 
-  CPU_word_size = 0; /* sizeof(float) */
-  IO_word_size  = 0; /* use what is stored in file */
+  int CPU_word_size = 0; /* sizeof(float) */
+  int IO_word_size  = 0; /* use what is stored in file */
 
   ex_opts(EX_VERBOSE | EX_ABORT);
 
