@@ -19,49 +19,13 @@
 
 int main(int argc, char **argv)
 {
-  int  node_ctr;
-  int *elem_map, *connect, *node_list, *node_ctr_list, *elem_list, *side_list;
-  int *ids;
-  int *num_nodes_per_set = NULL;
-  int *num_elem_per_set  = NULL;
-  int *num_df_per_set    = NULL;
-  int *node_ind          = NULL;
-  int *elem_ind          = NULL;
-  int *df_ind            = NULL;
-  int  num_qa_rec, num_info;
-  int  num_glo_vars, num_nod_vars, num_ele_vars;
-  int  num_nset_vars, num_sset_vars;
-  int *truth_tab;
-  int  num_time_steps;
-  int *num_elem_in_block  = NULL;
-  int *num_nodes_per_elem = NULL;
-  int *num_attr           = NULL;
-  int  num_nodes_in_set, num_elem_in_set;
-  int  num_sides_in_set, num_df_in_set;
-  int  list_len, elem_list_len, node_list_len, df_list_len;
-  int  node_num, time_step, var_index, beg_time, end_time, elem_num;
-  int  num_props, prop_value, *prop_values;
-  int  idum;
-
-  float  time_value, *time_values, *var_values;
-  float *attrib, *dist_fact;
-  float  version, fdum;
-
-  char *coord_names[3], *qa_record[2][4], *info[3], *var_names[3];
-  char *block_names[10], *nset_names[10], *sset_names[10];
-  char *attrib_names[10];
-  char  name[MAX_STR_LENGTH + 1];
-  char  elem_type[MAX_STR_LENGTH + 1];
-  char  title_chk[MAX_LINE_LENGTH + 1];
-  char *cdum = NULL;
-  char *prop_names[3];
-
-  int CPU_word_size = 0; /* sizeof(float) */
-  int IO_word_size  = 0; /* use what is stored in file */
-
   ex_opts(EX_VERBOSE | EX_ABORT);
 
   /* open EXODUS II files */
+  float version;
+  int   CPU_word_size = 0; /* sizeof(float) */
+  int   IO_word_size  = 0; /* use what is stored in file */
+
   int exoid = ex_open("test.exo",     /* filename path */
                       EX_READ,        /* access mode = READ */
                       &CPU_word_size, /* CPU word size */
@@ -76,6 +40,8 @@ int main(int argc, char **argv)
   printf("test.exo is an EXODUSII file; version %4.2f\n", version);
   /*   printf ("         CPU word size %1d\n",CPU_word_size);  */
   printf("         I/O word size %1d\n", IO_word_size);
+  int   idum;
+  char *cdum = NULL;
   ex_inquire(exoid, EX_INQ_API_VERS, &idum, &version, cdum);
   printf("EXODUSII API; version %4.2f\n", version);
 
@@ -102,6 +68,8 @@ int main(int argc, char **argv)
   printf("num_side_sets = %3d\n", num_side_sets);
 
   /* Check that ex_inquire gives same title */
+  float fdum;
+  char  title_chk[MAX_LINE_LENGTH + 1];
   error = ex_inquire(exoid, EX_INQ_TITLE, &idum, &fdum, title_chk);
   printf(" after ex_inquire, error = %d\n", error);
   if (strcmp(title, title_chk) != 0) {
@@ -164,6 +132,7 @@ int main(int argc, char **argv)
     free(z);
   }
 
+  char *coord_names[3];
   for (int i = 0; i < num_dim; i++) {
     coord_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
   }
@@ -188,6 +157,7 @@ int main(int argc, char **argv)
     printf(" after ex_get_attr_param, error = %d\n", error);
     printf("num nodal attributes = %d\n", num_attrs);
     if (num_attrs > 0) {
+      char *attrib_names[10];
       for (int j = 0; j < num_attrs; j++) {
         attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
@@ -195,7 +165,7 @@ int main(int argc, char **argv)
       printf(" after ex_get_attr_names, error = %d\n", error);
 
       if (error == 0) {
-        attrib = (float *)calloc(num_nodes, sizeof(float));
+        float *attrib = (float *)calloc(num_nodes, sizeof(float));
         for (int j = 0; j < num_attrs; j++) {
           printf("nodal attribute %d = '%s'\n", j, attrib_names[j]);
           error = ex_get_one_attr(exoid, EX_NODAL, 0, j + 1, attrib);
@@ -212,7 +182,7 @@ int main(int argc, char **argv)
 
   /* read element order map */
 
-  elem_map = (int *)calloc(num_elem, sizeof(int));
+  int *elem_map = (int *)calloc(num_elem, sizeof(int));
 
   error = ex_get_map(exoid, elem_map);
   printf("\nafter ex_get_map, error = %3d\n", error);
@@ -225,15 +195,17 @@ int main(int argc, char **argv)
 
   /* read element block parameters */
 
+  int *num_elem_in_block = NULL;
   if (num_elem_blk > 0) {
-    ids                = (int *)calloc(num_elem_blk, sizeof(int));
-    num_elem_in_block  = (int *)calloc(num_elem_blk, sizeof(int));
-    num_nodes_per_elem = (int *)calloc(num_elem_blk, sizeof(int));
-    num_attr           = (int *)calloc(num_elem_blk, sizeof(int));
+    int *ids                = (int *)calloc(num_elem_blk, sizeof(int));
+    num_elem_in_block       = (int *)calloc(num_elem_blk, sizeof(int));
+    int *num_nodes_per_elem = (int *)calloc(num_elem_blk, sizeof(int));
+    int *num_attr           = (int *)calloc(num_elem_blk, sizeof(int));
 
     error = ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
     printf("\nafter ex_get_elem_blk_ids, error = %3d\n", error);
 
+    char *block_names[10];
     for (int i = 0; i < num_elem_blk; i++) {
       block_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -242,10 +214,12 @@ int main(int argc, char **argv)
     printf("\nafter ex_get_names, error = %3d\n", error);
 
     for (int i = 0; i < num_elem_blk; i++) {
+      char name[MAX_STR_LENGTH + 1];
       ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
       if (strcmp(name, block_names[i]) != 0) {
         printf("error in ex_get_name for block id %d\n", ids[i]);
       }
+      char elem_type[MAX_STR_LENGTH + 1];
       error = ex_get_block(exoid, EX_ELEM_BLOCK, ids[i], elem_type, &(num_elem_in_block[i]),
                            &(num_nodes_per_elem[i]), 0, 0, &(num_attr[i]));
       printf("\nafter ex_get_elem_block, error = %d\n", error);
@@ -260,10 +234,11 @@ int main(int argc, char **argv)
     }
 
     /* read element block properties */
-    error = ex_inquire(exoid, EX_INQ_EB_PROP, &num_props, &fdum, cdum);
+    int num_props = ex_inquire_int(exoid, EX_INQ_EB_PROP);
     printf("\nafter ex_inquire, error = %d\n", error);
     printf("\nThere are %2d properties for each element block\n", num_props);
 
+    char *prop_names[3];
     for (int i = 0; i < num_props; i++) {
       prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -274,6 +249,7 @@ int main(int argc, char **argv)
     for (int i = 1; i < num_props; i++) /* Prop 1 is id; skip that here */
     {
       for (int j = 0; j < num_elem_blk; j++) {
+        int prop_value;
         error = ex_get_prop(exoid, EX_ELEM_BLOCK, ids[j], prop_names[i], &prop_value);
         if (error == 0) {
           printf("element block %2d, property(%2d): '%s'= %5d\n", j + 1, i + 1, prop_names[i],
@@ -288,53 +264,52 @@ int main(int argc, char **argv)
     for (int i = 0; i < num_props; i++) {
       free(prop_names[i]);
     }
-  }
 
-  /* read element connectivity */
+    /* read element connectivity */
 
-  for (int i = 0; i < num_elem_blk; i++) {
-    if (num_elem_in_block[i] > 0) {
-      connect = (int *)calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
+    for (int i = 0; i < num_elem_blk; i++) {
+      if (num_elem_in_block[i] > 0) {
+        int *connect = (int *)calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
 
-      error = ex_get_conn(exoid, EX_ELEM_BLOCK, ids[i], connect, NULL, NULL);
-      printf("\nafter ex_get_elem_conn, error = %d\n", error);
+        error = ex_get_conn(exoid, EX_ELEM_BLOCK, ids[i], connect, NULL, NULL);
+        printf("\nafter ex_get_elem_conn, error = %d\n", error);
 
-      printf("connect array for elem block %2d\n", ids[i]);
+        printf("connect array for elem block %2d\n", ids[i]);
 
-      for (int j = 0; j < num_nodes_per_elem[i]; j++) {
-        printf("%3d\n", connect[j]);
+        for (int j = 0; j < num_nodes_per_elem[i]; j++) {
+          printf("%3d\n", connect[j]);
+        }
+        free(connect);
       }
-      free(connect);
     }
-  }
 
-  /* read element block attributes */
-  for (int i = 0; i < num_elem_blk; i++) {
-    if (num_elem_in_block[i] > 0 && num_attr[i] > 0) {
-      for (int j = 0; j < num_attr[i]; j++) {
-        attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
-      }
+    /* read element block attributes */
+    for (int i = 0; i < num_elem_blk; i++) {
+      if (num_elem_in_block[i] > 0 && num_attr[i] > 0) {
+        char *attrib_names[10];
+        for (int j = 0; j < num_attr[i]; j++) {
+          attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
+        }
 
-      attrib = (float *)calloc(num_attr[i] * num_elem_in_block[i], sizeof(float));
-      error  = ex_get_attr(exoid, EX_ELEM_BLOCK, ids[i], attrib);
-      printf("\n after ex_get_elem_attr, error = %d\n", error);
-
-      if (error == 0) {
-        error = ex_get_attr_names(exoid, EX_ELEM_BLOCK, ids[i], attrib_names);
-        printf(" after ex_get_elem_attr_names, error = %d\n", error);
+        float *attrib = (float *)calloc(num_attr[i] * num_elem_in_block[i], sizeof(float));
+        error         = ex_get_attr(exoid, EX_ELEM_BLOCK, ids[i], attrib);
+        printf("\n after ex_get_elem_attr, error = %d\n", error);
 
         if (error == 0) {
-          printf("element block %d attribute '%s' = %6.4f\n", ids[i], attrib_names[0], *attrib);
+          error = ex_get_attr_names(exoid, EX_ELEM_BLOCK, ids[i], attrib_names);
+          printf(" after ex_get_elem_attr_names, error = %d\n", error);
+
+          if (error == 0) {
+            printf("element block %d attribute '%s' = %6.4f\n", ids[i], attrib_names[0], *attrib);
+          }
+        }
+        free(attrib);
+        for (int j = 0; j < num_attr[i]; j++) {
+          free(attrib_names[j]);
         }
       }
-      free(attrib);
-      for (int j = 0; j < num_attr[i]; j++) {
-        free(attrib_names[j]);
-      }
     }
-  }
 
-  if (num_elem_blk > 0) {
     free(ids);
     free(num_nodes_per_elem);
     free(num_attr);
@@ -342,11 +317,12 @@ int main(int argc, char **argv)
 
   /* read individual node sets */
   if (num_node_sets > 0) {
-    ids = (int *)calloc(num_node_sets, sizeof(int));
+    int *ids = (int *)calloc(num_node_sets, sizeof(int));
 
     error = ex_get_ids(exoid, EX_NODE_SET, ids);
     printf("\nafter ex_get_node_set_ids, error = %3d\n", error);
 
+    char *nset_names[10];
     for (int i = 0; i < num_node_sets; i++) {
       nset_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -355,11 +331,14 @@ int main(int argc, char **argv)
     printf("\nafter ex_get_names, error = %3d\n", error);
 
     for (int i = 0; i < num_node_sets; i++) {
+      char name[MAX_STR_LENGTH + 1];
       ex_get_name(exoid, EX_NODE_SET, ids[i], name);
       if (strcmp(name, nset_names[i]) != 0) {
         printf("error in ex_get_name for nodeset id %d\n", ids[i]);
       }
 
+      int num_nodes_in_set;
+      int num_df_in_set;
       error = ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_nodes_in_set, &num_df_in_set);
       printf("\nafter ex_get_node_set_param, error = %3d\n", error);
 
@@ -367,8 +346,8 @@ int main(int argc, char **argv)
       printf("num_nodes = %2d\n", num_nodes_in_set);
       printf("name = '%s'\n", nset_names[i]);
       free(nset_names[i]);
-      node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
-      dist_fact = (float *)calloc(num_nodes_in_set, sizeof(float));
+      int *  node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
+      float *dist_fact = (float *)calloc(num_nodes_in_set, sizeof(float));
 
       error = ex_get_set(exoid, EX_NODE_SET, ids[i], node_list, NULL);
       printf("\nafter ex_get_node_set, error = %3d\n", error);
@@ -404,6 +383,7 @@ int main(int argc, char **argv)
         printf(" after ex_get_attr_param, error = %d\n", error);
         printf("num nodeset attributes for nodeset %d = %d\n", ids[i], num_attrs);
         if (num_attrs > 0) {
+          char *attrib_names[10];
           for (int j = 0; j < num_attrs; j++) {
             attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
           }
@@ -411,7 +391,7 @@ int main(int argc, char **argv)
           printf(" after ex_get_attr_names, error = %d\n", error);
 
           if (error == 0) {
-            attrib = (float *)calloc(num_nodes_in_set, sizeof(float));
+            float *attrib = (float *)calloc(num_nodes_in_set, sizeof(float));
             for (int j = 0; j < num_attrs; j++) {
               printf("nodeset attribute %d = '%s'\n", j, attrib_names[j]);
               error = ex_get_one_attr(exoid, EX_NODE_SET, ids[i], j + 1, attrib);
@@ -429,14 +409,15 @@ int main(int argc, char **argv)
     free(ids);
 
     /* read node set properties */
-    error = ex_inquire(exoid, EX_INQ_NS_PROP, &num_props, &fdum, cdum);
+    int num_props = ex_inquire_int(exoid, EX_INQ_NS_PROP);
     printf("\nafter ex_inquire, error = %d\n", error);
     printf("\nThere are %2d properties for each node set\n", num_props);
 
+    char *prop_names[10];
     for (int i = 0; i < num_props; i++) {
       prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
-    prop_values = (int *)calloc(num_node_sets, sizeof(int));
+    int *prop_values = (int *)calloc(num_node_sets, sizeof(int));
 
     error = ex_get_prop_names(exoid, EX_NODE_SET, prop_names);
     printf("after ex_get_prop_names, error = %d\n", error);
@@ -457,27 +438,26 @@ int main(int argc, char **argv)
       free(prop_names[i]);
     }
     free(prop_values);
+  }
+  /* read concatenated node sets; this produces the same information as
+   * the above code which reads individual node sets
+   */
 
-    /* read concatenated node sets; this produces the same information as
-     * the above code which reads individual node sets
-     */
+  int *num_nodes_per_set = NULL;
+  if (num_node_sets > 0) {
+    int *ids            = (int *)calloc(num_node_sets, sizeof(int));
+    num_nodes_per_set   = (int *)calloc(num_node_sets, sizeof(int));
+    int *num_df_per_set = (int *)calloc(num_node_sets, sizeof(int));
+    int *node_ind       = (int *)calloc(num_node_sets, sizeof(int));
+    int *df_ind         = (int *)calloc(num_node_sets, sizeof(int));
 
-    error = ex_inquire(exoid, EX_INQ_NODE_SETS, &num_node_sets, &fdum, cdum);
-    printf("\nafter ex_inquire, error = %3d\n", error);
-
-    ids               = (int *)calloc(num_node_sets, sizeof(int));
-    num_nodes_per_set = (int *)calloc(num_node_sets, sizeof(int));
-    num_df_per_set    = (int *)calloc(num_node_sets, sizeof(int));
-    node_ind          = (int *)calloc(num_node_sets, sizeof(int));
-    df_ind            = (int *)calloc(num_node_sets, sizeof(int));
-
-    error = ex_inquire(exoid, EX_INQ_NS_NODE_LEN, &list_len, &fdum, cdum);
+    int list_len = ex_inquire_int(exoid, EX_INQ_NS_NODE_LEN);
     printf("\nafter ex_inquire: EX_INQ_NS_NODE_LEN = %d, error = %3d\n", list_len, error);
-    node_list = (int *)calloc(list_len, sizeof(int));
+    int *node_list = (int *)calloc(list_len, sizeof(int));
 
-    error = ex_inquire(exoid, EX_INQ_NS_DF_LEN, &list_len, &fdum, cdum);
+    list_len = ex_inquire_int(exoid, EX_INQ_NS_DF_LEN);
     printf("\nafter ex_inquire: EX_INQ_NS_DF_LEN = %d, error = %3d\n", list_len, error);
-    dist_fact = (float *)calloc(list_len, sizeof(float));
+    float *dist_fact = (float *)calloc(list_len, sizeof(float));
 
     {
       struct ex_set_specs set_specs;
@@ -531,13 +511,13 @@ int main(int argc, char **argv)
   }
 
   /* read individual side sets */
-
   if (num_side_sets > 0) {
-    ids = (int *)calloc(num_side_sets, sizeof(int));
+    int *ids = (int *)calloc(num_side_sets, sizeof(int));
 
     error = ex_get_ids(exoid, EX_SIDE_SET, ids);
     printf("\nafter ex_get_side_set_ids, error = %3d\n", error);
 
+    char *sset_names[10];
     for (int i = 0; i < num_side_sets; i++) {
       sset_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -546,11 +526,14 @@ int main(int argc, char **argv)
     printf("\nafter ex_get_names, error = %3d\n", error);
 
     for (int i = 0; i < num_side_sets; i++) {
+      char name[MAX_STR_LENGTH + 1];
       ex_get_name(exoid, EX_SIDE_SET, ids[i], name);
       if (strcmp(name, sset_names[i]) != 0) {
         printf("error in ex_get_name for sideset id %d\n", ids[i]);
       }
 
+      int num_sides_in_set;
+      int num_df_in_set;
       error = ex_get_set_param(exoid, EX_SIDE_SET, ids[i], &num_sides_in_set, &num_df_in_set);
       printf("\nafter ex_get_side_set_param, error = %3d\n", error);
 
@@ -561,12 +544,12 @@ int main(int argc, char **argv)
       free(sset_names[i]);
 
       /* Note: The # of elements is same as # of sides!  */
-      num_elem_in_set = num_sides_in_set;
-      elem_list       = (int *)calloc(num_elem_in_set, sizeof(int));
-      side_list       = (int *)calloc(num_sides_in_set, sizeof(int));
-      node_ctr_list   = (int *)calloc(num_elem_in_set, sizeof(int));
-      node_list       = (int *)calloc(num_elem_in_set * 21, sizeof(int));
-      dist_fact       = (float *)calloc(num_df_in_set, sizeof(float));
+      int    num_elem_in_set = num_sides_in_set;
+      int *  elem_list       = (int *)calloc(num_elem_in_set, sizeof(int));
+      int *  side_list       = (int *)calloc(num_sides_in_set, sizeof(int));
+      int *  node_ctr_list   = (int *)calloc(num_elem_in_set, sizeof(int));
+      int *  node_list       = (int *)calloc(num_elem_in_set * 21, sizeof(int));
+      float *dist_fact       = (float *)calloc(num_df_in_set, sizeof(float));
 
       error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
       printf("\nafter ex_get_side_set, error = %3d\n", error);
@@ -589,7 +572,7 @@ int main(int argc, char **argv)
         printf("%3d\n", side_list[j]);
       }
 
-      node_ctr = 0;
+      int node_ctr = 0;
       printf("node list for side set %2d\n", ids[i]);
       for (int k = 0; k < num_elem_in_set; k++) {
         for (int j = 0; j < node_ctr_list[k]; j++) {
@@ -617,10 +600,11 @@ int main(int argc, char **argv)
     }
 
     /* read side set properties */
-    error = ex_inquire(exoid, EX_INQ_SS_PROP, &num_props, &fdum, cdum);
+    int num_props = ex_inquire_int(exoid, EX_INQ_SS_PROP);
     printf("\nafter ex_inquire, error = %d\n", error);
     printf("\nThere are %2d properties for each side set\n", num_props);
 
+    char *prop_names[10];
     for (int i = 0; i < num_props; i++) {
       prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -630,6 +614,7 @@ int main(int argc, char **argv)
 
     for (int i = 0; i < num_props; i++) {
       for (int j = 0; j < num_side_sets; j++) {
+        int prop_value;
         error = ex_get_prop(exoid, EX_SIDE_SET, ids[j], prop_names[i], &prop_value);
         if (error == 0) {
           printf("side set %2d, property(%2d): '%s'= %5d\n", j + 1, i + 1, prop_names[i],
@@ -644,20 +629,18 @@ int main(int argc, char **argv)
       free(prop_names[i]);
     }
     free(ids);
+  }
 
-    error = ex_inquire(exoid, EX_INQ_SIDE_SETS, &num_side_sets, &fdum, cdum);
-    printf("\nafter ex_inquire: EX_INQ_SIDE_SETS = %d,  error = %d\n", num_side_sets, error);
+  int *num_elem_per_set = NULL;
+  if (num_side_sets > 0) {
+    int elem_list_len = ex_inquire_int(exoid, EX_INQ_SS_ELEM_LEN);
+    printf("\nafter ex_inquire: EX_INQ_SS_ELEM_LEN = %d,  error = %d\n", elem_list_len, error);
 
-    if (num_side_sets > 0) {
-      error = ex_inquire(exoid, EX_INQ_SS_ELEM_LEN, &elem_list_len, &fdum, cdum);
-      printf("\nafter ex_inquire: EX_INQ_SS_ELEM_LEN = %d,  error = %d\n", elem_list_len, error);
+    int node_list_len = ex_inquire_int(exoid, EX_INQ_SS_NODE_LEN);
+    printf("\nafter ex_inquire: EX_INQ_SS_NODE_LEN = %d,  error = %d\n", node_list_len, error);
 
-      error = ex_inquire(exoid, EX_INQ_SS_NODE_LEN, &node_list_len, &fdum, cdum);
-      printf("\nafter ex_inquire: EX_INQ_SS_NODE_LEN = %d,  error = %d\n", node_list_len, error);
-
-      error = ex_inquire(exoid, EX_INQ_SS_DF_LEN, &df_list_len, &fdum, cdum);
-      printf("\nafter ex_inquire: EX_INQ_SS_DF_LEN = %d,  error = %d\n", df_list_len, error);
-    }
+    int df_list_len = ex_inquire_int(exoid, EX_INQ_SS_DF_LEN);
+    printf("\nafter ex_inquire: EX_INQ_SS_DF_LEN = %d,  error = %d\n", df_list_len, error);
 
     /* read concatenated side sets; this produces the same information as
      * the above code which reads individual side sets
@@ -665,87 +648,86 @@ int main(int argc, char **argv)
 
     /* concatenated side set read */
 
-    if (num_side_sets > 0) {
-      struct ex_set_specs set_specs;
+    struct ex_set_specs set_specs;
 
-      ids              = (int *)calloc(num_side_sets, sizeof(int));
-      num_elem_per_set = (int *)calloc(num_side_sets, sizeof(int));
-      num_df_per_set   = (int *)calloc(num_side_sets, sizeof(int));
-      elem_ind         = (int *)calloc(num_side_sets, sizeof(int));
-      df_ind           = (int *)calloc(num_side_sets, sizeof(int));
-      elem_list        = (int *)calloc(elem_list_len, sizeof(int));
-      side_list        = (int *)calloc(elem_list_len, sizeof(int));
-      dist_fact        = (float *)calloc(df_list_len, sizeof(float));
+    int *ids              = (int *)calloc(num_side_sets, sizeof(int));
+    num_elem_per_set      = (int *)calloc(num_side_sets, sizeof(int));
+    int *  num_df_per_set = (int *)calloc(num_side_sets, sizeof(int));
+    int *  elem_ind       = (int *)calloc(num_side_sets, sizeof(int));
+    int *  df_ind         = (int *)calloc(num_side_sets, sizeof(int));
+    int *  elem_list      = (int *)calloc(elem_list_len, sizeof(int));
+    int *  side_list      = (int *)calloc(elem_list_len, sizeof(int));
+    float *dist_fact      = (float *)calloc(df_list_len, sizeof(float));
 
-      set_specs.sets_ids            = ids;
-      set_specs.num_entries_per_set = num_elem_per_set;
-      set_specs.num_dist_per_set    = num_df_per_set;
-      set_specs.sets_entry_index    = elem_ind;
-      set_specs.sets_dist_index     = df_ind;
-      set_specs.sets_entry_list     = elem_list;
-      set_specs.sets_extra_list     = side_list;
-      set_specs.sets_dist_fact      = dist_fact;
+    set_specs.sets_ids            = ids;
+    set_specs.num_entries_per_set = num_elem_per_set;
+    set_specs.num_dist_per_set    = num_df_per_set;
+    set_specs.sets_entry_index    = elem_ind;
+    set_specs.sets_dist_index     = df_ind;
+    set_specs.sets_entry_list     = elem_list;
+    set_specs.sets_extra_list     = side_list;
+    set_specs.sets_dist_fact      = dist_fact;
 
-      error = ex_get_concat_sets(exoid, EX_SIDE_SET, &set_specs);
-      printf("\nafter ex_get_concat_side_sets, error = %3d\n", error);
+    error = ex_get_concat_sets(exoid, EX_SIDE_SET, &set_specs);
+    printf("\nafter ex_get_concat_side_sets, error = %3d\n", error);
 
-      printf("concatenated side set info\n");
+    printf("concatenated side set info\n");
 
-      printf("ids = \n");
-      for (int i = 0; i < num_side_sets; i++) {
-        printf("%3d\n", ids[i]);
-      }
-
-      printf("num_elem_per_set = \n");
-      for (int i = 0; i < num_side_sets; i++) {
-        printf("%3d\n", num_elem_per_set[i]);
-      }
-
-      printf("num_dist_per_set = \n");
-      for (int i = 0; i < num_side_sets; i++) {
-        printf("%3d\n", num_df_per_set[i]);
-      }
-
-      printf("elem_ind = \n");
-      for (int i = 0; i < num_side_sets; i++) {
-        printf("%3d\n", elem_ind[i]);
-      }
-
-      printf("dist_ind = \n");
-      for (int i = 0; i < num_side_sets; i++) {
-        printf("%3d\n", df_ind[i]);
-      }
-
-      printf("elem_list = \n");
-      for (int i = 0; i < elem_list_len; i++) {
-        printf("%3d\n", elem_list[i]);
-      }
-
-      printf("side_list = \n");
-      for (int i = 0; i < elem_list_len; i++) {
-        printf("%3d\n", side_list[i]);
-      }
-
-      printf("dist_fact = \n");
-      for (int i = 0; i < df_list_len; i++) {
-        printf("%5.3f\n", dist_fact[i]);
-      }
-
-      free(ids);
-      free(num_df_per_set);
-      free(df_ind);
-      free(elem_ind);
-      free(elem_list);
-      free(side_list);
-      free(dist_fact);
+    printf("ids = \n");
+    for (int i = 0; i < num_side_sets; i++) {
+      printf("%3d\n", ids[i]);
     }
+
+    printf("num_elem_per_set = \n");
+    for (int i = 0; i < num_side_sets; i++) {
+      printf("%3d\n", num_elem_per_set[i]);
+    }
+
+    printf("num_dist_per_set = \n");
+    for (int i = 0; i < num_side_sets; i++) {
+      printf("%3d\n", num_df_per_set[i]);
+    }
+
+    printf("elem_ind = \n");
+    for (int i = 0; i < num_side_sets; i++) {
+      printf("%3d\n", elem_ind[i]);
+    }
+
+    printf("dist_ind = \n");
+    for (int i = 0; i < num_side_sets; i++) {
+      printf("%3d\n", df_ind[i]);
+    }
+
+    printf("elem_list = \n");
+    for (int i = 0; i < elem_list_len; i++) {
+      printf("%3d\n", elem_list[i]);
+    }
+
+    printf("side_list = \n");
+    for (int i = 0; i < elem_list_len; i++) {
+      printf("%3d\n", side_list[i]);
+    }
+
+    printf("dist_fact = \n");
+    for (int i = 0; i < df_list_len; i++) {
+      printf("%5.3f\n", dist_fact[i]);
+    }
+
+    free(ids);
+    free(num_df_per_set);
+    free(df_ind);
+    free(elem_ind);
+    free(elem_list);
+    free(side_list);
+    free(dist_fact);
   }
   /* end of concatenated side set read */
 
   /* read QA records */
 
-  ex_inquire(exoid, EX_INQ_QA, &num_qa_rec, &fdum, cdum);
+  int num_qa_rec = ex_inquire_int(exoid, EX_INQ_QA);
 
+  char *qa_record[2][4];
   for (int i = 0; i < num_qa_rec; i++) {
     for (int j = 0; j < 4; j++) {
       qa_record[i][j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
@@ -765,9 +747,10 @@ int main(int argc, char **argv)
 
   /* read information records */
 
-  error = ex_inquire(exoid, EX_INQ_INFO, &num_info, &fdum, cdum);
+  int num_info = ex_inquire_int(exoid, EX_INQ_INFO);
   printf("\nafter ex_inquire, error = %3d\n", error);
 
+  char *info[3];
   for (int i = 0; i < num_info; i++) {
     info[i] = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char));
   }
@@ -783,10 +766,12 @@ int main(int argc, char **argv)
 
   /* read global variables parameters and names */
 
+  int num_glo_vars;
   error = ex_get_variable_param(exoid, EX_GLOBAL, &num_glo_vars);
   printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
   if (num_glo_vars > 0) {
+    char *var_names[3];
     for (int i = 0; i < num_glo_vars; i++) {
       var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -802,11 +787,12 @@ int main(int argc, char **argv)
   }
 
   /* read nodal variables parameters and names */
-  num_nod_vars = 0;
+  int num_nod_vars = 0;
   if (num_nodes > 0) {
     error = ex_get_variable_param(exoid, EX_NODAL, &num_nod_vars);
     printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
+    char *var_names[3];
     for (int i = 0; i < num_nod_vars; i++) {
       var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -823,11 +809,12 @@ int main(int argc, char **argv)
 
   /* read element variables parameters and names */
 
-  num_ele_vars = 0;
+  int num_ele_vars = 0;
   if (num_elem > 0) {
     error = ex_get_variable_param(exoid, EX_ELEM_BLOCK, &num_ele_vars);
     printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
+    char *var_names[3];
     for (int i = 0; i < num_ele_vars; i++) {
       var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -844,7 +831,7 @@ int main(int argc, char **argv)
     /* read element variable truth table */
 
     if (num_ele_vars > 0) {
-      truth_tab = (int *)calloc((num_elem_blk * num_ele_vars), sizeof(int));
+      int *truth_tab = (int *)calloc((num_elem_blk * num_ele_vars), sizeof(int));
 
       error = ex_get_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab);
       printf("\nafter ex_get_elem_var_tab, error = %3d\n", error);
@@ -860,12 +847,13 @@ int main(int argc, char **argv)
 
   /* read nodeset variables parameters and names */
 
-  num_nset_vars = 0;
+  int num_nset_vars = 0;
   if (num_node_sets > 0) {
     error = ex_get_variable_param(exoid, EX_NODE_SET, &num_nset_vars);
     printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
     if (num_nset_vars > 0) {
+      char *var_names[3];
       for (int i = 0; i < num_nset_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
@@ -882,7 +870,7 @@ int main(int argc, char **argv)
       /* read nodeset variable truth table */
 
       if (num_nset_vars > 0) {
-        truth_tab = (int *)calloc((num_node_sets * num_nset_vars), sizeof(int));
+        int *truth_tab = (int *)calloc((num_node_sets * num_nset_vars), sizeof(int));
 
         error = ex_get_truth_table(exoid, EX_NODE_SET, num_node_sets, num_nset_vars, truth_tab);
         printf("\nafter ex_get_nset_var_tab, error = %3d\n", error);
@@ -898,13 +886,13 @@ int main(int argc, char **argv)
   }
 
   /* read sideset variables parameters and names */
-
-  num_sset_vars = 0;
+  int num_sset_vars = 0;
   if (num_side_sets > 0) {
     error = ex_get_variable_param(exoid, EX_SIDE_SET, &num_sset_vars);
     printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
     if (num_sset_vars > 0) {
+      char *var_names[3];
       for (int i = 0; i < num_sset_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
@@ -921,7 +909,7 @@ int main(int argc, char **argv)
       /* read sideset variable truth table */
 
       if (num_sset_vars > 0) {
-        truth_tab = (int *)calloc((num_side_sets * num_sset_vars), sizeof(int));
+        int *truth_tab = (int *)calloc((num_side_sets * num_sset_vars), sizeof(int));
 
         error = ex_get_truth_table(exoid, EX_SIDE_SET, num_side_sets, num_sset_vars, truth_tab);
         printf("\nafter ex_get_sset_var_tab, error = %3d\n", error);
@@ -937,22 +925,22 @@ int main(int argc, char **argv)
   }
 
   /* determine how many time steps are stored */
-
-  error = ex_inquire(exoid, EX_INQ_TIME, &num_time_steps, &fdum, cdum);
+  int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
   printf("\nafter ex_inquire, error = %3d\n", error);
   printf("There are %2d time steps in the database.\n", num_time_steps);
 
   /* read time value at one time step */
 
-  time_step = 3;
-  error     = ex_get_time(exoid, time_step, &time_value);
+  int   time_step = 3;
+  float time_value;
+  error = ex_get_time(exoid, time_step, &time_value);
   printf("\nafter ex_get_time, error = %3d\n", error);
 
   printf("time value at time step %2d = %5.3f\n", time_step, time_value);
 
   /* read time values at all time steps */
 
-  time_values = (float *)calloc(num_time_steps, sizeof(float));
+  float *time_values = (float *)calloc(num_time_steps, sizeof(float));
 
   error = ex_get_all_times(exoid, time_values);
   printf("\nafter ex_get_all_times, error = %3d\n", error);
@@ -965,12 +953,12 @@ int main(int argc, char **argv)
   free(time_values);
 
   /* read all global variables at one time step */
-  var_index = 1;
-  beg_time  = 1;
-  end_time  = -1;
+  int var_index = 1;
+  int beg_time  = 1;
+  int end_time  = -1;
 
   if (num_glo_vars > 0) {
-    var_values = (float *)calloc(num_glo_vars, sizeof(float));
+    float *var_values = (float *)calloc(num_glo_vars, sizeof(float));
 
     error = ex_get_var(exoid, time_step, EX_GLOBAL, 1, 1, num_glo_vars, var_values);
     printf("\nafter ex_get_glob_vars, error = %3d\n", error);
@@ -999,7 +987,7 @@ int main(int argc, char **argv)
 
   /* read a nodal variable at one time step */
   if (num_nodes > 0) {
-    var_values = (float *)calloc(num_nodes, sizeof(float));
+    float *var_values = (float *)calloc(num_nodes, sizeof(float));
 
     error = ex_get_var(exoid, time_step, EX_NODAL, var_index, 1, num_nodes, var_values);
     printf("\nafter ex_get_nodal_var, error = %3d\n", error);
@@ -1015,7 +1003,7 @@ int main(int argc, char **argv)
 
     var_values = (float *)calloc(num_time_steps, sizeof(float));
 
-    node_num = 1;
+    int node_num = 1;
     error = ex_get_var_time(exoid, EX_NODAL, var_index, node_num, beg_time, end_time, var_values);
     printf("\nafter ex_get_nodal_var_time, error = %3d\n", error);
 
@@ -1029,14 +1017,14 @@ int main(int argc, char **argv)
   /* read an element variable at one time step */
 
   if (num_elem_blk > 0) {
-    ids = (int *)calloc(num_elem_blk, sizeof(int));
+    int *ids = (int *)calloc(num_elem_blk, sizeof(int));
 
     error = ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
     printf("\n after ex_get_elem_blk_ids, error = %3d\n", error);
 
     for (int i = 0; i < num_elem_blk; i++) {
       if (num_elem_in_block[i] > 0) {
-        var_values = (float *)calloc(num_elem_in_block[i], sizeof(float));
+        float *var_values = (float *)calloc(num_elem_in_block[i], sizeof(float));
 
         error = ex_get_var(exoid, time_step, EX_ELEM_BLOCK, var_index, ids[i], num_elem_in_block[i],
                            var_values);
@@ -1059,10 +1047,10 @@ int main(int argc, char **argv)
   /* read an element variable through time */
 
   if (num_ele_vars > 0) {
-    var_values = (float *)calloc(num_time_steps, sizeof(float));
+    float *var_values = (float *)calloc(num_time_steps, sizeof(float));
 
-    var_index = 2;
-    elem_num  = 2;
+    var_index    = 2;
+    int elem_num = 2;
     error =
         ex_get_var_time(exoid, EX_ELEM_BLOCK, var_index, elem_num, beg_time, end_time, var_values);
     printf("\nafter ex_get_elem_var_time, error = %3d\n", error);
@@ -1078,13 +1066,13 @@ int main(int argc, char **argv)
   /* read a sideset variable at one time step */
 
   if (num_sset_vars > 0) {
-    ids = (int *)calloc(num_side_sets, sizeof(int));
+    int *ids = (int *)calloc(num_side_sets, sizeof(int));
 
     error = ex_get_ids(exoid, EX_SIDE_SET, ids);
     printf("\n after ex_get_side_set_ids, error = %3d\n", error);
 
     for (int i = 0; i < num_side_sets; i++) {
-      var_values = (float *)calloc(num_elem_per_set[i], sizeof(float));
+      float *var_values = (float *)calloc(num_elem_per_set[i], sizeof(float));
 
       error = ex_get_var(exoid, time_step, EX_SIDE_SET, var_index, ids[i], num_elem_per_set[i],
                          var_values);
@@ -1107,13 +1095,13 @@ int main(int argc, char **argv)
   /* read a nodeset variable at one time step */
 
   if (num_nset_vars > 0) {
-    ids = (int *)calloc(num_node_sets, sizeof(int));
+    int *ids = (int *)calloc(num_node_sets, sizeof(int));
 
     error = ex_get_ids(exoid, EX_NODE_SET, ids);
     printf("\n after ex_get_node_set_ids, error = %3d\n", error);
 
     for (int i = 0; i < num_node_sets; i++) {
-      var_values = (float *)calloc(num_nodes_per_set[i], sizeof(float));
+      float *var_values = (float *)calloc(num_nodes_per_set[i], sizeof(float));
 
       error = ex_get_var(exoid, time_step, EX_NODE_SET, var_index, ids[i], num_nodes_per_set[i],
                          var_values);
