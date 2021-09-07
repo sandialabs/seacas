@@ -406,6 +406,11 @@ int main(int argc, char **argv)
   Catch::Session session;
   using namespace Catch::clara;
 
+#ifdef SEACAS_HAVE_MPI
+  MPI_Init(&argc, &argv);
+  ON_BLOCK_EXIT(MPI_Finalize);
+#endif
+
   auto cli =
       session.cli() | Opt(filename, "filename")["-F"]["--filename"]("The filename path to ADeDA.e");
 
