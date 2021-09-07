@@ -139,7 +139,7 @@ void exmemy(FTNINT *memreq, FTNINT *locblk, FTNINT *memrtn)
      */
     assert(block_location == (size_t *)((size_t)(*locblk) * NumSize));
 
-    if (block_location == 0) {
+    if (block_location == NULL) {
       /*
        * Then the call to 'malloc' has failed, most likely due to
        * asking for more memory than what's available.
@@ -180,7 +180,7 @@ void exmemy(FTNINT *memreq, FTNINT *locblk, FTNINT *memrtn)
       size_t *new_location = realloc(block_location, numbytes);
       /* printf("POST: %11x %11d\n", new_location, numbytes); */
 
-      if (new_location == 0 && *memreq > 0) {
+      if (new_location == NULL && *memreq > 0) {
         /*
          * Then the call to 'realloc' has failed, most likely due to
          * asking for more memory than what's available.
