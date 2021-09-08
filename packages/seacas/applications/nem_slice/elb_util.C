@@ -269,7 +269,7 @@ namespace {
 
     size_t ndx       = 0;
     INT    small_val = v[0];
-    for (i = 1; i < N; i++) {
+    for (size_t i = 1; i < N; i++) {
       if (v[i] < small_val) {
         small_val = v[i];
         ndx       = i;
@@ -278,9 +278,10 @@ namespace {
     /* Put smallest value in slot 0 */
     ISWAP(v, 0, ndx);
 
+    size_t j;
     for (size_t i = 1; i < N; i++) {
       INT tmp = v[i];
-      for (size_t j = i; tmp < v[j - 1]; j--) {
+      for (j = i; tmp < v[j - 1]; j--) {
         v[j] = v[j - 1];
       }
       v[j] = tmp;
