@@ -73,7 +73,7 @@ namespace {
 
 namespace {
   std::string codename;
-  std::string version = "5.0";
+  std::string version = "5.01";
 } // namespace
 
 int main(int argc, char *argv[])
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
   double end = Ioss::Utils::timer();
 
   if (rank == 0) {
-    fmt::print(stderr, "\n\tElapsed time = {} seconds.\n", end - begin);
+    fmt::print(stderr, "\n\tElapsed time = {:.2f} seconds.\n", end - begin);
     fmt::print(stderr, "\n{} execution successful.\n", codename);
   }
   return EXIT_SUCCESS;
@@ -575,10 +575,6 @@ namespace {
   {
     {
       const auto                &onb       = output_region.get_node_blocks()[0];
-      size_t              num_nodes = region.get_node_blocks()[0]->entity_count();
-      std::vector<double> node_data(num_nodes);
-      std::vector<double> data;
-
       Ioss::NameList fields;
       onb->field_describe(role, &fields);
 
@@ -588,16 +584,21 @@ namespace {
         const Ioss::VariableType *var_type   = field.raw_storage();
         size_t                    comp_count = var_type->component_count();
 
+	size_t              num_nodes = region.get_node_blocks()[0]->entity_count();
+	std::vector<double> node_data(num_nodes*comp_count);
+
         const auto &blocks = region.get_structured_blocks();
         for (const auto &block : blocks) {
 	  auto &nb = block->get_node_block();
 	  if (nb.field_exists(field_name)) {
+	    std::vector<double> data;
 	    nb.get_field_data(field_name, data);
-	    auto node_id_list = block->m_blockLocalNodeIndex;
+	    const auto &node_id_list = block->m_blockLocalNodeIndex;
 	    assert(!node_id_list.empty());
 
 	    for (size_t i = 0; i < node_id_list.size(); i++) {
 	      size_t node = node_id_list[i];
+	      assert(node < num_nodes);
 	      for (size_t j = 0; j < comp_count; j++) {
 		node_data[comp_count * node + j] = data[comp_count * i + j];
 	      }
