@@ -325,7 +325,7 @@ void F2C(expqa, EXPQA)(int *idexo, int *num_qa_records, char *qa_record, int *ie
       iii++; /* bump char array pointer */
     }
   }
-  *(sptr + iii) = 0; /* set last pointer to null */
+  *(sptr + iii) = NULL; /* set last pointer to null */
 
   if (ex_put_qa(*idexo, *num_qa_records, (void *)sptr) == EX_FATAL) {
     *ierr = EX_FATAL;
@@ -732,7 +732,7 @@ void F2C(expclb, EXPCLB)(int *idexo, void_int *elem_blk_id, char *elem_type,
     ex_fstrncpy(*(aptr + i), elem_type + i * elem_typelen, slen); /* copy string into
                                                                    * buffer */
   }
-  *(aptr + i) = 0; /* null out last ptr */
+  *(aptr + i) = NULL; /* null out last ptr */
 
   if (ex_put_concat_elem_block(*idexo, elem_blk_id, aptr, num_elem_this_blk, num_nodes_per_elem,
                                num_attr, *create_maps) == EX_FATAL) {
@@ -1216,7 +1216,7 @@ void F2C(exppn, EXPPN)(int *idexo, int *obj_type, int *num_props, char *prop_nam
     /* copy fortran string into allocated space */
     ex_fstrncpy(*(aptr + i), prop_names + i * prop_nameslen, slen);
   }
-  *(aptr + i) = 0; /* set last pointer to null */
+  *(aptr + i) = NULL; /* set last pointer to null */
 
   if (ex_put_prop_names(*idexo, (ex_entity_type)*obj_type, *num_props, aptr) == EX_FATAL) {
     *ierr = EX_FATAL;

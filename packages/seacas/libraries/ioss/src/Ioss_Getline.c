@@ -1264,7 +1264,7 @@ static char *hist_prev(void)
   char *p    = NULL;
   int   next = (hist_pos - 1 + HIST_SIZE) % HIST_SIZE;
 
-  if (hist_buf[hist_pos] != 0 && next != hist_last) {
+  if (hist_buf[hist_pos] != NULL && next != hist_last) {
     hist_pos = next;
     p        = hist_buf[hist_pos];
   }
@@ -1300,13 +1300,13 @@ static char *hist_save(const char *p)
   char * nl  = strpbrk(p, "\n\r");
 
   if (nl) {
-    if ((s = (char *)malloc(len)) != 0) {
+    if ((s = (char *)malloc(len)) != NULL) {
       copy_string(s, p, len);
       s[len - 1] = 0;
     }
   }
   else {
-    if ((s = (char *)malloc(len + 1)) != 0) {
+    if ((s = (char *)malloc(len + 1)) != NULL) {
       copy_string(s, p, len + 1);
     }
   }
