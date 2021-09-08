@@ -81,4 +81,4 @@ build_script:
   - cmd: cmake --build . --config %configuration% -- /maxcpucount:4
 
 test_script:
-  - cmd: ctest --build-config Release
+  - cmd: ctest --output-on-failure --build-config Release

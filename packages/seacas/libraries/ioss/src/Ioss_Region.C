@@ -664,15 +664,14 @@ namespace Ioss {
    */
   bool Region::end_mode(State current_state)
   {
-    bool success = true;
     {
       IOSS_FUNC_ENTER(m_);
-      success = end_mode__(current_state);
+      end_mode__(current_state);
     }
 
     // Pass the 'end state' message on to the database so it can do any
     // cleanup/data checking/manipulations it needs to do.
-    success = get_database()->end(current_state);
+    bool success = get_database()->end(current_state);
     begin_mode(STATE_CLOSED);
     return success;
   }

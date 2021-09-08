@@ -21,27 +21,14 @@ namespace {
   size_t internal_get_size(Ioss::Field::BasicType type, size_t count,
                            const Ioss::VariableType *storage);
 
-  std::string type_string(Ioss::Field::BasicType type)
-  {
-    switch (type) {
-    case Ioss::Field::REAL: return std::string("real");
-    case Ioss::Field::INTEGER: return std::string("integer");
-    case Ioss::Field::INT64: return std::string("64-bit integer");
-    case Ioss::Field::COMPLEX: return std::string("complex");
-    case Ioss::Field::STRING: return std::string("string");
-    case Ioss::Field::CHARACTER: return std::string("char");
-    case Ioss::Field::INVALID: return std::string("invalid");
-    default: return std::string("internal error");
-    }
-  }
-
   void error_message(const Ioss::Field &field, Ioss::Field::BasicType requested_type)
   {
     std::ostringstream errmsg;
     fmt::print(errmsg,
                "ERROR: For field named '{}', code requested value of type '{}', but field type is "
                "'{}'. Types must match\n",
-               field.get_name(), type_string(requested_type), type_string(field.get_type()));
+               field.get_name(), Ioss::Field::type_string(requested_type),
+               Ioss::Field::type_string(field.get_type()));
     IOSS_ERROR(errmsg);
   }
 } // namespace
@@ -239,7 +226,7 @@ bool Ioss::Field::transform(void *data)
   return true;
 }
 
-bool Ioss::Field::equal_(const Ioss::Field rhs, bool quiet) const
+bool Ioss::Field::equal_(const Ioss::Field &rhs, bool quiet) const
 {
   if (Ioss::Utils::str_equal(this->name_, rhs.name_) == false) {
     if (!quiet) {
@@ -289,11 +276,27 @@ bool Ioss::Field::equal_(const Ioss::Field rhs, bool quiet) const
   return true;
 }
 
-bool Ioss::Field::operator==(const Ioss::Field rhs) const { return equal_(rhs, true); }
+bool Ioss::Field::operator==(const Ioss::Field &rhs) const { return equal_(rhs, true); }
 
-bool Ioss::Field::operator!=(const Ioss::Field rhs) const { return !(*this == rhs); }
+bool Ioss::Field::operator!=(const Ioss::Field &rhs) const { return !(*this == rhs); }
 
-bool Ioss::Field::equal(const Ioss::Field rhs) const { return equal_(rhs, false); }
+bool Ioss::Field::equal(const Ioss::Field &rhs) const { return equal_(rhs, false); }
+
+std::string Ioss::Field::type_string() const { return type_string(get_type()); }
+
+std::string Ioss::Field::type_string(Ioss::Field::BasicType type)
+{
+  switch (type) {
+  case Ioss::Field::REAL: return std::string("real");
+  case Ioss::Field::INTEGER: return std::string("integer");
+  case Ioss::Field::INT64: return std::string("64-bit integer");
+  case Ioss::Field::COMPLEX: return std::string("complex");
+  case Ioss::Field::STRING: return std::string("string");
+  case Ioss::Field::CHARACTER: return std::string("char");
+  case Ioss::Field::INVALID: return std::string("invalid");
+  default: return std::string("internal error");
+  }
+}
 
 namespace {
   size_t internal_get_size(Ioss::Field::BasicType type, size_t count,

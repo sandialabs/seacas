@@ -39,10 +39,10 @@ int main(int argc, char **argv)
   char *cdum;
   char *prop_names[3];
 
-  cdum = 0;
+  cdum = NULL;
 
-  CPU_word_size = 0; /* sizeof(float) */
-  IO_word_size  = 0; /* use what is stored in file */
+  int CPU_word_size = 0; /* sizeof(float) */
+  int IO_word_size  = 0; /* use what is stored in file */
 
   ex_opts(EX_VERBOSE | EX_ABORT);
 
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
   if (num_dim >= 3)
     z = (float *)calloc(num_nodes, sizeof(float));
   else
-    z = 0;
+    z = NULL;
 
   ex_get_coord(exoid, x, y, z);
   free(x);

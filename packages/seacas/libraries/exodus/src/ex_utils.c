@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -20,19 +20,19 @@
 #include "exodusII.h"
 #include "exodusII_int.h"
 
-struct ex__obj_stats *exoII_eb  = 0;
-struct ex__obj_stats *exoII_ed  = 0;
-struct ex__obj_stats *exoII_fa  = 0;
-struct ex__obj_stats *exoII_ns  = 0;
-struct ex__obj_stats *exoII_es  = 0;
-struct ex__obj_stats *exoII_fs  = 0;
-struct ex__obj_stats *exoII_ss  = 0;
-struct ex__obj_stats *exoII_els = 0;
-struct ex__obj_stats *exoII_em  = 0;
-struct ex__obj_stats *exoII_edm = 0;
-struct ex__obj_stats *exoII_fam = 0;
-struct ex__obj_stats *exoII_nm  = 0;
-struct ex__obj_stats *exoII_ass = 0;
+struct ex__obj_stats *exoII_eb  = NULL;
+struct ex__obj_stats *exoII_ed  = NULL;
+struct ex__obj_stats *exoII_fa  = NULL;
+struct ex__obj_stats *exoII_ns  = NULL;
+struct ex__obj_stats *exoII_es  = NULL;
+struct ex__obj_stats *exoII_fs  = NULL;
+struct ex__obj_stats *exoII_ss  = NULL;
+struct ex__obj_stats *exoII_els = NULL;
+struct ex__obj_stats *exoII_em  = NULL;
+struct ex__obj_stats *exoII_edm = NULL;
+struct ex__obj_stats *exoII_fam = NULL;
+struct ex__obj_stats *exoII_nm  = NULL;
+struct ex__obj_stats *exoII_ass = NULL;
 
 /*****************************************************************************
  *
@@ -262,16 +262,15 @@ int ex_set_max_name_length(int exoid, int length)
 */
 void ex__update_max_name_length(int exoid, int length)
 {
-  int status;
-  int db_length = 0;
-  int rootid    = exoid & EX_FILE_ID_MASK;
-
   EX_FUNC_ENTER();
   if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_VOID();
   }
 
   /* Get current value of the maximum_name_length attribute... */
+  int status;
+  int db_length = 0;
+  int rootid    = exoid & EX_FILE_ID_MASK;
   if ((status = nc_get_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &db_length)) != NC_NOERR) {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
@@ -371,9 +370,6 @@ int ex__put_names(int exoid, int varid, size_t num_names, char *const *names,
 int ex__put_name(int exoid, int varid, size_t index, const char *name, ex_entity_type obj_type,
                  const char *subtype, const char *routine)
 {
-  int    status;
-  size_t start[2], count[2];
-
   if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -382,9 +378,10 @@ int ex__put_name(int exoid, int varid, size_t index, const char *name, ex_entity
   size_t name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
   if (name != NULL && *name != '\0') {
-    int too_long = 0;
-    start[0]     = index;
-    start[1]     = 0;
+    size_t start[2], count[2];
+    int    too_long = 0;
+    start[0]        = index;
+    start[1]        = 0;
 
     count[0] = 1;
     count[1] = strlen(name) + 1;
@@ -399,6 +396,7 @@ int ex__put_name(int exoid, int varid, size_t index, const char *name, ex_entity
       too_long = 1;
     }
 
+    int status;
     if ((status = nc_put_vara_text(exoid, varid, start, count, name)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s name in file id %d",
@@ -761,12 +759,11 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   char *   id_dim     = NULL;
   char *   stat_table = NULL;
   int      varid, dimid;
-  size_t   dim_len, j;
+  size_t   dim_len;
   int64_t  i;
   int64_t *id_vals   = NULL;
   int *    stat_vals = NULL;
 
-  static bool           filled     = false;
   static bool           sequential = false;
   struct ex__obj_stats *tmp_stats;
   int                   status;
@@ -927,8 +924,8 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     }
 
     /* check if values in stored arrays are filled with non-zeroes */
-    filled     = true;
-    sequential = true;
+    bool filled = true;
+    sequential  = true;
     for (i = 0; i < dim_len; i++) {
       if (id_vals[i] != i + 1) {
         sequential = false;
@@ -1004,7 +1001,7 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       }
     }
     else {
-      for (j = 0; j < dim_len; j++) {
+      for (size_t j = 0; j < dim_len; j++) {
         stat_vals[j] = 1;
       }
     }
@@ -1112,26 +1109,26 @@ void ex__rm_stat_ptr(int exoid, struct ex__obj_stats **obj_ptr)
 }
 
 /* structures to hold number of blocks of that type for each file id */
-static struct ex__list_item *ed_ctr_list = 0; /* edge blocks */
-static struct ex__list_item *fa_ctr_list = 0; /* face blocks */
-static struct ex__list_item *eb_ctr_list = 0; /* element blocks */
+static struct ex__list_item *ed_ctr_list = NULL; /* edge blocks */
+static struct ex__list_item *fa_ctr_list = NULL; /* face blocks */
+static struct ex__list_item *eb_ctr_list = NULL; /* element blocks */
 
 /* structures to hold number of sets of that type for each file id */
-static struct ex__list_item *ns_ctr_list  = 0; /* node sets */
-static struct ex__list_item *es_ctr_list  = 0; /* edge sets */
-static struct ex__list_item *fs_ctr_list  = 0; /* face sets */
-static struct ex__list_item *ss_ctr_list  = 0; /* side sets */
-static struct ex__list_item *els_ctr_list = 0; /* element sets */
+static struct ex__list_item *ns_ctr_list  = NULL; /* node sets */
+static struct ex__list_item *es_ctr_list  = NULL; /* edge sets */
+static struct ex__list_item *fs_ctr_list  = NULL; /* face sets */
+static struct ex__list_item *ss_ctr_list  = NULL; /* side sets */
+static struct ex__list_item *els_ctr_list = NULL; /* element sets */
 
 /* structures to hold number of blobs/assemblies for each file id */
-static struct ex__list_item *assm_ctr_list = 0; /* assemblies */
-static struct ex__list_item *blob_ctr_list = 0; /* blobs */
+static struct ex__list_item *assm_ctr_list = NULL; /* assemblies */
+static struct ex__list_item *blob_ctr_list = NULL; /* blobs */
 
 /* structures to hold number of maps of that type for each file id */
-static struct ex__list_item *nm_ctr_list  = 0; /* node maps */
-static struct ex__list_item *edm_ctr_list = 0; /* edge maps */
-static struct ex__list_item *fam_ctr_list = 0; /* face maps */
-static struct ex__list_item *em_ctr_list  = 0; /* element maps */
+static struct ex__list_item *nm_ctr_list  = NULL; /* node maps */
+static struct ex__list_item *edm_ctr_list = NULL; /* edge maps */
+static struct ex__list_item *fam_ctr_list = NULL; /* face maps */
+static struct ex__list_item *em_ctr_list  = NULL; /* element maps */
 
 /*!
   \internal
@@ -1725,9 +1722,9 @@ void ex__compress_variable(int exoid, int varid, int type)
     if ((type == 1 || type == 2) && file->is_hdf5) {
       if (file->compression_algorithm == EX_COMPRESS_GZIP) {
         int deflate_level = file->compression_level;
-        int compress      = 1;
-        int shuffle       = file->shuffle;
         if (deflate_level > 0) {
+          int compress = 1;
+          int shuffle  = file->shuffle;
           nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
         }
       }

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -888,7 +888,7 @@ void cdrofs_(ifilcd) int *ifilcd;
 
   /* check the environment to see if a file name has been assigned */
   env = getenv(symbol);
-  if (env != 0 && strlen(env) < 1024) {
+  if (env != NULL && strlen(env) < 1024) {
     sprintf(symbol, "%s", env);
   }
 

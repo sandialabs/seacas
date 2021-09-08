@@ -68,6 +68,7 @@ jobs:
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_catalyst2: "NO",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -78,6 +79,9 @@ jobs:
             debug: "YES",
             threadsafe: "NO",
             fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
+            use_catalyst2: "NO",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -90,6 +94,7 @@ jobs:
             fortran: "NO",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_catalyst2: "NO",
             extra: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
           }
@@ -99,9 +104,10 @@ jobs:
             compiler: "mpi",
             debug: "YES",
             threadsafe: "YES",
+            fortran: "NO",
             use_kokkos: "NO",
             use_adios2: "NO",
-            fortran: "NO",
+            use_catalyst2: "NO",
             extra: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
           }
@@ -111,9 +117,10 @@ jobs:
             compiler: "clang",
             debug: "YES",
             threadsafe: "NO",
+            fortran: "NO",
             use_kokkos: "NO",
             use_adios2: "NO",
-            fortran: "NO",
+            use_catalyst2: "NO",
             extra: "",
             sanitizer: "address" # address, integer, thread, memory, undefined
           }
@@ -123,9 +130,10 @@ jobs:
             compiler: "clang",
             debug: "YES",
             threadsafe: "NO",
+            fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
-            fortran: "YES",
+            use_catalyst2: "NO",
             extra: "",
             sanitizer: "undefined" # address, integer, thread, memory, undefined
           }
@@ -136,6 +144,9 @@ jobs:
             debug: "YES",
             threadsafe: "NO",
             fortran: "NO",
+            use_kokkos: "NO",
+            use_adios2: "NO",
+            use_catalyst2: "NO",
             extra: "",
             sanitizer: "integer" # address, integer, thread, memory, undefined
           }
@@ -145,9 +156,10 @@ jobs:
             compiler: "clang",
             debug: "NO",
             threadsafe: "NO",
+            fortran: "NO",
             use_kokkos: "NO",
             use_adios2: "NO",
-            fortran: "NO",
+            use_catalyst2: "NO",
             extra: "APPLICATIONS=NO LEGACY=NO",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -157,9 +169,23 @@ jobs:
             compiler: "mpi",
             debug: "NO",
             threadsafe: "NO",
+            fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "YES",
+            use_catalyst2: "NO",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "CATALYST2, serial",
+            os: ubuntu-latest,
+            compiler: "clang",
+            debug: "NO",
+            threadsafe: "NO",
             fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
+            use_catalyst2: "YES",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -186,7 +212,7 @@ jobs:
         if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' }}
         run: |
           set -x
-          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
           ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
         
 ###

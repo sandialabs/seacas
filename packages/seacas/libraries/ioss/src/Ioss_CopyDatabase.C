@@ -232,7 +232,7 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   auto max_field = calculate_maximum_field_size(region);
   if (options.verbose && rank == 0) {
     std::string label = "MiB";
-    double size = (double)max_field.first / 1024 / 1024;
+    double      size  = (double)max_field.first / 1024 / 1024;
     if (size > 1024.0) {
       label = "GiB";
       size /= 1024.0;
@@ -989,8 +989,7 @@ namespace {
   void transfer_sidesets(Ioss::Region &region, Ioss::Region &output_region,
                          const Ioss::MeshCopyOptions &options, int rank)
   {
-    const auto &fss         = region.get_sidesets();
-    size_t      total_sides = 0;
+    const auto &fss = region.get_sidesets();
     for (const auto &ss : fss) {
       const std::string &name = ss->name();
       if (options.debug && rank == 0) {
@@ -1015,8 +1014,6 @@ namespace {
     if (options.verbose && rank == 0 && !fss.empty()) {
       fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14L}\n", (*fss.begin())->type_string() + "s",
                  fss.size());
-      fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14L}\n",
-                 (*fss.begin())->contains_string() + "s", total_sides);
     }
     if (options.debug && rank == 0) {
       fmt::print(Ioss::DEBUG(), "\n");

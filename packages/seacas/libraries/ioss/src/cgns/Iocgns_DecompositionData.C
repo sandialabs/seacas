@@ -790,8 +790,6 @@ namespace Iocgns {
 
   template <typename INT> void DecompositionData<INT>::get_sideset_data(int filePtr)
   {
-    int base = 1; // Only single base supported so far.
-
     // NOTE: Not currently used; assume can read all on single processor...
     // Calculate the max "buffer" size usable for storing sideset
     // elemlists. This is basically the space used to store the file
@@ -821,6 +819,7 @@ namespace Iocgns {
         // *  num_to_get zeros (face on other parent element)
         CGNSIntVector parent(4 * sset.file_count());
 
+        int base = 1; // Only single base supported so far.
         CGCHECK2(cg_elements_read(filePtr, base, sset.zone(), sset.section(), nodes.data(),
                                   parent.data()));
 

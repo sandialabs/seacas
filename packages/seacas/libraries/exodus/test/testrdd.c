@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 
   char *coord_names[3], *qa_record[2][4], *info[3], *var_names[3];
   char  title[MAX_LINE_LENGTH + 1], elem_type[MAX_STR_LENGTH + 1];
-  char *cdum = 0;
+  char *cdum = NULL;
   char *prop_names[3];
 
   CPU_word_size = 8; /* sizeof(double) */
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
     z = (double *)my_calloc(num_nodes, sizeof(double));
   }
   else {
-    z = 0;
+    z = NULL;
   }
 
   error = ex_get_coord(exoid, x, y, z);

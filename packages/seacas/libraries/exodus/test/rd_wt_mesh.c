@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -890,7 +890,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
         }
       }
       else {
-        elem_var_tab = 0;
+        elem_var_tab = NULL;
       }
       err = ex_put_all_var_param(exoid[npd], num_global_fields, num_nodal_fields,
                                  num_element_fields, elem_var_tab, 0, 0, 0, 0);
