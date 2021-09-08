@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -150,12 +150,12 @@ int main(int argc, char **argv)
     if (num_dim >= 2)
       y = (float *)calloc(num_nodes, sizeof(float));
     else
-      y = 0;
+      y = NULL;
 
     if (num_dim >= 3)
       z = (float *)calloc(num_nodes, sizeof(float));
     else
-      z = 0;
+      z = NULL;
 
     error = ex_get_coord(exoid, x, y, z);
     printf("\nafter ex_get_coord, error = %3d\n", error);

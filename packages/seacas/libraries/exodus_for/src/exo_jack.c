@@ -923,7 +923,7 @@ void F2C(exgean, EXGEAN)(int *idexo, entity_id *elem_blk_id, int *num_attr, char
   for (i = 0; i < *num_attr; i++) {
     *(aptr + i) = sptr + i * (slen + 1); /* put address into ptr array */
   }
-  *(aptr + i) = 0; /* null out last ptr */
+  *(aptr + i) = NULL; /* null out last ptr */
 
   *ierr = 0;
   if (ex_get_attr_names(*idexo, EX_ELEM_BLOCK, *elem_blk_id, aptr) == EX_FATAL) {
@@ -983,7 +983,7 @@ void F2C(expean, EXPEAN)(int *idexo, entity_id *elem_blk_id, int *num_attr, char
     ex_fstrncpy(*(aptr + i), names + i * nameslen, slen); /* copy string into
                                                            * buffer */
   }
-  *(aptr + i) = 0; /* null out last ptr */
+  *(aptr + i) = NULL; /* null out last ptr */
 
   *ierr = 0;
   if (ex_put_attr_names(*idexo, EX_ELEM_BLOCK, *elem_blk_id, aptr) == EX_FATAL) {
@@ -1033,7 +1033,7 @@ void F2C(expnams, EXPNAMS)(int *idexo, int *type, int *num_obj, char *names, int
     ex_fstrncpy(*(aptr + i), names + i * nameslen, slen); /* copy string into
                                                            * buffer */
   }
-  *(aptr + i) = 0; /* null out last ptr */
+  *(aptr + i) = NULL; /* null out last ptr */
   /* do Exodus C call to write results variables names */
   if (ex_put_names(*idexo, (ex_entity_type)*type, aptr) == EX_FATAL) {
     *ierr = EX_FATAL;
@@ -1115,7 +1115,7 @@ void F2C(exgnams, EXGNAMS)(int *idexo, int *type, int *num_obj, char *names, int
   for (i = 0; i < *num_obj; i++) {
     *(aptr + i) = sptr + i * (slen + 1); /* put address into ptr array */
   }
-  *(aptr + i) = 0; /* null out last ptr */
+  *(aptr + i) = NULL; /* null out last ptr */
 
   /* do Exodus C call to read results variables names */
   if (ex_get_names(*idexo, (ex_entity_type)*type, aptr) == EX_FATAL) {
@@ -1293,9 +1293,9 @@ void F2C(exgpn, EXGPN)(int *idexo, int *obj_type, char *prop_names, int *ierr, i
 
   for (i = 0; i < num_props; i++) {
     *(aptr + i) = sptr + i * (slen + 1);
-  }                /* put ptrs to staging space
-                    * into ptr array */
-  *(aptr + i) = 0; /* set last pointer to null */
+  }                   /* put ptrs to staging space
+                       * into ptr array */
+  *(aptr + i) = NULL; /* set last pointer to null */
 
   /* do Exodus C call to get property name records */
   if (ex_get_prop_names(*idexo, (ex_entity_type)*obj_type, aptr) == EX_FATAL) {
@@ -1947,7 +1947,7 @@ void F2C(expvan, EXPVAN)(int *idexo, char *var_type, int *num_vars, char *var_na
     ex_fstrncpy(*(aptr + i), var_names + i * var_nameslen, slen); /* copy string into
                                                                    * buffer */
   }
-  *(aptr + i) = 0; /* null out last ptr */
+  *(aptr + i) = NULL; /* null out last ptr */
   /* do Exodus C call to write results variables names */
   if (ex_put_variable_names(*idexo, obj_type, *num_vars, aptr) == EX_FATAL) {
     *ierr = EX_FATAL;
@@ -1994,7 +1994,7 @@ void F2C(exgvan, EXGVAN)(int *idexo, char *var_type, int *num_vars, char *var_na
   for (i = 0; i < *num_vars; i++) {
     *(aptr + i) = sptr + i * (slen + 1); /* put address into ptr array */
   }
-  *(aptr + i) = 0; /* null out last ptr */
+  *(aptr + i) = NULL; /* null out last ptr */
 
   /* do Exodus C call to read results variables names */
   if (ex_get_variable_names(*idexo, obj_type, *num_vars, aptr) == EX_FATAL) {
