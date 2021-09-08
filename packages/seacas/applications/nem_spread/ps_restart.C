@@ -153,7 +153,6 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
 
   /* Open the ExodusII file */
   {
-    cpu_ws   = io_ws;
     int mode = EX_READ | int64api;
     if ((exoid = ex_open(Exo_Res_File.c_str(), mode, &cpu_ws, &io_ws, &vers)) < 0) {
       fmt::print(stderr, "{}: Could not open file {} for restart info\n", __func__,

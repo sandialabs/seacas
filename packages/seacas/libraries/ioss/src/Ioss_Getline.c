@@ -515,7 +515,7 @@ char *io_getline_int(const char *prompt)
 
   io_gl_init();
   io_gl_prompt = (prompt) ? prompt : "";
-  io_gl_buf[0] = 0;
+  io_gl_buf[0] = '\0';
   if (io_gl_in_hook)
     io_gl_in_hook(io_gl_buf);
   io_gl_fixup(io_gl_prompt, -2, IO_GL_BUF_SIZE);
@@ -698,7 +698,7 @@ char *io_getline_int(const char *prompt)
         break;
       case '\004': /* ^D */
         if (io_gl_cnt == 0) {
-          io_gl_buf[0] = 0;
+          io_gl_buf[0] = '\0';
           io_gl_cleanup();
           io_gl_putc('\n');
           return io_gl_buf;
@@ -862,7 +862,7 @@ char *io_getline_int(const char *prompt)
       lastch = c;
   }
   io_gl_cleanup();
-  io_gl_buf[0] = 0;
+  io_gl_buf[0] = '\0';
   return io_gl_buf;
 }
 
@@ -904,7 +904,7 @@ static void io_gl_yank(void)
       if (io_gl_pos + len > io_gl_cnt) {
         if (io_gl_pos + len >= IO_GL_BUF_SIZE - 1)
           io_gl_error("\n*** Error: getline(): input buffer overflow\n");
-        io_gl_buf[io_gl_pos + len] = 0;
+        io_gl_buf[io_gl_pos + len] = '\0';
       }
       for (int i = 0; i < len; i++)
         io_gl_buf[io_gl_pos + i] = io_gl_killbuf[i];
@@ -1226,7 +1226,7 @@ static void hist_init(void)
 
   hist_buf[0] = hist_empty_elem;
   for (i = 1; i < HIST_SIZE; i++)
-    hist_buf[i] = (char *)0;
+    hist_buf[i] = '\0';
 }
 
 void io_gl_histadd(const char *buf)
@@ -1302,7 +1302,7 @@ static char *hist_save(const char *p)
   if (nl) {
     if ((s = (char *)malloc(len)) != NULL) {
       copy_string(s, p, len);
-      s[len - 1] = 0;
+      s[len - 1] = '\0';
     }
   }
   else {
@@ -1367,10 +1367,10 @@ static void search_update(int c)
 {
   if (c == 0) {
     search_pos       = 0;
-    search_string[0] = 0;
+    search_string[0] = '\0';
     search_prompt[0] = '?';
     search_prompt[1] = ' ';
-    search_prompt[2] = 0;
+    search_prompt[2] = '\0';
   }
   else if (c > 0) {
     search_string[search_pos]     = (char)c;
@@ -1404,7 +1404,7 @@ static void search_addchar(int c)
       hist_pos = search_last;
     }
     else {
-      io_gl_buf[0] = 0;
+      io_gl_buf[0] = '\0';
       hist_pos     = hist_last;
     }
     copy_string(io_gl_buf, hist_buf[hist_pos], IO_GL_BUF_SIZE);
@@ -1444,7 +1444,7 @@ static void search_back(int new_search)
     search_last = hist_pos = hist_last;
     search_update(0);
     io_gl_search_mode = 1;
-    io_gl_buf[0]      = 0;
+    io_gl_buf[0]      = '\0';
     io_gl_fixup(search_prompt, 0, 0);
   }
   else if (search_pos > 0) {
@@ -1453,7 +1453,7 @@ static void search_back(int new_search)
       char *loc;
       char *p = hist_prev();
       if (*p == 0) { /* not found, done looking */
-        io_gl_buf[0] = 0;
+        io_gl_buf[0] = '\0';
         io_gl_fixup(search_prompt, 0, 0);
         found = 1;
       }
@@ -1480,7 +1480,7 @@ static void search_forw(int new_search)
     search_last = hist_pos = hist_last;
     search_update(0);
     io_gl_search_mode = 1;
-    io_gl_buf[0]      = 0;
+    io_gl_buf[0]      = '\0';
     io_gl_fixup(search_prompt, 0, 0);
   }
   else if (search_pos > 0) {
@@ -1488,7 +1488,7 @@ static void search_forw(int new_search)
     while (!found) {
       char *p = hist_next();
       if (*p == 0) { /* not found, done looking */
-        io_gl_buf[0] = 0;
+        io_gl_buf[0] = '\0';
         io_gl_fixup(search_prompt, 0, 0);
         found = 1;
       }

@@ -521,7 +521,7 @@ char *ap_getline_int(char *prompt)
 
   ap_gl_init();
   ap_gl_prompt = (prompt) ? prompt : "";
-  ap_gl_buf[0] = 0;
+  ap_gl_buf[0] = '\0';
   if (ap_gl_in_hook)
     ap_gl_in_hook(ap_gl_buf);
   ap_gl_fixup(ap_gl_prompt, -2, AP_GL_BUF_SIZE);
@@ -703,7 +703,7 @@ char *ap_getline_int(char *prompt)
         break;
       case '\004': /* ^D */
         if (ap_gl_cnt == 0) {
-          ap_gl_buf[0] = 0;
+          ap_gl_buf[0] = '\0';
           ap_gl_cleanup();
           ap_gl_putc('\n');
           return ap_gl_buf;
@@ -866,7 +866,7 @@ char *ap_getline_int(char *prompt)
       lastch = c;
   }
   ap_gl_cleanup();
-  ap_gl_buf[0] = 0;
+  ap_gl_buf[0] = '\0';
   return ap_gl_buf;
 }
 
@@ -1261,7 +1261,7 @@ static char *hist_prev(void)
   char *p    = NULL;
   int   next = (hist_pos - 1 + HIST_SIZE) % HIST_SIZE;
 
-  if (hist_buf[hist_pos] != 0 && next != hist_last) {
+  if (hist_buf[hist_pos] != NULL && next != hist_last) {
     hist_pos = next;
     p        = hist_buf[hist_pos];
   }
@@ -1299,7 +1299,7 @@ static char *hist_save(char *p)
   if (nl) {
     if ((s = (char *)malloc(len)) != NULL) {
       copy_string(s, p, len);
-      s[len - 1] = 0;
+      s[len - 1] = '\0';
     }
   }
   else {
@@ -1401,7 +1401,7 @@ static void search_addchar(int c)
       hist_pos = search_last;
     }
     else {
-      ap_gl_buf[0] = 0;
+      ap_gl_buf[0] = '\0';
       hist_pos     = hist_last;
     }
     copy_string(ap_gl_buf, hist_buf[hist_pos], AP_GL_BUF_SIZE);
@@ -1426,7 +1426,7 @@ static void search_addchar(int c)
 static void search_term(void)
 {
   ap_gl_search_mode = 0;
-  if (ap_gl_buf[0] == 0) /* not found, reset hist list */
+  if (ap_gl_buf[0] == '\0') /* not found, reset hist list */
     hist_pos = hist_last;
   if (ap_gl_in_hook)
     ap_gl_in_hook(ap_gl_buf);
@@ -1443,14 +1443,14 @@ static void search_back(int new_search)
     search_last = hist_pos = hist_last;
     search_update(0);
     ap_gl_search_mode = 1;
-    ap_gl_buf[0]      = 0;
+    ap_gl_buf[0]      = '\0';
     ap_gl_fixup(search_prompt, 0, 0);
   }
   else if (search_pos > 0) {
     while (!found) {
       char *p = hist_prev();
       if (*p == 0) { /* not found, done looking */
-        ap_gl_buf[0] = 0;
+        ap_gl_buf[0] = '\0';
         ap_gl_fixup(search_prompt, 0, 0);
         found = 1;
       }
@@ -1478,14 +1478,14 @@ static void search_forw(int new_search)
     search_last = hist_pos = hist_last;
     search_update(0);
     ap_gl_search_mode = 1;
-    ap_gl_buf[0]      = 0;
+    ap_gl_buf[0]      = '\0';
     ap_gl_fixup(search_prompt, 0, 0);
   }
   else if (search_pos > 0) {
     while (!found) {
       char *p = hist_next();
       if (*p == 0) { /* not found, done looking */
-        ap_gl_buf[0] = 0;
+        ap_gl_buf[0] = '\0';
         ap_gl_fixup(search_prompt, 0, 0);
         found = 1;
       }

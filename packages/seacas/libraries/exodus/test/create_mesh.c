@@ -640,6 +640,11 @@ void write_exo_mesh(int debug, char *file_name, INT map_origin, INT num_nodes, I
         sprintf(var_name[j], "node_field_%" PRId64, j + 1);
       }
       err = ex_put_variable_names(exoid, EX_NODAL, num_nodal_fields, var_name);
+      if (err) {
+        fprintf(stderr, "after ex_put_variable_names (nodal), error = %d\n", err);
+        ex_close(exoid);
+        exit(-1);
+      }
       for (INT j = 0; j < num_nodal_fields; j++) {
         free(var_name[j]);
       }
@@ -655,6 +660,11 @@ void write_exo_mesh(int debug, char *file_name, INT map_origin, INT num_nodes, I
         globals[j] = j;
       }
       err = ex_put_variable_names(exoid, EX_GLOBAL, num_global_fields, var_name);
+      if (err) {
+        fprintf(stderr, "after ex_put_variable_names (global), error = %d\n", err);
+        ex_close(exoid);
+        exit(-1);
+      }
       for (INT j = 0; j < num_global_fields; j++) {
         free(var_name[j]);
       }
