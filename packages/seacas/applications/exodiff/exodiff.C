@@ -2453,6 +2453,10 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &         f
     return false;
   }
 
+  if (file1.Num_Elements() == 0 || file2.Num_Elements() == 0) {
+    return false;
+  }
+
   bool diff_was_output = false;
   bool diff_flag       = false;
 
