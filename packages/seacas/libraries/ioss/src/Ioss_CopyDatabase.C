@@ -284,6 +284,15 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   std::vector<int> selected_steps = get_selected_steps(region, options);
 
   int step_count = region.get_property("state_count").get_int();
+#ifdef SEACAS_HAVE_MPI
+  int min_step_count = dbi->util().global_minmax(step_count, Ioss::ParallelUtils::DO_MIN);
+  int max_step_count = dbi->util().global_minmax(step_count, Ioss::ParallelUtils::DO_MAX);
+  if (min_step_count != max_step_count) {
+    std::ostringstream errmsg;
+    fmt::print(errmsg, "ERROR: Number of timesteps does not match on all ranks.  Range from {} to {}.\n", min_step_count, max_step_count);
+    IOSS_ERROR(errmsg);
+  }
+#endif
   for (int istep = 1; istep <= step_count; istep++) {
     if (selected_steps[istep] == 1) {
       transfer_step(region, output_region, data_pool, istep, options, rank);
