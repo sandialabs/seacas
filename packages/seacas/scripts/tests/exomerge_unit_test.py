@@ -47,6 +47,56 @@ import math
 import exomerge
 
 
+def _random_element(the_list):
+    """
+        Return a random element from the list or None if none exist.
+
+        """
+    if not the_list:
+        return None
+    return the_list[random.randint(0, len(the_list) - 1)]
+
+def _random_boolean():
+    """
+        Return one of True or False at random.
+
+        """
+    return [True, False][random.randint(0, 1)]
+
+def _random_subset(the_list, count=None):
+    """
+        Return a random subset of elements from the list.
+
+    """
+    if count is None:
+        if len(the_list) == 0:
+            count = 0
+        else:
+            count = random.randint(1, len(the_list))
+    return random.sample(the_list, count)
+
+def _random_scalar():
+    """
+    Return a random scalar.
+
+    """
+    return random.uniform(0.5, 2)
+
+def _random_vector():
+    """
+        Return a random vector.
+
+    """
+    vector = [_random_scalar() for _ in range(3)]
+    return vector
+
+def _new_id():
+    """
+        Return a new id.
+
+    """
+    return random.randint(0, 9999)
+
 def compares_equal_with_nan(one, two):
     """
     Return True if the two objects are equal, assuming NaN == NaN.
@@ -134,50 +184,7 @@ class ExomergeUnitTester:
         # growing too large
         self.maximum_objects = 10
 
-    def _random_element(the_list):
-        """
-        Return a random element from the list or None if none exist.
-
-        """
-        if not the_list:
-            return None
-        return the_list[random.randint(0, len(the_list) - 1)]
-
-    def _random_boolean():
-        """
-        Return one of True or False at random.
-
-        """
-        return [True, False][random.randint(0, 1)]
-
-    def _random_subset(the_list, count=None):
-        """
-        Return a random subset of elements from the list.
-
-        """
-        if count is None:
-            if len(the_list) == 0:
-                count = 0
-            else:
-                count = random.randint(1, len(the_list))
-        return random.sample(the_list, count)
-
-    def _random_scalar():
-        """
-        Return a random scalar.
-
-        """
-        return random.uniform(0.5, 2)
-
-    def _random_vector():
-        """
-        Return a random vector.
-
-        """
-        vector = [_random_scalar() for _ in range(3)]
-        return vector
-
-    def _random_identifier():
+    def _random_identifier(self):
         """
         Return a random name.
 
@@ -260,13 +267,6 @@ class ExomergeUnitTester:
         while value in self.model.timesteps:
             value = random.random()
         return value
-
-    def _new_id():
-        """
-        Return a new id.
-
-        """
-        return random.randint(0, 9999)
 
     def _new_element_block_id(self):
         """
@@ -1851,3 +1851,4 @@ if __name__ == '__main__':
         tester.min_tests = int(sys.argv[1])
         tester.max_tests = tester.min_tests
     tester.test()
+
