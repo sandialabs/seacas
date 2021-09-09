@@ -1222,10 +1222,8 @@ static char  hist_empty_elem[2] = "";
 
 static void hist_init(void)
 {
-  int i;
-
   hist_buf[0] = hist_empty_elem;
-  for (i = 1; i < HIST_SIZE; i++)
+  for (int i = 1; i < HIST_SIZE; i++)
     hist_buf[i] = '\0';
 }
 
