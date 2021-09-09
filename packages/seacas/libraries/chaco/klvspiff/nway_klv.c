@@ -154,25 +154,22 @@ int nway_klv(struct vtx_data **graph,      /* data structure for graph */
         --ltop;
       }
 
-      ssize_t lvtx, rvtx;            /* next vertex to move left/right */
-      double  left_imbalance = 0.0;  /* imbalance if I move to the left */
-      double  right_imbalance;       /* imbalance if I move to the right */
-      int     lweight, rweight;      /* weights of moving vertices */
-      int     weightfrom = 0;        /* weight moving out of a set */
-      int     to         = -1, from; /* sets moving into / out of */
-      ssize_t bestvtx    = -1;       /* best vertex to move */
+      int     to         = -1; /* sets moving into / out of */
+      ssize_t bestvtx    = -1; /* best vertex to move */
+      int     weightfrom = 0;
 
+      double left_imbalance = 0.0; /* imbalance if I move to the left */
       if (ltop >= 0 && !left_too_big) {
-        lvtx           = ((size_t)lbuckets[ltop] - (size_t)llistspace) / sizeof(struct bilist);
-        lweight        = graph[lvtx]->vwgt;
-        rweight        = lweight - (ltop - maxdval);
-        weightfrom     = rweight;
-        to             = 0;
-        bestvtx        = lvtx;
-        bestval        = ltop - maxdval;
-        partial_weight = weightsum[0] + lweight + weightsum[1] - rweight;
-        ratio          = partial_weight / total_weight;
-        left_imbalance = max(fabs(weightsum[0] + lweight - goal[0] * ratio),
+        ssize_t lvtx    = ((size_t)lbuckets[ltop] - (size_t)llistspace) / sizeof(struct bilist);
+        int     lweight = graph[lvtx]->vwgt;
+        int     rweight = lweight - (ltop - maxdval);
+        weightfrom      = rweight;
+        to              = 0;
+        bestvtx         = lvtx;
+        bestval         = ltop - maxdval;
+        partial_weight  = weightsum[0] + lweight + weightsum[1] - rweight;
+        ratio           = partial_weight / total_weight;
+        left_imbalance  = max(fabs(weightsum[0] + lweight - goal[0] * ratio),
                              fabs(weightsum[1] - rweight - goal[1] * ratio));
       }
 
@@ -180,13 +177,13 @@ int nway_klv(struct vtx_data **graph,      /* data structure for graph */
         --rtop;
       }
       if (rtop >= 0 && !right_too_big) {
-        rvtx            = ((size_t)rbuckets[rtop] - (size_t)rlistspace) / sizeof(struct bilist);
-        rweight         = graph[rvtx]->vwgt;
-        lweight         = rweight - (rtop - maxdval);
+        ssize_t rvtx    = ((size_t)rbuckets[rtop] - (size_t)rlistspace) / sizeof(struct bilist);
+        int     rweight = graph[rvtx]->vwgt;
+        int     lweight = rweight - (rtop - maxdval);
         partial_weight  = weightsum[0] - lweight + weightsum[1] + rweight;
         ratio           = partial_weight / total_weight;
-        right_imbalance = max(fabs(weightsum[0] - lweight - goal[0] * ratio),
-                              fabs(weightsum[1] + rweight - goal[1] * ratio));
+        double right_imbalance = max(fabs(weightsum[0] - lweight - goal[0] * ratio),
+                                     fabs(weightsum[1] + rweight - goal[1] * ratio));
         if (rtop - maxdval > bestval || (rtop - maxdval == bestval &&
                                          (right_imbalance < left_imbalance ||
                                           (right_imbalance == left_imbalance && drandom() < .5)))) {
@@ -211,6 +208,7 @@ int nway_klv(struct vtx_data **graph,      /* data structure for graph */
       struct bilist * from_listspace; /* list structure I'm moving from */
       struct bilist **to_buckets;     /* buckets I'm moving to */
       struct bilist **from_buckets;   /* buckets I'm moving from */
+      int             from;
       if (to == 0) {
         from           = 1;
         to_listspace   = llistspace;
