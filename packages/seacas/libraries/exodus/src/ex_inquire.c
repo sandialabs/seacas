@@ -52,7 +52,7 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
   *set_length = 0; /* default return value */
 
   int status;
-  if ((status = nc_inq_dimid(exoid, set_num_dim, &dimid)) == NC_NOERR) {
+  if (nc_inq_dimid(exoid, set_num_dim, &dimid) == NC_NOERR) {
     if ((status = nc_inq_dimlen(exoid, dimid, &num_sets)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s sets in file id %d",
@@ -73,7 +73,7 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
     }
 
     /* get variable id of status array */
-    if ((status = nc_inq_varid(exoid, set_stat_var, &varid)) == NC_NOERR) {
+    if (nc_inq_varid(exoid, set_stat_var, &varid) == NC_NOERR) {
       /* if status array exists, use it, otherwise assume, object exists
          to be backward compatible */
       if ((status = nc_get_var_int(exoid, varid, stat_vals)) != NC_NOERR) {
@@ -97,7 +97,7 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
       }
 
       size_t idum;
-      if ((status = nc_inq_dimid(exoid, ex__catstr(set_size_root, i + 1), &dimid)) != NC_NOERR) {
+      if (nc_inq_dimid(exoid, ex__catstr(set_size_root, i + 1), &dimid) != NC_NOERR) {
         if (missing_ok) {
           idum = 0;
         }
@@ -108,7 +108,7 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
         }
       }
       else {
-        if ((status = nc_inq_dimlen(exoid, dimid, &idum)) != NC_NOERR) {
+        if (nc_inq_dimlen(exoid, dimid, &idum) != NC_NOERR) {
           *set_length = 0;
           free(stat_vals);
           return (EX_FATAL);

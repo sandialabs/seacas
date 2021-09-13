@@ -1052,7 +1052,6 @@ namespace {
                           Mesh_Description<INT> *mesh, LB_Description<INT> *lb,
                           Graph_Description<INT> *graph, int check_type)
   {
-    size_t           num_found = 0;
     std::vector<int> list_ptr;
 
     /*
@@ -1232,6 +1231,7 @@ namespace {
         }
       }
 
+      size_t num_found = 0;
       for (size_t ecnt = 0; ecnt < mesh->num_elems; ecnt++) {
         E_Type etype = mesh->elem_type[ecnt];
 
@@ -1882,7 +1882,6 @@ namespace {
     time1 = get_time();
     for (size_t ncnt = 0; ncnt < mesh->num_nodes; ncnt++) {
       bool internal = true;
-      int  flag     = 0;
       int  proc     = 0;
 
       /* If a node is not connected to any elements (graph->nsur_elem[ncnt] == 0),
@@ -1894,6 +1893,7 @@ namespace {
 
         proc = lb->vertex2proc[elem];
         assert(proc < machine->num_procs);
+        int flag = 0;
         for (size_t ecnt = 1; ecnt < graph->sur_elem[ncnt].size(); ecnt++) {
           int proc2 = lb->vertex2proc[graph->sur_elem[ncnt][ecnt]];
           assert(proc2 < machine->num_procs);
@@ -2279,8 +2279,7 @@ namespace {
      * March 18, 2004
      */
 
-    double theta;           /* angle of (x,y) (polar coordinates) */
-    double epsilon = 1e-07; /* tolerance that allows a point to be in wedge */
+    double theta; /* angle of (x,y) (polar coordinates) */
 
     if (ndot > 0 && (x == nullptr || y == nullptr || z == nullptr || part == nullptr)) {
       fmt::print(stderr, "KDD -- Bad input to ZPINCH_assign.\n");
@@ -2331,6 +2330,7 @@ namespace {
     }
 
     /* Compute the partition assignment for each set of coordinates */
+    double epsilon = 1e-07; /* tolerance that allows a point to be in wedge */
     for (int i = 0; i < ndot; i++) {
 
       /* Compute the z slice that the element is in. */

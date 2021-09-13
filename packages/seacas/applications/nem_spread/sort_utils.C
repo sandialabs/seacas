@@ -42,8 +42,7 @@ namespace {
 
   template <typename INT> INT gds_imedian3(INT v[], INT iv[], size_t left, size_t right)
   {
-    size_t center;
-    center = (left + right) / 2;
+    size_t center = (left + right) / 2;
 
     if (v[iv[left]] > v[iv[center]]) {
       GDS_SWAP(iv, left, center);
@@ -89,16 +88,13 @@ namespace {
 
   template <typename INT> void gds_iisort(INT v[], INT iv[], size_t N)
   {
-    size_t i, j;
-    size_t ndx = 0;
-    INT    low;
-    INT    tmp;
-
     if (N == 0) {
       return;
     }
-    low = v[iv[0]];
-    for (i = 1; i < N; i++) {
+
+    size_t ndx = 0;
+    INT    low = v[iv[0]];
+    for (size_t i = 1; i < N; i++) {
       if (v[iv[i]] < low) {
         low = v[iv[i]];
         ndx = i;
@@ -107,8 +103,9 @@ namespace {
     /* Put lowest value in slot 0 */
     GDS_SWAP(iv, 0, ndx);
 
-    for (i = 1; i < N; i++) {
-      tmp = iv[i];
+    for (size_t i = 1; i < N; i++) {
+      INT    tmp = iv[i];
+      size_t j;
       for (j = i; v[tmp] < v[iv[j - 1]]; j--) {
         iv[j] = iv[j - 1];
       }
@@ -126,8 +123,7 @@ namespace {
 
   template <typename INT> size_t gds_median3(INT v[], size_t left, size_t right)
   {
-    size_t center;
-    center = (left + right) / 2;
+    size_t center = (left + right) / 2;
 
     if (v[left] > v[center]) {
       GDS_SWAP(v, left, center);
@@ -173,12 +169,12 @@ namespace {
 
   template <typename INT> void gds_isort(INT v[], size_t N)
   {
-    size_t ndx = 0;
-
     if (N <= 1) {
       return;
     }
-    INT low = v[0];
+    INT    low = v[0];
+    size_t ndx = 0;
+
     for (size_t i = 1; i < N; i++) {
       if (v[i] < low) {
         low = v[i];
