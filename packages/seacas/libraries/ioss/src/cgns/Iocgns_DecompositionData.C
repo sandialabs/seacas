@@ -258,7 +258,7 @@ namespace Iocgns {
           char ordinal = sub[i];
           ord |= ordinal == 'i' ? Ordinal::I : ordinal == 'j' ? Ordinal::J : Ordinal::K;
         }
-        for (auto zone : m_structuredZones) {
+        for (auto &zone : m_structuredZones) {
           if (zone->is_active()) {
             zone->m_lineOrdinal |= ord;
           }
@@ -279,7 +279,7 @@ namespace Iocgns {
                  return a->m_zone < b->m_zone;
                });
 
-    for (auto zone : m_structuredZones) {
+    for (auto &zone : m_structuredZones) {
       if (zone->is_active()) {
         zone->resolve_zgc_split_donor(m_structuredZones);
       }
@@ -720,7 +720,7 @@ namespace Iocgns {
     // if global_block_index[B] <= I && global_block_index[B+1] < I
     // allocate and TODO: Fill
     m_decomposition.m_fileBlockIndex.reserve(block_count + 1);
-    for (auto block : m_elementBlocks) {
+    for (auto &block : m_elementBlocks) {
       m_decomposition.m_fileBlockIndex.push_back(block.file_count());
     }
     m_decomposition.m_fileBlockIndex.push_back(0);

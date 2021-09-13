@@ -289,7 +289,9 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   int max_step_count = dbi->util().global_minmax(step_count, Ioss::ParallelUtils::DO_MAX);
   if (min_step_count != max_step_count) {
     std::ostringstream errmsg;
-    fmt::print(errmsg, "ERROR: Number of timesteps does not match on all ranks.  Range from {} to {}.\n", min_step_count, max_step_count);
+    fmt::print(errmsg,
+               "ERROR: Number of timesteps does not match on all ranks.  Range from {} to {}.\n",
+               min_step_count, max_step_count);
     IOSS_ERROR(errmsg);
   }
 #endif
@@ -909,7 +911,7 @@ namespace {
   void transfer_structuredblocks(Ioss::Region &region, Ioss::Region &output_region,
                                  const Ioss::MeshCopyOptions &options, int rank)
   {
-    auto blocks = region.get_structured_blocks();
+    const auto &blocks = region.get_structured_blocks();
     if (!blocks.empty()) {
       size_t total_entities = 0;
       if (options.reverse) {
@@ -1449,7 +1451,7 @@ namespace {
 
       // Set locally_owned_count property on all nodesets...
       const Ioss::NodeSetContainer &nss = region.get_nodesets();
-      for (auto ns : nss) {
+      for (const auto &ns : nss) {
 
         std::vector<INT> ids;
         ns->get_field_data("ids_raw", ids);
