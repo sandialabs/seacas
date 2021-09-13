@@ -179,14 +179,13 @@ int findmaxvariance(int l, int u, int dimension, real *points, int N)
   real max_var = 0.0;
 
   for (int i = 0; i < dimension; i++) {
-    real prev_mean = 0.0;
-    real mean      = 0.0;
-    real variance  = 0.0;
-    real count     = 0.0;
+    real mean     = 0.0;
+    real variance = 0.0;
+    real count    = 0.0;
 
     for (int j = l; j <= u; j++) {
-      real val  = points[N * i + perm[j]];
-      prev_mean = mean;
+      real val       = points[N * i + perm[j]];
+      real prev_mean = mean;
       count += 1.0;
       mean += (val - prev_mean) / count;
       variance += (val - prev_mean) * (val - mean);

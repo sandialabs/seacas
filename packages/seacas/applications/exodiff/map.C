@@ -130,7 +130,6 @@ void Compute_Maps(std::vector<INT> &node_map, std::vector<INT> &elmt_map, ExoII_
   // Match elmts in first file to their corresponding elmts in second.
   size_t num_blocks = file1.Num_Element_Blocks();
   size_t e1         = 0;
-  size_t e2         = 0;
 
   for (size_t b = 0; b < num_blocks; ++b) {
     const Exo_Block<INT> *block1 = file1.Get_Element_Block_by_Index(b);
@@ -172,7 +171,7 @@ void Compute_Maps(std::vector<INT> &node_map, std::vector<INT> &elmt_map, ExoII_
                           "file to second)\n",
                           i + 1, file1.Block_Id(b)));
       }
-      e2 = id[sort_idx];
+      size_t e2 = id[sort_idx];
 
       // Assign element map for this element.
       elmt_map[e1] = e2;

@@ -187,8 +187,6 @@ namespace {
                      Graph_Description<INT> *graph, Weight_Description<INT> *weight,
                      Sphere_Info *sphere)
   {
-    size_t nelem = 0;
-
     std::vector<INT> pt_list;
     std::vector<INT> hold_elem;
     INT              side_nodes[MAX_SIDE_NODES + 2];
@@ -370,7 +368,7 @@ namespace {
 
                 nnodes--; /* decrement to find the number of intersections  */
 
-                nelem = 0; /* reset this in case no intersections are needed */
+                size_t nelem = 0; /* reset this in case no intersections are needed */
 
                 /* copy the first array into temp storage */
 
@@ -492,7 +490,6 @@ namespace {
 
                       /* make sure this is a 3d element*/
 
-                      int sid;
                       if (is_3d_element(etype2)) {
 
                         /* need to check for hex's */
@@ -502,6 +499,7 @@ namespace {
                         tflag2 = is_tet(etype2);
 
                         /* check here for tet/hex combinations */
+                        int sid;
                         if ((tflag1 && hflag2) || (hflag1 && tflag2)) {
                           /*
                            * have to call a special function to get the side id
