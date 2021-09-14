@@ -43,10 +43,10 @@ int main(int argc, char **argv)
 {
   int exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
   int num_side_sets, error;
-  int i, j, k, node_ctr;
+  int i, j, k;
   int num_glo_vars, num_nod_vars, num_ele_vars;
   int num_time_steps;
-  int num_nodes_in_set, num_elem_in_set;
+  int num_nodes_in_set;
   int num_sides_in_set, num_df_in_set;
   int list_len      = 0;
   int elem_list_len = 0;
@@ -433,12 +433,12 @@ int main(int argc, char **argv)
     printf("num_dist_factors = %3d\n", num_df_in_set);
 
     /* Note: The # of elements is same as # of sides!  */
-    num_elem_in_set      = num_sides_in_set;
-    int *  elem_list     = (int *)my_calloc(num_elem_in_set, sizeof(int));
-    int *  side_list     = (int *)my_calloc(num_sides_in_set, sizeof(int));
-    int *  node_ctr_list = (int *)my_calloc(num_elem_in_set, sizeof(int));
-    int *  node_list     = (int *)my_calloc(num_elem_in_set * 21, sizeof(int));
-    float *dist_fact     = (float *)my_calloc(num_df_in_set, sizeof(float));
+    int    num_elem_in_set = num_sides_in_set;
+    int *  elem_list       = (int *)my_calloc(num_elem_in_set, sizeof(int));
+    int *  side_list       = (int *)my_calloc(num_sides_in_set, sizeof(int));
+    int *  node_ctr_list   = (int *)my_calloc(num_elem_in_set, sizeof(int));
+    int *  node_list       = (int *)my_calloc(num_elem_in_set * 21, sizeof(int));
+    float *dist_fact       = (float *)my_calloc(num_df_in_set, sizeof(float));
 
     error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
     printf("\nafter ex_get_side_set, error = %3d\n", error);
@@ -461,7 +461,7 @@ int main(int argc, char **argv)
       printf("%3d\n", side_list[j]);
     }
 
-    node_ctr = 0;
+    int node_ctr = 0;
     printf("node list for side set %2d\n", ids[i]);
     for (k = 0; k < num_elem_in_set; k++) {
       for (j = 0; j < node_ctr_list[k]; j++) {

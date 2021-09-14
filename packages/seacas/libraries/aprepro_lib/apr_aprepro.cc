@@ -754,10 +754,10 @@ namespace SEAMS {
       spre = pre;
     }
 
-    int width = 10; // controls spacing/padding for the variable names
     if (type == Parser::token::VAR || type == Parser::token::SVAR || type == Parser::token::AVAR) {
       (*infoStream) << "\n" << comment << "   Variable    = Value" << '\n';
 
+      int width = 10; // controls spacing/padding for the variable names
       for (unsigned hashval = 0; hashval < HASHSIZE; hashval++) {
         for (symrec *ptr = sym_table[hashval]; ptr != nullptr; ptr = ptr->next) {
           if (pre == nullptr || ptr->name.find(spre) != std::string::npos) {
