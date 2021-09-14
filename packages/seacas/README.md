@@ -60,9 +60,9 @@ support, you do not have to build hdf5.
 *  `tar zxvf parallel-netcdf-1.6.1.tar.gz`
 
 *  `cd` to the `parallel-netcdf-1.6.1` directory and enter the command:
-    ```bash
-    CC=mpicc ./configure --disable-fortran --prefix ${WHERE_TO_INSTALL}
-    ```
+   ```bash
+   CC=mpicc ./configure --disable-fortran --prefix ${WHERE_TO_INSTALL}
+   ```
 
 *  `make && make install`
 
@@ -78,10 +78,10 @@ The most recent released version is recommended. For use with Exodus, some local
    seacas/TPL/netcdf/netcdf-4.6.3/include/netcdf.h.  Versions *4.5.1 or
    later* do not check these limits and can be run unmodified.
 
-    ```c
-    #define NC_MAX_DIMS     65536    /* max dimensions per file */
-    #define NC_MAX_VARS     524288   /* max variables per file */
-    ```
+   ```c
+   #define NC_MAX_DIMS     65536    /* max dimensions per file */
+   #define NC_MAX_VARS     524288   /* max variables per file */
+   ```
 
 *  `cd netcdf-4.6.3` and enter the command:
 
