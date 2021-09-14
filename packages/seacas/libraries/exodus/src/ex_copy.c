@@ -545,6 +545,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
 /*! \internal */
 int cpy_var_val(int in_id, int out_id, char *var_nm)
 {
+  void *void_ptr = NULL;
   /* Routine to copy the variable data from an input netCDF file
    * to an output netCDF file.
    */
@@ -601,7 +602,6 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   } /* end loop over dim */
 
   /* Allocate enough space to hold the variable */
-  void *void_ptr = NULL;
   if (var_sz > 0) {
     void_ptr = calloc(var_sz, type_size(var_type_in));
   }
