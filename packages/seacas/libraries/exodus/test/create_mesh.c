@@ -67,15 +67,12 @@ void get_file_name(const char *base, const char *ext, int rank, int nprocs, cons
  */
 INT icbrt(unsigned x)
 {
-  INT      s;
-  unsigned y, b;
-
-  s = 30;
-  y = 0;
+  INT      s = 30;
+  unsigned y = 0;
   while (s >= 0) { /* Do 11 times. */
-    y = 2 * y;
-    b = (3 * y * (y + 1) + 1) << s;
-    s = s - 3;
+    y          = 2 * y;
+    unsigned b = (3 * y * (y + 1) + 1) << s;
+    s          = s - 3;
     if (x >= b) {
       x = x - b;
       y = y + 1;
@@ -337,7 +334,7 @@ void make_mesh(realtyp *x, realtyp *y, realtyp *z, INT *connect, INT map_origin,
 {
   /* create global coordinates */
   size_t k = 0;
-  for (size_t m = 0, k = 0; m < (num_elements_1d + 1); m++) {
+  for (size_t m = 0; m < (num_elements_1d + 1); m++) {
     for (size_t i = 0; i < (num_elements_1d + 1); i++) {
       for (size_t j = 0; j < (num_elements_1d + 1); j++, k++) {
         x[k] = (realtyp)j;

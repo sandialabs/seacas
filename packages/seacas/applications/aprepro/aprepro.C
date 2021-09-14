@@ -155,5 +155,8 @@ int main(int argc, char *argv[])
   if (aprepro.ap_options.debugging || aprepro.ap_options.dumpvars) {
     aprepro.dumpsym("variable", false);
   }
+  if (aprepro.ap_options.dumpvars_json) {
+    aprepro.dumpsym_json();
+  }
   return exit_status;
 }

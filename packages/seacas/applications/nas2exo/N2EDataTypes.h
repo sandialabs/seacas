@@ -37,10 +37,11 @@ namespace N2EModules {
 
       elementType = elType;
       strncpy(elemDesc, elDesc.c_str(), MAX_STR_LENGTH - 1);
-      numNodesPerElem = nodesPer;
-      numEdgesPerElem = edgesPer;
-      numFacesPerElem = facesPer;
-      numAttrPerElem  = attrPer;
+      elemDesc[MAX_STR_LENGTH - 1] = '\0';
+      numNodesPerElem              = nodesPer;
+      numEdgesPerElem              = edgesPer;
+      numFacesPerElem              = facesPer;
+      numAttrPerElem               = attrPer;
     }
   };
 
