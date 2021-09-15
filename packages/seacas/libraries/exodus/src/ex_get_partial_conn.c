@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -27,6 +27,7 @@
  * revision history -
  *
  */
+
 #include "exodusII.h"     // for ex_err, ex_name_of_object, etc
 #include "exodusII_int.h" // for ex__check_valid_file_id, etc
 
