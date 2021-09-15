@@ -103,19 +103,19 @@ int ex_get_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   switch (blk_type) {
   case EX_EDGE_BLOCK:
     dnumnodent = DIM_NUM_NOD_PER_ED(blk_id_ndx);
-    dnumedgent = 0;
-    dnumfacent = 0;
+    dnumedgent = NULL;
+    dnumfacent = NULL;
     vnodeconn  = VAR_EBCONN(blk_id_ndx);
-    vedgeconn  = 0;
-    vfaceconn  = 0;
+    vedgeconn  = NULL;
+    vfaceconn  = NULL;
     break;
   case EX_FACE_BLOCK:
     dnumnodent = DIM_NUM_NOD_PER_FA(blk_id_ndx);
-    dnumedgent = 0;
-    dnumfacent = 0;
+    dnumedgent = NULL;
+    dnumfacent = NULL;
     vnodeconn  = VAR_FBCONN(blk_id_ndx);
-    vedgeconn  = 0;
-    vfaceconn  = 0;
+    vedgeconn  = NULL;
+    vfaceconn  = NULL;
     break;
   case EX_ELEM_BLOCK:
     dnumnodent = DIM_NUM_NOD_PER_EL(blk_id_ndx);
