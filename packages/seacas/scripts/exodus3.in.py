@@ -106,9 +106,7 @@ def basename(file_name):
     Extract base name from file_name.
     `basename("test.e") -> "test"`
     """
-    fileParts = file_name.split(".")
-    base_name = ".".join(fileParts[:-1])
-    return base_name
+    return os.path.splitext(file_name)[0]
 
 
 def getExodusVersion():
