@@ -15,10 +15,8 @@ INCLUDE_DIRECTORIES(
 SET(HEADERS "")
 APPEND_GLOB(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/CP_SystemInterface.C)
 
-#disabling on PGI due to an odd compiler issue with the compiler generated assembly.
-#this error only seems to manifest on pgi 11.1, however, the version of the compiler
-#is not given for pgi compilers unfortunately so we can't be more specific
-IF(NOT __LINUX_COMPILER_PGI)
+ASSERT_DEFINED(TPL_ENABLE_CGNS)
+IF (TPL_ENABLE_CGNS)
   TRIBITS_ADD_EXECUTABLE(
     cpup
     NOEXEPREFIX
