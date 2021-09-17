@@ -61,7 +61,7 @@ namespace {
     return 7;
   }
 
-  bool is_field_valid(const Cpup::StringVector &variable_list, const std::string field_name)
+  bool is_field_valid(const Cpup::StringVector &variable_list, const std::string &field_name)
   {
     if (variable_list.empty() ||
         (variable_list.size() == 1 && case_compare(variable_list[0], "all") == 0)) {
@@ -599,38 +599,20 @@ namespace {
 
   void info_structuredblock(Ioss::Region &region)
   {
-    bool                                  parallel = true;
-    const Ioss::StructuredBlockContainer &sbs      = region.get_structured_blocks();
+    const Ioss::StructuredBlockContainer &sbs = region.get_structured_blocks();
     for (auto &sb : sbs) {
-      int64_t num_cell = sb->get_property("cell_count").get_int();
-      int64_t num_node = sb->get_property("node_count").get_int();
-      int64_t num_dim  = sb->get_property("component_degree").get_int();
 
       auto ijk_global = sb->get_ijk_global();
-      fmt::print("\n{} {}", name(sb), ijk_global[0]);
-      if (num_dim > 1) {
-        fmt::print("x{}", ijk_global[1]);
-      }
-      if (num_dim > 2) {
-        fmt::print("x{}", ijk_global[2]);
-      }
+      fmt::print("\n{} {}x{}x{}", name(sb), ijk_global[0], ijk_global[1], ijk_global[2]);
 
-      if (parallel) {
-        auto ijk_offset = sb->get_ijk_offset();
-        auto ijk_local  = sb->get_ijk_local();
-        fmt::print(" [{}x{}x{}, Offset = {}, {}, {}] ", ijk_local[0], ijk_local[1], ijk_local[2],
-                   ijk_offset[0], ijk_offset[1], ijk_offset[2]);
-      }
+      auto ijk_offset = sb->get_ijk_offset();
+      auto ijk_local  = sb->get_ijk_local();
+      fmt::print(" [{}x{}x{}, Offset = {}, {}, {}] ", ijk_local[0], ijk_local[1], ijk_local[2],
+                 ijk_offset[0], ijk_offset[1], ijk_offset[2]);
 
+      int64_t num_cell = sb->get_property("cell_count").get_int();
+      int64_t num_node = sb->get_property("node_count").get_int();
       fmt::print("  {:14L} cells, {:14L} nodes ", num_cell, num_node);
-
-#if 0
-      info_aliases(region, sb, true, false);
-      Ioss::Utils::info_fields(sb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
-      Ioss::Utils::info_fields(sb, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ", "\t");
-      info_nodeblock(region, sb->get_node_block(), "\t");
-      fmt::print("\n");
-#endif
 
       if (!sb->m_zoneConnectivity.empty()) {
         fmt::print("\n\tConnectivity with other blocks:\n");
@@ -638,7 +620,7 @@ namespace {
           fmt::print("{}\n", zgc);
         }
       }
-#if 1
+
       if (!sb->m_boundaryConditions.empty()) {
         fmt::print("\tBoundary Conditions:\n");
         // NOTE: The sort here is just to make io_info more useful for regression testing.
@@ -653,7 +635,6 @@ namespace {
           fmt::print("{}\n", bc);
         }
       }
-#endif
     }
   }
 
