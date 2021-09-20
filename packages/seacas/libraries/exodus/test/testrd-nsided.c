@@ -47,7 +47,7 @@ int main(int argc, char **argv)
   int  num_nodes_in_set;
   int  num_sides_in_set, num_df_in_set;
   int  list_len, elem_list_len, df_list_len;
-  int  time_step, beg_time, end_time;
+  int  time_step;
   int  num_props, prop_value;
   int  idum;
 
@@ -969,9 +969,9 @@ int main(int argc, char **argv)
 
   /* read a single global variable through time */
 
-  var_index = 1;
-  beg_time  = 1;
-  end_time  = -1;
+  int var_index = 1;
+  int beg_time  = 1;
+  int end_time  = -1;
 
   var_values = (float *)calloc(num_time_steps, sizeof(float));
 
@@ -1050,8 +1050,8 @@ int main(int argc, char **argv)
   if (num_ele_vars > 0) {
     var_values = (float *)calloc(num_time_steps, sizeof(float));
 
-    int var_index = 2;
-    int elem_num  = 2;
+    var_index    = 2;
+    int elem_num = 2;
     error =
         ex_get_var_time(exoid, EX_ELEM_BLOCK, var_index, elem_num, beg_time, end_time, var_values);
     printf("\nafter ex_get_elem_var_time, error = %3d\n", error);
