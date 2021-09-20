@@ -216,7 +216,10 @@ namespace {
     }
 
     if (!in_lattice) {
-      // ERROR -- file ended before lattice definition...
+      fmt::print(
+          stderr, fmt::fg(fmt::color::red),
+          "\nERROR: Reached end of input file without finding a 'BEGIN_LATTICE' command\n\n");
+      exit(EXIT_FAILURE);
     }
 
     // Tokenize line to get I J K size of lattice

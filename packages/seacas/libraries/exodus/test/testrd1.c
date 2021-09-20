@@ -40,10 +40,10 @@ static void *my_calloc(size_t length, size_t size)
 
 int main(int argc, char **argv)
 {
-  int  exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
+  int  num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
   int  num_side_sets, num_node_maps, num_elem_maps, error;
-  int  i, j, k, node_ctr;
-  int *elem_map, *connect, *node_list, *node_ctr_list, *elem_list, *side_list;
+  int  i, j, k;
+  int *elem_map, *node_list, *node_ctr_list, *elem_list, *side_list;
   int *ids, *node_map;
   int *num_nodes_per_set, *num_elem_per_set;
   int *num_df_per_set;
@@ -52,20 +52,18 @@ int main(int argc, char **argv)
   int *truth_tab;
   int  num_time_steps;
   int *num_elem_in_block, *num_nodes_per_elem, *num_attr;
-  int  num_nodes_in_set, num_elem_in_set;
+  int  num_nodes_in_set;
   int  num_sides_in_set, num_df_in_set;
   int  list_len      = 0;
   int  elem_list_len = 0;
   int  node_list_len = 0;
   int  df_list_len   = 0;
   int  node_num, time_step, var_index, beg_time, end_time, elem_num;
-  int  CPU_word_size, IO_word_size;
   int  num_props, prop_value, *prop_values;
   int  idum;
 
   float  time_value, *time_values, *var_values;
-  float *x, *y, *z;
-  float *attrib, *dist_fact;
+  float *dist_fact;
   float  version, fdum;
 
   char *coord_names[3], *qa_record[2][4], *info[3], *var_names[10];
@@ -74,16 +72,15 @@ int main(int argc, char **argv)
   char *prop_names[3];
   char *map_names[3];
 
-  CPU_word_size = 0; /* sizeof(float) */
-  IO_word_size  = 0; /* use what is stored in file */
-
   ex_opts(EX_VERBOSE | EX_ABORT);
 
   /* Test the NOCLOBBER option to ex_create.  Should fail to create file */
-  exoid = ex_create("test.exo", EX_NOCLOBBER, &CPU_word_size, &IO_word_size);
+  int CPU_word_size = 0; /* sizeof(float) */
+  int IO_word_size  = 0; /* use what is stored in file */
+  int exoid         = ex_create("test.exo", EX_NOCLOBBER, &CPU_word_size, &IO_word_size);
   printf("\nafter ex_create (NO_CLOBBER), error = %3d\n", exoid);
 
-  /* open EXODUS II files */
+  /* now open EXODUS II file.  Should not fail */
   exoid = ex_open("test.exo",     /* filename path */
                   EX_READ,        /* access mode = READ */
                   &CPU_word_size, /* CPU word size */
@@ -121,13 +118,11 @@ int main(int argc, char **argv)
 
   /* read nodal coordinates values and names from database */
 
-  x = (float *)my_calloc(num_nodes, sizeof(float));
-  y = (float *)my_calloc(num_nodes, sizeof(float));
+  float *x = (float *)my_calloc(num_nodes, sizeof(float));
+  float *y = (float *)my_calloc(num_nodes, sizeof(float));
+  float *z = NULL;
   if (num_dim >= 3) {
     z = (float *)my_calloc(num_nodes, sizeof(float));
-  }
-  else {
-    z = NULL;
   }
 
   error = ex_get_coord(exoid, x, y, z);
@@ -379,7 +374,7 @@ int main(int argc, char **argv)
   /* read element connectivity */
 
   for (i = 0; i < num_elem_blk; i++) {
-    connect = (int *)my_calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
+    int *connect = (int *)my_calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
 
     error = ex_get_conn(exoid, EX_ELEM_BLOCK, ids[i], connect, NULL, NULL);
     printf("\nafter ex_get_elem_conn, error = %d\n", error);
@@ -395,8 +390,8 @@ int main(int argc, char **argv)
   /* read element block attributes */
 
   for (i = 0; i < num_elem_blk; i++) {
-    attrib = (float *)my_calloc(num_attr[i] * num_elem_in_block[i], sizeof(float));
-    error  = ex_get_attr(exoid, EX_ELEM_BLOCK, ids[i], attrib);
+    float *attrib = (float *)my_calloc(num_attr[i] * num_elem_in_block[i], sizeof(float));
+    error         = ex_get_attr(exoid, EX_ELEM_BLOCK, ids[i], attrib);
     printf("\nafter ex_get_elem_attr, error = %d\n", error);
 
     if (error == 0) {
@@ -578,12 +573,12 @@ int main(int argc, char **argv)
     printf("num_dist_factors = %3d\n", num_df_in_set);
 
     /* Note: The # of elements is same as # of sides!  */
-    num_elem_in_set = num_sides_in_set;
-    elem_list       = (int *)my_calloc(num_elem_in_set, sizeof(int));
-    side_list       = (int *)my_calloc(num_sides_in_set, sizeof(int));
-    node_ctr_list   = (int *)my_calloc(num_elem_in_set, sizeof(int));
-    node_list       = (int *)my_calloc(num_elem_in_set * 21, sizeof(int));
-    dist_fact       = (float *)my_calloc(num_df_in_set, sizeof(float));
+    int num_elem_in_set = num_sides_in_set;
+    elem_list           = (int *)my_calloc(num_elem_in_set, sizeof(int));
+    side_list           = (int *)my_calloc(num_sides_in_set, sizeof(int));
+    node_ctr_list       = (int *)my_calloc(num_elem_in_set, sizeof(int));
+    node_list           = (int *)my_calloc(num_elem_in_set * 21, sizeof(int));
+    dist_fact           = (float *)my_calloc(num_df_in_set, sizeof(float));
 
     error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
     printf("\nafter ex_get_side_set, error = %3d\n", error);
@@ -606,7 +601,7 @@ int main(int argc, char **argv)
       printf("%3d\n", side_list[j]);
     }
 
-    node_ctr = 0;
+    int node_ctr = 0;
     printf("node list for side set %2d\n", ids[i]);
     for (k = 0; k < num_elem_in_set; k++) {
       for (j = 0; j < node_ctr_list[k]; j++) {
