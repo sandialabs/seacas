@@ -36,6 +36,12 @@ extern double seacas_timer();
 unsigned int  debug_level = 0;
 
 namespace {
+  using GlobalZgcMap = std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity>;
+  using GlobalBcMap  = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
+
+  GlobalZgcMap generate_global_zgc(std::vector<Ioss::Region *> &part_mesh);
+  GlobalBcMap  generate_global_bc(std::vector<Ioss::Region *> &part_mesh);
+
   void info_structuredblock(Ioss::Region &region);
   void resolve_offsets(std::vector<Ioss::Region *> &                               part_mesh,
                        std::map<const std::string, const Ioss::StructuredBlock *> &all_blocks);
@@ -145,6 +151,38 @@ namespace {
     }
   }
 
+  void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
+  {
+    assert(zgc_i.m_transform == zgc_j.m_transform);
+    if (zgc_i.m_ownerRangeBeg[0] == 0 && zgc_i.m_ownerRangeBeg[1] == 0 &&
+        zgc_i.m_ownerRangeBeg[2] == 0) {
+      zgc_i.m_ownerRangeBeg = zgc_j.m_ownerRangeBeg;
+      zgc_i.m_ownerRangeEnd = zgc_j.m_ownerRangeEnd;
+      zgc_i.m_donorRangeBeg = zgc_j.m_donorRangeBeg;
+      zgc_i.m_donorRangeEnd = zgc_j.m_donorRangeEnd;
+    }
+    else {
+      for (int i = 0; i < 3; i++) {
+        if (zgc_i.m_ownerRangeBeg[i] <= zgc_i.m_ownerRangeEnd[i]) {
+          zgc_i.m_ownerRangeBeg[i] = std::min(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+          zgc_i.m_ownerRangeEnd[i] = std::max(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+        }
+        else {
+          zgc_i.m_ownerRangeBeg[i] = std::max(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+          zgc_i.m_ownerRangeEnd[i] = std::min(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+        }
+
+        if (zgc_i.m_donorRangeBeg[i] <= zgc_i.m_donorRangeEnd[i]) {
+          zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+          zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+        }
+        else {
+          zgc_i.m_donorRangeBeg[i] = std::max(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+          zgc_i.m_donorRangeEnd[i] = std::min(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+        }
+      }
+    }
+  }
 } // namespace
 
 template <typename INT>
@@ -254,27 +292,11 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
   update_global_ijk(part_mesh, global_block);
 
   // Need a consistent set of Boundary Conditions for each zone unioned across the proc-local-zones
+  GlobalBcMap global_bc = generate_global_bc(part_mesh);
 
-  // Ugly datastructure... Map of pair(block_name, bc_name) Ioss::BoundaryCondition
-  std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition> global_bc;
-
-  for (auto &part : part_mesh) {
-    auto &blocks = part->get_structured_blocks();
-    for (auto &block : blocks) {
-      Ioss::IJK_t offset    = block->get_ijk_offset();
-      auto        name_proc = Iocgns::Utils::decompose_name(block->name(), true);
-      auto &      sb_bc     = block->m_boundaryConditions;
-      for (auto &bc : sb_bc) {
-        auto &gbc = global_bc[std::make_pair(name_proc.first, bc.m_bcName)];
-        if (gbc.m_bcName.empty()) {
-          gbc.m_bcName  = bc.m_bcName;
-          gbc.m_famName = bc.m_famName;
-        }
-        union_bc_range(gbc.m_rangeBeg, gbc.m_rangeEnd, bc.m_rangeBeg, bc.m_rangeEnd, offset);
-        SMART_ASSERT(gbc.which_face() == bc.which_face());
-      }
-    }
-  }
+  // Need a consistent set of ZGC for each zone unioned across the proc-local-zones...
+  // Skip the ZGC that are "from_decomp"
+  GlobalZgcMap global_zgc = generate_global_zgc(part_mesh);
 
   Ioss::PropertyManager properties{};
   properties.add(Ioss::Property("FLUSH_INTERVAL", 0));
@@ -306,6 +328,12 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
     for (auto &bc_map : global_bc) {
       if (bc_map.first.first == block_name) {
         block->m_boundaryConditions.push_back(bc_map.second);
+      }
+    }
+
+    for (auto &zgc_map : global_zgc) {
+      if (zgc_map.first.first == block_name) {
+        block->m_zoneConnectivity.push_back(zgc_map.second);
       }
     }
   }
@@ -431,7 +459,7 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
     double time_per_step       = elapsed / time_step_out;
     double percentage_done     = (time_step_out * 100.0) / output_steps;
     double estimated_remaining = time_per_step * (output_steps - time_step_out);
-    fmt::print("\tWrote step {:6L}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]    \r",
+    fmt::print(stderr, "\tWrote step {:6L}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]    \r",
                time_step, time_val, percentage_done, format_time(elapsed),
                format_time(estimated_remaining));
   }
@@ -447,6 +475,80 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
 }
 
 namespace {
+  GlobalZgcMap generate_global_zgc(std::vector<Ioss::Region *> &part_mesh)
+  {
+    std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity> global_zgc;
+    for (auto &part : part_mesh) {
+      auto &blocks = part->get_structured_blocks();
+      for (auto &block : blocks) {
+        auto name_proc = Iocgns::Utils::decompose_name(block->name(), true);
+
+        for (const auto &zgc : block->m_zoneConnectivity) {
+          if (!zgc.m_fromDecomp) {
+            auto &gzgc = global_zgc[std::make_pair(name_proc.first, zgc.m_connectionName)];
+            if (gzgc.m_connectionName.empty()) {
+              // First time this ZGC has been found.  Copy from the per-proc instance and update...
+              gzgc.m_connectionName = zgc.m_connectionName;
+              gzgc.m_donorName      = Iocgns::Utils::decompose_name(zgc.m_donorName, true).first;
+              gzgc.m_transform      = zgc.m_transform;
+            }
+
+            // Create a temporary zgc; adjust its ranges to "global" by adding the offsets
+            // and then union if with the global instance...
+            Ioss::IJK_t own_off = block->get_ijk_offset();
+            auto        tmp_zgc{zgc};
+
+            tmp_zgc.m_ownerRangeBeg[0] += own_off[0];
+            tmp_zgc.m_ownerRangeBeg[1] += own_off[1];
+            tmp_zgc.m_ownerRangeBeg[2] += own_off[2];
+            tmp_zgc.m_ownerRangeEnd[0] += own_off[0];
+            tmp_zgc.m_ownerRangeEnd[1] += own_off[1];
+            tmp_zgc.m_ownerRangeEnd[2] += own_off[2];
+
+            // Now find the donor block...
+            auto  donor       = Iocgns::Utils::decompose_name(zgc.m_donorName, true);
+            auto *donor_block = part_mesh[donor.second]->get_structured_block(zgc.m_donorName);
+            SMART_ASSERT(donor_block != nullptr);
+            Ioss::IJK_t don_off = donor_block->get_ijk_offset();
+
+            tmp_zgc.m_donorRangeBeg[0] += don_off[0];
+            tmp_zgc.m_donorRangeBeg[1] += don_off[1];
+            tmp_zgc.m_donorRangeBeg[2] += don_off[2];
+            tmp_zgc.m_donorRangeEnd[0] += don_off[0];
+            tmp_zgc.m_donorRangeEnd[1] += don_off[1];
+            tmp_zgc.m_donorRangeEnd[2] += don_off[2];
+
+            union_zgc_range(gzgc, tmp_zgc);
+          }
+        }
+      }
+    }
+    return global_zgc;
+  }
+
+  GlobalBcMap generate_global_bc(std::vector<Ioss::Region *> &part_mesh)
+  {
+    std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition> global_bc;
+    for (auto &part : part_mesh) {
+      auto &blocks = part->get_structured_blocks();
+      for (auto &block : blocks) {
+        Ioss::IJK_t offset    = block->get_ijk_offset();
+        auto        name_proc = Iocgns::Utils::decompose_name(block->name(), true);
+        auto &      sb_bc     = block->m_boundaryConditions;
+        for (auto &bc : sb_bc) {
+          auto &gbc = global_bc[std::make_pair(name_proc.first, bc.m_bcName)];
+          if (gbc.m_bcName.empty()) {
+            gbc.m_bcName  = bc.m_bcName;
+            gbc.m_famName = bc.m_famName;
+          }
+          union_bc_range(gbc.m_rangeBeg, gbc.m_rangeEnd, bc.m_rangeBeg, bc.m_rangeEnd, offset);
+          SMART_ASSERT(gbc.which_face() == bc.which_face());
+        }
+      }
+    }
+    return global_bc;
+  }
+
   double transfer_step(std::vector<Ioss::Region *> &part_mesh, Ioss::Region &output_region,
                        int istep)
   {
