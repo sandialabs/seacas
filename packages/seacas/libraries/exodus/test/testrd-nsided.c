@@ -19,7 +19,7 @@
 
 int main(int argc, char **argv)
 {
-  int  exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
+  int  num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
   int  num_side_sets, error, nnodes;
   int  i, j, k;
   int *elem_map          = NULL;
@@ -47,8 +47,7 @@ int main(int argc, char **argv)
   int  num_nodes_in_set;
   int  num_sides_in_set, num_df_in_set;
   int  list_len, elem_list_len, df_list_len;
-  int  time_step, var_index, beg_time, end_time, elem_num;
-  int  CPU_word_size, IO_word_size;
+  int  time_step, beg_time, end_time;
   int  num_props, prop_value;
   int  idum;
 
@@ -65,17 +64,17 @@ int main(int argc, char **argv)
   char *cdum = NULL;
   char *prop_names[3];
 
-  CPU_word_size = 0; /* sizeof(float) */
-  IO_word_size  = 0; /* use what is stored in file */
+  int CPU_word_size = 0; /* sizeof(float) */
+  int IO_word_size  = 0; /* use what is stored in file */
 
   ex_opts(EX_VERBOSE | EX_ABORT);
 
   /* open EXODUS II files */
-  exoid = ex_open("test-nsided.exo", /* filename path */
-                  EX_READ,           /* access mode = READ */
-                  &CPU_word_size,    /* CPU word size */
-                  &IO_word_size,     /* IO word size */
-                  &version);         /* ExodusII library version */
+  int exoid = ex_open("test-nsided.exo", /* filename path */
+                      EX_READ,           /* access mode = READ */
+                      &CPU_word_size,    /* CPU word size */
+                      &IO_word_size,     /* IO word size */
+                      &version);         /* ExodusII library version */
 
   printf("\nafter ex_open\n");
   if (exoid < 0) {
@@ -1051,8 +1050,8 @@ int main(int argc, char **argv)
   if (num_ele_vars > 0) {
     var_values = (float *)calloc(num_time_steps, sizeof(float));
 
-    var_index = 2;
-    elem_num  = 2;
+    int var_index = 2;
+    int elem_num  = 2;
     error =
         ex_get_var_time(exoid, EX_ELEM_BLOCK, var_index, elem_num, beg_time, end_time, var_values);
     printf("\nafter ex_get_elem_var_time, error = %3d\n", error);

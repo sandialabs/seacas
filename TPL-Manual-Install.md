@@ -40,9 +40,9 @@ create or read models of this size, you do not have to build hdf5.
 *  Download to `seacas/TPL/hdf5` and untar it
 
 *  `cd` to that directory and enter the command:
-     ```bash
-     sh ../runconfigure.sh
-     ```
+   ```bash
+   sh ../runconfigure.sh
+   ```
 
 *  `make && make install`
 

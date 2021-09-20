@@ -37,7 +37,7 @@ int main(int argc, char **argv)
   int  exoid, num_dim, num_nodes, num_elem, num_elem_blk;
   int  num_elem_in_block[10], num_nodes_per_elem[10];
   int  num_node_sets, num_side_sets;
-  int  i, j, k, kk, m, *elem_map, *connect;
+  int  i, j, k, m, *elem_map, *connect;
   int  node_list[100], elem_list[100], side_list[100];
   int  ebids[10], ssids[10], nsids[10], nattr[10];
   int  num_nodes_per_set[10], num_elem_per_set[10];
@@ -703,7 +703,7 @@ int main(int argc, char **argv)
 
     /* write nodeset variables */
 
-    kk = 0;
+    int kk = 0;
     for (j = 0; j < num_node_sets; j++) {
       for (k = 0; k < num_nset_vars; k++) {
         if (kk++ % 2 == 0) {
