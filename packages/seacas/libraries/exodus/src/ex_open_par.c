@@ -339,7 +339,6 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
       if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
         EX_FUNC_LEAVE(EX_FATAL);
       }
-      in_redef = false;
     }
 
     /* If this is a parallel execution and we are appending, then we

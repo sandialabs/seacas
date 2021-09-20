@@ -19,7 +19,7 @@
 *  NOTE: The old imake-based build has been removed.
 
 ## Get the sources
-```
+```sh
 git clone https://github.com/gsjaardema/seacas.git
 ```
 This will create a directory that will be referred to as _seacas_ in

@@ -16,7 +16,7 @@ else
 fi
 
 MPI="${MPI:-YES}"
-if [ "$MPI" != "YES" ]
+if [ "$MPI" != "YES" ] ; then
    echo "MPI Must be YES"
    exit 1
 fi
