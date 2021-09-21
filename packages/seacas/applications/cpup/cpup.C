@@ -254,7 +254,7 @@ template <typename INT>
 double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT /*dummy*/)
 {
   double begin = Ioss::Utils::timer();
-  SMART_ASSERT(interFace.processor_count() == part_mesh.size());
+  SMART_ASSERT(interFace.processor_count() == (int)part_mesh.size());
 
   // Each processor may have a different set of zones.  This routine
   // will sync the information such that at return, there is

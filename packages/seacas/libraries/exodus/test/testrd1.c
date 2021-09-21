@@ -409,6 +409,8 @@ int main(int argc, char **argv)
   error = ex_get_ids(exoid, EX_NODE_SET, ids);
   printf("\nafter ex_get_node_set_ids, error = %3d\n", error);
 
+  int *node_list = NULL;
+  int *elem_list = NULL;
   for (int i = 0; i < num_node_sets; i++) {
     error = ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_nodes_in_set, &num_df_in_set);
     printf("\nafter ex_get_node_set_param, error = %3d\n", error);
@@ -568,12 +570,12 @@ int main(int argc, char **argv)
     printf("num_dist_factors = %3d\n", num_df_in_set);
 
     /* Note: The # of elements is same as # of sides!  */
-    int  num_elem_in_set = num_sides_in_set;
-    int *elem_list       = (int *)my_calloc(num_elem_in_set, sizeof(int));
-    int *side_list       = (int *)my_calloc(num_sides_in_set, sizeof(int));
-    int *node_ctr_list   = (int *)my_calloc(num_elem_in_set, sizeof(int));
-    int *node_list       = (int *)my_calloc(num_elem_in_set * 21, sizeof(int));
-    float * 1dist_fact   = (float *)my_calloc(num_df_in_set, sizeof(float));
+    int    num_elem_in_set = num_sides_in_set;
+    int *  elem_list       = (int *)my_calloc(num_elem_in_set, sizeof(int));
+    int *  side_list       = (int *)my_calloc(num_sides_in_set, sizeof(int));
+    int *  node_ctr_list   = (int *)my_calloc(num_elem_in_set, sizeof(int));
+    int *  node_list       = (int *)my_calloc(num_elem_in_set * 21, sizeof(int));
+    float *dist_fact       = (float *)my_calloc(num_df_in_set, sizeof(float));
 
     error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
     printf("\nafter ex_get_side_set, error = %3d\n", error);
@@ -677,7 +679,7 @@ int main(int argc, char **argv)
   elem_ind         = (int *)my_calloc(num_side_sets, sizeof(int));
   df_ind           = (int *)my_calloc(num_side_sets, sizeof(int));
   elem_list        = (int *)my_calloc(elem_list_len, sizeof(int));
-  side_list        = (int *)my_calloc(elem_list_len, sizeof(int));
+  int *side_list   = (int *)my_calloc(elem_list_len, sizeof(int));
   dist_fact        = (float *)my_calloc(df_list_len, sizeof(float));
 
   {
