@@ -853,7 +853,7 @@ namespace {
     }
     size_t element_offset = 0;
     for (auto &eb : ebs) {
-      eb->put_field_data("ids", &ids[element_offset], ids.size() * sizeof(int));
+      eb->put_field_data("ids", &ids[element_offset], ids.size() * sizeof(INT));
       element_offset += eb->entity_count();
     }
 
