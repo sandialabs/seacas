@@ -131,10 +131,10 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
 The IOSS library supports using CGNS for structured and unstructred meshes.  To use this capability, you will need to download and install the CGNS library:
 
 *  Download CGNS via git:
-    ```bash
-    cd TPL/cgns
-    git clone https://github.com/CGNS/CGNS.git
-    ```
+   ```bash
+   cd TPL/cgns
+   git clone https://github.com/CGNS/CGNS.git
+   ```
 
 *  Build using CMake.
 
