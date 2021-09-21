@@ -36,17 +36,17 @@ extern double seacas_timer();
 unsigned int  debug_level = 0;
 
 namespace {
-  using GlobalZgcMap = std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity>;
-  using GlobalBcMap  = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
+  using GlobalZgcMap   = std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity>;
+  using GlobalBcMap    = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
+  using GlobalBlockMap = std::map<const std::string, const Ioss::StructuredBlock *>;
+  using GlobalIJKMap   = std::map<const std::string, Ioss::IJK_t>;
 
   GlobalZgcMap generate_global_zgc(std::vector<Ioss::Region *> &part_mesh);
   GlobalBcMap  generate_global_bc(std::vector<Ioss::Region *> &part_mesh);
 
   void info_structuredblock(Ioss::Region &region);
-  void resolve_offsets(std::vector<Ioss::Region *> &                               part_mesh,
-                       std::map<const std::string, const Ioss::StructuredBlock *> &all_blocks);
-  void update_global_ijk(std::vector<Ioss::Region *> &       part_mesh,
-                         std::map<std::string, Ioss::IJK_t> &global_block);
+  void resolve_offsets(std::vector<Ioss::Region *> &part_mesh, GlobalBlockMap &all_blocks);
+  void update_global_ijk(std::vector<Ioss::Region *> &part_mesh, GlobalIJKMap &global_block);
   void transfer_nodal_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
                             std::vector<double> &output);
   void transfer_cell_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
@@ -261,8 +261,8 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
   // a consistent set of structuredBlocks defined with the
   // correct local and global, i,j,k ranges and offsets.
 
-  std::map<const std::string, const Ioss::StructuredBlock *> all_blocks;
-  std::map<std::string, Ioss::IJK_t>                         global_block;
+  GlobalBlockMap all_blocks;
+  GlobalIJKMap   global_block;
   for (auto &part : part_mesh) {
     auto &blocks = part->get_structured_blocks();
     for (auto &block : blocks) {
@@ -476,7 +476,7 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
 namespace {
   GlobalZgcMap generate_global_zgc(std::vector<Ioss::Region *> &part_mesh)
   {
-    std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity> global_zgc;
+    GlobalZgcMap global_zgc;
     for (auto &part : part_mesh) {
       auto &blocks = part->get_structured_blocks();
       for (auto &block : blocks) {
@@ -527,7 +527,7 @@ namespace {
 
   GlobalBcMap generate_global_bc(std::vector<Ioss::Region *> &part_mesh)
   {
-    std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition> global_bc;
+    GlobalBcMap global_bc;
     for (auto &part : part_mesh) {
       auto &blocks = part->get_structured_blocks();
       for (auto &block : blocks) {
@@ -636,8 +636,7 @@ namespace {
     return time;
   }
 
-  void resolve_offsets(std::vector<Ioss::Region *> &                               part_mesh,
-                       std::map<const std::string, const Ioss::StructuredBlock *> &all_blocks)
+  void resolve_offsets(std::vector<Ioss::Region *> &part_mesh, GlobalBlockMap &all_blocks)
   {
     bool change_made;
     do {
@@ -667,8 +666,7 @@ namespace {
     } while (change_made);
   }
 
-  void update_global_ijk(std::vector<Ioss::Region *> &       part_mesh,
-                         std::map<std::string, Ioss::IJK_t> &global_block)
+  void update_global_ijk(std::vector<Ioss::Region *> &part_mesh, GlobalIJKMap &global_block)
   {
     for (auto &part : part_mesh) {
       auto &blocks = part->get_structured_blocks();
