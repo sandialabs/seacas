@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "add_to_log.h"
+#include "fmt/chrono.h"
 #include "fmt/ostream.h"
 #include "hwm.h"
 
@@ -36,6 +37,7 @@ extern double seacas_timer();
 unsigned int  debug_level = 0;
 
 namespace {
+  std::string tsFormat = "[{:%H:%M:%S}] ";
   using GlobalZgcMap   = std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity>;
   using GlobalBcMap    = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
   using GlobalBlockMap = std::map<const std::string, const Ioss::StructuredBlock *>;
@@ -43,6 +45,9 @@ namespace {
 
   GlobalZgcMap generate_global_zgc(std::vector<Ioss::Region *> &part_mesh);
   GlobalBcMap  generate_global_bc(std::vector<Ioss::Region *> &part_mesh);
+
+  std::string time_stamp(const std::string &format);
+  std::string format_time(double seconds);
 
   void info_structuredblock(Ioss::Region &region);
   void resolve_offsets(std::vector<Ioss::Region *> &part_mesh, GlobalBlockMap &all_blocks);
@@ -107,31 +112,6 @@ namespace {
       fmt::print("\nNumber of time steps on input databases = {}\n\n", num_time_steps);
     }
     return num_time_steps;
-  }
-
-  std::string format_time(double seconds)
-  {
-    std::string suffix("u");
-    if (seconds > 0.0 && seconds < 1.0) {
-      seconds *= 1000.;
-      suffix = "ms";
-    }
-    else if (seconds > 86400) {
-      suffix = "d";
-      seconds /= 86400.;
-    }
-    else if (seconds > 3600) {
-      suffix = "h";
-      seconds /= 3600.;
-    }
-    else if (seconds > 60) {
-      suffix = "m";
-      seconds /= 60.;
-    }
-    else {
-      suffix = "s";
-    }
-    return fmt::format("{:.3}{}", seconds, suffix);
   }
 
   double transfer_step(std::vector<Ioss::Region *> &part_mesh, Ioss::Region &output_region,
@@ -216,7 +196,7 @@ int main(int argc, char *argv[])
       auto        filename = Ioss::Utils::decode_filename(inp_file, p, interFace.processor_count());
 
       if (debug_level & 1) {
-        fmt::print(stderr, "Processor rank {}, file {}\n", p, filename);
+        fmt::print(stderr, "{} Processor rank {}, file {}\n", time_stamp(tsFormat), p, filename);
       }
       Ioss::DatabaseIO *dbi =
           Ioss::IOFactory::create("cgns", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
@@ -458,9 +438,16 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
     double time_per_step       = elapsed / time_step_out;
     double percentage_done     = (time_step_out * 100.0) / output_steps;
     double estimated_remaining = time_per_step * (output_steps - time_step_out);
-    fmt::print(stderr, "\tWrote step {:6L}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]    \r",
-               time_step, time_val, percentage_done, format_time(elapsed),
-               format_time(estimated_remaining));
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} \tWrote step {:6L}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]\n",
+                 time_stamp(tsFormat), time_step, time_val, percentage_done, format_time(elapsed),
+                 format_time(estimated_remaining));
+    }
+    else {
+      fmt::print(stderr, "\tWrote step {:6L}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]    \r",
+                 time_step, time_val, percentage_done, format_time(elapsed),
+                 format_time(estimated_remaining));
+    }
   }
   output_region.end_mode(Ioss::STATE_TRANSIENT);
 
@@ -847,6 +834,43 @@ namespace {
   int case_compare(const std::string &s1, const std::string &s2)
   {
     return case_compare(s1.c_str(), s2.c_str());
+  }
+
+  std::string time_stamp(const std::string &format)
+  {
+    if (format == "") {
+      return std::string("");
+    }
+
+    time_t      calendar_time = std::time(nullptr);
+    struct tm * local_time    = std::localtime(&calendar_time);
+    std::string time_string   = fmt::format(format, *local_time);
+    return time_string;
+  }
+
+  std::string format_time(double seconds)
+  {
+    char suffix = 'u';
+    if (seconds > 0.0 && seconds < 1.0) {
+      return " <1s";
+    }
+
+    if (seconds > 86400) {
+      suffix = 'd';
+      seconds /= 86400.;
+    }
+    else if (seconds > 3600) {
+      suffix = 'h';
+      seconds /= 3600.;
+    }
+    else if (seconds > 60) {
+      suffix = 'm';
+      seconds /= 60.;
+    }
+    else {
+      suffix = 's';
+    }
+    return fmt::format("{:.2}{}", seconds, suffix);
   }
 
 } // namespace
