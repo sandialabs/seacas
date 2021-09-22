@@ -33,7 +33,7 @@
 #include <mpi.h>
 #endif
 
-unsigned int  debug_level = 0;
+unsigned int debug_level = 0;
 
 namespace {
   std::string tsFormat = "[{:%H:%M:%S}] ";
@@ -58,9 +58,6 @@ namespace {
   void transfer_nodal_coordinates(Ioss::Region &               output_region,
                                   std::vector<Ioss::Region *> &part_mesh);
 
-  int case_compare(const char *s1, const char *s2);
-  int case_compare(const std::string &s1, const std::string &s2);
-
   int get_constant_face(const Ioss::IJK_t &beg, const Ioss::IJK_t &end)
   {
     for (int i = 0; i < 3; i++) {
@@ -74,7 +71,7 @@ namespace {
   bool is_field_valid(const Cpup::StringVector &variable_list, const std::string &field_name)
   {
     if (variable_list.empty() ||
-        (variable_list.size() == 1 && case_compare(variable_list[0], "all") == 0)) {
+        (variable_list.size() == 1 && Ioss::Utils::str_equal(variable_list[0], "all") == 0)) {
       return true;
     }
 
@@ -82,7 +79,7 @@ namespace {
     // of fields that should be output on combined file.  Run through
     // list and see if `field_name` is in the list.
     for (auto &valid : variable_list) {
-      if (case_compare(valid, field_name) == 0) {
+      if (Ioss::Utils::str_equal(valid, field_name) == 0) {
         return true;
       }
     }
@@ -164,8 +161,7 @@ namespace {
   }
 } // namespace
 
-template <typename INT>
-void cpup(Cpup::SystemInterface &interFace, INT dummy);
+template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT dummy);
 
 int main(int argc, char *argv[])
 {
@@ -187,14 +183,15 @@ int main(int argc, char *argv[])
       exit(EXIT_FAILURE);
     }
 
-    int error = 0;
+    int    error = 0;
     double begin = Ioss::Utils::timer();
     cpup(interFace, static_cast<int64_t>(0));
     double end = Ioss::Utils::timer();
 
-    fmt::print(stderr, "\nTotal Execution Time = {} seconds, Maximum memory = {:L} MiBytes.\n******* "
-	       "END *******\n\n",
-	       end - begin, (get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024));
+    fmt::print(stderr,
+               "\nTotal Execution Time = {:.2f} seconds, Maximum memory = {:L} MiBytes.\n******* "
+               "END *******\n\n",
+               end - begin, (get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024));
 
     add_to_log(argv[0], end - begin);
 
@@ -209,38 +206,45 @@ int main(int argc, char *argv[])
   }
 }
 
-template <typename INT>
-void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
+template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
 {
-    std::vector<Ioss::Region *> part_mesh(interFace.processor_count());
-    for (int p = 0; p < interFace.processor_count(); p++) {
-      std::string inp_file = interFace.basename() + "." + interFace.cgns_suffix();
-      auto        filename = Ioss::Utils::decode_filename(inp_file, p, interFace.processor_count());
+  std::vector<Ioss::Region *> part_mesh(interFace.processor_count());
+  for (int p = 0; p < interFace.processor_count(); p++) {
+    std::string inp_file = interFace.basename() + "." + interFace.cgns_suffix();
+    auto        filename = Ioss::Utils::decode_filename(inp_file, p, interFace.processor_count());
 
-      if (debug_level & 1) {
-        fmt::print(stderr, "{} Processor rank {}, file {}\n", time_stamp(tsFormat), p, filename);
-      }
-      Ioss::DatabaseIO *dbi =
-          Ioss::IOFactory::create("cgns", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
-      if (dbi == nullptr || !dbi->ok(true)) {
-        std::exit(EXIT_FAILURE);
-      }
-
-      dbi->set_field_separator(1);
-
-      // NOTE: region owns database pointer at this time...
-      std::string name = "CPUP_" + std::to_string(p + 1);
-      part_mesh[p]     = new Ioss::Region(dbi, name);
-      if (debug_level & 2) {
-        part_mesh[p]->output_summary(std::cerr);
-        fmt::print(stderr, "\n");
-      }
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Processor rank {}, file {}\n", time_stamp(tsFormat), p, filename);
+    }
+    Ioss::DatabaseIO *dbi =
+        Ioss::IOFactory::create("cgns", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
+    if (dbi == nullptr || !dbi->ok(true)) {
+      std::exit(EXIT_FAILURE);
     }
 
+    dbi->set_field_separator(1);
+
+    // NOTE: region owns database pointer at this time...
+    std::string name = "CPUP_" + std::to_string(p + 1);
+    part_mesh[p]     = new Ioss::Region(dbi, name);
+
+    if (part_mesh[p]->mesh_type() != Ioss::MeshType::STRUCTURED) {
+      part_mesh[p]->output_summary(std::cerr);
+      fmt::print(stderr,
+                 "\nERROR: Only UNSTRUCTURED CGNS file joining is supported at this time.\n");
+      exit(EXIT_FAILURE);
+    }
+
+    if (debug_level & 2) {
+      part_mesh[p]->output_summary(std::cerr);
+      fmt::print(stderr, "\n");
+    }
+  }
+
   // Each processor may have a different set of zones.  This routine
-  // will sync the information such that at return, there is
-  // a consistent set of structuredBlocks defined with the
-  // correct local and global, i,j,k ranges and offsets.
+  // will sync the information such that at end, there is a consistent
+  // set of structuredBlocks defined with the correct local and
+  // global, i,j,k ranges and offsets.
 
   GlobalBlockMap all_blocks;
   GlobalIJKMap   global_block;
@@ -278,6 +282,7 @@ void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
   // Skip the ZGC that are "from_decomp"
   GlobalZgcMap global_zgc = generate_global_zgc(part_mesh);
 
+  // Create output file...
   Ioss::PropertyManager properties{};
   properties.add(Ioss::Property("FLUSH_INTERVAL", 0));
   Ioss::DatabaseIO *dbo =
@@ -305,12 +310,14 @@ void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
     auto  block      = new Ioss::StructuredBlock(dbo, block_name, 3, block_range.second);
     output_region.add(block);
 
+    // Add BC to the block...
     for (auto &bc_map : global_bc) {
       if (bc_map.first.first == block_name) {
         block->m_boundaryConditions.push_back(bc_map.second);
       }
     }
 
+    // Add ZGC to the block...
     for (auto &zgc_map : global_zgc) {
       if (zgc_map.first.first == block_name) {
         block->m_zoneConnectivity.push_back(zgc_map.second);
@@ -332,8 +339,6 @@ void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
     output_region.add(oass);
   }
 
-  fmt::print(stderr, "\n********************* OUTPUT MESH ********************\n");
-
   if (debug_level & 1) {
     info_structuredblock(output_region);
   }
@@ -351,7 +356,7 @@ void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
   //     .. Find corresponding structured blocks on part meshes.
   //        .. Add each valid block and node_block field
   const auto &variable_list = interFace.var_names();
-  if (!(variable_list.size() == 1 && case_compare(variable_list[0], "none") == 0)) {
+  if (!(variable_list.size() == 1 && Ioss::Utils::str_equal(variable_list[0], "none") == 0)) {
     auto &blocks = output_region.get_structured_blocks();
     for (auto &block : blocks) {
       int64_t num_cell = block->get_property("cell_count").get_int();
@@ -452,7 +457,7 @@ void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
   }
   output_region.end_mode(Ioss::STATE_TRANSIENT);
 
-  fmt::print(stderr, "\n");
+  fmt::print(stderr, "\n\n********************* OUTPUT DATABASE ********************\n");
   output_region.output_summary(std::cerr);
 
   for (auto &pm : part_mesh) {
@@ -482,8 +487,8 @@ namespace {
             // Create a temporary zgc; adjust its ranges to "global" by adding the offsets
             // and then union if with the global instance...
             Ioss::IJK_t own_off = block->get_ijk_offset();
-            auto        tmp_zgc{zgc};
 
+            auto tmp_zgc{zgc};
             tmp_zgc.m_ownerRangeBeg[0] += own_off[0];
             tmp_zgc.m_ownerRangeBeg[1] += own_off[1];
             tmp_zgc.m_ownerRangeBeg[2] += own_off[2];
@@ -693,8 +698,8 @@ namespace {
 
       auto ijk_offset = sb->get_ijk_offset();
       auto ijk_local  = sb->get_ijk_local();
-      fmt::print(stderr, " [{}x{}x{}, Offset = {}, {}, {}] ", ijk_local[0], ijk_local[1], ijk_local[2],
-                 ijk_offset[0], ijk_offset[1], ijk_offset[2]);
+      fmt::print(stderr, " [{}x{}x{}, Offset = {}, {}, {}] ", ijk_local[0], ijk_local[1],
+                 ijk_local[2], ijk_offset[0], ijk_offset[1], ijk_offset[2]);
 
       int64_t num_cell = sb->get_property("cell_count").get_int();
       int64_t num_node = sb->get_property("node_count").get_int();
@@ -813,27 +818,6 @@ namespace {
         block->put_field_data(fields[dim], coord);
       }
     }
-  }
-
-  int case_compare(const char *s1, const char *s2)
-  {
-    const char *c1 = s1;
-    const char *c2 = s2;
-    for (;;) {
-      if (::toupper(*c1) != ::toupper(*c2)) {
-        return (::toupper(*c1) - ::toupper(*c2));
-      }
-      if (*c1 == '\0') {
-        return 0;
-      }
-      c1++;
-      c2++;
-    }
-  }
-
-  int case_compare(const std::string &s1, const std::string &s2)
-  {
-    return case_compare(s1.c_str(), s2.c_str());
   }
 
   std::string time_stamp(const std::string &format)
