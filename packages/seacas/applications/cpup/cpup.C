@@ -33,7 +33,6 @@
 #include <mpi.h>
 #endif
 
-extern double seacas_timer();
 unsigned int  debug_level = 0;
 
 namespace {
@@ -109,7 +108,7 @@ namespace {
                  num_time_steps);
     }
     else {
-      fmt::print("\nNumber of time steps on input databases = {}\n\n", num_time_steps);
+      fmt::print(stderr, "\nNumber of time steps on input databases = {}\n\n", num_time_steps);
     }
     return num_time_steps;
   }
@@ -166,7 +165,7 @@ namespace {
 } // namespace
 
 template <typename INT>
-double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT dummy);
+void cpup(Cpup::SystemInterface &interFace, INT dummy);
 
 int main(int argc, char *argv[])
 {
@@ -189,7 +188,30 @@ int main(int argc, char *argv[])
     }
 
     int error = 0;
+    double begin = Ioss::Utils::timer();
+    cpup(interFace, static_cast<int64_t>(0));
+    double end = Ioss::Utils::timer();
 
+    fmt::print(stderr, "\nTotal Execution Time = {} seconds, Maximum memory = {:L} MiBytes.\n******* "
+	       "END *******\n\n",
+	       end - begin, (get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024));
+
+    add_to_log(argv[0], end - begin);
+
+#ifdef SEACAS_HAVE_MPI
+    MPI_Finalize();
+#endif
+
+    return (error);
+  }
+  catch (std::exception &e) {
+    fmt::print(stderr, "ERROR: Standard exception: {}\n", e.what());
+  }
+}
+
+template <typename INT>
+void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
+{
     std::vector<Ioss::Region *> part_mesh(interFace.processor_count());
     for (int p = 0; p < interFace.processor_count(); p++) {
       std::string inp_file = interFace.basename() + "." + interFace.cgns_suffix();
@@ -214,31 +236,6 @@ int main(int argc, char *argv[])
         fmt::print(stderr, "\n");
       }
     }
-
-    double time = cpup(interFace, part_mesh, static_cast<int64_t>(0));
-
-    for (auto &pm : part_mesh) {
-      delete pm;
-    }
-
-    add_to_log(argv[0], time);
-
-#ifdef SEACAS_HAVE_MPI
-    MPI_Finalize();
-#endif
-
-    return (error);
-  }
-  catch (std::exception &e) {
-    fmt::print(stderr, "ERROR: Standard exception: {}\n", e.what());
-  }
-}
-
-template <typename INT>
-double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT /*dummy*/)
-{
-  double begin = Ioss::Utils::timer();
-  SMART_ASSERT(interFace.processor_count() == (int)part_mesh.size());
 
   // Each processor may have a different set of zones.  This routine
   // will sync the information such that at return, there is
@@ -335,7 +332,7 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
     output_region.add(oass);
   }
 
-  fmt::print("\n********************* OUTPUT MESH ********************\n");
+  fmt::print(stderr, "\n********************* OUTPUT MESH ********************\n");
 
   if (debug_level & 1) {
     info_structuredblock(output_region);
@@ -426,18 +423,18 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
 
   ts_max = ts_max < num_time_steps ? ts_max : num_time_steps;
   if (ts_min <= ts_max) {
-    fmt::print("\tTransferring step {} to step {} by {}\n", ts_min, ts_max, ts_step);
+    fmt::print(stderr, "\tTransferring step {} to step {} by {}\n", ts_min, ts_max, ts_step);
   }
 
   // Determine how many steps will be written...
   int output_steps = (ts_max - ts_min) / ts_step + 1;
 
-  double start_time = seacas_timer();
+  double start_time = Ioss::Utils::timer();
   for (int time_step = ts_min; time_step <= ts_max; time_step += ts_step) {
     time_step_out++;
     double time_val = transfer_step(part_mesh, output_region, time_step);
 
-    double cur_time            = seacas_timer();
+    double cur_time            = Ioss::Utils::timer();
     double elapsed             = cur_time - start_time;
     double time_per_step       = elapsed / time_step_out;
     double percentage_done     = (time_step_out * 100.0) / output_steps;
@@ -455,13 +452,12 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
   }
   output_region.end_mode(Ioss::STATE_TRANSIENT);
 
-  double end = Ioss::Utils::timer();
-  fmt::print("\n");
-  output_region.output_summary(std::cout);
-  fmt::print("\nTotal Execution Time = {:.2f} seconds, Maximum memory = {:L} MiBytes.\n******* "
-             "END *******\n\n",
-             end - begin, (get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024));
-  return (end - begin);
+  fmt::print(stderr, "\n");
+  output_region.output_summary(std::cerr);
+
+  for (auto &pm : part_mesh) {
+    delete pm;
+  }
 }
 
 namespace {
@@ -693,26 +689,26 @@ namespace {
     for (auto &sb : sbs) {
 
       auto ijk_global = sb->get_ijk_global();
-      fmt::print("\n{} {}x{}x{}", name(sb), ijk_global[0], ijk_global[1], ijk_global[2]);
+      fmt::print(stderr, "\n{} {}x{}x{}", name(sb), ijk_global[0], ijk_global[1], ijk_global[2]);
 
       auto ijk_offset = sb->get_ijk_offset();
       auto ijk_local  = sb->get_ijk_local();
-      fmt::print(" [{}x{}x{}, Offset = {}, {}, {}] ", ijk_local[0], ijk_local[1], ijk_local[2],
+      fmt::print(stderr, " [{}x{}x{}, Offset = {}, {}, {}] ", ijk_local[0], ijk_local[1], ijk_local[2],
                  ijk_offset[0], ijk_offset[1], ijk_offset[2]);
 
       int64_t num_cell = sb->get_property("cell_count").get_int();
       int64_t num_node = sb->get_property("node_count").get_int();
-      fmt::print("  {:14L} cells, {:14L} nodes ", num_cell, num_node);
+      fmt::print(stderr, "  {:14L} cells, {:14L} nodes ", num_cell, num_node);
 
       if (!sb->m_zoneConnectivity.empty()) {
-        fmt::print("\n\tConnectivity with other blocks:\n");
+        fmt::print(stderr, "\n\tConnectivity with other blocks:\n");
         for (const auto &zgc : sb->m_zoneConnectivity) {
-          fmt::print("{}\n", zgc);
+          fmt::print(stderr, "{}\n", zgc);
         }
       }
 
       if (!sb->m_boundaryConditions.empty()) {
-        fmt::print("\tBoundary Conditions:\n");
+        fmt::print(stderr, "\tBoundary Conditions:\n");
         // NOTE: The sort here is just to make io_info more useful for regression testing.
         //       With the sort, we get more reproducible output.  For now, only needed for BC...
         auto sb_bc = sb->m_boundaryConditions;
@@ -722,7 +718,7 @@ namespace {
                    });
 
         for (const auto &bc : sb_bc) {
-          fmt::print("{}\n", bc);
+          fmt::print(stderr, "{}\n", bc);
         }
       }
     }
