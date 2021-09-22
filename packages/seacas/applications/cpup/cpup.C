@@ -209,6 +209,10 @@ int main(int argc, char *argv[])
       // NOTE: region owns database pointer at this time...
       std::string name = "CPUP_" + std::to_string(p + 1);
       part_mesh[p]     = new Ioss::Region(dbi, name);
+      if (debug_level & 2) {
+        part_mesh[p]->output_summary(std::cerr);
+        fmt::print(stderr, "\n");
+      }
     }
 
     double time = cpup(interFace, part_mesh, static_cast<int64_t>(0));

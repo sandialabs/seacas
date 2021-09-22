@@ -83,6 +83,9 @@ public:
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &epu_proc_count);
+#else
+    (void)(argc);
+    (void)(argv);
 #endif
   }
 
@@ -110,16 +113,6 @@ namespace {
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
   int         get_width(int max_value);
-
-  void LOG(const std::string &message)
-  {
-    if ((debug_level & 1) != 0u) {
-      fmt::print("{}", time_stamp(tsFormat));
-    }
-    if (rank == 0) {
-      fmt::print("{}", message);
-    }
-  }
 
   void LOG(const char *message)
   {
