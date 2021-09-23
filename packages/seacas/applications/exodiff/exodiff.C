@@ -2229,7 +2229,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
 
 template <typename INT>
 bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                    int out_file_id, const INT *id_map, std::vector<double> &vals)
+                    int out_file_id, const INT * /* id_map */, std::vector<double> &vals)
 {
   bool diff_flag = false;
 
@@ -2338,7 +2338,7 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
 
 template <typename INT>
 bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                    int out_file_id, const INT *id_map, std::vector<double> &vals)
+                    int out_file_id, const INT * /* id_map */, std::vector<double> &vals)
 {
   bool diff_flag = false;
 
