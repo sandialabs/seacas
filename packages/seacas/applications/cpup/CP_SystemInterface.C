@@ -514,9 +514,9 @@ bool Cpup::SystemInterface::decompose_filename(const std::string &cs)
   if (myRank_ == 0) {
     fmt::print("\nThe following options were determined automatically:\n"
                "\t basename = '{}'\n"
-               "\t-processor_count {}\n"
-               "\t-extension {}\n"
-               "\t-Root_directory {}\n\n",
+               "\t-processor_count = {}\n"
+               "\t-extension = '{}'\n"
+               "\t-Root_directory = '{}'\n",
                basename_, processorCount_, inExtension_, rootDirectory_);
   }
   return true;

@@ -10,7 +10,7 @@
 
 static char const *qainfo[] = {
     "cpup",
-    "0.8 alpha",
+    "0.9 beta",
     "2021/09/23",
 };
 
