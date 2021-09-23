@@ -29,12 +29,12 @@
 #include <ctime>
 #ifndef _MSC_VER
 #include <sys/times.h>
-#include <sys/utsname.h>
 #endif
 
 #include "add_to_log.h"
 #include "adler.h"
 #include "copy_string_cpp.h"
+#include "sys_info.h"
 #if !USE_STD_SORT
 #include "pdqsort.h"
 #endif
@@ -2711,25 +2711,8 @@ namespace {
     // Maximum size of string is 'size' (not including terminating nullptr)
     // This is used as information data in the concatenated results file
     // to help in tracking when/where/... the file was created
-#ifndef _MSC_VER
-    struct utsname sys_info
-    {
-    };
-    uname(&sys_info);
-
-    std::string info = "CONJOIN: ";
-    info += sys_info.nodename;
-    info += ", OS: ";
-    info += sys_info.sysname;
-    info += " ";
-    info += sys_info.release;
-    info += ", ";
-    info += sys_info.version;
-    info += ", Machine: ";
-    info += sys_info.machine;
-    const char *sinfo = info.c_str();
-    copy_string(info_record, sinfo, size + 1);
-#endif
+    auto info = sys_info("CONJOIN");
+    copy_string(info_record, info, size + 1);
   }
 
   inline bool is_whitespace(char c)

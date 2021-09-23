@@ -8,10 +8,6 @@
 #include <exception>
 #include <map>
 #include <string>
-#ifndef _MSC_VER
-#include <sys/times.h>
-#include <sys/utsname.h>
-#endif
 #include <unistd.h>
 #include <vector>
 
@@ -445,12 +441,14 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
     double percentage_done     = (time_step_out * 100.0) / output_steps;
     double estimated_remaining = time_per_step * (output_steps - time_step_out);
     if (debug_level & 1) {
-      fmt::print(stderr, "{} \tWrote step {:6L}, time {:8.4e}\t[{:5.1f}%, Elapsed={}, ETA={}, TPS={}]\n",
+      fmt::print(stderr,
+                 "{} \tWrote step {:6L}, time {:8.4e}\t[{:5.1f}%, Elapsed={}, ETA={}, TPS={}]\n",
                  time_stamp(tsFormat), time_step, time_val, percentage_done, format_time(elapsed),
                  format_time(estimated_remaining), format_time(time_per_step));
     }
     else {
-      fmt::print(stderr, "\tWrote step {:6L}, time {:8.4e}\t[{:5.1f}%, Elapsed={}, ETA={}, TPS={}]    \r",
+      fmt::print(stderr,
+                 "\tWrote step {:6L}, time {:8.4e}\t[{:5.1f}%, Elapsed={}, ETA={}, TPS={}]    \r",
                  time_step, time_val, percentage_done, format_time(elapsed),
                  format_time(estimated_remaining), format_time(time_per_step));
     }

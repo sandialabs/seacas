@@ -17,10 +17,6 @@
 #include <numeric>
 #include <set>
 #include <string>
-#ifndef _MSC_VER
-#include <sys/times.h>
-#include <sys/utsname.h>
-#endif
 #include <unistd.h>
 #include <vector>
 

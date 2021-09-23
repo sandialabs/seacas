@@ -233,10 +233,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   processorCount_   = options_.get_option_value("processors", processorCount_);
   partialReadCount_ = options_.get_option_value("Partial_read_count", partialReadCount_);
-  maxFiles_         = options_.get_option_value("max-files", open_file_limit() - 1); // -1 for output exodus file.
-  debugLevel_       = options_.get_option_value("debug", debugLevel_);
-  inputFormat_      = options_.get_option_value("in_type", inputFormat_);
-  decompMethod_     = options_.get_option_value("method", decompMethod_);
+  maxFiles_ =
+      options_.get_option_value("max-files", open_file_limit() - 1); // -1 for output exodus file.
+  debugLevel_   = options_.get_option_value("debug", debugLevel_);
+  inputFormat_  = options_.get_option_value("in_type", inputFormat_);
+  decompMethod_ = options_.get_option_value("method", decompMethod_);
 
   {
     if (decompMethod_ == "file") {

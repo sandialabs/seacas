@@ -7,8 +7,8 @@
 #include "CJ_CodeTypes.h" // for StringIdVector, etc
 #include "CJ_ExodusFile.h"
 #include "CJ_SystemInterface.h"
-#include "smart_assert.h"
 #include "open_file_limit.h"
+#include "smart_assert.h"
 
 #include <climits>
 #include <cstdlib>

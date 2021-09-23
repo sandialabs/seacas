@@ -17,6 +17,7 @@ SET(SOURCES
   smart_assert.C
   iqsort.C
   timer.C
+  sys_info.C
   copyright.C
   SL_tokenize.C
   hwm.C

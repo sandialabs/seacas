@@ -12,8 +12,8 @@
 #include "EP_SystemInterface.h"
 #include "fmt/color.h"
 #include "fmt/ostream.h"
-#include "smart_assert.h"
 #include "open_file_limit.h"
+#include "smart_assert.h"
 #include <climits>
 #include <cstddef>
 #include <cstdlib>
@@ -368,4 +368,3 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   }
   return true;
 }
-

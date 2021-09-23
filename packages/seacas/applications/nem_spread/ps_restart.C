@@ -7,7 +7,7 @@
  */
 #include "exodusII.h" // for ex_close, etc
 #include "fmt/ostream.h"
-#include "nem_spread.h"     // for NemSpread, etc
+#include "nem_spread.h" // for NemSpread, etc
 #include "open_file_limit.h"
 #include "ps_pario_const.h" // for PIO_Info, etc
 #include "rf_allo.h"        // for array_alloc, safe_free
