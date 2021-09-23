@@ -173,6 +173,10 @@ namespace SEAMS {
 
   void math_error(const SEAMS::Aprepro &apr, const char *function)
   {
+#ifndef math_errhandling
+#define math_errhandling MATH_ERRNO
+#endif
+
     if (math_errhandling & MATH_ERRNO) {
       if (errno != 0) {
         yyerror(apr, function);
