@@ -19,6 +19,7 @@
 namespace {
   void reset_error()
   {
+#ifndef _WIN32
 #ifndef math_errhandling
 #define math_errhandling MATH_ERRNO
 #endif
@@ -29,6 +30,7 @@ namespace {
     if (math_errhandling & MATH_ERRNO) {
       errno = 0;
     }
+#endif
   }
 }
 

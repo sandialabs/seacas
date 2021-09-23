@@ -173,6 +173,7 @@ namespace SEAMS {
 
   void math_error(const SEAMS::Aprepro &apr, const char *function)
   {
+#ifndef _WIN32
 #ifndef math_errhandling
 #define math_errhandling MATH_ERRNO
 #endif
@@ -207,6 +208,7 @@ namespace SEAMS {
         std::cerr << "  RANGE error -- divide by zero\n";
       }
     }
+#endif
   }
 
   void math_error(const char *function) { math_error(*SEAMS::aprepro, function); }
