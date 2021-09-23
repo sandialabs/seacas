@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "copy_string_cpp.h"
+#include "format_time.h"
 #include "open_file_limit.h"
 #include "sys_info.h"
 #include "time_stamp.h"
@@ -104,8 +105,7 @@ namespace {
   int          rank        = 0;
   std::string  tsFormat    = "[{:%H:%M:%S}] ";
 
-  std::string format_time(double seconds);
-  int         get_width(int max_value);
+  int get_width(int max_value);
 
   void LOG(const char *message)
   {
@@ -3444,31 +3444,6 @@ namespace {
     while (i > 0 && is_whitespace(obuf[i])) {
       obuf[i--] = '\0';
     }
-  }
-
-  std::string format_time(double seconds)
-  {
-    std::string suffix("u");
-    if (seconds > 0.0 && seconds < 1.0) {
-      seconds *= 1000.;
-      suffix = "ms";
-    }
-    else if (seconds > 86400) {
-      suffix = "d";
-      seconds /= 86400.;
-    }
-    else if (seconds > 3600) {
-      suffix = "h";
-      seconds /= 3600.;
-    }
-    else if (seconds > 60) {
-      suffix = "m";
-      seconds /= 60.;
-    }
-    else {
-      suffix = "s";
-    }
-    return fmt::format("{:.3}{}", seconds, suffix);
   }
 
   int get_width(int max_value)

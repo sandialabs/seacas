@@ -34,6 +34,7 @@
 #include "add_to_log.h"
 #include "adler.h"
 #include "copy_string_cpp.h"
+#include "format_time.h"
 #include "sys_info.h"
 #if !USE_STD_SORT
 #include "pdqsort.h"
@@ -135,8 +136,7 @@ namespace {
     T      timeValue;
   };
 
-  std::string format_time(double seconds);
-  int         get_width(size_t max_value);
+  int get_width(size_t max_value);
 
   ex_entity_type exodus_object_type(const Excn::ObjectType &conjoin_type)
   {
@@ -2760,31 +2760,6 @@ namespace {
     while (i > 0 && is_whitespace(obuf[i])) {
       obuf[i--] = '\0';
     }
-  }
-
-  std::string format_time(double seconds)
-  {
-    char suffix = 'u';
-    if (seconds > 0.0 && seconds < 1.0) {
-      return " <1s";
-    }
-
-    if (seconds > 86400) {
-      suffix = 'd';
-      seconds /= 86400.;
-    }
-    else if (seconds > 3600) {
-      suffix = 'h';
-      seconds /= 3600.;
-    }
-    else if (seconds > 60) {
-      suffix = 'm';
-      seconds /= 60.;
-    }
-    else {
-      suffix = 's';
-    }
-    return fmt::format("{:.2}{}", seconds, suffix);
   }
 
   int get_width(size_t max_value)

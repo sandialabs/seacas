@@ -13,6 +13,7 @@
 
 #include "add_to_log.h"
 #include "fmt/ostream.h"
+#include "format_time.h"
 #include "hwm.h"
 #include "time_stamp.h"
 
@@ -42,8 +43,6 @@ namespace {
 
   GlobalZgcMap generate_global_zgc(PartVector &part_mesh);
   GlobalBcMap  generate_global_bc(PartVector &part_mesh);
-
-  std::string format_time(double seconds);
 
   void info_structuredblock(Ioss::Region &region);
   void resolve_offsets(PartVector &part_mesh, GlobalBlockMap &all_blocks);
@@ -810,30 +809,4 @@ namespace {
       }
     }
   }
-
-  std::string format_time(double seconds)
-  {
-    char suffix = 'u';
-    if (seconds > 0.0 && seconds < 1.0) {
-      return " <1s";
-    }
-
-    if (seconds > 86400) {
-      suffix = 'd';
-      seconds /= 86400.;
-    }
-    else if (seconds > 3600) {
-      suffix = 'h';
-      seconds /= 3600.;
-    }
-    else if (seconds > 60) {
-      suffix = 'm';
-      seconds /= 60.;
-    }
-    else {
-      suffix = 's';
-    }
-    return fmt::format("{:.2}{}", seconds, suffix);
-  }
-
 } // namespace
