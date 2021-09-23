@@ -7,7 +7,7 @@
 #include <sys_info.h>
 
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
-    defined(__MINGW32__)
+    defined(__MINGW32__) || defined(_WIN64)
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
@@ -25,7 +25,7 @@ std::string sys_info(const std::string &codename)
   // to help in tracking when/where/... the file was created
   std::string info = codename + ": ";
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
-    defined(__MINGW32__)
+    defined(__MINGW32__) || defined(_WIN64)
   char  machine_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
   DWORD buf_len                                   = MAX_COMPUTERNAME_LENGTH + 1;
   ::GetComputerName(machine_name, &buf_len);
