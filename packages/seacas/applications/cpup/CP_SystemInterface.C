@@ -65,6 +65,9 @@ void Cpup::SystemInterface::enroll_options()
   options_.enroll("extension", GetLongOption::MandatoryValue,
                   "CGNS database extension for the input files", "e");
 
+  options_.enroll("output", GetLongOption::MandatoryValue, "filename for output CGNS database",
+                  nullptr);
+
   options_.enroll("output_extension", GetLongOption::MandatoryValue,
                   "CGNS database extension for the output file", nullptr);
 
@@ -233,7 +236,7 @@ bool Cpup::SystemInterface::parse_options(int argc, char **argv)
 
   inExtension_    = options_.get_option_value("extension", inExtension_);
   outExtension_   = options_.get_option_value("output_extension", outExtension_);
-  processorCount_ = options_.get_option_value("processor_count", processorCount_);
+  outputFilename_ = options_.get_option_value("output", outputFilename_);
   //  partCount_      = options_.get_option_value("Part_count", partCount_);
   //  startPart_      = options_.get_option_value("start_part", startPart_);
   //  maxOpenFiles_   = options_.get_option_value("max_open_files", maxOpenFiles_);
