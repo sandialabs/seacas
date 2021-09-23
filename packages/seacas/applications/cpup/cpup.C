@@ -202,13 +202,16 @@ int main(int argc, char *argv[])
 
 template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
 {
+  auto width = Ioss::Utils::number_width(interFace.processor_count(), false);
+
   PartVector part_mesh(interFace.processor_count());
   for (int p = 0; p < interFace.processor_count(); p++) {
     std::string inp_file = interFace.basename() + "." + interFace.cgns_suffix();
     auto        filename = Ioss::Utils::decode_filename(inp_file, p, interFace.processor_count());
 
     if (debug_level & 1) {
-      fmt::print(stderr, "{} Processor rank {}, file {}\n", time_stamp(tsFormat), p, filename);
+      fmt::print(stderr, "{} Processor rank {:{}}, file {}\n", time_stamp(tsFormat), p, width,
+                 filename);
     }
     Ioss::DatabaseIO *dbi =
         Ioss::IOFactory::create("cgns", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
@@ -440,7 +443,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
     double estimated_remaining = time_per_step * (output_steps - time_step_out);
     if (debug_level & 1) {
       fmt::print(stderr,
-                 "{} \tWrote step {:6L}, time {:8.4e}\t[{:5.1f}%, Elapsed={}, ETA={}, TPS={}]\n",
+                 "{} \tWrote step {:6L}, time {:8.4e}\t[{:5.1f}%, Elapsed={},\tETA={},\tTPS={}]\n",
                  time_stamp(tsFormat), time_step, time_val, percentage_done, format_time(elapsed),
                  format_time(estimated_remaining), format_time(time_per_step));
     }
