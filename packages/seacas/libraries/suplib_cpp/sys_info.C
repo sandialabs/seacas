@@ -6,7 +6,8 @@
 
 #include <sys_info.h>
 
-#ifdef _WIN32
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__)
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
@@ -22,11 +23,11 @@ std::string sys_info(const std::string &codename)
   // Maximum size of string is 'size' (not including terminating nullptr)
   // This is used as information data in the concatenated results file
   // to help in tracking when/where/... the file was created
-  std::string info = "CONJOIN: ";
-#ifdef _WIN32
-  std::string info                                      = "EPU: ";
-  char        machine_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
-  DWORD       buf_len                                   = MAX_COMPUTERNAME_LENGTH + 1;
+  std::string info = codename + ": ";
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__)
+  char  machine_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
+  DWORD buf_len                                   = MAX_COMPUTERNAME_LENGTH + 1;
   ::GetComputerName(machine_name, &buf_len);
   info += machine_name;
   info += ", OS: ";
@@ -46,7 +47,6 @@ std::string sys_info(const std::string &codename)
   }
   info += os;
   const char *sinfo = info.c_str();
-  copy_string(info_record, sinfo, size + 1);
 #else
   struct utsname sys_info
   {
