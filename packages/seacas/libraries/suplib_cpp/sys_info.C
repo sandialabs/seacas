@@ -14,6 +14,7 @@
 #undef IN
 #undef OUT
 #include <fmt/ostream.h>
+#include <iostream>
 #else
 #include <sys/utsname.h>
 #endif
