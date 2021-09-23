@@ -26,6 +26,7 @@
 #include <fmt/color.h>
 #include <fmt/ostream.h>
 #include <open_file_limit.h>
+#include <time_stamp.h>
 #include <tokenize.h>
 
 //! \file
@@ -69,19 +70,7 @@ namespace std {
 
 namespace {
   std::string tsFormat = "[{:%H:%M:%S}]";
-  std::string time_stamp(const std::string &format)
-  {
-    if (format == "") {
-      return std::string("");
-    }
-
-    time_t      calendar_time = std::time(nullptr);
-    struct tm * local_time    = std::localtime(&calendar_time);
-    std::string time_string   = fmt::format(format, *local_time);
-    return time_string;
-  }
-
-  int axis_index(const std::string &axis_str)
+  int         axis_index(const std::string &axis_str)
   {
     char axis = axis_str[0];
     if (axis == 'x' || axis == 'i') {

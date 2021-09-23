@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "add_to_log.h"
-#include "fmt/chrono.h"
 #include "fmt/ostream.h"
 #include "hwm.h"
+#include "time_stamp.h"
 
 #include <Ionit_Initializer.h>
 #include <Ioss_SmartAssert.h>
@@ -33,6 +33,7 @@ unsigned int debug_level = 0;
 
 namespace {
   std::string tsFormat = "[{:%H:%M:%S}] ";
+
   using GlobalZgcMap   = std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity>;
   using GlobalBcMap    = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
   using GlobalBlockMap = std::map<const std::string, const Ioss::StructuredBlock *>;
@@ -42,7 +43,6 @@ namespace {
   GlobalZgcMap generate_global_zgc(PartVector &part_mesh);
   GlobalBcMap  generate_global_bc(PartVector &part_mesh);
 
-  std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
 
   void info_structuredblock(Ioss::Region &region);
@@ -809,18 +809,6 @@ namespace {
         block->put_field_data(fields[dim], coord);
       }
     }
-  }
-
-  std::string time_stamp(const std::string &format)
-  {
-    if (format == "") {
-      return std::string("");
-    }
-
-    time_t      calendar_time = std::time(nullptr);
-    struct tm * local_time    = std::localtime(&calendar_time);
-    std::string time_string   = fmt::format(format, *local_time);
-    return time_string;
   }
 
   std::string format_time(double seconds)

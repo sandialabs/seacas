@@ -39,6 +39,7 @@
 #include "pdqsort.h"
 #endif
 #include "smart_assert.h"
+#include "time_stamp.h"
 #include <exodusII.h>
 
 #if EX_API_VERS_NODOT <= 467
@@ -134,7 +135,6 @@ namespace {
     T      timeValue;
   };
 
-  std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
   int         get_width(size_t max_value);
 
@@ -2760,18 +2760,6 @@ namespace {
     while (i > 0 && is_whitespace(obuf[i])) {
       obuf[i--] = '\0';
     }
-  }
-
-  std::string time_stamp(const std::string &format)
-  {
-    if (format == "") {
-      return std::string("");
-    }
-
-    time_t      calendar_time = std::time(nullptr);
-    struct tm * local_time    = std::localtime(&calendar_time);
-    std::string time_string   = fmt::format(format, *local_time);
-    return time_string;
   }
 
   std::string format_time(double seconds)

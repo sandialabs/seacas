@@ -12,6 +12,7 @@
 #include "fmt/chrono.h"
 #include "fmt/color.h"
 #include "fmt/ostream.h"
+#include "time_stamp.h"
 #include "tokenize.h"
 
 #include <exodusII.h>
@@ -32,8 +33,6 @@
 
 namespace {
   Grid define_lattice(SystemInterface &interFace, Ioss::ParallelUtils &pu);
-
-  std::string time_stamp(const std::string &format);
 } // namespace
 
 std::string  tsFormat    = "[{:%H:%M:%S}]";
@@ -143,18 +142,6 @@ template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
 }
 
 namespace {
-  std::string time_stamp(const std::string &format)
-  {
-    if (format == "") {
-      return std::string("");
-    }
-
-    time_t      calendar_time = std::time(nullptr);
-    struct tm * local_time    = std::localtime(&calendar_time);
-    std::string time_string   = fmt::format(format, *local_time);
-    return time_string;
-  }
-
   Grid define_lattice(SystemInterface &interFace, Ioss::ParallelUtils &pu)
   {
     int my_rank = pu.parallel_rank();

@@ -31,6 +31,7 @@
 #include "copy_string_cpp.h"
 #include "open_file_limit.h"
 #include "sys_info.h"
+#include "time_stamp.h"
 
 #define USE_STD_SORT 1
 #if !USE_STD_SORT
@@ -103,7 +104,6 @@ namespace {
   int          rank        = 0;
   std::string  tsFormat    = "[{:%H:%M:%S}] ";
 
-  std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
   int         get_width(int max_value);
 
@@ -3444,18 +3444,6 @@ namespace {
     while (i > 0 && is_whitespace(obuf[i])) {
       obuf[i--] = '\0';
     }
-  }
-
-  std::string time_stamp(const std::string &format)
-  {
-    if (format == "") {
-      return std::string("");
-    }
-
-    time_t      calendar_time = std::time(nullptr);
-    struct tm * local_time    = std::localtime(&calendar_time);
-    std::string time_string   = fmt::format(format, *local_time);
-    return time_string;
   }
 
   std::string format_time(double seconds)

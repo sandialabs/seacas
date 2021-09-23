@@ -22,6 +22,7 @@
 
 #include "add_to_log.h"
 #include "fmt/ostream.h"
+#include "time_stamp.h"
 
 #include <exodusII.h>
 
@@ -133,8 +134,6 @@ namespace {
 
   void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
                                     const std::string &field_name);
-
-  std::string time_stamp(const std::string &format);
 } // namespace
 
 std::string tsFormat = "[%H:%M:%S] ";
@@ -743,27 +742,6 @@ namespace {
         set_id(ns, node_set);
       }
     }
-  }
-
-  std::string time_stamp(const std::string &format)
-  {
-    if (format == "") {
-      return std::string("");
-    }
-
-    const int   length = 256;
-    static char time_string[length];
-
-    time_t     calendar_time = time(nullptr);
-    struct tm *local_time    = localtime(&calendar_time);
-
-    int error = strftime(time_string, length, format.c_str(), local_time);
-    if (error != 0) {
-      time_string[length - 1] = '\0';
-      return std::string(time_string);
-    }
-
-    return std::string("[ERROR]");
   }
 
   template <typename T, typename INT>
