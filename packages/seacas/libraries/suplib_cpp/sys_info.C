@@ -13,22 +13,25 @@
 #include <Windows.h>
 #undef IN
 #undef OUT
+#include <fmt/ostream.h>
 #else
 #include <sys/utsname.h>
 #endif
+#include <fmt/format.h>
 
 std::string sys_info(const std::string &codename)
 {
-  // Add 'uname' output to the passed in character string.
-  // Maximum size of string is 'size' (not including terminating nullptr)
-  // This is used as information data in the concatenated results file
-  // to help in tracking when/where/... the file was created
-  std::string info = codename + ": ";
+  // Return 'uname' output.  This is used as information data records
+  // in output exodus files to help in tracking when/where/... the
+  // file was created
+
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64)
   char  machine_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
   DWORD buf_len                                   = MAX_COMPUTERNAME_LENGTH + 1;
   ::GetComputerName(machine_name, &buf_len);
+
+  std::string info = codename + ": ";
   info += machine_name;
   info += ", OS: ";
 
@@ -41,27 +44,20 @@ std::string sys_info(const std::string &codename)
   if (GetVersionEx(&osvi)) {
     DWORD             build = osvi.dwBuildNumber & 0xFFFF;
     std::stringstream str;
-    fmt::print(str, " {}.{} {} (Build {})", osvi.dwMajorVersion, osvi.dwMinorVersion,
+    fmt::print(info, " {}.{} {} (Build {})", osvi.dwMajorVersion, osvi.dwMinorVersion,
                osvi.szCSDVersion, build);
     os += str.str();
   }
   info += os;
-  const char *sinfo = info.c_str();
 #else
   struct utsname sys_info
   {
   };
   uname(&sys_info);
 
-  info += sys_info.nodename;
-  info += ", OS: ";
-  info += sys_info.sysname;
-  info += " ";
-  info += sys_info.release;
-  info += ", ";
-  info += sys_info.version;
-  info += ", Machine: ";
-  info += sys_info.machine;
+  std::string info =
+      fmt::format("{}: {}, OS: {} {}, {}, Machine: {}", codename, sys_info.nodename,
+                  sys_info.sysname, sys_info.release, sys_info.version, sys_info.machine);
 #endif
   return info;
 }
