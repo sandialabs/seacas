@@ -296,7 +296,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
     output_region.add(oass);
   }
 
-  if (debug_level & 1) {
+  if (debug_level & 4) {
     info_structuredblock(output_region);
   }
 
@@ -640,7 +640,7 @@ namespace {
         block->set_ijk_global(1, cur_global[1]);
         block->set_ijk_global(2, cur_global[2]);
       }
-      if (debug_level & 1) {
+      if (debug_level & 4) {
         info_structuredblock(*part);
       }
     }

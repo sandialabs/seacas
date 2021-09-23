@@ -185,8 +185,9 @@ void Cpup::SystemInterface::enroll_options()
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
-                  "\t\t  1 = Verbose Structured block information.\n"
-                  "\t\t  2 = Output region summary for each input part mesh.",
+                  "\t\t  1 = Timestamp output.\n"
+                  "\t\t  2 = Output region summary for each input part mesh.\n"
+                  "\t\t  4 = Verbose Structured block information.",
                   "0");
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
   options_.enroll("help", GetLongOption::NoValue, "Print this summary and exit", nullptr);
