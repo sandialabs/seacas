@@ -44,14 +44,18 @@ namespace {
   GlobalZgcMap generate_global_zgc(PartVector &part_mesh);
   GlobalBcMap  generate_global_bc(PartVector &part_mesh);
 
-  void info_structuredblock(Ioss::Region &region);
-  void resolve_offsets(PartVector &part_mesh, GlobalBlockMap &all_blocks);
-  void update_global_ijk(PartVector &part_mesh, GlobalIJKMap &global_block);
-  void transfer_nodal_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
-                            std::vector<double> &output);
-  void transfer_cell_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
-                           std::vector<double> &output);
-  void transfer_nodal_coordinates(Ioss::Region &output_region, PartVector &part_mesh);
+  void   info_structuredblock(Ioss::Region &region);
+  void   resolve_offsets(PartVector &part_mesh, GlobalBlockMap &all_blocks);
+  void   update_global_ijk(PartVector &part_mesh, GlobalIJKMap &global_block);
+  void   transfer_nodal_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
+                              std::vector<double> &output);
+  void   transfer_cell_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
+                             std::vector<double> &output);
+  void   transfer_nodal_coordinates(Ioss::Region &output_region, PartVector &part_mesh);
+  double transfer_step(PartVector &part_mesh, Ioss::Region &output_region, int istep);
+  void   union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j);
+  void   union_bc_range(Ioss::IJK_t &g_beg, Ioss::IJK_t &g_end, const Ioss::IJK_t &l_beg,
+                        Ioss::IJK_t &l_end, const Ioss::IJK_t &offset);
 
   int get_constant_face(const Ioss::IJK_t &beg, const Ioss::IJK_t &end)
   {
@@ -105,53 +109,9 @@ namespace {
     return num_time_steps;
   }
 
-  double transfer_step(PartVector &part_mesh, Ioss::Region &output_region, int istep);
-
   std::string name(const Ioss::GroupingEntity *entity)
   {
     return entity->type_string() + " '" + entity->name() + "'";
-  }
-
-  void union_bc_range(Ioss::IJK_t &g_beg, Ioss::IJK_t &g_end, const Ioss::IJK_t &l_beg,
-                      Ioss::IJK_t &l_end, const Ioss::IJK_t &offset)
-  {
-    for (int i = 0; i < 3; i++) {
-      g_beg[i] = g_beg[i] == 0 ? l_beg[i] + offset[i] : std::min(g_beg[i], l_beg[i] + offset[i]);
-      g_end[i] = std::max(g_end[i], l_end[i] + offset[i]);
-    }
-  }
-
-  void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
-  {
-    assert(zgc_i.m_transform == zgc_j.m_transform);
-    if (zgc_i.m_ownerRangeBeg[0] == 0 && zgc_i.m_ownerRangeBeg[1] == 0 &&
-        zgc_i.m_ownerRangeBeg[2] == 0) {
-      zgc_i.m_ownerRangeBeg = zgc_j.m_ownerRangeBeg;
-      zgc_i.m_ownerRangeEnd = zgc_j.m_ownerRangeEnd;
-      zgc_i.m_donorRangeBeg = zgc_j.m_donorRangeBeg;
-      zgc_i.m_donorRangeEnd = zgc_j.m_donorRangeEnd;
-    }
-    else {
-      for (int i = 0; i < 3; i++) {
-        if (zgc_i.m_ownerRangeBeg[i] <= zgc_i.m_ownerRangeEnd[i]) {
-          zgc_i.m_ownerRangeBeg[i] = std::min(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
-          zgc_i.m_ownerRangeEnd[i] = std::max(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
-        }
-        else {
-          zgc_i.m_ownerRangeBeg[i] = std::max(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
-          zgc_i.m_ownerRangeEnd[i] = std::min(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
-        }
-
-        if (zgc_i.m_donorRangeBeg[i] <= zgc_i.m_donorRangeEnd[i]) {
-          zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
-          zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
-        }
-        else {
-          zgc_i.m_donorRangeBeg[i] = std::max(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
-          zgc_i.m_donorRangeEnd[i] = std::min(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
-        }
-      }
-    }
   }
 } // namespace
 
@@ -809,6 +769,48 @@ namespace {
           }
         }
         block->put_field_data(fields[dim], coord);
+      }
+    }
+  }
+
+  void union_bc_range(Ioss::IJK_t &g_beg, Ioss::IJK_t &g_end, const Ioss::IJK_t &l_beg,
+                      Ioss::IJK_t &l_end, const Ioss::IJK_t &offset)
+  {
+    for (int i = 0; i < 3; i++) {
+      g_beg[i] = g_beg[i] == 0 ? l_beg[i] + offset[i] : std::min(g_beg[i], l_beg[i] + offset[i]);
+      g_end[i] = std::max(g_end[i], l_end[i] + offset[i]);
+    }
+  }
+
+  void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
+  {
+    assert(zgc_i.m_transform == zgc_j.m_transform);
+    if (zgc_i.m_ownerRangeBeg[0] == 0 && zgc_i.m_ownerRangeBeg[1] == 0 &&
+        zgc_i.m_ownerRangeBeg[2] == 0) {
+      zgc_i.m_ownerRangeBeg = zgc_j.m_ownerRangeBeg;
+      zgc_i.m_ownerRangeEnd = zgc_j.m_ownerRangeEnd;
+      zgc_i.m_donorRangeBeg = zgc_j.m_donorRangeBeg;
+      zgc_i.m_donorRangeEnd = zgc_j.m_donorRangeEnd;
+    }
+    else {
+      for (int i = 0; i < 3; i++) {
+        if (zgc_i.m_ownerRangeBeg[i] <= zgc_i.m_ownerRangeEnd[i]) {
+          zgc_i.m_ownerRangeBeg[i] = std::min(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+          zgc_i.m_ownerRangeEnd[i] = std::max(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+        }
+        else {
+          zgc_i.m_ownerRangeBeg[i] = std::max(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+          zgc_i.m_ownerRangeEnd[i] = std::min(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+        }
+
+        if (zgc_i.m_donorRangeBeg[i] <= zgc_i.m_donorRangeEnd[i]) {
+          zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+          zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+        }
+        else {
+          zgc_i.m_donorRangeBeg[i] = std::max(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+          zgc_i.m_donorRangeEnd[i] = std::min(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+        }
       }
     }
   }
