@@ -7,8 +7,8 @@
 #include <ctime>
 #include <exception>
 #include <map>
+#include <memory>
 #include <string>
-#include <unistd.h>
 #include <vector>
 
 #include "add_to_log.h"
@@ -37,22 +37,22 @@ namespace {
   using GlobalBcMap    = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
   using GlobalBlockMap = std::map<const std::string, const Ioss::StructuredBlock *>;
   using GlobalIJKMap   = std::map<const std::string, Ioss::IJK_t>;
+  using PartVector     = std::vector<std::unique_ptr<Ioss::Region>>;
 
-  GlobalZgcMap generate_global_zgc(std::vector<Ioss::Region *> &part_mesh);
-  GlobalBcMap  generate_global_bc(std::vector<Ioss::Region *> &part_mesh);
+  GlobalZgcMap generate_global_zgc(PartVector &part_mesh);
+  GlobalBcMap  generate_global_bc(PartVector &part_mesh);
 
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
 
   void info_structuredblock(Ioss::Region &region);
-  void resolve_offsets(std::vector<Ioss::Region *> &part_mesh, GlobalBlockMap &all_blocks);
-  void update_global_ijk(std::vector<Ioss::Region *> &part_mesh, GlobalIJKMap &global_block);
+  void resolve_offsets(PartVector &part_mesh, GlobalBlockMap &all_blocks);
+  void update_global_ijk(PartVector &part_mesh, GlobalIJKMap &global_block);
   void transfer_nodal_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
                             std::vector<double> &output);
   void transfer_cell_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
                            std::vector<double> &output);
-  void transfer_nodal_coordinates(Ioss::Region &               output_region,
-                                  std::vector<Ioss::Region *> &part_mesh);
+  void transfer_nodal_coordinates(Ioss::Region &output_region, PartVector &part_mesh);
 
   int get_constant_face(const Ioss::IJK_t &beg, const Ioss::IJK_t &end)
   {
@@ -82,7 +82,7 @@ namespace {
     return false;
   }
 
-  int verify_timestep_count(std::vector<Ioss::Region *> &part_mesh)
+  int verify_timestep_count(PartVector &part_mesh)
   {
     int num_time_steps = part_mesh[0]->get_property("state_count").get_int();
 
@@ -106,8 +106,7 @@ namespace {
     return num_time_steps;
   }
 
-  double transfer_step(std::vector<Ioss::Region *> &part_mesh, Ioss::Region &output_region,
-                       int istep);
+  double transfer_step(PartVector &part_mesh, Ioss::Region &output_region, int istep);
 
   std::string name(const Ioss::GroupingEntity *entity)
   {
@@ -204,7 +203,7 @@ int main(int argc, char *argv[])
 
 template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
 {
-  std::vector<Ioss::Region *> part_mesh(interFace.processor_count());
+  PartVector part_mesh(interFace.processor_count());
   for (int p = 0; p < interFace.processor_count(); p++) {
     std::string inp_file = interFace.basename() + "." + interFace.cgns_suffix();
     auto        filename = Ioss::Utils::decode_filename(inp_file, p, interFace.processor_count());
@@ -222,7 +221,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
 
     // NOTE: region owns database pointer at this time...
     std::string name = "CPUP_" + std::to_string(p + 1);
-    part_mesh[p]     = new Ioss::Region(dbi, name);
+    part_mesh[p]     = std::unique_ptr<Ioss::Region>(new Ioss::Region(dbi, name));
 
     if (part_mesh[p]->mesh_type() != Ioss::MeshType::STRUCTURED) {
       part_mesh[p]->output_summary(std::cerr);
@@ -457,14 +456,10 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
 
   fmt::print(stderr, "\n\n********************* OUTPUT DATABASE ********************\n");
   output_region.output_summary(std::cerr);
-
-  for (auto &pm : part_mesh) {
-    delete pm;
-  }
 }
 
 namespace {
-  GlobalZgcMap generate_global_zgc(std::vector<Ioss::Region *> &part_mesh)
+  GlobalZgcMap generate_global_zgc(PartVector &part_mesh)
   {
     GlobalZgcMap global_zgc;
     for (auto &part : part_mesh) {
@@ -515,7 +510,7 @@ namespace {
     return global_zgc;
   }
 
-  GlobalBcMap generate_global_bc(std::vector<Ioss::Region *> &part_mesh)
+  GlobalBcMap generate_global_bc(PartVector &part_mesh)
   {
     GlobalBcMap global_bc;
     for (auto &part : part_mesh) {
@@ -538,8 +533,7 @@ namespace {
     return global_bc;
   }
 
-  double transfer_step(std::vector<Ioss::Region *> &part_mesh, Ioss::Region &output_region,
-                       int istep)
+  double transfer_step(PartVector &part_mesh, Ioss::Region &output_region, int istep)
   {
     double time  = part_mesh[0]->get_state_time(istep);
     int    ostep = output_region.add_state(time);
@@ -626,7 +620,7 @@ namespace {
     return time;
   }
 
-  void resolve_offsets(std::vector<Ioss::Region *> &part_mesh, GlobalBlockMap &all_blocks)
+  void resolve_offsets(PartVector &part_mesh, GlobalBlockMap &all_blocks)
   {
     bool change_made;
     do {
@@ -656,7 +650,7 @@ namespace {
     } while (change_made);
   }
 
-  void update_global_ijk(std::vector<Ioss::Region *> &part_mesh, GlobalIJKMap &global_block)
+  void update_global_ijk(PartVector &part_mesh, GlobalIJKMap &global_block)
   {
     for (auto &part : part_mesh) {
       auto &blocks = part->get_structured_blocks();
@@ -779,8 +773,7 @@ namespace {
     }
   }
 
-  void transfer_nodal_coordinates(Ioss::Region &               output_region,
-                                  std::vector<Ioss::Region *> &part_mesh)
+  void transfer_nodal_coordinates(Ioss::Region &output_region, PartVector &part_mesh)
   {
     // This implementation results in having to iterate over the part
     // mesh 3 times -- once for each coordinate axis, but minimizes
