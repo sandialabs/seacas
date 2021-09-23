@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "copy_string_cpp.h"
+#include "open_file_limit.h"
 
 #define USE_STD_SORT 1
 #if !USE_STD_SORT
@@ -480,7 +481,7 @@ int main(int argc, char *argv[])
 #endif
     }
     else {
-      int max_open_file = ExodusFile::get_free_descriptor_count();
+      int max_open_file = open_file_limit() - 1; // -1 for output exodus file.
 
       // Only used to test the auto subcycle without requiring thousands of files...
       if (interFace.max_open_files() > 0) {

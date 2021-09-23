@@ -15,6 +15,7 @@ SET(SOURCES
   getline.c
   adler.c
   copy_string.c
+  open_file_limit.c
   term_width.c
   )
 

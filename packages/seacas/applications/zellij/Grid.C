@@ -6,7 +6,6 @@
 
 #include <cstdlib>
 #include <numeric>
-#include <unistd.h>
 
 #include "Cell.h"
 #include "Decompose.h"
@@ -26,6 +25,7 @@
 #include <fmt/chrono.h>
 #include <fmt/color.h>
 #include <fmt/ostream.h>
+#include <open_file_limit.h>
 #include <tokenize.h>
 
 //! \file
@@ -79,26 +79,6 @@ namespace {
     struct tm * local_time    = std::localtime(&calendar_time);
     std::string time_string   = fmt::format(format, *local_time);
     return time_string;
-  }
-
-  int get_free_descriptor_count()
-  {
-// Returns maximum number of files that one process can have open
-// at one time. (POSIX)
-#if defined(_WIN32)
-    int fdmax = _getmaxstdio();
-#else
-    int fdmax = sysconf(_SC_OPEN_MAX);
-    if (fdmax == -1) {
-      // POSIX indication that there is no limit on open files...
-      fdmax = INT_MAX;
-    }
-#endif
-    // File descriptors are assigned in order (0,1,2,3,...) on a per-process
-    // basis.
-
-    // Assume that we have stdin, stdout, stderr files (3 total).
-    return fdmax - 3;
   }
 
   int axis_index(const std::string &axis_str)
@@ -200,7 +180,7 @@ bool Grid::initialize(size_t i, size_t j, const std::string &key)
 
 void Grid::add_unit_cell(const std::string &key, const std::string &unit_filename, bool ints32bit)
 {
-  static size_t open_files = get_free_descriptor_count();
+  static size_t open_files = open_file_limit();
   if (!minimize_open_files(Minimize::UNIT) && unit_cells().size() >= open_files) {
     // Just hit the limit...  Close all previous unit_cell files and set the minimize_open_files
     // behavior to UNIT.
@@ -914,9 +894,9 @@ void Grid::handle_file_count()
     return;
   }
 
-  size_t open_files = get_free_descriptor_count();
+  size_t open_files = open_file_limit();
   if (util().parallel_rank() == 0) {
-    fmt::print("\n Maximum Open File Count = {}\n", get_free_descriptor_count());
+    fmt::print("\n Maximum Open File Count = {}\n", open_file_limit());
   }
 
   auto unit_cell_size = unit_cells().size();
