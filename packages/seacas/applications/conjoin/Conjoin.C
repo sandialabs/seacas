@@ -27,7 +27,7 @@
 #include <cctype>
 #include <cstring>
 #include <ctime>
-#ifndef _MSC_VER
+#if !defined(_WIN64) && !defined(WIN32) && !defined(_WINDOWS) && !defined(_MSC_VER)
 #include <sys/times.h>
 #endif
 
