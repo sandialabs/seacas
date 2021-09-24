@@ -42,7 +42,6 @@
 using idx_t = int;
 #endif
 
-#include <sys/stat.h>
 #include <sys/types.h>
 
 #ifdef SEACAS_HAVE_MPI
