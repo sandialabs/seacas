@@ -48,13 +48,6 @@
 // ========================================================================
 
 namespace {
-  struct my_numpunct : std::numpunct<char>
-  {
-  protected:
-    char        do_thousands_sep() const { return ','; }
-    std::string do_grouping() const { return "\3"; }
-  };
-
   int  rank      = 0;
   bool mem_stats = false;
 
@@ -123,8 +116,6 @@ int main(int argc, char *argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
-
-  std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
 
 #ifdef SEACAS_HAVE_KOKKOS
   Kokkos::ScopeGuard kokkos(argc, argv);
