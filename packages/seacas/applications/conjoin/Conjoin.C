@@ -27,9 +27,6 @@
 #include <cctype>
 #include <cstring>
 #include <ctime>
-#if !defined(_WIN64) && !defined(WIN32) && !defined(_WINDOWS) && !defined(_MSC_VER)
-#include <sys/times.h>
-#endif
 
 #include "add_to_log.h"
 #include "adler.h"

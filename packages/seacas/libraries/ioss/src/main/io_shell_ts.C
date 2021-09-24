@@ -28,9 +28,6 @@
 #include <iostream>
 #include <pthread.h>
 #include <string>
-#ifndef _MSC_VER
-#include <sys/times.h>
-#endif
 #include <unistd.h>
 #include <vector>
 
