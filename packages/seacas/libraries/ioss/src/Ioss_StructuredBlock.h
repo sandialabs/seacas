@@ -264,7 +264,7 @@ namespace Ioss {
             size_t i = m_offset[0] + ii;
 
             size_t ind =
-                k * (m_ijkGlobal[0] + 1) * (m_ijkGlobal[1] + 1) + j * (m_ijkGlobal[2] + 1) + i;
+                k * (m_ijkGlobal[0] + 1) * (m_ijkGlobal[1] + 1) + j * (m_ijkGlobal[0] + 1) + i;
 
             idata[index++] = ind + offset + 1;
           }

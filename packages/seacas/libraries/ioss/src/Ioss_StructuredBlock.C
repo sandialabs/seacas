@@ -116,14 +116,14 @@ namespace Ioss {
 
     SMART_ASSERT(index_dim == 1 || index_dim == 2 || index_dim == 3)(index_dim);
 
+    m_ijkGlobal[0] = (glo_ni == 0 ? m_ijk[0] : glo_ni);
+    m_ijkGlobal[1] = (glo_nj == 0 ? m_ijk[1] : glo_nj);
+    m_ijkGlobal[2] = (glo_nk == 0 ? m_ijk[2] : glo_nk);
+
     int64_t cell_count        = get_cell_count(m_ijk, index_dim);
     int64_t node_count        = get_node_count(m_ijk, index_dim);
     int64_t global_cell_count = get_cell_count(m_ijkGlobal, index_dim);
     int64_t global_node_count = get_node_count(m_ijkGlobal, index_dim);
-
-    m_ijkGlobal[0] = (glo_ni == 0 ? m_ijk[0] : glo_ni);
-    m_ijkGlobal[1] = (glo_nj == 0 ? m_ijk[1] : glo_nj);
-    m_ijkGlobal[2] = (glo_nk == 0 ? m_ijk[2] : glo_nk);
 
     SMART_ASSERT(global_cell_count >= cell_count)(global_cell_count)(cell_count);
     SMART_ASSERT(global_node_count >= node_count)(global_node_count)(node_count);
