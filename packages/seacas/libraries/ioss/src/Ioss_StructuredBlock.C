@@ -349,7 +349,7 @@ namespace Ioss {
     if (this->m_bcName != rhs.m_bcName) {
       if (!quiet) {
         fmt::print(Ioss::OUTPUT(), "BoundaryCondition: m_bcName MISMATCH ({} vs. {})\n",
-                   this->m_bcName.c_str(), rhs.m_bcName.c_str());
+                   this->m_bcName, rhs.m_bcName);
       }
       return false;
     }
@@ -357,7 +357,7 @@ namespace Ioss {
     if (this->m_famName != rhs.m_famName) {
       if (!quiet) {
         fmt::print(Ioss::OUTPUT(), "BoundaryCondition: m_famName MISMATCH ({} vs. {})\n",
-                   this->m_famName.c_str(), rhs.m_famName.c_str());
+                   this->m_famName, rhs.m_famName);
       }
       return false;
     }

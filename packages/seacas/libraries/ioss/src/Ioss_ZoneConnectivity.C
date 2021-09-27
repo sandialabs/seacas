@@ -105,7 +105,7 @@ namespace Ioss {
     if (this->m_connectionName != rhs.m_connectionName) {
       if (!quiet) {
         fmt::print(Ioss::OUTPUT(), "ZoneConnectivity : m_connectionName MISMATCH ({} vs {})\n",
-                   this->m_connectionName.c_str(), rhs.m_connectionName.c_str());
+                   this->m_connectionName, rhs.m_connectionName);
       }
       return false;
     }
@@ -113,7 +113,7 @@ namespace Ioss {
     if (this->m_donorName != rhs.m_donorName) {
       if (!quiet) {
         fmt::print(Ioss::OUTPUT(), "ZoneConnectivity : m_donorName MISMATCH ({} vs {})\n",
-                   this->m_donorName.c_str(), rhs.m_donorName.c_str());
+                   this->m_donorName, rhs.m_donorName);
       }
       return false;
     }
