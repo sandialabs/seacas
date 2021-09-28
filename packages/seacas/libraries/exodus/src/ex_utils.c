@@ -130,7 +130,7 @@ const char *ex_config(void)
     char *libver = ncmpi_inq_libvers();
     j += sprintf(buffer + j, "\t\tParallel IO enabled via PnetCDF (%s)\n", libver);
 #else
-    j += sprintf(buffer + j, "\t\tParallel IO enabled via PnetCDF.\n", libver);
+    j += sprintf(buffer + j, "\t\tParallel IO enabled via PnetCDF.\n");
 #endif
   }
 #else
