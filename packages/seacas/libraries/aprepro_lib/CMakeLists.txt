@@ -30,6 +30,7 @@ endif()
 
 SET(HEADERS
   aprepro.h
+  robin_map.h
 )
 
 SET(SOURCES

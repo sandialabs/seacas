@@ -17,12 +17,22 @@
 #include <sstream>
 #include <stack>
 #include <string>
+
+#define USE_ROBIN_MAP
+#if defined USE_ROBIN_MAP
+#include <robin_map.h>
+#else
+#include <unordered_map>
+#endif
+
 #include <vector>
 
 #if defined(_MSC_VER)
 #include <io.h>
 #define isatty _isatty
 #endif
+
+#define HASHSIZE 5939
 
 /** The SEAMS namespace is used to encapsulate the three parser classes
  * SEAMS::Parser, SEAMS::Scanner and SEAMS::Aprepro */
@@ -281,10 +291,16 @@ namespace SEAMS {
     array *make_array(const array &from);
 
   private:
-    void                  init_table(const char *comment);
-    std::vector<symrec *> sym_table{};
-    std::vector<array *>  array_allocations{};
-    std::ostringstream    parsingResults{};
+#if defined USE_ROBIN_MAP
+    using SymTable = tsl::robin_pg_map<std::string, symrec *>;
+#else
+    using SymTable = std::unordered_map<std::string, symrec *>;
+#endif
+
+    void                 init_table(const char *comment);
+    SymTable             sym_table{HASHSIZE};
+    std::vector<array *> array_allocations{};
+    std::ostringstream   parsingResults{};
 
     // Input stream used with parse_string_interactive
     std::istringstream stringInput{};
