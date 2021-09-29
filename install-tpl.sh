@@ -60,7 +60,12 @@ DEBUG=${DEBUG:-NO}
 DEBUG=$(check_valid DEBUG)
 
 # Shared libraries or static libraries?
-SHARED=${SHARED:-YES}
+if [ "${CRAY}" == "YES" ]
+then
+    SHARED="${SHARED:-NO}"
+else
+    SHARED="${SHARED:-YES}"
+fi
 SHARED=$(check_valid SHARED)
 
 # Enable Burst-Buffer support in PnetCDF?
@@ -151,7 +156,6 @@ then
     CFLAGS=-static; export CFLAGS
     CXX=CC; export CXX
     CXXFLAGS=-static; export CXXFLAGS
-    SHARED=NO
 elif [ "$MPI" == "YES" ]
 then
     CC=mpicc; export CC
@@ -779,7 +783,7 @@ then
             rm -rf build
             mkdir build
             cd build
-            SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
+            CRAY=${CRAY} SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure cmake for ADIOS2. exiting.${txtrst}
