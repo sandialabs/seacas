@@ -9,8 +9,6 @@
 #ifndef GETLINE_H
 #define GETLINE_H
 
-#include <unistd.h>
-
 #define GL_BUF_SIZE 1024
 
 char *getline_int(char *); /* read a line of input */

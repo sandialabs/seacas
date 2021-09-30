@@ -4,9 +4,13 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <fstream>
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include "aprepro.h"
 

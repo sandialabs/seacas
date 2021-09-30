@@ -12,7 +12,6 @@
 #include <algorithm>     // for sort, transform
 #include <cctype>        // for tolower
 #include <copyright.h>
-#include <cstddef> // for size_t
 #include <cstdlib> // for strtol, abs, exit, strtoul, etc
 #include <cstring> // for strchr, strlen
 #include <fmt/ostream.h>
