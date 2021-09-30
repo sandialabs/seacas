@@ -13,18 +13,11 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <ostream>
 #include <sstream>
 #include <stack>
 #include <string>
-
-#define USE_ROBIN_MAP
-#if defined USE_ROBIN_MAP
-#include <robin_map.h>
-#else
-#include <unordered_map>
-#endif
-
 #include <vector>
 
 #if defined(_MSC_VER)
@@ -32,86 +25,13 @@
 #define isatty _isatty
 #endif
 
-#define HASHSIZE 5939
-
 /** The SEAMS namespace is used to encapsulate the three parser classes
  * SEAMS::Parser, SEAMS::Scanner and SEAMS::Aprepro */
 namespace SEAMS {
 
-  struct array
-  {
-    std::vector<double> data{};
-    int                 rows{0};
-    int                 cols{0};
-
-    array(int r, int c) : rows(r), cols(c) { data.resize(r * c); }
-
-    array(const array &) = default;
-    array()              = default;
-    ~array()             = default;
-  };
-
-  struct symrec
-  {
-    std::string name{};
-    std::string syntax{};
-    std::string info{};
-    int         type;
-    bool        isInternal;
-    struct value
-    {
-      double var{0};
-      double (*fnctptr)(){nullptr};
-      double (*fnctptr_d)(double){nullptr};
-      double (*fnctptr_c)(char *){nullptr};
-      double (*fnctptr_dc)(double, char *){nullptr};
-      double (*fnctptr_cd)(char *, double){nullptr};
-      double (*fnctptr_cc)(char *, char *){nullptr};
-      double (*fnctptr_dd)(double, double){nullptr};
-      double (*fnctptr_ddd)(double, double, double){nullptr};
-      double (*fnctptr_ccc)(char *, char *, char *){nullptr};
-      double (*fnctptr_ccd)(char *, char *, double){nullptr};
-      double (*fnctptr_dddd)(double, double, double, double){nullptr};
-      double (*fnctptr_ddddc)(double, double, double, double, char *){nullptr};
-      double (*fnctptr_dddddd)(double, double, double, double, double, double){nullptr};
-      double (*fnctptr_a)(const array *){nullptr};
-      std::string svar{};
-      const char *(*strfnct)(){nullptr};
-      const char *(*strfnct_c)(char *){nullptr};
-      const char *(*strfnct_d)(double){nullptr};
-      const char *(*strfnct_a)(const array *){nullptr};
-      const char *(*strfnct_dd)(double, double){nullptr};
-      const char *(*strfnct_cc)(char *, char *){nullptr};
-      const char *(*strfnct_ccc)(char *, char *, char *){nullptr};
-      const char *(*strfnct_dcc)(double, char *, char *){nullptr};
-      const char *(*strfnct_dcccc)(double, char *, char *, char *, char *){nullptr};
-      array *avar{nullptr}; /* Array Variable */
-      array *(*arrfnct_c)(const char *){nullptr};
-      array *(*arrfnct_cc)(const char *, const char *){nullptr};
-      array *(*arrfnct_cd)(const char *, double){nullptr};
-      array *(*arrfnct_ddd)(double, double, double){nullptr};
-      array *(*arrfnct_dd)(double, double){nullptr};
-      array *(*arrfnct_d)(double){nullptr};
-      array *(*arrfnct_a)(const array *){nullptr};
-
-      value() = default;
-    } value;
-    symrec *next;
-
-    symrec(const char *my_name, int my_type, bool is_internal = false)
-        : name(my_name), syntax(my_name), info("UNDEFINED"), type(my_type), isInternal(is_internal),
-          next(nullptr)
-    {
-      value.var = 0;
-    }
-
-    symrec(const std::string &my_name, int my_type, bool is_internal = false)
-        : name(my_name), syntax(my_name), info("UNDEFINED"), type(my_type), isInternal(is_internal),
-          next(nullptr)
-    {
-      value.var = 0;
-    }
-  };
+  class Symtable;
+  struct symrec;
+  struct array;
 
   /* Global options */
   struct aprepro_options
@@ -193,6 +113,9 @@ namespace SEAMS {
 
     /** Return string representation of current version of aprepro.  */
     static std::string version();
+
+    /** Return long version: `# Algebraic Preprocessor (Aprepro) version X.X.X` */
+    std::string long_version() const;
 
     /** Invoke the scanner and parser for a stream.
      * @param in        input stream
@@ -291,14 +214,9 @@ namespace SEAMS {
     array *make_array(const array &from);
 
   private:
-#if defined USE_ROBIN_MAP
-    using SymTable = tsl::robin_pg_map<std::string, symrec *>;
-#else
-    using SymTable = std::unordered_map<std::string, symrec *>;
-#endif
+    std::unique_ptr<Symtable> sym_table;
 
     void                 init_table(const char *comment);
-    SymTable             sym_table{HASHSIZE};
     std::vector<array *> array_allocations{};
     std::ostringstream   parsingResults{};
 

@@ -4,8 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "apr_scanner.h"    // for Scanner
-#include "apr_stats.h"      // for Stats
+#include "apr_scanner.h" // for Scanner
+#include "apr_stats.h"   // for Stats
+#include "apr_symrec.h"
 #include "aprepro.h"        // for Aprepro, symrec, file_rec, etc
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
 #include "terminal_color.h"
@@ -22,8 +23,17 @@
 #include <unistd.h>
 #include <vector> // for allocator, vector
 
+#define HASHSIZE 5939
+
+#define USE_ROBIN_MAP
+#if defined USE_ROBIN_MAP
+#include <robin_map.h>
+#else
+#include <unordered_map>
+#endif
+
 namespace {
-  const char *version_string = "6.00 (2021/09/29)";
+  const char *version_string = "6.01 (2021/09/30)";
 
   void output_copyright();
 
@@ -43,10 +53,41 @@ namespace {
 } // namespace
 
 namespace SEAMS {
+  struct Symtable
+  {
+    Symtable() = default;
+    ~Symtable()
+    {
+      for (auto &sym : sym_table) {
+        auto &ptr = sym.second;
+        delete ptr;
+      }
+    }
+
+    void           add(const std::string &name, SEAMS::symrec *ptr) { sym_table[name] = ptr; }
+    void           erase(const std::string &name) { sym_table.erase(name); }
+    SEAMS::symrec *getsym(const char *sym_name)
+    {
+      auto ptr = sym_table.find(sym_name);
+      if (ptr != sym_table.end()) {
+        return ptr->second;
+      }
+      return nullptr;
+    }
+
+#if defined USE_ROBIN_MAP
+    tsl::robin_pg_map<std::string, SEAMS::symrec *>        sym_table{HASHSIZE};
+    const tsl::robin_pg_map<std::string, SEAMS::symrec *> &get() { return sym_table; }
+#else
+    std::unordered_map<std::string, SEAMS::symrec *>        sym_table{HASHSIZE};
+    const std::unordered_map<std::string, SEAMS::symrec *> &get() { return sym_table; }
+#endif
+  };
+
   Aprepro *aprepro = nullptr; // A global for use in the library.  Clean this up...
   bool     echo    = true;
 
-  Aprepro::Aprepro()
+  Aprepro::Aprepro() : sym_table(new Symtable())
   {
     ap_file_list.push(file_rec());
     init_table("$");
@@ -69,11 +110,6 @@ namespace SEAMS {
 
     delete lexer;
 
-    for (auto &sym : sym_table) {
-      auto &ptr = sym.second;
-      delete ptr;
-    }
-
     aprepro = nullptr;
 
     for (auto &arr_mem : array_allocations) {
@@ -85,6 +121,12 @@ namespace SEAMS {
   }
 
   std::string Aprepro::version() { return version_string; }
+
+  std::string Aprepro::long_version() const
+  {
+    auto comment = getsym("_C_")->value.svar;
+    return comment + " Algebraic Preprocessor (Aprepro) version " + version();
+  }
 
   void Aprepro::clear_results()
   {
@@ -383,8 +425,7 @@ namespace SEAMS {
     }
 
     auto ptr = new symrec(sym_name, parser_type, is_internal);
-
-    sym_table[sym_name] = ptr;
+    sym_table->add(sym_name, ptr);
     return ptr;
   }
 
@@ -607,7 +648,7 @@ namespace SEAMS {
   {
     std::vector<std::string> names;
 
-    for (const auto &sym : sym_table) {
+    for (const auto &sym : sym_table->get()) {
       const auto &ptr = sym.second;
       if (ptr->isInternal != doInternal) {
         continue;
@@ -641,7 +682,7 @@ namespace SEAMS {
          (ptr->type == Parser::token::IMMSVAR) || (ptr->type == Parser::token::UNDVAR));
 
     if (is_valid_variable) {
-      sym_table.erase(sym_name);
+      sym_table->erase(sym_name);
       delete ptr;
     }
     else {
@@ -649,14 +690,7 @@ namespace SEAMS {
     }
   }
 
-  symrec *Aprepro::getsym(const char *sym_name) const
-  {
-    auto ptr = sym_table.find(sym_name);
-    if (ptr != sym_table.end()) {
-      return ptr->second;
-    }
-    return nullptr;
-  }
+  symrec *Aprepro::getsym(const char *sym_name) const { return sym_table->getsym(sym_name); }
 
   symrec *Aprepro::getsym(const std::string &sym_name) const { return getsym(sym_name.c_str()); }
 
@@ -677,7 +711,7 @@ namespace SEAMS {
     (*infoStream) << "\n{\n";
     bool first = true;
 
-    for (const auto &sym : sym_table) {
+    for (const auto &sym : sym_table->get()) {
       const auto &ptr = sym.second;
 
       if (!ptr->isInternal) {
@@ -711,7 +745,7 @@ namespace SEAMS {
       (*infoStream) << "\n" << comment << "   Variable    = Value" << '\n';
 
       int width = 10; // controls spacing/padding for the variable names
-      for (const auto &sym : sym_table) {
+      for (const auto &sym : sym_table->get()) {
         const auto &ptr = sym.second;
         if (pre == nullptr || ptr->name.find(spre) != std::string::npos) {
           if (doInternal == ptr->isInternal) {
@@ -760,7 +794,7 @@ namespace SEAMS {
              type == Parser::token::AFNCT) {
       int fwidth = 20; // controls spacing/padding for the function names
       (*infoStream) << trmclr::blue << "\nFunctions returning double:" << trmclr::normal << '\n';
-      for (const auto &sym : sym_table) {
+      for (const auto &sym : sym_table->get()) {
         const auto &ptr = sym.second;
         if (pre == nullptr || ptr->name.find(spre) != std::string::npos) {
           if (ptr->type == Parser::token::FNCT) {
@@ -772,7 +806,7 @@ namespace SEAMS {
 
       (*infoStream) << trmclr::blue << trmclr::blue
                     << "\nFunctions returning string:" << trmclr::normal << '\n';
-      for (const auto &sym : sym_table) {
+      for (const auto &sym : sym_table->get()) {
         const auto &ptr = sym.second;
         if (pre == nullptr || ptr->name.find(spre) != std::string::npos) {
           if (ptr->type == Parser::token::SFNCT) {
@@ -783,7 +817,7 @@ namespace SEAMS {
       }
 
       (*infoStream) << trmclr::blue << "\nFunctions returning array:" << trmclr::normal << '\n';
-      for (const auto &sym : sym_table) {
+      for (const auto &sym : sym_table->get()) {
         const auto &ptr = sym.second;
         if (pre == nullptr || ptr->name.find(spre) != std::string::npos) {
           if (ptr->type == Parser::token::AFNCT) {

@@ -4,20 +4,22 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "apr_symrec.h"
 #include "aprepro.h"        // for symrec, Aprepro, etc
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
-#include <cctype>           // for isalnum, isalpha, isupper, etc
-#include <cerrno>           // for errno, EDOM, ERANGE
-#include <cfenv>            // for fetestexcept, FE_DIVBYZERO, etc
-#include <cmath>            // for math_errhandling, etc
-#include <cstdio>           // for perror
-#include <cstdlib>          // for mkstemp
-#include <cstring>          // for strlen, etc
-#include <iostream>         // for operator<<, cerr, ostream
-#include <string>           // for allocator, operator+, etc
-#include <sys/stat.h>       // for stat, S_ISDIR
-#include <unistd.h>         // for close
-#include <vector>           // for vector
+
+#include <cctype>     // for isalnum, isalpha, isupper, etc
+#include <cerrno>     // for errno, EDOM, ERANGE
+#include <cfenv>      // for fetestexcept, FE_DIVBYZERO, etc
+#include <cmath>      // for math_errhandling, etc
+#include <cstdio>     // for perror
+#include <cstdlib>    // for mkstemp
+#include <cstring>    // for strlen, etc
+#include <iostream>   // for operator<<, cerr, ostream
+#include <string>     // for allocator, operator+, etc
+#include <sys/stat.h> // for stat, S_ISDIR
+#include <unistd.h>   // for close
+#include <vector>     // for vector
 
 #ifdef _WIN32
 #include <fcntl.h>

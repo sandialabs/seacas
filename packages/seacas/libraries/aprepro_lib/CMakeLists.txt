@@ -30,10 +30,6 @@ endif()
 
 SET(HEADERS
   aprepro.h
-  robin_map.h
-  robin_set.h
-  robin_hash.h
-  robin_growth_policy.h
 )
 
 SET(SOURCES

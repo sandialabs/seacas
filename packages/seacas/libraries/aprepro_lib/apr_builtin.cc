@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include "apr_builtin.h"
+#include "apr_symrec.h"
 
 #include <cctype>
 #include <cerrno>
