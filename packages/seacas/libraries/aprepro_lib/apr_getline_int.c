@@ -39,7 +39,6 @@
 #define __unix__ 1
 #endif
 
-#include <sys/select.h>
 #include <termios.h>
 struct termios new_termios, old_termios;
 #endif
@@ -56,18 +55,20 @@ struct termios new_termios, old_termios;
 
 extern int kill(pid_t pid, int sig);
 
-#define _ap_getline_c_ 1
 #include "apr_getline_int.h"
+
+#define AP_GL_BUF_SIZE 1024
 
 /******************** external interface *********************************/
 
-ap_gl_strlen_proc ap_gl_strlen                     = (ap_gl_strlen_proc)strlen;
-int               ap_gl_filename_quoting_desired   = -1; /* default to unspecified */
-const char *      ap_gl_filename_quote_characters  = " \t*?<>|;&()[]$`";
-int               ap_gl_ellipses_during_completion = 1;
-char              ap_gl_buf[AP_GL_BUF_SIZE]; /* input buffer */
+int         ap_gl_filename_quoting_desired   = -1; /* default to unspecified */
+const char *ap_gl_filename_quote_characters  = " \t*?<>|;&()[]$`";
+int         ap_gl_ellipses_during_completion = 1;
+char        ap_gl_buf[AP_GL_BUF_SIZE]; /* input buffer */
 
 /******************** internal interface *********************************/
+
+#define AP_GL_BUF_SIZE 1024
 
 static int         ap_gl_init_done = -1;               /* terminal mode flag  */
 static int         ap_gl_termw     = 80;               /* actual terminal width */
@@ -78,13 +79,11 @@ static int         ap_gl_overwrite = 0;                /* overwrite mode */
 static int         ap_gl_pos, ap_gl_cnt = 0;           /* position and size of input */
 static char        ap_gl_killbuf[AP_GL_BUF_SIZE] = ""; /* killed text */
 static const char *ap_gl_prompt;                       /* to save the prompt string */
-static char        ap_gl_intrc        = 0;             /* keyboard SIGINT char */
-static char        ap_gl_quitc        = 0;             /* keyboard SIGQUIT char */
-static char        ap_gl_suspc        = 0;             /* keyboard SIGTSTP char */
-static char        ap_gl_dsuspc       = 0;             /* delayed SIGTSTP char */
-static int         ap_gl_search_mode  = 0;             /* search mode flag */
-static int         ap_gl_vi_preferred = -1;
-static int         ap_gl_vi_mode      = 0;
+static char        ap_gl_intrc       = 0;              /* keyboard SIGINT char */
+static char        ap_gl_quitc       = 0;              /* keyboard SIGQUIT char */
+static char        ap_gl_suspc       = 0;              /* keyboard SIGTSTP char */
+static char        ap_gl_dsuspc      = 0;              /* delayed SIGTSTP char */
+static int         ap_gl_search_mode = 0;              /* search mode flag */
 
 static void ap_gl_init(void);         /* prepare to edit a line */
 static void ap_gl_cleanup(void);      /* to undo ap_gl_init */
@@ -96,18 +95,15 @@ static void ap_gl_addchar(int c);               /* install specified char */
 static void ap_gl_del(int loc, int);            /* del, either left (-1) or cur (0) */
 static void ap_gl_error(const char *const buf); /* write error msg and die */
 static void ap_gl_fixup(const char *prompt, int change,
-                        int cursor); /* fixup state variables and screen */
-static int  ap_gl_getc(void);        /* read one char from terminal */
-static int  ap_gl_getcx(int);        /* read one char from terminal, if available before timeout */
-static void ap_gl_kill(int pos);     /* delete to EOL */
-static void ap_gl_newline(void);     /* handle \n or \r */
-static void ap_gl_putc(int c);       /* write one char to terminal */
+                        int cursor);           /* fixup state variables and screen */
+static int  ap_gl_getc(void);                  /* read one char from terminal */
+static void ap_gl_kill(int pos);               /* delete to EOL */
+static void ap_gl_newline(void);               /* handle \n or \r */
+static void ap_gl_putc(int c);                 /* write one char to terminal */
 static void ap_gl_puts(const char *const buf); /* write a line to terminal */
 static void ap_gl_redraw(void);                /* issue \n and redraw all */
 static void ap_gl_transpose(void);             /* transpose two chars */
 static void ap_gl_yank(void);                  /* yank killed text */
-static void ap_gl_word(int direction);         /* move a word */
-static void ap_gl_killword(int direction);
 
 static void  hist_init(void);    /* initializes hist pointers */
 static char *hist_next(void);    /* return ptr to next item */
@@ -252,78 +248,6 @@ static int ap_gl_getc(void)
   return c;
 }
 
-#ifdef __unix__
-
-static int ap_gl_getcx(int tlen)
-/* Get a character without echoing it to screen, timing out
- * after tlen tenths of a second.
- */
-{
-  for (errno = 0;;) {
-    fd_set ss;
-    FD_ZERO(&ss);
-    FD_SET(0, &ss); /* set STDIN_FILENO */
-
-    struct timeval tv;
-    tv.tv_sec  = tlen / 10;
-    tv.tv_usec = (tlen % 10) * 100000L;
-
-    int result = select(1, &ss, NULL, NULL, &tv);
-    if (result == 1) {
-      /* ready */
-      break;
-    }
-    if (result == 0) {
-      errno = ETIMEDOUT;
-      return (-2);
-    }
-    else if (errno != EINTR) {
-      return (-1);
-    }
-  }
-
-  for (errno = 0;;) {
-    char ch;
-    int  c = read(0, &ch, 1);
-    if (c == 1) {
-      return ((int)ch);
-    }
-    if (errno != EINTR) {
-      break;
-    }
-  }
-
-  return (-1);
-} /* ap_gl_getcx */
-
-#endif /* __unix__ */
-
-#ifdef __windows__
-
-static int ap_gl_getcx(int tlen)
-{
-  int i, c;
-
-  c = (-2);
-  tlen -= 2; /* Adjust for 200ms overhead */
-  if (tlen < 1)
-    tlen = 1;
-  for (i = 0; i < tlen; i++) {
-    if (_kbhit()) {
-      c = (int)_getch();
-      if ((c == 0) || (c == 0xE0)) {
-        /* Read key code */
-        c = (int)_getch();
-        c = pc_keymap(c);
-      }
-    }
-    (void)SleepEx((DWORD)(tlen * 100), FALSE);
-  }
-  return (c);
-} /* ap_gl_getcx */
-
-#endif /* __windows__ */
-
 static void ap_gl_putc(int c)
 {
   char ch = (char)(unsigned char)c;
@@ -398,29 +322,11 @@ void ap_gl_setwidth(int w)
 
 char *ap_getline_int(char *prompt)
 {
-  int   c, loc;
-  int   vi_count, count;
-  int   vi_delete;
-  char  vi_countbuf[32];
-  char *cp;
+  int c;
 
 #ifdef __unix__
   int sig;
 #endif
-
-  /* Even if it appears that "vi" is preferred, we
-   * don't start in ap_gl_vi_mode.  They need to hit
-   * ESC to go into vi command mode.
-   */
-  ap_gl_vi_mode = 0;
-  vi_count      = 0;
-  vi_delete     = 0;
-  if (ap_gl_vi_preferred < 0) {
-    ap_gl_vi_preferred = 0;
-    cp                 = (char *)getenv("EDITOR");
-    if (cp != NULL)
-      ap_gl_vi_preferred = (strstr(cp, "vi") != NULL);
-  }
 
   ap_gl_init();
   ap_gl_prompt = (prompt) ? prompt : "";
@@ -434,135 +340,7 @@ char *ap_getline_int(char *prompt)
   while ((c = ap_gl_getc()) >= 0) {
     ap_gl_extent = 0; /* reset to full extent */
     if (isprint(c)) {
-      if (ap_gl_vi_mode > 0) {
-      /* "vi" emulation -- far from perfect,
-       * but reasonably functional.
-       */
-      vi:
-        for (count = 0;;) {
-          if (isdigit(c)) {
-            if (vi_countbuf[sizeof(vi_countbuf) - 2] == '\0')
-              vi_countbuf[strlen(vi_countbuf)] = (char)c;
-          }
-          else if (vi_countbuf[0] != '\0') {
-            vi_count = atoi(vi_countbuf);
-            memset(vi_countbuf, 0, sizeof(vi_countbuf));
-          }
-          switch (c) {
-          case 'b': ap_gl_word(-1); break;
-          case 'w':
-            if (vi_delete) {
-              ap_gl_killword(1);
-            }
-            else {
-              ap_gl_word(1);
-            }
-            break;
-          case 'h': /* left */
-            if (vi_delete) {
-              if (ap_gl_pos > 0) {
-                ap_gl_fixup(ap_gl_prompt, -1, ap_gl_pos - 1);
-                ap_gl_del(0, 1);
-              }
-            }
-            else {
-              ap_gl_fixup(ap_gl_prompt, -1, ap_gl_pos - 1);
-            }
-            break;
-          case ' ':
-          case 'l': /* right */
-            if (vi_delete) {
-              ap_gl_del(0, 1);
-            }
-            else {
-              ap_gl_fixup(ap_gl_prompt, -1, ap_gl_pos + 1);
-            }
-            break;
-          case 'k': /* up */
-            copy_string(ap_gl_buf, hist_prev(), AP_GL_BUF_SIZE);
-            ap_gl_fixup(ap_gl_prompt, 0, AP_GL_BUF_SIZE);
-            break;
-          case 'j': /* down */
-            copy_string(ap_gl_buf, hist_next(), AP_GL_BUF_SIZE);
-            ap_gl_fixup(ap_gl_prompt, 0, AP_GL_BUF_SIZE);
-            break;
-          case 'd':
-            if (vi_delete == 1) {
-              ap_gl_kill(0);
-              vi_count      = 1;
-              vi_delete     = 0;
-              ap_gl_vi_mode = 0;
-              goto vi_break;
-            }
-            else {
-              vi_delete = 1;
-              goto vi_break;
-            }
-            break;
-          case '^': /* start of line */
-            if (vi_delete) {
-              vi_count = ap_gl_pos;
-              ap_gl_fixup(ap_gl_prompt, -1, 0);
-              for (c = 0; c < vi_count; c++) {
-                if (ap_gl_cnt > 0)
-                  ap_gl_del(0, 0);
-              }
-              vi_count  = 1;
-              vi_delete = 0;
-            }
-            else {
-              ap_gl_fixup(ap_gl_prompt, -1, 0);
-            }
-            break;
-          case '$': /* end of line */
-            if (vi_delete) {
-              ap_gl_kill(ap_gl_pos);
-            }
-            else {
-              loc = (int)strlen(ap_gl_buf);
-              if (loc > 1)
-                loc--;
-              ap_gl_fixup(ap_gl_prompt, -1, loc);
-            }
-            break;
-          case 'p': /* paste after */
-            ap_gl_fixup(ap_gl_prompt, -1, ap_gl_pos + 1);
-            ap_gl_yank();
-            break;
-          case 'P': /* paste before */ ap_gl_yank(); break;
-          case 'r': /* replace character */
-            ap_gl_buf[ap_gl_pos] = (char)ap_gl_getc();
-            ap_gl_fixup(ap_gl_prompt, ap_gl_pos, ap_gl_pos);
-            vi_count = 1;
-            break;
-          case 'R':
-            ap_gl_overwrite = 1;
-            ap_gl_vi_mode   = 0;
-            break;
-          case 'i':
-          case 'I':
-            ap_gl_overwrite = 0;
-            ap_gl_vi_mode   = 0;
-            break;
-          case 'o':
-          case 'O':
-          case 'a':
-          case 'A':
-            ap_gl_overwrite = 0;
-            ap_gl_fixup(ap_gl_prompt, -1, ap_gl_pos + 1);
-            ap_gl_vi_mode = 0;
-            break;
-          }
-          count++;
-          if (count >= vi_count)
-            break;
-        }
-        vi_count  = 1;
-        vi_delete = 0;
-      vi_break:
-        continue;
-      }
-      else if (ap_gl_search_mode) {
+      if (ap_gl_search_mode) {
         search_addchar(c);
       }
       else {
@@ -650,54 +428,6 @@ char *ap_getline_int(char *prompt)
         break;
       case '\031':
         ap_gl_yank(); /* ^Y */
-        break;
-      case '\033': /* ansi arrow keys */
-        c = ap_gl_getcx(3);
-        if (c == '[') {
-          switch (c = ap_gl_getc()) {
-          case 'A': /* up */
-            copy_string(ap_gl_buf, hist_prev(), AP_GL_BUF_SIZE);
-            ap_gl_fixup(ap_gl_prompt, 0, AP_GL_BUF_SIZE);
-            break;
-          case 'B': /* down */
-            copy_string(ap_gl_buf, hist_next(), AP_GL_BUF_SIZE);
-            ap_gl_fixup(ap_gl_prompt, 0, AP_GL_BUF_SIZE);
-            break;
-          case 'C':
-            ap_gl_fixup(ap_gl_prompt, -1, ap_gl_pos + 1); /* right */
-            break;
-          case 'D':
-            ap_gl_fixup(ap_gl_prompt, -1, ap_gl_pos - 1); /* left */
-            break;
-          default:
-            ap_gl_beep(); /* who knows */
-            break;
-          }
-        }
-        else if ((ap_gl_vi_preferred == 0) && ((c == 'f') || (c == 'F'))) {
-          ap_gl_word(1);
-        }
-        else if ((ap_gl_vi_preferred == 0) && ((c == 'b') || (c == 'B'))) {
-          ap_gl_word(-1);
-        }
-        else {
-          /* enter vi command mode */
-          if (ap_gl_vi_mode == 0) {
-            ap_gl_vi_mode = 1;
-            vi_count      = 1;
-            vi_delete     = 0;
-            memset(vi_countbuf, 0, sizeof(vi_countbuf));
-            if (ap_gl_pos > 0)
-              ap_gl_fixup(ap_gl_prompt, -2, ap_gl_pos - 1); /* left 1 char */
-            /* Don't bother if the line is empty. */
-            if (ap_gl_cnt > 0) {
-              /* We still have to use the char read! */
-              goto vi;
-            }
-            ap_gl_vi_mode = 0;
-          }
-          ap_gl_beep();
-        }
         break;
       default: /* check for a terminal signal */
 #ifdef __unix__
@@ -829,7 +559,7 @@ static void ap_gl_del(int loc, int killsave)
 {
   if ((loc == -1 && ap_gl_pos > 0) || (loc == 0 && ap_gl_pos < ap_gl_cnt)) {
     for (int j = 0, i = ap_gl_pos + loc; i < ap_gl_cnt; i++) {
-      if ((j == 0) && (killsave != 0) && (ap_gl_vi_mode != 0)) {
+      if ((j == 0) && (killsave != 0)) {
         ap_gl_killbuf[0] = ap_gl_buf[i];
         ap_gl_killbuf[1] = '\0';
         j                = 1;
@@ -853,66 +583,6 @@ static void ap_gl_kill(int pos)
   }
   else
     ap_gl_beep();
-}
-
-static void ap_gl_killword(int direction)
-{
-  int pos = ap_gl_pos;
-  if (direction > 0) { /* forward */
-    while (pos < ap_gl_cnt && !isspace(ap_gl_buf[pos]))
-      pos++;
-    while (pos < ap_gl_cnt && isspace(ap_gl_buf[pos]))
-      pos++;
-  }
-  else { /* backward */
-    if (pos > 0)
-      pos--;
-    while (pos > 0 && isspace(ap_gl_buf[pos]))
-      pos--;
-    while (pos > 0 && !isspace(ap_gl_buf[pos]))
-      pos--;
-    if (pos < ap_gl_cnt && isspace(ap_gl_buf[pos])) /* move onto word */
-      pos++;
-  }
-
-  int startpos = ap_gl_pos;
-  if (pos < startpos) {
-    int tmp  = pos;
-    pos      = startpos;
-    startpos = tmp;
-  }
-  memcpy(ap_gl_killbuf, ap_gl_buf + startpos, (size_t)(pos - startpos));
-  ap_gl_killbuf[pos - startpos] = '\0';
-  if (isspace(ap_gl_killbuf[pos - startpos - 1]))
-    ap_gl_killbuf[pos - startpos - 1] = '\0';
-  ap_gl_fixup(ap_gl_prompt, -1, startpos);
-  for (int i = 0, tmp = pos - startpos; i < tmp; i++)
-    ap_gl_del(0, 0);
-} /* ap_gl_killword */
-
-static void ap_gl_word(int direction)
-
-/* move forward or backward one word */
-{
-  int pos = ap_gl_pos;
-
-  if (direction > 0) { /* forward */
-    while (pos < ap_gl_cnt && !isspace(ap_gl_buf[pos]))
-      pos++;
-    while (pos < ap_gl_cnt && isspace(ap_gl_buf[pos]))
-      pos++;
-  }
-  else { /* backward */
-    if (pos > 0)
-      pos--;
-    while (pos > 0 && isspace(ap_gl_buf[pos]))
-      pos--;
-    while (pos > 0 && !isspace(ap_gl_buf[pos]))
-      pos--;
-    if (pos < ap_gl_cnt && isspace(ap_gl_buf[pos])) /* move onto word */
-      pos++;
-  }
-  ap_gl_fixup(ap_gl_prompt, -1, pos);
 }
 
 static void ap_gl_redraw(void)
@@ -957,11 +627,11 @@ static void ap_gl_fixup(const char *prompt, int change, int cursor)
     ap_gl_puts(prompt);
     copy_string(last_prompt, prompt, 80);
     change      = 0;
-    ap_gl_width = ap_gl_termw - ap_gl_strlen(prompt);
+    ap_gl_width = ap_gl_termw - strlen(prompt);
   }
   else if (strcmp(prompt, last_prompt) != 0) {
-    l1        = ap_gl_strlen(last_prompt);
-    l2        = ap_gl_strlen(prompt);
+    l1        = strlen(last_prompt);
+    l2        = strlen(prompt);
     ap_gl_cnt = ap_gl_cnt + l1 - l2;
     copy_string(last_prompt, prompt, 80);
     ap_gl_putc('\r');
