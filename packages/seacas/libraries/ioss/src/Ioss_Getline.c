@@ -31,9 +31,6 @@
 #define write _write
 #define read _read
 #endif
-#define NO_SIGNALS 1
-#define pid_t int
-
 #else
 
 #ifndef __unix__
@@ -47,7 +44,6 @@ struct termios new_termios, old_termios;
 /********************* C library headers ********************************/
 #include <ctype.h>
 #include <errno.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -426,31 +422,7 @@ char *io_getline_int(const char *prompt)
       case '\031':
         io_gl_yank(); /* ^Y */
         break;
-      default: /* check for a terminal signal */
-#ifdef __unix__
-        if (c > 0) { /* ignore 0 (reset above) */
-          sig = 0;
-#ifdef SIGINT
-          if (c == io_gl_intrc)
-            sig = SIGINT;
-#endif
-#ifdef SIGQUIT
-          if (c == io_gl_quitc)
-            sig = SIGQUIT;
-#endif
-#ifdef SIGTSTP
-          if (c == io_gl_suspc || c == io_gl_dsuspc)
-            sig = SIGTSTP;
-#endif
-          if (sig != 0) {
-            io_gl_cleanup();
-            kill(0, sig);
-            io_gl_init();
-            io_gl_redraw();
-            c = 0;
-          }
-        }
-#endif /* __unix__ */
+      default:
         if (c > 0)
           io_gl_beep();
         break;
