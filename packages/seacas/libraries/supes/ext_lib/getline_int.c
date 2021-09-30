@@ -39,7 +39,6 @@ struct termios new_termios, old_termios;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <unistd.h>
 
 #include "getline_int.h"
