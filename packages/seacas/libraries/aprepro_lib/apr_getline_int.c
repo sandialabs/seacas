@@ -74,10 +74,6 @@ static int         ap_gl_overwrite = 0;                /* overwrite mode */
 static int         ap_gl_pos, ap_gl_cnt = 0;           /* position and size of input */
 static char        ap_gl_killbuf[AP_GL_BUF_SIZE] = ""; /* killed text */
 static const char *ap_gl_prompt;                       /* to save the prompt string */
-static char        ap_gl_intrc       = 0;              /* keyboard SIGINT char */
-static char        ap_gl_quitc       = 0;              /* keyboard SIGQUIT char */
-static char        ap_gl_suspc       = 0;              /* keyboard SIGTSTP char */
-static char        ap_gl_dsuspc      = 0;              /* delayed SIGTSTP char */
 static int         ap_gl_search_mode = 0;              /* search mode flag */
 
 static void ap_gl_init(void);         /* prepare to edit a line */
@@ -131,14 +127,6 @@ static void ap_gl_char_init(void) /* turn off input echo */
 {
 #ifdef __unix__
   tcgetattr(0, &old_termios);
-  ap_gl_intrc = old_termios.c_cc[VINTR];
-  ap_gl_quitc = old_termios.c_cc[VQUIT];
-#ifdef VSUSP
-  ap_gl_suspc = old_termios.c_cc[VSUSP];
-#endif
-#ifdef VDSUSP
-  ap_gl_dsuspc = old_termios.c_cc[VDSUSP];
-#endif
   new_termios = old_termios;
   new_termios.c_iflag &= ~(BRKINT | ISTRIP | IXON | IXOFF);
   new_termios.c_iflag |= (IGNBRK | IGNPAR);
@@ -317,12 +305,6 @@ void ap_gl_setwidth(int w)
 
 char *ap_getline_int(char *prompt)
 {
-  int c;
-
-#ifdef __unix__
-  int sig;
-#endif
-
   ap_gl_init();
   ap_gl_prompt = (prompt) ? prompt : "";
   ap_gl_buf[0] = '\0';
@@ -332,6 +314,7 @@ char *ap_getline_int(char *prompt)
   FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
 #endif
 
+  int c;
   while ((c = ap_gl_getc()) >= 0) {
     ap_gl_extent = 0; /* reset to full extent */
     if (isprint(c)) {

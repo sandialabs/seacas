@@ -72,10 +72,6 @@ static int         io_gl_overwrite = 0;                /* overwrite mode */
 static int         io_gl_pos, io_gl_cnt = 0;           /* position and size of input */
 static char        io_gl_killbuf[IO_GL_BUF_SIZE] = ""; /* killed text */
 static const char *io_gl_prompt;                       /* to save the prompt string */
-static char        io_gl_intrc       = 0;              /* keyboard SIGINT char */
-static char        io_gl_quitc       = 0;              /* keyboard SIGQUIT char */
-static char        io_gl_suspc       = 0;              /* keyboard SIGTSTP char */
-static char        io_gl_dsuspc      = 0;              /* delayed SIGTSTP char */
 static int         io_gl_search_mode = 0;              /* search mode flag */
 
 static void io_gl_init(void);         /* prepare to edit a line */
@@ -129,14 +125,6 @@ static void io_gl_char_init(void) /* turn off input echo */
 {
 #ifdef __unix__
   tcgetattr(0, &old_termios);
-  io_gl_intrc = old_termios.c_cc[VINTR];
-  io_gl_quitc = old_termios.c_cc[VQUIT];
-#ifdef VSUSP
-  io_gl_suspc = old_termios.c_cc[VSUSP];
-#endif
-#ifdef VDSUSP
-  io_gl_dsuspc = old_termios.c_cc[VDSUSP];
-#endif
   new_termios = old_termios;
   new_termios.c_iflag &= ~(BRKINT | ISTRIP | IXON | IXOFF);
   new_termios.c_iflag |= (IGNBRK | IGNPAR);
@@ -316,10 +304,6 @@ void io_gl_setwidth(int w)
 
 char *io_getline_int(const char *prompt)
 {
-#ifdef __unix__
-  int sig;
-#endif
-
   io_gl_init();
   io_gl_prompt = (prompt) ? prompt : "";
   io_gl_buf[0] = '\0';
