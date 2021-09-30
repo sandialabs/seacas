@@ -53,8 +53,6 @@ struct termios new_termios, old_termios;
 #include <strings.h>
 #include <unistd.h>
 
-extern int kill(pid_t pid, int sig);
-
 #include "apr_getline_int.h"
 
 #define AP_GL_BUF_SIZE 1024

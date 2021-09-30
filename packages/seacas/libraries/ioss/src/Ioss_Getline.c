@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 1991, 1992, 1993 by Chris Thewalt (thewalt@ce.berkeley.edu)
+ * Copyright (C) 1991, 1992, 1993, 2021 by Chris Thewalt (thewalt@ce.berkeley.edu)
  *
  * Permission to use, copy, modify, and distribute this software
  * for any purpose and without fee is hereby granted, provided
@@ -53,8 +53,6 @@ struct termios new_termios, old_termios;
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
-
-extern int kill(pid_t pid, int sig);
 
 #include "Ioss_Getline.h"
 

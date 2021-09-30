@@ -46,8 +46,6 @@ struct termios new_termios, old_termios;
 #include <strings.h>
 #include <unistd.h>
 
-extern int kill(pid_t pid, int sig);
-
 #include "getline_int.h"
 
 /******************** external interface *********************************/
