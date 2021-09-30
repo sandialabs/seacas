@@ -5,13 +5,11 @@
 // See packages/seacas/LICENSE for details
 
 #include "apr_scanner.h" // for Scanner
-#include "apr_stats.h"   // for Stats
 #include "apr_symrec.h"
+#include "apr_util.h"
 #include "aprepro.h"        // for Aprepro, symrec, file_rec, etc
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
 #include "terminal_color.h"
-#include <climits>  // for INT_MAX
-#include <cstddef>  // for size_t
 #include <cstdlib>  // for exit, EXIT_SUCCESS, etc
 #include <cstring>  // for strcmp
 #include <fstream>  // for operator<<, basic_ostream, etc
@@ -19,6 +17,7 @@
 #include <iostream> // for left, cerr, cout, streampos
 #include <stack>    // for stack
 #include <stdexcept>
+#include <stdio.h>
 #include <string> // for string, operator==, etc
 #include <unistd.h>
 #include <vector> // for allocator, vector
@@ -33,7 +32,7 @@
 #endif
 
 namespace {
-  const char *version_string = "6.01 (2021/09/30)";
+  const char *version_string = "6.02 (2021/09/30)";
 
   void output_copyright();
 

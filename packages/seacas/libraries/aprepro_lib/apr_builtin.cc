@@ -15,17 +15,15 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
-#include <functional>
-#include <sstream>
+#include <stack>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
-#include <sys/stat.h>
 #ifdef _WIN32
 #include <io.h>
-#else
-#include <unistd.h>
 #endif
 #include "apr_scanner.h"
 #include "apr_tokenize.h"

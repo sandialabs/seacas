@@ -29,7 +29,7 @@
  * SEAMS::Parser, SEAMS::Scanner and SEAMS::Aprepro */
 namespace SEAMS {
 
-  class Symtable;
+  struct Symtable;
   struct symrec;
   struct array;
 
