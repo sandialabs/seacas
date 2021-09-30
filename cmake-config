@@ -136,7 +136,6 @@ if [ "${APPLICATIONS}" == "YES" ] && [ "${LEGACY}" == "YES" ]
 then
      SUBSET_OPTIONS="-DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
                      -DSEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASSlice:BOOL=ON \
                      -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON"
 else
      SUBSET_OPTIONS="-DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=OFF \
@@ -153,6 +152,7 @@ then
                      -DSEACASProj_ENABLE_SEACASAprepro:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASAprepro_lib:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASConjoin:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASCpup:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASEjoin:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASEpu:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASExo2mat:BOOL=ON \
@@ -160,6 +160,8 @@ then
                      -DSEACASProj_ENABLE_SEACASExodiff:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASMat2exo:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASNemslice:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASSlice:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASZellij:BOOL=ON \
                      -DSEACASProj_ENABLE_SEACASNemspread:BOOL=ON"
 
      if [ "${FORTRAN}" == "YES" ]

@@ -825,7 +825,7 @@ then
             rm -rf build
             mkdir build
             cd build
-            SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
+            CRAY=${CRAY} SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure cmake for Catalyst2. exiting.${txtrst}
@@ -867,7 +867,7 @@ then
             rm -rf build
             mkdir build
             cd build
-            SHARED=${SHARED} DEBUG=${DEBUG} bash -x ../../runcmake.sh
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure cmake for gtest. exiting.${txtrst}
