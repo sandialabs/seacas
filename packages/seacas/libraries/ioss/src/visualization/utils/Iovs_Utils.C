@@ -11,18 +11,21 @@
 #include <sstream>
 #include <visualization/utils/Iovs_Utils.h>
 
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64)
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#else
+#include <libgen.h>
+#endif
+
 #ifdef IOSS_DLOPEN_ENABLED
 #include <dlfcn.h>
 #endif
 
-#ifndef _WIN32
-#include <libgen.h>
-#endif
 #include <sys/stat.h>
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
 
 namespace Iovs {
   std::string persistentLdLibraryPathEnvForCatalyst = "";
@@ -342,7 +345,8 @@ namespace Iovs {
     else {
       persistentLdLibraryPathEnvForCatalyst = paraviewPythonZipFilePath + ":" + existingPythonpath;
     }
-#ifdef _WIN32
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64)
     SetEnvironmentVariableA("PYTHONPATH", persistentLdLibraryPathEnvForCatalyst.c_str());
 #else
     setenv("PYTHONPATH", persistentLdLibraryPathEnvForCatalyst.c_str(), 1);
@@ -387,7 +391,8 @@ namespace Iovs {
       IOSS_ERROR(errmsg);
     }
 
-#ifdef _WIN32
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64)
     char *cbuf = _fullpath(nullptr, sierraInsDir.c_str(), _MAX_PATH);
 #else
     char *cbuf  = realpath(sierraInsDir.c_str(), nullptr);
@@ -403,7 +408,8 @@ namespace Iovs {
       IOSS_ERROR(errmsg);
     }
 
-#ifdef _WIN32
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64)
     {
       std::ostringstream errmsg;
       errmsg << "This code is not yet supported on windows...\n";
