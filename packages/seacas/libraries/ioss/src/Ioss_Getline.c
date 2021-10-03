@@ -19,7 +19,8 @@
  * Note:  This version has been updated by Mike Gleason <mgleason@ncftp.com>
  */
 
-#if defined(_WIN64) || defined(WIN32) || defined(_WINDOWS) || defined(_MSC_VER)
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64)
 
 #define __windows__ 1
 #include <conio.h>

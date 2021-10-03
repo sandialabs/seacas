@@ -26,7 +26,7 @@
 #include <tokenize.h>
 #include <vector>
 
-#ifndef _WIN32
+#if !defined(__IOSS_WINDOWS__)
 #include <sys/ioctl.h>
 #include <sys/utsname.h>
 #endif
