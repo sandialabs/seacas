@@ -64,7 +64,7 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          ${LOCAL_SZIP} \
          ${EXTRA_DEPS} \
          -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
-         -DHDF5_DIR:PATH=${INSTALL_PATH}/lib
+         -DHDF5_DIR:PATH=${INSTALL_PATH}
 
 echo ""
 echo "         MPI: ${MPI}"
