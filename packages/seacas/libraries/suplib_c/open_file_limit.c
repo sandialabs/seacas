@@ -4,8 +4,13 @@
 //
 // See packages/seacas/LICENSE for details
 
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
+#include <stdio.h>
+#else
 #include <limits.h>
 #include <unistd.h>
+#endif
 
 int open_file_limit()
 {
