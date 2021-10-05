@@ -187,7 +187,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
 
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
-#defined __ED_WINDOWS__
+#define __ED_WINDOWS__ 1
 #endif
 
 #if !defined(__ED_WINDOWS__)
