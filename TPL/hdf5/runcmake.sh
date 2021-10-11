@@ -23,7 +23,6 @@ then
 else
     SHARED="${SHARED:-YES}"
 fi
-USE_SHARED="${SHARED}"
 
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
