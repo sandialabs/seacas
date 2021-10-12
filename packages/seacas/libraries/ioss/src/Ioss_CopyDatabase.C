@@ -28,7 +28,7 @@
 namespace {
   std::vector<int> get_selected_steps(Ioss::Region &region, const Ioss::MeshCopyOptions &options);
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank);
-  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region &               region,
+  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region                &region,
                                                   const Ioss::MeshCopyOptions &options);
   void define_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
                     const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
@@ -95,7 +95,7 @@ namespace {
 
   template <typename T>
   std::pair<size_t, std::string>
-  calculate_maximum_field_size(const std::vector<T> &          entities,
+  calculate_maximum_field_size(const std::vector<T>           &entities,
                                std::pair<size_t, std::string> &max_field)
   {
     size_t      max_size = max_field.first;
@@ -374,7 +374,7 @@ namespace {
     transfer_fields(input, output, Ioss::Field::MESH_REDUCTION);
   }
 
-  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region &               region,
+  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region                &region,
                                                   const Ioss::MeshCopyOptions &options)
   {
     std::vector<Ioss::Face> boundary;
@@ -679,7 +679,7 @@ namespace {
       for (const auto &isb : sbs) {
 
         // Find matching output structured block
-        const std::string &    name = isb->name();
+        const std::string     &name = isb->name();
         Ioss::StructuredBlock *osb  = output_region.get_structured_block(name);
         if (osb != nullptr) {
           transfer_fields(isb, osb, Ioss::Field::TRANSIENT);
@@ -920,7 +920,7 @@ namespace {
         // testing to verify that we handle zone reordering
         // correctly.
         for (int i = blocks.size() - 1; i >= 0; i--) {
-          const auto &       iblock = blocks[i];
+          const auto        &iblock = blocks[i];
           const std::string &name   = iblock->name();
           if (options.debug && rank == 0) {
             fmt::print(Ioss::DEBUG(), "{}, ", name);
@@ -1014,7 +1014,12 @@ namespace {
       for (const auto &ifb : fbs) {
         if (ifb->parent_block() != nullptr) {
           auto  fb_name = ifb->parent_block()->name();
-          auto *parent  = dynamic_cast<Ioss::EntityBlock *>(output_region.get_entity(fb_name));
+          auto *parent  = dynamic_cast<Ioss::EntityBlock *>(
+              output_region.get_entity(fb_name, Ioss::ELEMENTBLOCK));
+          if (parent == nullptr) {
+            parent = dynamic_cast<Ioss::EntityBlock *>(
+                output_region.get_entity(fb_name, Ioss::STRUCTUREDBLOCK));
+          }
 
           auto *ofb = surf->get_side_block(ifb->name());
           ofb->set_parent_block(parent);

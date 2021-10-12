@@ -89,7 +89,7 @@ std::string Ioss::GroupingEntity::generic_name() const
 bool Ioss::GroupingEntity::is_alias(const std::string &my_name) const
 {
   Region *region = database_->get_region();
-  return region->get_alias(my_name) == entityName;
+  return region->get_alias(my_name, type()) == entityName;
 }
 
 Ioss::DatabaseIO *Ioss::GroupingEntity::get_database() const
