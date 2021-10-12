@@ -1203,7 +1203,7 @@ namespace Ioex {
           "global_entity_count", static_cast<int64_t>(decomp->el_blocks[iblk].ioss_count())));
 
       if (block_name != alias) {
-        get_region()->add_alias(block_name, alias);
+        get_region()->add_alias(block_name, alias, io_block->type());
       }
 
       // Check for additional variables.
@@ -1406,8 +1406,8 @@ namespace Ioex {
             }
             get_region()->add(side_set);
 
-            get_region()->add_alias(side_set_name, alias);
-            get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("sideset", id));
+            get_region()->add_alias(side_set_name, alias, Ioss::SIDESET);
+            get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("sideset", id), Ioss::SIDESET);
           }
 
           //      split_type = SPLIT_BY_ELEMENT_BLOCK;
@@ -1755,8 +1755,8 @@ void ParallelDatabaseIO::get_sets(ex_entity_type type, int64_t count, const std:
       Xset->property_add(Ioss::Property("db_name", *db_name));
     }
     get_region()->add(Xset);
-    get_region()->add_alias(Xset_name, alias);
-    get_region()->add_alias(Xset_name, Ioss::Utils::encode_entity_name(base + "set", id));
+    get_region()->add_alias(Xset_name, alias, Xset->type());
+    get_region()->add_alias(Xset_name, Ioss::Utils::encode_entity_name(base + "set", id), Xset->type());
     add_attribute_fields(type, Xset, num_attr, "");
     add_results_fields(type, Xset, ins);
   }
