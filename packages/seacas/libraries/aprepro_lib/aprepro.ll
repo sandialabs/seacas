@@ -65,7 +65,7 @@ bool suppress_nl = false;
  double switch_condition = 0.0; // Value specified in "switch(condition)"
 
 // For substitution history
-size_t curr_index = 0;
+ssize_t curr_index = 0;
 std::string history_string;
 size_t hist_start = 0;
 
@@ -193,7 +193,7 @@ integer {D}+({E})?
 
 <LOOP>{
   {WS}"{"[Ee]"nd"[Ll]"oop".*"\n" {
-    outer_file.lineno++;
+    outer_file->lineno++;
     if(loop_lvl > 0)
       --loop_lvl;
 
@@ -219,7 +219,7 @@ integer {D}+({E})?
   {WS}"{"[Ll]"oop"{WS}"(".*"\n"  {
     loop_lvl++; /* Nested Loop */
     (*tmp_file) << yytext;
-    outer_file.lineno++;
+    outer_file->lineno++;
   }
 
   {WS}"{"[Aa]"bort"[Ll]"oop".*"\n" {
@@ -245,7 +245,7 @@ integer {D}+({E})?
 
   .*"\n" {
     (*tmp_file) << yytext;
-    outer_file.lineno++;
+    outer_file->lineno++;
   }
 }
 
