@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -13,9 +13,12 @@
 #include <sys/types.h> // for ssize_t
 #include <vector>
 
-#if defined(_MSC_VER)
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
+#if !defined(__MINGW32__)
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
+#endif
 #ifdef _WIN64
 #define ssize_t __int64
 #else
@@ -24,7 +27,7 @@
 #endif
 
 /* Function prototypes */
-extern int token_compare(char *      token, /* The input character string */
+extern int token_compare(char       *token, /* The input character string */
                          const char *key    /* The key to compare with token */
 );
 
