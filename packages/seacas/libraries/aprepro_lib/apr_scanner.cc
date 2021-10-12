@@ -1019,11 +1019,12 @@ namespace SEAMS {
 int file_must_exist = 0; /* Global used by include/conditional include */
 
 /* Global variables used by the looping mechanism */
-int           loop_lvl = 0;
-std::fstream *tmp_file;
-const char *  temp_f;
+SEAMS::file_rec *outer_file = nullptr;
+int              loop_lvl   = 0;
+std::fstream    *tmp_file;
+const char      *temp_f;
 
-#if defined __NVCC__
+#if defined           __NVCC__
 #pragma diag_suppress code_is_unreachable
 #endif
 
@@ -1213,7 +1214,7 @@ static int yy_flex_strlen(yyconst char *);
 YY_DECL
 {
   yy_state_type yy_current_state;
-  char *        yy_cp, *yy_bp;
+  char         *yy_cp, *yy_bp;
   int           yy_act;
 
   /* %% [7.0] user's declarations go here */
@@ -1364,7 +1365,8 @@ YY_DECL
         BEGIN(GET_LOOP_VAR);
         if (aprepro.ap_options.debugging)
           std::cerr << "DEBUG LOOP - Found loop begin test " << yytext << " in file "
-                    << aprepro.ap_file_list.top().name << "\n";
+                    << aprepro.ap_file_list.top().name << " at line "
+                    << aprepro.ap_file_list.top().lineno << "\n";
       }
       YY_BREAK
 
@@ -1374,6 +1376,7 @@ YY_DECL
       /* rule 14 can match eol */
       YY_RULE_SETUP
       {
+        aprepro.ap_file_list.top().lineno++;
         /* Loop control defined by integer */
         char *pt = strchr(yytext, ')');
         *pt      = '\0';
@@ -1383,20 +1386,20 @@ YY_DECL
           BEGIN(LOOP_SKIP);
         }
         else { /* Value defined and != 0. */
-          temp_f = get_temp_filename();
-          SEAMS::file_rec new_file(temp_f, 0, true, (int)yylval->val);
-          aprepro.ap_file_list.push(new_file);
-
           if (aprepro.ap_options.debugging)
             std::cerr << "DEBUG LOOP VAR = " << aprepro.ap_file_list.top().loop_count << " in file "
                       << aprepro.ap_file_list.top().name << " at line "
-                      << aprepro.ap_file_list.top().lineno << "\n";
+                      << aprepro.ap_file_list.top().lineno - 1 << "\n";
+
+          outer_file = &aprepro.ap_file_list.top();
+          temp_f     = get_temp_filename();
+          SEAMS::file_rec new_file(temp_f, 0, true, (int)yylval->val);
+          aprepro.ap_file_list.push(new_file);
 
           tmp_file = new std::fstream(temp_f, std::ios::out);
           loop_lvl++;
           BEGIN(LOOP);
         }
-        aprepro.ap_file_list.top().lineno++;
         aprepro.isCollectingLoop = true;
       }
       YY_BREAK
@@ -1404,9 +1407,10 @@ YY_DECL
       /* rule 15 can match eol */
       YY_RULE_SETUP
       {
+        aprepro.ap_file_list.top().lineno++;
         /* Loop control defined by variable */
         symrec *s;
-        char *  pt = strchr(yytext, ')');
+        char   *pt = strchr(yytext, ')');
         *pt        = '\0';
         if (!check_valid_var(yytext)) {
           aprepro.warning("Invalid variable name syntax '" + std::string(yytext) + "'");
@@ -1420,21 +1424,21 @@ YY_DECL
             BEGIN(LOOP_SKIP);
           }
           else { /* Value defined and != 0. */
-            temp_f = get_temp_filename();
-            SEAMS::file_rec new_file(temp_f, 0, true, (int)s->value.var);
-            aprepro.ap_file_list.push(new_file);
-
             if (aprepro.ap_options.debugging)
               std::cerr << "DEBUG LOOP VAR = " << aprepro.ap_file_list.top().loop_count
                         << " in file " << aprepro.ap_file_list.top().name << " at line "
-                        << aprepro.ap_file_list.top().lineno << "\n";
+                        << aprepro.ap_file_list.top().lineno - 1 << "\n";
+
+            outer_file = &aprepro.ap_file_list.top();
+            temp_f     = get_temp_filename();
+            SEAMS::file_rec new_file(temp_f, 0, true, (int)s->value.var);
+            aprepro.ap_file_list.push(new_file);
 
             tmp_file = new std::fstream(temp_f, std::ios::out);
             loop_lvl++;
             BEGIN(LOOP);
           }
         }
-        aprepro.ap_file_list.top().lineno++;
         aprepro.isCollectingLoop = true;
       }
       YY_BREAK
@@ -1443,7 +1447,7 @@ YY_DECL
       /* rule 16 can match eol */
       YY_RULE_SETUP
       {
-        aprepro.ap_file_list.top().lineno++;
+        outer_file->lineno++;
         if (loop_lvl > 0)
           --loop_lvl;
 
@@ -1472,7 +1476,7 @@ YY_DECL
       {
         loop_lvl++; /* Nested Loop */
         (*tmp_file) << yytext;
-        aprepro.ap_file_list.top().lineno++;
+        outer_file->lineno++;
       }
       YY_BREAK
     case 18:
@@ -1502,7 +1506,7 @@ YY_DECL
       YY_RULE_SETUP
       {
         (*tmp_file) << yytext;
-        aprepro.ap_file_list.top().lineno++;
+        outer_file->lineno++;
       }
       YY_BREAK
 
@@ -1545,13 +1549,17 @@ YY_DECL
       YY_BREAK
     case 23:
       /* rule 23 can match eol */
-      YY_RULE_SETUP { aprepro.ap_file_list.top().lineno++; }
+      YY_RULE_SETUP
+      { /*aprepro.ap_file_list.top().lineno++*/
+        ;
+      }
       YY_BREAK
 
     case 24:
       /* rule 24 can match eol */
       YY_RULE_SETUP
       {
+        /* aprepro.ap_file_list.top().lineno++; */
         yyless(0);
         curr_index = 0;
         BEGIN(INITIAL);
@@ -1562,7 +1570,7 @@ YY_DECL
       /* rule 25 can match eol */
       YY_RULE_SETUP
       {
-        aprepro.ap_file_list.top().lineno++;
+        /*        aprepro.ap_file_list.top().lineno++; */
         if (!switch_active) {
           yyerror("default statement found outside switch statement.");
         }
@@ -1809,8 +1817,6 @@ YY_DECL
       /* rule 46 can match eol */
       YY_RULE_SETUP
       {
-        aprepro.ap_file_list.top().lineno++;
-
         if (YY_START == VERBATIM) {
           if (echo)
             ECHO;
@@ -1831,6 +1837,7 @@ YY_DECL
           }
           /* Ignore endif if not skipping */
         }
+        aprepro.ap_file_list.top().lineno++;
       }
       YY_BREAK
     case 47:
@@ -1851,11 +1858,12 @@ YY_DECL
       /* rule 49 can match eol */
       YY_RULE_SETUP
       {
+        aprepro.ap_file_list.top().lineno++;
         BEGIN(INITIAL);
         {
           symrec *s;
           int     quoted = 0;
-          char *  pt     = strchr(yytext, ')');
+          char   *pt     = strchr(yytext, ')');
           *pt            = '\0';
           /* Check to see if surrounded by double quote */
           if ((pt = strchr(yytext, '"')) != nullptr) {
@@ -2523,7 +2531,7 @@ yy_state_type yyFlexLexer::yy_get_previous_state()
 /* %endif */
 {
   yy_state_type yy_current_state;
-  char *        yy_cp;
+  char         *yy_cp;
 
   /* %% [15.0] code to get the start state into yy_current_state goes here */
   yy_current_state = (yy_start);
@@ -3160,13 +3168,14 @@ namespace SEAMS {
     aprepro.outputStream.push(out);
   }
 
-  Scanner::~Scanner() {
+  Scanner::~Scanner()
+  {
     while (aprepro.ap_file_list.size() > 1) {
       auto kk = aprepro.ap_file_list.top();
       if (kk.name != "STDIN") {
-	yyFlexLexer::yy_load_buffer_state();
-	delete yyin;
-	yyin = nullptr;
+        yyFlexLexer::yy_load_buffer_state();
+        delete yyin;
+        yyin = nullptr;
       }
       aprepro.ap_file_list.pop();
       yyFlexLexer::yypop_buffer_state();
@@ -3437,7 +3446,8 @@ namespace SEAMS {
         if_case_run[if_lvl] = true;
       }
       if (aprepro.ap_options.debugging) {
-        std::cerr << "DEBUG IF: If level " << if_lvl << " " << if_state[if_lvl] << "\n";
+        std::cerr << "DEBUG IF: If level " << if_lvl << " " << if_state[if_lvl] << " at line "
+                  << aprepro.ap_file_list.top().lineno << "\n";
       }
     }
     return (nullptr);
@@ -3454,7 +3464,8 @@ namespace SEAMS {
       if_case_run[if_lvl] = true;
     }
     if (aprepro.ap_options.debugging) {
-      std::cerr << "DEBUG IF: elseif at level " << if_lvl << " " << if_state[if_lvl] << "\n";
+      std::cerr << "DEBUG IF: elseif at level " << if_lvl << " " << if_state[if_lvl] << " at line "
+                << aprepro.ap_file_list.top().lineno << "\n";
     }
     return (nullptr);
   }

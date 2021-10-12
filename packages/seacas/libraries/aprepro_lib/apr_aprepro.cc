@@ -32,7 +32,7 @@
 #endif
 
 namespace {
-  const char *version_string = "6.02 (2021/09/30)";
+  const char *version_string = "6.03 (2021/10/12)";
 
   void output_copyright();
 
@@ -223,7 +223,7 @@ namespace SEAMS {
     }
 
     if (line_info) {
-      ss << " (" << ap_file_list.top().name << ", line " << ap_file_list.top().lineno + 1 << ")";
+      ss << " (" << ap_file_list.top().name << ", line " << ap_file_list.top().lineno << ")";
     }
     ss << "\n";
 
@@ -254,7 +254,7 @@ namespace SEAMS {
     }
 
     if (line_info) {
-      ss << " (" << ap_file_list.top().name << ", line " << ap_file_list.top().lineno + 1 << ")";
+      ss << " (" << ap_file_list.top().name << ", line " << ap_file_list.top().lineno << ")";
     }
     ss << "\n";
 
@@ -284,7 +284,7 @@ namespace SEAMS {
     }
 
     if (line_info) {
-      ss << " (" << ap_file_list.top().name << ", line " << ap_file_list.top().lineno + 1 << ")";
+      ss << " (" << ap_file_list.top().name << ", line " << ap_file_list.top().lineno << ")";
     }
     ss << "\n";
 
@@ -611,7 +611,7 @@ namespace SEAMS {
   {
     if (check_valid_var(sym_name.c_str())) {
       SYMBOL_TYPE type = immutable ? SYMBOL_TYPE::IMMUTABLE_VARIABLE : SYMBOL_TYPE::VARIABLE;
-      symrec *    var  = getsym(sym_name);
+      symrec     *var  = getsym(sym_name);
       if (var == nullptr) {
         var = putsym(sym_name, type, internal);
       }
@@ -629,7 +629,7 @@ namespace SEAMS {
   {
     if (check_valid_var(sym_name.c_str())) {
       SYMBOL_TYPE type = SYMBOL_TYPE::ARRAY_VARIABLE;
-      symrec *    var  = getsym(sym_name);
+      symrec     *var  = getsym(sym_name);
       if (var == nullptr) {
         var = putsym(sym_name, type, false);
       }
