@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -17,10 +17,8 @@ int main(int argc, char **argv)
   MPI_Comm mpi_comm = MPI_COMM_WORLD;
   MPI_Info mpi_info = MPI_INFO_NULL;
 
-  int  exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
-  int  num_side_sets, error;
   int  i, j, k, node_ctr;
-  int *elem_map, *connect, *node_list, *node_ctr_list, *elem_list, *side_list;
+  int *node_ctr_list, *elem_list, *side_list;
   int *ids;
   int *num_nodes_per_set = NULL;
   int *num_elem_per_set  = NULL;
@@ -40,13 +38,12 @@ int main(int argc, char **argv)
   int  num_sides_in_set, num_df_in_set;
   int  list_len, elem_list_len, node_list_len, df_list_len;
   int  node_num, time_step, var_index, beg_time, end_time, elem_num;
-  int  CPU_word_size, IO_word_size;
   int  num_props, prop_value, *prop_values;
   int  idum;
 
   float  time_value, *time_values, *var_values;
   float *x, *y, *z;
-  float *attrib, *dist_fact;
+  float *attrib;
   float  version, fdum;
 
   char *coord_names[3], *qa_record[2][4], *info[3], *var_names[3];
@@ -58,8 +55,8 @@ int main(int argc, char **argv)
   char *cdum = NULL;
   char *prop_names[3];
 
-  CPU_word_size = 0; /* sizeof(float) */
-  IO_word_size  = 0; /* use what is stored in file */
+  int CPU_word_size = 0; /* sizeof(float) */
+  int IO_word_size  = 0; /* use what is stored in file */
 
   ex_opts(EX_VERBOSE | EX_ABORT);
 
@@ -67,12 +64,12 @@ int main(int argc, char **argv)
   MPI_Init(&argc, &argv);
 
   /* open EXODUS II files */
-  exoid = ex_open_par("test.exo",     /* filename path */
-                      EX_READ,        /* access mode = READ */
-                      &CPU_word_size, /* CPU word size */
-                      &IO_word_size,  /* IO word size */
-                      &version,       /* ExodusII library version */
-                      mpi_comm, mpi_info);
+  int exoid = ex_open_par("test.exo",     /* filename path */
+                          EX_READ,        /* access mode = READ */
+                          &CPU_word_size, /* CPU word size */
+                          &IO_word_size,  /* IO word size */
+                          &version,       /* ExodusII library version */
+                          mpi_comm, mpi_info);
 
   printf("\nafter ex_open\n");
   if (exoid < 0)
@@ -89,8 +86,9 @@ int main(int argc, char **argv)
 
   /* read database parameters */
 
-  error = ex_get_init(exoid, title, &num_dim, &num_nodes, &num_elem, &num_elem_blk, &num_node_sets,
-                      &num_side_sets);
+  int num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets, num_side_sets;
+  int error = ex_get_init(exoid, title, &num_dim, &num_nodes, &num_elem, &num_elem_blk,
+                          &num_node_sets, &num_side_sets);
 
   printf("after ex_get_init, error = %3d\n", error);
 
@@ -116,12 +114,12 @@ int main(int argc, char **argv)
   if (num_dim >= 2)
     y = (float *)calloc(num_nodes, sizeof(float));
   else
-    y = 0;
+    y = NULL;
 
   if (num_dim >= 3)
     z = (float *)calloc(num_nodes, sizeof(float));
   else
-    z = 0;
+    z = NULL;
 
   error = ex_get_coord(exoid, x, y, z);
   printf("\nafter ex_get_coord, error = %3d\n", error);
@@ -205,7 +203,7 @@ int main(int argc, char **argv)
 
   /* read element order map */
 
-  elem_map = (int *)calloc(num_elem, sizeof(int));
+  int *elem_map = (int *)calloc(num_elem, sizeof(int));
 
   error = ex_get_map(exoid, elem_map);
   printf("\nafter ex_get_map, error = %3d\n", error);
@@ -227,6 +225,7 @@ int main(int argc, char **argv)
     error = ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
     printf("\nafter ex_get_elem_blk_ids, error = %3d\n", error);
 
+    char *block_names[10];
     for (i = 0; i < num_elem_blk; i++) {
       printf("Block # %d is id %d\n", i, ids[i]);
       block_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
@@ -285,7 +284,7 @@ int main(int argc, char **argv)
 
   for (i = 0; i < num_elem_blk; i++) {
     if (num_elem_in_block[i] > 0) {
-      connect = (int *)calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
+      int *connect = (int *)calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
 
       error = ex_get_conn(exoid, EX_ELEM_BLOCK, ids[i], connect);
       printf("\nafter ex_get_elem_conn, error = %d\n", error);
@@ -347,6 +346,7 @@ int main(int argc, char **argv)
     error = ex_get_ids(exoid, EX_NODE_SET, ids);
     printf("\nafter ex_get_node_set_ids, error = %3d\n", error);
 
+    char *nset_names[10];
     for (i = 0; i < num_node_sets; i++) {
       nset_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -367,8 +367,8 @@ int main(int argc, char **argv)
       printf("num_nodes = %2d\n", num_nodes_in_set);
       printf("name = '%s'\n", nset_names[i]);
       free(nset_names[i]);
-      node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
-      dist_fact = (float *)calloc(num_nodes_in_set, sizeof(float));
+      int   *node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
+      float *dist_fact = (float *)calloc(num_nodes_in_set, sizeof(float));
 
       error = ex_get_set(exoid, EX_NODE_SET, ids[i], node_list);
       printf("\nafter ex_get_node_set, error = %3d\n", error);
@@ -472,7 +472,7 @@ int main(int argc, char **argv)
 
     error = ex_inquire(exoid, EX_INQ_NS_DF_LEN, &list_len, &fdum, cdum);
     printf("\nafter ex_inquire: EX_INQ_NS_DF_LEN = %d, error = %3d\n", list_len, error);
-    dist_fact = (float *)calloc(list_len, sizeof(float));
+    float *dist_fact = (float *)calloc(list_len, sizeof(float));
 
     error = ex_get_concat_node_sets(exoid, ids, num_nodes_per_set, num_df_per_set, node_ind, df_ind,
                                     node_list, dist_fact);
@@ -516,6 +516,7 @@ int main(int argc, char **argv)
     error = ex_get_ids(exoid, EX_SIDE_SET, ids);
     printf("\nafter ex_get_side_set_ids, error = %3d\n", error);
 
+    char *sset_names[10];
     for (i = 0; i < num_side_sets; i++) {
       sset_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -539,12 +540,12 @@ int main(int argc, char **argv)
       free(sset_names[i]);
 
       /* Note: The # of elements is same as # of sides!  */
-      num_elem_in_set = num_sides_in_set;
-      elem_list       = (int *)calloc(num_elem_in_set, sizeof(int));
-      side_list       = (int *)calloc(num_sides_in_set, sizeof(int));
-      node_ctr_list   = (int *)calloc(num_elem_in_set, sizeof(int));
-      node_list       = (int *)calloc(num_elem_in_set * 21, sizeof(int));
-      dist_fact       = (float *)calloc(num_df_in_set, sizeof(float));
+      num_elem_in_set  = num_sides_in_set;
+      elem_list        = (int *)calloc(num_elem_in_set, sizeof(int));
+      side_list        = (int *)calloc(num_sides_in_set, sizeof(int));
+      node_ctr_list    = (int *)calloc(num_elem_in_set, sizeof(int));
+      node_list        = (int *)calloc(num_elem_in_set * 21, sizeof(int));
+      float *dist_fact = (float *)calloc(num_df_in_set, sizeof(float));
 
       error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
       printf("\nafter ex_get_side_set, error = %3d\n", error);
@@ -647,7 +648,7 @@ int main(int argc, char **argv)
       df_ind           = (int *)calloc(num_side_sets, sizeof(int));
       elem_list        = (int *)calloc(elem_list_len, sizeof(int));
       side_list        = (int *)calloc(elem_list_len, sizeof(int));
-      dist_fact        = (float *)calloc(df_list_len, sizeof(float));
+      float *dist_fact = (float *)calloc(df_list_len, sizeof(float));
 
       error = ex_get_concat_side_sets(exoid, ids, num_elem_per_set, num_df_per_set, elem_ind,
                                       df_ind, elem_list, side_list, dist_fact);
