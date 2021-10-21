@@ -17,7 +17,7 @@
 
 #define EXCHECK(funcall)                                                                           \
   do {                                                                                             \
-    error = (funcall);                                                                             \
+    int error = (funcall);							\
     printf("after %s, error = %d\n", TOSTRING(funcall), error);                                    \
     if (error != EX_NOERR && error != EX_WARN) {                                                   \
       fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                    \
@@ -28,29 +28,17 @@
 
 int main(int argc, char **argv)
 {
-  int   exoid;
   int   num_blob;
-  int   num_red_vars;
-  int   num_vars;
-  int   error;
   int   i;
-  int   CPU_word_size;
-  int   IO_word_size;
-  int   idum;
-  char *blob_names[10];
-
-  float version;
-
-  char *var_names[10];
-  char *cdum = NULL;
-
-  CPU_word_size = 0; /* sizeof(float) */
-  IO_word_size  = 0; /* use what is stored in file */
 
   ex_opts(EX_VERBOSE | EX_ABORT);
 
+  int CPU_word_size = 0; /* sizeof(float) */
+  int IO_word_size  = 0; /* use what is stored in file */
+  float version;
+
   /* open EXODUS II files */
-  exoid = ex_open("test-blob.exo", /* filename path */
+  int exoid = ex_open("test-blob.exo", /* filename path */
                   EX_READ,         /* access mode = READ */
                   &CPU_word_size,  /* CPU word size */
                   &IO_word_size,   /* IO word size */
@@ -64,6 +52,8 @@ int main(int argc, char **argv)
   printf("test-assembly.exo is an EXODUSII file; version %4.2f\n", version);
   /*   printf ("         CPU word size %1d\n",CPU_word_size);  */
   printf("         I/O word size %1d\n", IO_word_size);
+  int   idum;
+  char *cdum = NULL;
   ex_inquire(exoid, EX_INQ_API_VERS, &idum, &version, cdum);
   printf("EXODUSII API; version %4.2f\n", version);
 
@@ -101,6 +91,7 @@ int main(int argc, char **argv)
     int blob_ids[10];
     ex_get_ids(exoid, EX_BLOB, blob_ids);
 
+    char *blob_names[10];
     for (i = 0; i < num_blob; i++) {
       blob_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
@@ -180,10 +171,13 @@ int main(int argc, char **argv)
       }
     }
 
+    int num_vars;
+    int num_red_vars;
     EXCHECK(ex_get_reduction_variable_param(exoid, EX_BLOB, &num_red_vars));
     EXCHECK(ex_get_variable_param(exoid, EX_BLOB, &num_vars));
 
     if (num_red_vars > 0) {
+      char *var_names[10];
       for (i = 0; i < num_red_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
@@ -198,6 +192,7 @@ int main(int argc, char **argv)
     }
 
     if (num_vars > 0) {
+      char *var_names[10];
       for (i = 0; i < num_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
@@ -245,9 +240,9 @@ int main(int argc, char **argv)
     }
     free(var_values);
     free(vals);
-  }
   for (i = 0; i < num_blob; i++) {
     free(blob_names[i]);
+  }
   }
 
   EXCHECK(ex_close(exoid));
