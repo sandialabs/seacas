@@ -149,7 +149,7 @@ namespace Ioss {
     static const std::vector<std::string> valid_methods
     {
       "EXTERNAL"
-#if defined(PARALLEL_AWARE_EXODUS)
+#ifdef SEACAS_HAVE_MPI
 	, "LINEAR", "MAP", "VARIABLE"
 #if !defined(NO_ZOLTAN_SUPPORT)
           ,
