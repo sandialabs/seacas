@@ -795,7 +795,7 @@ namespace Ioex {
     int ierr = 0;
     if (field.get_name() == "mesh_model_coordinates_x") {
       m_decomposition.show_progress("\tex_get_partial_coord X");
-      ierr = ex_get_partial_coord_component(filePtr, decomp_node_offset() + 1, decomp_node_count(),
+      int ierr = ex_get_partial_coord_component(filePtr, decomp_node_offset() + 1, decomp_node_count(),
                                             1, tmp.data());
       if (ierr >= 0) {
         communicate_node_data(tmp.data(), ioss_data, 1);
@@ -1552,7 +1552,6 @@ namespace Ioex {
                                              T *ioss_data) const
   {
     m_decomposition.show_progress(__func__);
-    int ierr = 0;
 
     // SideSet Distribution Factor data can be very complicated.
     // For some sanity, handle all requests for those here.  Only handles sidesets
@@ -1602,6 +1601,7 @@ namespace Ioex {
     // 1. Constant face topology in sideset (e.g., all quad or all tri) [EASY, COMMON]
     // 2. Non-constant face topology in sideset (e.g., mix of quad/tri/...) [HARD, RARE?]
 
+    int ierr = 0;
     if (set.distributionFactorValsPerEntity > 0) {
       // Constant face topology in sideset
       // Simply read the values in the file decomposition and

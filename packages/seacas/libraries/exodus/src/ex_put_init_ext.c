@@ -140,8 +140,8 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
   }
 
   /* Can have nonzero model->num_XXXX_map even if model->num_XXXX == 0 */
-  int status;
   if ((map_count) > 0) {
+    int status;
     if ((status = nc_def_dim(exoid, map_dim_name, map_count, map_dimension)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of %ss in file id %d",

@@ -17,8 +17,8 @@ int main(int argc, char **argv)
   MPI_Comm mpi_comm = MPI_COMM_WORLD;
   MPI_Info mpi_info = MPI_INFO_NULL;
 
-  int  i, j, k, node_ctr;
-  int *node_ctr_list, *elem_list, *side_list;
+  int  i, j, k;
+  int *elem_list, *side_list;
   int *ids;
   int *num_nodes_per_set = NULL;
   int *num_elem_per_set  = NULL;
@@ -34,11 +34,11 @@ int main(int argc, char **argv)
   int *num_elem_in_block  = NULL;
   int *num_nodes_per_elem = NULL;
   int *num_attr           = NULL;
-  int  num_nodes_in_set, num_elem_in_set;
+  int  num_nodes_in_set;
   int  num_sides_in_set, num_df_in_set;
   int  list_len, elem_list_len, node_list_len, df_list_len;
-  int  node_num, time_step, var_index, beg_time, end_time, elem_num;
-  int  num_props, prop_value, *prop_values;
+  int  time_step, var_index, beg_time, end_time, elem_num;
+  int  num_props, prop_value;
   int  idum;
 
   float  time_value, *time_values, *var_values;
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
   char *block_names[10], *nset_names[10], *sset_names[10];
   char *attrib_names[10];
   char  name[MAX_STR_LENGTH + 1];
-  char  title[MAX_LINE_LENGTH + 1], elem_type[MAX_STR_LENGTH + 1];
+  char  title[MAX_LINE_LENGTH + 1];
   char  title_chk[MAX_LINE_LENGTH + 1];
   char *cdum = NULL;
   char *prop_names[3];
@@ -234,6 +234,7 @@ int main(int argc, char **argv)
     error = ex_get_names(exoid, EX_ELEM_BLOCK, block_names);
     printf("\nafter ex_get_names, error = %3d\n", error);
 
+    char  elem_type[MAX_STR_LENGTH + 1];
     for (i = 0; i < num_elem_blk; i++) {
       ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
       if (strcmp(name, block_names[i]) != 0) {
@@ -435,7 +436,7 @@ int main(int argc, char **argv)
     for (i = 0; i < num_props; i++) {
       prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
-    prop_values = (int *)calloc(num_node_sets, sizeof(int));
+    int *prop_values = (int *)calloc(num_node_sets, sizeof(int));
 
     error = ex_get_prop_names(exoid, EX_NODE_SET, prop_names);
     printf("after ex_get_prop_names, error = %d\n", error);
@@ -540,10 +541,10 @@ int main(int argc, char **argv)
       free(sset_names[i]);
 
       /* Note: The # of elements is same as # of sides!  */
-      num_elem_in_set  = num_sides_in_set;
+      int num_elem_in_set  = num_sides_in_set;
       elem_list        = (int *)calloc(num_elem_in_set, sizeof(int));
       side_list        = (int *)calloc(num_sides_in_set, sizeof(int));
-      node_ctr_list    = (int *)calloc(num_elem_in_set, sizeof(int));
+      int *node_ctr_list    = (int *)calloc(num_elem_in_set, sizeof(int));
       node_list        = (int *)calloc(num_elem_in_set * 21, sizeof(int));
       float *dist_fact = (float *)calloc(num_df_in_set, sizeof(float));
 
@@ -568,7 +569,7 @@ int main(int argc, char **argv)
         printf("%3d\n", side_list[j]);
       }
 
-      node_ctr = 0;
+      int node_ctr = 0;
       printf("node list for side set %2d\n", ids[i]);
       for (k = 0; k < num_elem_in_set; k++) {
         for (j = 0; j < node_ctr_list[k]; j++) {
@@ -969,7 +970,7 @@ int main(int argc, char **argv)
 
     var_values = (float *)calloc(num_time_steps, sizeof(float));
 
-    node_num = 1;
+    int node_num = 1;
     error = ex_get_var_time(exoid, EX_NODAL, var_index, node_num, beg_time, end_time, var_values);
     printf("\nafter ex_get_nodal_var_time, error = %3d\n", error);
 

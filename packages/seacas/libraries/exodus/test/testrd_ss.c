@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -43,14 +43,13 @@ int main(int argc, char **argv)
 {
   int  exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
   int  num_side_sets, error;
-  int  i, j, k, node_ctr;
-  int *connect, *node_list, *node_ctr_list, *elem_list, *side_list;
+  int  i, j, k;
+  int *node_list, *node_ctr_list, *elem_list, *side_list;
   int *ids;
   int *num_elem_per_set;
   int *num_df_per_set;
   int *elem_ind, *df_ind;
   int *num_elem_in_block, *num_nodes_per_elem, *num_attr;
-  int  num_elem_in_set;
   int  num_sides_in_set, num_df_in_set;
   int  elem_list_len = 0;
   int  node_list_len = 0;
@@ -129,7 +128,7 @@ int main(int argc, char **argv)
   /* read element connectivity */
 
   for (i = 0; i < num_elem_blk; i++) {
-    connect = (int *)my_calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
+    int *connect = (int *)my_calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
 
     error = ex_get_conn(exoid, EX_ELEM_BLOCK, ids[i], connect, NULL, NULL);
     printf("\nafter ex_get_elem_conn, error = %d\n", error);
@@ -162,7 +161,7 @@ int main(int argc, char **argv)
     printf("num_dist_factors = %3d\n", num_df_in_set);
 
     /* Note: The # of elements is same as # of sides!  */
-    num_elem_in_set = num_sides_in_set;
+    int num_elem_in_set = num_sides_in_set;
     elem_list       = (int *)my_calloc(num_elem_in_set, sizeof(int));
     side_list       = (int *)my_calloc(num_sides_in_set, sizeof(int));
     node_ctr_list   = (int *)my_calloc(num_elem_in_set, sizeof(int));
@@ -190,7 +189,7 @@ int main(int argc, char **argv)
       printf("%3d\n", side_list[j]);
     }
 
-    node_ctr = 0;
+    int node_ctr = 0;
     printf("node list for side set %2d\n", ids[i]);
     for (k = 0; k < num_elem_in_set; k++) {
       printf("%3d nodes for side %3d\n", node_ctr_list[k], k);
