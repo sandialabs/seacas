@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
   param arg[NUM_THREADS];
 
   printf("Running on %d threads\n", NUM_THREADS);
-  for (lont t = 0; t < NUM_THREADS; t++) {
+  for (long t = 0; t < NUM_THREADS; t++) {
     arg[t].exoid    = exoid;
     arg[t].threadid = t;
     arg[t].timestep = 1;
