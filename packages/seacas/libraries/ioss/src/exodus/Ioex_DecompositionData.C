@@ -1601,11 +1601,11 @@ namespace Ioex {
     // 1. Constant face topology in sideset (e.g., all quad or all tri) [EASY, COMMON]
     // 2. Non-constant face topology in sideset (e.g., mix of quad/tri/...) [HARD, RARE?]
 
-    int ierr = 0;
     if (set.distributionFactorValsPerEntity > 0) {
       // Constant face topology in sideset
       // Simply read the values in the file decomposition and
       // communicate with a comp count of set.distributionFactorValsPerEntity.
+      int ierr = 0;
       std::vector<T> file_data;
       if (m_processor == set.root_) {
         file_data.resize(set.distributionFactorValsPerEntity * set.fileCount);
