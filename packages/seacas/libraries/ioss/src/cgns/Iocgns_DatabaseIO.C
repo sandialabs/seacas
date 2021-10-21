@@ -18,10 +18,9 @@
 #include <bitset>
 #include <cgns/Iocgns_DatabaseIO.h>
 #include <cgns/Iocgns_Utils.h>
-#ifdef SEACAS_HAVE_MPI
-#include <pcgnslib.h>
-#else
 #include <cgnslib.h>
+#if CG_BUILD_PARALLEL
+#include <pcgnslib.h>
 #endif
 #include <cstddef>
 #include <ctime>
@@ -610,7 +609,7 @@ namespace Iocgns {
         }
       }
 
-#ifdef SEACAS_HAVE_MPI
+#if CG_BUILD_PARALLEL
       cgp_mpi_comm(MPI_COMM_SELF);
       int ierr = cgp_open(decoded_filename().c_str(), mode, &m_cgnsFilePtr);
       cgp_mpi_comm(util().communicator());

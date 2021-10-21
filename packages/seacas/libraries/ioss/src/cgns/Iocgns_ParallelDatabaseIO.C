@@ -9,6 +9,8 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <cgnsconfig.h>
+#if CG_BUILD_PARALLEL
 #include <cgns/Iocgns_Defines.h>
 
 #include <Ioss_CodeTypes.h>
@@ -28,7 +30,6 @@
 #include <sys/select.h>
 #include <vector>
 
-#include <cgnsconfig.h>
 #include <pcgnslib.h>
 
 #if !defined(CGNSLIB_H)
@@ -2607,3 +2608,10 @@ namespace Iocgns {
   }
 
 } // namespace Iocgns
+#else
+/*
+ * Prevent warning in some versions of ranlib(1) because the object
+ * file has no symbols.
+ */
+const char ioss_cgns_parallel_database_unused_symbol_dummy = '\0';
+#endif
