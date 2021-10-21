@@ -148,7 +148,9 @@ namespace Ioss {
   {
     static const std::vector<std::string> valid_methods
     {
-      "LINEAR", "MAP", "VARIABLE"
+      "EXTERNAL"
+#if defined(PARALLEL_AWARE_EXODUS)
+	, "LINEAR", "MAP", "VARIABLE"
 #if !defined(NO_ZOLTAN_SUPPORT)
           ,
           "BLOCK", "CYCLIC", "RANDOM", "RCB", "RIB", "HSFC"
@@ -156,6 +158,7 @@ namespace Ioss {
 #if !defined(NO_PARMETIS_SUPPORT)
           ,
           "KWAY", "KWAY_GEOM", "GEOM_KWAY", "METIS_SFC"
+#endif
 #endif
     };
     return valid_methods;
