@@ -99,7 +99,7 @@ then
   then
       CXX=clang++
       CC=clang
-      FC=gfortran
+      FC=${FC:-gfortran}
       CFLAGS="-Wall -Wunused -pedantic"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
