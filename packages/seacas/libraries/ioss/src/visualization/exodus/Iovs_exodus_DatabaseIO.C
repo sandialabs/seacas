@@ -46,14 +46,14 @@ namespace Iovs_exodus {
     Iovs::Utils::DatabaseInfo dbinfo;
     dbinfo.databaseFilename   = this->DBFilename;
     dbinfo.separatorCharacter = std::string(1, this->get_field_separator());
-    dbinfo.myRank             = this->parallel_rank();
-    dbinfo.communicator       = communicator;
+    dbinfo.parallelUtils = &this->util();
 
     Iovs::Utils::getInstance().checkDbUsage(db_usage);
     Iovs::Utils::getInstance().createDatabaseOutputFile(dbinfo);
     dbState                              = Ioss::STATE_UNKNOWN;
     this->globalNodeAndElementIDsCreated = false;
 
+    Iovs::Utils::getInstance().writeToCatalystLogFile(dbinfo, props);
     this->catExoMesh = Iovs::Utils::getInstance().createCatalystExodusMesh(dbinfo, props);
 
     if (props.exists("CATALYST_CREATE_NODE_SETS")) {
