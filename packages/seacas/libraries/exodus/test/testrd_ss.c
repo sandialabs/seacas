@@ -42,7 +42,6 @@ void *my_calloc(size_t length, size_t size)
 int main(int argc, char **argv)
 {
   int i, j, k;
-  int df_list_len = 0;
 
   int CPU_word_size = 0; /* sizeof(float) */
   int IO_word_size  = 0; /* use what is stored in file */
@@ -211,6 +210,7 @@ int main(int argc, char **argv)
 
   int elem_list_len = 0;
   int node_list_len = 0;
+  int df_list_len   = 0;
   if (num_side_sets > 0) {
     elem_list_len = ex_inquire_int(exoid, EX_INQ_SS_ELEM_LEN);
     printf("\nafter ex_inquire: EX_INQ_SS_ELEM_LEN = %d\n", elem_list_len);
