@@ -209,13 +209,12 @@ int main(int argc, char **argv)
   free(ids);
 
   int elem_list_len = 0;
-  int node_list_len = 0;
   int df_list_len   = 0;
   if (num_side_sets > 0) {
     elem_list_len = ex_inquire_int(exoid, EX_INQ_SS_ELEM_LEN);
     printf("\nafter ex_inquire: EX_INQ_SS_ELEM_LEN = %d\n", elem_list_len);
 
-    node_list_len = ex_inquire_int(exoid, EX_INQ_SS_NODE_LEN);
+    int node_list_len = ex_inquire_int(exoid, EX_INQ_SS_NODE_LEN);
     printf("\nafter ex_inquire: EX_INQ_SS_NODE_LEN = %d\n", node_list_len);
 
     df_list_len = ex_inquire_int(exoid, EX_INQ_SS_DF_LEN);
