@@ -63,129 +63,61 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_init(exoid, title, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets,
                       num_side_sets));
 
+  /* clang-format off */
   /* write nodal coordinates values and names to database */
 
   /* Quad #1 */
   float x[100], y[100], z[100];
-  x[0] = 0.0;
-  y[0] = 0.0;
-  z[0] = 0.0;
-  x[1] = 1.0;
-  y[1] = 0.0;
-  z[1] = 0.0;
-  x[2] = 1.0;
-  y[2] = 1.0;
-  z[2] = 0.0;
-  x[3] = 0.0;
-  y[3] = 1.0;
-  z[3] = 0.0;
+  x[0] = 0.0;  y[0] = 0.0;  z[0] = 0.0;
+  x[1] = 1.0;  y[1] = 0.0;  z[1] = 0.0;
+  x[2] = 1.0;  y[2] = 1.0;  z[2] = 0.0;
+  x[3] = 0.0;  y[3] = 1.0;  z[3] = 0.0;
 
   /* Quad #2 */
-  x[4] = 1.0;
-  y[4] = 0.0;
-  z[4] = 0.0;
-  x[5] = 2.0;
-  y[5] = 0.0;
-  z[5] = 0.0;
-  x[6] = 2.0;
-  y[6] = 1.0;
-  z[6] = 0.0;
-  x[7] = 1.0;
-  y[7] = 1.0;
-  z[7] = 0.0;
+  x[4] = 1.0;  y[4] = 0.0;  z[4] = 0.0;
+  x[5] = 2.0;  y[5] = 0.0;  z[5] = 0.0;
+  x[6] = 2.0;  y[6] = 1.0;  z[6] = 0.0;
+  x[7] = 1.0;  y[7] = 1.0;  z[7] = 0.0;
 
   /* Hex #1 */
-  x[8]  = 0.0;
-  y[8]  = 0.0;
-  z[8]  = 0.0;
-  x[9]  = 10.0;
-  y[9]  = 0.0;
-  z[9]  = 0.0;
-  x[10] = 10.0;
-  y[10] = 0.0;
-  z[10] = -10.0;
-  x[11] = 1.0;
-  y[11] = 0.0;
-  z[11] = -10.0;
-  x[12] = 1.0;
-  y[12] = 10.0;
-  z[12] = 0.0;
-  x[13] = 10.0;
-  y[13] = 10.0;
-  z[13] = 0.0;
-  x[14] = 10.0;
-  y[14] = 10.0;
-  z[14] = -10.0;
-  x[15] = 1.0;
-  y[15] = 10.0;
-  z[15] = -10.0;
+  x[8]  = 0.0;   y[8]  = 0.0;  z[8]  = 0.0;
+  x[9]  = 10.0;  y[9]  = 0.0;  z[9]  = 0.0;
+  x[10] = 10.0;  y[10] = 0.0;  z[10] = -10.0;
+  x[11] = 1.0;   y[11] = 0.0;  z[11] = -10.0;
+  x[12] = 1.0;   y[12] = 10.0; z[12] = 0.0;
+  x[13] = 10.0;  y[13] = 10.0; z[13] = 0.0;
+  x[14] = 10.0;  y[14] = 10.0; z[14] = -10.0;
+  x[15] = 1.0;   y[15] = 10.0; z[15] = -10.0;
 
   /* Tetra #1 */
-  x[16] = 0.0;
-  y[16] = 0.0;
-  z[16] = 0.0;
-  x[17] = 1.0;
-  y[17] = 0.0;
-  z[17] = 5.0;
-  x[18] = 10.0;
-  y[18] = 0.0;
-  z[18] = 2.0;
-  x[19] = 7.0;
-  y[19] = 5.0;
-  z[19] = 3.0;
+  x[16] = 0.0;  y[16] = 0.0;  z[16] = 0.0;
+  x[17] = 1.0;  y[17] = 0.0;  z[17] = 5.0;
+  x[18] = 10.0; y[18] = 0.0;  z[18] = 2.0;
+  x[19] = 7.0;  y[19] = 5.0;  z[19] = 3.0;
 
   /* Wedge #1 */
-  x[20] = 3.0;
-  y[20] = 0.0;
-  z[20] = 6.0;
-  x[21] = 6.0;
-  y[21] = 0.0;
-  z[21] = 0.0;
-  x[22] = 0.0;
-  y[22] = 0.0;
-  z[22] = 0.0;
-  x[23] = 3.0;
-  y[23] = 2.0;
-  z[23] = 6.0;
-  x[24] = 6.0;
-  y[24] = 2.0;
-  z[24] = 2.0;
-  x[25] = 0.0;
-  y[25] = 2.0;
-  z[25] = 0.0;
+  x[20] = 3.0;  y[20] = 0.0;  z[20] = 6.0;
+  x[21] = 6.0;  y[21] = 0.0;  z[21] = 0.0;
+  x[22] = 0.0;  y[22] = 0.0;  z[22] = 0.0;
+  x[23] = 3.0;  y[23] = 2.0;  z[23] = 6.0;
+  x[24] = 6.0;  y[24] = 2.0;  z[24] = 2.0;
+  x[25] = 0.0;  y[25] = 2.0;  z[25] = 0.0;
 
   /* Tetra #2 */
-  x[26] = 2.7;
-  y[26] = 1.7;
-  z[26] = 2.7;
-  x[27] = 6.0;
-  y[27] = 1.7;
-  z[27] = 3.3;
-  x[28] = 5.7;
-  y[28] = 1.7;
-  z[28] = 1.7;
-  x[29] = 3.7;
-  y[29] = 0.0;
-  z[29] = 2.3;
+  x[26] = 2.7;  y[26] = 1.7;  z[26] = 2.7;
+  x[27] = 6.0;  y[27] = 1.7;  z[27] = 3.3;
+  x[28] = 5.7;  y[28] = 1.7;  z[28] = 1.7;
+  x[29] = 3.7;  y[29] = 0.0;  z[29] = 2.3;
 
   /* 3d Tri */
-  x[30] = 0.0;
-  y[30] = 0.0;
-  z[30] = 0.0;
-  x[31] = 10.0;
-  y[31] = 0.0;
-  z[31] = 0.0;
-  x[32] = 10.0;
-  y[32] = 10.0;
-  z[32] = 10.0;
+  x[30] = 0.0;  y[30] = 0.0;  z[30] = 0.0;
+  x[31] = 10.0; y[31] = 0.0;  z[31] = 0.0;
+  x[32] = 10.0; y[32] = 10.0; z[32] = 10.0;
+  /* clang-format on */
 
   EXCHECK(ex_put_coord(exoid, x, y, z));
 
-  char *coord_names[3];
-  coord_names[0] = "xcoor";
-  coord_names[1] = "ycoor";
-  coord_names[2] = "zcoor";
-
+  char *coord_names[] = {"xcoor", "ycoor", "zcoor"};
   EXCHECK(ex_put_coord_names(exoid, coord_names));
 
   /* Add nodal attributes */
@@ -193,10 +125,8 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_one_attr(exoid, EX_NODAL, 0, 1, x));
   EXCHECK(ex_put_one_attr(exoid, EX_NODAL, 0, 2, y));
 
-  char *attrib_names[2];
   {
-    attrib_names[0] = "Node_attr_1";
-    attrib_names[1] = "Node_attr_2";
+    char *attrib_names[] = {"Node_attr_1", "Node_attr_2"};
     EXCHECK(ex_put_attr_names(exoid, EX_NODAL, 0, attrib_names));
   }
 
@@ -350,9 +280,11 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[5].id, attrib));
   EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[6].id, attrib));
 
-  attrib_names[0] = "THICKNESS";
-  for (int i = 0; i < num_elem_blk; i++) {
-    EXCHECK(ex_put_attr_names(exoid, EX_ELEM_BLOCK, blocks[i].id, attrib_names));
+  {
+    char *attrib_names[] = {"THICKNESS"};
+    for (int i = 0; i < num_elem_blk; i++) {
+      EXCHECK(ex_put_attr_names(exoid, EX_ELEM_BLOCK, blocks[i].id, attrib_names));
+    }
   }
 
   /* write individual node sets */
@@ -380,10 +312,7 @@ int main(int argc, char **argv)
   }
 
   /* Write node set names */
-  char *nset_names[2];
-  nset_names[0] = "nset_1";
-  nset_names[1] = "nset_2";
-
+  char *nset_names[] = {"nset_1", "nset_2"};
   EXCHECK(ex_put_names(exoid, EX_NODE_SET, nset_names));
   EXCHECK(ex_put_prop(exoid, EX_NODE_SET, nsids[0], "FACE", 4));
   EXCHECK(ex_put_prop(exoid, EX_NODE_SET, nsids[1], "FACE", 5));
@@ -396,7 +325,7 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_attr(exoid, EX_NODE_SET, nsids[0], x));
 
   {
-    attrib_names[0] = "Nodeset_attribute";
+    char *attrib_names[] = {"Nodeset_attribute"};
     EXCHECK(ex_put_attr_names(exoid, EX_NODE_SET, nsids[0], attrib_names));
   }
 
@@ -459,23 +388,13 @@ int main(int argc, char **argv)
   }
 
   /* Write side set names */
-  char *sset_names[5];
-  sset_names[0] = "sset_1";
-  sset_names[1] = "sset_2";
-  sset_names[2] = "sset_3";
-  sset_names[3] = "sset_4";
-  sset_names[4] = "sset_5";
-
+  char *sset_names[] = {"sset_1", "sset_2", "sset_3", "sset_4", "sset_5"};
   EXCHECK(ex_put_names(exoid, EX_SIDE_SET, sset_names));
-
   EXCHECK(ex_put_prop(exoid, EX_SIDE_SET, 30, "COLOR", 100));
-
   EXCHECK(ex_put_prop(exoid, EX_SIDE_SET, 31, "COLOR", 101));
 
   /* write QA records; test empty and just blank-filled records */
-
-  int num_qa_rec = 2;
-
+  int   num_qa_rec = 2;
   char *qa_record[2][4];
   qa_record[0][0] = "TESTWT";
   qa_record[0][1] = "testwt";
@@ -562,17 +481,16 @@ int main(int argc, char **argv)
    * obviously the analysis code will populate these arrays
    */
 
-  int whole_time_step = 1;
-  int num_time_steps  = 10;
-
   float *glob_var_vals  = (float *)calloc(num_glo_vars, CPU_word_size);
   float *nodal_var_vals = (float *)calloc(num_nodes, CPU_word_size);
-  float *elem_var_vals  = (float *)calloc(4, CPU_word_size);
-  float *sset_var_vals  = (float *)calloc(10, CPU_word_size);
-  float *nset_var_vals  = (float *)calloc(10, CPU_word_size);
+  float *elem_var_vals  = (float *)calloc(num_ele_vars, CPU_word_size);
+  float *sset_var_vals  = (float *)calloc(10, CPU_word_size); /* max sides_in_sset */
+  float *nset_var_vals  = (float *)calloc(5, CPU_word_size);  /* max nodes_in_nset */
 
+  int num_time_steps = 10;
   for (int i = 0; i < num_time_steps; i++) {
-    float time_value = (float)(i + 1) / 100.;
+    int   whole_time_step = i + 1;
+    float time_value      = (float)(i + 1) / 100.;
 
     /* write time value */
     EXCHECK(ex_put_time(exoid, whole_time_step, &time_value));
@@ -626,8 +544,6 @@ int main(int argc, char **argv)
                            nset_var_vals));
       }
     }
-
-    whole_time_step++;
 
     /* update the data file; this should be done at the end of every time step
      * to ensure that no data is lost if the analysis dies
