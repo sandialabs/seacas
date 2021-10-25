@@ -18,7 +18,6 @@ int main(int argc, char **argv)
   MPI_Info mpi_info = MPI_INFO_NULL;
 
   int  i, j, k;
-  int *elem_list, *side_list;
   int *ids;
   int *num_nodes_per_set = NULL;
   int *num_elem_per_set  = NULL;
@@ -37,7 +36,7 @@ int main(int argc, char **argv)
   int  num_nodes_in_set;
   int  num_sides_in_set, num_df_in_set;
   int  list_len, elem_list_len, node_list_len, df_list_len;
-  int  time_step, var_index, beg_time, end_time, elem_num;
+  int  var_index;
   int  num_props, prop_value;
   int  idum;
 
@@ -234,7 +233,7 @@ int main(int argc, char **argv)
     error = ex_get_names(exoid, EX_ELEM_BLOCK, block_names);
     printf("\nafter ex_get_names, error = %3d\n", error);
 
-    char  elem_type[MAX_STR_LENGTH + 1];
+    char elem_type[MAX_STR_LENGTH + 1];
     for (i = 0; i < num_elem_blk; i++) {
       ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
       if (strcmp(name, block_names[i]) != 0) {
@@ -541,12 +540,12 @@ int main(int argc, char **argv)
       free(sset_names[i]);
 
       /* Note: The # of elements is same as # of sides!  */
-      int num_elem_in_set  = num_sides_in_set;
-      elem_list        = (int *)calloc(num_elem_in_set, sizeof(int));
-      side_list        = (int *)calloc(num_sides_in_set, sizeof(int));
-      int *node_ctr_list    = (int *)calloc(num_elem_in_set, sizeof(int));
-      node_list        = (int *)calloc(num_elem_in_set * 21, sizeof(int));
-      float *dist_fact = (float *)calloc(num_df_in_set, sizeof(float));
+      int  num_elem_in_set = num_sides_in_set;
+      int *elem_list       = (int *)calloc(num_elem_in_set, sizeof(int));
+      int *side_list       = (int *)calloc(num_sides_in_set, sizeof(int));
+      int *node_ctr_list   = (int *)calloc(num_elem_in_set, sizeof(int));
+      node_list            = (int *)calloc(num_elem_in_set * 21, sizeof(int));
+      float *dist_fact     = (float *)calloc(num_df_in_set, sizeof(float));
 
       error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
       printf("\nafter ex_get_side_set, error = %3d\n", error);
@@ -647,8 +646,8 @@ int main(int argc, char **argv)
       num_df_per_set   = (int *)calloc(num_side_sets, sizeof(int));
       elem_ind         = (int *)calloc(num_side_sets, sizeof(int));
       df_ind           = (int *)calloc(num_side_sets, sizeof(int));
-      elem_list        = (int *)calloc(elem_list_len, sizeof(int));
-      side_list        = (int *)calloc(elem_list_len, sizeof(int));
+      int   *elem_list = (int *)calloc(elem_list_len, sizeof(int));
+      int   *side_list = (int *)calloc(elem_list_len, sizeof(int));
       float *dist_fact = (float *)calloc(df_list_len, sizeof(float));
 
       error = ex_get_concat_side_sets(exoid, ids, num_elem_per_set, num_df_per_set, elem_ind,
@@ -903,8 +902,8 @@ int main(int argc, char **argv)
 
   /* read time value at one time step */
 
-  time_step = 3;
-  error     = ex_get_time(exoid, time_step, &time_value);
+  int time_step = 3;
+  error         = ex_get_time(exoid, time_step, &time_value);
   printf("\nafter ex_get_time, error = %3d\n", error);
 
   printf("time value at time step %2d = %5.3f\n", time_step, time_value);
@@ -937,9 +936,9 @@ int main(int argc, char **argv)
 
   /* read a single global variable through time */
 
-  var_index = 1;
-  beg_time  = 1;
-  end_time  = -1;
+  var_index    = 1;
+  int beg_time = 1;
+  int end_time = -1;
 
   var_values = (float *)calloc(num_time_steps, sizeof(float));
 
@@ -1014,8 +1013,8 @@ int main(int argc, char **argv)
   if (num_ele_vars > 0) {
     var_values = (float *)calloc(num_time_steps, sizeof(float));
 
-    var_index = 2;
-    elem_num  = 2;
+    var_index    = 2;
+    int elem_num = 2;
     error =
         ex_get_var_time(exoid, EX_ELEM_BLOCK, var_index, elem_num, beg_time, end_time, var_values);
     printf("\nafter ex_get_elem_var_time, error = %3d\n", error);
