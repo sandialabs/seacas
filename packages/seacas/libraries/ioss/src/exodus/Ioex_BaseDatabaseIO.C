@@ -1385,45 +1385,46 @@ namespace Ioex {
 
       // Create a property on `entity` for each `attribute`
       for (const auto &att : attr) {
-        if (att.values == nullptr) {
+        if (att.value_count == 0) {
+	        // Just an attribute name.  Give it an empty value...
+          entity->property_add(Ioss::Property(att.name, "", Ioss::Property::ATTRIBUTE));
           continue;
         }
-        std::string storage = fmt::format("Real[{}]", att.value_count);
+        assert(att.values != nullptr);
+        
         switch (att.type) {
         case EX_INTEGER:
-          if (att.value_count == 1) {
-            entity->property_add(
-                Ioss::Property(att.name, *(int *)att.values, Ioss::Property::ATTRIBUTE));
-          }
-          else {
-            const int *      idata = static_cast<int *>(att.values);
-            std::vector<int> tmp(att.value_count);
-            std::copy(idata, idata + att.value_count, tmp.begin());
-            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
-          }
+	        {
+            const auto *idata = static_cast<int *>(att.values);
+	          if (att.value_count == 1) {
+	            entity->property_add(Ioss::Property(att.name, *idata, Ioss::Property::ATTRIBUTE));
+	          }
+	          else {
+	            std::vector<int> tmp(att.value_count);
+	            std::copy(idata, idata + att.value_count, tmp.begin());
+	            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
+	          }
+	        }
           break;
         case EX_DOUBLE:
-          if (att.value_count == 1) {
-            entity->property_add(
-                Ioss::Property(att.name, *(double *)att.values, Ioss::Property::ATTRIBUTE));
-          }
-          else {
-            const double *      idata = static_cast<double *>(att.values);
-            std::vector<double> tmp(att.value_count);
-            std::copy(idata, idata + att.value_count, tmp.begin());
-            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
-          }
+	        {
+            const auto *ddata = static_cast<double *>(att.values);
+            if (att.value_count == 1) {
+	            entity->property_add(Ioss::Property(att.name, *ddata, Ioss::Property::ATTRIBUTE));
+	          }
+	          else {
+	            std::vector<double> tmp(att.value_count);
+	            std::copy(ddata, ddata + att.value_count, tmp.begin());
+	            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
+	          }
+	        }
           break;
         case EX_CHAR:
-          if (att.value_count > 0) {
-            entity->property_add(
-                Ioss::Property(att.name, (char *)att.values, Ioss::Property::ATTRIBUTE));
-          }
-          else {
-            // Just an attribute name.  Give it an empty value...
-            entity->property_add(Ioss::Property(att.name, "", Ioss::Property::ATTRIBUTE));
-          }
-          break;
+	        {
+            const auto *cdata = static_cast<char *>(att.values);
+            entity->property_add(Ioss::Property(att.name, cdata, Ioss::Property::ATTRIBUTE));
+	        }
+	      break;
         }
       }
     }
