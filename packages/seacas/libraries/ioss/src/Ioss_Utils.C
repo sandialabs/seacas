@@ -437,7 +437,7 @@ namespace {
     // suffices actually defines a field...
     const Ioss::VariableType *type = Ioss::VariableType::factory(suffices);
     if (type != nullptr) {
-      type = Ioss::VariableType::factory(type->name(), static_cast<int>(N));
+      type = Ioss::VariableType::factory(type->name(), N);
     }
     return type;
   }
@@ -681,7 +681,8 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
     while (true) {
       // NOTE: 'get_next_field' determines storage type (vector, tensor,...)
       Ioss::Field field =
-          get_next_field(names, static_cast<int>(num_names), entity_count, fld_role, suffix_separator, local_truth);
+          get_next_field(names, num_names
+                         , entity_count, fld_role, suffix_separator, local_truth);
       if (field.is_valid()) {
         fields.push_back(field);
       }
@@ -972,7 +973,7 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector             &face_is_
     // topology corresponding to the current side..
     if (common_ftopo == nullptr && side_id != current_side) {
       current_side = side_id;
-      topo         = block->topology()->boundary_type(static_cast<int>(side_id));
+      topo         = block->topology()->boundary_type(side_id);
     }
 
     bool face_topo_match  = ftopo == unknown || topo == ftopo;
@@ -1212,7 +1213,6 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t com
   // Know that the name is too long, try to shorten. Need room for
   // hash now.
   maxlen -= hash_len;
-
   size_t len = name.length();
 
   // Take last 'maxlen' characters.  Motivation for this is that the
@@ -1374,7 +1374,7 @@ void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::Role
   }
   size_t cur_out = 8; // Tab width...
   if (!header.empty()) {
-    cur_out = static_cast<int>(header.size() + suffix.size() + 16); // Assume 2 tabs...
+    cur_out = header.size() + suffix.size() + 16; // Assume 2 tabs...
   }
   for (const auto &field_name : fields) {
     const Ioss::VariableType *var_type   = ige->get_field(field_name).raw_storage();
