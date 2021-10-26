@@ -681,8 +681,7 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
     while (true) {
       // NOTE: 'get_next_field' determines storage type (vector, tensor,...)
       Ioss::Field field =
-          get_next_field(names, num_names
-                         , entity_count, fld_role, suffix_separator, local_truth);
+          get_next_field(names, num_names, entity_count, fld_role, suffix_separator, local_truth);
       if (field.is_valid()) {
         fields.push_back(field);
       }
@@ -1088,7 +1087,8 @@ std::string Ioss::Utils::uppercase(std::string name)
 
 std::string Ioss::Utils::lowercase(std::string name)
 {
-  std::transform(name.begin(), name.end(), name.begin(), [](char c) { return static_cast<char>(std::tolower(c)); });
+  std::transform(name.begin(), name.end(), name.begin(), 
+                 [](char c) { return static_cast<char>(std::tolower(c)); });
   return name;
 }
 
