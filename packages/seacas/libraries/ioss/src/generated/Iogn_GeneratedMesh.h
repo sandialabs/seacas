@@ -273,12 +273,12 @@ namespace Iogn {
     /**
      * Return number of element blocks in the entire model.
      */
-    virtual int64_t block_count() const;
+    virtual int block_count() const;
 
     /**
      * Return number of nodesets in the entire model.
      */
-    virtual int64_t nodeset_count() const;
+    virtual int nodeset_count() const;
 
     /**
      * Return number of nodeset nodes on nodeset 'id'
@@ -298,7 +298,7 @@ namespace Iogn {
     /**
      * Return number of sidesets in the entire model.
      */
-    virtual int64_t sideset_count() const;
+    virtual int sideset_count() const;
 
     /**
      * Return number of sideset 'sides' on sideset 'id'
@@ -331,7 +331,7 @@ namespace Iogn {
      */
     int64_t shell_element_count_proc(ShellLocation /*loc*/) const;
 
-    int64_t timestep_count() const { return timestepCount; }
+    int timestep_count() const { return timestepCount; }
     /**
      * Return number of elements in the element block with id
      * 'block_number'. The 'block_number' ranges from '1' to
@@ -481,13 +481,13 @@ namespace Iogn {
     std::vector<ShellLocation>           nodesets;
     std::vector<ShellLocation>           sidesets;
     std::array<std::array<double, 3>, 3> rotmat;
-    size_t                               numX{0}, numY{0}, numZ{0};
-    size_t                               myNumZ{0}, myStartZ{0};
+    int64_t                              numX{0}, numY{0}, numZ{0};
+    int64_t                              myNumZ{0}, myStartZ{0};
 
-    size_t processorCount{0};
-    size_t myProcessor{0};
+    int processorCount{0};
+    int myProcessor{0};
 
-    size_t                             timestepCount{0};
+    int                                timestepCount{0};
     std::map<Ioss::EntityType, size_t> variableCount;
 
     double offX{0}, offY{0}, offZ{0}; /** Offsets in X, Y, and Z directions */

@@ -271,7 +271,7 @@ namespace tsl {
 
       template <typename... Args>
       void set_value_of_empty_bucket(distance_type       dist_from_ideal_bucket,
-                                     truncated_hash_type my_hash, Args &&...value_type_args)
+                                     truncated_hash_type my_hash, Args &&... value_type_args)
       {
         tsl_rh_assert(dist_from_ideal_bucket >= 0);
         tsl_rh_assert(empty());
@@ -767,18 +767,18 @@ namespace tsl {
         return insert_or_assign(std::forward<K>(key), std::forward<M>(obj)).first;
       }
 
-      template <class... Args> std::pair<iterator, bool> emplace(Args &&...args)
+      template <class... Args> std::pair<iterator, bool> emplace(Args &&... args)
       {
         return insert(value_type(std::forward<Args>(args)...));
       }
 
-      template <class... Args> iterator emplace_hint(const_iterator hint, Args &&...args)
+      template <class... Args> iterator emplace_hint(const_iterator hint, Args &&... args)
       {
         return insert_hint(hint, value_type(std::forward<Args>(args)...));
       }
 
       template <class K, class... Args>
-      std::pair<iterator, bool> try_emplace(K &&key, Args &&...args)
+      std::pair<iterator, bool> try_emplace(K &&key, Args &&... args)
       {
         return insert_impl(key, std::piecewise_construct,
                            std::forward_as_tuple(std::forward<K>(key)),
@@ -786,7 +786,7 @@ namespace tsl {
       }
 
       template <class K, class... Args>
-      iterator try_emplace_hint(const_iterator hint, K &&key, Args &&...args)
+      iterator try_emplace_hint(const_iterator hint, K &&key, Args &&... args)
       {
         if (hint != cend() && compare_keys(KeySelect()(*hint), key)) {
           return mutable_iterator(hint);
@@ -1183,7 +1183,7 @@ namespace tsl {
       }
 
       template <class K, class... Args>
-      std::pair<iterator, bool> insert_impl(const K &key, Args &&...value_type_args)
+      std::pair<iterator, bool> insert_impl(const K &key, Args &&... value_type_args)
       {
         const std::size_t my_hash = hash_key(key);
 
@@ -1230,7 +1230,7 @@ namespace tsl {
 
       template <class... Args>
       void insert_value(std::size_t ibucket, distance_type dist_from_ideal_bucket,
-                        truncated_hash_type my_hash, Args &&...value_type_args)
+                        truncated_hash_type my_hash, Args &&... value_type_args)
       {
         value_type value(std::forward<Args>(value_type_args)...);
         insert_value_impl(ibucket, dist_from_ideal_bucket, my_hash, value);

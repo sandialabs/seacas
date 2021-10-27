@@ -431,11 +431,11 @@ namespace Iogn {
     return count;
   }
 
-  int64_t GeneratedMesh::block_count() const { return shellBlocks.size() + 1; }
+  int GeneratedMesh::block_count() const { return static_cast<int>(shellBlocks.size()) + 1; }
 
-  int64_t GeneratedMesh::nodeset_count() const { return nodesets.size(); }
+  int GeneratedMesh::nodeset_count() const { return static_cast<int>(nodesets.size()); }
 
-  int64_t GeneratedMesh::sideset_count() const { return sidesets.size(); }
+  int GeneratedMesh::sideset_count() const { return static_cast<int>(sidesets.size()); }
 
   int64_t GeneratedMesh::element_count() const
   {

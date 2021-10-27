@@ -12,6 +12,7 @@
 #include <Ioss_SubSystem.h>
 
 #include <fmt/ostream.h>
+#include <limits>
 
 // For Sleep...
 #include <chrono>
@@ -21,7 +22,7 @@
 namespace {
   std::vector<int> get_selected_steps(Ioss::Region &region, const Ioss::MeshCopyOptions &options);
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank);
-  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region                &region,
+  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region &               region,
                                                   const Ioss::MeshCopyOptions &options);
   void define_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
                     const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
@@ -88,7 +89,7 @@ namespace {
 
   template <typename T>
   std::pair<size_t, std::string>
-  calculate_maximum_field_size(const std::vector<T>           &entities,
+  calculate_maximum_field_size(const std::vector<T> &          entities,
                                std::pair<size_t, std::string> &max_field)
   {
     size_t      max_size = max_field.first;
@@ -367,7 +368,7 @@ namespace {
     transfer_fields(input, output, Ioss::Field::MESH_REDUCTION);
   }
 
-  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region                &region,
+  std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region &               region,
                                                   const Ioss::MeshCopyOptions &options)
   {
     std::vector<Ioss::Face> boundary;
@@ -672,7 +673,7 @@ namespace {
       for (const auto &isb : sbs) {
 
         // Find matching output structured block
-        const std::string     &name = isb->name();
+        const std::string &    name = isb->name();
         Ioss::StructuredBlock *osb  = output_region.get_structured_block(name);
         if (osb != nullptr) {
           transfer_fields(isb, osb, Ioss::Field::TRANSIENT);
@@ -783,7 +784,8 @@ namespace {
     output_region.end_state(ostep);
 
     if (options.delay > 0.0) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(options.delay * 1'000)));
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(static_cast<int>(options.delay * 1'000)));
     }
   }
 
@@ -906,7 +908,7 @@ namespace {
         // testing to verify that we handle zone reordering
         // correctly.
         for (int i = blocks.size() - 1; i >= 0; i--) {
-          const auto        &iblock = blocks[i];
+          const auto &       iblock = blocks[i];
           const std::string &name   = iblock->name();
           if (options.debug && rank == 0) {
             fmt::print(Ioss::DEBUG(), "{}, ", name);
