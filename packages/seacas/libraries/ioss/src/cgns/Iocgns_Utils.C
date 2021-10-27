@@ -53,44 +53,24 @@
 #include <cgnslib.h>
 #endif
 
-#if defined(_WIN32)
-#include <algorithm>
-static std::string to_lower(std::string s)
-{
-  std::transform(s.begin(), s.end(), s.begin(),
-      [](unsigned char c){ return std::tolower(c); });
-  return s;
-}
-static const char* strcasestr(const char* haystack, const char* needle)
-{
-  std::string lneedle(to_lower(needle));
-  std::string lhaystack(to_lower(haystack));
-
-  auto pos = lhaystack.find(lneedle);
-  return pos != std::string::npos ? haystack + pos : nullptr;
-}
-#endif
-
 #define CGERR(funcall)                                                                             \
   if ((funcall) != CG_OK) {                                                                        \
     Iocgns::Utils::cgns_error(file_ptr, __FILE__, __func__, __LINE__, -1);                         \
   }
 
-#if defined(__IOSS_WINDOWS__)
-#ifdef _MSC_VER
-#define strncasecmp strnicmp
-#endif
-char *strcasestr(char *haystack, const char *needle)
-{
-  char *c;
-  for (c = haystack; *c; c++)
-    if (!strncasecmp(c, needle, strlen(needle)))
-      return c;
-  return 0;
-}
-#endif
 
 namespace {
+#if defined(__IOSS_WINDOWS__)
+  const char* strcasestr(const char* haystack, const char* needle)
+  {
+    std::string lneedle(Ioss::Utils::lowercase(needle));
+    std::string lhaystack(Ioss::Utils::lowercase(haystack));
+    
+    auto pos = lhaystack.find(lneedle);
+    return pos != std::string::npos ? haystack + pos : nullptr;
+  }
+#endif
+
   int power_2(int count)
   {
     // Return the maximum power of two which is less than or equal to 'count'
