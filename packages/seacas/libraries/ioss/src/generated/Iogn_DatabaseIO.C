@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -80,7 +80,7 @@ namespace {
 
   void fill_constant_data(const Ioss::Field &field, void *data, double value)
   {
-    auto * rdata           = reinterpret_cast<double *>(data);
+    auto  *rdata           = reinterpret_cast<double *>(data);
     size_t count           = field.raw_count();
     size_t component_count = field.raw_storage()->component_count();
     for (size_t i = 0; i < count * component_count; i++) {
@@ -125,7 +125,10 @@ namespace Iogn {
     }
   }
 
-  DatabaseIO::~DatabaseIO() { delete m_generatedMesh; }
+  void DatabaseIO::setGeneratedMesh(Iogn::GeneratedMesh *generatedMesh)
+  {
+    m_generatedMesh.reset(generatedMesh);
+  }
 
   void DatabaseIO::read_meta_data__()
   {
@@ -137,8 +140,8 @@ namespace Iogn {
         IOSS_ERROR(errmsg);
       }
       else {
-        m_generatedMesh =
-            new GeneratedMesh(get_filename(), util().parallel_size(), util().parallel_rank());
+        m_generatedMesh = std::make_unique<Iogn::GeneratedMesh>(
+            get_filename(), util().parallel_size(), util().parallel_rank());
       }
     }
 
