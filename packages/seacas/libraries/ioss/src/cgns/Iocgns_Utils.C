@@ -58,14 +58,13 @@
     Iocgns::Utils::cgns_error(file_ptr, __FILE__, __func__, __LINE__, -1);                         \
   }
 
-
 namespace {
 #if defined(__IOSS_WINDOWS__)
-  const char* strcasestr(const char* haystack, const char* needle)
+  const char *strcasestr(const char *haystack, const char *needle)
   {
     std::string lneedle(Ioss::Utils::lowercase(needle));
     std::string lhaystack(Ioss::Utils::lowercase(haystack));
-    
+
     auto pos = lhaystack.find(lneedle);
     return pos != std::string::npos ? haystack + pos : nullptr;
   }
@@ -171,10 +170,10 @@ namespace {
   }
 
   int proc_with_minimum_work(Iocgns::StructuredZoneData *zone, const std::vector<size_t> &work,
-			     std::set<std::pair<int, int>> &proc_adam_map)
+                             std::set<std::pair<int, int>> &proc_adam_map)
   {
-    size_t  min_work = std::numeric_limits<size_t>::max();
-    int min_proc = -1;
+    size_t min_work = std::numeric_limits<size_t>::max();
+    int    min_proc = -1;
     for (int i = 0; i < static_cast<int>(work.size()); i++) {
       if (work[i] < min_work &&
           proc_adam_map.find(std::make_pair(zone->m_adam->m_zone, static_cast<int>(i))) ==
@@ -2615,12 +2614,12 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
 }
 
 int Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
-                                double load_balance, int proc_rank, int proc_count, bool verbose)
+                             double load_balance, int proc_rank, int proc_count, bool verbose)
 {
   auto original_zones(zones); // In case we need to call this again...
 
-  auto   new_zones(zones);
-  int new_zone_id = static_cast<int>(zones.size()) + 1;
+  auto new_zones(zones);
+  int  new_zone_id = static_cast<int>(zones.size()) + 1;
 
   // See if can split each zone over a set of procs...
   double           total_work = 0.0;
