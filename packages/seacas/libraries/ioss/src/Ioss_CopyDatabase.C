@@ -12,6 +12,7 @@
 #include <Ioss_SubSystem.h>
 
 #include <fmt/ostream.h>
+#include <limits>
 
 // For Sleep...
 #include <chrono>

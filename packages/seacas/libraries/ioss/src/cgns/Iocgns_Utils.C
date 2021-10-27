@@ -190,12 +190,12 @@ namespace {
     return val;
   }
 
-  ssize_t proc_with_minimum_work(Iocgns::StructuredZoneData *zone, const std::vector<size_t> &work,
-                                 std::set<std::pair<int, int>> &proc_adam_map)
+  int proc_with_minimum_work(Iocgns::StructuredZoneData *zone, const std::vector<size_t> &work,
+			     std::set<std::pair<int, int>> &proc_adam_map)
   {
     size_t  min_work = std::numeric_limits<size_t>::max();
-    ssize_t min_proc = -1;
-    for (ssize_t i = 0; i < (ssize_t)work.size(); i++) {
+    int min_proc = -1;
+    for (int i = 0; i < static_cast<int>(work.size()); i++) {
       if (work[i] < min_work &&
           proc_adam_map.find(std::make_pair(zone->m_adam->m_zone, static_cast<int>(i))) ==
               proc_adam_map.end()) {
@@ -2467,7 +2467,7 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
     }
   }
   // Split all blocks where block->work() > avg_work * load_balance_threshold
-  size_t new_zone_id =
+  int new_zone_id =
       Utils::pre_split(zones, avg_work, load_balance_threshold, rank, proc_count, verbose);
 
   // At this point, there should be no zone with block->work() > avg_work * load_balance_threshold
@@ -2604,7 +2604,7 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
 
     // Assign zone to processor with minimum work that does not already have a zone with the same
     // adam zone...
-    ssize_t proc = proc_with_minimum_work(zone, work_vector, proc_adam_map);
+    int proc = proc_with_minimum_work(zone, work_vector, proc_adam_map);
 
     // See if any other zone on this processor has the same adam zone...
     if (proc >= 0) {
@@ -2634,13 +2634,13 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
   }
 }
 
-size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
+int Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
                                 double load_balance, int proc_rank, int proc_count, bool verbose)
 {
   auto original_zones(zones); // In case we need to call this again...
 
   auto   new_zones(zones);
-  size_t new_zone_id = zones.size() + 1;
+  int new_zone_id = static_cast<int>(zones.size()) + 1;
 
   // See if can split each zone over a set of procs...
   double           total_work = 0.0;

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -305,7 +305,7 @@ namespace Iocgns {
                                          bool verbose);
     static void   decompose_model(std::vector<Iocgns::StructuredZoneData *> &zones, int proc_count,
                                   int rank, double load_balance_threshold, bool verbose);
-    static size_t pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
+    static int pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
                             double load_balance, int proc_rank, int proc_count, bool verbose);
     static void   assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,
                                         std::vector<size_t> &work_vector, bool verbose);
