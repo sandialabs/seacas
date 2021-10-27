@@ -1385,42 +1385,40 @@ namespace Ioex {
 
       // Create a property on `entity` for each `attribute`
       for (const auto &att : attr) {
-        std::string storage = fmt::format("Real[{}]", att.value_count);
+        if (att.value_count == 0) {
+          // Just an attribute name.  Give it an empty value...
+          entity->property_add(Ioss::Property(att.name, "", Ioss::Property::ATTRIBUTE));
+          continue;
+        }
+        assert(att.values != nullptr);
+
         switch (att.type) {
-        case EX_INTEGER:
+        case EX_INTEGER: {
+          const auto *idata = static_cast<int *>(att.values);
           if (att.value_count == 1) {
-            entity->property_add(
-                Ioss::Property(att.name, *(int *)att.values, Ioss::Property::ATTRIBUTE));
+            entity->property_add(Ioss::Property(att.name, *idata, Ioss::Property::ATTRIBUTE));
           }
           else {
-            const int *      idata = static_cast<int *>(att.values);
             std::vector<int> tmp(att.value_count);
             std::copy(idata, idata + att.value_count, tmp.begin());
             entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
           }
-          break;
-        case EX_DOUBLE:
+        } break;
+        case EX_DOUBLE: {
+          const auto *ddata = static_cast<double *>(att.values);
           if (att.value_count == 1) {
-            entity->property_add(
-                Ioss::Property(att.name, *(double *)att.values, Ioss::Property::ATTRIBUTE));
+            entity->property_add(Ioss::Property(att.name, *ddata, Ioss::Property::ATTRIBUTE));
           }
           else {
-            const double *      idata = static_cast<double *>(att.values);
             std::vector<double> tmp(att.value_count);
-            std::copy(idata, idata + att.value_count, tmp.begin());
+            std::copy(ddata, ddata + att.value_count, tmp.begin());
             entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
           }
-          break;
-        case EX_CHAR:
-          if (att.value_count > 0) {
-            entity->property_add(
-                Ioss::Property(att.name, (char *)att.values, Ioss::Property::ATTRIBUTE));
-          }
-          else {
-            // Just an attribute name.  Give it an empty value...
-            entity->property_add(Ioss::Property(att.name, "", Ioss::Property::ATTRIBUTE));
-          }
-          break;
+        } break;
+        case EX_CHAR: {
+          const auto *cdata = static_cast<char *>(att.values);
+          entity->property_add(Ioss::Property(att.name, cdata, Ioss::Property::ATTRIBUTE));
+        } break;
         }
       }
     }

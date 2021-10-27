@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -163,26 +163,26 @@ namespace Iocgns {
       // NOTE: '0' for first entry is to account for 1-based face numbering.
 
       switch (parent_topo->shape()) {
-      case Ioss::ElementShape::HEX:
+      case Ioss::ElementShape::HEX: {
         static int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = hex_map[idata[2 * i + 1]];
         }
-        break;
+      } break;
 
-      case Ioss::ElementShape::TET:
+      case Ioss::ElementShape::TET: {
         static int tet_map[] = {0, 4, 1, 2, 3};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = tet_map[idata[2 * i + 1]];
         }
-        break;
+      } break;
 
-      case Ioss::ElementShape::PYRAMID:
+      case Ioss::ElementShape::PYRAMID: {
         static int pyr_map[] = {0, 5, 1, 2, 3, 4};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = pyr_map[idata[2 * i + 1]];
         }
-        break;
+      } break;
 
       case Ioss::ElementShape::WEDGE:
 #if 0
@@ -205,26 +205,26 @@ namespace Iocgns {
       // NOTE: '0' for first entry is to account for 1-based face numbering.
 
       switch (parent_topo->shape()) {
-      case Ioss::ElementShape::HEX:
+      case Ioss::ElementShape::HEX: {
         static int hex_map[] = {0, 2, 3, 4, 5, 1, 6};
         for (size_t i = 0; i < num_to_get; i++) {
           data[num_to_get * 2 + i] = hex_map[data[num_to_get * 2 + i]];
         }
-        break;
+      } break;
 
-      case Ioss::ElementShape::TET:
+      case Ioss::ElementShape::TET: {
         static int tet_map[] = {0, 2, 3, 4, 1};
         for (size_t i = 0; i < num_to_get; i++) {
           data[num_to_get * 2 + i] = tet_map[data[num_to_get * 2 + i]];
         }
-        break;
+      } break;
 
-      case Ioss::ElementShape::PYRAMID:
+      case Ioss::ElementShape::PYRAMID: {
         static int pyr_map[] = {0, 2, 3, 4, 5, 1};
         for (size_t i = 0; i < num_to_get; i++) {
           data[num_to_get * 2 + i] = pyr_map[data[num_to_get * 2 + i]];
         }
-        break;
+      } break;
 
       case Ioss::ElementShape::WEDGE:
 #if 0
@@ -288,15 +288,15 @@ namespace Iocgns {
     static void add_transient_variables(int cgns_file_ptr, const std::vector<double> &timesteps,
                                         Ioss::Region *region, int myProcessor, bool is_parallel_io);
 
-    static void   set_line_decomposition(int cgns_file_ptr, const std::string &line_decomposition,
-                                         std::vector<Iocgns::StructuredZoneData *> &zones, int rank,
-                                         bool verbose);
-    static void   decompose_model(std::vector<Iocgns::StructuredZoneData *> &zones, int proc_count,
-                                  int rank, double load_balance_threshold, bool verbose);
-    static size_t pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
-                            double load_balance, int proc_rank, int proc_count, bool verbose);
-    static void   assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,
-                                        std::vector<size_t> &work_vector, bool verbose);
+    static void set_line_decomposition(int cgns_file_ptr, const std::string &line_decomposition,
+                                       std::vector<Iocgns::StructuredZoneData *> &zones, int rank,
+                                       bool verbose);
+    static void decompose_model(std::vector<Iocgns::StructuredZoneData *> &zones, int proc_count,
+                                int rank, double load_balance_threshold, bool verbose);
+    static int  pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
+                          double load_balance, int proc_rank, int proc_count, bool verbose);
+    static void assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,
+                                      std::vector<size_t> &work_vector, bool verbose);
     static std::string show_config();
 
     template <typename INT>

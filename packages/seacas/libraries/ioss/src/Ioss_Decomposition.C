@@ -150,7 +150,8 @@ namespace Ioss {
     {
       "EXTERNAL"
 #ifdef SEACAS_HAVE_MPI
-	, "LINEAR", "MAP", "VARIABLE"
+          ,
+          "LINEAR", "MAP", "VARIABLE"
 #if !defined(NO_ZOLTAN_SUPPORT)
           ,
           "BLOCK", "CYCLIC", "RANDOM", "RCB", "RIB", "HSFC"

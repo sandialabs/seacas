@@ -294,8 +294,8 @@ namespace Ioss {
      * string `1..3, 5..8`
      */
     static std::string format_id_list(const std::vector<size_t> &ids,
-                                      const std::string         &rng_sep = " to ",
-                                      const std::string         &seq_sep = ", ");
+                                      const std::string &        rng_sep = " to ",
+                                      const std::string &        seq_sep = ", ");
 
     /** \brief Convert a string to lower case, and convert spaces to `_`.
      *

@@ -44,7 +44,9 @@
 #include <iostream>
 #include <map>
 #include <string>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 #include <utility>
 #include <vector>
 
@@ -125,7 +127,7 @@ namespace {
   }
 
   template <typename T>
-  void compute_hashes(const std::vector<T>                      &entities,
+  void compute_hashes(const std::vector<T> &                     entities,
                       std::array<size_t, Ioss::entityTypeCount> &hashes, Ioss::EntityType type)
   {
     auto index = numberOfBits(type) - 1;
@@ -468,7 +470,7 @@ namespace Ioss {
 
     int64_t num_ts = get_property("state_count").get_int();
     auto    max_sb = std::max(
-           {get_property("spatial_dimension").get_int(), get_property("node_block_count").get_int(),
+        {get_property("spatial_dimension").get_int(), get_property("node_block_count").get_int(),
          get_property("edge_block_count").get_int(), get_property("face_block_count").get_int(),
          get_property("element_block_count").get_int(),
          get_property("structured_block_count").get_int(), get_property("node_set_count").get_int(),
@@ -1510,7 +1512,7 @@ namespace Ioss {
   bool Region::add_alias__(const GroupingEntity *ge)
   {
     // See if an entity with this name and type already exists...
-    const auto       &db_name = ge->name();
+    const auto &      db_name = ge->name();
     const std::string alias   = get_alias__(db_name, ge->type());
 
     if (!alias.empty()) {
