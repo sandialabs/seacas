@@ -70,7 +70,7 @@ namespace {
                              int dim_dim, int str_dim);
   template <typename T>
   int output_names(const std::vector<T> &entities, int exoid, ex_entity_type ent_type);
-  template <typename T> size_t get_max_name_length(const std::vector<T> &entities, size_t old_max);
+  template <typename T> int get_max_name_length(const std::vector<T> &entities, int old_max);
 } // namespace
 
 Redefine::Redefine(int exoid) : exodusFilePtr(exoid)
@@ -366,7 +366,7 @@ SideSet::SideSet(const Ioss::SideSet &other)
   dfProcOffset = 0;
 }
 
-Internals::Internals(int exoid, size_t maximum_name_length, const Ioss::ParallelUtils &util)
+Internals::Internals(int exoid, int maximum_name_length, const Ioss::ParallelUtils &util)
     : exodusFilePtr(exoid), nodeMapVarID(), elementMapVarID(),
       maximumNameLength(maximum_name_length), parallelUtil(util)
 {
@@ -3983,10 +3983,10 @@ int Internals::put_non_define_data(const std::vector<SideSet> &sidesets, bool ou
 }
 
 namespace {
-  template <typename T> size_t get_max_name_length(const std::vector<T> &entities, size_t old_max)
+  template <typename T> int get_max_name_length(const std::vector<T> &entities, int old_max)
   {
     for (const auto &entity : entities) {
-      old_max = std::max(old_max, entity.name.size());
+      old_max = std::max(old_max, static_cast<int>(entity.name.size()));
     }
     return (old_max);
   }
