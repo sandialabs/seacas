@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -198,9 +198,9 @@ namespace Iogn {
     double currentTime{0.0};
     int    spatialDimension{3};
 
-    int64_t elementBlockCount{0};
-    int64_t nodesetCount{0};
-    int64_t sidesetCount{0};
+    int elementBlockCount{0};
+    int nodesetCount{0};
+    int sidesetCount{0};
 
     bool m_useVariableDf{true};
   };

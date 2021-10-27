@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -695,8 +695,8 @@ namespace Iogn {
 
   void DatabaseIO::get_step_times__()
   {
-    int64_t time_step_count = m_generatedMesh->timestep_count();
-    for (int64_t i = 0; i < time_step_count; i++) {
+    auto time_step_count = m_generatedMesh->timestep_count();
+    for (int i = 0; i < time_step_count; i++) {
       get_region()->add_state(i);
     }
   }
@@ -713,8 +713,8 @@ namespace Iogn {
     // -- number of faces per element (derivable from type)
     // -- number of edges per element (derivable from type)
 
-    int64_t block_count = m_generatedMesh->block_count();
-    for (int64_t i = 0; i < block_count; i++) {
+    auto block_count = m_generatedMesh->block_count();
+    for (int i = 0; i < block_count; i++) {
       std::string name          = Ioss::Utils::encode_entity_name("block", i + 1);
       std::string type          = m_generatedMesh->topology_type(i + 1).first;
       size_t      element_count = m_generatedMesh->element_count_proc(i + 1);
