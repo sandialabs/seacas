@@ -558,7 +558,7 @@ namespace {
       // suffices have a basename that match other names with only a
       // single suffix lc_cam_x, lc_cam_y, lc_sfarea.
       for (int i = index + 1; i < num_names; i++) {
-        char *                   tst_name = names[i];
+        char                    *tst_name = names[i];
         std::vector<std::string> subtokens;
         field_tokenize(tst_name, suffix_separator, subtokens);
         if ((truth_table == nullptr || truth_table[i] == 1) && // Defined on this entity
@@ -655,11 +655,11 @@ namespace {
 // fieldx, fieldy, fieldz instead of field_x field_y field_z
 
 void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in this entity.
-                             char ** names,        // Raw list of field names from exodus
+                             char  **names,        // Raw list of field names from exodus
                              int     num_names,    // Number of names in list
                              Ioss::Field::RoleType   fld_role, // Role of field
                              const Ioss::DatabaseIO *db,
-                             int *                   local_truth, // Truth table for this entity;
+                             int                    *local_truth, // Truth table for this entity;
                              // null if not applicable.
                              std::vector<Ioss::Field> &fields) // The fields that were found.
 {
@@ -814,7 +814,7 @@ size_t Ioss::Utils::get_memory_info()
   taskinfo.virtual_size = 0;
   outCount              = MACH_TASK_BASIC_INFO_COUNT;
   error                 = task_info(mach_task_self(), MACH_TASK_BASIC_INFO,
-                    reinterpret_cast<task_info_t>(&taskinfo), &outCount);
+                                    reinterpret_cast<task_info_t>(&taskinfo), &outCount);
   if (error == KERN_SUCCESS) {
     memory_usage = taskinfo.resident_size;
   }
@@ -907,7 +907,7 @@ bool Ioss::Utils::block_is_omitted(Ioss::GroupingEntity *block)
   return omitted;
 }
 
-void Ioss::Utils::calculate_sideblock_membership(IntVector &            face_is_member,
+void Ioss::Utils::calculate_sideblock_membership(IntVector             &face_is_member,
                                                  const Ioss::SideBlock *ef_blk,
                                                  size_t int_byte_size, const void *element,
                                                  const void *sides, int64_t number_sides,
@@ -1013,7 +1013,7 @@ unsigned int Ioss::Utils::hash(const std::string &name)
   // Hash function from Aho, Sethi, Ullman "Compilers: Principles,
   // Techniques, and Tools.  Page 436
 
-  const char * symbol = name.c_str();
+  const char  *symbol = name.c_str();
   unsigned int hashval;
   for (hashval = 0; *symbol != '\0'; symbol++) {
     hashval = (hashval << 4) + *symbol;
@@ -1087,7 +1087,8 @@ std::string Ioss::Utils::uppercase(std::string name)
 
 std::string Ioss::Utils::lowercase(std::string name)
 {
-  std::transform(name.begin(), name.end(), name.begin(), [](char c) { return std::tolower(c); });
+  std::transform(name.begin(), name.end(), name.begin(),
+                 [](char c) { return static_cast<char>(std::tolower(c)); });
   return name;
 }
 
