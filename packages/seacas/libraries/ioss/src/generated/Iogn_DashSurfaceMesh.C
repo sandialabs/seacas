@@ -277,7 +277,10 @@ namespace Iogn {
 
   int ExodusMesh::nodeset_count() const { return 0; }
 
-  int ExodusMesh::sideset_count() const { return static_cast<int>(mExodusData.sidesetConnectivity.size()); }
+  int ExodusMesh::sideset_count() const
+  {
+    return static_cast<int>(mExodusData.sidesetConnectivity.size());
+  }
 
   int64_t ExodusMesh::element_count_proc() const { return mLocalNumberOfElements; }
 

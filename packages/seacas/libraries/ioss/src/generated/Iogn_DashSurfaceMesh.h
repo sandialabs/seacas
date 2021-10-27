@@ -151,10 +151,10 @@ namespace Iogn {
 
     int block_count() const override;
 
-    int nodeset_count() const override;
+    int     nodeset_count() const override;
     int64_t nodeset_node_count_proc(int64_t id) const override;
 
-    int sideset_count() const override;
+    int     sideset_count() const override;
     int64_t sideset_side_count_proc(int64_t id) const override;
 
     int64_t communication_node_count_proc() const override;
@@ -207,10 +207,10 @@ namespace Iogn {
 
     int block_count() const override;
 
-    int nodeset_count() const override;
+    int     nodeset_count() const override;
     int64_t nodeset_node_count_proc(int64_t id) const override;
 
-    int sideset_count() const override;
+    int     sideset_count() const override;
     int64_t sideset_side_count_proc(int64_t id) const override;
 
     int64_t communication_node_count_proc() const override;
