@@ -77,7 +77,7 @@ namespace Iocgns {
     static void update_db_zone_property(int cgns_file_ptr, const Ioss::Region *region,
                                         int myProcessor, bool is_parallel, bool is_parallel_io);
     static int  get_db_zone(const Ioss::GroupingEntity *entity);
-    static void set_field_index(const Ioss::Field &field, size_t index, CGNS_ENUMT(GridLocation_t) location);
+    static void set_field_index(const Ioss::Field &field, size_t index, CG_GridLocation_t location);
     static bool is_cell_field(const Ioss::Field &field);
 
     template <typename INT>
@@ -264,7 +264,7 @@ namespace Iocgns {
                                              const int *cell_center_solution_index,
                                              bool       is_parallel_io);
     static int  find_solution_index(int cgns_file_ptr, int base, int zone, int step,
-                                    CGNS_ENUMT(GridLocation_t) location);
+                                    CG_GridLocation_t location);
     static Ioss::MeshType check_mesh_type(int cgns_file_ptr);
 
     static void output_assembly(int file_ptr, const Ioss::Assembly *assembly, bool is_parallel_io,
@@ -279,8 +279,8 @@ namespace Iocgns {
     static std::vector<std::vector<std::pair<size_t, size_t>>>
     resolve_processor_shared_nodes(Ioss::Region &region, int my_processor);
 
-    static CGNS_ENUMT(ElementType_t) map_topology_to_cgns(const std::string &name);
-    static std::string      map_cgns_to_topology_type(CGNS_ENUMT(ElementType_t) type);
+    static CG_ElementType_t map_topology_to_cgns(const std::string &name);
+    static std::string      map_cgns_to_topology_type(CG_ElementType_t type);
     static void             add_sidesets(int cgns_file_ptr, Ioss::DatabaseIO *db);
     static void             add_assemblies(int cgns_file_ptr, Ioss::DatabaseIO *db);
     static void add_to_assembly(int cgns_file_ptr, Ioss::Region *region, Ioss::EntityBlock *block,
