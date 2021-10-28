@@ -1300,7 +1300,7 @@ namespace Ioex {
     // Find blk_seq corresponding to block the specified id...
     size_t blk_seq = get_block_seq(EX_ELEM_BLOCK, id);
     size_t count   = get_block_element_count(blk_seq);
-    size_t offset  = get_block_element_offset(blk_seq);
+    size_t offset  = count == 0 ? 0 : get_block_element_offset(blk_seq);
 
     std::vector<double> file_data(count * comp_count);
     int ierr = ex_get_partial_attr(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, file_data.data());
