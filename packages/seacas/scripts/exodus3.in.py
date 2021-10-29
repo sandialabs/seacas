@@ -83,9 +83,8 @@ rights in this software.
 
 EXODUS_PY_CONTACTS = """
 Authors:
-  Mario LoPrinzi   (mvlopri@sandia.gov)
   Greg Sjaardema   (gdsjaar@sandia.gov)
-
+  Mario LoPrinzi   (mvlopri@sandia.gov)
   Timothy Shelton  (trshelt@sandia.gov)
   Michael Veilleux (mgveill@sandia.gov)
   David Littlewood (djlittl@sandia.gov)
