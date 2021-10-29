@@ -16,9 +16,9 @@ import ctypes
 from contextlib import contextmanager
 
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
-
 sys.path.append(os.path.join(ACCESS, "lib"))
 import exodus as exo
+
 
 
 class TestAssemblies(unittest.TestCase):
