@@ -16,8 +16,8 @@
  * being compared.  Use Ioss::WARNING().
  */
 #define COUNT_MISMATCH "{} count mismatch ({} vs. {})"
-#define NOTFOUND_1 "{} ({}) not found in input #1"
-#define NOTFOUND_2 "{} ({}) not found in input #2"
+#define NOTFOUND_1     "{} ({}) not found in input #1"
+#define NOTFOUND_2     "{} ({}) not found in input #2"
 
 /* These messages indicate a value difference between the files
  * being compared.  Use Ioss::OUTPUT().
@@ -27,10 +27,10 @@
 /* These messages indicate a value difference between the files
  * being compared.  Use Ioss::OUTPUT().
  */
-#define ATTRIBUTE_FIELD_VALUE_MISMATCH "\n\nATTRIBUTE FIELD data mismatch ({})"
-#define COMMUNICATION_FIELD_VALUE_MISMATCH "\n\nCOMMUNICATION FIELD data mismatch ({})"
-#define MESH_FIELD_VALUE_MISMATCH "\n\nMESH FIELD data mismatch ({})"
-#define TRANSIENT_FIELD_VALUE_MISMATCH "\n\nTRANSIENT FIELD data mismatch ({})"
+#define ATTRIBUTE_FIELD_VALUE_MISMATCH      "\n\nATTRIBUTE FIELD data mismatch ({})"
+#define COMMUNICATION_FIELD_VALUE_MISMATCH  "\n\nCOMMUNICATION FIELD data mismatch ({})"
+#define MESH_FIELD_VALUE_MISMATCH           "\n\nMESH FIELD data mismatch ({})"
+#define TRANSIENT_FIELD_VALUE_MISMATCH      "\n\nTRANSIENT FIELD data mismatch ({})"
 #define TRANSIENT_FIELD_STEP_VALUE_MISMATCH "\n\nTRANSIENT FIELD data mismatch ({} at step {})"
 
 // For compare_database...
@@ -47,8 +47,8 @@ namespace {
                           const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
   bool compare_faceblocks(const Ioss::Region &input_region_1, const Ioss::Region &input_region_2,
                           const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
-  bool compare_structuredblocks(const Ioss::Region &         input_region_1,
-                                const Ioss::Region &         input_region_2,
+  bool compare_structuredblocks(const Ioss::Region          &input_region_1,
+                                const Ioss::Region          &input_region_2,
                                 const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
   bool compare_nodesets(const Ioss::Region &input_region_1, const Ioss::Region &input_region_2,
                         const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
@@ -62,8 +62,8 @@ namespace {
                         const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
   bool compare_commsets(const Ioss::Region &input_region_1, const Ioss::Region &input_region_2,
                         const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
-  bool compare_coordinate_frames(const Ioss::Region &         input_region_1,
-                                 const Ioss::Region &         input_region_2,
+  bool compare_coordinate_frames(const Ioss::Region          &input_region_1,
+                                 const Ioss::Region          &input_region_2,
                                  const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
   template <typename T>
   bool compare_fields(const std::vector<T *> &in_entities_1, const std::vector<T *> &in_entities_2,
@@ -82,7 +82,7 @@ namespace {
                           const std::string &prefix = "");
   bool compare_field_data_internal(const Ioss::GroupingEntity *ige_1,
                                    const Ioss::GroupingEntity *ige_2, DataPool &in_pool,
-                                   const std::string &          field_name,
+                                   const std::string           &field_name,
                                    const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
 } // namespace
 
@@ -1050,7 +1050,7 @@ namespace {
   }
 
   template <typename T>
-  bool compare_blocks(const std::vector<T *> &in_blocks_1, const std::vector<T *> &    in_blocks_2,
+  bool compare_blocks(const std::vector<T *> &in_blocks_1, const std::vector<T *>     &in_blocks_2,
                       const Ioss::MeshCopyOptions & /* options */, std::ostringstream &buf)
   {
     bool overall_result = true;
@@ -1480,7 +1480,7 @@ namespace {
 
   bool compare_field_data_internal(const Ioss::GroupingEntity *ige_1,
                                    const Ioss::GroupingEntity *ige_2, DataPool &in_pool,
-                                   const std::string &          field_name,
+                                   const std::string           &field_name,
                                    const Ioss::MeshCopyOptions &options, std::ostringstream &buf)
   {
     size_t isize = ige_1->get_field(field_name).get_size();

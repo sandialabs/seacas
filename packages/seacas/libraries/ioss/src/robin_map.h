@@ -298,7 +298,7 @@ namespace tsl {
      *
      * Mainly here for compatibility with the std::unordered_map interface.
      */
-    template <class... Args> std::pair<iterator, bool> emplace(Args &&... args)
+    template <class... Args> std::pair<iterator, bool> emplace(Args &&...args)
     {
       return m_ht.emplace(std::forward<Args>(args)...);
     }
@@ -310,30 +310,29 @@ namespace tsl {
      *
      * Mainly here for compatibility with the std::unordered_map interface.
      */
-    template <class... Args> iterator emplace_hint(const_iterator hint, Args &&... args)
+    template <class... Args> iterator emplace_hint(const_iterator hint, Args &&...args)
     {
       return m_ht.emplace_hint(hint, std::forward<Args>(args)...);
     }
 
     template <class... Args>
-    std::pair<iterator, bool> try_emplace(const key_type &k, Args &&... args)
+    std::pair<iterator, bool> try_emplace(const key_type &k, Args &&...args)
     {
       return m_ht.try_emplace(k, std::forward<Args>(args)...);
     }
 
-    template <class... Args> std::pair<iterator, bool> try_emplace(key_type &&k, Args &&... args)
+    template <class... Args> std::pair<iterator, bool> try_emplace(key_type &&k, Args &&...args)
     {
       return m_ht.try_emplace(std::move(k), std::forward<Args>(args)...);
     }
 
     template <class... Args>
-    iterator try_emplace(const_iterator hint, const key_type &k, Args &&... args)
+    iterator try_emplace(const_iterator hint, const key_type &k, Args &&...args)
     {
       return m_ht.try_emplace_hint(hint, k, std::forward<Args>(args)...);
     }
 
-    template <class... Args>
-    iterator try_emplace(const_iterator hint, key_type &&k, Args &&... args)
+    template <class... Args> iterator try_emplace(const_iterator hint, key_type &&k, Args &&...args)
     {
       return m_ht.try_emplace_hint(hint, std::move(k), std::forward<Args>(args)...);
     }
@@ -623,7 +622,7 @@ namespace tsl {
     /**
      * @copydoc equal_range(const Key& key, std::size_t precalculated_hash)
      */
-    std::pair<const_iterator, const_iterator> equal_range(const Key & key,
+    std::pair<const_iterator, const_iterator> equal_range(const Key  &key,
                                                           std::size_t precalculated_hash) const
     {
       return m_ht.equal_range(key, precalculated_hash);
@@ -670,7 +669,7 @@ namespace tsl {
      */
     template <class K, class KE = KeyEqual,
               typename std::enable_if<has_is_transparent<KE>::value>::type * = nullptr>
-    std::pair<const_iterator, const_iterator> equal_range(const K &   key,
+    std::pair<const_iterator, const_iterator> equal_range(const K    &key,
                                                           std::size_t precalculated_hash) const
     {
       return m_ht.equal_range(key, precalculated_hash);

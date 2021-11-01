@@ -68,7 +68,7 @@ bool Ioss::Map::is_sequential(bool check_all) const
   }
 
   IOSS_FUNC_ENTER(m_);
-  auto & new_map  = const_cast<Ioss::MapContainer &>(m_map);
+  auto  &new_map  = const_cast<Ioss::MapContainer &>(m_map);
   size_t map_size = m_map.size();
   for (int64_t i = 1; i < (int64_t)map_size; i++) {
     if (m_map[i] != i + m_offset) {
@@ -341,14 +341,14 @@ void Ioss::Map::map_implicit_data(void *data, const Ioss::Field &field, size_t c
   }
 }
 
-template size_t Ioss::Map::map_field_to_db_scalar_order(double *             variables,
+template size_t Ioss::Map::map_field_to_db_scalar_order(double              *variables,
                                                         std::vector<double> &db_var,
                                                         size_t begin_offset, size_t count,
                                                         size_t stride, size_t offset);
 template size_t Ioss::Map::map_field_to_db_scalar_order(int *variables, std::vector<double> &db_var,
                                                         size_t begin_offset, size_t count,
                                                         size_t stride, size_t offset);
-template size_t Ioss::Map::map_field_to_db_scalar_order(int64_t *            variables,
+template size_t Ioss::Map::map_field_to_db_scalar_order(int64_t             *variables,
                                                         std::vector<double> &db_var,
                                                         size_t begin_offset, size_t count,
                                                         size_t stride, size_t offset);

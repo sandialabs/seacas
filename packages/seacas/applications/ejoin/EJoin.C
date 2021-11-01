@@ -179,8 +179,8 @@ int main(int argc, char *argv[])
       int_byte_size = 8;
     }
 
-    const Omissions &               omissions  = interFace.block_omissions();
-    const Omissions &               inclusions = interFace.block_inclusions();
+    const Omissions                &omissions  = interFace.block_omissions();
+    const Omissions                &inclusions = interFace.block_inclusions();
     std::vector<Ioss::Region *>     part_mesh(interFace.inputFiles_.size());
     std::vector<Ioss::DatabaseIO *> dbi(interFace.inputFiles_.size());
     for (size_t p = 0; p < interFace.inputFiles_.size(); p++) {

@@ -20,7 +20,7 @@
  */
 
 #define NUM_THREADS 8
-#define NUM_NODES 64
+#define NUM_NODES   64
 
 typedef struct
 {
@@ -34,7 +34,7 @@ void *output_nodal_var(void *varg)
   param *arg      = (param *)varg;
   int    num_node = ex_inquire_int(arg->exoid, EX_INQ_NODES);
 
-  float *data     = malloc(num_node * sizeof(float));
+  float *data = malloc(num_node * sizeof(float));
   for (int i = 0; i < num_node; i++) {
     data[i] = (arg->timestep - 1) * 10 + arg->threadid + 1 + (float)i / 100.0;
   }
@@ -48,7 +48,7 @@ void *output_nodal_var(void *varg)
     }
   }
 
-  char   name[33];
+  char name[33];
   sprintf(name, "NodalVar%ld", arg->threadid + 1);
   ex_put_variable_name(arg->exoid, EX_NODAL, arg->threadid + 1, name);
 
@@ -107,8 +107,8 @@ int init_file(int num_nodal_vars)
 int main(int argc, char *argv[])
 {
   pthread_t threads[NUM_THREADS];
-  int exoid = init_file(NUM_THREADS);
-  param arg[NUM_THREADS];
+  int       exoid = init_file(NUM_THREADS);
+  param     arg[NUM_THREADS];
 
   printf("Running on %d threads\n", NUM_THREADS);
   for (long t = 0; t < NUM_THREADS; t++) {

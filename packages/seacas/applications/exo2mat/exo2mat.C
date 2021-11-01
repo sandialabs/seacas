@@ -52,7 +52,7 @@
 #define EXT ".mat"
 static int textfile = 0;
 
-static FILE * m_file   = nullptr; /* file for m file output */
+static FILE  *m_file   = nullptr; /* file for m file output */
 static mat_t *mat_file = nullptr; /* file for binary .mat output */
 static bool   debug    = false;
 
@@ -541,7 +541,7 @@ std::vector<int> handle_element_blocks(int exo_file, int num_blocks, bool use_ce
       PutInt(str, num_attr);
       if (num_attr > 0) {
         std::string attr_names;
-        char **     names = get_exodus_names(num_attr, max_name_length + 1);
+        char      **names = get_exodus_names(num_attr, max_name_length + 1);
         ex_get_attr_names(exo_file, EX_ELEM_BLOCK, ids[i], names);
         for (int j = 0; j < num_attr; j++) {
           attr_names += names[j];

@@ -513,8 +513,8 @@ namespace pdqsort_detail {
       // Partition and get results.
       std::pair<Iter, bool> part_result = Branchless ? partition_right_branchless(begin, end, comp)
                                                      : partition_right(begin, end, comp);
-      Iter pivot_pos           = part_result.first;
-      bool already_partitioned = part_result.second;
+      Iter                  pivot_pos   = part_result.first;
+      bool                  already_partitioned = part_result.second;
 
       // Check for a highly unbalanced partition.
       diff_t l_size            = pivot_pos - begin;

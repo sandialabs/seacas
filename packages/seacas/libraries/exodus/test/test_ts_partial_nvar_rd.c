@@ -23,8 +23,8 @@
  * -- Each thread handles a portion of the nodes for each coordinate variable
  */
 
-#define NUM_THREADS 8
-#define NUM_NODES 64 /* should be multiple of NUM_THREADS */
+#define NUM_THREADS   8
+#define NUM_NODES     64 /* should be multiple of NUM_THREADS */
 #define NUM_NODAL_VAR 4
 
 static int ulpsDistance(float a, float b)
@@ -132,10 +132,10 @@ int init_file(int num_nodal_vars)
 
   /* open EXODUS II files */
   int exoid = ex_open("test.exo",     /* filename path */
-                  EX_READ,        /* access mode = READ */
-                  &CPU_word_size, /* CPU word size */
-                  &IO_word_size,  /* IO word size */
-                  &version);      /* ExodusII library version */
+                      EX_READ,        /* access mode = READ */
+                      &CPU_word_size, /* CPU word size */
+                      &IO_word_size,  /* IO word size */
+                      &version);      /* ExodusII library version */
 
   if (exoid < 0)
     exit(1);

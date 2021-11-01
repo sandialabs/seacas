@@ -837,7 +837,7 @@ namespace Ioex {
   }
 
   // common
-  void BaseDatabaseIO::compute_block_membership__(Ioss::SideBlock *         efblock,
+  void BaseDatabaseIO::compute_block_membership__(Ioss::SideBlock          *efblock,
                                                   std::vector<std::string> &block_membership) const
   {
     const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
@@ -1157,7 +1157,7 @@ namespace Ioex {
       auto &id_values = m_reductionValues[type];
       for (const auto &values : id_values) {
         int64_t id    = values.first;
-        auto &  vals  = values.second;
+        auto   &vals  = values.second;
         size_t  count = vals.size();
         if (count > 0) {
           int ierr = ex_put_reduction_vars(get_file_pointer(), step, type, id, count, vals.data());
@@ -1178,7 +1178,7 @@ namespace Ioex {
       auto &id_values = m_reductionValues[type];
       for (const auto &values : id_values) {
         int64_t id    = values.first;
-        auto &  vals  = values.second;
+        auto   &vals  = values.second;
         size_t  count = vals.size();
         if (count > 0) {
           int ierr = ex_get_reduction_vars(get_file_pointer(), step, type, id, count,
@@ -1436,7 +1436,7 @@ namespace Ioex {
   int64_t BaseDatabaseIO::internal_add_results_fields(ex_entity_type        type,
                                                       Ioss::GroupingEntity *entity,
                                                       int64_t position, int64_t block_count,
-                                                      Ioss::IntVector &      truth_table,
+                                                      Ioss::IntVector       &truth_table,
                                                       Ioex::VariableNameMap &variables)
   {
     int nvar = 0;
@@ -2078,7 +2078,7 @@ namespace Ioex {
       size_t my_element_count = block->entity_count();
 
       // Get the attribute names. May not exist or may be blank...
-      char ** names = Ioss::Utils::get_name_array(attribute_count, maximumNameLength);
+      char  **names = Ioss::Utils::get_name_array(attribute_count, maximumNameLength);
       int64_t id    = block->get_property("id").get_int();
 
       // Some older applications do not want to used named

@@ -22,7 +22,7 @@
 #include "exodusII_int.h"
 
 #define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
+#define TOSTRING(x)  STRINGIFY(x)
 
 #define EXCHECK(funcall)                                                                           \
   do {                                                                                             \

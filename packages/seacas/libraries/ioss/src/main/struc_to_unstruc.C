@@ -118,7 +118,7 @@ namespace {
   void create_unstructured(const std::string &inpfile, const std::string &outfile)
   {
     Ioss::PropertyManager properties{};
-    Ioss::DatabaseIO *    dbi =
+    Ioss::DatabaseIO     *dbi =
         Ioss::IOFactory::create("cgns", inpfile, Ioss::READ_MODEL, MPI_COMM_WORLD, properties);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
@@ -224,7 +224,7 @@ namespace {
 
     if (!output_region.get_database()->needs_shared_node_information()) {
       std::vector<int> ids(num_nodes); // To hold the global node id map.
-      const auto &     blocks = region.get_structured_blocks();
+      const auto      &blocks = region.get_structured_blocks();
       for (const auto &block : blocks) {
         std::vector<int> cell_id;
         block->get_field_data("cell_node_ids", cell_id);
@@ -281,7 +281,7 @@ namespace {
 
       // Find matching element block in output region...
       const auto &name   = block->name();
-      auto *      output = output_region.get_element_block(name);
+      auto       *output = output_region.get_element_block(name);
       assert(output != nullptr);
 
       {
@@ -418,7 +418,7 @@ namespace {
 
     if (output_region.get_database()->needs_shared_node_information()) {
       std::vector<int> ids(num_nodes); // To hold the global node id map.
-      const auto &     blocks = region.get_structured_blocks();
+      const auto      &blocks = region.get_structured_blocks();
       for (const auto &block : blocks) {
         std::vector<int> cell_id;
         block->get_field_data("cell_node_ids", cell_id);
@@ -527,7 +527,7 @@ namespace {
 
     const auto &blocks = region.get_structured_blocks();
     for (const auto &block : blocks) {
-      const auto &   nb = block->get_node_block();
+      const auto    &nb = block->get_node_block();
       Ioss::NameList fields;
       nb.field_describe(role, &fields);
       for (const auto &field_name : fields) {
@@ -551,7 +551,7 @@ namespace {
       block->field_describe(role, &fields);
 
       const auto &name   = block->name();
-      auto *      eblock = output_region.get_element_block(name);
+      auto       *eblock = output_region.get_element_block(name);
       assert(eblock != nullptr);
 
       for (const auto &field_name : fields) {
@@ -573,13 +573,13 @@ namespace {
   void transfer_nb_field_data(const Ioss::Region &region, Ioss::Region &output_region,
                               Ioss::Field::RoleType role)
   {
-    const auto &   onb = output_region.get_node_blocks()[0];
+    const auto    &onb = output_region.get_node_blocks()[0];
     Ioss::NameList fields;
     onb->field_describe(role, &fields);
 
     for (const auto &field_name : fields) {
       assert(onb->field_exists(field_name));
-      const Ioss::Field &       field      = onb->get_field(field_name);
+      const Ioss::Field        &field      = onb->get_field(field_name);
       const Ioss::VariableType *var_type   = field.raw_storage();
       size_t                    comp_count = var_type->component_count();
 
@@ -623,7 +623,7 @@ namespace {
           block->get_field_data(field_name, data);
 
           const auto &name   = block->name();
-          auto *      eblock = output_region.get_element_block(name);
+          auto       *eblock = output_region.get_element_block(name);
           assert(eblock != nullptr);
           eblock->put_field_data(field_name, data);
         }

@@ -75,10 +75,10 @@ int main(int argc, char **argv)
 
   /* open EXODUS II files */
   int exoid = ex_open("test.exo",     /* filename path */
-                  EX_READ,        /* access mode = READ */
-                  &CPU_word_size, /* CPU word size */
-                  &IO_word_size,  /* IO word size */
-                  &version);      /* ExodusII library version */
+                      EX_READ,        /* access mode = READ */
+                      &CPU_word_size, /* CPU word size */
+                      &IO_word_size,  /* IO word size */
+                      &version);      /* ExodusII library version */
 
   printf("\nafter ex_open\n");
   if (exoid < 0) {
@@ -110,9 +110,9 @@ int main(int argc, char **argv)
   /* read database parameters */
   int  num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
   int  num_side_sets;
-  char  title[MAX_LINE_LENGTH + 1];
-  int error = ex_get_init(exoid, title, &num_dim, &num_nodes, &num_elem, &num_elem_blk, &num_node_sets,
-                      &num_side_sets);
+  char title[MAX_LINE_LENGTH + 1];
+  int  error = ex_get_init(exoid, title, &num_dim, &num_nodes, &num_elem, &num_elem_blk,
+                           &num_node_sets, &num_side_sets);
 
   printf("after ex_get_init, error = %3d\n", error);
 
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
   printf("num_side_sets = %3d\n", num_side_sets);
 
   /* Check that ex_inquire gives same title */
-  char  title_chk[MAX_LINE_LENGTH + 1];
+  char title_chk[MAX_LINE_LENGTH + 1];
   error = ex_inquire(exoid, EX_INQ_TITLE, &idum, &fdum, title_chk);
   printf("after ex_inquire, error = %3d\n", error);
   if (strcmp(title, title_chk) != 0) {
@@ -259,7 +259,7 @@ int main(int argc, char **argv)
       if (strcmp(name, block_names[i]) != 0) {
         printf("error in ex_get_name for block id %d\n", ids[i]);
       }
-      char  elem_type[MAX_STR_LENGTH + 1];
+      char elem_type[MAX_STR_LENGTH + 1];
       error = ex_get_block(exoid, EX_ELEM_BLOCK, ids[i], elem_type, &(num_elem_in_block[i]),
                            &(num_nodes_per_elem[i]), NULL, NULL, &(num_attr[i]));
       printf("\nafter ex_get_elem_block, error = %d\n", error);
@@ -590,11 +590,11 @@ int main(int argc, char **argv)
 
       /* Note: The # of elements is same as # of sides!  */
       int num_elem_in_set = num_sides_in_set;
-      elem_list       = (int *)calloc(num_elem_in_set, sizeof(int));
-      side_list       = (int *)calloc(num_sides_in_set, sizeof(int));
-      int *node_ctr_list   = (int *)calloc(num_elem_in_set, sizeof(int));
-      node_list       = (int *)calloc(num_elem_in_set * 21, sizeof(int));
-      dist_fact       = (float *)calloc(num_df_in_set, sizeof(float));
+      elem_list           = (int *)calloc(num_elem_in_set, sizeof(int));
+      side_list           = (int *)calloc(num_sides_in_set, sizeof(int));
+      int *node_ctr_list  = (int *)calloc(num_elem_in_set, sizeof(int));
+      node_list           = (int *)calloc(num_elem_in_set * 21, sizeof(int));
+      dist_fact           = (float *)calloc(num_df_in_set, sizeof(float));
 
       error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
       printf("\nafter ex_get_side_set, error = %3d\n", error);
@@ -974,7 +974,7 @@ int main(int argc, char **argv)
   /* read time value at one time step */
 
   int time_step = 3;
-  error     = ex_get_time(exoid, time_step, &time_value);
+  error         = ex_get_time(exoid, time_step, &time_value);
   printf("\nafter ex_get_time, error = %3d\n", error);
 
   printf("time value at time step %2d = %5.3f\n", time_step, time_value);
@@ -1090,8 +1090,8 @@ int main(int argc, char **argv)
   if (num_ele_vars > 0) {
     var_values = (float *)calloc(num_time_steps, sizeof(float));
 
-    var_index = 2;
-    int elem_num  = 2;
+    var_index    = 2;
+    int elem_num = 2;
     error =
         ex_get_var_time(exoid, EX_ELEM_BLOCK, var_index, elem_num, beg_time, end_time, var_values);
     printf("\nafter ex_get_elem_var_time, error = %3d\n", error);

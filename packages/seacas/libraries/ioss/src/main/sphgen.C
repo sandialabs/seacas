@@ -234,7 +234,7 @@ namespace {
     // that will be the number of output element and nodes in the
     // sphere mesh.
     size_t                                      sph_node_count = 0;
-    const Ioss::ElementBlockContainer &         ebs            = region.get_element_blocks();
+    const Ioss::ElementBlockContainer          &ebs            = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator I              = ebs.begin();
     while (I != ebs.end()) {
       Ioss::ElementBlock *eb = *I;
@@ -276,7 +276,7 @@ namespace {
 
     output_region.begin_mode(Ioss::STATE_MODEL);
 
-    Ioss::NodeBlock *   nb = region.get_node_blocks()[0];
+    Ioss::NodeBlock    *nb = region.get_node_blocks()[0];
     std::vector<double> coordinates;
     nb->get_field_data("mesh_model_coordinates", coordinates);
 

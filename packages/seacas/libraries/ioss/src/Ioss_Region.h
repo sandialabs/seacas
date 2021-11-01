@@ -160,39 +160,39 @@ namespace Ioss {
     // Special purpose...
     bool remove(Assembly *removal);
 
-    const NodeBlockContainer &      get_node_blocks() const;
-    const EdgeBlockContainer &      get_edge_blocks() const;
-    const FaceBlockContainer &      get_face_blocks() const;
-    const ElementBlockContainer &   get_element_blocks() const;
-    const SideSetContainer &        get_sidesets() const;
-    const NodeSetContainer &        get_nodesets() const;
-    const EdgeSetContainer &        get_edgesets() const;
-    const FaceSetContainer &        get_facesets() const;
-    const ElementSetContainer &     get_elementsets() const;
-    const CommSetContainer &        get_commsets() const;
+    const NodeBlockContainer       &get_node_blocks() const;
+    const EdgeBlockContainer       &get_edge_blocks() const;
+    const FaceBlockContainer       &get_face_blocks() const;
+    const ElementBlockContainer    &get_element_blocks() const;
+    const SideSetContainer         &get_sidesets() const;
+    const NodeSetContainer         &get_nodesets() const;
+    const EdgeSetContainer         &get_edgesets() const;
+    const FaceSetContainer         &get_facesets() const;
+    const ElementSetContainer      &get_elementsets() const;
+    const CommSetContainer         &get_commsets() const;
     const StructuredBlockContainer &get_structured_blocks() const;
-    const AssemblyContainer &       get_assemblies() const;
-    const BlobContainer &           get_blobs() const;
+    const AssemblyContainer        &get_assemblies() const;
+    const BlobContainer            &get_blobs() const;
     const CoordinateFrameContainer &get_coordinate_frames() const;
 
     // Retrieve the Grouping Entity with the specified name.
     // Returns nullptr if the entity does not exist
-    GroupingEntity * get_entity(const std::string &my_name, EntityType io_type) const;
-    GroupingEntity * get_entity(const std::string &my_name) const;
-    NodeBlock *      get_node_block(const std::string &my_name) const;
-    EdgeBlock *      get_edge_block(const std::string &my_name) const;
-    FaceBlock *      get_face_block(const std::string &my_name) const;
-    ElementBlock *   get_element_block(const std::string &my_name) const;
-    SideSet *        get_sideset(const std::string &my_name) const;
-    SideBlock *      get_sideblock(const std::string &my_name) const;
-    NodeSet *        get_nodeset(const std::string &my_name) const;
-    EdgeSet *        get_edgeset(const std::string &my_name) const;
-    FaceSet *        get_faceset(const std::string &my_name) const;
-    ElementSet *     get_elementset(const std::string &my_name) const;
-    CommSet *        get_commset(const std::string &my_name) const;
+    GroupingEntity  *get_entity(const std::string &my_name, EntityType io_type) const;
+    GroupingEntity  *get_entity(const std::string &my_name) const;
+    NodeBlock       *get_node_block(const std::string &my_name) const;
+    EdgeBlock       *get_edge_block(const std::string &my_name) const;
+    FaceBlock       *get_face_block(const std::string &my_name) const;
+    ElementBlock    *get_element_block(const std::string &my_name) const;
+    SideSet         *get_sideset(const std::string &my_name) const;
+    SideBlock       *get_sideblock(const std::string &my_name) const;
+    NodeSet         *get_nodeset(const std::string &my_name) const;
+    EdgeSet         *get_edgeset(const std::string &my_name) const;
+    FaceSet         *get_faceset(const std::string &my_name) const;
+    ElementSet      *get_elementset(const std::string &my_name) const;
+    CommSet         *get_commset(const std::string &my_name) const;
     StructuredBlock *get_structured_block(const std::string &my_name) const;
-    Assembly *       get_assembly(const std::string &my_name) const;
-    Blob *           get_blob(const std::string &my_name) const;
+    Assembly        *get_assembly(const std::string &my_name) const;
+    Blob            *get_blob(const std::string &my_name) const;
 
     // Not guaranteed to be efficient...
     // Note that not all GroupingEntity's are guaranteed to have an 'id'...

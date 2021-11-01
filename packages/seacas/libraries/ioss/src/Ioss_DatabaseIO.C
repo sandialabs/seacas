@@ -589,7 +589,7 @@ namespace Ioss {
         for (auto &sbold : side_blocks) {
           size_t  side_count = sbold->entity_count();
           auto    sbnew      = new SideBlock(this, sbold->name(), sbold->topology()->name(),
-                                     sbold->parent_element_topology()->name(), side_count);
+                                             sbold->parent_element_topology()->name(), side_count);
           int64_t id         = sbold->get_property("id").get_int();
           sbnew->property_add(Property("set_offset", entity_count));
           sbnew->property_add(Property("set_df_offset", df_count));
@@ -1076,7 +1076,7 @@ namespace Ioss {
     if (elementBlockBoundingBoxes.empty()) {
       // Calculate the bounding boxes for all element blocks...
       std::vector<double> coordinates;
-      Ioss::NodeBlock *   nb = get_region()->get_node_blocks()[0];
+      Ioss::NodeBlock    *nb = get_region()->get_node_blocks()[0];
       nb->get_field_data("mesh_model_coordinates", coordinates);
       ssize_t nnode = nb->entity_count();
       ssize_t ndim  = nb->get_property("component_degree").get_int();
@@ -1112,8 +1112,8 @@ namespace Ioss {
       util().global_array_minmax(minmax, Ioss::ParallelUtils::DO_MIN);
 
       for (size_t i = 0; i < element_blocks.size(); i++) {
-        Ioss::ElementBlock *   block = element_blocks[i];
-        const std::string &    name  = block->name();
+        Ioss::ElementBlock    *block = element_blocks[i];
+        const std::string     &name  = block->name();
         AxisAlignedBoundingBox bbox(minmax[6 * i + 0], minmax[6 * i + 1], minmax[6 * i + 2],
                                     -minmax[6 * i + 3], -minmax[6 * i + 4], -minmax[6 * i + 5]);
         elementBlockBoundingBoxes[name] = bbox;
@@ -1237,7 +1237,7 @@ namespace {
       }
 
       if (util.parallel_rank() == 0 || single_proc_only) {
-        const std::string &           name = entity->name();
+        const std::string            &name = entity->name();
         std::ostringstream            strm;
         auto                          now  = std::chrono::steady_clock::now();
         std::chrono::duration<double> diff = now - initial_time;

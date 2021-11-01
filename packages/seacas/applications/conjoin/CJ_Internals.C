@@ -80,7 +80,7 @@ template <typename INT>
 int Excn::Internals::write_meta_data(const Mesh<INT> &mesh, const std::vector<Block> &blocks,
                                      const std::vector<NodeSet<INT>> &nodesets,
                                      const std::vector<SideSet<INT>> &sidesets,
-                                     const CommunicationMetaData &    comm)
+                                     const CommunicationMetaData     &comm)
 {
   SMART_ASSERT(blocks.size() == mesh.blockCount);
   SMART_ASSERT(nodesets.size() == mesh.nodesetCount);
@@ -1057,7 +1057,7 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Side
       // create distribution factor list variable for side set
       dims[0] = dimid;
       status  = nc_def_var(exodusFilePtr, VAR_FACT_SS(cur_num_side_sets + 1),
-                          nc_flt_code(exodusFilePtr), 1, dims, &varid);
+                           nc_flt_code(exodusFilePtr), 1, dims, &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -1242,13 +1242,13 @@ namespace {
   }
 } // namespace
 
-template int Excn::Internals::write_meta_data(const Excn::Mesh<int> &                mesh,
-                                              const std::vector<Excn::Block> &       blocks,
+template int Excn::Internals::write_meta_data(const Excn::Mesh<int>                 &mesh,
+                                              const std::vector<Excn::Block>        &blocks,
                                               const std::vector<Excn::NodeSet<int>> &nodesets,
                                               const std::vector<Excn::SideSet<int>> &sidesets,
-                                              const Excn::CommunicationMetaData &    comm);
-template int Excn::Internals::write_meta_data(const Excn::Mesh<int64_t> &                mesh,
-                                              const std::vector<Excn::Block> &           blocks,
+                                              const Excn::CommunicationMetaData     &comm);
+template int Excn::Internals::write_meta_data(const Excn::Mesh<int64_t>                 &mesh,
+                                              const std::vector<Excn::Block>            &blocks,
                                               const std::vector<Excn::NodeSet<int64_t>> &nodesets,
                                               const std::vector<Excn::SideSet<int64_t>> &sidesets,
-                                              const Excn::CommunicationMetaData &        comm);
+                                              const Excn::CommunicationMetaData         &comm);

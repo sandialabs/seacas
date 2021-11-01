@@ -13,11 +13,11 @@
 #include <string.h>
 
 #define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
+#define TOSTRING(x)  STRINGIFY(x)
 
 #define EXCHECK(funcall)                                                                           \
   do {                                                                                             \
-    int error = (funcall);							\
+    int error = (funcall);                                                                         \
     printf("after %s, error = %d\n", TOSTRING(funcall), error);                                    \
     if (error != EX_NOERR && error != EX_WARN) {                                                   \
       fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                    \
@@ -31,16 +31,16 @@ int main(int argc, char **argv)
 
   ex_opts(EX_VERBOSE | EX_ABORT);
 
-  int CPU_word_size = 0; /* sizeof(float) */
-  int IO_word_size  = 0; /* use what is stored in file */
+  int   CPU_word_size = 0; /* sizeof(float) */
+  int   IO_word_size  = 0; /* use what is stored in file */
   float version;
 
   /* open EXODUS II files */
   int exoid = ex_open("test-blob.exo", /* filename path */
-                  EX_READ,         /* access mode = READ */
-                  &CPU_word_size,  /* CPU word size */
-                  &IO_word_size,   /* IO word size */
-                  &version);       /* ExodusII library version */
+                      EX_READ,         /* access mode = READ */
+                      &CPU_word_size,  /* CPU word size */
+                      &IO_word_size,   /* IO word size */
+                      &version);       /* ExodusII library version */
 
   printf("\nafter ex_open\n");
   if (exoid < 0) {
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   printf("EXODUSII Library API; version %4.2f (%d)\n", version, idum);
 
   /* read database parameters */
-  int   num_blob;
+  int num_blob;
   {
     ex_init_params par;
     EXCHECK(ex_get_init_ext(exoid, &par));
@@ -239,9 +239,9 @@ int main(int argc, char **argv)
     }
     free(var_values);
     free(vals);
-  for (int i = 0; i < num_blob; i++) {
-    free(blob_names[i]);
-  }
+    for (int i = 0; i < num_blob; i++) {
+      free(blob_names[i]);
+    }
   }
 
   EXCHECK(ex_close(exoid));

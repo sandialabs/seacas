@@ -248,7 +248,7 @@ namespace Iogn {
     int64_t mGlobalNumberOfElements;
     int64_t mLocalNumberOfElements;
 
-    const ExodusData &   mExodusData;
+    const ExodusData    &mExodusData;
     std::vector<int64_t> mElementOffsetForBlock;
   };
 } // namespace Iogn

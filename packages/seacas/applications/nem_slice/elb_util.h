@@ -16,7 +16,7 @@
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
 #if !defined(__MINGW32__)
-#define strcasecmp stricmp
+#define strcasecmp  stricmp
 #define strncasecmp strnicmp
 #endif
 #ifdef _WIN64
