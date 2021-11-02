@@ -4,19 +4,19 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <cgnsconfig.h>
-
 #include <cgns/Iocgns_DatabaseIO.h> // for DatabaseIO -- serial
 #include <cgns/Iocgns_IOFactory.h>
 #include <cgns/Iocgns_Utils.h>
 #include <cstddef> // for nullptr
-#if CG_BUILD_PARALLEL
-#include <cgns/Iocgns_ParallelDatabaseIO.h> // for DatabaseIO -- parallel
-#endif
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
 #include "Ioss_IOFactory.h" // for IOFactory
 #include <string>           // for string
 #include <tokenize.h>
+
+#include <cgnsconfig.h>
+#if CG_BUILD_PARALLEL
+#include <cgns/Iocgns_ParallelDatabaseIO.h> // for DatabaseIO -- parallel
+#endif
 
 namespace Ioss {
   class PropertyManager;

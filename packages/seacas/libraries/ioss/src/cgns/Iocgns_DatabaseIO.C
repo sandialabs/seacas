@@ -10,18 +10,12 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <cgns/Iocgns_Defines.h>
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
 #include <bitset>
 #include <cgns/Iocgns_DatabaseIO.h>
 #include <cgns/Iocgns_Utils.h>
-#include <cgnslib.h>
-#if CG_BUILD_PARALLEL
-#include <pcgnslib.h>
-#endif
 #include <cstddef>
 #include <ctime>
 #include <fmt/ostream.h>
@@ -34,6 +28,13 @@
 #endif
 #include <tokenize.h>
 #include <vector>
+
+#include <cgnslib.h>
+#if CG_BUILD_PARALLEL
+#include <pcgnslib.h>
+#endif
+
+#include <cgns/Iocgns_Defines.h>
 
 #if !defined(CGNSLIB_H)
 #error "Could not include cgnslib.h"

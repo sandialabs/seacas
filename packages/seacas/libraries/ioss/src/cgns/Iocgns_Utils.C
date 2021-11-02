@@ -4,8 +4,6 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <cgns/Iocgns_Defines.h>
-
 #include <Ioss_Assembly.h>
 #include <Ioss_Beam2.h>
 #include <Ioss_Beam3.h>
@@ -52,6 +50,8 @@
 #else
 #include <cgnslib.h>
 #endif
+
+#include <cgns/Iocgns_Defines.h>
 
 #define CGERR(funcall)                                                                             \
   if ((funcall) != CG_OK) {                                                                        \
