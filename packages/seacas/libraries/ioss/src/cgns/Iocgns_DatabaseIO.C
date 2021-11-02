@@ -1983,8 +1983,7 @@ namespace Iocgns {
       const Ioss::GroupingEntity *sb   = nb->contained_in();
       int                         zone = Iocgns::Utils::get_db_zone(sb);
       int                         solution_index =
-          Utils::find_solution_index(get_file_pointer(), base, zone, step, CG_Vertex);
-      Utils::find_solution_index(get_file_pointer(), base, zone, step, CGNS_ENUMV(Vertex));
+          Utils::find_solution_index(get_file_pointer(), base, zone, step, CGNS_ENUMV(Vertex));
 
       auto *rdata = static_cast<double *>(data);
       SMART_ASSERT(num_to_get == sb->get_property("node_count").get_int());
