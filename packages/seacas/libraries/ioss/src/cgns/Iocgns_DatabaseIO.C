@@ -10,18 +10,12 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <cgns/Iocgns_Defines.h>
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
 #include <bitset>
 #include <cgns/Iocgns_DatabaseIO.h>
 #include <cgns/Iocgns_Utils.h>
-#include <cgnslib.h>
-#if CG_BUILD_PARALLEL
-#include <pcgnslib.h>
-#endif
 #include <cstddef>
 #include <ctime>
 #include <fmt/ostream.h>
@@ -34,6 +28,13 @@
 #endif
 #include <tokenize.h>
 #include <vector>
+
+#include <cgnslib.h>
+#if CG_BUILD_PARALLEL
+#include <pcgnslib.h>
+#endif
+
+#include <cgns/Iocgns_Defines.h>
 
 #if !defined(CGNSLIB_H)
 #error "Could not include cgnslib.h"
@@ -58,7 +59,7 @@ namespace {
     return global - 1;
   }
 
-#ifdef SEACAS_HAVE_MPI
+#if CG_BUILD_PARALLEL
   bool has_decomp_descriptor(int cgns_file_ptr, int base, int zone, int zgc_idx)
   {
     bool has_decomp_flag = false;
@@ -180,12 +181,12 @@ namespace {
     std::array<int, 3>               offset{{0, 0, 0}};
     std::bitset<6>                   face_adj{};
 
-#ifdef SEACAS_HAVE_MPI
+#if CG_BUILD_PARALLEL
     bool split() const { return face_adj.any(); }
 #endif
   };
 
-#ifdef SEACAS_HAVE_MPI
+#if CG_BUILD_PARALLEL
   void add_zgc_fpp(int cgns_file_ptr, Ioss::StructuredBlock *block,
                    const std::map<std::string, int> &zone_name_map, int myProcessor,
                    bool isParallel)
@@ -761,7 +762,7 @@ namespace Iocgns {
     SMART_ASSERT(isParallel);
     PAR_UNUSED(base);
     PAR_UNUSED(num_zones);
-#ifdef SEACAS_HAVE_MPI
+#if CG_BUILD_PARALLEL
     // Each processor may have a different set of zones.  This routine
     // will sync the information such that at return, each procesosr
     // has a consistent set of structuredBlocks defined with the
