@@ -61,7 +61,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   int cpu_ws = sizeof(float);
   int io_ws  = sizeof(float);
 
-  fmt::print("Outputting load balance to file {}\n", nemI_out_file.c_str());
+  fmt::print("Outputting load balance to file {}\n", nemI_out_file);
 
   /* Create the load balance file */
   /* Attempt to create a netcdf4-format file; if it fails, then assume
@@ -109,7 +109,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     method1 = "elemental";
   }
 
-  title = fmt::format("nem_slice {} load balance file", method1.c_str());
+  title = fmt::format("nem_slice {} load balance file", method1);
 
   method1 = "method1: ";
   method2 = "method2: ";
@@ -169,7 +169,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
 
   /* Generate a QA record for the utility */
   time_t      time_val = time(nullptr);
-  auto *      lt       = std::localtime(&time_val);
+  auto       *lt       = std::localtime(&time_val);
   std::string time     = fmt::format("{:%H:%M:%S}", *lt);
   std::string date     = fmt::format("{:%Y/%m/%d}", *lt);
 
@@ -466,7 +466,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
   }
 
   /* Create the ExodusII file */
-  fmt::print("Outputting load balance visualization file {}\n", vis_file_name.c_str());
+  fmt::print("Outputting load balance visualization file {}\n", vis_file_name);
   int cpu_ws = 0;
   int io_ws  = 0;
   int mode   = EX_CLOBBER;
@@ -593,7 +593,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
       vis_el_blk_ptr[bcnt] = ccnt;
       int    pos           = 0;
       int    old_pos       = 0;
-      INT *  el_ptr        = elem_block.data();
+      INT   *el_ptr        = elem_block.data();
       size_t ecnt          = mesh->num_elems;
       while (pos != -1) {
         pos = in_list(bcnt, ecnt, el_ptr);

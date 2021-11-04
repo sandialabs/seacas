@@ -19,7 +19,8 @@
 #include "elb_inp.h"
 #include "elb_util.h" // for strip_string, token_compare, etc
 #include "fmt/ostream.h"
-#ifdef _MSC_VER
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
 #include "XGetopt.h"
 #include <unistd.h>
 #else
@@ -67,13 +68,13 @@ template int cmd_line_arg_parse(int argc, char *argv[], std::string &exoII_inp_f
 
 template <typename INT>
 int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passed by main() */
-                       std::string &            exoII_inp_file, /* The input ExodusII file name */
-                       std::string &            ascii_inp_file, /* The ASCII input file name */
-                       std::string &            nemI_out_file,  /* Output NemesisI file name */
-                       Machine_Description *    machine, /* Structure for machine description */
-                       LB_Description<INT> *    lb,     /* Structure for load balance description */
-                       Problem_Description *    prob,   /* Structure for various problem params */
-                       Solver_Description *     solver, /* Structure for eigen solver params */
+                       std::string             &exoII_inp_file, /* The input ExodusII file name */
+                       std::string             &ascii_inp_file, /* The ASCII input file name */
+                       std::string             &nemI_out_file,  /* Output NemesisI file name */
+                       Machine_Description     *machine, /* Structure for machine description */
+                       LB_Description<INT>     *lb,     /* Structure for load balance description */
+                       Problem_Description     *prob,   /* Structure for various problem params */
+                       Solver_Description      *solver, /* Structure for eigen solver params */
                        Weight_Description<INT> *weight  /* Structure for weighting graph */
 )
 {
@@ -83,7 +84,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
   int         wgt;
   int         max_dim = 0;
   int         i;
-  char *      sub_opt = nullptr, *value = nullptr, *cptr = nullptr, *cptr2 = nullptr;
+  char       *sub_opt = nullptr, *value = nullptr, *cptr = nullptr, *cptr2 = nullptr;
   std::string ctemp;
 
   /* see NOTE in elb.h about the order of the following array */
@@ -174,7 +175,8 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
     case 'w':
       /* Weighting options */
       sub_opt = optarg;
-#ifdef _MSC_VER
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
       fprintf(stderr, "Windows build does not use getsubopt yet...\n");
       exit(1);
 #else
@@ -369,7 +371,8 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       if (sub_opt != nullptr) {
         string_to_lower(sub_opt, '\0');
       }
-#ifdef _MSC_VER
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
       fprintf(stderr, "Windows build does not use getsubopt yet...\n");
       exit(1);
 #else
@@ -474,7 +477,8 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       if (sub_opt != nullptr) {
         string_to_lower(sub_opt, '\0');
       }
-#ifdef _MSC_VER
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
       fprintf(stderr, "Windows build does not use getsubopt yet...\n");
       exit(1);
 #else
@@ -570,7 +574,8 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       if (sub_opt != nullptr) {
         string_to_lower(sub_opt, '\0');
       }
-#ifdef _MSC_VER
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
       fprintf(stderr, "Windows build does not use getsubopt yet...\n");
       exit(1);
 #else
@@ -683,11 +688,11 @@ int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file,
                   Problem_Description *problem, Solver_Description *solver,
                   Weight_Description<INT> *weight)
 {
-  FILE *      inp_fd;
+  FILE       *inp_fd;
   std::string ctemp;
   char        inp_line[MAX_INP_LINE];
   char        inp_copy[MAX_INP_LINE];
-  char *      cptr, *cptr2;
+  char       *cptr, *cptr2;
 
   int  iret;
   int  el_blk;
@@ -698,7 +703,7 @@ int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file,
   char tmpstr[2048];
   /*-----------------------------Execution Begins------------------------------*/
   if (!(inp_fd = fopen(ascii_inp_file.c_str(), "r"))) {
-    ctemp = fmt::format("FATAL: unable to open ASCII input file {}", ascii_inp_file.c_str());
+    ctemp = fmt::format("FATAL: unable to open ASCII input file {}", ascii_inp_file);
     Gen_Error(0, ctemp);
     return 0;
   }
@@ -1364,8 +1369,7 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
   float vers;
   int   exid_inp;
   if ((exid_inp = ex_open(exoII_inp_file.c_str(), EX_READ, &icpu_ws, &iio_ws, &vers)) < 0) {
-    std::string ctemp =
-        fmt::format("FATAL: unable to open input ExodusII file {}", exoII_inp_file.c_str());
+    std::string ctemp = fmt::format("FATAL: unable to open input ExodusII file {}", exoII_inp_file);
     Gen_Error(0, ctemp);
     return 0;
   }
@@ -1612,8 +1616,8 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
     int   cpu_ws = 0;
     int   io_ws  = 0;
     if ((exoid = ex_open(weight->exo_filename.c_str(), EX_READ, &cpu_ws, &io_ws, &version)) < 0) {
-      std::string ctemp = fmt::format("FATAL: failed to open ExodusII weighting file {}",
-                                      weight->exo_filename.c_str());
+      std::string ctemp =
+          fmt::format("FATAL: failed to open ExodusII weighting file {}", weight->exo_filename);
       Gen_Error(0, ctemp);
       return 0;
     }
@@ -1716,9 +1720,8 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
      * not exist in the specified file.
      */
     if (weight->exo_vindx <= 0) {
-      std::string ctemp =
-          fmt::format("FATAL: requested weighting variable {} not found in ExodusII file",
-                      weight->exo_varname.c_str());
+      std::string ctemp = fmt::format(
+          "FATAL: requested weighting variable {} not found in ExodusII file", weight->exo_varname);
       Gen_Error(0, ctemp);
       return 0;
     }

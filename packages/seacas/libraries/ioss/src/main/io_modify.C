@@ -167,7 +167,7 @@ namespace {
       for (const auto &name : names) {
         if (std::regex_match(name, reg)) {
           const auto *entity = region.get_entity(name, entity_type);
-          const T *   ge     = dynamic_cast<const T *>(entity);
+          const T    *ge     = dynamic_cast<const T *>(entity);
           if (ge != nullptr) {
             info_entity(ge, show_property);
             matched = true;
@@ -195,7 +195,7 @@ namespace {
       for (const auto &name : names) {
         if (glob::glob_match(name, glob)) {
           const auto *entity = region.get_entity(name, entity_type);
-          const T *   ge     = dynamic_cast<const T *>(entity);
+          const T    *ge     = dynamic_cast<const T *>(entity);
           if (ge != nullptr) {
             info_entity(ge, show_property);
             matched = true;
@@ -379,20 +379,8 @@ int main(int argc, char *argv[])
 namespace {
   void info_entity(const Ioss::StructuredBlock *sb, bool show_property)
   {
-    fmt::print("\n{} {}", name(sb), sb->get_property("ni_global").get_int());
-
-    int64_t num_dim = sb->get_property("component_degree").get_int();
-    if (num_dim > 1) {
-      fmt::print("x{}", sb->get_property("nj_global").get_int());
-    }
-    if (num_dim > 2) {
-      fmt::print("x{}", sb->get_property("nk_global").get_int());
-    }
-
-    fmt::print(" [{}x{}x{}, Offset = {}, {}, {}] ", sb->get_property("ni").get_int(),
-               sb->get_property("nj").get_int(), sb->get_property("nk").get_int(),
-               sb->get_property("offset_i").get_int(), sb->get_property("offset_j").get_int(),
-               sb->get_property("offset_k").get_int());
+    fmt::print("\n{} {} [{}, Offset = {}] ", name(sb), fmt::join(sb->get_ijk_global(), "x"),
+               fmt::join(sb->get_ijk_local(), "x"), fmt::join(sb->get_ijk_offset(), ", "));
 
     int64_t num_cell = sb->get_property("cell_count").get_int();
     int64_t num_node = sb->get_property("node_count").get_int();

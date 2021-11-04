@@ -6,13 +6,13 @@
  * See packages/seacas/LICENSE for details
  */
 #include "CP_SystemInterface.h"
-#include "CP_Version.h"  // for qainfo
-#include "GetLongOpt.h"  // for GetLongOption, etc
+#include "CP_Version.h" // for qainfo
+#include "GetLongOpt.h" // for GetLongOption, etc
+#include "Ioss_CodeTypes.h"
 #include "SL_tokenize.h" // for tokenize
 #include <algorithm>     // for sort, transform
 #include <cctype>        // for tolower
 #include <copyright.h>
-#include <cstddef> // for size_t
 #include <cstdlib> // for strtol, abs, exit, strtoul, etc
 #include <cstring> // for strchr, strlen
 #include <fmt/ostream.h>
@@ -26,7 +26,7 @@
 namespace {
   bool is_path_absolute(const std::string &path)
   {
-#ifdef _WIN32
+#ifdef __IOSS_WINDOWS__
     return path[0] == '\\' || path[1] == ':';
 #else
     return path[0] == '/';
@@ -64,6 +64,9 @@ void Cpup::SystemInterface::enroll_options()
                   "1:", nullptr, true);
   options_.enroll("extension", GetLongOption::MandatoryValue,
                   "CGNS database extension for the input files", "e");
+
+  options_.enroll("output", GetLongOption::MandatoryValue, "filename for output CGNS database",
+                  nullptr);
 
   options_.enroll("output_extension", GetLongOption::MandatoryValue,
                   "CGNS database extension for the output file", nullptr);
@@ -185,7 +188,9 @@ void Cpup::SystemInterface::enroll_options()
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
-                  "\t\t  1 = Verbose Structured block information.",
+                  "\t\t  1 = Timestamp output.\n"
+                  "\t\t  2 = Output region summary for each input part mesh.\n"
+                  "\t\t  4 = Verbose Structured block information.",
                   "0");
   options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
   options_.enroll("help", GetLongOption::NoValue, "Print this summary and exit", nullptr);
@@ -231,7 +236,7 @@ bool Cpup::SystemInterface::parse_options(int argc, char **argv)
 
   inExtension_    = options_.get_option_value("extension", inExtension_);
   outExtension_   = options_.get_option_value("output_extension", outExtension_);
-  processorCount_ = options_.get_option_value("processor_count", processorCount_);
+  outputFilename_ = options_.get_option_value("output", outputFilename_);
   //  partCount_      = options_.get_option_value("Part_count", partCount_);
   //  startPart_      = options_.get_option_value("start_part", startPart_);
   //  maxOpenFiles_   = options_.get_option_value("max_open_files", maxOpenFiles_);
@@ -513,9 +518,9 @@ bool Cpup::SystemInterface::decompose_filename(const std::string &cs)
   if (myRank_ == 0) {
     fmt::print("\nThe following options were determined automatically:\n"
                "\t basename = '{}'\n"
-               "\t-processor_count {}\n"
-               "\t-extension {}\n"
-               "\t-Root_directory {}\n\n",
+               "\t-processor_count = {}\n"
+               "\t-extension = '{}'\n"
+               "\t-Root_directory = '{}'\n",
                basename_, processorCount_, inExtension_, rootDirectory_);
   }
   return true;

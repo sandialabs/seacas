@@ -40,9 +40,9 @@ create or read models of this size, you do not have to build hdf5.
 *  Download to `seacas/TPL/hdf5` and untar it
 
 *  `cd` to that directory and enter the command:
-     ```bash
-     sh ../runconfigure.sh
-     ```
+   ```bash
+   sh ../runconfigure.sh
+   ```
 
 *  `make && make install`
 
@@ -131,10 +131,10 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
 The IOSS library supports using CGNS for structured and unstructred meshes.  To use this capability, you will need to download and install the CGNS library:
 
 *  Download CGNS via git:
-    ```bash
-    cd TPL/cgns
-    git clone https://github.com/CGNS/CGNS.git
-    ```
+   ```bash
+   cd TPL/cgns
+   git clone https://github.com/CGNS/CGNS.git
+   ```
 
 *  Build using CMake.
 

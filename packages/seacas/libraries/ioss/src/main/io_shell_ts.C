@@ -28,9 +28,6 @@
 #include <iostream>
 #include <pthread.h>
 #include <string>
-#ifndef _MSC_VER
-#include <sys/times.h>
-#endif
 #include <unistd.h>
 #include <vector>
 
@@ -51,13 +48,6 @@
 // ========================================================================
 
 namespace {
-  struct my_numpunct : std::numpunct<char>
-  {
-  protected:
-    char        do_thousands_sep() const { return ','; }
-    std::string do_grouping() const { return "\3"; }
-  };
-
   int  rank      = 0;
   bool mem_stats = false;
 
@@ -100,7 +90,7 @@ namespace {
   void transform_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
                             Ioss::Field::RoleType role, const IOShell::Interface &interFace);
   void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                                    const std::string &       field_name,
+                                    const std::string        &field_name,
                                     const IOShell::Interface &interFace);
 
   void file_copy(IOShell::Interface &interFace, int rank);
@@ -126,8 +116,6 @@ int main(int argc, char *argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
-
-  std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
 
 #ifdef SEACAS_HAVE_KOKKOS
   Kokkos::ScopeGuard kokkos(argc, argv);
@@ -676,8 +664,8 @@ namespace {
 
   struct param
   {
-    Ioss::GroupingEntity *    entity;
-    Ioss::Region *            output_region;
+    Ioss::GroupingEntity     *entity;
+    Ioss::Region             *output_region;
     Ioss::Field::RoleType     role;
     const IOShell::Interface *interFace;
   };
@@ -837,7 +825,12 @@ namespace {
       for (const auto &ifb : fbs) {
         if (ifb->parent_block() != nullptr) {
           auto  fb_name = ifb->parent_block()->name();
-          auto *parent  = dynamic_cast<Ioss::EntityBlock *>(output_region.get_entity(fb_name));
+          auto *parent  = dynamic_cast<Ioss::EntityBlock *>(
+              output_region.get_entity(fb_name, Ioss::ELEMENTBLOCK));
+          if (parent == nullptr) {
+            parent = dynamic_cast<Ioss::EntityBlock *>(
+                output_region.get_entity(fb_name, Ioss::STRUCTUREDBLOCK));
+          }
 
           auto *ofb = surf->get_side_block(ifb->name());
           ofb->set_parent_block(parent);
@@ -1230,7 +1223,7 @@ namespace {
   }
 
   void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                                    const std::string &       field_name,
+                                    const std::string        &field_name,
                                     const IOShell::Interface &interFace)
   {
 

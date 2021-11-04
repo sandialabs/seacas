@@ -60,6 +60,9 @@ extern "C" {
 #include "third_library.h"
 #include "third_library_params.h"
 
+#if __metis__ || __parmetis__
+#include "parmetis_interface.h"
+#endif
 /**********************************************************/
 /* Interface routine for Graph methods.                   */
 /**********************************************************/

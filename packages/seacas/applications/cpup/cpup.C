@@ -4,20 +4,17 @@
 //
 // See packages/seacas/LICENSE for details
 #include <cstdlib>
-#include <ctime>
 #include <exception>
 #include <map>
+#include <memory>
 #include <string>
-#ifndef _MSC_VER
-#include <sys/times.h>
-#include <sys/utsname.h>
-#endif
-#include <unistd.h>
 #include <vector>
 
 #include "add_to_log.h"
 #include "fmt/ostream.h"
+#include "format_time.h"
 #include "hwm.h"
+#include "time_stamp.h"
 
 #include <Ionit_Initializer.h>
 #include <Ioss_SmartAssert.h>
@@ -32,30 +29,32 @@
 #include <mpi.h>
 #endif
 
-extern double seacas_timer();
-unsigned int  debug_level = 0;
+unsigned int debug_level = 0;
 
 namespace {
-  using GlobalZgcMap = std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity>;
-  using GlobalBcMap  = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
+  std::string tsFormat = "[{:%H:%M:%S}] ";
 
-  GlobalZgcMap generate_global_zgc(std::vector<Ioss::Region *> &part_mesh);
-  GlobalBcMap  generate_global_bc(std::vector<Ioss::Region *> &part_mesh);
+  using GlobalZgcMap   = std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity>;
+  using GlobalBcMap    = std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition>;
+  using GlobalBlockMap = std::map<const std::string, const Ioss::StructuredBlock *>;
+  using GlobalIJKMap   = std::map<const std::string, Ioss::IJK_t>;
+  using PartVector     = std::vector<std::unique_ptr<Ioss::Region>>;
 
-  void info_structuredblock(Ioss::Region &region);
-  void resolve_offsets(std::vector<Ioss::Region *> &                               part_mesh,
-                       std::map<const std::string, const Ioss::StructuredBlock *> &all_blocks);
-  void update_global_ijk(std::vector<Ioss::Region *> &       part_mesh,
-                         std::map<std::string, Ioss::IJK_t> &global_block);
-  void transfer_nodal_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
-                            std::vector<double> &output);
-  void transfer_cell_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
-                           std::vector<double> &output);
-  void transfer_nodal_coordinates(Ioss::Region &               output_region,
-                                  std::vector<Ioss::Region *> &part_mesh);
+  GlobalZgcMap generate_global_zgc(const PartVector &part_mesh);
+  GlobalBcMap  generate_global_bc(const PartVector &part_mesh);
 
-  int case_compare(const char *s1, const char *s2);
-  int case_compare(const std::string &s1, const std::string &s2);
+  void   info_structuredblock(const Ioss::Region &region);
+  void   resolve_offsets(const PartVector &part_mesh, GlobalBlockMap &all_blocks);
+  void   update_global_ijk(const PartVector &part_mesh, GlobalIJKMap &global_block);
+  void   transfer_nodal_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
+                              std::vector<double> &output);
+  void   transfer_cell_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
+                             std::vector<double> &output);
+  void   transfer_nodal_coordinates(const PartVector &part_mesh, Ioss::Region &output_region);
+  double transfer_step(const PartVector &part_mesh, Ioss::Region &output_region, int istep);
+  void   union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j);
+  void   union_bc_range(Ioss::IJK_t &g_beg, Ioss::IJK_t &g_end, const Ioss::IJK_t &l_beg,
+                        const Ioss::IJK_t &l_end, const Ioss::IJK_t &offset);
 
   int get_constant_face(const Ioss::IJK_t &beg, const Ioss::IJK_t &end)
   {
@@ -70,27 +69,27 @@ namespace {
   bool is_field_valid(const Cpup::StringVector &variable_list, const std::string &field_name)
   {
     if (variable_list.empty() ||
-        (variable_list.size() == 1 && case_compare(variable_list[0], "all") == 0)) {
+        (variable_list.size() == 1 && Ioss::Utils::str_equal(variable_list[0], "all") == 0)) {
       return true;
     }
 
     // At this point, the variable_list contains one or more entries
     // of fields that should be output on combined file.  Run through
     // list and see if `field_name` is in the list.
-    for (auto &valid : variable_list) {
-      if (case_compare(valid, field_name) == 0) {
+    for (const auto &valid : variable_list) {
+      if (Ioss::Utils::str_equal(valid, field_name) == 0) {
         return true;
       }
     }
     return false;
   }
 
-  int verify_timestep_count(std::vector<Ioss::Region *> &part_mesh)
+  int verify_timestep_count(const PartVector &part_mesh)
   {
     int num_time_steps = part_mesh[0]->get_property("state_count").get_int();
 
     bool differ = false;
-    for (auto &part : part_mesh) {
+    for (const auto &part : part_mesh) {
       int nts = part->get_property("state_count").get_int();
       if (nts != num_time_steps) {
         differ = true;
@@ -104,89 +103,14 @@ namespace {
                  num_time_steps);
     }
     else {
-      fmt::print("\nNumber of time steps on input databases = {}\n\n", num_time_steps);
+      fmt::print(stderr, "\nNumber of time steps on input databases = {}\n\n", num_time_steps);
     }
     return num_time_steps;
   }
 
-  std::string format_time(double seconds)
-  {
-    std::string suffix("u");
-    if (seconds > 0.0 && seconds < 1.0) {
-      seconds *= 1000.;
-      suffix = "ms";
-    }
-    else if (seconds > 86400) {
-      suffix = "d";
-      seconds /= 86400.;
-    }
-    else if (seconds > 3600) {
-      suffix = "h";
-      seconds /= 3600.;
-    }
-    else if (seconds > 60) {
-      suffix = "m";
-      seconds /= 60.;
-    }
-    else {
-      suffix = "s";
-    }
-    return fmt::format("{:.3}{}", seconds, suffix);
-  }
-
-  double transfer_step(std::vector<Ioss::Region *> &part_mesh, Ioss::Region &output_region,
-                       int istep);
-
-  std::string name(const Ioss::GroupingEntity *entity)
-  {
-    return entity->type_string() + " '" + entity->name() + "'";
-  }
-
-  void union_bc_range(Ioss::IJK_t &g_beg, Ioss::IJK_t &g_end, const Ioss::IJK_t &l_beg,
-                      Ioss::IJK_t &l_end, const Ioss::IJK_t &offset)
-  {
-    for (int i = 0; i < 3; i++) {
-      g_beg[i] = g_beg[i] == 0 ? l_beg[i] + offset[i] : std::min(g_beg[i], l_beg[i] + offset[i]);
-      g_end[i] = std::max(g_end[i], l_end[i] + offset[i]);
-    }
-  }
-
-  void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
-  {
-    assert(zgc_i.m_transform == zgc_j.m_transform);
-    if (zgc_i.m_ownerRangeBeg[0] == 0 && zgc_i.m_ownerRangeBeg[1] == 0 &&
-        zgc_i.m_ownerRangeBeg[2] == 0) {
-      zgc_i.m_ownerRangeBeg = zgc_j.m_ownerRangeBeg;
-      zgc_i.m_ownerRangeEnd = zgc_j.m_ownerRangeEnd;
-      zgc_i.m_donorRangeBeg = zgc_j.m_donorRangeBeg;
-      zgc_i.m_donorRangeEnd = zgc_j.m_donorRangeEnd;
-    }
-    else {
-      for (int i = 0; i < 3; i++) {
-        if (zgc_i.m_ownerRangeBeg[i] <= zgc_i.m_ownerRangeEnd[i]) {
-          zgc_i.m_ownerRangeBeg[i] = std::min(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
-          zgc_i.m_ownerRangeEnd[i] = std::max(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
-        }
-        else {
-          zgc_i.m_ownerRangeBeg[i] = std::max(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
-          zgc_i.m_ownerRangeEnd[i] = std::min(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
-        }
-
-        if (zgc_i.m_donorRangeBeg[i] <= zgc_i.m_donorRangeEnd[i]) {
-          zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
-          zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
-        }
-        else {
-          zgc_i.m_donorRangeBeg[i] = std::max(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
-          zgc_i.m_donorRangeEnd[i] = std::min(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
-        }
-      }
-    }
-  }
 } // namespace
 
-template <typename INT>
-double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT dummy);
+template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT dummy);
 
 int main(int argc, char *argv[])
 {
@@ -208,36 +132,17 @@ int main(int argc, char *argv[])
       exit(EXIT_FAILURE);
     }
 
-    int error = 0;
+    int    error = 0;
+    double begin = Ioss::Utils::timer();
+    cpup(interFace, static_cast<int64_t>(0));
+    double end = Ioss::Utils::timer();
 
-    std::vector<Ioss::Region *> part_mesh(interFace.processor_count());
-    for (int p = 0; p < interFace.processor_count(); p++) {
-      std::string inp_file = interFace.basename() + "." + interFace.cgns_suffix();
-      auto        filename = Ioss::Utils::decode_filename(inp_file, p, interFace.processor_count());
+    fmt::print(stderr,
+               "\nTotal Execution Time = {:.2f} seconds, Maximum memory = {:L} MiBytes.\n******* "
+               "END *******\n\n",
+               end - begin, (get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024));
 
-      if (debug_level & 1) {
-        fmt::print(stderr, "Processor rank {}, file {}\n", p, filename);
-      }
-      Ioss::DatabaseIO *dbi =
-          Ioss::IOFactory::create("cgns", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
-      if (dbi == nullptr || !dbi->ok(true)) {
-        std::exit(EXIT_FAILURE);
-      }
-
-      dbi->set_field_separator(1);
-
-      // NOTE: region owns database pointer at this time...
-      std::string name = "CPUP_" + std::to_string(p + 1);
-      part_mesh[p]     = new Ioss::Region(dbi, name);
-    }
-
-    double time = cpup(interFace, part_mesh, static_cast<int64_t>(0));
-
-    for (auto &pm : part_mesh) {
-      delete pm;
-    }
-
-    add_to_log(argv[0], time);
+    add_to_log(argv[0], end - begin);
 
 #ifdef SEACAS_HAVE_MPI
     MPI_Finalize();
@@ -250,23 +155,54 @@ int main(int argc, char *argv[])
   }
 }
 
-template <typename INT>
-double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh, INT /*dummy*/)
+template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*/)
 {
-  double begin           = Ioss::Utils::timer();
-  size_t processor_count = interFace.processor_count();
-  SMART_ASSERT(processor_count == part_mesh.size());
+  auto width = Ioss::Utils::number_width(interFace.processor_count(), false);
+
+  PartVector part_mesh(interFace.processor_count());
+  for (int p = 0; p < interFace.processor_count(); p++) {
+    std::string inp_file = interFace.basename() + "." + interFace.cgns_suffix();
+    auto        filename = Ioss::Utils::decode_filename(inp_file, p, interFace.processor_count());
+
+    if (debug_level & 1) {
+      fmt::print(stderr, "{} Processor rank {:{}}, file {}\n", time_stamp(tsFormat), p, width,
+                 filename);
+    }
+    Ioss::DatabaseIO *dbi =
+        Ioss::IOFactory::create("cgns", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
+    if (dbi == nullptr || !dbi->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
+
+    dbi->set_field_separator(1);
+
+    // NOTE: region owns database pointer at this time...
+    std::string name = "CPUP_" + std::to_string(p + 1);
+    part_mesh[p]     = std::unique_ptr<Ioss::Region>(new Ioss::Region(dbi, name));
+
+    if (part_mesh[p]->mesh_type() != Ioss::MeshType::STRUCTURED) {
+      part_mesh[p]->output_summary(std::cerr);
+      fmt::print(stderr,
+                 "\nERROR: Only UNSTRUCTURED CGNS file joining is supported at this time.\n");
+      exit(EXIT_FAILURE);
+    }
+
+    if (debug_level & 2) {
+      part_mesh[p]->output_summary(std::cerr);
+      fmt::print(stderr, "\n");
+    }
+  }
 
   // Each processor may have a different set of zones.  This routine
-  // will sync the information such that at return, there is
-  // a consistent set of structuredBlocks defined with the
-  // correct local and global, i,j,k ranges and offsets.
+  // will sync the information such that at end, there is a consistent
+  // set of structuredBlocks defined with the correct local and
+  // global, i,j,k ranges and offsets.
 
-  std::map<const std::string, const Ioss::StructuredBlock *> all_blocks;
-  std::map<std::string, Ioss::IJK_t>                         global_block;
-  for (auto &part : part_mesh) {
+  GlobalBlockMap all_blocks;
+  GlobalIJKMap   global_block;
+  for (const auto &part : part_mesh) {
     auto &blocks = part->get_structured_blocks();
-    for (auto &block : blocks) {
+    for (const auto &block : blocks) {
       auto &name       = block->name();
       all_blocks[name] = block;
 
@@ -298,6 +234,7 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
   // Skip the ZGC that are "from_decomp"
   GlobalZgcMap global_zgc = generate_global_zgc(part_mesh);
 
+  // Create output file...
   Ioss::PropertyManager properties{};
   properties.add(Ioss::Property("FLUSH_INTERVAL", 0));
   Ioss::DatabaseIO *dbo =
@@ -325,13 +262,15 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
     auto  block      = new Ioss::StructuredBlock(dbo, block_name, 3, block_range.second);
     output_region.add(block);
 
-    for (auto &bc_map : global_bc) {
+    // Add BC to the block...
+    for (const auto &bc_map : global_bc) {
       if (bc_map.first.first == block_name) {
         block->m_boundaryConditions.push_back(bc_map.second);
       }
     }
 
-    for (auto &zgc_map : global_zgc) {
+    // Add ZGC to the block...
+    for (const auto &zgc_map : global_zgc) {
       if (zgc_map.first.first == block_name) {
         block->m_zoneConnectivity.push_back(zgc_map.second);
       }
@@ -341,27 +280,25 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
   // Copy the sidesets and assemblies from the proc-0 input file to the output file...
   auto &part  = part_mesh[0];
   auto &ssets = part->get_sidesets();
-  for (auto &sset : ssets) {
+  for (const auto &sset : ssets) {
     auto oss = new Ioss::SideSet(*sset);
     output_region.add(oss);
   }
 
   auto &assems = part->get_assemblies();
-  for (auto &assem : assems) {
+  for (const auto &assem : assems) {
     auto oass = new Ioss::Assembly(*assem);
     output_region.add(oass);
   }
 
-  fmt::print("\n********************* OUTPUT MESH ********************\n");
-
-  if (debug_level & 1) {
+  if (debug_level & 4) {
     info_structuredblock(output_region);
   }
 
   output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
 
   output_region.begin_mode(Ioss::STATE_MODEL);
-  transfer_nodal_coordinates(output_region, part_mesh);
+  transfer_nodal_coordinates(part_mesh, output_region);
   output_region.end_mode(Ioss::STATE_MODEL);
 
   // ******* Transient Data...
@@ -371,18 +308,18 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
   //     .. Find corresponding structured blocks on part meshes.
   //        .. Add each valid block and node_block field
   const auto &variable_list = interFace.var_names();
-  if (!(variable_list.size() == 1 && case_compare(variable_list[0], "none") == 0)) {
+  if (!(variable_list.size() == 1 && Ioss::Utils::str_equal(variable_list[0], "none") == 0)) {
     auto &blocks = output_region.get_structured_blocks();
-    for (auto &block : blocks) {
+    for (const auto &block : blocks) {
       int64_t num_cell = block->get_property("cell_count").get_int();
       int64_t num_node = block->get_property("node_count").get_int();
 
       auto &onb = block->get_node_block();
 
       // Find all corresponding blocks on the input part meshes...
-      for (auto &part : part_mesh) {
+      for (const auto &part : part_mesh) {
         auto &blocks = part->get_structured_blocks();
-        for (auto &pblock : blocks) {
+        for (const auto &pblock : blocks) {
           auto &name      = pblock->name();
           auto  name_proc = Iocgns::Utils::decompose_name(name, true);
           if (name_proc.first == block->name()) {
@@ -443,44 +380,52 @@ double cpup(Cpup::SystemInterface &interFace, std::vector<Ioss::Region *> &part_
 
   ts_max = ts_max < num_time_steps ? ts_max : num_time_steps;
   if (ts_min <= ts_max) {
-    fmt::print("\tTransferring step {} to step {} by {}\n", ts_min, ts_max, ts_step);
+    fmt::print(stderr, "\tTransferring step {} to step {} by {}\n", ts_min, ts_max, ts_step);
   }
 
   // Determine how many steps will be written...
   int output_steps = (ts_max - ts_min) / ts_step + 1;
 
-  double start_time = seacas_timer();
+  double start_time = Ioss::Utils::timer();
+  double cur_time   = start_time;
   for (int time_step = ts_min; time_step <= ts_max; time_step += ts_step) {
     time_step_out++;
     double time_val = transfer_step(part_mesh, output_region, time_step);
 
-    double cur_time            = seacas_timer();
+    double time_per_step       = Ioss::Utils::timer() - cur_time;
+    cur_time                   = Ioss::Utils::timer();
     double elapsed             = cur_time - start_time;
-    double time_per_step       = elapsed / time_step_out;
+    double avg_time_per_step   = elapsed / time_step_out;
     double percentage_done     = (time_step_out * 100.0) / output_steps;
-    double estimated_remaining = time_per_step * (output_steps - time_step_out);
-    fmt::print(stderr, "\tWrote step {:6L}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]    \r",
-               time_step, time_val, percentage_done, format_time(elapsed),
-               format_time(estimated_remaining));
+    double estimated_remaining = avg_time_per_step * (output_steps - time_step_out);
+    if (debug_level & 1) {
+      fmt::print(
+          stderr,
+          "{} \tWrote step {:6L}, time {:8.4e}\t[{:5.1f}%, Elapsed={}, \tETA={}, \tTPS={}]\n",
+          time_stamp(tsFormat), time_step, time_val, percentage_done, format_time(elapsed),
+          format_time(estimated_remaining), format_time(time_per_step));
+    }
+    else {
+      fmt::print(
+          stderr,
+          "\tWrote step {:6L}, time {:8.4e}\t[{:5.1f}%, Elapsed={}, ETA={}, TPS={}]       \r",
+          time_step, time_val, percentage_done, format_time(elapsed),
+          format_time(estimated_remaining), format_time(time_per_step));
+    }
   }
   output_region.end_mode(Ioss::STATE_TRANSIENT);
 
-  double end = Ioss::Utils::timer();
-  fmt::print("\n");
-  output_region.output_summary(std::cout);
-  fmt::print("\nTotal Execution Time = {:.2f} seconds, Maximum memory = {:L} MiBytes.\n******* "
-             "END *******\n\n",
-             end - begin, (get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024));
-  return (end - begin);
+  fmt::print(stderr, "\n\n********************* OUTPUT DATABASE ********************\n");
+  output_region.output_summary(std::cerr);
 }
 
 namespace {
-  GlobalZgcMap generate_global_zgc(std::vector<Ioss::Region *> &part_mesh)
+  GlobalZgcMap generate_global_zgc(const PartVector &part_mesh)
   {
-    std::map<std::pair<std::string, std::string>, Ioss::ZoneConnectivity> global_zgc;
-    for (auto &part : part_mesh) {
+    GlobalZgcMap global_zgc;
+    for (const auto &part : part_mesh) {
       auto &blocks = part->get_structured_blocks();
-      for (auto &block : blocks) {
+      for (const auto &block : blocks) {
         auto name_proc = Iocgns::Utils::decompose_name(block->name(), true);
 
         for (const auto &zgc : block->m_zoneConnectivity) {
@@ -496,8 +441,8 @@ namespace {
             // Create a temporary zgc; adjust its ranges to "global" by adding the offsets
             // and then union if with the global instance...
             Ioss::IJK_t own_off = block->get_ijk_offset();
-            auto        tmp_zgc{zgc};
 
+            auto tmp_zgc{zgc};
             tmp_zgc.m_ownerRangeBeg[0] += own_off[0];
             tmp_zgc.m_ownerRangeBeg[1] += own_off[1];
             tmp_zgc.m_ownerRangeBeg[2] += own_off[2];
@@ -526,16 +471,16 @@ namespace {
     return global_zgc;
   }
 
-  GlobalBcMap generate_global_bc(std::vector<Ioss::Region *> &part_mesh)
+  GlobalBcMap generate_global_bc(const PartVector &part_mesh)
   {
-    std::map<std::pair<std::string, std::string>, Ioss::BoundaryCondition> global_bc;
-    for (auto &part : part_mesh) {
+    GlobalBcMap global_bc;
+    for (const auto &part : part_mesh) {
       auto &blocks = part->get_structured_blocks();
-      for (auto &block : blocks) {
+      for (const auto &block : blocks) {
         Ioss::IJK_t offset    = block->get_ijk_offset();
         auto        name_proc = Iocgns::Utils::decompose_name(block->name(), true);
-        auto &      sb_bc     = block->m_boundaryConditions;
-        for (auto &bc : sb_bc) {
+        auto       &sb_bc     = block->m_boundaryConditions;
+        for (const auto &bc : sb_bc) {
           auto &gbc = global_bc[std::make_pair(name_proc.first, bc.m_bcName)];
           if (gbc.m_bcName.empty()) {
             gbc.m_bcName  = bc.m_bcName;
@@ -549,20 +494,19 @@ namespace {
     return global_bc;
   }
 
-  double transfer_step(std::vector<Ioss::Region *> &part_mesh, Ioss::Region &output_region,
-                       int istep)
+  double transfer_step(const PartVector &part_mesh, Ioss::Region &output_region, int istep)
   {
     double time  = part_mesh[0]->get_state_time(istep);
     int    ostep = output_region.add_state(time);
 
     output_region.begin_state(ostep);
 
-    for (auto &part : part_mesh) {
+    for (const auto &part : part_mesh) {
       part->begin_state(istep);
     }
 
     auto &blocks = output_region.get_structured_blocks();
-    for (auto &block : blocks) {
+    for (const auto &block : blocks) {
       int64_t             num_cell = block->get_property("cell_count").get_int();
       std::vector<double> output(num_cell);
       std::vector<double> input;
@@ -573,12 +517,12 @@ namespace {
       // Not sure if this is the best ordering of loops, but it minimizes the
       // amount of data gathered at one time at the cost of multiple iterations
       // through the block-finding loop...
-      for (auto &field_name : fields) {
+      for (const auto &field_name : fields) {
 
         // Find all corresponding blocks on the input part meshes...
-        for (auto &part : part_mesh) {
+        for (const auto &part : part_mesh) {
           auto &blocks = part->get_structured_blocks();
-          for (auto &pblock : blocks) {
+          for (const auto &pblock : blocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
@@ -595,9 +539,9 @@ namespace {
     }
 
     // Now do the fields on the embedded node block...
-    for (auto &block : blocks) {
+    for (const auto &block : blocks) {
       int64_t num_node = block->get_property("node_count").get_int();
-      auto &  onb      = block->get_node_block();
+      auto   &onb      = block->get_node_block();
 
       std::vector<double> output(num_node);
       std::vector<double> input;
@@ -608,12 +552,12 @@ namespace {
       // Not sure if this is the best ordering of loops, but it minimizes the
       // amount of data gathered at one time at the cost of multiple iterations
       // through the block-finding loop...
-      for (auto &field_name : fields) {
+      for (const auto &field_name : fields) {
 
         // Find all corresponding blocks on the input part meshes...
-        for (auto &part : part_mesh) {
+        for (const auto &part : part_mesh) {
           auto &blocks = part->get_structured_blocks();
-          for (auto &pblock : blocks) {
+          for (const auto &pblock : blocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
@@ -631,22 +575,21 @@ namespace {
     }
 
     output_region.end_state(ostep);
-    for (auto &part : part_mesh) {
+    for (const auto &part : part_mesh) {
       part->end_state(istep);
     }
     return time;
   }
 
-  void resolve_offsets(std::vector<Ioss::Region *> &                               part_mesh,
-                       std::map<const std::string, const Ioss::StructuredBlock *> &all_blocks)
+  void resolve_offsets(const PartVector &part_mesh, GlobalBlockMap &all_blocks)
   {
     bool change_made;
     do {
       change_made = false;
-      for (auto &part : part_mesh) {
+      for (const auto &part : part_mesh) {
         auto &blocks = part->get_structured_blocks();
-        for (auto &block : blocks) {
-          for (auto &zgc : block->m_zoneConnectivity) {
+        for (const auto &block : blocks) {
+          for (const auto &zgc : block->m_zoneConnectivity) {
             if (zgc.is_from_decomp()) {
               auto plane = get_constant_face(zgc.m_ownerRangeBeg, zgc.m_ownerRangeEnd);
               if (plane < 3) {
@@ -668,12 +611,11 @@ namespace {
     } while (change_made);
   }
 
-  void update_global_ijk(std::vector<Ioss::Region *> &       part_mesh,
-                         std::map<std::string, Ioss::IJK_t> &global_block)
+  void update_global_ijk(const PartVector &part_mesh, GlobalIJKMap &global_block)
   {
-    for (auto &part : part_mesh) {
+    for (const auto &part : part_mesh) {
       auto &blocks = part->get_structured_blocks();
-      for (auto &block : blocks) {
+      for (const auto &block : blocks) {
         auto  ijk_o      = block->get_ijk_offset();
         auto  ijk_g      = block->get_ijk_global();
         auto  name_proc  = Iocgns::Utils::decompose_name(block->name(), true);
@@ -684,57 +626,47 @@ namespace {
       }
     }
 
-    for (auto &part : part_mesh) {
+    for (const auto &part : part_mesh) {
       auto &blocks = part->get_structured_blocks();
-      for (auto &block : blocks) {
+      for (const auto &block : blocks) {
         auto  name_proc  = Iocgns::Utils::decompose_name(block->name(), true);
         auto &cur_global = global_block[name_proc.first];
-        block->set_ijk_global(0, cur_global[0]);
-        block->set_ijk_global(1, cur_global[1]);
-        block->set_ijk_global(2, cur_global[2]);
+        block->set_ijk_global(cur_global);
       }
-      if (debug_level & 1) {
+      if (debug_level & 4) {
         info_structuredblock(*part);
       }
     }
   }
 
-  void info_structuredblock(Ioss::Region &region)
+  void info_structuredblock(const Ioss::Region &region)
   {
     const Ioss::StructuredBlockContainer &sbs = region.get_structured_blocks();
-    for (auto &sb : sbs) {
+    for (const auto &sb : sbs) {
 
       auto ijk_global = sb->get_ijk_global();
-      fmt::print("\n{} {}x{}x{}", name(sb), ijk_global[0], ijk_global[1], ijk_global[2]);
+      fmt::print(stderr, "\n{} '{}' {}", sb->type_string(), sb->name(), fmt::join(ijk_global, "x"));
 
       auto ijk_offset = sb->get_ijk_offset();
       auto ijk_local  = sb->get_ijk_local();
-      fmt::print(" [{}x{}x{}, Offset = {}, {}, {}] ", ijk_local[0], ijk_local[1], ijk_local[2],
-                 ijk_offset[0], ijk_offset[1], ijk_offset[2]);
+      fmt::print(stderr, " [{}, Offset = {}] ", fmt::join(ijk_local, "x"),
+                 fmt::join(ijk_offset, ", "));
 
       int64_t num_cell = sb->get_property("cell_count").get_int();
       int64_t num_node = sb->get_property("node_count").get_int();
-      fmt::print("  {:14L} cells, {:14L} nodes ", num_cell, num_node);
+      fmt::print(stderr, "  {:14L} cells, {:14L} nodes ", num_cell, num_node);
 
       if (!sb->m_zoneConnectivity.empty()) {
-        fmt::print("\n\tConnectivity with other blocks:\n");
+        fmt::print(stderr, "\n\tConnectivity with other blocks:\n");
         for (const auto &zgc : sb->m_zoneConnectivity) {
-          fmt::print("{}\n", zgc);
+          fmt::print(stderr, "{}\n", zgc);
         }
       }
 
       if (!sb->m_boundaryConditions.empty()) {
-        fmt::print("\tBoundary Conditions:\n");
-        // NOTE: The sort here is just to make io_info more useful for regression testing.
-        //       With the sort, we get more reproducible output.  For now, only needed for BC...
-        auto sb_bc = sb->m_boundaryConditions;
-        Ioss::sort(sb_bc.begin(), sb_bc.end(),
-                   [](const Ioss::BoundaryCondition &a, const Ioss::BoundaryCondition &b) {
-                     return a.m_bcName < b.m_bcName;
-                   });
-
-        for (const auto &bc : sb_bc) {
-          fmt::print("{}\n", bc);
+        fmt::print(stderr, "\tBoundary Conditions:\n");
+        for (const auto &bc : sb->m_boundaryConditions) {
+          fmt::print(stderr, "{}\n", bc);
         }
       }
     }
@@ -792,8 +724,7 @@ namespace {
     }
   }
 
-  void transfer_nodal_coordinates(Ioss::Region &               output_region,
-                                  std::vector<Ioss::Region *> &part_mesh)
+  void transfer_nodal_coordinates(const PartVector &part_mesh, Ioss::Region &output_region)
   {
     // This implementation results in having to iterate over the part
     // mesh 3 times -- once for each coordinate axis, but minimizes
@@ -805,17 +736,17 @@ namespace {
                                       "mesh_model_coordinates_z"};
 
     auto &blocks = output_region.get_structured_blocks();
-    for (auto &block : blocks) {
+    for (const auto &block : blocks) {
       // Get size of node_block...
-      auto &              onb       = block->get_node_block();
+      auto               &onb       = block->get_node_block();
       size_t              num_coord = onb.entity_count();
       std::vector<double> coord(num_coord);
       for (int dim = 0; dim < 3; dim++) {
 
         // Find all corresponding blocks on the input part meshes...
-        for (auto &part : part_mesh) {
+        for (const auto &part : part_mesh) {
           auto &blocks = part->get_structured_blocks();
-          for (auto &pblock : blocks) {
+          for (const auto &pblock : blocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
@@ -831,25 +762,46 @@ namespace {
     }
   }
 
-  int case_compare(const char *s1, const char *s2)
+  void union_bc_range(Ioss::IJK_t &g_beg, Ioss::IJK_t &g_end, const Ioss::IJK_t &l_beg,
+                      const Ioss::IJK_t &l_end, const Ioss::IJK_t &offset)
   {
-    const char *c1 = s1;
-    const char *c2 = s2;
-    for (;;) {
-      if (::toupper(*c1) != ::toupper(*c2)) {
-        return (::toupper(*c1) - ::toupper(*c2));
-      }
-      if (*c1 == '\0') {
-        return 0;
-      }
-      c1++;
-      c2++;
+    for (int i = 0; i < 3; i++) {
+      g_beg[i] = g_beg[i] == 0 ? l_beg[i] + offset[i] : std::min(g_beg[i], l_beg[i] + offset[i]);
+      g_end[i] = std::max(g_end[i], l_end[i] + offset[i]);
     }
   }
 
-  int case_compare(const std::string &s1, const std::string &s2)
+  void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
   {
-    return case_compare(s1.c_str(), s2.c_str());
-  }
+    assert(zgc_i.m_transform == zgc_j.m_transform);
+    if (zgc_i.m_ownerRangeBeg[0] == 0 && zgc_i.m_ownerRangeBeg[1] == 0 &&
+        zgc_i.m_ownerRangeBeg[2] == 0) {
+      // This is a newly-created zgc that hasn't been uninoed with anything yet.
+      zgc_i.m_ownerRangeBeg = zgc_j.m_ownerRangeBeg;
+      zgc_i.m_ownerRangeEnd = zgc_j.m_ownerRangeEnd;
+      zgc_i.m_donorRangeBeg = zgc_j.m_donorRangeBeg;
+      zgc_i.m_donorRangeEnd = zgc_j.m_donorRangeEnd;
+    }
+    else {
+      for (int i = 0; i < 3; i++) {
+        if (zgc_i.m_ownerRangeBeg[i] <= zgc_i.m_ownerRangeEnd[i]) {
+          zgc_i.m_ownerRangeBeg[i] = std::min(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+          zgc_i.m_ownerRangeEnd[i] = std::max(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+        }
+        else {
+          zgc_i.m_ownerRangeBeg[i] = std::max(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+          zgc_i.m_ownerRangeEnd[i] = std::min(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+        }
 
+        if (zgc_i.m_donorRangeBeg[i] <= zgc_i.m_donorRangeEnd[i]) {
+          zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+          zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+        }
+        else {
+          zgc_i.m_donorRangeBeg[i] = std::max(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+          zgc_i.m_donorRangeEnd[i] = std::min(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+        }
+      }
+    }
+  }
 } // namespace

@@ -5,18 +5,7 @@
 
 int main(int argc, char **argv)
 {
-  int  i, j;
-  int *ids;
-  int  prop_value;
-
   ex_set_specs ss_specs, ns_specs;
-
-  float *attrib, *dist_fact;
-
-  char *block_names[10], *nset_names[10], *sset_names[10];
-  char *attrib_names[10];
-  char  name[MAX_STR_LENGTH + 1];
-  char *cdum = NULL;
 
   ex_opts(EX_VERBOSE | EX_ABORT);
 
@@ -35,7 +24,8 @@ int main(int argc, char **argv)
 
   printf("test.exo is an EXODUSII file; version %4.2f\n", version);
   printf("         I/O word size %1d\n", IO_word_size);
-  int idum;
+  int   idum;
+  char *cdum = NULL;
   ex_inquire(exoid, EX_INQ_API_VERS, &idum, &version, cdum);
   printf("EXODUSII API; version %4.2f\n", version);
 
@@ -72,27 +62,28 @@ int main(int argc, char **argv)
     free(z);
 
   char *coord_names[3];
-  for (i = 0; i < num_dim; i++) {
+  for (int i = 0; i < num_dim; i++) {
     coord_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
   }
 
   ex_get_coord_names(exoid, coord_names);
 
-  for (i = 0; i < num_dim; i++)
+  for (int i = 0; i < num_dim; i++)
     free(coord_names[i]);
 
   {
     int num_attrs = 0;
     ex_get_attr_param(exoid, EX_NODAL, 0, &num_attrs);
     if (num_attrs > 0) {
-      for (j = 0; j < num_attrs; j++) {
+      char *attrib_names[10];
+      for (int j = 0; j < num_attrs; j++) {
         attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
       int error = ex_get_attr_names(exoid, EX_NODAL, 0, attrib_names);
 
       if (error == 0) {
         attrib = (float *)calloc(num_nodes, sizeof(float));
-        for (j = 0; j < num_attrs; j++) {
+        for (int j = 0; j < num_attrs; j++) {
           ex_get_one_attr(exoid, EX_NODAL, 0, j + 1, attrib);
           free(attrib_names[j]);
         }
@@ -109,20 +100,22 @@ int main(int argc, char **argv)
   /* read element block parameters */
   int *num_elem_in_block, *num_nodes_per_elem, *num_attr;
   if (num_elem_blk > 0) {
-    ids                = (int *)calloc(num_elem_blk, sizeof(int));
+    int *ids           = (int *)calloc(num_elem_blk, sizeof(int));
     num_elem_in_block  = (int *)calloc(num_elem_blk, sizeof(int));
     num_nodes_per_elem = (int *)calloc(num_elem_blk, sizeof(int));
     num_attr           = (int *)calloc(num_elem_blk, sizeof(int));
 
     ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
 
-    for (i = 0; i < num_elem_blk; i++) {
+    char *block_names[10];
+    for (int i = 0; i < num_elem_blk; i++) {
       block_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
     ex_get_names(exoid, EX_ELEM_BLOCK, block_names);
 
-    for (i = 0; i < num_elem_blk; i++) {
+    for (int i = 0; i < num_elem_blk; i++) {
+      char name[MAX_STR_LENGTH + 1];
       ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
       /* 'name' should equal 'block_names[i]' at this point */
 
@@ -135,24 +128,25 @@ int main(int argc, char **argv)
     /* read element block properties */
     int   num_props = ex_inquire_int(exoid, EX_INQ_EB_PROP);
     char *prop_names[3];
-    for (i = 0; i < num_props; i++) {
+    for (int i = 0; i < num_props; i++) {
       prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
     ex_get_prop_names(exoid, EX_ELEM_BLOCK, prop_names);
 
-    for (i = 1; i < num_props; i++) { /* Prop 1 is id; skip that here */
-      for (j = 0; j < num_elem_blk; j++) {
+    for (int i = 1; i < num_props; i++) { /* Prop 1 is id; skip that here */
+      for (int j = 0; j < num_elem_blk; j++) {
+        int prop_value;
         ex_get_prop(exoid, EX_ELEM_BLOCK, ids[j], prop_names[i], &prop_value);
       }
     }
 
-    for (i = 0; i < num_props; i++)
+    for (int i = 0; i < num_props; i++)
       free(prop_names[i]);
   }
 
   /* read element connectivity */
-  for (i = 0; i < num_elem_blk; i++) {
+  for (int i = 0; i < num_elem_blk; i++) {
     if (num_elem_in_block[i] > 0) {
       int *connect = (int *)calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
 
@@ -162,9 +156,10 @@ int main(int argc, char **argv)
   }
 
   /* read element block attributes */
-  for (i = 0; i < num_elem_blk; i++) {
+  for (int i = 0; i < num_elem_blk; i++) {
     if (num_elem_in_block[i] > 0) {
-      for (j = 0; j < num_attr[i]; j++)
+      char *attrib_names[10];
+      for (int j = 0; j < num_attr[i]; j++)
         attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
 
       attrib    = (float *)calloc(num_attr[i] * num_elem_in_block[i], sizeof(float));
@@ -174,7 +169,7 @@ int main(int argc, char **argv)
         ex_get_attr_names(exoid, EX_ELEM_BLOCK, ids[i], attrib_names);
       }
       free(attrib);
-      for (j = 0; j < num_attr[i]; j++)
+      for (int j = 0; j < num_attr[i]; j++)
         free(attrib_names[j]);
     }
   }
@@ -187,19 +182,21 @@ int main(int argc, char **argv)
 
   /* read individual node sets */
   if (num_node_sets > 0) {
-    ids = (int *)calloc(num_node_sets, sizeof(int));
+    int *ids = (int *)calloc(num_node_sets, sizeof(int));
 
     ex_get_ids(exoid, EX_NODE_SET, ids);
 
-    for (i = 0; i < num_node_sets; i++) {
+    char *nset_names[10];
+    for (int i = 0; i < num_node_sets; i++) {
       nset_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
     /* Get all nodeset names in one call */
     ex_get_names(exoid, EX_NODE_SET, nset_names);
 
-    for (i = 0; i < num_node_sets; i++) {
+    for (int i = 0; i < num_node_sets; i++) {
       /* Can also get the names one at a time... */
+      char name[MAX_STR_LENGTH + 1];
       ex_get_name(exoid, EX_NODE_SET, ids[i], name);
       /* 'name' should equal 'block_names[i]' at this point */
 
@@ -207,8 +204,8 @@ int main(int argc, char **argv)
       int num_nodes_in_set;
       ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_nodes_in_set, &num_df_in_set);
       free(nset_names[i]);
-      node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
-      dist_fact = (float *)calloc(num_nodes_in_set, sizeof(float));
+      float *node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
+      float *dist_fact = (float *)calloc(num_nodes_in_set, sizeof(float));
 
       ex_get_set(exoid, EX_NODE_SET, ids[i], node_list, 0);
 
@@ -223,14 +220,15 @@ int main(int argc, char **argv)
         int num_attrs = 0;
         ex_get_attr_param(exoid, EX_NODE_SET, ids[i], &num_attrs);
         if (num_attrs > 0) {
-          for (j = 0; j < num_attrs; j++) {
+          char *attrib_names[10];
+          for (int j = 0; j < num_attrs; j++) {
             attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
           }
 
           int error = ex_get_attr_names(exoid, EX_NODE_SET, ids[i], attrib_names);
           if (error == 0) {
             attrib = (float *)calloc(num_nodes_in_set, sizeof(float));
-            for (j = 0; j < num_attrs; j++) {
+            for (int j = 0; j < num_attrs; j++) {
               ex_get_one_attr(exoid, EX_NODE_SET, ids[i], j + 1, attrib);
               free(attrib_names[j]);
             }
@@ -244,17 +242,17 @@ int main(int argc, char **argv)
     /* read node set properties */
     num_props = ex_inquire_int(exoid, EX_INQ_NS_PROP);
 
-    for (i = 0; i < num_props; i++) {
+    for (int i = 0; i < num_props; i++) {
       prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
     int *prop_values = (int *)calloc(num_node_sets, sizeof(int));
 
     ex_get_prop_names(exoid, EX_NODE_SET, prop_names);
 
-    for (i = 0; i < num_props; i++) {
+    for (int i = 0; i < num_props; i++) {
       ex_get_prop_array(exoid, EX_NODE_SET, prop_names[i], prop_values);
     }
-    for (i = 0; i < num_props; i++)
+    for (int i = 0; i < num_props; i++)
       free(prop_names[i]);
     free(prop_values);
 
@@ -282,16 +280,18 @@ int main(int argc, char **argv)
 
   /* read individual side sets */
   if (num_side_sets > 0) {
-    ids = (int *)calloc(num_side_sets, sizeof(int));
+    int *ids = (int *)calloc(num_side_sets, sizeof(int));
 
+    char *sset_names[10];
     ex_get_ids(exoid, EX_SIDE_SET, ids);
-    for (i = 0; i < num_side_sets; i++) {
+    for (int i = 0; i < num_side_sets; i++) {
       sset_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
     ex_get_names(exoid, EX_SIDE_SET, sset_names);
 
-    for (i = 0; i < num_side_sets; i++) {
+    for (int i = 0; i < num_side_sets; i++) {
+      char name[MAX_STR_LENGTH + 1];
       ex_get_name(exoid, EX_SIDE_SET, ids[i], name);
 
       int num_sides_in_set, num_df_in_set;
@@ -323,18 +323,19 @@ int main(int argc, char **argv)
     /* read side set properties */
     num_props = ex_inquire_int(exoid, EX_INQ_SS_PROP);
 
-    for (i = 0; i < num_props; i++) {
+    for (int i = 0; i < num_props; i++) {
       prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
     ex_get_prop_names(exoid, EX_SIDE_SET, prop_names);
 
-    for (i = 0; i < num_props; i++) {
-      for (j = 0; j < num_side_sets; j++) {
+    for (int i = 0; i < num_props; i++) {
+      for (int j = 0; j < num_side_sets; j++) {
+        int prop_value;
         ex_get_prop(exoid, EX_SIDE_SET, ids[j], prop_names[i], &prop_value);
       }
     }
-    for (i = 0; i < num_props; i++)
+    for (int i = 0; i < num_props; i++)
       free(prop_names[i]);
     free(ids);
 
@@ -367,8 +368,8 @@ int main(int argc, char **argv)
   int num_qa_rec = ex_inquire_int(exoid, EX_INQ_QA);
 
   char *qa_record[2][4];
-  for (i = 0; i < num_qa_rec; i++) {
-    for (j = 0; j < 4; j++) {
+  for (int i = 0; i < num_qa_rec; i++) {
+    for (int j = 0; j < 4; j++) {
       qa_record[i][j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
   }
@@ -378,13 +379,13 @@ int main(int argc, char **argv)
   /* read information records */
   int   num_info = ex_inquire_int(exoid, EX_INQ_INFO);
   char *info[3];
-  for (i = 0; i < num_info; i++) {
+  for (int i = 0; i < num_info; i++) {
     info[i] = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char));
   }
 
   ex_get_info(exoid, info);
 
-  for (i = 0; i < num_info; i++) {
+  for (int i = 0; i < num_info; i++) {
     free(info[i]);
   }
 
@@ -393,13 +394,13 @@ int main(int argc, char **argv)
   ex_get_variable_param(exoid, EX_GLOBAL, &num_glo_vars);
 
   char *var_names[3];
-  for (i = 0; i < num_glo_vars; i++) {
+  for (int i = 0; i < num_glo_vars; i++) {
     var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
   }
 
   ex_get_variable_names(exoid, EX_GLOBAL, num_glo_vars, var_names);
 
-  for (i = 0; i < num_glo_vars; i++) {
+  for (int i = 0; i < num_glo_vars; i++) {
     free(var_names[i]);
   }
 
@@ -408,12 +409,12 @@ int main(int argc, char **argv)
   if (num_nodes > 0) {
     ex_get_variable_param(exoid, EX_NODAL, &num_nod_vars);
 
-    for (i = 0; i < num_nod_vars; i++) {
+    for (int i = 0; i < num_nod_vars; i++) {
       var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
     ex_get_variable_names(exoid, EX_NODAL, num_nod_vars, var_names);
-    for (i = 0; i < num_nod_vars; i++) {
+    for (int i = 0; i < num_nod_vars; i++) {
       free(var_names[i]);
     }
   }
@@ -423,12 +424,12 @@ int main(int argc, char **argv)
   if (num_elem > 0) {
     ex_get_variable_param(exoid, EX_ELEM_BLOCK, &num_ele_vars);
 
-    for (i = 0; i < num_ele_vars; i++) {
+    for (int i = 0; i < num_ele_vars; i++) {
       var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
     ex_get_variable_names(exoid, EX_ELEM_BLOCK, num_ele_vars, var_names);
-    for (i = 0; i < num_ele_vars; i++) {
+    for (int i = 0; i < num_ele_vars; i++) {
       free(var_names[i]);
     }
 
@@ -447,13 +448,13 @@ int main(int argc, char **argv)
     ex_get_variable_param(exoid, EX_NODE_SET, &num_nset_vars);
 
     if (num_nset_vars > 0) {
-      for (i = 0; i < num_nset_vars; i++) {
+      for (int i = 0; i < num_nset_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
 
       ex_get_variable_names(exoid, EX_NODE_SET, num_nset_vars, var_names);
 
-      for (i = 0; i < num_nset_vars; i++) {
+      for (int i = 0; i < num_nset_vars; i++) {
         free(var_names[i]);
       }
 
@@ -473,13 +474,13 @@ int main(int argc, char **argv)
     ex_get_variable_param(exoid, EX_SIDE_SET, &num_sset_vars);
 
     if (num_sset_vars > 0) {
-      for (i = 0; i < num_sset_vars; i++) {
+      for (int i = 0; i < num_sset_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
 
       ex_get_variable_names(exoid, EX_SIDE_SET, num_sset_vars, var_names);
 
-      for (i = 0; i < num_sset_vars; i++) {
+      for (int i = 0; i < num_sset_vars; i++) {
         free(var_names[i]);
       }
 
@@ -541,11 +542,11 @@ int main(int argc, char **argv)
 
   /* read an element variable at one time step */
   if (num_elem_blk > 0) {
-    ids = (int *)calloc(num_elem_blk, sizeof(int));
+    int *ids = (int *)calloc(num_elem_blk, sizeof(int));
 
     ex_get_elem_blk_ids(exoid, ids);
 
-    for (i = 0; i < num_elem_blk; i++) {
+    for (int i = 0; i < num_elem_blk; i++) {
       if (num_elem_in_block[i] > 0) {
         var_values = (float *)calloc(num_elem_in_block[i], sizeof(float));
 
@@ -570,7 +571,7 @@ int main(int argc, char **argv)
 
   /* read a sideset variable at one time step */
   if (num_sset_vars > 0) {
-    for (i = 0; i < num_side_sets; i++) {
+    for (int i = 0; i < num_side_sets; i++) {
       var_values = (float *)calloc(ss_specs.num_entries_per_set[i], sizeof(float));
 
       ex_get_var(exoid, time_step, EX_SIDE_SET, var_index, ss_specs.sets_ids[i],
@@ -582,7 +583,7 @@ int main(int argc, char **argv)
 
   /* read a nodeset variable at one time step */
   if (num_nset_vars > 0) {
-    for (i = 0; i < num_node_sets; i++) {
+    for (int i = 0; i < num_node_sets; i++) {
       var_values = (float *)calloc(ns_specs.num_entries_per_set[i], sizeof(float));
 
       ex_get_var(exoid, time_step, EX_NODE_SET, var_index, ns_specs.sets_ids[i],

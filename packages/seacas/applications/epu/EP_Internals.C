@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-, 20212021 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -21,7 +21,8 @@
 #include <string> // for string, basic_string
 #include <vector> // for vector
 
-#ifdef _WIN32
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
 #include <Shlwapi.h>
 #endif
 
@@ -37,24 +38,24 @@ namespace Excn {
   template int Internals<int>::write_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
                                                const std::vector<NodeSet<int>> &nodesets,
                                                const std::vector<SideSet<int>> &sidesets,
-                                               const CommunicationMetaData &    comm);
+                                               const CommunicationMetaData     &comm);
 
   template bool Internals<int>::check_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
                                                 const std::vector<NodeSet<int>> &nodesets,
                                                 const std::vector<SideSet<int>> &sidesets,
-                                                const CommunicationMetaData &    comm);
+                                                const CommunicationMetaData     &comm);
 
-  template int Internals<int64_t>::write_meta_data(const Mesh &                         mesh,
-                                                   const std::vector<Block> &           blocks,
+  template int Internals<int64_t>::write_meta_data(const Mesh                          &mesh,
+                                                   const std::vector<Block>            &blocks,
                                                    const std::vector<NodeSet<int64_t>> &nodesets,
                                                    const std::vector<SideSet<int64_t>> &sidesets,
-                                                   const CommunicationMetaData &        comm);
+                                                   const CommunicationMetaData         &comm);
 
-  template bool Internals<int64_t>::check_meta_data(const Mesh &                         mesh,
-                                                    const std::vector<Block> &           blocks,
+  template bool Internals<int64_t>::check_meta_data(const Mesh                          &mesh,
+                                                    const std::vector<Block>            &blocks,
                                                     const std::vector<NodeSet<int64_t>> &nodesets,
                                                     const std::vector<SideSet<int64_t>> &sidesets,
-                                                    const CommunicationMetaData &        comm);
+                                                    const CommunicationMetaData         &comm);
 } // namespace Excn
 
 namespace {
@@ -83,7 +84,8 @@ namespace {
 
 bool Excn::is_path_absolute(const std::string &path)
 {
-#ifdef _WIN32
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
   return path[0] == '\\' || path[1] == ':';
 #else
   return path[0] == '/';
@@ -124,7 +126,7 @@ template <typename INT>
 int Excn::Internals<INT>::write_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
                                           const std::vector<NodeSet<INT>> &nodesets,
                                           const std::vector<SideSet<INT>> &sidesets,
-                                          const CommunicationMetaData &    comm)
+                                          const CommunicationMetaData     &comm)
 {
   SMART_ASSERT((int)blocks.size() == mesh.blockCount);
   SMART_ASSERT((int)nodesets.size() == mesh.nodesetCount);
@@ -1030,7 +1032,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
       // create distribution factor list variable for side set
       dims[0] = dimid;
       status  = nc_def_var(exodusFilePtr, VAR_FACT_SS(cur_num_side_sets + 1),
-                          nc_flt_code(exodusFilePtr), 1, dims, &varid);
+                           nc_flt_code(exodusFilePtr), 1, dims, &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {

@@ -282,7 +282,7 @@ namespace {
 
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    const Ioss::NodeBlockContainer &         nbs = region.get_node_blocks();
+    const Ioss::NodeBlockContainer          &nbs = region.get_node_blocks();
     Ioss::NodeBlockContainer::const_iterator i   = nbs.begin();
     while (i != nbs.end()) {
       const std::string &name = (*i)->name();
@@ -307,7 +307,7 @@ namespace {
 
   void transfer_elementblock(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    const Ioss::ElementBlockContainer &         ebs            = region.get_element_blocks();
+    const Ioss::ElementBlockContainer          &ebs            = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i              = ebs.begin();
     size_t                                      total_elements = 0;
     while (i != ebs.end()) {
