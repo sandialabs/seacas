@@ -2605,16 +2605,15 @@ namespace {
   void put_global_info(const Mesh &global)
   {
     // Write out Global info
-
     if (rank == 0) {
       fmt::print(" Title: {}\n\n"
-                 " Number of coordinates per node       = {:15L}\n"
-                 " Number of nodes                      = {:15L}\n"
-                 " Number of elements                   = {:15L}\n"
-                 " Number of element blocks             = {:15L}\n"
-                 " Number of assemblies                 = {:15L}\n\n"
-                 " Number of nodal point sets           = {:15L}\n"
-                 " Number of element side sets          = {:15L}\n\n",
+                 " Number of coordinates per node  = {:15L}\n"
+                 " Number of nodes                 = {:15L}\n"
+                 " Number of elements              = {:15L}\n"
+                 " Number of element blocks        = {:15L}\n"
+                 " Number of assemblies            = {:15L}\n\n"
+                 " Number of nodal point sets      = {:15L}\n"
+                 " Number of element side sets     = {:15L}\n\n",
                  global.title, global.dimensionality, global.nodeCount, global.elementCount,
                  global.count(Excn::ObjectType::EBLK), global.count(Excn::ObjectType::ASSM),
                  global.count(Excn::ObjectType::NSET), global.count(Excn::ObjectType::SSET));
