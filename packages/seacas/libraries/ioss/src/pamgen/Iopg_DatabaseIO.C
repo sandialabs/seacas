@@ -537,7 +537,7 @@ namespace Iopg {
 
       get_region()->add(block);
       if (block_name != alias) {
-        get_region()->add_alias(block_name, alias);
+        get_region()->add_alias(block_name, alias, block->type());
       }
     }
     assert(elementCount == offset);
@@ -582,8 +582,10 @@ namespace Iopg {
         nodeset->property_add(Ioss::Property("guid", util().generate_guid(id)));
         get_region()->add(nodeset);
 
-        get_region()->add_alias(nodeset_name, Ioss::Utils::encode_entity_name("nodelist", id));
-        get_region()->add_alias(nodeset_name, Ioss::Utils::encode_entity_name("nodeset", id));
+        get_region()->add_alias(nodeset_name, Ioss::Utils::encode_entity_name("nodelist", id),
+				Ioss::NODESET);
+        get_region()->add_alias(nodeset_name, Ioss::Utils::encode_entity_name("nodeset", id),
+				Ioss::NODESET);
       }
     }
   }
@@ -699,8 +701,10 @@ namespace Iopg {
         side_set->property_add(Ioss::Property("id", id));
         side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
 
-        get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("surface", id));
-        get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("sideset", id));
+        get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("surface", id),
+				Ioss::SIDESET);
+        get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("sideset", id),
+				Ioss::SIDESET);
 
         //        split_type = SPLIT_BY_ELEMENT_BLOCK;
         //        split_type = SPLIT_BY_TOPOLOGIES;
