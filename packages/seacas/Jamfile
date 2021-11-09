@@ -277,6 +277,7 @@ install install-user-lib
     iogs
     ioinit
     ioss
+    iotm
     iotr
     iovs
   : <location>$(install-root)/seacas/lib
@@ -447,6 +448,7 @@ lib ioinit
     iohb
     iogn
     iogs
+    iotm
     iotr
     iovs
     /mpi//mpi
@@ -492,6 +494,23 @@ lib iotr
     # Any parameters within this 'ifuserbuild' block apply to user
     # builds only and will not be present for developer builds.
         <file>$(seacas-root)/lib/libiotr.a
+    ]
+  ;
+
+lib iotm
+  :
+    [ ifdevbuild
+    # Any parameters within this 'ifdevbuild' block apply to development
+    # builds only and will not be present for user builds.
+        [ glob $(seacas-root)/libraries/ioss/src/text_mesh/*.C ]
+    ]
+    ioss
+    /mpi//mpi
+  :
+    [ ifuserbuild
+    # Any parameters within this 'ifuserbuild' block apply to user
+    # builds only and will not be present for developer builds.
+        <file>$(seacas-root)/lib/libiotm.a
     ]
   ;
 
