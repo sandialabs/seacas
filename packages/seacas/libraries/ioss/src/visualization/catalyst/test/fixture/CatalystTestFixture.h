@@ -39,6 +39,8 @@ public:
   Json::Value getDefaultPhactoriJSON();
 
   Json::Value getDefaultCameraJSON();
+  Json::Value getDefaultImageSetJSON();
+  Json::Value getDefaultImageSetWithCameraJSON();
   Json::Value getDefaultCameraParallelProjectionJSON();
 
 private:

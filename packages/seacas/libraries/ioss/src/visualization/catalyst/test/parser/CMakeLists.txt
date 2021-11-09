@@ -14,3 +14,35 @@ TARGET_LINK_LIBRARIES(CameraInvalidTests
 
 addCatalystTest("Parser_Camera_Invalid" "1"
     ${CMAKE_CURRENT_BINARY_DIR}/CameraInvalidTests "exclude:[notWorking]")
+
+ADD_EXECUTABLE(ImageSetCameraValidTests
+               ImageSetCameraValidTests.cxx)
+TARGET_LINK_LIBRARIES(ImageSetCameraValidTests
+                      catalystiosstest)
+
+addCatalystTest("Parser_Imageset_Camera_Valid" "1"
+    ${CMAKE_CURRENT_BINARY_DIR}/ImageSetCameraValidTests "exclude:[notWorking]")
+
+ADD_EXECUTABLE(ImageSetValidTests
+               ImageSetValidTests.cxx)
+TARGET_LINK_LIBRARIES(ImageSetValidTests
+                      catalystiosstest)
+
+addCatalystTest("Parser_Imageset_Valid" "1"
+    ${CMAKE_CURRENT_BINARY_DIR}/ImageSetValidTests "exclude:[notWorking]")
+
+ADD_EXECUTABLE(ImageSetInvalidTests
+               ImageSetInvalidTests.cxx)
+TARGET_LINK_LIBRARIES(ImageSetInvalidTests
+                      catalystiosstest)
+
+addCatalystTest("Parser_Imageset_Invalid" "1"
+    ${CMAKE_CURRENT_BINARY_DIR}/ImageSetInvalidTests "exclude:[notWorking]")
+
+ADD_EXECUTABLE(ImageSetOperationValidTests
+               ImageSetOperationValidTests.cxx)
+TARGET_LINK_LIBRARIES(ImageSetOperationValidTests
+                      catalystiosstest)
+
+addCatalystTest("Parser_Imageset_Operation_Valid" "1"
+    ${CMAKE_CURRENT_BINARY_DIR}/ImageSetOperationValidTests "exclude:[notWorking]")

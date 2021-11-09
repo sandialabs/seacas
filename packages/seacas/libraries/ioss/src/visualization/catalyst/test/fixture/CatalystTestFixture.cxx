@@ -116,6 +116,31 @@ Json::Value CatalystTestFixture::getDefaultCameraJSON()
   return dj;
 }
 
+Json::Value CatalystTestFixture::getDefaultImageSetJSON()
+{
+  Json::Value imageSet;
+  imageSet["image size"][0] = 800;
+  imageSet["image size"][1] = 450;
+
+  Json::Value dj                       = getDefaultPhactoriJSON();
+  dj["imageset blocks"]["fooImageset"] = imageSet;
+  return dj;
+}
+
+Json::Value CatalystTestFixture::getDefaultImageSetWithCameraJSON()
+{
+  Json::Value dj = getDefaultImageSetJSON();
+  Json::Value camera;
+  camera["camera type"]                   = "camera";
+  camera["look direction"][0]             = -1.0;
+  camera["look direction"][1]             = -1.0;
+  camera["look direction"][2]             = -1.0;
+  dj["camera blocks"]["singletestcamera"] = camera;
+  Json::Value &imageset                   = dj["imageset blocks"]["fooImageset"];
+  imageset["camera"]                      = "singletestcamera";
+  return dj;
+}
+
 Json::Value CatalystTestFixture::getDefaultCameraParallelProjectionJSON()
 {
   Json::Value camParallel;
