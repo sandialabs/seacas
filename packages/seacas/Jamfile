@@ -1508,6 +1508,7 @@ exe exo_format
 exe exo2mat
   :
   $(seacas-root)/applications/exo2mat/exo2mat.C
+    suplib_cpp
     suplib_c
     exodus
     /tpl/matio//matio
