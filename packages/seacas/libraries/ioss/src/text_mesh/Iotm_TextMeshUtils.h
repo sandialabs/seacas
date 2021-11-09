@@ -246,10 +246,10 @@ struct TextMeshData {
     }
   }
 
-  const std::set<EntityId> nodes_on_proc(int proc) const
+  const std::set<EntityId>& nodes_on_proc(int proc) const
   {
     auto it = m_nodesOnProc.find(proc);
-    return it != m_nodesOnProc.end() ? it->second : std::set<EntityId>();
+    return it != m_nodesOnProc.end() ? it->second : m_emptyNodes;
   }
 
   unsigned num_nodes_on_proc(int proc) const
@@ -258,10 +258,10 @@ struct TextMeshData {
     return it != m_nodesOnProc.end() ? it->second.size() : 0;
   }
 
-  const std::set<int> procs_for_node(const EntityId nodeId) const
+  const std::set<int>& procs_for_node(const EntityId nodeId) const
   {
     auto it = m_procsForNode.find(nodeId);
-    return it != m_procsForNode.end() ? it->second : std::set<int>();
+    return it != m_procsForNode.end() ? it->second : m_emptyProcs;
   }
 
  private:
@@ -273,6 +273,9 @@ struct TextMeshData {
 
   std::unordered_map<EntityId, std::set<int>> m_procsForNode;
   std::unordered_map<int, std::set<EntityId>> m_nodesOnProc;
+
+  std::set<int>      m_emptyProcs;
+  std::set<EntityId> m_emptyNodes;
 };
 
 class TextMeshLexer

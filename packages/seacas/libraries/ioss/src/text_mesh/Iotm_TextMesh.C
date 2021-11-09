@@ -41,31 +41,26 @@ void error_handler(const std::ostringstream& message)
 
 TextMesh::TextMesh(int proc_count, int my_proc) : m_processorCount(proc_count), m_myProcessor(my_proc)
 {
+  m_errorHandler = [](const std::ostringstream &errmsg) { error_handler(errmsg); };
   initialize();
 }
 
 TextMesh::TextMesh(const std::string &parameters, int proc_count, int my_proc)
     : m_processorCount(proc_count), m_myProcessor(my_proc)
 {
-  // Possible that the 'parameters' has the working directory path
-  // prepended to the parameter list.  Strip off everything in front
-  // of the last '/' (if any)...
-  auto params = Ioss::tokenize(parameters, "/");
+  m_errorHandler = [](const std::ostringstream &errmsg) { error_handler(errmsg); };
 
-  if (!params.empty()) {
-    auto groups = Ioss::tokenize(params.back(), "|+");
+  if (!parameters.empty()) {
+    auto groups = Ioss::tokenize(parameters, "|+");
     parse_options(groups);
 
-    auto errorHandler = [] (const std::ostringstream& errmsg) {
-                               error_handler(errmsg);
-                             };
-
     TextMeshParser parser(m_dimension);
-    parser.set_error_handler(errorHandler);
+    parser.set_error_handler(m_errorHandler);
     m_data = parser.parse(groups[0]);
 
-    m_coordinates.set_error_handler(errorHandler);
+    m_coordinates.set_error_handler(m_errorHandler);
     m_coordinates.set_coordinate_data(m_data, m_rawCoordinates);
+    m_rawCoordinates.clear();
   };
 
   initialize();
@@ -73,6 +68,7 @@ TextMesh::TextMesh(const std::string &parameters, int proc_count, int my_proc)
 
 TextMesh::TextMesh()
 {
+  m_errorHandler = [](const std::ostringstream &errmsg) { error_handler(errmsg); };
   initialize();
 }
 
@@ -83,7 +79,6 @@ unsigned TextMesh::spatial_dimension() const
 
 void TextMesh::initialize()
 {
-
   build_part_to_topology_map();
   build_block_partition_map();
   build_element_connectivity_map();
@@ -98,13 +93,17 @@ void TextMesh::initialize()
 
 void TextMesh::parse_coordinates_option(const std::vector<std::string> &option)
 {
+  ThrowRequireMsg(!m_coordinatesParsed, "Coordinates have already been parsed! Check syntax.");
+ 
   if (option.size() > 1) {
-    auto tokens = Ioss::tokenize(option[1], ",");
+    const auto& tokens = Ioss::tokenize(option[1], ",");
     m_rawCoordinates.reserve(tokens.size());
-    for (auto token : tokens) {
+    for (const auto& token : tokens) {
       double coord = std::stod(token);
       m_rawCoordinates.push_back(coord);
     }
+
+    m_coordinatesParsed = true;
   }
 }
 
@@ -222,7 +221,7 @@ void TextMesh::raw_node_map(std::vector<INT> &map) const
   map.resize(node_count_proc());
   INT offset = 0;
 
-  auto nodeIds = m_data.nodes_on_proc(m_myProcessor);
+  const auto& nodeIds = m_data.nodes_on_proc(m_myProcessor);
   for (auto id : nodeIds) {
     map[offset++] = id;
   }
@@ -241,7 +240,7 @@ void TextMesh::node_map(Ioss::IntVector &map) const
 int64_t TextMesh::communication_node_count_proc() const
 {
   int64_t count = 0;
-  auto nodeIds = m_data.nodes_on_proc(m_myProcessor);
+  const auto& nodeIds = m_data.nodes_on_proc(m_myProcessor);
 
   for (auto id : nodeIds) {
     size_t numProcsForNode = m_data.procs_for_node(id).size();
@@ -253,13 +252,13 @@ int64_t TextMesh::communication_node_count_proc() const
 
 void TextMesh::owning_processor(int *owner, int64_t num_node)
 {
-  auto nodeIds = m_data.nodes_on_proc(m_myProcessor);
+  const auto& nodeIds = m_data.nodes_on_proc(m_myProcessor);
   auto iter = nodeIds.begin();
 
   ThrowRequireMsg(num_node == (int64_t) nodeIds.size(), "Unmatched data sizes in TextMesh::owning_processor()");
 
   for (int64_t i = 0; i < num_node; i++) {
-    auto procs = m_data.procs_for_node(*iter);
+    const auto& procs = m_data.procs_for_node(*iter);
     owner[i] = *procs.begin();
     iter++;
   }
@@ -275,7 +274,7 @@ public:
   void fill_map_from_data(const TextMeshData& data)
   {
     m_fillIndex = 0;
-    auto nodeIds = data.nodes_on_proc(m_myProcessor);
+    const auto& nodeIds = data.nodes_on_proc(m_myProcessor);
 
     for (const auto &id : nodeIds) {
       fill_map_for_node(id, data);
@@ -302,7 +301,7 @@ private:
 
   void fill_map_for_node(int64_t id, const TextMeshData& data)
   {
-    std::set<int> procs = data.procs_for_node(id);
+    const std::set<int>& procs = data.procs_for_node(id);
 
     for (int proc : procs) {
       if (proc != m_myProcessor) {
@@ -383,10 +382,11 @@ void TextMesh::coordinates(std::vector<double> &coord) const
 
 void TextMesh::coordinates(double *coord) const
 {
-  if (m_rawCoordinates.empty()) return;
+  if (!m_coordinatesParsed)
+      return;
 
   /* create global coordinates */
-  auto nodes = m_data.nodes_on_proc(m_myProcessor);
+  const auto& nodes = m_data.nodes_on_proc(m_myProcessor);
   unsigned offset = 0;
 
   for (auto node : nodes) {
@@ -399,7 +399,8 @@ void TextMesh::coordinates(double *coord) const
 
 void TextMesh::coordinates(std::vector<double> &x, std::vector<double> &y, std::vector<double> &z) const
 {
-  if (m_rawCoordinates.empty()) return;
+  if (!m_coordinatesParsed)
+    return;
 
   /* create global coordinates */
   int64_t count = node_count_proc();
@@ -407,7 +408,7 @@ void TextMesh::coordinates(std::vector<double> &x, std::vector<double> &y, std::
   y.reserve(count);
   z.reserve(count);
 
-  auto nodes = m_data.nodes_on_proc(m_myProcessor);
+  const auto& nodes = m_data.nodes_on_proc(m_myProcessor);
 
   for (auto node : nodes) {
     const std::vector<double> &coords = m_coordinates[node];
@@ -428,7 +429,7 @@ void TextMesh::coordinates(int component, std::vector<double> &xyz) const
 
 void TextMesh::coordinates(int component, double *xyz) const
 {
-  auto nodes = m_data.nodes_on_proc(m_myProcessor);
+  const auto& nodes = m_data.nodes_on_proc(m_myProcessor);
   unsigned offset = 0;
 
   if (component == 1) {

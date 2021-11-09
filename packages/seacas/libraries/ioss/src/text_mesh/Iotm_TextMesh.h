@@ -10,13 +10,13 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityType.h>  // for EntityType
 
-#include <array>
 #include <cstddef>  // for size_t
 #include <cstdint>  // for int64_t
 #include <map>      // for map, etc
 #include <string>   // for string
 #include <utility>  // for pair
 #include <vector>   // for vector
+#include <unordered_map>
 
 #include "Ioss_ElementTopology.h"
 #include "Ioss_StandardElementTypes.h"
@@ -38,31 +38,30 @@ struct TopologyMapEntry
   TopologyMapEntry()
   : id(Ioss::ElementTopology::get_unique_id(Ioss::Unknown::name))
   , topology(Ioss::ElementTopology::factory(Ioss::Unknown::name))
-  {  
-    validSpatialDimensions[0] = false;
-    validSpatialDimensions[1] = false;
-    validSpatialDimensions[2] = false;
-    validSpatialDimensions[3] = false;
+  {
+    set_valid_spatial_dimensions({false,false,false,false});
   }
 
   TopologyMapEntry(const std::string& name, const DimensionArray& validSpatialDimensions_)
   : id(Ioss::ElementTopology::get_unique_id(name))
   , topology(Ioss::ElementTopology::factory(name))
-  {  
-    validSpatialDimensions[0] = validSpatialDimensions_[0];
-    validSpatialDimensions[1] = validSpatialDimensions_[1];
-    validSpatialDimensions[2] = validSpatialDimensions_[2];
-    validSpatialDimensions[3] = validSpatialDimensions_[3];
+  {
+    set_valid_spatial_dimensions(validSpatialDimensions_);
   }
 
   TopologyMapEntry(const TopologyMapEntry& topo)
   : id(topo.id)
   , topology(topo.topology)
-  { 
-    validSpatialDimensions[0] = topo.validSpatialDimensions[0];
-    validSpatialDimensions[1] = topo.validSpatialDimensions[1];
-    validSpatialDimensions[2] = topo.validSpatialDimensions[2];
-    validSpatialDimensions[3] = topo.validSpatialDimensions[3];
+  {
+    set_valid_spatial_dimensions(topo.validSpatialDimensions);
+  }
+
+  void set_valid_spatial_dimensions(const DimensionArray &validSpatialDimensions_)
+  {
+    validSpatialDimensions[0] = validSpatialDimensions_[0];
+    validSpatialDimensions[1] = validSpatialDimensions_[1];
+    validSpatialDimensions[2] = validSpatialDimensions_[2];
+    validSpatialDimensions[3] = validSpatialDimensions_[3];
   }
 
   bool defined_on_spatial_dimension(const unsigned spatialDim) const
@@ -81,9 +80,17 @@ struct TopologyMapEntry
     return topology->number_nodes();
   }
 
+  bool equivalent_valid_spatial_dimensions(const DimensionArray &validSpatialDimensions_) const
+  {
+    return validSpatialDimensions[0] == validSpatialDimensions_[0] &&
+           validSpatialDimensions[1] == validSpatialDimensions_[1] &&
+           validSpatialDimensions[2] == validSpatialDimensions_[2] &&
+           validSpatialDimensions[3] == validSpatialDimensions_[3];
+  }
+
   bool operator==(const TopologyMapEntry &rhs) const
   {
-    return id == rhs.id && topology == rhs.topology && validSpatialDimensions == rhs.validSpatialDimensions;
+    return id == rhs.id && topology == rhs.topology && equivalent_valid_spatial_dimensions(rhs.validSpatialDimensions);
   }
 
   bool operator!=(const TopologyMapEntry &rhs) const
@@ -157,7 +164,6 @@ using TextMeshData = text_mesh::TextMeshData<int64_t, TopologyMapEntry>;
 using ElementData = text_mesh::ElementData<int64_t, TopologyMapEntry>;
 using Coordinates = text_mesh::Coordinates<int64_t, TopologyMapEntry>;
 using TextMeshParser = text_mesh::TextMeshParser<int64_t, IossTopologyMapping>;
-using MapVector = std::vector<int64_t>;
 
 inline
 std::ostream & operator<<(std::ostream &out, Topology t)
@@ -235,14 +241,14 @@ class TextMesh
   virtual std::pair<std::string, int> topology_type(int64_t block_number) const;
 
   virtual int64_t communication_node_count_proc() const;
-  virtual void node_communication_map(MapVector &map, std::vector<int> &proc);
+  virtual void node_communication_map(Ioss::Int64Vector &map, std::vector<int> &proc);
   virtual void owning_processor(int *owner, int64_t num_node);
   /**
    * Fill the passed in 'map' argument with the node map
    * "map[local_position] = global_id" for the nodes on this
    * processor.
    */
-  virtual void node_map(MapVector &map) const;
+  virtual void node_map(Ioss::Int64Vector &map) const;
   virtual void node_map(Ioss::IntVector &map) const;
 
   /**
@@ -250,7 +256,7 @@ class TextMesh
    * "map[local_position] = global_id" for the elements on this
    * processor in block "block_number".
    */
-  virtual void element_map(int64_t block_number, MapVector &map) const;
+  virtual void element_map(int64_t block_number, Ioss::Int64Vector &map) const;
   virtual void element_map(int64_t block_number, Ioss::IntVector &map) const;
 
   /**
@@ -258,7 +264,7 @@ class TextMesh
    * "map[local_position] = global_id" for all elements on this
    * processor
    */
-  virtual void element_map(MapVector &map) const;
+  virtual void element_map(Ioss::Int64Vector &map) const;
   virtual void element_map(Ioss::IntVector &map) const;
 
   /**
@@ -351,10 +357,13 @@ class TextMesh
   size_t m_timestepCount{0};
   std::map<Ioss::EntityType, size_t> m_variableCount;
 
+  bool                m_coordinatesParsed{false};
   std::vector<double> m_rawCoordinates;
 
   TextMeshData m_data;
   Coordinates m_coordinates;
+
+  text_mesh::ErrorHandler m_errorHandler;
 
   std::unordered_map<std::string, Topology> m_partToTopology;
 
