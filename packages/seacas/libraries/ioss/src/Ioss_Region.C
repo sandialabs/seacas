@@ -1773,7 +1773,7 @@ namespace Ioss {
       entity = bl;
       nfound++;
     }
-    if (nfound > 0) {
+    if (nfound > 1) {
       std::string        filename = get_database()->get_filename();
       std::ostringstream errmsg;
       fmt::print(
