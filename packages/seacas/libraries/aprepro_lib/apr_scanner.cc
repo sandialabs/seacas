@@ -14,8 +14,8 @@
 /* %ok-for-header */
 
 #define FLEX_SCANNER
-#define YY_FLEX_MAJOR_VERSION 2
-#define YY_FLEX_MINOR_VERSION 5
+#define YY_FLEX_MAJOR_VERSION    2
+#define YY_FLEX_MINOR_VERSION    5
 #define YY_FLEX_SUBMINOR_VERSION 39
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
@@ -187,7 +187,7 @@ typedef unsigned int       flex_uint32_t;
  * compatibility.
  */
 #define YY_START (((yy_start)-1) / 2)
-#define YYSTATE YY_START
+#define YYSTATE  YY_START
 
 /* Action number for EOF rule of a given start state. */
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
@@ -226,8 +226,8 @@ extern yy_size_t yyleng;
 /* %endif */
 
 #define EOB_ACT_CONTINUE_SCAN 0
-#define EOB_ACT_END_OF_FILE 1
-#define EOB_ACT_LAST_MATCH 2
+#define EOB_ACT_END_OF_FILE   1
+#define EOB_ACT_LAST_MATCH    2
 
 #define YY_LESS_LINENO(n)
 #define YY_LINENO_REWIND_TO(ptr)
@@ -298,7 +298,7 @@ struct yy_buffer_state
 
   int yy_buffer_status;
 
-#define YY_BUFFER_NEW 0
+#define YY_BUFFER_NEW    0
 #define YY_BUFFER_NORMAL 1
   /* When an EOF's been seen but there's still some text to process
    * then we mark the buffer as YY_EOF_PENDING, to indicate that we
@@ -401,7 +401,7 @@ typedef unsigned char YY_CHAR;
   (yy_c_buf_p) = yy_cp;
 
 /* %% [4.0] data tables for the DFA and the user's section 1 definitions go here */
-#define YY_NUM_RULES 102
+#define YY_NUM_RULES     102
 #define YY_END_OF_BUFFER 103
 /* This struct is not used in this scanner,
    but its presence is necessary. */
@@ -977,8 +977,8 @@ static yyconst flex_int16_t yy_rule_linenum[102] = {
 /* The intent behind this definition is that it'll catch
  * any uses of REJECT which flex missed.
  */
-#define REJECT reject_used_but_not_detected
-#define yymore() yymore_used_but_not_detected
+#define REJECT      reject_used_but_not_detected
+#define yymore()    yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 /* -*- Mode: c++ -*- */
@@ -1044,7 +1044,7 @@ bool   switch_skip_to_endcase      = false;
 double switch_condition            = 0.0; // Value specified in "switch(condition)"
 
 // For substitution history
-ssize_t     curr_index = 0;
+size_t      curr_index = 0;
 std::string history_string;
 size_t      hist_start = 0;
 
@@ -1057,16 +1057,16 @@ size_t      hist_start = 0;
  * versions. */
 /* enables the use of start condition stacks */
 
-#define INITIAL 0
-#define PARSING 1
-#define GET_FILENAME 2
-#define IF_SKIP 3
-#define GET_VAR 4
-#define VERBATIM 5
+#define INITIAL       0
+#define PARSING       1
+#define GET_FILENAME  2
+#define IF_SKIP       3
+#define GET_VAR       4
+#define VERBATIM      5
 #define IF_WHILE_SKIP 6
-#define GET_LOOP_VAR 7
-#define LOOP 8
-#define LOOP_SKIP 9
+#define GET_LOOP_VAR  7
+#define LOOP          8
+#define LOOP_SKIP     9
 #define END_CASE_SKIP 10
 
 #ifndef YY_NO_UNISTD_H
