@@ -41,8 +41,9 @@
  */
 
 #include "fortranc.h"
-#if !defined(WIN32) && !defined(__WIN32__) && !defined(_WIN32) && !defined(_MSC_VER) &&            \
-    !defined(__MINGW32__) && !defined(_WIN64) && !defined(__MINGW64__)
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__) ||                             \
+    defined(__NO_CYGWIN_OPTION__)
 #define NOMINMAX
 #include <io.h>
 #include <sys/ioctl.h>
