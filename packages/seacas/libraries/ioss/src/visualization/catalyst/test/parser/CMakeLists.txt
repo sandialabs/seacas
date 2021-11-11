@@ -46,3 +46,11 @@ TARGET_LINK_LIBRARIES(ImageSetOperationValidTests
 
 addCatalystTest("Parser_Imageset_Operation_Valid" "1"
     ${CMAKE_CURRENT_BINARY_DIR}/ImageSetOperationValidTests "exclude:[notWorking]")
+
+ADD_EXECUTABLE(ImageSetRepresentationValidTests
+               ImageSetRepresentationValidTests.cxx)
+TARGET_LINK_LIBRARIES(ImageSetRepresentationValidTests
+                      catalystiosstest)
+
+addCatalystTest("Parser_Imageset_Representation_Valid" "1"
+    ${CMAKE_CURRENT_BINARY_DIR}/ImageSetRepresentationValidTests "exclude:[notWorking]")
