@@ -372,7 +372,7 @@ namespace Iotm {
       using Topology = typename TopologyMapping::Topology;
 
     public:
-      TextMeshParser(unsigned dim) : m_lineNumber(0)
+      explicit TextMeshParser(unsigned dim)
       {
         set_error_handler([](const std::ostringstream &errmsg) { default_error_handler(errmsg); });
         m_data.spatialDim = dim;
@@ -543,7 +543,7 @@ namespace Iotm {
         }
       }
 
-      unsigned                         m_lineNumber;
+      unsigned                         m_lineNumber{0};
       TextMeshData<EntityId, Topology> m_data;
       TextMeshLexer                    m_lexer;
       TopologyMapping                  m_topologyMapping;

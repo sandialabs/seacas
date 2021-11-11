@@ -346,8 +346,8 @@ namespace Iotm {
     bool                m_coordinatesParsed{false};
     std::vector<double> m_rawCoordinates;
 
-    TextMeshData m_data;
-    Coordinates  m_coordinates;
+    TextMeshData m_data{};
+    Coordinates  m_coordinates{};
 
     text_mesh::ErrorHandler m_errorHandler;
 
