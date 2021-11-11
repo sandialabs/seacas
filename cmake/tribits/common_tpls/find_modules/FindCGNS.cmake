@@ -3,7 +3,7 @@
 # ************************************************************************
 #
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016 Sandia Corporation
+#                    Copyright 2016, 2021 Sandia Corporation
 #
 # Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 # the U.S. Government retains certain rights in this software.
@@ -250,9 +250,10 @@ if (EXISTS ${cgns_types_h})
   file(STRINGS "${cgns_types_h}" cg_scoping_string REGEX "^#define CG_BUILD_SCOPE")
   string(REGEX REPLACE "[^0-1]" "" cg_scoping "${cg_scoping_string}")
   if ( cg_scoping EQUAL 1 )
-      message(STATUS "CGNS Scoping Enabled as Required")
+      message(STATUS "CGNS Scoping Enabled")
   else()
-      message(SEND_ERROR "CGNS Scoping *Not* Enabled as Required. Rebuild CGNS library with CGNS_ENABLE_SCOPING defined.")
+      message(STATUS "CGNS Scoping Not Enabled")
+#      message(SEND_ERROR "CGNS Scoping *Not* Enabled as Required. Rebuild CGNS library with CGNS_ENABLE_SCOPING defined.")
   endif()
 else()
   message(SEND_ERROR "CGNS: Could not find cgnstypes.h")
