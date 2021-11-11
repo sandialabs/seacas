@@ -5,6 +5,6 @@ pwd
 echo $HOME
 mkdir build
 cd build
-bash ../cmake-config
+MPI=NO bash ../cmake-config
 make -j4
 ctest -j 4 --output-on-failure
