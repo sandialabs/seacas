@@ -44,7 +44,9 @@
 // For memory utilities...
 #if defined(__IOSS_WINDOWS__)
 #define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #if 0
 #include <psapi.h>
 #endif
