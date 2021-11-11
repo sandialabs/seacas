@@ -41,20 +41,18 @@
  */
 
 #include "fortranc.h"
-#if defined(__NO_CYGWIN_OPTION__)
+#if !defined(WIN32) && !defined(__WIN32__) && !defined(_WIN32) && !defined(_MSC_VER) &&            \
+    !defined(__MINGW32__) && !defined(_WIN64) && !defined(__MINGW64__)
 #define NOMINMAX
+#include <io.h>
+#include <sys/ioctl.h>
 #include <windows.h>
+#define isatty _isatty
 #else
 #include <sys/utsname.h>
 #include <unistd.h> /* isatty  */
 #endif
 #include <stdio.h> /* sprintf */
-
-#ifdef _MSC_VER
-#include <io.h>
-#include <sys/ioctl.h>
-#define isatty _isatty
-#endif
 
 static char *copy_string(char *dest, char const *source, long int elements)
 {
