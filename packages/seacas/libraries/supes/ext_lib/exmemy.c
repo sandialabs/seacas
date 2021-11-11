@@ -110,6 +110,8 @@
  * Contact Greg Sjaardema, gdsjaar@sandia.gov for asisstance.
  */
 CT_ASSERT(sizeof(FTNINT) == sizeof(void *));
+CT_ASSERT(sizeof(FTNINT) == 8);
+CT_ASSERT(sizeof(FTNINT) == 4);
 
 #if defined(ADDC_)
 void exmemy_(FTNINT *memreq, FTNINT *locblk, FTNINT *memrtn)
