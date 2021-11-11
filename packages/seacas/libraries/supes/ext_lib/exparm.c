@@ -46,7 +46,6 @@
     defined(__NO_CYGWIN_OPTION__)
 #define NOMINMAX
 #include <io.h>
-#include <sys/ioctl.h>
 #include <windows.h>
 #define isatty _isatty
 #else
