@@ -14,3 +14,4 @@ ELSE()
   SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -r8 -i8")
 ENDIF()
 
+message(STATUS "CMAKE_Fortran_FLAGS set to ${CMAKE_Fortran_FLAGS}")
