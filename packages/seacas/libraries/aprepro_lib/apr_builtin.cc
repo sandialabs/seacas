@@ -22,7 +22,8 @@
 #include <utility>
 #include <vector>
 
-#ifdef _WIN32
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
 #include <io.h>
 #endif
 #include "apr_scanner.h"
@@ -59,7 +60,8 @@ namespace {
 
   void reset_error()
   {
-#ifndef _WIN32
+#if !defined(WIN32) && !defined(__WIN32__) && !defined(_WIN32) && !defined(_MSC_VER) &&            \
+    !defined(__MINGW32__) && !defined(_WIN64) && !defined(__MINGW64__)
 #ifndef math_errhandling
 #define math_errhandling MATH_ERRNO
 #endif

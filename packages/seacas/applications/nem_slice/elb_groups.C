@@ -84,7 +84,7 @@ template <typename INT> int parse_groups(Mesh_Description<INT> *mesh, Problem_De
       /* fill in the group identifier for each block */
     }
   }
-  char * id = prob->groups;
+  char  *id = prob->groups;
   size_t i  = 0;
   do {
     if (*id == '/') {

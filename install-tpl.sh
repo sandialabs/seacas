@@ -34,12 +34,12 @@ function check_exec()
 function check_valid()
 {
     if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ]; then
-	echo "YES"
-	return 1
+        echo "YES"
+        return 1
     fi
     if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ]; then
-	echo "NO"
-	return 1
+        echo "NO"
+        return 1
     fi
     echo "${txtred}Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF${txtrst}"
     exit 1
@@ -60,7 +60,9 @@ DEBUG=${DEBUG:-NO}
 DEBUG=$(check_valid DEBUG)
 
 # Shared libraries or static libraries?
-if [ "${CRAY}" == "YES" ]
+# For CRAY, must explicitly specify SHARED=YES, or it will default to NO
+# All other platforms default to SHARED=YES
+if [ "$CRAY" == "YES" ]
 then
     SHARED="${SHARED:-NO}"
 else
@@ -165,9 +167,9 @@ OS=$(uname -s)
 if [ "$SHARED" == "YES" ]
 then
     if [ "$OS" == "Darwin" ] ; then
-	LD_EXT="dylib"
+        LD_EXT="dylib"
     else
-	LD_EXT="so"
+        LD_EXT="so"
     fi
 else
     LD_EXT="a"
@@ -175,43 +177,43 @@ fi
 
 if [ $# -gt 0 ]; then
     if [ "$1" == "--help" ]; then
-	echo "${txtcyn}Environment Variables used in the script and their default values:"
-	echo ""
-	echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
+        echo "${txtcyn}Environment Variables used in the script and their default values:"
+        echo ""
+        echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
         echo "   INSTALL_PATH = ${txtgrn}${INSTALL_PATH}${txtcyn}"
-	echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
-	echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm)"
-	echo "   MPI          = ${MPI} (Parallel Build?)"
-	echo ""
-	echo "   FORCE        = ${FORCE}"
-	echo "   DOWNLOAD     = ${DOWNLOAD}"
-	echo "   BUILD        = ${BUILD}"
-	echo "   SHARED       = ${SHARED}"
-	echo "   DEBUG        = ${DEBUG}"
-	echo "   USE_PROXY    = ${USE_PROXY}"
-	echo ""
-	echo "   H5VERSION    = ${H5VERSION}"
-	echo "   CGNS         = ${CGNS}"
-	echo "   MATIO        = ${MATIO}"
-	echo "   METIS        = ${METIS}"
-	echo "   PARMETIS     = ${PARMETIS}"
-	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
-	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
-	echo "   USE_ZLIB_NG  = ${USE_ZLIB_NG}"
-	echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
-	echo "   USE_AEC      = ${USE_AEC}"
-	echo "   KOKKOS       = ${KOKKOS}"
-	echo "   BB           = ${BB}"
-	echo "   FAODEL       = ${FAODEL}"
-	echo "   ADIOS2       = ${ADIOS2}"
-	echo "   CATALYST2    = ${CATALYST2}"
-	echo "   GTEST        = ${GTEST}"
-	echo ""
-	echo "   SUDO         = ${SUDO} (empty unless need superuser permission via 'sudo')"
-	echo "   JOBS         = ${JOBS}"
-	echo "   VERBOSE      = ${VERBOSE}"
-	echo "${txtrst}"
-	exit 0
+        echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
+        echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm)"
+        echo "   MPI          = ${MPI} (Parallel Build?)"
+        echo ""
+        echo "   FORCE        = ${FORCE}"
+        echo "   DOWNLOAD     = ${DOWNLOAD}"
+        echo "   BUILD        = ${BUILD}"
+        echo "   SHARED       = ${SHARED}"
+        echo "   DEBUG        = ${DEBUG}"
+        echo "   USE_PROXY    = ${USE_PROXY}"
+        echo ""
+        echo "   H5VERSION    = ${H5VERSION}"
+        echo "   CGNS         = ${CGNS}"
+        echo "   MATIO        = ${MATIO}"
+        echo "   METIS        = ${METIS}"
+        echo "   PARMETIS     = ${PARMETIS}"
+        echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
+        echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
+        echo "   USE_ZLIB_NG  = ${USE_ZLIB_NG}"
+        echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
+        echo "   USE_AEC      = ${USE_AEC}"
+        echo "   KOKKOS       = ${KOKKOS}"
+        echo "   BB           = ${BB}"
+        echo "   FAODEL       = ${FAODEL}"
+        echo "   ADIOS2       = ${ADIOS2}"
+        echo "   CATALYST2    = ${CATALYST2}"
+        echo "   GTEST        = ${GTEST}"
+        echo ""
+        echo "   SUDO         = ${SUDO} (empty unless need superuser permission via 'sudo')"
+        echo "   JOBS         = ${JOBS}"
+        echo "   VERBOSE      = ${VERBOSE}"
+        echo "${txtrst}"
+        exit 0
     fi
 fi
 
@@ -226,14 +228,14 @@ if [ "$USE_AEC" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
     then
-	echo "${txtgrn}+++ SZIP (via libaec library)${txtrst}"
+        echo "${txtgrn}+++ SZIP (via libaec library)${txtrst}"
         szip_version="1.0.4"
 
-	cd $ACCESS
-	cd TPL/szip
-	if [ "$DOWNLOAD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+        cd $ACCESS
+        cd TPL/szip
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf libaec-${szip_version}
             rm -rf v-${szip_version}.tar.gz
             wget --no-check-certificate https://github.com/MathisRosenhauer/libaec/archive/v${szip_version}.tar.gz
@@ -252,61 +254,61 @@ then
 
             if [[ $? != 0 ]]
             then
-		echo 1>&2 "${txtred}couldn\'t configure libaec(szip). exiting.${txtrst}"
-		exit 1
+                echo 1>&2 "${txtred}couldn\'t configure libaec(szip). exiting.${txtrst}"
+                exit 1
             fi
             make -j${JOBS} && ${SUDO} make install
             if [[ $? != 0 ]]
             then
-		echo 1>&2 "${txtred}couldn\'t build libaec(szip). exiting.${txtrst}"
-		exit 1
+                echo 1>&2 "${txtred}couldn\'t build libaec(szip). exiting.${txtrst}"
+                exit 1
             fi
-	fi
+        fi
     else
-	echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
     fi
 else
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
     then
-	echo "${txtgrn}+++ SZIP${txtrst}"
+        echo "${txtgrn}+++ SZIP${txtrst}"
         szip_version="2.1.1"
 
-	cd $ACCESS
-	cd TPL/szip
-	if [ "$DOWNLOAD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+        cd $ACCESS
+        cd TPL/szip
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf szip-${szip_version}
             rm -rf szip-${szip_version}.tar.gz
             wget --no-check-certificate https://support.hdfgroup.org/ftp/lib-external/szip/2.1.1/src/szip-${szip_version}.tar.gz
             tar -xzf szip-${szip_version}.tar.gz
             rm -rf szip-${szip_version}.tar.gz
-	fi
+        fi
 
-	if [ "$BUILD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd szip-${szip_version}
             # mkdir build
             # cd build
 
-	    ./configure --prefix=${INSTALL_PATH}
+            ./configure --prefix=${INSTALL_PATH}
             # CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
 
             if [[ $? != 0 ]]
             then
-		echo 1>&2 ${txtred}couldn\'t configure szip. exiting.${txtrst}
-		exit 1
+                echo 1>&2 ${txtred}couldn\'t configure szip. exiting.${txtrst}
+                exit 1
             fi
             make -j${JOBS} && ${SUDO} make install
             if [[ $? != 0 ]]
             then
-		echo 1>&2 ${txtred}couldn\'t build szip. exiting.${txtrst}
-		exit 1
+                echo 1>&2 ${txtred}couldn\'t build szip. exiting.${txtrst}
+                exit 1
             fi
-	fi
+        fi
     else
-	echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 fi
@@ -315,76 +317,77 @@ if [ "$NEEDS_ZLIB" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libz.${LD_EXT} ]
     then
-	if [ "$USE_ZLIB_NG" == "YES" ]
-	then
-	    echo "${txtgrn}+++ ZLIB-NG${txtrst}"
+        if [ "$USE_ZLIB_NG" == "YES" ]
+        then
+            echo "${txtgrn}+++ ZLIB-NG${txtrst}"
             zlib_ng_version="develop"
 
-	    cd $ACCESS
-	    cd TPL
-	    if [ "$DOWNLOAD" == "YES" ]
-	    then
-		echo "${txtgrn}+++ Downloading...${txtrst}"
-		rm -rf zlib-ng
-		git clone https://github.com/zlib-ng/zlib-ng
-	    fi
+            cd $ACCESS
+            cd TPL
+            if [ "$DOWNLOAD" == "YES" ]
+            then
+                echo "${txtgrn}+++ Downloading...${txtrst}"
+                rm -rf zlib-ng
+                git clone https://github.com/zlib-ng/zlib-ng
+            fi
 
-	    if [ "$BUILD" == "YES" ]
-	    then
-		echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-		cd zlib-ng
-		git checkout ${zlib_ng_version}
-		rm -rf build
-		cmake -Bbuild -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} -DZLIB_COMPAT=YES .
-		if [[ $? != 0 ]]
-		then
-		    echo 1>&2 ${txtred}couldn\'t configure zlib-ng. exiting.${txtrst}
-		    exit 1
-		fi
-		cmake --build build --config Release
-		if [[ $? != 0 ]]
-		then
-		    echo 1>&2 ${txtred}couldn\'t build zlib-ng. exiting.${txtrst}
-		    exit 1
-		fi
-		cmake --install build --config Release
-	    fi
-	else
-	    echo "${txtgrn}+++ ZLIB${txtrst}"
+            if [ "$BUILD" == "YES" ]
+            then
+                echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+                cd zlib-ng
+                git checkout ${zlib_ng_version}
+                rm -rf build
+                mkdir build
+                cmake -Bbuild -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} -DZLIB_COMPAT=YES .
+                if [[ $? != 0 ]]
+                then
+                    echo 1>&2 ${txtred}couldn\'t configure zlib-ng. exiting.${txtrst}
+                    exit 1
+                fi
+                cmake --build build --config Release
+                if [[ $? != 0 ]]
+                then
+                    echo 1>&2 ${txtred}couldn\'t build zlib-ng. exiting.${txtrst}
+                    exit 1
+                fi
+                cmake --install build --config Release
+            fi
+        else
+            echo "${txtgrn}+++ ZLIB${txtrst}"
             zlib_version="1.2.11"
 
-	    cd $ACCESS
-	    cd TPL
-	    if [ "$DOWNLOAD" == "YES" ]
-	    then
-		echo "${txtgrn}+++ Downloading...${txtrst}"
-		rm -rf zlib-${zlib_version}
-		rm -rf zlib-${zlib_version}.tar.gz
-		wget --no-check-certificate https://zlib.net/zlib-${zlib_version}.tar.gz
-		tar -xzf zlib-${zlib_version}.tar.gz
-		rm -rf zlib-${zlib_version}.tar.gz
-	    fi
+            cd $ACCESS
+            cd TPL
+            if [ "$DOWNLOAD" == "YES" ]
+            then
+                echo "${txtgrn}+++ Downloading...${txtrst}"
+                rm -rf zlib-${zlib_version}
+                rm -rf zlib-${zlib_version}.tar.gz
+                wget --no-check-certificate https://zlib.net/zlib-${zlib_version}.tar.gz
+                tar -xzf zlib-${zlib_version}.tar.gz
+                rm -rf zlib-${zlib_version}.tar.gz
+            fi
 
-	    if [ "$BUILD" == "YES" ]
-	    then
-		echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-		cd zlib-${zlib_version}
-		./configure --prefix=${INSTALL_PATH}
-		if [[ $? != 0 ]]
-		then
-		    echo 1>&2 ${txtred}couldn\'t configure zlib. exiting.${txtrst}
-		    exit 1
-		fi
-		make -j${JOBS} && ${SUDO} make install
-		if [[ $? != 0 ]]
-		then
-		    echo 1>&2 ${txtred}couldn\'t build zlib. exiting.${txtrst}
-		    exit 1
-		fi
-	    fi
-	fi
+            if [ "$BUILD" == "YES" ]
+            then
+                echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+                cd zlib-${zlib_version}
+                ./configure --prefix=${INSTALL_PATH}
+                if [[ $? != 0 ]]
+                then
+                    echo 1>&2 ${txtred}couldn\'t configure zlib. exiting.${txtrst}
+                    exit 1
+                fi
+                make -j${JOBS} && ${SUDO} make install
+                if [[ $? != 0 ]]
+                then
+                    echo 1>&2 ${txtred}couldn\'t build zlib. exiting.${txtrst}
+                    exit 1
+                fi
+            fi
+        fi
     else
-	echo "${txtylw}+++ ZLIB already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ ZLIB already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -393,54 +396,54 @@ if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]; then
-	hdf_version="1.8.21"
+        hdf_version="1.8.21"
     elif [ "${H5VERSION}" == "V110" ]; then
-	hdf_version="1.10.7"
+        hdf_version="1.10.7"
     elif [ "${H5VERSION}" == "V112" ]; then
-	hdf_version="1.12.0"
+        hdf_version="1.12.0"
     elif [ "${H5VERSION}" == "develop" ]; then
-	hdf_version="develop"
+        hdf_version="develop"
     else
-	echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
-	exit 1
+        echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
+        exit 1
     fi
 
     cd $ACCESS
     cd TPL/hdf5
     if [ "$DOWNLOAD" == "YES" ]
     then
-	echo "${txtgrn}+++ Downloading...${txtrst}"
+        echo "${txtgrn}+++ Downloading...${txtrst}"
         rm -rf hdf5-${hdf_version}
         rm -f hdf5-${hdf_version}.tar.bz2
-	if [ "${H5VERSION}" == "V18" ]
-	then
-	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar.bz2
-	elif [ "${H5VERSION}" == "V110" ]; then
-	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-	elif [ "${H5VERSION}" == "V112" ]; then
-	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-	elif [ "${H5VERSION}" == "develop" ]; then
-	    git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
-	else
-	    echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
-	    exit 1
-	fi
-	if [ "${H5VERSION}" != "develop" ]
-	then
+        if [ "${H5VERSION}" == "V18" ]
+        then
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar.bz2
+        elif [ "${H5VERSION}" == "V110" ]; then
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+        elif [ "${H5VERSION}" == "V112" ]; then
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+        elif [ "${H5VERSION}" == "develop" ]; then
+            git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
+        else
+            echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
+            exit 1
+        fi
+        if [ "${H5VERSION}" != "develop" ]
+        then
             tar -jxf hdf5-${hdf_version}.tar.bz2
             rm -f hdf5-${hdf_version}.tar.bz2
-	fi
+        fi
     fi
 
     if [ "$BUILD" == "YES" ]
     then
-	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+        echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
         rm -rf build
         mkdir build
         cd build
-	CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
-	#CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
+        CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
+        #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
@@ -464,12 +467,12 @@ then
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
         pnet_version="1.12.2"
-	pnet_base="pnetcdf"
+        pnet_base="pnetcdf"
         cd $ACCESS
         cd TPL/pnetcdf
         if [ "$DOWNLOAD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf ${pnet_base}-${pnet_version}
             rm -f ${pnet_base}-${pnet_version}.tar.gz
             wget --no-check-certificate https://parallel-netcdf.github.io/Release/${pnet_base}-${pnet_version}.tar.gz
@@ -479,7 +482,7 @@ then
 
         if [ "$BUILD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ${pnet_base}-${pnet_version}
             CRAY=${CRAY} BB=${BB} DEBUG=${DEBUG} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
@@ -502,7 +505,7 @@ then
             fi
         fi
     else
-	echo "${txtylw}+++ PnetCDF already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ PnetCDF already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -514,7 +517,7 @@ then
     cd TPL/netcdf
     if [ "$DOWNLOAD" == "YES" ]
     then
-	echo "${txtgrn}+++ Downloading...${txtrst}"
+        echo "${txtgrn}+++ Downloading...${txtrst}"
         rm -rf netcdf-c
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
@@ -524,12 +527,12 @@ then
 
     if [ "$BUILD" == "YES" ]
     then
-	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+        echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
-	if [ "$net_version" != "master" ]
-	   then
-	       git checkout $net_version
-	fi
+        if [ "$net_version" != "master" ]
+           then
+               git checkout $net_version
+        fi
         rm -rf build
         mkdir build
         cd build
@@ -560,14 +563,14 @@ then
         cd TPL/cgns
         if [ "$DOWNLOAD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf CGNS
             git clone https://github.com/cgns/CGNS
-	fi
+        fi
 
         if [ "$BUILD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS
             git checkout v4.2.0
             rm -rf build
@@ -588,7 +591,7 @@ then
             fi
         fi
     else
-	echo "${txtylw}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -597,24 +600,24 @@ if [ "$METIS" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.a ]
     then
-	echo "${txtgrn}+++ Metis${txtrst}"
-	cd $ACCESS
-	cd TPL/metis
-	if [ "$DOWNLOAD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+        echo "${txtgrn}+++ Metis${txtrst}"
+        cd $ACCESS
+        cd TPL/metis
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf metis-5.1.0
             rm -f metis-5.1.0.tar.gz
             wget --no-check-certificate https://github.com/scivision/METIS/archive/v5.1.0.1.tar.gz
-	    tar zxvf v5.1.0.1.tar.gz
-	fi
+            tar zxvf v5.1.0.1.tar.gz
+        fi
 
-	if [ "$BUILD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd METIS-5.1.0.1
-	    sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' src/include/metis.h > tmp
-	    mv tmp src/include/metis.h
+            sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' src/include/metis.h > tmp
+            mv tmp src/include/metis.h
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
@@ -627,9 +630,9 @@ then
                 echo 1>&2 ${txtred}couldn\'t build Metis. exiting.${txtrst}
                 exit 1
             fi
-	fi
+        fi
     else
-	echo "${txtylw}+++ Metis already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ Metis already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -639,19 +642,19 @@ if [ "$PARMETIS" == "YES" ] && [ "$MPI" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libparmetis.a ]
     then
-	echo "${txtgrn}+++ ParMETIS${txtrst}"
-	cd $ACCESS
-	cd TPL/parmetis
-	if [ "$DOWNLOAD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+        echo "${txtgrn}+++ ParMETIS${txtrst}"
+        cd $ACCESS
+        cd TPL/parmetis
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf parmetis
-	    git clone https://github.com/gsjaardema/parmetis
-	fi
+            git clone https://github.com/gsjaardema/parmetis
+        fi
 
-	if [ "$BUILD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parmetis
             CRAY=${CRAY} MPI=${MPI} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
@@ -665,9 +668,9 @@ then
                 echo 1>&2 ${txtred}couldn\'t build ParMETIS. exiting.${txtrst}
                 exit 1
             fi
-	fi
+        fi
     else
-	echo "${txtylw}+++ ParMETIS already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ ParMETIS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -682,19 +685,19 @@ then
 
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
-	echo "${txtgrn}+++ MatIO${txtrst}"
-	cd $ACCESS
-	cd TPL/matio
-	if [ "$DOWNLOAD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+        echo "${txtgrn}+++ MatIO${txtrst}"
+        cd $ACCESS
+        cd TPL/matio
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf matio
             git clone https://github.com/tbeu/matio.git
-	fi
+        fi
 
-	if [ "$BUILD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio
             ./autogen.sh
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
@@ -709,9 +712,9 @@ then
                 echo 1>&2 ${txtred}couldn\'t build MatIO. exiting.${txtrst}
                 exit 1
             fi
-	fi
+        fi
     else
-	echo "${txtylw}+++ MatIO already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ MatIO already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -720,23 +723,23 @@ if [ "$KOKKOS" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
     then
-	kokkos_version="2.8.00"
-	echo "${txtgrn}+++ KOKKOS${txtrst}"
-	cd $ACCESS
-	cd TPL/kokkos
-	if [ "$DOWNLOAD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+        kokkos_version="2.8.00"
+        echo "${txtgrn}+++ KOKKOS${txtrst}"
+        cd $ACCESS
+        cd TPL/kokkos
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf kokkos
-	    wget --no-check-certificate https://github.com/kokkos/kokkos/archive/${kokkos_version}.tar.gz
+            wget --no-check-certificate https://github.com/kokkos/kokkos/archive/${kokkos_version}.tar.gz
             tar -zxf ${kokkos_version}.tar.gz
             rm -f ${kokkos_version}.tar.gz
-	    ln -s kokkos-${kokkos_version} kokkos
-	fi
+            ln -s kokkos-${kokkos_version} kokkos
+        fi
 
-	if [ "$BUILD" == "YES" ]
-	then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd kokkos-${kokkos_version}
             rm -rf build
             mkdir build
@@ -754,9 +757,9 @@ then
                 echo 1>&2 ${txtred}couldn\'t build KOKKOS. exiting.${txtrst}
                 exit 1
             fi
-	fi
+        fi
     else
-	echo "${txtylw}+++ KOKKOS already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ KOKKOS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -770,16 +773,16 @@ then
         cd TPL/adios2
         if [ "$DOWNLOAD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf ADIOS2
             git clone https://github.com/ornladios/ADIOS2.git
         fi
 
         if [ "$BUILD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2
-	    git checkout v2.5.0
+            git checkout v2.5.0
             rm -rf build
             mkdir build
             cd build
@@ -812,16 +815,16 @@ then
         cd TPL/catalyst2
         if [ "$DOWNLOAD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf catalyst
             git clone https://gitlab.kitware.com/paraview/catalyst.git
         fi
 
         if [ "$BUILD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd catalyst
-	          git checkout master #todo: a specific version
+                  git checkout master #todo: a specific version
             rm -rf build
             mkdir build
             cd build
@@ -854,16 +857,16 @@ then
         cd TPL/gtest
         if [ "$DOWNLOAD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf gtest
             git clone https://github.com/google/googletest.git
         fi
 
         if [ "$BUILD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd googletest
-	    git checkout release-1.8.1
+            git checkout release-1.8.1
             rm -rf build
             mkdir build
             cd build
@@ -891,12 +894,12 @@ if [ "$GNU_PARALLEL" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/bin/env_parallel ]
     then
-	echo "${txtgrn}+++ GNU Parallel${txtrst}"
+        echo "${txtgrn}+++ GNU Parallel${txtrst}"
         cd $ACCESS
         cd TPL/parallel
         if [ "$DOWNLOAD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf parallel-*
             wget --no-check-certificate https://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2
             tar -jxf parallel-latest.tar.bz2
@@ -905,7 +908,7 @@ then
 
         if [ "$BUILD" == "YES" ]
         then
-	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parallel-*
             bash ../runconfigure.sh
             if [[ $? != 0 ]]
@@ -921,7 +924,7 @@ then
             fi
         fi
     else
-	echo "${txtylw}+++ Parallel already installed.  Skipping download and installation.${txtrst}"
+        echo "${txtylw}+++ Parallel already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 

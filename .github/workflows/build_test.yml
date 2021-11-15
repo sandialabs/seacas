@@ -96,6 +96,13 @@ jobs:
           make -j 4
         if: ${{ success() }}
 
+      - name: Install
+        shell: bash -l {0}
+        run: |
+          cd build 
+          make -j 4 install
+        if: ${{ success() }}
+
       - name: Run Tests
         shell: bash -l {0}
         run: |

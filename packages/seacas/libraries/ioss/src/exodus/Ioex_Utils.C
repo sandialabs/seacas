@@ -566,7 +566,7 @@ namespace Ioex {
     }
   }
 
-  bool filter_node_list(Ioss::Int64Vector &               nodes,
+  bool filter_node_list(Ioss::Int64Vector                &nodes,
                         const std::vector<unsigned char> &node_connectivity_status)
   {
     // Iterate through 'nodes' and determine which of the nodes are
@@ -631,9 +631,9 @@ namespace Ioex {
 
   void separate_surface_element_sides(Ioss::Int64Vector &element, Ioss::Int64Vector &sides,
                                       Ioss::Region *region, Ioex::TopologyMap &topo_map,
-                                      Ioex::TopologyMap &    side_map,
+                                      Ioex::TopologyMap     &side_map,
                                       Ioss::SurfaceSplitType split_type,
-                                      const std::string &    surface_name)
+                                      const std::string     &surface_name)
   {
     if (!element.empty()) {
       Ioss::ElementBlock *block = nullptr;

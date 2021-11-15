@@ -25,7 +25,13 @@ else
     USE_SHARED="--disable-shared"
 fi
 
-./configure --with-hdf5=${INSTALL_PATH} --enable-mat73 ${USE_SHARED} --prefix=${INSTALL_PATH} $1
+NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
+if [ "$NEEDS_ZLIB" == "YES" ] || [ "$NEEDS_ZLIB" == "ON" ]
+then
+   LOCAL_ZLIB="--with-zlib=${INSTALL_PATH}"
+fi
+
+./configure ${LOCAL_ZLIB} --with-hdf5=${INSTALL_PATH} --enable-mat73 ${USE_SHARED} --prefix=${INSTALL_PATH} $1
 
 echo ""
 echo "         MPI: ${MPI}"

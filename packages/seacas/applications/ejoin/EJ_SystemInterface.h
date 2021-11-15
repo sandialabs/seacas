@@ -44,11 +44,11 @@ public:
 
   vector3d                offset() const { return offset_; }
   const std::vector<int> &information_record_parts() const { return infoRecordParts_; }
-  const StringIdVector &  global_var_names() const { return globalVarNames_; }
-  const StringIdVector &  node_var_names() const { return nodeVarNames_; }
-  const StringIdVector &  elem_var_names() const { return elemVarNames_; }
-  const StringIdVector &  nset_var_names() const { return nsetVarNames_; }
-  const StringIdVector &  sset_var_names() const { return ssetVarNames_; }
+  const StringIdVector   &global_var_names() const { return globalVarNames_; }
+  const StringIdVector   &node_var_names() const { return nodeVarNames_; }
+  const StringIdVector   &elem_var_names() const { return elemVarNames_; }
+  const StringIdVector   &nset_var_names() const { return nsetVarNames_; }
+  const StringIdVector   &sset_var_names() const { return ssetVarNames_; }
 
   const Omissions &block_inclusions() const { return blockInclusions_; }
   const Omissions &block_omissions() const { return blockOmissions_; }

@@ -47,10 +47,27 @@ ZOLTAN=$(check_valid ZOLTAN)
 ### Python Version...
 PYTHON_VER=${PYTHON_VER:-"3.0"}
 
+### TPLs --
+### Make sure these point to the locations to find the libraries and includes in lib and include
+### subdirectories of the specified paths.
+### For example, netcdf.h should be in ${NETCDF_PATH}/include
+NETCDF_PATH=${NETCDF_PATH:-${INSTALL_PATH}}
+PNETCDF_PATH=${PNETCDF_PATH:-${INSTALL_PATH}}
+MATIO_PATH=${MATIO_PATH:-${INSTALL_PATH}}
+HDF5_PATH=${HDF5_PATH:-${INSTALL_PATH}}
+CGNS_PATH=${CGNS_PATH:-${INSTALL_PATH}}
+FAODEL_PATH=${FAODEL_PATH:-${INSTALL_PATH}}
+ADIOS2_PATH=${ADIOS2_PATH:-${INSTALL_PATH}}
+CATALYST2_PATH=${CATALYST2_PATH:-${INSTALL_PATH}}
+GTEST_PATH=${GTEST_PATH:-${INSTALL_PATH}}
+KOKKOS_PATH=${KOKKOS_PATH:-${INSTALL_PATH}}
+METIS_PATH=${METIS_PATH:-${INSTALL_PATH}}
+PARMETIS_PATH=${PARMETIS_PATH:-${INSTALL_PATH}}
+
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 if [ "${MPI}" = "" ]
 then
-  netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
+  netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
   if [ "${netcdf_parallel}" == "yes" ]
   then
       MPI=YES
@@ -99,7 +116,7 @@ then
   then
       CXX=clang++
       CC=clang
-      FC=gfortran
+      FC=${FC:-gfortran}
       CFLAGS="-Wall -Wunused -pedantic"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
@@ -209,6 +226,12 @@ else
 fi
 SHARED=$(check_valid SHARED)
 
+if [ "${CRAY}" == "YES" ] && [ "${SHARED}" == "NO" ]
+then
+  # Assumes we build our own static zlib with CRAY
+  CRAY_OPT=-DSEACASProj_EXTRA_LINK_FLAGS=${INSTALL_PATH}/lib/libz.a
+fi
+
 ### Switch for Debug or Release build:
 ### Check that both `DEBUG` and `BUILD_TYPE` are not set
 if [ ! -z ${DEBUG+x} ] && [ ! -z ${BUILD_TYPE+x} ]
@@ -248,23 +271,6 @@ if [ "$THREADSAFE" == "YES" ] ; then
   THREAD_SAFE_OPT="-DSEACASProj_EXTRA_LINK_FLAGS=-lpthread"
 fi
 
-
-### TPLs --
-### Make sure these point to the locations to find the libraries and includes in lib and include
-### subdirectories of the specified paths.
-### For example, netcdf.h should be in ${NETCDF_PATH}/include
-NETCDF_PATH=${INSTALL_PATH}
-PNETCDF_PATH=${INSTALL_PATH}
-MATIO_PATH=${INSTALL_PATH}
-HDF5_PATH=${INSTALL_PATH}
-CGNS_PATH=${INSTALL_PATH}
-FAODEL_PATH=${INSTALL_PATH}
-ADIOS2_PATH=${INSTALL_PATH}
-CATALYST2_PATH=${INSTALL_PATH}
-GTEST_PATH=${INSTALL_PATH}
-KOKKOS_PATH=${INSTALL_PATH}
-METIS_PATH=${INSTALL_PATH}
-PARMETIS_PATH=${INSTALL_PATH}
 
 function check_enable()
 {
@@ -309,7 +315,6 @@ then
    CC=cc
    FC=ftn
    MPI_BIN=$(dirname $(which ${CC}))
-   SHARED=NO
 elif [ "${MPI}" == "YES" ]
 then
    if [ "${USE_SRUN}" == "YES" ]
@@ -452,6 +457,7 @@ ${SUBSET_OPTIONS} \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 -D SEACASProj_ENABLE_DOXYGEN:BOOL=${DOXYGEN} \
 -D SEACASProj_ENABLE_Fortran=${FORTRAN} \
+${CRAY_OPT} \
 \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \

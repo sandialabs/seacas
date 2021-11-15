@@ -17,7 +17,13 @@ else
   BUILD_TYPE="Release"
 fi
 
-SHARED="${SHARED:-YES}"
+if [ "$CRAY" == "YES" ]
+then
+    SHARED="${SHARED:-NO}"
+else
+    SHARED="${SHARED:-YES}"
+fi
+
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
   OS=$(uname -s)
