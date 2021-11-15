@@ -1593,7 +1593,7 @@ namespace Ioex {
             int64_t my_side_count = topo.second;
 
             std::string side_block_name = "surface_" + topo_or_block_name + "_" + side_topo->name();
-            if (side_set_name == "universal_sideset") {
+            if (split_type == Ioss::SPLIT_BY_DONT_SPLIT) {
               side_block_name = side_set_name;
             }
             else {

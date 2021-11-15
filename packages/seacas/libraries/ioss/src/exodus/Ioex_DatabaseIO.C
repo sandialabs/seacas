@@ -1682,14 +1682,14 @@ namespace Ioex {
             assert(side_topo != nullptr);
 #if 0
             if (side_topo->parametric_dimension() == topology_dimension-1 ||
-                split_type == Ioss::SPLIT_BY_DONT_SPLIT ) {
+                split_type == Ioss::SPLIT_BY_DONT_SPLIT) {
 #else
             if (true) {
 #endif
             int64_t my_side_count = topo.second;
 
             std::string side_block_name = "surface_" + topo_or_block_name + "_" + side_topo->name();
-            if (side_set_name == "universal_sideset") {
+            if (split_type == Ioss::SPLIT_BY_DONT_SPLIT) {
               side_block_name = side_set_name;
             }
             else {
