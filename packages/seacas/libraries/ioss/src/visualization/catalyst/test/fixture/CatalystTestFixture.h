@@ -42,6 +42,7 @@ public:
   Json::Value getDefaultImageSetJSON();
   Json::Value getDefaultImageSetWithCameraJSON();
   Json::Value getDefaultCameraParallelProjectionJSON();
+  Json::Value getDefaultOperationsJSON();
 
 private:
   IossApplication ioapp;

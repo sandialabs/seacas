@@ -141,6 +141,29 @@ Json::Value CatalystTestFixture::getDefaultImageSetWithCameraJSON()
   return dj;
 }
 
+Json::Value CatalystTestFixture::getDefaultOperationsJSON()
+{
+  Json::Value dj = getDefaultImageSetWithCameraJSON();
+  Json::Value clip;
+  clip["type"] = "clip";
+  Json::Value plane;
+  plane[0]                        = -0.5;
+  plane[1]                        = 0.0;
+  plane[2]                        = 0.0;
+  clip["relative point on plane"] = plane;
+  Json::Value normal;
+  normal[0]            = 1.0;
+  normal[1]            = 0.0;
+  normal[2]            = 0.0;
+  clip["plane normal"] = normal;
+  clip["side to keep"] = "positive";
+
+  Json::Value &imageset              = dj["imageset blocks"]["fooImageset"];
+  imageset["operation"]              = "clipNone";
+  dj["operation blocks"]["clipNone"] = clip;
+  return dj;
+}
+
 Json::Value CatalystTestFixture::getDefaultCameraParallelProjectionJSON()
 {
   Json::Value camParallel;
