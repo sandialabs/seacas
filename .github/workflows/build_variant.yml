@@ -244,5 +244,10 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
-          ctest -j 4 --output-on-failure
+	  if: ${{ matrix.config.sanitizer == 'NO' &&  matrix.config.threadsafe == 'NO' }}
+	  run: |
+             ctest -j 4 --output-on-failure 
+	  if: ${{ matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO' }}
+	  run: |
+             ctest -j 4 --output-on-failure --exclude-regex exodus3.py
         if: ${{ success() }}
