@@ -242,16 +242,14 @@ jobs:
 
       - name: Run Non-sanitized Tests
         shell: bash -l {0}
-        if: ${{ matrix.config.sanitizer == 'NO' &&  matrix.config.threadsafe == 'NO' }}
         run: |
           cd build
           ctest -j 4 --output-on-failure 
-        if: ${{ success() }}
+        if: ${{ success() && matrix.config.sanitizer == 'NO' &&  matrix.config.threadsafe == 'NO' }}
 
       - name: Run sanitized/threadsafe Tests
         shell: bash -l {0}
-        if: ${{ matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO' }}
         run: |
           cd build
           ctest -j 4 --output-on-failure --exclude-regex exodus3.py
-        if: ${{ success() }}
+        if: ${{ success() && (matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO') }}
