@@ -1581,10 +1581,19 @@ namespace Ioss {
     }
     std::ostringstream errmsg;
     fmt::print(errmsg,
-               "\n\nERROR: The entity named '{}' which is being aliased to '{}' does not exist in "
+               "\n\nERROR: The entity named '{}' of type {} which is being aliased to '{}' does not exist in "
                "region '{}'.\n",
-               db_name, alias, name());
+               db_name, type, alias, name());
     IOSS_ERROR(errmsg);
+  }
+
+  bool Region::add_alias(const std::string &db_name, const std::string &alias)
+  {
+    auto entity = get_entity(db_name);
+    IOSS_FUNC_ENTER(m_);
+    if (entity != nullptr) {
+      return add_alias__(db_name, alias, entity->type());
+    }
   }
 
   /** \brief Get the original name for an alias.
@@ -1728,11 +1737,6 @@ namespace Ioss {
       entity = edb;
       nfound++;
     }
-    GroupingEntity *ss = get_sideset(my_name);
-    if (ss != nullptr) {
-      entity = ss;
-      nfound++;
-    }
     GroupingEntity *ns = get_nodeset(my_name);
     if (ns != nullptr) {
       entity = ns;
@@ -1758,8 +1762,15 @@ namespace Ioss {
       entity = cs;
       nfound++;
     }
+    GroupingEntity *ss = get_sideset(my_name);
+    if (ss != nullptr) {
+      entity = ss;
+      nfound++;
+    }
     GroupingEntity *sib = get_sideblock(my_name);
-    if (sib != nullptr) {
+    if (ss == nullptr && sib != nullptr) {
+      // Allowable for sideset and a contained sideblock to have
+      // same name. Historically, the sideset is returned in this case
       entity = sib;
       nfound++;
     }
@@ -1780,8 +1791,8 @@ namespace Ioss {
           errmsg,
           "ERROR: There are multiple ({}) blocks and/or sets with the name '{}' defined in the "
           "database file '{}'.\n"
-          "\tThis is allowed in general, but this application uses an API function that does not "
-          "support duplicate names.",
+          "\tThis is allowed in general, but this application uses an API function (get_entity) "
+	  "that does not support duplicate names.",
           nfound, my_name, filename);
       IOSS_ERROR(errmsg);
       return nullptr;
