@@ -84,7 +84,7 @@ namespace Iovs {
     return result;
   }
 
-  void CatalystLogging::writeVectorWithDelimeter(std::fstream &                  file,
+  void CatalystLogging::writeVectorWithDelimeter(std::fstream                   &file,
                                                  const std::vector<std::string> &string_vector,
                                                  char                            delimeter)
   {
@@ -186,6 +186,7 @@ namespace Iovs {
         case Ioss::Property::REAL: logOutput.push_back(std::to_string(prop.get_real())); break;
         case Ioss::Property::INTEGER: logOutput.push_back(std::to_string(prop.get_int())); break;
         case Ioss::Property::STRING: logOutput.push_back(prop.get_string()); break;
+        default: logOutput.push_back("Unsupported property type for " + propName);
         }
       }
     }
