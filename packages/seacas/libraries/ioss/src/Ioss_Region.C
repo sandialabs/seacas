@@ -1552,6 +1552,7 @@ namespace Ioss {
    *
    *  \param[in] db_name The original name.
    *  \param[in] alias the alias
+   *  \param[in] type  the entity type
    *  \returns True if successful
    */
   bool Region::add_alias(const std::string &db_name, const std::string &alias, EntityType type)
@@ -1581,7 +1582,8 @@ namespace Ioss {
     }
     std::ostringstream errmsg;
     fmt::print(errmsg,
-               "\n\nERROR: The entity named '{}' of type {} which is being aliased to '{}' does not exist in "
+               "\n\nERROR: The entity named '{}' of type {} which is being aliased to '{}' does "
+               "not exist in "
                "region '{}'.\n",
                db_name, type, alias, name());
     IOSS_ERROR(errmsg);
@@ -1594,11 +1596,13 @@ namespace Ioss {
     if (entity != nullptr) {
       return add_alias__(db_name, alias, entity->type());
     }
+    return false;
   }
 
   /** \brief Get the original name for an alias.
    *
    *  \param[in] alias The alias name.
+   *  \param[in] type  the entity type
    *  \returns The original name.
    */
   std::string Region::get_alias(const std::string &alias, EntityType type) const
@@ -1620,6 +1624,7 @@ namespace Ioss {
   /** \brief Get all aliases for a name in the region.
    *
    *  \param[in] my_name The original name.
+   *  \param[in] type  the entity type
    *  \param[in,out] aliases On input, any vector of strings.
    *                         On output, all aliases for my_name are appended.
    *  \returns The number of aliases that were appended.
@@ -1792,7 +1797,7 @@ namespace Ioss {
           "ERROR: There are multiple ({}) blocks and/or sets with the name '{}' defined in the "
           "database file '{}'.\n"
           "\tThis is allowed in general, but this application uses an API function (get_entity) "
-	  "that does not support duplicate names.",
+          "that does not support duplicate names.",
           nfound, my_name, filename);
       IOSS_ERROR(errmsg);
       return nullptr;
