@@ -1455,11 +1455,11 @@ namespace Ioex {
         std::string            side_set_name;
         Ioss::SideSet         *side_set = nullptr;
 
+        bool db_has_name = false;
         {
           Ioss::SerializeIO serializeIO__(this);
 
-          bool        db_has_name = false;
-          std::string alias       = Ioss::Utils::encode_entity_name("surface", id);
+          std::string alias = Ioss::Utils::encode_entity_name("surface", id);
           if (ignore_database_names()) {
             side_set_name = alias;
           }
@@ -1693,12 +1693,18 @@ namespace Ioex {
               side_block_name = side_set_name;
             }
             else {
-              if (sid.empty()) {
-                side_block_name = Ioss::Utils::encode_entity_name(side_block_name, id);
+              if (db_has_name) {
+                side_block_name =
+                    side_set->name() + "_" + topo_or_block_name + "_" + side_topo->name();
               }
               else {
-                side_block_name += "_";
-                side_block_name += sid;
+                if (sid.empty()) {
+                  side_block_name = Ioss::Utils::encode_entity_name(side_block_name, id);
+                }
+                else {
+                  side_block_name += "_";
+                  side_block_name += sid;
+                }
               }
             }
 
