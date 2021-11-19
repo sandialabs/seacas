@@ -373,7 +373,7 @@ namespace Iovs_exodus {
         const Ioss::VariableType *var_type         = field.transformed_storage();
         Ioss::Field::BasicType    ioss_type        = field.get_type();
         std::vector<double>       temp(num_to_get);
-        ssize_t                   eb_offset  = eb->get_offset();
+        ioss_ssize_t              eb_offset  = eb->get_offset();
         int                       comp_count = var_type->component_count();
         int                       bid        = get_id(eb, &ids_);
 
@@ -394,8 +394,8 @@ namespace Iovs_exodus {
             std::string var_name = var_type->label_name(field_name, i + 1, field_suffix_separator);
             component_names.push_back(var_name);
 
-            ssize_t begin_offset = (re_im * i) + complex_comp;
-            ssize_t stride       = re_im * comp_count;
+            ioss_ssize_t begin_offset = (re_im * i) + complex_comp;
+            ioss_ssize_t stride       = re_im * comp_count;
 
             if (ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::COMPLEX) {
               this->elemMap.map_field_to_db_scalar_order(

@@ -6,6 +6,7 @@
 
 #include <generated/Iogn_GeneratedMesh.h>
 
+#include <Ioss_CodeTypes.h>
 #include <Ioss_Hex8.h>
 #include <Ioss_Pyramid5.h>
 #include <Ioss_Shell4.h>
@@ -21,7 +22,6 @@
 #include <iostream>
 #include <numeric>
 #include <string>
-#include <sys/types.h> // for ssize_t
 #include <tokenize.h>  // for tokenize
 #include <vector>      // for vector
 
@@ -1638,9 +1638,9 @@ namespace Iogn {
       // Insert face_ordinal in between each entry in elem_sides...
       // Face will be 0 for all shells...
       elem_sides.resize(2 * sideset_side_count_proc(id));
-      ssize_t face_ordinal = 0;
-      ssize_t i            = 2 * sideset_side_count_proc(id) - 1;
-      ssize_t j            = sideset_side_count_proc(id) - 1;
+      ioss_ssize_t face_ordinal = 0;
+      ioss_ssize_t i            = 2 * sideset_side_count_proc(id) - 1;
+      ioss_ssize_t j            = sideset_side_count_proc(id) - 1;
       while (i >= 0) {
         elem_sides[i--] = face_ordinal;
         elem_sides[i--] = elem_sides[j--];

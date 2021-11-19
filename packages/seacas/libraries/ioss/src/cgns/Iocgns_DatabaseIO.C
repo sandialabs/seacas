@@ -2384,7 +2384,7 @@ namespace Iocgns {
     int zone = Iocgns::Utils::get_db_zone(sb);
     int sect = sb->get_property("section").get_int();
 
-    ssize_t num_to_get = field.verify(data_size);
+    ioss_ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
       int64_t entity_count = sb->entity_count();
       if (num_to_get != entity_count) {
@@ -2479,7 +2479,7 @@ namespace Iocgns {
           if (field.get_type() == Ioss::Field::INT32) {
             int   *idata = reinterpret_cast<int *>(data);
             size_t j     = 0;
-            for (ssize_t i = 0; i < num_to_get; i++) {
+            for (ioss_ssize_t i = 0; i < num_to_get; i++) {
               idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
               idata[j++] = parent[num_to_get * 2 + i];
               SMART_ASSERT(parent[num_to_get * 1 + i] == 0);
@@ -2491,7 +2491,7 @@ namespace Iocgns {
           else {
             auto  *idata = reinterpret_cast<int64_t *>(data);
             size_t j     = 0;
-            for (ssize_t i = 0; i < num_to_get; i++) {
+            for (ioss_ssize_t i = 0; i < num_to_get; i++) {
               idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
               idata[j++] = parent[num_to_get * 2 + i];
               SMART_ASSERT(parent[num_to_get * 1 + i] == 0);
@@ -3080,7 +3080,7 @@ namespace Iocgns {
 
     int     base       = parent_block->get_property("base").get_int();
     int     zone       = Iocgns::Utils::get_db_zone(parent_block);
-    ssize_t num_to_get = field.verify(data_size);
+    ioss_ssize_t num_to_get = field.verify(data_size);
 
     if (num_to_get == 0) {
       return num_to_get;
@@ -3130,7 +3130,7 @@ namespace Iocgns {
         if (field.get_type() == Ioss::Field::INT32) {
           int   *idata = reinterpret_cast<int *>(data);
           size_t j     = 0;
-          for (ssize_t i = 0; i < num_to_get; i++) {
+          for (ioss_ssize_t i = 0; i < num_to_get; i++) {
             cgsize_t element           = elemMap.global_to_local(idata[j++]) - offset;
             parent[num_to_get * 0 + i] = element;
             parent[num_to_get * 2 + i] = idata[j++]; // side
@@ -3141,7 +3141,7 @@ namespace Iocgns {
         else {
           auto  *idata = reinterpret_cast<int64_t *>(data);
           size_t j     = 0;
-          for (ssize_t i = 0; i < num_to_get; i++) {
+          for (ioss_ssize_t i = 0; i < num_to_get; i++) {
             cgsize_t element           = elemMap.global_to_local(idata[j++]) - offset;
             parent[num_to_get * 0 + i] = element; // Element
             parent[num_to_get * 2 + i] = idata[j++];

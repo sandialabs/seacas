@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_Assembly.h>
+#include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_Region.h>
 #include <Ioss_SmartAssert.h>
@@ -616,8 +617,8 @@ namespace Ioex {
     for (const auto &block : element_blocks) {
 
       if (Ioss::Utils::block_is_omitted(block)) {
-        ssize_t min_id = block->get_offset() + 1;
-        ssize_t max_id = min_id + block->entity_count() - 1;
+        ioss_ssize_t min_id = block->get_offset() + 1;
+        ioss_ssize_t max_id = min_id + block->entity_count() - 1;
         for (size_t i = 0; i < elements.size(); i++) {
           if (min_id <= elements[i] && elements[i] <= max_id) {
             omitted     = true;

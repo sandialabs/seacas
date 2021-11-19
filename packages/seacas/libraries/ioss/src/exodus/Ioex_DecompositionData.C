@@ -485,14 +485,14 @@ namespace Ioex {
     std::vector<INT> entitylist(max_size);
     std::vector<INT> set_entities_read(set_count);
 
-    size_t  offset     = 0;        // What position are we filling in entitylist.
-    ssize_t remain     = max_size; // Amount of space left in entitylist.
-    size_t  ibeg       = 0;
-    size_t  total_read = 0;
+    size_t  offset      = 0;        // What position are we filling in entitylist.
+    ioss_ssize_t remain = max_size; // Amount of space left in entitylist.
+    size_t  ibeg        = 0;
+    size_t  total_read  = 0;
     for (size_t i = 0; i < set_count; i++) {
-      ssize_t entitys_to_read = sets[i].num_entry;
+      ioss_ssize_t entitys_to_read = sets[i].num_entry;
       do {
-        ssize_t to_read = std::min(remain, entitys_to_read);
+        ioss_ssize_t to_read = std::min(remain, entitys_to_read);
         if (m_processor == root) {
 #if IOSS_DEBUG_OUTPUT
           fmt::print(Ioss::DEBUG(), "{} {} reading {} entities from offset {}\n", set_type_name,

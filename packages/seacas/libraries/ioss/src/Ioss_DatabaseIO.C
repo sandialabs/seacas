@@ -1078,8 +1078,8 @@ namespace Ioss {
       std::vector<double> coordinates;
       Ioss::NodeBlock    *nb = get_region()->get_node_blocks()[0];
       nb->get_field_data("mesh_model_coordinates", coordinates);
-      ssize_t nnode = nb->entity_count();
-      ssize_t ndim  = nb->get_property("component_degree").get_int();
+      ioss_ssize_t nnode = nb->entity_count();
+      ioss_ssize_t ndim  = nb->get_property("component_degree").get_int();
 
       const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
       size_t                             nblock         = element_blocks.size();
@@ -1126,8 +1126,8 @@ namespace Ioss {
   {
     std::vector<double> coordinates;
     nb->get_field_data("mesh_model_coordinates", coordinates);
-    ssize_t nnode = nb->entity_count();
-    ssize_t ndim  = nb->get_property("component_degree").get_int();
+    ioss_ssize_t nnode = nb->entity_count();
+    ioss_ssize_t ndim  = nb->get_property("component_degree").get_int();
 
     double xmin, ymin, zmin, xmax, ymax, zmax;
     calc_bounding_box(ndim, nnode, coordinates, xmin, ymin, zmin, xmax, ymax, zmax);
@@ -1150,7 +1150,7 @@ namespace Ioss {
 
   AxisAlignedBoundingBox DatabaseIO::get_bounding_box(const Ioss::StructuredBlock *sb) const
   {
-    ssize_t ndim = sb->get_property("component_degree").get_int();
+    ioss_ssize_t ndim = sb->get_property("component_degree").get_int();
 
     std::pair<double, double> xx;
     std::pair<double, double> yy;

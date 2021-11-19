@@ -15,7 +15,6 @@
 #include <gen_struc/Iogs_GeneratedMesh.h>
 #include <numeric>
 #include <string>
-#include <sys/types.h> // for ssize_t
 #include <tokenize.h>  // for tokenize
 #include <vector>      // for vector
 

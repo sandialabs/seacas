@@ -20,10 +20,13 @@
 
 #if defined(__IOSS_WINDOWS__)
 #ifdef _WIN64
-#define ssize_t __int64
+#define ioss_ssize_t __int64
 #else
-#define ssize_t long
+#define ioss_ssize_t long
 #endif
+#else
+#include <sys/types.h>
+#define ioss_ssize_t ssize_t
 #endif
 
 namespace Ioss {

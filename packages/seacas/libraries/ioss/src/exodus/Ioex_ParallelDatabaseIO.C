@@ -2447,8 +2447,8 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Io
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Field &field,
                                                void *data, size_t data_size) const
 {
-  ssize_t num_to_get = field.verify(data_size);
-  int     ierr       = 0;
+  ioss_ssize_t num_to_get = field.verify(data_size);
+  int     ierr            = 0;
 
   int64_t id           = Ioex::get_id(fb, EX_SIDE_SET, &ids_);
   int64_t entity_count = fb->entity_count();
@@ -2491,14 +2491,14 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const 
         if (field.get_type() == Ioss::Field::INTEGER) {
           // Need to convert 'double' to 'int' for Sierra use...
           int *ids = static_cast<int *>(data);
-          for (ssize_t i = 0; i < num_to_get; i++) {
+          for (ioss_ssize_t i = 0; i < num_to_get; i++) {
             ids[i] = static_cast<int>(real_ids[i]);
           }
         }
         else {
           // Need to convert 'double' to 'int' for Sierra use...
           int64_t *ids = static_cast<int64_t *>(data);
-          for (ssize_t i = 0; i < num_to_get; i++) {
+          for (ioss_ssize_t i = 0; i < num_to_get; i++) {
             ids[i] = static_cast<int64_t>(real_ids[i]);
           }
         }
@@ -2623,7 +2623,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const 
                                                     element.data(), sides.data(), number_sides,
                                                     get_region());
 
-        ssize_t index = 0;
+        ioss_ssize_t index = 0;
         if (int_byte_size_api() == 4) {
           int *element_side = static_cast<int *>(data);
           int *element32    = reinterpret_cast<int *>(element.data());
@@ -2746,17 +2746,17 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const 
 int64_t ParallelDatabaseIO::write_attribute_field(ex_entity_type type, const Ioss::Field &field,
                                                   const Ioss::GroupingEntity *ge, void *data) const
 {
-  std::string att_name   = ge->name() + SEP() + field.get_name();
-  ssize_t     num_entity = ge->entity_count();
-  ssize_t     offset     = field.get_index();
+  std::string att_name    = ge->name() + SEP() + field.get_name();
+  ioss_ssize_t num_entity = ge->entity_count();
+  ioss_ssize_t offset     = field.get_index();
 
   int64_t id = Ioex::get_id(ge, type, &ids_);
   assert(offset > 0);
   assert(offset - 1 + field.raw_storage()->component_count() <=
          ge->get_property("attribute_count").get_int());
 
-  size_t  proc_offset = ge->get_optional_property("_processor_offset", 0);
-  ssize_t file_count  = ge->get_optional_property("locally_owned_count", num_entity);
+  size_t  proc_offset     = ge->get_optional_property("_processor_offset", 0);
+  ioss_ssize_t file_count = ge->get_optional_property("locally_owned_count", num_entity);
 
   Ioss::Field::BasicType ioss_type = field.get_type();
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
@@ -2852,7 +2852,7 @@ int64_t ParallelDatabaseIO::read_attribute_field(ex_entity_type type, const Ioss
   }
 
   std::string att_name = ge->name() + SEP() + field.get_name();
-  ssize_t     offset   = field.get_index();
+  ioss_ssize_t offset  = field.get_index();
   assert(offset - 1 + field.raw_storage()->component_count() <= attribute_count);
   if (offset == 1 && field.raw_storage()->component_count() == attribute_count) {
     // Read all attributes in one big chunk...
@@ -3152,8 +3152,8 @@ int64_t ParallelDatabaseIO::get_side_connectivity(const Ioss::SideBlock *fb, int
       // ensure we have correct connectivity
       block = get_region()->get_element_block(elem_id);
       if (conn_block != block) {
-        ssize_t nelem = block->entity_count();
-        nelnode       = block->topology()->number_nodes();
+        ioss_ssize_t nelem = block->entity_count();
+        nelnode            = block->topology()->number_nodes();
         // Used to map element number into position in connectivity array.
         // E.g., element 97 is the (97-offset)th element in this block and
         // is stored in array index (97-offset-1).
@@ -3285,7 +3285,7 @@ int64_t ParallelDatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, in
       if (value == 0.0) {
         value = 1.0; // Take care of some buggy mesh generators
       }
-      for (ssize_t j = 0; j < my_side_count * nfnodes; j++) {
+      for (ioss_ssize_t j = 0; j < my_side_count * nfnodes; j++) {
         dist_fact[j] = value;
       }
       return 0;
@@ -4172,8 +4172,8 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
   int step = get_current_state();
   step     = get_database_step(step);
 
-  Ioss::Map *map       = nullptr;
-  ssize_t    eb_offset = 0;
+  Ioss::Map *map         = nullptr;
+  ioss_ssize_t eb_offset = 0;
   if (ge->type() == Ioss::ELEMENTBLOCK) {
     const Ioss::ElementBlock *elb = dynamic_cast<const Ioss::ElementBlock *>(ge);
     Ioss::Utils::check_dynamic_cast(elb);
@@ -4230,8 +4230,8 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
       // beg_offset = (re_im*i)+complex_comp
       // number_values = count
       // stride = re_im*comp_count
-      ssize_t begin_offset = (re_im * i) + complex_comp;
-      ssize_t stride       = re_im * comp_count;
+      ioss_ssize_t begin_offset = (re_im * i) + complex_comp;
+      ioss_ssize_t stride       = re_im * comp_count;
 
       if (ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::COMPLEX) {
         map->map_field_to_db_scalar_order(static_cast<double *>(variables), temp, begin_offset,
