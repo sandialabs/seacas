@@ -486,7 +486,7 @@ namespace Ioex {
     std::vector<INT> set_entities_read(set_count);
 
     size_t offset     = 0;        // What position are we filling in entitylist.
-    size_t remain     = max_size; // Amount of space left in entitylist.
+    int64_t remain     = max_size; // Amount of space left in entitylist.
     size_t ibeg       = 0;
     size_t total_read = 0;
     for (size_t i = 0; i < set_count; i++) {

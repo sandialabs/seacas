@@ -2498,7 +2498,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const 
         else {
           // Need to convert 'double' to 'int' for Sierra use...
           int64_t *ids = static_cast<int64_t *>(data);
-          for (int_t i = 0; i < num_to_get; i++) {
+          for (int64_t i = 0; i < num_to_get; i++) {
             ids[i] = static_cast<int64_t>(real_ids[i]);
           }
         }
