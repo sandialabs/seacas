@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -98,7 +98,7 @@ private:
   bool zlib_{true};
   bool szip_{false};
 
-  std::string blockPrefix_{std::string("p")};
+  std::string blockPrefix_{"p"};
 
   vector3d offset_;
   double   tolerance_{0.0};
