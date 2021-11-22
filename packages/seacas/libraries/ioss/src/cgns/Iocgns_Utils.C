@@ -943,8 +943,7 @@ void Iocgns::Utils::write_state_meta_data(int file_ptr, const Ioss::Region &regi
     size[1]                    = eb->get_property("zone_element_count").get_int();
     size[0]                    = eb->get_property("zone_node_count").get_int();
 
-    if (is_parallel_io) {
-    }
+    if (is_parallel_io) {}
 
     CGERR(cg_zone_write(file_ptr, base, name.c_str(), size, CGNS_ENUMV(Unstructured), &db_zone));
     int prev_db_zone = get_db_zone(eb);
@@ -1731,8 +1730,8 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
     num_total_cell_nodes += node_count;
   }
 
-  ssize_t              ss_max = std::numeric_limits<ssize_t>::max();
-  std::vector<ssize_t> cell_node_map(num_total_cell_nodes, ss_max);
+  int64_t              ss_max = std::numeric_limits<int64_t>::max();
+  std::vector<int64_t> cell_node_map(num_total_cell_nodes, ss_max);
 
   // Each cell_node location in the cell_node_map is currently initialized to ss_max.
   // Iterate each block and then each blocks non-intra-block (i.e., not
@@ -1763,8 +1762,8 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
               // the owner (unless it is already owned by another
               // block)
 
-              ssize_t owner_global_offset = owner_block->get_global_node_offset(owner_index);
-              ssize_t donor_global_offset = donor_block->get_global_node_offset(donor_index);
+              int64_t owner_global_offset = owner_block->get_global_node_offset(owner_index);
+              int64_t donor_global_offset = donor_block->get_global_node_offset(donor_index);
 
               if (owner_global_offset > donor_global_offset) {
                 if (is_parallel && (zgc.m_donorProcessor != my_processor)) {
@@ -1775,7 +1774,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
                 }
                 else if (!is_parallel || (zgc.m_ownerProcessor != my_processor)) {
                   size_t  owner_local_offset = owner_block->get_local_node_offset(owner_index);
-                  ssize_t donor_local_offset = donor_block->get_local_node_offset(donor_index);
+                  int64_t donor_local_offset = donor_block->get_local_node_offset(donor_index);
 
                   if (cell_node_map[owner_local_offset] == ss_max) {
                     cell_node_map[owner_local_offset] = donor_local_offset;
@@ -1868,11 +1867,11 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
               // should refer to the same node.
 
               if (my_processor == zgc.m_ownerProcessor) {
-                ssize_t owner_offset = owner_block->get_block_local_node_offset(owner_index);
+                int64_t owner_offset = owner_block->get_block_local_node_offset(owner_index);
                 shared_nodes[owner_zone].emplace_back(owner_offset, zgc.m_donorProcessor);
               }
               else if (my_processor == zgc.m_donorProcessor) {
-                ssize_t donor_offset = donor_block->get_block_local_node_offset(donor_index);
+                int64_t donor_offset = donor_block->get_block_local_node_offset(donor_index);
                 shared_nodes[donor_zone].emplace_back(donor_offset, zgc.m_ownerProcessor);
               }
             }

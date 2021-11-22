@@ -20,8 +20,7 @@
 #include <cstdlib> // for free, malloc
 #include <cstring> // for strchr, strlen
 #include <fmt/format.h>
-#include <sys/types.h> // for ssize_t
-#include <vector>      // for vector
+#include <vector> // for vector
 
 /*****************************************************************************/
 namespace {
@@ -270,7 +269,7 @@ namespace {
        in the grp array. */
 
     const char *p = d;
-    ssize_t     i;        /* integer read from string */
+    int         i;        /* integer read from string */
     int         last = 0; /* last integer read */
     int         stop;     /* stop value in a string range */
     int         q;        /* number of ints read */
@@ -278,11 +277,7 @@ namespace {
     int         c;        /* integer index when spanning a range */
 
     while (*p != '/' && *p != 0) {
-#ifdef _MSC_VER
-      q = sscanf(p, "%lld%n", &i, &qn);
-#else
-      q = sscanf(p, "%ld%n", &i, &qn);
-#endif
+      q = sscanf(p, "%d%n", &i, &qn);
       if (q == 0 || i < 0) {
         if (p[qn - 1] == '/') {
           return;

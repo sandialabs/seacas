@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(
 
 SET(SOURCES
   add_to_log.c
-  getline.c
+  sl_getline.c
   adler.c
   copy_string.c
   open_file_limit.c

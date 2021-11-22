@@ -2384,7 +2384,7 @@ namespace Iocgns {
     int zone = Iocgns::Utils::get_db_zone(sb);
     int sect = sb->get_property("section").get_int();
 
-    ssize_t num_to_get = field.verify(data_size);
+    int64_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
       int64_t entity_count = sb->entity_count();
       if (num_to_get != entity_count) {
@@ -2436,7 +2436,7 @@ namespace Iocgns {
           int                num_corner_nodes = sb->topology()->number_corner_nodes();
           SMART_ASSERT(num_corner_nodes == 3 || num_corner_nodes == 4)(num_corner_nodes);
 
-          for (int iface = 0; iface < num_to_get; iface++) {
+          for (int64_t iface = 0; iface < num_to_get; iface++) {
             std::array<size_t, 4> conn = {{0, 0, 0, 0}};
 
             for (int i = 0; i < num_corner_nodes; i++) {
@@ -2479,7 +2479,7 @@ namespace Iocgns {
           if (field.get_type() == Ioss::Field::INT32) {
             int   *idata = reinterpret_cast<int *>(data);
             size_t j     = 0;
-            for (ssize_t i = 0; i < num_to_get; i++) {
+            for (int64_t i = 0; i < num_to_get; i++) {
               idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
               idata[j++] = parent[num_to_get * 2 + i];
               SMART_ASSERT(parent[num_to_get * 1 + i] == 0);
@@ -2491,7 +2491,7 @@ namespace Iocgns {
           else {
             auto  *idata = reinterpret_cast<int64_t *>(data);
             size_t j     = 0;
-            for (ssize_t i = 0; i < num_to_get; i++) {
+            for (int64_t i = 0; i < num_to_get; i++) {
               idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
               idata[j++] = parent[num_to_get * 2 + i];
               SMART_ASSERT(parent[num_to_get * 1 + i] == 0);
@@ -3078,9 +3078,9 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    int     base       = parent_block->get_property("base").get_int();
-    int     zone       = Iocgns::Utils::get_db_zone(parent_block);
-    ssize_t num_to_get = field.verify(data_size);
+    int  base       = parent_block->get_property("base").get_int();
+    int  zone       = Iocgns::Utils::get_db_zone(parent_block);
+    auto num_to_get = field.verify(data_size);
 
     if (num_to_get == 0) {
       return num_to_get;
@@ -3130,7 +3130,7 @@ namespace Iocgns {
         if (field.get_type() == Ioss::Field::INT32) {
           int   *idata = reinterpret_cast<int *>(data);
           size_t j     = 0;
-          for (ssize_t i = 0; i < num_to_get; i++) {
+          for (size_t i = 0; i < num_to_get; i++) {
             cgsize_t element           = elemMap.global_to_local(idata[j++]) - offset;
             parent[num_to_get * 0 + i] = element;
             parent[num_to_get * 2 + i] = idata[j++]; // side
@@ -3141,7 +3141,7 @@ namespace Iocgns {
         else {
           auto  *idata = reinterpret_cast<int64_t *>(data);
           size_t j     = 0;
-          for (ssize_t i = 0; i < num_to_get; i++) {
+          for (size_t i = 0; i < num_to_get; i++) {
             cgsize_t element           = elemMap.global_to_local(idata[j++]) - offset;
             parent[num_to_get * 0 + i] = element; // Element
             parent[num_to_get * 2 + i] = idata[j++];

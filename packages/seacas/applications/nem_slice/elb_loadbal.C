@@ -1067,8 +1067,8 @@ namespace {
 
         rows[0] = 1;
         for (size_t ecnt = 1; ecnt < mesh->num_elems; ecnt++) {
-          ssize_t distance = graph->start[ecnt] - graph->start[ecnt - 1] + 1;
-          rows[ecnt]       = rows[ecnt - 1] + distance;
+          auto distance = graph->start[ecnt] - graph->start[ecnt - 1] + 1;
+          rows[ecnt]    = rows[ecnt - 1] + distance;
         }
         rows[nrow]              = graph->nadj + mesh->num_elems + 1;
         size_t           nedges = rows[nrow] - 1;
@@ -1985,8 +1985,9 @@ namespace {
      */
     time1 = get_time();
     for (INT pcnt = 1; pcnt < machine->num_procs; pcnt++) {
-      int              save_fv1 = 0;
-      ssize_t          size  = lb->e_cmap_procs[pcnt].size(); /* Define shortcuts size and procs */
+      int     save_fv1 = 0;
+      int64_t size =
+          static_cast<int64_t>(lb->e_cmap_procs[pcnt].size()); /* Define shortcuts size and procs */
       std::vector<INT> procs = lb->e_cmap_procs[pcnt];
 
       INT fv1 = -1;
@@ -2004,7 +2005,7 @@ namespace {
          * If not found, value is -1; else search for !pcnt2 from
          * that point forward.
          */
-        ssize_t i = save_fv1;
+        int64_t i = save_fv1;
         while (i < size && procs[i] < pcnt2) {
           i++;
         }

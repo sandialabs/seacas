@@ -1520,8 +1520,8 @@ namespace Ioss {
       if (old_ge != nullptr && ge != old_ge) {
         if (!((old_ge->type() == SIDEBLOCK && ge->type() == SIDESET) ||
               (ge->type() == SIDEBLOCK && old_ge->type() == SIDESET))) {
-          ssize_t            old_id = old_ge->get_optional_property(id_str(), -1);
-          ssize_t            new_id = ge->get_optional_property(id_str(), -1);
+          auto               old_id = old_ge->get_optional_property(id_str(), -1);
+          auto               new_id = ge->get_optional_property(id_str(), -1);
           std::ostringstream errmsg;
           fmt::print(errmsg,
                      "\n\nERROR: Duplicate names detected.\n"

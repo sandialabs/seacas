@@ -32,17 +32,8 @@
 #include <stddef.h> // for size_t
 #include <stdio.h>  // for NULL, FILE, feof, fgetc, etc
 #include <stdlib.h> // for malloc, realloc
-#include <unistd.h> // for ssize_t
 
-#if defined(_MSC_VER)
-#ifdef _WIN64
-#define ssize_t __int64
-#else
-#define ssize_t long
-#endif
-#endif
-
-ssize_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp)
+int sl_getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp)
 {
   char *ptr, *eptr;
 
@@ -67,9 +58,9 @@ ssize_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp)
       return ptr - *buf;
     }
     if (ptr + 2 >= eptr) {
-      char *  nbuf;
-      size_t  nbufsiz = *bufsiz * 2;
-      ssize_t d       = ptr - *buf;
+      char  *nbuf;
+      size_t nbufsiz = *bufsiz * 2;
+      int    d       = ptr - *buf;
       if ((nbuf = realloc(*buf, nbufsiz)) == NULL) {
         return -1;
       }
@@ -81,16 +72,16 @@ ssize_t getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp)
   }
 }
 
-ssize_t getline(char **buf, size_t *bufsiz, FILE *fp) { return getdelim(buf, bufsiz, '\n', fp); }
+int sl_getline(char **buf, size_t *bufsiz, FILE *fp) { return getdelim(buf, bufsiz, '\n', fp); }
 
 #ifdef TEST
 int main(int argc, char *argv[])
 {
-  char *  p = NULL;
-  ssize_t len;
-  size_t  n = 0;
+  char  *p = NULL;
+  int    len;
+  size_t n = 0;
 
-  while ((len = getline(&p, &n, stdin)) != -1) {
+  while ((len = sl_getline(&p, &n, stdin)) != -1) {
     printf("%zd %s", len, p);
   }
   free(p);

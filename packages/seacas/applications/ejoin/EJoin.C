@@ -670,8 +670,8 @@ namespace {
         std::vector<INT> nodelist;
         nb->get_field_data("ids", nodelist);
         for (auto &node : nodelist) {
-          size_t  loc_node = part_mesh[p]->node_global_to_local(node, true) - 1;
-          ssize_t gpos     = local_node_map[node_offset + loc_node];
+          size_t loc_node = part_mesh[p]->node_global_to_local(node, true) - 1;
+          auto   gpos     = local_node_map[node_offset + loc_node];
           if (gpos >= 0) {
             node = gpos + 1;
           }
@@ -795,7 +795,7 @@ namespace {
       size_t node_count = nb->entity_count();
       size_t offset     = pm->get_property("node_offset").get_int();
       for (size_t i = 0; i < node_count; i++) {
-        ssize_t glob_pos = local_node_map[i + offset];
+        auto glob_pos = local_node_map[i + offset];
         if (glob_pos >= 0) {
           coord[glob_pos * spatial_dimension + 0] = coordinates[i * spatial_dimension + 0];
           coord[glob_pos * spatial_dimension + 1] = coordinates[i * spatial_dimension + 1];
@@ -860,7 +860,7 @@ namespace {
             // list
             size_t loc_node = node - 1;
             SMART_ASSERT(node_offset + loc_node < local_node_map.size());
-            ssize_t gpos = local_node_map[node_offset + loc_node];
+            auto gpos = local_node_map[node_offset + loc_node];
             if (gpos >= 0) {
               node = gpos + 1;
             }
@@ -899,8 +899,8 @@ namespace {
 
           // This needs to make sure that the nodelist comes back as local id (1..numnodes)
           for (auto &node : nodelist) {
-            size_t  loc_node = pm->node_global_to_local(node, true) - 1;
-            ssize_t gpos     = local_node_map[node_offset + loc_node];
+            size_t loc_node = pm->node_global_to_local(node, true) - 1;
+            auto   gpos     = local_node_map[node_offset + loc_node];
             if (gpos >= 0) {
               node = gpos + 1;
             }
@@ -955,8 +955,8 @@ namespace {
             // output region...
             for (size_t i = 0; i < elem_side_list.size();
                  i += 2) { // just get the elem part of the pair...
-              size_t  local_position = elem_side_list[i] - 1;
-              ssize_t gpos           = local_element_map[element_offset + local_position];
+              size_t local_position = elem_side_list[i] - 1;
+              auto   gpos           = local_element_map[element_offset + local_position];
               SMART_ASSERT(gpos >= 0)(gpos)(i); // Inactive elements should be filtered by Ioss
               elem_side_list[i] = gpos + 1;
             }
@@ -1008,7 +1008,7 @@ namespace {
             size_t nc = nb->entity_count();
             SMART_ASSERT(loc_data.size() == nc * comp_count);
             for (size_t i = 0; i < nc; i++) {
-              ssize_t glob_pos = local_node_map[offset + i];
+              auto glob_pos = local_node_map[offset + i];
               if (glob_pos >= 0) {
                 for (size_t j = 0; j < comp_count; j++) {
                   data[glob_pos * comp_count + j] = loc_data[i * comp_count + j];
