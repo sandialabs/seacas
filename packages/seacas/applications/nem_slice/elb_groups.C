@@ -43,8 +43,8 @@ extern int ilog2i(size_t n);
  *
  * the group designator prob->groups follows these rules:
  *  - Blocks are grouped using the slash "/" character.
- *  - Ids are separated with white space, comma, or by the hyphen "-" character. *  - Any blocks not
- *included in the list, are added to a separate group.
+ *  - Ids are separated with white space, comma, or by the hyphen "-" character.
+ *  - Any blocks not included in the list, are added to a separate group.
  *  - Duplicates in the list are permitted, but the last group to which a
  *    block is placed is where the block will go.
  *  - Block IDs not in the exodus file are quietly ignored.
