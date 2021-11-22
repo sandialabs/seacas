@@ -267,17 +267,15 @@ namespace {
     /* reads the descriptor up to the next "/" character. interprets the
        descriptor. The ranges specified in the descriptor are then stored
        in the grp array. */
+    int i;
+    int last = 0; /* last integer read */
+    int stop;     /* stop value in a string range */
+    int qn;       /* number of bytes read */
+    int c;        /* integer index when spanning a range */
 
     const char *p = d;
-    int         i;        /* integer read from string */
-    int         last = 0; /* last integer read */
-    int         stop;     /* stop value in a string range */
-    int         q;        /* number of ints read */
-    int         qn;       /* number of bytes read */
-    int         c;        /* integer index when spanning a range */
-
     while (*p != '/' && *p != 0) {
-      q = sscanf(p, "%d%n", &i, &qn);
+      int q = sscanf(p, "%d%n", &i, &qn);
       if (q == 0 || i < 0) {
         if (p[qn - 1] == '/') {
           return;
