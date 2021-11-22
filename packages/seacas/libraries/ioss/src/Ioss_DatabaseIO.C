@@ -192,6 +192,13 @@ namespace Ioss {
       fieldSeparator  = tmp[0];
     }
 
+    // If `FIELD_SUFFIX_SEPARATOR` is empty and there are fields that
+    // end with an underscore, then strip the underscore. This will
+    // cause d_x, d_y, d_z to be a 3-component field 'd' and vx, vy,
+    // vz to be a 3-component field 'v'.
+    Utils::check_set_bool_property(properties, "FIELD_STRIP_TRAILING_UNDERSCORE",
+                                   fieldStripTrailing_);
+
     if (properties.exists("INTEGER_SIZE_API")) {
       int isize = properties.get("INTEGER_SIZE_API").get_int();
       if (isize == 8) {
