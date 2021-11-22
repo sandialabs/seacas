@@ -105,6 +105,16 @@ then
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
 
+  if [ "$COMPILER" == "clangmacport" ]
+  then
+      VER=${VER:-7}
+      CXX=clang++-mp-${VER}.0
+      CC=clang-mp-${VER}.0
+      FC=gfortran
+      CFLAGS="-Wall -Wunused -pedantic -std=c11"
+      CXXFLAGS="-Wall -Wunused -pedantic"
+  fi
+
   if [ "$COMPILER" == "nvidia" ]
   then
       CXX="nvcc -x c++"
