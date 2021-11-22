@@ -217,10 +217,8 @@ namespace Ioss {
     if (static_cast<int>(suffices.size()) == suffix_count()) {
       for (int i = 0; i < suffix_count(); i++) {
         if (suffices[i] != label(i + 1)) {
-          if (!Ioss::Utils::str_equal(suffices[i].m_data, label(i + 1))) {
-            result = false;
-            break;
-          }
+          result = false;
+          break;
         }
       }
     }
