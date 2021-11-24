@@ -514,10 +514,6 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
   assert(input_region_1.property_exists("state_count") ==
          input_region_2.property_exists("state_count"));
 
-  // This should have already been checked
-  assert(input_region_1.get_property("state_count").get_int() ==
-         input_region_2.get_property("state_count").get_int());
-
   if (input_region_1.property_exists("state_count") &&
       input_region_1.get_property("state_count").get_int() > 0) {
 
@@ -696,20 +692,19 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
     }
 
     int in_step_count_1 = input_region_1.get_property("state_count").get_int();
-
-    // This should have already been checked
-    assert(in_step_count_1 == input_region_2.get_property("state_count").get_int());
+    int in_step_count_2 = input_region_2.get_property("state_count").get_int();
 
     for (int istep = 1; istep <= in_step_count_1; istep++) {
       double in_time_1 = input_region_1.get_state_time(istep);
-
-      // This should have already been checked
-      assert(in_time_1 == input_region_2.get_state_time(istep));
 
       if (in_time_1 < options.minimum_time) {
         continue;
       }
       if (in_time_1 > options.maximum_time) {
+        break;
+      }
+
+      if (istep > in_step_count_2) {
         break;
       }
 
@@ -1450,8 +1445,10 @@ namespace {
         continue;
       }
       if (Ioss::Utils::substr_equal(prefix, field_name)) {
-        assert(ige_2->field_exists(field_name));
-        overall_result &= compare_field_data_internal(ige_1, ige_2, pool, field_name, options, buf);
+        if (ige_2->field_exists(field_name)) {
+          overall_result &=
+              compare_field_data_internal(ige_1, ige_2, pool, field_name, options, buf);
+        }
       }
     }
 
