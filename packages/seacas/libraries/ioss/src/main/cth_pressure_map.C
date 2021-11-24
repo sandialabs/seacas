@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -313,11 +313,10 @@ namespace {
     }
     std::cerr << "...or: " << prog << " command_file\n";
     std::cerr << "       version: " << version << "\n";
-    Ioss::NameList db_types;
-    Ioss::IOFactory::describe(&db_types);
+    Ioss::NameList db_types = Ioss::IOFactory::describe();
     std::cerr << "\nSupports database types:\n\t";
-    for (Ioss::NameList::const_iterator IF = db_types.begin(); IF != db_types.end(); ++IF) {
-      std::cerr << *IF << "  ";
+    for (const auto &db : db_types) {
+      std::cerr << db << "  ";
     }
     std::cerr << "\n\n";
   }
@@ -763,8 +762,7 @@ namespace {
                        Ioss::Field::RoleType role, const std::string &prefix)
   {
     // Check for transient fields...
-    Ioss::NameList fields;
-    ige->field_describe(role, &fields);
+    Ioss::NameList fields = ige->field_describe(role);
 
     // Iterate through results fields and transfer to output
     // database...  If a prefix is specified, only transfer fields
@@ -787,9 +785,9 @@ namespace {
   {
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
-    Ioss::NameList                 state_fields;
+    Ioss::NameList state_fields = ige->field_describe(role);
+
     Ioss::NameList::const_iterator IF;
-    ige->field_describe(role, &state_fields);
 
     // Complication here is that if the 'role' is 'Ioss::Field::MESH',
     // then the 'ids' field must be transferred first...
@@ -866,8 +864,7 @@ namespace {
 
   void transfer_properties(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge)
   {
-    Ioss::NameList names;
-    ige->property_describe(&names);
+    Ioss::NameList names = ige->property_describe();
 
     // Iterate through properties and transfer to output database...
     Ioss::NameList::const_iterator I;
@@ -1015,9 +1012,8 @@ namespace {
           std::exit(EXIT_FAILURE);
         }
 
-        Ioss::NameList                 state_fields;
+        Ioss::NameList                 state_fields = (*i)->field_describe(Ioss::Field::TRANSIENT);
         Ioss::NameList::const_iterator IF;
-        (*i)->field_describe(Ioss::Field::TRANSIENT, &state_fields);
 
         for (IF = state_fields.begin(); IF != state_fields.end(); ++IF) {
           std::string field_name = *IF;
@@ -1067,9 +1063,8 @@ namespace {
           std::exit(EXIT_FAILURE);
         }
 
-        Ioss::NameList                 state_fields;
+        Ioss::NameList                 state_fields = (*i)->field_describe(Ioss::Field::TRANSIENT);
         Ioss::NameList::const_iterator IF;
-        (*i)->field_describe(Ioss::Field::TRANSIENT, &state_fields);
 
         for (IF = state_fields.begin(); IF != state_fields.end(); ++IF) {
           std::string field_name = *IF;
@@ -1154,9 +1149,8 @@ namespace {
           throw std::runtime_error(msg.str());
         }
 
-        Ioss::NameList                 state_fields;
+        Ioss::NameList                 state_fields = (*i)->field_describe(Ioss::Field::TRANSIENT);
         Ioss::NameList::const_iterator IF;
-        (*i)->field_describe(Ioss::Field::TRANSIENT, &state_fields);
 
         for (IF = state_fields.begin(); IF != state_fields.end(); ++IF) {
           std::string field_name = *IF;

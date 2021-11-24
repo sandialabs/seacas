@@ -902,11 +902,8 @@ namespace {
   {
     bool overall_result = true;
 
-    Ioss::NameList ige_properties_1;
-    ige_1->property_describe(&ige_properties_1);
-
-    Ioss::NameList ige_properties_2;
-    ige_2->property_describe(&ige_properties_2);
+    Ioss::NameList ige_properties_1 = ige_1->property_describe();
+    Ioss::NameList ige_properties_2 = ige_2->property_describe();
 
     for (const auto &property : ige_properties_1) {
       if (!ige_2->property_exists(property)) {
@@ -955,8 +952,10 @@ namespace {
   {
     bool overall_result = true;
 
-    std::vector<std::string> in_information_records_1 = input_region_1.get_information_records();
-    std::vector<std::string> in_information_records_2 = input_region_2.get_information_records();
+    const std::vector<std::string> &in_information_records_1 =
+        input_region_1.get_information_records();
+    const std::vector<std::string> &in_information_records_2 =
+        input_region_2.get_information_records();
 
     if (in_information_records_1.size() != in_information_records_2.size()) {
       fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "INFORMATION RECORD",
@@ -1021,8 +1020,8 @@ namespace {
   {
     bool overall_result = true;
 
-    Ioss::NodeBlockContainer in_nbs_1 = input_region_1.get_node_blocks();
-    Ioss::NodeBlockContainer in_nbs_2 = input_region_2.get_node_blocks();
+    const Ioss::NodeBlockContainer &in_nbs_1 = input_region_1.get_node_blocks();
+    const Ioss::NodeBlockContainer &in_nbs_2 = input_region_2.get_node_blocks();
 
     if (in_nbs_1.size() != in_nbs_2.size()) {
       fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "NODEBLOCK", in_nbs_1.size(), in_nbs_2.size());
@@ -1341,11 +1340,8 @@ namespace {
                       const Ioss::Field::RoleType role, std::ostringstream &buf)
   {
     // Check for transient fields...
-    Ioss::NameList in_fields_1;
-    ige_1->field_describe(role, &in_fields_1);
-
-    Ioss::NameList in_fields_2;
-    ige_2->field_describe(role, &in_fields_2);
+    Ioss::NameList in_fields_1 = ige_1->field_describe(role);
+    Ioss::NameList in_fields_2 = ige_2->field_describe(role);
 
     if (in_fields_1.size() != in_fields_2.size()) {
       fmt::print(Ioss::WARNING(), COUNT_MISMATCH, "FIELD", in_fields_1.size(), in_fields_2.size());
@@ -1411,26 +1407,8 @@ namespace {
 
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
-    Ioss::NameList in_state_fields_1;
-    Ioss::NameList in_state_fields_2;
-
-    ige_1->field_describe(role, &in_state_fields_1);
-    ige_2->field_describe(role, &in_state_fields_2);
-
-    // Complication here is that if the 'role' is 'Ioss::Field::MESH',
-    // then the 'ids' field must be transferred first...
-    if (ige_1->field_exists("ids") != ige_2->field_exists("ids")) {
-      fmt::print(buf,
-                 "FIELD data: field MISMATCH --> "
-                 "ige_1->field_exists(\"ids\") = {} / ige_2->field_exists(\"ids\") = {}\n",
-                 ige_1->field_exists("ids"), ige_2->field_exists("ids"));
-      return false;
-    }
-
-    if (role == Ioss::Field::MESH && ige_1->field_exists("ids")) {
-      assert(ige_2->field_exists("ids"));
-      overall_result &= compare_field_data_internal(ige_1, ige_2, pool, "ids", options, buf);
-    }
+    Ioss::NameList in_state_fields_1 = ige_1->field_describe(role);
+    Ioss::NameList in_state_fields_2 = ige_2->field_describe(role);
 
     for (const auto &field_name : in_state_fields_1) {
       // All of the 'Ioss::EntityBlock' derived classes have a
@@ -1439,9 +1417,6 @@ namespace {
       // generates overhead...
       if (field_name == "connectivity" && ige_1->type() != Ioss::ELEMENTBLOCK) {
         assert(ige_2->type() != Ioss::ELEMENTBLOCK);
-        continue;
-      }
-      if (field_name == "ids") {
         continue;
       }
       if (Ioss::Utils::substr_equal(prefix, field_name)) {

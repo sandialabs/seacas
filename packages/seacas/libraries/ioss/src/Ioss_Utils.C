@@ -1351,8 +1351,7 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
 void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
                               const std::string &header, const std::string &suffix)
 {
-  Ioss::NameList fields;
-  ige->field_describe(role, &fields);
+  Ioss::NameList fields = ige->field_describe(role);
 
   if (fields.empty()) {
     return;
@@ -1396,8 +1395,7 @@ void Ioss::Utils::info_property(const Ioss::GroupingEntity *ige, Ioss::Property:
                                 const std::string &header, const std::string &suffix,
                                 bool print_empty)
 {
-  Ioss::NameList properties;
-  ige->property_describe(origin, &properties);
+  Ioss::NameList properties = ige->property_describe(origin);
 
   if (properties.empty()) {
     if (print_empty && !header.empty()) {

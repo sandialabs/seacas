@@ -978,8 +978,7 @@ namespace Ioex {
       size_t offset = 0;
       for (const auto &block : blocks) {
         // Get names of all transient and reduction fields...
-        Ioss::NameList results_fields;
-        block->field_describe(Ioss::Field::TRANSIENT, &results_fields);
+        Ioss::NameList results_fields = block->field_describe(Ioss::Field::TRANSIENT);
         block->field_describe(Ioss::Field::REDUCTION, &results_fields);
 
         for (const auto &fn : results_fields) {
@@ -1842,8 +1841,7 @@ namespace Ioex {
         }
 
         // Get names of all transient and reduction fields...
-        Ioss::NameList results_fields;
-        block->field_describe(Ioss::Field::TRANSIENT, &results_fields);
+        Ioss::NameList results_fields = block->field_describe(Ioss::Field::TRANSIENT);
         block->field_describe(Ioss::Field::REDUCTION, &results_fields);
 
         for (const auto &fn : results_fields) {
@@ -2598,8 +2596,7 @@ namespace {
         std::vector<std::string> names_str(attribute_count);
 
         // Get the attribute fields...
-        Ioss::NameList results_fields;
-        ge->field_describe(Ioss::Field::ATTRIBUTE, &results_fields);
+        Ioss::NameList results_fields = ge->field_describe(Ioss::Field::ATTRIBUTE);
 
         for (const auto &field_name : results_fields) {
           const Ioss::Field &field = ge->get_fieldref(field_name);
@@ -2641,8 +2638,7 @@ namespace {
     std::vector<int> attributes(attribute_count + 1);
 
     // Get the attribute fields...
-    Ioss::NameList results_fields;
-    block->field_describe(Ioss::Field::ATTRIBUTE, &results_fields);
+    Ioss::NameList results_fields = block->field_describe(Ioss::Field::ATTRIBUTE);
 
     bool all_attributes_indexed  = true;
     bool some_attributes_indexed = false;

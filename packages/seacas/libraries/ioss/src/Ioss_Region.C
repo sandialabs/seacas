@@ -2576,8 +2576,7 @@ namespace Ioss {
               // not name... (typically, element blocks only)
               size_t count = this_ge->entity_count();
 
-              Ioss::NameList attr_fields;
-              ge->field_describe(Ioss::Field::ATTRIBUTE, &attr_fields);
+              Ioss::NameList attr_fields = ge->field_describe(Ioss::Field::ATTRIBUTE);
               for (auto &field_name : attr_fields) {
                 const Ioss::Field &field = ge->get_fieldref(field_name);
                 if (this_ge->field_exists(field_name)) {

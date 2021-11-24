@@ -257,8 +257,7 @@ int64_t Ioss::GroupingEntity::put_field_data(const std::string &field_name, void
 size_t Ioss::GroupingEntity::field_count(Ioss::Field::RoleType role) const
 {
   IOSS_FUNC_ENTER(m_);
-  Ioss::NameList names;
-  fields.describe(role, &names);
+  Ioss::NameList names = field_describe(role);
   return names.size();
 }
 
@@ -270,8 +269,7 @@ void Ioss::GroupingEntity::count_attributes() const
 
   // If the set has a field named "attribute", then the number of
   // attributes is equal to the component count of that field...
-  NameList results_fields;
-  field_describe(Ioss::Field::ATTRIBUTE, &results_fields);
+  Ioss::NameList results_fields = field_describe(Ioss::Field::ATTRIBUTE);
 
   Ioss::NameList::const_iterator IF;
   int64_t                        attribute_count = 0;
@@ -371,9 +369,8 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
   }
 
   /* COMPARE properties */
-  Ioss::NameList lhs_properties, rhs_properties;
-  this->properties.describe(&lhs_properties);
-  rhs.properties.describe(&rhs_properties);
+  Ioss::NameList lhs_properties = this->property_describe();
+  Ioss::NameList rhs_properties = rhs.property_describe();
 
   if (lhs_properties.size() != rhs_properties.size()) {
     if (!quiet) {
@@ -426,9 +423,8 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
   }
 
   /* COMPARE fields */
-  Ioss::NameList lhs_fields, rhs_fields;
-  this->fields.describe(&lhs_fields);
-  rhs.fields.describe(&rhs_fields);
+  Ioss::NameList lhs_fields = this->field_describe();
+  Ioss::NameList rhs_fields = rhs.field_describe();
 
   bool the_same = true;
   if (lhs_fields.size() != rhs_fields.size()) {

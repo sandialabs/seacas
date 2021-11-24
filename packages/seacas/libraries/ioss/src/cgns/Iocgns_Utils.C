@@ -303,9 +303,8 @@ namespace {
 
     size_t offset = 0;
     for (size_t i = 0; i < sblocks.size(); i++) {
-      const auto    &block = sblocks[i];
-      Ioss::NameList fields;
-      block->field_describe(Ioss::Field::TRANSIENT, &fields);
+      const auto    &block  = sblocks[i];
+      Ioss::NameList fields = block->field_describe(Ioss::Field::TRANSIENT);
       if (!fields.empty()) {
         for (const auto &field_name : fields) {
           const Ioss::Field &field = block->get_fieldref(field_name);

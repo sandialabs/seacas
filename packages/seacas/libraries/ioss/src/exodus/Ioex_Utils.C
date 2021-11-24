@@ -712,8 +712,7 @@ namespace Ioex {
 
   void write_reduction_attributes(int exoid, const Ioss::GroupingEntity *ge)
   {
-    Ioss::NameList properties;
-    ge->property_describe(Ioss::Property::Origin::ATTRIBUTE, &properties);
+    Ioss::NameList properties = ge->property_describe(Ioss::Property::Origin::ATTRIBUTE);
 
     auto type = Ioex::map_exodus_type(ge->type());
     auto id   = ge->get_optional_property("id", 0);
