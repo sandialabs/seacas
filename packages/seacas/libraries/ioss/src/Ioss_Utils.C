@@ -390,8 +390,7 @@ namespace {
 
     char suffix[2] = {suffix_separator, '\0'};
 
-    std::vector<std::string> tokens =
-        Ioss::tokenize(names[which_names[which_names.size() - 1]], suffix);
+    std::vector<std::string> tokens = Ioss::tokenize(names[which_names.back()], suffix);
 
     if (tokens.size() <= 2) {
       return nullptr;
@@ -400,7 +399,7 @@ namespace {
     assert(tokens.size() > 2);
 
     // Check that suffix is a number -- all digits
-    int N = Ioss::Utils::get_number(tokens[tokens.size() - 1]);
+    int N = Ioss::Utils::get_number(tokens.back());
 
     if (N == 0) {
       return nullptr;
