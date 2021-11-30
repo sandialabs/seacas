@@ -82,6 +82,17 @@ namespace Ioss {
     return count;
   }
 
+  /** \brief Get the names of variable types known to IOSS.
+   *
+   *  \returns The list of known variable type names.
+   */
+  Ioss::NameList VariableType::describe()
+  {
+    Ioss::NameList names;
+    describe(&names);
+    return names;
+  }
+
   bool VariableType::add_field_type_mapping(const std::string &raw_field,
                                             const std::string &raw_type)
   {
