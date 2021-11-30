@@ -36,26 +36,26 @@ extern "C" {
 // Explicit Initialization of the functions used...
 namespace Excn {
   template int Internals<int>::write_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
-                                               const std::vector<NodeSet<int>> &  nodesets,
-                                               const std::vector<SideSet<int>> &  sidesets,
+                                               const std::vector<NodeSet<int>>   &nodesets,
+                                               const std::vector<SideSet<int>>   &sidesets,
                                                const std::vector<EdgeBlock<int>> &edgeblock,
                                                const std::vector<FaceBlock<int>> &faceblock,
-                                               const CommunicationMetaData &      comm);
+                                               const CommunicationMetaData       &comm);
 
   template bool Internals<int>::check_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
-                                                const std::vector<NodeSet<int>> &  nodesets,
-                                                const std::vector<SideSet<int>> &  sidesets,
+                                                const std::vector<NodeSet<int>>   &nodesets,
+                                                const std::vector<SideSet<int>>   &sidesets,
                                                 const std::vector<EdgeBlock<int>> &edgeblock,
                                                 const std::vector<FaceBlock<int>> &faceblock,
-                                                const CommunicationMetaData &      comm);
+                                                const CommunicationMetaData       &comm);
 
-  template int Internals<int64_t>::write_meta_data(const Mesh &                           mesh,
-                                                   const std::vector<Block> &             blocks,
-                                                   const std::vector<NodeSet<int64_t>> &  nodesets,
-                                                   const std::vector<SideSet<int64_t>> &  sidesets,
+  template int Internals<int64_t>::write_meta_data(const Mesh                            &mesh,
+                                                   const std::vector<Block>              &blocks,
+                                                   const std::vector<NodeSet<int64_t>>   &nodesets,
+                                                   const std::vector<SideSet<int64_t>>   &sidesets,
                                                    const std::vector<EdgeBlock<int64_t>> &edgeblock,
                                                    const std::vector<FaceBlock<int64_t>> &faceblock,
-                                                   const CommunicationMetaData &          comm);
+                                                   const CommunicationMetaData           &comm);
 
   template bool Internals<int64_t>::check_meta_data(
       const Mesh &mesh, const std::vector<Block> &blocks,
@@ -130,11 +130,11 @@ Excn::Redefine::~Redefine()
 
 template <typename INT>
 int Excn::Internals<INT>::write_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
-                                          const std::vector<NodeSet<INT>> &  nodesets,
-                                          const std::vector<SideSet<INT>> &  sidesets,
+                                          const std::vector<NodeSet<INT>>   &nodesets,
+                                          const std::vector<SideSet<INT>>   &sidesets,
                                           const std::vector<EdgeBlock<INT>> &edgeblocks,
                                           const std::vector<FaceBlock<INT>> &faceblocks,
-                                          const CommunicationMetaData &      comm)
+                                          const CommunicationMetaData       &comm)
 {
   SMART_ASSERT((int)blocks.size() == mesh.blockCount);
   SMART_ASSERT((int)nodesets.size() == mesh.nodesetCount);
@@ -1118,7 +1118,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
       // create distribution factor list variable for side set
       dims[0] = dimid;
       status  = nc_def_var(exodusFilePtr, VAR_FACT_SS(cur_num_side_sets + 1),
-                          nc_flt_code(exodusFilePtr), 1, dims, &varid);
+                           nc_flt_code(exodusFilePtr), 1, dims, &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {

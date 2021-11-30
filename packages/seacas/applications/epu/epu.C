@@ -300,8 +300,8 @@ namespace {
                               Excn::SystemInterface &interFace);
 
   template <typename INT>
-  void build_reverse_element_map(std::vector<std::vector<INT>> &        local_element_to_global,
-                                 const std::vector<Excn::Mesh> &        local_mesh,
+  void build_reverse_element_map(std::vector<std::vector<INT>>         &local_element_to_global,
+                                 const std::vector<Excn::Mesh>         &local_mesh,
                                  std::vector<std::vector<Excn::Block>> &blocks,
                                  std::vector<Excn::Block> &glob_blocks, Excn::Mesh *global,
                                  int part_count, std::vector<INT> &global_element_map,
@@ -309,7 +309,7 @@ namespace {
 
   template <typename T, typename INT>
   void get_nodesets(int part_count, size_t total_node_count,
-                    const std::vector<std::vector<INT>> &         local_node_to_global,
+                    const std::vector<std::vector<INT>>          &local_node_to_global,
                     std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
                     std::vector<Excn::NodeSet<INT>> &glob_sets, T float_or_double);
 
@@ -325,69 +325,69 @@ namespace {
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part,
                           std::vector<std::vector<Excn::Block>> &blocks,
-                          std::vector<Excn::Block> &             glob_blocks,
-                          const std::vector<std::vector<INT>> &  local_node_to_global,
-                          const std::vector<std::vector<INT>> &  local_element_to_global,
+                          std::vector<Excn::Block>              &glob_blocks,
+                          const std::vector<std::vector<INT>>   &local_node_to_global,
+                          const std::vector<std::vector<INT>>   &local_element_to_global,
                           T                                      float_or_double);
 
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part,
                           std::vector<std::vector<Excn::Block>> &blocks,
-                          std::vector<Excn::Block> &             glob_blocks,
-                          const std::vector<std::vector<INT>> &  local_node_to_global,
+                          std::vector<Excn::Block>              &glob_blocks,
+                          const std::vector<std::vector<INT>>   &local_node_to_global,
                           T /* float_or_double */);
 
   template <typename INT>
   void get_edgeblocks(int part_count, const std::vector<Excn::Mesh> &local_mesh,
-                      const Excn::Mesh &                              global,
+                      const Excn::Mesh                               &global,
                       std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<Excn::EdgeBlock<INT>> &             glob_edgeblocks);
+                      std::vector<Excn::EdgeBlock<INT>>              &glob_edgeblocks);
   template <typename T, typename INT>
   void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<Excn::EdgeBlock<INT>> &             glob_edgeblocks,
-                      const std::vector<std::vector<INT>> &           local_node_to_global,
-                      const std::vector<std::vector<INT>> &           local_element_to_global,
+                      std::vector<Excn::EdgeBlock<INT>>              &glob_edgeblocks,
+                      const std::vector<std::vector<INT>>            &local_node_to_global,
+                      const std::vector<std::vector<INT>>            &local_element_to_global,
                       T /* float_or_double */);
   template <typename T, typename INT>
   void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<Excn::EdgeBlock<INT>> &             glob_edgeblocks,
-                      const std::vector<std::vector<INT>> &           local_node_to_global,
+                      std::vector<Excn::EdgeBlock<INT>>              &glob_edgeblocks,
+                      const std::vector<std::vector<INT>>            &local_node_to_global,
                       T /* float_or_double */);
 
   template <typename INT>
-  void build_reverse_edge_map(std::vector<std::vector<INT>> &                 local_edge_to_global,
-                              const std::vector<Excn::Mesh> &                 local_mesh,
+  void build_reverse_edge_map(std::vector<std::vector<INT>>                  &local_edge_to_global,
+                              const std::vector<Excn::Mesh>                  &local_mesh,
                               std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
-                              std::vector<Excn::EdgeBlock<INT>> &             glob_edgeblocks,
+                              std::vector<Excn::EdgeBlock<INT>>              &glob_edgeblocks,
                               Excn::Mesh *global, int part_count, std::vector<INT> &global_edge_map,
                               bool map_ids);
 
   template <typename INT>
   void get_faceblocks(int part_count, const std::vector<Excn::Mesh> &local_mesh,
-                      const Excn::Mesh &                              global,
+                      const Excn::Mesh                               &global,
                       std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
-                      std::vector<Excn::FaceBlock<INT>> &             glob_faceblocks);
+                      std::vector<Excn::FaceBlock<INT>>              &glob_faceblocks);
   template <typename T, typename INT>
   void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
-                      std::vector<Excn::FaceBlock<INT>> &             glob_faceblocks,
-                      const std::vector<std::vector<INT>> &           local_node_to_global,
-                      const std::vector<std::vector<INT>> &           local_element_to_global,
+                      std::vector<Excn::FaceBlock<INT>>              &glob_faceblocks,
+                      const std::vector<std::vector<INT>>            &local_node_to_global,
+                      const std::vector<std::vector<INT>>            &local_element_to_global,
                       T /* float_or_double */);
   template <typename T, typename INT>
   void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
-                      std::vector<Excn::FaceBlock<INT>> &             glob_faceblocks,
-                      const std::vector<std::vector<INT>> &           local_node_to_global,
+                      std::vector<Excn::FaceBlock<INT>>              &glob_faceblocks,
+                      const std::vector<std::vector<INT>>            &local_node_to_global,
                       T /* float_or_double */);
 
   template <typename INT>
-  void build_reverse_face_map(std::vector<std::vector<INT>> &                 local_face_to_global,
-                              const std::vector<Excn::Mesh> &                 local_mesh,
+  void build_reverse_face_map(std::vector<std::vector<INT>>                  &local_face_to_global,
+                              const std::vector<Excn::Mesh>                  &local_mesh,
                               std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
-                              std::vector<Excn::FaceBlock<INT>> &             glob_faceblocks,
+                              std::vector<Excn::FaceBlock<INT>>              &glob_faceblocks,
                               Excn::Mesh *global, int part_count, std::vector<INT> &global_face_map,
                               bool map_ids);
 
@@ -406,29 +406,29 @@ namespace {
   template <typename INT>
   void add_processor_map(int id_out, int part_count, int start_part, const Excn::Mesh &global,
                          std::vector<std::vector<Excn::Block>> &blocks,
-                         const std::vector<Excn::Block> &       glob_blocks,
-                         const std::vector<std::vector<INT>> &  local_element_to_global);
+                         const std::vector<Excn::Block>        &glob_blocks,
+                         const std::vector<std::vector<INT>>   &local_element_to_global);
 
   template <typename T, typename INT>
   void add_processor_variable(int id_out, int part_count, int start_part, const Excn::Mesh &global,
                               std::vector<std::vector<Excn::Block>> &blocks,
-                              const std::vector<Excn::Block> &       glob_blocks,
-                              const std::vector<std::vector<INT>> &  local_element_to_global,
+                              const std::vector<Excn::Block>        &glob_blocks,
+                              const std::vector<std::vector<INT>>   &local_element_to_global,
                               int step, int variable, std::vector<T> &proc);
 
   template <typename INT>
   size_t find_max_entity_count(int part_count, std::vector<Excn::Mesh> &local_mesh,
-                               const Excn::Mesh &                              global,
-                               std::vector<std::vector<Excn::Block>> &         blocks,
-                               std::vector<std::vector<Excn::NodeSet<INT>>> &  nodesets,
-                               std::vector<std::vector<Excn::SideSet<INT>>> &  sidesets,
+                               const Excn::Mesh                               &global,
+                               std::vector<std::vector<Excn::Block>>          &blocks,
+                               std::vector<std::vector<Excn::NodeSet<INT>>>   &nodesets,
+                               std::vector<std::vector<Excn::SideSet<INT>>>   &sidesets,
                                std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
                                std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks);
 
   template <typename INT>
   size_t find_max_global_entity_count(const Excn::Mesh &global, std::vector<Excn::Block> &blocks,
-                                      std::vector<Excn::NodeSet<INT>> &  nodesets,
-                                      std::vector<Excn::SideSet<INT>> &  sidesets,
+                                      std::vector<Excn::NodeSet<INT>>   &nodesets,
+                                      std::vector<Excn::SideSet<INT>>   &sidesets,
                                       std::vector<Excn::EdgeBlock<INT>> &edgeblocks,
                                       std::vector<Excn::FaceBlock<INT>> &faceblocks);
 
@@ -1775,7 +1775,7 @@ namespace {
     copy_string(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH + 1); // Version
 
     time_t date_time = std::time(nullptr);
-    auto * lt        = std::localtime(&date_time);
+    auto  *lt        = std::localtime(&date_time);
     buffer           = fmt::format("{:%Y/%m/%d}", *lt);
     copy_string(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH + 1);
 
@@ -2149,7 +2149,7 @@ namespace {
 
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part, std::vector<std::vector<Block>> &blocks,
-                          std::vector<Block> &                 glob_blocks,
+                          std::vector<Block>                  &glob_blocks,
                           const std::vector<std::vector<INT>> &local_node_to_global,
                           const std::vector<std::vector<INT>> &local_element_to_global,
                           T /* float_or_double */)
@@ -2279,7 +2279,7 @@ namespace {
 
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part, std::vector<std::vector<Block>> &blocks,
-                          std::vector<Block> &                 glob_blocks,
+                          std::vector<Block>                  &glob_blocks,
                           const std::vector<std::vector<INT>> &local_node_to_global,
                           T /* float_or_double */)
   {
@@ -2377,8 +2377,8 @@ namespace {
   }
 
   template <typename INT>
-  void build_reverse_element_map(std::vector<std::vector<INT>> &  local_element_to_global,
-                                 const std::vector<Mesh> &        local_mesh,
+  void build_reverse_element_map(std::vector<std::vector<INT>>   &local_element_to_global,
+                                 const std::vector<Mesh>         &local_mesh,
                                  std::vector<std::vector<Block>> &blocks,
                                  std::vector<Block> &glob_blocks, Mesh *global, int part_count,
                                  std::vector<INT> &global_element_map, bool map_ids)
@@ -2554,8 +2554,8 @@ namespace {
   }
 
   template <typename INT>
-  void build_reverse_edge_map(std::vector<std::vector<INT>> &           local_edge_to_global,
-                              const std::vector<Mesh> &                 local_mesh,
+  void build_reverse_edge_map(std::vector<std::vector<INT>>            &local_edge_to_global,
+                              const std::vector<Mesh>                  &local_mesh,
                               std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
                               std::vector<EdgeBlock<INT>> &glob_edgeblocks, Mesh *global,
                               int part_count, std::vector<INT> &global_edge_map, bool map_ids)
@@ -2731,8 +2731,8 @@ namespace {
   }
 
   template <typename INT>
-  void build_reverse_face_map(std::vector<std::vector<INT>> &           local_face_to_global,
-                              const std::vector<Mesh> &                 local_mesh,
+  void build_reverse_face_map(std::vector<std::vector<INT>>            &local_face_to_global,
+                              const std::vector<Mesh>                  &local_mesh,
                               std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
                               std::vector<FaceBlock<INT>> &glob_faceblocks, Mesh *global,
                               int part_count, std::vector<INT> &global_face_map, bool map_ids)
@@ -3205,9 +3205,9 @@ namespace {
 
   template <typename T, typename INT>
   void get_nodesets(int part_count, size_t total_node_count,
-                    const std::vector<std::vector<INT>> &   local_node_to_global,
+                    const std::vector<std::vector<INT>>    &local_node_to_global,
                     std::vector<std::vector<NodeSet<INT>>> &nodesets,
-                    std::vector<NodeSet<INT>> &             glob_sets, T /* float_or_double */)
+                    std::vector<NodeSet<INT>>              &glob_sets, T /* float_or_double */)
   {
     // Find number of nodesets in the global model...
     std::set<ex_entity_id> set_ids;
@@ -3383,7 +3383,7 @@ namespace {
         // distFactors is a vector of 'char' to allow storage of either float or double.
         glob_sets[ns].distFactors.resize(glob_sets[ns].dfCount * ExodusFile::io_word_size());
 
-        T *    glob_df = (T *)(glob_sets[ns].distFactors.data());
+        T     *glob_df = (T *)(glob_sets[ns].distFactors.data());
         size_t j       = 0;
         for (size_t i = 1; i <= total_node_count; i++) {
           if (glob_ns_nodes[i] == 1) {
@@ -3598,7 +3598,7 @@ namespace {
 
   template <typename INT>
   void get_put_sidesets(int                                     part_count,
-                        const std::vector<std::vector<INT>> &   local_element_to_global,
+                        const std::vector<std::vector<INT>>    &local_element_to_global,
                         std::vector<std::vector<SideSet<INT>>> &sets,
                         std::vector<SideSet<INT>> &glob_ssets, Excn::SystemInterface &interFace)
   {
@@ -3629,7 +3629,7 @@ namespace {
         if (size > 0) {
           size_t off   = offset[ss];
           int    error = ex_get_set(id, EX_SIDE_SET, sets[p][ss].id, &glob_ssets[ss].elems[off],
-                                 &glob_ssets[ss].sides[off]);
+                                    &glob_ssets[ss].sides[off]);
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -3650,7 +3650,7 @@ namespace {
         if (df_size > 0) {
           size_t df_off = df_offset[ss] * ExodusFile::io_word_size();
           int    error  = ex_get_set_dist_fact(id, EX_SIDE_SET, sets[p][ss].id,
-                                           &glob_ssets[ss].distFactors[df_off]);
+                                               &glob_ssets[ss].distFactors[df_off]);
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -3696,7 +3696,7 @@ namespace {
   template <typename INT>
   void get_edgeblocks(int part_count, const std::vector<Mesh> &local_mesh, const Mesh &global,
                       std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<EdgeBlock<INT>> &             glob_edgeblocks)
+                      std::vector<EdgeBlock<INT>>              &glob_edgeblocks)
   {
     LOG("\n\n**** GET EDGE BLOCK INFORMATION (INCL. ELEMENT ATTRIBUTES) ****\n");
 
@@ -3827,9 +3827,9 @@ namespace {
   template <typename T, typename INT>
   void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<EdgeBlock<INT>> &             glob_edgeblocks,
-                      const std::vector<std::vector<INT>> &     local_node_to_global,
-                      const std::vector<std::vector<INT>> &     local_edge_to_global,
+                      std::vector<EdgeBlock<INT>>              &glob_edgeblocks,
+                      const std::vector<std::vector<INT>>      &local_node_to_global,
+                      const std::vector<std::vector<INT>>      &local_edge_to_global,
                       T /* float_or_double */)
   {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
@@ -3972,8 +3972,8 @@ namespace {
   template <typename T, typename INT>
   void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<EdgeBlock<INT>> &             glob_edgeblocks,
-                      const std::vector<std::vector<INT>> &     local_node_to_global,
+                      std::vector<EdgeBlock<INT>>              &glob_edgeblocks,
+                      const std::vector<std::vector<INT>>      &local_node_to_global,
                       T /* float_or_double */)
   {
     // This variant of `put_edgeblocks` is used in the case of
@@ -4072,7 +4072,7 @@ namespace {
   template <typename INT>
   void get_faceblocks(int part_count, const std::vector<Mesh> &local_mesh, const Mesh &global,
                       std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
-                      std::vector<FaceBlock<INT>> &             glob_faceblocks)
+                      std::vector<FaceBlock<INT>>              &glob_faceblocks)
   {
     LOG("\n\n**** GET FACE BLOCK INFORMATION (INCL. ELEMENT ATTRIBUTES) ****\n");
 
@@ -4203,9 +4203,9 @@ namespace {
   template <typename T, typename INT>
   void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
-                      std::vector<FaceBlock<INT>> &             glob_faceblocks,
-                      const std::vector<std::vector<INT>> &     local_node_to_global,
-                      const std::vector<std::vector<INT>> &     local_face_to_global,
+                      std::vector<FaceBlock<INT>>              &glob_faceblocks,
+                      const std::vector<std::vector<INT>>      &local_node_to_global,
+                      const std::vector<std::vector<INT>>      &local_face_to_global,
                       T /* float_or_double */)
   {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
@@ -4350,8 +4350,8 @@ namespace {
   template <typename T, typename INT>
   void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
-                      std::vector<FaceBlock<INT>> &             glob_faceblocks,
-                      const std::vector<std::vector<INT>> &     local_node_to_global,
+                      std::vector<FaceBlock<INT>>              &glob_faceblocks,
+                      const std::vector<std::vector<INT>>      &local_node_to_global,
                       T /* float_or_double */)
   {
     // This variant of `put_faceblocks` is used in the case of
@@ -4449,8 +4449,8 @@ namespace {
 
   template <typename T, typename INT>
   void add_processor_variable(int id_out, int part_count, int start_part, const Mesh &global,
-                              std::vector<std::vector<Block>> &    blocks,
-                              const std::vector<Block> &           glob_blocks,
+                              std::vector<std::vector<Block>>     &blocks,
+                              const std::vector<Block>            &glob_blocks,
                               const std::vector<std::vector<INT>> &local_element_to_global,
                               int step, int variable, std::vector<T> &proc)
   {
@@ -4476,8 +4476,8 @@ namespace {
 
   template <typename INT>
   void add_processor_map(int id_out, int part_count, int start_part, const Mesh &global,
-                         std::vector<std::vector<Block>> &    blocks,
-                         const std::vector<Block> &           glob_blocks,
+                         std::vector<std::vector<Block>>     &blocks,
+                         const std::vector<Block>            &glob_blocks,
                          const std::vector<std::vector<INT>> &local_element_to_global)
   {
     std::vector<INT> proc(global.elementCount);
@@ -4895,7 +4895,7 @@ namespace {
             if (global.truthTable[static_cast<int>(vars.objectType)][output_truth_table_loc] &&
                 local_sets[p][b].entity_count() > 0) {
 
-              T *    iv_block_mev = master_values.data();
+              T     *iv_block_mev = master_values.data();
               size_t entity_count = local_sets[p][b].entity_count();
 
               if (local_mesh[p]
@@ -4969,8 +4969,8 @@ namespace {
   template <typename INT>
   size_t find_max_entity_count(int part_count, std::vector<Excn::Mesh> &local_mesh,
                                const Excn::Mesh &global, std::vector<std::vector<Block>> &blocks,
-                               std::vector<std::vector<NodeSet<INT>>> &  nodesets,
-                               std::vector<std::vector<SideSet<INT>>> &  sidesets,
+                               std::vector<std::vector<NodeSet<INT>>>   &nodesets,
+                               std::vector<std::vector<SideSet<INT>>>   &sidesets,
                                std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
                                std::vector<std::vector<FaceBlock<INT>>> &faceblocks)
   {
@@ -5029,8 +5029,8 @@ namespace {
 
   template <typename INT>
   size_t find_max_global_entity_count(const Excn::Mesh &global, std::vector<Block> &blocks,
-                                      std::vector<NodeSet<INT>> &  nodesets,
-                                      std::vector<SideSet<INT>> &  sidesets,
+                                      std::vector<NodeSet<INT>>   &nodesets,
+                                      std::vector<SideSet<INT>>   &sidesets,
                                       std::vector<EdgeBlock<INT>> &edgeblocks,
                                       std::vector<FaceBlock<INT>> &faceblocks)
   {

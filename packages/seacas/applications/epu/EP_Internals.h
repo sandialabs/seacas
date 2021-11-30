@@ -99,18 +99,18 @@ namespace Excn {
     }
 
     int write_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
-                        const std::vector<NodeSet<INT>> &  nodesets,
-                        const std::vector<SideSet<INT>> &  sidesets,
+                        const std::vector<NodeSet<INT>>   &nodesets,
+                        const std::vector<SideSet<INT>>   &sidesets,
                         const std::vector<EdgeBlock<INT>> &edgeblocks,
                         const std::vector<FaceBlock<INT>> &faceblocks,
-                        const CommunicationMetaData &      comm);
+                        const CommunicationMetaData       &comm);
 
     bool check_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
-                         const std::vector<NodeSet<INT>> &  nodesets,
-                         const std::vector<SideSet<INT>> &  sidesets,
+                         const std::vector<NodeSet<INT>>   &nodesets,
+                         const std::vector<SideSet<INT>>   &sidesets,
                          const std::vector<EdgeBlock<INT>> &edgeblocks,
                          const std::vector<FaceBlock<INT>> &faceblocks,
-                         const CommunicationMetaData &      comm);
+                         const CommunicationMetaData       &comm);
 
   private:
     int put_metadata(const Mesh &mesh, const CommunicationMetaData &comm);
