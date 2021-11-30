@@ -300,8 +300,8 @@ namespace {
                               Excn::SystemInterface &interFace);
 
   template <typename INT>
-  void build_reverse_element_map(std::vector<std::vector<INT>>         &local_element_to_global,
-                                 const std::vector<Excn::Mesh>         &local_mesh,
+  void build_reverse_element_map(std::vector<std::vector<INT>> &        local_element_to_global,
+                                 const std::vector<Excn::Mesh> &        local_mesh,
                                  std::vector<std::vector<Excn::Block>> &blocks,
                                  std::vector<Excn::Block> &glob_blocks, Excn::Mesh *global,
                                  int part_count, std::vector<INT> &global_element_map,
@@ -309,7 +309,7 @@ namespace {
 
   template <typename T, typename INT>
   void get_nodesets(int part_count, size_t total_node_count,
-                    const std::vector<std::vector<INT>>          &local_node_to_global,
+                    const std::vector<std::vector<INT>> &         local_node_to_global,
                     std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
                     std::vector<Excn::NodeSet<INT>> &glob_sets, T float_or_double);
 
@@ -325,81 +325,71 @@ namespace {
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part,
                           std::vector<std::vector<Excn::Block>> &blocks,
-                          std::vector<Excn::Block>              &glob_blocks,
-                          const std::vector<std::vector<INT>>   &local_node_to_global,
-                          const std::vector<std::vector<INT>>   &local_element_to_global,
+                          std::vector<Excn::Block> &             glob_blocks,
+                          const std::vector<std::vector<INT>> &  local_node_to_global,
+                          const std::vector<std::vector<INT>> &  local_element_to_global,
                           T                                      float_or_double);
 
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part,
                           std::vector<std::vector<Excn::Block>> &blocks,
-                          std::vector<Excn::Block>              &glob_blocks,
-                          const std::vector<std::vector<INT>>   &local_node_to_global,
+                          std::vector<Excn::Block> &             glob_blocks,
+                          const std::vector<std::vector<INT>> &  local_node_to_global,
                           T /* float_or_double */);
 
   template <typename INT>
-  void get_edgeblocks(int part_count,
-                      const std::vector<Excn::Mesh> &local_mesh,
-                      const Excn::Mesh &global,
+  void get_edgeblocks(int part_count, const std::vector<Excn::Mesh> &local_mesh,
+                      const Excn::Mesh &                              global,
                       std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<Excn::EdgeBlock<INT>> &glob_edgeblocks);
+                      std::vector<Excn::EdgeBlock<INT>> &             glob_edgeblocks);
   template <typename T, typename INT>
-  void put_edgeblocks(int part_count,
-                      int start_part,
+  void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<Excn::EdgeBlock<INT>> &glob_edgeblocks,
-                      const std::vector<std::vector<INT>> &local_node_to_global,
-                      const std::vector<std::vector<INT>> &local_element_to_global,
+                      std::vector<Excn::EdgeBlock<INT>> &             glob_edgeblocks,
+                      const std::vector<std::vector<INT>> &           local_node_to_global,
+                      const std::vector<std::vector<INT>> &           local_element_to_global,
                       T /* float_or_double */);
   template <typename T, typename INT>
-  void put_edgeblocks(int part_count,
-                      int start_part,
+  void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<Excn::EdgeBlock<INT>> &glob_edgeblocks,
-                      const std::vector<std::vector<INT>> &local_node_to_global,
+                      std::vector<Excn::EdgeBlock<INT>> &             glob_edgeblocks,
+                      const std::vector<std::vector<INT>> &           local_node_to_global,
                       T /* float_or_double */);
 
   template <typename INT>
-  void build_reverse_edge_map(std::vector<std::vector<INT>>             &local_edge_to_global,
-                              const std::vector<Excn::Mesh>             &local_mesh,
+  void build_reverse_edge_map(std::vector<std::vector<INT>> &                 local_edge_to_global,
+                              const std::vector<Excn::Mesh> &                 local_mesh,
                               std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
-                              std::vector<Excn::EdgeBlock<INT>>              &glob_edgeblocks,
-                              Excn::Mesh                                *global,
-                              int                                        part_count,
-                              std::vector<INT>                          &global_edge_map,
-                              bool                                       map_ids);
+                              std::vector<Excn::EdgeBlock<INT>> &             glob_edgeblocks,
+                              Excn::Mesh *global, int part_count, std::vector<INT> &global_edge_map,
+                              bool map_ids);
 
   template <typename INT>
-  void get_faceblocks(int part_count,
-                      const std::vector<Excn::Mesh> &local_mesh,
-                      const Excn::Mesh &global,
+  void get_faceblocks(int part_count, const std::vector<Excn::Mesh> &local_mesh,
+                      const Excn::Mesh &                              global,
                       std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
-                      std::vector<Excn::FaceBlock<INT>> &glob_faceblocks);
+                      std::vector<Excn::FaceBlock<INT>> &             glob_faceblocks);
   template <typename T, typename INT>
-  void put_faceblocks(int part_count,
-                      int start_part,
+  void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
-                      std::vector<Excn::FaceBlock<INT>> &glob_faceblocks,
-                      const std::vector<std::vector<INT>> &local_node_to_global,
-                      const std::vector<std::vector<INT>> &local_element_to_global,
+                      std::vector<Excn::FaceBlock<INT>> &             glob_faceblocks,
+                      const std::vector<std::vector<INT>> &           local_node_to_global,
+                      const std::vector<std::vector<INT>> &           local_element_to_global,
                       T /* float_or_double */);
   template <typename T, typename INT>
-  void put_faceblocks(int part_count,
-                      int start_part,
+  void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
-                      std::vector<Excn::FaceBlock<INT>> &glob_faceblocks,
-                      const std::vector<std::vector<INT>> &local_node_to_global,
+                      std::vector<Excn::FaceBlock<INT>> &             glob_faceblocks,
+                      const std::vector<std::vector<INT>> &           local_node_to_global,
                       T /* float_or_double */);
 
   template <typename INT>
-  void build_reverse_face_map(std::vector<std::vector<INT>>             &local_face_to_global,
-                              const std::vector<Excn::Mesh>             &local_mesh,
+  void build_reverse_face_map(std::vector<std::vector<INT>> &                 local_face_to_global,
+                              const std::vector<Excn::Mesh> &                 local_mesh,
                               std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks,
-                              std::vector<Excn::FaceBlock<INT>>              &glob_faceblocks,
-                              Excn::Mesh                                *global,
-                              int                                        part_count,
-                              std::vector<INT>                          &global_face_map,
-                              bool                                       map_ids);
+                              std::vector<Excn::FaceBlock<INT>> &             glob_faceblocks,
+                              Excn::Mesh *global, int part_count, std::vector<INT> &global_face_map,
+                              bool map_ids);
 
   template <typename INT> void put_nodesets(std::vector<Excn::NodeSet<INT>> &glob_sets);
 
@@ -416,29 +406,29 @@ namespace {
   template <typename INT>
   void add_processor_map(int id_out, int part_count, int start_part, const Excn::Mesh &global,
                          std::vector<std::vector<Excn::Block>> &blocks,
-                         const std::vector<Excn::Block>        &glob_blocks,
-                         const std::vector<std::vector<INT>>   &local_element_to_global);
+                         const std::vector<Excn::Block> &       glob_blocks,
+                         const std::vector<std::vector<INT>> &  local_element_to_global);
 
   template <typename T, typename INT>
   void add_processor_variable(int id_out, int part_count, int start_part, const Excn::Mesh &global,
                               std::vector<std::vector<Excn::Block>> &blocks,
-                              const std::vector<Excn::Block>        &glob_blocks,
-                              const std::vector<std::vector<INT>>   &local_element_to_global,
+                              const std::vector<Excn::Block> &       glob_blocks,
+                              const std::vector<std::vector<INT>> &  local_element_to_global,
                               int step, int variable, std::vector<T> &proc);
 
   template <typename INT>
   size_t find_max_entity_count(int part_count, std::vector<Excn::Mesh> &local_mesh,
-                               const Excn::Mesh                             &global,
-                               std::vector<std::vector<Excn::Block>>        &blocks,
-                               std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
-                               std::vector<std::vector<Excn::SideSet<INT>>> &sidesets,
+                               const Excn::Mesh &                              global,
+                               std::vector<std::vector<Excn::Block>> &         blocks,
+                               std::vector<std::vector<Excn::NodeSet<INT>>> &  nodesets,
+                               std::vector<std::vector<Excn::SideSet<INT>>> &  sidesets,
                                std::vector<std::vector<Excn::EdgeBlock<INT>>> &edgeblocks,
                                std::vector<std::vector<Excn::FaceBlock<INT>>> &faceblocks);
 
   template <typename INT>
   size_t find_max_global_entity_count(const Excn::Mesh &global, std::vector<Excn::Block> &blocks,
-                                      std::vector<Excn::NodeSet<INT>> &nodesets,
-                                      std::vector<Excn::SideSet<INT>> &sidesets,
+                                      std::vector<Excn::NodeSet<INT>> &  nodesets,
+                                      std::vector<Excn::SideSet<INT>> &  sidesets,
                                       std::vector<Excn::EdgeBlock<INT>> &edgeblocks,
                                       std::vector<Excn::FaceBlock<INT>> &faceblocks);
 
@@ -912,8 +902,6 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     build_reverse_element_map(local_element_to_global, local_mesh, blocks, glob_blocks, &global,
                               part_count, global_element_map, map_element_ids);
 
-
-
     get_edgeblocks(part_count, local_mesh, global, edgeblocks, glob_edgeblocks);
     if (glob_edgeblocks.size() > 0) {
       bool map_edge_ids = interFace.map_edge_ids();
@@ -924,7 +912,6 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       build_reverse_edge_map(local_edge_to_global, local_mesh, edgeblocks, glob_edgeblocks, &global,
                              part_count, global_edge_map, map_edge_ids);
     }
-
 
     get_faceblocks(part_count, local_mesh, global, faceblocks, glob_faceblocks);
     if (glob_faceblocks.size() > 0) {
@@ -1035,8 +1022,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       global.needNodeMap    = !is_sequential(global_node_map);
       global.needElementMap = !is_sequential(global_element_map);
 
-      exodus.write_meta_data(global, glob_blocks, glob_nsets, glob_ssets,
-                             glob_edgeblocks, glob_faceblocks, comm_data);
+      exodus.write_meta_data(global, glob_blocks, glob_nsets, glob_ssets, glob_edgeblocks,
+                             glob_faceblocks, comm_data);
 
       get_put_assemblies(ExodusFile(0), ExodusFile::output(), global);
 
@@ -1073,18 +1060,18 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       if (interFace.map_element_ids()) {
         put_element_blocks(part_count, start_part, blocks, glob_blocks, local_node_to_global,
                            local_element_to_global, float_or_double);
-        put_edgeblocks(part_count, start_part, edgeblocks, glob_edgeblocks,
-                       local_node_to_global, local_edge_to_global, float_or_double);
-        put_faceblocks(part_count, start_part, faceblocks, glob_faceblocks,
-                       local_node_to_global, local_face_to_global, float_or_double);
+        put_edgeblocks(part_count, start_part, edgeblocks, glob_edgeblocks, local_node_to_global,
+                       local_edge_to_global, float_or_double);
+        put_faceblocks(part_count, start_part, faceblocks, glob_faceblocks, local_node_to_global,
+                       local_face_to_global, float_or_double);
       }
       else {
         put_element_blocks(part_count, start_part, blocks, glob_blocks, local_node_to_global,
                            float_or_double);
-        put_edgeblocks(part_count, start_part, edgeblocks, glob_edgeblocks,
-                       local_node_to_global, float_or_double);
-        put_faceblocks(part_count, start_part, faceblocks, glob_faceblocks,
-                       local_node_to_global, float_or_double);
+        put_edgeblocks(part_count, start_part, edgeblocks, glob_edgeblocks, local_node_to_global,
+                       float_or_double);
+        put_faceblocks(part_count, start_part, faceblocks, glob_faceblocks, local_node_to_global,
+                       float_or_double);
       }
     }
 
@@ -1189,8 +1176,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
   // need a temporary vector here...
   if (global_vars.count(InOut::OUT) + nodal_vars.count(InOut::OUT) +
           element_vars.count(InOut::OUT) + nodeset_vars.count(InOut::OUT) +
-          sideset_vars.count(InOut::OUT) +
-          edgeblock_vars.count(InOut::OUT) + faceblock_vars.count(InOut::OUT) >
+          sideset_vars.count(InOut::OUT) + edgeblock_vars.count(InOut::OUT) +
+          faceblock_vars.count(InOut::OUT) >
       0) {
 
     std::vector<int> elem_truth_table(
@@ -1209,38 +1196,30 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       }
 
       if (edgeblock_vars.count(InOut::OUT) > 0) {
-        error = ex_put_variable_param(
-          ExodusFile::output(),
-          EX_EDGE_BLOCK,
-          edgeblock_vars.count(InOut::OUT));
+        error = ex_put_variable_param(ExodusFile::output(), EX_EDGE_BLOCK,
+                                      edgeblock_vars.count(InOut::OUT));
         if (error < 0) {
           exodus_error(__LINE__);
         }
-        error = ex_put_truth_table(
-            ExodusFile::output(),
-            EX_EDGE_BLOCK,
-            glob_edgeblocks.size(),
-            edgeblock_vars.count(InOut::OUT),
-            global.truthTable[static_cast<int>(Excn::ObjectType::EDBLK)].data());
+        error =
+            ex_put_truth_table(ExodusFile::output(), EX_EDGE_BLOCK, glob_edgeblocks.size(),
+                               edgeblock_vars.count(InOut::OUT),
+                               global.truthTable[static_cast<int>(Excn::ObjectType::EDBLK)].data());
         if (error < 0) {
-            exodus_error(__LINE__);
+          exodus_error(__LINE__);
         }
       }
 
       if (faceblock_vars.count(InOut::OUT) > 0) {
-        error = ex_put_variable_param(
-          ExodusFile::output(),
-          EX_FACE_BLOCK,
-          faceblock_vars.count(InOut::OUT));
+        error = ex_put_variable_param(ExodusFile::output(), EX_FACE_BLOCK,
+                                      faceblock_vars.count(InOut::OUT));
         if (error < 0) {
           exodus_error(__LINE__);
         }
-        error = ex_put_truth_table(
-            ExodusFile::output(),
-            EX_FACE_BLOCK,
-            glob_faceblocks.size(),
-            faceblock_vars.count(InOut::OUT),
-            global.truthTable[static_cast<int>(Excn::ObjectType::FABLK)].data());
+        error =
+            ex_put_truth_table(ExodusFile::output(), EX_FACE_BLOCK, glob_faceblocks.size(),
+                               faceblock_vars.count(InOut::OUT),
+                               global.truthTable[static_cast<int>(Excn::ObjectType::FABLK)].data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -1313,11 +1292,12 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
 
   // TODO(gdsjaar): Handle variables via a class instead of 3-D array.
   // Determine maximum number of entities on any processor...
-  size_t max_ent =
-      find_max_entity_count(part_count, local_mesh, global, blocks, nodesets, sidesets, edgeblocks, faceblocks);
+  size_t max_ent = find_max_entity_count(part_count, local_mesh, global, blocks, nodesets, sidesets,
+                                         edgeblocks, faceblocks);
   std::vector<T> values(max_ent);
 
-  size_t max_global_ent = find_max_global_entity_count(global, glob_blocks, glob_nsets, glob_ssets, glob_edgeblocks, glob_faceblocks);
+  size_t max_global_ent = find_max_global_entity_count(global, glob_blocks, glob_nsets, glob_ssets,
+                                                       glob_edgeblocks, glob_faceblocks);
   std::vector<T> master_values(max_global_ent);
 
   // Stage II.  Extracting transient variable data.
@@ -1795,7 +1775,7 @@ namespace {
     copy_string(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH + 1); // Version
 
     time_t date_time = std::time(nullptr);
-    auto  *lt        = std::localtime(&date_time);
+    auto * lt        = std::localtime(&date_time);
     buffer           = fmt::format("{:%Y/%m/%d}", *lt);
     copy_string(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH + 1);
 
@@ -2169,7 +2149,7 @@ namespace {
 
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part, std::vector<std::vector<Block>> &blocks,
-                          std::vector<Block>                  &glob_blocks,
+                          std::vector<Block> &                 glob_blocks,
                           const std::vector<std::vector<INT>> &local_node_to_global,
                           const std::vector<std::vector<INT>> &local_element_to_global,
                           T /* float_or_double */)
@@ -2299,7 +2279,7 @@ namespace {
 
   template <typename T, typename INT>
   void put_element_blocks(int part_count, int start_part, std::vector<std::vector<Block>> &blocks,
-                          std::vector<Block>                  &glob_blocks,
+                          std::vector<Block> &                 glob_blocks,
                           const std::vector<std::vector<INT>> &local_node_to_global,
                           T /* float_or_double */)
   {
@@ -2397,8 +2377,8 @@ namespace {
   }
 
   template <typename INT>
-  void build_reverse_element_map(std::vector<std::vector<INT>>   &local_element_to_global,
-                                 const std::vector<Mesh>         &local_mesh,
+  void build_reverse_element_map(std::vector<std::vector<INT>> &  local_element_to_global,
+                                 const std::vector<Mesh> &        local_mesh,
                                  std::vector<std::vector<Block>> &blocks,
                                  std::vector<Block> &glob_blocks, Mesh *global, int part_count,
                                  std::vector<INT> &global_element_map, bool map_ids)
@@ -2574,14 +2554,11 @@ namespace {
   }
 
   template <typename INT>
-  void build_reverse_edge_map(std::vector<std::vector<INT>>   &local_edge_to_global,
-                              const std::vector<Mesh>         &local_mesh,
+  void build_reverse_edge_map(std::vector<std::vector<INT>> &           local_edge_to_global,
+                              const std::vector<Mesh> &                 local_mesh,
                               std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
-                              std::vector<EdgeBlock<INT>> &glob_edgeblocks,
-                              Mesh *global,
-                              int part_count,
-                              std::vector<INT> &global_edge_map,
-                              bool map_ids)
+                              std::vector<EdgeBlock<INT>> &glob_edgeblocks, Mesh *global,
+                              int part_count, std::vector<INT> &global_edge_map, bool map_ids)
   {
     // Global edge map and count
     std::vector<std::vector<INT>> global_edge_numbers(part_count);
@@ -2629,8 +2606,8 @@ namespace {
     // the edges back to their original location. Since the edges are
     // sorted and there are no duplicates, we just need to see if the id
     // at global_edge_map.size() == global_edge_map.size();
-    bool is_contiguous = global_edge_map.empty() ||
-                         ((size_t)global_edge_map.back() == global_edge_map.size());
+    bool is_contiguous =
+        global_edge_map.empty() || ((size_t)global_edge_map.back() == global_edge_map.size());
     if (rank == 0) {
       fmt::print("Edge id map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -2652,8 +2629,8 @@ namespace {
           INT global_edge = global_edge_numbers[p][i];
 
           if (cur_pos == global_edge_map.end() || *cur_pos != global_edge) {
-            auto iter = std::lower_bound(global_edge_map.begin(), global_edge_map.end(),
-                                         global_edge);
+            auto iter =
+                std::lower_bound(global_edge_map.begin(), global_edge_map.end(), global_edge);
             SMART_ASSERT(iter != global_edge_map.end());
             cur_pos = iter;
           }
@@ -2670,7 +2647,7 @@ namespace {
       size_t gpos = 0;
       for (size_t b = 0; b < glob_edgeblocks.size(); b++) {
         for (int p = 0; p < part_count; p++) {
-          size_t poff = proc_off[p];
+          size_t poff       = proc_off[p];
           size_t edge_count = edgeblocks[p][b].entity_count();
           for (size_t e = 0; e < edge_count; e++) {
             local_edge_to_global[p][e + poff] = gpos++;
@@ -2754,14 +2731,11 @@ namespace {
   }
 
   template <typename INT>
-  void build_reverse_face_map(std::vector<std::vector<INT>>   &local_face_to_global,
-                              const std::vector<Mesh>         &local_mesh,
+  void build_reverse_face_map(std::vector<std::vector<INT>> &           local_face_to_global,
+                              const std::vector<Mesh> &                 local_mesh,
                               std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
-                              std::vector<FaceBlock<INT>> &glob_faceblocks,
-                              Mesh *global,
-                              int part_count,
-                              std::vector<INT> &global_face_map,
-                              bool map_ids)
+                              std::vector<FaceBlock<INT>> &glob_faceblocks, Mesh *global,
+                              int part_count, std::vector<INT> &global_face_map, bool map_ids)
   {
     // Global element map and count.
     std::vector<std::vector<INT>> global_face_numbers(part_count);
@@ -2809,8 +2783,8 @@ namespace {
     // the faces back to their original location. Since the faces are
     // sorted and there are no duplicates, we just need to see if the id
     // at global_face_map.size() == global_face_map.size();
-    bool is_contiguous = global_face_map.empty() ||
-                         ((size_t)global_face_map.back() == global_face_map.size());
+    bool is_contiguous =
+        global_face_map.empty() || ((size_t)global_face_map.back() == global_face_map.size());
     if (rank == 0) {
       fmt::print("Face id map {} contiguous.\n", (is_contiguous ? "is" : "is not"));
     }
@@ -2832,8 +2806,8 @@ namespace {
           INT global_face = global_face_numbers[p][i];
 
           if (cur_pos == global_face_map.end() || *cur_pos != global_face) {
-            auto iter = std::lower_bound(global_face_map.begin(), global_face_map.end(),
-                                         global_face);
+            auto iter =
+                std::lower_bound(global_face_map.begin(), global_face_map.end(), global_face);
             SMART_ASSERT(iter != global_face_map.end());
             cur_pos = iter;
           }
@@ -2850,7 +2824,7 @@ namespace {
       size_t gpos = 0;
       for (size_t b = 0; b < glob_faceblocks.size(); b++) {
         for (int p = 0; p < part_count; p++) {
-          size_t poff = proc_off[p];
+          size_t poff       = proc_off[p];
           size_t face_count = faceblocks[p][b].entity_count();
           for (size_t e = 0; e < face_count; e++) {
             local_face_to_global[p][e + poff] = gpos++;
@@ -3231,9 +3205,9 @@ namespace {
 
   template <typename T, typename INT>
   void get_nodesets(int part_count, size_t total_node_count,
-                    const std::vector<std::vector<INT>>    &local_node_to_global,
+                    const std::vector<std::vector<INT>> &   local_node_to_global,
                     std::vector<std::vector<NodeSet<INT>>> &nodesets,
-                    std::vector<NodeSet<INT>>              &glob_sets, T /* float_or_double */)
+                    std::vector<NodeSet<INT>> &             glob_sets, T /* float_or_double */)
   {
     // Find number of nodesets in the global model...
     std::set<ex_entity_id> set_ids;
@@ -3409,7 +3383,7 @@ namespace {
         // distFactors is a vector of 'char' to allow storage of either float or double.
         glob_sets[ns].distFactors.resize(glob_sets[ns].dfCount * ExodusFile::io_word_size());
 
-        T     *glob_df = (T *)(glob_sets[ns].distFactors.data());
+        T *    glob_df = (T *)(glob_sets[ns].distFactors.data());
         size_t j       = 0;
         for (size_t i = 1; i <= total_node_count; i++) {
           if (glob_ns_nodes[i] == 1) {
@@ -3624,7 +3598,7 @@ namespace {
 
   template <typename INT>
   void get_put_sidesets(int                                     part_count,
-                        const std::vector<std::vector<INT>>    &local_element_to_global,
+                        const std::vector<std::vector<INT>> &   local_element_to_global,
                         std::vector<std::vector<SideSet<INT>>> &sets,
                         std::vector<SideSet<INT>> &glob_ssets, Excn::SystemInterface &interFace)
   {
@@ -3655,7 +3629,7 @@ namespace {
         if (size > 0) {
           size_t off   = offset[ss];
           int    error = ex_get_set(id, EX_SIDE_SET, sets[p][ss].id, &glob_ssets[ss].elems[off],
-                                    &glob_ssets[ss].sides[off]);
+                                 &glob_ssets[ss].sides[off]);
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -3676,7 +3650,7 @@ namespace {
         if (df_size > 0) {
           size_t df_off = df_offset[ss] * ExodusFile::io_word_size();
           int    error  = ex_get_set_dist_fact(id, EX_SIDE_SET, sets[p][ss].id,
-                                               &glob_ssets[ss].distFactors[df_off]);
+                                           &glob_ssets[ss].distFactors[df_off]);
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -3720,11 +3694,9 @@ namespace {
   }
 
   template <typename INT>
-  void get_edgeblocks(int part_count,
-                      const std::vector<Mesh> &local_mesh,
-                      const Mesh &global,
+  void get_edgeblocks(int part_count, const std::vector<Mesh> &local_mesh, const Mesh &global,
                       std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<EdgeBlock<INT>> &glob_edgeblocks)
+                      std::vector<EdgeBlock<INT>> &             glob_edgeblocks)
   {
     LOG("\n\n**** GET EDGE BLOCK INFORMATION (INCL. ELEMENT ATTRIBUTES) ****\n");
 
@@ -3805,17 +3777,17 @@ namespace {
         }
 
         if (temp_block.num_entry != 0) {
-          edgeblocks[p][b].edgeCount       = temp_block.num_entry;
-          edgeblocks[p][b].nodesPerEdge    = temp_block.num_nodes_per_entry;
-          edgeblocks[p][b].attributeCount  = temp_block.num_attribute;
-          edgeblocks[p][b].offset_         = temp_block.num_entry;
-          edgeblocks[p][b].position_       = b;
+          edgeblocks[p][b].edgeCount      = temp_block.num_entry;
+          edgeblocks[p][b].nodesPerEdge   = temp_block.num_nodes_per_entry;
+          edgeblocks[p][b].attributeCount = temp_block.num_attribute;
+          edgeblocks[p][b].offset_        = temp_block.num_entry;
+          edgeblocks[p][b].position_      = b;
           copy_string(edgeblocks[p][b].elType, temp_block.topology);
 
-          glob_edgeblocks[b].edgeCount      += temp_block.num_entry;
-          glob_edgeblocks[b].nodesPerEdge    = temp_block.num_nodes_per_entry;
-          glob_edgeblocks[b].attributeCount  = temp_block.num_attribute;
-          glob_edgeblocks[b].position_       = (int)b;
+          glob_edgeblocks[b].edgeCount += temp_block.num_entry;
+          glob_edgeblocks[b].nodesPerEdge   = temp_block.num_nodes_per_entry;
+          glob_edgeblocks[b].attributeCount = temp_block.num_attribute;
+          glob_edgeblocks[b].position_      = (int)b;
           copy_string(glob_edgeblocks[b].elType, temp_block.topology);
         }
 
@@ -3835,8 +3807,8 @@ namespace {
         }
         if ((debug_level & 4) != 0U) {
           fmt::print(", Name = '{}', Edges = {:12L}, Nodes/Edge= {}, Attributes = {}\n",
-                     edgeblocks[p][b].name_, edgeblocks[p][b].entity_count(), edgeblocks[p][b].nodesPerEdge,
-                     edgeblocks[p][b].attributeCount);
+                     edgeblocks[p][b].name_, edgeblocks[p][b].entity_count(),
+                     edgeblocks[p][b].nodesPerEdge, edgeblocks[p][b].attributeCount);
         }
       }
     } // end for p=0..part_count
@@ -3845,7 +3817,7 @@ namespace {
     for (int p = 0; p < part_count; p++) {
       size_t sum = 0;
       for (size_t b = 0; b < global.count(Excn::ObjectType::EDBLK); b++) {
-        size_t save = edgeblocks[p][b].offset_;
+        size_t save              = edgeblocks[p][b].offset_;
         edgeblocks[p][b].offset_ = sum;
         sum += save;
       }
@@ -3853,12 +3825,11 @@ namespace {
   }
 
   template <typename T, typename INT>
-  void put_edgeblocks(int part_count,
-                      int start_part,
+  void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<EdgeBlock<INT>> &glob_edgeblocks,
-                      const std::vector<std::vector<INT>> &local_node_to_global,
-                      const std::vector<std::vector<INT>> &local_edge_to_global,
+                      std::vector<EdgeBlock<INT>> &             glob_edgeblocks,
+                      const std::vector<std::vector<INT>> &     local_node_to_global,
+                      const std::vector<std::vector<INT>> &     local_edge_to_global,
                       T /* float_or_double */)
   {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
@@ -3876,8 +3847,9 @@ namespace {
                    "Edge Block {}, Id = {}, Name = '{}', Edges = {:12L}, Nodes/Edge = {}, "
                    "Attributes = {}\n"
                    "B{}:\t",
-                   b, glob_edgeblocks[b].id, glob_edgeblocks[b].name_, glob_edgeblocks[b].entity_count(),
-                   glob_edgeblocks[b].nodesPerEdge, glob_edgeblocks[b].attributeCount, b);
+                   b, glob_edgeblocks[b].id, glob_edgeblocks[b].name_,
+                   glob_edgeblocks[b].entity_count(), glob_edgeblocks[b].nodesPerEdge,
+                   glob_edgeblocks[b].attributeCount, b);
       }
 
       size_t max_nodes = glob_edgeblocks[b].entity_count();
@@ -3916,10 +3888,9 @@ namespace {
           ex_entity_id bid = edgeblocks[p][b].id;
           error = ex_get_conn(id, EX_EDGE_BLOCK, bid, local_linkage.data(), nullptr, nullptr);
           if (error < 0) {
-            fmt::print(
-                stderr,
-                "ERROR: (EPU) Cannot get edge block connectivity for block {} on part {}.\n",
-                bid, p + start_part);
+            fmt::print(stderr,
+                       "ERROR: (EPU) Cannot get edge block connectivity for block {} on part {}.\n",
+                       bid, p + start_part);
             exodus_error(__LINE__);
           }
           size_t                  pos                     = 0;
@@ -3973,7 +3944,8 @@ namespace {
       int id_out = ExodusFile::output(); // output file identifier
 
       if (linkage[b] != nullptr) {
-        error = ex_put_conn(id_out, EX_EDGE_BLOCK, glob_edgeblocks[b].id, linkage[b], nullptr, nullptr);
+        error =
+            ex_put_conn(id_out, EX_EDGE_BLOCK, glob_edgeblocks[b].id, linkage[b], nullptr, nullptr);
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -3998,11 +3970,10 @@ namespace {
   }
 
   template <typename T, typename INT>
-  void put_edgeblocks(int part_count,
-                      int start_part,
+  void put_edgeblocks(int part_count, int start_part,
                       std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
-                      std::vector<EdgeBlock<INT>> &glob_edgeblocks,
-                      const std::vector<std::vector<INT>> &local_node_to_global,
+                      std::vector<EdgeBlock<INT>> &             glob_edgeblocks,
+                      const std::vector<std::vector<INT>> &     local_node_to_global,
                       T /* float_or_double */)
   {
     // This variant of `put_edgeblocks` is used in the case of
@@ -4025,8 +3996,9 @@ namespace {
         fmt::print("\nOutput edge block info for...\n"
                    "Edge Block {}, Id = {}, Name = '{}', Edges = {:12L}, Nodes/Edge = {}, "
                    "Attributes = {}\n",
-                   b, glob_edgeblocks[b].id, glob_edgeblocks[b].name_, glob_edgeblocks[b].entity_count(),
-                   glob_edgeblocks[b].nodesPerEdge, glob_edgeblocks[b].attributeCount);
+                   b, glob_edgeblocks[b].id, glob_edgeblocks[b].name_,
+                   glob_edgeblocks[b].entity_count(), glob_edgeblocks[b].nodesPerEdge,
+                   glob_edgeblocks[b].attributeCount);
       }
 
       int id_out = ExodusFile::output(); // output file identifier
@@ -4042,10 +4014,9 @@ namespace {
           ex_entity_id bid = edgeblocks[p][b].id;
           int error = ex_get_conn(id, EX_EDGE_BLOCK, bid, local_linkage.data(), nullptr, nullptr);
           if (error < 0) {
-            fmt::print(
-                stderr,
-                "ERROR: (EPU) Cannot get edge block connectivity for block {} on part {}.\n",
-                bid, p + start_part);
+            fmt::print(stderr,
+                       "ERROR: (EPU) Cannot get edge block connectivity for block {} on part {}.\n",
+                       bid, p + start_part);
             exodus_error(__LINE__);
           }
 
@@ -4077,7 +4048,7 @@ namespace {
 
           // Get attributes list,  if it exists
           if (edgeblocks[p][b].attributeCount > 0) {
-            size_t         max_attr = edgeblocks[p][b].entity_count() * edgeblocks[p][b].attributeCount;
+            size_t max_attr = edgeblocks[p][b].entity_count() * edgeblocks[p][b].attributeCount;
             std::vector<T> local_attr(max_attr);
 
             int error = ex_get_attr(id, EX_EDGE_BLOCK, edgeblocks[p][b].id, local_attr.data());
@@ -4085,8 +4056,8 @@ namespace {
               exodus_error(__LINE__);
             }
 
-            error = ex_put_partial_attr(id_out, EX_EDGE_BLOCK, bid, part_block_offset,
-                                        edge_count, local_attr.data());
+            error = ex_put_partial_attr(id_out, EX_EDGE_BLOCK, bid, part_block_offset, edge_count,
+                                        local_attr.data());
             if (error < 0) {
               exodus_error(__LINE__);
             }
@@ -4099,11 +4070,9 @@ namespace {
   }
 
   template <typename INT>
-  void get_faceblocks(int part_count,
-                      const std::vector<Mesh> &local_mesh,
-                      const Mesh &global,
+  void get_faceblocks(int part_count, const std::vector<Mesh> &local_mesh, const Mesh &global,
                       std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
-                      std::vector<FaceBlock<INT>> &glob_faceblocks)
+                      std::vector<FaceBlock<INT>> &             glob_faceblocks)
   {
     LOG("\n\n**** GET FACE BLOCK INFORMATION (INCL. ELEMENT ATTRIBUTES) ****\n");
 
@@ -4184,17 +4153,17 @@ namespace {
         }
 
         if (temp_block.num_entry != 0) {
-          faceblocks[p][b].faceCount       = temp_block.num_entry;
-          faceblocks[p][b].nodesPerFace    = temp_block.num_nodes_per_entry;
-          faceblocks[p][b].attributeCount  = temp_block.num_attribute;
-          faceblocks[p][b].offset_         = temp_block.num_entry;
-          faceblocks[p][b].position_       = b;
+          faceblocks[p][b].faceCount      = temp_block.num_entry;
+          faceblocks[p][b].nodesPerFace   = temp_block.num_nodes_per_entry;
+          faceblocks[p][b].attributeCount = temp_block.num_attribute;
+          faceblocks[p][b].offset_        = temp_block.num_entry;
+          faceblocks[p][b].position_      = b;
           copy_string(faceblocks[p][b].elType, temp_block.topology);
 
-          glob_faceblocks[b].faceCount      += temp_block.num_entry;
-          glob_faceblocks[b].nodesPerFace    = temp_block.num_nodes_per_entry;
-          glob_faceblocks[b].attributeCount  = temp_block.num_attribute;
-          glob_faceblocks[b].position_       = (int)b;
+          glob_faceblocks[b].faceCount += temp_block.num_entry;
+          glob_faceblocks[b].nodesPerFace   = temp_block.num_nodes_per_entry;
+          glob_faceblocks[b].attributeCount = temp_block.num_attribute;
+          glob_faceblocks[b].position_      = (int)b;
           copy_string(glob_faceblocks[b].elType, temp_block.topology);
         }
 
@@ -4214,8 +4183,8 @@ namespace {
         }
         if ((debug_level & 4) != 0U) {
           fmt::print(", Name = '{}', Faces = {:12L}, Nodes/Face= {}, Attributes = {}\n",
-                     faceblocks[p][b].name_, faceblocks[p][b].entity_count(), faceblocks[p][b].nodesPerFace,
-                     faceblocks[p][b].attributeCount);
+                     faceblocks[p][b].name_, faceblocks[p][b].entity_count(),
+                     faceblocks[p][b].nodesPerFace, faceblocks[p][b].attributeCount);
         }
       }
     } // end for p=0..part_count
@@ -4224,7 +4193,7 @@ namespace {
     for (int p = 0; p < part_count; p++) {
       size_t sum = 0;
       for (size_t b = 0; b < global.count(Excn::ObjectType::FABLK); b++) {
-        size_t save = faceblocks[p][b].offset_;
+        size_t save              = faceblocks[p][b].offset_;
         faceblocks[p][b].offset_ = sum;
         sum += save;
       }
@@ -4232,12 +4201,11 @@ namespace {
   }
 
   template <typename T, typename INT>
-  void put_faceblocks(int part_count,
-                      int start_part,
+  void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
-                      std::vector<FaceBlock<INT>> &glob_faceblocks,
-                      const std::vector<std::vector<INT>> &local_node_to_global,
-                      const std::vector<std::vector<INT>> &local_face_to_global,
+                      std::vector<FaceBlock<INT>> &             glob_faceblocks,
+                      const std::vector<std::vector<INT>> &     local_node_to_global,
+                      const std::vector<std::vector<INT>> &     local_face_to_global,
                       T /* float_or_double */)
   {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
@@ -4255,8 +4223,9 @@ namespace {
                    "Face Block {}, Id = {}, Name = '{}', Faces = {:12L}, Nodes/Face = {}, "
                    "Attributes = {}\n"
                    "B{}:\t",
-                   b, glob_faceblocks[b].id, glob_faceblocks[b].name_, glob_faceblocks[b].entity_count(),
-                   glob_faceblocks[b].nodesPerFace, glob_faceblocks[b].attributeCount, b);
+                   b, glob_faceblocks[b].id, glob_faceblocks[b].name_,
+                   glob_faceblocks[b].entity_count(), glob_faceblocks[b].nodesPerFace,
+                   glob_faceblocks[b].attributeCount, b);
       }
 
       size_t max_nodes = glob_faceblocks[b].entity_count();
@@ -4295,10 +4264,9 @@ namespace {
           ex_entity_id bid = faceblocks[p][b].id;
           error = ex_get_conn(id, EX_FACE_BLOCK, bid, local_linkage.data(), nullptr, nullptr);
           if (error < 0) {
-            fmt::print(
-                stderr,
-                "ERROR: (EPU) Cannot get face block connectivity for block {} on part {}.\n",
-                bid, p + start_part);
+            fmt::print(stderr,
+                       "ERROR: (EPU) Cannot get face block connectivity for block {} on part {}.\n",
+                       bid, p + start_part);
             exodus_error(__LINE__);
           }
           size_t                  pos                     = 0;
@@ -4321,7 +4289,7 @@ namespace {
 
           // Get attributes list,  if it exists
           if (faceblocks[p][b].attributeCount > 0) {
-            size_t         max_attr = faceblocks[p][b].entity_count() * faceblocks[p][b].attributeCount;
+            size_t max_attr = faceblocks[p][b].entity_count() * faceblocks[p][b].attributeCount;
             std::vector<T> local_attr(max_attr);
 
             error = ex_get_attr(id, EX_FACE_BLOCK, faceblocks[p][b].id, local_attr.data());
@@ -4352,11 +4320,10 @@ namespace {
       int id_out = ExodusFile::output(); // output file identifier
 
       if (linkage[b] != nullptr) {
-        fmt::print(
-            stderr,
-            "(EPU) id_out({}) glob_faceblocks[{}].id({})\n",
-            id_out, b, glob_faceblocks[b].id);
-        error = ex_put_conn(id_out, EX_FACE_BLOCK, glob_faceblocks[b].id, linkage[b], nullptr, nullptr);
+        fmt::print(stderr, "(EPU) id_out({}) glob_faceblocks[{}].id({})\n", id_out, b,
+                   glob_faceblocks[b].id);
+        error =
+            ex_put_conn(id_out, EX_FACE_BLOCK, glob_faceblocks[b].id, linkage[b], nullptr, nullptr);
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -4381,11 +4348,10 @@ namespace {
   }
 
   template <typename T, typename INT>
-  void put_faceblocks(int part_count,
-                      int start_part,
+  void put_faceblocks(int part_count, int start_part,
                       std::vector<std::vector<FaceBlock<INT>>> &faceblocks,
-                      std::vector<FaceBlock<INT>> &glob_faceblocks,
-                      const std::vector<std::vector<INT>> &local_node_to_global,
+                      std::vector<FaceBlock<INT>> &             glob_faceblocks,
+                      const std::vector<std::vector<INT>> &     local_node_to_global,
                       T /* float_or_double */)
   {
     // This variant of `put_faceblocks` is used in the case of
@@ -4408,8 +4374,9 @@ namespace {
         fmt::print("\nOutput face block info for...\n"
                    "Face Block {}, Id = {}, Name = '{}', Faces = {:12L}, Nodes/Face = {}, "
                    "Attributes = {}\n",
-                   b, glob_faceblocks[b].id, glob_faceblocks[b].name_, glob_faceblocks[b].entity_count(),
-                   glob_faceblocks[b].nodesPerFace, glob_faceblocks[b].attributeCount);
+                   b, glob_faceblocks[b].id, glob_faceblocks[b].name_,
+                   glob_faceblocks[b].entity_count(), glob_faceblocks[b].nodesPerFace,
+                   glob_faceblocks[b].attributeCount);
       }
 
       int id_out = ExodusFile::output(); // output file identifier
@@ -4419,16 +4386,15 @@ namespace {
         ExodusFile id(p);
 
         if (faceblocks[p][b].entity_count() > 0) { // non-zero length block
-          size_t           node_count = faceblocks[p][b].entity_count() * faceblocks[p][b].nodesPerFace;
+          size_t node_count = faceblocks[p][b].entity_count() * faceblocks[p][b].nodesPerFace;
           std::vector<INT> local_linkage(node_count);
 
           ex_entity_id bid = faceblocks[p][b].id;
           int error = ex_get_conn(id, EX_FACE_BLOCK, bid, local_linkage.data(), nullptr, nullptr);
           if (error < 0) {
-            fmt::print(
-                stderr,
-                "ERROR: (EPU) Cannot get face block connectivity for block {} on part {}.\n",
-                bid, p + start_part);
+            fmt::print(stderr,
+                       "ERROR: (EPU) Cannot get face block connectivity for block {} on part {}.\n",
+                       bid, p + start_part);
             exodus_error(__LINE__);
           }
 
@@ -4460,7 +4426,7 @@ namespace {
 
           // Get attributes list,  if it exists
           if (faceblocks[p][b].attributeCount > 0) {
-            size_t         max_attr = faceblocks[p][b].entity_count() * faceblocks[p][b].attributeCount;
+            size_t max_attr = faceblocks[p][b].entity_count() * faceblocks[p][b].attributeCount;
             std::vector<T> local_attr(max_attr);
 
             int error = ex_get_attr(id, EX_FACE_BLOCK, faceblocks[p][b].id, local_attr.data());
@@ -4468,8 +4434,8 @@ namespace {
               exodus_error(__LINE__);
             }
 
-            error = ex_put_partial_attr(id_out, EX_FACE_BLOCK, bid, part_block_offset,
-                                        face_count, local_attr.data());
+            error = ex_put_partial_attr(id_out, EX_FACE_BLOCK, bid, part_block_offset, face_count,
+                                        local_attr.data());
             if (error < 0) {
               exodus_error(__LINE__);
             }
@@ -4483,8 +4449,8 @@ namespace {
 
   template <typename T, typename INT>
   void add_processor_variable(int id_out, int part_count, int start_part, const Mesh &global,
-                              std::vector<std::vector<Block>>     &blocks,
-                              const std::vector<Block>            &glob_blocks,
+                              std::vector<std::vector<Block>> &    blocks,
+                              const std::vector<Block> &           glob_blocks,
                               const std::vector<std::vector<INT>> &local_element_to_global,
                               int step, int variable, std::vector<T> &proc)
   {
@@ -4510,8 +4476,8 @@ namespace {
 
   template <typename INT>
   void add_processor_map(int id_out, int part_count, int start_part, const Mesh &global,
-                         std::vector<std::vector<Block>>     &blocks,
-                         const std::vector<Block>            &glob_blocks,
+                         std::vector<std::vector<Block>> &    blocks,
+                         const std::vector<Block> &           glob_blocks,
                          const std::vector<std::vector<INT>> &local_element_to_global)
   {
     std::vector<INT> proc(global.elementCount);
@@ -4879,8 +4845,9 @@ namespace {
   }
 
   template <typename T, typename INT>
-  void map_edgeblock_vars(size_t loffset, size_t goffset, size_t entity_count, std::vector<T> &values,
-                          T *global_values, const std::vector<INT> &proc_loc_elem_to_global)
+  void map_edgeblock_vars(size_t loffset, size_t goffset, size_t entity_count,
+                          std::vector<T> &values, T *global_values,
+                          const std::vector<INT> &proc_loc_elem_to_global)
   {
     // copy values to master edgeblock value information
     T *local_values = values.data();
@@ -4928,7 +4895,7 @@ namespace {
             if (global.truthTable[static_cast<int>(vars.objectType)][output_truth_table_loc] &&
                 local_sets[p][b].entity_count() > 0) {
 
-              T     *iv_block_mev = master_values.data();
+              T *    iv_block_mev = master_values.data();
               size_t entity_count = local_sets[p][b].entity_count();
 
               if (local_mesh[p]
@@ -4960,9 +4927,9 @@ namespace {
                   break;
 
                 case Excn::ObjectType::FABLK:
-                    map_edgeblock_vars(local_sets[p][b].offset_, global_sets[b].offset_, entity_count,
-                                       values, iv_block_mev, proc_loc_face_to_global);
-                    break;
+                  map_edgeblock_vars(local_sets[p][b].offset_, global_sets[b].offset_, entity_count,
+                                     values, iv_block_mev, proc_loc_face_to_global);
+                  break;
                 default: break;
                 }
               }
@@ -5002,8 +4969,8 @@ namespace {
   template <typename INT>
   size_t find_max_entity_count(int part_count, std::vector<Excn::Mesh> &local_mesh,
                                const Excn::Mesh &global, std::vector<std::vector<Block>> &blocks,
-                               std::vector<std::vector<NodeSet<INT>>> &nodesets,
-                               std::vector<std::vector<SideSet<INT>>> &sidesets,
+                               std::vector<std::vector<NodeSet<INT>>> &  nodesets,
+                               std::vector<std::vector<SideSet<INT>>> &  sidesets,
                                std::vector<std::vector<EdgeBlock<INT>>> &edgeblocks,
                                std::vector<std::vector<FaceBlock<INT>>> &faceblocks)
   {
@@ -5062,8 +5029,8 @@ namespace {
 
   template <typename INT>
   size_t find_max_global_entity_count(const Excn::Mesh &global, std::vector<Block> &blocks,
-                                      std::vector<NodeSet<INT>> &nodesets,
-                                      std::vector<SideSet<INT>> &sidesets,
+                                      std::vector<NodeSet<INT>> &  nodesets,
+                                      std::vector<SideSet<INT>> &  sidesets,
                                       std::vector<EdgeBlock<INT>> &edgeblocks,
                                       std::vector<FaceBlock<INT>> &faceblocks)
   {
@@ -5091,16 +5058,16 @@ namespace {
 
     // Edge Blocks...
     for (size_t b = 0; b < global.count(Excn::ObjectType::EDBLK); b++) {
-        if (edgeblocks[b].entity_count() > max_ent) {
-            max_ent = edgeblocks[b].entity_count();
-        }
+      if (edgeblocks[b].entity_count() > max_ent) {
+        max_ent = edgeblocks[b].entity_count();
+      }
     }
 
     // Face Blocks...
     for (size_t b = 0; b < global.count(Excn::ObjectType::FABLK); b++) {
-        if (faceblocks[b].entity_count() > max_ent) {
-            max_ent = faceblocks[b].entity_count();
-        }
+      if (faceblocks[b].entity_count() > max_ent) {
+        max_ent = faceblocks[b].entity_count();
+      }
     }
     return max_ent;
   }

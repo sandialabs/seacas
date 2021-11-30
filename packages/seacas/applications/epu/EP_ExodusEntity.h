@@ -185,9 +185,9 @@ namespace Excn {
     EdgeBlock() { copy_string(elType, ""); }
 
     EdgeBlock(const EdgeBlock &other)
-      : name_(other.name_), id(other.id), edgeCount(other.edgeCount),
-        nodesPerEdge(other.nodesPerEdge), attributeCount(other.attributeCount),
-        offset_(other.offset_), position_(other.position_)
+        : name_(other.name_), id(other.id), edgeCount(other.edgeCount),
+          nodesPerEdge(other.nodesPerEdge), attributeCount(other.attributeCount),
+          offset_(other.offset_), position_(other.position_)
     {
       copy_string(elType, other.elType);
     }
@@ -207,21 +207,20 @@ namespace Excn {
 
     void dump() const
     {
-      fmt::print(stderr, "EdgeBlock {}, Name: {}, {} edges\n",
-                 id, name_, edgeCount);
+      fmt::print(stderr, "EdgeBlock {}, Name: {}, {} edges\n", id, name_, edgeCount);
     }
 
     EdgeBlock &operator=(const EdgeBlock &other)
     {
       copy_string(elType, other.elType);
-      name_           = other.name_;
-      id              = other.id;
-      edgeCount       = other.edgeCount;
-      nodesPerEdge    = other.nodesPerEdge;
-      attributeCount  = other.attributeCount;
-      attributeNames  = other.attributeNames;
-      offset_         = other.offset_;
-      position_       = other.position_;
+      name_          = other.name_;
+      id             = other.id;
+      edgeCount      = other.edgeCount;
+      nodesPerEdge   = other.nodesPerEdge;
+      attributeCount = other.attributeCount;
+      attributeNames = other.attributeNames;
+      offset_        = other.offset_;
+      position_      = other.position_;
       return *this;
     }
   };
@@ -232,9 +231,9 @@ namespace Excn {
     FaceBlock() { copy_string(elType, ""); }
 
     FaceBlock(const FaceBlock &other)
-      : name_(other.name_), id(other.id), faceCount(other.faceCount),
-        nodesPerFace(other.nodesPerFace), attributeCount(other.attributeCount),
-        offset_(other.offset_), position_(other.position_)
+        : name_(other.name_), id(other.id), faceCount(other.faceCount),
+          nodesPerFace(other.nodesPerFace), attributeCount(other.attributeCount),
+          offset_(other.offset_), position_(other.position_)
     {
       copy_string(elType, other.elType);
     }
@@ -254,21 +253,20 @@ namespace Excn {
 
     void dump() const
     {
-      fmt::print(stderr, "FaceBlock {}, Name: {}, {} faces\n",
-                 id, name_, faceCount);
+      fmt::print(stderr, "FaceBlock {}, Name: {}, {} faces\n", id, name_, faceCount);
     }
 
     FaceBlock &operator=(const FaceBlock &other)
     {
       copy_string(elType, other.elType);
-      name_           = other.name_;
-      id              = other.id;
-      faceCount       = other.faceCount;
-      nodesPerFace    = other.nodesPerFace;
-      attributeCount  = other.attributeCount;
-      attributeNames  = other.attributeNames;
-      offset_         = other.offset_;
-      position_       = other.position_;
+      name_          = other.name_;
+      id             = other.id;
+      faceCount      = other.faceCount;
+      nodesPerFace   = other.nodesPerFace;
+      attributeCount = other.attributeCount;
+      attributeNames = other.attributeNames;
+      offset_        = other.offset_;
+      position_      = other.position_;
       return *this;
     }
   };

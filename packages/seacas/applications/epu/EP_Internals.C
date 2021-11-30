@@ -36,34 +36,32 @@ extern "C" {
 // Explicit Initialization of the functions used...
 namespace Excn {
   template int Internals<int>::write_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
-                                               const std::vector<NodeSet<int>> &nodesets,
-                                               const std::vector<SideSet<int>> &sidesets,
+                                               const std::vector<NodeSet<int>> &  nodesets,
+                                               const std::vector<SideSet<int>> &  sidesets,
                                                const std::vector<EdgeBlock<int>> &edgeblock,
                                                const std::vector<FaceBlock<int>> &faceblock,
-                                               const CommunicationMetaData     &comm);
+                                               const CommunicationMetaData &      comm);
 
   template bool Internals<int>::check_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
-                                                const std::vector<NodeSet<int>> &nodesets,
-                                                const std::vector<SideSet<int>> &sidesets,
+                                                const std::vector<NodeSet<int>> &  nodesets,
+                                                const std::vector<SideSet<int>> &  sidesets,
                                                 const std::vector<EdgeBlock<int>> &edgeblock,
                                                 const std::vector<FaceBlock<int>> &faceblock,
-                                                const CommunicationMetaData     &comm);
+                                                const CommunicationMetaData &      comm);
 
-  template int Internals<int64_t>::write_meta_data(const Mesh                          &mesh,
-                                                   const std::vector<Block>            &blocks,
-                                                   const std::vector<NodeSet<int64_t>> &nodesets,
-                                                   const std::vector<SideSet<int64_t>> &sidesets,
+  template int Internals<int64_t>::write_meta_data(const Mesh &                           mesh,
+                                                   const std::vector<Block> &             blocks,
+                                                   const std::vector<NodeSet<int64_t>> &  nodesets,
+                                                   const std::vector<SideSet<int64_t>> &  sidesets,
                                                    const std::vector<EdgeBlock<int64_t>> &edgeblock,
                                                    const std::vector<FaceBlock<int64_t>> &faceblock,
-                                                   const CommunicationMetaData         &comm);
+                                                   const CommunicationMetaData &          comm);
 
-  template bool Internals<int64_t>::check_meta_data(const Mesh                          &mesh,
-                                                    const std::vector<Block>            &blocks,
-                                                    const std::vector<NodeSet<int64_t>> &nodesets,
-                                                    const std::vector<SideSet<int64_t>> &sidesets,
-                                                    const std::vector<EdgeBlock<int64_t>> &edgeblock,
-                                                    const std::vector<FaceBlock<int64_t>> &faceblock,
-                                                    const CommunicationMetaData         &comm);
+  template bool Internals<int64_t>::check_meta_data(
+      const Mesh &mesh, const std::vector<Block> &blocks,
+      const std::vector<NodeSet<int64_t>> &nodesets, const std::vector<SideSet<int64_t>> &sidesets,
+      const std::vector<EdgeBlock<int64_t>> &edgeblock,
+      const std::vector<FaceBlock<int64_t>> &faceblock, const CommunicationMetaData &comm);
 } // namespace Excn
 
 namespace {
@@ -132,11 +130,11 @@ Excn::Redefine::~Redefine()
 
 template <typename INT>
 int Excn::Internals<INT>::write_meta_data(const Mesh &mesh, const std::vector<Block> &blocks,
-                                          const std::vector<NodeSet<INT>> &nodesets,
-                                          const std::vector<SideSet<INT>> &sidesets,
+                                          const std::vector<NodeSet<INT>> &  nodesets,
+                                          const std::vector<SideSet<INT>> &  sidesets,
                                           const std::vector<EdgeBlock<INT>> &edgeblocks,
                                           const std::vector<FaceBlock<INT>> &faceblocks,
-                                          const CommunicationMetaData     &comm)
+                                          const CommunicationMetaData &      comm)
 {
   SMART_ASSERT((int)blocks.size() == mesh.blockCount);
   SMART_ASSERT((int)nodesets.size() == mesh.nodesetCount);
@@ -414,18 +412,18 @@ bool Excn::Internals<INT>::check_meta_data(const Mesh &mesh, const std::vector<B
   }
 
   if (mesh.edgeBlockCount != init_data.num_edge_blk) {
-    fmt::print(
-        stderr,
-        "ERROR: (EPU) original mesh edgeblock count ({}) does not match current edgeblock count ({})\n",
-        mesh.edgeBlockCount, init_data.num_edge_blk);
+    fmt::print(stderr,
+               "ERROR: (EPU) original mesh edgeblock count ({}) does not match current edgeblock "
+               "count ({})\n",
+               mesh.edgeBlockCount, init_data.num_edge_blk);
     matches = false;
   }
 
   if (mesh.faceBlockCount != init_data.num_face_blk) {
-    fmt::print(
-        stderr,
-        "ERROR: (EPU) original mesh faceblock count ({}) does not match current faceblock count ({})\n",
-        mesh.faceBlockCount, init_data.num_face_blk);
+    fmt::print(stderr,
+               "ERROR: (EPU) original mesh faceblock count ({}) does not match current faceblock "
+               "count ({})\n",
+               mesh.faceBlockCount, init_data.num_face_blk);
     matches = false;
   }
 
@@ -1120,7 +1118,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
       // create distribution factor list variable for side set
       dims[0] = dimid;
       status  = nc_def_var(exodusFilePtr, VAR_FACT_SS(cur_num_side_sets + 1),
-                           nc_flt_code(exodusFilePtr), 1, dims, &varid);
+                          nc_flt_code(exodusFilePtr), 1, dims, &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -1231,23 +1229,24 @@ int Excn::Internals<INT>::put_metadata(const std::vector<EdgeBlock<INT>> &edgebl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
       else {
-        errmsg = fmt::format("Error: failed to define number of edges for edge block {} in file id {}",
-                             edgeblocks[i].id, exodusFilePtr);
+        errmsg =
+            fmt::format("Error: failed to define number of edges for edge block {} in file id {}",
+                        edgeblocks[i].id, exodusFilePtr);
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
       return (EX_FATAL);
     }
 
     int num_nodes_per_edge_dim;
-    status = nc_def_dim(exodusFilePtr, DIM_NUM_NOD_PER_ED(cur_num_edge_blocks + 1), edgeblocks[i].nodesPerEdge,
-                        &num_nodes_per_edge_dim);
+    status = nc_def_dim(exodusFilePtr, DIM_NUM_NOD_PER_ED(cur_num_edge_blocks + 1),
+                        edgeblocks[i].nodesPerEdge, &num_nodes_per_edge_dim);
     if (status != NC_NOERR) {
-        ex_opts(EX_VERBOSE);
-        errmsg =
-            fmt::format("Error: failed to define number of nodes/edge for block {} in file id {}",
-                        edgeblocks[i].id, exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-        return (EX_FATAL);
+      ex_opts(EX_VERBOSE);
+      errmsg =
+          fmt::format("Error: failed to define number of nodes/edge for block {} in file id {}",
+                      edgeblocks[i].id, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
     }
 
     // element connectivity array
@@ -1255,13 +1254,15 @@ int Excn::Internals<INT>::put_metadata(const std::vector<EdgeBlock<INT>> &edgebl
     dims[1] = num_nodes_per_edge_dim;
 
     int connid;
-    status = nc_def_var(exodusFilePtr, VAR_EBCONN(cur_num_edge_blocks + 1), bulk_type, 2, dims, &connid);
+    status =
+        nc_def_var(exodusFilePtr, VAR_EBCONN(cur_num_edge_blocks + 1), bulk_type, 2, dims, &connid);
     if (status != NC_NOERR) {
-        ex_opts(EX_VERBOSE);
-        errmsg = fmt::format("Error: failed to create connectivity array for edge block {} in file id {}",
-                             edgeblocks[i].id, exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-        return (EX_FATAL);
+      ex_opts(EX_VERBOSE);
+      errmsg =
+          fmt::format("Error: failed to create connectivity array for edge block {} in file id {}",
+                      edgeblocks[i].id, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
     }
     ex__compress_variable(exodusFilePtr, connid, 1);
 
@@ -1270,11 +1271,11 @@ int Excn::Internals<INT>::put_metadata(const std::vector<EdgeBlock<INT>> &edgebl
                              static_cast<int>(std::strlen(edgeblocks[i].elType)) + 1,
                              edgeblocks[i].elType);
     if (status != NC_NOERR) {
-        ex_opts(EX_VERBOSE);
-        errmsg = fmt::format("Error: failed to store edge type name {} in file id {}",
-                             edgeblocks[i].elType, exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-        return (EX_FATAL);
+      ex_opts(EX_VERBOSE);
+      errmsg = fmt::format("Error: failed to store edge type name {} in file id {}",
+                           edgeblocks[i].elType, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
     }
   }
   return EX_NOERR;
@@ -1288,7 +1289,7 @@ int Excn::Internals<INT>::put_non_define_data(const std::vector<EdgeBlock<INT>> 
   }
 
   // Output edgeblock ids...
-  int num_edgeblocks = (int)edgeblocks.size();
+  int                       num_edgeblocks = (int)edgeblocks.size();
   std::vector<ex_entity_id> edgeblock_id(num_edgeblocks);
   for (int i = 0; i < num_edgeblocks; i++) {
     edgeblock_id[i] = edgeblocks[i].id;
@@ -1368,23 +1369,24 @@ int Excn::Internals<INT>::put_metadata(const std::vector<FaceBlock<INT>> &facebl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
       else {
-        errmsg = fmt::format("Error: failed to define number of faces for face block {} in file id {}",
-                             faceblocks[i].id, exodusFilePtr);
+        errmsg =
+            fmt::format("Error: failed to define number of faces for face block {} in file id {}",
+                        faceblocks[i].id, exodusFilePtr);
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
       return (EX_FATAL);
     }
 
     int num_nodes_per_face_dim;
-    status = nc_def_dim(exodusFilePtr, DIM_NUM_NOD_PER_FA(cur_num_face_blocks + 1), faceblocks[i].nodesPerFace,
-                        &num_nodes_per_face_dim);
+    status = nc_def_dim(exodusFilePtr, DIM_NUM_NOD_PER_FA(cur_num_face_blocks + 1),
+                        faceblocks[i].nodesPerFace, &num_nodes_per_face_dim);
     if (status != NC_NOERR) {
-        ex_opts(EX_VERBOSE);
-        errmsg =
-            fmt::format("Error: failed to define number of nodes/face for block {} in file id {}",
-                        faceblocks[i].id, exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-        return (EX_FATAL);
+      ex_opts(EX_VERBOSE);
+      errmsg =
+          fmt::format("Error: failed to define number of nodes/face for block {} in file id {}",
+                      faceblocks[i].id, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
     }
 
     // element connectivity array
@@ -1392,13 +1394,15 @@ int Excn::Internals<INT>::put_metadata(const std::vector<FaceBlock<INT>> &facebl
     dims[1] = num_nodes_per_face_dim;
 
     int connid;
-    status = nc_def_var(exodusFilePtr, VAR_FBCONN(cur_num_face_blocks + 1), bulk_type, 2, dims, &connid);
+    status =
+        nc_def_var(exodusFilePtr, VAR_FBCONN(cur_num_face_blocks + 1), bulk_type, 2, dims, &connid);
     if (status != NC_NOERR) {
-        ex_opts(EX_VERBOSE);
-        errmsg = fmt::format("Error: failed to create connectivity array for face block {} in file id {}",
-                             faceblocks[i].id, exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-        return (EX_FATAL);
+      ex_opts(EX_VERBOSE);
+      errmsg =
+          fmt::format("Error: failed to create connectivity array for face block {} in file id {}",
+                      faceblocks[i].id, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
     }
     ex__compress_variable(exodusFilePtr, connid, 1);
 
@@ -1407,11 +1411,11 @@ int Excn::Internals<INT>::put_metadata(const std::vector<FaceBlock<INT>> &facebl
                              static_cast<int>(std::strlen(faceblocks[i].elType)) + 1,
                              faceblocks[i].elType);
     if (status != NC_NOERR) {
-        ex_opts(EX_VERBOSE);
-        errmsg = fmt::format("Error: failed to store face type name {} in file id {}",
-                             faceblocks[i].elType, exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
-        return (EX_FATAL);
+      ex_opts(EX_VERBOSE);
+      errmsg = fmt::format("Error: failed to store face type name {} in file id {}",
+                           faceblocks[i].elType, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
     }
   }
   return EX_NOERR;
@@ -1425,7 +1429,7 @@ int Excn::Internals<INT>::put_non_define_data(const std::vector<FaceBlock<INT>> 
   }
 
   // Output faceblock ids...
-  int num_faceblocks = (int)faceblocks.size();
+  int                       num_faceblocks = (int)faceblocks.size();
   std::vector<ex_entity_id> faceblock_id(num_faceblocks);
   for (int i = 0; i < num_faceblocks; i++) {
     faceblock_id[i] = faceblocks[i].id;
