@@ -464,8 +464,7 @@ inline int Ioss::GroupingEntity::field_describe(NameList *names) const
 /** \brief Get the names of all fields of a specified RoleType in the entity's field manager.
  *
  * \param[in] role The role type (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc.)
- * \param[out] names All field names of the specified RoleType in the entity's field manager.
- * \returns The number of fields extracted from the entity's field manager.
+ * \returns All field names of the specified RoleType in the entity's field manager.
  *
  */
 inline Ioss::NameList Ioss::GroupingEntity::field_describe(Ioss::Field::RoleType role) const
