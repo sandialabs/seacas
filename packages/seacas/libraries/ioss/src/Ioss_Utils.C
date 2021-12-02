@@ -1360,9 +1360,7 @@ void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::Role
   if (!header.empty()) {
     fmt::print("{}{}", header, suffix);
   }
-  // Iterate through results fields and transfer to output
-  // database...
-  // Get max width of a name...
+  // Iterate through results fields. Get max width of a name...
   size_t max_width = 0;
   for (const auto &field_name : fields) {
     max_width = max_width > field_name.length() ? max_width : field_name.length();
