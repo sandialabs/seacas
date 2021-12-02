@@ -1432,18 +1432,19 @@ namespace {
 
   template <typename T>
   bool compare_field_data(T *data1, T *data2, size_t count, const std::string &field_name,
-                          std::ostringstream &buf)
+                          const std::string &entity_name, std::ostringstream &buf)
   {
+    int  width = Ioss::Utils::number_width(count - 1);
     bool first = true;
     for (size_t i = 0; i < count; i++) {
       if (data1[i] != data2[i]) {
         if (first) {
-          fmt::print(buf, "\n\tFIELD ({}) mismatch at index[{}]: {} vs. {}", field_name, i,
-                     data1[i], data2[i]);
+          fmt::print(buf, "\n\tFIELD ({}) on {} -- mismatch at index\n\t\t[{:{}}]: {}\tvs. {}",
+                     field_name, entity_name, i, width, data1[i], data2[i]);
           first = false;
         }
         else {
-          fmt::print(buf, ", [{}]: {} vs. {}", i, data1[i], data2[i]);
+          fmt::print(buf, "\n\t\t[{:{}}]: {}\tvs. {}", i, width, data1[i], data2[i]);
         }
       }
     }
@@ -1461,8 +1462,8 @@ namespace {
     DataPool in_pool_2;
 
     if (isize != osize) {
-      fmt::print(buf, "\n\tFIELD size mismatch for field '{}', ({} vs. {})", field_name, isize,
-                 osize);
+      fmt::print(buf, "\n\tFIELD size mismatch for field '{}', ({} vs. {}) on {}", field_name,
+                 isize, osize, ige_1->name());
       return false;
     }
 
@@ -1530,13 +1531,13 @@ namespace {
       switch (field.get_type()) {
       case Ioss::Field::REAL:
         return compare_field_data((double *)in_pool.data.data(), (double *)in_pool_2.data.data(),
-                                  field.raw_count(), field_name, buf);
+                                  field.raw_count(), field_name, ige_1->name(), buf);
       case Ioss::Field::INTEGER:
         return compare_field_data((int *)in_pool.data.data(), (int *)in_pool_2.data.data(),
-                                  field.raw_count(), field_name, buf);
+                                  field.raw_count(), field_name, ige_1->name(), buf);
       case Ioss::Field::INT64:
         return compare_field_data((int64_t *)in_pool.data.data(), (int64_t *)in_pool_2.data.data(),
-                                  field.raw_count(), field_name, buf);
+                                  field.raw_count(), field_name, ige_1->name(), buf);
       default:
         fmt::print(Ioss::WARNING(), "Field data_storage type {} not recognized for field {}.",
                    field.type_string(), field_name);
