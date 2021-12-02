@@ -10,7 +10,6 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
-#include <Ioss_Version.h>
 #include <algorithm>
 #include <cstring>
 #include <exodus/Ioex_Utils.h>
@@ -92,8 +91,6 @@ namespace {
 } // namespace
 
 namespace Ioex {
-  const char *Version() { return Ioss::Version(); }
-
   void update_last_time_attribute(int exodusFilePtr, double value)
   {
     double tmp    = 0.0;
