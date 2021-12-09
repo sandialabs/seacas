@@ -48,7 +48,7 @@ fi
 
 rm -f config.cache
 
-cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
+cmake --debug-find .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DBUILD_SHARED_LIBS:BOOL=${SHARED} \
          -DBUILD_TESTING:BOOL=OFF \
          -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} \
