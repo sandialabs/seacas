@@ -13,7 +13,7 @@ jobs:
     
     strategy:
       matrix:
-        compiler: [ intel ]
+        compiler: [ intel, mpi ]
         hdf5: [ V112 ]
         netcdf: [ 4.8.1 ]
         cgns: [ 4.2.0 ]
@@ -72,7 +72,7 @@ jobs:
 
     strategy:
       matrix:
-        compiler: [ intel ]
+        compiler: [ intel, mpi ]
         hdf5: [ V112 ]
         netcdf: [ 4.8.1 ]
         cgns: [ 4.2.0 ]
