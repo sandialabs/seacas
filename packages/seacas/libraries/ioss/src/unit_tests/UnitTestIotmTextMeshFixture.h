@@ -44,36 +44,19 @@
     if ( !(expr) ) {                                                         \
       std::ostringstream internal_throw_require_oss;                         \
       internal_throw_require_oss << message;                                 \
-      IOSS_ERROR(internal_throw_require_oss );                               \
+      throw std::logic_error(internal_throw_require_oss.str());              \
     }                                                                        \
   } while (false)
 
-namespace Iotm{ namespace unit_test {
+using EntityId = int64_t;
+using EntityIdVector = std::vector<EntityId>;
+using EntityIdSet = std::set<EntityId>;
 
-inline
-void filename_substitution(std::string &filename)
-{
-  // See if filename contains "%P" which is replaced by the number of processors...
-  // Assumes that %P only occurs once...
-  // filename is changed.
-  size_t pos = filename.find("%P");
-  if (pos != std::string::npos) {
-    // Found the characters...  Replace with the processor count...
-    int num_proc = std::max(1, get_parallel_size());
-    std::string tmp(filename, 0, pos);
-    tmp += std::to_string(num_proc);
-    tmp += filename.substr(pos+2);
-    filename = tmp;
-  }
-}
+namespace Iotm{ namespace unit_test {
 
 class TextMeshFixture : public ::testing::Test
 {
  protected:
-  using EntityId = int64_t;
-  using EntityIdVector = std::vector<EntityId>;
-  using EntityIdSet = std::set<EntityId>;
-
   using PartNameId = std::pair<std::string, unsigned>;
 
   struct ElementInfo {
@@ -95,6 +78,7 @@ class TextMeshFixture : public ::testing::Test
   : m_spatialDimension(spatialDimension)
   {
     Ioss::Init::Initializer io;
+    m_topologyMapping.initialize_topology_map();
   }
 
   ~TextMeshFixture()
@@ -465,6 +449,22 @@ class TextMeshFixture : public ::testing::Test
     }
   }
 
+  void filename_substitution(std::string &filename)
+  {
+    // See if filename contains "%P" which is replaced by the number of processors...
+    // Assumes that %P only occurs once...
+    // filename is changed.
+    size_t pos = filename.find("%P");
+    if (pos != std::string::npos) {
+      // Found the characters...  Replace with the processor count...
+      int num_proc = std::max(1, get_parallel_size());
+      std::string tmp(filename, 0, pos);
+      tmp += std::to_string(num_proc);
+      tmp += filename.substr(pos+2);
+      filename = tmp;
+    }
+  }
+
   std::pair<std::string, std::string> get_database_type_and_filename(const std::string& meshDesc)
   {
     std::string type;
@@ -652,8 +652,6 @@ class TextMeshFixture : public ::testing::Test
 
 }}
 
-using TextMeshFixture = Iotm::unit_test::TextMeshFixture;
-using EntityIdVector = TextMeshFixture::EntityIdVector;
 
 namespace
 {
