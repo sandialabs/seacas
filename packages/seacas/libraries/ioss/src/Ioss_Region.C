@@ -1616,6 +1616,12 @@ namespace Ioss {
     std::string ci_alias = Ioss::Utils::uppercase(alias);
     auto        I        = aliases_[type].find(ci_alias);
     if (I == aliases_[type].end()) {
+      if (type == Ioss::SIDEBLOCK) {
+	I = aliases_[Ioss::SIDESET].find(ci_alias);
+	if (I != aliases_[Ioss::SIDESET].end()) {
+	  return (*I).second;
+	}
+      }
       return "";
     }
     return (*I).second;
