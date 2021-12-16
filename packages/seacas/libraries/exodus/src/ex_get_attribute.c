@@ -10,19 +10,14 @@
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include <stdbool.h>
 
-/* An assembly attribute is similar to an IOSS property consisting of
+/* An entity attribute is similar to an IOSS property consisting of
    a name, a type, and a value or values. It is not a value per entity
-   in the assembly, but a value for the assembly. For now, they types
+   in the entity, but a value for the entity. For now, the types
    will be limited to text, integer, and double to provide capability
    without the complexity of supporting the many types available in
    NetCDF-4 including user-defined types. Note that an attribute can
    have multiple values, for example if the attribute is a range, it
    could have the value {1.0, 100.0}
-
-   NOTE: This type of attribute (value on entity instead of value per
-   entities members, for example nodes in a nodeset) will also be added
-   to the other entity types (blocks and sets) when implemented for
-   assemblies.
 
    NOTE: Need a better name or way of distinguishing from the
    attributes which are currently supported in Exodus.
