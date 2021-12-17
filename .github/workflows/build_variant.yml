@@ -69,6 +69,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -82,6 +83,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -95,6 +97,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
           }
@@ -108,6 +111,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
           }
@@ -121,6 +125,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "address" # address, integer, thread, memory, undefined
           }
@@ -134,6 +139,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "undefined" # address, integer, thread, memory, undefined
           }
@@ -147,8 +153,23 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "integer" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "GTest Enabled",
+            os: ubuntu-latest,
+            compiler: "gnu",
+            debug: "YES",
+            threadsafe: "NO",
+            fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
+            use_catalyst2: "NO",
+            gtest: "YES",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
             name: "No applications, legacy, or fortran",
@@ -160,6 +181,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "APPLICATIONS=NO LEGACY=NO",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -173,6 +195,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "YES",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -186,6 +209,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "YES",
+            gtest: "NO",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -212,7 +236,7 @@ jobs:
         if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' }}
         run: |
           set -x
-          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} GNU_PARALLEL=OFF GTEST=${{ matrix.config.gtest }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
           ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
         
 ###
