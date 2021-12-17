@@ -870,7 +870,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd googletest
-            git checkout release-1.8.1
+            git checkout release-1.11.0
             rm -rf build
             mkdir build
             cd build
