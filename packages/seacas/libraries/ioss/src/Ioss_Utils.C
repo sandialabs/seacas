@@ -291,7 +291,7 @@ std::string Ioss::Utils::fixup_type(const std::string &base, int nodes_per_eleme
   // nodes.  To fix this, check the block type name and see if it
   // ends with a number.  If it does, assume it is OK; if not, append
   // the 'nodes_per_element'.
-  if (isdigit(*(type.rbegin())) == 0) {
+  if (type.empty() || isdigit(*(type.rbegin())) == 0) {
     if (nodes_per_element > 1) {
       type += std::to_string(nodes_per_element);
     }
