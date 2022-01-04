@@ -8,6 +8,7 @@
 
 #include <array>
 #include <cassert>
+#include <cmath>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -54,8 +55,6 @@
 #include <Ioss_VariableType.h>
 #include <tokenize.h>
 
-#include <tgmath.h>
-
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -76,7 +75,7 @@
 #endif
 // ========================================================================
 
-using real = long double;
+using real = double;
 
 namespace {
   std::string codename;
@@ -1664,11 +1663,11 @@ namespace {
       n3 = 2;
     }
 
-    static real degang  = atan2(0.0L, -1.0L) / 180.0;
+    static real degang  = std::atan2(0.0L, -1.0L) / 180.0;
     real        ang_rad = angle * degang;
 
-    auto cosang = cos(ang_rad);
-    auto sinang = sin(ang_rad);
+    auto cosang = std::cos(ang_rad);
+    auto sinang = std::sin(ang_rad);
 
     real by[3][3];
     real res[3][3];
