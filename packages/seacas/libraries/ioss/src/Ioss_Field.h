@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -107,6 +107,11 @@ namespace Ioss {
     bool is_invalid() const { return type_ == INVALID; }
 
     const std::string &get_name() const { return name_; }
+    std::string        get_component_name(int component_index) const;
+    int                get_component_count() const;
+
+    void set_suffix_separator(char suffix_separator) { suffixSeparator_ = suffix_separator; }
+    char get_suffix_separator() const { return suffixSeparator_; }
 
     /** \brief Get the basic data type of the data held in the field.
      *
@@ -167,6 +172,7 @@ namespace Ioss {
 
     std::vector<Transform *> transforms_;
     bool                     equal_(const Ioss::Field &rhs, bool quiet) const;
+    char                     suffixSeparator_{'_'};
   };
 } // namespace Ioss
 #endif
