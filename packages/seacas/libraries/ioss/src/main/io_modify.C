@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -17,7 +17,6 @@
 #include <iostream>
 #include <regex>
 #include <string>
-#include <tgmath.h>
 #include <unistd.h>
 #include <utility>
 #include <vector>
@@ -54,6 +53,8 @@
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
 #include <tokenize.h>
+
+#include <tgmath.h>
 
 #include <fmt/color.h>
 #include <fmt/format.h>
@@ -1663,11 +1664,11 @@ namespace {
       n3 = 2;
     }
 
-    static real degang  = std::atan2(0.0L, -1.0L) / 180.0;
+    static real degang  = atan2(0.0L, -1.0L) / 180.0;
     real        ang_rad = angle * degang;
 
-    auto cosang = std::cos(ang_rad);
-    auto sinang = std::sin(ang_rad);
+    auto cosang = cos(ang_rad);
+    auto sinang = sin(ang_rad);
 
     real by[3][3];
     real res[3][3];
