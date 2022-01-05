@@ -2916,7 +2916,7 @@ int64_t ParallelDatabaseIO::read_transient_field(ex_entity_type               ty
 
   char field_suffix_separator = get_field_separator();
   for (size_t i = 0; i < comp_count; i++) {
-    std::string var_name = field.get_component_name(i + 1);
+    std::string var_name = get_component_name(field, i + 1);
 
     // Read the variable...
     int64_t id       = Ioex::get_id(ge, type, &ids_);
@@ -2992,7 +2992,7 @@ int64_t ParallelDatabaseIO::read_ss_transient_field(const Ioss::Field &field, in
 
   char field_suffix_separator = get_field_separator();
   for (size_t i = 0; i < comp_count; i++) {
-    std::string var_name = field.get_component_name(i + 1);
+    std::string var_name = get_component_name(field, i + 1);
 
     // Read the variable...
     int  ierr     = 0;
@@ -4102,7 +4102,7 @@ void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */,
 
     char field_suffix_separator = get_field_separator();
     for (int i = 0; i < comp_count; i++) {
-      std::string var_name = field.get_component_name(i + 1);
+      std::string var_name = get_component_name(field, i + 1);
 
       auto var_iter = m_variables[EX_NODE_BLOCK].find(var_name);
       if (var_iter == m_variables[EX_NODE_BLOCK].end()) {
@@ -4213,7 +4213,7 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
 
     char field_suffix_separator = get_field_separator();
     for (int i = 0; i < comp_count; i++) {
-      std::string var_name = field.get_component_name(i + 1);
+      std::string var_name = get_component_name(field, i + 1);
 
       auto var_iter = m_variables[type].find(var_name);
       if (var_iter == m_variables[type].end()) {

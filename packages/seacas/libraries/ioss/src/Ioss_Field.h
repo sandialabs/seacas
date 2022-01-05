@@ -107,8 +107,16 @@ namespace Ioss {
     bool is_invalid() const { return type_ == INVALID; }
 
     const std::string &get_name() const { return name_; }
-    std::string        get_component_name(int component_index) const;
-    int                get_component_count() const;
+
+    /** \brief Get name of the 'component_indexth` component (1-based)
+     *
+     * \param[in] component_index 1-based index of the component to be named
+     * \param[in] separator optional suffix separator to be used if the separator
+     *            on the field is set to 1 which means 'unset'
+     * \returns name of the specified component
+     */
+    std::string get_component_name(int component_index, char suffix = 1) const;
+    int         get_component_count() const;
 
     void set_suffix_separator(char suffix_separator) { suffixSeparator_ = suffix_separator; }
     char get_suffix_separator() const { return suffixSeparator_; }
@@ -172,7 +180,7 @@ namespace Ioss {
 
     std::vector<Transform *> transforms_;
     bool                     equal_(const Ioss::Field &rhs, bool quiet) const;
-    char                     suffixSeparator_{'_'};
+    char                     suffixSeparator_{1}; // Value = 1 means unset; use database default.
   };
 } // namespace Ioss
 #endif

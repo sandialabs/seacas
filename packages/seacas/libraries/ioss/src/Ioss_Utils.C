@@ -588,7 +588,9 @@ namespace {
         assert(type->component_count() == static_cast<int>(which_names.size()));
         Ioss::Field field(base_name.substr(0, bn_len - 1), Ioss::Field::REAL, type, fld_role,
                           count);
-        field.set_suffix_separator(suffix_separator);
+        if (suffix_separator != '_') {
+          field.set_suffix_separator(suffix_separator);
+        }
         field.set_index(index);
         for (const auto &which_name : which_names) {
           names[which_name][0] = '\0';
@@ -630,7 +632,9 @@ namespace {
           suffix                 = '_';
         }
         Ioss::Field field(name, Ioss::Field::REAL, type, fld_role, entity_count);
-        field.set_suffix_separator(suffix);
+        if (suffix != suffix_separator) {
+          field.set_suffix_separator(suffix);
+        }
         if (field.is_valid()) {
           fields.push_back(field);
         }
@@ -654,11 +658,9 @@ namespace {
     return false; // Can't get here...  Quiet the compiler
   }
 } // namespace
+
 // Read scalar fields off an input database and determine whether
 // they are components of a higher order type (vector, tensor, ...).
-// This routine is used if there is no field component separator.  E.g.,
-// fieldx, fieldy, fieldz instead of field_x field_y field_z
-
 void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in this entity.
                              char  **names,        // Raw list of field names from exodus
                              int     num_names,    // Number of names in list
@@ -696,6 +698,8 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
     }
   }
   else {
+    // This routine is used if there is no field component separator.  E.g.,
+    // fieldx, fieldy, fieldz instead of field_x field_y field_z
     int                       nmatch = 1;
     int                       ibeg   = 0;
     int                       pmat   = 0;

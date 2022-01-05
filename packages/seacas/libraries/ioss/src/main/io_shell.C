@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -298,6 +298,8 @@ namespace {
           std::exit(EXIT_FAILURE);
         }
 
+        dbo->set_field_separator(interFace.fieldSuffixSeparator);
+
         // NOTE: 'output_region' owns 'dbo' pointer at this time
         Ioss::Region output_region(dbo, "region_2");
         // Set the qa information...
@@ -382,6 +384,8 @@ namespace {
           if (dbo == nullptr || !dbo->ok(true)) {
             std::exit(EXIT_FAILURE);
           }
+
+          dbo->set_field_separator(interFace.fieldSuffixSeparator);
 
           // NOTE: 'output_region' owns 'dbo' pointer at this time
           Ioss::Region output_region(dbo, "region_2");

@@ -109,9 +109,13 @@ Ioss::Field::~Field() = default;
 
 int Ioss::Field::get_component_count() const { return raw_storage()->component_count(); }
 
-std::string Ioss::Field::get_component_name(int component_index) const
+std::string Ioss::Field::get_component_name(int component_index, char suffix) const
 {
-  return raw_storage()->label_name(get_name(), component_index, get_suffix_separator());
+  char suffix_separator = get_suffix_separator();
+  if (suffix_separator == 1) {
+    suffix_separator = suffix != 1 ? suffix : '_';
+  }
+  return raw_storage()->label_name(get_name(), component_index, suffix_separator);
 }
 
 /* \brief Verify that data_size is valid.

@@ -3510,7 +3510,7 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
   size_t comp_count = field.get_component_count();
 
   if (comp_count == 1 && field.get_type() == Ioss::Field::REAL) {
-    std::string var_name = field.get_component_name(1);
+    std::string var_name = get_component_name(field, 1);
 
     // Read the variable...
     int64_t id   = Ioex::get_id(ge, type, &ids_);
@@ -3531,7 +3531,7 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
   }
   else {
     for (size_t i = 0; i < comp_count; i++) {
-      std::string var_name = field.get_component_name(i + 1);
+      std::string var_name = get_component_name(field, i + 1);
 
       // Read the variable...
       int64_t id       = Ioex::get_id(ge, type, &ids_);
@@ -3598,7 +3598,7 @@ int64_t DatabaseIO::read_ss_transient_field(const Ioss::Field &field, int64_t id
   size_t comp_count = field.get_component_count();
 
   for (size_t i = 0; i < comp_count; i++) {
-    std::string var_name = field.get_component_name(i + 1);
+    std::string var_name = get_component_name(field, i + 1);
 
     // Read the variable...
     int  ierr     = 0;
@@ -4610,7 +4610,7 @@ void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Io
     }
 
     for (int i = 0; i < comp_count; i++) {
-      std::string var_name = field.get_component_name(i + 1);
+      std::string var_name = get_component_name(field, i + 1);
 
       auto var_iter = m_variables[EX_NODE_BLOCK].find(var_name);
       if (var_iter == m_variables[EX_NODE_BLOCK].end()) {
@@ -4705,7 +4705,7 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
       !map->reorders()) {
     // Simply output the variable...
     int64_t     id       = Ioex::get_id(ge, type, &ids_);
-    std::string var_name = field.get_component_name(1);
+    std::string var_name = get_component_name(field, 1);
     auto        var_iter = m_variables[type].find(var_name);
     if (var_iter == m_variables[type].end()) {
       std::ostringstream errmsg;
@@ -4735,7 +4735,7 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
     }
 
     for (int i = 0; i < comp_count; i++) {
-      std::string var_name = field.get_component_name(i + 1);
+      std::string var_name = get_component_name(field, i + 1);
 
       auto var_iter = m_variables[type].find(var_name);
       if (var_iter == m_variables[type].end()) {
