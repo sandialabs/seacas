@@ -1233,7 +1233,7 @@ namespace Iocgns {
       // Locate the FlowSolution node corresponding to the correct state/step/time
       // TODO: do this at read_meta_data() and store...
       int step       = get_region()->get_current_state();
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
       if (comp_count == 1) {
         decomp->get_node_field(get_file_pointer(), step, Utils::index(field), (double *)data);
@@ -1300,7 +1300,7 @@ namespace Iocgns {
                (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
       }
 
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
       if (comp_count == 1) {
         CGCHECKM(cg_field_read(get_file_pointer(), base, zone, solution_index,
                                field.get_name().c_str(), CGNS_ENUMV(RealDouble), rmin, rmax,
@@ -1460,7 +1460,7 @@ namespace Iocgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
       int sol_index = 0;
       int step      = get_region()->get_current_state();
@@ -1547,7 +1547,7 @@ namespace Iocgns {
       std::vector<double> temp(num_entity);
 
       // get number of components, cycle through each component
-      size_t comp_count = field.get_component_count();
+      size_t comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
       for (size_t i = 0; i < comp_count; i++) {
         int field_offset = Utils::index(field) + i;
         decomp->get_element_field(get_file_pointer(), solution_index, order, field_offset,
@@ -1869,7 +1869,7 @@ namespace Iocgns {
       // prior to outputting nodal coordinates.
       std::vector<int64_t> node_offset = get_processor_zone_node_offset();
 
-      size_t comp_count = field.get_component_count();
+      size_t comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
       double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
@@ -1930,7 +1930,7 @@ namespace Iocgns {
       int   base       = 1;
       auto *rdata      = static_cast<double *>(data);
       int   cgns_field = 0;
-      int   comp_count = field.get_component_count();
+      int   comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
       cgsize_t rmin[3] = {0, 0, 0};
       cgsize_t rmax[3] = {0, 0, 0};
@@ -2159,7 +2159,7 @@ namespace Iocgns {
       cgsize_t range_max[1] = {(cgsize_t)start + (cgsize_t)num_to_get};
 
       // get number of components, cycle through each component
-      size_t comp_count = field.get_component_count();
+      size_t comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
       if (comp_count == 1) {
         int cgns_field = 0;
         CGCHECKM(cgp_field_write(get_file_pointer(), base, zone, m_currentCellCenterSolutionIndex,
@@ -2301,7 +2301,7 @@ namespace Iocgns {
     }
     else if (role == Ioss::Field::TRANSIENT) {
       int cgns_field = 0;
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
       int sol_index  = 0;
       CGNS_ENUMT(GridLocation_t) location;
       if (cell_field) {

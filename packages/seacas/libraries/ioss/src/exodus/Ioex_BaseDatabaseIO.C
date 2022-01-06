@@ -994,7 +994,7 @@ namespace Ioex {
               field_name += complex_suffix[complex_comp];
             }
 
-            for (int i = 1; i <= field.get_component_count(); i++) {
+            for (int i = 1; i <= field.get_component_count(Ioss::Field::InOut::INPUT); i++) {
               std::string var_string = field.get_component_name(i, field_suffix_separator);
               // Find position of 'var_string' in 'variables'
               auto VN = variables.find(var_string);
@@ -1036,7 +1036,7 @@ namespace Ioex {
     // get number of components, cycle through each component
     // and add suffix to base 'field_name'.  Look up index
     // of this name in 'm_variables[EX_GLOBAL]' map
-    int comp_count = field.get_component_count();
+    int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
     int var_index  = 0;
 
     int re_im = 1;
@@ -1103,7 +1103,7 @@ namespace Ioex {
     // and add suffix to base 'field_name'.  Look up index
     // of this name in 'm_variables[type]' map
 
-    int comp_count = field.get_component_count();
+    int comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
     for (int i = 0; i < comp_count; i++) {
       int         var_index = 0;
       std::string var_name  = get_component_name(field, i + 1);
@@ -1783,7 +1783,7 @@ namespace Ioex {
           field_name += complex_suffix[complex_comp];
         }
 
-        for (int i = 1; i <= field.get_component_count(); i++) {
+        for (int i = 1; i <= field.get_component_count(Ioss::Field::InOut::OUTPUT); i++) {
           std::string var_string = get_component_name(field, i);
 
           if (variables.find(var_string) == variables.end()) {
@@ -1844,7 +1844,7 @@ namespace Ioex {
               field_name += complex_suffix[complex_comp];
             }
 
-            for (int i = 1; i <= field.get_component_count(); i++) {
+            for (int i = 1; i <= field.get_component_count(Ioss::Field::InOut::OUTPUT); i++) {
               std::string var_string = get_component_name(field, i);
               // Find position of 'var_string' in 'm_variables[]'
               auto VN = m_variables[EX_SIDE_SET].find(var_string);
@@ -2132,7 +2132,7 @@ namespace Ioex {
           block->field_add(field);
           const Ioss::Field &tmp_field = block->get_fieldref(field.get_name());
           tmp_field.set_index(offset);
-          offset += field.get_component_count();
+          offset += field.get_component_count(Ioss::Field::InOut::INPUT);
         }
       }
       else {
@@ -2580,7 +2580,7 @@ namespace {
             continue;
           }
 
-          int comp_count   = field.get_component_count();
+          int comp_count   = field.get_component_count(Ioss::Field::InOut::OUTPUT);
           int field_offset = field.get_index();
           for (int i = 0; i < comp_count; i++) {
             names_str[field_offset - 1 + i] = ge->get_database()->get_component_name(field, i + 1);
@@ -2633,7 +2633,7 @@ namespace {
         some_attributes_indexed = true;
       }
 
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
       component_sum += comp_count;
 
       if (field_offset == 0) {
@@ -2705,7 +2705,7 @@ namespace {
           continue;
         }
 
-        int comp_count = field.get_component_count();
+        int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
         assert(field.get_index() == 0);
         field.set_index(offset);
@@ -2742,7 +2742,7 @@ namespace {
 
         if (field.get_index() == 0) {
           field.set_index(first_undefined);
-          int comp_count = field.get_component_count();
+          int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
           first_undefined += comp_count;
         }
       }
@@ -2760,7 +2760,7 @@ namespace {
         continue;
       }
 
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
       assert(field.get_index() == 0);
       field.set_index(offset);

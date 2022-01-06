@@ -35,6 +35,8 @@ namespace Ioss {
       CHARACTER
     };
 
+    enum class InOut { INPUT, OUTPUT };
+
     static Ioss::Field::BasicType get_field_type(char /*dummy*/) { return CHARACTER; }
     static Ioss::Field::BasicType get_field_type(double /*dummy*/) { return DOUBLE; }
     static Ioss::Field::BasicType get_field_type(int /*dummy*/) { return INTEGER; }
@@ -114,7 +116,7 @@ namespace Ioss {
      * \returns name of the specified component
      */
     std::string get_component_name(int component_index, char suffix = 1) const;
-    int         get_component_count() const;
+    int         get_component_count(InOut in_out) const;
 
     void set_suffix_separator(char suffix_separator) { suffixSeparator_ = suffix_separator; }
     char get_suffix_separator() const { return suffixSeparator_; }

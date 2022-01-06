@@ -1923,7 +1923,7 @@ namespace Iocgns {
         auto               *rdata        = static_cast<double *>(data);
         cgsize_t            range_min[1] = {1};
         cgsize_t            range_max[1] = {num_block_node};
-        int                 comp_count   = field.get_component_count();
+        int                 comp_count   = field.get_component_count(Ioss::Field::InOut::INPUT);
         std::vector<double> cgns_data(num_block_node);
         if (comp_count == 1) {
           CGCHECKM(cg_field_read(get_file_pointer(), base, zone, solution_index,
@@ -2000,7 +2000,7 @@ namespace Iocgns {
                      (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
       }
 
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
       if (comp_count == 1) {
         CGCHECKM(cg_field_read(get_file_pointer(), base, zone, solution_index,
@@ -2146,7 +2146,7 @@ namespace Iocgns {
         cgsize_t range_min[1] = {1};
         cgsize_t range_max[1] = {my_element_count};
 
-        int comp_count = field.get_component_count();
+        int comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
         if (comp_count == 1) {
           CGCHECKM(cg_field_read(get_file_pointer(), base, zone, solution_index,
                                  field.get_name().c_str(), CGNS_ENUMV(RealDouble), range_min,
@@ -2310,7 +2310,7 @@ namespace Iocgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
       int sol_index = 0;
       int step      = get_region()->get_current_state();
@@ -2604,7 +2604,7 @@ namespace Iocgns {
     else if (role == Ioss::Field::TRANSIENT) {
       auto *rdata      = static_cast<double *>(data);
       int   cgns_field = 0;
-      int   comp_count = field.get_component_count();
+      int   comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
       if (comp_count == 1) {
         CGCHECKM(cg_field_write(get_file_pointer(), base, zone, m_currentCellCenterSolutionIndex,
                                 CGNS_ENUMV(RealDouble), field.get_name().c_str(), rdata,
@@ -2750,7 +2750,7 @@ namespace Iocgns {
         int   zone       = Iocgns::Utils::get_db_zone(eb);
         auto *rdata      = static_cast<double *>(data);
         int   cgns_field = 0;
-        int   comp_count = field.get_component_count();
+        int   comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         if (comp_count == 1) {
           CGCHECKM(cg_field_write(get_file_pointer(), base, zone, m_currentCellCenterSolutionIndex,
                                   CGNS_ENUMV(RealDouble), field.get_name().c_str(), rdata,
@@ -2932,7 +2932,7 @@ namespace Iocgns {
         const auto         &block_map = block.second;
         std::vector<double> blk_data(block_map->size());
 
-        int comp_count = field.get_component_count();
+        int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
         if (comp_count == 1) {
           for (size_t j = 0; j < block_map->size(); j++) {
@@ -2991,7 +2991,7 @@ namespace Iocgns {
       int   base       = 1;
       auto *rdata      = static_cast<double *>(data);
       int   cgns_field = 0;
-      int   comp_count = field.get_component_count();
+      int   comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
       if (comp_count == 1) {
         CGCHECKM(cg_field_write(get_file_pointer(), base, zone, m_currentVertexSolutionIndex,

@@ -173,7 +173,7 @@ namespace Iovs_exodus {
       int                   *ivar             = static_cast<int *>(data);
       auto                  *ivar64           = static_cast<int64_t *>(data);
 
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
       int re_im = 1;
       if (field.get_type() == Ioss::Field::COMPLEX) {
@@ -259,7 +259,7 @@ namespace Iovs_exodus {
         const char            *complex_suffix[] = {".re", ".im"};
         Ioss::Field::BasicType ioss_type        = field.get_type();
         std::vector<double>    temp(num_to_get);
-        int                    comp_count = field.get_component_count();
+        int                    comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         int                    re_im      = 1;
         if (ioss_type == Ioss::Field::COMPLEX) {
           re_im = 2;
@@ -369,7 +369,7 @@ namespace Iovs_exodus {
         Ioss::Field::BasicType ioss_type        = field.get_type();
         std::vector<double>    temp(num_to_get);
         int64_t                eb_offset  = eb->get_offset();
-        int                    comp_count = field.get_component_count();
+        int                    comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         int                    bid        = get_id(eb, &ids_);
 
         int re_im = 1;

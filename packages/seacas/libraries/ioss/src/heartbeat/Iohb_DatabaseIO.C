@@ -452,7 +452,7 @@ namespace Iohb {
 
     if ((role == Ioss::Field::TRANSIENT || role == Ioss::Field::REDUCTION) && num_to_get == 1) {
 
-      int ncomp = field.get_component_count();
+      int ncomp = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
       if (legend_ != nullptr && layout_ != nullptr) {
         if (ncomp == 1) {

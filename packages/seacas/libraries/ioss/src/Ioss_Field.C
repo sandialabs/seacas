@@ -101,7 +101,15 @@ Ioss::Field::Field(std::string name, const Ioss::Field::BasicType type,
   size_ = internal_get_size(type_, rawCount_, rawStorage_);
 }
 
-int Ioss::Field::get_component_count() const { return raw_storage()->component_count(); }
+int Ioss::Field::get_component_count(Ioss::Field::InOut in_out) const
+{
+  if (in_out == InOut::INPUT) {
+    return raw_storage()->component_count();
+  }
+  else {
+    return transformed_storage()->component_count();
+  }
+}
 
 std::string Ioss::Field::get_component_name(int component_index, char suffix) const
 {
