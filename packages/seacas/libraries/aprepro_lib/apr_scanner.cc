@@ -53,14 +53,6 @@
 #ifndef FLEXINT_H
 #define FLEXINT_H
 
-#if defined(_MSC_VER)
-#ifdef _WIN64
-#define ssize_t __int64
-#else
-#define ssize_t long
-#endif
-#endif
-
 /* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L

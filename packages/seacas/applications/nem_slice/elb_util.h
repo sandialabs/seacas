@@ -9,8 +9,8 @@
 #ifndef _ELB_UTIL_CONST_H_
 #define _ELB_UTIL_CONST_H_
 
-#include <cstddef>     // for size_t
-#include <sys/types.h> // for ssize_t
+#include <cstddef> // for size_t
+#include <cstdint>
 #include <vector>
 
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
@@ -18,11 +18,6 @@
 #if !defined(__MINGW32__)
 #define strcasecmp  stricmp
 #define strncasecmp strnicmp
-#endif
-#ifdef _WIN64
-#define ssize_t __int64
-#else
-#define ssize_t long
 #endif
 #endif
 
@@ -77,13 +72,13 @@ template <typename INT> void siftDown(INT *a, INT *b, size_t start, size_t end)
   }
 }
 
-template <typename INT> void sort2(ssize_t count, INT ra[], INT rb[])
+template <typename INT> void sort2(int64_t count, INT ra[], INT rb[])
 {
   if (count <= 1) {
     return;
   }
   /* heapify */
-  for (ssize_t start = (count - 2) / 2; start >= 0; start--) {
+  for (int64_t start = (count - 2) / 2; start >= 0; start--) {
     siftDown(ra, rb, start, count);
   }
 
@@ -94,17 +89,17 @@ template <typename INT> void sort2(ssize_t count, INT ra[], INT rb[])
   }
 }
 
-template <typename INT> void sort3(ssize_t count, INT ra[], INT rb[], INT rc[]);
+template <typename INT> void sort3(int64_t count, INT ra[], INT rb[], INT rc[]);
 
 template <typename INT>
 void find_first_last(INT val, size_t vecsize, INT *vector, INT *first, INT *last);
 
 template <typename INT>
-ssize_t find_int(INT value1, INT value2, size_t start, size_t stop, INT *vector1, INT *vector2);
+int64_t find_int(INT value1, INT value2, size_t start, size_t stop, INT *vector1, INT *vector2);
 
-template <typename INT> ssize_t in_list(INT value, size_t count, const INT *vector);
+template <typename INT> int64_t in_list(INT value, size_t count, const INT *vector);
 
-template <typename INT> ssize_t in_list(INT value, const std::vector<INT> &vector);
+template <typename INT> int64_t in_list(INT value, const std::vector<INT> &vector);
 
 extern int roundfloat(float value /* the value to be rounded */
 );
@@ -117,6 +112,6 @@ size_t find_inter(const INT set1[],     /* the first set of integers */
                   INT       inter_ptr[] /* the values in the intersection */
 );
 
-template <typename INT> ssize_t bin_search2(INT value, size_t num, INT List[]);
+template <typename INT> int64_t bin_search2(INT value, size_t num, INT List[]);
 
 #endif /* _ELB_UTIL_CONST_H_ */

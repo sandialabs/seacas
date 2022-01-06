@@ -27,6 +27,12 @@ else
       export CXX=g++-mp-${VER}
       export CC=gcc-mp-${VER}
   fi
+  if [ "$COMPILER" == "clangmacport" ]
+  then
+      VER=${VER:-7}
+      export CXX=clang++-mp-${VER}.0
+      export CC=clang-mp-${VER}.0
+  fi
   if [ "$COMPILER" == "intel" ]
   then
       export CC=icc

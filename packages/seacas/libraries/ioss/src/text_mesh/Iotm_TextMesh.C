@@ -8,8 +8,7 @@
 
 #include <Ioss_Utils.h>
 #include <fmt/ostream.h>
-#include <sys/types.h> // for ssize_t
-#include <tokenize.h>  // for tokenize
+#include <tokenize.h> // for tokenize
 
 #include <algorithm>
 #include <array>
@@ -28,12 +27,12 @@
     if (!(expr)) {                                                                                 \
       std::ostringstream internal_throw_require_oss;                                               \
       internal_throw_require_oss << message;                                                       \
-      IOSS_ERROR(internal_throw_require_oss);                                                      \
+      throw std::logic_error(internal_throw_require_oss.str());                                    \
     }                                                                                              \
   } while (false)
 
 namespace Iotm {
-  void error_handler(const std::ostringstream &message) { IOSS_ERROR(message); }
+  void error_handler(const std::ostringstream &message) { throw std::logic_error((message).str()); }
 
   TextMesh::TextMesh(int proc_count, int my_proc)
       : m_processorCount(proc_count), m_myProcessor(my_proc)

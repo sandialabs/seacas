@@ -42,7 +42,6 @@
 
 #include <cassert> // for assert
 #include <cstddef> // for size_t
-#include <cstdio>  // for fprintf, printf, sprintf, etc
 #include <cstdlib> // for free, calloc, exit
 #include <ctime>
 #if MATIO_VERSION < 151
@@ -999,7 +998,7 @@ int main(int argc, char *argv[])
   }
 
   /* QA Info */
-  printf("%s: %s, %s\n", qainfo[0], qainfo[2], qainfo[1]);
+  fmt::print("{}: {}, {}\n", qainfo[0], qainfo[2], qainfo[1]);
 
   /* usage message*/
   if (argc != 2) {

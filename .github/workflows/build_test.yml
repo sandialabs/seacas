@@ -16,7 +16,7 @@ jobs:
       matrix:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V18, V110, V112 ]
-        netcdf: [ 4.8.0 ]
+        netcdf: [ 4.8.1 ]
         cgns: [ 4.2.0 ]
     steps:
 
@@ -57,7 +57,7 @@ jobs:
       matrix:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V18, V110, V112 ]
-        netcdf: [ 4.8.0 ]
+        netcdf: [ 4.8.1 ]
         cgns: [ 4.2.0 ]
     steps:
 
@@ -94,6 +94,13 @@ jobs:
         run: |
           cd build 
           make -j 4
+        if: ${{ success() }}
+
+      - name: Install
+        shell: bash -l {0}
+        run: |
+          cd build 
+          make -j 4 install
         if: ${{ success() }}
 
       - name: Run Tests

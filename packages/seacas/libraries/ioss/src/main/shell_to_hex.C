@@ -208,11 +208,10 @@ namespace {
 
     std::cerr << "...or: " << prog << " command_file\n";
     std::cerr << "       version: " << version << "\n";
-    Ioss::NameList db_types;
-    Ioss::IOFactory::describe(&db_types);
+    Ioss::NameList db_types = Ioss::IOFactory::describe();
     std::cerr << "\nSupports database types:\n\t";
-    for (Ioss::NameList::const_iterator IF = db_types.begin(); IF != db_types.end(); ++IF) {
-      std::cerr << *IF << "  ";
+    for (const auto &db : db_types) {
+      std::cerr << db << "  ";
     }
     std::cerr << "\n\n";
   }

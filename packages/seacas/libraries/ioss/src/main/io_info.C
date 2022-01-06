@@ -318,8 +318,7 @@ namespace {
       Ioss::Utils::info_property(eb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
 
       if (interFace.adjacencies()) {
-        std::vector<std::string> blocks;
-        eb->get_block_adjacencies(blocks);
+        std::vector<std::string> blocks = eb->get_block_adjacencies();
         fmt::print("\n\tAdjacent to  {} element block(s):\t", blocks.size());
         for (const auto &block : blocks) {
           fmt::print("{}  ", block);
@@ -349,8 +348,7 @@ namespace {
       Ioss::Utils::info_fields(eb, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
 
 #if 0
-        std::vector<std::string> blocks;
-        eb->get_block_adjacencies(blocks);
+        std::vector<std::string> blocks = eb->get_block_adjacencies();
         fmt::print("\tAdjacent to  {} edge block(s):\t", blocks.size());
         for (auto &block : blocks) {
           fmt::print("{}  ", block);
@@ -377,8 +375,7 @@ namespace {
       Ioss::Utils::info_fields(eb, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
 
 #if 0
-        std::vector<std::string> blocks;
-        eb->get_block_adjacencies(blocks);
+        std::vector<std::string> blocks = eb->get_block_adjacencies();
         fmt::print("\tAdjacent to  {} face block(s):\t", blocks.size());
         for (auto &block : blocks) {
           fmt::print("{}  ", block);

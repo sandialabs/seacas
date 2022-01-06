@@ -134,6 +134,7 @@ static int ex_copy_internal(int in_exoid, int out_exoid, int mesh_only)
 
   EX_FUNC_LEAVE(EX_NOERR);
 }
+/*! \endcond */
 
 /*!
   \ingroup Utilities
@@ -249,6 +250,7 @@ int cpy_variables(int in_exoid, int out_exoid, int in_large, int mesh_only)
   }
   return EX_NOERR;
 }
+/*! \endcond */
 
 /*! \cond INTERNAL */
 int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
@@ -385,6 +387,7 @@ int cpy_global_att(int in_exoid, int out_exoid)
 
   return EX_NOERR;
 }
+/*! \endcond */
 
 /*! \cond INTERNAL */
 int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
@@ -413,6 +416,7 @@ int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
 
   return (EX_NOERR);
 }
+/*! \endcond */
 
 /*! \internal */
 int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_large)
@@ -470,6 +474,7 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
 
   return var_out_id; /* OK */
 }
+/*! \endcond */
 
 /*! \internal */
 int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)

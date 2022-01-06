@@ -68,10 +68,10 @@ namespace {
 #endif
   }
 
-  void map_local_to_global_implicit(CGNSIntVector &data, ssize_t count,
+  void map_local_to_global_implicit(CGNSIntVector &data, size_t count,
                                     const CGNSIntVector &global_implicit_map)
   {
-    for (ssize_t i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
       data[i] = global_implicit_map[data[i] - 1];
     }
   }
@@ -1609,7 +1609,7 @@ namespace Iocgns {
     int         id   = sb->get_property("id").get_int();
     const auto &sset = decomp->m_sideSets[id];
 
-    ssize_t num_to_get = field.verify(data_size);
+    auto num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
       int64_t entity_count = sb->entity_count();
       if (num_to_get != entity_count) {
@@ -2418,9 +2418,9 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    int     base       = parent_block->get_property("base").get_int();
-    int     zone       = parent_block->get_property("zone").get_int();
-    ssize_t num_to_get = field.verify(data_size);
+    int  base       = parent_block->get_property("base").get_int();
+    int  zone       = parent_block->get_property("zone").get_int();
+    auto num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role = field.get_role();
 
@@ -2467,7 +2467,7 @@ namespace Iocgns {
         if (field.get_type() == Ioss::Field::INT32) {
           int   *idata = reinterpret_cast<int *>(data);
           size_t j     = 0;
-          for (ssize_t i = 0; i < num_to_get; i++) {
+          for (size_t i = 0; i < num_to_get; i++) {
             parent[num_to_get * 0 + i] = elemMap.global_to_local(idata[j++]); // Element
             parent[num_to_get * 2 + i] = idata[j++];
           }
@@ -2475,7 +2475,7 @@ namespace Iocgns {
         else {
           auto  *idata = reinterpret_cast<int64_t *>(data);
           size_t j     = 0;
-          for (ssize_t i = 0; i < num_to_get; i++) {
+          for (size_t i = 0; i < num_to_get; i++) {
             parent[num_to_get * 0 + i] = elemMap.global_to_local(idata[j++]); // Element
             parent[num_to_get * 2 + i] = idata[j++];
           }

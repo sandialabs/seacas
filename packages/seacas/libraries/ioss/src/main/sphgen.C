@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -171,11 +171,10 @@ namespace {
         << "\t\t which gives the half-side-length of a cube with that volume\n"
         << "\t\t use 4*pi/3 = 4.18879 for the radius of a sphere with that volume.\n";
 
-    Ioss::NameList db_types;
-    Ioss::IOFactory::describe(&db_types);
+    Ioss::NameList db_types = Ioss::IOFactory::describe();
     DO_OUTPUT << "\nSupports database types:\n\t";
-    for (Ioss::NameList::const_iterator IF = db_types.begin(); IF != db_types.end(); ++IF) {
-      DO_OUTPUT << *IF << "  ";
+    for (const auto &db : db_types) {
+      DO_OUTPUT << db << "  ";
     }
     DO_OUTPUT << "\n\n";
   }

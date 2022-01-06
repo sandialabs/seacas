@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -108,6 +108,19 @@ namespace Ioss {
 
     const std::string &get_name() const { return name_; }
 
+    /** \brief Get name of the 'component_indexth` component (1-based)
+     *
+     * \param[in] component_index 1-based index of the component to be named
+     * \param[in] suffix optional suffix separator to be used if the separator
+     *            on the field is set to '1' which means 'unset'
+     * \returns name of the specified component
+     */
+    std::string get_component_name(int component_index, char suffix = 1) const;
+    int         get_component_count() const;
+
+    void set_suffix_separator(char suffix_separator) { suffixSeparator_ = suffix_separator; }
+    char get_suffix_separator() const { return suffixSeparator_; }
+
     /** \brief Get the basic data type of the data held in the field.
      *
      * \returns the basic data type of the data held in the field.
@@ -167,6 +180,7 @@ namespace Ioss {
 
     std::vector<Transform *> transforms_;
     bool                     equal_(const Ioss::Field &rhs, bool quiet) const;
+    char                     suffixSeparator_{1}; // Value = 1 means unset; use database default.
   };
 } // namespace Ioss
 #endif

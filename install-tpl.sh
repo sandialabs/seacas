@@ -400,7 +400,9 @@ then
     elif [ "${H5VERSION}" == "V110" ]; then
         hdf_version="1.10.7"
     elif [ "${H5VERSION}" == "V112" ]; then
-        hdf_version="1.12.0"
+        hdf_version="1.12.1"
+    elif [ "${H5VERSION}" == "V113" ]; then
+        hdf_version="1.13.0"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
     else
@@ -422,6 +424,8 @@ then
             wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
         elif [ "${H5VERSION}" == "V112" ]; then
             wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+        elif [ "${H5VERSION}" == "V113" ]; then
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
         elif [ "${H5VERSION}" == "develop" ]; then
             git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
         else
@@ -522,8 +526,8 @@ then
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-#   net_version="v4.8.0"
-   net_version="master"
+   net_version="v4.8.1"
+#   net_version="master"
 
     if [ "$BUILD" == "YES" ]
     then
@@ -866,7 +870,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd googletest
-            git checkout release-1.8.1
+            git checkout release-1.11.0
             rm -rf build
             mkdir build
             cd build

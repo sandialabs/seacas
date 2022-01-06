@@ -54,12 +54,12 @@
 #endif
 
 /* EXODUS version number */
-#define EXODUS_VERSION       "8.13"
+#define EXODUS_VERSION       "8.14"
 #define EXODUS_VERSION_MAJOR 8
-#define EXODUS_VERSION_MINOR 13
-#define EXODUS_RELEASE_DATE  "October 28, 2021"
+#define EXODUS_VERSION_MINOR 14
+#define EXODUS_RELEASE_DATE  "December 2, 2021"
 
-#define EX_API_VERS       8.13f
+#define EX_API_VERS       8.14f
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
 #define EX_VERS           EX_API_VERS
 
@@ -538,7 +538,7 @@ EXODUS_EXPORT int         ex_opts(int options);
 EXODUS_EXPORT int         ex_inquire(int exoid, ex_inquiry req_info, void_int         */*ret_int*/,
                                      float         */*ret_float*/, char         */*ret_char*/);
 EXODUS_EXPORT int64_t     ex_inquire_int(int exoid, ex_inquiry req_info);
-EXODUS_EXPORT int         ex_int64_status(int exoid);
+EXODUS_EXPORT unsigned    ex_int64_status(int exoid);
 EXODUS_EXPORT int         ex_set_int64_status(int exoid, int mode);
 
 EXODUS_EXPORT void        ex_print_config(void);

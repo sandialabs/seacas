@@ -47,10 +47,27 @@ ZOLTAN=$(check_valid ZOLTAN)
 ### Python Version...
 PYTHON_VER=${PYTHON_VER:-"3.0"}
 
+### TPLs --
+### Make sure these point to the locations to find the libraries and includes in lib and include
+### subdirectories of the specified paths.
+### For example, netcdf.h should be in ${NETCDF_PATH}/include
+NETCDF_PATH=${NETCDF_PATH:-${INSTALL_PATH}}
+PNETCDF_PATH=${PNETCDF_PATH:-${INSTALL_PATH}}
+MATIO_PATH=${MATIO_PATH:-${INSTALL_PATH}}
+HDF5_PATH=${HDF5_PATH:-${INSTALL_PATH}}
+CGNS_PATH=${CGNS_PATH:-${INSTALL_PATH}}
+FAODEL_PATH=${FAODEL_PATH:-${INSTALL_PATH}}
+ADIOS2_PATH=${ADIOS2_PATH:-${INSTALL_PATH}}
+CATALYST2_PATH=${CATALYST2_PATH:-${INSTALL_PATH}}
+GTEST_PATH=${GTEST_PATH:-${INSTALL_PATH}}
+KOKKOS_PATH=${KOKKOS_PATH:-${INSTALL_PATH}}
+METIS_PATH=${METIS_PATH:-${INSTALL_PATH}}
+PARMETIS_PATH=${PARMETIS_PATH:-${INSTALL_PATH}}
+
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 if [ "${MPI}" = "" ]
 then
-  netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
+  netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
   if [ "${netcdf_parallel}" == "yes" ]
   then
       MPI=YES
@@ -84,6 +101,16 @@ then
       CXX=g++-mp-${VER}
       CC=gcc-mp-${VER}
       FC=gfortran-mp-${VER}
+      CFLAGS="-Wall -Wunused -pedantic -std=c11"
+      CXXFLAGS="-Wall -Wunused -pedantic"
+  fi
+
+  if [ "$COMPILER" == "clangmacport" ]
+  then
+      VER=${VER:-7}
+      CXX=clang++-mp-${VER}.0
+      CC=clang-mp-${VER}.0
+      FC=gfortran
       CFLAGS="-Wall -Wunused -pedantic -std=c11"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
@@ -254,23 +281,6 @@ if [ "$THREADSAFE" == "YES" ] ; then
   THREAD_SAFE_OPT="-DSEACASProj_EXTRA_LINK_FLAGS=-lpthread"
 fi
 
-
-### TPLs --
-### Make sure these point to the locations to find the libraries and includes in lib and include
-### subdirectories of the specified paths.
-### For example, netcdf.h should be in ${NETCDF_PATH}/include
-NETCDF_PATH=${INSTALL_PATH}
-PNETCDF_PATH=${INSTALL_PATH}
-MATIO_PATH=${INSTALL_PATH}
-HDF5_PATH=${INSTALL_PATH}
-CGNS_PATH=${INSTALL_PATH}
-FAODEL_PATH=${INSTALL_PATH}
-ADIOS2_PATH=${INSTALL_PATH}
-CATALYST2_PATH=${INSTALL_PATH}
-GTEST_PATH=${INSTALL_PATH}
-KOKKOS_PATH=${INSTALL_PATH}
-METIS_PATH=${INSTALL_PATH}
-PARMETIS_PATH=${INSTALL_PATH}
 
 function check_enable()
 {
@@ -464,7 +474,7 @@ ${CRAY_OPT} \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
 -D TPL_ENABLE_ADIOS2:BOOL=${HAVE_ADIOS2} \
 -D TPL_ENABLE_Catalyst2:BOOL=${HAVE_CATALYST2} \
--D TPL_ENABLE_gtest:BOOL=${HAVE_GTEST} \
+-D TPL_ENABLE_GTest:BOOL=${HAVE_GTEST} \
 -D TPL_ENABLE_Kokkos:BOOL=${HAVE_KOKKOS} \
 -D TPL_ENABLE_METIS:BOOL=${HAVE_METIS} \
 -D TPL_ENABLE_ParMETIS:BOOL=${HAVE_PARMETIS} \
