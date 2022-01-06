@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -278,14 +278,14 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   }
 
   // Copy the sidesets and assemblies from the proc-0 input file to the output file...
-  auto &part  = part_mesh[0];
-  auto &ssets = part->get_sidesets();
+  auto       &part  = part_mesh[0];
+  const auto &ssets = part->get_sidesets();
   for (const auto &sset : ssets) {
     auto oss = new Ioss::SideSet(*sset);
     output_region.add(oss);
   }
 
-  auto &assems = part->get_assemblies();
+  const auto &assems = part->get_assemblies();
   for (const auto &assem : assems) {
     auto oass = new Ioss::Assembly(*assem);
     output_region.add(oass);
@@ -317,9 +317,9 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
       auto &onb = block->get_node_block();
 
       // Find all corresponding blocks on the input part meshes...
-      for (const auto &part : part_mesh) {
-        auto &blocks = part->get_structured_blocks();
-        for (const auto &pblock : blocks) {
+      for (const auto &prt : part_mesh) {
+        auto &pblocks = prt->get_structured_blocks();
+        for (const auto &pblock : pblocks) {
           auto &name      = pblock->name();
           auto  name_proc = Iocgns::Utils::decompose_name(name, true);
           if (name_proc.first == block->name()) {
@@ -504,7 +504,7 @@ namespace {
       part->begin_state(istep);
     }
 
-    auto &blocks = output_region.get_structured_blocks();
+    const auto &blocks = output_region.get_structured_blocks();
     for (const auto &block : blocks) {
       int64_t             num_cell = block->get_property("cell_count").get_int();
       std::vector<double> output(num_cell);
@@ -519,7 +519,7 @@ namespace {
 
         // Find all corresponding blocks on the input part meshes...
         for (const auto &part : part_mesh) {
-          auto &blocks = part->get_structured_blocks();
+          const auto &blocks = part->get_structured_blocks();
           for (const auto &pblock : blocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
