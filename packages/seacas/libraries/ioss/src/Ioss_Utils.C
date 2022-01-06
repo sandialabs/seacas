@@ -635,6 +635,8 @@ namespace {
         if (suffix != suffix_separator) {
           field.set_suffix_separator(suffix);
         }
+        // Are suffices upper or lowercase...
+        field.set_suffices_uppercase(suffices[0].is_uppercase());
         if (field.is_valid()) {
           fields.push_back(field);
         }

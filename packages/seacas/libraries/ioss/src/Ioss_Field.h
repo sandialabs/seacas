@@ -90,9 +90,9 @@ namespace Ioss {
     Field(std::string name, BasicType type, const VariableType *storage, RoleType role,
           size_t value_count = 0, size_t index = 0);
 
-    // Create a field from another field.
-    Field(const Field & /*from*/);
-    Field &operator=(const Field & /*from*/);
+    Field(const Ioss::Field &from) = default;
+    Field &operator=(const Field &from) = default;
+    ~Field()                            = default;
 
     // Compare two fields (used for STL container)
     bool operator<(const Field &other) const;
@@ -100,8 +100,6 @@ namespace Ioss {
     bool operator==(const Ioss::Field &rhs) const;
     bool operator!=(const Ioss::Field &rhs) const;
     bool equal(const Ioss::Field &rhs) const;
-
-    ~Field();
 
     bool is_valid() const { return type_ != INVALID; }
     bool is_invalid() const { return type_ == INVALID; }
@@ -120,6 +118,8 @@ namespace Ioss {
 
     void set_suffix_separator(char suffix_separator) { suffixSeparator_ = suffix_separator; }
     char get_suffix_separator() const { return suffixSeparator_; }
+    void set_suffices_uppercase(bool true_false) { sufficesUppercase_ = true_false; }
+    bool get_suffices_uppercase() const { return sufficesUppercase_; }
 
     /** \brief Get the basic data type of the data held in the field.
      *
@@ -179,8 +179,10 @@ namespace Ioss {
     const VariableType *transStorage_{}; // Storage type after transformation
 
     std::vector<Transform *> transforms_;
-    bool                     equal_(const Ioss::Field &rhs, bool quiet) const;
     char                     suffixSeparator_{1}; // Value = 1 means unset; use database default.
+    bool sufficesUppercase_{false}; // True if the suffices are uppercase on database...
+
+    bool equal_(const Ioss::Field &rhs, bool quiet) const;
   };
 } // namespace Ioss
 #endif
