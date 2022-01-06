@@ -1300,9 +1300,7 @@ namespace Iocgns {
                (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
       }
 
-      int  comp_count             = field.get_component_count();
-      char field_suffix_separator = get_field_separator();
-
+      int comp_count = field.get_component_count();
       if (comp_count == 1) {
         CGCHECKM(cg_field_read(get_file_pointer(), base, zone, solution_index,
                                field.get_name().c_str(), CGNS_ENUMV(RealDouble), rmin, rmax,
@@ -2172,7 +2170,6 @@ namespace Iocgns {
         Utils::set_field_index(field, cgns_field, CGNS_ENUMV(CellCenter));
       }
       else {
-        char                field_suffix_separator = get_field_separator();
         std::vector<double> cgns_data(num_to_get);
         for (size_t i = 0; i < comp_count; i++) {
           for (size_t j = 0; j < num_to_get; j++) {
@@ -2303,11 +2300,9 @@ namespace Iocgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      int  cgns_field             = 0;
-      int  comp_count             = field.get_component_count();
-      char field_suffix_separator = get_field_separator();
-
-      int sol_index = 0;
+      int cgns_field = 0;
+      int comp_count = field.get_component_count();
+      int sol_index  = 0;
       CGNS_ENUMT(GridLocation_t) location;
       if (cell_field) {
         sol_index = m_currentCellCenterSolutionIndex;
