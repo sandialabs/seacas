@@ -188,7 +188,7 @@ namespace Iovs_exodus {
         std::vector<std::string> component_names;
         std::vector<double>      globalValues;
         for (int i = 0; i < comp_count; i++) {
-          std::string var_name = get_component_name(field, i + 1);
+          std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
           component_names.push_back(var_name);
 
           // Transfer from 'variables' array.
@@ -273,7 +273,7 @@ namespace Iovs_exodus {
           std::vector<double>      interleaved_data(num_to_get * comp_count);
           std::vector<std::string> component_names;
           for (int i = 0; i < comp_count; i++) {
-            std::string var_name = get_component_name(field, i + 1);
+            std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
             component_names.push_back(var_name);
 
             size_t begin_offset = (re_im * i) + complex_comp;
@@ -385,7 +385,7 @@ namespace Iovs_exodus {
           std::vector<double>      interleaved_data(num_to_get * comp_count);
           std::vector<std::string> component_names;
           for (int i = 0; i < comp_count; i++) {
-            std::string var_name = get_component_name(field, i + 1);
+            std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
             component_names.push_back(var_name);
 
             int64_t begin_offset = (re_im * i) + complex_comp;

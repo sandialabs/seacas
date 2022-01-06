@@ -115,7 +115,7 @@ namespace Ioss {
      *            on the field is set to '1' which means 'unset'
      * \returns name of the specified component
      */
-    std::string get_component_name(int component_index, char suffix = 1) const;
+    std::string get_component_name(int component_index, InOut in_out, char suffix = 1) const;
     int         get_component_count(InOut in_out) const;
 
     void set_suffix_separator(char suffix_separator) { suffixSeparator_ = suffix_separator; }

@@ -293,14 +293,15 @@ namespace Ioss {
     fieldSeparatorSpecified = true;
   }
 
-  std::string DatabaseIO::get_component_name(const Ioss::Field &field, int component) const
+  std::string DatabaseIO::get_component_name(const Ioss::Field &field, Ioss::Field::InOut in_out,
+                                             int component) const
   {
     // If the user has explicitly set the suffix separator for this database,
     // then use it for all fields.
     // If it was not explicity set, then use whatever the field has defined,
     // of if field also has nothing explicitly set, use '_'
     char suffix = fieldSeparatorSpecified ? get_field_separator() : 1;
-    return field.get_component_name(component, suffix);
+    return field.get_component_name(component, in_out, suffix);
   }
 
   /**

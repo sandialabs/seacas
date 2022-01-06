@@ -460,7 +460,7 @@ namespace Iohb {
         }
         else {
           for (int i = 0; i < ncomp; i++) {
-            std::string var_name = get_component_name(field, i + 1);
+            std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
             legend_->add_legend(var_name);
           }
         }

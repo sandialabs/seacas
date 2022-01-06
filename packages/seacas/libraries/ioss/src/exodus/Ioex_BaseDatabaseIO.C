@@ -995,7 +995,8 @@ namespace Ioex {
             }
 
             for (int i = 1; i <= field.get_component_count(Ioss::Field::InOut::INPUT); i++) {
-              std::string var_string = field.get_component_name(i, field_suffix_separator);
+              std::string var_string =
+                  field.get_component_name(i, Ioss::Field::InOut::INPUT, field_suffix_separator);
               // Find position of 'var_string' in 'variables'
               auto VN = variables.find(var_string);
               if (VN != variables.end()) {
@@ -1050,7 +1051,7 @@ namespace Ioex {
       }
 
       for (int i = 0; i < comp_count; i++) {
-        std::string var_name = get_component_name(field, i + 1);
+        std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
 #if GLOBALS_ARE_TRANSIENT
         if (type == EX_GLOBAL) {
@@ -1106,7 +1107,7 @@ namespace Ioex {
     int comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
     for (int i = 0; i < comp_count; i++) {
       int         var_index = 0;
-      std::string var_name  = get_component_name(field, i + 1);
+      std::string var_name  = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
 
 #if GLOBALS_ARE_TRANSIENT
       if (type == EX_GLOBAL) {
@@ -1784,7 +1785,7 @@ namespace Ioex {
         }
 
         for (int i = 1; i <= field.get_component_count(Ioss::Field::InOut::OUTPUT); i++) {
-          std::string var_string = get_component_name(field, i);
+          std::string var_string = get_component_name(field, Ioss::Field::InOut::OUTPUT, i);
 
           if (variables.find(var_string) == variables.end()) {
             variables.insert(VNMValuePair(var_string, ++new_index));
@@ -1845,7 +1846,7 @@ namespace Ioex {
             }
 
             for (int i = 1; i <= field.get_component_count(Ioss::Field::InOut::OUTPUT); i++) {
-              std::string var_string = get_component_name(field, i);
+              std::string var_string = get_component_name(field, Ioss::Field::InOut::OUTPUT, i);
               // Find position of 'var_string' in 'm_variables[]'
               auto VN = m_variables[EX_SIDE_SET].find(var_string);
               if (VN != m_variables[EX_SIDE_SET].end()) {
@@ -2583,7 +2584,8 @@ namespace {
           int comp_count   = field.get_component_count(Ioss::Field::InOut::OUTPUT);
           int field_offset = field.get_index();
           for (int i = 0; i < comp_count; i++) {
-            names_str[field_offset - 1 + i] = ge->get_database()->get_component_name(field, i + 1);
+            names_str[field_offset - 1 + i] =
+                ge->get_database()->get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
             names[field_offset - 1 + i] =
                 const_cast<char *>(names_str[field_offset - 1 + i].c_str());
           }

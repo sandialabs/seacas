@@ -1309,7 +1309,7 @@ namespace Iocgns {
       else {
         std::vector<double> cgns_data(num_to_get);
         for (int i = 0; i < comp_count; i++) {
-          std::string var_name = get_component_name(field, i + 1);
+          std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
           CGCHECKM(cg_field_read(get_file_pointer(), base, zone, solution_index, var_name.c_str(),
                                  CGNS_ENUMV(RealDouble), rmin, rmax, cgns_data.data()));
           for (cgsize_t j = 0; j < num_to_get; j++) {
@@ -1891,9 +1891,10 @@ namespace Iocgns {
             assert(local >= 0 && local < (int64_t)num_to_get);
             blk_data[j] = rdata[local * comp_count + i];
           }
-          std::string var_name =
-              (comp_count > 1) ? get_component_name(field, i + 1) : field.get_name();
-          int cgns_field = 0;
+          std::string var_name   = (comp_count > 1)
+                                       ? get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1)
+                                       : field.get_name();
+          int         cgns_field = 0;
           CGCHECKM(cgp_field_write(get_file_pointer(), base, zone, m_currentVertexSolutionIndex,
                                    CGNS_ENUMV(RealDouble), var_name.c_str(), &cgns_field));
 
@@ -1960,7 +1961,7 @@ namespace Iocgns {
           for (cgsize_t j = 0; j < num_to_get; j++) {
             cgns_data[j] = rdata[comp_count * j + i];
           }
-          std::string var_name = get_component_name(field, i + 1);
+          std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
           CGCHECKM(cgp_field_write(get_file_pointer(), base, zone, m_currentVertexSolutionIndex,
                                    CGNS_ENUMV(RealDouble), var_name.c_str(), &cgns_field));
@@ -2175,7 +2176,7 @@ namespace Iocgns {
           for (size_t j = 0; j < num_to_get; j++) {
             cgns_data[j] = rdata[comp_count * j + i];
           }
-          std::string var_name   = get_component_name(field, i + 1);
+          std::string var_name   = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
           int         cgns_field = 0;
           CGCHECKM(cgp_field_write(get_file_pointer(), base, zone, m_currentCellCenterSolutionIndex,
                                    CGNS_ENUMV(RealDouble), var_name.c_str(), &cgns_field));
@@ -2326,7 +2327,7 @@ namespace Iocgns {
           for (cgsize_t j = 0; j < num_to_get; j++) {
             cgns_data[j] = rdata[comp_count * j + i];
           }
-          std::string var_name = get_component_name(field, i + 1);
+          std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
           CGCHECKM(cgp_field_write(get_file_pointer(), base, zone, sol_index,
                                    CGNS_ENUMV(RealDouble), var_name.c_str(), &cgns_field));

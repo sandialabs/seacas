@@ -413,7 +413,8 @@ namespace Ioss {
     virtual void set_maximum_symbol_length(int /* requested_symbol_size */) {
     } // Default does nothing...
 
-    std::string get_component_name(const Ioss::Field &field, int component) const;
+    std::string get_component_name(const Ioss::Field &field, Ioss::Field::InOut in_out,
+                                   int component) const;
     char        get_field_separator() const { return fieldSeparator; }
     bool        get_field_recognition() const { return enableFieldRecognition; }
     bool        get_field_strip_trailing_() const { return fieldStripTrailing_; }
