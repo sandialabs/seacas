@@ -111,8 +111,8 @@ namespace Ioss {
     /** \brief Get name of the 'component_indexth` component (1-based)
      *
      * \param[in] component_index 1-based index of the component to be named
-     * \param[in] separator optional suffix separator to be used if the separator
-     *            on the field is set to 1 which means 'unset'
+     * \param[in] suffix optional suffix separator to be used if the separator
+     *            on the field is set to '1' which means 'unset'
      * \returns name of the specified component
      */
     std::string get_component_name(int component_index, char suffix = 1) const;
