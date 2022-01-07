@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -159,7 +159,7 @@ int ex_get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id)
   /* Get names of each attribute and see if it is an 'internal' name */
   int count = att_count;
   for (int i = 0; i < count; i++) {
-    char name[NC_MAX_NAME];
+    char name[NC_MAX_NAME + 1];
     int  status;
     if ((status = nc_inq_attname(exoid, varid, i, name)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
@@ -208,7 +208,7 @@ int ex_get_attribute_param(int exoid, ex_entity_type obj_type, ex_entity_id id, 
   */
   count = 0;
   for (int i = 0; i < att_count; i++) {
-    char name[NC_MAX_NAME];
+    char name[NC_MAX_NAME + 1];
     int  status;
     if ((status = nc_inq_attname(exoid, varid, i, name)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
