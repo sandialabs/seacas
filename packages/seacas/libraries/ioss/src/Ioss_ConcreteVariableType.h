@@ -4,8 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#ifndef IOSS_Ioss_ConcreteVariableType_h
-#define IOSS_Ioss_ConcreteVariableType_h
+#pragma once
 
 #include <Ioss_VariableType.h> // for VariableType
 #include <string>              // for string
@@ -82,4 +81,3 @@ namespace Ioss {
   MAKE_CLASS(Matrix_22);
   MAKE_CLASS(Matrix_33);
 } // namespace Ioss
-#endif
