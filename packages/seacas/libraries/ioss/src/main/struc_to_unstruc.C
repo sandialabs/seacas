@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -264,7 +264,7 @@ namespace {
 
   void transfer_connectivity(Ioss::Region &region, Ioss::Region &output_region)
   {
-    auto &blocks = region.get_structured_blocks();
+    const auto &blocks = region.get_structured_blocks();
     for (const auto &block : blocks) {
       // We have a structured block of size ni x nj x nk.
       // Need to convert that to element connectivity
