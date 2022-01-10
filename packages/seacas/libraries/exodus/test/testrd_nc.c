@@ -546,9 +546,9 @@ int main(int argc, char **argv)
   num_df_per_set        = (int *)my_calloc(num_side_sets, sizeof(int));
   int *elem_ind         = (int *)my_calloc(num_side_sets, sizeof(int));
   df_ind                = (int *)my_calloc(num_side_sets, sizeof(int));
-  int *elem_list        = (int *)my_calloc(elem_list_len, sizeof(int));
-  int *side_list        = (int *)my_calloc(elem_list_len, sizeof(int));
-  int *dist_fact        = (float *)my_calloc(df_list_len, sizeof(float));
+  int   *elem_list      = (int *)my_calloc(elem_list_len, sizeof(int));
+  int   *side_list      = (int *)my_calloc(elem_list_len, sizeof(int));
+  float *dist_fact      = (float *)my_calloc(df_list_len, sizeof(float));
 
   {
     struct ex_set_specs set_specs;
