@@ -267,8 +267,7 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
   int timedim    = 0;
   int strdim     = 0;
   int namestrdim = 0;
-  int dim[2];
-  int varid = 0;
+  int varid      = 0;
 
   int map_type = get_type(exodusFilePtr, EX_MAPS_INT64_DB);
 
@@ -336,7 +335,7 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
   }
 
   {
-    dim[0] = timedim;
+    int dim[] = {timedim};
     if ((status = nc_def_var(exodusFilePtr, VAR_WHOLE_TIME, nc_flt_code(exodusFilePtr), 1, dim,
                              &varid)) != NC_NOERR) {
       errmsg = fmt::format("Error: failed to define whole time step variable in file id {}",
@@ -363,9 +362,8 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
     }
 
     // Define the node map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numnoddim;
-    status  = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims, &varid);
+    int dims[] = {numnoddim};
+    status     = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims, &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -394,10 +392,9 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
     }
 
     // Define the element map here to avoid a later redefine call
-    int dims[1];
-    dims[0] = numelemdim;
-    varid   = 0;
-    status  = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims, &varid);
+    int dims[1] = {numelemdim};
+    varid       = 0;
+    status      = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims, &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -548,9 +545,8 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
         return (EX_FATAL);
       }
 
-      dims[0]   = numelbdim;
-      dims[1]   = numattrdim;
-      int varid = 0;
+      int dims[] = {numelbdim, numattrdim};
+      int varid  = 0;
       status = nc_def_var(exodusFilePtr, VAR_ATTRIB(iblk + 1), nc_flt_code(exodusFilePtr), 2, dims,
                           &varid);
       if (status != NC_NOERR) {
@@ -652,9 +648,7 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Node
   }
 
   std::string errmsg;
-  int         dims[2];
-
-  int status = 0; // clear error code
+  int         status = 0; // clear error code
 
   // Get number of node sets defined for this file
   int dimid;
@@ -706,7 +700,7 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Node
 
     // define variable to store node set node list here instead of in expns
     int bulk_type = get_type(exodusFilePtr, EX_BULK_INT64_DB);
-    dims[0]       = dimid;
+    int dims[]    = {dimid};
     int varid;
     status =
         nc_def_var(exodusFilePtr, VAR_NODE_NS(cur_num_node_sets + 1), bulk_type, 1, dims, &varid);
@@ -802,9 +796,7 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Side
   }
 
   std::string errmsg;
-  int         dims[2];
-
-  int status = 0; // clear error code
+  int         status = 0; // clear error code
 
   // Get number of side sets defined for this file
   int dimid;
@@ -855,7 +847,7 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Side
     }
 
     int bulk_type = get_type(exodusFilePtr, EX_BULK_INT64_DB);
-    dims[0]       = dimid;
+    int dims[]    = {dimid};
     int varid     = 0;
     status =
         nc_def_var(exodusFilePtr, VAR_ELEM_SS(cur_num_side_sets + 1), bulk_type, 1, dims, &varid);

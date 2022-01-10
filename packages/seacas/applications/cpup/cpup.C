@@ -519,8 +519,8 @@ namespace {
 
         // Find all corresponding blocks on the input part meshes...
         for (const auto &part : part_mesh) {
-          const auto &blocks = part->get_structured_blocks();
-          for (const auto &pblock : blocks) {
+          const auto &sblocks = part->get_structured_blocks();
+          for (const auto &pblock : sblocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
@@ -732,7 +732,7 @@ namespace {
     std::array<std::string, 3> fields{"mesh_model_coordinates_x", "mesh_model_coordinates_y",
                                       "mesh_model_coordinates_z"};
 
-    auto &blocks = output_region.get_structured_blocks();
+    const auto &blocks = output_region.get_structured_blocks();
     for (const auto &block : blocks) {
       // Get size of node_block...
       auto               &onb       = block->get_node_block();
