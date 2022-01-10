@@ -47,13 +47,12 @@ namespace Ioss {
     bool get_environment(const std::string &name, std::string &value, bool sync_parallel) const;
 
     /*!
-     * Returns 'true' if 'name' is defined in the environment.
-     * The value of the environment variable is converted to an
-     * integer via the atoi library call and returned in 'value'.
-     * No checking is done to ensure that the environment variable
-     * points to a valid integer.
-     * getenv system call is only done on processor 0.
-     * If '!sync_parallel', then don't push to other processors.
+     * Returns 'true' if 'name' is defined in the environment.  The
+     * value of the environment variable is converted to an integer
+     * and returned in 'value'.  No checking is done to ensure that
+     * the environment variable points to a valid integer.  getenv
+     * system call is only done on processor 0.  If '!sync_parallel',
+     * then don't push to other processors.
      */
     bool get_environment(const std::string &name, int &value, bool sync_parallel) const;
 
