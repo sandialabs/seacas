@@ -879,11 +879,17 @@ namespace Ioex {
     size_t count  = get_block_element_count(blk_seq);
     size_t offset = get_block_element_offset(blk_seq);
 
-    std::vector<INT> file_conn(count * nnpe);
-    m_decomposition.show_progress("\tex_get_partial_conn");
-    ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, file_conn.data(), nullptr,
-                        nullptr);
-    m_decomposition.communicate_block_data(file_conn.data(), data, blk, nnpe);
+    if (m_decomposition.m_method == "LINEAR") {
+      ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, data, nullptr,
+			  nullptr);
+    }
+    else {
+      std::vector<INT> file_conn(count * nnpe);
+      m_decomposition.show_progress("\tex_get_partial_conn");
+      ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, file_conn.data(), nullptr,
+			  nullptr);
+      m_decomposition.communicate_block_data(file_conn.data(), data, blk, nnpe);
+    }
 
     for (size_t i = 0; i < blk.iossCount * nnpe; i++) {
       data[i] = node_global_to_local(data[i]);
@@ -1278,17 +1284,22 @@ namespace Ioex {
     size_t blk_seq = get_block_seq(EX_ELEM_BLOCK, id);
     size_t count   = get_block_element_count(blk_seq);
     size_t offset  = get_block_element_offset(blk_seq);
-
-    std::vector<double> file_data(count);
+    int    ierr    = 0;
     m_decomposition.show_progress("\tex_get_partial_var (elem)");
-    int ierr = ex_get_partial_var(filePtr, step, EX_ELEM_BLOCK, var_index, id, offset + 1, count,
-                                  file_data.data());
-
-    if (ierr >= 0) {
-      m_decomposition.communicate_block_data(file_data.data(), ioss_data.data(), el_blocks[blk_seq],
-                                             1);
+    if (m_decomposition.m_method == "LINEAR") {
+      ierr = ex_get_partial_var(filePtr, step, EX_ELEM_BLOCK, var_index, id, offset + 1, count,
+				ioss_data.data());
     }
+    else {
+      std::vector<double> file_data(count);
+      ierr = ex_get_partial_var(filePtr, step, EX_ELEM_BLOCK, var_index, id, offset + 1, count,
+				file_data.data());
 
+      if (ierr >= 0) {
+	m_decomposition.communicate_block_data(file_data.data(), ioss_data.data(), el_blocks[blk_seq],
+					       1);
+      }
+    }
     return ierr;
   }
 
@@ -1301,15 +1312,18 @@ namespace Ioex {
     size_t blk_seq = get_block_seq(EX_ELEM_BLOCK, id);
     size_t count   = get_block_element_count(blk_seq);
     size_t offset  = count == 0 ? 0 : get_block_element_offset(blk_seq);
-
-    std::vector<double> file_data(count * comp_count);
-    int ierr = ex_get_partial_attr(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, file_data.data());
-
-    if (ierr >= 0) {
-      m_decomposition.communicate_block_data(file_data.data(), ioss_data, el_blocks[blk_seq],
-                                             comp_count);
+    int    ierr    = 0;
+    if (m_decomposition.m_method == "LINEAR") {
+      ierr = ex_get_partial_attr(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, ioss_data);
     }
-
+    else {
+      std::vector<double> file_data(count * comp_count);
+      ierr = ex_get_partial_attr(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, file_data.data());
+      if (ierr >= 0) {
+	m_decomposition.communicate_block_data(file_data.data(), ioss_data, el_blocks[blk_seq],
+					       comp_count);
+      }
+    }
     return ierr;
   }
 
