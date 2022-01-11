@@ -4,13 +4,13 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ioss_DBUsage.h"           // for DatabaseUsage
+#include "Ioss_IOFactory.h"         // for IOFactory
 #include <cgns/Iocgns_DatabaseIO.h> // for DatabaseIO -- serial
 #include <cgns/Iocgns_IOFactory.h>
 #include <cgns/Iocgns_Utils.h>
 #include <cstddef> // for nullptr
-#include "Ioss_DBUsage.h"   // for DatabaseUsage
-#include "Ioss_IOFactory.h" // for IOFactory
-#include <string>           // for string
+#include <string>  // for string
 #include <tokenize.h>
 
 #include <cgnsconfig.h>

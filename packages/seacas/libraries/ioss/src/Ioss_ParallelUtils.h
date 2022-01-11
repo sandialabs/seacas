@@ -210,15 +210,15 @@ namespace Ioss {
 #if IOSS_DEBUG_OUTPUT
     {
       Ioss::ParallelUtils utils(comm);
-      int processor_count = utils.parallel_size();
+      int                 processor_count = utils.parallel_size();
 
-      int max_comm = sendcnts[processor_count - 1] + senddisp[processor_count - 1];
+      int              max_comm = sendcnts[processor_count - 1] + senddisp[processor_count - 1];
       std::vector<int> comm_size;
 
       utils.gather(max_comm, comm_size);
       int my_rank = utils.parallel_rank();
       if (my_rank == 0) {
-	fmt::print("Send Communication Size: {}\n", fmt::join(comm_size, ", "));
+        fmt::print("Send Communication Size: {}\n", fmt::join(comm_size, ", "));
       }
     }
 #endif
@@ -258,15 +258,15 @@ namespace Ioss {
 #if IOSS_DEBUG_OUTPUT
     {
       Ioss::ParallelUtils utils(comm);
-      int processor_count = utils.parallel_size();
+      int                 processor_count = utils.parallel_size();
 
-      int max_comm = sendcnts[processor_count - 1] + senddisp[processor_count - 1];
+      int              max_comm = sendcnts[processor_count - 1] + senddisp[processor_count - 1];
       std::vector<int> comm_size;
 
       utils.gather(max_comm, comm_size);
       int my_rank = utils.parallel_rank();
       if (my_rank == 0) {
-	fmt::print("Send Communication Size: {}\n", fmt::join(comm_size, ", "));
+        fmt::print("Send Communication Size: {}\n", fmt::join(comm_size, ", "));
       }
     }
 #endif

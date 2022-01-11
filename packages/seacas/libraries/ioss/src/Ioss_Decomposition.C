@@ -691,8 +691,9 @@ namespace Ioss {
     show_progress("\tguided_decompose Communication 2 finished");
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(Ioss::DEBUG(), "Processor {}:\t{:L} local, {:L} imported and {:L} exported elements\n",
-               m_processor, m_elementCount - exp_size, imp_size, exp_size);
+    fmt::print(Ioss::DEBUG(),
+               "Processor {}:\t{:L} local, {:L} imported and {:L} exported elements\n", m_processor,
+               m_elementCount - exp_size, imp_size, exp_size);
 #endif
   }
 
@@ -858,8 +859,9 @@ namespace Ioss {
     show_progress("\tmetis_decompose Communication 2 finished");
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(Ioss::DEBUG(), "Processor {}:\t{:L} local, {:L} imported and {:L} exported elements\n",
-               m_processor, m_elementCount - exp_size, imp_size, exp_size);
+    fmt::print(Ioss::DEBUG(),
+               "Processor {}:\t{:L} local, {:L} imported and {:L} exported elements\n", m_processor,
+               m_elementCount - exp_size, imp_size, exp_size);
 #endif
   }
 
@@ -1022,8 +1024,9 @@ namespace Ioss {
     show_progress("\tZoltan lb_partition finished");
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(Ioss::DEBUG(), "Processor {}:\t{:L} local, {:L} imported and {:L} exported elements\n",
-               m_processor, m_elementCount - num_export, num_import, num_export);
+    fmt::print(Ioss::DEBUG(),
+               "Processor {}:\t{:L} local, {:L} imported and {:L} exported elements\n", m_processor,
+               m_elementCount - num_export, num_import, num_export);
 #endif
 
     // Don't need centroid data anymore... Free up space
