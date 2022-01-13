@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -301,8 +301,8 @@ namespace Ioss {
     show_progress(__func__);
     if (m_processor == 0) {
       fmt::print(Ioss::OUTPUT(),
-                 "\nIOSS: Using decomposition method '{}' for {:L} elements on {} mpi ranks.\n",
-                 m_method, m_globalElementCount, m_processorCount);
+                 "\nIOSS: Using decomposition method '{}' for {} elements on {} mpi ranks.\n",
+                 m_method, fmt::group_digits(m_globalElementCount), m_processorCount);
 
       if ((size_t)m_processorCount > m_globalElementCount) {
         fmt::print(Ioss::WARNING(),
@@ -430,8 +430,8 @@ namespace Ioss {
 
 #if IOSS_DEBUG_OUTPUT
     fmt::print(Ioss::DEBUG(),
-               "Processor {} communicates {:L} nodes from and {:L} nodes to other processors\n",
-               m_processor, sumr, sums);
+               "Processor {} communicates {} nodes from and {} nodes to other processors\n",
+               m_processor, fmt::group_digits(sumr), fmt::group_digits(sums));
 #endif
     // Build the list telling the other processors which of their nodes I will
     // need data from...
@@ -691,9 +691,9 @@ namespace Ioss {
     show_progress("\tguided_decompose Communication 2 finished");
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(Ioss::DEBUG(),
-               "Processor {}:\t{:L} local, {:L} imported and {:L} exported elements\n", m_processor,
-               m_elementCount - exp_size, imp_size, exp_size);
+    fmt::print(Ioss::DEBUG(), "Processor {}:\t{} local, {} imported and {} exported elements\n",
+               m_processor, fmt::group_digits(m_elementCount - exp_size),
+               fmt::group_digits(imp_size), fmt::group_digits(exp_size));
 #endif
   }
 
@@ -859,9 +859,9 @@ namespace Ioss {
     show_progress("\tmetis_decompose Communication 2 finished");
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(Ioss::DEBUG(),
-               "Processor {}:\t{:L} local, {:L} imported and {:L} exported elements\n", m_processor,
-               m_elementCount - exp_size, imp_size, exp_size);
+    fmt::print(Ioss::DEBUG(), "Processor {}:\t{} local, {} imported and {} exported elements\n",
+               m_processor, fmt::group_digits(m_elementCount - exp_size),
+               fmt::group_digits(imp_size), fmt::group_digits(exp_size));
 #endif
   }
 
@@ -1024,9 +1024,9 @@ namespace Ioss {
     show_progress("\tZoltan lb_partition finished");
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(Ioss::DEBUG(),
-               "Processor {}:\t{:L} local, {:L} imported and {:L} exported elements\n", m_processor,
-               m_elementCount - num_export, num_import, num_export);
+    fmt::print(Ioss::DEBUG(), "Processor {}:\t{} local, {} imported and {} exported elements\n",
+               m_processor, fmt::group_digits(m_elementCount - num_export),
+               fmt::group_digits(num_import), fmt::group_digits(num_export));
 #endif
 
     // Don't need centroid data anymore... Free up space
@@ -1370,7 +1370,8 @@ namespace Ioss {
 // Map that converts nodes from the global index (1-based) to a
 // local-per-processor index (1-based)
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(Ioss::DEBUG(), "Processor {}:\tNode Count = {:L}\n", m_processor, nodes.size());
+    fmt::print(Ioss::DEBUG(), "Processor {}:\tNode Count = {}\n", m_processor,
+               fmt::group_digits(nodes.size()));
 #endif
     nodeGTL.swap(nodes);
     for (size_t i = 0; i < nodeGTL.size(); i++) {
@@ -1497,8 +1498,8 @@ namespace Ioss {
       m_nodeCommMap[i] = node_global_to_local(m_nodeCommMap[i] + 1);
     }
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(Ioss::DEBUG(), "Processor {} has {:L} shared nodes\n", m_processor,
-               m_nodeCommMap.size() / 2);
+    fmt::print(Ioss::DEBUG(), "Processor {} has {} shared nodes\n", m_processor,
+               fmt::group_digits(m_nodeCommMap.size() / 2));
 #endif
     show_progress(__func__);
   }

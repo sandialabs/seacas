@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -138,7 +138,7 @@ namespace Iogn {
       }
       else {
         m_generatedMesh =
-	  new GeneratedMesh(get_filename(), util().parallel_size(), util().parallel_rank());
+            new GeneratedMesh(get_filename(), util().parallel_size(), util().parallel_rank());
       }
     }
 
@@ -156,12 +156,13 @@ namespace Iogn {
         int_byte_size_api() == 4) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
-                 "ERROR: The node count is {:L} and the element count is {:L}.\n"
-                 "       This exceeds the capacity of the 32-bit integers ({:L})\n"
+                 "ERROR: The node count is {} and the element count is {}.\n"
+                 "       This exceeds the capacity of the 32-bit integers ({})\n"
                  "       which are being requested by the client.\n"
                  "       The mesh requires 64-bit integers which can be requested by setting the "
                  "`INTEGER_SIZE_API=8` property.",
-                 glob_node_count, glob_elem_count, two_billion);
+                 fmt::group_digits(glob_node_count), fmt::group_digits(glob_elem_count),
+                 fmt::group_digits(two_billion));
       IOSS_ERROR(errmsg);
     }
 
