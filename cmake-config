@@ -44,9 +44,6 @@ FORTRAN=$(check_valid FORTRAN)
 ZOLTAN=${ZOLTAN:-YES}
 ZOLTAN=$(check_valid ZOLTAN)
 
-### Python Version...
-PYTHON_VER=${PYTHON_VER:-"3.0"}
-
 ### TPLs --
 ### Make sure these point to the locations to find the libraries and includes in lib and include
 ### subdirectories of the specified paths.
@@ -501,7 +498,6 @@ ${FAODEL_SYMBOLS} \
 -D Metis_ROOT:PATH=${METIS_PATH} \
 -D ParMETIS_ROOT:PATH=${PARMETIS_PATH} \
 -D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
--D PythonInterp_FIND_VERSION:STRING=${PYTHON_VER} \
 \
 $EXTRA_ARGS \
 ${ACCESS}
@@ -519,7 +515,6 @@ echo "     SHARED: ${SHARED}"
 echo " BUILD_TYPE: ${BUILD_TYPE}"
 echo " THREADSAFE: ${THREADSAFE}"
 echo "       CRAY: ${CRAY}"
-echo " PYTHON_VER: ${PYTHON_VER}"
 echo " "
 echo "     NETCDF: ${HAVE_NETCDF}"
 echo "      MATIO: ${HAVE_MATIO}"
