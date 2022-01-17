@@ -352,7 +352,7 @@ namespace Iotm {
     }
 
     Ioss::Field::RoleType role = field.get_role();
-    const Ioss::SideSet * owner = ef_blk->owner();
+
     if (role == Ioss::Field::MESH) {
 
       if (field.get_name() == "ids") {

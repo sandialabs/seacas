@@ -18,7 +18,6 @@
 #include <functional>
 #include <stdexcept>
 #include <numeric>
-#include <tokenize.h>
 #include <fmt/ostream.h>
 #include <strings.h>
 
@@ -40,6 +39,24 @@ inline void default_error_handler(const std::ostringstream &message)
   handle_error<std::logic_error>(message);
 }
 
+template <class ForwardIt, class T>
+ForwardIt bound_search(ForwardIt first, ForwardIt last, const T &value)
+{
+  first = std::lower_bound(first, last, value);
+  if (!(first == last) && !(value < *first)) return first;
+
+  return last;
+}
+
+template <class ForwardIt, class T, class Compare>
+ForwardIt bound_search(ForwardIt first, ForwardIt last, const T &value, Compare comp)
+{
+  first = std::lower_bound(first, last, value, comp);
+  if (!(first == last) && !(comp(value, *first))) return first;
+
+  return last;
+}
+
 inline std::string strip(const std::string &inpt)
 {
   auto start_it = inpt.begin();
@@ -49,7 +66,7 @@ inline std::string strip(const std::string &inpt)
   return std::string(start_it, end_it.base());
 }
 
-inline std::vector<std::string> tokenize(const std::string &str, const std::string &separators)
+inline std::vector<std::string> get_tokens(const std::string &str, const std::string &separators)
 {
   std::vector<std::string> tokens;
   auto first = std::begin(str);
@@ -352,6 +369,7 @@ struct ElementData {
 
 struct SideBlockInfo {
   std::string name;
+  std::string parentName;
   std::string sideTopology;
   std::string elementTopology;
   std::string touchingBlock;
@@ -359,25 +377,25 @@ struct SideBlockInfo {
   unsigned numNodesPerSide;
 };
 
-enum SplitType { SPLIT_BY_TOPOLOGIES = 1, SPLIT_BY_ELEMENT_BLOCK = 2, SPLIT_BY_DONT_SPLIT = 3, SPLIT_INVALID = 4 };
+enum SplitType { TOPOLOGY, ELEMENT_BLOCK, NO_SPLIT, INVALID };
 
 inline std::ostream &operator<<(std::ostream &out, const SplitType &t)
 {
   switch (t) {
-    case SPLIT_BY_TOPOLOGIES:
-      return out << "SPLIT_BY_TOPOLOGIES";
+    case SplitType::TOPOLOGY:
+      return out << "TOPOLOGY";
       break;
-    case SPLIT_BY_ELEMENT_BLOCK:
-      return out << "SPLIT_BY_ELEMENT_BLOCK";
+    case SplitType::ELEMENT_BLOCK:
+      return out << "ELEMENT_BLOCK";
       break;
-    case SPLIT_BY_DONT_SPLIT:
-      return out << "SPLIT_BY_DONT_SPLIT";
+    case SplitType::NO_SPLIT:
+      return out << "NO_SPLIT";
       break;
     default:
-      return out << "SPLIT_INVALID";
+      return out << "INVALID";
       break;
   }
-  return out << "SPLIT_INVALID";
+  return out << "INVALID[" << (unsigned) t << "]";
 }
 
 template <typename EntityId, typename T>
@@ -410,7 +428,9 @@ class EntityGroup
     set_error_handler([](const std::ostringstream &errmsg) { default_error_handler(errmsg); });
   }
 
-  void set_error_handler(ErrorHandler errorHandler) { m_errorHandler = errorHandler; }
+  virtual ~EntityGroup() {}
+
+  virtual void set_error_handler(ErrorHandler errorHandler) { m_errorHandler = errorHandler; }
 
   GroupData *add_group_data(const std::string &name, const std::vector<DataType> &data)
   {
@@ -623,7 +643,7 @@ class SidesetSplitter
     set_error_handler(errorHandler);
   }
 
-  SidesetSplitter() : m_splitType(SPLIT_INVALID)
+  SidesetSplitter() : m_splitType(INVALID)
   {
     ErrorHandler errorHandler = [](const std::ostringstream &errmsg) { default_error_handler(errmsg); };
     set_error_handler(errorHandler);
@@ -637,11 +657,11 @@ class SidesetSplitter
     m_splitMap.clear();
     m_sidesetName = sideset.name;
 
-    if (get_split_type() == SPLIT_BY_TOPOLOGIES) {
+    if (get_split_type() == SplitType::TOPOLOGY) {
       split_by_topology(sideset, elementData);
-    } else if (get_split_type() == SPLIT_BY_ELEMENT_BLOCK) {
+    } else if (get_split_type() == SplitType::ELEMENT_BLOCK) {
       split_by_element_block(sideset, elementData);
-    } else if (get_split_type() == SPLIT_BY_DONT_SPLIT) {
+    } else if (get_split_type() == SplitType::NO_SPLIT) {
       split_by_no_split(sideset, elementData);
     } else {
       std::ostringstream errmsg;
@@ -649,17 +669,7 @@ class SidesetSplitter
       m_errorHandler(errmsg);
     }
 
-    create_index_proc_map(sideset, elementData);
-  }
-
-  std::vector<SideBlockInfo> get_side_block_info_for_proc(int proc) const
-  {
-    std::vector<SideBlockInfo> infoVec = get_side_block_info();
-
-    for (SideBlockInfo &info : infoVec) {
-      info.sideIndex = get_entries_local_to_proc(info.sideIndex, proc);
-    }
-    return infoVec;
+    build_index_proc_map(sideset, elementData);
   }
 
   std::vector<SideBlockInfo> get_side_block_info() const
@@ -675,11 +685,19 @@ class SidesetSplitter
     return infoVec;
   }
 
-  SideBlockInfo get_side_block_info_for_proc(const std::string &name, int proc) const
+  std::vector<size_t> get_indices_local_to_proc(const std::vector<size_t> &index, int proc) const
   {
-    SideBlockInfo info = get_side_block_info(name);
-    info.sideIndex = get_entries_local_to_proc(info.sideIndex, proc);
-    return info;
+    std::vector<size_t> indexForProc;
+    indexForProc.reserve(index.size());
+
+    for (size_t elemPairIndex : index) {
+      if (is_index_local_to_proc(elemPairIndex, proc)) {
+        indexForProc.push_back(elemPairIndex);
+      }
+    }
+
+    indexForProc.resize(indexForProc.size());
+    return indexForProc;
   }
 
   SideBlockInfo get_side_block_info(const std::string &name) const
@@ -691,6 +709,7 @@ class SidesetSplitter
       const SplitData &splitData = iter->second;
 
       info.name = name;
+      info.parentName = splitData.sidesetName;
       info.sideTopology = splitData.sideTopology;
       info.elementTopology = splitData.elemTopology;
       info.numNodesPerSide = splitData.sideNodeCount;
@@ -704,14 +723,14 @@ class SidesetSplitter
   void set_split_type(SplitType inputSplitType) { m_splitType = inputSplitType; }
 
  private:
-  void create_index_proc_map(
+  void build_index_proc_map(
       const SidesetData<EntityId, Topology> &sideset, const std::vector<ElementData<EntityId, Topology>> &elementData)
   {
     for (size_t i = 0; i < sideset.data.size(); ++i) {
       const SidesetDataType<EntityId> &elemSidePair = sideset.data[i];
       EntityId elemId = elemSidePair.first;
 
-      auto iter = std::find(elementData.begin(), elementData.end(), elemId);
+      auto iter = bound_search(elementData.begin(), elementData.end(), elemId);
       if (iter == elementData.end()) {
         std::ostringstream errmsg;
         errmsg << "Error!  Sideset with id: " << sideset.id << " and name: " << sideset.name
@@ -721,21 +740,6 @@ class SidesetSplitter
 
       m_indexProcMap[i] = iter->proc;
     }
-  }
-
-  std::vector<size_t> get_entries_local_to_proc(const std::vector<size_t> &index, int proc) const
-  {
-    std::vector<size_t> indexForProc;
-    indexForProc.reserve(index.size());
-
-    for (size_t elemPairIndex : index) {
-      if (is_index_local_to_proc(elemPairIndex, proc)) {
-        indexForProc.push_back(elemPairIndex);
-      }
-    }
-
-    indexForProc.resize(indexForProc.size());
-    return indexForProc;
   }
 
   bool is_index_local_to_proc(size_t elemPairIndex, int proc) const
@@ -753,15 +757,37 @@ class SidesetSplitter
 
   struct SplitData {
     bool metaDataSet;
+    std::string sidesetName;
     std::string touchingBlock;
     std::string elemTopology;
-    unsigned elemNodeCount;
     std::string sideTopology;
-    unsigned sideNodeCount;
+    int sideNodeCount;
     std::vector<size_t> index;
 
-    SplitData() : metaDataSet(false), elemNodeCount(0), sideNodeCount(0) {}
+    SplitData() : metaDataSet(false), sideNodeCount(-1) {}
   };
+
+  void fill_split_data(std::string key, size_t index, const ElementData<EntityId, Topology> &elemData, int side)
+  {
+    convert_to_upper_case(key);
+
+    SplitData &splitData = m_splitMap[key];
+
+    splitData.index.push_back(index);
+
+    if (!splitData.metaDataSet) {
+      splitData.sidesetName = m_sidesetName;
+      splitData.elemTopology = elemData.topology.name();
+      splitData.sideTopology = elemData.topology.side_topology_name(side);
+      splitData.sideNodeCount = elemData.topology.side_topology_num_nodes(side);
+
+      if (get_split_type() == ELEMENT_BLOCK) {
+        splitData.touchingBlock = elemData.partName;
+      }
+
+      splitData.metaDataSet = true;
+    }
+  }
 
   using Criterion = std::function<std::string(
       const SidesetData<EntityId, Topology> &sideset, const ElementData<EntityId, Topology> &elemData, int side)>;
@@ -775,7 +801,7 @@ class SidesetSplitter
       EntityId elemId = elemSidePair.first;
       int side = elemSidePair.second;
 
-      auto iter = std::find(elementData.begin(), elementData.end(), elemId);
+      auto iter = bound_search(elementData.begin(), elementData.end(), elemId);
       if (iter == elementData.end()) {
         std::ostringstream errmsg;
         errmsg << "Error!  Sideset with id: " << sideset.id << " and name: " << sideset.name
@@ -784,24 +810,7 @@ class SidesetSplitter
       }
 
       std::string key = criterion(sideset, *iter, side);
-      convert_to_upper_case(key);
-
-      SplitData &splitData = m_splitMap[key];
-
-      splitData.index.push_back(index);
-
-      if (!splitData.metaDataSet) {
-        splitData.elemTopology = iter->topology.name();
-        splitData.sideTopology = iter->topology.side_topology_name(side);
-        splitData.elemNodeCount = iter->topology.num_nodes();
-        splitData.sideNodeCount = iter->topology.side_topology_num_nodes(side);
-
-        if (get_split_type() == SPLIT_BY_ELEMENT_BLOCK) {
-          splitData.touchingBlock = iter->partName;
-        }
-
-        splitData.metaDataSet = true;
-      }
+      fill_split_data(key, index, *iter, side);
     }
   }
 
@@ -843,15 +852,14 @@ class SidesetSplitter
     SplitData &splitData = m_splitMap[sideset.name];
 
     splitData.index = splitIndex;
+    splitData.sidesetName = m_sidesetName;
     splitData.elemTopology = "unknown";
     splitData.sideTopology = "unknown";
-    splitData.elemNodeCount = 0;
-    splitData.sideNodeCount = 0;
+    splitData.sideNodeCount = -1;
     splitData.metaDataSet = true;
   }
 
   SplitType m_splitType;
-
   std::string m_sidesetName;
 
   std::unordered_map<size_t, int> m_indexProcMap;
@@ -867,19 +875,16 @@ struct SidesetData : public EntityGroupData<EntityId, SidesetDataType<EntityId>>
   void set_split_type(SplitType splitType) { sidesetSplitter.set_split_type(splitType); }
   SplitType get_split_type() const { return sidesetSplitter.get_split_type(); }
 
+  void set_error_handler(ErrorHandler errorHandler) { sidesetSplitter.set_error_handler(errorHandler); }
+
   void split(const std::vector<ElementData<EntityId, Topology>> &elementData)
   {
     sidesetSplitter.split(*this, elementData);
   }
 
-  SideBlockInfo get_side_block_info_for_proc(const std::string &sideBlockName, int proc) const
+  std::vector<size_t> get_sideblock_indices_local_to_proc(const SideBlockInfo &info, int proc) const
   {
-    return sidesetSplitter.get_side_block_info_for_proc(sideBlockName, proc);
-  }
-
-  std::vector<SideBlockInfo> get_side_block_info_for_proc(int proc) const
-  {
-    return sidesetSplitter.get_side_block_info_for_proc(proc);
+    return sidesetSplitter.get_indices_local_to_proc(info.sideIndex, proc);
   }
 
   SideBlockInfo get_side_block_info(const std::string &sideBlockName) const
@@ -909,7 +914,16 @@ class Sidesets : public EntityGroup<EntityId, SidesetData<EntityId, Topology>>
  public:
   using BaseClass = EntityGroup<EntityId, SidesetData<EntityId, Topology>>;
 
-  Sidesets() : BaseClass("SIDESET", "SURFACE_", {"BLOCK_"}) {}
+  Sidesets() : BaseClass("SIDESET", "SURFACE_", {"BLOCK_", "NODELIST_"}) {}
+
+  void set_error_handler(ErrorHandler errorHandler) override
+  {
+    BaseClass::set_error_handler(errorHandler);
+
+    for (SidesetData<EntityId, Topology> &sidesetData : BaseClass::m_groupDataVec) {
+      sidesetData.set_error_handler(errorHandler);
+    }
+  }
 
   void finalize_parse(const std::vector<ElementData<EntityId, Topology>> &elementData)
   {
@@ -1075,7 +1089,7 @@ template <typename EntityId>
 class SidesetParser
 {
  public:
-  SidesetParser() : m_splitType(SPLIT_BY_DONT_SPLIT)
+  SidesetParser() : m_splitType(NO_SPLIT)
   {
     ErrorHandler errorHandler = [](const std::ostringstream &errmsg) { default_error_handler(errmsg); };
     set_error_handler(errorHandler);
@@ -1091,18 +1105,35 @@ class SidesetParser
 
   void parse(const std::string &parseData)
   {
-    auto options = tokenize(parseData, ";");
+    auto options = get_tokens(parseData, ";");
 
     for (const auto &option : options) {
-      parse_option(option);
+      parse_option_group(option);
     }
   }
 
  private:
-  void parse_option(const std::string &option)
+  void parse_option(std::string optionName, const std::string &optionValue)
+  {
+    convert_to_lower_case(optionName);
+
+    if (optionName == "name") {
+      parse_name(optionValue);
+    } else if (optionName == "data") {
+      parse_element_side_pairs(optionValue);
+    } else if (optionName == "split") {
+      parse_split_type(optionValue);
+    } else {
+      std::ostringstream errmsg;
+      errmsg << "Unrecognized sideset option: " << optionName;
+      m_errorHandler(errmsg);
+    }
+  }
+
+  void parse_option_group(const std::string &option)
   {
     if (!option.empty()) {
-      auto optionTokens = tokenize(option, "=");
+      auto optionTokens = get_tokens(option, "=");
 
       if (optionTokens.size() != 2) {
         std::ostringstream errmsg;
@@ -1110,20 +1141,7 @@ class SidesetParser
         m_errorHandler(errmsg);
       }
 
-      std::string optionName = optionTokens[0];
-      convert_to_lower_case(optionName);
-
-      if (optionName == "name") {
-        parse_name(optionTokens[1]);
-      } else if (optionName == "data") {
-        parse_element_side_pairs(optionTokens[1]);
-      } else if (optionName == "split") {
-        parse_split_type(optionTokens[1]);
-      } else {
-        std::ostringstream errmsg;
-        errmsg << "Unrecognized sideset option: " << optionName;
-        m_errorHandler(errmsg);
-      }
+      parse_option(optionTokens[0], optionTokens[1]);
     }
   }
 
@@ -1131,7 +1149,7 @@ class SidesetParser
 
   void parse_element_side_pairs(const std::string &data)
   {
-    auto sidesetData = tokenize(data, ",");
+    auto sidesetData = get_tokens(data, ",");
 
     if (sidesetData.size() % 2 != 0) {
       std::ostringstream errmsg;
@@ -1158,11 +1176,11 @@ class SidesetParser
     convert_to_lower_case(splitName);
 
     if (splitName == "none") {
-      m_splitType = SPLIT_BY_DONT_SPLIT;
+      m_splitType = NO_SPLIT;
     } else if (splitName == "block") {
-      m_splitType = SPLIT_BY_ELEMENT_BLOCK;
+      m_splitType = ELEMENT_BLOCK;
     } else if (splitName == "topology") {
-      m_splitType = SPLIT_BY_TOPOLOGIES;
+      m_splitType = TOPOLOGY;
     } else {
       std::ostringstream errmsg;
       errmsg << "Unrecognized sideset split type: " << splitName;
@@ -1194,18 +1212,33 @@ class NodesetParser
 
   void parse(const std::string &parseData)
   {
-    auto options = tokenize(parseData, ";");
+    auto options = get_tokens(parseData, ";");
 
     for (const auto &option : options) {
-      parse_option(option);
+      parse_option_group(option);
     }
   }
 
  private:
-  void parse_option(const std::string &option)
+  void parse_option(std::string optionName, const std::string &optionValue)
+  {
+    convert_to_lower_case(optionName);
+
+    if (optionName == "name") {
+      parse_name(optionValue);
+    } else if (optionName == "data") {
+      parse_node_data(optionValue);
+    } else {
+      std::ostringstream errmsg;
+      errmsg << "Unrecognized nodeset option: " << optionName;
+      m_errorHandler(errmsg);
+    }
+  }
+
+  void parse_option_group(const std::string &option)
   {
     if (!option.empty()) {
-      auto optionTokens = tokenize(option, "=");
+      auto optionTokens = get_tokens(option, "=");
 
       if (optionTokens.size() != 2) {
         std::ostringstream errmsg;
@@ -1213,18 +1246,7 @@ class NodesetParser
         m_errorHandler(errmsg);
       }
 
-      std::string optionName = optionTokens[0];
-      convert_to_lower_case(optionName);
-
-      if (optionName == "name") {
-        parse_name(optionTokens[1]);
-      } else if (optionName == "data") {
-        parse_node_data(optionTokens[1]);
-      } else {
-        std::ostringstream errmsg;
-        errmsg << "Unrecognized nodeset option: " << optionName;
-        m_errorHandler(errmsg);
-      }
+      parse_option(optionTokens[0], optionTokens[1]);
     }
   }
 
@@ -1232,7 +1254,7 @@ class NodesetParser
 
   void parse_node_data(const std::string &data)
   {
-    auto nodesetData = tokenize(data, ",");
+    auto nodesetData = get_tokens(data, ",");
 
     for (const std::string &nodeString : nodesetData) {
       if (!is_number(nodeString)) {
@@ -1292,7 +1314,7 @@ class TextMeshOptionParser
   void initialize_parse(const std::string &parameters)
   {
     if (!parameters.empty()) {
-      std::vector<std::string> optionGroups = tokenize(parameters, "|");
+      std::vector<std::string> optionGroups = get_tokens(parameters, "|");
       parse_options(optionGroups);
 
       m_meshConnectivityDescription = optionGroups[0];
@@ -1388,7 +1410,7 @@ class TextMeshOptionParser
     }
 
     if (coordinatesOptionGroup.size() > 1) {
-      const std::vector<std::string> &coordinateTokens = tokenize(coordinatesOptionGroup[1], ",");
+      const std::vector<std::string> &coordinateTokens = get_tokens(coordinatesOptionGroup[1], ",");
       m_rawCoordinates.reserve(coordinateTokens.size());
       for (const auto &token : coordinateTokens) {
         double coord = std::stod(token);
@@ -1510,8 +1532,9 @@ class TextMeshOptionParser
         "element list .. first "
         "argument)\n"
         "\tcoordinates:x_1,y_1[,z_1], x_2,y_2[,z_2], ...., x_n,y_n[,z_n] (specifies coordinate data)\n"
-        "\tsideset:[name,]elem_1,side_1, elem_2,side_2, ...., elem_n,side_n (specifies sideset data)\n"
-        "\tnodeset:[name,]node_1, node_2, ...., node_n (specifies nodeset data)\n"
+        "\tsideset:[name=<name>;] data=elem_1,side_1,elem_2,side_2,....,elem_n,side_n; [split=<block|topology|none>;] "
+        "(specifies sideset data)\n"
+        "\tnodeset:[name=<name>;] data=node_1,node_2,....,node_n (specifies nodeset data)\n"
         "\tdimension:spatialDimension (specifies spatial dimension .. default is 3)\n"
         "\thelp -- show this list\n\n");
   }
@@ -1526,7 +1549,7 @@ class TextMeshOptionParser
   void parse_options(const std::vector<std::string> &optionGroups)
   {
     for (size_t i = 1; i < optionGroups.size(); i++) {
-      std::vector<std::string> optionGroup = tokenize(optionGroups[i], ":");
+      std::vector<std::string> optionGroup = get_tokens(optionGroups[i], ":");
       std::string optionType = optionGroup[0];
       convert_to_lower_case(optionType);
 
@@ -1764,4 +1787,4 @@ class TextMeshParser
 };
 
 }  // namespace text_mesh
-}  // namespace Iotm
+}  // mamespace Iotm
