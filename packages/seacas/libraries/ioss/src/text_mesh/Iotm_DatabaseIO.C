@@ -366,13 +366,13 @@ namespace Iotm {
         if (field.is_type(Ioss::Field::INTEGER)) {
           int *ids = static_cast<int *>(data);
           for (size_t i = 0; i < num_to_get; i++) {
-            ids[i] = static_cast<int>(10 * elem_side[2 * i + 0] + elem_side[2 * i + 1] + 1);
+            ids[i] = static_cast<int>(10 * elem_side[2 * i + 0] + elem_side[2 * i + 1]);
           }
         }
         else {
           auto *ids = static_cast<int64_t *>(data);
           for (size_t i = 0; i < num_to_get; i++) {
-            ids[i] = 10 * elem_side[2 * i + 0] + elem_side[2 * i + 1] + 1;
+            ids[i] = 10 * elem_side[2 * i + 0] + elem_side[2 * i + 1];
           }
         }
       }
@@ -393,14 +393,14 @@ namespace Iotm {
           int *element_side = static_cast<int *>(data);
           for (size_t i = 0; i < num_to_get; i++) {
             element_side[2 * i + 0] = static_cast<int>(elem_side[2 * i + 0]);
-            element_side[2 * i + 1] = static_cast<int>(elem_side[2 * i + 1] + 1);
+            element_side[2 * i + 1] = static_cast<int>(elem_side[2 * i + 1]);
           }
         }
         else {
           auto *element_side = static_cast<int64_t *>(data);
           for (size_t i = 0; i < num_to_get; i++) {
             element_side[2 * i + 0] = elem_side[2 * i + 0];
-            element_side[2 * i + 1] = elem_side[2 * i + 1] + 1;
+            element_side[2 * i + 1] = elem_side[2 * i + 1];
           }
         }
       }

@@ -176,9 +176,14 @@ namespace Iotm {
       {
         EXPECT_TRUE(nullptr != sideset);
         EXPECT_EQ(id, sideset->get_property("id").get_int());
-        EXPECT_EQ(sideset->get_side_blocks().size(), subsetNames.size());
 
-        for (const std::string& subsetName : subsetNames) {
+        if(subsetNames.size() == 0) {
+          EXPECT_EQ(1u, sideset->get_side_blocks().size());
+        } else {
+          EXPECT_EQ(subsetNames.size(), sideset->get_side_blocks().size());
+        }
+        for (std::string subsetName : subsetNames) {
+          std::transform(subsetName.begin(), subsetName.end(), subsetName.begin(), ::toupper);
           Ioss::SideBlock* sideBlock = sideset->get_side_block(subsetName);
           EXPECT_TRUE(nullptr != sideBlock);
           EXPECT_EQ(id, sideBlock->get_property("id").get_int());
