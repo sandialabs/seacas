@@ -255,7 +255,7 @@ void Grid::create_output_regions(SystemInterface &interFace)
       properties.add(Ioss::Property("my_processor", i));
     }
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
-        "exodus", interFace.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_SELF, properties);
+        "exodus", interFace.outputName_, Ioss::WRITE_RESTART, (Ioss_MPI_Comm)IOSS_MPI_COMM_SELF, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -1269,7 +1269,7 @@ namespace {
     // Check that 'filename' does not contain a starting/ending double quote...
     filename.erase(remove(filename.begin(), filename.end(), '\"'), filename.end());
     Ioss::DatabaseIO *dbi =
-        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_SELF);
+        Ioss::IOFactory::create("exodus", filename, Ioss::READ_RESTART, (Ioss_MPI_Comm)IOSS_MPI_COMM_SELF);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }

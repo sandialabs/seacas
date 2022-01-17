@@ -102,8 +102,8 @@ namespace Iotm {
         create_ioss_region();
       }
 
-      MPI_Comm get_comm() const { return communicator; }
-      void     set_comm(MPI_Comm comm) { communicator = comm; }
+      Ioss_MPI_Comm get_comm() const { return communicator; }
+      void     set_comm(Ioss_MPI_Comm comm) { communicator = comm; }
 
       std::string get_mesh_desc(const std::string &textMeshDesc)
       {
@@ -651,7 +651,7 @@ namespace Iotm {
       Ioss::PropertyManager m_propertyManager;
       Ioss::DatabaseIO     *m_database   = nullptr;
       Ioss::Region         *m_region     = nullptr;
-      MPI_Comm              communicator = MPI_COMM_WORLD;
+      Ioss_MPI_Comm         communicator = IOSS_MPI_COMM_WORLD;
       IossTopologyMapping   m_topologyMapping;
     };
 

@@ -82,7 +82,7 @@ namespace Ioss {
   //: Returns TRUE if the file exists (is readable)
   bool FileInfo::exists() const { return exists_; }
 
-  int FileInfo::parallel_exists(MPI_Comm communicator, std::string &where) const
+  int FileInfo::parallel_exists(Ioss_MPI_Comm communicator, std::string &where) const
   {
     PAR_UNUSED(communicator);
     PAR_UNUSED(where);
@@ -353,7 +353,7 @@ namespace Ioss {
     }
   }
 
-  void FileInfo::create_path(const std::string &filename, MPI_Comm communicator)
+  void FileInfo::create_path(const std::string &filename, Ioss_MPI_Comm communicator)
   {
     PAR_UNUSED(communicator);
 #ifdef SEACAS_HAVE_MPI

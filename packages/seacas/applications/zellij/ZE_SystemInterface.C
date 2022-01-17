@@ -326,7 +326,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   repeat_ = options_.get_option_value("repeat", repeat_);
 
   // Adjust start_rank and rank_count if running in parallel...
-  Ioss::ParallelUtils pu{MPI_COMM_WORLD};
+  Ioss::ParallelUtils pu{IOSS_MPI_COMM_WORLD};
   if (pu.parallel_size() > 1) {
     if (subcycle_) {
       if (myRank_ == 0) {

@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
   properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_MODIFY));
 
   Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::WRITE_RESTART,
-                                                  (MPI_Comm)MPI_COMM_WORLD, properties);
+                                                  (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
   if (dbi == nullptr || !dbi->ok(true)) {
     std::exit(EXIT_FAILURE);
   }
@@ -1495,7 +1495,7 @@ namespace {
       std::string       out_file  = interFace.filename() + ".mod";
       std::string       file_type = interFace.type();
       Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(file_type, out_file, Ioss::WRITE_RESTART,
-                                                      (MPI_Comm)MPI_COMM_WORLD, properties);
+                                                      (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
 
       if (dbo == nullptr || !dbo->ok(true)) {
         std::exit(EXIT_FAILURE);

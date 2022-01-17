@@ -187,7 +187,7 @@ namespace {
     // NOTE: The "READ_RESTART" mode ensures that the node and element ids will be mapped.
     //========================================================================
     Ioss::DatabaseIO *dbi =
-        Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
+        Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART, (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -203,7 +203,7 @@ namespace {
     // OUTPUT ...
     //========================================================================
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(output_type, outfile, Ioss::WRITE_RESTART,
-                                                    (MPI_Comm)MPI_COMM_WORLD);
+                                                    (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }

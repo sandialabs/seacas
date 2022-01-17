@@ -154,7 +154,7 @@ namespace {
 
 namespace Ioex {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
-                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+                         Ioss::DatabaseUsage db_usage, Ioss_MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
       : Ioex::BaseDatabaseIO(region, filename, db_usage, communicator, props)
   {
@@ -1055,7 +1055,7 @@ namespace Ioex {
 
     // If the model contains assemblies, we want to retain the empty blocks since the blocks
     // might be in an assembly.  This is typically the case when an application is running
-    // in parallel, but is telling IOSS that it is "serial" (MPI_COMM_SELF) and taking care
+    // in parallel, but is telling IOSS that it is "serial" (IOSS_MPI_COMM_SELF) and taking care
     // of synchronization at the app level instead of down here...
     bool retain_empty_blocks = m_groupCount[EX_ASSEMBLY] > 0;
 

@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   ON_BLOCK_EXIT(MPI_Finalize);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(IOSS_MPI_COMM_WORLD, &rank);
 #endif
 
   if (argc <= 2) {
@@ -119,7 +119,7 @@ namespace {
   {
     Ioss::PropertyManager properties{};
     Ioss::DatabaseIO     *dbi =
-        Ioss::IOFactory::create("cgns", inpfile, Ioss::READ_MODEL, MPI_COMM_WORLD, properties);
+        Ioss::IOFactory::create("cgns", inpfile, Ioss::READ_MODEL, IOSS_MPI_COMM_WORLD, properties);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -145,7 +145,7 @@ namespace {
 #endif
 
     Ioss::DatabaseIO *dbo =
-        Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, MPI_COMM_WORLD, properties);
+        Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, IOSS_MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }

@@ -170,7 +170,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
                  filename);
     }
     Ioss::DatabaseIO *dbi =
-        Ioss::IOFactory::create("cgns", filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
+        Ioss::IOFactory::create("cgns", filename, Ioss::READ_RESTART, (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -240,7 +240,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   properties.add(Ioss::Property("FLUSH_INTERVAL", 0));
   Ioss::DatabaseIO *dbo =
       Ioss::IOFactory::create("cgns", interFace.output_filename(), Ioss::WRITE_RESTART,
-                              (MPI_Comm)MPI_COMM_WORLD, properties);
+                              (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
   if (dbo == nullptr || !dbo->ok(true)) {
     std::exit(EXIT_FAILURE);
   }

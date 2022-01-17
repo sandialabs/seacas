@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   ON_BLOCK_EXIT(MPI_Finalize);
-  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+  MPI_Comm_rank(IOSS_MPI_COMM_WORLD, &my_rank);
 #endif
 
   codename = Ioss::FileInfo(argv[0]).basename();
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 #ifdef SEACAS_HAVE_MPI
-  Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
+  Ioss::ParallelUtils parallel(IOSS_MPI_COMM_WORLD);
   parallel.barrier();
 #endif
   double end = Ioss::Utils::timer();
@@ -140,7 +140,7 @@ namespace {
     // NOTE: The "READ_RESTART" mode ensures that the node and element ids will be mapped.
     //========================================================================
     Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART,
-                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
+                                                    (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -230,7 +230,7 @@ namespace {
     std::string       file = interFace.output_filename();
     std::string       type = interFace.output_type();
     Ioss::DatabaseIO *dbo  = Ioss::IOFactory::create(type, file, Ioss::WRITE_RESTART,
-                                                     (MPI_Comm)MPI_COMM_WORLD, properties);
+                                                     (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }

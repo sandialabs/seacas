@@ -68,8 +68,8 @@ int main(int argc, char *argv[])
   int num_proc = 1;
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
+  MPI_Comm_rank(IOSS_MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(IOSS_MPI_COMM_WORLD, &num_proc);
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
   }
 
 #ifdef SEACAS_HAVE_MPI
-  Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
+  Ioss::ParallelUtils parallel(IOSS_MPI_COMM_WORLD);
   parallel.barrier();
 #endif
   double end = Ioss::Utils::timer();
@@ -190,7 +190,7 @@ namespace {
       // INPUT Database...
       //========================================================================
       Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
-          interFace.inFiletype, inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
+          interFace.inFiletype, inpfile, Ioss::READ_MODEL, (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
       if (dbi == nullptr || !dbi->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
@@ -293,7 +293,7 @@ namespace {
           interFace.inputFile.size() > 1) {
         Ioss::DatabaseIO *dbo =
             Ioss::IOFactory::create(interFace.outFiletype, interFace.outputFile,
-                                    Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
+                                    Ioss::WRITE_RESTART, (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
         if (dbo == nullptr || !dbo->ok(true)) {
           std::exit(EXIT_FAILURE);
         }
@@ -381,7 +381,7 @@ namespace {
 
           Ioss::DatabaseIO *dbo =
               Ioss::IOFactory::create(interFace.outFiletype, filename, Ioss::WRITE_RESTART,
-                                      (MPI_Comm)MPI_COMM_WORLD, properties);
+                                      (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
           if (dbo == nullptr || !dbo->ok(true)) {
             std::exit(EXIT_FAILURE);
           }
@@ -418,7 +418,7 @@ namespace {
       // INPUT Database #1...
       //========================================================================
       Ioss::DatabaseIO *dbi1 = Ioss::IOFactory::create(
-          interFace.inFiletype, inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
+          interFace.inFiletype, inpfile, Ioss::READ_MODEL, (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
       if (dbi1 == nullptr || !dbi1->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
@@ -480,7 +480,7 @@ namespace {
       //========================================================================
       Ioss::DatabaseIO *dbi2 =
           Ioss::IOFactory::create(interFace.outFiletype, interFace.outputFile, Ioss::READ_MODEL,
-                                  (MPI_Comm)MPI_COMM_WORLD, properties);
+                                  (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
       if (dbi2 == nullptr || !dbi2->ok(true)) {
         std::exit(EXIT_FAILURE);
       }

@@ -522,7 +522,7 @@ namespace {
 namespace Iocgns {
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
-                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+                         Ioss::DatabaseUsage db_usage, Ioss_MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
   {
@@ -611,7 +611,7 @@ namespace Iocgns {
       }
 
 #if CG_BUILD_PARALLEL
-      cgp_mpi_comm(MPI_COMM_SELF);
+      cgp_mpi_comm(IOSS_MPI_COMM_SELF);
       int ierr = cgp_open(decoded_filename().c_str(), mode, &m_cgnsFilePtr);
       cgp_mpi_comm(util().communicator());
 #else

@@ -27,7 +27,7 @@ namespace Ioss {
   {
   public:
     ParallelUtils() = default;
-    explicit ParallelUtils(MPI_Comm the_communicator);
+    explicit ParallelUtils(Ioss_MPI_Comm the_communicator);
     ~ParallelUtils() = default;
 
     // Assignment operator
@@ -70,7 +70,7 @@ namespace Ioss {
 
     std::string decode_filename(const std::string &filename, bool is_parallel) const;
 
-    MPI_Comm communicator() const { return communicator_; }
+    Ioss_MPI_Comm communicator() const { return communicator_; }
     int      parallel_size() const;
     int      parallel_rank() const;
 
@@ -122,7 +122,7 @@ namespace Ioss {
     void progress(const std::string &output) const;
 
   private:
-    MPI_Comm communicator_{MPI_COMM_WORLD};
+    Ioss_MPI_Comm communicator_{IOSS_MPI_COMM_WORLD};
   };
 
 #ifdef SEACAS_HAVE_MPI
@@ -140,7 +140,7 @@ namespace Ioss {
   int MY_Alltoallv64(const std::vector<T> &sendbuf, const std::vector<int64_t> &sendcounts,
                      const std::vector<int64_t> &senddisp, std::vector<T> &recvbuf,
                      const std::vector<int64_t> &recvcounts, const std::vector<int64_t> &recvdisp,
-                     MPI_Comm comm)
+                     Ioss_MPI_Comm comm)
   {
     int processor_count = 0;
     int my_processor    = 0;
@@ -199,7 +199,7 @@ namespace Ioss {
   int MY_Alltoallv(const std::vector<T> &sendbuf, const std::vector<int64_t> &sendcnts,
                    const std::vector<int64_t> &senddisp, std::vector<T> &recvbuf,
                    const std::vector<int64_t> &recvcnts, const std::vector<int64_t> &recvdisp,
-                   MPI_Comm comm)
+                   Ioss_MPI_Comm comm)
   {
 // Wrapper to handle case where send/recv counts and displacements are 64-bit integers.
 // Two cases:
@@ -253,7 +253,7 @@ namespace Ioss {
   int MY_Alltoallv(const std::vector<T> &sendbuf, const std::vector<int> &sendcnts,
                    const std::vector<int> &senddisp, std::vector<T> &recvbuf,
                    const std::vector<int> &recvcnts, const std::vector<int> &recvdisp,
-                   MPI_Comm comm)
+                   Ioss_MPI_Comm comm)
   {
 #if IOSS_DEBUG_OUTPUT
     {

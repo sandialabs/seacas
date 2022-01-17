@@ -330,7 +330,7 @@ namespace {
     // NOTE: The "READ_RESTART" mode ensures that the node and element ids will be mapped.
     //========================================================================
     Ioss::DatabaseIO *dbi =
-        Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
+        Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART, (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD);
     if (dbi == nullptr || !dbi->ok()) {
       std::cerr << "ERROR: Could not open database '" << inpfile << "' of type '" << input_type
                 << "'\n";
@@ -344,7 +344,7 @@ namespace {
     // OUTPUT ...
     //========================================================================
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(output_type, outfile, Ioss::WRITE_RESTART,
-                                                    (MPI_Comm)MPI_COMM_WORLD);
+                                                    (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD);
     if (dbo == nullptr || !dbo->ok()) {
       std::cerr << "ERROR: Could not create output database '" << outfile << "' of type '"
                 << output_type << "'\n";
@@ -363,7 +363,7 @@ namespace {
     if (globals.add_sset) {
       // Open the file containing the data which will be the new sideset...
       dbs = Ioss::IOFactory::create(input_type, ss_file, Ioss::READ_RESTART,
-                                    (MPI_Comm)MPI_COMM_WORLD);
+                                    (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD);
       if (dbs == nullptr || !dbs->ok()) {
         std::cerr << "ERROR: Could not open database '" << ss_file << "' of type '" << input_type
                   << "'\n";

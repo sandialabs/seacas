@@ -85,7 +85,7 @@ void write_blob()
   Ioss::PropertyManager properties;
   properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
   Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
-      "exodus", "ioss_blob_example.e", Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
+      "exodus", "ioss_blob_example.e", Ioss::WRITE_RESTART, (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
   if (dbo == NULL || !dbo->ok(true)) {
     std::exit(EXIT_FAILURE);
   }
@@ -211,7 +211,7 @@ bool read_blob()
   Ioss::PropertyManager properties;
   properties.add(Ioss::Property("DECOMPOSITION_METHOD", "linear"));
   Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
-      "exodus", "ioss_blob_example.e", Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
+      "exodus", "ioss_blob_example.e", Ioss::READ_RESTART, (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
   if (dbi == NULL || !dbi->ok(true)) {
     std::exit(EXIT_FAILURE);
   }

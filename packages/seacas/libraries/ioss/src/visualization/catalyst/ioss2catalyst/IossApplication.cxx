@@ -116,8 +116,8 @@ void IossApplication::initializeMPI(int argc, char **argv) { MPI_Init(&argc, &ar
 
 void IossApplication::initMPIRankAndSize()
 {
-  MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
-  MPI_Comm_size(MPI_COMM_WORLD, &numRanks);
+  MPI_Comm_rank(IOSS_MPI_COMM_WORLD, &myRank);
+  MPI_Comm_size(IOSS_MPI_COMM_WORLD, &numRanks);
 }
 
 void IossApplication::finalizeMPI() { MPI_Finalize(); }
@@ -554,7 +554,7 @@ bool IossApplication::decomposedMeshExists(int ndx)
       fstream.close();
     }
   }
-  MPI_Bcast(&status, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&status, 1, MPI_INT, 0, IOSS_MPI_COMM_WORLD);
   return status == 1;
 }
 
@@ -581,7 +581,7 @@ void IossApplication::openInputIOSSDatabase(int ndx)
 
   Ioss::DatabaseIO *dbi =
       Ioss::IOFactory::create(getIOSSDatabaseType(ndx), getFileName(ndx), Ioss::READ_RESTART,
-                              (MPI_Comm)MPI_COMM_WORLD, inputProperties);
+                              (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, inputProperties);
   if (dbi == nullptr || !dbi->ok(true)) {
     printErrorMessage("Unable to open input file(s) " + getFileName(ndx));
     exitApplicationFailure();
@@ -618,7 +618,7 @@ void IossApplication::copyInputIOSSDatabaseOnRank()
   Ioss::PropertyManager outputProperties;
   outputProperties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
   Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(getIOSSDatabaseType(0), fn, Ioss::WRITE_RESULTS,
-                                                  (MPI_Comm)MPI_COMM_WORLD, outputProperties);
+                                                  (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, outputProperties);
   if (dbo == nullptr || !dbo->ok(true)) {
     printErrorMessage("Unable to open output file(s) " + fn);
     exitApplicationFailure();
@@ -678,7 +678,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid()
     outputProps.push_back(newProps);
     Ioss::DatabaseIO *newDbo =
         Ioss::IOFactory::create(getCatalystDatabaseType(ii), mytmpnm, Ioss::WRITE_RESULTS,
-                                (MPI_Comm)MPI_COMM_WORLD, *newProps);
+                                (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, *newProps);
     outputDbs.push_back(newDbo);
   }
   // create an output Ioss::Region instance for each grid
@@ -781,7 +781,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRankOneGrid()
 
   Ioss::DatabaseIO *dbo =
       Ioss::IOFactory::create(getCatalystDatabaseType(0), "catalyst", Ioss::WRITE_RESULTS,
-                              (MPI_Comm)MPI_COMM_WORLD, outputProperties);
+                              (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, outputProperties);
   if (dbo == nullptr || !dbo->ok(true)) {
     printErrorMessage("Unable to open catalyst database");
     exitApplicationFailure();

@@ -48,7 +48,7 @@ namespace Iocgns {
   }
 
   Ioss::DatabaseIO *IOFactory::make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
-                                       MPI_Comm                     communicator,
+                                       Ioss_MPI_Comm                communicator,
                                        const Ioss::PropertyManager &properties) const
   {
 // The "cgns" and "parallel_cgns" databases can both be accessed from

@@ -1034,7 +1034,7 @@ void Internals::copy_database(int in_file, int out_file, bool transient_also)
 
 void Internals::update_assembly_data(int exoid, std::vector<Assembly> &assemblies, int stage)
 {
-  Ioss::ParallelUtils pm(MPI_COMM_WORLD);
+  Ioss::ParallelUtils pm(IOSS_MPI_COMM_WORLD);
   Internals           internal{exoid, 0, pm};
 
   if (stage == 0 || stage == 1) {

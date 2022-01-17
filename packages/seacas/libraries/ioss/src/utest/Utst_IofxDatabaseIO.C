@@ -37,7 +37,7 @@ namespace {
     Ioss::Init::Initializer init_db;
 
     Ioss::DatabaseUsage   db_usage     = Ioss::READ_MODEL;
-    MPI_Comm              communicator = MPI_COMM_WORLD;
+    Ioss_MPI_Comm         communicator = IOSS_MPI_COMM_WORLD;
     Ioss::PropertyManager properties;
 
     properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
@@ -54,7 +54,7 @@ namespace {
     Ioss::Init::Initializer init_db;
 
     Ioss::DatabaseUsage   db_usage     = Ioss::WRITE_RESULTS;
-    MPI_Comm              communicator = MPI_COMM_WORLD;
+    Ioss_MPI_Comm         communicator = IOSS_MPI_COMM_WORLD;
     Ioss::PropertyManager properties;
 
     properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));

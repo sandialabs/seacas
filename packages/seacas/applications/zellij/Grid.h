@@ -116,7 +116,7 @@ private:
   UnitCellMap                                m_unitCells;
   std::vector<std::unique_ptr<Ioss::Region>> m_outputRegions;
   std::vector<Cell>                          m_grid{};
-  Ioss::ParallelUtils                        m_pu{MPI_COMM_WORLD};
+  Ioss::ParallelUtils                        m_pu{IOSS_MPI_COMM_WORLD};
   size_t                                     m_gridI{0};
   size_t                                     m_gridJ{0};
   double                                     m_scaleFactor{1.0};

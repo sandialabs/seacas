@@ -112,8 +112,8 @@ int main(int argc, char *argv[])
   int num_proc = 1;
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
+  MPI_Comm_rank(IOSS_MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(IOSS_MPI_COMM_WORLD, &num_proc);
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
     int64_t             min, max, avg;
     int64_t             hwmin, hwmax, hwavg;
-    Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
+    Ioss::ParallelUtils parallel(IOSS_MPI_COMM_WORLD);
     parallel.memory_stats(min, max, avg);
     parallel.hwm_memory_stats(hwmin, hwmax, hwavg);
     if (rank == 0) {
@@ -204,7 +204,7 @@ namespace {
     bool first = true;
     for (const auto &inpfile : interFace.inputFile) {
       Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
-          interFace.inFiletype, inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
+          interFace.inFiletype, inpfile, Ioss::READ_MODEL, (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
       if (dbi == nullptr || !dbi->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
@@ -272,7 +272,7 @@ namespace {
       //========================================================================
       Ioss::DatabaseIO *dbo =
           Ioss::IOFactory::create(interFace.outFiletype, interFace.outputFile, Ioss::WRITE_RESTART,
-                                  (MPI_Comm)MPI_COMM_WORLD, properties);
+                                  (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
       if (dbo == nullptr || !dbo->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
@@ -319,7 +319,7 @@ namespace {
       // This also assumes that the node order and count is the same for input
       // and output regions... (This is checked during nodeset output)
       if (output_region.get_database()->needs_shared_node_information()) {
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(IOSS_MPI_COMM_WORLD, &rank);
 
         if (interFace.ints_64_bit)
           set_owned_node_count(region, rank, (int64_t)0);
