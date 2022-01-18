@@ -5,7 +5,7 @@
 //    strange cases
 //
 //
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -912,11 +912,10 @@ namespace Ioex {
           // a warning if there is a corrupt step on processor
           // 0... Need better warnings which won't overload in the
           // worst case...
-          fmt::print(
-              Ioss::WARNING(),
-              "Skipping step {:L} at time {} in database file\n\t{}.\nThe data for that step "
-              "is possibly corrupt.\n",
-              i + 1, tsteps[i], get_filename());
+          fmt::print(Ioss::WARNING(),
+                     "Skipping step {} at time {} in database file\n\t{}.\nThe data for that step "
+                     "is possibly corrupt.\n",
+                     fmt::group_digits(i + 1), tsteps[i], get_filename());
         }
       }
     }
@@ -1893,7 +1892,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const 
         // expand out into corresponding `get_field_internal` call.
         Ioss::Field          ep_field = css->get_field("entity_processor_raw");
         std::vector<int64_t> ent_proc(ep_field.raw_count() *
-                                      ep_field.raw_storage()->component_count());
+                                      ep_field.get_component_count(Ioss::Field::InOut::INPUT));
         size_t               ep_data_size = ent_proc.size() * sizeof(int64_t);
         get_field_internal(css, ep_field, ent_proc.data(), ep_data_size);
         for (size_t i = 0; i < ent_proc.size(); i += 2) {
@@ -1906,7 +1905,8 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const 
       }
       else {
         Ioss::Field      ep_field = css->get_field("entity_processor_raw");
-        std::vector<int> ent_proc(ep_field.raw_count() * ep_field.raw_storage()->component_count());
+        std::vector<int> ent_proc(ep_field.raw_count() *
+                                  ep_field.get_component_count(Ioss::Field::InOut::INPUT));
         size_t           ep_data_size = ent_proc.size() * sizeof(int);
         get_field_internal(css, ep_field, ent_proc.data(), ep_data_size);
         for (size_t i = 0; i < ent_proc.size(); i += 2) {
@@ -2054,7 +2054,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb,
 
     if (field.get_name() == "connectivity" || field.get_name() == "connectivity_raw") {
       int element_nodes = eb->topology()->number_nodes();
-      assert(field.raw_storage()->component_count() == element_nodes);
+      assert(field.get_component_count(Ioss::Field::InOut::INPUT) == element_nodes);
 
       int order = eb->get_property("iblk").get_int();
       // The connectivity is stored in a 1D array.
@@ -2067,7 +2067,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb,
     }
 #if 0
         else if (field.get_name() == "connectivity_face") {
-          int face_count = field.raw_storage()->component_count();
+          int face_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
           // The connectivity is stored in a 1D array.
           // The element_face index varies fastest
@@ -2077,7 +2077,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb,
           }
         }
         else if (field.get_name() == "connectivity_edge") {
-          int edge_count = field.raw_storage()->component_count();
+          int edge_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
           // The connectivity is stored in a 1D array.
           // The element_edge index varies fastest
@@ -2177,7 +2177,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const 
 
     if (field.get_name() == "connectivity") {
       int face_nodes = eb->topology()->number_nodes();
-      assert(field.raw_storage()->component_count() == face_nodes);
+      assert(field.get_component_count(Ioss::Field::InOut::INPUT) == face_nodes);
 
       // The connectivity is stored in a 1D array.
       // The face_node index varies fastet
@@ -2187,7 +2187,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const 
       }
     }
     else if (field.get_name() == "connectivity_edge") {
-      int edge_count = field.raw_storage()->component_count();
+      int edge_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
       // The connectivity is stored in a 1D array.
       // The face_edge index varies fastest
@@ -2198,7 +2198,8 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const 
     }
     else if (field.get_name() == "connectivity_raw") {
       // "connectivity_raw" has nodes in local id space (1-based)
-      assert(field.raw_storage()->component_count() == eb->topology()->number_nodes());
+      assert(field.get_component_count(Ioss::Field::InOut::INPUT) ==
+             eb->topology()->number_nodes());
 
       // The connectivity is stored in a 1D array.
       // The face_node index varies fastet
@@ -2250,7 +2251,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const 
 
     if (field.get_name() == "connectivity") {
       int edge_nodes = eb->topology()->number_nodes();
-      assert(field.raw_storage()->component_count() == edge_nodes);
+      assert(field.get_component_count(Ioss::Field::InOut::INPUT) == edge_nodes);
 
       // The connectivity is stored in a 1D array.
       // The edge_node index varies fastet
@@ -2261,7 +2262,8 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const 
     }
     else if (field.get_name() == "connectivity_raw") {
       // "connectivity_raw" has nodes in local id space (1-based)
-      assert(field.raw_storage()->component_count() == eb->topology()->number_nodes());
+      assert(field.get_component_count(Ioss::Field::InOut::INPUT) ==
+             eb->topology()->number_nodes());
 
       // The connectivity is stored in a 1D array.
       // The edge_node index varies fastet
@@ -2752,7 +2754,7 @@ int64_t ParallelDatabaseIO::write_attribute_field(ex_entity_type type, const Ios
 
   int64_t id = Ioex::get_id(ge, type, &ids_);
   assert(offset > 0);
-  assert(offset - 1 + field.raw_storage()->component_count() <=
+  assert(offset - 1 + field.get_component_count(Ioss::Field::InOut::OUTPUT) <=
          ge->get_property("attribute_count").get_int());
 
   size_t  proc_offset = ge->get_optional_property("_processor_offset", 0);
@@ -2762,7 +2764,7 @@ int64_t ParallelDatabaseIO::write_attribute_field(ex_entity_type type, const Ios
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
          ioss_type == Ioss::Field::INT64);
 
-  int comp_count = field.raw_storage()->component_count();
+  int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
   if (type == EX_NODAL) {
     for (int i = 0; i < comp_count; i++) {
@@ -2853,8 +2855,8 @@ int64_t ParallelDatabaseIO::read_attribute_field(ex_entity_type type, const Ioss
 
   std::string att_name = ge->name() + SEP() + field.get_name();
   int64_t     offset   = field.get_index();
-  assert(offset - 1 + field.raw_storage()->component_count() <= attribute_count);
-  if (offset == 1 && field.raw_storage()->component_count() == attribute_count) {
+  assert(offset - 1 + field.get_component_count(Ioss::Field::InOut::INPUT) <= attribute_count);
+  if (offset == 1 && field.get_component_count(Ioss::Field::InOut::INPUT) == attribute_count) {
     // Read all attributes in one big chunk...
     int ierr = decomp->get_attr(get_file_pointer(), type, id, attribute_count,
                                 static_cast<double *>(data));
@@ -2866,7 +2868,7 @@ int64_t ParallelDatabaseIO::read_attribute_field(ex_entity_type type, const Ioss
     // Read a subset of the attributes.  If scalar, read one;
     // if higher-order (vector3d, ..) read each component and
     // put into correct location...
-    if (field.raw_storage()->component_count() == 1) {
+    if (field.get_component_count(Ioss::Field::InOut::INPUT) == 1) {
       int ierr =
           decomp->get_one_attr(get_file_pointer(), type, id, offset, static_cast<double *>(data));
       if (ierr < 0) {
@@ -2878,7 +2880,7 @@ int64_t ParallelDatabaseIO::read_attribute_field(ex_entity_type type, const Ioss
       // Need a local memory space to read data into and
       // then push that into the user-supplied data block...
       std::vector<double> local_data(num_entity);
-      int                 comp_count = field.raw_storage()->component_count();
+      int                 comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
       double             *rdata      = static_cast<double *>(data);
       for (int i = 0; i < comp_count; i++) {
         int ierr =
@@ -2914,11 +2916,11 @@ int64_t ParallelDatabaseIO::read_transient_field(ex_entity_type               ty
   // get number of components, cycle through each component
   // and add suffix to base 'field_name'.  Look up index
   // of this name in 'nodeVariables' map
-  size_t comp_count = var_type->component_count();
+  size_t comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
   char field_suffix_separator = get_field_separator();
   for (size_t i = 0; i < comp_count; i++) {
-    std::string var_name = var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+    std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
 
     // Read the variable...
     int64_t id       = Ioex::get_id(ge, type, &ids_);
@@ -2990,11 +2992,11 @@ int64_t ParallelDatabaseIO::read_ss_transient_field(const Ioss::Field &field, in
   // get number of components, cycle through each component
   // and add suffix to base 'field_name'.  Look up index
   // of this name in 'nodeVariables' map
-  size_t comp_count = var_type->component_count();
+  size_t comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
   char field_suffix_separator = get_field_separator();
   for (size_t i = 0; i < comp_count; i++) {
-    std::string var_name = var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+    std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
 
     // Read the variable...
     int  ierr     = 0;
@@ -3711,7 +3713,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
     }
     else if (field.get_name() == "connectivity_edge") {
       // Map element connectivity from global edge id to local edge id.
-      int element_edges = field.transformed_storage()->component_count();
+      int element_edges = field.get_component_count(Ioss::Field::InOut::OUTPUT);
       edgeMap.reverse_map_data(data, field, num_to_get * element_edges);
       ierr = ex_put_conn(get_file_pointer(), EX_ELEM_BLOCK, id, nullptr, data, nullptr);
       if (ierr < 0) {
@@ -3720,7 +3722,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
     }
     else if (field.get_name() == "connectivity_face") {
       // Map element connectivity from global face id to local face id.
-      int element_faces = field.transformed_storage()->component_count();
+      int element_faces = field.get_component_count(Ioss::Field::InOut::OUTPUT);
       faceMap.reverse_map_data(data, field, num_to_get * element_faces);
       ierr = ex_put_conn(get_file_pointer(), EX_ELEM_BLOCK, id, nullptr, nullptr, data);
       if (ierr < 0) {
@@ -3878,7 +3880,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceBlock *eb, const 
       if (my_face_count > 0) {
         // Map face connectivity from global edge id to local edge id.
         // Do it in 'data' ...
-        int face_edges = field.transformed_storage()->component_count();
+        int face_edges = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         edgeMap.reverse_map_data(data, field, num_to_get * face_edges);
         ierr = ex_put_conn(get_file_pointer(), EX_FACE_BLOCK, id, nullptr, data, nullptr);
         if (ierr < 0) {
@@ -4090,7 +4092,7 @@ void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */,
   // get number of components, cycle through each component
   // and add suffix to base 'field_name'.  Look up index
   // of this name in 'm_variables[EX_NODE_BLOCK]' map
-  int comp_count = var_type->component_count();
+  int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
   int re_im = 1;
   if (ioss_type == Ioss::Field::COMPLEX) {
@@ -4104,7 +4106,7 @@ void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */,
 
     char field_suffix_separator = get_field_separator();
     for (int i = 0; i < comp_count; i++) {
-      std::string var_name = var_type->label_name(field_name, i + 1, field_suffix_separator);
+      std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
       auto var_iter = m_variables[EX_NODE_BLOCK].find(var_name);
       if (var_iter == m_variables[EX_NODE_BLOCK].end()) {
@@ -4137,8 +4139,9 @@ void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */,
         fmt::print(errmsg,
                    "ERROR: Problem outputting nodal variable '{}' with index = {} to file '{}' on "
                    "processor {}\n"
-                   "\tShould have output {:L} values, but instead only output {:L} values.\n",
-                   var_name, var_index, get_filename(), myProcessor, nodeCount, num_out);
+                   "\tShould have output {} values, but instead only output {} values.\n",
+                   var_name, var_index, get_filename(), myProcessor, fmt::group_digits(nodeCount),
+                   fmt::group_digits(num_out));
         IOSS_ERROR(errmsg);
       }
 
@@ -4201,7 +4204,7 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
   // get number of components, cycle through each component
   // and add suffix to base 'field_name'.  Look up index
   // of this name in 'm_variables[type]' map
-  int comp_count = var_type->component_count();
+  int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
   int re_im = 1;
   if (ioss_type == Ioss::Field::COMPLEX) {
@@ -4215,7 +4218,7 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
 
     char field_suffix_separator = get_field_separator();
     for (int i = 0; i < comp_count; i++) {
-      std::string var_name = var_type->label_name(field_name, i + 1, field_suffix_separator);
+      std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
       auto var_iter = m_variables[type].find(var_name);
       if (var_iter == m_variables[type].end()) {
@@ -4271,8 +4274,8 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
 
       if (ierr < 0) {
         std::ostringstream extra_info;
-        fmt::print(extra_info, "Outputting component {} of field '{}' at step {:L} on {} '{}'.", i,
-                   field_name, step, ge->type_string(), ge->name());
+        fmt::print(extra_info, "Outputting component {} of field '{}' at step {} on {} '{}'.", i,
+                   field_name, fmt::group_digits(step), ge->type_string(), ge->name());
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
       }
     }

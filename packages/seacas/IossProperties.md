@@ -117,6 +117,6 @@ If the environment variable is set correctly, there should be an
 informational message output during running of the application similar
 to:
 ```bash
-	IOSS: Adding property 'DECOMPOSITION_METHOD' with value 'rib'
-	IOSS: Adding property 'FILE_TYPE' with value 'netcdf4'
+        IOSS: Adding property 'DECOMPOSITION_METHOD' with value 'rib'
+        IOSS: Adding property 'FILE_TYPE' with value 'netcdf4'
 ```

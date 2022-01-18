@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -1636,8 +1636,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     double time_per_step       = elapsed / time_step_out;
     double percentage_done     = (time_step_out * 100.0) / output_steps;
     double estimated_remaining = time_per_step * (output_steps - time_step_out);
-    fmt::print("Wrote step {:6L}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]    \r",
-               time_step + 1, time_val, percentage_done, format_time(elapsed),
+    fmt::print("Wrote step {:6}, time {:8.4e}\t\t[{:5.1f}%, Elapsed={}, ETA={}]    \r",
+               fmt::group_digits(time_step + 1), time_val, percentage_done, format_time(elapsed),
                format_time(estimated_remaining));
     if (debug_level & 1) {
       fmt::print("\n");
@@ -1651,10 +1651,10 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
   if (subcycles > 2) {
     fmt::print("{}/{} ", cycle + 1, subcycles);
   }
-  fmt::print("\n\nTotal Execution Time = {:.2f} seconds, Maximum memory = {:L} MiBytes.\n******* "
+  fmt::print("\n\nTotal Execution Time = {:.2f} seconds, Maximum memory = {} MiBytes.\n******* "
              "END *******\n",
              seacas_timer() - execution_time,
-             (get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024));
+             fmt::group_digits((get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024)));
   return (0);
 }
 
@@ -1953,11 +1953,11 @@ namespace {
           if (x[node] != FillValue && y[node] != FillValue && z[node] != FillValue) {
             if (x[node] != local_x[i] || y[node] != local_y[i] || z[node] != local_z[i]) {
               fmt::print(stderr,
-                         "\nWARNING: Node {:L} has different coordinates in at least two files.\n"
+                         "\nWARNING: Node {} has different coordinates in at least two files.\n"
                          "         cur value = {:14.6e} {:14.6e} {:14.6e}\n"
                          "         new value = {:14.6e} {:14.6e} {:14.6e} from processor {}\n",
-                         node + 1, x[node], y[node], z[node], local_x[i], local_y[i], local_z[i],
-                         proc);
+                         fmt::group_digits(node + 1), x[node], y[node], z[node], local_x[i],
+                         local_y[i], local_z[i], proc);
             }
           }
         }
@@ -1980,10 +1980,11 @@ namespace {
           if (x[node] != FillValue && y[node] != FillValue) {
             if (x[node] != local_x[i] || y[node] != local_y[i]) {
               fmt::print(stderr,
-                         "\nWARNING: Node {:L} has different coordinates in at least two files.\n"
+                         "\nWARNING: Node {} has different coordinates in at least two files.\n"
                          "         cur value = {:14.6e} {:14.6e}\n"
                          "         new value = {:14.6e} {:14.6e} from processor {}\n",
-                         node + 1, x[node], y[node], local_x[i], local_y[i], proc);
+                         fmt::group_digits(node + 1), x[node], y[node], local_x[i], local_y[i],
+                         proc);
             }
           }
         }
@@ -2005,9 +2006,9 @@ namespace {
           if (x[node] != FillValue && y[node] != FillValue) {
             if (x[node] != local_x[i]) {
               fmt::print(stderr,
-                         "\nWARNING: Node {:L} has different coordinates in at least two files.\n"
+                         "\nWARNING: Node {} has different coordinates in at least two files.\n"
                          "         cur value = {:14.6e}\tnew value = {:14.6e} from processor {}\n",
-                         node + 1, x[node], local_x[i], proc);
+                         fmt::group_digits(node + 1), x[node], local_x[i], proc);
             }
           }
         }
@@ -2129,9 +2130,9 @@ namespace {
           free_name_array(names, temp_block.num_attribute);
         }
         if ((debug_level & 4) != 0U) {
-          fmt::print(", Name = '{}', Elements = {:12L}, Nodes/element = {}, Attributes = {}\n",
-                     blocks[p][b].name_, blocks[p][b].entity_count(), blocks[p][b].nodesPerElement,
-                     blocks[p][b].attributeCount);
+          fmt::print(", Name = '{}', Elements = {:12}, Nodes/element = {}, Attributes = {}\n",
+                     blocks[p][b].name_, fmt::group_digits(blocks[p][b].entity_count()),
+                     blocks[p][b].nodesPerElement, blocks[p][b].attributeCount);
         }
       }
     } // end for p=0..part_count
@@ -2168,11 +2169,12 @@ namespace {
 
       if (debug_level & 4) {
         fmt::print("\nOutput element block info for...\n"
-                   "Block {}, Id = {}, Name = '{}', Elements = {:12L}, Nodes/element = {}, "
+                   "Block {}, Id = {}, Name = '{}', Elements = {:12}, Nodes/element = {}, "
                    "Attributes = {}\n"
                    "B{}:\t",
-                   b, glob_blocks[b].id, glob_blocks[b].name_, glob_blocks[b].entity_count(),
-                   glob_blocks[b].nodesPerElement, glob_blocks[b].attributeCount, b);
+                   b, glob_blocks[b].id, glob_blocks[b].name_,
+                   fmt::group_digits(glob_blocks[b].entity_count()), glob_blocks[b].nodesPerElement,
+                   glob_blocks[b].attributeCount, b);
       }
 
       size_t max_nodes = glob_blocks[b].entity_count() * glob_blocks[b].nodesPerElement;
@@ -2301,10 +2303,11 @@ namespace {
 
       if (debug_level & 4) {
         fmt::print("\nOutput element block info for...\n"
-                   "Block {}, Id = {}, Name = '{}', Elements = {:12L}, Nodes/element = {}, "
+                   "Block {}, Id = {}, Name = '{}', Elements = {:12}, Nodes/element = {}, "
                    "Attributes = {}\n",
-                   b, glob_blocks[b].id, glob_blocks[b].name_, glob_blocks[b].entity_count(),
-                   glob_blocks[b].nodesPerElement, glob_blocks[b].attributeCount);
+                   b, glob_blocks[b].id, glob_blocks[b].name_,
+                   fmt::group_digits(glob_blocks[b].entity_count()), glob_blocks[b].nodesPerElement,
+                   glob_blocks[b].attributeCount);
       }
 
       int id_out = ExodusFile::output(); // output file identifier
@@ -3185,19 +3188,23 @@ namespace {
     // Write out Global info
     if (rank == 0) {
       fmt::print(" Title: {}\n\n"
-                 " Number of coordinates per node  = {:15L}\n"
-                 " Number of nodes                 = {:15L}\n"
-                 " Number of elements              = {:15L}\n"
-                 " Number of element blocks        = {:15L}\n"
-                 " Number of assemblies            = {:15L}\n\n"
-                 " Number of nodal point sets      = {:15L}\n"
-                 " Number of element side sets     = {:15L}\n\n"
-                 " Number of edge blocks           = {:15L}\n"
-                 " Number of face blocks           = {:15L}\n\n",
-                 global.title, global.dimensionality, global.nodeCount, global.elementCount,
-                 global.count(Excn::ObjectType::EBLK), global.count(Excn::ObjectType::ASSM),
-                 global.count(Excn::ObjectType::NSET), global.count(Excn::ObjectType::SSET),
-                 global.count(Excn::ObjectType::EDBLK), global.count(Excn::ObjectType::FABLK));
+                 " Number of coordinates per node  = {:15}\n"
+                 " Number of nodes                 = {:15}\n"
+                 " Number of elements              = {:15}\n"
+                 " Number of element blocks        = {:15}\n"
+                 " Number of assemblies            = {:15}\n\n"
+                 " Number of nodal point sets      = {:15}\n"
+                 " Number of element side sets     = {:15}\n\n"
+                 " Number of edge blocks           = {:15}\n"
+                 " Number of face blocks           = {:15}\n\n",
+                 global.title, fmt::group_digits(global.dimensionality),
+                 fmt::group_digits(global.nodeCount), fmt::group_digits(global.elementCount),
+                 fmt::group_digits(global.count(Excn::ObjectType::EBLK)),
+                 fmt::group_digits(global.count(Excn::ObjectType::ASSM)),
+                 fmt::group_digits(global.count(Excn::ObjectType::NSET)),
+                 fmt::group_digits(global.count(Excn::ObjectType::SSET)),
+                 fmt::group_digits(global.count(Excn::ObjectType::EDBLK)),
+                 fmt::group_digits(global.count(Excn::ObjectType::FABLK)));
     }
     int id_out = ExodusFile::output();
     get_put_qa(ExodusFile(0), id_out);
@@ -3806,8 +3813,8 @@ namespace {
           free_name_array(names, temp_block.num_attribute);
         }
         if ((debug_level & 4) != 0U) {
-          fmt::print(", Name = '{}', Edges = {:12L}, Nodes/Edge= {}, Attributes = {}\n",
-                     edgeblocks[p][b].name_, edgeblocks[p][b].entity_count(),
+          fmt::print(", Name = '{}', Edges = {:12}, Nodes/Edge= {}, Attributes = {}\n",
+                     edgeblocks[p][b].name_, fmt::group_digits(edgeblocks[p][b].entity_count()),
                      edgeblocks[p][b].nodesPerEdge, edgeblocks[p][b].attributeCount);
         }
       }
@@ -3844,12 +3851,12 @@ namespace {
 
       if (debug_level & 64) {
         fmt::print("\nOutput edge block info for...\n"
-                   "Edge Block {}, Id = {}, Name = '{}', Edges = {:12L}, Nodes/Edge = {}, "
+                   "Edge Block {}, Id = {}, Name = '{}', Edges = {:12}, Nodes/Edge = {}, "
                    "Attributes = {}\n"
                    "B{}:\t",
                    b, glob_edgeblocks[b].id, glob_edgeblocks[b].name_,
-                   glob_edgeblocks[b].entity_count(), glob_edgeblocks[b].nodesPerEdge,
-                   glob_edgeblocks[b].attributeCount, b);
+                   fmt::group_digits(glob_edgeblocks[b].entity_count()),
+                   glob_edgeblocks[b].nodesPerEdge, glob_edgeblocks[b].attributeCount, b);
       }
 
       size_t max_nodes = glob_edgeblocks[b].entity_count();
@@ -3994,11 +4001,11 @@ namespace {
 
       if (debug_level & 64) {
         fmt::print("\nOutput edge block info for...\n"
-                   "Edge Block {}, Id = {}, Name = '{}', Edges = {:12L}, Nodes/Edge = {}, "
+                   "Edge Block {}, Id = {}, Name = '{}', Edges = {:12}, Nodes/Edge = {}, "
                    "Attributes = {}\n",
                    b, glob_edgeblocks[b].id, glob_edgeblocks[b].name_,
-                   glob_edgeblocks[b].entity_count(), glob_edgeblocks[b].nodesPerEdge,
-                   glob_edgeblocks[b].attributeCount);
+                   fmt::group_digits(glob_edgeblocks[b].entity_count()),
+                   glob_edgeblocks[b].nodesPerEdge, glob_edgeblocks[b].attributeCount);
       }
 
       int id_out = ExodusFile::output(); // output file identifier
@@ -4182,8 +4189,8 @@ namespace {
           free_name_array(names, temp_block.num_attribute);
         }
         if ((debug_level & 4) != 0U) {
-          fmt::print(", Name = '{}', Faces = {:12L}, Nodes/Face= {}, Attributes = {}\n",
-                     faceblocks[p][b].name_, faceblocks[p][b].entity_count(),
+          fmt::print(", Name = '{}', Faces = {:12}, Nodes/Face= {}, Attributes = {}\n",
+                     faceblocks[p][b].name_, fmt::group_digits(faceblocks[p][b].entity_count()),
                      faceblocks[p][b].nodesPerFace, faceblocks[p][b].attributeCount);
         }
       }
@@ -4220,12 +4227,12 @@ namespace {
 
       if (debug_level & 64) {
         fmt::print("\nOutput face block info for...\n"
-                   "Face Block {}, Id = {}, Name = '{}', Faces = {:12L}, Nodes/Face = {}, "
+                   "Face Block {}, Id = {}, Name = '{}', Faces = {:12}, Nodes/Face = {}, "
                    "Attributes = {}\n"
                    "B{}:\t",
                    b, glob_faceblocks[b].id, glob_faceblocks[b].name_,
-                   glob_faceblocks[b].entity_count(), glob_faceblocks[b].nodesPerFace,
-                   glob_faceblocks[b].attributeCount, b);
+                   fmt::group_digits(glob_faceblocks[b].entity_count()),
+                   glob_faceblocks[b].nodesPerFace, glob_faceblocks[b].attributeCount, b);
       }
 
       size_t max_nodes = glob_faceblocks[b].entity_count();
@@ -4372,11 +4379,11 @@ namespace {
 
       if (debug_level & 64) {
         fmt::print("\nOutput face block info for...\n"
-                   "Face Block {}, Id = {}, Name = '{}', Faces = {:12L}, Nodes/Face = {}, "
+                   "Face Block {}, Id = {}, Name = '{}', Faces = {:12}, Nodes/Face = {}, "
                    "Attributes = {}\n",
                    b, glob_faceblocks[b].id, glob_faceblocks[b].name_,
-                   glob_faceblocks[b].entity_count(), glob_faceblocks[b].nodesPerFace,
-                   glob_faceblocks[b].attributeCount);
+                   fmt::group_digits(glob_faceblocks[b].entity_count()),
+                   glob_faceblocks[b].nodesPerFace, glob_faceblocks[b].attributeCount);
       }
 
       int id_out = ExodusFile::output(); // output file identifier
