@@ -207,7 +207,7 @@ class PartIdMapping
     return names;
   }
 
-  std::vector<std::string> get_part_names() const { return m_partNames; }
+  const std::vector<std::string>& get_part_names() const { return m_partNames; }
 
   void set_error_handler(ErrorHandler errorHandler) { m_errorHandler = errorHandler; }
 
@@ -1525,19 +1525,19 @@ class TextMeshOptionParser
     }
   }
 
-  void print_help_message()
+  void print_help_message(std::ostream &out = std::cout)
   {
-    fmt::print(std::cerr,
+    out <<
         "\nValid Options for TextMesh parameter string:\n"
         "\tPROC_ID,ELEM_ID,TOPOLOGY,{NODE CONNECTIVITY LIST}[,PART_NAME[,PART_ID]] (specifies "
         "element list .. first "
         "argument)\n"
-        "\tcoordinates:x_1,y_1[,z_1], x_2,y_2[,z_2], ...., x_n,y_n[,z_n] (specifies coordinate data)\n"
-        "\tsideset:[name=<name>;] data=elem_1,side_1,elem_2,side_2,....,elem_n,side_n; [split=<block|topology|none>;] "
+        "\t|coordinates:x_1,y_1[,z_1], x_2,y_2[,z_2], ...., x_n,y_n[,z_n] (specifies coordinate data)\n"
+        "\t|sideset:[name=<name>;] data=elem_1,side_1,elem_2,side_2,....,elem_n,side_n; [split=<block|topology|none>;] "
         "(specifies sideset data)\n"
-        "\tnodeset:[name=<name>;] data=node_1,node_2,....,node_n (specifies nodeset data)\n"
-        "\tdimension:spatialDimension (specifies spatial dimension .. default is 3)\n"
-        "\thelp -- show this list\n\n");
+        "\t|nodeset:[name=<name>;] data=node_1,node_2,....,node_n (specifies nodeset data)\n"
+        "\t|dimension:spatialDimension (specifies spatial dimension .. default is 3)\n"
+        "\t|help -- show this list\n\n";
   }
 
   void handle_unrecognized_option(const std::string &optionType)
@@ -1788,4 +1788,4 @@ class TextMeshParser
 };
 
 }  // namespace text_mesh
-}  // mamespace Iotm
+}  // namespace Iotm
