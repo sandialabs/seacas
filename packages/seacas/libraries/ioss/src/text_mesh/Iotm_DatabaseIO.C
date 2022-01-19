@@ -782,8 +782,9 @@ namespace Iotm {
       std::vector<SideBlockInfo> infoVec = m_textMesh->get_side_block_info_for_sideset(name) ;
 
       for(const SideBlockInfo& info : infoVec) {
+        size_t sideCount = m_textMesh->get_local_side_block_indices(name, info).size();
         auto sideblock = new Ioss::SideBlock(this, info.name, info.sideTopology,
-                                              info.elementTopology, info.sideIndex.size());
+                                              info.elementTopology, sideCount);
         sideset->add(sideblock);
 
         // Note that all sideblocks within a specific
@@ -794,13 +795,13 @@ namespace Iotm {
 
         // If splitting by element block, need to set the
         // element block member on this side block.
-        Iotm::text_mesh::SplitType splitType = m_textMesh->get_sideset_split_type(name);
-        if (splitType == Iotm::text_mesh::SPLIT_BY_ELEMENT_BLOCK) {
+        text_mesh::SplitType splitType = m_textMesh->get_sideset_split_type(name);
+        if (splitType == text_mesh::SplitType::ELEMENT_BLOCK) {
           Ioss::ElementBlock *block = get_region()->get_element_block(info.touchingBlock);
           sideblock->set_parent_element_block(block);
         }
 
-        if (splitType != Iotm::text_mesh::SPLIT_BY_DONT_SPLIT) {
+        if (splitType != text_mesh::SplitType::NO_SPLIT) {
           std::string storage = "Real[";
           storage += std::to_string(info.numNodesPerSide);
           storage += "]";

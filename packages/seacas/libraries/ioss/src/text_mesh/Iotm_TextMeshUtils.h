@@ -395,6 +395,7 @@ inline std::ostream &operator<<(std::ostream &out, const SplitType &t)
       return out << "INVALID";
       break;
   }
+
   return out << "INVALID[" << (unsigned) t << "]";
 }
 

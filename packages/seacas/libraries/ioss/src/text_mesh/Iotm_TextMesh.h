@@ -31,6 +31,7 @@ namespace Iotm {
   using NodesetData     = text_mesh::NodesetData<int64_t>;
   using Coordinates     = text_mesh::Coordinates<int64_t>;
   using TextMeshParser  = text_mesh::TextMeshParser<int64_t, IossTopologyMapping>;
+  using ErrorHandler    = text_mesh::ErrorHandler;
   using SideBlockInfo   = text_mesh::SideBlockInfo;
   using SplitType       = text_mesh::SplitType;
 
@@ -263,6 +264,7 @@ namespace Iotm {
     unsigned spatial_dimension() const;
 
     std::vector<SideBlockInfo> get_side_block_info_for_sideset(const std::string &name) const;
+    std::vector<size_t> get_local_side_block_indices(const std::string &name, const SideBlockInfo& info) const;
     SplitType get_sideset_split_type(const std::string &name) const;
 
   private:
@@ -296,7 +298,7 @@ namespace Iotm {
 
     TextMeshData m_data;
 
-    text_mesh::ErrorHandler m_errorHandler;
+    ErrorHandler m_errorHandler;
 
     std::unordered_map<std::string, Topology> m_partToTopology;
 

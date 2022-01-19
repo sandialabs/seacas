@@ -8,7 +8,6 @@
 
 #include <Ioss_Utils.h>
 #include <fmt/ostream.h>
-#include <tokenize.h> // for tokenize
 
 #include <algorithm>
 #include <array>
@@ -731,8 +730,8 @@ namespace Iotm {
 
     const SidesetData* sideset = m_data.sidesets.get_group_data(id);
     if(nullptr != sideset) {
-      SideBlockInfo info = sideset->get_side_block_info_for_proc(sideBlockName, m_myProcessor);
-      count = info.sideIndex.size();
+      SideBlockInfo info = sideset->get_side_block_info(sideBlockName);
+      count = sideset->get_sideblock_indices_local_to_proc(info, m_myProcessor).size();
     }
     return count;
   }
@@ -742,13 +741,13 @@ namespace Iotm {
     const SidesetData* sideset = m_data.sidesets.get_group_data(id);
     if(nullptr == sideset) return;
 
-    SideBlockInfo info = sideset->get_side_block_info_for_proc(sideBlockName, m_myProcessor);
-
-    elemSides.resize(2 * info.sideIndex.size());
+    SideBlockInfo info = sideset->get_side_block_info(sideBlockName);
+    std::vector<size_t> localSideIndex = sideset->get_sideblock_indices_local_to_proc(info, m_myProcessor);
+    elemSides.resize(2 * localSideIndex.size());
 
     int64_t count = 0;
 
-    for(size_t sideIndex : info.sideIndex) {
+    for(size_t sideIndex : localSideIndex) {
       const SidesetData::DataType& elemSidePair = sideset->data[sideIndex];
       int64_t elemId = elemSidePair.first;
       int side = elemSidePair.second;
@@ -762,7 +761,16 @@ namespace Iotm {
   {
     const SidesetData* sideset = m_data.sidesets.get_group_data(name);
     ThrowRequireMsg(nullptr != sideset,"Could not find sideset with name" << name);
-    return sideset->get_side_block_info_for_proc(m_myProcessor);
+    return sideset->get_side_block_info();
+  }
+
+  std::vector<size_t> TextMesh::get_local_side_block_indices(const std::string &name, const SideBlockInfo& info) const
+  {
+    const SidesetData* sideset = m_data.sidesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != sideset,"Could not find sideset with name" << name);
+    ThrowRequireMsg(name == info.parentName,
+        "SideBlock: " << info.name << " with parent: " << info.parentName << " was not created from sideset: " << name);
+    return sideset->get_sideblock_indices_local_to_proc(info, m_myProcessor);
   }
 
   SplitType TextMesh::get_sideset_split_type(const std::string &name) const

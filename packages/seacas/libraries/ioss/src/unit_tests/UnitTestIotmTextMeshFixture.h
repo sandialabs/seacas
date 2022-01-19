@@ -142,7 +142,7 @@ namespace Iotm {
 
       void verify_shared_nodes(const EntityIdVector &nodeIds, int sharingProc)
       {
-        EXPECT_EQ(nodeIds.size(), get_node_sharing_count());
+        EXPECT_EQ(nodeIds.size(), get_node_sharing_count(sharingProc));
 
         for (EntityId nodeId : nodeIds) {
           EXPECT_TRUE(node_is_shared_with_proc(nodeId, sharingProc));
@@ -177,7 +177,7 @@ namespace Iotm {
         EXPECT_TRUE(nullptr != sideset);
         EXPECT_EQ(id, sideset->get_property("id").get_int());
 
-        if(subsetNames.size() == 0) {
+        if(subsetNames.empty()) {
           EXPECT_EQ(1u, sideset->get_side_blocks().size());
         } else {
           EXPECT_EQ(subsetNames.size(), sideset->get_side_blocks().size());
@@ -294,14 +294,38 @@ namespace Iotm {
         return m_database->int_byte_size_api();
       }
 
-      size_t get_node_sharing_count() const
+      size_t get_node_sharing_count(int sharingProc) const
+      {
+        if (db_api_int_size() == 4) {
+          return get_node_sharing_count_impl<int>(sharingProc);
+        }
+        else {
+          return get_node_sharing_count_impl<int64_t>(sharingProc);
+        }
+      }
+
+      template <typename INT>
+      size_t get_node_sharing_count_impl(int sharingProc) const
       {
         ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
 
         Ioss::CommSet *io_cs       = m_region->get_commset("commset_node");
         size_t         numSharings = io_cs->get_field("entity_processor").raw_count();
 
-        return numSharings;
+        std::vector<INT> entityProc;
+        io_cs->get_field_data("entity_processor", entityProc);
+
+        size_t count = 0;
+
+        for (size_t i = 0; i < numSharings; ++i) {
+          int      iossSharingProc = entityProc[i * 2 + 1];
+
+          if (iossSharingProc == sharingProc) {
+            count++;
+          }
+        }
+
+        return count;
       }
 
       template <typename INT>
