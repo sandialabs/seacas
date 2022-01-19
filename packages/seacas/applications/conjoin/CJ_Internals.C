@@ -450,9 +450,7 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
 int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
 {
   std::string errmsg;
-  int         dims[2];
-
-  int status = 0; // clear error code
+  int         status = 0; // clear error code
 
   if (blocks.empty()) {
     return (EX_NOERR);
@@ -560,10 +558,9 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
       ex__compress_variable(exodusFilePtr, varid, 2);
 
       // Attribute name array...
-      dims[0] = numattrdim;
-      dims[1] = namestrdim;
+      int adims[] = {numattrdim, namestrdim};
 
-      status = nc_def_var(exodusFilePtr, VAR_NAME_ATTRIB(iblk + 1), NC_CHAR, 2, dims, &varid);
+      status = nc_def_var(exodusFilePtr, VAR_NAME_ATTRIB(iblk + 1), NC_CHAR, 2, adims, &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         errmsg = fmt::format("Error: failed to define attribute name array for element block {}"
@@ -575,8 +572,7 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
     }
 
     // element connectivity array
-    dims[0] = numelbdim;
-    dims[1] = nelnoddim;
+    int dims[] = {numelbdim, nelnoddim};
 
     int bulk_type = get_type(exodusFilePtr, EX_BULK_INT64_DB);
     int connid;

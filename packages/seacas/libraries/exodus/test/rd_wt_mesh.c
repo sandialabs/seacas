@@ -179,7 +179,6 @@ int main(int argc, char **argv)
     char *env;                        /* Contents of environmental variable.  */
     int   hint;                       /* ROMIO hint index.                    */
     char  hint_value[MAX_STRING_LEN]; /* ROMIO hint value.                    */
-    int   rank;                       /* MPI process rank.                    */
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     /*      The "value" of the hint is obtained from the environment of
