@@ -759,7 +759,7 @@ namespace Iotm {
       int64_t id           = m_textMesh->get_nodeset_id(name);
       int64_t number_nodes = m_textMesh->nodeset_node_count_proc(id);
 
-      auto        nodeset = new Ioss::NodeSet(this, name, number_nodes);
+      auto nodeset = new Ioss::NodeSet(this, name, number_nodes);
       nodeset->property_add(Ioss::Property("id", id));
       nodeset->property_add(Ioss::Property("guid", util().generate_guid(id)));
       get_region()->add(nodeset);
@@ -771,20 +771,20 @@ namespace Iotm {
   {
     std::vector<std::string> sidesetNames = m_textMesh->get_sideset_names();
     for (const std::string &name : sidesetNames) {
-      int64_t id   = m_textMesh->get_sideset_id(name);
-      auto sideset = new Ioss::SideSet(this, name);
+      int64_t id      = m_textMesh->get_sideset_id(name);
+      auto    sideset = new Ioss::SideSet(this, name);
       sideset->property_add(Ioss::Property("id", id));
       sideset->property_add(Ioss::Property("guid", util().generate_guid(id)));
       get_region()->add(sideset);
 
       get_region()->add_alias(name, Ioss::Utils::encode_entity_name("sideset", id), Ioss::SIDESET);
 
-      std::vector<SideBlockInfo> infoVec = m_textMesh->get_side_block_info_for_sideset(name) ;
+      std::vector<SideBlockInfo> infoVec = m_textMesh->get_side_block_info_for_sideset(name);
 
-      for(const SideBlockInfo& info : infoVec) {
+      for (const SideBlockInfo &info : infoVec) {
         size_t sideCount = m_textMesh->get_local_side_block_indices(name, info).size();
-        auto sideblock = new Ioss::SideBlock(this, info.name, info.sideTopology,
-                                              info.elementTopology, sideCount);
+        auto   sideblock = new Ioss::SideBlock(this, info.name, info.sideTopology,
+                                               info.elementTopology, sideCount);
         sideset->add(sideblock);
 
         // Note that all sideblocks within a specific
@@ -805,8 +805,8 @@ namespace Iotm {
           std::string storage = "Real[";
           storage += std::to_string(info.numNodesPerSide);
           storage += "]";
-          sideblock->field_add(Ioss::Field("distribution_factors", Ioss::Field::REAL, storage,
-                                            Ioss::Field::MESH));
+          sideblock->field_add(
+              Ioss::Field("distribution_factors", Ioss::Field::REAL, storage, Ioss::Field::MESH));
         }
 
         add_transient_fields(sideblock);

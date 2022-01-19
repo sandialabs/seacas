@@ -87,8 +87,8 @@ namespace Iotm {
   {
     int64_t count = 0;
 
-    const NodesetData* nodeset = m_data.nodesets.get_group_data(id);
-    if(nullptr != nodeset) {
+    const NodesetData *nodeset = m_data.nodesets.get_group_data(id);
+    if (nullptr != nodeset) {
       count = nodeset->data.size();
     }
     return count;
@@ -98,12 +98,12 @@ namespace Iotm {
   {
     int64_t count = 0;
 
-    const NodesetData* nodeset = m_data.nodesets.get_group_data(id);
-    const std::set<int64_t>& myNodes = m_data.nodes_on_proc(m_myProcessor);
+    const NodesetData       *nodeset = m_data.nodesets.get_group_data(id);
+    const std::set<int64_t> &myNodes = m_data.nodes_on_proc(m_myProcessor);
 
-    if(nullptr != nodeset) {
-      for(int64_t nodeId : nodeset->data) {
-        if(myNodes.count(nodeId) > 0) {
+    if (nullptr != nodeset) {
+      for (int64_t nodeId : nodeset->data) {
+        if (myNodes.count(nodeId) > 0) {
           count++;
         }
       }
@@ -117,8 +117,8 @@ namespace Iotm {
   {
     int64_t count = 0;
 
-    const SidesetData* sideset = m_data.sidesets.get_group_data(id);
-    if(nullptr != sideset) {
+    const SidesetData *sideset = m_data.sidesets.get_group_data(id);
+    if (nullptr != sideset) {
       count = sideset->data.size();
     }
     return count;
@@ -128,10 +128,10 @@ namespace Iotm {
   {
     int64_t count = 0;
 
-    const SidesetData* sideset = m_data.sidesets.get_group_data(id);
-    int myProc = m_myProcessor;
-    if(nullptr != sideset) {
-      for(const std::pair<int64_t, int>& elemSidePair : sideset->data) {
+    const SidesetData *sideset = m_data.sidesets.get_group_data(id);
+    int                myProc  = m_myProcessor;
+    if (nullptr != sideset) {
+      for (const std::pair<int64_t, int> &elemSidePair : sideset->data) {
         int64_t elemId = elemSidePair.first;
         auto iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
         if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
@@ -429,16 +429,17 @@ namespace Iotm {
 
   void TextMesh::nodeset_nodes(int64_t id, Ioss::Int64Vector &nodes) const
   {
-    const NodesetData* nodeset = m_data.nodesets.get_group_data(id);
-    if(nullptr == nodeset) return;
+    const NodesetData *nodeset = m_data.nodesets.get_group_data(id);
+    if (nullptr == nodeset)
+      return;
 
     nodes.resize(nodeset_node_count_proc(id));
 
-    int64_t count = 0;
-    const std::set<int64_t>& myNodes = m_data.nodes_on_proc(m_myProcessor);
+    int64_t                  count   = 0;
+    const std::set<int64_t> &myNodes = m_data.nodes_on_proc(m_myProcessor);
 
-    for(int64_t nodeId : nodeset->data) {
-      if(myNodes.count(nodeId) > 0) {
+    for (int64_t nodeId : nodeset->data) {
+      if (myNodes.count(nodeId) > 0) {
         nodes[count++] = nodeId;
       }
     }
@@ -446,18 +447,19 @@ namespace Iotm {
 
   void TextMesh::sideset_elem_sides(int64_t id, Ioss::Int64Vector &elemSides) const
   {
-    const SidesetData* sideset = m_data.sidesets.get_group_data(id);
-    if(nullptr == sideset) return;
+    const SidesetData *sideset = m_data.sidesets.get_group_data(id);
+    if (nullptr == sideset)
+      return;
 
     elemSides.resize(2 * sideset_side_count_proc(id));
 
-    int64_t count = 0;
-    int myProc = m_myProcessor;
+    int64_t count  = 0;
+    int     myProc = m_myProcessor;
 
-    for(const std::pair<int64_t, int>& elemSidePair : sideset->data) {
+    for (const std::pair<int64_t, int> &elemSidePair : sideset->data) {
       int64_t elemId = elemSidePair.first;
-      int side = elemSidePair.second;
-      auto iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
+      int     side   = elemSidePair.second;
+      auto    iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
       if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
         elemSides[count++] = elemId;
         elemSides[count++] = side;
@@ -465,15 +467,15 @@ namespace Iotm {
     }
   }
 
-  std::set<std::string> TextMesh::get_blocks_touched_by_sideset(const SidesetData* sideset) const
+  std::set<std::string> TextMesh::get_blocks_touched_by_sideset(const SidesetData *sideset) const
   {
     std::set<std::string> touchedBlocks;
 
     int myProc = m_myProcessor;
 
-    for(const std::pair<int64_t, int>& elemSidePair : sideset->data) {
+    for (const std::pair<int64_t, int> &elemSidePair : sideset->data) {
       int64_t elemId = elemSidePair.first;
-      auto iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
+      auto    iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
       if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
         touchedBlocks.insert(iter->partName);
       }
@@ -486,11 +488,11 @@ namespace Iotm {
   {
     std::vector<std::string> touchedBlocks;
 
-    const SidesetData* sideset = m_data.sidesets.get_group_data(setId);
-    if(nullptr != sideset){
+    const SidesetData *sideset = m_data.sidesets.get_group_data(setId);
+    if (nullptr != sideset) {
       std::set<std::string> blockList = get_blocks_touched_by_sideset(sideset);
       touchedBlocks.reserve(blockList.size());
-      for(const std::string& block : blockList) {
+      for (const std::string &block : blockList) {
         touchedBlocks.push_back(block);
       }
     }
@@ -582,15 +584,15 @@ namespace Iotm {
 
   std::string TextMesh::get_nodeset_name(int64_t id) const
   {
-    const NodesetData* nodeset = m_data.nodesets.get_group_data(id);
-    ThrowRequireMsg(nullptr != nodeset,"Could not find nodeset with id" << id);
+    const NodesetData *nodeset = m_data.nodesets.get_group_data(id);
+    ThrowRequireMsg(nullptr != nodeset, "Could not find nodeset with id" << id);
     return nodeset->name;
   }
 
   int64_t TextMesh::get_nodeset_id(const std::string &name) const
   {
-    const NodesetData* nodeset = m_data.nodesets.get_group_data(name);
-    ThrowRequireMsg(nullptr != nodeset,"Could not find nodeset with name" << name);
+    const NodesetData *nodeset = m_data.nodesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != nodeset, "Could not find nodeset with name" << name);
     return nodeset->id;
   }
 
@@ -601,15 +603,15 @@ namespace Iotm {
 
   std::string TextMesh::get_sideset_name(int64_t id) const
   {
-    const SidesetData* sideset = m_data.sidesets.get_group_data(id);
-    ThrowRequireMsg(nullptr != sideset,"Could not find sideset with id" << id);
+    const SidesetData *sideset = m_data.sidesets.get_group_data(id);
+    ThrowRequireMsg(nullptr != sideset, "Could not find sideset with id" << id);
     return sideset->name;
   }
 
   int64_t TextMesh::get_sideset_id(const std::string &name) const
   {
-    const SidesetData* sideset = m_data.sidesets.get_group_data(name);
-    ThrowRequireMsg(nullptr != sideset,"Could not find sideset with name" << name);
+    const SidesetData *sideset = m_data.sidesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != sideset, "Could not find sideset with name" << name);
     return sideset->id;
   }
 
@@ -712,71 +714,77 @@ namespace Iotm {
     }
   }
 
-  int64_t TextMesh::sideblock_side_count(int64_t id, const std::string& sideBlockName) const
+  int64_t TextMesh::sideblock_side_count(int64_t id, const std::string &sideBlockName) const
   {
     int64_t count = 0;
 
-    const SidesetData* sideset = m_data.sidesets.get_group_data(id);
-    if(nullptr != sideset) {
+    const SidesetData *sideset = m_data.sidesets.get_group_data(id);
+    if (nullptr != sideset) {
       SideBlockInfo info = sideset->get_side_block_info(sideBlockName);
-      count = info.sideIndex.size();
+      count              = info.sideIndex.size();
     }
     return count;
   }
 
-  int64_t TextMesh::sideblock_side_count_proc(int64_t id, const std::string& sideBlockName) const
+  int64_t TextMesh::sideblock_side_count_proc(int64_t id, const std::string &sideBlockName) const
   {
     int64_t count = 0;
 
-    const SidesetData* sideset = m_data.sidesets.get_group_data(id);
-    if(nullptr != sideset) {
+    const SidesetData *sideset = m_data.sidesets.get_group_data(id);
+    if (nullptr != sideset) {
       SideBlockInfo info = sideset->get_side_block_info(sideBlockName);
-      count = sideset->get_sideblock_indices_local_to_proc(info, m_myProcessor).size();
+      count              = sideset->get_sideblock_indices_local_to_proc(info, m_myProcessor).size();
     }
     return count;
   }
 
-  void TextMesh::sideblock_elem_sides(int64_t id, const std::string& sideBlockName, Ioss::Int64Vector &elemSides) const
+  void TextMesh::sideblock_elem_sides(int64_t id, const std::string &sideBlockName,
+                                      Ioss::Int64Vector &elemSides) const
   {
-    const SidesetData* sideset = m_data.sidesets.get_group_data(id);
-    if(nullptr == sideset) return;
+    const SidesetData *sideset = m_data.sidesets.get_group_data(id);
+    if (nullptr == sideset)
+      return;
 
-    SideBlockInfo info = sideset->get_side_block_info(sideBlockName);
-    std::vector<size_t> localSideIndex = sideset->get_sideblock_indices_local_to_proc(info, m_myProcessor);
+    SideBlockInfo       info = sideset->get_side_block_info(sideBlockName);
+    std::vector<size_t> localSideIndex =
+        sideset->get_sideblock_indices_local_to_proc(info, m_myProcessor);
     elemSides.resize(2 * localSideIndex.size());
 
     int64_t count = 0;
 
-    for(size_t sideIndex : localSideIndex) {
-      const SidesetData::DataType& elemSidePair = sideset->data[sideIndex];
-      int64_t elemId = elemSidePair.first;
-      int side = elemSidePair.second;
+    for (size_t sideIndex : localSideIndex) {
+      const SidesetData::DataType &elemSidePair = sideset->data[sideIndex];
+      int64_t                      elemId       = elemSidePair.first;
+      int                          side         = elemSidePair.second;
 
       elemSides[count++] = elemId;
       elemSides[count++] = side;
     }
   }
 
-  std::vector<SideBlockInfo> TextMesh::get_side_block_info_for_sideset(const std::string &name) const
+  std::vector<SideBlockInfo>
+  TextMesh::get_side_block_info_for_sideset(const std::string &name) const
   {
-    const SidesetData* sideset = m_data.sidesets.get_group_data(name);
-    ThrowRequireMsg(nullptr != sideset,"Could not find sideset with name" << name);
+    const SidesetData *sideset = m_data.sidesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != sideset, "Could not find sideset with name" << name);
     return sideset->get_side_block_info();
   }
 
-  std::vector<size_t> TextMesh::get_local_side_block_indices(const std::string &name, const SideBlockInfo& info) const
+  std::vector<size_t> TextMesh::get_local_side_block_indices(const std::string   &name,
+                                                             const SideBlockInfo &info) const
   {
-    const SidesetData* sideset = m_data.sidesets.get_group_data(name);
-    ThrowRequireMsg(nullptr != sideset,"Could not find sideset with name" << name);
+    const SidesetData *sideset = m_data.sidesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != sideset, "Could not find sideset with name" << name);
     ThrowRequireMsg(name == info.parentName,
-        "SideBlock: " << info.name << " with parent: " << info.parentName << " was not created from sideset: " << name);
+                    "SideBlock: " << info.name << " with parent: " << info.parentName
+                                  << " was not created from sideset: " << name);
     return sideset->get_sideblock_indices_local_to_proc(info, m_myProcessor);
   }
 
   SplitType TextMesh::get_sideset_split_type(const std::string &name) const
   {
-    const SidesetData* sideset = m_data.sidesets.get_group_data(name);
-    ThrowRequireMsg(nullptr != sideset,"Could not find sideset with name" << name);
+    const SidesetData *sideset = m_data.sidesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != sideset, "Could not find sideset with name" << name);
 
     return sideset->get_split_type();
   }

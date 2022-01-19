@@ -24,18 +24,21 @@
 #include "Iotm_TextMeshUtils.h"
 
 namespace Iotm {
-  using Topology        = TopologyMapEntry;
-  using TextMeshData    = text_mesh::TextMeshData<int64_t, TopologyMapEntry>;
-  using ElementData     = text_mesh::ElementData<int64_t, TopologyMapEntry>;
-  using SidesetData     = text_mesh::SidesetData<int64_t, TopologyMapEntry>;
-  using NodesetData     = text_mesh::NodesetData<int64_t>;
-  using Coordinates     = text_mesh::Coordinates<int64_t>;
-  using TextMeshParser  = text_mesh::TextMeshParser<int64_t, IossTopologyMapping>;
-  using ErrorHandler    = text_mesh::ErrorHandler;
-  using SideBlockInfo   = text_mesh::SideBlockInfo;
-  using SplitType       = text_mesh::SplitType;
+  using Topology       = TopologyMapEntry;
+  using TextMeshData   = text_mesh::TextMeshData<int64_t, TopologyMapEntry>;
+  using ElementData    = text_mesh::ElementData<int64_t, TopologyMapEntry>;
+  using SidesetData    = text_mesh::SidesetData<int64_t, TopologyMapEntry>;
+  using NodesetData    = text_mesh::NodesetData<int64_t>;
+  using Coordinates    = text_mesh::Coordinates<int64_t>;
+  using TextMeshParser = text_mesh::TextMeshParser<int64_t, IossTopologyMapping>;
+  using ErrorHandler   = text_mesh::ErrorHandler;
+  using SideBlockInfo  = text_mesh::SideBlockInfo;
+  using SplitType      = text_mesh::SplitType;
 
-  inline std::ostream &operator<<(std::ostream &out, const TopologyMapEntry& t) { return out << t.name(); }
+  inline std::ostream &operator<<(std::ostream &out, const TopologyMapEntry &t)
+  {
+    return out << t.name();
+  }
 
   struct BlockPartition
   {
@@ -111,13 +114,13 @@ namespace Iotm {
     /**
      * Return number of sideblock 'sides' on sideset 'id' and sideblock 'sideBlockName'
      */
-    int64_t sideblock_side_count(int64_t id, const std::string& sideBlockName) const;
+    int64_t sideblock_side_count(int64_t id, const std::string &sideBlockName) const;
 
     /**
      * Return number of sideset 'sides' on sideset 'id' and sideblock 'sideBlockName' on the current
      * processor.
      */
-    virtual int64_t sideblock_side_count_proc(int64_t id, const std::string& sideBlockName) const;
+    virtual int64_t sideblock_side_count_proc(int64_t id, const std::string &sideBlockName) const;
 
     /**
      * Return number of elements in all element blocks in the model.
@@ -239,7 +242,8 @@ namespace Iotm {
      * the side ordinal is 0-based.
      */
     virtual void sideset_elem_sides(int64_t id, Ioss::Int64Vector &elemSides) const;
-    virtual void sideblock_elem_sides(int64_t sidesetId, const std::string& sideBlockName, Ioss::Int64Vector &elemSides) const;
+    virtual void sideblock_elem_sides(int64_t sidesetId, const std::string &sideBlockName,
+                                      Ioss::Int64Vector &elemSides) const;
 
     virtual std::vector<std::string> sideset_touching_blocks(int64_t set_id) const;
 
@@ -264,8 +268,9 @@ namespace Iotm {
     unsigned spatial_dimension() const;
 
     std::vector<SideBlockInfo> get_side_block_info_for_sideset(const std::string &name) const;
-    std::vector<size_t> get_local_side_block_indices(const std::string &name, const SideBlockInfo& info) const;
-    SplitType get_sideset_split_type(const std::string &name) const;
+    std::vector<size_t>        get_local_side_block_indices(const std::string   &name,
+                                                            const SideBlockInfo &info) const;
+    SplitType                  get_sideset_split_type(const std::string &name) const;
 
   private:
     template <typename INT> void raw_element_map(int64_t block_number, std::vector<INT> &map) const;
@@ -288,10 +293,10 @@ namespace Iotm {
 
     std::set<int64_t> get_local_element_ids_for_block(int64_t id) const;
 
-    std::set<std::string> get_blocks_touched_by_sideset(const SidesetData* sideset) const;
+    std::set<std::string> get_blocks_touched_by_sideset(const SidesetData *sideset) const;
 
-    size_t   m_processorCount{0};
-    size_t   m_myProcessor{0};
+    size_t m_processorCount{0};
+    size_t m_myProcessor{0};
 
     size_t                             m_timestepCount{0};
     std::map<Ioss::EntityType, size_t> m_variableCount;
