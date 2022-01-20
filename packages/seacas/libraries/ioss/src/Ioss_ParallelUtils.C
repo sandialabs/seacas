@@ -42,7 +42,7 @@ namespace {
 #endif
 } // namespace
 
-Ioss::ParallelUtils::ParallelUtils(MPI_Comm the_communicator) : communicator_(the_communicator) {}
+Ioss::ParallelUtils::ParallelUtils(Ioss_MPI_Comm the_communicator) : communicator_(the_communicator) {}
 
 void Ioss::ParallelUtils::add_environment_properties(Ioss::PropertyManager &properties)
 {

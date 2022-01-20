@@ -110,13 +110,13 @@ namespace {
 
 namespace Ioex {
   template DecompositionData<int>::DecompositionData(const Ioss::PropertyManager &props,
-                                                     MPI_Comm                     communicator);
+                                                     Ioss_MPI_Comm                communicator);
   template DecompositionData<int64_t>::DecompositionData(const Ioss::PropertyManager &props,
-                                                         MPI_Comm                     communicator);
+                                                         Ioss_MPI_Comm                communicator);
 
   template <typename INT>
   DecompositionData<INT>::DecompositionData(const Ioss::PropertyManager &props,
-                                            MPI_Comm                     communicator)
+                                            Ioss_MPI_Comm                communicator)
       : DecompositionDataBase(communicator), m_decomposition(props, communicator)
   {
     Ioss::ParallelUtils pu(comm_);

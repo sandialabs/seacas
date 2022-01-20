@@ -318,7 +318,7 @@ namespace {
 
 namespace Ioex {
   ParallelDatabaseIO::ParallelDatabaseIO(Ioss::Region *region, const std::string &filename,
-                                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+                                         Ioss::DatabaseUsage db_usage, Ioss_MPI_Comm communicator,
                                          const Ioss::PropertyManager &props)
       : Ioex::BaseDatabaseIO(region, filename, db_usage, communicator, props)
   {

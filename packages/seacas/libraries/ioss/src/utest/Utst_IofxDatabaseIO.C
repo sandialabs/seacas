@@ -51,7 +51,6 @@ namespace {
   Ioex::DatabaseIO *create_output_db_io(const std::string &filename)
   {
     Ioss::Init::Initializer init_db;
-
     Ioss::DatabaseUsage   db_usage = Ioss::WRITE_RESULTS;
     Ioss::PropertyManager properties;
 

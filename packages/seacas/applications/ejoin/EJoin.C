@@ -295,7 +295,6 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   }
 
   properties.add(Ioss::Property("FLUSH_INTERVAL", 0));
-
   Ioss::DatabaseIO *dbo =
       Ioss::IOFactory::create("exodusII", interFace.outputName_, Ioss::WRITE_RESTART,
                               Ioss::ParallelUtils::comm_world(), properties);

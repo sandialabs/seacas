@@ -17,7 +17,7 @@
 #include <fmt/ostream.h>
 #include <string> // for string
 
-#include "Ioss_CodeTypes.h" // for MPI_Comm
+#include "Ioss_CodeTypes.h" // for Ioss_MPI_Comm
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
 #include "Ioss_IOFactory.h" // for IOFactory
 
@@ -57,7 +57,7 @@ namespace Ioex {
   }
 
   Ioss::DatabaseIO *IOFactory::make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
-                                       MPI_Comm                     communicator,
+                                       Ioss_MPI_Comm                communicator,
                                        const Ioss::PropertyManager &properties) const
   {
 #if defined(PARALLEL_AWARE_EXODUS)

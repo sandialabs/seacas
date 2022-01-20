@@ -35,7 +35,7 @@ namespace Ioss {
     virtual ~IOFactory() = default;
     static DatabaseIO *create(const std::string &type, const std::string &filename,
                               DatabaseUsage db_usage,
-                              MPI_Comm      communicator = Ioss::ParallelUtils::comm_world(),
+                              Ioss_MPI_Comm      communicator = Ioss::ParallelUtils::comm_world(),
                               const Ioss::PropertyManager &properties = Ioss::PropertyManager());
 
     static int         describe(NameList *names);
@@ -47,7 +47,7 @@ namespace Ioss {
     explicit IOFactory(const std::string &type);
 
     virtual DatabaseIO *make_IO(const std::string &filename, DatabaseUsage db_usage,
-                                MPI_Comm                     communicator,
+                                Ioss_MPI_Comm                communicator,
                                 const Ioss::PropertyManager &properties) const = 0;
 
     virtual std::string show_config() const { return std::string(""); }

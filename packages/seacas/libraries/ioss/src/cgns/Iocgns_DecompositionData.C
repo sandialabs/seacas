@@ -102,7 +102,7 @@ namespace {
 
   // These are used for structured parallel decomposition...
   void create_zone_data(int cgns_file_ptr, std::vector<Iocgns::StructuredZoneData *> &zones,
-                        MPI_Comm comm)
+                        Ioss_MPI_Comm comm)
   {
     Ioss::ParallelUtils par_util(comm);
     int                 myProcessor = par_util.parallel_rank(); // To make error macro work...
@@ -184,13 +184,13 @@ namespace {
 
 namespace Iocgns {
   template DecompositionData<int>::DecompositionData(const Ioss::PropertyManager &props,
-                                                     MPI_Comm                     communicator);
+                                                     Ioss_MPI_Comm                communicator);
   template DecompositionData<int64_t>::DecompositionData(const Ioss::PropertyManager &props,
-                                                         MPI_Comm                     communicator);
+                                                         Ioss_MPI_Comm                communicator);
 
   template <typename INT>
   DecompositionData<INT>::DecompositionData(const Ioss::PropertyManager &props,
-                                            MPI_Comm                     communicator)
+                                            Ioss_MPI_Comm                communicator)
       : DecompositionDataBase(), m_decomposition(props, communicator)
   {
     rank = m_decomposition.m_processor;

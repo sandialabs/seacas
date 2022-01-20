@@ -121,7 +121,7 @@ namespace Iotm {
         create_ioss_region();
       }
 
-      MPI_Comm get_comm() const { return Ioss::ParallelUtils::comm_world(); }
+      Ioss_MPI_Comm get_comm() const { return Ioss::ParallelUtils::comm_world(); }
 
       std::string get_mesh_desc(const std::string &textMeshDesc)
       {

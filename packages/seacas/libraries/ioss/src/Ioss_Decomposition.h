@@ -124,14 +124,14 @@ namespace Ioss {
     size_t distributionFactorCount{0};
     double distributionFactorValue{
         0.0}; // If distributionFactorConstant == true, the constant value
-    MPI_Comm setComm_{Ioss::ParallelUtils::comm_null()};
+    Ioss_MPI_Comm setComm_{Ioss::ParallelUtils::comm_null()};
     bool     distributionFactorConstant{false}; // T if all distribution factors the same value.
   };
 
   template <typename INT> class Decomposition
   {
   public:
-    Decomposition(const Ioss::PropertyManager &props, MPI_Comm comm);
+    Decomposition(const Ioss::PropertyManager &props, Ioss_MPI_Comm comm);
 
     size_t global_node_count() const { return m_globalNodeCount; }
     size_t global_elem_count() const { return m_globalElementCount; }
@@ -573,7 +573,7 @@ namespace Ioss {
       }
     }
 
-    MPI_Comm            m_comm;
+    Ioss_MPI_Comm       m_comm;
     Ioss::ParallelUtils m_pu;
     int                 m_processor{};
     int                 m_processorCount{};
