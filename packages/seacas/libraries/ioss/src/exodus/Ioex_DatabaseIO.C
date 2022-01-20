@@ -1055,7 +1055,7 @@ namespace Ioex {
 
     // If the model contains assemblies, we want to retain the empty blocks since the blocks
     // might be in an assembly.  This is typically the case when an application is running
-    // in parallel, but is telling IOSS that it is "serial" (IOSS_MPI_COMM_SELF) and taking care
+    // in parallel, but is telling IOSS that it is "serial" (MPI_COMM_SELF) and taking care
     // of synchronization at the app level instead of down here...
     bool retain_empty_blocks = m_groupCount[EX_ASSEMBLY] > 0;
 
