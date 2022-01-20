@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
 #endif
 
-  Ioss::ParallelUtils pu{IOSS_MPI_COMM_WORLD};
+  Ioss::ParallelUtils pu{};
   int                 my_rank = pu.parallel_rank();
 
   try {
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 template <typename INT> double zellij(SystemInterface &interFace, INT /*dummy*/)
 {
   double              begin = Ioss::Utils::timer();
-  Ioss::ParallelUtils pu{IOSS_MPI_COMM_WORLD};
+  Ioss::ParallelUtils pu{};
 
   if (debug_level & 1) {
     fmt::print(stderr, "{} Begin Execution\n", time_stamp(tsFormat));
