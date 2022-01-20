@@ -119,8 +119,9 @@ namespace Ioex {
                                             MPI_Comm                     communicator)
       : DecompositionDataBase(communicator), m_decomposition(props, communicator)
   {
-    MPI_Comm_rank(comm_, &m_processor);
-    MPI_Comm_size(comm_, &m_processorCount);
+    Ioss::ParallelUtils pu(comm_);
+    m_processor      = pu.parallel_rank();
+    m_processorCount = pu.parallel_size();
   }
 
   template <typename INT> void DecompositionData<INT>::decompose_model(int filePtr)

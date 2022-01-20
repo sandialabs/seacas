@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -56,10 +56,8 @@ namespace Iocgns {
 // than 1 processor unless the decomposition property is set and the
 // value is "external" or the composition property is set with value "external"
 #if CG_BUILD_PARALLEL
-    int proc_count = 1;
-    if (communicator != MPI_COMM_NULL) {
-      MPI_Comm_size(communicator, &proc_count);
-    }
+    Ioss::ParallelUtils pu(communicator);
+    int                 proc_count = pu.parallel_size();
 
     bool decompose = false;
 

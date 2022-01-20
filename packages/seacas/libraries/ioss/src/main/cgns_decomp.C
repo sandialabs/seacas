@@ -723,7 +723,7 @@ int main(int argc, char *argv[])
 
   Ioss::PropertyManager properties{};
   Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(in_type, interFace.filename, Ioss::READ_RESTART,
-                                                  (MPI_Comm)MPI_COMM_WORLD, properties);
+                                                  Ioss::ParallelUtils::comm_world(), properties);
   if (dbi == nullptr || !dbi->ok()) {
     fmt::print(stderr, "\nERROR: Could not open database '{}' of type '{}'\n", interFace.filename,
                in_type);

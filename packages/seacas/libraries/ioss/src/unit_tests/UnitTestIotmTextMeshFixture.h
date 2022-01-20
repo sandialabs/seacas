@@ -6,22 +6,27 @@
 
 #pragma once
 
+#include <Ioss_CodeTypes.h>
+
 #include <Ionit_Initializer.h>
+#include <Ioss_CommSet.h>
 #include <Ioss_DBUsage.h>
+#include <Ioss_DatabaseIO.h> // for DatabaseIO
 #include <Ioss_ElementBlock.h>
+#include <Ioss_ElementTopology.h>
+#include <Ioss_EntityType.h>     // for EntityType, etc
+#include <Ioss_Field.h>          // for Field, etc
+#include <Ioss_GroupingEntity.h> // for GroupingEntity
+#include <Ioss_IOFactory.h>      // for IOFactory
+#include <Ioss_MeshType.h>       // for MeshType, etc
 #include <Ioss_NodeBlock.h>
-#include <Ioss_SideSet.h>
-#include <Ioss_SideBlock.h>
 #include <Ioss_NodeSet.h>
+#include <Ioss_ParallelUtils.h>
 #include <Ioss_PropertyManager.h>
 #include <Ioss_Region.h>
-
-#include "Ioss_DatabaseIO.h"     // for DatabaseIO
-#include "Ioss_EntityType.h"     // for EntityType, etc
-#include "Ioss_Field.h"          // for Field, etc
-#include "Ioss_GroupingEntity.h" // for GroupingEntity
-#include "Ioss_IOFactory.h"      // for IOFactory
-#include "Ioss_MeshType.h"       // for MeshType, etc
+#include <Ioss_SideBlock.h>
+#include <Ioss_SideSet.h>
+#include <Ioss_StandardElementTypes.h>
 
 #include <gtest/gtest.h>
 #include <mpi.h>
@@ -33,11 +38,6 @@
 #include <string>
 #include <strings.h>
 #include <vector>
-
-#include "Ioss_CommSet.h"
-#include "Ioss_ElementTopology.h"
-#include "Ioss_ParallelUtils.h"
-#include "Ioss_StandardElementTypes.h"
 
 #include "text_mesh/Iotm_TextMeshTopologyMapping.h"
 
@@ -61,7 +61,7 @@ struct SideEntryLess
 {
   inline bool operator()(const SideEntry &lhs, const SideEntry &rhs) const
   {
-    if(lhs.first < rhs.first)
+    if (lhs.first < rhs.first)
       return true;
     else if (lhs.first == rhs.first && lhs.second < rhs.second)
       return true;
@@ -121,8 +121,7 @@ namespace Iotm {
         create_ioss_region();
       }
 
-      MPI_Comm get_comm() const { return communicator; }
-      void     set_comm(MPI_Comm comm) { communicator = comm; }
+      MPI_Comm get_comm() const { return Ioss::ParallelUtils::comm_world(); }
 
       std::string get_mesh_desc(const std::string &textMeshDesc)
       {
@@ -172,36 +171,38 @@ namespace Iotm {
         EXPECT_EQ(goldCount, count);
       }
 
-      void verify_sideset_subset(const Ioss::SideSet* sideset, const unsigned id, const std::vector<std::string>& subsetNames)
+      void verify_sideset_subset(const Ioss::SideSet *sideset, const unsigned id,
+                                 const std::vector<std::string> &subsetNames)
       {
         EXPECT_TRUE(nullptr != sideset);
         EXPECT_EQ(id, sideset->get_property("id").get_int());
 
-        if(subsetNames.empty()) {
+        if (subsetNames.empty()) {
           EXPECT_EQ(1u, sideset->get_side_blocks().size());
-        } else {
+        }
+        else {
           EXPECT_EQ(subsetNames.size(), sideset->get_side_blocks().size());
         }
 
         for (std::string subsetName : subsetNames) {
           std::transform(subsetName.begin(), subsetName.end(), subsetName.begin(), ::toupper);
-          Ioss::SideBlock* sideBlock = sideset->get_side_block(subsetName);
+          Ioss::SideBlock *sideBlock = sideset->get_side_block(subsetName);
           EXPECT_TRUE(nullptr != sideBlock);
           EXPECT_EQ(id, sideBlock->get_property("id").get_int());
         }
       }
 
-      void verify_single_sideset(const std::string& name, const unsigned id, const SideVector& goldElemSidePairs)
+      void verify_single_sideset(const std::string &name, const unsigned id,
+                                 const SideVector &goldElemSidePairs)
       {
         verify_single_sideset(name, id, std::vector<std::string>{}, goldElemSidePairs);
       }
 
-      void verify_single_sideset(const std::string& name,
-          const unsigned id,
-          const std::vector<std::string>& subsets,
-          const SideVector& goldElemSidePairs)
+      void verify_single_sideset(const std::string &name, const unsigned id,
+                                 const std::vector<std::string> &subsets,
+                                 const SideVector               &goldElemSidePairs)
       {
-        Ioss::SideSet* sideset = get_sideset(name);
+        Ioss::SideSet *sideset = get_sideset(name);
         verify_sideset_subset(sideset, id, subsets);
 
         EXPECT_TRUE(nullptr != sideset);
@@ -209,17 +210,18 @@ namespace Iotm {
         SideVector elemSidePairs = get_element_side_pairs_from_sideset(sideset);
         std::sort(elemSidePairs.begin(), elemSidePairs.end(), SideEntryLess());
 
-        for (const SideEntry& sideEntry : goldElemSidePairs) {
+        for (const SideEntry &sideEntry : goldElemSidePairs) {
           EntityId elemId = sideEntry.first;
-          int side = sideEntry.second;
+          int      side   = sideEntry.second;
 
           ElementInfo info = get_element_info(elemId);
           EXPECT_TRUE(is_valid_element(info));
 
           EXPECT_TRUE(side > 0);
-          EXPECT_TRUE(side <= (int) info.topology->number_boundaries());
+          EXPECT_TRUE(side <= (int)info.topology->number_boundaries());
 
-          EXPECT_TRUE(std::binary_search(elemSidePairs.begin(), elemSidePairs.end(), sideEntry, SideEntryLess()));
+          EXPECT_TRUE(std::binary_search(elemSidePairs.begin(), elemSidePairs.end(), sideEntry,
+                                         SideEntryLess()));
         }
       }
 
@@ -230,16 +232,17 @@ namespace Iotm {
         EXPECT_EQ(goldCount, count);
       }
 
-      void verify_single_nodeset(const std::string& name, const unsigned id, const EntityIdVector& goldNodeIds)
+      void verify_single_nodeset(const std::string &name, const unsigned id,
+                                 const EntityIdVector &goldNodeIds)
       {
-        Ioss::NodeSet* nodeset = get_nodeset(name);
+        Ioss::NodeSet *nodeset = get_nodeset(name);
         EXPECT_TRUE(nullptr != nodeset);
         EXPECT_EQ(id, nodeset->get_property("id").get_int());
 
         EntityIdVector nodeIds = get_node_ids_from_nodeset(nodeset);
         std::sort(nodeIds.begin(), nodeIds.end());
 
-        for(EntityId node : goldNodeIds) {
+        for (EntityId node : goldNodeIds) {
           EXPECT_TRUE(std::binary_search(nodeIds.begin(), nodeIds.end(), node));
         }
       }
@@ -277,7 +280,6 @@ namespace Iotm {
         cv.verify();
       }
 
-
       void setup_text_mesh(const std::string &textMeshDesc)
       {
         fill_mesh(get_mesh_desc(textMeshDesc, m_spatialDimension));
@@ -304,8 +306,7 @@ namespace Iotm {
         }
       }
 
-      template <typename INT>
-      size_t get_node_sharing_count_impl(int sharingProc) const
+      template <typename INT> size_t get_node_sharing_count_impl(int sharingProc) const
       {
         ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
 
@@ -318,7 +319,7 @@ namespace Iotm {
         size_t count = 0;
 
         for (size_t i = 0; i < numSharings; ++i) {
-          int      iossSharingProc = entityProc[i * 2 + 1];
+          int iossSharingProc = entityProc[i * 2 + 1];
 
           if (iossSharingProc == sharingProc) {
             count++;
@@ -370,7 +371,7 @@ namespace Iotm {
         return nodeIds;
       }
 
-      EntityIdVector get_node_ids_from_nodeset(const Ioss::NodeSet* ns) const
+      EntityIdVector get_node_ids_from_nodeset(const Ioss::NodeSet *ns) const
       {
         if (db_api_int_size() == 4) {
           return get_node_ids_from_nodeset_impl<int>(ns);
@@ -381,25 +382,25 @@ namespace Iotm {
       }
 
       template <typename INT>
-      SideVector get_element_side_pairs_from_sideset_impl(const Ioss::SideSet* ss) const
+      SideVector get_element_side_pairs_from_sideset_impl(const Ioss::SideSet *ss) const
       {
         SideVector elemSides;
 
-        for(const Ioss::SideBlock *sb : ss->get_side_blocks()) {
+        for (const Ioss::SideBlock *sb : ss->get_side_blocks()) {
           std::vector<INT> elemSideVec;
           sb->get_field_data("element_side", elemSideVec);
 
-          for (unsigned i=0; i<sb->entity_count(); i++) {
-            EntityId elem = elemSideVec[2*i + 0];
-            int side      = elemSideVec[2*i + 1];
-            elemSides.push_back({elem,side});
+          for (unsigned i = 0; i < sb->entity_count(); i++) {
+            EntityId elem = elemSideVec[2 * i + 0];
+            int      side = elemSideVec[2 * i + 1];
+            elemSides.push_back({elem, side});
           }
         }
 
         return elemSides;
       }
 
-      SideVector get_element_side_pairs_from_sideset(const Ioss::SideSet* ss) const
+      SideVector get_element_side_pairs_from_sideset(const Ioss::SideSet *ss) const
       {
         if (db_api_int_size() == 4) {
           return get_element_side_pairs_from_sideset_impl<int>(ss);
@@ -569,7 +570,7 @@ namespace Iotm {
         ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
 
         const Ioss::NodeSetContainer &nodesets = m_region->get_nodesets();
-        Ioss::NodeSet* nodeset  = nullptr;
+        Ioss::NodeSet                *nodeset  = nullptr;
 
         for (Ioss::NodeSet *ns : nodesets) {
           if (strcasecmp(ns->name().c_str(), name.c_str()) == 0) {
@@ -585,7 +586,7 @@ namespace Iotm {
         ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
 
         const Ioss::SideSetContainer &sidesets = m_region->get_sidesets();
-        Ioss::SideSet* sideset  = nullptr;
+        Ioss::SideSet                *sideset  = nullptr;
 
         for (Ioss::SideSet *ss : sidesets) {
           if (strcasecmp(ss->name().c_str(), name.c_str()) == 0) {
@@ -830,9 +831,8 @@ namespace Iotm {
 
       unsigned              m_spatialDimension = 3;
       Ioss::PropertyManager m_propertyManager;
-      Ioss::DatabaseIO     *m_database   = nullptr;
-      Ioss::Region         *m_region     = nullptr;
-      MPI_Comm              communicator = MPI_COMM_WORLD;
+      Ioss::DatabaseIO     *m_database = nullptr;
+      Ioss::Region         *m_region   = nullptr;
       IossTopologyMapping   m_topologyMapping;
     };
 

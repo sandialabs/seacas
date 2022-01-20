@@ -54,13 +54,7 @@ inline const std::string IOSS_SYM_TENSOR() { return std::string("sym_tensor_33")
     (void)(x);                                                                                     \
   } while (0)
 
-#ifndef MPI_COMM_SELF
-#define MPI_COMM_SELF 0
-#endif
-#ifndef MPI_COMM_WORLD
-#define MPI_COMM_WORLD 0
 using MPI_Comm       = int;
-#endif
 #endif
 
 #ifdef SEACAS_HAVE_KOKKOS
