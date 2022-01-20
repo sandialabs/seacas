@@ -132,7 +132,9 @@ namespace Ioss {
     void progress(const std::string &output) const;
 
   private:
-    MPI_Comm communicator_{comm_world()};
+    MPI_Comm    communicator_{comm_world()};
+    mutable int parallelSize_{-1};
+    mutable int parallelRank_{-1};
   };
 
 #ifdef SEACAS_HAVE_MPI

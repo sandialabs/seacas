@@ -202,24 +202,28 @@ std::string Ioss::ParallelUtils::decode_filename(const std::string &filename,
 
 int Ioss::ParallelUtils::parallel_size() const
 {
-  int my_size = 1;
+  if (parallelSize_ == -1) {
+    parallelSize_ = 1;
 #ifdef SEACAS_HAVE_MPI
-  if (communicator_ != Ioss::ParallelUtils::comm_null()) {
-    MPI_Comm_size(communicator_, &my_size);
-  }
+    if (communicator_ != Ioss::ParallelUtils::comm_null()) {
+      MPI_Comm_size(communicator_, &parallelSize_);
+    }
 #endif
-  return my_size;
+  }
+  return parallelSize_;
 }
 
 int Ioss::ParallelUtils::parallel_rank() const
 {
-  int my_rank = 0;
+  if (parallelRank_ == -1) {
+    parallelRank_ = 0;
 #ifdef SEACAS_HAVE_MPI
-  if (communicator_ != Ioss::ParallelUtils::comm_null()) {
-    MPI_Comm_rank(communicator_, &my_rank);
-  }
+    if (communicator_ != Ioss::ParallelUtils::comm_null()) {
+      MPI_Comm_rank(communicator_, &parallelRank_);
+    }
 #endif
-  return my_rank;
+  }
+  return parallelRank_;
 }
 
 void Ioss::ParallelUtils::memory_stats(int64_t &min, int64_t &max, int64_t &avg) const
