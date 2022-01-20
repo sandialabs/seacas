@@ -1651,7 +1651,8 @@ namespace Iotm {
       using Topology = typename TopologyMapping::Topology;
 
     public:
-      TextMeshParser(unsigned enforcedDimension) : m_optionParser(m_data, enforcedDimension)
+      explicit TextMeshParser(unsigned enforcedDimension)
+          : m_optionParser(m_data, enforcedDimension)
       {
         initialize_constructor();
       }
