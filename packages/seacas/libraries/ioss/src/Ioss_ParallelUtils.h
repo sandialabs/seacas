@@ -133,6 +133,8 @@ namespace Ioss {
 
   private:
     Ioss_MPI_Comm communicator_{comm_world()};
+    mutable int   parallelSize_{-1};
+    mutable int   parallelRank_{-1};
   };
 
 #ifdef SEACAS_HAVE_MPI

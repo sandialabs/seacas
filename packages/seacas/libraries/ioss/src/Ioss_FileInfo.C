@@ -86,31 +86,29 @@ namespace Ioss {
   {
     PAR_UNUSED(communicator);
     PAR_UNUSED(where);
+    int                 sum = exists_ ? 1 : 0;
 
+#ifdef SEACAS_HAVE_MPI
     Ioss::ParallelUtils pu(communicator);
     int                 my_rank = pu.parallel_rank();
     int                 my_size = pu.parallel_size();
-    if (my_size == 1)
-      return exists_ ? 1 : 0;
-
-#ifdef SEACAS_HAVE_MPI
-    // Now handle the parallel case
-    std::vector<int> result(my_size);
-    int              my_val = exists_ ? 1 : 0;
-    MPI_Allgather(&my_val, 1, MPI_INT, &result[0], 1, MPI_INT, communicator);
-
-    int sum = std::accumulate(result.begin(), result.end(), 0);
-    if (my_rank == 0 && sum < my_size) {
-      std::vector<size_t> procs;
-      for (int i = 0; i < my_size; i++) {
-        if (result[i] == 0) {
-          procs.push_back(i);
-        }
+    if (my_size > 1) {
+      // Handle the parallel case
+      std::vector<int> result;
+      pu.all_gather(sum, result);
+      sum = std::accumulate(result.begin(), result.end(), 0);
+      if (my_rank == 0 && sum < my_size) {
+	std::vector<size_t> procs;
+	for (int i = 0; i < my_size; i++) {
+	  if (result[i] == 0) {
+	    procs.push_back(i);
+	  }
+	}
+	where = Ioss::Utils::format_id_list(procs, "--");
       }
-      where = Ioss::Utils::format_id_list(procs, "--");
     }
-    return sum;
 #endif
+    return sum;
   }
 
   //: Returns TRUE if the file is readable
