@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -69,10 +69,8 @@ namespace Ioex {
     // 2. There is a DECOMPOSITION_METHOD specified in 'properties'
     // 3. The decomposition method is not "EXTERNAL"
 
-    int proc_count = 1;
-    if (communicator != MPI_COMM_NULL) {
-      MPI_Comm_size(communicator, &proc_count);
-    }
+    Ioss::ParallelUtils pu(communicator);
+    int                 proc_count = pu.parallel_size();
 
     bool decompose = false;
     if (proc_count > 1) {

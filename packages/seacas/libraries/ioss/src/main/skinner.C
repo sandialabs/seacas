@@ -74,12 +74,12 @@ namespace {
 
 int main(int argc, char *argv[])
 {
-  int my_rank = 0;
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   ON_BLOCK_EXIT(MPI_Finalize);
-  MPI_Comm_rank(IOSS_MPI_COMM_WORLD, &my_rank);
 #endif
+  Ioss::ParallelUtils pu{};
+  int                 my_rank = pu.parallel_rank();
 
   codename = Ioss::FileInfo(argv[0]).basename();
 
@@ -112,10 +112,7 @@ int main(int argc, char *argv[])
     fmt::print(stderr, "\n{}\n\nskinner terminated due to exception\n", e.what());
     exit(EXIT_FAILURE);
   }
-#ifdef SEACAS_HAVE_MPI
-  Ioss::ParallelUtils parallel(IOSS_MPI_COMM_WORLD);
-  parallel.barrier();
-#endif
+  pu.barrier();
   double end = Ioss::Utils::timer();
 
   if (my_rank == 0) {
@@ -140,7 +137,7 @@ namespace {
     // NOTE: The "READ_RESTART" mode ensures that the node and element ids will be mapped.
     //========================================================================
     Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART,
-                                                    (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
+                                                    Ioss::ParallelUtils::comm_world(), properties);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -230,7 +227,7 @@ namespace {
     std::string       file = interFace.output_filename();
     std::string       type = interFace.output_type();
     Ioss::DatabaseIO *dbo  = Ioss::IOFactory::create(type, file, Ioss::WRITE_RESTART,
-                                                     (Ioss_MPI_Comm)IOSS_MPI_COMM_WORLD, properties);
+                                                     Ioss::ParallelUtils::comm_world(), properties);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }

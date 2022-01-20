@@ -81,8 +81,9 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   ON_BLOCK_EXIT(MPI_Finalize);
-  MPI_Comm_rank(IOSS_MPI_COMM_WORLD, &rank);
 #endif
+  Ioss::ParallelUtils pu{};
+  rank = pu.parallel_rank();
 
   if (argc <= 2) {
     if (rank == 0) {
@@ -118,8 +119,8 @@ namespace {
   void create_unstructured(const std::string &inpfile, const std::string &outfile)
   {
     Ioss::PropertyManager properties{};
-    Ioss::DatabaseIO     *dbi =
-        Ioss::IOFactory::create("cgns", inpfile, Ioss::READ_MODEL, IOSS_MPI_COMM_WORLD, properties);
+    Ioss::DatabaseIO     *dbi = Ioss::IOFactory::create("cgns", inpfile, Ioss::READ_MODEL,
+                                                        Ioss::ParallelUtils::comm_world(), properties);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -144,8 +145,8 @@ namespace {
     }
 #endif
 
-    Ioss::DatabaseIO *dbo =
-        Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, IOSS_MPI_COMM_WORLD, properties);
+    Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
+                                                    Ioss::ParallelUtils::comm_world(), properties);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }

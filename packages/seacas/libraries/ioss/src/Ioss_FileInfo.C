@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -87,15 +87,10 @@ namespace Ioss {
     PAR_UNUSED(communicator);
     PAR_UNUSED(where);
 
-#ifdef SEACAS_HAVE_MPI
-    int my_rank = 0;
-    int my_size = 1;
-    if (communicator != MPI_COMM_NULL) {
-      MPI_Comm_rank(communicator, &my_rank);
-      MPI_Comm_size(communicator, &my_size);
-    }
+    Ioss::ParallelUtils pu(communicator);
+    int                 my_rank = pu.parallel_rank();
+    int                 my_size = pu.parallel_size();
     if (my_size == 1)
-#endif
       return exists_ ? 1 : 0;
 
 #ifdef SEACAS_HAVE_MPI

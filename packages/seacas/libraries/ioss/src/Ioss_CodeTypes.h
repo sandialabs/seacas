@@ -57,8 +57,6 @@ using Ioss_MPI_Comm  = MPI_Comm;
     (void)(x);                                                                                     \
   } while (0)
 
-#define IOSS_MPI_COMM_SELF 0
-#define IOSS_MPI_COMM_WORLD 0
 using Ioss_MPI_Comm  = int;
 #endif
 

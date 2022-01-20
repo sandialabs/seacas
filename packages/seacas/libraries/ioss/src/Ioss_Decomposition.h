@@ -92,7 +92,7 @@ namespace Ioss {
 
     ~SetDecompositionData()
     {
-      if (setComm_ != MPI_COMM_NULL) {
+      if (setComm_ != Ioss::ParallelUtils::comm_null()) {
         MPI_Comm_free(&setComm_);
       }
     }
@@ -124,7 +124,7 @@ namespace Ioss {
     size_t distributionFactorCount{0};
     double distributionFactorValue{
         0.0}; // If distributionFactorConstant == true, the constant value
-    Ioss_MPI_Comm setComm_{MPI_COMM_NULL};
+    Ioss_MPI_Comm setComm_{Ioss::ParallelUtils::comm_null()};
     bool     distributionFactorConstant{false}; // T if all distribution factors the same value.
   };
 
@@ -366,7 +366,7 @@ namespace Ioss {
       if (size == 0)
         return;
 
-      if (set.setComm_ != MPI_COMM_NULL) {
+      if (set.setComm_ != Ioss::ParallelUtils::comm_null()) {
         recv_data.resize(size);
         if (m_processor == set.root_) {
           std::copy(file_data, file_data + size, recv_data.begin());

@@ -877,10 +877,10 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
         fmt::print("Node Sharing information: (Part:Local Node Id)\n");
         for (size_t i = 0; i < global_node_map.size(); i++) {
           if (num_shared[i] > 1) {
-            fmt::print("Global Node {}:", i + 1);
+            fmt::print("Global Node {}:", fmt::group_digits(i + 1));
             for (int pc = 0; pc < part_count; pc++) {
               if (shared[pc][i] >= 1) {
-                fmt::print("\t{}:{}", pc, shared[pc][i]);
+                fmt::print("\t{}:{}", pc, fmt::group_digits(shared[pc][i]));
               }
             }
             fmt::print("\n");
@@ -1497,7 +1497,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
                 size_t nodal_value = local_node_to_global[p][j];
                 if (master_values[nodal_value] != 0 && master_values[nodal_value] != values[j]) {
                   fmt::print(stderr, "Variable {}, Node {}, old = {}, new = {}\n", i + 1,
-                             nodal_value, master_values[nodal_value], values[j]);
+                             fmt::group_digits(nodal_value), master_values[nodal_value], values[j]);
                 }
               }
             }
@@ -2344,7 +2344,7 @@ namespace {
 
           if (debug_level & 4) {
             fmt::print(stderr, "part, block, offset, count = {} {} {} {}\n", p, bid,
-                       part_block_offset, element_count);
+                       part_block_offset, fmt::group_digits(element_count));
           }
           error = ex_put_partial_conn(id_out, EX_ELEM_BLOCK, bid, part_block_offset, element_count,
                                       local_linkage.data(), nullptr, nullptr);
@@ -2352,7 +2352,7 @@ namespace {
             fmt::print(stderr,
                        "ERROR: (EPU) Cannot output element block connectivity for block {} on part "
                        "{} (offset = {}, count = {}).\n",
-                       bid, p + start_part, part_block_offset, element_count);
+                       bid, p + start_part, part_block_offset, fmt::group_digits(element_count));
             exodus_error(__LINE__);
           }
 
@@ -2543,7 +2543,7 @@ namespace {
                        "ERROR: (EPU) The element ids for element block {} are not consistent.\n"
                        "Block {}, Id = {} min/max id = {}/{} size = {}.\n",
                        glob_blocks[b].id, b, glob_blocks[b].id, min_id + 1, max_id + 1,
-                       glob_blocks[b].entity_count());
+                       fmt::group_digits(glob_blocks[b].entity_count()));
             throw std::runtime_error(errmsg.str());
           }
         }
@@ -2720,7 +2720,7 @@ namespace {
                        "ERROR: (EPU) The edge ids for edge block {} are not consistent.\n"
                        "Block {}, Id = {} min/max id = {}/{} size = {}.\n",
                        glob_edgeblocks[b].id, b, glob_edgeblocks[b].id, min_id + 1, max_id + 1,
-                       glob_edgeblocks[b].entity_count());
+                       fmt::group_digits(glob_edgeblocks[b].entity_count()));
             throw std::runtime_error(errmsg.str());
           }
         }
@@ -2897,7 +2897,7 @@ namespace {
                        "ERROR: (EPU) The face ids for face block {} are not consistent.\n"
                        "Block {}, Id = {} min/max id = {}/{} size = {}.\n",
                        glob_faceblocks[b].id, b, glob_faceblocks[b].id, min_id + 1, max_id + 1,
-                       glob_faceblocks[b].entity_count());
+                       fmt::group_digits(glob_faceblocks[b].entity_count()));
             throw std::runtime_error(errmsg.str());
           }
         }
@@ -3304,7 +3304,8 @@ namespace {
                      "WARNING: Nodeset {} with id {} on processor {} has an invalid distribution "
                      "factor count ({})."
                      " The distribution factors will be set to 1.0 on this nodeset.\n",
-                     nodesets[p][iset].name_, nodesets[p][iset].id, p, nodesets[p][iset].dfCount);
+                     nodesets[p][iset].name_, nodesets[p][iset].id, p,
+                     fmt::group_digits(nodesets[p][iset].dfCount));
           nodesets[p][iset].dfCount = 0;
         }
 
@@ -3712,7 +3713,8 @@ namespace {
     }
 
     if (rank == 0) {
-      fmt::print("Global edge block count = {}\n", global.count(Excn::ObjectType::EDBLK));
+      fmt::print("Global edge block count = {}\n",
+                 fmt::group_digits(global.count(Excn::ObjectType::EDBLK)));
     }
 
     if (global.count(Excn::ObjectType::EDBLK) == 0) {
@@ -4041,7 +4043,7 @@ namespace {
 
           if (debug_level & 64) {
             fmt::print(stderr, "part, block, offset, count = {} {} {} {}\n", p, bid,
-                       part_block_offset, edge_count);
+                       part_block_offset, fmt::group_digits(edge_count));
           }
           error = ex_put_partial_conn(id_out, EX_EDGE_BLOCK, bid, part_block_offset, edge_count,
                                       local_linkage.data(), nullptr, nullptr);
@@ -4049,7 +4051,7 @@ namespace {
             fmt::print(stderr,
                        "ERROR: (EPU) Cannot output edge block connectivity for block {} on part "
                        "{} (offset = {}, count = {}).\n",
-                       bid, p + start_part, part_block_offset, edge_count);
+                       bid, p + start_part, part_block_offset, fmt::group_digits(edge_count));
             exodus_error(__LINE__);
           }
 
@@ -4276,13 +4278,13 @@ namespace {
                        bid, p + start_part);
             exodus_error(__LINE__);
           }
-          size_t                  pos                     = 0;
-          size_t                  goffset                 = glob_faceblocks[b].offset_;
-          size_t                  face_count              = faceblocks[p][b].entity_count();
-          size_t                  boffset                 = faceblocks[p][b].offset_;
-          size_t                  npe                     = faceblocks[p][b].nodesPerFace;
-          const std::vector<INT> &proc_loc_face_to_global = local_face_to_global[p];
-          const std::vector<INT> &proc_loc_node_to_global = local_node_to_global[p];
+          size_t      pos                     = 0;
+          size_t      goffset                 = glob_faceblocks[b].offset_;
+          size_t      face_count              = faceblocks[p][b].entity_count();
+          size_t      boffset                 = faceblocks[p][b].offset_;
+          size_t      npe                     = faceblocks[p][b].nodesPerFace;
+          const auto &proc_loc_face_to_global = local_face_to_global[p];
+          const auto &proc_loc_node_to_global = local_node_to_global[p];
 
           for (size_t e = 0; e < face_count; e++) {
             global_block_pos = proc_loc_face_to_global[(e + boffset)] - goffset;

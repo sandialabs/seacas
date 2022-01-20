@@ -35,6 +35,16 @@ namespace Ioss {
 
     enum MinMax { DO_MAX, DO_MIN, DO_SUM };
 
+#if defined(SEACAS_HAVE_MPI)
+    static constexpr MPI_Comm comm_world() { return MPI_COMM_WORLD; }
+    static constexpr MPI_Comm comm_self() { return MPI_COMM_SELF; }
+    static constexpr MPI_Comm comm_null() { return MPI_COMM_NULL; }
+#else
+    static constexpr MPI_Comm comm_world() { return 0; }
+    static constexpr MPI_Comm comm_self() { return 0; }
+    static constexpr MPI_Comm comm_null() { return 0; }
+#endif
+
     /*!
      * See if any external properties specified via the
      * IOSS_PROPERTIES environment variable.  If any found, add to
@@ -122,7 +132,7 @@ namespace Ioss {
     void progress(const std::string &output) const;
 
   private:
-    Ioss_MPI_Comm communicator_{IOSS_MPI_COMM_WORLD};
+    Ioss_MPI_Comm communicator_{comm_world()};
   };
 
 #ifdef SEACAS_HAVE_MPI
