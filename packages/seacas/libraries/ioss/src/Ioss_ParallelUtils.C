@@ -452,7 +452,7 @@ template void Ioss::ParallelUtils::broadcast(std::vector<int> &, int) const;
 /// \relates Ioss::ParallelUtils::broadcast
 template void Ioss::ParallelUtils::broadcast(std::vector<long> &, int) const;
 /// \relates Ioss::ParallelUtils::broadcast
-template void Ioss::ParallelUtils::broadcast(std::vector<int64_t> &, int) const;
+template void Ioss::ParallelUtils::broadcast(std::vector<long long> &, int) const;
 /// \relates Ioss::ParallelUtils::broadcast
 template void Ioss::ParallelUtils::broadcast(std::vector<char> &, int) const;
 /// \relates Ioss::ParallelUtils::broadcast
