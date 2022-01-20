@@ -109,7 +109,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
   }
 
   if (sync_parallel && parallel_size() > 1) {
-    MPI_Bcast(&string_length, 1, MPI_INT, 0, communicator_);
+    broadcast(string_length);
 
     if (string_length > 0) {
       broadcast_string.resize(string_length + 1);
@@ -117,7 +117,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
         Ioss::Utils::copy_string(broadcast_string.data(), result_string,
                                  static_cast<size_t>(string_length) + 1);
       }
-      MPI_Bcast(broadcast_string.data(), string_length + 1, MPI_CHAR, 0, communicator_);
+      broadcast(broadcast_string);
       value = std::string(broadcast_string.data());
     }
     else {
@@ -174,7 +174,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, bool sync_par
   }
 
   if (sync_parallel && parallel_size() > 1) {
-    MPI_Bcast(&string_length, 1, MPI_INT, 0, communicator_);
+    broadcast(string_length);
   }
 
   return string_length > 0;
@@ -408,6 +408,81 @@ T Ioss::ParallelUtils::global_minmax(T local_minmax, Ioss::ParallelUtils::MinMax
   }
 #endif
   return minmax;
+}
+
+/// \relates Ioss::ParallelUtils::broadcast
+template void Ioss::ParallelUtils::broadcast(double &value, int) const;
+/// \relates Ioss::ParallelUtils::broadcast
+template void Ioss::ParallelUtils::broadcast(int &value, int) const;
+/// \relates Ioss::ParallelUtils::broadcast
+template void Ioss::ParallelUtils::broadcast(int64_t &value, int) const;
+
+template <> void Ioss::ParallelUtils::broadcast(std::string &my_str, int root) const
+{
+#ifdef SEACAS_HAVE_MPI
+  if (parallel_size() > 1) {
+    const int success = MPI_Bcast(const_cast<char *>(my_str.data()), (int)my_str.size()+1, MPI_CHAR, root, communicator_);
+    if (success != MPI_SUCCESS) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "{} - MPI_Broadcast failed", __func__);
+      IOSS_ERROR(errmsg);
+    }
+  }
+#endif
+}
+
+template <typename T> void Ioss::ParallelUtils::broadcast(T &my_value, int root) const
+{
+#ifdef SEACAS_HAVE_MPI
+  if (parallel_size() > 1) {
+    const int success = MPI_Bcast((void *)&my_value, 1, mpi_type(T()), root, communicator_);
+    if (success != MPI_SUCCESS) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "{} - MPI_Broadcast failed", __func__);
+      IOSS_ERROR(errmsg);
+    }
+  }
+#endif
+}
+
+/// \relates Ioss::ParallelUtils::broadcast
+template void Ioss::ParallelUtils::broadcast(std::vector<double> &, int) const;
+/// \relates Ioss::ParallelUtils::broadcast
+template void Ioss::ParallelUtils::broadcast(std::vector<int> &, int) const;
+/// \relates Ioss::ParallelUtils::broadcast
+template void Ioss::ParallelUtils::broadcast(std::vector<long> &, int) const;
+/// \relates Ioss::ParallelUtils::broadcast
+template void Ioss::ParallelUtils::broadcast(std::vector<int64_t> &, int) const;
+/// \relates Ioss::ParallelUtils::broadcast
+template void Ioss::ParallelUtils::broadcast(std::vector<char> &, int) const;
+/// \relates Ioss::ParallelUtils::broadcast
+template <> void Ioss::ParallelUtils::broadcast(std::vector<std::pair<int,int>> &my_value, int root) const
+{
+#ifdef SEACAS_HAVE_MPI
+  if (parallel_size() > 1) {
+    const int success = MPI_Bcast(my_value.data(), (int)my_value.size() * 2, mpi_type(int(0)), root, communicator_);
+    if (success != MPI_SUCCESS) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "{} - MPI_Broadcast failed", __func__);
+      IOSS_ERROR(errmsg);
+    }
+  }
+#endif
+}
+
+
+template <typename T> void Ioss::ParallelUtils::broadcast(std::vector<T> &my_value, int root) const
+{
+#ifdef SEACAS_HAVE_MPI
+  if (parallel_size() > 1) {
+    const int success = MPI_Bcast(my_value.data(), (int)my_value.size(), mpi_type(T()), root, communicator_);
+    if (success != MPI_SUCCESS) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "{} - MPI_Broadcast failed", __func__);
+      IOSS_ERROR(errmsg);
+    }
+  }
+#endif
 }
 
 /// \relates Ioss::ParallelUtils::gather

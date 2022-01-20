@@ -537,7 +537,7 @@ namespace Ioex {
         Ioss::FileInfo file(get_filename());
         int_is_ok = file.exists() && file.is_writable() ? 1 : 0;
       }
-      MPI_Bcast(&int_is_ok, 1, MPI_INT, 0, util().communicator());
+      util().broadcast(int_is_ok);
 
       if (int_is_ok == 1) {
         // Note that at this point, we cannot totally guarantee that

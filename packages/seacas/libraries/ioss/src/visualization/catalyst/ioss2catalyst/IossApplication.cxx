@@ -555,7 +555,8 @@ bool IossApplication::decomposedMeshExists(int ndx)
       fstream.close();
     }
   }
-  MPI_Bcast(&status, 1, MPI_INT, 0, Ioss::ParallelUtils::comm_world());
+  Ioss::ParallelUtils pu{};
+  pu.broadcast(status);
   return status == 1;
 }
 

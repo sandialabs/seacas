@@ -129,6 +129,9 @@ namespace Ioss {
     int gather(int vals_count, int size_per_val, std::vector<T> &my_values,
                std::vector<T> &result) const;
 
+    template <typename T> void broadcast(T &value, int root = 0) const;
+    template <typename T> void broadcast(std::vector<T> &value, int root = 0) const;
+
     void progress(const std::string &output) const;
 
   private:

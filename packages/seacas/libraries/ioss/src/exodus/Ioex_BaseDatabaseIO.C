@@ -2839,7 +2839,7 @@ namespace {
                          "more details.\n");
     }
     int idiff = any_diff ? 1 : 0;
-    MPI_Bcast(&idiff, 1, MPI_INT, 0, util.communicator());
+    util.broadcast(idiff);
     any_diff = idiff == 1;
 
     if (any_diff) {

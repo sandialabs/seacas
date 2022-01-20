@@ -373,7 +373,8 @@ namespace Ioss {
         }
         // NOTE: This broadcast uses a split communicator, so possibly
         // not all processors participating.
-        MPI_Bcast(recv_data.data(), size, Ioss::mpi_type(T(0)), 0, set.setComm_);
+        Ioss::ParallelUtils pu(set.setComm_);
+        pu.broadcast(recv_data);
       }
       if (comp_count == 1) {
         if (set.root_ == m_processor) {
