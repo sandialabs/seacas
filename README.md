@@ -1,5 +1,5 @@
 # SEACAS  [[Documentation](http://gsjaardema.github.io/seacas-docs/)] [[Wiki](https://github.com/gsjaardema/seacas/wiki)]
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c82efc90be9943e08b71e2d16abaa370)](https://app.codacy.com/app/gsjaardema/seacas?utm_source=github.com&utm_medium=referral&utm_content=gsjaardema/seacas&utm_campaign=Badge_Grade_Dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/838c6d845e9e4ce4a7cd02bd06b4d2ad)](https://www.codacy.com/gh/gsjaardema/seacas/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gsjaardema/seacas&amp;utm_campaign=Badge_Grade)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 [![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
 [![Appveyor Build](https://ci.appveyor.com/api/projects/status/pis4gok72yh0wwfs/branch/master?svg=true)](https://ci.appveyor.com/project/gsjaardema/seacas/branch/master)
