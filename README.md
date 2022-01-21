@@ -101,7 +101,6 @@ to configure the SEACAS CMake build.
 | LEGACY          | YES, NO | YES  | Should the legacy SEACAS applications be built (see `cmake-config`) |
 | FORTRAN         | YES, NO | YES  | Should fortran libraries and applications be built (see `cmake-config`) |
 | ZOLTAN          | YES, NO | YES  | Should zoltan library and nem_slice be built |
-| PYTHON_VER      | 2.7 3.0 | 3.0  | Minimum version of python which should be found |
 | BUILD_TYPE      | debug, release | release | what type of build |
 | DEBUG           | -none-  |      | If specified, then do a debug build. Can't be used with `BUILD_TYPE` |
 | HAVE_X11        | YES, NO | YES  | Does the system have X11 libraries and include files; used for blot, fastq |
@@ -202,4 +201,4 @@ a separate license:
 | [pdqsort](https://github.com/orlp/pdqsort) | `packages/seacas/libraries/ioss/src` | [Zlib License](https://github.com/orlp/pdqsort/blob/master/license.txt) |
 ## Contact information
 
- Greg Sjaardema  (gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
+ Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
