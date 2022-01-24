@@ -45,10 +45,6 @@ namespace Iocatalyst {
 
   namespace detail {
 
-    class FieldNonExistent
-    {
-    };
-
     template <typename GroupingEntityT>
     GroupingEntityT *createEntityGroup(const conduit_cpp::Node &node, Ioss::DatabaseIO *dbase);
 
@@ -57,7 +53,8 @@ namespace Iocatalyst {
                                                         Ioss::DatabaseIO *       dbase)
     {
       const auto name = node.name();
-      return new Ioss::NodeBlock(dbase, name, node["properties/entity_count/value"].as_int64(),
+      return new Ioss::NodeBlock(dbase, node["properties/name/value"].as_string(),
+                                 node["properties/entity_count/value"].as_int64(),
                                  node["properties/component_degree/value"].as_int64());
     }
 
@@ -87,6 +84,26 @@ namespace Iocatalyst {
       return new Ioss::SideSet(dbase, name);
     }
 
+    template <>
+    Ioss::StructuredBlock *createEntityGroup<Ioss::StructuredBlock>(const conduit_cpp::Node &node,
+                                                                    Ioss::DatabaseIO *       dbase)
+    {
+      const auto name = node.name();
+
+      Ioss::IJK_t localSizes    = {{(int)node["properties/ni/value"].as_int64(),
+                                 (int)node["properties/nj/value"].as_int64(),
+                                 (int)node["properties/nk/value"].as_int64()}};
+      Ioss::IJK_t globalSizes   = {{(int)node["properties/ni_global/value"].as_int64(),
+                                  (int)node["properties/nj_global/value"].as_int64(),
+                                  (int)node["properties/nk_global/value"].as_int64()}};
+      Ioss::IJK_t parentOffsets = {{(int)node["properties/offset_i/value"].as_int64(),
+                                    (int)node["properties/offset_j/value"].as_int64(),
+                                    (int)node["properties/offset_k/value"].as_int64()}};
+      return new Ioss::StructuredBlock(dbase, node["properties/name/value"].as_string(),
+                                       node["properties/component_degree/value"].as_int64(),
+                                       localSizes, parentOffsets, globalSizes);
+    }
+
   } // namespace detail
 
   class DatabaseIO::ImplementationT
@@ -97,6 +114,7 @@ namespace Iocatalyst {
 
   public:
     conduit_cpp::Node &databaseNode() { return this->DBNode; }
+    void *             catalystConduitNode() { return conduit_cpp::c_node(&this->DBNode); }
     void               setDatabaseNode(conduit_node *c_node)
     {
       this->DBNode = conduit_cpp::Node();
@@ -148,7 +166,7 @@ namespace Iocatalyst {
       // this->readEntityGroup<Ioss::EdgeSet>(node["edgesets"], region);
       // this->readEntityGroup<Ioss::FaceSet>(node["facesets"], region);
       // this->readEntityGroup<Ioss::ElementSet>(node["elementsets"], region);
-      // this->readEntityGroup<Ioss::StructuredBlock>(node["structured_blocks"], region);
+      this->readEntityGroup<Ioss::StructuredBlock>(node["structured_blocks"], region);
       // this->readEntityGroup<Ioss::Assembly>(node["assemblies"], region);
 
       return this->readTime(region);
@@ -156,9 +174,11 @@ namespace Iocatalyst {
 
     bool readTime(Ioss::Region *region)
     {
-      auto &     node = this->DBNode;
-      const auto time = node["state_time"].as_float64();
-      region->add_state(time);
+      auto &node = this->DBNode;
+      if (node.has_child("state_time")) {
+        const auto time = node["state_time"].as_float64();
+        region->add_state(time);
+      }
       return true;
     }
 
@@ -169,7 +189,7 @@ namespace Iocatalyst {
       const auto num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
-        auto &&node = this->DBNode[containerName + "/" + groupName + "/fields/" + field.get_name()];
+        auto &&node = this->DBNode[getFieldPath(containerName, groupName, field.get_name())];
         node["role"].set(static_cast<std::int8_t>(field.get_role()));
         node["type"].set(static_cast<std::int8_t>(field.get_type()));
         node["count"].set(static_cast<std::int64_t>(field.verify(data_size)));
@@ -228,11 +248,7 @@ namespace Iocatalyst {
       auto       num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
-        auto path = containerName + "/" + groupName + "/fields/" + field.get_name() + "/value";
-        if (!this->DBNode.has_path(path)) {
-          throw detail::FieldNonExistent();
-          ;
-        }
+        auto path = getFieldPath(containerName, groupName, field.get_name()) + "/value";
         const auto &&node = this->DBNode[path];
         switch (field.get_type()) {
         case Ioss::Field::BasicType::DOUBLE:
@@ -261,6 +277,72 @@ namespace Iocatalyst {
       }
       fmt::print(stderr, "get_field {}: {} ({})\n", containerName, field.get_name(), num_to_get);
       return num_to_get;
+    }
+
+    int64_t getMeshModelCoordinates(const std::string &         containerName,
+                                    const Ioss::GroupingEntity *entityGroup,
+                                    const Ioss::Field &field, void *data, size_t data_size)
+    {
+      const auto groupName      = entityGroup->generic_name();
+      auto       num_to_get     = field.verify(data_size);
+      const auto num_components = field.raw_storage()->component_count();
+      if (num_to_get > 0) {
+        auto    path = getPropertyPath(containerName, groupName, "component_degree") + "/value";
+        int64_t component_degree = this->DBNode[path].as_int64();
+        double *rdata            = static_cast<double *>(data);
+
+        auto coord_lambda = [&](const std::string &coord_name, int ordinal) {
+          path  = getFieldPath(containerName, groupName, coord_name) + "/count";
+          int64_t count = this->DBNode[path].as_int64();
+
+          path = getFieldPath(containerName, groupName, coord_name) + "/value";
+          const double *mesh_coords =
+              reinterpret_cast<const double *>(this->DBNode[path].element_ptr(0));
+
+          for (size_t i = 0; i < count; i++) {
+            rdata[component_degree * i + ordinal] = mesh_coords[i];
+          }
+        };
+
+        coord_lambda("mesh_model_coordinates_x", 0);
+
+        if (component_degree >= 2) {
+          coord_lambda("mesh_model_coordinates_y", 1);
+        }
+
+        if (component_degree == 3) {
+          coord_lambda("mesh_model_coordinates_z", 2);
+        }
+      }
+      fmt::print(stderr, "get_mesh_model_coordinates {}: {} ({})\n", containerName,
+                 field.get_name(), num_to_get);
+      return num_to_get;
+    }
+
+    bool hasField(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
+                  const std::string &fieldName)
+    {
+      const auto groupName = entityGroup->generic_name();
+      return this->DBNode.has_path(getFieldPath(containerName, groupName, fieldName));
+    }
+
+    std::string getFieldPath(const std::string &containerName, const std::string &groupName,
+                             const std::string &fieldName)
+    {
+      return containerName + "/" + groupName + "/fields/" + fieldName;
+    }
+
+    bool hasProperty(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
+                     const std::string &propertyName)
+    {
+      const auto groupName = entityGroup->generic_name();
+      return this->DBNode.has_path(getPropertyPath(containerName, groupName, propertyName));
+    }
+
+    std::string getPropertyPath(const std::string &containerName, const std::string &groupName,
+                                const std::string &propertyName)
+    {
+      return containerName + "/" + groupName + "/properties/" + propertyName;
     }
 
     Ioss::Map &get_node_map(const Ioss::DatabaseIO *dbase) const
@@ -304,6 +386,7 @@ namespace Iocatalyst {
       entityGroup->property_describe(Ioss::Property::INTERNAL, &names);
       entityGroup->property_describe(Ioss::Property::EXTERNAL, &names);
       entityGroup->property_describe(Ioss::Property::ATTRIBUTE, &names);
+      entityGroup->property_describe(Ioss::Property::IMPLICIT, &names);
 
       auto &&propertiesNode = parent["properties"];
       for (const auto &name : names) {
@@ -412,7 +495,7 @@ namespace Iocatalyst {
     dbState = Ioss::STATE_UNKNOWN;
     //// Always 64 bits
     // dbIntSizeAPI = Ioss::USE_INT64_API;
-    dbIntSizeAPI = Ioss::USE_INT32_API;
+    // dbIntSizeAPI = Ioss::USE_INT32_API;
 
     bool shallowCopy = false;
     if (Ioss::Utils::check_set_bool_property(properties, "SHALLOW_COPY_FIELDS", shallowCopy)) {
@@ -443,14 +526,11 @@ namespace Iocatalyst {
       // in output-mode, we're pass data on to Catalyst.
       conduit_cpp::Node node;
 
-#if defined(SEACAS_HAVE_MPI)
-      // pass communicator is using MPI.
-      // TODO: skip for now.
-      // node["catalyst"]["mpi_comm"].set(MPI_Comm_c2f(communicator));
-#endif
-
       // TODO: Here, we need to pass pipeline scripts to execute to the Catalyst
       // implementation. ParaView Catalyst supports multiple scripts with args.
+      // We could support that via the property manager. There are several
+      // options:
+      //.
       // We could support that via the property manager. There are several
       // options:
       //
@@ -526,8 +606,7 @@ namespace Iocatalyst {
   // common
   bool DatabaseIO::end_state__(int state, double time)
   {
-    if (this->is_input()) {
-    }
+    if (this->is_input()) {}
     else {
       // invoke catalyst.
       auto &impl = (*this->Impl.get());
@@ -550,7 +629,7 @@ namespace Iocatalyst {
   {
     return Ioss::NODEBLOCK | Ioss::EDGEBLOCK | Ioss::FACEBLOCK | Ioss::ELEMENTBLOCK |
            Ioss::NODESET | Ioss::EDGESET | Ioss::FACESET | Ioss::ELEMENTSET | Ioss::SIDESET |
-           Ioss::SIDEBLOCK | Ioss::REGION;
+           Ioss::SIDEBLOCK | Ioss::STRUCTUREDBLOCK | Ioss::REGION;
   }
 
   void DatabaseIO::read_meta_data__()
@@ -569,6 +648,18 @@ namespace Iocatalyst {
 
     auto &impl = (*this->Impl.get());
     impl.readTime(region);
+  }
+
+  void *DatabaseIO::get_catalyst_conduit_node()
+  {
+    auto &impl = (*this->Impl.get());
+    return impl.catalystConduitNode();
+  }
+
+  void DatabaseIO::print_catalyst_conduit_node()
+  {
+    auto &impl = (*this->Impl.get());
+    impl.print();
   }
 
   int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
@@ -671,18 +762,27 @@ namespace Iocatalyst {
                                          void *data, size_t data_size) const
   {
     auto &impl = (*this->Impl.get());
-    return impl.getField("node_blocks", nb, field, data, data_size);
+
+    if (impl.hasField("node_blocks", nb, field.get_name())) {
+      return impl.getField("node_blocks", nb, field, data, data_size);
+    }
+    else {
+      fmt::print(stderr, "WARNING in {} : {}\n", __func__,
+                 "field not available, " + field.get_name() + ", in container node_blocks\n");
+      return -1;
+    }
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
     auto &impl = (*this->Impl.get());
-    try {
+    if (impl.hasField("element_blocks", eb, field.get_name())) {
       return impl.getField("element_blocks", eb, field, data, data_size);
     }
-    catch (detail::FieldNonExistent &) {
-      if (field.get_name() == "connectivity_raw") {
+    else {
+      if (field.get_name() == "connectivity_raw" &&
+          impl.hasField("element_blocks", eb, "connectivity")) {
         // maybe the data has 'connectivity' provided, so we convert it to 'connectivity_raw'.
         auto count = this->get_field_internal(eb, eb->get_field("connectivity"), data, data_size);
         if (count <= 0) {
@@ -693,7 +793,8 @@ namespace Iocatalyst {
             data, field, field.verify(data_size) * field.raw_storage()->component_count());
         return count;
       }
-      else if (field.get_name() == "connectivity") {
+      else if (field.get_name() == "connectivity" &&
+               impl.hasField("element_blocks", eb, "connectivity_raw")) {
         // maybe the data has 'connectivity_raw' is provided, so we convert it to 'connectivity.
         auto count =
             this->get_field_internal(eb, eb->get_field("connectivity_raw"), data, data_size);
@@ -705,6 +806,9 @@ namespace Iocatalyst {
             data, field, field.verify(data_size) * field.raw_storage()->component_count());
         return count;
       }
+
+      fmt::print(stderr, "WARNING in {} : {}\n", __func__,
+                 "field not available, " + field.get_name() + ", in container element_blocks\n");
       return -1;
     }
   }
@@ -777,7 +881,17 @@ namespace Iocatalyst {
                                          void *data, size_t data_size) const
   {
     auto &impl = (*this->Impl.get());
-    return impl.getField("structured_blocks", sb, field, data, data_size);
+    if (impl.hasField("structured_blocks", sb, field.get_name())) {
+      return impl.getField("structured_blocks", sb, field, data, data_size);
+    }
+    else if (field.get_name() == "mesh_model_coordinates") {
+      return impl.getMeshModelCoordinates("structured_blocks", sb, field, data, data_size);
+    }
+    else {
+      fmt::print(stderr, "WARNING in {} : {}\n", __func__,
+                 "field not available, " + field.get_name() + ", in container structured_blocks\n");
+      return -1;
+    }
   }
 
 } // namespace Iocatalyst
