@@ -519,8 +519,8 @@ namespace {
 
         // Find all corresponding blocks on the input part meshes...
         for (const auto &part : part_mesh) {
-          const auto &sblocks = part->get_structured_blocks();
-          for (const auto &pblock : sblocks) {
+          const auto &pblocks = part->get_structured_blocks();
+          for (const auto &pblock : pblocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
@@ -553,8 +553,8 @@ namespace {
 
         // Find all corresponding blocks on the input part meshes...
         for (const auto &part : part_mesh) {
-          auto &sblocks = part->get_structured_blocks();
-          for (const auto &pblock : sblocks) {
+          auto &pblocks = part->get_structured_blocks();
+          for (const auto &pblock : pblocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
@@ -743,8 +743,8 @@ namespace {
 
         // Find all corresponding blocks on the input part meshes...
         for (const auto &part : part_mesh) {
-          auto &sblocks = part->get_structured_blocks();
-          for (const auto &pblock : sblocks) {
+          auto &pblocks = part->get_structured_blocks();
+          for (const auto &pblock : pblocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
