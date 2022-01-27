@@ -774,7 +774,7 @@ namespace {
     assert(zgc_i.m_transform == zgc_j.m_transform);
     if (zgc_i.m_ownerRangeBeg[0] == 0 && zgc_i.m_ownerRangeBeg[1] == 0 &&
         zgc_i.m_ownerRangeBeg[2] == 0) {
-      // This is a newly-created zgc that hasn't been uninoed with anything yet.
+      // This is a newly-created zgc that hasn't been unioned with anything yet.
       zgc_i.m_ownerRangeBeg = zgc_j.m_ownerRangeBeg;
       zgc_i.m_ownerRangeEnd = zgc_j.m_ownerRangeEnd;
       zgc_i.m_donorRangeBeg = zgc_j.m_donorRangeBeg;
