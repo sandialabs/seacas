@@ -1,0 +1,220 @@
+/*
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+ * NTESS, the U.S. Government retains certain rights in this software.
+ *
+ * See packages/seacas/LICENSE for details
+ */
+
+#include "exodusII.h"     // for ex_err, etc
+#include "exodusII_int.h" // for EX_FATAL, etc
+#include <assert.h>
+
+#define SIZE(X) sizeof(X) / sizeof(X[0])
+
+static void verify_valid_component(int component, size_t suffix_size)
+{
+  assert(component - 1 < suffix_size);
+}
+
+const char *ex_field_component_name(ex_field_type field_type, int component)
+{
+  static char *const X = "x";
+  static char *const Y = "y";
+  static char *const Z = "z";
+  static char *const Q = "q";
+  static char *const S = "s";
+
+  static char *const XX = "xx";
+  static char *const YY = "yy";
+  static char *const ZZ = "zz";
+  static char *const XY = "xy";
+  static char *const YZ = "yz";
+  static char *const ZX = "zx";
+  static char *const YX = "yx";
+  static char *const ZY = "zy";
+  static char *const XZ = "xz";
+
+  switch (field_type) {
+  case EX_VECTOR_1D: {
+    static const char *suffix[] = {X};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_VECTOR_2D: {
+    static const char *suffix[] = {X, Y};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_VECTOR_3D: {
+    static const char *suffix[] = {X, Y, Z};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_QUATERNION_2D: {
+    static const char *suffix[] = {S, Q};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_QUATERNION_3D: {
+    static const char *suffix[] = {X, Y, Z, Q};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_FULL_TENSOR_36: {
+    static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX, YX, ZY, XZ};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_FULL_TENSOR_32: {
+    static const char *suffix[] = {XX, YY, ZZ, XY, YX};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_FULL_TENSOR_22: {
+    static const char *suffix[] = {XX, YY, XY, YX};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_FULL_TENSOR_16: {
+    static const char *suffix[] = {XX, XY, YZ, ZX, YX, ZY, XZ};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_FULL_TENSOR_12: {
+    static const char *suffix[] = {XX, XY, YX};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_SYM_TENSOR_33: {
+    static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX};
+    verify_valid_component(component, sizeof(suffix) / sizeof(suffix[0]));
+    return suffix[component - 1];
+  }
+  case EX_SYM_TENSOR_31: {
+    static const char *suffix[] = {XX, YY, ZZ, XY};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_SYM_TENSOR_21: {
+    static const char *suffix[] = {XX, YY, XY};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_SYM_TENSOR_13: {
+    static const char *suffix[] = {XX, XY, YZ, ZX};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_SYM_TENSOR_11: {
+    static const char *suffix[] = {XX, XY};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_SYM_TENSOR_10: {
+    static const char *suffix[] = {XX};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_ASYM_TENSOR_03: {
+    static const char *suffix[] = {XY, YZ, ZX};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_ASYM_TENSOR_02: {
+    static const char *suffix[] = {XY, YZ};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_ASYM_TENSOR_01: {
+    static const char *suffix[] = {XY};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_MATRIX_22: {
+    static const char *suffix[] = {XX, XY, YX, YY};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_MATRIX_33: {
+    static const char *suffix[] = {XX, XY, XZ, YX, YY, YZ, ZX, ZY, ZZ};
+    verify_valid_component(component, SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_FIELD_TYPE_UNKNOWN:
+  case EX_FIELD_TYPE_USER_DEFINED:
+  case EX_FIELD_TYPE_SEQUENCE:
+  case EX_BASIS:
+  case EX_SCALAR:
+  case EX_FIELD_TYPE_INVALID:
+  default: return "invalid";
+  }
+}
+
+int ex_field_component_count(const ex_field_type field_type)
+{
+  switch (field_type) {
+  case EX_FIELD_TYPE_UNKNOWN: return -1;
+  case EX_FIELD_TYPE_USER_DEFINED: return -1;
+  case EX_FIELD_TYPE_SEQUENCE: return -1;
+  case EX_BASIS: return -1;
+  case EX_SCALAR: return 1;
+  case EX_VECTOR_1D: return 1;
+  case EX_VECTOR_2D: return 2;
+  case EX_VECTOR_3D: return 3;
+  case EX_QUATERNION_2D: return 2;
+  case EX_QUATERNION_3D: return 4;
+  case EX_FULL_TENSOR_36: return 9;
+  case EX_FULL_TENSOR_32: return 5;
+  case EX_FULL_TENSOR_22: return 4;
+  case EX_FULL_TENSOR_16: return 7;
+  case EX_FULL_TENSOR_12: return 3;
+  case EX_SYM_TENSOR_33: return 6;
+  case EX_SYM_TENSOR_31: return 4;
+  case EX_SYM_TENSOR_21: return 3;
+  case EX_SYM_TENSOR_13: return 4;
+  case EX_SYM_TENSOR_11: return 2;
+  case EX_SYM_TENSOR_10: return 1;
+  case EX_ASYM_TENSOR_03: return 3;
+  case EX_ASYM_TENSOR_02: return 2;
+  case EX_ASYM_TENSOR_01: return 1;
+  case EX_MATRIX_22: return 4;
+  case EX_MATRIX_33: return 9;
+  case EX_FIELD_TYPE_INVALID: return -1;
+  }
+  return -1;
+}
+
+const char *const ex_field_name(const ex_field_type field_type)
+{
+  switch (field_type) {
+  case EX_FIELD_TYPE_UNKNOWN: return "unknown";
+  case EX_FIELD_TYPE_USER_DEFINED: return "user defined";
+  case EX_FIELD_TYPE_SEQUENCE: return "sequence";
+  case EX_BASIS: return "basis";
+  case EX_SCALAR: return "scalar";
+  case EX_VECTOR_1D: return "vector 1D";
+  case EX_VECTOR_2D: return "vector 2D";
+  case EX_VECTOR_3D: return "vector 3D";
+  case EX_QUATERNION_2D: return "quaternion 2D";
+  case EX_QUATERNION_3D: return "quaternion 3D";
+  case EX_FULL_TENSOR_36: return "full tensor 36";
+  case EX_FULL_TENSOR_32: return "full tensor 32";
+  case EX_FULL_TENSOR_22: return "full tensor 22";
+  case EX_FULL_TENSOR_16: return "full tensor 16";
+  case EX_FULL_TENSOR_12: return "full tensor 12";
+  case EX_SYM_TENSOR_33: return "symmetric tensor 33";
+  case EX_SYM_TENSOR_31: return "symmetric tensor 31";
+  case EX_SYM_TENSOR_21: return "symmetric tensor 21";
+  case EX_SYM_TENSOR_13: return "symmetric tensor 13";
+  case EX_SYM_TENSOR_11: return "symmetric tensor 11";
+  case EX_SYM_TENSOR_10: return "symmetric tensor 10";
+  case EX_ASYM_TENSOR_03: return "asymmetric tensor 03";
+  case EX_ASYM_TENSOR_02: return "asymmetric tensor 02";
+  case EX_ASYM_TENSOR_01: return "asymmetric tensor 01";
+  case EX_MATRIX_22: return "matrix 2x2";
+  case EX_MATRIX_33: return "matrix 3x3";
+  case EX_FIELD_TYPE_INVALID: return "invalid";
+  }
+  return "invalid";
+}

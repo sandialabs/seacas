@@ -284,6 +284,47 @@ enum ex_entity_type {
 };
 typedef enum ex_entity_type ex_entity_type;
 
+enum ex_field_type {
+  EX_FIELD_TYPE_UNKNOWN = 0,
+  EX_FIELD_TYPE_USER_DEFINED,
+  EX_FIELD_TYPE_SEQUENCE,
+  EX_BASIS,
+  EX_SCALAR,
+  EX_VECTOR_1D,
+  EX_VECTOR_2D,
+  EX_VECTOR_3D,
+  EX_QUATERNION_2D,
+  EX_QUATERNION_3D,
+  EX_FULL_TENSOR_36,
+  EX_FULL_TENSOR_32,
+  EX_FULL_TENSOR_22,
+  EX_FULL_TENSOR_16,
+  EX_FULL_TENSOR_12,
+  EX_SYM_TENSOR_33,
+  EX_SYM_TENSOR_31,
+  EX_SYM_TENSOR_21,
+  EX_SYM_TENSOR_13,
+  EX_SYM_TENSOR_11,
+  EX_SYM_TENSOR_10,
+  EX_ASYM_TENSOR_03,
+  EX_ASYM_TENSOR_02,
+  EX_ASYM_TENSOR_01,
+  EX_MATRIX_22,
+  EX_MATRIX_33,
+  EX_FIELD_TYPE_INVALID = -1
+};
+typedef enum ex_field_type ex_field_type;
+
+#define EX_MAX_FIELD_NESTING 4
+typedef struct ex_field
+{
+  char          name[NC_MAX_NAME + 1];
+  ex_field_type type[EX_MAX_FIELD_NESTING];
+  int           nesting;
+  int           component_count[EX_MAX_FIELD_NESTING];
+  char          compnonent_separator;
+} ex_field;
+
 /*!
  * ex_opts() function codes - codes are OR'ed into exopts
  */
@@ -374,7 +415,8 @@ typedef struct ex_attribute
   char           name[NC_MAX_NAME + 1];
   ex_type        type; /* int, double, text */
   size_t         value_count;
-  void          *values; /* not accessed if NULL */
+  void          *values;         /* not accessed if NULL */
+  int            variable_index; /* For variable attributes only */
 } ex_attribute;
 
 typedef struct ex_blob
@@ -1185,6 +1227,10 @@ EXODUS_EXPORT int ex_put_elem_cmap(int             exoid,    /**< NetCDF/Exodus 
                                    const void_int *proc_ids, /**< Vector of processor IDs */
                                    int             processor /**< This processor ID */
 );
+
+EXODUS_EXPORT const char       *ex_field_component_name(ex_field_type field_type, int component);
+EXODUS_EXPORT int               ex_field_component_count(const ex_field_type field_type);
+EXODUS_EXPORT const char *const ex_field_name(const ex_field_type field_type);
 
 /*! @} */
 
