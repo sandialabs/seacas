@@ -309,8 +309,8 @@ enum ex_field_type {
   EX_ASYM_TENSOR_03,
   EX_ASYM_TENSOR_02,
   EX_ASYM_TENSOR_01,
-  EX_MATRIX_22,
-  EX_MATRIX_33,
+  EX_MATRIX_2X2,
+  EX_MATRIX_3X3,
   EX_FIELD_TYPE_INVALID = -1
 };
 typedef enum ex_field_type ex_field_type;
@@ -1231,6 +1231,8 @@ EXODUS_EXPORT int ex_put_elem_cmap(int             exoid,    /**< NetCDF/Exodus 
 EXODUS_EXPORT const char       *ex_field_component_name(ex_field_type field_type, int component);
 EXODUS_EXPORT int               ex_field_component_count(const ex_field_type field_type);
 EXODUS_EXPORT const char *const ex_field_name(const ex_field_type field_type);
+EXODUS_EXPORT ex_field_type     field_string_to_field_type(const char *field_name);
+EXODUS_EXPORT const char *const field_type_enum_to_string(const ex_field_type field_type);
 
 /*! @} */
 
