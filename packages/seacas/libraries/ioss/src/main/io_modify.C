@@ -337,7 +337,7 @@ int main(int argc, char *argv[])
     }
 
     // NOTE: getline_int returns the trailing '\n'
-    auto tokens = Ioss::tokenize(std::string(input), " ,\n");
+    auto tokens = Ioss::tokenize(input, " ,\n");
     if (tokens.empty()) {
       continue;
     }

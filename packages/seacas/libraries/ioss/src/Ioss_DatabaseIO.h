@@ -584,9 +584,9 @@ namespace Ioss {
      * run since the passed in filename is just the basename, not the
      * processor-specific filename.
      */
-    std::string         originalDBFilename;
-    std::string         DBFilename;
-    mutable std::string decodedFilename;
+    std::string         originalDBFilename{};
+    std::string         DBFilename{};
+    mutable std::string decodedFilename{};
 
     /*!
      * `bbName` is a temporary swizzled name which resides inside Burst Buffer namespace.
@@ -618,7 +618,7 @@ namespace Ioss {
     void check_side_topology() const;
 
     /// Used to speed up faceblock/edgeblock calculations.
-    TopoContainer sideTopology;
+    TopoContainer sideTopology{};
 
     /*! Typically used for restart output, but can be used for all output...
      * Maximum number of states on the output file.  Overwrite the existing
@@ -641,7 +641,7 @@ namespace Ioss {
     double timeScaleFactor{1.0};
 
     Ioss::SurfaceSplitType splitType{SPLIT_BY_TOPOLOGIES};
-    Ioss::DatabaseUsage    dbUsage;
+    Ioss::DatabaseUsage    dbUsage{};
 
     mutable Ioss::DataSize dbIntSizeAPI{USE_INT32_API};
 
@@ -664,11 +664,11 @@ namespace Ioss {
     // element ids and offsets are still calculated assuming that the
     // blocks exist in the model...
     // Only one of these can have values and the other must be empty.
-    std::vector<std::string> blockOmissions;
-    std::vector<std::string> blockInclusions;
+    std::vector<std::string> blockOmissions{};
+    std::vector<std::string> blockInclusions{};
 
-    std::vector<std::string> informationRecords;
-    std::vector<std::string> qaRecords;
+    std::vector<std::string> informationRecords{};
+    std::vector<std::string> qaRecords{};
 
     //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
     //               application side.   global = nodeMap[local]
@@ -818,8 +818,8 @@ namespace Ioss {
                   // True is default and required for parallel-io databases.
     // Even if false, metadata operations must be called by all processors
 
-    bool singleProcOnly;   // True if history or heartbeat which is only written from proc 0...
-    bool doLogging{false}; // True if logging field input/output
+    bool singleProcOnly{false}; // True if history or heartbeat which is only written from proc 0...
+    bool doLogging{false};      // True if logging field input/output
     bool useGenericCanonicalName{
         false}; // True if "block_id" is used as canonical name instead of the name
     // given on the mesh file e.g. "fireset".  Both names are still aliases.

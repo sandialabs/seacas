@@ -52,7 +52,7 @@ namespace Ioss {
     size_t count() const;
 
   private:
-    PropMapType m_properties;
+    PropMapType m_properties{};
 #if defined(IOSS_THREADSAFE)
     mutable std::mutex m_;
 #endif

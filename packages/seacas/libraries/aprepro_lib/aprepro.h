@@ -1,4 +1,4 @@
-// Copyright(C) 1999-, 20212021,  National Technology & Engineering Solutions
+// Copyright(C) 1999-2022,  National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -90,6 +90,8 @@ namespace SEAMS {
     /// construct a new parser aprepro context
     Aprepro();
     ~Aprepro();
+    Aprepro(const Aprepro &) = delete;
+    Aprepro &operator=(const Aprepro &) = delete;
 
     enum class SYMBOL_TYPE {
       VARIABLE                  = 1,
