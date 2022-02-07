@@ -1298,6 +1298,44 @@ namespace Ioex {
     nodeConnectivityStatusCalculated = true;
   }
 
+  namespace {
+    void get_element_sides_lists(const std::unique_ptr<DecompositionDataBase> &decomp,
+				 int exoid, int64_t id, int int_byte_size, int64_t number_sides,
+				 Ioss::Int64Vector &element, Ioss::Int64Vector &sides)
+  {
+    // Check whether we already populated the element/sides vectors.
+    if (element.empty() && sides.empty() && number_sides > 0) {
+      fmt::print("IOSS DEBUG: Reading data for {} element/sides\n", number_sides);
+      element.resize(number_sides);
+      sides.resize(number_sides);
+
+      // Easier below here if the element and sides are a known 64-bit size...
+      // Kluge here to do that...
+      if (int_byte_size == 4) {
+	Ioss::Field side_field("sides", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
+			       number_sides);
+	Ioss::Field elem_field("ids_raw", Ioss::Field::INTEGER, IOSS_SCALAR(),
+			       Ioss::Field::MESH, number_sides);
+
+	Ioss::IntVector e32(number_sides);
+	decomp->get_set_mesh_var(exoid, EX_SIDE_SET, id, elem_field, e32.data());
+	std::copy(e32.begin(), e32.end(), element.begin());
+	decomp->get_set_mesh_var(exoid, EX_SIDE_SET, id, side_field, e32.data());
+	std::copy(e32.begin(), e32.end(), sides.begin());
+      }
+      else {
+	Ioss::Field side_field("sides", Ioss::Field::INT64, IOSS_SCALAR(), Ioss::Field::MESH,
+			       number_sides);
+	Ioss::Field elem_field("ids_raw", Ioss::Field::INT64, IOSS_SCALAR(), Ioss::Field::MESH,
+			       number_sides);
+	decomp->get_set_mesh_var(exoid, EX_SIDE_SET, id, elem_field,
+				 element.data());
+	decomp->get_set_mesh_var(exoid, EX_SIDE_SET, id, side_field, sides.data());
+      }
+    }
+  }
+  }
+
   void ParallelDatabaseIO::get_sidesets()
   {
     // This function creates all sidesets (surfaces) for a
@@ -1421,34 +1459,11 @@ namespace Ioex {
           int64_t number_sides = decomp->side_sets[iss].ioss_count();
           // FIXME: Support-  number_distribution_factors = decomp->side_sets[iss].df_count();
 
-          Ioss::Int64Vector element(number_sides);
-          Ioss::Int64Vector sides(number_sides);
-
-          // Easier below here if the element and sides are a known 64-bit size...
-          // Kluge here to do that...
-          if (int_byte_size_api() == 4) {
-            Ioss::Field side_field("sides", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
-                                   number_sides);
-            Ioss::Field elem_field("ids_raw", Ioss::Field::INTEGER, IOSS_SCALAR(),
-                                   Ioss::Field::MESH, number_sides);
-
-            Ioss::IntVector e32(number_sides);
-            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, e32.data());
-            std::copy(e32.begin(), e32.end(), element.begin());
-            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, e32.data());
-            std::copy(e32.begin(), e32.end(), sides.begin());
-          }
-          else {
-            Ioss::Field side_field("sides", Ioss::Field::INT64, IOSS_SCALAR(), Ioss::Field::MESH,
-                                   number_sides);
-            Ioss::Field elem_field("ids_raw", Ioss::Field::INT64, IOSS_SCALAR(), Ioss::Field::MESH,
-                                   number_sides);
-            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field,
-                                     element.data());
-            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, sides.data());
-          }
+          Ioss::Int64Vector element;
+          Ioss::Int64Vector sides;
 
           if (!blockOmissions.empty() || !blockInclusions.empty()) {
+	    get_element_sides_lists(decomp, get_file_pointer(), id, int_byte_size_api(), number_sides, element, sides);
             Ioex::filter_element_list(get_region(), element, sides, true);
             number_sides = element.size();
             assert(element.size() == sides.size());
@@ -1503,6 +1518,7 @@ namespace Ioex {
               side_map[std::make_pair(side_topo.first->name(), side_topo.second)] = 0;
             }
 
+	    get_element_sides_lists(decomp, get_file_pointer(), id, int_byte_size_api(), number_sides, element, sides);
             Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map,
                                                  split_type, side_set_name);
           }
@@ -1543,6 +1559,7 @@ namespace Ioex {
                 }
               }
             }
+	    get_element_sides_lists(decomp, get_file_pointer(), id, int_byte_size_api(), number_sides, element, sides);
             Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map,
                                                  split_type, side_set_name);
           }
