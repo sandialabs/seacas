@@ -75,10 +75,11 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
  REAL_SIZE_DB          | 4 / [8] | byte size of floating point stored on the database.
  REAL_SIZE_API         | 4 / [8] | byte size of floating point used in api functions.
 
-## Properties related to field interpretation
+## Properties related to field and sideset/surface interpretation
  Property                 |   Value  | Description
 --------------------------|:--------:|-----------------------------------------------------------
  ENABLE_FIELD_RECOGNITION | [on]/off | Does the IOSS library combine scalar fields into higher-order fields (tensor, vector) based on suffix interpretation.
+ IGNORE_REALN_FIELDS      | [off]/on | Do not recognize var_1, var_2, ..., var_n as an n-component field.  Keep as n scalar fields.  Currently ignored for composite fields.
  FIELD_SUFFIX_SEPARATOR   | char / '_'| The character that is used to separate the base field name from the suffix.  Default is underscore.
  FIELD_STRIP_TRAILING_UNDERSCORE | on / [off] | If `FIELD_SUFFIX_SEPARATOR` is empty and there are fields that end with an underscore, then strip the underscore. (`a_x`, `a_y`, `a_z` is vector field `a`).
  IGNORE_ATTRIBUTE_NAMES   | on/[off] | Do not read the attribute names that may exist on an input database. Instead for an element block with N attributes, the fields will be named `attribute_1` ... `attribute_N`

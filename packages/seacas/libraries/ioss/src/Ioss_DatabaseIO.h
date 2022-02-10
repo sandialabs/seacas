@@ -404,6 +404,9 @@ namespace Ioss {
     bool ignore_database_names() const { return ignoreDatabaseNames; }
     void ignore_database_names(bool yes_no) { ignoreDatabaseNames = yes_no; }
 
+    bool get_ignore_realn_fields() const { return m_ignoreRealnFields; }
+    void set_ignore_realn_fields(bool yes_no) { m_ignoreRealnFields = yes_no; }
+
     /** \brief Get the length of the longest name in the database file.
      *
      *  \returns The length, or 0 for unlimited.
@@ -830,6 +833,8 @@ namespace Ioss {
 
     bool m_timeStateInOut{false};
     bool m_enableTracing{false};
+    bool m_ignoreRealnFields{false}; // Do not recognize var_1, var_2, ..., var_n as an n-component
+                                     // field.  Keep as n scalar fields.
     std::chrono::time_point<std::chrono::steady_clock>
         m_stateStart; // Used for optional output step timing.
   };

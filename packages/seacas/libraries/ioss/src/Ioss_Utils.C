@@ -444,7 +444,8 @@ namespace {
   }
 
   const Ioss::VariableType *match_single_field(char **names, Ioss::IntVector &which_names,
-                                               const char suffix_separator)
+                                               const char suffix_separator,
+                                               bool       ignore_realn_fields)
   {
     // Strip off the suffix from each name indexed in 'which_names'
     // and see if it defines a valid type...
@@ -460,13 +461,13 @@ namespace {
       Ioss::Suffix tmp(tokens[num_tokens - 1]);
       suffices.push_back(tmp);
     }
-    const Ioss::VariableType *type = Ioss::VariableType::factory(suffices);
+    const Ioss::VariableType *type = Ioss::VariableType::factory(suffices, ignore_realn_fields);
     return type;
   }
 
   Ioss::Field get_next_field(char **names, int num_names, size_t count,
                              Ioss::Field::RoleType fld_role, const char suffix_separator,
-                             const int *truth_table)
+                             const int *truth_table, bool ignore_realn_fields)
   {
     // NOTE: 'names' are all lowercase at this point.
 
@@ -578,7 +579,7 @@ namespace {
       }
       else {
         assert(suffix_size == 1);
-        type = match_single_field(names, which_names, suffix_separator);
+        type = match_single_field(names, which_names, suffix_separator, ignore_realn_fields);
       }
 
       if (type != nullptr) {
@@ -674,6 +675,7 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
 {
   bool enable_field_recognition = db->get_field_recognition();
   bool strip_trailing_          = db->get_field_strip_trailing_();
+  bool ignore_realn_fields      = db->get_ignore_realn_fields();
   char suffix_separator         = db->get_field_separator();
 
   if (!enable_field_recognition) {
@@ -689,8 +691,8 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
   else if (suffix_separator != 0) {
     while (true) {
       // NOTE: 'get_next_field' determines storage type (vector, tensor,...)
-      Ioss::Field field =
-          get_next_field(names, num_names, entity_count, fld_role, suffix_separator, local_truth);
+      Ioss::Field field = get_next_field(names, num_names, entity_count, fld_role, suffix_separator,
+                                         local_truth, ignore_realn_fields);
       if (field.is_valid()) {
         fields.push_back(field);
       }
