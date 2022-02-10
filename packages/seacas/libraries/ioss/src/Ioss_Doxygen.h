@@ -83,6 +83,8 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
  FIELD_SUFFIX_SEPARATOR   | char / '_'| The character that is used to separate the base field name from the suffix.  Default is underscore.
  FIELD_STRIP_TRAILING_UNDERSCORE | on / [off] | If `FIELD_SUFFIX_SEPARATOR` is empty and there are fields that end with an underscore, then strip the underscore. (`a_x`, `a_y`, `a_z` is vector field `a`).
  IGNORE_ATTRIBUTE_NAMES   | on/[off] | Do not read the attribute names that may exist on an input database. Instead for an element block with N attributes, the fields will be named `attribute_1` ... `attribute_N`
+ SURFACE_SPLIT_TYPE       | {type} | Specify how to split sidesets into homogeneous sideblocks. Either an integer or string: 1 or `TOPOLOGY`, 2 or `BLOCK`, 3 or `NO_SPLIT`.  Default is `TOPOLOGY` if not specified.
+
 ## Properties related to underlying file type (exodus only)
 
 ## Output Database-Related Properties

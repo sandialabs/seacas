@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -255,7 +255,7 @@ void IOShell::Interface::enroll_options()
   options_.enroll("surface_split_scheme", Ioss::GetLongOption::MandatoryValue,
                   "Method used to split sidesets into homogeneous blocks\n"
                   "\t\tOptions are: TOPOLOGY, BLOCK, NO_SPLIT",
-                  "TOPOLOGY");
+                  nullptr);
 
   options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
                   "Do not lowercase variable names and replace spaces with underscores.\n"

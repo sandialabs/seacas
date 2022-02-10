@@ -202,6 +202,37 @@ namespace Ioss {
     Utils::check_set_bool_property(properties, "FIELD_STRIP_TRAILING_UNDERSCORE",
                                    fieldStripTrailing_);
 
+    if (properties.exists("SURFACE_SPLIT_TYPE")) {
+      Ioss::SurfaceSplitType split_type = Ioss::SPLIT_INVALID;
+      auto                   type       = properties.get("SURFACE_SPLIT_TYPE").get_type();
+      if (type == Ioss::Property::INTEGER) {
+        int split  = properties.get("SURFACE_SPLIT_TYPE").get_int();
+        split_type = Ioss::int_to_surface_split(split);
+      }
+      else if (type == Ioss::Property::STRING) {
+        std::string split = properties.get("SURFACE_SPLIT_TYPE").get_string();
+        if (Ioss::Utils::str_equal(split, "TOPOLOGY")) {
+          split_type = Ioss::SPLIT_BY_TOPOLOGIES;
+        }
+        else if (Ioss::Utils::str_equal(split, "BLOCK")) {
+          split_type = Ioss::SPLIT_BY_ELEMENT_BLOCK;
+        }
+        else if (Ioss::Utils::str_equal(split, "NO_SPLIT")) {
+          split_type = Ioss::SPLIT_BY_DONT_SPLIT;
+        }
+        else {
+          split_type = Ioss::SPLIT_INVALID;
+          fmt::print(Ioss::WARNING(),
+                     "Invalid setting for SURFACE_SPLIT_TYPE Property ('{}').  Valid entries are "
+                     "TOPOLOGY, BLOCK, NO_SPLIT. Ignoring.\n",
+                     split);
+        }
+      }
+      if (split_type != Ioss::SPLIT_INVALID) {
+        set_surface_split_type(split_type);
+      }
+    }
+
     if (properties.exists("INTEGER_SIZE_API")) {
       int isize = properties.get("INTEGER_SIZE_API").get_int();
       if (isize == 8) {

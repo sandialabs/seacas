@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -82,7 +82,7 @@ void Info::Interface::enroll_options()
   options_.enroll("surface_split_scheme", Ioss::GetLongOption::MandatoryValue,
                   "Method used to split sidesets into homogeneous blocks\n"
                   "\t\tOptions are: TOPOLOGY, BLOCK, NO_SPLIT",
-                  "TOPOLOGY", nullptr, true);
+                  nullptr, nullptr, true);
 
 #if defined(SEACAS_HAVE_MPI)
 #if !defined(NO_ZOLTAN_SUPPORT)
