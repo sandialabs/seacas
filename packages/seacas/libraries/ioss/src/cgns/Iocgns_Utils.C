@@ -2393,6 +2393,10 @@ void Iocgns::Utils::set_line_decomposition(int cgns_file_ptr, const std::string 
           if (verbose && rank == 0) {
             fmt::print(Ioss::DEBUG(), "Setting line ordinal to {} on {} for surface: {}\n",
                        zone->m_lineOrdinal, zone->m_name, boconame);
+	    if (zone->m_lineOrdinal == 7) {
+	      fmt::print(Ioss::DEBUG(), "NOTE: Zone {} with work {} will not be decomposed due to line ordinal setting.\n",
+			 zone->m_name, fmt::group_digits(zone->work()));
+	    }
           }
         }
       }
@@ -2624,15 +2628,17 @@ int Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, d
 
   for (size_t i = 0; i < zones.size(); i++) {
     auto   zone = zones[i];
-    double work = zone->work();
-    total_work += work;
-    if (load_balance <= 1.2) {
-      splits[i] = int(std::ceil(work / avg_work));
+    if (zone->m_lineOrdinal != 7) {
+      double work = zone->work();
+      total_work += work;
+      if (load_balance <= 1.2) {
+	splits[i] = int(std::ceil(work / avg_work));
+      }
+      else {
+	splits[i] = int(std::round(work / avg_work + 0.2));
+      }
+      splits[i] = splits[i] == 0 ? 1 : splits[i];
     }
-    else {
-      splits[i] = int(std::round(work / avg_work + 0.2));
-    }
-    splits[i] = splits[i] == 0 ? 1 : splits[i];
   }
 
   int  num_splits        = std::accumulate(splits.begin(), splits.end(), 0);

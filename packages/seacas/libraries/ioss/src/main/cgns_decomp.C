@@ -758,6 +758,12 @@ int main(int argc, char *argv[])
   if (in_type == "cgns") {
     Iocgns::Utils::set_line_decomposition(dbi->get_file_pointer(), interFace.line_decomposition,
                                           zones, 0, interFace.verbose);
+    for (const auto &z : zones) {
+      if (z->m_lineOrdinal == 7) {
+	fmt::print("WARNING: Zone {} with work {} will not be decomposed due to line ordinal setting.\n",
+		   z->m_name, fmt::group_digits(z->work()));
+      }
+    }
   }
 
   region.output_summary(std::cout, false);
