@@ -26,6 +26,12 @@
 #include <utility> // for pair, make_pair
 #include <vector>  // for vector
 
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
+#define __SUP_WINDOWS__ 1
+#endif
+
+#if !defined(__SUP_WINDOWS)
 #if (__cplusplus >= 201703L)
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -34,6 +40,7 @@ namespace fs = std::filesystem;
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #undef _LIBCPP_NO_EXPERIMENTAL_DEPRECATION_WARNING_FILESYSTEM
+#endif
 #endif
 
 namespace {
@@ -663,6 +670,7 @@ namespace {
 
   std::string find_matching_file(const std::string &path, const std::string &basename)
   {
+#if !defined(__SUP_WINDOWS)
     glob::glob g(basename + ".*.*");
     for (const auto &entry : fs::directory_iterator(path)) {
       std::string filename = entry.path().filename();
@@ -670,6 +678,7 @@ namespace {
         return filename;
       }
     }
+#endif
     return "";
   }
 } // namespace
