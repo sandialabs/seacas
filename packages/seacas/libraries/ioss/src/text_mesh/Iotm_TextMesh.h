@@ -25,20 +25,15 @@
 
 namespace Iotm {
   using Topology       = TopologyMapEntry;
-  using TextMeshData   = text_mesh::TextMeshData<int64_t, TopologyMapEntry>;
-  using ElementData    = text_mesh::ElementData<int64_t, TopologyMapEntry>;
-  using SidesetData    = text_mesh::SidesetData<int64_t, TopologyMapEntry>;
+  using TextMeshData   = text_mesh::TextMeshData<int64_t, Topology>;
+  using ElementData    = text_mesh::ElementData<int64_t, Topology>;
+  using SidesetData    = text_mesh::SidesetData<int64_t, Topology>;
   using NodesetData    = text_mesh::NodesetData<int64_t>;
   using Coordinates    = text_mesh::Coordinates<int64_t>;
   using TextMeshParser = text_mesh::TextMeshParser<int64_t, IossTopologyMapping>;
   using ErrorHandler   = text_mesh::ErrorHandler;
   using SideBlockInfo  = text_mesh::SideBlockInfo;
   using SplitType      = text_mesh::SplitType;
-
-  inline std::ostream &operator<<(std::ostream &out, const TopologyMapEntry &t)
-  {
-    return out << t.name();
-  }
 
   struct BlockPartition
   {
