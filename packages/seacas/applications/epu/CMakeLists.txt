@@ -29,7 +29,9 @@ IF(NOT __LINUX_COMPILER_PGI)
     SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/epu.C
     INSTALLABLE
     )
-    target_link_libraries(epu stdc++fs)
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+      target_link_libraries(epu stdc++fs)
+    endif()
 IF (TPL_ENABLE_MPI)
   TRIBITS_ADD_EXECUTABLE(
     pepu
@@ -40,7 +42,9 @@ IF (TPL_ENABLE_MPI)
     INSTALLABLE
     )
     target_compile_definitions(pepu PUBLIC SEACAS_HAVE_MPI)
-    target_link_libraries(pepu stdc++fs)
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+      target_link_libraries(epu stdc++fs)
+    endif()
 ENDIF()
 ENDIF()
 
