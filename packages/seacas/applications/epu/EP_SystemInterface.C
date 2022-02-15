@@ -425,8 +425,8 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
         // basename...
         std::string candidate = find_matching_file(rootDirectory_, basename_);
         if (!candidate.empty()) {
-          basename_    = candidate;
-          bool success = decompose_filename(basename_);
+          basename_ = candidate;
+          success   = decompose_filename(basename_);
           if (!success) {
             std::ostringstream errmsg;
             fmt::print(
