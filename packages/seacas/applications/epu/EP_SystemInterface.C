@@ -32,13 +32,7 @@
 #endif
 
 #if !defined(__SUP_WINDOWS)
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
 #include <dirent.h>
-#define NO_FILESYSTEM_SUPPORT
-#endif
 #endif
 
 namespace {
@@ -670,7 +664,6 @@ namespace {
   {
     glob::glob g(basename + ".*.*");
 #if !defined(__SUP_WINDOWS__)
-#if defined(NO_FILESYSTEM_SUPPORT)
     struct dirent *entry = nullptr;
     DIR           *dp    = nullptr;
 
@@ -685,14 +678,6 @@ namespace {
       }
     }
     closedir(dp);
-#else
-    for (const auto &entry : fs::directory_iterator(path)) {
-      std::string filename = entry.path().filename();
-      if (glob::glob_match(filename, g)) {
-        return filename;
-      }
-    }
-#endif
 #endif
     return "";
   }
