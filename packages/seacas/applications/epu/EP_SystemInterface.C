@@ -35,11 +35,9 @@
 #if (__cplusplus >= 201703L)
 #include <filesystem>
 namespace fs = std::filesystem;
-#elif (__cplusplus >= 201402L)
-#define _LIBCPP_NO_EXPERIMENTAL_DEPRECATION_WARNING_FILESYSTEM
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#undef _LIBCPP_NO_EXPERIMENTAL_DEPRECATION_WARNING_FILESYSTEM
+#else
+#include <dirent.h>
+#define NO_FILESYSTEM_SUPPORT
 #endif
 #endif
 
@@ -670,14 +668,31 @@ namespace {
 
   std::string find_matching_file(const std::string &path, const std::string &basename)
   {
-#if !defined(__SUP_WINDOWS)
     glob::glob g(basename + ".*.*");
+#if !defined(__SUP_WINDOWS__)
+#if defined(NO_FILESYSTEM_SUPPORT)
+    struct dirent *entry = nullptr;
+    DIR           *dp    = nullptr;
+
+    dp = opendir(path.c_str());
+    if (dp != nullptr) {
+      while ((entry = readdir(dp))) {
+        std::string filename = entry->d_name;
+        if (glob::glob_match(filename, g)) {
+          closedir(dp);
+          return filename;
+        }
+      }
+    }
+    closedir(dp);
+#else
     for (const auto &entry : fs::directory_iterator(path)) {
       std::string filename = entry.path().filename();
       if (glob::glob_match(filename, g)) {
         return filename;
       }
     }
+#endif
 #endif
     return "";
   }

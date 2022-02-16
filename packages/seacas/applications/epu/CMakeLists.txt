@@ -29,9 +29,7 @@ IF(NOT __LINUX_COMPILER_PGI)
     SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/epu.C
     INSTALLABLE
     )
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR NOT (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin"))
-      target_link_libraries(epu stdc++fs)
-    endif()
+    target_compile_features(epu PRIVATE cxx_std_17)
 IF (TPL_ENABLE_MPI)
   TRIBITS_ADD_EXECUTABLE(
     pepu
@@ -41,10 +39,8 @@ IF (TPL_ENABLE_MPI)
     COMM mpi
     INSTALLABLE
     )
+    target_compile_features(epu PRIVATE cxx_std_17)
     target_compile_definitions(pepu PUBLIC SEACAS_HAVE_MPI)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR NOT (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin"))
-      target_link_libraries(epu stdc++fs)
-    endif()
 ENDIF()
 ENDIF()
 
