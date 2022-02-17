@@ -1,6 +1,7 @@
 ADD_DEFINITIONS(-DBuild64)
 
-IF ("${FC_FN_UNDERSCORE}" STREQUAL "UNDER")
+include(FortranCInterface)
+if ("${FortranCInterface_GLOBAL_SUFFIX}" STREQUAL "_")
   ADD_DEFINITIONS(-DADDC_)
 ENDIF()
 
