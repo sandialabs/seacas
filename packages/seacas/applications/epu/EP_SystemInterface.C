@@ -397,7 +397,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("copyright") != nullptr) {
     if (myRank_ == 0) {
-      fmt::print("{}", copyright("2010-2021"));
+      fmt::print("{}", copyright("2010-2022"));
     }
     return false;
   }
