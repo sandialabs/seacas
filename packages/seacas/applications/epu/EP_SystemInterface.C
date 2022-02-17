@@ -31,7 +31,7 @@
 #define __SUP_WINDOWS__ 1
 #endif
 
-#if !defined(__SUP_WINDOWS)
+#if !defined(__SUP_WINDOWS__)
 #include <dirent.h>
 #endif
 
