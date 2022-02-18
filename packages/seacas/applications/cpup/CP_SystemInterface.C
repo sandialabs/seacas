@@ -22,6 +22,7 @@
 #include <stdexcept>
 #include <string> // for string, char_traits, etc
 #include <term_width.h>
+#include <unistd.h>
 #include <utility> // for pair, make_pair
 #include <vector>  // for vector
 
@@ -341,9 +342,9 @@ bool Cpup::SystemInterface::parse_options(int argc, char **argv)
       // Now, strip off path and set `rootDirectory_`
       rootDirectory_ = filename.pathname();
       if (rootDirectory_.empty()) {
-	rootDirectory_ = getcwd(nullptr, 0);
+        rootDirectory_ = getcwd(nullptr, 0);
       }
-      basename_      = filename.tailname();
+      basename_ = filename.tailname();
 
       bool success = decompose_filename(basename_);
       if (!success) {
