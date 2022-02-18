@@ -69,7 +69,7 @@
 #include <cgns/Iocgns_Utils.h>
 #endif
 
-#if defined(_MSC_VER)
+#if defined(__IOSS_WINDOWS__)
 #include <io.h>
 #define isatty _isatty
 #endif
