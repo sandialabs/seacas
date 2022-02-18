@@ -427,10 +427,10 @@ std::string Ioss::Matrix_22::label(int which, const char /*suffix_sep*/) const
 {
   assert(which > 0 && which <= component_count());
   switch (which) {
-  case 1: return XX();
-  case 2: return XY();
-  case 3: return YX();
-  case 4: return YY();
+  case 1: return "11";
+  case 2: return "12";
+  case 3: return "21";
+  case 4: return "22";
   default: return "";
   }
 }
@@ -443,15 +443,15 @@ std::string Ioss::Matrix_33::label(int which, const char /*suffix_sep*/) const
 {
   assert(which > 0 && which <= component_count());
   switch (which) {
-  case 1: return XX();
-  case 2: return XY();
-  case 3: return XZ();
-  case 4: return YX();
-  case 5: return YY();
-  case 6: return YZ();
-  case 7: return ZX();
-  case 8: return ZY();
-  case 9: return ZZ();
+  case 1: return "11";
+  case 2: return "12";
+  case 3: return "13";
+  case 4: return "21";
+  case 5: return "22";
+  case 6: return "23";
+  case 7: return "31";
+  case 8: return "32";
+  case 9: return "33";
   default: return "";
   }
 }

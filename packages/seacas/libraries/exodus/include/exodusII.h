@@ -321,7 +321,7 @@ typedef struct ex_field
   char          name[NC_MAX_NAME + 1];
   ex_field_type type[EX_MAX_FIELD_NESTING];
   int           nesting;
-  int           component_count[EX_MAX_FIELD_NESTING];
+  int           cardinality[EX_MAX_FIELD_NESTING];
   char          compnonent_separator;
 } ex_field;
 
@@ -1229,7 +1229,7 @@ EXODUS_EXPORT int ex_put_elem_cmap(int             exoid,    /**< NetCDF/Exodus 
 );
 
 EXODUS_EXPORT const char       *ex_field_component_name(ex_field_type field_type, int component);
-EXODUS_EXPORT int               ex_field_component_count(const ex_field_type field_type);
+EXODUS_EXPORT int               ex_field_cardinality(const ex_field_type field_type);
 EXODUS_EXPORT const char *const ex_field_name(const ex_field_type field_type);
 EXODUS_EXPORT ex_field_type     field_string_to_field_type(const char *field_name);
 EXODUS_EXPORT const char *const field_type_enum_to_string(const ex_field_type field_type);

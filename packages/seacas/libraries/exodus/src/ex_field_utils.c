@@ -12,8 +12,9 @@
 
 #define SIZE(X) sizeof(X) / sizeof(X[0])
 
-static void verify_valid_component(int component, size_t suffix_size)
+static void verify_valid_component(int component, size_t cardinality, size_t suffix_size)
 {
+  assert(cardinality == suffix_size);
   assert(component - 1 < suffix_size);
 }
 
@@ -38,107 +39,107 @@ const char *ex_field_component_name(ex_field_type field_type, int component)
   switch (field_type) {
   case EX_VECTOR_1D: {
     static const char *suffix[] = {X};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_VECTOR_2D: {
     static const char *suffix[] = {X, Y};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_VECTOR_3D: {
     static const char *suffix[] = {X, Y, Z};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_QUATERNION_2D: {
     static const char *suffix[] = {S, Q};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_QUATERNION_3D: {
     static const char *suffix[] = {X, Y, Z, Q};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_36: {
     static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX, YX, ZY, XZ};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_32: {
     static const char *suffix[] = {XX, YY, ZZ, XY, YX};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_22: {
     static const char *suffix[] = {XX, YY, XY, YX};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_16: {
     static const char *suffix[] = {XX, XY, YZ, ZX, YX, ZY, XZ};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_12: {
     static const char *suffix[] = {XX, XY, YX};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_33: {
     static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX};
-    verify_valid_component(component, sizeof(suffix) / sizeof(suffix[0]));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_31: {
     static const char *suffix[] = {XX, YY, ZZ, XY};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_21: {
     static const char *suffix[] = {XX, YY, XY};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_13: {
     static const char *suffix[] = {XX, XY, YZ, ZX};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_11: {
     static const char *suffix[] = {XX, XY};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_10: {
     static const char *suffix[] = {XX};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_ASYM_TENSOR_03: {
     static const char *suffix[] = {XY, YZ, ZX};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_ASYM_TENSOR_02: {
     static const char *suffix[] = {XY, YZ};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_ASYM_TENSOR_01: {
     static const char *suffix[] = {XY};
-    verify_valid_component(component, SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_MATRIX_2X2: {
-    static const char *suffix[] = {XX, XY, YX, YY};
-    verify_valid_component(component, SIZE(suffix));
+    static const char *suffix[] = {"11", "12", "21", "22"};
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_MATRIX_3X3: {
-    static const char *suffix[] = {XX, XY, XZ, YX, YY, YZ, ZX, ZY, ZZ};
-    verify_valid_component(component, SIZE(suffix));
+    static const char *suffix[] = {"11", "12", "13", "21", "22", "23", "31", "32", "33"};
+    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FIELD_TYPE_UNKNOWN:
@@ -151,7 +152,7 @@ const char *ex_field_component_name(ex_field_type field_type, int component)
   }
 }
 
-int ex_field_component_count(const ex_field_type field_type)
+int ex_field_cardinality(const ex_field_type field_type)
 {
   switch (field_type) {
   case EX_FIELD_TYPE_UNKNOWN: return -1;
