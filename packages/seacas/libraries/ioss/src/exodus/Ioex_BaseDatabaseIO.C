@@ -602,10 +602,13 @@ namespace Ioex {
         Ioss::Assembly *assem = get_region()->get_assembly(assembly.name);
         assert(assem != nullptr);
         auto type = Ioex::map_exodus_type(assembly.type);
+        size_t num_added_entities = 0;
+
         for (int j = 0; j < assembly.entity_count; j++) {
           auto *ge = get_region()->get_entity(assembly.entity_list[j], type);
-          if (ge != nullptr) {
+          if (ge != nullptr && !Ioss::Utils::block_is_omitted(ge)) {
             assem->add(ge);
+            num_added_entities++;
           }
           else {
             std::ostringstream errmsg;
@@ -615,8 +618,8 @@ namespace Ioex {
             IOSS_ERROR(errmsg);
           }
         }
-        SMART_ASSERT(assem->member_count() == (size_t)assembly.entity_count)
-        (assem->member_count())(assembly.entity_count);
+        SMART_ASSERT(assem->member_count() == num_added_entities)
+        (assem->member_count())(num_added_entities);
 
         add_mesh_reduction_fields(EX_ASSEMBLY, assembly.id, assem);
         // Check for additional variables.
