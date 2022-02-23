@@ -673,16 +673,11 @@ namespace Ioex {
           Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
         }
 
-        int max_step = timestep_count;
-        if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
-          max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
-        }
-        max_step = std::min(max_step, timestep_count);
+        int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", timestep_count);
+        max_step     = std::min(max_step, timestep_count);
 
-        double max_time = std::numeric_limits<double>::max();
-        if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
-          max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
-        }
+        double max_time =
+            properties.get_optional("APPEND_OUTPUT_AFTER_TIME", std::numeric_limits<double>::max());
 
         Ioss::Region *this_region = get_region();
         for (int i = 0; i < max_step; i++) {
@@ -748,16 +743,11 @@ namespace Ioex {
       // One use case is that job is restarting at a time prior to what has been
       // written to the results file, so want to start appending after
       // restart time instead of at end time on database.
-      int max_step = timestep_count;
-      if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
-        max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
-      }
-      max_step = std::min(max_step, timestep_count);
+      int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", timestep_count);
+      max_step     = std::min(max_step, timestep_count);
 
-      double max_time = std::numeric_limits<double>::max();
-      if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
-        max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
-      }
+      double max_time =
+          properties.get_optional("APPEND_OUTPUT_AFTER_TIME", std::numeric_limits<double>::max());
       last_time = std::min(last_time, max_time);
 
       Ioss::Region *this_region = get_region();

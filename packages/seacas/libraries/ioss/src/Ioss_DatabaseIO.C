@@ -248,13 +248,8 @@ namespace Ioss {
       }
     }
 
-    if (properties.exists("CYCLE_COUNT")) {
-      cycleCount = properties.get("CYCLE_COUNT").get_int();
-    }
-
-    if (properties.exists("OVERLAY_COUNT")) {
-      overlayCount = properties.get("OVERLAY_COUNT").get_int();
-    }
+    cycleCount   = properties.get_optional("CYCLE_COUNT", cycleCount);
+    overlayCount = properties.get_optional("OVERLAY_COUNT", overlayCount);
 
     Utils::check_set_bool_property(properties, "ENABLE_TRACING", m_enableTracing);
     Utils::check_set_bool_property(properties, "TIME_STATE_INPUT_OUTPUT", m_timeStateInOut);
