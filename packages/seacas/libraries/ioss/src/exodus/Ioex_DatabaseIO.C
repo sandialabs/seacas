@@ -677,9 +677,7 @@ namespace Ioex {
         if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
           max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
         }
-        if (max_step > timestep_count) {
-          max_step = timestep_count;
-        }
+        max_step = std::min(max_step, timestep_count);
 
         double max_time = std::numeric_limits<double>::max();
         if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
@@ -754,17 +752,13 @@ namespace Ioex {
       if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
         max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
       }
-      if (max_step > timestep_count) {
-        max_step = timestep_count;
-      }
+      max_step = std::min(max_step, timestep_count);
 
       double max_time = std::numeric_limits<double>::max();
       if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
         max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
       }
-      if (last_time > max_time) {
-        last_time = max_time;
-      }
+      last_time = std::min(last_time, max_time);
 
       Ioss::Region *this_region = get_region();
       for (int i = 0; i < max_step; i++) {
