@@ -85,8 +85,6 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
  IGNORE_ATTRIBUTE_NAMES   | on/[off] | Do not read the attribute names that may exist on an input database. Instead for an element block with N attributes, the fields will be named `attribute_1` ... `attribute_N`
  SURFACE_SPLIT_TYPE       | {type} | Specify how to split sidesets into homogeneous sideblocks. Either an integer or string: 1 or `TOPOLOGY`, 2 or `BLOCK`, 3 or `NO_SPLIT`.  Default is `TOPOLOGY` if not specified.
 
-## Properties related to underlying file type (exodus only)
-
 ## Output Database-Related Properties
  Property        | Value  | Description
 -----------------|:------:|-----------------------------------------------------------
@@ -122,7 +120,7 @@ PARALLEL_IO_MODE | netcdf4, hdf5, pnetcdf, (mpiio and mpiposix are deprecated)
   SHOW_LEGEND          | [on]/off  | Should a legend be printed at the beginning of the output showing the field names for each column of data.
   SHOW_TIME_FIELD      | on/[off]  | Should the current analysis time be output as the first field.
 
-## Experimental
+## Experimental / Special Purpose
 
  Property              | Value  | Description
 -----------------------|:------:|-----------------------------------------------------------
@@ -131,7 +129,18 @@ MEMORY_WRITE       | on/[off]   | experimental
 ENABLE_FILE_GROUPS | on/[off]   | experimental
 MINIMAL_NEMESIS_INFO | on/[off] | special case, omit all nemesis data except for nodal communication map
 OMIT_EXODUS_NUM_MAPS | on/[off] | special case, do not output the node and element numbering map.
+EXODUS_CALL_GET_ALL_TIMES| [on] / off | special case -- should the `ex_get_all_times()` function be called.  See below.
 
+* `EXODUS_CALL_GET_ALL_TIMES`: Typically only used in `isSerialParallel`
+mode and the client is responsible for making sure that the step times
+are handled correctly.  All databases will know about the number of
+timesteps, but if the `ex_get_all_times()` function call is skipped, then
+the times on that database will all be zero.  The use case is that in `isSerialParallel`,
+each call to `ex_get_all_times()` for all files is performed
+sequentially, so if you have hundreds to thousands of files, the time
+for the call is additive and since timesteps are record variables in
+netCDF, accessing the data for all timesteps involves lseeks
+throughout the file.
 
 ## Debugging / Profiling
 
