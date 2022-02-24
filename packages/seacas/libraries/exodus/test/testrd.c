@@ -248,7 +248,6 @@ int main(int argc, char **argv)
       offset += num_elem_in_block[i];
       free(block_map);
     }
-    free(elem_map);
 
     /* read element block properties */
     int num_props = ex_inquire_int(exoid, EX_INQ_EB_PROP);
@@ -331,6 +330,7 @@ int main(int argc, char **argv)
     free(num_nodes_per_elem);
     free(num_attr);
   }
+  free(elem_map);
 
   /* read individual node sets */
   if (num_node_sets > 0) {
