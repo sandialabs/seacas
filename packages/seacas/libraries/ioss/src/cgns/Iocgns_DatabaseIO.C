@@ -1813,15 +1813,18 @@ namespace Iocgns {
     cgsize_t              first      = 1;
 
     // Create a lambda to eliminate some duplicate code in coordinate outputs...
-    auto coord_lambda = [&data, &first, base](const char *ordinate, int cgns_file_ptr, const std::vector<CGNSIntVector> &block_local_node_map, int myProcessor) {
+    auto coord_lambda = [&data, &first,
+                         base](const char *ordinate, int cgns_file_ptr,
+                               const std::vector<CGNSIntVector> &block_local_node_map,
+                               int                               myProcessor) {
       auto *rdata = static_cast<double *>(data);
 
       for (int zone = 1; zone < static_cast<int>(block_local_node_map.size()); zone++) {
         auto               &block_map = block_local_node_map[zone];
         cgsize_t            num_coord = block_map.size();
         std::vector<double> coord(num_coord);
-        CGCHECK(cg_coord_read(cgns_file_ptr, base, zone, ordinate, CGNS_ENUMV(RealDouble),
-			      &first, &num_coord, coord.data()));
+        CGCHECK(cg_coord_read(cgns_file_ptr, base, zone, ordinate, CGNS_ENUMV(RealDouble), &first,
+                              &num_coord, coord.data()));
 
         // Map to global coordinate position...
         for (cgsize_t i = 0; i < num_coord; i++) {
@@ -1866,10 +1869,11 @@ namespace Iocgns {
 
           // ========================================================================
           // Repetitive code for each coordinate direction; use a lambda to consolidate...
-          auto blk_coord_lambda = [block_map, base, zone, &coord, first, num_coord,
-                                   phys_dimension, &rdata](const char *ord_name, int ordinate, int cgns_file_ptr, int myProcessor) {
+          auto blk_coord_lambda = [block_map, base, zone, &coord, first, num_coord, phys_dimension,
+                                   &rdata](const char *ord_name, int ordinate, int cgns_file_ptr,
+                                           int myProcessor) {
             CGCHECK(cg_coord_read(cgns_file_ptr, base, zone, ord_name, CGNS_ENUMV(RealDouble),
-                                   &first, &num_coord, coord.data()));
+                                  &first, &num_coord, coord.data()));
 
             // Map to global coordinate position...
             for (cgsize_t i = 0; i < num_coord; i++) {
@@ -2259,9 +2263,10 @@ namespace Iocgns {
         // ========================================================================
         // Repetitive code for each coordinate direction; use a lambda to consolidate...
         auto coord_lambda = [base, zone, &coord, &rmin, &rmax, phys_dimension, num_to_get,
-                             &rdata](const char *ord_name, int ordinate, int cgns_file_ptr, int myProcessor) {
-          CGCHECK(cg_coord_read(cgns_file_ptr, base, zone, ord_name, CGNS_ENUMV(RealDouble),
-                                 rmin, rmax, coord.data()));
+                             &rdata](const char *ord_name, int ordinate, int cgns_file_ptr,
+                                     int myProcessor) {
+          CGCHECK(cg_coord_read(cgns_file_ptr, base, zone, ord_name, CGNS_ENUMV(RealDouble), rmin,
+                                rmax, coord.data()));
 
           // Map to global coordinate position...
           for (cgsize_t i = 0; i < num_to_get; i++) {
@@ -2572,7 +2577,8 @@ namespace Iocgns {
         // ========================================================================
         // Repetitive code for each coordinate direction; use a lambda to consolidate...
         auto coord_lambda = [&coord, num_to_get, phys_dimension, &rdata, base,
-                             zone](const char *ord_name, int ordinate, int cgns_file_ptr, int myProcessor) {
+                             zone](const char *ord_name, int ordinate, int cgns_file_ptr,
+                                   int myProcessor) {
           int crd_index = 0;
 
           // Map to global coordinate position...
@@ -2581,7 +2587,7 @@ namespace Iocgns {
           }
 
           CGCHECK(cg_coord_write(cgns_file_ptr, base, zone, CGNS_ENUMV(RealDouble), ord_name,
-                                  coord.data(), &crd_index));
+                                 coord.data(), &crd_index));
         };
         // End of lambda...
         // ========================================================================

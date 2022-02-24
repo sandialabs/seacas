@@ -758,8 +758,9 @@ int main(int argc, char *argv[])
                                           zones, 0, interFace.verbose);
     for (const auto &z : zones) {
       if (z->m_lineOrdinal == 7) {
-	fmt::print("WARNING: Zone {} with work {} will not be decomposed due to line ordinal setting.\n",
-		   z->m_name, fmt::group_digits(z->work()));
+        fmt::print(
+            "WARNING: Zone {} with work {} will not be decomposed due to line ordinal setting.\n",
+            z->m_name, fmt::group_digits(z->work()));
       }
     }
   }
