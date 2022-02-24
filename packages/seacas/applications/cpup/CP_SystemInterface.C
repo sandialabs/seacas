@@ -335,17 +335,24 @@ bool Cpup::SystemInterface::parse_options(int argc, char **argv)
       // Determine Root, Proc, Extension, and Basename automatically
       // by parsing the basename_ entered by the user.  Assumed to be
       // in the form: "/directory/sub/basename.ext.#proc.34"
-
-      // First, remove all relative paths
-      FileInfo filename{FileInfo(basename_).realpath()};
-
-      // Now, strip off path and set `rootDirectory_`
-      rootDirectory_ = filename.pathname();
-      if (rootDirectory_.empty()) {
-        rootDirectory_ = getcwd(nullptr, 0);
+      FileInfo file(basename_);
+      auto path = file.pathname();
+      if (path.empty()) {
+	path = ".";
       }
-      basename_ = filename.tailname();
+      rootDirectory_ = ::realpath(path.c_str(), nullptr);
 
+      basename_ = file.tailname();
+      if (basename_.empty()) {
+            std::ostringstream errmsg;
+            fmt::print(
+                errmsg,
+                "\nERROR: (CPUP) If the '-auto' option is specified, the basename must specify an "
+                "existing filename or portion of a base of a filename (no rank/proc count).\n"
+                "       The entered basename ('{}') does not contain a filename.\n",
+                basename_);
+            throw std::runtime_error(errmsg.str());
+      }
       bool success = decompose_filename(basename_);
       if (!success) {
         // See if we can find files that match the basename and take the first match as the "new"
@@ -359,7 +366,7 @@ bool Cpup::SystemInterface::parse_options(int argc, char **argv)
             fmt::print(
                 errmsg,
                 "\nERROR: (CPUP) If the '-auto' option is specified, the basename must specify an "
-                "existing filename.\n"
+                "existing filename or a basename (no rank/proc count).\n"
                 "       The entered basename ('{}') does not contain an extension or processor "
                 "count.\n",
                 basename_);
@@ -529,7 +536,7 @@ bool Cpup::SystemInterface::decompose_filename(const std::string &cs)
   if (processorCount_ <= 0) {
     fmt::print(
         stderr,
-        "\nERROR: (EPU) Invalid processor count specified: '{}'. Must be greater than zero.\n",
+        "\nERROR: (CPUP) Invalid processor count specified: '{}'. Must be greater than zero.\n",
         processorCount_);
     return false;
   }
