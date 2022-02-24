@@ -262,7 +262,7 @@ void *init_file(void *varg)
   elem_map = (int *)calloc(num_elem, sizeof(int));
 
   for (i = 1; i <= num_elem; i++) {
-    elem_map[i - 1] = i;
+    elem_map[i - 1] = i * 10;
   }
 
   error = ex_put_id_map(exoid, EX_ELEM_MAP, elem_map);
