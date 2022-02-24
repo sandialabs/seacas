@@ -29,6 +29,7 @@
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
 #define __SUP_WINDOWS__ 1
+#include <direct.h>
 #endif
 
 #if !defined(__SUP_WINDOWS__)
@@ -411,22 +412,26 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
       // by parsing the basename_ entered by the user.  Assumed to be
       // in the form: "/directory/sub/basename.ext.#proc.34"
       FileInfo file(basename_);
-      auto path = file.pathname();
+      auto     path = file.pathname();
       if (path.empty()) {
-	path = ".";
+        path = ".";
       }
+#if defined(__SUP_WINDOWS__)
+      rootDirectory_ = _fullpath(nullptr, path.c_str(), _MAX_PATH);
+#else
       rootDirectory_ = ::realpath(path.c_str(), nullptr);
+#endif
 
       basename_ = file.tailname();
       if (basename_.empty()) {
-            std::ostringstream errmsg;
-            fmt::print(
-                errmsg,
-                "\nERROR: (EPU) If the '-auto' option is specified, the basename must specify an "
-                "existing filename or portion of a base of a filename (no rank/proc count).\n"
-                "       The entered basename ('{}') does not contain a filename.\n",
-                basename_);
-            throw std::runtime_error(errmsg.str());
+        std::ostringstream errmsg;
+        fmt::print(
+            errmsg,
+            "\nERROR: (EPU) If the '-auto' option is specified, the basename must specify an "
+            "existing filename or portion of a base of a filename (no rank/proc count).\n"
+            "       The entered basename ('{}') does not contain a filename.\n",
+            basename_);
+        throw std::runtime_error(errmsg.str());
       }
       bool success = decompose_filename(basename_);
       if (!success) {
