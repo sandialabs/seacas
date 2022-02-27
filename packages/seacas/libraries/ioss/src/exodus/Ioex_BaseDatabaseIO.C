@@ -95,6 +95,76 @@ namespace {
   void generate_block_truth_table(Ioex::VariableNameMap &variables, Ioss::IntVector &truth_table,
                                   std::vector<T *> &blocks, char field_suffix_separator);
 
+  void insert_sort_and_unique(const std::vector<std::string>& src, std::vector<std::string>& dest);
+
+  class AssemblyTreeFilter
+  {
+  public:
+    AssemblyTreeFilter(Ioss::Region* region, const Ioss::EntityType filterType,
+                       const std::vector<ex_assembly>& assemblies)
+    : m_region(region)
+    , m_type(filterType)
+    , m_assemblies(assemblies)
+    , m_visitedAssemblies(assemblies.size(), false) {}
+
+    void update_list_from_assembly_tree(size_t assemblyIndex, std::vector<std::string>& list)
+    {
+      // Walk the tree without cyclic dependency
+      if (assemblyIndex < m_assemblies.size()) {
+        if (m_visitedAssemblies[assemblyIndex] == false) {
+          m_visitedAssemblies[assemblyIndex] = true;
+
+          const auto &assembly = m_assemblies[assemblyIndex];
+          const Ioss::EntityType assemblyType = Ioex::map_exodus_type(assembly.type);
+          if(m_type == assemblyType) {
+            for (int j = 0; j < assembly.entity_count; j++) {
+              Ioss::GroupingEntity *ge = m_region->get_entity(assembly.entity_list[j], m_type);
+              if(nullptr != ge) {
+                list.push_back(ge->name());
+              }
+            }
+          }
+
+          if(Ioss::ASSEMBLY == assemblyType) {
+            for (int i = 0; i < assembly.entity_count; i++) {
+              // Find the sub assembly with the same id
+              int64_t subAssemblyId = assembly.entity_list[i];
+              bool found = false;
+              for(size_t j=0; j<m_assemblies.size(); j++) {
+                if(m_assemblies[j].id == subAssemblyId) {
+                  found = true;
+                  update_list_from_assembly_tree(j, list);
+                }
+              }
+              assert(found);
+            }
+          }
+        }
+      }
+    }
+
+    void update_assembly_filter_list(std::vector<std::string>& assemblyFilterList)
+    {
+      for (size_t i=0; i<m_assemblies.size(); ++i) {
+        if(m_visitedAssemblies[i]) {
+          assemblyFilterList.push_back(m_assemblies[i].name);
+        }
+      }
+
+      std::sort(assemblyFilterList.begin(), assemblyFilterList.end(), std::less<std::string>());
+      auto endIter = std::unique(assemblyFilterList.begin(), assemblyFilterList.end());
+      assemblyFilterList.resize(endIter - assemblyFilterList.begin());
+    }
+
+  private:
+    AssemblyTreeFilter() = delete;
+    AssemblyTreeFilter(const AssemblyTreeFilter&) = delete;
+
+    Ioss::Region* m_region;
+    Ioss::EntityType m_type;
+    const std::vector<ex_assembly>& m_assemblies;
+    mutable std::vector<bool> m_visitedAssemblies;
+  };
 } // namespace
 
 namespace Ioex {
@@ -563,6 +633,89 @@ namespace Ioex {
     return step;
   }
 
+  void BaseDatabaseIO::update_block_omissions_from_assemblies()
+  {
+    Ioss::SerializeIO serializeIO__(this);
+
+    if(!assemblyOmissions.empty() && !assemblyInclusions.empty()) {
+      // Only one can be non-empty
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: Only one of assembly omission or inclusion can be non-empty"
+                 "       [{}]\n",
+                 get_filename());
+      IOSS_ERROR(errmsg);
+    }
+
+    if(!assemblyOmissions.empty()) {
+      assert(blockInclusions.empty());
+    }
+
+    if(!assemblyInclusions.empty()) {
+      assert(blockOmissions.empty());
+    }
+
+    std::vector<std::string> exclusions;
+    std::vector<std::string> inclusions;
+
+    // Query number of coordinate frames...
+    int nassem = ex_inquire_int(get_file_pointer(), EX_INQ_ASSEMBLY);
+
+    if (nassem > 0) {
+      std::vector<ex_assembly> assemblies(nassem);
+      int max_name_length = ex_inquire_int(m_exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      for (auto &assembly : assemblies) {
+        assembly.name = new char[max_name_length + 1];
+      }
+
+      int ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
+      // Now allocate space for member list and get assemblies again...
+      for (auto &assembly : assemblies) {
+        assembly.entity_list = new int64_t[assembly.entity_count];
+      }
+
+      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
+      AssemblyTreeFilter inclusionFilter(get_region(), Ioss::ELEMENTBLOCK, assemblies);
+      AssemblyTreeFilter exclusionFilter(get_region(), Ioss::ELEMENTBLOCK, assemblies);
+
+      for (size_t i=0; i<assemblies.size(); ++i) {
+        const auto &assembly = assemblies[i];
+
+        bool omitAssembly = std::binary_search(assemblyOmissions.begin(),
+                                               assemblyOmissions.end(), assembly.name);
+        bool includeAssembly = std::binary_search(assemblyInclusions.begin(),
+                                                  assemblyInclusions.end(), assembly.name);
+
+        if(omitAssembly) {
+          exclusionFilter.update_list_from_assembly_tree(i, exclusions);
+        }
+
+        if(includeAssembly) {
+          inclusionFilter.update_list_from_assembly_tree(i, inclusions);
+        }
+      }
+
+      exclusionFilter.update_assembly_filter_list(assemblyOmissions);
+      inclusionFilter.update_assembly_filter_list(assemblyInclusions);
+
+      for (auto &assembly : assemblies) {
+        delete[] assembly.entity_list;
+        delete[] assembly.name;
+      }
+
+      insert_sort_and_unique(exclusions, blockOmissions);
+      insert_sort_and_unique(inclusions, blockInclusions);
+    }
+  }
+
   void BaseDatabaseIO::get_assemblies()
   {
     Ioss::SerializeIO serializeIO__(this);
@@ -639,6 +792,33 @@ namespace Ioex {
       for (auto &assembly : assemblies) {
         delete[] assembly.entity_list;
         delete[] assembly.name;
+      }
+
+      assert(assemblyOmissions.empty() || assemblyInclusions.empty()); // Only one can be non-empty
+
+      // Handle all assembly omissions or inclusions...
+      if (!assemblyOmissions.empty()) {
+        for (const auto &name : assemblyOmissions) {
+          auto assembly = get_region()->get_assembly(name);
+          if (assembly != nullptr) {
+            assembly->property_add(Ioss::Property(std::string("omitted"), 1));
+          }
+        }
+      }
+
+      if (!assemblyInclusions.empty()) {
+        const auto &assemblies = get_region()->get_assemblies();
+        for (auto &assembly : assemblies) {
+          assembly->property_add(Ioss::Property(std::string("omitted"), 1));
+        }
+
+        // Now, erase the property on any assemblies in the inclusion list...
+        for (const auto &name : assemblyInclusions) {
+          auto assembly = get_region()->get_assembly(name);
+          if (assembly != nullptr) {
+            assembly->property_erase("omitted");
+          }
+        }
       }
     }
   }
@@ -2850,5 +3030,13 @@ namespace {
       throw x;
     }
 #endif
+  }
+
+  void insert_sort_and_unique(const std::vector<std::string>& src, std::vector<std::string>& dest)
+  {
+    dest.insert(dest.end(), src.begin(), src.end());
+    std::sort(dest.begin(), dest.end(), std::less<std::string>());
+    auto endIter = std::unique(dest.begin(), dest.end());
+    dest.resize(endIter - dest.begin());
   }
 } // namespace
