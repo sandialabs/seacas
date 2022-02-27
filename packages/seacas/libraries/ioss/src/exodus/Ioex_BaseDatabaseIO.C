@@ -754,7 +754,7 @@ namespace Ioex {
       for (const auto &assembly : assemblies) {
         Ioss::Assembly *assem = get_region()->get_assembly(assembly.name);
         assert(assem != nullptr);
-        auto type = Ioex::map_exodus_type(assembly.type);
+        auto   type               = Ioex::map_exodus_type(assembly.type);
         size_t num_added_entities = 0;
 
         for (int j = 0; j < assembly.entity_count; j++) {

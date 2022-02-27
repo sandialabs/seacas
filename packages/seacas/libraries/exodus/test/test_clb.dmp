@@ -68,7 +68,7 @@ variables:
 	char coor_names(num_dim, len_name) ;
 	char qa_records(num_qa_rec, four, len_string) ;
 	char info_records(num_info, len_line) ;
-	int elem_map(num_elem) ;
+	int elem_num_map(num_elem) ;
 	int connect1(num_el_in_blk1, num_nod_per_el1) ;
 		connect1:elem_type = "quad" ;
 	char attrib_name1(num_att_in_blk1, len_name) ;
@@ -247,7 +247,7 @@ data:
   "",
   "                                     " ;
 
- elem_map = 1, 2, 3, 4, 5, 6, 7 ;
+ elem_num_map = 1, 2, 3, 4, 5, 6, 7 ;
 
  connect1 =
   1, 2, 3, 4 ;

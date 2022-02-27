@@ -130,14 +130,13 @@ int main(int argc, char **argv)
     EXCHECK(ex_put_attr_names(exoid, EX_NODAL, 0, attrib_names));
   }
 
-  /* write element order map */
-
+  /* write element id map */
   int *elem_map = (int *)calloc(num_elem, sizeof(int));
   for (int i = 1; i <= num_elem; i++) {
-    elem_map[i - 1] = i;
+    elem_map[i - 1] = i * 10;
   }
 
-  EXCHECK(ex_put_map(exoid, elem_map));
+  EXCHECK(ex_put_id_map(exoid, EX_ELEM_MAP, elem_map));
 
   free(elem_map);
 

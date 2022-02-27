@@ -667,23 +667,17 @@ namespace Ioex {
         // Since we can't access the Region's stateCount directly, we just add
         // all of the steps and assume the Region is dealing with them directly...
         tsteps.resize(timestep_count);
+
         int error = ex_get_all_times(get_file_pointer(), tsteps.data());
         if (error < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
         }
 
-        int max_step = timestep_count;
-        if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
-          max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
-        }
-        if (max_step > timestep_count) {
-          max_step = timestep_count;
-        }
+        int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", timestep_count);
+        max_step     = std::min(max_step, timestep_count);
 
-        double max_time = std::numeric_limits<double>::max();
-        if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
-          max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
-        }
+        double max_time =
+            properties.get_optional("APPEND_OUTPUT_AFTER_TIME", std::numeric_limits<double>::max());
 
         Ioss::Region *this_region = get_region();
         for (int i = 0; i < max_step; i++) {
@@ -704,9 +698,26 @@ namespace Ioex {
         // For an exodus file, timesteps are global and are stored in the region.
         // Read the timesteps and add to the region
         tsteps.resize(timestep_count);
-        int error = ex_get_all_times(get_file_pointer(), tsteps.data());
-        if (error < 0) {
-          Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+
+        // The `EXODUS_CALL_GET_ALL_TIMES=NO` is typically only used in
+        // isSerialParallel mode and the client is responsible for
+        // making sure that the step times are handled correctly.  All
+        // databases will know about the number of timesteps, but if
+        // this is skipped, then the times will all be zero.  Use case
+        // is that in isSerialParallel, each call to
+        // `ex_get_all_times` for all files is performed sequentially,
+        // so if you have hundreds to thousands of files, the time for
+        // the call is additive and since timesteps are record
+        // variables in netCDF, accessing the data for all timesteps
+        // involves lseeks throughout the file.
+        bool call_ex_get_all_times = true;
+        Ioss::Utils::check_set_bool_property(properties, "EXODUS_CALL_GET_ALL_TIMES",
+                                             call_ex_get_all_times);
+        if (call_ex_get_all_times) {
+          int error = ex_get_all_times(get_file_pointer(), tsteps.data());
+          if (error < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+          }
         }
 
         // See if the "last_written_time" attribute exists and if it
@@ -732,21 +743,12 @@ namespace Ioex {
       // One use case is that job is restarting at a time prior to what has been
       // written to the results file, so want to start appending after
       // restart time instead of at end time on database.
-      int max_step = timestep_count;
-      if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
-        max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
-      }
-      if (max_step > timestep_count) {
-        max_step = timestep_count;
-      }
+      int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", timestep_count);
+      max_step     = std::min(max_step, timestep_count);
 
-      double max_time = std::numeric_limits<double>::max();
-      if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
-        max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
-      }
-      if (last_time > max_time) {
-        last_time = max_time;
-      }
+      double max_time =
+          properties.get_optional("APPEND_OUTPUT_AFTER_TIME", std::numeric_limits<double>::max());
+      last_time = std::min(last_time, max_time);
 
       Ioss::Region *this_region = get_region();
       for (int i = 0; i < max_step; i++) {

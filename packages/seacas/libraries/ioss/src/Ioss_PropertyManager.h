@@ -37,7 +37,9 @@ namespace Ioss {
     bool exists(const std::string &property_name) const;
 
     Property    get(const std::string &property_name) const;
+    double      get_optional(const std::string &property_name, double optional_value) const;
     int64_t     get_optional(const std::string &property_name, int64_t optional_value) const;
+    int         get_optional(const std::string &property_name, int optional_value) const;
     std::string get_optional(const std::string &property_name,
                              const std::string &optional_value) const;
 
