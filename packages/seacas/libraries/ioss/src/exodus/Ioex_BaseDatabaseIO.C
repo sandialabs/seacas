@@ -100,6 +100,9 @@ namespace {
   class AssemblyTreeFilter
   {
   public:
+    AssemblyTreeFilter() = delete;
+    AssemblyTreeFilter(const AssemblyTreeFilter&) = delete;
+
     AssemblyTreeFilter(Ioss::Region* region, const Ioss::EntityType filterType,
                        const std::vector<ex_assembly>& assemblies)
     : m_region(region)
@@ -134,6 +137,7 @@ namespace {
                 if(m_assemblies[j].id == subAssemblyId) {
                   found = true;
                   update_list_from_assembly_tree(j, list);
+                  break;
                 }
               }
               assert(found);
@@ -157,11 +161,8 @@ namespace {
     }
 
   private:
-    AssemblyTreeFilter() = delete;
-    AssemblyTreeFilter(const AssemblyTreeFilter&) = delete;
-
-    Ioss::Region* m_region;
-    Ioss::EntityType m_type;
+    Ioss::Region* m_region = nullptr;
+    Ioss::EntityType m_type = Ioss::INVALID_TYPE;
     const std::vector<ex_assembly>& m_assemblies;
     mutable std::vector<bool> m_visitedAssemblies;
   };
@@ -658,7 +659,7 @@ namespace Ioex {
     std::vector<std::string> exclusions;
     std::vector<std::string> inclusions;
 
-    // Query number of coordinate frames...
+    // Query number of assemblies...
     int nassem = ex_inquire_int(get_file_pointer(), EX_INQ_ASSEMBLY);
 
     if (nassem > 0) {
