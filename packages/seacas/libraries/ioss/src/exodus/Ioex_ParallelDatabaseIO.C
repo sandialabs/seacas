@@ -1210,6 +1210,11 @@ namespace Ioex {
               Ioex::add_map_fields(get_file_pointer(), dynamic_cast<Ioss::ElementBlock *>(io_block),
                                    decomp->el_blocks[iblk].ioss_count(), maximumNameLength);
         }
+
+        if(!assemblyOmissions.empty() || !assemblyInclusions.empty()) {
+          update_block_omissions_from_assemblies();
+        }
+
         assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
 
         // Handle all block omissions or inclusions...

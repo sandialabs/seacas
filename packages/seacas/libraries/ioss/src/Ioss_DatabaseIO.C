@@ -749,6 +749,19 @@ namespace Ioss {
     }
   }
 
+  void DatabaseIO::set_assembly_omissions(const std::vector<std::string> &omissions,
+                                          const std::vector<std::string> &inclusions)
+  {
+    if (!omissions.empty()) {
+      assemblyOmissions.assign(omissions.cbegin(), omissions.cend());
+      Ioss::sort(assemblyOmissions.begin(), assemblyOmissions.end());
+    }
+    if (!inclusions.empty()) {
+      assemblyInclusions.assign(inclusions.cbegin(), inclusions.cend());
+      Ioss::sort(assemblyInclusions.begin(), assemblyInclusions.end());
+    }
+  }
+
   // Check topology of all sides (face/edges) in model...
   void DatabaseIO::check_side_topology() const
   {
