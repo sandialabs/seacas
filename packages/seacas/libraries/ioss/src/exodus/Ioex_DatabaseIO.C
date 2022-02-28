@@ -1298,7 +1298,7 @@ namespace Ioex {
     m_groupCount[entity_type] = used_blocks;
 
     if (entity_type == EX_ELEM_BLOCK) {
-      if(!assemblyOmissions.empty() || !assemblyInclusions.empty()) {
+      if (!assemblyOmissions.empty() || !assemblyInclusions.empty()) {
         update_block_omissions_from_assemblies();
       }
 
