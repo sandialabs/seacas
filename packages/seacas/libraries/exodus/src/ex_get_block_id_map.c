@@ -40,19 +40,6 @@ int ex_get_block_id_map(int exoid, ex_entity_type obj_type, ex_entity_id entity_
 
   /* Determine index of entity_id in id array */
   int blk_id_ndx = ex__id_lkup(exoid, obj_type, entity_id);
-  if (blk_id_ndx <= 0) {
-    ex_get_err(NULL, NULL, &status);
-    if (status != 0) {
-      if (status != EX_NULLENTITY) {
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to locate %s id %" PRId64 " in id variable in file id %d",
-                 ex_name_of_object(obj_type), entity_id, exoid);
-        ex_err_fn(exoid, __func__, errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
-    }
-  }
-
   if (blk_id_ndx <= 0) { /* Empty block */
     ex_get_err(NULL, NULL, &status);
     if (status != 0) {
