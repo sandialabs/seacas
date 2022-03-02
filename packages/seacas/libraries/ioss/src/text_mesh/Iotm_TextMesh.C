@@ -640,13 +640,16 @@ namespace Iotm {
 
   Ioss::EntityType TextMesh::assembly_type_to_entity_type(const AssemblyType type) const
   {
-    if(type == AssemblyType::BLOCK) {
+    if (type == AssemblyType::BLOCK) {
       return Ioss::ELEMENTBLOCK;
-    } else if(type == AssemblyType::NODESET) {
+    }
+    else if (type == AssemblyType::NODESET) {
       return Ioss::NODESET;
-    } else if(type == AssemblyType::SIDESET) {
+    }
+    else if (type == AssemblyType::SIDESET) {
       return Ioss::SIDESET;
-    } else if(type == AssemblyType::ASSEMBLY) {
+    }
+    else if (type == AssemblyType::ASSEMBLY) {
       return Ioss::ASSEMBLY;
     }
 

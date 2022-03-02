@@ -8,8 +8,8 @@
 
 #include <Ioss_CodeTypes.h> // for Int64Vector, IntVector
 #include <Ioss_SideBlock.h> // for SideBlock
-#include <Ioss_Utils.h>     // for Utils, IOSS_ERROR
 #include <Ioss_SmartAssert.h>
+#include <Ioss_Utils.h> // for Utils, IOSS_ERROR
 #include <fmt/ostream.h>
 
 #include <algorithm> // for copy
@@ -19,6 +19,7 @@
 #include <string>    // for string, operator==, etc
 #include <utility>   // for pair
 
+#include "Ioss_Assembly.h"     // for Assembly
 #include "Ioss_CommSet.h"      // for CommSet
 #include "Ioss_DBUsage.h"      // for DatabaseUsage
 #include "Ioss_DatabaseIO.h"   // for DatabaseIO
@@ -36,12 +37,11 @@
 #include "Ioss_Property.h"        // for Property
 #include "Ioss_PropertyManager.h" // for PropertyManager
 #include "Ioss_Region.h"          // for Region
-#include "Ioss_SideSet.h"         // for SideSet
-#include "Ioss_Assembly.h"       // for Assembly
-#include "Ioss_VariableType.h"    // for VariableType
-#include "Ioss_Utils.h"
 #include "Ioss_SerializeIO.h"
-#include "Iotm_TextMesh.h"        // for TextMesh
+#include "Ioss_SideSet.h" // for SideSet
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h" // for VariableType
+#include "Iotm_TextMesh.h"     // for TextMesh
 
 namespace {
   template <typename INT>
@@ -628,14 +628,14 @@ namespace Iotm {
           // Read in each component of the variable and transfer into
           // 'data'.  Need temporary storage area of size 'number of
           // items in this assembly.
-          //num_to_get =
+          // num_to_get =
           //    read_transient_field(EX_ASSEMBLY, m_variables[EX_ASSEMBLY], field, assembly, data);
         }
         else if (role == Ioss::Field::REDUCTION) {
-          //get_reduction_field(EX_ASSEMBLY, field, assembly, data);
+          // get_reduction_field(EX_ASSEMBLY, field, assembly, data);
         }
         else if (role == Ioss::Field::ATTRIBUTE) {
-          //num_to_get = read_attribute_field(EX_ASSEMBLY, field, assembly, data);
+          // num_to_get = read_attribute_field(EX_ASSEMBLY, field, assembly, data);
         }
       }
       return num_to_get;
@@ -889,7 +889,7 @@ namespace Iotm {
     // Get assembly metadata
     std::vector<std::string> assemblyNames = m_textMesh->get_assembly_names();
     for (const std::string &name : assemblyNames) {
-      int64_t id           = m_textMesh->get_assembly_id(name);
+      int64_t id = m_textMesh->get_assembly_id(name);
 
       auto assembly = new Ioss::Assembly(this, name);
       assembly->property_add(Ioss::Property("id", id));
@@ -901,7 +901,7 @@ namespace Iotm {
     for (const std::string &name : assemblyNames) {
       Ioss::Assembly *assem = get_region()->get_assembly(name);
       assert(assem != nullptr);
-      Ioss::EntityType type = m_textMesh->get_assembly_type(name);
+      Ioss::EntityType               type    = m_textMesh->get_assembly_type(name);
       const std::vector<std::string> members = m_textMesh->get_assembly_members(name);
 
       for (size_t j = 0; j < members.size(); j++) {
@@ -923,7 +923,8 @@ namespace Iotm {
 
   unsigned DatabaseIO::entity_field_support() const
   {
-    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::REGION | Ioss::NODESET | Ioss::SIDESET | Ioss::ASSEMBLY;
+    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::REGION | Ioss::NODESET | Ioss::SIDESET |
+           Ioss::ASSEMBLY;
   }
 
   void DatabaseIO::add_transient_fields(Ioss::GroupingEntity *entity)

@@ -150,7 +150,7 @@ namespace Iotm {
     /**
      * Return number of assemblies in the entire model.
      */
-    int64_t         assembly_count() const;
+    int64_t assembly_count() const;
 
     /**
      * Returns pair containing "topology type string" and "number of
@@ -278,7 +278,7 @@ namespace Iotm {
     Ioss::EntityType         get_assembly_type(const std::string &name) const;
     std::vector<std::string> get_assembly_members(const std::string &name) const;
 
-    Ioss::EntityType         assembly_type_to_entity_type(const AssemblyType type) const;
+    Ioss::EntityType assembly_type_to_entity_type(const AssemblyType type) const;
 
     unsigned spatial_dimension() const;
 
