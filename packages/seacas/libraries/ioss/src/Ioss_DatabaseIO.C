@@ -526,6 +526,7 @@ namespace Ioss {
   bool DatabaseIO::begin_state(int state, double time)
   {
     IOSS_FUNC_ENTER(m_);
+    progress(__func__);
     if (m_timeStateInOut) {
       m_stateStart = std::chrono::steady_clock::now();
     }
@@ -539,6 +540,7 @@ namespace Ioss {
       auto finish = std::chrono::steady_clock::now();
       log_time(m_stateStart, finish, state, time, is_input(), singleProcOnly, util_);
     }
+    progress(__func__);
     return res;
   }
 
