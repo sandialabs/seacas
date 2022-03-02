@@ -1932,7 +1932,9 @@ class TextMeshParser
   using Topology = typename TopologyMapping::Topology;
 
  public:
-  TextMeshParser(unsigned enforcedDimension) : m_optionParser(m_data, enforcedDimension) { initialize_constructor(); }
+  explicit TextMeshParser(unsigned enforcedDimension)
+  : m_optionParser(m_data, enforcedDimension)
+  { initialize_constructor(); }
 
   TextMeshParser() : m_optionParser(m_data) { initialize_constructor(); }
 
