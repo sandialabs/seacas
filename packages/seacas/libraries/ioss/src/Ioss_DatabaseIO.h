@@ -440,6 +440,9 @@ namespace Ioss {
     void set_block_omissions(const std::vector<std::string> &omissions,
                              const std::vector<std::string> &inclusions = {});
 
+    void set_assembly_omissions(const std::vector<std::string> &omissions,
+                                const std::vector<std::string> &inclusions = {});
+
     void get_block_adjacencies(const Ioss::ElementBlock *eb,
                                std::vector<std::string> &block_adjacency) const
     {
@@ -669,6 +672,8 @@ namespace Ioss {
     // Only one of these can have values and the other must be empty.
     std::vector<std::string> blockOmissions{};
     std::vector<std::string> blockInclusions{};
+    std::vector<std::string> assemblyOmissions{};
+    std::vector<std::string> assemblyInclusions{};
 
     std::vector<std::string> informationRecords{};
     std::vector<std::string> qaRecords{};

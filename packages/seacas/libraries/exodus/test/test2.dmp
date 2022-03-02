@@ -55,7 +55,7 @@ variables:
 	char ns_names(num_node_sets, len_name) ;
 	char ss_names(num_side_sets, len_name) ;
 	char coor_names(num_dim, len_name) ;
-	int elem_map(num_elem) ;
+	int elem_num_map(num_elem) ;
 	float attrib1(num_el_in_blk1, num_att_in_blk1) ;
 	char attrib_name1(num_att_in_blk1, len_name) ;
 	int connect1(num_el_in_blk1, num_nod_per_el1) ;
@@ -113,7 +113,6 @@ variables:
 		:floating_point_word_size = 4 ;
 		:file_size = 1 ;
 		:maximum_name_length = 32 ;
-		:int64_status = 0 ;
 		:title = "This is a test" ;
 data:
 
@@ -161,7 +160,7 @@ data:
   "ycoor",
   "zcoor" ;
 
- elem_map = 1, 2, 3, 4, 5 ;
+ elem_num_map = 1, 2, 3, 4, 5 ;
 
  attrib1 =
   3.1416 ;

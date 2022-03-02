@@ -50,7 +50,7 @@ variables:
 	char coor_names(num_dim, len_name) ;
 	float nattrb(num_nodes, num_att_in_nblk) ;
 	char nattrib_name(num_att_in_nblk, len_name) ;
-	int elem_map(num_elem) ;
+	int elem_num_map(num_elem) ;
 	float attrib1(num_el_in_blk1, num_att_in_blk1) ;
 	char attrib_name1(num_att_in_blk1, len_name) ;
 	int connect1(num_el_in_blk1, num_nod_per_el1) ;
@@ -157,7 +157,7 @@ data:
  nattrib_name =
   "Node_attr_1" ;
 
- elem_map = 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ;
+ elem_num_map = 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ;
 
  attrib1 =
   0,

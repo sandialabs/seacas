@@ -36,13 +36,10 @@
 #endif
 #include <cstdio>
 
-#if defined(_MSC_VER)
-#include <io.h>
-#define isatty _isatty
-#endif
-
 // For memory utilities...
 #if defined(__IOSS_WINDOWS__)
+#include <io.h>
+#define isatty _isatty
 #define WIN32_LEAN_AND_MEAN
 #ifndef NOMINMAX
 #define NOMINMAX

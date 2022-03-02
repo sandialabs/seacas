@@ -69,7 +69,7 @@
 #include <cgns/Iocgns_Utils.h>
 #endif
 
-#if defined(_MSC_VER)
+#if defined(__IOSS_WINDOWS__)
 #include <io.h>
 #define isatty _isatty
 #endif
@@ -200,13 +200,13 @@ namespace {
         fmt::print(stderr, fg(fmt::color::yellow), "WARNING: Unrecognized entity type '{}'.\n",
                    tokens[1]);
       }
-      glob::glob     glob(tokens[3]);
-      Ioss::NameList names = get_name_list(region, entity_type);
+      Ioss::glob::glob glob(tokens[3]);
+      Ioss::NameList   names = get_name_list(region, entity_type);
 
       // Check for match against all names in list...
       bool matched = false;
       for (const auto &name : names) {
-        if (glob::glob_match(name, glob)) {
+        if (Ioss::glob::glob_match(name, glob)) {
           const auto *entity = region.get_entity(name, entity_type);
           const T    *ge     = dynamic_cast<const T *>(entity);
           if (ge != nullptr) {
@@ -1319,11 +1319,11 @@ namespace {
             // Get list of all names for this entity type...
             Ioss::NameList names = get_name_list(region, type);
 
-            glob::glob glob(tokens[5]);
+            Ioss::glob::glob glob(tokens[5]);
 
             // Check for match against all names in list...
             for (const auto &name : names) {
-              if (glob::glob_match(name, glob)) {
+              if (Ioss::glob::glob_match(name, glob)) {
                 const auto *entity = region.get_entity(name, type);
                 if (entity != nullptr) {
                   if (assem->add(entity)) {
