@@ -224,21 +224,21 @@ namespace Ioss {
     void openDatabase() const
     {
       IOSS_FUNC_ENTER(m_);
-      progress(__PRETTY_FUNCTION__);
+      progress(__func__);
       openDatabase__();
     }
 
     void closeDatabase() const
     {
       IOSS_FUNC_ENTER(m_);
-      progress(__PRETTY_FUNCTION__);
+      progress(__func__);
       closeDatabase__();
     }
 
     void flush_database() const
     {
       IOSS_FUNC_ENTER(m_);
-      progress(__PRETTY_FUNCTION__);
+      progress(__func__);
       flush_database__();
     }
 
@@ -292,7 +292,7 @@ namespace Ioss {
     bool begin(Ioss::State state)
     {
       IOSS_FUNC_ENTER(m_);
-      progress(__PRETTY_FUNCTION__);
+      progress(__func__);
       return begin__(state);
     }
 
@@ -309,7 +309,7 @@ namespace Ioss {
     bool end(Ioss::State state)
     {
       IOSS_FUNC_ENTER(m_);
-      progress(__PRETTY_FUNCTION__);
+      progress(__func__);
       return end__(state);
     }
 

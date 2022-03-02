@@ -968,8 +968,10 @@ namespace Iocgns {
       unpack(id, zone_data.data(), global_ijk.data(), 3);
       unpack(id, zone_data.data(), offset_ijk.data(), 3);
 
+      int index_dim = 0;
+      CGCHECKM(cg_index_dim(get_file_pointer(), base, zone, &index_dim));
       Ioss::StructuredBlock *block =
-          new Ioss::StructuredBlock(this, zone_name, 3, local_ijk, offset_ijk, global_ijk);
+          new Ioss::StructuredBlock(this, zone_name, index_dim, local_ijk, offset_ijk, global_ijk);
 
       // See if this zone exists on this processor's file, or is just for interprocessor
       // consistency.
