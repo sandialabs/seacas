@@ -1579,6 +1579,9 @@ int Iocgns::Utils::find_solution_index(int cgns_file_ptr, int base, int zone, in
 
 void Iocgns::Utils::add_sidesets(int cgns_file_ptr, Ioss::DatabaseIO *db)
 {
+  static int fake_id =
+      std::numeric_limits<int>::max(); // Used in case CGNS file does not specify an id.
+
   int base         = 1;
   int num_families = 0;
   CGCHECKNP(cg_nfamilies(cgns_file_ptr, base, &num_families));
@@ -1622,6 +1625,11 @@ void Iocgns::Utils::add_sidesets(int cgns_file_ptr, Ioss::DatabaseIO *db)
       }
       if (id == 0) {
         id = Ioss::Utils::extract_id(ss_name);
+        if (id == 0) {
+          // Assign a fake_id to this sideset.  No checking to make
+          // sure there are no duplicates...
+          id = fake_id--;
+        }
       }
       if (id != 0) {
         auto *ss = new Ioss::SideSet(db, ss_name);
