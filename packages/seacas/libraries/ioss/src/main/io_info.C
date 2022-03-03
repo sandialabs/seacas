@@ -7,6 +7,7 @@
 #include "io_info.h"
 #include <Ioss_Hex8.h>
 #include <Ioss_Sort.h>
+#define FMT_DEPRECATED_OSTREAM
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #if defined(SEACAS_HAVE_CGNS)
