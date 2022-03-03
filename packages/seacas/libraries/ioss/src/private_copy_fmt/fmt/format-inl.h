@@ -90,7 +90,9 @@ FMT_FUNC void report_error(format_func func, int error_code,
 inline void fwrite_fully(const void* ptr, size_t size, size_t count,
                          FILE* stream) {
   size_t written = std::fwrite(ptr, size, count, stream);
+#if !FMT_NVCC
   if (written < count) FMT_THROW(system_error(errno, "cannot write to file"));
+#endif
 }
 
 template <typename Locale>
@@ -130,12 +132,13 @@ template <typename Char> FMT_FUNC Char decimal_point_impl(locale_ref) {
 FMT_API FMT_FUNC format_error::~format_error() FMT_NOEXCEPT = default;
 #endif
 
+#if !FMT_NVCC
 FMT_FUNC std::system_error vsystem_error(int error_code, string_view format_str,
                                          format_args args) {
   auto ec = std::error_code(error_code, std::generic_category());
   return std::system_error(ec, vformat(format_str, args));
 }
-
+#endif
 namespace detail {
 
 template <> FMT_FUNC int count_digits<4>(detail::fallback_uintptr n) {
@@ -2558,12 +2561,14 @@ FMT_FUNC detail::utf8_to_utf16::utf8_to_utf16(string_view s) {
 
 FMT_FUNC void format_system_error(detail::buffer<char>& out, int error_code,
                                   const char* message) FMT_NOEXCEPT {
+#if !FMT_NVCC
   FMT_TRY {
     auto ec = std::error_code(error_code, std::generic_category());
     write(std::back_inserter(out), std::system_error(ec, message).what());
     return;
   }
   FMT_CATCH(...) {}
+#endif
   format_error_code(out, error_code, message);
 }
 

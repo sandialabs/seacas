@@ -2453,9 +2453,10 @@ FMT_API void report_error(format_func func, int error_code,
                           const char* message) FMT_NOEXCEPT;
 FMT_END_DETAIL_NAMESPACE
 
-FMT_API auto vsystem_error(int error_code, string_view format_str,
-                           format_args args) -> std::system_error;
-
+#if !FMT_NVCC
+FMT_API std::system_error vsystem_error(int error_code, string_view format_str,
+                           format_args args);
+#endif
 /**
  \rst
  Constructs :class:`std::system_error` with a message formatted with
@@ -2473,11 +2474,13 @@ FMT_API auto vsystem_error(int error_code, string_view format_str,
      throw fmt::system_error(errno, "cannot open file '{}'", filename);
  \endrst
 */
+#if !FMT_NVCC
 template <typename... T>
 auto system_error(int error_code, format_string<T...> fmt, T&&... args)
     -> std::system_error {
   return vsystem_error(error_code, fmt, fmt::make_format_args(args...));
 }
+#endif
 
 /**
   \rst

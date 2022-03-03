@@ -104,7 +104,6 @@ variables:
 	float vals_nset_var3ns2(time_step, num_nod_ns2) ;
 
 // global attributes:
-		:floating_point_word_size = 4 ;
 		:file_size = 1 ;
 		:title = "This is a test" ;
 data:
@@ -123,7 +122,7 @@ data:
 
  ss_prop1 = 1, 2 ;
 
- coordx = 1, 1.1052, 1.2214, 1.3499, 1.4918, 1.6487, 1.8221, 2.0138, 2.2255, 
+ coordx = 1, 1.1052, 1.2214, 1.3499, 1.4918, 1.6487, 1.8221, 2.0138, 2.2255,
     2.4596 ;
 
  eb_names =
