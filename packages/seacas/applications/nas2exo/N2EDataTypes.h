@@ -55,7 +55,7 @@ namespace N2EModules {
   };
   struct N2EGridPtList
   {
-    double v[8];
+    int v[8];
   };
   using sectionType = std::tuple<unsigned /*propID*/, unsigned /*MATID*/>;
   using gridType    = std::tuple<unsigned /*GRIDID*/, N2EPoint3D>;
