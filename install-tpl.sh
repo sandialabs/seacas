@@ -95,8 +95,8 @@ then
     METIS="YES"
 fi
 
-USE_FMT=${USE_FMT:-YES}
-USE_FMT=${check_valid USE_FMT}
+FMT=${FMT:-YES}
+FMT=${check_valid FMT}
 
 GNU_PARALLEL=${GNU_PARALLEL:-YES}
 GNU_PARALLEL=$(check_valid GNU_PARALLEL)
@@ -201,7 +201,7 @@ if [ $# -gt 0 ]; then
         echo "   METIS        = ${METIS}"
         echo "   PARMETIS     = ${PARMETIS}"
         echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
-	echo "   USE_FMT      = ${USE_FMT}"
+	echo "   FMT          = ${FMT}"
         echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
         echo "   USE_ZLIB_NG  = ${USE_ZLIB_NG}"
         echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
@@ -727,7 +727,7 @@ then
 fi
 
 # =================== INSTALL FMT ===============
-if [ "$USE_FMT" == "YES" ]
+if [ "$FMT" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libfmt.${LD_EXT} ]
     then

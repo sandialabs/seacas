@@ -5,6 +5,8 @@
 [![Appveyor Build](https://ci.appveyor.com/api/projects/status/pis4gok72yh0wwfs/branch/master?svg=true)](https://ci.appveyor.com/project/gsjaardema/seacas/branch/master)
 [![Github Actions -- CI Serial](https://github.com/gsjaardema/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/gsjaardema/seacas)
 [![Github Actions -- CI Variants](https://github.com/gsjaardema/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/gsjaardema/seacas)
+[![Github Actions -- CI Intel](https://github.com/gsjaardema/seacas/actions/workflows/intel-build.yml/badge.svg)](https://github.com/gsjaardema/seacas)
+[![Github Actions -- CI MSYS2](https://github.com/gsjaardema/seacas/actions/workflows/msys2.yml/badge.svg)](https://github.com/gsjaardema/seacas)
 
 *  [Get the sources](#get-the-sources)
 *  [Build instructions](#build-instructions)
@@ -69,6 +71,7 @@ manually as detailed in
 | CATALYST2       | YES, NO | NO  | Should catalyst 2 TPL be built. |
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
+| FMT             | YES, NO | YES | Should Lib::FMT TPL be built. |
 | H5VERSION       | V112, V110, V18 | V110 | Use HDF5-1.12.X, HDF5-1.10.X or HDF5-1.8.X |
 | BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
 | JOBS            | {count} |  2   | Number of "jobs" used for simultaneous compiles |
