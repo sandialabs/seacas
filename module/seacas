@@ -1,0 +1,28 @@
+#%Module -*- tcl -*-
+#
+## SEACAS modulefile
+#
+## written by greg sjaardema, 2020-03-07
+#
+proc ModulesHelp { } {
+ puts stderr "\tThis module loads SEACAS (aka ACCESS) paths and environments."
+ puts stderr " "
+}
+
+module-trace on
+module-info alias seacas
+
+module-verbosity on
+
+# Need to do some path translation
+set cluster ::env(SNLSYSTEM)
+if { $cluster == "cee" } {
+    set cluster ::env(SNLCLUSTER)
+}
+set seacas_path  /projects/seacas/$cluster/current
+
+setenv ACCESS $seacas_path
+prepend-path PATH $seacas_path/etc:$seacas_path/bin
+prepend-path PYTHONPATH $seacas_path/lib
+
+prepend-path LD_LIBRARY_PATH $seacas_path/lib
