@@ -96,7 +96,7 @@ then
 fi
 
 FMT=${FMT:-YES}
-FMT=${check_valid FMT}
+FMT=$(check_valid FMT)
 
 GNU_PARALLEL=${GNU_PARALLEL:-YES}
 GNU_PARALLEL=$(check_valid GNU_PARALLEL)
@@ -729,7 +729,7 @@ fi
 # =================== INSTALL FMT ===============
 if [ "$FMT" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libfmt.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/fmt/core.h ]
     then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS
