@@ -140,7 +140,14 @@ namespace {
                   break;
                 }
               }
-              assert(found);
+
+              if(!found) {
+                std::ostringstream errmsg;
+                fmt::print(errmsg,
+                    "ERROR: Could not find sub-assembly with id: {} and name: {}"
+                    "       [{}]\n", assembly.id, assembly.name);
+                IOSS_ERROR(errmsg);
+              }
             }
           }
         }
