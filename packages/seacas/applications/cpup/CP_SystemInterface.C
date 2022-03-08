@@ -344,7 +344,9 @@ bool Cpup::SystemInterface::parse_options(int argc, char **argv)
 #if defined(__SUP_WINDOWS__)
       rootDirectory_ = _fullpath(nullptr, path.c_str(), _MAX_PATH);
 #else
-      rootDirectory_ = ::realpath(path.c_str(), nullptr);
+      char *tmp = ::realpath(path.c_str(), nullptr);
+      rootDirectory_ = std::string(tmp);
+      free(tmp);
 #endif
 
       basename_ = file.tailname();
