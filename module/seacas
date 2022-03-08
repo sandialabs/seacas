@@ -15,9 +15,9 @@ module-info alias seacas
 module-verbosity on
 
 # Need to do some path translation
-set cluster ::env(SNLSYSTEM)
+set cluster $::env(SNLSYSTEM)
 if { $cluster == "cee" } {
-    set cluster ::env(SNLCLUSTER)
+    set cluster $::env(SNLCLUSTER)
 }
 set seacas_path  /projects/seacas/$cluster/current
 
