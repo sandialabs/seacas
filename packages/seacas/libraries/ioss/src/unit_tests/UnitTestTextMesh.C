@@ -1761,5 +1761,553 @@ TEST_F(TestTextMesh1d, oneDimensionNotSupported)
   EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
 }
 
+TEST_F(TestTextMeshGraph, singleHex)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHexNeighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, -1});
+  verify_side_adjacency({goldHexNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, singleHexConnectedShell)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "0,2,SHELL_QUAD_4,5,6,7,8";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHexNeighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldShellNeighbors(1u, Adjacency::SimpleNeighborVector{-1, 0});
+  verify_side_adjacency({goldHexNeighbors, goldShellNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, hexShellShell)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "0,2,SHELL_QUAD_4,5,6,7,8\n"
+      "0,3,SHELL_QUAD_4,5,6,7,8";
+  ;
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHexNeighbors(
+      0u, Adjacency::NeighborVector{{0, -1}, {1, -1}, {2, -1}, {3, -1}, {4, -1}, {5, 1}, {5, 2}});
+  Adjacency goldShell1Neighbors(1u, Adjacency::SimpleNeighborVector{-1, 0});
+  Adjacency goldShell2Neighbors(2u, Adjacency::SimpleNeighborVector{-1, 0});
+  verify_side_adjacency({goldHexNeighbors, goldShell1Neighbors, goldShell2Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, hexShellShellHex)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "0,2,SHELL_QUAD_4,5,6,7,8\n"
+      "0,3,SHELL_QUAD_4,5,6,7,8\n"
+      "0,4,HEX_8,5,6,7,8,9,10,11,12\n";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHex1Neighbors(
+      0u, Adjacency::NeighborVector{{0, -1}, {1, -1}, {2, -1}, {3, -1}, {4, -1}, {5, 1}, {5, 2}});
+  Adjacency goldShell1Neighbors(1u, Adjacency::SimpleNeighborVector{3, 0});
+  Adjacency goldShell2Neighbors(2u, Adjacency::SimpleNeighborVector{3, 0});
+  Adjacency goldHex2Neighbors(
+      3u, Adjacency::NeighborVector{{0, -1}, {1, -1}, {2, -1}, {3, -1}, {4, 1}, {4, 2}, {5, -1}});
+
+  verify_side_adjacency({goldHex1Neighbors, goldShell1Neighbors, goldShell2Neighbors, goldHex2Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, hexShellShellHex_splitCoincidentShells)
+{
+  if (get_parallel_size() != 2) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "0,2,SHELL_QUAD_4,5,6,7,8\n"
+      "1,3,SHELL_QUAD_4,5,6,7,8\n"
+      "1,4,HEX_8,5,6,7,8,9,10,11,12\n";
+  EXPECT_THROW(setup_text_mesh_graph(meshDesc, {}, get_parallel_rank()), std::logic_error);
+}
+
+TEST_F(TestTextMeshGraph, hexShellShellHex_parallelWithLocalGraph)
+{
+  if (get_parallel_size() != 3) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "1,2,SHELL_QUAD_4,5,6,7,8\n"
+      "1,3,SHELL_QUAD_4,5,6,7,8\n"
+      "2,4,HEX_8,5,6,7,8,9,10,11,12\n";
+  setup_text_mesh_graph(meshDesc, {}, get_parallel_rank());
+
+  Adjacency goldHex1Neighbors(
+      0u, Adjacency::NeighborVector{{0, -1}, {1, -1}, {2, -1}, {3, -1}, {4, -1}, {5, 1}, {5, 2}});
+  Adjacency goldShell1Neighbors(1u, Adjacency::SimpleNeighborVector{3, 0});
+  Adjacency goldShell2Neighbors(2u, Adjacency::SimpleNeighborVector{3, 0});
+  Adjacency goldHex2Neighbors(
+      3u, Adjacency::NeighborVector{{0, -1}, {1, -1}, {2, -1}, {3, -1}, {4, 1}, {4, 2}, {5, -1}});
+
+  verify_side_adjacency({goldHex1Neighbors, goldShell1Neighbors, goldShell2Neighbors, goldHex2Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, singleHexConnectedShell_highOrder)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_20,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\n"
+      "0,2,SHELL_QUAD_8,5,6,7,8,17,18,19,20";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHexNeighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldShellNeighbors(1u, Adjacency::SimpleNeighborVector{-1, 0});
+  verify_side_adjacency({goldHexNeighbors, goldShellNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, singleHexConnectedShell_highOrderWithRotation)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_20,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\n"
+      "0,2,SHELL_QUAD_8,6,7,8,5,18,19,20,17";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHexNeighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldShellNeighbors(1u, Adjacency::SimpleNeighborVector{-1, 0});
+  verify_side_adjacency({goldHexNeighbors, goldShellNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnected)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "0,2,HEX_8,5,6,7,8,9,10,11,12";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, -1});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnected_parallelWithLocalGraph)
+{
+  if (get_parallel_size() != 2) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "1,2,HEX_8,5,6,7,8,9,10,11,12";
+  setup_text_mesh_graph(meshDesc, {}, get_parallel_rank());
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, -1});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnected_parallelGlobal)
+{
+  if (get_parallel_size() != 2) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "1,2,HEX_8,5,6,7,8,9,10,11,12";
+  setup_text_mesh_graph(meshDesc, {});
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, -1});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, threeHexConnected)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "0,2,HEX_8,5,6,7,8,9,10,11,12\n"
+      "0,3,HEX_8,9,10,11,12,13,14,15,16";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, 2});
+  Adjacency goldHex3Neighbors(2u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 1, -1});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors, goldHex3Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, threeHexConnected_parallelWithLocalGraph)
+{
+  if (get_parallel_size() != 3) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "1,2,HEX_8,5,6,7,8,9,10,11,12\n"
+      "2,3,HEX_8,9,10,11,12,13,14,15,16";
+  setup_text_mesh_graph(meshDesc, {}, get_parallel_rank());
+
+  if (get_parallel_rank() == 0) {
+    Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+    Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, -1});
+
+    verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors});
+  } else if (get_parallel_rank() == 1) {
+    Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+    Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, 2});
+    Adjacency goldHex3Neighbors(2u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 1, -1});
+
+    verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors, goldHex3Neighbors});
+  } else if (get_parallel_rank() == 2) {
+    Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 2});
+    Adjacency goldHex3Neighbors(2u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 1, -1});
+
+    verify_side_adjacency({goldHex2Neighbors, goldHex3Neighbors});
+  }
+}
+
+TEST_F(TestTextMeshGraph, threeHexConnected_parallelGlobal)
+{
+  if (get_parallel_size() != 3) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8\n"
+      "0,2,HEX_8,5,6,7,8,9,10,11,12\n"
+      "0,3,HEX_8,9,10,11,12,13,14,15,16";
+  setup_text_mesh_graph(meshDesc, {});
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, 2});
+  Adjacency goldHex3Neighbors(2u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 1, -1});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors, goldHex3Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnected_separateBlocks)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+      "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2";
+  setup_text_mesh_graph(meshDesc, {"block_1"});
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, -1});
+  verify_side_adjacency({goldHex1Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnected_separateBlocksWithInvalidAdjacency)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+      "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2";
+  setup_text_mesh_graph(meshDesc, {"block_1"});
+
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, -1});
+  EXPECT_THROW(verify_side_adjacency({goldHex2Neighbors}), std::logic_error);
+}
+
+TEST_F(TestTextMeshGraph, twoHexDisconnected)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_1\n"
+      "0,2,HEX_8,9,10,11,12,13,14,15,16,block_2";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, -1});
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, -1});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnectedAndShellDisconnected)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
+      "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12\n"
+      "0,3,SHELL_QUAD_4,17,18,19,20";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, -1});
+  Adjacency goldShellNeighbors(2u, Adjacency::SimpleNeighborVector{-1, -1});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors, goldShellNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnectedAndShellExternallyConnected)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
+      "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12\n"
+      "0,3,SHELL_QUAD_4,9,10,11,12";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, 2});
+  Adjacency goldShellNeighbors(2u, Adjacency::SimpleNeighborVector{-1, 1});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors, goldShellNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnectedAndShellExternallyConnected_shellInSeparateBlock)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_1\n"
+      "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12,block_1\n"
+      "0,3,SHELL_QUAD_4,9,10,11,12,block_2";
+  setup_text_mesh_graph(meshDesc, {"block_2"});
+
+  Adjacency goldShellNeighbors(2u, Adjacency::SimpleNeighborVector{-1, -1});
+  verify_side_adjacency({goldShellNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnectedAndShellInternallyConnected)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
+      "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12\n"
+      "0,3,SHELL_QUAD_4,5,6,7,8";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 2});
+  Adjacency goldHex2Neighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 2, -1});
+  Adjacency goldShellNeighbors(2u, Adjacency::SimpleNeighborVector{1, 0});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors, goldShellNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnectedAndShellInternallyConnected_reorderShell)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8\n"
+      "0,3,HEX_8,5, 6, 7, 8, 9,10,11,12\n"
+      "0,2,SHELL_QUAD_4,5,6,7,8";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldHex1Neighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, 1});
+  Adjacency goldHex2Neighbors(2u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 1, -1});
+  Adjacency goldShellNeighbors(1u, Adjacency::SimpleNeighborVector{2, 0});
+  verify_side_adjacency({goldHex1Neighbors, goldHex2Neighbors, goldShellNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, twoHexConnectedAndShellInternallyConnected_shellInSeperateBlock)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1, 2, 3, 4, 5, 6, 7, 8,block_1\n"
+      "0,2,HEX_8,5, 6, 7, 8, 9,10,11,12,block_1\n"
+      "0,3,SHELL_QUAD_4,5,6,7,8,block_2";
+  setup_text_mesh_graph(meshDesc, {"block_2"});
+
+  Adjacency goldShellNeighbors(2u, Adjacency::SimpleNeighborVector{-1, -1});
+  verify_side_adjacency({goldShellNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, connectedPyramidAndHexAndTet)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,PYRAMID_5,1,2,3,4,5\n"
+      "0,2,HEX_8,1,4,3,2,6,9,8,7\n"
+      "0,3,TET_4,2,3,5,10";
+  setup_text_mesh_graph(meshDesc);
+
+  Adjacency goldPyramidNeighbors(0u, Adjacency::SimpleNeighborVector{-1, 2, -1, -1, 1});
+  Adjacency goldHexNeighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, -1});
+  Adjacency goldTetNeighbors(2u, Adjacency::SimpleNeighborVector{-1, -1, -1, 0});
+  verify_side_adjacency({goldPyramidNeighbors, goldHexNeighbors, goldTetNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, connectedPyramidAndHexAndTet_parallel)
+{
+  if (get_parallel_size() != 3) return;
+
+  std::string meshDesc =
+      "0,1,PYRAMID_5,1,2,3,4,5\n"
+      "1,2,HEX_8,1,4,3,2,6,9,8,7\n"
+      "2,3,TET_4,2,3,5,10";
+  setup_text_mesh_graph(meshDesc, {}, get_parallel_rank());
+
+  Adjacency goldPyramidNeighbors(0u, Adjacency::SimpleNeighborVector{-1, 2, -1, -1, 1});
+  Adjacency goldHexNeighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, -1});
+  Adjacency goldTetNeighbors(2u, Adjacency::SimpleNeighborVector{-1, -1, -1, 0});
+  verify_side_adjacency({goldPyramidNeighbors, goldHexNeighbors, goldTetNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, connectedPyramidAndHexAndTet_graphPyramidAndHexBlocks)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,PYRAMID_5,1,2,3,4,5,block_1\n"
+      "0,2,HEX_8,1,4,3,2,6,9,8,7,block_2\n"
+      "0,3,TET_4,2,3,5,10,block_3";
+  setup_text_mesh_graph(meshDesc, {"block_1", "block_2"});
+
+  Adjacency goldPyramidNeighbors(0u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 1});
+  Adjacency goldHexNeighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, 0, -1});
+  verify_side_adjacency({goldPyramidNeighbors, goldHexNeighbors});
+}
+
+TEST_F(TestTextMeshGraph, connectedPyramidAndHexAndTet_graphHexAndTetBlocks)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,PYRAMID_5,1,2,3,4,5,block_1\n"
+      "0,2,HEX_8,1,4,3,2,6,9,8,7,block_2\n"
+      "0,3,TET_4,2,3,5,10,block_3";
+  setup_text_mesh_graph(meshDesc, {"block_2", "block_3"});
+
+  Adjacency goldHexNeighbors(1u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1, -1, -1});
+  Adjacency goldTetNeighbors(2u, Adjacency::SimpleNeighborVector{-1, -1, -1, -1});
+  verify_side_adjacency({goldHexNeighbors, goldTetNeighbors});
+}
+
+TEST_F(TestTextMeshSkin, singleHex_skin)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|sideset:name=skinned; skin=block_1";
+  setup_text_mesh(meshDesc);
+
+  verify_num_sidesets(1);
+  verify_single_sideset("skinned", 1, SideVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}});
+}
+
+TEST_F(TestTextMeshSkin, singleHex_invalidComboSkinAndData)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc = "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1|sideset:name=skinned; data=1,2; skin=block_1";
+  EXPECT_THROW(setup_text_mesh(meshDesc), std::logic_error);
+}
+
+TEST_F(TestTextMeshSkin, pyramidWithStandardName_skinAndSplitByBlock)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc = "0,1,PYRAMID_5,1,2,3,4,5,block_1|sideset:name=surface_1; skin=block_1; split=block";
+  setup_text_mesh(meshDesc);
+
+  verify_num_elements(1);
+  verify_single_element(1u, "PYRAMID_5", EntityIdVector{1, 2, 3, 4, 5});
+
+  std::vector<std::string> sidesetSubsets;
+  std::string prefix("surface_");
+  sidesetSubsets.push_back(prefix + std::string("block_1") + "_" + get_topology_name("QUAD_4") + "_1");
+  sidesetSubsets.push_back(prefix + std::string("block_1") + "_" + get_topology_name("TRI_3") + "_1");
+
+  verify_num_sidesets(1);
+  verify_single_sideset("surface_1", 1, sidesetSubsets, SideVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}});
+}
+
+TEST_F(TestTextMeshSkin, pyramidWithStandardName_skinAndSplitByTopology)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc = "0,1,PYRAMID_5,1,2,3,4,5,block_1|sideset:name=surface_1; skin=block_1; split=topology";
+  setup_text_mesh(meshDesc);
+
+  verify_num_elements(1);
+  verify_single_element(1u, "PYRAMID_5", EntityIdVector{1, 2, 3, 4, 5});
+
+  std::vector<std::string> sidesetSubsets;
+  std::string prefix("surface_");
+  sidesetSubsets.push_back(prefix + get_topology_name("PYRAMID_5") + "_" + get_topology_name("QUAD_4") + "_1");
+  sidesetSubsets.push_back(prefix + get_topology_name("PYRAMID_5") + "_" + get_topology_name("TRI_3") + "_1");
+
+  verify_num_sidesets(1);
+  verify_single_sideset("surface_1", 1, sidesetSubsets, SideVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}});
+}
+
+TEST_F(TestTextMeshSkin, twoHexConnected_separateBlocks_skinOneBlock)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+      "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|sideset:name=surface_1; skin=block_1";
+  setup_text_mesh(meshDesc);
+
+  verify_num_sidesets(1);
+  verify_single_sideset("surface_1", 1, SideVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}});
+}
+
+TEST_F(TestTextMeshSkin, connectedPyramidAndHexAndTet_skinAll)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,PYRAMID_5,1,2,3,4,5,block_1\n"
+      "0,2,HEX_8,1,4,3,2,6,9,8,7,block_2\n"
+      "0,3,TET_4,2,3,5,10,block_3|sideset:name=surface_1; skin=all";
+  setup_text_mesh(meshDesc);
+
+  verify_num_sidesets(1);
+  verify_single_sideset("surface_1", 1,
+      SideVector{{1, 1}, {1, 3}, {1, 4}, {2, 1}, {2, 2}, {2, 3}, {2, 4}, {2, 6}, {3, 1}, {3, 2}, {3, 3}});
+}
+
+TEST_F(TestTextMeshSkin, singleHexAndConnectedShell_skinAll)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+      "0,2,SHELL_QUAD_4,5,6,7,8,block_2|sideset:name=surface_1; skin=all";
+  setup_text_mesh(meshDesc);
+
+  verify_num_sidesets(1);
+  verify_single_sideset("surface_1", 1, SideVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {2, 1}});
+}
+
+TEST_F(TestTextMeshSkin, twoHexConnectedTwoBlocks_skinIntoTwoSideSets)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+      "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|sideset:name=surface_1; skin=block_1|sideset:name=surface_2; skin=block_2";
+  setup_text_mesh(meshDesc);
+
+  verify_num_sidesets(2);
+  verify_single_sideset("surface_1", 1, SideVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}});
+  verify_single_sideset("surface_2", 2, SideVector{{2, 1}, {2, 2}, {2, 3}, {2, 4}, {2, 5}, {2, 6}});
+}
+
+TEST_F(TestTextMeshSkin, threeHexConnectedThreeBlocks_skinTwoEndBlocks)
+{
+  if (get_parallel_size() != 1) return;
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+      "0,2,HEX_8,5,6,7,8,9,10,11,12,block_2\n"
+      "0,3,HEX_8,9,10,11,12,13,14,15,16,block_3|sideset:name=surface_1; skin=block_1,block_3";
+  setup_text_mesh(meshDesc);
+
+  verify_num_sidesets(1);
+  verify_single_sideset("surface_1", 1,
+      SideVector{{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {3, 1}, {3, 2}, {3, 3}, {3, 4}, {3, 5}, {3, 6}});
+}
 
 }  // namespace
