@@ -1387,7 +1387,6 @@ namespace Ioex {
     {
       // Check whether we already populated the element/sides vectors.
       if (element.empty() && sides.empty() && number_sides > 0) {
-        fmt::print("IOSS DEBUG: Reading data for {} element/sides\n", number_sides);
         element.resize(number_sides);
         sides.resize(number_sides);
         // Easier below here if the element and sides are a known 64-bit size...
