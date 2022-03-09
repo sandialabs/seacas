@@ -9,20 +9,29 @@ proc ModulesHelp { } {
  puts stderr " "
 }
 
+proc GetPath { } {
+    if { [ info exists ::env(SNLSYSTEM) ] } {
+	set cluster $::env(SNLSYSTEM)
+	if { $cluster == "cee" } {
+	    set cluster $::env(SNLCLUSTER)
+	}
+    } else {
+	set cluster $::env(HOSTNAME)
+    }
+    return $cluster
+}
+
 module-trace on
 module-info alias seacas
 
 module-verbosity on
 
-# Need to do some path translation
-set cluster $::env(SNLSYSTEM)
-if { $cluster == "cee" } {
-    set cluster $::env(SNLCLUSTER)
-}
+# Try to determine the path used on this system...
+set cluster [GetPath]
 set seacas_path  /projects/seacas/$cluster/current
 
 setenv ACCESS $seacas_path
-prepend-path PATH $seacas_path/etc:$seacas_path/bin
+prepend-path PATH $seacas_path/bin
 prepend-path PYTHONPATH $seacas_path/lib
 
 prepend-path LD_LIBRARY_PATH $seacas_path/lib
