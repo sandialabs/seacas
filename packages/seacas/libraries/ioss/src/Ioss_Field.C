@@ -101,21 +101,21 @@ Ioss::Field::Field(std::string name, const Ioss::Field::BasicType type,
   size_ = internal_get_size(type_, rawCount_, rawStorage_);
 }
 
-Ioss::Field::Field(const Ioss::Field &from) = default;
+int Ioss::Field::get_component_count(Ioss::Field::InOut in_out) const
+{
+  auto *storage = (in_out == InOut::INPUT) ? raw_storage() : transformed_storage();
+  return storage->component_count();
+}
 
-Ioss::Field &Ioss::Field::operator=(const Field &from) = default;
-
-Ioss::Field::~Field() = default;
-
-int Ioss::Field::get_component_count() const { return raw_storage()->component_count(); }
-
-std::string Ioss::Field::get_component_name(int component_index, char suffix) const
+std::string Ioss::Field::get_component_name(int component_index, InOut in_out, char suffix) const
 {
   char suffix_separator = get_suffix_separator();
   if (suffix_separator == 1) {
     suffix_separator = suffix != 1 ? suffix : '_';
   }
-  return raw_storage()->label_name(get_name(), component_index, suffix_separator);
+  auto *storage = (in_out == InOut::INPUT) ? raw_storage() : transformed_storage();
+  return storage->label_name(get_name(), component_index, suffix_separator,
+                             get_suffices_uppercase());
 }
 
 /* \brief Verify that data_size is valid.

@@ -69,7 +69,7 @@
 #include <cgns/Iocgns_Utils.h>
 #endif
 
-#if defined(_MSC_VER)
+#if defined(__IOSS_WINDOWS__)
 #include <io.h>
 #define isatty _isatty
 #endif
@@ -200,13 +200,13 @@ namespace {
         fmt::print(stderr, fg(fmt::color::yellow), "WARNING: Unrecognized entity type '{}'.\n",
                    tokens[1]);
       }
-      glob::glob     glob(tokens[3]);
-      Ioss::NameList names = get_name_list(region, entity_type);
+      Ioss::glob::glob glob(tokens[3]);
+      Ioss::NameList   names = get_name_list(region, entity_type);
 
       // Check for match against all names in list...
       bool matched = false;
       for (const auto &name : names) {
-        if (glob::glob_match(name, glob)) {
+        if (Ioss::glob::glob_match(name, glob)) {
           const auto *entity = region.get_entity(name, entity_type);
           const T    *ge     = dynamic_cast<const T *>(entity);
           if (ge != nullptr) {
@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
   properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_MODIFY));
 
   Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::WRITE_RESTART,
-                                                  (MPI_Comm)MPI_COMM_WORLD, properties);
+                                                  Ioss::ParallelUtils::comm_world(), properties);
   if (dbi == nullptr || !dbi->ok(true)) {
     std::exit(EXIT_FAILURE);
   }
@@ -337,7 +337,7 @@ int main(int argc, char *argv[])
     }
 
     // NOTE: getline_int returns the trailing '\n'
-    auto tokens = Ioss::tokenize(std::string(input), " ,\n");
+    auto tokens = Ioss::tokenize(input, " ,\n");
     if (tokens.empty()) {
       continue;
     }
@@ -401,7 +401,8 @@ namespace {
 
     int64_t num_cell = sb->get_property("cell_count").get_int();
     int64_t num_node = sb->get_property("node_count").get_int();
-    fmt::print("{:14L} cells, {:14L} nodes\n", num_cell, num_node);
+    fmt::print("{:14} cells, {:14} nodes\n", fmt::group_digits(num_cell),
+               fmt::group_digits(num_node));
     if (show_property) {
       Ioss::Utils::info_property(sb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
@@ -453,8 +454,8 @@ namespace {
 
     std::string type       = eb->topology()->name();
     int64_t     num_attrib = eb->get_property("attribute_count").get_int();
-    fmt::print("\n{} id: {:6d}, topology: {:>10s}, {:14L} elements, {:3d} attributes.\n", name(eb),
-               id(eb), type, num_elem, num_attrib);
+    fmt::print("\n{} id: {:6d}, topology: {:>10s}, {:14} elements, {:3d} attributes.\n", name(eb),
+               id(eb), type, fmt::group_digits(num_elem), num_attrib);
     if (show_property) {
       Ioss::Utils::info_property(eb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
@@ -476,8 +477,8 @@ namespace {
       int64_t count      = fb->entity_count();
       int64_t num_attrib = fb->get_property("attribute_count").get_int();
       int64_t num_dist   = fb->get_property("distribution_factor_count").get_int();
-      fmt::print("\t{}, {:8L} sides, {:3d} attributes, {:8L} distribution factors.\n", name(fb),
-                 count, num_attrib, num_dist);
+      fmt::print("\t{}, {:8} sides, {:3d} attributes, {:8} distribution factors.\n", name(fb),
+                 fmt::group_digits(count), num_attrib, fmt::group_digits(num_dist));
     }
     if (show_property) {
       Ioss::Utils::info_property(ss, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
@@ -489,8 +490,8 @@ namespace {
     int64_t count      = ns->entity_count();
     int64_t num_attrib = ns->get_property("attribute_count").get_int();
     int64_t num_dist   = ns->get_property("distribution_factor_count").get_int();
-    fmt::print("\n{} id: {:6d}, {:8L} nodes, {:3d} attributes, {:8L} distribution factors.\n",
-               name(ns), id(ns), count, num_attrib, num_dist);
+    fmt::print("\n{} id: {:6d}, {:8} nodes, {:3d} attributes, {:8} distribution factors.\n",
+               name(ns), id(ns), fmt::group_digits(count), num_attrib, fmt::group_digits(num_dist));
     if (show_property) {
       Ioss::Utils::info_property(ns, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
@@ -500,7 +501,8 @@ namespace {
   {
     int64_t num_nodes  = nb->entity_count();
     int64_t num_attrib = nb->get_property("attribute_count").get_int();
-    fmt::print("\n{} {:14L} nodes, {:3d} attributes.\n", name(nb), num_nodes, num_attrib);
+    fmt::print("\n{} {:14} nodes, {:3d} attributes.\n", name(nb), fmt::group_digits(num_nodes),
+               num_attrib);
     if (show_property) {
       Ioss::Utils::info_property(nb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
@@ -1317,11 +1319,11 @@ namespace {
             // Get list of all names for this entity type...
             Ioss::NameList names = get_name_list(region, type);
 
-            glob::glob glob(tokens[5]);
+            Ioss::glob::glob glob(tokens[5]);
 
             // Check for match against all names in list...
             for (const auto &name : names) {
-              if (glob::glob_match(name, glob)) {
+              if (Ioss::glob::glob_match(name, glob)) {
                 const auto *entity = region.get_entity(name, type);
                 if (entity != nullptr) {
                   if (assem->add(entity)) {
@@ -1492,8 +1494,8 @@ namespace {
       properties.add(Ioss::Property("INTEGER_SIZE_DB", byte_size));
       std::string       out_file  = interFace.filename() + ".mod";
       std::string       file_type = interFace.type();
-      Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(file_type, out_file, Ioss::WRITE_RESTART,
-                                                      (MPI_Comm)MPI_COMM_WORLD, properties);
+      Ioss::DatabaseIO *dbo       = Ioss::IOFactory::create(
+                file_type, out_file, Ioss::WRITE_RESTART, Ioss::ParallelUtils::comm_world(), properties);
 
       if (dbo == nullptr || !dbo->ok(true)) {
         std::exit(EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -262,7 +262,7 @@ int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
   EXCHECKI(nc_inq(in_exoid, &ndims, NULL, NULL, &recdimid));
   for (int dimid = 0; dimid < ndims; dimid++) {
 
-    char   dim_nm[NC_MAX_NAME];
+    char   dim_nm[NC_MAX_NAME + 1];
     size_t dim_sz;
     EXCHECK(nc_inq_dim(in_exoid, dimid, dim_nm, &dim_sz));
 
@@ -511,7 +511,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
   /* Get the dimension sizes and names */
   int dim_out_id[NC_MAX_VAR_DIMS];
   for (int idx = 0; idx < nbr_dim; idx++) {
-    char   dim_nm[NC_MAX_NAME];
+    char   dim_nm[NC_MAX_NAME + 1];
     size_t dim_sz;
 
     EXCHECKI(nc_inq_dim(in_id, dim_in_id[idx], dim_nm, &dim_sz));

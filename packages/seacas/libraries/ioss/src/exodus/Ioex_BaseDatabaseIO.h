@@ -1,12 +1,11 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
 // -*- Mode: c++ -*-
-#ifndef IOSS_Ioex_BaseDatabaseIO_h
-#define IOSS_Ioex_BaseDatabaseIO_h
+#pragma once
 
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
@@ -73,7 +72,7 @@ namespace Ioex {
   {
   public:
     BaseDatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
-                   MPI_Comm communicator, const Ioss::PropertyManager &props);
+                   Ioss_MPI_Comm communicator, const Ioss::PropertyManager &props);
     BaseDatabaseIO(const BaseDatabaseIO &from) = delete;
     BaseDatabaseIO &operator=(const BaseDatabaseIO &from) = delete;
 
@@ -231,6 +230,8 @@ namespace Ioex {
     void get_assemblies();
     void get_blobs();
 
+    void update_block_omissions_from_assemblies();
+
     void add_attribute_fields(ex_entity_type entity_type, Ioss::GroupingEntity *block,
                               int attribute_count, const std::string &type);
 
@@ -326,4 +327,3 @@ namespace Ioex {
                 // nodeConnectivityStatus has been calculated.
   };
 } // namespace Ioex
-#endif

@@ -33,6 +33,7 @@ install:
   - cmd: set PATH=%PATH%;%MSYS2_BIN_LOCN%;%INSTALL_LOC%\bin;%INSTALL_LOC%\lib
   - cmd: vcpkg install netcdf-c
   - cmd: vcpkg install matio
+  - cmd: vcpkg install fmt
   - cmd: vcpkg integrate install
 
 configuration: Release
@@ -44,6 +45,7 @@ build_script:
   - cmd: mkdir build
   - cmd: cd build
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
+     -DCMAKE_TOOLCHAIN_FILE=C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake ^
      -DBUILD_SHARED_LIBS:BOOL=OFF ^
      -DCMAKE_BUILD_TYPE=Release ^
      -DCMAKE_CXX_FLAGS="%SUPPRESSIONS% /EHsc" ^

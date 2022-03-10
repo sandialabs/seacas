@@ -1,10 +1,12 @@
 # SEACAS  [[Documentation](http://gsjaardema.github.io/seacas-docs/)] [[Wiki](https://github.com/gsjaardema/seacas/wiki)]
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c82efc90be9943e08b71e2d16abaa370)](https://app.codacy.com/app/gsjaardema/seacas?utm_source=github.com&utm_medium=referral&utm_content=gsjaardema/seacas&utm_campaign=Badge_Grade_Dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/838c6d845e9e4ce4a7cd02bd06b4d2ad)](https://www.codacy.com/gh/gsjaardema/seacas/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gsjaardema/seacas&amp;utm_campaign=Badge_Grade)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 [![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
 [![Appveyor Build](https://ci.appveyor.com/api/projects/status/pis4gok72yh0wwfs/branch/master?svg=true)](https://ci.appveyor.com/project/gsjaardema/seacas/branch/master)
 [![Github Actions -- CI Serial](https://github.com/gsjaardema/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/gsjaardema/seacas)
 [![Github Actions -- CI Variants](https://github.com/gsjaardema/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/gsjaardema/seacas)
+[![Github Actions -- CI Intel](https://github.com/gsjaardema/seacas/actions/workflows/intel-build.yml/badge.svg)](https://github.com/gsjaardema/seacas)
+[![Github Actions -- CI MSYS2](https://github.com/gsjaardema/seacas/actions/workflows/msys2.yml/badge.svg)](https://github.com/gsjaardema/seacas)
 
 *  [Get the sources](#get-the-sources)
 *  [Build instructions](#build-instructions)
@@ -69,6 +71,7 @@ manually as detailed in
 | CATALYST2       | YES, NO | NO  | Should catalyst 2 TPL be built. |
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
+| FMT             | YES, NO | YES | Should Lib::FMT TPL be built. |
 | H5VERSION       | V112, V110, V18 | V110 | Use HDF5-1.12.X, HDF5-1.10.X or HDF5-1.8.X |
 | BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
 | JOBS            | {count} |  2   | Number of "jobs" used for simultaneous compiles |
@@ -101,7 +104,6 @@ to configure the SEACAS CMake build.
 | LEGACY          | YES, NO | YES  | Should the legacy SEACAS applications be built (see `cmake-config`) |
 | FORTRAN         | YES, NO | YES  | Should fortran libraries and applications be built (see `cmake-config`) |
 | ZOLTAN          | YES, NO | YES  | Should zoltan library and nem_slice be built |
-| PYTHON_VER      | 2.7 3.0 | 3.0  | Minimum version of python which should be found |
 | BUILD_TYPE      | debug, release | release | what type of build |
 | DEBUG           | -none-  |      | If specified, then do a debug build. Can't be used with `BUILD_TYPE` |
 | HAVE_X11        | YES, NO | YES  | Does the system have X11 libraries and include files; used for blot, fastq |
@@ -198,7 +200,6 @@ a separate license:
 | [terminal_color](https://github.com/matovitch/trmclr) | `packages/seacas/libraries/aprepro_lib` | [zlib](https://opensource.org/licenses/zlib) |
 | [Tessil Hash](https://github.com/Tessil/) | `packages/seacas/libraries/ioss/src/hash` |  [MIT](https://opensource.org/licenses/MIT) |
 | [Catch2](https://github.com/catchorg/Catch2) | `packages/seacas/libraries/ioss/src/catch.hpp` | [Boost](http://www.boost.org/LICENSE_1_0.txt) |
-| [{fmt}](https://github.com/fmtlib/fmt) | `packages/seacas/libraries/ioss/src/fmt` | [BSD-2-Clause](https://github.com/fmtlib/fmt/blob/master/LICENSE.rst) |
 | [pdqsort](https://github.com/orlp/pdqsort) | `packages/seacas/libraries/ioss/src` | [Zlib License](https://github.com/orlp/pdqsort/blob/master/license.txt) |
 ## Contact information
 

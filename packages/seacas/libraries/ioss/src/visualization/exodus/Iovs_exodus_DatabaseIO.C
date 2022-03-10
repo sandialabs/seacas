@@ -34,7 +34,7 @@ namespace Iovs_exodus {
                     const std::string &inout);
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
-                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+                         Ioss::DatabaseUsage db_usage, Ioss_MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region,
                          Iovs::Utils::getInstance().getDatabaseOutputFilePath(filename, props),
@@ -173,7 +173,7 @@ namespace Iovs_exodus {
       int                   *ivar             = static_cast<int *>(data);
       auto                  *ivar64           = static_cast<int64_t *>(data);
 
-      int comp_count = field.get_component_count();
+      int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
       int re_im = 1;
       if (field.get_type() == Ioss::Field::COMPLEX) {
@@ -188,7 +188,7 @@ namespace Iovs_exodus {
         std::vector<std::string> component_names;
         std::vector<double>      globalValues;
         for (int i = 0; i < comp_count; i++) {
-          std::string var_name = get_component_name(field, i + 1);
+          std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
           component_names.push_back(var_name);
 
           // Transfer from 'variables' array.
@@ -259,7 +259,7 @@ namespace Iovs_exodus {
         const char            *complex_suffix[] = {".re", ".im"};
         Ioss::Field::BasicType ioss_type        = field.get_type();
         std::vector<double>    temp(num_to_get);
-        int                    comp_count = field.get_component_count();
+        int                    comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         int                    re_im      = 1;
         if (ioss_type == Ioss::Field::COMPLEX) {
           re_im = 2;
@@ -273,7 +273,7 @@ namespace Iovs_exodus {
           std::vector<double>      interleaved_data(num_to_get * comp_count);
           std::vector<std::string> component_names;
           for (int i = 0; i < comp_count; i++) {
-            std::string var_name = get_component_name(field, i + 1);
+            std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
             component_names.push_back(var_name);
 
             size_t begin_offset = (re_im * i) + complex_comp;
@@ -369,7 +369,7 @@ namespace Iovs_exodus {
         Ioss::Field::BasicType ioss_type        = field.get_type();
         std::vector<double>    temp(num_to_get);
         int64_t                eb_offset  = eb->get_offset();
-        int                    comp_count = field.get_component_count();
+        int                    comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         int                    bid        = get_id(eb, &ids_);
 
         int re_im = 1;
@@ -385,7 +385,7 @@ namespace Iovs_exodus {
           std::vector<double>      interleaved_data(num_to_get * comp_count);
           std::vector<std::string> component_names;
           for (int i = 0; i < comp_count; i++) {
-            std::string var_name = get_component_name(field, i + 1);
+            std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
             component_names.push_back(var_name);
 
             int64_t begin_offset = (re_im * i) + complex_comp;

@@ -95,6 +95,9 @@ then
     METIS="YES"
 fi
 
+FMT=${FMT:-YES}
+FMT=$(check_valid FMT)
+
 GNU_PARALLEL=${GNU_PARALLEL:-YES}
 GNU_PARALLEL=$(check_valid GNU_PARALLEL)
 
@@ -198,6 +201,7 @@ if [ $# -gt 0 ]; then
         echo "   METIS        = ${METIS}"
         echo "   PARMETIS     = ${PARMETIS}"
         echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
+	echo "   FMT          = ${FMT}"
         echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
         echo "   USE_ZLIB_NG  = ${USE_ZLIB_NG}"
         echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
@@ -719,6 +723,47 @@ then
         fi
     else
         echo "${txtylw}+++ MatIO already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+# =================== INSTALL FMT ===============
+if [ "$FMT" == "YES" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/fmt/core.h ]
+    then
+        echo "${txtgrn}+++ FMT${txtrst}"
+        cd $ACCESS
+        cd TPL/fmt
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf fmt
+            git clone https://github.com/fmtlib/fmt
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd fmt
+            rm -rf build
+            mkdir build
+            cd build
+            cmake -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} -DFMT_TEST:BOOL=OFF -DBUILD_SHARED_LIBS=${SHARED} ..
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure FMT. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build FMT. exiting.${txtrst}
+                exit 1
+            fi
+        fi
+    else
+        echo "${txtylw}+++ FMT already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 

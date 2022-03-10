@@ -154,7 +154,7 @@ namespace {
 
 namespace Ioex {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
-                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+                         Ioss::DatabaseUsage db_usage, Ioss_MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
       : Ioex::BaseDatabaseIO(region, filename, db_usage, communicator, props)
   {
@@ -648,6 +648,7 @@ namespace Ioex {
 
   void DatabaseIO::get_step_times__()
   {
+    double              t_begin        = Ioss::Utils::timer();
     bool                exists         = false;
     double              last_time      = DBL_MAX;
     int                 timestep_count = 0;
@@ -666,23 +667,17 @@ namespace Ioex {
         // Since we can't access the Region's stateCount directly, we just add
         // all of the steps and assume the Region is dealing with them directly...
         tsteps.resize(timestep_count);
+
         int error = ex_get_all_times(get_file_pointer(), tsteps.data());
         if (error < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
         }
 
-        int max_step = timestep_count;
-        if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
-          max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
-        }
-        if (max_step > timestep_count) {
-          max_step = timestep_count;
-        }
+        int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", timestep_count);
+        max_step     = std::min(max_step, timestep_count);
 
-        double max_time = std::numeric_limits<double>::max();
-        if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
-          max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
-        }
+        double max_time =
+            properties.get_optional("APPEND_OUTPUT_AFTER_TIME", std::numeric_limits<double>::max());
 
         Ioss::Region *this_region = get_region();
         for (int i = 0; i < max_step; i++) {
@@ -703,9 +698,26 @@ namespace Ioex {
         // For an exodus file, timesteps are global and are stored in the region.
         // Read the timesteps and add to the region
         tsteps.resize(timestep_count);
-        int error = ex_get_all_times(get_file_pointer(), tsteps.data());
-        if (error < 0) {
-          Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+
+        // The `EXODUS_CALL_GET_ALL_TIMES=NO` is typically only used in
+        // isSerialParallel mode and the client is responsible for
+        // making sure that the step times are handled correctly.  All
+        // databases will know about the number of timesteps, but if
+        // this is skipped, then the times will all be zero.  Use case
+        // is that in isSerialParallel, each call to
+        // `ex_get_all_times` for all files is performed sequentially,
+        // so if you have hundreds to thousands of files, the time for
+        // the call is additive and since timesteps are record
+        // variables in netCDF, accessing the data for all timesteps
+        // involves lseeks throughout the file.
+        bool call_ex_get_all_times = true;
+        Ioss::Utils::check_set_bool_property(properties, "EXODUS_CALL_GET_ALL_TIMES",
+                                             call_ex_get_all_times);
+        if (call_ex_get_all_times) {
+          int error = ex_get_all_times(get_file_pointer(), tsteps.data());
+          if (error < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+          }
         }
 
         // See if the "last_written_time" attribute exists and if it
@@ -731,21 +743,12 @@ namespace Ioex {
       // One use case is that job is restarting at a time prior to what has been
       // written to the results file, so want to start appending after
       // restart time instead of at end time on database.
-      int max_step = timestep_count;
-      if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
-        max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
-      }
-      if (max_step > timestep_count) {
-        max_step = timestep_count;
-      }
+      int max_step = properties.get_optional("APPEND_OUTPUT_AFTER_STEP", timestep_count);
+      max_step     = std::min(max_step, timestep_count);
 
-      double max_time = std::numeric_limits<double>::max();
-      if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
-        max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
-      }
-      if (last_time > max_time) {
-        last_time = max_time;
-      }
+      double max_time =
+          properties.get_optional("APPEND_OUTPUT_AFTER_TIME", std::numeric_limits<double>::max());
+      last_time = std::min(last_time, max_time);
 
       Ioss::Region *this_region = get_region();
       for (int i = 0; i < max_step; i++) {
@@ -760,14 +763,17 @@ namespace Ioex {
             // 0... Need better warnings which won't overload in the
             // worst case...
             fmt::print(Ioss::WARNING(),
-                       "Skipping step {:L} at time {} in database file\n\t{}.\n"
+                       "Skipping step {} at time {} in database file\n\t{}.\n"
                        "\tThe data for that step is possibly corrupt since the last time written "
                        "successfully was {}.\n",
-                       i + 1, tsteps[i], get_filename(), last_time);
+                       fmt::group_digits(i + 1), tsteps[i], get_filename(), last_time);
           }
         }
       }
     }
+    double t_end    = Ioss::Utils::timer();
+    double duration = t_end - t_begin;
+    fmt::print(Ioss::DEBUG(), "Get Step Times = {}\n", duration);
   }
 
   void DatabaseIO::read_communication_metadata()
@@ -1292,6 +1298,10 @@ namespace Ioex {
     m_groupCount[entity_type] = used_blocks;
 
     if (entity_type == EX_ELEM_BLOCK) {
+      if (!assemblyOmissions.empty() || !assemblyInclusions.empty()) {
+        update_block_omissions_from_assemblies();
+      }
+
       assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
 
       // Handle all block omissions or inclusions...
@@ -1370,6 +1380,36 @@ namespace Ioex {
     }
     nodeConnectivityStatusCalculated = true;
   }
+
+  namespace {
+    void get_element_sides_lists(int exoid, int64_t id, int int_byte_size, int64_t number_sides,
+                                 Ioss::Int64Vector &element, Ioss::Int64Vector &sides)
+    {
+      // Check whether we already populated the element/sides vectors.
+      if (element.empty() && sides.empty() && number_sides > 0) {
+        element.resize(number_sides);
+        sides.resize(number_sides);
+        // Easier below here if the element and sides are a known 64-bit size...
+        // Kluge here to do that...
+        if (int_byte_size == 4) {
+          Ioss::IntVector e32(number_sides);
+          Ioss::IntVector s32(number_sides);
+          int             ierr = ex_get_set(exoid, EX_SIDE_SET, id, e32.data(), s32.data());
+          if (ierr < 0) {
+            Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+          }
+          std::copy(e32.begin(), e32.end(), element.begin());
+          std::copy(s32.begin(), s32.end(), sides.begin());
+        }
+        else {
+          int ierr = ex_get_set(exoid, EX_SIDE_SET, id, element.data(), sides.data());
+          if (ierr < 0) {
+            Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+          }
+        }
+      }
+    }
+  } // namespace
 
   void DatabaseIO::get_sidesets()
   {
@@ -1523,30 +1563,12 @@ namespace Ioex {
 
           int64_t number_sides = set_param[0].num_entry;
 
-          Ioss::Int64Vector element(number_sides);
-          Ioss::Int64Vector sides(number_sides);
-
-          // Easier below here if the element and sides are a known 64-bit size...
-          // Kluge here to do that...
-          if (int_byte_size_api() == 4) {
-            Ioss::IntVector e32(number_sides);
-            Ioss::IntVector s32(number_sides);
-            int ierr = ex_get_set(get_file_pointer(), EX_SIDE_SET, id, e32.data(), s32.data());
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-            }
-            std::copy(e32.begin(), e32.end(), element.begin());
-            std::copy(s32.begin(), s32.end(), sides.begin());
-          }
-          else {
-            int ierr =
-                ex_get_set(get_file_pointer(), EX_SIDE_SET, id, element.data(), sides.data());
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-            }
-          }
+          Ioss::Int64Vector element;
+          Ioss::Int64Vector sides;
 
           if (!blockOmissions.empty() || !blockInclusions.empty()) {
+            get_element_sides_lists(get_file_pointer(), id, int_byte_size_api(), number_sides,
+                                    element, sides);
             Ioex::filter_element_list(get_region(), element, sides, true);
             number_sides = element.size();
             SMART_ASSERT(element.size() == sides.size())(element.size())(sides.size());
@@ -1601,6 +1623,8 @@ namespace Ioex {
               side_map[std::make_pair(elem.first->name(), elem.second)] = 0;
             }
 
+            get_element_sides_lists(get_file_pointer(), id, int_byte_size_api(), number_sides,
+                                    element, sides);
             Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map,
                                                  split_type, side_set_name);
           }
@@ -1641,6 +1665,8 @@ namespace Ioex {
                 }
               }
             }
+            get_element_sides_lists(get_file_pointer(), id, int_byte_size_api(), number_sides,
+                                    element, sides);
             Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map,
                                                  split_type, side_set_name);
           }
@@ -2188,8 +2214,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
 
             if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
               Ioss::Field          ep_field = css->get_field("entity_processor_raw");
-              std::vector<int64_t> ent_proc(ep_field.raw_count() * ep_field.get_component_count());
-              size_t               ep_data_size = ent_proc.size() * sizeof(int64_t);
+              std::vector<int64_t> ent_proc(
+                  ep_field.raw_count() * ep_field.get_component_count(Ioss::Field::InOut::INPUT));
+              size_t ep_data_size = ent_proc.size() * sizeof(int64_t);
               get_field_internal(css, ep_field, ent_proc.data(), ep_data_size);
               for (size_t i = 0; i < ent_proc.size(); i += 2) {
                 int64_t node = ent_proc[i + 0];
@@ -2201,7 +2228,8 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
             }
             else {
               Ioss::Field      ep_field = css->get_field("entity_processor_raw");
-              std::vector<int> ent_proc(ep_field.raw_count() * ep_field.get_component_count());
+              std::vector<int> ent_proc(ep_field.raw_count() *
+                                        ep_field.get_component_count(Ioss::Field::InOut::INPUT));
               size_t           ep_data_size = ent_proc.size() * sizeof(int);
               get_field_internal(css, ep_field, ent_proc.data(), ep_data_size);
               for (size_t i = 0; i < ent_proc.size(); i += 2) {
@@ -2366,7 +2394,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
 
         if (field.get_name() == "connectivity") {
           int element_nodes = eb->topology()->number_nodes();
-          assert(field.get_component_count() == element_nodes);
+          assert(field.get_component_count(Ioss::Field::InOut::INPUT) == element_nodes);
 
           // The connectivity is stored in a 1D array.
           // The element_node index varies fastet
@@ -2376,7 +2404,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
           }
         }
         else if (field.get_name() == "connectivity_face") {
-          int face_count = field.get_component_count();
+          int face_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
           // The connectivity is stored in a 1D array.
           // The element_face index varies fastest
@@ -2386,7 +2414,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
           }
         }
         else if (field.get_name() == "connectivity_edge") {
-          int edge_count = field.get_component_count();
+          int edge_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
           // The connectivity is stored in a 1D array.
           // The element_edge index varies fastest
@@ -2397,7 +2425,8 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
         }
         else if (field.get_name() == "connectivity_raw") {
           // "connectivity_raw" has nodes in local id space (1-based)
-          assert(field.get_component_count() == eb->topology()->number_nodes());
+          assert(field.get_component_count(Ioss::Field::InOut::INPUT) ==
+                 eb->topology()->number_nodes());
 
           // The connectivity is stored in a 1D array.
           // The element_node index varies fastest
@@ -2526,7 +2555,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
 
         if (field.get_name() == "connectivity") {
           int face_nodes = eb->topology()->number_nodes();
-          assert(field.get_component_count() == face_nodes);
+          assert(field.get_component_count(Ioss::Field::InOut::INPUT) == face_nodes);
 
           // The connectivity is stored in a 1D array.
           // The face_node index varies fastet
@@ -2536,7 +2565,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
           }
         }
         else if (field.get_name() == "connectivity_edge") {
-          int edge_count = field.get_component_count();
+          int edge_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
           // The connectivity is stored in a 1D array.
           // The face_edge index varies fastest
@@ -2547,7 +2576,8 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
         }
         else if (field.get_name() == "connectivity_raw") {
           // "connectivity_raw" has nodes in local id space (1-based)
-          assert(field.get_component_count() == eb->topology()->number_nodes());
+          assert(field.get_component_count(Ioss::Field::InOut::INPUT) ==
+                 eb->topology()->number_nodes());
 
           // The connectivity is stored in a 1D array.
           // The face_node index varies fastet
@@ -2606,7 +2636,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
 
         if (field.get_name() == "connectivity") {
           int edge_nodes = eb->topology()->number_nodes();
-          assert(field.get_component_count() == edge_nodes);
+          assert(field.get_component_count(Ioss::Field::InOut::INPUT) == edge_nodes);
 
           // The connectivity is stored in a 1D array.
           // The edge_node index varies fastet
@@ -2617,7 +2647,8 @@ int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
         }
         else if (field.get_name() == "connectivity_raw") {
           // "connectivity_raw" has nodes in local id space (1-based)
-          assert(field.get_component_count() == eb->topology()->number_nodes());
+          assert(field.get_component_count(Ioss::Field::InOut::INPUT) ==
+                 eb->topology()->number_nodes());
 
           // The connectivity is stored in a 1D array.
           // The edge_node index varies fastet
@@ -3344,13 +3375,13 @@ int64_t DatabaseIO::write_attribute_field(ex_entity_type type, const Ioss::Field
   int64_t id              = Ioex::get_id(ge, type, &ids_);
   int     attribute_count = ge->get_property("attribute_count").get_int();
   assert(fld_offset > 0);
-  assert(fld_offset - 1 + field.get_component_count() <= attribute_count);
+  assert(fld_offset - 1 + field.get_component_count(Ioss::Field::InOut::OUTPUT) <= attribute_count);
 
   Ioss::Field::BasicType ioss_type = field.get_type();
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
          ioss_type == Ioss::Field::INT64);
 
-  if (fld_offset == 1 && field.get_component_count() == attribute_count) {
+  if (fld_offset == 1 && field.get_component_count(Ioss::Field::InOut::OUTPUT) == attribute_count) {
     // Write all attributes in one big chunk...
     std::vector<double> temp;
     double             *rdata = nullptr;
@@ -3376,7 +3407,7 @@ int64_t DatabaseIO::write_attribute_field(ex_entity_type type, const Ioss::Field
   else {
     // Write a subset of the attributes.  If scalar, write one;
     // if higher-order (vector3d, ..) write each component.
-    if (field.get_component_count() == 1) {
+    if (field.get_component_count(Ioss::Field::InOut::OUTPUT) == 1) {
       std::vector<double> temp;
       double             *rdata = nullptr;
       if (ioss_type == Ioss::Field::INTEGER) {
@@ -3402,7 +3433,7 @@ int64_t DatabaseIO::write_attribute_field(ex_entity_type type, const Ioss::Field
       // Multi-component...  Need a local memory space to push
       // data into and then write that out to the file...
       std::vector<double> local_data(num_entity);
-      int                 comp_count = field.get_component_count();
+      int                 comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
       for (int i = 0; i < comp_count; i++) {
         size_t offset = i;
         if (ioss_type == Ioss::Field::REAL) {
@@ -3451,8 +3482,8 @@ int64_t DatabaseIO::read_attribute_field(ex_entity_type type, const Ioss::Field 
 
   std::string att_name = ge->name() + SEP() + field.get_name();
   int64_t     offset   = field.get_index();
-  assert(offset - 1 + field.get_component_count() <= attribute_count);
-  if (offset == 1 && field.get_component_count() == attribute_count) {
+  assert(offset - 1 + field.get_component_count(Ioss::Field::InOut::INPUT) <= attribute_count);
+  if (offset == 1 && field.get_component_count(Ioss::Field::InOut::INPUT) == attribute_count) {
     // Read all attributes in one big chunk...
     int ierr = ex_get_attr(get_file_pointer(), type, id, static_cast<double *>(data));
     if (ierr < 0) {
@@ -3463,7 +3494,7 @@ int64_t DatabaseIO::read_attribute_field(ex_entity_type type, const Ioss::Field 
     // Read a subset of the attributes.  If scalar, read one;
     // if higher-order (vector3d, ..) read each component and
     // put into correct location...
-    if (field.get_component_count() == 1) {
+    if (field.get_component_count(Ioss::Field::InOut::INPUT) == 1) {
       int ierr = ex_get_one_attr(get_file_pointer(), type, id, offset, static_cast<double *>(data));
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
@@ -3474,7 +3505,7 @@ int64_t DatabaseIO::read_attribute_field(ex_entity_type type, const Ioss::Field 
       // Need a local memory space to read data into and
       // then push that into the user-supplied data block...
       std::vector<double> local_data(num_entity);
-      int                 comp_count = field.get_component_count();
+      int                 comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
       auto               *rdata      = static_cast<double *>(data);
       for (int i = 0; i < comp_count; i++) {
         int ierr = ex_get_one_attr(get_file_pointer(), type, id, offset + i, local_data.data());
@@ -3507,10 +3538,10 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
   // get number of components, cycle through each component
   // and add suffix to base 'field_name'.  Look up index
   // of this name in 'nodeVariables' map
-  size_t comp_count = field.get_component_count();
+  size_t comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
   if (comp_count == 1 && field.get_type() == Ioss::Field::REAL) {
-    std::string var_name = get_component_name(field, 1);
+    std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, 1);
 
     // Read the variable...
     int64_t id   = Ioex::get_id(ge, type, &ids_);
@@ -3531,7 +3562,7 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
   }
   else {
     for (size_t i = 0; i < comp_count; i++) {
-      std::string var_name = get_component_name(field, i + 1);
+      std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
 
       // Read the variable...
       int64_t id       = Ioex::get_id(ge, type, &ids_);
@@ -3595,10 +3626,10 @@ int64_t DatabaseIO::read_ss_transient_field(const Ioss::Field &field, int64_t id
   // get number of components, cycle through each component
   // and add suffix to base 'field_name'.  Look up index
   // of this name in 'nodeVariables' map
-  size_t comp_count = field.get_component_count();
+  size_t comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
   for (size_t i = 0; i < comp_count; i++) {
-    std::string var_name = get_component_name(field, i + 1);
+    std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
 
     // Read the variable...
     int  ierr     = 0;
@@ -4596,7 +4627,7 @@ void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Io
   // get number of components, cycle through each component
   // and add suffix to base 'field_name'.  Look up index
   // of this name in 'm_variables[EX_NODE_BLOCK]' map
-  int comp_count = field.get_component_count();
+  int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
   int var_index  = 0;
 
   int re_im = 1;
@@ -4610,7 +4641,7 @@ void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Io
     }
 
     for (int i = 0; i < comp_count; i++) {
-      std::string var_name = get_component_name(field, i + 1);
+      std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
       auto var_iter = m_variables[EX_NODE_BLOCK].find(var_name);
       if (var_iter == m_variables[EX_NODE_BLOCK].end()) {
@@ -4698,14 +4729,14 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
   // get number of components, cycle through each component
   // and add suffix to base 'field_name'.  Look up index
   // of this name in 'm_variables[type]' map
-  int comp_count = field.get_component_count();
+  int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
   // Handle quick easy, hopefully common case first...
   if (comp_count == 1 && ioss_type == Ioss::Field::REAL && type != EX_SIDE_SET &&
       !map->reorders()) {
     // Simply output the variable...
     int64_t     id       = Ioex::get_id(ge, type, &ids_);
-    std::string var_name = get_component_name(field, 1);
+    std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, 1);
     auto        var_iter = m_variables[type].find(var_name);
     if (var_iter == m_variables[type].end()) {
       std::ostringstream errmsg;
@@ -4718,8 +4749,8 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
 
     if (ierr < 0) {
       std::ostringstream extra_info;
-      fmt::print(extra_info, "Outputting field {} at step {:L} on {} {}.", field.get_name(), step,
-                 ge->type_string(), ge->name());
+      fmt::print(extra_info, "Outputting field {} at step {} on {} {}.", field.get_name(),
+                 fmt::group_digits(step), ge->type_string(), ge->name());
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
     }
     return;
@@ -4735,7 +4766,7 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
     }
 
     for (int i = 0; i < comp_count; i++) {
-      std::string var_name = get_component_name(field, i + 1);
+      std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
       auto var_iter = m_variables[type].find(var_name);
       if (var_iter == m_variables[type].end()) {
@@ -4780,8 +4811,8 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
 
       if (ierr < 0) {
         std::ostringstream extra_info;
-        fmt::print(extra_info, "Outputting component {} of field {} at step {:L} on {} {}.", i,
-                   field_name, step, ge->type_string(), ge->name());
+        fmt::print(extra_info, "Outputting component {} of field {} at step {} on {} {}.", i,
+                   field_name, fmt::group_digits(step), ge->type_string(), ge->name());
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
       }
     }
