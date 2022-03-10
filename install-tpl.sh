@@ -201,7 +201,7 @@ if [ $# -gt 0 ]; then
         echo "   METIS        = ${METIS}"
         echo "   PARMETIS     = ${PARMETIS}"
         echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
-	echo "   FMT          = ${FMT}"
+        echo "   FMT          = ${FMT}"
         echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
         echo "   USE_ZLIB_NG  = ${USE_ZLIB_NG}"
         echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
@@ -707,8 +707,10 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio
-            ./autogen.sh
-            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            rm -rf build
+            mkdir build
+            cd build
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure MatIO. exiting.${txtrst}
