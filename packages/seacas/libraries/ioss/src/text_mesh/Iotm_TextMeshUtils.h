@@ -413,13 +413,13 @@ namespace Iotm {
 
     struct SideBlockInfo
     {
-      std::string         name;
-      std::string         parentName;
-      std::string         sideTopology;
-      std::string         elementTopology;
-      std::string         touchingBlock;
-      std::vector<size_t> sideIndex;
-      unsigned            numNodesPerSide;
+      std::string         name{};
+      std::string         parentName{};
+      std::string         sideTopology{};
+      std::string         elementTopology{};
+      std::string         touchingBlock{};
+      std::vector<size_t> sideIndex{};
+      unsigned            numNodesPerSide{};
     };
 
     enum SplitType { TOPOLOGY, ELEMENT_BLOCK, NO_SPLIT, INVALID_SPLIT };
