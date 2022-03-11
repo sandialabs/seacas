@@ -420,8 +420,10 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
       rootDirectory_ = _fullpath(nullptr, path.c_str(), _MAX_PATH);
 #else
       char *tmp = ::realpath(path.c_str(), nullptr);
-      rootDirectory_ = std::string(tmp);
-      free(tmp);
+      if (tmp != nullptr) {
+        rootDirectory_ = std::string(tmp);
+        free(tmp);
+      }
 #endif
 
       basename_ = file.tailname();
