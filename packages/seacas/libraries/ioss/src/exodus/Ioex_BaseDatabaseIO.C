@@ -144,8 +144,8 @@ namespace {
               if(!found) {
                 std::ostringstream errmsg;
                 fmt::print(errmsg,
-                    "ERROR: Could not find sub-assembly with id: {} and name: {}"
-                    "       [{}]\n", assembly.id, assembly.name);
+                    "ERROR: Could not find sub-assembly with id: {} and name: {}",
+                    assembly.id, assembly.name);
                 IOSS_ERROR(errmsg);
               }
             }
@@ -771,10 +771,11 @@ namespace Ioex {
             assem->add(ge);
             num_added_entities++;
           }
-          else {
+
+          if (ge == nullptr) {
             std::ostringstream errmsg;
             fmt::print(errmsg,
-                       "Error: Failed to find entity of type {} with id {} for Assembly {}.\n",
+                       "Error: Failed to find entity of type {} with id {} for assembly {}.\n",
                        type, assembly.entity_list[j], assem->name());
             IOSS_ERROR(errmsg);
           }
