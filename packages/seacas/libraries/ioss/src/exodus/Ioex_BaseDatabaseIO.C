@@ -767,17 +767,17 @@ namespace Ioex {
 
         for (int j = 0; j < assembly.entity_count; j++) {
           auto *ge = get_region()->get_entity(assembly.entity_list[j], type);
-          if (ge != nullptr && !Ioss::Utils::block_is_omitted(ge)) {
-            assem->add(ge);
-            num_added_entities++;
-          }
-
           if (ge == nullptr) {
             std::ostringstream errmsg;
             fmt::print(errmsg,
                        "Error: Failed to find entity of type {} with id {} for assembly {}.\n",
                        type, assembly.entity_list[j], assem->name());
             IOSS_ERROR(errmsg);
+          }
+
+          if (!Ioss::Utils::block_is_omitted(ge)) {
+            assem->add(ge);
+            num_added_entities++;
           }
         }
         SMART_ASSERT(assem->member_count() == num_added_entities)
