@@ -1,10 +1,15 @@
 #! /usr/bin/env bash
+
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
-  ACCESS=$(cd ../../../..; pwd)
+  ACCESS=$(cd ../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
+
+. ${ACCESS}/TPL/compiler.sh
+
+rm -f config.cache
 
 DEBUG="${DEBUG:-NO}"
 if [ "$DEBUG" == "YES" ]
@@ -34,41 +39,23 @@ then
    LOCAL_ZLIB="-DZLIB_INCLUDE_DIR:PATH=${INSTALL_PATH}/include -DZLIB_LIBRARY:FILEPATH=${INSTALL_PATH}/lib/libz.${LD_EXT}"
 fi
 
-NEEDS_SZIP="${NEEDS_SZIP:-NO}"
-if [ "$NEEDS_SZIP" == "YES" ]
-then
-   LOCAL_SZIP="-DSZIP_INCLUDE_DIR:PATH=${INSTALL_PATH}/include -DSZIP_LIBRARY:FILEPATH=${INSTALL_PATH}/lib/libsz.${LD_EXT}"
-fi
-
-. ${ACCESS}/TPL/compiler.sh
-
-# If using an XLF compiler on an IBM system, may need to add the following:
-# -DCMAKE_Fortran_FLAGS="-qfixed=72" \
-# -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
-
 rm -f config.cache
 
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DBUILD_SHARED_LIBS:BOOL=${SHARED} \
-         -DBUILD_TESTING:BOOL=OFF \
+	 -DMATIO_DEFAULT_FILE_VERSION=7.3 \
+         -DMATIO_MAT73:BOOL=ON \
          -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
 	 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-         -DENABLE_NETCDF_4:BOOL=ON \
-         -DENABLE_PNETCDF:BOOL=${MPI} \
-         -DENABLE_CDF5=ON \
-         -DENABLE_MMAP:BOOL=ON \
-         -DENABLE_DAP:BOOL=OFF \
-         -DENABLE_V2_API:BOOL=OFF \
-         ${LOCAL_ZLIB} \
-         ${LOCAL_SZIP} \
-         ${EXTRA_DEPS} \
-         -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
+         -DMATIO_WITH_HDF5:BOOL=ON \
+         -DMATIO_WITH_ZLIB:BOOL=ON \
          -DHDF5_ROOT:PATH=${INSTALL_PATH} \
-         -DHDF5_DIR:PATH=${INSTALL_PATH}
+         -DHDF5_DIR:PATH=${INSTALL_PATH} \
+	 ${LOCAL_ZLIB} ${EXTRA_DEPS}
+
 
 echo ""
-echo "         MPI: ${MPI}"
 echo "    COMPILER: ${CC}"
 echo "      ACCESS: ${ACCESS}"
 echo "INSTALL_PATH: ${INSTALL_PATH}"

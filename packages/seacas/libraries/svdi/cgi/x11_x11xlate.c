@@ -4931,7 +4931,7 @@ static void set_foreground_color(surf_statelist *surf_state, int *colors)
 /* Set the SVDI background color */
 static void set_background_color(surf_statelist *surf_state, int *colors)
 {
-  int   i;                      /* loop index */
+  int   i     = 0;              /* loop index */
   int   index = 0;              /* color index */
   float dr, dg, db, dmin, dist; /* for finding the closet index */
   int   one     = 1;

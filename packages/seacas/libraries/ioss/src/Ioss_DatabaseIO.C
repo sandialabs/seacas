@@ -187,6 +187,7 @@ namespace Ioss {
     util_.add_environment_properties(properties);
 
     Utils::check_set_bool_property(properties, "ENABLE_FIELD_RECOGNITION", enableFieldRecognition);
+    Utils::check_set_bool_property(properties, "IGNORE_REALN_FIELDS", m_ignoreRealnFields);
 
     if (properties.exists("FIELD_SUFFIX_SEPARATOR")) {
       std::string tmp         = properties.get("FIELD_SUFFIX_SEPARATOR").get_string();
@@ -200,6 +201,37 @@ namespace Ioss {
     // vz to be a 3-component field 'v'.
     Utils::check_set_bool_property(properties, "FIELD_STRIP_TRAILING_UNDERSCORE",
                                    fieldStripTrailing_);
+
+    if (properties.exists("SURFACE_SPLIT_TYPE")) {
+      Ioss::SurfaceSplitType split_type = Ioss::SPLIT_INVALID;
+      auto                   type       = properties.get("SURFACE_SPLIT_TYPE").get_type();
+      if (type == Ioss::Property::INTEGER) {
+        int split  = properties.get("SURFACE_SPLIT_TYPE").get_int();
+        split_type = Ioss::int_to_surface_split(split);
+      }
+      else if (type == Ioss::Property::STRING) {
+        std::string split = properties.get("SURFACE_SPLIT_TYPE").get_string();
+        if (Ioss::Utils::str_equal(split, "TOPOLOGY")) {
+          split_type = Ioss::SPLIT_BY_TOPOLOGIES;
+        }
+        else if (Ioss::Utils::str_equal(split, "BLOCK")) {
+          split_type = Ioss::SPLIT_BY_ELEMENT_BLOCK;
+        }
+        else if (Ioss::Utils::str_equal(split, "NO_SPLIT")) {
+          split_type = Ioss::SPLIT_BY_DONT_SPLIT;
+        }
+        else {
+          split_type = Ioss::SPLIT_INVALID;
+          fmt::print(Ioss::WARNING(),
+                     "Invalid setting for SURFACE_SPLIT_TYPE Property ('{}').  Valid entries are "
+                     "TOPOLOGY, BLOCK, NO_SPLIT. Ignoring.\n",
+                     split);
+        }
+      }
+      if (split_type != Ioss::SPLIT_INVALID) {
+        set_surface_split_type(split_type);
+      }
+    }
 
     if (properties.exists("INTEGER_SIZE_API")) {
       int isize = properties.get("INTEGER_SIZE_API").get_int();
@@ -216,13 +248,8 @@ namespace Ioss {
       }
     }
 
-    if (properties.exists("CYCLE_COUNT")) {
-      cycleCount = properties.get("CYCLE_COUNT").get_int();
-    }
-
-    if (properties.exists("OVERLAY_COUNT")) {
-      overlayCount = properties.get("OVERLAY_COUNT").get_int();
-    }
+    cycleCount   = properties.get_optional("CYCLE_COUNT", cycleCount);
+    overlayCount = properties.get_optional("OVERLAY_COUNT", overlayCount);
 
     Utils::check_set_bool_property(properties, "ENABLE_TRACING", m_enableTracing);
     Utils::check_set_bool_property(properties, "TIME_STATE_INPUT_OUTPUT", m_timeStateInOut);
@@ -499,6 +526,7 @@ namespace Ioss {
   bool DatabaseIO::begin_state(int state, double time)
   {
     IOSS_FUNC_ENTER(m_);
+    progress(__func__);
     if (m_timeStateInOut) {
       m_stateStart = std::chrono::steady_clock::now();
     }
@@ -512,6 +540,7 @@ namespace Ioss {
       auto finish = std::chrono::steady_clock::now();
       log_time(m_stateStart, finish, state, time, is_input(), singleProcOnly, util_);
     }
+    progress(__func__);
     return res;
   }
 
@@ -719,6 +748,19 @@ namespace Ioss {
     if (!inclusions.empty()) {
       blockInclusions.assign(inclusions.cbegin(), inclusions.cend());
       Ioss::sort(blockInclusions.begin(), blockInclusions.end());
+    }
+  }
+
+  void DatabaseIO::set_assembly_omissions(const std::vector<std::string> &omissions,
+                                          const std::vector<std::string> &inclusions)
+  {
+    if (!omissions.empty()) {
+      assemblyOmissions.assign(omissions.cbegin(), omissions.cend());
+      Ioss::sort(assemblyOmissions.begin(), assemblyOmissions.end());
+    }
+    if (!inclusions.empty()) {
+      assemblyInclusions.assign(inclusions.cbegin(), inclusions.cend());
+      Ioss::sort(assemblyInclusions.begin(), assemblyInclusions.end());
     }
   }
 

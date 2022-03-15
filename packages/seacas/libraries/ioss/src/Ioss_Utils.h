@@ -107,6 +107,8 @@ namespace Ioss {
     static void set_pre_warning_text(const std::string &text) { m_preWarningText = text; }
     /** @}*/
 
+    static void copyright(std::ostream &out, const std::string &year_range);
+
     static void check_dynamic_cast(const void *ptr)
     {
       if (ptr == nullptr) {

@@ -4,7 +4,7 @@
  * ***********************************************************************
  *
  *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
+ *                  Copyright 2012, 2022 Sandia Corporation
  *
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
  * the U.S. Government retains certain rights in this software.
@@ -337,7 +337,6 @@ int gen_geom, int gen_graph, int gen_hg)
     goto End;
   }
   for (i=0; i<num_obj; i++) {
-    int j;
     for (j = 0; j < lenGID; j++)
       fprintf(fp, ZOLTAN_ID_SPEC" ", global_ids[i*lenGID+j]);
     fprintf(fp, "\n");

@@ -236,7 +236,7 @@ SHARED=$(check_valid SHARED)
 if [ "${CRAY}" == "YES" ] && [ "${SHARED}" == "NO" ]
 then
   # Assumes we build our own static zlib with CRAY
-  CRAY_OPT=-DSEACASProj_EXTRA_LINK_FLAGS=${INSTALL_PATH}/lib/libz.a
+  EXTRA_LIB=-DSEACASProj_EXTRA_LINK_FLAGS=${INSTALL_PATH}/lib/libz.a
 fi
 
 ### Switch for Debug or Release build:
@@ -348,6 +348,7 @@ then
 	LD_EXT="so"
     fi
 else
+    EXTRA_LIB="-DSEACASProj_EXTRA_LINK_FLAGS=z;dl -DSEACASExodus_ENABLE_SHARED:BOOL=OFF"
     LD_EXT="a"
 fi
 
@@ -464,7 +465,7 @@ ${SUBSET_OPTIONS} \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 -D SEACASProj_ENABLE_DOXYGEN:BOOL=${DOXYGEN} \
 -D SEACASProj_ENABLE_Fortran=${FORTRAN} \
-${CRAY_OPT} \
+${EXTRA_LIB} \
 \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
@@ -477,6 +478,7 @@ ${CRAY_OPT} \
 -D TPL_ENABLE_ParMETIS:BOOL=${HAVE_PARMETIS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
+-D TPL_ENABLE_fmt:BOOL=ON \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
 ${THREAD_SAFE_OPT} \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
