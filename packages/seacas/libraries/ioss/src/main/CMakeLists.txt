@@ -528,7 +528,7 @@ TRIBITS_ADD_ADVANCED_TEST(unstructured_2d_cgns
      NOEXEPREFIX NOEXESUFFIX
    TEST_1 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/circle-square-2d.cgns 2d-out.cgns
      NUM_MPI_PROCS 1
-  COMM mpi
+  COMM mpi serial
   )
 
 TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_fpp_vertex_cell_fields
