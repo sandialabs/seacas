@@ -2432,8 +2432,9 @@ namespace Iocgns {
         CGCHECKM(
             cg_goto(get_file_pointer(), base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", sect, "end"));
         CGCHECKM(cg_famname_write(name.c_str()));
-        CGCHECKM(cg_boco_gridlocation_write(get_file_pointer(), base, zone, sect,
-                                            CGNS_ENUMV(FaceCenter)));
+
+        auto location = phys_dimension == 2 ? CGNS_ENUMV(EdgeCenter) : CGNS_ENUMV(FaceCenter);
+        CGCHECKM(cg_boco_gridlocation_write(get_file_pointer(), base, zone, sect, location));
 
         CGCHECKM(cgp_section_write(get_file_pointer(), base, zone, sb_name.c_str(), type, cg_start,
                                    cg_end, 0, &sect));
