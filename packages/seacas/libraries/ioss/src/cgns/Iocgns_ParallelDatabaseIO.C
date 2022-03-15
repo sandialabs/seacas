@@ -2433,7 +2433,8 @@ namespace Iocgns {
             cg_goto(get_file_pointer(), base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", sect, "end"));
         CGCHECKM(cg_famname_write(name.c_str()));
 
-        auto location = phys_dimension == 2 ? CGNS_ENUMV(EdgeCenter) : CGNS_ENUMV(FaceCenter);
+        int  phys_dimension = get_region()->get_property("spatial_dimension").get_int();
+        auto location       = phys_dimension == 2 ? CGNS_ENUMV(EdgeCenter) : CGNS_ENUMV(FaceCenter);
         CGCHECKM(cg_boco_gridlocation_write(get_file_pointer(), base, zone, sect, location));
 
         CGCHECKM(cgp_section_write(get_file_pointer(), base, zone, sb_name.c_str(), type, cg_start,
