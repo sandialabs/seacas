@@ -2720,8 +2720,10 @@ namespace Iocgns {
             int field_byte_size            = (field.get_type() == Ioss::Field::INT32) ? 32 : 64;
             if (field_byte_size == CG_SIZEOF_SIZE) {
               Utils::unmap_cgns_connectivity(eb->topology(), num_to_get, (cgsize_t *)data);
-              CGCHECKM(cg_section_write(get_file_pointer(), base, zone, "HexElements", type, 1,
-                                        num_to_get, 0, (cgsize_t *)data, &sect));
+              std::string element_type =
+                  fmt::format("{}Elements", Ioss::Utils::shape_to_string(eb->topology()->shape()));
+              CGCHECKM(cg_section_write(get_file_pointer(), base, zone, element_type.c_str(), type,
+                                        1, num_to_get, 0, (cgsize_t *)data, &sect));
             }
             else {
               CGNSIntVector connect;
@@ -2739,8 +2741,10 @@ namespace Iocgns {
                 }
               }
               Utils::unmap_cgns_connectivity(eb->topology(), num_to_get, connect.data());
-              CGCHECKM(cg_section_write(get_file_pointer(), base, zone, "HexElements", type, 1,
-                                        num_to_get, 0, connect.data(), &sect));
+              std::string element_type =
+                  fmt::format("{}Elements", Ioss::Utils::shape_to_string(eb->topology()->shape()));
+              CGCHECKM(cg_section_write(get_file_pointer(), base, zone, element_type.c_str(), type,
+                                        1, num_to_get, 0, connect.data(), &sect));
             }
             m_bcOffset[zone] += num_to_get;
             eb->property_update("section", sect);
