@@ -116,9 +116,9 @@
  */
 typedef struct
 {
-  void (*device_fn)();           /* which device is this list for */
-  short     num_active_surfaces; /* how many active */
-  short     num_on_surfaces;     /* how many have output on */
+  void (*device_fn)(anything **, int, anything **); /* which device is this list for */
+  short     num_active_surfaces;                    /* how many active */
+  short     num_on_surfaces;                        /* how many have output on */
   anything *statelist[MAX_SURFACES];
   /* within surfaces, all surfaces which have output on are */
   /* found at the beginning of the list, followed by all */
