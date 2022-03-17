@@ -142,9 +142,9 @@ const char *ex_field_component_name(ex_field_type field_type, int component)
     verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_FIELD_TYPE_UNKNOWN:
   case EX_FIELD_TYPE_USER_DEFINED:
   case EX_FIELD_TYPE_SEQUENCE:
+  case EX_QUADRATURE:
   case EX_BASIS:
   case EX_SCALAR:
   case EX_FIELD_TYPE_INVALID:
@@ -155,9 +155,9 @@ const char *ex_field_component_name(ex_field_type field_type, int component)
 int ex_field_cardinality(const ex_field_type field_type)
 {
   switch (field_type) {
-  case EX_FIELD_TYPE_UNKNOWN: return -1;
   case EX_FIELD_TYPE_USER_DEFINED: return -1;
   case EX_FIELD_TYPE_SEQUENCE: return -1;
+  case EX_QUADRATURE: return -1;
   case EX_BASIS: return -1;
   case EX_SCALAR: return 1;
   case EX_VECTOR_1D: return 1;
@@ -191,11 +191,8 @@ int ex_field_cardinality(const ex_field_type field_type)
  *  database as a user-readable attribute.  For example, EX_VECTOR_2D
  *  is on the database instead of a raw number 2
  */
-ex_field_type field_string_to_field_type(const char *field_name)
+ex_field_type ex_field_string_to_field_type(const char *field_name)
 {
-  if (strcmp(field_name, "EX_FIELD_TYPE_UNKNOWN") == 0) {
-    return EX_FIELD_TYPE_UNKNOWN;
-  }
   if (strcmp(field_name, "EX_FIELD_TYPE_USER_DEFINED") == 0) {
     return EX_FIELD_TYPE_USER_DEFINED;
   }
@@ -204,6 +201,9 @@ ex_field_type field_string_to_field_type(const char *field_name)
   }
   if (strcmp(field_name, "EX_BASIS") == 0) {
     return EX_BASIS;
+  }
+  if (strcmp(field_name, "EX_QUADRATURE") == 0) {
+    return EX_QUADRATURE;
   }
   if (strcmp(field_name, "EX_SCALAR") == 0) {
     return EX_SCALAR;
@@ -281,13 +281,13 @@ ex_field_type field_string_to_field_type(const char *field_name)
  *  written to the database as a user-readable attribute.  For
  *  example, EX_VECTOR_2D would appear instead of a raw number 2
  */
-const char *const field_type_enum_to_string(const ex_field_type field_type)
+const char *const ex_field_type_enum_to_string(const ex_field_type field_type)
 {
   switch (field_type) {
-  case EX_FIELD_TYPE_UNKNOWN: return "EX_FIELD_TYPE_UNKNOWN";
   case EX_FIELD_TYPE_USER_DEFINED: return "EX_FIELD_TYPE_USER_DEFINED";
   case EX_FIELD_TYPE_SEQUENCE: return "EX_FIELD_TYPE_SEQUENCE";
   case EX_BASIS: return "EX_BASIS";
+  case EX_QUADRATURE: return "EX_QUADRATURE";
   case EX_SCALAR: return "EX_SCALAR";
   case EX_VECTOR_1D: return "EX_VECTOR_1D";
   case EX_VECTOR_2D: return "EX_VECTOR_2D";
@@ -318,10 +318,10 @@ const char *const field_type_enum_to_string(const ex_field_type field_type)
 const char *const ex_field_name(const ex_field_type field_type)
 {
   switch (field_type) {
-  case EX_FIELD_TYPE_UNKNOWN: return "unknown";
   case EX_FIELD_TYPE_USER_DEFINED: return "user defined";
   case EX_FIELD_TYPE_SEQUENCE: return "sequence";
   case EX_BASIS: return "basis";
+  case EX_QUADRATURE: return "quadrature";
   case EX_SCALAR: return "scalar";
   case EX_VECTOR_1D: return "vector 1D";
   case EX_VECTOR_2D: return "vector 2D";

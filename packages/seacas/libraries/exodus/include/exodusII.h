@@ -285,10 +285,11 @@ enum ex_entity_type {
 typedef enum ex_entity_type ex_entity_type;
 
 enum ex_field_type {
-  EX_FIELD_TYPE_UNKNOWN = 0,
+  EX_FIELD_TYPE_INVALID = 0,
   EX_FIELD_TYPE_USER_DEFINED,
   EX_FIELD_TYPE_SEQUENCE,
   EX_BASIS,
+  EX_QUADRATURE,
   EX_SCALAR,
   EX_VECTOR_1D,
   EX_VECTOR_2D,
@@ -310,20 +311,37 @@ enum ex_field_type {
   EX_ASYM_TENSOR_02,
   EX_ASYM_TENSOR_01,
   EX_MATRIX_2X2,
-  EX_MATRIX_3X3,
-  EX_FIELD_TYPE_INVALID = -1
+  EX_MATRIX_3X3
 };
 typedef enum ex_field_type ex_field_type;
 
 #define EX_MAX_FIELD_NESTING 4
 typedef struct ex_field
 {
-  char          name[NC_MAX_NAME + 1];
-  ex_field_type type[EX_MAX_FIELD_NESTING];
-  int           nesting;
-  int           cardinality[EX_MAX_FIELD_NESTING];
-  char          compnonent_separator;
+  char          name[NC_MAX_NAME + 1]; /* Name of the field */
+  int           nesting; /* Number of composite fields (vector at each quadrature point = 2) */
+  ex_field_type type[EX_MAX_FIELD_NESTING];        /* ex_field_type of each nested field */
+  int           cardinality[EX_MAX_FIELD_NESTING]; /* 0 to calculate based on type */
+  char          component_separator[EX_MAX_FIELD_NESTING +
+                           1]; /* empty defaults to '_'; +1 so can be a string... */
 } ex_field;
+
+typedef struct ex_basis
+{
+  char name[NC_MAX_NAME + 1];
+} ex_basis;
+
+typedef struct ex_quadrature
+{
+  char    name[NC_MAX_NAME + 1];
+  int     cardinality; /* Number of quadrature points */
+  int     dimension;   /* 1,2,3 -- spatial dimension of points */
+  double *xi;          /* xi  (x) coordinate of points; dimension = cardinality  or NULL */
+  double *
+      eta; /* eta (y) coordinate of points; dimension = cardinality if dimension = 2 or 3 or NULL */
+  double *mu; /* mu  (z) coordinate of points; dimension = cardinality if dimension == 3. or NULL */
+  double *weight; /* weights for each point; dimension = cardinality or NULL */
+} ex_quadrature;
 
 /*!
  * ex_opts() function codes - codes are OR'ed into exopts
@@ -982,6 +1000,13 @@ EXODUS_EXPORT int ex_get_blob(int exoid, struct ex_blob *blob);
 EXODUS_EXPORT int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs);
 EXODUS_EXPORT int ex_get_blobs(int exoid, struct ex_blob *blobs);
 
+EXODUS_EXPORT int ex_put_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id,
+                                        const ex_field field);
+EXODUS_EXPORT int ex_put_basis_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id,
+                                        const ex_field field);
+EXODUS_EXPORT int ex_put_quadrature_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id,
+                                             const ex_field field);
+
 /*  Write arbitrary integer, double, or text attributes on an entity */
 EXODUS_EXPORT int ex_put_attribute(int exoid, const ex_attribute attributes);
 EXODUS_EXPORT int ex_put_attributes(int exoid, size_t attr_count, const ex_attribute *attributes);
@@ -1234,8 +1259,8 @@ EXODUS_EXPORT int ex_put_elem_cmap(int             exoid,    /**< NetCDF/Exodus 
 EXODUS_EXPORT const char       *ex_field_component_name(ex_field_type field_type, int component);
 EXODUS_EXPORT int               ex_field_cardinality(const ex_field_type field_type);
 EXODUS_EXPORT const char *const ex_field_name(const ex_field_type field_type);
-EXODUS_EXPORT ex_field_type     field_string_to_field_type(const char *field_name);
-EXODUS_EXPORT const char *const field_type_enum_to_string(const ex_field_type field_type);
+EXODUS_EXPORT ex_field_type     ex_field_string_to_field_type(const char *field_name);
+EXODUS_EXPORT const char *const ex_field_type_enum_to_string(const ex_field_type field_type);
 
 /*! @} */
 
