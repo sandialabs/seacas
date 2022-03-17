@@ -645,16 +645,6 @@ namespace Ioex {
   {
     Ioss::SerializeIO serializeIO__(this);
 
-    if (!assemblyOmissions.empty() && !assemblyInclusions.empty()) {
-      // Only one can be non-empty
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: Only one of assembly omission or inclusion can be non-empty"
-                 "       [{}]\n",
-                 get_filename());
-      IOSS_ERROR(errmsg);
-    }
-
     if (!assemblyOmissions.empty()) {
       assert(blockInclusions.empty());
     }
