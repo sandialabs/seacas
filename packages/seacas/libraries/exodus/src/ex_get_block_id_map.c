@@ -55,7 +55,7 @@ int ex_get_block_id_map(int exoid, ex_entity_type obj_type, ex_entity_id entity_
   }
 
   /* At this point, we have a valid block.  Determine the number of
-     entities it and all previousl blocks contain. */
+     entities it and all previous blocks contain. */
   switch (obj_type) {
   case EX_EDGE_BLOCK:
     dnument  = DIM_NUM_ED_IN_EBLK(blk_id_ndx);

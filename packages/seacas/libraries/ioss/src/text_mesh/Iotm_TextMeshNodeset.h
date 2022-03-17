@@ -125,8 +125,8 @@ class NodesetParser
     }
   }
 
-  std::vector<EntityId> m_nodeList;
-  std::string m_name;
+  std::vector<EntityId> m_nodeList{};
+  std::string m_name{};
   ErrorHandler m_errorHandler;
 };
 

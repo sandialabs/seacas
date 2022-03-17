@@ -1109,20 +1109,20 @@ namespace Iotm {
       permutationNodeOrdinals = permutationNodeOrdinals_;
     }
 
-    unsigned int           id = 0;
+    unsigned int           id{0};
     Ioss::ElementTopology *topology = nullptr;
 
-    bool isShell = false;
+    bool isShell {false};
     std::vector<TopologyMapEntry*> sideTopologies{};
 
-    uint8_t numPermutations = 0;
-    uint8_t numPositivePermutations = 0;
+    uint8_t numPermutations{0};
+    uint8_t numPositivePermutations{0};
     std::vector<std::vector<uint8_t>> permutationNodeOrdinals{};
 
     // Defines what spatial dimension the topology is valid on
     DimensionArray validSpatialDimensions;
 
-    bool initialized = false;
+    bool initialized{false};
   };
 
   inline std::ostream &operator<<(std::ostream &out, const TopologyMapEntry &t)

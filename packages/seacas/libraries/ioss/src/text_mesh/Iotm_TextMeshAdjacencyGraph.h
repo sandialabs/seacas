@@ -169,7 +169,7 @@ class SideAdjacencyGraph
     }
 
     // Number of sides defined by topology for this element entry
-    unsigned numSides = 0;
+    unsigned numSides{0};
 
     // Number of references to given side based on entries to the connections member: for performance
     std::vector<int> sideReference{};

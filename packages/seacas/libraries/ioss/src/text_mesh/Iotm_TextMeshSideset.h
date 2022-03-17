@@ -37,13 +37,13 @@ namespace text_mesh {
 using ErrorHandler = std::function<void(const std::ostringstream &)>;
 
 struct SideBlockInfo {
-  std::string name;
-  std::string parentName;
-  std::string sideTopology;
-  std::string elementTopology;
-  std::string touchingBlock;
-  std::vector<size_t> sideIndex;
-  unsigned numNodesPerSide;
+  std::string name{};
+  std::string parentName{};
+  std::string sideTopology{};
+  std::string elementTopology{};
+  std::string touchingBlock{};
+  std::vector<size_t> sideIndex{};
+  unsigned numNodesPerSide{0};
 };
 
 enum SplitType { TOPOLOGY, ELEMENT_BLOCK, NO_SPLIT, INVALID_SPLIT };
@@ -196,13 +196,13 @@ class SidesetSplitter
   }
 
   struct SplitData {
-    bool metaDataSet;
-    std::string sidesetName;
-    std::string touchingBlock;
-    std::string elemTopology;
-    std::string sideTopology;
-    int sideNodeCount;
-    std::vector<size_t> index;
+    bool metaDataSet{false};
+    std::string sidesetName{};
+    std::string touchingBlock{};
+    std::string elemTopology{};
+    std::string sideTopology{};
+    int sideNodeCount{-1};
+    std::vector<size_t> index{};
 
     SplitData() : metaDataSet(false), sideNodeCount(-1) {}
   };
@@ -299,8 +299,8 @@ class SidesetSplitter
     splitData.metaDataSet = true;
   }
 
-  SplitType m_splitType;
-  std::string m_sidesetName;
+  SplitType m_splitType{INVALID_SPLIT};
+  std::string m_sidesetName{};
 
   std::unordered_map<size_t, int> m_indexProcMap;
   std::unordered_map<std::string, SplitData> m_splitMap;
@@ -398,7 +398,7 @@ struct SidesetData : public EntityGroupData<SidesetDataType<EntityId>> {
 
   SideAdjacencyGraph<EntityId, Topology> m_adjacencyGraph;
   SidesetSplitter<EntityId, Topology> m_sidesetSplitter;
-  std::vector<std::string> m_skinBlocks;
+  std::vector<std::string> m_skinBlocks{};
 };
 
 template <typename EntityId, typename Topology>
@@ -551,10 +551,10 @@ class SidesetParser
     }
   }
 
-  std::vector<std::pair<EntityId, int>> m_elemSidePairs;
-  std::string m_name;
-  std::vector<std::string> m_skinnedBlocks;
-  SplitType m_splitType;
+  std::vector<std::pair<EntityId, int>> m_elemSidePairs{};
+  std::string m_name{};
+  std::vector<std::string> m_skinnedBlocks{};
+  SplitType m_splitType{NO_SPLIT};
   ErrorHandler m_errorHandler;
 };
 

@@ -190,10 +190,10 @@ class PartIdMapping
     return it->second;
   }
 
-  std::vector<std::string> m_partNames;
+  std::vector<std::string> m_partNames{};
   mutable std::unordered_map<std::string, unsigned> m_ids;
   mutable std::map<unsigned, std::string> m_parts;
-  mutable bool m_idsAssigned;
+  mutable bool m_idsAssigned{false};
 
   ErrorHandler m_errorHandler;
 };
@@ -266,7 +266,7 @@ struct ElementData {
   int proc;
   EntityId identifier;
   Topology topology;
-  std::vector<EntityId> nodeIds;
+  std::vector<EntityId> nodeIds{};
   std::string partName = "";
 
   operator EntityId() const { return identifier; }
@@ -297,10 +297,10 @@ class Assemblies;
 
 template <typename EntityId, typename Topology>
 struct TextMeshData {
-  unsigned spatialDim;
-  std::vector<ElementData<EntityId, Topology>> elementDataVec;
+  unsigned spatialDim{0};
+  std::vector<ElementData<EntityId, Topology>> elementDataVec{};
   PartIdMapping partIds;
-  std::set<EntityId> nodeIds;
+  std::set<EntityId> nodeIds{};
   Coordinates<EntityId> coords;
   Sidesets<EntityId, Topology> sidesets;
   Nodesets<EntityId> nodesets;
@@ -345,8 +345,8 @@ struct TextMeshData {
   std::unordered_map<EntityId, std::set<int>> m_procsForNode;
   std::unordered_map<int, std::set<EntityId>> m_nodesOnProc;
 
-  std::set<int> m_emptyProcs;
-  std::set<EntityId> m_emptyNodes;
+  std::set<int> m_emptyProcs{};
+  std::set<EntityId> m_emptyNodes{};
 };
 
 

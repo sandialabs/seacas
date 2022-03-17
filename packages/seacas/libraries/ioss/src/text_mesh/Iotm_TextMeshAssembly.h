@@ -270,8 +270,8 @@ class AssemblyParser
   }
 
   std::vector<std::string> m_members{};
-  std::string m_name;
-  AssemblyType m_assemblyType;
+  std::string m_name{};
+  AssemblyType m_assemblyType{INVALID_ASSEMBLY};
   ErrorHandler m_errorHandler;
 };
 

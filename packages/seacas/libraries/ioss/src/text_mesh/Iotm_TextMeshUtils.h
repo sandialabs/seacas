@@ -126,13 +126,13 @@ class TextMeshLexer
     return str;
   }
 
-  std::string m_input;
-  unsigned m_currentIndex;
+  std::string m_input{};
+  unsigned m_currentIndex{0};
 
-  std::string m_oldToken;
-  std::string m_token;
+  std::string m_oldToken{};
+  std::string m_token{};
 
-  bool m_isNumber;
+  bool m_isNumber{false};
 };
 
 
@@ -527,14 +527,14 @@ class TextMeshOptionParser
     }
   }
 
-  unsigned long m_parsedOptionMask;
+  unsigned long m_parsedOptionMask{PARSED_NONE};
 
-  int m_parsedDimension;
-  int m_constructorEnforcedDimension;
+  int m_parsedDimension{INVALID_DIMENSION};
+  int m_constructorEnforcedDimension{INVALID_DIMENSION};
 
-  std::string m_meshConnectivityDescription;
+  std::string m_meshConnectivityDescription{};
 
-  std::vector<double> m_rawCoordinates;
+  std::vector<double> m_rawCoordinates{};
   ErrorHandler m_errorHandler;
 
   TextMeshData<EntityId, Topology> &m_data;
@@ -732,7 +732,7 @@ class TextMeshParser
     }
   }
 
-  unsigned m_lineNumber = 0;
+  unsigned m_lineNumber{0};
   TextMeshData<EntityId, Topology> m_data;
   TextMeshLexer m_lexer;
   TopologyMapping m_topologyMapping;

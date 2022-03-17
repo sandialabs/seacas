@@ -42,7 +42,7 @@ struct EntityGroupData {
   unsigned id = INVALID_ID;
   std::string name = "";
   std::string type = "";
-  std::vector<DataType> data;
+  std::vector<DataType> data{};
 
   bool has_valid_id() const { return id != 0 && id != INVALID_ID; }
   bool has_name() const { return !name.empty(); }
@@ -238,16 +238,16 @@ class EntityGroup
     }
   }
 
-  std::vector<std::string> m_partNames;
+  std::vector<std::string> m_partNames{};
   mutable std::unordered_map<std::string, unsigned> m_ids;
   mutable std::unordered_map<unsigned, std::string> m_parts;
-  mutable bool m_idsAssigned;
+  mutable bool m_idsAssigned{false};
   mutable std::unordered_map<std::string, size_t> m_groupDataMap;
 
-  std::string m_type;
-  std::string m_exodusPrefix;
-  std::vector<std::string> m_invalidPrefixes;
-  std::vector<GroupData> m_groupDataVec;
+  std::string m_type{};
+  std::string m_exodusPrefix{};
+  std::vector<std::string> m_invalidPrefixes{};
+  std::vector<GroupData> m_groupDataVec{};
 
   ErrorHandler m_errorHandler;
 };
