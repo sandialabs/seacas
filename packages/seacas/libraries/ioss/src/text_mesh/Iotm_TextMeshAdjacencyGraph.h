@@ -179,22 +179,30 @@ class SideAdjacencyGraph
     std::set<FaceConnection> connections{};
   };
 
+  virtual size_t get_num_elements() const = 0;
+  virtual int get_element_proc(const size_t elemIndex) const = 0;
+  virtual bool element_has_any_node_on_proc(const size_t elemIndex, int proc) const = 0;
+  virtual const std::string& get_element_block_name(const size_t elemIndex) const = 0;
+  virtual const std::vector<EntityId>& get_element_node_ids(const size_t elemIndex) const = 0;
+  virtual const Topology& get_element_topology(const size_t elemIndex) const = 0;
+  virtual EntityId get_element_id(const size_t elemIndex) const = 0;
+
   SideAdjacencyGraph()
   {
     ErrorHandler errorHandler = [](const std::ostringstream &errmsg) { default_error_handler(errmsg); };
     set_error_handler(errorHandler);
   }
 
-  void create_graph(const TextMeshData<EntityId, Topology> &data, int proc = ANY_PROC) { create_graph(data, {}, proc); }
+  virtual ~SideAdjacencyGraph() = default;
 
-  void create_graph(
-      const TextMeshData<EntityId, Topology> &data, const std::vector<std::string> &selectedBlocks, int proc = ANY_PROC)
+  void create_graph(int proc = ANY_PROC) { create_graph({}, proc); }
+
+  void create_graph(const std::vector<std::string> &selectedBlocks, int proc = ANY_PROC)
   {
     m_indexGraph.clear();
-    std::vector<size_t> localAndAuraElementIndex = get_local_and_aura_elements(data, selectedBlocks, proc);
-    std::unordered_map<EntityId, std::set<size_t>> elementsForNode =
-        get_elements_for_node_map(data.elementDataVec, localAndAuraElementIndex);
-    build_side_connectivity_graph(data.elementDataVec, localAndAuraElementIndex, elementsForNode);
+    std::vector<size_t> localAndAuraElementIndex = get_local_and_aura_elements(selectedBlocks, proc);
+    std::unordered_map<EntityId, std::set<size_t>> elementsForNode = get_elements_for_node_map(localAndAuraElementIndex);
+    build_side_connectivity_graph(localAndAuraElementIndex, elementsForNode);
   }
 
   void set_error_handler(ErrorHandler errorHandler) { m_errorHandler = errorHandler; }
@@ -245,7 +253,7 @@ class SideAdjacencyGraph
   typename std::unordered_map<size_t, FaceConnections>::const_iterator begin() const { return m_indexGraph.begin(); }
   typename std::unordered_map<size_t, FaceConnections>::const_iterator end() const { return m_indexGraph.end(); }
 
- private:
+ protected:
   using OrdinalType = typename Topology::Ordinal;
   using PermutationType = typename Topology::Permutation;
 
@@ -258,12 +266,11 @@ class SideAdjacencyGraph
 
   // Current element and side under consideration
   struct CurrentAdjacency {
-    CurrentAdjacency(const std::vector<ElementData<EntityId, Topology>> &elemDataVec_, size_t elementIndex_, int side_)
-        : elemDataVec(elemDataVec_), elementIndex(elementIndex_), side(side_)
+    CurrentAdjacency(size_t elementIndex_, int side_)
+        : elementIndex(elementIndex_), side(side_)
     {
     }
 
-    const std::vector<ElementData<EntityId, Topology>> &elemDataVec;
     size_t elementIndex;
     int side;
 
@@ -272,22 +279,22 @@ class SideAdjacencyGraph
   };
 
   std::set<size_t>
-  get_element_indices_with_common_nodes_on_side(
-      const ElementData<EntityId, Topology> &elemData,
-      int side,
-      const std::unordered_map<EntityId, std::set<size_t>> &elementsForNode)
+  get_element_indices_with_common_nodes_on_side(const size_t elemIndex, int side,
+                                                const std::unordered_map<EntityId, std::set<size_t>> &elementsForNode)
   {
     std::set<size_t> neighbors;
-    std::vector<OrdinalType> sideNodeIndices = elemData.topology.side_topology_node_indices(side);
+    std::vector<OrdinalType> sideNodeIndices = get_element_topology(elemIndex).side_topology_node_indices(side);
+
+    const std::vector<EntityId>& elementNodeIds = get_element_node_ids(elemIndex);
 
     if (!sideNodeIndices.empty()) {
-      EntityId firstSideNode = elemData.nodeIds[sideNodeIndices[0]];
+      EntityId firstSideNode = elementNodeIds[sideNodeIndices[0]];
       neighbors = elementsForNode.at(firstSideNode);
     }
 
     for (size_t i = 1; i < sideNodeIndices.size(); ++i) {
       OrdinalType sideNodeIndex = sideNodeIndices[i];
-      EntityId sideNode = elemData.nodeIds[sideNodeIndex];
+      EntityId sideNode = elementNodeIds[sideNodeIndex];
       const std::set<size_t> &sideNodeElementIndices = elementsForNode.at(sideNode);
 
       std::set<size_t> intersection;
@@ -300,22 +307,23 @@ class SideAdjacencyGraph
     return neighbors;
   }
 
-  std::vector<EntityId> get_side_nodes(const ElementData<EntityId, Topology> &elemData, const int side)
+  std::vector<EntityId> get_side_nodes(const size_t elemIndex, const int side)
   {
-    std::vector<OrdinalType> sideNodeIndices = elemData.topology.side_topology_node_indices(side);
+    std::vector<OrdinalType> sideNodeIndices = get_element_topology(elemIndex).side_topology_node_indices(side);
     std::vector<EntityId> sideNodes(sideNodeIndices.size());
+    const std::vector<EntityId>& elementNodeIds = get_element_node_ids(elemIndex);
 
     for (size_t i = 0; i < sideNodeIndices.size(); ++i) {
       OrdinalType sideNodeIndex = sideNodeIndices[i];
-      sideNodes[i] = elemData.nodeIds[sideNodeIndex];
+      sideNodes[i] = elementNodeIds[sideNodeIndex];
     }
 
     return sideNodes;
   }
 
-  std::vector<EntityId> get_sorted_side_nodes(const ElementData<EntityId, Topology> &elemData, const int side)
+  std::vector<EntityId> get_sorted_side_nodes(const size_t elemIndex, const int side)
   {
-    std::vector<EntityId> sideNodes = get_side_nodes(elemData, side);
+    std::vector<EntityId> sideNodes = get_side_nodes(elemIndex, side);
     std::sort(sideNodes.begin(), sideNodes.end());
 
     return sideNodes;
@@ -326,12 +334,10 @@ class SideAdjacencyGraph
   {
     adjacency.connectedSides.clear();
 
-    std::vector<EntityId> sideNodes =
-        get_sorted_side_nodes(adjacency.elemDataVec[adjacency.elementIndex], adjacency.side);
+    std::vector<EntityId> sideNodes = get_sorted_side_nodes(adjacency.elementIndex, adjacency.side);
 
-    const ElementData<EntityId, Topology> &neighborElemData = adjacency.elemDataVec[neighborElementIndex];
-    for (int otherSide = 1; otherSide <= neighborElemData.topology.num_sides(); ++otherSide) {
-      std::vector<EntityId> otherSideNodes = get_sorted_side_nodes(neighborElemData, otherSide);
+    for (int otherSide = 1; otherSide <= get_element_topology(neighborElementIndex).num_sides(); ++otherSide) {
+      std::vector<EntityId> otherSideNodes = get_sorted_side_nodes(neighborElementIndex, otherSide);
       if (sideNodes == otherSideNodes) {
         adjacency.connectedSides.push_back(otherSide);
       }
@@ -346,8 +352,8 @@ class SideAdjacencyGraph
     if (adjacency.connectedSides.empty()) {
       std::ostringstream errmsg;
       errmsg << "Neighboring reciprocity check for elements "
-             << adjacency.elemDataVec[adjacency.elementIndex].identifier << " and "
-             << adjacency.elemDataVec[neighborElementIndex].identifier << " failed.";
+             << get_element_id(adjacency.elementIndex) << " and "
+             << get_element_id(neighborElementIndex) << " failed.";
       m_errorHandler(errmsg);
     }
   }
@@ -415,15 +421,15 @@ class SideAdjacencyGraph
     return get_permutation(topology, controlNodes, permutedNodes, topology.num_positive_permutations());
   }
 
-  bool has_same_polarity(const ElementData<EntityId, Topology> &thisElem,
+  bool has_same_polarity(const size_t thisElem,
       const int thisSide,
-      const ElementData<EntityId, Topology> &thatElem,
+      const size_t thatElem,
       const int thatSide)
   {
     std::vector<EntityId> thisNodes = get_side_nodes(thisElem, thisSide);
     std::vector<EntityId> thatNodes = get_side_nodes(thatElem, thatSide);
 
-    Topology sideTopo = thisElem.topology.side_topology(thisSide);
+    const Topology& sideTopo = get_element_topology(thisElem).side_topology(thisSide);
     std::pair<bool, PermutationType> result = get_positive_permutation(sideTopo, thisNodes, thatNodes);
 
     bool samePolarity = result.first;
@@ -487,40 +493,51 @@ class SideAdjacencyGraph
     }
   }
 
-  inline bool is_shell_shell_connection(
-      const ElementData<EntityId, Topology> &thisElem, const ElementData<EntityId, Topology> &thatElem)
+  inline bool is_shell_shell_connection(const Topology &thisElemTopology, const Topology &thatElemTopology)
   {
-    return thisElem.topology.is_shell() && thatElem.topology.is_shell();
+    return thisElemTopology.is_shell() && thatElemTopology.is_shell();
   }
 
-  inline bool is_shell_solid_connection(
-      const ElementData<EntityId, Topology> &thisElem, const ElementData<EntityId, Topology> &thatElem)
+  inline bool is_shell_shell_connection(const size_t thisElem, const size_t thatElem)
   {
-    return thisElem.topology.is_shell() && !thatElem.topology.is_shell();
+    return is_shell_shell_connection(get_element_topology(thisElem), get_element_topology(thatElem));
   }
 
-  inline bool is_solid_shell_connection(
-      const ElementData<EntityId, Topology> &thisElem, const ElementData<EntityId, Topology> &thatElem)
+  inline bool is_shell_solid_connection(const Topology &thisElemTopology, const Topology &thatElemTopology)
   {
-    return !thisElem.topology.is_shell() && thatElem.topology.is_shell();
+    return thisElemTopology.is_shell() && !thatElemTopology.is_shell();
   }
 
-  inline bool is_solid_solid_connection(
-      const ElementData<EntityId, Topology> &thisElem, const ElementData<EntityId, Topology> &thatElem)
+  inline bool is_shell_solid_connection(const size_t thisElem, const size_t thatElem)
   {
-    return !thisElem.topology.is_shell() && !thatElem.topology.is_shell();
+    return is_shell_solid_connection(get_element_topology(thisElem), get_element_topology(thatElem));
   }
 
-  using Criterion =
-      std::function<bool(const ElementData<EntityId, Topology> &elem1, const ElementData<EntityId, Topology> &elem2)>;
-
-
-  bool has_connection_type(const std::vector<ElementData<EntityId, Topology>> &elemDataVec,
-      size_t thisIndex,
-      int thisSide,
-      Criterion criterion)
+  inline bool is_solid_shell_connection(const Topology &thisElemTopology, const Topology &thatElemTopology)
   {
-    const ElementData<EntityId, Topology> &thisElem = elemDataVec[thisIndex];
+    return !thisElemTopology.is_shell() && thatElemTopology.is_shell();
+  }
+
+  inline bool is_solid_shell_connection(const size_t thisElem, const size_t thatElem)
+  {
+    return is_solid_shell_connection(get_element_topology(thisElem), get_element_topology(thatElem));
+  }
+
+  inline bool is_solid_solid_connection(const Topology &thisElemTopology, const Topology &thatElemTopology)
+  {
+    return !thisElemTopology.is_shell() && !thatElemTopology.is_shell();
+  }
+
+  inline bool is_solid_solid_connection(const size_t thisElem, const size_t thatElem)
+  {
+    return is_solid_solid_connection(get_element_topology(thisElem), get_element_topology(thatElem));
+  }
+
+  using Criterion = std::function<bool(const Topology &topo1, const Topology &topo2)>;
+
+
+  bool has_connection_type_on_side(size_t thisIndex, int thisSide, Criterion criterion)
+  {
     const FaceConnections &thisEntry = m_indexGraph[thisIndex];
 
     for (const FaceConnection &connection : thisEntry.connections) {
@@ -528,8 +545,7 @@ class SideAdjacencyGraph
 
       if (connection.thisSide != thisSide || INVALID_INDEX == thatIndex) continue;
 
-      const ElementData<EntityId, Topology> &thatElem = elemDataVec[thatIndex];
-      if (criterion(thisElem, thatElem)) {
+      if (criterion(get_element_topology(thisIndex), get_element_topology(thatIndex))) {
         return true;
       }
     }
@@ -537,63 +553,58 @@ class SideAdjacencyGraph
     return false;
   }
 
-  bool has_any_shell_connection(
-      const std::vector<ElementData<EntityId, Topology>> &elemDataVec, size_t thisIndex, int thisSide)
+  bool has_any_shell_connection_on_side(size_t thisIndex, int thisSide)
   {
-    Criterion criterion = [&](const ElementData<EntityId, Topology> &elem1,
-                              const ElementData<EntityId, Topology> &elem2) { return elem2.topology.is_shell(); };
+    Criterion criterion = [&](const Topology &topo1,
+                              const Topology &topo2) { return topo2.is_shell(); };
 
-    return has_connection_type(elemDataVec, thisIndex, thisSide, criterion);
+    return has_connection_type_on_side(thisIndex, thisSide, criterion);
   }
 
-  bool has_shell_shell_connection(
-      const std::vector<ElementData<EntityId, Topology>> &elemDataVec, size_t thisIndex, int thisSide)
+  bool has_shell_shell_connection_on_side(size_t thisIndex, int thisSide)
   {
-    Criterion criterion = [&](const ElementData<EntityId, Topology> &elem1,
-                              const ElementData<EntityId, Topology> &elem2) {
-      return is_shell_shell_connection(elem1, elem2);
+    Criterion criterion = [&](const Topology &topo1,
+                              const Topology &topo2) {
+      return is_shell_shell_connection(topo1, topo2);
     };
 
-    return has_connection_type(elemDataVec, thisIndex, thisSide, criterion);
+    return has_connection_type_on_side(thisIndex, thisSide, criterion);
   }
 
-  bool has_shell_solid_connection(
-      const std::vector<ElementData<EntityId, Topology>> &elemDataVec, size_t thisIndex, int thisSide)
+  bool has_shell_solid_connection_on_side(size_t thisIndex, int thisSide)
   {
-    Criterion criterion = [&](const ElementData<EntityId, Topology> &elem1,
-                              const ElementData<EntityId, Topology> &elem2) {
-      return is_shell_solid_connection(elem1, elem2);
+    Criterion criterion = [&](const Topology &topo1,
+                              const Topology &topo2) {
+      return is_shell_solid_connection(topo1, topo2);
     };
 
-    return has_connection_type(elemDataVec, thisIndex, thisSide, criterion);
+    return has_connection_type_on_side(thisIndex, thisSide, criterion);
   }
 
-  bool has_solid_shell_connection(
-      const std::vector<ElementData<EntityId, Topology>> &elemDataVec, size_t thisIndex, int thisSide)
+  bool has_solid_shell_connection_on_side(size_t thisIndex, int thisSide)
   {
-    Criterion criterion = [&](const ElementData<EntityId, Topology> &elem1,
-                              const ElementData<EntityId, Topology> &elem2) {
-      return is_solid_shell_connection(elem1, elem2);
+    Criterion criterion = [&](const Topology &topo1,
+                              const Topology &topo2) {
+      return is_solid_shell_connection(topo1, topo2);
     };
 
-    return has_connection_type(elemDataVec, thisIndex, thisSide, criterion);
+    return has_connection_type_on_side(thisIndex, thisSide, criterion);
   }
 
-  bool has_solid_solid_connection(
-      const std::vector<ElementData<EntityId, Topology>> &elemDataVec, size_t thisIndex, int thisSide)
+  bool has_solid_solid_connection_on_side(size_t thisIndex, int thisSide)
   {
-    Criterion criterion = [&](const ElementData<EntityId, Topology> &elem1,
-                              const ElementData<EntityId, Topology> &elem2) {
-      return is_solid_solid_connection(elem1, elem2);
+    Criterion criterion = [&](const Topology &topo1,
+                              const Topology &topo2) {
+      return is_solid_solid_connection(topo1, topo2);
     };
 
-    return has_connection_type(elemDataVec, thisIndex, thisSide, criterion);
+    return has_connection_type_on_side(thisIndex, thisSide, criterion);
   }
 
   void add_connection(CurrentAdjacency &adjacency, size_t connectedElementIndex, int otherSide)
   {
-    const ElementData<EntityId, Topology> &thisElem = adjacency.elemDataVec[adjacency.elementIndex];
-    const ElementData<EntityId, Topology> &thatElem = adjacency.elemDataVec[connectedElementIndex];
+    const size_t thisElem = adjacency.elementIndex;
+    const size_t thatElem = connectedElementIndex;
 
     bool doConnect = false;
     bool breakConnection = false;
@@ -601,18 +612,18 @@ class SideAdjacencyGraph
     if (is_shell_solid_connection(thisElem, thatElem)) {
       doConnect = !has_same_polarity(thisElem, adjacency.side, thatElem, otherSide);
 
-      if (has_solid_solid_connection(adjacency.elemDataVec, connectedElementIndex, otherSide)) {
+      if (has_solid_solid_connection_on_side(connectedElementIndex, otherSide)) {
         breakConnection = doConnect;
       }
     } else if (is_solid_shell_connection(thisElem, thatElem)) {
       doConnect = !has_same_polarity(thisElem, adjacency.side, thatElem, otherSide);
 
-      if (has_solid_solid_connection(adjacency.elemDataVec, adjacency.elementIndex, adjacency.side)) {
+      if (has_solid_solid_connection_on_side(adjacency.elementIndex, adjacency.side)) {
         breakConnection = doConnect;
       }
     } else if (is_solid_solid_connection(thisElem, thatElem)) {
-      doConnect = !has_any_shell_connection(adjacency.elemDataVec, adjacency.elementIndex, adjacency.side) &&
-                  !has_any_shell_connection(adjacency.elemDataVec, connectedElementIndex, otherSide) &&
+      doConnect = !has_any_shell_connection_on_side(adjacency.elementIndex, adjacency.side) &&
+                  !has_any_shell_connection_on_side(connectedElementIndex, otherSide) &&
                   !has_same_polarity(thisElem, adjacency.side, thatElem, otherSide);
     }
 
@@ -635,19 +646,14 @@ class SideAdjacencyGraph
     }
   }
 
-  void enforce_coincident_shell_ownership(const std::vector<ElementData<EntityId, Topology>> &elemDataVec,
-      IndexType connectedElemIndex1,
-      IndexType connectedElemIndex2)
+  void enforce_coincident_shell_ownership(IndexType connectedElemIndex1, IndexType connectedElemIndex2)
   {
-    const ElementData<EntityId, Topology> &connectedElem1 = elemDataVec[connectedElemIndex1];
-    const ElementData<EntityId, Topology> &connectedElem2 = elemDataVec[connectedElemIndex2];
-
-    if (connectedElem1.topology.is_shell() && connectedElem2.topology.is_shell()) {
-      if (connectedElem1.proc != connectedElem2.proc) {
+    if (get_element_topology(connectedElemIndex1).is_shell() && get_element_topology(connectedElemIndex2).is_shell()) {
+      if (get_element_proc(connectedElemIndex1) != get_element_proc(connectedElemIndex2)) {
         std::ostringstream errmsg;
-        errmsg << "Invalid proc ownership for co-incident shells " << connectedElem1.identifier << " (proc "
-               << connectedElem1.proc << ") and " << connectedElem2.identifier << " (proc " << connectedElem2.proc
-               << ")."
+        errmsg << "Invalid proc ownership for co-incident shells " << get_element_id(connectedElemIndex1) << " (proc "
+               << get_element_proc(connectedElemIndex1) << ") and " << get_element_proc(connectedElemIndex2) <<
+               " (proc " << get_element_proc(connectedElemIndex2)  << ")."
                << " Co-incident shells must all exist on the same processor";
         m_errorHandler(errmsg);
       }
@@ -657,55 +663,46 @@ class SideAdjacencyGraph
   void process_side_connectivity(
       CurrentAdjacency &adjacency, const std::unordered_map<EntityId, std::set<size_t>> &elementsForNode)
   {
-    const ElementData<EntityId, Topology> &elemData = adjacency.elemDataVec[adjacency.elementIndex];
     int side = adjacency.side;
 
     std::set<size_t> elementIndicesConnectedToSide =
-        get_element_indices_with_common_nodes_on_side(elemData, side, elementsForNode);
+        get_element_indices_with_common_nodes_on_side(adjacency.elementIndex, side, elementsForNode);
     for (size_t connectedElementIndex : elementIndicesConnectedToSide) {
       if (connectedElementIndex != adjacency.elementIndex) {
-        enforce_coincident_shell_ownership(adjacency.elemDataVec, adjacency.elementIndex, connectedElementIndex);
+        enforce_coincident_shell_ownership(adjacency.elementIndex, connectedElementIndex);
         set_side_connectivity(adjacency, connectedElementIndex);
       }
     }
   }
 
-  void build_side_connectivity_graph(const std::vector<ElementData<EntityId, Topology>> &elemDataVec,
-      const std::vector<size_t> &elementIndices,
+  void build_side_connectivity_graph(const std::vector<size_t> &elementIndices,
       const std::unordered_map<EntityId, std::set<size_t>> &elementsForNode)
   {
-    initialize_side_connectivity_graph(elemDataVec, elementIndices);
+    initialize_side_connectivity_graph(elementIndices);
 
     for (size_t elementIndex : elementIndices) {
-      const ElementData<EntityId, Topology> &elemData = elemDataVec[elementIndex];
-
-      int numSides = elemData.topology.num_sides();
+      int numSides = get_element_topology(elementIndex).num_sides();
       for (int side = 1; side <= numSides; ++side) {
         if (m_indexGraph[elementIndex].sideReference[side - 1] == 0) {
-          CurrentAdjacency adjacency(elemDataVec, elementIndex, side);
+          CurrentAdjacency adjacency(elementIndex, side);
           process_side_connectivity(adjacency, elementsForNode);
         }
       }
     }
   }
 
-  void initialize_side_connectivity_graph(
-      const std::vector<ElementData<EntityId, Topology>> &elemDataVec, const std::vector<size_t> &elementIndex)
+  void initialize_side_connectivity_graph(const std::vector<size_t> &elementIndices)
   {
-    for (size_t index : elementIndex) {
-      const ElementData<EntityId, Topology> &elemData = elemDataVec[index];
-      m_indexGraph[index] = FaceConnections(elemData.topology.num_sides());
+    for (size_t elementIndex : elementIndices) {
+      m_indexGraph[elementIndex] = FaceConnections(get_element_topology(elementIndex).num_sides());
     }
   }
 
-  std::unordered_map<EntityId, std::set<size_t>> get_elements_for_node_map(
-      const std::vector<ElementData<EntityId, Topology>> &elemDataVec, const std::vector<size_t> &elementIndex)
+  std::unordered_map<EntityId, std::set<size_t>> get_elements_for_node_map(const std::vector<size_t> &elementIndices)
   {
     std::unordered_map<EntityId, std::set<size_t>> elementsForNode;
-    for (size_t index : elementIndex) {
-      const ElementData<EntityId, Topology> &elemData = elemDataVec[index];
-
-      for (const EntityId &nodeId : elemData.nodeIds) {
+    for (size_t index : elementIndices) {
+      for (const EntityId nodeId : get_element_node_ids(index)) {
         elementsForNode[nodeId].insert(index);
       }
     }
@@ -713,32 +710,30 @@ class SideAdjacencyGraph
     return elementsForNode;
   }
 
-  bool element_is_in_selected_blocks(
-      const ElementData<EntityId, Topology> &elemData, const std::vector<std::string> &sortedSelectedBlocks)
+  bool element_is_in_selected_blocks(const size_t elemIndex, const std::vector<std::string> &sortedSelectedBlocks)
   {
     if (sortedSelectedBlocks.empty()) return true;
+
+    const std::string& partName = get_element_block_name(elemIndex);
+
     return std::binary_search(
-        sortedSelectedBlocks.begin(), sortedSelectedBlocks.end(), elemData.partName, StringCaseCompLess());
+        sortedSelectedBlocks.begin(), sortedSelectedBlocks.end(), partName, StringCaseCompLess());
   }
 
-  bool is_selected_element(const TextMeshData<EntityId, Topology> &data,
-      const ElementData<EntityId, Topology> &elemData,
-      const std::vector<std::string> &sortedSelectedBlocks,
-      int proc)
+  bool is_selected_element(const size_t elemIndex, const std::vector<std::string> &sortedSelectedBlocks, int proc)
   {
     bool isGloballySelected = (ANY_PROC == proc);
-    bool isLocallySelected = (elemData.proc == proc);
-    bool hasLocalNode = element_has_any_node_on_proc(data, elemData, proc);
-    bool isInSelectedBlocks = element_is_in_selected_blocks(elemData, sortedSelectedBlocks);
+    bool isLocallySelected = (get_element_proc(elemIndex) == proc);
+    bool hasLocalNode = element_has_any_node_on_proc(elemIndex, proc);
+    bool isInSelectedBlocks = element_is_in_selected_blocks(elemIndex, sortedSelectedBlocks);
 
     return isInSelectedBlocks && (isGloballySelected || isLocallySelected || hasLocalNode);
   }
 
-  std::vector<size_t> get_local_and_aura_elements(
-      const TextMeshData<EntityId, Topology> &data, const std::vector<std::string> &selectedBlocks, int proc)
+  std::vector<size_t> get_local_and_aura_elements(const std::vector<std::string> &selectedBlocks, int proc)
   {
     std::vector<size_t> localAndAuraElementIndex;
-    localAndAuraElementIndex.reserve(data.elementDataVec.size());
+    localAndAuraElementIndex.reserve(get_num_elements());
 
     std::vector<std::string> sortedSelectedBlocks;
     for (const std::string &block : selectedBlocks) {
@@ -746,29 +741,14 @@ class SideAdjacencyGraph
     }
     std::sort(sortedSelectedBlocks.begin(), sortedSelectedBlocks.end(), StringCaseCompLess());
 
-    for (size_t i = 0; i < data.elementDataVec.size(); ++i) {
-      const ElementData<EntityId, Topology> &elemData = data.elementDataVec[i];
-
-      if (is_selected_element(data, elemData, sortedSelectedBlocks, proc)) {
+    for (size_t i = 0; i < get_num_elements(); ++i) {
+      if (is_selected_element(i, sortedSelectedBlocks, proc)) {
         localAndAuraElementIndex.push_back(i);
       }
     }
 
     localAndAuraElementIndex.resize(localAndAuraElementIndex.size());
     return localAndAuraElementIndex;
-  }
-
-  bool element_has_any_node_on_proc(
-      const TextMeshData<EntityId, Topology> &data, const ElementData<EntityId, Topology> &elemData, int proc)
-  {
-    for (const EntityId &nodeId : elemData.nodeIds) {
-      const std::set<int> &procsForNode = data.procs_for_node(nodeId);
-      if (procsForNode.count(proc) > 0) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   ErrorHandler m_errorHandler;

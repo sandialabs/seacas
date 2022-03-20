@@ -117,9 +117,9 @@ namespace Iotm {
       return sideTopology->name();
     }
 
-    TopologyMapEntry side_topology(unsigned side) const
+    const TopologyMapEntry& side_topology(unsigned side) const
     {
-      if (!valid_side(side)) return TopologyMapEntry();
+      if (!valid_side(side)) return *(invalid_topology_factory());
       return *sideTopologies[side-1];
     }
 
@@ -1051,7 +1051,6 @@ namespace Iotm {
     // object .. this will not be necessary if/when they are migrated to Ioss_ElementTopology
     void set_side_topologies(const std::vector<TopologyMapEntry*>& sideTopologies_)
     {
-//      assert(static_cast<int>(sideTopologies_.size()) == num_sides());
       int numSides = sideTopologies_.size();
 
       for(int side=1; side<=numSides; side++) {

@@ -39,6 +39,7 @@
 #include <string>
 #include <strings.h>
 #include <vector>
+#include <memory>
 
 #include "text_mesh/Iotm_TextMeshTopologyMapping.h"
 #include "text_mesh/Iotm_TextMeshSideset.h"
@@ -1008,7 +1009,65 @@ namespace {
    protected:
     TestTextMeshGraph() : TextMeshFixture(3) {}
 
-    void dump_graph(std::ostream& out = std::cout) { m_graph.dump(m_data.elementDataVec, out); }
+    class TextMeshGraph : public SideAdjacencyGraph
+    {
+    public:
+      TextMeshGraph(const TextMeshData& data) : m_data(data) {}
+
+      size_t get_num_elements() const override
+      {
+        return m_data.elementDataVec.size();
+      }
+
+      int get_element_proc(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.proc;
+      }
+
+      bool element_has_any_node_on_proc(const size_t elemIndex, int proc) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+
+        for (const EntityId &nodeId : elemData.nodeIds) {
+          const std::set<int> &procsForNode = m_data.procs_for_node(nodeId);
+          if (procsForNode.count(proc) > 0) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      const std::string& get_element_block_name(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.partName;
+      }
+
+      const std::vector<EntityId>& get_element_node_ids(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.nodeIds;
+      }
+
+      const Topology& get_element_topology(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.topology;
+      }
+
+      EntityId get_element_id(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.identifier;
+      }
+
+    private:
+      const TextMeshData& m_data;
+    };
+
+    void dump_graph(std::ostream& out = std::cout) { m_graph->dump(m_data.elementDataVec, out); }
 
     void setup_text_mesh_graph(const std::string& meshDesc,
         const std::vector<std::string>& selectedBlocks = {},
@@ -1016,14 +1075,15 @@ namespace {
     {
       TextMeshParser parser;
       m_data = parser.parse(meshDesc);
-      m_graph.create_graph(m_data, selectedBlocks, proc);
+      m_graph = std::make_shared<TextMeshGraph>(m_data);
+      m_graph->create_graph(selectedBlocks, proc);
     }
 
     void verify_side_adjacency(const std::vector<Adjacency>& goldNeighbors)
     {
-      EXPECT_EQ(m_graph.size(), goldNeighbors.size());
+      EXPECT_EQ(m_graph->size(), goldNeighbors.size());
       for (size_t i = 0; i < goldNeighbors.size(); ++i) {
-        const auto& graphNeighborIndices = m_graph[goldNeighbors[i].elemIndex];
+        const auto& graphNeighborIndices = (*m_graph)[goldNeighbors[i].elemIndex];
         const auto& goldNeighborIndices = goldNeighbors[i].neighborIndices;
 
         unsigned numActualGoldConnections = 0;
@@ -1051,7 +1111,7 @@ namespace {
     }
 
     TextMeshData m_data;
-    SideAdjacencyGraph m_graph;
+    std::shared_ptr<TextMeshGraph> m_graph;
   };
 
   using TestTextMeshSkin = TestTextMesh;
