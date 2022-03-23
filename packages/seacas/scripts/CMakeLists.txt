@@ -158,6 +158,3 @@ IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
 ELSE()
    MESSAGE(STATUS "Exodus.py and exomerge.py NOT installed since Exodus is not enabled.")
 endif()
-
-
-

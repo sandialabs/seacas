@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -60,7 +60,7 @@ extern "C" {
 /*
  *  This file contains routines implementing the list inverting tools
  *  Zoltan_Invert_Lists and Zoltan_Compute_Destinations.
- *  These functions are all callable by the application.  
+ *  These functions are all callable by the application.
  */
 /*****************************************************************************/
 /*****************************************************************************/
@@ -75,12 +75,12 @@ static int check_invert_input(ZZ *, int, int *, int *, int *, int *, int *);
 
 int Zoltan_Invert_Lists(
   ZZ *zz,                       /* Zoltan structure.                  */
-  int num_in,                   /* Number of objects in the input lists. */ 
+  int num_in,                   /* Number of objects in the input lists. */
   ZOLTAN_ID_PTR in_global_ids,  /* Array of input global IDs. */
   ZOLTAN_ID_PTR in_local_ids,   /* Array of input local IDs. */
   int *in_procs,                /* Array of processor IDs of processors owning
                                    the input objects. */
-  int *in_to_part,              /* Optional:  Array of partition numbers to 
+  int *in_to_part,              /* Optional:  Array of partition numbers to
                                    which input objects should be assigned. */
   int *num_out,                 /* Returned value:  Number of output objs. */
   ZOLTAN_ID_PTR *out_global_ids,/* Returned value:  Array of global IDs of
@@ -89,17 +89,17 @@ int Zoltan_Invert_Lists(
                                    output objects. */
   int **out_procs,              /* Returned value:  Array of processor IDs
                                    to which output objects are assigned. */
-  int **out_to_part             /* Optional:  Returned value:  Array of 
+  int **out_to_part             /* Optional:  Returned value:  Array of
                                    partition numbers to which output
                                    objects should be assigned. */
 )
 {
 /*
  *  Routine to compute the inverse map.  Can be used in two ways:
- *  1.  Given, for each processor, a list of objects to be received by the 
- *  processor, compute the list of objects that the processor needs to send 
+ *  1.  Given, for each processor, a list of objects to be received by the
+ *  processor, compute the list of objects that the processor needs to send
  *  to other processors to satisfy their needs.
- *  2.  Given, for each processor, a list of objects to be sent to other 
+ *  2.  Given, for each processor, a list of objects to be sent to other
  *  processors, compute the list of objects that the processor needs to receive
  *  to satisfy its needs.
  */
@@ -129,7 +129,7 @@ int ierr, ret_ierr = ZOLTAN_OK;
    *  Check that all procs use the same id types.
    */
 
-  ierr = check_invert_input(zz, num_in, in_procs, in_to_part, 
+  ierr = check_invert_input(zz, num_in, in_procs, in_to_part,
                             &num_gid_entries, &num_lid_entries, &include_parts);
   if (ierr != ZOLTAN_OK) {
     ZOLTAN_TRACE_EXIT(zz, yo);
@@ -149,7 +149,7 @@ int ierr, ret_ierr = ZOLTAN_OK;
    */
 
   msgtag = 32767;
-  ierr = Zoltan_Comm_Create(&comm_plan, num_in, in_procs, zz->Communicator, 
+  ierr = Zoltan_Comm_Create(&comm_plan, num_in, in_procs, zz->Communicator,
                         msgtag, num_out);
   if (ierr != ZOLTAN_OK) {
     sprintf(msg, "Error %s returned from Zoltan_Comm_Create.",
@@ -158,7 +158,7 @@ int ierr, ret_ierr = ZOLTAN_OK;
     ret_ierr = ierr;
     goto End;
   }
-  
+
 
   ZOLTAN_TRACE_DETAIL(zz, yo, "Done comm create");
 
@@ -202,11 +202,11 @@ int ierr, ret_ierr = ZOLTAN_OK;
    */
 
   msgtag2 = 32766;
-  ierr = Zoltan_Comm_Do(comm_plan, msgtag2, (char *) in_global_ids, 
-                    (int) (sizeof(ZOLTAN_ID_TYPE)*(num_gid_entries)), 
+  ierr = Zoltan_Comm_Do(comm_plan, msgtag2, (char *) in_global_ids,
+                    (int) (sizeof(ZOLTAN_ID_TYPE)*(num_gid_entries)),
                     (char *) *out_global_ids);
   if (ierr != ZOLTAN_OK) {
-    sprintf(msg, "Error %s returned from Zoltan_Comm_Do.", 
+    sprintf(msg, "Error %s returned from Zoltan_Comm_Do.",
             (ierr == ZOLTAN_MEMERR ? "ZOLTAN_MEMERR" : "ZOLTAN_FATAL"));
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
     ret_ierr = ierr;
@@ -214,11 +214,11 @@ int ierr, ret_ierr = ZOLTAN_OK;
 
   if (num_lid_entries) {
     msgtag2--;
-    ierr = Zoltan_Comm_Do(comm_plan, msgtag2, (char *) in_local_ids, 
-                      (int) (sizeof(ZOLTAN_ID_TYPE)*num_lid_entries), 
+    ierr = Zoltan_Comm_Do(comm_plan, msgtag2, (char *) in_local_ids,
+                      (int) (sizeof(ZOLTAN_ID_TYPE)*num_lid_entries),
                       (char *) *out_local_ids);
     if (ierr != ZOLTAN_OK) {
-      sprintf(msg, "Error %s returned from Zoltan_Comm_Do.", 
+      sprintf(msg, "Error %s returned from Zoltan_Comm_Do.",
               (ierr == ZOLTAN_MEMERR ? "ZOLTAN_MEMERR" : "ZOLTAN_FATAL"));
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
       ret_ierr = ierr;
@@ -227,13 +227,13 @@ int ierr, ret_ierr = ZOLTAN_OK;
 
   Zoltan_Comm_Info(comm_plan, NULL, NULL, NULL, NULL, NULL, NULL,
                    NULL, NULL, NULL, NULL, NULL, *out_procs, NULL);
-  
+
   if (include_parts) {
     msgtag2--;
-    ierr = Zoltan_Comm_Do(comm_plan, msgtag2, (char *) in_to_part, 
+    ierr = Zoltan_Comm_Do(comm_plan, msgtag2, (char *) in_to_part,
                       (int) sizeof(int), (char *) *out_to_part);
     if (ierr != ZOLTAN_OK) {
-      sprintf(msg, "Error %s returned from Zoltan_Comm_Do.", 
+      sprintf(msg, "Error %s returned from Zoltan_Comm_Do.",
               (ierr == ZOLTAN_MEMERR ? "ZOLTAN_MEMERR" : "ZOLTAN_FATAL"));
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
       ret_ierr = ierr;
@@ -263,10 +263,10 @@ End:
 /*****************************************************************************/
 
 static int check_invert_input(
-  ZZ *zz, 
+  ZZ *zz,
   int in_num,
-  int *in_procs, 
-  int *in_to_part, 
+  int *in_procs,
+  int *in_to_part,
   int *num_gid_entries,
   int *num_lid_entries,
   int *include_parts
@@ -296,7 +296,7 @@ int ierr = ZOLTAN_OK;
   MPI_Allreduce(loc_tmp, glob_min, 2,
                 MPI_INT, MPI_MIN, zz->Communicator);
 
-  /* 
+  /*
    * For MPI_MAX operation:
    * include_parts == if any proc has in_num > 0 and specifies in_to_part.
    * do_not_include_parts == if any proc has in_num > 0 and does not specify
@@ -335,8 +335,8 @@ int ierr = ZOLTAN_OK;
   if (glob_max[2]) {
     ierr = ZOLTAN_FATAL;
     if (loc_tmp[2] == glob_max[2]) {
-      sprintf(msg, 
-              "Inconsistent input: # objects = %d but proc array is NULL\n", 
+      sprintf(msg,
+              "Inconsistent input: # objects = %d but proc array is NULL\n",
               in_num);
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
     }
@@ -369,7 +369,7 @@ int Zoltan_Compute_Destinations(
   int **out_procs
 )
 {
-/*  
+/*
  *  Wrapper around Zoltan_Invert_Lists, with NULL for excluded partition arrays.
  *  Maintained for backward compatibility.
  *  Arguments are analogous to Zoltan_Invert_Lists.
@@ -381,7 +381,7 @@ int ierr;
 
   ZOLTAN_TRACE_ENTER(zz, yo);
 
-  ierr = Zoltan_Invert_Lists(zz, num_in, 
+  ierr = Zoltan_Invert_Lists(zz, num_in,
            in_global_ids, in_local_ids, in_procs, NULL,
            num_out,
            out_global_ids, out_local_ids, out_procs, NULL);
@@ -394,4 +394,3 @@ int ierr;
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
-

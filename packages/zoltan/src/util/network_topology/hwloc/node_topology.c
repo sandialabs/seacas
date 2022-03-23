@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -43,12 +43,12 @@
  *
  * @HEADER
  */
-/* 
+/*
  * Discover hardware topology using hwloc.
  * Tested with hwloc 1.0.2: http://www.open-mpi.org/software/hwloc
  *
  * Print out topology and which MPI processes are where.
- * Printing out the MPI ranks may not be possible 
+ * Printing out the MPI ranks may not be possible
  * if hwloc_get_cpubind() doesn't work or if it
  * works but gives us a cpuset containing more than one cpu.
  *
@@ -116,7 +116,7 @@ int rc, num;
 
   support = hwloc_topology_get_support((struct hwloc_topology *)topology);
 
-  /* 
+  /*
    * Get the depth of topology and the root.
    * The root typically is a node on a multi-node machine, not the collection of nodes
    * in the application.
@@ -124,7 +124,7 @@ int rc, num;
 
   depth = hwloc_topology_get_depth(topology);
 
-  /* 
+  /*
    * Which cpu am I running on?
    *
    * HWLOC_CPUBIND_STRICT - says assume each process is running on one processor and won't be moved
@@ -139,7 +139,7 @@ int rc, num;
   }
   else{
     rc = hwloc_get_cpubind(topology, binding, HWLOC_CPUBIND_STRICT);
-  
+
     if ((rc < 0) || (hwloc_cpuset_weight(binding) > 1)){
       have_my_cpu = 0;
     }
@@ -162,7 +162,7 @@ int rc, num;
 
     hwloc_cpuset_snprintf(mask, MAX_NAME_LEN-1, binding);
     MPI_Gather(mask, MAX_NAME_LEN, MPI_CHAR, recvbuf, MAX_NAME_LEN, MPI_CHAR, 0, MPI_COMM_WORLD);
- 
+
     if (rank == 0){
       cpuset = (hwloc_cpuset_t*)malloc(sizeof(hwloc_cpuset_t) * size);
 
@@ -183,17 +183,17 @@ int rc, num;
     for (i=0; i < depth; i++){
 
       num = hwloc_get_nbobjs_by_depth(topology, i);
-   
+
       for (j = 0; j < num; j++){
 
         obj = hwloc_get_obj_by_depth(topology, i, j);
 
         if (j==0){
           hwloc_obj_type_snprintf(type_name, MAX_NAME_LEN-1, obj, 1);
-          printf("\n%d %s%s:\n",num,type_name, ((num> 1) ? "s" : "")); 
+          printf("\n%d %s%s:\n",num,type_name, ((num> 1) ? "s" : ""));
         }
 
-        hwloc_cpuset_snprintf(mask, MAX_NAME_LEN - 1, obj->cpuset); 
+        hwloc_cpuset_snprintf(mask, MAX_NAME_LEN - 1, obj->cpuset);
         local_memory = obj->memory.local_memory;
         total_memory= obj->memory.total_memory;
 
@@ -260,4 +260,3 @@ char *info=NULL;
 
   return info;
 }
-

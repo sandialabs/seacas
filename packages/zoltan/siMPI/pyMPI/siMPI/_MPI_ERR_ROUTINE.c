@@ -24,7 +24,7 @@ int _MPI_ERR_ROUTINE(MPI_Error_Class error, char* message)
   _MPI_COVERAGE();
 #ifdef _MPI_DEBUG
   printf("ERROR: %d %s\n",error, message);
-#endif 
+#endif
   return 0;
 }
 

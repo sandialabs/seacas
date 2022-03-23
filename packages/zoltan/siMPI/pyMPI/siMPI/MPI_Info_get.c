@@ -19,4 +19,3 @@ int MPI_Info_get(MPI_Info info, char *key, int valuelen, char *value, int *flag)
   _MPI_COVERAGE();
   return PMPI_Info_get (info, key, valuelen, value, flag);
 }
-

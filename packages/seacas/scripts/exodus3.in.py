@@ -2315,7 +2315,7 @@ class exodus:
 
     def get_assembly(self, object_id):
         """
-        reads the assembly parameters and assembly data for one assembly 
+        reads the assembly parameters and assembly data for one assembly
         """
         assem = ex_assembly(id=object_id)
         self.__ex_get_assembly(assem)
@@ -2326,7 +2326,7 @@ class exodus:
 
     def get_assemblies(self, object_ids):
         """
-        reads the assembly parameters and assembly data for all assemblies 
+        reads the assembly parameters and assembly data for all assemblies
         with ids in object_ids
         """
         assemblies = [ex_assembly(id=object_id) for object_id in object_ids]

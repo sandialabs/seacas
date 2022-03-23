@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -62,9 +62,9 @@ extern "C" {
 /*****************************************************************************/
 /*****************************************************************************/
 /*
- *  This file contains routines that create, copy, and destroy load-balancing 
+ *  This file contains routines that create, copy, and destroy load-balancing
  *  structures (struct Zoltan_Struct).
- *  These functions are all callable by the application. 
+ *  These functions are all callable by the application.
  */
 /*****************************************************************************/
 /*****************************************************************************/
@@ -114,7 +114,7 @@ int proc;
   if (communicator == MPI_COMM_NULL) {
     /*
      *  The processor is not in the communicator for the load-balancing
-     *  structure.  Set zz->Communicator to MPI_COMM_NULL and give dummy 
+     *  structure.  Set zz->Communicator to MPI_COMM_NULL and give dummy
      *  values to zz->Proc and zz->Num_Proc.
      */
     zz->Communicator = MPI_COMM_NULL;
@@ -155,7 +155,7 @@ ZZ *Zoltan_Copy(ZZ const *from)
     Zoltan_Destroy(&to);
   }
 
-  return to; 
+  return to;
 }
 
 /****************************************************************************/
@@ -165,7 +165,7 @@ ZZ *Zoltan_Copy(ZZ const *from)
 int Zoltan_Copy_To(ZZ *to, ZZ const *from)
 {
   /*
-   * Copy one Zoltan_Struct to another.  "to" must be a valid 
+   * Copy one Zoltan_Struct to another.  "to" must be a valid
    * Zoltan_Struct.
    */
 
@@ -175,7 +175,7 @@ int Zoltan_Copy_To(ZZ *to, ZZ const *from)
   *to = *from;
 
   MPI_Comm_dup(from->Communicator, &(to->Communicator));
-  
+
   to->Params = NULL;
   Zoltan_Copy_Params(&(to->Params), from->Params);
 
@@ -236,7 +236,7 @@ static void Zoltan_Free_Structures(
  */
 
   /* Free load-balancing data */
-  if (zz->LB.Free_Structure != NULL) 
+  if (zz->LB.Free_Structure != NULL)
     zz->LB.Free_Structure(zz);
 
  /* Add calls to additional module-specific free routines here.  */
@@ -352,7 +352,7 @@ static void Zoltan_Init(ZZ* zz)
   zz->Pack_Obj_Multi = NULL;
   zz->Unpack_Obj_Multi = NULL;
   zz->Get_Obj_Size_Multi = NULL;
-  
+
   zz->Pack_Obj_Fort = NULL;
   zz->Unpack_Obj_Fort = NULL;
   zz->Get_Obj_Size_Fort = NULL;

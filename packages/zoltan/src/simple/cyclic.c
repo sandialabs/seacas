@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -59,7 +59,7 @@ extern "C" {
 #include "all_allo_const.h"
 
 /* local function prototypes */
-static void cyclic_part(ZZ *zz, int num_obj, int wtflag, float *wgts, 
+static void cyclic_part(ZZ *zz, int num_obj, int wtflag, float *wgts,
             float *part_sizes, int *newparts);
 
 /* Cyclic (round-robin) partitioning method.
@@ -87,7 +87,7 @@ int Zoltan_Cyclic(
   int i, count, num_obj;
   int wtflag = 0;
   ZOLTAN_ID_PTR global_ids = NULL;
-  ZOLTAN_ID_PTR local_ids = NULL; 
+  ZOLTAN_ID_PTR local_ids = NULL;
   int *parts = NULL;
   int *newparts = NULL;
   float *wgts = NULL;
@@ -103,7 +103,7 @@ int Zoltan_Cyclic(
   /* Get list of local objects. */
   if (zz->Obj_Weight_Dim > 1) {
     ierr = ZOLTAN_FATAL;
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                       "OBJ_WEIGHT_DIM > 1 not supported by LB_METHOD BLOCK.");
     goto End;
   }
@@ -158,7 +158,7 @@ int Zoltan_Cyclic(
       /* Set new partition number. */
       (*export_to_part)[count] = newparts[i];
       /* Processor is derived from partition number. */
-      (*export_procs)[count] = Zoltan_LB_Part_To_Proc(zz, 
+      (*export_procs)[count] = Zoltan_LB_Part_To_Proc(zz,
                      (*export_to_part)[count], &global_ids[i*zz->Num_GID]);
 
       ++count;
@@ -182,7 +182,7 @@ End:
 /* Pure cyclic. Ignore weights!                */
 /* Output: newparts contains the new partition numbers. */
 
-static void cyclic_part(ZZ *zz, int num_obj, int wtflag, float *wgts, 
+static void cyclic_part(ZZ *zz, int num_obj, int wtflag, float *wgts,
             float *part_sizes, int *newparts)
 {
   ZOLTAN_GNO_TYPE n, scan_sum;
@@ -195,7 +195,7 @@ static void cyclic_part(ZZ *zz, int num_obj, int wtflag, float *wgts,
   /* Compute offset for my proc */
   n = (ZOLTAN_GNO_TYPE)num_obj;
   MPI_Scan(&n, &scan_sum, 1, gno_mpi_type, MPI_SUM, zz->Communicator);
-  part = (int)(scan_sum - num_obj); 
+  part = (int)(scan_sum - num_obj);
   part = (part % k);
 
   /* Loop over objects and assign parts. */
@@ -204,5 +204,5 @@ static void cyclic_part(ZZ *zz, int num_obj, int wtflag, float *wgts,
     if (++part >= k)
       part= 0;
   }
- 
+
 }

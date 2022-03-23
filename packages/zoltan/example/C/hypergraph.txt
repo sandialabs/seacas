@@ -59,7 +59,7 @@
 ##  Here we list for each hyperedge, its global ID, the number of vertices it links,
 ##  and the global ID of each vertex in the hyperedge.
 
-1   3  1  2  6   
+1   3  1  2  6
 2   4  1  2  3  7
 3   4  2  3  4  8
 4   4  3  4  5  9

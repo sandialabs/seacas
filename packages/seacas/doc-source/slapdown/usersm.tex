@@ -6,11 +6,11 @@ models the body as a three degree-of-freedom system.  The deformation of
 the body is approximated by nonlinear springs at each end of the model.
 The program was written primarily to model the \SLAP\  behavior of
 nuclear waste transportation casks subjected to the regulatory 30-foot
-drops onto an unyielding surface. 
+drops onto an unyielding surface.
 
 The theory and algorithms used within the program are described in
 Chapter~\ref{theory}.  This Appendix describes the \SLAP\ user interface
-and program execution. 
+and program execution.
 
 \section{Execution of the \SLAP\  program}
 
@@ -19,7 +19,7 @@ VAXCluster. The \SLAP\ program is run by typing:\hbox{\ {\sf SLAP
 }{\em input\_file}}\quad where {\em input\_file} is the name of the
 file containing the input data.  The file extension for this file must
 be {\tt .INP}. To run \SLAP\ interactively type:\quad{\sf SLAP}\quad
-and input the required data from the terminal. 
+and input the required data from the terminal.
 
 \section{Description of \SLAP\  Input Data}
 
@@ -29,20 +29,20 @@ The input is order independent.  The free field input allows the user to
 delimit entries by either a blank, a comma, or an equals sign.  A dollar
 sign indicates that whatever follows on the line of input is a comment
 and is ignored.  Although it is seldom necessary, an asterisk indicates
-that the current input line is to be continued on the next line. 
+that the current input line is to be continued on the next line.
 
 The keyword input parsing is designed to allow the user to create
 readable input files.  The parsing system used in \SLAP\ examines only
 the \underline{first} keyword and the \underline{last} numerical
 constant found in the input line.  For example, the two sample input
-lines below are both equivalent to the \SLAP\ parser. 
+lines below are both equivalent to the \SLAP\ parser.
 \begin{verbatim}
 VERTICAL -527.5
 VERTICAL VELOCITY IS -527.5 INCHES PER SECOND
 \end{verbatim}
 Both of these lines set the initial vertical velocity to the value
 $-527.5$.  Note that all of the words in the second line except for {\tt
-VERTICAL} and {\tt -527.5} are ignored by \SLAP. 
+VERTICAL} and {\tt -527.5} are ignored by \SLAP.
 
 Tables \ref{tgeom} and~\ref{tglob} list the keywords recognized by
 \SLAP. Normally, \SLAP\  is run in a batch mode where the input data are
@@ -54,7 +54,7 @@ the correct value may be entered.  In both the interactive and batch
 mode, the program checks that all required values have been input.  If
 it detects any undefined quantities, they are listed and the program
 terminates. A complete echo of the input data is written to the output
-file. 
+file.
 
 In the keyword list, the nose of the body refers to the part
 of the body in contact with the rigid surface at the beginning of the
@@ -68,35 +68,35 @@ inertia, where only one value is required to describe the body.  Global
 quantities may be input at any time.  The first line of the input file
 must be a title which is used to identify the problem.  The input phase
 is terminated by inputting either \cmd{EXIT} or \cmd{END}.  A sample
-input file is shown in Figure~\ref{sampinput}. 
+input file is shown in Figure~\ref{sampinput}.
 \begin{table}
 \caption{Keywords for \SLAP---Geometric}\label{tgeom}
 \begin{center}
-\begin{tabular}{lct{4in}} 
-\multicolumn{1}{c}{\em Keyword} & \multicolumn{1}{c}{\em Default\N1} & 
-  \multicolumn{1}{c}{\em Description}\\ \hline 
+\begin{tabular}{lct{4in}}
+\multicolumn{1}{c}{\em Keyword} & \multicolumn{1}{c}{\em Default\N1} &
+  \multicolumn{1}{c}{\em Description}\\ \hline
 \cmd{HELP}  & --- & {Lists all keywords and their values.
 Required quantities that have not yet been assigned values are given the
-value {\tt -9.999E0}.}\\[1ex] 
+value {\tt -9.999E0}.}\\[1ex]
 
 \cmd{NOSE}  & --- & {Indicates that the geometric
-quantities following this line refer to the nose end of the body.  
+quantities following this line refer to the nose end of the body.
 If \cmd{SYMMETRIC} is the second field, the geometric quantities that
 have been defined for the tail are copied to the nose quantities. If
 \cmd{SQUARE} is the second field, the nose is treated as square (See
-Section~\ref{s:ideal}).}\\[1ex] 
+Section~\ref{s:ideal}).}\\[1ex]
 
 \cmd{TAIL}  & --- & {Indicates that the geometric
 quantities following this line refer to the tail end of the body.
 If \cmd{SYMMETRIC} is the second field, the geometric quantities that
 have been defined for the tail are copied to the nose quantities. If
 \cmd{SQUARE} is the second field, the tail is treated as square (See
-Section~\ref{s:ideal}).}\\[1ex] 
+Section~\ref{s:ideal}).}\\[1ex]
 
 \cmd{LENGTH} & \REQ & {The length along the
 longitudinal axis from the center of gravity to a point perpendicular to
 the contact point of the current end of the body. This distance is
-designated as $L_n$ and $L_t$ in Figure~\ref{f:geom}. }\\[1ex] 
+designated as $L_n$ and $L_t$ in Figure~\ref{f:geom}. }\\[1ex]
 
 \cmd{RADIUS} & \REQ & {The distance from the
 longitudinal axis to the contact point of the current end of the body
@@ -104,14 +104,14 @@ measured perpendicular to the longitudinal axis. This distance is
 designated as $R_n$ and $R_t$ in Figure~\ref{f:geom}.} \\[1ex]
 
 \cmd{MU}     & 0.0 & {Coefficient of friction between
-body and rigid surface at contact point}\\[1ex] 
+body and rigid surface at contact point}\\[1ex]
 
 \cmd{SPRING} & \REQ & {Indicates the beginning of the spring
 definition, spring data are input as pairs of data with one pair per
 record.  Each record consists of the displacement and the force exerted
-by the spring at that displacement.  Terminate the spring definition with 
+by the spring at that displacement.  Terminate the spring definition with
 
-\cmd{END}}\\[1ex] 
+\cmd{END}}\\[1ex]
 
 \cmd{UNLOAD} & 0.0 & {Spring unloading modulus.  If this
 value is zero, the spring unloads elastically along the
@@ -127,39 +127,39 @@ applicable.}
 \begin{table}
 \caption{Keywords for \SLAP---Global}\label{tglob}
 \begin{center}
-\begin{tabular}{lct{4in}} 
-\multicolumn{1}{c}{\em Keyword} & \multicolumn{1}{c}{\em Default\N1} & 
-  \multicolumn{1}{c}{\em Description}\\ \hline 
+\begin{tabular}{lct{4in}}
+\multicolumn{1}{c}{\em Keyword} & \multicolumn{1}{c}{\em Default\N1} &
+  \multicolumn{1}{c}{\em Description}\\ \hline
 
 \cmd{HELP}  & --- & {Lists all keywords and their values.
 Required values that have not yet been input appear as
-{\tt-9.999E0}.}\\[1ex] 
+{\tt-9.999E0}.}\\[1ex]
 
 \cmd{MASS}   & \REQ & {Body mass}\\[1ex]
 
 \cmd{MOMENT} & \REQ & {Mass moment of inertia about the
-center of gravity. }\\[1ex] 
+center of gravity. }\\[1ex]
 
 \cmd{VERTICAL}& 0.0 & {Initial vertical velocity, positive
-upward.}\\[1ex] 
+upward.}\\[1ex]
 
 \cmd{HORIZONTAL}& 0.0 & {Initial horizontal velocity
-(positive towards tail)}\\[1ex] 
+(positive towards tail)}\\[1ex]
 
 \cmd{THETA}   & 0.0 & { Initial angle in degrees.  Positive
 counterclockwise if the nose is to the left of the tail.  Theta is
-shown positive in Figure~\ref{f:geom}.}\\[1ex] 
+shown positive in Figure~\ref{f:geom}.}\\[1ex]
 
 \cmd{OMEGA}   & 0.0 & { Initial angular velocity
-(radians/time)}\\[1ex] 
+(radians/time)}\\[1ex]
 
 \cmd{GRAVITY} & 0.0 & {Constant vertical acceleration
 applied to body, positive upward. (length/time$^2$)}\\[1ex]
 
 \cmd{TIME}    & 0.1 & {Time step scale factor applied to
-the internally calculated time step.}\\[1ex] 
+the internally calculated time step.}\\[1ex]
 
-\cmd{TERMINATION} &  & {Time to terminate the analysis. 
+\cmd{TERMINATION} &  & {Time to terminate the analysis.
 If \cmd{TERMINATION} is not specified, the calculation will
 continue until either both springs have unloaded, or the velocities of
 both the \cmd{NOSE} and \cmd{TAIL} are positive.}\\[1ex]
@@ -167,11 +167,11 @@ both the \cmd{NOSE} and \cmd{TAIL} are positive.}\\[1ex]
 \cmd{PLOT}    & 1   & {The Plot data output interval
 specifies the number of time steps between output of the plot data to the
 \EXO\ database file.  Plot data are always output at the beginning and
-end of the problem.}\\[1ex] 
+end of the problem.}\\[1ex]
 
 \cmd{FRICTION}& 1.0 & {The friction factor is used to
 smooth the applied friction force. The use of friction is being
-investigated and does not always work correctly. }\\ \hline 
+investigated and does not always work correctly. }\\ \hline
 \end{tabular}
 \end{center}
 NOTE:\\
@@ -185,18 +185,18 @@ applicable.}
 Two output files are created during the execution of the \SLAP\ program:
 a text file containing an echo of the input data and a summary of the
 output data, and a binary plot file written in the \EXO~\cite{EXODUS}
-format. 
+format.
 
 \subsection{Text Output File}
 
 The text file written during execution of \SLAP\  consists
 of four main sections.  The first section describes the name of the
 program, the date of the latest program revision, the system hardware
-and software, and the time and date of execution. 
+and software, and the time and date of execution.
 
 The second section is a formatted echo of the input data. All input data
 appears in this section so that the input data file can be reconstructed
-at a later time. 
+at a later time.
 
 The third section summarizes the sequence of events that occur during
 the analysis.  The times at which the nose and the tail hit the impact
@@ -214,7 +214,7 @@ strain energy in each of the springs during the impact event is output. These
 values are important in determining the severity of the slapdown effect since
 for some geometries the second impact will occur at a velocity greater than the
 initial velocity; however, due to the bodies angular position and velocity, the
-strain energy in the spring will be less than that caused by a flat impact. 
+strain energy in the spring will be less than that caused by a flat impact.
 The opposite effect will also occur (higher strain energy at lower impact
 velocity).
 
@@ -223,7 +223,7 @@ The name of this file is the same as the input data file except that the
 extension is {\tt .OUT}.   The file is named {\tt SLAP.OUT} if the program is
 run interactively.  Figures~\ref{sampout1} through \ref{sampout4} illustrate
 the four sections of the output file resulting from the input shown in
-Figure~\ref{sampinput}. 
+Figure~\ref{sampinput}.
 
 \subsection{\EXO\ Database File}
 
@@ -266,15 +266,15 @@ written to the \EXO\ file are listed in Table~\ref{seatab}.
 \sf OMEGA     & Angular velocity, Radians/time\\
 \sf ALPHA     & Angular acceleration, Radians/time${}^2$\\
 \sf KE        & Kinetic energy\\
-\sf INTE      & Internal strain energy in the spring\\ 
-\sf DAMKE     & Damaging kinetic energy 
+\sf INTE      & Internal strain energy in the spring\\
+\sf DAMKE     & Damaging kinetic energy
                 $=\sfrac1/2 \left(m v_y^2 + I \omega^2\right)$ \\ \hline
 \end{tabular}
 \end{center}
 \end{table}
 The name of this file is the same as the input data file with the suffix
 {\tt .EXO}.  The file is named {\tt SLAP.EXO} if the program is run
-interactively. 
+interactively.
 
 \begin{figure}
 \hrule\small
@@ -282,8 +282,8 @@ interactively.
 CASK - TOP END HIT - LIN ELAS NOSE SPRING
 NOSE, SQUARE
 LENGTH 80
-RADIUS 59.95 
-SPRING 
+RADIUS 59.95
+SPRING
   10.0 5.75E8
 END
 
@@ -424,7 +424,7 @@ EXIT
 \end{verbatim}
 \hrule
 \caption{Sample output file for \SLAP---Formatted Input
-Data Echo}\label{sampout2} 
+Data Echo}\label{sampout2}
 \end{figure}
 
 \begin{figure}
@@ -433,7 +433,7 @@ Data Echo}\label{sampout2}
 \begin{verbatim}
  ****** S L A P D O W N ******
 
- CASK - TOP END HIT - LIN ELAS NOSE SPRING 
+ CASK - TOP END HIT - LIN ELAS NOSE SPRING
 
  ****** SEQUENCE OF EVENTS ******
 
@@ -473,4 +473,3 @@ Data Echo}\label{sampout2}
 \hrule
 \caption{Sample output file for \SLAP---Results Summary}\label{sampout4}
 \end{figure}
-

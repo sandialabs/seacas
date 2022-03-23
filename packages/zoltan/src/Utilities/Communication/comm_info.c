@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -74,7 +74,7 @@ int Zoltan_Comm_Info(
   int *send_list,               /* proc assignment of each value to be sent
                                    (same as "assign" in Zoltan_Comm_Create)  */
   int *nrecvs,                  /* number of receives in plan */
-  int *recv_procs,              /* list of procs from which messages are 
+  int *recv_procs,              /* list of procs from which messages are
                                    received. */
   int *recv_lengths,            /* number of values to be received from each
                                    proc in procs_from */
@@ -124,7 +124,7 @@ int i, j, k, my_proc;
     else {
       for (i = 0; i < plan->nsends + plan->self_msg; i++) {
         k = plan->starts_to[i];
-        for (j = 0; j < plan->lengths_to[i]; j++) 
+        for (j = 0; j < plan->lengths_to[i]; j++)
           send_list[plan->indices_to[k+j]] = plan->procs_to[i];
       }
     }
@@ -159,7 +159,7 @@ int i, j, k, my_proc;
     else {
       for (i = 0; i < plan->nrecvs + plan->self_msg; i++) {
         k = plan->starts_from[i];
-        for (j = 0; j < plan->lengths_from[i]; j++) 
+        for (j = 0; j < plan->lengths_from[i]; j++)
           recv_list[plan->indices_from[k+j]] = plan->procs_from[i];
       }
     }

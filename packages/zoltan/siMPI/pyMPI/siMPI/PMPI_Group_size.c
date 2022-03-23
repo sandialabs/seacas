@@ -23,4 +23,3 @@ int PMPI_Group_size ( MPI_Group group, int *size )
     *size = _MPI_SIZE;
   return MPI_SUCCESS;
 }
-

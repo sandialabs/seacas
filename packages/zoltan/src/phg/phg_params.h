@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -46,7 +46,7 @@
 
 #ifndef __PHG_PARAMS_H
 #define __PHG_PARAMS_H
- 
+
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
@@ -67,7 +67,7 @@ static PARAM_VARS PHG_params[] = {
   {"PHG_OUTPUT_LEVEL",                NULL,  "INT",    0},
     /* Higher value -> more output */
   {"FINAL_OUTPUT",                    NULL,  "INT",    0},
-    /* Output related to final partitioning only */ 
+    /* Output related to final partitioning only */
   {"CHECK_GRAPH",                     NULL,  "INT",    0},
     /* Same as CHECK_HYPERGRAPH */
   {"CHECK_HYPERGRAPH",                NULL,  "INT",    0},
@@ -78,7 +78,7 @@ static PARAM_VARS PHG_params[] = {
     /* No. of processors along hyperedge direction initially in 2D layout */
   {"PHG_COARSENING_LIMIT",            NULL,  "INT",    0},
     /* When to stop coarsening (global no. of vertices) */
-  {"PHG_COARSENING_NCANDIDATE",       NULL,  "INT",    0},  
+  {"PHG_COARSENING_NCANDIDATE",       NULL,  "INT",    0},
     /* Max no. of candidate vertices in a round of matching */
   {"PHG_COARSENING_METHOD",           NULL,  "STRING", 0},
     /* Coarsening method (ipm, agg, etc. ) */
@@ -98,20 +98,20 @@ static PARAM_VARS PHG_params[] = {
     /* Direct k-way partitioning not yet implemented! */
   {"PHG_REFINEMENT_LOOP_LIMIT",       NULL,  "INT",    0},
     /* Max no. of loops in KL/FM. */
-  {"PHG_REFINEMENT_MAX_NEG_MOVE",     NULL,  "INT",    0},    
+  {"PHG_REFINEMENT_MAX_NEG_MOVE",     NULL,  "INT",    0},
     /* Max. no. of negative moves allowed before exiting refinement. */
   {"PHG_REFINEMENT_QUALITY",          NULL,  "FLOAT",  0},
     /* 1.0 is default; higher (lower) value gives more (less) refinement. */
-  {"PHG_USE_TIMERS",                  NULL,  "INT",    0},    
+  {"PHG_USE_TIMERS",                  NULL,  "INT",    0},
     /* Same as USE_TIMERS. */
-  {"USE_TIMERS",                      NULL,  "INT",    0},    
+  {"USE_TIMERS",                      NULL,  "INT",    0},
     /* Same as PHG_USE_TIMERS. */
   {"PHG_EDGE_SIZE_THRESHOLD",         NULL,  "FLOAT",  0},
     /* Ignore hyperedges larger than this threshold times nvertex */
     /* If PHG_EDGE_SIZE_THRESHOLD>1, interpret it as absolute value. */
   {"PHG_MATCH_EDGE_SIZE_THRESHOLD",   NULL,  "INT",    0},
     /* Ignore hyperedges larger than this threshold, in local processor, during matching */
-  {"PHG_BAL_TOL_ADJUSTMENT",          NULL,  "FLOAT",  0},  
+  {"PHG_BAL_TOL_ADJUSTMENT",          NULL,  "FLOAT",  0},
     /* Adjustment factor for balance in recursive bisection. */
   {"PHG_EDGE_WEIGHT_OPERATION",       NULL,  "STRING",  0},
     /* How to handle inconsistent edge weights across processors */
@@ -119,8 +119,8 @@ static PARAM_VARS PHG_params[] = {
     /* Serial partitioner for ParKway (PaToH or hMetis) */
   {"ADD_OBJ_WEIGHT",                  NULL,  "STRING", 0},
     /* Add implicit vertex weight, like no. of pins (nonzeros)? */
-  {"PHG_RANDOMIZE_INPUT",             NULL,  "INT",    0},    
-    /* Randomizing input often improves load balance within PHG but destroys 
+  {"PHG_RANDOMIZE_INPUT",             NULL,  "INT",    0},
+    /* Randomizing input often improves load balance within PHG but destroys
        locality, so may produce lower quality partitions  */
   {"PHG_PROCESSOR_REDUCTION_LIMIT",   NULL,  "FLOAT",  0},
     /* When to move data to fewer processors. */
@@ -132,11 +132,11 @@ static PARAM_VARS PHG_params[] = {
     /* # of levels on which to use geometric matching; INT_MAX-->all levels. */
   {"PATOH_ALLOC_POOL0",               NULL,  "INT",    0},
     /* Memory allocation parameter for Patoh. */
-  {"PATOH_ALLOC_POOL1",               NULL,  "INT",    0},   
+  {"PATOH_ALLOC_POOL1",               NULL,  "INT",    0},
   /* Memory allocation parameter for Patoh. */
   {"PHG_KEEP_TREE",                   NULL,  "INT",    0},
   /* Keep bisection tree */
-  {NULL,                              NULL,  NULL,     0}     
+  {NULL,                              NULL,  NULL,     0}
 };
 
 
@@ -145,4 +145,3 @@ static PARAM_VARS PHG_params[] = {
 #endif
 
 #endif
-

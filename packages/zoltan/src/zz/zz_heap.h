@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -66,7 +66,7 @@ typedef struct {
 #define Zoltan_Heap_Empty(H)         (((H)->n)==0)
 #define Zoltan_Heap_Not_Empty(H)     (((H)->n)!=0)
 #define Zoltan_Heap_Has_Elem(H,e)    (((H)->pos[e])!=-1)
-#define Zoltan_Heap_Value(H,e)       ((H)->value[e])    
+#define Zoltan_Heap_Value(H,e)       ((H)->value[e])
 #define Zoltan_Heap_Max_Value(H)     ((H)->value[(H)->ele[0]])
 #define Zoltan_Heap_Peek_Max(H)      ((H)->ele[0])
 #define Zoltan_Heap_Count(H)         ((H)->n)

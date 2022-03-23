@@ -20,4 +20,3 @@ int MPI_Comm_rank(MPI_Comm comm, int* rank)
   _MPI_COVERAGE();
   return  PMPI_Comm_rank(comm, rank);
 }
-

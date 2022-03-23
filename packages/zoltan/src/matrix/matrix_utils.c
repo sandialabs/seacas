@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -99,7 +99,7 @@ Zoltan_Matrix2d_Free(Zoltan_matrix_2d *m)
 
   Zoltan_PHGComm_Destroy(m->comm);
 
-  ZOLTAN_FREE(&m->comm); 
+  ZOLTAN_FREE(&m->comm);
 
   memset (m, 0, sizeof(Zoltan_matrix_2d));
 }

@@ -10,7 +10,7 @@ a parallel analysis is to be run on the mesh file \file{mesh.g} using
 \file{mesh.g.8.7}. Each submesh will contain a subset of the nodes and
 elements of the entire mesh and some communication data indicating
 which nodes and elements are on the boundary of this submesh and the
-submesh of one or more other processors. 
+submesh of one or more other processors.
 
 The analysis code is then executed in parallel and each processor
 reads its portion of the mesh from its respective submesh; when it
@@ -33,7 +33,7 @@ required.
 The name \epu{} is an acronym for {\em \exo{} Parallel Unification}
 Program.  The ``alternate'' meaning of \epu{} is {\em E Pluribus Unum} which means
 ``Out of Many One'' which is described in more detail at
-\url{http://www.greatseal.com/mottoes/unum.html}. 
+\url{http://www.greatseal.com/mottoes/unum.html}.
 
 \section{Invoking \epu}
 \epu{} is typically invoked using a command line similar to:
@@ -43,7 +43,7 @@ epu [options] -auto full_filename
 \end{syntax}
 Where \param{basename} is the ``base'' portion of the filename.  For
 example, if one of the files to be joined is \file{results.e.8.3},
-then the basename would be specified as \file{results}.  
+then the basename would be specified as \file{results}.
 
 \subsubsection{File Naming Convention}
 The naming of the per-processor files must follow the convention that
@@ -54,7 +54,7 @@ processor that created the file, respectively.  Also, the last suffix
 same as the width required to represent the processor count.  For
 example, if the files were written for a 1000 processor run, the files
 would be \file{basename.e.1000.0000} through
-\file{basename.e.1000.0999}. 
+\file{basename.e.1000.0999}.
 
 \subsubsection{Defaults and Requirements}
 The default behavior is that \epu{} will join all per-processor files
@@ -83,7 +83,7 @@ as:
 	epu -auto /scratch/user/results.e.16.00
 \end{syntax}
 and the output file would be written to \file{results.e} in the
-current directory. 
+current directory.
 
 \subsubsection{Disk-related filename options}
 If this simple invocation does not work for some reason, then the
@@ -111,8 +111,8 @@ processor-specific data. For example, given the file
 below).  If not on a raid system, this can be omitted.
 \item[sub]  The portion of the pathname following the raid data (see
 below). If not on a raid system, this can be omitted.
-\item[\#o] The ``raid offset'' 
-\item[\#r] The ``raid count'' which is the number of raid disks. 
+\item[\#o] The ``raid offset''
+\item[\#r] The ``raid count'' which is the number of raid disks.
 \end{description}
 
 The raid options are not used very often, but can be very useful if
@@ -194,7 +194,7 @@ not required and everything can be set automatically via the
 \param{-add\_processor\_id} & Add 'processor\_id' element variable to
 the output file. The value of the variable is the processor on which
 that element existed.  \\
-\param{-append} & Append to an existing database instead of overwriting an existing database. 
+\param{-append} & Append to an existing database instead of overwriting an existing database.
 	Timestep transfer will start after last timestep on the
 	existing database.  \\
 
@@ -219,7 +219,7 @@ that element existed.  \\
 	\item The maximum number of simultaneously open files on the filesystem
 		or system is less than the processor
 		count\footnote{\epu{} will output a message to standard output if this
-		happens.}.  In that case, unless this option is used, \epu{} will have to 
+		happens.}.  In that case, unless this option is used, \epu{} will have to
 		open and close each file for each time it is accessed
 		which can take a long time.
 	\item The user wants to use a parallel visualization program that can
@@ -241,13 +241,13 @@ variables will be written to the output file.\\
 		id 10 and 20. The default behavior is that all element
 		variables will be written to the output file.  \\
 \param{-nvar <val>} & Comma-separated list of nodal variables to be
-		joined or ALL or NONE. The default behavior is that all nodal 
+		joined or ALL or NONE. The default behavior is that all nodal
 		variables will be written to the output file. \\
 \param{-nsetvar <val>} & Comma-separated list of nodeset variables to
-		be joined or ALL or NONE.  The default behavior is that all nodeset 
+		be joined or ALL or NONE.  The default behavior is that all nodeset
 		variables will be written to the output file.\\
 \param{-ssetvar <val>} & Comma-separated list of sideset variables to
-		be joined or ALL or NONE.  The default behavior is that all sideset 
+		be joined or ALL or NONE.  The default behavior is that all sideset
 		variables will be written to the output file.\\
 \param{-omit\_nodesets} & Don't transfer nodesets to output file.  \\
 \param{-omit\_sidesets} & Don't transfer sidesets to output file.  \\
@@ -280,7 +280,7 @@ The following options were determined automatically:
 	 basename = 'epu_example'
 	-processor_count 8
 	-extension rsout
-	-Root_directory 
+	-Root_directory
 
 Input(0): './epu_example.rsout.8.0'
 ...
@@ -329,36 +329,36 @@ complete and all that remains is defining the results data and
 transferring it to the output file.  The timing information in the
 timestep transfer gives an estimate of how long the transfer is
 expected to take; its accuracy can vary depending on the machine load
-and the file system load.  
+and the file system load.
 
 At the end, a summary of the output mesh is given.
 
 \begin{verbatim}
 **** GET VARIABLE INFORMATION AND NAMES ****
 Found 11 global variables.
-	cumulative_topology_modification  current_eigenvalue                
-	delta_t                           hourglass_energy                  
+	cumulative_topology_modification  current_eigenvalue
+	delta_t                           hourglass_energy
 	last_rebalance_comm_load          last_rebalance_step
-	stepcount                         strain_external_energy            
-	timestep_lanczos_last             timestep_nodal                    
-	updated_step_count                
+	stepcount                         strain_external_energy
+	timestep_lanczos_last             timestep_nodal
+	updated_step_count
 
 Found 14 nodal variables.
-	displacement_x                    displacement_y                    
-	displacement_z                    3by3_block_diag_pc_xx             
+	displacement_x                    displacement_y
+	displacement_z                    3by3_block_diag_pc_xx
 	acceleration_x                    acceleration_y
 	acceleration_z                    force_constraint_x
 	force_constraint_y                force_constraint_z
-	temperature                       velocity_x                        
-	velocity_y                        velocity_z                        
+	temperature                       velocity_x
+	velocity_y                        velocity_z
 
 Found 11 element variables.
-	dilmod                       element_mass                 
-	stress_xx                    stress_yy                    
-	stress_zz                    stress_xy                    
-	stress_yz                    stress_zx                    
-	temperature                  timestep                     
-	volume                       
+	dilmod                       element_mass
+	stress_xx                    stress_yy
+	stress_zz                    stress_xy
+	stress_yz                    stress_zx
+	temperature                  timestep
+	volume
 
 
 **** GET TRANSIENT NODAL, GLOBAL, AND ELEMENT DATA VALUES ****

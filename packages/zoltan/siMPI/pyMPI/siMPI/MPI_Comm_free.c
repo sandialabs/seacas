@@ -20,4 +20,3 @@ int MPI_Comm_free(MPI_Comm* comm)
   _MPI_COVERAGE();
   return  PMPI_Comm_free(comm);
 }
-

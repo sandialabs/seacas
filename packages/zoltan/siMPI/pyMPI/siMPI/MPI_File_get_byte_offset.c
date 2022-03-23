@@ -18,6 +18,5 @@
 int MPI_File_get_byte_offset(MPI_File fh, MPI_Offset offset, MPI_Offset *disp)
 {
   _MPI_COVERAGE();
-  return PMPI_File_get_byte_offset(fh, offset, disp); 
+  return PMPI_File_get_byte_offset(fh, offset, disp);
 }
-

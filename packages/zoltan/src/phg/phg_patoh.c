@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -97,7 +97,7 @@ char *yo = "Zoltan_HG_PaToH";
   }
 
   if (hg->EdgeWeightDim) {
-    if (hg->EdgeWeightDim > 1) 
+    if (hg->EdgeWeightDim > 1)
       ZOLTAN_PATOH_ERROR("PaToH supports Edge_Weight_Dim == 0 or 1 only.",
                          ZOLTAN_FATAL);
     iewgts = (int *) ZOLTAN_MALLOC(hg->nEdge*hg->EdgeWeightDim*sizeof(int));
@@ -112,11 +112,11 @@ char *yo = "Zoltan_HG_PaToH";
     /* set the same imbalanace ratio to the required one */
   pargs.init_imbal = pargs.final_imbal = hgp->bal_tol-1.0;
   if (hgp->patoh_alloc_pool0>0)
-    pargs.MemMul_CellNet = hgp->patoh_alloc_pool0; 
+    pargs.MemMul_CellNet = hgp->patoh_alloc_pool0;
   if (hgp->patoh_alloc_pool1>0)
-    pargs.MemMul_Pins = hgp->patoh_alloc_pool1; 
+    pargs.MemMul_Pins = hgp->patoh_alloc_pool1;
 
-  PaToH_Alloc(&pargs, hg->nVtx, hg->nEdge, hg->VtxWeightDim, 
+  PaToH_Alloc(&pargs, hg->nVtx, hg->nEdge, hg->VtxWeightDim,
               ivwgts, iewgts, hg->hindex, hg->hvertex);
 
 
@@ -124,7 +124,7 @@ char *yo = "Zoltan_HG_PaToH";
   pargs.seed = cnt;                   /* Differ each call to allow     */
                                       /* randomized testing.           */
 
-  partweight = (int *) ZOLTAN_MALLOC(nparts * MAX(1, hg->VtxWeightDim) 
+  partweight = (int *) ZOLTAN_MALLOC(nparts * MAX(1, hg->VtxWeightDim)
                                      * sizeof(int));
   if (!partweight)
     ZOLTAN_PATOH_ERROR("Memory error.", ZOLTAN_MEMERR);
@@ -133,7 +133,7 @@ char *yo = "Zoltan_HG_PaToH";
     if (hgp->UseFixedVtx){
       /* Copy fixed vertices from hg->fixed_part */
       memcpy(partvec, hg->fixed_part, hg->nVtx*sizeof(int) );
-      PaToH_Partition_with_FixCells(&pargs, hg->nVtx, hg->nEdge, 
+      PaToH_Partition_with_FixCells(&pargs, hg->nVtx, hg->nEdge,
                     ivwgts, iewgts, hg->hindex,
                     hg->hvertex, partvec, partweight, &cut);
       }
@@ -141,11 +141,11 @@ char *yo = "Zoltan_HG_PaToH";
       PaToH_Partition(&pargs, hg->nVtx, hg->nEdge, ivwgts, iewgts, hg->hindex,
                     hg->hvertex, partvec, partweight, &cut);
   }
-  else 
+  else
     PaToH_MultiConst_Partition(&pargs, hg->nVtx, hg->nEdge, hg->VtxWeightDim,
                                ivwgts, hg->hindex, hg->hvertex, partvec,
                                partweight, &cut);
-  
+
 
   /* HERE:  Check whether imbalance criteria were met. */
 
@@ -167,20 +167,20 @@ End:
 #define INT_EPSILON (1e-5)
 
 static int scale_round_weights(
-  float *fwgts, 
-  int *iwgts, 
-  int n, 
+  float *fwgts,
+  int *iwgts,
+  int n,
   int dim,
   int mode
 )
 {
 /* Convert floating point weights to integer weights.
  * This routine is stolen from scale_round_weights in parmetis_jostle.c.
- * Because it needs to run only serially, and because it uses only 
+ * Because it needs to run only serially, and because it uses only
  * integers (not idxtype), it has been largely duplicated here.
  */
 
-  int i, j, tmp, ierr; 
+  int i, j, tmp, ierr;
   int max_wgt_sum = INT_MAX/8;
   int *nonint;
   float *scale, *sum_wgt, *max_wgt;
@@ -219,7 +219,7 @@ static int scale_round_weights(
     /* Check if all weights are integers */
     for (i=0; i<n; i++){
       for (j=0; j<dim; j++){
-        if (!nonint[j]){ 
+        if (!nonint[j]){
           /* tmp = (int) roundf(fwgts[i]);  EB: Valid C99, but not C89 */
           tmp = (int) floor((double) fwgts[i] + .5); /* Nearest int */
           if (fabs((double)tmp-fwgts[i*dim+j]) > INT_EPSILON){
@@ -228,7 +228,7 @@ static int scale_round_weights(
         }
         sum_wgt[j] += fwgts[i*dim+j];
         if (fwgts[i*dim+j] > max_wgt[j])
-          max_wgt[j] = fwgts[i*dim+j]; 
+          max_wgt[j] = fwgts[i*dim+j];
       }
     }
 
@@ -236,7 +236,7 @@ static int scale_round_weights(
     for (j=0; j<dim; j++){
       scale[j] = 1.;
       /* Scale unless all weights are integers (not all zero) */
-      if (nonint[j] || (max_wgt[j] <= INT_EPSILON) 
+      if (nonint[j] || (max_wgt[j] <= INT_EPSILON)
                     || (sum_wgt[j] > max_wgt_sum)){
         if (sum_wgt[j] == 0){
           ierr = ZOLTAN_WARN;

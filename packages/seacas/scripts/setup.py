@@ -11,4 +11,3 @@ setup(name='exodus',
 #	extras = {'numpy'},
 #	python_requires='<3',
       )
-

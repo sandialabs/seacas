@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -91,7 +91,7 @@ int Zoltan_Get_Distribution(ZZ *zz, int **vtxdist)
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Error in Get_Num_Obj.");
     return (ierr);
   }
-  
+
   *vtxdist = (int *) ZOLTAN_MALLOC((zz->Num_Proc+1)*sizeof(int));
   if (num_obj>0){
     if (!(*vtxdist)){
@@ -100,15 +100,15 @@ int Zoltan_Get_Distribution(ZZ *zz, int **vtxdist)
       return ZOLTAN_MEMERR;
     }
   }
-  
+
   /* Construct *vtxdist[i] = the number of objects on all procs < i. */
   /* Scan to compute partial sums of the number of objs */
   MPI_Scan (&num_obj, *vtxdist, 1, MPI_INT, MPI_SUM, zz->Communicator);
   /* Gather data from all procs */
-  MPI_Allgather (&((*vtxdist)[0]), 1, MPI_INT, 
+  MPI_Allgather (&((*vtxdist)[0]), 1, MPI_INT,
                  &((*vtxdist)[1]), 1, MPI_INT, zz->Communicator);
   (*vtxdist)[0] = 0;
-  
+
   return ZOLTAN_OK;
 }
 
@@ -162,7 +162,7 @@ int Zoltan_Inverse_Perm(
       sendlist[2*i+1] = perm[i];
       proclist[i] =  Zoltan_Get_Processor_Graph(vtxdist, zz->Num_Proc, perm[i]);
     }
-    ierr = Zoltan_Comm_Create(&comm_plan, num_obj, proclist, 
+    ierr = Zoltan_Comm_Create(&comm_plan, num_obj, proclist,
              zz->Communicator, TAG1, &nrecv);
     if (ierr != ZOLTAN_OK){
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Error in Zoltan_Comm_Create");
@@ -170,7 +170,7 @@ int Zoltan_Inverse_Perm(
     }
     if (nrecv != num_obj){
       /* This should never happen. */
-      sprintf(msg, "Internal error: nrecv (%3d) != num_obj (%3d). Invalid permutation.\n", nrecv, num_obj); 
+      sprintf(msg, "Internal error: nrecv (%3d) != num_obj (%3d). Invalid permutation.\n", nrecv, num_obj);
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
       ierr = ZOLTAN_FATAL;
       goto error;

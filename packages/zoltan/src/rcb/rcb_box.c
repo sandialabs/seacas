@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -91,21 +91,21 @@ int                i, ierr = ZOLTAN_OK;
   *ndim = -1;
 
   if (zz->LB.Data_Structure == NULL) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
       "No Decomposition Data available; use KEEP_CUTS parameter.");
     ierr = ZOLTAN_FATAL;
     goto End;
   }
 
   if (zz->LB.Method != RCB) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
       "Function can be used only with LB_METHOD == RCB.");
     ierr = ZOLTAN_FATAL;
     goto End;
   }
 
   if (part < 0 || part >= zz->LB.Num_Global_Parts) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
       "Invalid part number.");
     ierr = ZOLTAN_FATAL;
     goto End;

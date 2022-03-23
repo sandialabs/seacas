@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -80,10 +80,10 @@ void zoltanParams_hier_set_partition(int level, int partition);
 void zoltanParams_hier_set_param(int level, char *param, char *value);
 int zoltanParams_hier_get_num_levels();
 int zoltanParams_hier_get_partition(int level);
-void zoltanParams_hier_use_params(int level, struct Zoltan_Struct *zz, 
+void zoltanParams_hier_use_params(int level, struct Zoltan_Struct *zz,
 				  int *ierr);
 void zoltanParams_set_comm(MPI_Comm thecomm);
 void zoltanParams_hier_setup(Zoltan &zz);
-void zoltanParams_read_file(Zoltan &lb, char *file, 
+void zoltanParams_read_file(Zoltan &lb, char *file,
 			    MPI_Comm thecomm);
 #endif

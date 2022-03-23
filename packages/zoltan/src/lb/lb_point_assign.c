@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -64,13 +64,13 @@ int Zoltan_LB_Point_Assign (
   char *yo = "Zoltan_LB_Point_Assign";
   if (zz->LB.Point_Assign == NULL) {
     /* function not supported by current decomposition method */
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Point_Assign not supported by chosen partitioning method.");
-    return ZOLTAN_FATAL;  
+    return ZOLTAN_FATAL;
   }
 
   if (zz->LB.PartDist != NULL) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
       "Non-uniform distribution of partitions over processors is specified; "
       "use Zoltan_LB_Point_PP_Assign.");
     return ZOLTAN_FATAL;
@@ -78,7 +78,7 @@ int Zoltan_LB_Point_Assign (
 
   /* call appropriate method; pass proc in partition argument for greater
    * efficiency within LB.Point_Assign (Zoltan is partition-based). */
-  return zz->LB.Point_Assign(zz, x, NULL, proc); 
+  return zz->LB.Point_Assign(zz, x, NULL, proc);
 }
 
 /****************************************************************************/
@@ -92,9 +92,9 @@ int Zoltan_LB_Point_PP_Assign (
   char *yo = "Zoltan_LB_Point_PP_Assign";
   if (zz->LB.Point_Assign == NULL) {
     /* function not supported by current decomposition method */
-     ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+     ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Point_Assign not supported by chosen partitioning method.");
-     return ZOLTAN_FATAL ;   
+     return ZOLTAN_FATAL ;
   }
 
   return zz->LB.Point_Assign(zz, x, proc, part);  /* call appropriate method */

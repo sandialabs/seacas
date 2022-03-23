@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -70,9 +70,9 @@ int Zoltan_LB_Box_Assign (
 
   if (zz->LB.Box_Assign == NULL) {
     /* function not supported by current decomposition method */
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Box_Assign not supported by chosen partitioning method.");
-    return ZOLTAN_FATAL;  
+    return ZOLTAN_FATAL;
   }
 
   if (zz->LB.PartDist != NULL) {
@@ -84,7 +84,7 @@ int Zoltan_LB_Box_Assign (
 
   /* Call appropriate method.  Pass procs and count in partition arguments
    * for greater efficiency in LB.Box_Assign (Zoltan is partition-based.) */
-  return zz->LB.Box_Assign(zz, xlo, ylo, zlo, xhi, yhi, zhi, NULL, &tmp, 
+  return zz->LB.Box_Assign(zz, xlo, ylo, zlo, xhi, yhi, zhi, NULL, &tmp,
                            procs, count);
 }
 
@@ -106,9 +106,9 @@ int Zoltan_LB_Box_PP_Assign (
 
   if (zz->LB.Box_Assign == NULL) {
     /* function not supported by current decomposition method */
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Box_Assign not supported by chosen partitioning method.");
-    return ZOLTAN_FATAL;  
+    return ZOLTAN_FATAL;
   }
 
   /* Call appropriate method.  Pass procs and count in partition arguments

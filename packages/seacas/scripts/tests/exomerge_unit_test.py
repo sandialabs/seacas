@@ -1851,4 +1851,3 @@ if __name__ == '__main__':
         tester.min_tests = int(sys.argv[1])
         tester.max_tests = tester.min_tests
     tester.test()
-

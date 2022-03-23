@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -58,7 +58,7 @@ extern "C" {
 /*****************************************************************************/
 /*
  *  This file contains routines for initializing Zoltan.
- *  These functions are all callable by the application. 
+ *  These functions are all callable by the application.
  */
 /*****************************************************************************/
 /*****************************************************************************/
@@ -74,7 +74,7 @@ int Zoltan_Initialize(int argc, char **argv, float *ver)
 
 int mpi_flag;
 
-  /* 
+  /*
    *  Test whether MPI is already initialized.  If not, call MPI_Init.
    */
 

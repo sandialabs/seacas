@@ -25,4 +25,3 @@ int PMPI_Request_free( MPI_Request *request ) {
   *request = MPI_REQUEST_NULL;
   return MPI_SUCCESS;
 }
-

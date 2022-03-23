@@ -18,6 +18,5 @@
 int MPI_Cart_coords ( MPI_Comm comm, int rank, int maxdims, int *coords )
 {
   _MPI_COVERAGE();
-  return PMPI_Cart_coords (comm, rank, maxdims, coords); 
+  return PMPI_Cart_coords (comm, rank, maxdims, coords);
 }
-

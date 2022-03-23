@@ -18,6 +18,5 @@
 int MPI_Cart_sub ( MPI_Comm comm, int *remain_dims, MPI_Comm *comm_new )
 {
   _MPI_COVERAGE();
-  return PMPI_Cart_sub (comm, remain_dims, comm_new); 
+  return PMPI_Cart_sub (comm, remain_dims, comm_new);
 }
-

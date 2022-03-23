@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -79,7 +79,7 @@ MPI_Comm  comm) {		/* communicator */
 
     self_index_to = -1;
     for (i = 0; i < nsends + self_msg; i++) {
-	if (procs_to[i] != my_proc) 
+	if (procs_to[i] != my_proc)
 	    MPI_Send((void *) &sizes_to[i], 1, MPI_INT, procs_to[i], tag, comm);
 	else
 	    self_index_to = i;
@@ -87,10 +87,10 @@ MPI_Comm  comm) {		/* communicator */
 
     *total_recv_size = 0;
     for (i = 0; i < nrecvs + self_msg; i++) {
-	if (procs_from[i] != my_proc) 
+	if (procs_from[i] != my_proc)
 	    MPI_Recv((void *) &sizes_from[i], 1, MPI_INT, procs_from[i],
 		     tag, comm, &status);
-	else 
+	else
 	    sizes_from[i] = sizes_to[self_index_to];
 
 	*total_recv_size += sizes_from[i];

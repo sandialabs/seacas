@@ -19,4 +19,3 @@ int MPI_Graph_neighbors_count ( MPI_Comm comm, int rank, int *nneighbors )
   _MPI_COVERAGE();
   return PMPI_Graph_neighbors_count (comm, rank, nneighbors);
 }
-

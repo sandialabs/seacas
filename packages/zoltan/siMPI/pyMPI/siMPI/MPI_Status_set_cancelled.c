@@ -19,4 +19,3 @@ int MPI_Status_set_cancelled( MPI_Status *status, int flag )
   _MPI_COVERAGE();
   return PMPI_Status_set_cancelled (status, flag);
 }
-

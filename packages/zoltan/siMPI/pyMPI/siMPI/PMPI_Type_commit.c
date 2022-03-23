@@ -17,6 +17,5 @@
 /* Does not do anything */
 int PMPI_Type_commit ( MPI_Datatype *datatype )
 {
-  return MPI_SUCCESS; 
+  return MPI_SUCCESS;
 }
-

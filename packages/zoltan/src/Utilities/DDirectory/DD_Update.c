@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -179,11 +179,11 @@ int Zoltan_DD_Update (
    if (dd->debug_level > 6)
       ZOLTAN_PRINT_INFO(dd->my_proc, yo, "After Comm_Create");
 
-   /* If dd has no nodes allocated (e.g., first call to DD_Update; 
-    * create the nodelist and freelist 
+   /* If dd has no nodes allocated (e.g., first call to DD_Update;
+    * create the nodelist and freelist
     */
    if (nrec && dd->nodelistlen == 0) {
-      DD_Memory_Alloc_Nodelist(dd, (DD_NodeIdx) nrec, 0.); 
+      DD_Memory_Alloc_Nodelist(dd, (DD_NodeIdx) nrec, 0.);
                                /* TODO Add overalloc parameter */
    }
 

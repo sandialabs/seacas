@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -56,7 +56,7 @@
 extern "C" {
 #endif
 
-/* Generic Tflops_special routines to avoid certain types of 
+/* Generic Tflops_special routines to avoid certain types of
    collective communication routines. */
 
 void Zoltan_RB_scan_double(
@@ -112,7 +112,7 @@ void Zoltan_RB_scan_double(
          MPI_Recv(tmpin, count, MPI_DOUBLE, to, tag, local_comm, &status);
          for (i=0; i<count; i++){
             tmpout[i] += tmpin[i];
-            if (to < proc) 
+            if (to < proc)
                wtupto[i] += tmpin[i];
          }
       }
@@ -142,7 +142,7 @@ void Zoltan_RB_sum_double(
    MPI_Status status;
 
    /* This routine sums doubles on a subset of processors */
- 
+
    if (count==0)
      return;
    else if (count==1){ /* avoid malloc */
@@ -154,13 +154,13 @@ void Zoltan_RB_sum_double(
 
    /* Find next lower power of 2. */
    for (hbit = 0; (nprocs >> hbit) != 1; hbit++);
- 
+
    nprocs_small = 1 << hbit;
    if (nprocs_small * 2 == nprocs) {
       nprocs_small *= 2;
       hbit++;
    }
- 
+
    to = proclower + (rank ^ nprocs_small);
    if (rank & nprocs_small) {  /* processors greater than largest power of 2 */
       MPI_Send(x, count, MPI_DOUBLE, to, tag, comm);
@@ -172,7 +172,7 @@ void Zoltan_RB_sum_double(
          MPI_Recv(tmp, count, MPI_DOUBLE, to, tag, comm, &status);
          for (i=0; i<count; i++)
             x[i] += tmp[i];
-      }  
+      }
       for (mask = nprocs_small >> 1; mask; mask >>= 1) { /* binary exchange */
          tag++;
          partner = proclower + (rank ^ mask);
@@ -180,7 +180,7 @@ void Zoltan_RB_sum_double(
          MPI_Recv(tmp, count, MPI_DOUBLE, partner, tag, comm, &status);
          for (i=0; i<count; i++)
             x[i] += tmp[i];
-      }  
+      }
       tag++;
       if (rank + nprocs_small < nprocs)
          MPI_Send(x, count, MPI_DOUBLE, to, tag, comm);
@@ -221,13 +221,13 @@ void Zoltan_RB_max_double(
 
    /* Find next lower power of 2. */
    for (hbit = 0; (nprocs >> hbit) != 1; hbit++);
- 
+
    nprocs_small = 1 << hbit;
    if (nprocs_small * 2 == nprocs) {
       nprocs_small *= 2;
       hbit++;
    }
- 
+
    to = proclower + (rank ^ nprocs_small);
    if (rank & nprocs_small) {  /* processors greater than largest power of 2 */
       MPI_Send(x, count, MPI_DOUBLE, to, tag, comm);
@@ -270,7 +270,7 @@ void Zoltan_RB_bcast_doubles(
    MPI_Comm comm
 )
 {
-   int tag = 32280; 
+   int tag = 32280;
    int i;
    MPI_Status status;
 
@@ -299,7 +299,7 @@ void Zoltan_RB_gather_double(
    MPI_Comm comm
 )
 {
-   int tag = 32180; 
+   int tag = 32180;
    int i;
    MPI_Status status;
 

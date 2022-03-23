@@ -15,12 +15,12 @@
 #include "mpi.h"
 
 int PMPI_Type_get_contents(
-        MPI_Datatype datatype, 
-        int max_integers, 
-        int max_addresses, 
-        int max_datatypes, 
-        int *array_of_integers, 
-        MPI_Aint *array_of_addresses, 
+        MPI_Datatype datatype,
+        int max_integers,
+        int max_addresses,
+        int max_datatypes,
+        int *array_of_integers,
+        MPI_Aint *array_of_addresses,
         MPI_Datatype *array_of_datatypes)
 {
   int index, position;
@@ -43,7 +43,7 @@ int PMPI_Type_get_contents(
        (_MPI_TYPE_LIST[position].info->count < max_datatypes) )
   {
     _MPI_ERR_ROUTINE (MPI_ERR_TYPE, "MPI_TYPE_GET_CONTENTS: invalid max_* error");
-    MPI_Abort (MPI_COMM_NULL, MPI_ERR_TYPE);    
+    MPI_Abort (MPI_COMM_NULL, MPI_ERR_TYPE);
   }
   if (_MPI_TYPE_LIST[position].sendType == _MPI_STRUCT)
   {
@@ -65,4 +65,3 @@ int PMPI_Type_get_contents(
   }
   return MPI_SUCCESS;
 }
-

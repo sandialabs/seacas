@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -85,12 +85,12 @@ char *errorstr;
     rc = MPI_Comm_size(comm[i], nprocs + i);
     if (rc != MPI_SUCCESS){
       MPI_Error_string(rc, errorstr, &len);
-      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr); 
+      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr);
     }
     rc = MPI_Comm_rank(comm[i], me + i);
     if (rc != MPI_SUCCESS){
       MPI_Error_string(rc, errorstr, &len);
-      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr); 
+      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr);
     }
 #ifdef DEBUG_ME
     MPI_Barrier(MPI_COMM_WORLD);
@@ -109,7 +109,7 @@ char *errorstr;
     /*
      * classes[k] contains the rank (in level i) of the rank 0 element of element k's subcommunicator
      */
-    level_down(i, classes, me, nprocs); 
+    level_down(i, classes, me, nprocs);
 
     /*
      * my sub communicator will create which parts in the final partitioning?
@@ -287,9 +287,8 @@ int i, numClasses, myClass, myClassLeader, rangeStart;
   for (i=0; i < nprocs; i++){
     if ((buf[i] > 0) && (i == myClassLeader)) break;
     rangeStart += buf[i];
-  } 
+  }
 
   rangeNext[0] = rangeCurrent[0] + rangeStart;
   rangeNext[1] = rangeNext[0] + buf[myClassLeader] - 1;
 }
-

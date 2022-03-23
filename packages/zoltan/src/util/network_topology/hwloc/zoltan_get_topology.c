@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -43,7 +43,7 @@
  *
  * @HEADER
  */
-/* 
+/*
  * Discover hardware topology using hwloc.
  * Tested with hwloc 1.0.2: http://www.open-mpi.org/software/hwloc
  *
@@ -85,18 +85,18 @@
   } \
 }
 
-/* 
+/*
  * Define BUILD_MAIN to create a test application
  */
-#define BUILD_MAIN 
+#define BUILD_MAIN
 
 #define MAX_NAME_LEN 64           /* what should this be? */
 #define MAX_NUM_LEVELS 12          /* ditto */
 
-int Zoltan_Get_Topology(int **branch_degree, 
-                        int **num_cpus, 
-                        char ***level_name, 
-                        uint64_t **total_memory, 
+int Zoltan_Get_Topology(int **branch_degree,
+                        int **num_cpus,
+                        char ***level_name,
+                        uint64_t **total_memory,
                         uint64_t **local_memory)
 {
 hwloc_topology_t topology;
@@ -135,7 +135,7 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
 
   hwloc_topology_load(topology);
 
-  /* 
+  /*
    * Get the depth of topology and the root.
    */
 
@@ -145,17 +145,17 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
     ancestor_cpuset[i] = hwloc_cpuset_alloc();
   }
 
-  /* 
+  /*
    * Get topology information.  We'll use sibling 0 at each level of the topology.
    *
-   * The root object typically is a node on a multi-node machine, not the 
+   * The root object typically is a node on a multi-node machine, not the
    * collection of nodes in the application.
    */
 
   rootobj = hwloc_get_root_obj(topology);
 
   hwloc_obj_type_snprintf(type_name[0], MAX_NAME_LEN, rootobj, 1);
-  hwloc_cpuset_copy(ancestor_cpuset[0], rootobj->cpuset); 
+  hwloc_cpuset_copy(ancestor_cpuset[0], rootobj->cpuset);
   type_size[0] = 1;
   lmem[0] = rootobj->memory.local_memory;  /*0 if not available */
   tmem[0] = rootobj->memory.total_memory;
@@ -170,13 +170,13 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
     type_size[i] = prev_obj->arity;      /* parent's number of children */
 
     if ( (type_size[i] > 1) || (i == depth-1)){
-      /* 
+      /*
        * Significant levels are processing units (the leaf nodes) and levels
        * that are genuine branches - not the only child of parent.
        */
       real_level[next++] = i;
     }
-  
+
     obj = prev_obj->children[0];
     hwloc_obj_type_snprintf(type_name[i], MAX_NAME_LEN, obj, 1);
     hwloc_cpuset_copy(ancestor_cpuset[i], obj->cpuset);
@@ -217,7 +217,7 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
       to = real_level[i+1];
     else
       to = 0;             /* leaf node */
- 
+
     /* Total number of CPUs within this object
      */
 
@@ -237,7 +237,7 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
       }
     }
 
-    /* 
+    /*
      * name of this level in the topology and the succession of children
      * level that have only one parent.
      */
@@ -259,7 +259,7 @@ uint64_t tmem[MAX_NUM_LEVELS];           /* owned by this object and all its chi
       else{
         strcat(description, type_name[from]);
       }
-  
+
       (*level_name)[i] = (char *)malloc(strlen(description) +1);
       MEMORY_ERROR((*level_name)[i]);
       strcpy((*level_name)[i], description);
@@ -325,7 +325,7 @@ char **type_name=NULL;
         printf("  %d %s (%d total CPUs) %swith\n",
               branching_degree[i-1], type_name[i],num_cpus[i],
               ((num_cpus[i] > 1) ? "each " : ""));
-      } 
+      }
       else{
         printf("  %d %s\n", branching_degree[i-1], type_name[i]);
       }
@@ -346,7 +346,7 @@ char **type_name=NULL;
       for (i=0; i < depth; i++){
         printf("Memory at level %s: (%f10.0KB, %f10.0KB)\n",
          type_name[i],(float)total_memory[i]/1024.0,(float)local_memory[i]/1024.0);
-      } 
+      }
     }
     else{
         printf("Memory available at each level is not available\n");
