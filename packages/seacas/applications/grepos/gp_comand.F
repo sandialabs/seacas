@@ -432,7 +432,7 @@ C=======================================================================
           WRITE (CTEMP, 10010) 'Offset for Material ', idelb(iblk),' > '
 10010     FORMAT (1X, A, I10, A)
           CALL SQZSTR (CTEMP, LSTR)
-          
+
           CALL FREFLD (0, 0, CTEMP(:LENSTR(CTEMP)+1), MAXFLD,
      &      IOSTAT, NUMFLD, INTYP, CFIELD, IFIELD, RFIELD)
           IF (IOSTAT .LT. 0) GOTO 430
@@ -2301,7 +2301,7 @@ C========================================================================
 
 C========================================================================
       ELSE IF (VERB .EQ. 'QUIT') THEN
-         call prterr('WARNING', 
+         call prterr('WARNING',
      &   'Aborting current execution; no output file will be written')
         CALL SCNEOF
         RETURN 1

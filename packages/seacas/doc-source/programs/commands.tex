@@ -18,10 +18,10 @@ simply commands that do not fit into any of the previous categories.
 \newpage
 \section{Operational Commands}\label{sec:oper}
 
-\cmddef{\cmdverb{PROPERTIES} 
+\cmddef{\cmdverb{PROPERTIES}
       \param{nquad} \default{1},
       [\param{density}]
-\cmdnext \cmdverb{MASS} 
+\cmdnext \cmdverb{MASS}
       \param{nquad} \default{1},
       [\param{density}]
 } {
@@ -41,7 +41,7 @@ three-dimensional mesh.  If it is not entered, it will be set to the
 last entered value, or to 1 if it has never been set.  If all of the
 material densities are equal, they can be set by entering a positive
 value for the optional parameter \param{density}. If the densities are
-not equal, they must be input through the \cmd{density} command. 
+not equal, they must be input through the \cmd{density} command.
 
 If the \cmd{exodus} flag is \cmd{true}, the mass properties will be
 calculated for the deformed shape of the body at each time step; if
@@ -50,7 +50,7 @@ undeformed geometry.  Section~\ref{sec:mass} describes the algorithms
 used in this calculation, and the resulting output.
 }
 
-\cmddef{\cmdverb{LOCATE} \cmd{\{NODES$|$ELEMENTS\}} 
+\cmddef{\cmdverb{LOCATE} \cmd{\{NODES$|$ELEMENTS\}}
       \param{locate\_option}
 } {
 \cmd{LOCATE} is used to locate \cmd{NODES} or \cmd{ELEMENTS} that are a
@@ -61,9 +61,9 @@ the distance is measured to the element centroid.  In the descriptions
 of the \cmd{locate} options below, the $z$ coordinates are entered only
 for three-dimensional bodies.  \cmd{LOCATE} calculates distances only
 for the undeformed geometry regardless of the setting of the
-\cmd{EXODUS} flag. 
+\cmd{EXODUS} flag.
 
-\cmdoption{\cmd{LOCATE \{NODES$|$ELEMENTS\} POINT} 
+\cmdoption{\cmd{LOCATE \{NODES$|$ELEMENTS\} POINT}
    \param{$x_0$, $y_0$, $z_0$}, \param{distance}, \param{tolerance}
 } {
 outputs all \cmd{nodes} or \cmd{elements} located a
@@ -74,12 +74,12 @@ is printed.  The output includes the node or element number, the
 coordinates of the node or the element centroid, the distance to the
 point, and the angles $\theta$ and $\phi$\footnote{$\phi$ is defined for
 three-dimensional bodies only}.  The angles are defined in
-Section~\ref{sec:locate} 
+Section~\ref{sec:locate}
 }
 
-\cmdoption{\cmd{LOCATE \{NODES$|$ELEMENTS\} LINE} 
-   \param{$x_0$, $y_0$, $z_0$}, 
-   \param{$x_1$, $y_1$, $z_1$}, 
+\cmdoption{\cmd{LOCATE \{NODES$|$ELEMENTS\} LINE}
+   \param{$x_0$, $y_0$, $z_0$},
+   \param{$x_1$, $y_1$, $z_1$},
    \param{distance},
    \param{tolerance},
    \cmd{[BOUNDED$|$UNBOUNDED]}\default{\cmd{UNBOUNDED}}
@@ -91,16 +91,16 @@ no nodes or elements are located in the specified range, the minimum
 calculated distance is printed.  The output includes the node or element
 number, the coordinates of the node or the element centroid, and the
 normal and parametric distances from the node or element centroid to the
-line.  The distances are defined in Section~\ref{sec:locate} 
+line.  The distances are defined in Section~\ref{sec:locate}
 }
 
-\cmdoption{\cmd{LOCATE \{NODES$|$ELEMENTS\} PLANE} 
+\cmdoption{\cmd{LOCATE \{NODES$|$ELEMENTS\} PLANE}
    \param{$x_0$, $y_0$, $z_0$},
    \param{$i$, $j$, $k$},
    \param{distance},
    \param{tolerance}
 } {
-outputs all \cmd{nodes} or \cmd{elements} located a 
+outputs all \cmd{nodes} or \cmd{elements} located a
 distance of \param{distance}$\pm$\param{tolerance} from the plane that
 passes through the point \param{$x_0$, $y_0$, $z_0$} and has a normal
 defined by the vector \param{$i$, $j$, $k$}. This command is only
@@ -109,26 +109,26 @@ located in the specified range, the minimum calculated distance is
 printed.  The output includes the node or element number, the
 coordinates of the node or the element centroid, and the normal and
 radial distances to the plane.  The distances are defined in
-Section~\ref{sec:locate} 
+Section~\ref{sec:locate}
 }
 }
 
-\cmddef{\cmdverb{CAVITY  } 
+\cmddef{\cmdverb{CAVITY  }
    \param{sset$_{1}$}, \param{sset$_{2}$}, \ldots, \param{sset$_n$}
 } {
 \cmd{CAVITY} calculates the volume of a cavity defined by the element
 sidesets \param{sset$_{1}$} to \param{sset$_n$}.  The cavity volume
 algorithm, the resulting output, and the rules for defining a valid
-cavity are described in Section~\ref{sec:cavity}. 
+cavity are described in Section~\ref{sec:cavity}.
 
 If the \cmd{EXODUS} flag is \cmd{TRUE}\footnote{See command
 \cmd{EXODUS}}, the cavity volume is calculated for each of the selected
-time steps, else only the undeformed cavity volume is calculated. 
+time steps, else only the undeformed cavity volume is calculated.
 }
 
 \cmddef{\cmdverb{LIMITS} [\cmd{ALLTIMES}]
 } {
-\cmd{limits} determines the minimum, maximum, and range of the 
+\cmd{limits} determines the minimum, maximum, and range of the
 X, Y, and Z coordinates for each of the selected material blocks.
 If \cmd{ALLTIMES} is specified, the limits are determined for each of
 the selected time steps.  Note that the \cmd{exodus} flag status does
@@ -147,11 +147,11 @@ node and element numbers are output along with the connectivity array
 for the penetrated element. The algorithm and assumptions used in this
 calculation are described in Section~\ref{sec:overlap}.  \cmd{overlap}
 checks only the undeformed geometry regardless of the setting of the
-\cmd{EXODUS} flag. 
+\cmd{EXODUS} flag.
 }
 
-\cmddef{\cmdverb{GAP} 
-      \param{flag$_m$}, \param{flag$_s$}, 
+\cmddef{\cmdverb{GAP}
+      \param{flag$_m$}, \param{flag$_s$},
       \param{d$_{\max}$}, \param{\cmd{[DISTANCE$|$NORMAL]}}
 } {
 \cmd{gap} calculates the distance between nodes on the surfaces defined
@@ -166,7 +166,7 @@ the node on the \param{flag$_s$} surface measured from a line passing
 through the node on the \param{flag$_m$} surface and normal to the
 surface.  If the distance to the closest \param{flag$_s$} node is
 greater than \param{d$_{\max}$}, then the \param{flag$_m$} node has no
-match and is not shown in the output.  
+match and is not shown in the output.
 
 For each  \param{flag$_m$} node with a match, the output shows the
 matching  \param{flag$_s$} node, the direction cosines of the surface,
@@ -178,7 +178,7 @@ If the \cmd{EXODUS} flag is \cmd{TRUE}, the above information is output
 for each time step.  Note that the node matching process and the
 determination of the surface normal are only performed on the undeformed
 geometry; therefore, the distances output for subsequent time steps are
-measured relative to the undeformed normal.  
+measured relative to the undeformed normal.
 
 This command is normally used to calculate the change in distance
 between two surfaces, for example, the closure of a drift in a
@@ -192,7 +192,7 @@ Section~\ref{sec:gap}.
 
 \section{Parameter Setting Commands}\label{sec:param}
 
-\cmddef{\cmdverb{AXISYMMETRIC} 
+\cmddef{\cmdverb{AXISYMMETRIC}
 } {
 \cmd{AXISYMMETRIC} informs \numbers\ that the two-dimensional body
 described in the \EXO\ database is axisymmetric.  All of the relevant
@@ -204,17 +204,17 @@ geometry.  This is the default for two-dimensional bodies.
 } {
 \cmd{PLANAR} informs \numbers\ that the two-dimensional body described
 in the \EXO\ database is planar or plane strain. All of the relevant
-operational commands will calculate values based on a planar geometry. 
+operational commands will calculate values based on a planar geometry.
 }
 
-\cmddef{\cmdverb{EXODUS} 
+\cmddef{\cmdverb{EXODUS}
       \cmd{[ON$|$OFF]} \\
       \default{\cmd{ON} if timesteps present, else \cmd{OFF}}
 } {
 \cmd{EXODUS} sets the \cmd{EXODUS} flag to \cmd{TRUE} which indicates
 that the operational commands should calculate values for each of the
 selected time steps, or \cmd{FALSE} which indicates that the operational
-commands should only calculate values for the basic undeformed geometry. 
+commands should only calculate values for the basic undeformed geometry.
 }
 
 \cmddef{\cmdverb{DENSITY }
@@ -226,16 +226,16 @@ entered prior to entering a \cmd{MASS} or \cmd{PROPERTIES} command, the
 \cmd{density} command will be executed automatically.  An optional
 16-character label can be entered following the density.  The label will
 be used to identify the material blocks in the mass properties output.
-The label cannot contain any blanks. 
+The label cannot contain any blanks.
 }
 
 \cmddef{\cmdverb{SELECT}
-   \param{option} 
+   \param{option}
 } {
 \cmd{SELECT} selects the materials or material blocks for the
-operational commands. 
+operational commands.
 
-\cmdoption{\cmd{SELECT BLOCKS} 
+\cmdoption{\cmd{SELECT BLOCKS}
    [\cmd{ALL},]
    \param{block\_id$_{1}$}, \param{block\_id$_{2}$}, \ldots\
       \\ \default{all element blocks}
@@ -244,10 +244,10 @@ selects the element blocks. The \param{block\_id} is the element block
 identifier displayed by the \cmd{LIST BLOCKS} command. The relevant
 operational commands will only calculate values for the selected element
 blocks.
-} 
+}
 }
 
-\cmdoption{\cmd{SELECT MATERIALS} 
+\cmdoption{\cmd{SELECT MATERIALS}
    [\cmd{ALL},]
    \param{material\_id$_{1}$}, \param{material\_id$_{2}$}, \ldots\
       \\ \default{all materials}
@@ -261,14 +261,14 @@ calculate values for the selected materials.
    \param{tmin} \default{minimum database time}
 } {
 \cmd{TMIN} sets the minimum selected time \param{tmin} to the specified
-parameter value. 
+parameter value.
 }
 
 \cmddef{\cmdverb{TMAX}
    \param{tmax} \default{maximum database time}
 } {
 \cmd{TMAX} sets the maximum selected time \param{tmax} to the specified
-parameter value. 
+parameter value.
 }
 
 \cmddef{\cmdverb{DELTIME}
@@ -281,7 +281,7 @@ specified parameter value.
 \cmddef{\cmdverb{TIMES}
    \param{tmin} \cmd{TO} \param{tmax} \cmd{BY} \param{$\Delta t$}
 } {
-\cmd{TIMES} sets \param{tmin}, \param{tmax}, and 
+\cmd{TIMES} sets \param{tmin}, \param{tmax}, and
 \param{$\Delta t$} with a single command.
 }
 
@@ -289,7 +289,7 @@ specified parameter value.
 \label{cmd:display}
 
 \cmddef{\cmdverb{LIST}
-   \param{option} 
+   \param{option}
 } {
 \cmd{LIST} displays the database information specified by \param{option}
 on the user's terminal. The ``selected'' items are specified with the
@@ -353,7 +353,7 @@ all systems.
 \cmd{ECHO} controls the output of results to the terminal.  If \cmd{ON},
 the results are output to the screen. If \cmd{OFF}, \cmd{PRINT} is
 automatically set to \cmd{ON}.  Error messages and information from a
-\cmd{LIST} command are always output to the terminal. 
+\cmd{LIST} command are always output to the terminal.
 }
 
 \cmddef{\cmdverb{PRINT}
@@ -361,7 +361,7 @@ automatically set to \cmd{ON}.  Error messages and information from a
 } {
 \cmd{PRINT} controls the output of results to the output file.  If
 \cmd{ON}, the results are printed to the output file. If \cmd{OFF},
-\cmd{ECHO} is automatically set to \cmd{ON}. 
+\cmd{ECHO} is automatically set to \cmd{ON}.
 }
 
 \cmddef{\cmdverb{COMMENT }   [\cmd{PAGE,}] \param{ncom}\default{1}
@@ -369,11 +369,10 @@ automatically set to \cmd{ON}.  Error messages and information from a
 \cmd{COMMENT} prompts the user for a \param{ncom} comment lines which
 are written to the output file.  If the optional parameter \cmd{PAGE} is
 present, a page eject will be written to the output file prior to
-writing the comment line(s). 
+writing the comment line(s).
 }
 
-\cmddef{\cmdverb{EXIT    } 
+\cmddef{\cmdverb{EXIT    }
 } {
 \cmd{EXIT} exits the program and closes all files.
 }
-
