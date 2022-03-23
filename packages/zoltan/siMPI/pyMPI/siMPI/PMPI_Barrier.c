@@ -27,4 +27,3 @@ int PMPI_Barrier ( MPI_Comm comm)
   }
   return retval;
 }
-

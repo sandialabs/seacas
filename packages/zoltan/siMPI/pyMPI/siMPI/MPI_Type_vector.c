@@ -14,14 +14,13 @@
 
 #include "mpi.h"
 
-int MPI_Type_vector( 
-        int count, 
-        int blocklen, 
-        int stride, 
-        MPI_Datatype old_type, 
+int MPI_Type_vector(
+        int count,
+        int blocklen,
+        int stride,
+        MPI_Datatype old_type,
         MPI_Datatype *newtype )
 {
   _MPI_COVERAGE();
   return PMPI_Type_vector (count, blocklen, stride, old_type, newtype);
 }
-

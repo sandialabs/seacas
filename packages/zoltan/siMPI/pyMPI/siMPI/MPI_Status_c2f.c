@@ -19,4 +19,3 @@ int MPI_Status_c2f( MPI_Status *c_status, MPI_Fint *f_status )
   _MPI_COVERAGE();
   return PMPI_Status_c2f (c_status, f_status);
 }
-

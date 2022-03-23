@@ -15,10 +15,9 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_File_read_ordered_begin(MPI_File fh, void *buf, int count, 
+int PMPI_File_read_ordered_begin(MPI_File fh, void *buf, int count,
                              MPI_Datatype datatype)
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
 }
-

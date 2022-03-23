@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -142,8 +142,8 @@ extern "C" {
 #endif /* !AUTOTOOLS_BUILD */
 
 /*****************************************************************************/
-/* 
- *  Macros and definitions that are common to all Zoltan modules and 
+/*
+ *  Macros and definitions that are common to all Zoltan modules and
  *  utilities.
  */
 /*****************************************************************************/

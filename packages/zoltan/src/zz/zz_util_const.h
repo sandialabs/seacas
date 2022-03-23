@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -72,9 +72,9 @@ extern int Zoltan_Clean_String(const char *, char **);
 extern char *Zoltan_Strdup(const char *);
 void Zoltan_Transform_Point( double *p, double (*m)[3], int *a, int d,
   int ndims, double *v);
-void Zoltan_Transform_Box(double *lo, double *hi, double (*m)[3], int *a, 
+void Zoltan_Transform_Box(double *lo, double *hi, double (*m)[3], int *a,
   int d, int ndims);
-void Zoltan_Transform_Box_Points(double *lo, double *hi, double (*m)[3], 
+void Zoltan_Transform_Box_Points(double *lo, double *hi, double (*m)[3],
   int *a, int d, int ndims, double (*v)[3]);
 int Zoltan_AllReduceInPlace(void *, int , MPI_Datatype , MPI_Op , MPI_Comm );
 void Zoltan_write_linux_meminfo(int append, char *msg, int committedOnly);

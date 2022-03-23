@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -116,10 +116,10 @@ extern int Zoltan_Reftree_Coarse_Grid_Path(int nobj, int *num_vert,
                                ZOLTAN_ID_PTR lids, char *initpath_method,
                                ZZ *zz);
 
-extern ZOLTAN_REFTREE* Zoltan_Reftree_hash_lookup(ZZ *zz, 
+extern ZOLTAN_REFTREE* Zoltan_Reftree_hash_lookup(ZZ *zz,
                                       struct Zoltan_Reftree_hash_node **hashtab,
                                       ZOLTAN_ID_PTR key, int n);
-extern int Zoltan_Reftree_inthash_lookup(ZZ *zz, 
+extern int Zoltan_Reftree_inthash_lookup(ZZ *zz,
                                    struct Zoltan_Reftree_inthash_node **hashtab,
                                    ZOLTAN_ID_PTR key, int n);
 extern void Zoltan_Reftree_Hash_Insert(ZZ *zz, ZOLTAN_REFTREE *reftree_node,

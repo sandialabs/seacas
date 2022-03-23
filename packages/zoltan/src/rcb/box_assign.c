@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -93,11 +93,11 @@ int            *numparts)       /* number of parts in part list */
      RIB_STRUCT        *rib;    /* Pointer to data structures for RIB. */
      struct rib_tree   *itree;  /* tree of RIB cuts */
      struct rcb_box    box;     /* box data structure */
-     int               *proc_array = NULL;  
+     int               *proc_array = NULL;
                                 /* Array of size zz->Num_Proc; initialized
-                                   to 0; entry i incremented each time 
-                                   a found part is on processor i. 
-                                   Added to support 
+                                   to 0; entry i incremented each time
+                                   a found part is on processor i.
+                                   Added to support
                                    !zz->LB.Single_Proc_Per_Part. */
      int               include_procs = (procs != NULL);
      int               include_parts = (parts != NULL);
@@ -106,7 +106,7 @@ int            *numparts)       /* number of parts in part list */
      double            p[8][3];
 
      if (zz->LB.Data_Structure == NULL) {
-        ZOLTAN_PRINT_ERROR(-1, yo, 
+        ZOLTAN_PRINT_ERROR(-1, yo,
           "No Decomposition Data available; use KEEP_CUTS parameter.");
         ierr = ZOLTAN_FATAL;
         goto End;
@@ -140,16 +140,16 @@ int            *numparts)       /* number of parts in part list */
         box.hi[2] = zmax;
 
         if (rcb->Tran.Target_Dim > 0){
-          /* 
+          /*
            * Degenerate geometry, transform box to the lower dimensional
            * space that the partitioning occured in.  Our new box may
            * encompass more parts, but it won't miss any.
            */
-          Zoltan_Transform_Box(box.lo, box.hi, rcb->Tran.Transformation, 
+          Zoltan_Transform_Box(box.lo, box.hi, rcb->Tran.Transformation,
                     rcb->Tran.Permutation, rcb->Num_Dim, rcb->Tran.Target_Dim);
         }
 
-        Box_Assign(zz, treept, &box, include_procs, include_parts, 
+        Box_Assign(zz, treept, &box, include_procs, include_parts,
                    proc_array, parts, numparts, treept[0].right_leaf);
      }
      else if (zz->LB.Method == RIB) {
@@ -173,21 +173,21 @@ int            *numparts)       /* number of parts in part list */
               box.hi[2] = zmax;
 
               if (rib->Tran.Target_Dim <= 0){
-                Box_Assign3(zz, itree, &box, include_procs, include_parts, 
+                Box_Assign3(zz, itree, &box, include_procs, include_parts,
                           proc_array, parts, numparts, itree[0].right_leaf);
               }
               else{ /* degenerate geometry, Target_Dim is 2 or 1 */
 
                 Zoltan_Transform_Box_Points(box.lo, box.hi,
-                  rib->Tran.Transformation, rib->Tran.Permutation, 3, 
+                  rib->Tran.Transformation, rib->Tran.Permutation, 3,
                   rib->Tran.Target_Dim, p);
 
                 if (rib->Tran.Target_Dim == 1){  /* box -> line */
 
                   box.lo[0] = box.hi[0] = p[0][0];
                   for (i=1; i<8; i++){
-                    if (p[i][0] < box.lo[0]) box.lo[0] = p[i][0]; 
-                    else if (p[i][0] > box.hi[0]) box.hi[0] = p[i][0]; 
+                    if (p[i][0] < box.lo[0]) box.lo[0] = p[i][0];
+                    else if (p[i][0] > box.hi[0]) box.hi[0] = p[i][0];
                   }
                   Box_Assign1(zz, itree, &box, include_procs, include_parts,
                           proc_array, parts, numparts, itree[0].right_leaf);
@@ -195,7 +195,7 @@ int            *numparts)       /* number of parts in part list */
                 else{     /* box -> plane, no longer axis-aligned */
 
                   Transformed_Box_Assign(zz, itree, p, rib->Tran.Target_Dim,
-                    include_procs, include_parts, proc_array, parts, numparts, 
+                    include_procs, include_parts, proc_array, parts, numparts,
                     itree[0].right_leaf);
                 }
               }
@@ -220,8 +220,8 @@ int            *numparts)       /* number of parts in part list */
 
                 box.lo[0] = box.hi[0] = p[0][0];
                 for (i=1; i<4; i++){
-                  if (p[i][0] < box.lo[0]) box.lo[0] = p[i][0]; 
-                  else if (p[i][0] > box.hi[0]) box.hi[0] = p[i][0]; 
+                  if (p[i][0] < box.lo[0]) box.lo[0] = p[i][0];
+                  else if (p[i][0] > box.hi[0]) box.hi[0] = p[i][0];
                 }
 
                 Box_Assign1(zz, itree, &box, include_procs, include_parts,
@@ -240,7 +240,7 @@ int            *numparts)       /* number of parts in part list */
         }
      }
      else {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
               "Valid only when load-balancing method is RCB and RIB.");
         ierr = ZOLTAN_FATAL;
         goto End;
@@ -272,7 +272,7 @@ struct rcb_box  *boxpt,         /* extended box */
 int              include_procs, /* Flag:  Compute proc lists. */
 int              include_parts, /* Flag:  Compute part lists. */
 int             *proc_array,    /* Array of size Num_Proc; entry i is
-                                   incremented if a found part is on 
+                                   incremented if a found part is on
                                    proc i. */
 int             *parts,         /* parts that box is in */
 int             *numparts,      /* current number of parts on list */
@@ -285,7 +285,7 @@ int              partmid)       /* 1st part in upper half */
      /* add part to list of parts */
 
      if (partmid <= 0) {
-        add_to_list(zz, include_procs, include_parts, proc_array, 
+        add_to_list(zz, include_procs, include_parts, proc_array,
                     parts, numparts, -partmid);
         return;
      }
@@ -317,7 +317,7 @@ struct rcb_box  *box,           /* extended box */
 int              include_procs, /* Flag:  Compute proc lists. */
 int              include_parts, /* Flag:  Compute part lists. */
 int             *proc_array,    /* Array of size Num_Proc; entry i is
-                                   incremented if a found part is on 
+                                   incremented if a found part is on
                                    proc i. */
 int             *parts,         /* parts that box is in */
 int             *numparts,      /* current number of parts on list */
@@ -330,7 +330,7 @@ int              partmid)       /* 1st part in upper half */
      /* end recursion when part size is a single part */
      /* add part to list of parts */
      if (partmid <= 0) {
-        add_to_list(zz, include_procs, include_parts, proc_array, 
+        add_to_list(zz, include_procs, include_parts, proc_array,
                     parts, numparts, -partmid);
         return;
      }
@@ -401,7 +401,7 @@ int              ndims,         /* partition reduced to 2 or 1 dimensions */
 int              include_procs, /* Flag:  Compute proc lists. */
 int              include_parts, /* Flag:  Compute part lists. */
 int             *proc_array,    /* Array of size Num_Proc; entry i is
-                                   incremented if a found part is on 
+                                   incremented if a found part is on
                                    proc i. */
 int             *parts,         /* parts that box is in */
 int             *numparts,      /* current number of parts on list */
@@ -412,7 +412,7 @@ int              partmid)       /* 1st part in upper half */
      int i;
 
      if (partmid <= 0) {
-        add_to_list(zz, include_procs, include_parts, proc_array, 
+        add_to_list(zz, include_procs, include_parts, proc_array,
                     parts, numparts, -partmid);
         return;
      }
@@ -440,10 +440,10 @@ int              partmid)       /* 1st part in upper half */
      cut = itree[partmid].cut;
 
      if (min <= cut)
-        Transformed_Box_Assign(zz, itree, p, ndims, include_procs, include_parts, 
+        Transformed_Box_Assign(zz, itree, p, ndims, include_procs, include_parts,
              proc_array, parts, numparts, itree[partmid].left_leaf);
      if (max >= cut)
-        Transformed_Box_Assign(zz, itree, p, ndims, include_procs, include_parts, 
+        Transformed_Box_Assign(zz, itree, p, ndims, include_procs, include_parts,
              proc_array, parts, numparts, itree[partmid].right_leaf);
 }
 
@@ -455,7 +455,7 @@ struct rcb_box  *box,           /* extended box */
 int              include_procs, /* Flag:  Compute proc lists. */
 int              include_parts, /* Flag:  Compute part lists. */
 int             *proc_array,    /* Array of size Num_Proc; entry i is
-                                   incremented if a found part is on 
+                                   incremented if a found part is on
                                    proc i. */
 int             *parts,         /* parts that box is in */
 int             *numparts,      /* current number of parts on list */
@@ -468,7 +468,7 @@ int              partmid)       /* 1st part in upper half */
      /* end recursion when part size is a single part */
      /* add part to list of parts */
      if (partmid <= 0) {
-        add_to_list(zz, include_procs, include_parts, proc_array, 
+        add_to_list(zz, include_procs, include_parts, proc_array,
                     parts, numparts, -partmid);
         return;
      }
@@ -524,7 +524,7 @@ struct rcb_box  *box,           /* extended box */
 int              include_procs, /* Flag:  Compute proc lists. */
 int              include_parts, /* Flag:  Compute part lists. */
 int             *proc_array,    /* Array of size Num_Proc; entry i is
-                                   incremented if a found part is on 
+                                   incremented if a found part is on
                                    proc i. */
 int             *parts,         /* parts that box is in */
 int             *numparts,      /* current number of parts on list */
@@ -535,7 +535,7 @@ int              partmid)       /* 1st part in upper half */
      /* end recursion when part size is a single part */
      /* add part to list of parts */
      if (partmid <= 0) {
-        add_to_list(zz, include_procs, include_parts, proc_array, 
+        add_to_list(zz, include_procs, include_parts, proc_array,
                     parts, numparts, -partmid);
         return;
      }
@@ -586,7 +586,7 @@ int i;
               last_proc = Zoltan_LB_Part_To_Proc(zz, add_part+1, NULL);
            else
               last_proc = zz->Num_Proc;
-  
+
            for (i = add_proc+1; i < last_proc; i++)
               proc_array[i]++;
         }

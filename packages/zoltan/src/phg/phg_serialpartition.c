@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -53,9 +53,9 @@ extern "C" {
 #include "zz_heap.h"
 #include "phg.h"
 #include "zz_const.h"
-    
-/* If adding a new coarse partitioning fn, add prototype here 
- * AND add entry to CoarsePartitionFns array 
+
+/* If adding a new coarse partitioning fn, add prototype here
+ * AND add entry to CoarsePartitionFns array
  * AND increment NUM_COARSEPARTITION_FN.
  */
 #define NUM_COARSEPARTITION_FNS 3
@@ -64,7 +64,7 @@ static ZOLTAN_PHG_COARSEPARTITION_FN coarse_part_greedy;
 static ZOLTAN_PHG_COARSEPARTITION_FN coarse_part_random;
 static ZOLTAN_PHG_COARSEPARTITION_FN coarse_part_linear;
 
-static ZOLTAN_PHG_COARSEPARTITION_FN* CoarsePartitionFns[] = 
+static ZOLTAN_PHG_COARSEPARTITION_FN* CoarsePartitionFns[] =
                                       {&coarse_part_greedy,
                                        &coarse_part_random,
                                        &coarse_part_linear,
@@ -92,32 +92,32 @@ char *str, *str2;
   if (!strncasecmp(str2, "l-", 2)) {
     str = str2+2;
     hgp->LocalCoarsePartition = 1;
-  }  
+  }
   else {
     str = str2;
     hgp->LocalCoarsePartition = 0;
   }
 
   if      (!strcasecmp(str, "auto"))   return NULL; /* try all methods */
-  else if (!strcasecmp(str, "no"))     return NULL; 
-  else if (!strcasecmp(str, "none"))   return NULL; 
+  else if (!strcasecmp(str, "no"))     return NULL;
+  else if (!strcasecmp(str, "none"))   return NULL;
   else if (!strcasecmp(str, "greedy")) return coarse_part_greedy;
   else if (!strcasecmp(str, "random")) return coarse_part_random;
   else if (!strcasecmp(str, "linear")) return coarse_part_linear;
-  else {                              
-    *ierr = ZOLTAN_FATAL; 
+  else {
+    *ierr = ZOLTAN_FATAL;
     return NULL;
   }
 }
 
 /****************************************************************************/
 
-#define NUM_PART_KEEP 1            /* No. of partition vectors to keep; 
+#define NUM_PART_KEEP 1            /* No. of partition vectors to keep;
                                       must be at least 1! Currently only the
                                       best partition vector is used. */
 
 int Zoltan_PHG_CoarsePartition(
-  ZZ *zz, 
+  ZZ *zz,
   HGraph *phg,         /* Input:  coarse hypergraph -- distributed! */
   int numPart,         /* Input:  number of partitions to generate. */
   float *part_sizes,   /* Input:  array of size numPart listing target sizes
@@ -127,12 +127,12 @@ int Zoltan_PHG_CoarsePartition(
   PHGPartParams *hgp   /* Input:  parameters to use.  */
 )
 {
-/* 
+/*
  * Zoltan_PHG_CoarsePartition computes a partitioning of a hypergraph.
  * Typically, this routine is called at the bottom level in a
  * multilevel scheme (V-cycle).
  * It gathers the distributed hypergraph to each processor and computes
- * a decomposition of the serial hypergraph.  
+ * a decomposition of the serial hypergraph.
  * It computes a different partition on each processor
  * using different random numbers (and possibly also
  * different algorithms) and selects the best.
@@ -154,7 +154,7 @@ int local_coarse_part = hgp->LocalCoarsePartition;
 
 /* Number of iterations to try coarse partitioning on each proc. */
 /* 10 when p=1, and 1 when p is large. */
-const int num_coarse_iter = 1 + 9/zz->Num_Proc; 
+const int num_coarse_iter = 1 + 9/zz->Num_Proc;
 
   ZOLTAN_TRACE_ENTER(zz, yo);
 
@@ -185,7 +185,7 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
     /* Do no coarse partitioning. */
     /* Do a sanity test and  mapping to parts [0,...,numPart-1] */
     int first = 1;
-    PHGComm *hgc=phg->comm;    
+    PHGComm *hgc=phg->comm;
 
     Zoltan_Srand_Sync (Zoltan_Rand(NULL), &(hgc->RNGState_col), hgc->col_comm);
     if (hgp->UsePrefPart) {
@@ -201,7 +201,7 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
                 else
                     /* recursive bisection, map to 0-1 part numbers */
                     part[i] = (phg->pref_part[i] < phg->bisec_split ? 0 : 1);
-            }            
+            }
         }
     } else {
         for (i = 0; i < phg->nVtx; i++) {
@@ -212,16 +212,16 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
                     ierr = ZOLTAN_WARN;
                 }
                 part[i] = ((part[i]<0) ? -part[i] : part[i]) % numPart;
-            }        
+            }
         }
     }
   }
-  else if (numPart == 1) {            
+  else if (numPart == 1) {
     /* everything goes in the one partition */
     for (i =  0; i < phg->nVtx; i++)
       part[i] = 0;
   }
-  else if (!hgp->UsePrefPart && numPart >= phg->dist_x[phg->comm->nProc_x]) { 
+  else if (!hgp->UsePrefPart && numPart >= phg->dist_x[phg->comm->nProc_x]) {
     /* more partitions than vertices, trivial answer */
     for (i = 0; i < phg->nVtx; i++)
       part[i] = phg->dist_x[phg->comm->myProc_x]+i;
@@ -244,7 +244,7 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
     CoarsePartition = hgp->CoarsePartition;
     if (CoarsePartition == NULL) { /* auto */
       /* Select a coarse partitioner from the array of coarse partitioners */
-      CoarsePartition = CoarsePartitionFns[phg->comm->myProc % 
+      CoarsePartition = CoarsePartitionFns[phg->comm->myProc %
                                            NUM_COARSEPARTITION_FNS];
     }
 
@@ -271,7 +271,7 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
       scomm.RNGState_col = Zoltan_Rand(NULL);
       scomm.zz = zz;
 
-      /* 
+      /*
        * Gather parallel hypergraph phg to each processor, creating
        * serial hypergraph shg.
        */
@@ -293,19 +293,19 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
 
     }
 
-    /* 
+    /*
      * Allocate partition array spart for the serial hypergraph shg
      * and partition shg.
      */
     spart = (int *) ZOLTAN_CALLOC(shg->nVtx * (NUM_PART_KEEP+1),
                                     sizeof(int));
-    bestvals = (float *) ZOLTAN_MALLOC((NUM_PART_KEEP+1)*sizeof(int)); 
+    bestvals = (float *) ZOLTAN_MALLOC((NUM_PART_KEEP+1)*sizeof(int));
     if ((!spart) || (!bestvals)) {
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Out of memory.");
       ierr = ZOLTAN_MEMERR;
       goto End;
     }
-    
+
     /* Compute several coarse partitionings. */
     /* Keep the NUM_PART_KEEP best ones around. */
     /* Currently, only the best one is used. */
@@ -318,12 +318,12 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
 
     for (i=0; i< num_coarse_iter; i++){
       int savefmlooplimit=hgp->fm_loop_limit;
-        
+
       /* Overwrite worst partition with new candidate. */
-      ierr = CoarsePartition(zz, shg, numPart, part_sizes, 
+      ierr = CoarsePartition(zz, shg, numPart, part_sizes,
                new_part, hgp);
       if (ierr < 0) {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                          "Error returned from CoarsePartition.");
         goto End;
       }
@@ -338,7 +338,7 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
       hgp->fm_loop_limit = 1;
       Zoltan_PHG_Refinement(zz, shg, numPart, part_sizes, new_part, hgp);
       hgp->fm_loop_limit = savefmlooplimit;
-      
+
       /* stop refinement timer */
       if (fine_timing) {
         ZOLTAN_TIMER_STOP(zz->ZTime, timer->cprefine, phg->comm->Communicator);
@@ -348,15 +348,15 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
       /* Decide if candidate is in the top tier or not. */
       /* Our objective is a combination of cuts and balance */
 
-      bal = Zoltan_PHG_Compute_Balance(zz, shg, part_sizes, 0, 
-                                       numPart, new_part); 
+      bal = Zoltan_PHG_Compute_Balance(zz, shg, part_sizes, 0,
+                                       numPart, new_part);
       cut = Zoltan_PHG_Compute_ConCut(shg->comm, shg, new_part, numPart, &ierr);
-      
+
       /* Use ratio-cut as our objective. There are many other options! */
       bestvals[new_cand] = cut/(MAX(2.-bal, 0.0001)); /* avoid divide-by-0 */
 
       if (ierr < 0) {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                          "Error returned from Zoltan_PHG_Compute_ConCut.");
         goto End;
       }
@@ -388,15 +388,15 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
     /* Evaluate and select the best. */
     /* For now, only pick the best one, in the future we pick the k best. */
 
-    ierr = pick_best(zz, hgp, phg->comm, shg, numPart, 
+    ierr = pick_best(zz, hgp, phg->comm, shg, numPart,
               MIN(NUM_PART_KEEP, num_coarse_iter), spart,
               bestvals);
     if (ierr < 0) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                         "Error returned from pick_best.");
       goto End;
     }
-  
+
     if (phg->comm->nProc > 1) {
       /* Map gathered partition back to 2D distribution */
       for (i = 0; i < phg->nVtx; i++) {
@@ -407,15 +407,15 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
 
       Zoltan_HG_HGraph_Free(shg);
       ZOLTAN_FREE(&shg);
-    } 
+    }
     else { /* single processor */
       for (i = 0; i < phg->nVtx; i++)
         part[i] = spart[i];
     }
   }
-  
+
 End:
-  if (fine_timing) 
+  if (fine_timing)
     ZOLTAN_TIMER_STOP(zz->ZTime, timer->cpart, phg->comm->Communicator);
 
   ZOLTAN_FREE(&spart);
@@ -436,11 +436,11 @@ static int local_coarse_partitioner(
   ZOLTAN_PHG_COARSEPARTITION_FN *CoarsePartition
 )
 {
-/* 
+/*
  * Function that allows any of the coarse partitioning strategies to be applied
  * locally, without a gather operation.
  * Each column group does independent partitioning; each tries to balance
- * local vertex weights; our hope is that this will give somewhat balanced 
+ * local vertex weights; our hope is that this will give somewhat balanced
  * result.
  */
 PHGComm *hgc = hg->comm;
@@ -452,16 +452,16 @@ int rootnpins, rootrank;
   }
 
   /* The column processor with the most pins will be our root.  */
-  Zoltan_PHG_Find_Root(hg->nPins, hgc->myProc_y, hgc->col_comm, 
+  Zoltan_PHG_Find_Root(hg->nPins, hgc->myProc_y, hgc->col_comm,
                        &rootnpins, &rootrank);
 
   if (hgc->myProc_y==rootrank)   /* only root of each column does this */
-    err = CoarsePartition(zz, hg, numPart, part_sizes, part, hgp);  
+    err = CoarsePartition(zz, hg, numPart, part_sizes, part, hgp);
 
   MPI_Bcast(&err, 1, MPI_INT, rootrank, hgc->col_comm);
   if (!err)
     MPI_Bcast(part, hg->nVtx, MPI_INT, rootrank, hgc->col_comm);
-    
+
   return err;
 }
 
@@ -472,15 +472,15 @@ int rootnpins, rootrank;
    in a given order. The goal is to assign approximately
    even weights to each partition, or alternatively, proportional
    to the target weights (if such are given), subject to
-   a specified linear order (sequence). 
+   a specified linear order (sequence).
 
    Multi-weights are not yet supported; only the
    first weight is used in computing the partition.
 
    This is a quick but effective heuristic. We could alternatively use
-   a more expensive but optimal algorithm, see e.g. 
+   a more expensive but optimal algorithm, see e.g.
    "Fast Optimal Load Balancing Algorithms for 1D Partitioning"
-   by Ali Pinar and C. Aykanat, but for our purpose it is 
+   by Ali Pinar and C. Aykanat, but for our purpose it is
    probably not worth the effort.
 
    Adapted for fixed vertices and/or prefered parts.
@@ -488,7 +488,7 @@ int rootnpins, rootrank;
 */
 
 static int seq_part (
-  ZZ *zz, 
+  ZZ *zz,
   HGraph *hg,         /* the hypergraph, containing vertex weights */
   int *order,         /* the ordering of the vertices */
   int p,              /* desired number of partitions */
@@ -546,7 +546,7 @@ static int seq_part (
         fixed_wgts[part[i]] += hg->vwgt[i*vwgtdim];
       }
   }
- 
+
 
   /* Sum up all the target partition weights. */
   /* Only use first vweight for now. */
@@ -560,7 +560,7 @@ static int seq_part (
   cutoff = weight_sum*part_sizes[0]/psize_sum;
 
   /* Loop through all vertices in specified order, and assign
-     partition numbers.  */                                        
+     partition numbers.  */
   for (i=0; i<hg->nVtx; i++) {
     /* If order==NULL, then use linear order. */
     j = order ? order[i] : i;
@@ -573,7 +573,7 @@ static int seq_part (
       if ((pnumber+1) < p && part_sum > cutoff) {
         pnumber++; /* Increase current part number */
         /* Decide if current vertex should be moved to the next partition */
-        if ((part_sum-cutoff) > (cutoff-old_sum)) { 
+        if ((part_sum-cutoff) > (cutoff-old_sum)) {
           part[j]++;
           part_sum = old_sum;
         }
@@ -588,7 +588,7 @@ static int seq_part (
       }
     }
     if (hgp->output_level >= PHG_DEBUG_PRINT)
-      printf("COARSE_PART i=%2d, part[%2d] = %2d, part_sum=%f, cutoff=%f\n", 
+      printf("COARSE_PART i=%2d, part[%2d] = %2d, part_sum=%f, cutoff=%f\n",
        i, j, part[j], part_sum, cutoff);
   }
 
@@ -603,11 +603,11 @@ End:
 /* Linear partitioning. Sequence partitioning with vertices in linear order. */
 
 static int coarse_part_linear (
-  ZZ *zz, 
-  HGraph *hg, 
-  int p, 
+  ZZ *zz,
+  HGraph *hg,
+  int p,
   float *part_sizes,
-  Partition part, 
+  Partition part,
   PHGPartParams *hgp
 )
 {
@@ -631,7 +631,7 @@ static int coarse_part_linear (
 
     for (i=0; i<hg->nVtx; i++) {
         order[i] = offset + i;
-        if (order[i] >= hg->nVtx) 
+        if (order[i] >= hg->nVtx)
           order[i] -= hg->nVtx;
     }
 
@@ -669,7 +669,7 @@ static int coarse_part_random (
 
     /* Randomly permute order array */
     Zoltan_Rand_Perm_Int (order, hg->nVtx, NULL);
-        
+
     /* Call sequence partitioning with random order array. */
     err = seq_part (zz, hg, order, p, part_sizes, part, hgp);
 
@@ -680,13 +680,13 @@ static int coarse_part_random (
 
 /*********************************************************************/
 
-/* Greedy growing algorithm. 
+/* Greedy growing algorithm.
 
    Start with all vertices in part 0, except start_vtx
    goes in part 1. Greedily grow part 1 while
    minimizing the cut at every step.
 
-   Note: This version assumes p==2 (bisection). 
+   Note: This version assumes p==2 (bisection).
 */
 
 static int greedy_grow_part (
@@ -725,13 +725,13 @@ static int greedy_grow_part (
 
   /* Initially put all vertices in part 0, except fixed ones. */
   for (i=0; i<hg->nVtx; i++)
-    part[i] = 0;   
+    part[i] = 0;
   if (hgp->UsePrefPart){
     for (i=0; i<hg->nVtx; i++)
       if ((hg->bisec_split >= 0) && (hg->pref_part[i] >= hg->bisec_split))
-        part[i] = 1;   
+        part[i] = 1;
   }
- 
+
   cut[0]  = (int*) ZOLTAN_CALLOC (2*hg->nEdge, sizeof (int));
   if ((hg->nEdge > 0 && cut[0] == NULL) ) {
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
@@ -748,7 +748,7 @@ static int greedy_grow_part (
   /* Initialize gain values. */
   for (i=0; i<hg->nVtx; i++){
     /* compute gain only if vertex is free */
-    if (!hgp->UseFixedVtx || (hg->fixed_part[i] < 0)) 
+    if (!hgp->UseFixedVtx || (hg->fixed_part[i] < 0))
       for (j=hg->vindex[i]; j<hg->vindex[i+1]; j++) {
         edge = hg->vedge[j];
         edgesize = cut[0][edge]+cut[1][edge];
@@ -765,7 +765,7 @@ static int greedy_grow_part (
   part_sum = 0.0;  /* Weight in the growing partition (1) */
   for (i=0; i<hg->nVtx; i++){
     weight_sum += hg->vwgt[i*vwgtdim];
-    if (part[i]>0) 
+    if (part[i]>0)
       part_sum  += hg->vwgt[i*vwgtdim];
   }
 
@@ -777,7 +777,7 @@ static int greedy_grow_part (
     printf("Debug: Starting new greedy growing at vertex %d, part=%2d\n", start_vtx, p);
 
   /* Initialize heap. */
-  if (!hgp->UseFixedVtx) 
+  if (!hgp->UseFixedVtx)
     gain[start_vtx] = 1e10;      /* Make start_vtx max value in heap. */
                                  /* All other values should be negative. */
   for (i=0; i<hg->nVtx; i++){
@@ -838,7 +838,7 @@ static int coarse_part_greedy (
   int scaling;
   float *new_ewgt=NULL;
 #endif
-  float *old_ewgt=NULL; 
+  float *old_ewgt=NULL;
   int err = ZOLTAN_OK;
   char *yo = "coarse_part_greedy";
 
@@ -886,10 +886,10 @@ static int coarse_part_greedy (
 
 /*****************************************************************************/
 static int pick_best(
-  ZZ *zz, 
-  PHGPartParams *hgp,  
+  ZZ *zz,
+  PHGPartParams *hgp,
   PHGComm *phg_comm,
-  HGraph *shg, 
+  HGraph *shg,
   int numPart,
   int numLocalCandidates,
   int *spart,     /* On input: All candidate partition vectors concatenated.
@@ -923,7 +923,7 @@ int err = ZOLTAN_OK;
     local[1].val = Zoltan_PHG_Compute_ConCut(shg->comm, shg, spart, numPart,
                                              &err);
     if (err < 0) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                          "Error returned from Zoltan_PHG_Compute_ConCut");
       goto End;
     }
@@ -937,10 +937,10 @@ int err = ZOLTAN_OK;
     if (cutvals)
       cut = cutvals[i];
     else {
-      cut = Zoltan_PHG_Compute_ConCut(shg->comm, shg, 
+      cut = Zoltan_PHG_Compute_ConCut(shg->comm, shg,
              spart+i*(shg->nVtx), numPart, &err);
       if (err < 0) {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                            "Error returned from Zoltan_PHG_Compute_ConCut");
         goto End;
       }
@@ -952,21 +952,21 @@ int err = ZOLTAN_OK;
       local[1].val = cut;
     }
   }
-  
+
   /* copy best partition to beginning of spart */
   for (i=0; i<shg->nVtx; i++)
     spart[i] = spart[mybest*(shg->nVtx)+i];
 
   /* Pick lowest ratio cut as best. */
-  MPI_Allreduce(local, global, 2, MPI_FLOAT_INT, MPI_MINLOC, 
+  MPI_Allreduce(local, global, 2, MPI_FLOAT_INT, MPI_MINLOC,
                 phg_comm->Communicator);
 
   if (hgp->output_level)
     uprintf(phg_comm,
-            "Local Ratio Cut= %.2lf   Global Ratio Cut= %.2lf\n", 
+            "Local Ratio Cut= %.2lf   Global Ratio Cut= %.2lf\n",
              local[1].val, global[1].val);
 
-  MPI_Bcast(spart, shg->nVtx, MPI_INT, global[1].rank, 
+  MPI_Bcast(spart, shg->nVtx, MPI_INT, global[1].rank,
             phg_comm->Communicator);
 
 End:
@@ -976,4 +976,3 @@ End:
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
-

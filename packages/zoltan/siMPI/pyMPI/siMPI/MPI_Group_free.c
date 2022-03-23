@@ -19,4 +19,3 @@ int MPI_Group_free ( MPI_Group *group )
   _MPI_COVERAGE();
   return PMPI_Group_free (group);
 }
-

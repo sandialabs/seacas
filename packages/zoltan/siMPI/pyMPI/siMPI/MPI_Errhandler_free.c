@@ -19,4 +19,3 @@ int MPI_Errhandler_free( MPI_Errhandler *errhandler )
   _MPI_COVERAGE();
   return PMPI_Errhandler_free (errhandler);
 }
-

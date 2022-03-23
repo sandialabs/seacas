@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -91,9 +91,9 @@ struct HierPartParamsStruct {
   int num_levels;                    /* number of levels I do */
   int level;                         /* level currently being processed */
   MPI_Comm hier_comm;                /* MPI communicator for each level */
- 
+
   ZZ *origzz;                        /* Zoltan struct passed into top level */
-  ZZ *hierzz;                        /* internal zoltan struct for balancing 
+  ZZ *hierzz;                        /* internal zoltan struct for balancing
 					within the hierarchy */
 
   int part_to_compute;               /* part to compute at each level */

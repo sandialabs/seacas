@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -75,7 +75,7 @@ int Zoltan_LocalHSFC_Order(
 
   double (*fhsfc)(ZZ*, double*);  /* space filling curve function */
 
-  int wgt_dim=0; 
+  int wgt_dim=0;
   float *obj_wgts=0;
   int *parts=0;
 
@@ -102,7 +102,7 @@ int Zoltan_LocalHSFC_Order(
 
   ZOLTAN_TRACE_ENTER(zz, yo);
 
-#if 0  /* KDD 2/3/15  Trusting that order_opt should never be NULL, 
+#if 0  /* KDD 2/3/15  Trusting that order_opt should never be NULL,
         * KDD 2/3/15  I am commenting out this code.   */
   /******************************************************************/
   /* If for some reason order_opt is NULL, allocate a new ZOOS here. */
@@ -117,7 +117,7 @@ int Zoltan_LocalHSFC_Order(
   /******************************************************************/
 
   /* local HSFC only computes the rank vector */
-  order_opt->return_args = RETURN_RANK; 
+  order_opt->return_args = RETURN_RANK;
 
 
   /******************************************************************/
@@ -195,7 +195,7 @@ int Zoltan_LocalHSFC_Order(
 
   for(dimNum=0; dimNum<numGeomDims; dimNum++)
   {
-    widthDim[dimNum] = maxValInDim[dimNum] - minValInDim[dimNum]; 
+    widthDim[dimNum] = maxValInDim[dimNum] - minValInDim[dimNum];
   }
   /*************************************************************/
 
@@ -217,7 +217,7 @@ int Zoltan_LocalHSFC_Order(
   free(widthDim); widthDim=0;
   /******************************************************************/
 
-  /******************************************************************/   
+  /******************************************************************/
   /* Specify which HSFC function to use (based on dim) */
   /******************************************************************/
   if (numGeomDims==1)
@@ -275,7 +275,7 @@ int Zoltan_LocalHSFC_Order(
   {
     /*MMW temporary hack to make Cedric's interface give me want I need */
     /*rank[coordIndx[objNum]] = objNum + offset; */
-    rank[objNum] = coordIndx[objNum] + offset; 
+    rank[objNum] = coordIndx[objNum] + offset;
   }
 
   /******************************************************************/

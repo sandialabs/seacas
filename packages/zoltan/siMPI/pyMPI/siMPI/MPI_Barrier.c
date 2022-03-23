@@ -18,6 +18,5 @@
 int MPI_Barrier ( MPI_Comm comm)
 {
   _MPI_COVERAGE();
-  return PMPI_Barrier (comm); 
+  return PMPI_Barrier (comm);
 }
-

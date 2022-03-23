@@ -21,7 +21,7 @@ void _MPI_Default_Op ( void* a, void* b, int* len, MPI_Datatype* type )
 {
   int size;
   _MPI_COVERAGE();
-  size = _MPI_calculateSize(*len, *type); 
+  size = _MPI_calculateSize(*len, *type);
   memcpy(b, a, size);
 }
 
@@ -65,7 +65,7 @@ int _MPI_Op_insert (MPI_User_function* function, int commute, MPI_Op* id) {
     _MPI_OP_LIST = (_MPI_OP_TYPE*) _MPI_safeRealloc
       (_MPI_OP_LIST,
        (_MPI_OP_ARRAY_SIZE+_MPI_PREALLOCATION_SIZE)*sizeof(_MPI_OP_TYPE),
-       "Error in _MPI_Op_Insert for reallocation"); 
+       "Error in _MPI_Op_Insert for reallocation");
 
     for(j=0;j<_MPI_PREALLOCATION_SIZE;j++) {
       _MPI_COVERAGE();
@@ -78,11 +78,11 @@ int _MPI_Op_insert (MPI_User_function* function, int commute, MPI_Op* id) {
   _MPI_OP_LIST[i].function = function;
   _MPI_OP_LIST[i].commute = commute;
 
-  *id = i+_MPI_OP_OFFSET; 
+  *id = i+_MPI_OP_OFFSET;
   _MPI_OP_COUNT++;
   _MPI_COVERAGE();
   return MPI_SUCCESS;
-} 
+}
 /*==========================================================================*/
 int _MPI_checkOp(MPI_Op op)
 {
@@ -138,7 +138,7 @@ int _MPI_Op_invalid(int index)
 int _MPI_check_overlap(void* sendbuf, void* recvbuf, int size)
 {
   _MPI_COVERAGE();
-  if(sendbuf == recvbuf) { 
+  if(sendbuf == recvbuf) {
     _MPI_COVERAGE();
     return _MPI_NOT_OK;
   }
@@ -154,4 +154,3 @@ int _MPI_check_overlap(void* sendbuf, void* recvbuf, int size)
   return MPI_SUCCESS;
 }
 /*==========================================================================*/
-

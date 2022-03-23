@@ -23,4 +23,3 @@ double PMPI_Wtick(void)
 {
   return 1.0/(_SC_CLK_TCK);
 }
-

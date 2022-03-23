@@ -20,14 +20,13 @@ int PMPI_Finalized( int *flag )
   retval = _MPI_checkIntP (flag);
   if (retval!=MPI_SUCCESS)
   {
-    _MPI_ERR_ROUTINE(MPI_ERR_IN_STATUS, "MPI_FINALIZED: Invalid pointer."); 
+    _MPI_ERR_ROUTINE(MPI_ERR_IN_STATUS, "MPI_FINALIZED: Invalid pointer.");
     MPI_Abort((MPI_Comm)0, MPI_ERR_OTHER);
     return retval;
   }
   if ( (_MPI_INIT_STATUS == _MPI_ENDED) && (_MPI_FINALIZED_FLAG) )
     *flag = _MPI_TRUE;
-  else 
+  else
     *flag = _MPI_FALSE;
-  return MPI_SUCCESS; 
+  return MPI_SUCCESS;
 }
-

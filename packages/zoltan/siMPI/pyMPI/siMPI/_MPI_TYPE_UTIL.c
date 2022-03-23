@@ -31,8 +31,8 @@ int _MPI_FindType (MPI_Datatype datatype)
   int index;
   _MPI_COVERAGE();
   /* KDDKDD 11/4/14:  changed loop max from _MPI_TYPE_COUNT to
-   * _MPI_TYPE_ARRAY_SIZE; _MPI_TYPE_LIST entries are freed and 
-   * reused, so _MPI_TYPE_ARRAY_SIZE accurately gives the max 
+   * _MPI_TYPE_ARRAY_SIZE; _MPI_TYPE_LIST entries are freed and
+   * reused, so _MPI_TYPE_ARRAY_SIZE accurately gives the max
    * entries to search */
   for (index = 0; index < _MPI_TYPE_ARRAY_SIZE; index++)
   {
@@ -42,7 +42,7 @@ int _MPI_FindType (MPI_Datatype datatype)
   _MPI_COVERAGE();
       return index;
     }
-  } 
+  }
   return _MPI_NOT_OK;
 }
 /*==========================================================================*/
@@ -62,7 +62,7 @@ int _MPI_Free_datatype (MPI_Datatype datatype)
   child = _MPI_TYPE_LIST[index].next;
   if ( child ) _MPI_deleteAll(child);
   _MPI_safeFree(_MPI_TYPE_LIST[index].info,"type info");
-  /* 
+  /*
   _MPI_safeFree(_MPI_TYPE_LIST[index].next,"type next");
   */
 
@@ -90,8 +90,8 @@ int _MPI_Find_free (void) {
   int ret;
   _MPI_COVERAGE();
   /* KDDKDD 11/4/14:  changed loop max from _MPI_TYPE_COUNT to
-   * _MPI_TYPE_ARRAY_SIZE; _MPI_TYPE_LIST entries are freed and 
-   * reused, so _MPI_TYPE_ARRAY_SIZE accurately gives the max 
+   * _MPI_TYPE_ARRAY_SIZE; _MPI_TYPE_LIST entries are freed and
+   * reused, so _MPI_TYPE_ARRAY_SIZE accurately gives the max
    * entries to search */
   for (i=0; i<_MPI_TYPE_ARRAY_SIZE; i++) {
     _MPI_COVERAGE();
@@ -122,6 +122,3 @@ int _MPI_checkSendType (MPI_Datatype type) {
   return _MPI_TYPE_LIST[index].sendType;
 }
 /*==========================================================================*/
-
-
-

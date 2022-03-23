@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -282,4 +282,3 @@ int Zoltan_Heap_Extract (HEAP *h, int element)
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
-

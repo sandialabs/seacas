@@ -1,13 +1,13 @@
 %
 % This section includes brief examples, including all source
 % code and gnuplot images where possible, of a geometric problem,
-% a graph problem, and a hypergraph problem.  
+% a graph problem, and a hypergraph problem.
 %
 \chapter{Examples}
 \label{cha:ex}
 
 This chapter begins with a very simple example.  We use the Zoltan
-library in a parallel application to partition a small set of 
+library in a parallel application to partition a small set of
 objects, each of which has only a global ID and a weight.
 
 We follow this with three more realistic examples.
@@ -20,7 +20,7 @@ examples in the \textbf{examples/C} directory.  The versions
 found in the source code include code to
 display the initial partitioning followed by Zoltan's computed
 partitioning.  It may be helpful to compile and run them, and
-then try changing parameters 
+then try changing parameters
 to see how the partitioning is affected.  Consult the Zoltan
 User's Guide at
 \url{http://www.cs.sandia.gov/Zoltan/ug_html/ug.html}
@@ -30,7 +30,7 @@ parameters for each partitioning method.
 The next four examples are written in C.  At the end of this section,
 we also provide a C++ version of the geometric example.
 
-As you read through these examples you will see that, regardless 
+As you read through these examples you will see that, regardless
 of the load balancing method chosen, every program must:
 
 \begin{itemize}
@@ -48,13 +48,13 @@ This example is a C program which uses Zoltan to partition
 in parallel 36 objects, each of which has a weight.  The goal is
 to balance the weights across the parallel application.
 
-It uses the Zoltan method called BLOCK, which simply assignes 
+It uses the Zoltan method called BLOCK, which simply assignes
 the first $n/p$ data objects to the first process and so on.
 This method really exists as an example for developers
-to learn how to write partitioning methods.  
+to learn how to write partitioning methods.
 It can also be used for testing in applications, but was never
 intended to be a serious partitioning strategy for real applications.
-However, it is a good choice for our first example.  
+However, it is a good choice for our first example.
 
 If you are a new user of Zoltan, you may want to initially get your
 application working with the BLOCK method.  Once you have
@@ -71,7 +71,7 @@ In order to use the BLOCK method, we must define two query functions:
 The \textbf{ZOLTAN\_*} function prototyes named above
 are defined in the Zoltan file \textbf{include/zoltan.h}.
 
-Zoltan requires that the parallel application supply a unique 
+Zoltan requires that the parallel application supply a unique
 global ID to identify each of the objects to be partitioned.
 Zoltan is very flexible about the data type used to represent
 a global ID, and only requires that it be allowed to represent
@@ -80,9 +80,9 @@ length.  Zoltan also permits the use of an additional set of
 IDs that are local to a process.  If you supply these optional local IDs,
 Zoltan will also include them when querying your application for data.
 
-A version of the 
+A version of the
 code listed below may be found in the Zoltan source in file
-\textbf{examples/C/simpleBLOCK.c}. 
+\textbf{examples/C/simpleBLOCK.c}.
 
 \begin{flushleft}
 \begin{verbatim}
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
   float ver;
   struct Zoltan_Struct *zz;
   ZOLTAN_ID_PTR importGlobalGids, importLocalGids;
-  ZOLTAN_ID_PTR exportGlobalGids, exportLocalGids; 
+  ZOLTAN_ID_PTR exportGlobalGids, exportLocalGids;
   int *importProcs, *importToPart, *exportProcs, *exportToPart;
 
   /******************************************************************
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
   ******************************************************************/
 
   rc = Zoltan_LB_Partition(zz, /* input (all remaining fields are output) */
-        &changes,        /* 1 if partitioning was changed, 0 otherwise */ 
+        &changes,        /* 1 if partitioning was changed, 0 otherwise */
         &numGidEntries,  /* Number of integers used for a global ID */
         &numLidEntries,  /* Number of integers used for a local ID */
         &numImport,      /* Number of objects to be sent to me */
@@ -205,9 +205,9 @@ int main(int argc, char *argv[])
   ** the storage allocated for the Zoltan structure.
   ******************************************************************/
 
-  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids, 
+  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids,
                       &importProcs, &importToPart);
-  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids, 
+  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids,
                       &exportProcs, &exportToPart);
 
   Zoltan_Destroy(&zz);
@@ -297,7 +297,7 @@ static int edges[25][4]={
 \subsection{Recursive Coordinate Bisection}
 \label{sec:rcb}
 
-This example uses \emph{Recursive Coordinate Bisection}, 
+This example uses \emph{Recursive Coordinate Bisection},
 one of Zoltan's geometric methods, to partition
 the vertices of the simple mesh.  This method will use
 the coordinates of each vertex, and the weight of each
@@ -311,11 +311,11 @@ The full source code for this example may be found in
 
 \subsubsection{Application defined query functions}
 
-We must define four query functions.  The function prototyes named 
+We must define four query functions.  The function prototyes named
 below are defined in the Zoltan file \textbf{include/zoltan.h}.
 
 \begin{itemize}
-\item A function of type ZOLTAN\_NUM\_OBJ\_FN (Figure~\ref{fig:NumObj}) which provides the number of objects belonging to this process 
+\item A function of type ZOLTAN\_NUM\_OBJ\_FN (Figure~\ref{fig:NumObj}) which provides the number of objects belonging to this process
 \item A function of type ZOLTAN\_OBJ\_LIST\_FN (Figure~\ref{fig:ObjList}) which supplies the global IDs and optional weights for the objects belonging to the process
 \item A function of type ZOLTAN\_NUM\_GEOM\_FN (Figure~\ref{fig:NumGeom}) which provides the dimension of the objects
 \item A function of type ZOLTAN\_GEOM\_MULTI\_FN (Figure~\ref{fig:GeomMulti}) which supplies the coordinates of the objects and optionally their weights
@@ -362,7 +362,7 @@ static void get_object_list(void *data, int sizeGID, int sizeLID,
 {
 int i, next;
 
-  if ( (sizeGID != 1) || (sizeLID != 1) || (wgt_dim != 1)){ 
+  if ( (sizeGID != 1) || (sizeLID != 1) || (wgt_dim != 1)){
     *ierr = ZOLTAN_FATAL;
     return;
   }
@@ -410,23 +410,23 @@ static void get_geometry_list(void *data, int sizeGID, int sizeLID,
 {
 int i;
 int row, col;
-   
+
   if ( (sizeGID != 1) || (sizeLID != 1) || (num_dim != 2)){
-    *ierr = ZOLTAN_FATAL; 
+    *ierr = ZOLTAN_FATAL;
     return;
   }
-    
+
   for (i=0;  i < num_obj ; i++){
     row = (globalID[i] - 1) / 5;
     col = (globalID[i] - 1) % 5;
-  
+
     geom_vec[2*i] = (double)col;
     geom_vec[2*i + 1] = (double)row;
   }
 
   *ierr = ZOLTAN_OK;
   return;
-} 
+}
 \end{verbatim}
 \end{flushleft}
 \caption{A ZOLTAN\_GEOM\_MULTI\_FN query function}
@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
   struct Zoltan_Struct *zz;
   int changes, numGidEntries, numLidEntries, numImport, numExport;
   ZOLTAN_ID_PTR importGlobalGids, importLocalGids;
-  ZOLTAN_ID_PTR exportGlobalGids, exportLocalGids; 
+  ZOLTAN_ID_PTR exportGlobalGids, exportLocalGids;
   int *importProcs, *importToPart, *exportProcs, *exportToPart;
   float *wgt_list, ver;
   int *gid_flags, *gid_list, *lid_list;
@@ -495,16 +495,16 @@ int main(int argc, char *argv[])
 
   Zoltan_Set_Param(zz, "DEBUG_LEVEL", "0");
   Zoltan_Set_Param(zz, "LB_METHOD", "RCB");
-  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1"); 
+  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1");
   Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "1");
   Zoltan_Set_Param(zz, "OBJ_WEIGHT_DIM", "1");
   Zoltan_Set_Param(zz, "RETURN_LISTS", "ALL");
 
   /* RCB parameters */
 
-  Zoltan_Set_Param(zz, "KEEP_CUTS", "1"); 
+  Zoltan_Set_Param(zz, "KEEP_CUTS", "1");
   Zoltan_Set_Param(zz, "RCB_OUTPUT_LEVEL", "0");
-  Zoltan_Set_Param(zz, "RCB_RECTILINEAR_BLOCKS", "1"); 
+  Zoltan_Set_Param(zz, "RCB_RECTILINEAR_BLOCKS", "1");
 
   /* Query functions - defined in simpleQueries.h, to return
    * information about objects defined in simpleGraph.h      */
@@ -529,7 +529,7 @@ int main(int argc, char *argv[])
   ******************************************************************/
 
   rc = Zoltan_LB_Partition(zz, /* input (all remaining fields are output) */
-        &changes,        /* 1 if partitioning was changed, 0 otherwise */ 
+        &changes,        /* 1 if partitioning was changed, 0 otherwise */
         &numGidEntries,  /* Number of integers used for a global ID */
         &numLidEntries,  /* Number of integers used for a local ID */
         &numImport,      /* Number of vertices to be sent to me */
@@ -567,9 +567,9 @@ int main(int argc, char *argv[])
   ** the storage allocated for the Zoltan structure.
   ******************************************************************/
 
-  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids, 
+  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids,
                       &importProcs, &importToPart);
-  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids, 
+  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids,
                       &exportProcs, &exportToPart);
 
   Zoltan_Destroy(&zz);
@@ -608,7 +608,7 @@ are defined in the Zoltan file \textbf{include/zoltan.h}.
 The four query functions are:
 
 \begin{itemize}
-\item A function of type ZOLTAN\_NUM\_OBJ\_FN (Figure~\ref{fig:NumObj}) which provides the number of objects belonging to this process 
+\item A function of type ZOLTAN\_NUM\_OBJ\_FN (Figure~\ref{fig:NumObj}) which provides the number of objects belonging to this process
 \item A function of type ZOLTAN\_OBJ\_LIST\_FN (Figure~\ref{fig:ObjList}) which supplies the global IDs and optional weights for the objects belonging to the process
 \item A function of type ZOLTAN\_NUM\_EDGES\_MULTI\_FN (Figure~\ref{fig:NumEdges}) which provides the number of edges for each object
 \item A function of type ZOLTAN\_EDGE\_LIST\_MULTI\_FN (Figure~\ref{fig:EdgeListMulti})
@@ -622,11 +622,11 @@ a ZOLTAN\_FIRST\_OBJ\_FN and a ZOLTAN\_NEXT\_OBJ\_FN.  The first function
 would return the global ID for first object.  Each call to the second function would
 return a subsequent global ID.
 
-An alternative to defining a ZOLTAN\_NUM\_EDGES\_MULTI\_FN is to 
+An alternative to defining a ZOLTAN\_NUM\_EDGES\_MULTI\_FN is to
 define a ZOLTAN\_NUM\_EDGES\_FN, which returns the number of adjacent
 objects for a single object ID.
 
-An alternative to defining a ZOLTAN\_EDGE\_LIST\_MULTI\_FN is to 
+An alternative to defining a ZOLTAN\_EDGE\_LIST\_MULTI\_FN is to
 define a ZOLTAN\_EDGE\_LIST\_FN, which
 returns the same information but for a single object.
 
@@ -708,9 +708,9 @@ int *nextProc;
 
 \subsubsection{Calling the Zoltan library}
 
-This code may be found in the 
+This code may be found in the
 file \textbf{examples/C/simpleGRAPH.c}.
-More information about graph parameters 
+More information about graph parameters
 may be found in the Zoltan User's Guide at
 \url{http://www.cs.sandia.gov/Zoltan/ug_html/ug_alg_parmetis.html}.
 
@@ -768,16 +768,16 @@ int main(int argc, char *argv[])
 
   Zoltan_Set_Param(zz, "DEBUG_LEVEL", "0");
   Zoltan_Set_Param(zz, "LB_METHOD", "GRAPH");
-  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1"); 
+  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1");
   Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "1");
   Zoltan_Set_Param(zz, "OBJ_WEIGHT_DIM", "1");
   Zoltan_Set_Param(zz, "RETURN_LISTS", "ALL");
 
   /* Graph parameters */
 
-  Zoltan_Set_Param(zz, "PARMETIS_METHOD", "PARTKWAY"); 
+  Zoltan_Set_Param(zz, "PARMETIS_METHOD", "PARTKWAY");
   Zoltan_Set_Param(zz, "PARMETIS_COARSE_ALG", "2");
-  Zoltan_Set_Param(zz, "CHECK_GRAPH", "2"); 
+  Zoltan_Set_Param(zz, "CHECK_GRAPH", "2");
 
   /* Query functions - defined in simpleQueries.h */
 
@@ -799,7 +799,7 @@ int main(int argc, char *argv[])
   ******************************************************************/
 
   rc = Zoltan_LB_Partition(zz, /* input (all remaining fields are output) */
-        &changes,        /* 1 if partitioning was changed, 0 otherwise */ 
+        &changes,        /* 1 if partitioning was changed, 0 otherwise */
         &numGidEntries,  /* Number of integers used for a global ID */
         &numLidEntries,  /* Number of integers used for a local ID */
         &numImport,      /* Number of vertices to be sent to me */
@@ -822,7 +822,7 @@ int main(int argc, char *argv[])
 
   /******************************************************************
   ** In a real application, you would rebalance the problem now by
-  ** sending the objects to their new partitions.  Your query 
+  ** sending the objects to their new partitions.  Your query
   ** functions would need to reflect the new partitioning.
   ******************************************************************/
 \end{verbatim}
@@ -836,9 +836,9 @@ int main(int argc, char *argv[])
   ** the storage allocated for the Zoltan structure.
   ******************************************************************/
 
-  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids, 
+  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids,
                       &importProcs, &importToPart);
-  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids, 
+  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids,
                       &exportProcs, &exportToPart);
 
   Zoltan_Destroy(&zz);
@@ -860,7 +860,7 @@ int main(int argc, char *argv[])
 In this example, we use the simple graph in  Figure~\ref{fig:mesh25}
 to create a hypergraph, and
 then partition it using Zoltan's parallel hypergraph
-partitioner.  
+partitioner.
 
 In a hypergraph, each edge can be associated with more than
 two vertices.  This edge is called a hyperedge.
@@ -872,12 +872,12 @@ for each vertex in the simple graph.
 
 We are creating this hypergraph in the hypergraph query functions.
 But you can use the Zoltan parameter
-\emph{PHG\_FROM\_GRAPH\_METHOD=neighbors} 
-described in the User's Guide at 
+\emph{PHG\_FROM\_GRAPH\_METHOD=neighbors}
+described in the User's Guide at
 \url{http://www.cs.sandia.gov/Zoltan/ug_html/ug_alg_phg.html},
 to accomplish the same
 result.  In this case you use graph query functions instead of
-hypergraph query funtions to supply the 
+hypergraph query funtions to supply the
 graph to Zoltan.
 The Zoltan library would then do the conversion to a hypergraph.
 
@@ -885,7 +885,7 @@ First we will define the required query functions.
 
 \subsubsection{Application defined query functions}
 
-We must define six query functions.  The function prototyes named 
+We must define six query functions.  The function prototyes named
 below are defined in the Zoltan file \textbf{include/zoltan.h}.
 
 \begin{itemize}
@@ -910,7 +910,7 @@ of the structure to the application when calling the query functions.
 
 If you have the Zoltan source, the following query functions
 are defined in the file \textbf{examples/C/simpleQueries.h}.
-The variables used in these query functions refer to those defined 
+The variables used in these query functions refer to those defined
 in \textbf{examples/C/simpleGraph.h} which were shown in
 Figure~\ref{fig:simpleGraphDotH}.
 
@@ -1143,20 +1143,20 @@ int main(int argc, char *argv[])
 
   Zoltan_Set_Param(zz, "DEBUG_LEVEL", "0");
   Zoltan_Set_Param(zz, "LB_METHOD", "HYPERGRAPH");
-  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1"); 
+  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1");
   Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "0");
   Zoltan_Set_Param(zz, "OBJ_WEIGHT_DIM", "0");
   Zoltan_Set_Param(zz, "RETURN_LISTS", "ALL");
 
   /* Hypergraph parameters */
 
-  Zoltan_Set_Param(zz, "HYPERGRAPH_PACKAGE", "PHG"); 
+  Zoltan_Set_Param(zz, "HYPERGRAPH_PACKAGE", "PHG");
   Zoltan_Set_Param(zz, "PHG_COARSENING_METHOD", "ipm");
   Zoltan_Set_Param(zz, "PHG_COARSEPARTITION_METHOD", "greedy");
   Zoltan_Set_Param(zz, "PHG_REFINEMENT_METHOD", "fm");
-  Zoltan_Set_Param(zz, "PHG_EDGE_WEIGHT_OPERATION", "error"); 
-  Zoltan_Set_Param(zz, "PHG_EDGE_SIZE_THRESHOLD", ".7"); 
-  Zoltan_Set_Param(zz, "ADD_OBJ_WEIGHT", "unit"); 
+  Zoltan_Set_Param(zz, "PHG_EDGE_WEIGHT_OPERATION", "error");
+  Zoltan_Set_Param(zz, "PHG_EDGE_SIZE_THRESHOLD", ".7");
+  Zoltan_Set_Param(zz, "ADD_OBJ_WEIGHT", "unit");
 
   /* Query functions - defined in simpleQueries.h */
 
@@ -1180,7 +1180,7 @@ int main(int argc, char *argv[])
   ******************************************************************/
 
   rc = Zoltan_LB_Partition(zz, /* input (all remaining fields are output) */
-        &changes,        /* 1 if partitioning was changed, 0 otherwise */ 
+        &changes,        /* 1 if partitioning was changed, 0 otherwise */
         &numGidEntries,  /* Number of integers used for a global ID */
         &numLidEntries,  /* Number of integers used for a local ID */
         &numImport,      /* Number of vertices to be sent to me */
@@ -1203,7 +1203,7 @@ int main(int argc, char *argv[])
 
   /******************************************************************
   ** In a real application, you would rebalance the problem now by
-  ** sending the objects to their new partitions.  Your query 
+  ** sending the objects to their new partitions.  Your query
   ** functions would need to reflect the new partitioning.
   ******************************************************************/
 \end{verbatim}
@@ -1217,9 +1217,9 @@ int main(int argc, char *argv[])
   ** the storage allocated for the Zoltan structure.
   ******************************************************************/
 
-  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids, 
+  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids,
                       &importProcs, &importToPart);
-  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids, 
+  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids,
                       &exportProcs, &exportToPart);
 
   Zoltan_Destroy(&zz);
@@ -1244,7 +1244,7 @@ in Section~\ref{sec:rcb} solves.
 
 We created a C++ class called \textbf{rectangularMesh}, which can represent
 the rectangular mesh shown in Figure~\ref{fig:mesh25}.
-The query functions required by Zoltan are implemented as 
+The query functions required by Zoltan are implemented as
 static methods of the \textbf{rectangularMesh} class.  They
 take as an argument an object of type \textbf{rectangularMesh}.
 We will not list the entire class due to space constraints.  If you
@@ -1259,7 +1259,7 @@ owned by the process:
     {
     // Prototype: ZOLTAN_NUM_OBJ_FN
     // Return the number of objects I own.
-    
+
     rectangularMesh *mesh = (rectangularMesh *)data;
     *ierr = ZOLTAN_OK;
     return mesh->get_num_my_IDs();
@@ -1270,7 +1270,7 @@ owned by the process:
 We use static class methods, but your
 query functions could also be global C or C++ functions.
 
-The example below can be found in the Zoltan source in 
+The example below can be found in the Zoltan source in
 \textbf{examples/CPP/simpleRCB.cpp}.
 
 \clearpage
@@ -1291,8 +1291,8 @@ int main(int argc, char *argv[])
 
   Zoltan_Initialize(argc, argv, &version);
 
-  // Create a Zoltan object 
-  
+  // Create a Zoltan object
+
   Zoltan *zz = new Zoltan(MPI::COMM_WORLD);
 
   if (zz == NULL){
@@ -1331,7 +1331,7 @@ int main(int argc, char *argv[])
   zz->Set_Obj_List_Fn(rectangularMesh::get_object_list, (void *)mesh);
   zz->Set_Num_Geom_Fn(rectangularMesh::get_num_geometry, NULL);
   zz->Set_Geom_Multi_Fn(rectangularMesh::get_geometry_list, (void *)mesh);
-  
+
   // Zoltan can now partition the vertices in the simple mesh.
 
   int changes;
@@ -1351,7 +1351,7 @@ int main(int argc, char *argv[])
   int rc = zz->LB_Partition(changes, numGidEntries, numLidEntries,
     numImport, importGlobalIds, importLocalIds, importProcs, importToPart,
     numExport, exportGlobalIds, exportLocalIds, exportProcs, exportToPart);
-  
+
   if (rc != ZOLTAN_OK){
     printf("Partitioning failed on process %d\n",rank);
     MPI::Finalize();
@@ -1382,4 +1382,3 @@ int main(int argc, char *argv[])
 }
 \end{verbatim}
 \end{flushleft}
-

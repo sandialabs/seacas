@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -91,12 +91,12 @@ struct median {          /* median cut info */
 
 
 int Zoltan_RB_find_median(
-  int Tflops_Special,   /* Flag indicating whether Tflops_Special handling 
+  int Tflops_Special,   /* Flag indicating whether Tflops_Special handling
                            of communicators should be done (to avoid memory
                            leaks in tflops' Comm_Dup and Comm_Split).        */
   double *dots,         /* array of coordinates                              */
   double *wgts,         /* array of weights associated with dots, or NULL    */
-  double uniformWeight, /* weight of every dot, or 0.0 if wgts != NULL */ 
+  double uniformWeight, /* weight of every dot, or 0.0 if wgts != NULL */
   int *dotmark,         /* returned list of which side of the median
                            each dot is on:
                                 0 - dot is < valuehalf
@@ -202,7 +202,7 @@ int Zoltan_RB_find_median(
       tolerance = wtmax;
       Zoltan_RB_max_double(&tolerance, 1, proclower, rank, num_procs, local_comm);
     }
-    else 
+    else
       tolerance = 1.0;   /* if user did not supply weights, all are 1.0 */
   }
   else {
@@ -241,15 +241,15 @@ int Zoltan_RB_find_median(
           all dots >= valuehalf are marked with 1 in dotmark */
 
   if (!Tflops_Special || num_procs > 1) { /* don't need to go thru if only
-                                             one proc with Tflops_Special. 
-                                             Input argument Tflops_Special 
+                                             one proc with Tflops_Special.
+                                             Input argument Tflops_Special
                                              should be 0 for
                                              serial partitioning. */
     while (1) {
 
     /* choose bisector value */
     /* use old value on 1st iteration if old cut dimension is the same */
-    /* on 2nd option: could push valuehalf towards geometric center 
+    /* on 2nd option: could push valuehalf towards geometric center
        with "1.0-factor" to force overshoot */
 
 
@@ -260,12 +260,12 @@ int Zoltan_RB_find_median(
       }
       else if (weight) {
         /* Note, since zoltan provides artificial weights of 1 for non-weighted
-         * problems, this computation of tmp_half is always used.  
-         * 
+         * problems, this computation of tmp_half is always used.
+         *
          * Some problems with many zero-weighted dots do not behave well
-         * with this computation of tmp_half.  
+         * with this computation of tmp_half.
          * Removing it, however, increases the number of iterations needed for
-         * many Zoltan tests.  
+         * many Zoltan tests.
          * KDD 2/2016
          */
         tmp_half = valuemin + (targetlo - weightlo) /
@@ -333,7 +333,7 @@ int Zoltan_RB_find_median(
       if (Tflops_Special) {
          i = 1;
          Zoltan_RB_reduce(num_procs, rank, proc, (void *) &medme, (void *) &med,
-                          sizeof(medme), &i, med_type, local_comm, 
+                          sizeof(medme), &i, med_type, local_comm,
                           Zoltan_RB_median_merge);
       }
       else {
@@ -371,7 +371,7 @@ if (proc==0) printf("%d tmp_half %.20f weightlo/hi %.0f %.0f valuemin/max %.20f 
           wtok = 0.0;
           moveSome = 0;
           if (medme.valuehi == med.valuehi) {
-            wtok = medme.wthi;   
+            wtok = medme.wthi;
             moveSome = 1;
           }
           if (weightlo + med.wthi >= targetlo) {                /* all done */
@@ -383,7 +383,7 @@ if (proc==0) printf("%d tmp_half %.20f weightlo/hi %.0f %.0f valuemin/max %.20f 
               }
             } else {
               if (Tflops_Special)
-                Zoltan_RB_scan_double(&wtok, &wtupto, 1, local_comm, 
+                Zoltan_RB_scan_double(&wtok, &wtupto, 1, local_comm,
                                       proc, rank, num_procs);
               else
                 MPI_Scan(&wtok,&wtupto,1,MPI_DOUBLE,MPI_SUM,local_comm);
@@ -393,7 +393,7 @@ if (proc==0) printf("%d tmp_half %.20f weightlo/hi %.0f %.0f valuemin/max %.20f 
             breakflag = 1;
           }                                      /* wtok = most I can move */
           wtsum = 0.0;
-          if (moveSome) 
+          if (moveSome)
           for (j = 0; j < numlist;  j++)
           {
             i = dotlist[j];
@@ -411,7 +411,7 @@ if (proc==0) printf("%d tmp_half %.20f weightlo/hi %.0f %.0f valuemin/max %.20f 
           if (breakflag) {                        /* done if moved enough */
             if (Tflops_Special) {
               wtok = wtsum;
-              Zoltan_RB_sum_double(&wtok, 1, proclower, rank, num_procs, 
+              Zoltan_RB_sum_double(&wtok, 1, proclower, rank, num_procs,
                                    local_comm);
             }
             else
@@ -455,7 +455,7 @@ if (proc==0) printf("%d tmp_half %.20f weightlo/hi %.0f %.0f valuemin/max %.20f 
           wtok = 0.0;
           moveSome = 0;
           if (medme.valuelo == med.valuelo) {
-            wtok = medme.wtlo;   
+            wtok = medme.wtlo;
             moveSome = 1;
           }
           if (weighthi + med.wtlo >= targethi) {                /* all done */
@@ -467,7 +467,7 @@ if (proc==0) printf("%d tmp_half %.20f weightlo/hi %.0f %.0f valuemin/max %.20f 
               }
             } else {
               if (Tflops_Special)
-                Zoltan_RB_scan_double(&wtok, &wtupto, 1, local_comm, 
+                Zoltan_RB_scan_double(&wtok, &wtupto, 1, local_comm,
                                       proc, rank, num_procs);
               else
                 MPI_Scan(&wtok,&wtupto,1,MPI_DOUBLE,MPI_SUM,local_comm);
@@ -477,7 +477,7 @@ if (proc==0) printf("%d tmp_half %.20f weightlo/hi %.0f %.0f valuemin/max %.20f 
             breakflag = 1;
           }                                      /* wtok = most I can move */
           wtsum = 0.0;
-          if (moveSome) 
+          if (moveSome)
           for (j = 0; j < numlist;  j++)
           {
             i = dotlist[j];
@@ -522,7 +522,7 @@ if (proc==0) printf("%d tmp_half %.20f weightlo/hi %.0f %.0f valuemin/max %.20f 
       }
 
       /* shrink the active list */
-      
+
       k = 0;
       for (j = 0; j < numlist; j++) {
         i = dotlist[j];
@@ -545,7 +545,7 @@ if (proc==0) printf("FINAL tmp_half %.20f weightlo/hi %.0f %.0f valuemin/max %.2
   /* found median */
   *valuehalf = tmp_half;
 
-  if (average_cuts) 
+  if (average_cuts)
     *valuehalf = Zoltan_RB_Average_Cut(Tflops_Special, dots, dotmark, dotnum,
                                        num_procs, rank, proc, local_comm,
                                        *valuehalf);
@@ -591,7 +591,7 @@ void Zoltan_RB_median_merge(void *in, void *inout, int *len, MPI_Datatype *dptr)
 
   med1 = (struct median *) in;
   med2 = (struct median *) inout;
- 
+
   med2->totallo += med1->totallo;
   if (med1->valuelo > med2->valuelo) {
     med2->valuelo = med1->valuelo;
@@ -629,7 +629,7 @@ void Zoltan_RB_reduce(
    int *len,              /* length to pass to fn */
    MPI_Datatype datatype, /* MPI datatype for operation */
    MPI_Comm comm,         /* MPI communicator */
-   MPI_User_function *fn  /* Function to be applied in reduction */    
+   MPI_User_function *fn  /* Function to be applied in reduction */
 )
 {
    void *tmp = NULL;      /* temporary to receive information */

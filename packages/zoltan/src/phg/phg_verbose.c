@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -150,11 +150,11 @@ void print_hypergraph(ZZ *zz, ZHG *zhg, int sumWeight)
     printf("\n");
   }
   printf("\n");
- 
+
   wgt = zhg->Ewgt;
   pin = zhg->pinGNO;
   owner = zhg->Pin_Procs;
-   
+
   printf("(%d) %d INPUT or REMOVED EDGES (out of " ZOLTAN_GNO_SPEC "), %d pins: gno size (weights) (pinGNO/pinProc)\n",
                   p, zhg->nHedges, zhg->globalHedges, zhg->nPins);
 

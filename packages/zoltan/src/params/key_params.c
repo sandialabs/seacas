@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -90,7 +90,7 @@ static PARAM_VARS Key_params[] = {
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
-/* 
+/*
  * Handle parameter changes for variables stored in Zoltan structure.
  */
 
@@ -116,7 +116,7 @@ int  idx 			/* index of vector param, -1 if scalar */
       switch (index) {
 
       case 0:  		/* Imbalance_Tol */
-        if (result.def) 
+        if (result.def)
             result.fval = ZOLTAN_LB_IMBALANCE_TOL_DEF;
 	if (result.fval < 1.0) {
 	    sprintf(msg, "Invalid Imbalance_Tol value (%g) "
@@ -207,7 +207,7 @@ int  idx 			/* index of vector param, -1 if scalar */
 	zz->Debug_Proc = result.ival;
 	status = 3;		/* Don't add to Params field of ZZ */
         break;
-       
+
       case 6: 		/* Deterministic flag */
         if (result.def)
             result.ival = ZOLTAN_DETERMINISTIC_DEF;
@@ -272,7 +272,7 @@ int  idx 			/* index of vector param, -1 if scalar */
         }
         else if (strstr(result.sval, "PART")!=NULL) {
           /* list of every object's part assignment */
-          tmp = ZOLTAN_LB_COMPLETE_EXPORT_LISTS; 
+          tmp = ZOLTAN_LB_COMPLETE_EXPORT_LISTS;
           status = 3;
         }
         else if (strcmp(result.sval, "NONE")==0) {
@@ -293,7 +293,7 @@ int  idx 			/* index of vector param, -1 if scalar */
         break;
 
       case 11:          /* LB_Method */
-        if (result.def) 
+        if (result.def)
           strcpy(result.sval, "RCB");
         status = Zoltan_LB_Set_LB_Method(zz,result.sval);
         if (status == ZOLTAN_OK)
@@ -385,21 +385,21 @@ void Zoltan_Print_Key_Params(ZZ const *zz)
 {
   int i;
   for (i=0; i<(zz->Obj_Weight_Dim?zz->Obj_Weight_Dim:1); i++)
-    printf("ZOLTAN Parameter %s[%1d] = %f\n", Key_params[0].name, 
+    printf("ZOLTAN Parameter %s[%1d] = %f\n", Key_params[0].name,
          i, zz->LB.Imbalance_Tol[i]);
-  printf("ZOLTAN Parameter %s = %s\n", Key_params[1].name, 
+  printf("ZOLTAN Parameter %s = %s\n", Key_params[1].name,
          (zz->Migrate.Auto_Migrate ? "TRUE" : "FALSE"));
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[18].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[18].name,
          zz->Migrate.Only_Proc_Changes);
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[2].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[2].name,
          zz->Obj_Weight_Dim);
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[3].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[3].name,
          zz->Edge_Weight_Dim);
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[4].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[4].name,
          zz->Debug_Level);
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[5].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[5].name,
          zz->Debug_Proc);
-  printf("ZOLTAN Parameter %s = %s\n", Key_params[6].name, 
+  printf("ZOLTAN Parameter %s = %s\n", Key_params[6].name,
          (zz->Deterministic ? "TRUE" : "FALSE"));
   printf("ZOLTAN Parameter %s = %d ", Key_params[7].name, zz->Timer);
   if (zz->Timer == ZOLTAN_TIME_WALL)
@@ -407,9 +407,9 @@ void Zoltan_Print_Key_Params(ZZ const *zz)
   else if (zz->Timer == ZOLTAN_TIME_CPU)
      printf("(cpu)");
   printf("\n");
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[8].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[8].name,
          zz->Num_GID);
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[9].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[9].name,
          zz->Num_LID);
   printf("ZOLTAN Parameter %s = ", Key_params[10].name);
   switch (zz->LB.Return_Lists) {
@@ -434,15 +434,15 @@ void Zoltan_Print_Key_Params(ZZ const *zz)
   }
   if (zz->Tflops_Special)   /* print only if set */
      printf("ZOLTAN Parameter %s = %s\n", Key_params[12].name, "TRUE");
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[14].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[14].name,
          zz->LB.Num_Global_Parts_Param);
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[16].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[16].name,
          zz->LB.Num_Local_Parts_Param);
-  printf("ZOLTAN Parameter %s = %d\n", Key_params[19].name, 
+  printf("ZOLTAN Parameter %s = %d\n", Key_params[19].name,
          zz->LB.Remap_Flag);
-  printf("ZOLTAN Parameter %s = %d (%u)\n", Key_params[20].name, 
+  printf("ZOLTAN Parameter %s = %d (%u)\n", Key_params[20].name,
          Zoltan_Seed(), Zoltan_Seed());
-  printf("ZOLTAN Parameter %s = %s\n", Key_params[21].name, 
+  printf("ZOLTAN Parameter %s = %s\n", Key_params[21].name,
          zz->LB.Approach);
 }
 /*****************************************************************************/
@@ -463,7 +463,7 @@ void Zoltan_Print_Configuration(char *indent)
     indent, zoltan_gno_datatype_name, (unsigned long)(sizeof(ZOLTAN_GNO_TYPE)));
   printf("%sMPI_Datatype for ZOLTAN_ID_TYPE: %s\n", indent,
     zoltan_mpi_id_datatype_name);
-  printf("%sMPI_Datatype for ZOLTAN_GNO_TYPE: %s\n", indent, 
+  printf("%sMPI_Datatype for ZOLTAN_GNO_TYPE: %s\n", indent,
     Zoltan_mpi_gno_name());
 
   /* Metis and ParMetis have different version numbers.  Some
@@ -493,7 +493,7 @@ void Zoltan_Print_Configuration(char *indent)
 #ifdef ZOLTAN_PTSCOTCH
   printf("%sThird party library: PTScotch ", indent);
   #ifdef SCOTCH_VERSION
-    printf("version %d_%d_%d\n", 
+    printf("version %d_%d_%d\n",
            SCOTCH_VERSION, SCOTCH_RELEASE, SCOTCH_PATCHLEVEL);
   #endif
 #endif
@@ -501,7 +501,7 @@ void Zoltan_Print_Configuration(char *indent)
 #ifdef ZOLTAN_SCOTCH
   printf("%sThird party library: Scotch ", indent);
   #ifdef SCOTCH_VERSION
-    printf("version %d_%d_%d\n", 
+    printf("version %d_%d_%d\n",
            SCOTCH_VERSION, SCOTCH_RELEASE, SCOTCH_PATCHLEVEL);
   #endif
 #endif

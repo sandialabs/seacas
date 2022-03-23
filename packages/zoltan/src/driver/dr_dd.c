@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -57,7 +57,7 @@ extern "C" {
 
 
 /****************************************************************************/
-int build_elem_dd(MESH_INFO_PTR mesh) 
+int build_elem_dd(MESH_INFO_PTR mesh)
 {
 /* Create a distributed directory of the elements so we can track their
  * processor assignment after migrations.
@@ -81,7 +81,7 @@ int update_elem_dd(MESH_INFO_PTR mesh)
  *  assignments initially and after migration.
  */
 ELEM_INFO_PTR current_elem;
-ZOLTAN_ID_PTR gids; 
+ZOLTAN_ID_PTR gids;
 int *parts;
 int i, j;
 
@@ -113,7 +113,7 @@ int update_hvertex_proc(MESH_INFO_PTR mesh)
 {
   int npins;
 
-  npins = mesh->hindex[mesh->nhedges];  
+  npins = mesh->hindex[mesh->nhedges];
 
   if (Zoltan_DD_Find(mesh->dd, mesh->hvertex, NULL, NULL, NULL, npins, mesh->hvertex_proc) != 0) {
 
