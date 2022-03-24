@@ -49,6 +49,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+/** Maximum length of name permitted by NetCDF */
+#define EX_MAX_NAME NC_MAX_NAME
+
 #ifndef NC_INT64
 #error "NetCDF version 4.1.2 or later is required."
 #endif
@@ -318,7 +321,7 @@ typedef enum ex_field_type ex_field_type;
 #define EX_MAX_FIELD_NESTING 4
 typedef struct ex_field
 {
-  char          name[NC_MAX_NAME + 1]; /* Name of the field */
+  char          name[EX_MAX_NAME + 1]; /* Name of the field */
   int           nesting; /* Number of composite fields (vector at each quadrature point = 2) */
   ex_field_type type[EX_MAX_FIELD_NESTING];        /* ex_field_type of each nested field */
   int           cardinality[EX_MAX_FIELD_NESTING]; /* 0 to calculate based on type */
@@ -328,12 +331,12 @@ typedef struct ex_field
 
 typedef struct ex_basis
 {
-  char name[NC_MAX_NAME + 1];
+  char name[EX_MAX_NAME + 1];
 } ex_basis;
 
 typedef struct ex_quadrature
 {
-  char    name[NC_MAX_NAME + 1];
+  char    name[EX_MAX_NAME + 1];
   int     cardinality; /* Number of quadrature points */
   int     dimension;   /* 1,2,3 -- spatial dimension of points */
   double *xi;          /* xi  (x) coordinate of points; dimension = cardinality  or NULL */
@@ -365,9 +368,6 @@ typedef enum ex_options ex_options;
  * constants that are used as netcdf dimensions must be of type long
  * @{
  */
-
-/** Maximum length of name permitted by NetCDF */
-#define EX_MAX_NAME NC_MAX_NAME
 
 /** Maximum length of QA record, element type name */
 #define MAX_STR_LENGTH 32L
@@ -430,7 +430,7 @@ typedef struct ex_attribute
 {
   ex_entity_type entity_type;
   int64_t        entity_id;
-  char           name[NC_MAX_NAME + 1];
+  char           name[EX_MAX_NAME + 1];
   ex_type        type; /* int, double, text */
   size_t         value_count;
   void          *values;         /* not accessed if NULL */
@@ -1006,6 +1006,9 @@ EXODUS_EXPORT int ex_put_basis_metadata(int exoid, ex_entity_type obj_type, ex_e
                                         const ex_field field);
 EXODUS_EXPORT int ex_put_quadrature_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id,
                                              const ex_field field);
+EXODUS_EXPORT int ex_get_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id,
+                                        ex_field *field);
+EXODUS_EXPORT int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id id);
 
 /*  Write arbitrary integer, double, or text attributes on an entity */
 EXODUS_EXPORT int ex_put_attribute(int exoid, const ex_attribute attributes);

@@ -44,19 +44,13 @@ int main(int argc, char **argv)
 
   int num_elem_blk = 3;
   {
-    /* initialize file with parameters */
-    int            num_dim       = 3;
-    int            num_nodes     = 1;
-    int            num_elem      = 7;
-    int            num_node_sets = 0;
-    int            num_side_sets = 0;
-    ex_init_params par           = {.num_dim       = num_dim,
-                                    .num_nodes     = num_nodes,
-                                    .num_elem      = num_elem,
-                                    .num_elem_blk  = num_elem_blk,
-                                    .num_node_sets = num_node_sets,
-                                    .num_side_sets = num_side_sets,
-                                    .num_assembly  = 0};
+    ex_init_params par = {.num_dim       = 3,
+                          .num_nodes     = 1,
+                          .num_elem      = 7,
+                          .num_elem_blk  = num_elem_blk,
+                          .num_node_sets = 0,
+                          .num_side_sets = 0,
+                          .num_assembly  = 0};
 
     char *title = "This is a test";
     ex_copy_string(par.title, title, MAX_LINE_LENGTH + 1);
@@ -109,26 +103,34 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_block_vars));
   EXCHECK(ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_block_vars, var_names));
 
-  struct ex_field fields[4];
-  fields[0] =
-      (ex_field){.name = "Disp", .type = {EX_VECTOR_3D}, .nesting = 1, .component_separator = "-"};
-  fields[1] = (ex_field){
-      .name = "Velocity", .type = {EX_VECTOR_3D}, .nesting = 1, .component_separator = "%"};
-  EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[0].id, fields[0]));
-  EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[0].id, fields[1]));
+  {
+    struct ex_field field = (ex_field){
+        .name = "Disp", .type = {EX_VECTOR_3D}, .nesting = 1, .component_separator = "-"};
+    EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[0].id, field));
+  }
 
-  fields[2] = (ex_field){.name                = "Gradient",
-                         .type                = {EX_VECTOR_3D, EX_BASIS},
-                         .nesting             = 2,
-                         .component_separator = "-$"};
-  EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[1].id, fields[2]));
+  {
+    struct ex_field field = (ex_field){
+        .name = "Velocity", .type = {EX_VECTOR_3D}, .nesting = 1, .component_separator = "%"};
+    EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[0].id, field));
+  }
 
-  fields[3] = (ex_field){.name                = "User",
-                         .type                = {EX_FIELD_TYPE_USER_DEFINED},
-                         .nesting             = 1,
-                         .cardinality         = {4},
-                         .component_separator = "_"};
-  EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[1].id, fields[3]));
+  {
+    struct ex_field field = (ex_field){.name                = "Gradient",
+                                       .type                = {EX_VECTOR_3D, EX_BASIS},
+                                       .nesting             = 2,
+                                       .component_separator = "-$"};
+    EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[1].id, field));
+  }
+
+  {
+    struct ex_field field = (ex_field){.name                = "User",
+                                       .type                = {EX_FIELD_TYPE_USER_DEFINED},
+                                       .nesting             = 1,
+                                       .cardinality         = {4},
+                                       .component_separator = "_"};
+    EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[1].id, field));
+  }
 
   { /* Output time steps ... */
     for (int ts = 0; ts < 1; ts++) {
