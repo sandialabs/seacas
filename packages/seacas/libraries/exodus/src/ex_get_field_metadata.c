@@ -164,9 +164,7 @@ int ex_get_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id, e
   }
 
   /* Iterate through each Field metadata field and populate `field` */
-  int count        = -1;
-  field[0].name[0] = '\0';
-
+  int count = -1;
   for (int i = 0; i < att_count; i++) {
     char attr_name[EX_MAX_NAME + 1];
     int  status;
@@ -207,18 +205,21 @@ int ex_get_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id, e
 
       if (strcmp(fld_type, "type") == 0) {
         status = nc_get_att(exoid, varid, attr_name, field[count].type);
-        if (field[count].nesting == 0)
+        if (field[count].nesting == 0) {
           field[count].nesting = val_count;
+        }
       }
       else if (strcmp(fld_type, "separator") == 0) {
         status = nc_get_att(exoid, varid, attr_name, field[count].component_separator);
-        if (field[count].nesting == 0)
+        if (field[count].nesting == 0) {
           field[count].nesting = val_count;
+        }
       }
       else if (strcmp(fld_type, "cardinality") == 0) {
         status = nc_get_att(exoid, varid, attr_name, field[count].cardinality);
-        if (field[count].nesting == 0)
+        if (field[count].nesting == 0) {
           field[count].nesting = val_count;
+        }
       }
       else {
         char errmsg[MAX_ERR_LENGTH];
