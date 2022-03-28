@@ -79,7 +79,7 @@ using real = double;
 
 namespace {
   std::string codename;
-  std::string version = "2.00 (2021-12-17)";
+  std::string version = "2.01 (2022-03-28)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -134,7 +134,10 @@ namespace {
                                  bool allow_modify);
   bool           handle_attribute(const std::vector<std::string> &tokens, Ioss::Region &region);
   bool           handle_geometry(const std::vector<std::string> &tokens, Ioss::Region &region);
+  bool           handle_time(const std::vector<std::string> &tokens, Ioss::Region &region);
   void           update_assembly_info(Ioss::Region &region, const Modify::Interface &interFace);
+
+  void modify_time(Ioss::Region &region, double scale, double offset);
 
   void offset_filtered_coordinates(Ioss::Region &region, real offset[3],
                                    const std::vector<int> &filter);
@@ -154,6 +157,7 @@ namespace {
   void info_entity(const Ioss::Assembly *as, bool show_property = false);
   void info_entity(const Ioss::Blob *blob, bool show_property = false);
   void info_entity(const Ioss::Region &region, bool show_property = false);
+  void info_time(const Ioss::Region &region);
 
   template <typename T>
   void info_entities(const std::vector<T *> &entities, const std::vector<std::string> &tokens,
@@ -376,6 +380,9 @@ int main(int argc, char *argv[])
     else if (Ioss::Utils::substr_equal(tokens[0], "geometry")) {
       changed |= handle_geometry(tokens, region);
     }
+    else if (Ioss::Utils::substr_equal(tokens[0], "time")) {
+      changed |= handle_time(tokens, region);
+    }
     else {
       fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized command: {}\n",
                  tokens[0]);
@@ -384,10 +391,8 @@ int main(int argc, char *argv[])
 
   if (changed) {
     update_assembly_info(region, interFace);
-  }
-  else {
     fmt::print(fg(fmt::color::cyan),
-               "\n\t*** Database assembly structure unchanged. No update required.\n");
+               "\n\t*** Database assembly structure modified. File update required.\n");
   }
   fmt::print("\n{} execution successful.\n", codename);
   return EXIT_SUCCESS;
@@ -508,6 +513,17 @@ namespace {
     }
   }
 
+  void info_time(const Ioss::Region &region)
+  {
+    fmt::print("\n");
+    size_t ts_count = region.get_optional_property("state_count", 0);
+    auto   width    = Ioss::Utils::number_width(ts_count);
+
+    for (size_t step = 1; step <= ts_count; step++) {
+      fmt::print("\tStep {:{}}, Time = {}\n", step, width, region.get_state_time(step));
+    }
+  }
+
   void set_db_properties(const Modify::Interface & /* interFace */, Ioss::DatabaseIO *dbi)
   {
     if (dbi == nullptr || !dbi->ok(true)) {
@@ -534,7 +550,8 @@ namespace {
     }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
       fmt::print(
-          "\n\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob|summary\n");
+          "\n\tLIST "
+          "elementblock|block|structuredblock|assembly|nodeset|sideset|blob|times|summary\n");
       fmt::print("\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
                  "{{names...}}\n");
       fmt::print("\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
@@ -620,6 +637,10 @@ namespace {
       fmt::print(
           "\tGEOMETRY OFFSET {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{x}} {{y}} {{z}}\n");
     }
+    if (all || Ioss::Utils::substr_equal(topic, "time")) {
+      fmt::print("\tTIME SCALE  {{scale}} (T_out = T_in * {{scale}})\n");
+      fmt::print("\tTIME OFFSET {{offset}}  (T_out = T_in + {{offset}})\n");
+    }
     if (all || Ioss::Utils::substr_equal(topic, "regex")) {
       fmt::print("\n\tRegular Expression help (used in ASSEMBLY MATCHES and LIST MATCHES and "
                  "ATTRIBUTE LIST MATCHES options)\n"
@@ -682,6 +703,9 @@ namespace {
       else if (Ioss::Utils::substr_equal(tokens[1], "blobs")) {
         const auto &entities = region.get_blobs();
         info_entities(entities, tokens, region, "Blobs", show_attribute);
+      }
+      else if (Ioss::Utils::substr_equal(tokens[1], "times")) {
+        info_time(region);
       }
       else {
         fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized list option '{}'\n",
@@ -1071,6 +1095,36 @@ namespace {
       }
       return node_filter;
     }
+  }
+
+  bool handle_time(const std::vector<std::string> &tokens, Ioss::Region &region)
+  {
+    //   0      1       2
+    // TIME   SCALE  {{scale}}
+    // TIME   OFFSET {{offset}
+    if (tokens.size() < 3) {
+      fmt::print(stderr, fg(fmt::color::red),
+                 "ERROR: TIME Command does not have enough tokens to be valid.\n"
+                 "\t\t{}\n",
+                 fmt::join(tokens, " "));
+      handle_help("time");
+      return false;
+    }
+    if (Ioss::Utils::substr_equal(tokens[1], "scale")) {
+      double scale = std::stod(tokens[2]);
+      modify_time(region, scale, 0.0);
+      fmt::print(fg(fmt::color::cyan), "\t*** Database time scaled:  T_out = T_in * {}.\n", scale);
+      return false;
+    }
+    if (Ioss::Utils::substr_equal(tokens[1], "offset")) {
+      double offset = std::stod(tokens[2]);
+      modify_time(region, 1.0, offset);
+      fmt::print(fg(fmt::color::cyan), "\t*** Database time offset:  T_out = T_in + {}.\n", offset);
+      return false;
+    }
+    fmt::print(stderr, fg(fmt::color::red), "ERROR: Unrecognized time command.\n");
+    handle_help("time");
+    return false;
   }
 
   bool handle_geometry(const std::vector<std::string> &tokens, Ioss::Region &region)
@@ -1697,4 +1751,20 @@ namespace {
       }
     }
   }
+
+  void modify_time(Ioss::Region &region, double scale, double offset)
+  {
+    size_t              ts_count = region.get_optional_property("state_count", 0);
+    std::vector<double> times(ts_count);
+
+    int exoid = region.get_database()->get_file_pointer();
+    ex_get_all_times(exoid, times.data());
+
+    for (size_t step = 0; step < ts_count; step++) {
+      times[step] = times[step] * scale + offset;
+      ex_put_time(exoid, step + 1, &times[step]);
+    }
+    region.get_min_time();
+  }
+
 } // nameSpace
