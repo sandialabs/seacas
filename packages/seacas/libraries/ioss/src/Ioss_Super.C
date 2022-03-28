@@ -6,6 +6,7 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Super.h>
 #include <cstddef> // for size_t
@@ -38,6 +39,13 @@ Ioss::Super::Super(const std::string &my_name, int node_count)
 {
 }
 
+Ioss::ElementPermutation *Ioss::Super::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::SuperPermutation::get_name(nodeCount));
+  assert(perm != nullptr);
+  return perm;
+}
+
 Ioss::Super::~Super() { delete storageType; }
 
 void Ioss::Super::make_super(const std::string &type)
@@ -48,6 +56,8 @@ void Ioss::Super::make_super(const std::string &type)
   if (digits != std::string::npos) {
     std::string node_count_str = type.substr(digits + 1);
     int         node_count     = std::stoi(node_count_str);
+
+    Ioss::SuperPermutation::factory(node_count);
     new Ioss::Super(type, node_count);
   }
 }

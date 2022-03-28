@@ -10,15 +10,19 @@
 #include <map>    // for map, map<>::value_compare
 #include <string> // for string, operator<
 #include <vector> // for vector
+#include <set>    // for set
+
 namespace Ioss {
   class ElementTopology;
+  class ElementPermutation;
 } // namespace Ioss
 
 namespace Ioss {
   enum class ElementShape { UNKNOWN, POINT, LINE, TRI, QUAD, TET, PYRAMID, WEDGE, HEX };
 
-  using ElementTopologyMap = std::map<std::string, ElementTopology *, std::less<std::string>>;
-  using ETM_VP             = ElementTopologyMap::value_type;
+  using ElementTopologyMap      = std::map<std::string, ElementTopology *, std::less<std::string>>;
+  using ElementTopologyAliasMap = std::map<std::string, std::set<std::string>, std::less<std::string>>;
+  using ETM_VP                  = ElementTopologyMap::value_type;
 
   class ETRegistry
   {
@@ -28,11 +32,17 @@ namespace Ioss {
     ElementTopologyMap::iterator end() { return m_registry.end(); }
     ElementTopologyMap::iterator find(const std::string &type) { return m_registry.find(type); }
 
+    void                              add_alias(const std::string& base, const std::string& syn);
+    ElementTopologyAliasMap::iterator begin_alias() { return m_alias.begin(); }
+    ElementTopologyAliasMap::iterator end_alias() { return m_alias.end(); }
+    ElementTopologyAliasMap::iterator find_alias(const std::string &type) { return m_alias.find(type); }
+
     ~ETRegistry();
     std::map<std::string, std::string> customFieldTypes;
 
   private:
     Ioss::ElementTopologyMap             m_registry;
+    Ioss::ElementTopologyAliasMap        m_alias;
     std::vector<Ioss::ElementTopology *> m_deleteThese;
   };
 
@@ -47,6 +57,7 @@ namespace Ioss {
   public:
     void alias(const std::string &base, const std::string &syn);
     bool is_alias(const std::string &my_alias) const;
+    std::vector<std::string> get_aliases(const std::string &base);
 
     ElementTopology(const ElementTopology &) = delete;
     ElementTopology &operator=(const ElementTopology &) = delete;
@@ -73,6 +84,7 @@ namespace Ioss {
     // "Structural" elements (shells, rods, trusses, particles) need
     // to override.
     virtual bool is_element() const;
+    virtual bool is_shell() const             = 0;
     virtual int  spatial_dimension() const    = 0;
     virtual int  parametric_dimension() const = 0;
     virtual int  order() const                = 0;
@@ -116,6 +128,8 @@ namespace Ioss {
     bool operator==(const Ioss::ElementTopology &rhs) const;
     bool operator!=(const Ioss::ElementTopology &rhs) const;
     bool equal(const Ioss::ElementTopology &rhs) const;
+
+    virtual ElementPermutation *permutation() const = 0;
 
   protected:
     ElementTopology(std::string type, std::string master_elem_name, bool delete_me = false);

@@ -25,6 +25,11 @@ void Ioss::ETRegistry::insert(const Ioss::ETM_VP &value, bool delete_me)
   }
 }
 
+void Ioss::ETRegistry::add_alias(const std::string &base, const std::string &syn)
+{
+  m_alias[base].insert(syn);
+}
+
 Ioss::ETRegistry::~ETRegistry()
 {
   for (auto &entry : m_deleteThese) {
@@ -48,10 +53,32 @@ Ioss::ElementTopology::ElementTopology(std::string type, std::string master_elem
 void Ioss::ElementTopology::alias(const std::string &base, const std::string &syn)
 {
   registry().insert(Ioss::ETM_VP(syn, factory(base)), false);
+  registry().add_alias(base, syn);
   std::string lsyn = Ioss::Utils::lowercase(syn);
   if (lsyn != syn) {
     alias(base, lsyn);
   }
+}
+
+std::vector<std::string> Ioss::ElementTopology::get_aliases(const std::string &base)
+{
+  std::string lbase = Ioss::Utils::lowercase(base);
+
+  auto        iter = registry().find_alias(lbase);
+  std::vector<std::string> aliases;
+
+  if (iter != registry().end_alias()) {
+    const std::set<std::string>& values = (*iter).second;
+    if(values.count(base) == 0) {
+      aliases.push_back(base);
+    }
+
+    for(const std::string& entry : values) {
+      aliases.push_back(entry);
+    }
+  }
+
+  return aliases;
 }
 
 Ioss::ETRegistry &Ioss::ElementTopology::registry()

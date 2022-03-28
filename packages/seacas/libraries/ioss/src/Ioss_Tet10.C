@@ -6,6 +6,7 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Tet10.h>
 #include <cassert> // for assert
@@ -71,6 +72,16 @@ Ioss::Tet10::Tet10() : Ioss::ElementTopology(Ioss::Tet10::name, "Tetrahedron_10"
 {
   Ioss::ElementTopology::alias(Ioss::Tet10::name, "tet10");
   Ioss::ElementTopology::alias(Ioss::Tet10::name, "Solid_Tet_10_3D");
+
+  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+}
+
+Ioss::ElementPermutation *Ioss::Tet10::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::TetPermutation::name);
+  assert(perm != nullptr);
+  assert(static_cast<int>(perm->num_permutation_nodes()) == num_corner_nodes());
+  return perm;
 }
 
 int Ioss::Tet10::parametric_dimension() const { return 3; }

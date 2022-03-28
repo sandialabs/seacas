@@ -6,6 +6,7 @@
 
 #include "Ioss_CodeTypes.h"       // for IntVector
 #include "Ioss_ElementTopology.h" // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_Edge2.h>
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <cassert>                    // for assert
@@ -48,6 +49,16 @@ Ioss::Edge2::Edge2() : Ioss::ElementTopology(Ioss::Edge2::name, "Line_2")
   Ioss::ElementTopology::alias(Ioss::Edge2::name, "edge");
   Ioss::ElementTopology::alias(Ioss::Edge2::name, "edge3d2");
   Ioss::ElementTopology::alias(Ioss::Edge2::name, "LINE_2_1D");
+
+  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+}
+
+Ioss::ElementPermutation *Ioss::Edge2::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::LinePermutation::name);
+  assert(perm != nullptr);
+  assert(static_cast<int>(perm->num_permutation_nodes()) == num_corner_nodes());
+  return perm;
 }
 
 int Ioss::Edge2::parametric_dimension() const { return 1; }

@@ -6,6 +6,7 @@
 
 #include "Ioss_CodeTypes.h"       // for IntVector
 #include "Ioss_ElementTopology.h" // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_Beam4.h>
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <cassert>                    // for assert
@@ -52,6 +53,16 @@ Ioss::Beam4::Beam4() : Ioss::ElementTopology(Ioss::Beam4::name, "Beam_4")
   Ioss::ElementTopology::alias(Ioss::Beam4::name, "beam4");
   Ioss::ElementTopology::alias(Ioss::Beam4::name, "Rod_4_2D");
   Ioss::ElementTopology::alias(Ioss::Beam4::name, "rod2d4");
+
+  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+}
+
+Ioss::ElementPermutation *Ioss::Beam4::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::LinePermutation::name);
+  assert(perm != nullptr);
+  assert(static_cast<int>(perm->num_permutation_nodes()) == num_corner_nodes());
+  return perm;
 }
 
 int Ioss::Beam4::parametric_dimension() const { return 1; }

@@ -6,6 +6,7 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_ShellLine2D2.h>
 #include <cassert> // for assert
@@ -47,6 +48,16 @@ Ioss::ShellLine2D2::ShellLine2D2() : Ioss::ElementTopology(Ioss::ShellLine2D2::n
 {
   Ioss::ElementTopology::alias(Ioss::ShellLine2D2::name, "Shell_Line_2_2D");
   Ioss::ElementTopology::alias(Ioss::ShellLine2D2::name, "SHELL_LINE_2");
+
+  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+}
+
+Ioss::ElementPermutation *Ioss::ShellLine2D2::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::LinePermutation::name);
+  assert(perm != nullptr);
+  assert(static_cast<int>(perm->num_permutation_nodes()) == num_corner_nodes());
+  return perm;
 }
 
 int Ioss::ShellLine2D2::parametric_dimension() const { return 1; }

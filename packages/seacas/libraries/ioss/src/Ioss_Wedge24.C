@@ -6,6 +6,7 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Wedge24.h>
 #include <cassert> // for assert
@@ -73,6 +74,16 @@ void Ioss::Wedge24::factory()
 Ioss::Wedge24::Wedge24() : Ioss::ElementTopology(Ioss::Wedge24::name, "Wedge_24")
 {
   Ioss::ElementTopology::alias(Ioss::Wedge24::name, "Solid_Wedge_24_3D");
+
+  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+}
+
+Ioss::ElementPermutation *Ioss::Wedge24::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::WedgePermutation::name);
+  assert(perm != nullptr);
+  assert(static_cast<int>(perm->num_permutation_nodes()) == num_corner_nodes());
+  return perm;
 }
 
 int Ioss::Wedge24::parametric_dimension() const { return 3; }

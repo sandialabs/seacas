@@ -6,6 +6,7 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Unknown.h>
 #include <cassert> // for assert
@@ -45,6 +46,15 @@ void Ioss::Unknown::factory()
 Ioss::Unknown::Unknown() : Ioss::ElementTopology(Ioss::Unknown::name, Ioss::Unknown::name)
 {
   Ioss::ElementTopology::alias(Ioss::Unknown::name, "invalid_topology");
+
+  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+}
+
+Ioss::ElementPermutation *Ioss::Unknown::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::NullPermutation::name);
+  assert(perm != nullptr);
+  return perm;
 }
 
 int Ioss::Unknown::parametric_dimension() const { return 0; }

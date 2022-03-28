@@ -8,6 +8,7 @@
 // Define a variable type for storage of this elements connectivity
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Quad12.h>
 #include <cassert> // for assert
@@ -25,7 +26,6 @@ namespace Ioss {
   };
 } // namespace Ioss
 // ========================================================================
-Ioss::Quad12 Ioss::Quad12::instance_;
 
 namespace {
   struct Constants
@@ -54,6 +54,16 @@ Ioss::Quad12::Quad12() : Ioss::ElementTopology(Ioss::Quad12::name, "Quadrilatera
   Ioss::ElementTopology::alias(Ioss::Quad12::name, "QUADRILATERAL_12_2D");
   Ioss::ElementTopology::alias(Ioss::Quad12::name, "Face_Quad_12_3D");
   Ioss::ElementTopology::alias(Ioss::Quad12::name, "quadface12");
+
+  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+}
+
+Ioss::ElementPermutation *Ioss::Quad12::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::QuadPermutation::name);
+  assert(perm != nullptr);
+  assert(static_cast<int>(perm->num_permutation_nodes()) == num_corner_nodes());
+  return perm;
 }
 
 int Ioss::Quad12::parametric_dimension() const { return 2; }

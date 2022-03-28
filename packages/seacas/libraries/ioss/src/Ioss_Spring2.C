@@ -43,7 +43,18 @@ void Ioss::Spring2::factory()
   Ioss::St_Spring2::factory();
 }
 
-Ioss::Spring2::Spring2() : Ioss::ElementTopology(Ioss::Spring2::name, "Spring_2") {}
+Ioss::Spring2::Spring2() : Ioss::ElementTopology(Ioss::Spring2::name, "Spring_2")
+{
+  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+}
+
+Ioss::ElementPermutation *Ioss::Spring2::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::SpringPermutation::name);
+  assert(perm != nullptr);
+  assert(static_cast<int>(perm->num_permutation_nodes()) == num_corner_nodes());
+  return perm;
+}
 
 int Ioss::Spring2::parametric_dimension() const { return 1; }
 int Ioss::Spring2::spatial_dimension() const { return 3; }

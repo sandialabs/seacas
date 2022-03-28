@@ -8,6 +8,7 @@
 // Define a variable type for storage of this elements connectivity
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Node.h>
 #include <cassert> // for assert
@@ -47,6 +48,15 @@ Ioss::Node::Node() : Ioss::ElementTopology(Ioss::Node::name, "Node_0_3D")
 {
   Ioss::ElementTopology::alias(Ioss::Node::name, "Node_0_2D");
   Ioss::ElementTopology::alias(Ioss::Node::name, "NODE");
+
+  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+}
+
+Ioss::ElementPermutation *Ioss::Node::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(Ioss::NullPermutation::name);
+  assert(perm != nullptr);
+  return perm;
 }
 
 int Ioss::Node::parametric_dimension() const { return 0; }
