@@ -53,7 +53,7 @@ Ioss::ElementPermutation *Ioss::Spring3::permutation() const
 {
   auto perm = Ioss::ElementPermutation::factory(Ioss::SpringPermutation::name);
   assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == num_corner_nodes());
+  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
   return perm;
 }
 
