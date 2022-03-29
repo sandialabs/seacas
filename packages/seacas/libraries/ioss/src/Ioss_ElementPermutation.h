@@ -104,7 +104,7 @@ public:
   bool equal(const Ioss::ElementPermutation &rhs) const;
 
 protected:
-  ElementPermutation(std::string type, bool delete_me = false);
+  explicit ElementPermutation(std::string type, bool delete_me = false);
 
   // Store low order permutation data regarding this topology .. the positive permutations are listed first
   // If this topology is a high order topology, the data is only for the nodes of the associated low order
