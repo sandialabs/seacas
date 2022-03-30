@@ -92,11 +92,7 @@ C     NOTE: Positive delcav = shrink in cavity volume
          do istep = 1, nstep
             delvol = a(itimscr + ((ncav-1)*nstep + istep) - 1)
             deldel = delvol - dellas
-            if (istep .gt. 1) then
-            else
-            end if
             IF (istep .eq. 1) THEN
-               delrat = 0.0
                DO IO=IOMIN, IOMAX
                   WRITE (IO, 130) TIME(ISTEP), TVOL-DELVOL, -DELVOL,
      *                 -DELDEL
