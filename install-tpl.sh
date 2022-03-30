@@ -580,7 +580,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS
-            git checkout v4.2.0
+            git checkout v4.3.0
             rm -rf build
             mkdir build
             cd build
