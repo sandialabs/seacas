@@ -750,7 +750,7 @@ then
             rm -rf build
             mkdir build
             cd build
-            cmake -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} -DFMT_TEST:BOOL=OFF -DBUILD_SHARED_LIBS=${SHARED} ..
+            cmake -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} -DCMAKE_INSTALL_LIBDIR:PATH=lib -DFMT_TEST:BOOL=OFF -DBUILD_SHARED_LIBS=${SHARED} ..
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure FMT. exiting.${txtrst}
