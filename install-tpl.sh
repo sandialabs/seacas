@@ -358,7 +358,7 @@ then
             fi
         else
             echo "${txtgrn}+++ ZLIB${txtrst}"
-            zlib_version="1.2.11"
+            zlib_version="1.2.12"
 
             cd $ACCESS
             cd TPL
@@ -367,7 +367,7 @@ then
                 echo "${txtgrn}+++ Downloading...${txtrst}"
                 rm -rf zlib-${zlib_version}
                 rm -rf zlib-${zlib_version}.tar.gz
-                wget --no-check-certificate https://zlib.net/zlib-${zlib_version}.tar.gz
+                wget --no-check-certificate https://zlib.net/fossils/zlib-${zlib_version}.tar.gz
                 tar -xzf zlib-${zlib_version}.tar.gz
                 rm -rf zlib-${zlib_version}.tar.gz
             fi
