@@ -8,7 +8,6 @@
 // Define a variable type for storage of this elements connectivity
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
-#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Pyramid13.h>
 #include <cassert> // for assert
@@ -80,16 +79,6 @@ Ioss::Pyramid13::Pyramid13() : Ioss::ElementTopology(Ioss::Pyramid13::name, "Pyr
 {
   Ioss::ElementTopology::alias(Ioss::Pyramid13::name, "Solid_Pyramid_13_3D");
   Ioss::ElementTopology::alias(Ioss::Pyramid13::name, "pyra13");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
-}
-
-Ioss::ElementPermutation *Ioss::Pyramid13::permutation() const
-{
-  auto perm = Ioss::ElementPermutation::factory(Ioss::PyramidPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
 }
 
 int Ioss::Pyramid13::parametric_dimension() const { return 3; }

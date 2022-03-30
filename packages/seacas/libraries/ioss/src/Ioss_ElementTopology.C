@@ -17,17 +17,24 @@
 #include <utility> // for pair
 #include <vector>  // for vector
 
+Ioss::ElementShapeMap Ioss::ElementTopology::shapeToPermutationNameMap_ = {
+  {Ioss::ElementShape::UNKNOWN, "none"},
+  {Ioss::ElementShape::POINT  , "point"},
+  {Ioss::ElementShape::LINE   , "line"},
+  {Ioss::ElementShape::TRI    , "tri"},
+  {Ioss::ElementShape::QUAD   , "quad"},
+  {Ioss::ElementShape::TET    , "tet"},
+  {Ioss::ElementShape::PYRAMID, "pyramid"},
+  {Ioss::ElementShape::WEDGE  , "wedge"},
+  {Ioss::ElementShape::HEX    , "hex"}
+};
+
 void Ioss::ETRegistry::insert(const Ioss::ETM_VP &value, bool delete_me)
 {
   m_registry.insert(value);
   if (delete_me) {
     m_deleteThese.push_back(value.second);
   }
-}
-
-void Ioss::ETRegistry::add_alias(const std::string &base, const std::string &syn)
-{
-  m_alias[base].insert(syn);
 }
 
 Ioss::ETRegistry::~ETRegistry()
@@ -53,32 +60,10 @@ Ioss::ElementTopology::ElementTopology(std::string type, std::string master_elem
 void Ioss::ElementTopology::alias(const std::string &base, const std::string &syn)
 {
   registry().insert(Ioss::ETM_VP(syn, factory(base)), false);
-  registry().add_alias(base, syn);
   std::string lsyn = Ioss::Utils::lowercase(syn);
   if (lsyn != syn) {
     alias(base, lsyn);
   }
-}
-
-std::vector<std::string> Ioss::ElementTopology::get_aliases(const std::string &base)
-{
-  std::string lbase = Ioss::Utils::lowercase(base);
-
-  auto        iter = registry().find_alias(lbase);
-  std::vector<std::string> aliases;
-
-  if (iter != registry().end_alias()) {
-    const std::set<std::string>& values = (*iter).second;
-    if(values.count(base) == 0) {
-      aliases.push_back(base);
-    }
-
-    for(const std::string& entry : values) {
-      aliases.push_back(entry);
-    }
-  }
-
-  return aliases;
 }
 
 Ioss::ETRegistry &Ioss::ElementTopology::registry()
@@ -384,4 +369,32 @@ bool Ioss::ElementTopology::operator!=(const Ioss::ElementTopology &rhs) const
 bool Ioss::ElementTopology::equal(const Ioss::ElementTopology &rhs) const
 {
   return equal_(rhs, false);
+}
+
+Ioss::ElementPermutation *Ioss::ElementTopology::permutation() const
+{
+  auto perm = Ioss::ElementPermutation::factory(base_topology_permutation_name());
+  assert(perm != nullptr);
+  if(validate_permutation()) {
+    assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
+  }
+  return perm;
+}
+
+const std::string &Ioss::ElementTopology::base_topology_permutation_name() const
+{
+   return topology_shape_to_permutation_name(shape());
+}
+
+const std::string &Ioss::ElementTopology::topology_shape_to_permutation_name(Ioss::ElementShape topoShape)
+{
+   auto iter = Ioss::ElementTopology::shapeToPermutationNameMap_.find(topoShape);
+   if(iter == Ioss::ElementTopology::shapeToPermutationNameMap_.end()) {
+     std::ostringstream errmsg;
+     fmt::print(errmsg, "ERROR: The topology shape '{}' is not supported.",
+                Ioss::Utils::shape_to_string(topoShape));
+     IOSS_ERROR(errmsg);
+   }
+
+   return iter->second;
 }

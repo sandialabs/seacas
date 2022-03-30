@@ -55,16 +55,12 @@ Ioss::Sphere::Sphere() : Ioss::ElementTopology(Ioss::Sphere::name, "Particle")
   Ioss::ElementTopology::alias(Ioss::Sphere::name, "circle1");
   Ioss::ElementTopology::alias(Ioss::Sphere::name, "point");
   Ioss::ElementTopology::alias(Ioss::Sphere::name, "point1");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
 }
 
-Ioss::ElementPermutation *Ioss::Sphere::permutation() const
+const std::string &Ioss::Sphere::base_topology_permutation_name() const
 {
-  auto perm = Ioss::ElementPermutation::factory(Ioss::ParticlePermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
+  static std::string permutationName(Ioss::SpherePermutation::name);
+  return permutationName;
 }
 
 int Ioss::Sphere::parametric_dimension() const { return 0; }

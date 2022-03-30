@@ -8,7 +8,6 @@
 
 #include "Ioss_Super.h"
 #include <Ioss_CodeTypes.h>       // for IntVector
-#include <Ioss_ElementTopology.h> // for ElementTopology
 #include <Ioss_ElementPermutation.h> // for ElementPermutation
 #include <string>                 // for string
 namespace Ioss {
@@ -56,11 +55,12 @@ namespace Ioss {
     Ioss::ElementTopology *face_type(int face_number = 0) const override;
     Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
 
-    Ioss::ElementPermutation *permutation() const override;
+    const std::string &base_topology_permutation_name() const override {return baseTopologyName;}
   protected:
   private:
     int                        nodeCount;
     Ioss::ElementVariableType *storageType{};
+    std::string                baseTopologyName{};
     Super(const Super &) = delete;
   };
 } // namespace Ioss

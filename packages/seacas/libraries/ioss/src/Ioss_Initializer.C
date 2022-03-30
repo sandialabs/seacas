@@ -16,7 +16,7 @@ Ioss::Initializer::Initializer()
   // List all storage types here with a call to their factory method.
   // This is Used to get the linker to pull in all needed libraries.
   Ioss::NullPermutation::factory();
-  Ioss::ParticlePermutation::factory();
+  Ioss::SpherePermutation::factory();
   Ioss::LinePermutation::factory();
   Ioss::SpringPermutation::factory();
   Ioss::TriPermutation::factory();

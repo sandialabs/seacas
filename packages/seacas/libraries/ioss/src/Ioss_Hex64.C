@@ -6,7 +6,6 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
-#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Hex64.h>
 #include <cassert> // for assert
@@ -78,16 +77,6 @@ void Ioss::Hex64::factory()
 Ioss::Hex64::Hex64() : Ioss::ElementTopology(Ioss::Hex64::name, "Hexahedron_64")
 {
   Ioss::ElementTopology::alias(Ioss::Hex64::name, "Solid_Hex_64_3D");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
-}
-
-Ioss::ElementPermutation *Ioss::Hex64::permutation() const
-{
-  auto perm = Ioss::ElementPermutation::factory(Ioss::HexPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
 }
 
 int Ioss::Hex64::parametric_dimension() const { return 3; }

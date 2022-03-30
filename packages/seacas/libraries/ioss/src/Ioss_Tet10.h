@@ -8,7 +8,6 @@
 
 #include <Ioss_CodeTypes.h>       // for IntVector
 #include <Ioss_ElementTopology.h> // for ElementTopology
-#include <Ioss_ElementPermutation.h> // for ElementPermutation
 
 // STL Includes
 
@@ -47,7 +46,6 @@ namespace Ioss {
     Ioss::ElementTopology *face_type(int face_number = 0) const override;
     Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
 
-    Ioss::ElementPermutation *permutation() const override;
   protected:
     Tet10();
 

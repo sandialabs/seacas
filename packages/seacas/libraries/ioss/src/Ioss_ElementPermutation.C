@@ -41,45 +41,6 @@ ElementPermutation::ElementPermutation(std::string type, bool delete_me)
     : m_name(std::move(type))
 {
   registry().insert(EPM_VP(m_name, this), delete_me);
-  std::string lname = Ioss::Utils::lowercase(m_name);
-  if (lname != m_name) {
-    alias(m_name, lname);
-  }
-}
-
-void ElementPermutation::alias(const std::string &base, const std::string &syn)
-{
-  registry().insert(EPM_VP(syn, factory(base)), false);
-  std::string lsyn = Ioss::Utils::lowercase(syn);
-  if (lsyn != syn) {
-    alias(base, lsyn);
-  }
-}
-
-void ElementPermutation::alias(const std::string &syn)
-{
-  alias(m_name, syn);
-}
-
-void ElementPermutation::alias(const std::string &base, const std::vector<std::string> &syns)
-{
-  for(const std::string& syn : syns)
-    alias(base, syn);
-}
-
-void ElementPermutation::alias(const std::vector<std::string> &syns)
-{
-    alias(m_name, syns);
-}
-
-bool ElementPermutation::is_alias(const std::string &my_alias) const
-{
-  std::string low_my_alias = Ioss::Utils::lowercase(my_alias);
-  auto        iter         = registry().find(low_my_alias);
-  if (iter == registry().end()) {
-    return false;
-  }
-  return this == (*iter).second;
 }
 
 EPRegistry &ElementPermutation::registry()
@@ -91,7 +52,7 @@ EPRegistry &ElementPermutation::registry()
 Ioss::ElementPermutation::~ElementPermutation() = default;
 
 
-ElementPermutation *Ioss::ElementPermutation::factory(const std::string &type, bool ok_to_fail)
+ElementPermutation *Ioss::ElementPermutation::factory(const std::string &type)
 {
   std::string ltype = Ioss::Utils::lowercase(type);
 
@@ -112,11 +73,9 @@ ElementPermutation *Ioss::ElementPermutation::factory(const std::string &type, b
   }
 
   if (iter == registry().end()) {
-    if (!ok_to_fail) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: The permutation type '{}' is not supported.", type);
-      IOSS_ERROR(errmsg);
-    }
+    std::ostringstream errmsg;
+    fmt::print(errmsg, "ERROR: The permutation type '{}' is not supported.", type);
+    IOSS_ERROR(errmsg);
   }
   else {
     inst = (*iter).second;
@@ -270,7 +229,7 @@ bool ElementPermutation::equal(const ElementPermutation &rhs) const
 }
 
 //====================================================================================================
-const char *NullPermutation::name = "null";
+const char *NullPermutation::name = "none";
 
 void NullPermutation::factory()
 {
@@ -283,14 +242,14 @@ NullPermutation::NullPermutation() : ElementPermutation(NullPermutation::name)
 }
 
 //====================================================================================================
-const char *ParticlePermutation::name = "particle";
+const char *SpherePermutation::name = "sphere";
 
-void ParticlePermutation::factory()
+void SpherePermutation::factory()
 {
-  static ParticlePermutation registerThis;
+  static SpherePermutation registerThis;
 }
 
-ParticlePermutation::ParticlePermutation() : ElementPermutation(ParticlePermutation::name)
+SpherePermutation::SpherePermutation() : ElementPermutation(SpherePermutation::name)
 {
   set_permutation(1, 1, 1, {{0}});
 }
@@ -520,6 +479,8 @@ std::vector<std::vector<uint8_t>> SuperPermutation::get_super_permutations(unsig
     for(unsigned j=0; j<n; j++) {
       perm.push_back( (i+j)%n );
     }
+
+    superPerms.push_back(perm);
   }
 
   // Negative permutations
@@ -529,6 +490,8 @@ std::vector<std::vector<uint8_t>> SuperPermutation::get_super_permutations(unsig
     for(unsigned j=0; j<n; j++) {
       perm.push_back( ((i+n)-j)%n );
     }
+
+    superPerms.push_back(perm);
   }
 
   return superPerms;

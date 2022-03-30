@@ -6,6 +6,7 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Spring2.h>
 #include <cassert> // for assert
@@ -45,15 +46,13 @@ void Ioss::Spring2::factory()
 
 Ioss::Spring2::Spring2() : Ioss::ElementTopology(Ioss::Spring2::name, "Spring_2")
 {
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+
 }
 
-Ioss::ElementPermutation *Ioss::Spring2::permutation() const
+const std::string &Ioss::Spring2::base_topology_permutation_name() const
 {
-  auto perm = Ioss::ElementPermutation::factory(Ioss::SpringPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
+  static std::string permutationName(Ioss::SpringPermutation::name);
+  return permutationName;
 }
 
 int Ioss::Spring2::parametric_dimension() const { return 1; }

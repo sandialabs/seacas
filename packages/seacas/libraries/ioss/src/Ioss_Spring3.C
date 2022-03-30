@@ -46,15 +46,13 @@ void Ioss::Spring3::factory()
 
 Ioss::Spring3::Spring3() : Ioss::ElementTopology(Ioss::Spring3::name, "Spring_3")
 {
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
+
 }
 
-Ioss::ElementPermutation *Ioss::Spring3::permutation() const
+const std::string &Ioss::Spring3::base_topology_permutation_name() const
 {
-  auto perm = Ioss::ElementPermutation::factory(Ioss::SpringPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
+  static std::string permutationName(Ioss::SpringPermutation::name);
+  return permutationName;
 }
 
 int Ioss::Spring3::parametric_dimension() const { return 1; }

@@ -6,7 +6,6 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
-#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_TriShell6.h>
 #include <cassert> // for assert
@@ -67,16 +66,6 @@ Ioss::TriShell6::TriShell6() : Ioss::ElementTopology(Ioss::TriShell6::name, "She
   Ioss::ElementTopology::alias(Ioss::TriShell6::name, "Shell_Tri_6_3D");
   Ioss::ElementTopology::alias(Ioss::TriShell6::name, "SHELL_TRIANGLE_6");
   Ioss::ElementTopology::alias(Ioss::TriShell6::name, "SHELL6");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
-}
-
-Ioss::ElementPermutation *Ioss::TriShell6::permutation() const
-{
-  auto perm = Ioss::ElementPermutation::factory(Ioss::TriPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
 }
 
 int Ioss::TriShell6::parametric_dimension() const { return 2; }

@@ -6,7 +6,6 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
-#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Hex20.h>
 #include <cassert> // for assert
@@ -73,16 +72,6 @@ void Ioss::Hex20::factory()
 Ioss::Hex20::Hex20() : Ioss::ElementTopology(Ioss::Hex20::name, "Hexahedron_20")
 {
   Ioss::ElementTopology::alias(Ioss::Hex20::name, "Solid_Hex_20_3D");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
-}
-
-Ioss::ElementPermutation *Ioss::Hex20::permutation() const
-{
-  auto perm = Ioss::ElementPermutation::factory(Ioss::HexPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
 }
 
 int Ioss::Hex20::parametric_dimension() const { return 3; }

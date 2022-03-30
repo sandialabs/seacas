@@ -8,7 +8,6 @@
 // Define a variable type for storage of this elements connectivity
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
-#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Tri6.h>
 #include <cassert> // for assert
@@ -56,16 +55,6 @@ Ioss::Tri6::Tri6() : Ioss::ElementTopology(Ioss::Tri6::name, "Triangle_6")
   Ioss::ElementTopology::alias(Ioss::Tri6::name, "Face_Tri_6_3D");
   Ioss::ElementTopology::alias(Ioss::Tri6::name, "TRIANGLE_6_2D");
   Ioss::ElementTopology::alias(Ioss::Tri6::name, "triface6");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
-}
-
-Ioss::ElementPermutation *Ioss::Tri6::permutation() const
-{
-  auto perm = Ioss::ElementPermutation::factory(Ioss::TriPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
 }
 
 int Ioss::Tri6::parametric_dimension() const { return 2; }

@@ -53,16 +53,6 @@ Ioss::Quad16::Quad16() : Ioss::ElementTopology(Ioss::Quad16::name, "Quadrilatera
   Ioss::ElementTopology::alias(Ioss::Quad16::name, "QUADRILATERAL_16_2D");
   Ioss::ElementTopology::alias(Ioss::Quad16::name, "Face_Quad_16_3D");
   Ioss::ElementTopology::alias(Ioss::Quad16::name, "quadface16");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
-}
-
-Ioss::ElementPermutation *Ioss::Quad16::permutation() const
-{
-  auto perm = Ioss::ElementPermutation::factory(Ioss::QuadPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
 }
 
 int Ioss::Quad16::parametric_dimension() const { return 2; }

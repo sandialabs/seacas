@@ -6,7 +6,6 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
-#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Tri4.h>
 #include <cassert> // for assert
@@ -55,16 +54,6 @@ Ioss::Tri4::Tri4() : Ioss::ElementTopology(Ioss::Tri4::name, "Triangle_4")
   Ioss::ElementTopology::alias(Ioss::Tri4::name, "Face_Tri_4_3D");
   Ioss::ElementTopology::alias(Ioss::Tri4::name, "triface4");
   Ioss::ElementTopology::alias(Ioss::Tri4::name, "TRIANGLE_4_2D");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
-}
-
-Ioss::ElementPermutation *Ioss::Tri4::permutation() const
-{
-  auto perm = Ioss::ElementPermutation::factory(Ioss::TriPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
 }
 
 int Ioss::Tri4::parametric_dimension() const { return 2; }

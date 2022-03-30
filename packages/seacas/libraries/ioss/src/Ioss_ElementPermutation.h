@@ -7,7 +7,6 @@
 #pragma once
 
 #include <Ioss_CodeTypes.h>
-#include <Ioss_Utils.h>
 #include <map>    // for map, map<>::value_compare
 #include <string> // for string, operator<
 #include <vector> // for vector
@@ -58,12 +57,6 @@ public:
 
   virtual ~ElementPermutation();
 
-  void alias(const std::string &base, const std::string &syn);
-  void alias(const std::string &syn);
-  void alias(const std::string &base, const std::vector<std::string> &syns);
-  void alias(const std::vector<std::string> &syns);
-  bool is_alias(const std::string &my_alias) const;
-
   unsigned num_permutations() const;
 
   // The number of positive permutations must be less than or equal to the total number of permutations
@@ -84,7 +77,7 @@ public:
 
   const std::string &name() const;
 
-  static ElementPermutation *factory(const std::string &type, bool ok_to_fail = false);
+  static ElementPermutation *factory(const std::string &type);
 
   /** \brief Get the names of element permutations known to Ioss.
    *
@@ -145,17 +138,17 @@ protected:
   NullPermutation();
 };
 
-class ParticlePermutation : public ElementPermutation
+class SpherePermutation : public ElementPermutation
 {
 public:
   static const char *name;
 
   static void factory();
-  ~ParticlePermutation() override    = default;
-  ParticlePermutation(const ParticlePermutation &) = delete;
+  ~SpherePermutation() override    = default;
+  SpherePermutation(const SpherePermutation &) = delete;
 
 protected:
-  ParticlePermutation();
+  SpherePermutation();
 };
 
 class LinePermutation : public ElementPermutation

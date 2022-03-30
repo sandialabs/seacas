@@ -48,15 +48,12 @@ Ioss::Node::Node() : Ioss::ElementTopology(Ioss::Node::name, "Node_0_3D")
 {
   Ioss::ElementTopology::alias(Ioss::Node::name, "Node_0_2D");
   Ioss::ElementTopology::alias(Ioss::Node::name, "NODE");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
 }
 
-Ioss::ElementPermutation *Ioss::Node::permutation() const
+const std::string &Ioss::Node::base_topology_permutation_name() const
 {
-  auto perm = Ioss::ElementPermutation::factory(Ioss::NullPermutation::name);
-  assert(perm != nullptr);
-  return perm;
+  static std::string permutationName(Ioss::NullPermutation::name);
+  return permutationName;
 }
 
 int Ioss::Node::parametric_dimension() const { return 0; }

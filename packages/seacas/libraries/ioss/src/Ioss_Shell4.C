@@ -8,7 +8,6 @@
 // Define a variable type for storage of this elements connectivity
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
-#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Shell4.h>
 #include <cassert> // for assert
@@ -72,16 +71,6 @@ Ioss::Shell4::Shell4() : Ioss::ElementTopology(Ioss::Shell4::name, "ShellQuadril
   Ioss::ElementTopology::alias(Ioss::Shell4::name, "shell");
   Ioss::ElementTopology::alias(Ioss::Shell4::name, "Shell_Quad_4_3D");
   Ioss::ElementTopology::alias(Ioss::Shell4::name, "SHELL_QUADRILATERAL_4");
-
-  permutation()->alias(get_aliases(Ioss::ElementTopology::name()));
-}
-
-Ioss::ElementPermutation *Ioss::Shell4::permutation() const
-{
-  auto perm = Ioss::ElementPermutation::factory(Ioss::QuadPermutation::name);
-  assert(perm != nullptr);
-  assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
-  return perm;
 }
 
 int Ioss::Shell4::parametric_dimension() const { return 2; }

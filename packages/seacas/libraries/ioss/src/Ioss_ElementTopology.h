@@ -7,6 +7,7 @@
 #pragma once
 
 #include <Ioss_CodeTypes.h>
+#include <Ioss_ElementPermutation.h> // for ElementPermutation
 #include <map>    // for map, map<>::value_compare
 #include <string> // for string, operator<
 #include <vector> // for vector
@@ -14,14 +15,13 @@
 
 namespace Ioss {
   class ElementTopology;
-  class ElementPermutation;
 } // namespace Ioss
 
 namespace Ioss {
   enum class ElementShape { UNKNOWN, POINT, LINE, TRI, QUAD, TET, PYRAMID, WEDGE, HEX };
 
+  using ElementShapeMap         = std::map<ElementShape, std::string>;
   using ElementTopologyMap      = std::map<std::string, ElementTopology *, std::less<std::string>>;
-  using ElementTopologyAliasMap = std::map<std::string, std::set<std::string>, std::less<std::string>>;
   using ETM_VP                  = ElementTopologyMap::value_type;
 
   class ETRegistry
@@ -32,17 +32,11 @@ namespace Ioss {
     ElementTopologyMap::iterator end() { return m_registry.end(); }
     ElementTopologyMap::iterator find(const std::string &type) { return m_registry.find(type); }
 
-    void                              add_alias(const std::string& base, const std::string& syn);
-    ElementTopologyAliasMap::iterator begin_alias() { return m_alias.begin(); }
-    ElementTopologyAliasMap::iterator end_alias() { return m_alias.end(); }
-    ElementTopologyAliasMap::iterator find_alias(const std::string &type) { return m_alias.find(type); }
-
     ~ETRegistry();
     std::map<std::string, std::string> customFieldTypes;
 
   private:
     Ioss::ElementTopologyMap             m_registry;
-    Ioss::ElementTopologyAliasMap        m_alias;
     std::vector<Ioss::ElementTopology *> m_deleteThese;
   };
 
@@ -57,7 +51,6 @@ namespace Ioss {
   public:
     void alias(const std::string &base, const std::string &syn);
     bool is_alias(const std::string &my_alias) const;
-    std::vector<std::string> get_aliases(const std::string &base);
 
     ElementTopology(const ElementTopology &) = delete;
     ElementTopology &operator=(const ElementTopology &) = delete;
@@ -129,15 +122,19 @@ namespace Ioss {
     bool operator!=(const Ioss::ElementTopology &rhs) const;
     bool equal(const Ioss::ElementTopology &rhs) const;
 
-    virtual ElementPermutation *permutation() const = 0;
-
+    virtual ElementPermutation *permutation() const;
+    virtual const std::string &base_topology_permutation_name() const;
   protected:
     ElementTopology(std::string type, std::string master_elem_name, bool delete_me = false);
+    virtual bool validate_permutation() const {return true;}
 
   private:
     bool              equal_(const Ioss::ElementTopology &rhs, bool quiet) const;
     const std::string name_;
     const std::string masterElementName_;
+
+    static Ioss::ElementShapeMap shapeToPermutationNameMap_;
+    static const std::string &topology_shape_to_permutation_name(Ioss::ElementShape topoShape);
 
     static ETRegistry &registry();
   };
