@@ -31,6 +31,7 @@ C     Experimental for use with cavity
       call mdrsrv('TIMESCR', ITIMSCR, NSTEP * NUMCAV)
       call mdrsrv('TVOL', ITVOL, NUMCAV)
 
+      write (*,*) '... Calculating volumes for cavities...'
       DO NCAV = 1, NUMCAV
          IFLG = IFND(NCAV)
          IPTR = IPNESS(IFLG)
@@ -54,7 +55,6 @@ C ... REWIND EXODUS FILE TO BEGINNING OF TIMESTEPS
    90    CONTINUE
          CALL GETDSP (CRD, DISP, NDIM, NUMNP, TIME, ITMSEL, 'S', ISTAT)
          IF (ISTAT .NE. 0) GO TO 140
-         DELVOL = 0.0
          DO NCAV = 1, NUMCAV
             IFLG = IFND(NCAV)
             IPTR = IPNESS(IFLG)
@@ -72,59 +72,50 @@ C     NOTE: Positive delcav = shrink in cavity volume
             a(itimscr + ((ncav-1)*nstep + istep) - 1) = delcav
          END DO
          istep = istep + 1
-c$$$         DELDEL = DELVOL - DELLAS
-c$$$         IF (TREAD .EQ. TIMEL) THEN
-c$$$            DO IO=IOMIN, IOMAX
-c$$$               WRITE (IO, 130) TREAD, TVOL-DELVOL, -DELVOL,
-c$$$     *            -DELDEL
-c$$$            END DO
-c$$$         ELSE
-c$$$            DELRAT = DELDEL / (TREAD - TIMEL)
-c$$$            DO IO=IOMIN, IOMAX
-c$$$               WRITE (IO, 130) TREAD, TVOL-DELVOL, -DELVOL,
-c$$$     *            -DELDEL, -DELRAT
-c$$$            END DO
-c$$$         END IF
-c$$$         DELLAS = DELVOL
-c$$$         TIMEL  = TREAD
          GO TO 90
       END IF
   140 CONTINUE
 
-      DELLAS = 0.0
-      write (*,*) '------------- new version ------------------'
       do ncav = 1, numcav
          tvol = a(itvol + ncav - 1)
-      DO IO=IOMIN, IOMAX
-         write (IO, 30) icav(ncav)
-         WRITE (IO,60) tvol
-         WRITE (IO, 80)
-      END DO
-      do istep = 1, nstep
-         delvol = a(itimscr + ((ncav-1)*nstep + istep) - 1)
-         deldel = delvol - dellas
-         if (i .gt. 1) then
-            DELRAT = DELDEL / (time(istep) - time(istep-1))
-         else
-            delrat = 0.0
-         end if
-         IF (i .eq. 1) THEN
-            DO IO=IOMIN, IOMAX
-               WRITE (IO, 130) TIME(ISTEP), TVOL-DELVOL, -DELVOL,
-     *            -DELDEL
-            END DO
-         ELSE
-            DELRAT = DELDEL / (TREAD - TIMEL)
-            DO IO=IOMIN, IOMAX
-               WRITE (IO, 130) TIME(ISTEP), TVOL-DELVOL, -DELVOL,
-     *            -DELDEL, -DELRAT
-            END DO
-         end if
-         dellas = delvol
-      end do
+         DO IO=IOMIN, IOMAX
+            write (IO, 30) icav(ncav)
+            IF (NDIM .EQ. 2) THEN
+               WRITE (IO, 40) CENT(1),CENT(2)
+            ELSE
+               WRITE (IO, 50) CENT(1),CENT(2),CENT(3)
+            END IF
+            WRITE (IO,60) tvol
+            WRITE (IO, 80)
+         END DO
+         DELLAS = 0.0
+         do istep = 1, nstep
+            delvol = a(itimscr + ((ncav-1)*nstep + istep) - 1)
+            deldel = delvol - dellas
+            if (istep .gt. 1) then
+            else
+            end if
+            IF (istep .eq. 1) THEN
+               delrat = 0.0
+               DO IO=IOMIN, IOMAX
+                  WRITE (IO, 130) TIME(ISTEP), TVOL-DELVOL, -DELVOL,
+     *                 -DELDEL
+               END DO
+            ELSE
+               DELRAT = DELDEL / (time(istep) - time(istep-1))
+               DO IO=IOMIN, IOMAX
+                  WRITE (IO, 130) TIME(ISTEP), TVOL-DELVOL, -DELVOL,
+     *                 -DELDEL, -DELRAT
+               END DO
+            end if
+            dellas = delvol
+         end do
       end do
       CALL INIINT (NUMCAV, 0, ICAV)
       NUMCAV = 0
+
+      call mddel('TIMESCR')
+      call mddel('TVOL')
 
    30 FORMAT (/' Cavity Flag(s): ',8I8)
    40 FORMAT ( ' Apex at X =',1PE15.8,', Y =',1PE15.8)
@@ -139,8 +130,6 @@ c$$$         TIMEL  = TREAD
      *     '           --------         -------')
   130    FORMAT (1X,5(1PE15.8,2X))
 
-      call mddel('TIMESCR')
-      call mddel('TVOL')
-
       RETURN
       END
+      
