@@ -22,6 +22,7 @@
 
 #include "Ioss_Utils.h"
 #include "Ioss_ElementTopology.h"
+#include "Ioss_ElementPermutation.h"
 #include "Ioss_StandardElementTypes.h"
 
 #include "Iotm_TextMeshDataTypes.h"
@@ -41,9 +42,6 @@ namespace Iotm {
     TopologyMapEntry()
         : id(Ioss::ElementTopology::get_unique_id(std::string(Ioss::Unknown::name))),
           topology(Ioss::ElementTopology::factory(std::string(Ioss::Unknown::name))),
-          isShell(false),
-          numPermutations(0),
-          numPositivePermutations(0),
           initialized(false)
     {
       set_valid_spatial_dimensions({false, false, false, false});
@@ -52,9 +50,6 @@ namespace Iotm {
     TopologyMapEntry(const std::string &name)
         : id(Ioss::ElementTopology::get_unique_id(name)),
           topology(Ioss::ElementTopology::factory(name)),
-          isShell(false),
-          numPermutations(0),
-          numPositivePermutations(0),
           initialized(false)
     {
       set_valid_spatial_dimensions({false, false, false, false});
@@ -89,7 +84,7 @@ namespace Iotm {
 
     int num_sides() const
     {
-      if (isShell) {
+      if (topology->is_shell()) {
         // Only interested in face boundaries, not edges
         if (topology->parametric_dimension() == 2) {
           return topology->number_faces();
@@ -148,43 +143,30 @@ namespace Iotm {
       return elementNodeOrdinalVector;
     }
 
-    bool is_shell() const { return isShell; }
+    bool is_shell() const { return topology->is_shell(); }
 
-    unsigned num_permutations() const { return numPermutations; }
+    unsigned num_permutations() const { return topology->permutation()->num_permutations(); }
 
-    // The number of positive permutations must be less than or equal to the total number of permutations
-    unsigned num_positive_permutations() const { return numPositivePermutations; }
+    unsigned num_positive_permutations() const { return topology->permutation()->num_positive_permutations(); }
 
-    // Permutation data is stored such that the positive permutations are listed first ... the order of the
-    // positive permutations within that group is irrelevant. The remaining permutations listed after the
-    // positive ones are the negative permutations hence, any permutation index outside of the positive
-    // range is a negative permutation. By convention, the first permutation listed matches the default
-    // listed in the Exodus manual
-    bool is_positive_polarity(Permutation permutation) const { return permutation < numPositivePermutations; }
-
-    // Permutation type is unsigned so only need to check upper bound
-    bool valid_permutation(Permutation permutation) const { return permutation < numPermutations; }
-
-    // For a validated permutation, return the node ordinals
-    bool fill_permutation_indices(Permutation permutation, std::vector<Ordinal>& nodeOrdinalVector) const
+    bool is_positive_polarity(Permutation permutation) const
     {
-      if (!valid_permutation(permutation)) return false;
-
-      nodeOrdinalVector.resize(num_permutation_nodes());
-      const auto& ordinals = permutationNodeOrdinals[permutation];
-      for(unsigned i=0; i<num_permutation_nodes(); i++) {
-        nodeOrdinalVector[i] = ordinals[i];
-      }
-
-      return true;
+      return topology->permutation()->is_positive_polarity(permutation);
     }
 
-    // For a given permutation, return the node ordinals
+    bool valid_permutation(Permutation permutation) const
+    {
+      return topology->permutation()->valid_permutation(permutation);
+    }
+
+    bool fill_permutation_indices(Permutation permutation, std::vector<Ordinal>& nodeOrdinalVector) const
+    {
+      return topology->permutation()->fill_permutation_indices(permutation, nodeOrdinalVector);
+    }
+
     std::vector<Ordinal> permutation_indices(Permutation permutation) const
     {
-      std::vector<Ordinal> nodeOrdinalVector;
-      fill_permutation_indices(permutation, nodeOrdinalVector);
-      return nodeOrdinalVector;
+      return topology->permutation()->permutation_indices(permutation);
     }
 
     static TopologyMapEntry* invalid_topology_factory()
@@ -203,7 +185,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,true,true,true});
-        entry.set_low_order_permutation(0, 0, {});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -221,7 +202,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,true,true});
-        entry.set_low_order_permutation(2, 1, {{0, 1}, {1, 0}});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -239,7 +219,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,true,false,false});
-        entry.set_low_order_permutation(2, 1, {{0, 1}, {1, 0}});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -257,7 +236,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,true,true});
-        entry.set_low_order_permutation(2, 1, {{0, 1}, {1, 0}});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -275,7 +253,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,true,false,false});
-        entry.set_low_order_permutation(2, 1, {{0, 1}, {1, 0}});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -294,7 +271,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tri3_permutation(entry);
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -308,7 +284,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tri3_permutation(entry);
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -322,7 +297,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tri3_permutation(entry);
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -341,7 +315,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -355,7 +328,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -369,7 +341,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -383,7 +354,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -401,7 +371,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,true,true,true});
-        entry.set_low_order_permutation(1, 1, {{0}});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -419,7 +388,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,true ,true });
-        entry.set_low_order_permutation(2, 1, {{0, 1}, {1, 0}});
         entry.set_side_topologies({line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
@@ -437,7 +405,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,true ,true });
-        entry.set_low_order_permutation(2, 1, {{0, 1}, {1, 0}});
         entry.set_side_topologies({line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
@@ -456,9 +423,7 @@ namespace Iotm {
       static TopologyMapEntry entry(Ioss::ShellLine2D2::name);
 
       if(!entry.initialized) {
-        entry.set_shell_flag(true);
         entry.set_valid_spatial_dimensions({false,false,true ,false });
-        entry.set_low_order_permutation(2, 1, {{0, 1}, {1, 0}});
         entry.set_side_topologies({line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
@@ -471,9 +436,7 @@ namespace Iotm {
       static TopologyMapEntry entry(Ioss::ShellLine2D3::name);
 
       if(!entry.initialized) {
-        entry.set_shell_flag(true);
         entry.set_valid_spatial_dimensions({false,false,true,false});
-        entry.set_low_order_permutation(2, 1, {{0, 1}, {1, 0}});
         entry.set_side_topologies({line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
@@ -492,7 +455,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,true,true,true});
-        entry.set_low_order_permutation(2, 2, {{0, 1}, {1, 0}});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -506,7 +468,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,true,true,true});
-        entry.set_low_order_permutation(2, 2, {{0, 1}, {1, 0}});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -525,7 +486,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,true,false});
-        set_tri3_permutation(entry);
         entry.set_side_topologies({line_2_factory(), line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
@@ -539,7 +499,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,true,false});
-        set_tri3_permutation(entry);
         entry.set_side_topologies({line_2_factory(), line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
@@ -553,7 +512,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,true,false});
-        set_tri3_permutation(entry);
         entry.set_side_topologies({line_3_factory(), line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
@@ -573,7 +531,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,true,false});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({line_2_factory(), line_2_factory(), line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
@@ -587,7 +544,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,true,false});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({line_3_factory(), line_3_factory(), line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
@@ -601,7 +557,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({line_3_factory(), line_3_factory(), line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
@@ -620,9 +575,7 @@ namespace Iotm {
       static TopologyMapEntry entry(Ioss::TriShell3::name);
 
       if(!entry.initialized) {
-        entry.set_shell_flag(true);
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tri3_permutation(entry);
         entry.set_side_topologies({tri_3_factory(), tri_3_factory()});
         entry.initialized = true;
       }
@@ -635,9 +588,7 @@ namespace Iotm {
       static TopologyMapEntry entry(Ioss::TriShell4::name);
 
       if(!entry.initialized) {
-        entry.set_shell_flag(true);
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tri3_permutation(entry);
         entry.set_side_topologies({tri_4_factory(), tri_4_factory()});
         entry.initialized = true;
       }
@@ -650,25 +601,12 @@ namespace Iotm {
       static TopologyMapEntry entry(Ioss::TriShell6::name);
 
       if(!entry.initialized) {
-        entry.set_shell_flag(true);
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tri3_permutation(entry);
         entry.set_side_topologies({tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
       }
 
       return &entry;
-    }
-
-    static void set_tri3_permutation(TopologyMapEntry &entry)
-    {
-      entry.set_low_order_permutation(6, 3,
-                                      {{0, 1, 2},
-                                       {2, 0, 1},
-                                       {1, 2, 0},
-                                       {0, 2, 1},
-                                       {2, 1, 0},
-                                       {1, 0, 2}});
     }
 
     //***************************************************************************
@@ -681,9 +619,7 @@ namespace Iotm {
       static TopologyMapEntry entry(Ioss::Shell4::name);
 
       if(!entry.initialized) {
-        entry.set_shell_flag(true);
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({quad_4_factory(), quad_4_factory()});
         entry.initialized = true;
       }
@@ -696,9 +632,7 @@ namespace Iotm {
       static TopologyMapEntry entry(Ioss::Shell8::name);
 
       if(!entry.initialized) {
-        entry.set_shell_flag(true);
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({quad_8_factory(), quad_8_factory()});
         entry.initialized = true;
       }
@@ -711,27 +645,12 @@ namespace Iotm {
       static TopologyMapEntry entry(Ioss::Shell9::name);
 
       if(!entry.initialized) {
-        entry.set_shell_flag(true);
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_quad4_permutation(entry);
         entry.set_side_topologies({quad_9_factory(), quad_9_factory()});
         entry.initialized = true;
       }
 
       return &entry;
-    }
-
-    static void set_quad4_permutation(TopologyMapEntry &entry)
-    {
-      entry.set_low_order_permutation(8, 4,
-                                      {{0, 1, 2, 3},
-                                       {3, 0, 1, 2},
-                                       {2, 3, 0, 1},
-                                       {1, 2, 3, 0},
-                                       {0, 3, 2, 1},
-                                       {3, 2, 1, 0},
-                                       {2, 1, 0, 3},
-                                       {1, 0, 3, 2}});
     }
 
     //***************************************************************************
@@ -745,7 +664,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tet4_permutation(entry);
         entry.set_side_topologies({tri_3_factory(), tri_3_factory(), tri_3_factory(), tri_3_factory()});
         entry.initialized = true;
       }
@@ -759,7 +677,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tet4_permutation(entry);
         entry.set_side_topologies({tri_4_factory(), tri_4_factory(), tri_4_factory(), tri_4_factory()});
         entry.initialized = true;
       }
@@ -773,7 +690,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tet4_permutation(entry);
         entry.set_side_topologies({tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
       }
@@ -787,29 +703,11 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_tet4_permutation(entry);
         entry.set_side_topologies({tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
       }
 
       return &entry;
-    }
-
-    static void set_tet4_permutation(TopologyMapEntry &entry)
-    {
-      entry.set_low_order_permutation(12, 12,
-                                      {{0, 1, 2, 3},
-                                       {1, 2, 0, 3},
-                                       {2, 0, 1, 3},
-                                       {0, 3, 1, 2},
-                                       {3, 1, 0, 2},
-                                       {1, 0, 3, 2},
-                                       {0, 2, 3, 1},
-                                       {2, 3, 0, 1},
-                                       {3, 0, 2, 1},
-                                       {1, 3, 2, 0},
-                                       {3, 2, 1, 0},
-                                       {2, 1, 3, 0}});
     }
 
     //***************************************************************************
@@ -823,7 +721,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_pyramid5_permutation(entry);
         entry.set_side_topologies({tri_3_factory(), tri_3_factory(), tri_3_factory(), tri_3_factory(),
                                    quad_4_factory()});
         entry.initialized = true;
@@ -838,7 +735,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_pyramid5_permutation(entry);
         entry.set_side_topologies({tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory(),
                                    quad_8_factory()});
         entry.initialized = true;
@@ -853,22 +749,12 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_pyramid5_permutation(entry);
         entry.set_side_topologies({tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory(),
                                    quad_9_factory()});
         entry.initialized = true;
       }
 
       return &entry;
-    }
-
-    static void set_pyramid5_permutation(TopologyMapEntry &entry)
-    {
-      entry.set_low_order_permutation(4, 4,
-                                      {{0, 1, 2, 3, 4},
-                                       {1, 2, 3, 0, 4},
-                                       {2, 3, 0, 1, 4},
-                                       {3, 0, 1, 2, 4}});
     }
 
     //***************************************************************************
@@ -882,7 +768,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_wedge6_permutation(entry);
         entry.set_side_topologies({quad_4_factory(), quad_4_factory(), quad_4_factory(),
                                    tri_3_factory(), tri_3_factory()});
         entry.initialized = true;
@@ -897,7 +782,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_wedge6_permutation(entry);
         entry.set_side_topologies({quad_6_factory(), quad_6_factory(), quad_6_factory(),
                                    tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
@@ -912,7 +796,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_wedge6_permutation(entry);
         entry.set_side_topologies({quad_8_factory(), quad_8_factory(), quad_8_factory(),
                                    tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
@@ -927,24 +810,12 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_wedge6_permutation(entry);
         entry.set_side_topologies({quad_9_factory(), quad_9_factory(), quad_9_factory(),
                                    tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
       }
 
       return &entry;
-    }
-
-    static void set_wedge6_permutation(TopologyMapEntry &entry)
-    {
-      entry.set_low_order_permutation(6, 6,
-                                      {{0, 1, 2, 3, 4, 5},
-                                       {1, 2, 0, 4, 5, 3},
-                                       {2, 0, 1, 5, 3, 4},
-                                       {3, 5, 4, 0, 2, 1},
-                                       {5, 4, 3, 2, 1, 0},
-                                       {4, 3, 5, 1, 0, 2}});
     }
 
     //***************************************************************************
@@ -958,7 +829,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_hex8_permutation(entry);
         entry.set_side_topologies({quad_4_factory(), quad_4_factory(), quad_4_factory(),
                                    quad_4_factory(), quad_4_factory(), quad_4_factory()});
         entry.initialized = true;
@@ -973,7 +843,6 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_hex8_permutation(entry);
         entry.set_side_topologies({quad_8_factory(), quad_8_factory(), quad_8_factory(),
                                    quad_8_factory(), quad_8_factory(), quad_8_factory()});
         entry.initialized = true;
@@ -988,42 +857,12 @@ namespace Iotm {
 
       if(!entry.initialized) {
         entry.set_valid_spatial_dimensions({false,false,false,true});
-        set_hex8_permutation(entry);
         entry.set_side_topologies({quad_9_factory(), quad_9_factory(), quad_9_factory(),
                                    quad_9_factory(), quad_9_factory(), quad_9_factory()});
         entry.initialized = true;
       }
 
       return &entry;
-    }
-
-    static void set_hex8_permutation(TopologyMapEntry &entry)
-    {
-      entry.set_low_order_permutation(24, 24,
-                                      {{0, 1, 2, 3, 4, 5, 6, 7},
-                                       {0, 1, 5, 4, 3, 2, 6, 7},
-                                       {0, 4, 7, 3, 1, 5, 6, 2},
-                                       {1, 2, 3, 0, 5, 6, 7, 4},
-                                       {1, 2, 6, 5, 0, 3, 7, 4},
-                                       {1, 5, 4, 0, 2, 6, 7, 3},
-                                       {2, 3, 0, 1, 6, 7, 4, 5},
-                                       {2, 3, 7, 6, 1, 0, 4, 5},
-                                       {2, 6, 5, 1, 3, 7, 4, 0},
-                                       {3, 0, 1, 2, 7, 4, 5, 6},
-                                       {3, 0, 4, 7, 2, 1, 5, 6},
-                                       {3, 7, 6, 2, 0, 4, 5, 1},
-                                       {4, 0, 1, 5, 7, 3, 2, 6},
-                                       {4, 7, 3, 0, 5, 6, 2, 1},
-                                       {4, 7, 6, 5, 0, 3, 2, 1},
-                                       {5, 1, 2, 6, 4, 0, 3, 7},
-                                       {5, 4, 0, 1, 6, 7, 3, 2},
-                                       {5, 4, 7, 6, 1, 0, 3, 2},
-                                       {6, 2, 3, 7, 5, 1, 0, 4},
-                                       {6, 5, 1, 2, 7, 4, 0, 3},
-                                       {6, 5, 4, 7, 2, 1, 0, 3},
-                                       {7, 3, 0, 4, 6, 2, 1, 5},
-                                       {7, 6, 2, 3, 4, 5, 1, 0},
-                                       {7, 6, 5, 4, 3, 2, 1, 0}});
     }
 
   private:
@@ -1043,9 +882,6 @@ namespace Iotm {
       validSpatialDimensions[3] = validSpatialDimensions_[3];
     }
 
-    // Mark topology as a shell
-    void set_shell_flag(bool isShell_) {isShell = isShell_;}
-
     // Create and set TopologyMapEntry based side topologies since some of the implementation
     // details of the class cannot be automatically constructed from the Ioss_ElementTopology
     // object .. this will not be necessary if/when they are migrated to Ioss_ElementTopology
@@ -1054,7 +890,13 @@ namespace Iotm {
       int numSides = sideTopologies_.size();
 
       for(int side=1; side<=numSides; side++) {
-        assert(topology->boundary_type(side) == sideTopologies_[side-1]->topology);
+        if(topology->boundary_type(side) != sideTopologies_[side-1]->topology) {
+          std::ostringstream errmsg;
+          fmt::print(errmsg,
+              "ERROR: For element topology: {} on side: {}, expected topology: {} does not match topology: {}",
+              topology->name(), side, topology->boundary_type(side)->name(), sideTopologies_[side-1]->topology->name());
+          IOSS_ERROR(errmsg);
+        }
       }
 
       sideTopologies = sideTopologies_;
@@ -1062,61 +904,13 @@ namespace Iotm {
 
     unsigned num_permutation_nodes() const
     {
-      return topology->number_corner_nodes();
-    }
-
-    // Store low order permutation data regarding this topology .. the positive permutations are listed first
-    // If this topology is a high order topology, the data is only for the nodes of the associated low order
-    // topology. This implies that any usage of this assumes that the higher order nodes are numbered correctly
-    // relative to the low order nodes.
-    //
-    //        {{0, 1, 2,  3, 4, 5},               {{0, 1, 2},
-    //         {2, 0, 1,  5, 3, 4},                {2, 0, 1},
-    //  Tri6   {1, 2, 0,  4, 5, 3},   -->    Tri3  {1, 2, 0},
-    //         {0, 2, 1,  5, 4, 3},                {0, 2, 1},
-    //         {2, 1, 0,  4, 3, 5},                {2, 1, 0},
-    //         {1, 0, 2,  3, 5, 4}}                {1, 0, 2}}
-
-    void set_low_order_permutation(uint8_t numPermutations_, uint8_t numPositivePermutations_,
-                                   const std::vector<std::vector<uint8_t>>& permutationNodeOrdinals_)
-    {
-      assert(permutationNodeOrdinals_.size() == numPermutations_);
-      assert(numPositivePermutations_ <= numPermutations_);
-
-      numPermutations = numPermutations_;
-      numPositivePermutations = numPositivePermutations_;
-
-      for(const auto& ordinals : permutationNodeOrdinals_) {
-        if(ordinals.size() != num_permutation_nodes()) {
-          std::ostringstream errmsg;
-          fmt::print(errmsg,
-              "ERROR: Number of low order permutation ordinals: {} for topology: {} does not match low order topology value: {}",
-              ordinals.size(), topology->name(), num_permutation_nodes());
-          IOSS_ERROR(errmsg);
-        }
-
-        for(const auto ordinal : ordinals) {
-          if(ordinal >= num_permutation_nodes()) {
-            std::ostringstream errmsg;
-            fmt::print(errmsg,
-                "ERROR: Invalid value of ordinal: {} for topology: {}", ordinal, topology->name());
-            IOSS_ERROR(errmsg);
-          }
-        }
-      }
-
-      permutationNodeOrdinals = permutationNodeOrdinals_;
+      return topology->permutation()->num_permutation_nodes();
     }
 
     unsigned int           id{0};
     Ioss::ElementTopology *topology = nullptr;
 
-    bool isShell {false};
     std::vector<TopologyMapEntry*> sideTopologies{};
-
-    uint8_t numPermutations{0};
-    uint8_t numPositivePermutations{0};
-    std::vector<std::vector<uint8_t>> permutationNodeOrdinals{};
 
     // Defines what spatial dimension the topology is valid on
     DimensionArray validSpatialDimensions;

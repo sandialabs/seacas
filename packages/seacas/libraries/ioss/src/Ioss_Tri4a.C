@@ -52,7 +52,11 @@ void Ioss::Tri4a::factory()
   Ioss::St_Tri4a::factory();
 }
 
-Ioss::Tri4a::Tri4a() : Ioss::ElementTopology(Ioss::Tri4a::name, "Triangle_4a") {}
+Ioss::Tri4a::Tri4a() : Ioss::ElementTopology(Ioss::Tri4a::name, "Triangle_4a")
+{
+
+}
+
 
 int Ioss::Tri4a::parametric_dimension() const { return 2; }
 int Ioss::Tri4a::spatial_dimension() const { return 2; }

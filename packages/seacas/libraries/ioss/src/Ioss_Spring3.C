@@ -6,6 +6,7 @@
 
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Spring3.h>
 #include <cassert> // for assert
@@ -43,7 +44,10 @@ void Ioss::Spring3::factory()
   Ioss::St_Spring3::factory();
 }
 
-Ioss::Spring3::Spring3() : Ioss::ElementTopology(Ioss::Spring3::name, "Spring_3") {}
+Ioss::Spring3::Spring3() : Ioss::ElementTopology(Ioss::Spring3::name, "Spring_3")
+{
+
+}
 
 int Ioss::Spring3::parametric_dimension() const { return 1; }
 int Ioss::Spring3::spatial_dimension() const { return 3; }

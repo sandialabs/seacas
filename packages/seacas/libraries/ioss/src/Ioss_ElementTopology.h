@@ -7,18 +7,23 @@
 #pragma once
 
 #include <Ioss_CodeTypes.h>
+#include <Ioss_ElementPermutation.h> // for ElementPermutation
 #include <map>    // for map, map<>::value_compare
 #include <string> // for string, operator<
 #include <vector> // for vector
+#include <set>    // for set
+
 namespace Ioss {
   class ElementTopology;
+  class ElementPermutation;
 } // namespace Ioss
 
 namespace Ioss {
-  enum class ElementShape { UNKNOWN, POINT, LINE, TRI, QUAD, TET, PYRAMID, WEDGE, HEX };
+  enum class ElementShape : unsigned { UNKNOWN, POINT, SPHERE, LINE, SPRING, TRI, QUAD, TET, PYRAMID, WEDGE, HEX, SUPER };
 
-  using ElementTopologyMap = std::map<std::string, ElementTopology *, std::less<std::string>>;
-  using ETM_VP             = ElementTopologyMap::value_type;
+  using ElementShapeMap         = std::map<ElementShape, std::string>;
+  using ElementTopologyMap      = std::map<std::string, ElementTopology *, std::less<std::string>>;
+  using ETM_VP                  = ElementTopologyMap::value_type;
 
   class ETRegistry
   {
@@ -73,6 +78,7 @@ namespace Ioss {
     // "Structural" elements (shells, rods, trusses, particles) need
     // to override.
     virtual bool is_element() const;
+    virtual bool is_shell() const             = 0;
     virtual int  spatial_dimension() const    = 0;
     virtual int  parametric_dimension() const = 0;
     virtual int  order() const                = 0;
@@ -117,13 +123,18 @@ namespace Ioss {
     bool operator!=(const Ioss::ElementTopology &rhs) const;
     bool equal(const Ioss::ElementTopology &rhs) const;
 
+    ElementPermutation *permutation() const;
+    virtual const std::string &base_topology_permutation_name() const;
   protected:
     ElementTopology(std::string type, std::string master_elem_name, bool delete_me = false);
+    virtual bool validate_permutation_nodes() const {return true;}
 
   private:
     bool              equal_(const Ioss::ElementTopology &rhs, bool quiet) const;
     const std::string name_;
     const std::string masterElementName_;
+
+    static const std::string &topology_shape_to_permutation_name(Ioss::ElementShape topoShape);
 
     static ETRegistry &registry();
   };

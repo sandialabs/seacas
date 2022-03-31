@@ -127,3 +127,4 @@ Ioss::ElementTopology *Ioss::Beam2::edge_type(int /* edge_number */) const
 {
   return Ioss::ElementTopology::factory("edge2");
 }
+
