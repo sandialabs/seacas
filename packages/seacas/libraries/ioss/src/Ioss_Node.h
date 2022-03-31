@@ -46,6 +46,6 @@ namespace Ioss {
 
   protected:
     Node();
-    bool validate_permutation_nodes() const override {return false;}
+    bool validate_permutation_nodes() const override { return false; }
   };
 } // namespace Ioss

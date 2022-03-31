@@ -8,10 +8,10 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementPermutation.h> // for ElementPermutation
-#include <map>    // for map, map<>::value_compare
-#include <string> // for string, operator<
-#include <vector> // for vector
-#include <set>    // for set
+#include <map>                       // for map, map<>::value_compare
+#include <set>                       // for set
+#include <string>                    // for string, operator<
+#include <vector>                    // for vector
 
 namespace Ioss {
   class ElementTopology;
@@ -19,11 +19,24 @@ namespace Ioss {
 } // namespace Ioss
 
 namespace Ioss {
-  enum class ElementShape : unsigned { UNKNOWN, POINT, SPHERE, LINE, SPRING, TRI, QUAD, TET, PYRAMID, WEDGE, HEX, SUPER };
+  enum class ElementShape : unsigned {
+    UNKNOWN,
+    POINT,
+    SPHERE,
+    LINE,
+    SPRING,
+    TRI,
+    QUAD,
+    TET,
+    PYRAMID,
+    WEDGE,
+    HEX,
+    SUPER
+  };
 
-  using ElementShapeMap         = std::map<ElementShape, std::string>;
-  using ElementTopologyMap      = std::map<std::string, ElementTopology *, std::less<std::string>>;
-  using ETM_VP                  = ElementTopologyMap::value_type;
+  using ElementShapeMap    = std::map<ElementShape, std::string>;
+  using ElementTopologyMap = std::map<std::string, ElementTopology *, std::less<std::string>>;
+  using ETM_VP             = ElementTopologyMap::value_type;
 
   class ETRegistry
   {
@@ -123,11 +136,12 @@ namespace Ioss {
     bool operator!=(const Ioss::ElementTopology &rhs) const;
     bool equal(const Ioss::ElementTopology &rhs) const;
 
-    ElementPermutation *permutation() const;
+    ElementPermutation        *permutation() const;
     virtual const std::string &base_topology_permutation_name() const;
+
   protected:
     ElementTopology(std::string type, std::string master_elem_name, bool delete_me = false);
-    virtual bool validate_permutation_nodes() const {return true;}
+    virtual bool validate_permutation_nodes() const { return true; }
 
   private:
     bool              equal_(const Ioss::ElementTopology &rhs, bool quiet) const;

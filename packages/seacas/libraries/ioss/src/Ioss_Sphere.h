@@ -46,6 +46,7 @@ namespace Ioss {
     Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
 
     const std::string &base_topology_permutation_name() const override;
+
   protected:
     Sphere();
   };
