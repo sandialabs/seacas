@@ -1034,7 +1034,7 @@ std::string Ioss::Utils::shape_to_string(const Ioss::ElementShape &shape)
   case Ioss::ElementShape::HEX: return std::string("Hex");
   case Ioss::ElementShape::SUPER: return std::string("Super");
   }
-  return std::string("INTERNAL ERROR");
+  return std::string("Invalid shape [") + std::to_string(unsigned(shape)) + std::string("]");
 }
 
 unsigned int Ioss::Utils::hash(const std::string &name)

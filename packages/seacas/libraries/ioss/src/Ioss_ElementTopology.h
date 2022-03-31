@@ -19,7 +19,7 @@ namespace Ioss {
 } // namespace Ioss
 
 namespace Ioss {
-  enum class ElementShape { UNKNOWN, POINT, SPHERE, LINE, SPRING, TRI, QUAD, TET, PYRAMID, WEDGE, HEX, SUPER };
+  enum class ElementShape : unsigned { UNKNOWN, POINT, SPHERE, LINE, SPRING, TRI, QUAD, TET, PYRAMID, WEDGE, HEX, SUPER };
 
   using ElementShapeMap         = std::map<ElementShape, std::string>;
   using ElementTopologyMap      = std::map<std::string, ElementTopology *, std::less<std::string>>;
