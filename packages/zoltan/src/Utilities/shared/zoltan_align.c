@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -60,7 +60,7 @@ extern "C" {
  */
 /*****************************************************************************/
 
-/* 
+/*
  * Plauger alignment algorithm, The Standard C Library.
  * Forces malloc'ed variable size struct alignment.
  * ZOLTAN_ALIGN_VAL is defined in Zoltan/include/zoltan_align.h;

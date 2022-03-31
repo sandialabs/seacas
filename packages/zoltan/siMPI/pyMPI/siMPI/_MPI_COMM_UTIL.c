@@ -62,7 +62,7 @@ int _MPI_Comm_Invalid (int index)
 int _MPI_Comm_check (int index)
 {
   _MPI_COVERAGE();
-/* KDDKDDKDD  WHY DO WE CHANGE THE VALIDITY HERE?  
+/* KDDKDDKDD  WHY DO WE CHANGE THE VALIDITY HERE?
   _MPI_COMM_LIST[index].valid = _MPI_NOT_VALID;
 */
   if ( (index == MPI_COMM_NULL)||(index==0) ) {
@@ -126,4 +126,3 @@ int _MPI_Comm_check_legal (MPI_Comm comm, int *index)
   return MPI_ERR_COMM;
 }
 /*============================================================================*/
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef ZOLTAN_PURIFY
-  printf("%d of %d ZDRIVE LAUNCH pid = %d file = %s\n", 
+  printf("%d of %d ZDRIVE LAUNCH pid = %d file = %s\n",
          Proc, Num_Proc, getpid(), argv[1]);
 #endif
 
@@ -313,7 +313,7 @@ int main(int argc, char *argv[])
   for (iteration = 1; iteration <= Number_Iterations; iteration++) {
 
     if (Proc == 0) {
-      printf("Starting iteration %d\n", iteration); 
+      printf("Starting iteration %d\n", iteration);
       fflush(stdout);
     }
 
@@ -382,7 +382,7 @@ int main(int argc, char *argv[])
 
     if (Test.Dynamic_Graph > 0.0){
       if (mesh.data_type == ZOLTAN_GRAPH) {
-        remove_random_vertices(&mesh, iteration, Test.Dynamic_Graph); 
+        remove_random_vertices(&mesh, iteration, Test.Dynamic_Graph);
       }
       else{
         Gen_Error(0, "fatal: \"test dynamic graph\" only works on graphs, not hypergraphs\n");
@@ -411,7 +411,7 @@ int main(int argc, char *argv[])
      * now run Zoltan to get a new load balance and perform
      * the migration
      */
-  
+
 #ifdef IGNORE_FIRST_ITERATION_STATS
 if (iteration == 1) {
   /* Exercise partitioner once on Tbird because first run is slow. */
@@ -491,7 +491,7 @@ if (iteration == 1) {
       }
       /* change the ParMETIS Seed */
       sprintf(str, "%d", iteration);
-#ifdef ZOLTAN_PARMETIS      
+#ifdef ZOLTAN_PARMETIS
       Zoltan_Set_Param(zz, "PARMETIS_SEED", str);
 #endif
     }
@@ -499,9 +499,9 @@ if (iteration == 1) {
   } /* End of loop over read and balance */
 
   if (Proc == 0) {
-    printf("FILE %s:  Total:    %e seconds in Partitioning\n", 
+    printf("FILE %s:  Total:    %e seconds in Partitioning\n",
            cmd_file, Total_Partition_Time);
-    printf("FILE %s:  Average:  %e seconds per Iteration\n", 
+    printf("FILE %s:  Average:  %e seconds per Iteration\n",
            cmd_file, Total_Partition_Time/Number_Iterations);
   }
 
@@ -531,7 +531,7 @@ End:
   free_mesh_arrays(&mesh);
   if (prob.params != NULL) free(prob.params);
   MPI_Finalize();
-  
+
 #ifdef VAMPIR
   VT_finalize();
 #endif
@@ -589,7 +589,7 @@ static int read_mesh(
         Gen_Error(0, "fatal: Error returned from read_mtxplus_file\n");
         return 0;
     }
-    /* KDDKDD 3/26/10:  
+    /* KDDKDD 3/26/10:
      * Eventually, we should do cleanup here to address bug 3346.
      * but doing so will change the answer files.
      * mm_cleanup(mesh);
@@ -645,7 +645,7 @@ static int read_mesh(
 
 /*****************************************************************************/
 /*****************************************************************************/
-static void print_input_info(FILE *fp, int Num_Proc, PROB_INFO_PTR prob, 
+static void print_input_info(FILE *fp, int Num_Proc, PROB_INFO_PTR prob,
 PARIO_INFO_PTR pio, float zoltan_version)
 {
 int i;
@@ -665,7 +665,7 @@ char *idtypename;
     fprintf(fp, "\t\t%s %s\n", prob->params[i].Name, prob->params[i].Val);
 
   if ((pio->init_dist_procs > 0) && (pio->init_dist_procs != Num_Proc)){
-    fprintf(fp, "\n  Distribute input objects to only %d processes initially.\n", 
+    fprintf(fp, "\n  Distribute input objects to only %d processes initially.\n",
              pio->init_dist_procs);
   }
   if (pio->chunk_reader > 0){
@@ -763,8 +763,8 @@ static void initialize_mesh(MESH_INFO_PTR mesh, int proc)
   mesh->visible_nvtx   = 0;
 }
 
-static void remove_random_vertices(MESH_INFO_PTR mesh, int iteration, 
-                                   float blank_factor) 
+static void remove_random_vertices(MESH_INFO_PTR mesh, int iteration,
+                                   float blank_factor)
 {
 int i, j, blankmine = (mesh->proc % 2) == (iteration % 2);
 ZOLTAN_ID_TYPE tmp, total_vertices;
@@ -780,7 +780,7 @@ ELEM_INFO *elem;
 
   /*
    * Mark some portion of vertices as blanked.  The graph callbacks
-   * will not report blanked vertices.  
+   * will not report blanked vertices.
    */
 
   if ((blank_factor <= 0.0) || (blank_factor >= 1.0)){
@@ -793,9 +793,9 @@ ELEM_INFO *elem;
     error_report(mesh->proc);
     return;
   }
- 
+
   for (i=0; i < mesh->num_elems; i++){
-  
+
     /* Each vertex (element) has probability given by
      * by blank_factor of being blanked.  The blanked vertices should
      * vary somewhat in each iteration.
@@ -879,12 +879,12 @@ static void print_mesh(int proc, MESH_INFO_PTR m, int *tp, int *the, int *tv)
     }
     printf("\n");
   }
-  
+
   printf("Total pins: %d\n", m->hindex[m->nhedges]);
   printf("%d vertices: ", m->num_elems);
 
   el = m->elements;
-  
+
   for (i=0; i<m->num_elems; i++){
     printf(ZOLTAN_ID_SPEC " (%d adj: ", el->globalID, el->nadj);
     for (j=0; j<el->nadj; j++){
@@ -894,7 +894,7 @@ static void print_mesh(int proc, MESH_INFO_PTR m, int *tp, int *the, int *tv)
       }
       else{
         globalID = adj;
-      } 
+      }
       if (j && (j%15==0)) printf("\n       ");
       printf(ZOLTAN_ID_SPEC " ",globalID);
     }

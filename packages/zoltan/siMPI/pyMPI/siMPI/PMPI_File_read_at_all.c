@@ -16,10 +16,9 @@
 
 /* STUB */
 int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void *buf,
-                         int count, MPI_Datatype datatype, 
+                         int count, MPI_Datatype datatype,
                          MPI_Status *status)
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
 }
-

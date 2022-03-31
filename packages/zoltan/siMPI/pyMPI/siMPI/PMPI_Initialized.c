@@ -24,6 +24,5 @@ int PMPI_Initialized( int *flag )
     return retval;
   }
   *flag = _MPI_INITIALIZED_FLAG;
-  return MPI_SUCCESS; 
+  return MPI_SUCCESS;
 }
-

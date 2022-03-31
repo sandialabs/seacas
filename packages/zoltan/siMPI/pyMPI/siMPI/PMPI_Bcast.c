@@ -18,7 +18,7 @@
 #include "mpi.h"
 
 /*==========================================================================*/
-int PMPI_Bcast ( void *buffer, int count, MPI_Datatype datatype, int root, 
+int PMPI_Bcast ( void *buffer, int count, MPI_Datatype datatype, int root,
   MPI_Comm comm )
 {
   int retval;
@@ -30,9 +30,8 @@ int PMPI_Bcast ( void *buffer, int count, MPI_Datatype datatype, int root,
   {
   _MPI_COVERAGE();
     _MPI_ERR_ROUTINE(retval, "MPI_BCAST: Argument error.");
-    MPI_Abort (comm, retval);  
+    MPI_Abort (comm, retval);
   }
   return retval;
 }
 /*==========================================================================*/
-

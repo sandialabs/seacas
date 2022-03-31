@@ -18,6 +18,5 @@
 int MPI_File_preallocate(MPI_File fh, MPI_Offset size)
 {
   _MPI_COVERAGE();
-  return PMPI_File_preallocate(fh, size); 
+  return PMPI_File_preallocate(fh, size);
 }
-

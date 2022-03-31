@@ -6,13 +6,13 @@ described in this chapter. Although most of the algorithms are
 well-known and documented in several references, it is important to
 understand the actual methods used in each of the utilities to avoid
 misinterpretation of the output and to understand the limitations and
-assumptions used to calculate the properties and values. 
+assumptions used to calculate the properties and values.
 
 Another reason for describing the algorithms is that \numbers\ is
 written as a basic shell program for reading \exo\ files.  If additional
 utilities are developed for \numbers, it is likely that several of the
 algorithms already implemented can be modified to perform the new
-function. 
+function.
 
 This chapter is organized into several sections; each utility is
 described in a separate section.  The descriptions include the function
@@ -20,7 +20,7 @@ of the utility and the algorithm used in the utility including its
 assumptions and limitations.  The complete command syntax for each
 utility is given in Section~\ref{sec:oper}; a summary of the command
 syntax is given in Section~\ref{sec:opsum}.  Examples of the use of most
-of the utilities are presented in Chapter~\ref{c:examples}. 
+of the utilities are presented in Chapter~\ref{c:examples}.
 
 \section{Mass Properties Utility}\label{sec:mass}
 
@@ -30,12 +30,12 @@ required in a finite element analysis to ensure that the finite element
 idealization correctly approximates the actual body.  This utility also
 lists the minimum, maximum, and average element volume for each material
 block.  A summary of the equations used to calculate the mass properties
-is given in this section. 
+is given in this section.
 
 The moments of inertia are originally calculated about the origin of the
 coordinate system and then transferred to the centroid using the
 parallel-axis theorem. The mass and the moments of inertia about the
-origin of the coordinate system are given by the following integrals: 
+origin of the coordinate system are given by the following integrals:
 \begin{eqnarray}
  M      &=& \int_V \rho dV                         \label{V}\\
  I_x    &=& \int_V \rho\left(y^2 + z^2\right)\,dV \label{IX}\\
@@ -50,7 +50,7 @@ where $M$ is the mass, $\rho$ is the density, $I$ is the mass moment
 of inertia, and the subscripts $x$, $y$, and $z$ denote the axes about
 which the moment is measured.  The double subscripts indicate products
 of inertia.  Note that the product of inertia with respect to any two
-orthogonal axes is zero if either of the axes is an axis of symmetry. 
+orthogonal axes is zero if either of the axes is an axis of symmetry.
 
 \paragraph{Axisymmetric Two-dimensional Body:}
 For an axisymmetric two-dimensional body, the integrals are written in
@@ -60,25 +60,25 @@ to be the axis of revolution.  The infinitesimal volume $dV$ is equal to
 $r\,dA\,d\theta$ where $dA$ is an infinitesimal area equal to $dr\,dy$.
 Rewriting Equations \eref{V} through~\eref{IZ} in terms of
 $r$ and $\theta$, and performing the theta integration from $-\pi$ to
-$\pi$ gives: 
+$\pi$ gives:
 \begin{eqnarray}
 M   &=& 2\pi\rho\int_A r\,dA   \\
 I_y &=& 2\pi\rho\int_A r^3\,dA   \\
 I_x = I_z &=& 2\pi\rho\int_A r y^2\,dA + \pi\rho \int_A r^3\,dA\nonumber \\
-    &=& 2\pi\rho\int_A r y^2\,dA + {I_y\over2}  
+    &=& 2\pi\rho\int_A r y^2\,dA + {I_y\over2}
 \end{eqnarray}
 The products of inertia $I_{xy}$, $I_{xz}$, and $I_{yz}$ are zero since
-all three axes are symmetry axes.  
+all three axes are symmetry axes.
 
 \paragraph{Two-dimensional Planar Body:}
 For a two-dimensional planar body, area moments of inertia are
 calculated; the depth in the $z$-direction is ignored. The integrals
-simplify as follows: 
+simplify as follows:
 \begin{eqnarray}
  I_x    &=& \rho\int_A y^2\,dA                   \\
  I_y    &=& \rho\int_A x^2\,dA                   \\
  I_z    &=& \rho\int_A \left(x^2 + y^2\right)\,dA = I_x + I_y \\
- I_{xy} &=& \rho\int_A xy\,dA                    
+ I_{xy} &=& \rho\int_A xy\,dA
 \end{eqnarray}
 The products of inertia $I_{xz}$ and $I_{yz}$ are both zero.
 
@@ -95,7 +95,7 @@ with either integration option.  The second-order quadrature rule is
 also useful for calculating the section properties of a non-standard
 shape.  For this purpose, the discretization of the body is only refined
 enough to capture the essential details of the shape since a structural
-analysis will not be performed. 
+analysis will not be performed.
 
 \paragraph{Calculation of Centroid Location:} The location of the
 centroid is calculated using the first mass moments about each of the
@@ -104,8 +104,8 @@ coordinate directions over the range of the elements.  The centroid
 location is then given by the quotient of the mass moment sums divided
 by the total mass of the body.  For a two-dimensional axisymmetric body,
 $x_c$ and $z_c$ (the $x$ and $z$ coordinates of the centroid) are zero;
-for a two-dimensional planar body, $z_c$ is zero. 
-  
+for a two-dimensional planar body, $z_c$ is zero.
+
 \section{Locate Utility}\label{sec:locate}
 
 The locate utility outputs the numbers of all nodes or elements that are
@@ -116,23 +116,23 @@ centerline of a body during an impact analysis.  The equations used to
 calculate the distances from a node or element centroid to the point,
 line, or plane are defined in the following subsections.  All equations
 are defined in terms of a three-dimensional body; for a two-dimensional
-body the $z$ coordinates are deleted. 
+body the $z$ coordinates are deleted.
 
 Note that the point location procedure is also a circle (2D) and sphere
 (3D) location procedure and the line location procedure is also a
 cylinder (3D) location procedure since the search interval distance from
-the point and line can be specified. 
-  
+the point and line can be specified.
+
 In the location utility, the distance for an element is defined to be
 the distance to the element geometric center. The location of the
 element center is calculated by summing the four or eight nodal
 coordinates in each coordinate direction and dividing by the number of
-nodes. 
+nodes.
 
 \subsection{Point Location}\label{sec:plocate}
 The point location utility outputs all nodes or elements that are a
 specified distance from a user-specified point.  The distance $d_r$ from
-the node or element to the point ($x_0$, $y_0$, $z_0$) is given by: 
+the node or element to the point ($x_0$, $y_0$, $z_0$) is given by:
 \begin{equation}
 d_r = \sqrt{ (x_0-x_n)^2 + (y_0-y_n)^2 + (z_0-z_n)^2}
 \end{equation}
@@ -144,20 +144,22 @@ angles $\theta$ and $\phi$ are also calculated.  The angle $\theta$ is
 the angle between the $x$ axis and the projection of the line from the
 point to the node onto the $x$--$z$ plane.  The angle $\phi$ is the
 angle between the $y$ axis and the line from the point to the node.  In
-two dimensions, $\theta$ is the angle between the line and the $x$ axis. 
+two dimensions, $\theta$ is the angle between the line and the $x$ axis.
 Figure~\ref{f:theta} illustrates the definitions of $\theta$ and $\phi$.
 
 \begin{figure}
+\centering
+\includegraphics[scale=0.65]{figures/Angles.png}
 \caption{Illustration of the Angles $\theta$ and $\phi$
 for the Locate Point Utility}\label{f:theta}
 \end{figure}
-  
+
 \subsection{Line Location}\label{sec:llocate}
 The line location utility outputs all nodes or elements that are within
 a specified distance from a user-specified line.  The distance is
 measured normal to the line.   The parametric representation of the line
 from $P_1$($x_1$, $y_1$, $z_1$) to $P_2$($x_2$, $y_2$, $z_2$) is $P(t) =
-P_1 + (P_2 - P_1)t$.  The components of this line are: 
+P_1 + (P_2 - P_1)t$.  The components of this line are:
 \begin{equation}
 \begin{array}{ccccc}
 x &=& x_1 + (x_2 - x_1) t &=& x_1 + at   \\
@@ -165,40 +167,40 @@ y &=& y_1 + (y_2 - y_1) t &=& y_1 + bt   \\
 z &=& z_1 + (z_2 - z_1) t &=& z_1 + ct   \\
 \end{array}
 \end{equation}
-The minimum distance $d_t$ from the line to the point ($x_n$, $y_n$, $z_n$) 
+The minimum distance $d_t$ from the line to the point ($x_n$, $y_n$, $z_n$)
 is
 \begin{equation}
-d_t^2 = (x_1+at-x_n)^2 +(y_1+bt-y_n)^2 +(z_1+ct-z_n)^2 
+d_t^2 = (x_1+at-x_n)^2 +(y_1+bt-y_n)^2 +(z_1+ct-z_n)^2
 \end{equation}
-where the parameter $t$ is 
+where the parameter $t$ is
 \begin{equation}
 t = -\frac{a(x_1-x_n) + b(y_1-y_n) +
 c(z_1-z_n)}{a^2+b^2+c^2}\label{parametric}
 \end{equation}
-  
+
 \subsection{Plane Location}\label{sec:slocate}
 The plane location utility outputs all nodes or elements that are within
 a specified distance from a user-specified plane.  The distance is
 measured normal to the plane. A unique plane can be defined by a
 specified point and a normal vector to the plane.  Given the point
 ($x_0$, $y_0$, $z_0$) and the unit vector $\vec{n} = a\vec{i} + b\vec{j} +
-c\vec{k}$, the equation of the plane is: 
+c\vec{k}$, the equation of the plane is:
 \begin{eqnarray}
 0 &=& ax + by + cz + d      \label{plane} \\
 d &=& -( ax_0 + by_0 + cz_0 )
 \end{eqnarray}
 The normal distance $d_n$ from the plane to a node or
-element center is: 
+element center is:
 \begin{equation}
 d_n = \frac{\left| a x_n + b y_n + c z_n - d\right|}%
-                                    {\sqrt{a^2 + b^2 + c^2}} 
+                                    {\sqrt{a^2 + b^2 + c^2}}
 \end{equation}
 where the subscript $n$ refers to the coordinates of the node or
 element.  The normal distance is calculated for each node or element and
 compared to the user-specified distance and tolerance.  If the node or
 element is within this range, its number, coordinates, normal distance,
 and radial distance are output.  The radial distance is the same
-distance calculated in the point location utility. 
+distance calculated in the point location utility.
 
 \subsection{Sort Algorithm}
 
@@ -213,7 +215,7 @@ disadvantage of the sort routine is that it is not ``stable.''  This
 means that sorting the data a second time on a different field will
 destroy the order of the first sort.  A method for sorting on two or
 more fields simultaneously is being investigated and will be implemented
-in a later version of \numbers. 
+in a later version of \numbers.
 
 \subsection{Sort Fields}\label{sortfields}
 
@@ -252,13 +254,13 @@ Equation~\eref{parametric}.  The initial point of the line is located at
 location point, line, or plane.  See the respective sections above for
 the definition of distance for each of the location options.
 \item[RADIUS] The shortest distance from the plane definition point (see
-Section~\ref{sec:slocate}) to the located node or element center. 
+Section~\ref{sec:slocate}) to the located node or element center.
 \item[THETA] For three-dimensional bodies, \cmd{THETA} is the angle
 between the $x$ axis and the projection of the line from the point to
 the node or element center onto the $x$--$z$ plane (see
 Section~\ref{sec:plocate}).  For two-dimensional bodies, \cmd{theta} is
 the angle between the line from the point to the node or element center
-and the $x$ axis. 
+and the $x$ axis.
 \item[PHI] The angle between the $y$ axis and the line from the point to
 the located node or element center.
 \end{description}
@@ -269,7 +271,7 @@ a cavity or hole in a body.  The boundary of the cavity is defined by
 side set flags in the \exo\ file.  Two separate calculations are
 involved in this utility; the first is the calculation of the
 cavity volume, and the second is the calculation of the change in
-volume.  
+volume.
 
 The cavity volume is calculated by forming triangles (2D) or
 pentahedrons (3D) for each segment of the cavity boundary.  The apex of
@@ -279,12 +281,13 @@ side set.  The segments are element faces; in two-dimensions, the faces
 are lines; in three-dimensions, the faces are four-node quadrilaterals.
 The faces are assumed to be planar.  The volume of each triangle or
 pentahedron is calculated and the sum of the volumes is, for certain
-geometries, the volume of the cavity. 
+geometries, the volume of the cavity.
 
 Figure~\ref{cvol2d} is an example of this process for a two-dimensional
-cavity with three boundary segments: 1--2, 2--3, and 3--4.  
+cavity with three boundary segments: 1--2, 2--3, and 3--4.
 \begin{figure}
-\vspace{3.5in}
+\centering
+\includegraphics[scale=0.75]{figures/Cavity.png}
 \caption{Illustration of Cavity Volume Determination for
 a Two-Dimensional Cavity}\label{cvol2d}
 \end{figure}
@@ -294,7 +297,7 @@ points defining the triangle and point {\sf0} is the apex or center
 point. A similar process is used for three-dimensional cavities except
 that pentahedral volumes are calculated instead of triangular areas. The
 volume $V$ of a pentahedron with the apex at the point $(x_c,y_c,z_c)$
-and the base formed by a boundary segment is~\cite{flanagan}: 
+and the base formed by a boundary segment is~\cite{flanagan}:
 \begin{eqnarray}
 V = &\frac{1}{12}&\{
  ((2y_c - y_3) z_{42} + y_2 (z_{c3} + z_{c4}) - y_4 (z_{c3} + z_{c2})) x_1 \nonumber \\
@@ -305,17 +308,17 @@ V = &\frac{1}{12}&\{
 \end{eqnarray}
 where the numerical subscript refers to the sequence of the node of the
 boundary segment, the $c$ subscript refers to the center location, and
-the double subscript $z_{ij}$ is defined as $z_i-z_j$. 
+the double subscript $z_{ij}$ is defined as $z_i-z_j$.
 
 The planar area $V_P$ of a triangle with the apex at the point
-$(x_c,y_c)$ and the base formed by a boundary segment is: 
+$(x_c,y_c)$ and the base formed by a boundary segment is:
 \begin{equation}
-V_P = \sfrac{1}{2}[(y_1-y_c) (x_2-x_c) - (y_2-y_c) (x_1-x_c)] 
+V_P = \sfrac{1}{2}[(y_1-y_c) (x_2-x_c) - (y_2-y_c) (x_1-x_c)]
 \end{equation}
 where the subscript refers to the first and second node of the boundary
 segment, and $y_c$ is the approximate vertical geometric center of the
 cavity. It is calculated by summing the $y$ coordinates and dividing by
-the total number of nodes on the boundary. 
+the total number of nodes on the boundary.
 
 If the body is axisymmetric, the volume $V_A$ is calculated as:
 \begin{eqnarray}
@@ -334,7 +337,7 @@ the symmetry plane, or if it is on the intersection of two or more
 symmetry planes.  If the apex point is not specified  by the user, it is
 set to the point $(0,0,0)$ for three-dimensional bodies, and the point
 $(0,y_c)$ for two-dimensional bodies, where $y_c$ is the approximate
-vertical geometric center of the cavity. 
+vertical geometric center of the cavity.
 
 \paragraph*{Cavity Volume Change:}
 The change in cavity volume is calculated by calculating the volume of
@@ -342,11 +345,11 @@ the hexahedron formed by the original element face and the displaced
 element face.  This is repeated for each element face on the cavity
 boundary and the total volume change is the sum of the element face
 volume changes.  Note that this calculation is correct for all cavities
-even if they are bounded by symmetry planes. 
+even if they are bounded by symmetry planes.
 
 For a three-dimensional cavity, the volume change $\Delta V$ for each
 element on the cavity boundary is given by the following sequence of
-calculations~\cite{PRONTO3D}. 
+calculations~\cite{PRONTO3D}.
 \begin{equation}
 \Delta V = \sfrac{1}{12}\sum_{i=1}^8 x_i B_i
 \end{equation}
@@ -368,33 +371,33 @@ B_{6} &=&   y_5 (z_{18}-z_{72}) + y_8 z_{57} + y_7 (z_{83}-z_{25})
           + y_2 (z_{31}-z_{57}) + y_1 z_{25} + y_3 z_{72} \\
 B_{7} &=&   y_6 (z_{25}-z_{83}) + y_5 z_{68} + y_8 (z_{54}-z_{36})
           + y_3 (z_{42}-z_{68}) + y_2 z_{36} + y_4 z_{83} \\
-B_{8} &=&   y_7 (z_{36}-z_{54}) + y_6 z_{75} + y_5 (z_{61}-z_{47})  
-          + y_4 (z_{13}-z_{75}) + y_3 z_{47} + y_1 z_{54} 
+B_{8} &=&   y_7 (z_{36}-z_{54}) + y_6 z_{75} + y_5 (z_{61}-z_{47})
+          + y_4 (z_{13}-z_{75}) + y_3 z_{47} + y_1 z_{54}
 \end{eqnarray*}
 where $y_i$ and $z_i$ are defined in the same way as $x_i$, and $z_{ij}$
 is equal to $z_i - z_j$.
 
 For a two-dimensional, planar cavity, the volume change $\Delta V_P$ for
-each element on the cavity boundary is equal to 
+each element on the cavity boundary is equal to
 \begin{equation}
-\Delta V_P = \sfrac{1}{2}\left[x_{12} (\Delta y_2 + \Delta y_1) - 
+\Delta V_P = \sfrac{1}{2}\left[x_{12} (\Delta y_2 + \Delta y_1) -
            y_{12} (\Delta x_2 + \Delta x_1) +
            \Delta x_1 \Delta y_2 -
-           \Delta x_2 \Delta y_1\right] 
+           \Delta x_2 \Delta y_1\right]
 \end{equation}
-where $x$ and $y$ are the original coordinates of the face nodes and 
+where $x$ and $y$ are the original coordinates of the face nodes and
 $\Delta x$ and $\Delta y$ are the $x$ and $y$ displacements of the
 nodes.
 
 For an axisymmetric cavity, the volume change $\Delta V_A$ for each
-element on the cavity boundary is equal to 
+element on the cavity boundary is equal to
 \begin{equation}
 \Delta V_A = 2\pi x_c \Delta V_P
 \end{equation}
 where $x_c$ is the $x$ coordinate of the geometric center which is equal
-to 
+to
 \begin{equation}
-x_c = \frac{(\Delta x_2 + \Delta x_1)}{4} + 
+x_c = \frac{(\Delta x_2 + \Delta x_1)}{4} +
       \frac{(x_2 + x_1)}{2}
 \end{equation}
 
@@ -418,10 +421,11 @@ portion of the mesh since the code will separate the contact surface in
 one timestep.  Currently, the utility only checks for penetration of the
 master surface by the slave surface; however, other checks for valid
 contact surfaces, such as continuity or other requirements imposed by
-analysis codes, can be added if there is a need. 
+analysis codes, can be added if there is a need.
 
 \begin{figure}
-\vspace{3.1in}
+\centering
+\includegraphics[scale=0.5]{figures/Overlap.png}
 \caption{Illustration of Contact Surface Overlap due to
 Discretization Mismatch on Curved Contact Surfaces}
 \label{f:overlap}
@@ -433,7 +437,7 @@ and then examine the results to see if the kinetic energy has increased
 suddenly, or if the mesh has been ``blown'' apart where the analysis
 code detects an overlapping contact surface and separates it in one
 timestep---both symptoms indicate that a slideline overlap exists in the
-original mesh. 
+original mesh.
 
 The overlap utility was written to provide an efficient means of
 determining whether an overlap exists prior to running an analysis. The
@@ -455,9 +459,9 @@ is inside the element; if a volume is equal to zero, the node is on
 the face. If the node is inside the element, its node number and the
 number and connectivity of the penetrated element are output.  At the
 end of the calculation, the total number of nodes penetrating the
-surface and the number of nodes on the surface are output.  
+surface and the number of nodes on the surface are output.
 
-The volume $V_P^i$ of the three-dimensional pentahedron formed by 
+The volume $V_P^i$ of the three-dimensional pentahedron formed by
 slave node $s$ and the element face $i$ is equal
 to~\cite{flanagan}:
 \begin{eqnarray}
@@ -473,26 +477,26 @@ to~\cite{flanagan}:
 \end{eqnarray}
 where the subscript $S$ refers to the slave node, and the subscripts
 $A$, $B$, $C$, and $D$ refer to the nodes on an element face (assumed to
-be planar) as given in Table~\ref{t:nodes}. 
+be planar) as given in Table~\ref{t:nodes}.
 
 \begin{table}
 \parbox[t]{3.0in}{
 \begin{center}
 \begin{tabular}{l|cccccc}
-\multicolumn{7}{c}{Hexahedron} \\ 
+\multicolumn{7}{c}{Hexahedron} \\
 \multicolumn{7}{c}{\ } \\
   & \multicolumn{6}{c}{Face} \\
   & 1 & 2 & 3 & 4 & 5 & 6 \\ \hline
 A & 1 & 6 & 6 & 5 & 4 & 1 \\
 B & 2 & 7 & 5 & 1 & 3 & 5 \\
 C & 3 & 3 & 8 & 4 & 7 & 6 \\
-D & 4 & 2 & 7 & 8 & 8 & 2 \\ 
+D & 4 & 2 & 7 & 8 & 8 & 2 \\
 \end{tabular}
 \end{center}}\hfil
 \parbox[t]{3.0in}{
 \begin{center}
 \begin{tabular}{l|cccc}
-\multicolumn{5}{c}{Quadrilateral} \\ 
+\multicolumn{5}{c}{Quadrilateral} \\
 \multicolumn{5}{c}{\ } \\
   & \multicolumn{4}{c}{Face} \\
   & 1 & 2 & 3 & 4 \\ \hline
@@ -519,12 +523,12 @@ Explicit integration is used in most large-deformation, nonlinear,
 transient dynamics finite element codes, for example
 \code{PRONTO}~\cite{PRONTO2D,PRONTO3D}. This utility provides an
 estimate of the time step size which will be used in the explicit
-integration in these codes. 
+integration in these codes.
 
 The stable time step $\Delta t$ for the central difference operator
 commonly used in transient dynamic analysis codes is given
-by~\cite{Cook} 
-\begin{equation} 
+by~\cite{Cook}
+\begin{equation}
 \Delta t \leq {2\over \omega_{\max}} \left(\sqrt{1+\epsilon^2} -
 \epsilon\right)
 \end{equation}
@@ -533,13 +537,13 @@ $\epsilon$ is the fraction of critical damping in the highest element
 mode.  In a explicit integration finite element code, the linear bulk
 viscosity term is an estimate of $\epsilon$~\cite{PRONTO2D}. The default
 value of $\epsilon$ is 0.06 which is the default value of the linear
-bulk viscosity used in \code{PRONTO2D} and \code{PRONTO3D}. 
+bulk viscosity used in \code{PRONTO2D} and \code{PRONTO3D}.
 
 Flanagan and Belytschko~\cite{flanagan} have derived simple
 formulas for bounding the maximum eigenvalues for the uniform strain
 eight-node hexahedron and four-node quadrilateral which can be used to
 provide conservative estimates of the maximum frequency.  The maximum
-frequency estimate for a rectangular quadrilateral element is 
+frequency estimate for a rectangular quadrilateral element is
 \begin{equation}
 \hat\omega_{\max}^2 = {4(\lambda + 2\mu)\over\rho}\left({1\over s_1^2} +
    {1\over s_2^2}\right)
@@ -547,14 +551,14 @@ frequency estimate for a rectangular quadrilateral element is
 where $s_1$ and $s_2$ are the lengths of the sides of the rectangle,
 $\lambda$ and $\mu$ are Lame's constants, $\rho$ is the density, and
 $\hat\omega_{\max}$ is the predicted value for the maximum frequency.
-Similarly, for a rectangular parallelepiped hexahedron, 
+Similarly, for a rectangular parallelepiped hexahedron,
 \begin{equation}
 \hat\omega_{\max}^2 = {4(\lambda + 2\mu)\over\rho}\left({1\over s_1^2} +
    {1\over s_2^2}+{1\over s_3^2}\right)
 \end{equation}
 
 Substituting the maximum frequency equation into the stable time step
-equation gives the following estimate for the stable time step size: 
+equation gives the following estimate for the stable time step size:
 \begin{equation}
 \Delta\hat t\le \sqrt{\frac{\rho}{\lambda+2\mu}}
       \left(\sum_{i=1}^{n_D}\frac{1}{s_i^2}\right)^{-1/2}
@@ -564,11 +568,11 @@ where $\Delta\hat t$ is the estimate of the stable time step, and $n_D$
 is the number of dimensions.  The first quantity on the right-hand side
 of the inequality is the inverse of the dilatational wave speed which is
 input by the user.  The second quantity is calculated by \numbers\ with
-the assumption that the element is rectangular.  
+the assumption that the element is rectangular.
 
 The output from this utility includes the calculated time step, the
 element with the minimum time step, and the number of time steps per
-millisecond of analysis time for each element block.  
+millisecond of analysis time for each element block.
 
 The number of time steps per millisecond can be used to estimate the
 computer time required to perform an analysis.  Most explicit transient
@@ -577,14 +581,14 @@ calculations for one element for one time step. Although this quantity
 varies for different constitutive models and the number of contact
 surfaces (slidelines), the average value is usually relatively constant
 and well known.  The CPU time per millisecond of analysis time can be
-estimated using the formula 
+estimated using the formula
 \begin{equation}
-{CPU\over ms} = \left(10^{-3}\over \Delta\hat t\right) 
+{CPU\over ms} = \left(10^{-3}\over \Delta\hat t\right)
                 ({\sf Speed})({\sf NUMEL})
 \end{equation}
 where {\sf NUMEL} is the number of elements, {\sf Speed} is the CPU time
 per element per timestep, and $(10^{-3}/\Delta\hat t)$ is the number of
-time steps per millisecond.  
+time steps per millisecond.
 
 \section{Gap Utility}\label{sec:gap}
 
@@ -599,9 +603,11 @@ illustrates the two closeness measures.  In this figure, Node~$M$ is the
 master node and nodes $S_1$ and~$S_2$ are two slave nodes.  If the
 absolute distance is used, node~$S_1$ will be the matching node; if the
 distance to the normal vector is used, node~$S_2$ will be the matching
-node.  
+node.
 
 \begin{figure}
+\centering
+\includegraphics[scale=0.65]{figures/Gap.png}
 \caption{Illustration of Closeness Measures Used in the Gap Utility}
 \label{f:gap}
 \end{figure}
@@ -613,14 +619,14 @@ undeformed geometry and for each of the selected timesteps in the
 database.  This utility is normally used to calculate the change in
 distance between two surfaces, for example, the closure of a drift in a
 geomechanics problem or the slip (tangential movement) along a contact
-surface. 
+surface.
 
 The normal for a node is defined to be the average normal of the element
 faces for all elements connected to the node.  For a three-dimensional
 body, a technique developed by Newell~\cite{Rogers:pefcg} gives the
 exact normal for planar faces and a ``best'' approximation for almost
 planar faces. The coefficients $a$, $b$, and $c$ of the normal vector
-for an element face $\vec{n} = a\vec{i} + b\vec{j} + c\vec{k}$ are given by: 
+for an element face $\vec{n} = a\vec{i} + b\vec{j} + c\vec{k}$ are given by:
 \begin{eqnarray}
 a &=& \sum_{i=1}^n (y_i - y_j)(z_i + z_j) \nonumber\\
 b &=& \sum_{i=1}^n (z_i - z_j)(x_i + x_j) \label{3dnorm}\\
@@ -641,13 +647,13 @@ normal vector for an element face $\vec{n} = a\vec{i} + b\vec{j}$ is given by:
       b &=& (y_i - y_j) / r                      \nonumber
 \end{eqnarray}
 where $x_i$ and $x_j$ are the $x$ coordinates of the two face nodes, and
-$y_i$ and $y_j$ are the $y$ coordinates of the two face nodes. 
+$y_i$ and $y_j$ are the $y$ coordinates of the two face nodes.
 
 After the average nodal normals have been calculated, the node matching
 process is performed.  For each node on the master surface, the {\em
 closest} node on the slave surface is determined.  There are two
 criteria for determining closeness: radial distance and tangential
-distance.  The radial distance $d_r$ between two nodes is simply 
+distance.  The radial distance $d_r$ between two nodes is simply
 \begin{equation}
 d_r = \sqrt{(x_s - x_m)^2 + (y_s - y_m)^2 + (z_s - z_m)^2}\label{distr}
 \end{equation}
@@ -663,9 +669,9 @@ d_n &=& -\left(a(x_m - x_s) + b(y_m - y_s)+c(z_m-z_s)\right)\label{distn}
 where $d_r$ is the radial distance given in Equation~\eref{distr}, $d_n$
 is the distance to the slave node measured in the direction of the
 normal vector, and $a$, $b$, and $c$ are the components of the unit
-normal vector determined in Equations \eref{3dnorm} or~\eref{2dnorm}. 
+normal vector determined in Equations \eref{3dnorm} or~\eref{2dnorm}.
 
-\section{Limits Utility}  
+\section{Limits Utility}
 
 The limits utility provides the basic function of determining the
 minimum, maximum, and range of the coordinates for each of the material
@@ -674,5 +680,4 @@ inherent limitations or assumptions in its implementation. The utility
 simply examines the coordinates of each element in each element block
 and saves the minimum and maximum values.  After all of the elements
 have been processed, the minimum and maximum values are subtracted to
-determine the coordinate range of the data. 
-
+determine the coordinate range of the data.

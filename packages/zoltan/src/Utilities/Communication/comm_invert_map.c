@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -103,10 +103,10 @@ MPI_Comm  comm)			/* communicator */
 
     /* Work-around for compiler bug suggested by Rich Schiek.
      * With 64-bit linux, OpenMPI 1.2.5, and Intel 10.1 compilers with
-     * optimization, passing the address of out_of_mem to MPI_Allreduce 
-     * causes a crash in MPI_Allreduce.  Rich and Tom Russo theorize that in 
-     * Zoltan_Comm_Create, out_of_mem is stored in a register, and taking 
-     * the address of a register is undefined.  Copying out_of_mem to a 
+     * optimization, passing the address of out_of_mem to MPI_Allreduce
+     * causes a crash in MPI_Allreduce.  Rich and Tom Russo theorize that in
+     * Zoltan_Comm_Create, out_of_mem is stored in a register, and taking
+     * the address of a register is undefined.  Copying out_of_mem to a
      * local variable avoids the problem.
      * See Zoltan Bugzilla bug 3825 for more info.
      */
@@ -125,7 +125,7 @@ MPI_Comm  comm)			/* communicator */
     for (i = 0; i < nsends + self_msg; i++)
 	msg_count[procs_to[i]] = 1;
 
-/*  
+/*
  *  KDDKDD:  Replaced MPI_Reduce_scatter with MPI_Reduce and MPI_Scatter
  *  KDDKDD:  to avoid reported problems with MPICH 1.5.2.1.
  *  KDDKDD:  Some sort of MPI_TYPE_INDEXED error.
@@ -144,7 +144,7 @@ MPI_Comm  comm)			/* communicator */
         if (counts[i] > max_nrecvs)
           max_nrecvs = counts[i];
       }
-    } 
+    }
     MPI_Bcast(&max_nrecvs, 1, MPI_INT, 0, comm);
 
     ZOLTAN_FREE(&counts);
@@ -163,23 +163,23 @@ MPI_Comm  comm)			/* communicator */
         ZOLTAN_FREE(&procs_from);
         return(ZOLTAN_MEMERR);
       }
-  
+
       /* Note: I'm counting on having a unique tag or some of my incoming */
       /*       messages might get confused with others. */
-  
+
       for (i=0; i < nrecvs; i++){
         MPI_Irecv(lengths_from + i, 1, MPI_INT, MPI_ANY_SOURCE, tag, comm, req + i);
       }
-  
+
       for (i=0; i < nsends+self_msg; i++){
         MPI_Send(lengths_to + i, 1, MPI_INT, procs_to[i], tag, comm);
       }
-  
+
       for (i=0; i < nrecvs; i++){
         MPI_Wait(req + i, &status);
         procs_from[i] = status.MPI_SOURCE;
       }
-  
+
       ZOLTAN_FREE(&req);
     }
     else{   /* some large HPC machines have a limit on number of posted receives */

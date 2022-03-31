@@ -52,7 +52,7 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DMATIO_WITH_ZLIB:BOOL=ON \
          -DHDF5_ROOT:PATH=${INSTALL_PATH} \
          -DHDF5_DIR:PATH=${INSTALL_PATH} \
-	 ${EXTRA_DEPS}
+	 ${LOCAL_ZLIB} ${EXTRA_DEPS}
 
 
 echo ""

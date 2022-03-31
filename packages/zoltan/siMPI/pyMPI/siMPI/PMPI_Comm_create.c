@@ -42,7 +42,7 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group new_group, MPI_Comm* new_comm) {
         }
         _MPI_COMM_ARRAY_SIZE+=_MPI_PREALLOCATION_SIZE;
       }
-      _MPI_Comm_Insert(i);  
+      _MPI_Comm_Insert(i);
       *new_comm = _MPI_COMM_LIST[i].comm;
       return MPI_SUCCESS;
     } else {
@@ -55,4 +55,3 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group new_group, MPI_Comm* new_comm) {
   return MPI_ERR_INTERN;
 }
 /*============================================================================*/
-

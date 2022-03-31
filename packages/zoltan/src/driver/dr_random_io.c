@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -157,7 +157,7 @@ int create_random_triangles(
 
       /* Generate random triangles and vertex weights. */
       srand(0);
-      diff = 1.0/50.0; 
+      diff = 1.0/50.0;
 
       switch (ndim) {
       case 1:
@@ -176,7 +176,7 @@ int create_random_triangles(
           y[i+1] = y[i];
           x[i+2] = x[i];
           y[i+2] = y[i] + diff;
-          if (fpc != NULL) fprintf(fpc, "%e %e\n%e %e\n%e %e\n", 
+          if (fpc != NULL) fprintf(fpc, "%e %e\n%e %e\n%e %e\n",
                            x[i], y[i],x[i+1], y[i+1],x[i+2], y[i+2]);
         }
         break;
@@ -191,7 +191,7 @@ int create_random_triangles(
           x[i+2] = x[i];
           y[i+2] = y[i] + diff;
           z[i+2] = z[i];
-          if (fpc != NULL) fprintf(fpc, "%e %e %e\n%e %e %e\n%e %e %e\n", 
+          if (fpc != NULL) fprintf(fpc, "%e %e %e\n%e %e %e\n%e %e %e\n",
                    x[i], y[i], z[i],x[i+1], y[i+1], z[i+1],x[i+2], y[i+2], z[i+2]);
         }
         break;
@@ -247,9 +247,9 @@ int create_random_triangles(
           fprintf(fpg, "%d %d 010\n", nvtxs, nvtxs);
         else
           fprintf(fpg, "%d %d 010 %d\n", nvtxs, nvtxs, vwgt_dim);
-      
+
         for (i = 0, w=0; i < nvtxs; i++, w += 2) {
-          for (j = 0; j < vwgt_dim; j++) 
+          for (j = 0; j < vwgt_dim; j++)
             fprintf(fpg, "%e ", vwgts[i*vwgt_dim+j]);
           fprintf(fpg, "%d %d",adj[w],adj[w+1]);
           fprintf(fpg, "\n");
@@ -262,8 +262,8 @@ int create_random_triangles(
 
   /* Distribute graph */
 
-  if (!chaco_dist_graph(MPI_COMM_WORLD, pio_info, 0, &gnvtxs, &nvtxs, 
-             &start, &adj, &vwgt_dim, &vwgts, &ewgt_dim, &ewgts, 
+  if (!chaco_dist_graph(MPI_COMM_WORLD, pio_info, 0, &gnvtxs, &nvtxs,
+             &start, &adj, &vwgt_dim, &vwgts, &ewgt_dim, &ewgts,
              &ndim, &x, &y, &z, &assignments)) {
     Gen_Error(0, "fatal: Error returned from chaco_dist_graph");
     return 0;
@@ -276,7 +276,7 @@ int create_random_triangles(
     return 0;
   }
 
-    
+
   safe_free((void **)(void *) &adj);
   safe_free((void **)(void *) &vwgts);
   safe_free((void **)(void *) &ewgts);
@@ -378,7 +378,7 @@ int create_random_input(
       }
 
       for (i = 0; i < nvtxs; i++)  {
-        if (pio_info->init_vwgt_dim == 0) 
+        if (pio_info->init_vwgt_dim == 0)
           /* Unit weights if no weights were requested. */
           vwgts[i] = 1.0;
         else
@@ -408,8 +408,8 @@ int create_random_input(
           fprintf(fpg, "%d %d 010 %d\n", nvtxs, start[nvtxs], vwgt_dim);
       }
       for (i = 0; i < nvtxs; i++) {
-        if (fpg != NULL) 
-          for (j = 0; j < vwgt_dim; j++) 
+        if (fpg != NULL)
+          for (j = 0; j < vwgt_dim; j++)
             fprintf(fpg, "%e ", vwgts[i*vwgt_dim+j]);
         /* KDDSJP Print edges here */
         if (fpg != NULL) fprintf(fpg, "\n");
@@ -421,8 +421,8 @@ int create_random_input(
 
   /* Distribute graph */
 
-  if (!chaco_dist_graph(MPI_COMM_WORLD, pio_info, 0, &gnvtxs, &nvtxs, 
-             &start, &adj, &vwgt_dim, &vwgts, &ewgt_dim, &ewgts, 
+  if (!chaco_dist_graph(MPI_COMM_WORLD, pio_info, 0, &gnvtxs, &nvtxs,
+             &start, &adj, &vwgt_dim, &vwgts, &ewgt_dim, &ewgts,
              &ndim, &x, &y, &z, &assignments)) {
     Gen_Error(0, "fatal: Error returned from chaco_dist_graph");
     return 0;
@@ -494,15 +494,15 @@ int create_a_graph(
 {
   const char  *yo = "create_a_graph";
 
-  /* The graph (and geometry) is created in parallel by each process, as opposed to being 
+  /* The graph (and geometry) is created in parallel by each process, as opposed to being
    * created by process 0 and then dealt out to the other processes.  This allows us to
    * create graphs where the number of vertices is larger than a number which would
    * fit in the memory of one process.
    *
    * Geometrically the graph is a cylinder extending in the z-direction.
    *
-   * Each process creates points along a circle in an x-y plane, and knows which process has the 
-   * plane adjacent to it and what global ID has been assigned to the neighbors with the same 
+   * Each process creates points along a circle in an x-y plane, and knows which process has the
+   * plane adjacent to it and what global ID has been assigned to the neighbors with the same
    * x and y value as its points.  So adjacency information is easily created.
    */
 
@@ -518,7 +518,7 @@ int create_a_graph(
   float *ewgts = NULL, *vwgts = NULL;
   float *x = NULL, *y = NULL, *z = NULL;
 
-  double theta, delta, radius, m, length, step; 
+  double theta, delta, radius, m, length, step;
 
 /***************************** BEGIN EXECUTION ******************************/
 
@@ -533,7 +533,7 @@ int create_a_graph(
 
   nvtxs = gnvtxs / Num_Proc;
 
-  if (nvtxs > 4){ 
+  if (nvtxs > 4){
     num4 = nvtxs / 4;
     nvtxs = num4 * 4;
   }
@@ -570,7 +570,7 @@ int create_a_graph(
     step = 1.0 / 500.0;
     length = (double)nvtxs * step;
     x[0] = length * (float)Proc;
-    
+
     for (i=1; i < nvtxs; i++){
       x[i] = x[i+1] + step;
     }
@@ -581,11 +581,11 @@ int create_a_graph(
     theta = (2 * M_PI ) / (double)Num_Proc;
     delta = theta / (double)nvtxs;
     m = (theta * Proc);
-    
+
     for (i=0; i < nvtxs; i++, m += delta){
       x[i] = radius * cos(m);
       y[i] = radius * sin(m);
-    } 
+    }
   }
   else if (ndim == 3){
     /* a cylinder */
@@ -623,7 +623,7 @@ int create_a_graph(
   }
 
   for (i = 0; i < nvtxs; i++)  {
-    if (pio_info->init_vwgt_dim == 0) 
+    if (pio_info->init_vwgt_dim == 0)
       /* Unit weights if no weights were requested. */
       vwgts[i] = 1.0;
     else {
@@ -676,7 +676,7 @@ int create_a_graph(
       }
     }
   }
-  else{  
+  else{
 
     /* each vertex has 2 neighbors on this process, and one or two off process */
 
@@ -819,14 +819,14 @@ ZOLTAN_ID_TYPE min_vtx;
 
   /* write element data */
 
-  for (i = 0; i < mesh->elem_array_len; i++) 
+  for (i = 0; i < mesh->elem_array_len; i++)
     initialize_element(&(mesh->elements[i]));
 
   min_vtx = local_to_global_id_map(0, Proc);
 
   for (i = 0; i < nvtxs; i++) {
     mesh->elements[i].globalID = local_to_global_id_map(i, Proc);
-                                                       
+
     if (vwgts != NULL){
       for (j=0; j<vwgt_dim; j++) {
         mesh->elements[i].cpu_wgt[j] = vwgts[i*vwgt_dim+j];
@@ -843,7 +843,7 @@ ZOLTAN_ID_TYPE min_vtx;
       mesh->elements[i].connect = (ZOLTAN_ID_TYPE *) malloc(sizeof(ZOLTAN_ID_TYPE));
       mesh->elements[i].connect[0] = mesh->elements[i].globalID;
       mesh->elements[i].coord = (float **) malloc(sizeof(float *));
-      mesh->elements[i].coord[0] = (float *) calloc(mesh->num_dims, sizeof(float));  
+      mesh->elements[i].coord[0] = (float *) calloc(mesh->num_dims, sizeof(float));
       mesh->elements[i].coord[0][0] = x[i];
       mesh->elements[i].avg_coord[0] = x[i];
       if (mesh->num_dims > 1) {
@@ -890,7 +890,7 @@ ZOLTAN_ID_TYPE min_vtx;
          * if the adjacent element is on this processor
          * then find the local id for that element
          */
-        if (k == Proc) 
+        if (k == Proc)
           mesh->elements[i].adj[j] = elem_id-min_vtx;
         else /* use the global id */
           mesh->elements[i].adj[j] = elem_id;

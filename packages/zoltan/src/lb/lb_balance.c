@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -66,7 +66,7 @@ extern "C" {
 /*****************************************************************************/
 /*
  *  This file contains routines for performing load balancing with Zoltan.
- *  These functions are all callable by the application.  
+ *  These functions are all callable by the application.
  */
 /*****************************************************************************/
 /*****************************************************************************/
@@ -95,7 +95,7 @@ static void free_hash_table(struct Hash_Node **ht, int tableSize);
 /****************************************************************************/
 
 int Zoltan_LB_Partition(
-  ZZ *zz, 
+  ZZ *zz,
   int *changes,
   int *num_gid_entries,
   int *num_lid_entries,
@@ -123,8 +123,8 @@ int ierr = ZOLTAN_OK;    /* Error code */
 
   ierr = Zoltan_LB(zz, 1, changes, num_gid_entries, num_lid_entries,
            num_import_objs, import_global_ids, import_local_ids,
-           import_procs, import_to_part, 
-           num_export_objs, export_global_ids, 
+           import_procs, import_to_part,
+           num_export_objs, export_global_ids,
            export_local_ids, export_procs, export_to_part);
 
   ZOLTAN_TRACE_EXIT(zz, yo);
@@ -136,7 +136,7 @@ int ierr = ZOLTAN_OK;    /* Error code */
 /*****************************************************************************/
 
 int Zoltan_LB_Balance(
-  ZZ *zz, 
+  ZZ *zz,
   int *changes,
   int *num_gid_entries,
   int *num_lid_entries,
@@ -152,7 +152,7 @@ int Zoltan_LB_Balance(
 {
 /*
  * Wrapper around Zoltan_LB for backward compatibility with
- * previous Zoltan versions.  
+ * previous Zoltan versions.
  * Appropriate only when (# requested parts == # processors), uniformly
  * distributed.
  * Arguments correspond directly with arguments of Zoltan_LB.
@@ -171,11 +171,11 @@ struct OVIS_parameters ovisParameters;
 
   /* Determine whether part parameters were set.  Report error if
    * values are unreasonable. */
-  if ((zz->LB.Num_Global_Parts_Param != -1 && 
+  if ((zz->LB.Num_Global_Parts_Param != -1 &&
        zz->LB.Num_Global_Parts_Param != zz->Num_Proc) ||
       (zz->LB.Num_Local_Parts_Param != -1 &&
        zz->LB.Num_Local_Parts_Param != 1)) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
       "Non-uniform distribution of parts over processors is specified; "
       "use Zoltan_LB_Partition.");
     ierr = ZOLTAN_FATAL;
@@ -190,12 +190,12 @@ struct OVIS_parameters ovisParameters;
     int acg_num_obj = zz->Get_Num_Obj(zz->Get_Num_Obj_Data, &error);
     printf ("Entering Proc %d num_objs %d\n", zz->Proc, acg_num_obj);
   }
-#endif 
-  
+#endif
+
   ierr = Zoltan_LB(zz, 0, changes, num_gid_entries, num_lid_entries,
            num_import_objs, import_global_ids, import_local_ids,
-           import_procs, &import_to_part, 
-           num_export_objs, export_global_ids, 
+           import_procs, &import_to_part,
+           num_export_objs, export_global_ids,
            export_local_ids, export_procs, &export_to_part);
 
 
@@ -205,14 +205,14 @@ End:
   if (ovisParameters.outputLevel > 5){
     printf ("Exiting Proc %d num_import_objs %d num_export_objs %d\n", zz->Proc, *num_import_objs, *num_export_objs);
   }
-#endif 
+#endif
 
   /* Not returning import/export part information; free it if allocated. */
-  if (import_to_part != NULL) 
-    Zoltan_Special_Free(zz, (void **)(void*) &import_to_part, 
+  if (import_to_part != NULL)
+    Zoltan_Special_Free(zz, (void **)(void*) &import_to_part,
                         ZOLTAN_SPECIAL_MALLOC_INT);
-  if (export_to_part != NULL) 
-    Zoltan_Special_Free(zz, (void **)(void*) &export_to_part, 
+  if (export_to_part != NULL)
+    Zoltan_Special_Free(zz, (void **)(void*) &export_to_part,
                         ZOLTAN_SPECIAL_MALLOC_INT);
   ZOLTAN_TRACE_EXIT(zz, yo);
   return(ierr);
@@ -224,12 +224,12 @@ End:
 /*****************************************************************************/
 
 static int Zoltan_LB(
-  ZZ *zz, 
+  ZZ *zz,
   int include_parts,             /* Flag indicating whether to generate
                                     part informtion;
                                     0 if called by Zoltan_LB_Balance,
                                     1 if called by Zoltan_LB_Partition.       */
-  int *changes,                  /* Set to zero or one depending on if 
+  int *changes,                  /* Set to zero or one depending on if
                                     Zoltan determines a new
                                     decomposition or not:
                                     zero - No changes to the decomposition
@@ -255,7 +255,7 @@ static int Zoltan_LB(
   ZOLTAN_ID_PTR *import_local_ids,   /* Array of local IDs for non-local objects
                                     (i.e., objs to be imported) in
                                     the processor's new decomposition.        */
-  int **import_procs,            /* Array of processor IDs for processors 
+  int **import_procs,            /* Array of processor IDs for processors
                                     currently owning non-local objects (i.e.,
                                     objs to be imported) in this processor's
                                     new decomposition.                        */
@@ -266,23 +266,23 @@ static int Zoltan_LB(
                                     the new decomposition.                    */
   ZOLTAN_ID_PTR *export_global_ids,/* Array of global IDs for objects that need
                                     to be exported (assigned and sent to other
-                                    processors) to establish the new 
+                                    processors) to establish the new
                                     decomposition.                            */
   ZOLTAN_ID_PTR *export_local_ids,   /* Array of local IDs for objects that need
                                     to be exported (assigned and sent to other
-                                    processors) to establish the new 
+                                    processors) to establish the new
                                     decomposition.                            */
   int **export_procs,            /* Array of destination processor IDs for
-                                    objects that need to be exported 
+                                    objects that need to be exported
                                     to establish the new decomposition.       */
-  int **export_to_part           /* Partition to which objects should be 
+  int **export_to_part           /* Partition to which objects should be
                                     exported.                                 */
 )
 {
 /*
  * Main load-balancing routine.
  * Input:  a Zoltan structure with appropriate function pointers set.
- * Output: 
+ * Output:
  *   changes
  *   num_import_objs
  *   import_global_ids
@@ -304,7 +304,7 @@ int error = ZOLTAN_OK;    /* Error code */
 double start_time, end_time;
 double lb_time[2] = {0.0,0.0};
 char msg[256];
-int comm[3],gcomm[3]; 
+int comm[3],gcomm[3];
 float *part_sizes = NULL, *fdummy = NULL;
 int wgt_dim = zz->Obj_Weight_Dim;
 int part_dim;
@@ -325,17 +325,17 @@ struct OVIS_parameters ovisParameters;
 #ifdef ZOLTAN_OVIS
   Zoltan_OVIS_Setup(zz, &ovisParameters);
   if (zz->Proc == 0)
-    printf("OVIS PARAMETERS %s %s %d %f\n", 
-           ovisParameters.hello, 
-           ovisParameters.dll, 
-           ovisParameters.outputLevel, 
+    printf("OVIS PARAMETERS %s %s %d %f\n",
+           ovisParameters.hello,
+           ovisParameters.dll,
+           ovisParameters.outputLevel,
            ovisParameters.minVersion);
   ovis_enabled(zz->Proc, ovisParameters.dll);
 
 
 #endif
 
-  /* 
+  /*
    * Compute Max number of array entries per ID over all processors.
    * Compute Max number of return arguments for Zoltan_LB_Balance.
    * This is a sanity-maintaining step; we don't want different
@@ -367,7 +367,7 @@ struct OVIS_parameters ovisParameters;
    *  communicator.
    */
 
-  if (ZOLTAN_PROC_NOT_IN_COMMUNICATOR(zz)) 
+  if (ZOLTAN_PROC_NOT_IN_COMMUNICATOR(zz))
     goto End;
 
   if (zz->LB.Method == NONE) {
@@ -398,7 +398,7 @@ struct OVIS_parameters ovisParameters;
       int np, fp;
       for (i = 0; i < zz->Num_Proc; i++) {
         Zoltan_LB_Proc_To_Part(zz, i, &np, &fp);
-        printf("%d Proc_To_Part Proc %d NParts %d FPart %d\n", 
+        printf("%d Proc_To_Part Proc %d NParts %d FPart %d\n",
                zz->Proc, i, np, fp);
       }
     }
@@ -412,10 +412,10 @@ struct OVIS_parameters ovisParameters;
     {
       float part_sizes[1];
       int part_ids[1], wgt_idx[1];
-  
+
       wgt_idx[0] = 0;
       part_ids[0] = 0;
-      ovis_getPartsize(&(part_sizes[0])); 
+      ovis_getPartsize(&(part_sizes[0]));
       printf("Rank %d ps %f\n",zz->Proc, part_sizes[0]);
       /* clear out old part size info first */
       Zoltan_LB_Set_Part_Sizes(zz, 0, -1, NULL, NULL, NULL);
@@ -425,7 +425,7 @@ struct OVIS_parameters ovisParameters;
 
     part_dim = ((wgt_dim > 0) ? wgt_dim : 1);
 
-    part_sizes = (float *) ZOLTAN_MALLOC(sizeof(float) * part_dim 
+    part_sizes = (float *) ZOLTAN_MALLOC(sizeof(float) * part_dim
                                      * zz->LB.Num_Global_Parts);
     if (part_sizes == NULL) {
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Memory error.");
@@ -462,8 +462,8 @@ struct OVIS_parameters ovisParameters;
 
     error = zz->LB.LB_Fn(zz, part_sizes,
                          num_import_objs, import_global_ids, import_local_ids,
-                         import_procs, import_to_part, 
-                         num_export_objs, export_global_ids, export_local_ids, 
+                         import_procs, import_to_part,
+                         num_export_objs, export_global_ids, export_local_ids,
                          export_procs, export_to_part);
 
     ZOLTAN_FREE(&part_sizes);
@@ -486,14 +486,14 @@ struct OVIS_parameters ovisParameters;
         ZOLTAN_PRINT_WARN(zz->Proc, yo, msg);
       }
     }
-  
+
     ZOLTAN_TRACE_DETAIL(zz, yo, "Done partitioning");
-  
+
     if (*num_import_objs >= 0)
-      MPI_Allreduce(num_import_objs, &gmax, 1, MPI_INT, MPI_MAX, 
+      MPI_Allreduce(num_import_objs, &gmax, 1, MPI_INT, MPI_MAX,
                   zz->Communicator);
     else /* use export data */
-      MPI_Allreduce(num_export_objs, &gmax, 1, MPI_INT, MPI_MAX, 
+      MPI_Allreduce(num_export_objs, &gmax, 1, MPI_INT, MPI_MAX,
                   zz->Communicator);
   }
 
@@ -520,7 +520,7 @@ struct OVIS_parameters ovisParameters;
        * This parameter setting requires that all local objects
        * and their assignments appear in the export list.
        */
-      error= Zoltan_Get_Obj_List_Special_Malloc(zz, num_export_objs, 
+      error= Zoltan_Get_Obj_List_Special_Malloc(zz, num_export_objs,
                export_global_ids, export_local_ids,
                wgt_dim, &fdummy, export_to_part);
 
@@ -551,11 +551,11 @@ struct OVIS_parameters ovisParameters;
    *  Unless we were given both maps, compute the inverse map.
    */
   if (zz->LB.Return_Lists == ZOLTAN_LB_NO_LISTS) {
-    if (*num_import_objs >= 0) 
-      Zoltan_LB_Special_Free_Part(zz, import_global_ids, import_local_ids, 
+    if (*num_import_objs >= 0)
+      Zoltan_LB_Special_Free_Part(zz, import_global_ids, import_local_ids,
                                   import_procs, import_to_part);
-    if (*num_export_objs >= 0) 
-      Zoltan_LB_Special_Free_Part(zz, export_global_ids, export_local_ids, 
+    if (*num_export_objs >= 0)
+      Zoltan_LB_Special_Free_Part(zz, export_global_ids, export_local_ids,
                                   export_procs, export_to_part);
     *num_import_objs = *num_export_objs = -1;
   }
@@ -564,11 +564,11 @@ struct OVIS_parameters ovisParameters;
     if (*num_export_objs >= 0) {
       /* Both maps already available; nothing to do. */;
     }
-    else if (zz->LB.Return_Lists == ZOLTAN_LB_ALL_LISTS || 
+    else if (zz->LB.Return_Lists == ZOLTAN_LB_ALL_LISTS ||
              zz->LB.Return_Lists == ZOLTAN_LB_EXPORT_LISTS ||
              zz->LB.Return_Lists == ZOLTAN_LB_COMPLETE_EXPORT_LISTS) {
       /* Export lists are requested; compute export map */
-      error = Zoltan_Invert_Lists(zz, *num_import_objs, *import_global_ids, 
+      error = Zoltan_Invert_Lists(zz, *num_import_objs, *import_global_ids,
                                       *import_local_ids, *import_procs,
                                       *import_to_part,
                                       num_export_objs, export_global_ids,
@@ -585,7 +585,7 @@ struct OVIS_parameters ovisParameters;
         /* Method returned import lists, but only export lists were desired. */
         /* Import lists not needed; free them. */
         *num_import_objs = -1;
-        Zoltan_LB_Special_Free_Part(zz, import_global_ids, import_local_ids, 
+        Zoltan_LB_Special_Free_Part(zz, import_global_ids, import_local_ids,
                             import_procs, import_to_part);
       }
     }
@@ -593,14 +593,14 @@ struct OVIS_parameters ovisParameters;
   else { /* (*num_import_objs < 0) */
     if (*num_export_objs >= 0) {
       /* Only export lists have been returned. */
-      if (zz->LB.Return_Lists == ZOLTAN_LB_ALL_LISTS || 
+      if (zz->LB.Return_Lists == ZOLTAN_LB_ALL_LISTS ||
           zz->LB.Return_Lists == ZOLTAN_LB_IMPORT_LISTS) {
         /* Compute import map */
-        error = Zoltan_Invert_Lists(zz, *num_export_objs, *export_global_ids, 
+        error = Zoltan_Invert_Lists(zz, *num_export_objs, *export_global_ids,
                                         *export_local_ids, *export_procs,
                                         *export_to_part,
                                         num_import_objs, import_global_ids,
-                                        import_local_ids, import_procs, 
+                                        import_local_ids, import_procs,
                                         import_to_part);
 
         if (error != ZOLTAN_OK && error != ZOLTAN_WARN) {
@@ -613,7 +613,7 @@ struct OVIS_parameters ovisParameters;
           /* Method returned export lists, but only import lists are desired. */
           /* Export lists not needed; free them. */
           *num_export_objs = -1;
-          Zoltan_LB_Special_Free_Part(zz, export_global_ids, export_local_ids, 
+          Zoltan_LB_Special_Free_Part(zz, export_global_ids, export_local_ids,
                               export_procs, export_to_part);
         }
       }
@@ -669,15 +669,15 @@ struct OVIS_parameters ovisParameters;
       ZOLTAN_ID_PTR gid;
 
       if (*num_export_objs < all_num_obj){
-  
+
         /* Create a lookup table for exported IDs */
-  
+
         ts = Zoltan_Recommended_Hash_Size(*num_export_objs);
         ht = create_hash_table(zz, *export_global_ids, *num_export_objs, ts);
-  
+
         /* Create a list of all gids, lids and parts */
-  
-        error = Zoltan_Get_Obj_List(zz, &all_num_obj, 
+
+        error = Zoltan_Get_Obj_List(zz, &all_num_obj,
                                         &all_global_ids, &all_local_ids,
                                         wgt_dim, &fdummy, &all_export_to_part);
 
@@ -687,20 +687,20 @@ struct OVIS_parameters ovisParameters;
           if (all_num_obj && !all_export_procs)
             error = ZOLTAN_MEMERR;
         }
-  
+
         if ((error != ZOLTAN_OK) && (error != ZOLTAN_WARN)){
           sprintf(msg, "Error building complete export list; "
                        "%d returned by Zoltan_Get_Obj_List\n", error);
           ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
           goto End;
         }
-  
+
         gid = all_global_ids;
-  
+
         for (i=0; i < all_num_obj; i++, gid += zz->Num_GID){
-  
+
           int idIdx = search_hash_table(zz, gid, ht, ts);
-  
+
           if (idIdx >= 0){
 
             all_export_procs[i] = (*export_procs)[idIdx];
@@ -711,25 +711,25 @@ struct OVIS_parameters ovisParameters;
             /* No change in all_export_to_part[i] so no assignment needed */
           }
         }
-  
+
         free_hash_table(ht, ts);
 
-        Zoltan_LB_Special_Free_Part(zz, export_global_ids, export_local_ids, 
+        Zoltan_LB_Special_Free_Part(zz, export_global_ids, export_local_ids,
                             export_procs, export_to_part);
-        if (!Zoltan_Special_Malloc(zz, (void **)export_global_ids, 
+        if (!Zoltan_Special_Malloc(zz, (void **)export_global_ids,
                                    all_num_obj, ZOLTAN_SPECIAL_MALLOC_GID)
-         || (zz->Num_LID && 
-            !Zoltan_Special_Malloc(zz, (void **)export_local_ids, 
+         || (zz->Num_LID &&
+            !Zoltan_Special_Malloc(zz, (void **)export_local_ids,
                                    all_num_obj, ZOLTAN_SPECIAL_MALLOC_LID))
-         || !Zoltan_Special_Malloc(zz, (void **)export_procs, 
+         || !Zoltan_Special_Malloc(zz, (void **)export_procs,
                                    all_num_obj, ZOLTAN_SPECIAL_MALLOC_INT)
-         || !Zoltan_Special_Malloc(zz, (void **)export_to_part, 
+         || !Zoltan_Special_Malloc(zz, (void **)export_to_part,
                                    all_num_obj, ZOLTAN_SPECIAL_MALLOC_INT))
         {
           error = ZOLTAN_MEMERR;
           goto End;
         }
-  
+
         *num_export_objs = all_num_obj;
 
         {
@@ -770,8 +770,8 @@ struct OVIS_parameters ovisParameters;
     for (i = 0; i < *num_import_objs; i++) {
       printf("    Obj: ");
       ZOLTAN_PRINT_GID(zz, &((*import_global_ids)[i*zz->Num_GID]));
-      printf("  To part: %4d", 
-             (*import_to_part != NULL ? (*import_to_part)[i] 
+      printf("  To part: %4d",
+             (*import_to_part != NULL ? (*import_to_part)[i]
                                       : zz->Proc));
       printf("  From processor: %4d\n", (*import_procs)[i]);
     }
@@ -781,7 +781,7 @@ struct OVIS_parameters ovisParameters;
       printf("    Obj: ");
       ZOLTAN_PRINT_GID(zz, &((*export_global_ids)[i*zz->Num_GID]));
       printf("  To part: %4d",
-             (*export_to_part != NULL ? (*export_to_part)[i] 
+             (*export_to_part != NULL ? (*export_to_part)[i]
                                       : (*export_procs)[i]));
       printf("  To processor: %4d\n", (*export_procs)[i]);
     }
@@ -812,16 +812,16 @@ struct OVIS_parameters ovisParameters;
 
     ZOLTAN_TRACE_DETAIL(zz, yo, "Done auto-migration");
   }
-  
+
   /* Print timing info */
   if (zz->Debug_Level >= ZOLTAN_DEBUG_ZTIME) {
     if (zz->Proc == zz->Debug_Proc) {
       printf("ZOLTAN Times:  \n");
     }
-    Zoltan_Print_Stats (zz->Communicator, zz->Debug_Proc, lb_time[0], 
+    Zoltan_Print_Stats (zz->Communicator, zz->Debug_Proc, lb_time[0],
                    "ZOLTAN     Partition:     ");
     if (zz->Migrate.Auto_Migrate)
-      Zoltan_Print_Stats (zz->Communicator, zz->Debug_Proc, lb_time[1], 
+      Zoltan_Print_Stats (zz->Communicator, zz->Debug_Proc, lb_time[1],
                       "ZOLTAN     Migrate: ");
   }
 
@@ -841,11 +841,11 @@ int Zoltan_LB_Build_PartDist(ZZ *zz)
 char *yo = "Zoltan_LB_Build_PartDist";
 int ierr = ZOLTAN_OK;
 int inflag[6], outflag[6] = {0,0,-1,0,0,0};
-int global_parts_set = 0;   /* number of procs on which NUM_GLOBAL_PARTS 
+int global_parts_set = 0;   /* number of procs on which NUM_GLOBAL_PARTS
                                parameter was set. */
 int local_parts_set = 0;    /* number of procs on which NUM_LOCAL_PARTS
                                parameter was set. */
-int max_global_parts = 0;   /* Max value of Num_Global_Parts_Param on all 
+int max_global_parts = 0;   /* Max value of Num_Global_Parts_Param on all
                                procs. */
 int sum_local_parts = 0;    /* Sum of Num_Local_Parts over all procs.
                                Procs on which NUM_LOCAL_PARTS was not
@@ -865,10 +865,10 @@ MPI_User_function Zoltan_PartDist_MPIOp;
   MPI_Op_create(&Zoltan_PartDist_MPIOp,1,&op);
 
   /* Check whether global parts or local parts parameters were used. */
-  inflag[0] = (zz->LB.Num_Global_Parts_Param != -1); 
-  inflag[1] = (zz->LB.Num_Local_Parts_Param != -1); 
+  inflag[0] = (zz->LB.Num_Global_Parts_Param != -1);
+  inflag[1] = (zz->LB.Num_Local_Parts_Param != -1);
   inflag[2] =  zz->LB.Num_Global_Parts_Param;
-  inflag[3] = ((zz->LB.Num_Local_Parts_Param == -1) 
+  inflag[3] = ((zz->LB.Num_Local_Parts_Param == -1)
                     ? 0 : zz->LB.Num_Local_Parts_Param);
   inflag[4] = (zz->LB.Num_Global_Parts_Param != zz->LB.Prev_Global_Parts_Param);
   inflag[5] = (zz->LB.Num_Local_Parts_Param != zz->LB.Prev_Local_Parts_Param);
@@ -883,7 +883,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
   }
 
   /* Since PartDist is changing, can't reuse old parts.
-   * Free LB.Data_Structure to prevent reuse. 
+   * Free LB.Data_Structure to prevent reuse.
    * Also free LB.PartDist and LB.ProcDist.
    */
   if (zz->LB.Free_Structure != NULL)
@@ -900,7 +900,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
   sum_local_parts = outflag[3];   /* Sum of inflag[3] */
 
   /* Check whether any parameters were set;
-   * No need to build the PartDist array if not. 
+   * No need to build the PartDist array if not.
    */
   if ((!global_parts_set || (max_global_parts==num_proc)) && !local_parts_set) {
     /* Number of parts == number of procs, uniformly distributed; */
@@ -910,28 +910,28 @@ MPI_User_function Zoltan_PartDist_MPIOp;
 
   else {
     /* Either NUM_GLOBAL_PARTS is set != num_proc or NUM_LOCAL_PARTS
-     * is set.  Build PartDist, distributing parts to processors as 
-     * specified. 
+     * is set.  Build PartDist, distributing parts to processors as
+     * specified.
      */
 
     /* error checking. */
     if (local_parts_set) {
-      if (!global_parts_set) 
+      if (!global_parts_set)
         max_global_parts = sum_local_parts;
       else if (sum_local_parts > max_global_parts) {
         char emsg[256];
-        sprintf(emsg, 
-                "Sum of NUM_LOCAL_PARTS %d > NUM_GLOBAL_PARTS %d", 
+        sprintf(emsg,
+                "Sum of NUM_LOCAL_PARTS %d > NUM_GLOBAL_PARTS %d",
                 sum_local_parts, max_global_parts);
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, emsg);
         ierr = ZOLTAN_FATAL;
         goto End;
       }
-      else if (sum_local_parts < max_global_parts && 
+      else if (sum_local_parts < max_global_parts &&
                local_parts_set == num_proc) {
         char emsg[256];
-        sprintf(emsg, 
-                "Sum of NUM_LOCAL_PARTS %d < NUM_GLOBAL_PARTS %d", 
+        sprintf(emsg,
+                "Sum of NUM_LOCAL_PARTS %d < NUM_GLOBAL_PARTS %d",
                 sum_local_parts, max_global_parts);
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, emsg);
         ierr = ZOLTAN_FATAL;
@@ -953,7 +953,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
     }
 
     pdist = zz->LB.PartDist;
- 
+
     /* Compute the PartDist array. */
 
     if (!local_parts_set) {
@@ -987,14 +987,14 @@ MPI_User_function Zoltan_PartDist_MPIOp;
 
       /* NUM_LOCAL_PARTS is set on at least some processors. */
       /* Distribute parts to processors to match NUM_LOCAL_PARTS
-         where specified; distribute remaining parts 
+         where specified; distribute remaining parts
          to processors that didn't specify NUM_LOCAL_PARTS */
 
       zz->LB.Single_Proc_Per_Part = 1;
 
       /* Gather the parameter values from all processors. */
       local_parts_params = (int *) ZOLTAN_MALLOC((num_proc+1)* sizeof(int));
-      MPI_Allgather(&(zz->LB.Num_Local_Parts_Param), 1, MPI_INT, 
+      MPI_Allgather(&(zz->LB.Num_Local_Parts_Param), 1, MPI_INT,
                     local_parts_params, 1, MPI_INT, zz->Communicator);
 
       /* Compute number of parts not specified by NUM_LOCAL_PARTS */
@@ -1021,7 +1021,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
             pdist[cnt++] = i;
           pcnt++;
         }
-  
+
       pdist[cnt] = num_proc;
       ZOLTAN_FREE(&local_parts_params);
     }
@@ -1033,7 +1033,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
       printf("[%1d] Debug: LB.PartDist = ", zz->Proc);
       for (i=0; i<=zz->LB.Num_Global_Parts; i++)
         printf("%d ", zz->LB.PartDist[i]);
-      
+
     }
   }
 
@@ -1043,9 +1043,9 @@ End:
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
-static struct Hash_Node **create_hash_table(ZZ *zz, 
+static struct Hash_Node **create_hash_table(ZZ *zz,
                           ZOLTAN_ID_PTR gids, int numIds,
-                          int tableSize) 
+                          int tableSize)
 {
 struct Hash_Node **ht=NULL;
 struct Hash_Node *hnodes=NULL;
@@ -1057,7 +1057,7 @@ int i, j;
   ht[tableSize] = hnodes;
 
   for (i=0; i<numIds; i++){
-    j = Zoltan_Hash(gids, zz->Num_GID, tableSize); 
+    j = Zoltan_Hash(gids, zz->Num_GID, tableSize);
 
     hnodes[i].next = ht[j];
     hnodes[i].gid = gids;
@@ -1079,7 +1079,7 @@ struct Hash_Node *hn;
   found = -1;
 
   j = Zoltan_Hash(gid, zz->Num_GID, tableSize);
- 
+
   hn = ht[j];
 
   while (hn){
@@ -1090,7 +1090,7 @@ struct Hash_Node *hn;
     }
     hn = hn->next;
   }
-  return found; 
+  return found;
 }
 static void free_hash_table(struct Hash_Node **ht, int tableSize)
 {
@@ -1101,9 +1101,9 @@ static void free_hash_table(struct Hash_Node **ht, int tableSize)
 /*****************************************************************************/
 /*****************************************************************************/
 void Zoltan_PartDist_MPIOp(
-  void *in, 
-  void *inout, 
-  int *len, 
+  void *in,
+  void *inout,
+  int *len,
   MPI_Datatype *dptr)
 {
 int *int_in = (int *) in;

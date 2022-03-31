@@ -187,14 +187,14 @@ int *nextProc;
 /* Application-defined query functions used in migrating *******************
  *
  * Migration strategy:
- *   The data sent for each vertex is the list 
+ *   The data sent for each vertex is the list
  *   of the vertex neighbor global IDs.
  *   At the pack query function, copy the vertex
  *   data to the Zoltan-supplied buffer.
- *   At the mid-migrate query function, rewrite 
+ *   At the mid-migrate query function, rewrite
  *   the local graph data omitting the
  *   exported vertices.
- *   At the unpack query function, copy the 
+ *   At the unpack query function, copy the
  *   new vertices to the local graph data.
  */
 /***************************************************************************/
@@ -228,8 +228,8 @@ static void pack_object_messages(void *data, int gidSize, int lidSize,
   *ierr = ZOLTAN_OK;
   graph = (GRAPH_DATA *)data;
 
-  /* For each exported vertex, write its neighbor 
-   * global IDs to the supplied buffer 
+  /* For each exported vertex, write its neighbor
+   * global IDs to the supplied buffer
    */
 
   for (i=0; i < num_ids; i++){
@@ -441,7 +441,7 @@ int main(int argc, char *argv[])
                            0);                     /* debug level */
 
   parts = (int *) malloc(myGraph.numMyVertices * sizeof(int));
-  lids = (ZOLTAN_ID_TYPE *) 
+  lids = (ZOLTAN_ID_TYPE *)
           malloc(myGraph.numMyVertices * sizeof(ZOLTAN_ID_TYPE));
 
   for (i=0; i < myGraph.numMyVertices; i++){
@@ -1010,7 +1010,7 @@ GRAPH_DATA *send_graph;
       if (send_count[1] > 0){
         MPI_Recv(graph->nborGID,send_count[1], ZOLTAN_ID_MPI_TYPE, 0,
                  id_tag + 2, MPI_COMM_WORLD, &status);
-        MPI_Recv(graph->nborPart,send_count[1], MPI_INT, 0, 
+        MPI_Recv(graph->nborPart,send_count[1], MPI_INT, 0,
                  id_tag + 3, MPI_COMM_WORLD, &status);
       }
     }

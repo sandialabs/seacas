@@ -22,4 +22,3 @@ void MPI_ERRORS_ARE_FATAL (MPI_Comm* comm, int* error_code, ...)
   if (comm == (MPI_Comm)0) MPI_Abort(0, *error_code);
   MPI_Abort(*comm, *error_code);
 }
-

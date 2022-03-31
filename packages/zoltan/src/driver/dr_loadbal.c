@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -173,7 +173,7 @@ int setup_zoltan(struct Zoltan_Struct *zz, int Proc, PROB_INFO_PTR prob,
     if (prob->params[i].Index>=0)
       ierr = Zoltan_Set_Param_Vec(zz, prob->params[i].Name, prob->params[i].Val,
 	     prob->params[i].Index);
-    else 
+    else
       ierr = Zoltan_Set_Param(zz, prob->params[i].Name, prob->params[i].Val);
     if (ierr == ZOLTAN_FATAL) {
       sprintf(errmsg,
@@ -342,7 +342,7 @@ int setup_zoltan(struct Zoltan_Struct *zz, int Proc, PROB_INFO_PTR prob,
 
     safe_free((void **)(void *) &psize);
     safe_free((void **)(void *) &partid);
-  
+
     psize = (float *) malloc(nentries * sizeof(float));
     partid = (int *) malloc(2 * nentries * sizeof(int));
     idx = partid + nentries;
@@ -1589,10 +1589,10 @@ void get_edge_list_multi (void *data, int num_gid_entries, int num_lid_entries,
     for (i = 0; i < current_elem->adj_len; i++) {
 
       /* Skip NULL adjacencies (sides that are not adjacent to another elem). */
-      /* KDD 1/22/15  See bug 6278 and comment in dr_const.h.  
-       * This line is needed only for Exodus inputs which will not work correctly 
-       * with current definition of adj as ZOLTAN_ID_PTR, and it generates 
-       * compiler warnings.  If the Exodus interface is revived, this line 
+      /* KDD 1/22/15  See bug 6278 and comment in dr_const.h.
+       * This line is needed only for Exodus inputs which will not work correctly
+       * with current definition of adj as ZOLTAN_ID_PTR, and it generates
+       * compiler warnings.  If the Exodus interface is revived, this line
        * should again be included.
        *
       if (current_elem->adj[i] == -1) continue;
@@ -1672,10 +1672,10 @@ void get_edge_list (void *data, int num_gid_entries, int num_lid_entries,
   for (i = 0; i < current_elem->adj_len; i++) {
 
     /* Skip NULL adjacencies (sides that are not adjacent to another elem). */
-    /* KDD 1/22/15  See bug 6278 and comment in dr_const.h.  
-     * This line is needed only for Exodus inputs which will not work correctly 
-     * with current definition of adj as ZOLTAN_ID_PTR, and it generates 
-     * compiler warnings.  If the Exodus interface is revived, this line 
+    /* KDD 1/22/15  See bug 6278 and comment in dr_const.h.
+     * This line is needed only for Exodus inputs which will not work correctly
+     * with current definition of adj as ZOLTAN_ID_PTR, and it generates
+     * compiler warnings.  If the Exodus interface is revived, this line
      * should again be included.
      *
     if (current_elem->adj[i] == -1) continue;

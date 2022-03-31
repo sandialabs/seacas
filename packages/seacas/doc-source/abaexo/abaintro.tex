@@ -6,7 +6,7 @@ program \cite{bib:abaqus} into the \caps{EXODUS} database format
 4-5 and 4-6.
 The \caps{EXODUS} format is used by the
 Engineering Analysis Department plot programs such as \caps{BLOT}
-\cite{bib:blot}. 
+\cite{bib:blot}.
 
 \caps{ABAQUS} allows 8-node 2D elements and 20-node 3D elements, but the
 plot programs expect 4-node 2D elements and 8-node 3D elements.
@@ -40,10 +40,10 @@ element.
 
 \section{Translation of Nodal Quantities} \label{intro:nodal}
 
-Two types of information for each node are needed: the 
+Two types of information for each node are needed: the
 coordinates and the value of the nodal variables.
 
-The \caps{ABAQUS} output file contains the coordinates of the 
+The \caps{ABAQUS} output file contains the coordinates of the
 original nodes.
 The coordinates of the generated nodes
 are the average of the coordinates of the original nodes that define the
@@ -59,7 +59,7 @@ coordinates of node \nodenum{21} are the average of the coordinates of
 nodes \nodenum{1}, \nodenum{12}, \nodenum{4}, \nodenum{20}, \nodenum{8},
 \nodenum{16}, \nodenum{5}, and \nodenum{17}. The center node
 (\nodenum{27}) is defined by the original twenty nodes
-(\nodenum{1}..\nodenum{20}). 
+(\nodenum{1}..\nodenum{20}).
 
 The \caps{ABAQUS} output file contains the nodal variables for
 the original nodes.
@@ -77,11 +77,11 @@ each element with the element connectivity. The element block is either
 determined by the element type name or supplied by the user (with the
 \cmd{MATERIAL} command). If the element type is used, each type forms a
 single block. The number of nodes per element must be the same for all
-elements in an element block. 
+elements in an element block.
 
 In addition to the element block, the following information is needed
 for each element: the dimension of the element, the element
-connectivity, and the values of the element variables. 
+connectivity, and the values of the element variables.
 
 The \caps{ABAQUS} output file does not supply the dimension of an
 element, but it does contain the  number of nodes and an element type
@@ -90,16 +90,16 @@ than 4 nodes are assumed to be \caps{1D}, elements with 4 to 7 nodes are
 \caps{2D}, and elements with more than 8 nodes are \caps{3D}. The
 program distinguishes between 8-node \caps{2D} and \caps{3D} element
 types by examining the element type name: it is \caps{3D} if and only if
-the name contains the characters ``\cmd{3D}''. 
+the name contains the characters ``\cmd{3D}''.
 
 The \caps{ABAQUS} output file contains the connectivity for
 the original elements.
-Any element transformations are performed as explained in 
+Any element transformations are performed as explained in
 Section~\ref{intro:trans}.
 The new elements replace the original
-elements. 
+elements.
 
-The \caps{ABAQUS} output file contains the element variables 
+The \caps{ABAQUS} output file contains the element variables
 for the original elements at appropriate integration points.
 The variables for the
 generated elements are read from the input variables at the appropriate

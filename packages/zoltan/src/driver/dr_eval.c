@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -83,7 +83,7 @@ double gsumload, gmaxload, gminload;
   for (i = 0; i < mesh->necmap; i++) {
     cuts += mesh->ecmap_cnt[i];
   }
-  
+
   for (i = 0; i < mesh->num_elems; i++) {
     if (mesh->blank_count && (mesh->blank[i] == 1)) continue;
     load += mesh->elements[i].cpu_wgt[0];
@@ -104,9 +104,9 @@ double gsumload, gmaxload, gminload;
   MPI_Allreduce(&load, &gminload, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
 
   if (proc == 0) {
-    printf("DRIVER EVAL:  load:  max %f  min %f  sum %f\n", 
+    printf("DRIVER EVAL:  load:  max %f  min %f  sum %f\n",
            gmaxload, gminload, gsumload);
-    printf("DRIVER EVAL:  objs:  max " ZOLTAN_ID_SPEC "  min " ZOLTAN_ID_SPEC "  sum " ZOLTAN_ID_SPEC "\n", 
+    printf("DRIVER EVAL:  objs:  max " ZOLTAN_ID_SPEC "  min " ZOLTAN_ID_SPEC "  sum " ZOLTAN_ID_SPEC "\n",
            gmaxelems, gminelems, gsumelems);
     printf("DRIVER EVAL:  cuts:  max " ZOLTAN_ID_SPEC "  min " ZOLTAN_ID_SPEC "  sum " ZOLTAN_ID_SPEC "\n",
            gmaxcuts, gmincuts, gsumcuts);

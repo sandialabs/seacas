@@ -170,7 +170,7 @@ int _MPI_calculateStructureSize (MPI_Datatype type)
   }
   datatype = &_MPI_TYPE_LIST[index];
 
-  /* KDD 6/2/16 Comment below says this return value should be extent, 
+  /* KDD 6/2/16 Comment below says this return value should be extent,
      KDD 6/2/16 not size. I agree.
   size = datatype->size;
   */
@@ -245,7 +245,7 @@ int _MPI_Buff_Insert(void *message,int count,MPI_Datatype datatype,int tag,MPI_C
 
   _MPI_DATA_BUFF = (_MPI_DATA_ENTRY*) _MPI_safeRealloc
     (_MPI_DATA_BUFF,
-     (_MPI_DATA_ARRAY_SIZE+_MPI_PREALLOCATION_SIZE)*sizeof(_MPI_DATA_ENTRY), 
+     (_MPI_DATA_ARRAY_SIZE+_MPI_PREALLOCATION_SIZE)*sizeof(_MPI_DATA_ENTRY),
      "Error in _MPI_Buff_Insert for reallocation");
   _MPI_DATA_ARRAY_SIZE+=_MPI_PREALLOCATION_SIZE;
   _MPI_DATA_BUFF[index].valid = _MPI_VALID;
@@ -265,7 +265,7 @@ int _MPI_Data_Invalid(int index) {
     if(_MPI_DATA_BUFF[index].user==_MPI_TRUE) {
       ;
     } else {
-      _MPI_safeFree(_MPI_DATA_BUFF[index].buffer,"BUFF buffer"); 
+      _MPI_safeFree(_MPI_DATA_BUFF[index].buffer,"BUFF buffer");
       _MPI_DATA_BUFF[index].buffer = 0;
     }
 
@@ -332,4 +332,3 @@ int _MPI_Buff_Find(int tag, MPI_Comm comm) {
   return _MPI_NOT_OK;
 }
 /*==========================================================================*/
-

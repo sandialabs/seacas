@@ -648,7 +648,6 @@ namespace Ioex {
 
   void DatabaseIO::get_step_times__()
   {
-    double              t_begin        = Ioss::Utils::timer();
     bool                exists         = false;
     double              last_time      = DBL_MAX;
     int                 timestep_count = 0;
@@ -771,9 +770,6 @@ namespace Ioex {
         }
       }
     }
-    double t_end    = Ioss::Utils::timer();
-    double duration = t_end - t_begin;
-    fmt::print(Ioss::DEBUG(), "Get Step Times = {}\n", duration);
   }
 
   void DatabaseIO::read_communication_metadata()

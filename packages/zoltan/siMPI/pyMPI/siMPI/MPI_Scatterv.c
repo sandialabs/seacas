@@ -14,18 +14,17 @@
 
 #include "mpi.h"
 
-int MPI_Scatterv ( 
-        void *sendbuf, 
-        int *sendcnts, 
-        int *displs, 
-        MPI_Datatype sendtype, 
-        void *recvbuf, 
-        int recvcnt,  
-        MPI_Datatype recvtype, 
-        int root, 
+int MPI_Scatterv (
+        void *sendbuf,
+        int *sendcnts,
+        int *displs,
+        MPI_Datatype sendtype,
+        void *recvbuf,
+        int recvcnt,
+        MPI_Datatype recvtype,
+        int root,
         MPI_Comm comm )
 {
   _MPI_COVERAGE();
   return PMPI_Scatterv (sendbuf, sendcnts, displs, sendtype, recvbuf, recvcnt, recvtype, root, comm);
 }
-

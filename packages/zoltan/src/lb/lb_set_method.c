@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -98,7 +98,7 @@ int Zoltan_LB_Set_LB_Method(ZZ *zz, char *method_name)
 
   error = Zoltan_Clean_String(method_name, &method_upper);
   if (error) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
       "Error returned from Zoltan_Clean_String; No method set.");
     goto End;
   }
@@ -130,7 +130,7 @@ int Zoltan_LB_Set_LB_Method(ZZ *zz, char *method_name)
     zz->LB.Box_Assign = Zoltan_RB_Box_Assign;
   }
   else if (strcmp(method_upper, "OCTPART") == 0) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                      "OCTPART method is no longer supported in Zoltan; "
                      "Try LB_METHOD=HSFC for similar results.");
     error = ZOLTAN_FATAL;
@@ -158,7 +158,7 @@ int Zoltan_LB_Set_LB_Method(ZZ *zz, char *method_name)
     zz->LB.Point_Assign = NULL;
     zz->LB.Box_Assign = NULL;
 #else
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                        "ParMETIS method selected but "
                        "ParMETIS not compiled into Zoltan.");
     error = ZOLTAN_FATAL;
@@ -189,7 +189,7 @@ int Zoltan_LB_Set_LB_Method(ZZ *zz, char *method_name)
     zz->LB.Point_Assign = Zoltan_HSFC_Point_Assign;
     zz->LB.Box_Assign = Zoltan_HSFC_Box_Assign;
   }
-  else if ((strcmp(method_upper, "HYPERGRAPH") == 0) 
+  else if ((strcmp(method_upper, "HYPERGRAPH") == 0)
            || (strcmp(method_upper, "PHG") == 0)){
 
     /* HYPERGRAPH is a family of methods. */
@@ -218,12 +218,12 @@ int Zoltan_LB_Set_LB_Method(ZZ *zz, char *method_name)
     zz->LB.Box_Assign = NULL;
   }
 
-  
+
   /*
    *  SET OTHER METHODS HERE!!
    */
 
-  else {  
+  else {
     sprintf(msg, "Invalid LB method specified:  %s\n", method_name);
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
     error = ZOLTAN_FATAL;
@@ -231,7 +231,7 @@ int Zoltan_LB_Set_LB_Method(ZZ *zz, char *method_name)
   }
 
   if (zz->Proc == zz->Debug_Proc && zz->Debug_Level >= ZOLTAN_DEBUG_PARAMS) {
-    printf("ZOLTAN Load balancing method = %d (%s)\n", 
+    printf("ZOLTAN Load balancing method = %d (%s)\n",
            zz->LB.Method, method_name);
   }
 

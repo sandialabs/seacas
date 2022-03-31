@@ -15,8 +15,8 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Comm_dup ( 
-        MPI_Comm comm, 
+int PMPI_Comm_dup (
+        MPI_Comm comm,
         MPI_Comm *comm_out )
 {
   _MPI_COVERAGE();
@@ -27,4 +27,3 @@ int PMPI_Comm_dup (
   }
   return PMPI_Comm_create(comm,_MPI_COMM_WORLD_GROUP,comm_out);
 }
-

@@ -358,7 +358,7 @@ then
             fi
         else
             echo "${txtgrn}+++ ZLIB${txtrst}"
-            zlib_version="1.2.11"
+            zlib_version="1.2.12"
 
             cd $ACCESS
             cd TPL
@@ -367,7 +367,7 @@ then
                 echo "${txtgrn}+++ Downloading...${txtrst}"
                 rm -rf zlib-${zlib_version}
                 rm -rf zlib-${zlib_version}.tar.gz
-                wget --no-check-certificate https://zlib.net/zlib-${zlib_version}.tar.gz
+                wget --no-check-certificate https://zlib.net/fossils/zlib-${zlib_version}.tar.gz
                 tar -xzf zlib-${zlib_version}.tar.gz
                 rm -rf zlib-${zlib_version}.tar.gz
             fi
@@ -580,7 +580,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS
-            git checkout v4.2.0
+            git checkout v4.3.0
             rm -rf build
             mkdir build
             cd build
@@ -750,7 +750,7 @@ then
             rm -rf build
             mkdir build
             cd build
-            cmake -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} -DFMT_TEST:BOOL=OFF -DBUILD_SHARED_LIBS=${SHARED} ..
+            cmake -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} -DCMAKE_INSTALL_LIBDIR:PATH=lib -DFMT_TEST:BOOL=OFF -DBUILD_SHARED_LIBS=${SHARED} ..
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure FMT. exiting.${txtrst}

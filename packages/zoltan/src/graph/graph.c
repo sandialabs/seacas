@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -66,15 +66,15 @@ extern "C" {
 /* This function needs a distribution : rows then cols to work properly */
 int
 Zoltan_ZG_Build (ZZ* zz, ZG* graph, int local,
-  int request_GNOs,                /* Input:  Flag indicating calling code 
+  int request_GNOs,                /* Input:  Flag indicating calling code
                                               needs translation of extra GIDs
                                               to GNOs; partial 2D coloring
                                               needs this feature. */
-  int num_requested,               /* Input:  Local # of GIDs needing 
+  int num_requested,               /* Input:  Local # of GIDs needing
                                               translation to GNOs. */
-  ZOLTAN_ID_PTR requested_GIDs,    /* Input:  Calling code requests the 
+  ZOLTAN_ID_PTR requested_GIDs,    /* Input:  Calling code requests the
                                               GNOs for these GIDs */
-  ZOLTAN_GNO_TYPE *requested_GNOs  /* Output: Return GNOs of 
+  ZOLTAN_GNO_TYPE *requested_GNOs  /* Output: Return GNOs of
                                               the requested GIDs.  */
 )
 {
@@ -252,7 +252,7 @@ Zoltan_ZG_Export (ZZ* zz, const ZG* const graph, ZOLTAN_GNO_TYPE *gvtx, int *nvt
   AFFECT_NOT_NULL(gvtx, graph->mtx.mtx.globalY);
   AFFECT_NOT_NULL(nvtx, graph->mtx.mtx.nY);
   AFFECT_NOT_NULL(vtxdist, graph->mtx.dist_y);
-  AFFECT_NOT_NULL(xadj, graph->mtx.mtx.ystart); 
+  AFFECT_NOT_NULL(xadj, graph->mtx.mtx.ystart);
   AFFECT_NOT_NULL(adjncy, graph->mtx.mtx.pinGNO);
   AFFECT_NOT_NULL(partialD2, graph->fixed_vertices);
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -79,8 +79,8 @@ int Zoltan_LB_Set_Part_Sizes(ZZ *zz, int global_num,
  *    len           --  Length of arrays wgt_idx, part_idx, part_sizes
  *    part_ids      --  Array of part ids (local or global)
  *    wgt_idx       --  Array of indices between 0 and Obj_Wgt_Dim-1
- *    part_sizes    --  Array of floats that gives the desired part 
- *                      size for each weight and each part, i.e., 
+ *    part_sizes    --  Array of floats that gives the desired part
+ *                      size for each weight and each part, i.e.,
  *                      part_sizes[i] corresponds to wgt_idx[i] and part_id[i]
  *
  *  Output:
@@ -116,7 +116,7 @@ int Zoltan_LB_Set_Part_Sizes(ZZ *zz, int global_num,
   }
   if (zz->LB.Part_Info_Len + len > zz->LB.Part_Info_Max_Len){
     maxlen = 2*(zz->LB.Part_Info_Len + len);  /* Double the length */
-    zz->LB.Part_Info = (struct Zoltan_part_info *) ZOLTAN_REALLOC( zz->LB.Part_Info, 
+    zz->LB.Part_Info = (struct Zoltan_part_info *) ZOLTAN_REALLOC( zz->LB.Part_Info,
                          maxlen * sizeof(struct Zoltan_part_info));
   }
 
@@ -129,8 +129,8 @@ int Zoltan_LB_Set_Part_Sizes(ZZ *zz, int global_num,
   /* Add new data to part info array. */
   for (i=0,j=zz->LB.Part_Info_Len; i<len; i++,j++){
     zz->LB.Part_Info[j].Size = part_sizes[i];
-    zz->LB.Part_Info[j].Part_id = part_ids[i]; 
-    zz->LB.Part_Info[j].Idx = (wgt_idx ? wgt_idx[i] : 0); 
+    zz->LB.Part_Info[j].Part_id = part_ids[i];
+    zz->LB.Part_Info[j].Idx = (wgt_idx ? wgt_idx[i] : 0);
     zz->LB.Part_Info[j].Global_num = global_num;
   }
 
@@ -158,7 +158,7 @@ int Zoltan_LB_Get_Part_Sizes(ZZ *zz, int part_dim, float *part_sizes)
  *                      (This usually equals lb->Obj_Wgt_Dim.)
  *
  *  Output:
- *    part_sizes    --  Array of floats that gives the set part 
+ *    part_sizes    --  Array of floats that gives the set part
  *                      sizes, scaled such that they sum to one.
  */
   int i, j, nparts, fpart;
@@ -185,7 +185,7 @@ int Zoltan_LB_Get_Part_Sizes(ZZ *zz, int part_dim, float *part_sizes)
   }
 
   /* Find max Part_Info_Len over all procs to see if they are all zero. */
-  MPI_Allreduce((void*) &(zz->LB.Part_Info_Len), (void*) &j, 
+  MPI_Allreduce((void*) &(zz->LB.Part_Info_Len), (void*) &j,
       1, MPI_INT, MPI_MAX, zz->Communicator);
 
   if (j == 0){
@@ -230,17 +230,17 @@ int Zoltan_LB_Get_Part_Sizes(ZZ *zz, int part_dim, float *part_sizes)
           error = ZOLTAN_WARN;
         }
         else
-          temp_part_sizes[j*part_dim + zz->LB.Part_Info[i].Idx] 
+          temp_part_sizes[j*part_dim + zz->LB.Part_Info[i].Idx]
             = zz->LB.Part_Info[i].Size;
       }
     }
 
     /* Reduce over all procs */
-    MPI_Allreduce((void*) temp_part_sizes, (void*) part_sizes, 
+    MPI_Allreduce((void*) temp_part_sizes, (void*) part_sizes,
       num_global_parts*part_dim, MPI_FLOAT, MPI_MAX, zz->Communicator);
-  
+
     /* Check for errors. Scale the sizes so they sum to one for each weight. */
-    for (j = 0; j < part_dim; j++) 
+    for (j = 0; j < part_dim; j++)
       sum[j] = 0.0;
 
     for (i = 0; i < num_global_parts; i++){
@@ -251,7 +251,7 @@ int Zoltan_LB_Get_Part_Sizes(ZZ *zz, int part_dim, float *part_sizes)
       }
 
       if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL){
-        printf("[%1d] In %s: Part size %1d (before scaling) = ",  
+        printf("[%1d] In %s: Part size %1d (before scaling) = ",
             zz->Proc, yo, i);
         for (j = 0; j < part_dim; j++)
           printf("%f, ",  part_sizes[i*part_dim+j]);
@@ -275,7 +275,7 @@ int Zoltan_LB_Get_Part_Sizes(ZZ *zz, int part_dim, float *part_sizes)
         part_sizes[i*part_dim+j] /= sum[j];
 
   }
- 
+
 End:
   if (temp_part_sizes) ZOLTAN_FREE(&temp_part_sizes);
   if (sum)             ZOLTAN_FREE(&sum);

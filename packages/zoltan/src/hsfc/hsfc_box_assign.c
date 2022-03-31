@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -116,11 +116,11 @@ int Zoltan_HSFC_Box_Assign (
       }
 
    if (d->tran.Target_Dim > 0){   /* It must be 1 or 2 */
-     /* 
+     /*
       * Degenerate geometry:
       * Transform query box into coordinates that were used for partitioning,
-      * and place an axis aligned bounding box around it.  This box in the new 
-      * coordinates may encompass more "dots" than did the original box, but 
+      * and place an axis aligned bounding box around it.  This box in the new
+      * coordinates may encompass more "dots" than did the original box, but
       * it won't miss any dots.
       */
      lo[0] = xlo; lo[1] = ylo; lo[2] = zlo;
@@ -138,7 +138,7 @@ int Zoltan_HSFC_Box_Assign (
        dim = d->tran.Target_Dim;
      }
      else if (d->tran.Target_Dim == 1){
-       /* 
+       /*
         * Don't let Point_Assign transform coordinates (we already
         * did that) or remap partition numbers (we'll do that at "fini").
         */
@@ -152,7 +152,7 @@ int Zoltan_HSFC_Box_Assign (
        for (i = n; i <= loop; i++)  /* loop < n */
           part_array[i] = 1;
        d->tran.Target_Dim = 1;
-       d->ndimension = dim;       
+       d->ndimension = dim;
        zz->LB.Remap = remap;
        goto fini;
      }
@@ -324,7 +324,7 @@ static double next_query_2d (ZZ *zz, double *lquerybox, double *hquerybox,
    /* convert floating minimum query hilbert coordinate to integer */
    start[1] = (unsigned int) (modf (s * (double) IMAX, &t) * (double) IMAX);
    start[0] = (unsigned int) t;
-   
+
    /* initializations before starting main loop */
    state = 0;
    prune = 1;
@@ -397,7 +397,7 @@ static double next_query_2d (ZZ *zz, double *lquerybox, double *hquerybox,
          /* discard results below backtrack level */
          keyx &= ~(IMAX >> savelevel);
          keyy &= ~(IMAX >> savelevel);
-         
+
          nptx &= ~(IMAX >> savelevel);
          nptx &= ~(IMAX >> savelevel);
          }
@@ -490,7 +490,7 @@ static double next_query_3d (ZZ *zz, double *lquerybox, double *hquerybox,
       x = ((nptx | temp) > qhix) ? qhix : (nptx | temp);
       y = ((npty | temp) > qhiy) ? qhiy : (npty | temp);
       z = ((nptz | temp) > qhiz) ? qhiz : (nptz | temp);
-      intersect_hi = ((x >> (29-level)) & 4) 
+      intersect_hi = ((x >> (29-level)) & 4)
                    | ((y >> (30-level)) & 2)
                    | ((z >> (31-level)) & 1);
 
@@ -498,7 +498,7 @@ static double next_query_3d (ZZ *zz, double *lquerybox, double *hquerybox,
       x = ((nptx & temp) < qlox) ? qlox : (nptx & temp);
       y = ((npty & temp) < qloy) ? qloy : (npty & temp);
       z = ((nptz & temp) < qloz) ? qloz : (nptz & temp);
-      intersect_lo = ((x >> (29-level)) & 4) 
+      intersect_lo = ((x >> (29-level)) & 4)
                    | ((y >> (30-level)) & 2)
                    | ((z >> (31-level)) & 1);
 
@@ -571,7 +571,7 @@ static double next_query_3d (ZZ *zz, double *lquerybox, double *hquerybox,
    for (i = 0; i < MAXLEVEL; i++)  {
       start[0] = (start[0] << 3) | (start[1] >> 29);
       start[1] = (start[1] << 3) | ((keyx >> (29-i)) & 4)
-                                 | ((keyy >> (30-i)) & 2) 
+                                 | ((keyy >> (30-i)) & 2)
                                  | ((keyz >> (31-i)) & 1);
       }
    return ldexp ((double) start[0], -22) + ldexp((double) start[1], -54);

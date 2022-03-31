@@ -18,6 +18,5 @@
 int MPI_File_get_group(MPI_File fh, MPI_Group *group)
 {
   _MPI_COVERAGE();
-  return PMPI_File_get_group(fh, group); 
+  return PMPI_File_get_group(fh, group);
 }
-

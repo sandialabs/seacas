@@ -19,4 +19,3 @@ int MPI_Group_rank ( MPI_Group group, int *rank )
   _MPI_COVERAGE();
   return PMPI_Group_rank (group, rank);
 }
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -142,7 +142,7 @@ FILE *fp;
            fprintf(stderr, "ERROR in opening file fixed.dat. No fixed vertices set.\n");
         else {
           while (1){
-            if (feof(fp)) break; 
+            if (feof(fp)) break;
             /* read (i, part) for each fixed vertex */
             fscanf(fp, "%i%i\n", &i, &part);
             if ((part >= 0) && (part < Num_Global_Parts)){

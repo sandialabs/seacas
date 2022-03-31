@@ -20,4 +20,3 @@ int PMPI_Scan ( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
 {
   return PMPI_Allreduce(sendbuf,recvbuf,count,datatype,op,comm);
 }
-

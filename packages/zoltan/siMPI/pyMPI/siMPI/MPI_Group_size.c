@@ -19,4 +19,3 @@ int MPI_Group_size ( MPI_Group group, int *size )
   _MPI_COVERAGE();
   return PMPI_Group_size (group, size);
 }
-

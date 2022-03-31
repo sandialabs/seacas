@@ -93,7 +93,7 @@ C      --LTNESS - the nodes in all the side sets
 C      --FACESS - the factor for each node in LTNESS
 
 C ...A valid GENESIS database may end at this point or after any point
-C ...described below. 
+C ...described below.
 
 C   --Read the QA header information
 

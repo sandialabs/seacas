@@ -18,6 +18,5 @@
 int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo)
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
 }
-

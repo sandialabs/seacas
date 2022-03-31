@@ -61,4 +61,3 @@ int PMPI_Error_string( int errorcode, char *string, int *resultlen )
   *resultlen = 0;
   return MPI_ERR_ARG;
 }
-
