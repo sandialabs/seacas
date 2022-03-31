@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -457,7 +457,7 @@ static void quickpart_pointer_inc_id_id (
   int *sorted, ZOLTAN_ID_TYPE *val1, ZOLTAN_ID_TYPE *val2,
   int start, int end, int *equal, int *larger)
 {
-int i, next; 
+int i, next;
 ZOLTAN_ID_TYPE key1, key1_next, key2, key2_next;
 
   i = (end + start) / 2;

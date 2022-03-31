@@ -322,7 +322,7 @@ C   --Number new elements
 
       call pltend
       end
-
+
       subroutine option (what, ison, vcs, penlin, pentxt)
 
       character*(*) what

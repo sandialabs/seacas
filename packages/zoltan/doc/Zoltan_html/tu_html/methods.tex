@@ -15,7 +15,7 @@ Partitioning or load balancing can either be performed once
 We wish to divide work evenly but at the same time minimize
 communication among processes. Communication could either be
 message passing (on distributed memory systems) or memory access
-(on shared-memory systems). 
+(on shared-memory systems).
 
 We give a brief overview of the different categories of partitioning methods,
 and later explain how to use them in Zoltan.
@@ -24,7 +24,7 @@ and later explain how to use them in Zoltan.
 \section{Geometric methods}
 Geometric methods rely on each object having a set of coordinates.
 Data objects are partitioned based on geometric locality.
-We assume that it is beneficial to keep objects that are close together on 
+We assume that it is beneficial to keep objects that are close together on
 the same processor, but there is no explicit model of communication.
 Examples of geometric methods include recursive coordinate bisection (RCB)
 and space-filling curves. An advantage of geometric methods is that
@@ -33,12 +33,12 @@ the application may be high.
 
 \section{Graph partitioning}
 Graph partitioning is perhaps the most popular method. This approach is
-based on representing the application 
-(computation) as a graph, where data objects are vertices and 
+based on representing the application
+(computation) as a graph, where data objects are vertices and
 data dependencies are edges. The graph partitioning problem is then
 to partition the vertices into equal-sized sets, while minimizing the
 number of edges with endpoints in different sets (parts).
-This is an NP-hard optimization problem, but fast multilevel 
+This is an NP-hard optimization problem, but fast multilevel
 algorithms and software produce good solutions in practice.
 In general, graph partitioning produces better quality partitions
 than geometric methods but also take longer to compute.
@@ -46,17 +46,17 @@ than geometric methods but also take longer to compute.
 
 \section{Hypergraph partitioning}
 The graph model has several deficiencies. First, only symmetric
-relations between pairs of objects can be represented. Second, 
-the communication model is inaccurate and does not model 
+relations between pairs of objects can be represented. Second,
+the communication model is inaccurate and does not model
 communication volume correctly.
 Hypergraphs generalize graphs, but can represent relationships
 among arbitrary sets of objects (not just pairs). Also,
-communication volume is exact, so hypergraph methods 
+communication volume is exact, so hypergraph methods
 produce very high quality partitions. The main drawback of hypergraph
-methods is that they take longer to run than graph algorithms. 
+methods is that they take longer to run than graph algorithms.
 
 \section{Methods in Zoltan}
-Zoltan is a toolkit containing many load balancing methods. We explain how 
+Zoltan is a toolkit containing many load balancing methods. We explain how
 to use Zoltan in the next chapter. The methods currently available
 in Zoltan (version 3.1) are:
 \begin{description}
@@ -65,4 +65,3 @@ in Zoltan (version 3.1) are:
 \item[Graph:] Zoltan has a native graph partitioner, and optionlly supports ParMetis and PT-Scotch.
 \item[Hypergraph:] Zoltan has a native parallel hypergraph partitioner.
 \end{description}
-

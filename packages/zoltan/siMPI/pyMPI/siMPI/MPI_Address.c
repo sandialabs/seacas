@@ -18,6 +18,5 @@
 int MPI_Address( void *location, MPI_Aint *address)
 {
   _MPI_COVERAGE();
-  return PMPI_Address(location, address); 
+  return PMPI_Address(location, address);
 }
-

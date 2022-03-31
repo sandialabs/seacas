@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -72,17 +72,17 @@ extern int Zoltan_Get_Num_Edges_Per_Obj(
 
 int
 Zoltan_Matrix_Build (ZZ* zz, Zoltan_matrix_options *opt, Zoltan_matrix* matrix,
-  int request_GNOs,                /* Input:  Flag indicating calling code 
+  int request_GNOs,                /* Input:  Flag indicating calling code
                                               needs translation of extra GIDs
                                               to GNOs; partial 2D coloring
                                               needs this feature. */
-  int num_requested,               /* Input:  Local # of GIDs needing 
+  int num_requested,               /* Input:  Local # of GIDs needing
                                               translation to GNOs. */
-  ZOLTAN_ID_PTR requested_GIDs,    /* Input:  Calling code requests the 
+  ZOLTAN_ID_PTR requested_GIDs,    /* Input:  Calling code requests the
                                               GNOs for these GIDs */
-  ZOLTAN_GNO_TYPE *requested_GNOs  /* Output: Return GNOs of 
+  ZOLTAN_GNO_TYPE *requested_GNOs  /* Output: Return GNOs of
                                               the requested GIDs.  */
-)  
+)
 {
   static char *yo = "Zoltan_Matrix_Build";
   int ierr = ZOLTAN_OK;
@@ -103,13 +103,13 @@ Zoltan_Matrix_Build (ZZ* zz, Zoltan_matrix_options *opt, Zoltan_matrix* matrix,
   MPI_Datatype zoltan_gno_mpi_type;
   int use_full_dd = (opt->speed == MATRIX_FULL_DD);
   int fast_build_base = opt->fast_build_base;
-  matrix->opts.speed = opt->speed;  
+  matrix->opts.speed = opt->speed;
   matrix->opts.fast_build_base = opt->fast_build_base;
 
   ZOLTAN_TRACE_ENTER(zz, yo);
 
   if (num_requested && (!requested_GIDs || !requested_GNOs)) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                        "Error in requested input; needed arrays are NULL.\n");
   }
 
@@ -189,8 +189,8 @@ Zoltan_Matrix_Build (ZZ* zz, Zoltan_matrix_options *opt, Zoltan_matrix* matrix,
     for (i = 0; i < num_requested; i++)
       requested_GNOs[i] = (ZOLTAN_GNO_TYPE)requested_GIDs[i]
                         - fast_build_base;
-     
-    tmp = (ZOLTAN_GNO_TYPE)nX; 
+
+    tmp = (ZOLTAN_GNO_TYPE)nX;
     MPI_Allreduce(&tmp, &matrix->globalX, 1, zoltan_gno_mpi_type, MPI_SUM, zz->Communicator);
   }
 
@@ -246,7 +246,7 @@ Zoltan_Matrix_Build (ZZ* zz, Zoltan_matrix_options *opt, Zoltan_matrix* matrix,
 
   if (matrix->opts.local) { /* keep only local edges */
     proclist = (int*) ZOLTAN_MALLOC(matrix->nPins*sizeof(int));
-    if (matrix->nPins && proclist == NULL) { 
+    if (matrix->nPins && proclist == NULL) {
       ZOLTAN_FREE(&pinID);
       MEMORY_ERROR;
     }
@@ -282,7 +282,7 @@ Zoltan_Matrix_Build (ZZ* zz, Zoltan_matrix_options *opt, Zoltan_matrix* matrix,
       }
       for (i=0; i < matrix->nPins; i++)
         matrix->pinGNO[i] = (ZOLTAN_GNO_TYPE)pinID[i] - fast_build_base;
-      
+
       ZOLTAN_FREE(&pinID);
     }
     else{
@@ -394,7 +394,7 @@ Zoltan_Matrix_Vertex_Info(ZZ* zz, const Zoltan_matrix * const m,
 			     zz->Obj_Weight_Dim, &l_xwgt,
 			     &l_input_part);
 
-  ierr = Zoltan_DD_Create (&dd, zz->Communicator, zz->Num_GID, zz->Num_LID, 
+  ierr = Zoltan_DD_Create (&dd, zz->Communicator, zz->Num_GID, zz->Num_LID,
                            sizeof(float) * zz->Obj_Weight_Dim, nX, 0);
   CHECK_IERR;
 
@@ -451,7 +451,7 @@ matrix_get_edges(ZZ *zz, Zoltan_matrix *matrix, ZOLTAN_ID_PTR *yGID, ZOLTAN_ID_P
 /* TEMPORARY FIX */
 if (!graph_callbacks){
   fprintf(stderr,"Bug #5470: matrix_get_edges fails for hypergraph queries\n");
-  return ZOLTAN_FATAL; 
+  return ZOLTAN_FATAL;
 }
 hypergraph_callbacks=0;
 /* TEMPORARY FIX */

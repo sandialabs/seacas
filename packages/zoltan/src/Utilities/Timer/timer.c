@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -81,9 +81,9 @@ double Zoltan_Time(int timer)
   static clock_t last_num_ticks = 0;
   static int     clock_rollovers = 0;
   static double  secs_per_clock = (double) 1./((double) CLOCKS_PER_SEC);
-  static double  clock_width = 
+  static double  clock_width =
     ((double)(1L<<((int)sizeof(clock_t)*8-2)))*4./((double) CLOCKS_PER_SEC);
-  static double  secs_per_tick  = 0.; /* Not necessarily the same as 
+  static double  secs_per_tick  = 0.; /* Not necessarily the same as
          secs_per_clock; system-dependent; get value from sysconf(). */
 #endif
 
@@ -117,9 +117,9 @@ double Zoltan_Time(int timer)
 }
 
 
-/* Resolution (precision) of timer. 
+/* Resolution (precision) of timer.
  * This is really a lower bound, the actual resolution may be worse.
- * If the precision is unknown, -1 is returned.  
+ * If the precision is unknown, -1 is returned.
  */
 
 double Zoltan_Time_Resolution(int timer)
@@ -133,7 +133,7 @@ double Zoltan_Time_Resolution(int timer)
 #ifndef NO_TIMES
   else if (timer==ZOLTAN_TIME_USER)
     t = (double) 1. / ((double) sysconf(_SC_CLK_TCK));
-#endif 
+#endif
 
   return t;
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -59,8 +59,8 @@ extern "C" {
 #endif
 
 /********************************************************************
- * Hypergraph data structure.  Supports both serial hypergraph and 
- * 2D data distribution (where each block is, in fact, a serial 
+ * Hypergraph data structure.  Supports both serial hypergraph and
+ * 2D data distribution (where each block is, in fact, a serial
  * hypergraph).
  ********************************************************************/
 typedef struct {
@@ -68,20 +68,20 @@ typedef struct {
   int nVtx;             /* number of vertices on this processor */
   int nEdge;            /* number of hyperedges on this processor */
   int nPins;            /* number of pins (nonzeros) on this processor */
-  int nRepartVtx;       /* number of repartition vertices added 
+  int nRepartVtx;       /* number of repartition vertices added
                            when LB_APPROACH=repartition */
-  int nRepartEdge;      /* number of repartition edges added 
+  int nRepartEdge;      /* number of repartition edges added
                            when LB_APPROACH=repartition. */
-  int nRepartPin;       /* number of repartition pins added 
+  int nRepartPin;       /* number of repartition pins added
                            when LB_APPROACH=repartition. */
-  
+
   int VtxWeightDim;     /* number of weight dimensions for a vertex */
   int EdgeWeightDim;    /* number of weight dimensions for a hyperedge */
 
   /* arrays with vertex and edge weights */
   float *vwgt;    /* weights of vertices, nVtx long by VtxWeightDim */
   float *ewgt;    /* weights of hypergraph edges, nEdge long by EdgeWeightDim */
-    
+
   /* physical coordinates of each vertex, optional */
   int nDim;         /* number of coordinate dimensions for a vertex */
   double *coor;     /* |V| long by CoordinateDim */
@@ -100,32 +100,32 @@ typedef struct {
   int *vmap;        /* used when recursively dividing for p > 2 */
   double ratio;     /* split when recursively dividing for p > 2 */
   int redl;         /* working reduction limit */
-    
+
   int *fixed_part;       /* an array of size |V| containing part assignments of fixed
-                       vertices. If it is NULL no vertex is fixed in any part; 
-                       otherwise 
+                       vertices. If it is NULL no vertex is fixed in any part;
+                       otherwise
                          < 0 (negative) : vertex is free,
                          [0,..., p-1]: part that vertex is fixed
                          >= p is invalid. */
   int *pref_part;   /* parallel to fixed array with size of |V| containing the
                        preferred parts for each vertex; again -1 is free.
                        If both a vertex has both prefered and fixed part;
-                       fixed part takes precedence. */ 
+                       fixed part takes precedence. */
   int bisec_split;  /* For fixed vertex partitioning via Recursive Bisection
                        treat vertices fixed in parts < bisec_split as
                        they were in the part 0 and the others in part 1.
-                    if bisec_split < 0 
+                    if bisec_split < 0
                        it is k-way partitioning use fixed parts as they apear
-                    */ 
-    
-    
+                    */
+
+
   PHGComm *comm;  /* this is a pointer to storage PHGPartParamsStruct:
                      (set in phg_build)
                      UVCUVC: I included here because nProc_x, nProc_y was here
                      for convenience.  */
   ZOLTAN_GNO_TYPE *dist_x;    /* distributions of vertices to processor columns. Vertices
                                * dist_x[n] to dist_x[n+1]-1 are stored in col block n */
-  ZOLTAN_GNO_TYPE *dist_y;    /* distribution of hyperedges to processor rows as above */    
+  ZOLTAN_GNO_TYPE *dist_y;    /* distribution of hyperedges to processor rows as above */
 } HGraph;
 
 
@@ -164,12 +164,12 @@ typedef struct {
 
 #define VTX_TO_PROC_X(phg, gno) \
     Zoltan_PHG_Gno_To_Proc_Block(gno, (phg)->dist_x, (phg)->comm->nProc_x)
-    
+
 
 /********************************************************************
- * Data structure for hypergraph returned by query functions. 
+ * Data structure for hypergraph returned by query functions.
  * Includes Zoltan IDs corresponding to local objects (vertices).
- * Includes HGraph built by Zoltan for use by the partitioning algorithms. 
+ * Includes HGraph built by Zoltan for use by the partitioning algorithms.
  ********************************************************************/
 
 struct Zoltan_HGraph {
@@ -197,7 +197,7 @@ struct Zoltan_HGraph {
 
   double *coor;             /* Array of gathered coordinates returned from */
                             /* Zoltan_Get_Coordinates */
-  
+
   /* This hyperedge list includes all hyperedges when LB_Eval uses ZHG, and
      it includes only removed edges when Zoltan_PHG uses ZHG.
    */
@@ -217,7 +217,7 @@ struct Zoltan_HGraph {
                                received from other processors in row.
                                Used to fill buffer for Comm_Do_Reverse
                                with VtxPlan in building return lists. */
-  ZOLTAN_COMM_OBJ *VtxPlan; /* Communication plan mapping GIDs to GNOs 
+  ZOLTAN_COMM_OBJ *VtxPlan; /* Communication plan mapping GIDs to GNOs
                                within row communicators. */
 #ifdef CEDRIC_2D_PARTITIONS
   struct Zoltan_DD_Struct *ddHedge;
@@ -251,10 +251,10 @@ extern int Zoltan_HG_Info         (ZZ*, HGraph*);
 extern int Zoltan_HG_Check        (ZZ*, HGraph*);
 extern void Zoltan_HG_Print(ZZ*, HGraph*, Partition, FILE*, char*);
 extern void Zoltan_HG_HGraph_Print(ZZ *zz, ZHG *, HGraph *, Partition, FILE *fp);
-    
+
 extern void Zoltan_Input_HG_Init (ZHG *);
 extern int Zoltan_Input_HG_Free  (ZHG *);
-    
+
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif

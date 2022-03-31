@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -68,7 +68,7 @@ typedef struct Zoltan_DD_Struct Zoltan_DD_Directory;
 
 /***********  Distributed Directory Function Prototypes ************/
 
-int Zoltan_DD_Create(Zoltan_DD_Directory **dd, MPI_Comm comm, 
+int Zoltan_DD_Create(Zoltan_DD_Directory **dd, MPI_Comm comm,
                      int num_gid, int num_lid, int user_length,
                      int table_length, int debug_level);
 
@@ -101,7 +101,7 @@ int Zoltan_DD_Set_Neighbor_Hash_Fn3(Zoltan_DD_Directory *dd, int total);
 
 int Zoltan_DD_Print(Zoltan_DD_Directory *dd);
 
-int Zoltan_DD_GetLocalKeys(Zoltan_DD_Directory *dd, ZOLTAN_ID_PTR* gid, 
+int Zoltan_DD_GetLocalKeys(Zoltan_DD_Directory *dd, ZOLTAN_ID_PTR* gid,
                            int* size);
 
 

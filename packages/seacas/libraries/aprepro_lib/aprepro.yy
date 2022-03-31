@@ -580,4 +580,3 @@ void SEAMS::Parser::error(const std::string& m)
 {
     aprepro.error(m);
 }
-

@@ -1,4 +1,4 @@
-C    Copyright(C) 1999-2021 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2022 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
@@ -514,6 +514,11 @@ C     processes the data for zoom mesh, and write the output database.
       CALL RWEVAL (NDBIN, NDBOUT, A, A, C, NPTIMS,
      &             NUMSTO, LTMENT, MAXSTK, NWRIT, IOERR, MERR)
       IF ((IOERR .EQ. 1) .OR. (MERR .EQ. 1)) GO TO 130
+
+      if (numsto .gt. 1 .and. nsteps .eq. 0) then
+         nsteps = 1
+         nwrit = 1
+      end if
 
       CALL MDSTAT (NERR, MEM)
       IF (NERR .GT. 0) THEN

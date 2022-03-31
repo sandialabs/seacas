@@ -21,4 +21,3 @@ int PMPI_Type_free ( MPI_Datatype *datatype ) {
   if ( datatype ) *datatype = _MPI_NOT_VALID;
   return retval;
 }
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -76,21 +76,21 @@ int ierr;
   else set = 1;                        // set = UPPERHALF;
 
   oldheap = get_heap_usage();
-  std::cout << "KDD " << myproc 
+  std::cout << "KDD " << myproc
             << " ITER " << itercnt
             << " BEFORE Comm_split:  " << oldheap << std::endl;
   ierr = MPI_Comm_split(MPI_COMM_WORLD, set, myproc, &local_comm);
   newheap = get_heap_usage();
   used = newheap - oldheap;
   if (ierr != MPI_SUCCESS) std::cout << " ERROR SPLIT " << ierr << std::endl;
-  std::cout << "KDD " << myproc 
+  std::cout << "KDD " << myproc
             << " ITER " << itercnt
-            << " AFTER  Comm_split:  " << newheap 
+            << " AFTER  Comm_split:  " << newheap
             << " Used: " << used << std::endl;
 
   // Free local_comm.
   oldheap = get_heap_usage();
-  std::cout << "KDD " << myproc 
+  std::cout << "KDD " << myproc
             << " ITER " << itercnt
             << " BEFORE final Comm_free:  " << oldheap
             << std::endl;
@@ -98,7 +98,7 @@ int ierr;
   newheap = get_heap_usage();
   freed = oldheap - newheap;
   if (ierr != MPI_SUCCESS) std::cout << " ERROR FREE " << ierr << std::endl;
-  std::cout << "KDD " << myproc 
+  std::cout << "KDD " << myproc
             << " ITER " << itercnt
             << " AFTER  final Comm_free:  " << newheap
             << " Freed: " << freed
@@ -150,11 +150,10 @@ main(int argc, char *argv[])
             << std::endl;
   std::cout << "KDDEND " << myproc
             << " Total Leak "
-            << (ending - beginning) 
+            << (ending - beginning)
             << std::endl;
 
 
 
-  return(0);  
+  return(0);
 }
-

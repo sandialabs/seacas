@@ -19,4 +19,3 @@ int MPI_Errhandler_get( MPI_Comm comm, MPI_Errhandler *errhandler )
   _MPI_COVERAGE();
   return PMPI_Errhandler_get (comm, errhandler);
 }
-

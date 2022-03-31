@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -55,7 +55,7 @@ int Zoltan_RCB_Build_Structure(ZZ *zz, int *num_obj, int *max_obj, int wgtflag,
                                double overalloc, int use_ids, int gen_tree)
 {
 /*
- *  Function to build the geometry-based data structures for 
+ *  Function to build the geometry-based data structures for
  *  Steve Plimpton's RCB implementation.
  */
 char *yo = "Zoltan_RCB_Build_Structure";
@@ -120,7 +120,7 @@ int i, ierr = 0;
                                &(rcb->Num_Dim),
                                wgtflag, overalloc, use_ids, 1);
   if (ierr) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                        "Error returned from Zoltan_RB_Build_Structure.");
     Zoltan_RCB_Free_Structure(zz);
     return(ierr);

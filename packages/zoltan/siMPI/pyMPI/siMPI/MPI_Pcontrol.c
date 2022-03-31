@@ -19,4 +19,3 @@ int MPI_Pcontrol( int level )
   _MPI_COVERAGE();
   return PMPI_Pcontrol (level);
 }
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -64,11 +64,11 @@ extern "C" {
  *  of the switch statements in this file.
  *
  *  Methods currently implemented:
- *    INITIAL_FILE:    takes assignments from user input file 
+ *    INITIAL_FILE:    takes assignments from user input file
  *                     (graphname.assign).
  *    INITIAL_LINEAR:  assigns the first n/p vertices to proc 0, the
  *                     next n/p vertices to proc 1, etc.
- *    INITIAL_OWNER:   same as INITIAL_LINEAR; takes on different meaning 
+ *    INITIAL_OWNER:   same as INITIAL_LINEAR; takes on different meaning
  *                     only for hyperedges.
  *    INITIAL_CYCLIC:  deals out the vertices like cards; i.e., proc 0
  *                     gets the first vertex, proc 1 gets the second vertex,
@@ -82,13 +82,13 @@ extern "C" {
  */
 
 /*****************************************************************************/
-/* Global variables for all routines in this file.  These variables 
+/* Global variables for all routines in this file.  These variables
  * are set in ch_dist_init and are used in all subsequent queries of
  * the chaco distribution.
  */
 static ZOLTAN_GNO_TYPE Gnvtxs;     /* Global number of vertices (across all procs)  */
 static int Num_Proc;        /* Global number of processors                   */
-static int Num_Proc_Dist;   /* Number of processors to distribute data; 
+static int Num_Proc_Dist;   /* Number of processors to distribute data;
                                Num_Proc_Dist may be < Num_Proc!              */
 static int Initial_Method;  /* Flag indicating which initial decomposition
                                method to use.                                */
@@ -96,8 +96,8 @@ static int Initial_Method;  /* Flag indicating which initial decomposition
 /*****************************************************************************/
 /* Data structures specifically for INITIAL_LINEAR */
 static ZOLTAN_GNO_TYPE *Vtxdist;   /* Array of size Num_Proc+1 indicating range of
-                               vertices assigned to a processor.  It is 
-                               assumed that vertices are numbered 
+                               vertices assigned to a processor.  It is
+                               assumed that vertices are numbered
                                consecutively.  The values stored in Vtxdist
                                assume vertex IDs are zero-based (e.g., the
                                lowest-numbered vertex has ID 0).
@@ -117,26 +117,26 @@ void ch_dist_init(int num_proc, int gnvtxs, PARIO_INFO_PTR pio_info,
  * global variables to be used in the query routines included in this
  * file.  It also performs any initializations that a particular method
  * may need.
- * All processors call this routine prior to the actual distribution of 
+ * All processors call this routine prior to the actual distribution of
  * graph data.
  */
 int proc, i;
 int max_assignment, have_assignments;
 
-  Num_Proc = num_proc; 
+  Num_Proc = num_proc;
   Gnvtxs = gnvtxs;
   Num_Proc_Dist  = pio_info->init_dist_procs;
-  /* If Num_Proc_Dist has an invalid value, set it to Num_Proc by default */ 
-  if ((Num_Proc_Dist <= 0) || (Num_Proc_Dist > Num_Proc)) 
+  /* If Num_Proc_Dist has an invalid value, set it to Num_Proc by default */
+  if ((Num_Proc_Dist <= 0) || (Num_Proc_Dist > Num_Proc))
      Num_Proc_Dist = Num_Proc;
 
-  /* Broadcast initial assignments if they exist.  
+  /* Broadcast initial assignments if they exist.
    * Assignments can be used for partitions and/or processors.
    */
   MPI_Comm_rank(MPI_COMM_WORLD, &proc);
 
   /* First, tell other processors whether the assignments array is NULL. */
-  if (proc == host_proc) 
+  if (proc == host_proc)
     have_assignments = (*assignments != NULL);
   MPI_Bcast(&have_assignments, 1, MPI_INT, host_proc, comm);
 
@@ -176,7 +176,7 @@ int max_assignment, have_assignments;
   case INITIAL_CYCLIC:
     /* no initialization needed for this method. */
     break;
-  default: 
+  default:
     Gen_Error(0, "Invalid Initial Distribution Type in ch_dist_init");
     error_report(proc);
     return;
@@ -231,7 +231,7 @@ int num;
 
 int ch_dist_max_num_vtx(short *assignments)
 {
-/* Function that returns the maximum number of vertices assigned to any 
+/* Function that returns the maximum number of vertices assigned to any
  * processor.
  */
 int i;
@@ -251,7 +251,7 @@ void ch_dist_vtx_list(
   int *vtx_list,
   int *nvtx,
   int target_proc,
-  short *assignments          
+  short *assignments
 )
 {
 /* Function that returns a list of vertices assigned to proc target_proc.
@@ -279,7 +279,7 @@ int i, proc;
     break;
   case INITIAL_CYCLIC:
     if (target_proc < Num_Proc_Dist){
-      for (i = proc; i < Gnvtxs; i+=Num_Proc_Dist) 
+      for (i = proc; i < Gnvtxs; i+=Num_Proc_Dist)
         vtx_list[(*nvtx)++] = i;
     }
     break;
@@ -296,7 +296,7 @@ int i, proc;
 int ch_dist_proc(int v, short *assignments, int base)
 {
 /* Function that returns the processor to which a vertex v is assigned.
- * The function assumes the vertex numbering is "base"-based (i.e., lowest 
+ * The function assumes the vertex numbering is "base"-based (i.e., lowest
  * numbered vertex is vertex base); this convention is used since the function
  * is called primarily to find adjacent vertices' processor assignments and
  * the read-in adjacency information is "base"-based.
@@ -314,12 +314,12 @@ ZOLTAN_GNO_TYPE b = (ZOLTAN_GNO_TYPE)base;
   case INITIAL_LINEAR:
   case INITIAL_OWNER:
     for (p = 0; p < Num_Proc_Dist; p++)
-      /* Since v is "base"-based and Vtxdist is 0-based, add base to 
+      /* Since v is "base"-based and Vtxdist is 0-based, add base to
        * Vtxdist[p+1]. */
       if (v < Vtxdist[p+1]+b) break;
     break;
   case INITIAL_CYCLIC:
-    /* test for (v-base) as v is "base"-based and 
+    /* test for (v-base) as v is "base"-based and
      * INITIAL_CYCLIC equations are 0-based */
     p = (v-b) % Num_Proc_Dist;
     break;
@@ -338,10 +338,10 @@ static void create_Vtxdist()
 {
 /* Function that creates Vtxdist for the INITIAL_LINEAR distribution.
  * Vtxdist is an array of size Num_Proc+1 indicating range of
- * vertices assigned to a processor.  It is assumed that vertices are numbered 
- * consecutively.  The values stored in Vtxdist assume vertex IDs are 0-based 
- * (e.g., the lowest-numbered vertex has ID 0).  Proc p is assigned vertices 
- * Vtxdist[p] through (Vtxdist[p+1]-1), inclusive.         
+ * vertices assigned to a processor.  It is assumed that vertices are numbered
+ * consecutively.  The values stored in Vtxdist assume vertex IDs are 0-based
+ * (e.g., the lowest-numbered vertex has ID 0).  Proc p is assigned vertices
+ * Vtxdist[p] through (Vtxdist[p+1]-1), inclusive.
  */
 int rest, i, n;
 

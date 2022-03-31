@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -692,7 +692,7 @@ int check_inp (
 
 
 /* Broadcast commands to all processes.
-   NOTE: This requires manual updating when a new field 
+   NOTE: This requires manual updating when a new field
    is added to a struct, like Test!
  */
 void brdcst_cmd_info (

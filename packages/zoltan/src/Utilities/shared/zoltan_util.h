@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -142,8 +142,8 @@ extern "C" {
 #endif /* !AUTOTOOLS_BUILD */
 
 /*****************************************************************************/
-/* 
- *  Macros and definitions that are common to all Zoltan modules and 
+/*
+ *  Macros and definitions that are common to all Zoltan modules and
  *  utilities.
  */
 /*****************************************************************************/
@@ -155,7 +155,7 @@ extern "C" {
 /*****************************************************************************/
 
 void Zoltan_add_back_trace(char *yo);
-void Zoltan_remove_back_trace();
+void Zoltan_remove_back_trace(void);
 void Zoltan_print_trace(int rank);
 
 #define ZOLTAN_PRINT_ERROR(proc,yo,str) { \

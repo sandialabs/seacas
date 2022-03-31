@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -59,10 +59,10 @@ extern "C" {
 /*****************************************************************************/
 /*****************************************************************************/
 
-/* 
+/*
  * This function gets a list of objects one way or the other,
  * i.e., by calling either Get_Obj_List or Get_First_Obj+Get_Next_Obj.
- * It also retrieves object weights and initial partition assignments. 
+ * It also retrieves object weights and initial partition assignments.
  *
  * It is called through either Zoltan_Get_Obj_List or
  * Zoltan_Get_Obj_List_Special_Malloc.  In the second case, the
@@ -71,11 +71,11 @@ extern "C" {
  */
 
 static int _Zoltan_Get_Obj_List(
-  ZZ *zz, 
+  ZZ *zz,
   int *num_obj,
-  ZOLTAN_ID_PTR *global_ids, 
-  ZOLTAN_ID_PTR *local_ids, 
-  int wdim, 
+  ZOLTAN_ID_PTR *global_ids,
+  ZOLTAN_ID_PTR *local_ids,
+  int wdim,
   float **objwgts,
   int **parts,
   int special_malloc
@@ -87,8 +87,8 @@ static int _Zoltan_Get_Obj_List(
   int num_lid_entries = zz->Num_LID;
   int alloced_gids = 0, alloced_lids = 0;
   int gid_off, lid_off;
-  ZOLTAN_ID_PTR lid, next_lid; /* Temporary pointers to local IDs; used to pass 
-                                  NULL to query functions when 
+  ZOLTAN_ID_PTR lid, next_lid; /* Temporary pointers to local IDs; used to pass
+                                  NULL to query functions when
                                   NUM_LID_ENTRIES == 0. */
   float *next_objwgt;          /* Temporarry pointer to an object weight; used
                                   to pass NULL to query functions when wdim=0 */
@@ -114,8 +114,8 @@ static int _Zoltan_Get_Obj_List(
 
   if (*num_obj > 0) {
 
-    /* 
-     * Test global_ids and local_ids for NULL.  
+    /*
+     * Test global_ids and local_ids for NULL.
      * Should be NULL for doing partitioning.
      * Should not be NULL if doing ordering.
      */
@@ -159,29 +159,29 @@ static int _Zoltan_Get_Obj_List(
 
     if (zz->Get_Obj_List != NULL){
       /* Get object list directly */
-      zz->Get_Obj_List(zz->Get_Obj_List_Data, 
+      zz->Get_Obj_List(zz->Get_Obj_List_Data,
                        num_gid_entries, num_lid_entries,
-                       *global_ids, *local_ids, 
+                       *global_ids, *local_ids,
                        wdim, *objwgts, &ierr);
     }
     else if ((zz->Get_First_Obj != NULL) && (zz->Get_Next_Obj != NULL)){
       /* Use iterator functions to loop through object list */
-      if (zz->Get_First_Obj(zz->Get_First_Obj_Data, 
-                            num_gid_entries, num_lid_entries, 
-                            *global_ids, *local_ids, 
+      if (zz->Get_First_Obj(zz->Get_First_Obj_Data,
+                            num_gid_entries, num_lid_entries,
+                            *global_ids, *local_ids,
                             wdim, *objwgts, &ierr)){
         n = *num_obj;
         i = 0;
-        while (!ierr && (i<n-1)){ 
+        while (!ierr && (i<n-1)){
           gid_off = i * num_gid_entries;
           lid_off = i * num_lid_entries;
           lid = (num_lid_entries ? &((*local_ids)[lid_off]) : NULL);
-          next_lid = (num_lid_entries ? &((*local_ids)[lid_off+num_lid_entries]) 
+          next_lid = (num_lid_entries ? &((*local_ids)[lid_off+num_lid_entries])
                                       : NULL);
           next_objwgt = (wdim ? (*objwgts) + (i+1)*wdim : NULL);
-          zz->Get_Next_Obj(zz->Get_Next_Obj_Data, 
-                           num_gid_entries, num_lid_entries, 
-                           &((*global_ids)[gid_off]), lid, 
+          zz->Get_Next_Obj(zz->Get_Next_Obj_Data,
+                           num_gid_entries, num_lid_entries,
+                           &((*global_ids)[gid_off]), lid,
                            &((*global_ids)[gid_off+num_gid_entries]),
                            next_lid,
                            wdim, next_objwgt, &ierr);
@@ -198,17 +198,17 @@ static int _Zoltan_Get_Obj_List(
 
     /* Get partition information for objects. */
     /* Call user-callback if provided; otherwise, all parts == zz->Proc */
-    
+
     if (zz->Get_Part == NULL && zz->Get_Part_Multi == NULL) {
-      for (i = 0; i < *num_obj; i++) 
+      for (i = 0; i < *num_obj; i++)
         (*parts)[i] = zz->Proc;
     }
     else if (zz->Get_Part_Multi) {
-      zz->Get_Part_Multi(zz->Get_Part_Multi_Data, 
+      zz->Get_Part_Multi(zz->Get_Part_Multi_Data,
                               num_gid_entries, num_lid_entries, *num_obj,
                               *global_ids, *local_ids, *parts, &ierr);
       if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN) {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                            "Error returned from ZOLTAN_PART_MULTI_FN");
         goto End;
       }
@@ -220,7 +220,7 @@ static int _Zoltan_Get_Obj_List(
                               num_gid_entries, num_lid_entries,
                               &((*global_ids)[i*num_gid_entries]), lid, &ierr);
         if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN) {
-          ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+          ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                              "Error returned from ZOLTAN_PART_FN");
           goto End;
         }
@@ -232,9 +232,9 @@ End:
   if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN) {
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Error found; no lists returned.");
     if (special_malloc){
-      if (alloced_gids) 
+      if (alloced_gids)
         Zoltan_Special_Free(zz, (void **)global_ids, ZOLTAN_SPECIAL_MALLOC_GID);
-      if (alloced_lids) 
+      if (alloced_lids)
         Zoltan_Special_Free(zz, (void **)local_ids, ZOLTAN_SPECIAL_MALLOC_LID);
       Zoltan_Special_Free(zz, (void **)parts, ZOLTAN_SPECIAL_MALLOC_INT);
     }
@@ -249,11 +249,11 @@ End:
   return ierr;
 }
 int Zoltan_Get_Obj_List(
-  ZZ *zz, 
+  ZZ *zz,
   int *num_obj,
-  ZOLTAN_ID_PTR *global_ids, 
-  ZOLTAN_ID_PTR *local_ids, 
-  int wdim, 
+  ZOLTAN_ID_PTR *global_ids,
+  ZOLTAN_ID_PTR *local_ids,
+  int wdim,
   float **objwgts,
   int **parts
 )
@@ -269,11 +269,11 @@ int Zoltan_Get_Obj_List(
   return rc;
 }
 int Zoltan_Get_Obj_List_Special_Malloc(
-  ZZ *zz, 
+  ZZ *zz,
   int *num_obj,
-  ZOLTAN_ID_PTR *global_ids, 
-  ZOLTAN_ID_PTR *local_ids, 
-  int wdim, 
+  ZOLTAN_ID_PTR *global_ids,
+  ZOLTAN_ID_PTR *local_ids,
+  int wdim,
   float **objwgts,
   int **parts
 )
@@ -291,7 +291,7 @@ int Zoltan_Get_Obj_List_Special_Malloc(
 /*****************************************************************************/
 /*****************************************************************************/
 
-/* 
+/*
  * For debugging purposes, print out object information.
  */
 
@@ -309,7 +309,7 @@ int Zoltan_Print_Obj_List(
   int num_obj=0;
   int lidSize = zz->Num_LID;
   int gidSize = zz->Num_GID;
- 
+
   if (zz->Get_Num_Obj != NULL) {
     num_obj = zz->Get_Num_Obj(zz->Get_Num_Obj_Data, &ierr);
   }
@@ -334,7 +334,7 @@ int Zoltan_Print_Obj_List(
       }
       printf("\n");
     }
-  
+
     if (Lids && lidSize){
       printf("Local ID's \n");
       for(i=0; i<len; i++){
@@ -344,9 +344,9 @@ int Zoltan_Print_Obj_List(
       }
       printf("\n");
     }
-  
+
     if (Weights && wdim){
-      rowSize = 15 / wdim; 
+      rowSize = 15 / wdim;
       printf("Object weights\n");
       k=0;
       for(i=0; i<len; i++){
@@ -359,11 +359,11 @@ int Zoltan_Print_Obj_List(
       }
       printf("\n");
     }
-  
+
     if (Parts){
       printf("Partitions\n");
       for(i=0; i<len; i++){
-        printf("%d ", Parts[i]); 
+        printf("%d ", Parts[i]);
         if (i && (i%10==0)) printf("\n");
       }
       printf("\n");

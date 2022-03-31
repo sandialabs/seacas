@@ -280,7 +280,7 @@ integer {D}+({E})?
     }
   }
 
-  .*"\n" { /* Do not increment line count */ 
+  .*"\n" { /* Do not increment line count */
     ;
   }
 }

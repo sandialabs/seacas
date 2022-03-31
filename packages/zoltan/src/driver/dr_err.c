@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -160,11 +160,11 @@ void error_report(int Proc)
 
         fprintf(stderr, "Proc %d: \t%s\n", Proc, (error_info+i)->err_mesg);
         if(error_lev >= 2)
-          fprintf(stderr, "Proc %d: \t\tin file %s\n", 
+          fprintf(stderr, "Proc %d: \t\tin file %s\n",
                            Proc, (error_info+i)->filename);
 
         if(error_lev >= 3)
-          fprintf(stderr, "Proc %d: \t\t\tat line %d\n", 
+          fprintf(stderr, "Proc %d: \t\t\tat line %d\n",
                            Proc, (error_info+i)->line_no);
       }
 

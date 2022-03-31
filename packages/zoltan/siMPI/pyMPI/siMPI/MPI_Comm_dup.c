@@ -15,11 +15,10 @@
 #include "mpi.h"
 
 /* STUB */
-int MPI_Comm_dup ( 
-        MPI_Comm comm, 
+int MPI_Comm_dup (
+        MPI_Comm comm,
         MPI_Comm *comm_out )
 {
   _MPI_COVERAGE();
-  return PMPI_Comm_dup (comm, comm_out); 
+  return PMPI_Comm_dup (comm, comm_out);
 }
-

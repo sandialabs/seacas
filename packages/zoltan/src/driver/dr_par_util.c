@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -199,7 +199,7 @@ MPI_Request *req = NULL;
   /* Post receives */
   offset = 0;
   for (i = 0; i < mesh->necmap; i++) {
-    MPI_Irecv(&(recv_vec[offset]), mesh->ecmap_cnt[i]*vec_len, MPI_INT, 
+    MPI_Irecv(&(recv_vec[offset]), mesh->ecmap_cnt[i]*vec_len, MPI_INT,
               mesh->ecmap_id[i], msg_type, MPI_COMM_WORLD, &(req[i]));
     offset += mesh->ecmap_cnt[i]*vec_len;
   }
@@ -207,7 +207,7 @@ MPI_Request *req = NULL;
   /* Send messages */
   offset = 0;
   for (i = 0; i < mesh->necmap; i++) {
-    MPI_Send(&(send_vec[offset]), mesh->ecmap_cnt[i]*vec_len, MPI_INT, 
+    MPI_Send(&(send_vec[offset]), mesh->ecmap_cnt[i]*vec_len, MPI_INT,
              mesh->ecmap_id[i], msg_type, MPI_COMM_WORLD);
     offset += mesh->ecmap_cnt[i]*vec_len;
   }

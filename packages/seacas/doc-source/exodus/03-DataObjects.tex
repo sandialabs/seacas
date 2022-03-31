@@ -1,4 +1,4 @@
-\chapter{Description of Data Objects} 
+\chapter{Description of Data Objects}
 
 \begin{tabular}{llll}
 entity  & block         & set        & map    \\
@@ -11,16 +11,16 @@ element & element block & elementset & elementmap \\
 The data in \exo{} files can be divided into three primary categories:
 initialization data, model data, and results data.
 
-Initialization data includes sizing parameters (number of 
-nodes, number of elements, etc.), optional quality assurance 
-information (names of codes that have operated on the data), 
+Initialization data includes sizing parameters (number of
+nodes, number of elements, etc.), optional quality assurance
+information (names of codes that have operated on the data),
 and optional informational text.
 
-The model is described by data which are static (do not change 
-through time). This data includes nodal coordinates, element 
-connectivity (node lists for each element), element attributes, 
-and node sets and side sets (used to aid in applying loading 
-conditions and boundary constraints). 
+The model is described by data which are static (do not change
+through time). This data includes nodal coordinates, element
+connectivity (node lists for each element), element attributes,
+and node sets and side sets (used to aid in applying loading
+conditions and boundary constraints).
 
 The results are optional and include five types of variables -- nodal,
 element, nodeset, sideset, and global -- each of which is stored
@@ -114,7 +114,7 @@ Every \exo{} file is initialized with the following parameters:
  file \file{exodusII.h}. Current values are 32 and
  80, respectively.
 
- \item Length of character lines -- see description above 
+ \item Length of character lines -- see description above
 for length of character strings.
 \end{itemize}
 
@@ -134,17 +134,17 @@ record containing four character strings of length
 
 \begin{description}
 
-\item[Code name] indicates the application code that has operated 
+\item[Code name] indicates the application code that has operated
 on the \exo{} file.
 
-\item[Code QA descriptor] provides a location for a version 
+\item[Code QA descriptor] provides a location for a version
 identifier of the application code.
 
-\item[Date] the date on which the application code was executed; 
+\item[Date] the date on which the application code was executed;
 should be in the format 20080331.
 
- \item[Time] the 24-hour time at which the application code 
-was executed; should be in the format hours:minutes:seconds, 
+ \item[Time] the 24-hour time at which the application code
+was executed; should be in the format hours:minutes:seconds,
 such as 16:30:15.
  \end{description}
 
@@ -197,17 +197,17 @@ three strings.
 
 \end{spacing}
 
-Within the data model, internal node IDs are indices into 
-the nodal coordinate array and internal element IDs are indices 
-into the element connectivity array. Thus, internal node and 
+Within the data model, internal node IDs are indices into
+the nodal coordinate array and internal element IDs are indices
+into the element connectivity array. Thus, internal node and
 element numbers (IDs) are contiguous (i.e., 1\ldots{number_of_nodes}
-and 1\ldots{number_of_elements}, respectively). Optional 
-node and element number maps can be stored to relate user-defined 
-node and element IDs to these internal node and element numbers. 
-The length of these maps are {number_of_nodes} and {number_of_elements}, 
-respectively. As an example, suppose a database contains exactly 
-one QUAD element with four nodes. The user desires the element 
-ID to be 100 and the node IDs to be 10, 20, 30, and 40 as shown 
+and 1\ldots{number_of_elements}, respectively). Optional
+node and element number maps can be stored to relate user-defined
+node and element IDs to these internal node and element numbers.
+The length of these maps are {number_of_nodes} and {number_of_elements},
+respectively. As an example, suppose a database contains exactly
+one QUAD element with four nodes. The user desires the element
+ID to be 100 and the node IDs to be 10, 20, 30, and 40 as shown
 in  Figure~\ref{f:UserDefinedNodeElementIds}.
 \begin{figure}[htbp]
 \begin{center}
@@ -216,12 +216,12 @@ in  Figure~\ref{f:UserDefinedNodeElementIds}.
 \end{center}
 \end{figure}
 
-The internal data structures representing the above model 
+The internal data structures representing the above model
 would be the following:
 
 
 \begin{itemize}
- \item {nodal coordinate array}{:} {(0.0, 1.0, 1.0, 
+ \item {nodal coordinate array}{:} {(0.0, 1.0, 1.0,
 0.0, 0.0, 0.0, 1.0, 1.0)}
 
  \item {connectivity array}{: (1, 2, 3, 4)}
@@ -250,7 +250,7 @@ element number for the node or element of interest.
 
 \end{spacing}
 
-{Refer to  Section 3.5 for a discussion of the optional element 
+{Refer to  Section 3.5 for a discussion of the optional element
 number map.}
 
 
@@ -313,10 +313,10 @@ The following parameters are defined for each element block:
  string (up to the maximum length allowed) to further classify the
  element for specific purposes.
 
- \item {Number of elements -- the number of elements in the 
+ \item {Number of elements -- the number of elements in the
 element block.}
 
- \item {Nodes per element -- the number of nodes per element 
+ \item {Nodes per element -- the number of nodes per element
 for the element block.}
 
  \item {Number of attributes -- the number of attributes per element
@@ -543,7 +543,7 @@ was used to output them.
  \item {node set ID -- a unique positive integer that identifies the
  node set.}
 
- \item {Number of nodes -- the number of nodes in the node 
+ \item {Number of nodes -- the number of nodes in the node
 set.}
 
  \item {Number of node set distribution factors -- this should be zero
@@ -593,32 +593,32 @@ efficiency concerns.) This is accomplished with the following lists:
 
 \begin{itemize}
 
- \item Node sets IDs -- list (of length number of node sets) 
-of unique integer node set ID's. The \textit{{i}}\th{} entry in 
+ \item Node sets IDs -- list (of length number of node sets)
+of unique integer node set ID's. The \textit{{i}}\th{} entry in
 this list specifies the ID of the \textit{{i}}\th{} node set.
 
- \item Node sets node counts -- list (of length number of 
-node sets) of counts of nodes for each node set. Thus, the \textit{{i}}\th{} 
-entry in this list specifies the number of nodes in the \textit{{i}}\th{} 
+ \item Node sets node counts -- list (of length number of
+node sets) of counts of nodes for each node set. Thus, the \textit{{i}}\th{}
+entry in this list specifies the number of nodes in the \textit{{i}}\th{}
 node set.
 
- \item Node sets distribution factors counts -- list (of 
-length number of node sets) of counts of distribution factors 
-for each node set. The \textit{{i}}\th{} entry in this list specifies 
-the number of distribution factors in the \textit{{i}}\th{} node 
+ \item Node sets distribution factors counts -- list (of
+length number of node sets) of counts of distribution factors
+for each node set. The \textit{{i}}\th{} entry in this list specifies
+the number of distribution factors in the \textit{{i}}\th{} node
 set.
 
- \item Node sets node pointers -- list (of length number 
-of node sets) of indices which are pointers into the node sets 
-node list locating the first node of each node set. The \textit{{i}}\th{} 
-entry in this list is an index in the node sets node list where 
+ \item Node sets node pointers -- list (of length number
+of node sets) of indices which are pointers into the node sets
+node list locating the first node of each node set. The \textit{{i}}\th{}
+entry in this list is an index in the node sets node list where
 the first node of the \textit{{i}}\th{} node set can be located.
 
- \item Node sets distribution factors pointers -- list (of 
-length number of node sets) of indices which are pointers into 
-the node sets distribution factors list locating the first factor 
-of each node set. The \textit{{i}}\th{} entry in this list is an 
-index in the node sets distribution factors list where the first 
+ \item Node sets distribution factors pointers -- list (of
+length number of node sets) of indices which are pointers into
+the node sets distribution factors list locating the first factor
+of each node set. The \textit{{i}}\th{} entry in this list is an
+index in the node sets distribution factors list where the first
 factor of the \textit{{i}}\th{} node set can be located.
 
  \item Node sets node list -- concatenated integer list of the nodes
@@ -627,15 +627,15 @@ factor of the \textit{{i}}\th{} node set can be located.
  node counts are used to find the first node and the number of nodes
  in a particular node set.
 
- \item Node sets distribution factors list -- concatenated 
-list of the (floating point) distribution factors in all the 
-node sets. The node sets distribution factors pointers and node 
-sets distribution factors counts are used to find the first factor 
+ \item Node sets distribution factors list -- concatenated
+list of the (floating point) distribution factors in all the
+node sets. The node sets distribution factors pointers and node
+sets distribution factors counts are used to find the first factor
 and the number of factors in a particular node set.
 
 \end{itemize}
 
-To clarify the use of these lists, refer to the coding examples 
+To clarify the use of these lists, refer to the coding examples
 in  Section 4.2.25 and  Section 4.2.26.
 
 \section{Side Sets}
@@ -679,7 +679,7 @@ illustrated in Figure~\ref{f:SideSetNumbering}.
  \item {side set ID -- a unique positive integer that identifies the
  side set.}
 
- \item {Number of sides -- the number of sides in the side 
+ \item {Number of sides -- the number of sides in the side
 set.}
 
  \item {Number of side set distribution factors -- this should be zero
@@ -697,8 +697,8 @@ set.}
 \api \cfuncref{ex_put_side_set}, \cfuncref{ex_get_side_set}
 \end{spacing}
 
-{This is an integer list of all the elements in the side set. 
-Internal element IDs (see  Section~\ref{s:enm}) must be used 
+{This is an integer list of all the elements in the side set.
+Internal element IDs (see  Section~\ref{s:enm}) must be used
 in this list.}
 
 
@@ -711,9 +711,9 @@ in this list.}
 \api \cfuncref{ex_put_side_set}, \cfuncref{ex_get_side_set}
 \end{spacing}
 
-{This is an integer list of all the sides in the side set. 
-This list contains the local edge (for 2-d elements) or face 
-(for 3-d elements) numbers following the conventions specified 
+{This is an integer list of all the sides in the side set.
+This list contains the local edge (for 2-d elements) or face
+(for 3-d elements) numbers following the conventions specified
 in  Figure 5.}
 
 
@@ -726,17 +726,17 @@ in  Figure 5.}
 \api \cfuncref{ex_get_side_set_node_list}
 \end{spacing}
 
-It is important to note that the nodes on a side set are 
-not explicitly stored in the data file, but can be extracted 
-from the element numbers in the side set element list, local 
-side numbers in the side set side list, and the element connectivity 
-array. The node IDs that are output are internal node numbers 
-(see  Section~\ref{s:nnm}). They are extracted according to 
+It is important to note that the nodes on a side set are
+not explicitly stored in the data file, but can be extracted
+from the element numbers in the side set element list, local
+side numbers in the side set side list, and the element connectivity
+array. The node IDs that are output are internal node numbers
+(see  Section~\ref{s:nnm}). They are extracted according to
 the following conventions:
 
 
 \begin{enumerate}
-\item {All nodes for the first side (defined by the first element 
+\item {All nodes for the first side (defined by the first element
 in the side set element list and the first side in the side set side
 list) are output before the nodes for the second side. There is no
 attempt to consolidate nodes; if a node is attached to four different
@@ -744,7 +744,7 @@ faces, then the same node number will be output four times -- once
 each time the node is encountered when progressing along the side
 list.}
 
-\item {The nodes for a single face (or edge) are ordered to assist 
+\item {The nodes for a single face (or edge) are ordered to assist
 an application code in determining an ``outward'' direction. Thus, the
 node list for a face of a 3-d element proceeds around the face so that
 the outward normal follows the right-hand rule. The node list for an
@@ -755,7 +755,7 @@ the thumb points to the inside of the element. This node ordering is
 detailed in Table~\ref{t:sset_node_ordering} on
 page~\pageref{t:sset_node_ordering}}
 
-\item {The nodes required for a first-order element are output 
+\item {The nodes required for a first-order element are output
 first, followed by the nodes of a higher ordered
 element. Table~\ref{t:sset_node_ordering} lists the nodes for
 first-order elements.  Refer to the node orderings shown in
@@ -770,43 +770,43 @@ ordering for side~1 of the \code{hex27} element is {1,2,6,5,9,14,17,13,26}}
 % use packages: array
 \begin{tabular}{l|c|lll}
 \hline \textbf{Element Type} & \textbf{Side \#}& \textbf{Node Order} \\ \hline
-QUAD   & 1 & 1, 2, & 5 \\ 
-(2D)   & 2 & 2, 3, & 6 \\ 
-       & 3 & 3, 4, & 7 \\ 
+QUAD   & 1 & 1, 2, & 5 \\
+(2D)   & 2 & 2, 3, & 6 \\
+       & 3 & 3, 4, & 7 \\
        & 4 & 4, 1, & 8 \\ \hline
-SHELL  & 1 & 1, 2, 3, 4, & 5, 6, 7, 8, & 9 \\ 
-       & 2 & 1, 4, 3, 2, & 8, 7, 6, 5, & 9 \\ 
-(Edges)& 3 & 1, 2, & 5 \\ 
-       & 4 & 2, 3, & 6 \\ 
-       & 5 & 3, 4, & 7 \\ 
+SHELL  & 1 & 1, 2, 3, 4, & 5, 6, 7, 8, & 9 \\
+       & 2 & 1, 4, 3, 2, & 8, 7, 6, 5, & 9 \\
+(Edges)& 3 & 1, 2, & 5 \\
+       & 4 & 2, 3, & 6 \\
+       & 5 & 3, 4, & 7 \\
        & 6 & 4, 1, & 8 \\ \hline
-TRIANGLE&1 & 1, 2, & 4 \\ 
-(2D)   & 2 & 2, 3, & 5 \\ 
+TRIANGLE&1 & 1, 2, & 4 \\
+(2D)   & 2 & 2, 3, & 5 \\
        & 3 & 3, 1, & 6 \\ \hline
-TRIANGLE& 1 & 1, 2, 3, & 4, 5, 6 \\ 
-(Shell)& 2 & 1, 3, 2, & 6, 5, 4 \\ 
+TRIANGLE& 1 & 1, 2, 3, & 4, 5, 6 \\
+(Shell)& 2 & 1, 3, 2, & 6, 5, 4 \\
        & 3 & 1, 2,    & 4  \\
        & 4 & 2, 3,    & 5 \\
        & 5 & 3, 1,    & 6 \\ \hline
-TETRA  & 1 & 1, 2, 4, & 5, 9, 8 \\ 
-       & 2 & 2, 3, 4, & 6, 10, 9 \\ 
-       & 3 & 1, 4, 3, & 8, 10, 7 \\ 
+TETRA  & 1 & 1, 2, 4, & 5, 9, 8 \\
+       & 2 & 2, 3, 4, & 6, 10, 9 \\
+       & 3 & 1, 4, 3, & 8, 10, 7 \\
        & 4 & 1, 3, 2, & 7, 6, 5 \\ \hline
-WEDGE  & 1 & 1, 2, 5, 4, & 7, 11, 13, 10 \\ 
-       & 2 & 2, 3, 6, 5, & 8, 12, 14, 11 \\ 
-       & 3 & 1, 4, 6, 3, & 10, 15, 12, 9 \\ 
-       & 4 & 1, 3, 2, & 9, 8, 7 \\ 
+WEDGE  & 1 & 1, 2, 5, 4, & 7, 11, 13, 10 \\
+       & 2 & 2, 3, 6, 5, & 8, 12, 14, 11 \\
+       & 3 & 1, 4, 6, 3, & 10, 15, 12, 9 \\
+       & 4 & 1, 3, 2, & 9, 8, 7 \\
        & 5 & 4, 5, 6, & 13, 14, 15 \\ \hline
-HEX    & 1 & 1, 2, 6, 5, & 9, 14, 17, 13, & 26 \\ 
-       & 2 & 2, 3, 7, 6, & 10, 15, 18, 14, & 25 \\ 
-       & 3 & 3, 4, 8, 7, & 11, 16, 19, 15, & 27 \\ 
-       & 4 & 1, 5, 8, 4, & 13, 20, 16, 12, & 24 \\ 
-       & 5 & 1, 4, 3, 2, & 12, 11, 10, 9, & 22 \\ 
+HEX    & 1 & 1, 2, 6, 5, & 9, 14, 17, 13, & 26 \\
+       & 2 & 2, 3, 7, 6, & 10, 15, 18, 14, & 25 \\
+       & 3 & 3, 4, 8, 7, & 11, 16, 19, 15, & 27 \\
+       & 4 & 1, 5, 8, 4, & 13, 20, 16, 12, & 24 \\
+       & 5 & 1, 4, 3, 2, & 12, 11, 10, 9, & 22 \\
        & 6 & 5, 6, 7, 8, & 17, 18, 19, 20, & 23 \\ \hline
-PYRAMID&1 & 1, 2, 5, & 6, 11, 10 \\ 
-       & 2 & 2, 3, 5, & 7, 12, 11 \\ 
-       & 3 & 3, 4, 5, & 8, 13, 12 \\ 
-       & 4 & 4, 1, 5, & 9, 10, 13 \\ 
+PYRAMID&1 & 1, 2, 5, & 6, 11, 10 \\
+       & 2 & 2, 3, 5, & 7, 12, 11 \\
+       & 3 & 3, 4, 5, & 8, 13, 12 \\
+       & 4 & 4, 1, 5, & 9, 10, 13 \\
        & 5 & 1, 4, 3, 2, & 9, 8, 7, 6
 \end{tabular}
 \caption{Sideset Node Ordering}\label{t:sset_node_ordering}
@@ -907,25 +907,25 @@ lists:
 
 \subsection{Object Properties}
 
-Certain \exo{} objects (currently element blocks, node 
-sets, and side sets) can be given integer properties, providing 
+Certain \exo{} objects (currently element blocks, node
+sets, and side sets) can be given integer properties, providing
 the following capabilitities:
 \begin{enumerate}
-\item assign a specific integer value to a named property of 
+\item assign a specific integer value to a named property of
 an object.
 
-\item tag objects as members of a group. For example element 
-blocks 1 and 3 and side sets 1 and 2 could be put in a group 
+\item tag objects as members of a group. For example element
+blocks 1 and 3 and side sets 1 and 2 could be put in a group
 named ``TOP.''
 \end{enumerate}
 
 This functionality is illustrated in Table~\ref{t:property} which
 contains the property values of a sample
-\exo{} file with three element blocks, one node set, and two 
-side sets. Note that an application code can define properties 
-to be valid for only specified object types. In this example, 
-``STEEL'' and ``COPPER'' are valid for all element blocks but are 
-not defined for node sets and side sets. 
+\exo{} file with three element blocks, one node set, and two
+side sets. Note that an application code can define properties
+to be valid for only specified object types. In this example,
+``STEEL'' and ``COPPER'' are valid for all element blocks but are
+not defined for node sets and side sets.
 
 \begin{table}
 \begin{center}
@@ -983,8 +983,8 @@ introduced to the data file.
 \api\cfuncref{ex_put_variable_param}, \cfuncref{ex_get_variable_param}
 
 
-The number of each type of results variables (element, nodal, 
-and global) is specified only once, and cannot change through 
+The number of each type of results variables (element, nodal,
+and global) is specified only once, and cannot change through
 time.
 
 \subsection{Results Names}
@@ -993,7 +993,7 @@ time.
 \api \cfuncref{ex_put_variable_names}, \cfuncref{ex_get_variable_names}
 \end{spacing}
 
-Associated with each results variable is a unique name of 
+Associated with each results variable is a unique name of
 length \param{MAX_STR_LENGTH}.
 
 
@@ -1040,8 +1040,8 @@ specified in the results parameters.
 \api \cfuncref{ex_put_nodal_var}, \cfuncref{ex_get_nodal_var}, \cfuncref{ex_get_nodal_var_time}
 \end{spacing}
 
-This object contains the floating point nodal data for the 
-time step. The size of the array is the number of nodes, as specified 
+This object contains the floating point nodal data for the
+time step. The size of the array is the number of nodes, as specified
 in the global parameters, times the number of nodal variables.
 
 \subsection{Element Results}

@@ -39,8 +39,12 @@
 #include <string>
 #include <strings.h>
 #include <vector>
+#include <memory>
 
 #include "text_mesh/Iotm_TextMeshTopologyMapping.h"
+#include "text_mesh/Iotm_TextMeshSideset.h"
+#include "text_mesh/Iotm_TextMeshNodeset.h"
+#include "text_mesh/Iotm_TextMeshUtils.h"
 
 #define ThrowRequireWithMsg(expr, message)                                                         \
   do {                                                                                             \
@@ -51,12 +55,51 @@
     }                                                                                              \
   } while (false)
 
+using Topology       = Iotm::TopologyMapEntry;
+using TopologyMapping = Iotm::IossTopologyMapping;
 using EntityId       = int64_t;
 using EntityIdVector = std::vector<EntityId>;
 using EntityIdSet    = std::set<EntityId>;
-using Topology       = Iotm::TopologyMapEntry;
-using SideEntry      = std::pair<EntityId, int>;
-using SideVector     = std::vector<SideEntry>;
+using TextMeshData = Iotm::text_mesh::TextMeshData<EntityId, Topology>;
+using ElementData = Iotm::text_mesh::ElementData<EntityId, Topology>;
+using SidesetData = Iotm::text_mesh::SidesetData<EntityId, Topology>;
+using NodesetData = Iotm::text_mesh::NodesetData<EntityId>;
+using Coordinates = Iotm::text_mesh::Coordinates<EntityId>;
+using TextMeshParser = Iotm::text_mesh::TextMeshParser<EntityId, TopologyMapping>;
+using SideAdjacencyGraph = Iotm::text_mesh::SideAdjacencyGraph<EntityId, Topology>;
+using SideBlockInfo = Iotm::text_mesh::SideBlockInfo;
+using SideEntry = std::pair<EntityId, int>;
+using SideVector = std::vector<SideEntry>;
+using SplitType = Iotm::text_mesh::SplitType;
+
+struct Adjacency {
+  using NeighborVector = std::vector<std::pair<int, SideAdjacencyGraph::IndexType>>;
+  using SimpleNeighborVector = std::vector<SideAdjacencyGraph::IndexType>;
+
+  size_t elemIndex;
+  NeighborVector neighborIndices;
+
+  Adjacency(size_t elemIndex_, const NeighborVector& neighborIndices_)
+      : elemIndex(elemIndex_), neighborIndices(neighborIndices_)
+  {
+  }
+
+  Adjacency(size_t elemIndex_, const SimpleNeighborVector& neighborIndices_)
+      : elemIndex(elemIndex_), neighborIndices(get_full_neighbor_vector(neighborIndices_))
+  {
+  }
+
+  NeighborVector get_full_neighbor_vector(const SimpleNeighborVector& simpleNeighborVector)
+  {
+    NeighborVector fullNeighborVector;
+    fullNeighborVector.reserve(simpleNeighborVector.size());
+
+    for (unsigned i = 0; i < simpleNeighborVector.size(); i++) {
+      fullNeighborVector.push_back(std::make_pair(static_cast<int>(i), simpleNeighborVector[i]));
+    }
+    return fullNeighborVector;
+  }
+};
 
 struct SideEntryLess
 {
@@ -218,7 +261,7 @@ namespace Iotm {
       void verify_single_element(EntityId elemId, const std::string &textMeshTopologyName,
                                  const EntityIdVector &nodeIds)
       {
-        Ioss::ElementTopology *topology = m_topologyMapping.topology(textMeshTopologyName).topology;
+        Topology topology = m_topologyMapping.topology(textMeshTopologyName);
         ElementInfo            info     = get_element_info(elemId);
         EXPECT_TRUE(is_valid_element(info));
         EXPECT_EQ(topology, info.topology);
@@ -960,4 +1003,116 @@ namespace {
   protected:
     TestTextMesh1d() : TextMeshFixture(1) {}
   };
+
+  class TestTextMeshGraph : public Iotm::unit_test::TextMeshFixture
+  {
+   protected:
+    TestTextMeshGraph() : TextMeshFixture(3) {}
+
+    class TextMeshGraph : public SideAdjacencyGraph
+    {
+    public:
+      TextMeshGraph(const TextMeshData& data) : m_data(data) {}
+
+      size_t get_num_elements() const override
+      {
+        return m_data.elementDataVec.size();
+      }
+
+      int get_element_proc(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.proc;
+      }
+
+      bool element_has_any_node_on_proc(const size_t elemIndex, int proc) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+
+        for (const EntityId &nodeId : elemData.nodeIds) {
+          const std::set<int> &procsForNode = m_data.procs_for_node(nodeId);
+          if (procsForNode.count(proc) > 0) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      const std::string& get_element_block_name(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.partName;
+      }
+
+      const std::vector<EntityId>& get_element_node_ids(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.nodeIds;
+      }
+
+      const Topology& get_element_topology(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.topology;
+      }
+
+      EntityId get_element_id(const size_t elemIndex) const override
+      {
+        const ElementData &elemData = m_data.elementDataVec[elemIndex];
+        return elemData.identifier;
+      }
+
+    private:
+      const TextMeshData& m_data;
+    };
+
+    void dump_graph(std::ostream& out = std::cout) { m_graph->dump(m_data.elementDataVec, out); }
+
+    void setup_text_mesh_graph(const std::string& meshDesc,
+        const std::vector<std::string>& selectedBlocks = {},
+        int proc = SideAdjacencyGraph::ANY_PROC)
+    {
+      TextMeshParser parser;
+      m_data = parser.parse(meshDesc);
+      m_graph = std::make_shared<TextMeshGraph>(m_data);
+      m_graph->create_graph(selectedBlocks, proc);
+    }
+
+    void verify_side_adjacency(const std::vector<Adjacency>& goldNeighbors)
+    {
+      EXPECT_EQ(m_graph->size(), goldNeighbors.size());
+      for (size_t i = 0; i < goldNeighbors.size(); ++i) {
+        const auto& graphNeighborIndices = (*m_graph)[goldNeighbors[i].elemIndex];
+        const auto& goldNeighborIndices = goldNeighbors[i].neighborIndices;
+
+        unsigned numActualGoldConnections = 0;
+        for (const auto& entry : goldNeighborIndices) {
+          if (entry.second >= 0) {
+            numActualGoldConnections++;
+          }
+        }
+
+        EXPECT_EQ(numActualGoldConnections, graphNeighborIndices.connections.size());
+
+        for (const auto& entry : goldNeighborIndices) {
+          int side = entry.first + 1;
+          SideAdjacencyGraph::IndexType neighborElemIndex = entry.second;
+
+          if (neighborElemIndex >= 0) {
+            EXPECT_LT(0, graphNeighborIndices.sideReference[side - 1]);
+            EXPECT_TRUE(graphNeighborIndices.has_any_connection(side, neighborElemIndex));
+          } else {
+            EXPECT_EQ(0, graphNeighborIndices.sideReference[side - 1]);
+            EXPECT_FALSE(graphNeighborIndices.has_any_connection(side));
+          }
+        }
+      }
+    }
+
+    TextMeshData m_data;
+    std::shared_ptr<TextMeshGraph> m_graph;
+  };
+
+  using TestTextMeshSkin = TestTextMesh;
 } // namespace

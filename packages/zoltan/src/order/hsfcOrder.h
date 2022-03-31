@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -55,4 +55,3 @@ int Zoltan_LocalHSFC_Order(
 	int *iperm,
 	ZOOS *order_opt       /* Ordering options, parsed by Zoltan_Order */
 			   );
-

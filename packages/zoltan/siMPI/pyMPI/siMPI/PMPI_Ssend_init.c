@@ -15,10 +15,9 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Ssend_init( void *buf, int count, MPI_Datatype datatype, int dest, 
+int PMPI_Ssend_init( void *buf, int count, MPI_Datatype datatype, int dest,
                    int tag, MPI_Comm comm, MPI_Request *request )
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
 }
-

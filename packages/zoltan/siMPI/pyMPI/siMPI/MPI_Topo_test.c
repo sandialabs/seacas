@@ -19,4 +19,3 @@ int MPI_Topo_test ( MPI_Comm comm, int *top_type )
   _MPI_COVERAGE();
   return PMPI_Topo_test (comm, top_type);
 }
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
   float ver;
   struct Zoltan_Struct *zz;
   int changes, numGidEntries, numLidEntries, numImport, numExport;
-  ZOLTAN_ID_PTR importGlobalGids, importLocalGids, exportGlobalGids, exportLocalGids; 
+  ZOLTAN_ID_PTR importGlobalGids, importLocalGids, exportGlobalGids, exportLocalGids;
   int *importProcs, *importToPart, *exportProcs, *exportToPart;
   int *parts;
   FILE *fp;
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 
   Zoltan_Set_Param(zz, "DEBUG_LEVEL", "1");
   Zoltan_Set_Param(zz, "LB_METHOD", "RCB");
-  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1"); 
+  Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1");
   Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "1");
   Zoltan_Set_Param(zz, "OBJ_WEIGHT_DIM", "0");
   Zoltan_Set_Param(zz, "RETURN_LISTS", "ALL");
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
   /* RCB parameters */
 
   Zoltan_Set_Param(zz, "RCB_OUTPUT_LEVEL", "0");
-  Zoltan_Set_Param(zz, "RCB_RECTILINEAR_BLOCKS", "1"); 
+  Zoltan_Set_Param(zz, "RCB_RECTILINEAR_BLOCKS", "1");
   /*Zoltan_Set_Param(zz, "RCB_RECTILINEAR_BLOCKS", "0"); */
 
   /* Query functions, to provide geometry to Zoltan */
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
   ** partition 0, process rank 1 will own partition 1, and so on.
   ******************************************************************/
   rc = Zoltan_LB_Partition(zz, /* input (all remaining fields are output) */
-        &changes,        /* 1 if partitioning was changed, 0 otherwise */ 
+        &changes,        /* 1 if partitioning was changed, 0 otherwise */
         &numGidEntries,  /* Number of integers used for a global ID */
         &numLidEntries,  /* Number of integers used for a local ID */
         &numImport,      /* Number of vertices to be sent to me */
@@ -221,9 +221,9 @@ int main(int argc, char *argv[])
   ** the storage allocated for the Zoltan structure.
   ******************************************************************/
 
-  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids, 
+  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids,
                       &importProcs, &importToPart);
-  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids, 
+  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids,
                       &exportProcs, &exportToPart);
 
   Zoltan_Destroy(&zz);
@@ -518,4 +518,3 @@ int i, j, part;
     printf("\n");
   }
 }
-

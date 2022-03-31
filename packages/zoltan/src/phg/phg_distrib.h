@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -55,7 +55,7 @@ extern "C" {
 
 int Zoltan_PHG_Gno_To_Proc_Block(ZOLTAN_GNO_TYPE gno, ZOLTAN_GNO_TYPE  *dist_dim, int nProc_dim);
 
-    
+
 int Zoltan_PHG_Redistribute(
     ZZ *zz,
     PHGPartParams *hgp,     /* Input: parameters; used only for user's
@@ -68,16 +68,15 @@ int Zoltan_PHG_Redistribute(
     int     **vmap,         /* Output: allocated with the size nhg->nVtx and
                                vertex map from nhg to ohg's local vertex number*/
     int     **vdest         /* Output: allocated with the size nhg->nVtx and
-                               stores dest proc in ocomm */    
+                               stores dest proc in ocomm */
     );
-    
 
-    
 
-    
+
+
+
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
 
 #endif   /* __ZOLTAN_PHG_DISTRIB_H */
-    

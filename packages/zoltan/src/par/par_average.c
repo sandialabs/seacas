@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -83,7 +83,7 @@ double Zoltan_RB_Average_Cut(
   double oldvaluehalf   /* Cut computed before averaging is done.            */
 )
 {
-/* Compute a median value that is exactly between two closest dots. 
+/* Compute a median value that is exactly between two closest dots.
  * Routine is called when parameter AVERAGE_CUTS == 1.
  */
 double val[2] = {-DBL_MAX, DBL_MAX};
@@ -91,7 +91,7 @@ double gval[2];
 double valuehalf = oldvaluehalf;
 int i;
 
-  if (!Tflops_Special || num_procs > 1) { 
+  if (!Tflops_Special || num_procs > 1) {
     /* Don't include dot info if going thru loop only due to Tflops_Special */
     for (i = 0; i < dotnum; i++) {
 /*
@@ -99,7 +99,7 @@ printf("KDDDDD %d proclower=%d num_parts=%d numlist=%d i=%d dotmark[i]=%d dots[i
 */
       if (dotmark[i] == 0) {            /* in lower part */
         if (dots[i] > val[0]) val[0] = dots[i];
-      } 
+      }
       else {   /* in upper part */
         if (dots[i] < val[1]) val[1] = dots[i];
       }
@@ -109,7 +109,7 @@ printf("KDDDDD %d proclower=%d num_parts=%d numlist=%d i=%d dotmark[i]=%d dots[i
       MPI_Allreduce(&val[1], &gval[1], 1, MPI_DOUBLE, MPI_MIN, local_comm);
     }
     else
-      Zoltan_average_cuts_reduce(num_procs, rank, proc, val, gval, 2, 
+      Zoltan_average_cuts_reduce(num_procs, rank, proc, val, gval, 2,
                                  MPI_DOUBLE, local_comm);
 
     valuehalf = 0.5 * (gval[0] + gval[1]);

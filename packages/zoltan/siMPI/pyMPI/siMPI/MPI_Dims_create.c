@@ -16,11 +16,10 @@
 
 /* STUB */
 int MPI_Dims_create(
-        int nnodes, 
-        int ndims, 
+        int nnodes,
+        int ndims,
         int *dims)
 {
   _MPI_COVERAGE();
-  return PMPI_Dims_create ( nnodes, ndims, dims); 
+  return PMPI_Dims_create ( nnodes, ndims, dims);
 }
-

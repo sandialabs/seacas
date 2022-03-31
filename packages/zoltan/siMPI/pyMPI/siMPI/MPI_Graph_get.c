@@ -14,10 +14,9 @@
 
 #include "mpi.h"
 
-int MPI_Graph_get ( MPI_Comm comm, int maxindex, int maxedges, 
+int MPI_Graph_get ( MPI_Comm comm, int maxindex, int maxedges,
                    int *index, int *edges )
 {
   _MPI_COVERAGE();
   return PMPI_Graph_get (comm, maxindex, maxedges, index, edges);
 }
-

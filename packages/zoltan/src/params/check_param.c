@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -66,7 +66,7 @@ const char *val,		/* new value for parameter */
 PARAM_VARS * params,		/* structure describing parameters */
 PARAM_UTYPE *result,		/* pointer to return value */
 int *matched_index)		/* where in struct the match occurs */
-{		
+{
     char     *yo = "Zoltan_Check_Param";
     char      msg[256];
     int       i;		/* loop counter */
@@ -156,7 +156,7 @@ int *matched_index)		/* where in struct the match occurs */
 	}
 
 	else {
-	    sprintf(msg, "Bad type for parameter `%s'", 
+	    sprintf(msg, "Bad type for parameter `%s'",
                     params->name);
             ZOLTAN_PRINT_WARN(-1, yo, msg);
 	    status = 2;

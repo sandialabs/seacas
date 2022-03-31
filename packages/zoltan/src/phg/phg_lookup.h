@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -56,12 +56,12 @@ extern "C" {
 
 /*****************************************************************************/
 
-/* 
+/*
  * Structures to hold hypergraph data returned by query functions,
  * and hypergraph data gathered by processes to which edges/vertices
  * map to via a hash function.
  */
- 
+
 typedef struct _myObj{  /* Vertices returned in Get_Obj_List queries */
   int    *vtxHash;      /* Process to which GID hashes, temporary owner */
 }zoltan_objects;
@@ -95,7 +95,7 @@ typedef struct _hshVtx{ /* Vertices assigned to this process with hash func */
   ZOLTAN_GNO_TYPE *vtxGNO;   /* vertex global number */
 }zoltan_temp_vertices;
 
-/* 
+/*
  * A search structure, to find the index of a global ID in any of the
  * above structures.
  */
@@ -116,7 +116,7 @@ void phg_free_ews(zoltan_ews *zew);
 void phg_free_temp_edges(zoltan_temp_edges *zte);
 void phg_free_temp_vertices(zoltan_temp_vertices *ztv);
 
-int phg_map_GIDs_to_processes(ZZ *zz, ZOLTAN_ID_PTR eid, int size, int lenGID, 
+int phg_map_GIDs_to_processes(ZZ *zz, ZOLTAN_ID_PTR eid, int size, int lenGID,
                               int **hashedProc, int nprocs);
 
 phg_GID_lookup *phg_create_GID_lookup_table(ZOLTAN_ID_PTR gids, int size, int lenGID);
