@@ -44,12 +44,8 @@ namespace Ioss {
     Ioss::ElementTopology *face_type(int face_number = 0) const override;
     Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
 
-    const std::string &base_topology_permutation_name() const override;
   protected:
     Node();
-    bool validate_permutation() const override {return false;}
-
-  private:
-    static Node instance_;
+    bool validate_permutation_nodes() const override {return false;}
   };
 } // namespace Ioss

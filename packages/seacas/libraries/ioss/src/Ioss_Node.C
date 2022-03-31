@@ -50,12 +50,6 @@ Ioss::Node::Node() : Ioss::ElementTopology(Ioss::Node::name, "Node_0_3D")
   Ioss::ElementTopology::alias(Ioss::Node::name, "NODE");
 }
 
-const std::string &Ioss::Node::base_topology_permutation_name() const
-{
-  static std::string permutationName(Ioss::NullPermutation::name);
-  return permutationName;
-}
-
 int Ioss::Node::parametric_dimension() const { return 0; }
 int Ioss::Node::spatial_dimension() const { return 3; }
 int Ioss::Node::order() const { return 1; }

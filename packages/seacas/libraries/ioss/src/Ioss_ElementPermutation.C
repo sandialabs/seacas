@@ -22,7 +22,6 @@
 namespace Ioss {
 void EPRegistry::insert(const Ioss::EPM_VP &value, bool delete_me)
 {
-  std::cout << value.second->name() << ": " << value.first << std::endl;
   m_registry.insert(value);
   if (delete_me) {
     m_deleteThese.push_back(value.second);
@@ -38,9 +37,9 @@ EPRegistry::~EPRegistry()
 
 //=========================================================================================
 ElementPermutation::ElementPermutation(std::string type, bool delete_me)
-    : m_name(std::move(type))
+    : m_type(std::move(type))
 {
-  registry().insert(EPM_VP(m_name, this), delete_me);
+  registry().insert(EPM_VP(Ioss::Utils::lowercase(m_type), this), delete_me);
 }
 
 EPRegistry &ElementPermutation::registry()
@@ -100,7 +99,7 @@ int ElementPermutation::describe(NameList *names)
   return count;
 }
 
-const std::string &ElementPermutation::name() const { return m_name; }
+const std::string &ElementPermutation::type() const { return m_type; }
 
 unsigned ElementPermutation::num_permutations() const { return m_numPermutations; }
 
@@ -152,7 +151,7 @@ void ElementPermutation::set_permutation(uint8_t numPermutationNodes_,
       std::ostringstream errmsg;
       fmt::print(errmsg,
           "ERROR: Number of low order permutation ordinals: {} for permutation: {} does not match permutation value: {}",
-          ordinals.size(), name(), numPermutationNodes_);
+          ordinals.size(), type(), numPermutationNodes_);
       IOSS_ERROR(errmsg);
     }
 
@@ -171,10 +170,10 @@ void ElementPermutation::set_permutation(uint8_t numPermutationNodes_,
 
 bool ElementPermutation::equal_(const ElementPermutation &rhs, bool quiet) const
 {
-  if (this->m_name.compare(rhs.m_name) != 0) {
+  if (this->m_type.compare(rhs.m_type) != 0) {
     if (!quiet) {
       fmt::print(Ioss::OUTPUT(), "Element Permutation: NAME mismatch ({} vs. {})\n",
-                 this->m_name.c_str(), rhs.m_name.c_str());
+                 this->m_type.c_str(), rhs.m_type.c_str());
     }
     return false;
   }

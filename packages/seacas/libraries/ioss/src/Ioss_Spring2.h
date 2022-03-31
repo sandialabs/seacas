@@ -22,7 +22,7 @@ namespace Ioss {
     ~Spring2() override      = default;
     Spring2(const Spring2 &) = delete;
 
-    ElementShape shape() const override { return ElementShape::LINE; }
+    ElementShape shape() const override { return ElementShape::SPRING; }
     int          spatial_dimension() const override;
     int          parametric_dimension() const override;
     bool         is_element() const override { return true; }
@@ -45,7 +45,6 @@ namespace Ioss {
     Ioss::ElementTopology *face_type(int face_number = 0) const override;
     Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
 
-    const std::string &base_topology_permutation_name() const override;
   protected:
     Spring2();
   };

@@ -1023,13 +1023,16 @@ std::string Ioss::Utils::shape_to_string(const Ioss::ElementShape &shape)
   switch (shape) {
   case Ioss::ElementShape::UNKNOWN: return std::string("Unknown");
   case Ioss::ElementShape::POINT: return std::string("Point");
+  case Ioss::ElementShape::SPHERE: return std::string("Sphere");
   case Ioss::ElementShape::LINE: return std::string("Line");
+  case Ioss::ElementShape::SPRING: return std::string("Spring");
   case Ioss::ElementShape::TRI: return std::string("Tri");
   case Ioss::ElementShape::QUAD: return std::string("Quad");
   case Ioss::ElementShape::TET: return std::string("Tet");
   case Ioss::ElementShape::PYRAMID: return std::string("Pyramid");
   case Ioss::ElementShape::WEDGE: return std::string("Wedge");
   case Ioss::ElementShape::HEX: return std::string("Hex");
+  case Ioss::ElementShape::SUPER: return std::string("Super");
   }
   return std::string("INTERNAL ERROR");
 }

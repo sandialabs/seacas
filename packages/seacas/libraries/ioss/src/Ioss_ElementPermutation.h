@@ -75,7 +75,7 @@ public:
 
   uint8_t num_permutation_nodes() const;
 
-  const std::string &name() const;
+  const std::string &type() const;
 
   static ElementPermutation *factory(const std::string &type);
 
@@ -118,7 +118,7 @@ protected:
 private:
   bool               equal_(const Ioss::ElementPermutation &rhs, bool quiet) const;
 
-  std::string m_name{};
+  std::string m_type{};
   uint8_t m_numPermutations{0};
   uint8_t m_numPositivePermutations{0};
   uint8_t m_numPermutationNodes{0};

@@ -6,6 +6,7 @@
 
 #include <Ioss_CodeTypes.h> // for IntVector
 #include <Ioss_ElementTopology.h>
+#include <Ioss_ElementPermutation.h> // for ElementPermutation
 #include <Ioss_Super.h> // for Super
 #include <Ioss_Utils.h>
 
@@ -16,18 +17,6 @@
 #include <string>  // for string, char_traits, etc
 #include <utility> // for pair
 #include <vector>  // for vector
-
-Ioss::ElementShapeMap Ioss::ElementTopology::shapeToPermutationNameMap_ = {
-  {Ioss::ElementShape::UNKNOWN, "none"},
-  {Ioss::ElementShape::POINT  , "point"},
-  {Ioss::ElementShape::LINE   , "line"},
-  {Ioss::ElementShape::TRI    , "tri"},
-  {Ioss::ElementShape::QUAD   , "quad"},
-  {Ioss::ElementShape::TET    , "tet"},
-  {Ioss::ElementShape::PYRAMID, "pyramid"},
-  {Ioss::ElementShape::WEDGE  , "wedge"},
-  {Ioss::ElementShape::HEX    , "hex"}
-};
 
 void Ioss::ETRegistry::insert(const Ioss::ETM_VP &value, bool delete_me)
 {
@@ -375,8 +364,14 @@ Ioss::ElementPermutation *Ioss::ElementTopology::permutation() const
 {
   auto perm = Ioss::ElementPermutation::factory(base_topology_permutation_name());
   assert(perm != nullptr);
-  if(validate_permutation()) {
-    assert(static_cast<int>(perm->num_permutation_nodes()) == number_corner_nodes());
+  if(validate_permutation_nodes()) {
+    if(static_cast<int>(perm->num_permutation_nodes()) != number_corner_nodes()) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: The permutation node count: {} for topology '{}' does not match expected value: {}.",
+                 perm->num_permutation_nodes(), name(), number_corner_nodes());
+      IOSS_ERROR(errmsg);
+    }
   }
   return perm;
 }
@@ -388,8 +383,23 @@ const std::string &Ioss::ElementTopology::base_topology_permutation_name() const
 
 const std::string &Ioss::ElementTopology::topology_shape_to_permutation_name(Ioss::ElementShape topoShape)
 {
-   auto iter = Ioss::ElementTopology::shapeToPermutationNameMap_.find(topoShape);
-   if(iter == Ioss::ElementTopology::shapeToPermutationNameMap_.end()) {
+  static ElementShapeMap shapeToPermutationNameMap_ = {
+    {ElementShape::UNKNOWN, "none"},
+    {ElementShape::POINT  , "none"},
+    {ElementShape::SPHERE , "sphere"},
+    {ElementShape::LINE   , "line"},
+    {ElementShape::SPRING , "spring"},
+    {ElementShape::TRI    , "tri"},
+    {ElementShape::QUAD   , "quad"},
+    {ElementShape::TET    , "tet"},
+    {ElementShape::PYRAMID, "pyramid"},
+    {ElementShape::WEDGE  , "wedge"},
+    {ElementShape::HEX    , "hex"},
+    {ElementShape::SUPER  , "super"}
+  };
+
+   auto iter = shapeToPermutationNameMap_.find(topoShape);
+   if(iter == shapeToPermutationNameMap_.end()) {
      std::ostringstream errmsg;
      fmt::print(errmsg, "ERROR: The topology shape '{}' is not supported.",
                 Ioss::Utils::shape_to_string(topoShape));

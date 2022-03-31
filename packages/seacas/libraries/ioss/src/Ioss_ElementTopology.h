@@ -15,10 +15,11 @@
 
 namespace Ioss {
   class ElementTopology;
+  class ElementPermutation;
 } // namespace Ioss
 
 namespace Ioss {
-  enum class ElementShape { UNKNOWN, POINT, LINE, TRI, QUAD, TET, PYRAMID, WEDGE, HEX };
+  enum class ElementShape { UNKNOWN, POINT, SPHERE, LINE, SPRING, TRI, QUAD, TET, PYRAMID, WEDGE, HEX, SUPER };
 
   using ElementShapeMap         = std::map<ElementShape, std::string>;
   using ElementTopologyMap      = std::map<std::string, ElementTopology *, std::less<std::string>>;
@@ -122,18 +123,17 @@ namespace Ioss {
     bool operator!=(const Ioss::ElementTopology &rhs) const;
     bool equal(const Ioss::ElementTopology &rhs) const;
 
-    virtual ElementPermutation *permutation() const;
+    ElementPermutation *permutation() const;
     virtual const std::string &base_topology_permutation_name() const;
   protected:
     ElementTopology(std::string type, std::string master_elem_name, bool delete_me = false);
-    virtual bool validate_permutation() const {return true;}
+    virtual bool validate_permutation_nodes() const {return true;}
 
   private:
     bool              equal_(const Ioss::ElementTopology &rhs, bool quiet) const;
     const std::string name_;
     const std::string masterElementName_;
 
-    static Ioss::ElementShapeMap shapeToPermutationNameMap_;
     static const std::string &topology_shape_to_permutation_name(Ioss::ElementShape topoShape);
 
     static ETRegistry &registry();

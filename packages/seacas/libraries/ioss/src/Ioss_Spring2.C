@@ -49,12 +49,6 @@ Ioss::Spring2::Spring2() : Ioss::ElementTopology(Ioss::Spring2::name, "Spring_2"
 
 }
 
-const std::string &Ioss::Spring2::base_topology_permutation_name() const
-{
-  static std::string permutationName(Ioss::SpringPermutation::name);
-  return permutationName;
-}
-
 int Ioss::Spring2::parametric_dimension() const { return 1; }
 int Ioss::Spring2::spatial_dimension() const { return 3; }
 int Ioss::Spring2::order() const { return 1; }

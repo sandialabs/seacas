@@ -22,7 +22,7 @@ namespace Ioss {
     ~Sphere() override     = default;
     Sphere(const Sphere &) = delete;
 
-    ElementShape shape() const override { return ElementShape::POINT; }
+    ElementShape shape() const override { return ElementShape::SPHERE; }
     int          spatial_dimension() const override;
     int          parametric_dimension() const override;
     bool         is_element() const override { return true; }
