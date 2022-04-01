@@ -191,7 +191,7 @@ namespace Ioss {
 
     template <size_t size> static void copy_string(char (&output)[size], const char *source)
     {
-      // Copy the string — don’t copy too many bytes.
+      // Copy the string don't copy too many bytes.
       copy_string(output, source, size);
     }
 
@@ -490,7 +490,7 @@ namespace Ioss {
     static std::string variable_name_kluge(const std::string &name, size_t component_count,
                                            size_t copies, size_t max_var_len);
 
-    static std::string shape_to_string(const ElementShape &shape);
+    static std::string shape_to_string(const Ioss::ElementShape &shape);
 
     /** \brief Create a nominal mesh for use in history databases.
      *
