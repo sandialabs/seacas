@@ -133,4 +133,5 @@ TPL/pnetcdf/pnetcdf-*.tar.gz
 TPL/pnetcdf/pnetcdf-*/
 TPL/faodel/faodel*/
 TPL/catalyst2/catalyst/
+TPL/fmt/fmt/
 build/

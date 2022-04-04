@@ -533,7 +533,7 @@ namespace SEAMS {
       std::cerr
           << "\nAprepro version " << version() << "\n"
           << "\nUsage: aprepro [options] [-I path] [-c char] [var=val] [filein] [fileout]\n"
-          << "          --debug or -d: Dump all variables, debug loops/if/endif\n"
+          << "  --debug or -d: Dump all variables, debug loops/if/endif and keep temporary files\n"
           << "       --dumpvars or -D: Dump all variables at end of run        \n"
           << "  --dumpvars_json or -J: Dump all variables at end of run in json format\n"
           << "        --version or -v: Print version number to stderr          \n"
