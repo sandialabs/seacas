@@ -93,43 +93,56 @@ int main(int argc, char **argv)
   /* ======================================================================== */
   /* Transient Variables */
   char *var_names[]    = {"Disp-X",       "Disp-Y",       "Disp-Z",       "Velocity%X",
-                       "Velocity%Y",   "Velocity%Z",   "Gradient-X$1", "Gradient-Y$1",
-                       "Gradient-Z$1", "Gradient-X$2", "Gradient-Y$2", "Gradient-Z$2",
-                       "Gradient-X$3", "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4",
-                       "Gradient-Y$4", "Gradient-Z$4", "User_1",       "User_2",
-                       "User_3",       "User_4"};
+                          "Velocity%Y",   "Velocity%Z",   "Gradient-X$1", "Gradient-Y$1",
+                          "Gradient-Z$1", "Gradient-X$2", "Gradient-Y$2", "Gradient-Z$2",
+                          "Gradient-X$3", "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4",
+                          "Gradient-Y$4", "Gradient-Z$4", "User_1",       "User_2",
+                          "User_3",       "User_4"};
   int   num_block_vars = sizeof(var_names) / sizeof(var_names[0]);
 
   EXCHECK(ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_block_vars));
   EXCHECK(ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_block_vars, var_names));
 
   {
-    struct ex_field field = (ex_field){
-        .name = "Disp", .type = {EX_VECTOR_3D}, .nesting = 1, .component_separator = "-"};
-    EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[0].id, field));
+    struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
+                                       .entity_id           = blocks[0].id,
+                                       .name                = "Disp",
+                                       .type                = {EX_VECTOR_3D},
+                                       .nesting             = 1,
+                                       .component_separator = "-"};
+    EXCHECK(ex_put_field_metadata(exoid, field));
   }
 
   {
-    struct ex_field field = (ex_field){
-        .name = "Velocity", .type = {EX_VECTOR_3D}, .nesting = 1, .component_separator = "%"};
-    EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[0].id, field));
+    struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
+                                       .entity_id           = blocks[0].id,
+                                       .name                = "Velocity",
+                                       .type                = {EX_VECTOR_3D},
+                                       .nesting             = 1,
+                                       .component_separator = "%"};
+    EXCHECK(ex_put_field_metadata(exoid, field));
   }
 
   {
-    struct ex_field field = (ex_field){.name                = "Gradient",
+    struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
+                                       .entity_id           = blocks[1].id,
+                                       .name                = "Gradient",
                                        .type                = {EX_VECTOR_3D, EX_BASIS},
                                        .nesting             = 2,
                                        .component_separator = "-$"};
-    EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[1].id, field));
+    EXCHECK(ex_put_field_metadata(exoid, field));
   }
 
   {
-    struct ex_field field = (ex_field){.name                = "User",
+    struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
+                                       .entity_id           = blocks[1].id,
+                                       .name                = "User",
                                        .type                = {EX_FIELD_TYPE_USER_DEFINED},
                                        .nesting             = 1,
                                        .cardinality         = {4},
                                        .component_separator = "_"};
-    EXCHECK(ex_put_field_metadata(exoid, EX_ELEM_BLOCK, blocks[1].id, field));
+    EXCHECK(ex_put_field_metadata(exoid, field));
+    EXCHECK(ex_put_field_suffices(exoid, field, "h2o,gas,ch4,methane"));
   }
 
   { /* Output time steps ... */

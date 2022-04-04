@@ -321,11 +321,13 @@ typedef enum ex_field_type ex_field_type;
 #define EX_MAX_FIELD_NESTING 4
 typedef struct ex_field
 {
-  char          name[EX_MAX_NAME + 1]; /* Name of the field */
-  int           nesting; /* Number of composite fields (vector at each quadrature point = 2) */
-  ex_field_type type[EX_MAX_FIELD_NESTING];        /* ex_field_type of each nested field */
-  int           cardinality[EX_MAX_FIELD_NESTING]; /* 0 to calculate based on type */
-  char          component_separator[EX_MAX_FIELD_NESTING +
+  ex_entity_type entity_type;
+  int64_t        entity_id;
+  char           name[EX_MAX_NAME + 1]; /* Name of the field */
+  int            nesting; /* Number of composite fields (vector at each quadrature point = 2) */
+  ex_field_type  type[EX_MAX_FIELD_NESTING];        /* ex_field_type of each nested field */
+  int            cardinality[EX_MAX_FIELD_NESTING]; /* 0 to calculate based on type */
+  char           component_separator[EX_MAX_FIELD_NESTING +
                            1]; /* empty defaults to '_'; +1 so can be a string... */
 } ex_field;
 
@@ -1000,15 +1002,13 @@ EXODUS_EXPORT int ex_get_blob(int exoid, struct ex_blob *blob);
 EXODUS_EXPORT int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs);
 EXODUS_EXPORT int ex_get_blobs(int exoid, struct ex_blob *blobs);
 
-EXODUS_EXPORT int ex_put_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id,
-                                        const ex_field field);
-EXODUS_EXPORT int ex_put_basis_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id,
-                                        const ex_field field);
-EXODUS_EXPORT int ex_put_quadrature_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id,
-                                             const ex_field field);
-EXODUS_EXPORT int ex_get_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id,
-                                        ex_field *field);
+EXODUS_EXPORT int ex_put_field_metadata(int exoid, const ex_field field);
+EXODUS_EXPORT int ex_put_field_suffices(int exoid, const ex_field field, const char *suffices);
+EXODUS_EXPORT int ex_put_basis_metadata(int exoid, const ex_field field);
+EXODUS_EXPORT int ex_put_quadrature_metadata(int exoid, const ex_field field);
+EXODUS_EXPORT int ex_get_field_metadata(int exoid, ex_field *field);
 EXODUS_EXPORT int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id id);
+EXODUS_EXPORT int ex_get_field_suffices(int exoid, const ex_field field, char *suffices);
 
 /*  Write arbitrary integer, double, or text attributes on an entity */
 EXODUS_EXPORT int ex_put_attribute(int exoid, const ex_attribute attributes);

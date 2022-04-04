@@ -148,17 +148,17 @@ int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id
 }
 
 /*! Get the values for the specified attribute. */
-int ex_get_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id, ex_field *field)
+int ex_get_field_metadata(int exoid, ex_field *field)
 {
   EX_FUNC_ENTER();
 
   int varid;
-  int att_count = ex__get_attribute_count(exoid, obj_type, id, &varid);
+  int att_count = ex__get_attribute_count(exoid, field->entity_type, field->entity_id, &varid);
   if (att_count < 0) {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: Negative attribute count (%d) on %s with id %" PRId64 " in file id %d",
-             att_count, ex_name_of_object(obj_type), id, exoid);
+             att_count, ex_name_of_object(field->entity_type), field->entity_id, exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_INTERNAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -172,7 +172,7 @@ int ex_get_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id, e
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get attribute named %s on %s with id %" PRId64 " in file id %d",
-               attr_name, ex_name_of_object(obj_type), id, exoid);
+               attr_name, ex_name_of_object(field->entity_type), field->entity_id, exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
@@ -196,7 +196,7 @@ int ex_get_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id, e
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to get parameters for attribute named %s on %s with id %" PRId64
                  " in file id %d",
-                 attr_name, ex_name_of_object(obj_type), id, exoid);
+                 attr_name, ex_name_of_object(field->entity_type), field->entity_id, exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
@@ -227,7 +227,7 @@ int ex_get_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id, e
             errmsg, MAX_ERR_LENGTH,
             "ERROR: Invalid field metadata attribute type %s on field %s on %s with id %" PRId64
             " in file id %d",
-            fld_type, fld_name, ex_name_of_object(obj_type), id, exoid);
+            fld_type, fld_name, ex_name_of_object(field->entity_type), field->entity_id, exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
@@ -236,7 +236,8 @@ int ex_get_field_metadata(int exoid, ex_entity_type obj_type, ex_entity_id id, e
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to read field metadata attribute type %s on field %s on %s with id "
                  "%" PRId64 " in file id %d",
-                 fld_type, fld_name, ex_name_of_object(obj_type), id, exoid);
+                 fld_type, fld_name, ex_name_of_object(field->entity_type), field->entity_id,
+                 exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
