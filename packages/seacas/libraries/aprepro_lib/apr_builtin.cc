@@ -820,6 +820,12 @@ namespace SEAMS {
     return nullptr;
   }
 
+  const char *do_include(char *string)
+  {
+    aprepro->lexer->include_handler(string);
+    return nullptr;
+  }
+
   const char *do_if(double x)
   {
     aprepro->inIfdefGetvar = false;
