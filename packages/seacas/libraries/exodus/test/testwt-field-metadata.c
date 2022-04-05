@@ -92,13 +92,16 @@ int main(int argc, char **argv)
 
   /* ======================================================================== */
   /* Transient Variables */
-  char *var_names[]    = {"Disp-X",       "Disp-Y",       "Disp-Z",       "Velocity%X",
-                          "Velocity%Y",   "Velocity%Z",   "Gradient-X$1", "Gradient-Y$1",
-                          "Gradient-Z$1", "Gradient-X$2", "Gradient-Y$2", "Gradient-Z$2",
-                          "Gradient-X$3", "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4",
-                          "Gradient-Y$4", "Gradient-Z$4", "User_1",       "User_2",
-                          "User_3",       "User_4"};
-  int   num_block_vars = sizeof(var_names) / sizeof(var_names[0]);
+  char *var_names[] = {
+      "Disp-X",       "Disp-Y",       "Disp-Z",       "Velocity%X",   "Velocity%Y",
+      "Velocity%Z",   "Gradient-X$0", "Gradient-Y$0", "Gradient-Z$0", "Gradient-X$1",
+      "Gradient-Y$1", "Gradient-Z$1", "Gradient-X$2", "Gradient-Y$2", "Gradient-Z$2",
+      "Gradient-X$3", "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4", "Gradient-Y$4",
+      "Gradient-Z$4", "Gradient-X$5", "Gradient-Y$5", "Gradient-Z$5", "Gradient-X$6",
+      "Gradient-Y$6", "Gradient-Z$6", "Gradient-X$7", "Gradient-Y$7", "Gradient-Z$7",
+      "Gradient-X$8", "Gradient-Y$8", "Gradient-Z$8", "User_h2o",     "User_gas",
+      "User_ch4",     "User_methane"};
+  int num_block_vars = sizeof(var_names) / sizeof(var_names[0]);
 
   EXCHECK(ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_block_vars));
   EXCHECK(ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_block_vars, var_names));
@@ -124,6 +127,24 @@ int main(int argc, char **argv)
   }
 
   {
+    int    subc_dim[]         = {0, 0, 0, 0, 1, 1, 1, 1, 2};
+    int    subc_ordinal[]     = {0, 1, 2, 3, 0, 1, 2, 3, 0};
+    int    subc_dof_ordinal[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    int    subc_num_dof[]     = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+    double xi[]               = {-1.0, 1.0, 1.0, -1.0, 0.0, 1.0, 0.0, -1.0, 0.0};
+    double eta[]              = {-1.0, -1.0, 1.0, 1.0, -1.0, 0.0, 1.0, 0.0, 0.0};
+
+    struct ex_basis basis = (ex_basis){.name             = "HGRAD_QUAD_C2_FEM",
+                                       .cardinality      = 9,
+                                       .subc_dim         = subc_dim,
+                                       .subc_ordinal     = subc_ordinal,
+                                       .subc_dof_ordinal = subc_dof_ordinal,
+                                       .subc_num_dof     = subc_num_dof,
+                                       .xi               = xi,
+                                       .eta              = eta,
+                                       .zeta             = NULL};
+    EXCHECK(ex_put_basis_metadata(exoid, EX_ELEM_BLOCK, blocks[1].id, basis));
+
     struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
                                        .entity_id           = blocks[1].id,
                                        .name                = "Gradient",
