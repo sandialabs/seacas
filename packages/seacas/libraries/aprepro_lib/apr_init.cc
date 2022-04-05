@@ -174,8 +174,14 @@ namespace SEAMS {
        "Translates all lowercase character in svar to "
        "uppercase. It modifies svar and returns the "
        "resulting string. "},
-      {"tst_include", do_include, "include(svar)",
+      {"include", do_include, "include(svar)",
        "Include the file pointed to by the string variable 'svar'"},
+      {"Include", do_include, "Include(svar)",
+       "Include the file pointed to by the string variable 'svar'"},
+      {"cinclude", do_cinclude, "cinclude(svar)",
+       "Include the file pointed to by the string variable 'svar'.  Ok if file does not exist."},
+      {"Cinclude", do_cinclude, "Cinclude(svar)",
+       "Include the file pointed to by the string variable 'svar'. Ok if file does not exist."},
       {"getenv", do_getenv, "getenv(svar)",
        "Returns a string containing the value of the environment variable svar. If the environment "
        "\n\t\t\tvariable is not defined, an empty string is returned. "},

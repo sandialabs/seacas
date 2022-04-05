@@ -822,7 +822,13 @@ namespace SEAMS {
 
   const char *do_include(char *string)
   {
-    aprepro->lexer->include_handler(string);
+    aprepro->lexer->include_handler(string, true);
+    return nullptr;
+  }
+
+  const char *do_cinclude(char *string)
+  {
+    aprepro->lexer->include_handler(string, false);
     return nullptr;
   }
 

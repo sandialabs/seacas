@@ -44,7 +44,7 @@ namespace SEAMS {
     /** Required for virtual functions */
     ~Scanner() override;
 
-    void add_include_file(const std::string &filename, bool must_exist);
+    bool add_include_file(const std::string &filename, bool must_exist);
     int  yywrap() override;
     void yyerror(const char *s);
     void LexerOutput(const char *buf, int size) override;
@@ -57,7 +57,7 @@ namespace SEAMS {
 
     char *rescan(char *string);
     char *execute(char *string);
-    char *include_handler(char *string);
+    char *include_handler(char *string, bool must_exist);
     char *if_handler(double x);
     char *elseif_handler(double x);
     char *switch_handler(double x);

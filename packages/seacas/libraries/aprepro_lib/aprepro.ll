@@ -520,49 +520,6 @@ integer {D}+({E})?
     aprepro.ap_file_list.top().lineno++;
   }
 
-<INITIAL>{WS}"{"[Ii]"nclude"{WS}"("           { BEGIN(GET_FILENAME);
-                             file_must_exist = true; }
-<INITIAL>{WS}"{"[Cc]"include"{WS}"("          { BEGIN(GET_FILENAME);
-                             file_must_exist = false; }
-<GET_FILENAME>.+")"{WS}"}"{NL}* {
-  aprepro.ap_file_list.top().lineno++;
-  BEGIN(INITIAL);
-  {
-    symrec *s;
-    int quoted = 0;
-    char *pt = strchr(yytext, ')');
-    *pt = '\0';
-    /* Check to see if surrounded by double quote */
-    if ((pt = strchr(yytext, '"')) != nullptr) {
-      yytext++;
-      quoted = 1;
-    }
-    if ((pt = strrchr(yytext, '"')) != nullptr) {
-      *pt = '\0';
-      quoted = 1;
-    }
-
-    if (quoted == 0) {
-      /* See if this is an aprepro variable referring to a name */
-      s = aprepro.getsym(yytext);
-      if (s == nullptr || (s->type != token::SVAR && s->type != token::IMMSVAR)) {
-        pt = yytext;
-      } else {
-        pt = (char*)s->value.svar.c_str();
-      }
-    } else {
-      pt = yytext;
-    }
-
-    add_include_file(pt, file_must_exist);
-
-    if(!aprepro.doIncludeSubstitution)
-      yy_push_state(VERBATIM);
-
-    aprepro.ap_file_list.top().lineno++;
-  }
-}
-
 <PARSING>{integer}  |
 <PARSING>{number}          { sscanf (yytext, "%lf", &yylval->val);
                        return(token::NUM); }
@@ -707,7 +664,7 @@ integer {D}+({E})?
     };
   }
 
-  void Scanner::add_include_file(const std::string &filename, bool must_exist)
+  bool Scanner::add_include_file(const std::string &filename, bool must_exist)
   {
     std::fstream *yytmp = nullptr;
     if (must_exist)
@@ -729,6 +686,7 @@ integer {D}+({E})?
       yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(yytmp, YY_BUF_SIZE));
       curr_index = 0;
     }
+    return yytmp != nullptr;
   }
 
   void Scanner::LexerOutput(const char *buf, int size)
@@ -954,36 +912,38 @@ integer {D}+({E})?
     return (nullptr);
   }
 
-  char *Scanner::include_handler(char *string)
+  char *Scanner::include_handler(char *string, bool must_exist)
   {
     /*
      * NOTE: The closing } has not yet been scanned in the call to rescan();
      *       therefore, we read it ourselves using input().
      */
-    int i = 0;
-    while ((i = yyFlexLexer::yyinput()) != '}' && i != EOF)
-      curr_index++; /* eat up values */
+    bool exists = add_include_file(string, must_exist);
 
-    add_include_file(string, true);
+    if (exists) {
+      int i = 0;
+      while ((i = yyFlexLexer::yyinput()) != '}' && i != EOF)
+	curr_index++; /* eat up values */
 
-    if (!aprepro.doIncludeSubstitution)
-      yy_push_state(VERBATIM);
+      if (!aprepro.doIncludeSubstitution)
+	yy_push_state(VERBATIM);
 
-    /*
-     * Now we need to push back the closing } so it is the first thing read.
-     * We no longer have the initial file stream (is is pushed down on stack)
-     * so we need to add a new file stream consisting of just a single character.
-     * Wasteful, but best I can come up with at this time.
-     */
-    {
-      aprepro.ap_file_list.push(SEAMS::file_rec("_string_", 0, true, -1));
-      std::string new_string("}");
-      auto        ins = new std::istringstream(new_string); // Declare an input string stream.
-      yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(ins, new_string.size()));
-    }
-
-    if (aprepro.ap_options.debugging) {
-      std::cerr << "DEBUG INCLUDE: Including " << string << "\n";
+      /*
+       * Now we need to push back the closing } so it is the first thing read.
+       * We no longer have the initial file stream (is is pushed down on stack)
+       * so we need to add a new file stream consisting of just a single character.
+       * Wasteful, but best I can come up with at this time.
+       */
+      {
+	aprepro.ap_file_list.push(SEAMS::file_rec("_string_", 0, true, -1));
+	std::string new_string("}");
+	auto        ins = new std::istringstream(new_string); // Declare an input string stream.
+	yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(ins, new_string.size()));
+      }
+      
+      if (aprepro.ap_options.debugging) {
+	std::cerr << "DEBUG INCLUDE: Including " << string << "\n";
+      }
     }
     return (nullptr);
   }
