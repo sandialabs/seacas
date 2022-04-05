@@ -956,8 +956,38 @@ integer {D}+({E})?
 
   char *Scanner::include_handler(char *string)
   {
+    /*
+     * NOTE: The closing } has not yet been scanned in the call to rescan();
+     *       therefore, we read it ourselves using input().
+     */
+    int i = 0;
+    while ((i = yyFlexLexer::yyinput()) != '}' && i != EOF)
+      curr_index++; /* eat up values */
+
+    add_include_file(string, true);
+
+    if (!aprepro.doIncludeSubstitution)
+      yy_push_state(VERBATIM);
+
+    /*
+     * Now we need to push back the closing } so it is the first thing read.
+     * We no longer have the initial file stream (is is pushed down on stack)
+     * so we need to add a new file stream consisting of just a single character.
+     * Wasteful, but best I can come up with at this time.
+     */
+    {
+      aprepro.ap_file_list.push(SEAMS::file_rec("_string_", 0, true, -1));
+      std::string new_string("}");
+      auto        ins = new std::istringstream(new_string); // Declare an input string stream.
+      yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(ins, new_string.size()));
+    }
+
+    if (aprepro.ap_options.debugging) {
+      std::cerr << "DEBUG INCLUDE: Including " << string << "\n";
+    }
     return (nullptr);
   }
+
 
   char *Scanner::if_handler(double x)
   {
