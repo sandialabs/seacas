@@ -92,41 +92,25 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   return EX_NOERR;
 }
 
-int ex__put_basis_i_attribute(int exoid, const char *basis_name, const char *type,
-                              ex_entity_type entity_type, ex_entity_id id, int cardinality,
-                              const int *basis_entry)
+int ex__put_basis_attribute(int exoid, const char *basis_name, const char *type,
+                            ex_entity_type entity_type, ex_entity_id id, ex_type value_type,
+                            int cardinality, const void *basis_entry)
 {
   char         attribute_name[NC_MAX_NAME + 1];
   static char *basis_template = "Basis@%s";
-  int          status;
 
   if (basis_entry != NULL) {
     sprintf(attribute_name, basis_template, type);
-    if ((status = ex_put_integer_attribute(exoid, entity_type, id, attribute_name, cardinality,
-                                           basis_entry)) != EX_NOERR) {
-      char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to store %s for basis '%s' on %s with id %" PRId64 " in file id %d",
-               type, basis_name, ex_name_of_object(entity_type), id, exoid);
-      ex_err_fn(exoid, __func__, errmsg, status);
-      return EX_FATAL;
+    int status;
+    if (value_type == EX_INTEGER) {
+      status = ex_put_integer_attribute(exoid, entity_type, id, attribute_name, cardinality,
+                                        basis_entry);
     }
-  }
-  return EX_NOERR;
-}
-
-int ex__put_basis_d_attribute(int exoid, const char *basis_name, const char *type,
-                              ex_entity_type entity_type, ex_entity_id id, int cardinality,
-                              const double *basis_entry)
-{
-  char         attribute_name[NC_MAX_NAME + 1];
-  static char *basis_template = "Basis@%s";
-  int          status;
-
-  if (basis_entry != NULL) {
-    sprintf(attribute_name, basis_template, type);
-    if ((status = ex_put_double_attribute(exoid, entity_type, id, attribute_name, cardinality,
-                                          basis_entry)) != EX_NOERR) {
+    else if (value_type == EX_DOUBLE) {
+      status =
+          ex_put_double_attribute(exoid, entity_type, id, attribute_name, cardinality, basis_entry);
+    }
+    if (status != EX_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to store %s for basis '%s' on %s with id %" PRId64 " in file id %d",
@@ -166,43 +150,43 @@ int ex_put_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id en
     return EX_FATAL;
   }
 
-  if (ex__put_basis_i_attribute(exoid, basis.name, "cardinality", entity_type, entity_id, 1,
-                                &basis.cardinality) != EX_NOERR) {
+  if (ex__put_basis_attribute(exoid, basis.name, "cardinality", entity_type, entity_id, EX_INTEGER,
+                              1, &basis.cardinality) != EX_NOERR) {
     return EX_FATAL;
   }
 
-  if (ex__put_basis_i_attribute(exoid, basis.name, "subc_dim", entity_type, entity_id,
-                                basis.cardinality, basis.subc_dim) != EX_NOERR) {
+  if (ex__put_basis_attribute(exoid, basis.name, "subc_dim", entity_type, entity_id, EX_INTEGER,
+                              basis.cardinality, basis.subc_dim) != EX_NOERR) {
     return EX_FATAL;
   }
 
-  if (ex__put_basis_i_attribute(exoid, basis.name, "subc_ordinal", entity_type, entity_id,
-                                basis.cardinality, basis.subc_ordinal) != EX_NOERR) {
+  if (ex__put_basis_attribute(exoid, basis.name, "subc_ordinal", entity_type, entity_id, EX_INTEGER,
+                              basis.cardinality, basis.subc_ordinal) != EX_NOERR) {
     return EX_FATAL;
   }
 
-  if (ex__put_basis_i_attribute(exoid, basis.name, "subc_dof_ordinal", entity_type, entity_id,
-                                basis.cardinality, basis.subc_dof_ordinal) != EX_NOERR) {
+  if (ex__put_basis_attribute(exoid, basis.name, "subc_dof_ordinal", entity_type, entity_id,
+                              EX_INTEGER, basis.cardinality, basis.subc_dof_ordinal) != EX_NOERR) {
     return EX_FATAL;
   }
 
-  if (ex__put_basis_i_attribute(exoid, basis.name, "subc_num_dof", entity_type, entity_id,
-                                basis.cardinality, basis.subc_num_dof) != EX_NOERR) {
+  if (ex__put_basis_attribute(exoid, basis.name, "subc_num_dof", entity_type, entity_id, EX_INTEGER,
+                              basis.cardinality, basis.subc_num_dof) != EX_NOERR) {
     return EX_FATAL;
   }
 
-  if (ex__put_basis_d_attribute(exoid, basis.name, "xi", entity_type, entity_id, basis.cardinality,
-                                basis.xi) != EX_NOERR) {
+  if (ex__put_basis_attribute(exoid, basis.name, "xi", entity_type, entity_id, EX_DOUBLE,
+                              basis.cardinality, basis.xi) != EX_NOERR) {
     return EX_FATAL;
   }
 
-  if (ex__put_basis_d_attribute(exoid, basis.name, "eta", entity_type, entity_id, basis.cardinality,
-                                basis.eta) != EX_NOERR) {
+  if (ex__put_basis_attribute(exoid, basis.name, "eta", entity_type, entity_id, EX_DOUBLE,
+                              basis.cardinality, basis.eta) != EX_NOERR) {
     return EX_FATAL;
   }
 
-  if (ex__put_basis_d_attribute(exoid, basis.name, "zeta", entity_type, entity_id,
-                                basis.cardinality, basis.zeta) != EX_NOERR) {
+  if (ex__put_basis_attribute(exoid, basis.name, "zeta", entity_type, entity_id, EX_DOUBLE,
+                              basis.cardinality, basis.zeta) != EX_NOERR) {
     return EX_FATAL;
   }
   return EX_NOERR;
