@@ -65,6 +65,18 @@ int main(int argc, char **argv)
   fields[1].entity_id = 11;
   EXCHECK(ex_get_field_metadata(exoid, fields));
 
+  struct ex_basis basis = (ex_basis){.name             = "",
+                                     .cardinality      = 0,
+                                     .subc_dim         = NULL,
+                                     .subc_ordinal     = NULL,
+                                     .subc_dof_ordinal = NULL,
+                                     .subc_num_dof     = NULL,
+                                     .xi               = NULL,
+                                     .eta              = NULL,
+                                     .zeta             = NULL};
+  EXCHECK(ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 10, &basis));
+  EXCHECK(ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 11, &basis));
+
   int error = ex_close(exoid);
   printf("\nafter ex_close, error = %3d\n", error);
   return 0;

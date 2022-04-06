@@ -1021,12 +1021,16 @@ EXODUS_EXPORT int ex_get_blobs(int exoid, struct ex_blob *blobs);
 
 EXODUS_EXPORT int ex_put_field_metadata(int exoid, const ex_field field);
 EXODUS_EXPORT int ex_put_field_suffices(int exoid, const ex_field field, const char *suffices);
-EXODUS_EXPORT int ex_put_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id id,
-                                        const ex_basis basis);
-EXODUS_EXPORT int ex_put_quadrature_metadata(int exoid, const ex_field field);
 EXODUS_EXPORT int ex_get_field_metadata(int exoid, ex_field *field);
 EXODUS_EXPORT int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id id);
 EXODUS_EXPORT int ex_get_field_suffices(int exoid, const ex_field field, char *suffices);
+
+EXODUS_EXPORT int ex_put_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id id,
+                                        const ex_basis basis);
+EXODUS_EXPORT int ex_get_basis_metadata(int exoid, ex_entity_type entity_type,
+                                        ex_entity_id entity_id, ex_basis *basis);
+
+EXODUS_EXPORT int ex_put_quadrature_metadata(int exoid, const ex_field field);
 
 /*  Write arbitrary integer, double, or text attributes on an entity */
 EXODUS_EXPORT int ex_put_attribute(int exoid, const ex_attribute attributes);

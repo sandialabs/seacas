@@ -245,3 +245,60 @@ int ex_get_field_metadata(int exoid, ex_field *field)
   }
   EX_FUNC_LEAVE(EX_NOERR);
 }
+
+int ex__get_basis_name(int exoid, ex_entity_type entity_type, ex_entity_id entity_id, char *name)
+{
+  int varid;
+  if (entity_type == EX_GLOBAL) {
+    varid = NC_GLOBAL;
+  }
+  else {
+    varid = ex__get_varid(exoid, entity_type, entity_id);
+    if (varid <= 0) {
+      /* Error message handled in ex__get_varid */
+      EX_FUNC_LEAVE(varid);
+    }
+  }
+
+  int status;
+  if ((status = nc_get_att(exoid, varid, "Basis@name", name)) != NC_NOERR) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to read basis name on %s with id %" PRId64 " in file id %d",
+             ex_name_of_object(entity_type), entity_id, exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    return EX_FATAL;
+  }
+  return EX_NOERR;
+}
+
+int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id entity_id,
+                          ex_basis *basis)
+{
+  /*
+   * -- There is at most 1 basis definition on an entity.
+   * -- If this function is called an there is no basis metadata on the
+   *    entity, it will return EX_NOTFOUND; otherwise it will populate
+   *    (portions of) `basis` and return EX_NOERR.
+   *
+   * -- name and cardinality will be populated if empty at time of call.
+   * -- other fields will be populated if they are non-null.
+   * -- so, can call first time with empty `basis' with 'NULL' on all pointer members.
+   *    - `name` and `cardinality` will be populated
+   *    - Then malloc/calloc the pointer members that you want populated
+   *    - then call again.  `name` will not be populated if non-empty.
+   *    - `cardinality` will be checked and must be >= to value on database.
+   *      - assumed to be the size of the pointer member allocated space.
+   *      - if > value on database, will be set to value on database.
+   *      - if < value on database, error unless 0.
+   *    - pointer members will be populated if non-NULL.
+   */
+
+  int status;
+  if ((status = ex__get_basis_name(exoid, entity_type, entity_id, basis->name)) != EX_NOERR) {
+    /* Error message printed in `ex__get_basis_name` */
+    return EX_NOTFOUND;
+  }
+  fprintf(stderr, "Basis is named '%s'\n", basis->name);
+  return EX_NOERR;
+}
