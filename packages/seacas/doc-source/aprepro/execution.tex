@@ -10,9 +10,13 @@ The effects of the parameters are:
 \begin{longtable}{lp{5.0in}}
 --debug (-d) &  Dump all variables, debug loops/if/endif \\
 --dumpvars (-D) & Dump all variables at end of run \\
+--dumpvars\_json (-J) & Dump all variables at end of run in json format \\
 --version (-v) &  Print version number to stderr           \\
 --comment char (-c char) &  Change comment character to 'char'       \\
 --immutable (-X) &  All variables are immutable--cannot be modified \\
+--errors\_fatal (-f) & Exit program with nonzero status if errors are encountered \\
+--errors\_and\_warnings\_fatal (-F) & Exit program with nonzero status if warnings are encountered \\
+--require\_defined (-R) & Treat undefined variable warnings as fatal \\
 --interactive (-i) &  Interactive use, no buffering of output.       \\
 --include path (-I path) &  Include file or include path. Any variables defined in the include file will be immutable.\\
 --one\_based\_index (-1) & Array indexing is one-based (default = zero-based) \\
@@ -20,6 +24,7 @@ The effects of the parameters are:
 EXIT, Exit, exit, QUIT, Quit, or quit are entered. Otherwise, \aprepro{} will exit at end of
 file. \\
 --message (-M) &  Print INFO messages. (See Chapter~\ref{ch:errors} for a list of INFO messages.) \\
+--info=file & Output INFO messages (e.g. DUMP() output) to file. \\
 --nowarning (-W) &  Do not print warning messages. (See Chapter~\ref{ch:errors} for a list of warning messages.) \\
 --copyright (-c) &  Print copyright message                  \\
 --quiet (-q) &  Do not anything extra to stdout          \\

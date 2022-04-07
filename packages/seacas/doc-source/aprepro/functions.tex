@@ -113,6 +113,9 @@ get\_word(n,svar,del&  Returns a string containing the \var{n}th word of \var{sv
 getenv(svar)        &  Returns a string containing the value of the environment variable \var{svar}. If the environment variable is not defined, an empty string is returned.  \\
 help()              &  Tell how to get help on variables, functions, \ldots \\
 include\_path(path) &  Specify an optional path to be prepended to a filename when opening a file. Can also be specified via the \cmd{-I} command line option when executing aprepro. \\
+include(file)       &  include contents of the file.  See Section~\ref{sec:inclusion} for details. \\
+cinclude(file)      &  conditionally include contents of the file.  See Section~\ref{sec:inclusion} for details. \\
+import(svar)        &  include contents of the file pointed to by \var{svar}.  See Section~\ref{sec:inclusion} for details. \\
 output(filename)    &  Creates the file specified by filename and
 sends all subsequent output from aprepro to that file. Calling \cmd{output(\"stdout\")} will close the current output file and return output to the terminal (standard output).\\
 output\_append(fn)  &  If file with name \var{fn} exists, append output to it; otherwise create the file and send all subsequent output from aprepro to that file. \\
@@ -198,29 +201,38 @@ by square brackets will return the integer value of that variable or
 expression truncated toward zero. For example \cmd{[sqrt(2)]} will return the value
 \cmd{1}.
 
-\subsection{File Inclusion} \aprepro{} can read input from multiple
-files using the \cmd{include()} and \cmd{cinclude()} functions. If a line
+\subsection{File Inclusion}\label{sec:inclusion} \aprepro{} can read input from multiple
+files using the \cmd{include()}, \cmd{cinclude()}, and \cmd{import()} functions. If a line
 of the form:
 
 \cmd{\{include(\texttt{"}\textit{filename}\texttt{"})\}}\\
-\cmd{\{include(string\_variable)\}}
+\cmd{\{include(string\_variable)\}}\\
+\cmd{\{import(string\_expression)\}}
 
 is read, \aprepro{} will open and begin reading from the file
-\file{filename}.  A string variable can be used as the
-argument instead of a literal string value.  When the end of the file
-is reached, it will be closed and \aprepro{} will continue
-reading from the previous file. The difference between
-\cmd{include()} and \cmd{cinclude()} is that if
-\file{filename} does not exist, \cmd{include()} will
-terminate \aprepro{} with a fatal error, but \cmd{cinclude()} will just
-write a warning message and continue with the current file. The
-\cmd{cinclude()} function can be thought of as a {\em conditional
-include}, that is, include the file if it exists. Multiple include
-files are allowed and an included file can also include additional
-files. This option can be used to set variables globally in several
-files. For example, if two or more input files share common points or
-dimensions, those dimensions can be set in one file that is included
-in the other files.
+\file{filename}.  A string variable can be used as the argument
+instead of a literal string value.  In the \cmd{import()} command, the
+argument can be an expression that evaluates to a string, a string
+variable, or a literal string. For example:
+\begin{apinp}
+\{base = "filename"\}
+\{ext = "apr"\}
+\{import(base // "." // ext)\}
+\end{apinp}
+Will result in the contents of the file \file{filename.apr} being included.
+
+When the end of the file is reached, it will be closed and \aprepro{}
+will continue reading from the previous file. The difference between
+\cmd{include()}, \cmd{import()}, and \cmd{cinclude()} is that if \file{filename} does
+not exist, \cmd{include()} and \cmd{import()} will terminate \aprepro{} with a fatal
+error, but \cmd{cinclude()} will just write a warning message and
+continue with the current file. The \cmd{cinclude()} function can be
+thought of as a {\em conditional include}, that is, include the file
+if it exists. Multiple include files are allowed and an included file
+can also include additional files. This option can be used to set
+variables globally in several files. For example, if two or more input
+files share common points or dimensions, those dimensions can be set
+in one file that is included in the other files.
 
 If \cmd{ECHO(OFF)} is in effect during in an included file, \cmd{ECHO(ON)}
 will automatically be executed at the end of the included file.

@@ -975,7 +975,7 @@ static yyconst flex_int16_t yy_rule_linenum[102] = {
 #define YY_RESTORE_YY_MORE_OFFSET
 /* -*- Mode: c++ -*- */
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -2595,7 +2595,7 @@ void yyFlexLexer::yyunput(int c, char *yy_bp)
   *yy_cp = (yy_hold_char);
 
   if (yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2) { /* need to shift things up to make room */
-    /* +2 for EOB chars. */
+                                                         /* +2 for EOB chars. */
     yy_size_t number_to_move = (yy_n_chars) + 2;
     char *dest   = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
     char *source = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
@@ -3178,7 +3178,7 @@ namespace SEAMS {
     };
   }
 
-  void Scanner::add_include_file(const std::string &filename, bool must_exist)
+  bool Scanner::add_include_file(const std::string &filename, bool must_exist)
   {
     std::fstream *yytmp = nullptr;
     if (must_exist)
@@ -3200,6 +3200,7 @@ namespace SEAMS {
       yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(yytmp, YY_BUF_SIZE));
       curr_index = 0;
     }
+    return yytmp != nullptr;
   }
 
   void Scanner::LexerOutput(const char *buf, int size)
@@ -3421,6 +3422,41 @@ namespace SEAMS {
 
       auto ins = new std::istringstream(new_string); // Declare an input string stream.
       yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(ins, new_string.size()));
+    }
+    return (nullptr);
+  }
+
+  char *Scanner::import_handler(char *string)
+  {
+    /*
+     * NOTE: The closing } has not yet been scanned in the call to rescan();
+     *       therefore, we read it ourselves using input().
+     */
+    int i = 0;
+    while ((i = yyFlexLexer::yyinput()) != '}' && i != EOF)
+      curr_index++; /* eat up values */
+
+    add_include_file(string, true);
+    std::string info_string = std::string("Imported File: '") + string + "'";
+    aprepro.info(info_string, true);
+
+    if (!aprepro.doIncludeSubstitution) {
+      yy_push_state(VERBATIM);
+    }
+
+    /*
+     * Now we need to push back the closing } so it is the first thing read.
+     * We no longer have the initial file stream (is is pushed down on stack)
+     * so we need to add a new file stream consisting of just a single character.
+     * Wasteful, but best I can come up with at this time.
+     */
+    aprepro.ap_file_list.push(SEAMS::file_rec("_string_", 0, true, -1));
+    std::string new_string("}");
+    auto        ins = new std::istringstream(new_string); // Declare an input string stream.
+    yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(ins, new_string.size()));
+
+    if (aprepro.ap_options.debugging) {
+      std::cerr << "DEBUG IMPORT: " << string << "\n";
     }
     return (nullptr);
   }

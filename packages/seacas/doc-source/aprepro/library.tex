@@ -94,11 +94,20 @@ command. The syntax is:
 Where \cmd{option} is one of:
 \begin{longtable}{lp{5.0in}}
 \cmd{--debug} &  Dump all variables, debug loops/if/endif \\
+\cmd{--dumpvars} & Dump all variables at end of run \\
+\cmd{--dumpvars\_json} & Dump all variables at end of run in json format \\
 \cmd{--version} &  Print version number to stderr.\\
+\cmd{--immutable} & All variables are immutable -- cannot be modified \\
+\cmd{--errors\_fatal} & Exit program with nonzero status if errors are encountered \\
+\cmd{--errors\_and\_warnings\_fatal} & Exit program with nonzero status if warnings are encountered \\
+\cmd{--require\_defined} & Treat undefined variable warnings as fatal \\
+\cmd{--one\_based\_index} & Array indexing is one-based (default = zero-based) \\
+\cmd{--interactive} & Interactive use, no buffering \\
+\cmd{--message} & Print INFO messages \\
+\cmd{--info=file} & Output INFO messages (e.g. DUMP() output) to file. \\
 \cmd{--nowarning} &  Do not print warning messages.\\
 \cmd{--copyright} &  Print copyright message to stderr.\\
 \cmd{--message} &  Print INFO messages.\\
-\cmd{--immutable} &  All variables are immutable.\\
 \cmd{--trace} &  Trace program execution. Primarily for aprepro developer.\\
 \cmd{--interactive} &  Interactive use; do not buffer output.\\
 \cmd{--exit\_on} &  End with Exit or EXIT or exit or Quit or QUIT or
@@ -111,24 +120,39 @@ processing input files.\\
 \end{longtable}
 \begin{apout}
 APREPRO PREPROCESSOR OPTIONS:
-        --debug or -d: Dump all variables, debug loops/if/endif
-      --version or -v: Print version number to stderr
-    --immutable or -X: All variables are immutable--cannot be modified
-  --interactive or -i: Interactive use, no buffering
-  --include=P or -I=P: Include file or include path
-                     : If P is path, then optionally prepended to all include filenames
-                     : If P is file, then processed before processing input file
-      --exit\_on or -e: End when 'Exit|EXIT|exit' entered
-         --help or -h: Print this list
-      --message or -M: Print INFO messages
-    --nowarning or -W: Do not print WARN messages
-    --copyright or -C: Print copyright message
+  --debug or -d: Dump all variables, debug loops/if/endif and keep temporary files
+       --dumpvars or -D: Dump all variables at end of run
+  --dumpvars_json or -J: Dump all variables at end of run in json format
+        --version or -v: Print version number to stderr
+      --immutable or -X: All variables are immutable--cannot be modified
+   --errors\_fatal or -f: Exit program with nonzero status if errors are encountered
+ --errors\_and\_warnings_fatal or -F: Exit program with nonzero status if warnings are encountered
+--require\_defined or -R: Treat undefined variable warnings as fatal
+--one\_based\_index or -1: Array indexing is one-based (default = zero-based)
+    --interactive or -i: Interactive use, no buffering
+    --include=P or -I=P: Include file or include path
+                       : If P is path, then optionally prepended to all include filenames
+                       : If P is file, then processed before processing input file
+                       : variables defined in P will be immutable.
+       --exit\_on or -e: End when 'Exit|EXIT|exit' entered
+           --help or -h: Print this list
+        --message or -M: Print INFO messages
+            --info=file: Output INFO messages (e.g. DUMP() output) to file.
+      --nowarning or -W: Do not print WARN messages
+--comment=char or -c=char: Change comment character to 'char'
+      --copyright or -C: Print copyright message
+  --keep\_history or -k: Keep a history of aprepro substitutions.
+                         (not for general interactive use)
+          --quiet or -q: Do not print the header output line
+                var=val: Assign value 'val' to variable 'var'
+                         Use var=\"sval\" for a string variable
 
-   Units Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s
-   Enter {DUMP\_FUNC()} for list of functions recognized by aprepro
-   Enter {DUMP\_PREVAR()} for list of predefined variables in aprepro
+	Units Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s
+	Enter {DUMP()} for list of user-defined variables
+	Enter {DUMP_FUNC()} for list of functions recognized by aprepro
+	Enter {DUMP_PREVAR()} for list of predefined variables in aprepro
 
-   ->->-> Send email to gdsjaar@sandia.gov for aprepro support.
+	->->-> Send email to gdsjaar@sandia.gov for aprepro support.
 \end{apout}
 
 For additional functions that are rarely used, see the
