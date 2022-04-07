@@ -3310,7 +3310,7 @@ namespace SEAMS {
     return (nullptr);
   }
 
-  char *Scanner::include_handler(char *string, bool must_exist)
+  char *Scanner::import_handler(char *string)
   {
     /*
      * NOTE: The closing } has not yet been scanned in the call to rescan();
@@ -3320,12 +3320,10 @@ namespace SEAMS {
     while ((i = yyFlexLexer::yyinput()) != '}' && i != EOF)
       curr_index++; /* eat up values */
 
-    bool exists = add_include_file(string, must_exist);
+    add_include_file(string, true);
 
-    if (exists) {
-      if (!aprepro.doIncludeSubstitution) {
-        yy_push_state(VERBATIM);
-      }
+    if (!aprepro.doIncludeSubstitution) {
+      yy_push_state(VERBATIM);
     }
 
     /*
@@ -3340,7 +3338,7 @@ namespace SEAMS {
     yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(ins, new_string.size()));
 
     if (aprepro.ap_options.debugging) {
-      std::cerr << "DEBUG INCLUDE: Including " << string << "\n";
+      std::cerr << "DEBUG IMPORT: '" << string << "'\n";
     }
     return (nullptr);
   }

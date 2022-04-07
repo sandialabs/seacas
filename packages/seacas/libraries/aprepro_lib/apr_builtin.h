@@ -115,8 +115,7 @@ namespace SEAMS {
   const char *do_extract(char *string, char *begin, char *end);
   const char *do_print_array(const array *my_array_data);
 
-  const char *do_include(char *string);
-  const char *do_cinclude(char *string);
+  const char *do_import(char *string);
   const char *do_execute(char *string);
   const char *do_getenv(char *env);
   const char *do_tolower(char *string);

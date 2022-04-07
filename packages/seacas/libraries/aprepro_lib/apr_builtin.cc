@@ -820,15 +820,9 @@ namespace SEAMS {
     return nullptr;
   }
 
-  const char *do_include(char *string)
+  const char *do_import(char *string)
   {
-    aprepro->lexer->include_handler(string, true);
-    return nullptr;
-  }
-
-  const char *do_cinclude(char *string)
-  {
-    aprepro->lexer->include_handler(string, false);
+    aprepro->lexer->import_handler(string);
     return nullptr;
   }
 
