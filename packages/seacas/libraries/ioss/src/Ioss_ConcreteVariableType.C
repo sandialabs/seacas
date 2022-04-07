@@ -29,7 +29,6 @@ namespace {
 
   const std::string invalid() { return std::string("invalid"); }
   const std::string scalar() { return std::string("scalar"); }
-  const std::string vector_1d() { return std::string("vector_1d"); }
   const std::string vector_2d() { return std::string("vector_2d"); }
   const std::string vector_3d() { return std::string("vector_3d"); }
   const std::string quaternion_2d() { return std::string("quaternion_2d"); }
@@ -58,7 +57,6 @@ Ioss::StorageInitializer::StorageInitializer()
   // This is Used to get the linker to pull in all needed libraries.
   Ioss::Invalid_Storage::factory();
   Ioss::Scalar::factory();
-  Ioss::Vector_1D::factory();
   Ioss::Vector_2D::factory();
   Ioss::Vector_3D::factory();
   Ioss::Quaternion_2D::factory();
@@ -120,19 +118,6 @@ std::string Ioss::Scalar::label_name(const std::string &base, int /*which*/,
                                      const char /*suffix_sep*/, bool /*suffices_uppercase*/) const
 {
   return base;
-}
-
-// ------------------------------------------------------------------------
-
-Ioss::Vector_1D::Vector_1D() : Ioss::VariableType(vector_1d(), 1) {}
-
-std::string Ioss::Vector_1D::label(int which, const char /*suffix_sep*/) const
-{
-  assert(which > 0 && which <= component_count());
-  switch (which) {
-  case 1: return X();
-  default: return "";
-  }
 }
 
 // ------------------------------------------------------------------------
@@ -427,10 +412,10 @@ std::string Ioss::Matrix_22::label(int which, const char /*suffix_sep*/) const
 {
   assert(which > 0 && which <= component_count());
   switch (which) {
-  case 1: return "11";
-  case 2: return "12";
-  case 3: return "21";
-  case 4: return "22";
+  case 1: return XX();
+  case 2: return XY();
+  case 3: return YX();
+  case 4: return YY();
   default: return "";
   }
 }
@@ -443,15 +428,15 @@ std::string Ioss::Matrix_33::label(int which, const char /*suffix_sep*/) const
 {
   assert(which > 0 && which <= component_count());
   switch (which) {
-  case 1: return "11";
-  case 2: return "12";
-  case 3: return "13";
-  case 4: return "21";
-  case 5: return "22";
-  case 6: return "23";
-  case 7: return "31";
-  case 8: return "32";
-  case 9: return "33";
+  case 1: return XX();
+  case 2: return XY();
+  case 3: return XZ();
+  case 4: return YX();
+  case 5: return YY();
+  case 6: return YZ();
+  case 7: return ZX();
+  case 8: return ZY();
+  case 9: return ZZ();
   default: return "";
   }
 }
@@ -460,8 +445,6 @@ std::string Ioss::Matrix_33::label(int which, const char /*suffix_sep*/) const
 void Ioss::Invalid_Storage::factory() { static Ioss::Invalid_Storage registerThis; }
 
 void Ioss::Scalar::factory() { static Ioss::Scalar registerThis; }
-
-void Ioss::Vector_1D::factory() { static Ioss::Vector_1D registerThis; }
 
 void Ioss::Vector_2D::factory() { static Ioss::Vector_2D registerThis; }
 
