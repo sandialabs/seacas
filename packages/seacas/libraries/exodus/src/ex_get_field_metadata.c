@@ -87,8 +87,7 @@ static int ex__get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity
 
     if ((status = nc_inq(exoid, NULL, NULL, &att_count, NULL)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get GLOBAL attribute count in file id %d",
-               exoid);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get GLOBAL attribute count");
       ex_err_fn(exoid, __func__, errmsg, status);
       return EX_FATAL;
     }
@@ -103,8 +102,8 @@ static int ex__get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity
     if ((status = nc_inq_var(exoid, *varid, NULL, NULL, NULL, NULL, &att_count)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to get attribute count on %s with id %" PRId64 " in file id %d",
-               ex_name_of_object(obj_type), id, exoid);
+               "ERROR: failed to get attribute count on %s with id %" PRId64,
+               ex_name_of_object(obj_type), id);
       ex_err_fn(exoid, __func__, errmsg, status);
       return EX_FATAL;
     }
@@ -120,9 +119,8 @@ int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id
   int att_count = ex__get_attribute_count(exoid, obj_type, id, &varid);
   if (att_count < 0) {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: Negative attribute count (%d) on %s with id %" PRId64 " in file id %d",
-             att_count, ex_name_of_object(obj_type), id, exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Negative attribute count (%d) on %s with id %" PRId64,
+             att_count, ex_name_of_object(obj_type), id);
     ex_err_fn(exoid, __func__, errmsg, EX_INTERNAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -135,8 +133,8 @@ int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id
     if ((status = nc_inq_attname(exoid, varid, i, name)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to get attribute named %s on %s with id %" PRId64 " in file id %d",
-               name, ex_name_of_object(obj_type), id, exoid);
+               "ERROR: failed to get attribute named %s on %s with id %" PRId64, name,
+               ex_name_of_object(obj_type), id);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
@@ -156,9 +154,8 @@ int ex_get_field_metadata(int exoid, ex_field *field)
   int att_count = ex__get_attribute_count(exoid, field->entity_type, field->entity_id, &varid);
   if (att_count < 0) {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: Negative attribute count (%d) on %s with id %" PRId64 " in file id %d",
-             att_count, ex_name_of_object(field->entity_type), field->entity_id, exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Negative attribute count (%d) on %s with id %" PRId64,
+             att_count, ex_name_of_object(field->entity_type), field->entity_id);
     ex_err_fn(exoid, __func__, errmsg, EX_INTERNAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -171,8 +168,8 @@ int ex_get_field_metadata(int exoid, ex_field *field)
     if ((status = nc_inq_attname(exoid, varid, i, attr_name)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to get attribute named %s on %s with id %" PRId64 " in file id %d",
-               attr_name, ex_name_of_object(field->entity_type), field->entity_id, exoid);
+               "ERROR: failed to get attribute named %s on %s with id %" PRId64, attr_name,
+               ex_name_of_object(field->entity_type), field->entity_id);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
@@ -194,9 +191,8 @@ int ex_get_field_metadata(int exoid, ex_field *field)
       if ((status = nc_inq_att(exoid, varid, attr_name, &type, &val_count)) != NC_NOERR) {
         char errmsg[MAX_ERR_LENGTH];
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to get parameters for attribute named %s on %s with id %" PRId64
-                 " in file id %d",
-                 attr_name, ex_name_of_object(field->entity_type), field->entity_id, exoid);
+                 "ERROR: failed to get parameters for attribute named %s on %s with id %" PRId64,
+                 attr_name, ex_name_of_object(field->entity_type), field->entity_id);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
@@ -225,9 +221,8 @@ int ex_get_field_metadata(int exoid, ex_field *field)
         char errmsg[MAX_ERR_LENGTH];
         snprintf(
             errmsg, MAX_ERR_LENGTH,
-            "ERROR: Invalid field metadata attribute type %s on field %s on %s with id %" PRId64
-            " in file id %d",
-            fld_type, fld_name, ex_name_of_object(field->entity_type), field->entity_id, exoid);
+            "ERROR: Invalid field metadata attribute type %s on field %s on %s with id %" PRId64,
+            fld_type, fld_name, ex_name_of_object(field->entity_type), field->entity_id);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
@@ -235,41 +230,14 @@ int ex_get_field_metadata(int exoid, ex_field *field)
         char errmsg[MAX_ERR_LENGTH];
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to read field metadata attribute type %s on field %s on %s with id "
-                 "%" PRId64 " in file id %d",
-                 fld_type, fld_name, ex_name_of_object(field->entity_type), field->entity_id,
-                 exoid);
+                 "%" PRId64,
+                 fld_type, fld_name, ex_name_of_object(field->entity_type), field->entity_id);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
   }
   EX_FUNC_LEAVE(EX_NOERR);
-}
-
-int ex__get_basis_name(int exoid, ex_entity_type entity_type, ex_entity_id entity_id, char *name)
-{
-  int varid;
-  if (entity_type == EX_GLOBAL) {
-    varid = NC_GLOBAL;
-  }
-  else {
-    varid = ex__get_varid(exoid, entity_type, entity_id);
-    if (varid <= 0) {
-      /* Error message handled in ex__get_varid */
-      EX_FUNC_LEAVE(varid);
-    }
-  }
-
-  int status;
-  if ((status = nc_get_att(exoid, varid, "Basis@name", name)) != NC_NOERR) {
-    char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to read basis name on %s with id %" PRId64 " in file id %d",
-             ex_name_of_object(entity_type), entity_id, exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return EX_FATAL;
-  }
-  return EX_NOERR;
 }
 
 int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id entity_id,
@@ -294,11 +262,76 @@ int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id en
    *    - pointer members will be populated if non-NULL.
    */
 
-  int status;
-  if ((status = ex__get_basis_name(exoid, entity_type, entity_id, basis->name)) != EX_NOERR) {
-    /* Error message printed in `ex__get_basis_name` */
+  int  status;
+  char errmsg[MAX_ERR_LENGTH];
+  int  varid;
+
+  if (entity_type == EX_GLOBAL) {
+    varid = NC_GLOBAL;
+  }
+  else {
+    varid = ex__get_varid(exoid, entity_type, entity_id);
+    if (varid <= 0) {
+      /* Error message handled in ex__get_varid */
+      return varid;
+    }
+  }
+
+  /* Get name of the basis (if it exists) */
+  if ((status = nc_get_att(exoid, varid, "Basis@name", basis->name)) != NC_NOERR) {
+    /* Basis not found... Return EX_NOTFOUND */
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to read basis name on %s with id %" PRId64,
+             ex_name_of_object(entity_type), entity_id);
+    ex_err_fn(exoid, __func__, errmsg, status);
     return EX_NOTFOUND;
   }
-  fprintf(stderr, "Basis is named '%s'\n", basis->name);
+
+  /* Get the basis cardinality... We know there is a basis and cardinality is required parameter. */
+  const char attr_name[] = "Basis@cardinality";
+  int        cardinality[1];
+  if ((status = nc_get_att(exoid, varid, attr_name, cardinality)) != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to get basis cardinality on %s with id %" PRId64,
+             ex_name_of_object(entity_type), entity_id);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    return EX_FATAL;
+  }
+
+  if (basis->cardinality != 0 && basis->cardinality < cardinality[0]) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: Basis cardinality on the database is %d, but the value passed in the basis "
+             "struct is %d.\n\tThis indicates that"
+             " not enough memory has been allocated to store the other basis fields\n\ton %s with "
+             "id %" PRId64 ".",
+             cardinality[0], basis->cardinality, ex_name_of_object(entity_type), entity_id);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    return EX_FATAL;
+  }
+  basis->cardinality = cardinality[0];
+  fprintf(stderr, "Basis is named '%s' with cardinality %d\n", basis->name, basis->cardinality);
+
+  /* Now, for each non-NULL parameter of `basis`, query the data... */
+  if (basis->subc_dim != NULL) {
+    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_dim);
+  }
+  if (basis->subc_ordinal != NULL) {
+    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_ordinal);
+  }
+  if (basis->subc_dof_ordinal != NULL) {
+    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_dof_ordinal);
+  }
+  if (basis->subc_num_dof != NULL) {
+    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_num_dof);
+  }
+  if (basis->xi != NULL) {
+    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->xi);
+  }
+  if (basis->eta != NULL) {
+    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->eta);
+  }
+  if (basis->zeta != NULL) {
+    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->zeta);
+  }
+
   return EX_NOERR;
 }
