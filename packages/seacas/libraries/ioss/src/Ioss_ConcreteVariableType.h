@@ -60,7 +60,6 @@ namespace Ioss {
     Scalar();
   };
 
-  MAKE_CLASS(Vector_1D);
   MAKE_CLASS(Vector_2D);
   MAKE_CLASS(Vector_3D);
   MAKE_CLASS(Quaternion_2D);

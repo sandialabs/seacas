@@ -14,16 +14,8 @@ txtcyn=$(tput setaf 6)    # Cyan
 txtrst=$(tput sgr0)       # Text reset
 
 # Which compiler to use?
-export COMPILER=${COMPILER:-gnu}
-
-echo "Compiler set to ${COMPILER}"
-
-if [ "$COMPILER" == "mpi" ]
-then
-    echo "Setting MPI=YES due to COMPILER=mpi"
-    export MPI="YES"
-    export COMPILER=gnu
-fi
+export ACCESS=$(pwd)
+. ${ACCESS}/TPL/compiler.sh
 
 function check_exec()
 {
@@ -152,7 +144,6 @@ then
 fi
 
 pwd
-export ACCESS=$(pwd)
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 if [ "$MPI" == "YES" ] && [ "$CRAY" == "YES" ]
@@ -750,7 +741,7 @@ then
             rm -rf build
             mkdir build
             cd build
-            cmake -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} -DCMAKE_INSTALL_LIBDIR:PATH=lib -DFMT_TEST:BOOL=OFF -DBUILD_SHARED_LIBS=${SHARED} ..
+            cmake -DCMAKE_CXX_COMPILER:FILEPATH=${CXX} -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} -DCMAKE_INSTALL_LIBDIR:PATH=lib -DFMT_TEST:BOOL=OFF -DBUILD_SHARED_LIBS=${SHARED} ..
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure FMT. exiting.${txtrst}

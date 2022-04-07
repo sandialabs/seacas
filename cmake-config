@@ -94,7 +94,7 @@ then
 
   if [ "$COMPILER" == "gnumacport" ]
   then
-      VER=${VER:-5}
+      VER=${VER:-10}
       CXX=g++-mp-${VER}
       CC=gcc-mp-${VER}
       FC=gfortran-mp-${VER}
@@ -104,7 +104,7 @@ then
 
   if [ "$COMPILER" == "clangmacport" ]
   then
-      VER=${VER:-7}
+      VER=${VER:-9}
       CXX=clang++-mp-${VER}.0
       CC=clang-mp-${VER}.0
       FC=gfortran
