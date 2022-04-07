@@ -107,6 +107,8 @@ IF ( NETCDF_NCDUMP_BINARY )
     test-add-assembly
     testwt-blob
     testrd-blob
+    testwt-field-metadata
+    testrd-field-metadata
   )
 
   IF (SEACASExodus_ENABLE_THREADSAFE)

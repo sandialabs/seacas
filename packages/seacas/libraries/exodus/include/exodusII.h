@@ -47,6 +47,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+/** Maximum length of name permitted by NetCDF */
+#define EX_MAX_NAME NC_MAX_NAME
+
 #ifndef NC_INT64
 #error "NetCDF version 4.1.2 or later is required."
 #endif
@@ -282,6 +285,84 @@ enum ex_entity_type {
 };
 typedef enum ex_entity_type ex_entity_type;
 
+enum ex_field_type {
+  EX_FIELD_TYPE_INVALID = 0,
+  EX_FIELD_TYPE_USER_DEFINED,
+  EX_FIELD_TYPE_SEQUENCE,
+  EX_BASIS,
+  EX_QUADRATURE,
+  EX_SCALAR,
+  EX_VECTOR_1D,
+  EX_VECTOR_2D,
+  EX_VECTOR_3D,
+  EX_QUATERNION_2D,
+  EX_QUATERNION_3D,
+  EX_FULL_TENSOR_36,
+  EX_FULL_TENSOR_32,
+  EX_FULL_TENSOR_22,
+  EX_FULL_TENSOR_16,
+  EX_FULL_TENSOR_12,
+  EX_SYM_TENSOR_33,
+  EX_SYM_TENSOR_31,
+  EX_SYM_TENSOR_21,
+  EX_SYM_TENSOR_13,
+  EX_SYM_TENSOR_11,
+  EX_SYM_TENSOR_10,
+  EX_ASYM_TENSOR_03,
+  EX_ASYM_TENSOR_02,
+  EX_ASYM_TENSOR_01,
+  EX_MATRIX_2X2,
+  EX_MATRIX_3X3
+};
+typedef enum ex_field_type ex_field_type;
+
+#define EX_MAX_FIELD_NESTING 4
+typedef struct ex_field
+{
+  ex_entity_type entity_type;
+  int64_t        entity_id;
+  char           name[EX_MAX_NAME + 1]; /* Name of the field */
+  int            nesting; /* Number of composite fields (vector at each quadrature point = 2) */
+  ex_field_type  type[EX_MAX_FIELD_NESTING];        /* ex_field_type of each nested field */
+  int            cardinality[EX_MAX_FIELD_NESTING]; /* 0 to calculate based on type */
+  char           component_separator[EX_MAX_FIELD_NESTING +
+                           1]; /* empty defaults to '_'; +1 so can be a string... */
+} ex_field;
+
+typedef struct ex_basis
+{
+  /*
+   * subc_dim: dimension of the subcell associated with the specified DoF ordinal -- 0 node, 1 edge,
+   * 2 face, 3 volume [Range: 0..3] subc_ordinal: ordinal of the subcell relative to its parent cell
+   * -- 0..n for each ordinal with the same subc dim [Range: <= DoF ordinal] subc_dof_ordinal:
+   * ordinal of the DoF relative to the subcell subc_num_dof: cardinality of the DoF set associated
+   * with this subcell. xi, eta, mu (ξ, η, ζ): Parametric coordinate location of the DoF (Only first
+   * ndim values are valid)
+   */
+  char    name[EX_MAX_NAME + 1];
+  int     cardinality; /* number of `basis` points == dimension of non-null subc_*, xi, eta, mu */
+  int    *subc_dim;
+  int    *subc_ordinal;
+  int    *subc_dof_ordinal;
+  int    *subc_num_dof;
+  double *xi;
+  double *eta;
+  double *zeta;
+} ex_basis;
+
+typedef struct ex_quadrature
+{
+  char    name[EX_MAX_NAME + 1];
+  int     cardinality; /* Number of quadrature points */
+  int     dimension;   /* 1,2,3 -- spatial dimension of points */
+  double *xi;          /* xi  (x) coordinate of points; dimension = cardinality  or NULL */
+  double *
+      eta; /* eta (y) coordinate of points; dimension = cardinality if dimension = 2 or 3 or NULL */
+  double
+      *zeta; /* zeta (z) coordinate of points; dimension = cardinality if dimension == 3. or NULL */
+  double *weight; /* weights for each point; dimension = cardinality or NULL */
+} ex_quadrature;
+
 /*!
  * ex_opts() function codes - codes are OR'ed into exopts
  */
@@ -304,9 +385,6 @@ typedef enum ex_options ex_options;
  * constants that are used as netcdf dimensions must be of type long
  * @{
  */
-
-/** Maximum length of name permitted by NetCDF */
-#define EX_MAX_NAME NC_MAX_NAME
 
 /** Maximum length of QA record, element type name */
 #define MAX_STR_LENGTH 32L
@@ -369,10 +447,11 @@ typedef struct ex_attribute
 {
   ex_entity_type entity_type;
   int64_t        entity_id;
-  char           name[NC_MAX_NAME + 1];
+  char           name[EX_MAX_NAME + 1];
   ex_type        type; /* int, double, text */
   size_t         value_count;
-  void          *values; /* not accessed if NULL */
+  void          *values;         /* not accessed if NULL */
+  int            variable_index; /* For variable attributes only */
 } ex_attribute;
 
 typedef struct ex_blob
@@ -725,6 +804,9 @@ ex_put_loadbal_param_cc(int             exoid,          /* NetCDF/Exodus file ID
 
 /* Utility function to replace strncpy, strcpy -- guarantee null termination */
 char *ex_copy_string(char *dest, char const *source, size_t elements);
+
+/* Utility function to find variable to store entity attribute on */
+int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id);
 
 /*!
  * \addtogroup ModelDescription
@@ -1207,6 +1289,12 @@ EXODUS_EXPORT int ex_put_elem_cmap(int             exoid,    /**< NetCDF/Exodus 
                                    const void_int *proc_ids, /**< Vector of processor IDs */
                                    int             processor /**< This processor ID */
 );
+
+EXODUS_EXPORT const char       *ex_field_component_name(ex_field_type field_type, int component);
+EXODUS_EXPORT int               ex_field_cardinality(const ex_field_type field_type);
+EXODUS_EXPORT const char *const ex_field_name(const ex_field_type field_type);
+EXODUS_EXPORT ex_field_type     ex_field_string_to_field_type(const char *field_name);
+EXODUS_EXPORT const char *const ex_field_type_enum_to_string(const ex_field_type field_type);
 
 /*! @} */
 
