@@ -966,6 +966,8 @@ integer {D}+({E})?
       curr_index++; /* eat up values */
 
     add_include_file(string, true);
+    std::string info_string = std::string("Imported File: '") + string + "'";
+    aprepro.info(info_string, true);
 
     if (!aprepro.doIncludeSubstitution) {
       yy_push_state(VERBATIM);
