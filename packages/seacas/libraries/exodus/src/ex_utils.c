@@ -2379,4 +2379,3 @@ int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
   }
   return varid;
 }
-

@@ -74,7 +74,24 @@ int main(int argc, char **argv)
                                      .xi               = NULL,
                                      .eta              = NULL,
                                      .zeta             = NULL};
-  EXCHECK(ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 10, &basis));
+  /* Query basis on a block where it doesn't exist */
+  int status = ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 10, &basis);
+  if (status != EX_NOTFOUND) {
+    fprintf(stderr,
+            "Error calling ex_get_basis for non-existant basis.  Should return EX_NOTFOUND");
+  }
+
+  EXCHECK(ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 11, &basis));
+  /*
+   * Now, allocate memory for all pointer members of basis and call to populate...
+   */
+  basis.subc_dim         = calloc(basis.cardinality, sizeof(int));
+  basis.subc_ordinal     = calloc(basis.cardinality, sizeof(int));
+  basis.subc_dof_ordinal = calloc(basis.cardinality, sizeof(int));
+  basis.subc_num_dof     = calloc(basis.cardinality, sizeof(int));
+  basis.xi               = calloc(basis.cardinality, sizeof(double));
+  basis.eta              = calloc(basis.cardinality, sizeof(double));
+  basis.zeta             = calloc(basis.cardinality, sizeof(double));
   EXCHECK(ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 11, &basis));
 
   int error = ex_close(exoid);
