@@ -20,21 +20,21 @@ static void verify_valid_component(int component, size_t cardinality, size_t suf
 
 const char *ex_field_component_name(ex_field_type field_type, int component)
 {
-  static const char *const X = "x";
-  static const char *const Y = "y";
-  static const char *const Z = "z";
-  static const char *const Q = "q";
-  static const char *const S = "s";
+#define X "x"
+#define Y "y"
+#define Z "z"
+#define Q "q"
+#define S "s"
 
-  static const char *const XX = "xx";
-  static const char *const YY = "yy";
-  static const char *const ZZ = "zz";
-  static const char *const XY = "xy";
-  static const char *const YZ = "yz";
-  static const char *const ZX = "zx";
-  static const char *const YX = "yx";
-  static const char *const ZY = "zy";
-  static const char *const XZ = "xz";
+#define XX "xx"
+#define YY "yy"
+#define ZZ "zz"
+#define XY "xy"
+#define YZ "yz"
+#define ZX "zx"
+#define YX "yx"
+#define ZY "zy"
+#define XZ "xz"
 
   switch (field_type) {
   case EX_VECTOR_1D: {
