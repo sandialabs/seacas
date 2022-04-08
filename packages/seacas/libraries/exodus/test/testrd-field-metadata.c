@@ -78,7 +78,7 @@ int main(int argc, char **argv)
   int status = ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 10, &basis);
   if (status != EX_NOTFOUND) {
     fprintf(stderr,
-            "Error calling ex_get_basis for non-existant basis.  Should return EX_NOTFOUND");
+            "Error calling ex_get_basis for non-existent basis.  Should return EX_NOTFOUND");
   }
 
   EXCHECK(ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 11, &basis));
