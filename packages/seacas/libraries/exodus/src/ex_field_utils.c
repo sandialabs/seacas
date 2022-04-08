@@ -20,21 +20,21 @@ static void verify_valid_component(int component, size_t cardinality, size_t suf
 
 const char *ex_field_component_name(ex_field_type field_type, int component)
 {
-  static char *const X = "x";
-  static char *const Y = "y";
-  static char *const Z = "z";
-  static char *const Q = "q";
-  static char *const S = "s";
+  static const char *const X = "x";
+  static const char *const Y = "y";
+  static const char *const Z = "z";
+  static const char *const Q = "q";
+  static const char *const S = "s";
 
-  static char *const XX = "xx";
-  static char *const YY = "yy";
-  static char *const ZZ = "zz";
-  static char *const XY = "xy";
-  static char *const YZ = "yz";
-  static char *const ZX = "zx";
-  static char *const YX = "yx";
-  static char *const ZY = "zy";
-  static char *const XZ = "xz";
+  static const char *const XX = "xx";
+  static const char *const YY = "yy";
+  static const char *const ZZ = "zz";
+  static const char *const XY = "xy";
+  static const char *const YZ = "yz";
+  static const char *const ZX = "zx";
+  static const char *const YX = "yx";
+  static const char *const ZY = "zy";
+  static const char *const XZ = "xz";
 
   switch (field_type) {
   case EX_VECTOR_1D: {
@@ -281,7 +281,7 @@ ex_field_type ex_field_string_to_field_type(const char *field_name)
  *  written to the database as a user-readable attribute.  For
  *  example, EX_VECTOR_2D would appear instead of a raw number 2
  */
-const char *const ex_field_type_enum_to_string(const ex_field_type field_type)
+const char *ex_field_type_enum_to_string(const ex_field_type field_type)
 {
   switch (field_type) {
   case EX_FIELD_TYPE_USER_DEFINED: return "EX_FIELD_TYPE_USER_DEFINED";
@@ -315,7 +315,7 @@ const char *const ex_field_type_enum_to_string(const ex_field_type field_type)
   return "EX_FIELD_TYPE_INVALID";
 }
 
-const char *const ex_field_name(const ex_field_type field_type)
+const char *ex_field_name(const ex_field_type field_type)
 {
   switch (field_type) {
   case EX_FIELD_TYPE_USER_DEFINED: return "user defined";
