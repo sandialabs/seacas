@@ -88,6 +88,9 @@ extern "C" {
 #define EX_FILE_ID_MASK (0xffff0000) /**< Must match FILE_ID_MASK in NetCDF nc4internal.h */
 #define EX_GRP_ID_MASK  (0x0000ffff) /**< Must match GRP_ID_MASK in NetCDF nc4internal.h */
 
+/* Utility function to find variable to store entity attribute on */
+int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id);
+
 void ex__reset_error_status(void);
 
 #if defined(EXODUS_THREADSAFE)

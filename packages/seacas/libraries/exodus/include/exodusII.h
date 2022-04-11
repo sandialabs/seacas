@@ -805,9 +805,6 @@ ex_put_loadbal_param_cc(int             exoid,          /* NetCDF/Exodus file ID
 /* Utility function to replace strncpy, strcpy -- guarantee null termination */
 char *ex_copy_string(char *dest, char const *source, size_t elements);
 
-/* Utility function to find variable to store entity attribute on */
-int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id);
-
 /*!
  * \addtogroup ModelDescription
  * @{
