@@ -234,7 +234,9 @@ int main(int argc, char **argv)
     }
 
     /* Read per-block id map and compare to overall id map... */
+#if 0
     int offset = 0;
+#endif
     for (int i = 0; i < num_elem_blk; i++) {
       int *block_map = (int *)calloc(num_elem_in_block[i], sizeof(int));
       error          = ex_get_block_id_map(exoid, EX_ELEM_BLOCK, ids[i], block_map);
@@ -244,8 +246,8 @@ int main(int argc, char **argv)
       for (int j = 0; j < num_elem_in_block[i]; j++) {
 	assert(block_map[j] == elem_map[offset + j]);
       }
-#endif
       offset += num_elem_in_block[i];
+#endif
       free(block_map);
     }
 
