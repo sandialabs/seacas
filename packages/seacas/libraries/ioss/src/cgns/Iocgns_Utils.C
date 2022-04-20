@@ -2633,14 +2633,12 @@ int Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, d
   int  new_zone_id = static_cast<int>(zones.size()) + 1;
 
   // See if can split each zone over a set of procs...
-  double           total_work = 0.0;
   std::vector<int> splits(zones.size());
 
   for (size_t i = 0; i < zones.size(); i++) {
     auto zone = zones[i];
     if (zone->m_lineOrdinal != 7) {
       double work = zone->work();
-      total_work += work;
       if (load_balance <= 1.2) {
         splits[i] = int(std::ceil(work / avg_work));
       }
