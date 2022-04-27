@@ -34,11 +34,8 @@
 #include "sys_info.h"
 #include "time_stamp.h"
 
-#define USE_STD_SORT 1
-#if !USE_STD_SORT
-#include "pdqsort.h"
-#endif
 #include "hwm.h"
+#include "suplib_sort.h"
 
 // Enable SMART_ASSERT even in Release mode...
 #define SMART_ASSERT_DEBUG_MODE 1
@@ -238,11 +235,7 @@ namespace {
   template <typename T> static void uniquify(std::vector<T> &vec)
   {
 
-#if USE_STD_SORT
-    std::sort(vec.begin(), vec.end());
-#else
-    pdqsort(vec.begin(), vec.end());
-#endif
+    suplib_sort(vec.begin(), vec.end());
     vec.resize(unique(vec));
     vec.shrink_to_fit();
   }
@@ -2408,12 +2401,7 @@ namespace {
     }
 
     // Now, sort the global_element_map array.
-#if USE_STD_SORT
-    std::sort(global_element_map.begin(), global_element_map.end());
-#else
-    pdqsort(global_element_map.begin(), global_element_map.end());
-#endif
-
+    suplib_sort(global_element_map.begin(), global_element_map.end());
     global->elementCount = global_element_map.size();
 
     // See if any duplicates...
@@ -2585,11 +2573,7 @@ namespace {
     }
 
     // Now, sort the global_edge_map array.
-#if USE_STD_SORT
-    std::sort(global_edge_map.begin(), global_edge_map.end());
-#else
-    pdqsort(global_edge_map.begin(), global_edge_map.end());
-#endif
+    suplib_sort(global_edge_map.begin(), global_edge_map.end());
 
     global->edgeCount = global_edge_map.size();
 
@@ -2762,11 +2746,7 @@ namespace {
     }
 
     // Now, sort the global_face_map array.
-#if USE_STD_SORT
-    std::sort(global_face_map.begin(), global_face_map.end());
-#else
-    pdqsort(global_face_map.begin(), global_face_map.end());
-#endif
+    suplib_sort(global_face_map.begin(), global_face_map.end());
 
     global->faceCount = global_face_map.size();
 
@@ -2942,11 +2922,7 @@ namespace {
     }
 
     // Now, sort the global_node_map array and remove duplicates...
-#if USE_STD_SORT
-    std::sort(global_node_map.begin(), global_node_map.end());
-#else
-    pdqsort(global_node_map.begin(), global_node_map.end());
-#endif
+    suplib_sort(global_node_map.begin(), global_node_map.end());
     global_node_map.resize(unique(global_node_map));
     global_node_map.shrink_to_fit();
 
@@ -3047,7 +3023,8 @@ namespace {
       }
 
       if (rank == 0) {
-        fmt::print("Found {} {} variables.\n\t", vars.count(InOut::OUT), vars.label());
+        fmt::print("Found {} {} variable{}.\n\t", vars.count(InOut::OUT), vars.label(),
+                   vars.count(InOut::OUT) > 1 ? "s" : "");
         int i    = 0;
         int ifld = 1;
         while (i < vars.count(InOut::OUT)) {
