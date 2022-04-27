@@ -629,7 +629,7 @@ namespace {
       fmt::print("{{ent_name}} ADD {{att_name}} DOUBLE {{values...}}\n");
       fmt::print(fmt::emphasis::bold, "\tATTRIBUTE ");
       fmt::print("{{ent_name}} NAME {{att_name}} INTEGER {{values...}}\n");
-      fmt::print("\t\tAdd an attribute to the specified entity ('type' and 'name').\n"
+      fmt::print("\t\tAdd an attribute to the specified entity 'ent_name'.\n"
                  "\t\tThe attribute will be named 'att_name' with value(s) 'values...'\n"
                  "\t\tCan also modify the values of an existing attribute.'\n");
       fmt::print(fmt::emphasis::bold, "\tATTRIBUTE LIST ");
