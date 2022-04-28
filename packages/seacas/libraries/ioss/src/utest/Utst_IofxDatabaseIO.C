@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#define CATCH_CONFIG_RUNNER
-#include <catch.hpp>
+#define DOCTEST_CONFIG_IMPLEMENT
+#include <doctest.h>
 #include <string>
 
 #include <Ionit_Initializer.h>
@@ -51,8 +51,8 @@ namespace {
   Ioex::DatabaseIO *create_output_db_io(const std::string &filename)
   {
     Ioss::Init::Initializer init_db;
-    Ioss::DatabaseUsage   db_usage = Ioss::WRITE_RESULTS;
-    Ioss::PropertyManager properties;
+    Ioss::DatabaseUsage     db_usage = Ioss::WRITE_RESULTS;
+    Ioss::PropertyManager   properties;
 
     properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
     properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
@@ -62,7 +62,7 @@ namespace {
     return db_io;
   }
 
-  TEST_CASE("Ioex::constructor", "[Ioex::constructor]")
+  DOCTEST_TEST_CASE("Ioex::constructor")
   {
     Ioex::DatabaseIO *db_io = create_input_db_io(input_filename);
     db_io->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
@@ -248,7 +248,7 @@ namespace {
   }
 
   // BeginDocTest2
-  TEST_CASE("Ioex::write_file", "[test_writing_of_file]")
+  DOCTEST_TEST_CASE("Ioex::write_file")
   {
     Ioex::DatabaseIO *db_in = create_input_db_io(input_filename);
 
@@ -403,23 +403,19 @@ namespace {
 } // namespace
 int main(int argc, char **argv)
 {
-  Catch::Session session;
-  using namespace Catch::clara;
-
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
-  auto cli = session.cli() |
-             Opt(input_filename, "filename")["-F"]["--filename"]("The filename path to ADeDA.e");
+  doctest::Context context;
 
-  session.cli(cli);
-
-  auto exitCode = session.applyCommandLine(argc, argv);
-  if (exitCode != 0) {
-    return exitCode;
+  while (*++argv) {
+    if (std::string(*argv) == "--filename") {
+      input_filename = *++argv;
+      break;
+    }
+    printf("'%s'\n", input_filename.c_str());
   }
-
-  return session.run();
+  return context.run();
 }

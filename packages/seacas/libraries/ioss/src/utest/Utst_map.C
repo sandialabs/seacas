@@ -1,16 +1,17 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#define CATCH_CONFIG_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest.h>
+
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ConcreteVariableType.h>
 #include <Ioss_Field.h>
 #include <Ioss_Map.h>
 #include <algorithm>
-#include <catch.hpp>
 #include <exception>
 #include <numeric>
 #include <random>
@@ -62,7 +63,7 @@ template <typename INT> void test_reorder(Ioss::Map &my_map, std::vector<INT> &i
   }
 }
 
-TEST_CASE("test random ids", "[random_ids]")
+DOCTEST_TEST_CASE("test random ids")
 {
   // Create a map of random ids and make verify global to local works.
   size_t    count = 128;
@@ -85,7 +86,7 @@ TEST_CASE("test random ids", "[random_ids]")
   REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 }
 
-TEST_CASE("test sequential map with offset", "[sequential offset]")
+DOCTEST_TEST_CASE("test sequential map with offset")
 {
   // Simple sequential map 'offset+1 .. offset+1+count'
   // Should verify that reverseMap and reorderMap are empty, but
@@ -103,7 +104,7 @@ TEST_CASE("test sequential map with offset", "[sequential offset]")
   std::vector<std::string> sections{"offset0", "offset123", "offsetBIG"};
 
   for (size_t i = 0; i < offsets.size(); i++) {
-    SECTION(sections[i])
+    DOCTEST_SUBCASE(sections[i].c_str())
     {
       std::size_t offset = offsets[i];
       std::iota(init.begin(), init.end(), int64_t(offset) + 1);
@@ -114,17 +115,17 @@ TEST_CASE("test sequential map with offset", "[sequential offset]")
       REQUIRE(my_map.is_sequential(true));
       REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 
-      SECTION("Reorder-1")
+      DOCTEST_SUBCASE("Reorder-1")
       {
         test_reorder(my_map, init, offset);
 
-        SECTION("Reorder-2") { test_reorder(my_map, init, offset); }
+        DOCTEST_SUBCASE("Reorder-2") { test_reorder(my_map, init, offset); }
       }
     }
   }
 }
 
-TEST_CASE("test segmented map creation", "[segment]")
+DOCTEST_TEST_CASE("test segmented map creation")
 {
   Ioss::Map my_map;
   size_t    segments = 4;
@@ -141,7 +142,7 @@ TEST_CASE("test segmented map creation", "[segment]")
   std::vector<std::string> sections{"offset0", "offset123"};
 
   for (size_t i = 0; i < offsets.size(); i++) {
-    SECTION(sections[i])
+    DOCTEST_SUBCASE(sections[i].c_str())
     {
       std::size_t offset = offsets[i];
       std::iota(init.begin(), init.end(), int(offset) + 1);
@@ -159,7 +160,7 @@ TEST_CASE("test segmented map creation", "[segment]")
   }
 }
 
-TEST_CASE("test reverse segmented map creation", "[reverse segment]")
+DOCTEST_TEST_CASE("test reverse segmented map creation")
 {
   Ioss::Map my_map;
   size_t    segments = 4;
@@ -176,7 +177,7 @@ TEST_CASE("test reverse segmented map creation", "[reverse segment]")
   std::vector<std::string> sections{"offset0", "offset123"};
 
   for (size_t i = 0; i < offsets.size(); i++) {
-    SECTION(sections[i])
+    DOCTEST_SUBCASE(sections[i].c_str())
     {
       std::size_t offset = offsets[i];
       std::iota(init.begin(), init.end(), int(offset) + 1);
@@ -195,7 +196,7 @@ TEST_CASE("test reverse segmented map creation", "[reverse segment]")
   }
 }
 
-TEST_CASE("test segment gap", "[segment gap]")
+DOCTEST_TEST_CASE("test segment gap")
 {
   // Each segment is sequential, but there is a gap between each segment.
   // Make sure mapping can detect the gap...
@@ -213,7 +214,7 @@ TEST_CASE("test segment gap", "[segment gap]")
   std::vector<std::string> sections{"offset0", "offset123"};
 
   for (size_t ii = 0; ii < offsets.size(); ii++) {
-    SECTION(sections[ii])
+    DOCTEST_SUBCASE(sections[ii].c_str())
     {
       std::size_t offset = offsets[ii];
       for (size_t j = 0; j < segments; j++) {
@@ -236,7 +237,7 @@ TEST_CASE("test segment gap", "[segment gap]")
   }
 }
 
-TEST_CASE("test small reverse", "[small reverse]")
+DOCTEST_TEST_CASE("test small reverse")
 {
   std::vector<int> init{1, 3};
 
@@ -252,7 +253,7 @@ TEST_CASE("test small reverse", "[small reverse]")
   REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 }
 
-TEST_CASE("test small swap front back", "[swap front back]")
+DOCTEST_TEST_CASE("test small swap front back")
 {
   size_t    count = 16;
   Ioss::Map my_map;
@@ -270,7 +271,7 @@ TEST_CASE("test small swap front back", "[swap front back]")
   REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 }
 
-TEST_CASE("test map_data sequential", "[map_data_seq]")
+DOCTEST_TEST_CASE("test map_data sequential")
 {
   size_t    count = 128;
   Ioss::Map my_map;
@@ -281,7 +282,7 @@ TEST_CASE("test map_data sequential", "[map_data_seq]")
   std::vector<std::string> sections{"offset0", "offset123"};
 
   for (size_t ii = 0; ii < offsets.size(); ii++) {
-    SECTION(sections[ii])
+    DOCTEST_SUBCASE(sections[ii].c_str())
     {
       std::size_t offset = offsets[ii];
       std::iota(init.begin(), init.end(), int(offset) + 1);
@@ -295,7 +296,7 @@ TEST_CASE("test map_data sequential", "[map_data_seq]")
       Ioss::StorageInitializer();
       Ioss::Field int_field("int_field", Ioss::Field::INTEGER, "invalid", Ioss::Field::MESH, count);
 
-      SECTION("explicit map")
+      DOCTEST_SUBCASE("explicit map")
       {
         // Now try 'map_data' call which is basically a bulk local-global.
         // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
@@ -304,7 +305,7 @@ TEST_CASE("test map_data sequential", "[map_data_seq]")
         my_map.map_data(local.data(), int_field, count);
         REQUIRE(init == local);
 
-        SECTION("reverse_map")
+        DOCTEST_SUBCASE("reverse_map")
         {
           // If now reverse 'local', should get the original 1..count back
           my_map.reverse_map_data(local.data(), int_field, count);
@@ -314,7 +315,7 @@ TEST_CASE("test map_data sequential", "[map_data_seq]")
         }
       }
 
-      SECTION("implicit map")
+      DOCTEST_SUBCASE("implicit map")
       {
         // Now try 'map_data' call which is basically a bulk local-global.
         // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
@@ -326,7 +327,7 @@ TEST_CASE("test map_data sequential", "[map_data_seq]")
   }
 }
 
-TEST_CASE("test map_data random", "[map_data_ran]")
+DOCTEST_TEST_CASE("test map_data random")
 {
   size_t    count = 128;
   Ioss::Map my_map;
@@ -350,7 +351,7 @@ TEST_CASE("test map_data random", "[map_data_ran]")
   Ioss::StorageInitializer();
   Ioss::Field int_field("int_field", Ioss::Field::INTEGER, "invalid", Ioss::Field::MESH, count);
 
-  SECTION("explicit map")
+  DOCTEST_SUBCASE("explicit map")
   {
     // Now try 'map_data' call which is basically a bulk local-global.
     // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
@@ -359,7 +360,7 @@ TEST_CASE("test map_data random", "[map_data_ran]")
     my_map.map_data(local.data(), int_field, count);
     REQUIRE(init == local);
 
-    SECTION("reverse_map")
+    DOCTEST_SUBCASE("reverse_map")
     {
       // If now reverse 'local', should get the original 1..count back
       my_map.reverse_map_data(local.data(), int_field, count);
@@ -369,7 +370,7 @@ TEST_CASE("test map_data random", "[map_data_ran]")
     }
   }
 
-  SECTION("implicit map")
+  DOCTEST_SUBCASE("implicit map")
   {
     // Now try 'map_data' call which is basically a bulk local-global.
     // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
