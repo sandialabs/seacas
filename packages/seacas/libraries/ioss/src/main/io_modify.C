@@ -79,7 +79,7 @@ using real = double;
 
 namespace {
   std::string codename;
-  std::string version = "2.01 (2022-03-28)";
+  std::string version = "2.02 (2022-04-27)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -535,13 +535,14 @@ namespace {
   {
     bool all = Ioss::Utils::substr_equal(topic, "help");
     if (all) {
-      fmt::print("\n\tHELP [list | assembly | graph | attribute | regex | glob]\n");
-      fmt::print("\n\tEND | EXIT\n");
+      fmt::print(fmt::emphasis::bold, "\n\tHELP");
+      fmt::print(" [list | assembly | graph | attribute | regex | glob]\n");
+      fmt::print(fmt::emphasis::bold, "\n\tEND | EXIT\n");
       fmt::print("\t\tEnd command input and output changed assembly definitions (if any).\n");
-      fmt::print("\n\tQUIT\n");
+      fmt::print(fmt::emphasis::bold, "\n\tQUIT\n");
       fmt::print("\t\tEnd command input and exit with no changes to database.\n");
 
-      fmt::print("\n\tALLOW MODIFICATIONS\n");
+      fmt::print(fmt::emphasis::bold, "\n\tALLOW MODIFICATIONS\n");
       fmt::print("\t\tBy default, io_modify will only allow creation of new assemblies.\n"
                  "\t\tIf this command is specified, then can modify assemblies that already exist "
                  "in database.\n"
@@ -549,97 +550,122 @@ namespace {
                  "updated in place.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
+      fmt::print(fmt::emphasis::bold, "\n\tLIST ");
       fmt::print(
-          "\n\tLIST "
           "elementblock|block|structuredblock|assembly|nodeset|sideset|blob|times|summary\n");
-      fmt::print("\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
+      fmt::print(fmt::emphasis::bold, "\tLIST ");
+      fmt::print("elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
                  "{{names...}}\n");
-      fmt::print("\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
+      fmt::print(fmt::emphasis::bold, "\tLIST ");
+      fmt::print("elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
                  "MATCHES {{regex}}\n");
-      fmt::print("\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
+      fmt::print(fmt::emphasis::bold, "\tLIST ");
+      fmt::print("elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
                  "GLOB {{glob}}\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "assembly")) {
       fmt::print("\n\tFor all commands, if an assembly named `name` does not exist, it will be "
                  "created.\n");
-      fmt::print("\tASSEMBLY {{name}}\n");
+      fmt::print(fmt::emphasis::bold, "\tASSEMBLY ");
+      fmt::print("{{name}}\n");
       fmt::print("\t\tCreates an empty assembly named `name` if it does not exist.\n");
 
-      fmt::print("\n\tASSEMBLY {{name}} ADD {{name1}} {{name2}} ... {{nameL}}\n");
+      fmt::print(fmt::emphasis::bold, "\n\tASSEMBLY ");
+      fmt::print("{{name}} ADD {{name1}} {{name2}} ... {{nameL}}\n");
       fmt::print("\t\tAdds the specified entities to the assembly.  All entities must be the same "
                  "type.\n");
 
-      fmt::print("\n\tASSEMBLY {{name}} REMOVE {{name1}} {{name2}} ... {{nameL}}\n");
+      fmt::print(fmt::emphasis::bold, "\n\tASSEMBLY ");
+      fmt::print("{{name}} REMOVE {{name1}} {{name2}} ... {{nameL}}\n");
       fmt::print("\t\tRemoves the specified entities from the assembly.\n");
 
-      fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} MATCHES {{regex}}\n");
+      fmt::print(fmt::emphasis::bold, "\n\tASSEMBLY ");
+      fmt::print("{{name}} TYPE {{type}} MATCHES {{regex}}\n");
       fmt::print("\t\tAdds the entities of the specified type to the assembly.\n"
                  "\t\tAll entities whose name matches the {{regex}} will be added.\n");
-      fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} GLOB {{glob}}\n");
+      fmt::print(fmt::emphasis::bold, "\n\tASSEMBLY ");
+      fmt::print("{{name}} TYPE {{type}} GLOB {{glob}}\n");
       fmt::print("\t\tAdds the entities of the specified type to the assembly.\n"
                  "\t\tAll entities whose name matches the {{glob}} will be added.\n");
 
-      fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} NAMED {{list of one or more names}}\n");
+      fmt::print(fmt::emphasis::bold, "\n\tASSEMBLY ");
+      fmt::print("{{name}} TYPE {{type}} NAMED {{list of one or more names}}\n");
       fmt::print("\t\tAdds the entities of the specified type to the assembly.\n"
                  "\t\tAll entities whose names are listed will be added.\n");
 
-      fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} RANGE {{id}} TO {{id}} BY {{step}}\n");
+      fmt::print(fmt::emphasis::bold, "\n\tASSEMBLY ");
+      fmt::print("{{name}} TYPE {{type}} RANGE {{id}} TO {{id}} BY {{step}}\n");
       fmt::print("\t\tAdds the entities of the specified type to the assembly.\n"
                  "\t\tAll entities whose id matches the specified range will be added.\n"
                  "\t\tNo message will be output for ids not matching an entity.\n");
 
-      fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} IDS {{id}}, {{id2}}, ..., {{idL}}\n");
+      fmt::print(fmt::emphasis::bold, "\n\tASSEMBLY ");
+      fmt::print("{{name}} TYPE {{type}} IDS {{id}}, {{id2}}, ..., {{idL}}\n");
       fmt::print(
           "\t\tAdds the entities of the specified type to the assembly.\n"
           "\t\tAll entities whose id matches an id in the list will be added.\n"
           "\t\tA warning message will be output if there is no entity with the requested id.\n");
 
-      fmt::print("\n\tDELETE {{name}}\n");
+      fmt::print(fmt::emphasis::bold, "\n\tDELETE ");
+      fmt::print("{{name}}\n");
       fmt::print("\t\tRemove the assembly with the specified name.\n"
                  "\t\tCurrently only supported for assemblies created during this execution; not "
                  "for assemblies\n"
                  "\t\texisting on the input database.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "graph")) {
-      fmt::print("\n\tGRAPH OUTPUT [filename]\n");
+      fmt::print(fmt::emphasis::bold, "\n\tGRAPH OUTPUT ");
+      fmt::print("[filename]\n");
       fmt::print(
           "\t\tCreate a 'dot' input file with the structure of the assembly graph.\n"
           "\t\tFile is named 'filename' or defaults to 'assembly.dot' if filename not given.\n");
-      fmt::print("\tGRAPH CHECK\n");
+      fmt::print(fmt::emphasis::bold, "\tGRAPH CHECK\n");
       fmt::print("\t\tCheck validity of assembly graph--are there any cycles.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "attribute")) {
-      fmt::print("\n\tATTRIBUTE {{ent_name}} ADD {{att_name}} STRING {{values...}}\n");
-      fmt::print("\tATTRIBUTE {{ent_name}} ADD {{att_name}} DOUBLE {{values...}}\n");
-      fmt::print("\tATTRIBUTE {{ent_name}} NAME {{att_name}} INTEGER {{values...}}\n");
-      fmt::print("\t\tAdd an attribute to the specified entity ('type' and 'name').\n"
+      fmt::print(fmt::emphasis::bold, "\n\tATTRIBUTE ");
+      fmt::print("{{ent_name}} ADD {{att_name}} STRING {{values...}}\n");
+      fmt::print(fmt::emphasis::bold, "\tATTRIBUTE ");
+      fmt::print("{{ent_name}} ADD {{att_name}} DOUBLE {{values...}}\n");
+      fmt::print(fmt::emphasis::bold, "\tATTRIBUTE ");
+      fmt::print("{{ent_name}} NAME {{att_name}} INTEGER {{values...}}\n");
+      fmt::print("\t\tAdd an attribute to the specified entity 'ent_name'.\n"
                  "\t\tThe attribute will be named 'att_name' with value(s) 'values...'\n"
                  "\t\tCan also modify the values of an existing attribute.'\n");
-      fmt::print("\tATTRIBUTE LIST {{ent_name...}}\n"
+      fmt::print(fmt::emphasis::bold, "\tATTRIBUTE LIST ");
+      fmt::print("{{ent_name...}}\n"
                  "\t\tList attributes for the selected entities\n");
-      fmt::print("\tATTRIBUTE {{ent_type}} LIST\n"
+      fmt::print(fmt::emphasis::bold, "\tATTRIBUTE ");
+      fmt::print("{{ent_type}} LIST\n"
                  "\t\tList attributes for all entities in the specified entity type\n");
-      fmt::print("\tATTRIBUTE {{ent_type}} MATCH {{regex}}\n"
+      fmt::print(fmt::emphasis::bold, "\tATTRIBUTE ");
+      fmt::print("{{ent_type}} MATCH {{regex}}\n"
                  "\t\tList attributes for all entities in the specified entity type whose name "
                  "matches the regex.\n");
-      fmt::print("\tATTRIBUTE {{ent_type}} GLOB {{glob}}\n"
+      fmt::print(fmt::emphasis::bold, "\tATTRIBUTE ");
+      fmt::print("{{ent_type}} GLOB {{glob}}\n"
                  "\t\tList attributes for all entities in the specified entity type whose name "
                  "matches the glob.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "geometry")) {
-      fmt::print("\n\tGEOMETRY ROTATE {{X|Y|Z}} {{angle}}\n");
-      fmt::print("\tGEOMETRY SCALE  {{x}} {{y}} {{z}}\n");
-      fmt::print("\tGEOMETRY OFFSET {{x}} {{y}} {{z}}\n");
-      fmt::print(
-          "\tGEOMETRY ROTATE {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{angle}}\n");
-      fmt::print(
-          "\tGEOMETRY SCALE  {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{x}} {{y}} {{z}}\n");
-      fmt::print(
-          "\tGEOMETRY OFFSET {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{x}} {{y}} {{z}}\n");
+      fmt::print(fmt::emphasis::bold, "\n\tGEOMETRY ROTATE ");
+      fmt::print("{{X|Y|Z}} {{angle}}\n");
+      fmt::print(fmt::emphasis::bold, "\tGEOMETRY SCALE  ");
+      fmt::print("{{x}} {{y}} {{z}}\n");
+      fmt::print(fmt::emphasis::bold, "\tGEOMETRY OFFSET ");
+      fmt::print("{{x}} {{y}} {{z}}\n");
+      fmt::print(fmt::emphasis::bold, "\tGEOMETRY ROTATE ");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{angle}}\n");
+      fmt::print(fmt::emphasis::bold, "\tGEOMETRY SCALE  ");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{x}} {{y}} {{z}}\n");
+      fmt::print(fmt::emphasis::bold, "\tGEOMETRY OFFSET ");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{x}} {{y}} {{z}}\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "time")) {
-      fmt::print("\tTIME SCALE  {{scale}} (T_out = T_in * {{scale}})\n");
-      fmt::print("\tTIME OFFSET {{offset}}  (T_out = T_in + {{offset}})\n");
+      fmt::print(fmt::emphasis::bold, "\n\tTIME SCALE  ");
+      fmt::print("{{scale}} (T_out = T_in * {{scale}})\n");
+      fmt::print(fmt::emphasis::bold, "\tTIME OFFSET ");
+      fmt::print("{{offset}}  (T_out = T_in + {{offset}})\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "regex")) {
       fmt::print("\n\tRegular Expression help (used in ASSEMBLY MATCHES and LIST MATCHES and "

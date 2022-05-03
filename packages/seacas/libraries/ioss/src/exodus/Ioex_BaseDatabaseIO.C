@@ -441,7 +441,7 @@ namespace Ioex {
     // Check byte-size of integers stored on the database...
     if ((ex_int64_status(m_exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
       if (myProcessor == 0 && !sixty_four_bit_message_output) {
-        fmt::print(Ioss::OUTPUT(),
+        fmt::print(Ioss::DEBUG(),
                    "IOSS: Input database contains 8-byte integers. Setting Ioss to use "
                    "8-byte integers.\n");
         sixty_four_bit_message_output = true;

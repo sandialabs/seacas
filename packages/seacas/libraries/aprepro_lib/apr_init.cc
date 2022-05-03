@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -174,6 +174,8 @@ namespace SEAMS {
        "Translates all lowercase character in svar to "
        "uppercase. It modifies svar and returns the "
        "resulting string. "},
+      {"import", do_import, "import(svar)",
+       "Include/import the file pointed to by the string variable or expression 'svar'"},
       {"getenv", do_getenv, "getenv(svar)",
        "Returns a string containing the value of the environment variable svar. If the environment "
        "\n\t\t\tvariable is not defined, an empty string is returned. "},

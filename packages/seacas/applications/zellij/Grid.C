@@ -20,6 +20,7 @@
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
 #include <Ioss_SmartAssert.h>
+#include <Ioss_ParallelUtils.h>
 
 #include <exodusII.h>
 #include <fmt/chrono.h>

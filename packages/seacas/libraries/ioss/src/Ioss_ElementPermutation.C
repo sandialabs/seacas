@@ -289,8 +289,6 @@ namespace Ioss {
 
   QuadPermutation::QuadPermutation() : ElementPermutation(QuadPermutation::name)
   {
-    std::cout << "In quad constructor" << std::endl;
-
     set_permutation(4, 8, 4,
                     {{0, 1, 2, 3},
                      {3, 0, 1, 2},

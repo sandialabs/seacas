@@ -1,11 +1,11 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest.h>
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
@@ -13,9 +13,9 @@
 #include <numeric>
 #include <vector>
 
-TEST_CASE("number_width", "[number_width]")
+DOCTEST_TEST_CASE("number_width")
 {
-  SECTION("single digit")
+  DOCTEST_SUBCASE("single digit")
   {
     for (int i = 0; i < 10; i++) {
       REQUIRE(1 == Ioss::Utils::number_width(i));
@@ -23,7 +23,7 @@ TEST_CASE("number_width", "[number_width]")
     }
   }
 
-  SECTION("double digit")
+  DOCTEST_SUBCASE("double digit")
   {
     for (int i = 11; i < 100; i += 11) {
       REQUIRE(2 == Ioss::Utils::number_width(i));
@@ -31,7 +31,7 @@ TEST_CASE("number_width", "[number_width]")
     }
   }
 
-  SECTION("triple digit")
+  DOCTEST_SUBCASE("triple digit")
   {
     for (int i = 111; i < 1'000; i += 111) {
       REQUIRE(3 == Ioss::Utils::number_width(i));
@@ -39,7 +39,7 @@ TEST_CASE("number_width", "[number_width]")
     }
   }
 
-  SECTION("quad digit")
+  DOCTEST_SUBCASE("quad digit")
   {
     for (int i = 1111; i < 10'000; i += 1111) {
       REQUIRE(4 == Ioss::Utils::number_width(i));
@@ -47,7 +47,7 @@ TEST_CASE("number_width", "[number_width]")
     }
   }
 
-  SECTION("larger")
+  DOCTEST_SUBCASE("larger")
   {
     REQUIRE(6 == Ioss::Utils::number_width(999'999));
     REQUIRE(7 == Ioss::Utils::number_width(999'999, true));
@@ -62,7 +62,7 @@ TEST_CASE("number_width", "[number_width]")
 }
 
 #if !defined __NVCC__
-TEST_CASE("str_equal", "[str_equal]")
+DOCTEST_TEST_CASE("str_equal")
 {
   REQUIRE(Ioss::Utils::str_equal("", ""));
   REQUIRE(!Ioss::Utils::str_equal("", "a"));
@@ -80,7 +80,7 @@ TEST_CASE("str_equal", "[str_equal]")
   REQUIRE(!Ioss::Utils::str_equal("Almost_The_Same", "almost_the_sam"));
 }
 
-TEST_CASE("substr_equal", "[substr_equal]")
+DOCTEST_TEST_CASE("substr_equal")
 {
   REQUIRE(Ioss::Utils::substr_equal("", ""));
   REQUIRE(Ioss::Utils::substr_equal("", "a"));
@@ -97,69 +97,69 @@ TEST_CASE("substr_equal", "[substr_equal]")
   REQUIRE(Ioss::Utils::substr_equal("PRe", "PREFIX"));
 }
 
-TEST_CASE("format_id_list", "[format_id_list]")
+DOCTEST_TEST_CASE("format_id_list")
 {
-  SECTION("ids_empty")
+  DOCTEST_SUBCASE("ids_empty")
   {
     std::string ret = Ioss::Utils::format_id_list({});
     REQUIRE(ret == std::string(""));
   }
 
-  SECTION("ids_distinct")
+  DOCTEST_SUBCASE("ids_distinct")
   {
     std::string ret = Ioss::Utils::format_id_list({1, 3, 5, 7, 9, 11});
     REQUIRE(ret == std::string("1, 3, 5, 7, 9, 11"));
   }
 
-  SECTION("ids two element ranges")
+  DOCTEST_SUBCASE("ids two element ranges")
   {
     std::string ret = Ioss::Utils::format_id_list({1, 2, 4, 5, 7, 8, 10, 11});
     REQUIRE(ret == std::string("1, 2, 4, 5, 7, 8, 10, 11"));
   }
 
-  SECTION("ids one-range")
+  DOCTEST_SUBCASE("ids one-range")
   {
     std::string ret = Ioss::Utils::format_id_list({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, "--");
     REQUIRE(ret == std::string("1--11"));
   }
 
-  SECTION("ids one value")
+  DOCTEST_SUBCASE("ids one value")
   {
     std::string ret = Ioss::Utils::format_id_list({11}, "--");
     REQUIRE(ret == std::string("11"));
   }
 
-  SECTION("ids two consecutive values")
+  DOCTEST_SUBCASE("ids two consecutive values")
   {
     std::string ret = Ioss::Utils::format_id_list({10, 11}, "--");
     REQUIRE(ret == std::string("10, 11"));
   }
 
-  SECTION("ids two separated values")
+  DOCTEST_SUBCASE("ids two separated values")
   {
     std::string ret = Ioss::Utils::format_id_list({2, 11}, "--");
     REQUIRE(ret == std::string("2, 11"));
   }
 
-  SECTION("ids two separated values pipe sep")
+  DOCTEST_SUBCASE("ids two separated values pipe sep")
   {
     std::string ret = Ioss::Utils::format_id_list({2, 11}, "--");
     REQUIRE(ret == std::string("2, 11"));
   }
 
-  SECTION("ids two ranges")
+  DOCTEST_SUBCASE("ids two ranges")
   {
     std::string ret = Ioss::Utils::format_id_list({1, 2, 3, 4, 6, 7, 8}, "--");
     REQUIRE(ret == std::string("1--4, 6--8"));
   }
 
-  SECTION("ids two ranges pipe separated")
+  DOCTEST_SUBCASE("ids two ranges pipe separated")
   {
     std::string ret = Ioss::Utils::format_id_list({1, 2, 3, 4, 6, 7, 8}, "--", "|");
     REQUIRE(ret == std::string("1--4|6--8"));
   }
 
-  SECTION("ids large range")
+  DOCTEST_SUBCASE("ids large range")
   {
     std::vector<size_t> range(100'000);
     std::iota(range.begin(), range.end(), 42);
@@ -167,7 +167,7 @@ TEST_CASE("format_id_list", "[format_id_list]")
     REQUIRE(ret == std::string("42--100041"));
   }
 
-  SECTION("ids large range with singles")
+  DOCTEST_SUBCASE("ids large range with singles")
   {
     std::vector<size_t> range(100'000);
     std::iota(range.begin(), range.end(), 42);
@@ -177,7 +177,7 @@ TEST_CASE("format_id_list", "[format_id_list]")
     REQUIRE(ret == std::string("1, 43--100040, 100042"));
   }
 
-  SECTION("ids large range with singles with to")
+  DOCTEST_SUBCASE("ids large range with singles with to")
   {
     std::vector<size_t> range(100'000);
     std::iota(range.begin(), range.end(), 42);
@@ -187,7 +187,7 @@ TEST_CASE("format_id_list", "[format_id_list]")
     REQUIRE(ret == std::string("1, 43 to 100040, 100042"));
   }
 
-  SECTION("ids large range with singles with colon")
+  DOCTEST_SUBCASE("ids large range with singles with colon")
   {
     std::vector<size_t> range(100'000);
     std::iota(range.begin(), range.end(), 42);
@@ -197,7 +197,7 @@ TEST_CASE("format_id_list", "[format_id_list]")
     REQUIRE(ret == std::string("1, 43:100040, 100042"));
   }
 
-  SECTION("ids large range with singles with words")
+  DOCTEST_SUBCASE("ids large range with singles with words")
   {
     std::vector<size_t> range(100'000);
     std::iota(range.begin(), range.end(), 42);
@@ -207,11 +207,14 @@ TEST_CASE("format_id_list", "[format_id_list]")
     REQUIRE(ret == std::string("1 and 43 to 100040 and 100042"));
   }
 
-  SECTION("detect unsorted two ids") { CHECK_THROWS(Ioss::Utils::format_id_list({2, 1})); }
+  DOCTEST_SUBCASE("detect unsorted two ids") { CHECK_THROWS(Ioss::Utils::format_id_list({2, 1})); }
 
-  SECTION("detect unsorted ids") { CHECK_THROWS(Ioss::Utils::format_id_list({1, 2, 3, 4, 5, 1})); }
+  DOCTEST_SUBCASE("detect unsorted ids")
+  {
+    CHECK_THROWS(Ioss::Utils::format_id_list({1, 2, 3, 4, 5, 1}));
+  }
 
-  SECTION("detect duplicate ids")
+  DOCTEST_SUBCASE("detect duplicate ids")
   {
     CHECK_THROWS(Ioss::Utils::format_id_list({1, 2, 3, 3, 4, 5, 6}));
   }
