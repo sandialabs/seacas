@@ -482,7 +482,7 @@ C         --Set wireframe mode on 1 view
             CALL INIINT (3, 1, LTYP)
             CALL SETMSH (2, 'UNDEFORM', 'NONE', MSHSEL, LTYP,
      &         0, IDUM, 0, IDUM, 'WIREFRAM', ' ', ISSNPS, ISSESS)
-            CALL SCOLOR (.TRUE., CDUM, IDUM, IDUM, RDUM, IDUM,
+            CALL SCOLOR (.TRUE., CDUM, IDUM, [IDUM], [RDUM], [IDUM],
      *        CDUM, SHDCOL, ISHDCL, IDELB)
 
 C         --Set display options
