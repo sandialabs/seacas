@@ -83,15 +83,15 @@ namespace Ioss {
 
     /** \brief get the debug stream.
      */
-    static std::ostream& get_debug_stream();
+    static std::ostream &get_debug_stream();
 
     /** \brief get the warning stream.
      */
-    static std::ostream& get_warning_stream();
+    static std::ostream &get_warning_stream();
 
     /** \brief get the output stream.
      */
-    static std::ostream& get_output_stream();
+    static std::ostream &get_output_stream();
 
     /** \brief set the output stream to the specified `output_stream`
      */
@@ -517,9 +517,9 @@ namespace Ioss {
 
   inline std::ostream &OUTPUT() { return *Utils::m_outputStream; }
 
-  inline std::ostream &DEBUG() { return *Utils::m_debugStream; }
+  inline std::ostream &DebugOut() { return *Utils::m_debugStream; }
 
-  inline std::ostream &WARNING()
+  inline std::ostream &WarnOut()
   {
     *Utils::m_warningStream << Utils::m_preWarningText;
     return *Utils::m_warningStream;
