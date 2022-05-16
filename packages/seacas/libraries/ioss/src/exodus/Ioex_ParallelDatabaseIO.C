@@ -342,7 +342,7 @@ namespace Ioex {
         Ioss::FileInfo file = Ioss::FileInfo(get_filename());
         fileExists          = file.exists();
         if (fileExists && myProcessor == 0) {
-          fmt::print(Ioss::WARNING(),
+          fmt::print(Ioss::WarnOut(),
                      "Appending to existing database in parallel single-file "
                      "output mode is a new capability; please check results carefully. File '{}'",
                      get_filename());
@@ -495,7 +495,7 @@ namespace Ioex {
       double t_end    = Ioss::Utils::timer();
       double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       if (myProcessor == 0) {
-        fmt::print(Ioss::DEBUG(), "File Open Time = {}\n", duration);
+        fmt::print(Ioss::DebugOut(), "File Open Time = {}\n", duration);
       }
     }
 
@@ -612,7 +612,7 @@ namespace Ioex {
       double      duration    = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       std::string open_create = fileExists ? "Open" : "Create";
       if (myProcessor == 0) {
-        fmt::print(Ioss::DEBUG(), "File {} Time = {}\n", open_create, duration);
+        fmt::print(Ioss::DebugOut(), "File {} Time = {}\n", open_create, duration);
       }
     }
 
@@ -642,14 +642,14 @@ namespace Ioex {
           exo_method = EX_COMPRESS_SZIP;
 #else
           if (myProcessor == 0) {
-            fmt::print(Ioss::WARNING(), "The NetCDF library does not have SZip compression enabled."
+            fmt::print(Ioss::WarnOut(), "The NetCDF library does not have SZip compression enabled."
                                         " 'zlib' will be used instead.\n\n");
           }
 #endif
         }
         else {
           if (myProcessor == 0) {
-            fmt::print(Ioss::WARNING(),
+            fmt::print(Ioss::WarnOut(),
                        "Unrecognized compression method specified: '{}'."
                        " 'zlib' will be used instead.\n\n",
                        method);
@@ -903,7 +903,7 @@ namespace Ioex {
           // a warning if there is a corrupt step on processor
           // 0... Need better warnings which won't overload in the
           // worst case...
-          fmt::print(Ioss::WARNING(),
+          fmt::print(Ioss::WarnOut(),
                      "Skipping step {} at time {} in database file\n\t{}.\nThe data for that step "
                      "is possibly corrupt.\n",
                      fmt::group_digits(i + 1), tsteps[i], get_filename());
@@ -4812,7 +4812,7 @@ void ParallelDatabaseIO::check_valid_values() const
         }
 
         if (!bad_proc.empty()) {
-          fmt::print(Ioss::WARNING(), "No {} on processor{}:\n\t{}\n\n", label[j],
+          fmt::print(Ioss::WarnOut(), "No {} on processor{}:\n\t{}\n\n", label[j],
                      bad_proc.size() > 1 ? "s" : "", Ioss::Utils::format_id_list(bad_proc, ":"));
           if (j == 0) {
             break;
