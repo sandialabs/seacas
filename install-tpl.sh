@@ -617,7 +617,7 @@ then
             cd METIS-5.1.0.1 || exit
             sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' src/include/metis.h > tmp
             mv tmp src/include/metis.h
-            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            INSTALL_PATH=${INSTALL_PATH} CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure Metis. exiting.${txtrst}
@@ -655,7 +655,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parmetis || exit
-            CRAY=${CRAY} MPI=${MPI} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            INSTALL_PATH=${INSTALL_PATH} CRAY=${CRAY} MPI=${MPI} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure ParMETIS. exiting.${txtrst}
