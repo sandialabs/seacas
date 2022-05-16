@@ -17,13 +17,13 @@
 #include <utility> // for pair
 #include <vector>  // for vector
 
-#include <fmt/ostream.h>
 #include <assert.h>
+#include <fmt/ostream.h>
 
-#include "Ioss_Utils.h"
-#include "Ioss_ElementTopology.h"
 #include "Ioss_ElementPermutation.h"
+#include "Ioss_ElementTopology.h"
 #include "Ioss_StandardElementTypes.h"
+#include "Ioss_Utils.h"
 
 #include "Iotm_TextMeshDataTypes.h"
 
@@ -31,10 +31,10 @@ namespace Iotm {
   class TopologyMapEntry
   {
   public:
-    using Ordinal = uint16_t;
+    using Ordinal     = uint16_t;
     using Permutation = uint8_t;
 
-    static constexpr Ordinal InvalidOrdinal = 65535;
+    static constexpr Ordinal     InvalidOrdinal     = 65535;
     static constexpr Permutation InvalidPermutation = 128;
 
     using DimensionArray = bool[4];
@@ -49,18 +49,14 @@ namespace Iotm {
 
     TopologyMapEntry(const std::string &name)
         : id(Ioss::ElementTopology::get_unique_id(name)),
-          topology(Ioss::ElementTopology::factory(name)),
-          initialized(false)
+          topology(Ioss::ElementTopology::factory(name)), initialized(false)
     {
       set_valid_spatial_dimensions({false, false, false, false});
     }
 
     TopologyMapEntry(const TopologyMapEntry &topo) = default;
 
-    bool operator==(const Ioss::ElementTopology *topo) const
-    {
-      return topo == topology;
-    }
+    bool operator==(const Ioss::ElementTopology *topo) const { return topo == topology; }
 
     bool defined_on_spatial_dimension(const unsigned spatialDim) const
     {
@@ -112,10 +108,11 @@ namespace Iotm {
       return sideTopology->name();
     }
 
-    const TopologyMapEntry& side_topology(unsigned side) const
+    const TopologyMapEntry &side_topology(unsigned side) const
     {
-      if (!valid_side(side)) return *(invalid_topology_factory());
-      return *sideTopologies[side-1];
+      if (!valid_side(side))
+        return *(invalid_topology_factory());
+      return *sideTopologies[side - 1];
     }
 
     unsigned side_topology_num_nodes(unsigned side) const
@@ -129,14 +126,15 @@ namespace Iotm {
 
     std::vector<Ordinal> side_topology_node_indices(unsigned side) const
     {
-      if (!valid_side(side)) return std::vector<Ordinal>();
+      if (!valid_side(side))
+        return std::vector<Ordinal>();
 
       Ioss::ElementTopology *sideTopology = topology->boundary_type(side);
-      std::vector<Ordinal> elementNodeOrdinalVector(sideTopology->number_nodes());
+      std::vector<Ordinal>   elementNodeOrdinalVector(sideTopology->number_nodes());
 
       Ioss::IntVector connectivity = topology->boundary_connectivity(side);
 
-      for(int i=0; i<sideTopology->number_nodes(); i++) {
+      for (int i = 0; i < sideTopology->number_nodes(); i++) {
         elementNodeOrdinalVector[i] = connectivity[i];
       }
 
@@ -147,7 +145,10 @@ namespace Iotm {
 
     unsigned num_permutations() const { return topology->permutation()->num_permutations(); }
 
-    unsigned num_positive_permutations() const { return topology->permutation()->num_positive_permutations(); }
+    unsigned num_positive_permutations() const
+    {
+      return topology->permutation()->num_positive_permutations();
+    }
 
     bool is_positive_polarity(Permutation permutation) const
     {
@@ -159,7 +160,8 @@ namespace Iotm {
       return topology->permutation()->valid_permutation(permutation);
     }
 
-    bool fill_permutation_indices(Permutation permutation, std::vector<Ordinal>& nodeOrdinalVector) const
+    bool fill_permutation_indices(Permutation           permutation,
+                                  std::vector<Ordinal> &nodeOrdinalVector) const
     {
       return topology->permutation()->fill_permutation_indices(permutation, nodeOrdinalVector);
     }
@@ -169,7 +171,7 @@ namespace Iotm {
       return topology->permutation()->permutation_indices(permutation);
     }
 
-    static TopologyMapEntry* invalid_topology_factory()
+    static TopologyMapEntry *invalid_topology_factory()
     {
       static TopologyMapEntry entry;
 
@@ -179,12 +181,12 @@ namespace Iotm {
     }
 
     // Node with no permutation and no sides
-    static TopologyMapEntry* node_factory()
+    static TopologyMapEntry *node_factory()
     {
       static TopologyMapEntry entry(Ioss::Node::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,true,true,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, true, true, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -196,12 +198,12 @@ namespace Iotm {
     // topology::LINE -- topology::EDGE_RANK
     // 2 nodes with no sides defined in 2D/3D
     //***************************************************************************
-    static TopologyMapEntry* line_2_factory()
+    static TopologyMapEntry *line_2_factory()
     {
       static TopologyMapEntry entry(Ioss::Edge2::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -213,12 +215,12 @@ namespace Iotm {
     // topology::LINE 1D -- topology::ELEMENT_RANK
     // 2 nodes with no sides only defined on 1d problems
     //***************************************************************************
-    static TopologyMapEntry* line_2_1d_factory()
+    static TopologyMapEntry *line_2_1d_factory()
     {
       static TopologyMapEntry entry(Ioss::Edge2::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,true,false,false});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, true, false, false});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -230,12 +232,12 @@ namespace Iotm {
     // topology::LINE -- topology::EDGE_RANK
     // 3 nodes with no sides defined in 2D/3D
     //***************************************************************************
-    static TopologyMapEntry* line_3_factory()
+    static TopologyMapEntry *line_3_factory()
     {
       static TopologyMapEntry entry(Ioss::Edge3::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -247,12 +249,12 @@ namespace Iotm {
     // topology::LINE 1D -- topology::ELEMENT_RANK
     // 3 nodes with no sides only defined on 1d problems
     //***************************************************************************
-    static TopologyMapEntry* line_3_1d_factory()
+    static TopologyMapEntry *line_3_1d_factory()
     {
       static TopologyMapEntry entry(Ioss::Edge3::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,true,false,false});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, true, false, false});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -265,12 +267,12 @@ namespace Iotm {
     // defined on spatial dimension 3d
     // 3, 4, or 6 nodes with 3 edges and no sides
     //***************************************************************************
-    static TopologyMapEntry* tri_3_factory()
+    static TopologyMapEntry *tri_3_factory()
     {
       static TopologyMapEntry entry(Ioss::Tri3::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -278,12 +280,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* tri_4_factory()
+    static TopologyMapEntry *tri_4_factory()
     {
       static TopologyMapEntry entry(Ioss::Tri4::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -291,12 +293,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* tri_6_factory()
+    static TopologyMapEntry *tri_6_factory()
     {
       static TopologyMapEntry entry(Ioss::Tri6::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -309,12 +311,12 @@ namespace Iotm {
     // defined on spatial dimension 3d
     // 4, 8, or 9 nodes with 4 edges and no sides
     //***************************************************************************
-    static TopologyMapEntry* quad_4_factory()
+    static TopologyMapEntry *quad_4_factory()
     {
       static TopologyMapEntry entry(Ioss::Quad4::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -322,12 +324,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* quad_6_factory()
+    static TopologyMapEntry *quad_6_factory()
     {
       static TopologyMapEntry entry(Ioss::Quad6::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -335,12 +337,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* quad_8_factory()
+    static TopologyMapEntry *quad_8_factory()
     {
       static TopologyMapEntry entry(Ioss::Quad8::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -348,12 +350,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* quad_9_factory()
+    static TopologyMapEntry *quad_9_factory()
     {
       static TopologyMapEntry entry(Ioss::Quad9::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -365,12 +367,12 @@ namespace Iotm {
     // PARTICLE -- topology::ELEMENT_RANK
     // one node with no sides
     //***************************************************************************
-    static TopologyMapEntry* particle_factory()
+    static TopologyMapEntry *particle_factory()
     {
       static TopologyMapEntry entry(Ioss::Sphere::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,true,true,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, true, true, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -382,12 +384,12 @@ namespace Iotm {
     // topology::BEAM_2 -- topology::ELEMENT_RANK
     // 2 nodes with 2 sides defined in 2D/3D
     //***************************************************************************
-    static TopologyMapEntry* beam_2_factory()
+    static TopologyMapEntry *beam_2_factory()
     {
       static TopologyMapEntry entry(Ioss::Beam2::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true ,true });
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, true});
         entry.set_side_topologies({line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
@@ -399,12 +401,12 @@ namespace Iotm {
     // topology::BEAM_3 -- topology::ELEMENT_RANK
     // 3 nodes with 2 sides defined in 2D/3D
     //***************************************************************************
-    static TopologyMapEntry* beam_3_factory()
+    static TopologyMapEntry *beam_3_factory()
     {
       static TopologyMapEntry entry(Ioss::Beam3::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true ,true });
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, true});
         entry.set_side_topologies({line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
@@ -418,12 +420,12 @@ namespace Iotm {
     // 2 or 3 nodes with two edges and 2 sides
     //***************************************************************************
 
-    static TopologyMapEntry* shell_line_2_factory()
+    static TopologyMapEntry *shell_line_2_factory()
     {
       static TopologyMapEntry entry(Ioss::ShellLine2D2::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true ,false });
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, false});
         entry.set_side_topologies({line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
@@ -431,12 +433,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* shell_line_3_factory()
+    static TopologyMapEntry *shell_line_3_factory()
     {
       static TopologyMapEntry entry(Ioss::ShellLine2D3::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true,false});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, false});
         entry.set_side_topologies({line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
@@ -449,12 +451,12 @@ namespace Iotm {
     // 2 or 3 nodes with no sides
     //***************************************************************************
 
-    static TopologyMapEntry* spring_2_factory()
+    static TopologyMapEntry *spring_2_factory()
     {
       static TopologyMapEntry entry(Ioss::Spring2::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,true,true,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, true, true, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -462,12 +464,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* spring_3_factory()
+    static TopologyMapEntry *spring_3_factory()
     {
       static TopologyMapEntry entry(Ioss::Spring3::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,true,true,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, true, true, true});
         entry.set_side_topologies({});
         entry.initialized = true;
       }
@@ -480,12 +482,12 @@ namespace Iotm {
     // defined on spatial dimension 2d
     // 3, 4, or 6 nodes with 3 edges and 3 sides
     //***************************************************************************
-    static TopologyMapEntry* tri_3_2d_factory()
+    static TopologyMapEntry *tri_3_2d_factory()
     {
       static TopologyMapEntry entry(Ioss::Tri3::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true,false});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, false});
         entry.set_side_topologies({line_2_factory(), line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
@@ -493,12 +495,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* tri_4_2d_factory()
+    static TopologyMapEntry *tri_4_2d_factory()
     {
       static TopologyMapEntry entry(Ioss::Tri4::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true,false});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, false});
         entry.set_side_topologies({line_2_factory(), line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
@@ -506,12 +508,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* tri_6_2d_factory()
+    static TopologyMapEntry *tri_6_2d_factory()
     {
       static TopologyMapEntry entry(Ioss::Tri6::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true,false});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, false});
         entry.set_side_topologies({line_3_factory(), line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
@@ -525,39 +527,42 @@ namespace Iotm {
     // 4, 8, or 9 nodes with 4 edges and 4 sides
     //***************************************************************************
 
-    static TopologyMapEntry* quad_4_2d_factory()
+    static TopologyMapEntry *quad_4_2d_factory()
     {
       static TopologyMapEntry entry(Ioss::Quad4::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true,false});
-        entry.set_side_topologies({line_2_factory(), line_2_factory(), line_2_factory(), line_2_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, false});
+        entry.set_side_topologies(
+            {line_2_factory(), line_2_factory(), line_2_factory(), line_2_factory()});
         entry.initialized = true;
       }
 
       return &entry;
     }
 
-    static TopologyMapEntry* quad_8_2d_factory()
+    static TopologyMapEntry *quad_8_2d_factory()
     {
       static TopologyMapEntry entry(Ioss::Quad8::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,true,false});
-        entry.set_side_topologies({line_3_factory(), line_3_factory(), line_3_factory(), line_3_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, true, false});
+        entry.set_side_topologies(
+            {line_3_factory(), line_3_factory(), line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
 
       return &entry;
     }
 
-    static TopologyMapEntry* quad_9_2d_factory()
+    static TopologyMapEntry *quad_9_2d_factory()
     {
       static TopologyMapEntry entry(Ioss::Quad9::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
-        entry.set_side_topologies({line_3_factory(), line_3_factory(), line_3_factory(), line_3_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
+        entry.set_side_topologies(
+            {line_3_factory(), line_3_factory(), line_3_factory(), line_3_factory()});
         entry.initialized = true;
       }
 
@@ -570,12 +575,12 @@ namespace Iotm {
     // 3, 4, or 6 nodes with 3 edges and 2 sides
     //***************************************************************************
 
-    static TopologyMapEntry* shell_tri_3_factory()
+    static TopologyMapEntry *shell_tri_3_factory()
     {
       static TopologyMapEntry entry(Ioss::TriShell3::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({tri_3_factory(), tri_3_factory()});
         entry.initialized = true;
       }
@@ -583,12 +588,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* shell_tri_4_factory()
+    static TopologyMapEntry *shell_tri_4_factory()
     {
       static TopologyMapEntry entry(Ioss::TriShell4::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({tri_4_factory(), tri_4_factory()});
         entry.initialized = true;
       }
@@ -596,12 +601,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* shell_tri_6_factory()
+    static TopologyMapEntry *shell_tri_6_factory()
     {
       static TopologyMapEntry entry(Ioss::TriShell6::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
       }
@@ -614,12 +619,12 @@ namespace Iotm {
     // defined on spatial dimension 3d
     // 4, 8, or 9 nodes with 4 edges and 2 sides
     //***************************************************************************
-    static TopologyMapEntry* shell_quad_4_factory()
+    static TopologyMapEntry *shell_quad_4_factory()
     {
       static TopologyMapEntry entry(Ioss::Shell4::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_4_factory(), quad_4_factory()});
         entry.initialized = true;
       }
@@ -627,12 +632,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* shell_quad_8_factory()
+    static TopologyMapEntry *shell_quad_8_factory()
     {
       static TopologyMapEntry entry(Ioss::Shell8::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_8_factory(), quad_8_factory()});
         entry.initialized = true;
       }
@@ -640,12 +645,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* shell_quad_9_factory()
+    static TopologyMapEntry *shell_quad_9_factory()
     {
       static TopologyMapEntry entry(Ioss::Shell9::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_9_factory(), quad_9_factory()});
         entry.initialized = true;
       }
@@ -658,52 +663,56 @@ namespace Iotm {
     // defined on spatial dimension 3d
     // 4, 8, 10 or 11 nodes with 4 sides
     //***************************************************************************
-    static TopologyMapEntry* tet_4_factory()
+    static TopologyMapEntry *tet_4_factory()
     {
       static TopologyMapEntry entry(Ioss::Tet4::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
-        entry.set_side_topologies({tri_3_factory(), tri_3_factory(), tri_3_factory(), tri_3_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
+        entry.set_side_topologies(
+            {tri_3_factory(), tri_3_factory(), tri_3_factory(), tri_3_factory()});
         entry.initialized = true;
       }
 
       return &entry;
     }
 
-    static TopologyMapEntry* tet_8_factory()
+    static TopologyMapEntry *tet_8_factory()
     {
       static TopologyMapEntry entry(Ioss::Tet8::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
-        entry.set_side_topologies({tri_4_factory(), tri_4_factory(), tri_4_factory(), tri_4_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
+        entry.set_side_topologies(
+            {tri_4_factory(), tri_4_factory(), tri_4_factory(), tri_4_factory()});
         entry.initialized = true;
       }
 
       return &entry;
     }
 
-    static TopologyMapEntry* tet_10_factory()
+    static TopologyMapEntry *tet_10_factory()
     {
       static TopologyMapEntry entry(Ioss::Tet10::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
-        entry.set_side_topologies({tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
+        entry.set_side_topologies(
+            {tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
       }
 
       return &entry;
     }
 
-    static TopologyMapEntry* tet_11_factory()
+    static TopologyMapEntry *tet_11_factory()
     {
       static TopologyMapEntry entry(Ioss::Tet11::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
-        entry.set_side_topologies({tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
+        entry.set_side_topologies(
+            {tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
       }
 
@@ -715,42 +724,42 @@ namespace Iotm {
     // defined on spatial dimension 3d
     // 5, 13 or 14 nodes with 5 sides
     //***************************************************************************
-    static TopologyMapEntry* pyramid_5_factory()
+    static TopologyMapEntry *pyramid_5_factory()
     {
       static TopologyMapEntry entry(Ioss::Pyramid5::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
-        entry.set_side_topologies({tri_3_factory(), tri_3_factory(), tri_3_factory(), tri_3_factory(),
-                                   quad_4_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
+        entry.set_side_topologies(
+            {tri_3_factory(), tri_3_factory(), tri_3_factory(), tri_3_factory(), quad_4_factory()});
         entry.initialized = true;
       }
 
       return &entry;
     }
 
-    static TopologyMapEntry* pyramid_13_factory()
+    static TopologyMapEntry *pyramid_13_factory()
     {
       static TopologyMapEntry entry(Ioss::Pyramid13::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
-        entry.set_side_topologies({tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory(),
-                                   quad_8_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
+        entry.set_side_topologies(
+            {tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory(), quad_8_factory()});
         entry.initialized = true;
       }
 
       return &entry;
     }
 
-    static TopologyMapEntry* pyramid_14_factory()
+    static TopologyMapEntry *pyramid_14_factory()
     {
       static TopologyMapEntry entry(Ioss::Pyramid14::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
-        entry.set_side_topologies({tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory(),
-                                   quad_9_factory()});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
+        entry.set_side_topologies(
+            {tri_6_factory(), tri_6_factory(), tri_6_factory(), tri_6_factory(), quad_9_factory()});
         entry.initialized = true;
       }
 
@@ -762,12 +771,12 @@ namespace Iotm {
     // defined on spatial dimension 3d
     // 6, 12, 15 or 18 nodes with 5 sides
     //***************************************************************************
-    static TopologyMapEntry* wedge_6_factory()
+    static TopologyMapEntry *wedge_6_factory()
     {
       static TopologyMapEntry entry(Ioss::Wedge6::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_4_factory(), quad_4_factory(), quad_4_factory(),
                                    tri_3_factory(), tri_3_factory()});
         entry.initialized = true;
@@ -776,12 +785,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* wedge_12_factory()
+    static TopologyMapEntry *wedge_12_factory()
     {
       static TopologyMapEntry entry(Ioss::Wedge12::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_6_factory(), quad_6_factory(), quad_6_factory(),
                                    tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
@@ -790,12 +799,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* wedge_15_factory()
+    static TopologyMapEntry *wedge_15_factory()
     {
       static TopologyMapEntry entry(Ioss::Wedge15::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_8_factory(), quad_8_factory(), quad_8_factory(),
                                    tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
@@ -804,12 +813,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* wedge_18_factory()
+    static TopologyMapEntry *wedge_18_factory()
     {
       static TopologyMapEntry entry(Ioss::Wedge18::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_9_factory(), quad_9_factory(), quad_9_factory(),
                                    tri_6_factory(), tri_6_factory()});
         entry.initialized = true;
@@ -823,12 +832,12 @@ namespace Iotm {
     // defined on spatial dimension 3d
     // 8, 20 or 27 nodes nodes with 6 sides
     //***************************************************************************
-    static TopologyMapEntry* hex_8_factory()
+    static TopologyMapEntry *hex_8_factory()
     {
       static TopologyMapEntry entry(Ioss::Hex8::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_4_factory(), quad_4_factory(), quad_4_factory(),
                                    quad_4_factory(), quad_4_factory(), quad_4_factory()});
         entry.initialized = true;
@@ -837,12 +846,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* hex_20_factory()
+    static TopologyMapEntry *hex_20_factory()
     {
       static TopologyMapEntry entry(Ioss::Hex20::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_8_factory(), quad_8_factory(), quad_8_factory(),
                                    quad_8_factory(), quad_8_factory(), quad_8_factory()});
         entry.initialized = true;
@@ -851,12 +860,12 @@ namespace Iotm {
       return &entry;
     }
 
-    static TopologyMapEntry* hex_27_factory()
+    static TopologyMapEntry *hex_27_factory()
     {
       static TopologyMapEntry entry(Ioss::Hex27::name);
 
-      if(!entry.initialized) {
-        entry.set_valid_spatial_dimensions({false,false,false,true});
+      if (!entry.initialized) {
+        entry.set_valid_spatial_dimensions({false, false, false, true});
         entry.set_side_topologies({quad_9_factory(), quad_9_factory(), quad_9_factory(),
                                    quad_9_factory(), quad_9_factory(), quad_9_factory()});
         entry.initialized = true;
@@ -885,16 +894,18 @@ namespace Iotm {
     // Create and set TopologyMapEntry based side topologies since some of the implementation
     // details of the class cannot be automatically constructed from the Ioss_ElementTopology
     // object .. this will not be necessary if/when they are migrated to Ioss_ElementTopology
-    void set_side_topologies(const std::vector<TopologyMapEntry*>& sideTopologies_)
+    void set_side_topologies(const std::vector<TopologyMapEntry *> &sideTopologies_)
     {
       int numSides = sideTopologies_.size();
 
-      for(int side=1; side<=numSides; side++) {
-        if(topology->boundary_type(side) != sideTopologies_[side-1]->topology) {
+      for (int side = 1; side <= numSides; side++) {
+        if (topology->boundary_type(side) != sideTopologies_[side - 1]->topology) {
           std::ostringstream errmsg;
           fmt::print(errmsg,
-              "ERROR: For element topology: {} on side: {}, expected topology: {} does not match topology: {}",
-              topology->name(), side, topology->boundary_type(side)->name(), sideTopologies_[side-1]->topology->name());
+                     "ERROR: For element topology: {} on side: {}, expected topology: {} does not "
+                     "match topology: {}",
+                     topology->name(), side, topology->boundary_type(side)->name(),
+                     sideTopologies_[side - 1]->topology->name());
           IOSS_ERROR(errmsg);
         }
       }
@@ -910,7 +921,7 @@ namespace Iotm {
     unsigned int           id{0};
     Ioss::ElementTopology *topology = nullptr;
 
-    std::vector<TopologyMapEntry*> sideTopologies{};
+    std::vector<TopologyMapEntry *> sideTopologies{};
 
     // Defines what spatial dimension the topology is valid on
     DimensionArray validSpatialDimensions;

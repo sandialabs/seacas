@@ -1532,7 +1532,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     // by this quantity.
     {
       const char   *vars[]  = {VAR_NS_IDS_GLOBAL, VAR_NS_NODE_CNT_GLOBAL, VAR_NS_DF_CNT_GLOBAL,
-                            nullptr};
+                               nullptr};
       const nc_type types[] = {ids_type, bulk_type, bulk_type};
 
       status = define_variables(exodusFilePtr, static_cast<int>(comm.globalNodeSets),
@@ -1547,7 +1547,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     // by this quantity.
     {
       const char   *vars[]  = {VAR_SS_IDS_GLOBAL, VAR_SS_SIDE_CNT_GLOBAL, VAR_SS_DF_CNT_GLOBAL,
-                            nullptr};
+                               nullptr};
       const nc_type types[] = {ids_type, bulk_type, bulk_type};
 
       status = define_variables(exodusFilePtr, static_cast<int>(comm.globalSideSets),
