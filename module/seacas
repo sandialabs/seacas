@@ -21,11 +21,6 @@ proc GetPath { } {
     return $cluster
 }
 
-module-trace on
-module-info alias seacas
-
-module-verbosity on
-
 # Try to determine the path used on this system...
 set cluster [GetPath]
 set seacas_path  /projects/seacas/$cluster/current
