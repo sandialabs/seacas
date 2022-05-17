@@ -900,7 +900,7 @@ then
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
-            rm -rf gtest
+            rm -rf googletest
             git clone https://github.com/google/googletest.git
         fi
 
