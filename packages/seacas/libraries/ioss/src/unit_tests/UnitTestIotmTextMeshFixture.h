@@ -30,7 +30,9 @@
 #include <Ioss_StandardElementTypes.h>
 
 #include <gtest/gtest.h>
+#ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
+#endif
 #include <string>
 #include <unordered_map>
 
