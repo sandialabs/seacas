@@ -3538,6 +3538,9 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
 
   if (comp_count == 1 && field.get_type() == Ioss::Field::REAL) {
     std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, 1);
+    if (lowerCaseVariableNames) {
+      Ioss::Utils::fixup_name(var_name);
+    }
 
     // Read the variable...
     int64_t id   = Ioex::get_id(ge, type, &ids_);
@@ -3559,6 +3562,9 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
   else {
     for (size_t i = 0; i < comp_count; i++) {
       std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
+      if (lowerCaseVariableNames) {
+	Ioss::Utils::fixup_name(var_name);
+      }
 
       // Read the variable...
       int64_t id       = Ioex::get_id(ge, type, &ids_);
