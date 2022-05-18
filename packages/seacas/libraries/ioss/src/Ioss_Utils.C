@@ -608,6 +608,11 @@ namespace {
         if (suffix_separator != '_') {
           field.set_suffix_separator(suffix_separator);
         }
+        // Are suffices upper or lowercase...
+        std::vector<std::string> tmp;
+	field_tokenize(names[which_names[0]], suffix_separator, tmp);
+	Ioss::Suffix suffix{tmp[tmp.size()-1]};
+        field.set_suffices_uppercase(suffix.is_uppercase());
         field.set_index(index);
         for (const auto &which_name : which_names) {
           names[which_name][0] = '\0';

@@ -106,6 +106,7 @@ namespace Ioss {
     bool is_invalid() const { return type_ == INVALID; }
 
     const std::string &get_name() const { return name_; }
+    std::string &get_name() { return name_; }
 
     /** \brief Get name of the 'component_indexth` component (1-based)
      *
