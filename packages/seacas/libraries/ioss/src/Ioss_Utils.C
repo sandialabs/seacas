@@ -610,8 +610,8 @@ namespace {
         }
         // Are suffices upper or lowercase...
         std::vector<std::string> tmp;
-	field_tokenize(names[which_names[0]], suffix_separator, tmp);
-	Ioss::Suffix suffix{tmp[tmp.size()-1]};
+        field_tokenize(names[which_names[0]], suffix_separator, tmp);
+        Ioss::Suffix suffix{tmp[tmp.size() - 1]};
         field.set_suffices_uppercase(suffix.is_uppercase());
         field.set_index(index);
         for (const auto &which_name : which_names) {
@@ -621,6 +621,11 @@ namespace {
       }
       if (suffix_size == 1) {
         Ioss::Field field(name, Ioss::Field::REAL, IOSS_SCALAR(), fld_role, count);
+        // Are suffices upper or lowercase...
+        std::vector<std::string> tmp;
+        field_tokenize(names[which_names[0]], suffix_separator, tmp);
+        Ioss::Suffix suffix{tmp[tmp.size() - 1]};
+        field.set_suffices_uppercase(suffix.is_uppercase());
         field.set_index(index);
         names[index][0] = '\0';
         return field;
