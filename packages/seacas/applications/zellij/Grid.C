@@ -138,9 +138,9 @@ namespace {
 } // namespace
 
 Grid::Grid(SystemInterface &interFace)
-    : m_scaleFactor(interFace.scale_factor()), m_parallelSize(interFace.ranks()),
-      m_rankCount(interFace.rank_count()), m_startRank(interFace.start_rank()),
-      m_equivalenceNodes(interFace.equivalence_nodes()),
+    : m_offset(interFace.offset()), m_scaleFactor(interFace.scale_factor()),
+      m_parallelSize(interFace.ranks()), m_rankCount(interFace.rank_count()),
+      m_startRank(interFace.start_rank()), m_equivalenceNodes(interFace.equivalence_nodes()),
       m_useInternalSidesets(!interFace.ignore_internal_sidesets()),
       m_subCycle(interFace.subcycle()), m_minimizeOpenFiles(interFace.minimize_open_files()),
       m_generatedSideSets(which_sidesets(interFace.sideset_surfaces()))
@@ -562,6 +562,21 @@ void Grid::output_nodal_coordinates(const Cell &cell)
     std::for_each(coord_x.begin(), coord_x.end(), [scale](double &d) { d *= scale; });
     std::for_each(coord_y.begin(), coord_y.end(), [scale](double &d) { d *= scale; });
     std::for_each(coord_z.begin(), coord_z.end(), [scale](double &d) { d *= scale; });
+  }
+
+  // If there is a global offset specified, apply to all nodes...
+  // NOTE: Applied to scaled coordinates...
+  if (m_offset[0] != 0.0) {
+    double offset = m_offset[0];
+    std::for_each(coord_x.begin(), coord_x.end(), [offset](double &d) { d += offset; });
+  }
+  if (m_offset[1] != 0.0) {
+    double offset = m_offset[1];
+    std::for_each(coord_y.begin(), coord_y.end(), [offset](double &d) { d += offset; });
+  }
+  if (m_offset[2] != 0.0) {
+    double offset = m_offset[2];
+    std::for_each(coord_z.begin(), coord_z.end(), [offset](double &d) { d += offset; });
   }
 
   // Filter coordinates down to only "new nodes"...

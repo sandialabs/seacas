@@ -14,12 +14,17 @@
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <iosfwd> // for ostream
+#include <tokenize.h>
 
 //! \file
 
 SystemInterface::SystemInterface(int my_rank) : myRank_(my_rank) { enroll_options(); }
 
 SystemInterface::~SystemInterface() = default;
+
+namespace {
+  void parse_offset(const char *tokens, vector3d &offset, int myRank);
+}
 
 void SystemInterface::enroll_options()
 {
@@ -74,6 +79,11 @@ void SystemInterface::enroll_options()
   options_.enroll("subcycle", Ioss::GetLongOption::NoValue,
                   "Process cells in groups of '-rank_count'.  Helps minimize open files,\n"
                   "\t\tbut is faster than only having a single file open.",
+                  nullptr);
+
+  options_.enroll("offset", Ioss::GetLongOption::MandatoryValue,
+                  "Comma-separated x,y,z offset for coordinates of the output mesh.\n"
+                  "\t\tThe output coordinates will be xyz_out = xyz * scale + offset_xyz",
                   nullptr);
 
   options_.enroll("scale", Ioss::GetLongOption::MandatoryValue,
@@ -252,6 +262,13 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
+  {
+    const char *temp = options_.retrieve("offset");
+    if (temp != nullptr) {
+      parse_offset(temp, offset_, myRank_);
+    }
+  }
+
   scaleFactor_ = options_.get_option_value("scale", scaleFactor_);
   ranks_       = options_.get_option_value("ranks", ranks_);
   startRank_   = options_.get_option_value("start_rank", startRank_);
@@ -373,3 +390,43 @@ void SystemInterface::show_version()
              "\t(Version: {}) Modified: {}\n",
              qainfo[2], qainfo[1]);
 }
+
+namespace {
+  void parse_offset(const char *tokens, vector3d &offset, int myRank)
+  {
+    // Break into tokens separated by ","
+    if (tokens != nullptr) {
+      std::string token_string(tokens);
+      auto        var_list = Ioss::tokenize(token_string, ",");
+
+      // At this point, var_list should contain 1,2,or 3 strings
+      // corresponding to the x, y, and z coordinate offsets.
+      offset[0] = offset[1] = offset[2] = 0.0;
+
+      std::string offx = var_list[0];
+      double      x    = std::stod(offx);
+      offset[0]        = x;
+
+      if (var_list.size() >= 2) {
+        std::string offy = var_list[1];
+        double      y    = std::stod(offy);
+        offset[1]        = y;
+      }
+
+      if (var_list.size() == 3) {
+        std::string offz = var_list[2];
+        double      z    = std::stod(offz);
+        offset[2]        = z;
+      }
+
+      if (var_list.size() > 3) {
+        if (myRank == 0) {
+          fmt::print(stderr, fmt::fg(fmt::color::red),
+                     "ERROR: Incorrect number of offset components ({}) specified -- max is 3; "
+                     "ignoring extras.\n\n",
+                     var_list.size());
+        }
+      }
+    }
+  }
+} // namespace
