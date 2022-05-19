@@ -765,7 +765,7 @@ if [ "$KOKKOS" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
     then
-        kokkos_version="2.8.00"
+        kokkos_version="3.6.00"
         echo "${txtgrn}+++ KOKKOS${txtrst}"
         cd $ACCESS || exit
         cd TPL/kokkos || exit
