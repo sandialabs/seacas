@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.10 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.20.11 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.10 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.11 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.10 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.11 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -1604,6 +1604,33 @@ class exodus:
             True = successful execution
         """
         return self.__ex_put_id_map('EX_ELEM_MAP', id_map)
+
+    # --------------------------------------------------------------------
+
+    def get_block_id_map(self, obj_type, entity_id):
+        """
+        Gets the map of elements found in the given entity_id of an object
+        of obj_type.
+
+        *INDEX* ordering, a 1-based system going from 1 to
+        number of elements in the elem_block, used by exodus for
+        storage and input/output of array data stored on the elements;
+        a user or application can optionally use a separate element *ID* numbering system,
+        so the elem_id_map points to the element *ID* for each
+        element *INDEX*
+
+        >>> elem_block_id_map = exo.get_block_id_map("EX_ELEM_BLOCK", 100)
+
+        Returns
+        -------
+
+            if array_type == 'ctype':
+              <list<int>>  elem_id_map
+
+            if array_type == 'numpy':
+              <np_array<int>>  elem_id_map
+        """
+        return self.__ex_get_block_id_map(obj_type, entity_id)
 
     # --------------------------------------------------------------------
 
@@ -5430,6 +5457,21 @@ class exodus:
         if self.use_numpy:
             idMap = self.np.array(idMap)
         return idMap
+
+    # --------------------------------------------------------------------
+
+    def __ex_get_block_id_map(self, obj_type, id):
+        obj_type = ctypes.c_int(get_entity_type(obj_type))
+        entity_id = ctypes.c_longlong(id)
+        _, numObjs,_,_ = self.__ex_get_block('EX_ELEM_BLOCK', id)
+        if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
+            id_map = (ctypes.c_longlong * numObjs.value)()
+        else:
+            id_map = (ctypes.c_int * numObjs.value)()
+        EXODUS_LIB.ex_get_block_id_map(self.fileId, obj_type, entity_id, id_map)
+        if self.use_numpy:
+            id_map = ctype_to_numpy(self, id_map)
+        return id_map
 
     # --------------------------------------------------------------------
 
