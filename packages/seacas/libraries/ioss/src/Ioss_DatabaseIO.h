@@ -59,8 +59,8 @@ namespace Ioss {
   public:
     friend class SerializeIO;
 
-    DatabaseIO()                   = delete;
-    DatabaseIO(const DatabaseIO &) = delete;
+    DatabaseIO()                              = delete;
+    DatabaseIO(const DatabaseIO &)            = delete;
     DatabaseIO &operator=(const DatabaseIO &) = delete;
 
     /** \brief Check to see if database state is OK.

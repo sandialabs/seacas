@@ -91,7 +91,7 @@ namespace Ioss {
     Field(std::string name, BasicType type, const VariableType *storage, RoleType role,
           size_t value_count = 0, size_t index = 0);
 
-    Field(const Ioss::Field &from) = default;
+    Field(const Ioss::Field &from)      = default;
     Field &operator=(const Field &from) = default;
     ~Field()                            = default;
 
@@ -106,6 +106,7 @@ namespace Ioss {
     bool is_invalid() const { return type_ == INVALID; }
 
     const std::string &get_name() const { return name_; }
+    std::string &get_name() { return name_; }
 
     /** \brief Get name of the 'component_indexth` component (1-based)
      *

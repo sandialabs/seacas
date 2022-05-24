@@ -617,7 +617,7 @@ then
             cd METIS-5.1.0.1 || exit
             sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' src/include/metis.h > tmp
             mv tmp src/include/metis.h
-            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            INSTALL_PATH=${INSTALL_PATH} CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure Metis. exiting.${txtrst}
@@ -655,7 +655,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parmetis || exit
-            CRAY=${CRAY} MPI=${MPI} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            INSTALL_PATH=${INSTALL_PATH} CRAY=${CRAY} MPI=${MPI} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure ParMETIS. exiting.${txtrst}
@@ -765,7 +765,7 @@ if [ "$KOKKOS" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
     then
-        kokkos_version="2.8.00"
+        kokkos_version="3.6.00"
         echo "${txtgrn}+++ KOKKOS${txtrst}"
         cd $ACCESS || exit
         cd TPL/kokkos || exit
@@ -900,7 +900,7 @@ then
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
-            rm -rf gtest
+            rm -rf googletest
             git clone https://github.com/google/googletest.git
         fi
 

@@ -52,7 +52,7 @@ namespace Ioss {
   class ElementPermutation
   {
   public:
-    ElementPermutation(const ElementPermutation &) = delete;
+    ElementPermutation(const ElementPermutation &)            = delete;
     ElementPermutation &operator=(const ElementPermutation &) = delete;
 
     virtual ~ElementPermutation();

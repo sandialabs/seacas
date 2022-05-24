@@ -151,35 +151,17 @@ void Ioss::Utils::set_all_streams(std::ostream &out_stream)
   m_warningStream = &out_stream;
 }
 
-void Ioss::Utils::set_output_stream(std::ostream &out_stream)
-{
-  m_outputStream  = &out_stream;
-}
+void Ioss::Utils::set_output_stream(std::ostream &out_stream) { m_outputStream = &out_stream; }
 
-void Ioss::Utils::set_debug_stream(std::ostream &out_stream)
-{
-  m_debugStream   = &out_stream;
-}
+void Ioss::Utils::set_debug_stream(std::ostream &out_stream) { m_debugStream = &out_stream; }
 
-void Ioss::Utils::set_warning_stream(std::ostream &out_stream)
-{
-  m_warningStream = &out_stream;
-}
+void Ioss::Utils::set_warning_stream(std::ostream &out_stream) { m_warningStream = &out_stream; }
 
-std::ostream& Ioss::Utils::get_output_stream()
-{
-  return *m_outputStream;
-}
+std::ostream &Ioss::Utils::get_output_stream() { return *m_outputStream; }
 
-std::ostream& Ioss::Utils::get_warning_stream()
-{
-  return *m_warningStream;
-}
+std::ostream &Ioss::Utils::get_warning_stream() { return *m_warningStream; }
 
-std::ostream& Ioss::Utils::get_debug_stream()
-{
-  return *m_debugStream;
-}
+std::ostream &Ioss::Utils::get_debug_stream() { return *m_debugStream; }
 
 void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t length)
 {
@@ -402,7 +384,7 @@ int Ioss::Utils::field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field
                                const std::string &inout)
 {
   if (field.get_name() != "ids") {
-    fmt::print(Ioss::WARNING(), "{} '{}'. Unknown {} field '{}'\n", ge->type_string(), ge->name(),
+    fmt::print(Ioss::WarnOut(), "{} '{}'. Unknown {} field '{}'\n", ge->type_string(), ge->name(),
                inout, field.get_name());
   }
   return -4;
@@ -626,6 +608,11 @@ namespace {
         if (suffix_separator != '_') {
           field.set_suffix_separator(suffix_separator);
         }
+        // Are suffices upper or lowercase...
+        std::vector<std::string> tmp;
+        field_tokenize(names[which_names[0]], suffix_separator, tmp);
+        Ioss::Suffix suffix{tmp[tmp.size() - 1]};
+        field.set_suffices_uppercase(suffix.is_uppercase());
         field.set_index(index);
         for (const auto &which_name : which_names) {
           names[which_name][0] = '\0';
@@ -634,6 +621,11 @@ namespace {
       }
       if (suffix_size == 1) {
         Ioss::Field field(name, Ioss::Field::REAL, IOSS_SCALAR(), fld_role, count);
+        // Are suffices upper or lowercase...
+        std::vector<std::string> tmp;
+        field_tokenize(names[which_names[0]], suffix_separator, tmp);
+        Ioss::Suffix suffix{tmp[tmp.size() - 1]};
+        field.set_suffices_uppercase(suffix.is_uppercase());
         field.set_index(index);
         names[index][0] = '\0';
         return field;

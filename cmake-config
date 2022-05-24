@@ -357,7 +357,7 @@ then
     KOKKOS_SYMBOLS="-DKOKKOS_SRC_PATH:PATH=${INSTALL_PATH}/TPL/kokkos/kokkos \
 		    -DTPL_Kokkos_LIBRARY_DIRS:PATH=${KOKKOS_PATH}/lib \
 		    -DTPL_Kokkos_INCLUDE_DIRS:PATH=${KOKKOS_PATH}/include \
-		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkos.${LD_EXT}"
+		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkoscore.${LD_EXT}"
 fi
 
 if [ "$HAVE_FAODEL" == "YES" ]

@@ -133,7 +133,7 @@ unsigned int Ioss::ElementTopology::get_unique_id(const std::string &type)
   std::string  ltype    = Ioss::Utils::lowercase(type);
   auto         iter     = registry().find(ltype);
   if (iter == registry().end()) {
-    fmt::print(Ioss::WARNING(), "The topology type '{}' is not supported.\n", type);
+    fmt::print(Ioss::WarnOut(), "The topology type '{}' is not supported.\n", type);
   }
   else {
     Ioss::ElementTopology *inst = (*iter).second;

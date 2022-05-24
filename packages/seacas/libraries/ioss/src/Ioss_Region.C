@@ -466,17 +466,17 @@ namespace Ioss {
     int64_t total_nodes    = get_property("node_count").get_int();
     int64_t total_elements = get_property("element_count").get_int();
     auto    max_entity = std::max({total_sides, total_es_elements, total_fs_faces, total_es_edges,
-                                total_ns_nodes, total_cells, total_nodes, total_elements});
+                                   total_ns_nodes, total_cells, total_nodes, total_elements});
 
     int64_t num_ts = get_property("state_count").get_int();
     auto    max_sb = std::max(
            {get_property("spatial_dimension").get_int(), get_property("node_block_count").get_int(),
-         get_property("edge_block_count").get_int(), get_property("face_block_count").get_int(),
-         get_property("element_block_count").get_int(),
-         get_property("structured_block_count").get_int(), get_property("node_set_count").get_int(),
-         get_property("edge_set_count").get_int(), get_property("face_set_count").get_int(),
-         get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
-         get_property("assembly_count").get_int(), get_property("blob_count").get_int(), num_ts});
+            get_property("edge_block_count").get_int(), get_property("face_block_count").get_int(),
+            get_property("element_block_count").get_int(),
+            get_property("structured_block_count").get_int(), get_property("node_set_count").get_int(),
+            get_property("edge_set_count").get_int(), get_property("face_set_count").get_int(),
+            get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
+            get_property("assembly_count").get_int(), get_property("blob_count").get_int(), num_ts});
 
     // Global variables transitioning from TRANSIENT to REDUCTION..
     size_t num_glo_vars  = field_count(Ioss::Field::TRANSIENT);
@@ -512,12 +512,12 @@ namespace Ioss {
     }
 
     auto max_vr    = std::max({num_glo_vars,     num_nod_vars,     num_ele_vars,     num_str_vars,
-                            num_ns_vars,      num_ss_vars,      num_edg_vars,     num_fac_vars,
-                            num_es_vars,      num_fs_vars,      num_els_vars,     num_blob_vars,
-                            num_asm_vars,     num_glo_red_vars, num_nod_red_vars, num_edg_red_vars,
-                            num_fac_red_vars, num_ele_red_vars, num_str_red_vars, num_ns_red_vars,
-                            num_es_red_vars,  num_fs_red_vars,  num_els_red_vars, num_asm_red_vars,
-                            num_blob_red_vars});
+                               num_ns_vars,      num_ss_vars,      num_edg_vars,     num_fac_vars,
+                               num_es_vars,      num_fs_vars,      num_els_vars,     num_blob_vars,
+                               num_asm_vars,     num_glo_red_vars, num_nod_red_vars, num_edg_red_vars,
+                               num_fac_red_vars, num_ele_red_vars, num_str_red_vars, num_ns_red_vars,
+                               num_es_red_vars,  num_fs_red_vars,  num_els_red_vars, num_asm_red_vars,
+                               num_blob_red_vars});
     int  vr_width  = Ioss::Utils::number_width(max_vr, true) + 2;
     int  num_width = Ioss::Utils::number_width(max_entity, true) + 2;
     int  sb_width  = Ioss::Utils::number_width(max_sb, true) + 2;
@@ -794,7 +794,7 @@ namespace Ioss {
       // Check that time is increasing...
       static bool warning_output = false;
       if (!warning_output) {
-        fmt::print(Ioss::WARNING(),
+        fmt::print(Ioss::WarnOut(),
                    "Current time {} is not greater than previous time {} in\n\t{}.\n"
                    "This may cause problems in applications that assume monotonically increasing "
                    "time values.\n",

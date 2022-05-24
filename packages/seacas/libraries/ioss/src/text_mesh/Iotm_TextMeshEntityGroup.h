@@ -29,228 +29,230 @@
 // clang-format on
 // #######################   End Clang Header Tool Managed Headers  ########################
 namespace Iotm {
-namespace text_mesh {
+  namespace text_mesh {
 
-using ErrorHandler = std::function<void(const std::ostringstream &)>;
+    using ErrorHandler = std::function<void(const std::ostringstream &)>;
 
-template <typename T>
-struct EntityGroupData {
-  using DataType = T;
-  static constexpr unsigned INVALID_ID = std::numeric_limits<unsigned>::max();
+    template <typename T> struct EntityGroupData
+    {
+      using DataType                       = T;
+      static constexpr unsigned INVALID_ID = std::numeric_limits<unsigned>::max();
 
-  bool hasInputName = false;
-  unsigned id = INVALID_ID;
-  std::string name = "";
-  std::string type = "";
-  std::vector<DataType> data{};
+      bool                  hasInputName = false;
+      unsigned              id           = INVALID_ID;
+      std::string           name         = "";
+      std::string           type         = "";
+      std::vector<DataType> data{};
 
-  bool has_valid_id() const { return id != 0 && id != INVALID_ID; }
-  bool has_name() const { return !name.empty(); }
-};
+      bool has_valid_id() const { return id != 0 && id != INVALID_ID; }
+      bool has_name() const { return !name.empty(); }
+    };
 
-// Base grouping class for sidesets, nodesets, assemblies, etc
-template <typename GroupData>
-class EntityGroup
-{
- private:
-  using DataType = typename GroupData::DataType;
+    // Base grouping class for sidesets, nodesets, assemblies, etc
+    template <typename GroupData> class EntityGroup
+    {
+    private:
+      using DataType = typename GroupData::DataType;
 
- public:
-  EntityGroup(const std::string &type,
-      const std::string &namePrefix,
-      const std::vector<std::string> &invalidNamePrefixes)
-      : m_idsAssigned(false), m_type(type), m_exodusPrefix(namePrefix), m_invalidPrefixes(invalidNamePrefixes)
-  {
-    set_error_handler([](const std::ostringstream &errmsg) { default_error_handler(errmsg); });
-  }
+    public:
+      EntityGroup(const std::string &type, const std::string &namePrefix,
+                  const std::vector<std::string> &invalidNamePrefixes)
+          : m_idsAssigned(false), m_type(type), m_exodusPrefix(namePrefix),
+            m_invalidPrefixes(invalidNamePrefixes)
+      {
+        set_error_handler([](const std::ostringstream &errmsg) { default_error_handler(errmsg); });
+      }
 
-  virtual ~EntityGroup() {}
+      virtual ~EntityGroup() {}
 
-  virtual void set_error_handler(ErrorHandler errorHandler) { m_errorHandler = errorHandler; }
+      virtual void set_error_handler(ErrorHandler errorHandler) { m_errorHandler = errorHandler; }
 
-  GroupData *add_group_data(const std::string &name, const std::vector<DataType> &data)
-  {
-    GroupData groupData;
-    groupData.data = data;
-    groupData.type = m_type;
+      GroupData *add_group_data(const std::string &name, const std::vector<DataType> &data)
+      {
+        GroupData groupData;
+        groupData.data = data;
+        groupData.type = m_type;
 
-    if (!name.empty()) {
-      verify_name(name);
-      groupData.name = name;
-      groupData.hasInputName = true;
-    }
+        if (!name.empty()) {
+          verify_name(name);
+          groupData.name         = name;
+          groupData.hasInputName = true;
+        }
 
-    m_groupDataVec.push_back(groupData);
+        m_groupDataVec.push_back(groupData);
 
-    return &m_groupDataVec.back();
-  }
+        return &m_groupDataVec.back();
+      }
 
-  void finalize_parse()
-  {
-    assign_id_from_default_exodus_name();
-    assign_id_and_name_for_empty_name();
-    assign_id_for_non_default_exodus_name();
+      void finalize_parse()
+      {
+        assign_id_from_default_exodus_name();
+        assign_id_and_name_for_empty_name();
+        assign_id_for_non_default_exodus_name();
 
-    if (m_groupDataVec.size() != m_groupDataMap.size()) {
-      std::ostringstream errmsg;
-      errmsg << "Error populating " << m_type << " map";
-      m_errorHandler(errmsg);
-    }
-    m_idsAssigned = true;
-  }
+        if (m_groupDataVec.size() != m_groupDataMap.size()) {
+          std::ostringstream errmsg;
+          errmsg << "Error populating " << m_type << " map";
+          m_errorHandler(errmsg);
+        }
+        m_idsAssigned = true;
+      }
 
-  size_t size() const { return m_groupDataVec.size(); }
+      size_t size() const { return m_groupDataVec.size(); }
 
-  const std::vector<GroupData> &get_group_data() const { return m_groupDataVec; }
+      const std::vector<GroupData> &get_group_data() const { return m_groupDataVec; }
 
-  const std::vector<std::string> &get_part_names() const { return m_partNames; }
+      const std::vector<std::string> &get_part_names() const { return m_partNames; }
 
-  const std::string &get_group_type() const { return m_type; }
+      const std::string &get_group_type() const { return m_type; }
 
-  const GroupData *get_group_data(unsigned id) const
-  {
-    if (is_assigned(id)) {
-      auto iter = m_parts.find(id);
-      return &m_groupDataVec[m_groupDataMap[iter->second]];
-    }
+      const GroupData *get_group_data(unsigned id) const
+      {
+        if (is_assigned(id)) {
+          auto iter = m_parts.find(id);
+          return &m_groupDataVec[m_groupDataMap[iter->second]];
+        }
 
-    return nullptr;
-  }
+        return nullptr;
+      }
 
-  const GroupData *get_group_data(std::string name) const
-  {
-    convert_to_upper_case(name);
-    if (is_registered(name)) {
-      return &m_groupDataVec[m_groupDataMap[name]];
-    }
+      const GroupData *get_group_data(std::string name) const
+      {
+        convert_to_upper_case(name);
+        if (is_registered(name)) {
+          return &m_groupDataVec[m_groupDataMap[name]];
+        }
 
-    return nullptr;
-  }
+        return nullptr;
+      }
 
-  bool is_registered(const std::string &name) const { return m_ids.count(name) > 0; }
+      bool is_registered(const std::string &name) const { return m_ids.count(name) > 0; }
 
- protected:
-  EntityGroup();
+    protected:
+      EntityGroup();
 
-  unsigned get_unassigned_id() const
-  {
-    unsigned nextPartId = 1;
-    while (is_assigned(nextPartId)) nextPartId++;
-    return nextPartId;
-  }
+      unsigned get_unassigned_id() const
+      {
+        unsigned nextPartId = 1;
+        while (is_assigned(nextPartId))
+          nextPartId++;
+        return nextPartId;
+      }
 
-  void validate_group_meta_data(const GroupData &groupData)
-  {
-    if (!groupData.has_name()) {
-      std::ostringstream errmsg;
-      errmsg << m_type << " has no name";
-      m_errorHandler(errmsg);
-    }
+      void validate_group_meta_data(const GroupData &groupData)
+      {
+        if (!groupData.has_name()) {
+          std::ostringstream errmsg;
+          errmsg << m_type << " has no name";
+          m_errorHandler(errmsg);
+        }
 
-    if (!groupData.has_valid_id()) {
-      std::ostringstream errmsg;
-      errmsg << m_type << " named " << groupData.name << " has invalid id";
-      m_errorHandler(errmsg);
-    }
+        if (!groupData.has_valid_id()) {
+          std::ostringstream errmsg;
+          errmsg << m_type << " named " << groupData.name << " has invalid id";
+          m_errorHandler(errmsg);
+        }
 
-    if (is_registered(groupData.name)) {
-      std::ostringstream errmsg;
-      errmsg << "Multiple declarations of " << m_type << ": " << groupData.name;
-      m_errorHandler(errmsg);
-    }
-  }
-
-  void assign(size_t index)
-  {
-    GroupData &groupData = m_groupDataVec[index];
-
-    convert_to_upper_case(groupData.name);
-    validate_group_meta_data(groupData);
-
-    m_partNames.push_back(groupData.name);
-    m_ids[groupData.name] = groupData.id;
-    m_parts[groupData.id] = groupData.name;
-    m_groupDataMap[groupData.name] = index;
-  }
-
-  void assign_id_from_default_exodus_name()
-  {
-    for (size_t i = 0; i < m_groupDataVec.size(); i++) {
-      GroupData &groupData = m_groupDataVec[i];
-      if (groupData.has_name()) {
-        std::pair<unsigned, bool> result = get_id_from_part_name(groupData.name, m_exodusPrefix);
-
-        if (result.second) {
-          groupData.id = result.first;
-          assign(i);
+        if (is_registered(groupData.name)) {
+          std::ostringstream errmsg;
+          errmsg << "Multiple declarations of " << m_type << ": " << groupData.name;
+          m_errorHandler(errmsg);
         }
       }
-    }
-  }
 
-  void assign_id_and_name_for_empty_name()
-  {
-    for (size_t i = 0; i < m_groupDataVec.size(); i++) {
-      GroupData &groupData = m_groupDataVec[i];
-      if (!groupData.has_name()) {
-        unsigned id = get_unassigned_id();
+      void assign(size_t index)
+      {
+        GroupData &groupData = m_groupDataVec[index];
 
-        std::ostringstream oss;
-        oss << m_exodusPrefix;
-        oss << id;
-        std::string name = oss.str();
+        convert_to_upper_case(groupData.name);
+        validate_group_meta_data(groupData);
 
-        groupData.id = id;
-        groupData.name = name;
-        assign(i);
+        m_partNames.push_back(groupData.name);
+        m_ids[groupData.name]          = groupData.id;
+        m_parts[groupData.id]          = groupData.name;
+        m_groupDataMap[groupData.name] = index;
       }
-    }
-  }
 
-  void assign_id_for_non_default_exodus_name()
-  {
-    for (size_t i = 0; i < m_groupDataVec.size(); i++) {
-      GroupData &groupData = m_groupDataVec[i];
-      if (groupData.has_name()) {
-        std::pair<unsigned, bool> result = get_id_from_part_name(groupData.name, m_exodusPrefix);
+      void assign_id_from_default_exodus_name()
+      {
+        for (size_t i = 0; i < m_groupDataVec.size(); i++) {
+          GroupData &groupData = m_groupDataVec[i];
+          if (groupData.has_name()) {
+            std::pair<unsigned, bool> result =
+                get_id_from_part_name(groupData.name, m_exodusPrefix);
 
-        if (!result.second) {
-          groupData.id = get_unassigned_id();
-          assign(i);
+            if (result.second) {
+              groupData.id = result.first;
+              assign(i);
+            }
+          }
         }
       }
-    }
-  }
 
-  bool is_assigned(unsigned id) const { return m_parts.count(id) > 0; }
+      void assign_id_and_name_for_empty_name()
+      {
+        for (size_t i = 0; i < m_groupDataVec.size(); i++) {
+          GroupData &groupData = m_groupDataVec[i];
+          if (!groupData.has_name()) {
+            unsigned id = get_unassigned_id();
 
-  void verify_name(const std::string &name)
-  {
-    for (const std::string &invalidPrefix : m_invalidPrefixes) {
-      const unsigned prefixLength = invalidPrefix.length();
-      const std::string namePrefix = name.substr(0, prefixLength);
+            std::ostringstream oss;
+            oss << m_exodusPrefix;
+            oss << id;
+            std::string name = oss.str();
 
-      if (strcasecmp(namePrefix.c_str(), invalidPrefix.c_str()) == 0) {
-        std::ostringstream errmsg;
-        errmsg << "Invalid name '" << name << "' for a " << m_type << " part";
-        m_errorHandler(errmsg);
+            groupData.id   = id;
+            groupData.name = name;
+            assign(i);
+          }
+        }
       }
-    }
-  }
 
-  std::vector<std::string> m_partNames{};
-  mutable std::unordered_map<std::string, unsigned> m_ids;
-  mutable std::unordered_map<unsigned, std::string> m_parts;
-  mutable bool m_idsAssigned{false};
-  mutable std::unordered_map<std::string, size_t> m_groupDataMap;
+      void assign_id_for_non_default_exodus_name()
+      {
+        for (size_t i = 0; i < m_groupDataVec.size(); i++) {
+          GroupData &groupData = m_groupDataVec[i];
+          if (groupData.has_name()) {
+            std::pair<unsigned, bool> result =
+                get_id_from_part_name(groupData.name, m_exodusPrefix);
 
-  std::string m_type{};
-  std::string m_exodusPrefix{};
-  std::vector<std::string> m_invalidPrefixes{};
-  std::vector<GroupData> m_groupDataVec{};
+            if (!result.second) {
+              groupData.id = get_unassigned_id();
+              assign(i);
+            }
+          }
+        }
+      }
 
-  ErrorHandler m_errorHandler;
-};
+      bool is_assigned(unsigned id) const { return m_parts.count(id) > 0; }
 
-}  // namespace text_mesh
-}  // namespace Iotm
+      void verify_name(const std::string &name)
+      {
+        for (const std::string &invalidPrefix : m_invalidPrefixes) {
+          const unsigned    prefixLength = invalidPrefix.length();
+          const std::string namePrefix   = name.substr(0, prefixLength);
+
+          if (strcasecmp(namePrefix.c_str(), invalidPrefix.c_str()) == 0) {
+            std::ostringstream errmsg;
+            errmsg << "Invalid name '" << name << "' for a " << m_type << " part";
+            m_errorHandler(errmsg);
+          }
+        }
+      }
+
+      std::vector<std::string>                          m_partNames{};
+      mutable std::unordered_map<std::string, unsigned> m_ids;
+      mutable std::unordered_map<unsigned, std::string> m_parts;
+      mutable bool                                      m_idsAssigned{false};
+      mutable std::unordered_map<std::string, size_t>   m_groupDataMap;
+
+      std::string              m_type{};
+      std::string              m_exodusPrefix{};
+      std::vector<std::string> m_invalidPrefixes{};
+      std::vector<GroupData>   m_groupDataVec{};
+
+      ErrorHandler m_errorHandler;
+    };
+
+  } // namespace text_mesh
+} // namespace Iotm

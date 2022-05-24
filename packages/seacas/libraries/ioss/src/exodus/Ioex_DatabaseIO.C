@@ -203,7 +203,7 @@ namespace Ioex {
         if (abort_if_error) {
           IOSS_ERROR(errmsg);
         }
-        Ioss::WARNING() << errmsg.str();
+        Ioss::WarnOut() << errmsg.str();
         return false;
       }
       return true; // At least on this processor...
@@ -248,7 +248,7 @@ namespace Ioex {
             *error_msg = errmsg.str();
           }
           if (write_message && myProcessor == 0) {
-            Ioss::WARNING() << errmsg.str();
+            Ioss::WarnOut() << errmsg.str();
           }
         }
         if (bad_count != nullptr) {
@@ -295,7 +295,7 @@ namespace Ioex {
     if (do_timer) {
       double t_end    = Ioss::Utils::timer();
       double duration = t_end - t_begin;
-      fmt::print(Ioss::DEBUG(), "Input File Open Time = {}\n", duration);
+      fmt::print(Ioss::DebugOut(), "Input File Open Time = {}\n", duration);
     }
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
@@ -399,12 +399,12 @@ namespace Ioex {
 #if NC_HAS_SZIP_WRITE
           exo_method = EX_COMPRESS_SZIP;
 #else
-          fmt::print(Ioss::WARNING(), "The NetCDF library does not have SZip compression enabled."
+          fmt::print(Ioss::WarnOut(), "The NetCDF library does not have SZip compression enabled."
                                       " 'zlib' will be used instead.\n\n");
 #endif
         }
         else {
-          fmt::print(Ioss::WARNING(),
+          fmt::print(Ioss::WarnOut(),
                      "Unrecognized compression method specified: '{}'."
                      " 'zlib' will be used instead.\n\n",
                      method);
@@ -560,7 +560,7 @@ namespace Ioex {
     m_groupCount[EX_BLOB]     = info.num_blob;
 
     if (nodeCount == 0 && info.num_blob == 0) {
-      fmt::print(Ioss::WARNING(), "No nodes were found in the model, file '{}'\n",
+      fmt::print(Ioss::WarnOut(), "No nodes were found in the model, file '{}'\n",
                  decoded_filename());
     }
     else if (nodeCount < 0) {
@@ -574,7 +574,7 @@ namespace Ioex {
     }
 
     if (elementCount == 0 && info.num_blob == 0) {
-      fmt::print(Ioss::WARNING(), "No elements were found in the model, file '{}'\n",
+      fmt::print(Ioss::WarnOut(), "No elements were found in the model, file '{}'\n",
                  decoded_filename());
     }
 
@@ -761,7 +761,7 @@ namespace Ioex {
             // a warning if there is a corrupt step on processor
             // 0... Need better warnings which won't overload in the
             // worst case...
-            fmt::print(Ioss::WARNING(),
+            fmt::print(Ioss::WarnOut(),
                        "Skipping step {} at time {} in database file\n\t{}.\n"
                        "\tThe data for that step is possibly corrupt since the last time written "
                        "successfully was {}.\n",
@@ -3538,6 +3538,9 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
 
   if (comp_count == 1 && field.get_type() == Ioss::Field::REAL) {
     std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, 1);
+    if (lowerCaseVariableNames) {
+      Ioss::Utils::fixup_name(var_name);
+    }
 
     // Read the variable...
     int64_t id   = Ioex::get_id(ge, type, &ids_);
@@ -3559,6 +3562,9 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
   else {
     for (size_t i = 0; i < comp_count; i++) {
       std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
+      if (lowerCaseVariableNames) {
+	Ioss::Utils::fixup_name(var_name);
+      }
 
       // Read the variable...
       int64_t id       = Ioex::get_id(ge, type, &ids_);

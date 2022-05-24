@@ -141,11 +141,10 @@ namespace {
                 }
               }
 
-              if(!found) {
+              if (!found) {
                 std::ostringstream errmsg;
-                fmt::print(errmsg,
-                    "ERROR: Could not find sub-assembly with id: {} and name: {}",
-                    assembly.id, assembly.name);
+                fmt::print(errmsg, "ERROR: Could not find sub-assembly with id: {} and name: {}",
+                           assembly.id, assembly.name);
                 IOSS_ERROR(errmsg);
               }
             }
@@ -195,7 +194,7 @@ namespace Ioex {
     // Set exodusII warning level.
     if (util().get_environment("EX_DEBUG", isParallel)) {
       fmt::print(
-          Ioss::DEBUG(),
+          Ioss::DebugOut(),
           "IOEX: Setting EX_VERBOSE|EX_DEBUG because EX_DEBUG environment variable is set.\n");
       ex_opts(EX_VERBOSE | EX_DEBUG);
     }
@@ -388,7 +387,7 @@ namespace Ioex {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(Ioss::DEBUG(), "File Close Time = {}\n", duration);
+          fmt::print(Ioss::DebugOut(), "File Close Time = {}\n", duration);
         }
       }
     }
@@ -441,7 +440,7 @@ namespace Ioex {
     // Check byte-size of integers stored on the database...
     if ((ex_int64_status(m_exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
       if (myProcessor == 0 && !sixty_four_bit_message_output) {
-        fmt::print(Ioss::DEBUG(),
+        fmt::print(Ioss::DebugOut(),
                    "IOSS: Input database contains 8-byte integers. Setting Ioss to use "
                    "8-byte integers.\n");
         sixty_four_bit_message_output = true;
@@ -1672,10 +1671,11 @@ namespace Ioex {
         // Add to VariableNameMap so can determine exodusII index given a
         // Sierra field name.  exodusII index is just 'i+1'
         for (int i = 0; i < nvar; i++) {
-          if (lowerCaseVariableNames) {
-            Ioss::Utils::fixup_name(names[i]);
-          }
-          variables.insert(VNMValuePair(std::string(names[i]), i + 1));
+	  std::string var = names[i];
+	  if (lowerCaseVariableNames) {
+	    Ioss::Utils::fixup_name(var);
+	  }
+          variables.insert(VNMValuePair(var, i + 1));
         }
 
         int  offset      = position * nvar;
@@ -1689,7 +1689,10 @@ namespace Ioex {
         Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::TRANSIENT, this, local_truth,
                                 fields);
 
-        for (const auto &field : fields) {
+        for (auto &field : fields) {
+          if (lowerCaseVariableNames) {
+            Ioss::Utils::fixup_name(field.get_name());
+          }
           entity->field_add(field);
         }
 
@@ -2083,7 +2086,7 @@ namespace Ioex {
       // try changing DIM_STR_NAME value and see if works...)
       if (name_length > static_cast<size_t>(maximumNameLength)) {
         if (myProcessor == 0) {
-          fmt::print(Ioss::WARNING(),
+          fmt::print(Ioss::WarnOut(),
                      "There are variables names whose name length ({0}) exceeds the current "
                      "maximum name length ({1})\n         set for this database ({2}).\n"
                      "         You should either reduce the length of the variable name, or "
@@ -2346,7 +2349,7 @@ namespace Ioex {
         else if (Ioss::Utils::str_equal(type, "sphere-mass")) {
           if (attribute_count != 10) {
             if (myProcessor == 0) {
-              fmt::print(Ioss::WARNING(),
+              fmt::print(Ioss::WarnOut(),
                          "For element block '{}' of type '{}' there were {} attributes instead of "
                          "the expected 10 attributes "
                          "known to the IO Subsystem. "

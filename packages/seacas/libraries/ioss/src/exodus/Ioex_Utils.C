@@ -201,7 +201,7 @@ namespace Ioex {
       status = nc_get_att_int(exodusFilePtr, NC_GLOBAL, "processor_info", proc_info);
       if (status == NC_NOERR) {
         if (proc_info[0] != processor_count && proc_info[0] > 1) {
-          fmt::print(Ioss::WARNING(),
+          fmt::print(Ioss::WarnOut(),
                      "Processor decomposition count in file ({}) does not match current "
                      "processor "
                      "count ({}).\n",
@@ -210,7 +210,7 @@ namespace Ioex {
         }
         if (proc_info[1] != processor_id) {
           fmt::print(
-              Ioss::WARNING(),
+              Ioss::WarnOut(),
               "This file was originally written on processor {}, but is now being read on "
               "processor {}.\n"
               "This may cause problems if there is any processor-dependent data on the file.\n",
@@ -468,7 +468,7 @@ namespace Ioex {
             db_has_name = false;
             if (name_id != id) {
               std::string new_name = Ioss::Utils::encode_entity_name(basename, id);
-              fmt::print(Ioss::WARNING(),
+              fmt::print(Ioss::WarnOut(),
                          "The entity named '{}' has the id {} which does not match the "
                          "embedded id {}.\n"
                          "         This can cause issues later; the entity will be renamed to '{}' "
