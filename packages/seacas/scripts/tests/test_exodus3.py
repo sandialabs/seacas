@@ -65,6 +65,15 @@ class TestAssemblies(unittest.TestCase):
         assem_count = temp_exofile.inquire("EX_INQ_ASSEMBLY")
         self.assertEqual(6, assem_count)
 
+    def test_get_block_id_map(self):
+        temp_exofile = exo.exodus(self.temp_exo_path)
+        elem_ids = temp_exofile.get_ids("EX_ELEM_BLOCK")
+        expected = [1, 2, 3, 4, 5, 6, 7]
+        outputs = []
+        for val in elem_ids:
+            outputs.extend(temp_exofile.get_block_id_map("EX_ELEM_BLOCK", val))
+        self.assertListEqual(expected, outputs)
+
     def test_get_assembly(self):
         temp_exofile = exo.exodus(self.temp_exo_path)
         assembly_ids = temp_exofile.get_ids("EX_ASSEMBLY")
