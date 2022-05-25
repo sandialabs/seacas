@@ -1944,7 +1944,7 @@ namespace Ioex {
     // comes back sorted on field names.  Lets check whether any of the fields
     // have an index set and if so, then sort the fields based on the index...
     std::vector<Ioss::Field> fields;
-    fields.resize(results_fields.size());
+    fields.reserve(results_fields.size());
     for (const auto &name : results_fields) {
       fields.push_back(ge->get_field(name));
     }
