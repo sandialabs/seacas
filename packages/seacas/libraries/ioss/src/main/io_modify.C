@@ -544,7 +544,8 @@ namespace {
       fmt::print(fmt::emphasis::bold, "\n\tEND | EXIT\n");
       fmt::print("\t\tEnd command input and output changed assembly definitions (if any).\n");
       fmt::print(fmt::emphasis::bold, "\n\tQUIT\n");
-      fmt::print("\t\tEnd command input and exit with no changes to database.\n");
+      fmt::print("\t\tEnd command input and exit with no rewriting of database. Some changes may "
+                 "have already been made.\n");
 
       fmt::print(fmt::emphasis::bold, "\n\tALLOW MODIFICATIONS\n");
       fmt::print("\t\tBy default, io_modify will only allow creation of new assemblies.\n"
@@ -1097,7 +1098,7 @@ namespace {
     Ioss::GroupingEntity *ge       = nullptr;
     std::string           new_name = tokens[tokens.size() - 1];
 
-    if (tokens.size() == 5) {
+    if (tokens.size() == 5 && Ioss::Utils::str_equal(tokens[3], "to")) {
       // Type + ID
       auto entity_type = get_entity_type(tokens[1]);
       if (entity_type == Ioss::INVALID_TYPE) {
@@ -1114,22 +1115,29 @@ namespace {
         return false;
       }
     }
-    else if (tokens.size() == 4) {
+    else if (tokens.size() == 4 && Ioss::Utils::str_equal(tokens[2], "to")) {
       ge = region.get_entity(tokens[1]);
       if (ge == nullptr) {
         fmt::print(stderr, fg(fmt::color::red), "ERROR: Entity '{}' not found.\n", tokens[1]);
         return false;
       }
     }
-
-    int            exoid     = region.get_database()->get_file_pointer();
-    auto           ioss_type = ge->type();
-    ex_entity_type exo_type  = Ioex::map_exodus_type(ioss_type);
-    auto           ierr      = ex_put_name(exoid, exo_type, id(ge), new_name.c_str());
-    if (ierr != EX_NOERR) {
-      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    else {
+      fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized rename syntax '{}'\n",
+                 fmt::join(tokens, " "));
+      handle_help("rename");
     }
-    ge->set_name(new_name);
+
+    if (ge != nullptr) {
+      int            exoid     = region.get_database()->get_file_pointer();
+      auto           ioss_type = ge->type();
+      ex_entity_type exo_type  = Ioex::map_exodus_type(ioss_type);
+      auto           ierr      = ex_put_name(exoid, exo_type, id(ge), new_name.c_str());
+      if (ierr != EX_NOERR) {
+        Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+      }
+      ge->set_name(new_name);
+    }
     return false;
   }
 
