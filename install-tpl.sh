@@ -391,13 +391,13 @@ if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]; then
-        hdf_version="1.8.21"
+        hdf_version="1.8.22"
     elif [ "${H5VERSION}" == "V110" ]; then
-        hdf_version="1.10.7"
+        hdf_version="1.10.9"
     elif [ "${H5VERSION}" == "V112" ]; then
-        hdf_version="1.12.1"
+        hdf_version="1.12.2"
     elif [ "${H5VERSION}" == "V113" ]; then
-        hdf_version="1.13.0"
+        hdf_version="1.13.1"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
     else
