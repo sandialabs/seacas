@@ -654,9 +654,9 @@ namespace {
     }
     if (all || Ioss::Utils::substr_equal(topic, "rename")) {
       fmt::print(fmt::emphasis::bold, "\n\tRENAME ");
-      fmt::print("{{ent_name}} TO {{new_name}}\n");
+      fmt::print("{{name}} TO {{new_name}}\n");
       fmt::print(fmt::emphasis::bold, "\tRENAME ");
-      fmt::print("{{ent_type}} {{id}} TO {{new_name}}\n");
+      fmt::print("{{type}} {{id}} TO {{new_name}}\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "geometry")) {
       fmt::print(fmt::emphasis::bold, "\n\tGEOMETRY ROTATE ");
@@ -674,7 +674,7 @@ namespace {
     }
     if (all || Ioss::Utils::substr_equal(topic, "time")) {
       fmt::print(fmt::emphasis::bold, "\n\tTIME SCALE  ");
-      fmt::print("{{scale}} (T_out = T_in * {{scale}})\n");
+      fmt::print("{{scale}}   (T_out = T_in * {{scale}})\n");
       fmt::print(fmt::emphasis::bold, "\tTIME OFFSET ");
       fmt::print("{{offset}}  (T_out = T_in + {{offset}})\n");
     }
