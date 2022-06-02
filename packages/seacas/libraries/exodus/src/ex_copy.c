@@ -356,7 +356,7 @@ int cpy_global_att(int in_exoid, int out_exoid)
      * word size, I/O word size etc. are global attributes stored when
      * file is created with ex_create;  we don't want to overwrite those
      */
-    if ((status = nc_inq_att(out_exoid, NC_GLOBAL, att.name, &att.type, &att.len)) != NC_NOERR) {
+    if (nc_inq_att(out_exoid, NC_GLOBAL, att.name, &att.type, &att.len) != NC_NOERR) {
 
       /* The "last_written_time" attribute is a special attribute used
          by the IOSS library to determine whether a timestep has been
