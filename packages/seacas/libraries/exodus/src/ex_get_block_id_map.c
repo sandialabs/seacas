@@ -30,8 +30,8 @@ int ex_get_block_id_map(int exoid, ex_entity_type obj_type, ex_entity_id entity_
 {
   int            status;
   char           errmsg[MAX_ERR_LENGTH];
-  const char    *dnument;
-  ex_entity_type map_type;
+  const char    *dnument  = NULL;
+  ex_entity_type map_type = EX_INVALID;
 
   EX_FUNC_ENTER();
   if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
