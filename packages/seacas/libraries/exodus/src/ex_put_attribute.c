@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -55,6 +55,8 @@ int ex_put_double_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id,
 
   /* leave define mode  */
   if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to exit define mode");
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -105,6 +107,8 @@ int ex_put_integer_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id
 
   /* leave define mode  */
   if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to exit define mode");
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -149,6 +153,8 @@ int ex_put_text_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id, c
 
   /* leave define mode  */
   if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to exit define mode");
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
