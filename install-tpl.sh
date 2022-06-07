@@ -763,7 +763,7 @@ fi
 # =================== INSTALL KOKKOS  ===============
 if [ "$KOKKOS" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkoscore.${LD_EXT} ]
     then
         kokkos_version="3.6.00"
         echo "${txtgrn}+++ KOKKOS${txtrst}"
