@@ -455,6 +455,10 @@ then
             exit 1
         fi
     fi
+    # Create default plugin directory...
+    mkdir  ${INSTALL_PATH}/lib/hdf5
+    mkdir  ${INSTALL_PATH}/lib/hdf5/lib
+    mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin 
 else
     echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
@@ -535,6 +539,7 @@ then
         rm -rf build
         mkdir build
         cd build || exit
+        export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin 
         CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
