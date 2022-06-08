@@ -562,14 +562,12 @@ namespace {
       }
       base_name += suffix_separator;
       size_t bn_len = base_name.length(); // Length of basename portion only
-      size_t length = std::strlen(name);  // Length of total name (with suffix)
 
       // Add the current name...
       which_names.push_back(index);
 
       // Gather all other names that are valid for this entity, and
-      // have the same overall length and match in the first 'bn_len'
-      // characters.
+      // match in the first 'bn_len' characters.
       //
       // Check that they have the same number of tokens,
       // It is possible that the first name(s) that match with two
@@ -580,7 +578,6 @@ namespace {
         std::vector<std::string> subtokens;
         field_tokenize(tst_name, suffix_separator, subtokens);
         if ((truth_table == nullptr || truth_table[i] == 1) && // Defined on this entity
-            std::strlen(tst_name) == length &&                 // names must be same length
             std::strncmp(name, tst_name, bn_len) == 0 &&       // base portion must match
             subtokens.size() == num_tokens) {
           which_names.push_back(i);
