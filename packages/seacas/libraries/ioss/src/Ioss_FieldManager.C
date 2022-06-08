@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -9,6 +9,7 @@
 #include <Ioss_Sort.h>
 #include <cassert>
 #include <cstddef>
+#include <fmt/ostream.h>
 #include <map>
 #include <string>
 #include <utility>
@@ -26,6 +27,14 @@ void Ioss::FieldManager::add(const Ioss::Field &new_field)
   if (!exists(key)) {
     IOSS_FUNC_ENTER(m_);
     fields.insert(FieldValuePair(key, new_field));
+  }
+  else {
+    const auto &old_field = getref(new_field.get_name());
+    if (old_field != new_field) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: Duplicate fields named '{}'.\n", new_field.get_name());
+      IOSS_ERROR(errmsg);
+    }
   }
 }
 
