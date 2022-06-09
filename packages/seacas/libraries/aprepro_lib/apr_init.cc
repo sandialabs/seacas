@@ -131,7 +131,7 @@ namespace SEAMS {
   str_init string_fncts[] = {
       {"DUMP", do_dumpsym, "DUMP()",
        "Output a list of all user-defined variables and their value."},
-      {"DUMP_JSON", do_dumpsym_json, "DUMP()",
+      {"DUMP_JSON", do_dumpsym_json, "DUMP_JSON()",
        "Output a list of all user-defined variables and their value in JSON format."},
       {"DUMP_FUNC", do_dumpfunc, "DUMP_FUNC()",
        "Output a list of all double and string functions recognized by aprepro."},
@@ -153,7 +153,7 @@ namespace SEAMS {
   str_c_init string_c_fncts[] = {
       {"DUMP", do_dumpsym1, "DUMP(str)",
        "Output a list of all defined variables and their value if name contains 'str'."},
-      {"DUMP_FUNC", do_dumpfunc1, "DUMP_FUNC()",
+      {"DUMP_FUNC", do_dumpfunc1, "DUMP_FUNC(str)",
        "Output a list of all double and string functions recognized by aprepro if name contains "
        "'str'."},
       {"DUMP_PREVAR", do_dumpvar1, "DUMP_PREVAR()",
