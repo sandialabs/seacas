@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.11 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.20.12 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -51,7 +51,7 @@ of global variables. Although these examples correspond to typical FE
 applications, the data format is flexible enough to accommodate a
 spectrum of uses.
 
-Copyright(C) 1999-2021 National Technology & Engineering Solutions
+Copyright(C) 1999-2022 National Technology & Engineering Solutions
 of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 NTESS, the U.S. Government retains certain rights in this software.
 
@@ -70,12 +70,12 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.11 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.12 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.11 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.12 (seacas-py3), a python wrapper of some of the exodus library.
 
-Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 National Technology &
+Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
 Contract DE-NA0003525 with NTESS, the U.S. Government retains certain
 rights in this software.
@@ -710,6 +710,13 @@ class exodus:
         self.coordsZ = None
         self.times = None
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
+        if not traceback:
+            return True
 
     def summarize(self):
         """
