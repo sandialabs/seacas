@@ -49,7 +49,7 @@ class TestAssemblies(unittest.TestCase):
 
     def test_exodus_context_manager_reraises_exceptions(self):
         with self.assertRaises(AssertionError):
-            with exo.exodus(self.temp_exo_path, mode='r') as temp_exofile:
+            with exo.exodus(self.temp_exo_path, mode='r'):
                 self.assertFalse(True)
 
     def test_setup_ex_assembly(self):
