@@ -1,4 +1,4 @@
-# SEACAS  [[Documentation](http://gsjaardema.github.io/seacas-docs/)] [[Wiki](https://github.com/sandialabs/seacas/wiki)]
+# SEACAS  [[Documentation](http://sandialabs.github.io/seacas-docs/)] [[Wiki](https://github.com/sandialabs/seacas/wiki)]
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/838c6d845e9e4ce4a7cd02bd06b4d2ad)](https://www.codacy.com/gh/gsjaardema/seacas/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gsjaardema/seacas&amp;utm_campaign=Badge_Grade)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 [![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
