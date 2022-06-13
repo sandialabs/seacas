@@ -1,12 +1,12 @@
-# SEACAS  [[Documentation](http://gsjaardema.github.io/seacas-docs/)] [[Wiki](https://github.com/SandiaLabs/seacas/wiki)]
+# SEACAS  [[Documentation](http://gsjaardema.github.io/seacas-docs/)] [[Wiki](https://github.com/sandialabs/seacas/wiki)]
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/838c6d845e9e4ce4a7cd02bd06b4d2ad)](https://www.codacy.com/gh/gsjaardema/seacas/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gsjaardema/seacas&amp;utm_campaign=Badge_Grade)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 [![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
 [![Appveyor Build](https://ci.appveyor.com/api/projects/status/pis4gok72yh0wwfs/branch/master?svg=true)](https://ci.appveyor.com/project/gsjaardema/seacas/branch/master)
-[![Github Actions -- CI Serial](https://github.com/SandiaLabs/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/SandiaLabs/seacas)
-[![Github Actions -- CI Variants](https://github.com/SandiaLabs/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/SandiaLabs/seacas)
-[![Github Actions -- CI Intel](https://github.com/SandiaLabs/seacas/actions/workflows/intel-build.yml/badge.svg)](https://github.com/SandiaLabs/seacas)
-[![Github Actions -- CI MSYS2](https://github.com/SandiaLabs/seacas/actions/workflows/msys2.yml/badge.svg)](https://github.com/SandiaLabs/seacas)
+[![Github Actions -- CI Serial](https://github.com/sandialabs/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/sandialabs/seacas)
+[![Github Actions -- CI Variants](https://github.com/sandialabs/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/sandialabs/seacas)
+[![Github Actions -- CI Intel](https://github.com/sandialabs/seacas/actions/workflows/intel-build.yml/badge.svg)](https://github.com/sandialabs/seacas)
+[![Github Actions -- CI MSYS2](https://github.com/sandialabs/seacas/actions/workflows/msys2.yml/badge.svg)](https://github.com/sandialabs/seacas)
 
 *  [Get the sources](#get-the-sources)
 *  [Build instructions](#build-instructions)
@@ -22,7 +22,7 @@
 
 ## Get the sources
 ```sh
-git clone https://github.com/SandiaLabs/seacas.git
+git clone https://github.com/sandialabs/seacas.git
 ```
 This will create a directory that will be referred to as _seacas_ in
 the instructions that follow. You can rename this directory to any
@@ -163,7 +163,7 @@ using `SEACAS_SOURCE_DIR_OVERRIDE`.  Here is how you do it:
 
 ```sh
 cd Trilinos/
-git clone https://github.com/SandiaLabs/seacas.git
+git clone https://github.com/sandialabs/seacas.git
 cd BUILD/
 cmake -DSEACAS_SOURCE_DIR_OVERRIDE:STRING=seacas/packages/seacas -DTrilinos_ENABLE_SEACAS [other options] ..
 ```
