@@ -825,12 +825,14 @@ class exodus:
     # copy to a new database
     #
     # --------------------------------------------------------------------
-    def copy(self, fileName, include_transient=False):
+    def copy(self, fileName, include_transient=False, mode='a'):
         """
-        copies exodus database to file_name and returns this copy as a
-        new exodus object
+        Copies exodus database to file_name and returns an opened copy as a
+        new exodus object. This object will need to be closed when it is done
+        being used.
 
         >>> exo_copy = exo.copy(file_name)
+        >>> exo_copy.close()
 
         Parameters
         ----------
@@ -839,7 +841,7 @@ class exodus:
 
         Returns
         -------
-        exo_copy : exodus object
+        exo_copy : exodus object opened in append mode by default
         """
         i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
         fileId = EXODUS_LIB.ex_create_int(fileName.encode('ascii'), EX_NOCLOBBER|i64Status,
@@ -850,7 +852,8 @@ class exodus:
         self.__copy_file(fileId, include_transient)
         EXODUS_LIB.ex_close(fileId)
 
-        return exodus(fileName, "a")
+        return exodus(fileName, mode)
+
 
     #
     # general info

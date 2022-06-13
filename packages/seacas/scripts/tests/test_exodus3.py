@@ -52,6 +52,27 @@ class TestAssemblies(unittest.TestCase):
             with exo.exodus(self.temp_exo_path, mode='r'):
                 self.assertFalse(True)
 
+    def test_copy_opened_in_append_mode(self):
+        new = exo.assembly(name='Unit_test', type=exo.ex_entity_type.EX_ASSEMBLY, id=444)
+        new.entity_list = [100, 222]
+        temp_exo_path2 = self.temp_exo_path+'2'
+        with exo.exodus(self.temp_exo_path, mode='r') as temp_exofile:
+            expected = [assem for assem in temp_exofile.get_ids('EX_ASSEMBLY')]
+            with temp_exofile.copy(temp_exo_path2, True, mode='a') as temp_exofile2:
+                temp_exofile2.put_assembly(new)
+                copied_output = [assem for assem in temp_exofile2.get_ids('EX_ASSEMBLY')]
+                self.assertNotEqual(temp_exofile.modeChar, temp_exofile2.modeChar)
+        self.assertNotEquals(expected, copied_output)
+
+    def test_copy_opened_in_read_mode(self):
+        temp_exo_path2 = self.temp_exo_path+'2'
+        with exo.exodus(self.temp_exo_path, mode='r') as temp_exofile:
+            with temp_exofile.copy(temp_exo_path2, True, mode='r') as temp_exofile2:
+                expected = [assem for assem in temp_exofile.get_ids('EX_ASSEMBLY')]
+                copied_output = [assem for assem in temp_exofile2.get_ids('EX_ASSEMBLY')]
+                self.assertEqual(temp_exofile.modeChar, temp_exofile2.modeChar)
+        self.assertEquals(expected, copied_output)
+    
     def test_setup_ex_assembly(self):
         assem = exo.assembly(name='Unit_test', type='EX_ASSEMBLY', id=444)
         assem.entity_list = [100, 222]
