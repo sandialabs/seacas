@@ -19,7 +19,7 @@ jobs:
           PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         with:
           path-to-signatures: 'signatures/version1/cla.json'
-          path-to-document: 'https://github.com/gsjaardema/seacas/blob/master/SEACAS-CLA.md'
+          path-to-document: 'https://github.com/SandiaLabs/seacas/blob/master/SEACAS-CLA.md'
           # branch should not be protected
           branch: 'master'
           allowlist: user1,bot*,*@sandia.gov
