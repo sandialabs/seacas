@@ -36,8 +36,8 @@ INSTALL_PATH=${ACCESS}
 ### https://sems.sandia.gov/
 module purge
 module load sems-env
-module load sems-gcc
-module load sems-cmake
+module load sems-gcc/9.2.0
+module load sems-cmake/3.19.1
 module load sems-doxygen
 module load sems-zlib/1.2.8/base
 
@@ -58,7 +58,7 @@ HAVE_NETCDF=ON
 HAVE_CGNS=ON
 
 # NOTE: CGNS, MATIO, PNETCDF, and are currently not supported by SEMS.
-#       To use them you will need to install them following the directions in 
+#       To use them you will need to install them following the directions in
 #       README.md, enable them below, and add the appropriate defines below:
 #
 # -D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
@@ -138,6 +138,7 @@ cmake  \
 -D SEACASProj_ENABLE_TESTS=ON \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
+-D TPL_ENABLE_fmt:BOOL=ON \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
