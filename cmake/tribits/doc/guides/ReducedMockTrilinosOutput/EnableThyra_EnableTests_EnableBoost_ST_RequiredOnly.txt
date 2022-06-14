@@ -17,7 +17,7 @@ Enabling subpackages for hard enables of parent packages due to \
  Trilinos_ENABLE_Thyra=ON
 
 Disabling forward required SE packages and optional intra-package support that have a \
- dependancy on disabled SE packages Trilinos_ENABLE_<TRIBITS_PACKAGE>=OFF ...
+ dependency on disabled SE packages Trilinos_ENABLE_<TRIBITS_PACKAGE>=OFF ...
 
 -- Setting Thyra_ENABLE_ThyraCrazyStuff=OFF because Thyra has an optional library \
  dependence on disabled package ThyraCrazyStuff

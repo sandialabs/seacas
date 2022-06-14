@@ -2,7 +2,7 @@
 # ************************************************************************
 #
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016, 2022 Sandia Corporation
+#                    Copyright 2013 Sandia Corporation
 #
 # Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 # the U.S. Government retains certain rights in this software.
@@ -37,47 +37,41 @@
 # ************************************************************************
 # @HEADER
 
-#
-# First, set up the variables for the (backward-compatible) TriBITS way of
-# finding Netcdf.  These are used in case find_package(NetCDF ...) is not
-# called or does not find NetCDF.  Also, these variables need to be non-null
-# in order to trigger the right behavior in the function
-# tribits_tpl_find_include_dirs_and_libraries().
-#
-set(REQUIRED_HEADERS Kokkos_Core.h)
-set(REQUIRED_LIBS_NAMES kokkos)
+include_guard()
 
+
+# @FUNCTION: tribits_set_lib_is_testonly()
 #
-# Second, search for Netcdf components (if allowed) using the standard
-# find_package(CGNS ...).
+# See if a library is a TESTONLY library
 #
-tribits_tpl_allow_pre_find_package(Kokkos  Kokkos_ALLOW_PREFIND)
-if (Kokkos_ALLOW_PREFIND)
+# Usage::
+#
+#   tribits_set_lib_is_testonly(<libName>)
+#
+# This sets the ``TRIBITS_TESTONLY_LIB`` on the library target ``<libName>``.
+#
+function(tribits_set_lib_is_testonly  libName)
+  set_target_properties(${libName}  PROPERTIES  TRIBITS_TESTONLY_LIB  TRUE)
+endfunction()
 
-  message("-- Using find_package(Kokkos ...) ...")
 
-  set(CMAKE_MODULE_PATH
-    "${CMAKE_MODULE_PATH}"
-    "${CMAKE_CURRENT_LIST_DIR}/find_modules"
-    "${CMAKE_CURRENT_LIST_DIR}/utils"
-     )
-  
-  find_package(Kokkos)
-
-  if (Kokkos_FOUND)
-    set(TPL_Kokkos_LIBRARY_DIRS ${_hdf5_LIBRARY_SEARCH_DIRS} CACHE PATH
-      "${DOCSTR} library files")
-    set(TPL_Kokkos_LIBRARIES ${Kokkos_LIBRARIES} CACHE PATH
-      "List of semi-colon seprated (full) paths to the Kokkos libraries")
-    set(TPL_Kokkos_INCLUDE_DIRS ${Kokkos_INCLUDE_DIRS} CACHE PATH
-      "List of semi-colon seprated list of directories containing Kokkos header files")
+# @FUNCTION: tribits_lib_is_testonly()
+#
+# See if a library is a TESTONLY library
+#
+# Usage::
+#
+#   tribits_lib_is_testonly(<libName> <libIsTestOnlyOut>)
+#
+# This will only return ``TRUE`` in `` <libIsTestOnlyOut>`` if ``<libName>``
+# is a target and the target property ``TRIBITS_TESTONLY_LIB`` is set to
+# ``TRUE``.
+#
+function(tribits_lib_is_testonly  libName  libIsTestOnlyOut)
+  if (TARGET ${libName})
+    get_target_property(libIsTestOnly ${libName} TRIBITS_TESTONLY_LIB)
+  else()
+    set(libIsTestOnly FALSE)
   endif()
-
-endif()
-
-#
-# Third, call tribits_tpl_find_include_dirs_and_libraries()
-#
-tribits_tpl_find_include_dirs_and_libraries( Kokkos
-  REQUIRED_HEADERS ${REQUIRED_HEADERS}
-  REQUIRED_LIBS_NAMES ${REQUIRED_LIBS_NAMES})
+  set(${libIsTestOnlyOut} ${libIsTestOnly} PARENT_SCOPE)
+endfunction()

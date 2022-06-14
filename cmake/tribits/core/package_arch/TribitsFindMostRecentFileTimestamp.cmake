@@ -40,7 +40,6 @@
 include(CMakeParseArguments)
 
 
-#
 # @FUNCTION: tribits_find_most_recent_file_timestamp()
 #
 # Find the most modified file in a set of base directories and return its
@@ -174,7 +173,7 @@ function(tribits_find_most_recent_file_timestamp)
       endforeach()
 
       # Get the time stamp and the file name of the most recently modified file
-      # in currnet directory.
+      # in current directory.
       execute_process(
         WORKING_DIRECTORY "${BASE_DIR}"
         COMMAND find . -type f -printf "%T@ %p\n"
@@ -294,7 +293,6 @@ function(tribits_find_most_recent_file_timestamp)
 endfunction()
 
 
-#
 # @FUNCTION: tribits_find_most_recent_source_file_timestamp()
 #
 # Find the most modified source file in a set of base directories and return
@@ -381,7 +379,6 @@ function(tribits_find_most_recent_source_file_timestamp)
 endfunction()
 
 
-#
 # @FUNCTION: tribits_find_most_recent_binary_file_timestamp()
 #
 # Find the most modified binary file in a set of base directories and return
@@ -471,7 +468,6 @@ function(tribits_find_most_recent_binary_file_timestamp)
 endfunction()
 
 
-#
 # @FUNCTION: tribits_determine_if_current_package_needs_rebuilt()
 #
 # Determine at configure time if any of the upstream dependencies for a

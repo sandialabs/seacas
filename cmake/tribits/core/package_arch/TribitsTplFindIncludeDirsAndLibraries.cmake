@@ -37,11 +37,9 @@
 # ************************************************************************
 # @HEADER
 
-if (TribitsTplFindIncludeDirsAndLibraries_INCLUDED)
-  return()
-else()
-  set(TribitsTplFindIncludeDirsAndLibraries_INCLUDED TRUE)
-endif()
+include_guard()
+
+include(TribitsExternalPackageWriteConfigFile)
 
 include(AdvancedSet)
 include(AppendSet)
@@ -54,7 +52,7 @@ include(CMakeParseArguments)
 include(SetNotFound)
 include(Split)
 
-#
+
 # @FUNCTION: tribits_tpl_allow_pre_find_package()
 #
 # Function that determines if a TriBITS find module file
@@ -80,12 +78,13 @@ include(Split)
 # the search for the library components and just specify the absolute
 # locations.  The function will also set ``<allowPackagePrefindOut>`` to
 # ``FALSE`` if ``<tplName>_INCLUDE_DIRS``, ``<tplName>_LIBRARY_NAMES``, or
-# ``<tplName>_LIBRARY_DIRS`` is set and ``<tplName>_FORCE_PRE_FIND_PACKAGE`` is
-# set to ``FALSE``.  Otherwise, if ``<tplName>_FORCE_PRE_FIND_PACKAGE`` is set
-# to ``TRUE``, the function will not return ``FALSE`` for
+# ``<tplName>_LIBRARY_DIRS`` is set and ``<tplName>_FORCE_PRE_FIND_PACKAGE``
+# is set to ``FALSE``.  Otherwise, if ``<tplName>_FORCE_PRE_FIND_PACKAGE`` is
+# set to ``TRUE``, the function will not return ``FALSE`` for
 # ``<allowPackagePrefindOut>`` no matter what the values of
 # ``<tplName>_INCLUDE_DIRS``, ``<tplName>_LIBRARY_NAMES``, or
-# ``<tplName>_LIBRARY_DIRS``.
+# ``<tplName>_LIBRARY_DIRS``.  Finally, ``<allowPackagePrefindOut>`` is set to
+# ``FALSE`` if ``<tplName>_ALLOW_PACKAGE_PREFIND=OFF`` is set in the cache.
 #
 # The variable ``<tplName>_FORCE_PRE_FIND_PACKAGE`` is needed to allow users
 # (or the ``FindTPL<tplName>.cmake`` module itself) to avoid name clashes with
@@ -95,6 +94,10 @@ include(Split)
 # sets ``<tplName>_FORCE_PRE_FIND_PACKAGE`` as a cache variable with default
 # value ``FALSE`` to maintain backward compatibility with existing
 # ``FindTPL<tplName>.cmake`` modules.
+#
+# The cache variable ``<tplName>_ALLOW_PACKAGE_PREFIND`` is to allow the user
+# to disable the prefind call to ``find_package()`` even if it would be
+# allowed otherwise.
 #
 # See `How to use find_package() for a TriBITS TPL`_ for details in how to use
 # this function to create a ``FindTPL<tplName>.cmake`` module file.
@@ -114,9 +117,15 @@ function(tribits_tpl_allow_pre_find_package  TPL_NAME  ALLOW_PACKAGE_PREFIND_OUT
     "Determines if the variables ${TPL_NAME}_[INCLUDE_DIRS,LIBRARY_NAMES,LIBRARY_DIRS] should be ignored and the pre-find find_package(${TPL_NAME} should be performed anyway.  But this will *not* do the pre-find if any of the TPL_${TPL_NAME}_[INCLUDE_DIRS,LIBRARY_NAMES,LIBRARY_DIRS] vars are set." )
 
   # Start out with TRUE and set to FALSE in logic below
+  set(${TPL_NAME}_ALLOW_PACKAGE_PREFIND TRUE CACHE BOOL
+     "Set to FALSE to skip find_package() prefind for the TriBITS TPL '${TPL_NAME}'")
+
+  # Start out with TRUE and set to FALSE in logic below
   set(ALLOW_PACKAGE_PREFIND TRUE)
 
-  if (
+  if (NOT ${TPL_NAME}_ALLOW_PACKAGE_PREFIND)
+    set(ALLOW_PACKAGE_PREFIND FALSE)
+  elseif (
     (NOT "${TPL_${TPL_NAME}_INCLUDE_DIRS}" STREQUAL "")
     OR (NOT "${TPL_${TPL_NAME}_LIBRARIES}" STREQUAL "")
     OR (NOT "${TPL_${TPL_NAME}_LIBRARY_DIRS}" STREQUAL "")
@@ -146,7 +155,6 @@ function(tribits_tpl_allow_pre_find_package  TPL_NAME  ALLOW_PACKAGE_PREFIND_OUT
 endfunction()
 
 
-#
 # @FUNCTION: tribits_tpl_find_include_dirs_and_libraries()
 #
 # Function that sets up cache variables for users to specify where to find a
@@ -293,11 +301,30 @@ function(tribits_tpl_find_include_dirs_and_libraries TPL_NAME)
     set(ERROR_MSG_MODE SEND_ERROR)
   endif()
 
+  # Allow user override for finding libraries even if REQUIRED_LIBS_NAMES is
+  # empty on input
+
+  multiline_set(DOCSTR
+    "List of semi-colon separated names of libraries needed to link to for"
+    " the TPL ${TPL_NAME}.  This list of libraries will be search for in"
+    " find_library(...) calls along with the directories specified with"
+    " ${TPL_NAME}_LIBRARY_DIRS.  NOTE: This is not the final list of libraries"
+    " used for linking.  That is specified by TPL_${TPL_NAME}_LIBRARIES!"
+    )
+  advanced_set(${TPL_NAME}_LIBRARY_NAMES ${PARSE_REQUIRED_LIBS_NAMES}
+    CACHE STRING ${DOCSTR})
+  split("${${TPL_NAME}_LIBRARY_NAMES}" "," ${TPL_NAME}_LIBRARY_NAMES)
+  print_var(${TPL_NAME}_LIBRARY_NAMES)
+
+  # Let the user override what the names of the libraries which might
+  # actually mean that no libraries are searched for.
+  set(REQUIRED_LIBS_NAMES ${${TPL_NAME}_LIBRARY_NAMES})
+
   #
   # User options
   #
 
-  if (PARSE_REQUIRED_LIBS_NAMES)
+  if (REQUIRED_LIBS_NAMES)
 
     # Library directories
 
@@ -317,22 +344,6 @@ function(tribits_tpl_find_include_dirs_and_libraries TPL_NAME)
     endif()
 
     # Libraries
-
-    multiline_set(DOCSTR
-      "List of semi-colon separated names of libraries needed to link to for"
-      " the TPL ${TPL_NAME}.  This list of libraries will be search for in"
-      " find_library(...) calls along with the directories specified with"
-      " ${TPL_NAME}_LIBRARY_DIRS.  NOTE: This is not the final list of libraries"
-      " used for linking.  That is specified by TPL_${TPL_NAME}_LIBRARIES!"
-      )
-    advanced_set(${TPL_NAME}_LIBRARY_NAMES ${PARSE_REQUIRED_LIBS_NAMES}
-      CACHE STRING ${DOCSTR})
-    split("${${TPL_NAME}_LIBRARY_NAMES}" "," ${TPL_NAME}_LIBRARY_NAMES)
-    print_var(${TPL_NAME}_LIBRARY_NAMES)
-
-    # Let the user override what the names of the libraries which might
-    # actually mean that no libraries are searched for.
-    set(REQUIRED_LIBS_NAMES ${${TPL_NAME}_LIBRARY_NAMES})
 
     if (${PROJECT_NAME}_MUST_FIND_ALL_TPL_LIBS)
       set(MUST_FIND_ALL_LIBS TRUE) 
@@ -423,7 +434,7 @@ function(tribits_tpl_find_include_dirs_and_libraries TPL_NAME)
 
       set(LIBRARIES_FOUND)
 
-      foreach(LIBNAME_SET ${${TPL_NAME}_LIBRARY_NAMES})
+      foreach(LIBNAME_SET ${REQUIRED_LIBS_NAMES})
 
         message("-- Searching for a lib in the set \"${LIBNAME_SET}\":")
 
@@ -680,10 +691,23 @@ function(tribits_tpl_find_include_dirs_and_libraries TPL_NAME)
     global_set(TPL_${TPL_NAME}_NOT_FOUND FALSE)
   endif()
 
+  set(buildDirExternalPkgsDir
+    "${${PROJECT_NAME}_BINARY_DIR}/${${PROJECT_NAME}_BUILD_DIR_EXTERNAL_PKGS_DIR}")
+  set(tplConfigFileBaseDir "${buildDirExternalPkgsDir}/${TPL_NAME}")
+  set(tplConfigFile "${tplConfigFileBaseDir}/${TPL_NAME}Config.cmake")
+  tribits_external_package_write_config_file(${TPL_NAME} "${tplConfigFile}")
+  if (NOT ${PROJECT_NAME}_ENABLE_INSTALLATION_TESTING)
+    include("${tplConfigFile}")
+    set(${TPL_NAME}_DIR "${tplConfigFileBaseDir}" CACHE INTERNAL
+       "TriBITS-generated ${TPL_NAME}Config.cmake file used from this dir")
+  endif()
+  # NOTE: The file <tplName>ConfigVersion.cmake will get created elsewhere as
+  # will the install targets for the files <tplName>Config and
+  # <tplName>ConfigVersion.cmake.
+
 endfunction()
 
 
-#
 # @FUNCTION: tribits_tpl_tentatively_enable()
 #
 # Function that sets up for an optionally enabled TPL that is attempted to be
@@ -728,10 +752,8 @@ function(tribits_tpl_tentatively_enable  TPL_NAME)
 endfunction()
 
 
+# Set find error and print error message
 #
-# Utility macro
-#
-
 macro(tribits_tpl_find_include_dirs_and_libraries_handle_fail) 
   set(_${TPL_NAME}_ENABLE_SUCCESS FALSE)
   global_set(TPL_${TPL_NAME}_NOT_FOUND TRUE)
