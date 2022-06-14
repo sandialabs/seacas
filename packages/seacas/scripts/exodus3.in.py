@@ -641,7 +641,9 @@ class exodus:
 
         >>> exo = exodus(file_name, mode=mode, title=title,
         ...             array_type=array_type, init_params=ex_pars)
-
+        >>> with exodus(file_name, mode=mode, title=title,\
+        ...             array_type=array_type, init_params=ex_pars) as exo:
+        ...     pass
         """
         global SHOW_BANNER
         if SHOW_BANNER:
@@ -6147,10 +6149,9 @@ def collectElemConnectivity(exodusHandle, connectivity):
 
     Usage:
     ------
-    >>> exodusHandle = exodus("file.g", "r")
-    >>> connectivity = []
-    >>> collectElemConnectivity(exodusHandle, connectivity)
-    >>> exodusHandle.close()
+    >>> with exodus("file.g", "r") as exodusHandle:
+    >>>     connectivity = []
+    >>>     collectElemConnectivity(exodusHandle, connectivity)
     """
 
     if not isinstance(connectivity, list):
@@ -6182,11 +6183,10 @@ def collectLocalNodeToLocalElems(
 
     Usage:
     ------
-    >>> exodusHandle = exodus("file.g", "r")
     >>> connectivity = [] ## If this is not empty it will assume it is already filled.
     >>> localNodeToLocalElems = []
-    >>> collectLocalNodeToLocalElems(exodusHandle, connectivity, localNodeToLocalElems)
-    >>> exodusHandle.close()
+    >>> with exodus("file.g", "r") as exodusHandle:
+    >>>     collectLocalNodeToLocalElems(exodusHandle, connectivity, localNodeToLocalElems)
     """
 
     if not isinstance(connectivity, list):
@@ -6226,13 +6226,12 @@ def collectLocalElemToLocalElems(
 
     Usage:
     ------
-    >>> exodusHandle = exodus("file.g", "r")
     >>> connectivity = [] ## If this is not empty it will assume it is already filled.
     >>> localNodeToLocalElems = [] ## If this is not empty it will assume it is already filled.
     >>> localElemToLocalElems = []
-    >>> collectLocalElemToLocalElems(exodusHandle, connectivity, localNodeToLocalElems,
+    >>> with exodus("file.g", "r") as exodusHandle:
+    >>>     collectLocalElemToLocalElems(exodusHandle, connectivity, localNodeToLocalElems,
     ...                              localElemToLocalElems)
-    >>> exodusHandle.close()
     """
 
     if not isinstance(connectivity, list):
