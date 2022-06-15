@@ -110,7 +110,7 @@ SNTools.project
 *.settings
 *ioss.doxygen.warn
 *ioss.tags
-SEACASProjRepoVersion.txt
+SeacasRepoVersion.txt
 TPL/adios2/ADIOS2/
 TPL/cgns/CGNS/
 TPL/data-warehouse-release

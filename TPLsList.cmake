@@ -52,7 +52,7 @@
 # such dependencies exist).
 #
 
-SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
+SET( Seacas_TPLS_FINDMODS_CLASSIFICATIONS
   GTest           "cmake/TPLs/"    PT
   Zlib            "cmake/TPLs/"    SS
   Pthread         "cmake/TPLs/"    PT

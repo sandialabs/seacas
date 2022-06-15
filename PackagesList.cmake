@@ -1,5 +1,5 @@
 #
-# Define the SEACASProj packages
+# Define the Seacas packages
 #
 TRIBITS_REPOSITORY_DEFINE_PACKAGES(
   Zoltan                packages/zoltan                   PT

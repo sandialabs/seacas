@@ -10,7 +10,7 @@ INCLUDE_DIRECTORIES(
 
 FILE(GLOB SOURCES src/ex_*.c)
 
-if (${SEACAS_HIDE_DEPRECATED_CODE} OR ${SEACASProj_HIDE_DEPRECATED_CODE})
+if (${SEACAS_HIDE_DEPRECATED_CODE} OR ${Seacas_HIDE_DEPRECATED_CODE})
 else()
   FILE(GLOB DEP_SOURCES src/deprecated/ex_*.c)
 endif()
@@ -71,9 +71,9 @@ if (SEACASExodus_ENABLE_STATIC)
    InstallSymLink(libexodus.a ${CMAKE_INSTALL_PREFIX}/lib/libexoIIv2c.a)
 endif()
 
-if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
+if (${CMAKE_PROJECT_NAME} STREQUAL "Seacas")
    # add a target to generate API documentation with Doxygen
-   if(SEACASProj_ENABLE_DOXYGEN)
+   if(Seacas_ENABLE_DOXYGEN)
      find_package(Doxygen)
      if(DOXYGEN_FOUND)
        add_custom_command(TARGET exodus POST_BUILD
