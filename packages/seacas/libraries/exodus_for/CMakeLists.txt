@@ -27,10 +27,10 @@ TRIBITS_ADD_LIBRARY(
 
 # Many users of the SEACAS installations still want a static exodus library...
 if (SEACASExodus_ENABLE_STATIC)
-   ADD_LIBRARY(
+   TRIBITS_ADD_LIBRARY(
            exodus_for_static
            STATIC
-           ${SOURCES}
+           SOURCES ${SOURCES}
    )
    set_target_properties(exodus_for_static PROPERTIES OUTPUT_NAME exodus_for)
    INSTALL(TARGETS exodus_for_static DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
