@@ -91,7 +91,7 @@ entire TriBITS system, the design philosophy that provides the foundation for
 TriBITS and be an expert in CMake, CTest, and CDash.  Much of what needs to be
 known by a TriBITS System Developer and a TriBITS System Architect is
 contained in the document `TriBITS Maintainers Guide and Reference`_.  The
-rest of the the primary documentation for these roles will be in the TriBITS
+rest of the primary documentation for these roles will be in the TriBITS
 CMake source code and various unit tests itself defined in `The TriBITS Test
 Package`_.  At the time of this writing, there is currently there is only one
 TriBITS System Architect (who also happens to be the primary author of this
@@ -315,21 +315,20 @@ CMake language behavior with respect to case sensitivity is also strange:
 * Calls of built-in and user-defined macros and functions is *case
   insensitive*!  That is ``set(...)``, ``set(...)``, ``set()``, and all other
   combinations of upper and lower case characters for 'S', 'E', 'T' all call
-  the built-in ``set()`` function.  The convention in TriBITS is to use all
-  caps for functions and macros (which was adopted by following the
-  conventions used in the early versions of TriBITS, see the `History of
-  TriBITS`_).  The convention in CMake literature from Kitware seems to use
-  lower-case letters for functions and macros.
+  the built-in ``set()`` function.  The convention in TriBITS is to use
+  ``lower_case_with_underscores()`` for functions and macros.
 
 * However, the names of CMake (local or cache/global) variables are *case
   sensitive*!  That is, ``SOME_VAR`` and ``some_var`` are *different*
   variables.  Built-in CMake variables tend use all caps with underscores
   (e.g. ``CMAKE_CURRENT_SOURCE_DIR``) but other built-in CMake variables tend
   to use mixed case with underscores (e.g. ``CMAKE_Fortran_FLAGS``).  TriBITS
-  tends to use a similar naming convention where variables have mostly
-  upper-case letters except for parts that are proper nouns like the project,
-  package or TPL name (e.g. ``TribitsProj_TRIBITS_DIR``,
-  ``TriBITS_SOURCE_DIR``, ``Boost_INCLUDE_DIRS``).
+  tends to use a similar naming convention where project-level and cache
+  variables have mostly upper-case letters except for parts that are proper
+  nouns like the project, package or TPL name
+  (e.g. ``TribitsExProj_TRIBITS_DIR``, ``TriBITS_SOURCE_DIR``,
+  ``Boost_INCLUDE_DIRS``).  Local variables and function/macro parameters can
+  use camelCase or lower_case_with_underscores.
 
 I don't know of any other programming language that uses different case
 sensitivity rules for variables and functions.  However, because we must parse
@@ -341,7 +340,7 @@ keyword-based arguments.
 Other mistakes that people make result from not understanding how CMake scopes
 variables and other entities.  CMake defines a global scope (i.e. "cache"
 variables) and several nested local scopes that are created by
-``add_subdirectory()`` and entering FUNCTIONS.  See `dual_scope_set()`_ for a
+``add_subdirectory()`` and entering functions.  See `dual_scope_set()`_ for a
 short discussion of these scoping rules.  And it is not just variables that
 can have local and global scoping rules.  Other entities, like defines set
 with the built-in command ``add_definitions()`` only apply to the local scope
@@ -700,7 +699,7 @@ The minimum CMake version must also be declared in the top-level
 version avoids strange errors that can occur when someone tries to build the
 project using a version of CMake that is too old.  The project should set the
 minimum CMake version based on the CMake features used in that project's own
-CMake files.  The minimum CMake version required by TriBITS is defined in in
+CMake files.  The minimum CMake version required by TriBITS is defined in
 the variable ``TRIBITS_CMAKE_MINIMUM_REQUIRED`` (the current minimum version
 of CMake required by TriBITS is given at in `Getting set up to use CMake`_) .
 For example, the ``VERA/CMakeLists.txt`` file lists as its first line::
@@ -1578,7 +1577,24 @@ Other TriBITS macros/functions that can be called in this file include
 configured header file.  This file will contain placeholders for variables
 that will be substitute at configure time with `tribits_configure_file()`_.
 This includes usage of ``#cmakedefine <varName>`` and other standard CMake
-file configuration features.
+file configuration features used by CMake's ``configure_file()`` command.
+
+An example of this file is shown in:
+
+  `TribitsExampleProject`_/``packages/simple_cxx/cmake/SimpleCxx_config.h.in``
+
+which is:
+
+.. include:: ../../examples/TribitsExampleProject/packages/simple_cxx/cmake/SimpleCxx_config.h.in
+   :literal:
+
+The variable ``HAVE_SIMPLECXX___INT64`` is set up in the base file
+``SimpleCxx/CMakeLists.txt`` (see `<packageDir>/CMakeLists.txt`_ below).  For
+an explanation of ``HAVE_SIMPLECXX_DEBUG``, see `tribits_add_debug_option()`_.
+For an explanation of ``HAVE_SIMPLECXX_SIMPLETPL``, see `How to add a new
+TriBITS TPL dependency`_.  For an explanation of
+``@SIMPLECXX_DEPRECATED_DECLARATIONS@``, see `Setting up support for
+deprecated code handling`_.
 
 **NOTE:** The file name ``<packageName>_config.h.in`` is not at all fixed and
 the package can call this file anything it wants.  Also, a package can
@@ -1765,7 +1781,13 @@ defined before a (SE) Package's ``CMakeLists.txt`` file is processed:
 
   ``${PROJECT_NAME}_ENABLE_${PACKAGE_NAME}``
 
-    Set to ``ON`` if the package is enabled and is to be processed.
+    Set to ``ON`` if the package is enabled and is to be processed or will be
+    set to ``ON`` or ``OFF`` automatically during enable/disable logic.  For a
+    parent package that is not directly enabled but were one of its
+    subpackages is enabled, this will get set to ``ON`` (but that is not the
+    same as the parent package being directly enabled and therefore does not
+    imply that all of the required subpackages will be enabled, only that the
+    parent package will be processed).
 
   .. _${PACKAGE_NAME}_ENABLE_${OPTIONAL_DEP_PACKAGE_NAME}:
 
@@ -1787,6 +1809,10 @@ defined before a (SE) Package's ``CMakeLists.txt`` file is processed:
     turned off by the user even through the packages ``${PACKAGE_NAME}`` and
     ``${OPTIONAL_DEP_PACKAGE_NAME}`` are both enabled at the project level!
     See `Support for optional SE package/TPL can be explicitly disabled`_.
+
+    **NOTE:** This variable will also be set for required dependencies as well
+    to allow for uniform processing such as when looping over the items in
+    `${PACKAGE_NAME}_LIB_ALL_DEPENDENCIES`_.
 
   .. _${PACKAGE_NAME}_ENABLE_${OPTIONAL_DEP_TPL_NAME}:
 
@@ -2150,20 +2176,20 @@ applied math and computational science community and are not likely to clash.
 Using a TriBITS TPL is to be preferred over using raw CMake
 ``find_package(<someCMakePackage>)`` because the TriBITS system guarantees
 that only a single unique version of TPL of the same version will be used by
-multiple packages.  Also, by defining a TriBITS TPL, automatic enable/disable
-logic will be applied as described in `Package Dependencies and Enable/Disable
-Logic`_.  For example, if a TPL is explicitly disabled, all of the downstream
-packages that depend on that TPL will be automatically disabled as well (see
-`TPL disable triggers auto-disables of downstream dependencies`_).
+multiple packages that uses the TPL.  Also, by defining a TriBITS TPL,
+automatic enable/disable logic will be applied as described in `Package
+Dependencies and Enable/Disable Logic`_.  For example, if a TPL is explicitly
+disabled, all of the downstream packages that depend on that TPL will be
+automatically disabled as well (see `TPL disable triggers auto-disables of
+downstream dependencies`_).
 
 For each TPL referenced in a `<repoDir>/TPLsList.cmake`_ file using the macro
 `tribits_repository_define_tpls()`_, there must exist a file, typically called
-``FindTPL${TPL_NAME}.cmake``, that once processed, produces the variables
-``TPL_${TPL_NAME}_LIBRARIES`` and ``TPL_${TPL_NAME}_INCLUDE_DIRS``.  Most
-``FindTPL${TPL_NAME}.cmake`` files just use the function
-`tribits_tpl_find_include_dirs_and_libraries()`_ the define the TriBITS TPL.
-A simple example of such a file is the common TriBITS ``FindTPLPETSC.cmake``
-module which is currently:
+``FindTPL${TPL_NAME}.cmake``, that once processed, produces the target
+```${TPL_NAME}::all_libs``.  Most ``FindTPL${TPL_NAME}.cmake`` files just use
+the function `tribits_tpl_find_include_dirs_and_libraries()`_ to define the
+TriBITS TPL.  A simple example of such a file is the common TriBITS
+``FindTPLPETSC.cmake`` module which is currently:
 
 .. include:: ../../common_tpls/FindTPLPETSC.cmake
    :literal:
@@ -2171,11 +2197,12 @@ module which is currently:
 Some concrete ``FindTPL${TPL_NAME}.cmake`` files actually do use
 ``find_package()`` and a standard CMake package find module to fill in the
 guts of finding at TPL which is perfectly fine.  In this case, the purpose for
-the wrapping ``FindTPL${TPL_NAME}.cmake`` file is to standardize the output
-variables ``TPL_${TPL_NAME}_INCLUDE_DIRS`` and ``TPL_${TPL_NAME}_LIBRARIES``.
-For more details on properly using ``find_package()`` to define a
-``FindTPL${TPL_NAME}.cmake`` file, see `How to use find_package() for a
-TriBITS TPL`_.
+the wrapping ``FindTPL${TPL_NAME}.cmake`` file is to ensure the definition of
+the complete target ``${TPL_NAME}::all_libs`` which contains all usage
+requirements for the external package/TPL (i.e. all of the libraries, include
+directories, etc.).  For more details on properly using ``find_package()`` to
+define a ``FindTPL${TPL_NAME}.cmake`` file, see `How to use find_package() for
+a TriBITS TPL`_.
 
 Once the `<repoDir>/TPLsList.cmake`_ files are all processed, then each
 defined TPL ``TPL_NAME`` is assigned the following global non-cache variables:
@@ -2225,11 +2252,10 @@ override and specialize how a TPL's include directories and libraries are
 determined.  However, note that the TriBITS system does not require the usage
 of the function ``tribits_tpl_find_include_dirs_and_libraries()`` and does not
 even care about the TPL module name ``FindTPL${TPL_NAME}.cmake``.  All that is
-required is that some CMake file fragment exist that once included, will
-define the variables ``${TPL_NAME}_LIBRARIES`` and
-``${TPL_NAME}_INCLUDE_DIRS``.  However, to be user friendly, such a CMake file
-should respond to the same variables as accepted by the standard
-``tribits_tpl_find_include_dirs_and_libraries()`` function.
+required is that some CMake file fragment exist such that, once included, will
+define the target ``${TPL_NAME}::all_libs``.  However, to be user friendly,
+such a CMake file should respond to the same variables as accepted by the
+standard ``tribits_tpl_find_include_dirs_and_libraries()`` function.
 
 The core variables related to an enabled TPL are ``${TPL_NAME}_LIBRARIES``,
 ``${TPL_NAME}_INCLUDE_DIRS``, and ``${TPL_NAME}_TESTGROUP`` as defined in
@@ -3471,8 +3497,16 @@ In more detail, these rules/behaviors are:
     `downstream`_ package declares a dependency on the SE package
     ``ThyraEpetra``, but not the parent package ``Thyra``, then the ``Thyra``
     package (and its other subpackages and their dependencies) will not get
-    auto-enabled.  This is a key aspect of the TriBITS SE package management
-    system.
+    auto-enabled.  Also note that enabling a subset of the required
+    subpackages for a parent package does not require the enable of the other
+    required subpackages.  For example, if both ``ThyraEpetra`` and
+    ``ThyraCore`` were both required subpackages of the parent package
+    ``Thyra``, then enabling ``ThyraCore`` does not require the enabling of
+    ``ThyraEpetra``.  In these cases where one of a parent package's
+    subpackages is enabled for some reason, the final value of
+    ``${PROJECT_NAME}_ENABLE_${PACKAGE_NAME}`` will be set to ``ON`` (but this
+    does imply that all of the required subpackages will be enabled, only that
+    the parent package will be processed.)
 
 .. _Support for optional SE package/TPL is enabled by default:
 
@@ -4218,7 +4252,7 @@ subsections.
 
 The first type of test-related classification is for extra repositories
 defined in the file `<projectDir>/cmake/ExtraRepositoriesList.cmake`_ (pulled
-in trough the `${PROJECT_NAME}_EXTRAREPOS_FILE`_ cache variable) using the
+in through the `${PROJECT_NAME}_EXTRAREPOS_FILE`_ cache variable) using the
 ``REPO_CLASSIFICATION`` field in the macro call
 `tribits_project_define_extra_repositories()`_.  These classifications map to
 the standard CTest dashboard types ``Continuous``, ``Nightly``, and
@@ -5116,7 +5150,7 @@ Once cloned, the directories would be laid out as::
 .. _clone_extra_repos.py:
 
 The tool **clone_extra_repos.py** is used to clone the extra repositories for
-a multi-repositories TriBITS proejct.  It reads the repository URLs and
+a multi-repositories TriBITS project.  It reads the repository URLs and
 destination directories from the file
 `<projectDir>/cmake/ExtraRepositoriesList.cmake`_ and does the clones.  For
 example, to clone all the repos for the ``MetaProject`` project, one would use
@@ -5472,14 +5506,22 @@ To add a new TriBITS TPL, do the following:
 How to use find_package() for a TriBITS TPL
 -------------------------------------------
 
-When defining a ``FindTPL<tplName>.cmake`` file, it is possible (and
-encouraged) to utilize ``find_package(<tplName> ...)`` to provide the default
-find operation.  In order for the resulting ``FindTPL<tplName>.cmake`` to
-behave consistently between all the various TriBITS TPLs (and allow the
-standard TriBITS TPL find overrides) one must use the TriBITS function
+When defining a ``FindTPL<tplName>.cmake`` file, it is possible and encouraged
+to utilize ``find_package(<tplName> ...)`` to provide the default find
+operation.  However, most ``Find<tplName>.cmake`` modules and even some
+``<tplName>Config.cmake`` config files don't provide all of the required
+features needed by downstream TriBITS packages.  Specifically, these modules
+and config files usually don't provide a complete ``<tplName>::all_libs``
+target that contains all usage requirements (such as the
+``INTERFACE_INCLUDE_DIRECTORIES`` and ``INTERFACE_LINK_LIBRARIES`` target
+properties) for the external package/TPL libraries.  Also, in order for the
+resulting ``FindTPL<tplName>.cmake`` module to behave consistently between all
+the various TriBITS TPLs (and allow the standard TriBITS TPL find overrides)
+and maintain backwards compatibility, one must use the TriBITS function
 `tribits_tpl_allow_pre_find_package()`_ in combination with the function
-`tribits_tpl_find_include_dirs_and_libraries()`_.  The basic form of the
-resulting TriBITS TPL module file ``FindTPL<tplName>.cmake`` looks like::
+`tribits_tpl_find_include_dirs_and_libraries()`_.  One basic form of the
+resulting TriBITS TPL module file ``FindTPL<tplName>.cmake`` that uses a list
+of include directories and library files locations looks like::
 
   # First, set up the variables for the (backward-compatible) TriBITS way of
   # finding <tplName>.  These are used in case find_package(<tplName> ...) is
@@ -5529,8 +5571,9 @@ If one wants to skip and ignore the standard TriBITS TPL override variables
   set(<tplName>_FORCE_PRE_FIND_PACKAGE TRUE CACHE BOOL
     "Always first call find_package(<tplName> ...) unless explicit override")
 
-at the top of the ``FindTPL<tplName>.cmake`` and it will ignore these
-variables.  This avoids name classes with the variables
+at the top of the file ``FindTPL<tplName>.cmake`` and
+``tribits_tpl_allow_pre_find_package()`` will ignore these variables and
+return ``TRUE``.  This avoids name classes with the variables
 ``<tplName>_INCLUDE_DIRS`` and ``<tplName>_LIBRARY_DIRS`` which are often used
 in the concrete CMake ``Find<tplName>.cmake`` module files themselves.
 
@@ -5549,6 +5592,66 @@ specialized ``FindTPL<tplName>.cmake`` file and can't use the
 `tribits_tpl_allow_pre_find_package()`_ function like shown above.  Such
 find modules cannot completely adhere to the standard behavior described in
 `Enabling support for an optional Third-Party Library (TPL)`_.
+
+One issue to be made aware of is that code in ``FindTPL<tplName>.cmake`` must
+generate the file::
+
+  <buildDir>/external_packages/<tplName>/<tplName>Config.cmake
+
+where ``<tplName>Config.cmake`` defines the ``<tplName>::all_libs`` target.
+The function `tribits_tpl_find_include_dirs_and_libraries()`_ creates these
+files automatically when working with the lists ``TPL_<tplName>_INCLUDE_DIRS``
+and ``TPL_<tplName>_LIBRARIES`` as shown in the examples above.  But in cases
+where the inner ``find_package(<tplName> ...)`` call actually generates a set
+of modern CMake IMPORTED targets, the code in ``Find<tplName>.cmake`` will
+need to skip calling ``tribits_tpl_find_include_dirs_and_libraries()`` and
+will instead need to build the target ``<tplName>::all_libs`` itself and will
+need to build the and write the wrapper file ``<tplName>Config.cmake``
+manually into ``<buildDir>/external_packages/<tplName>/`` that does the right
+thing when they are included by downstream ``<Package>Config.cmake`` files.
+
+An example of a custom ``FindTPL<tplName>.cmake`` file that calls
+``find_package(<tplName> ...)`` which produces modern CMake targets that
+manually creates the ``<tplName>::all_libs`` target is given in
+``TribitsExampleProject2/cmake/tpls/FindTPLTpl1.cmake`` which is:
+
+.. include:: ../../examples/TribitsExampleProject2/cmake/tpls/FindTPLTpl1.cmake
+   :literal:
+
+Another issue that comes up with external packages/TPLs like HDF5 that needs
+to be discussed here is the fact that TriBITS generates and installs files of
+the name ``HDF5Config.cmake`` that can be found by calls to
+``find_package(HDF5)``.  These TriBITS-generated ``HDF5Config.cmake`` files
+are primarily meant to be included by and provide targets for downstream
+TriBITS package ``<Package>Config.cmake`` files.  These TriBITS-generated
+``HDF5Config.cmake`` files may not behave the same way that a more general
+``FindHDF5.config`` modules or ``HDF5Config.camke`` configure files would
+behave as expected when found by ``find_package(HDF5)`` commands called in
+some arbitrary downstream raw CMake project.
+
+Therefore, to avoid having an installed TriBITS-generated ``HDF5Config.cmake``
+file, for example, being found by the inner call to ``find_package(HDF5 ...)``
+in the file ``FindTPLHDF5.cmake`` (which would be disastrous), TriBITS employs
+two safeguards.  First, TriBITS-generated ``<tplName>Config.cmake`` files are
+placed into the build directory ``<buildDir>/external_packages/`` and
+installed into the directory ``<installDir>/lib/external_packages/`` so they
+will not be found by default when ``<buildDir>/cmake_packages`` and/or
+``<installDir>``, respectively, are added to ``CMake_PREFIX_PATH``.  Also,
+even if ``<installDir>/lib/external_packages`` or
+``<buildDir>/external_packages`` do get added to the search path somehow
+(e.g. through ``CMAKE_INSTALL_PREFIX``), the TriBITS framework will set the
+variable ``TRIBITS_FINDING_RAW_<tplName>_PACKAGE_FIRST=TRUE`` before including
+``FindTPL<tplName>.cmake`` and there is special logic in the TriBITS-generated
+``<tplName>ConfigVersion.cmake`` file that will set
+``PACKAGE_VERSION_COMPATIBLE=OFF`` and result in ``find_package(<tplName>)``
+not selecting ``<tplName>Config.cmake``.  (It turns out that CMake's
+``find_package(<Package>)`` command always includes the file
+``<Package>ConfigVersion.cmake``, even if no version information is passed to
+the command ``find_package(<Package>)``.  This allows special logic to be
+placed in the file ``<Package>ConfigVersion.cmake`` to determine if
+``find_package(<Package>)`` will select a given ``<Package>Config.cmake`` file
+that is in the search path based on a number of different criteria such as in
+this case.)
 
 
 How to add a new TriBITS Repository
@@ -6976,7 +7079,7 @@ shown by::
   $ cat ../git_bisect_log.log | grep "\(good:\|bad:\)" | sed "s/[a-z0-9]\{30\}\]/]/g"
   # bad: [605b91b012] Merge branch 'master' of software.sandia.gov:/git/Trilinos
   # good: [d44c17d5d2] Merge branch 'master' of software.sandia.gov:/space/git/Trilinos
-  # good: [7e13a95774] Ifpack2: If the user does not provide the bandwith of the banded [...]
+  # good: [7e13a95774] Ifpack2: If the user does not provide the bandwidth of the banded [...]
   # bad: [7335d8bc92] MueLu: fix documentation
   # bad: [9997ecf0ba] Belos::LSQRSolMgr: Fixed bug in setParameters.
   # bad: [b6e0453224] MueLu: add a nightly test for the combination of semicoarsening [...]
@@ -8069,3 +8172,33 @@ and then the installed versions of GCC, MPICH, CMake, and `gitdist`_ are
 placed in one's path.
 
 See `install_devtools.py --help`_ for more details.
+
+
+.. Words specific to this documentation collection:
+
+.. LocalWords:  projectDir packageDir
+
+.. TriBITS words:
+
+.. LocalWords:  TRIBITS TriBITS tribits TPL TPLs
+.. LocalWords:  Subpackages subpackages Subpackage subpackage
+.. LocalWords:  PackagesList TPLsList
+.. LocalWords:  NativeRepositoriesList ExtraRepositoriesList
+.. LocalWords:  TribitsCTestDriverCore
+.. LocalWords:  TribitsExampleProject TribitsExProj DTribitsExProj SimpleCXX MixedLang
+.. LocalWords:  MockTrilinos
+.. LocalWords:  WithSubpackages WithSubpackagesA WithSubpackagesB WithSubpackagesC 
+
+.. General CMake words:
+
+.. LocalWords:  CMAKE CMake cmake CTEST CTest ctest CDash
+.. LocalWords:  CMakeLists CMakeCache CTestConfig
+.. LocalWords:  Kitware
+.. LocalWords:  endif foreach endforeach endmacro subdirectory
+.. LocalWords:  Fortran
+
+
+.. Other general words:
+
+.. LocalWords:  Trilinos executables Versioning versioning
+.. LocalWords:  Namespaced namespaced symlinks initializations

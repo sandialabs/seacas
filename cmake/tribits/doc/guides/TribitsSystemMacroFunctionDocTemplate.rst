@@ -25,7 +25,7 @@ understand the internals of TriBITS.
 @MACRO:    tribits_read_all_package_deps_files_create_deps_graph() +
 @MACRO:    tribits_read_package_subpackage_deps_files_add_to_graph() +
 @MACRO:    tribits_read_back_dependencies_vars() +
-@MACRO:    tribits_read_defined_external_and_intenral_toplevel_packages_lists() +
+@MACRO:    tribits_read_defined_external_and_internal_toplevel_packages_lists() +
 @MACRO:    tribits_read_all_project_deps_files_create_deps_graph() +
 @MACRO:    tribits_read_toplevel_package_deps_files_add_to_graph() +
 @MACRO:    tribits_read_subpackage_deps_file_add_to_graph() +
@@ -33,7 +33,8 @@ understand the internals of TriBITS.
 @MACRO:    tribits_prep_to_read_dependencies() +
 @MACRO:    tribits_process_package_dependencies_lists() +
 @MACRO:    tribits_read_deps_files_create_deps_graph() +
-@MACRO:    tribits_save_off_dependencies_vars() +
+@MACRO:    tribits_save_off_dependency_vars() +
 @FUNCTION: tribits_set_dep_packages() +
+@FUNCTION: tribits_write_package_client_export_files_install_targets() +
 @MACRO:    tribits_write_xml_dependency_files() +
 @FUNCTION: tribits_write_xml_dependency_files_if_supported() +

@@ -3,7 +3,7 @@
 ###########################################################################
 
 This directory contains the source and output files for the RST-formatted
-docuemnts TribitsUsersGuide.[rst,html] and TribitsUsersGuide.[rst,html].
+documents TribitsUsersGuide.[rst,html] and TribitsUsersGuide.[rst,html].
 Running the script:
 
   ./generate-guide.sh all

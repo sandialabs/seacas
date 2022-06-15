@@ -1,5 +1,5 @@
 Disabling forward required SE packages and optional intra-package support that have a \
- dependancy on disabled SE packages Trilinos_ENABLE_<TRIBITS_PACKAGE>=OFF ...
+ dependency on disabled SE packages Trilinos_ENABLE_<TRIBITS_PACKAGE>=OFF ...
 
 -- Setting Trilinos_ENABLE_Triutils=OFF because Triutils has a required library dependence \
  on disabled package Epetra
