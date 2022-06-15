@@ -72,7 +72,7 @@ class TestAssemblies(unittest.TestCase):
                 copied_output = [assem for assem in temp_exofile2.get_ids('EX_ASSEMBLY')]
                 self.assertEqual(temp_exofile.modeChar, temp_exofile2.modeChar)
         self.assertEquals(expected, copied_output)
-    
+
     def test_setup_ex_assembly(self):
         assem = exo.assembly(name='Unit_test', type='EX_ASSEMBLY', id=444)
         assem.entity_list = [100, 222]
