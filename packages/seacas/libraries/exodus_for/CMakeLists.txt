@@ -26,7 +26,7 @@ TRIBITS_ADD_LIBRARY(
   )
 
 # Many users of the SEACAS installations still want a static exodus library...
-if (SEACASExodus_ENABLE_STATIC AND NOT SEACASExodus_ENABLE_THREADSAFE)
+if (SEACASExodus_ENABLE_STATIC)
    ADD_LIBRARY(
            exodus_for_static
            STATIC
