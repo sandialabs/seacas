@@ -134,7 +134,7 @@ parallel capability enabled (if applicable).  You can then continue
 with the steps outlined in the previous section.
 
 ## Testing
-There are a few unit tests for zoltan, exodus, ioss, and aprepro that can be run via `make test` or `ctest` if you configured with `-D SEACASProj_ENABLE_TESTS=YES`.
+There are a few unit tests for zoltan, exodus, ioss, and aprepro that can be run via `make test` or `ctest` if you configured with `-D Seacas_ENABLE_TESTS=YES`.
 
 There is also a system-level test that just verifies that the applications can read and write exodus files correctly.  This test runs off of the installed applications.  To run do:
 
