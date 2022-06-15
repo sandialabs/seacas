@@ -32,6 +32,8 @@ if (SEACASExodus_ENABLE_STATIC)
            STATIC
            ${SOURCES}
    )
+   target_link_libraries(exodus_for_static PUBLIC Netcdf::all_libs)
+   target_link_libraries(exodus_for_static PRIVATE SEACASExodus::all_libs)
    set_target_properties(exodus_for_static PROPERTIES OUTPUT_NAME exodus_for)
    # This keeps the library out of the `all_libs` targets...
    set_target_properties(exodus_for_static PROPERTIES TRIBITS_TESTONLY_LIB TRUE)

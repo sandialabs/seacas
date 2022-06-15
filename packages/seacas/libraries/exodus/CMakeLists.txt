@@ -58,6 +58,8 @@ if (SEACASExodus_ENABLE_STATIC)
            STATIC
            ${SOURCES} ${DEP_SOURCES}
    )
+   target_include_directories(exodus_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+   target_link_libraries(exodus_static PUBLIC Netcdf::all_libs)
    set_property(TARGET exodus_static PROPERTY C_STANDARD 99)
    # This keeps the library out of the `all_libs` targets...
    set_target_properties(exodus_static PROPERTIES TRIBITS_TESTONLY_LIB TRUE)
