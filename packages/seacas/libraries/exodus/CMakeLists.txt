@@ -52,10 +52,10 @@ endif()
 
 # Many users of the SEACAS installations still want a static exodus library...
 if (SEACASExodus_ENABLE_STATIC)
-   ADD_LIBRARY(
+   TRIBITS_ADD_LIBRARY(
            exodus_static
            STATIC
-           ${SOURCES} ${DEP_SOURCES}
+           SOURCES ${SOURCES} ${DEP_SOURCES}
    )
    set_property(TARGET exodus_static PROPERTY C_STANDARD 99)
    set_target_properties(exodus_static PROPERTIES OUTPUT_NAME exodus)
