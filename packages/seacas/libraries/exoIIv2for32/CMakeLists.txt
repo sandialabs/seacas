@@ -19,12 +19,14 @@ TRIBITS_ADD_LIBRARY(
 
 # Many users of the SEACAS installations still want a static exodus library...
 if (SEACASExodus_ENABLE_STATIC)
-    TRIBITS_ADD_LIBRARY(
+    ADD_LIBRARY(
       exoIIv2for32_static
       STATIC
-      SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/exo_jack_32.c
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/exo_jack_32.c
     )
     set_target_properties(exoIIv2for32_static PROPERTIES OUTPUT_NAME exoIIv2for32)
+    # This keeps the library out of the `all_libs` targets...
+    set_target_properties(exoIIv2for32_static PROPERTIES TRIBITS_TESTONLY_LIB TRUE)
     INSTALL(TARGETS exoIIv2for32_static DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 endif()
 
