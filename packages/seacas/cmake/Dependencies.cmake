@@ -46,5 +46,3 @@ TRIBITS_PACKAGE_DEFINE_DEPENDENCIES(
   Txtexo      applications/txtexo     PT  OPTIONAL
   Ex2ex1v2    applications/ex2ex1v2   PT  OPTIONAL
 )
-
-SET(LIB_OPTIONAL_DEP_TPLS MPI)
