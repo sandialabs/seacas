@@ -557,9 +557,9 @@ namespace {
         Ioss::IntVector which_names; // Contains index of names that potentially match as components
                                      // of a higher-order type.
         std::string base_name = tokens[0];
-        for (size_t i = 1; i < num_tokens - suffix_size; i++) {
+        for (size_t it = 1; it < num_tokens - suffix_size; it++) {
           base_name += suffix_separator;
-          base_name += tokens[i];
+          base_name += tokens[it];
         }
         base_name += suffix_separator;
         size_t bn_len = base_name.length(); // Length of basename portion only
