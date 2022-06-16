@@ -1,5 +1,18 @@
 #! /usr/bin/env bash
 
+# Text color variables
+if [[ $TERM != *"xterm"* ]]; then
+    export TERM=dumb
+fi
+txtred=$(tput setaf 1)    # Red
+txtgrn=$(tput setaf 2)    # Green
+txtylw=$(tput setaf 3)    # Yellow
+#txtblu=$(tput setaf 4)    # Blue
+#txtpur=$(tput setaf 5)    # Purple
+txtcyn=$(tput setaf 6)    # Cyan
+#txtwht=$(tput setaf 7)    # White
+txtrst=$(tput sgr0)       # Text reset
+
 if [ "${TRAVIS}" == "true" ]
 then
   BUILDDIR=${1:-build}
@@ -285,7 +298,7 @@ THREADSAFE=${THREADSAFE:-NO}
 THREADSAFE=$(check_valid THREADSAFE)
 
 if [ "$THREADSAFE" == "YES" ] ; then
-  THREAD_SAFE_OPT="-DSEACASProj_EXTRA_LINK_FLAGS=-lpthread"
+  THREAD_SAFE_OPT="-DTPL_Pthread_LIBRARIES=-lpthread"
 fi
 
 
