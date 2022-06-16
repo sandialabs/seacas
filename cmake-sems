@@ -59,9 +59,6 @@ PYTHON_VER=${PYTHON_VER:-"3.0"}
 ### Set to YES to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-NO}
 THREADSAFE=$(check_valid THREADSAFE)
-if [ "$THREADSAFE" == "YES" ] ; then
-  THREAD_SAFE_OPT="-DTPL_Pthread_LIBRARIES=-lpthread"
-fi
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
