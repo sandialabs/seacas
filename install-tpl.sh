@@ -414,7 +414,7 @@ then
         rm -f hdf5-${hdf_version}.tar.bz2
         if [ "${H5VERSION}" == "V18" ]
         then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar.bz2
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
         elif [ "${H5VERSION}" == "V110" ]; then
             wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
         elif [ "${H5VERSION}" == "V112" ]; then
