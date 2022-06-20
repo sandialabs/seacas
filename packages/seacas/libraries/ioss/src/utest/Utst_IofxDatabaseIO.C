@@ -74,7 +74,7 @@ namespace {
     DOCTEST_CHECK(db_io->ok());
 
     const std::vector<Ioss::ElementBlock *> &element_blocks = region.get_element_blocks();
-    DOCTEST_CHECK(2u == element_blocks.size());
+    DOCTEST_CHECK_EQ(2u, element_blocks.size());
 
     std::vector<std::string>      gold_strings{"block_2", "block_1"};
     std::vector<std::string>      gold_top_names{Ioss::Hex8::name, Ioss::Shell4::name};
@@ -99,7 +99,7 @@ namespace {
     for (size_t i = 0; i < element_blocks.size(); ++i) {
       std::vector<std::string> empty = element_blocks[i]->get_block_adjacencies();
       DOCTEST_CHECK(!empty.empty());
-      DOCTEST_CHECK(gold_strings[i] == empty[0]);
+      DOCTEST_CHECK_EQ(gold_strings[i], empty[0]);
 
       const Ioss::ElementTopology *topology = element_blocks[i]->topology();
       test_topology(topology, gold_top_names[i], parametric_dim[i], num_vertices[i],
@@ -108,26 +108,26 @@ namespace {
       std::vector<int64_t> connectivity;
       element_blocks[i]->get_field_data("connectivity_raw", connectivity);
 
-      DOCTEST_CHECK(gold_conn_size[i] == connectivity.size());
+      DOCTEST_CHECK_EQ(gold_conn_size[i], connectivity.size());
       for (size_t j = 0; j < gold_conn_size[i]; ++j) {
-        DOCTEST_CHECK(gold_connectivity[i][j] == connectivity[j]);
+        DOCTEST_CHECK_EQ(gold_connectivity[i][j], connectivity[j]);
       }
 
       std::vector<int64_t> ids;
       element_blocks[i]->get_field_data("ids", ids);
 
-      DOCTEST_CHECK(gold_num_elements_per_block[i] == ids.size());
+      DOCTEST_CHECK_EQ(gold_num_elements_per_block[i], ids.size());
       for (size_t j = 0; j < ids.size(); ++j) {
-        DOCTEST_CHECK(gold_ids[i][j] == ids[j]);
+        DOCTEST_CHECK_EQ(gold_ids[i][j], ids[j]);
       }
 
       std::vector<double> attributeValues;
-      DOCTEST_CHECK(attributes_exist[i] == element_blocks[i]->field_exists("attribute"));
+      DOCTEST_CHECK_EQ(attributes_exist[i], element_blocks[i]->field_exists("attribute"));
       if (attributes_exist[i]) {
         int num_attr = element_blocks[i]->get_property("attribute_count").get_int();
-        DOCTEST_CHECK(1 == num_attr);
+        DOCTEST_CHECK_EQ(1, num_attr);
         element_blocks[i]->get_field_data("attribute", attributeValues);
-        DOCTEST_CHECK(num_attributes[i] == attributeValues.size());
+        DOCTEST_CHECK_EQ(num_attributes[i], attributeValues.size());
       }
     }
 
@@ -146,21 +146,21 @@ namespace {
 
     size_t num_coordinates = num_nodes * spatial_dim;
 
-    DOCTEST_CHECK(coordinates.size() == num_coordinates);
+    DOCTEST_CHECK_EQ(coordinates.size(), num_coordinates);
     for (int i = 0; i < num_nodes; ++i) {
       for (int j = 0; j < spatial_dim; ++j) {
         int index_coordinate      = spatial_dim * i + j;
         int index_gold_coordinate = num_nodes * j + i;
         // gold_coordinates = { all_x, all_y, all_z };
         // coordinates = { x1, y1, z1, x2, y2, z2, ..., };
-        DOCTEST_CHECK(gold_coordinates[index_gold_coordinate] == coordinates[index_coordinate]);
+        DOCTEST_CHECK_EQ(gold_coordinates[index_gold_coordinate], coordinates[index_coordinate]);
       }
     }
 
     // sidesets
 
     const std::vector<Ioss::SideSet *> &sidesets = region.get_sidesets();
-    DOCTEST_CHECK(2u == sidesets.size());
+    DOCTEST_CHECK_EQ(2u, sidesets.size());
 
     // std::vector<bool> gold_df_exist{true, true};
 
@@ -193,23 +193,23 @@ namespace {
 
         DOCTEST_CHECK(block->field_exists("connectivity_raw"));
         block->get_field_data("connectivity_raw", connectivity_per_block);
-        DOCTEST_CHECK(4u == connectivity_per_block.size());
+        DOCTEST_CHECK_EQ(4u, connectivity_per_block.size());
         connectivity.insert(connectivity.end(), connectivity_per_block.begin(),
                             connectivity_per_block.end());
       }
 
-      DOCTEST_CHECK(element_ids.size() == side_ids.size());
+      DOCTEST_CHECK_EQ(element_ids.size(), side_ids.size());
       for (size_t j = 0; j < element_ids.size(); ++j) {
         DOCTEST_INFO(fmt::format("Sideset Element and Side Ids check for sideset {}, element {}",
                                  i + 1, j + 1));
-        DOCTEST_CHECK(gold_element_ids[i][j] == element_ids[j]);
-        DOCTEST_CHECK(gold_side_ids[i][j] == side_ids[j]);
+        DOCTEST_CHECK_EQ(gold_element_ids[i][j], element_ids[j]);
+        DOCTEST_CHECK_EQ(gold_side_ids[i][j], side_ids[j]);
       }
 
-      DOCTEST_CHECK(gold_sideset_conn[i].size() == connectivity.size());
+      DOCTEST_CHECK_EQ(gold_sideset_conn[i].size(), connectivity.size());
       for (size_t j = 0; j < connectivity.size(); ++j) {
         DOCTEST_INFO(fmt::format("Sideset Connectivity for sideset {}, node {}", i + 1, j + 1));
-        DOCTEST_CHECK(gold_sideset_conn[i][j] == connectivity[j]);
+        DOCTEST_CHECK_EQ(gold_sideset_conn[i][j], connectivity[j]);
       }
     }
   }
@@ -220,33 +220,33 @@ namespace {
                      const int num_edges, const int num_faces, const int num_boundaries)
   {
     const std::string &name = topology->name();
-    DOCTEST_CHECK(gold_top == name);
+    DOCTEST_CHECK_EQ(gold_top, name);
 
     DOCTEST_CHECK(topology->is_element());
-    DOCTEST_CHECK(3 == topology->spatial_dimension());
-    DOCTEST_CHECK(parameteric_dim == topology->parametric_dimension());
-    DOCTEST_CHECK(1 == topology->order());
+    DOCTEST_CHECK_EQ(3, topology->spatial_dimension());
+    DOCTEST_CHECK_EQ(parameteric_dim, topology->parametric_dimension());
+    DOCTEST_CHECK_EQ(1, topology->order());
 
     DOCTEST_CHECK(topology->edges_similar());
     DOCTEST_CHECK(topology->faces_similar());
 
-    DOCTEST_CHECK(num_vertices == topology->number_corner_nodes());
-    DOCTEST_CHECK(num_nodes == topology->number_nodes());
-    DOCTEST_CHECK(num_edges == topology->number_edges());
-    DOCTEST_CHECK(num_faces == topology->number_faces());
-    DOCTEST_CHECK(num_boundaries == topology->number_boundaries());
+    DOCTEST_CHECK_EQ(num_vertices, topology->number_corner_nodes());
+    DOCTEST_CHECK_EQ(num_nodes, topology->number_nodes());
+    DOCTEST_CHECK_EQ(num_edges, topology->number_edges());
+    DOCTEST_CHECK_EQ(num_faces, topology->number_faces());
+    DOCTEST_CHECK_EQ(num_boundaries, topology->number_boundaries());
 
     for (int i = 0; i < num_edges; ++i) {
-      DOCTEST_CHECK(2 == topology->number_nodes_edge(i));
+      DOCTEST_CHECK_EQ(2, topology->number_nodes_edge(i));
     }
 
     for (int i = 0; i < num_faces; ++i) {
-      DOCTEST_CHECK(4 == topology->number_nodes_face(i));
-      DOCTEST_CHECK(4 == topology->number_edges_face(i));
+      DOCTEST_CHECK_EQ(4, topology->number_nodes_face(i));
+      DOCTEST_CHECK_EQ(4, topology->number_edges_face(i));
     }
 
     std::vector<int> element_connectivity = topology->element_connectivity();
-    DOCTEST_CHECK((size_t)num_nodes == element_connectivity.size());
+    DOCTEST_CHECK_EQ((size_t)num_nodes, element_connectivity.size());
   }
 
   // BeginDocTest2

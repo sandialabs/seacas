@@ -1085,12 +1085,23 @@ namespace Ioex {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
 
+    // If the model contains assemblies, we want to retain the empty blocks since the blocks
+    // might be in an assembly.  This is typically the case when an application is running
+    // in parallel, but is telling IOSS that it is "serial" (MPI_COMM_SELF) and taking care
+    // of synchronization at the app level instead of down here...
+    bool retain_empty_blocks = m_groupCount[EX_ASSEMBLY] > 0;
+
+    // The application can override this setting using the `RETAIN_EMPTY_BLOCKS` property.
+    // This can either set to TRUE or FALSE...  Note that `retain_empty_blocks` will not be
+    // changed unless the property exists.
+    Ioss::Utils::check_set_bool_property(properties, "RETAIN_EMPTY_BLOCKS", retain_empty_blocks);
+
     int nvar = std::numeric_limits<int>::max(); // Number of 'block' vars on database. Used to
                                                 // skip querying if none.
     int nmap = std::numeric_limits<int>::max(); // Number of 'block' maps on database. Used to
                                                 // skip querying if none.
     for (int iblk = 0; iblk < m_groupCount[entity_type]; iblk++) {
-      if (decomp->el_blocks[iblk].global_count() == 0) {
+      if (decomp->el_blocks[iblk].global_count() == 0 && !retain_empty_blocks) {
         continue;
       }
 
@@ -1114,6 +1125,24 @@ namespace Ioex {
       std::string type      = Ioss::Utils::fixup_type(decomp->el_blocks[iblk].topologyType,
                                                       decomp->el_blocks[iblk].nodesPerEntity,
                                                       spatialDimension - rank_offset);
+
+      if (decomp->el_blocks[iblk].global_count() == 0 && type.empty()) {
+        std::vector<std::string> tokens = Ioss::tokenize(block_name, "_");
+        if (tokens.size() >= 2) {
+          // Check whether last token names an X topology type...
+          const Ioss::ElementTopology *topology =
+              Ioss::ElementTopology::factory(tokens.back(), true);
+          if (topology != nullptr) {
+            type = topology->name();
+          }
+        }
+      }
+
+      if (type == "null" || type.empty()) {
+        // If we have no idea what the topology type for an empty
+        // X block is, call it "unknown"
+        type = "unknown";
+      }
 
       Ioss::EntityBlock *io_block = nullptr;
       if (entity_type == EX_ELEM_BLOCK) {

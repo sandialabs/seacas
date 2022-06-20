@@ -30,11 +30,11 @@ template <typename INT>
 void verify_global_to_local(const Ioss::Map &my_map, const std::vector<INT> &init)
 {
   size_t count = my_map.map().size() - 1;
-  DOCTEST_REQUIRE(count == init.size());
+  DOCTEST_REQUIRE_EQ(count, init.size());
 
   for (size_t i = 0; i < count; i++) {
     INT global = init[i];
-    DOCTEST_REQUIRE((size_t)my_map.global_to_local(global) == i + 1);
+    DOCTEST_REQUIRE_EQ((size_t)my_map.global_to_local(global), i + 1);
   }
 }
 
@@ -54,14 +54,14 @@ template <typename INT> void test_reorder(Ioss::Map &my_map, std::vector<INT> &i
   // Check that we get the *original* ordering back from global_to_local.
   size_t count = init.size();
   for (size_t i = 0; i < count; i++) {
-    DOCTEST_REQUIRE(my_map.global_to_local(init[i]) == int(init[i] - offset));
+    DOCTEST_REQUIRE_EQ(my_map.global_to_local(init[i]), int(init[i] - offset));
   }
 
   // Check that we get the the `reordered` vector has been put into `db` order.
   std::vector<double> reordered(count);
   my_map.map_field_to_db_scalar_order(init.data(), reordered, 0, count, 1, 0);
   for (size_t i = 0; i < count; i++) {
-    DOCTEST_REQUIRE(reordered[i] == offset + i + 1);
+    DOCTEST_REQUIRE_EQ(reordered[i], offset + i + 1);
   }
 }
 
@@ -136,7 +136,7 @@ DOCTEST_TEST_CASE("test segmented map creation")
   my_map.set_size(count);
 
   size_t seg_size = count / segments;
-  DOCTEST_CHECK(count % segments == 0);
+  DOCTEST_CHECK_EQ(count % segments, 0);
 
   std::vector<int> init(count);
 
@@ -171,7 +171,7 @@ DOCTEST_TEST_CASE("test reverse segmented map creation")
   my_map.set_size(count);
 
   size_t seg_size = count / segments;
-  DOCTEST_CHECK(count % segments == 0);
+  DOCTEST_CHECK_EQ(count % segments, 0);
 
   std::vector<int> init(count);
 
@@ -205,7 +205,7 @@ DOCTEST_TEST_CASE("test segment gap")
   size_t segments = 4;
   size_t count    = 128;
   size_t seg_size = count / segments;
-  DOCTEST_CHECK(count % segments == 0);
+  DOCTEST_CHECK_EQ(count % segments, 0);
 
   Ioss::Map my_map;
   my_map.set_size(count);
@@ -305,7 +305,7 @@ DOCTEST_TEST_CASE("test map_data sequential")
         std::vector<int> local(count);
         std::iota(local.begin(), local.end(), 1);
         my_map.map_data(local.data(), int_field, count);
-        DOCTEST_REQUIRE(init == local);
+        DOCTEST_REQUIRE_EQ(init, local);
 
         DOCTEST_SUBCASE("reverse_map")
         {
@@ -313,7 +313,7 @@ DOCTEST_TEST_CASE("test map_data sequential")
           my_map.reverse_map_data(local.data(), int_field, count);
           std::vector<int> seq(count);
           std::iota(seq.begin(), seq.end(), 1);
-          DOCTEST_REQUIRE(local == seq);
+          DOCTEST_REQUIRE_EQ(local, seq);
         }
       }
 
@@ -323,7 +323,7 @@ DOCTEST_TEST_CASE("test map_data sequential")
         // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
         std::vector<int> local(count);
         my_map.map_implicit_data(local.data(), int_field, count, 0);
-        DOCTEST_REQUIRE(init == local);
+        DOCTEST_REQUIRE_EQ(init, local);
       }
     }
   }
@@ -360,7 +360,7 @@ DOCTEST_TEST_CASE("test map_data random")
     std::vector<int> local(count);
     std::iota(local.begin(), local.end(), 1);
     my_map.map_data(local.data(), int_field, count);
-    DOCTEST_REQUIRE(init == local);
+    DOCTEST_REQUIRE_EQ(init, local);
 
     DOCTEST_SUBCASE("reverse_map")
     {
@@ -368,7 +368,7 @@ DOCTEST_TEST_CASE("test map_data random")
       my_map.reverse_map_data(local.data(), int_field, count);
       std::vector<int> seq(count);
       std::iota(seq.begin(), seq.end(), 1);
-      DOCTEST_REQUIRE(local == seq);
+      DOCTEST_REQUIRE_EQ(local, seq);
     }
   }
 
@@ -378,6 +378,6 @@ DOCTEST_TEST_CASE("test map_data random")
     // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
     std::vector<int> local(count);
     my_map.map_implicit_data(local.data(), int_field, count, 0);
-    DOCTEST_REQUIRE(init == local);
+    DOCTEST_REQUIRE_EQ(init, local);
   }
 }
