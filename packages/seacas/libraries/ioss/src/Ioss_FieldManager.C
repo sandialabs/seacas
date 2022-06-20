@@ -32,7 +32,8 @@ void Ioss::FieldManager::add(const Ioss::Field &new_field)
     const auto &old_field = getref(new_field.get_name());
     if (!old_field.equal(new_field)) {
       std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Duplicate incompatible fields named '{}'.\n", new_field.get_name());
+      fmt::print(errmsg, "ERROR: Duplicate incompatible fields named '{}'.\n",
+                 new_field.get_name());
       IOSS_ERROR(errmsg);
     }
   }

@@ -123,7 +123,7 @@ namespace Ioss {
   private:
     bool equal_(const Ioss::ElementPermutation &rhs, bool quiet) const;
 
-    std::string                       m_type{};
+    std::string                           m_type{};
     Permutation                           m_numPermutations{0};
     Permutation                           m_numPositivePermutations{0};
     Permutation                           m_numPermutationNodes{0};

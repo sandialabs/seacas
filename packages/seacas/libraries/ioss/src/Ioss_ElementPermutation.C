@@ -141,7 +141,8 @@ namespace Ioss {
   Permutation ElementPermutation::num_permutation_nodes() const { return m_numPermutationNodes; }
 
   void ElementPermutation::set_permutation(
-      Permutation numPermutationNodes_, Permutation numPermutations_, Permutation numPositivePermutations_,
+      Permutation numPermutationNodes_, Permutation numPermutations_,
+      Permutation                                  numPositivePermutations_,
       const std::vector<std::vector<Permutation>> &permutationNodeOrdinals_)
   {
     assert(permutationNodeOrdinals_.size() == numPermutations_);
