@@ -87,12 +87,12 @@ void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones,
     double max_work = avg_work * load_balance_tolerance * max_toler;
     for (const auto zone : zones) {
       if (zone->is_active()) {
-        CHECK(zone->work() <= max_work);
+        DOCTEST_CHECK_LE(zone->work(), max_work);
       }
     }
 
     for (size_t i = 0; i < zones.size(); i++) {
-      CHECK(zones[i]->m_zone == int(i) + 1);
+      DOCTEST_CHECK_EQ(zones[i]->m_zone, int(i) + 1);
     }
 
     DOCTEST_SUBCASE("assign_to_procs")
@@ -115,15 +115,15 @@ void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones,
       // Each active zone must be on a processor
       for (const auto zone : zones) {
         if (zone->is_active()) {
-          CHECK(zone->m_proc >= 0);
+          DOCTEST_CHECK_GE(zone->m_proc, 0);
         }
       }
 
       // Work must be min_work <= work <= max_work
       double min_work = avg_work / load_balance_tolerance * min_toler;
       for (auto work : work_vector) {
-        CHECK(work >= min_work);
-        CHECK(work <= max_work * max_toler);
+        DOCTEST_CHECK_GE(work, min_work);
+        DOCTEST_CHECK_LE(work, max_work * max_toler);
       }
 
       // A processor cannot have more than one zone with the same adam zone
@@ -131,7 +131,7 @@ void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones,
       for (const auto zone : zones) {
         if (zone->is_active()) {
           auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
-          CHECK(success.second);
+          DOCTEST_CHECK(success.second);
         }
       }
 
@@ -143,8 +143,8 @@ void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones,
         if (zone->is_active()) {
           for (const auto &zgc : zone->m_zoneConnectivity) {
             if (zgc.is_active()) {
-              CHECK(zgc.m_ownerZone != zgc.m_donorZone);
-              CHECK(zgc.m_ownerGUID != zgc.m_donorGUID);
+              DOCTEST_CHECK_NE(zgc.m_ownerZone, zgc.m_donorZone);
+              DOCTEST_CHECK_NE(zgc.m_ownerGUID, zgc.m_donorGUID);
             }
           }
         }
@@ -166,7 +166,7 @@ void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones,
             }
           }
           for (const auto &kk : zgc_map) {
-            CHECK(kk.second < 26 * 26 + 26 + 1);
+            DOCTEST_CHECK_LT(kk.second, 26 * 26 + 26 + 1);
           }
         }
       } //
@@ -186,7 +186,7 @@ void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones,
       }
       // Iterate `is_symm` and make sure there is an even number for all entries.
       for (const auto &item : is_symm) {
-        CHECK(item.second % 2 == 0);
+        DOCTEST_CHECK_EQ(item.second % 2, 0);
       }
     }
   }
