@@ -13,8 +13,8 @@ jobs:
       matrix:
         compiler: [ gnu ]
         hdf5: [ V110 ]
-        netcdf: [ 4.8.0 ]
-        cgns: [ 4.2.0 ]
+        netcdf: [ 4.9.0 ]
+        cgns: [ 4.3.0 ]
     steps:
 
       - uses: actions/checkout@v2
@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v5-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -54,8 +54,8 @@ jobs:
       matrix:
         compiler: [ gnu ]
         hdf5: [ V110 ]
-        netcdf: [ 4.8.0 ]
-        cgns: [ 4.2.0 ]
+        netcdf: [ 4.9.0 ]
+        cgns: [ 4.3.0 ]
     steps:
 
       - uses: actions/checkout@v2
@@ -69,7 +69,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v5-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
