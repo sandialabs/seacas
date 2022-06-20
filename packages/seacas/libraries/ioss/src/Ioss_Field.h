@@ -106,7 +106,7 @@ namespace Ioss {
     bool is_invalid() const { return type_ == INVALID; }
 
     const std::string &get_name() const { return name_; }
-    std::string &get_name() { return name_; }
+    std::string       &get_name() { return name_; }
 
     /** \brief Get name of the 'component_indexth` component (1-based)
      *
@@ -170,11 +170,12 @@ namespace Ioss {
   private:
     std::string name_;
 
-    size_t         rawCount_{};   // Count of items in field before transformation
-    size_t         transCount_{}; // Count of items in field after transformed
-    size_t         size_{};       // maximum data size (in bytes) required to hold entire field
-    mutable size_t index_{}; // Optional flag that can be used by a client to indicate an ordering.
-                             // Unused by field itself.
+    size_t rawCount_{};   // Count of items in field before transformation
+    size_t transCount_{}; // Count of items in field after transformed
+    size_t size_{};       // maximum data size (in bytes) required to hold entire field
+    mutable size_t
+        index_{}; // Optional flag that can be used by a client to indicate an ordering.
+                  // Unused by field itself.  Used by some DatabaeIO objects to set ordering.
     BasicType type_{INVALID};
     RoleType  role_{INTERNAL};
 

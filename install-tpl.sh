@@ -391,13 +391,13 @@ if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]; then
-        hdf_version="1.8.21"
+        hdf_version="1.8.22"
     elif [ "${H5VERSION}" == "V110" ]; then
-        hdf_version="1.10.7"
+        hdf_version="1.10.9"
     elif [ "${H5VERSION}" == "V112" ]; then
-        hdf_version="1.12.1"
+        hdf_version="1.12.2"
     elif [ "${H5VERSION}" == "V113" ]; then
-        hdf_version="1.13.0"
+        hdf_version="1.13.1"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
     else
@@ -455,6 +455,10 @@ then
             exit 1
         fi
     fi
+    # Create default plugin directory...
+    mkdir  ${INSTALL_PATH}/lib/hdf5
+    mkdir  ${INSTALL_PATH}/lib/hdf5/lib
+    mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin 
 else
     echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
@@ -535,6 +539,7 @@ then
         rm -rf build
         mkdir build
         cd build || exit
+        export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin 
         CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
@@ -763,7 +768,7 @@ fi
 # =================== INSTALL KOKKOS  ===============
 if [ "$KOKKOS" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkoscore.${LD_EXT} ]
     then
         kokkos_version="3.6.00"
         echo "${txtgrn}+++ KOKKOS${txtrst}"

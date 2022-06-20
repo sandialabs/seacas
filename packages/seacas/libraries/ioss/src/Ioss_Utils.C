@@ -512,7 +512,8 @@ namespace {
     // not valid for this grouping entity (truth_table entry == 0).
     assert(index < num_names && names[index][0] != '\0' &&
            (truth_table == nullptr || truth_table[index] == 1));
-    char *name = names[index];
+    char *name        = names[index];
+    auto  name_length = strlen(name);
 
     // Split the name up into tokens separated by the
     // 'suffix_separator'.  Note that the basename itself could
@@ -551,86 +552,87 @@ namespace {
     // (num_tokens-suffix_size) tokens and see if their suffices form
     // a valid variable type...
     while (suffix_size > 0) {
-      Ioss::IntVector which_names; // Contains index of names that
-      // potentially match as components
-      // of a higher-order type.
-
-      std::string base_name = tokens[0];
-      for (size_t i = 1; i < num_tokens - suffix_size; i++) {
+      for (int i = 0; i <= 1; i++) {
+        bool            same_length = (i == 0);
+        Ioss::IntVector which_names; // Contains index of names that potentially match as components
+                                     // of a higher-order type.
+        std::string base_name = tokens[0];
+        for (size_t it = 1; it < num_tokens - suffix_size; it++) {
+          base_name += suffix_separator;
+          base_name += tokens[it];
+        }
         base_name += suffix_separator;
-        base_name += tokens[i];
-      }
-      base_name += suffix_separator;
-      size_t bn_len = base_name.length(); // Length of basename portion only
-      size_t length = std::strlen(name);  // Length of total name (with suffix)
+        size_t bn_len = base_name.length(); // Length of basename portion only
 
-      // Add the current name...
-      which_names.push_back(index);
+        // Add the current name...
+        which_names.push_back(index);
 
-      // Gather all other names that are valid for this entity, and
-      // have the same overall length and match in the first 'bn_len'
-      // characters.
-      //
-      // Check that they have the same number of tokens,
-      // It is possible that the first name(s) that match with two
-      // suffices have a basename that match other names with only a
-      // single suffix lc_cam_x, lc_cam_y, lc_sfarea.
-      for (int i = index + 1; i < num_names; i++) {
-        char                    *tst_name = names[i];
-        std::vector<std::string> subtokens;
-        field_tokenize(tst_name, suffix_separator, subtokens);
-        if ((truth_table == nullptr || truth_table[i] == 1) && // Defined on this entity
-            std::strlen(tst_name) == length &&                 // names must be same length
-            std::strncmp(name, tst_name, bn_len) == 0 &&       // base portion must match
-            subtokens.size() == num_tokens) {
-          which_names.push_back(i);
+        // Gather all other names that are valid for this entity, and
+        // match in the first 'bn_len' characters.
+        //
+        // Check that they have the same number of tokens,
+        // It is possible that the first name(s) that match with two
+        // suffices have a basename that match other names with only a
+        // single suffix lc_cam_x, lc_cam_y, lc_sfarea.
+        for (int i = index + 1; i < num_names; i++) {
+          char                    *tst_name = names[i];
+          std::vector<std::string> subtokens;
+          field_tokenize(tst_name, suffix_separator, subtokens);
+          if ((truth_table == nullptr || truth_table[i] == 1) && // Defined on this entity
+              std::strncmp(name, tst_name, bn_len) == 0 &&       // base portion must match
+              (!same_length || (strlen(tst_name) == name_length)) &&
+              subtokens.size() == num_tokens) {
+            which_names.push_back(i);
+          }
+        }
+
+        const Ioss::VariableType *type = nullptr;
+        if (suffix_size == 2) {
+          if (which_names.size() > 1) {
+            type = match_composite_field(names, which_names, suffix_separator);
+          }
+        }
+        else {
+          assert(suffix_size == 1);
+          type = match_single_field(names, which_names, suffix_separator, ignore_realn_fields);
+        }
+
+        if (type != nullptr) {
+          // A valid variable type was recognized.
+          // Mark the names which were used so they aren't used for another field on this entity.
+          // Create a field of that variable type.
+          assert(type->component_count() == static_cast<int>(which_names.size()));
+          Ioss::Field field(base_name.substr(0, bn_len - 1), Ioss::Field::REAL, type, fld_role,
+                            count);
+          if (suffix_separator != '_') {
+            field.set_suffix_separator(suffix_separator);
+          }
+          // Are suffices upper or lowercase...
+          std::vector<std::string> tmp;
+          field_tokenize(names[which_names[0]], suffix_separator, tmp);
+          Ioss::Suffix suffix{tmp[tmp.size() - 1]};
+          field.set_suffices_uppercase(suffix.is_uppercase());
+          field.set_index(index);
+          for (const auto &which_name : which_names) {
+            names[which_name][0] = '\0';
+          }
+          return field;
+        }
+        if (suffix_size == 1 && !same_length) {
+          // Failure recognizing a higher-order field; just take the
+          // first field and return it as a scalar...
+          Ioss::Field field(name, Ioss::Field::REAL, IOSS_SCALAR(), fld_role, count);
+
+          // Are suffices upper or lowercase...
+          std::vector<std::string> tmp;
+          field_tokenize(names[which_names[0]], suffix_separator, tmp);
+          Ioss::Suffix suffix{tmp[tmp.size() - 1]};
+          field.set_suffices_uppercase(suffix.is_uppercase());
+          field.set_index(index);
+          names[index][0] = '\0';
+          return field;
         }
       }
-
-      const Ioss::VariableType *type = nullptr;
-      if (suffix_size == 2) {
-        if (which_names.size() > 1) {
-          type = match_composite_field(names, which_names, suffix_separator);
-        }
-      }
-      else {
-        assert(suffix_size == 1);
-        type = match_single_field(names, which_names, suffix_separator, ignore_realn_fields);
-      }
-
-      if (type != nullptr) {
-        // A valid variable type was recognized.
-        // Mark the names which were used so they aren't used for another field on this entity.
-        // Create a field of that variable type.
-        assert(type->component_count() == static_cast<int>(which_names.size()));
-        Ioss::Field field(base_name.substr(0, bn_len - 1), Ioss::Field::REAL, type, fld_role,
-                          count);
-        if (suffix_separator != '_') {
-          field.set_suffix_separator(suffix_separator);
-        }
-        // Are suffices upper or lowercase...
-        std::vector<std::string> tmp;
-        field_tokenize(names[which_names[0]], suffix_separator, tmp);
-        Ioss::Suffix suffix{tmp[tmp.size() - 1]};
-        field.set_suffices_uppercase(suffix.is_uppercase());
-        field.set_index(index);
-        for (const auto &which_name : which_names) {
-          names[which_name][0] = '\0';
-        }
-        return field;
-      }
-      if (suffix_size == 1) {
-        Ioss::Field field(name, Ioss::Field::REAL, IOSS_SCALAR(), fld_role, count);
-        // Are suffices upper or lowercase...
-        std::vector<std::string> tmp;
-        field_tokenize(names[which_names[0]], suffix_separator, tmp);
-        Ioss::Suffix suffix{tmp[tmp.size() - 1]};
-        field.set_suffices_uppercase(suffix.is_uppercase());
-        field.set_index(index);
-        names[index][0] = '\0';
-        return field;
-      }
-
       suffix_size--;
     }
     return Ioss::Field("", Ioss::Field::INVALID, IOSS_SCALAR(), fld_role, 1);
@@ -640,13 +642,13 @@ namespace {
   bool define_field(size_t nmatch, size_t match_length, char **names,
                     std::vector<Ioss::Suffix> &suffices, size_t entity_count,
                     Ioss::Field::RoleType fld_role, std::vector<Ioss::Field> &fields,
-                    bool strip_trailing_, char suffix_separator)
+                    bool strip_trailing_, bool ignore_realn_fields, char suffix_separator)
   {
     // Try to define a field of size 'nmatch' with the suffices in 'suffices'.
     // If this doesn't define a known field, then assume it is a scalar instead
     // and return false.
     if (nmatch > 1) {
-      const Ioss::VariableType *type = Ioss::VariableType::factory(suffices);
+      const Ioss::VariableType *type = Ioss::VariableType::factory(suffices, ignore_realn_fields);
       if (type == nullptr) {
         nmatch = 1;
       }
@@ -709,6 +711,7 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
     for (int i = 0; i < num_names; i++) {
       if (local_truth == nullptr || local_truth[i] == 1) {
         Ioss::Field field(names[i], Ioss::Field::REAL, IOSS_SCALAR(), fld_role, entity_count);
+        field.set_index(i);
         fields.push_back(field);
         names[i][0] = '\0';
       }
@@ -773,8 +776,9 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
         }
         else {
 
-          bool multi_component = define_field(nmatch, pmat, &names[ibeg], suffices, entity_count,
-                                              fld_role, fields, strip_trailing_, suffix_separator);
+          bool multi_component =
+              define_field(nmatch, pmat, &names[ibeg], suffices, entity_count, fld_role, fields,
+                           strip_trailing_, ignore_realn_fields, suffix_separator);
           if (!multi_component) {
             // Although we matched multiple suffices, it wasn't a
             // higher-order field, so we only used 1 name instead of
@@ -799,8 +803,9 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
     // that had been gathered.
     if (ibeg < num_names) {
       if (local_truth == nullptr || local_truth[ibeg] == 1) {
-        bool multi_component = define_field(nmatch, pmat, &names[ibeg], suffices, entity_count,
-                                            fld_role, fields, strip_trailing_, suffix_separator);
+        bool multi_component =
+            define_field(nmatch, pmat, &names[ibeg], suffices, entity_count, fld_role, fields,
+                         strip_trailing_, ignore_realn_fields, suffix_separator);
         clear(suffices);
         if (nmatch > 1 && !multi_component) {
           ibeg++;

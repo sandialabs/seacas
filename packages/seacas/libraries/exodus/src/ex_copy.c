@@ -341,7 +341,6 @@ int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
 /*! \cond INTERNAL */
 int cpy_global_att(int in_exoid, int out_exoid)
 {
-  int          status;
   struct ncatt att; /* attribute */
 
   int ngatts;
@@ -356,7 +355,7 @@ int cpy_global_att(int in_exoid, int out_exoid)
      * word size, I/O word size etc. are global attributes stored when
      * file is created with ex_create;  we don't want to overwrite those
      */
-    if ((status = nc_inq_att(out_exoid, NC_GLOBAL, att.name, &att.type, &att.len)) != NC_NOERR) {
+    if (nc_inq_att(out_exoid, NC_GLOBAL, att.name, &att.type, &att.len) != NC_NOERR) {
 
       /* The "last_written_time" attribute is a special attribute used
          by the IOSS library to determine whether a timestep has been
@@ -379,7 +378,7 @@ int cpy_global_att(int in_exoid, int out_exoid)
   {
     nc_type att_type = NC_NAT;
     size_t  att_len  = 0;
-    status           = nc_inq_att(in_exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &att_type, &att_len);
+    int     status   = nc_inq_att(in_exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &att_type, &att_len);
     if (status == NC_NOERR) {
       EXCHECKI(nc_copy_att(in_exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, out_exoid, NC_GLOBAL));
     }

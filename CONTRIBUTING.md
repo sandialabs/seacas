@@ -1,15 +1,15 @@
 ### Fork seacas
 
 *   If you have not already done so, create a fork of seacas on GitHub under your username.
-  *   Sign on (via web) to https://github.com/gsjaardema/seacas
+  *   Sign on (via web) to https://github.com/sandialabs/seacas
   *   Make sure you are signed in to github
   *   Click on the 'Fork' button near the top right of the page.
 *   Clone your fork of seacas with 
   *   `git clone git@github.com:<username>/seacas`.
   *   Or: `git clone https://github.com/<username>/seacas`
 *   Each time you clone your fork, 
-  *   `git remote add upstream git@github.com:gsjaardema/seacas` to add the original seacas repository as the `upstream` remote.
-  *   Or: `git remote add upstream https://github.com/gsjaardema/seacas'
+  *   `git remote add upstream git@github.com:sandialabs/seacas` to add the original seacas repository as the `upstream` remote.
+  *   Or: `git remote add upstream https://github.com/sandialabs/seacas'
 
 ### Update the Main Development Branch
 
@@ -64,7 +64,7 @@ When your changes are ready to be integrated into seacas' `master` branch:
 *   Navigate to your fork of seacas on GitHub and create a new pull request:
 
   *   Be sure you choose:
-    *   base fork:  `gsjaardema/seacas`
+    *   base fork:  `sandialabs/seacas`
     *   base:  `master`
     *   head fork:  `<username>/seacas`
     *   compare:  `<branchName>`

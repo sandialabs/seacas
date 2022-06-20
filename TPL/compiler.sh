@@ -21,6 +21,12 @@ else
       export CC=clang
       export CXX=clang++
   fi
+  if [ "$COMPILER" == "gnubrew" ]
+  then
+      VER=${VER:-10}
+      CXX=g++-${VER}
+      CC=gcc-${VER}
+  fi
   if [ "$COMPILER" == "gnumacport" ]
   then
       VER=${VER:-5}

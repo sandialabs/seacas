@@ -544,39 +544,31 @@ void Grid::output_nodal_coordinates(const Cell &cell)
   std::vector<double> coord_y;
   std::vector<double> coord_z;
 
+  // Are we modifying the coordinates ... scale and/or offset and/or offset_unit_cell...
+  bool mod_x = cell.m_offX != 0.0 || m_scaleFactor != 1.0 || m_offset[0] != 0.0;
+  bool mod_y = cell.m_offY != 0.0 || m_scaleFactor != 1.0 || m_offset[1] != 0.0;
+  bool mod_z = m_scaleFactor != 1.0 || m_offset[2] != 0.0;
+
+  double scale = m_scaleFactor;
   nb->get_field_data("mesh_model_coordinates_x", coord_x);
-  nb->get_field_data("mesh_model_coordinates_y", coord_y);
-  nb->get_field_data("mesh_model_coordinates_z", coord_z);
-
-  // Apply coordinate offsets to all nodes...
-  if (cell.m_offX != 0.0) {
-    std::for_each(coord_x.begin(), coord_x.end(), [&cell](double &d) { d += cell.m_offX; });
-  }
-  if (cell.m_offY != 0.0) {
-    std::for_each(coord_y.begin(), coord_y.end(), [&cell](double &d) { d += cell.m_offY; });
-  }
-
-  // If there is a scale factor specified, apply to all nodes...
-  if (m_scaleFactor != 1.0) {
-    double scale = m_scaleFactor;
-    std::for_each(coord_x.begin(), coord_x.end(), [scale](double &d) { d *= scale; });
-    std::for_each(coord_y.begin(), coord_y.end(), [scale](double &d) { d *= scale; });
-    std::for_each(coord_z.begin(), coord_z.end(), [scale](double &d) { d *= scale; });
-  }
-
-  // If there is a global offset specified, apply to all nodes...
-  // NOTE: Applied to scaled coordinates...
-  if (m_offset[0] != 0.0) {
+  if (mod_x) {
     double offset = m_offset[0];
-    std::for_each(coord_x.begin(), coord_x.end(), [offset](double &d) { d += offset; });
+    std::for_each(coord_x.begin(), coord_x.end(),
+                  [&cell, scale, offset](double &d) { d = (d + cell.m_offX) * scale + offset; });
   }
-  if (m_offset[1] != 0.0) {
+
+  nb->get_field_data("mesh_model_coordinates_y", coord_y);
+  if (mod_y) {
     double offset = m_offset[1];
-    std::for_each(coord_y.begin(), coord_y.end(), [offset](double &d) { d += offset; });
+    std::for_each(coord_y.begin(), coord_y.end(),
+                  [&cell, scale, offset](double &d) { d = (d + cell.m_offY) * scale + offset; });
   }
-  if (m_offset[2] != 0.0) {
+
+  nb->get_field_data("mesh_model_coordinates_z", coord_z);
+  if (mod_z) {
     double offset = m_offset[2];
-    std::for_each(coord_z.begin(), coord_z.end(), [offset](double &d) { d += offset; });
+    std::for_each(coord_z.begin(), coord_z.end(),
+                  [scale, offset](double &d) { d = d * scale + offset; });
   }
 
   // Filter coordinates down to only "new nodes"...

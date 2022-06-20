@@ -18,6 +18,7 @@
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 #include <fmt/ostream.h>
+#include <tokenize.h>
 
 #include <algorithm>
 #include <cstddef>
@@ -89,6 +90,13 @@ int main(int argc, char *argv[])
 
   Ioss::Init::Initializer io;
 
+  // See if a custom field is defined...
+  if (!interFace.customField.empty()) {
+    auto suffices = Ioss::tokenize(interFace.customField, ",");
+    if (suffices.size() > 1) {
+      Ioss::VariableType::create_named_suffix_field_type("UserDefined", suffices);
+    }
+  }
   std::string in_file  = interFace.inputFile[0];
   std::string out_file = interFace.outputFile;
 

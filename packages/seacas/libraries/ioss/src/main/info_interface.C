@@ -76,6 +76,12 @@ void Info::Interface::enroll_options()
                   "\t\t when recognizing vector, tensor fields. Enter '0' for no separaor",
                   "_");
 
+  options_.enroll("custom_field", Ioss::GetLongOption::MandatoryValue,
+                  "A comma-separated list of field suffices defining a custom field that should be "
+                  "recognized.\n"
+                  "\t\tPrimarily used for testing",
+                  nullptr);
+
   options_.enroll("use_generic_names", Ioss::GetLongOption::NoValue,
                   "Use generic names (type_id) instead of names in database", nullptr);
 
@@ -218,6 +224,13 @@ bool Info::Interface::parse_options(int argc, char **argv)
   }
 
   disableFieldRecognition_ = options_.retrieve("disable_field_recognition") != nullptr;
+
+  {
+    const char *temp = options_.retrieve("custom_field");
+    if (temp != nullptr) {
+      customField_ = temp;
+    }
+  }
 
   {
     const char *temp = options_.retrieve("field_suffix_separator");

@@ -172,6 +172,44 @@ namespace {
     const std::vector<ex_assembly> &m_assemblies;
     mutable std::vector<bool>       m_visitedAssemblies;
   };
+
+  std::vector<ex_assembly> get_exodus_assemblies(int exoid)
+  {
+    std::vector<ex_assembly> assemblies;
+    int                      nassem = ex_inquire_int(exoid, EX_INQ_ASSEMBLY);
+    if (nassem > 0) {
+      assemblies.resize(nassem);
+
+      int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      for (auto &assembly : assemblies) {
+        assembly.name = new char[max_name_length + 1];
+      }
+
+      int ierr = ex_get_assemblies(exoid, assemblies.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+      }
+
+      // Now allocate space for member list and get assemblies again...
+      for (auto &assembly : assemblies) {
+        assembly.entity_list = new int64_t[assembly.entity_count];
+      }
+
+      ierr = ex_get_assemblies(exoid, assemblies.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+      }
+    }
+    return assemblies;
+  }
+
+  void cleanup_exodus_assembly_vector(std::vector<ex_assembly> &assemblies)
+  {
+    for (auto &assembly : assemblies) {
+      delete[] assembly.entity_list;
+      delete[] assembly.name;
+    }
+  }
 } // namespace
 
 namespace Ioex {
@@ -656,30 +694,8 @@ namespace Ioex {
     std::vector<std::string> inclusions;
 
     // Query number of assemblies...
-    int nassem = ex_inquire_int(get_file_pointer(), EX_INQ_ASSEMBLY);
-
-    if (nassem > 0) {
-      std::vector<ex_assembly> assemblies(nassem);
-      int max_name_length = ex_inquire_int(m_exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-      for (auto &assembly : assemblies) {
-        assembly.name = new char[max_name_length + 1];
-      }
-
-      int ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
-
-      // Now allocate space for member list and get assemblies again...
-      for (auto &assembly : assemblies) {
-        assembly.entity_list = new int64_t[assembly.entity_count];
-      }
-
-      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
-
+    auto assemblies = get_exodus_assemblies(get_file_pointer());
+    if (!assemblies.empty()) {
       AssemblyTreeFilter inclusionFilter(get_region(), Ioss::ELEMENTBLOCK, assemblies);
       AssemblyTreeFilter exclusionFilter(get_region(), Ioss::ELEMENTBLOCK, assemblies);
 
@@ -703,10 +719,7 @@ namespace Ioex {
       exclusionFilter.update_assembly_filter_list(assemblyOmissions);
       inclusionFilter.update_assembly_filter_list(assemblyInclusions);
 
-      for (auto &assembly : assemblies) {
-        delete[] assembly.entity_list;
-        delete[] assembly.name;
-      }
+      cleanup_exodus_assembly_vector(assemblies);
 
       insert_sort_and_unique(exclusions, blockOmissions);
       insert_sort_and_unique(inclusions, blockInclusions);
@@ -716,31 +729,9 @@ namespace Ioex {
   void BaseDatabaseIO::get_assemblies()
   {
     Ioss::SerializeIO serializeIO__(this);
-    // Query number of assemblies...
-    int nassem = ex_inquire_int(get_file_pointer(), EX_INQ_ASSEMBLY);
 
-    if (nassem > 0) {
-      std::vector<ex_assembly> assemblies(nassem);
-      int max_name_length = ex_inquire_int(m_exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-      for (auto &assembly : assemblies) {
-        assembly.name = new char[max_name_length + 1];
-      }
-
-      int ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
-
-      // Now allocate space for member list and get assemblies again...
-      for (auto &assembly : assemblies) {
-        assembly.entity_list = new int64_t[assembly.entity_count];
-      }
-
-      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
-
+    auto assemblies = get_exodus_assemblies(get_file_pointer());
+    if (!assemblies.empty()) {
       for (const auto &assembly : assemblies) {
         auto *assem = new Ioss::Assembly(get_region()->get_database(), assembly.name);
         assem->property_add(Ioss::Property("id", assembly.id));
@@ -787,10 +778,7 @@ namespace Ioex {
           m_reductionValues[EX_ASSEMBLY][assembly.id].resize(size);
         }
       }
-      for (auto &assembly : assemblies) {
-        delete[] assembly.entity_list;
-        delete[] assembly.name;
-      }
+      cleanup_exodus_assembly_vector(assemblies);
 
       assert(assemblyOmissions.empty() || assemblyInclusions.empty()); // Only one can be non-empty
 
@@ -805,8 +793,8 @@ namespace Ioex {
       }
 
       if (!assemblyInclusions.empty()) {
-        const auto &assemblies = get_region()->get_assemblies();
-        for (auto &assembly : assemblies) {
+        const auto &ioss_assemblies = get_region()->get_assemblies();
+        for (auto &assembly : ioss_assemblies) {
           assembly->property_add(Ioss::Property(std::string("omitted"), 1));
         }
 
@@ -829,7 +817,7 @@ namespace Ioex {
 
     if (nblob > 0) {
       std::vector<ex_blob> blobs(nblob);
-      int max_name_length = ex_inquire_int(m_exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      int max_name_length = ex_inquire_int(get_file_pointer(), EX_INQ_DB_MAX_USED_NAME_LENGTH);
       for (auto &bl : blobs) {
         bl.name = new char[max_name_length + 1];
       }
@@ -1671,10 +1659,10 @@ namespace Ioex {
         // Add to VariableNameMap so can determine exodusII index given a
         // Sierra field name.  exodusII index is just 'i+1'
         for (int i = 0; i < nvar; i++) {
-	  std::string var = names[i];
-	  if (lowerCaseVariableNames) {
-	    Ioss::Utils::fixup_name(var);
-	  }
+          std::string var = names[i];
+          if (lowerCaseVariableNames) {
+            Ioss::Utils::fixup_name(var);
+          }
           variables.insert(VNMValuePair(var, i + 1));
         }
 
@@ -1938,6 +1926,20 @@ namespace Ioex {
       ge->field_describe(Ioss::Field::TRANSIENT, &results_fields);
     }
 
+    // Some applications will set the index on the field to get a specific
+    // ordering of the fields. For exodus, we typically use that to get the
+    // same output ordering as the input ordering. The output from `field_describe`
+    // comes back sorted on field names.  Lets check whether any of the fields
+    // have an index set and if so, then sort the fields based on the index...
+    std::vector<Ioss::Field> fields;
+    fields.reserve(results_fields.size());
+    for (const auto &name : results_fields) {
+      fields.push_back(ge->get_field(name));
+    }
+    std::stable_sort(fields.begin(), fields.end(), [](const Ioss::Field &a, const Ioss::Field &b) {
+      return a.get_index() < b.get_index();
+    });
+
     // NOTE: For exodusII, the convention is that the displacement
     //       fields are the first 'ndim' fields in the file.
     //       Try to find a likely displacement field
@@ -1951,15 +1953,13 @@ namespace Ioex {
     }
 
     int save_index = 0;
-    for (const auto &name : results_fields) {
-
-      if (has_disp && name == disp_name && new_index != 0) {
+    for (const auto &field : fields) {
+      if (has_disp && field.get_name() == disp_name && new_index != 0) {
         save_index = new_index;
         new_index  = 0;
       }
 
-      Ioss::Field field = ge->get_field(name);
-      int         re_im = 1;
+      int re_im = 1;
       if (field.get_type() == Ioss::Field::COMPLEX) {
         re_im = 2;
       }
@@ -1977,7 +1977,7 @@ namespace Ioex {
           }
         }
       }
-      if (has_disp && name == disp_name) {
+      if (has_disp && field.get_name() == disp_name) {
         new_index = save_index;
       }
     }

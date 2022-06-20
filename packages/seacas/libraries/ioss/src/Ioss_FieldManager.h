@@ -29,7 +29,7 @@ namespace Ioss {
     FieldManager &operator=(const FieldManager &) = delete;
     ~FieldManager()                               = default;
 
-    // Assumes: Field with the same 'name' does not exist.
+    // If a field with the same 'name' exists, an exception will be thrown.
     // Add the specified field to the list.
     void add(const Field &new_field);
 

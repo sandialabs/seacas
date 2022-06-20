@@ -79,7 +79,7 @@ using real = double;
 
 namespace {
   std::string codename;
-  std::string version = "2.02 (2022-04-27)";
+  std::string version = "2.03 (2022-05-26)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -135,6 +135,7 @@ namespace {
   bool           handle_attribute(const std::vector<std::string> &tokens, Ioss::Region &region);
   bool           handle_geometry(const std::vector<std::string> &tokens, Ioss::Region &region);
   bool           handle_time(const std::vector<std::string> &tokens, Ioss::Region &region);
+  bool           handle_rename(const std::vector<std::string> &tokens, Ioss::Region &region);
   void           update_assembly_info(Ioss::Region &region, const Modify::Interface &interFace);
 
   void modify_time(Ioss::Region &region, double scale, double offset);
@@ -383,6 +384,9 @@ int main(int argc, char *argv[])
     else if (Ioss::Utils::substr_equal(tokens[0], "time")) {
       changed |= handle_time(tokens, region);
     }
+    else if (Ioss::Utils::substr_equal(tokens[0], "rename")) {
+      changed |= handle_rename(tokens, region);
+    }
     else {
       fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized command: {}\n",
                  tokens[0]);
@@ -540,7 +544,8 @@ namespace {
       fmt::print(fmt::emphasis::bold, "\n\tEND | EXIT\n");
       fmt::print("\t\tEnd command input and output changed assembly definitions (if any).\n");
       fmt::print(fmt::emphasis::bold, "\n\tQUIT\n");
-      fmt::print("\t\tEnd command input and exit with no changes to database.\n");
+      fmt::print("\t\tEnd command input and exit with no rewriting of database. Some changes may "
+                 "have already been made.\n");
 
       fmt::print(fmt::emphasis::bold, "\n\tALLOW MODIFICATIONS\n");
       fmt::print("\t\tBy default, io_modify will only allow creation of new assemblies.\n"
@@ -647,6 +652,12 @@ namespace {
                  "\t\tList attributes for all entities in the specified entity type whose name "
                  "matches the glob.\n");
     }
+    if (all || Ioss::Utils::substr_equal(topic, "rename")) {
+      fmt::print(fmt::emphasis::bold, "\n\tRENAME ");
+      fmt::print("{{name}} TO {{new_name}}\n");
+      fmt::print(fmt::emphasis::bold, "\tRENAME ");
+      fmt::print("{{type}} {{id}} TO {{new_name}}\n");
+    }
     if (all || Ioss::Utils::substr_equal(topic, "geometry")) {
       fmt::print(fmt::emphasis::bold, "\n\tGEOMETRY ROTATE ");
       fmt::print("{{X|Y|Z}} {{angle}}\n");
@@ -663,7 +674,7 @@ namespace {
     }
     if (all || Ioss::Utils::substr_equal(topic, "time")) {
       fmt::print(fmt::emphasis::bold, "\n\tTIME SCALE  ");
-      fmt::print("{{scale}} (T_out = T_in * {{scale}})\n");
+      fmt::print("{{scale}}   (T_out = T_in * {{scale}})\n");
       fmt::print(fmt::emphasis::bold, "\tTIME OFFSET ");
       fmt::print("{{offset}}  (T_out = T_in + {{offset}})\n");
     }
@@ -1064,6 +1075,69 @@ namespace {
     }
     fmt::print(stderr, fg(fmt::color::red), "ERROR: Unrecognized attribute command.\n");
     handle_help("attribute");
+    return false;
+  }
+
+  bool handle_rename(const std::vector<std::string> &tokens, Ioss::Region &region)
+  {
+    //     0          1        2       3         4
+    // RENAME   {{ent_name}}   TO   {{new_name}}
+    // RENAME   {{ent_type}} {{id}}    TO    {{new_name}}
+
+    // Must be at least 4 tokens...
+    if (tokens.size() < 4) {
+      fmt::print(stderr, fg(fmt::color::red),
+                 "ERROR: RENAME Command does not have enough tokens to be valid.\n"
+                 "\t\t{}\n",
+                 fmt::join(tokens, " "));
+      handle_help("rename");
+      return false;
+    }
+
+    // See if asking for actual entity by name or by type + id
+    Ioss::GroupingEntity *ge       = nullptr;
+    std::string           new_name = tokens[tokens.size() - 1];
+
+    if (tokens.size() == 5 && Ioss::Utils::str_equal(tokens[3], "to")) {
+      // Type + ID
+      auto entity_type = get_entity_type(tokens[1]);
+      if (entity_type == Ioss::INVALID_TYPE) {
+        fmt::print(stderr, fg(fmt::color::yellow), "WARNING: Unrecognized entity type '{}'.\n",
+                   tokens[1]);
+        return false;
+      }
+
+      int entity_id = std::stoi(tokens[2]);
+      ge            = region.get_entity(entity_id, entity_type);
+      if (ge == nullptr) {
+        fmt::print(stderr, fg(fmt::color::red), "ERROR: Entity type '{}' with id {} not found.\n",
+                   tokens[1], tokens[2]);
+        return false;
+      }
+    }
+    else if (tokens.size() == 4 && Ioss::Utils::str_equal(tokens[2], "to")) {
+      ge = region.get_entity(tokens[1]);
+      if (ge == nullptr) {
+        fmt::print(stderr, fg(fmt::color::red), "ERROR: Entity '{}' not found.\n", tokens[1]);
+        return false;
+      }
+    }
+    else {
+      fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized rename syntax '{}'\n",
+                 fmt::join(tokens, " "));
+      handle_help("rename");
+    }
+
+    if (ge != nullptr) {
+      int            exoid     = region.get_database()->get_file_pointer();
+      auto           ioss_type = ge->type();
+      ex_entity_type exo_type  = Ioex::map_exodus_type(ioss_type);
+      auto           ierr      = ex_put_name(exoid, exo_type, id(ge), new_name.c_str());
+      if (ierr != EX_NOERR) {
+        Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+      }
+      ge->set_name(new_name);
+    }
     return false;
   }
 

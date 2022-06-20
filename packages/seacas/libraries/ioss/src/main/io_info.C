@@ -7,6 +7,7 @@
 #include "io_info.h"
 #include <Ioss_Hex8.h>
 #include <Ioss_Sort.h>
+#include <tokenize.h>
 #define FMT_DEPRECATED_OSTREAM
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -154,6 +155,14 @@ namespace {
     // NOTE: The "READ_RESTART" mode ensures that the node and element ids will be mapped.
     //========================================================================
     Ioss::PropertyManager properties = set_properties(interFace);
+
+    const auto custom_field = interFace.custom_field();
+    if (!custom_field.empty()) {
+      auto suffices = Ioss::tokenize(custom_field, ",");
+      if (suffices.size() > 1) {
+        Ioss::VariableType::create_named_suffix_field_type("UserDefined", suffices);
+      }
+    }
 
     Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART,
                                                     Ioss::ParallelUtils::comm_world(), properties);
