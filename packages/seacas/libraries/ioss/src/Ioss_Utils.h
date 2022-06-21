@@ -8,6 +8,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_EntityType.h>
 #include <Ioss_Field.h>
 #include <Ioss_Property.h>
 #include <Ioss_Sort.h>
@@ -495,6 +496,8 @@ namespace Ioss {
                                            size_t copies, size_t max_var_len);
 
     static std::string shape_to_string(const Ioss::ElementShape &shape);
+
+    static std::string entity_type_to_string(const Ioss::EntityType &type);
 
     /** \brief Create a nominal mesh for use in history databases.
      *

@@ -748,11 +748,10 @@ namespace Ioex {
         for (int j = 0; j < assembly.entity_count; j++) {
           auto *ge = get_region()->get_entity(assembly.entity_list[j], type);
           if (ge == nullptr) {
-            std::ostringstream errmsg;
-            fmt::print(errmsg,
+            fmt::print(Ioss::WarnOut(),
                        "Error: Failed to find entity of type {} with id {} for assembly {}.\n",
-                       type, assembly.entity_list[j], assem->name());
-            IOSS_ERROR(errmsg);
+                       Ioss::Utils::entity_type_to_string(type), assembly.entity_list[j], assem->name());
+            continue;
           }
 
           if (!Ioss::Utils::block_is_omitted(ge)) {
