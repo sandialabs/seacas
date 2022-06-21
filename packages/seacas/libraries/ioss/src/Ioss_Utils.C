@@ -1083,7 +1083,6 @@ std::string Ioss::Utils::entity_type_to_string(const Ioss::EntityType &type)
       case Ioss::EntityType::FACESET: return std::string("FACESET");
       case Ioss::EntityType::ELEMENTSET: return std::string("ELEMENTSET");
       case Ioss::EntityType::SIDESET: return std::string("SIDESET");
-      case Ioss::EntityType::SURFACE: return std::string("SURFACE");
       case Ioss::EntityType::COMMSET: return std::string("COMMSET");
       case Ioss::EntityType::SIDEBLOCK: return std::string("SIDEBLOCK");
       case Ioss::EntityType::REGION: return std::string("REGION");
