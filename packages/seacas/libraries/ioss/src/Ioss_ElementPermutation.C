@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -381,11 +381,9 @@ namespace Ioss {
   {
     // Decode name to determine number of nodes...
     // Assume that digits at end specify number of nodes.
-    size_t digits = type.find_last_not_of("0123456789");
-    if (digits != std::string::npos) {
-      std::string node_count_str = type.substr(digits + 1);
-      int         node_count     = std::stoi(node_count_str);
-
+    std::string node_count_str = Ioss::Utils::get_trailing_digits(type);
+    if (!node_count_str.empty()) {
+      int node_count = std::stoi(node_count_str);
       SuperPermutation::factory(node_count);
     }
   }
