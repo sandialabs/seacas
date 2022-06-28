@@ -57,51 +57,23 @@ void CatalystTestFixture::checkMeshOutputVariables(const std::string        &inp
     vtkDataSet *ds                 = vtkDataSet::SafeDownCast(iter->GetCurrentDataObject());
     bool        leafNodeHasAllVars = true;
 
-    for (auto gg : globalVars) {
-      vtkAbstractArray *ar = ds->GetFieldData()->GetAbstractArray(gg.first.c_str());
-      if (ar == nullptr) {
-        leafNodeHasAllVars = false;
-        break;
+    auto hasAllVars = [](vtkFieldData *fd, const VarAndCompCountVec &vars) {
+      for (auto vv : vars) {
+        vtkAbstractArray *ar = fd->GetAbstractArray(vv.first.c_str());
+        if (ar == nullptr) {
+          return false;
+        }
+        if (ar->GetNumberOfComponents() != vv.second) {
+          return false;
+        }
       }
-      if (ar->GetNumberOfComponents() != gg.second) {
-        leafNodeHasAllVars = false;
-        break;
-      }
-    }
+      return true;
+    };
 
-    for (auto pp : cellVars) {
-      vtkAbstractArray *ar = ds->GetCellData()->GetAbstractArray(pp.first.c_str());
-      if (ar == nullptr) {
-        leafNodeHasAllVars = false;
-        break;
-      }
-      if (ar->GetNumberOfComponents() != pp.second) {
-        leafNodeHasAllVars = false;
-        break;
-      }
+    if (hasAllVars(ds->GetCellData(), cellVars) && hasAllVars(ds->GetPointData(), pointVars) &&
+        hasAllVars(ds->GetFieldData(), globalVars)) {
+      foundBlockThatHasAllVars = true;
     }
-
-    if (!leafNodeHasAllVars) {
-      continue;
-    }
-
-    for (auto pp : pointVars) {
-      vtkAbstractArray *ar = ds->GetPointData()->GetAbstractArray(pp.first.c_str());
-      if (ar == nullptr) {
-        leafNodeHasAllVars = false;
-        break;
-      }
-      if (ar->GetNumberOfComponents() != pp.second) {
-        leafNodeHasAllVars = false;
-        break;
-      }
-    }
-    if (!leafNodeHasAllVars) {
-      continue;
-    }
-
-    foundBlockThatHasAllVars = true;
-    break;
   }
 
   REQUIRE(foundBlockThatHasAllVars);
