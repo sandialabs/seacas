@@ -3532,6 +3532,7 @@ int64_t DatabaseIO::read_transient_field(const Ioex::VariableNameMap &variables,
   // of this name in 'nodeVariables' map
   size_t comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
 
+  ex_entity_type type = Ioex::map_exodus_type(ge->type());
   if (comp_count == 1 && field.get_type() == Ioss::Field::REAL) {
     std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, 1);
     if (lowerCaseVariableNames) {
@@ -3539,9 +3540,8 @@ int64_t DatabaseIO::read_transient_field(const Ioex::VariableNameMap &variables,
     }
 
     // Read the variable...
-    ex_entity_type type = Ioex::map_exodus_type(ge->type());
-    int64_t        id   = Ioex::get_id(ge, &ids_);
-    int            ierr = 0;
+    int64_t id   = Ioex::get_id(ge, &ids_);
+    int     ierr = 0;
 
     auto var_iter = variables.find(var_name);
     if (var_iter == variables.end()) {
@@ -3564,10 +3564,9 @@ int64_t DatabaseIO::read_transient_field(const Ioex::VariableNameMap &variables,
       }
 
       // Read the variable...
-      ex_entity_type type     = Ioex::map_exodus_type(ge->type());
-      int64_t        id       = Ioex::get_id(ge, &ids_);
-      int            ierr     = 0;
-      auto           var_iter = variables.find(var_name);
+      int64_t id       = Ioex::get_id(ge, &ids_);
+      int     ierr     = 0;
+      auto    var_iter = variables.find(var_name);
       if (var_iter == variables.end()) {
         std::ostringstream errmsg;
         fmt::print(errmsg, "ERROR: Could not find field '{}'\n", var_name);
@@ -4960,9 +4959,8 @@ int64_t DatabaseIO::put_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
       }
 
       if (commsetNodeCount > 0) {
-        int ierr = ex_put_node_cmap(get_file_pointer(),
-                                    Ioex::get_id(cs, &ids_),
-                                    entities.data(), procs.data(), myProcessor);
+        int ierr = ex_put_node_cmap(get_file_pointer(), Ioex::get_id(cs, &ids_), entities.data(),
+                                    procs.data(), myProcessor);
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
         }
@@ -5031,9 +5029,8 @@ int64_t DatabaseIO::put_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
         }
       }
 
-      int ierr = ex_put_elem_cmap(get_file_pointer(),
-                                  Ioex::get_id(cs, &ids_),
-                                  entities.data(), sides.data(), procs.data(), myProcessor);
+      int ierr = ex_put_elem_cmap(get_file_pointer(), Ioex::get_id(cs, &ids_), entities.data(),
+                                  sides.data(), procs.data(), myProcessor);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }

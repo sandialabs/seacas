@@ -223,8 +223,8 @@ namespace Ioex {
 
     void output_results_names(ex_entity_type type, VariableNameMap &variables,
                               bool reduction) const;
-    int  gather_names(ex_entity_type type, VariableNameMap &variables,
-                      const Ioss::GroupingEntity *ge, int index, bool reduction);
+    int  gather_names(VariableNameMap &variables, const Ioss::GroupingEntity *ge, int index,
+                      bool reduction);
 
     void get_nodeblocks();
     void get_assemblies();

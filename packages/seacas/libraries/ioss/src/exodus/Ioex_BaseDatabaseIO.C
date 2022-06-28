@@ -1769,10 +1769,9 @@ namespace Ioex {
     if (gather_data) {
       int glob_index = 0;
 #if GLOBALS_ARE_TRANSIENT
-      glob_index = gather_names(EX_GLOBAL, m_variables[EX_GLOBAL], get_region(), glob_index, true);
+      glob_index = gather_names(m_variables[EX_GLOBAL], get_region(), glob_index, true);
 #else
-      glob_index =
-          gather_names(EX_GLOBAL, m_reductionVariables[EX_GLOBAL], get_region(), glob_index, true);
+      glob_index = gather_names(m_reductionVariables[EX_GLOBAL], get_region(), glob_index, true);
 #endif
       m_reductionValues[EX_GLOBAL][0].resize(glob_index);
 
@@ -1813,9 +1812,8 @@ namespace Ioex {
         for (const auto &sideset : sidesets) {
           const Ioss::SideBlockContainer &side_blocks = sideset->get_side_blocks();
           for (const auto &block : side_blocks) {
-            glob_index = gather_names(EX_SIDE_SET, m_reductionVariables[EX_SIDE_SET], block,
-                                      glob_index, true);
-            index      = gather_names(EX_SIDE_SET, m_variables[EX_SIDE_SET], block, index, false);
+            glob_index = gather_names(m_reductionVariables[EX_SIDE_SET], block, glob_index, true);
+            index      = gather_names(m_variables[EX_SIDE_SET], block, index, false);
           }
         }
         generate_sideset_truth_table();
@@ -1894,8 +1892,8 @@ namespace Ioex {
     int index     = 0;
     int red_index = 0;
     for (const auto &entity : entities) {
-      red_index = gather_names(type, m_reductionVariables[type], entity, red_index, true);
-      index     = gather_names(type, m_variables[type], entity, index, false);
+      red_index = gather_names(m_reductionVariables[type], entity, red_index, true);
+      index     = gather_names(m_variables[type], entity, index, false);
     }
 
 #if GLOBALS_ARE_TRANSIENT
@@ -1914,11 +1912,12 @@ namespace Ioex {
   }
 
   // common
-  int BaseDatabaseIO::gather_names(ex_entity_type type, VariableNameMap &variables,
-                                   const Ioss::GroupingEntity *ge, int index, bool reduction)
+  int BaseDatabaseIO::gather_names(VariableNameMap &variables, const Ioss::GroupingEntity *ge,
+                                   int index, bool reduction)
   {
     int new_index = index;
 
+    auto type   = Ioex::map_exodus_type(ge);
     bool nblock = (type == EX_NODE_BLOCK);
 
     // Get names of all transient and reduction fields...

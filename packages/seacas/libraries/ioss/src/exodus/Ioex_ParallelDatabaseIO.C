@@ -2069,8 +2069,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Assembly *assembly,
         // Read in each component of the variable and transfer into
         // 'data'.  Need temporary storage area of size 'number of
         // items in this assembly.
-        num_to_get =
-            read_transient_field(m_variables[EX_ASSEMBLY], field, assembly, data);
+        num_to_get = read_transient_field(m_variables[EX_ASSEMBLY], field, assembly, data);
       }
       else if (role == Ioss::Field::ATTRIBUTE) {
         num_to_get = read_attribute_field(field, assembly, data);
@@ -2408,7 +2407,7 @@ int64_t ParallelDatabaseIO::get_Xset_field_internal(const Ioss::EntitySet *ns,
     // 'data'.  Need temporary storage area of size 'number of
     // nodes in this block.
     ex_entity_type type = Ioex::map_exodus_type(ns->type());
-    num_to_get = read_transient_field(m_variables[type], field, ns, data);
+    num_to_get          = read_transient_field(m_variables[type], field, ns, data);
   }
   return num_to_get;
 }
@@ -2797,8 +2796,7 @@ int64_t ParallelDatabaseIO::write_attribute_field(const Ioss::Field          &fi
   int64_t     num_entity = ge->entity_count();
   int64_t     offset     = field.get_index();
 
-  ex_entity_type type = Ioex::map_exodus_type(ge->type());
-  int64_t        id   = Ioex::get_id(ge, &ids_);
+  int64_t id = Ioex::get_id(ge, &ids_);
   assert(offset > 0);
   assert(offset - 1 + field.get_component_count(Ioss::Field::InOut::OUTPUT) <=
          ge->get_property("attribute_count").get_int());
@@ -2812,6 +2810,7 @@ int64_t ParallelDatabaseIO::write_attribute_field(const Ioss::Field          &fi
 
   int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
+  ex_entity_type type = Ioex::map_exodus_type(ge->type());
   if (type == EX_NODAL) {
     for (int i = 0; i < comp_count; i++) {
       std::vector<double> file_data;
@@ -2888,9 +2887,8 @@ int64_t ParallelDatabaseIO::read_attribute_field(const Ioss::Field          &fie
 {
   int64_t num_entity = ge->entity_count();
 
-  int            attribute_count = ge->get_property("attribute_count").get_int();
-  ex_entity_type type            = Ioex::map_exodus_type(ge->type());
-  int64_t        id              = Ioex::get_id(ge, &ids_);
+  int     attribute_count = ge->get_property("attribute_count").get_int();
+  int64_t id              = Ioex::get_id(ge, &ids_);
 
   Ioss::Field::BasicType ioss_type = field.get_type();
   if (ioss_type == Ioss::Field::INTEGER || ioss_type == Ioss::Field::INT64) {
@@ -2900,8 +2898,9 @@ int64_t ParallelDatabaseIO::read_attribute_field(const Ioss::Field          &fie
     IOSS_ERROR(errmsg);
   }
 
-  std::string att_name = ge->name() + SEP() + field.get_name();
-  int64_t     offset   = field.get_index();
+  std::string    att_name = ge->name() + SEP() + field.get_name();
+  ex_entity_type type     = Ioex::map_exodus_type(ge->type());
+  int64_t        offset   = field.get_index();
   assert(offset - 1 + field.get_component_count(Ioss::Field::InOut::INPUT) <= attribute_count);
   if (offset == 1 && field.get_component_count(Ioss::Field::InOut::INPUT) == attribute_count) {
     // Read all attributes in one big chunk...
@@ -4330,7 +4329,6 @@ int64_t ParallelDatabaseIO::put_Xset_field_internal(const Ioss::EntitySet *ns,
   size_t entity_count = ns->entity_count();
   size_t num_to_get   = field.verify(data_size);
 
-  ex_entity_type        type = Ioex::map_exodus_type(ns->type());
   int64_t               id   = Ioex::get_id(ns, &ids_);
   Ioss::Field::RoleType role = field.get_role();
 
@@ -4344,6 +4342,7 @@ int64_t ParallelDatabaseIO::put_Xset_field_internal(const Ioss::EntitySet *ns,
     size_t proc_offset = ns->get_optional_property("_processor_offset", 0);
     size_t file_count  = ns->get_optional_property("locally_owned_count", num_to_get);
 
+    ex_entity_type type = Ioex::map_exodus_type(ns->type());
     if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
       // Map node id from global node id to local node id.
       // Do it in 'data' ...
