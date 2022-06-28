@@ -63,6 +63,8 @@
 #include "Ioss_State.h"
 #include "Ioss_VariableType.h"
 
+#include "Ioex_Utils.h"
+
 // Transitioning from treating global variables as Ioss::Field::TRANSIENT
 // to Ioss::Field::REDUCTION.  To get the old behavior, define the value
 // below to '1'.
@@ -748,11 +750,11 @@ namespace Ioex {
         for (int j = 0; j < assembly.entity_count; j++) {
           auto *ge = get_region()->get_entity(assembly.entity_list[j], type);
           if (ge == nullptr) {
-            std::ostringstream errmsg;
-            fmt::print(errmsg,
+            fmt::print(Ioss::WarnOut(),
                        "Error: Failed to find entity of type {} with id {} for assembly {}.\n",
-                       type, assembly.entity_list[j], assem->name());
-            IOSS_ERROR(errmsg);
+                       Ioss::Utils::entity_type_to_string(type), assembly.entity_list[j],
+                       assem->name());
+            continue;
           }
 
           if (!Ioss::Utils::block_is_omitted(ge)) {
@@ -763,11 +765,11 @@ namespace Ioex {
         SMART_ASSERT(assem->member_count() == num_added_entities)
         (assem->member_count())(num_added_entities);
 
-        add_mesh_reduction_fields(EX_ASSEMBLY, assembly.id, assem);
+        add_mesh_reduction_fields(assembly.id, assem);
         // Check for additional variables.
         int attribute_count = assem->get_property("attribute_count").get_int();
-        add_attribute_fields(EX_ASSEMBLY, assem, attribute_count, "Assembly");
-        add_reduction_results_fields(EX_ASSEMBLY, assem);
+        add_attribute_fields(assem, attribute_count, "Assembly");
+        add_reduction_results_fields(assem);
       }
 
       // If there are any reduction results fields ("REDUCTION"), then need to
@@ -858,12 +860,12 @@ namespace Ioex {
         Ioss::Blob *blob = get_region()->get_blob(bl.name);
         assert(blob != nullptr);
 
-        add_mesh_reduction_fields(EX_BLOB, bl.id, blob);
+        add_mesh_reduction_fields(bl.id, blob);
         // Check for additional variables.
         int attribute_count = blob->get_property("attribute_count").get_int();
-        add_attribute_fields(EX_BLOB, blob, attribute_count, "Blob");
-        add_reduction_results_fields(EX_BLOB, blob);
-        add_results_fields(EX_BLOB, blob, iblk++);
+        add_attribute_fields(blob, attribute_count, "Blob");
+        add_reduction_results_fields(blob);
+        add_results_fields(blob, iblk++);
       }
 
       // If there are any reduction results fields ("REDUCTION"), then need to
@@ -903,10 +905,10 @@ namespace Ioex {
       }
     }
 
-    add_attribute_fields(EX_NODE_BLOCK, block, num_attr, "");
+    add_attribute_fields(block, num_attr, "");
     // Not supported on nodeblocks at this time
-    // add_reduction_results_fields(EX_NODE_BLOCK, block);
-    add_results_fields(EX_NODE_BLOCK, block);
+    // add_reduction_results_fields(block);
+    add_results_fields(block);
 
     // If there are any reduction results fields ("REDUCTION"), then need to
     // allocate space for the values to be stored on each timestep...
@@ -1074,7 +1076,7 @@ namespace Ioex {
       Ioss::Field::RoleType role = field.get_role();
 
       if (role == Ioss::Field::TRANSIENT || role == Ioss::Field::REDUCTION) {
-        get_reduction_field(EX_GLOBAL, field, get_region(), data);
+        get_reduction_field(field, get_region(), data);
       }
       else {
         std::ostringstream errmsg;
@@ -1102,7 +1104,7 @@ namespace Ioex {
       size_t                num_to_get = field.verify(data_size);
 
       if ((role == Ioss::Field::TRANSIENT || role == Ioss::Field::REDUCTION) && num_to_get == 1) {
-        store_reduction_field(EX_GLOBAL, field, get_region(), data);
+        store_reduction_field(field, get_region(), data);
       }
       else if (num_to_get != 1) {
         // There should have been a warning/error message printed to the
@@ -1181,7 +1183,7 @@ namespace Ioex {
     }
   } // namespace
   // common
-  void BaseDatabaseIO::store_reduction_field(ex_entity_type type, const Ioss::Field &field,
+  void BaseDatabaseIO::store_reduction_field(const Ioss::Field          &field,
                                              const Ioss::GroupingEntity *ge, void *variables) const
   {
     Ioss::Field::BasicType ioss_type = field.get_type();
@@ -1192,6 +1194,8 @@ namespace Ioex {
     auto *ivar64 = static_cast<int64_t *>(variables);
 
     auto id = ge->get_optional_property("id", 0);
+
+    auto type = Ioex::map_exodus_type(ge->type());
 
     // Note that if the field's basic type is COMPLEX, then each component of
     // the VariableType is a complex variable consisting of a real and
@@ -1257,10 +1261,11 @@ namespace Ioex {
   }
 
   // common
-  void BaseDatabaseIO::get_reduction_field(ex_entity_type type, const Ioss::Field &field,
-                                           const Ioss::GroupingEntity *ge, void *variables) const
+  void BaseDatabaseIO::get_reduction_field(const Ioss::Field &field, const Ioss::GroupingEntity *ge,
+                                           void *variables) const
   {
-    auto id = ge->get_optional_property("id", 0);
+    auto id   = ge->get_optional_property("id", 0);
+    auto type = Ioex::map_exodus_type(ge->type());
 
     Ioss::Field::BasicType ioss_type = field.get_type();
     assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
@@ -1511,12 +1516,12 @@ namespace Ioex {
   void BaseDatabaseIO::add_region_fields()
   {
 #if GLOBALS_ARE_TRANSIENT
-    int field_count = add_results_fields(EX_GLOBAL, get_region());
+    int field_count = add_results_fields(get_region());
 #else
-    int field_count = add_reduction_results_fields(EX_GLOBAL, get_region());
+    int field_count = add_reduction_results_fields(get_region());
 #endif
     m_reductionValues[EX_GLOBAL][0].resize(field_count);
-    add_mesh_reduction_fields(EX_GLOBAL, 0, get_region());
+    add_mesh_reduction_fields(0, get_region());
   }
 
   namespace {
@@ -1529,13 +1534,13 @@ namespace Ioex {
     };
   } // namespace
 
-  void BaseDatabaseIO::add_mesh_reduction_fields(ex_entity_type type, int64_t id,
-                                                 Ioss::GroupingEntity *entity)
+  void BaseDatabaseIO::add_mesh_reduction_fields(int64_t id, Ioss::GroupingEntity *entity)
   {
     // Get "global attributes"
     // These are single key-value per grouping entity
     // Stored as Ioss::Property with origin of ATTRIBUTE
     Ioss::SerializeIO serializeIO__(this);
+    auto              type      = Ioex::map_exodus_type(entity->type());
     int               att_count = ex_get_attribute_count(get_file_pointer(), type, id);
 
     if (att_count > 0) {
@@ -1585,9 +1590,9 @@ namespace Ioex {
   }
 
   // common
-  int64_t BaseDatabaseIO::add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
-                                             int64_t position)
+  int64_t BaseDatabaseIO::add_results_fields(Ioss::GroupingEntity *entity, int64_t position)
   {
+    ex_entity_type type = Ioex::map_exodus_type(entity->type());
     return internal_add_results_fields(type, entity, position, m_groupCount[type],
                                        m_truthTable[type], m_variables[type]);
   }
@@ -1696,10 +1701,10 @@ namespace Ioex {
   }
 
   // common
-  int64_t BaseDatabaseIO::add_reduction_results_fields(ex_entity_type        type,
-                                                       Ioss::GroupingEntity *entity)
+  int64_t BaseDatabaseIO::add_reduction_results_fields(Ioss::GroupingEntity *entity)
   {
-    int nvar = 0;
+    ex_entity_type type = Ioex::map_exodus_type(entity->type());
+    int            nvar = 0;
     {
       Ioss::SerializeIO serializeIO__(this);
 
@@ -2212,8 +2217,7 @@ namespace Ioex {
   }
 
   // common
-  void Ioex::BaseDatabaseIO::add_attribute_fields(ex_entity_type        entity_type,
-                                                  Ioss::GroupingEntity *block, int attribute_count,
+  void Ioex::BaseDatabaseIO::add_attribute_fields(Ioss::GroupingEntity *block, int attribute_count,
                                                   const std::string &type)
   {
     /// \todo REFACTOR Some of the attribute knowledge should be at
@@ -2269,7 +2273,8 @@ namespace Ioex {
         {
           Ioss::SerializeIO serializeIO__(this);
           if (block->entity_count() != 0) {
-            int ierr = ex_get_attr_names(get_file_pointer(), entity_type, id, &names[0]);
+            ex_entity_type entity_type = Ioex::map_exodus_type(block->type());
+            int            ierr = ex_get_attr_names(get_file_pointer(), entity_type, id, &names[0]);
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
             }
@@ -2472,7 +2477,7 @@ namespace Ioex {
     const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
     assert(node_blocks.size() <= 1);
     if (!node_blocks.empty()) {
-      Ioex::get_id(node_blocks[0], EX_NODE_BLOCK, &ids_);
+      Ioex::get_id(node_blocks[0], &ids_);
       nodeCount        = node_blocks[0]->entity_count();
       spatialDimension = node_blocks[0]->get_property("component_degree").get_int();
     }
@@ -2486,11 +2491,11 @@ namespace Ioex {
       if (behavior != Ioss::DB_MODIFY) {
         // Set ids of all entities that have "id" property...
         for (auto &assem : assemblies) {
-          Ioex::set_id(assem, EX_ASSEMBLY, &ids_);
+          Ioex::set_id(assem, &ids_);
         }
 
         for (auto &assem : assemblies) {
-          Ioex::get_id(assem, EX_ASSEMBLY, &ids_);
+          Ioex::get_id(assem, &ids_);
         }
       }
       m_groupCount[EX_ASSEMBLY] = assemblies.size();
@@ -2502,11 +2507,11 @@ namespace Ioex {
       // Set ids of all entities that have "id" property...
       if (behavior != Ioss::DB_MODIFY) {
         for (auto &blob : blobs) {
-          Ioex::set_id(blob, EX_BLOB, &ids_);
+          Ioex::set_id(blob, &ids_);
         }
 
         for (auto &blob : blobs) {
-          Ioex::get_id(blob, EX_BLOB, &ids_);
+          Ioex::get_id(blob, &ids_);
         }
       }
       m_groupCount[EX_BLOB] = blobs.size();
@@ -2519,14 +2524,14 @@ namespace Ioex {
       // Set ids of all entities that have "id" property...
       if (behavior != Ioss::DB_MODIFY) {
         for (auto &edge_block : edge_blocks) {
-          Ioex::set_id(edge_block, EX_EDGE_BLOCK, &ids_);
+          Ioex::set_id(edge_block, &ids_);
         }
 
         edgeCount = 0;
         for (auto &edge_block : edge_blocks) {
           edgeCount += edge_block->entity_count();
           // Set ids of all entities that do not have "id" property...
-          Ioex::get_id(edge_block, EX_EDGE_BLOCK, &ids_);
+          Ioex::get_id(edge_block, &ids_);
         }
       }
       m_groupCount[EX_EDGE_BLOCK] = edge_blocks.size();
@@ -2539,14 +2544,14 @@ namespace Ioex {
       // Set ids of all entities that have "id" property...
       if (behavior != Ioss::DB_MODIFY) {
         for (auto &face_block : face_blocks) {
-          Ioex::set_id(face_block, EX_FACE_BLOCK, &ids_);
+          Ioex::set_id(face_block, &ids_);
         }
 
         faceCount = 0;
         for (auto &face_block : face_blocks) {
           faceCount += face_block->entity_count();
           // Set ids of all entities that do not have "id" property...
-          Ioex::get_id(face_block, EX_FACE_BLOCK, &ids_);
+          Ioex::get_id(face_block, &ids_);
         }
       }
       m_groupCount[EX_FACE_BLOCK] = face_blocks.size();
@@ -2559,7 +2564,7 @@ namespace Ioex {
       if (behavior != Ioss::DB_MODIFY) {
         // Set ids of all entities that have "id" property...
         for (auto &element_block : element_blocks) {
-          Ioex::set_id(element_block, EX_ELEM_BLOCK, &ids_);
+          Ioex::set_id(element_block, &ids_);
         }
       }
       elementCount = 0;
@@ -2570,7 +2575,7 @@ namespace Ioex {
         element_counts.push_back(element_block->entity_count());
         // Set ids of all entities that do not have "id" property...
         if (behavior != Ioss::DB_MODIFY) {
-          Ioex::get_id(element_block, EX_ELEM_BLOCK, &ids_);
+          Ioex::get_id(element_block, &ids_);
         }
       }
       m_groupCount[EX_ELEM_BLOCK] = element_blocks.size();
@@ -2592,11 +2597,11 @@ namespace Ioex {
       const Ioss::NodeSetContainer &nodesets = region->get_nodesets();
       if (behavior != Ioss::DB_MODIFY) {
         for (auto &set : nodesets) {
-          Ioex::set_id(set, EX_NODE_SET, &ids_);
+          Ioex::set_id(set, &ids_);
         }
 
         for (auto &set : nodesets) {
-          Ioex::get_id(set, EX_NODE_SET, &ids_);
+          Ioex::get_id(set, &ids_);
         }
       }
       m_groupCount[EX_NODE_SET] = nodesets.size();
@@ -2607,11 +2612,11 @@ namespace Ioex {
       const Ioss::EdgeSetContainer &edgesets = region->get_edgesets();
       if (behavior != Ioss::DB_MODIFY) {
         for (auto &set : edgesets) {
-          Ioex::set_id(set, EX_EDGE_SET, &ids_);
+          Ioex::set_id(set, &ids_);
         }
 
         for (auto &set : edgesets) {
-          Ioex::get_id(set, EX_EDGE_SET, &ids_);
+          Ioex::get_id(set, &ids_);
         }
       }
       m_groupCount[EX_EDGE_SET] = edgesets.size();
@@ -2622,11 +2627,11 @@ namespace Ioex {
       const Ioss::FaceSetContainer &facesets = region->get_facesets();
       if (behavior != Ioss::DB_MODIFY) {
         for (auto &set : facesets) {
-          Ioex::set_id(set, EX_FACE_SET, &ids_);
+          Ioex::set_id(set, &ids_);
         }
 
         for (auto &set : facesets) {
-          Ioex::get_id(set, EX_FACE_SET, &ids_);
+          Ioex::get_id(set, &ids_);
         }
       }
       m_groupCount[EX_FACE_SET] = facesets.size();
@@ -2637,11 +2642,11 @@ namespace Ioex {
       const Ioss::ElementSetContainer &elementsets = region->get_elementsets();
       if (behavior != Ioss::DB_MODIFY) {
         for (auto &set : elementsets) {
-          Ioex::set_id(set, EX_ELEM_SET, &ids_);
+          Ioex::set_id(set, &ids_);
         }
 
         for (auto &set : elementsets) {
-          Ioex::get_id(set, EX_ELEM_SET, &ids_);
+          Ioex::get_id(set, &ids_);
         }
       }
       m_groupCount[EX_ELEM_SET] = elementsets.size();
@@ -2652,13 +2657,13 @@ namespace Ioex {
       const Ioss::SideSetContainer &ssets = region->get_sidesets();
       if (behavior != Ioss::DB_MODIFY) {
         for (auto &set : ssets) {
-          Ioex::set_id(set, EX_SIDE_SET, &ids_);
+          Ioex::set_id(set, &ids_);
         }
       }
       // Get entity counts for all face sets... Create SideSets.
       for (auto &set : ssets) {
         if (behavior != Ioss::DB_MODIFY) {
-          Ioex::get_id(set, EX_SIDE_SET, &ids_);
+          Ioex::get_id(set, &ids_);
         }
         int64_t id           = set->get_property("id").get_int();
         int64_t entity_count = 0;

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -93,6 +93,23 @@ Ioss::ElementTopology *Ioss::ElementTopology::factory(const std::string &type, b
         std::string sub_type = ltype.substr(0, dash);
         iter                 = registry().find(sub_type);
       }
+    }
+  }
+
+  // See if we can recognize an element topology consisting of the first 3 or 4 letters
+  // of the name concatenated with the digits at the end of the name (if any)...
+  if (iter == registry().end()) {
+    auto first_three    = ltype.substr(0, 3);
+    auto first_four     = ltype.substr(0, 4);
+    auto node_count_str = Ioss::Utils::get_trailing_digits(ltype);
+    if (!node_count_str.empty()) {
+      first_three += node_count_str;
+      first_four += node_count_str;
+    }
+
+    iter = registry().find(first_four);
+    if (iter == registry().end()) {
+      iter = registry().find(first_three);
     }
   }
 
