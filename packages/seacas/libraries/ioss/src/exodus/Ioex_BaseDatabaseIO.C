@@ -1917,7 +1917,7 @@ namespace Ioex {
   {
     int new_index = index;
 
-    auto type   = Ioex::map_exodus_type(ge);
+    auto type   = Ioex::map_exodus_type(ge->type());
     bool nblock = (type == EX_NODE_BLOCK);
 
     // Get names of all transient and reduction fields...
