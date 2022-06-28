@@ -292,6 +292,12 @@ namespace Ioss {
     static int         extract_id(const std::string &name_id);
     static std::string encode_entity_name(const std::string &entity_type, int64_t id);
 
+    /** Return the trailing digits (if any) from `name`
+     * `hex20` would return the string `20`
+     * `tetra` would return an empty string.
+     */
+    static std::string get_trailing_digits(const std::string &name);
+
     /** \brief create a string that describes the list of input `ids` collapsing ranges if possible.
      *
      * Traverse the sorted input vector `ids` and return a string that has all sequential ranges

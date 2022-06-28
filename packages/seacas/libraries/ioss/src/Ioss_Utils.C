@@ -210,6 +210,15 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   return filename;
 }
 
+std::string Ioss::Utils::get_trailing_digits(const std::string &name)
+{
+  size_t digits = name.find_last_not_of("0123456789");
+  if (digits != std::string::npos) {
+    return name.substr(digits + 1);
+  }
+  return std::string{};
+}
+
 int Ioss::Utils::get_number(const std::string &suffix)
 {
   int  N       = 0;
@@ -1074,23 +1083,23 @@ std::string Ioss::Utils::shape_to_string(const Ioss::ElementShape &shape)
 std::string Ioss::Utils::entity_type_to_string(const Ioss::EntityType &type)
 {
   switch (type) {
-      case Ioss::EntityType::NODEBLOCK: return std::string("NODEBLOCK");
-      case Ioss::EntityType::EDGEBLOCK: return std::string("EDGEBLOCK");
-      case Ioss::EntityType::FACEBLOCK: return std::string("FACEBLOCK");
-      case Ioss::EntityType::ELEMENTBLOCK: return std::string("ELEMENTBLOCK");
-      case Ioss::EntityType::NODESET: return std::string("NODESET");
-      case Ioss::EntityType::EDGESET: return std::string("EDGESET");
-      case Ioss::EntityType::FACESET: return std::string("FACESET");
-      case Ioss::EntityType::ELEMENTSET: return std::string("ELEMENTSET");
-      case Ioss::EntityType::SIDESET: return std::string("SIDESET");
-      case Ioss::EntityType::COMMSET: return std::string("COMMSET");
-      case Ioss::EntityType::SIDEBLOCK: return std::string("SIDEBLOCK");
-      case Ioss::EntityType::REGION: return std::string("REGION");
-      case Ioss::EntityType::SUPERELEMENT: return std::string("SUPERELEMENT");
-      case Ioss::EntityType::STRUCTUREDBLOCK: return std::string("STRUCTUREDBLOCK");
-      case Ioss::EntityType::ASSEMBLY: return std::string("ASSEMBLY");
-      case Ioss::EntityType::BLOB: return std::string("BLOB");
-      case Ioss::EntityType::INVALID_TYPE: return std::string("INVALID_TYPE");
+  case Ioss::EntityType::NODEBLOCK: return std::string("NODEBLOCK");
+  case Ioss::EntityType::EDGEBLOCK: return std::string("EDGEBLOCK");
+  case Ioss::EntityType::FACEBLOCK: return std::string("FACEBLOCK");
+  case Ioss::EntityType::ELEMENTBLOCK: return std::string("ELEMENTBLOCK");
+  case Ioss::EntityType::NODESET: return std::string("NODESET");
+  case Ioss::EntityType::EDGESET: return std::string("EDGESET");
+  case Ioss::EntityType::FACESET: return std::string("FACESET");
+  case Ioss::EntityType::ELEMENTSET: return std::string("ELEMENTSET");
+  case Ioss::EntityType::SIDESET: return std::string("SIDESET");
+  case Ioss::EntityType::COMMSET: return std::string("COMMSET");
+  case Ioss::EntityType::SIDEBLOCK: return std::string("SIDEBLOCK");
+  case Ioss::EntityType::REGION: return std::string("REGION");
+  case Ioss::EntityType::SUPERELEMENT: return std::string("SUPERELEMENT");
+  case Ioss::EntityType::STRUCTUREDBLOCK: return std::string("STRUCTUREDBLOCK");
+  case Ioss::EntityType::ASSEMBLY: return std::string("ASSEMBLY");
+  case Ioss::EntityType::BLOB: return std::string("BLOB");
+  case Ioss::EntityType::INVALID_TYPE: return std::string("INVALID_TYPE");
   }
   return std::string("Invalid entity type [") + std::to_string(unsigned(type)) + std::string("]");
 }
