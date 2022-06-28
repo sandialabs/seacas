@@ -14,6 +14,8 @@
 class CatalystTestFixture
 {
 public:
+  typedef std::vector<std::pair<std::string, int>> VarAndCompCountVec;
+
   CatalystTestFixture();
   ~CatalystTestFixture();
 
@@ -31,6 +33,12 @@ public:
 
   void runCatalystLoggingTest(Ioss::PropertyManager *logging_properties,
                               const std::string &jsonFile, const std::string &inputFile);
+
+  void runCatalystMultiBlockMeshTest(const std::string &inputFile);
+
+  void checkMeshOutputVariables(const std::string &inputFile, const VarAndCompCountVec &cellVars,
+                                const VarAndCompCountVec &pointVars,
+                                const VarAndCompCountVec &globalVars);
 
   static bool isFileExists(const char *fileName);
   static void checkTestOutputFileExists(const char *fileName);

@@ -176,25 +176,21 @@ void CatalystCGNSMesh::AddStructuredZoneData(int base_id,
         }
     }
     else {
-        for(int i=0; i<comp_count; i++) {
-            vtkDoubleArray* da = vtkDoubleArray::New();
-            std::string fn = this->createFieldVariableName(data_name,
-                field_suffix_separator, i, comp_count);
-            da->SetName(fn.c_str());
-            da->SetNumberOfComponents(1);
-            da->SetNumberOfTuples(size);
-            for(int j=0; j<size;j++) {
-                da->InsertValue(j, data[comp_count * j + i]);
-            }
-
-            if(is_cell_field) {
-                sg->GetCellData()->AddArray(da);
-            }
-            else {
-                sg->GetPointData()->AddArray(da);
-            }
-            da->Delete();
+        vtkDoubleArray* da = vtkDoubleArray::New();
+        da->SetName(data_name.c_str());
+        da->SetNumberOfComponents(comp_count);
+        da->SetNumberOfTuples(size);
+        for(int j=0; j<size;j++) {
+            da->InsertTuple(j, data + (comp_count * j));
         }
+
+        if(is_cell_field) {
+            sg->GetCellData()->AddArray(da);
+        }
+        else {
+            sg->GetPointData()->AddArray(da);
+        }
+        da->Delete();
     }
 }
 

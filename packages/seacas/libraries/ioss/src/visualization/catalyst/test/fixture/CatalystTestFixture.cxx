@@ -7,6 +7,15 @@
 #include "CatalystTestFixture.h"
 #include "TestDataDirectoryPath.h"
 #include "catch.hpp"
+#include "vtkAbstractArray.h"
+#include "vtkCellData.h"
+#include "vtkDataObjectTreeIterator.h"
+#include "vtkDataSet.h"
+#include "vtkFieldData.h"
+#include "vtkMultiBlockDataSet.h"
+#include "vtkNew.h"
+#include "vtkPointData.h"
+#include "vtkXMLMultiBlockDataReader.h"
 #include <Iovs_Utils.h>
 #include <cstdlib>
 
@@ -20,6 +29,89 @@ void CatalystTestFixture::runParaViewGuiScriptTest(const std::string &pythonScri
   std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
   ioapp.setParaViewExportedScript(td + pythonScript);
   ioapp.addFileName(td + inputFile);
+  ioapp.runApplication();
+  REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
+
+  // ioapp.setOutputCatalystMeshOneFileON();
+
+  // vtkXMLMultiBlockDataReader* p = vtkXMLMultiBlockDataReader::New();
+  // if(p != nullptr) {
+  //   p->Delete();
+  // }
+}
+
+void CatalystTestFixture::checkMeshOutputVariables(const std::string        &inputFile,
+                                                   const VarAndCompCountVec &cellVars,
+                                                   const VarAndCompCountVec &pointVars,
+                                                   const VarAndCompCountVec &globalVars)
+{
+  vtkNew<vtkXMLMultiBlockDataReader> mbr;
+  mbr->SetFileName(inputFile.c_str());
+  mbr->Update();
+  vtkMultiBlockDataSet *mbds = vtkMultiBlockDataSet::SafeDownCast(mbr->GetOutput());
+
+  vtkNew<vtkDataObjectTreeIterator> iter;
+  iter->SetDataSet(mbds);
+  bool foundBlockThatHasAllVars = false;
+  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem()) {
+    vtkDataSet *ds                 = vtkDataSet::SafeDownCast(iter->GetCurrentDataObject());
+    bool        leafNodeHasAllVars = true;
+
+    for (auto gg : globalVars) {
+      vtkAbstractArray *ar = ds->GetFieldData()->GetAbstractArray(gg.first.c_str());
+      if (ar == nullptr) {
+        leafNodeHasAllVars = false;
+        break;
+      }
+      if (ar->GetNumberOfComponents() != gg.second) {
+        leafNodeHasAllVars = false;
+        break;
+      }
+    }
+
+    for (auto pp : cellVars) {
+      vtkAbstractArray *ar = ds->GetCellData()->GetAbstractArray(pp.first.c_str());
+      if (ar == nullptr) {
+        leafNodeHasAllVars = false;
+        break;
+      }
+      if (ar->GetNumberOfComponents() != pp.second) {
+        leafNodeHasAllVars = false;
+        break;
+      }
+    }
+
+    if (!leafNodeHasAllVars) {
+      continue;
+    }
+
+    for (auto pp : pointVars) {
+      vtkAbstractArray *ar = ds->GetPointData()->GetAbstractArray(pp.first.c_str());
+      if (ar == nullptr) {
+        leafNodeHasAllVars = false;
+        break;
+      }
+      if (ar->GetNumberOfComponents() != pp.second) {
+        leafNodeHasAllVars = false;
+        break;
+      }
+    }
+    if (!leafNodeHasAllVars) {
+      continue;
+    }
+
+    foundBlockThatHasAllVars = true;
+    break;
+  }
+
+  REQUIRE(foundBlockThatHasAllVars);
+}
+
+void CatalystTestFixture::runCatalystMultiBlockMeshTest(const std::string &inputFile)
+{
+  std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
+  ioapp.addFileName(td + inputFile);
+  ioapp.setOutputCatalystMeshOneFile(true);
   ioapp.runApplication();
   REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
 }
@@ -49,8 +141,8 @@ void CatalystTestFixture::runPhactoriJSONTestTwoGrid(const std::string &jsonFile
 }
 
 void CatalystTestFixture::runCatalystLoggingTest(Ioss::PropertyManager *logging_properties,
-                                                 const std::string &    jsonFile,
-                                                 const std::string &    inputFile)
+                                                 const std::string     &jsonFile,
+                                                 const std::string     &inputFile)
 {
   ioapp.setAdditionalProperties(logging_properties);
   runPhactoriJSONTest(jsonFile, inputFile);
@@ -219,5 +311,4 @@ bool CatalystTestFixture::isFileExists(const char *fileName)
     fclose(fp);
   }
   return outputFileExists;
-  REQUIRE(outputFileExists);
 }

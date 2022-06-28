@@ -28,7 +28,7 @@ namespace Iovs_exodus {
 
     ~CatalystExodusMesh();
 
-    void PerformCoProcessing(std::vector<int> &        error_and_warning_codes,
+    void PerformCoProcessing(std::vector<int>         &error_and_warning_codes,
                              std::vector<std::string> &error_and_warning_messages);
 
     void SetTimeData(double currentTime, int timeStep);
@@ -101,13 +101,13 @@ namespace Iovs_exodus {
 
   private:
     const unsigned int ELEMENT_BLOCK_MBDS_ID   = 0;
-    const char *       ELEMENT_BLOCK_MBDS_NAME = "Element Blocks";
+    const char        *ELEMENT_BLOCK_MBDS_NAME = "Element Blocks";
 
     const unsigned int SIDE_SETS_MBDS_ID   = 1;
-    const char *       SIDE_SETS_MBDS_NAME = "Side Sets";
+    const char        *SIDE_SETS_MBDS_NAME = "Side Sets";
 
     const unsigned int NODE_SETS_MBDS_ID   = 2;
-    const char *       NODE_SETS_MBDS_NAME = "Node Sets";
+    const char        *NODE_SETS_MBDS_NAME = "Node Sets";
 
     const int HEXAHEDRON_FACE_MAP[6] = {2, 1, 3, 0, 4, 5};
     const int WEDGE_FACE_MAP[5]      = {2, 3, 4, 0, 1};
@@ -145,14 +145,15 @@ namespace Iovs_exodus {
     std::map<int, Ve2mSideSetInfo *> ssinfomap;
 
     std::map<int, std::map<int, int>> ssmap;
-    void                              ContainsVector(std::vector<std::string> &component_names,
-                                                     std::vector<std::string> &prefix_name);
     double                            GetArrayValue(vtkVariant &v, const void *data, int index);
     void                              ReleaseGlobalPoints();
-    vtkPoints *                       global_points;
+    vtkPoints                        *global_points;
     int                               num_global_points;
     bool                              writeCatalystMesh;
     std::string                       catalystMeshFilePrefix;
+
+    std::string FindComponentNameStem(const std::vector<std::string> &component_names);
+    bool isComponentNamesValid(const std::vector<std::string> &component_names);
 
     void CreateElementBlockInternal(const char *elem_block_name, int elem_block_id,
                                     const std::string &elem_type, int nodes_per_elem, int num_elem,
@@ -187,10 +188,10 @@ namespace Iovs_exodus {
     void ReleaseMemoryInternal(vtkMultiBlockDataSet *eb);
 
     CatalystExodusMesh();
-    CatalystExodusMesh(const CatalystExodusMesh &) = delete;
+    CatalystExodusMesh(const CatalystExodusMesh &)            = delete;
     CatalystExodusMesh &operator=(const CatalystExodusMesh &) = delete;
 
-    vtkMultiBlockDataSet * multiBlock = nullptr;
+    vtkMultiBlockDataSet  *multiBlock = nullptr;
     Iovs::CatalystManager *catManager = nullptr;
     bool                   UnderscoreVectors;
     bool                   ApplyDisplacements;
