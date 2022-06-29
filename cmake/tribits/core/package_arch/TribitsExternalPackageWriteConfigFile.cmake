@@ -497,6 +497,7 @@ endfunction()
 # imported targets <tplName>::<libnamei> for this TPL are linked to this first
 # <tplName>::<libname0> which has the needed dependencies.
 
+
 function(tribits_external_package_get_libname_and_path_from_libentry
     libentry  libEntryType  libnameOut  libpathOut
   )
@@ -548,24 +549,56 @@ function(tribits_external_package_get_libname_from_full_lib_path  full_lib_path
     libnameOut
   )
   # Should be an absolute library path
-  get_filename_component(full_libname "${full_lib_path}" NAME_WLE)
+  get_filename_component(full_libname "${full_lib_path}" NAME_WE)
+  # Begins with 'lib'?
+  tribits_external_package_libname_begins_with_lib("${full_libname}" beginsWithLib)
   # Assert is a valid lib name and get lib name
+  set(libname "")
   string(LENGTH "${full_libname}" full_libname_len)
   if (full_libname_len LESS 0)
-    tribits_print_invalid_lib_name(${tplName} "${full_libname}")
+    tribits_print_invalid_lib_name(${tplName} "${full_lib_path}")
   endif()
   if (WIN32)
     # Native windows compilers does not prepend library names with 'lib'
     set(libname "${full_libname}")
-  else()
-    # Every other system prepends the library name with 'lib'
-    string(SUBSTRING "${full_libname}" 0 3 libPart)
-    if (NOT libPart STREQUAL "lib")
-      tribits_print_invalid_lib_name(${tplName} "${full_libname}")
+  elseif (APPLE)
+    # On MacOSX, CMake allows using frameworks that *don't* begin with 'lib'
+    # so we have to allow for that
+    if (beginsWithLib)
+      string(SUBSTRING "${full_libname}" 3 -1 libname)
+    else()
+      # Must be a framework dir with extension .framework
+      get_filename_component(last_ext "${full_lib_path}" LAST_EXT)
+      if (last_ext  STREQUAL ".framework")
+        set(libname "${full_libname}")
+      else()
+        tribits_print_invalid_lib_name(${tplName} "${full_lib_path}")
+      endif()
     endif()
-    string(SUBSTRING "${full_libname}" 3 -1 libname)
+  else() # I.e. Linux
+    # Every other system (i.e. Linux) prepends the library name with 'lib' so
+    # assert for that
+    if (NOT beginsWithLib)
+      tribits_print_invalid_lib_name(${tplName} "${full_lib_path}")
+    else()
+      string(SUBSTRING "${full_libname}" 3 -1 libname)
+    endif()
   endif()
+  # Set output
   set(${libnameOut} ${libname} PARENT_SCOPE)
+endfunction()
+
+
+function(tribits_external_package_libname_begins_with_lib  full_libname
+    libnameBeginsWithLibOut
+  )
+  string(SUBSTRING "${full_libname}" 0 3 libPart)
+  if (libPart STREQUAL "lib")
+    set(libnameBeginsWithLib TRUE)
+  else()
+    set(libnameBeginsWithLib FALSE)
+  endif()
+  set(${libnameBeginsWithLibOut} ${libnameBeginsWithLib} PARENT_SCOPE)
 endfunction()
 
 
@@ -585,8 +618,8 @@ endfunction()
 
 
 function(tribits_print_invalid_lib_name  tplName  full_libname)
-  message(SEND_ERROR
-    "ERROR: TPL_${tplName}_LIBRARIES entry '${full_libname}' not a valid lib name!")
+  message_wrapper(SEND_ERROR
+    "ERROR: TPL_${tplName}_LIBRARIES entry '${full_libname}' not a valid lib file name!")
 endfunction()
 
 
