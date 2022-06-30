@@ -24,6 +24,7 @@ namespace Line_Decomp {
 
     bool ints_64_bit() const { return ints64Bit_; }
 
+    int         debug() const { return debugLevel_; }
     std::string input_filename() const { return inputFile_; }
     std::string output_filename() const { return outputFile_; }
     std::string input_type() const { return inFiletype_; }
@@ -44,8 +45,8 @@ namespace Line_Decomp {
     std::string decomp_method;
     std::string compose_output{"default"};
     int         compression_level{0};
+    int         debugLevel_{};
     bool        shuffle{false};
-    bool        debug{false};
     bool        statistics{false};
     bool        ints64Bit_{false};
     bool        netcdf4_{false};

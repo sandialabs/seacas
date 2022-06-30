@@ -131,7 +131,13 @@ void Line_Decomp::Interface::enroll_options()
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
                   nullptr);
 
-  options_.enroll("debug", Ioss::GetLongOption::NoValue, "turn on debugging output", nullptr);
+  options_.enroll("debug", Ioss::GetLongOption::MandatoryValue,
+                  "debug level (values are or'd)\n"
+                  "\t\t  1 = IOSS logging.\n"
+                  "\t\t  2 = List faces on each element.\n"
+                  "\t\t  4 = Front Processing.\n"
+                  "\t\t  8 = Print the chains.",
+                  "0");
 
   options_.enroll("statistics", Ioss::GetLongOption::NoValue,
                   "output parallel io timing statistics", nullptr);
@@ -172,11 +178,11 @@ bool Line_Decomp::Interface::parse_options(int argc, char **argv)
     exit(0);
   }
 
-  ints64Bit_ = options_.retrieve("64-bit") != nullptr;
-  netcdf4_   = options_.retrieve("netcdf4") != nullptr;
-  shuffle    = options_.retrieve("shuffle") != nullptr;
-  debug      = options_.retrieve("debug") != nullptr;
-  statistics = options_.retrieve("statistics") != nullptr;
+  ints64Bit_  = options_.retrieve("64-bit") != nullptr;
+  netcdf4_    = options_.retrieve("netcdf4") != nullptr;
+  shuffle     = options_.retrieve("shuffle") != nullptr;
+  debugLevel_ = options_.get_option_value("debug", debugLevel_);
+  statistics  = options_.retrieve("statistics") != nullptr;
 
   {
     const char *temp = options_.retrieve("surfaces");

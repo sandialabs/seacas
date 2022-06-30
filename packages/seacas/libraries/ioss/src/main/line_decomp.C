@@ -1,3 +1,10 @@
+// TODO:
+// * Output the chains to an element map(s) instead of field.
+// * Make the chain generation a library function (need to watch the sideset/sideblock splitting)
+// * Parallelize
+// * Auto-Decomp (Can we generate the chains in the ioss decomp lower level...)
+// * Add to slice...
+
 // Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
@@ -56,7 +63,7 @@ template <typename INT> struct chain_entry_t
 template <typename INT> using chain_t = std::vector<chain_entry_t<INT>>;
 
 namespace {
-  bool debug = false;
+  int debug = 0;
 
   void add_chain_fields(Ioss::Region &region, const std::vector<std::string> &adj_blocks);
 
@@ -118,7 +125,7 @@ namespace {
       return front;
     }
 
-    fmt::print("Processing Element Block {}\n", adj_block);
+    fmt::print("---Processing Element Block {}\n", adj_block);
 
     // Get the offset into the element_chains vector...
     auto offset = block->get_offset() + 1;
@@ -148,7 +155,9 @@ namespace {
                   int side                         = element_side[i + 1]; // 1-based sides
                   element_chains[element - offset] = chain_entry_t<INT>{element, 0};
                   front.push_back(std::make_pair(element, side));
-                  fmt::print("Putting element {}, side {} in front.\n", element, side);
+                  if (debug & 4) {
+                    fmt::print("Putting element {}, side {} in front.\n", element, side);
+                  }
                 }
               }
             }
@@ -170,25 +179,27 @@ namespace {
       }
     }
 
-    fmt::print("\n-----------------------------\n");
-    int l = 1;
-    for (size_t i = 0; i < face_connectivity.size(); i++) {
-      for (size_t j = 0; j < 6; j++) {
-        const auto *face = face_connectivity[i][j];
-        assert(face != nullptr);
-        int  k       = (face->elementCount_ > 1 && face->element[0] / 10 - offset != i) ? 1 : 0;
-        auto element = face->element[k] / 10;
-        auto side    = face->element[k] % 10;
-        assert(side == j);
-        if (face->elementCount_ > 1) {
-          fmt::print(
-              "[{:3}] Element {}, Side {}/{} is Face {}.\tAdjacent to Element {}, Side {}.\n", l++,
-              element, side, j, face->hashId_, face->element[1 - k] / 10,
-              face->element[1 - k] % 10);
-        }
-        else {
-          fmt::print("[{:3}] Element {}, Side {}/{} is Face {}.\n", l++, element, side, j,
-                     face->hashId_);
+    if (debug & 2) {
+      fmt::print("\n-----------------------------\n");
+      int l = 1;
+      for (size_t i = 0; i < face_connectivity.size(); i++) {
+        for (size_t j = 0; j < 6; j++) {
+          const auto *face = face_connectivity[i][j];
+          assert(face != nullptr);
+          int  k       = (face->elementCount_ > 1 && face->element[0] / 10 - offset != i) ? 1 : 0;
+          auto element = face->element[k] / 10;
+          auto side    = face->element[k] % 10;
+          assert(side == j);
+          if (face->elementCount_ > 1) {
+            fmt::print(
+                "[{:3}] Element {}, Side {}/{} is Face {}.\tAdjacent to Element {}, Side {}.\n",
+                l++, element, side, j, face->hashId_, face->element[1 - k] / 10,
+                face->element[1 - k] % 10);
+          }
+          else {
+            fmt::print("[{:3}] Element {}, Side {}/{} is Face {}.\n", l++, element, side, j,
+                       face->hashId_);
+          }
         }
       }
     }
@@ -211,6 +222,7 @@ int main(int argc, char *argv[])
   if (!success) {
     return EXIT_FAILURE;
   }
+  debug = interFace.debug();
 
   Ioss::Init::Initializer io;
 
@@ -267,11 +279,6 @@ namespace {
 
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");
-
-    int my_rank = region.get_database()->util().parallel_rank();
-    if (my_rank == 0) {
-      region.output_summary(std::cerr, false);
-    }
 
     // Output File...
     Ioss::DatabaseIO *dbo =
@@ -332,7 +339,9 @@ namespace {
       // Get the offset into the element_chains vector...
       front_t<INT> next_front;
       while (!front.empty()) {
-        fmt::print("\n----------------------\n");
+        if (debug & 4) {
+          fmt::print("\n----------------------\n");
+        }
         next_front.reserve(front.size());
         for (auto &element_side : front) {
           auto element = element_side.first;
@@ -349,20 +358,26 @@ namespace {
             if (element_chains[nxt_element - offset] == chain_entry_t<INT>()) {
               element_chains[nxt_element - offset] = element_chains[element - offset];
               element_chains[nxt_element - offset].link++;
-              fmt::print("At element {}, side {} -- Next in chain is element {}, side {}\n",
-                         element, side, nxt_element, nxt_side);
+              if (debug & 4) {
+                fmt::print("At element {}, side {} -- Next in chain is element {}, side {}\n",
+                           element, side, nxt_element, nxt_side);
+              }
               next_front.push_back(std::make_pair(nxt_element, nxt_side + 1));
             }
             else {
+              if (debug & 4) {
+                fmt::print("At element {}, side {} -- Termination of chain {} of size {}.\n",
+                           element, side, element_chains[element - offset].element,
+                           element_chains[element - offset].link + 1);
+              }
+            }
+          }
+          else {
+            if (debug & 4) {
               fmt::print("At element {}, side {} -- Termination of chain {} of size {}.\n", element,
                          side, element_chains[element - offset].element,
                          element_chains[element - offset].link + 1);
             }
-          }
-          else {
-            fmt::print("At element {}, side {} -- Termination of chain {} of size {}.\n", element,
-                       side, element_chains[element - offset].element,
-                       element_chains[element - offset].link + 1);
           }
         }
         std::swap(front, next_front);
@@ -404,8 +419,10 @@ namespace {
 
     for (size_t i = 0; i < chain.size(); i++) {
       auto &chain_entry = chains[i];
-      fmt::print("[{}]: element {}, link {}\n", i + 1, chain_entry.element, chain_entry.link);
-      chain[i] = chain_entry.element;
+      chain[i]          = chain_entry.element;
+      if (debug & 8) {
+        fmt::print("[{}]: element {}, link {}\n", i + 1, chain_entry.element, chain_entry.link);
+      }
     }
 
     oeb->put_field_data("chain", chain);
@@ -419,7 +436,7 @@ namespace {
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
     }
 
-    if (interFace.debug) {
+    if (interFace.debug() & 1) {
       properties.add(Ioss::Property("LOGGING", 1));
     }
 
