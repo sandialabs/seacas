@@ -56,6 +56,8 @@ template <typename INT> struct chain_entry_t
 template <typename INT> using chain_t = std::vector<chain_entry_t<INT>>;
 
 namespace {
+  bool debug = false;
+
   void add_chain_fields(Ioss::Region &region, const std::vector<std::string> &adj_blocks);
 
   template <typename INT>
@@ -64,7 +66,7 @@ namespace {
 
   template <typename INT> void line_decomp(Line_Decomp::Interface &interFace, INT /*dummy*/);
   std::string                  codename;
-  std::string                  version = "0.99";
+  std::string                  version = "0.1";
 
   // 0-based face
   int hex_opposite_side(int side)
@@ -119,7 +121,7 @@ namespace {
     fmt::print("Processing Element Block {}\n", adj_block);
 
     // Get the offset into the element_chains vector...
-    auto offset = block->get_offset();
+    auto offset = block->get_offset() + 1;
 
     auto selected_surfaces = Ioss::tokenize(surface_list, ",");
     // Now find the facesets that have faces on this block...
@@ -170,7 +172,7 @@ namespace {
 
     fmt::print("\n-----------------------------\n");
     int l = 1;
-    for (size_t i = 1; i < face_connectivity.size(); i++) {
+    for (size_t i = 0; i < face_connectivity.size(); i++) {
       for (size_t j = 0; j < 6; j++) {
         const auto *face = face_connectivity[i][j];
         assert(face != nullptr);
@@ -260,16 +262,13 @@ namespace {
       std::exit(EXIT_FAILURE);
     }
 
-    // Use 64-bit integers here...
-    //    dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
-
     // Do not decompose sidesets into sideblocks...
     dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
 
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");
-    int          my_rank = region.get_database()->util().parallel_rank();
 
+    int my_rank = region.get_database()->util().parallel_rank();
     if (my_rank == 0) {
       region.output_summary(std::cerr, false);
     }
@@ -289,7 +288,6 @@ namespace {
     output_region.property_add(Ioss::Property(std::string("code_name"), codename));
     output_region.property_add(Ioss::Property(std::string("code_version"), version));
 
-    // Do normal copy...
     Ioss::MeshCopyOptions options{};
     options.ints_64_bit       = sizeof(INT) == 64;
     options.delete_timesteps  = true;
@@ -315,17 +313,17 @@ namespace {
     for (const auto &adj_block : adjacent_blocks) {
       // Get the offset into the element_chains vector...
       const auto *block  = region.get_element_block(adj_block);
-      auto        offset = block->get_offset();
+      auto        offset = block->get_offset() + 1;
       auto        count  = block->entity_count();
 
-      chain_t<INT> element_chains(count + 1);
+      chain_t<INT> element_chains(count);
       auto front = get_line_front(region, adj_block, element_chains, interFace.surfaceList, (INT)0);
       if (front.empty()) {
         continue;
       }
 
       // We want a vector giving us the Face for each face of each element in the block...
-      connectivity_t face_connectivity(count + 1);
+      connectivity_t face_connectivity(count);
       generate_face_connectivity(face_generator.faces(adj_block), offset, face_connectivity);
 
       // For each face on the "front" (at the beginning the boundary sideset faces)
@@ -402,10 +400,10 @@ namespace {
     Ioss::ElementBlock *oeb = region.get_element_block(eb->name());
     assert(oeb != nullptr);
     std::vector<double> chain(oeb->entity_count());
-    assert(chain.size() + 1 == chains.size());
+    assert(chain.size() == chains.size());
 
     for (size_t i = 0; i < chain.size(); i++) {
-      auto &chain_entry = chains[i + 1];
+      auto &chain_entry = chains[i];
       fmt::print("[{}]: element {}, link {}\n", i + 1, chain_entry.element, chain_entry.link);
       chain[i] = chain_entry.element;
     }
