@@ -18,6 +18,7 @@
 
 #include "Ionit_Initializer.h"
 #include "Ioss_CodeTypes.h"
+#include "Ioss_CopyDatabase.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h"
@@ -25,6 +26,7 @@
 #include "Ioss_FaceGenerator.h"
 #include "Ioss_FileInfo.h"
 #include "Ioss_IOFactory.h"
+#include "Ioss_MeshCopyOptions.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
@@ -33,6 +35,7 @@
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_Utils.h"
+#include "tokenize.h"
 
 #include <cassert>
 
@@ -53,6 +56,12 @@ template <typename INT> struct chain_entry_t
 template <typename INT> using chain_t = std::vector<chain_entry_t<INT>>;
 
 namespace {
+  void add_chain_fields(Ioss::Region &region, const std::vector<std::string> &adj_blocks);
+
+  template <typename INT>
+  void output_chain_fields(Ioss::Region &region, const Ioss::ElementBlock *eb,
+                           const chain_t<INT> &chains);
+
   template <typename INT> void line_decomp(Line_Decomp::Interface &interFace, INT /*dummy*/);
   std::string                  codename;
   std::string                  version = "0.99";
@@ -71,16 +80,21 @@ namespace {
     return -1;
   }
 
-  std::vector<std::string> get_adjacent_blocks(Ioss::Region &region)
+  std::vector<std::string> get_adjacent_blocks(Ioss::Region      &region,
+                                               const std::string &surface_list)
   {
+    auto                          selected_surfaces = Ioss::tokenize(surface_list, ",");
     std::vector<std::string>      adjacent_blocks;
     const Ioss::SideSetContainer &fss = region.get_sidesets();
     for (auto &fs : fss) {
-      // Save a list of all blocks that are adjacent to the surfaces...
-      std::vector<std::string> blocks;
-      fs->block_membership(blocks);
-      for (const auto &block : blocks) {
-        adjacent_blocks.push_back(block); // May have duplicates at this point.
+      if (surface_list == "ALL" || std::find(selected_surfaces.begin(), selected_surfaces.end(),
+                                             fs->name()) != selected_surfaces.end()) {
+        // Save a list of all blocks that are adjacent to the surfaces...
+        std::vector<std::string> blocks;
+        fs->block_membership(blocks);
+        for (const auto &block : blocks) {
+          adjacent_blocks.push_back(block); // May have duplicates at this point.
+        }
       }
     }
     Ioss::Utils::uniquify(adjacent_blocks);
@@ -89,7 +103,8 @@ namespace {
 
   template <typename INT>
   front_t<INT> get_line_front(Ioss::Region &region, const std::string &adj_block,
-                              chain_t<INT> &element_chains, INT /*dummy*/)
+                              chain_t<INT> &element_chains, const std::string &surface_list,
+                              INT /*dummy*/)
   {
     front_t<INT> front;
 
@@ -106,29 +121,33 @@ namespace {
     // Get the offset into the element_chains vector...
     auto offset = block->get_offset();
 
+    auto selected_surfaces = Ioss::tokenize(surface_list, ",");
     // Now find the facesets that have faces on this block...
     const Ioss::SideSetContainer &fss = region.get_sidesets();
     for (auto &fs : fss) {
-      std::vector<std::string> blocks;
-      fs->block_membership(blocks);
-      for (const auto &fs_block : blocks) {
-        if (fs_block == adj_block) {
-          // This faceset has some elements that are in `adj_block` -- put those in the `front`
-          // list. Get list of "sides" in this faceset...
-          std::vector<INT> element_side;
-          assert(fs->side_block_count() == 1);
-          const auto *fb = fs->get_block(0);
-          fb->get_field_data("element_side_raw", element_side);
+      if (surface_list == "ALL" || std::find(selected_surfaces.begin(), selected_surfaces.end(),
+                                             fs->name()) != selected_surfaces.end()) {
+        std::vector<std::string> blocks;
+        fs->block_membership(blocks);
+        for (const auto &fs_block : blocks) {
+          if (fs_block == adj_block) {
+            // This faceset has some elements that are in `adj_block` -- put those in the `front`
+            // list. Get list of "sides" in this faceset...
+            std::vector<INT> element_side;
+            assert(fs->side_block_count() == 1);
+            const auto *fb = fs->get_block(0);
+            fb->get_field_data("element_side_raw", element_side);
 
-          // Mark each element so we know it is on the sideset(s)
-          for (size_t i = 0; i < element_side.size(); i += 2) {
-            auto element = element_side[i];
-            if (block->contains(element)) {
-              if (element_chains[element - offset] == chain_entry_t<INT>()) {
-                int side                         = element_side[i + 1]; // 1-based sides
-                element_chains[element - offset] = chain_entry_t<INT>{element, 0};
-                front.push_back(std::make_pair(element, side));
-                fmt::print("Putting element {}, side {} in front.\n", element, side);
+            // Mark each element so we know it is on the sideset(s)
+            for (size_t i = 0; i < element_side.size(); i += 2) {
+              auto element = element_side[i];
+              if (block->contains(element)) {
+                if (element_chains[element - offset] == chain_entry_t<INT>()) {
+                  int side                         = element_side[i + 1]; // 1-based sides
+                  element_chains[element - offset] = chain_entry_t<INT>{element, 0};
+                  front.push_back(std::make_pair(element, side));
+                  fmt::print("Putting element {}, side {} in front.\n", element, side);
+                }
               }
             }
           }
@@ -195,10 +214,7 @@ int main(int argc, char *argv[])
 
   if (my_rank == 0) {
     fmt::print("\nInput:    '{}', Type: {}\n", interFace.input_filename(), interFace.input_type());
-    if (!interFace.no_output()) {
-      fmt::print("Output:   '{}', Type: {}\n", interFace.output_filename(),
-                 interFace.output_type());
-    }
+    fmt::print("Output:   '{}', Type: {}\n", interFace.output_filename(), interFace.output_type());
   }
 
   double begin = Ioss::Utils::timer();
@@ -258,6 +274,31 @@ namespace {
       region.output_summary(std::cerr, false);
     }
 
+    // Output File...
+    Ioss::DatabaseIO *dbo =
+        Ioss::IOFactory::create(interFace.output_type(), interFace.output_filename(),
+                                Ioss::WRITE_RESTART, Ioss::ParallelUtils::comm_world(), properties);
+    if (dbo == nullptr || !dbo->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
+
+    // NOTE: 'output_region' owns 'dbo' pointer at this time
+    Ioss::Region output_region(dbo, "region_2");
+
+    // Set the qa information...
+    output_region.property_add(Ioss::Property(std::string("code_name"), codename));
+    output_region.property_add(Ioss::Property(std::string("code_version"), version));
+
+    // Do normal copy...
+    Ioss::MeshCopyOptions options{};
+    options.ints_64_bit       = sizeof(INT) == 64;
+    options.delete_timesteps  = true;
+    options.data_storage_type = 2;
+    options.verbose           = true;
+
+    // Copy mesh portion of input region to the output region
+    Ioss::copy_database(region, output_region, options);
+
     // Generate the faces...
     Ioss::FaceGenerator face_generator(region);
     face_generator.generate_faces((INT)0, true, true);
@@ -265,7 +306,11 @@ namespace {
     // Determine which element block(s) are adjacent to the faceset specifying "lines"
     // The `adjacent_blocks` contains the names of all element blocks that are adjacent to the
     // surface(s) that specify the faces at the 'root' of the lines...
-    std::vector<std::string> adjacent_blocks = get_adjacent_blocks(region);
+    std::vector<std::string> adjacent_blocks = get_adjacent_blocks(region, interFace.surfaceList);
+
+    // Add the chain field metadata to all hex blocks that are adjacent to a 'chain surface'
+    // Leaves output_region in state "transient" and outputting a time_step...
+    add_chain_fields(output_region, adjacent_blocks);
 
     for (const auto &adj_block : adjacent_blocks) {
       // Get the offset into the element_chains vector...
@@ -274,7 +319,7 @@ namespace {
       auto        count  = block->entity_count();
 
       chain_t<INT> element_chains(count + 1);
-      auto         front = get_line_front(region, adj_block, element_chains, (INT)0);
+      auto front = get_line_front(region, adj_block, element_chains, interFace.surfaceList, (INT)0);
       if (front.empty()) {
         continue;
       }
@@ -325,18 +370,47 @@ namespace {
         std::swap(front, next_front);
         next_front.clear();
       }
-      int element = offset - 1;
-      for (auto &chain : element_chains) {
-        if (++element == 0) {
-          continue;
-        }
-        fmt::print("[{}]: element {}, link {}\n", element, chain.element, chain.link);
-      }
+      output_chain_fields(output_region, block, element_chains);
     } // End of block loop
 
-    if (interFace.no_output()) {
-      return;
+    output_region.end_state(1);
+    output_region.end_mode(Ioss::STATE_TRANSIENT);
+  }
+
+  void add_chain_fields(Ioss::Region &region, const std::vector<std::string> &adj_blocks)
+  {
+    region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
+    for (auto &blk_name : adj_blocks) {
+      auto *eb = region.get_element_block(blk_name);
+      assert(eb != nullptr);
+      if (eb->topology()->shape() == Ioss::ElementShape::HEX) {
+        eb->field_add(Ioss::Field("chain", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT));
+      }
     }
+    region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
+
+    region.begin_mode(Ioss::STATE_TRANSIENT);
+
+    auto step = region.add_state(0.0);
+    region.begin_state(step);
+  }
+
+  template <typename INT>
+  void output_chain_fields(Ioss::Region &region, const Ioss::ElementBlock *eb,
+                           const chain_t<INT> &chains)
+  {
+    Ioss::ElementBlock *oeb = region.get_element_block(eb->name());
+    assert(oeb != nullptr);
+    std::vector<double> chain(oeb->entity_count());
+    assert(chain.size() + 1 == chains.size());
+
+    for (size_t i = 0; i < chain.size(); i++) {
+      auto &chain_entry = chains[i + 1];
+      fmt::print("[{}]: element {}, link {}\n", i + 1, chain_entry.element, chain_entry.link);
+      chain[i] = chain_entry.element;
+    }
+
+    oeb->put_field_data("chain", chain);
   }
 
   Ioss::PropertyManager set_properties(Line_Decomp::Interface &interFace)

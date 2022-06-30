@@ -24,8 +24,6 @@ namespace Line_Decomp {
 
     bool ints_64_bit() const { return ints64Bit_; }
 
-    bool no_output() const { return noOutput_; }
-
     std::string input_filename() const { return inputFile_; }
     std::string output_filename() const { return outputFile_; }
     std::string input_type() const { return inFiletype_; }
@@ -42,6 +40,7 @@ namespace Line_Decomp {
     std::string outFiletype_{"unknown"};
 
   public:
+    std::string surfaceList;
     std::string decomp_method;
     std::string compose_output{"default"};
     int         compression_level{0};
@@ -50,8 +49,5 @@ namespace Line_Decomp {
     bool        statistics{false};
     bool        ints64Bit_{false};
     bool        netcdf4_{false};
-    bool        useFaceHashIds_{true};
-    bool        noOutput_{false};
-    bool        blocks_{false};
   };
 } // namespace Line_Decomp

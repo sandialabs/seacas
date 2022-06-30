@@ -55,14 +55,11 @@ void Line_Decomp::Interface::enroll_options()
                   ".\n\t\tIf not specified, guess from extension or exodus is the default.",
                   "unknown");
 
-  options_.enroll("no_output", Ioss::GetLongOption::NoValue,
-                  "Do not produce output file, just generate the faces", nullptr);
-
-  options_.enroll("ignore_face_hash_ids", Ioss::GetLongOption::NoValue,
-                  "Don't use face ids from hash of node ids; just use 1..num_face", nullptr);
-
-  options_.enroll("blocks", Ioss::GetLongOption::NoValue,
-                  "Skin block-by-block instead of entire model boundary", nullptr);
+  options_.enroll(
+      "surfaces", Ioss::GetLongOption::MandatoryValue,
+      "A comma-separated list of surface/sideset names from which the lines will grow.\n"
+      "\t\tOmit or enter 'ALL' for all surfaces in model",
+      nullptr);
 
   options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
                   "Output database will be a netcdf4 "
@@ -175,14 +172,21 @@ bool Line_Decomp::Interface::parse_options(int argc, char **argv)
     exit(0);
   }
 
-  ints64Bit_      = options_.retrieve("64-bit") != nullptr;
-  netcdf4_        = options_.retrieve("netcdf4") != nullptr;
-  shuffle         = options_.retrieve("shuffle") != nullptr;
-  noOutput_       = options_.retrieve("no_output") != nullptr;
-  useFaceHashIds_ = options_.retrieve("ignore_face_hash_ids") == nullptr;
-  debug           = options_.retrieve("debug") != nullptr;
-  statistics      = options_.retrieve("statistics") != nullptr;
-  blocks_         = options_.retrieve("blocks") != nullptr;
+  ints64Bit_ = options_.retrieve("64-bit") != nullptr;
+  netcdf4_   = options_.retrieve("netcdf4") != nullptr;
+  shuffle    = options_.retrieve("shuffle") != nullptr;
+  debug      = options_.retrieve("debug") != nullptr;
+  statistics = options_.retrieve("statistics") != nullptr;
+
+  {
+    const char *temp = options_.retrieve("surfaces");
+    if (temp != nullptr) {
+      surfaceList = Ioss::Utils::lowercase(temp);
+    }
+    else {
+      surfaceList = "ALL";
+    }
+  }
 
   {
     const char *temp = options_.retrieve("compress");
@@ -262,11 +266,11 @@ bool Line_Decomp::Interface::parse_options(int argc, char **argv)
     inputFile_ = argv[option_index++];
   }
 
-  if (option_index < argc && !noOutput_) {
+  if (option_index < argc) {
     outputFile_ = argv[option_index];
   }
 
-  if (inputFile_.empty() || (!noOutput_ && outputFile_.empty())) {
+  if (inputFile_.empty() || outputFile_.empty()) {
     fmt::print(stderr, "\nERROR: input and output filename not specified\n\n");
     return false;
   }
@@ -275,7 +279,7 @@ bool Line_Decomp::Interface::parse_options(int argc, char **argv)
   if (inFiletype_ == "unknown") {
     inFiletype_ = Ioss::Utils::get_type_from_file(inputFile_);
   }
-  if (!noOutput_ && outFiletype_ == "unknown") {
+  if (outFiletype_ == "unknown") {
     outFiletype_ = Ioss::Utils::get_type_from_file(outputFile_);
   }
   return true;
