@@ -829,6 +829,31 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
   }
 }
 
+bool Ioss::Utils::check_int_to_real_overflow(const Ioss::Field &field, int64_t *data,
+                                             size_t num_entity)
+{
+  // Check all values in `data` to make sure that if they are converted to a double and
+  // back again, there will be no data loss.  This requires that the value be less than 2^53.
+  static int64_t max_double = 2LL << 53;
+  assert(int64_t(double(max_double)) == max_double);
+  assert(int64_t(double(max_double + 1)) != max_double + 1);
+
+  size_t comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+  for (size_t i = 0; i < num_entity * comp_count; i++) {
+    if (data[i] > max_double) {
+      fmt::print(
+          Ioss::WarnOut(),
+          "Field '{}' contains 64-bit integer data that is not representable as a double value.\n"
+          "\tThis value can not currently be stored in the exodus database without data loss.\n"
+          "\tThe first such value is at location {}, component {} (1-based) with value {}.\n",
+          field.get_name(), fmt::group_digits(i / comp_count + 1), i % comp_count + 1,
+          fmt::group_digits(data[i]));
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string Ioss::Utils::platform_information()
 {
 #if !defined(__IOSS_WINDOWS__)

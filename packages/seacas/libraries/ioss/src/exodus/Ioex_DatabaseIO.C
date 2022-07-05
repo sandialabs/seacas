@@ -3373,6 +3373,10 @@ int64_t DatabaseIO::write_attribute_field(const Ioss::Field &field, const Ioss::
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
          ioss_type == Ioss::Field::INT64);
 
+  if (ioss_type == Ioss::Field::INT64) {
+    Ioss::Utils::check_int_to_real_overflow(field, (int64_t *)data, num_entity);
+  }
+
   if (fld_offset == 1 && field.get_component_count(Ioss::Field::InOut::OUTPUT) == attribute_count) {
     // Write all attributes in one big chunk...
     std::vector<double> temp;
@@ -4608,6 +4612,10 @@ void DatabaseIO::write_nodal_transient_field(const Ioss::Field &field,
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
          ioss_type == Ioss::Field::INT64 || ioss_type == Ioss::Field::COMPLEX);
 
+  if (ioss_type == Ioss::Field::INT64) {
+    Ioss::Utils::check_int_to_real_overflow(field, (int64_t *)variables, count);
+  }
+
   // Note that if the field's basic type is COMPLEX, then each component of
   // the VariableType is a complex variable consisting of a real and
   // imaginary part.  Since exodus cannot handle complex variables,
@@ -4714,6 +4722,10 @@ void DatabaseIO::write_entity_transient_field(const Ioss::Field          &field,
   Ioss::Field::BasicType ioss_type = field.get_type();
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
          ioss_type == Ioss::Field::INT64 || ioss_type == Ioss::Field::COMPLEX);
+
+  if (ioss_type == Ioss::Field::INT64) {
+    Ioss::Utils::check_int_to_real_overflow(field, (int64_t *)variables, count);
+  }
 
   // Note that if the field's basic type is COMPLEX, then each component of
   // the VariableType is a complex variable consisting of a real and

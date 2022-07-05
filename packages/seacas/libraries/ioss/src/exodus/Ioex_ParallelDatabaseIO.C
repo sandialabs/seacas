@@ -2808,6 +2808,10 @@ int64_t ParallelDatabaseIO::write_attribute_field(const Ioss::Field          &fi
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
          ioss_type == Ioss::Field::INT64);
 
+  if (ioss_type == Ioss::Field::INT64) {
+    Ioss::Utils::check_int_to_real_overflow(field, (int64_t *)data, num_entity);
+  }
+
   int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
 
   ex_entity_type type = Ioex::map_exodus_type(ge->type());
@@ -4116,6 +4120,10 @@ void ParallelDatabaseIO::write_nodal_transient_field(const Ioss::Field     &fiel
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
          ioss_type == Ioss::Field::INT64 || ioss_type == Ioss::Field::COMPLEX);
 
+  if (ioss_type == Ioss::Field::INT64) {
+    Ioss::Utils::check_int_to_real_overflow(field, (int64_t *)variables, count);
+  }
+
   // Note that if the field's basic type is COMPLEX, then each component of
   // the VariableType is a complex variable consisting of a real and
   // imaginary part.  Since exodus cannot handle complex variables,
@@ -4230,6 +4238,10 @@ void ParallelDatabaseIO::write_entity_transient_field(const Ioss::Field         
   Ioss::Field::BasicType ioss_type = field.get_type();
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
          ioss_type == Ioss::Field::INT64 || ioss_type == Ioss::Field::COMPLEX);
+
+  if (ioss_type == Ioss::Field::INT64) {
+    Ioss::Utils::check_int_to_real_overflow(field, (int64_t *)variables, count);
+  }
 
   // Note that if the field's basic type is COMPLEX, then each component of
   // the VariableType is a complex variable consisting of a real and

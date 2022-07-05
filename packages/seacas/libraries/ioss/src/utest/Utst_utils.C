@@ -10,6 +10,7 @@
 #include <doctest.h>
 
 #include <Ioss_CodeTypes.h>
+#include <Ioss_ConcreteVariableType.h>
 #include <Ioss_Utils.h>
 #include <exception>
 #include <numeric>
@@ -61,6 +62,16 @@ DOCTEST_TEST_CASE("number_width")
     DOCTEST_REQUIRE(15 == Ioss::Utils::number_width(111'111'111'111, true));
 #endif
   }
+}
+
+DOCTEST_TEST_CASE("detect large int64")
+{
+  Ioss::StorageInitializer init_fields;
+  static int64_t           max_double = 2LL << 53;
+
+  Ioss::Field field{"test", Ioss::Field::INT64, "vector_2d", Ioss::Field::RoleType::TRANSIENT, 3};
+  std::vector<int64_t> data{0, max_double, max_double + 1, max_double - 1};
+  DOCTEST_REQUIRE(true == Ioss::Utils::check_int_to_real_overflow(field, data.data(), data.size()));
 }
 
 #if !defined __NVCC__
