@@ -105,11 +105,11 @@ if (${CMAKE_PROJECT_NAME} STREQUAL "Seacas")
 endif()
 
 if (${CMAKE_PROJECT_NAME}_ENABLE_TESTS)
-  TRIBITS_ADD_EXECUTABLE(aprepro_test_app NOEXEPREFIX NOEXESUFFIX SOURCES apr_test.cc LINKER_LANGUAGE CXX)
+  TRIBITS_ADD_EXECUTABLE(aprepro_lib_test NOEXEPREFIX NOEXESUFFIX INSTALLABLE SOURCES apr_test.cc LINKER_LANGUAGE CXX)
 
 TRIBITS_ADD_ADVANCED_TEST(
  aprepro_lib_unit_test
- TEST_0 EXEC aprepro_test_app
+ TEST_0 EXEC aprepro_lib_test
         ARGS -o test.output ${CMAKE_CURRENT_SOURCE_DIR}/test.inp_app
   NOEXEPREFIX NOEXESUFFIX
   PASS_ANY
@@ -124,7 +124,7 @@ TRIBITS_ADD_ADVANCED_TEST(
 
 TRIBITS_ADD_ADVANCED_TEST(
  aprepro_lib_array_test
- TEST_0 EXEC aprepro_test_app
+ TEST_0 EXEC aprepro_lib_test
 	ARGS --info=test-array.dump --include=${CMAKE_CURRENT_SOURCE_DIR} -o test-array.out
 	     ${CMAKE_CURRENT_SOURCE_DIR}/test-array.i
   NOEXEPREFIX NOEXESUFFIX
