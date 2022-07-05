@@ -591,7 +591,13 @@ namespace Ioex {
     Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][0], codename, MAX_STR_LENGTH + 1);
     Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][1], version, MAX_STR_LENGTH + 1);
 
-    int ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
+    int ierr = 0;
+    if (isParallel && myProcessor != 0) {
+      ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, nullptr);
+    }
+    else {
+      ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
+    }
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
@@ -654,7 +660,13 @@ namespace Ioex {
       Ioss::Utils::copy_string(info[i], lines[j], max_line_length + 1);
     }
 
-    int ierr = ex_put_info(get_file_pointer(), total_lines, info);
+    int ierr = 0;
+    if (isParallel && myProcessor != 0) {
+      ierr = ex_put_info(get_file_pointer(), total_lines, nullptr);
+    }
+    else {
+      ierr = ex_put_info(get_file_pointer(), total_lines, info);
+    }
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
