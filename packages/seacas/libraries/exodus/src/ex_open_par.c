@@ -340,39 +340,30 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
-
-    /* If this is a parallel execution and we are appending, then we
-     * need to set the parallel access method for all transient variables to NC_COLLECTIVE since
-     * they will be being extended.
-     */
-    int ndims;    /* number of dimensions */
-    int nvars;    /* number of variables */
-    int ngatts;   /* number of global attributes */
-    int recdimid; /* id of unlimited dimension */
-
-    int varid;
-
-    /* Determine number of variables on the database... */
-    nc_inq(exoid, &ndims, &nvars, &ngatts, &recdimid);
-
-    for (varid = 0; varid < nvars; varid++) {
-      struct ncvar var;
-      nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
-
-      if ((strcmp(var.name, VAR_GLO_VAR) == 0) || (strncmp(var.name, "vals_elset_var", 14) == 0) ||
-          (strncmp(var.name, "vals_sset_var", 13) == 0) ||
-          (strncmp(var.name, "vals_fset_var", 13) == 0) ||
-          (strncmp(var.name, "vals_eset_var", 13) == 0) ||
-          (strncmp(var.name, "vals_nset_var", 13) == 0) ||
-          (strncmp(var.name, "vals_nod_var", 12) == 0) ||
-          (strncmp(var.name, "vals_edge_var", 13) == 0) ||
-          (strncmp(var.name, "vals_face_var", 13) == 0) ||
-          (strncmp(var.name, "vals_elem_var", 13) == 0) ||
-          (strcmp(var.name, VAR_WHOLE_TIME) == 0)) {
-        nc_var_par_access(exoid, varid, NC_COLLECTIVE);
-      }
-    }
   } /* End of (mode & EX_WRITE) */
+
+  /* Since this is a parallel execution we need to set the parallel access method for all transient
+   * variables to NC_COLLECTIVE. There are some smaller variables (X_status, X_prop1, ...) that
+   * don't really need this, but they are rare and it won't hurt... Also, many of them are `compact`
+   * so need to be collective anyway. For now, only filter out the `NC_CHAR` variables. Note that
+   * this is done for both read and append...
+   */
+  int ndims;    /* number of dimensions */
+  int nvars;    /* number of variables */
+  int ngatts;   /* number of global attributes */
+  int recdimid; /* id of unlimited dimension */
+
+  /* Determine number of variables on the database... */
+  nc_inq(exoid, &ndims, &nvars, &ngatts, &recdimid);
+
+  for (int varid = 0; varid < nvars; varid++) {
+    struct ncvar var;
+    nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
+
+    if (var.type != NC_CHAR) {
+      nc_var_par_access(exoid, varid, NC_COLLECTIVE);
+    }
+  }
 
   /* determine version of EXODUS file, and the word size of
    * floating point and integer values stored in the file
