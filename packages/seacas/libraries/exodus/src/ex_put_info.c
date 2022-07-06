@@ -135,8 +135,14 @@ int ex_put_info(int exoid, int num_info, char *const info[])
         ex_err_fn(exoid, __func__, errmsg, status);
         goto error_ret; /* exit define mode and return */
       }
-      ex__set_compact_storage(rootid, varid);
-      ex__compress_variable(rootid, varid, 3);
+      /* In parallel, only rank=0 will write the info records.
+       * Should be able to take advantage of HDF5 handling identical data on all ranks
+       * or use the compact storage, but we had issues on some NFS filesystems and some
+       * compilers/mpi so are doing it this way...
+       */
+      if (ex__is_parallel(rootid)) {
+	nc_var_par_access(rootid, varid, NC_INDEPENDENT);
+      }
 
       /*   leave define mode  */
       if ((status = ex__leavedef(rootid, __func__)) != NC_NOERR) {
@@ -170,16 +176,6 @@ int ex_put_info(int exoid, int num_info, char *const info[])
           ex_err_fn(exoid, __func__, errmsg, status);
           EX_FUNC_LEAVE(EX_FATAL);
         }
-      }
-    }
-    else if (ex__is_parallel(rootid)) {
-      /* All processors need to call nc_put_vara_text in case in a global
-       * collective mode */
-      char dummy[] = " ";
-      for (i = 0; i < num_info; i++) {
-        start[0] = start[1] = 0;
-        count[0] = count[1] = 0;
-        nc_put_vara_text(rootid, varid, start, count, dummy);
       }
     }
   }
