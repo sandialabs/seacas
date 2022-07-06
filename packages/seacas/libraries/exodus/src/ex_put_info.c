@@ -140,9 +140,11 @@ int ex_put_info(int exoid, int num_info, char *const info[])
        * or use the compact storage, but we had issues on some NFS filesystems and some
        * compilers/mpi so are doing it this way...
        */
+#if defined(PARALLEL_AWARE_EXODUS)
       if (ex__is_parallel(rootid)) {
-	nc_var_par_access(rootid, varid, NC_INDEPENDENT);
+        nc_var_par_access(rootid, varid, NC_INDEPENDENT);
       }
+#endif
 
       /*   leave define mode  */
       if ((status = ex__leavedef(rootid, __func__)) != NC_NOERR) {

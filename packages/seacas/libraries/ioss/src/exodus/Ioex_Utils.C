@@ -302,7 +302,7 @@ namespace Ioex {
 
       // See whether it already exists...
       auto type = map_exodus_type(entity->type());
-      succeed = idset->insert(std::make_pair(static_cast<int>(type), id)).second;
+      succeed   = idset->insert(std::make_pair(static_cast<int>(type), id)).second;
       if (!succeed) {
         // Need to remove the property so it doesn't cause problems
         // later...
