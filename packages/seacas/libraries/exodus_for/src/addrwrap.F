@@ -3950,7 +3950,52 @@ C> ex_put_elem_cmap()
      $  proc_ids, processor4, ierr4)
       ierr = ierr4
 
-         end
+      end
+
+C-----------------------------------------------------------------------
+
+C> \sa ex_put_partial_var()
+       subroutine exppv(idexo, time_step, var_type, var_index,
+     &                  obj_id, start_index, num_entities,
+     &                  var_vals, ierr)
+C> writes the values of a single variable for a partial block at one time
+
+        IMPLICIT NONE
+        INCLUDE 'exodusII.inc'
+        INTEGER idexo           ! (R)
+        INTEGER time_step       ! (R)
+        INTEGER var_type        ! (R)
+        INTEGER var_index       ! (R)
+        INTEGER obj_id          ! (R)
+        INTEGER start_index     ! (R)
+        INTEGER num_entities    ! (R)
+        REAL    var_vals(*)      ! (W)
+        INTEGER ierr            ! (W)
+
+        INTEGER*4 idexo4        ! (R)
+        INTEGER*4 time_step4    ! (R)
+        INTEGER*4 var_type4     ! (R)
+        INTEGER*4 var_index4    ! (R)
+        INTEGER*4 obj_id4       ! (R)
+        INTEGER*4 start_index4  ! (R)
+        INTEGER*4 num_entities4 ! (R)
+        INTEGER*4 ierr4         ! (W)
+
+		idexo4        = idexo
+		time_step4    = time_step
+		var_type4     = var_type
+		var_index4    = var_index
+		obj_id4       = obj_id
+		start_index4  = start_index
+		num_entities4 = num_entities
+		ierr4         = ierr
+
+        CALL exppv4(idexo, time_step, var_type, var_index, 
+     &                  obj_id, start_index, num_entities, 
+     &                  var_vals, ierr)
+        IERR = IERR4
+        END
+
 C-----------------------------------------------------------------------
 
         SUBROUTINE I8I4 (N, I8, PI4)
