@@ -4699,10 +4699,15 @@ void ParallelDatabaseIO::write_meta_data(Ioss::IfDatabaseExistsBehavior behavior
   mesh.populate(region);
 
   if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
-    if (!properties.exists("OMIT_QA_RECORDS")) {
+    bool omit_qa = false;
+    Ioss::Utils::check_set_bool_property(properties, "OMIT_QA_RECORDS", omit_qa);
+    if (!omit_qa) {
       put_qa();
     }
-    if (!properties.exists("OMIT_INFO_RECORDS")) {
+
+    bool omit_info = false;
+    Ioss::Utils::check_set_bool_property(properties, "OMIT_INFO_RECORDS", omit_info);
+    if (!omit_info) {
       put_info();
     }
 
