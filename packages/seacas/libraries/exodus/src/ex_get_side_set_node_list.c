@@ -613,8 +613,8 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
       }
       else {
         for (i = 0; i < num_nodes_per_elem; i++) {
-          int j = num_nodes_per_elem - i - 1;
-          get_nodes(exoid, side_set_node_list, node_pos + i, connect, connect_offset + j);
+          int nn = num_nodes_per_elem - i - 1;
+          get_nodes(exoid, side_set_node_list, node_pos + i, connect, connect_offset + nn);
         }
       }
       break;

@@ -1,4 +1,4 @@
-C Copyright(C) 1999-2020 National Technology & Engineering Solutions
+C Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
 C of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C NTESS, the U.S. Government retains certain rights in this software.
 C
@@ -3976,7 +3976,7 @@ C> writes the coordinates of some of the nodes in the model for the specified co
        component4    = component
        ierr4         = ierr
 
-       CALL EXGPCC4(exoid4, start_node_num, num_nodes, component4, 
+       CALL EXGPCC4(exoid4, start_node_num, num_nodes, component4,
      & coor, ierr4)
        IERR = IERR4
        END
@@ -4005,7 +4005,7 @@ C> writes the coordinates of some of the nodes in the model for the specified co
        component4    = component
        ierr4         = ierr
 
-       CALL EXPPCC4(exoid4, start_node_num, num_nodes, component4, 
+       CALL EXPPCC4(exoid4, start_node_num, num_nodes, component4,
      & coor, ierr4)
        IERR = IERR4
        END
@@ -4036,14 +4036,14 @@ C> writes the values of a single variable for a partial block at one time
         INTEGER*4 var_index4    ! (R)
         INTEGER*4 ierr4         ! (W)
 
-		idexo4        = idexo
-		time_step4    = time_step
-		var_type4     = var_type
-		var_index4    = var_index
-		ierr4         = ierr
+                idexo4        = idexo
+                time_step4    = time_step
+                var_type4     = var_type
+                var_index4    = var_index
+                ierr4         = ierr
 
-        CALL EXGPV4(idexo4, time_step4, var_type4, var_index4, 
-     &                  obj_id, start_index, num_entities, 
+        CALL EXGPV4(idexo4, time_step4, var_type4, var_index4,
+     &                  obj_id, start_index, num_entities,
      &                  var_vals, ierr4)
         IERR = IERR4
         END
@@ -4074,14 +4074,14 @@ C> writes the values of a single variable for a partial block at one time
         INTEGER*4 var_index4    ! (R)
         INTEGER*4 ierr4         ! (W)
 
-		idexo4        = idexo
-		time_step4    = time_step
-		var_type4     = var_type
-		var_index4    = var_index
-		ierr4         = ierr
+                idexo4        = idexo
+                time_step4    = time_step
+                var_type4     = var_type
+                var_index4    = var_index
+                ierr4         = ierr
 
-        CALL EXPPV4(idexo4, time_step4, var_type4, var_index4, 
-     &                  obj_id, start_index, num_entities, 
+        CALL EXPPV4(idexo4, time_step4, var_type4, var_index4,
+     &                  obj_id, start_index, num_entities,
      &                  var_vals, ierr4)
         IERR = IERR4
         END
