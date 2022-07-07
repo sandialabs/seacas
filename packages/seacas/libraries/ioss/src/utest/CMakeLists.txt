@@ -44,8 +44,7 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 	INSTALLABLE
 	SOURCES Utst_blob_write_read.C
 	NAME Utst_blob_write_read
-	NUM_MPI_PROCS ${NPROCS}
-	COMM mpi serial
+	NUM_MPI_PROCS 1
 	XHOSTTYPE Windows
 )
 
