@@ -572,8 +572,8 @@ namespace Ioex {
 
     std::string filename = get_dwname();
 
-#if !defined(__IOSS_WINDOWS__)
     Ioss::FileInfo file(filename);
+#if !defined(__IOSS_WINDOWS__)
     std::string    path = file.pathname();
     filename            = file.tailname();
     char *current_cwd   = getcwd(nullptr, 0);
@@ -602,6 +602,18 @@ namespace Ioex {
         else {
           mode |= EX_ALL_INT64_DB;
         }
+      }
+
+      // Check whether we are on a NFS filesyste -- composed output is sometimes slow/hangs
+      // on NFS
+      if (myProcessor == 0) {
+	if (file.is_nfs()) {
+	  fmt::print(Ioss::WarnOut(), "The database file: '{}'.\n"
+		     "\tis being written to an NFS filesystem. Some NFS filesystems have difficulty\n"
+		     "\twith parallel I/O (specifically writes). If you experience slow I/O,\n"
+		     "\ttry non-composed output or a different filesystem.\n",
+		     filename);
+	}
       }
       m_exodusFilePtr = ex_create_par(filename.c_str(), mode, &cpu_word_size, &dbRealWordSize,
                                       util().communicator(), info);

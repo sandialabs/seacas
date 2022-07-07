@@ -27,6 +27,7 @@
 #endif
 #else
 #include <sys/unistd.h>
+#include <sys/statfs.h>
 #endif
 
 #ifdef SEACAS_HAVE_MPI
@@ -160,6 +161,20 @@ namespace Ioss {
     }
 #endif
     return false;
+  }
+
+  //: Return TRUE if file is on an NFS filesystem...
+  bool FileInfo::is_nfs() const
+  {
+#define NFS_FS	0x6969  /* statfs defines that 0x6969 is NFS filesystem */
+
+    struct statfs stat_fs;
+    if (statfs(filename_.c_str(), &stat_fs) == -1) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: Could not run statfs on '" << filename_ << "'.\n";
+      IOSS_ERROR(errmsg);
+    }
+    return (stat_fs.f_type == NFS_FS);
   }
 
   //: Time of last data modification. See 'man stat(2)'
