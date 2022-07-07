@@ -4078,7 +4078,6 @@ C> writes the values of a single variable for a partial block at one time
 		time_step4    = time_step
 		var_type4     = var_type
 		var_index4    = var_index
-		obj_id4       = obj_id
 		ierr4         = ierr
 
         CALL EXPPV4(idexo4, time_step4, var_type4, var_index4, 
