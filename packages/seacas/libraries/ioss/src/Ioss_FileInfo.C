@@ -27,7 +27,12 @@
 #endif
 #else
 #include <sys/unistd.h>
+#if defined(__APPLE__) && defined(__MACH__)
+#include <sys/param.h>
+#include <sys/mount.h>
+#else
 #include <sys/statfs.h>
+#endif
 #endif
 
 #ifdef SEACAS_HAVE_MPI
