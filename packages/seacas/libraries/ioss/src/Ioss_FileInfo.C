@@ -173,17 +173,30 @@ namespace Ioss {
   {
 #if !defined(__IOSS_WINDOWS__)
 #define NFS_FS	0x6969  /* statfs defines that 0x6969 is NFS filesystem */
-    auto path = realpath();
-    path = FileInfo(path).pathname();
-
-    struct statfs stat_fs;
-    // We want to run `statfs` on the path; not the filename since it might not exist.
-    if (statfs(path.c_str(), &stat_fs) == -1) {
-      std::ostringstream errmsg;
-      errmsg << "ERROR: Could not run statfs on '" << filename_ << "'.\n";
-      IOSS_ERROR(errmsg);
+    auto tmp_path = pathname();
+    if (tmp_path.empty()) {
+      char *current_cwd   = getcwd(nullptr, 0);
+      tmp_path = std::string(current_cwd);
+      free(current_cwd);
     }
-    return (stat_fs.f_type == NFS_FS);
+#if defined(__IOSS_WINDOWS__)
+    char *path = _fullpath(nullptr, tmp_path.c_str(), _MAX_PATH);
+#else
+    char *path = ::realpath(tmp_path.c_str(), nullptr);
+#endif
+    if (path != nullptr) {
+
+      struct statfs stat_fs;
+      // We want to run `statfs` on the path; not the filename since it might not exist.
+      if (statfs(path, &stat_fs) == -1) {
+	free(path);
+	std::ostringstream errmsg;
+	errmsg << "ERROR: Could not run statfs on '" << filename_ << "'.\n";
+	IOSS_ERROR(errmsg);
+      }
+      free(path);
+      return (stat_fs.f_type == NFS_FS);
+    }
 #endif
     return false;
   }
@@ -320,9 +333,7 @@ namespace Ioss {
       free(path);
       return temp;
     }
-    {
-      return filename_;
-    }
+    return filename_;
   }
 
   bool FileInfo::remove_file()
