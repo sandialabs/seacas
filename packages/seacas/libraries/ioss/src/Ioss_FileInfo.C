@@ -171,6 +171,7 @@ namespace Ioss {
   //: Return TRUE if file is on an NFS filesystem...
   bool FileInfo::is_nfs() const
   {
+#if !defined(__IOSS_WINDOWS__)
 #define NFS_FS	0x6969  /* statfs defines that 0x6969 is NFS filesystem */
 
     struct statfs stat_fs;
@@ -180,6 +181,9 @@ namespace Ioss {
       IOSS_ERROR(errmsg);
     }
     return (stat_fs.f_type == NFS_FS);
+#else
+    return false;
+#endif
   }
 
   //: Time of last data modification. See 'man stat(2)'
