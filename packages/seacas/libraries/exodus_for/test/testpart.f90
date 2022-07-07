@@ -1,10 +1,11 @@
 Program TestExoRead_Part
-#include "exodusII.inc"
+   include 'exodusII.inc'
    !Use exodusIIF90
 
-   Integer                      :: exoid,cpu_ws,io_ws,mod_sz,ierr
+   Integer                      :: exoid,cpu_ws,io_ws,mod_sz,ierr,i,nparts
    Integer                      :: num_dim,num_nodes,num_elem,num_elem_blk,num_node_sets,num_side_sets
-   Integer                      :: time_step = 1,var_index = 3,i,nparts
+   Integer                      :: time_step = 1
+   Integer                      :: var_index = 2
    Integer                      :: istart,iend,len
    Real,dimension(:),Pointer    :: var_values
    character*(MXLNLN)           :: titl
@@ -40,7 +41,7 @@ Program TestExoRead_Part
    write (*, '("after exgnv, error = ", i3)' ) ierr
    write(*,*) var_values
    
-   call expnv (exoid, time_step, var_index, num_nodes, var_values,ierr)
+!   call expnv (exoid, time_step, var_index, num_nodes, var_values,ierr)
    DeAllocate(var_values)
 
    nparts=4
@@ -51,10 +52,11 @@ Program TestExoRead_Part
       write(*,'("   chunk ",i3," -- ",i3, ":")') istart,iend
       Allocate(var_values(len))
       call exgpv(exoid, time_step, EX_NODAL,var_index,0,istart,len,var_values,ierr)
+      write (*, '("after exgpv, error = ", i3)' ) ierr
       write(*,*) '   *', var_values
       var_values = var_values + 1
       call exppv(exoid,time_step,EX_NODAL,var_index,0,istart,len,var_values,ierr)
-      call exupda(exoid,ierr)
+      write (*, '("after exppv, error = ", i3)' ) ierr
       DeAllocate(var_values)
    End Do
 
@@ -65,9 +67,11 @@ Program TestExoRead_Part
       write(*,'("   chunk ",i3," -- ",i3, ":")') istart,iend
       Allocate(var_values(len))
       call exgpcc(exoid,istart,len,1,var_values,ierr)
+      write (*, '("after exgpcc, error = ", i3)' ) ierr
       write(*,*) '   coord', var_values
       var_values = var_values + 1
       call exppcc(exoid,istart,len,1,var_values,ierr)
+      write (*, '("after expcc, error = ", i3)' ) ierr
       DeAllocate(var_values)
    End Do
 
