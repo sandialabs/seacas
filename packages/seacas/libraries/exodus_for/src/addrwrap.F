@@ -3977,8 +3977,6 @@ C> writes the values of a single variable for a partial block at one time
         INTEGER*4 var_type4     ! (R)
         INTEGER*4 var_index4    ! (R)
         INTEGER*4 obj_id4       ! (R)
-        INTEGER*4 start_index4  ! (R)
-        INTEGER*4 num_entities4 ! (R)
         INTEGER*4 ierr4         ! (W)
 
 		idexo4        = idexo
@@ -3986,13 +3984,11 @@ C> writes the values of a single variable for a partial block at one time
 		var_type4     = var_type
 		var_index4    = var_index
 		obj_id4       = obj_id
-		start_index4  = start_index
-		num_entities4 = num_entities
 		ierr4         = ierr
 
-        CALL exppv4(idexo, time_step, var_type, var_index, 
-     &                  obj_id, start_index, num_entities, 
-     &                  var_vals, ierr)
+        CALL exppv4(idexo4, time_step4, var_type4, var_index4, 
+     &                  obj_id4, start_index, num_entities, 
+     &                  var_vals, ierr4)
         IERR = IERR4
         END
 
