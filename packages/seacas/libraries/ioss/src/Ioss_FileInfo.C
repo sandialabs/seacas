@@ -173,17 +173,19 @@ namespace Ioss {
   {
 #if !defined(__IOSS_WINDOWS__)
 #define NFS_FS	0x6969  /* statfs defines that 0x6969 is NFS filesystem */
+    auto path = realpath();
+    path = FileInfo(path).pathname();
 
     struct statfs stat_fs;
-    if (statfs(filename_.c_str(), &stat_fs) == -1) {
+    // We want to run `statfs` on the path; not the filename since it might not exist.
+    if (statfs(path.c_str(), &stat_fs) == -1) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not run statfs on '" << filename_ << "'.\n";
       IOSS_ERROR(errmsg);
     }
     return (stat_fs.f_type == NFS_FS);
-#else
-    return false;
 #endif
+    return false;
   }
 
   //: Time of last data modification. See 'man stat(2)'
