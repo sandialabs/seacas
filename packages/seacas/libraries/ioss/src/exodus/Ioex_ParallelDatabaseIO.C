@@ -611,7 +611,8 @@ namespace Ioex {
 	  fmt::print(Ioss::WarnOut(), "The database file: '{}'.\n"
 		     "\tis being written to an NFS filesystem. Some NFS filesystems have difficulty\n"
 		     "\twith parallel I/O (specifically writes). If you experience slow I/O,\n"
-		     "\ttry non-composed output or a different filesystem.\n",
+		     "\ttry `export OMPI_MCA_fs_ufs_lock_algorithm=1` prior to running or\n"
+		     "\tnon-composed output or a different filesystem.\n",
 		     filename);
 	}
       }
