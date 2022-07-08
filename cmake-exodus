@@ -4,13 +4,7 @@
 # By default, Will build both static and shared version of the C API.
 # If only want shared, then run with "sh STATIC=NO ../cmake-exodus"
 
-if [ "${TRAVIS}" == "true" ]
-then
-  BUILDDIR=${1:-build}
-  mkdir $BUILDDIR && cd $BUILDDIR
-else
-  EXTRA_ARGS=$@
-fi
+EXTRA_ARGS=$@
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 ### If not, then define "ACCESS" to point to the root of the SEACAS source code.
@@ -65,8 +59,7 @@ echo "${txtgrn}MPI set to ${MPI}${txtrst}"
 if [ "${MPI}" == "NO" ]
 then
   ### Change this to point to the compilers you want to use
-    ## Travis build (and others) set this to EXTERNAL to set
-    ## CXX, CC, and FC externally.
+  ## Some builds set this to EXTERNAL to set CXX, CC, and FC externally.
   COMPILER=${COMPILER:-gnu}
 
   if [ "$COMPILER" == "gnu" ]
@@ -78,9 +71,19 @@ then
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
 
+  if [ "$COMPILER" == "gnubrew" ]
+  then
+      VER=${VER:-10}
+      CXX=g++-${VER}
+      CC=gcc-${VER}
+      FC=gfortran-${VER}
+      CFLAGS="-Wall -Wunused -pedantic -std=c11"
+      CXXFLAGS="-Wall -Wunused -pedantic"
+  fi
+
   if [ "$COMPILER" == "gnumacport" ]
   then
-      VER=${VER:-5}
+      VER=${VER:-10}
       CXX=g++-mp-${VER}
       CC=gcc-mp-${VER}
       FC=gfortran-mp-${VER}
@@ -90,7 +93,7 @@ then
 
   if [ "$COMPILER" == "clangmacport" ]
   then
-      VER=${VER:-7}
+      VER=${VER:-9}
       CXX=clang++-mp-${VER}.0
       CC=clang-mp-${VER}.0
       FC=gfortran
@@ -158,7 +161,7 @@ SHARED=$(check_valid SHARED)
 if [ "${CRAY}" == "YES" ] && [ "${SHARED}" == "NO" ]
 then
   # Assumes we build our own static zlib with CRAY
-  CRAY_OPT=-DSeacas_EXTRA_LINK_FLAGS=${INSTALL_PATH}/lib/libz.a
+  EXTRA_LIB=-DSeacas_EXTRA_LINK_FLAGS=${INSTALL_PATH}/lib/libz.a
 fi
 
 ### Switch for Debug or Release build:
@@ -191,7 +194,7 @@ THREADSAFE=${THREADSAFE:-NO}
 THREADSAFE=$(check_valid THREADSAFE)
 
 if [ "$THREADSAFE" == "YES" ] ; then
-  THREAD_SAFE_OPT="-DSeacas_EXTRA_LINK_FLAGS=-lpthread"
+  THREAD_SAFE_OPT="-DTPL_Pthread_LIBRARIES=-lpthread"
 fi
 
 function check_enable()
@@ -215,7 +218,7 @@ HAVE_NETCDF=$(check_enable "${NETCDF_PATH}/include/netcdf.h")
 ###    -D DataWarp_INCLUDE_DIRS:PATH=/opt/cray/datawarp/2.1.16-6.0.5.1_2.61__g238b34d.ari/include \
 
 ### Define to NO to *enable* exodus deprecated functions
-OMIT_DEPRECATED=${OMIT_DEPRECATED:-NO}
+OMIT_DEPRECATED=${OMIT_DEPRECATED:-YES}
 
 NUMPROCS=${NUMPROCS:-4}
 
@@ -254,6 +257,7 @@ then
 	LD_EXT="so"
     fi
 else
+    EXTRA_LIB="-DSeacas_EXTRA_LINK_FLAGS=z;dl -DSEACASExodus_ENABLE_SHARED:BOOL=OFF"
     LD_EXT="a"
 fi
 
@@ -320,6 +324,7 @@ then
 fi
 fi
 
+rm -f CMakeCache.txt
 ###------------------------------------------------------------------------
 cmake -G "${GENERATOR}" \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
@@ -342,7 +347,7 @@ cmake -G "${GENERATOR}" \
 -D Seacas_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=YES \
 -D Seacas_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 -D Seacas_ENABLE_Fortran=${FORTRAN} \
-${CRAY_OPT} \
+${EXTRA_LIB} \
 \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
@@ -363,21 +368,19 @@ $EXTRA_ARGS \
 ${ACCESS}
 
 echo ""
-echo "      ACCESS: ${ACCESS}"
-echo "INSTALL_PATH: ${INSTALL_PATH}"
+echo "                  OS: ${OS}"
+echo "              ACCESS: ${ACCESS}"
+echo "        INSTALL_PATH: ${INSTALL_PATH}"
 echo "  "
-echo "          CC: ${CC}"
-echo "         CXX: ${CXX}"
-echo "          FC: ${FC}"
-echo "         MPI: ${MPI}"
-echo "      SHARED: ${SHARED}"
-echo "  BUILD_TYPE: ${BUILD_TYPE}"
-echo "  THREADSAFE: ${THREADSAFE}"
+echo "                  CC: ${CC}"
+echo "                 CXX: ${CXX}"
+echo "                  FC: ${FC}"
+echo "                 MPI: ${MPI}"
+echo "              SHARED: ${SHARED}"
+echo "          BUILD_TYPE: ${BUILD_TYPE}"
+echo "          THREADSAFE: ${THREADSAFE}"
+echo "OMIT_DEPRECATED_CODE: ${OMIT_DEPRECATED_CODE}"
+echo "                CRAY: ${CRAY}"
 echo "  "
-echo " HAVE_NETCDF: ${HAVE_NETCDF}"
+echo "         HAVE_NETCDF: ${HAVE_NETCDF}"
 echo ""
-
-
-
-
-

@@ -210,6 +210,15 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   return filename;
 }
 
+std::string Ioss::Utils::get_trailing_digits(const std::string &name)
+{
+  size_t digits = name.find_last_not_of("0123456789");
+  if (digits != std::string::npos) {
+    return name.substr(digits + 1);
+  }
+  return std::string{};
+}
+
 int Ioss::Utils::get_number(const std::string &suffix)
 {
   int  N       = 0;
@@ -820,6 +829,31 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
   }
 }
 
+bool Ioss::Utils::check_int_to_real_overflow(const Ioss::Field &field, int64_t *data,
+                                             size_t num_entity)
+{
+  // Check all values in `data` to make sure that if they are converted to a double and
+  // back again, there will be no data loss.  This requires that the value be less than 2^53.
+  static int64_t max_double = 2LL << 53;
+  assert(int64_t(double(max_double)) == max_double);
+  assert(int64_t(double(max_double + 1)) != max_double + 1);
+
+  size_t comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+  for (size_t i = 0; i < num_entity * comp_count; i++) {
+    if (data[i] > max_double) {
+      fmt::print(
+          Ioss::WarnOut(),
+          "Field '{}' contains 64-bit integer data that is not representable as a double value.\n"
+          "\tThis value can not currently be stored in the exodus database without data loss.\n"
+          "\tThe first such value is at location {}, component {} (1-based) with value {}.\n",
+          field.get_name(), fmt::group_digits(i / comp_count + 1), i % comp_count + 1,
+          fmt::group_digits(data[i]));
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string Ioss::Utils::platform_information()
 {
 #if !defined(__IOSS_WINDOWS__)
@@ -1069,6 +1103,30 @@ std::string Ioss::Utils::shape_to_string(const Ioss::ElementShape &shape)
   case Ioss::ElementShape::SUPER: return std::string("Super");
   }
   return std::string("Invalid shape [") + std::to_string(unsigned(shape)) + std::string("]");
+}
+
+std::string Ioss::Utils::entity_type_to_string(const Ioss::EntityType &type)
+{
+  switch (type) {
+  case Ioss::EntityType::NODEBLOCK: return std::string("NODEBLOCK");
+  case Ioss::EntityType::EDGEBLOCK: return std::string("EDGEBLOCK");
+  case Ioss::EntityType::FACEBLOCK: return std::string("FACEBLOCK");
+  case Ioss::EntityType::ELEMENTBLOCK: return std::string("ELEMENTBLOCK");
+  case Ioss::EntityType::NODESET: return std::string("NODESET");
+  case Ioss::EntityType::EDGESET: return std::string("EDGESET");
+  case Ioss::EntityType::FACESET: return std::string("FACESET");
+  case Ioss::EntityType::ELEMENTSET: return std::string("ELEMENTSET");
+  case Ioss::EntityType::SIDESET: return std::string("SIDESET");
+  case Ioss::EntityType::COMMSET: return std::string("COMMSET");
+  case Ioss::EntityType::SIDEBLOCK: return std::string("SIDEBLOCK");
+  case Ioss::EntityType::REGION: return std::string("REGION");
+  case Ioss::EntityType::SUPERELEMENT: return std::string("SUPERELEMENT");
+  case Ioss::EntityType::STRUCTUREDBLOCK: return std::string("STRUCTUREDBLOCK");
+  case Ioss::EntityType::ASSEMBLY: return std::string("ASSEMBLY");
+  case Ioss::EntityType::BLOB: return std::string("BLOB");
+  case Ioss::EntityType::INVALID_TYPE: return std::string("INVALID_TYPE");
+  }
+  return std::string("Invalid entity type [") + std::to_string(unsigned(type)) + std::string("]");
 }
 
 unsigned int Ioss::Utils::hash(const std::string &name)

@@ -8,6 +8,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_EntityType.h>
 #include <Ioss_Field.h>
 #include <Ioss_Property.h>
 #include <Ioss_Sort.h>
@@ -291,6 +292,12 @@ namespace Ioss {
     static int         extract_id(const std::string &name_id);
     static std::string encode_entity_name(const std::string &entity_type, int64_t id);
 
+    /** Return the trailing digits (if any) from `name`
+     * `hex20` would return the string `20`
+     * `tetra` would return an empty string.
+     */
+    static std::string get_trailing_digits(const std::string &name);
+
     /** \brief create a string that describes the list of input `ids` collapsing ranges if possible.
      *
      * Traverse the sorted input vector `ids` and return a string that has all sequential ranges
@@ -398,6 +405,13 @@ namespace Ioss {
      */
     static bool substr_equal(const std::string &prefix, const std::string &str);
 
+    /** Check all values in `data` to make sure that if they are converted to a double and
+     * back again, there will be no data loss.  This requires that the value be less than 2^53.
+     * This is done in the exodus database since it stores all transient data as doubles...
+     */
+    static bool check_int_to_real_overflow(const Ioss::Field &field, int64_t *data,
+                                           size_t num_entity);
+
     /** \brief Get a string containing `uname` output.
      *
      *  This output contains information about the current computing platform.
@@ -495,6 +509,8 @@ namespace Ioss {
                                            size_t copies, size_t max_var_len);
 
     static std::string shape_to_string(const Ioss::ElementShape &shape);
+
+    static std::string entity_type_to_string(const Ioss::EntityType &type);
 
     /** \brief Create a nominal mesh for use in history databases.
      *

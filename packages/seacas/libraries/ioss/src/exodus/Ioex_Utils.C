@@ -143,6 +143,8 @@ namespace Ioex {
     case Ioss::NODEBLOCK: return EX_NODAL;
     case Ioss::NODESET: return EX_NODE_SET;
     case Ioss::SIDESET: return EX_SIDE_SET;
+    case Ioss::SIDEBLOCK: return EX_SIDE_SET;
+    case Ioss::COMMSET: return static_cast<ex_entity_type>(0);
     default: return EX_INVALID;
     }
   }
@@ -285,7 +287,7 @@ namespace Ioex {
     }
   }
 
-  bool set_id(const Ioss::GroupingEntity *entity, ex_entity_type type, Ioex::EntityIdSet *idset)
+  bool set_id(const Ioss::GroupingEntity *entity, Ioex::EntityIdSet *idset)
   {
     // See description of 'get_id' function.  This function just primes
     // the idset with existing ids so that when we start generating ids,
@@ -299,7 +301,8 @@ namespace Ioex {
       int64_t id = entity->get_property(id_prop).get_int();
 
       // See whether it already exists...
-      succeed = idset->insert(std::make_pair(static_cast<int>(type), id)).second;
+      auto type = map_exodus_type(entity->type());
+      succeed   = idset->insert(std::make_pair(static_cast<int>(type), id)).second;
       if (!succeed) {
         // Need to remove the property so it doesn't cause problems
         // later...
@@ -332,7 +335,7 @@ namespace Ioex {
     return 0;
   }
 
-  int64_t get_id(const Ioss::GroupingEntity *entity, ex_entity_type type, Ioex::EntityIdSet *idset)
+  int64_t get_id(const Ioss::GroupingEntity *entity, Ioex::EntityIdSet *idset)
   {
     // Sierra uses names to refer to grouping entities; however,
     // exodusII requires integer ids.  When reading an exodusII file,
@@ -383,6 +386,7 @@ namespace Ioex {
     // At this point, we either have an id equal to '1' or we have an id
     // extracted from the entities name. Increment it until it is
     // unique...
+    ex_entity_type type = map_exodus_type(entity->type());
     while (idset->find(std::make_pair(int(type), id)) != idset->end()) {
       ++id;
     }

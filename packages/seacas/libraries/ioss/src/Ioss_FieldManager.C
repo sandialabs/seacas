@@ -99,6 +99,24 @@ void Ioss::FieldManager::erase(const std::string &field_name)
   }
 }
 
+/** \brief Remove all fields of type `role` from the field manager.
+ *
+ * \param[in] role Remove all fields (if any) of type `role`
+ */
+void Ioss::FieldManager::erase(Field::RoleType role)
+{
+  auto names = describe(role);
+  IOSS_FUNC_ENTER(m_);
+
+  for (const auto &field_name : names) {
+    const std::string key  = Ioss::Utils::lowercase(field_name);
+    auto              iter = fields.find(key);
+    if (iter != fields.end()) {
+      fields.erase(iter);
+    }
+  }
+}
+
 /** \brief Get the names of all fields in the field manager.
  *
  * \returns names All field names in the field manager.
