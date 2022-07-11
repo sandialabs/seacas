@@ -367,7 +367,11 @@ then
             then
                 echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
                 cd zlib-${zlib_version} || exit
-                ./configure --prefix=${INSTALL_PATH}
+		if [ "$SHARED" == "NO" ]
+		then
+		    USE_STATIC="--static"
+		fi
+                ./configure --prefix=${INSTALL_PATH} ${USE_STATIC}
                 if [[ $? != 0 ]]
                 then
                     echo 1>&2 ${txtred}couldn\'t configure zlib. exiting.${txtrst}
