@@ -180,6 +180,7 @@ bool Info::Interface::parse_options(int argc, char **argv)
     options_.usage(std::cerr);
     fmt::print(stderr,
                "\n\tCan also set options via IO_INFO_OPTIONS environment variable.\n\n"
+	       "\tDocumentation: https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#io-info\n\n"
                "\t->->-> Send email to gdsjaar@sandia.gov for {} support.<-<-<-\n",
                options_.program_name());
     exit(EXIT_SUCCESS);

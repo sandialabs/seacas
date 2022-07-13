@@ -136,13 +136,19 @@ C .. Get filename from command line.  If not specified, emit error message
       NARG = argument_count()
       if (narg .lt. 2) then
         CALL PRTERR ('FATAL', 'Filenames not specified.')
-        CALL PRTERR ('FATAL',
+        CALL PRTERR ('CMDSPEC',
      *    'Syntax is: "algebra file_in file_out"')
+        CALL PRTERR ('CMDSPEC',
+     *    'Documentation: https://sandialabs.github.io' //
+     $       '/seacas-docs/sphinx/html/index.html#algebra')
         GOTO 150
       else if (narg .gt. 2) then
         CALL PRTERR ('FATAL', 'Too many arguments specified.')
-        CALL PRTERR ('FATAL',
+        CALL PRTERR ('CMDSPEC',
      *    'Syntax is: "algebra file_in file_out"')
+        CALL PRTERR ('CMDSPEC',
+     *    'Documentation: https://sandialabs.github.io' //
+     $       '/seacas-docs/sphinx/html/index.html#algebra')
         GOTO 150
       end if
 
