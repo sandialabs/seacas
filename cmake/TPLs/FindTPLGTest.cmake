@@ -2,7 +2,7 @@
 # ************************************************************************
 #
 #            Trilinos: An Object-Oriented Solver Framework
-#                 Copyright (2001) Sandia Corporation
+#                 Copyright (2001, 2022) Sandia Corporation
 #
 #
 # Copyright (2001) Sandia Corporation. Under the terms of Contract
@@ -53,37 +53,7 @@
 # ************************************************************************
 # @HEADER
 
-# First, set up the variables for the (backward-compatible) TriBITS way of
-# finding GTest.  These are used in case FIND_PACKAGE(GTest ...) is
-# not called or does not find GTest.  Also, these variables need to be
-# non-null in order to trigger the right behavior in the function
-# TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES().
-set(REQUIRED_HEADERS gtest.h)
-set(REQUIRED_LIBS_NAMES gtest)
-
-# Second, search for GTest components (if allowed) using the standard
-# FIND_PACKAGE(GTest ...).
-tribits_tpl_allow_pre_find_package(GTest  GTest_ALLOW_PREFIND)
-if (GTest_ALLOW_PREFIND)
-  message("-- Using FIND_PACKAGE(GTest ...) ...") 
-  find_package(GTest CONFIG)
-  if (GTest_FOUND)
-    get_target_property(GTest_INCLUDE_DIRS GTest::gtest INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(GTest_CONFIGURATION GTest::gtest IMPORTED_CONFIGURATIONS)
-    get_target_property(GTest_LIBRARIES GTest::gtest IMPORTED_LOCATION_${GTest_CONFIGURATION})
-    # Tell TriBITS that we found GTest and there no need to look any further!
-    set(TPL_GTest_INCLUDE_DIRS ${GTest_INCLUDE_DIRS} CACHE PATH "...")
-    set(TPL_GTest_LIBRARIES ${GTest_LIBRARIES} CACHE FILEPATH "...")
-    set(TPL_GTest_LIBRARY_DIRS ${GTest_LIBRARY_DIRS} CACHE PATH "...")
-  endif()
-endif()
-
-# Third, call `tribits_tpl_find_include_dirs_and_libraries()`
-tribits_tpl_find_include_dirs_and_libraries( GTest
-  REQUIRED_HEADERS ${REQUIRED_HEADERS}
-  REQUIRED_LIBS_NAMES ${REQUIRED_LIBS_NAMES}
-  )
-# NOTE: If `find_package(GTest ...)` was called and successfully found
-# GTest, then `tribits_tpl_find_include_dirs_and_libraries()` will use the
-# already-set variables and just print them out.  This is the final "hook"
-# into the TriBITS TPL system.
+find_package(GTest CONFIG REQUIRED)
+tribits_extpkg_create_imported_all_libs_target_and_config_file(GTest
+  INNER_FIND_PACKAGE_NAME  GTest
+  IMPORTED_TARGETS_FOR_ALL_LIBS  GTest::gtest )

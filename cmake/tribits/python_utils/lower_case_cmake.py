@@ -137,7 +137,7 @@ def isMacroOrFunctionGroup(cmakeMatchGroup):
 usageHelp = r"""
 
 Convert cmake command calls to lower case and macro and function names in
-defintions to lower case in a given file.
+definitions to lower case in a given file.
 
 The replacements are somewhat conservative in order not to make too many
 replacements in non-CMake code.  That is, in general, any text of the form:
@@ -148,7 +148,7 @@ will result in '<identifier>' being lower-cased.  However, this does not apply
 for logical operators 'AND, 'OR', and 'NOT'.
 
 Also, certain common CMake commands that often have spaces between
-'<identifer>' and '(' like:
+'<identifier>' and '(' like:
 
   SET (...)
   IF (...)

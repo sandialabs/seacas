@@ -150,6 +150,7 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
         nc_var_par_access(rootid, varid, NC_INDEPENDENT);
       }
 #endif
+
       /*   leave define mode  */
       if ((status = ex__leavedef(rootid, __func__)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to exit define mode");
@@ -189,6 +190,12 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
         }
       }
     }
+    /* PnetCDF applies setting to entire file, so put back to collective... */
+#if defined(PARALLEL_AWARE_EXODUS)
+    if (ex__is_parallel(rootid)) {
+      nc_var_par_access(rootid, varid, NC_COLLECTIVE);
+    }
+#endif
   }
   EX_FUNC_LEAVE(EX_NOERR);
 

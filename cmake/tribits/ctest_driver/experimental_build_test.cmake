@@ -56,7 +56,7 @@
 #    env ${PROJECT_NAME}_PACKAGES="<PACKAGES>" \
 #      ctest -S ${PROJECT_NAME}_TRIBITS_DIR/ctest/experimental_build_test.cmake -VV
 #
-# where PACAKGES is the semi-colon-separated list of packages being tested
+# where PACKAGES is the semi-colon-separated list of packages being tested
 # (e.g. ${PROJECT_NAME}_PACKAGES="Teuchos;Epetra;NOX") and
 # ${PROJECT_NAME}_TRIBITS_DIR points back to your home project directory.  You
 # can take off the -VV argument if you don't want this to be too verbose.
@@ -100,7 +100,7 @@ include(SetDefaultAndFromEnv)
 
 # All these can be changed by env vars
 set(CTEST_TEST_TYPE Experimental)
-set(CTEST_DO_UPDATES FALSE)
+set(CTEST_UPDATE_VERSION_ONLY TRUE)
 set(${PROJECT_NAME}_WARNINGS_AS_ERRORS_FLAGS "-Werror")
 
 # Don't change these in the env!

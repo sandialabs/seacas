@@ -64,13 +64,19 @@ C .. Get filename from command line.  If not specified, emit error message
 
       if (narg .lt. 1) then
         CALL PRTERR ('FATAL', 'Filename(s) not specified.')
-        CALL PRTERR ('FATAL',
+        CALL PRTERR ('CMDSPEC',
      *    'Syntax is: "numbers filename [output]"')
+        CALL PRTERR ('CMDSPEC',
+     *    'Documentation: https://sandialabs.github.io' //
+     $       '/seacas-docs/sphinx/html/index.html#numbers')
         GOTO 60
       else if (narg .gt. 2) then
         CALL PRTERR ('FATAL', 'Too many arguments specified.')
-        CALL PRTERR ('FATAL',
+        CALL PRTERR ('CMDSPEC',
      *    'Syntax is: "numbers filename [output]"')
+        CALL PRTERR ('CMDSPEC',
+     *    'Documentation: https://sandialabs.github.io' //
+     $       '/seacas-docs/sphinx/html/index.html#numbers')
         GOTO 60
       end if
 

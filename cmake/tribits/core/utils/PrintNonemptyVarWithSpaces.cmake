@@ -40,7 +40,7 @@
 include(AssertDefined)
 include(AppendStringVarWithSep)
 
-#
+
 # @FUNCTION: print_nonempty_var_with_spaces()
 #
 # Print a defined variable giving its name then value printed with spaces
@@ -54,8 +54,8 @@ include(AppendStringVarWithSep)
 #
 #    <varName>: <ele0> <ele1> ...
 #
-# If ``$<printedVarInOut>`` is ``TRUE`` on input, then the varible is not
-# touched. If however, the varible ``$<printedVarInOut>`` is not ``TRUE`` on
+# If ``$<printedVarInOut>`` is ``TRUE`` on input, then the variable is not
+# touched. If however, the variable ``$<printedVarInOut>`` is not ``TRUE`` on
 # input, then it is set to ``TRUE`` on output.
 #
 function(print_nonempty_var_with_spaces  VARIBLE_NAME  PRINTED_VAR_OUT)

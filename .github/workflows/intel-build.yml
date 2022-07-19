@@ -2,9 +2,11 @@ name: Intel OneAPI build
 
 on:
   push:
-    branches-ignore:
-      - 'coverity'
+    branches:
+    - master
   pull_request:
+    branches:
+    - master
 
 jobs:
   build-deps:

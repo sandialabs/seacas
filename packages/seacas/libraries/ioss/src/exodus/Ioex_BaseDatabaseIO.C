@@ -558,7 +558,7 @@ namespace Ioex {
 
     size_t num_qa_records = qaRecords.size() / 4;
 
-    if (isParallel && myProcessor != 0) {
+    if (using_parallel_io() && myProcessor != 0) {
       // This call only sets the `num_qa_records` metadata on the other ranks...
       // if !isParallel or rank != 0...
       ex_put_qa(get_file_pointer(), num_qa_records + 1, nullptr);
@@ -617,7 +617,7 @@ namespace Ioex {
     int    total_lines = 0;
     char **info        = nullptr;
 
-    if (!isParallel || myProcessor == 0) {
+    if (!using_parallel_io() || myProcessor == 0) {
       // dump info records, include the product_registry
       // See if the input file was specified as a property on the database...
       std::string              filename;
@@ -666,10 +666,13 @@ namespace Ioex {
       }
     }
 
-    util().broadcast(total_lines);
+    if (using_parallel_io()) {
+      // In case in file-per-rank not all ranks have same records.
+      util().broadcast(total_lines);
+    }
 
     int ierr = 0;
-    if (!isParallel || myProcessor == 0) {
+    if (!using_parallel_io() || myProcessor == 0) {
       ierr = ex_put_info(get_file_pointer(), total_lines, info);
       Ioss::Utils::delete_name_array(info, total_lines);
     }

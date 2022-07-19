@@ -74,7 +74,7 @@ function(find_program_plus PROG_VAR)
   print_nonempty_var(${PROG_VAR})
 
   if (IS_ABSOLUTE ${PROG_VAR})
-    #message(STATUS "Is Absoute")
+    #message(STATUS "Is Absolute")
     set(NAMES_ARGS ${PARSE_NAMES})
   else()
     #message(STATUS "Is Not Absolute")

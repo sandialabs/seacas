@@ -37,12 +37,8 @@
 # ************************************************************************
 # @HEADER
 
-if (PRINT_VAR_INCLUDED)
-  return()
-endif()
-set(PRINT_VAR_INCLUDED TRUE)
+include_guard()
 
-#
 # @FUNCTION: print_var()
 #
 # Unconditionally print a variable giving its name then value.
@@ -71,4 +67,4 @@ endfunction()
 # was removing the ';' in array arguments.  This broke a bunch of unit tests.
 # Therefore, I have to duplicate code and call it in two separate places.  I
 # have to admit that CMake behavior surprises me many times.  This is not a
-# great programming langauge.
+# great programming language.

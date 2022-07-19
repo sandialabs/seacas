@@ -180,6 +180,12 @@ int ex_put_info(int exoid, int num_info, char *const info[])
         }
       }
     }
+    /* PnetCDF applies setting to entire file, so put back to collective... */
+#if defined(PARALLEL_AWARE_EXODUS)
+    if (ex__is_parallel(rootid)) {
+      nc_var_par_access(rootid, varid, NC_COLLECTIVE);
+    }
+#endif
   }
   EX_FUNC_LEAVE(EX_NOERR);
 

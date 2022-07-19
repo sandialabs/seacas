@@ -205,6 +205,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
     if (myRank_ == 0) {
       options_.usage();
       fmt::print("\n\tCan also set options via ZELLIJ_OPTIONS environment variable.\n"
+		 "\n\tDocumentation: https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#zellij\n"
                  "\n\t->->-> Send email to gdsjaar@sandia.gov for zellij support.<-<-<-\n");
     }
     exit(EXIT_SUCCESS);

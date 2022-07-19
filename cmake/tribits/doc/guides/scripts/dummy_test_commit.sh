@@ -13,7 +13,7 @@
 #   git bisect run ./dummy_test_commit.sh
 #
 # This should result in git-bisect bounding the commits around
-# $DUMMY_TEST_COMMIT_BAD_SHA.  To see the sorted set of commits containig the
+# $DUMMY_TEST_COMMIT_BAD_SHA.  To see the sorted set of commits containing the
 # first bad commit, run:
 #
 #   git bisect log | grep "possible first bad commit"
