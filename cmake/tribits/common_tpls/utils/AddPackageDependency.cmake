@@ -113,7 +113,7 @@ function(add_package_dependency)
         set(_save_lib_list "")
         if ( ${target_libs_split} OR ${req_libs_split} )
 
-            # Define the parsed lists if the orginal list did not contain keywords
+            # Define the parsed lists if the original list did not contain keywords
             if ( NOT ${target_libs_split} )
                 set(target_debug_libs ${${target_package}_LIBRARIES})
                 set(target_opt_libs ${${target_package}_LIBRARIES})

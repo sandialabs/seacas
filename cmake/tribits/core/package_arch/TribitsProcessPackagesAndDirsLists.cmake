@@ -373,7 +373,7 @@ endfunction()
 #    ${REPOSITORY_NAME}_PACKAGES_AND_DIRS_AND_CLASSIFICATIONS
 #
 # from a `<repoDir>/PackagesList.cmake`_ file that just got read in and
-# creates/updates the varaibles::
+# creates/updates the variables::
 #
 #   ${PROJECT_NAME}_PACKAGES
 #   ${PROJECT_NAME}_NUM_PACKAGES
@@ -388,13 +388,13 @@ endfunction()
 # * `${PACKAGE_NAME}_REL_SOURCE_DIR`_
 # * `${PACKAGE_NAME}_TESTGROUP`_
 #
-# and sets up some standard enable/diable vars with default values as defined
+# and sets up some standard enable/disable vars with default values as defined
 # in `TriBITS Package Cache Variables`_ like::
 #
 #   ${PROJECT_NAME}_ENABLE_${PACKAGE_NAME}
 #
 # NOTE: Set ``TRIBITS_PROCESS_PACKAGES_AND_DIRS_LISTS_VERBOSE=TRUE`` to see
-# really verbose debug ouptut from this macro.
+# really verbose debug output from this macro.
 #
 # See `Function call tree for constructing package dependency graph`_.
 #
@@ -504,9 +504,9 @@ macro(tribits_process_packages_and_dirs_lists  REPOSITORY_NAME  REPOSITORY_DIR)
             REPOSITORY_AND_PACKAGE_DIR)
         else()
           message_wrapper(FATAL_ERROR
-            "Error: The pacakge '${TRIBITS_PACKAGE}' was given an absolute directory '${PACKAGE_ABS_DIR}' which is *not* under the project's source directory '${PROJECT_SOURCE_DIR}/'!")
+            "Error: The package '${TRIBITS_PACKAGE}' was given an absolute directory '${PACKAGE_ABS_DIR}' which is *not* under the project's source directory '${PROJECT_SOURCE_DIR}/'!")
           set(REPOSITORY_AND_PACKAGE_DIR "ERROR-BAD-PACKAGE-ABS-DIR")
-          # ToDo: We could just put in a relative path but that requries
+          # ToDo: We could just put in a relative path but that requires
           # knowing the common path between the two directory paths but CMake
           # does not give an easy way to determine that.  I would have to
           # write that function myself.
@@ -557,6 +557,7 @@ macro(tribits_process_packages_and_dirs_lists  REPOSITORY_NAME  REPOSITORY_DIR)
         list(APPEND ${PROJECT_NAME}_PACKAGES ${TRIBITS_PACKAGE})
         tribits_insert_standard_package_options(${TRIBITS_PACKAGE}
           ${PACKAGE_TESTGROUP})
+        set(${TRIBITS_PACKAGE}_PACKAGE_BUILD_STATUS INTERNAL)
         set(${TRIBITS_PACKAGE}_SOURCE_DIR
           "${PROJECT_SOURCE_DIR}/${REPOSITORY_AND_PACKAGE_DIR}")
         set(${TRIBITS_PACKAGE}_REL_SOURCE_DIR

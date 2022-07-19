@@ -41,7 +41,6 @@ include(TribitsPackageMacros)
 include(TribitsReportInvalidTribitsUsage)
 
 
-#
 # @MACRO: tribits_subpackage()
 #
 # Forward declare a `TriBITS Subpackage`_ called at the top of the
@@ -78,18 +77,42 @@ macro(tribits_subpackage SUBPACKAGE_NAME_IN)
     message("\nSUBPACKAGE: ${SUBPACKAGE_NAME_IN}")
   endif()
 
+  tribits_subpackage_assert_call_context()
+
+  # To provide context for various macros
+  set(PACKAGE_NAME ${SUBPACKAGE_FULLNAME})
+
+  set(PARENT_PACKAGE_SOURCE_DIR "${PACKAGE_SOURCE_DIR}")
+  set(PARENT_PACKAGE_BINARY_DIR "${PACKAGE_BINARY_DIR}")
+
+  # Now override the package-like variables
+  tribits_set_common_vars(${SUBPACKAGE_FULLNAME})
+  tribits_define_linkage_vars(${SUBPACKAGE_FULLNAME})
+
+  tribits_append_package_specific_compiler_flags()
+  if(${PROJECT_NAME}_VERBOSE_CONFIGURE)
+    message("Final subpackage compiler flags:")
+  endif()
+  tribits_print_package_compiler_flags()
+
+  # Set flags that are used  to check that macros are called in the correct order
+  set(${SUBPACKAGE_FULLNAME}_TRIBITS_SUBPACKAGE_CALLED TRUE)
+  set(${SUBPACKAGE_FULLNAME}_TRIBITS_SUBPACKAGE_POSTPROCESS_CALLED FALSE)
+
+endmacro()
+
+
+function(tribits_subpackage_assert_call_context)
+
   # check that this is not being called from a package
   if (NOT CURRENTLY_PROCESSING_SUBPACKAGE)
-  # we are in a package
-
+    # we are in a package
     tribits_report_invalid_tribits_usage(
       "Cannot call tribits_subpackage() from a package."
       " Use tribits_package() instead"
       " ${CURRENT_PACKAGE_CMAKELIST_FILE}")
-
   else()
-  # We are in a subpackage
-
+    # We are in a subpackage
     # check to see if postprocess is called before subpackage
     if(${SUBPACKAGE_FULLNAME}_TRIBITS_SUBPACKAGE_POSTPROCESS_CALLED)
       tribits_report_invalid_tribits_usage(
@@ -113,25 +136,10 @@ macro(tribits_subpackage SUBPACKAGE_NAME_IN)
     endif()
   endif()
 
-
-  # To provide context for various macros
-  set(PACKAGE_NAME ${SUBPACKAGE_FULLNAME})
-
-  set(PARENT_PACKAGE_SOURCE_DIR "${PACKAGE_SOURCE_DIR}")
-  set(PARENT_PACKAGE_BINARY_DIR "${PACKAGE_BINARY_DIR}")
-
-  # Now override the package-like variables
-  tribits_set_common_vars(${SUBPACKAGE_FULLNAME})
-  tribits_define_linkage_vars(${SUBPACKAGE_FULLNAME})
-
-  # Set flags that are used  to check that macros are called in the correct order
-  set(${SUBPACKAGE_FULLNAME}_TRIBITS_SUBPACKAGE_CALLED TRUE)
-  set(${SUBPACKAGE_FULLNAME}_TRIBITS_SUBPACKAGE_POSTPROCESS_CALLED FALSE)
-
-endmacro()
+endfunction()
 
 
-#
+
 # @MACRO: tribits_subpackage_postprocess()
 #
 # Macro that performs standard post-processing after defining a `TriBITS
@@ -141,6 +149,10 @@ endmacro()
 # Usage::
 #
 #   tribits_subpackage_postprocess()
+#
+# NOTE: This creates the aliased target ``${PACKAGE_NAME}::all_libs`` for all
+# libraries in all subdirectories that don't have the TRIBITS_TESTONLY_LIB
+# target property set on them.
 #
 # NOTE: It is unfortunate that a Subpackages's CMakeLists.txt file must call
 # this macro but limitations of the CMake language make it necessary to do so.

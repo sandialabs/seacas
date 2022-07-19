@@ -1,16 +1,26 @@
-include(TribitsCMakePolicies)
-include(Split)
+# Set policy here instead of including TribitCTestPolicis.cmake since we want
+# this to be a standalone module
+cmake_policy(SET CMP0007 NEW)
 
 
+# @FUNCTION: tribits_read_ctest_tag_file()
 #
 # Read in the <build>/Testing/TAG file contents
 #
+# Usage::
 #
-function(tribits_read_ctest_tag_file  TAG_FILE_IN  BUILD_START_TIME_OUT  CDASH_TRACK_OUT)
-  file(READ "${TAG_FILE_IN}" TAG_FILE_STR)
-  split("${TAG_FILE_STR}" "\n" TAG_FILE_STR_LIST)
-  list(GET TAG_FILE_STR_LIST 0 BUILD_START_TIME)
-  list(GET TAG_FILE_STR_LIST 1 CDASH_TRACK)
-  set(${BUILD_START_TIME_OUT} "${BUILD_START_TIME}" PARENT_SCOPE)
-  set(${CDASH_TRACK_OUT} "${CDASH_TRACK}" PARENT_SCOPE)
+#   tribits_read_ctest_tag_file( <tagFileIn>
+#     <buildStartTimeOut> <cdashGroupOut> <cdashModelOut> )
+#
+function(tribits_read_ctest_tag_file  tagFileIn
+    buildStartTimeOut  cdashGroupOut  cdashModelOut
+  )
+  file(READ "${tagFileIn}" tagFileStr)
+  string(REPLACE "\n" ";" tagFileStrList "${tagFileStr}")
+  list(GET tagFileStrList 0 buildStartTime)
+  list(GET tagFileStrList 1 cdashGroup)
+  list(GET tagFileStrList 2 cdashModel)
+  set(${buildStartTimeOut} "${buildStartTime}" PARENT_SCOPE)
+  set(${cdashGroupOut} "${cdashGroup}" PARENT_SCOPE)
+  set(${cdashModelOut} "${cdashModel}" PARENT_SCOPE)
 endfunction()

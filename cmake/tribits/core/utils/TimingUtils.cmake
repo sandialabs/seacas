@@ -46,7 +46,7 @@
 
 include(Split)
 
-#
+
 # @FUNCTION: timer_get_raw_seconds()
 #
 # Return the raw time in seconds (nano-second accuracy) since epoch, i.e.,
@@ -76,7 +76,6 @@ function(timer_get_raw_seconds   SECONDS_DEC_OUT)
 endfunction()
 
 
-#
 # @FUNCTION: timer_get_rel_seconds()
 #
 # Return the relative time between start and stop seconds.
@@ -114,7 +113,6 @@ function(timer_get_rel_seconds  ABS_SECONDS_DEC_START
 endfunction()
 
 
-#
 # @FUNCTION: timer_print_rel_time()
 #
 # Print the relative time between start and stop timers in ``<min>m<sec>s``
@@ -194,7 +192,7 @@ endfunction()
 
 
 #
-# Reform the formated seconds in the form <sec>.<nanasec> from the combined
+# Reform the formatted seconds in the form <sec>.<nanasec> from the combined
 # int form.
 #
 function(timer_get_decimal_num_frum_truncated_combined_int

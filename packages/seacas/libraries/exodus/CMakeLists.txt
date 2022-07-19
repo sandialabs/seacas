@@ -52,12 +52,17 @@ endif()
 
 # Many users of the SEACAS installations still want a static exodus library...
 if (SEACASExodus_ENABLE_STATIC)
+   # NOTE: If use `TRIBITS_ADD_LIBRARY` here, then both exodus and exodus_static linked to all executables.
    ADD_LIBRARY(
            exodus_static
            STATIC
            ${SOURCES} ${DEP_SOURCES}
    )
+   target_include_directories(exodus_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+   target_link_libraries(exodus_static PUBLIC Netcdf::all_libs)
    set_property(TARGET exodus_static PROPERTY C_STANDARD 99)
+   # This keeps the library out of the `all_libs` targets...
+   set_target_properties(exodus_static PROPERTIES TRIBITS_TESTONLY_LIB TRUE)
    set_target_properties(exodus_static PROPERTIES OUTPUT_NAME exodus)
    INSTALL(TARGETS exodus_static DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
