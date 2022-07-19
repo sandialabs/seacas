@@ -2,7 +2,7 @@
 # ************************************************************************
 #
 #            Trilinos: An Object-Oriented Solver Framework
-#                 Copyright (2001) Sandia Corporation
+#                 Copyright (2001, 2022) Sandia Corporation
 #
 #
 # Copyright (2001) Sandia Corporation. Under the terms of Contract
@@ -54,6 +54,6 @@
 # @HEADER
 
 find_package(GTest CONFIG REQUIRED)
-tribits_external_package_create_imported_all_libs_target_and_config_file(GTest
+tribits_extpkg_package_create_imported_all_libs_target_and_config_file(GTest
   INNER_FIND_PACKAGE_NAME  GTest
   IMPORTED_TARGETS_FOR_ALL_LIBS  GTest::gtest )
