@@ -54,6 +54,6 @@
 # @HEADER
 
 find_package(GTest CONFIG REQUIRED)
-tribits_extpkg_package_create_imported_all_libs_target_and_config_file(GTest
+tribits_extpkg_create_imported_all_libs_target_and_config_file(GTest
   INNER_FIND_PACKAGE_NAME  GTest
   IMPORTED_TARGETS_FOR_ALL_LIBS  GTest::gtest )
