@@ -1069,7 +1069,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
   }
 
   if (rootid == exodusFilePtr) {
-    // We are creating a grouped file, the title and other attributes haveee
+    // We are creating a grouped file, the title and other attributes have
     // already been defined when the root group was created; don't redo now.
     int status = nc_put_att_text(rootid, NC_GLOBAL, ATT_TITLE,
                                  static_cast<int>(std::strlen(mesh.title)) + 1, mesh.title);
