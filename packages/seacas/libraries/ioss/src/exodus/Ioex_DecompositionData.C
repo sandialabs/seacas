@@ -418,6 +418,10 @@ namespace Ioex {
         }
         sum += overlap * element_nodes;
       }
+      else {
+        int64_t id            = block.id;
+        ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, 0, 0, nullptr, nullptr, nullptr);
+      }
     }
     decomposition.m_pointer.push_back(decomposition.m_adjacency.size());
   }
@@ -1183,6 +1187,9 @@ namespace Ioex {
       file_data.resize(set.file_count());
       m_decomposition.show_progress("\tex_get_var (set)");
       ierr = ex_get_var(filePtr, step, type, var_index, id, set.file_count(), file_data.data());
+    }
+    else {
+      ierr = ex_get_partial_var(filePtr, step, type, var_index, id, 0, 0, nullptr);
     }
 
     if (ierr >= 0) {
