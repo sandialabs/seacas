@@ -488,7 +488,7 @@ namespace Ioex {
       Ioss::SerializeIO serializeIO__(this);
 
       if (isParallel) {
-        Ioex::check_processor_info(get_file_pointer(), util().parallel_size(), myProcessor);
+        Ioex::check_processor_info(decoded_filename(), get_file_pointer(), util().parallel_size(), myProcessor);
       }
 
       read_region();

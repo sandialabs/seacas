@@ -180,7 +180,7 @@ namespace Ioex {
     return found;
   }
 
-  bool check_processor_info(int exodusFilePtr, int processor_count, int processor_id)
+  bool check_processor_info(const std::string &filename, int exodusFilePtr, int processor_count, int processor_id)
   {
     // A restart file may contain an attribute which contains
     // information about the processor count and current processor id
@@ -205,26 +205,25 @@ namespace Ioex {
         if (proc_info[0] != processor_count && proc_info[0] > 1) {
           fmt::print(Ioss::WarnOut(),
                      "Processor decomposition count in file ({}) does not match current "
-                     "processor "
-                     "count ({}).\n",
-                     proc_info[0], processor_count);
+                     "processor count ({}) in file named '{}'.\n",
+                     proc_info[0], processor_count, filename);
           matches = false;
         }
         if (proc_info[1] != processor_id) {
           fmt::print(
               Ioss::WarnOut(),
-              "This file was originally written on processor {}, but is now being read on "
+              "The file '{}' was originally written on processor {}, but is now being read on "
               "processor {}.\n"
               "This may cause problems if there is any processor-dependent data on the file.\n",
-              proc_info[1], processor_id);
+              filename, proc_info[1], processor_id);
           matches = false;
         }
       }
       else {
         char errmsg[MAX_ERR_LENGTH];
         ex_opts(EX_VERBOSE);
-        fmt::print(errmsg, "Error: failed to read processor info attribute from file id {}",
-                   exodusFilePtr);
+        fmt::print(errmsg, "Error: failed to read processor info attribute from file {}",
+                   filename);
         ex_err_fn(exodusFilePtr, __func__, errmsg, status);
         return (EX_FATAL) != 0;
       }

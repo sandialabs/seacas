@@ -195,7 +195,10 @@ namespace Ioss {
     size_t       field_count() const;
     size_t       field_count(Field::RoleType role) const;
 
+    bool         check_for_duplicate(const Ioss::Field &new_field) const;
+
     // Put this fields data into 'data'.
+
     // Returns number of entities for which the field was read.
     // Assumes 'data' is large enough to hold all values.
     int64_t get_field_data(const std::string &field_name, void *data, size_t data_size) const;

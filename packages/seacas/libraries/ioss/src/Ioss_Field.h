@@ -160,8 +160,12 @@ namespace Ioss {
     void check_type(BasicType the_type) const;
 
     bool               is_type(BasicType the_type) const { return the_type == type_; }
+
     std::string        type_string() const;
     static std::string type_string(BasicType type);
+
+    std::string        role_string() const;
+    static std::string role_string(RoleType role);
 
     bool add_transform(Transform *my_transform);
     bool transform(void *data);

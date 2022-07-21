@@ -354,7 +354,6 @@ char *io_getline_int(const char *prompt)
       case '\002':
         io_gl_fixup(io_gl_prompt, -1, io_gl_pos - 1); /* ^B */
         break;
-      case '\003': /* ^C */
       case '\004': /* ^D */
         if (io_gl_cnt == 0) {
           io_gl_buf[0] = '\0';

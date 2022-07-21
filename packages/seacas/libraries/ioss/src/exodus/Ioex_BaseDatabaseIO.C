@@ -560,7 +560,6 @@ namespace Ioex {
 
     if (using_parallel_io() && myProcessor != 0) {
       // This call only sets the `num_qa_records` metadata on the other ranks...
-      // if !isParallel or rank != 0...
       ex_put_qa(get_file_pointer(), num_qa_records + 1, nullptr);
     }
     else {
@@ -665,9 +664,8 @@ namespace Ioex {
         Ioss::Utils::copy_string(info[i], lines[j], max_line_length + 1);
       }
     }
-
+    
     if (using_parallel_io()) {
-      // In case in file-per-rank not all ranks have same records.
       util().broadcast(total_lines);
     }
 
