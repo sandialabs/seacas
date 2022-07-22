@@ -32,7 +32,7 @@
 #endif
 
 namespace {
-  const char *version_string = "6.08 (2022/07/21)";
+  const char *version_string = "6.09 (2022/07/22)";
 
   void output_copyright();
 

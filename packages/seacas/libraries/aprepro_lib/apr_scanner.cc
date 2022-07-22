@@ -1017,7 +1017,7 @@ namespace {
   {
     auto len = strlen(line);
     for (size_t i = 0; i < len; i++) {
-      if (line[i] > 0x7f) {
+      if (!(std::isspace(line[i]) || std::isprint(line[i]))) {
         return false;
       }
     }
@@ -3272,6 +3272,11 @@ namespace SEAMS {
         return -1;
       }
       else {
+        if (!string_is_ascii(buf)) {
+          yyerror(
+              "input file contains non-ASCII (probably UTF-8) characters which will most likely "
+              "be parsed incorrectly.");
+        }
         return yyin->gcount();
       }
     }
