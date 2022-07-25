@@ -41,9 +41,8 @@ typedef SEAMS::Parser::token_type token_type;
  }
 
 namespace {
-  int string_is_ascii(const char *line)
+  int string_is_ascii(const char *line, size_t len)
   {
-    auto len = strlen(line);
     for (size_t i = 0; i < len; i++) {
       if (!(std::isspace(line[i]) || std::isprint(line[i]))) {
 	return false;
@@ -776,7 +775,7 @@ integer {D}+({E})?
         return 0;
       }
 
-      if (!string_is_ascii(line)) {
+      if (!string_is_ascii(line, strlen(line))) {
         yyerror("input line contains non-ASCII (probably UTF-8) characters which will most likely "
                 "be parsed incorrectly.");
       }
@@ -800,7 +799,7 @@ integer {D}+({E})?
         return -1;
       }
       else {
-	if (!string_is_ascii(buf)) {
+	if (!string_is_ascii(buf, yyin->gcount())) {
 	  yyerror("input file contains non-ASCII (probably UTF-8) characters which will most likely "
 		  "be parsed incorrectly.");
 	}
