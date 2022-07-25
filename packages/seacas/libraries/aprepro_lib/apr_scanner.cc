@@ -1013,7 +1013,7 @@ namespace SEAMS {
 } // namespace SEAMS
 
 namespace {
-  int string_is_ascii(const char *line, size_t len)
+  bool string_is_ascii(const char *line, size_t len)
   {
     for (size_t i = 0; i < len; i++) {
       if (!(std::isspace(line[i]) || std::isprint(line[i]))) {
