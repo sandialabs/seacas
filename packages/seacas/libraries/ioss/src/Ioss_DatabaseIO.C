@@ -804,7 +804,8 @@ namespace Ioss {
         const ElementTopology *elem_type = block->topology();
         const ElementTopology *side_type = elem_type->boundary_type();
         if (side_type == nullptr) {
-          // heterogeneous sides.  Iterate through...
+          // heterogeneous sides.  Iterate through... (or there is no
+          // defined `side` for this parent topology.
           int size = elem_type->number_boundaries();
           for (int i = 1; i <= size; i++) {
             side_type = elem_type->boundary_type(i);
