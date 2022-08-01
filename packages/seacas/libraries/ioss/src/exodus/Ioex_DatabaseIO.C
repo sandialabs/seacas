@@ -3746,10 +3746,8 @@ int64_t DatabaseIO::get_side_connectivity_internal(const Ioss::SideBlock *fb, in
 
   // connectivity array
   int64_t current_side = -1;
-  int     nelnode      = 0;
   int     nfnodes      = 0;
   int     ieb          = 0;
-  size_t  offset       = 0;
   for (int64_t iel = 0; iel < number_sides; iel++) {
     if (is_valid_side[iel] == 1) {
 
@@ -3758,13 +3756,14 @@ int64_t DatabaseIO::get_side_connectivity_internal(const Ioss::SideBlock *fb, in
       // ensure we have correct connectivity
       block = get_region()->get_element_block(elem_id);
       assert(block != nullptr);
+      int nelnode       = block->topology()->number_nodes();
+      // Used to map element number into position in connectivity array.
+      // E.g., element 97 is the (97-offset)th element in this block and
+      // is stored in array index (97-offset-1).
+      size_t offset           = block->get_offset() + 1;
+
       if (conn_block != block) {
         int64_t nelem = block->entity_count();
-        nelnode       = block->topology()->number_nodes();
-        // Used to map element number into position in connectivity array.
-        // E.g., element 97 is the (97-offset)th element in this block and
-        // is stored in array index (97-offset-1).
-        offset           = block->get_offset() + 1;
         size_t elconsize = nelem * nelnode;
         elconnect.resize(elconsize);
         if (map_ids) {
