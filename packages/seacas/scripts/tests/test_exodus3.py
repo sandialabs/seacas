@@ -130,7 +130,7 @@ class TestAssemblies(unittest.TestCase):
         self.assertEqual(str(expected), str(assemblies))
 
     def test_put_qa(self):
-        new = [("name","yeet","woot","scoot")]
+        new = [("name","1.2.3-4","20220801","12:34:56")]
         with exo.exodus(self.temp_exo_path, mode='a') as temp_exofile:
             temp_exofile.put_qa_records(new)
         with exo.exodus(self.temp_exo_path) as temp_exofile:
