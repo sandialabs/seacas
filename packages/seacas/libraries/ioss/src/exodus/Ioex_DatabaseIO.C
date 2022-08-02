@@ -15,7 +15,6 @@
 #include <cassert>
 #include <cctype>
 #include <cfloat>
-#include <chrono>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -3702,7 +3701,6 @@ int64_t DatabaseIO::get_side_connectivity_internal(const Ioss::SideBlock *fb, in
                                                    bool map_ids) const
 {
   // Get size of data stored on the file...
-  auto  t1  = std::chrono::steady_clock::now();
   ex_set set_param[1];
   set_param[0].id                       = id;
   set_param[0].type                     = EX_SIDE_SET;
@@ -3713,7 +3711,6 @@ int64_t DatabaseIO::get_side_connectivity_internal(const Ioss::SideBlock *fb, in
   if (ierr < 0) {
     Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
   }
-  auto  t2  = std::chrono::steady_clock::now();
 
   int64_t number_sides = set_param[0].num_entry;
 
@@ -3730,14 +3727,12 @@ int64_t DatabaseIO::get_side_connectivity_internal(const Ioss::SideBlock *fb, in
     Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
   }
   //----
-  auto  t3  = std::chrono::steady_clock::now();
 
   Ioss::IntVector is_valid_side;
   Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, int_byte_size_api(),
                                               (void *)element.data(), (void *)side.data(),
                                               number_sides, get_region());
 
-  auto  t4  = std::chrono::steady_clock::now();
   static std::vector<INT>    elconnect;
   static Ioss::ElementBlock *conn_block = nullptr; // Block that we currently have connectivity for
 
@@ -3793,12 +3788,6 @@ int64_t DatabaseIO::get_side_connectivity_internal(const Ioss::SideBlock *fb, in
       }
     }
   }
-  auto  t5  = std::chrono::steady_clock::now();
-  std::chrono::duration<double> diff1 = t2 - t1;
-  std::chrono::duration<double> diff2 = t3 - t2;
-  std::chrono::duration<double> diff3 = t4 - t3;
-  std::chrono::duration<double> diff4 = t5 - t4;
-  fmt::print(stderr, "IOSS: get_side_connectivity_internal {:.5f},  {:.5f},  {:.5f},  {:.5f}\n", diff1.count(), diff2.count(), diff3.count(), diff4.count());
   return ierr;
 }
 
