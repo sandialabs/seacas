@@ -129,6 +129,13 @@ class TestAssemblies(unittest.TestCase):
         self.maxDiff = None
         self.assertEqual(str(expected), str(assemblies))
 
+    def test_put_qa(self):
+        new = [("name","1.2.3-4","20220801","12:34:56")]
+        with exo.exodus(self.temp_exo_path, mode='a') as temp_exofile:
+            temp_exofile.put_qa_records(new)
+        with exo.exodus(self.temp_exo_path) as temp_exofile:
+            self.assertEqual(new, temp_exofile.get_qa_records())
+
     def test_put_assembly(self):
         new = exo.assembly(name='Unit_test', type=exo.ex_entity_type.EX_ASSEMBLY, id=444)
         new.entity_list = [100, 222]
