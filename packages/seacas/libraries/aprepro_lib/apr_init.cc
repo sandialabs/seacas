@@ -62,6 +62,10 @@ namespace SEAMS {
       {"tan", do_tan, "tan(x)", "Tangent of x, with x in radians. "},
       {"tand", do_tand, "tand(x)", "Tangent of x, with x in radians. "},
       {"tanh", do_tanh, "tanh(x)", "Hyperbolic tangent of x. "},
+      {"FtoC", do_FtoC, "FtoC(x)",
+       "Convert temperature x from degrees F to degrees C (212F -> 100C)"},
+      {"CtoF", do_CtoF, "CtoF(x)",
+       "Convert temperature x from degrees C to degrees F (100C -> 212F)"},
       {nullptr, nullptr, nullptr, nullptr}};
 
   init_a arith_a_fncts[] = {

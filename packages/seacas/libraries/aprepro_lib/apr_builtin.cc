@@ -93,6 +93,10 @@ namespace SEAMS {
     return timer;
   }
 
+  double do_FtoC(double F) { return (F - 32.0) / 1.8; }
+
+  double do_CtoF(double C) { return (C * 1.8) + 32.0; }
+
   // DO_INT:  Calculate integer nearest to zero from value
   double do_int(double x)
   {
