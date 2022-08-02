@@ -488,8 +488,7 @@ namespace Ioex {
       Ioss::SerializeIO serializeIO__(this);
 
       if (isParallel) {
-        Ioex::check_processor_info(decoded_filename(), get_file_pointer(), util().parallel_size(),
-                                   myProcessor);
+        Ioex::check_processor_info(decoded_filename(), get_file_pointer(), util().parallel_size(), myProcessor);
       }
 
       read_region();
@@ -3733,8 +3732,10 @@ int64_t DatabaseIO::get_side_connectivity_internal(const Ioss::SideBlock *fb, in
                                               (void *)element.data(), (void *)side.data(),
                                               number_sides, get_region());
 
-  static std::vector<INT>    elconnect;
-  static Ioss::ElementBlock *conn_block = nullptr; // Block that we currently have connectivity for
+  std::vector<INT>    elconnect;
+  int64_t             elconsize  = 0;       // Size of currently allocated connectivity block
+  Ioss::ElementBlock *conn_block = nullptr; // Block that we currently
+  // have connectivity for
 
   Ioss::ElementBlock *block = nullptr;
   Ioss::IntVector     side_elem_map; // Maps the side into the elements
@@ -3759,9 +3760,11 @@ int64_t DatabaseIO::get_side_connectivity_internal(const Ioss::SideBlock *fb, in
         // Used to map element number into position in connectivity array.
         // E.g., element 97 is the (97-offset)th element in this block and
         // is stored in array index (97-offset-1).
-        offset           = block->get_offset() + 1;
-        size_t elconsize = nelem * nelnode;
-        elconnect.resize(elconsize);
+        offset = block->get_offset() + 1;
+        if (elconsize < nelem * nelnode) {
+          elconsize = nelem * nelnode;
+          elconnect.resize(elconsize);
+        }
         if (map_ids) {
           get_field_internal(block, block->get_field("connectivity"), elconnect.data(),
                              nelem * nelnode * int_byte_size_api());
