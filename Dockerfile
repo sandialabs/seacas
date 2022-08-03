@@ -1,5 +1,8 @@
 FROM ubuntu:latest
-RUN apt-get install autoconf automake wget libx11-dev -y
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
+        autoconf automake cmake git libx11-dev wget -y
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
 RUN cd seacas/ && \
     ./install-tpl.sh && \
