@@ -9,7 +9,7 @@ RUN apt-get update && \
         openmpi-bin libopenmpi-dev \
         build-essential gfortran git libx11-dev \
         python3.10 python3-dev python3-mpi4py python3-pip
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python${PYTHON_VERSION} 1
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
 RUN cd seacas/ && \
     ./install-tpl.sh && \
@@ -22,5 +22,7 @@ RUN cd seacas/ && \
     make install && \
     cd ../../
 RUN python -m pip install numpy
+ENV PATH "${PATH}:/seacas/bin/"
 ENV PYTHONPATH "${PYTHONPATH}:/seacas/lib/"
+ENV LD_LIBRARY_PATH "${LD_LIBRARY_PATH}:/seacas/lib/"
 CMD ["/bin/bash"]
