@@ -579,7 +579,7 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   size_t dim_str[NC_MAX_VAR_DIMS];
   size_t dim_cnt[NC_MAX_VAR_DIMS];
   size_t var_sz        = 1L;
-  bool   all_dims_same = true;
+  bool   string_len_same = true;
 
   for (int idx = 0; idx < nbr_dim; idx++) {
     /* NB: For the unlimited dimension, ncdiminq() returns the maximum
@@ -599,8 +599,10 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
 
     /* Initialize the indicial offset and stride arrays */
     size_t dim_max = dim_in > dim_out ? dim_in : dim_out;
-    if (dim_in != dim_out) {
-      all_dims_same = false;
+
+    /* Need to know if input and output have different size strings. */
+    if (var_type_in == NC_CHAR && idx == 1 && dim_in != dim_out) {
+      string_len_same = false;
     }
     var_sz *= dim_max;
 
@@ -674,12 +676,14 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
 
     else if (var_type_in == NC_CHAR) {
 
-      if (all_dims_same) {
+      if (string_len_same) {
         EXCHECKF(nc_get_var_text(in_id, var_in_id, void_ptr));
         EXCHECKF(nc_put_vara_text(out_id, var_out_id, dim_str, dim_cnt, void_ptr));
       }
       else {
         /* Use void_ptr for the input read; alloc new space for output... */
+        EXCHECKF(nc_get_var_text(in_id, var_in_id, void_ptr));
+
         size_t num_string = 0;
         size_t in_size    = 0;
         size_t out_size   = 0;
@@ -689,7 +693,6 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
         size_t min_size    = in_size < out_size ? in_size : out_size;
         char  *out_strings = calloc(num_string * out_size, 1);
         /* Read the input strings...*/
-        EXCHECKF(nc_get_var_text(in_id, var_in_id, void_ptr));
 
         /* Copy to the output strings...*/
         const char *in_strings = void_ptr;
