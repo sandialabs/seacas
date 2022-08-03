@@ -3,7 +3,7 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
         apt-utils apt-transport-https build-essential bzip2 \
-        autoconf automake cmake git libx11-dev wget zip unzip -y
+        autoconf automake cmake git libx11-dev wget zip unzip zlib1g -y
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
 RUN cd seacas/ && \
     ./install-tpl.sh && \
