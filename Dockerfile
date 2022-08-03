@@ -2,7 +2,7 @@ FROM ubuntu:latest
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
-        autoconf automake cmake git libx11-dev wget -y
+        autoconf automake cmake git libx11-dev wget zip unzip -y
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
 RUN cd seacas/ && \
     ./install-tpl.sh && \
