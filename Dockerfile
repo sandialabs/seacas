@@ -7,7 +7,7 @@ RUN apt-get update && \
         libcurl4-openssl-dev libjpeg-dev wget \
         curl bzip2 m4 flex bison cmake libzip-dev \
         openmpi-bin libopenmpi-dev \
-        git libx11-dev
+        build-essential gfortran git libx11-dev
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
 RUN cd seacas/ && \
     ./install-tpl.sh && \
