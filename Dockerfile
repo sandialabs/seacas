@@ -1,9 +1,12 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
-        apt-utils apt-transport-https build-essential bzip2 \
-        autoconf automake cmake git libx11-dev wget zip unzip -y
+        libaec-dev zlib1g-dev automake autoconf \
+        libcurl4-openssl-dev libjpeg-dev wget \
+        curl bzip2 m4 flex bison cmake libzip-dev \
+        openmpi-bin libopenmpi-dev \
+        git libx11-dev
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
 ENV NEEDS_ZLIB YES
 RUN cd seacas/ && \
