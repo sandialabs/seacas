@@ -249,6 +249,7 @@ C ... Don't warn about no map stored in file
          call exgcss(ndbin, ia(kidss), ia(kness), ia(kndss),
      &        ia(kixess), ia(kixdss), IA(KLTeSS), ia(kltsss),
      &        a(kfacss), ierr)
+         if (ierr .ne. 0) go to 50
          if (lessdf .eq. 0) then
            call inirea(lessnl, 1.0, a(kfacss))
          end if
@@ -264,11 +265,12 @@ C     update index array
            ia(kixnss+i)=nodcnt+1
 C     get num of sides & df
            call exgsp(ndbin,ia(kidss+i),nsess,ndess,nerr)
+           if (nerr .gt. 0) goto 50
 
 C     get side set nodes
            call exgssn(ndbin,ia(kidss+i),ia(kltnnn+isoff),
      &          ia(kltnss+nodcnt),nerr)
-           if (nerr .gt. 0) goto 40
+           if (nerr .gt. 0) goto 50
            nness = 0
 C     sum node counts to calculate next index
            do 102 ii=0,nsess-1
@@ -279,7 +281,6 @@ C     sum node counts to calculate next index
            isoff=isoff+nsess
  104     continue
 
-         if (ierr .ne. 0) go to 40
       end if
 
       call exinq(ndbin, EXQA,   nqarec, rdum, cdum, ierr)
@@ -572,9 +573,10 @@ C     --Write the side sets
       GOTO 50
 
    50 CONTINUE
+      call exerr('gen3d', ' ', EXLMSG)
       call mdfree()
       call exclos(ndbin, ierr)
-      call exclos(ndbout, ierr)
+      if (ndbout .ne. 10) call exclos(ndbout, ierr)
 
    60 CONTINUE
       call addlog (QAINFO(1)(:lenstr(QAINFO(1))))
