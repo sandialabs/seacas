@@ -8,7 +8,6 @@ RUN apt-get update && \
         openmpi-bin libopenmpi-dev \
         git libx11-dev
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
-ENV NEEDS_ZLIB YES
 RUN cd seacas/ && \
     ./install-tpl.sh && \
     cd ../
