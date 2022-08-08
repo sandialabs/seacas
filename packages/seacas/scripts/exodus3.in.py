@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.13 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.20.14 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,12 +70,12 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.13 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.14 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.13 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.14 (seacas-py3), a python wrapper of some of the exodus library.
 
-Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 National Technology &
+Copyright (c) 2013-2022 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
 Contract DE-NA0003525 with NTESS, the U.S. Government retains certain
 rights in this software.
@@ -697,8 +697,8 @@ class exodus:
 
                 info = [title, numDims, numNodes, numElems, numBlocks,
                         numNodeSets, numSideSets]
-                assert None not in info
-                self.__ex_put_info(info)
+                if None not in info:
+                    self.__ex_put_info(info)
 
             self.numTimes = ctypes.c_int(0)
         else:
@@ -851,11 +851,43 @@ class exodus:
                                           ctypes.byref(self.io_ws),
                                           EX_API_VERSION_NODOT)
 
-        self.__copy_file(fileId, include_transient)
+        self.copy_file(fileId, include_transient)
         EXODUS_LIB.ex_close(fileId)
 
         return exodus(fileName, mode)
 
+
+    #
+    # copy to a new already created database
+    #
+    # --------------------------------------------------------------------
+    def copy_file(self, file_id, include_transient=False):
+        """
+        Copies exodus database to the database pointed to by `fileId`
+        Returns the passed in `file_id`.
+
+        >>> with exodus.exodus(file_name, mode='w') as exofile:
+        >>>     with exo.copy_file(exofile.fileId, include_transient=True) as exo_copy:
+        >>>         exo_copy.close()
+
+        Parameters
+        ----------
+        fileId : str
+            name of exodus file to open
+        include_transient: bool
+            should the transient data in the original file also be copied to the output file
+            or just the mesh (non-transient) portion.
+
+        Returns
+        -------
+        file_id: The file_id of the copied to file
+        
+        """
+        EXODUS_LIB.ex_copy(self.fileId, file_id)
+        if include_transient:
+            EXODUS_LIB.ex_copy_transient(self.fileId, file_id)
+
+        return file_id;
 
     #
     # general info
@@ -4859,15 +4891,6 @@ class exodus:
                                                ctypes.byref(self.comp_ws),
                                                ctypes.byref(self.io_ws),
                                                EX_API_VERSION_NODOT)
-
-    # --------------------------------------------------------------------
-
-    def __copy_file(self, fileId, include_transient=False):
-        if include_transient:
-            EXODUS_LIB.ex_copy(self.fileId, fileId)
-            EXODUS_LIB.ex_copy_transient(self.fileId, fileId)
-        else:
-            EXODUS_LIB.ex_copy(self.fileId, fileId)
 
     # --------------------------------------------------------------------
 
