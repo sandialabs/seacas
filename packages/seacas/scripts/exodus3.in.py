@@ -864,20 +864,23 @@ class exodus:
     def copy_file(self, file_id, include_transient=False):
         """
         Copies exodus database to the database pointed to by `fileId`
-        Does not return anything.
+        Returns the passed in `file_id`.
 
-        >>> exofile = exodus.exodus(file_name, mode='w')
-        >>> exo_copy = exo.copy_file(exofile.fileId, include_transient=True)
-        >>> exo_copy.close()
+        >>> with exodus.exodus(file_name, mode='w') as exofile:
+        >>>     with exo.copy_file(exofile.fileId, include_transient=True) as exo_copy:
+        >>>         exo_copy.close()
 
         Parameters
         ----------
         fileId : str
             name of exodus file to open
+        include_transient: bool
+            should the transient data in the original file also be copied to the output file
+            or just the mesh (non-transient) portion.
 
         Returns
         -------
-        file_id: The file_id of to copied to file
+        file_id: The file_id of the copied to file
         
         """
         EXODUS_LIB.ex_copy(self.fileId, file_id)
