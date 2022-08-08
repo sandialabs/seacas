@@ -23,7 +23,7 @@ RUN apt-get update && \
         python3.10=3.10.4-3ubuntu0.1 \
         python3-dev \
         python3-mpi4py \
-        python3-numpy=1.23.1 \
+        python3-numpy \
         python3-pip && \
         wget \
         zlib1g-dev \
