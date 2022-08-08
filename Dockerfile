@@ -23,7 +23,7 @@ RUN cd seacas/ && \
     make && \
     make install && \
     cd ../../
-RUN python -m pip install numpy
+RUN python -m pip install numpy==1.23.1
 ENV PATH "${PATH}:/seacas/bin/"
 ENV PYTHONPATH "${PYTHONPATH}:/seacas/lib/"
 ENV LD_LIBRARY_PATH "${LD_LIBRARY_PATH}:/seacas/lib/"
