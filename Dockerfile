@@ -12,17 +12,13 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
-RUN pwd
-RUN cd seacas/ && \
-    ./install-tpl.sh && \
-    cd ../
-RUN cd seacas/ && \
-    mkdir build && \
-    cd build && \
-    ../cmake-config && \
+WORKDIR /seacas
+RUN ./install-tpl.sh
+RUN mkdir build
+WORKDIR /seacas/build
+RUN ../cmake-config && \
     make && \
-    make install && \
-    cd ../../
+    make install
 RUN python -m pip install numpy==1.23.1
 ENV PATH "${PATH}:/seacas/bin/"
 ENV PYTHONPATH "${PYTHONPATH}:/seacas/lib/"
