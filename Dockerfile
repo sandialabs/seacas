@@ -24,9 +24,9 @@ RUN apt-get update && \
         python3-dev \
         python3-mpi4py \
         python3-numpy \
-        python3-pip && \
+        python3-pip \
         wget \
-        zlib1g-dev \
+        zlib1g-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
