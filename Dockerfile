@@ -21,12 +21,12 @@ RUN apt-get update && \
         m4 \
         openmpi-bin \
         python3.10=3.10.4-3ubuntu0.1 \
-        python3-dev \
-        python3-mpi4py \
-        python3-numpy \
-        python3-pip \
-        wget \
-        zlib1g-dev && \
+        python3-dev=3.10.4-3ubuntu0.1 \
+        python3-mpi4py=3.1.3-1build2 \
+        python3-numpy=1:1.21.5-1build2 \
+        python3-pip=22.0.2+dfsg-1 \
+        wget=1.21.2-2ubuntu1 \
+        zlib1g-dev=1:1.2.11.dfsg-2ubuntu9 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
