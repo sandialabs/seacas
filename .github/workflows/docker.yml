@@ -49,7 +49,7 @@ jobs:
       - name: Delay before pull
         run: sleep 234s
   test-exodus-latest:
-    needs: build-latest
+    needs: build-exodus-latest
     runs-on: ubuntu-latest
     container: mrbuche/cmake-exodus
     steps:
