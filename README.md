@@ -190,7 +190,11 @@ An Ubuntu-based Docker image, with SEACAS built and installed, is available on [
 docker pull mrbuche/seacas
 ```
 
-SEACAS is located in `/seacas` when running the container.
+SEACAS is located in `/seacas` when running the container. There is also a similar image available on [Docker Hub](https://hub.docker.com/r/mrbuche/exodus) with only Exodus built and installed.
+
+```sh
+docker pull mrbuche/exodus
+```
 
 ## License
 
@@ -214,3 +218,4 @@ a separate license:
 ## Contact information
 
  Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
+
