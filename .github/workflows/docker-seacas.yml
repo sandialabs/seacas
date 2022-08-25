@@ -1,4 +1,4 @@
-name: docker
+name: docker-seacas
 on:
   push:
     branches: [ "master" ]
