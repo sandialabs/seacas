@@ -1,4 +1,4 @@
-name: docker
+name: docker-seacas
 on:
   push:
     branches: [ "master" ]
@@ -15,6 +15,7 @@ jobs:
       - name: Docker build and push
         uses: docker/build-push-action@v2.8.0
         with:
+          context: docker/seacas
           push: true
           tags: mrbuche/seacas:latest
       - name: Delay before pull
