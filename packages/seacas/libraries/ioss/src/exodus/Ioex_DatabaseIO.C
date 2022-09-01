@@ -4353,6 +4353,74 @@ int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss:
             }
           }
         }
+        else if (field.get_name() == "chain") {
+          // This is (currently) for the line decomp which creates
+          // lines or chains or columns of elements from a surface
+          // face back into the mesh.
+          // The map entry is the element number at the beginning of the chain.
+
+          // FIX: Hardwired map ids....
+          int map_count = ex_inquire_int(get_file_pointer(), EX_INQ_ELEM_MAP);
+          if (map_count == 0) {
+            // This needs to be fixed... Currently hardwired....
+            ierr = ex_put_map_param(get_file_pointer(), 0, 2);
+            if (ierr < 0) {
+              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+            }
+          }
+
+          std::vector<char> element(my_element_count * int_byte_size_api());
+          std::vector<char> link(my_element_count * int_byte_size_api());
+
+          if (int_byte_size_api() == 4) {
+            int *el_link   = reinterpret_cast<int *>(data);
+            int *element32 = reinterpret_cast<int *>(element.data());
+            int *link32    = reinterpret_cast<int *>(link.data());
+
+            int index = 0;
+            for (size_t i = 0; i < my_element_count; i++) {
+              element32[i] = el_link[index++];
+              link32[i]    = el_link[index++];
+            }
+          }
+          else {
+            auto *el_link   = reinterpret_cast<int64_t *>(data);
+            auto *element64 = reinterpret_cast<int64_t *>(element.data());
+            auto *link64    = reinterpret_cast<int64_t *>(link.data());
+
+            size_t index = 0;
+            for (size_t i = 0; i < my_element_count; i++) {
+              element64[i] = el_link[index++];
+              link64[i]    = el_link[index++];
+            }
+          }
+
+          size_t eb_offset = eb->get_offset();
+          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 1, eb_offset + 1,
+                                        my_element_count, element.data());
+          if (ierr < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+          }
+
+          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 2, eb_offset + 1,
+                                        my_element_count, link.data());
+          if (ierr < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+          }
+
+          if (map_count == 0) {
+            // NOTE: ex_put_*num_map must be called prior to defining the name...
+            ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, 1, "chain:root_element_id");
+            if (ierr < 0) {
+              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+            }
+
+            ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, 2, "chain:depth_from_root");
+            if (ierr < 0) {
+              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+            }
+          }
+        }
         else {
           num_to_get = Ioss::Utils::field_warning(eb, field, "mesh output");
         }
