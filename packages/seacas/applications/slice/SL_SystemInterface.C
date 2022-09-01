@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -85,7 +85,27 @@ void SystemInterface::enroll_options()
                   nullptr);
   options_.enroll("contiguous_decomposition", GetLongOption::NoValue,
                   "If the input mesh is contiguous, create contiguous decompositions", nullptr,
-                  nullptr, true);
+                  nullptr);
+
+  options_.enroll("line_decomp", GetLongOption::OptionalValue,
+                  "Generate the `lines` or `columns` of elements from the specified surface(s).\n"
+                  "\t\tDo not split a line across processors.\n"
+                  "\t\tSpecify a comma-separated list of surface/sideset names from which the "
+                  "lines will grow.\n"
+                  "\t\tOmit or enter 'ALL' for all surfaces in model",
+                  nullptr, "ALL", true);
+
+  options_.enroll("output_decomp_map", GetLongOption::NoValue,
+                  "Do not output the split files; instead write the decomposition information to "
+                  "an element map.\n"
+                  "\t\tThe name of the map is specified by `-decomposition_name`",
+                  nullptr);
+
+  options_.enroll("output_decomp_field", GetLongOption::NoValue,
+                  "Do not output the split files; instead write the decomposition information to "
+                  "an element map.\n"
+                  "\t\tThe name of the field is specified by `-decomposition_name`",
+                  nullptr);
 
   options_.enroll("output_path", GetLongOption::MandatoryValue,
                   "Path to where decomposed files will be written.\n"
@@ -258,6 +278,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
+  {
+    const char *temp = options_.retrieve("line_decomp");
+    if (temp != nullptr) {
+      lineSurfaceList_ = temp;
+      lineDecomp_      = true;
+    }
+  }
+
   outputPath_ = options_.get_option_value("output_path", outputPath_);
   ints64Bit_  = (options_.retrieve("64-bit") != nullptr);
 
@@ -283,8 +311,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
     fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
   }
 
-  compressionLevel_ = options_.get_option_value("compress", compressionLevel_);
-  contig_           = options_.retrieve("contiguous_decomposition") != nullptr;
+  compressionLevel_  = options_.get_option_value("compress", compressionLevel_);
+  contig_            = options_.retrieve("contiguous_decomposition") != nullptr;
+  outputDecompMap_   = options_.retrieve("output_decomp_map") != nullptr;
+  outputDecompField_ = options_.retrieve("output_decomp_field") != nullptr;
 
 #if 0
  {

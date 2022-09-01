@@ -5,8 +5,10 @@
 // See packages/seacas/LICENSE for details
 
 #include <SL_SystemInterface.h>
+#include <SL_Version.h>
 #include <SL_tokenize.h>
 
+#include <Ioss_ChainGenerator.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_CopyDatabase.h>
 #include <Ioss_DatabaseIO.h>
@@ -63,6 +65,10 @@ int           debug_level = 0;
 size_t partial_count = 1'000'000'000;
 
 namespace {
+  template <typename INT>
+  void line_decomp_modify(Ioss::Region &region, const std::string &surface_list,
+                          const std::vector<int> &elem_to_proc, int proc_count, INT dummy);
+
   int case_compare(const char *s1, const char *s2)
   {
     const char *c1 = s1;
@@ -638,6 +644,69 @@ namespace {
       }
     }
     assert(elem_to_proc.size() == element_count);
+  }
+
+  template <typename INT>
+  void line_decomp_modify(Ioss::Region &region, const std::string &surface_list,
+                          std::vector<int> &elem_to_proc, int proc_count, INT dummy)
+  {
+    fmt::print("Modifying decomposition to respect element lines growing from surface(s) {}\n",
+               surface_list);
+    auto element_chains = Ioss::generate_element_chains(region, surface_list, dummy);
+
+    // Get a map of all chains and the elements in the chains.  Map key will be root.
+    std::map<INT, std::vector<INT>> chains;
+
+    for (size_t i = 0; i < element_chains.size(); i++) {
+      auto &chain_entry = element_chains[i];
+      fmt::print("[{}]: element {}, link {}, processor {}\n", i + 1, chain_entry.element,
+                 chain_entry.link, elem_to_proc[i]);
+      chains[chain_entry.element].push_back(i + 1);
+    }
+
+    // Delta: elements added/removed from each processor...
+    std::vector<int> delta(proc_count);
+
+    // Now, for each chain...
+    for (auto &chain : chains) {
+      fmt::print("Chain Root: {} contains: {}\n", chain.first, fmt::join(chain.second, ", "));
+
+      std::vector<INT> chain_proc_count(proc_count);
+      auto            &chain_elements = chain.second;
+
+      // * get processors used by elements in the chain...
+      for (auto &element : chain_elements) {
+        auto proc = elem_to_proc[element - 1];
+        chain_proc_count[proc]++;
+      }
+
+      // * Now, subtract the `delta` from each count
+      for (int i = 0; i < proc_count; i++) {
+        chain_proc_count[i] -= delta[i];
+      }
+
+      // * Find the maximum value in `chain_proc_count`
+      auto max      = std::max_element(chain_proc_count.begin(), chain_proc_count.end());
+      auto max_proc = std::distance(chain_proc_count.begin(), max);
+
+      // * Assign all elements in the chain to `max_proc`.
+      // * Update the deltas for all processors that gain/lose elements...
+      for (auto &element : chain_elements) {
+        if (elem_to_proc[element - 1] != max_proc) {
+          auto old_proc             = elem_to_proc[element - 1];
+          elem_to_proc[element - 1] = max_proc;
+          delta[max_proc]++;
+          delta[old_proc]--;
+        }
+      }
+    }
+
+    std::vector<INT> proc_element_count(proc_count);
+    for (auto proc : elem_to_proc) {
+      proc_element_count[proc]++;
+    }
+    fmt::print("\nElements/Processor: {}\n", fmt::join(proc_element_count, ", "));
+    fmt::print("Delta/Processor:    {}\n", fmt::join(delta, ", "));
   }
 
   template <typename INT>
@@ -1592,8 +1661,13 @@ namespace {
              INT dummy)
   {
     progress(__func__);
-    std::vector<Ioss::Region *> proc_region(interFace.processor_count());
-    bool                        ints64 = (sizeof(INT) == 8);
+    bool create_split_files = !interFace.outputDecompMap_ && !interFace.outputDecompField_;
+
+    std::vector<Ioss::Region *> proc_region;
+    if (create_split_files) {
+      proc_region.resize(interFace.processor_count());
+    }
+    bool ints64 = (sizeof(INT) == 8);
 
     Ioss::PropertyManager properties;
     if (interFace.netcdf4_) {
@@ -1621,6 +1695,71 @@ namespace {
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
     }
 
+    double           start = seacas_timer();
+    std::vector<int> elem_to_proc;
+    decompose_elements(region, interFace, elem_to_proc, dummy);
+    double end = seacas_timer();
+    fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
+
+    if (interFace.lineDecomp_) {
+      line_decomp_modify(region, interFace.lineSurfaceList_, elem_to_proc,
+                         interFace.processor_count(), dummy);
+    }
+
+    start = seacas_timer();
+    // Build the proc_elem_block_cnt[i][j] vector.
+    // Gives number of elements in block i on processor j
+    size_t block_count = region.get_property("element_block_count").get_int();
+    std::vector<std::vector<INT>> proc_elem_block_cnt(block_count + 1);
+    for (auto &pebc : proc_elem_block_cnt) {
+      pebc.resize(interFace.processor_count());
+    }
+    get_proc_elem_block_count(region, elem_to_proc, proc_elem_block_cnt);
+    end = seacas_timer();
+
+    fmt::print(stderr, "Calculate elements per element block on each processor = {:.5}\n",
+               end - start);
+
+    if (!create_split_files) {
+      std::string outfile = nemfile;
+      if (interFace.inputFile_ == interFace.nemesisFile_) {
+        outfile += "-decomp";
+      }
+      Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
+          "exodus", outfile, Ioss::WRITE_RESTART, Ioss::ParallelUtils::comm_world(), properties);
+      if (dbo == nullptr || !dbo->ok(true)) {
+        std::exit(EXIT_FAILURE);
+      }
+
+      // NOTE: 'output_region' owns 'dbo' pointer at this time
+      Ioss::Region output_region(dbo, "region_2");
+
+      // Set the qa information...
+      output_region.property_add(Ioss::Property(std::string("code_name"), qainfo[0]));
+      output_region.property_add(Ioss::Property(std::string("code_version"), qainfo[2]));
+
+      Ioss::MeshCopyOptions options{};
+      options.ints_64_bit       = sizeof(INT) == 64;
+      options.delete_timesteps  = true;
+      options.data_storage_type = 2;
+      options.verbose           = true;
+
+      // Copy mesh portion of input region to the output region
+      Ioss::copy_database(region, output_region, options);
+
+#if 0
+      if (interFace.outputDecompMap_) {
+	add_decomp_map(output_region);
+      }
+      if (interFace.outputDecompField_) {
+	add_chain_fields(output_region);
+	output_chain_fields(output_region, element_chains);
+	add_decomp_field(output_region);
+      }
+#endif
+      return;
+    }
+
     bool close_files = interFace.processor_count() + 1 > interFace.max_files();
     for (size_t i = 0; i < interFace.processor_count(); i++) {
       std::string outfile   = Ioss::Utils::decode_filename(nemfile, i, interFace.processor_count());
@@ -1636,26 +1775,6 @@ namespace {
         proc_region[i]->get_database()->closeDatabase();
       }
     }
-
-    double           start = seacas_timer();
-    std::vector<int> elem_to_proc;
-    decompose_elements(region, interFace, elem_to_proc, dummy);
-    double end = seacas_timer();
-    fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
-
-    start = seacas_timer();
-    // Build the proc_elem_block_cnt[i][j] vector.
-    // Gives number of elements in block i on processor j
-    size_t block_count = region.get_property("element_block_count").get_int();
-    std::vector<std::vector<INT>> proc_elem_block_cnt(block_count + 1);
-    for (auto &pebc : proc_elem_block_cnt) {
-      pebc.resize(interFace.processor_count());
-    }
-    get_proc_elem_block_count(region, elem_to_proc, proc_elem_block_cnt);
-    end = seacas_timer();
-
-    fmt::print(stderr, "Calculate elements per element block on each processor = {:.5}\n",
-               end - start);
 
     // Create element blocks for each processor...
     for (size_t p = 0; p < interFace.processor_count(); p++) {
