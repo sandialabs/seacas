@@ -54,11 +54,10 @@
 namespace {
   int debug = 0;
 
-  void add_chain_fields(Ioss::Region &region, const std::vector<std::string> &adj_blocks);
+  void add_chain_fields(Ioss::Region &region);
 
   template <typename INT>
-  void output_chain_fields(Ioss::Region &region, const Ioss::ElementBlock *eb,
-                           const Ioss::chain_t<INT> &chains);
+  void output_chain_fields(Ioss::Region &region, const Ioss::chain_t<INT> &chains);
 
   template <typename INT> void line_decomp(Line_Decomp::Interface &interFace, INT /*dummy*/);
   std::string                  codename;
@@ -173,44 +172,32 @@ namespace {
 
     // Copy mesh portion of input region to the output region
     Ioss::copy_database(region, output_region, options);
+    add_chain_fields(output_region);
+    output_chain_fields(output_region, element_chains);
   }
 
-  void add_chain_fields(Ioss::Region &region, const std::vector<std::string> &adj_blocks)
+  void add_chain_fields(Ioss::Region &region)
   {
-    region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
-    for (auto &blk_name : adj_blocks) {
-      auto *eb = region.get_element_block(blk_name);
-      assert(eb != nullptr);
-      if (eb->topology()->shape() == Ioss::ElementShape::HEX) {
-        eb->field_add(Ioss::Field("chain", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT));
-      }
+    // The chain / line data will be stored as an element map...
+    const auto &blocks = region.get_element_blocks();
+    for (const auto &block : blocks) {
+      block->field_add(Ioss::Field("chain", region.field_int_type(), "Real[2]", Ioss::Field::MESH));
     }
-    region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
-
-    region.begin_mode(Ioss::STATE_TRANSIENT);
-
-    auto step = region.add_state(0.0);
-    region.begin_state(step);
   }
 
   template <typename INT>
-  void output_chain_fields(Ioss::Region &region, const Ioss::ElementBlock *eb,
-                           const Ioss::chain_t<INT> &chains)
+  void output_chain_fields(Ioss::Region &region, const Ioss::chain_t<INT> &chains)
   {
-    Ioss::ElementBlock *oeb = region.get_element_block(eb->name());
-    assert(oeb != nullptr);
-    std::vector<double> chain(oeb->entity_count());
-    assert(chain.size() == chains.size());
-
-    for (size_t i = 0; i < chain.size(); i++) {
-      auto &chain_entry = chains[i];
-      chain[i]          = chain_entry.element;
-      if (debug & 8) {
-        fmt::print("[{}]: element {}, link {}\n", i + 1, chain_entry.element, chain_entry.link);
+    const auto &blocks = region.get_element_blocks();
+    for (const auto &block : blocks) {
+      std::vector<INT> chain;
+      chain.reserve(block->entity_count() * 2);
+      for (auto &chain_entry : chains) {
+        chain.push_back(chain_entry.element);
+        chain.push_back(chain_entry.link);
       }
+      block->put_field_data("chain", chain);
     }
-
-    oeb->put_field_data("chain", chain);
   }
 
   Ioss::PropertyManager set_properties(Line_Decomp::Interface &interFace)
