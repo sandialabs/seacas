@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.14 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.15 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.14 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.15 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2022 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -5624,8 +5624,9 @@ class exodus:
         else:
             elem_block_connectivity = (
                 ctypes.c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
-        EXODUS_LIB.ex_get_elem_conn(
+        EXODUS_LIB.ex_get_conn(
             self.fileId,
+            ctypes.c_int(get_entity_type('EX_ELEM_BLOCK')),
             elem_block_id,
             ctypes.byref(elem_block_connectivity))
         return elem_block_connectivity, num_elem_this_blk, num_nodes_per_elem
@@ -5646,8 +5647,9 @@ class exodus:
                 ctypes.c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
             for i in range(num_elem_this_blk.value * num_nodes_per_elem.value):
                 elem_block_connectivity[i] = ctypes.c_int(connectivity[i])
-        EXODUS_LIB.ex_put_elem_conn(
+        EXODUS_LIB.ex_put_conn(
             self.fileId,
+            ctypes.c_int(get_entity_type('EX_ELEM_BLOCK')),
             elem_block_id,
             elem_block_connectivity)
 
