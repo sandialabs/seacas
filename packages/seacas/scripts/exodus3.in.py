@@ -4561,10 +4561,13 @@ class exodus:
         # adjust one of them
         values[names.index(name)] = ctypes.c_double(value)
         # write them all
-        EXODUS_LIB.ex_put_glob_vars(self.fileId,
-                                    ctypes.c_int(step),
-                                    ctypes.c_int(numVals),
-                                    values)
+        EXODUS_LIB.ex_put_var(self.fileId,
+                              ctypes.c_int(step),
+                              ctypes.c_int(get_entity_type('EX_GLOBAL')), 
+                              ctypes.c_int(1),
+                              ctypes.c_int(0),
+                              ctypes.c_int(numVals),
+                              values)
         return True
 
     # --------------------------------------------------------------------
@@ -4591,10 +4594,13 @@ class exodus:
         gvalues = (ctypes.c_double * numVals)()
         for i in range(numVals):
             gvalues[i] = ctypes.c_double(values[i])
-        EXODUS_LIB.ex_put_glob_vars(self.fileId,
-                                    ctypes.c_int(step),
-                                    ctypes.c_int(numVals),
-                                    gvalues)
+        EXODUS_LIB.ex_put_var(self.fileId,
+                              ctypes.c_int(step),
+                              ctypes.c_int(get_entity_type('EX_GLOBAL')), 
+                              ctypes.c_int(1),
+                              ctypes.c_int(0),
+                              ctypes.c_int(numVals),
+                              gvalues)
         return True
 
     # --------------------------------------------------------------------
@@ -5329,7 +5335,7 @@ class exodus:
             set_nodes = (ctypes.c_longlong * num_node_set_nodes)()
         else:
             set_nodes = (ctypes.c_int * num_node_set_nodes)()
-        EXODUS_LIB.ex_get_node_set(self.fileId, node_set_id, ctypes.byref(set_nodes))
+        EXODUS_LIB.ex_get_set(self.fileId, ctypes.c_int(get_entity_type('EX_NODE_SET')), node_set_id, ctypes.byref(set_nodes), None)
         return set_nodes
 
     # --------------------------------------------------------------------
@@ -5344,7 +5350,7 @@ class exodus:
             node_set_nodes = (ctypes.c_int * len(nodeSetNodes))()
             for i, node_set_node in enumerate(nodeSetNodes):
                 node_set_nodes[i] = ctypes.c_int(node_set_node)
-        EXODUS_LIB.ex_put_node_set(self.fileId, node_set_id, node_set_nodes)
+        EXODUS_LIB.ex_put_set(self.fileId, ctypes.c_int(get_entity_type('EX_NODE_SET')), node_set_id, node_set_nodes, None)
 
     # --------------------------------------------------------------------
 
@@ -5628,7 +5634,7 @@ class exodus:
             self.fileId,
             ctypes.c_int(get_entity_type('EX_ELEM_BLOCK')),
             elem_block_id,
-            ctypes.byref(elem_block_connectivity))
+            ctypes.byref(elem_block_connectivity), None, None)
         return elem_block_connectivity, num_elem_this_blk, num_nodes_per_elem
 
     # --------------------------------------------------------------------
@@ -5651,7 +5657,7 @@ class exodus:
             self.fileId,
             ctypes.c_int(get_entity_type('EX_ELEM_BLOCK')),
             elem_block_id,
-            elem_block_connectivity)
+            elem_block_connectivity, None, None)
 
     # --------------------------------------------------------------------
 
@@ -5971,9 +5977,12 @@ class exodus:
         else:
             side_set_elem_list = (ctypes.c_int * num_side_in_set)()
             side_set_side_list = (ctypes.c_int * num_side_in_set)()
-        EXODUS_LIB.ex_get_side_set(self.fileId, side_set_id,
-                                   ctypes.byref(side_set_elem_list),
-                                   ctypes.byref(side_set_side_list))
+        EXODUS_LIB.ex_get_set(
+            self.fileId, 
+            ctypes.c_int(get_entity_type('EX_SIDE_SET')), 
+            side_set_id,
+            ctypes.byref(side_set_elem_list),
+            ctypes.byref(side_set_side_list))
         return side_set_elem_list, side_set_side_list
 
     # --------------------------------------------------------------------
@@ -5992,8 +6001,9 @@ class exodus:
             for i, sse in enumerate(sideSetElements):
                 side_set_elem_list[i] = ctypes.c_int(sse)
                 side_set_side_list[i] = ctypes.c_int(sideSetSides[i])
-        EXODUS_LIB.ex_put_side_set(
+        EXODUS_LIB.ex_put_set(
             self.fileId,
+            ctypes.c_int(get_entity_type('EX_SIDE_SET')), 
             side_set_id,
             side_set_elem_list,
             side_set_side_list)
