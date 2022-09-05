@@ -8,12 +8,12 @@ RUN apt-get update && \
         build-essential=12.9ubuntu3 \
         bzip2=1.0.8-5build1 \
         cmake=3.22.1-1ubuntu1 \
-        curl=7.81.0-1ubuntu1.3 \
+        curl=7.81.0-1ubuntu1.4 \
         flex=2.6.4-8build2 \
         gfortran=4:11.2.0-1ubuntu1 \
         git=1:2.34.1-1ubuntu1.4 \
         libaec-dev=1.0.6-1 \
-        libcurl4-openssl-dev=7.81.0-1ubuntu1.3 \
+        libcurl4-openssl-dev=7.81.0-1ubuntu1.4 \
         libjpeg-dev=8c-2ubuntu10 \
         libopenmpi-dev=4.1.2-2ubuntu1 \
         libx11-dev=2:1.7.5-1 \
