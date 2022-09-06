@@ -65,8 +65,46 @@ int           debug_level = 0;
 size_t partial_count = 1'000'000'000;
 
 namespace {
+  void add_decomp_map(Ioss::Region &region)
+  {
+    ex_opts(EX_VERBOSE);
+    int ierr0 = ex_put_map_param(region.get_database()->get_file_pointer(), 0, 2);
+    int ierr1 = ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 1,
+                            "chain:root_element_id");
+    int ierr2 = ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 2,
+                            "chain:depth_from_root");
+    fmt::print("Map errors: {} {} {}\n", ierr0, ierr1, ierr2);
+
+    // The chain / line data will be stored as an element map...
+    const auto &blocks = region.get_element_blocks();
+    for (const auto &block : blocks) {
+      Ioss::Field field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
+      field.set_index(0);
+      block->field_add(field);
+    }
+  }
+
   template <typename INT>
-  void line_decomp_modify(Ioss::Region &region, const std::string &surface_list,
+  void output_decomp_map(Ioss::Region &region, const Ioss::chain_t<INT> &chains)
+  {
+    const auto &blocks = region.get_element_blocks();
+    for (const auto &block : blocks) {
+      std::vector<INT> chain;
+      size_t           num_elem = block->entity_count();
+      size_t           offset   = 0;
+      chain.reserve(num_elem * 2);
+      for (size_t i = 0; i < num_elem; i++) {
+        auto &chain_entry = chains[i + offset];
+        chain.push_back(chain_entry.element);
+        chain.push_back(chain_entry.link);
+      }
+      offset += num_elem;
+      block->put_field_data("chain", chain);
+    }
+  }
+
+  template <typename INT>
+  void line_decomp_modify(Ioss::Region &region, const Ioss::chain_t<INT> &element_chains,
                           const std::vector<int> &elem_to_proc, int proc_count, INT dummy);
 
   int case_compare(const char *s1, const char *s2)
@@ -647,13 +685,9 @@ namespace {
   }
 
   template <typename INT>
-  void line_decomp_modify(Ioss::Region &region, const std::string &surface_list,
+  void line_decomp_modify(Ioss::Region &region, const Ioss::chain_t<INT> &element_chains,
                           std::vector<int> &elem_to_proc, int proc_count, INT dummy)
   {
-    fmt::print("Modifying decomposition to respect element lines growing from surface(s) {}\n",
-               surface_list);
-    auto element_chains = Ioss::generate_element_chains(region, surface_list, dummy);
-
     // Get a map of all chains and the elements in the chains.  Map key will be root.
     std::map<INT, std::vector<INT>> chains;
 
@@ -1701,9 +1735,10 @@ namespace {
     double end = seacas_timer();
     fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
 
+    Ioss::chain_t<INT> element_chains;
     if (interFace.lineDecomp_) {
-      line_decomp_modify(region, interFace.lineSurfaceList_, elem_to_proc,
-                         interFace.processor_count(), dummy);
+      element_chains = Ioss::generate_element_chains(region, interFace.lineSurfaceList_, dummy);
+      line_decomp_modify(region, element_chains, elem_to_proc, interFace.processor_count(), dummy);
     }
 
     start = seacas_timer();
@@ -1747,10 +1782,16 @@ namespace {
       // Copy mesh portion of input region to the output region
       Ioss::copy_database(region, output_region, options);
 
-#if 0
+      // KLUGE: The metadata has already been written on
+      // output_region, but we couln't define the maps until now, so
+      // need to update the metadata with map information and hope
+      // that no other maps exist on the database...
       if (interFace.outputDecompMap_) {
-	add_decomp_map(output_region);
+        add_decomp_map(output_region);
+        output_decomp_map(output_region, element_chains);
       }
+
+#if 0
       if (interFace.outputDecompField_) {
 	add_chain_fields(output_region);
 	output_chain_fields(output_region, element_chains);
