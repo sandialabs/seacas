@@ -1146,8 +1146,7 @@ namespace Ioex {
     // maps into. An particular X block contains all Xs in
     // the range:
     //     offset < file_descriptor <= offset+number_Xs_per_block
-    int64_t offset      = 0;
-    int     used_blocks = 0;
+    int used_blocks = 0;
 
     int nvar = std::numeric_limits<int>::max(); // Number of 'block' vars on database. Used to skip
                                                 // querying if none.
@@ -1268,8 +1267,6 @@ namespace Ioex {
       }
 
       block->property_add(Ioss::Property("global_entity_count", global_X_count[iblk]));
-
-      offset += local_X_count[iblk];
 
       get_region()->add_alias(block_name, alias, block->type());
 
@@ -4283,22 +4280,14 @@ int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss:
         else if (field.get_name() == "implicit_ids") {
           // Do nothing, input only field.
         }
-        else if (field.get_name() == "skin") {
+      }
+      else if (role == Ioss::Field::MAP) {
+        if (field.get_name() == "skin") {
           // This is (currently) for the skinned body. It maps the
           // side element on the skin to the original element/local
           // side number.  It is a two component field, the first
           // component is the global id of the underlying element in
           // the initial mesh and its local side number (1-based).
-
-          // FIX: Hardwired map ids....
-          int map_count = ex_inquire_int(get_file_pointer(), EX_INQ_ELEM_MAP);
-          if (map_count == 0) {
-            // This needs to be fixed... Currently hardwired....
-            ierr = ex_put_map_param(get_file_pointer(), 0, 2);
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-            }
-          }
 
           std::vector<char> element(my_element_count * int_byte_size_api());
           std::vector<char> side(my_element_count * int_byte_size_api());
@@ -4327,30 +4316,29 @@ int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss:
           }
 
           size_t eb_offset = eb->get_offset();
-          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 1, eb_offset + 1,
-                                        my_element_count, element.data());
+          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index(),
+                                        eb_offset + 1, my_element_count, element.data());
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
 
-          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 2, eb_offset + 1,
-                                        my_element_count, side.data());
+          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index() + 1,
+                                        eb_offset + 1, my_element_count, side.data());
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
 
-          if (map_count == 0) {
-            // NOTE: ex_put_*num_map must be called prior to defining the name...
-            ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, 1, "skin:parent_element_id");
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-            }
+          // NOTE: ex_put_*num_map must be called prior to defining the name...
+          ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, field.get_index(),
+                             "skin:parent_element_id");
+          if (ierr < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+          }
 
-            ierr =
-                ex_put_name(get_file_pointer(), EX_ELEM_MAP, 2, "skin:parent_element_side_number");
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-            }
+          ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, field.get_index() + 1,
+                             "skin:parent_element_side_number");
+          if (ierr < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
         }
         else if (field.get_name() == "chain") {
@@ -4358,16 +4346,6 @@ int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss:
           // lines or chains or columns of elements from a surface
           // face back into the mesh.
           // The map entry is the element number at the beginning of the chain.
-
-          // FIX: Hardwired map ids....
-          int map_count = ex_inquire_int(get_file_pointer(), EX_INQ_ELEM_MAP);
-          if (map_count == 0) {
-            // This needs to be fixed... Currently hardwired....
-            ierr = ex_put_map_param(get_file_pointer(), 0, 2);
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-            }
-          }
 
           std::vector<char> element(my_element_count * int_byte_size_api());
           std::vector<char> link(my_element_count * int_byte_size_api());
@@ -4396,29 +4374,16 @@ int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss:
           }
 
           size_t eb_offset = eb->get_offset();
-          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 1, eb_offset + 1,
-                                        my_element_count, element.data());
+          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index(),
+                                        eb_offset + 1, my_element_count, element.data());
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
 
-          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 2, eb_offset + 1,
-                                        my_element_count, link.data());
+          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index() + 1,
+                                        eb_offset + 1, my_element_count, link.data());
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
-
-          if (map_count == 0) {
-            // NOTE: ex_put_*num_map must be called prior to defining the name...
-            ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, 1, "chain:root_element_id");
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-            }
-
-            ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, 2, "chain:depth_from_root");
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-            }
           }
         }
         else {

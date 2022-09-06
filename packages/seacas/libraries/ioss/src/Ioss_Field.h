@@ -57,6 +57,7 @@ namespace Ioss {
                       EntityBlock derived class. Examples would be thickness
                       of the elements in a shell element block or the radius
                       of particles in a particle element block. */
+      MAP,
       COMMUNICATION,
       MESH_REDUCTION, /**< A field which summarizes some non-transient data
                          about an entity (\sa REDUCTION). This could be an

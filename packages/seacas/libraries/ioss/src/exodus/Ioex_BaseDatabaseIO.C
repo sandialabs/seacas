@@ -2735,6 +2735,48 @@ namespace Ioex {
       }
     }
 
+    // Determine number of node, element maps (client-specified)
+    // Set the index/order of the maps for later output.
+    // Note that some fields have more than a single component and each component maps to a
+    // different map
+    auto  *node_block      = get_region()->get_node_blocks()[0];
+    auto   node_map_fields = node_block->field_describe(Ioss::Field::MAP);
+    size_t node_map_cnt    = 0;
+    for (const auto &field_name : node_map_fields) {
+      const auto &field = node_block->get_fieldref(field_name);
+      field.set_index(node_map_cnt + 1);
+      node_map_cnt += field.get_component_count(Ioss::Field::InOut::OUTPUT);
+    }
+
+    Ioss::NameList elem_map_fields;
+    const auto    &blocks = get_region()->get_element_blocks();
+    for (const auto &block : blocks) {
+      block->field_describe(Ioss::Field::MAP, &elem_map_fields);
+    }
+
+    Ioss::Utils::uniquify(elem_map_fields);
+
+    // Now need to set the map index on any element map fields...
+    // Note that not all blocks will potentially have all maps...
+    size_t elem_map_cnt = 0;
+    for (const auto &field_name : elem_map_fields) {
+      int comp_count = 0;
+      for (const auto &block : blocks) {
+        if (block->field_exists(field_name)) {
+          auto &field = block->get_fieldref(field_name);
+          field.set_index(elem_map_cnt + 1);
+          // Assumes all maps of a type have same component count
+          comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+        }
+      }
+      elem_map_cnt += comp_count;
+    }
+
+    int ierr = ex_put_map_param(get_file_pointer(), node_map_cnt, elem_map_cnt);
+    if (ierr < 0) {
+      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    }
+
     // Write coordinate frame data...
     write_coordinate_frames(get_file_pointer(), get_region()->get_coordinate_frames());
   }
