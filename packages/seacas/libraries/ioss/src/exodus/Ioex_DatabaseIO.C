@@ -2456,52 +2456,69 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
             }
           }
         }
-        else if (field.get_name() == "skin") {
-          // This is (currently) for the skinned body. It maps the
-          // side element on the skin to the original element/local
-          // side number.  It is a two component field, the first
-          // component is the global id of the underlying element in
-          // the initial mesh and its local side number (1-based).
-
+      }
+      else if (role == Ioss::Field::MAP) {
+        int component_count = field.get_component_count(Ioss::Field::InOut::INPUT);
+        if (component_count == 1) {
           if (field.is_type(Ioss::Field::INTEGER)) {
-            Ioss::IntVector element(my_element_count);
-            Ioss::IntVector side(my_element_count);
-            int            *el_side = reinterpret_cast<int *>(data);
+            Ioss::IntVector component(my_element_count);
+            int            *data32 = reinterpret_cast<int *>(data);
 
-            // FIX: Hardwired map ids....
             size_t eb_offset = eb->get_offset();
-            ex_get_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 1, eb_offset + 1,
-                                   my_element_count, element.data());
-            ex_get_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 2, eb_offset + 1,
-                                   my_element_count, side.data());
+            ex_get_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index(),
+                                   eb_offset + 1, my_element_count, component.data());
 
-            int index = 0;
             for (size_t i = 0; i < my_element_count; i++) {
-              el_side[index++] = element[i];
-              el_side[index++] = side[i];
+              data32[i] = component[i];
             }
           }
           else {
-            Ioss::Int64Vector element(my_element_count);
-            Ioss::Int64Vector side(my_element_count);
-            auto             *el_side = reinterpret_cast<int64_t *>(data);
+            Ioss::Int64Vector component(my_element_count);
+            auto             *data64 = reinterpret_cast<int64_t *>(data);
 
-            // FIX: Hardwired map ids....
             size_t eb_offset = eb->get_offset();
-            ex_get_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 1, eb_offset + 1,
-                                   my_element_count, element.data());
-            ex_get_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 2, eb_offset + 1,
-                                   my_element_count, side.data());
+            ex_get_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index(),
+                                   eb_offset + 1, my_element_count, component.data());
 
-            size_t index = 0;
             for (size_t i = 0; i < my_element_count; i++) {
-              el_side[index++] = element[i];
-              el_side[index++] = side[i];
+              data64[i] = component[i];
             }
           }
         }
         else {
-          num_to_get = Ioss::Utils::field_warning(eb, field, "input");
+          // Multi-component field...
+          if (field.is_type(Ioss::Field::INTEGER)) {
+            Ioss::IntVector component(my_element_count);
+            int            *data32    = reinterpret_cast<int *>(data);
+            size_t          eb_offset = eb->get_offset();
+
+            for (int comp = 0; comp < component_count; comp++) {
+              ex_get_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index() + comp,
+                                     eb_offset + 1, my_element_count, component.data());
+
+              int index = comp;
+              for (size_t i = 0; i < my_element_count; i++) {
+                data32[index] = component[i];
+                index += component_count;
+              }
+            }
+          }
+          else {
+            Ioss::Int64Vector component(my_element_count);
+            auto             *data64    = reinterpret_cast<int64_t *>(data);
+            size_t            eb_offset = eb->get_offset();
+
+            for (int comp = 0; comp < component_count; comp++) {
+              ex_get_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index() + comp,
+                                     eb_offset + 1, my_element_count, component.data());
+
+              int index = comp;
+              for (size_t i = 0; i < my_element_count; i++) {
+                data64[index] = component[i];
+                index += component_count;
+              }
+            }
+          }
         }
       }
       else if (role == Ioss::Field::ATTRIBUTE) {
@@ -4307,9 +4324,9 @@ int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss:
             }
           }
           size_t eb_offset = eb->get_offset();
-          ierr =
-              ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index() + 1 + comp,
-                                     eb_offset + 1, my_element_count, component.data());
+          int    index     = -1 * (field.get_index() + comp);
+          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, index, eb_offset + 1,
+                                        my_element_count, component.data());
         }
       }
       else if (role == Ioss::Field::ATTRIBUTE) {

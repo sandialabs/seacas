@@ -302,7 +302,7 @@ namespace Ioex {
 
       // See whether it already exists...
       auto type = map_exodus_type(entity->type());
-      succeed = idset->insert(std::make_pair(static_cast<int>(type), id)).second;
+      succeed   = idset->insert(std::make_pair(static_cast<int>(type), id)).second;
       if (!succeed) {
         // Need to remove the property so it doesn't cause problems
         // later...
@@ -538,15 +538,44 @@ namespace Ioex {
       Ioss::Utils::fixup_name(names[i]);
     }
 
-    if (map_count == 2 && std::strncmp(names[0], "skin:", 5) == 0 &&
-        std::strncmp(names[1], "skin:", 5) == 0) {
-      // Currently, only support the "skin" map -- It will be a 2
-      // component field consisting of "parent_element":"local_side"
-      // pairs.  The parent_element is an element in the original mesh,
-      // not this mesh.
-      block->field_add(Ioss::Field("skin", block->field_int_type(), "Real[2]", Ioss::Field::MESH,
-                                   my_element_count));
+    for (int i = 0; i < map_count; i++) {
+      // If the name does *not* contain a `:`, then assume that this is a scalar map and add to the
+      // block.
+      std::string name{names[i]};
+      if (name.find(':') == std::string::npos) {
+        Ioss::Field field(name, block->field_int_type(), IOSS_SCALAR(), Ioss::Field::MAP,
+                          my_element_count);
+        field.set_index(i + 1);
+        block->field_add(field);
+        continue;
+      }
+
+      // Name does contain a `:` which is a loose convention for naming of maps in IOSS.
+      // If multiple maps start with the same substring before the `:`, then they are considered
+      // components of the same Ioss::Field::MAP field.
+      // Count the number of names that begin with the same substring...
+      auto base = name.substr(0, name.find(':'));
+
+      // Now see if the following name(s) contain the same substring...
+      int ii = i;
+      while (++ii < map_count) {
+        std::string next{names[ii]};
+        std::string next_base = next.substr(0, next.find(':'));
+        if (base != next_base) {
+          break;
+        }
+      }
+
+      int comp_count = ii - i;
+
+      std::string storage = fmt::format("Real[{}]", comp_count);
+      Ioss::Field field(base, block->field_int_type(), storage, Ioss::Field::MAP, my_element_count);
+      field.set_index(i + 1);
+      block->field_add(field);
+
+      i = ii - 1;
     }
+
     Ioss::Utils::delete_name_array(names, map_count);
     return map_count;
   }

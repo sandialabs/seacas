@@ -140,7 +140,7 @@ namespace {
     const auto &blocks = region.get_element_blocks();
     for (const auto &block : blocks) {
       Ioss::Field field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
-      field.set_index(0);
+      field.set_index(1);
       block->field_add(field);
     }
   }
@@ -165,11 +165,11 @@ namespace {
     const auto &blocks = region.get_element_blocks();
     for (const auto &block : blocks) {
       Ioss::Field field{"processor_id", Ioss::Field::INT32, IOSS_SCALAR(), Ioss::Field::MAP};
-      field.set_index(0);
+      field.set_index(1);
       block->field_add(field);
       if (add_chain_info) {
         Ioss::Field field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
-        field.set_index(1);
+        field.set_index(2);
         block->field_add(field);
       }
     }

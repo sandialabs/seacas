@@ -2745,7 +2745,9 @@ namespace Ioex {
       auto  node_map_fields = node_block->field_describe(Ioss::Field::MAP);
       for (const auto &field_name : node_map_fields) {
         const auto &field = node_block->get_fieldref(field_name);
-        field.set_index(node_map_cnt + 1);
+        if (field.get_index() == 0) {
+          field.set_index(node_map_cnt + 1);
+        }
         node_map_cnt += field.get_component_count(Ioss::Field::InOut::OUTPUT);
       }
     }
@@ -2766,7 +2768,9 @@ namespace Ioex {
       for (const auto &block : blocks) {
         if (block->field_exists(field_name)) {
           auto &field = block->get_fieldref(field_name);
-          field.set_index(elem_map_cnt + 1);
+          if (field.get_index() == 0) {
+            field.set_index(elem_map_cnt + 1);
+          }
           // Assumes all maps of a type have same component count
           comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         }
@@ -2777,6 +2781,61 @@ namespace Ioex {
     int ierr = ex_put_map_param(get_file_pointer(), node_map_cnt, elem_map_cnt);
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    }
+
+    if (node_map_cnt > 0) {
+      char **names = Ioss::Utils::get_name_array(node_map_cnt, maximumNameLength);
+      auto  *node_block =
+          get_region()->get_node_blocks()[0]; // If there are node_maps, then there is a node_block
+      auto node_map_fields = node_block->field_describe(Ioss::Field::MAP);
+      for (const auto &field_name : node_map_fields) {
+        const auto &field           = node_block->get_fieldref(field_name);
+        int         component_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+        if (component_count == 1) {
+          Ioss::Utils::copy_string(names[field.get_index() - 1], field_name, maximumNameLength + 1);
+        }
+        else {
+          for (int i = 0; i < component_count; i++) {
+            auto name = fmt::format("{}:{}", field_name, i + 1);
+            Ioss::Utils::copy_string(names[field.get_index() + i - 1], name, maximumNameLength + 1);
+          }
+        }
+      }
+      ex_put_names(get_file_pointer(), EX_NODE_MAP, names);
+      Ioss::Utils::delete_name_array(names, node_map_cnt);
+    }
+
+    if (elem_map_cnt > 0) {
+      char **names = Ioss::Utils::get_name_array(elem_map_cnt, maximumNameLength);
+      for (const auto &field_name : elem_map_fields) {
+        // Now, we need to find an element block that has this field...
+        for (const auto &block : blocks) {
+          if (block->field_exists(field_name)) {
+            const auto &field           = block->get_fieldref(field_name);
+            int         component_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+            if (component_count == 1) {
+              Ioss::Utils::copy_string(names[field.get_index() - 1], field_name,
+                                       maximumNameLength + 1);
+            }
+            else {
+              for (int i = 0; i < component_count; i++) {
+                auto name = fmt::format("{}:{}", field_name, i + 1);
+                if (field_name == "skin") {
+                  name = i == 0 ? "skin:parent_element_id" : "skin:parent_element_side_number";
+                }
+                else if (field_name == "chain") {
+                  name = i == 0 ? "chain:root_element_id" : "chain:depth_from_root";
+                }
+                Ioss::Utils::copy_string(names[field.get_index() + i - 1], name,
+                                         maximumNameLength + 1);
+              }
+            }
+            break;
+          }
+        }
+      }
+      ex_put_names(get_file_pointer(), EX_ELEM_MAP, names);
+      Ioss::Utils::delete_name_array(names, elem_map_cnt);
     }
 
     // Write coordinate frame data...
