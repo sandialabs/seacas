@@ -365,6 +365,7 @@ namespace {
   {
     transfer_properties(input, output);
     transfer_fields(input, output, Ioss::Field::MESH);
+    transfer_fields(input, output, Ioss::Field::MAP);
     transfer_fields(input, output, Ioss::Field::ATTRIBUTE);
     transfer_fields(input, output, Ioss::Field::MESH_REDUCTION);
   }
@@ -499,6 +500,8 @@ namespace {
                           options);
       transfer_field_data(region.get_element_blocks(), output_region, data_pool,
                           Ioss::Field::ATTRIBUTE, options);
+      transfer_field_data(region.get_element_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                          options);
     }
 
     if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
@@ -506,6 +509,8 @@ namespace {
                           options);
       transfer_field_data(region.get_node_blocks(), output_region, data_pool,
                           Ioss::Field::ATTRIBUTE, options);
+      transfer_field_data(region.get_node_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                          options);
     }
 
     if (node_major) {
@@ -513,6 +518,8 @@ namespace {
                           options);
       transfer_field_data(region.get_element_blocks(), output_region, data_pool,
                           Ioss::Field::ATTRIBUTE, options);
+      transfer_field_data(region.get_element_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                          options);
     }
 
     // Structured Blocks -- Contain a NodeBlock that also needs its field data transferred...
@@ -552,10 +559,14 @@ namespace {
                         options);
     transfer_field_data(region.get_edge_blocks(), output_region, data_pool, Ioss::Field::ATTRIBUTE,
                         options);
+    transfer_field_data(region.get_edge_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                        options);
 
     transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::MESH,
                         options);
     transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::ATTRIBUTE,
+                        options);
+    transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::MAP,
                         options);
 
     transfer_field_data(region.get_nodesets(), output_region, data_pool, Ioss::Field::MESH,
