@@ -21,5 +21,5 @@ namespace Ioss {
 
   template <typename INT>
   chain_t<INT> generate_element_chains(Ioss::Region &region, const std::string &surface_list,
-                                       INT /*dummy*/);
+                                       int debug_level, INT /*dummy*/);
 } // namespace Ioss

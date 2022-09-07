@@ -80,7 +80,6 @@ namespace {
       return front;
     }
 
-    fmt::print("---Processing Element Block {}\n", adj_block);
     auto selected_surfaces = Ioss::tokenize(surface_list, ",");
     // Now find the facesets that have faces on this block...
     const Ioss::SideSetContainer &fss = region.get_sidesets();
@@ -106,7 +105,7 @@ namespace {
                   int side                    = element_side[i + 1]; // 1-based sides
                   element_chains[element - 1] = Ioss::chain_entry_t<INT>{element, 0};
                   front.push_back(std::make_pair(element, side));
-                  if (debug & 4) {
+                  if (debug & 16) {
                     fmt::print("Putting element {}, side {} in front.\n", element, side);
                   }
                 }
@@ -130,7 +129,7 @@ namespace {
       }
     }
 
-    if (debug & 2) {
+    if (debug & 16) {
       fmt::print("\n-----------------------------\n");
       int l = 1;
       for (size_t i = 0; i < face_connectivity.size(); i++) {
@@ -160,14 +159,15 @@ namespace {
 namespace Ioss {
 
   template Ioss::chain_t<int>     generate_element_chains(Ioss::Region &region, const std::string &,
-                                                          int);
+                                                          int, int);
   template Ioss::chain_t<int64_t> generate_element_chains(Ioss::Region &region, const std::string &,
-                                                          int64_t);
+                                                          int, int64_t);
 
   template <typename INT>
   Ioss::chain_t<INT> generate_element_chains(Ioss::Region &region, const std::string &surface_list,
-                                             INT /*dummy*/)
+                                             int debug_level, INT /*dummy*/)
   {
+    debug                    = debug_level;
     size_t             numel = region.get_property("element_count").get_int();
     Ioss::chain_t<INT> element_chains(numel);
 
@@ -199,7 +199,7 @@ namespace Ioss {
       // We are only working on the elements that are in the curent block...
       front_t<INT> next_front;
       while (!front.empty()) {
-        if (debug & 4) {
+        if (debug & 16) {
           fmt::print("\n----------------------\n");
         }
         next_front.reserve(front.size());
@@ -218,14 +218,14 @@ namespace Ioss {
             if (element_chains[nxt_element - 1] == Ioss::chain_entry_t<INT>()) {
               element_chains[nxt_element - 1] = element_chains[element - 1];
               element_chains[nxt_element - 1].link++;
-              if (debug & 4) {
+              if (debug & 16) {
                 fmt::print("At element {}, side {} -- Next in chain is element {}, side {}\n",
                            element, side, nxt_element, nxt_side);
               }
               next_front.push_back(std::make_pair(nxt_element, nxt_side + 1));
             }
             else {
-              if (debug & 4) {
+              if (debug & 16) {
                 fmt::print("At element {}, side {} -- Termination of chain {} of size {}.\n",
                            element, side, element_chains[element - 1].element,
                            element_chains[element - 1].link + 1);
@@ -233,7 +233,7 @@ namespace Ioss {
             }
           }
           else {
-            if (debug & 4) {
+            if (debug & 16) {
               fmt::print("At element {}, side {} -- Termination of chain {} of size {}.\n", element,
                          side, element_chains[element - 1].element,
                          element_chains[element - 1].link + 1);
