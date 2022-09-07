@@ -4282,112 +4282,34 @@ int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss:
         }
       }
       else if (role == Ioss::Field::MAP) {
-        if (field.get_name() == "skin") {
-          // This is (currently) for the skinned body. It maps the
-          // side element on the skin to the original element/local
-          // side number.  It is a two component field, the first
-          // component is the global id of the underlying element in
-          // the initial mesh and its local side number (1-based).
-
-          std::vector<char> element(my_element_count * int_byte_size_api());
-          std::vector<char> side(my_element_count * int_byte_size_api());
+        int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+        for (int comp = 0; comp < comp_count; comp++) {
+          std::vector<char> component(my_element_count * int_byte_size_api());
 
           if (int_byte_size_api() == 4) {
-            int *el_side   = reinterpret_cast<int *>(data);
-            int *element32 = reinterpret_cast<int *>(element.data());
-            int *side32    = reinterpret_cast<int *>(side.data());
+            int *data32 = reinterpret_cast<int *>(data);
+            int *comp32 = reinterpret_cast<int *>(component.data());
 
-            int index = 0;
+            int index = comp;
             for (size_t i = 0; i < my_element_count; i++) {
-              element32[i] = el_side[index++];
-              side32[i]    = el_side[index++];
+              comp32[i] = data32[index];
+              index += comp_count;
             }
           }
           else {
-            auto *el_side   = reinterpret_cast<int64_t *>(data);
-            auto *element64 = reinterpret_cast<int64_t *>(element.data());
-            auto *side64    = reinterpret_cast<int64_t *>(side.data());
+            int64_t *data64 = reinterpret_cast<int64_t *>(data);
+            int64_t *comp64 = reinterpret_cast<int64_t *>(component.data());
 
-            size_t index = 0;
+            int index = comp;
             for (size_t i = 0; i < my_element_count; i++) {
-              element64[i] = el_side[index++];
-              side64[i]    = el_side[index++];
+              comp64[i] = data64[index];
+              index += comp_count;
             }
           }
-
           size_t eb_offset = eb->get_offset();
-          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index(),
-                                        eb_offset + 1, my_element_count, element.data());
-          if (ierr < 0) {
-            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
-
-          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index() + 1,
-                                        eb_offset + 1, my_element_count, side.data());
-          if (ierr < 0) {
-            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
-
-          // NOTE: ex_put_*num_map must be called prior to defining the name...
-          ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, field.get_index(),
-                             "skin:parent_element_id");
-          if (ierr < 0) {
-            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
-
-          ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, field.get_index() + 1,
-                             "skin:parent_element_side_number");
-          if (ierr < 0) {
-            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
-        }
-        else if (field.get_name() == "chain") {
-          // This is (currently) for the line decomp which creates
-          // lines or chains or columns of elements from a surface
-          // face back into the mesh.
-          // The map entry is the element number at the beginning of the chain.
-
-          std::vector<char> element(my_element_count * int_byte_size_api());
-          std::vector<char> link(my_element_count * int_byte_size_api());
-
-          if (int_byte_size_api() == 4) {
-            int *el_link   = reinterpret_cast<int *>(data);
-            int *element32 = reinterpret_cast<int *>(element.data());
-            int *link32    = reinterpret_cast<int *>(link.data());
-
-            int index = 0;
-            for (size_t i = 0; i < my_element_count; i++) {
-              element32[i] = el_link[index++];
-              link32[i]    = el_link[index++];
-            }
-          }
-          else {
-            auto *el_link   = reinterpret_cast<int64_t *>(data);
-            auto *element64 = reinterpret_cast<int64_t *>(element.data());
-            auto *link64    = reinterpret_cast<int64_t *>(link.data());
-
-            size_t index = 0;
-            for (size_t i = 0; i < my_element_count; i++) {
-              element64[i] = el_link[index++];
-              link64[i]    = el_link[index++];
-            }
-          }
-
-          size_t eb_offset = eb->get_offset();
-          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index(),
-                                        eb_offset + 1, my_element_count, element.data());
-          if (ierr < 0) {
-            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
-
-          ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index() + 1,
-                                        eb_offset + 1, my_element_count, link.data());
-          if (ierr < 0) {
-            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
-        }
-        else {
-          num_to_get = Ioss::Utils::field_warning(eb, field, "mesh output");
+          ierr =
+              ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, field.get_index() + 1 + comp,
+                                     eb_offset + 1, my_element_count, component.data());
         }
       }
       else if (role == Ioss::Field::ATTRIBUTE) {
