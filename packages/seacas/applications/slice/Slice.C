@@ -65,15 +65,76 @@ int           debug_level = 0;
 size_t partial_count = 1'000'000'000;
 
 namespace {
-  void add_decomp_map(Ioss::Region &region)
+  void progress(const std::string &output)
   {
-    ex_opts(EX_VERBOSE);
-    int ierr0 = ex_put_map_param(region.get_database()->get_file_pointer(), 0, 2);
-    int ierr1 = ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 1,
-                            "chain:root_element_id");
-    int ierr2 = ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 2,
-                            "chain:depth_from_root");
-    fmt::print("Map errors: {} {} {}\n", ierr0, ierr1, ierr2);
+    static auto start = std::chrono::steady_clock::now();
+
+    if ((debug_level & 1) != 0) {
+      auto                          now  = std::chrono::steady_clock::now();
+      std::chrono::duration<double> diff = now - start;
+      fmt::print(stderr, " [{:.2f} - {}]\t{}\n", diff.count(),
+                 fmt::group_digits(Ioss::Utils::get_memory_info()), output);
+    }
+  }
+
+  void proc_progress(int p, int proc_count)
+  {
+    if (((debug_level & 8) != 0) && ((proc_count <= 20) || ((p + 1) % (proc_count / 20) == 0))) {
+      progress("\t\tProcessor " + std::to_string(p + 1));
+    }
+  }
+
+  // Add the chain maps for file-per-rank output...
+  template <typename INT>
+  void output_chain_maps(std::vector<Ioss::Region *> &proc_region, const Ioss::chain_t<INT> &chains,
+                         const std::vector<int> &elem_to_proc, size_t proc_begin, size_t proc_size,
+                         INT /* dummy */)
+  {
+    progress(__func__);
+    size_t block_count = proc_region[0]->get_property("element_block_count").get_int();
+
+    size_t offset = 0;
+    for (size_t b = 0; b < block_count; b++) {
+      if (debug_level & 4) {
+        progress("\tBlock " + std::to_string(b + 1));
+      }
+
+      size_t                        proc_count = proc_region.size();
+      std::vector<std::vector<INT>> map(proc_count);
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+        auto  &proc_ebs           = proc_region[p]->get_element_blocks();
+        size_t proc_element_count = proc_ebs[b]->entity_count();
+        map[p].reserve(proc_element_count * 2);
+      }
+
+      size_t global_element_count = elem_to_proc.size();
+      for (size_t j = 0; j < global_element_count; j++) {
+        size_t p = elem_to_proc[offset + j];
+        if (p >= proc_begin && p < proc_begin + proc_size) {
+          auto &chain_entry = chains[j + offset];
+          // TODO: Map this from global to local element number...
+          size_t loc_elem =
+              proc_region[p]->get_database()->element_global_to_local(chain_entry.element);
+          map[p].push_back(loc_elem);
+          map[p].push_back(chain_entry.link);
+        }
+      }
+      offset += global_element_count;
+
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+        auto &proc_ebs = proc_region[p]->get_element_blocks();
+        proc_ebs[b]->put_field_data("chain", map[p]);
+        map[p].clear();
+        proc_progress(p, proc_count);
+      }
+    }
+  }
+
+  void add_chain_maps(Ioss::Region &region)
+  {
+    ex_put_map_param(region.get_database()->get_file_pointer(), 0, 2);
+    ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 1, "chain:root_element_id");
+    ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 2, "chain:depth_from_root");
 
     // The chain / line data will be stored as an element map...
     const auto &blocks = region.get_element_blocks();
@@ -84,22 +145,56 @@ namespace {
     }
   }
 
-  template <typename INT>
-  void output_decomp_map(Ioss::Region &region, const Ioss::chain_t<INT> &chains)
+  void add_decomp_map(Ioss::Region &region, bool add_chain_info)
   {
+    ex_opts(EX_VERBOSE);
+    if (add_chain_info) {
+      ex_put_map_param(region.get_database()->get_file_pointer(), 0, 3);
+      ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 1, "processor_id");
+      ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 2,
+                  "chain:root_element_id");
+      ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 3,
+                  "chain:depth_from_root");
+    }
+    else {
+      ex_put_map_param(region.get_database()->get_file_pointer(), 0, 1);
+      ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 1, "processor_id");
+    }
+
+    // The chain / line data will be stored as an element map...
     const auto &blocks = region.get_element_blocks();
     for (const auto &block : blocks) {
-      std::vector<INT> chain;
-      size_t           num_elem = block->entity_count();
-      size_t           offset   = 0;
-      chain.reserve(num_elem * 2);
-      for (size_t i = 0; i < num_elem; i++) {
-        auto &chain_entry = chains[i + offset];
-        chain.push_back(chain_entry.element);
-        chain.push_back(chain_entry.link);
+      Ioss::Field field{"processor_id", Ioss::Field::INT32, IOSS_SCALAR(), Ioss::Field::MAP};
+      field.set_index(0);
+      block->field_add(field);
+      if (add_chain_info) {
+        Ioss::Field field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
+        field.set_index(1);
+        block->field_add(field);
+      }
+    }
+  }
+
+  template <typename INT>
+  void output_decomp_map(Ioss::Region &region, const std::vector<int> &elem_to_proc,
+                         const Ioss::chain_t<INT> &chains, bool add_chain_info)
+  {
+    const auto &blocks = region.get_element_blocks();
+    size_t      offset = 0;
+    for (const auto &block : blocks) {
+      size_t num_elem = block->entity_count();
+      block->put_field_data("processor_id", (void *)&elem_to_proc[offset], -1);
+      if (add_chain_info) {
+        std::vector<INT> chain;
+        chain.reserve(num_elem * 2);
+        for (size_t i = 0; i < num_elem; i++) {
+          auto &chain_entry = chains[i + offset];
+          chain.push_back(chain_entry.element);
+          chain.push_back(chain_entry.link);
+        }
+        block->put_field_data("chain", chain);
       }
       offset += num_elem;
-      block->put_field_data("chain", chain);
     }
   }
 
@@ -156,25 +251,6 @@ namespace {
           on_proc_count[p]++;
         }
       }
-    }
-  }
-
-  void progress(const std::string &output)
-  {
-    static auto start = std::chrono::steady_clock::now();
-
-    if ((debug_level & 1) != 0) {
-      auto                          now  = std::chrono::steady_clock::now();
-      std::chrono::duration<double> diff = now - start;
-      fmt::print(stderr, " [{:.2f} - {}]\t{}\n", diff.count(),
-                 fmt::group_digits(Ioss::Utils::get_memory_info()), output);
-    }
-  }
-
-  void proc_progress(int p, int proc_count)
-  {
-    if (((debug_level & 8) != 0) && ((proc_count <= 20) || ((p + 1) % (proc_count / 20) == 0))) {
-      progress("\t\tProcessor " + std::to_string(p + 1));
     }
   }
 
@@ -319,7 +395,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
-  fmt::print(stderr, "High-Water Memory Use: {} bytes\n",
+  fmt::print(stderr, "\nHigh-Water Memory Use: {} bytes\n",
              fmt::group_digits(Ioss::Utils::get_hwm_memory_info()));
   fmt::print(stderr, "Total execution time = {:.5}\n", seacas_timer() - begin);
   fmt::print(stderr, "\nSlice execution successful.\n");
@@ -384,9 +460,14 @@ namespace {
 
     elem_to_proc.reserve(element_count);
 
-    fmt::print(stderr, "Decomposing {} elements across {} processors using method '{}'.\n\n",
+    fmt::print(stderr, "Decomposing {} elements across {} processors using method '{}'.\n",
                fmt::group_digits(element_count), fmt::group_digits(interFace.processor_count()),
                interFace.decomposition_method());
+    if (interFace.lineDecomp_) {
+      fmt::print(stderr, "\tDecomposition will be modified to put element lines/chains/columns on "
+                         "same processor rank\n");
+    }
+    fmt::print(stderr, "\n");
 
     if (interFace.decomposition_method() == "linear") {
       size_t elem_beg = 0;
@@ -693,9 +774,11 @@ namespace {
 
     for (size_t i = 0; i < element_chains.size(); i++) {
       auto &chain_entry = element_chains[i];
-      fmt::print("[{}]: element {}, link {}, processor {}\n", i + 1, chain_entry.element,
-                 chain_entry.link, elem_to_proc[i]);
       chains[chain_entry.element].push_back(i + 1);
+      if ((debug_level & 16) != 0) {
+        fmt::print("[{}]: element {}, link {}, processor {}\n", i + 1, chain_entry.element,
+                   chain_entry.link, elem_to_proc[i]);
+      }
     }
 
     // Delta: elements added/removed from each processor...
@@ -703,7 +786,9 @@ namespace {
 
     // Now, for each chain...
     for (auto &chain : chains) {
-      fmt::print("Chain Root: {} contains: {}\n", chain.first, fmt::join(chain.second, ", "));
+      if ((debug_level & 16) != 0) {
+        fmt::print("Chain Root: {} contains: {}\n", chain.first, fmt::join(chain.second, ", "));
+      }
 
       std::vector<INT> chain_proc_count(proc_count);
       auto            &chain_elements = chain.second;
@@ -739,8 +824,10 @@ namespace {
     for (auto proc : elem_to_proc) {
       proc_element_count[proc]++;
     }
-    fmt::print("\nElements/Processor: {}\n", fmt::join(proc_element_count, ", "));
-    fmt::print("Delta/Processor:    {}\n", fmt::join(delta, ", "));
+    if ((debug_level & 16) != 0) {
+      fmt::print("\nElements/Processor: {}\n", fmt::join(proc_element_count, ", "));
+      fmt::print("Delta/Processor:    {}\n", fmt::join(delta, ", "));
+    }
   }
 
   template <typename INT>
@@ -1737,23 +1824,10 @@ namespace {
 
     Ioss::chain_t<INT> element_chains;
     if (interFace.lineDecomp_) {
-      element_chains = Ioss::generate_element_chains(region, interFace.lineSurfaceList_, dummy);
+      element_chains =
+          Ioss::generate_element_chains(region, interFace.lineSurfaceList_, debug_level, dummy);
       line_decomp_modify(region, element_chains, elem_to_proc, interFace.processor_count(), dummy);
     }
-
-    start = seacas_timer();
-    // Build the proc_elem_block_cnt[i][j] vector.
-    // Gives number of elements in block i on processor j
-    size_t block_count = region.get_property("element_block_count").get_int();
-    std::vector<std::vector<INT>> proc_elem_block_cnt(block_count + 1);
-    for (auto &pebc : proc_elem_block_cnt) {
-      pebc.resize(interFace.processor_count());
-    }
-    get_proc_elem_block_count(region, elem_to_proc, proc_elem_block_cnt);
-    end = seacas_timer();
-
-    fmt::print(stderr, "Calculate elements per element block on each processor = {:.5}\n",
-               end - start);
 
     if (!create_split_files) {
       std::string outfile = nemfile;
@@ -1787,8 +1861,9 @@ namespace {
       // need to update the metadata with map information and hope
       // that no other maps exist on the database...
       if (interFace.outputDecompMap_) {
-        add_decomp_map(output_region);
-        output_decomp_map(output_region, element_chains);
+        bool line_decomp = interFace.lineDecomp_;
+        add_decomp_map(output_region, line_decomp);
+        output_decomp_map(output_region, elem_to_proc, element_chains, line_decomp);
       }
 
 #if 0
@@ -1816,6 +1891,20 @@ namespace {
         proc_region[i]->get_database()->closeDatabase();
       }
     }
+
+    start = seacas_timer();
+    // Build the proc_elem_block_cnt[i][j] vector.
+    // Gives number of elements in block i on processor j
+    size_t block_count = region.get_property("element_block_count").get_int();
+    std::vector<std::vector<INT>> proc_elem_block_cnt(block_count + 1);
+    for (auto &pebc : proc_elem_block_cnt) {
+      pebc.resize(interFace.processor_count());
+    }
+    get_proc_elem_block_count(region, elem_to_proc, proc_elem_block_cnt);
+    end = seacas_timer();
+
+    fmt::print(stderr, "Calculate elements per element block on each processor = {:.5}\n",
+               end - start);
 
     // Create element blocks for each processor...
     for (size_t p = 0; p < interFace.processor_count(); p++) {
@@ -1884,6 +1973,9 @@ namespace {
         Ioss::transfer_assemblies(region, *proc_region[p], Ioss::MeshCopyOptions{}, 0);
         proc_region[p]->synchronize_id_and_name(&region);
         proc_region[p]->end_mode(Ioss::STATE_DEFINE_MODEL);
+        if (interFace.lineDecomp_) {
+          add_chain_maps(*proc_region[p]);
+        }
         proc_region[p]->begin_mode(Ioss::STATE_MODEL);
         proc_progress(p, proc_count);
       }
@@ -1942,6 +2034,10 @@ namespace {
       output_sidesets(region, proc_region, elem_to_proc, proc_begin, proc_size, (INT)0);
       end = seacas_timer();
       fmt::print(stderr, "\tSideset Output = {:.5}\n", end - start);
+
+      if (interFace.lineDecomp_) {
+        output_chain_maps(proc_region, element_chains, elem_to_proc, proc_begin, proc_size, (INT)0);
+      }
 
       // Close all files...
       start = seacas_timer();
