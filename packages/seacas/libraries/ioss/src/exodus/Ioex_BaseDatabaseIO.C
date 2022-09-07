@@ -2739,13 +2739,15 @@ namespace Ioex {
     // Set the index/order of the maps for later output.
     // Note that some fields have more than a single component and each component maps to a
     // different map
-    auto  *node_block      = get_region()->get_node_blocks()[0];
-    auto   node_map_fields = node_block->field_describe(Ioss::Field::MAP);
-    size_t node_map_cnt    = 0;
-    for (const auto &field_name : node_map_fields) {
-      const auto &field = node_block->get_fieldref(field_name);
-      field.set_index(node_map_cnt + 1);
-      node_map_cnt += field.get_component_count(Ioss::Field::InOut::OUTPUT);
+    size_t node_map_cnt = 0;
+    if (get_region()->get_property("node_block_count").get_int() > 0) {
+      auto *node_block      = get_region()->get_node_blocks()[0];
+      auto  node_map_fields = node_block->field_describe(Ioss::Field::MAP);
+      for (const auto &field_name : node_map_fields) {
+        const auto &field = node_block->get_fieldref(field_name);
+        field.set_index(node_map_cnt + 1);
+        node_map_cnt += field.get_component_count(Ioss::Field::InOut::OUTPUT);
+      }
     }
 
     Ioss::NameList elem_map_fields;
