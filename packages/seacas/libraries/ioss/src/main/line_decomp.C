@@ -140,7 +140,8 @@ namespace {
     //=======================================================================
     // Function which generates chains...
     //=======================================================================
-    auto element_chains = Ioss::generate_element_chains(region, interFace.surfaceList, dummy);
+    auto element_chains =
+        Ioss::generate_element_chains(region, interFace.surfaceList, debug, dummy);
 
     if (debug & 8) {
       for (size_t i = 0; i < element_chains.size(); i++) {

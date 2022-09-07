@@ -154,7 +154,14 @@ void SystemInterface::enroll_options()
                   "Specify the hdf5 compression level [0..9] to be used on the output file.",
                   nullptr, nullptr, true);
 
-  options_.enroll("debug", GetLongOption::MandatoryValue, "Debug level: 0, 1, 2, 4 or'd", "0");
+  options_.enroll("debug", GetLongOption::MandatoryValue,
+                  "debug level (values are or'd)\n"
+                  "\t\t  1 = timing information.\n"
+                  "\t\t  2 = Communication, NodeSet, Sideset information.\n"
+                  "\t\t  4 = Progress information in File/Rank.\n"
+                  "\t\t  8 = File/Rank Decomposition information.\n"
+                  "\t\t 16 = Chain/Line generation/decomp information.\n",
+                  "0");
 
   options_.enroll("version", GetLongOption::NoValue, "Print version and exit", nullptr);
 
