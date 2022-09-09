@@ -2134,6 +2134,44 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb,
       // (eb_offset+1...eb_offset+1+my_element_count) to global element ids.
       get_map(EX_ELEM_BLOCK).map_implicit_data(data, field, num_to_get, eb->get_offset());
     }
+  }
+  else if (role == Ioss::Field::MAP) {
+    int component_count = field.get_component_count(Ioss::Field::InOut::INPUT);
+    size_t eb_offset        = eb->get_offset();
+
+    if (component_count == 1) {
+      // Single component -- can put data directly into return `data`;
+      decomp->get_user_map(get_file_pointer(), EX_ELEM_MAP, id, field.get_index(), eb_offset, my_element_count, data);
+    }
+    else {
+      // Multi-component -- need read a component at a time and interleave into return `data`
+      if (field.is_type(Ioss::Field::INTEGER)) {
+	Ioss::IntVector component(my_element_count);
+	auto *data32 = reinterpret_cast<int *>(data);
+	for (int comp = 0; comp < component_count; comp++) {
+	  decomp->get_user_map(get_file_pointer(), EX_ELEM_MAP, id, field.get_index() + comp, eb_offset, my_element_count, component.data());
+	  int index = comp;
+	  for (size_t i = 0; i < my_element_count; i++) {
+	    data32[index] = component[i];
+	    index += component_count;
+	  }
+	}
+      }
+      else {
+	Ioss::Int64Vector component(my_element_count);
+	auto *data64 = reinterpret_cast<int64_t *>(data);
+	for (int comp = 0; comp < component_count; comp++) {
+	  decomp->get_user_map(get_file_pointer(), EX_ELEM_MAP, id, field.get_index() + comp, eb_offset, my_element_count, component.data());
+
+	  int index = comp;
+	  for (size_t i = 0; i < my_element_count; i++) {
+	    data64[index] = component[i];
+	    index += component_count;
+	  }
+	}
+      }
+    }
+#if 0
     else if (field.get_name() == "skin") {
       // This is (currently) for the skinned body. It maps the
       // side element on the skin to the original element/local
@@ -2183,6 +2221,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb,
     else {
       num_to_get = Ioss::Utils::field_warning(eb, field, "input");
     }
+#endif
   }
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(field, eb, data);
@@ -3798,77 +3837,38 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
     else if (field.get_name() == "implicit_ids") {
       // Do nothing, input only field.
     }
-    else if (field.get_name() == "skin") {
-      // This is (currently) for the skinned body. It maps the
-      // side element on the skin to the original element/local
-      // side number.  It is a two component field, the first
-      // component is the global id of the underlying element in
-      // the initial mesh and its local side number (1-based).
-
-      // FIX: Hardwired map ids....
-      int map_count = ex_inquire_int(get_file_pointer(), EX_INQ_ELEM_MAP);
-      if (map_count == 0) {
-        // This needs to be fixed... Currently hardwired....
-        ierr = ex_put_map_param(get_file_pointer(), 0, 2);
-        if (ierr < 0) {
-          Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-        }
-      }
-
-      std::vector<char> element(my_element_count * int_byte_size_api());
-      std::vector<char> side(my_element_count * int_byte_size_api());
+  }
+  else if (role == Ioss::Field::MAP) {
+    int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+    for (int comp = 0; comp < comp_count; comp++) {
+      std::vector<char> component(my_element_count * int_byte_size_api());
 
       if (int_byte_size_api() == 4) {
-        int *el_side   = reinterpret_cast<int *>(data);
-        int *element32 = reinterpret_cast<int *>(element.data());
-        int *side32    = reinterpret_cast<int *>(side.data());
+	int *data32 = reinterpret_cast<int *>(data);
+	int *comp32 = reinterpret_cast<int *>(component.data());
 
-        int index = 0;
-        for (int i = 0; i < my_element_count; i++) {
-          element32[i] = el_side[index++];
-          side32[i]    = el_side[index++];
-        }
+	int index = comp;
+	for (size_t i = 0; i < my_element_count; i++) {
+	  comp32[i] = data32[index];
+	  index += comp_count;
+	}
       }
       else {
-        int64_t *el_side   = reinterpret_cast<int64_t *>(data);
-        int64_t *element64 = reinterpret_cast<int64_t *>(element.data());
-        int64_t *side64    = reinterpret_cast<int64_t *>(side.data());
+	int64_t *data64 = reinterpret_cast<int64_t *>(data);
+	int64_t *comp64 = reinterpret_cast<int64_t *>(component.data());
 
-        int64_t index = 0;
-        for (int64_t i = 0; i < my_element_count; i++) {
-          element64[i] = el_side[index++];
-          side64[i]    = el_side[index++];
-        }
+	int index = comp;
+	for (size_t i = 0; i < my_element_count; i++) {
+	  comp64[i] = data64[index];
+	  index += comp_count;
+	}
       }
-
-      size_t eb_offset = eb->get_offset() + proc_offset;
-      ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 1, eb_offset + 1, file_count,
-                                    element.data());
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
-
-      ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 2, eb_offset + 1, file_count,
-                                    side.data());
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
-
-      if (map_count == 0) {
-        // NOTE: ex_put_*num_map must be called prior to defining the name...
-        ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, 1, "skin:parent_element_id");
-        if (ierr < 0) {
-          Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-        }
-
-        ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, 2, "skin:parent_element_side_number");
-        if (ierr < 0) {
-          Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-        }
-      }
-    }
-    else {
-      num_to_get = Ioss::Utils::field_warning(eb, field, "mesh output");
+      size_t eb_offset   = eb->get_offset(); // Offset of beginning of the element block elements for this block
+      size_t proc_offset = eb->get_optional_property("_processor_offset", 0); // Offset of this processors elements within that block.
+      size_t file_count  = eb->get_optional_property("locally_owned_count", my_element_count);
+      int    index     = -1 * (field.get_index() + comp); // Negative since specifying index, not id to exodus API.
+      
+      ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, index, proc_offset + eb_offset + 1, file_count, component.data());
     }
   }
   else if (role == Ioss::Field::ATTRIBUTE) {
