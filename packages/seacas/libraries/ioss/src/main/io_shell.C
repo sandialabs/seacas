@@ -47,6 +47,7 @@ namespace {
     Ioss::MeshCopyOptions options{};
     options.selected_times    = interFace.selected_times;
     options.verbose           = !interFace.quiet;
+    options.output_summary    = true;
     options.memory_statistics = interFace.memory_statistics;
     options.debug             = interFace.debug;
     options.ints_64_bit       = interFace.ints_64_bit;
