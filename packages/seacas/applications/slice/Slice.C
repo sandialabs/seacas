@@ -198,6 +198,37 @@ namespace {
     }
   }
 
+  void add_decomp_field(Ioss::Region &region, bool add_chain_info)
+  {
+    region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
+
+    const auto &blocks = region.get_element_blocks();
+    for (const auto &block : blocks) {
+      block->field_add(Ioss::Field("processor_id", region.field_int_type(), IOSS_SCALAR(),
+                                   Ioss::Field::TRANSIENT));
+      if (add_chain_info) {
+        block->field_add(
+            Ioss::Field("chain", region.field_int_type(), "Real[2]", Ioss::Field::TRANSIENT));
+      }
+    }
+    region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
+  }
+
+  template <typename INT>
+  void output_decomp_field(Ioss::Region &region, const std::vector<int> &elem_to_proc,
+                           const Ioss::chain_t<INT> &chains, bool add_chain_info)
+  {
+    region.begin_mode(Ioss::STATE_TRANSIENT);
+
+    auto step = region.add_state(0.0);
+    region.begin_state(step);
+
+    output_decomp_map(region, elem_to_proc, chains, add_chain_info);
+
+    region.end_state(step);
+    region.end_mode(Ioss::STATE_TRANSIENT);
+  }
+
   template <typename INT>
   void line_decomp_modify(Ioss::Region &region, const Ioss::chain_t<INT> &element_chains,
                           const std::vector<int> &elem_to_proc, int proc_count, INT dummy);
@@ -1866,13 +1897,12 @@ namespace {
         output_decomp_map(output_region, elem_to_proc, element_chains, line_decomp);
       }
 
-#if 0
       if (interFace.outputDecompField_) {
-	add_chain_fields(output_region);
-	output_chain_fields(output_region, element_chains);
-	add_decomp_field(output_region);
+        bool line_decomp = interFace.lineDecomp_;
+        add_decomp_field(output_region, line_decomp);
+        output_decomp_field(output_region, elem_to_proc, element_chains, line_decomp);
       }
-#endif
+
       return;
     }
 
