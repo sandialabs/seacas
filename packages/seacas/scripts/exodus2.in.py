@@ -3,7 +3,7 @@ from ctypes import *
 import os
 
 """
-exodus.py v 1.16 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.17 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 2 Version)
 
 Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
@@ -15,10 +15,10 @@ See packages/seacas/LICENSE for details
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.16 (seacas-py2)"
+EXODUS_PY_VERSION = "1.17 (seacas-py2)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.16 (seacas-py2), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.17 (seacas-py2), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
