@@ -89,10 +89,10 @@ void SystemInterface::enroll_options()
 
   options_.enroll("line_decomp", GetLongOption::OptionalValue,
                   "Generate the `lines` or `columns` of elements from the specified surface(s).\n"
-                  "\t\tDo not split a line across processors.\n"
                   "\t\tSpecify a comma-separated list of surface/sideset names from which the "
                   "lines will grow.\n"
-                  "\t\tOmit or enter 'ALL' for all surfaces in model",
+                  "\t\tOmit or enter 'ALL' for all surfaces in model\n"
+                  "\t\tDo not split a line/column across processors.",
                   nullptr, "ALL", true);
 
   options_.enroll("output_decomp_map", GetLongOption::NoValue,
@@ -160,7 +160,7 @@ void SystemInterface::enroll_options()
                   "\t\t  2 = Communication, NodeSet, Sideset information.\n"
                   "\t\t  4 = Progress information in File/Rank.\n"
                   "\t\t  8 = File/Rank Decomposition information.\n"
-                  "\t\t 16 = Chain/Line generation/decomp information.\n",
+                  "\t\t 16 = Chain/Line generation/decomp information.",
                   "0");
 
   options_.enroll("version", GetLongOption::NoValue, "Print version and exit", nullptr);
@@ -279,11 +279,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
         return false;
       }
     }
-    else if (decompMethod_ == "variable" || decompMethod_ == "map") {
-      // If isn't specified, then default `processor_id` is used.
-      decompVariable_ = options_.get_option_value("decomposition_name", decompVariable_);
-    }
   }
+
+  // Only used in a few methods, but see if set anyway...
+  decompVariable_ = options_.get_option_value("decomposition_name", decompVariable_);
 
   {
     const char *temp = options_.retrieve("line_decomp");
@@ -322,6 +321,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
   contig_            = options_.retrieve("contiguous_decomposition") != nullptr;
   outputDecompMap_   = options_.retrieve("output_decomp_map") != nullptr;
   outputDecompField_ = options_.retrieve("output_decomp_field") != nullptr;
+
+  if (outputDecompMap_ && outputDecompField_) {
+    fmt::print(
+        stderr,
+        "\nERROR: Cannot specify BOTH `output_decomp_map` and `output_decomp_field` options.\n"
+        "       Can only specify one of the two options.\n\n");
+    exit(EXIT_FAILURE);
+  }
 
 #if 0
  {

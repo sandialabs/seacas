@@ -145,12 +145,14 @@ namespace {
     }
   }
 
-  void add_decomp_map(Ioss::Region &region, bool add_chain_info)
+  void add_decomp_map(Ioss::Region &region, const std::string &decomp_variable_name,
+                      bool add_chain_info)
   {
     ex_opts(EX_VERBOSE);
     if (add_chain_info) {
       ex_put_map_param(region.get_database()->get_file_pointer(), 0, 3);
-      ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 1, "processor_id");
+      ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 1,
+                  decomp_variable_name.c_str());
       ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 2,
                   "chain:root_element_id");
       ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 3,
@@ -158,13 +160,14 @@ namespace {
     }
     else {
       ex_put_map_param(region.get_database()->get_file_pointer(), 0, 1);
-      ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 1, "processor_id");
+      ex_put_name(region.get_database()->get_file_pointer(), EX_ELEM_MAP, 1,
+                  decomp_variable_name.c_str());
     }
 
     // The chain / line data will be stored as an element map...
     const auto &blocks = region.get_element_blocks();
     for (const auto &block : blocks) {
-      Ioss::Field field{"processor_id", Ioss::Field::INT32, IOSS_SCALAR(), Ioss::Field::MAP};
+      Ioss::Field field{decomp_variable_name, Ioss::Field::INT32, IOSS_SCALAR(), Ioss::Field::MAP};
       field.set_index(1);
       block->field_add(field);
       if (add_chain_info) {
@@ -177,13 +180,14 @@ namespace {
 
   template <typename INT>
   void output_decomp_map(Ioss::Region &region, const std::vector<int> &elem_to_proc,
-                         const Ioss::chain_t<INT> &chains, bool add_chain_info)
+                         const Ioss::chain_t<INT> &chains, const std::string &decomp_variable_name,
+                         bool add_chain_info)
   {
     const auto &blocks = region.get_element_blocks();
     size_t      offset = 0;
     for (const auto &block : blocks) {
       size_t num_elem = block->entity_count();
-      block->put_field_data("processor_id", (void *)&elem_to_proc[offset], -1);
+      block->put_field_data(decomp_variable_name, (void *)&elem_to_proc[offset], -1);
       if (add_chain_info) {
         std::vector<INT> chain;
         chain.reserve(num_elem * 2);
@@ -198,13 +202,14 @@ namespace {
     }
   }
 
-  void add_decomp_field(Ioss::Region &region, bool add_chain_info)
+  void add_decomp_field(Ioss::Region &region, const std::string &decomp_variable_name,
+                        bool add_chain_info)
   {
     region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
 
     const auto &blocks = region.get_element_blocks();
     for (const auto &block : blocks) {
-      block->field_add(Ioss::Field("processor_id", region.field_int_type(), IOSS_SCALAR(),
+      block->field_add(Ioss::Field(decomp_variable_name, region.field_int_type(), IOSS_SCALAR(),
                                    Ioss::Field::TRANSIENT));
       if (add_chain_info) {
         block->field_add(
@@ -216,14 +221,15 @@ namespace {
 
   template <typename INT>
   void output_decomp_field(Ioss::Region &region, const std::vector<int> &elem_to_proc,
-                           const Ioss::chain_t<INT> &chains, bool add_chain_info)
+                           const Ioss::chain_t<INT> &chains,
+                           const std::string &decomp_variable_name, bool add_chain_info)
   {
     region.begin_mode(Ioss::STATE_TRANSIENT);
 
     auto step = region.add_state(0.0);
     region.begin_state(step);
 
-    output_decomp_map(region, elem_to_proc, chains, add_chain_info);
+    output_decomp_map(region, elem_to_proc, chains, decomp_variable_name, add_chain_info);
 
     region.end_state(step);
     region.end_mode(Ioss::STATE_TRANSIENT);
@@ -1893,14 +1899,16 @@ namespace {
       // that no other maps exist on the database...
       if (interFace.outputDecompMap_) {
         bool line_decomp = interFace.lineDecomp_;
-        add_decomp_map(output_region, line_decomp);
-        output_decomp_map(output_region, elem_to_proc, element_chains, line_decomp);
+        add_decomp_map(output_region, interFace.decomposition_variable(), line_decomp);
+        output_decomp_map(output_region, elem_to_proc, element_chains,
+                          interFace.decomposition_variable(), line_decomp);
       }
 
       if (interFace.outputDecompField_) {
         bool line_decomp = interFace.lineDecomp_;
-        add_decomp_field(output_region, line_decomp);
-        output_decomp_field(output_region, elem_to_proc, element_chains, line_decomp);
+        add_decomp_field(output_region, interFace.decomposition_variable(), line_decomp);
+        output_decomp_field(output_region, elem_to_proc, element_chains,
+                            interFace.decomposition_variable(), line_decomp);
       }
 
       return;
