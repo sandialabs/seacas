@@ -391,8 +391,16 @@ int main(int argc, char *argv[])
     nem_file = path + sep + nemesis.tailname();
   }
 
+  if (interFace.outputDecompMap_ || interFace.outputDecompField_) {
+    // Then not creating split files, just adding map or field to a single output file
+    // Need to check that not overwriting input file...
+    if (interFace.inputFile_ == nem_file) {
+      nem_file += "-decomp";
+    }
+  }
+
   fmt::print(stderr, "\nInput:    '{}'\n", interFace.inputFile_);
-  fmt::print(stderr, "Output:   '{}'\n\n", nem_file);
+  fmt::print(stderr, "Output:   '{}'\n", nem_file);
 
   debug_level   = interFace.debug();
   partial_count = interFace.partial();
@@ -418,7 +426,7 @@ int main(int argc, char *argv[])
   // NOTE: 'region' owns 'db' pointer at this time...
   Ioss::Region region(dbi, "region_1");
 
-  region.output_summary(std::cout, true);
+  region.output_summary(std::cerr, true);
 
   if (dbi->int_byte_size_api() == 4) {
     progress("4-byte slice");
@@ -497,12 +505,21 @@ namespace {
 
     elem_to_proc.reserve(element_count);
 
-    fmt::print(stderr, "Decomposing {} elements across {} processors using method '{}'.\n",
+    fmt::print(stderr, "\nDecomposing {} elements across {} processors using method '{}'.\n",
                fmt::group_digits(element_count), fmt::group_digits(interFace.processor_count()),
                interFace.decomposition_method());
     if (interFace.lineDecomp_) {
       fmt::print(stderr, "\tDecomposition will be modified to put element lines/chains/columns on "
                          "same processor rank\n");
+    }
+
+    if (interFace.outputDecompMap_) {
+      fmt::print(stderr, "\tDecomposition will be output to an element map named '{}'.\n",
+                 interFace.decomposition_variable());
+    }
+    if (interFace.outputDecompField_) {
+      fmt::print(stderr, "\tDecomposition will be output to an element field named '{}'.\n",
+                 interFace.decomposition_variable());
     }
     fmt::print(stderr, "\n");
 
@@ -1867,12 +1884,8 @@ namespace {
     }
 
     if (!create_split_files) {
-      std::string outfile = nemfile;
-      if (interFace.inputFile_ == interFace.nemesisFile_) {
-        outfile += "-decomp";
-      }
       Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
-          "exodus", outfile, Ioss::WRITE_RESTART, Ioss::ParallelUtils::comm_world(), properties);
+          "exodus", nemfile, Ioss::WRITE_RESTART, Ioss::ParallelUtils::comm_world(), properties);
       if (dbo == nullptr || !dbo->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
