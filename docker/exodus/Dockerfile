@@ -7,7 +7,7 @@ RUN apt-get update && \
         bison=2:3.8.2+dfsg-1build1 \
         build-essential=12.9ubuntu3 \
         bzip2=1.0.8-5build1 \
-        cmake=3.22.1-1ubuntu1 \
+        cmake=3.22.1-1ubuntu1.22.04.1 \
         curl=7.81.0-1ubuntu1.4 \
         flex=2.6.4-8build2 \
         gfortran=4:11.2.0-1ubuntu1 \
