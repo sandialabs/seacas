@@ -87,14 +87,6 @@ TRIBITS_ADD_EXECUTABLE(
   INSTALLABLE
   )
 
-TRIBITS_ADD_EXECUTABLE(
-  line_decomp
-  NOEXEPREFIX
-  NOEXESUFFIX
-  SOURCES line_decomp.C line_decomp_interface.C
-  INSTALLABLE
-  )
-
 if (TPL_ENABLE_MPI)
   IF (TPL_Netcdf_PARALLEL)
     set(DECOMP_ARG "--rcb")
