@@ -236,7 +236,7 @@ namespace {
   }
 
   template <typename INT>
-  void line_decomp_modify(Ioss::Region &region, const Ioss::chain_t<INT> &element_chains,
+  void line_decomp_modify(const Ioss::chain_t<INT> &element_chains,
                           const std::vector<int> &elem_to_proc, int proc_count, INT dummy);
 
   int case_compare(const char *s1, const char *s2)
@@ -803,8 +803,8 @@ namespace {
   }
 
   template <typename INT>
-  void line_decomp_modify(Ioss::Region &region, const Ioss::chain_t<INT> &element_chains,
-                          std::vector<int> &elem_to_proc, int proc_count, INT dummy)
+  void line_decomp_modify(const Ioss::chain_t<INT> &element_chains, std::vector<int> &elem_to_proc,
+                          int proc_count, INT /* dummy */)
   {
     // Get a map of all chains and the elements in the chains.  Map key will be root.
     std::map<INT, std::vector<INT>> chains;
@@ -1863,7 +1863,7 @@ namespace {
     if (interFace.lineDecomp_) {
       element_chains =
           Ioss::generate_element_chains(region, interFace.lineSurfaceList_, debug_level, dummy);
-      line_decomp_modify(region, element_chains, elem_to_proc, interFace.processor_count(), dummy);
+      line_decomp_modify(element_chains, elem_to_proc, interFace.processor_count(), dummy);
     }
 
     if (!create_split_files) {
