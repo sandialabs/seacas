@@ -219,4 +219,3 @@ a separate license:
 ## Contact information
 
  Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
-
