@@ -907,9 +907,9 @@ namespace Ioss {
     DatabaseIO *db = get_database();
     db->get_step_times();
 
-    int    step     = -1;
-    double max_time = -1.0;
-    for (int i = 0; i < static_cast<int>(stateTimes.size()); i++) {
+    int    step     = stateTimes.empty() ? -1 : 0;
+    double max_time = stateTimes.empty() ? -1 : stateTimes[0];
+    for (int i = 1; i < static_cast<int>(stateTimes.size()); i++) {
       if (stateTimes[i] > max_time) {
         step     = i;
         max_time = stateTimes[i];

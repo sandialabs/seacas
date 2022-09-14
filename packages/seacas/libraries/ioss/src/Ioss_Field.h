@@ -57,6 +57,7 @@ namespace Ioss {
                       EntityBlock derived class. Examples would be thickness
                       of the elements in a shell element block or the radius
                       of particles in a particle element block. */
+      MAP,
       COMMUNICATION,
       MESH_REDUCTION, /**< A field which summarizes some non-transient data
                          about an entity (\sa REDUCTION). This could be an
@@ -160,8 +161,12 @@ namespace Ioss {
     void check_type(BasicType the_type) const;
 
     bool               is_type(BasicType the_type) const { return the_type == type_; }
+
     std::string        type_string() const;
     static std::string type_string(BasicType type);
+
+    std::string        role_string() const;
+    static std::string role_string(RoleType role);
 
     bool add_transform(Transform *my_transform);
     bool transform(void *data);

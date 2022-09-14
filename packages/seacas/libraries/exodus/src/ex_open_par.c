@@ -342,27 +342,45 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     }
   } /* End of (mode & EX_WRITE) */
 
-  /* Since this is a parallel execution we need to set the parallel access method for all transient
-   * variables to NC_COLLECTIVE. There are some smaller variables (X_status, X_prop1, ...) that
-   * don't really need this, but they are rare and it won't hurt... Also, many of them are `compact`
-   * so need to be collective anyway. For now, only filter out the `NC_CHAR` variables. Note that
-   * this is done for both read and append...
+  /* If this is a `pnetcdf` file (non HDF5), then we can't set the
+   * collective vs independent setting on a per-variable basis -- it
+   * is set for the entire file.  Several apps rely on being able to
+   * access some set or other data in an independent mode, so we can't
+   * set any vars to collective or it sets the file to collective and
+   * we potentially hang...
+   */
+  if (!is_pnetcdf) {
+
+  /* If this is a parallel execution and we are appending, then we
+   * need to set the parallel access method for all transient variables to NC_COLLECTIVE since
+   * they will be being extended.
    */
   int ndims;    /* number of dimensions */
   int nvars;    /* number of variables */
   int ngatts;   /* number of global attributes */
   int recdimid; /* id of unlimited dimension */
 
+  int varid;
+
   /* Determine number of variables on the database... */
   nc_inq(exoid, &ndims, &nvars, &ngatts, &recdimid);
 
-  for (int varid = 0; varid < nvars; varid++) {
+  for (varid = 0; varid < nvars; varid++) {
     struct ncvar var;
     nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
-
-    if (var.type != NC_CHAR) {
+    
+    if (((strncmp(var.name, "vals_", 5) == 0) && (strncmp(var.name, "vals_red_", 9) != 0)) ||
+	(strcmp(var.name, VAR_WHOLE_TIME) == 0) ||
+	(strncmp(var.name, "coord", 5) == 0) ||
+	(strcmp(var.name, "connect") == 0) ||
+	(strcmp(var.name, "edgconn") == 0) ||
+	(strcmp(var.name, "ebconn") == 0) ||
+	(strcmp(var.name, "facconn") == 0) ||
+	(strcmp(var.name, "fbconn") == 0) ||
+	(strcmp(var.name, "attrib") == 0)) {
       nc_var_par_access(exoid, varid, NC_COLLECTIVE);
     }
+  }
   }
 
   /* determine version of EXODUS file, and the word size of

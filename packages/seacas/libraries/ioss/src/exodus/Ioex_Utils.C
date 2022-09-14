@@ -180,7 +180,7 @@ namespace Ioex {
     return found;
   }
 
-  bool check_processor_info(int exodusFilePtr, int processor_count, int processor_id)
+  bool check_processor_info(const std::string &filename, int exodusFilePtr, int processor_count, int processor_id)
   {
     // A restart file may contain an attribute which contains
     // information about the processor count and current processor id
@@ -205,26 +205,25 @@ namespace Ioex {
         if (proc_info[0] != processor_count && proc_info[0] > 1) {
           fmt::print(Ioss::WarnOut(),
                      "Processor decomposition count in file ({}) does not match current "
-                     "processor "
-                     "count ({}).\n",
-                     proc_info[0], processor_count);
+                     "processor count ({}) in file named '{}'.\n",
+                     proc_info[0], processor_count, filename);
           matches = false;
         }
         if (proc_info[1] != processor_id) {
           fmt::print(
               Ioss::WarnOut(),
-              "This file was originally written on processor {}, but is now being read on "
+              "The file '{}' was originally written on processor {}, but is now being read on "
               "processor {}.\n"
               "This may cause problems if there is any processor-dependent data on the file.\n",
-              proc_info[1], processor_id);
+              filename, proc_info[1], processor_id);
           matches = false;
         }
       }
       else {
         char errmsg[MAX_ERR_LENGTH];
         ex_opts(EX_VERBOSE);
-        fmt::print(errmsg, "Error: failed to read processor info attribute from file id {}",
-                   exodusFilePtr);
+        fmt::print(errmsg, "Error: failed to read processor info attribute from file {}",
+                   filename);
         ex_err_fn(exodusFilePtr, __func__, errmsg, status);
         return (EX_FATAL) != 0;
       }
@@ -538,15 +537,44 @@ namespace Ioex {
       Ioss::Utils::fixup_name(names[i]);
     }
 
-    if (map_count == 2 && std::strncmp(names[0], "skin:", 5) == 0 &&
-        std::strncmp(names[1], "skin:", 5) == 0) {
-      // Currently, only support the "skin" map -- It will be a 2
-      // component field consisting of "parent_element":"local_side"
-      // pairs.  The parent_element is an element in the original mesh,
-      // not this mesh.
-      block->field_add(Ioss::Field("skin", block->field_int_type(), "Real[2]", Ioss::Field::MESH,
-                                   my_element_count));
+    for (int i = 0; i < map_count; i++) {
+      // If the name does *not* contain a `:`, then assume that this is a scalar map and add to the
+      // block.
+      std::string name{names[i]};
+      if (name.find(':') == std::string::npos) {
+        Ioss::Field field(name, block->field_int_type(), IOSS_SCALAR(), Ioss::Field::MAP,
+                          my_element_count);
+        field.set_index(i + 1);
+        block->field_add(field);
+        continue;
+      }
+
+      // Name does contain a `:` which is a loose convention for naming of maps in IOSS.
+      // If multiple maps start with the same substring before the `:`, then they are considered
+      // components of the same Ioss::Field::MAP field.
+      // Count the number of names that begin with the same substring...
+      auto base = name.substr(0, name.find(':'));
+
+      // Now see if the following name(s) contain the same substring...
+      int ii = i;
+      while (++ii < map_count) {
+        std::string next{names[ii]};
+        std::string next_base = next.substr(0, next.find(':'));
+        if (base != next_base) {
+          break;
+        }
+      }
+
+      int comp_count = ii - i;
+
+      std::string storage = fmt::format("Real[{}]", comp_count);
+      Ioss::Field field(base, block->field_int_type(), storage, Ioss::Field::MAP, my_element_count);
+      field.set_index(i + 1);
+      block->field_add(field);
+
+      i = ii - 1;
     }
+
     Ioss::Utils::delete_name_array(names, map_count);
     return map_count;
   }

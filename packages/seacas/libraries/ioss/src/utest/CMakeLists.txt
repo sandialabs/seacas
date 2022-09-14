@@ -39,12 +39,11 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
 	Utst_blob_write_read
+	NAME Utst_blob_write_read
 	NOEXEPREFIX
 	${ADD_SUFFIX}
 	INSTALLABLE
 	SOURCES Utst_blob_write_read.C
-	NAME Utst_blob_write_read
-	NUM_MPI_PROCS 1
 	XHOSTTYPE Windows
 )
 

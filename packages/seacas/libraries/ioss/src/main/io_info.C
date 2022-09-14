@@ -205,6 +205,7 @@ namespace {
     if (!nb.is_nonglobal_nodeblock()) {
       info_aliases(region, &nb, false, true);
     }
+    Ioss::Utils::info_fields(&nb, Ioss::Field::MAP, prefix + "\tMap Fields: ");
     Ioss::Utils::info_fields(&nb, Ioss::Field::ATTRIBUTE, prefix + "\tAttributes: ");
     Ioss::Utils::info_fields(&nb, Ioss::Field::TRANSIENT, prefix + "\tTransient:  ");
 
@@ -325,6 +326,7 @@ namespace {
 
       info_aliases(region, eb, true, false);
       fmt::print("\n");
+      Ioss::Utils::info_fields(eb, Ioss::Field::MAP, "\n\tMap Fields: ");
       Ioss::Utils::info_fields(eb, Ioss::Field::ATTRIBUTE, "\n\tAttributes: ");
       Ioss::Utils::info_property(eb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
 

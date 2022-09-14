@@ -987,6 +987,7 @@ static yyconst flex_int16_t yy_rule_linenum[102] = {
 #include <iostream>
 #include <sstream>
 #include <stack>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -1010,6 +1011,18 @@ namespace SEAMS {
   extern bool echo;
   void        yyerror(const char *s);
 } // namespace SEAMS
+
+namespace {
+  bool string_is_ascii(const char *line, size_t len)
+  {
+    for (size_t i = 0; i < len; i++) {
+      if (!(std::isspace(line[i]) || std::isprint(line[i]))) {
+        return false;
+      }
+    }
+    return true;
+  }
+} // namespace
 
 int file_must_exist = 0; /* Global used by include/conditional include */
 
@@ -3234,6 +3247,11 @@ namespace SEAMS {
         return 0;
       }
 
+      if (!string_is_ascii(line, strlen(line))) {
+        yyerror("input line contains non-ASCII (probably UTF-8) characters which will most likely "
+                "be parsed incorrectly.");
+      }
+
       ap_gl_histadd(line);
 
       if (strlen(line) > (size_t)max_size - 2) {
@@ -3253,6 +3271,11 @@ namespace SEAMS {
         return -1;
       }
       else {
+        if (!string_is_ascii(buf, yyin->gcount())) {
+          yyerror(
+              "input file contains non-ASCII (probably UTF-8) characters which will most likely "
+              "be parsed incorrectly.");
+        }
         return yyin->gcount();
       }
     }

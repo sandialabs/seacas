@@ -68,7 +68,7 @@ namespace Ioex {
 #endif
 
   const char *Version();
-  bool        check_processor_info(int exodusFilePtr, int processor_count, int processor_id);
+  bool        check_processor_info(const std::string &filename, int exodusFilePtr, int processor_count, int processor_id);
 
   Ioss::EntityType map_exodus_type(ex_entity_type type);
   ex_entity_type   map_exodus_type(Ioss::EntityType type);
