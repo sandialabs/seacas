@@ -157,6 +157,9 @@ namespace Iocatalyst {
       auto &node = this->DBNode;
       region->get_database()->set_int_byte_size_api(
           static_cast<Ioss::DataSize>(node["database/int_byte_size_api"].as_int8()));
+      if (node.has_path("region/time")) {
+        region->add_state(node["region/time"].to_float64());
+      }
       this->readEntityGroup<Ioss::NodeBlock>(node["node_blocks"], region);
       this->readEntityGroup<Ioss::ElementBlock>(node["element_blocks"], region);
       // this->readEntityGroup<Ioss::EdgeBlock>(node["edge_blocks"], region);
@@ -185,7 +188,7 @@ namespace Iocatalyst {
     int64_t putField(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
                      const Ioss::Field &field, void *data, size_t data_size, bool deep_copy)
     {
-      const auto groupName      = entityGroup->generic_name();
+      const auto groupName      = entityGroup->name();
       const auto num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
@@ -244,11 +247,11 @@ namespace Iocatalyst {
     int64_t getField(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
                      const Ioss::Field &field, void *data, size_t data_size)
     {
-      const auto groupName      = entityGroup->generic_name();
+      const auto groupName      = entityGroup->name();
       auto       num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
-        auto path = getFieldPath(containerName, groupName, field.get_name()) + "/value";
+        auto         path = getFieldPath(containerName, groupName, field.get_name()) + "/value";
         const auto &&node = this->DBNode[path];
         switch (field.get_type()) {
         case Ioss::Field::BasicType::DOUBLE:
@@ -283,7 +286,7 @@ namespace Iocatalyst {
                                     const Ioss::GroupingEntity *entityGroup,
                                     const Ioss::Field &field, void *data, size_t data_size)
     {
-      const auto groupName      = entityGroup->generic_name();
+      const auto groupName      = entityGroup->name();
       auto       num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
@@ -292,7 +295,7 @@ namespace Iocatalyst {
         double *rdata            = static_cast<double *>(data);
 
         auto coord_lambda = [&](const std::string &coord_name, int ordinal) {
-          path  = getFieldPath(containerName, groupName, coord_name) + "/count";
+          path          = getFieldPath(containerName, groupName, coord_name) + "/count";
           int64_t count = this->DBNode[path].as_int64();
 
           path = getFieldPath(containerName, groupName, coord_name) + "/value";
@@ -322,7 +325,7 @@ namespace Iocatalyst {
     bool hasField(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
                   const std::string &fieldName)
     {
-      const auto groupName = entityGroup->generic_name();
+      const auto groupName = entityGroup->name();
       return this->DBNode.has_path(getFieldPath(containerName, groupName, fieldName));
     }
 
@@ -335,7 +338,7 @@ namespace Iocatalyst {
     bool hasProperty(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
                      const std::string &propertyName)
     {
-      const auto groupName = entityGroup->generic_name();
+      const auto groupName = entityGroup->name();
       return this->DBNode.has_path(getPropertyPath(containerName, groupName, propertyName));
     }
 
@@ -373,7 +376,7 @@ namespace Iocatalyst {
                            const std::vector<GroupingEntityT *> &container)
     {
       for (auto group : container) {
-        this->addProperties(parent[group->generic_name()], group);
+        this->addProperties(parent[group->name()], group);
       }
       return true;
     }
@@ -559,6 +562,13 @@ namespace Iocatalyst {
   bool DatabaseIO::begin__(Ioss::State state)
   {
     this->dbState = state;
+    if (is_input()) {
+      if (state == Ioss::STATE_TRANSIENT) {
+        std::cout << "ADDED STATE\n";
+        auto &impl = (*this->Impl.get());
+        // this->get_region()->add_state(impl.databaseNode()["region/time"].to_float64());
+      }
+    }
     return true;
   }
 
@@ -610,6 +620,9 @@ namespace Iocatalyst {
     else {
       // invoke catalyst.
       auto &impl = (*this->Impl.get());
+
+      auto &dbaseNode = this->Impl->databaseNode();
+      dbaseNode["region/time"].set_float64(time);
 
       // state is 1-based, need to offset by 1 to make it 0-based.
       // timesteps start with 0.

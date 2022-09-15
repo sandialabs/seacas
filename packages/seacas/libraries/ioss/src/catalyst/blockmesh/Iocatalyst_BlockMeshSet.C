@@ -16,7 +16,7 @@
 
 namespace Iocatalyst {
 
-  BlockMeshSet::BlockMeshSet() : region(nullptr), databaseIO(nullptr) {}
+  BlockMeshSet::BlockMeshSet() : region(nullptr), databaseIO(nullptr), numTimeSteps(0) {}
 
   BlockMeshSet::~BlockMeshSet()
   {
@@ -29,6 +29,8 @@ namespace Iocatalyst {
   void BlockMeshSet::addBlockMesh(const BlockMesh &blockMesh) { bms.push_back(blockMesh); }
 
   void BlockMeshSet::writeCGNSFile(const std::string &fileName) { writeFile(fileName, "cgns"); }
+
+  void BlockMeshSet::setNumberOfTimeSteps(int numTimeSteps) { this->numTimeSteps = numTimeSteps; }
 
   void BlockMeshSet::writeCatalystCGNSFile(const std::string &fileName)
   {
@@ -69,6 +71,8 @@ namespace Iocatalyst {
     openIOSSDatabase(fileName, dbType);
     switchStateDefineModel();
     switchStateModel();
+    switchStateDefineTransient();
+    switchStateTransient();
     if (dbType == "catalyst") {
       auto c_node = reinterpret_cast<conduit_node *>(
           ((Iocatalyst::DatabaseIO *)databaseIO)->get_catalyst_conduit_node());
@@ -112,6 +116,21 @@ namespace Iocatalyst {
     region->begin_mode(Ioss::STATE_MODEL);
     writeStructuredBlockBulkData();
     region->end_mode(Ioss::STATE_MODEL);
+  }
+
+  void BlockMeshSet::switchStateDefineTransient()
+  {
+    region->begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
+    region->end_mode(Ioss::STATE_DEFINE_TRANSIENT);
+  }
+  void BlockMeshSet::switchStateTransient() {
+    region->begin_mode(Ioss::STATE_TRANSIENT);
+    for(int time=0;time<numTimeSteps;time++) {
+      int tstep =  region->add_state(time);
+      region->begin_state(tstep);
+      region->end_state(tstep);
+    }
+    region->end_mode(Ioss::STATE_TRANSIENT);
   }
 
   void BlockMeshSet::writeStructuredBlockDefinitions()
@@ -175,8 +194,6 @@ namespace Iocatalyst {
       iossBlock->put_field_data("mesh_model_coordinates_y", coordy);
       iossBlock->put_field_data("mesh_model_coordinates_z", coordz);
       origin.x += bm.getGlobalNumBlocks().x;
-      origin.y += bm.getGlobalNumBlocks().y;
-      origin.z += bm.getGlobalNumBlocks().z;
     }
   }
 

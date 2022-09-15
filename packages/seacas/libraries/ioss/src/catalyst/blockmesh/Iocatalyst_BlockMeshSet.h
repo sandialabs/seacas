@@ -18,23 +18,26 @@ namespace Iocatalyst {
   public:
     BlockMeshSet();
     ~BlockMeshSet();
-
     void  addBlockMesh(const BlockMesh &blockMesh);
+    void  setNumberOfTimeSteps(int numTimeSteps);
     void  writeCGNSFile(const std::string &fileName);
     void  writeCatalystCGNSFile(const std::string &fileName);
     void  printCatalystConduitNode();
-    void *getCatalystConduitNode() { return conduit_cpp::c_node(&conduitNode); }
+    //void *getCatalystConduitNode() { return conduit_cpp::c_node(&conduitNode); }
 
   private:
     std::vector<BlockMesh>        bms;
     std::unique_ptr<Ioss::Region> region;
     Ioss::DatabaseIO *            databaseIO;
-    conduit_cpp::Node             conduitNode;
+    int                           numTimeSteps;
+    std::vector<conduit_cpp::Node> conduitNodes;
 
     void        writeFile(const std::string &fileName, const std::string &dbType);
     void        openIOSSDatabase(const std::string &fileName, const std::string &dbType);
     void        switchStateDefineModel();
     void        switchStateModel();
+    void        switchStateDefineTransient();
+    void        switchStateTransient();
     void        closeIOSSDatabase();
     void        writeStructuredBlockDefinitions();
     void        writeStructuredBlockBulkData();
