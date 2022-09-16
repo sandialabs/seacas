@@ -207,7 +207,8 @@ namespace Ioss {
           auto element = element_side.first;
           auto side    = element_side.second - 1;
 
-          auto  opp_side = hex_opposite_side(side);
+          auto opp_side = hex_opposite_side(side);
+          assert(opp_side >= 0);
           auto *opp_face = face_connectivity[element - offset][opp_side];
           // See if there is an element attached to the `opp_side`
           if (opp_face->elementCount_ > 1) {

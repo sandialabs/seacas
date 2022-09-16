@@ -578,7 +578,7 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   /* Get the dimension sizes and names from the input file */
   size_t dim_str[NC_MAX_VAR_DIMS];
   size_t dim_cnt[NC_MAX_VAR_DIMS];
-  size_t var_sz        = 1L;
+  size_t var_sz          = 1L;
   bool   string_len_same = true;
 
   for (int idx = 0; idx < nbr_dim; idx++) {
@@ -699,7 +699,7 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
         for (size_t i = 0; i < num_string; i++) {
           size_t in_off  = i * in_size;
           size_t out_off = i * out_size;
-          strncpy(&out_strings[out_off], &in_strings[in_off], min_size);
+          ex_copy_string(&out_strings[out_off], &in_strings[in_off], min_size);
           out_strings[out_off + out_size - 1] = '\0';
         }
         dim_cnt[1] = out_size;

@@ -47,7 +47,7 @@ namespace Iotm {
       set_valid_spatial_dimensions({false, false, false, false});
     }
 
-    TopologyMapEntry(const std::string &name)
+    explicit TopologyMapEntry(const std::string &name)
         : id(Ioss::ElementTopology::get_unique_id(name)),
           topology(Ioss::ElementTopology::factory(name)), initialized(false)
     {

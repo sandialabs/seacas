@@ -681,7 +681,7 @@ static void hist_init(void)
 {
   hist_buf[0] = hist_empty_elem;
   for (int i = 1; i < HIST_SIZE; i++)
-    hist_buf[i] = (char *)0;
+    hist_buf[i] = '\0';
 }
 
 void gl_histadd(char *buf)

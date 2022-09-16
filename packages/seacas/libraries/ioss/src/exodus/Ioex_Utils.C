@@ -101,10 +101,9 @@ namespace Ioex {
       status = nc_put_att_double(rootid, NC_GLOBAL, "last_written_time", NC_DOUBLE, 1, &value);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
-        char errmsg[MAX_ERR_LENGTH];
-        fmt::print(errmsg, "Error: failed to define 'last_written_time' attribute to file id {}",
-                   exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg, status);
+        auto errmsg = fmt::format(
+            "Error: failed to define 'last_written_time' attribute to file id {}", exodusFilePtr);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
     }
   }
@@ -169,18 +168,18 @@ namespace Ioex {
         found  = true;
       }
       else {
-        char errmsg[MAX_ERR_LENGTH];
         ex_opts(EX_VERBOSE);
-        fmt::print(errmsg, "Error: failed to read last_written_time attribute from file id {}",
-                   exodusFilePtr);
-        ex_err_fn(exodusFilePtr, __func__, errmsg, status);
+        auto errmsg = fmt::format(
+            "Error: failed to read last_written_time attribute from file id {}", exodusFilePtr);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         found = false;
       }
     }
     return found;
   }
 
-  bool check_processor_info(const std::string &filename, int exodusFilePtr, int processor_count, int processor_id)
+  bool check_processor_info(const std::string &filename, int exodusFilePtr, int processor_count,
+                            int processor_id)
   {
     // A restart file may contain an attribute which contains
     // information about the processor count and current processor id
@@ -220,11 +219,10 @@ namespace Ioex {
         }
       }
       else {
-        char errmsg[MAX_ERR_LENGTH];
         ex_opts(EX_VERBOSE);
-        fmt::print(errmsg, "Error: failed to read processor info attribute from file {}",
-                   filename);
-        ex_err_fn(exodusFilePtr, __func__, errmsg, status);
+        auto errmsg =
+            fmt::format("Error: failed to read processor info attribute from file {}", filename);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL) != 0;
       }
     }

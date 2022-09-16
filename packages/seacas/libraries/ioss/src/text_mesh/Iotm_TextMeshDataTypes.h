@@ -42,7 +42,7 @@ namespace Iotm {
 
       Topology topology(const std::string &textMeshName) const
       {
-        auto it = m_nameToTopology.find(textMeshName);
+        const auto &it = m_nameToTopology.find(textMeshName);
         return (it != m_nameToTopology.end() ? it->second : invalid_topology());
       }
 
@@ -102,7 +102,7 @@ namespace Iotm {
         std::vector<std::string> names;
         names.reserve(m_parts.size());
 
-        for (auto iter : m_parts) {
+        for (const auto &iter : m_parts) {
           names.push_back(iter.second);
         }
 
