@@ -19,6 +19,7 @@
 *  [Trilinos](#trilinos)
 *  [SPACK](#spack)
 *  [Docker](#docker)
+*  [CMake Example Usage](#cmake-example-usage)
 *  [License](#license)
 *  [Contact information](#contact-information)
 *  NOTE: The old imake-based build has been removed.
@@ -197,7 +198,7 @@ SEACAS is located in `/seacas` when running the container. There is also a simil
 docker pull mrbuche/exodus
 ```
 
-## CMake
+## CMake Example Usage
 A simple example of using the SEACAS Exodus library in your external project.  Here is the CMakeLists.txt file:
 ```
 project(SeacasExodusExample)
