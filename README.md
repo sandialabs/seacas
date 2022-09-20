@@ -197,6 +197,26 @@ SEACAS is located in `/seacas` when running the container. There is also a simil
 docker pull mrbuche/exodus
 ```
 
+## CMake
+A simple example of using the SEACAS Exodus library in your external project.  Here is the CMakeLists.txt file:
+```
+project(SeacasExodusExample)
+cmake_minimum_required(VERSION 3.12)
+
+find_package(SEACASExodus REQUIRED)
+
+add_executable(exo_write exo_write.c)
+target_link_libraries(exo_write SEACASExodus::exodus)
+```
+
+This would then be used as:
+```
+mkdir build; cd build
+CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake -G "Unix Makefiles" ..
+make
+```
+And you would then get `exo_write` compiled and linked against the Exodus library.
+
 ## License
 
 SEACAS is licensed under the Modified BSD License.  See the [LICENSE](LICENSE) file for details.
