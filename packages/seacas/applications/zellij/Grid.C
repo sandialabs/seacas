@@ -431,7 +431,7 @@ template <typename INT> void Grid::process(SystemInterface &interFace, INT /* du
     if (m_startRank + m_rankCount > m_parallelSize) {
       m_rankCount = m_parallelSize - m_startRank;
     }
-    if (debug_level & 1) {
+    if (debug_level & 2) {
       fmt::print(stderr, "{} Processing Ranks {} to {}\n", time_stamp(tsFormat), begin,
                  begin + rank_count - 1);
     }
@@ -439,12 +439,12 @@ template <typename INT> void Grid::process(SystemInterface &interFace, INT /* du
     create_output_regions(interFace);
 
     internal_process();
-    if (debug_level & 1) {
+    if (debug_level & 2) {
       fmt::print(stderr, "{} Lattice Processing Finalized\n", time_stamp(tsFormat));
     }
 
     output_model(INT(0));
-    if (debug_level & 1) {
+    if (debug_level & 2) {
       fmt::print(stderr, "{} Model Output\n", time_stamp(tsFormat));
     }
   }
