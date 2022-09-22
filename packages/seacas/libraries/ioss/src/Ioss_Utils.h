@@ -529,6 +529,73 @@ namespace Ioss {
     static void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
                               const std::string &header, const std::string &suffix = "\n\t",
                               bool print_empty = false);
+
+// Options for generating hash function key...
+#define USE_MURMUR
+    //#define USE_RANDOM
+
+    // Return a hash value that can be used as a key to an unordered map (or whatever you want).
+    // Mainly used now in the FaceGenerator code.
+    static inline size_t id_hash(size_t global_id)
+    {
+#if defined(USE_RANDOM)
+      std::mt19937_64 rng;
+      rng.seed(global_id);
+      return rng();
+#elif defined(USE_MURMUR)
+      return Ioss::Utils::MurmurHash64A(global_id);
+#else
+      return global_id;
+#endif
+    }
+
+    //-----------------------------------------------------------------------------
+    // MurmurHash2 was written by Austin Appleby, and is placed in the public
+    // domain. The author hereby disclaims copyright to this source code.
+
+    // Note - This code makes a few assumptions about how your machine behaves -
+
+    // 1. We can read a 4-byte value from any address without crashing
+    // 2. sizeof(int) == 4
+
+    // And it has a few limitations -
+
+    // 1. It will not work incrementally.
+    // 2. It will not produce the same results on little-endian and big-endian
+    //    machines.
+
+    //-----------------------------------------------------------------------------
+    // MurmurHash2, 64-bit versions, by Austin Appleby
+
+    // The same caveats as 32-bit MurmurHash2 apply here - beware of alignment
+    // and endian-ness issues if used across multiple platforms.
+
+    // 64-bit hash for 64-bit platforms
+#define BIG_CONSTANT(x) (x##LLU)
+    static inline uint64_t MurmurHash64A(const size_t key)
+    {
+      // NOTE: Not general purpose -- optimized for single 'size_t key'
+      const uint64_t m    = BIG_CONSTANT(0xc6a4a7935bd1e995) * 8;
+      const int      r    = 47;
+      const int      seed = 24713;
+
+      uint64_t h = seed ^ (m);
+
+      uint64_t k = key;
+
+      k *= m;
+      k ^= k >> r;
+      k *= m;
+
+      h ^= k;
+      h *= m;
+
+      h ^= h >> r;
+      h *= m;
+      h ^= h >> r;
+
+      return h;
+    }
   };
 
   inline std::ostream &OUTPUT() { return *Utils::m_outputStream; }
@@ -540,5 +607,4 @@ namespace Ioss {
     *Utils::m_warningStream << Utils::m_preWarningText;
     return *Utils::m_warningStream;
   }
-
 } // namespace Ioss

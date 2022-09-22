@@ -27,38 +27,13 @@
 #include <random>
 #include <utility>
 
-// Options for generating hash function key...
-#define USE_MURMUR
-//#define USE_RANDOM
-
 #define DO_TIMING 0
 
-#if defined(__GNUC__) && __GNUC__ >= 7 && !__INTEL_COMPILER
-#define FALL_THROUGH [[gnu::fallthrough]]
-#else
-#define FALL_THROUGH ((void)0)
-#endif /* __GNUC__ >= 7 */
-
 namespace {
-  template <typename T> void generate_index(std::vector<T> &index)
-  {
-    T sum = 0;
-    for (auto &idx : index) {
-      T cnt = idx;
-      idx   = sum;
-      sum += cnt;
-    }
-  }
-
-#if defined(USE_MURMUR)
-  uint64_t MurmurHash64A(const size_t key);
-#endif
-
   void create_face(Ioss::FaceUnorderedSet &faces, size_t id, std::array<size_t, 4> &conn,
                    size_t element, int local_face)
   {
-    Ioss::Face face(id, conn);
-    auto       face_iter = faces.insert(face);
+    auto face_iter = faces.emplace(id, conn);
 
     (*(face_iter.first)).add_element(element, local_face);
   }
@@ -151,6 +126,12 @@ namespace {
         }
       }
 
+#ifdef SEACAS_HAVE_MPI
+  template <typename INT>
+    void internal_resolve_parallel_faces(const Ioss::FaceUnorderedSet &faces,
+					 const std::vector<size_t> &hash_ids, 
+					 const std::vector<std::pair<INT, INT>> &proc_entity, int proc_count, INT /*dummy*/)
+    {
       // 'id_span' gives index into proc_entity for all nodes.
       // 'id_span[local_node_id] .. id_span[local_node_id+1]' gives
       // the location in 'proc_entity' of the sharing information
@@ -161,7 +142,7 @@ namespace {
         assert(node >= 0 && node < (INT)id_span.size() - 1);
         id_span[node]++;
       }
-      generate_index(id_span);
+      Ioss::Utils::generate_index(id_span);
 
       // Each boundary face ...
       // .. See if all of its nodes are shared with same processor.
@@ -200,7 +181,7 @@ namespace {
       }
 
       std::vector<INT> potential_offset(potential_count.begin(), potential_count.end());
-      generate_index(potential_offset);
+      Ioss::Utils::generate_index(potential_offset);
 
       size_t potential = potential_offset[proc_count - 1] + potential_count[proc_count - 1];
       std::vector<int64_t> potential_faces(6 * potential);
@@ -242,7 +223,7 @@ namespace {
 
       // Regenerate potential_offset since it was modified above...
       std::copy(potential_count.begin(), potential_count.end(), potential_offset.begin());
-      generate_index(potential_offset);
+      Ioss::Utils::generate_index(potential_offset);
 
       // Now need to send to the other processors...
       // For now, use all-to-all; optimization is just send to processors with
@@ -256,7 +237,7 @@ namespace {
       std::vector<int64_t> check_faces(values_per_face * sum);
 
       std::vector<INT> check_offset(check_count.begin(), check_count.end());
-      generate_index(check_offset);
+      Ioss::Utils::generate_index(check_offset);
 
       // Need to adjust counts and offsets to account for sending 6 values per
       // face...
@@ -298,43 +279,67 @@ namespace {
       }
     }
 #endif
+  
+  template <typename INT>
+  void resolve_parallel_faces(Ioss::Region &region, const Ioss::FaceUnorderedSet &faces,
+                              const std::vector<size_t> &hash_ids, INT /*dummy*/)
+  {
+    PAR_UNUSED(region);
+    PAR_UNUSED(faces);
+    PAR_UNUSED(hash_ids);
+
+#ifdef SEACAS_HAVE_MPI
+    size_t proc_count = region.get_database()->util().parallel_size();
+
+    if (proc_count > 1) {
+      // If parallel, resolve faces on processor boundaries.
+      // For each boundary face, need to check whether all of the nodes on
+      // the face are shared with the same processor.  If so, then that face
+      // is *possibly* shared with that processor.
+      //
+      // With the current continuum element only restriction, then a face
+      // can only be shared with one other processor...
+
+      // get nodal communication data CommSet...
+      Ioss::CommSet *css = region.get_commset("commset_node");
+
+      std::vector<std::pair<INT, INT>> proc_entity;
+      {
+        // entity_processor consists of node,proc, node,proc, entries.
+        std::vector<INT> entity_processor;
+        css->get_field_data("entity_processor_raw", entity_processor);
+
+        proc_entity.reserve(entity_processor.size() / 2);
+        for (size_t i = 0; i < entity_processor.size(); i += 2) {
+          // Converts from 1-based to 0-based local nodes.
+          proc_entity.push_back(std::make_pair(entity_processor[i + 1], entity_processor[i] - 1));
+        }
+      }
+
+      // ========================================================================
+      // ========================================================================
+      // minimal Ioss::Region use below here:
+      // * node_global_to_local
+      // * communicator
+      //
+      // Separate out the "region"-specific code from generic and then can
+      // support raw exodus version with minimal duplication...
+      //
+      // Uses:
+      // * hash_ids
+      // * faces
+      // * proc_entity
+      // * proc_count (scalar)
+      // ========================================================================
+      // ========================================================================
+
+      internal_resolve_parallel_faces(faces, hash_ids, proc_entity, region.get_database()->util().communicator(), proc_count, INT(0));
+    
+#endif
   }
 } // namespace
 
 namespace Ioss {
-  Face::Face(std::array<size_t, 4> conn) : connectivity_(conn)
-  {
-    for (auto &node : connectivity_) {
-      hashId_ += Ioss::FaceGenerator::id_hash(node);
-    }
-  }
-
-  void Face::face_element_error(size_t element_id) const
-  {
-    std::ostringstream errmsg;
-    fmt::print(errmsg,
-               "ERROR: Face {} has more than two elements using it.\n"
-               "       The element/local_face are: {}:{}, {}:{}, and {}:{}.\n"
-               "       The face connectivity is {} {} {} {}.\n",
-               hashId_, element[0] / 10, element[0] % 10, element[1] / 10, element[1] % 10,
-               element_id / 10, element_id % 10, connectivity_[0], connectivity_[1],
-               connectivity_[2], connectivity_[3]);
-    IOSS_ERROR(errmsg);
-  }
-
-  size_t FaceGenerator::id_hash(size_t global_id)
-  {
-#if defined(USE_RANDOM)
-    std::mt19937_64 rng;
-    rng.seed(global_id);
-    return rng();
-#elif defined(USE_MURMUR)
-    return MurmurHash64A(global_id);
-#else
-    return global_id;
-#endif
-  }
-
   FaceGenerator::FaceGenerator(Ioss::Region &region) : region_(region) {}
 
   template void FaceGenerator::generate_faces(int, bool, bool);
@@ -355,7 +360,7 @@ namespace Ioss {
   {
     hashIds_.reserve(node_ids.size());
     for (auto &id : node_ids) {
-      hashIds_.push_back(id_hash(id));
+      hashIds_.push_back(Ioss::Utils::id_hash(id));
     }
   }
 
@@ -486,55 +491,3 @@ namespace Ioss {
 #endif
   }
 } // namespace Ioss
-
-namespace {
-#if defined(USE_MURMUR)
-//-----------------------------------------------------------------------------
-// MurmurHash2 was written by Austin Appleby, and is placed in the public
-// domain. The author hereby disclaims copyright to this source code.
-
-// Note - This code makes a few assumptions about how your machine behaves -
-
-// 1. We can read a 4-byte value from any address without crashing
-// 2. sizeof(int) == 4
-
-// And it has a few limitations -
-
-// 1. It will not work incrementally.
-// 2. It will not produce the same results on little-endian and big-endian
-//    machines.
-
-//-----------------------------------------------------------------------------
-// MurmurHash2, 64-bit versions, by Austin Appleby
-
-// The same caveats as 32-bit MurmurHash2 apply here - beware of alignment
-// and endian-ness issues if used across multiple platforms.
-
-// 64-bit hash for 64-bit platforms
-#define BIG_CONSTANT(x) (x##LLU)
-  uint64_t MurmurHash64A(const size_t key)
-  {
-    // NOTE: Not general purpose -- optimized for single 'size_t key'
-    const uint64_t m    = BIG_CONSTANT(0xc6a4a7935bd1e995) * 8;
-    const int      r    = 47;
-    const int      seed = 24713;
-
-    uint64_t h = seed ^ (m);
-
-    uint64_t k = key;
-
-    k *= m;
-    k ^= k >> r;
-    k *= m;
-
-    h ^= k;
-    h *= m;
-
-    h ^= h >> r;
-    h *= m;
-    h ^= h >> r;
-
-    return h;
-  }
-#endif
-} // namespace
