@@ -2985,7 +2985,7 @@ void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, size_t num
         size_t fnode = offset + face_conn[face][j];
         size_t lnode = connectivity[fnode]; // local since "connectivity_raw"
         conn[j]      = lnode;
-        id += Ioss::FaceGenerator::id_hash(lnode);
+        id += Ioss::Utils::id_hash(lnode);
       }
       auto elem_id = zone_local_zone_global[elem];
       create_face(all_faces, id, conn, elem_id, face);

@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <Ioss_Face.h>
+
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -25,50 +27,6 @@
 
 namespace Ioss {
   class Region;
-
-  class Face
-  {
-  public:
-    Face() = default;
-    Face(size_t id, std::array<size_t, 4> conn) : hashId_(id), connectivity_(conn) {}
-    explicit Face(std::array<size_t, 4> conn);
-
-    void add_element(size_t element_id) const
-    {
-      if (elementCount_ < 2) {
-        element[elementCount_++] = element_id;
-      }
-      else {
-        face_element_error(element_id);
-      }
-    }
-
-    void add_element(size_t element_id, size_t face_ordinal) const
-    {
-      add_element(element_id * 10 + face_ordinal);
-    }
-
-    void face_element_error(size_t element_id) const;
-
-    size_t hashId_{0};
-
-    // NOTE: Not used at all by `Face` or `FaceGenerator` class, but are used by
-    // skinner to give a consistent element id in cases where there
-    // is a hash collision (face.id).
-
-    // NOTE: For interior faces, this will not be the same value for each
-    // face where the `hashId_` *will* be consistent for interior faces.
-    // Should only use this as an id if `elementCount_` is 1.
-
-    // NOTE: This could be used to do parallel or block boundary
-    // collision since it is calculated as 10*element_id + local_face,
-    // you could recover element_id and local_face and then set up
-    // parallel communication maps.  May need to save the proc it is
-    // shared with also (which is available in git history)
-    mutable std::array<size_t, 2> element{};
-    mutable int                   elementCount_{0}; // Should be max of 2 solid elements...
-    std::array<size_t, 4>         connectivity_{};
-  };
 
   struct FaceHash
   {
@@ -114,8 +72,6 @@ namespace Ioss {
     explicit FaceGenerator(Ioss::Region &region);
     ~FaceGenerator() = default;
 
-    static size_t id_hash(size_t global_id);
-
     template <typename INT>
     void generate_faces(INT /*dummy*/, bool block_by_block = false, bool local_ids = false);
     FaceUnorderedSet &faces(const std::string &name = "ALL") { return faces_[name]; }
@@ -125,8 +81,6 @@ namespace Ioss {
 
   private:
     template <typename INT> void hash_node_ids(const std::vector<INT> &node_ids);
-    template <typename INT> void generate_block_faces(INT /*dummy*/, bool local_ids);
-    template <typename INT> void generate_model_faces(INT /*dummy*/, bool local_ids);
 
     Ioss::Region                           &region_;
     std::map<std::string, FaceUnorderedSet> faces_;
