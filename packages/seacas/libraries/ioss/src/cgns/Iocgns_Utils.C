@@ -2943,17 +2943,6 @@ std::string Iocgns::Utils::show_config()
   return config.str();
 }
 
-namespace {
-  void create_face(Ioss::FaceUnorderedSet &faces, size_t id, std::array<size_t, 4> &conn,
-                   size_t element, int local_face)
-  {
-    Ioss::Face face(id, conn);
-    auto       face_iter = faces.insert(face);
-
-    (*(face_iter.first)).add_element(element * 10 + local_face);
-  }
-} // namespace
-
 template <typename INT>
 void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, size_t num_elem,
                                          const std::vector<INT> &connectivity,
