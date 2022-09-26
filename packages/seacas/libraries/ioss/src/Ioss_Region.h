@@ -94,6 +94,9 @@ namespace Ioss {
     bool supports_field_type(Ioss::EntityType fld_type) const;
 
     // Helper function...
+    const Ioss::Map &get_node_map() const;
+
+    // Helper function...
     int64_t node_global_to_local(int64_t global, bool must_exist = true) const;
 
     bool begin_mode(State new_state);
@@ -318,6 +321,11 @@ inline int Ioss::Region::get_current_state() const { return currentState; }
 inline bool Ioss::Region::supports_field_type(Ioss::EntityType fld_type) const
 {
   return static_cast<unsigned int>((get_database()->entity_field_support() & fld_type) != 0u) != 0u;
+}
+
+inline const Ioss::Map &Ioss::Region::get_node_map() const
+{
+  return get_database()->get_node_map();
 }
 
 inline int64_t Ioss::Region::node_global_to_local(int64_t global, bool must_exist) const

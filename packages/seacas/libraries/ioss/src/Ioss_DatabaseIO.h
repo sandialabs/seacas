@@ -88,6 +88,9 @@ namespace Ioss {
 
     bool using_parallel_io() const { return usingParallelIO; }
 
+    // Be very careful using this to make sure it has been populated and set up...
+    const Ioss::Map &get_node_map() const { return nodeMap; }
+
     /** \brief Get the local (process-specific) node number corresponding to a global node number.
      *
      *  \param[in] global The global node number
