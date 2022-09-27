@@ -20,8 +20,8 @@ RUN apt-get update && \
         libzip-dev=1.7.3-1ubuntu2 \
         m4=1.4.18-5ubuntu2 \
         openmpi-bin=4.1.2-2ubuntu1 \
-        python3.10=3.10.6-1 \
-        python3-dev=3.10.6-1 \
+        python3.10=3.10.4-0ubuntu2 \
+        python3-dev=3.10.4-0ubuntu2 \
         python3-mpi4py=3.1.3-1build2 \
         python3-numpy=1:1.21.5-1build2 \
         python3-pip=22.0.2+dfsg-1 \
