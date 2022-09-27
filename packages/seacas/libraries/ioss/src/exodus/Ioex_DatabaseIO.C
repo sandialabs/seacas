@@ -1232,16 +1232,22 @@ namespace Ioex {
       if (entity_type == EX_ELEM_BLOCK) {
         auto eblock = new Ioss::ElementBlock(this, block_name, type, local_X_count[iblk]);
         block       = eblock;
+        block->property_add(
+            Ioss::Property("id", id)); // Do before adding for better error messages.
         get_region()->add(eblock);
       }
       else if (entity_type == EX_FACE_BLOCK) {
         auto fblock = new Ioss::FaceBlock(this, block_name, type, local_X_count[iblk]);
         block       = fblock;
+        block->property_add(
+            Ioss::Property("id", id)); // Do before adding for better error messages.
         get_region()->add(fblock);
       }
       else if (entity_type == EX_EDGE_BLOCK) {
         auto eblock = new Ioss::EdgeBlock(this, block_name, type, local_X_count[iblk]);
         block       = eblock;
+        block->property_add(
+            Ioss::Property("id", id)); // Do before adding for better error messages.
         get_region()->add(eblock);
       }
       else {
@@ -1265,7 +1271,6 @@ namespace Ioex {
             Ioss::Field("connectivity_edge", block->field_int_type(), storage, Ioss::Field::MESH));
       }
 
-      block->property_add(Ioss::Property("id", id)); // Do before adding for better error messages.
       block->property_add(Ioss::Property("guid", util().generate_guid(id)));
       if (db_has_name) {
         std::string *db_name = &block_name;
