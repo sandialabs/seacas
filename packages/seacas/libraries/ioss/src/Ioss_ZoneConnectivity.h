@@ -145,7 +145,7 @@ namespace Ioss {
 } // namespace Ioss
 
 namespace fmt {
-  template <> struct fmt::formatter<Ioss::ZoneConnectivity> : fmt::ostream_formatter
+  template <> struct formatter<Ioss::ZoneConnectivity> : ostream_formatter
   {
   };
 } // namespace fmt

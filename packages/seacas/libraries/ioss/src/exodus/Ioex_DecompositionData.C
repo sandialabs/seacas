@@ -14,6 +14,8 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
+
+#include <exodus/Ioex_FaceGenerator.h>
 #include <exodus/Ioex_Utils.h>
 
 #include <algorithm> // for lower_bound, copy, etc
@@ -152,6 +154,12 @@ namespace Ioex {
                fmt::group_digits(decomp_node_count()), fmt::group_digits(decomp_node_offset()));
 #endif
 
+    if (m_decomposition.m_lineDecompModify) {
+      // Generate the faces and the chains in the file_decomp...
+      Ioex::FaceGenerator face_gen(filePtr, comm_);
+      face_gen.generate_faces(INT(0), true, false);
+    }
+	
     if (m_decomposition.needs_centroids()) {
       // Get my coordinate data using direct exodus calls
       size_t size = decomp_node_count();

@@ -10,6 +10,7 @@
 #include <Ioss_ElementBlock.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_Face.h>
+#include <Ioss_Utils.h>
 
 #include <algorithm>
 #include <functional>
@@ -64,6 +65,16 @@ namespace Ioss {
   using FaceUnorderedSet = tsl::robin_set<Face, FaceHash, FaceEqual>;
   // using FaceUnorderedSet = tsl::robin_pg_set<Face, FaceHash, FaceEqual>;
 #endif
+
+  template <typename INT> std::vector<size_t> hash_node_ids(const std::vector<INT> &node_ids)
+  {
+    std::vector<size_t> hash_ids;
+    hash_ids.reserve(node_ids.size());
+    for (auto &id : node_ids) {
+      hash_ids.push_back(Ioss::Utils::id_hash(id));
+    }
+    return hash_ids;
+  }
 
   inline void create_face(Ioss::FaceUnorderedSet &faces, size_t id, std::array<size_t, 4> &conn,
                           size_t element, int local_face)
@@ -131,7 +142,7 @@ namespace Ioss {
                                        const Ioss::FaceUnorderedSet           &faces,
                                        const std::vector<size_t>              &hash_ids,
                                        const std::vector<std::pair<INT, INT>> &proc_entity,
-                                       MPI_Comm communicator, int proc_count, INT /*dummy*/)
+                                       const Ioss::ParallelUtils &pu, INT /*dummy*/)
   {
     // 'id_span' gives index into proc_entity for all nodes.
     // 'id_span[local_node_id] .. id_span[local_node_id+1]' gives
@@ -152,6 +163,7 @@ namespace Ioss {
     //  .. (for now, use a vector[proc] = count
     //   .. if potentially shared with 'proc', then count == num_nodes_face
 
+    auto proc_count = pu.parallel_size();
     std::vector<INT> potential_count(proc_count);
     std::vector<int> shared_nodes(proc_count);
     for (auto &face : faces) {
@@ -231,7 +243,7 @@ namespace Ioss {
     // data...
     std::vector<INT> check_count(proc_count);
     MPI_Alltoall(potential_count.data(), 1, Ioss::mpi_type((INT)0), check_count.data(), 1,
-                 Ioss::mpi_type((INT)0), communicator);
+                 Ioss::mpi_type((INT)0), pu.communicator());
 
     const int            values_per_face = 6; // id, 4-node-conn, element
     auto                 sum = std::accumulate(check_count.begin(), check_count.end(), 0);
@@ -250,7 +262,7 @@ namespace Ioss {
     }
 
     Ioss::MY_Alltoallv(potential_faces, potential_count, potential_offset, check_faces, check_count,
-                       check_offset, communicator);
+                       check_offset, pu.communicator());
 
     // Now iterate the check_faces and see if any of them match one
     // of this processors faces...  If so, then mark as shared and

@@ -175,9 +175,14 @@ namespace Ioss {
       : m_comm(comm), m_pu(comm), m_processor(m_pu.parallel_rank()),
         m_processorCount(m_pu.parallel_size())
   {
+    m_lineDecompModify = props.get_optional("LINE_DECOMPOSITION", m_lineDecompModify);
+
     m_method = get_decomposition_method(props);
     if (m_method == "MAP" || m_method == "VARIABLE") {
       m_decompExtra = props.get_optional("DECOMPOSITION_EXTRA", "processor_id");
+    }
+    if (m_lineDecompModify) {
+      m_decompExtra = props.get_optional("DECOMPOSITION_EXTRA", "ALL");
     }
 
     Utils::check_set_bool_property(props, "RETAIN_FREE_NODES", m_retainFreeNodes);

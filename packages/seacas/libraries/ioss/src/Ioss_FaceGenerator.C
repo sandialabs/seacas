@@ -67,7 +67,8 @@ namespace {
         }
       }
 
-      internal_resolve_parallel_faces(region.get_node_map(), faces, hash_ids, proc_entity, region.get_database()->util().communicator(), proc_count, INT(0));
+      internal_resolve_parallel_faces(region.get_node_map(), faces, hash_ids, proc_entity, 
+				      region.get_database()->util(), INT(0));
     }
 #endif
   }
@@ -97,7 +98,7 @@ namespace Ioss {
 #if DO_TIMING
     auto starth = std::chrono::steady_clock::now();
 #endif
-    hash_node_ids(ids);
+    hashIds_ = Ioss::hash_node_ids(ids);
 #if DO_TIMING
     auto endh = std::chrono::steady_clock::now();
 #endif
@@ -165,13 +166,5 @@ namespace Ioss {
     fmt::print("Total time:          \t{:.6} ms\n\n",
                std::chrono::duration<double, std::milli>(endp - starth).count());
 #endif
-  }
-
-  template <typename INT> void FaceGenerator::hash_node_ids(const std::vector<INT> &node_ids)
-  {
-    hashIds_.reserve(node_ids.size());
-    for (auto &id : node_ids) {
-      hashIds_.push_back(Ioss::Utils::id_hash(id));
-    }
   }
 } // namespace Ioss

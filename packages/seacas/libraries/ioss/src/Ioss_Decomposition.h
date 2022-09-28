@@ -593,6 +593,7 @@ namespace Ioss {
     size_t m_nodeOffset{0};
     size_t m_importPreLocalNodeIndex{0};
 
+    bool m_lineDecompModify{false};
     bool m_retainFreeNodes{true};
     bool m_showProgress{false};
     bool m_showHWM{false};
