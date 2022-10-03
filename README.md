@@ -200,7 +200,7 @@ docker pull mrbuche/exodus
 
 ## CMake Example Usage
 A simple example of using the SEACAS Exodus library in your external project.  Here is the CMakeLists.txt file:
-```
+```sh
 project(SeacasExodusExample)
 cmake_minimum_required(VERSION 3.12)
 
