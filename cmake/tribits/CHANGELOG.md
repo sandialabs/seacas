@@ -2,9 +2,60 @@
 ChangeLog for TriBITS
 ----------------------------------------
 
+## 2022-10-02:
+
+* **Changed:** The TriBITS FindTPLCUDA.cmake module changed
+  `find_package(CUDA)` to `find_package(CUDAToolkit)` (the former is
+  deprecated as of CMake 3.17).  This avoids imported target namespace
+  conflicts with downstream CMake projects that call
+  `find_package(CUDAToolkit)` (see [Trilinos
+  #10954](https://github.com/trilinos/Trilinos/issues/10954)).
+
+
+## 2022-09-16:
+
+* **Changed:** Changed nomenclature for packages and TPLs (see updated
+  "Maintainers Guide" section "TriBITS System Data Structures"): "TPLs" =>
+  "External Packages/TPLs"; "Packages" => "Internal Top-Level Packages"; "SE
+  Packages" => "Internal Packages". This impacted many internal variables as
+  well as printed qualities.  Behavior should otherwise be identical
+  w.r.t. input state.  The only observable change that users should see is the
+  text used to describe the different sets of packages and TPLs.  (This is
+  working towards a uniform handling of packages and TPLs (see [TriBITS
+  #63](https://github.com/TriBITSPub/TriBITS/issues/63)).
+
+* **Deprecated:** The rarely used input var
+  `<Project>_GENERATE_EXPORT_FILES_FOR_ONLY_LISTED_SE_PACKAGES` is deprecated
+  and the new var name
+  `<Project>_GENERATE_EXPORT_FILES_FOR_ONLY_LISTED_PACKAGES` should be used
+  instead.
+
+## 2022-08-22:
+
+* **Added:** Added support for exporting cache variables for packages in their
+    `<Package>Config.cmake` files using the new function
+    `tribits_pkg_export_cache_var()`.
+
+## 2022-08-18:
+
+* **Changed:** Made setting parent package tests/examples enable/disable
+  correctly propagate down to subpackages in a more intuitive way (see
+  [TriBITSPub/TriBITS#268](https://github.com/TriBITSPub/TriBITS/issues/268)).
+  This also results in not enabling tests for subpackages that are not
+  explicitly enabled or enabled as part of the forward sweep of packages
+  enables due to `<Project>_ENABLE_ALL_FORWARD_DEP_PACKAGES=ON`.
+
+## 2022-08-11:
+
+* **Changed:** Fix a bug where the test dependencies for an enabled
+  subpackage that resulted in a build error (see
+  [trilinos/Trilinos#10842](https://github.com/trilinos/Trilinos/issues/10842)
+  and
+  [TriBITSPub/TriBITS#510](https://github.com/TriBITSPub/TriBITS/issues/510)).
+
 ## 2022-07-20:
 
-* ** Changed:** Fixed TriBITS generated and installed `<tplName>Config.cmake`
+* **Changed:** Fixed TriBITS generated and installed `<tplName>Config.cmake`
   files to not point into the build dir but instead point into relative dir
   for upstream TPL's when calling find_dependency() (see
   [TribitsPub/TriBITS#500](https://github.com/TriBITSPub/TriBITS/issues/500)).

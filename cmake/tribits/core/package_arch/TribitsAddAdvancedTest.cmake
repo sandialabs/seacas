@@ -156,7 +156,7 @@ include(PrintVar)
 # defined in `Test case Pass/Fail (tribits_add_advanced_test())`_) in order
 # for the overall test to pass.
 #
-# Finally, the test is only added if tests are enabled for the SE package
+# Finally, the test is only added if tests are enabled for the package
 # (i.e. `${PACKAGE_NAME}_ENABLE_TESTS`_ ``= ON``) or the parent package (if
 # this is a subpackage) (i.e. ``${PARENT_PACKAGE_NAME}_ENABLE_TESTS=ON``) or
 # if other criteria are met (see some of the arguments in `Overall Arguments
@@ -1097,7 +1097,7 @@ function(tribits_add_advanced_test TEST_NAME_IN)
          ""
          # multi_value_keywords
          "COPY_FILES_TO_TEST_DIR;SOURCE_DIR;DEST_DIR" 
-	 # Arguments to parse
+         # Arguments to parse
          ${PARSE_TEST_${TEST_CMND_IDX}}
          )
       tribits_check_for_unparsed_arguments()
@@ -1113,20 +1113,20 @@ function(tribits_add_advanced_test TEST_NAME_IN)
       # Parse TEST_<IDX> block args for types EXEC and CMND
 
       set(testBlockOptionsList  NOEXEPREFIX  NOEXESUFFIX  NO_ECHO_OUTPUT  PASS_ANY
-	STANDARD_PASS_OUTPUT  ALWAYS_FAIL_ON_NONZERO_RETURN  ALWAYS_FAIL_ON_ZERO_RETURN
-	WILL_FAIL  ADD_DIR_TO_NAME  SKIP_CLEAN_WORKING_DIRECTORY
+        STANDARD_PASS_OUTPUT  ALWAYS_FAIL_ON_NONZERO_RETURN  ALWAYS_FAIL_ON_ZERO_RETURN
+        WILL_FAIL  ADD_DIR_TO_NAME  SKIP_CLEAN_WORKING_DIRECTORY
         )
 
       set(testBlockMultiValueKeywordsList  EXEC  CMND  ARGS  DIRECTORY  MESSAGE
-	WORKING_DIRECTORY  OUTPUT_FILE  NUM_MPI_PROCS  NUM_TOTAL_CORES_USED
-	PASS_REGULAR_EXPRESSION_ALL  FAIL_REGULAR_EXPRESSION  PASS_REGULAR_EXPRESSION
-	)
+        WORKING_DIRECTORY  OUTPUT_FILE  NUM_MPI_PROCS  NUM_TOTAL_CORES_USED
+        PASS_REGULAR_EXPRESSION_ALL  FAIL_REGULAR_EXPRESSION  PASS_REGULAR_EXPRESSION
+        )
 
       cmake_parse_arguments(
          PARSE  #prefix
-	 "${testBlockOptionsList}"
-	 ""     # one_value_keywords
-	 "${testBlockMultiValueKeywordsList}"
+         "${testBlockOptionsList}"
+         ""     # one_value_keywords
+         "${testBlockMultiValueKeywordsList}"
          ${PARSE_TEST_${TEST_CMND_IDX}}
          )
 

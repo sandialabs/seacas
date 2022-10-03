@@ -505,7 +505,7 @@ function(tribits_tpl_find_include_dirs_and_libraries TPL_NAME)
             "-- ${LIB_NOT_FOUND_MSG_PREFIX} Did not find a lib in the lib set \"${LIBNAME_SET}\""
              " for the TPL '${TPL_NAME}'!")
           if (MUST_FIND_ALL_LIBS)
-	    set(_${TPL_NAME}_ENABLE_SUCCESS FALSE)
+            set(_${TPL_NAME}_ENABLE_SUCCESS FALSE)
           else()
             break()
           endif()
@@ -741,9 +741,9 @@ endfunction()
 #   tribits_tpl_tentatively_enable(<tplName>)
 # 
 # This function can be called from any CMakeLists.txt file to put a TPL in
-# tentative enable mode.  But typically, it is called from an SE Package's
+# tentative enable mode.  But typically, it is called from an Package's
 # `<packageDir>/cmake/Dependencies.cmake`_ file (see `How to tentatively
-# enable a TPL`_).
+# enable an external package/TPL`_).
 #
 # This should only be used for optional TPLs.  It will not work correctly for
 # required TPLs because any enabled packages that require this TPL will not be
