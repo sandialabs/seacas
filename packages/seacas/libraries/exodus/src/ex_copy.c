@@ -684,27 +684,29 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
         /* Use void_ptr for the input read; alloc new space for output... */
         EXCHECKF(nc_get_var_text(in_id, var_in_id, void_ptr));
 
-        size_t num_string = 0;
-        size_t in_size    = 0;
-        size_t out_size   = 0;
-        EXCHECKF(nc_inq_dimlen(in_id, dim_id_in[0], &num_string));
-        EXCHECKF(nc_inq_dimlen(in_id, dim_id_in[1], &in_size));
-        EXCHECKF(nc_inq_dimlen(out_id, dim_id_out[1], &out_size));
-        size_t min_size    = in_size < out_size ? in_size : out_size;
-        char  *out_strings = calloc(num_string * out_size, 1);
-        /* Read the input strings...*/
+        if (void_ptr != NULL) {
+          size_t num_string = 0;
+          size_t in_size    = 0;
+          size_t out_size   = 0;
+          EXCHECKF(nc_inq_dimlen(in_id, dim_id_in[0], &num_string));
+          EXCHECKF(nc_inq_dimlen(in_id, dim_id_in[1], &in_size));
+          EXCHECKF(nc_inq_dimlen(out_id, dim_id_out[1], &out_size));
+          size_t min_size    = in_size < out_size ? in_size : out_size;
+          char  *out_strings = calloc(num_string * out_size, 1);
+          /* Read the input strings...*/
 
-        /* Copy to the output strings...*/
-        const char *in_strings = void_ptr;
-        for (size_t i = 0; i < num_string; i++) {
-          size_t in_off  = i * in_size;
-          size_t out_off = i * out_size;
-          ex_copy_string(&out_strings[out_off], &in_strings[in_off], min_size);
-          out_strings[out_off + out_size - 1] = '\0';
+          /* Copy to the output strings...*/
+          const char *in_strings = void_ptr;
+          for (size_t i = 0; i < num_string; i++) {
+            size_t in_off  = i * in_size;
+            size_t out_off = i * out_size;
+            ex_copy_string(&out_strings[out_off], &in_strings[in_off], min_size);
+            out_strings[out_off + out_size - 1] = '\0';
+          }
+          dim_cnt[1] = out_size;
+          EXCHECKF(nc_put_vara_text(out_id, var_out_id, dim_str, dim_cnt, out_strings));
+          free(out_strings);
         }
-        dim_cnt[1] = out_size;
-        EXCHECKF(nc_put_vara_text(out_id, var_out_id, dim_str, dim_cnt, out_strings));
-        free(out_strings);
       }
     }
 

@@ -76,7 +76,7 @@ macro(tribits_add_dashboard_target)
 
     set(${PROJECT_NAME}_ENABLED_PACKAGES_LIST)
     set(${PROJECT_NAME}_ENABLED_PACKAGES_CMAKE_ARG_LIST)
-    foreach(TRIBITS_PACKAGE ${${PROJECT_NAME}_ENABLED_SE_PACKAGES})
+    foreach(TRIBITS_PACKAGE ${${PROJECT_NAME}_ENABLED_INTERNAL_PACKAGES})
       if (${PROJECT_NAME}_ENABLE_${TRIBITS_PACKAGE} AND ${TRIBITS_PACKAGE}_ENABLE_TESTS)
         if (${PROJECT_NAME}_ENABLED_PACKAGES_LIST)
           set(${PROJECT_NAME}_ENABLED_PACKAGES_LIST
@@ -118,7 +118,7 @@ macro(tribits_add_dashboard_target)
       append_set(EXPR_CMND_ARGS "CTEST_DO_COVERAGE_TESTING=${${PROJECT_NAME}_ENABLE_COVERAGE_TESTING}")
     endif()
     if (NOT "${CTEST_BUILD_FLAGS}" STREQUAL "")
-      append_set(EXPR_CMND_ARGS "CTEST_BUILD_FLAGS='${CTEST_BUILD_FLAGS}'")
+      append_set(EXPR_CMND_ARGS "CTEST_BUILD_FLAGS=${CTEST_BUILD_FLAGS}")
     endif()
     if (NOT "${CTEST_PARALLEL_LEVEL}" STREQUAL "")
       append_set(EXPR_CMND_ARGS "CTEST_PARALLEL_LEVEL=${CTEST_PARALLEL_LEVEL}")
@@ -196,7 +196,7 @@ macro(tribits_add_dashboard_target)
         # NOTE: Above, if ${PROJECT_NAME}_ENABLE_ALL_PACKAGES was set in CMakeCache.txt, then setting
         # -D${PROJECT_NAME}_ENABLE_ALL_PACKAGES:BOOL=OFF will turn it off in the cache.  Note that it will
         # never be turned on again which means that the list of packages will be set explicitly below.
-	)
+        )
 
       set(DASHBOARD_TARGET_CTEST_DRIVER_CMND_NUM "B) ")
 
@@ -226,7 +226,7 @@ macro(tribits_add_dashboard_target)
         COMMAND echo
         COMMAND echo "See the results at http://${CTEST_DROP_SITE}${CTEST_DROP_LOCATION}&display=project\#Experimental"
         COMMAND echo
-	)
+        )
 
     endif()
 

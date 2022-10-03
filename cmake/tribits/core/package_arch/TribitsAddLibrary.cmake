@@ -138,16 +138,16 @@ include(SetAndIncDirs)
 #
 #   ``DEPLIBS <deplib0> <deplib1> ...``
 #
-#     List of dependent libraries that are built in the current SE package
-#     that this library is dependent on.  These libraries are passed into
+#     List of dependent libraries that are built in the current package that
+#     this library is dependent on.  These libraries are passed into
 #     ``target_link_libraries(<libTargetName> ...)`` so that CMake knows about
-#     the dependency structure of the libraries within this SE package.
-#     **NOTE:** One must **not** list libraries in other upstream `TriBITS SE
+#     the dependency structure of the libraries within this package.
+#     **NOTE:** One must **not** list libraries in other upstream `TriBITS
 #     Packages`_ or libraries built externally from this TriBITS CMake project
 #     in ``DEPLIBS``.  The TriBITS system automatically handles linking to
-#     libraries in upstream TriBITS SE packages.  External libraries need to
-#     be listed in the ``IMPORTEDLIBS`` argument instead if they are not
-#     already specified automatically using a `TriBITS TPL`_.
+#     libraries in upstream TriBITS packages.  External libraries need to be
+#     listed in the ``IMPORTEDLIBS`` argument instead if they are not already
+#     specified automatically using a `TriBITS TPL`_.
 #
 #   ``IMPORTEDLIBS <ideplib0> <ideplib1> ...``
 #
@@ -172,8 +172,8 @@ include(SetAndIncDirs)
 #     will be created.  If both ``STATIC`` and ``SHARED`` are passed in (which
 #     is obviously a mistake), then a shared library will be created.
 #     WARNING: Once you mark a library with ``STATIC``, then all of the
-#     downstream libraries in the current SE package and all downstream SE
-#     packages must also be also be marked with ``STATIC``.  That is because,
+#     downstream libraries in the current package and all downstream packages
+#     must also be also be marked with ``STATIC``.  That is because,
 #     generally, one can not link a link a static lib against a downstream
 #     shared lib since that is not portable (but can be done on some platforms
 #     if, for example, ``-fPIC`` is specified).  So be careful to use
@@ -202,7 +202,7 @@ include(SetAndIncDirs)
 #     ``add_library()`` where ``cuda_add_library()`` is assumed to be defined
 #     by the standard ``FindCUDA.cmake`` module as processed using the
 #     standard TriBITS ``FindTPLCUDA.cmake`` file (see `Standard TriBITS
-#     TPLs`_).  For this option to work, this SE package must have an enabled
+#     TPLs`_).  For this option to work, this package must have an enabled
 #     direct or indirect dependency on the TriBITS CUDA TPL or a
 #     configure-time error may occur about not knowing about
 #     ``cuda_all_library()``.
@@ -701,7 +701,7 @@ function(tribits_add_library_assert_deplibs)
     else()
       message(WARNING "WARNING: The case PARSE_TESTONLY=${PARSE_TESTONLY},"
         " depLibAlreadyInPkgLibs=${depLibAlreadyInPkgLibs},"
-	  " depLibIsTestOnlyLib=${depLibIsTestOnlyLib}, has"
+          " depLibIsTestOnlyLib=${depLibIsTestOnlyLib}, has"
         " not yet been handled!")
     endif()
 
@@ -781,7 +781,7 @@ function(tribits_add_library_determine_install_lib_and_or_headers
     if (${PROJECT_NAME}_VERBOSE_CONFIGURE)
       message("-- " "Skipping installation of headers and libraries"
         " because ${PROJECT_NAME}_INSTALL_LIBRARIES_AND_HEADERS=FALSE and"
-	  " BUILD_SHARED_LIBS=FALSE ...")
+          " BUILD_SHARED_LIBS=FALSE ...")
     endif()
     set(installLib OFF)
     set(installHeaders OFF)
@@ -789,7 +789,7 @@ function(tribits_add_library_determine_install_lib_and_or_headers
     if (${PROJECT_NAME}_VERBOSE_CONFIGURE)
       message("-- " "Skipping installation of headers but installing libraries"
         " because ${PROJECT_NAME}_INSTALL_LIBRARIES_AND_HEADERS=FALSE and"
-	  " BUILD_SHARED_LIBS=TRUE ...")
+        " BUILD_SHARED_LIBS=TRUE ...")
     endif()
     set(installHeaders OFF)
   endif()

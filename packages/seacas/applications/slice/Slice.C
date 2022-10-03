@@ -428,13 +428,19 @@ int main(int argc, char *argv[])
 
   region.output_summary(std::cerr, true);
 
-  if (dbi->int_byte_size_api() == 4) {
-    progress("4-byte slice");
-    slice(region, nem_file, interFace, 1);
+  try {
+    if (dbi->int_byte_size_api() == 4) {
+      progress("4-byte slice");
+      slice(region, nem_file, interFace, 1);
+    }
+    else {
+      progress("8-byte slice");
+      slice(region, nem_file, interFace, static_cast<int64_t>(1));
+    }
   }
-  else {
-    progress("8-byte slice");
-    slice(region, nem_file, interFace, static_cast<int64_t>(1));
+  catch (std::exception &e) {
+    fmt::print(stderr, "\n{}\n\nSlice terminated due to exception\n", e.what());
+    exit(EXIT_FAILURE);
   }
 
 #ifdef SEACAS_HAVE_MPI

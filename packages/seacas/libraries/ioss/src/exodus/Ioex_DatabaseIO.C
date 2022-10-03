@@ -488,7 +488,8 @@ namespace Ioex {
       Ioss::SerializeIO serializeIO__(this);
 
       if (isParallel) {
-        Ioex::check_processor_info(decoded_filename(), get_file_pointer(), util().parallel_size(), myProcessor);
+        Ioex::check_processor_info(decoded_filename(), get_file_pointer(), util().parallel_size(),
+                                   myProcessor);
       }
 
       read_region();
@@ -844,28 +845,8 @@ namespace Ioex {
       IOSS_ERROR(errmsg);
     }
 
+    bool minimal_nemesis = false;
     if (nemesis_file) {
-      if (int_byte_size_api() == 4) {
-        int nin, nbn, nen, nie, nbe, nnc, nec;
-        error = ex_get_loadbal_param(get_file_pointer(), &nin, &nbn, &nen, &nie, &nbe, &nnc, &nec,
-                                     myProcessor);
-        num_external_nodes = nen;
-        num_elem_cmaps     = nec;
-        num_node_cmaps     = nnc;
-        num_internal_nodes = nin;
-        num_border_nodes   = nbn;
-        num_internal_elems = nie;
-        num_border_elems   = nbe;
-      }
-      else {
-        error = ex_get_loadbal_param(get_file_pointer(), &num_internal_nodes, &num_border_nodes,
-                                     &num_external_nodes, &num_internal_elems, &num_border_elems,
-                                     &num_node_cmaps, &num_elem_cmaps, myProcessor);
-      }
-      if (error < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
-
       // A nemesis file typically separates nodes into multiple
       // communication sets by processor.  (each set specifies
       // nodes/elements that communicate with only a single processor).
@@ -889,37 +870,74 @@ namespace Ioex {
       if (error < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
+
+      // If the file was written with minimal nemesis data, then these will not exist...
+      if (int_byte_size_api() == 4) {
+        int nin, nbn, nen, nie, nbe, nnc, nec;
+        error = ex_get_loadbal_param(get_file_pointer(), &nin, &nbn, &nen, &nie, &nbe, &nnc, &nec,
+                                     myProcessor);
+        if (error == 0) {
+          num_external_nodes = nen;
+          num_elem_cmaps     = nec;
+          num_node_cmaps     = nnc;
+          num_internal_nodes = nin;
+          num_border_nodes   = nbn;
+          num_internal_elems = nie;
+          num_border_elems   = nbe;
+        }
+        else {
+          minimal_nemesis = true;
+        }
+      }
+      else {
+        error = ex_get_loadbal_param(get_file_pointer(), &num_internal_nodes, &num_border_nodes,
+                                     &num_external_nodes, &num_internal_elems, &num_border_elems,
+                                     &num_node_cmaps, &num_elem_cmaps, myProcessor);
+        if (error < 0) {
+          minimal_nemesis    = true;
+          num_external_nodes = 0;
+          num_elem_cmaps     = 0;
+          num_node_cmaps     = 0;
+          num_internal_nodes = 0;
+          num_border_nodes   = 0;
+          num_internal_elems = 0;
+          num_border_elems   = 0;
+        }
+      }
     }
 
     commsetNodeCount = num_node_cmaps;
     commsetElemCount = num_elem_cmaps;
 
     Ioss::Region *region = get_region();
-    region->property_add(Ioss::Property("internal_node_count", num_internal_nodes));
-    region->property_add(Ioss::Property("border_node_count", num_border_nodes));
-    region->property_add(Ioss::Property("internal_element_count", num_internal_elems));
-    region->property_add(Ioss::Property("border_element_count", num_border_elems));
     region->property_add(Ioss::Property("global_node_count", global_nodes));
     region->property_add(Ioss::Property("global_element_count", global_elements));
     region->property_add(Ioss::Property("global_element_block_count", global_eblocks));
     region->property_add(Ioss::Property("global_node_set_count", global_nsets));
     region->property_add(Ioss::Property("global_side_set_count", global_ssets));
 
-    // Possibly, the following 4 fields should be nodesets and element
-    // sets instead of fields on the region...
-    region->field_add(Ioss::Field("internal_nodes", region->field_int_type(), IOSS_SCALAR(),
-                                  Ioss::Field::COMMUNICATION, num_internal_nodes));
-    region->field_add(Ioss::Field("border_nodes", region->field_int_type(), IOSS_SCALAR(),
-                                  Ioss::Field::COMMUNICATION, num_border_nodes));
-    region->field_add(Ioss::Field("internal_elements", region->field_int_type(), IOSS_SCALAR(),
-                                  Ioss::Field::COMMUNICATION, num_internal_elems));
-    region->field_add(Ioss::Field("border_elements", region->field_int_type(), IOSS_SCALAR(),
-                                  Ioss::Field::COMMUNICATION, num_border_elems));
+    if (!minimal_nemesis) {
+      region->property_add(Ioss::Property("internal_node_count", num_internal_nodes));
+      region->property_add(Ioss::Property("border_node_count", num_border_nodes));
+      region->property_add(Ioss::Property("internal_element_count", num_internal_elems));
+      region->property_add(Ioss::Property("border_element_count", num_border_elems));
 
-    SMART_ASSERT(nodeCount == num_internal_nodes + num_border_nodes)
-    (nodeCount)(num_internal_nodes)(num_border_nodes);
-    SMART_ASSERT(elementCount == num_internal_elems + num_border_elems)
-    (elementCount)(num_internal_elems)(num_border_elems);
+      // Possibly, the following 4 fields should be nodesets and element
+      // sets instead of fields on the region...
+      region->field_add(Ioss::Field("internal_nodes", region->field_int_type(), IOSS_SCALAR(),
+                                    Ioss::Field::COMMUNICATION, num_internal_nodes));
+      region->field_add(Ioss::Field("border_nodes", region->field_int_type(), IOSS_SCALAR(),
+                                    Ioss::Field::COMMUNICATION, num_border_nodes));
+      region->field_add(Ioss::Field("internal_elements", region->field_int_type(), IOSS_SCALAR(),
+                                    Ioss::Field::COMMUNICATION, num_internal_elems));
+      region->field_add(Ioss::Field("border_elements", region->field_int_type(), IOSS_SCALAR(),
+                                    Ioss::Field::COMMUNICATION, num_border_elems));
+
+      SMART_ASSERT(nodeCount == num_internal_nodes + num_border_nodes)
+      (nodeCount)(num_internal_nodes)(num_border_nodes);
+      SMART_ASSERT(elementCount == num_internal_elems + num_border_elems)
+      (elementCount)(num_internal_elems)(num_border_elems);
+    }
   }
 
   const Ioss::Map &DatabaseIO::get_map(ex_entity_type type) const
@@ -1214,16 +1232,22 @@ namespace Ioex {
       if (entity_type == EX_ELEM_BLOCK) {
         auto eblock = new Ioss::ElementBlock(this, block_name, type, local_X_count[iblk]);
         block       = eblock;
+        block->property_add(
+            Ioss::Property("id", id)); // Do before adding for better error messages.
         get_region()->add(eblock);
       }
       else if (entity_type == EX_FACE_BLOCK) {
         auto fblock = new Ioss::FaceBlock(this, block_name, type, local_X_count[iblk]);
         block       = fblock;
+        block->property_add(
+            Ioss::Property("id", id)); // Do before adding for better error messages.
         get_region()->add(fblock);
       }
       else if (entity_type == EX_EDGE_BLOCK) {
         auto eblock = new Ioss::EdgeBlock(this, block_name, type, local_X_count[iblk]);
         block       = eblock;
+        block->property_add(
+            Ioss::Property("id", id)); // Do before adding for better error messages.
         get_region()->add(eblock);
       }
       else {
@@ -1247,7 +1271,6 @@ namespace Ioex {
             Ioss::Field("connectivity_edge", block->field_int_type(), storage, Ioss::Field::MESH));
       }
 
-      block->property_add(Ioss::Property("id", id)); // Do before adding for better error messages.
       block->property_add(Ioss::Property("guid", util().generate_guid(id)));
       if (db_has_name) {
         std::string *db_name = &block_name;

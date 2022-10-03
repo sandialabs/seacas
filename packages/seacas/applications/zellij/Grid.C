@@ -243,7 +243,8 @@ void Grid::create_output_regions(SystemInterface &interFace)
   if (parallel_size() == 1) {
     properties.add(Ioss::Property("OMIT_EXODUS_NUM_MAPS", 1));
   }
-  properties.add(Ioss::Property("MINIMAL_NEMESIS_DATA", 1));
+  // Disable this for now.  Readers need to be modified and propogated to allow this.
+  //   properties.add(Ioss::Property("MINIMAL_NEMESIS_DATA", 1));
 
   if (debug_level & 2) {
     properties.add(Ioss::Property("ENABLE_TRACING", 1));
@@ -431,7 +432,7 @@ template <typename INT> void Grid::process(SystemInterface &interFace, INT /* du
     if (m_startRank + m_rankCount > m_parallelSize) {
       m_rankCount = m_parallelSize - m_startRank;
     }
-    if (debug_level & 1) {
+    if (debug_level & 2) {
       fmt::print(stderr, "{} Processing Ranks {} to {}\n", time_stamp(tsFormat), begin,
                  begin + rank_count - 1);
     }
@@ -439,12 +440,12 @@ template <typename INT> void Grid::process(SystemInterface &interFace, INT /* du
     create_output_regions(interFace);
 
     internal_process();
-    if (debug_level & 1) {
+    if (debug_level & 2) {
       fmt::print(stderr, "{} Lattice Processing Finalized\n", time_stamp(tsFormat));
     }
 
     output_model(INT(0));
-    if (debug_level & 1) {
+    if (debug_level & 2) {
       fmt::print(stderr, "{} Model Output\n", time_stamp(tsFormat));
     }
   }

@@ -38,6 +38,7 @@
 # @HEADER
 
 include(TribitsGeneralMacros)
+include(TribitsPkgExportCacheVars)
 
 ###
 ### WARNING: See "NOTES TO DEVELOPERS" at the bottom of the file
@@ -273,7 +274,7 @@ function(tribits_write_flexible_package_client_export_files)
   #to help us create a properly ordered list of tpls.
   if (FULL_TPL_SET)
     set(ORDERED_FULL_TPL_SET ${FULL_TPL_SET})
-    tribits_sort_list_according_to_master_list("${${PROJECT_NAME}_REVERSE_TPLS}"
+    tribits_sort_list_according_to_master_list("${${PROJECT_NAME}_REVERSE_DEFINED_TPLS}"
       ORDERED_FULL_TPL_SET)
   endif()
 
@@ -545,8 +546,7 @@ function(tribits_append_dependent_package_config_file_includes_and_enables packa
   # Parse input
 
   cmake_parse_arguments(
-     PARSE  #prefix
-     ""  #options
+     PARSE ""  # prefix, options
      #one_value_keywords
      "EXPORT_FILE_VAR_PREFIX;EXT_PKG_CONFIG_FILE_BASE_DIR;PKG_CONFIG_FILE_BASE_DIR;CONFIG_FILE_STR_INOUT"
      "" #multi_value_keywords
@@ -567,7 +567,7 @@ function(tribits_append_dependent_package_config_file_includes_and_enables packa
   # Add set of enables/disables for all upstream dependencies
   string(APPEND configFileStr
     "# Enables/Disables for upstream package dependencies\n")
-  foreach(depPkg IN LISTS ${packageName}_LIB_ALL_DEPENDENCIES)
+  foreach(depPkg IN LISTS ${packageName}_LIB_DEFINED_DEPENDENCIES)
     if (${packageName}_ENABLE_${depPkg})
       set(enableVal ON)
     else()
@@ -576,6 +576,11 @@ function(tribits_append_dependent_package_config_file_includes_and_enables packa
     string(APPEND configFileStr
       "set(${EXPORT_FILE_VAR_PREFIX}_ENABLE_${depPkg} ${enableVal})\n")
   endforeach()
+
+  # Put in set() statements for exported cache vars
+  string(APPEND configFileStr
+    "\n# Exported cache variables\n")
+  tribits_pkg_append_set_commands_for_exported_vars(${packageName} configFileStr)
 
   # Include configurations of dependent packages
   string(APPEND configFileStr
@@ -725,7 +730,7 @@ function(tribits_write_project_client_export_files)
 
   # Reversing the package list so that libraries will be produced in order of
   # most dependent to least dependent.
-  set(PACKAGE_LIST ${${PROJECT_NAME}_SE_PACKAGES})
+  set(PACKAGE_LIST ${${PROJECT_NAME}_DEFINED_INTERNAL_PACKAGES})
   if (PACKAGE_LIST)
     list(REVERSE PACKAGE_LIST)
   endif()
@@ -745,8 +750,8 @@ function(tribits_write_project_client_export_files)
 
   # Reversing the tpl list so that the list of tpls will be produced in
   # order of most dependent to least dependent.
-  if (${PROJECT_NAME}_TPLS)
-    set(TPL_LIST ${${PROJECT_NAME}_TPLS})
+  if (${PROJECT_NAME}_DEFINED_TPLS)
+    set(TPL_LIST ${${PROJECT_NAME}_DEFINED_TPLS})
     list(REVERSE TPL_LIST)
   endif()
 
@@ -876,7 +881,7 @@ include(\"${${TRIBITS_PACKAGE}_BINARY_DIR}/${TRIBITS_PACKAGE}Config.cmake\")")
       set(TRIBITS_PROJECT_INSTALL_INCLUDE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}")
     else()
       set(TRIBITS_PROJECT_INSTALL_INCLUDE_DIR
-	"${CMAKE_INSTALL_PREFIX}/${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}")
+        "${CMAKE_INSTALL_PREFIX}/${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}")
     endif()
 
     configure_file(

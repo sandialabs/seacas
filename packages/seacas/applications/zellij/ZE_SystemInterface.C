@@ -180,8 +180,8 @@ void SystemInterface::enroll_options()
 
   options_.enroll("debug", Ioss::GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
-                  "\t\t   1 = Time stamp information.\n"
-                  "\t\t   2 = Memory information.\n"
+                  "\t\t   1 = Exodus Verbose mode.\n"
+                  "\t\t   2 = Memory and time stamp information.\n"
                   "\t\t   4 = Verbose Unit Cell information.\n"
                   "\t\t   8 = Verbose output of Grid finalization calculations.\n"
                   "\t\t  16 = Put exodus library into verbose mode.\n"
@@ -205,7 +205,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
     if (myRank_ == 0) {
       options_.usage();
       fmt::print("\n\tCan also set options via ZELLIJ_OPTIONS environment variable.\n"
-		 "\n\tDocumentation: https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#zellij\n"
+                 "\n\tDocumentation: "
+                 "https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#zellij\n"
                  "\n\t->->-> Send email to gdsjaar@sandia.gov for zellij support.<-<-<-\n");
     }
     exit(EXIT_SUCCESS);
