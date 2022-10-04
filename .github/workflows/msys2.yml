@@ -14,8 +14,8 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v2
-      - uses: msys2/setup-msys2@v2
+      - uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v3
         with:
           msystem: MINGW64
           update: true
