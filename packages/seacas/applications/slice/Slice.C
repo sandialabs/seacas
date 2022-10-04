@@ -171,9 +171,9 @@ namespace {
       field.set_index(1);
       block->field_add(field);
       if (add_chain_info) {
-        Ioss::Field field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
-        field.set_index(2);
-        block->field_add(field);
+        Ioss::Field ch_field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
+        ch_field.set_index(2);
+        block->field_add(ch_field);
       }
     }
   }
@@ -320,7 +320,7 @@ namespace {
 
     int common_nodes = 999;
 
-    auto &ebs = region.get_element_blocks();
+    const auto &ebs = region.get_element_blocks();
     for (const auto &eb : ebs) {
       const Ioss::ElementTopology *topology = eb->topology();
       const Ioss::ElementTopology *boundary = topology->boundary_type(0);
