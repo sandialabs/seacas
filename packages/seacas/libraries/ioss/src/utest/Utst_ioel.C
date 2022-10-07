@@ -37,7 +37,7 @@ int main(int /* argc */, char *argv[])
   // Make sure Ioss::NullEntity works.  Not used in IOSS itself,
   // but some clients use it, so need to make sure it compiles
   // correctly.
-  std::unique_ptr<Ioss::NullEntity> entity{new Ioss::NullEntity()};
+  auto entity = std::make_unique<Ioss::NullEntity>();
   fmt::print(stderr, "\nThe null entity type is '{}' and it contains '{}'\n", entity->type_string(),
              entity->contains_string());
 
