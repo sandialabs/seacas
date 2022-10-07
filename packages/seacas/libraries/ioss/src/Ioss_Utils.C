@@ -233,7 +233,7 @@ int Ioss::Utils::extract_id(const std::string &name_id)
 {
   int id = 0;
 
-  std::vector<std::string> tokens = Ioss::tokenize(name_id, "_");
+  auto tokens = Ioss::tokenize(name_id, "_");
   if (tokens.size() > 1) {
     // Check whether last token is an integer...
     std::string str_id = tokens.back();
@@ -415,7 +415,7 @@ namespace {
 
     char suffix[2] = {suffix_separator, '\0'};
 
-    std::vector<std::string> tokens = Ioss::tokenize(names[which_names.back()], suffix);
+    auto tokens = Ioss::tokenize(names[which_names.back()], suffix);
 
     if (tokens.size() <= 2) {
       return nullptr;
@@ -440,7 +440,7 @@ namespace {
     // Gather the first 'inner_ccomp' inner field suffices...
     std::vector<Ioss::Suffix> suffices;
     for (size_t i = 0; i < inner_comp; i++) {
-      std::vector<std::string> ltokens = Ioss::tokenize(names[which_names[i]], suffix);
+      auto ltokens = Ioss::tokenize(std::string(names[which_names[i]]), suffix);
       // The second-last token is the suffix for this component...
       Ioss::Suffix tmp(ltokens[inner_token]);
       suffices.push_back(tmp);
@@ -451,7 +451,7 @@ namespace {
     size_t j = inner_comp;
     for (int copy = 1; copy < N; copy++) {
       for (size_t i = 0; i < inner_comp; i++) {
-        std::vector<std::string> ltokens = Ioss::tokenize(names[which_names[j++]], suffix);
+        auto ltokens = Ioss::tokenize(std::string(names[which_names[j++]]), suffix);
         // The second-last token is the suffix for this component...
         if (suffices[i] != ltokens[inner_token]) {
           return nullptr;
@@ -479,8 +479,8 @@ namespace {
     char suffix[2] = {suffix_separator, '\0'};
 
     for (int which_name : which_names) {
-      std::vector<std::string> tokens     = Ioss::tokenize(names[which_name], suffix);
-      size_t                   num_tokens = tokens.size();
+      auto   tokens     = Ioss::tokenize(names[which_name], suffix);
+      size_t num_tokens = tokens.size();
 
       // The last token is the suffix for this component...
       Ioss::Suffix tmp(tokens[num_tokens - 1]);
