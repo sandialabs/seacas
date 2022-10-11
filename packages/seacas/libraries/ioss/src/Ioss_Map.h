@@ -53,6 +53,8 @@ namespace Ioss {
     Map &operator=(const Map &from) = delete;
     ~Map()                          = default;
 
+    void   set_rank(int processor) {m_myProcessor = processor;}
+
     void   set_size(size_t entity_count);
     size_t size() const { return m_map.empty() ? 0 : m_map.size() - 1; }
 
