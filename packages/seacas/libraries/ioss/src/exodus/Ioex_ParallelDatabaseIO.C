@@ -729,10 +729,10 @@ namespace Ioex {
     }
 
     if (int_byte_size_api() == 8) {
-      decomp = std::make_unique<DecompositionDataBase<int64_t>>(properties, util().communicator());
+      decomp = std::make_unique<DecompositionData<int64_t>>(properties, util().communicator());
     }
     else {
-      decomp = std::make_unique<DecompositionDataBase<int>>(properties, util().communicator());
+      decomp = std::make_unique<DecompositionData<int>>(properties, util().communicator());
     }
     assert(decomp != nullptr);
     decomp->decompose_model(exoid);
