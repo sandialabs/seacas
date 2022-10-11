@@ -291,5 +291,5 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
-          ctest -j 4 --output-on-failure --exclude-regex exodus3.py
+          ctest -j 4 --output-on-failure --exclude-regex \"^test_exo\*\"
         if: ${{ success() && (matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO') }}
