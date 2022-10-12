@@ -3,6 +3,8 @@
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 [![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
 [![Appveyor Build](https://ci.appveyor.com/api/projects/status/pis4gok72yh0wwfs/branch/master?svg=true)](https://ci.appveyor.com/project/gsjaardema/seacas/branch/master)
+[![SEACAS Docker](https://img.shields.io/github/workflow/status/sandialabs/seacas/docker-seacas?label=SEACAS&logo=docker&logoColor=0db7ed)](https://hub.docker.com/r/mrbuche/seacas)
+[![Exodus Docker](https://img.shields.io/github/workflow/status/sandialabs/seacas/docker-exodus?label=Exodus&logo=docker&logoColor=0db7ed)](https://hub.docker.com/r/mrbuche/exodus)
 [![Github Actions -- CI Serial](https://github.com/sandialabs/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/sandialabs/seacas)
 [![Github Actions -- CI Variants](https://github.com/sandialabs/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/sandialabs/seacas)
 [![Github Actions -- CI Intel](https://github.com/sandialabs/seacas/actions/workflows/intel-build.yml/badge.svg)](https://github.com/sandialabs/seacas)
@@ -16,6 +18,8 @@
 *  [Exodus](#exodus)
 *  [Trilinos](#trilinos)
 *  [SPACK](#spack)
+*  [Docker](#docker)
+*  [CMake Example Usage](#cmake-example-usage)
 *  [License](#license)
 *  [Contact information](#contact-information)
 *  NOTE: The old imake-based build has been removed.
@@ -180,7 +184,39 @@ git clone https://github.com/spack/spack.git
 spack install seacas~mpi   # Serial build (most common)
 ```
 
-Enter `spack info seacas` to see information on supported variants and other information about the SEACAS package.
+## Docker
+
+An Ubuntu-based Docker image, with SEACAS built and installed, is available on [Docker Hub](https://hub.docker.com/r/mrbuche/seacas).
+
+```sh
+docker pull mrbuche/seacas
+```
+
+SEACAS is located in `/seacas` when running the container. There is also a similar image available on [Docker Hub](https://hub.docker.com/r/mrbuche/exodus) with only Exodus built and installed.
+
+```sh
+docker pull mrbuche/exodus
+```
+
+## CMake Example Usage
+A simple example of using the SEACAS Exodus library in your external project.  Here is the CMakeLists.txt file:
+```sh
+project(SeacasExodusExample)
+cmake_minimum_required(VERSION 3.12)
+
+find_package(SEACASExodus REQUIRED)
+
+add_executable(exo_write exo_write.c)
+target_link_libraries(exo_write SEACASExodus::exodus)
+```
+
+This would then be used as:
+```sh
+mkdir build; cd build
+CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake -G "Unix Makefiles" ..
+make
+```
+And you would then get `exo_write` compiled and linked against the Exodus library.
 
 ## License
 

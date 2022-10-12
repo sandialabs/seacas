@@ -1,9 +1,11 @@
 name: SEACAS MSYS2 Build
-on: 
+on:
   push:
-    branches-ignore:
-      - 'coverity'
+    branches:
+    - master
   pull_request:
+    branches:
+    - master
 
 jobs:
   build:
@@ -12,7 +14,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64

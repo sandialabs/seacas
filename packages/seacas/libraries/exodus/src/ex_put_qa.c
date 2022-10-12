@@ -140,7 +140,16 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
         ex_err_fn(exoid, __func__, errmsg, status);
         goto error_ret; /* exit define mode and return */
       }
-      ex__set_compact_storage(rootid, varid);
+      /* In parallel, only rank=0 will write the QA records.
+       * Should be able to take advantage of HDF5 handling identical data on all ranks
+       * or use the compact storage, but we had issues on some NFS filesystems and some
+       * compilers/mpi so are doing it this way...
+       */
+#if defined(PARALLEL_AWARE_EXODUS)
+      if (ex__is_parallel(rootid)) {
+        nc_var_par_access(rootid, varid, NC_INDEPENDENT);
+      }
+#endif
 
       /*   leave define mode  */
       if ((status = ex__leavedef(rootid, __func__)) != NC_NOERR) {
@@ -181,17 +190,12 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
         }
       }
     }
-    else if (ex__is_parallel(rootid)) {
-      /* In case we are in a collective mode, all processors need to call */
-      const char dummy[] = " ";
-      for (i = 0; i < num_qa_records; i++) {
-        for (j = 0; j < 4; j++) {
-          start[0] = start[1] = start[2] = 0;
-          count[0] = count[1] = count[2] = 0;
-          nc_put_vara_text(rootid, varid, start, count, dummy);
-        }
-      }
+    /* PnetCDF applies setting to entire file, so put back to collective... */
+#if defined(PARALLEL_AWARE_EXODUS)
+    if (ex__is_parallel(rootid)) {
+      nc_var_par_access(rootid, varid, NC_COLLECTIVE);
     }
+#endif
   }
   EX_FUNC_LEAVE(EX_NOERR);
 

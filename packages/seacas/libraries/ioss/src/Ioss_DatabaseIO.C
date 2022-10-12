@@ -178,6 +178,11 @@ namespace Ioss {
     isParallel  = util_.parallel_size() > 1;
     myProcessor = util_.parallel_rank();
 
+    nodeMap.set_rank(myProcessor);
+    edgeMap.set_rank(myProcessor);
+    faceMap.set_rank(myProcessor);
+    elemMap.set_rank(myProcessor);
+
     // Some operations modify DBFilename and there is a need to get
     // back to the original filename...
     originalDBFilename = DBFilename;
@@ -804,7 +809,8 @@ namespace Ioss {
         const ElementTopology *elem_type = block->topology();
         const ElementTopology *side_type = elem_type->boundary_type();
         if (side_type == nullptr) {
-          // heterogeneous sides.  Iterate through...
+          // heterogeneous sides.  Iterate through... (or there is no
+          // defined `side` for this parent topology.
           int size = elem_type->number_boundaries();
           for (int i = 1; i <= size; i++) {
             side_type = elem_type->boundary_type(i);
@@ -1317,7 +1323,7 @@ namespace {
         std::ostringstream            strm;
         auto                          now  = std::chrono::steady_clock::now();
         std::chrono::duration<double> diff = now - initial_time;
-        fmt::print(strm, "{} [{:.3f}]\t", symbol, diff.count());
+        fmt::print(strm, "{} [{:.5f}]\t", symbol, diff.count());
 
         int64_t total = 0;
         for (auto &p_size : all_sizes) {
@@ -1348,7 +1354,7 @@ namespace {
       if (util.parallel_rank() == 0 || single_proc_only) {
         auto                          time_now = std::chrono::steady_clock::now();
         std::chrono::duration<double> diff     = time_now - initial_time;
-        fmt::print("{} [{:.3f}]\n", symbol, diff.count());
+        fmt::print(Ioss::DebugOut(), "{} [{:.5f}]\n", symbol, diff.count());
       }
     }
   }

@@ -69,12 +69,10 @@ if (CGNS_ALLOW_PREFIND)
   find_package(CGNS)
 
   if (CGNS_FOUND)
-    set(TPL_CGNS_LIBRARY_DIRS ${_hdf5_LIBRARY_SEARCH_DIRS} CACHE PATH
-      "${DOCSTR} library files")
     set(TPL_CGNS_LIBRARIES ${CGNS_LIBRARIES} CACHE PATH
-      "List of semi-colon seprated (full) paths to the CGNS libraries")
+      "List of semi-colon separated (full) paths to the CGNS libraries")
     set(TPL_CGNS_INCLUDE_DIRS ${CGNS_INCLUDE_DIRS} CACHE PATH
-      "List of semi-colon seprated list of directories containing CGNS header files")
+      "List of semi-colon separated list of directories containing CGNS header files")
   endif()
 
 endif()

@@ -367,7 +367,11 @@ then
             then
                 echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
                 cd zlib-${zlib_version} || exit
-                ./configure --prefix=${INSTALL_PATH}
+		if [ "$SHARED" == "NO" ]
+		then
+		    USE_STATIC="--static"
+		fi
+                ./configure --prefix=${INSTALL_PATH} ${USE_STATIC}
                 if [[ $? != 0 ]]
                 then
                     echo 1>&2 ${txtred}couldn\'t configure zlib. exiting.${txtrst}
@@ -392,12 +396,16 @@ then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]; then
         hdf_version="1.8.21"
+	hdf_base="1.8"
     elif [ "${H5VERSION}" == "V110" ]; then
         hdf_version="1.10.9"
+	hdf_base="1.10"
     elif [ "${H5VERSION}" == "V112" ]; then
         hdf_version="1.12.2"
+	hdf_base="1.12"
     elif [ "${H5VERSION}" == "V113" ]; then
         hdf_version="1.13.1"
+	hdf_base="1.13"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
     else
@@ -412,20 +420,10 @@ then
         echo "${txtgrn}+++ Downloading...${txtrst}"
         rm -rf hdf5-${hdf_version}
         rm -f hdf5-${hdf_version}.tar.bz2
-        if [ "${H5VERSION}" == "V18" ]
-        then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "V110" ]; then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "V112" ]; then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "V113" ]; then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "develop" ]; then
+        if [ "${H5VERSION}" == "develop" ]; then
             git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
         else
-            echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
-            exit 1
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
         fi
         if [ "${H5VERSION}" != "develop" ]
         then
@@ -525,7 +523,8 @@ then
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-   net_version="v4.8.1"
+   net_version="v4.9.0"
+#   net_version="v4.8.1"
 #   net_version="master"
 
     if [ "$BUILD" == "YES" ]

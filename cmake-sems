@@ -59,9 +59,6 @@ PYTHON_VER=${PYTHON_VER:-"3.0"}
 ### Set to YES to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-NO}
 THREADSAFE=$(check_valid THREADSAFE)
-if [ "$THREADSAFE" == "YES" ] ; then
-  THREAD_SAFE_OPT="-DTPL_Pthread_LIBRARIES=-lpthread"
-fi
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
@@ -72,7 +69,8 @@ INSTALL_PATH=${ACCESS}
 module purge
 module load sems-env
 module load sems-gcc/9.2.0
-module load sems-cmake/3.19.1
+module load sparc-cmake/3.23.2
+#module load sems-cmake/3.19.1
 module load sems-doxygen
 module load sems-zlib/1.2.8/base
 
@@ -183,11 +181,10 @@ cmake  \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
--D TPL_ENABLE_fmt:BOOL=ON \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 -D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
-${THREAD_SAFE_OPT} \
+-D TPL_ENABLE_fmt:BOOL=ON \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 -D PythonInterp_FIND_VERSION:STRING=${PYTHON_VER} \
 \

@@ -62,6 +62,10 @@ namespace SEAMS {
       {"tan", do_tan, "tan(x)", "Tangent of x, with x in radians. "},
       {"tand", do_tand, "tand(x)", "Tangent of x, with x in radians. "},
       {"tanh", do_tanh, "tanh(x)", "Hyperbolic tangent of x. "},
+      {"FtoC", do_FtoC, "FtoC(x)",
+       "Convert temperature x from degrees F to degrees C (212F -> 100C)"},
+      {"CtoF", do_CtoF, "CtoF(x)",
+       "Convert temperature x from degrees C to degrees F (100C -> 212F)"},
       {nullptr, nullptr, nullptr, nullptr}};
 
   init_a arith_a_fncts[] = {
@@ -220,8 +224,9 @@ namespace SEAMS {
        "Handles the if statements. x can be any valid "
        "expression; nonzero is true (deprecated, use if)"},
 #if defined(EXODUS_SUPPORT)
-      {"exodus_meta", do_exodus_meta, "exodus_meta(ex_fn)",
-       "Creates several variables related to the exodus metadata in the specified file. "},
+      {"exodus_meta", do_exodus_meta, "exodus_meta(filename)",
+       "Creates several variables and arrays related to the exodus metadata in the specified "
+       "file. "},
 #endif
       {nullptr, nullptr, nullptr, nullptr}};
 
@@ -274,14 +279,14 @@ namespace SEAMS {
        "empty, "
        "return rest of string."},
 #if defined(EXODUS_SUPPORT)
-      {"exodus_info", do_exodus_info_range, "exodus_info(ex_fn, beg, end)",
+      {"exodus_info", do_exodus_info_range, "exodus_info(filename, beg, end)",
        "Parses the info records starting after 'beg' and ending before 'end'"},
 #endif
       {nullptr, nullptr, nullptr, nullptr}};
 
   str_cc_init string_cc_fncts[] = {
 #if defined(EXODUS_SUPPORT)
-      {"exodus_info", do_exodus_info, "exodus_info(ex_fn, prefix)",
+      {"exodus_info", do_exodus_info, "exodus_info(filename, prefix)",
        "Parses the info records that begin with 'prefix' extracted from the exodus file 'ex_fn'"},
 #endif
       {nullptr, nullptr, nullptr, nullptr}};

@@ -312,12 +312,22 @@ will change the comment character at the beginning of the lines to \#.
 
 The temperature conversions are only valid for relative temperatures, for
 example, 100\textasciitilde{}degC is equal to 180\textasciitilde{}degF, not 212\textasciitilde{}degF.
+The functions \cmd{CtoF(x)} and \cmd{FtoC(x)} can be used to convert absolute temperatures.  For example,
+\begin{apinp}
+100 C = \{CtoF(100)\} F
+98.6 F = \{FtoC(98.6)\} C
+\end{apinp}
+produces the output:
+\begin{apout}
+100 C = 212 F
+98.6 F = 37 C
+\end{apout}
 
-Since several variables are defined in the units system, it is
-possible to redefine one of the variable names in your input file. If
-the \aprepro{} warning messages are turned off, you will not be
-notified of the variable redefinition and erroneous results may
-occur. Therefore, you should not turn off \aprepro{} warning
-messages while using the units system, and you should investigate all
-redefined variable messages to ensure that you are getting the results
-you expect.
+Several variables are defined in the units system; they are all
+\textit{immutable} variables, so it is not possible to
+redefine their values.  However, if you inadvertently are using a
+variable with the same name as a variable defined in the units system,
+you may get the incorrect value of that variable since it cannot be
+redefined from the value set by the units system. You can enter the
+command \cmd{DUMP()} to see a list of all defined variables and their
+current value.

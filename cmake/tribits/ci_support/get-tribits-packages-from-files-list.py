@@ -51,7 +51,7 @@ usageHelp = \
 r"""get-tribits-packages-from-files-list.py --deps-xml-file=<DEPS_XML_FILE> \
     --files-list-file=<FILES_LIST_FILE> [--project-dir=<projectDir>]
 
-This script returns a comma-seprated list of all of the project's TriBITS SE
+This script returns a comma-seprated list of all of the project's TriBITS
 packages that must be directly tested for changes in the input list of files.
 This may also include the special package name 'ALL_PACKAGES' which means that
 at least one changed file (e.g. <projectDir>/CMakeLists.txt) should result in
@@ -87,7 +87,7 @@ clp.add_option(
 
 clp.add_option(
   "--project-dir", dest="projectDir", type="string", default="",
-  help="Base proejct directory.  Used to acces more specialized logic beyond" \
+  help="Base project directory.  Used to access more specialized logic beyond" \
     +" what is known in the <DEPSXMLFILE>.  If empty '', then it will be set" \
     +" automatically if TriBITS is is the standard location w.r.t. the project" \
     +" in relation to this script run from the TriBITS dir.")

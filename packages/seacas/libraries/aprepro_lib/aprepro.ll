@@ -40,6 +40,18 @@ typedef SEAMS::Parser::token_type token_type;
    void yyerror(const char *s);
  }
 
+namespace {
+  bool string_is_ascii(const char *line, size_t len)
+  {
+    for (size_t i = 0; i < len; i++) {
+      if (!(std::isspace(line[i]) || std::isprint(line[i]))) {
+	return false;
+      }
+    }
+    return true;
+  }
+} // namespace
+
 int file_must_exist = 0; /* Global used by include/conditional include */
 
 /* Global variables used by the looping mechanism */
@@ -763,6 +775,11 @@ integer {D}+({E})?
         return 0;
       }
 
+      if (!string_is_ascii(line, strlen(line))) {
+        yyerror("input line contains non-ASCII (probably UTF-8) characters which will most likely "
+                "be parsed incorrectly.");
+      }
+
       ap_gl_histadd(line);
 
       if (strlen(line) > (size_t)max_size - 2) {
@@ -782,6 +799,10 @@ integer {D}+({E})?
         return -1;
       }
       else {
+	if (!string_is_ascii(buf, yyin->gcount())) {
+	  yyerror("input file contains non-ASCII (probably UTF-8) characters which will most likely "
+		  "be parsed incorrectly.");
+	}
         return yyin->gcount();
       }
     }

@@ -13,6 +13,8 @@
 namespace SEAMS {
   struct array;
 
+  double do_FtoC(double F);
+  double do_CtoF(double C);
   double do_acos(double x);
   double do_acosd(double x);
   double do_acosh(double x);

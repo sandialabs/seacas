@@ -283,6 +283,8 @@ namespace Ioss {
     }
   }
 
+  // ========================================================================
+  // Decompose model function (confusing with all the #if...
   template void Decomposition<int>::decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
       Zoltan &zz,
@@ -293,6 +295,7 @@ namespace Ioss {
       Zoltan &zz,
 #endif
       std::vector<BlockDecompositionData> &element_blocks);
+
   template <typename INT>
   void Decomposition<INT>::decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)

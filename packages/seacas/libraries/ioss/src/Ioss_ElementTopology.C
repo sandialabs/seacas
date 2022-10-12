@@ -295,6 +295,10 @@ Ioss::IntVector Ioss::ElementTopology::boundary_connectivity(int bnd_number) con
       assert(spatial_dimension() == 3);
       return edge_connectivity(bnd_number);
     }
+    if (parametric_dimension() == 1) {
+      // Spring/line-type element -- has node as boundary.
+      return Ioss::IntVector{bnd_number - 1};
+    }
   }
   return Ioss::IntVector();
 }
@@ -336,6 +340,10 @@ Ioss::ElementTopology *Ioss::ElementTopology::boundary_type(int bnd_number) cons
     if (parametric_dimension() == 2) {
       assert(spatial_dimension() == 3);
       return edge_type(bnd_number);
+    }
+    if (parametric_dimension() == 1) {
+      assert(spatial_dimension() == 3 || spatial_dimension() == 2);
+      return Ioss::ElementTopology::factory("node");
     }
   }
   return nullptr;

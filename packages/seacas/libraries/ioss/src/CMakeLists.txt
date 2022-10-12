@@ -73,7 +73,7 @@ TRIBITS_ADD_LIBRARY(
   SOURCES ${SOURCES}
   )
 IF (MINGW)
-  target_link_libraries(Ioss psapi)
+  target_link_libraries(Ioss PUBLIC psapi)
 ENDIF ()
 
 if (${CMAKE_PROJECT_NAME} STREQUAL "Seacas")

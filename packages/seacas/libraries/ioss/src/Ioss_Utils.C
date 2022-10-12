@@ -233,7 +233,7 @@ int Ioss::Utils::extract_id(const std::string &name_id)
 {
   int id = 0;
 
-  std::vector<std::string> tokens = Ioss::tokenize(name_id, "_");
+  auto tokens = Ioss::tokenize(name_id, "_");
   if (tokens.size() > 1) {
     // Check whether last token is an integer...
     std::string str_id = tokens.back();
@@ -415,7 +415,7 @@ namespace {
 
     char suffix[2] = {suffix_separator, '\0'};
 
-    std::vector<std::string> tokens = Ioss::tokenize(names[which_names.back()], suffix);
+    auto tokens = Ioss::tokenize(names[which_names.back()], suffix);
 
     if (tokens.size() <= 2) {
       return nullptr;
@@ -440,7 +440,7 @@ namespace {
     // Gather the first 'inner_ccomp' inner field suffices...
     std::vector<Ioss::Suffix> suffices;
     for (size_t i = 0; i < inner_comp; i++) {
-      std::vector<std::string> ltokens = Ioss::tokenize(names[which_names[i]], suffix);
+      auto ltokens = Ioss::tokenize(std::string(names[which_names[i]]), suffix);
       // The second-last token is the suffix for this component...
       Ioss::Suffix tmp(ltokens[inner_token]);
       suffices.push_back(tmp);
@@ -451,7 +451,7 @@ namespace {
     size_t j = inner_comp;
     for (int copy = 1; copy < N; copy++) {
       for (size_t i = 0; i < inner_comp; i++) {
-        std::vector<std::string> ltokens = Ioss::tokenize(names[which_names[j++]], suffix);
+        auto ltokens = Ioss::tokenize(std::string(names[which_names[j++]]), suffix);
         // The second-last token is the suffix for this component...
         if (suffices[i] != ltokens[inner_token]) {
           return nullptr;
@@ -479,8 +479,8 @@ namespace {
     char suffix[2] = {suffix_separator, '\0'};
 
     for (int which_name : which_names) {
-      std::vector<std::string> tokens     = Ioss::tokenize(names[which_name], suffix);
-      size_t                   num_tokens = tokens.size();
+      auto   tokens     = Ioss::tokenize(names[which_name], suffix);
+      size_t num_tokens = tokens.size();
 
       // The last token is the suffix for this component...
       Ioss::Suffix tmp(tokens[num_tokens - 1]);
@@ -827,6 +827,31 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
       }
     }
   }
+}
+
+bool Ioss::Utils::check_int_to_real_overflow(const Ioss::Field &field, int64_t *data,
+                                             size_t num_entity)
+{
+  // Check all values in `data` to make sure that if they are converted to a double and
+  // back again, there will be no data loss.  This requires that the value be less than 2^53.
+  static int64_t max_double = 2LL << 53;
+  assert(int64_t(double(max_double)) == max_double);
+  assert(int64_t(double(max_double + 1)) != max_double + 1);
+
+  size_t comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+  for (size_t i = 0; i < num_entity * comp_count; i++) {
+    if (data[i] > max_double) {
+      fmt::print(
+          Ioss::WarnOut(),
+          "Field '{}' contains 64-bit integer data that is not representable as a double value.\n"
+          "\tThis value can not currently be stored in the exodus database without data loss.\n"
+          "\tThe first such value is at location {}, component {} (1-based) with value {}.\n",
+          field.get_name(), fmt::group_digits(i / comp_count + 1), i % comp_count + 1,
+          fmt::group_digits(data[i]));
+      return true;
+    }
+  }
+  return false;
 }
 
 std::string Ioss::Utils::platform_information()

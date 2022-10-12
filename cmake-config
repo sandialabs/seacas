@@ -297,11 +297,6 @@ HAVE_X11=$(check_valid HAVE_X11)
 THREADSAFE=${THREADSAFE:-NO}
 THREADSAFE=$(check_valid THREADSAFE)
 
-if [ "$THREADSAFE" == "YES" ] ; then
-  THREAD_SAFE_OPT="-DTPL_Pthread_LIBRARIES=-lpthread"
-fi
-
-
 function check_enable()
 {
     local path=$1

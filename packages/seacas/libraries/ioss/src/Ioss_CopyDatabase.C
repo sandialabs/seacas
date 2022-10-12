@@ -177,7 +177,7 @@ void Ioss::transfer_assemblies(Ioss::Region &region, Ioss::Region &output_region
       output_region.add(o_assem);
     }
 
-    if (options.verbose && rank == 0) {
+    if (options.output_summary && rank == 0) {
       fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n", "Assemblies",
                  fmt::group_digits(assem.size()));
     }
@@ -204,7 +204,7 @@ void Ioss::transfer_blobs(Ioss::Region &region, Ioss::Region &output_region,
       output_region.add(o_blob);
     }
 
-    if (options.verbose && rank == 0) {
+    if (options.output_summary && rank == 0) {
       fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}",
                  (*blobs.begin())->type_string() + "s", fmt::group_digits(blobs.size()));
       fmt::print(Ioss::DebugOut(), "\tLength of entity list = {:14}\n",
@@ -305,7 +305,7 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   dbi->progress("END STATE_TRANSIENT (end) ... ");
   Ioss::Utils::clear(data_pool.data);
 
-  if (rank == 0) {
+  if (rank == 0 && options.output_summary) {
     fmt::print(std::cout, "\n\n Output Region summary for rank 0:");
     output_region.output_summary(std::cout);
   }
@@ -365,6 +365,7 @@ namespace {
   {
     transfer_properties(input, output);
     transfer_fields(input, output, Ioss::Field::MESH);
+    transfer_fields(input, output, Ioss::Field::MAP);
     transfer_fields(input, output, Ioss::Field::ATTRIBUTE);
     transfer_fields(input, output, Ioss::Field::MESH_REDUCTION);
   }
@@ -417,7 +418,7 @@ namespace {
     transfer_properties(&region, &output_region);
     transfer_qa_info(region, output_region);
 
-    if (rank == 0) {
+    if (rank == 0 && options.output_summary) {
       fmt::print(std::cout, "\n\n Input Region summary for rank 0:\n");
     }
     transfer_nodeblock(region, output_region, data_pool, options, rank);
@@ -499,6 +500,8 @@ namespace {
                           options);
       transfer_field_data(region.get_element_blocks(), output_region, data_pool,
                           Ioss::Field::ATTRIBUTE, options);
+      transfer_field_data(region.get_element_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                          options);
     }
 
     if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
@@ -506,6 +509,8 @@ namespace {
                           options);
       transfer_field_data(region.get_node_blocks(), output_region, data_pool,
                           Ioss::Field::ATTRIBUTE, options);
+      transfer_field_data(region.get_node_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                          options);
     }
 
     if (node_major) {
@@ -513,6 +518,8 @@ namespace {
                           options);
       transfer_field_data(region.get_element_blocks(), output_region, data_pool,
                           Ioss::Field::ATTRIBUTE, options);
+      transfer_field_data(region.get_element_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                          options);
     }
 
     // Structured Blocks -- Contain a NodeBlock that also needs its field data transferred...
@@ -552,10 +559,14 @@ namespace {
                         options);
     transfer_field_data(region.get_edge_blocks(), output_region, data_pool, Ioss::Field::ATTRIBUTE,
                         options);
+    transfer_field_data(region.get_edge_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                        options);
 
     transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::MESH,
                         options);
     transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::ATTRIBUTE,
+                        options);
+    transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::MAP,
                         options);
 
     transfer_field_data(region.get_nodesets(), output_region, data_pool, Ioss::Field::MESH,
@@ -652,7 +663,7 @@ namespace {
     dbi->progress("DEFINING TRANSIENT FIELDS ... ");
 
     if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), "\n Number of time steps on database = {}\n",
                    region.get_property("state_count").get_int());
       }
@@ -797,7 +808,7 @@ namespace {
       }
       size_t num_nodes = inb->entity_count();
       size_t degree    = inb->get_property("component_degree").get_int();
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of Coordinates per Node = {:14}\n",
                    fmt::group_digits(degree));
         fmt::print(Ioss::DebugOut(), " Number of Nodes                = {:14}\n",
@@ -883,7 +894,7 @@ namespace {
         auto block = new T(*iblock);
         output_region.add(block);
       }
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
                    (*blocks.begin())->type_string() + "s", fmt::group_digits(blocks.size()));
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
@@ -951,7 +962,7 @@ namespace {
         }
       }
 
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
                    (*blocks.begin())->type_string() + "s", fmt::group_digits(blocks.size()));
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
@@ -1014,7 +1025,7 @@ namespace {
       }
     }
 
-    if (options.verbose && rank == 0 && !fss.empty()) {
+    if (options.output_summary && rank == 0 && !fss.empty()) {
       fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
                  (*fss.begin())->type_string() + "s", fmt::group_digits(fss.size()));
     }
@@ -1040,7 +1051,7 @@ namespace {
         output_region.add(o_set);
       }
 
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}",
                    (*sets.begin())->type_string() + "s", fmt::group_digits(sets.size()));
         fmt::print(Ioss::DebugOut(), "\tLength of entity list = {:14}\n",
@@ -1423,7 +1434,7 @@ namespace {
 
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank)
   {
-    if (options.verbose && rank == 0) {
+    if (options.output_summary && rank == 0) {
       fmt::print(Ioss::DebugOut(), "\r\tTime step {:5d} at time {:10.5e}", istep, time);
     }
   }

@@ -345,6 +345,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     if (my_processor == 0) {
       options_.usage(std::cerr);
       fmt::print(stderr, "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.\n\n");
+      fmt::print(stderr, "\tDocumentation: https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#io-shell\n\n");
       fmt::print(stderr, "\t->->-> Send email to gdsjaar@sandia.gov for {} support.<-<-<-\n",
                  options_.program_name());
     }

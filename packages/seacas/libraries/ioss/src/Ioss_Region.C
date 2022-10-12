@@ -287,6 +287,14 @@ namespace {
     return iodatabase->is_input() || iodatabase->open_create_behavior() == Ioss::DB_APPEND ||
            iodatabase->open_create_behavior() == Ioss::DB_MODIFY;
   }
+
+  template <typename T>
+  void internal_erase_fields(const std::vector<T> &entities, Ioss::Field::RoleType role)
+  {
+    for (const auto &entity : entities) {
+      entity->field_erase(role);
+    }
+  }
 } // namespace
 
 namespace Ioss {
@@ -899,9 +907,9 @@ namespace Ioss {
     DatabaseIO *db = get_database();
     db->get_step_times();
 
-    int    step     = -1;
-    double max_time = -1.0;
-    for (int i = 0; i < static_cast<int>(stateTimes.size()); i++) {
+    int    step     = stateTimes.empty() ? -1 : 0;
+    double max_time = stateTimes.empty() ? -1 : stateTimes[0];
+    for (int i = 1; i < static_cast<int>(stateTimes.size()); i++) {
       if (stateTimes[i] > max_time) {
         step     = i;
         max_time = stateTimes[i];
@@ -1027,6 +1035,24 @@ namespace Ioss {
     db->end_state(state, time);
     currentState = -1;
     return time;
+  }
+
+  void Region::erase_fields(Field::RoleType role)
+  {
+    field_erase(role);
+    internal_erase_fields(get_node_blocks(), role);
+    internal_erase_fields(get_edge_blocks(), role);
+    internal_erase_fields(get_face_blocks(), role);
+    internal_erase_fields(get_element_blocks(), role);
+    internal_erase_fields(get_nodesets(), role);
+    internal_erase_fields(get_edgesets(), role);
+    internal_erase_fields(get_facesets(), role);
+    internal_erase_fields(get_elementsets(), role);
+    internal_erase_fields(get_sidesets(), role);
+    internal_erase_fields(get_commsets(), role);
+    internal_erase_fields(get_structured_blocks(), role);
+    internal_erase_fields(get_assemblies(), role);
+    internal_erase_fields(get_blobs(), role);
   }
 
   /** \brief Add a structured block to the region.

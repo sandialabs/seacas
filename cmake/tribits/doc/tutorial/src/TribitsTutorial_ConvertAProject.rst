@@ -44,7 +44,7 @@ The first thing to do when converting a projec to tribits is to think
 about the structure of the project and to figure out the best way to
 break it into packages.  In this section, I hope to give you a better
 idea of what exactly constitutes a tribits package and give you some
-guidlines on how to split them up.  Once you have your project
+guidelines on how to split them up.  Once you have your project
 building with Tribits, you will be able to build different
 configurations by simply turning packages on or off.
 
@@ -64,7 +64,7 @@ examples
 ~~~~~~~~
 
 if libA libB, and liC do not depend on each other and it makes sense
-to build them separately, then make them each ther own package.
+to build them separately, then make them each their own package.
 
 libA ==> libB ==> libC 
 libA depends on libB which depends on libC.
@@ -72,7 +72,7 @@ Again consider making them all their own packages
 
 libA <==> libB ==> libC
 
-libA and libB depend on eachother and libB depends on libC.  Make two
+libA and libB depend on each other and libB depends on libC.  Make two
 packages, one that builds A and B, and one that builds C
 
 
@@ -203,12 +203,12 @@ If you are building more than one target in a package you may be
 accustomed to calling target_link_library() to tell camke to build the
 target against some library.  If the library is being built in the
 same package as your target, you do not need to do this because
-Tribits will automatically link against any libraies built in the same
+Tribits will automatically link against any libraries built in the same
 package.  Additionally you do not need to do this for targets built in
 other packages because tribits will link against any libraries built
 in packages that the current package depends on.  If you are calling
 target_link_library() then it is either redundant, or it indicates
-there is a dependancy that needs to be defined in the
+there is a dependency that needs to be defined in the
 Dependencies.camke file of your package.  
 
 
@@ -221,12 +221,12 @@ project.  In order to do this you need to define some things at the
 project level.  The top level project will have a CMakeLists file as
 well as a few .camke files to define packages that are in the project,
 TPLs that he project may depend on, software version, and other
-project infrormation.  In the tribits project directory you need to
+project information.  In the tribits project directory you need to
 have the following files:
 
 1. *CMakeLists.txt* - top level CMakeLists for the project.  here you
    will initialize your Tribits project, define which packages will be
-   built by defult, and define some setting for your project
+   built by default, and define some setting for your project
 #. *PackagesList.cmake* - Tells tribits which packages are part of
    this projec t and where to find them
 #. *TPLsList.cmke* - Tells tribits which TPLs that packages my depend
@@ -239,7 +239,7 @@ have the following files:
    Projects will have a packages directory that contains all of the
    individual package directories in the project
 
-An example direcory structure could look like this::
+An example directory structure could look like this::
 
   my_tribits_project/
   |__CMakeLists.txt
@@ -302,13 +302,13 @@ Testing category (Required)
 - *PT (Primary Tested)* - The code is the highest priority to keep
   working.  This package package is essential to developer
   productivity and would adversly effect customers if broken.
-- *ST (Seconday Tested)* - This code is very important to the project
-  but will not nessesarily halt developement if it breaks.  Consider
+- *ST (Secondary Tested)* - This code is very important to the project
+  but will not necessarily halt development if it breaks.  Consider
   making a package as ST if it depends on difficult to install TPLs or
   TPLs that are not available no all deveopment platforms.
 - *EX (Experimental)* - This code is unstable and difficult to
   maintain.  It is not portible or not important enough to be tested
-  at teh same level as other code
+  at the same level as other code
 
 Package Maturity (Defaults to UM) (ask Ross what this is? to include?)
 - EP
@@ -348,8 +348,8 @@ cmake find module, and a classification for each tpl.  For example::
  )
 
 In this example you can see a path to the tribits findTPLMPI.camke
-moduel which will find mpi on the sytem as well as exaples of reletive
-paths to a directory where the project has defiend some cmkae find
+module which will find mpi on the system as well as examples of relative
+paths to a directory where the project has defined some cmkae find
 modules for the required TPLs.  Each line will contain information
 about one tpl.  The first entry is the name of the tpl, the second is
 the path to the tpl find module, and the third is for tpl
@@ -359,7 +359,7 @@ Testing category (Required)
 
 - *PT (Primary Tested)* - This tpl is essential to developer
   productivity and would adversly effect customers if broken.
-- *ST (Seconday Tested)* - This tpl is important to the project but
+- *ST (Secondary Tested)* - This tpl is important to the project but
   mat be difficult to install or the TPL is not available no all
   deveopment platforms.
 - *EX (Experimental)* - TPL is experimental, unstable and/or difficult to
@@ -371,7 +371,7 @@ The recommendation is to list all TPLs as "PT"
 Version.cmake
 -------------
 
-This file just contains version infromation for the code example::
+This file just contains version information for the code example::
 
   set(${REPOSITORY_NAME}_VERSION 1.1)
   set(${REPOSITORY_NAME}_MAJOR_VERSION 01)
@@ -391,7 +391,7 @@ in this project level CMakeLists file:
 
 1. cmake_minimum_version() - set the minimum version of cmake required
    for this project o build.  If you try and run with a lower version
-   then there wil be an error. You cannot specify a version lower than
+   then there will be an error. You cannot specify a version lower than
    3.17.0
 #. Include ProjectNmae.cmake and call project() with argument PROJECT_NAME
 #. specify the directory to tribits and include TriBITS.cmake
@@ -439,7 +439,7 @@ such as ::
 
 where each line is one repo and
 
-- **REPO_NAME** is the name ofthe repo
+- **REPO_NAME** is the name of the repo
 
 - **REPO_DIR** is the relative path to the repo (asssumed to be
   ./REPO_NAME/ if it is blank)

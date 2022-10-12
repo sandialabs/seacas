@@ -32,7 +32,7 @@
 #endif
 
 namespace {
-  const char *version_string = "6.07 (2022/06/10)";
+  const char *version_string = "6.10 (2022/08/02)";
 
   void output_copyright();
 
@@ -566,6 +566,8 @@ namespace SEAMS {
           << "\tEnter {DUMP()} for list of user-defined variables\n"
           << "\tEnter {DUMP_FUNC()} for list of functions recognized by aprepro\n"
           << "\tEnter {DUMP_PREVAR()} for list of predefined variables in aprepro\n\n"
+          << "\tDocumentation: "
+             "https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#aprepro\n\n"
           << "\t->->-> Send email to gdsjaar@sandia.gov for aprepro support.\n\n";
       exit(EXIT_SUCCESS);
     }
