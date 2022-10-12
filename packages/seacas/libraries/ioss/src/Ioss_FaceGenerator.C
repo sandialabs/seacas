@@ -33,12 +33,6 @@
 
 #define DO_TIMING 0
 
-#if defined(__GNUC__) && __GNUC__ >= 7 && !__INTEL_COMPILER
-#define FALL_THROUGH [[gnu::fallthrough]]
-#else
-#define FALL_THROUGH ((void)0)
-#endif /* __GNUC__ >= 7 */
-
 namespace {
   template <typename T> void generate_index(std::vector<T> &index)
   {
