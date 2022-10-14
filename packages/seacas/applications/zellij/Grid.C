@@ -262,8 +262,7 @@ void Grid::create_output_regions(SystemInterface &interFace)
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
-    m_outputRegions[i] =
-        std::unique_ptr<Ioss::Region>(new Ioss::Region(dbo, "zellij_output_region"));
+    m_outputRegions[i] = std::make_unique<Ioss::Region>(dbo, "zellij_output_region");
     output_region(i)->begin_mode(Ioss::STATE_DEFINE_MODEL);
     output_region(i)->property_add(Ioss::Property("code_name", qainfo[0]));
     output_region(i)->property_add(Ioss::Property("code_version", qainfo[2]));

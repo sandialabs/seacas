@@ -7,6 +7,8 @@
 #include <Ioss_Field.h>
 #include <Ioss_FieldManager.h>
 #include <Ioss_Sort.h>
+#include <Ioss_Utils.h>
+
 #include <cassert>
 #include <cstddef>
 #include <fmt/ostream.h>

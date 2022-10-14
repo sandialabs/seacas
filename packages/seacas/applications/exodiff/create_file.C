@@ -325,8 +325,8 @@ namespace {
     }
 
     if (do_all_flag) {
-      auto name_length = var_names1.size();
-      for (size_t n = 0; n < name_length; ++n) {
+      auto length_name = var_names1.size();
+      for (size_t n = 0; n < length_name; ++n) {
         const std::string &name = var_names1[n];
         if (!interFace.summary_flag &&
             find_string(var_names2, name, interFace.nocase_var_names) < 0) {
@@ -357,8 +357,8 @@ namespace {
       }
 
       if (!interFace.noSymmetricNameCheck) {
-        name_length = var_names2.size();
-        for (size_t n = 0; n < name_length; ++n) {
+        length_name = var_names2.size();
+        for (size_t n = 0; n < length_name; ++n) {
           const std::string &name = var_names2[n];
           if (!interFace.summary_flag &&
               find_string(var_names1, name, interFace.nocase_var_names) < 0) {

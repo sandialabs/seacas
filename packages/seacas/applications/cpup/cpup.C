@@ -180,7 +180,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
 
     // NOTE: region owns database pointer at this time...
     std::string name = "CPUP_" + std::to_string(p + 1);
-    part_mesh[p]     = std::unique_ptr<Ioss::Region>(new Ioss::Region(dbi, name));
+    part_mesh[p]     = std::make_unique<Ioss::Region>(dbi, name);
 
     if (part_mesh[p]->mesh_type() != Ioss::MeshType::STRUCTURED) {
       part_mesh[p]->output_summary(std::cerr);

@@ -102,8 +102,8 @@ namespace {
       size_t                        proc_count = proc_region.size();
       std::vector<std::vector<INT>> map(proc_count);
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
-        auto  &proc_ebs           = proc_region[p]->get_element_blocks();
-        size_t proc_element_count = proc_ebs[b]->entity_count();
+        const auto &proc_ebs           = proc_region[p]->get_element_blocks();
+        size_t      proc_element_count = proc_ebs[b]->entity_count();
         map[p].reserve(proc_element_count * 2);
       }
 
@@ -122,7 +122,7 @@ namespace {
       offset += global_element_count;
 
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
-        auto &proc_ebs = proc_region[p]->get_element_blocks();
+        const auto &proc_ebs = proc_region[p]->get_element_blocks();
         proc_ebs[b]->put_field_data("chain", map[p]);
         map[p].clear();
         proc_progress(p, proc_count);
@@ -171,9 +171,9 @@ namespace {
       field.set_index(1);
       block->field_add(field);
       if (add_chain_info) {
-        Ioss::Field field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
-        field.set_index(2);
-        block->field_add(field);
+        Ioss::Field ch_field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
+        ch_field.set_index(2);
+        block->field_add(ch_field);
       }
     }
   }
@@ -320,7 +320,7 @@ namespace {
 
     int common_nodes = 999;
 
-    auto &ebs = region.get_element_blocks();
+    const auto &ebs = region.get_element_blocks();
     for (const auto &eb : ebs) {
       const Ioss::ElementTopology *topology = eb->topology();
       const Ioss::ElementTopology *boundary = topology->boundary_type(0);
@@ -462,9 +462,9 @@ namespace {
     progress(__func__);
     // Size of pointer list is element count + 1;
     // Size of adjacency list is sum of nodes-per-element for each element.
-    size_t sum   = 0;
-    size_t count = 0;
-    auto  &ebs   = region.get_element_blocks();
+    size_t      sum   = 0;
+    size_t      count = 0;
+    const auto &ebs   = region.get_element_blocks();
     for (const auto &eb : ebs) {
       size_t element_count = eb->entity_count();
       size_t element_nodes = eb->topology()->number_nodes();
@@ -637,8 +637,8 @@ namespace {
       }
       // Get all element blocks and cycle through each reading the
       // values for the processor...
-      auto &blocks   = region.get_element_blocks();
-      auto  c_region = (Ioss::Region *)(&region);
+      const auto &blocks   = region.get_element_blocks();
+      auto        c_region = (Ioss::Region *)(&region);
       c_region->begin_state(1);
       for (const auto &block : blocks) {
         if (!block->field_exists(elem_variable)) {
@@ -1346,8 +1346,8 @@ namespace {
     // map[p][b] = map for block b on processor p
     size_t proc_count = proc_region.size();
 
-    auto  &ebs         = region.get_element_blocks();
-    size_t block_count = ebs.size();
+    const auto &ebs         = region.get_element_blocks();
+    size_t      block_count = ebs.size();
 
     size_t offset = 0;
     for (size_t b = 0; b < block_count; b++) {
@@ -1361,8 +1361,8 @@ namespace {
 
       std::vector<std::vector<INT>> map(proc_count);
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
-        auto  &proc_ebs           = proc_region[p]->get_element_blocks();
-        size_t proc_element_count = proc_ebs[b]->entity_count();
+        const auto &proc_ebs           = proc_region[p]->get_element_blocks();
+        size_t      proc_element_count = proc_ebs[b]->entity_count();
         map[p].reserve(proc_element_count);
       }
 
@@ -1381,7 +1381,7 @@ namespace {
       offset += element_count;
 
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
-        auto &proc_ebs = proc_region[p]->get_element_blocks();
+        const auto &proc_ebs = proc_region[p]->get_element_blocks();
         proc_ebs[b]->put_field_data("ids", map[p]);
         map[p].clear();
         proc_progress(p, proc_count);
@@ -1589,8 +1589,8 @@ namespace {
     // connectvity[p][b] = connectivity for block b on processor p
 
     progress(__func__);
-    auto  &ebs         = region.get_element_blocks();
-    size_t block_count = ebs.size();
+    const auto &ebs         = region.get_element_blocks();
+    size_t      block_count = ebs.size();
 
     size_t processor_count = proc_region.size();
 
@@ -1662,7 +1662,7 @@ namespace {
       }
 
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
-        auto               &proc_ebs = proc_region[p]->get_element_blocks();
+        const auto         &proc_ebs = proc_region[p]->get_element_blocks();
         Ioss::ElementBlock *eb       = proc_ebs[b];
         eb->put_field_data("connectivity", connectivity[p]);
       }
@@ -1674,9 +1674,9 @@ namespace {
                                  std::vector<std::vector<INT>> &proc_elem_block_cnt)
   {
     progress(__func__);
-    auto  &ebs         = region.get_element_blocks();
-    size_t block_count = ebs.size();
-    size_t begin       = 0;
+    const auto &ebs         = region.get_element_blocks();
+    size_t      block_count = ebs.size();
+    size_t      begin       = 0;
     for (size_t i = 0; i < block_count; i++) {
       size_t end = begin + ebs[i]->entity_count();
       for (size_t j = begin; j < end; j++) {
@@ -1733,9 +1733,9 @@ namespace {
     size_t            sum_on_proc_count = 0;
     Ioss::DatabaseIO *db                = region.get_database();
 
-    auto  &ebs         = region.get_element_blocks();
-    size_t block_count = ebs.size();
-    size_t offset      = 0;
+    const auto &ebs         = region.get_element_blocks();
+    size_t      block_count = ebs.size();
+    size_t      offset      = 0;
 
     std::vector<size_t> on_proc_count(proc_count);
     for (size_t b = 0; b < block_count; b++) {
@@ -1965,8 +1965,8 @@ namespace {
 
     // Create element blocks for each processor...
     for (size_t p = 0; p < interFace.processor_count(); p++) {
-      auto  &ebs = region.get_element_blocks();
-      size_t bc  = ebs.size();
+      const auto &ebs = region.get_element_blocks();
+      size_t      bc  = ebs.size();
       for (size_t b = 0; b < bc; b++) {
         std::string type = ebs[b]->topology()->name();
         auto *eb = new Ioss::ElementBlock(proc_region[p]->get_database(), ebs[b]->name(), type,

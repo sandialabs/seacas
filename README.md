@@ -211,7 +211,7 @@ target_link_libraries(exo_write SEACASExodus::exodus)
 ```
 
 This would then be used as:
-```
+```sh
 mkdir build; cd build
 CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake -G "Unix Makefiles" ..
 make

@@ -24,7 +24,7 @@ jobs:
         cgns: [ 4.3.0 ]
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -35,7 +35,7 @@ jobs:
         ###
       - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         id: cache-TPL-mpi
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
           key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
@@ -231,7 +231,7 @@ jobs:
           }
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -239,7 +239,7 @@ jobs:
 
       - name: Fetch TPL Cache
         id: cache-TPL
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
           key: TPL-v1-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
@@ -291,5 +291,5 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
-          ctest -j 4 --output-on-failure --exclude-regex exodus3.py
+          ctest -j 4 --output-on-failure --exclude-regex test_exo
         if: ${{ success() && (matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO') }}
