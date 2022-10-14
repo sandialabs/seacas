@@ -433,8 +433,9 @@ namespace {
         fmt::print("\t{}, {:8} sides, {:3d} attributes, {:8} distribution factors.\n", name(fb),
                    fmt::group_digits(count), num_attrib, fmt::group_digits(num_dist));
         info_df(fb, "\t\t");
-        Ioss::Utils::info_fields(fb, Ioss::Field::TRANSIENT, "\t\tTransient: ");
-        Ioss::Utils::info_fields(fb, Ioss::Field::REDUCTION, "\t\tTransient (Reduction):  ");
+        Ioss::Utils::info_fields(fb, Ioss::Field::TRANSIENT, "\t\tTransient: ", "\n\t\t");
+        Ioss::Utils::info_fields(fb, Ioss::Field::REDUCTION,
+                                 "\t\tTransient (Reduction):  ", "\n\t\t");
       }
     }
   }

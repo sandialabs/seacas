@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -929,11 +929,13 @@ namespace {
       const Ioss::Property &ige_property_2 = ige_2->get_property(property);
       if (ige_property_1 != ige_property_2) {
         if (ige_property_1.get_type() == Ioss::Property::STRING) {
-          fmt::print(buf, "\tPROPERTY value mismatch ({}): ({} vs {})\n", property,
-                     ige_property_1.get_string(), ige_property_2.get_string());
+          auto p1_value = ige_property_1.get_string();
+          auto p2_value = ige_property_2.get_string();
+          fmt::print(buf, "\tPROPERTY value mismatch [STRING] ({}): ('{}' vs '{}')\n", property,
+                     p1_value, p2_value);
         }
         else if (ige_property_1.get_type() == Ioss::Property::INTEGER) {
-          fmt::print(buf, "\tPROPERTY value mismatch ({}): ({} vs {})\n", property,
+          fmt::print(buf, "\tPROPERTY value mismatch [INTEGER] ({}): ({} vs {})\n", property,
                      ige_property_1.get_int(), ige_property_2.get_int());
         }
         else {
