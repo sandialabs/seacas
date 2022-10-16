@@ -14,10 +14,9 @@
 
 #include "mpi.h"
 
-int MPI_Graph_create ( MPI_Comm comm_old, int nnodes, int *index, int *edges, 
+int MPI_Graph_create ( MPI_Comm comm_old, int nnodes, int *index, int *edges,
                       int reorder, MPI_Comm *comm_graph )
 {
   _MPI_COVERAGE();
   return PMPI_Graph_create (comm_old, nnodes, index, edges, reorder, comm_graph);
 }
-

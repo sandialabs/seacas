@@ -5,16 +5,16 @@ from a finite element model described in the \exo\ database
 format~\cite{EXODUS}.
 Within this shell program are several utility routines which calculate
 information about the finite element model.  The utilities currently
-implemented in \numbers\ allow the analyst to determine: 
+implemented in \numbers\ allow the analyst to determine:
 \begin{itemize}
 \item the volume and coordinate limits of each of the materials in the model;
-\item the mass properties of the model; 
-\item the minimum, maximum, and average element volumes for each material; 
-\item the volume and change in volume of a cavity; 
+\item the mass properties of the model;
+\item the minimum, maximum, and average element volumes for each material;
+\item the volume and change in volume of a cavity;
 \item the nodes or elements that are within a specified distance from a
-user-defined point, line, or plane; 
-\item an estimate of the explicit central-difference timestep for each 
-material; 
+user-defined point, line, or plane;
+\item an estimate of the explicit central-difference timestep for each
+material;
 \item the validity of contact surfaces or slidelines, that is, whether
 two surfaces overlap at any point; and
 \item the distance between two surfaces.
@@ -24,7 +24,7 @@ These utilities have been developed to automate and simplify some of the
 tasks normally performed during an analysis.  The \numbers\ program
 reads the finite element model and results from a file written in the
 \exo\ binary file format which is used in the Engineering
-Analysis Department at \SNLA. 
+Analysis Department at \SNLA.
 
 The capabilities of \numbers\ have evolved during the past eighteen
 months.  Originally, it was written solely to calculate the mass
@@ -34,7 +34,7 @@ tasks that were usually performed manually could easily be implemented
 in \numbers.  Tasks such as determining node and element numbers,
 verifying contact surfaces, and others, are now performed more
 efficiently and, hopefully, more accurately since the code performs the
-repetitive calculations automatically. 
+repetitive calculations automatically.
 
 Although the original reason for developing \numbers\ was to simply
 calculate mass properties, the code now functions as an \exo\ shell that
@@ -45,7 +45,7 @@ simply write a subroutine to perform their function, and insert it into
 database and providing a user interface. For most cases, adding a
 function to \numbers\ requires only writing the function subroutine,
 adding the command name to the table of valid commands, and adding a few
-statements to call the routine. 
+statements to call the routine.
 
 The remainder of this report is organized as follows.
 Chapter~\ref{c:numerics} describes the numerical algorithms used by the

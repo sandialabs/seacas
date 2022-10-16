@@ -24,4 +24,3 @@ int PMPI_Reduce_scatter ( void *sendbuf, void *recvbuf, int *recvcnts, MPI_Datat
 
   return PMPI_Reduce(sendbuf,recvbuf,*recvcnts,datatype,op,0,comm);
 }
-

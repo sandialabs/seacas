@@ -19,6 +19,5 @@ int MPI_File_get_view(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype,
                 MPI_Datatype *filetype, char *datarep)
 {
   _MPI_COVERAGE();
-  return PMPI_File_get_view(fh, disp, etype, filetype, datarep); 
+  return PMPI_File_get_view(fh, disp, etype, filetype, datarep);
 }
-

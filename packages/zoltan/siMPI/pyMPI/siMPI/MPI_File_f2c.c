@@ -18,6 +18,5 @@
 MPI_File MPI_File_f2c(MPI_Fint fh)
 {
   _MPI_COVERAGE();
-  return PMPI_File_f2c(fh); 
+  return PMPI_File_f2c(fh);
 }
-

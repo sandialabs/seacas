@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -112,17 +112,17 @@ struct Parallel_IO
   int     chunk_reader;   /* for very large matrix market files */
   int     init_dist_type;      /* Flag indicating how input objects
                                   should be initially distributed.     */
-  int     init_dist_procs;     /* How many procs to use in 
+  int     init_dist_procs;     /* How many procs to use in
                                   the initial distribution.            */
-  ZOLTAN_ID_TYPE  init_size;           /* For NO_FILE_* (random) input, the 
+  ZOLTAN_ID_TYPE  init_size;           /* For NO_FILE_* (random) input, the
                                   no. of objects to be created. */
-  int     init_dim;            /* For NO_FILE_* (random) input, the 
+  int     init_dim;            /* For NO_FILE_* (random) input, the
                                   dimension of the problem (1, 2, or 3D) */
-  int     init_vwgt_dim;       /* For NO_FILE_* (random) input, the 
+  int     init_vwgt_dim;       /* For NO_FILE_* (random) input, the
                                   no. of weights per object.           */
   int     matrix_obj;          /* What are the objects to be balanced
                                   for a sparse matrix? (ROWS, COLUMNS) */
-  int     init_dist_pins;      /* For hypergraphs, how should pins be  
+  int     init_dist_pins;      /* For hypergraphs, how should pins be
                                   initially distributed.               */
 
   /* The root location of the parallel disks */
@@ -138,7 +138,7 @@ struct Parallel_IO
 typedef struct Parallel_IO  PARIO_INFO;
 typedef struct Parallel_IO *PARIO_INFO_PTR;
 
-/* 
+/*
  * Generic list of options for programs that want to use
  * zdrive style of input file.
  */
@@ -271,7 +271,7 @@ extern int chaco_setup_mesh_struct(int, int, PROB_INFO_PTR,
                          int *, int, float *, int, float *, int,
                          float *, float *, float *, short *, int, int);
 
-extern void chaco_init_local_ids(int **, int **, int *, int *, int *, 
+extern void chaco_init_local_ids(int **, int **, int *, int *, int *,
                          short *, int);
 
 #ifdef __cplusplus

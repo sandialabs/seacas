@@ -349,10 +349,10 @@ int Zoltan_RB_find_bisector(
     MPI_Get_address(&(med->totallo[0]), &(ind[3]));
 #else /* MPI 1.x */
     /* MPI_Address is deprecated in MPI 2.0 */
-    MPI_Address(med, &offset); 
-    MPI_Address(&(med->countlo), &(ind[1])); 
-    MPI_Address(&(med->proclo), &(ind[2])); 
-    MPI_Address(&(med->totallo[0]), &(ind[3])); 
+    MPI_Address(med, &offset);
+    MPI_Address(&(med->countlo), &(ind[1]));
+    MPI_Address(&(med->proclo), &(ind[2]));
+    MPI_Address(&(med->totallo[0]), &(ind[3]));
 #endif /* MPI_VERSION >= 2 */
 
     ind[0] = 0;
@@ -538,7 +538,7 @@ int Zoltan_RB_find_bisector(
         tmp_half = 0.5 * (valuemin + valuemax);
 
 #ifdef DEBUG_BISECT
-      printf("[%2d] Debug: Iteration %d,  tmp_half = %f\n", 
+      printf("[%2d] Debug: Iteration %d,  tmp_half = %f\n",
              proc, iteration, tmp_half);
 #endif
 
@@ -685,7 +685,7 @@ int Zoltan_RB_find_bisector(
               proc, medme->totallo[0], medme->totallo[1],
               medme->totalhi[0], medme->totalhi[1]);
       printf("[%2d] Debug: med->totallo = (%f, %f), med->totalhi = (%f, %f)\n",
-              proc, med->totallo[0], med->totallo[1], 
+              proc, med->totallo[0], med->totallo[1],
               med->totalhi[0], med->totalhi[1]);
       printf("[%2d] Debug: med->wtlo = (%f, %f), med->wthi = (%f, %f)\n",
               proc, med->wtlo[0], med->wtlo[1], med->wthi[0], med->wthi[1]);
@@ -819,8 +819,8 @@ int Zoltan_RB_find_bisector(
 
 #ifdef DEBUG_BISECT
                   printf("[%2d] Debug: moving dot %d to other half, "
-                         "norm(tmplo) = %g, norm(tmphi) = %g\n", 
-                         proc, i, Zoltan_norm(mcnorm, nwgts, tmplo, scalelo), 
+                         "norm(tmplo) = %g, norm(tmphi) = %g\n",
+                         proc, i, Zoltan_norm(mcnorm, nwgts, tmplo, scalelo),
                          Zoltan_norm(mcnorm, nwgts, tmphi, scalehi));
 #endif
                 }
@@ -837,7 +837,7 @@ int Zoltan_RB_find_bisector(
           }
 
 #ifdef DEBUG_BISECT
-          printf("[%2d] Debug: bisect value too small, breakflag = %d\n", 
+          printf("[%2d] Debug: bisect value too small, breakflag = %d\n",
                  proc, breakflag);
 #endif
 
@@ -985,7 +985,7 @@ int Zoltan_RB_find_bisector(
                   Zoltan_daxpy(nwgts, 1., &uniformWeight, tmphi, tmphi);
 #ifdef DEBUG_BISECT
                 printf("[%2d] Examining dot %2d = %f, norm= %f, oldnorm= %f\n",
-                  proc, i, dots[i], 
+                  proc, i, dots[i],
                   Zoltan_norm(mcnorm, nwgts, tmphi, scalehi), oldnorm);
                 printf("[%2d] tmplo = (%f, %f)\n", proc, tmplo[0], tmplo[1]);
                 printf("[%2d] tmphi = (%f, %f)\n", proc, tmphi[0], tmphi[1]);
@@ -1015,7 +1015,7 @@ int Zoltan_RB_find_bisector(
             }
           }
 #ifdef DEBUG_BISECT
-          printf("[%2d] Debug: bisect value too big, breakflag = %d\n", 
+          printf("[%2d] Debug: bisect value too big, breakflag = %d\n",
                  proc, breakflag);
 #endif
           if (breakflag){                  /* done if moved enough */
@@ -1263,7 +1263,7 @@ void Zoltan_bisector_merge(void *in, void *inout, int *len, MPI_Datatype *dptr)
   /* make sure both bisectors use the same # of weights */
   nwgts = med1->nwgts;
   if (med2->nwgts != nwgts){
-    ZOLTAN_PRINT_ERROR(-1, yo, 
+    ZOLTAN_PRINT_ERROR(-1, yo,
                        "Inconsistent number of weights in bisector structs!");
     return;
   }
@@ -1412,4 +1412,3 @@ static void Zoltan_daxpy(int n, double alpha, double *x, double *y, double *z)
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
-

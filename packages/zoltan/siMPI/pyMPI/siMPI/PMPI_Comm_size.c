@@ -35,4 +35,3 @@ int index;
   MPI_Abort (comm, MPI_ERR_IN_STATUS);
   return MPI_ERR_ARG;
 }
-

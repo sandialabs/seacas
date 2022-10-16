@@ -14,11 +14,10 @@
 
 #include "mpi.h"
 
-int MPI_Get_version( 
-        int *version, 
+int MPI_Get_version(
+        int *version,
         int *subversion )
 {
   _MPI_COVERAGE();
   return PMPI_Get_version (version, subversion);
 }
-

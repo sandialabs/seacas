@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -57,7 +57,7 @@ extern "C" {
 
 extern int Zoltan_Get_Processor_Name(ZZ *, char *);
 
-extern int Zoltan_Divide_Machine(ZZ *, int, float *, int, MPI_Comm, int *, 
+extern int Zoltan_Divide_Machine(ZZ *, int, float *, int, MPI_Comm, int *,
                                  int *, int *, int *, int *, int *, int *,
                                  double *);
 extern int Zoltan_Divide_Parts(ZZ *, int, float *, int, int *, int *, double *);

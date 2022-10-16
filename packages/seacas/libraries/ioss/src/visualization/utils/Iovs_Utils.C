@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -231,7 +231,7 @@ namespace Iovs {
 
   void Utils::writeToCatalystLogFile(const DatabaseInfo &dbinfo, const Ioss::PropertyManager &props)
   {
-    if(dbinfo.parallelUtils->parallel_rank() == 0) {
+    if (dbinfo.parallelUtils->parallel_rank() == 0) {
       CatalystLogging catLog = CatalystLogging();
       catLog.setProperties(&props);
       catLog.writeToLogFile();
@@ -259,7 +259,7 @@ namespace Iovs {
     return (stat(filepath.c_str(), &buffer) == 0);
   }
 
-  std::string Utils::getDatabaseOutputFilePath(const std::string &          databaseFilename,
+  std::string Utils::getDatabaseOutputFilePath(const std::string           &databaseFilename,
                                                const Ioss::PropertyManager &properties)
   {
 
@@ -502,7 +502,7 @@ namespace Iovs {
     dbinfo.parallelUtils->barrier();
   }
 
-  void Utils::reportCatalystErrorMessages(const std::vector<int> &        error_codes,
+  void Utils::reportCatalystErrorMessages(const std::vector<int>         &error_codes,
                                           const std::vector<std::string> &error_messages,
                                           int                             myRank)
   {
@@ -511,9 +511,9 @@ namespace Iovs {
         error_codes.size() == error_messages.size()) {
       for (unsigned int i = 0; i < error_codes.size(); i++) {
         if (error_codes[i] > 0) {
-          Ioss::WARNING() << "\n\n** ParaView Catalyst Plugin Warning Message Severity Level "
+          Ioss::WarnOut() << "\n\n** ParaView Catalyst Plugin Warning Message Severity Level "
                           << error_codes[i] << ", On Processor " << myRank << " **\n\n";
-          Ioss::WARNING() << error_messages[i];
+          Ioss::WarnOut() << error_messages[i];
         }
         else {
           std::ostringstream errmsg;
@@ -532,11 +532,11 @@ namespace Iovs {
     PAR_UNUSED(dbinfo);
 #ifdef SEACAS_HAVE_MPI
     int size = s.size();
-    MPI_Bcast(&size, 1, MPI_INT, 0, dbinfo.parallelUtils->communicator());
+    dbinfo.parallelUtils->broadcast(size);
     if (dbinfo.parallelUtils->parallel_rank() != 0) {
       s.resize(size);
     }
-    MPI_Bcast(const_cast<char *>(s.data()), size, MPI_CHAR, 0, dbinfo.parallelUtils->communicator());
+    dbinfo.parallelUtils->broadcast(s);
 #endif
   }
 
@@ -547,7 +547,7 @@ namespace Iovs {
 #ifdef SEACAS_HAVE_MPI
 
     int code = statusCode;
-    MPI_Bcast(&code, 1, MPI_INT, 0, dbinfo.parallelUtils->communicator());
+    dbinfo.parallelUtils->broadcast(code);
     statusCode = code;
 #endif
   }

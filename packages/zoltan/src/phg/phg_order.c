@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -44,21 +44,21 @@
  * @HEADER
  */
 
- 
+
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
 #endif
 
 #include <stdlib.h>
-#include "zz_sort.h"    
+#include "zz_sort.h"
 #include "phg.h"
 #include "zz_const.h"
 
 int Zoltan_PHG_Vertex_Visit_Order(
-  ZZ *zz, 
-  HGraph *hg, 
-  PHGPartParams *hgp, 
+  ZZ *zz,
+  HGraph *hg,
+  PHGPartParams *hgp,
   int *order)
 {
   int i, j, edge;
@@ -73,7 +73,7 @@ int Zoltan_PHG_Vertex_Visit_Order(
 
   /* Permute order array according to chosen strategy. */
   switch (hgp->visit_order){
-    case 0: 
+    case 0:
       /* random node visit order (recommended)  */
       /* Synchronize so each proc in column visits in same order */
       Zoltan_Srand_Sync(Zoltan_Rand(NULL), &(hg->comm->RNGState_col),
@@ -81,7 +81,7 @@ int Zoltan_PHG_Vertex_Visit_Order(
       Zoltan_Rand_Perm_Int (order, hg->nVtx, &(hg->comm->RNGState_col));
       break;
 
-    case 1: 
+    case 1:
       /* linear (natural) vertex visit order */
       break;
 
@@ -99,17 +99,17 @@ int Zoltan_PHG_Vertex_Visit_Order(
 
         for (i = 0; i < hg->nVtx; i++)
           tmpvwgt[i] = hg->vwgt[i*hg->VtxWeightDim];
-      } 
-      
+      }
+
       Zoltan_quicksort_pointer_inc_float (order, tmpvwgt, 0, hg->nVtx-1);
       if (tmpvwgt != hg->vwgt) ZOLTAN_FREE(&tmpvwgt);
       break;
     }
 
-    case 3: 
+    case 3:
       /* increasing vertex degree */
       /* intentionally fall through into next case */
-    case 4: 
+    case 4:
       /* increasing vertex degree, weighted by # pins */
 
       /* allocate 4 arrays of size hg->nVtx with a single malloc */
@@ -136,7 +136,7 @@ int Zoltan_PHG_Vertex_Visit_Order(
 
       /* sum up local degrees in each column to get global degrees */
       /* also sum up #pins in same communication */
-      MPI_Allreduce(ldegree, gdegree, 2*hg->nVtx, MPI_INT, MPI_SUM, 
+      MPI_Allreduce(ldegree, gdegree, 2*hg->nVtx, MPI_INT, MPI_SUM,
          hg->comm->col_comm);
 
       /* sort by global values. same on every processor. */

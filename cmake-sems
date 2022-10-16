@@ -1,14 +1,44 @@
-#!/bin/sh
+#! /usr/bin/env bash
 EXTRA_ARGS=$@
 
-### Set to ON for parallel compile; otherwise OFF for serial (default)
-MPI="${MPI:-OFF}"
+# Text color variables
+if [[ $TERM != *"xterm"* ]]; then
+    export TERM=dumb
+fi
+txtred=$(tput setaf 1)    # Red
+txtgrn=$(tput setaf 2)    # Green
+txtylw=$(tput setaf 3)    # Yellow
+#txtblu=$(tput setaf 4)    # Blue
+#txtpur=$(tput setaf 5)    # Purple
+txtcyn=$(tput setaf 6)    # Cyan
+#txtwht=$(tput setaf 7)    # White
+txtrst=$(tput sgr0)       # Text reset
+
+function check_valid()
+{
+    if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ]; then
+	echo "YES"
+	return 1
+    fi
+    if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ]; then
+	echo "NO"
+	return 1
+    fi
+    echo "Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF"
+    exit 1
+}
+
+### Set to YES for parallel compile; otherwise NO for serial (default)
+MPI="${MPI:-NO}"
+MPI=$(check_valid MPI)
+echo "${txtgrn}MPI set to ${MPI}${txtrst}"
 
 ### Switch for Debug or Release build:
 BUILD_TYPE="${BUILD_TYPE:-Release}"
 #BUILD_TYPE=Debug
 
-SHARED="${SHARED:-ON}"
+SHARED="${SHARED:-YES}"
+SHARED=$(check_valid SHARED)
 
 ### Define to YES to *disable* all exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -18,15 +48,17 @@ OMIT_DEPRECATED_CODE="NO"
 ACCESS=$(cd ..; pwd)
 
 ### If you do not have the X11 developer package on your system
-### which provides X11/Xlib.h and the libX11, then change the "ON"
-### below to "OFF". It will disable blot and fastq
-HAVE_X11=ON
+### which provides X11/Xlib.h and the libX11, then change the "YES"
+### below to "NO". It will disable blot and fastq
+HAVE_X11="${HAVE_X11:-YES}"
+HAVE_X11=$(check_valid HAVE_X11)
 
 ### Python Version...
 PYTHON_VER=${PYTHON_VER:-"3.0"}
 
-### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
-THREADSAFE_IO_LIBS=OFF
+### Set to YES to enable the building of a thread-safe version of the Exodus and IOSS libraries.
+THREADSAFE=${THREADSAFE:-NO}
+THREADSAFE=$(check_valid THREADSAFE)
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
@@ -36,12 +68,13 @@ INSTALL_PATH=${ACCESS}
 ### https://sems.sandia.gov/
 module purge
 module load sems-env
-module load sems-gcc
-module load sems-cmake
+module load sems-gcc/9.2.0
+module load sparc-cmake/3.23.2
+#module load sems-cmake/3.19.1
 module load sems-doxygen
 module load sems-zlib/1.2.8/base
 
-if [ "$MPI" == "ON" ]
+if [ "$MPI" == "YES" ]
 then
   module load sems-openmpi
   module load sems-hdf5/1.10.6/parallel
@@ -54,18 +87,18 @@ else
   module load sems-cgns/4.1.1/base
 fi
 
-HAVE_NETCDF=ON
-HAVE_CGNS=ON
+HAVE_NETCDF=YES
+HAVE_CGNS=YES
 
 # NOTE: CGNS, MATIO, PNETCDF, and are currently not supported by SEMS.
-#       To use them you will need to install them following the directions in 
+#       To use them you will need to install them following the directions in
 #       README.md, enable them below, and add the appropriate defines below:
 #
 # -D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
 # -D TPL_Matio_INCLUDE_DIRS:PATH=${MATIO_PATH}/include \
 
-HAVE_MATIO=OFF
-HAVE_CGNS=OFF
+HAVE_MATIO=NO
+HAVE_CGNS=NO
 
 NETCDF_PATH=${SEMS_NETCDF_ROOT}
 HDF5_PATH=${SEMS_HDF5_ROOT}
@@ -74,16 +107,16 @@ CGNS_PATH=${SEMS_CGNS_ROOT}
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
 
-### Set to ON to use Kokkos in the Ioss library; otherwise OFF (default)
-KOKKOS=OFF
+### Set to YES to use Kokkos in the Ioss library; otherwise NO (default)
+KOKKOS=NO
 
-### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
-CUDA=OFF
+### Set to YES for CUDA compile; otherwise NO (default) (only used if KOKKOS=YES
+CUDA=NO
 
 ### Change this to point to the compilers you want to use
 COMPILER="gnu"
 #COMPILER="clang"
-if [ "$MPI" == "ON" ]
+if [ "$MPI" == "YES" ]
 then
   MPI_EXEC=`which mpiexec`
   MPI_BIN=`dirname $MPI_EXEC`
@@ -98,25 +131,25 @@ else
   FC=gfortran
 fi
 
-if [ "$KOKKOS" == "ON" ]
+if [ "$KOKKOS" == "YES" ]
 then
-  if [ "$CUDA" == "ON" ]
+  if [ "$CUDA" == "YES" ]
   then
     export "OMPI_CXX=${SEACAS_SRC_DIR}/packages/kokkos/config/nvcc_wrapper"
     export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
-    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
+    KOKKOS_SYMBOLS="-D Seacas_ENABLE_Kokkos:BOOL=ON \
                     -D TPL_ENABLE_CUDA:Bool=ON \
                     -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   else
     export OMPI_CXX=`which gcc`
     unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
-    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
-                    -D SEACASProj_ENABLE_OpenMP:Bool=ON \
+    KOKKOS_SYMBOLS="-D Seacas_ENABLE_Kokkos:BOOL=ON \
+                    -D Seacas_ENABLE_OpenMP:Bool=ON \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   fi
 else
-  KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
+  KOKKOS_SYMBOLS="-D Seacas_ENABLE_Kokkos:BOOL=OFF"
 fi
 
 rm -f CMakeCache.txt
@@ -132,30 +165,30 @@ cmake  \
 -D CMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=TRUE \
 -D BUILD_SHARED_LIBS:BOOL=OFF \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
--D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
--D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
--D SEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
--D SEACASProj_ENABLE_TESTS=ON \
+-D Seacas_ENABLE_ALL_PACKAGES:BOOL=ON \
+-D Seacas_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
+-D Seacas_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
+-D Seacas_ENABLE_TESTS=ON \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
--D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
--D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
+-D Seacas_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
+-D Seacas_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
--D TPL_ENABLE_Pthread:BOOL=${THREADSAFE_IO_LIBS} \
--D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
--D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
+-D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
+-D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
+-D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
+-D TPL_ENABLE_fmt:BOOL=ON \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 -D PythonInterp_FIND_VERSION:STRING=${PYTHON_VER} \
 \
 ${KOKKOS_SYMBOLS} \
-${DW_SYMBOLS} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
@@ -168,18 +201,20 @@ ${DW_SYMBOLS} \
 $EXTRA_ARGS \
 ..
 
-
+OS=$(uname -s)
+CC_VER=$(${CC} --version)
 echo ""
+echo "          OS: ${OS}"
 echo "      ACCESS: ${ACCESS}"
 echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo "  "
-echo "         CC: ${CC}"
+echo "         CC: ${CC}, ${CC_VER}"
 echo "        CXX: ${CXX}"
 echo "         FC: ${FC}"
 echo "        MPI: ${MPI}"
 echo "     SHARED: ${SHARED}"
 echo " BUILD_TYPE: ${BUILD_TYPE}"
-echo " THREADSAFE: ${THREADSAFE_IO_LIBS}"
+echo " THREADSAFE: ${THREADSAFE}"
 echo " PYTHON_VER: ${PYTHON_VER}"
 echo " "
 echo "     NETCDF: ${HAVE_NETCDF}"

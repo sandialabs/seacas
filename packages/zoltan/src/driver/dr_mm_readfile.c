@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -104,7 +104,7 @@ char line[128];
 int *sendcount = NULL, *start = NULL, *outVals  = NULL;
 int *myVals= NULL, *inVals= NULL, *inptr = NULL;
 struct ijv *myIJV = NULL, *iptr = NULL;
-int remaining, chunksize, amt, myInCount, myMaxCount, myCount; 
+int remaining, chunksize, amt, myInCount, myMaxCount, myCount;
 int rc, edge, vtx, idx,owner, num_lone_vertices;
 short *assignments=NULL;
 int error = 0;  /* flag to indicate status */
@@ -500,7 +500,7 @@ int error = 0;  /* flag to indicate status */
           else { /* Off-diagonal */
             idx = start[iptr->i]+cnt[iptr->i];
             adj[idx] = iptr->j;
-            if (*ch_ewgt_dim) 
+            if (*ch_ewgt_dim)
               ewgts[idx] = iptr->v;
             cnt[iptr->i]++;
           }
@@ -565,7 +565,7 @@ static int comp(const void *a, const void *b)
   else
     return (ai - bi);
 }
-static int add_new_vals(int *newvals, int newCount, 
+static int add_new_vals(int *newvals, int newCount,
        int **myVals, int *myCount, int *myMaxCount)
 {
 int newsize;

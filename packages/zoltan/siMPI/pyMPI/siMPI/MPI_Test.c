@@ -14,7 +14,7 @@
 
 #include "mpi.h"
 
-int MPI_Test ( 
+int MPI_Test (
         MPI_Request  *request,
         int          *flag,
         MPI_Status   *status)
@@ -22,4 +22,3 @@ int MPI_Test (
   _MPI_COVERAGE();
   return PMPI_Test (request, flag, status);
 }
-

@@ -28,14 +28,14 @@ models the body as a three degree-of-freedom system.  The deformation of
 the body is approximated by nonlinear springs at each end of the model.
 The program was written to model the impact behavior of both nuclear
 waste transportation casks (subjected to the regulatory 30-foot drops
-onto an unyielding surface) and laydown weapons. 
+onto an unyielding surface) and laydown weapons.
 
 The code documentation and users' manual are in SAND88-0616, "Numerical
 and Analytical Methods for Approximating the Eccentric Impact Response
 (Slapdown) of Deformable Bodies."  However, several modifications and
 improvements have been added to \slap\ since the users' manual was
 written.  The modifications and improvements are documented in this
-memo. 
+memo.
 
 \section*{New Commands}
 
@@ -43,16 +43,16 @@ A \slap\ analysis normally continues until either both springs have
 unloaded, or the velocities of both the \cmd{NOSE} and \cmd{TAIL} are
 positive.  Sometimes a longer or shorter time duration is needed for
 special cases; therefore, a command has been added to let the analyst
-control the length of the analysis.  The command syntax is: 
+control the length of the analysis.  The command syntax is:
 \begin{quote}
 \sf TERMINATION [TIME] \em end\_time
 \end{quote}
 where the keyword \cmd{TIME} is optional, and the parameter
-\param{end\_time} is the time to terminate the analysis.  
+\param{end\_time} is the time to terminate the analysis.
 
 If \cmd{TERMINATION~TIME} is not specified, the calculation will
 continue until either both springs have unloaded, or the velocities of
-both the \cmd{NOSE} and \cmd{TAIL} are positive. 
+both the \cmd{NOSE} and \cmd{TAIL} are positive.
 
 The square end treatment (see Section~3.1, page~19 of the users' manual)
 can now be specified for both the nose and tail of the body; previously
@@ -70,14 +70,14 @@ algorithm correctly handles both square and round ends and will
 ``stick'' at the impact point if the coefficient of friction is high
 enough.  The new algorithm also works when both ends are in contact
 simultaneously--the oscillations that occurred with the old algorithm no
-longer occur.  
+longer occur.
 
 The algorithm uses an iterative approach to determine the lateral force
 required to completely stick the impacting end.  It then compares this
 with the maximum possible lateral force (normal force times the
 coefficient of friction) and returns the minimum of these two values. In
 several test problems and a comparison with an actual test, the new
-algorithm gives much better results. 
+algorithm gives much better results.
 
 \section*{Modifications to \slap\ Output Files}
 
@@ -88,12 +88,12 @@ and element numberings used in \slap.  The nodes at the contact points
 were added to provide information about the behavior at these points for
 bodies with square ends. For square ends, the $x$-velocities at the
 contact points are not the same as the $x$-velocities at the ends of the
-body centerline. 
+body centerline.
 
 The global variable \cmd{DAMKE} (damaging kinetic energy) has been added
 to the database.  This variable is sometimes used in laydown weapon
 analysis to indicate the severity of the impact.  The damaging kinetic
-energy is equal to 
+energy is equal to
 \begin{displaymath}
 \cmd{DAMKE} = \sfrac1/2 \left(m v_y^2 + I \omega^2\right)
 \end{displaymath}
@@ -105,7 +105,7 @@ velocity about the center of gravity.
 modified slightly.  The event sequence summary (see Figure~A.5 in the
 users' manual) now includes the ratio of the impact velocity to the
 initial velocity which makes it easier to determine the severity of the
-slapdown effect.  
+slapdown effect.
 
 Also, the maximum strain energy in each of the springs during the impact
 event is output in the results summary.  These values are important
@@ -116,11 +116,11 @@ velocity, the strain energy in the spring will be less than that caused
 by a flat impact.  The opposite effect will also occur (higher strain
 energy at lower impact velocity).
 
-\section*{Support and Notification of Modifications} 
+\section*{Support and Notification of Modifications}
 An \cmd{ICER} facility has been created for \slap.  This facility will
 be used to provide a more immediate notification of any future
 modifications or problems. If there are any problems with \slap, contact
-Greg Sjaardema, 1521, at 844--7045. 
+Greg Sjaardema, 1521, at 844--7045.
 
 \begin{figure}
 %\begin{center}

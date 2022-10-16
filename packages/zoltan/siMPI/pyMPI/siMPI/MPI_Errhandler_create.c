@@ -14,11 +14,10 @@
 
 #include "mpi.h"
 
-int MPI_Errhandler_create( 
+int MPI_Errhandler_create(
         MPI_Handler_function *function,
         MPI_Errhandler       *errhandler)
 {
   _MPI_COVERAGE();
   return PMPI_Errhandler_create (function, errhandler);
 }
-

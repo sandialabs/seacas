@@ -10,7 +10,7 @@ the \exo{}~\cite{bib:exodus} format.
 Each application is targeted at a few specific areas of functionality:
 
 \begin{description}
-\item[\exodiff] compares the results data from two \exo{} files with 
+\item[\exodiff] compares the results data from two \exo{} files with
 user-specified relative or absolute tolerances. Output is either (1)~a
 summary of the differences, or (2)~a new \exo{} database where each
 variable is the difference of the variables in the input files.
@@ -25,11 +25,11 @@ application into a single \exo{} database.  \epu{} provides several
 options for controlling the output database contents.  Typical uses
 are for combining two or more processor-specific \exo{} databases into
 a single \exo{} database.
-\epu{} is described in Chapter~\ref{ch:epu}. 
+\epu{} is described in Chapter~\ref{ch:epu}.
 
 \item[\ejoin] joins two or more \exo{} databases into a single
 \exo{} database. The input databases must have disjoint meta and bulk data.
-That is, 
+That is,
 \begin{itemize}
 \item element blocks are not combined in the output model.  Each
 element block in each input file will produce an element block in the
@@ -38,11 +38,11 @@ output file. Similarly for nodesets and sidesets.
 file unless one of the node matching options
 (\param{-match\_node\_ids} or \param{-match\_node\_coordinates}) is specified.
 \item Each element in each input file will produce an element in the
-output file. 
+output file.
 \end{itemize}
 If any of the input databases have timesteps, then the timestep values
 and counts must match on all databases with timesteps.
-\ejoin{} is described in Chapter~\ref{ch:ejoin}. 
+\ejoin{} is described in Chapter~\ref{ch:ejoin}.
 
 \item[\conjoin] joins two or more \exo{} databases into a single
 database. The input databases should represent the same model meta
@@ -53,7 +53,7 @@ database contains time data from 0 to 5 seconds, and the second
 database contains time data from 4 to 10 seconds; the output database
 will contain time data from 0 to 10 seconds.  Typical uses are to join
 databases written from restarted analyses into a single database.
-\conjoin{} is described in Chapter~\ref{ch:conjoin}. 
+\conjoin{} is described in Chapter~\ref{ch:conjoin}.
 \end{description}
 
 Three of the applications above are used to join multiple \exo{}
@@ -75,7 +75,7 @@ analysis model at different times throughout the analysis event, then
 
 \section{\exo{} Concepts}
 The \exo{} database documentation can be accessed at
-\url{http://gsjaardema.github.io/seacas/exodusII-new.pdf}. It
+\url{http://sandialabs.github.io/seacas/exodusII-new.pdf}. It
 contains a full detailed description of \exo{}. This section presents
 an overview of the concepts and structure of an \exo{} database to give some
 details which will be referred to in subsequent chapters. An \exo{}
@@ -91,7 +91,7 @@ contains. It is data like:
 \item element block, nodeset, sideset counts, ids, and names;
 \item the topology of the elements in an element block;
 \item the names of the transient variables and which entities the
-	variables are defined on.  
+	variables are defined on.
 \item shape and position of the entities, i.e., the model ``topology''.
 \end{itemize}
 
@@ -189,4 +189,4 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \end{quote}
 
-The software is available at \url{https://github.com/gsjaardema/seacas}.
+The software is available at \url{https://github.com/sandialabs/seacas}.

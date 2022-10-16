@@ -19,4 +19,3 @@ int MPI_Type_size ( MPI_Datatype datatype, int *size )
   _MPI_COVERAGE();
   return PMPI_Type_size (datatype, size);
 }
-

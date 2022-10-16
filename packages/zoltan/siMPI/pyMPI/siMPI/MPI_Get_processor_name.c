@@ -14,11 +14,10 @@
 
 #include "mpi.h"
 
-int MPI_Get_processor_name( 
+int MPI_Get_processor_name(
         char *name,
         int *resultlen)
 {
   _MPI_COVERAGE();
   return PMPI_Get_processor_name (name, resultlen);
 }
-

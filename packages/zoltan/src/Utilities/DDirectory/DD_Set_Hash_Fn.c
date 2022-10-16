@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -61,7 +61,7 @@ extern "C" {
 
 
 static unsigned int dd_hash_user (
-  ZOLTAN_ID_PTR gid, int gid_length, 
+  ZOLTAN_ID_PTR gid, int gid_length,
   unsigned int nproc,
   void *data,
   ZOLTAN_HASH_FN *fn)
@@ -87,7 +87,7 @@ int Zoltan_DD_Set_Hash_Fn (
    dd->hash = (DD_Hash_fn*)dd_hash_user;
    dd->hashdata = NULL;
    dd->hashfn = hash;
-   dd->cleanup = (DD_Cleanup_fn*) NULL; 
+   dd->cleanup = (DD_Cleanup_fn*) NULL;
 
    if (dd->debug_level > 0)
       ZOLTAN_PRINT_INFO (dd->my_proc, yo, "Successful");

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -53,9 +53,9 @@ extern "C" {
 
 #ifdef ZOLTAN_PARKWAY
 
-    
-void Zoltan_ParaPartKway(int numVertices, int numHedges, const int *vWeights, const int *hEdgeWts, const int *pinList, const int *offsets, int numParts, double constraint, int *k_1cut, const int *options, int *pVector, const char *outFile, MPI_Comm comm);    
-    
+
+void Zoltan_ParaPartKway(int numVertices, int numHedges, const int *vWeights, const int *hEdgeWts, const int *pinList, const int *offsets, int numParts, double constraint, int *k_1cut, const int *options, int *pVector, const char *outFile, MPI_Comm comm);
+
 static int scale_round_weights(float *, int *, int, int, int);
 
 #define ZOLTAN_PARKWAY_ERROR(str, err) \
@@ -70,7 +70,7 @@ int Zoltan_PHG_ParKway(
   HGraph    *hg,
   int       nparts,           /* # of desired partitions */
   Partition partvec,          /* Output:  partition assignment vector */
-  PHGPartParams *hgp          /* Input: hypergraph parameters */  
+  PHGPartParams *hgp          /* Input: hypergraph parameters */
 )
 {
     char *yo = "Zoltan_HG_ParKway";
@@ -91,35 +91,35 @@ int Zoltan_PHG_ParKway(
     PHGComm *hgc=hg->comm;
     int *disp=NULL, *recv_size=NULL;      /* for allgatherv */
     static int seed=1;
-    
+
     /* ParKway expects integer weights; convert if weights are provided. */
     ivwgts = (int *) ZOLTAN_MALLOC(hg->nVtx  * sizeof(int));
-    iewgts = (int *) ZOLTAN_MALLOC(hg->nEdge * sizeof(int));    
+    iewgts = (int *) ZOLTAN_MALLOC(hg->nEdge * sizeof(int));
     if (!ivwgts || !iewgts)
         ZOLTAN_PARKWAY_ERROR("Memory error.", ZOLTAN_MEMERR);
-    
-    
-    if (hg->VtxWeightDim > 1) { 
+
+
+    if (hg->VtxWeightDim > 1) {
         ZOLTAN_PARKWAY_ERROR("ParKway supports Vtx_Weight_Dim == 0 or 1 only.",
                              ZOLTAN_FATAL);
-    } else if (hg->VtxWeightDim == 1) 
+    } else if (hg->VtxWeightDim == 1)
         scale_round_weights(hg->vwgt, ivwgts, hg->nVtx, hg->VtxWeightDim, 0);
-    else 
+    else
         for (i=0; i<hg->nVtx; ++i)
             ivwgts[i] = 1;
 
-        
+
     if (hg->EdgeWeightDim > 1) {
         ZOLTAN_PARKWAY_ERROR("ParKway supports Edge_Weight_Dim == 0 or 1 only.",
                              ZOLTAN_FATAL);
-    } else if (hg->EdgeWeightDim == 1) 
+    } else if (hg->EdgeWeightDim == 1)
         scale_round_weights(hg->ewgt, iewgts, hg->nEdge, hg->EdgeWeightDim, 0);
     else
         for (i=0; i<hg->nEdge; ++i)
             iewgts[i] = 1;
-    
-    
-    
+
+
+
     anVtx = hg->nVtx / hgc->nProc;
     nVtx = (hgc->myProc==hgc->nProc-1) ? hg->nVtx-(anVtx*(hgc->nProc-1)) : anVtx;
 
@@ -146,9 +146,9 @@ int Zoltan_PHG_ParKway(
     options[12] = 3;/*divide connectivity by cluster weight/hyperedge length: 0-neither, 1-only cluster, 2-only hedge len, 3-both   */
     options[13] = 3;/*matching request resolution order: 3 -> random, 2 -> as they arrive */
     options[14] = 1;/*number serial partitioning runs*/
-    
+
     options[15] = 5;/*serial partitioning routine, 1-3 RB, 4 khmetis, 5 patoh, see manual*/
-    
+
     if (!strcasecmp(hgp->parkway_serpart, "patoh"))
         options[15] = 5;
     else if (!strcasecmp(hgp->parkway_serpart, "hmetis"))
@@ -162,9 +162,9 @@ int Zoltan_PHG_ParKway(
     else {
         ZOLTAN_PARKWAY_ERROR("Invalid ParKway serial partitioner. It should be one of; generic, genericv, genericmv, hmetis, patoh.", ZOLTAN_FATAL);
     }
-    
+
     /* uprintf(hgc, "ParKway serpart='%s'  options[13]=%d\n", hgp->parkway_serpart, options[13]); */
-    
+
     options[16] = 2;/*serial coarsening algorithm (only if [15] = RB, see manual)*/
     options[17] = 2;/*num bisection runs in RB (only if [15] = RB, see manual)*/
     options[18] = 10;/*num initial partitioning runs in RB (only if [13] = RB, see manual)*/
@@ -178,61 +178,61 @@ int Zoltan_PHG_ParKway(
     options[26] = 0;/*reduction in [23] as partitions propagate by factor [24]/100 (see manual)*/
     options[27] = 100;/*early exit criterion in parallel refinement, will exit if see ([25]*num vert)/100 consecutive -ve moves */
     options[28] = 0;/*parallel refinement 0->basic, 1->use approx 2->use early exit 3->use approx and early exit  */
-    
+
     constraint = hgp->bal_tol-1.0;
-    
+
     Zoltan_ParaPartKway(nVtx, hg->nEdge, &ivwgts[hgc->myProc*anVtx], iewgts,
                         hg->hindex, hg->hvertex, nparts,
                         constraint, &cut, options, pvector, NULL, hgc->Communicator);
-    
+
 /* KDDKDD
    uprintf(hgc, "ParaPartKway cut=%d\n", cut);
 */
-    
-    
-    /* after partitioning Zoltan needs partvec exist on all procs for nProc_x=1 */       
-    disp[0] = 0; 
+
+
+    /* after partitioning Zoltan needs partvec exist on all procs for nProc_x=1 */
+    disp[0] = 0;
     for (i = 1; i < hgc->nProc; ++i)
         disp[i] = disp[i-1] + anVtx;
-    
-    MPI_Allgather (&nVtx, 1, MPI_INT, recv_size, 1, MPI_INT, hgc->Communicator);    
-    MPI_Allgatherv(pvector, nVtx, MPI_INT, 
+
+    MPI_Allgather (&nVtx, 1, MPI_INT, recv_size, 1, MPI_INT, hgc->Communicator);
+    MPI_Allgatherv(pvector, nVtx, MPI_INT,
                   partvec, recv_size, disp, MPI_INT, hgc->Communicator);
 
-    
+
   /* HERE:  Check whether imbalance criteria were met. */
 
 End:
 
     Zoltan_Multifree(__FILE__,__LINE__, 5, &ivwgts, &iewgts, &pvector, &disp, &recv_size);
-    
+
     return ierr;
 #endif
 }
 
-    
+
 /*****************************************************************************/
 
 #ifdef ZOLTAN_PARKWAY
 
-    
+
 #define INT_EPSILON (1e-5)
 
 static int scale_round_weights(
-  float *fwgts, 
-  int *iwgts, 
-  int n, 
+  float *fwgts,
+  int *iwgts,
+  int n,
   int dim,
   int mode
 )
 {
 /* Convert floating point weights to integer weights.
  * This routine is stolen from scale_round_weights in parmetis_jostle.c.
- * Because it needs to run only serially, and because it uses only 
+ * Because it needs to run only serially, and because it uses only
  * integers (not idxtype), it has been largely duplicated here.
  */
 
-  int i, j, tmp, ierr; 
+  int i, j, tmp, ierr;
   int max_wgt_sum = INT_MAX/8;
   int *nonint;
   float *scale, *sum_wgt, *max_wgt;
@@ -271,7 +271,7 @@ static int scale_round_weights(
     /* Check if all weights are integers */
     for (i=0; i<n; i++){
       for (j=0; j<dim; j++){
-        if (!nonint[j]){ 
+        if (!nonint[j]){
           /* tmp = (int) roundf(fwgts[i]);  EB: Valid C99, but not C89 */
           tmp = (int) floor((double) fwgts[i] + .5); /* Nearest int */
           if (fabs((double)tmp-fwgts[i*dim+j]) > INT_EPSILON){
@@ -280,7 +280,7 @@ static int scale_round_weights(
         }
         sum_wgt[j] += fwgts[i*dim+j];
         if (fwgts[i*dim+j] > max_wgt[j])
-          max_wgt[j] = fwgts[i*dim+j]; 
+          max_wgt[j] = fwgts[i*dim+j];
       }
     }
 
@@ -288,7 +288,7 @@ static int scale_round_weights(
     for (j=0; j<dim; j++){
       scale[j] = 1.;
       /* Scale unless all weights are integers (not all zero) */
-      if (nonint[j] || (max_wgt[j] <= INT_EPSILON) 
+      if (nonint[j] || (max_wgt[j] <= INT_EPSILON)
                     || (sum_wgt[j] > max_wgt_sum)){
         if (sum_wgt[j] == 0){
           ierr = ZOLTAN_WARN;

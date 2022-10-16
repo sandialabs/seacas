@@ -1,11 +1,10 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#ifndef IOSS_Ioss_Map_h
-#define IOSS_Ioss_Map_h
+#pragma once
 
 #include <Ioss_CodeTypes.h>
 #include <cstddef> // for size_t
@@ -50,9 +49,11 @@ namespace Ioss {
           m_myProcessor(processor)
     {
     }
-    Map(const Map &from) = delete;
+    Map(const Map &from)            = delete;
     Map &operator=(const Map &from) = delete;
     ~Map()                          = default;
+
+    void   set_rank(int processor) {m_myProcessor = processor;}
 
     void   set_size(size_t entity_count);
     size_t size() const { return m_map.empty() ? 0 : m_map.size() - 1; }
@@ -114,5 +115,3 @@ namespace Ioss {
     bool m_defined{false}; // For use by some clients; not all, so don't read too much into value...
   };
 } // namespace Ioss
-
-#endif // IOSS_Ioss_Map_h

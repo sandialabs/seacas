@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -94,7 +94,7 @@ int Zoltan_Copy_Params(PARAM_LIST **to, PARAM_LIST const *from)
   prev = NULL;
 
   while (from) {
-    
+
     param = (PARAM_LIST *) ZOLTAN_MALLOC(sizeof(PARAM_LIST));
     if (param == NULL) {
       Zoltan_Free_Params(to);

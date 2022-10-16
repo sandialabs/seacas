@@ -640,7 +640,7 @@ IF(${PROJECT_NAME}_ENABLE_Fortran AND BUILD_ZOLTAN_F90_INTERFACE)
     fort/set_unpackobjmulti.if
     )
 
-  APPEND_SET(SOURCES 
+  APPEND_SET(SOURCES
     fort/ztypes.f90
     fort/zoltan_user_data.f90
     fort/fwrap.f90
@@ -655,7 +655,7 @@ IF(${PROJECT_NAME}_ENABLE_Fortran AND BUILD_ZOLTAN_F90_INTERFACE)
     ${CMAKE_CURRENT_BINARY_DIR}/zoltan_types.mod
     ${CMAKE_CURRENT_BINARY_DIR}/zoltan_user_data.mod
     )
-    
+
 ENDIF()
 
 
@@ -682,4 +682,3 @@ TRIBITS_ADD_LIBRARY(
   )
 
 INSTALL(FILES ${MODULES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-

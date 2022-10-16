@@ -8,7 +8,7 @@ class which has three methods for parsing the input:
 \begin{enumerate}
 \item Read from stdin, echo data to stdout. At end of input, the
 parsed output is available in the \cmd{Aprepro::parsing\_results()}
-stream. 
+stream.
 \item Read and parse a file. The entire file will be parsed with no
 output.  After the file is parsed, the parsed output is available in
 the \cmd{Aprepro::parsing\_results()} stream.
@@ -20,7 +20,7 @@ blocks, verbatim, and echo.
 
 \section{Adding basic \aprepro{} parsing to your application}
 The \aprepro{} capability is provided as a set of C++ classes. The
-main \cmd{SEAMS::Aprepro} class defined in the \file{aprepro.h} 
+main \cmd{SEAMS::Aprepro} class defined in the \file{aprepro.h}
 include file is the main interface used by external programs.
 
 The basic method for using the \cmd{SEAMS::Aprepro} class is:
@@ -60,11 +60,11 @@ function signatures are:
 Where \cmd{name} is the name of the variable to be defined,
 \cmd{value} is the value of the variable (either a double or a
 string).  To create the variable as immutable, pass \var{true} as the
-third option.  
+third option.
 
 \subsection{Adding new functions}
 Additional functions can be made available during parsing as shown in
-the example below. 
+the example below.
 \begin{source}
   // This function is used below in the example showing how an
   // application can add its own functions to an aprepro instance.
@@ -94,11 +94,20 @@ command. The syntax is:
 Where \cmd{option} is one of:
 \begin{longtable}{lp{5.0in}}
 \cmd{--debug} &  Dump all variables, debug loops/if/endif \\
+\cmd{--dumpvars} & Dump all variables at end of run \\
+\cmd{--dumpvars\_json} & Dump all variables at end of run in json format \\
 \cmd{--version} &  Print version number to stderr.\\
+\cmd{--immutable} & All variables are immutable -- cannot be modified \\
+\cmd{--errors\_fatal} & Exit program with nonzero status if errors are encountered \\
+\cmd{--errors\_and\_warnings\_fatal} & Exit program with nonzero status if warnings are encountered \\
+\cmd{--require\_defined} & Treat undefined variable warnings as fatal \\
+\cmd{--one\_based\_index} & Array indexing is one-based (default = zero-based) \\
+\cmd{--interactive} & Interactive use, no buffering \\
+\cmd{--message} & Print INFO messages \\
+\cmd{--info=file} & Output INFO messages (e.g. DUMP() output) to file. \\
 \cmd{--nowarning} &  Do not print warning messages.\\
 \cmd{--copyright} &  Print copyright message to stderr.\\
 \cmd{--message} &  Print INFO messages.\\
-\cmd{--immutable} &  All variables are immutable.\\
 \cmd{--trace} &  Trace program execution. Primarily for aprepro developer.\\
 \cmd{--interactive} &  Interactive use; do not buffer output.\\
 \cmd{--exit\_on} &  End with Exit or EXIT or exit or Quit or QUIT or
@@ -111,24 +120,39 @@ processing input files.\\
 \end{longtable}
 \begin{apout}
 APREPRO PREPROCESSOR OPTIONS:
-        --debug or -d: Dump all variables, debug loops/if/endif
-      --version or -v: Print version number to stderr          
-    --immutable or -X: All variables are immutable--cannot be modified
-  --interactive or -i: Interactive use, no buffering           
-  --include=P or -I=P: Include file or include path            
-                     : If P is path, then optionally prepended to all include filenames
-                     : If P is file, then processed before processing input file
-      --exit\_on or -e: End when 'Exit|EXIT|exit' entered       
-         --help or -h: Print this list                         
-      --message or -M: Print INFO messages                     
-    --nowarning or -W: Do not print WARN messages              
-    --copyright or -C: Print copyright message                 
+  --debug or -d: Dump all variables, debug loops/if/endif and keep temporary files
+       --dumpvars or -D: Dump all variables at end of run
+  --dumpvars_json or -J: Dump all variables at end of run in json format
+        --version or -v: Print version number to stderr
+      --immutable or -X: All variables are immutable--cannot be modified
+   --errors\_fatal or -f: Exit program with nonzero status if errors are encountered
+ --errors\_and\_warnings_fatal or -F: Exit program with nonzero status if warnings are encountered
+--require\_defined or -R: Treat undefined variable warnings as fatal
+--one\_based\_index or -1: Array indexing is one-based (default = zero-based)
+    --interactive or -i: Interactive use, no buffering
+    --include=P or -I=P: Include file or include path
+                       : If P is path, then optionally prepended to all include filenames
+                       : If P is file, then processed before processing input file
+                       : variables defined in P will be immutable.
+       --exit\_on or -e: End when 'Exit|EXIT|exit' entered
+           --help or -h: Print this list
+        --message or -M: Print INFO messages
+            --info=file: Output INFO messages (e.g. DUMP() output) to file.
+      --nowarning or -W: Do not print WARN messages
+--comment=char or -c=char: Change comment character to 'char'
+      --copyright or -C: Print copyright message
+  --keep\_history or -k: Keep a history of aprepro substitutions.
+                         (not for general interactive use)
+          --quiet or -q: Do not print the header output line
+                var=val: Assign value 'val' to variable 'var'
+                         Use var=\"sval\" for a string variable
 
-   Units Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s
-   Enter {DUMP\_FUNC()} for list of functions recognized by aprepro
-   Enter {DUMP\_PREVAR()} for list of predefined variables in aprepro
+	Units Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s
+	Enter {DUMP()} for list of user-defined variables
+	Enter {DUMP_FUNC()} for list of functions recognized by aprepro
+	Enter {DUMP_PREVAR()} for list of predefined variables in aprepro
 
-   ->->-> Send email to gdsjaar@sandia.gov for aprepro support.
+	->->-> Send email to gdsjaar@sandia.gov for aprepro support.
 \end{apout}
 
 For additional functions that are rarely used, see the
@@ -162,17 +186,17 @@ int main(int argc, char *argv[])
   bool readfile = false;
 
   SEAMS::Aprepro aprepro;
-  
+
   // EXAMPLE: Add a function to aprepro...
   SEAMS::symrec *ptr = aprepro.putsym("succ", SEAMS::Aprepro::FUNCTION, 0);
   ptr->value.fnctptr_d = succ;
   ptr->info = "Return the successor to d";
   ptr->syntax = "succ(d)";
-  
+
   // EXAMPLE: Add a couple variables...
   aprepro.add_variable("Greg", "Is the author of this code", true);  // Make it immutable
   aprepro.add_variable("BirthYear", 1958);
-  
+
   for(int ai = 1; ai < argc; ++ai) {
     std::string arg = argv[ai];
     if (arg == "-i") {
@@ -187,7 +211,7 @@ int main(int argc, char *argv[])
     }
     else if (arg[0] == '-') {
       aprepro.set_option(argv[ai]);
-    } 
+    }
     else {
       // Read and parse a file.  The entire file will be parsed and
       // then the output can be obtained in an std::ostringstream via
@@ -208,18 +232,18 @@ int main(int argc, char *argv[])
   }
 
   if (readfile) return 0;
-    
+
   // Read and parse a string's worth of data at a time.
   // Cannot use looping/ifs/... with this method.
   std::string line;
   while( std::cout << "\nexpession: " &&
 	 std::getline(std::cin, line) &&
 	 !line.empty() ) {
-    if (line[0] != '{') 
+    if (line[0] != '{')
       line = "{" + line + "}\n";
     else
       line += "\n";
-    
+
     bool result = aprepro.parse_string(line, "input");
     if (result) {
       std::cout << "         : " << aprepro.parsing_results().str();

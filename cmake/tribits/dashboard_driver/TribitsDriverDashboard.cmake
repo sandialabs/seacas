@@ -148,7 +148,7 @@ endif()
 #
 # Set CTEST_BUILD_NAME from TDD_BUILD_NAME in env or set default.
 #
-# NOTE: CTEST_BUILD_NAME is a built-in CTest varaible and therefore it
+# NOTE: CTEST_BUILD_NAME is a built-in CTest variable and therefore it
 # should not be set from the environment since it will give crosstalk
 # with TribitsCTestDriverCore.cmake.
 #

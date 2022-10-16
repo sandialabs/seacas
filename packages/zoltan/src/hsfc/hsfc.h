@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -57,7 +57,7 @@
 #include "zz_const.h"
 #include "all_allo_const.h"
 #include "params_const.h"
-#include "zoltan_util.h"  
+#include "zoltan_util.h"
 #include "hsfc_hilbert_const.h"
 #include "hsfc_const.h"
 

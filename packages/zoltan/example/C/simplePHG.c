@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -50,7 +50,7 @@
 * the rows, and the vertices are the columns.  If (i,j) is
 * non-zero, this indicates that vertex j is in hyperedge i.
 *
-* In some Zoltan documentation, the non-zeroes in hypergraph 
+* In some Zoltan documentation, the non-zeroes in hypergraph
 * matrices are called "pins".
 *
 ***************************************************************/
@@ -105,7 +105,7 @@ static void input_file_error(int numProcs, int tag, int startProc);
 static void showHypergraph(int myProc, int numProc, int numIDs, ZOLTAN_ID_TYPE *GIDs, int *parts);
 static void read_input_file(int myRank, int numProcs, char *fname, HGRAPH_DATA *data);
 
-static HGRAPH_DATA global_hg; 
+static HGRAPH_DATA global_hg;
 
 int main(int argc, char *argv[])
 {
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
   }
 
   /******************************************************************
-  ** Read hypergraph from input file and distribute it 
+  ** Read hypergraph from input file and distribute it
   ******************************************************************/
 
   fp = fopen(global_fname, "r");
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
 
   /* PHG parameters  - see the Zoltan User's Guide for many more
    *   (The "REPARTITION" approach asks Zoltan to create a partitioning that is
-   *    better but is not too far from the current partitioning, rather than partitioning 
+   *    better but is not too far from the current partitioning, rather than partitioning
    *    from scratch.  It may be faster but of lower quality that LB_APPROACH=PARTITION.)
   */
 
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
   ******************************************************************/
 
   rc = Zoltan_LB_Partition(zz, /* input (all remaining fields are output) */
-        &changes,        /* 1 if partitioning was changed, 0 otherwise */ 
+        &changes,        /* 1 if partitioning was changed, 0 otherwise */
         &numGidEntries,  /* Number of integers used for a global ID */
         &numLidEntries,  /* Number of integers used for a local ID */
         &numImport,      /* Number of vertices to be sent to me */
@@ -245,9 +245,9 @@ int main(int argc, char *argv[])
   ** the storage allocated for the Zoltan structure.
   ******************************************************************/
 
-  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids, 
+  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids,
                       &importProcs, &importToPart);
-  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids, 
+  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids,
                       &exportProcs, &exportToPart);
 
   Zoltan_Destroy(&zz);
@@ -348,7 +348,7 @@ int i;
 
 
 /* Function to find next line of information in input file */
- 
+
 static int get_next_line(FILE *fp, char *buf, int bufsize)
 {
 int i, cval, len;
@@ -364,7 +364,7 @@ char *c;
     len = strlen(c);
 
     for (i=0, c=buf; i < len; i++, c++){
-      cval = (int)*c; 
+      cval = (int)*c;
       if (isspace(cval) == 0) break;
     }
     if (i == len) continue;   /* blank line */
@@ -391,16 +391,16 @@ int count=0;
       if ((c - buf) >= bufsize) break;
       c++;
     }
-  
+
     if ( (c-buf) >= bufsize) break;
-  
+
     vals[count++] = atoi(c);
-  
+
     while (isdigit(*c)){
       if ((c - buf) >= bufsize) break;
       c++;
     }
-  
+
     if ( (c-buf) >= bufsize) break;
   }
 
@@ -697,7 +697,7 @@ HGRAPH_DATA *send_hg;
 
     send_hg = (HGRAPH_DATA *)calloc(sizeof(HGRAPH_DATA) , numProcs);
 
-    /* 
+    /*
      * Divide the vertices across the processes
      */
 
@@ -741,13 +741,13 @@ HGRAPH_DATA *send_hg;
       send_hg[i].numAllNbors = 0;
 
       if (count > 0){
-  
+
         to = from + count;
-  
+
         nnbors = global_hg.nborIndex[to] - global_hg.nborIndex[from];
 
         send_hg[i].numAllNbors = nnbors;
-  
+
         send_hg[i].edgeGID = (ZOLTAN_ID_TYPE *)malloc(sizeof(ZOLTAN_ID_TYPE) * count);
         memcpy(send_hg[i].edgeGID, global_hg.edgeGID + from, sizeof(ZOLTAN_ID_TYPE) * count);
 
@@ -761,10 +761,10 @@ HGRAPH_DATA *send_hg;
           for (j=1; j <= count; j++){
             send_hg[i].nborIndex[j] = global_hg.nborIndex[from+j] - num;
           }
-        
+
           send_hg[i].nborGID = (ZOLTAN_ID_TYPE *)malloc(sizeof(ZOLTAN_ID_TYPE) * nnbors);
-          memcpy(send_hg[i].nborGID, 
-                 global_hg.nborGID + global_hg.nborIndex[from], 
+          memcpy(send_hg[i].nborGID,
+                 global_hg.nborGID + global_hg.nborIndex[from],
                  sizeof(ZOLTAN_ID_TYPE) * nnbors);
         }
       }

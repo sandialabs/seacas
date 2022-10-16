@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -106,14 +106,14 @@ int Zoltan_Color_Test(
   ZOLTAN_GNO_TYPE gvtx;                         /* number of global vertices */
   ZOLTAN_GNO_TYPE *vtxdist=NULL, *adjncy=NULL;
   ZG graph;
-  ZOLTAN_GNO_TYPE *requested_GNOs = NULL;  /* Return GNOs of 
+  ZOLTAN_GNO_TYPE *requested_GNOs = NULL;  /* Return GNOs of
                                               the requested GIDs.  */
   int *loc_partialD2 = NULL;    /* local binary array showing which vertices to be colored */
   int *partialD2 = NULL;        /* global binary array showing which vertices to be colored */
   struct Zoltan_DD_Struct *dd_color;  /* DDirectory for colors */
   ZOLTAN_GNO_TYPE *local_GNOs = NULL;
   ZOLTAN_GNO_TYPE *global_GNOs = NULL;
-  
+
   memset (&graph, 0, sizeof(ZG));
 
   /* PARAMETER SETTINGS */
@@ -187,11 +187,11 @@ int Zoltan_Color_Test(
 
   requested_GNOs = (ZOLTAN_GNO_TYPE *) ZOLTAN_MALLOC(num_obj *
                                                      sizeof(ZOLTAN_GNO_TYPE));
-  Zoltan_ZG_Build (zz, &graph, 0, 1, num_obj, 
+  Zoltan_ZG_Build (zz, &graph, 0, 1, num_obj,
                    global_ids, requested_GNOs);
 
   Zoltan_ZG_Export (zz, &graph,
-		    &gvtx, &nvtx, NULL, NULL, 
+		    &gvtx, &nvtx, NULL, NULL,
                     &vtxdist, &xadj, &adjncy, &adjproc,
 		    NULL, NULL);
 
@@ -217,7 +217,7 @@ int Zoltan_Color_Test(
   for (i=0; i<vtxdist[zz->Num_Proc]; ++i)
       global_GNOs[i] = i;
 
-  ierr = Zoltan_DD_Create (&dd_color, zz->Communicator, 
+  ierr = Zoltan_DD_Create (&dd_color, zz->Communicator,
                            sizeof(ZOLTAN_GNO_TYPE)/sizeof(ZOLTAN_ID_TYPE), 0, 0, num_obj, 0);
   if (ierr != ZOLTAN_OK)
       ZOLTAN_COLOR_ERROR(ierr, "Cannot construct DDirectory.");
@@ -250,32 +250,32 @@ int Zoltan_Color_Test(
       if (coloring_problem == 'P') {
           for (i=0; i<num_obj; ++i) {
               int gno=requested_GNOs[i];
-              loc_partialD2[gno] = 1;           
+              loc_partialD2[gno] = 1;
           }
 
           MPI_Allreduce(loc_partialD2, partialD2, vtxdist[zz->Num_Proc], MPI_INT, MPI_LOR, zz->Communicator);
       } else {
           for (i=0; i<vtxdist[zz->Num_Proc]; ++i)
               partialD2[i] = 1;
-      }      
+      }
   }
 
-  
+
   /* Check if there is an error in coloring */
   if (coloring_problem == '1') {
       for (i=0; i<nvtx; i++) {
           int gno = i + (int)vtxdist[zz->Proc];
           if (color[gno] <= 0) { /* object i is not colored properly */
               ierr = ZOLTAN_FATAL;
-              printf("Error in coloring! u:%d, cu:%d\n", gno, color[gno]);               
+              printf("Error in coloring! u:%d, cu:%d\n", gno, color[gno]);
               break;
           }
           for (j = xadj[i]; j < xadj[i+1]; ++j) {
               int v = (int)adjncy[j];
               if (color[gno] == color[v]) { /* neighbors have the same color */
                   ierr = ZOLTAN_FATAL;
-                  printf("Error in coloring! u:%d, v:%d, cu:%d, cv:%d\n", gno, v, color[gno], color[v]); 
-                  break; 
+                  printf("Error in coloring! u:%d, v:%d, cu:%d, cv:%d\n", gno, v, color[gno], color[v]);
+                  break;
               }
           }
           if (ierr == ZOLTAN_FATAL)
@@ -286,7 +286,7 @@ int Zoltan_Color_Test(
           int gno = i + (int)vtxdist[zz->Proc];
           if (partialD2[gno] && color[gno] <= 0) { /* object i is not colored properly */
               ierr = ZOLTAN_FATAL;
-              printf("Error in coloring! u:%d, cu:%d\n", gno, color[gno]); 
+              printf("Error in coloring! u:%d, cu:%d\n", gno, color[gno]);
               break;
           }
           for (j = xadj[i]; j < xadj[i+1]; ++j) {
@@ -298,14 +298,14 @@ int Zoltan_Color_Test(
               }
               if (partialD2[gno] && partialD2[v] && color[gno] == color[v]) { /* d-1 neighbors have the same color */
                   ierr = ZOLTAN_FATAL;
-                  printf("Error in coloring! d1-neigh: u:%d, v:%d, cu:%d, cv:%d  pu:%d pv:%d\n", gno, v, color[gno], color[v], partialD2[gno], partialD2[v]); 
+                  printf("Error in coloring! d1-neigh: u:%d, v:%d, cu:%d, cv:%d  pu:%d pv:%d\n", gno, v, color[gno], color[v], partialD2[gno], partialD2[v]);
                   break;
               }
               for (k = j+1; k < xadj[i+1]; ++k) {
                   int w = (int)adjncy[k];
                   if (partialD2[v] && partialD2[w] && color[v] == color[w]) { /* d-2 neighbors have the same color */
                       ierr = ZOLTAN_FATAL;
-                      printf("Error in coloring! d2-neigh: v:%d, w:%d, cv:%d, cw:%d   pv:%d pw:%d\n", v, w, color[v], color[w], partialD2[v], partialD2[w]); 
+                      printf("Error in coloring! d2-neigh: v:%d, w:%d, cv:%d, cw:%d   pv:%d pw:%d\n", v, w, color[v], color[w], partialD2[v], partialD2[w]);
                       break;
 
                   }
@@ -314,10 +314,10 @@ int Zoltan_Color_Test(
           }
           if (ierr == ZOLTAN_FATAL)
               break;
-      }      
-  } else 
-      ZOLTAN_COLOR_ERROR(ZOLTAN_WARN, "Zoltan_Color_Test is only implemented for distance-1 and distance-2 coloring. Unknown coloring, skipping verification.");      
-  
+      }
+  } else
+      ZOLTAN_COLOR_ERROR(ZOLTAN_WARN, "Zoltan_Color_Test is only implemented for distance-1 and distance-2 coloring. Unknown coloring, skipping verification.");
+
  End:
   if (ierr==ZOLTAN_FATAL)
       ierr = 2;

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -525,14 +525,14 @@ Zoltan_Postprocess_FinalOutput (ZZ* zz, ZOLTAN_Third_Graph *gr,
     nRuns++;
 
     if (zz->Proc == 0) {
-      for (i = 0; i < vdim; i++) 
+      for (i = 0; i < vdim; i++)
 	printf("STATS Runs %d  bal[%d]  CURRENT %f  MAX %f  MIN %f  AVG %f\n",
 	       nRuns, i, bal[i], balmax[i], balmin[i], balsum[i]/nRuns);
       printf("STATS Runs %d  cutl CURRENT %f  MAX %f  MIN %f  AVG %f\n",
 	     nRuns, cutl, cutlmax, cutlmin, cutlsum/nRuns);
       printf("STATS Runs %d  cutn CURRENT %f  MAX %f  MIN %f  AVG %f\n",
 	     nRuns, cutn, cutnmax, cutnmin, cutnsum/nRuns);
-      for (i = 0; i < edim; i++) 
+      for (i = 0; i < edim; i++)
 	printf("STATS Runs %d  cute[%d] CURRENT %f  MAX %f  MIN %f  AVG %f\n",
 	       nRuns, i, cute[i], cutemax[i], cutemin[i], cutesum[i]/nRuns);
       printf("STATS Runs %d  %s CURRENT %f  MAX %f  MIN %f  AVG %f\n",
@@ -655,12 +655,12 @@ int dim = zz->Edge_Weight_Dim;
     /* For now, use only first weight per edge. */
     float maxewgt = 0.;
     if (ewgts)
-      for (j = xadj[i]; j < xadj[i+1]; j++) 
+      for (j = xadj[i]; j < xadj[i+1]; j++)
         if (ewgts[j*dim] > maxewgt) maxewgt = ewgts[j*dim];
 
     for (j = xadj[i]; j < xadj[i+1]; j++)
       if (parts[i] != nborparts[j]) {
-        cutn += (ewgts ? maxewgt : 1.); 
+        cutn += (ewgts ? maxewgt : 1.);
         break;
       }
   }
@@ -697,14 +697,14 @@ int dim = zz->Edge_Weight_Dim;
     /* For now, use only first weight per edge. */
     float maxewgt = 0.;
     if (ewgts)
-      for (j = xadj[i]; j < xadj[i+1]; j++) 
+      for (j = xadj[i]; j < xadj[i+1]; j++)
         if (ewgts[j*dim] > maxewgt) maxewgt = ewgts[j*dim];
 
     used[parts[i]] = i;
     for (j = xadj[i]; j < xadj[i+1]; j++)
       if (used[nborparts[j]] < i) {
         used[nborparts[j]] = i;
-        cutl += (ewgts ? maxewgt : 1.); 
+        cutl += (ewgts ? maxewgt : 1.);
       }
   }
   ZOLTAN_FREE(&used);
@@ -719,7 +719,7 @@ static int Compute_Adjpart(
   ZZ *zz,
   int nvtx,         /* Input:  # vtxs in this processor */
   indextype *vtxdist,     /* Input:  Distribution of vertices across processors */
-  indextype *xadj,        /* Input:  Index of adjncy:  adjncy[xadj[i]] to 
+  indextype *xadj,        /* Input:  Index of adjncy:  adjncy[xadj[i]] to
                                adjncy[xadj[i]+1] are all edge nbors of vtx i. */
   indextype *adjncy,      /* Input:  Array of nbor vertices. */
   int *adjproc,     /* Input:  adjproc[j] == processor owning adjncy[j]. */
@@ -727,7 +727,7 @@ static int Compute_Adjpart(
   int *adjpart      /* Output: adjpart[j] == partition owning adjncy[j] */
 )
 {
-/* Given an adjacency list adjncy, find the partition number of each 
+/* Given an adjacency list adjncy, find the partition number of each
  * vertex in adjncy.  Return it in adjpart.
  */
 ZOLTAN_COMM_OBJ *plan;

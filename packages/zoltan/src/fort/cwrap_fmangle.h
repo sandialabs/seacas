@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -117,12 +117,12 @@
 
 #define Zfw_Initialize                 zfw_initialize
 #define Zfw_Initialize1                zfw_initialize1
-#define Zfw_Create                     zfw_create       
+#define Zfw_Create                     zfw_create
 #define Zfw_Copy                       zfw_copy
 #define Zfw_Copy_To                    zfw_copy_to
-#define Zfw_Destroy                    zfw_destroy       
-#define Zfw_Align                      zfw_align       
-#define Zfw_Memory_Stats               zfw_memory_stats       
+#define Zfw_Destroy                    zfw_destroy
+#define Zfw_Align                      zfw_align
+#define Zfw_Memory_Stats               zfw_memory_stats
 #define Zfw_Set_Fn0f                   zfw_set_fn0f
 #define Zfw_Set_Fn1f                   zfw_set_fn1f
 #define Zfw_Set_Fn2f                   zfw_set_fn2f
@@ -158,13 +158,13 @@
 #define Zfw_LB_Box_PP_Assign           zfw_lb_box_pp_assign
 #define Zfw_Invert_Lists               zfw_invert_lists
 #define Zfw_Compute_Destinations       zfw_compute_destinations
-#define Zfw_Migrate                    zfw_migrate  
-#define Zfw_Help_Migrate               zfw_help_migrate  
-#define Zfw_Order                      zfw_order  
-#define Zfw_Color                      zfw_color  
-#define Zfw_Color_Test                 zfw_color_test  
-#define Zfw_Generate_Files             zfw_generate_files  
-#define Zfw_RCB_Box                    zfw_rcb_box  
+#define Zfw_Migrate                    zfw_migrate
+#define Zfw_Help_Migrate               zfw_help_migrate
+#define Zfw_Order                      zfw_order
+#define Zfw_Color                      zfw_color
+#define Zfw_Color_Test                 zfw_color_test
+#define Zfw_Generate_Files             zfw_generate_files
+#define Zfw_RCB_Box                    zfw_rcb_box
 #define Zfw_Register_Fort_Malloc       zfw_register_fort_malloc
 #define Zfw_Get_Address_int            zfw_get_address_int
 #define Zfw_Get_Address_struct         zfw_get_address_struct
@@ -218,11 +218,11 @@
 #define Zfw_Invert_Lists               zfw_invert_lists_
 #define Zfw_Compute_Destinations       zfw_compute_destinations_
 #define Zfw_Migrate                    zfw_migrate_
-#define Zfw_Help_Migrate               zfw_help_migrate_  
-#define Zfw_Order                      zfw_order_  
-#define Zfw_Color                      zfw_color_  
-#define Zfw_Color_Test                 zfw_color_test_  
-#define Zfw_Generate_Files             zfw_generate_files_ 
+#define Zfw_Help_Migrate               zfw_help_migrate_
+#define Zfw_Order                      zfw_order_
+#define Zfw_Color                      zfw_color_
+#define Zfw_Color_Test                 zfw_color_test_
+#define Zfw_Generate_Files             zfw_generate_files_
 #define Zfw_RCB_Box                    zfw_rcb_box_
 #define Zfw_Register_Fort_Malloc       zfw_register_fort_malloc_
 #define Zfw_Get_Address_int            zfw_get_address_int_
@@ -294,12 +294,12 @@
 
 #define Zfw_Initialize                 ZFW_INITIALIZE
 #define Zfw_Initialize1                ZFW_INITIALIZE1
-#define Zfw_Create                     ZFW_CREATE       
+#define Zfw_Create                     ZFW_CREATE
 #define Zfw_Copy                       ZFW_COPY
 #define Zfw_Copy_To                    ZFW_COPY_TO
-#define Zfw_Destroy                    ZFW_DESTROY       
+#define Zfw_Destroy                    ZFW_DESTROY
 #define Zfw_Align                      ZFW_ALIGN
-#define Zfw_Memory_Stats               ZFW_MEMORY_STATS  
+#define Zfw_Memory_Stats               ZFW_MEMORY_STATS
 #define Zfw_Set_Fn0f                   ZFW_SET_FN0F
 #define Zfw_Set_Fn1f                   ZFW_SET_FN1F
 #define Zfw_Set_Fn2f                   ZFW_SET_FN2F
@@ -334,14 +334,14 @@
 #define Zfw_LB_Box_Assign              ZFW_LB_BOX_ASSIGN
 #define Zfw_LB_Box_PP_Assign           ZFW_LB_BOX_PP_ASSIGN
 #define Zfw_Invert_Lists               ZFW_INVERT_LISTS
-#define Zfw_Compute_Destinations       ZFW_COMPUTE_DESTINATIONS  
-#define Zfw_Migrate                    ZFW_MIGRATE  
-#define Zfw_Help_Migrate               ZFW_HELP_MIGRATE  
-#define Zfw_Order                      ZFW_ORDER  
-#define Zfw_Color                      ZFW_COLOR  
-#define Zfw_Color_Test                 ZFW_COLOR_TEST  
-#define Zfw_Generate_Files             ZFW_GENERATE_FILES  
-#define Zfw_RCB_Box                    ZFW_RCB_BOX  
+#define Zfw_Compute_Destinations       ZFW_COMPUTE_DESTINATIONS
+#define Zfw_Migrate                    ZFW_MIGRATE
+#define Zfw_Help_Migrate               ZFW_HELP_MIGRATE
+#define Zfw_Order                      ZFW_ORDER
+#define Zfw_Color                      ZFW_COLOR
+#define Zfw_Color_Test                 ZFW_COLOR_TEST
+#define Zfw_Generate_Files             ZFW_GENERATE_FILES
+#define Zfw_RCB_Box                    ZFW_RCB_BOX
 #define Zfw_Register_Fort_Malloc       ZFW_REGISTER_FORT_MALLOC
 #define Zfw_Get_Address_int            ZFW_GET_ADDRESS_INT
 #define Zfw_Get_Address_struct         ZFW_GET_ADDRESS_STRUCT

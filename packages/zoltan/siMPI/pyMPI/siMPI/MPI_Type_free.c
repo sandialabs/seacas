@@ -19,4 +19,3 @@ int MPI_Type_free ( MPI_Datatype *datatype )
   _MPI_COVERAGE();
   return PMPI_Type_free (datatype);
 }
-

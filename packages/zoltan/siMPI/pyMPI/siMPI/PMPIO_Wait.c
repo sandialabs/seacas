@@ -18,6 +18,5 @@
 int PMPIO_Wait(MPIO_Request *request, MPI_Status *status)
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
 }
-

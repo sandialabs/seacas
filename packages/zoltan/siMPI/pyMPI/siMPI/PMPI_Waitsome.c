@@ -15,13 +15,12 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Waitsome( 
-        int incount, 
-        MPI_Request array_of_requests[], 
-        int *outcount, 
-        int array_of_indices[], 
+int PMPI_Waitsome(
+        int incount,
+        MPI_Request array_of_requests[],
+        int *outcount,
+        int array_of_indices[],
         MPI_Status array_of_statuses[] )
 {
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
 }
-

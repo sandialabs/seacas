@@ -2,22 +2,22 @@
 
 \section{Mesh Generation Input File}
 
-The first example shown in this section is the point definition portion of an input 
-file for a mesh generation code. First, the locations of the arc center points 
-1, 2, and 5 are specified. Then, the radius of each arc is defined ( \cmd{\{Rad1\}}, 
-\cmd{\{Rad2\}}, and \cmd{\{Rad5\}}). Note that the lines are started with a dollar sign, which 
-is a comment character to the mesh generation code. Following this, the locations 
-of points 10, 20, 30, 40, and 50 are defined in algebraic terms. Then, the points 
-for the inner wall are defined simply by subtracting the wall thickness from the 
+The first example shown in this section is the point definition portion of an input
+file for a mesh generation code. First, the locations of the arc center points
+1, 2, and 5 are specified. Then, the radius of each arc is defined ( \cmd{\{Rad1\}},
+\cmd{\{Rad2\}}, and \cmd{\{Rad5\}}). Note that the lines are started with a dollar sign, which
+is a comment character to the mesh generation code. Following this, the locations
+of points 10, 20, 30, 40, and 50 are defined in algebraic terms. Then, the points
+for the inner wall are defined simply by subtracting the wall thickness from the
 radius values.
 \begin{apinp}
-Title          
-Example for Aprepro     
-\$  Center  Points        
+Title
+Example for Aprepro
+\$  Center  Points
 Point  1  \{x1  =  6.31952E+01\}  \{y1  =  7.57774E+01\}
 Point  2  \{x2  =  0.00000E+00\}  \{y2  =  -3.55000E+01\}
 Point  5  \{x5  =  0.00000E+00\}  \{y5  =  3.62966E+01\}
-\$  Width  =  \{Width  =  3.0\}      
+\$  Width  =  \{Width  =  3.0\}
 \ldots Wall thickness
 \$  Rad5  =  \{Rad5  =  207.00\}
 \$  Rad2  =  \{Rad2  =  203.2236\}
@@ -25,28 +25,28 @@ Point  5  \{x5  =  0.00000E+00\}  \{y5  =  3.62966E+01\}
 \$  Angle  between  Points  2  and  1:  \{Th12  =  atan2d((y1-y2),(x1-x2))\}
 Point  10  0.00    \{y5  -  Rad5\}
 Point  20  \{x20  =  x1+Rad1\}    \{y5-sqrt(Rad5\^{}2-x20\^{}2)\}
-Point  30  \{x20\}    \{y1\}  
+Point  30  \{x20\}    \{y1\}
 Point  40  \{x1+Rad1*cosd(Th12)\}  \{y1+Rad1*sind(Th12)\}
 Point  50  0.00    \{y2  +  Rad2\}
-\$  Inner Wall (3  mm  thick) 
-\$  \{Rad5  -=  Width\}        
-\$  \{Rad2  -=  Width\}        
-\$  \{Rad1  -=  Width\}        
+\$  Inner Wall (3  mm  thick)
+\$  \{Rad5  -=  Width\}
+\$  \{Rad2  -=  Width\}
+\$  \{Rad1  -=  Width\}
 \ldots Rad1, Rad2, and Rad5 are reduced by the wall thickness
 Point  110  0.00    \{y5  -  Rad5\}
 Point  120  \{x20  =  x1+Rad1\}    \{y5-sqrt(Rad5\^{}2-x20\^{}2)\}
-Point  130  \{x20\}    \{y1\}  
+Point  130  \{x20\}    \{y1\}
 Point  140  \{x1+Rad1*cosd(Th12)\}  \{y1+Rad1*sind(Th12)\}
 Point  150  0.00    \{y2  +  Rad2\}
 \end{apinp}
 The output obtained from processing the above input file by \aprepro{} is shown below.
 \begin{apout}
-Title          
+Title
 Example for  Aprepro
 \$  Center  Points
-Point  1  63.1952  75.7774    
-Point  2  0  -35.5    
-Point  5  0  36.2966    
+Point  1  63.1952  75.7774
+Point  2  0  -35.5
+Point  5  0  36.2966
 \$  Rad5  =  207
 \$  Rad2  =  203.2236
 \$  Rad1  =  75.2537088
@@ -57,8 +57,8 @@ Point  30  138.4489088  75.7774
 Point  40  100.3576382  141.214957
 Point  50  0.00  167.7236
 \$  Inner Wall  (3  mm  thick)
-\$  204      
-\$  200.2236   
+\$  204
+\$  200.2236
 \$  72.2537088
 Point  110  0.00  -167.7034
 Point  120  135.4489088  -116.2471416
@@ -69,11 +69,11 @@ Point  150  0.00  164.7236
 
 \section{Macro Examples}
 
-Aprepro can also be used as a simple macro definition program. For example, a mesh 
-input file may have many lines with the same number of intervals. If those lines 
-are defined using a variable name for the number of intervals, then preprocessing 
-the file with Aprepro will set all of the intervals to the same value, and simply 
-changing one value will change them all. The following input file fragment illustrates 
+Aprepro can also be used as a simple macro definition program. For example, a mesh
+input file may have many lines with the same number of intervals. If those lines
+are defined using a variable name for the number of intervals, then preprocessing
+the file with Aprepro will set all of the intervals to the same value, and simply
+changing one value will change them all. The following input file fragment illustrates
 this
 \begin{apinp}
 \$ \{intA = 11\} \{intB = int(intA / 2)\} line 10 str 10 20 0 \{intA\}
@@ -87,15 +87,15 @@ Which when processed looks like:
 \$  11  5
 
 line 10 str 10 20 0 11
-line 20 str 20 30 0 5 
+line 20 str 20 30 0 5
 line 30 str 30 40 0 11
 line 40 str 40 10 0 5
 \end{apout}
 
 \section{Command Line Variable Assignment}\label{example:varval}
 
-This example illustrates the use of assigning variables on the command line. While 
-generating a complicated 2D or 3D mesh, it is often necessary to reposition the 
+This example illustrates the use of assigning variables on the command line. While
+generating a complicated 2D or 3D mesh, it is often necessary to reposition the
 mesh using GREPOS. If the following file called shift.grp is created:
 \begin{apinp}
 Offset  X  \{xshift\}  Y  \{yshift\}
@@ -109,34 +109,34 @@ Grepos  input.mesh  output.mesh  temp.grp
 
 \section{Loop Example}
 
-This example illustrates the use of the loop construct to print a table of sines 
+This example illustrates the use of the loop construct to print a table of sines
 and cosines from 0 to 90 degrees in 5 degree increments.
 
 Input:
 \begin{apinp}
 \$  Test  looping  -  print  sin,  cos  from  0  to  90  by  5
-\{angle  =  -5\}      
-\{Loop(19)\}      
+\{angle  =  -5\}
+\{Loop(19)\}
 \{angle  +=  5\}  \{sind(angle)\}  \{cosd(angle)\}
 \{EndLoop\}
 \end{apinp}
-Output:        
+Output:
 \begin{apout}
 \$  Test  looping  -  print  sin,  cos  from  0  to 90  by  5
--5        
- 0  0    1  
+-5
+ 0  0    1
  5  0.08715574275 0.9961946981
-10  0.1736481777  0.984807753  
+10  0.1736481777  0.984807753
 15  0.2588190451  0.9659258263
 20  0.3420201433  0.9396926208
-25  0.4226182617  0.906307787  
+25  0.4226182617  0.906307787
 30  0.5    0.8660254038
 35  0.5735764364  0.8191520443
 40  0.6427876097  0.7660444431
 45  0.7071067812  0.7071067812
 50  0.7660444431  0.6427876097
 55  0.8191520443  0.5735764364
-60  0.8660254038  0.5  
+60  0.8660254038  0.5
 65  0.906307787  0.4226182617
 70  0.9396926208  0.3420201433
 75  0.9659258263  0.2588190451
@@ -244,7 +244,7 @@ NOTE: Array index are 0-based by default; get_word is 1-based... \{i_=0\}
 Element block \{ex_block_ids[i_]\} named '\{get_word(++i_,ex_block_names,",")\}' has topology '\{get_word(i_,ex_block_topology,",")\}'
 \{endloop\}
 
-Extract Information Records using begin \ldots end 
+Extract Information Records using begin \ldots end
 \{info1 = exodus_info("exodus.g", "start extract", "end extract")\}
 Rescan String:
 \{rescan(info1)\}
@@ -300,7 +300,7 @@ Element block 2 named 'Shell-MinX' has topology 'shell4'
 Element block 3 named 'Shell-MaxY' has topology 'shell4'
 Element block 4 named 'Shell-MinZ' has topology 'shell4'
 
-Extract Information Records using begin \ldots end 
+Extract Information Records using begin \ldots end
 {loop(6)}
 {a_++^2}
 {endloop}
@@ -342,7 +342,7 @@ $
 Test number representations
 \{1\}	\{10e-1\}	\{10.e-1\}	\{.1e+1\}	\{.1e1\}
 \{1\}	\{10E-1\}	\{10.E-1\}	\{.1E+1\}	\{.1E1\}
-	
+
 Test assign statements:
 \{_a = 5\}	\{b=_a\}	$ Should print 5 5
 \{_a +=b\}	\{_a\} 	$ Should print 10 10
@@ -421,7 +421,7 @@ $ Test int and [] (shortcut for int)
 $ Test looping - print sin, cos from 0 to 90 by 5
 \{_angle = -5\}
 \{Loop(19)\}
-\{_angle += 5\}	\{_sa=sind(_angle)\}	\{_ca=cosd(_angle)\} \{hypot(_sa, _ca)\} 
+\{_angle += 5\}	\{_sa=sind(_angle)\}	\{_ca=cosd(_angle)\} \{hypot(_sa, _ca)\}
 \{EndLoop\}
 
 $$$$ Test formatting and string concatenation
@@ -441,12 +441,12 @@ $$$$ Test string rescanning and executing
 Original String:
 \{Test\}
 Rescanned String:
-\{rescan(Test)\} 
+\{rescan(Test)\}
 Original String:
 \{Test2\}
 Print Value of variable T = \{T\}
 Rescanned String:
-\{rescan(Test2)\} 
+\{rescan(Test2)\}
 Print Value of variable T = \{T\}
 
 Original String: \{t1 = "atan2(0,-1)"\}
@@ -491,7 +491,7 @@ $
 Test number representations
 1	1	1	1	1
 1	1	1	1	1
-	
+
 Test assign statements:
 5	5	$ Should print 5 5
 10	10 	$ Should print 10 10
@@ -535,7 +535,7 @@ $ Test if - else lines
 This line should be echoed (6)
 This line should be echoed. (7)
 $ Lines a, b, c, d, 1, 4, 6, 7 should be echoed
-$ Check line counting -- should be on line 74: 
+$ Check line counting -- should be on line 74:
 
 $ Test int and [] (shortcut for int)
 5	-5
@@ -543,25 +543,25 @@ $ Test int and [] (shortcut for int)
 
 $ Test looping - print sin, cos from 0 to 90 by 5
 -5
-0	0	1 1 
-5	0.08715574275	0.9961946981 1 
-10	0.1736481777	0.984807753 1 
-15	0.2588190451	0.9659258263 1 
-20	0.3420201433	0.9396926208 1 
-25	0.4226182617	0.906307787 1 
-30	0.5	0.8660254038 1 
-35	0.5735764364	0.8191520443 1 
-40	0.6427876097	0.7660444431 1 
-45	0.7071067812	0.7071067812 1 
-50	0.7660444431	0.6427876097 1 
-55	0.8191520443	0.5735764364 1 
-60	0.8660254038	0.5 1 
-65	0.906307787	0.4226182617 1 
-70	0.9396926208	0.3420201433 1 
-75	0.9659258263	0.2588190451 1 
-80	0.984807753	0.1736481777 1 
-85	0.9961946981	0.08715574275 1 
-90	1	6.123233996e-17 1 
+0	0	1 1
+5	0.08715574275	0.9961946981 1
+10	0.1736481777	0.984807753 1
+15	0.2588190451	0.9659258263 1
+20	0.3420201433	0.9396926208 1
+25	0.4226182617	0.906307787 1
+30	0.5	0.8660254038 1
+35	0.5735764364	0.8191520443 1
+40	0.6427876097	0.7660444431 1
+45	0.7071067812	0.7071067812 1
+50	0.7660444431	0.6427876097 1
+55	0.8191520443	0.5735764364 1
+60	0.8660254038	0.5 1
+65	0.906307787	0.4226182617 1
+70	0.9396926208	0.3420201433 1
+75	0.9659258263	0.2588190451 1
+80	0.984807753	0.1736481777 1
+85	0.9961946981	0.08715574275 1
+90	1	6.123233996e-17 1
 
 $$$$ Test formatting and string concatenation
 0 %.10g
@@ -596,12 +596,12 @@ Original String:
 Rescanned String:
 	This is line 1: 3.141592654
         This is line 2: 0.7071067812
-	This is line 3: 0.7071067812 
+	This is line 3: 0.7071067812
 Original String:
 This has an embedded string: {T = "This is a string"}
 Print Value of variable T = 0
 Rescanned String:
-This has an embedded string: This is a string 
+This has an embedded string: This is a string
 Print Value of variable T = This is a string
 
 Original String: atan2(0,-1)

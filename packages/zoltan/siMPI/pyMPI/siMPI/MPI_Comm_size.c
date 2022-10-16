@@ -22,4 +22,3 @@ int MPI_Comm_size(MPI_Comm comm, int* size)
   _MPI_COVERAGE();
   return PMPI_Comm_size(comm, size);
 }
-

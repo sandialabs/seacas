@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -95,16 +95,16 @@ static int Zoltan_Compare_Indextypes(const void *key, const void *arg);
 /*                                                                   */
 /*********************************************************************/
 
-int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj, 
-       indextype *adjncy, weighttype *vwgt, weighttype *adjwgt, 
-       int vwgt_dim, int ewgt_dim, 
+int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
+       indextype *adjncy, weighttype *vwgt, weighttype *adjwgt,
+       int vwgt_dim, int ewgt_dim,
        int graph_type, int check_graph, int output_level)
 {
   int flag, cross_edges = 0, mesg_size, sum;
   int ierr;  /* Error in the graph; always return the worst ierr found */
   int runerr;/* Error running this routine */
   int nprocs, proc, *proclist, errors, global_errors;
-  int *perm=NULL; 
+  int *perm=NULL;
   int free_adjncy_sort=0;
   ZOLTAN_COMM_OBJ *comm_plan;
   static char *yo = "Zoltan_Verify_Graph";
@@ -151,7 +151,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
        sum = 0;
        for (k=0; k<vwgt_dim; k++){
          if (vwgt[i*vwgt_dim+k] < 0) {
-            sprintf(msg, "Negative object weight of " TPL_WGT_SPEC " for object " ZOLTAN_GNO_SPEC ".", 
+            sprintf(msg, "Negative object weight of " TPL_WGT_SPEC " for object " ZOLTAN_GNO_SPEC ".",
                     vwgt[i*vwgt_dim+k], i);
             ZOLTAN_PRINT_ERROR(proc, yo, msg);
             ierr = ZOLTAN_FATAL;
@@ -193,7 +193,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
       sum = 0;
       for (k=0; k<ewgt_dim; k++){
         if (adjwgt[j*ewgt_dim+k] < 0) {
-          sprintf(msg, "Negative edge weight of " TPL_WGT_SPEC " in edge " ZOLTAN_GNO_SPEC ".", 
+          sprintf(msg, "Negative edge weight of " TPL_WGT_SPEC " in edge " ZOLTAN_GNO_SPEC ".",
                   adjwgt[j*ewgt_dim+k], j);
           ZOLTAN_PRINT_ERROR(proc, yo, msg);
           ierr = ZOLTAN_FATAL;
@@ -230,7 +230,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
     for (ii=xadj[i]; ii<xadj[i+1]-1; ii++){
       if (adjncy[ii] > adjncy[ii+1]){
         flag = 1; /* Not sorted. */
-        break; 
+        break;
       }
     }
   }
@@ -249,27 +249,27 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
         perm[k] = k;
       }
       if (sizeof(indextype) == sizeof(short)){
-        for (i=0; i<num_obj; i++) 
-          Zoltan_quicksort_list_inc_short((short *)adjncy_sort, perm, 
+        for (i=0; i<num_obj; i++)
+          Zoltan_quicksort_list_inc_short((short *)adjncy_sort, perm,
                                           (int)xadj[i], (int)xadj[i+1]-1);
       }
       else if (sizeof(indextype) == sizeof(int)){
-        for (i=0; i<num_obj; i++) 
-          Zoltan_quicksort_list_inc_int((int *)adjncy_sort, perm, 
+        for (i=0; i<num_obj; i++)
+          Zoltan_quicksort_list_inc_int((int *)adjncy_sort, perm,
                                         (int)xadj[i], (int)xadj[i+1]-1);
       }
       else if (sizeof(indextype) == sizeof(long)){
-        for (i=0; i<num_obj; i++) 
-          Zoltan_quicksort_list_inc_long((long *)adjncy_sort, perm, 
+        for (i=0; i<num_obj; i++)
+          Zoltan_quicksort_list_inc_long((long *)adjncy_sort, perm,
                                          (int)xadj[i], (int)xadj[i+1]-1);
       }
       else if (sizeof(indextype) == sizeof(int64_t)){
-        for (i=0; i<num_obj; i++) 
-          Zoltan_quicksort_list_inc_long_long((int64_t*)adjncy_sort, perm, 
+        for (i=0; i<num_obj; i++)
+          Zoltan_quicksort_list_inc_long_long((int64_t*)adjncy_sort, perm,
                                               (int)xadj[i], (int)xadj[i+1]-1);
       }
       else{
-        ZOLTAN_PRINT_ERROR(proc, yo, 
+        ZOLTAN_PRINT_ERROR(proc, yo,
                            "Error in third party library data type support.");
         ierr = ZOLTAN_FATAL;
       }
@@ -304,7 +304,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
       /* Valid vertex number? */
       if ((IS_GLOBAL_GRAPH(graph_type) &&
            ((global_j < vtxdist[0]) || (global_j >= vtxdist[nprocs])))
-          || (IS_LOCAL_GRAPH(graph_type) && 
+          || (IS_LOCAL_GRAPH(graph_type) &&
            ((global_j < 0) || (global_j >= num_obj)))){
         sprintf(msg, "Edge to invalid vertex " TPL_IDX_SPEC " detected.", global_j);
         ZOLTAN_PRINT_ERROR(proc, yo, msg);
@@ -344,7 +344,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
             /* EBEB For now, don't compare weights if we sorted edge lists. */
             flag = 0;
             for (k=0; k<ewgt_dim; k++){
-              if (adjwgt[(ptr-adjncy_sort)*ewgt_dim+k] != 
+              if (adjwgt[(ptr-adjncy_sort)*ewgt_dim+k] !=
                                            adjwgt[ii*ewgt_dim+k]){
                  /* Numerically nonsymmetric */
                  flag = -1;
@@ -360,7 +360,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
         }
         else { /* bsearch failed */
           sprintf(msg, "Graph is not symmetric. "
-                  "Edge (" TPL_IDX_SPEC "," TPL_IDX_SPEC ") exists, but no edge (" TPL_IDX_SPEC "," TPL_IDX_SPEC ").", 
+                  "Edge (" TPL_IDX_SPEC "," TPL_IDX_SPEC ") exists, but no edge (" TPL_IDX_SPEC "," TPL_IDX_SPEC ").",
                   global_i, global_j, global_j, global_i);
           ZOLTAN_PRINT_ERROR(proc, yo, msg);
           ierr = ZOLTAN_FATAL;
@@ -397,8 +397,8 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
       ZOLTAN_PRINT_WARN(proc, yo, msg);
     }
   }
-  
-  
+
+
   /* Check if any processor has encountered an error so far */
   errors = 0;
   if (ierr == ZOLTAN_WARN)
@@ -442,7 +442,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
           /* Is global_j off-proc? */
           if ((global_j < vtxdist[proc]) || (global_j >= vtxdist[proc+1])){
              /* Add to list */
-             k=0; 
+             k=0;
              while (global_j >= vtxdist[k+1]) k++;
              proclist[nedges++] = k;
              /* Copy (global_i,global_j) and corresponding weights to sendgno */
@@ -459,7 +459,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
       runerr = Zoltan_Comm_Create(&comm_plan, cross_edges, proclist, comm,
                                   TAG1, &nrecv);
       if (runerr != ZOLTAN_OK && runerr != ZOLTAN_WARN) {
-        sprintf(msg, "Error %s returned from Zoltan_Comm_Create.", 
+        sprintf(msg, "Error %s returned from Zoltan_Comm_Create.",
                 (runerr == ZOLTAN_MEMERR ? "ZOLTAN_MEMERR" : "ZOLTAN_FATAL"));
         Zoltan_Comm_Destroy(&comm_plan);
         ZOLTAN_PRINT_ERROR(proc, yo, msg);
@@ -470,7 +470,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
           ZOLTAN_PRINT_ERROR(proc, yo, msg);
           ierr = ZOLTAN_FATAL;
         }
-  
+
         runerr = Zoltan_Comm_Do(comm_plan, TAG2, (char *)sendgno, mesg_size,
                                (char *)recvgno);
         Zoltan_Comm_Destroy(&comm_plan);
@@ -480,7 +480,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
           ZOLTAN_PRINT_ERROR(proc, yo, msg);
         }
         else {
-  
+
           /* Third pass: Compare on-proc data to off-proc data we received */
           /* sendgno and recvgno should contain the same data except (i,j) is */
           /* (j,i)                                                            */
@@ -509,7 +509,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
             }
             if (!flag){
               sprintf(msg, "Graph is not symmetric.  "
-                      "Edge (" TPL_IDX_SPEC "," TPL_IDX_SPEC ") exists, but not (" TPL_IDX_SPEC "," TPL_IDX_SPEC ").", 
+                      "Edge (" TPL_IDX_SPEC "," TPL_IDX_SPEC ") exists, but not (" TPL_IDX_SPEC "," TPL_IDX_SPEC ").",
                       ptr1[0], ptr1[1], ptr1[1], ptr1[0]);
               ZOLTAN_PRINT_ERROR(proc, yo, msg);
               ierr = ZOLTAN_FATAL;
@@ -551,7 +551,7 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
   }
   else {
     if (proc==0 && output_level>0){
-      printf("ZOLTAN %s: The graph is valid with check_graph = %1d\n", 
+      printf("ZOLTAN %s: The graph is valid with check_graph = %1d\n",
              yo, check_graph);
     }
     return ZOLTAN_OK;

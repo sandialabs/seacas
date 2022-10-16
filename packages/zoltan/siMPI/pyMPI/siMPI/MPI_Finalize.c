@@ -17,10 +17,10 @@
 #include "mpi.h"
 
 int MPI_Finalize (void)
-{  
+{
   _MPI_COVERAGE();
   return  PMPI_Finalize();
-  /* 
+  /*
   #ifdef _MPI_DEBUG
   if (x == _MPI_NOT_OK)
     printf ("\n>>>>ERROR MPI_Finalize\n");
@@ -29,5 +29,3 @@ int MPI_Finalize (void)
   #endif
   */
 }
-
-  

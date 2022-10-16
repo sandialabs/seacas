@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -62,7 +62,7 @@ extern "C" {
 
 /****************************************************************************/
 /*
- * Default value of ZOLTAN_ID_TYPE; 
+ * Default value of ZOLTAN_ID_TYPE;
  * IDs allocated with ZOLTAN_MALLOC_ID are initialized with this value.
  */
 #define ZOLTAN_ID_DEFAULT 0

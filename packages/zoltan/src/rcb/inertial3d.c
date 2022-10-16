@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -149,7 +149,7 @@ int Zoltan_RIB_inertial3d(
      if (dotpt->nWeights)
         for (j = 0; j < dotnum; j++) {
            i = (dindx ? dindx[j] : j);
-           wgt = dotpt->Weight[i * dotpt->nWeights]; 
+           wgt = dotpt->Weight[i * dotpt->nWeights];
            xdif = x[i] - cm[0];
            ydif = y[i] - cm[1];
            zdif = z[i] - cm[2];
@@ -177,17 +177,17 @@ int Zoltan_RIB_inertial3d(
      /* Sum tensor across processors */
 
      if (Tflops_Special) {
-        tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = zz; 
+        tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = zz;
         tmp1[3] = xy; tmp1[4] = xz; tmp1[5] = yz;
         Zoltan_RIB_reduce_double(tmp1, tmp2, 6, comm, nproc, rank, proc, 1);
-        xxt = tmp2[0]; yyt = tmp2[1]; zzt = tmp2[2]; 
+        xxt = tmp2[0]; yyt = tmp2[1]; zzt = tmp2[2];
         xyt = tmp2[3]; xzt = tmp2[4]; yzt = tmp2[5];
      }
      else {
-        tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = zz; 
+        tmp1[0] = xx; tmp1[1] = yy; tmp1[2] = zz;
         tmp1[3] = xy; tmp1[4] = xz; tmp1[5] = yz;
         MPI_Allreduce(tmp1, tmp2, 6, MPI_DOUBLE, MPI_SUM, comm);
-        xxt = tmp2[0]; yyt = tmp2[1]; zzt = tmp2[2]; 
+        xxt = tmp2[0]; yyt = tmp2[1]; zzt = tmp2[2];
         xyt = tmp2[3]; xzt = tmp2[4]; yzt = tmp2[5];
      }
 
@@ -466,7 +466,7 @@ void Zoltan_RIB_reduce_double(double *in, double *out, int len, MPI_Comm comm,
 {
    int i, m, to, tag = 32107;
    MPI_Status status;
- 
+
    /* this is a recursive function for Tflops_Special that takes a double
       vector in and returns the summed vector out for a subset of processors
       of the entire number of processors.  rank is a processors rank within
@@ -488,10 +488,10 @@ void Zoltan_RIB_reduce_double(double *in, double *out, int len, MPI_Comm comm,
          if (m < nproc)
             Zoltan_RIB_reduce_double(in, out, len, comm, nproc, rank, proc, m);
          else
-            for (i = 0; i < len; i++) 
+            for (i = 0; i < len; i++)
                out[i] = in[i];
          MPI_Send(out, len, MPI_DOUBLE, to, tag, comm);
-      }  
+      }
       else
          Zoltan_RIB_reduce_double(in, out, len, comm, nproc, rank, proc, m);
 }

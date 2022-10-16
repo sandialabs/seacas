@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -97,7 +97,7 @@ extern int Zoltan_Special_Free(ZZ *zz, void **array,
 extern void Zoltan_Register_Fort_Malloc(ZOLTAN_FORT_MALLOC_INT_FN *,
                                         ZOLTAN_FORT_FREE_INT_FN *,
 					ZOLTAN_FORT_MALLOC_SET_STRUCT_FN *);
-extern int Zoltan_Special_Fort_Malloc_Set_Struct(int *zz_addr_bytes, 
+extern int Zoltan_Special_Fort_Malloc_Set_Struct(int *zz_addr_bytes,
 						 int **fort_zz);
 extern int Zoltan_Special_Fort_Free_Struct(int *fort_zz);
 

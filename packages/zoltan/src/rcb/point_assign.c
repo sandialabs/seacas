@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -62,7 +62,7 @@ ZZ       *zz,                   /* The Zoltan structure */
 double   *coords,
 int      *proc,                 /* processor that point lands in;
                                    if NULL, processor info is not returned. */
-int      *part                  /* part that point lands in; 
+int      *part                  /* part that point lands in;
                                    if NULL, part info is not returned. */
 )
 {
@@ -83,7 +83,7 @@ int      *part                  /* part that point lands in;
      double *c = coords;
 
      if (zz->LB.Data_Structure == NULL) {
-        ZOLTAN_PRINT_ERROR(-1, yo, 
+        ZOLTAN_PRINT_ERROR(-1, yo,
                    "No Decomposition Data available; use KEEP_CUTS parameter.");
         ierr = ZOLTAN_FATAL;
         goto End;
@@ -100,7 +100,7 @@ int      *part                  /* part that point lands in;
         }
 
         if (rcb->Tran.Target_Dim > 0){  /* degenerate geometry */
-          Zoltan_Transform_Point(c, rcb->Tran.Transformation, 
+          Zoltan_Transform_Point(c, rcb->Tran.Transformation,
             rcb->Tran.Permutation, rcb->Num_Dim, rcb->Tran.Target_Dim, cnew);
           c = cnew;
         }
@@ -124,7 +124,7 @@ int      *part                  /* part that point lands in;
         }
 
         if (rib->Tran.Target_Dim > 0){ /* degenerate geometry */
-          Zoltan_Transform_Point(c, rib->Tran.Transformation, 
+          Zoltan_Transform_Point(c, rib->Tran.Transformation,
             rib->Tran.Permutation, rib->Num_Geom, rib->Tran.Target_Dim, cnew);
           c = cnew;
           num_geom = rib->Tran.Target_Dim;
@@ -178,7 +178,7 @@ int      *part                  /* part that point lands in;
      if (proc != NULL) {
         if (zz->LB.Remap)
            *proc = Zoltan_LB_Part_To_Proc(zz, zz->LB.Remap[-partmid], NULL);
-        else 
+        else
            *proc = Zoltan_LB_Part_To_Proc(zz, -partmid, NULL);
      }
 

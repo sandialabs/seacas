@@ -287,7 +287,7 @@ zfdrive_SOURCES = \
 	$(srcdir)/fdr_mm_io.f90 \
 	$(srcdir)/fdr_migrate.f90 \
 	$(srcdir)/fdr_loadbal.f90 \
-	$(srcdir)/fdr_main.f90 
+	$(srcdir)/fdr_main.f90
 
 zfdrive_DEPENDENCIES = \
 			$(ZOLTAN_DEPS)
@@ -341,7 +341,7 @@ $(am__aclocal_m4_deps):
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-zfdrive$(EXEEXT): $(zfdrive_OBJECTS) $(zfdrive_DEPENDENCIES) $(EXTRA_zfdrive_DEPENDENCIES) 
+zfdrive$(EXEEXT): $(zfdrive_OBJECTS) $(zfdrive_DEPENDENCIES) $(EXTRA_zfdrive_DEPENDENCIES)
 	@rm -f zfdrive$(EXEEXT)
 	$(F77LINK) $(zfdrive_OBJECTS) $(zfdrive_LDADD) $(LIBS)
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -85,25 +85,25 @@ extern "C" {
 
 #if PRINT_DEBUG_INFO
 static void debug_elements(int Proc, int Num_Proc, int num, ELEM_INFO_PTR el);
-static void debug_lists(int Proc, int Num_Proc, int nedge, int *index, ZOLTAN_ID_TYPE *vtx, 
+static void debug_lists(int Proc, int Num_Proc, int nedge, int *index, ZOLTAN_ID_TYPE *vtx,
   int *vtx_proc, ZOLTAN_ID_TYPE *egid);
-static void debug_pins(int Proc, int Num_Proc,  
-          ZOLTAN_ID_TYPE nGlobalEdges, ZOLTAN_ID_TYPE nGlobalVtxs, 
+static void debug_pins(int Proc, int Num_Proc,
+          ZOLTAN_ID_TYPE nGlobalEdges, ZOLTAN_ID_TYPE nGlobalVtxs,
           int vtxWDim, int edgeWDim,
           int nMyPins, ZOLTAN_ID_TYPE *myPinI, ZOLTAN_ID_TYPE *myPinJ,
           int nMyVtx, ZOLTAN_ID_TYPE *myVtxNum, float *myVtxWgts,
           int nMyEdgeWgts, ZOLTAN_ID_TYPE *myEWGno, float *myEdgeWgts);
 #endif
 
-static int dist_hyperedges( MPI_Comm, PARIO_INFO_PTR, int, int, int, 
+static int dist_hyperedges( MPI_Comm, PARIO_INFO_PTR, int, int, int,
     int *, int *, int **, int **, int **, int **, int *, float  **, short  *);
 
 static int create_edge_lists(int, ZOLTAN_ID_TYPE *, ZOLTAN_ID_TYPE *,
       int *, ZOLTAN_ID_TYPE **, int **, ZOLTAN_ID_TYPE **);
 
-static int process_mtxp_file(PARIO_INFO_PTR, char *, size_t , int , int , int, 
-    ZOLTAN_ID_TYPE *, ZOLTAN_ID_TYPE *, int *, int *, int *, 
-    ZOLTAN_ID_TYPE **, ZOLTAN_ID_TYPE **, int *, ZOLTAN_ID_TYPE **, 
+static int process_mtxp_file(PARIO_INFO_PTR, char *, size_t , int , int , int,
+    ZOLTAN_ID_TYPE *, ZOLTAN_ID_TYPE *, int *, int *, int *,
+    ZOLTAN_ID_TYPE **, ZOLTAN_ID_TYPE **, int *, ZOLTAN_ID_TYPE **,
     float **, int *, ZOLTAN_ID_TYPE **, float **, int);
 
 static int read_mtxp_lines(char *, int, int, char **, int *);
@@ -500,7 +500,7 @@ int read_hypergraph_file(
 
   /*
    * initialize all of the element structs as unused by
-   * setting the globalID to ZOLTAN_ID_INVALID 
+   * setting the globalID to ZOLTAN_ID_INVALID
    */
   for (i = 0; i < mesh->elem_array_len; i++)
     initialize_element(&(mesh->elements[i]));
@@ -556,7 +556,7 @@ int read_mtxplus_file(
   int rc, fsize, i, j;
   char *filebuf=NULL;
   FILE* fp;
-  ZOLTAN_ID_TYPE nGlobalEdges, nGlobalVtxs; 
+  ZOLTAN_ID_TYPE nGlobalEdges, nGlobalVtxs;
   ZOLTAN_ID_TYPE *myPinI, *myPinJ, *myVtxNum, *myEWGno;
   ZOLTAN_ID_TYPE *edgeGno, *pinGno;
   int vtxWDim, edgeWDim;
@@ -585,7 +585,7 @@ int read_mtxplus_file(
     /* Each process reads in the mtxp file and keeps only the parts that it owns.
      * Buffer is null terminated.
      * It's possible a process only has mtxp header and owns no vertices, etc.
-     */                                     
+     */
 
     fsize = read_mtxp_lines(filename, Proc, Num_Proc, &filebuf, &num_my_lines);
 
@@ -601,21 +601,21 @@ int read_mtxplus_file(
     /* Process 0 reads the file and broadcasts it */
     if (Proc == 0) {
       fsize = 0;
-  
+
       rc = stat(filename, &statbuf);
-  
+
       if (rc == 0){
         fsize = statbuf.st_size;
         fp = fopen(filename, "r");
-  
+
         if (!fp){
   	  fsize = 0;
         }
         else{
   	filebuf = (char *)malloc(fsize+1);
-  
+
   	rc = fread(filebuf, 1, fsize, fp);
-  
+
   	if (rc != fsize){
   	  free(filebuf);
   	  fsize = 0;
@@ -629,19 +629,19 @@ int read_mtxplus_file(
         }
       }
     }
-  
+
     MPI_Bcast(&fsize, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  
+
     if (fsize == 0) {
       sprintf(cmesg, "fatal:  Could not open/read hypergraph file %s", filename);
       Gen_Error(0, cmesg);
       return 0;
     }
-  
+
     if (Proc > 0){
       filebuf = (char *)malloc(fsize);
     }
-  
+
     MPI_Bcast(filebuf, fsize, MPI_BYTE, 0, MPI_COMM_WORLD);
   }
   else{
@@ -657,9 +657,9 @@ int read_mtxplus_file(
   	  &nMyEdgeWgts, &myEWGno, &myEdgeWgts, preprocessed);
 
   free(filebuf);
-  
+
   MPI_Allreduce(&rc, &status, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-  
+
   if (status != Num_Proc){
     Gen_Error(0, "fatal: invalid mtxp file");  /* TODO better message */
     return 0;
@@ -682,15 +682,15 @@ int read_mtxplus_file(
    * initial pins = row     each process gets full rows (hedges) initially
    *                        and format is ZOLTAN_COMPRESSED_EDGE
    *
-   * initial pins = col     each process gets full columns (vertices) initially 
+   * initial pins = col     each process gets full columns (vertices) initially
    *                        and format is ZOLTAN_COMPRESSED_VERTEX
    */
 
-  if (pio_info->init_dist_pins != INITIAL_COL){  
+  if (pio_info->init_dist_pins != INITIAL_COL){
     rc = create_edge_lists(nMyPins, myPinI, myPinJ, &numHEdges, &edgeGno, &edgeIdx, &pinGno);
     mesh->format = ZOLTAN_COMPRESSED_EDGE;
   }
-  else{                                       
+  else{
     /* actually creating vertex lists, since we switched
      * the role of I and J in the argument list.
      */
@@ -825,18 +825,18 @@ void mm_cleanup(MESH_INFO_PTR mesh)
 {
 /* Matrix-market files are one-based, but when we read them, we converted
  * them to zero-based for convenience of indexing arrays.
- * However, we should give Zoltan and the output routines IDs 
- * that have the same base as the input (not converted from one-based 
- * to zero-based).  So if the input was from Matrix-Market files, 
+ * However, we should give Zoltan and the output routines IDs
+ * that have the same base as the input (not converted from one-based
+ * to zero-based).  So if the input was from Matrix-Market files,
  * add one to all GIDs.
  */
-  
+
   int i, j, sum;
   int nhedges = mesh->nhedges;
   int npins = mesh->hindex[nhedges];
 
   ELEM_INFO_PTR elements = mesh->elements;
- 
+
   for (i = 0; i < mesh->num_elems; i++) {
     ELEM_INFO_PTR current_elem = &(elements[i]);
     current_elem->globalID++;
@@ -1226,9 +1226,9 @@ ZOLTAN_ID_TYPE *eidList, *pins, *match;
 static int process_mtxp_file(PARIO_INFO_PTR pio_info,
   char *filebuf, size_t fsize, int num_my_lines,
   int nprocs, int myrank,
-  ZOLTAN_ID_TYPE *nGlobalEdges, ZOLTAN_ID_TYPE *nGlobalVtxs, 
+  ZOLTAN_ID_TYPE *nGlobalEdges, ZOLTAN_ID_TYPE *nGlobalVtxs,
   int *vtxWDim, int *edgeWDim,
-  int *nMyPins, 
+  int *nMyPins,
   ZOLTAN_ID_TYPE **myPinI, ZOLTAN_ID_TYPE **myPinJ,
   int *nMyVtx, ZOLTAN_ID_TYPE **myVtxNum, float **myVtxWgts,
   int *nMyEdgeWgts, ZOLTAN_ID_TYPE **myEdgeNum, float **myEdgeWgts,
@@ -1297,7 +1297,7 @@ char linestr[MATRIX_MARKET_MAX_LINE+1];
         (pio_info->init_dist_procs < nprocs)){
       nDistProcs = pio_info->init_dist_procs;
     }
-    
+
     if (pio_info->init_dist_type == INITIAL_LINEAR){ /* vertex distribution */
       if (myrank < nDistProcs){
         share = nvtxs / nDistProcs;
@@ -1378,7 +1378,7 @@ char linestr[MATRIX_MARKET_MAX_LINE+1];
         break;
       line = next_line(line, fsize);
     }
-     
+
     while (line){          /* PINS */
 
       make_string(line, linestr);
@@ -1415,7 +1415,7 @@ char linestr[MATRIX_MARKET_MAX_LINE+1];
     }
 
     while(line) {        /* VERTICES and possibly WEIGHTS */
-  
+
       make_string(line, linestr);
       rc = sscanf(linestr, ZOLTAN_ID_SPEC, &vid);
 
@@ -1429,10 +1429,10 @@ char linestr[MATRIX_MARKET_MAX_LINE+1];
         Gen_Error(0, cmesg);
         goto failure;
       }
-  
+
       vid -= 1;
       mine = my_vtx(proc, vid, myminVtx, mymaxVtx, myrank, nDistProcs, pio_info);
-  
+
       if (mine){
         countMyVtxs++;
       }
@@ -1451,7 +1451,7 @@ char linestr[MATRIX_MARKET_MAX_LINE+1];
         line = next_line(line, fsize);
       }
 
-      while(line) {   
+      while(line) {
         make_string(line, linestr);
         rc = sscanf(linestr, ZOLTAN_ID_SPEC, &eid);
         token = get_nth_token(linestr, edim + 1, strlen(linestr), 1, (char)0);
@@ -1465,7 +1465,7 @@ char linestr[MATRIX_MARKET_MAX_LINE+1];
   	  goto failure;
         }
         proc = atoi(token);
-  
+
         if ((proc % nprocs) == myrank){
   	  countMyEdges++;
         }
@@ -1474,7 +1474,7 @@ char linestr[MATRIX_MARKET_MAX_LINE+1];
         if (line && line[0] == COMMENT_CHAR) break;
       }
     }
-  } 
+  }
 
   /* Start over at beginning of file and save my pins, and weights */
 
@@ -1644,7 +1644,7 @@ done:
 }
 
 /* Read the mtxp file and return only comments plus lines I "own",
- * null-terminate the buffer, and set the number of objects I own. 
+ * null-terminate the buffer, and set the number of objects I own.
  * Return the size of the buffer, 0 on failure.
  */
 
@@ -1659,7 +1659,7 @@ char *c_in_end;
 char *buf;
 long count_mine;
 int rc, max_sanity, total_line_found, line_size=0;
-ZOLTAN_ID_TYPE nedges, nvtxs, npins, numew; 
+ZOLTAN_ID_TYPE nedges, nvtxs, npins, numew;
 int numOwners, vdim, edim;
 int i=0;
 int owning_proc;
@@ -1676,7 +1676,7 @@ FILE *fp=NULL;
     status = 0;
     goto End;
   }
-  
+
   fsize = statbuf.st_size;
   fp = fopen(fname, "r");
   if (!fp){
@@ -1700,7 +1700,7 @@ FILE *fp=NULL;
     if (!inbuf){
       inbufsize *= .75;
       inbuf = malloc(inbufsize+1);
-  
+
       if (!inbuf){
         inbufsize *= .5;
         inbuf = malloc(inbufsize+1);
@@ -1717,14 +1717,14 @@ FILE *fp=NULL;
     /* TODO a Zoltan utility that uses hwloc info to decide a reasonable amount of
      *     memory for Zoltan to use.  Maybe more of a TO_CONSIDER.
      */
-    
+
     inbufsize = (fsize > 100*1024 ? 100*1024 : fsize);
     inbuf = malloc(inbufsize+1);
 
     if (!inbuf){
       inbufsize *= .75;
       inbuf = malloc(inbufsize+1);
-  
+
       if (!inbuf){
         inbufsize *= .5;
         inbuf = malloc(inbufsize+1);
@@ -1848,7 +1848,7 @@ FILE *fp=NULL;
           if (nbytes + line_size > outbufsize){
               outbufsize += line_size;
               outbufsize *= 1.2;
-  
+
               buf = (char *)malloc(outbufsize+1);
               if (!buf){
                 status = 0;
@@ -1859,7 +1859,7 @@ FILE *fp=NULL;
               c_out = buf + nbytes;
               outbuf = buf;
           }
-  
+
           sprintf(c_out, "%s\n", c_in);
           c_out += line_size;
           nbytes += line_size;
@@ -1896,7 +1896,7 @@ End:
 ******************************************************************************/
 
 static char *get_nth_token(char *line, int nth, /* get nth token (0-based) */
-                         size_t max, 
+                         size_t max,
                          int direction,      /* 1: from the front, -1: from the back */
                          char terminator)    /* null or \n terminated */
 {
@@ -1914,7 +1914,7 @@ int found;
 
   l = (size_t)(c1-line);
 
-  while ((*c2 != terminator) && (l < max)){ c2++; l++;} 
+  while ((*c2 != terminator) && (l < max)){ c2++; l++;}
 
   if ((c2 == c1) ||            /* no tokens */
       (*c2 != terminator))     /* invalid line */
@@ -1929,7 +1929,7 @@ int found;
 
   c2--;
 
-  while ((c2 > c1) && IS_BLANK(*c2)) c2--; 
+  while ((c2 > c1) && IS_BLANK(*c2)) c2--;
   *(c2+1) = 0;
 
   found = 0;     /* null terminate last token */
@@ -1948,7 +1948,7 @@ int found;
   }
   else
     c1 = NULL;
-  
+
   return c1;
 }
 
@@ -2020,7 +2020,7 @@ char *c = buf;
 size_t sanity = 0;
 
   /* Skip current line, and any subsequent blank lines.
-   * Return pointer to the next line. 
+   * Return pointer to the next line.
    */
 
   if (!buf) return NULL;
@@ -2038,7 +2038,7 @@ size_t sanity = 0;
 
 static char *next_line_of_data(char *buf, size_t max, char *str)
 {
-char *c; 
+char *c;
 
   /* Skip current line, and any following comments or blank lines.
    * Return pointer to the next line. Also copy
@@ -2065,7 +2065,7 @@ char *c;
 
 static char *next_line_of_comment(char *buf, size_t max, char *str)
 {
-char *c; 
+char *c;
 
   /* Skip current line, and any following data or blank lines.
    * Return pointer to the next line. Also copy
@@ -2092,7 +2092,7 @@ char *c;
 
 /*************************************************************************/
 
-static int my_vtx(int proc, 
+static int my_vtx(int proc,
        ZOLTAN_ID_TYPE vtx, ZOLTAN_ID_TYPE mymin, ZOLTAN_ID_TYPE mymax,
        int myrank, int nprocs, PARIO_INFO_PTR pio_info)
 {
@@ -2117,7 +2117,7 @@ static int my_vtx(int proc,
   return mine;
 }
 static int my_pin(ZOLTAN_ID_TYPE eid, ZOLTAN_ID_TYPE vid, int proc,
-       ZOLTAN_ID_TYPE pin, ZOLTAN_ID_TYPE npins, 
+       ZOLTAN_ID_TYPE pin, ZOLTAN_ID_TYPE npins,
        ZOLTAN_ID_TYPE mymin, ZOLTAN_ID_TYPE mymax,
        int myrank, int nprocs, PARIO_INFO_PTR pio_info)
 {
@@ -2212,8 +2212,8 @@ static void debug_lists(int Proc, int Num_Proc, int nedge, int *index, ZOLTAN_ID
     MPI_Barrier(MPI_COMM_WORLD);
   }
 }
-static void debug_pins(int Proc, int Num_Proc,  
-          ZOLTAN_ID_TYPE nGlobalEdges, ZOLTAN_ID_TYPE nGlobalVtxs, 
+static void debug_pins(int Proc, int Num_Proc,
+          ZOLTAN_ID_TYPE nGlobalEdges, ZOLTAN_ID_TYPE nGlobalVtxs,
           int vtxWDim, int edgeWDim,
           int nMyPins, ZOLTAN_ID_TYPE *myPinI, ZOLTAN_ID_TYPE *myPinJ,
           int nMyVtx, ZOLTAN_ID_TYPE *myVtxNum, float *myVtxWgts,
@@ -2251,7 +2251,7 @@ int p,i,j,k;
       }
       printf("\n");
       fflush(stdout);
-    } 
+    }
     MPI_Barrier(MPI_COMM_WORLD);
   }
   MPI_Barrier(MPI_COMM_WORLD);

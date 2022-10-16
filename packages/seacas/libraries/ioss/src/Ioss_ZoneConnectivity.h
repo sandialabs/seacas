@@ -1,15 +1,15 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#ifndef IOSS_Ioss_ZoneConnectivity_h
-#define IOSS_Ioss_ZoneConnectivity_h
+#pragma once
 
 #include <Ioss_CodeTypes.h>
 #include <array>
 #include <cassert>
+#include <fmt/ostream.h>
 #include <string>
 
 #if defined(SEACAS_HAVE_CGNS) && !defined(BUILT_IN_SIERRA)
@@ -144,4 +144,8 @@ namespace Ioss {
   };
 } // namespace Ioss
 
-#endif
+namespace fmt {
+  template <> struct formatter<Ioss::ZoneConnectivity> : ostream_formatter
+  {
+  };
+} // namespace fmt

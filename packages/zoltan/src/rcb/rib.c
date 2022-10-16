@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -113,11 +113,11 @@ int Zoltan_RIB_Set_Param(
 int Zoltan_RIB(
   ZZ *zz,                       /* The Zoltan structure with info for
                                 the RIB balancer.                       */
-  float *part_sizes,            /* Input:  Array of size 
+  float *part_sizes,            /* Input:  Array of size
                                 zz->Num_Global_Parts * max(zz->Obj_Weight_Dim, 1)
                                 containing the percentage of work to be
                                 assigned to each part.               */
-  int *num_import,              /* Returned value: Number of non-local 
+  int *num_import,              /* Returned value: Number of non-local
                                 objects assigned to
                                 this processor in the new decomposition.*/
   ZOLTAN_ID_PTR *import_global_ids, /* Returned value: array of global IDs for
@@ -182,7 +182,7 @@ int Zoltan_RIB(
 
   if (final_output && (stats < 1)){
     /* FINAL_OUTPUT is a graph/phg param, corresponds to our OUTPUT_LEVEL 1 */
-    stats = 1; 
+    stats = 1;
   }
 
   ierr = rib_fn(zz, num_import, import_global_ids, import_local_ids,
@@ -200,37 +200,37 @@ static int rib_fn(
   ZZ *zz,                       /* The Zoltan structure with info for
                                 the RIB balancer. */
   int *num_import,              /* Number of non-local objects assigned to
-                                this processor in the new decomposition.      
+                                this processor in the new decomposition.
                                 When LB.Return_Lists==CANDIDATE_LISTS,
                                 num_import returns the number of input
                                 objects as given by ZOLTAN_NUM_OBJ_FN. */
   ZOLTAN_ID_PTR *import_global_ids, /* Returned value:  array of global IDs for
                                 non-local objects in this processor's new
-                                decomposition.  
+                                decomposition.
                                 When LB.Return_Lists==CANDIDATE_LISTS,
-                                this array contains GIDs for all input 
+                                this array contains GIDs for all input
                                 objs as given by ZOLTAN_OBJ_LIST_FN.*/
   ZOLTAN_ID_PTR *import_local_ids,  /* Returned value:  array of local IDs for
                                 non-local objects in this processor's new
-                                decomposition.                            
+                                decomposition.
                                 When LB.Return_Lists==CANDIDATE_LISTS,
-                                this array contains LIDs for all input 
+                                this array contains LIDs for all input
                                 objs as given by ZOLTAN_OBJ_LIST_FN.*/
   int **import_procs,           /* Returned value: array of processor IDs for
                                 processors owning the non-local objects in
-                                this processor's new decomposition.       
+                                this processor's new decomposition.
                                 When LB.Return_Lists==CANDIDATE_LISTS,
                                 the returned array is NULL. */
   int **import_to_part,         /* Returned value: array of parts to
-                                which objects are imported.      
+                                which objects are imported.
                                 When LB.Return_Lists==CANDIDATE_LISTS,
                                 the returned array is NULL.  */
-  int *num_export,              /* Returned value only when 
+  int *num_export,              /* Returned value only when
                                 LB.Return_Lists==CANDIDATE_LISTS; number of
                                 input objs as given by ZOLTAN_NUM_OBJ_FN */
   ZOLTAN_ID_PTR *export_global_ids, /* Returned value only when
                                 LB.Return_Lists==CANDIDATE_LISTS; for each
-                                input obj (from ZOLTAN_OBJ_LIST_FN), 
+                                input obj (from ZOLTAN_OBJ_LIST_FN),
                                 return a candidate obj from the part to which
                                 the obj is assigned; used in PHG matching */
   double overalloc,             /* amount to overallocate by when realloc
@@ -276,7 +276,7 @@ static int rib_fn(
   double  time1=0,time2=0;    /* timers */
   double  time3=0,time4=0;    /* timers */
   double  timestart=0,timestop=0; /* timers */
-  double  timers[4]={0.,0.,0.,0.}; 
+  double  timers[4]={0.,0.,0.,0.};
                               /* diagnostic timers
                                  0 = start-up time before recursion
                                  1 = time before median iterations
@@ -294,7 +294,7 @@ static int rib_fn(
   int     use_ids;            /* When true, global and local IDs will be
                                  stored along with dots in the RCB_STRUCT.
                                  When false, storage, manipulation, and
-                                 communication of IDs is avoided.     
+                                 communication of IDs is avoided.
                                  Set by call to Zoltan_RB_Use_IDs().         */
 
   RIB_STRUCT *rib = NULL;     /* Pointer to data structures for RIB */
@@ -357,7 +357,7 @@ static int rib_fn(
   ierr = Zoltan_RIB_Build_Structure(zz, &pdotnum, &dotmax, wgtflag, overalloc,
                                     use_ids, gen_tree);
   if (ierr < 0) {
-    ZOLTAN_PRINT_ERROR(proc, yo, 
+    ZOLTAN_PRINT_ERROR(proc, yo,
       "Error returned from Zoltan_RIB_Build_Structure.");
     goto End;
   }
@@ -384,9 +384,9 @@ static int rib_fn(
   counters[6] = 0;
 
   /* Ensure there are dots */
-    
+
   MPI_Allreduce(&dotnum, &i, 1, MPI_INT, MPI_MAX, zz->Communicator);
-  
+
   if (i == 0){
     if (proc == 0){
       ZOLTAN_PRINT_WARN(proc, yo, "RIB partitioning called with no objects");
@@ -499,16 +499,16 @@ static int rib_fn(
     tfs[1] = num_parts;
   }
 
-  while ((num_parts > 1 && num_procs > 1) || 
+  while ((num_parts > 1 && num_procs > 1) ||
          (zz->Tflops_Special && tfs[0] > 1 && tfs[1] > 1)) {
 
-    if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME)) 
+    if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME))
       time1 = Zoltan_Time(zz->Timer);
 
-    ierr = Zoltan_Divide_Machine(zz, zz->Obj_Weight_Dim, part_sizes, 
-                                 proc, local_comm, &set, 
-                                 &proclower, &procmid, &num_procs, 
-                                 &partlower, &partmid, &num_parts, 
+    ierr = Zoltan_Divide_Machine(zz, zz->Obj_Weight_Dim, part_sizes,
+                                 proc, local_comm, &set,
+                                 &proclower, &procmid, &num_procs,
+                                 &partlower, &partmid, &num_parts,
                                  fractionlo);
     if (ierr < 0) {
       ZOLTAN_PRINT_ERROR(proc, yo, "Error in Zoltan_Divide_Machine.");
@@ -540,33 +540,33 @@ static int rib_fn(
     }
 
     dotpt = &rib->Dots;
-    
+
     if (old_nparts > 1 && old_nprocs > 1) { /* test added for Tflops_Special;
                                                compute values only if looping
                                                to decompose, not if looping to
                                                keep Tflops_Special happy.  */
-      ierr = compute_rib_direction(zz, zz->Tflops_Special, rib->Num_Geom, 
-                                   &valuelo, &valuehi, dotpt, NULL, dotnum, 
+      ierr = compute_rib_direction(zz, zz->Tflops_Special, rib->Num_Geom,
+                                   &valuelo, &valuehi, dotpt, NULL, dotnum,
                                    wgtflag, cm, evec, value,
                                    local_comm, proc, old_nprocs, proclower);
       if (ierr < 0) {
-        ZOLTAN_PRINT_ERROR(proc, yo, 
+        ZOLTAN_PRINT_ERROR(proc, yo,
           "Error returned from compute_rib_direction");
         goto End;
       }
     }
-    else {  /* For Tflops_Special: initialize value when looping only 
+    else {  /* For Tflops_Special: initialize value when looping only
                                    for Tflops_Special */
       for (i = 0; i < dotmax; i++)
         value[i] = 0.0;
       valuelo = valuehi = 0.0;
     }
 
-    if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME)) 
+    if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME))
       time2 = Zoltan_Time(zz->Timer);
 
     if (!Zoltan_RB_find_median(
-                   zz->Tflops_Special, value, dotpt->Weight, dotpt->uniformWeight, dotmark, dotnum, proc, 
+                   zz->Tflops_Special, value, dotpt->Weight, dotpt->uniformWeight, dotmark, dotnum, proc,
                    fractionlo, local_comm, &valuehalf, first_guess,
                    nprocs, old_nprocs, proclower, old_nparts,
                    wgtflag, valuelo, valuehi, weight[0], weightlo,
@@ -576,19 +576,19 @@ static int rib_fn(
       ierr = ZOLTAN_FATAL;
       goto End;
     }
-  
+
     if (set)    /* set weight for current part */
       for (j=0; j<wgtdim; j++) weight[j] = weighthi[j];
     else
       for (j=0; j<wgtdim; j++) weight[j] = weightlo[j];
 
-    if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME)) 
+    if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME))
       time3 = Zoltan_Time(zz->Timer);
 
     /* store cut info in tree only if proc "owns" partmid */
-    /* test of partmid > 0 prevents treept[0] being set when this cut is 
+    /* test of partmid > 0 prevents treept[0] being set when this cut is
        only removing low-numbered processors (proclower to procmid-1) that
-       have no parts in them from the processors remaining to 
+       have no parts in them from the processors remaining to
        be partitioned. */
 
     if (treept && partmid > 0 && partmid == fp) {
@@ -606,12 +606,12 @@ static int rib_fn(
       treept[partmid].right_leaf = -partmid;
     }
 
-    if (old_nprocs > 1 && partmid > 0 && partmid != partlower + old_nparts) {  
-      /* old_nprocs > 1 test: Don't reset these values if proc is in loop only 
+    if (old_nprocs > 1 && partmid > 0 && partmid != partlower + old_nparts) {
+      /* old_nprocs > 1 test: Don't reset these values if proc is in loop only
        * because of other procs for Tflops_Special.
        * partmid > 0 test:  Don't reset these values if low-numbered processors
        * (proclower to procmid-1) have zero parts and this cut is removing
-       * them from the processors remaining to be partitioned. 
+       * them from the processors remaining to be partitioned.
        * partmid != partlower + old_nparts test:  Don't reset these values if
        * cut is removing high-numbered processors with zero parts from
        * the processors remaining to be partitioned.
@@ -620,11 +620,11 @@ static int rib_fn(
       root = partmid;
     }
 
-    ierr = Zoltan_RB_Send_Outgoing(zz, &(rib->Global_IDs), &(rib->Local_IDs), 
+    ierr = Zoltan_RB_Send_Outgoing(zz, &(rib->Global_IDs), &(rib->Local_IDs),
                                &(rib->Dots), &dotmark,
                                &dottop, &dotnum, &dotmax,
                                set, &allocflag, overalloc,
-                               stats, counters, use_ids,  
+                               stats, counters, use_ids,
                                 local_comm, proclower,
                                old_nprocs, partlower, partmid);
     if (ierr < 0) {
@@ -632,7 +632,7 @@ static int rib_fn(
         "Error returned from Zoltan_RB_Send_Outgoing.");
       goto End;
     }
-    
+
     /* create new communicators */
 
     if (zz->Tflops_Special) {
@@ -666,7 +666,7 @@ static int rib_fn(
      most notably when a processor has zero parts on it, but still has
      some dots after the parallel partitioning. */
 
-  if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME)) 
+  if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME))
     time1 = Zoltan_Time(zz->Timer);
 
   ierr = Zoltan_RB_Send_To_Part(zz, &(rib->Global_IDs), &(rib->Local_IDs),
@@ -680,15 +680,15 @@ static int rib_fn(
     goto End;
   }
 
-  if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME)) 
+  if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME))
     timers[3] += (Zoltan_Time(zz->Timer) - time1);
-  
+
 
   /* All dots are now on the processors they will end up on; now generate
    * more parts if needed. */
 
   if (num_parts > 1) {
-    if (dotpt->nWeights) 
+    if (dotpt->nWeights)
       wgts = (double *) ZOLTAN_MALLOC(dotpt->nWeights * dotnum * sizeof(double));
     dindx = (int *) ZOLTAN_MALLOC(dotnum * 2 * sizeof(int));
     tmpdindx = dindx + dotnum;
@@ -755,7 +755,7 @@ EndReporting:
                                &(rib->Dots), &dotnum, &dotmax,
                   &allocflag, overalloc, stats, counters, use_ids);
     /* Note:  dottop is no longer valid after remapping.  Remapping might
-       destroy the nice local-followed-by-non-local ordering of the 
+       destroy the nice local-followed-by-non-local ordering of the
        dots array.  Do not use dottop after remapping. */
     if (ierr < 0) {
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Error returned from Zoltan_RB_Remap.");
@@ -768,10 +768,10 @@ EndReporting:
   if (zz->LB.Return_Lists != ZOLTAN_LB_NO_LISTS &&
       zz->LB.Return_Lists != ZOLTAN_LB_CANDIDATE_LISTS) {
     /* zz->LB.Return_Lists is true ==> use_ids is true */
-    ierr = Zoltan_RB_Return_Arguments(zz, rib->Global_IDs, rib->Local_IDs, 
+    ierr = Zoltan_RB_Return_Arguments(zz, rib->Global_IDs, rib->Local_IDs,
                                       &rib->Dots, num_import,
                                       import_global_ids, import_local_ids,
-                                      import_procs, import_to_part, 
+                                      import_procs, import_to_part,
                                       dotnum);
     if (ierr < 0) {
       ZOLTAN_PRINT_ERROR(proc, yo,
@@ -816,7 +816,7 @@ EndReporting:
 
     ierr = Zoltan_RB_Tree_Gatherv(zz, sizeof(struct rib_tree), &sendcount,
                                   recvcount, displ);
-    /* 
+    /*
      * Create copy of treept so that MPI_Allgatherv doesn't use same
      * memory for sending and receiving; removes valgrind warning.
      */
@@ -843,22 +843,22 @@ EndReporting:
   lb_time[0] += (end_time - start_time);
 
   if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME))
-    Zoltan_RB_stats(zz, timestop-timestart, &rib->Dots, dotnum, 
+    Zoltan_RB_stats(zz, timestop-timestart, &rib->Dots, dotnum,
                 part_sizes, timers, counters, stats, NULL, NULL, FALSE);
 
   if (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME) {
     if (zz->Proc == zz->Debug_Proc)
       printf("ZOLTAN RIB Times:  \n");
-    Zoltan_Print_Stats(zz->Communicator, zz->Debug_Proc, lb_time[0], 
+    Zoltan_Print_Stats(zz->Communicator, zz->Debug_Proc, lb_time[0],
                    "ZOLTAN       Build:       ");
-    Zoltan_Print_Stats(zz->Communicator, zz->Debug_Proc, lb_time[1], 
+    Zoltan_Print_Stats(zz->Communicator, zz->Debug_Proc, lb_time[1],
                    "ZOLTAN         RIB:         ");
   }
 
   if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) {
     /* zz->Debug_Level >= ZOLTAN_DEBUG_ALL ==> use_ids is true */
-    Zoltan_RB_Print_All(zz, rib->Global_IDs, &rib->Dots, 
-                    dotnum, *num_import, 
+    Zoltan_RB_Print_All(zz, rib->Global_IDs, &rib->Dots,
+                    dotnum, *num_import,
                     *import_global_ids, *import_procs);
   }
 
@@ -897,9 +897,9 @@ struct rib_tree *treept = treept_arr;
   Zoltan_Print_Sync_Start(zz->Communicator, TRUE);
   for (i = fp; i < fp+np; i++) {
     printf("Proc %d Part %d:  Tree Struct:\n", zz->Proc, i);
-    printf("          cm         = (%e,%e,%e)\n", 
+    printf("          cm         = (%e,%e,%e)\n",
            treept->cm[0], treept->cm[1], treept->cm[2]);
-    printf("          ev         = (%e,%e,%e)\n", 
+    printf("          ev         = (%e,%e,%e)\n",
            treept->ev[0], treept->ev[1], treept->ev[2]);
     printf("          cut        = %e\n", treept->cut);
     printf("          parent     = %d\n", treept->parent);
@@ -939,13 +939,13 @@ void Zoltan_RIB_min_max(
 
    /* Find next lower power of 2. */
    for (hbit = 0; (nprocs >> hbit) != 1; hbit++);
- 
+
    nprocs_small = 1 << hbit;
    if (nprocs_small * 2 == nprocs) {
       nprocs_small *= 2;
       hbit++;
    }
- 
+
    to = proclower + (rank ^ nprocs_small);
    if (rank & nprocs_small) {  /* processors greater than largest power of 2 */
       MPI_Send(tmp, 2, MPI_DOUBLE, to, tag, comm);
@@ -957,7 +957,7 @@ void Zoltan_RIB_min_max(
          MPI_Recv(tmp1, 2, MPI_DOUBLE, to, tag, comm, &status);
          if (tmp1[0] < tmp[0]) tmp[0] = tmp1[0];
          if (tmp1[1] > tmp[1]) tmp[1] = tmp1[1];
-      }  
+      }
       for (mask = nprocs_small >> 1; mask; mask >>= 1) { /* binary exchange */
          tag++;
          partner = proclower + (rank ^ mask);
@@ -965,7 +965,7 @@ void Zoltan_RIB_min_max(
          MPI_Recv(tmp1, 2, MPI_DOUBLE, partner, tag, comm, &status);
          if (tmp1[0] < tmp[0]) tmp[0] = tmp1[0];
          if (tmp1[1] > tmp[1]) tmp[1] = tmp1[1];
-      }  
+      }
       tag++;
       if (rank + nprocs_small < nprocs)
          MPI_Send(tmp, 2, MPI_DOUBLE, to, tag, comm);
@@ -978,7 +978,7 @@ void Zoltan_RIB_min_max(
 /*****************************************************************************/
 
 static int compute_rib_direction(
-  ZZ *zz, 
+  ZZ *zz,
   int Tflops_Special,         /* Tflops_Special flag for special processing.
                                  Should be 0 when called by serial_rib. */
   int num_geom,               /* number of dimensions */
@@ -997,7 +997,7 @@ static int compute_rib_direction(
   int proc,                   /* Current processor; needed for Tflops_Special */
   int nprocs,                 /* Number of procs in operation; needed for
                                  Tflops_Special */
-  int proclower               /* Lowest numbered proc; needed for 
+  int proclower               /* Lowest numbered proc; needed for
                                  Tflops_Special */
 )
 {
@@ -1007,18 +1007,18 @@ RIB_STRUCT *rib;
 
   rib = (RIB_STRUCT *)zz->LB.Data_Structure;
 
-  if (rib->Tran.Target_Dim > 0){ 
+  if (rib->Tran.Target_Dim > 0){
     num_geom = rib->Tran.Target_Dim; /* degenerate geometry */
   }
 
   switch (num_geom) {
   case 3:
-    ierr = Zoltan_RIB_inertial3d(Tflops_Special, dotpt, dindx, dotnum, wgtflag, 
+    ierr = Zoltan_RIB_inertial3d(Tflops_Special, dotpt, dindx, dotnum, wgtflag,
                                  cm, evec, value,
                                  local_comm, proc, nprocs, proclower);
     break;
   case 2:
-    ierr = Zoltan_RIB_inertial2d(Tflops_Special, dotpt, dindx, dotnum, wgtflag, 
+    ierr = Zoltan_RIB_inertial2d(Tflops_Special, dotpt, dindx, dotnum, wgtflag,
                                  cm, evec, value,
                                  local_comm, proc, nprocs, proclower);
     break;
@@ -1049,7 +1049,7 @@ RIB_STRUCT *rib;
 /*****************************************************************************/
 
 static int serial_rib(
-  ZZ *zz, 
+  ZZ *zz,
   struct Dot_Struct *dotpt,  /* local dot array */
   int *dotmark,              /* which side of median for each dot */
   int *dotlist,              /* list of dots used only in find_median;
@@ -1105,17 +1105,17 @@ double start_time=0., end_time;
   }
   else {
 
-    if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME)) 
+    if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME))
       start_time = Zoltan_Time(zz->Timer);
 
     ierr = Zoltan_Divide_Parts(zz, zz->Obj_Weight_Dim, part_sizes, num_parts,
                                &partlower, &partmid, fractionlo);
 
-    ierr = compute_rib_direction(zz, 0, num_geom, &valuelo, &valuehi, 
+    ierr = compute_rib_direction(zz, 0, num_geom, &valuelo, &valuehi,
                                  dotpt, dindx, dotnum, wgtflag, cm, evec, value,
                                  MPI_COMM_SELF, proc, 1, proc);
     if (ierr < 0) {
-      ZOLTAN_PRINT_ERROR(proc, yo, 
+      ZOLTAN_PRINT_ERROR(proc, yo,
         "Error returned from compute_rib_direction");
       goto End;
     }
@@ -1135,13 +1135,13 @@ double start_time=0., end_time;
       start_time = end_time;
     }
 
-    if (!Zoltan_RB_find_median(0, value, wgts, dotpt->uniformWeight, dotmark, dotnum, proc, 
-                               fractionlo, MPI_COMM_SELF, &valuehalf, 
+    if (!Zoltan_RB_find_median(0, value, wgts, dotpt->uniformWeight, dotmark, dotnum, proc,
+                               fractionlo, MPI_COMM_SELF, &valuehalf,
                                0, zz->Num_Proc, 1, proc, num_parts,
                                wgtflag, valuelo, valuehi, weight, &weightlo,
-                               &weighthi, dotlist, rectilinear_blocks, 
+                               &weighthi, dotlist, rectilinear_blocks,
                                average_cuts)) {
-      ZOLTAN_PRINT_ERROR(proc, yo, 
+      ZOLTAN_PRINT_ERROR(proc, yo,
         "Error returned from Zoltan_RB_find_median.");
       ierr = ZOLTAN_FATAL;
       goto End;
@@ -1183,7 +1183,7 @@ double start_time=0., end_time;
       ierr = serial_rib(zz, dotpt, dotmark, dotlist, 0, root, num_geom,
                         weightlo, set0, new_nparts,
                         &(dindx[0]), &(tmpdindx[0]), partlower,
-                        proc, wgtflag, stats, gen_tree, 
+                        proc, wgtflag, stats, gen_tree,
                         rectilinear_blocks, average_cuts,
                         treept, value, wgts, part_sizes, timers);
       if (ierr < 0) {
@@ -1206,7 +1206,7 @@ double start_time=0., end_time;
       }
     }
   }
-    
+
 End:
   return ierr;
 }

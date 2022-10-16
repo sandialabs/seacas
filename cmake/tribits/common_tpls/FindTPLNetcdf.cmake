@@ -51,6 +51,10 @@ endif()
 set(REQUIRED_HEADERS netcdf.h)
 set(REQUIRED_LIBS_NAMES netcdf)
 
+if (TPL_ENABLE_MPI)
+  set(REQUIRED_LIBS_NAMES ${REQUIRED_LIBS_NAMES} pnetcdf)
+endif()
+
 #
 # Second, search for Netcdf components (if allowed) using the standard
 # find_package(NetCDF ...).
@@ -65,7 +69,7 @@ if (Netcdf_ALLOW_PREFIND)
     "${CMAKE_CURRENT_LIST_DIR}/find_modules"
     "${CMAKE_CURRENT_LIST_DIR}/utils"
      )
-  
+
   find_package(NetCDF)
 
   if (NetCDF_FOUND)
@@ -74,16 +78,29 @@ if (Netcdf_ALLOW_PREFIND)
       "True if netcdf enables netcdf-4")
     set(TPL_Netcdf_Enables_PNetcdf ${NetCDF_NEEDS_PNetCDF} CACHE BOOL
       "True if netcdf enables pnetcdf")
-    set(TPL_Netcdf_PARALLEL ${NetCDF_PARALLEL} CACHE BOOL
+    set(TPL_Netcdf_PARALLEL ${NetCDF_PARALLEL} CACHE INTERNAL
       "True if netcdf compiled with parallel enabled")
     set(TPL_Netcdf_LIBRARY_DIRS ${_hdf5_LIBRARY_SEARCH_DIRS} CACHE PATH
       "${DOCSTR} library files")
     set(TPL_Netcdf_LIBRARIES ${NetCDF_LIBRARIES} CACHE PATH
-      "List of semi-colon seprated library names (not 'lib' or extension).")
+      "List of semi-colon separated library names (not 'lib' or extension).")
     set(TPL_Netcdf_INCLUDE_DIRS ${NetCDF_INCLUDE_DIRS} CACHE PATH
       "${DOCSTR} header files.")
   endif()
-
+else()
+  # Curl library is only required if DAP is enabled; should detect inside
+  # FindNetCDF.cmake, but that is not being called... SEMS has DAP enabled;
+  # many HPC systems don't, but they override these settings...
+  find_program(NC_CONFIG "nc-config")
+  if (NC_CONFIG)
+    execute_process(COMMAND "nc-config --has-dap2"
+                    OUTPUT_VARIABLE NETCDF_HAS_DAP2)
+    execute_process(COMMAND "nc-config --has-dap4"
+                    OUTPUT_VARIABLE NETCDF_HAS_DAP4)
+  endif()
+  if ((NOT NC_CONFIG) OR NETCDF_HAS_DAP2 OR NETCDF_HAS_DAP4)
+    set(REQUIRED_LIBS_NAMES ${REQUIRED_LIBS_NAMES} curl)
+  endif()
 endif()
 
 #
@@ -102,8 +119,8 @@ tribits_tpl_find_include_dirs_and_libraries( Netcdf
 # If the `find_package(NetCDF)` is not run, then this may not be set
 # Need to determine how this is set in the library that is being used...
 
-if ("${TPL_Netcdf_PARALLEL}" STREQUAL "")  
-   ASSERT_DEFINED(TPL_Netcdf_INCLUDE_DIRS)
+if ("${TPL_Netcdf_PARALLEL}" STREQUAL "")
+   assert_defined(TPL_Netcdf_INCLUDE_DIRS)
    find_path(meta_path
       NAMES "netcdf_meta.h"
       HINTS ${TPL_Netcdf_INCLUDE_DIRS}
@@ -115,12 +132,12 @@ if ("${TPL_Netcdf_PARALLEL}" STREQUAL "")
       file(STRINGS "${meta_path}/netcdf_meta.h" netcdf_par_string REGEX "NC_HAS_PARALLEL ")
       string(REGEX MATCH "[01]" netcdf_par_val "${netcdf_par_string}")
       if (netcdf_par_val EQUAL 1)
-         set(TPL_Netcdf_PARALLEL True CACHE INTERNAL 
-	     "True if netcdf compiled with parallel enabled")
+         set(TPL_Netcdf_PARALLEL True CACHE INTERNAL
+             "True if netcdf compiled with parallel enabled")
       endif()
    endif()
-   if ("${TPL_Netcdf_PARALLEL}" STREQUAL "")  
-      set(TPL_Netcdf_PARALLEL False CACHE INTERNAL 
+   if ("${TPL_Netcdf_PARALLEL}" STREQUAL "")
+      set(TPL_Netcdf_PARALLEL False CACHE INTERNAL
           "True if netcdf compiled with parallel enabled")
    endif()
 endif()

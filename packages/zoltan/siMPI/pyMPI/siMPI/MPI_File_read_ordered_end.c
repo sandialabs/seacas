@@ -17,6 +17,5 @@
 int MPI_File_read_ordered_end(MPI_File fh, void *buf, MPI_Status *status)
 {
   _MPI_COVERAGE();
-  return PMPI_File_read_ordered_end (fh, buf, status); 
+  return PMPI_File_read_ordered_end (fh, buf, status);
 }
-

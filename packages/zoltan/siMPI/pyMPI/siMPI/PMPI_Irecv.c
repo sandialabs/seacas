@@ -37,5 +37,3 @@ int PMPI_Irecv (void* message, int count, MPI_Datatype datatype, int source,
   return retval;
 }
 /*==========================================================================*/
-
-

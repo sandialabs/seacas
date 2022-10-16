@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -88,7 +88,7 @@ struct _eval_graph_struct{
   float nobj[EVAL_SIZE];        /* number of partition vertices */
   float obj_wgt[EVAL_SIZE];     /* partition vertex weights */
   float num_boundary[EVAL_SIZE];/* the number of objects with a remote neighbor */
-              
+
   float xtra_imbalance[EVAL_MAX_XTRA_VWGTS];
   float xtra_obj_wgt[EVAL_MAX_XTRA_VWGTS][EVAL_SIZE];
 
@@ -102,7 +102,7 @@ struct _eval_balance_struct{
   float imbalance;              /* vertex weight imbalance */
   float nobj[EVAL_SIZE];        /* number of partition vertices */
   float obj_wgt[EVAL_SIZE];     /* partition vertex weights */
-              
+
   float xtra_imbalance[EVAL_MAX_XTRA_VWGTS];
   float xtra_obj_wgt[EVAL_MAX_XTRA_VWGTS][EVAL_SIZE];
 };
@@ -115,7 +115,7 @@ int Zoltan_LB_Eval_Graph(struct Zoltan_Struct  *zz, int print_stats, ZOLTAN_GRAP
 
 int Zoltan_LB_Eval_HG(struct Zoltan_Struct  *zz, int print_stats, ZOLTAN_HG_EVAL *hg);
 
-int Zoltan_LB_Eval(struct Zoltan_Struct  *zz, int print_stats, 
+int Zoltan_LB_Eval(struct Zoltan_Struct  *zz, int print_stats,
                     ZOLTAN_BALANCE_EVAL *obj, ZOLTAN_GRAPH_EVAL *graph, ZOLTAN_HG_EVAL *hg);
 
 void Zoltan_LB_Eval_Print_Graph(ZOLTAN_GRAPH_EVAL *graph);

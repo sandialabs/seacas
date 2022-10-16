@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -65,9 +65,9 @@ extern "C" {
 #define SIMPLE_HUND
 
 #ifndef SIMPLE_HUND
-/* Removed CCOLAMD from BSD version. 
+/* Removed CCOLAMD from BSD version.
 int Zoltan_CColAMD(
-  ZZ *zz,               
+  ZZ *zz,
   struct Zoltan_DD_Struct *dd_constraint,
   int nPart,
   int *num_obj,

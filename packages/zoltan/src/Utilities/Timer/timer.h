@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -55,11 +55,11 @@
 #endif
 
 /*
- * POSIX compliant systems should use times() for user timing. 
+ * POSIX compliant systems should use times() for user timing.
  * This is the default in Zoltan. Make Zoltan with -DNO_TIMES if
  * your system does not have sys/times.h and times().
  * Note: BSD-like systems may use getrusage() instead for user timing,
- * but that has not been implemented here. 
+ * but that has not been implemented here.
  */
 
 #if defined(__PUMAGON__) || defined(__LIBCATAMOUNT__) || defined(_WIN32)

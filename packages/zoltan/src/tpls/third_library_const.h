@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -96,7 +96,7 @@ extern "C" {
  * "indextype" is the type used for global numbers and indices in the graph
  *  data structure.
  * "weighttype" is the type used for weights.
- * 
+ *
  * If there are no third party graph/ordering libraries, let indextype be
  * ZOLTAN_GNO_TYPE and let "weighttype" be float.
  *

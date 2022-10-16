@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -358,7 +358,7 @@ double *Zoltan_Malloc(size_t n, char *filename, int lineno)
   else {		/* n < 0 */
     GET_RANK(&proc);
     fprintf(stderr, "%s (from %s,%d) ERROR on proc %d: "
-	    "Negative malloc argument. (%lu)\n", yo, filename, lineno, proc, 
+	    "Negative malloc argument. (%lu)\n", yo, filename, lineno, proc,
             (unsigned long) n);
     return ((double *) NULL);
   }
@@ -517,8 +517,8 @@ void Zoltan_Free (void **ptr, char *filename, int lineno)
  *  This version of free calls the system's free function.  It doesn't call
  *  free if ptr is the NULL pointer.
  */
- 
-  if (ptr == NULL || *ptr == NULL) 
+
+  if (ptr == NULL || *ptr == NULL)
     return;
 
   nfree++;
@@ -533,7 +533,7 @@ void Zoltan_Free (void **ptr, char *filename, int lineno)
     if (dbptr == NULL) {
       GET_RANK(&proc);
       fprintf(stderr, "Proc %d: Memory error: In free, address (0x%lx) "
-	"not found in debug list. File=%s, line=%d.\n", proc, 
+	"not found in debug list. File=%s, line=%d.\n", proc,
         (long) *ptr, filename, lineno);
    }
    else {
@@ -555,7 +555,7 @@ void Zoltan_Free (void **ptr, char *filename, int lineno)
 #else
   free(*ptr);
 #endif
- 
+
   /* Set value of ptr to NULL, to flag further references to it. */
   *ptr = NULL;
 
@@ -570,7 +570,7 @@ void Zoltan_Multifree(char *filename, int lineno, int n, ...)
 {
   int i;
   va_list va;
-  
+
   va_start(va, n);
   for (i=0; i<n; i++){
     Zoltan_Free(va_arg(va, void **), filename, lineno);
@@ -586,7 +586,7 @@ va_dcl
   int i, n, lineno;
   char *filename;
   va_list va;
-   
+
   va_start(va);
   filename = va_arg(va, char *);
   lineno = va_arg(va, int);
@@ -621,10 +621,10 @@ void Zoltan_Memory_Stats()
     else if (DEBUG_MEMORY > 1) {
         GET_RANK(&proc);
 	fprintf(stderr, "Proc %d: Calls to malloc = %d,  Calls to free = %d, "
-                        "Max bytes = %lu, total bytes = %lu\n", 
+                        "Max bytes = %lu, total bytes = %lu\n",
                          proc, nmalloc, nfree,
                          (unsigned long) bytes_max, (unsigned long) bytes_used);
-        if (nmalloc > nfree) 
+        if (nmalloc > nfree)
           fprintf(stderr, "Proc %d: Possible memory error: "
                           "# malloc > # free.\n", proc);
         else if (nfree > nmalloc)
@@ -634,7 +634,7 @@ void Zoltan_Memory_Stats()
 	    fprintf(stderr, "Proc %d: Remaining allocations:\n", proc);
 	    for (dbptr = top; dbptr != NULL; dbptr = dbptr->next) {
 		fprintf(stderr, " order=%d, size=%lu, location=0x%lx, "
-                  "file=%s, line=%d\n", 
+                  "file=%s, line=%d\n",
                   dbptr->order, (unsigned long) (dbptr->size),
                   (long) dbptr->ptr,
                   dbptr->file, dbptr->line);
@@ -663,7 +663,7 @@ size_t Zoltan_Memory_Usage (int type)
 
 void Zoltan_Memory_Reset (int type)
 {
-/* Reset total bytes used currently or maximum bytes used at any point 
+/* Reset total bytes used currently or maximum bytes used at any point
    to zero. */
 
    if (type == ZOLTAN_MEM_STAT_TOTAL)

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -101,7 +101,7 @@ int output_gnu(const char *cmd_file,
  * results.
  * We'll do 3D problems later.
  *
- * One gnuplot file is written for each part.  
+ * One gnuplot file is written for each part.
  * When number of part == number of processors, there is one file per
  * processor.
  *
@@ -161,10 +161,10 @@ int output_gnu(const char *cmd_file,
     return 0;
   }
 
-  /* 
-   * Build arrays of part number to sort by.  Index and elem_index arrays 
-   * will be used even when plotting by processor numbers (for generality), 
-   * so build it regardless. 
+  /*
+   * Build arrays of part number to sort by.  Index and elem_index arrays
+   * will be used even when plotting by processor numbers (for generality),
+   * so build it regardless.
    */
   nelems = mesh->num_elems - mesh->blank_count;
 
@@ -177,7 +177,7 @@ int output_gnu(const char *cmd_file,
       if (current_elem->globalID != ZOLTAN_ID_INVALID) {
 
         if (mesh->blank_count && (mesh->blank[i] == 1)) continue;
-        
+
         if (current_elem->my_part > max_part) max_part = current_elem->my_part;
         parts[j] = (Output.Plot_Partition ? current_elem->my_part : Proc);
         index[j] = j;
@@ -188,7 +188,7 @@ int output_gnu(const char *cmd_file,
   }
   if (Output.Plot_Partition) {
     /* Sort by part numbers.  Assumes # parts >= # proc. */
-    if (nelems > 0) 
+    if (nelems > 0)
       Zoltan_quicksort_pointer_inc_int_int(index, parts, NULL, 0, nelems-1);
     MPI_Allreduce(&max_part, &gmax_part, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
     gnum_part = gmax_part + 1;
@@ -205,7 +205,7 @@ int output_gnu(const char *cmd_file,
       pio_info->file_type == NO_FILE_POINTS ||
       pio_info->file_type == NO_FILE_TRIANGLES ||
       pio_info->file_type == HYPERGRAPH_FILE) {
-    /* 
+    /*
      * For each node of Chaco graph, print the coordinates of the node.
      * Then, for each neighboring node on the processor, print the neighbor's
      * coordinates.
@@ -215,12 +215,12 @@ int output_gnu(const char *cmd_file,
       current_elem = &(mesh->elements[elem_index[index[i]]]);
       if (parts[index[i]] != prev_part) {
         if (fp != NULL) fclose(fp);
-        gen_par_filename(ctemp, par_out_fname, pio_info, 
+        gen_par_filename(ctemp, par_out_fname, pio_info,
                          parts[index[i]], Num_Proc);
         fp = fopen(par_out_fname, "w");
         prev_part = parts[index[i]];
       }
-    
+
       /* Include the point itself, so that even if there are no edges,
        * the point will appear.  */
       printcoord(fp, mesh->num_dims, "\n", current_elem);
@@ -251,9 +251,9 @@ int output_gnu(const char *cmd_file,
           if (current_elem->adj_proc[j] == Proc) {  /* Nbor is on same proc */
             if (mesh->blank_count && (mesh->blank[current_elem->adj[j]] == 1))
               continue;
-            if (!Output.Plot_Partition || 
-                mesh->elements[current_elem->adj[j]].my_part == 
-                             current_elem->my_part) {  
+            if (!Output.Plot_Partition ||
+                mesh->elements[current_elem->adj[j]].my_part ==
+                             current_elem->my_part) {
               /* Not plotting parts, or nbor is in same part */
               /* Plot the edge.  Need to include current point and nbor point
                * for each edge. */
@@ -274,7 +274,7 @@ int output_gnu(const char *cmd_file,
 
   }
   else if (pio_info->file_type == NEMESIS_FILE) { /* Nemesis input file */
-    /* 
+    /*
      *  For each element of Nemesis input file, print the coordinates of its
      *  nodes.  No need to follow neighbors, as decomposition is by elements.
      */
@@ -292,7 +292,7 @@ int output_gnu(const char *cmd_file,
       current_elem = &(mesh->elements[elem_index[index[i]]]);
       if (parts[index[i]] != prev_part) {
         if (fp != NULL) fclose(fp);
-        gen_par_filename(ctemp, par_out_fname, pio_info, 
+        gen_par_filename(ctemp, par_out_fname, pio_info,
                          parts[index[i]], Num_Proc);
         fp = fopen(par_out_fname, "w");
         prev_part = parts[index[i]];
@@ -300,12 +300,12 @@ int output_gnu(const char *cmd_file,
       num_nodes = mesh->eb_nnodes[current_elem->elem_blk];
       sum[0] = sum[1] = 0.0;
       for (j = 0; j < num_nodes; j++) {
-        fprintf(fp, "%e %e\n", 
+        fprintf(fp, "%e %e\n",
                 current_elem->coord[j][0], current_elem->coord[j][1]);
         sum[0] += current_elem->coord[j][0];
         sum[1] += current_elem->coord[j][1];
       }
-      fprintf(fp, "%e %e\n", current_elem->coord[0][0], 
+      fprintf(fp, "%e %e\n", current_elem->coord[0][0],
                              current_elem->coord[0][1]);
       fprintf(fp, "\n");
       /* Print small + in center of element */
@@ -317,13 +317,13 @@ int output_gnu(const char *cmd_file,
       fprintf(fp, "%e %e\n\n", sum[0], sum[1] + 0.001);
     }
   }
-  
-  if (nelems == 0 && !Output.Plot_Partition) { 
+
+  if (nelems == 0 && !Output.Plot_Partition) {
     /* Open a file just so one exists; satisfies the gnuload file. */
     gen_par_filename(ctemp, par_out_fname, pio_info, Proc, Num_Proc);
     fp = fopen(par_out_fname, "w");
   }
-    
+
   if (fp != NULL) fclose(fp);
   safe_free((void **)(void *) &parts);
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -158,7 +158,7 @@ typedef struct Zoltan_matrix_2d_ {
   ZOLTAN_GNO_TYPE *dist_y;      /* Distribution on y axis */
   distFnct        *hashDistFct; /* How to distribute nnz */
   void            *hashDistData;/* Used by hashDist */
-  int             delete_flag;  /* 0x001: dist_y, 0x010: ystart, 
+  int             delete_flag;  /* 0x001: dist_y, 0x010: ystart,
                                  * 0x100: pinGNO, 0x1000: yGID */
 
 } Zoltan_matrix_2d;

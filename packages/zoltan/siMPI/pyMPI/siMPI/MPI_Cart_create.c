@@ -19,6 +19,5 @@ int MPI_Cart_create ( MPI_Comm comm_old, int ndims, int *dims, int *periods,
                      int reorder, MPI_Comm *comm_cart )
 {
   _MPI_COVERAGE();
-  return PMPI_Cart_create (comm_old, ndims, dims, periods, reorder, comm_cart); 
+  return PMPI_Cart_create (comm_old, ndims, dims, periods, reorder, comm_cart);
 }
-

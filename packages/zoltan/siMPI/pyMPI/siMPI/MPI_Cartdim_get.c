@@ -18,6 +18,5 @@
 int MPI_Cartdim_get ( MPI_Comm comm, int *ndims )
 {
   _MPI_COVERAGE();
-  return PMPI_Cartdim_get (comm, ndims); 
+  return PMPI_Cartdim_get (comm, ndims);
 }
-

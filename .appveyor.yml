@@ -33,6 +33,7 @@ install:
   - cmd: set PATH=%PATH%;%MSYS2_BIN_LOCN%;%INSTALL_LOC%\bin;%INSTALL_LOC%\lib
   - cmd: vcpkg install netcdf-c
   - cmd: vcpkg install matio
+  - cmd: vcpkg install fmt
   - cmd: vcpkg integrate install
 
 configuration: Release
@@ -44,6 +45,7 @@ build_script:
   - cmd: mkdir build
   - cmd: cd build
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
+     -DCMAKE_TOOLCHAIN_FILE=C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake ^
      -DBUILD_SHARED_LIBS:BOOL=OFF ^
      -DCMAKE_BUILD_TYPE=Release ^
      -DCMAKE_CXX_FLAGS="%SUPPRESSIONS% /EHsc" ^
@@ -55,16 +57,16 @@ build_script:
      -DNetCDF_ROOT:PATH=%LIB_ROOT% ^
      -DSEACASExodus_ENABLE_THREADSAFE:BOOL=OFF ^
      -DSEACASIoss_ENABLE_THREADSAFE:BOOL=OFF ^
-     -DSEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON ^
-     -DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON ^
-     -DSEACASProj_ENABLE_DOXYGEN:BOOL=OFF ^
-     -DSEACASProj_ENABLE_Fortran=OFF ^
-     -DSEACASProj_ENABLE_SEACAS:BOOL=ON ^
-     -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON ^
-     -DSEACASProj_ENABLE_TESTS=ON ^
-     -DSEACASProj_ENABLE_Zoltan:BOOL=OFF ^
-     -DSEACASProj_HIDE_DEPRECATED_CODE:BOOL=ON ^
-     -DSEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON ^
+     -DSeacas_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON ^
+     -DSeacas_ENABLE_ALL_PACKAGES:BOOL=ON ^
+     -DSeacas_ENABLE_DOXYGEN:BOOL=OFF ^
+     -DSeacas_ENABLE_Fortran=OFF ^
+     -DSeacas_ENABLE_SEACAS:BOOL=ON ^
+     -DSeacas_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON ^
+     -DSeacas_ENABLE_TESTS=ON ^
+     -DSeacas_ENABLE_Zoltan:BOOL=OFF ^
+     -DSeacas_HIDE_DEPRECATED_CODE:BOOL=ON ^
+     -DSeacas_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON ^
      -DTPL_ENABLE_ADIOS2:BOOL=OFF ^
      -DTPL_ENABLE_CGNS:BOOL=OFF ^
      -DTPL_ENABLE_Kokkos:BOOL=OFF ^

@@ -17,6 +17,5 @@
 int MPI_File_set_info(MPI_File fh, MPI_Info info)
 {
   _MPI_COVERAGE();
-  return PMPI_File_set_info (fh, info); 
+  return PMPI_File_set_info (fh, info);
 }
-

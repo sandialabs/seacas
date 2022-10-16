@@ -18,7 +18,6 @@
 int MPI_Ssend (void* message, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
   _MPI_COVERAGE();
-  return PMPI_Ssend(message, count, datatype, dest, tag, comm); 
+  return PMPI_Ssend(message, count, datatype, dest, tag, comm);
 }
 /*=============================================================================================*/
-

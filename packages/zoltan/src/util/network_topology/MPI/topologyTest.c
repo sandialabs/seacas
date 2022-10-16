@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -101,13 +101,13 @@ comm_group level_info[NLEVELS];
     rc = MPI_Comm_size(comm[i], nprocs + i);
     if (rc != MPI_SUCCESS){
       MPI_Error_string(rc, errorstr, &len);
-      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr); 
+      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr);
     }
-  
+
     rc = MPI_Comm_rank(comm[i], me + i);
     if (rc != MPI_SUCCESS){
       MPI_Error_string(rc, errorstr, &len);
-      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr); 
+      fprintf(stderr,"(%d) MPI_Comm_size %s : %s\n",me[0],commName[i],errorstr);
     }
 #ifdef DEBUG_ME
     MPI_Barrier(MPI_COMM_WORLD);
@@ -128,7 +128,7 @@ comm_group level_info[NLEVELS];
     /*
      * classes[k] contains the rank (in level i) of the rank 0 element of element k's subcommunicator
      */
-    level_down(i, classes, me, nprocs); 
+    level_down(i, classes, me, nprocs);
 
     /*
      * my sub communicator will create which parts in the final partitioning?
@@ -140,9 +140,9 @@ comm_group level_info[NLEVELS];
   MPI_Barrier(MPI_COMM_WORLD);
   for (i=0; i < nprocs[0]; i++){
     if (i == me[0]){
-      printf("(%d) ranges: %s (%d %d iam %d) %s (%d %d iam %d) %s (%d %d iam %d) %s (%d %d iam %d) \n", 
+      printf("(%d) ranges: %s (%d %d iam %d) %s (%d %d iam %d) %s (%d %d iam %d) %s (%d %d iam %d) \n",
         me[0],
-        commName[0], level_part_range[0][0],  level_part_range[0][1], level_part_range[0][0] + me[0], 
+        commName[0], level_part_range[0][0],  level_part_range[0][1], level_part_range[0][0] + me[0],
         commName[1], level_part_range[1][0],  level_part_range[1][1], level_part_range[1][0] + me[1],
         commName[2], level_part_range[2][0],  level_part_range[2][1], level_part_range[2][0] + me[2],
         commName[3], level_part_range[3][0],  level_part_range[3][1], level_part_range[3][0] + me[3]);
@@ -354,7 +354,7 @@ int i, numClasses, myClass, myClassLeader, rangeStart;
   for (i=0; i < nprocs; i++){
     if ((buf[i] > 0) && (i == myClassLeader)) break;
     rangeStart += buf[i];
-  } 
+  }
 
   rangeNext[0] = rangeCurrent[0] + rangeStart;
   rangeNext[1] = rangeNext[0] + buf[myClassLeader] - 1;
@@ -416,7 +416,7 @@ void ping_pong_test(MPI_Comm comm, int myproc, int senderRank, int receiverRank,
      fflush(stdout);
    }
 
-/* Communications between nodes 
+/* Communications between nodes
  *   - Blocking sends and recvs
  *   - No guarantee of prepost, so might pass through comm buffer
  */
@@ -491,18 +491,18 @@ void ping_pong_test(MPI_Comm comm, int myproc, int senderRank, int receiverRank,
 
            MPI_Recv(NULL, 0, MPI_CHAR, receiverRank, 99, MPI_COMM_WORLD, &status);   /* ok to start */
            MPI_Irecv(b, size/8, MPI_DOUBLE, other_proc, j, comm, &request);
-  
+
            t0 = MPI_Wtime();
            MPI_Send(a, size/8, MPI_DOUBLE, other_proc, j, comm);
            MPI_Wait(&request, &status);
            tsum += MPI_Wtime() - t0;
-  
+
         } else if (myproc == receiverRank) {
 
            MPI_Irecv(b, size/8, MPI_DOUBLE, other_proc, j, comm, &request);
 
            MPI_Send(NULL, 0, MPI_CHAR, senderRank, 99, MPI_COMM_WORLD);    /* ok to start */
-  
+
            MPI_Wait(&request, &status);
 
            MPI_Send(b, size/8, MPI_DOUBLE, other_proc, j, comm);
@@ -550,14 +550,14 @@ void ping_pong_test(MPI_Comm comm, int myproc, int senderRank, int receiverRank,
         t0 = MPI_Wtime();
         MPI_Send(a, size/8, MPI_DOUBLE, other_proc, 0, comm);
         MPI_Wait(&request_b, &status);
-  
+
         b[0] += 1.0;
         if (last != 0)
         b[last] += 1.0;
-  
+
         MPI_Send(b, size/8, MPI_DOUBLE, other_proc, 0, comm);
         MPI_Wait(&request_a, &status);
-  
+
         t1 = MPI_Wtime();
         time = 1.e6 * (t1 - t0);
       }
@@ -586,5 +586,3 @@ void ping_pong_test(MPI_Comm comm, int myproc, int senderRank, int receiverRank,
       printf("\n Max rate = %f MB/sec  Min latency = %f usec\n",
                max_rate, min_latency);
 }
-
-

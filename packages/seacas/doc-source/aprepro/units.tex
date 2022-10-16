@@ -72,7 +72,7 @@ The units definitions are accessed through the \afunc{Units} function in \aprepr
 \{Units("\var{unit\_system}")\}
 \end{apinp}
 where \var{unit\_system} is one of the strings listed in the first row
-of the previous two tables. 
+of the previous two tables.
 
 \section{Defined Units Variables}
 
@@ -118,7 +118,7 @@ yr, year & Year = 365.25 days \\
 decade & 10 Years \\
 century & 100 Years \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Velocity \boldmath{[L/T]}} \\
 \hline
 mph & Miles per hour \\
@@ -128,12 +128,12 @@ kps & Kilometre per second \\
 fps & Foot per second \\
 ips & Inch per second \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Acceleration \boldmath{[$L/T^2$]}} \\
 \hline
 ga & Gravitational acceleration \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Mass \boldmath{[$M$]}} \\
 \hline
 kg & \cmd{Kilogram (base unit)} \\
@@ -142,7 +142,7 @@ lbm & Pound (mass) \\
 slug & Slug \\
 lbfs2pin & Lbf-sec$^2$/in \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Density \boldmath{[$M/L^3]$}} \\
 \hline
 gpcc & Gram / cm$^3$ \\
@@ -152,7 +152,7 @@ lbmpin3 & Lbm / in \\
 lbmpft3 & Lbm / ft$^3$ \\
 slugpft3 & Slug / ft$^3$ \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Force \boldmath{[$ML/T^2$]}} \\
 \hline
 N, newton & Newton = 1 kg-m/sec$^2$ \\
@@ -164,7 +164,7 @@ kip & Kilopound (force) \\
 pdl, poundal & Poundal \\
 ounce & Ounce = lbf / 16 \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Energy \cmd{[$ML^2/T^2$]}} \\
 \hline
 J,   joule & Joule = 1 newton-metre \\
@@ -176,13 +176,13 @@ therm & EEC therm \\
 tonTNT & Energy in 1 ton TNT \\
 kwh & Kilowatt hour \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Power \boldmath{[$ML^2/T^3$]}} \\
 \hline
 W, watt & Watt = 1 joule / second \\
 Hp & Elec. Horsepower (746 W) \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Temperature \boldmath{[t]}} \\
 \hline
 degK, kelvin & \cmd{Kelvin (Base Unit)} \\
@@ -191,7 +191,7 @@ degF & Degree Fahrenheit \\
 degR, rankine & Degree Rankine \\
 eV & Electron Volt \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Pressure \boldmath{[$M/L/T^2$]}} \\
 \hline
 Pa, pascal & Pascal = 1 newton / metre$^2$ \\
@@ -211,13 +211,13 @@ psi & Pound per square inch \\
 ksi & Kilo-pound per square inch \\
 psf & Pound per square foot \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Volume \boldmath{[L$^3$]}} \\
 \hline
 liter & Metre$^3$ / 1000 \\
 gal, gallon & Gallon (U.S.) \\
 \multicolumn{2}{c}{} \\
-\hline 
+\hline
 \multicolumn{2}{c}{\bf Angular }  \\
 \hline
 rad & \cmd{Radian (base unit)} \\
@@ -235,10 +235,10 @@ References~\cite{bib:isotopes}, \cite{bib:jaeger}, \cite{bib:lambe}, and~\cite{b
 The following example illustrates the basic usage of the \aprepro{} units conversion utility.
 
 \begin{apinp}
-\$ Aprepro Units Utility Example 
+\$ Aprepro Units Utility Example
 \$ \{ECHO(OFF)\} \textit{\ldots{}Turn off echoing of the conversion factors}
 \$ \{Units(``shock'')\} \textit{\ldots{}Select the shock units system}
-\$  NOTE:  Dimensions  -  \{lout\},  \{mout\},  \{dout\},  \{pout\} 
+\$  NOTE:  Dimensions  -  \{lout\},  \{mout\},  \{dout\},  \{pout\}
 \textit{\ldots{}This will document what quantities are used in the file after it is run through Aprepro}
 \{len1  = 10.0 * inch\}  \textit{\ldots{}Define a length in an english unit (inches)}
 $ \{len2  = 12.0\textasciitilde{}inch\} \textit{\ldots{}\textasciitilde{} is a synonym for * (multiplication)}
@@ -259,10 +259,10 @@ The output from this example input file is:
 \begin{apout}
 \$  Aprepro  Units  Utility  Example
 \$  NOTE:  Dimensions  -  cm,  gram,  g/cc,  Mbar  \textit{\ldots{}The documentation of what quantities this file uses}
-\$ 25.4 
+\$ 25.4
 \$ 30.48
 
-Material 1, Elastic Plastic, 1.89 \$ g/cc 
+Material 1, Elastic Plastic, 1.89 \$ g/cc
    Youngs Modulus = 1.951216314 \$ Mbar
    Yield  Stress  =  0.002068427188  \textit{\ldots{}All material parameters are now in consistent units}
    Initial Velocity = 0.00044704 \$ cm/usec
@@ -274,19 +274,19 @@ Point  120  25.4 30.48
 Point  130  0   25.4   \textit{\ldots{}Lengths have all been converted to centimetres}
 \end{apout}
 
-The same input file can be used to output in SI units simply by changing Units 
+The same input file can be used to output in SI units simply by changing Units
 command from \var{shock} to \var{si}. The output in SI units is:
 
 \begin{apout}
 \$ Aprepro Units Utility Example
-\$  NOTE:  Dimensions  -  meter,  kilogram,  kg/m^3,  Pa  
+\$  NOTE:  Dimensions  -  meter,  kilogram,  kg/m^3,  Pa
 \textit{\ldots{}Quantities are now output in standard SI units}
 \$ 0.254
 \$ 0.3048
 
 Material  1,  Elastic  Plastic,  1890  \$  kg/m^3
    Youngs  Modulus =  1.951216314e+11 \$ Pa
-   Yield  Stress   =  206842718.8 
+   Yield  Stress   =  206842718.8
    Initial Velocity = 4.4704 \$ meter/sec
 End
 
@@ -298,27 +298,36 @@ Point  130 0   0.254  \textit{\ldots{}Lengths have all been converted to metres}
 
 \section{Additional Comments}
 
-A few additional comments and warnings on the use of the units system are detailed 
+A few additional comments and warnings on the use of the units system are detailed
 below.
 
-Omitting the \{ECHO(OFF)\} line prior to the \{Units(``unit\_system'')\} 
-function will print out the contents of the units header and conversion files. 
-Each line in the output will be preceded by the current comment character which 
+Omitting the \{ECHO(OFF)\} line prior to the \{Units(``unit\_system'')\}
+function will print out the contents of the units header and conversion files.
+Each line in the output will be preceded by the current comment character which
 is \$ by default.
 
-The comment character can be changed by invoking \aprepro{} with the 
-\cmd{-c} option. For example \cmd{aprepro -c\# input\_file output\_file} 
-will change the comment character at the beginning of the lines to \#. 
+The comment character can be changed by invoking \aprepro{} with the
+\cmd{-c} option. For example \cmd{aprepro -c\# input\_file output\_file}
+will change the comment character at the beginning of the lines to \#.
 
-The temperature conversions are only valid for relative temperatures, for 
-example, 100\textasciitilde{}degC is equal to 180\textasciitilde{}degF, not 212\textasciitilde{}degF. 
+The temperature conversions are only valid for relative temperatures, for
+example, 100\textasciitilde{}degC is equal to 180\textasciitilde{}degF, not 212\textasciitilde{}degF.
+The functions \cmd{CtoF(x)} and \cmd{FtoC(x)} can be used to convert absolute temperatures.  For example,
+\begin{apinp}
+100 C = \{CtoF(100)\} F
+98.6 F = \{FtoC(98.6)\} C
+\end{apinp}
+produces the output:
+\begin{apout}
+100 C = 212 F
+98.6 F = 37 C
+\end{apout}
 
-Since several variables are defined in the units system, it is
-possible to redefine one of the variable names in your input file. If
-the \aprepro{} warning messages are turned off, you will not be
-notified of the variable redefinition and erroneous results may
-occur. Therefore, you should not turn off \aprepro{} warning
-messages while using the units system, and you should investigate all
-redefined variable messages to ensure that you are getting the results
-you expect. 
-
+Several variables are defined in the units system; they are all
+\textit{immutable} variables, so it is not possible to
+redefine their values.  However, if you inadvertently are using a
+variable with the same name as a variable defined in the units system,
+you may get the incorrect value of that variable since it cannot be
+redefined from the value set by the units system. You can enter the
+command \cmd{DUMP()} to see a list of all defined variables and their
+current value.

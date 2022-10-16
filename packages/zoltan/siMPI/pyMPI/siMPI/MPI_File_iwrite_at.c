@@ -16,10 +16,9 @@
 
 /* STUB */
 int MPI_File_iwrite_at(MPI_File fh, MPI_Offset offset, void *buf,
-                       int count, MPI_Datatype datatype, 
+                       int count, MPI_Datatype datatype,
                        MPIO_Request *request)
 {
   _MPI_COVERAGE();
-  return PMPI_File_iwrite_at(fh, offset, buf, count, datatype, request); 
+  return PMPI_File_iwrite_at(fh, offset, buf, count, datatype, request);
 }
-

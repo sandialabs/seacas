@@ -2,7 +2,7 @@
 \section{Introduction}
 A finite element analysis can often generate multiple results and/or
 restart databases due to model bulk data changes or restarting the
-analysis. 
+analysis.
 
 The bulk data changes are caused by element death, element creation,
 and surface evolution.  Because the \exo{} database requires a
@@ -86,7 +86,7 @@ variable named \param{node\_status} and an element variable named
 \param{elem\_status} will be added to the variables already existing
 on the first file.  The value of the status variables will be 0 to
 indicate an active node or element and 1 to indicate an inactive node
-or element. 
+or element.
 
 Several options are available to modify the default behavior of \conjoin{}.
 
@@ -106,18 +106,18 @@ Several options are available to modify the default behavior of \conjoin{}.
 \param{-combine\_status\_variables <val>}  & The conjoin elem\_status variable will be combined
                 with the specified status variable (val) existing on the mesh.
                 Both variables must have the same value (1 or 0) to
-		indicate that the element is alive or active. 
+		indicate that the element is alive or active.
                 If 1 is alive, then the combined variable is the minimum of the two values.
                 If 0 is alive, then the combined variable is the maximum of the two values.
                 Use the \param{alive\_value} option to set conjoin's alive value  \\
 
-\param{-element\_status\_variable <val>}  & Element variable name to use as element 
-                existence status variable; it must not exist on input files. If specified 
+\param{-element\_status\_variable <val>}  & Element variable name to use as element
+                existence status variable; it must not exist on input files. If specified
                 as NONE, then it will not be written to the output file.
                 Default = elem\_status \\
 
 \param{-nodal\_status\_variable <val>}  & Nodal variable name to use as nodal status variable;
-		it must not exist on input files. If specified as NONE, 
+		it must not exist on input files. If specified as NONE,
                 then it will not be written to the output file. Default = node\_status  \\
 
 \param{-omit\_nodesets}  & Don't transfer nodesets to output file.  \\
@@ -133,13 +133,13 @@ Several options are available to modify the default behavior of \conjoin{}.
 		id 10 and 20. The default behavior is that all element
 		variables will be written to the output file.  \\
 \param{-nvar <val>} & Comma-separated list of nodal variables to be
-		joined or ALL or NONE. The default behavior is that all nodal 
+		joined or ALL or NONE. The default behavior is that all nodal
 		variables will be written to the output file. \\
 \param{-nsetvar <val>} & Comma-separated list of nodeset variables to
-		be joined or ALL or NONE.  The default behavior is that all nodeset 
+		be joined or ALL or NONE.  The default behavior is that all nodeset
 		variables will be written to the output file.\\
 \param{-ssetvar <val>} & Comma-separated list of sideset variables to
-		be joined or ALL or NONE.  The default behavior is that all sideset 
+		be joined or ALL or NONE.  The default behavior is that all sideset
 		variables will be written to the output file.\\
 \param{-debug <val>}  & Debug level (values are or'd)\par
 	\begin{tabular}{l@{ = }l}
@@ -205,16 +205,16 @@ Reading and Writing element connectivity & attributes
 Wrote coordinate names...
 Wrote coordinate information...
 Found 7 global variables.
-        ExternalEnergy  InternalEnergy  KineticEnergy   Momentum_x      
-        Momentum_y      Momentum_z      TIMESTEP        
+        ExternalEnergy  InternalEnergy  KineticEnergy   Momentum_x
+        Momentum_y      Momentum_z      TIMESTEP
 
 Found 7 nodal variables.
-        displ_x      displ_y      displ_z      vel_x        vel_y        
-        vel_z        node_status  
+        displ_x      displ_y      displ_z      vel_x        vel_y
+        vel_z        node_status
 
 Found 7 element variables.
-        stress_xx    stress_yy    stress_zz    stress_xy    stress_yz    
-        stress_zx    elem_status  
+        stress_xx    stress_yy    stress_zz    stress_xy    stress_yz
+        stress_zx    elem_status
 \end{verbatim}
 \sectionline
 
@@ -259,4 +259,4 @@ blocks, nodesets, and sidesets which is not supported by
 have the exact same bulk data which limits its use for adaptive
 analyses and other analyses which have varying numbers of active and
 inactive nodes and elements.  \code{Conex} is no longer actively
-supported. 
+supported.

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -66,7 +66,7 @@ struct G2L_Hash {
     ZOLTAN_GNO_TYPE base, baseend; /* base and baseend are inclusive gno's of local vertices */
     int   nlvtx;         /* it is #localy owened vertices: simply equal to "baseend-base+1" */
     int   num_gid_entries;   /* multiple of ZOLTAN_ID_TYPEs in a key */
-    
+
     G2LHashNode **table;
     G2LHashNode *nodes;
 };
@@ -80,7 +80,7 @@ int Zoltan_G2LHash_G2L(G2LHash *hash, ZOLTAN_GNO_TYPE gno);
   if gno exist it returns lno, if it does not exist,
   it inserts andr returns newly assigned lno */
 int Zoltan_G2LHash_Insert(G2LHash *hash, ZOLTAN_GNO_TYPE gno);
-    
+
 #define Zoltan_G2LHash_L2G(hash, lno) ((lno<(hash)->nlvtx) ? (hash)->base+lno : (hash)->nodes[lno-(hash)->nlvtx].gno)
 
 
@@ -94,11 +94,10 @@ int Zoltan_KVHash_Destroy(KVHash *hash);
 int Zoltan_KVHash_Insert(KVHash *hash, ZOLTAN_GNO_TYPE key, int value);
 int Zoltan_KVHash_GetValue(KVHash *hash, ZOLTAN_GNO_TYPE key);
 
-    
+
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
-    
+
 
 #endif
-

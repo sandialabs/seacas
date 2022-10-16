@@ -17,6 +17,5 @@
 int MPI_File_write_at_all_end(MPI_File fh, void *buf, MPI_Status *status)
 {
   _MPI_COVERAGE();
-  return PMPI_File_write_at_all_end (fh, buf, status); 
+  return PMPI_File_write_at_all_end (fh, buf, status);
 }
-

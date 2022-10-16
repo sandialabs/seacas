@@ -18,6 +18,5 @@
 int MPI_Cancel( MPI_Request *request )
 {
   _MPI_COVERAGE();
-  return PMPI_Cancel(request); 
+  return PMPI_Cancel(request);
 }
-

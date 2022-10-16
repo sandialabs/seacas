@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -131,7 +131,7 @@ int Zoltan_RIB_inertial2d(
         tmp1[0] = xcm; tmp1[1] = ycm; tmp1[2] = wgt_sum;
         Zoltan_RIB_reduce_double(tmp1, tmp2, 3, comm, nproc, rank, proc, 1);
         xcmt = tmp2[0]; ycmt = tmp2[1]; wgtt = tmp2[2];
-     }   
+     }
      else {
         tmp1[0] = xcm; tmp1[1] = ycm; tmp1[2] = wgt_sum;
         MPI_Allreduce(tmp1, tmp2, 3, MPI_DOUBLE, MPI_SUM, comm);

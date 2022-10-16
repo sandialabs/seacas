@@ -23,6 +23,5 @@ int MPI_Cart_map (
         int *newrank)
 {
   _MPI_COVERAGE();
-  return PMPI_Cart_map(comm_old, ndims, dims, periods, newrank); 
+  return PMPI_Cart_map(comm_old, ndims, dims, periods, newrank);
 }
-

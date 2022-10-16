@@ -1,5 +1,18 @@
 #! /usr/bin/env bash
 
+# Text color variables
+if [[ $TERM != *"xterm"* ]]; then
+    export TERM=dumb
+fi
+txtred=$(tput setaf 1)    # Red
+txtgrn=$(tput setaf 2)    # Green
+txtylw=$(tput setaf 3)    # Yellow
+#txtblu=$(tput setaf 4)    # Blue
+#txtpur=$(tput setaf 5)    # Purple
+txtcyn=$(tput setaf 6)    # Cyan
+#txtwht=$(tput setaf 7)    # White
+txtrst=$(tput sgr0)       # Text reset
+
 if [ "${TRAVIS}" == "true" ]
 then
   BUILDDIR=${1:-build}
@@ -43,9 +56,6 @@ FORTRAN=$(check_valid FORTRAN)
 
 ZOLTAN=${ZOLTAN:-YES}
 ZOLTAN=$(check_valid ZOLTAN)
-
-### Python Version...
-PYTHON_VER=${PYTHON_VER:-"3.0"}
 
 ### TPLs --
 ### Make sure these point to the locations to find the libraries and includes in lib and include
@@ -95,9 +105,19 @@ then
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
 
+  if [ "$COMPILER" == "gnubrew" ]
+  then
+      VER=${VER:-10}
+      CXX=g++-${VER}
+      CC=gcc-${VER}
+      FC=gfortran-${VER}
+      CFLAGS="-Wall -Wunused -pedantic -std=c11"
+      CXXFLAGS="-Wall -Wunused -pedantic"
+  fi
+
   if [ "$COMPILER" == "gnumacport" ]
   then
-      VER=${VER:-5}
+      VER=${VER:-10}
       CXX=g++-mp-${VER}
       CC=gcc-mp-${VER}
       FC=gfortran-mp-${VER}
@@ -107,7 +127,7 @@ then
 
   if [ "$COMPILER" == "clangmacport" ]
   then
-      VER=${VER:-7}
+      VER=${VER:-9}
       CXX=clang++-mp-${VER}.0
       CC=clang-mp-${VER}.0
       FC=gfortran
@@ -161,61 +181,61 @@ fi
 
 if [ "${APPLICATIONS}" == "YES" ] && [ "${LEGACY}" == "YES" ]
 then
-     SUBSET_OPTIONS="-DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
-                     -DSEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
-                     -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON"
+     SUBSET_OPTIONS="-DSeacas_ENABLE_ALL_PACKAGES:BOOL=ON \
+                     -DSeacas_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
+                     -DSeacas_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON"
 else
-     SUBSET_OPTIONS="-DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=OFF \
-                     -DSEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=OFF \
-		     -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=OFF \
-                     -DSEACASProj_ENABLE_SEACASIoss:BOOL=ON \
-		     -DSEACASProj_ENABLE_SEACASExodus:BOOL=ON \
-		     -DSEACASProj_ENABLE_SEACASExodus_for:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASExoIIv2for32:BOOL=ON"
+     SUBSET_OPTIONS="-DSeacas_ENABLE_ALL_PACKAGES:BOOL=OFF \
+                     -DSeacas_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=OFF \
+		     -DSeacas_ENABLE_SECONDARY_TESTED_CODE:BOOL=OFF \
+                     -DSeacas_ENABLE_SEACASIoss:BOOL=ON \
+		     -DSeacas_ENABLE_SEACASExodus:BOOL=ON \
+		     -DSeacas_ENABLE_SEACASExodus_for:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASExoIIv2for32:BOOL=ON"
 
 if [ "${APPLICATIONS}" == "YES" ]
 then
      SUBSET_OPTIONS="${SUBSET_OPTIONS} \
-                     -DSEACASProj_ENABLE_SEACASAprepro:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASAprepro_lib:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASConjoin:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASCpup:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASEjoin:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASEpu:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASExo2mat:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASExo_format:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASExodiff:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASMat2exo:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASNemslice:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASSlice:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASZellij:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASNemspread:BOOL=ON"
+                     -DSeacas_ENABLE_SEACASAprepro:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASAprepro_lib:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASConjoin:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASCpup:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASEjoin:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASEpu:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASExo2mat:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASExo_format:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASExodiff:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASMat2exo:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASNemslice:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASSlice:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASZellij:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASNemspread:BOOL=ON"
 
      if [ "${FORTRAN}" == "YES" ]
 	then
 	    SUBSET_OPTIONS="${SUBSET_OPTIONS} \
-            		  -DSEACASProj_ENABLE_SEACASExplore:BOOL=ON \
-			  -DSEACASProj_ENABLE_SEACASGrepos:BOOL=ON"
+            		  -DSeacas_ENABLE_SEACASExplore:BOOL=ON \
+			  -DSeacas_ENABLE_SEACASGrepos:BOOL=ON"
      fi
 
 elif [ "${LEGACY}" == "YES" ] && [ "${FORTRAN}" == "YES" ]
 then
      SUBSET_OPTIONS="${SUBSET_OPTIONS} \
-                     -DSEACASProj_ENABLE_SEACASAlgebra:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASBlot:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASEx1ex2v2:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASEx2ex1v2:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASExomatlab:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASExotec2:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASExotxt:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASFastq:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASGen3D:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASGenshell:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASGjoin:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASMapvar:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASMapvar-kd:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASNemesis:BOOL=ON \
-                     -DSEACASProj_ENABLE_SEACASTxtexo:BOOL=ON"
+                     -DSeacas_ENABLE_SEACASAlgebra:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASBlot:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASEx1ex2v2:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASEx2ex1v2:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASExomatlab:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASExotec2:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASExotxt:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASFastq:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASGen3D:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASGenshell:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASGjoin:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASMapvar:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASMapvar-kd:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASNemesis:BOOL=ON \
+                     -DSeacas_ENABLE_SEACASTxtexo:BOOL=ON"
 fi
 fi
 
@@ -239,7 +259,7 @@ SHARED=$(check_valid SHARED)
 if [ "${CRAY}" == "YES" ] && [ "${SHARED}" == "NO" ]
 then
   # Assumes we build our own static zlib with CRAY
-  CRAY_OPT=-DSEACASProj_EXTRA_LINK_FLAGS=${INSTALL_PATH}/lib/libz.a
+  EXTRA_LIB=-DSeacas_EXTRA_LINK_FLAGS=${INSTALL_PATH}/lib/libz.a
 fi
 
 ### Switch for Debug or Release build:
@@ -276,11 +296,6 @@ HAVE_X11=$(check_valid HAVE_X11)
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-NO}
 THREADSAFE=$(check_valid THREADSAFE)
-
-if [ "$THREADSAFE" == "YES" ] ; then
-  THREAD_SAFE_OPT="-DSEACASProj_EXTRA_LINK_FLAGS=-lpthread"
-fi
-
 
 function check_enable()
 {
@@ -351,6 +366,7 @@ then
 	LD_EXT="so"
     fi
 else
+    EXTRA_LIB="-DSeacas_EXTRA_LINK_FLAGS=z;dl -DSEACASExodus_ENABLE_SHARED:BOOL=OFF"
     LD_EXT="a"
 fi
 
@@ -359,7 +375,7 @@ then
     KOKKOS_SYMBOLS="-DKOKKOS_SRC_PATH:PATH=${INSTALL_PATH}/TPL/kokkos/kokkos \
 		    -DTPL_Kokkos_LIBRARY_DIRS:PATH=${KOKKOS_PATH}/lib \
 		    -DTPL_Kokkos_INCLUDE_DIRS:PATH=${KOKKOS_PATH}/include \
-		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkos.${LD_EXT}"
+		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkoscore.${LD_EXT}"
 fi
 
 if [ "$HAVE_FAODEL" == "YES" ]
@@ -413,7 +429,7 @@ fi
 
 ### You can add these below if you want more verbosity...
 #-D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-#-D SEACASProj_VERBOSE_CONFIGURE=ON \
+#-D Seacas_VERBOSE_CONFIGURE=ON \
 
 ### You can add these below to regenerate the flex and bison files for
 ### aprepro and aprepro_lib May have to touch aprepro.l aprepro.y
@@ -454,20 +470,20 @@ cmake -G "${GENERATOR}" \
 -D CMAKE_CXX_FLAGS="${CXXFLAGS} ${CXX_WARNING_FLAGS} ${SANITIZE}" \
 -D CMAKE_C_FLAGS="${CFLAGS} ${C_WARNING_FLAGS} ${SANITIZE}" \
 -D CMAKE_Fortran_FLAGS="${FFLAGS} ${F77_WARNING_FLAGS} ${SANITIZE}" \
--D SEACASProj_ENABLE_STRONG_C_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
--D SEACASProj_ENABLE_STRONG_CXX_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
+-D Seacas_ENABLE_STRONG_C_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
+-D Seacas_ENABLE_STRONG_CXX_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
 -D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
 ${SUBSET_OPTIONS} \
--D SEACASProj_ENABLE_Zoltan:BOOL=${ZOLTAN} \
--D SEACASProj_ENABLE_TESTS=ON \
+-D Seacas_ENABLE_Zoltan:BOOL=${ZOLTAN} \
+-D Seacas_ENABLE_TESTS=ON \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
--D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
--D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
--D SEACASProj_ENABLE_DOXYGEN:BOOL=${DOXYGEN} \
--D SEACASProj_ENABLE_Fortran=${FORTRAN} \
-${CRAY_OPT} \
+-D Seacas_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
+-D Seacas_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED} \
+-D Seacas_ENABLE_DOXYGEN:BOOL=${DOXYGEN} \
+-D Seacas_ENABLE_Fortran=${FORTRAN} \
+${EXTRA_LIB} \
 \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
@@ -480,6 +496,7 @@ ${CRAY_OPT} \
 -D TPL_ENABLE_ParMETIS:BOOL=${HAVE_PARMETIS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
+-D TPL_ENABLE_fmt:BOOL=ON \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
 ${THREAD_SAFE_OPT} \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
@@ -501,7 +518,6 @@ ${FAODEL_SYMBOLS} \
 -D Metis_ROOT:PATH=${METIS_PATH} \
 -D ParMETIS_ROOT:PATH=${PARMETIS_PATH} \
 -D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
--D PythonInterp_FIND_VERSION:STRING=${PYTHON_VER} \
 \
 $EXTRA_ARGS \
 ${ACCESS}
@@ -519,7 +535,6 @@ echo "     SHARED: ${SHARED}"
 echo " BUILD_TYPE: ${BUILD_TYPE}"
 echo " THREADSAFE: ${THREADSAFE}"
 echo "       CRAY: ${CRAY}"
-echo " PYTHON_VER: ${PYTHON_VER}"
 echo " "
 echo "     NETCDF: ${HAVE_NETCDF}"
 echo "      MATIO: ${HAVE_MATIO}"

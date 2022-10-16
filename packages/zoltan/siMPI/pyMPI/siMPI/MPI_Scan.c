@@ -20,4 +20,3 @@ int MPI_Scan ( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
   _MPI_COVERAGE();
   return PMPI_Scan(sendbuf, recvbuf, count, datatype, op, comm);
 }
-

@@ -42,7 +42,7 @@ function(assert_and_touch_defined VARS)
     if(NOT DEFINED ${VAR})
       message(SEND_ERROR "Error, the variable ${VAR} is not defined!")
     else()
-      # Read the varaible so that it will register as being read!
+      # Read the variable so that it will register as being read!
       set(DUMMY_VAR ${${VAR}})
     endif()
   endforeach()

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -132,7 +132,7 @@ void zoltanParams_hier_set_num_levels(int levels) {
   int i;
 
 #ifdef DEBUG
-  printf("(zoltanParams_hier_set_num_levels) setting to %d\n", levels);  
+  printf("(zoltanParams_hier_set_num_levels) setting to %d\n", levels);
   fflush(stdout);
 #endif
 
@@ -148,11 +148,11 @@ void zoltanParams_hier_set_num_levels(int levels) {
 
   num_levels = levels;
 
-  SAFE_MALLOC(zph, struct zoltanParams_hier_struct **, 
+  SAFE_MALLOC(zph, struct zoltanParams_hier_struct **,
 	      (long)sizeof(struct zoltanParams_hier_struct *) * levels);
 
   for (i=0; i<levels; i++) {
-    SAFE_MALLOC(zph[i],  struct zoltanParams_hier_struct *, 
+    SAFE_MALLOC(zph[i],  struct zoltanParams_hier_struct *,
 		(long)sizeof (struct zoltanParams_hier_struct));
     zph[i]->partition = 0;
     zph[i]->first = NULL;
@@ -165,7 +165,7 @@ void zoltanParams_hier_set_partition(int level, int partition) {
   int mypid;
   MPI_Comm_rank(comm, &mypid);
 
-  printf("[%d] will compute partition %d at level %d\n", 
+  printf("[%d] will compute partition %d at level %d\n",
 	 mypid, partition, level); fflush(stdout);
 #endif
 
@@ -180,7 +180,7 @@ void zoltanParams_hier_set_param(int level, char *param, char *value) {
 #ifdef DEBUG
   int mypid;
   MPI_Comm_rank(comm, &mypid);
-  printf("[%d] will set param <%s> to <%s> at level %d\n", 
+  printf("[%d] will set param <%s> to <%s> at level %d\n",
 	 mypid, param, value, level); fflush(stdout);
 #endif
 
@@ -192,7 +192,7 @@ void zoltanParams_hier_set_param(int level, char *param, char *value) {
   strcpy(newparam->param, param);
   strcpy(newparam->value, value);
   newparam->next = NULL;
-  
+
   if (!zph[level]->first) {
     zph[level]->first = newparam;
     return;
@@ -200,7 +200,7 @@ void zoltanParams_hier_set_param(int level, char *param, char *value) {
 
   nextparam = zph[level]->first;
   while (nextparam->next) nextparam=nextparam->next;
-  nextparam->next = newparam;    
+  nextparam->next = newparam;
 }
 
 int zoltanParams_hier_get_num_levels() {
@@ -220,7 +220,7 @@ void zoltanParams_hier_use_params(int level, struct Zoltan_Struct *zz, int *ierr
 
   *ierr = ZOLTAN_OK;
   check_level(level);
-  
+
   nextparam = zph[level]->first;
 
   while (nextparam) {
@@ -228,7 +228,7 @@ void zoltanParams_hier_use_params(int level, struct Zoltan_Struct *zz, int *ierr
     if (*ierr != ZOLTAN_OK) return;
     nextparam = nextparam->next;
   }
-  
+
 }
 
 static int get_num_levels(void *data, int *ierr) {
@@ -259,20 +259,20 @@ void zoltanParams_set_comm(MPI_Comm thecomm) {
 void zoltanParams_hier_setup(struct Zoltan_Struct *zz) {
 
   /* make sure the hierarchical balancing callbacks are in place */
-  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_NUM_LEVELS_FN_TYPE, 
+  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_NUM_LEVELS_FN_TYPE,
 		    (void (*)()) get_num_levels, NULL) == ZOLTAN_FATAL) {
     fprintf(stderr,"zoltanParams_hier_setup: set NUM_LEVELS callback failed\n");
   }
 
-  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_PART_FN_TYPE, 
+  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_PART_FN_TYPE,
 		    (void (*)()) get_partition, NULL) == ZOLTAN_FATAL) {
     fprintf(stderr,"zoltanParams_hier_setup: set PART callback failed\n");
   }
 
-  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_METHOD_FN_TYPE, 
+  if (Zoltan_Set_Fn(zz, ZOLTAN_HIER_METHOD_FN_TYPE,
 		    (void (*)()) get_method, NULL) == ZOLTAN_FATAL) {
     fprintf(stderr,"zoltanParams_hier_setup: set METHOD callback failed\n");
-  }   
+  }
 }
 
 /*
@@ -302,7 +302,7 @@ void zoltanParams_hier_setup(struct Zoltan_Struct *zz) {
   End file with EOF
 
 */
-void zoltanParams_read_file(struct Zoltan_Struct *lb, char *file, 
+void zoltanParams_read_file(struct Zoltan_Struct *lb, char *file,
 			    MPI_Comm thecomm) {
   FILE *fp;
   char str1[500], str2[500];
@@ -320,7 +320,7 @@ void zoltanParams_read_file(struct Zoltan_Struct *lb, char *file,
   if (!fp) {
     fprintf(stderr,"Cannot open file %s for reading", file);
     return;
-  } 
+  }
 
 #ifdef DEBUG
   if (mypid == 0) {
@@ -361,7 +361,7 @@ void zoltanParams_read_file(struct Zoltan_Struct *lb, char *file,
 	while ((fscanf(fp, "%s %s\n", str1, str2) == 2) &&
 	       (strcmp(str1, "LEVEL") != 0) &&
 	       (strcmp(str2, "END") != 0)) {
-	  
+
 	  zoltanParams_hier_set_param(level, str1, str2);
 	}
       }

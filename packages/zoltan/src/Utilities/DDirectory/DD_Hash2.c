@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -119,7 +119,7 @@ unsigned int Zoltan_DD_Hash2(ZOLTAN_ID_PTR key, int num_id_entries,
  *
  * Author:
  *   Erik Boman, eboman@cs.sandia.gov (SNL 9226)
-    
+
  *   Replaced explict constant with #define below.  Consider changing
  *   to new constant. Changed name to DD_Hash2.  RTH
  */

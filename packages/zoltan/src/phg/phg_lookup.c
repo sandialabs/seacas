@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -93,7 +93,7 @@ void phg_free_temp_vertices(zoltan_temp_vertices *ztv)
 }
 
 /*****************************************************************************/
-int phg_map_GIDs_to_processes(ZZ *zz, ZOLTAN_ID_PTR eid, int size, 
+int phg_map_GIDs_to_processes(ZZ *zz, ZOLTAN_ID_PTR eid, int size,
                              int lenGID, int **hashedProc, int nprocs)
 {
 int i, j;
@@ -109,7 +109,7 @@ static char *yo = "map_GIDs_to_processes";
   procList = (int *)ZOLTAN_MALLOC(sizeof(int) * size);
 
   if (!procList){
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Memory error."); 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Memory error.");
     return ZOLTAN_MEMERR;
   }
 
@@ -125,7 +125,7 @@ static char *yo = "map_GIDs_to_processes";
 }
 
 /****************************************************************************/
-/* 
+/*
  * Create, access and delete a hash table mapping a GID its
  * position in a list.
  */
@@ -172,11 +172,11 @@ phg_GID_lookup *phg_create_GID_lookup_table(ZOLTAN_ID_PTR gids, int size, int le
     lu->htTop[i].gno = i;
 
     j = Zoltan_Hash(lu->htTop[i].gid, lenGID, tsize);
-    
+
     lu->htTop[i].next = lu->ht[j];
     lu->ht[j] = lu->htTop + i;
   }
- 
+
   return lu;
 }
 
@@ -191,7 +191,7 @@ phg_GID_lookup *phg_create_GID_lookup_table2(ZOLTAN_ID_PTR gids, int ngids, int 
   phg_GID_lookup *lu = NULL;
 
   tsize = ngids;    /* actually may be larger than number of unique ids */
-  
+
   nextGID = nextUniqueGID = gids;
 
   lu = (phg_GID_lookup *)ZOLTAN_MALLOC(sizeof(phg_GID_lookup));
@@ -224,7 +224,7 @@ phg_GID_lookup *phg_create_GID_lookup_table2(ZOLTAN_ID_PTR gids, int ngids, int 
 
     if (nextUniqueGID < nextGID){
       for (k=0; k<lenGID; k++){
-        nextUniqueGID[k] = nextGID[k]; 
+        nextUniqueGID[k] = nextGID[k];
       }
     }
 
@@ -232,7 +232,7 @@ phg_GID_lookup *phg_create_GID_lookup_table2(ZOLTAN_ID_PTR gids, int ngids, int 
 
     hn->next = lu->ht[j];
     lu->ht[j] = hn;
-   
+
     hn++;
     nextUniqueGID += lenGID;
     lu->numGIDs++;
@@ -250,7 +250,7 @@ int phg_lookup_GID(phg_GID_lookup *lu, ZOLTAN_ID_PTR gid)
   if (lu->numGIDs < 1) return -1;
 
   i = Zoltan_Hash(gid, lu->lenGID, (unsigned int) lu->table_size);
-  
+
   for (hn=lu->ht[i]; hn != NULL; hn = hn->next){
     match = 1;
     for (k=0; k<lu->lenGID; k++){

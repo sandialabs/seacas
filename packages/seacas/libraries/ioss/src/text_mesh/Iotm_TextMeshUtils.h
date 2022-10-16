@@ -1,9 +1,12 @@
-#ifndef IOTM_TEXTMESHUTILS_HPP_
-#define IOTM_TEXTMESHUTILS_HPP_
+// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+
+#pragma once
 
 // #######################  Start Clang Header Tool Managed Headers ########################
 // clang-format off
-#include <ctype.h>                                   // for toupper
+#include <cctype>                                    // for toupper, isspace, isdigit
 #include <stddef.h>                                  // for size_t
 #include <algorithm>                                 // for remove, etc
 #include <iterator>                                  // for insert_iterator
@@ -15,259 +18,24 @@
 #include <vector>                                    // for vector
 #include <unordered_map>
 #include <sstream>                       // for ostringstream
+#include <iostream>
 #include <functional>
 #include <stdexcept>
+#include <numeric>
+#include <strings.h>
+
+#include "Iotm_TextMeshFuncs.h"
+#include "Iotm_TextMeshDataTypes.h"
+#include "Iotm_TextMeshEntityGroup.h"
+#include "Iotm_TextMeshSideset.h"
+#include "Iotm_TextMeshNodeset.h"
+#include "Iotm_TextMeshAssembly.h"
 
 // clang-format on
 // #######################   End Clang Header Tool Managed Headers  ########################
 namespace Iotm {
   namespace text_mesh {
     using ErrorHandler = std::function<void(const std::ostringstream &)>;
-
-    template <class EXCEPTION> void handle_error(const std::ostringstream &message)
-    {
-      throw EXCEPTION((message).str());
-    }
-
-    inline void default_error_handler(const std::ostringstream &message)
-    {
-      handle_error<std::logic_error>(message);
-    }
-
-    template <typename T> class TopologyMapping
-    {
-    public:
-      using Topology = T;
-
-      virtual ~TopologyMapping() {}
-
-      Topology topology(const std::string &name) const
-      {
-        auto it = m_nameToTopology.find(name);
-        return (it != m_nameToTopology.end() ? it->second : invalid_topology());
-      }
-
-      virtual Topology invalid_topology() const  = 0;
-      virtual void     initialize_topology_map() = 0;
-
-    protected:
-      std::unordered_map<std::string, Topology> m_nameToTopology;
-    };
-
-    class PartIdMapping
-    {
-    public:
-      PartIdMapping() : m_idsAssigned(false)
-      {
-        set_error_handler([](const std::ostringstream &errmsg) { default_error_handler(errmsg); });
-      }
-
-      void register_part_name(const std::string &name)
-      {
-        m_partNames.push_back(name);
-        handle_block_part(name);
-      }
-
-      void register_part_name_with_id(const std::string &name, unsigned id)
-      {
-        register_part_name(name);
-        assign(name, id);
-      }
-
-      unsigned get(const std::string &name) const
-      {
-        if (!m_idsAssigned)
-          assign_ids();
-        return get_part_id(name);
-      }
-
-      std::string get(unsigned id) const
-      {
-        if (!m_idsAssigned)
-          assign_ids();
-        return get_part_name(id);
-      }
-
-      unsigned size() const
-      {
-        if (!m_idsAssigned)
-          assign_ids();
-        return m_ids.size();
-      }
-
-      std::vector<std::string> get_part_names_sorted_by_id() const
-      {
-        if (!m_idsAssigned)
-          assign_ids();
-
-        std::vector<std::string> names;
-        names.reserve(m_parts.size());
-
-        for (auto iter : m_parts) {
-          names.push_back(iter.second);
-        }
-
-        return names;
-      }
-
-      void set_error_handler(ErrorHandler errorHandler) { m_errorHandler = errorHandler; }
-
-    private:
-      void handle_block_part(const std::string &name)
-      {
-        const std::string blockPrefix  = "BLOCK_";
-        const unsigned    prefixLength = blockPrefix.length();
-
-        if (name.length() < prefixLength + 1)
-          return;
-
-        const std::string namePrefix = name.substr(0, prefixLength);
-        const std::string nameSuffix = name.substr(prefixLength);
-
-        if (namePrefix != blockPrefix)
-          return;
-
-        unsigned           id;
-        std::istringstream nameSuffixStream(nameSuffix);
-        nameSuffixStream >> id;
-        if (nameSuffixStream.fail()) {
-          return;
-        }
-        assign(name, id);
-      }
-
-      void assign_ids() const
-      {
-        unsigned nextPartId = 1;
-        for (const std::string &name : m_partNames) {
-          if (m_ids.find(name) == m_ids.end()) {
-            while (is_assigned(nextPartId))
-              nextPartId++;
-
-            assign(name, nextPartId);
-          }
-        }
-
-        m_idsAssigned = true;
-      }
-
-      void assign(const std::string &name, unsigned id) const
-      {
-        validate_name_and_id(name, id);
-        m_ids[name] = id;
-        m_parts[id] = name;
-      }
-
-      void validate_name_and_id(const std::string &name, unsigned id) const
-      {
-        if (is_registered(name)) {
-          if (m_ids[name] != id) {
-            std::ostringstream errmsg;
-            errmsg << "Cannot assign part '" << name << "' two different ids: " << m_ids[name]
-                   << " and " << id;
-            m_errorHandler(errmsg);
-          }
-        }
-        else {
-          if (is_assigned(id)) {
-            std::ostringstream errmsg;
-            errmsg << "Part id " << id << " has already been assigned, cannot assign it to part '"
-                   << name << "'";
-            m_errorHandler(errmsg);
-          }
-        }
-      }
-
-      bool is_registered(const std::string &name) const { return m_ids.count(name) > 0; }
-
-      bool is_assigned(unsigned id) const { return m_parts.count(id) > 0; }
-
-      unsigned get_part_id(const std::string &name) const
-      {
-        auto it = m_ids.find(name);
-        if (it == m_ids.end()) {
-          std::ostringstream errmsg;
-          errmsg << "PartIdMapping has no ID for invalid part name " << name;
-          m_errorHandler(errmsg);
-        }
-        return it->second;
-      }
-
-      std::string get_part_name(unsigned id) const
-      {
-        auto it = m_parts.find(id);
-        if (it == m_parts.end()) {
-          std::ostringstream errmsg;
-          errmsg << "PartIdMapping has no part name for invalid id " << id;
-          m_errorHandler(errmsg);
-        }
-        return it->second;
-      }
-
-      std::vector<std::string>                          m_partNames;
-      mutable std::unordered_map<std::string, unsigned> m_ids;
-      mutable std::map<unsigned, std::string>           m_parts;
-      mutable bool                                      m_idsAssigned;
-
-      ErrorHandler m_errorHandler;
-    };
-
-    template <typename EntityId, typename Topology> struct ElementData
-    {
-      int                   proc;
-      EntityId              identifier;
-      Topology              topology;
-      std::vector<EntityId> nodeIds;
-      std::string           partName = "";
-    };
-
-    template <typename EntityId, typename Topology> struct TextMeshData
-    {
-      unsigned                                     spatialDim;
-      std::vector<ElementData<EntityId, Topology>> elementDataVec;
-      PartIdMapping                                partIds;
-      std::set<EntityId>                           nodeIds;
-
-      void add_element(const ElementData<EntityId, Topology> &elem)
-      {
-        elementDataVec.push_back(elem);
-        for (const EntityId &nodeId : elem.nodeIds) {
-          nodeIds.insert(nodeId);
-          associate_node_with_proc(nodeId, elem.proc);
-        }
-      }
-
-      const std::set<EntityId> &nodes_on_proc(int proc) const
-      {
-        auto it = m_nodesOnProc.find(proc);
-        return it != m_nodesOnProc.end() ? it->second : m_emptyNodes;
-      }
-
-      unsigned num_nodes_on_proc(int proc) const
-      {
-        auto it = m_nodesOnProc.find(proc);
-        return it != m_nodesOnProc.end() ? it->second.size() : 0;
-      }
-
-      const std::set<int> &procs_for_node(const EntityId nodeId) const
-      {
-        auto it = m_procsForNode.find(nodeId);
-        return it != m_procsForNode.end() ? it->second : m_emptyProcs;
-      }
-
-    private:
-      void associate_node_with_proc(const EntityId nodeId, int proc)
-      {
-        m_procsForNode[nodeId].insert(proc);
-        m_nodesOnProc[proc].insert(nodeId);
-      }
-
-      std::unordered_map<EntityId, std::set<int>> m_procsForNode;
-      std::unordered_map<int, std::set<EntityId>> m_nodesOnProc;
-
-      std::set<int>      m_emptyProcs;
-      std::set<EntityId> m_emptyNodes;
-    };
 
     class TextMeshLexer
     {
@@ -357,13 +125,439 @@ namespace Iotm {
         return str;
       }
 
-      std::string m_input;
-      unsigned    m_currentIndex;
+      std::string m_input{};
+      unsigned    m_currentIndex{0};
 
-      std::string m_oldToken;
-      std::string m_token;
+      std::string m_oldToken{};
+      std::string m_token{};
 
-      bool m_isNumber;
+      bool m_isNumber{false};
+    };
+
+    template <typename EntityId, typename Topology> class TextMeshOptionParser
+    {
+    private:
+      static constexpr int INVALID_DIMENSION = -1;
+      static constexpr int DEFAULT_DIMENSION = 3;
+
+      enum ParsedOptions {
+        PARSED_NONE        = 0,
+        PARSED_DIMENSION   = 1L << 0,
+        PARSED_COORDINATES = 1L << 1,
+        PARSED_SIDESET     = 1L << 2,
+        PARSED_NODESET     = 1L << 3,
+        PARSED_ASSEMBLY    = 1L << 4
+      };
+
+    public:
+      TextMeshOptionParser(TextMeshData<EntityId, Topology> &data, unsigned enforcedDimension)
+          : m_parsedOptionMask(PARSED_NONE), m_parsedDimension(INVALID_DIMENSION),
+            m_constructorEnforcedDimension(enforcedDimension), m_data(data)
+      {
+      }
+
+      TextMeshOptionParser(TextMeshData<EntityId, Topology> &data)
+          : m_parsedOptionMask(PARSED_NONE), m_parsedDimension(INVALID_DIMENSION),
+            m_constructorEnforcedDimension(INVALID_DIMENSION), m_data(data)
+      {
+      }
+
+      void set_error_handler(ErrorHandler errorHandler) { m_errorHandler = errorHandler; }
+
+      std::string get_mesh_connectivity_description() const
+      {
+        return m_meshConnectivityDescription;
+      }
+
+      void initialize_parse(const std::string &parameters)
+      {
+        if (!parameters.empty()) {
+          std::vector<std::string> optionGroups = get_tokens(parameters, "|");
+          parse_options(optionGroups);
+
+          m_meshConnectivityDescription = optionGroups[0];
+        }
+
+        validate_dimension();
+        set_dimension();
+      }
+
+      void finalize_parse()
+      {
+        set_coordinates();
+        m_data.partIds.finalize_parse();
+        m_data.sidesets.finalize_parse(m_data);
+        m_data.nodesets.finalize_parse();
+        m_data.assemblies.finalize_parse();
+        validate_sidesets();
+        validate_nodesets();
+        validate_assemblies();
+      }
+
+    private:
+      bool parsed_dimension_provided() { return m_parsedOptionMask & PARSED_DIMENSION; }
+
+      bool enforced_dimension_provided()
+      {
+        return m_constructorEnforcedDimension != INVALID_DIMENSION;
+      }
+
+      void validate_dimension()
+      {
+        if (enforced_dimension_provided()) {
+          if (parsed_dimension_provided() && m_constructorEnforcedDimension != m_parsedDimension) {
+            std::ostringstream errmsg;
+            errmsg << "Error!  An enforced dimension of " << m_constructorEnforcedDimension
+                   << " was provided but does not match the parsed value of " << m_parsedDimension
+                   << ".";
+            m_errorHandler(errmsg);
+          }
+        }
+      }
+
+      void set_dimension()
+      {
+        if (enforced_dimension_provided()) {
+          m_data.spatialDim = m_constructorEnforcedDimension;
+        }
+        else if (parsed_dimension_provided()) {
+          m_data.spatialDim = m_parsedDimension;
+        }
+        else {
+          m_data.spatialDim = DEFAULT_DIMENSION;
+        }
+      }
+
+      void parse_dimension_option(const std::vector<std::string> &option)
+      {
+        if (parsed_dimension_provided()) {
+          std::ostringstream errmsg;
+          errmsg << "Spatial dimension has already been parsed! Check syntax.";
+          m_errorHandler(errmsg);
+        }
+
+        if (option.size() == 2) {
+          m_parsedDimension = std::stoull(option[1]);
+          if (m_parsedDimension != 2 && m_parsedDimension != 3) {
+            std::ostringstream errmsg;
+            errmsg << "Error!  Parsed spatial dimension (" << m_parsedDimension
+                   << " not defined to be 2 or 3.";
+            m_errorHandler(errmsg);
+          }
+
+          m_parsedOptionMask |= PARSED_DIMENSION;
+        }
+        else {
+          std::ostringstream errmsg;
+          errmsg << "Error!  Invalid spatial dimension syntax.";
+          m_errorHandler(errmsg);
+        }
+      }
+
+      void deallocate_raw_coordinates()
+      {
+        std::vector<double> swapVectorForDeallocation;
+        m_rawCoordinates.swap(swapVectorForDeallocation);
+      }
+
+      void set_coordinates()
+      {
+        if (parsed_coordinates_provided()) {
+          m_data.coords.set_coordinate_data(m_data.spatialDim, m_data.nodeIds, m_rawCoordinates);
+          deallocate_raw_coordinates();
+        }
+      }
+
+      bool parsed_coordinates_provided() { return m_parsedOptionMask & PARSED_COORDINATES; }
+
+      void parse_coordinates_option(const std::vector<std::string> &coordinatesOptionGroup)
+      {
+        if (parsed_coordinates_provided()) {
+          std::ostringstream errmsg;
+          errmsg << "Coordinates have already been parsed! Check syntax.";
+          m_errorHandler(errmsg);
+        }
+
+        if (coordinatesOptionGroup.size() > 1) {
+          const std::vector<std::string> &coordinateTokens =
+              get_tokens(coordinatesOptionGroup[1], ",");
+          m_rawCoordinates.reserve(coordinateTokens.size());
+          for (const auto &token : coordinateTokens) {
+            double coord = std::stod(token);
+            m_rawCoordinates.push_back(coord);
+          }
+
+          m_parsedOptionMask |= PARSED_COORDINATES;
+        }
+      }
+
+      template <typename DataType>
+      void check_name_collision_with_entity_sets(const EntityGroupData<DataType> &groupData,
+                                                 const std::string               &entityType,
+                                                 const std::set<std::string>     &entitySetNames)
+      {
+        std::string groupName = groupData.name;
+        convert_to_upper_case(groupName);
+
+        if (entitySetNames.count(groupName) > 0) {
+          std::ostringstream errmsg;
+          errmsg << "Error! " << groupData.type << " with id: " << groupData.id
+                 << " and name: " << groupData.name << " is referencing " << entityType
+                 << " with same name.";
+          m_errorHandler(errmsg);
+        }
+      }
+
+      template <typename SrcDataGroup, typename DestDataGroup>
+      void check_name_collision_with_group(const SrcDataGroup  &srcGroup,
+                                           const DestDataGroup &destGroup)
+      {
+        std::set<std::string> groupNames = transform_to_set(destGroup.get_part_names());
+
+        for (const auto &srcGroupData : srcGroup.get_group_data()) {
+          check_name_collision_with_entity_sets(srcGroupData, destGroup.get_group_type(),
+                                                groupNames);
+        }
+      }
+
+      void check_sideset_element_reference()
+      {
+        for (const SidesetData<EntityId, Topology> &sidesetData :
+             m_data.sidesets.get_group_data()) {
+          for (const std::pair<EntityId, int> &elemSidePair : sidesetData.data) {
+            EntityId id = elemSidePair.first;
+            if (!std::binary_search(m_data.elementDataVec.begin(), m_data.elementDataVec.end(),
+                                    id)) {
+              std::ostringstream errmsg;
+              errmsg << "Error!  Sideset with id: " << sidesetData.id
+                     << " and name: " << sidesetData.name << " has reference to invalid element '"
+                     << id << "'.";
+              m_errorHandler(errmsg);
+            }
+          }
+        }
+      }
+
+      void check_sideset_name_collision()
+      {
+        check_name_collision_with_group(m_data.sidesets, m_data.partIds);
+        check_name_collision_with_group(m_data.sidesets, m_data.nodesets);
+        check_name_collision_with_group(m_data.sidesets, m_data.assemblies);
+      }
+
+      void validate_sidesets()
+      {
+        check_sideset_element_reference();
+        check_sideset_name_collision();
+      }
+
+      void check_nodeset_node_reference()
+      {
+        for (const NodesetData<EntityId> &nodesetData : m_data.nodesets.get_group_data()) {
+          for (const EntityId nodeId : nodesetData.data) {
+            if (m_data.nodeIds.count(nodeId) == 0) {
+              std::ostringstream errmsg;
+              errmsg << "Error!  Nodeset with id: " << nodesetData.id
+                     << " and name: " << nodesetData.name << " has reference to invalid node '"
+                     << nodeId << "'.";
+              m_errorHandler(errmsg);
+            }
+          }
+        }
+      }
+
+      void check_nodeset_name_collision()
+      {
+        check_name_collision_with_group(m_data.nodesets, m_data.partIds);
+        check_name_collision_with_group(m_data.nodesets, m_data.sidesets);
+        check_name_collision_with_group(m_data.nodesets, m_data.assemblies);
+      }
+
+      void validate_nodesets()
+      {
+        check_nodeset_node_reference();
+        check_nodeset_name_collision();
+      }
+
+      template <typename T>
+      void check_assembly_member_reference_in_group(const AssemblyData &assemblyData,
+                                                    const T            &group)
+      {
+        for (const std::string &entry : assemblyData.data) {
+          if (!group.is_registered(entry)) {
+            std::ostringstream errmsg;
+            errmsg << "Error!  Assembly with id: " << assemblyData.id
+                   << " and name: " << assemblyData.name << " has reference to invalid "
+                   << group.get_group_type() << " '" << entry << "'.";
+            m_errorHandler(errmsg);
+          }
+        }
+      }
+
+      void check_assembly_member_reference()
+      {
+        for (const AssemblyData &assemblyData : m_data.assemblies.get_group_data()) {
+          const AssemblyType assemblyType = assemblyData.get_assembly_type();
+
+          switch (assemblyType) {
+          case AssemblyType::BLOCK:
+            check_assembly_member_reference_in_group(assemblyData, m_data.partIds);
+            break;
+          case AssemblyType::SIDESET:
+            check_assembly_member_reference_in_group(assemblyData, m_data.sidesets);
+            break;
+          case AssemblyType::NODESET:
+            check_assembly_member_reference_in_group(assemblyData, m_data.nodesets);
+            break;
+          case AssemblyType::ASSEMBLY:
+            check_assembly_member_reference_in_group(assemblyData, m_data.assemblies);
+            break;
+          default:
+            std::ostringstream errmsg;
+            errmsg << "Error!  Assembly with id: " << assemblyData.id
+                   << " and name: " << assemblyData.name << " does not have a valid assembly type '"
+                   << assemblyType << "'.";
+            m_errorHandler(errmsg);
+          }
+        }
+      }
+
+      void check_assembly_name_collision()
+      {
+        check_name_collision_with_group(m_data.assemblies, m_data.partIds);
+        check_name_collision_with_group(m_data.assemblies, m_data.sidesets);
+        check_name_collision_with_group(m_data.assemblies, m_data.nodesets);
+      }
+
+      void check_assembly_cyclic_dependency()
+      {
+        for (const std::string &assembly : m_data.assemblies.get_part_names()) {
+          if (m_data.assemblies.is_cyclic(assembly)) {
+            std::ostringstream errmsg;
+            errmsg << "Error!  Assembly with name: '" << assembly << "' has a cyclic dependency.";
+            m_errorHandler(errmsg);
+          }
+        }
+      }
+
+      void validate_assemblies()
+      {
+        check_assembly_member_reference();
+        check_assembly_name_collision();
+        check_assembly_cyclic_dependency();
+      }
+
+      void parse_sideset_option(const std::vector<std::string> &sidesetOptionGroup)
+      {
+        if (sidesetOptionGroup.size() > 1) {
+          SidesetParser<EntityId> parser;
+          parser.set_error_handler(m_errorHandler);
+          parser.parse(sidesetOptionGroup[1]);
+          parser.verify_parse();
+
+          SidesetData<EntityId, Topology> *sideset =
+              m_data.sidesets.add_group_data(parser.get_name(), parser.get_sideset_data());
+          sideset->set_split_type(parser.get_split_type());
+          sideset->set_skin_blocks(parser.get_skin_blocks());
+          m_parsedOptionMask |= PARSED_SIDESET;
+        }
+      }
+
+      void parse_nodeset_option(const std::vector<std::string> &nodesetOptionGroup)
+      {
+        if (nodesetOptionGroup.size() > 1) {
+          NodesetParser<EntityId> parser;
+          parser.set_error_handler(m_errorHandler);
+          parser.parse(nodesetOptionGroup[1]);
+
+          m_data.nodesets.add_group_data(parser.get_name(), parser.get_nodeset_data());
+          m_parsedOptionMask |= PARSED_NODESET;
+        }
+      }
+
+      void parse_assembly_option(const std::vector<std::string> &assemblyOptionGroup)
+      {
+        if (assemblyOptionGroup.size() > 1) {
+          AssemblyParser parser;
+          parser.set_error_handler(m_errorHandler);
+          parser.parse(assemblyOptionGroup[1]);
+          parser.verify_parse();
+
+          AssemblyData *assembly =
+              m_data.assemblies.add_group_data(parser.get_name(), parser.get_assembly_data());
+          assembly->set_assembly_type(parser.get_assembly_type());
+          m_parsedOptionMask |= PARSED_ASSEMBLY;
+        }
+      }
+
+      void print_help_message(std::ostream &out = std::cout)
+      {
+        out << "\nValid Options for TextMesh parameter string:\n"
+               "\tPROC_ID,ELEM_ID,TOPOLOGY,{NODE CONNECTIVITY LIST}[,PART_NAME[,PART_ID]] "
+               "(specifies "
+               "element list .. first "
+               "argument)\n"
+               "\t|coordinates:x_1,y_1[,z_1], x_2,y_2[,z_2], ...., x_n,y_n[,z_n] (specifies "
+               "coordinate data)\n"
+               "\t|sideset:[name=<name>;] data=elem_1,side_1,elem_2,side_2,....,elem_n,side_n; "
+               "[split=<block|topology|none>;] [skin=<block list|all>;]"
+               "(specifies sideset data)\n"
+               "\t|nodeset:[name=<name>;] data=node_1,node_2,....,node_n (specifies nodeset data)\n"
+               "\t|assembly:[name=<name>;] type=<assembly|block|sideset|nodeset>; "
+               "member=member_1,...,member_n (specifies assembly hierarchy)\n"
+               "\t|dimension:spatialDimension (specifies spatial dimension .. default is 3)\n"
+               "\t|help -- show this list\n\n";
+      }
+
+      void handle_unrecognized_option(const std::string &optionType)
+      {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: Unrecognized option '" << optionType << "'.  It will be ignored.\n";
+        m_errorHandler(errmsg);
+      }
+
+      void parse_options(const std::vector<std::string> &optionGroups)
+      {
+        for (size_t i = 1; i < optionGroups.size(); i++) {
+          std::vector<std::string> optionGroup = get_tokens(optionGroups[i], ":");
+          std::string              optionType  = optionGroup[0];
+          convert_to_lower_case(optionType);
+
+          if (optionType == "coordinates") {
+            parse_coordinates_option(optionGroup);
+          }
+          else if (optionType == "dimension") {
+            parse_dimension_option(optionGroup);
+          }
+          else if (optionType == "sideset") {
+            parse_sideset_option(optionGroup);
+          }
+          else if (optionType == "nodeset") {
+            parse_nodeset_option(optionGroup);
+          }
+          else if (optionType == "assembly") {
+            parse_assembly_option(optionGroup);
+          }
+          else if (optionType == "help") {
+            print_help_message();
+          }
+          else {
+            handle_unrecognized_option(optionType);
+          }
+        }
+      }
+
+      unsigned long m_parsedOptionMask{PARSED_NONE};
+
+      int m_parsedDimension{INVALID_DIMENSION};
+      int m_constructorEnforcedDimension{INVALID_DIMENSION};
+
+      std::string m_meshConnectivityDescription{};
+
+      std::vector<double> m_rawCoordinates{};
+      ErrorHandler        m_errorHandler;
+
+      TextMeshData<EntityId, Topology> &m_data;
     };
 
     template <typename EntityId, typename TopologyMapping> class TextMeshParser
@@ -372,17 +566,19 @@ namespace Iotm {
       using Topology = typename TopologyMapping::Topology;
 
     public:
-      explicit TextMeshParser(unsigned dim)
+      explicit TextMeshParser(unsigned enforcedDimension)
+          : m_optionParser(m_data, enforcedDimension)
       {
-        set_error_handler([](const std::ostringstream &errmsg) { default_error_handler(errmsg); });
-        m_data.spatialDim = dim;
-        m_topologyMapping.initialize_topology_map();
+        initialize_constructor();
       }
+
+      TextMeshParser() : m_optionParser(m_data) { initialize_constructor(); }
 
       TextMeshData<EntityId, Topology> parse(const std::string &meshDescription)
       {
         initialize_parse(meshDescription);
         parse_description();
+        finalize_parse();
         return m_data;
       }
 
@@ -390,15 +586,37 @@ namespace Iotm {
       {
         m_errorHandler = errorHandler;
         m_data.partIds.set_error_handler(errorHandler);
+        m_data.coords.set_error_handler(errorHandler);
+        m_data.sidesets.set_error_handler(errorHandler);
+        m_data.nodesets.set_error_handler(errorHandler);
+        m_data.assemblies.set_error_handler(errorHandler);
+        m_optionParser.set_error_handler(errorHandler);
       }
 
     private:
-      void initialize_parse(const std::string &meshDescription)
+      void initialize_constructor()
+      {
+        ErrorHandler errorHandler = [](const std::ostringstream &errmsg) {
+          default_error_handler(errmsg);
+        };
+        set_error_handler(errorHandler);
+        m_topologyMapping.initialize_topology_map();
+      }
+
+      void initialize_connectivity_parse(const std::string &meshDescription)
       {
         m_lexer.set_input_string(meshDescription);
         m_lineNumber = 1;
         validate_required_field(m_lexer.has_token());
       }
+
+      void initialize_parse(const std::string &meshDescription)
+      {
+        m_optionParser.initialize_parse(meshDescription);
+        initialize_connectivity_parse(m_optionParser.get_mesh_connectivity_description());
+      }
+
+      void finalize_parse() { m_optionParser.finalize_parse(); }
 
       void parse_description()
       {
@@ -409,6 +627,9 @@ namespace Iotm {
           validate_no_extra_fields();
           parse_newline();
         }
+
+        std::sort(m_data.elementDataVec.begin(), m_data.elementDataVec.end(),
+                  ElementDataLess<EntityId, Topology>());
       }
 
       ElementData<EntityId, Topology> parse_element()
@@ -549,61 +770,9 @@ namespace Iotm {
       TopologyMapping                  m_topologyMapping;
 
       ErrorHandler m_errorHandler;
-    };
 
-    template <typename EntityId, typename Topology> class Coordinates
-    {
-    private:
-      using Data = TextMeshData<EntityId, Topology>;
-
-    public:
-      Coordinates()
-      {
-        set_error_handler([](const std::ostringstream &errmsg) { default_error_handler(errmsg); });
-      }
-
-      const std::vector<double> &operator[](const EntityId nodeId) const
-      {
-        auto it(m_nodalCoords.find(nodeId));
-        return it->second;
-      }
-
-      void set_coordinate_data(const Data &data, const std::vector<double> &coordinates)
-      {
-        if (!coordinates.empty()) {
-          validate_num_coordinates(data, coordinates);
-          fill_coordinate_map(data, coordinates);
-        }
-      }
-
-      void set_error_handler(ErrorHandler errorHandler) { m_errorHandler = errorHandler; }
-
-    private:
-      void validate_num_coordinates(const Data &data, const std::vector<double> &coordinates)
-      {
-        if (coordinates.size() != data.nodeIds.size() * data.spatialDim) {
-          std::ostringstream errmsg;
-          errmsg << "Number of coordinates: " << coordinates.size()
-                 << ", Number of nodes: " << data.nodeIds.size()
-                 << ", Spatial dimension: " << data.spatialDim;
-          m_errorHandler(errmsg);
-        }
-      }
-
-      void fill_coordinate_map(const Data &data, const std::vector<double> &coordinates)
-      {
-        std::vector<double>::const_iterator coordIter = coordinates.begin();
-        for (const EntityId &nodeId : data.nodeIds) {
-          m_nodalCoords[nodeId] = std::vector<double>(coordIter, coordIter + data.spatialDim);
-          coordIter += data.spatialDim;
-        }
-      }
-
-      std::unordered_map<EntityId, std::vector<double>> m_nodalCoords;
-      ErrorHandler                                      m_errorHandler;
+      TextMeshOptionParser<EntityId, Topology> m_optionParser;
     };
 
   } // namespace text_mesh
 } // namespace Iotm
-
-#endif /* IOTM_TEXTMESHUTILS_HPP_ */

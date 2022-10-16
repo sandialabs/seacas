@@ -1,11 +1,10 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#ifndef IOSS_Ioss_GroupingEntity_h
-#define IOSS_Ioss_GroupingEntity_h
+#pragma once
 
 #include <Ioss_CodeTypes.h>       // for Complex
 #include <Ioss_DatabaseIO.h>      // for DatabaseIO
@@ -185,6 +184,7 @@ namespace Ioss {
     // Just forward these through to the field manager...
     void         field_add(Field new_field);
     void         field_erase(const std::string &field_name);
+    void         field_erase(Field::RoleType role);
     bool         field_exists(const std::string &field_name) const;
     Field        get_field(const std::string &field_name) const;
     const Field &get_fieldref(const std::string &field_name) const;
@@ -195,7 +195,10 @@ namespace Ioss {
     size_t       field_count() const;
     size_t       field_count(Field::RoleType role) const;
 
+    bool         check_for_duplicate(const Ioss::Field &new_field) const;
+
     // Put this fields data into 'data'.
+
     // Returns number of entities for which the field was read.
     // Assumes 'data' is large enough to hold all values.
     int64_t get_field_data(const std::string &field_name, void *data, size_t data_size) const;
@@ -398,6 +401,12 @@ inline int Ioss::GroupingEntity::property_describe(Ioss::Property::Origin origin
 inline size_t Ioss::GroupingEntity::property_count() const { return properties.count(); }
 
 // ------------------------------------------------------------------------
+
+/** \brief Remove all fields of type `role` from the entity's field manager.
+ *
+ * \param[in] role Remove all fields (if any) of type `role`
+ */
+inline void Ioss::GroupingEntity::field_erase(Ioss::Field::RoleType role) { fields.erase(role); }
 
 /** \brief Remove a field from the entity's field manager.
  *
@@ -768,6 +777,4 @@ int64_t Ioss::GroupingEntity::put_field_data(const std::string           &field_
 
   return retval;
 }
-#endif
-
 #endif

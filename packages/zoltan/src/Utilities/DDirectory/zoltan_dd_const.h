@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -87,7 +87,7 @@ typedef void DD_Cleanup_fn(void*);
 
 /************  Zoltan_DD_Directory, DD_Node  **********************/
 
-typedef int DD_NodeIdx;   /* Index into dd->nodelist; 
+typedef int DD_NodeIdx;   /* Index into dd->nodelist;
                              must be a signed type as -1 indicates NULL */
 
 /* The following structure, DD_Node, is the basic unit of the hash table's
@@ -100,7 +100,7 @@ typedef struct DD_Node  {
   int              owner;      /* processor hosting global ID object    */
   int              partition;  /* Optional data                         */
   int              errcheck;   /* Error checking(inconsistent updates) */
-  DD_NodeIdx       next;       /* index in nodelist of next DD_Node in 
+  DD_NodeIdx       next;       /* index in nodelist of next DD_Node in
                                   linked list or free node list */
   ZOLTAN_ID_TYPE  *gid;        /* gid used as key for update & lookup   */
                                /* lid starts at gid + dd->gid_length    */
@@ -146,7 +146,7 @@ struct Zoltan_DD_Struct {
   DD_Node *nodelist;      /* Memory for storing all nodes in the directory */
   char *nodedata;         /* Memory for storing all data in the directory  */
   DD_NodeIdx nodelistlen; /* Length of the nodelist. */
-  DD_NodeIdx nextfreenode;/* Index of first free node in nodelist; 
+  DD_NodeIdx nextfreenode;/* Index of first free node in nodelist;
                              -1 if no nodes are free */
   DD_NodeIdx table[1];    /* Hash table heads of the link lists     */
 };

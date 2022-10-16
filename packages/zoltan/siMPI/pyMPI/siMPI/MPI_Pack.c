@@ -14,10 +14,9 @@
 
 #include "mpi.h"
 
-int MPI_Pack ( void *inbuf, int incount, MPI_Datatype datatype, 
+int MPI_Pack ( void *inbuf, int incount, MPI_Datatype datatype,
                void *outbuf, int outcount, int *position, MPI_Comm comm )
 {
   _MPI_COVERAGE();
   return PMPI_Pack (inbuf, incount, datatype, outbuf, outcount, position, comm);
 }
-

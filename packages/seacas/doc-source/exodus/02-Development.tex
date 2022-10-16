@@ -1,26 +1,26 @@
 \chapter{Development of \exo{}}
 
 
-The evolution of the \exo() data model has been steered by 
-FE application code developers who desire the advantages of a 
-common data format. The \exo{} model has been designed to 
-overcome deficiencies in the EXODUS I file format and meet the 
+The evolution of the \exo() data model has been steered by
+FE application code developers who desire the advantages of a
+common data format. The \exo{} model has been designed to
+overcome deficiencies in the EXODUS I file format and meet the
 following functional requirements as specified by these developers:
 
 \begin{itemize}
  \item random read/write access.
 
- \item application programming interface (API) -- provide 
+ \item application programming interface (API) -- provide
 routines callable from FORTRAN, C, and C++ application codes.
 
- \item extensible -- allow new data objects to be added 
-without modifying the application programs that use the file 
+ \item extensible -- allow new data objects to be added
+without modifying the application programs that use the file
 format.
 
- \item {machine independent -- data should be independent 
+ \item {machine independent -- data should be independent
 of the machine which generated it.}
 
- \item {real time access during analysis -- allow access 
+ \item {real time access during analysis -- allow access
 to the data in a file while the file is being created.}
 \end{itemize}
 
@@ -47,6 +47,3 @@ example, if an application required access to the coordinates of a
 single node (the standard library function returns the coordinates for
 all of the nodes in the model), a simple function could be written
 that calls netCDF routines directly to read the data of interest.
-
-
-

@@ -14,10 +14,9 @@
 
 #include "mpi.h"
 
-int MPI_Ssend_init( void *buf, int count, MPI_Datatype datatype, int dest, 
+int MPI_Ssend_init( void *buf, int count, MPI_Datatype datatype, int dest,
                    int tag, MPI_Comm comm, MPI_Request *request )
 {
   _MPI_COVERAGE();
   return PMPI_Ssend_init (buf, count, datatype, dest, tag, comm, request);
 }
-

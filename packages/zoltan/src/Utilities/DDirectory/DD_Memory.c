@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -58,10 +58,10 @@ extern "C" {
 
 /*
  * Idea:  Store hash table as array of bucket heads, pointing into
- * an array-based linked list of nodes (instead of to individually 
+ * an array-based linked list of nodes (instead of to individually
  * allocated nodes).
  * The array-based memory would have a free-memory list running
- * through it, allowing items to be added to or deleted from the 
+ * through it, allowing items to be added to or deleted from the
  * directory.
  */
 
@@ -70,7 +70,7 @@ int DD_Memory_Alloc_Nodelist(
   Zoltan_DD_Directory *dd,  /* directory state information    */
   DD_NodeIdx count,         /* Number of GIDs in update list  */
   float overalloc           /* Percentage to extra nodes to
-                               allocate (for future dynamic 
+                               allocate (for future dynamic
                                additions).                    */
 )
 {
@@ -93,7 +93,7 @@ int DD_Memory_Alloc_Nodelist(
     /* Initialize the freenode list; all nodes are initially free. */
     /* Also initialize gid pointers to nodedata.                   */
     dd->nextfreenode = 0;
-    for (ptr = dd->nodelist, dataptr = dd->nodedata, nodeidx = 0; 
+    for (ptr = dd->nodelist, dataptr = dd->nodedata, nodeidx = 0;
          nodeidx < len;
          nodeidx++, ptr++, dataptr += dd->nodedata_size) {
       ptr->next = nodeidx + 1;
@@ -134,7 +134,7 @@ DD_NodeIdx returnnode;
     /* Reinitialize the gid pointers in the realloc'ed nodelist. */
     for (ptr = dd->nodelist, dataptr = dd->nodedata, nodeidx = 0;
          nodeidx < newlen;
-         ptr++, dataptr += dd->nodedata_size, nodeidx++) 
+         ptr++, dataptr += dd->nodedata_size, nodeidx++)
       ptr->gid = (ZOLTAN_ID_PTR) dataptr;
 
     /* Initialize free list in the newly extended memory */
@@ -165,7 +165,7 @@ void DD_Memory_Free_Node(
 )
 {
 /* "free" a node by returning it to the free list.  */
-  
+
   /* TODO Error check:  freenode should be < nodelistlen */
 
   dd->nodelist[freenode].next = dd->nextfreenode;

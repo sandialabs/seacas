@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -75,13 +75,13 @@ extern "C" {
 
 void Zoltan_Print_Sync_Start(MPI_Comm communicator, int do_print_line)
 {
-/* 
- * Routine to allow I/O between Zoltan_Print_Sync_Start and Zoltan_Print_Sync_End to be 
+/*
+ * Routine to allow I/O between Zoltan_Print_Sync_Start and Zoltan_Print_Sync_End to be
  * printed by each processor in the communicator entirely before the next
  * processor begins its I/O.  The printing sequence is from proc = 0 to the
  * last processor, where the last processor is num_proc - 1.
  *
- * The do_print_line argument is a boolean variable.  If true, a line of # 
+ * The do_print_line argument is a boolean variable.  If true, a line of #
  * is printed to indicate the start of a Print_Sync I/O block.
  *
  * NOTE: THERE CAN BE NO COMMUNICATION BETWEEN THESE CALLS.
@@ -98,7 +98,7 @@ int proc;
 
   MPI_Comm_rank(communicator, &proc);
 
-  /* This strategy for computing the type assumes that all calls to 
+  /* This strategy for computing the type assumes that all calls to
    * Zoltan_Print_Sync_Start and Zoltan_Print_Sync_End are made with
    * the same sized communicator.
    */
@@ -132,12 +132,12 @@ int proc;
 void Zoltan_Print_Sync_End(MPI_Comm communicator, int do_print_line)
 {
 /*
- * Routine to allow I/O between Zoltan_Print_Sync_Start and Zoltan_Print_Sync_End to be 
+ * Routine to allow I/O between Zoltan_Print_Sync_Start and Zoltan_Print_Sync_End to be
  * printed by each processor in the communicator entirely before the next
  * processor begins its I/O.  The printing sequence is from proc = 0 to the
  * last processor, where the last processor is num_proc - 1.
  *
- * The do_print_line argument is a boolean variable.  If true, a line of # 
+ * The do_print_line argument is a boolean variable.  If true, a line of #
  * is printed to indicate the start of a Print_Sync I/O block.
  *
  * NOTE: THERE CAN BE NO COMMUNICATION BETWEEN THESE CALLS.
@@ -156,7 +156,7 @@ char msg[256];
 
   fflush(stdout);
 
-  /* This strategy for computing the type assumes that all calls to 
+  /* This strategy for computing the type assumes that all calls to
    * Zoltan_Print_Sync_Start and Zoltan_Print_Sync_End are made with
    * the same sized communicator.
    */
@@ -165,7 +165,7 @@ char msg[256];
 
   if (proc < num_proc -1) {
     to = proc + 1;
-    if (MPI_Send((void *) &flag, 1, MPI_INT, to, type, communicator) 
+    if (MPI_Send((void *) &flag, 1, MPI_INT, to, type, communicator)
         != MPI_SUCCESS ) {
       sprintf(msg, "MPI_Send failed, message type %d.", type);
       ZOLTAN_PRINT_ERROR(proc, yo, msg);

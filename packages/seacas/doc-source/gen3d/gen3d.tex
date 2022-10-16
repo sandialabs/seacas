@@ -7,7 +7,7 @@ SPONSOR:  Gregory D. Sjaardema, 1562 (505) 844-2701
 KEYWORDS: preprocessor, mesh\_generation
 \subsection{Documentation  }
 ``GEN3D - A GENESIS Database 2D to 3D Transformation Program''
-Amy P. Gilkey and Gregory D. Sjaardema, SAND89-0485, 
+Amy P. Gilkey and Gregory D. Sjaardema, SAND89-0485,
 March 1989.
 
 ``Updates to the mesh generation program GEN3D,''
@@ -41,12 +41,12 @@ To execute GEN3D on VMS, type:
 ``input\_file''  is the optional input file containing commands.
 
 Commands are read from the terminal keyboard if ``input\_file''
-is not specified. 
+is not specified.
 \subsection{Commands}
 Mesh Transformation
 \begin{verbatim}
    TRANSLATE  ROTATE     WARP_P     WARP_A     SPLINE    PROJECT
-   SPLINE     PROJECT    TWIST      INTERVAL   SCALE     CHANGE    
+   SPLINE     PROJECT    TWIST      INTERVAL   SCALE     CHANGE
 \end{verbatim}
 
 Mesh Orientation
@@ -61,7 +61,7 @@ Element Block Types
 
 Information and Processing
 \begin{verbatim}
-   SHOW       LIST       HELP       END        QUIT      
+   SHOW       LIST       HELP       END        QUIT
 \end{verbatim}
 
 Undocumented and experimental
@@ -80,7 +80,7 @@ is \{tottran\} with a gradient of \{grad\}.  The translation is always in
 the negative Z direction.  This command supersedes previous
 transformation commands.
 The gradient affects the spacing of the levels.  The displacement or
-thickness of level i is zi where:  
+thickness of level i is zi where:
 \begin{verbatim}
          z1 = tottran X grad - 1)/(grad^{ntran} - 1)  if grad ne 1;
               tottran / ntran                         if grad = 1
@@ -89,7 +89,7 @@ thickness of level i is zi where:
 Multiple translation increments can be specified with a single translate
 command by repeating the \{ntran\}, \{tottran\}, and \{grad\} parameters on
 the command line.  For example, the following command specifies two
-translation increments of thickness 1.0 for a total translation of 2.0: 
+translation increments of thickness 1.0 for a total translation of 2.0:
 
 \begin{verbatim}
         TRANSLATE 5 1.0 0.5, 5 1.0 2.0
@@ -111,14 +111,14 @@ rotation \{cenrot\} and the gradient \{grad\} are only meaningful if no
 center element blocks are defined (see the CENTER command).
 \paragraph{Gradient}
 The gradient affects the rotation of the levels.  The angular rotation
-of level i is thetai where:  
+of level i is thetai where:
 \begin{verbatim}
          theta1 = totdeg X (grad - 1)/(grad^{nrot} - 1)  if grad ne 1;
                   totdeg / nrot                          if grad = 1
          thetai = theta1 X grad^{i-1}
 \end{verbatim}
 Rotation is always counterclockwise.  This command supersedes previous
-transformation commands. 
+transformation commands.
 \subsubsection{WARP\_P}
 \begin{verbatim}
  WARP POINT {ntran} <1>, {tottran} <1.0>, {grad} <1.0>, {radius} <no
@@ -144,14 +144,14 @@ of curvature (0.0, 0.0, \{radius\}) to the coordinates of the warped node
 node, and zw is determined such that the distance from the warped node
 to the center of curvature is equal to \{radius\}.  Figure 2.1 in manual
 illustrates the VERTICAL edge type, and Figure 2.2 in manual illustrates
-the RADIAL edge type. 
+the RADIAL edge type.
 
 The mesh transformation is performed in two parts.  First, the warped
 nodal positions (xw, yw, zw) are calculated by mapping the original 2D
 mesh onto a spherical surface with a radius of curvature equal to
 \{radius\}.  The original x and y coordinates of the 2D mesh remain at the
 same values; the z coordinate is calculated such that the distance to
-the center of curvature is equal to \{radius\}.  
+the center of curvature is equal to \{radius\}.
 \begin{verbatim}
          xw = x0
          yw = y0
@@ -163,10 +163,10 @@ this process. Then, the generated nodal positions are determined by
 translating either vertically or radially from the warped nodal
 position.  A total of \{ntran\} translations are performed through a
 distance of \{tottran\} with a gradient of \{grad\}.  Note that the
-thickness is measured radially for either \{edge\_type\}. 
+thickness is measured radially for either \{edge\_type\}.
 
 The gradient affects the spacing of the levels.  The thickness or length
-of level i is zi where:  
+of level i is zi where:
 \begin{verbatim}
          z1 = tottran X grad - 1)/(grad^{ntran} - 1)  if grad ne 1;
               tottran / ntran                         if grad = 1
@@ -208,10 +208,10 @@ above discussion.  Then, the generated nodal positions are determined by
 translating either vertically or radially from the warped nodal
 position.  A total of \{ntran\} translations are performed through a
 distance of \{tottran\} with a gradient of \{grad\}.  Note that the distance
-is measured radially for either \{edge\_type\}. 
+is measured radially for either \{edge\_type\}.
 
 The gradient affects the spacing of the levels.  The thickness or length
-of level i is zi where:  
+of level i is zi where:
 \begin{verbatim}
          z1 = tottran X grad - 1)/(grad^{ntran} - 1)  if grad ne 1;
               tottran / ntran                         if grad = 1
@@ -221,7 +221,7 @@ of level i is zi where:
 The resulting 3D mesh will have an cylindrical angle of (x\{max\}/radius)
 radians if warped about the Y axis, or (y\{max\}/radius) radians if warped
 about the X axis, where x\{max\} and y\{max\} are the maximum X and Y
-coordinates in the 2D mesh. 
+coordinates in the 2D mesh.
 \subsubsection{SPLINE}
 \begin{verbatim}
  SPLINE {ntran} <1>, {tottran} <1.0>, {grad}  <1.0>,  ...
@@ -262,7 +262,7 @@ end of the curves are linear slopes.
 the spline data are input as Theta(degrees)-Distance data pairs, where
 Theta is the angle of the line between the origin (X = Y = Z = 0) and
 the defined point and the Distance is the length of this curve.  The
-slopes at the end of the curves are relative to this curve.  
+slopes at the end of the curves are relative to this curve.
 \paragraph{ANGULAR}
 \begin{verbatim}
  FRONT !  FRONT
@@ -375,7 +375,7 @@ equations used to transform the coordinates.
 
 SCLCEN specifies the origin of the coordinate system for scaling.  This
 is best illustrated by examining the equations used in the
-transformation:  
+transformation:
 
 \begin{verbatim}
        x_new = (x_old - x_cen) X x_scale + x_cen
@@ -413,12 +413,12 @@ command processing.
 \subsubsection{TWIST}
 \begin{verbatim}
  TWIST  {twangl} <0.0>, {twxcen} <0.0>, {twycen} <0.0>, {TRANSLATE},
-        {ntran} <1>, {tottran} <1.0>, {grad} <1.0>,  ...      
+        {ntran} <1>, {tottran} <1.0>, {grad} <1.0>,  ...
 \end{verbatim}
 
 \begin{verbatim}
- TWIST  {twangl} <0.0>, {twxcen} <0.0>, {twycen} <0.0>, {Rotate}, 
-        {cenrot} <0.0>, {ntran} <1>, {tottran} <1.0>, {grad}  <1.0>,  ...     
+ TWIST  {twangl} <0.0>, {twxcen} <0.0>, {twycen} <0.0>, {Rotate},
+        {cenrot} <0.0>, {ntran} <1>, {tottran} <1.0>, {grad}  <1.0>,  ...
 \end{verbatim}
 
 where \{twangl\} is the rotational offset in degrees of the front surface
@@ -449,8 +449,8 @@ specified with a single INTERVAL command by repeating the \{ntran\},
 \{tottran\}, \{grad\} parameters on a single line.
 \subsubsection{SCALE}
 \begin{verbatim}
- SCALE {axis_1}, {scale_1}, {...} 
- SCALE ALL {scale} 
+ SCALE {axis_1}, {scale_1}, {...}
+ SCALE ALL {scale}
  SCALE RESET
 \end{verbatim}
 
@@ -493,9 +493,9 @@ REVCEN sets the center of revolution for the REVOLVE command to the
 point (\{xcen\},\{ycen\},\{zcen\}).
 \subsubsection{SHIFT}
 \begin{verbatim}
- SHIFT [ADD] {axis_{1}}, {offset_{1}}, {axis_{2}}, {offset_{2}}, ... 
- SHIFT ALL {offset} <0.0> 
- SHIFT RESET <initial condition> 
+ SHIFT [ADD] {axis_{1}}, {offset_{1}}, {axis_{2}}, {offset_{2}}, ...
+ SHIFT ALL {offset} <0.0>
+ SHIFT RESET <initial condition>
  SHIFT {xoff} <0.0>, {yoff} <0.0>, {zoff} <0.0>
 \end{verbatim}
 
@@ -508,14 +508,14 @@ with the offset command in GEN3D.
 SHIFT ALL offsets all of the coordinates by the specified offset, and
 SHIFT RESET resets the offsets to zero.
 
-Offsets are not cumulative unless ADD is specified, that is, 
+Offsets are not cumulative unless ADD is specified, that is,
 if SHIFT X 0.5 X 1.0 is entered, the X coordinates will be offset by 1.0.
 if SHIFT ADD X 0.5 X 1.0 is entered, the X coordinates will be offset by 1.5.
 \subsubsection{OFFSET}
 \begin{verbatim}
- OFFSET [ADD] {axis_{1}}, {offset_{1}}, {axis_{2}}, {offset_{2}}, ... 
- OFFSET ALL {offset} <0.0> 
- OFFSET RESET <initial condition> 
+ OFFSET [ADD] {axis_{1}}, {offset_{1}}, {axis_{2}}, {offset_{2}}, ...
+ OFFSET ALL {offset} <0.0>
+ OFFSET RESET <initial condition>
  OFFSET {xoff} <0.0>, {yoff} <0.0>, {zoff} <0.0>
 \end{verbatim}
 
@@ -528,12 +528,12 @@ with the offset command in GEN3D.
 OFFSET ALL offsets all of the coordinates by the specified offset, and
 OFFSET RESET resets the offsets to zero.
 
-Offsets are not cumulative unless ADD is specified, that is, 
+Offsets are not cumulative unless ADD is specified, that is,
 if OFFSET X 0.5 X 1.0 is entered, the X coordinates will be offset by 1.0.
 if OFFSET ADD X 0.5 X 1.0 is entered, the X coordinates will be offset by 1.5.
 \subsubsection{MIRROR}
 \begin{verbatim}
- MIRROR {axis_{1}}, {axis_{2}}, ... <no default> 
+ MIRROR {axis_{1}}, {axis_{2}}, ... <no default>
  MIRROR RESET <no reflections>
 \end{verbatim}
 
@@ -550,7 +550,7 @@ number of reflections are performed, the element connectivity and the
 sideset face numberings will be correctly reordered.
 \subsubsection{ZERO}
 \begin{verbatim}
- ZERO {axis_1}, {min_1}, {axis_2}, {min_2}, ... 
+ ZERO {axis_1}, {min_1}, {axis_2}, {min_2}, ...
  ZERO RESET <no automatic zeroing>
 \end{verbatim}
 
@@ -604,7 +604,7 @@ blocks are assigned consecutive identifiers greater than the maximum
 existing (and new) identifier.
 \subsubsection{CENTER}
 \begin{verbatim}
- CENTER {block_id_{1}}, {block_id_{2}}, ... <all element blocks> 
+ CENTER {block_id_{1}}, {block_id_{2}}, ... <all element blocks>
 \end{verbatim}
 
 CENTER defines the specified element blocks as center blocks.  A ROTATE
@@ -616,21 +616,21 @@ em nrot/2 elements along the X axis in the center block.  If a TRANSLATE
 command is issued, all center blocks are changed to normal blocks.  If
 center blocks are defined, the center of rotation defined by the ROTATE
 command is ignored.  The center of rotation is the minimum coordinate of
-all elements in the center blocks.  
+all elements in the center blocks.
 \subsubsection{NSETS}
 \begin{verbatim}
- NSETS FRONT or BACK <no default>, {set_id_{1}}, {set_id_{2}}, ... 
+ NSETS FRONT or BACK <no default>, {set_id_{1}}, {set_id_{2}}, ...
       <no default>
 \end{verbatim}
 
 NSETS defines front or back node sets with the given identifiers.  The
 identifiers must be unique from existing node set identifiers and
-previously defined front and back node set identifiers. 
+previously defined front and back node set identifiers.
 
 Back sets cannot be defined on a 360-degree rotation.
 \subsubsection{SSETS}
 \begin{verbatim}
- SSETS FRONT or BACK <no default>, {set_id_{1}}, {set_id_{2}}, ... 
+ SSETS FRONT or BACK <no default>, {set_id_{1}}, {set_id_{2}}, ...
       <no default>
 \end{verbatim}
 
@@ -669,7 +669,7 @@ some systems.
 END ends the command input and starts the database transformation.
 \subsubsection{QUIT}
 QUIT ends the command input and exits the program immediately without
-writing an output database. 
+writing an output database.
 \subsection{Problems/Bugs}
 \begin{verbatim}
  CENTER BLOCKS -- Incorrect mesh will be generated if center blocks are
@@ -689,45 +689,45 @@ writing an output database.
      * 'GEN3D   ',
      * '07/16/90',
      * 'X1.02.03' /
- C Version : Date      Time      Modifier 
+ C Version : Date      Time      Modifier
  C -------   ----      ----      --------
  C X1.01.05: --/--/--  --:--:--  GREG SJAARDEMA1
- C        : Fixed orientation of NORMAL vector in GETPRO.  Added option        
- C         : DOOLDWAY to maintain compatibility with previous bug version.    
+ C        : Fixed orientation of NORMAL vector in GETPRO.  Added option
+ C         : DOOLDWAY to maintain compatibility with previous bug version.
  C X1.01.05: --/--/--  --:--:--  GREG SJAARDEMA1
- C         : Initial compilation of TRANSLATE SPLINE routine                    
+ C         : Initial compilation of TRANSLATE SPLINE routine
  C X1.01.06: --/--/--  --:--:--  GREG SJAARDEMA1
- C         : Modify SPTIN2 - total Z distance given by spline coordinates       
+ C         : Modify SPTIN2 - total Z distance given by spline coordinates
  C X1.01.06: --/--/--  --:--:--  GREG SJAARDEMA1
- C         : Recompile with no debug                                            
+ C         : Recompile with no debug
  C X1.01.06: --/--/--  --:--:--  GREG SJAARDEMA1
- C         : Fix problem in RDSPLN - increased MAXFLD to 4                      
- C X1.01.07: 03/21/90  16:23:19  GREG SJAARDEMA1                                
- C         : Reorganized SPLINE transformation, read from sys$input             
- C X1.01.08: 03/22/90  07:31:23  GREG SJAARDEMA1                                
- C         : Added A to COMAND call list to fix bug in SPLINE transformation    
- C X1.01.09: 03/22/90  08:39:58  GREG SJAARDEMA1                                
- C         : Fixed SPLXYZ - Added INIGRD lines to set ZCORD                     
- C X1.01.10: 03/22/90  09:01:10  GREG SJAARDEMA1                                
- C         : Modify SPLINE input routine (GETSPL) to use Amy's FREFLD routines  
- C X1.01.11: 03/27/90  08:44:46  GREG SJAARDEMA1                                
- C         : TRANSPLINE now reads from standard input, not file                 
- C X1.01.12: 03/27/90  12:26:46  GREG SJAARDEMA1                                
- C         : Installed as XGEN3D in XACCESS.  Recompile only                  
- C X1.01.13: 03/27/90  13:05:47  GREG SJAARDEMA1                            
- C         : Reordered SPTXYZ for efficiency                                    
- C X1.01.14: 03/29/90  15:49:40  GREG SJAARDEMA1                                
- C         : Fixed problem with 360 ROTATE - ndegr not set, X version only      
- C X1.02.00: 04/12/90  07:43:50  GREG SJAARDEMA1                                
- C         : Install SPLINE version in XACCESS. No other changes                
- C X1.02.01: 07/06/90  14:08:02  GREG SJAARDEMA2                                
- C         : Problem with noncontiguous material blocks in center             
- C         : blocks. (ie. Slidelines separating materials.)                    
- C         : Problem not fixed, error checking enabled.                        
- C         : Problem is in setting node numbers in NPCEN (sub: FNPCEN)         
- C X1.02.02: 07/09/90  14:32:11  GREG SJAARDEMA2                                
+ C         : Fix problem in RDSPLN - increased MAXFLD to 4
+ C X1.01.07: 03/21/90  16:23:19  GREG SJAARDEMA1
+ C         : Reorganized SPLINE transformation, read from sys$input
+ C X1.01.08: 03/22/90  07:31:23  GREG SJAARDEMA1
+ C         : Added A to COMAND call list to fix bug in SPLINE transformation
+ C X1.01.09: 03/22/90  08:39:58  GREG SJAARDEMA1
+ C         : Fixed SPLXYZ - Added INIGRD lines to set ZCORD
+ C X1.01.10: 03/22/90  09:01:10  GREG SJAARDEMA1
+ C         : Modify SPLINE input routine (GETSPL) to use Amy's FREFLD routines
+ C X1.01.11: 03/27/90  08:44:46  GREG SJAARDEMA1
+ C         : TRANSPLINE now reads from standard input, not file
+ C X1.01.12: 03/27/90  12:26:46  GREG SJAARDEMA1
+ C         : Installed as XGEN3D in XACCESS.  Recompile only
+ C X1.01.13: 03/27/90  13:05:47  GREG SJAARDEMA1
+ C         : Reordered SPTXYZ for efficiency
+ C X1.01.14: 03/29/90  15:49:40  GREG SJAARDEMA1
+ C         : Fixed problem with 360 ROTATE - ndegr not set, X version only
+ C X1.02.00: 04/12/90  07:43:50  GREG SJAARDEMA1
+ C         : Install SPLINE version in XACCESS. No other changes
+ C X1.02.01: 07/06/90  14:08:02  GREG SJAARDEMA2
+ C         : Problem with noncontiguous material blocks in center
+ C         : blocks. (ie. Slidelines separating materials.)
+ C         : Problem not fixed, error checking enabled.
+ C         : Problem is in setting node numbers in NPCEN (sub: FNPCEN)
+ C X1.02.02: 07/09/90  14:32:11  GREG SJAARDEMA2
  C         : Fixed Typo in FNPCEN -- Second contiguous block warning
- C         : was IBOT, now ITOP                                                 
+ C         : was IBOT, now ITOP
  C X1.02.03: 07/16/90  15:44:30  GREG SJAARDEMA4
  C         : Added SHIFT as synonym for OFFSET,
  C         : Added OFFSET/SHIFT RESET/ADD/ALL/X/Y/Z -- now same as GREPOS
@@ -743,15 +743,15 @@ Code Goal/Status: (See HELP 1520\_CODES QA for more information)
 \begin{verbatim}
           Category      Goal   Status  Comment
      -------------     ------  ------  -------
-     Documentation:    Formal  Formal  See 
-           Sponsor:    X       X       
-      Traceability:    X       X       
-    Retrievability:    X       X       
-      Verification:    X       X       
-          Archived:    X               
-   Maintainability:    X       X       See     
-        Help Entry:    X       X       
-        Executable:    X       X       
+     Documentation:    Formal  Formal  See
+           Sponsor:    X       X
+      Traceability:    X       X
+    Retrievability:    X       X
+      Verification:    X       X
+          Archived:    X
+   Maintainability:    X       X       See
+        Help Entry:    X       X
+        Executable:    X       X
 \end{verbatim}
 
 \begin{verbatim}

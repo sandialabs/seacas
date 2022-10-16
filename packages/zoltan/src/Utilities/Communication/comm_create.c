@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -111,7 +111,7 @@ int      *pnvals_recv)		/* returned # vals I own after communication */
     starts = (int *) ZOLTAN_MALLOC((nprocs + 1) * sizeof(int));
 
     out_of_mem = FALSE;
-    if (starts == NULL) { 
+    if (starts == NULL) {
 	out_of_mem = TRUE;
 	goto Mem_Err;
     }
@@ -271,7 +271,7 @@ Mem_Err:
 	    j += lengths_from[i];
         }
     }
-    
+
     if (comm_flag != ZOLTAN_OK) {
         if (comm_flag == ZOLTAN_MEMERR) {
 	    ZOLTAN_COMM_ERROR("Out of memory", yo, my_proc);
@@ -341,7 +341,7 @@ Mem_Err:
     else{
       plan->request = (MPI_Request *) ZOLTAN_MALLOC(plan->nrecvs * sizeof(MPI_Request));
       plan->status = (MPI_Status *) ZOLTAN_MALLOC(plan->nrecvs * sizeof(MPI_Status));
-      if (plan->nrecvs && ((plan->request == NULL) || (plan->status == NULL))) 
+      if (plan->nrecvs && ((plan->request == NULL) || (plan->status == NULL)))
         comm_flag = ZOLTAN_MEMERR;
     }
 
@@ -363,7 +363,7 @@ Mem_Err:
   else { \
     to->buf = NULL; \
   }
-    
+
 ZOLTAN_COMM_OBJ *Zoltan_Comm_Copy(ZOLTAN_COMM_OBJ *from)
 {
   ZOLTAN_COMM_OBJ *to = NULL;

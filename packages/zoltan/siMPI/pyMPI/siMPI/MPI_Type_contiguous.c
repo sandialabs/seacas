@@ -14,7 +14,7 @@
 
 #include "mpi.h"
 
-int MPI_Type_contiguous( 
+int MPI_Type_contiguous(
         int count,
         MPI_Datatype old_type,
         MPI_Datatype *newtype)
@@ -22,4 +22,3 @@ int MPI_Type_contiguous(
   _MPI_COVERAGE();
   return PMPI_Type_contiguous (count, old_type, newtype);
 }
-

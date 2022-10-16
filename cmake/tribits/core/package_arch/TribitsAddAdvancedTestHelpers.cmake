@@ -99,7 +99,7 @@ endfunction()
 # Unit test helper function for tribits_add_advanced_test(...) that resets
 # state before calling tribits_add_advanced_test(...) in unit test mode.
 #
-# NOTE: The varaibles:
+# NOTE: The variables:
 #
 #   TRIBITS_ADD_ADVANCED_TEST_CMND_ARRAY_${TEST_CMND_IDX}
 #

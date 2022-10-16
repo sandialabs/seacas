@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -70,7 +70,7 @@ static int get_number_of_objects(void *data, int *ierr);
 static void get_object_list(void *data, int sizeGID, int sizeLID,
             ZOLTAN_ID_PTR globalID, ZOLTAN_ID_PTR localID,
                   int wgt_dim, float *obj_wgts, int *ierr);
- 
+
 static int get_next_line(FILE *fp, char *buf, int bufsize);
 
 static void input_file_error(int numProcs, int tag, int startProc);
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
   struct Zoltan_Struct *zz;
   int changes, numGidEntries, numLidEntries, numImport, numExport;
   ZOLTAN_ID_PTR importGlobalGids, importLocalGids;
-  ZOLTAN_ID_PTR exportGlobalGids, exportLocalGids; 
+  ZOLTAN_ID_PTR exportGlobalGids, exportLocalGids;
   int *importProcs, *importToPart, *exportProcs, *exportToPart;
   int *parts = NULL;
 
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
   ******************************************************************/
 
   rc = Zoltan_LB_Partition(zz, /* input (all remaining fields are output) */
-        &changes,        /* 1 if partitioning was changed, 0 otherwise */ 
+        &changes,        /* 1 if partitioning was changed, 0 otherwise */
         &numGidEntries,  /* Number of integers used for a global ID */
         &numLidEntries,  /* Number of integers used for a local ID */
         &numImport,      /* Number of objects to be sent to me */
@@ -202,9 +202,9 @@ int main(int argc, char *argv[])
   ** the storage allocated for the Zoltan structure.
   ******************************************************************/
 
-  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids, 
+  Zoltan_LB_Free_Part(&importGlobalGids, &importLocalGids,
                       &importProcs, &importToPart);
-  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids, 
+  Zoltan_LB_Free_Part(&exportGlobalGids, &exportLocalGids,
                       &exportProcs, &exportToPart);
 
   Zoltan_Destroy(&zz);
@@ -245,7 +245,7 @@ int i;
 }
 
 /* Function to find next line of information in input file */
- 
+
 static int get_next_line(FILE *fp, char *buf, int bufsize)
 {
 int i, cval, len;
@@ -261,7 +261,7 @@ char *c;
     len = strlen(c);
 
     for (i=0, c=buf; i < len; i++, c++){
-      cval = (int)*c; 
+      cval = (int)*c;
       if (isspace(cval) == 0) break;
     }
     if (i == len) continue;   /* blank line */
@@ -372,13 +372,13 @@ int obj_ack_tag = 5, obj_count_tag = 10, obj_id_tag = 15;
       if (num == 0) input_file_error(numProcs, obj_count_tag, 1);
       num = sscanf(buf, ZOLTAN_ID_SPEC , myData->myGlobalIDs + i);
       if (num != 1) input_file_error(numProcs, obj_count_tag, 1);
-  
+
     }
 
     gids = (ZOLTAN_ID_TYPE *)malloc(sizeof(ZOLTAN_ID_TYPE) * (nobj + 1));
 
     for (i=1; i < numProcs; i++){
-    
+
       if (remainingObj > 1){
         nobj = remainingObj / 2;
         remainingObj -= nobj;
@@ -408,7 +408,7 @@ int obj_ack_tag = 5, obj_count_tag = 10, obj_id_tag = 15;
 
       if (nobj > 0)
         MPI_Send(gids, nobj, ZOLTAN_ID_MPI_TYPE, i, obj_id_tag, MPI_COMM_WORLD);
-      
+
     }
 
     free(gids);
@@ -428,7 +428,7 @@ int obj_ack_tag = 5, obj_count_tag = 10, obj_id_tag = 15;
     if (myData->numMyObjects > 0){
       myData->myGlobalIDs = (ZOLTAN_ID_TYPE *)malloc(sizeof(ZOLTAN_ID_TYPE) * myData->numMyObjects);
       MPI_Send(&ack, 1, MPI_INT, 0, obj_ack_tag, MPI_COMM_WORLD);
-      MPI_Recv(myData->myGlobalIDs, myData->numMyObjects, ZOLTAN_ID_MPI_TYPE, 0, 
+      MPI_Recv(myData->myGlobalIDs, myData->numMyObjects, ZOLTAN_ID_MPI_TYPE, 0,
                obj_id_tag, MPI_COMM_WORLD, &status);
     }
     else if (myData->numMyObjects == 0){

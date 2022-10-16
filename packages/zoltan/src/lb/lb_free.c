@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -57,8 +57,8 @@ extern "C" {
 /*****************************************************************************/
 /*
  *  This file contains routines for freeing arrays allocated by Zoltan and
- *  returned to the application; these functions are all callable by the 
- *  application.  
+ *  returned to the application; these functions are all callable by the
+ *  application.
  *
  *  Also includes routine for freeing memory in zz->LB (LB_Struct).
  *  This routine should be called only by Zoltan.
@@ -82,7 +82,7 @@ int Zoltan_LB_Free_Part(
   ZOLTAN_FREE(local_ids);
   ZOLTAN_FREE(procs);
   ZOLTAN_FREE(to_part);
-  
+
   return (ZOLTAN_OK);
 
 }
@@ -98,13 +98,13 @@ int Zoltan_LB_Special_Free_Part(
 /*
  *  Routine to free the arrays returning the results of the load balancing.
  *  This routine should be used within Zoltan to ensure that F90-allocated
- *  arrays are freed correctly.  
+ *  arrays are freed correctly.
  *  For example, Zoltan SPECIAL_MALLOCs return arrays, but then needs to
  *  free them while changing the return list format.  Zoltan should call
  *  Zoltan_LB_Special_Free Part (not Zoltan_LB_Free_Part) to SPECIAL_FREE
  *  the memory that was SPECIAL_MALLOCed.
- * 
- *  External applications do not need to use this routine, 
+ *
+ *  External applications do not need to use this routine,
  *  as the correct malloc/free protocal for their language will be observed.
  */
 
@@ -121,7 +121,7 @@ int Zoltan_LB_Special_Free_Part(
 /*****************************************************************************/
 
 int Zoltan_LB_Free_Data(
-  ZOLTAN_ID_PTR *import_global_ids, /* Array of global IDs for non-local objects 
+  ZOLTAN_ID_PTR *import_global_ids, /* Array of global IDs for non-local objects
                                     assigned to this processor in the new
                                     decomposition.                           */
   ZOLTAN_ID_PTR *import_local_ids,  /* Array of local IDs for non-local objects

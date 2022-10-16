@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -67,7 +67,7 @@ static size_t get_heap_usage()
 #elif defined(__APPLE__)
   malloc_statistics_t t = {0,0,0,0};
   malloc_zone_statistics(NULL, &t);
-  heap_size = t.size_in_use;  
+  heap_size = t.size_in_use;
 
 #elif defined(__sun)
   pstatus_t proc_status;

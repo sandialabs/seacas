@@ -19,7 +19,7 @@ int PMPI_Cancel( MPI_Request *request )
   _MPI_COVERAGE();
   if ( !request )
     return MPI_ERR_REQUEST;
-  
+
   (*request)->cancel = 1;  /* true */
   return MPI_SUCCESS;
 }

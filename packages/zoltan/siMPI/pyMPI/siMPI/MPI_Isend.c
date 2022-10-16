@@ -19,7 +19,6 @@ int MPI_Isend (void* message, int count, MPI_Datatype datatype, int dest,
         int tag, MPI_Comm comm, MPI_Request* request)
 {
   _MPI_COVERAGE();
-  return PMPI_Isend(message, count, datatype, dest, tag, comm, request); 
+  return PMPI_Isend(message, count, datatype, dest, tag, comm, request);
 }
 /*=============================================================================================*/
-

@@ -18,6 +18,5 @@
 int MPI_File_get_position(MPI_File fh, MPI_Offset *offset)
 {
   _MPI_COVERAGE();
-  return PMPI_File_get_position(fh, offset); 
+  return PMPI_File_get_position(fh, offset);
 }
-

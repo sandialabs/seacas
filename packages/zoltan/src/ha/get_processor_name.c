@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -56,8 +56,8 @@ extern "C" {
 
 int Zoltan_Get_Processor_Name(
    ZZ *zz,             /* The Zoltan structure.                */
-   char *name          /* A string uniquely identifying the processor. 
-                          We assume that at least MAX_PROC_NAME_LEN 
+   char *name          /* A string uniquely identifying the processor.
+                          We assume that at least MAX_PROC_NAME_LEN
                           characters have been allocated.              */
 )
 {

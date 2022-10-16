@@ -28,14 +28,13 @@ int index;
       return MPI_SUCCESS;
     }
     _MPI_ERR_ROUTINE(MPI_ERR_COMM, "MPI_COMM_RANK: Null communicator.");
-    MPI_Abort (comm, MPI_ERR_COMM); 
+    MPI_Abort (comm, MPI_ERR_COMM);
     return MPI_ERR_COMM;
   }
   else
   {
     _MPI_ERR_ROUTINE(MPI_ERR_IN_STATUS, "MPI_COMM_RANK: MPI initialization error.");
-    MPI_Abort (comm, MPI_ERR_IN_STATUS); 
+    MPI_Abort (comm, MPI_ERR_IN_STATUS);
     return MPI_ERR_ARG;
   }
 }
-

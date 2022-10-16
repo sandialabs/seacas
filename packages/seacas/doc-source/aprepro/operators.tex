@@ -1,15 +1,15 @@
 \chapter{Operators}\label{ch:operators}
 
-The operators recognized by \aprepro{} are listed below. The letters \textbf{a} 
-and \textbf{b} can represent variables, numbers, functions, or expressions unless 
-otherwise noted. The tables below also list the precedence and associativity of 
-the operators. {\em Precedence} defines the order in which operations should be performed. 
+The operators recognized by \aprepro{} are listed below. The letters \textbf{a}
+and \textbf{b} can represent variables, numbers, functions, or expressions unless
+otherwise noted. The tables below also list the precedence and associativity of
+the operators. {\em Precedence} defines the order in which operations should be performed.
 For example, in the expression:
 \begin{apinp}
 \{3 * 4 + 6 / 2\}
 \end{apinp}
-the multiplications and divisions are performed first, followed by the addition 
-because multiplication and division have higher precedence (10) than addition (9). The precedence 
+the multiplications and divisions are performed first, followed by the addition
+because multiplication and division have higher precedence (10) than addition (9). The precedence
 is listed from 1 to 14 with 1 being the lowest precedence and 14 being the highest.
 
 {\em Associativity} defines which side of the expressions should be
@@ -58,8 +58,8 @@ Syntax   & Description    & Precedence & Associativity\\
 
 \section{Assignment Operators}
 
-Assignment operators combine a variable and an algebraic expression into a single 
-algebraic expression, and also set the variable equal to the algebraic expression. 
+Assignment operators combine a variable and an algebraic expression into a single
+algebraic expression, and also set the variable equal to the algebraic expression.
 Only variables can be specified on the left-hand-side of the equal sign.
 
 \begin{longtable}{llcc}
@@ -76,8 +76,8 @@ Syntax & Description & Precedence & Associativity \\
 
 \section{Relational Operators}\label{sec:relationaloperators}
 
-Relational operators combine two algebraic expressions into a single relational 
-expression. Relational expressions and operators can only be used before the question 
+Relational operators combine two algebraic expressions into a single relational
+expression. Relational expressions and operators can only be used before the question
 mark (\cmd{?}) in a conditional expression.
 
 \begin{longtable}{llcc}
@@ -94,7 +94,7 @@ Syntax & Description & Precedence & Associativity \\
 
 \section{Boolean Operators}
 
-Boolean operators combine one or more relational expressions into a single relational 
+Boolean operators combine one or more relational expressions into a single relational
 expression. If \cmd{la} and \cmd{lb} are two relational expressions, then:
 
 \begin{longtable}{llcc}
@@ -111,11 +111,11 @@ evaluated and then the truth of the expression is returned.
 
 \section{String Operators}
 
-The only supported string operator at this time is string concatenation which is 
+The only supported string operator at this time is string concatenation which is
 denoted by \cmd{//}. For example,
 \begin{apinp}
 \{a = "Hello"\} \{b = "World"\}
 \{c = a // " " //  b\}
 \end{apinp}
-sets \cmd{c} equal to \cmd{\texttt{"}Hello  World\texttt{"}.}  Concatenation 
+sets \cmd{c} equal to \cmd{\texttt{"}Hello  World\texttt{"}.}  Concatenation
 has precedence 14 and left associativity.

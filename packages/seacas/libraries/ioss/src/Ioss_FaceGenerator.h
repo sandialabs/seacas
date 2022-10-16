@@ -1,11 +1,10 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#ifndef IOSS_Ioss_FaceGenerator_h
-#define IOSS_Ioss_FaceGenerator_h
+#pragma once
 
 #include <algorithm>
 #include <array>
@@ -42,6 +41,11 @@ namespace Ioss {
       else {
         face_element_error(element_id);
       }
+    }
+
+    void add_element(size_t element_id, size_t face_ordinal) const
+    {
+      add_element(element_id * 10 + face_ordinal);
     }
 
     void face_element_error(size_t element_id) const;
@@ -130,5 +134,3 @@ namespace Ioss {
   };
 
 } // namespace Ioss
-
-#endif

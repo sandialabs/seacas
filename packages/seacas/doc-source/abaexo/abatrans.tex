@@ -6,7 +6,7 @@ described in Appendix~\ref{appx:exodus}. This section describes how an
 \caps{ABAQUS} output file is translated into the \caps{EXODUS} format.
 
 The \caps{EXODUS} title is copied from the \caps{ABAQUS} header record
-(1922). 
+(1922).
 
 The coordinates of the original nodes are copied from the \caps{ABAQUS}
 nodal coordinate records (1901). A node which does not have a coordinate
@@ -22,13 +22,13 @@ Section~\ref{intro:element}.
 There are no attributes for any element blocks.
 
 The connectivity of the original elements is read from the \caps{ABAQUS} element
-connectivity records (1900). 
+connectivity records (1900).
 An element which does not have a connectivity record is deleted from the
 \caps{EXODUS} database.
 The connectivity for the new elements is derived as explained in Section~\ref{intro:element}.
 The new elements replace the original
-elements so the element may be renumbered. 
-The elements are also renumbered to group the 
+elements so the element may be renumbered.
+The elements are also renumbered to group the
 elements by element block.
 
 The element order map lists the elements in the order they were input,
@@ -39,19 +39,19 @@ There are no node sets and no side sets.
 Two \caps{QA} records are written: the first contain information about
 the \caps{ABAQUS} run that created the output file and the second
 describes the \caps{\PROGRAM} run. There are no information records
-written. 
+written.
 
 The \caps{EXODUS} database requires names for the coordinates, the
 element blocks, and the variables, which the \caps{ABAQUS} output file does
-not supply. 
+not supply.
 The coordinates are named ``\cmd{C1}'', ``\cmd{C2}'', and
-``\cmd{C3}'' to be consistent with the variable names. 
+``\cmd{C3}'' to be consistent with the variable names.
 The element blocks are named ``\cmd{TRUSS}'' for \caps{1D} blocks,
 ``\cmd{QUAD}'' for \caps{2D} blocks, and ``\cmd{HEX}'' for \caps{3D} blocks.
 The variable naming is explained below.
 
 The time for each time step is copied from the total time in the
-\caps{ABAQUS} time record (2000) at the start of each time step. 
+\caps{ABAQUS} time record (2000) at the start of each time step.
 
 \notetome{Mention modal record 1980}
 

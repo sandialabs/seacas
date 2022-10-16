@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -54,12 +54,12 @@ extern "C" {
 #endif
 
 
-/* 
+/*
  * Given a communication plan, invert the plan for the reverse communication.
  * The sizes in the inverted plan are assumed to be uniform.
  * The input plan is overwritten with the inverted plan.
  * If an error occurs, the old plan is returned unchanged.
- * Note:  receives in new plan are blocked, even if sends in old 
+ * Note:  receives in new plan are blocked, even if sends in old
  * plan were not.   This blocking allows variable sized sends to be
  * done with the new plan (Zoltan_Comm_Resize).  However, it also means
  * the new plan can not do exactly what Zoltan_Comm_Do_Reverse can do.

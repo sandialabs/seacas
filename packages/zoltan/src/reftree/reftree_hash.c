@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -36,7 +36,7 @@ extern "C" {
 #include "zz_util_const.h"
 #include "reftree.h"
 
-/* Zoltan_Reftree_hash_lookup uses Zoltan_Hash to lookup a key 
+/* Zoltan_Reftree_hash_lookup uses Zoltan_Hash to lookup a key
  *
  * Input:
  *   zz, a Zoltan structure
@@ -52,7 +52,7 @@ extern "C" {
  * Modified for refinement tree nodes by william.mitchell@nist.gov
  */
 
-ZOLTAN_REFTREE* Zoltan_Reftree_hash_lookup (ZZ *zz, 
+ZOLTAN_REFTREE* Zoltan_Reftree_hash_lookup (ZZ *zz,
                                     struct Zoltan_Reftree_hash_node **hashtab,
                                     ZOLTAN_ID_PTR key, int n)
 {
@@ -70,7 +70,7 @@ ZOLTAN_REFTREE* Zoltan_Reftree_hash_lookup (ZZ *zz,
 
 /* second version for int instead of refinement tree node */
 
-int Zoltan_Reftree_inthash_lookup (ZZ *zz, 
+int Zoltan_Reftree_inthash_lookup (ZZ *zz,
                                    struct Zoltan_Reftree_inthash_node **hashtab,
                                    ZOLTAN_ID_PTR key, int n)
 {

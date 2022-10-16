@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -280,7 +280,7 @@ static int set_neigh(ZOLTAN_ID_PTR vertices, int *num_vert,
                      int all_triangles, ZZ *zz)
 {
 
-/* 
+/*
  * determine the neighbor relationships and list of shared vertices
  */
 
@@ -289,7 +289,7 @@ struct Zoltan_Reftree_inthash_node **hashtable;
 int **temp_element_list;
 int i, j, k, l, nvert, vert, index, element, vert_count, ierr;
 
-/* 
+/*
  * first create a list of elements for each vertex
  */
 
@@ -550,7 +550,7 @@ int i, j, k, l, nvert, vert, index, element, vert_count, ierr;
 static int add_neigh_pair(int v,int e1,int e2, ZZ *zz)
 {
 
-/* 
+/*
  * adds the elements e1 and e2, which share vertex v, to the neigh
  * and shared_vert lists
  */
@@ -558,7 +558,7 @@ static int add_neigh_pair(int v,int e1,int e2, ZZ *zz)
 char *yo = "add_neigh_pair";
 int nshare, index = 0, i, j, k;
 
-/* 
+/*
  * see if they are already listed as neighbors
  */
 
@@ -580,9 +580,9 @@ int nshare, index = 0, i, j, k;
 
    if (neigh_dim[e1][nshare+1] <= num_neigh[e1][nshare+1]) {
       neigh_dim[e1][nshare+1] *= 2;
-      neigh[e1][nshare+1] = 
+      neigh[e1][nshare+1] =
         (int *) ZOLTAN_REALLOC(neigh[e1][nshare+1], sizeof(int)*neigh_dim[e1][nshare+1]);
-      shared_vert[e1][nshare+1] = 
+      shared_vert[e1][nshare+1] =
         (int **) ZOLTAN_REALLOC(shared_vert[e1][nshare+1], sizeof(int *)*neigh_dim[e1][nshare+1]);
 
       if (neigh[e1][nshare+1] == NULL || shared_vert[e1][nshare+1] == NULL) {
@@ -617,7 +617,7 @@ int nshare, index = 0, i, j, k;
       for (i=0; i<nshare; i++) shared_vert[e1][nshare][index][i] = shared_vert[e1][nshare][num_neigh[e1][nshare]][i];
    }
 
-/* 
+/*
  * add e1 to the list for e2
  */
 
@@ -638,9 +638,9 @@ int nshare, index = 0, i, j, k;
 
    if (neigh_dim[e2][nshare+1] <= num_neigh[e2][nshare+1]) {
       neigh_dim[e2][nshare+1] *= 2;
-      neigh[e2][nshare+1] = (int *) ZOLTAN_REALLOC(neigh[e2][nshare+1], 
+      neigh[e2][nshare+1] = (int *) ZOLTAN_REALLOC(neigh[e2][nshare+1],
                                        sizeof(int)*neigh_dim[e2][nshare+1]);
-      shared_vert[e2][nshare+1] = (int **) ZOLTAN_REALLOC(shared_vert[e2][nshare+1], 
+      shared_vert[e2][nshare+1] = (int **) ZOLTAN_REALLOC(shared_vert[e2][nshare+1],
                                        sizeof(int *)*neigh_dim[e2][nshare+1]);
       if (neigh[e2][nshare+1] == NULL || shared_vert[e2][nshare+1] == NULL) {
          ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
@@ -684,7 +684,7 @@ int nshare, index = 0, i, j, k;
 static int add_to_to_add(int element, ZZ *zz)
 {
 
-/* 
+/*
  * add all the neighbors of element that are not on the cycle to the
  * lists of elements that can be added to the cycle
  */
@@ -1860,10 +1860,10 @@ static int sfc_coarse_grid_path(int nobj, int *num_vert, ZOLTAN_ID_PTR vertices,
   }
   num_geom = zz->Get_Num_Geom(zz->Get_Num_Geom_Data, &ierr);
   if (ierr) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Error returned from user function Get_Num_Geom.");
     ZOLTAN_TRACE_EXIT(zz, yo);
-    return(ierr); 
+    return(ierr);
   }
   if (!(num_geom==2 || num_geom==3)) {
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Geometry must be either 2D or 3D.");
@@ -1960,12 +1960,12 @@ static int sfc_coarse_grid_path(int nobj, int *num_vert, ZOLTAN_ID_PTR vertices,
   first_vert[0] = 0;
   for (i=1; i<nobj; i++) first_vert[i] = first_vert[i-1] + num_vert[i-1];
 
-/* 
+/*
  * pass through the elements in order setting order and looking for
  * in/out vertices
  */
 
-  
+
   elem = ind[0];
   order[elem] = 0;
   ZOLTAN_SET_GID(zz,&(in_vertex[zz->Num_GID*elem]),
@@ -1984,11 +1984,11 @@ static int sfc_coarse_grid_path(int nobj, int *num_vert, ZOLTAN_ID_PTR vertices,
     ierr = find_inout(elem, pprev, prevprev, in_vertex, out_vertex,
                       vertices, num_vert, first_vert, zz);
     if (ierr) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                      "Error returned from find_inout.");
       Zoltan_Multifree(__FILE__,__LINE__, 3, &sfccoord, &ind, &first_vert);
       ZOLTAN_TRACE_EXIT(zz, yo);
-      return(ierr); 
+      return(ierr);
     }
   }
 
@@ -2297,7 +2297,7 @@ static int MAXLEV = 24;
 /*****************************************************************************/
 /*****************************************************************************/
 
-int Zoltan_Reftree_Coarse_Grid_Path(int nobj, int *num_vert, 
+int Zoltan_Reftree_Coarse_Grid_Path(int nobj, int *num_vert,
                                ZOLTAN_ID_PTR vertices, ZOLTAN_ID_PTR in_vertex,
                                ZOLTAN_ID_PTR out_vertex, double *coords,
                                int *order, ZOLTAN_ID_PTR gids,
@@ -2331,7 +2331,7 @@ int all_triangles = 0, i, element, success, ierr;
        strcmp(initpath_method, "SIERPINSKI") == 0 ||
        strcmp(initpath_method, "REFTREE_DEFAULT") == 0 ) {
       ierr = sfc_coarse_grid_path(nobj, num_vert, vertices, in_vertex,
-                                  out_vertex, coords, order, gids, lids, 
+                                  out_vertex, coords, order, gids, lids,
                                   initpath_method, all_triangles, zz);
       ZOLTAN_TRACE_EXIT(zz, yo);
       return (ierr);

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -63,7 +63,7 @@ extern "C" {
 /*****************************************************************************/
 /*
  *  This file contains routines for performing ordering with Zoltan.
- *  These functions are all callable by the application.  
+ *  These functions are all callable by the application.
  */
 /*****************************************************************************/
 /*****************************************************************************/

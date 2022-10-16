@@ -19,6 +19,5 @@ int MPI_Cart_shift ( MPI_Comm comm, int direction, int displ,
                     int *source, int *dest )
 {
   _MPI_COVERAGE();
-  return PMPI_Cart_shift (comm, direction, displ, source, dest); 
+  return PMPI_Cart_shift (comm, direction, displ, source, dest);
 }
-

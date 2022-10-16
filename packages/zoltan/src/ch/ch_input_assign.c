@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -236,7 +236,7 @@ short    *assignment)		/* values to be printed */
 
 	    if (k <= 0 || k > nvtxs) {
 		printf("ERROR: In assignment file `%s'\n", inassignname);
-		printf("       Entry %d of set %d invalid (%d)\n", 
+		printf("       Entry %d of set %d invalid (%d)\n",
 		    total + i, set, k);
 		ZOLTAN_FILE_close(finassign);
                 DEBUG_TRACE_END(0, yo);

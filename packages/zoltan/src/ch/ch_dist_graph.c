@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -107,7 +107,7 @@ int chaco_dist_graph(
 
   /* Initialize */
   use_graph = (*xadj  != NULL);
- 
+
   /* Handle serial case and return. */
   if (nprocs == 1) {
     /* Set values expected to be returned by this function. */
@@ -129,7 +129,7 @@ int chaco_dist_graph(
 
   /* Initialize the chaco distribution on all processors */
   ch_dist_init(nprocs, *gnvtxs, pio_info, assignments, host_proc, comm);
-  
+
   /* Store pointers to original data */
   if (myproc == host_proc) {
     old_xadj   = *xadj;
@@ -173,8 +173,8 @@ int chaco_dist_graph(
   }
 
 
-  /* 
-   * Distribute vertex data (xadj, coordinates, etc ) to all procs 
+  /*
+   * Distribute vertex data (xadj, coordinates, etc ) to all procs
    */
 
   if (myproc == host_proc){
@@ -336,8 +336,8 @@ int chaco_dist_graph(
   }
 
 
-  /* 
-   * Distribute edge data to all procs 
+  /*
+   * Distribute edge data to all procs
    */
 
   if (use_graph) {
@@ -387,7 +387,7 @@ int chaco_dist_graph(
             nvtx_edges = old_xadj[v+1] - old_xadj[v];
             for (j = 0; j < nvtx_edges; j++) {
               (*adjncy)[adj_cnt] = old_adjncy[offset+j];
-              if (*ewgt_dim){ 
+              if (*ewgt_dim){
                 for (k=0; k<*ewgt_dim; k++)
                   (*ewgts)[adj_cnt*(*ewgt_dim)+k] = old_ewgts[(offset+j)*(*ewgt_dim)+k];
               }
@@ -464,7 +464,7 @@ int chaco_dist_graph(
     safe_free((void **)(void *) &vtx_list);
   }
   if (size != NULL) safe_free((void **)(void *) &size);
-   
+
   DEBUG_TRACE_END(myproc, yo);
   return 1;
 }

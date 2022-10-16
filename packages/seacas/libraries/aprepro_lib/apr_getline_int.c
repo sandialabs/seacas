@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1991, 1992, 1993, 2020, 2021 by Chris Thewalt (thewalt@ce.berkeley.edu)
+ * Copyright (C) 1991, 1992, 1993, 2020, 2021, 2022 by Chris Thewalt (thewalt@ce.berkeley.edu)
  *
  * Permission to use, copy, modify, and distribute this software
  * for any purpose and without fee is hereby granted, provided
@@ -266,7 +266,7 @@ static void ap_gl_init(void)
   if (ap_gl_init_done < 0) { /* -1 only on startup */
     const char *cp = (const char *)getenv("COLUMNS");
     if (cp != NULL) {
-      int w = atoi(cp);
+      int w = strtol(cp, NULL, 10);
       if (w > 20)
         ap_gl_setwidth(w);
     }
@@ -353,6 +353,7 @@ char *ap_getline_int(char *prompt)
       case '\002':
         ap_gl_fixup(ap_gl_prompt, -1, ap_gl_pos - 1); /* ^B */
         break;
+      case '\003': /* ^C */
       case '\004': /* ^D */
         if (ap_gl_cnt == 0) {
           ap_gl_buf[0] = '\0';
@@ -691,7 +692,7 @@ static void hist_init(void)
 {
   hist_buf[0] = hist_empty_elem;
   for (int i = 1; i < HIST_SIZE; i++)
-    hist_buf[i] = (char *)0;
+    hist_buf[i] = NULL;
 }
 
 void ap_gl_histadd(char *buf)

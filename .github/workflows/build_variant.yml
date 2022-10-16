@@ -2,11 +2,13 @@
 name: SEACAS Variant builds
 
 # Controls when the action will run. Triggers the workflow on push
-on: 
+on:
   push:
-    branches-ignore:
-      - 'coverity'
+    branches:
+    - master
   pull_request:
+    branches:
+    - master
 
 jobs:
 
@@ -18,11 +20,11 @@ jobs:
       matrix:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V110 ]
-        netcdf: [ 4.8.1 ]
-        cgns: [ 4.2.0 ]
+        netcdf: [ 4.9.0 ]
+        cgns: [ 4.3.0 ]
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -33,10 +35,10 @@ jobs:
         ###
       - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         id: cache-TPL-mpi
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v3-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -56,8 +58,8 @@ jobs:
       fail-fast: false
       matrix:
         hdf5: [ V110 ]
-        netcdf: [ 4.8.1 ]
-        cgns: [ 4.2.0 ]
+        netcdf: [ 4.9.0 ]
+        cgns: [ 4.3.0 ]
         config: 
         - {
             name: "Debug serial build",
@@ -69,6 +71,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -82,6 +85,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
@@ -95,6 +99,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
           }
@@ -108,6 +113,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "thread" # address, integer, thread, memory, undefined
           }
@@ -121,6 +127,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "address" # address, integer, thread, memory, undefined
           }
@@ -134,6 +141,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "undefined" # address, integer, thread, memory, undefined
           }
@@ -147,8 +155,23 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "",
             sanitizer: "integer" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "GTest Enabled",
+            os: ubuntu-latest,
+            compiler: "gnu",
+            debug: "YES",
+            threadsafe: "NO",
+            fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
+            use_catalyst2: "NO",
+            gtest: "YES",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
             name: "No applications, legacy, or fortran",
@@ -160,20 +183,8 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
+            gtest: "NO",
             extra: "APPLICATIONS=NO LEGACY=NO",
-            sanitizer: "NO" # address, integer, thread, memory, undefined
-          }
-        - {
-            name: "ADIOS2, parallel",
-            os: ubuntu-latest,
-            compiler: "mpi",
-            debug: "NO",
-            threadsafe: "NO",
-            fortran: "YES",
-            use_kokkos: "NO",
-            use_adios2: "YES",
-            use_catalyst2: "NO",
-            extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
@@ -186,12 +197,41 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "YES",
+            gtest: "NO",
             extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "KOKKOS, parallel",
+            os: ubuntu-latest,
+            compiler: "mpi",
+            debug: "NO",
+            threadsafe: "NO",
+            fortran: "YES",
+            use_kokkos: "YES",
+            use_adios2: "NO",
+            use_catalyst2: "NO",
+            gtest: "NO",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "No deprecated exodus functions",
+            os: ubuntu-latest,
+            compiler: "mpi",
+            debug: "NO",
+            threadsafe: "NO",
+            fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
+            use_catalyst2: "NO",
+            gtest: "NO",
+            extra: "OMIT_DEPRECATED=YES",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -199,20 +239,20 @@ jobs:
 
       - name: Fetch TPL Cache
         id: cache-TPL
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v3-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v1-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
         run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
       - name: install additional TPL
-        if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' }}
+        if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' || matrix.config.gtest == 'YES' || matrix.config.use_catalyst == 'YES' }}
         run: |
           set -x
-          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} GNU_PARALLEL=OFF INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} GNU_PARALLEL=OFF GTEST=${{ matrix.config.gtest }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
           ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
         
 ###
@@ -251,5 +291,5 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
-          ctest -j 4 --output-on-failure --exclude-regex exodus3.py
+          ctest -j 4 --output-on-failure --exclude-regex test_exo
         if: ${{ success() && (matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO') }}

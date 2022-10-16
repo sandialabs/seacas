@@ -201,7 +201,7 @@ int main(int argc, char** argv) {
       puts("#include \"mpi.h\"");
       puts("#include \"mpi_config.h\"");
       puts("#include \"mpi_implementation.h\"");
-      
+
       if ( body ) {
 	mangle(ident,mangled);
 	printf("void %s%s\n",mangled,body);
@@ -211,7 +211,7 @@ int main(int argc, char** argv) {
       return 0;
     }
   }
-  
 
-  return 0;  
+
+  return 0;
 }

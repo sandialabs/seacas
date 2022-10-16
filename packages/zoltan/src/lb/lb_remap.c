@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -82,12 +82,12 @@ int Zoltan_LB_Remap(
   int *new_map,        /* Upon return, flag indicating whether part or proc
                           assignments actually changed due to remapping. */
   int nobj,            /* # objs the processor knows about after partitioning */
-  int *proc,           /* processors for the objs; 
-                          if export_list_flag == 1, 
+  int *proc,           /* processors for the objs;
+                          if export_list_flag == 1,
                              proc contains new proc assignment
                           else
                              proc contains old proc assignment
-                          Upon return, proc contains remapped new proc 
+                          Upon return, proc contains remapped new proc
                           assignment regardless of export_list_flag's value. */
   int *old_part,       /* old part assignments for the objs */
   int *new_part,       /* new part assignments for the objs.
@@ -95,17 +95,17 @@ int Zoltan_LB_Remap(
                           part assignments */
   int export_list_flag /* Flag indicating whether the algorithm computes
                           export lists or import lists. The HG for matching
-                          is built differently depending on whether 
+                          is built differently depending on whether
                           the algorithm knows export or import info.  */
 )
 {
 char *yo = "Zoltan_LB_Remap";
 int ierr = ZOLTAN_OK;
 int i;
-int remap_type;               /* Type of remapping to be done: 
+int remap_type;               /* Type of remapping to be done:
                                  Procs, Parts, or None */
 int HEcnt = 0;                /* Number of local hyperedges */
-int *HEinfo = NULL;           /* Array of HE info; for each HE, two pins and 
+int *HEinfo = NULL;           /* Array of HE info; for each HE, two pins and
                                  one edge weight. Stored as a single vector
                                  to minimize communication calls.  */
 
@@ -116,11 +116,11 @@ int *HEinfo = NULL;           /* Array of HE info; for each HE, two pins and
 
   if (remap_type != ZOLTAN_LB_REMAP_NONE) {
     /* Build local hyperedges */
-    if (export_list_flag) 
+    if (export_list_flag)
       ierr = local_HEs_from_export_lists(zz, remap_type,
                                          nobj, proc, old_part, new_part,
                                          &HEcnt, &HEinfo);
-    else 
+    else
       ierr = local_HEs_from_import_lists(zz, remap_type,
                                          nobj, proc, old_part, new_part,
                                          &HEcnt, &HEinfo);
@@ -137,7 +137,7 @@ int *HEinfo = NULL;           /* Array of HE info; for each HE, two pins and
                          "Error returned from gather_and_build_remap.");
       goto End;
     }
-  
+
     if (*new_map) {
       /* Update part and processor information for algorithms */
       for (i = 0; i < nobj; i++) {
@@ -158,14 +158,14 @@ static int local_HEs_from_import_lists(
   ZZ *zz,
   int remap_type,      /* type of remapping to do:  parts, procs, or none. */
   int nobj,            /* # objs the processor knows about (keep + imports) */
-  int *proc,           /* On input, old processor assignment for each obj; 
+  int *proc,           /* On input, old processor assignment for each obj;
                           Upon return, remapped new proc assignment for
                           each obj. */
   int *old_part,       /* old part assignments for each objs */
   int *new_part,       /* On input, new part assignments for each objs.
                           Upon return, remapped new part assignments */
   int *HEcnt,          /* # of HEs allocated. */
-  int **HEinfo         /* Array of HE info; for each HE, two pins and 
+  int **HEinfo         /* Array of HE info; for each HE, two pins and
                           one edge weight. Stored as a single vector
                           to minimize communication calls.  */
 )
@@ -182,7 +182,7 @@ int i, cnt, tmp;
 int *tmp_HEinfo;
 int old_size;                 /* # of old entries to remap to. If remapping
                                  parts to processors, old_size = Num_Procs;
-                                 if renumbering parts, old_size = old 
+                                 if renumbering parts, old_size = old
                                  num parts. */
 int fp;                       /* First part on this processor in new
                                  decomposition. */
@@ -210,15 +210,15 @@ int *HEwgt = NULL;            /* Array of HE weights.  Initially includes
       goto End;
     }
 
-    for (i = 0; i < nobj; i++) 
+    for (i = 0; i < nobj; i++)
       HEwgt[proc[i]]++;    /* At this point, proc has old proc assignments */
 
     *HEcnt = 0;
     for (i = 0; i < HEwgt_size; i++)
       if (HEwgt[i] != 0) (*HEcnt)++;
- 
+
     ierr = malloc_HEinfo(zz, *HEcnt, HEinfo);
-    if (ierr < 0) 
+    if (ierr < 0)
       goto End;
     tmp_HEinfo = *HEinfo;
 
@@ -243,16 +243,16 @@ int *HEwgt = NULL;            /* Array of HE weights.  Initially includes
       if (old_part[i] > maxp) maxp = old_part[i];
     }
 
-    /* Don't include old part numbers that are greater than 
-     * zz->LB.Num_Global_Parts - 1; they are not valid values for 
-     * remapping of new part numbers. 
+    /* Don't include old part numbers that are greater than
+     * zz->LB.Num_Global_Parts - 1; they are not valid values for
+     * remapping of new part numbers.
      */
     if (minp >= zz->LB.Num_Global_Parts)
       minp = zz->LB.Num_Global_Parts-1;
     if (maxp >= zz->LB.Num_Global_Parts)
       maxp = zz->LB.Num_Global_Parts-1;
 
-    old_size = maxp - minp + 1; 
+    old_size = maxp - minp + 1;
 
     Zoltan_LB_Proc_To_Part(zz, my_proc, &np, &fp);
     HEwgt_size = np * old_size;
@@ -266,8 +266,8 @@ int *HEwgt = NULL;            /* Array of HE weights.  Initially includes
     }
 
     for (i = 0; i < nobj; i++) {
-      if (old_part[i] < zz->LB.Num_Global_Parts) {  
-        /* Include only HEs to old parts numbered 
+      if (old_part[i] < zz->LB.Num_Global_Parts) {
+        /* Include only HEs to old parts numbered
          * 0 to zz->LB.Num_Global_Parts-1; these are the only valid
          * remapping values for the new part numbers.
          */
@@ -279,9 +279,9 @@ int *HEwgt = NULL;            /* Array of HE weights.  Initially includes
     *HEcnt = 0;
     for (i = 0; i < HEwgt_size; i++)
       if (HEwgt[i] != 0) (*HEcnt)++;
-   
+
     ierr = malloc_HEinfo(zz, *HEcnt, HEinfo);
-    if (ierr < 0) 
+    if (ierr < 0)
       goto End;
     tmp_HEinfo = *HEinfo;
 
@@ -298,28 +298,28 @@ int *HEwgt = NULL;            /* Array of HE weights.  Initially includes
   }
 
 End:
-  
+
   if (HEwgt) ZOLTAN_FREE(&HEwgt);
 
   return ierr;
-}    
+}
 
 /******************************************************************************/
 static int local_HEs_from_export_lists(
   ZZ *zz,
   int remap_type,      /* type of remapping to do:  parts, procs, or none. */
   int nobj,            /* # objs the processor knows about (keep + exports) */
-  int *new_proc,       /* On input, new processor assignment for each obj; 
+  int *new_proc,       /* On input, new processor assignment for each obj;
                           Upon return, remapped new proc assignment for
                           each obj. */
   int *old_part,       /* old part assignments for each objs */
   int *new_part,       /* On input, new part assignments for each objs.
                           Upon return, remapped new part assignments */
   int *HEcnt,          /* # of HEs allocated. */
-  int **HEinfo         /* Array of HE info; for each HE, two pins and 
+  int **HEinfo         /* Array of HE info; for each HE, two pins and
                           one edge weight. Stored as a single vector
                           to minimize communication calls.  */
-) 
+)
 {
 /*  Routine to remap parts (to new processors or new part numbers)
  *  to reduce data movement.
@@ -348,7 +348,7 @@ int *HEwgt = NULL;            /* Array of HE weights.  Initially includes
      * export objects -- it is my_proc!
      * We also know the new processor number for all objects initially on
      * my_proc (since we built export lists.)
-     * This case is a special case of part remapping; it is easy to 
+     * This case is a special case of part remapping; it is easy to
      * build the hyperedges in this special case.
      */
 
@@ -360,15 +360,15 @@ int *HEwgt = NULL;            /* Array of HE weights.  Initially includes
       goto End;
     }
 
-    for (i = 0; i < nobj; i++) 
+    for (i = 0; i < nobj; i++)
       HEwgt[new_proc[i]]++;
 
     *HEcnt = 0;
     for (i = 0; i < HEwgt_size; i++)
       if (HEwgt[i] != 0) (*HEcnt)++;
-   
+
     ierr = malloc_HEinfo(zz, *HEcnt, HEinfo);
-    if (ierr < 0) 
+    if (ierr < 0)
       goto End;
     tmp_HEinfo = *HEinfo;
 
@@ -386,8 +386,8 @@ int *HEwgt = NULL;            /* Array of HE weights.  Initially includes
 
   else {  /* ZOLTAN_LB_REMAP_PARTS */
     /* Cannot renumber parts given export lists without summing HE weights
-     * across processors.  This summation is not straightforward.  Also, a 
-     * potentially large number of HEs may exist 
+     * across processors.  This summation is not straightforward.  Also, a
+     * potentially large number of HEs may exist
      * (max_old_part_number * zz->Num_Global_Parts).  Rather than build
      * this large matrix, just compute import lists from the export lists
      * and run the import-list algorithm.
@@ -409,7 +409,7 @@ int *HEwgt = NULL;            /* Array of HE weights.  Initially includes
       }
     }
 
-    ierr = Zoltan_Comm_Info(plan, NULL, NULL, NULL, NULL, NULL, NULL, 
+    ierr = Zoltan_Comm_Info(plan, NULL, NULL, NULL, NULL, NULL, NULL,
                             NULL, NULL, NULL, NULL, NULL, imp_proc, NULL);
 
     msg_tag++;
@@ -437,7 +437,7 @@ End:
 
 /******************************************************************************/
 static int set_remap_type(
-  ZZ *zz, 
+  ZZ *zz,
   int *remap_type
 )
 {
@@ -483,7 +483,7 @@ static int do_match(
 /* Temporary function; will be replace by a real matching function later. */
 int ierr = ZOLTAN_OK;
 int i;
-  
+
   /* Default initialization -- no change in mapping */
   for (i = 0; i < hg->nVtx; i++)
     match[i] = i;
@@ -497,7 +497,7 @@ int i;
 static int malloc_HEinfo(
   ZZ *zz,
   int HEcnt,    /* Number of HEs to allocate */
-  int **HEinfo  /* Array of HE info; for each HE, two pins and 
+  int **HEinfo  /* Array of HE info; for each HE, two pins and
                    one edge weight. Stored as a single vector
                    to minimize communication calls.  */
 )
@@ -513,7 +513,7 @@ int ierr = ZOLTAN_OK;
       ierr = ZOLTAN_MEMERR;
     }
   }
-  else 
+  else
     *HEinfo = NULL;
 
   return ierr;
@@ -521,11 +521,11 @@ int ierr = ZOLTAN_OK;
 
 /******************************************************************************/
 static int gather_and_build_remap(
-  ZZ *zz, 
+  ZZ *zz,
   int *new_map,               /* Upon return, flag indicating whether parts
                                  assignments were changed due to remap. */
   int HEcnt,                  /* # of HEs allocated. */
-  int *HEinfo                 /* Array of HE info; for each HE, two pins and 
+  int *HEinfo                 /* Array of HE info; for each HE, two pins and
                                  one edge weight. Stored as a single vector
                                  to minimize communication calls.  */
 )
@@ -540,15 +540,15 @@ int send_size;                /* Local # HEs * HEINFO_ENTRIES */
 int total_size;               /* Total # ints in gatherv */
 int total_HEcnt;              /* Total (across all procs) number of HEs. */
 int max0, max1;               /* Max values of pin 0 and pin 1 for each HE. */
-int *match = NULL;            /* Vector describing the matching. 
-                                 match[i] = j ==> match[j] = i ==> 
+int *match = NULL;            /* Vector describing the matching.
+                                 match[i] = j ==> match[j] = i ==>
                                  vertices i and j are matched. */
 int *used = NULL;             /* Vector indicating which parts are used
                                  in the matching. */
 int limit;                    /* Maximum number of matches that are allowed */
 HGraph hg;                    /* Hypergraph for matching */
 float before_remap = 0,       /* Amount of data that overlaps between old and */
-      after_remap = 0;        /* new decomposition before and after remapping, 
+      after_remap = 0;        /* new decomposition before and after remapping,
                                  respectively. */
 float with_oldremap = 0;      /* Amount of data that overlaps between old and
                                  new decomposition using the OldRemap vector
@@ -583,7 +583,7 @@ float with_oldremap = 0;      /* Amount of data that overlaps between old and
   for (i = 1; i < zz->Num_Proc; i++)
     displs[i] = displs[i-1] + each_size[i-1];
 
-  MPI_Allgatherv(HEinfo, send_size, MPI_INT, 
+  MPI_Allgatherv(HEinfo, send_size, MPI_INT,
                  recvbuf, each_size, displs, MPI_INT, zz->Communicator);
 
   total_HEcnt = total_size / HEINFO_ENTRIES;
@@ -596,21 +596,21 @@ float with_oldremap = 0;      /* Amount of data that overlaps between old and
      pin values for pin0 and pin1 respectively; i.e., allow pin value == 0. */
   max0++;
   max1++;
-  
+
   /* Sanity check */
   /* Ideally, max1 should equal LB.Num_Global_Parts, but ParMETIS3 sometimes
    * does not return the correct number of non-empty parts, allowing
-   * max1 to be less than LB.Num_Global_Parts. 
+   * max1 to be less than LB.Num_Global_Parts.
    * (e.g., ewgt.adaptive-partlocal1-v3.4.?).
    */
-  if (max1 > zz->LB.Num_Global_Parts) 
+  if (max1 > zz->LB.Num_Global_Parts)
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Unexpected value for max1.");
 
   /* Set up global HG */
 
   Zoltan_HG_HGraph_Init(&hg);
   if (total_HEcnt) {
-    hg.nVtx = max0 + zz->LB.Num_Global_Parts;  
+    hg.nVtx = max0 + zz->LB.Num_Global_Parts;
     hg.nEdge = total_HEcnt;
     hg.nPins = total_HEcnt * 2;   /* two pins per HE */
     hg.EdgeWeightDim = 1;
@@ -625,7 +625,7 @@ float with_oldremap = 0;      /* Amount of data that overlaps between old and
 
     for (i = 0; i < total_HEcnt; i++) {
       tmp = i * HEINFO_ENTRIES;
-      hg.hindex[i] = i+i; 
+      hg.hindex[i] = i+i;
       hg.hvertex[i+i] = recvbuf[tmp];
       hg.hvertex[i+i+1] = (int)recvbuf[tmp+1]+max0;
       hg.ewgt[i] = recvbuf[tmp+2];
@@ -653,14 +653,14 @@ float with_oldremap = 0;      /* Amount of data that overlaps between old and
   }
 
   /* Max # matches allowed */
-  limit = (max0 < zz->LB.Num_Global_Parts ? max0 : zz->LB.Num_Global_Parts); 
+  limit = (max0 < zz->LB.Num_Global_Parts ? max0 : zz->LB.Num_Global_Parts);
   do_match(zz, &hg, match, limit);
 
-      
+
   /* Build remapping vector, if non-trivial matching was returned. */
 
   *new_map = 0;
-  for (i = 0; i < zz->LB.Num_Global_Parts; i++) 
+  for (i = 0; i < zz->LB.Num_Global_Parts; i++)
     if (match[i+max0] != i+max0) {
       *new_map = 1;
       break;
@@ -679,7 +679,7 @@ float with_oldremap = 0;      /* Amount of data that overlaps between old and
     /* First, process all parts that were matched. Mark matched parts as used.*/
 
     for (i = 0; i < zz->LB.Num_Global_Parts; i++) {
-      zz->LB.Remap[i] = -1; 
+      zz->LB.Remap[i] = -1;
       tmp = match[i+max0];
       if (tmp != i+max0) {
         zz->LB.Remap[i] = tmp;
@@ -697,10 +697,10 @@ float with_oldremap = 0;      /* Amount of data that overlaps between old and
         used[i] = 1;
       }
     }
-  
-    /* Third, process remaining unmatched parts; assign them to 
+
+    /* Third, process remaining unmatched parts; assign them to
        unused parts.*/
-  
+
     for (uidx = 0, i = 0; i < zz->LB.Num_Global_Parts; i++) {
       if (zz->LB.Remap[i] > -1) continue;  /* Already processed part i */
       /* match[i+max0] == i+max0 */
@@ -710,7 +710,7 @@ float with_oldremap = 0;      /* Amount of data that overlaps between old and
     }
   }
 
-  if (*new_map) 
+  if (*new_map)
     after_remap = measure_stays(zz, &hg, max0, zz->LB.Remap, "AFTER ");
 
   if ((before_remap >= after_remap) && (before_remap >= with_oldremap)) {
@@ -732,8 +732,8 @@ float with_oldremap = 0;      /* Amount of data that overlaps between old and
   }
 
   if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL && zz->Proc == zz->Debug_Proc &&
-      zz->LB.Remap) 
-    for (i = 0; i < zz->LB.Num_Global_Parts; i++) 
+      zz->LB.Remap)
+    for (i = 0; i < zz->LB.Num_Global_Parts; i++)
       printf("%d REMAP Part %d to Part %d\n", zz->Proc, i, zz->LB.Remap[i]);
 
 End:
@@ -747,14 +747,14 @@ End:
 /******************************************************************************/
 static float measure_stays(
   ZZ *zz,
-  HGraph *hg, 
+  HGraph *hg,
   int max0,
   int *remapvec,
   char *when
 )
 {
 /* Routine that measures and prints the amount of data that doesn't move
- * as described by the hypergraph. 
+ * as described by the hypergraph.
  */
 
 float stay = 0.;
@@ -763,7 +763,7 @@ int tmp, i;
   for (i = 0; i < hg->nEdge; i++) {
     tmp = i + i;
     if (remapvec) {
-      if (hg->hvertex[tmp] == (int)remapvec[hg->hvertex[tmp+1]-max0]) 
+      if (hg->hvertex[tmp] == (int)remapvec[hg->hvertex[tmp+1]-max0])
         stay += hg->ewgt[i];
     }
     else {
@@ -819,7 +819,7 @@ char  *yo = "matching_pgm";
             weight *= hg->ewgt[edge];
           for (k = hg->hindex[edge]; k < hg->hindex[edge+1]; k++) {
             neighbor = hg->hvertex[k];
-            if (neighbor != vertex && Match[0][neighbor] == neighbor && 
+            if (neighbor != vertex && Match[0][neighbor] == neighbor &&
                 Match[1][neighbor]==neighbor)
                sims[neighbor] += weight;
           }

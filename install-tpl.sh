@@ -14,16 +14,8 @@ txtcyn=$(tput setaf 6)    # Cyan
 txtrst=$(tput sgr0)       # Text reset
 
 # Which compiler to use?
-export COMPILER=${COMPILER:-gnu}
-
-echo "Compiler set to ${COMPILER}"
-
-if [ "$COMPILER" == "mpi" ]
-then
-    echo "Setting MPI=YES due to COMPILER=mpi"
-    export MPI="YES"
-    export COMPILER=gnu
-fi
+export ACCESS=$(pwd)
+. ${ACCESS}/TPL/compiler.sh
 
 function check_exec()
 {
@@ -95,6 +87,9 @@ then
     METIS="YES"
 fi
 
+FMT=${FMT:-YES}
+FMT=$(check_valid FMT)
+
 GNU_PARALLEL=${GNU_PARALLEL:-YES}
 GNU_PARALLEL=$(check_valid GNU_PARALLEL)
 
@@ -149,7 +144,6 @@ then
 fi
 
 pwd
-export ACCESS=$(pwd)
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 if [ "$MPI" == "YES" ] && [ "$CRAY" == "YES" ]
@@ -198,6 +192,7 @@ if [ $# -gt 0 ]; then
         echo "   METIS        = ${METIS}"
         echo "   PARMETIS     = ${PARMETIS}"
         echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
+        echo "   FMT          = ${FMT}"
         echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
         echo "   USE_ZLIB_NG  = ${USE_ZLIB_NG}"
         echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
@@ -231,8 +226,8 @@ then
         echo "${txtgrn}+++ SZIP (via libaec library)${txtrst}"
         szip_version="1.0.4"
 
-        cd $ACCESS
-        cd TPL/szip
+        cd $ACCESS || exit
+        cd TPL/szip || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -246,9 +241,9 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd libaec-${szip_version}
+            cd libaec-${szip_version} || exit
             mkdir build
-            cd build
+            cd build || exit
 
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
 
@@ -273,8 +268,8 @@ else
         echo "${txtgrn}+++ SZIP${txtrst}"
         szip_version="2.1.1"
 
-        cd $ACCESS
-        cd TPL/szip
+        cd $ACCESS || exit
+        cd TPL/szip || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -288,9 +283,9 @@ else
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd szip-${szip_version}
+            cd szip-${szip_version} || exit
             # mkdir build
-            # cd build
+            # cd build || exit
 
             ./configure --prefix=${INSTALL_PATH}
             # CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
@@ -322,8 +317,8 @@ then
             echo "${txtgrn}+++ ZLIB-NG${txtrst}"
             zlib_ng_version="develop"
 
-            cd $ACCESS
-            cd TPL
+            cd $ACCESS || exit
+            cd TPL || exit
             if [ "$DOWNLOAD" == "YES" ]
             then
                 echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -334,7 +329,7 @@ then
             if [ "$BUILD" == "YES" ]
             then
                 echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-                cd zlib-ng
+                cd zlib-ng || exit
                 git checkout ${zlib_ng_version}
                 rm -rf build
                 mkdir build
@@ -354,16 +349,16 @@ then
             fi
         else
             echo "${txtgrn}+++ ZLIB${txtrst}"
-            zlib_version="1.2.11"
+            zlib_version="1.2.12"
 
-            cd $ACCESS
-            cd TPL
+            cd $ACCESS || exit
+            cd TPL || exit
             if [ "$DOWNLOAD" == "YES" ]
             then
                 echo "${txtgrn}+++ Downloading...${txtrst}"
                 rm -rf zlib-${zlib_version}
                 rm -rf zlib-${zlib_version}.tar.gz
-                wget --no-check-certificate https://zlib.net/zlib-${zlib_version}.tar.gz
+                wget --no-check-certificate https://zlib.net/fossils/zlib-${zlib_version}.tar.gz
                 tar -xzf zlib-${zlib_version}.tar.gz
                 rm -rf zlib-${zlib_version}.tar.gz
             fi
@@ -371,8 +366,12 @@ then
             if [ "$BUILD" == "YES" ]
             then
                 echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-                cd zlib-${zlib_version}
-                ./configure --prefix=${INSTALL_PATH}
+                cd zlib-${zlib_version} || exit
+		if [ "$SHARED" == "NO" ]
+		then
+		    USE_STATIC="--static"
+		fi
+                ./configure --prefix=${INSTALL_PATH} ${USE_STATIC}
                 if [[ $? != 0 ]]
                 then
                     echo 1>&2 ${txtred}couldn\'t configure zlib. exiting.${txtrst}
@@ -397,12 +396,16 @@ then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]; then
         hdf_version="1.8.21"
+	hdf_base="1.8"
     elif [ "${H5VERSION}" == "V110" ]; then
-        hdf_version="1.10.7"
+        hdf_version="1.10.9"
+	hdf_base="1.10"
     elif [ "${H5VERSION}" == "V112" ]; then
-        hdf_version="1.12.1"
+        hdf_version="1.12.2"
+	hdf_base="1.12"
     elif [ "${H5VERSION}" == "V113" ]; then
-        hdf_version="1.13.0"
+        hdf_version="1.13.1"
+	hdf_base="1.13"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
     else
@@ -410,27 +413,17 @@ then
         exit 1
     fi
 
-    cd $ACCESS
-    cd TPL/hdf5
+    cd $ACCESS || exit
+    cd TPL/hdf5 || exit
     if [ "$DOWNLOAD" == "YES" ]
     then
         echo "${txtgrn}+++ Downloading...${txtrst}"
         rm -rf hdf5-${hdf_version}
         rm -f hdf5-${hdf_version}.tar.bz2
-        if [ "${H5VERSION}" == "V18" ]
-        then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "V110" ]; then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "V112" ]; then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "V113" ]; then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "develop" ]; then
+        if [ "${H5VERSION}" == "develop" ]; then
             git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
         else
-            echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
-            exit 1
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
         fi
         if [ "${H5VERSION}" != "develop" ]
         then
@@ -442,10 +435,10 @@ then
     if [ "$BUILD" == "YES" ]
     then
         echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-        cd hdf5-${hdf_version}
+        cd hdf5-${hdf_version} || exit
         rm -rf build
         mkdir build
-        cd build
+        cd build || exit
         CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
         #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
@@ -460,6 +453,10 @@ then
             exit 1
         fi
     fi
+    # Create default plugin directory...
+    mkdir  ${INSTALL_PATH}/lib/hdf5
+    mkdir  ${INSTALL_PATH}/lib/hdf5/lib
+    mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin 
 else
     echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
@@ -472,8 +469,8 @@ then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
         pnet_version="1.12.2"
         pnet_base="pnetcdf"
-        cd $ACCESS
-        cd TPL/pnetcdf
+        cd $ACCESS || exit
+        cd TPL/pnetcdf || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -487,7 +484,7 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd ${pnet_base}-${pnet_version}
+            cd ${pnet_base}-${pnet_version} || exit
             CRAY=${CRAY} BB=${BB} DEBUG=${DEBUG} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
@@ -517,8 +514,8 @@ fi
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
     echo "${txtgrn}+++ NetCDF${txtrst}"
-    cd $ACCESS
-    cd TPL/netcdf
+    cd $ACCESS || exit
+    cd TPL/netcdf || exit
     if [ "$DOWNLOAD" == "YES" ]
     then
         echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -526,20 +523,22 @@ then
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-   net_version="v4.8.1"
+   net_version="v4.9.0"
+#   net_version="v4.8.1"
 #   net_version="master"
 
     if [ "$BUILD" == "YES" ]
     then
         echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-        cd netcdf-c
+        cd netcdf-c || exit
         if [ "$net_version" != "master" ]
            then
                git checkout $net_version
         fi
         rm -rf build
         mkdir build
-        cd build
+        cd build || exit
+        export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin 
         CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
@@ -563,8 +562,8 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
         echo "${txtgrn}+++ CGNS${txtrst}"
-        cd $ACCESS
-        cd TPL/cgns
+        cd $ACCESS || exit
+        cd TPL/cgns || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -575,11 +574,11 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd CGNS
-            git checkout v4.2.0
+            cd CGNS || exit
+            git checkout v4.3.0
             rm -rf build
             mkdir build
-            cd build
+            cd build || exit
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
             then
@@ -605,8 +604,8 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.a ]
     then
         echo "${txtgrn}+++ Metis${txtrst}"
-        cd $ACCESS
-        cd TPL/metis
+        cd $ACCESS || exit
+        cd TPL/metis || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -619,16 +618,16 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd METIS-5.1.0.1
+            cd METIS-5.1.0.1 || exit
             sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' src/include/metis.h > tmp
             mv tmp src/include/metis.h
-            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            INSTALL_PATH=${INSTALL_PATH} CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure Metis. exiting.${txtrst}
                 exit 1
             fi
-            cd build; make -j${JOBS} && ${SUDO} make install
+            cd build || exit; make -j${JOBS} && ${SUDO} make install
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t build Metis. exiting.${txtrst}
@@ -647,8 +646,8 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libparmetis.a ]
     then
         echo "${txtgrn}+++ ParMETIS${txtrst}"
-        cd $ACCESS
-        cd TPL/parmetis
+        cd $ACCESS || exit
+        cd TPL/parmetis || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -659,8 +658,8 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd parmetis
-            CRAY=${CRAY} MPI=${MPI} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            cd parmetis || exit
+            INSTALL_PATH=${INSTALL_PATH} CRAY=${CRAY} MPI=${MPI} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure ParMETIS. exiting.${txtrst}
@@ -690,8 +689,8 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
         echo "${txtgrn}+++ MatIO${txtrst}"
-        cd $ACCESS
-        cd TPL/matio
+        cd $ACCESS || exit
+        cd TPL/matio || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -702,9 +701,11 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd matio
-            ./autogen.sh
-            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            cd matio || exit
+            rm -rf build
+            mkdir build
+            cd build || exit
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure MatIO. exiting.${txtrst}
@@ -722,15 +723,56 @@ then
     fi
 fi
 
+# =================== INSTALL FMT ===============
+if [ "$FMT" == "YES" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/fmt/core.h ]
+    then
+        echo "${txtgrn}+++ FMT${txtrst}"
+        cd $ACCESS || exit
+        cd TPL/fmt || exit
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf fmt
+            git clone https://github.com/fmtlib/fmt
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd fmt || exit
+            rm -rf build
+            mkdir build
+            cd build || exit
+            cmake -DCMAKE_CXX_COMPILER:FILEPATH=${CXX} -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} -DCMAKE_INSTALL_LIBDIR:PATH=lib -DFMT_TEST:BOOL=OFF -DBUILD_SHARED_LIBS=${SHARED} ..
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure FMT. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build FMT. exiting.${txtrst}
+                exit 1
+            fi
+        fi
+    else
+        echo "${txtylw}+++ FMT already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
 # =================== INSTALL KOKKOS  ===============
 if [ "$KOKKOS" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkoscore.${LD_EXT} ]
     then
-        kokkos_version="2.8.00"
+        kokkos_version="3.6.00"
         echo "${txtgrn}+++ KOKKOS${txtrst}"
-        cd $ACCESS
-        cd TPL/kokkos
+        cd $ACCESS || exit
+        cd TPL/kokkos || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -744,10 +786,10 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd kokkos-${kokkos_version}
+            cd kokkos-${kokkos_version} || exit
             rm -rf build
             mkdir build
-            cd build
+            cd build || exit
             CUDA=${CUDA} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
             then
@@ -773,8 +815,8 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2.${LD_EXT} ]
     then
         echo "${txtgrn}+++ ADIOS2${txtrst}"
-        cd $ACCESS
-        cd TPL/adios2
+        cd $ACCESS || exit
+        cd TPL/adios2 || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -785,11 +827,11 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd ADIOS2
+            cd ADIOS2 || exit
             git checkout v2.5.0
             rm -rf build
             mkdir build
-            cd build
+            cd build || exit
             CRAY=${CRAY} SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
@@ -815,8 +857,8 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatalyst.${LD_EXT} ]
     then
         echo "${txtgrn}+++ Catalyst2${txtrst}"
-        cd $ACCESS
-        cd TPL/catalyst2
+        cd $ACCESS || exit
+        cd TPL/catalyst2 || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -827,11 +869,11 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd catalyst
+            cd catalyst || exit
                   git checkout master #todo: a specific version
             rm -rf build
             mkdir build
-            cd build
+            cd build || exit
             CRAY=${CRAY} SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
@@ -857,23 +899,23 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libgtest.${LD_EXT} ]
     then
         echo "${txtgrn}+++ gtest${txtrst}"
-        cd $ACCESS
-        cd TPL/gtest
+        cd $ACCESS || exit
+        cd TPL/gtest || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
-            rm -rf gtest
+            rm -rf googletest
             git clone https://github.com/google/googletest.git
         fi
 
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd googletest
-            git checkout release-1.8.1
+            cd googletest || exit
+            git checkout release-1.11.0
             rm -rf build
             mkdir build
-            cd build
+            cd build || exit
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
@@ -899,8 +941,8 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/bin/env_parallel ]
     then
         echo "${txtgrn}+++ GNU Parallel${txtrst}"
-        cd $ACCESS
-        cd TPL/parallel
+        cd $ACCESS || exit
+        cd TPL/parallel || exit
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -913,7 +955,7 @@ then
         if [ "$BUILD" == "YES" ]
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd parallel-*
+            cd parallel-* || exit
             bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
@@ -939,8 +981,8 @@ then
   then
     faodel_base="faodel"
     echo "${txtgrn}+++ Faodel${txtrst}"
-    cd $ACCESS
-    cd TPL/faodel
+    cd $ACCESS || exit
+    cd TPL/faodel || exit
     if [ "$DOWNLOAD" == "YES" ]
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -952,7 +994,7 @@ then
     then
       echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
       mkdir ${faodel_base}/build
-      cd ${faodel_base}/build
+      cd ${faodel_base}/build || exit
       echo "------------- ${faodel_base}"
       echo "------------- $(pwd)"
       MPI=${MPI} bash ../../runcmake.sh
@@ -980,12 +1022,12 @@ then
   if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
   then
     echo "${txtgrn}+++ Cereal${txtrst}"
-    cd $ACCESS
+    cd $ACCESS || exit
     CEREAL_DIR="TPL/cereal"
     if [ ! -d "${CEREAL_DIR}" ]; then
       mkdir ${CEREAL_DIR}
     fi
-    cd ${CEREAL}
+    cd ${CEREAL} || exit
     if [ "$DOWNLOAD" == "YES" ]
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -1006,7 +1048,7 @@ then
 fi
 
 # ==================================
-cd $ACCESS
+cd $ACCESS || exit
 #ls -l include
 #ls -l bin
 #ls -l lib

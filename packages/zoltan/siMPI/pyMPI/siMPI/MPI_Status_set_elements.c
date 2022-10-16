@@ -20,4 +20,3 @@ int MPI_Status_set_elements( MPI_Status *status, MPI_Datatype datatype,
   _MPI_COVERAGE();
   return PMPI_Status_set_elements (status, datatype, count);
 }
-

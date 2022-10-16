@@ -52,9 +52,11 @@
 # such dependencies exist).
 #
 
-SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
+SET( Seacas_TPLS_FINDMODS_CLASSIFICATIONS
   GTest           "cmake/TPLs/"    PT
   Zlib            "cmake/TPLs/"    SS
+  Pthread         "cmake/TPLs/"    PT
+  MPI             "${${PROJECT_NAME}_TRIBITS_DIR}/core/std_tpls/" PT
   HDF5            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   Pnetcdf         "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   Netcdf          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS

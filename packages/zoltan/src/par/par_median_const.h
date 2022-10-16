@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -69,7 +69,7 @@ extern int Zoltan_RB_find_median_randomized(int, double *, double *, double, int
 
 /* Prototype for function used with TFLOPS_SPECIAL */
 extern void Zoltan_RB_reduce(int, int, int, void*, void*,
-                             int, int*, MPI_Datatype, MPI_Comm, 
+                             int, int*, MPI_Datatype, MPI_Comm,
                              MPI_User_function);
 
 extern void par_median_accumulate_counts(int nprocs, int num_procs, int rank, int count);

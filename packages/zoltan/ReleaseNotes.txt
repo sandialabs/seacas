@@ -1,7 +1,7 @@
 Zoltan release notes for Trilinos v12.8
 
 Improved robustness of RCB partitioner for problems where many objects have
-weight = 0 (e.g., PIC codes).  Convergence is faster and the stopping 
+weight = 0 (e.g., PIC codes).  Convergence is faster and the stopping
 criteria are more robust.
 
 Fixed bug that occurred when RETURN_LIST=PARTS and (Num_GID > 1 or Num_LID > 1);
@@ -18,7 +18,7 @@ Minor code cleanup and bug fixes.
 New Zoltan_Get_Fn interface returning pointers to callback functions.
 See zoltan/src/include/zoltan.h for details.
 
-Closest stand-alone Zoltan release is v3.83.  
+Closest stand-alone Zoltan release is v3.83.
 http://www.cs.sandia.gov/Zoltan
 
 -----------------------
@@ -35,7 +35,7 @@ Fixed bug in interface to Scotch when some processor has no vertices.
 
 Zoltan release notes for Trilinos v11.
 
-Highlights are listed below; for more details, see 
+Highlights are listed below; for more details, see
 Trilinos/packages/zoltan/doc/Zoltan_html/ug_html/ug_release.html .
 
 -  Zoltan is now released under Trilinos' BSD license.
@@ -45,11 +45,11 @@ Trilinos/packages/zoltan/doc/Zoltan_html/ug_html/ug_release.html .
    +  Partitioning method OCTPART: use partitioning method HSFC instead.
 
 
--  Hierarchical partitioning received several performance, interface and 
-   testing improvements.  An easier-to-use interface has been 
+-  Hierarchical partitioning received several performance, interface and
+   testing improvements.  An easier-to-use interface has been
    added using simple parameters (HIER_ASSIST, PLATFORM_NAME, TOPOLOGY)
    instead of callback functions; the callback function interface is still
-   supported. 
+   supported.
 
 -  Memory usage in Zoltan Distributed Data Directories is improved, leading to
    faster execution times for data directories and hierarchical partitioning.
@@ -57,4 +57,4 @@ Trilinos/packages/zoltan/doc/Zoltan_html/ug_html/ug_release.html .
 -  Compilation with gcc 4.7 is now supported.
 
 -  Zoltan supports PT-Scotch v5.1.12 and ParMETIS v4, as well as some older
-   versions of these TPLs. 
+   versions of these TPLs.

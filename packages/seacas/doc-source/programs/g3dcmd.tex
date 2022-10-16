@@ -95,10 +95,10 @@ The \param{block\_id} parameter below refers to the element block identifier.
 The identifiers are displayed by the \cmd{SHOW BLOCKS} command.
 
 \cmddef{\cmdverb{BLOCK}
-   \param{block\_id$_{1}$}, \param{block\_id$_{2}$}, \ldots\ 
+   \param{block\_id$_{1}$}, \param{block\_id$_{2}$}, \ldots\
       \default{all element blocks}
 } {
-\cmd{BLOCK} defines the specified element blocks 
+\cmd{BLOCK} defines the specified element blocks
 as normal blocks. This command
 negates the effect of a \cmd{TUNNEL} or \cmd{CENTER} command.
 }
@@ -139,10 +139,10 @@ existing (and new) identifier.
 }
 
 \cmddef{\cmdverb{CENTER}
-   \param{block\_id$_{1}$}, \param{block\_id$_{2}$}, \ldots\ 
+   \param{block\_id$_{1}$}, \param{block\_id$_{2}$}, \ldots\
       \default{all element blocks}
 } {
-\cmd{CENTER} defines the specified element blocks 
+\cmd{CENTER} defines the specified element blocks
 as center blocks. A
 \cmd{ROTATE} command must be in effect before this command is issued.
 The mesh must be rotated a complete quadrant (90, 180, 270 or 360
@@ -164,7 +164,7 @@ coordinate of all elements in the center blocks.
    \param{set\_id$_{1}$}, \param{set\_id$_{2}$}, \ldots\ \nodefault
 } {
 \cmd{NSETS} defines front or back node sets with the given
-identifiers. The identifiers must be unique from existing node 
+identifiers. The identifiers must be unique from existing node
 set identifiers and defined front and back node set identifiers.
 
 Back sets cannot be defined on a 360-degree rotation.

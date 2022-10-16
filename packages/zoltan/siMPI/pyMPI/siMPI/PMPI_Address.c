@@ -21,4 +21,3 @@ int PMPI_Address( void *location, MPI_Aint *address)
   if ( address ) (*address) = (MPI_Aint)(location);
   return MPI_SUCCESS;
 }
-

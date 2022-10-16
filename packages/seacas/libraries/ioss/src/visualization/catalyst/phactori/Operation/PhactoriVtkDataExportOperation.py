@@ -143,10 +143,7 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
     self.mWriter.SetInputData(self.mFilterToWriteDataFrom.GetClientSideObject().GetOutputDataObject(0))
 
   def CreateCurrentCallbackOutputFilename(self):
-    try:
-      ftc = GetFrameTagCounter()
-    except:
-      ftc = 0
+    ftc = GetFrameTagCounter()
     outName = self.mOutputFileBasedirectory + "/" + \
       self.mOutputFileBasename + "_" + \
       str(ftc).zfill(self.mNumCounterDigits) + \
@@ -190,4 +187,3 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
           "ExportOperationData returning\n", 100)
 
 #phactori_combine_to_single_python_file_subpiece_end_1
-

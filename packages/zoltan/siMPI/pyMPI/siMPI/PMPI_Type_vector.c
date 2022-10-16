@@ -14,11 +14,11 @@
 
 #include "mpi.h"
 
-int PMPI_Type_vector( 
-        int count, 
-        int blocklen, 
-        int stride, 
-        MPI_Datatype old_type, 
+int PMPI_Type_vector(
+        int count,
+        int blocklen,
+        int stride,
+        MPI_Datatype old_type,
         MPI_Datatype *newtype )
 {
   int index;
@@ -60,4 +60,3 @@ int PMPI_Type_vector(
 
   return MPI_SUCCESS;
 }
-

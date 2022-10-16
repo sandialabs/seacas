@@ -1,12 +1,12 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
+#define DOCTEST_CONFIG_IMPLEMENT
+#include <doctest.h>
 
-#define CATCH_CONFIG_RUNNER
-#include <catch.hpp>
-
+#include "Ioss_CodeTypes.h"
 #include "Ioss_CommSet.h"      // for CommSet
 #include "Ioss_EdgeBlock.h"    // for EdgeBlock
 #include "Ioss_EdgeSet.h"      // for EdgeSet
@@ -32,14 +32,6 @@
 #include "adios/Ioad_Helper.h"
 #include "adios/Ioad_TemplateToValue.h"
 
-#ifdef SEACAS_HAVE_MPI
-#include "mpi.h"
-#else
-#ifndef MPI_COMM_WORLD
-#define MPI_COMM_WORLD 1
-#endif
-#endif
-
 #include <algorithm>
 #include <iostream>
 #include <ostream>
@@ -60,7 +52,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
 #endif
-  const int result = Catch::Session().run(argc, argv);
+  const int result = doctest::Context().run(argc, argv);
 #ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
@@ -308,10 +300,7 @@ void put_field_data(std::string field_name, int local_size, size_t component_cou
   data.reserve(data_size);
   for (size_t i = 0; i < data_size; ++i) {
     if (field_name == "owning_processor") {
-      int rank = 0;
-#ifdef SEACAS_HAVE_MPI
-      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-#endif
+      int rank = e->get_database()->parallel_rank();
       data.push_back(rank);
     }
     else {
@@ -426,13 +415,13 @@ void create_phantom(Ioss::DatabaseIO *db)
 
 void create_database(std::string type, std::string file_name)
 {
-  std::shared_ptr<Ioss::DatabaseIO> db(
-      Ioss::IOFactory::create(type, file_name, Ioss::WRITE_RESULTS, MPI_COMM_WORLD));
+  std::shared_ptr<Ioss::DatabaseIO> db(Ioss::IOFactory::create(type, file_name, Ioss::WRITE_RESULTS,
+                                                               Ioss::ParallelUtils::comm_world()));
   create_phantom(db.get());
   db->closeDatabase();
 }
 
-TEST_CASE("Ioad", "[Ioad]")
+DOCTEST_TEST_CASE("Ioad")
 {
 
   Ioss::Init::Initializer::initialize_ioss();
@@ -441,11 +430,11 @@ TEST_CASE("Ioad", "[Ioad]")
   create_database("exodus", exodus_db_name);
   create_database("adios", adios_db_name);
   // Database pointers are deleted by their respective region destructors.
-  Ioss::DatabaseIO *read_exodus_db =
-      Ioss::IOFactory::create("exodus", exodus_db_name, Ioss::READ_MODEL, MPI_COMM_WORLD);
+  Ioss::DatabaseIO *read_exodus_db = Ioss::IOFactory::create(
+      "exodus", exodus_db_name, Ioss::READ_MODEL, Ioss::ParallelUtils::comm_world());
   read_exodus_db->set_int_byte_size_api(Ioss::USE_INT64_API);
-  Ioss::DatabaseIO *read_adios_db =
-      Ioss::IOFactory::create("adios", adios_db_name, Ioss::READ_MODEL, MPI_COMM_WORLD);
+  Ioss::DatabaseIO *read_adios_db = Ioss::IOFactory::create(
+      "adios", adios_db_name, Ioss::READ_MODEL, Ioss::ParallelUtils::comm_world());
   CompareDB(read_exodus_db, read_adios_db);
 }
 
@@ -478,7 +467,7 @@ template <> const std::string get_entity_type_test<Ioss::SideBlock>()
   return sideblock.type_string();
 }
 
-TEST_CASE("Ioad_BlockNames", "[Ioad]")
+DOCTEST_TEST_CASE("Ioad_BlockNames")
 {
   REQUIRE(get_entity_type_test<Ioss::SideBlock>() == Ioad::get_entity_type<Ioss::SideBlock>());
   REQUIRE(get_entity_type_test<Ioss::SideSet>() == Ioad::get_entity_type<Ioss::SideSet>());

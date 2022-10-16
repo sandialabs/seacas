@@ -78,7 +78,7 @@ example, \code{"mode |= NC_64BIT_OFFSET;"}
 \param{ATT_FILESIZE} attribute (1=large, 0=normal):
 \end{itemize}
 \begin{lstlisting}
-    filesiz = (nclong)(((cmode & EX_LARGE_MODEL) != 0) || 
+    filesiz = (nclong)(((cmode & EX_LARGE_MODEL) != 0) ||
                         (ex_large_model(-1) == 1));
      if (ncattput (exoid, NC_GLOBAL, ATT_FILESIZE, NC_LONG, 1,
                   &filesiz) == -1) ... handle errors...
@@ -95,16 +95,16 @@ variable as is currently done.
 if (ex_large_model(exoid) == 1) {
   /* node coordinate arrays -- separate storage... */
   dim[0] = numnoddim;
-  if ((status = nc_def_var (exoid, VAR_COORD_X, nc_flt_code(exoid), 1, 
+  if ((status = nc_def_var (exoid, VAR_COORD_X, nc_flt_code(exoid), 1,
        dim, &temp)) != NC_NOERR)
     { ... handle error }
   if (num_dim > 1) {
-    if ((status = nc_def_var (exoid, VAR_COORD_Y, nc_flt_code(exoid), 1, 
+    if ((status = nc_def_var (exoid, VAR_COORD_Y, nc_flt_code(exoid), 1,
        dim, &temp)) != NC_NOERR)
       { ... handle error }
   }
   if (num_dim > 2) {
-    if ((status = nc_def_var (exoid, VAR_COORD_Z, nc_flt_code(exoid), 1, 
+    if ((status = nc_def_var (exoid, VAR_COORD_Z, nc_flt_code(exoid), 1,
        dim, &temp)) != NC_NOERR)
       { ... handle error }
   }
@@ -185,7 +185,7 @@ if (ex_large_model(exoid) == 0) {
   count[2] = num_nodes;
 } else {
   /* nodal variables stored separately, find variable for this variable index */
-  if ((status = nc_inq_varid(exoid, VAR_NOD_VAR_NEW(nodal_var_index), 
+  if ((status = nc_inq_varid(exoid, VAR_NOD_VAR_NEW(nodal_var_index),
       &varid)) != NC_NOERR) {
     ... handle error ...
   }

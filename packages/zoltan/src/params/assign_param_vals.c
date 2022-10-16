@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -83,7 +83,7 @@ int debug_level,                /* level for output of debugging info     */
 int proc,                       /* processor # (controls debug printing)  */
 int print_proc                  /* processor that should perform printing */
 )
-{	
+{
     char     *yo = "Zoltan_Assign_Param_Vals";
     char      msg[256];
     char     *name;		/* name of parameter being reset */
@@ -119,7 +119,7 @@ int print_proc                  /* processor that should perform printing */
              ierr = ZOLTAN_WARN;
              if (debug_level > 0 && proc == print_proc) {
                 sprintf(msg, "Parameter %s is not bound "
-                       "to any variable.  Parameter ignored.\n", 
+                       "to any variable.  Parameter ignored.\n",
                         param_ptr->name);
                 ZOLTAN_PRINT_WARN(proc, yo, msg);
              }
@@ -130,7 +130,7 @@ int print_proc                  /* processor that should perform printing */
              ierr = ZOLTAN_WARN;
              if (debug_level > 0 && proc == print_proc) {
                 sprintf(msg, "Invalid index %d for parameter %s. "
-                       "Parameter entry ignored.\n", 
+                       "Parameter entry ignored.\n",
                         index, param_ptr->name);
                 ZOLTAN_PRINT_WARN(proc, yo, msg);
              }
@@ -140,7 +140,7 @@ int print_proc                  /* processor that should perform printing */
 
             if (index == -1){  /* Set all entries in a param vector. */
               lo = 0;
-              hi = param_ptr->length; 
+              hi = param_ptr->length;
               if (hi == 0) hi = 1; /* Special case for scalar parameters. */
             }
             else {  /* Set just one entry in the param vector. */
@@ -149,7 +149,7 @@ int print_proc                  /* processor that should perform printing */
             }
 
 	    /* Figure out what type it is and read value. */
-	    if (!strcmp(param_ptr->type, "INT") || 
+	    if (!strcmp(param_ptr->type, "INT") ||
                 !strcmp(param_ptr->type, "INTEGER")) {
 		/* First special case if True or False */
 		if (*val == 'T')
@@ -215,55 +215,55 @@ int i;
 
     while (param_ptr->name != NULL) {
       if (param_ptr->ptr != NULL) {
-        if (!strcmp(param_ptr->type, "INT") || 
+        if (!strcmp(param_ptr->type, "INT") ||
             !strcmp(param_ptr->type, "INTEGER")) {
- 
-          if (param_ptr->length < 1) 
-            printf("ZOLTAN Parameter %s = %d\n", 
+
+          if (param_ptr->length < 1)
+            printf("ZOLTAN Parameter %s = %d\n",
                     param_ptr->name, *((int *) param_ptr->ptr));
           else
             for (i=0; i<param_ptr->length; i++)
-              printf("ZOLTAN Parameter %s = %d\n", 
+              printf("ZOLTAN Parameter %s = %d\n",
                       param_ptr->name, ((int *) param_ptr->ptr)[i]);
-                
+
         }
         else if (!strcmp(param_ptr->type, "FLOAT") ||
                  !strcmp(param_ptr->type, "REAL")) {
-          if (param_ptr->length < 1) 
-            printf("ZOLTAN Parameter %s = %f\n", 
+          if (param_ptr->length < 1)
+            printf("ZOLTAN Parameter %s = %f\n",
                     param_ptr->name, *((float *) param_ptr->ptr));
           else
             for (i=0; i<param_ptr->length; i++)
-              printf("ZOLTAN Parameter %s = %f\n", 
+              printf("ZOLTAN Parameter %s = %f\n",
                       param_ptr->name, ((float *) param_ptr->ptr)[i]);
-                
+
         }
         else if (!strcmp(param_ptr->type, "DOUBLE")) {
-          if (param_ptr->length < 1) 
-            printf("ZOLTAN Parameter %s = %f\n", 
+          if (param_ptr->length < 1)
+            printf("ZOLTAN Parameter %s = %f\n",
                     param_ptr->name, *((double *) param_ptr->ptr));
           else
             for (i=0; i<param_ptr->length; i++)
-              printf("ZOLTAN Parameter %s = %f\n", 
+              printf("ZOLTAN Parameter %s = %f\n",
                       param_ptr->name, ((double *) param_ptr->ptr)[i]);
-                
+
         }
         else if (!strcmp(param_ptr->type, "LONG")) {
-          if (param_ptr->length < 1) 
-            printf("ZOLTAN Parameter %s = %ld\n", 
+          if (param_ptr->length < 1)
+            printf("ZOLTAN Parameter %s = %ld\n",
                     param_ptr->name, *((long *) param_ptr->ptr));
           else
             for (i=0; i<param_ptr->length; i++)
-              printf("ZOLTAN Parameter %s = %ld\n", 
+              printf("ZOLTAN Parameter %s = %ld\n",
                       param_ptr->name, ((long *) param_ptr->ptr)[i]);
-                
+
         }
         else if (!strcmp(param_ptr->type, "STRING")) {
-            printf("ZOLTAN Parameter %s = %s\n", 
+            printf("ZOLTAN Parameter %s = %s\n",
                     param_ptr->name, (char *) param_ptr->ptr);
         }
         else if (!strcmp(param_ptr->type, "CHAR")) {
-            printf("ZOLTAN Parameter %s = %c\n", 
+            printf("ZOLTAN Parameter %s = %c\n",
                     param_ptr->name, *((char *) param_ptr->ptr));
         }
       }

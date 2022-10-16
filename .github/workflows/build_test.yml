@@ -1,10 +1,12 @@
 name: Build and run SEACAS tests
 
-on: 
+on:
   push:
-    branches-ignore:
-      - 'coverity'
+    branches:
+    - master
   pull_request:
+    branches:
+    - master
 
 jobs:
 
@@ -16,11 +18,11 @@ jobs:
       matrix:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V18, V110, V112 ]
-        netcdf: [ 4.8.1 ]
-        cgns: [ 4.2.0 ]
+        netcdf: [ 4.9.0 ]
+        cgns: [ 4.3.0 ]
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -31,10 +33,10 @@ jobs:
         ###
       - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         id: cache-TPL
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v3-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -57,11 +59,11 @@ jobs:
       matrix:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V18, V110, V112 ]
-        netcdf: [ 4.8.1 ]
-        cgns: [ 4.2.0 ]
+        netcdf: [ 4.9.0 ]
+        cgns: [ 4.3.0 ]
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -69,10 +71,10 @@ jobs:
 
       - name: Fetch TPL Cache
         id: cache-TPL
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v3-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}

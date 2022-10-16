@@ -15,11 +15,11 @@
 #include "mpi.h"
 #include <string.h>
 
-int PMPI_Type_struct( 
-        int count, 
-        int blocklens[], 
-        MPI_Aint indices[], 
-        MPI_Datatype old_types[], 
+int PMPI_Type_struct(
+        int count,
+        int blocklens[],
+        MPI_Aint indices[],
+        MPI_Datatype old_types[],
         MPI_Datatype *newtype )
 {
   int index, i;
@@ -29,11 +29,11 @@ int PMPI_Type_struct(
   _MPI_TYPE_DES* prevType;
   _MPI_TYPE_INFO* info;
 
-  /* KDD 6/2/16 Last entry of old_types must be MPI_UB to 
+  /* KDD 6/2/16 Last entry of old_types must be MPI_UB to
      get the padding correct. */
   nfields = count - 1;
   if (old_types[nfields] != MPI_UB) {
-    _MPI_ERR_ROUTINE (MPI_ERR_TYPE, 
+    _MPI_ERR_ROUTINE (MPI_ERR_TYPE,
                       "MPI_Type_struct:  Must terminate type list with MPI_UB");
     MPI_Abort(MPI_COMM_WORLD, MPI_ERR_TYPE);
     return _MPI_NOT_OK;
@@ -42,7 +42,7 @@ int PMPI_Type_struct(
   index = _MPI_Find_free();
   /* ===================================== */
   /* Calculate total size of parts to copy */
-  /* KDD 6/2/16  This size calc doesn't account for padding in the struct. 
+  /* KDD 6/2/16  This size calc doesn't account for padding in the struct.
      KDD 6/2/16  Instead, we'll compute size based on the indices.
      KDD 6/2/16  We assume that the indices are terminated with MPI_UB,
      KDD 6/2/16  as recommended in MPI-1 documentation, so that indices
@@ -61,8 +61,8 @@ int PMPI_Type_struct(
 
   /* ====================== */
   /* Save Query information */
-  /* KDD 6/2/16  To account for padding in the structure, the 
-   * KDD 6/2/16  extent and ub should be related to the calculated size 
+  /* KDD 6/2/16  To account for padding in the structure, the
+   * KDD 6/2/16  extent and ub should be related to the calculated size
   _MPI_TYPE_LIST[index].extent = indices[count-1]+(blocklens[count-1]*_MPI_getSize(old_types[count-1]));
   _MPI_TYPE_LIST[index].ub = indices[count-1]+(blocklens[count-1]*_MPI_getSize(old_types[count-1]));
   _MPI_TYPE_LIST[index].lb = indices[0];
@@ -91,7 +91,7 @@ int PMPI_Type_struct(
     currType = (_MPI_TYPE_DES *) _MPI_safeMalloc(sizeof(_MPI_TYPE_DES), "MPI_TYPE_STRUCT: Error with malloc");
     prevType->next = currType;
     currType->id = old_types[i];
-    /* KDD 6/2/16 use the actual extent provided by the indices 
+    /* KDD 6/2/16 use the actual extent provided by the indices
     currType->extent = indices[i]+currType->size;
     */
     currType->extent = indices[i+1]-indices[i];
@@ -110,6 +110,5 @@ int PMPI_Type_struct(
   currType->extent = 0;
   currType->next = 0;
 
-  return MPI_SUCCESS;  
+  return MPI_SUCCESS;
 }
-

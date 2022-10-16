@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -105,7 +105,7 @@ typedef struct Param_List {
 } PARAM_LIST;
 
 /* API for general parameter setting functions */
-typedef int ZOLTAN_SET_PARAM_FN(char *, char *); 
+typedef int ZOLTAN_SET_PARAM_FN(char *, char *);
 typedef int ZOLTAN_SET_PARAM_VEC_FN(char *, int, char *);
 
 /* function declarations for parameter modification routines */

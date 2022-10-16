@@ -23,6 +23,5 @@ int MPI_Cart_get (
         int *coords )
 {
   _MPI_COVERAGE();
-  return PMPI_Cart_get(comm, maxdims, dims, periods, coords); 
+  return PMPI_Cart_get(comm, maxdims, dims, periods, coords);
 }
-

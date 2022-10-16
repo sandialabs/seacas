@@ -16,13 +16,12 @@
 
 /* STUB */
 int PMPI_Type_get_envelope(
-        MPI_Datatype datatype, 
-        int *num_integers, 
-        int *num_addresses, 
-        int *num_datatypes, 
+        MPI_Datatype datatype,
+        int *num_integers,
+        int *num_addresses,
+        int *num_datatypes,
         int *combiner)
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
 }
-

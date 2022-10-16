@@ -5,7 +5,8 @@ given in this chapter.  A two-dimensional finite element model of a
 portion of a transportation container will be used for most of the
 examples.  The outline of the model is shown in Figure~\ref{exmodel}.
 \begin{figure}
-\vspace{5.0in}
+\centering
+\includegraphics[scale=0.75]{figures/Model.png}
 \caption{Finite Element Model for \numbers\ Examples}\label{exmodel}
 \end{figure}
 The model is composed of nine materials.  Material~1 is the outer shell
@@ -26,7 +27,7 @@ in the following table.
 
 \begin{center}
 \begin{tabular}{|ccl|}\hline
-Contact  & Side Set  &  Location \\ 
+Contact  & Side Set  &  Location \\
 Surface  & Number    &            \\ \hline \hline
       1  &  100      &  Bottom of outer shell \\
          &  999      &  Top and side of punch      \\ \hline
@@ -44,7 +45,7 @@ Surface  & Number    &            \\ \hline \hline
 Several of the utilities in \numbers\ were used during the development
 of this model.  Examples of the \cmd{mass properties}, \cmd{overlap},
 \cmd{locate}, and \cmd{timestep} utilities will be shown below using the
-above model.  
+above model.
 
 \section{\cmd{mass properties} Utility Example}
 The \cmd{mass properties} command was used to determine the
@@ -59,7 +60,7 @@ each of the materials in the model.  The density of the cargo
 (Material~10) was then calculated by dividing the cargo mass by the
 cargo volume.  Materials 11 and~22 are intended to simulate the mass of
 the upper half of the container.  The density $\rho_{11}$ of Material~11
-is calculated as: 
+is calculated as:
 \begin{equation}
 \rho_{11} = \rho_1 (V_1 + 2V_{11}) / V_{11}
 \end{equation}
@@ -71,15 +72,15 @@ using four-point quadrature is:
 \begin{verbatim}
       AXISYMMETRIC
       DENSITY
-      7.324E-04  OUTER_SHELL     
+      7.324E-04  OUTER_SHELL
       3.297E-03  MASS_OUTER_SHELL
-      1.035E-05  FOAM            
-      7.324E-04  INNER_SHELL     
+      1.035E-05  FOAM
+      7.324E-04  INNER_SHELL
       2.901E-03  MASS_INNER_SHELL
-      1.603E-05  CARGO_FOAM      
-      7.324E-04  PUNCH           
-      7.324E-04  THIN_SHEET      
-      7.781E-04  CARGO_MASS      
+      1.603E-05  CARGO_FOAM
+      7.324E-04  PUNCH
+      7.324E-04  THIN_SHEET
+      7.781E-04  CARGO_MASS
       MASS 4
       EXIT
 \end{verbatim}
@@ -89,7 +90,7 @@ material labels cannot contain spaces; the character ``\_'' was used to
 simulate a space. Although only the masses and volumes were needed for
 this example, the output also shows the location of the centroid, the
 mass moments of inertia, and the minimum, maximum, and average element
-volumes for each material block. 
+volumes for each material block.
 
 The mass properties utility was also used during the documentation of
 this analysis to estimate the weight savings due to using a thinner
@@ -127,7 +128,7 @@ that is, check first with one flag as the master and then check again
 with that flag as the slave.  Figure~\ref{exoverlap2} shows the output
 from the overlap utility when the contact surfaces do overlap.  The
 output shows the number of the penetrating node, the number of the
-penetrated element, and the connectivity of the element. 
+penetrated element, and the connectivity of the element.
 
 \begin{figure}
 \verbatiminput{overlap_example_out}
@@ -138,7 +139,7 @@ Penetration}\label{exoverlapout}
 \begin{figure}
 \verbatiminput{overlap2_out}
 \caption{Output for Overlap Utility
-Example--Penetration}\label{exoverlap2} 
+Example--Penetration}\label{exoverlap2}
 \end{figure}
 
 \section{\cmd{locate} Utility Example}
@@ -170,7 +171,7 @@ The input used to locate all elements in the outermost element row is:
 
 Figure~\ref{exlocateout} is the resulting output.  The output is sorted
 on the \cmd{theta} field so that the elements are ordered from the
-centerline outward. 
+centerline outward.
 
 \begin{figure}
 \verbatiminput{locate_example_out}
@@ -193,16 +194,16 @@ timestep using the \cmd{timestep} command.  The input is:
 
 \begin{verbatim}
       WAVESPEED
-      2.273e+05  OUTER_SHELL         
-      1.071e+05  MASS_OUTER_SHELL    
-      2.003e+04  FOAM                
-      2.273e+05  INNER_SHELL         
-      1.142e+05  MASS_INNER_SHELL    
-      2.731e+04  CARGO_FOAM          
-      2.273e+05  PUNCH               
-      2.273e+05  THIN_SHEET          
-      1.525e+05  CARGO_MASS          
-      TIMESTEP 
+      2.273e+05  OUTER_SHELL
+      1.071e+05  MASS_OUTER_SHELL
+      2.003e+04  FOAM
+      2.273e+05  INNER_SHELL
+      1.142e+05  MASS_INNER_SHELL
+      2.731e+04  CARGO_FOAM
+      2.273e+05  PUNCH
+      2.273e+05  THIN_SHEET
+      1.525e+05  CARGO_MASS
+      TIMESTEP
       EXIT
 \end{verbatim}
 
@@ -225,6 +226,4 @@ an analysis prior to running the analysis.  The timestep estimation is
 also useful in determining which material has the smallest or
 controlling timestep; if the material with the controlling timestep is
 not in the area of interest, reducing the refinement in that material
-will give a larger timestep and less analysis time. 
-
-
+will give a larger timestep and less analysis time.

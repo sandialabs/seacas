@@ -17,10 +17,9 @@
 #include "mpi.h"
 
 /*==========================================================================*/
-int MPI_Bcast ( void* buffer, int count, MPI_Datatype datatype, int root, 
+int MPI_Bcast ( void* buffer, int count, MPI_Datatype datatype, int root,
   MPI_Comm comm )
 {
   _MPI_COVERAGE();
   return PMPI_Bcast(buffer, count, datatype, root, comm);
 }
-

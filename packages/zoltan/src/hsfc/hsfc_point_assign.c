@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -60,8 +60,8 @@ extern "C" {
 
 /* Point drop for refinement after above partitioning */
 int Zoltan_HSFC_Point_Assign (
-   ZZ *zz, 
-   double *x, 
+   ZZ *zz,
+   double *x,
    int *proc,
    int *part)
    {
@@ -116,7 +116,7 @@ int Zoltan_HSFC_Point_Assign (
          *part = p->index;
       }
    if (proc != NULL) {
-      if (zz->LB.Remap) 
+      if (zz->LB.Remap)
          *proc = Zoltan_LB_Part_To_Proc(zz, zz->LB.Remap[p->index], NULL);
       else
          *proc = Zoltan_LB_Part_To_Proc(zz, p->index, NULL);

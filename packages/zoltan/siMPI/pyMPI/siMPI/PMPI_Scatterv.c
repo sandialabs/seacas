@@ -15,18 +15,17 @@
 #include "mpi.h"
 
 /* STUB */
-int PMPI_Scatterv ( 
-        void *sendbuf, 
-        int *sendcnts, 
-        int *displs, 
-        MPI_Datatype sendtype, 
-        void *recvbuf, 
-        int recvcnt,  
-        MPI_Datatype recvtype, 
-        int root, 
+int PMPI_Scatterv (
+        void *sendbuf,
+        int *sendcnts,
+        int *displs,
+        MPI_Datatype sendtype,
+        void *recvbuf,
+        int recvcnt,
+        MPI_Datatype recvtype,
+        int root,
         MPI_Comm comm )
 {
   fprintf(stderr,"%s:%d: NOT IMPLEMENTED\n",__FILE__,__LINE__);
-  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED); 
+  return MPI_Abort((MPI_Comm)0, MPI_UNDEFINED);
 }
-

@@ -95,7 +95,7 @@ inhibit the calculation and output of the minimum distance between any
 two nodes in the file which can take a long time for large models and
 is often unneeded data.
 \begin{syntax}
-     exodiff -summary [no\_coord\_sep] file.e (create variable summary)  
+     exodiff -summary [no\_coord\_sep] file.e (create variable summary)
 \end{syntax}
 
 The remaining invocation lines will output a short usage summary, a
@@ -103,9 +103,9 @@ much longer usage summary, and the last just output the version
 information.
 
 \begin{syntax}
-     exodiff [-h] [-help]             (short usage summary) 
+     exodiff [-h] [-help]             (short usage summary)
      exodiff [-H]                     (longer usage summary)
-     exodiff [-v] [-version]          (version info)       
+     exodiff [-v] [-version]          (version info)
 \end{syntax}
 
 The basic behavior can be modified using several optional parameters
@@ -138,17 +138,17 @@ specified on the command line.  These are documented below:
 	just the maximum.  Default behavior is that there will be a maximum of
 	one difference output per variable per timestep.  If this option is
 	specified, then any pair of values that exceed the tolerance will be
-	output.  Use of this option Can result in lots of output on large files 
+	output.  Use of this option Can result in lots of output on large files
         with lots of differences.\\
 
 -m & Invoke a matching algorithm to create a mapping between the
-	nodes and elements of the two files based on geometric proximity.  
-	The topology must still be the same (within tolerance), but can be ordered differently. 
+	nodes and elements of the two files based on geometric proximity.
+	The topology must still be the same (within tolerance), but can be ordered differently.
 	A match must be found for all nodes and elements or \exodiff{}
 	will output an error message and stop.\\
 
--p & Invoke a matching algorithm similar to the -m option.  However 
-	this option ignores unmatched nodes and elements.  This allows 
+-p & Invoke a matching algorithm similar to the -m option.  However
+	this option ignores unmatched nodes and elements.  This allows
 	comparison of files that only partially overlap. \\
 
 -match\_ids & Invoke a matching algorithm which matches nodes and elements using the node and element
@@ -158,7 +158,7 @@ specified on the command line.  These are documented below:
 -match\_file\_order & Invoke a matching algorithm using the node and element
         position order in the two files. \\
 
--show\_unmatched & If the -p option is given, this prints out the 
+-show\_unmatched & If the -p option is given, this prints out the
         elements that did not match. \\
 
 -dumpmap & If the -m or -p switch is given, this prints out the resulting
@@ -263,7 +263,7 @@ specified on the command line.  These are documented below:
 
 -copyright & Output the copyright and license information. \\
 
--f {\tt <cmd file>} & Use the given file to specify the variables to 
+-f {\tt <cmd file>} & Use the given file to specify the variables to
 	be considered and the tolerances to be used for
 	each variable type or each individual variable. See
 	Section~\ref{ed:command_file} for details of the syntax in this file.\\
@@ -287,7 +287,7 @@ The basic syntax of the file is:
 \item each command is given on a separate line.
 
 \item Anything following the \param{\#} character on a line
-will be treated as a comment and ignored. 
+will be treated as a comment and ignored.
 
 \item Within a ``variables'' block, lines must be indented and must begin with a ``tab'' character.
 \end{itemize}
@@ -331,9 +331,9 @@ specify.
 	variables of that type will be considered.  Allowed variable
 	types are: \param{GLOBAL VARIABLES}, \param{NODAL VARIABLES},
 	\param{ELEMENT VARIABLES}, \param{NODESET VARIABLES}, and
-	\param{SIDESET VARIABLES}. 
+	\param{SIDESET VARIABLES}.
 
-\item The command line option to set the maximum number of \exo{} 
+\item The command line option to set the maximum number of \exo{}
 	names can be set with \param{MAX NAMES <int>}.  Note:  this option must
 	appear before the variable blocks are read!
 
@@ -362,7 +362,7 @@ specify.
            \param{IGNORE NANS} keyword.
 \item  The ignore dups option, \param{-ignore\_dups}, can be turned on with the
            \param{IGNORE DUPLICATES} keyword.
-\item  The time step offset option, \param{-T}, can be turned on with the 
+\item  The time step offset option, \param{-T}, can be turned on with the
            \param{STEP OFFSET} keyword.
 \item  The automatic time step offset option, \param{-TA}, can be turned
            on with the \param{STEP OFFSET AUTOMATIC} keyword.
@@ -370,7 +370,7 @@ specify.
            on with the \param{STEP OFFSET MATCH} keyword.
 \item  The calculation of the L2 norm of differences \param{-norms}, can be turned
            on with the \param{CALCULATE NORMS} keyword.
-\item  The exit status return option, \param{-stat}, can be turned on with the 
+\item  The exit status return option, \param{-stat}, can be turned on with the
            \param{RETURN STATUS} keyword.
 \end{itemize}
 \section{Examples}
@@ -384,27 +384,27 @@ The \file{P\_exodiff.cmd} command file contains the following:
 \begin{verbatim}
 COORDINATES absolute 1.e-6
 
-TIME STEPS relative 1.e-6 floor 0.0 
+TIME STEPS relative 1.e-6 floor 0.0
 
 GLOBAL VARIABLES relative 1.e-6 floor 1.e-16
-	internal_energy  
-	kinetic_energy   
-	momentum_x       
+	internal_energy
+	kinetic_energy
+	momentum_x
 
 NODAL VARIABLES relative 1.e-4 floor 1.e-16
-	displacement_x    
-	acceleration_x    
-	force_internal_x  
-	mass              
-	velocity_x        
+	displacement_x
+	acceleration_x
+	force_internal_x
+	mass
+	velocity_x
 
 ELEMENT VARIABLES relative 1.e-6 floor 1.e-16
-	eqps              
-	stress_xx          absolute 1000 
-	stress_yy          absolute 1000 
-	stress_zz          absolute 1000 
-	temperature        absolute 1    
-	yield_stress       absolute 1000 
+	eqps
+	stress_xx          absolute 1000
+	stress_yy          absolute 1000
+	stress_zz          absolute 1000
+	temperature        absolute 1
+	yield_stress       absolute 1000
 \end{verbatim}
 
 The first section of the output shows the code version and contact
@@ -415,18 +415,18 @@ file, the path to that file is listed.
 
 \begin{verbatim}
    *****************************************************************
-     EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  
-                                                                    
+     EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF
+
                         Version 2.43 (2011-04-07)
-              Authors:  Richard Drake, rrdrake@sandia.gov           
-                        Greg Sjaardema, gdsjaar@sandia.gov          
+              Authors:  Richard Drake, rrdrake@sandia.gov
+                        Greg Sjaardema, gdsjaar@sandia.gov
                         2011/04/28   21:11:00 MDT
-                                                                    
-     EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  
+
+     EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF
    *****************************************************************
 
-Reading first file ... 
-Reading second file ... 
+Reading first file ...
+Reading second file ...
   FILE 1: /home/exodiff/axial_pulse_par_ns/P_gold_results.e
    Title: Default Database Title
           Dim = 3, Blocks = 1, Nodes = 816, Elements = 450, Nodesets = 6, Sidesets = 0
@@ -478,9 +478,9 @@ No Sideset variables on either file.
 
 \sectionline
 The next output section shows the results of the differencing.  For
-the first several timesteps, no differences were found. 
+the first several timesteps, no differences were found.
 
-\begin{verbatim} 
+\begin{verbatim}
   --------- Time step 1, 0.0000000e+00 ~ 0.0000000e+00, rel diff:  0.00000e+00 ---------
 Global variables:
 Nodal variables:
@@ -517,7 +517,7 @@ format is:
 \begin{verbatim}
   variable name  diff type   val file 1       val file 2     difference  (which entity)
    stress_xx     rel diff: -1.1444528e+04 ~ -1.1444553e+04 = 2.15241e-06 (block 1, elmt 66)
-\end{verbatim}	
+\end{verbatim}
 
 Note that only the maximum difference found for each variable at each
 time step is output.  There may be many more differences detected.
@@ -585,14 +585,14 @@ exodiff -summary bar-P.e
 \end{syntax}
 \begin{verbatim}
 #  *****************************************************************
-#    EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  
-#                                                                   
+#    EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF
+#
 #                       Version 2.43 (2011-04-07)
-#             Authors:  Richard Drake, rrdrake@sandia.gov           
-#                       Greg Sjaardema, gdsjaar@sandia.gov          
+#             Authors:  Richard Drake, rrdrake@sandia.gov
+#                       Greg Sjaardema, gdsjaar@sandia.gov
 #                       2011/06/03   11:23:07 MDT
-#                                                                   
-#    EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  
+#
+#    EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF  EXODIFF
 #  *****************************************************************
 
 #  FILE 1: /scratch/user/bar-P.e
@@ -660,7 +660,7 @@ ELEMENT VARIABLES relative 1.e-6 floor 0.0
 The output starts with a database summary similar to the previous
 example.  It then gives a summary of the minimum and maximum values of
 each variable and the timestep and node or element where that minimum
-or maximum occurs.  
+or maximum occurs.
 
 The format of the summary is such that it can be used as a basis for
 creating an \exodiff{} command input file.

@@ -18,7 +18,7 @@
 #include "mpi.h"
 
 /*==========================================================================*/
-int PMPI_Reduce ( void *sendbuf, void *recvbuf, int count, 
+int PMPI_Reduce ( void *sendbuf, void *recvbuf, int count,
    MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm )
 {
   int size;
@@ -42,13 +42,13 @@ int PMPI_Reduce ( void *sendbuf, void *recvbuf, int count,
     MPI_Abort(comm, retval);
     return _MPI_NOT_OK;
   }
-      
+
   if ( _MPI_checkBuffer(recvbuf) != MPI_SUCCESS ) {
     _MPI_ERR_ROUTINE (MPI_ERR_BUFFER, "MPI_REDUCE : Invalid buffer pointer");
     MPI_Abort(comm, MPI_ERR_BUFFER);
     return _MPI_NOT_OK;
   }
-   
+
   if ( _MPI_checkOp(op) != MPI_SUCCESS ) {
     _MPI_ERR_ROUTINE(MPI_ERR_OP, "MPI_REDUCE : Invalid MPI_Op");
     MPI_Abort(comm, MPI_ERR_OP);
@@ -73,4 +73,3 @@ int PMPI_Reduce ( void *sendbuf, void *recvbuf, int count,
   return MPI_SUCCESS;
 }
 /*==========================================================================*/
-

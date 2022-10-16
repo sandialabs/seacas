@@ -153,7 +153,7 @@ typedef int MPI_Op;
 #define MPI_CART		(6001)
 
 typedef int MPI_Comm;
- 
+
 typedef struct MPI_Status {
   int MPI_SOURCE;
   int MPI_TAG;
@@ -165,8 +165,8 @@ typedef struct MPI_Status {
 #define MPI_STATUSES_IGNORE ((MPI_Status *)0)
 
 typedef struct _MPI_REQUEST_OBJECT {
-  void* buffer; 
-  int count; 
+  void* buffer;
+  int count;
   int type;
   int tag;
   MPI_Comm comm;
@@ -228,20 +228,20 @@ typedef void MPI_User_function(void* invec, void* inoutvec, int* len, MPI_Dataty
 #include "mpi_implementation.h"
 
 
-#define MPI_COMM_WORLD ( (MPI_Comm) -100)		
+#define MPI_COMM_WORLD ( (MPI_Comm) -100)
 #define MPI_COMM_SELF	( (MPI_Comm) -100)
 
-typedef int MPI_Copy_function (MPI_Comm oldcomm, int keyval, 
+typedef int MPI_Copy_function (MPI_Comm oldcomm, int keyval,
 	void* extra_arg, void* attribute_val_in, void* attribute_val_out, int* flag);
 typedef int MPI_Delete_function (MPI_Comm comm, int keyval, void* attribute_val, void* extra_arg);
 
 
 
- 
+
 /* MPI Error Classes */
 
 /* Success=0 is safest as some codes wrongly assume zero=good non-zero=bad */
-#define MPI_SUCCESS 		( (MPI_Error_Class) 0) 
+#define MPI_SUCCESS 		( (MPI_Error_Class) 0)
 #define MPI_ERR_BUFFER		( (MPI_Error_Class) -5001)
 #define MPI_ERR_COUNT		( (MPI_Error_Class) -5002)
 #define MPI_ERR_TYPE		( (MPI_Error_Class) -5003)
@@ -292,7 +292,7 @@ SKIP FOR NOW FORTRAN: EXTERNAL MPI_NULL_DELETE_FN
 SKIP FOR NOW FORTRAN: EXTERNAL MPI_DUP_FN
 #endif
 
-	
+
 #ifdef __cplusplus
 }
 #endif

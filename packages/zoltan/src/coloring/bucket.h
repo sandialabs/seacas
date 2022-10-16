@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -68,7 +68,7 @@ typedef struct arg
     Bucket_element **buckets; /* actual pointers to bucket heads */
     Bucket_element *elements; /* for direct access to bucket elements
                                  elements[id] is the id-th element */
-    int          nb_elements; 
+    int          nb_elements;
     int            max_value;
     int              *values; /* needed for update, incase bucket head
                                  changed. */
@@ -93,7 +93,7 @@ void Zoltan_Bucket_Free(Bucket* bs);
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
-    
+
 
 
 #endif

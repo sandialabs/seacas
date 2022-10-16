@@ -18,6 +18,5 @@
 int MPI_Attr_delete ( MPI_Comm comm, int keyval )
 {
   _MPI_COVERAGE();
-  return PMPI_Attr_delete (comm, keyval); 
+  return PMPI_Attr_delete (comm, keyval);
 }
-

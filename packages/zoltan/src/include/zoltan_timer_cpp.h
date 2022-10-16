@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -45,8 +45,8 @@
  */
 //
 // ************************************************************************
-// 
-// C++ wrappers for Zoltan Timer library.  
+//
+// C++ wrappers for Zoltan Timer library.
 //
 // ************************************************************************
 
@@ -94,7 +94,7 @@ public:
     return Zoltan_Timer_Init(this->ZTStruct, use_barrier, name.c_str());
   }
 
-  int Reset(const int &ts_idx, const int &use_barrier, 
+  int Reset(const int &ts_idx, const int &use_barrier,
             const std::string & name) {
     return Zoltan_Timer_Reset(this->ZTStruct, ts_idx, use_barrier, name.c_str());
   }
@@ -105,11 +105,11 @@ public:
   }
 
   int Stop(const int &ts_idx, const MPI_Comm &comm) {
-    return Zoltan_Timer_Stop(this->ZTStruct, ts_idx, comm, 
+    return Zoltan_Timer_Stop(this->ZTStruct, ts_idx, comm,
                              (char *) __FILE__, __LINE__);
   }
 
-  int Print(const int &ts_idx, const int &proc, 
+  int Print(const int &ts_idx, const int &proc,
             const MPI_Comm &comm, FILE *os) const {
     return Zoltan_Timer_Print(this->ZTStruct, ts_idx, proc, comm, os);
   }

@@ -18,6 +18,5 @@
 int MPI_Attr_put ( MPI_Comm comm, int keyval, void *attr_value )
 {
   _MPI_COVERAGE();
-  return PMPI_Attr_put (comm, keyval, attr_value); 
+  return PMPI_Attr_put (comm, keyval, attr_value);
 }
-

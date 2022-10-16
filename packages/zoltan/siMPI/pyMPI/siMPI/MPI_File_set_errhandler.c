@@ -17,6 +17,5 @@
 int MPI_File_set_errhandler(MPI_File fh, MPI_Errhandler errhandler)
 {
   _MPI_COVERAGE();
-  return PMPI_File_set_errhandler(fh, errhandler); 
+  return PMPI_File_set_errhandler(fh, errhandler);
 }
-

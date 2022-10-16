@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -108,7 +108,7 @@ int proc = fromZZ->Proc;
     to->Data_Structure = NULL;
     if (!from->Copy_Structure)
       {
-      /* 
+      /*
        * Some Zoltan codes don't save their Data_Structure after
        * partitioning.  However if they do, they must define a
        * copy function.
@@ -117,7 +117,7 @@ int proc = fromZZ->Proc;
       return ZOLTAN_WARN;
       }
     from->Copy_Structure(toZZ, fromZZ);
-  } 
+  }
 
   return ZOLTAN_OK;
 }

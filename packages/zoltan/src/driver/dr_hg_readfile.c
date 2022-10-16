@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -106,7 +106,7 @@ int HG_readfile (
     ERROR(Proc, yo, "Unrecognized file format.", ZOLTAN_FATAL);
 
   if (*nVtx <= 1) {                  /* wrong guess if nVtx really is one! */
-    i = sscanf(string, "%d %d %d %d %d %d", 
+    i = sscanf(string, "%d %d %d %d %d %d",
                        base, nVtx, nEdge, nPins, &code, vwgt_dim);
     if (i == 4)
       code = 0;

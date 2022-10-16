@@ -33,8 +33,8 @@ int PMPI_Send (void* message, int count, MPI_Datatype datatype, int dest, int ta
     switch (sendType) {
     case _MPI_DEFAULT:
       {
-        size = _MPI_calculateSize(count, datatype);  
-        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer."); 
+        size = _MPI_calculateSize(count, datatype);
+        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer.");
         p = memcpy(p, message, size);
         retval =_MPI_Buff_Insert(p, count, datatype, tag, comm);
         return retval;
@@ -43,7 +43,7 @@ int PMPI_Send (void* message, int count, MPI_Datatype datatype, int dest, int ta
       {
         sendType = _MPI_FindType(datatype);
         size = _MPI_TYPE_LIST[sendType].extent;
-        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer."); 
+        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer.");
         p = memcpy(p, message, size);
         retval =_MPI_Buff_Insert(p, count, datatype, tag, comm);
         return retval;
@@ -52,7 +52,7 @@ int PMPI_Send (void* message, int count, MPI_Datatype datatype, int dest, int ta
       {
         sendType = _MPI_FindType(datatype);
         size = _MPI_TYPE_LIST[sendType].extent;
-        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer."); 
+        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer.");
 
         /* ================================================== */
         /* Determine the correct parts to save to the buffers */
@@ -62,7 +62,7 @@ int PMPI_Send (void* message, int count, MPI_Datatype datatype, int dest, int ta
         for (index = 0; index < info->count; index++)
           {
             position = info->stride[index]*sizeof(info->types[0]);
-            p = memcpy(p+copiedPointer, ((char*)message)+position, info->blocklen[index]*sizeof(info->types[0])); 
+            p = memcpy(p+copiedPointer, ((char*)message)+position, info->blocklen[index]*sizeof(info->types[0]));
             copiedPointer += info->blocklen[index]*sizeof(info->types[0]);
           }
         retval =_MPI_Buff_Insert(p, count, datatype, tag, comm);
@@ -72,7 +72,7 @@ int PMPI_Send (void* message, int count, MPI_Datatype datatype, int dest, int ta
       {
         sendType = _MPI_FindType(datatype);
         size = _MPI_TYPE_LIST[sendType].extent;
-        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer."); 
+        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer.");
         /* =================================== */
         /* Figure out the correct ones to pass */
         retval =_MPI_Buff_Insert(p, count, datatype, tag, comm);
@@ -82,7 +82,7 @@ int PMPI_Send (void* message, int count, MPI_Datatype datatype, int dest, int ta
       {
         sendType = _MPI_FindType(datatype);
         size = _MPI_TYPE_LIST[sendType].extent;
-        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer."); 
+        p = (char *)_MPI_safeMalloc(size, "Error with malloc for send buffer.");
         /* =================================== */
         /* Figure out the correct ones to pass */
         retval =_MPI_Buff_Insert(p, count, datatype, tag, comm);
@@ -94,7 +94,7 @@ int PMPI_Send (void* message, int count, MPI_Datatype datatype, int dest, int ta
         MPI_Abort (comm, _MPI_NOT_OK);
       }
     }
-  } else { 
+  } else {
     _MPI_ERR_ROUTINE (retval, "MPI_SEND / MPI_ISEND: argument error");
     MPI_Abort (comm, retval);
   }

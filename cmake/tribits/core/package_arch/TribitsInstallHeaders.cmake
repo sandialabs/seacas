@@ -41,7 +41,6 @@
 include(CMakeParseArguments)
 
 
-#
 # @FUNCTION: tribits_install_headers()
 #
 # Function used to (optionally) install header files using ``install()``
@@ -105,8 +104,8 @@ function(tribits_install_headers)
   tribits_check_for_unparsed_arguments()
 
   # ToDo: Assert PARSE_HEADERS has at least one argument!
-  # ToDo: Assert PARSE_INSTALL_DIR has 0 or 1 argumnets!
-  # ToDo: Assert PARSE_COMONENT has 0 or 1 argumnets!
+  # ToDo: Assert PARSE_INSTALL_DIR has 0 or 1 arguments!
+  # ToDo: Assert PARSE_COMONENT has 0 or 1 arguments!
   
   if (PARSE_INSTALL_SUBDIR)
     set(INSTALL_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/${PARSE_INSTALL_SUBDIR}")

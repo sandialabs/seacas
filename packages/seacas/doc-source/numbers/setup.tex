@@ -1,5 +1,5 @@
 %
-% STANDARD SETUP FOR MANUALS 
+% STANDARD SETUP FOR MANUALS
 %
 %%% set up so item does not have so much space between items and top
 \setlength{\parindent}{0pt}
@@ -18,7 +18,7 @@
 \newcommand{\cenlinesend}
    { \end{tabular} \end{center} }
 %
-%%% these commands are used for all-capital-letter words (\caps), 
+%%% these commands are used for all-capital-letter words (\caps),
 %%% typed literals (\cmd), parameters (\param), bold font (\bold)
 \newcommand{\caps}[1]
    {\uppercase{#1}\null}
@@ -72,9 +72,9 @@
    \addtolength{\leftmargini}{-\myindent}
    }
 %
-%%% \cmddef produces the command descriptions 
+%%% \cmddef produces the command descriptions
 \newcommand{\cmddef}[2]{
-   \par \hangindent=\myhalfind \hangafter=1 {#1} 
+   \par \hangindent=\myhalfind \hangafter=1 {#1}
    \par \topicbegin {#2} \topicend
    }
 %
@@ -88,14 +88,14 @@
 %
 %%% \cmdoption produces a heading and an indented block of text
 \newcommand{\cmdoption}[2]{
-   \par \hangindent=\myhalfind \hangafter=1 {#1} 
+   \par \hangindent=\myhalfind \hangafter=1 {#1}
    \topicbegin {#2} \topicend
    }
 %
 %%% \cmdsum produces a command summary line
 \newcommand{\cmdsum}[2]{
    \par {#1}
-   \par 
+   \par
    \topicbegin {#2} \topicend
    }
 %

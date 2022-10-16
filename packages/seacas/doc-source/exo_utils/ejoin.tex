@@ -2,7 +2,7 @@
 \section{Introduction}
 \ejoin{} is used to join two or more \exo{} databases into a single
 \exo{} database. The input databases must have disjoint meta and bulk data.
-That is, 
+That is,
 \begin{itemize}
 \item element blocks are not combined in the output model.  Each
 element block in each input file will produce an element block in the
@@ -25,7 +25,7 @@ The minimal command line for executing \ejoin{} is:
      ejoin \{list of files to join\}
 \end{syntax}
 This would create an output mesh named \file{ejoin-out.e} containing
-the entities and data from the files listed on the command line. 
+the entities and data from the files listed on the command line.
 
 Several options are available to modify the default behavior of
 \ejoin{}. In the description of the options, there is the concept of a
@@ -70,7 +70,7 @@ numbered sequentially starting at 1.
 		This option can not be specified if
 		\param{-match\_node\_coordinates} is specified.\\
 
-\param{-match\_node\_coordinates}  &  Combine nodes if they are within tolerance distance of each other.  
+\param{-match\_node\_coordinates}  &  Combine nodes if they are within tolerance distance of each other.
 		The \param{-tolerance <val>} option is used to set the matching tolerance.
 		This option can not be specified if \param{-match\_node\_ids} is specified.\\
 
@@ -106,22 +106,22 @@ numbered sequentially starting at 1.
 		id 10 and 20. The default behavior is that all element
 		variables will be written to the output file.  \\
 \param{-nvar <val>} & Comma-separated list of nodal variables to be
-		joined or \param{ALL} or \param{NONE}. The default behavior is that all nodal 
+		joined or \param{ALL} or \param{NONE}. The default behavior is that all nodal
 		variables will be written to the output file. \\
 \param{-nsetvar <val>} & Comma-separated list of nodeset variables to
-		be joined or \param{ALL} or \param{NONE}.  
+		be joined or \param{ALL} or \param{NONE}.
                 Variables can be limited to certain sets by appending a
                 colon followed by the nodeset id.  E.g. -nsetvar temperature:10:20.
-		The default behavior is that all nodeset 
+		The default behavior is that all nodeset
 		variables will be written to the output file.\\
 \param{-ssetvar <val>} & Comma-separated list of sideset variables to
-		be joined or \param{ALL} or \param{NONE}.  
+		be joined or \param{ALL} or \param{NONE}.
                 Variables can be limited to certain sets by appending a
                 colon followed by the nodeset id.  E.g. -ssetvar sigxx:10:20.
-		The default behavior is that all sideset 
+		The default behavior is that all sideset
 		variables will be written to the output file.\\
 
-\param{-disable\_field\_recognition}  &  Do not try to combine scalar fields 
+\param{-disable\_field\_recognition}  &  Do not try to combine scalar fields
 		into higher-order fields such as vectors or tensors
 		based on the field suffix.  \\
 
@@ -152,7 +152,7 @@ need to be done:
 \item Remove the spring attachment points from each prestressed spring
 model.
 \begin{itemize}
-\item Blocks 14 and 21 in the drive spring (part 2), 
+\item Blocks 14 and 21 in the drive spring (part 2),
 \item Blocks 17 and 31 in the gate spring (part 3), and
 \item Blocks 72 and 61 in the shutter spring (part 4).
 \end{itemize}
@@ -202,8 +202,8 @@ Wrote step    1/1, time 3.6000e-02
 databases.
 \item \code{gjoin} can combine element blocks from multiple input
 databases into a single element block. Similarly for nodesets and
-sidesets. 
-\item \code{gjoin} can independently rotate, scale, and offset each 
+sidesets.
+\item \code{gjoin} can independently rotate, scale, and offset each
 input database; \ejoin{} can currently only offset the second and
 subsequent parts by the same value; however, it is planned to add
 additional part transformation (offset, scale, rotation) options to
@@ -213,4 +213,3 @@ additional part transformation (offset, scale, rotation) options to
 the size of database that it can generate; \ejoin{} should use memory
 more efficiently and allow the generation of much larger models.
 \end{itemize}
-

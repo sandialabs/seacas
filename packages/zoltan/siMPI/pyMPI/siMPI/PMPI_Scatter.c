@@ -18,8 +18,8 @@
 #include "mpi.h"
 
 /*==========================================================================*/
-int PMPI_Scatter (void *sendbuf, int sendcnt, MPI_Datatype sendtype, void *recvbuf, 
-    int recvcnt, MPI_Datatype recvtype, int root, MPI_Comm comm) 
+int PMPI_Scatter (void *sendbuf, int sendcnt, MPI_Datatype sendtype, void *recvbuf,
+    int recvcnt, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int sendsize, recvsize, retval;
  _MPI_COVERAGE();
@@ -47,4 +47,3 @@ int PMPI_Scatter (void *sendbuf, int sendcnt, MPI_Datatype sendtype, void *recvb
   return _MPI_NOT_OK;
 }
 /*==========================================================================*/
-

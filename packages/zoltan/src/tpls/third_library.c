@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -141,7 +141,7 @@ int rc;
                          num_exp, exp_gids, exp_lids, exp_procs, exp_to_part);
   }
   else{
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                        "Invalid value for GRAPH_PACKAGE parameter\n");
     rc = ZOLTAN_FATAL;
   }
@@ -204,7 +204,7 @@ void Zoltan_Third_Exit(ZOLTAN_Third_Graph *gr, ZOLTAN_Third_Geom *geo,
     MEMFREE(gr->ewgts);
     MEMFREE(gr->float_ewgts);
     MEMFREE(gr->adjproc);
-    
+
     Zoltan_ZG_Free(&gr->graph);
   }
 
@@ -299,7 +299,7 @@ float *wgts;
   fprintf(stderr,"Options: local %d, final_output %d, symmetrize %d keep_distribution %d speed %s\n",
     m->opts.local, m->opts.final_output, m->opts.symmetrize, m->opts.keep_distribution,
      ((m->opts.speed == 0) ? "full dd" : ((m->opts.speed == 1) ? "fast" : "no redist")));
-   
+
   fprintf(stderr,"redist %d, completed %d, bipartite %d\n", m->redist, m->completed, m->bipartite);
 
   fprintf(stderr,"globalX " ZOLTAN_GNO_SPEC ", globalY " ZOLTAN_GNO_SPEC ", nY %d, nY_ori %d, ywgtdim %d, nPins %d\n",
@@ -312,11 +312,11 @@ float *wgts;
       for (j=m->ystart[i]; j < m->ystart[i+1]; j++){
         fprintf(stderr, ZOLTAN_GNO_SPEC " ", m->pinGNO[j]);
         if (wgts && (m->pinwgtdim > 0)){
-          fprintf(stderr,"("); 
+          fprintf(stderr,"(");
           for (k=0; k < m->pinwgtdim; k++){
             fprintf(stderr,"%f ",*wgts++);
           }
-          fprintf(stderr,") "); 
+          fprintf(stderr,") ");
         }
       }
       fprintf(stderr,"\n");
@@ -364,7 +364,7 @@ int nproc_y = m2d->comm->nProc_y;
       }
 
       Zoltan_matrix_Print(m, NULL);
-  
+
       fflush(stderr);
     }
     MPI_Barrier(MPI_COMM_WORLD);
@@ -389,7 +389,7 @@ me = zz->Proc;
       gr->scatter_min, gr->get_data, gr->obj_wgt_dim, gr->edge_wgt_dim);
       fprintf(stderr,"num obj %d, num obj orig %d, num edges %d\n",
       gr->num_obj, gr->num_obj_orig, gr->num_edges);
-  
+
       if (gr->vtxdist){
         numvtx = gr->vtxdist[proc+1] - gr->vtxdist[proc];
         offset = gr->vtxdist[proc];
@@ -416,7 +416,7 @@ me = zz->Proc;
           fprintf(stderr,"\n");
         }
       }
-  
+
       fflush(stderr);
     }
     MPI_Barrier(MPI_COMM_WORLD);
@@ -433,20 +433,20 @@ me = zz->Proc;
 #define CHECK_ZOLTAN_FREE(ptr) do { if ((ptr) != NULL) ZOLTAN_FREE(&(ptr)); } while (0)
 
 int Zoltan_TPL_Order_Init_Tree (struct Zoltan_TPL_Order_Struct *order, indextype blocknbr, indextype leavesnbr)
-{   
+{
   Zoltan_TPL_Order_Free_Struct(order);
 
   order->ancestor = (indextype *) ZOLTAN_MALLOC(blocknbr*sizeof(indextype));
   order->start = (indextype *) ZOLTAN_MALLOC((blocknbr+1)*sizeof(indextype));
   order->leaves = (indextype *) ZOLTAN_MALLOC((leavesnbr+1)*sizeof(indextype));
-  
+
   order->needfree = 1;
   if ((order->ancestor == NULL) || (order->start == NULL) || (order->leaves == NULL)) {
     Zoltan_TPL_Order_Free_Struct(order);
     return (ZOLTAN_MEMERR);
   }
   return (ZOLTAN_OK);
-} 
+}
 
 void Zoltan_TPL_Order_Free_Struct(struct Zoltan_TPL_Order_Struct *order)
 {
@@ -460,7 +460,7 @@ void Zoltan_TPL_Order_Free_Struct(struct Zoltan_TPL_Order_Struct *order)
   order->needfree = 0;
 }
 
-    
+
 
 
 #ifdef __cplusplus

@@ -21,6 +21,5 @@ int MPI_Cart_rank (
         int *rank )
 {
   _MPI_COVERAGE();
-  return PMPI_Cart_rank(comm, coords, rank); 
+  return PMPI_Cart_rank(comm, coords, rank);
 }
-

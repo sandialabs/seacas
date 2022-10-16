@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -94,7 +94,7 @@ int Zoltan_Random(
   int max_export;
   double rand_frac = 1.0;       /* Default is to move all objects. */
   ZOLTAN_ID_PTR global_ids = NULL;
-  ZOLTAN_ID_PTR local_ids = NULL; 
+  ZOLTAN_ID_PTR local_ids = NULL;
   int *parts = NULL;
   float *dummy = NULL;
   static char *yo = "Zoltan_Random";
@@ -102,9 +102,9 @@ int Zoltan_Random(
 
   ZOLTAN_TRACE_ENTER(zz, yo);
 
-  /* Synchronize the random number generator. 
-   * This synchronization is needed only for sanity in our nightly testing. 
-   * If some other operation (eg., Zoltan_LB_Eval) changes the status of 
+  /* Synchronize the random number generator.
+   * This synchronization is needed only for sanity in our nightly testing.
+   * If some other operation (eg., Zoltan_LB_Eval) changes the status of
    * the random number generator, the answers here will change.  They won't
    * be wrong, but they will be different from our accepted answers.
    */
@@ -119,7 +119,7 @@ int Zoltan_Random(
 
   /* Get parameter values. */
   Zoltan_Bind_Param(Random_params, "RANDOM_MOVE_FRACTION", (void *) &rand_frac);
-  Zoltan_Assign_Param_Vals(zz->Params, Random_params, zz->Debug_Level, 
+  Zoltan_Assign_Param_Vals(zz->Params, Random_params, zz->Debug_Level,
                            zz->Proc, zz->Debug_Proc);
 
   /* Get list of local objects. */
@@ -162,7 +162,7 @@ int Zoltan_Random(
       /* Randomly pick new partition number. */
       (*export_to_part)[count] = Zoltan_Rand_InRange(NULL, zz->LB.Num_Global_Parts);
       /* Processor number is derived from partition number. */
-      (*export_procs)[count] = Zoltan_LB_Part_To_Proc(zz, 
+      (*export_procs)[count] = Zoltan_LB_Part_To_Proc(zz,
                      (*export_to_part)[count], &global_ids[i*zz->Num_GID]);
 
       /* printf("Debug: Export gid %u to part %d and proc %d.\n", (*export_global_ids)[count], (*export_to_part)[count], (*export_procs)[count]); */
@@ -204,5 +204,3 @@ char *val)                      /* value of variable */
 
   return(status);
 }
-
-

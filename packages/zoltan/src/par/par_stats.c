@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -80,10 +80,10 @@ void Zoltan_Print_Stats (MPI_Comm communicator, int debug_proc, double x, char *
   MPI_Comm_rank(communicator, &proc);
   MPI_Comm_size(communicator, &num_proc);
 
-  MPI_Reduce((void *)&x, (void *)&sum, 1, MPI_DOUBLE, MPI_SUM, debug_proc, 
+  MPI_Reduce((void *)&x, (void *)&sum, 1, MPI_DOUBLE, MPI_SUM, debug_proc,
              communicator);
 
-  MPI_Reduce((void *)&x, (void *)&max, 1, MPI_DOUBLE, MPI_MAX, debug_proc, 
+  MPI_Reduce((void *)&x, (void *)&max, 1, MPI_DOUBLE, MPI_MAX, debug_proc,
              communicator);
 
   if (proc == debug_proc) {

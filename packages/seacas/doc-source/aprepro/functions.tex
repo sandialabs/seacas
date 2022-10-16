@@ -7,9 +7,9 @@ parentheses. For example
 \begin{apinp}
 \{sqrt(min(a,b*3))\}
 \end{apinp}
-uses the two functions \cmd{sqrt()} and \cmd{min()}. The arguments \cmd{a} 
-and \cmd{b*3} are passed to \cmd{min()}. The result is then passed as an 
-argument to \cmd{sqrt()}. The functions in \aprepro{} are listed below 
+uses the two functions \cmd{sqrt()} and \cmd{min()}. The arguments \cmd{a}
+and \cmd{b*3} are passed to \cmd{min()}. The result is then passed as an
+argument to \cmd{sqrt()}. The functions in \aprepro{} are listed below
 along with the number of arguments and a short description of their effect.
 
 \section{Mathematical Functions}
@@ -38,6 +38,7 @@ ceil(x)             &  Smallest integer not less than $x$.\\
 cos(x)              &  Cosine of $x$, with $x$ in radians\\
 cosd(x)             &  Cosine of $x$, with $x$ in degrees\\
 cosh(x)             &  Hyperbolic cosine of $x$.\\
+CtoF(x)             &  Convert from degrees Celsius to degrees Fahrenheit. \\
 d2r(x)              &  Degrees to radians.\\
 dim(x,y)            &  $x - \min(x,y)$\\
 dist(x1,y1, x2,y2)  &  $\sqrt{(x_1-x_2)^2 + (y_1-y_2)^2}$ \\
@@ -47,6 +48,7 @@ exp(x)              &  Exponential  $e^x$ \\
 find\_word(word,svar,del)&  Find 1-based index of \var{word} in \var{svar}. Words are separated by one or more of the characters in the string variable del. Returns 0 if \var{word} is not found.\\
 floor(x)            &  Largest integer not greater than $x$.\\
 fmod(x,y)           &  Floating-point remainder of $x/y$.\\
+FtoC(x)             &  Convert from degrees Fahrenheit to degrees Celsius. \\
 hypot(x,y)          &  $\sqrt{x^2+y^2}$.\\
 int(x), [x]         &  Integer part of $x$ truncated toward 0.\\
 julday(mm, dd, yy)  &  Julian day corresponding to mm/dd/yy. \\
@@ -113,6 +115,9 @@ get\_word(n,svar,del&  Returns a string containing the \var{n}th word of \var{sv
 getenv(svar)        &  Returns a string containing the value of the environment variable \var{svar}. If the environment variable is not defined, an empty string is returned.  \\
 help()              &  Tell how to get help on variables, functions, \ldots \\
 include\_path(path) &  Specify an optional path to be prepended to a filename when opening a file. Can also be specified via the \cmd{-I} command line option when executing aprepro. \\
+include(file)       &  include contents of the file.  See Section~\ref{sec:inclusion} for details. \\
+cinclude(file)      &  conditionally include contents of the file.  See Section~\ref{sec:inclusion} for details. \\
+import(svar)        &  include contents of the file pointed to by \var{svar}.  See Section~\ref{sec:inclusion} for details. \\
 output(filename)    &  Creates the file specified by filename and
 sends all subsequent output from aprepro to that file. Calling \cmd{output(\"stdout\")} will close the current output file and return output to the terminal (standard output).\\
 output\_append(fn)  &  If file with name \var{fn} exists, append output to it; otherwise create the file and send all subsequent output from aprepro to that file. \\
@@ -128,16 +133,16 @@ toupper(svar)       &  Translates all lowercase character in \var{svar} to upper
 
 The following example shows the use of some of the string functions. The input:
 \begin{apinp}
-\{t1 = "ATAN2"\} 
-\{t2 = "(0, -1)"\} 
-\{t3 = tolower(t1//t2)\} 
-\{execute(t3)\} 
+\{t1 = "ATAN2"\}
+\{t2 = "(0, -1)"\}
+\{t3 = tolower(t1//t2)\}
+\{execute(t3)\}
 \end{apinp}
 produces the output:
 \begin{apout}
-ATAN2 
+ATAN2
 (0, -1)
-atan2(0, -1)   \textit{The variable t3 is equal to the string atan2(0,-1)} 
+atan2(0, -1)   \textit{The variable t3 is equal to the string atan2(0,-1)}
 3.141592654    \textit{The result is the same as executing \{atan2(0, -1)\}}
 \end{apout}
 
@@ -154,15 +159,15 @@ circumference of a 180 degree arc of radius 10.
 
 \begin{apinp}
 \{ECHO(OFF)\}\
-\{num = 0\} 
-\{rad = 10\} 
-\{nintv = 10\} 
-\{nloop = nintv + 1\} 
-\{line = 'Define \{"Point"//tostring(++num)\}, \{polarX(rad, (num-1) * 
+\{num = 0\}
+\{rad = 10\}
+\{nintv = 10\}
+\{nloop = nintv + 1\}
+\{line = 'Define \{"Point"//tostring(++num)\}, \{polarX(rad, (num-1) *
   180/nintv)\} \{polarY(rad, (num-1)*180/nintv)\}'\}
-\{ECHO(ON)\} 
+\{ECHO(ON)\}
 \{loop(nloop)\}
-\{rescan(line)\} 
+\{rescan(line)\}
 \{endloop\}
 \end{apinp}
 
@@ -182,13 +187,13 @@ Define  Point10,  -9.510565163    3.090169944
 Define  Point11,  -10    1.224646753e-15
 \end{apout}
 
-Note the use of the \cmd{ECHO(OFF\textbar{}ON)} block to 
+Note the use of the \cmd{ECHO(OFF\textbar{}ON)} block to
 suppress output during the initialization phase, and the loop construct
-to automatically repeat the rescan line. The variable \cmd{num} is converted 
-to a string after it is incremented and then concatenated to build the name of 
-the point. In the definition of the variable \cmd{line}, single quotes are first 
-used since this is a multi-line string; double quotes are then used to embed another 
-string within the first string. To modify this example to calculate the coordinates 
+to automatically repeat the rescan line. The variable \cmd{num} is converted
+to a string after it is incremented and then concatenated to build the name of
+the point. In the definition of the variable \cmd{line}, single quotes are first
+used since this is a multi-line string; double quotes are then used to embed another
+string within the first string. To modify this example to calculate the coordinates
 of 101 points rather than eleven, the only change necessary would be to set \cmd{\{nintv=100\}}.
 
 \section{Additional Functions }
@@ -198,37 +203,46 @@ by square brackets will return the integer value of that variable or
 expression truncated toward zero. For example \cmd{[sqrt(2)]} will return the value
 \cmd{1}.
 
-\subsection{File Inclusion} \aprepro{} can read input from multiple 
-files using the \cmd{include()} and \cmd{cinclude()} functions. If a line 
-of the form: 
+\subsection{File Inclusion}\label{sec:inclusion} \aprepro{} can read input from multiple
+files using the \cmd{include()}, \cmd{cinclude()}, and \cmd{import()} functions. If a line
+of the form:
 
 \cmd{\{include(\texttt{"}\textit{filename}\texttt{"})\}}\\
-\cmd{\{include(string\_variable)\}}
+\cmd{\{include(string\_variable)\}}\\
+\cmd{\{import(string\_expression)\}}
 
 is read, \aprepro{} will open and begin reading from the file
-\file{filename}.  A string variable can be used as the
-argument instead of a literal string value.  When the end of the file
-is reached, it will be closed and \aprepro{} will continue
-reading from the previous file. The difference between
-\cmd{include()} and \cmd{cinclude()} is that if
-\file{filename} does not exist, \cmd{include()} will
-terminate \aprepro{} with a fatal error, but \cmd{cinclude()} will just
-write a warning message and continue with the current file. The
-\cmd{cinclude()} function can be thought of as a {\em conditional
-include}, that is, include the file if it exists. Multiple include
-files are allowed and an included file can also include additional
-files. This option can be used to set variables globally in several
-files. For example, if two or more input files share common points or
-dimensions, those dimensions can be set in one file that is included
-in the other files.
+\file{filename}.  A string variable can be used as the argument
+instead of a literal string value.  In the \cmd{import()} command, the
+argument can be an expression that evaluates to a string, a string
+variable, or a literal string. For example:
+\begin{apinp}
+\{base = "filename"\}
+\{ext = "apr"\}
+\{import(base // "." // ext)\}
+\end{apinp}
+Will result in the contents of the file \file{filename.apr} being included.
 
-If \cmd{ECHO(OFF)} is in effect during in an included file, \cmd{ECHO(ON)} 
+When the end of the file is reached, it will be closed and \aprepro{}
+will continue reading from the previous file. The difference between
+\cmd{include()}, \cmd{import()}, and \cmd{cinclude()} is that if \file{filename} does
+not exist, \cmd{include()} and \cmd{import()} will terminate \aprepro{} with a fatal
+error, but \cmd{cinclude()} will just write a warning message and
+continue with the current file. The \cmd{cinclude()} function can be
+thought of as a {\em conditional include}, that is, include the file
+if it exists. Multiple include files are allowed and an included file
+can also include additional files. This option can be used to set
+variables globally in several files. For example, if two or more input
+files share common points or dimensions, those dimensions can be set
+in one file that is included in the other files.
+
+If \cmd{ECHO(OFF)} is in effect during in an included file, \cmd{ECHO(ON)}
 will automatically be executed at the end of the included file.
 
-\subsection{Conditionals} Portions of an input file can be conditionally processed 
-through the use of the \cmd{if(expression)}, \cmd{elseif(expression)}, \cmd{else}, and \cmd{endif} 
+\subsection{Conditionals} Portions of an input file can be conditionally processed
+through the use of the \cmd{if(expression)}, \cmd{elseif(expression)}, \cmd{else}, and \cmd{endif}
 construct.\footnote{The \cmd{Ifdef(expression)} and \cmd{Ifndef(expression)} construct is deprecated. Please use \cmd{if(expression)} and \cmd{if(!expression)} instead.}
-The syntax is: 
+The syntax is:
 
 \begin{apinp}
 \{if(expression)\}
@@ -241,8 +255,8 @@ The syntax is:
 \end{apinp}
 
 The \cmd{elseif()} and \cmd{else} are optional.  Note that if \var{expression} is a simple \var{variable}, then its value will be zero or false if it is undefined; a zero value evaluates to false and a non-zero value is true. The \cmd{if} construct can be nested multiple levels.
-A warning message will be printed if improper nesting is detected. The \cmd{if(expression)}, 
-\cmd{elseif(expression)}, \cmd{else}, and \cmd{endif} are the 
+A warning message will be printed if improper nesting is detected. The \cmd{if(expression)},
+\cmd{elseif(expression)}, \cmd{else}, and \cmd{endif} are the
 only text parsed on a line. Text that follows these on the same line is
 ignored.  For example:
 
@@ -273,11 +287,11 @@ The construct is begun with a \cmd{switch(expression)} statement followed by one
  is finished.
 \end{apinp}
 
-Switch constructs cannot be nested, but a \cmd{switch()} can be used inside an \cmd{if()} construct and an \cmd{if()} can be used inside a \cmd{case()} construct. 
+Switch constructs cannot be nested, but a \cmd{switch()} can be used inside an \cmd{if()} construct and an \cmd{if()} can be used inside a \cmd{case()} construct.
 The \cmd{switch(expression)}, \cmd{case(expression)}, \cmd{default}, and \cmd{endswitch} are the only text parsed on a line. Text that follows these on the same line is
 ignored.
 
-\subsection{Loops} Repeated processing of a group of lines can be controlled 
+\subsection{Loops} Repeated processing of a group of lines can be controlled
 with the \cmd{loop(control)}, and \cmd{endloop} commands. The syntax is:
 \begin{apinp}
 \{loop(variable)\}
@@ -285,15 +299,15 @@ with the \cmd{loop(control)}, and \cmd{endloop} commands. The syntax is:
 \{endloop\}
 \end{apinp}
 
-Loops can be nested. A numerical variable or constant must be specified as the 
+Loops can be nested. A numerical variable or constant must be specified as the
 loop control specifier. You cannot use an algebraic expression such as
 
 \cmd{\{loop(3+5)\}}.
 
 The \cmd{endloop} command must be on a line by itself with no other text except optional whitespace (spaces or tabs).
 
-\subsection{ECHO}\label{echo} The printing of lines to the output file can be controlled 
-through the use of the \cmd{ECHO(OFF)} and \cmd{ECHO(ON)} 
+\subsection{ECHO}\label{echo} The printing of lines to the output file can be controlled
+through the use of the \cmd{ECHO(OFF)} and \cmd{ECHO(ON)}
 commands. The syntax is:
 
 \begin{apinp}
@@ -303,11 +317,11 @@ commands. The syntax is:
 \ldots These lines will be both processed and printed to output.
 \end{apinp}
 
-\cmd{ECHO} will automatically be turned on at the end of an included file. The 
+\cmd{ECHO} will automatically be turned on at the end of an included file. The
 commands \cmd{ECHO} and \cmd{NOECHO} are synonyms for \cmd{ECHO(ON)} and \cmd{ECHO(OFF)}.
 
-\subsection{VERBATIM} The printing of all lines to the output file without processing 
-can be controlled through the use of the \cmd{VERBATIM(ON)} and \cmd{VERBATIM(OFF)} 
+\subsection{VERBATIM} The printing of all lines to the output file without processing
+can be controlled through the use of the \cmd{VERBATIM(ON)} and \cmd{VERBATIM(OFF)}
 commands. The syntax is:
 
 \begin{apinp}
@@ -316,7 +330,7 @@ commands. The syntax is:
 \{VERBATIM(OFF)\}
 \ldots These lines will be printed to output and processed
 \end{apinp}
-NOTE:  there  is  a  major  difference  between  the  \cmd{ECHO/NOECHO} commands, 
+NOTE:  there  is  a  major  difference  between  the  \cmd{ECHO/NOECHO} commands,
 the \cmd{Ifdef/Endif }commands, and the \cmd{VERBATIM(ON\textbar{}OFF)} commands:
 
 \begin{itemize}
@@ -342,7 +356,7 @@ is typically mutable unless \aprepro{} executed with the
 Note that any variables created as immutable are still immutable
 following the \cmd{IMMUTABLE(OFF)} command.
 
-\subsection{Output File Specification} The \cmd{output} function can be used 
+\subsection{Output File Specification} The \cmd{output} function can be used
 to change the file to which \aprepro{} is outputting the processed
 data.  The syntax is: \cmd{\{output("\file{filename}")\}}, where
 \file{filename} is the name of the new output file. A string variable
@@ -376,7 +390,7 @@ ex\_sideset\_count   & Number of sidesets \\
 ex\_nodeset\_count   & Number of nodesets \\
 ex\_timestep\_count  & Number of timesteps \\
 ex\_version          & Version of the \exo{} database \\
-\hline 
+\hline
 \end{longtable}
 
 The following string variables will be defined if the model contains
@@ -398,11 +412,11 @@ ex\_sideset\_names   & Sideset names.  Will be ``sideset\_'' + sideset
 id if no names on the database. \\
 ex\_nodeset\_names   & Nodeset names.  Will be ``nodeset\_'' + nodeset
 id if no names on the database. \\
-\hline 
+\hline
 \end{longtable}
 
 The following array variables will be defined if the model contains
-one or more of the specific entity type.  
+one or more of the specific entity type.
 
 \begin{longtable}{lccp{4.0in}}
 \caption{\exo{} Array Variables}\\
@@ -420,7 +434,7 @@ ex\_nodeset\_ids      & ex\_nodeset\_count & 1 & Nodeset Ids. \\
 ex\_nodeset\_info     & ex\_nodeset\_count & 3 & Nodeset info: id,
 number of nodes in nodeset, number of distribution factors. \\
 ex\_timestep\_times   & ex\_timestep\_count & 1 & Timestep times. \\
-\hline 
+\hline
 \end{longtable}
 
 The following shows an example of the variables which are defined:
@@ -430,7 +444,7 @@ The following shows an example of the variables which are defined:
   {DUMP()}
   Element Block IDs:
   {print\_array(transpose(ex\_block\_ids))}
-  
+
   Element Block Info: (id, num, nnpe, nattrib)
   {print\_array(ex\_block\_info)}
 \end{apinp}
@@ -471,7 +485,7 @@ Element Block Info: (id, num, nnpe, nattrib)
 
 \subsection{\exo{} Info Records Extraction} \aprepro{} can extract all
 or a portion of the ``information records'' from a binary \exo{} file
-and return the results as a string variable. 
+and return the results as a string variable.
 
 There are two forms of the function.  The first function has the
 syntax:  \cmd{exodus\_info(filename, prefix)}.  This will read
@@ -493,4 +507,3 @@ it will resume appending lines to the return string.
 
 The returned string can then be operated on as a normal \aprepro{}
 variable.
-

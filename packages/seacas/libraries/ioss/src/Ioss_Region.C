@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -287,6 +287,14 @@ namespace {
     return iodatabase->is_input() || iodatabase->open_create_behavior() == Ioss::DB_APPEND ||
            iodatabase->open_create_behavior() == Ioss::DB_MODIFY;
   }
+
+  template <typename T>
+  void internal_erase_fields(const std::vector<T> &entities, Ioss::Field::RoleType role)
+  {
+    for (const auto &entity : entities) {
+      entity->field_erase(role);
+    }
+  }
 } // namespace
 
 namespace Ioss {
@@ -466,17 +474,17 @@ namespace Ioss {
     int64_t total_nodes    = get_property("node_count").get_int();
     int64_t total_elements = get_property("element_count").get_int();
     auto    max_entity = std::max({total_sides, total_es_elements, total_fs_faces, total_es_edges,
-                                total_ns_nodes, total_cells, total_nodes, total_elements});
+                                   total_ns_nodes, total_cells, total_nodes, total_elements});
 
     int64_t num_ts = get_property("state_count").get_int();
     auto    max_sb = std::max(
            {get_property("spatial_dimension").get_int(), get_property("node_block_count").get_int(),
-         get_property("edge_block_count").get_int(), get_property("face_block_count").get_int(),
-         get_property("element_block_count").get_int(),
-         get_property("structured_block_count").get_int(), get_property("node_set_count").get_int(),
-         get_property("edge_set_count").get_int(), get_property("face_set_count").get_int(),
-         get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
-         get_property("assembly_count").get_int(), get_property("blob_count").get_int(), num_ts});
+            get_property("edge_block_count").get_int(), get_property("face_block_count").get_int(),
+            get_property("element_block_count").get_int(),
+            get_property("structured_block_count").get_int(), get_property("node_set_count").get_int(),
+            get_property("edge_set_count").get_int(), get_property("face_set_count").get_int(),
+            get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
+            get_property("assembly_count").get_int(), get_property("blob_count").get_int(), num_ts});
 
     // Global variables transitioning from TRANSIENT to REDUCTION..
     size_t num_glo_vars  = field_count(Ioss::Field::TRANSIENT);
@@ -512,12 +520,12 @@ namespace Ioss {
     }
 
     auto max_vr    = std::max({num_glo_vars,     num_nod_vars,     num_ele_vars,     num_str_vars,
-                            num_ns_vars,      num_ss_vars,      num_edg_vars,     num_fac_vars,
-                            num_es_vars,      num_fs_vars,      num_els_vars,     num_blob_vars,
-                            num_asm_vars,     num_glo_red_vars, num_nod_red_vars, num_edg_red_vars,
-                            num_fac_red_vars, num_ele_red_vars, num_str_red_vars, num_ns_red_vars,
-                            num_es_red_vars,  num_fs_red_vars,  num_els_red_vars, num_asm_red_vars,
-                            num_blob_red_vars});
+                               num_ns_vars,      num_ss_vars,      num_edg_vars,     num_fac_vars,
+                               num_es_vars,      num_fs_vars,      num_els_vars,     num_blob_vars,
+                               num_asm_vars,     num_glo_red_vars, num_nod_red_vars, num_edg_red_vars,
+                               num_fac_red_vars, num_ele_red_vars, num_str_red_vars, num_ns_red_vars,
+                               num_es_red_vars,  num_fs_red_vars,  num_els_red_vars, num_asm_red_vars,
+                               num_blob_red_vars});
     int  vr_width  = Ioss::Utils::number_width(max_vr, true) + 2;
     int  num_width = Ioss::Utils::number_width(max_entity, true) + 2;
     int  sb_width  = Ioss::Utils::number_width(max_sb, true) + 2;
@@ -528,37 +536,75 @@ namespace Ioss {
         "\n Database: {0}\n"
         " Mesh Type = {1}, {39}\n"
         "                      {38:{24}s}\t                 {38:{23}s}\t Variables : Transient / Reduction\n"
-        " Spatial dimensions = {2:{24}L}\t                 {38:{23}s}\t Global     = {26:{25}L}\t{44:{25}L}\n"
-        " Node blocks        = {7:{24}L}\t Nodes         = {3:{23}L}\t Nodal      = {27:{25}L}\t{45:{25}L}\n"
-        " Edge blocks        = {8:{24}L}\t Edges         = {4:{23}L}\t Edge       = {33:{25}L}\t{46:{25}L}\n"
-        " Face blocks        = {9:{24}L}\t Faces         = {5:{23}L}\t Face       = {34:{25}L}\t{47:{25}L}\n"
-        " Element blocks     = {10:{24}L}\t Elements      = {6:{23}L}\t Element    = {28:{25}L}\t{48:{25}L}\n"
-        " Structured blocks  = {11:{24}L}\t Cells         = {17:{23}L}\t Structured = {29:{25}L}\t{49:{25}L}\n"
-        " Node sets          = {12:{24}L}\t Node list     = {18:{23}L}\t Nodeset    = {30:{25}L}\t{50:{25}L}\n"
-        " Edge sets          = {13:{24}L}\t Edge list     = {19:{23}L}\t Edgeset    = {35:{25}L}\t{51:{25}L}\n"
-        " Face sets          = {14:{24}L}\t Face list     = {20:{23}L}\t Faceset    = {36:{25}L}\t{52:{25}L}\n"
-        " Element sets       = {15:{24}L}\t Element list  = {21:{23}L}\t Elementset = {37:{25}L}\t{53:{25}L}\n"
-        " Element side sets  = {16:{24}L}\t Element sides = {22:{23}L}\t Sideset    = {31:{25}L}\n"
-        " Assemblies         = {40:{24}L}\t                 {38:{23}s}\t Assembly   = {41:{25}L}\t{54:{25}L}\n"
-        " Blobs              = {42:{24}L}\t                 {38:{23}s}\t Blob       = {43:{25}L}\t{55:{25}L}\n\n"
-        " Time steps         = {32:{24}L}\n",
+        " Spatial dimensions = {2:{24}}\t                 {38:{23}s}\t Global     = {26:{25}}\t{44:{25}}\n"
+        " Node blocks        = {7:{24}}\t Nodes         = {3:{23}}\t Nodal      = {27:{25}}\t{45:{25}}\n"
+        " Edge blocks        = {8:{24}}\t Edges         = {4:{23}}\t Edge       = {33:{25}}\t{46:{25}}\n"
+        " Face blocks        = {9:{24}}\t Faces         = {5:{23}}\t Face       = {34:{25}}\t{47:{25}}\n"
+        " Element blocks     = {10:{24}}\t Elements      = {6:{23}}\t Element    = {28:{25}}\t{48:{25}}\n"
+        " Structured blocks  = {11:{24}}\t Cells         = {17:{23}}\t Structured = {29:{25}}\t{49:{25}}\n"
+        " Node sets          = {12:{24}}\t Node list     = {18:{23}}\t Nodeset    = {30:{25}}\t{50:{25}}\n"
+        " Edge sets          = {13:{24}}\t Edge list     = {19:{23}}\t Edgeset    = {35:{25}}\t{51:{25}}\n"
+        " Face sets          = {14:{24}}\t Face list     = {20:{23}}\t Faceset    = {36:{25}}\t{52:{25}}\n"
+        " Element sets       = {15:{24}}\t Element list  = {21:{23}}\t Elementset = {37:{25}}\t{53:{25}}\n"
+        " Element side sets  = {16:{24}}\t Element sides = {22:{23}}\t Sideset    = {31:{25}}\n"
+        " Assemblies         = {40:{24}}\t                 {38:{23}s}\t Assembly   = {41:{25}}\t{54:{25}}\n"
+        " Blobs              = {42:{24}}\t                 {38:{23}s}\t Blob       = {43:{25}}\t{55:{25}}\n\n"
+        " Time steps         = {32:{24}}\n",
         get_database()->get_filename(), mesh_type_string(),
-        get_property("spatial_dimension").get_int(), get_property("node_count").get_int(),
-        get_property("edge_count").get_int(), get_property("face_count").get_int(),
-        get_property("element_count").get_int(), get_property("node_block_count").get_int(),
-        get_property("edge_block_count").get_int(), get_property("face_block_count").get_int(),
-        get_property("element_block_count").get_int(),
-        get_property("structured_block_count").get_int(), get_property("node_set_count").get_int(),
-        get_property("edge_set_count").get_int(), get_property("face_set_count").get_int(),
-        get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
-        total_cells, total_ns_nodes, total_es_edges, total_fs_faces, total_es_elements, total_sides,
-        num_width, sb_width, vr_width, num_glo_vars, num_nod_vars, num_ele_vars, num_str_vars,
-        num_ns_vars, num_ss_vars, num_ts, num_edg_vars, num_fac_vars, num_es_vars, num_fs_vars,
-        num_els_vars, " ", get_database()->get_format(), get_property("assembly_count").get_int(),
-        num_asm_vars, get_property("blob_count").get_int(), num_blob_vars, num_glo_red_vars,
-        num_nod_red_vars, num_edg_red_vars, num_fac_red_vars, num_ele_red_vars, num_str_red_vars,
-        num_ns_red_vars, num_es_red_vars, num_fs_red_vars, num_els_red_vars, num_asm_red_vars,
-        num_blob_red_vars);
+        fmt::group_digits(get_property("spatial_dimension").get_int()),
+	fmt::group_digits(get_property("node_count").get_int()),
+        fmt::group_digits(get_property("edge_count").get_int()),
+	fmt::group_digits(get_property("face_count").get_int()),
+        fmt::group_digits(get_property("element_count").get_int()),
+	fmt::group_digits(get_property("node_block_count").get_int()),
+        fmt::group_digits(get_property("edge_block_count").get_int()),
+	fmt::group_digits(get_property("face_block_count").get_int()),
+        fmt::group_digits(get_property("element_block_count").get_int()),
+        fmt::group_digits(get_property("structured_block_count").get_int()),
+	fmt::group_digits(get_property("node_set_count").get_int()),
+        fmt::group_digits(get_property("edge_set_count").get_int()),
+	fmt::group_digits(get_property("face_set_count").get_int()),
+        fmt::group_digits(get_property("element_set_count").get_int()),
+	fmt::group_digits(get_property("side_set_count").get_int()),
+        fmt::group_digits(total_cells),
+	fmt::group_digits(total_ns_nodes),
+	fmt::group_digits(total_es_edges),
+	fmt::group_digits(total_fs_faces),
+	fmt::group_digits(total_es_elements),
+	fmt::group_digits(total_sides),
+        num_width,
+	sb_width,
+	vr_width,
+	fmt::group_digits(num_glo_vars),
+	fmt::group_digits(num_nod_vars),
+	fmt::group_digits(num_ele_vars),
+	fmt::group_digits(num_str_vars),
+        fmt::group_digits(num_ns_vars),
+	fmt::group_digits(num_ss_vars),
+	fmt::group_digits(num_ts),
+	fmt::group_digits(num_edg_vars),
+	fmt::group_digits(num_fac_vars),
+	fmt::group_digits(num_es_vars),
+	fmt::group_digits(num_fs_vars),
+        fmt::group_digits(num_els_vars),
+	" ",
+	get_database()->get_format(),
+	fmt::group_digits(get_property("assembly_count").get_int()),
+        fmt::group_digits(num_asm_vars) ,
+	fmt::group_digits(get_property("blob_count").get_int()),
+	fmt::group_digits(num_blob_vars),
+	fmt::group_digits(num_glo_red_vars),
+        fmt::group_digits(num_nod_red_vars),
+	fmt::group_digits(num_edg_red_vars),
+	fmt::group_digits(num_fac_red_vars),
+	fmt::group_digits(num_ele_red_vars),
+	fmt::group_digits(num_str_red_vars),
+        fmt::group_digits(num_ns_red_vars),
+	fmt::group_digits(num_es_red_vars),
+	fmt::group_digits(num_fs_red_vars),
+	fmt::group_digits(num_els_red_vars),
+	fmt::group_digits(num_asm_red_vars),
+        fmt::group_digits(num_blob_red_vars));
     // clang-format on
   }
 
@@ -605,9 +651,7 @@ namespace Ioss {
       switch (get_state()) {
       case STATE_CLOSED:
         // Make sure we can go to the specified state.
-        switch (new_state) {
-        default: success = set_state(new_state);
-        }
+        success = set_state(new_state);
         break;
 
       // For the invalid transitions; provide a more meaningful
@@ -758,7 +802,7 @@ namespace Ioss {
       // Check that time is increasing...
       static bool warning_output = false;
       if (!warning_output) {
-        fmt::print(Ioss::WARNING(),
+        fmt::print(Ioss::WarnOut(),
                    "Current time {} is not greater than previous time {} in\n\t{}.\n"
                    "This may cause problems in applications that assume monotonically increasing "
                    "time values.\n",
@@ -863,9 +907,9 @@ namespace Ioss {
     DatabaseIO *db = get_database();
     db->get_step_times();
 
-    int    step     = -1;
-    double max_time = -1.0;
-    for (int i = 0; i < static_cast<int>(stateTimes.size()); i++) {
+    int    step     = stateTimes.empty() ? -1 : 0;
+    double max_time = stateTimes.empty() ? -1 : stateTimes[0];
+    for (int i = 1; i < static_cast<int>(stateTimes.size()); i++) {
       if (stateTimes[i] > max_time) {
         step     = i;
         max_time = stateTimes[i];
@@ -991,6 +1035,24 @@ namespace Ioss {
     db->end_state(state, time);
     currentState = -1;
     return time;
+  }
+
+  void Region::erase_fields(Field::RoleType role)
+  {
+    field_erase(role);
+    internal_erase_fields(get_node_blocks(), role);
+    internal_erase_fields(get_edge_blocks(), role);
+    internal_erase_fields(get_face_blocks(), role);
+    internal_erase_fields(get_element_blocks(), role);
+    internal_erase_fields(get_nodesets(), role);
+    internal_erase_fields(get_edgesets(), role);
+    internal_erase_fields(get_facesets(), role);
+    internal_erase_fields(get_elementsets(), role);
+    internal_erase_fields(get_sidesets(), role);
+    internal_erase_fields(get_commsets(), role);
+    internal_erase_fields(get_structured_blocks(), role);
+    internal_erase_fields(get_assemblies(), role);
+    internal_erase_fields(get_blobs(), role);
   }
 
   /** \brief Add a structured block to the region.
@@ -1617,10 +1679,10 @@ namespace Ioss {
     auto        I        = aliases_[type].find(ci_alias);
     if (I == aliases_[type].end()) {
       if (type == Ioss::SIDEBLOCK) {
-	I = aliases_[Ioss::SIDESET].find(ci_alias);
-	if (I != aliases_[Ioss::SIDESET].end()) {
-	  return (*I).second;
-	}
+        I = aliases_[Ioss::SIDESET].find(ci_alias);
+        if (I != aliases_[Ioss::SIDESET].end()) {
+          return (*I).second;
+        }
       }
       return "";
     }

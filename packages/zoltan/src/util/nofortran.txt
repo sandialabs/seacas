@@ -22,7 +22,7 @@ The below link points to a "no-fortran" serial nightly build.  You will
 see what packages can be built without Fortran there.
 
 http://software.sandia.gov/trilinos/developer/test_harness/results/build.html?mid=51=1172
-<http://software.sandia.gov/trilinos/developer/test_harness/results/build.html?mid=51&bid=1172> 
+<http://software.sandia.gov/trilinos/developer/test_harness/results/build.html?mid=51&bid=1172>
 
 Also, this only works on the dev branch.
 

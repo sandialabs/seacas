@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -67,7 +67,7 @@ E_Type get_elem_type(
   const int   num_dim		/* Number of dimensions of the mesh */
 );
 
-extern 
+extern
 const char *get_elem_name(
   int         itype             /* ExodusII element type */
 );

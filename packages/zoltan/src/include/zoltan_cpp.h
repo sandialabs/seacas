@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -60,8 +60,8 @@
 #include <cstdlib>
 
 /* F90 names must be less than 31 characters, support old name */
-#define Set_HG_Size_Edge_Weights_Fn    Set_HG_Size_Edge_Wts_Fn 
-#define Set_HG_Edge_Weights_Fn         Set_HG_Edge_Wts_Fn 
+#define Set_HG_Size_Edge_Weights_Fn    Set_HG_Size_Edge_Wts_Fn
+#define Set_HG_Edge_Weights_Fn         Set_HG_Edge_Wts_Fn
 
 #ifdef TFLOP
   #include <string.h>
@@ -75,7 +75,7 @@ public:
 
   // Constructor
 
-  Zoltan (const MPI_Comm &communicator = MPI_COMM_WORLD) 
+  Zoltan (const MPI_Comm &communicator = MPI_COMM_WORLD)
   {
   this->ZZ_Ptr = Zoltan_Create(communicator);
 
@@ -93,9 +93,9 @@ public:
 
   ~Zoltan()
   {
-    // Warning: Zoltan_Destroy calls MPI.   
-    // Do not call MPI_Finalize() before this destructor gets called. 
-    // Ensure that ZoltanObject's created on the stack are deleted 
+    // Warning: Zoltan_Destroy calls MPI.
+    // Do not call MPI_Finalize() before this destructor gets called.
+    // Ensure that ZoltanObject's created on the stack are deleted
     // before MPI_Finalize().
     // Alternatively, you can allocate and destroy Zoltans explicitly:
     //
@@ -134,7 +134,7 @@ public:
   }
 
   //! Replaces Zoltan_Set_Param_Vec
-  int Set_Param_Vec( const std::string & param, const std::string & value, 
+  int Set_Param_Vec( const std::string & param, const std::string & value,
                      const int &index )
   {
     return Zoltan_Set_Param_Vec( ZZ_Ptr, param.c_str(), value.c_str(), index);
@@ -255,19 +255,19 @@ public:
     return Zoltan_LB_Eval_HG(ZZ_Ptr, print_stats, hg);
   }
 
-  int LB_Eval( const int &print_stats, ZOLTAN_BALANCE_EVAL *eval, 
+  int LB_Eval( const int &print_stats, ZOLTAN_BALANCE_EVAL *eval,
                ZOLTAN_GRAPH_EVAL *graph, ZOLTAN_HG_EVAL *hg)
   {
-    return Zoltan_LB_Eval( ZZ_Ptr, print_stats, eval, graph, hg); 
+    return Zoltan_LB_Eval( ZZ_Ptr, print_stats, eval, graph, hg);
   }
 
   int RCB_Box( const int &part,
-                int &ndim, 
-                double &xmin, 
-                double &ymin, 
-                double &zmin, 
-                double &xmax, 
-                double &ymax, 
+                int &ndim,
+                double &xmin,
+                double &ymin,
+                double &zmin,
+                double &xmax,
+                double &ymax,
                 double &zmax )
   {
     return Zoltan_RCB_Box( ZZ_Ptr,part,&ndim,&xmin,&ymin,&zmin,&xmax,&ymax,&zmax);
@@ -617,9 +617,9 @@ public:
                          int * const export_to_part )
   {
     return Zoltan_Migrate( ZZ_Ptr,
-                           num_import, import_global_ids, import_local_ids, 
+                           num_import, import_global_ids, import_local_ids,
                            import_procs, import_to_part,
-                           num_export, export_global_ids, export_local_ids, 
+                           num_export, export_global_ids, export_local_ids,
                            export_procs, export_to_part );
   }
 
@@ -658,9 +658,8 @@ public:
 
 private:
 
-  Zoltan_Struct * ZZ_Ptr; 
+  Zoltan_Struct * ZZ_Ptr;
 
 };
 
 #endif
-

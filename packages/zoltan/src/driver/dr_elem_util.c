@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -135,12 +135,12 @@ void free_mesh_arrays(MESH_INFO_PTR mesh)
 {
 int i;
 
-  for (i = 0; i < mesh->elem_array_len; i++) 
+  for (i = 0; i < mesh->elem_array_len; i++)
     free_element_arrays(&(mesh->elements[i]), mesh);
   safe_free((void **)(void *) &(mesh->elements));
   safe_free((void **)(void *) &(mesh->blank));
 
-  for (i = 0; i < mesh->num_el_blks; i++) 
+  for (i = 0; i < mesh->num_el_blks; i++)
     safe_free((void **)(void *) &(mesh->eb_names[i]));
 
   safe_free((void **)(void *) &(mesh->eb_names));

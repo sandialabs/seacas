@@ -21,26 +21,26 @@ option. (See Chapter~ref{ch:execution}.)
 \section{Error Messages}
 
 \begin{description}
-\item[Aprepro:  ERROR:  parse  error  (file,  line  line\#)]    
+\item[Aprepro:  ERROR:  parse  error  (file,  line  line\#)]
 An unrecognized or ill-formed expression has been entered. Parsing of
 the file continues following this expression.
 
-\item[Aprepro: ERROR: Can't open 'file': No such file or directory] The file specified 
-in the include command cannot be found or does not exist. Aprepro will terminate 
+\item[Aprepro: ERROR: Can't open 'file': No such file or directory] The file specified
+in the include or import command cannot be found or does not exist. Aprepro will terminate
 processing following this error message.
 
-\item[Aprepro: ERROR: Can't open 'file': Permission denied] The file specified in the 
-include or output command could not be opened due to insufficient permission. 
+\item[Aprepro: ERROR: Can't open 'file': Permission denied] The file specified in the
+include, import, or output command could not be opened due to insufficient permission.
 Aprepro will terminate processing following this error message.
 
-\item[Aprepro: ERROR: Improperly Nested ifdef/ifndef statements (file, line line\#)] 
-An invalid ifdef/ifndef block has been detected. Typically this is caused by an 
+\item[Aprepro: ERROR: Improperly Nested ifdef/ifndef statements (file, line line\#)]
+An invalid ifdef/ifndef block has been detected. Typically this is caused by an
 extra endif or else statement.
 
 \item[Aprepro:  ERROR:    Zero  divisor  (file,  line  line\#)]    An expression tried
 to divide by zero. The expression is given the value of the dividend and parsing continues.
 
-\item[Aprepro: ERROR: Invalid units system type. Valid types are: 'si', 'cgs', 'cgs-ev', 'shock', 'swap', 'ft-lbf-s', 'ft-lbm-s', 'in-lbf-s'] 
+\item[Aprepro: ERROR: Invalid units system type. Valid types are: 'si', 'cgs', 'cgs-ev', 'shock', 'swap', 'ft-lbf-s', 'ft-lbm-s', 'in-lbf-s']
 The units system specified in the command could not be found. This
 is most likely due to a misspelling of the units system name.
 
@@ -64,7 +64,7 @@ information.
 
 \begin{description}
 \item[Aprepro:  WARN:  Undefined  variable  'variable'  (file,  line  line\#)]
-A variable is used in an expression before it has been defined. The variable is 
+A variable is used in an expression before it has been defined. The variable is
 set equal to zero or the null string (\texttt{"}\texttt{"}) and parsing continues.
 
 \item[Aprepro:  WARN:  Variable  'variable'  redefined  (file,  line  line\#)]
@@ -80,9 +80,9 @@ page~\ref{immutable_block} for a description of immutable variables.
 \section{Informational Messages}
 
 \begin{description}
-\item[Aprepro: INFO: Included File: 'filename' (file, line line\#)] The file filename 
-is being included at line line\# of file file. This message will also be printed 
-during the execution of a loop block since temporary files are used to implement 
-the looping function, and during the execution of the units conversion and material 
+\item[Aprepro: INFO: Included File: 'filename' (file, line line\#)] The file filename
+is being included at line line\# of file file. This message will also be printed
+during the execution of a loop block since temporary files are used to implement
+the looping function, and during the execution of the units conversion and material
 database access routines.
 \end{description}

@@ -2,7 +2,6 @@
 TRIBITS_ADD_EXECUTABLE(
  Utst_textmesh
  SOURCES unitMain.C UnitTestTextMesh.C
- IMPORTEDLIBS gtest
 )
 
 TRIBITS_ADD_TEST(

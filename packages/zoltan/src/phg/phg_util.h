@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -56,8 +56,8 @@
 extern "C" {
 #endif
 
-/* Definitions to allow simplicity in PHG code 
- * while protecting application namespace. 
+/* Definitions to allow simplicity in PHG code
+ * while protecting application namespace.
  */
 #define uMe Zoltan_PHG_uMe
 #define uprintf Zoltan_PHG_uprintf

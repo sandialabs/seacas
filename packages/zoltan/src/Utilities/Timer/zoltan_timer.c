@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -72,12 +72,12 @@ extern "C" {
 
 /****************************************************************************/
 /* Number of timers initially in Timer object. */
-#define INITLENGTH 30   
+#define INITLENGTH 30
 
 /* Length of character strings naming each timer. */
 /* If you change this constant, change the string format  */
 /* in Zoltan_Timer_Print, too. */
-#define MAXNAMELEN 31   
+#define MAXNAMELEN 31
 
 /* Flag indicating whether a timer is in use. */
 #define INUSE 1
@@ -92,7 +92,7 @@ extern "C" {
     ZOLTAN_PRINT_ERROR(ppproc, yo, str); \
     return ZOLTAN_FATAL; \
   }
-  
+
 
 /* Macro to ensure that a Timer object is non-NULL */
 #define TESTTIMER(zt, yo) \
@@ -106,7 +106,7 @@ extern "C" {
 /****************************************************************************/
 /* Structure that implements an individual timer. */
 typedef struct TimeStruct {
-  double Start_Time;      /* Most recent start time; 
+  double Start_Time;      /* Most recent start time;
                              set by Zoltan_Timer_Start */
   double Stop_Time;       /* Most recent end time;
                              set by Zoltan_Timer_Stop */
@@ -128,7 +128,7 @@ typedef struct TimeStruct {
 #endif
 } ZTIMER_TS;
 
-/* Timer object consisting of many related timers. 
+/* Timer object consisting of many related timers.
  * Applications access this structure. */
 typedef struct Zoltan_Timer {
   int Timer_Flag;         /* Zoltan Timer_Flag flag passed to Zoltan_Time */
@@ -174,7 +174,7 @@ int Zoltan_Timer_Copy_To(ZTIMER **to, ZTIMER *from)
       toptr->Times = NULL;
     }
   }
-  
+
   return ZOLTAN_OK;
 }
 
@@ -183,7 +183,7 @@ ZTIMER *Zoltan_Timer_Create(
   int timer_flag
 )
 {
-/* Allocates a Timer object for the application; returns a pointer to it. 
+/* Allocates a Timer object for the application; returns a pointer to it.
  * Does not start any timers.
  */
 
@@ -196,7 +196,7 @@ int i;
   zt->Length = INITLENGTH;
   zt->NextTimeStruct = 0;
 
-  for (i = 0; i < zt->Length; i++) 
+  for (i = 0; i < zt->Length; i++)
     zt->Times[i].Status = 0;
 
   return zt;
@@ -205,7 +205,7 @@ int i;
 /****************************************************************************/
 int Zoltan_Timer_Init(
   ZTIMER *zt,           /* Ptr to Timer object */
-  int use_barrier,      /* Flag indicating whether to perform a 
+  int use_barrier,      /* Flag indicating whether to perform a
                            barrier operation before starting the
                            timer. */
   const char *name            /* Name of this timer */
@@ -216,7 +216,7 @@ int ret;
 static char *yo = "Zoltan_Timer_Init";
 
   TESTTIMER(zt, yo);
-  
+
   ret = zt->NextTimeStruct++;
 
   if (ret >= zt->Length) {
@@ -240,7 +240,7 @@ static char *yo = "Zoltan_Timer_Init";
 int Zoltan_Timer_Reset(
   ZTIMER *zt,
   int ts_idx,            /* Index of the timer to reset */
-  int use_barrier,       /* Flag indicating whether to perform a 
+  int use_barrier,       /* Flag indicating whether to perform a
                             barrier operation before starting the
                             timer. */
   const char *name             /* Name of this timer */
@@ -287,7 +287,7 @@ static char *yo = "Zoltan_Timer_ChangeFlag";
 int Zoltan_Timer_Start(
   ZTIMER *zt,            /* Ptr to Timer object */
   int ts_idx,            /* Index of the timer to use */
-  MPI_Comm comm,         /* Communicator to use for synchronization, 
+  MPI_Comm comm,         /* Communicator to use for synchronization,
                             if requested */
   char *filename,        /* Filename of file calling the Start */
   int lineno             /* Line number where Start was called */
@@ -302,7 +302,7 @@ static char *yo = "Zoltan_Timer_Start";
   ts = &(zt->Times[ts_idx]);
   if (ts->Status > RUNNING)  {
     char msg[256];
-    sprintf(msg, 
+    sprintf(msg,
             "Cannot start timer %d at %s:%d; timer already running from %s:%d.",
             ts_idx, filename, lineno, ts->Start_File, ts->Start_Line);
     FATALERROR(yo, msg)
@@ -329,7 +329,7 @@ static char *yo = "Zoltan_Timer_Start";
 int Zoltan_Timer_Stop(
   ZTIMER *zt,            /* Ptr to Timer object */
   int ts_idx,            /* Index of the timer to use */
-  MPI_Comm comm,         /* Communicator to use for synchronization, 
+  MPI_Comm comm,         /* Communicator to use for synchronization,
                             if requested */
   char *filename,        /* Filename of file calling the Stop */
   int lineno             /* Line number where Stop was called */
@@ -349,7 +349,7 @@ double my_time;
       FATALERROR(yo, "Cannot stop timer; timer never started.")
     else {
       char msg[256];
-      sprintf(msg, 
+      sprintf(msg,
               "Cannot stop timer %d at %s:%d; "
               "timer already stopped from %s:%d.",
               ts_idx, filename, lineno, ts->Stop_File, ts->Stop_Line);
@@ -385,9 +385,9 @@ int Zoltan_Timer_Print(
   FILE *fp
 )
 {
-/* Accrues a single timer's values across a communicator and prints 
+/* Accrues a single timer's values across a communicator and prints
  * its information.  This function must be called by all processors
- * within the communicator.  
+ * within the communicator.
  */
 static char *yo = "Zoltan_Timer_Print";
 ZTIMER_TS *ts;
@@ -415,11 +415,11 @@ double sum_time;
   MPI_Allreduce(&(ts->My_Tot_Time), &min_time, 1, MPI_DOUBLE, MPI_MIN, comm);
   MPI_Allreduce(&(ts->My_Tot_Time), &sum_time, 1, MPI_DOUBLE, MPI_SUM, comm);
 
-  if (proc == my_proc) 
+  if (proc == my_proc)
     fprintf(fp,
             "%3d ZOLTAN_TIMER %3d %23s:  MyTime %7.4f  "
             "MaxTime %7.4f  MinTime %7.4f  AvgTime %7.4f\n",
-            proc, ts_idx, ts->Name, ts->My_Tot_Time, 
+            proc, ts_idx, ts->Name, ts->My_Tot_Time,
             max_time, min_time, sum_time/nproc);
 
   if (restart) {
@@ -434,7 +434,7 @@ double sum_time;
 int Zoltan_Timer_PrintAll(
   ZTIMER *zt,
   int proc,    /* Rank of the processor (in comm) that should print the data. */
-  MPI_Comm comm, 
+  MPI_Comm comm,
   FILE *fp
 )
 {
@@ -443,7 +443,7 @@ static char *yo = "Zoltan_Timer_PrintAll";
 int i, ierr = ZOLTAN_OK;
 
   TESTTIMER(zt, yo);
-  for (i = 0; i < zt->NextTimeStruct; i++) 
+  for (i = 0; i < zt->NextTimeStruct; i++)
     if ((ierr = Zoltan_Timer_Print(zt, i, proc, comm, fp)) != ZOLTAN_OK)
       break;
 

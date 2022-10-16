@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -56,7 +56,7 @@
 #include "zoltan_eval.h"
 
 /*
- * Define this prior to #ifdef __cplusplus to avoid a 
+ * Define this prior to #ifdef __cplusplus to avoid a
  * compiler warning when compiling C++ on Solaris
  */
 typedef void ZOLTAN_VOID_FN(void);
@@ -171,15 +171,15 @@ struct Zoltan_Struct;
 
 /*****************************************************************************/
 /*
- *  Function to return, for a list of object IDs, 
+ *  Function to return, for a list of object IDs,
  *  the partition numbers the objects are assigned to.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
  *    num_lid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a local ID
- *    num_obj             --  number of objects for which partition values 
+ *    num_obj             --  number of objects for which partition values
  *                            should be returned.
  *    global_id           --  the Global IDs for the objects
  *    local_id            --  the Local IDs for the objects
@@ -190,23 +190,23 @@ struct Zoltan_Struct;
  */
 
 typedef void ZOLTAN_PART_MULTI_FN(
-  void *data,              
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
   int num_obj,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
   int *parts,
   int *ierr
 );
 
 typedef void ZOLTAN_PART_MULTI_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
   int *num_obj,
-  ZOLTAN_ID_PTR global_id, 
-  ZOLTAN_ID_PTR local_id, 
+  ZOLTAN_ID_PTR global_id,
+  ZOLTAN_ID_PTR local_id,
   int *parts,
   int *ierr
 );
@@ -219,7 +219,7 @@ typedef void ZOLTAN_PART_MULTI_FORT_FN(
 /*
  *  Function to return, for the object with a given ID,
  *  the partition number the object is assigned to.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -233,20 +233,20 @@ typedef void ZOLTAN_PART_MULTI_FORT_FN(
  */
 
 typedef int ZOLTAN_PART_FN(
-  void *data,              
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
   int *ierr
 );
 
 typedef int ZOLTAN_PART_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
-  ZOLTAN_ID_PTR local_id, 
+  ZOLTAN_ID_PTR global_id,
+  ZOLTAN_ID_PTR local_id,
   int *ierr
 );
 
@@ -259,7 +259,7 @@ typedef int ZOLTAN_PART_FORT_FN(
  *  Function to return, for the object with a given ID,
  *  the object's number of edges (i.e., the number of objects with which
  *  the given object must communicate).
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -273,20 +273,20 @@ typedef int ZOLTAN_PART_FORT_FN(
  */
 
 typedef int ZOLTAN_NUM_EDGES_FN(
-  void *data,              
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
   int *ierr
 );
 
 typedef int ZOLTAN_NUM_EDGES_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
-  ZOLTAN_ID_PTR local_id, 
+  ZOLTAN_ID_PTR global_id,
+  ZOLTAN_ID_PTR local_id,
   int *ierr
 );
 
@@ -295,7 +295,7 @@ typedef int ZOLTAN_NUM_EDGES_FORT_FN(
  *  Function to return, for a list of object with a given IDs,
  *  each object's number of edges (i.e., the number of objects with which
  *  the given object must communicate).
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -312,33 +312,33 @@ typedef int ZOLTAN_NUM_EDGES_FORT_FN(
  */
 
 typedef void ZOLTAN_NUM_EDGES_MULTI_FN(
-  void *data,              
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
   int num_obj,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
   int *num_edges,
   int *ierr
 );
 
 typedef void ZOLTAN_NUM_EDGES_MULTI_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
   int *num_obj,
-  ZOLTAN_ID_PTR global_id, 
-  ZOLTAN_ID_PTR local_id, 
+  ZOLTAN_ID_PTR global_id,
+  ZOLTAN_ID_PTR local_id,
   int *num_edges,
   int *ierr
 );
 
 /*****************************************************************************/
 /*
- *  Function to return, for the object with a given ID, 
+ *  Function to return, for the object with a given ID,
  *  the object's edge list (i.e., objects with which the given object must
  *  communicate.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -351,35 +351,35 @@ typedef void ZOLTAN_NUM_EDGES_MULTI_FORT_FN(
  *  Output:
  *    nbor_global_ids     --  Array of Global IDs of neighboring objects.
  *    nbor_procs          --  Array of neighboring procs.
- *    nbor_ewgts          --  Array of edge weights, where 
+ *    nbor_ewgts          --  Array of edge weights, where
  *                            nbor_ewgts[i*wdim:(i+1)*wdim-1]
  *                            corresponds to the weight of edge i
  *    ierr                --  error code
  */
 
 typedef void ZOLTAN_EDGE_LIST_FN(
-  void *data, 
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
-  ZOLTAN_ID_PTR nbor_global_id, 
+  ZOLTAN_ID_PTR nbor_global_id,
   int *nbor_procs,
-  int wdim, 
-  float *nbor_ewgts, 
+  int wdim,
+  float *nbor_ewgts,
   int *ierr
 );
 
 typedef void ZOLTAN_EDGE_LIST_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
-  ZOLTAN_ID_PTR local_id, 
+  ZOLTAN_ID_PTR global_id,
+  ZOLTAN_ID_PTR local_id,
   ZOLTAN_ID_PTR nbor_global_id,
-  int *nbor_procs, 
-  int *wdim, 
-  float *nbor_ewgts, 
+  int *nbor_procs,
+  int *wdim,
+  float *nbor_ewgts,
   int *ierr
 );
 
@@ -388,7 +388,7 @@ typedef void ZOLTAN_EDGE_LIST_FORT_FN(
  *  Function to return, for an array of objects,
  *  each object's edge list (i.e., objects with which the given object must
  *  communicate.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -403,47 +403,47 @@ typedef void ZOLTAN_EDGE_LIST_FORT_FN(
  *                            edge weights are not sought.
  *  Output:
  *    nbor_global_ids     --  Array of Global IDs of neighboring objects.
- *                            Nbors are stored consecutively; 
+ *                            Nbors are stored consecutively;
  *                            nbor_global_ids[sum:sum+num_edges[i]-1],
  *                            sum = sum j from 0 to i-1 of num_edges[j],
  *                            holds nbors for the i-th global_id.
  *    nbor_procs          --  Array of neighboring procs.  Storage is parallel
  *                            to nbor_global_ids.
- *    nbor_ewgts          --  Array of edge weights, where 
+ *    nbor_ewgts          --  Array of edge weights, where
  *                            nbor_ewgts[sum*wdim:(num_edges[i]+sum)*wdim-1],
  *                            sum = sum j from 0 to i-1 of num_edges[j],
- *                            corresponds to the weights for edges of the 
+ *                            corresponds to the weights for edges of the
  *                            i-th global_id.
  *    ierr                --  error code
  */
 
 typedef void ZOLTAN_EDGE_LIST_MULTI_FN(
-  void *data, 
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
   int num_obj,
-  ZOLTAN_ID_PTR global_ids, 
+  ZOLTAN_ID_PTR global_ids,
   ZOLTAN_ID_PTR local_ids,
   int *num_edges,
-  ZOLTAN_ID_PTR nbor_global_id, 
+  ZOLTAN_ID_PTR nbor_global_id,
   int *nbor_procs,
-  int wdim, 
-  float *nbor_ewgts, 
+  int wdim,
+  float *nbor_ewgts,
   int *ierr
 );
 
 typedef void ZOLTAN_EDGE_LIST_MULTI_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
   int *num_obj,
-  ZOLTAN_ID_PTR global_ids, 
-  ZOLTAN_ID_PTR local_ids, 
+  ZOLTAN_ID_PTR global_ids,
+  ZOLTAN_ID_PTR local_ids,
   int *num_edges,
   ZOLTAN_ID_PTR nbor_global_id,
-  int *nbor_procs, 
-  int *wdim, 
-  float *nbor_ewgts, 
+  int *nbor_procs,
+  int *wdim,
+  float *nbor_ewgts,
   int *ierr
 );
 
@@ -452,7 +452,7 @@ typedef void ZOLTAN_EDGE_LIST_MULTI_FORT_FN(
  *  Function to return
  *  the number of geometry fields per object (e.g., the number of values
  *  used to express the coordinates of the object).
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *  Output:
  *    ierr                --  error code
@@ -460,20 +460,20 @@ typedef void ZOLTAN_EDGE_LIST_MULTI_FORT_FN(
  */
 
 typedef int ZOLTAN_NUM_GEOM_FN(
-  void *data, 
+  void *data,
   int *ierr
 );
 
 typedef int ZOLTAN_NUM_GEOM_FORT_FN(
-  void *data, 
+  void *data,
   int *ierr
 );
 
 /*****************************************************************************/
 /*
- *  Function to return the geometry information (e.g., coordinates) for 
+ *  Function to return the geometry information (e.g., coordinates) for
  *  all objects.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -481,38 +481,38 @@ typedef int ZOLTAN_NUM_GEOM_FORT_FN(
  *                            in a local ID
  *    num_obj             --  number of objects whose coordinates are needed.
  *    global_id           --  array of Global IDs for the objects
- *    local_id            --  array of Local IDs for the objects; 
+ *    local_id            --  array of Local IDs for the objects;
  *                            NULL if num_lid_entries == 0.
  *    num_dim             --  dimension of coordinates for each object.
  *  Output:
- *    geom_vec            --  the geometry info for the objects; 
+ *    geom_vec            --  the geometry info for the objects;
  *                            (e.g., coordinates)
- *                            If num_dim == n, geom_vec[i*n+j] is the 
+ *                            If num_dim == n, geom_vec[i*n+j] is the
  *                            jth coordinate for object i.
  *    ierr                --  error code
  */
 
 typedef void ZOLTAN_GEOM_MULTI_FN(
-  void *data, 
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
   int num_obj,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
   int num_dim,
-  double *geom_vec, 
+  double *geom_vec,
   int *ierr
 );
 
 typedef void ZOLTAN_GEOM_MULTI_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
   int *num_obj,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
   int *num_dim,
-  double *geom_vec, 
+  double *geom_vec,
   int *ierr
 );
 
@@ -520,7 +520,7 @@ typedef void ZOLTAN_GEOM_MULTI_FORT_FN(
 /*
  *  Function to return, for the object with a given ID,
  *  the geometry information for the object (e.g., coordinates).
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -535,30 +535,30 @@ typedef void ZOLTAN_GEOM_MULTI_FORT_FN(
  */
 
 typedef void ZOLTAN_GEOM_FN(
-  void *data, 
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
-  double *geom_vec, 
+  double *geom_vec,
   int *ierr
 );
 
 typedef void ZOLTAN_GEOM_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
-  double *geom_vec, 
+  double *geom_vec,
   int *ierr
 );
 
 /*****************************************************************************/
 /*
- *  Function to return, for the calling processor, the number of objects 
+ *  Function to return, for the calling processor, the number of objects
  *  located in that processor's memory.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *  Output:
  *    ierr                --  error code
@@ -566,54 +566,54 @@ typedef void ZOLTAN_GEOM_FORT_FN(
  */
 
 typedef int ZOLTAN_NUM_OBJ_FN(
-  void *data, 
+  void *data,
   int *ierr
 );
 
 typedef int ZOLTAN_NUM_OBJ_FORT_FN(
-  void *data, 
+  void *data,
   int *ierr
 );
 
 /*****************************************************************************/
 /*
  *  Function to return a list of all local objects on a processor.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
  *    num_lid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a local ID
  *    wdim                --  dimension of object weights, or 0 if
- *                            object weights are not sought. 
+ *                            object weights are not sought.
  *  Output:
  *    global_ids          --  array of Global IDs of all objects on the
  *                            processor.
  *    local_ids           --  array of Local IDs of all objects on the
  *                            processor.
  *    objwgts             --  objwgts[i*wdim:(i+1)*wdim-1] correponds
- *                            to the weight of object i 
+ *                            to the weight of object i
  *    ierr                --  error code
  */
 
 typedef void ZOLTAN_OBJ_LIST_FN(
-  void *data, 
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
-  ZOLTAN_ID_PTR global_ids, 
+  ZOLTAN_ID_PTR global_ids,
   ZOLTAN_ID_PTR local_ids,
-  int wdim, 
-  float *objwgts, 
+  int wdim,
+  float *objwgts,
   int *ierr
 );
 
 typedef void ZOLTAN_OBJ_LIST_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
-  ZOLTAN_ID_PTR global_ids, 
+  ZOLTAN_ID_PTR global_ids,
   ZOLTAN_ID_PTR local_ids,
-  int *wdim, 
+  int *wdim,
   float *objwgts,
   int *ierr
 );
@@ -638,29 +638,29 @@ typedef void ZOLTAN_OBJ_LIST_FORT_FN(
  *    first_obj_wgt       --  weight vector for first object
  *                            (undefined if wdim=0)
  *    ierr                --  error code
- *  Returned value:       --  1 if a valid object is returned; 
+ *  Returned value:       --  1 if a valid object is returned;
  *                            0 if no more objects exist on the processor.
  */
 
 typedef int ZOLTAN_FIRST_OBJ_FN(
-  void *data, 
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
   ZOLTAN_ID_PTR first_global_id,
-  ZOLTAN_ID_PTR first_local_id, 
-  int wdim, 
-  float *first_obj_wgt, 
+  ZOLTAN_ID_PTR first_local_id,
+  int wdim,
+  float *first_obj_wgt,
   int *ierr
 );
 
 typedef int ZOLTAN_FIRST_OBJ_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
   ZOLTAN_ID_PTR first_global_id,
-  ZOLTAN_ID_PTR first_local_id, 
+  ZOLTAN_ID_PTR first_local_id,
   int *wdim,
-  float *first_obj_wgt, 
+  float *first_obj_wgt,
   int *ierr
 );
 
@@ -668,7 +668,7 @@ typedef int ZOLTAN_FIRST_OBJ_FORT_FN(
 /*
  *  Iterator function for local objects; return the next local object.
  *  This function should be used with ZOLTAN_FIRST_OBJ_FN.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -692,28 +692,28 @@ typedef int ZOLTAN_FIRST_OBJ_FORT_FN(
  */
 
 typedef int ZOLTAN_NEXT_OBJ_FN(
-  void *data, 
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
-  ZOLTAN_ID_PTR next_global_id, 
+  ZOLTAN_ID_PTR next_global_id,
   ZOLTAN_ID_PTR next_local_id,
-  int wdim, 
-  float *next_obj_wgt, 
+  int wdim,
+  float *next_obj_wgt,
   int *ierr
 );
 
 typedef int ZOLTAN_NEXT_OBJ_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
   ZOLTAN_ID_PTR next_global_id,
   ZOLTAN_ID_PTR next_local_id,
-  int *wdim, 
-  float *next_obj_wgt, 
+  int *wdim,
+  float *next_obj_wgt,
   int *ierr
 );
 
@@ -721,8 +721,8 @@ typedef int ZOLTAN_NEXT_OBJ_FORT_FN(
 /*****************************************************************************/
 /*
  *  Function to return the size (in bytes) of data associated with an object.
- *  
- *  Input:  
+ *
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -740,7 +740,7 @@ typedef int ZOLTAN_OBJ_SIZE_FN(
   void *data,
   int num_gid_entries,
   int num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
   int *ierr
 );
@@ -749,17 +749,17 @@ typedef int ZOLTAN_OBJ_SIZE_FORT_FN(
   void *data,
   int *num_gid_entries,
   int *num_lid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   ZOLTAN_ID_PTR local_id,
   int *ierr
 );
 
 /*****************************************************************************/
-/* 
- *  MULTI-ID version of ZOLTAN_OBJ_SIZE_FN 
+/*
+ *  MULTI-ID version of ZOLTAN_OBJ_SIZE_FN
  *  Function to return the size (in bytes) of data associated with each of
  *  multiple objects.
- * 
+ *
  *  Input:
  *    data                --  pointer to user-defined data structure.
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
@@ -767,10 +767,10 @@ typedef int ZOLTAN_OBJ_SIZE_FORT_FN(
  *    num_lid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a local ID
  *    num_ids             --  number of objects whose size is sought
- *    global_ids          --  the Global IDs for the objects 
+ *    global_ids          --  the Global IDs for the objects
  *    local_ids           --  the Local IDs for the objects
  *  Output:
- *    num_bytes           --  array of sizes (in bytes) for the given IDs 
+ *    num_bytes           --  array of sizes (in bytes) for the given IDs
  *    ierr                --  Zoltan error code
  */
 
@@ -798,11 +798,11 @@ typedef void ZOLTAN_OBJ_SIZE_MULTI_FORT_FN(
 /*****************************************************************************/
 /*
  *  Function to pack data to be migrated for the given object.
- *  This function is needed only when the application wants the load-balancer 
+ *  This function is needed only when the application wants the load-balancer
  *  to help migrate the data.  It packs all data related to the given object
  *  into a communication buffer, the starting address of which is provided
  *  by the load-balancer.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -822,7 +822,7 @@ typedef void ZOLTAN_OBJ_SIZE_MULTI_FORT_FN(
  */
 
 typedef void ZOLTAN_PACK_OBJ_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   ZOLTAN_ID_PTR global_id,
@@ -834,7 +834,7 @@ typedef void ZOLTAN_PACK_OBJ_FN(
 );
 
 typedef void ZOLTAN_PACK_OBJ_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   ZOLTAN_ID_PTR global_id,
@@ -847,7 +847,7 @@ typedef void ZOLTAN_PACK_OBJ_FORT_FN(
 
 /*****************************************************************************/
 /*
- *  MULTI-ID version of ZOLTAN_PACK_OBJ_FN 
+ *  MULTI-ID version of ZOLTAN_PACK_OBJ_FN
  *  Function to pack data for multiple given objects.
  *
  *  Input:
@@ -857,22 +857,22 @@ typedef void ZOLTAN_PACK_OBJ_FORT_FN(
  *    num_lid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a local ID
  *    num_ids             --  number of objects whose data is to be packed
- *    global_ids          --  the Global IDs for the objects 
+ *    global_ids          --  the Global IDs for the objects
  *    local_ids           --  the Local IDs for the objects
  *    dest_proc           --  Processor IDs of the destination processor for the
  *                            objects.
  *    size                --  number of bytes allowed for each object to
  *                            be packed.
- *                            size[i] = # of bytes to store the i-th object's 
+ *                            size[i] = # of bytes to store the i-th object's
  *                            data.  Each size includes padding for alignment.
- *    index               --  Indices into buf giving the starting location 
+ *    index               --  Indices into buf giving the starting location
  *                            of each object's data;
  *                            data for the i-th object are stored in
  *                              buf[index[i]],
  *                              buf[index[i]+1], ...,
  *                              buf[index[i]+size[i]-1].
  *                            Since Zoltan adds some tag information
- *                            to packed data, index[i] != sum[j=0,i-1](size[j]) 
+ *                            to packed data, index[i] != sum[j=0,i-1](size[j])
  *    buf                 --  starting address of buffer into which to
  *                            pack the object.
  *  Output:
@@ -912,10 +912,10 @@ typedef void ZOLTAN_PACK_OBJ_MULTI_FORT_FN(
 /*****************************************************************************/
 /*
  *  Function to unpack data for an object migrated to a new processor.
- *  This function is needed only when the application wants the load-balancer 
+ *  This function is needed only when the application wants the load-balancer
  *  to help migrate the data.  The data is stored in a buffer (char *); the
  *  size of the data for the object is included.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -929,9 +929,9 @@ typedef void ZOLTAN_PACK_OBJ_MULTI_FORT_FN(
  */
 
 typedef void ZOLTAN_UNPACK_OBJ_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
-  ZOLTAN_ID_PTR global_id, 
+  ZOLTAN_ID_PTR global_id,
   int size,
   char *buf,
   int *ierr
@@ -939,7 +939,7 @@ typedef void ZOLTAN_UNPACK_OBJ_FN(
 
 typedef void ZOLTAN_UNPACK_OBJ_FORT_FN(
   void *data,
-  int *num_gid_entries, 
+  int *num_gid_entries,
   ZOLTAN_ID_PTR global_id,
   int *size,
   char *buf,
@@ -948,11 +948,11 @@ typedef void ZOLTAN_UNPACK_OBJ_FORT_FN(
 
 /*****************************************************************************/
 
-/*  
- * MULTI-ID version of ZOLTAN_UNPACK_OBJ_FN 
+/*
+ * MULTI-ID version of ZOLTAN_UNPACK_OBJ_FN
  *  Function to unpack data for an object migrated to a new processor.
  *
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -970,7 +970,7 @@ typedef void ZOLTAN_UNPACK_OBJ_FORT_FN(
  *                              buf[index[i]+size[i]-1].
  *                            Since Zoltan adds some tag information
  *                            to packed data,
- *                              index[i] != sum[j=0,i-1](size[j]) 
+ *                              index[i] != sum[j=0,i-1](size[j])
  *    buf                 --  starting address of buffer from which to
  *                            unpack the objects.
  *  Output:
@@ -1002,12 +1002,12 @@ typedef void ZOLTAN_UNPACK_OBJ_MULTI_FORT_FN(
 /*****************************************************************************/
 /*
  *  Function called as a pre-processor to migration; it includes partition
- *  as well as processor information.  This function is 
+ *  as well as processor information.  This function is
  *  optional, and is used only when the application wants Zoltan
- *  to help migrate the data.  The application can perform any type of 
+ *  to help migrate the data.  The application can perform any type of
  *  pre-processing in this function.
  *
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -1029,7 +1029,7 @@ typedef void ZOLTAN_UNPACK_OBJ_MULTI_FORT_FN(
  */
 
 typedef void ZOLTAN_PRE_MIGRATE_PP_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   int num_import,
@@ -1046,17 +1046,17 @@ typedef void ZOLTAN_PRE_MIGRATE_PP_FN(
 );
 
 typedef void ZOLTAN_PRE_MIGRATE_PP_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   int *num_import,
   ZOLTAN_ID_PTR import_global_ids,
-  ZOLTAN_ID_PTR import_local_ids, 
+  ZOLTAN_ID_PTR import_local_ids,
   int *import_procs,
   int *import_to_part,
-  int *num_export, 
+  int *num_export,
   ZOLTAN_ID_PTR export_global_ids,
-  ZOLTAN_ID_PTR export_local_ids, 
+  ZOLTAN_ID_PTR export_local_ids,
   int *export_procs,
   int *export_to_part,
   int *ierr
@@ -1066,12 +1066,12 @@ typedef void ZOLTAN_PRE_MIGRATE_PP_FORT_FN(
 /*
  *  Function called between the packing and unpacking phases of data migration.
  *  It includes partition as well as processor information.
- *  Within Zoltan_Migrate, the data to be migrated is packed and 
- *  communicated; then this function is called (if specified). This function is 
+ *  Within Zoltan_Migrate, the data to be migrated is packed and
+ *  communicated; then this function is called (if specified). This function is
  *  optional, and is used only when the application wants Zoltan
- *  to help migrate the data.  The application can perform any type of 
+ *  to help migrate the data.  The application can perform any type of
  *  processing in this function.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -1093,7 +1093,7 @@ typedef void ZOLTAN_PRE_MIGRATE_PP_FORT_FN(
  */
 
 typedef void ZOLTAN_MID_MIGRATE_PP_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   int num_import,
@@ -1110,17 +1110,17 @@ typedef void ZOLTAN_MID_MIGRATE_PP_FN(
 );
 
 typedef void ZOLTAN_MID_MIGRATE_PP_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   int *num_import,
   ZOLTAN_ID_PTR import_global_ids,
-  ZOLTAN_ID_PTR import_local_ids, 
+  ZOLTAN_ID_PTR import_local_ids,
   int *import_procs,
   int *import_to_part,
-  int *num_export, 
+  int *num_export,
   ZOLTAN_ID_PTR export_global_ids,
-  ZOLTAN_ID_PTR export_local_ids, 
+  ZOLTAN_ID_PTR export_local_ids,
   int *export_procs,
   int *export_to_part,
   int *ierr
@@ -1128,12 +1128,12 @@ typedef void ZOLTAN_MID_MIGRATE_PP_FORT_FN(
 
 /*****************************************************************************/
 /*
- *  Function called as a post-processor to the migration.  It includes 
- *  partition as well as processor information.  This function is 
+ *  Function called as a post-processor to the migration.  It includes
+ *  partition as well as processor information.  This function is
  *  optional, and is used only when the application wants Zoltan
- *  to help migrate the data.  The application can perform any type of 
+ *  to help migrate the data.  The application can perform any type of
  *  post-processing in this function.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -1155,7 +1155,7 @@ typedef void ZOLTAN_MID_MIGRATE_PP_FORT_FN(
  */
 
 typedef void ZOLTAN_POST_MIGRATE_PP_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   int num_import,
@@ -1172,17 +1172,17 @@ typedef void ZOLTAN_POST_MIGRATE_PP_FN(
 );
 
 typedef void ZOLTAN_POST_MIGRATE_PP_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   int *num_import,
   ZOLTAN_ID_PTR import_global_ids,
-  ZOLTAN_ID_PTR import_local_ids, 
+  ZOLTAN_ID_PTR import_local_ids,
   int *import_procs,
   int *import_to_part,
-  int *num_export, 
+  int *num_export,
   ZOLTAN_ID_PTR export_global_ids,
-  ZOLTAN_ID_PTR export_local_ids, 
+  ZOLTAN_ID_PTR export_local_ids,
   int *export_procs,
   int *export_to_part,
   int *ierr
@@ -1191,12 +1191,12 @@ typedef void ZOLTAN_POST_MIGRATE_PP_FORT_FN(
 /*****************************************************************************/
 /*
  *  Function called as a pre-processor to migration; it includes only
- *  processor information.  This function is 
+ *  processor information.  This function is
  *  optional, and is used only when the application wants Zoltan
- *  to help migrate the data.  The application can perform any type of 
+ *  to help migrate the data.  The application can perform any type of
  *  pre-processing in this function.
  *
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -1216,7 +1216,7 @@ typedef void ZOLTAN_POST_MIGRATE_PP_FORT_FN(
  */
 
 typedef void ZOLTAN_PRE_MIGRATE_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   int num_import,
@@ -1231,16 +1231,16 @@ typedef void ZOLTAN_PRE_MIGRATE_FN(
 );
 
 typedef void ZOLTAN_PRE_MIGRATE_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   int *num_import,
   ZOLTAN_ID_PTR import_global_ids,
-  ZOLTAN_ID_PTR import_local_ids, 
+  ZOLTAN_ID_PTR import_local_ids,
   int *import_procs,
-  int *num_export, 
+  int *num_export,
   ZOLTAN_ID_PTR export_global_ids,
-  ZOLTAN_ID_PTR export_local_ids, 
+  ZOLTAN_ID_PTR export_local_ids,
   int *export_procs,
   int *ierr
 );
@@ -1249,12 +1249,12 @@ typedef void ZOLTAN_PRE_MIGRATE_FORT_FN(
 /*
  *  Function called between the packing and unpacking phases of data migration.
  *  It includes only processor information.
- *  Within Zoltan_Migrate, the data to be migrated is packed and 
- *  communicated; then this function is called (if specified). This function is 
+ *  Within Zoltan_Migrate, the data to be migrated is packed and
+ *  communicated; then this function is called (if specified). This function is
  *  optional, and is used only when the application wants Zoltan
- *  to help migrate the data.  The application can perform any type of 
+ *  to help migrate the data.  The application can perform any type of
  *  processing in this function.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -1274,7 +1274,7 @@ typedef void ZOLTAN_PRE_MIGRATE_FORT_FN(
  */
 
 typedef void ZOLTAN_MID_MIGRATE_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   int num_import,
@@ -1289,28 +1289,28 @@ typedef void ZOLTAN_MID_MIGRATE_FN(
 );
 
 typedef void ZOLTAN_MID_MIGRATE_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   int *num_import,
   ZOLTAN_ID_PTR import_global_ids,
-  ZOLTAN_ID_PTR import_local_ids, 
+  ZOLTAN_ID_PTR import_local_ids,
   int *import_procs,
-  int *num_export, 
+  int *num_export,
   ZOLTAN_ID_PTR export_global_ids,
-  ZOLTAN_ID_PTR export_local_ids, 
+  ZOLTAN_ID_PTR export_local_ids,
   int *export_procs,
   int *ierr
 );
 
 /*****************************************************************************/
 /*
- *  Function called as a post-processor to the migration.  It includes 
- *  only processor information.  This function is 
+ *  Function called as a post-processor to the migration.  It includes
+ *  only processor information.  This function is
  *  optional, and is used only when the application wants Zoltan
- *  to help migrate the data.  The application can perform any type of 
+ *  to help migrate the data.  The application can perform any type of
  *  post-processing in this function.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -1330,7 +1330,7 @@ typedef void ZOLTAN_MID_MIGRATE_FORT_FN(
  */
 
 typedef void ZOLTAN_POST_MIGRATE_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   int num_import,
@@ -1345,28 +1345,28 @@ typedef void ZOLTAN_POST_MIGRATE_FN(
 );
 
 typedef void ZOLTAN_POST_MIGRATE_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   int *num_import,
   ZOLTAN_ID_PTR import_global_ids,
-  ZOLTAN_ID_PTR import_local_ids, 
+  ZOLTAN_ID_PTR import_local_ids,
   int *import_procs,
-  int *num_export, 
+  int *num_export,
   ZOLTAN_ID_PTR export_global_ids,
-  ZOLTAN_ID_PTR export_local_ids, 
+  ZOLTAN_ID_PTR export_local_ids,
   int *export_procs,
   int *ierr
 );
 /*****************************************************************************/
 /*  Function to get the name of the physical processor on which
- *  the current process is running. 
+ *  the current process is running.
  *
- *  Input:  
+ *  Input:
  *    data                -- pointer to user defined data structure
  *
  *  Output:
- *    name                -- name of the processor 
+ *    name                -- name of the processor
  *    length              -- length of the name
  *    ierr                -- error code
  */
@@ -1374,7 +1374,7 @@ typedef void ZOLTAN_POST_MIGRATE_FORT_FN(
 typedef void ZOLTAN_PROC_NAME_FN(
   void *data,
   char *name,
-  int *length, 
+  int *length,
   int *ierr
 );
 
@@ -1393,12 +1393,12 @@ typedef void ZOLTAN_PROC_NAME_FN(
  */
 
 typedef int ZOLTAN_NUM_COARSE_OBJ_FN(
-  void *data, 
+  void *data,
   int *ierr
 );
 
 typedef int ZOLTAN_NUM_COARSE_OBJ_FORT_FN(
-  void *data, 
+  void *data,
   int *ierr
 );
 
@@ -1422,7 +1422,7 @@ typedef int ZOLTAN_NUM_COARSE_OBJ_FORT_FN(
  *                            is ignored.
  *    num_vert            --  array containing the number of vertices
  *                            for each object
- *    vertices            --  array containing the vertices for each 
+ *    vertices            --  array containing the vertices for each
  *                            object.  If the sum of the number of
  *                            vertices for objects 0 through i-1 is N,
  *                            then the vertices for object i are in
@@ -1442,7 +1442,7 @@ typedef int ZOLTAN_NUM_COARSE_OBJ_FORT_FN(
  */
 
 typedef void ZOLTAN_COARSE_OBJ_LIST_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   ZOLTAN_ID_PTR global_ids,
@@ -1460,7 +1460,7 @@ typedef void ZOLTAN_COARSE_OBJ_LIST_FORT_FN(
   void *data,
   int *num_gid_entries,
   int *num_lid_entries,
-  ZOLTAN_ID_PTR global_ids, 
+  ZOLTAN_ID_PTR global_ids,
   ZOLTAN_ID_PTR local_ids,
   int *assigned,
   int *num_vert,
@@ -1508,7 +1508,7 @@ typedef void ZOLTAN_COARSE_OBJ_LIST_FORT_FN(
  */
 
 typedef int ZOLTAN_FIRST_COARSE_OBJ_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   ZOLTAN_ID_PTR global_id,
@@ -1573,7 +1573,7 @@ typedef int ZOLTAN_FIRST_COARSE_OBJ_FORT_FN(
  */
 
 typedef int ZOLTAN_NEXT_COARSE_OBJ_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   ZOLTAN_ID_PTR global_id,
@@ -1589,7 +1589,7 @@ typedef int ZOLTAN_NEXT_COARSE_OBJ_FN(
 );
 
 typedef int ZOLTAN_NEXT_COARSE_OBJ_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   ZOLTAN_ID_PTR global_id,
@@ -1624,7 +1624,7 @@ typedef int ZOLTAN_NEXT_COARSE_OBJ_FORT_FN(
  */
 
 typedef int ZOLTAN_NUM_CHILD_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   ZOLTAN_ID_PTR global_id,
@@ -1633,7 +1633,7 @@ typedef int ZOLTAN_NUM_CHILD_FN(
 );
 
 typedef int ZOLTAN_NUM_CHILD_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   ZOLTAN_ID_PTR global_id,
@@ -1664,7 +1664,7 @@ typedef int ZOLTAN_NUM_CHILD_FORT_FN(
  *                            is ignored.
  *    num_vert            --  array containing the number of vertices
  *                            for each child
- *    vertices            --  array containing the vertices for each 
+ *    vertices            --  array containing the vertices for each
  *                            child.  If the sum of the number of
  *                            vertices for children 0 through i-1 is N,
  *                            then the vertices for child i are in
@@ -1682,7 +1682,7 @@ typedef int ZOLTAN_NUM_CHILD_FORT_FN(
  */
 
 typedef void ZOLTAN_CHILD_LIST_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   ZOLTAN_ID_PTR parent_gid,
@@ -1699,7 +1699,7 @@ typedef void ZOLTAN_CHILD_LIST_FN(
 );
 
 typedef void ZOLTAN_CHILD_LIST_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   ZOLTAN_ID_PTR parent_gid,
@@ -1737,7 +1737,7 @@ typedef void ZOLTAN_CHILD_LIST_FORT_FN(
  */
 
 typedef void ZOLTAN_CHILD_WEIGHT_FN(
-  void *data, 
+  void *data,
   int num_gid_entries,
   int num_lid_entries,
   ZOLTAN_ID_PTR global_id,
@@ -1748,7 +1748,7 @@ typedef void ZOLTAN_CHILD_WEIGHT_FN(
 );
 
 typedef void ZOLTAN_CHILD_WEIGHT_FORT_FN(
-  void *data, 
+  void *data,
   int *num_gid_entries,
   int *num_lid_entries,
   ZOLTAN_ID_PTR global_id,
@@ -1791,7 +1791,7 @@ typedef void ZOLTAN_HG_SIZE_CS_FORT_FN(
 /*****************************************************************************/
 /*
  *  Function to return the pins (non-zeroes) of a hypergraph in
- *  compressed vertex or compressed hyperedge storage format.  
+ *  compressed vertex or compressed hyperedge storage format.
  *
  *  Input:
  *    data                --  pointer to user defined data structure
@@ -1803,19 +1803,19 @@ typedef void ZOLTAN_HG_SIZE_CS_FORT_FN(
  *
  *  Output:
  *    vtxedge_GID -- if ZOLTAN_COMPRESSED_EDGE: global edge ID for each edge
- *                   if ZOLTAN_COMPRESSED_VERTEX: global vertex ID for each 
+ *                   if ZOLTAN_COMPRESSED_VERTEX: global vertex ID for each
  *                   vertex
- *    vtxedge_ptr -- if ZOLTAN_COMPRESSED_EDGE:  
- *                      vtxedge_ptr[i+1]-vtxedge_ptr[i] is the number of 
+ *    vtxedge_ptr -- if ZOLTAN_COMPRESSED_EDGE:
+ *                      vtxedge_ptr[i+1]-vtxedge_ptr[i] is the number of
  *                      vertices belonging to edge i (i.e., pins or non-zeros)
  *                      specified by this processor in pin_GID. The starting
- *                      index in pin_GID of edge i's vertices is 
+ *                      index in pin_GID of edge i's vertices is
  *                      vtxedge_ptr[i]*num_gid_entries.
- *                   if ZOLTAN_COMPRESSED_VERTEX:  
- *                      vtxedge_ptr[i+1]-vtxedge_ptr[i] is the number of 
- *                      edges to which vertex i belongs 
+ *                   if ZOLTAN_COMPRESSED_VERTEX:
+ *                      vtxedge_ptr[i+1]-vtxedge_ptr[i] is the number of
+ *                      edges to which vertex i belongs
  *                      specified by this processor in pin_GID. The starting
- *                      index in pin_GID of vertex i's edges is 
+ *                      index in pin_GID of vertex i's edges is
  *                      vtxedge_ptr[i]*num_gid_entries.
  *    pin_GID    --  if ZOLTAN_COMPRESSED_EDGE: global vertex ID for each
  *                     pin (non-zero) in each edge
@@ -1919,7 +1919,7 @@ typedef void ZOLTAN_HG_EDGE_WTS_FORT_FN(
 /*
  *  Function to return
  *  the number of objects on a given processor fixed to particular partitions.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *  Output:
  *    ierr                --  error code
@@ -1927,12 +1927,12 @@ typedef void ZOLTAN_HG_EDGE_WTS_FORT_FN(
  */
 
 typedef int ZOLTAN_NUM_FIXED_OBJ_FN(
-  void *data, 
+  void *data,
   int *ierr
 );
 
 typedef int ZOLTAN_NUM_FIXED_OBJ_FORT_FN(
-  void *data, 
+  void *data,
   int *ierr
 );
 
@@ -1972,9 +1972,9 @@ typedef void ZOLTAN_FIXED_OBJ_LIST_FORT_FN(
 
 /*****************************************************************************/
 /*
- *  Function to return, for the calling processor, the number of objects 
+ *  Function to return, for the calling processor, the number of objects
  *  sharing a subdomain border with a given processor.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    nbor_proc           --  processor ID of the neighboring processor.
  *  Output:
@@ -1983,22 +1983,22 @@ typedef void ZOLTAN_FIXED_OBJ_LIST_FORT_FN(
  */
 
 typedef int ZOLTAN_NUM_BORDER_OBJ_FN(
-  void *data, 
-  int nbor_proc, 
+  void *data,
+  int nbor_proc,
   int *ierr
 );
 
 typedef int ZOLTAN_NUM_BORDER_OBJ_FORT_FN(
-  void *data, 
-  int *nbor_proc, 
+  void *data,
+  int *nbor_proc,
   int *ierr
 );
 
 /*****************************************************************************/
 /*
- *  Function to return a list of all objects sharing a subdomain border 
+ *  Function to return a list of all objects sharing a subdomain border
  *  with a given processor.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -2011,44 +2011,44 @@ typedef int ZOLTAN_NUM_BORDER_OBJ_FORT_FN(
  *    global_ids          --  array of Global IDs of all objects on the
  *                            processor border with the given neighboring
  *                            processor.
- *    local_ids           --  array of Local IDs of all objects on the 
- *                            processor border with the given neighboring 
+ *    local_ids           --  array of Local IDs of all objects on the
+ *                            processor border with the given neighboring
  *                            processor.
  *    objwgts            --  objwgts[i*wdim:(i+1)*wdim-1] correponds
- *                            to the weight of object i 
+ *                            to the weight of object i
  *                            (objwgts is undefined if wdim=0)
  *    ierr               --  error code
  */
 
 typedef void ZOLTAN_BORDER_OBJ_LIST_FN(
-  void *data, 
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
   int nbor_proc,
-  ZOLTAN_ID_PTR global_ids, 
+  ZOLTAN_ID_PTR global_ids,
   ZOLTAN_ID_PTR local_ids,
-  int wdim, 
-  float *objwgts, 
+  int wdim,
+  float *objwgts,
   int *ierr
 );
 
 typedef void ZOLTAN_BORDER_OBJ_LIST_FORT_FN(
   void *data,
-  int *num_gid_entries, 
+  int *num_gid_entries,
   int *num_lid_entries,
   int *nbor_proc,
-  ZOLTAN_ID_PTR global_ids, 
+  ZOLTAN_ID_PTR global_ids,
   ZOLTAN_ID_PTR local_ids,
-  int *wdim, 
-  float *objwgts, 
+  int *wdim,
+  float *objwgts,
   int *ierr
 );
 
 /*****************************************************************************/
 /*
- *  Iterator function for border objects; return the first local object 
+ *  Iterator function for border objects; return the first local object
  *  along the subdomain boundary with a given processor.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -2060,7 +2060,7 @@ typedef void ZOLTAN_BORDER_OBJ_LIST_FORT_FN(
  *  Output:
  *    first_global_id     --  Global ID of the first object; NULL if no
  *                            objects.
- *    first_local_id      --  Local ID of the first object; NULL if no 
+ *    first_local_id      --  Local ID of the first object; NULL if no
  *                            objects.
  *    first_obj_wgt       --  weight vector for the first object
  *                            (undefined if wdim=0)
@@ -2071,34 +2071,34 @@ typedef void ZOLTAN_BORDER_OBJ_LIST_FORT_FN(
  */
 
 typedef int ZOLTAN_FIRST_BORDER_OBJ_FN(
-  void *data, 
-  int num_gid_entries, 
-  int num_lid_entries, 
+  void *data,
+  int num_gid_entries,
+  int num_lid_entries,
   int nbor_proc,
   ZOLTAN_ID_PTR first_global_id,
-  ZOLTAN_ID_PTR first_local_id, 
-  int wdim, 
+  ZOLTAN_ID_PTR first_local_id,
+  int wdim,
   float *first_obj_wgt,
   int *ierr
 );
 
 typedef int ZOLTAN_FIRST_BORDER_OBJ_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
-  int *num_lid_entries, 
+  void *data,
+  int *num_gid_entries,
+  int *num_lid_entries,
   int *nbor_proc,
   ZOLTAN_ID_PTR first_global_id,
-  ZOLTAN_ID_PTR first_local_id, 
-  int *wdim, 
+  ZOLTAN_ID_PTR first_local_id,
+  int *wdim,
   float *first_obj_wgt,
   int *ierr
 );
 
 /*****************************************************************************/
 /*
- *  Iterator function for border objects; return the next local object 
+ *  Iterator function for border objects; return the next local object
  *  along the subdomain boundary with a given processor.
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
@@ -2112,7 +2112,7 @@ typedef int ZOLTAN_FIRST_BORDER_OBJ_FORT_FN(
  *  Output:
  *    next_global_id      --  Global ID of the next object; NULL if no
  *                            more objects.
- *    next_local_id       --  Local ID of the next object; NULL if no 
+ *    next_local_id       --  Local ID of the next object; NULL if no
  *                            more objects.
  *    next_obj_wgt        --  weight vector for the next object
  *                            (undefined if wdim=0)
@@ -2123,29 +2123,29 @@ typedef int ZOLTAN_FIRST_BORDER_OBJ_FORT_FN(
  */
 
 typedef int ZOLTAN_NEXT_BORDER_OBJ_FN(
-  void *data, 
-  int num_gid_entries, 
+  void *data,
+  int num_gid_entries,
   int num_lid_entries,
   ZOLTAN_ID_PTR global_id,
-  ZOLTAN_ID_PTR local_id, 
+  ZOLTAN_ID_PTR local_id,
   int nbor_proc,
   ZOLTAN_ID_PTR next_global_id,
-  ZOLTAN_ID_PTR next_local_id, 
-  int wdim, 
+  ZOLTAN_ID_PTR next_local_id,
+  int wdim,
   float *next_obj_wgt,
   int *ierr
 );
 
 typedef int ZOLTAN_NEXT_BORDER_OBJ_FORT_FN(
-  void *data, 
-  int *num_gid_entries, 
+  void *data,
+  int *num_gid_entries,
   int *num_lid_entries,
   ZOLTAN_ID_PTR global_id,
-  ZOLTAN_ID_PTR local_id, 
+  ZOLTAN_ID_PTR local_id,
   int *nbor_proc,
   ZOLTAN_ID_PTR next_global_id,
-  ZOLTAN_ID_PTR next_local_id, 
-  int *wdim, 
+  ZOLTAN_ID_PTR next_local_id,
+  int *wdim,
   float *next_obj_wgt,
   int *ierr
 );
@@ -2158,7 +2158,7 @@ typedef int ZOLTAN_NEXT_BORDER_OBJ_FORT_FN(
 /*
  *  Function to return, for the calling processor, the number of levels
  *  of hierarchy for hierarchical load balancing
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *  Output:
  *    ierr                --  error code
@@ -2171,7 +2171,7 @@ typedef int ZOLTAN_HIER_NUM_LEVELS_FN(
 );
 
 typedef int ZOLTAN_HIER_NUM_LEVELS_FORT_FN(
-  void *data, 
+  void *data,
   int *ierr
 );
 
@@ -2180,7 +2180,7 @@ typedef int ZOLTAN_HIER_NUM_LEVELS_FORT_FN(
  *  Function to return, for the calling processor, the part
  *  in which the processor is to be computing for hierarchical
  *  balancing at the given level in the hierarchy
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    level               --  level in the hierarchy being considered
  *  Output:
@@ -2211,7 +2211,7 @@ typedef int ZOLTAN_HIER_PART_FORT_FN(
  *  given level in the hierarchy.  This Zoltan_Struct can be passed to
  *  Zoltan_Set_Param to set load balancing parameters for this level
  *  in the hierarchical balancing
- *  Input:  
+ *  Input:
  *    data                --  pointer to user defined data structure
  *    level               --  level in the hierarchy being considered
  *    zz                  --  Zoltan_Struct to use to set parameters
@@ -2306,7 +2306,7 @@ extern struct Zoltan_Struct *Zoltan_Copy(struct Zoltan_Struct const *from);
  *                            successfully copied to the first, 1 otherwise.
  */
 
-extern int Zoltan_Copy_To(struct Zoltan_Struct *to, 
+extern int Zoltan_Copy_To(struct Zoltan_Struct *to,
                           struct Zoltan_Struct const *from);
 
 /*****************************************************************************/
@@ -2328,7 +2328,7 @@ extern void Zoltan_Destroy(
  *    zz                  --  Pointer to a Zoltan structure.
  *    fn_type             --  Enum type indicating the function to be
  *                            set.
- *    fn_ptr              --  Pointer to the function to be used in the 
+ *    fn_ptr              --  Pointer to the function to be used in the
  *                            assignment.
  *    data_ptr            --  Pointer to data that Zoltan will
  *                            pass as an argument to fn(). May be NULL.
@@ -2372,7 +2372,7 @@ extern int Zoltan_Get_Fn(
  *  callback function types.
  *  Input:
  *    zz                  --  Pointer to a Zoltan structure.
- *    fn_ptr              --  Pointer to the function to be used in the 
+ *    fn_ptr              --  Pointer to the function to be used in the
  *                            assignment, where FN is one of the
  *                            callback function typedef'ed above.
  *    data_ptr            --  Pointer to data that Zoltan will
@@ -2383,271 +2383,271 @@ extern int Zoltan_Get_Fn(
  */
 
 extern int Zoltan_Set_Part_Multi_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_PART_MULTI_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_PART_MULTI_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Part_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_PART_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_PART_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Num_Edges_Multi_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NUM_EDGES_MULTI_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NUM_EDGES_MULTI_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Num_Edges_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NUM_EDGES_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NUM_EDGES_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Edge_List_Multi_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_EDGE_LIST_MULTI_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_EDGE_LIST_MULTI_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Edge_List_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_EDGE_LIST_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_EDGE_LIST_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Num_Geom_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NUM_GEOM_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NUM_GEOM_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Geom_Multi_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_GEOM_MULTI_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_GEOM_MULTI_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Geom_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_GEOM_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_GEOM_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Num_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NUM_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NUM_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Obj_List_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_OBJ_LIST_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_OBJ_LIST_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_First_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_FIRST_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_FIRST_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Next_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NEXT_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NEXT_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Num_Border_Obj_Fn(
-  struct Zoltan_Struct *zz, 
+  struct Zoltan_Struct *zz,
   ZOLTAN_NUM_BORDER_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Border_Obj_List_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_BORDER_OBJ_LIST_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_BORDER_OBJ_LIST_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_First_Border_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_FIRST_BORDER_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_FIRST_BORDER_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Next_Border_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NEXT_BORDER_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NEXT_BORDER_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Pre_Migrate_PP_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_PRE_MIGRATE_PP_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_PRE_MIGRATE_PP_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Mid_Migrate_PP_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_MID_MIGRATE_PP_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_MID_MIGRATE_PP_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Post_Migrate_PP_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_POST_MIGRATE_PP_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_POST_MIGRATE_PP_FN *fn_ptr,
   void *data_ptr
 );
 extern int Zoltan_Set_Pre_Migrate_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_PRE_MIGRATE_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_PRE_MIGRATE_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Mid_Migrate_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_MID_MIGRATE_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_MID_MIGRATE_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Post_Migrate_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_POST_MIGRATE_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_POST_MIGRATE_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Obj_Size_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_OBJ_SIZE_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_OBJ_SIZE_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Obj_Size_Multi_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_OBJ_SIZE_MULTI_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_OBJ_SIZE_MULTI_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Pack_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_PACK_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_PACK_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Pack_Obj_Multi_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_PACK_OBJ_MULTI_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_PACK_OBJ_MULTI_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Unpack_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_UNPACK_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_UNPACK_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Unpack_Obj_Multi_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_UNPACK_OBJ_MULTI_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_UNPACK_OBJ_MULTI_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Num_Coarse_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NUM_COARSE_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NUM_COARSE_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Coarse_Obj_List_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_COARSE_OBJ_LIST_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_COARSE_OBJ_LIST_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_First_Coarse_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_FIRST_COARSE_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_FIRST_COARSE_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Next_Coarse_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NEXT_COARSE_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NEXT_COARSE_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Num_Child_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NUM_CHILD_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NUM_CHILD_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Child_List_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_CHILD_LIST_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_CHILD_LIST_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Child_Weight_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_CHILD_WEIGHT_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_CHILD_WEIGHT_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_HG_Size_CS_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_HG_SIZE_CS_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_HG_SIZE_CS_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_HG_CS_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_HG_CS_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_HG_CS_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_HG_Size_Edge_Wts_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_HG_SIZE_EDGE_WTS_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_HG_SIZE_EDGE_WTS_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_HG_Edge_Wts_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_HG_EDGE_WTS_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_HG_EDGE_WTS_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Num_Fixed_Obj_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_NUM_FIXED_OBJ_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_NUM_FIXED_OBJ_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Fixed_Obj_List_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_FIXED_OBJ_LIST_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_FIXED_OBJ_LIST_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Hier_Num_Levels_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_HIER_NUM_LEVELS_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_HIER_NUM_LEVELS_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Hier_Part_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_HIER_PART_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_HIER_PART_FN *fn_ptr,
   void *data_ptr
 );
 
 extern int Zoltan_Set_Hier_Method_Fn(
-  struct Zoltan_Struct *zz, 
-  ZOLTAN_HIER_METHOD_FN *fn_ptr, 
+  struct Zoltan_Struct *zz,
+  ZOLTAN_HIER_METHOD_FN *fn_ptr,
   void *data_ptr
 );
 
@@ -2673,8 +2673,8 @@ extern int Zoltan_Set_Hier_Method_Fn(
  */
 
 extern int Zoltan_Set_Param(
-  struct Zoltan_Struct *zz, 
-  const char *name, 
+  struct Zoltan_Struct *zz,
+  const char *name,
   const char *val
 );
 
@@ -2698,8 +2698,8 @@ extern int Zoltan_Set_Param(
  */
 
 extern int Zoltan_Set_Param_Vec(
-  struct Zoltan_Struct *zz, 
-  const char *name, 
+  struct Zoltan_Struct *zz,
+  const char *name,
   const char *val,
   int index
 );
@@ -2711,8 +2711,8 @@ extern int Zoltan_Set_Param_Vec(
  *  Input:
  *    zz                  --  The Zoltan structure returned by Zoltan_Create.
  *  Output:
- *    changes             --  This value tells whether the new 
- *                            decomposition computed by Zoltan differs 
+ *    changes             --  This value tells whether the new
+ *                            decomposition computed by Zoltan differs
  *                            from the one given as input to Zoltan.
  *                            It can be either a one or a zero:
  *                            zero - No changes to the decomposition
@@ -2726,18 +2726,18 @@ extern int Zoltan_Set_Param_Vec(
  *                            in a global ID
  *    num_lid_entries     --  number of entries of type ZOLTAN_ID_TYPE
  *                            in a local ID
- *    num_import          --  The number of non-local objects in the 
+ *    num_import          --  The number of non-local objects in the
  *                            processor's new decomposition (i.e.,
  *                            number of objects to be imported).
  *    import_global_ids   --  Pointer to array of Global IDs for the
  *                            objects to be imported.
- *    import_local_ids    --  Pointer to array of Local IDs for the 
+ *    import_local_ids    --  Pointer to array of Local IDs for the
  *                            objects to be imported (local to the
  *                            exporting processor).
  *    import_procs        --  Pointer to array of Processor IDs for the
  *                            objects to be imported (processor IDs of
  *                            source processor).
- *    import_to_part      --  Pointer to array of partition numbers to 
+ *    import_to_part      --  Pointer to array of partition numbers to
  *                            which the imported objects should be assigned.
  *    num_export          --  The number of local objects that must be
  *                            exported from the processor to establish
@@ -2751,7 +2751,7 @@ extern int Zoltan_Set_Param_Vec(
  *    export_procs        --  Pointer to array of Processor IDs for the
  *                            objects to be exported (processor IDs of
  *                            destination processors).
- *    export_to_part      --  Pointer to array of partition numbers to 
+ *    export_to_part      --  Pointer to array of partition numbers to
  *                            which the exported objects should be assigned.
  *  Returned value:       --  Error code
  */
@@ -2770,7 +2770,7 @@ extern int Zoltan_LB_Partition(
   ZOLTAN_ID_PTR *export_global_ids,
   ZOLTAN_ID_PTR *export_local_ids,
   int **export_procs,
-  int **export_to_part 
+  int **export_to_part
 );
 /*****************************************************************************/
 /*
@@ -2814,7 +2814,7 @@ extern int Zoltan_LB_Balance(
  *    zmin                --  lower z extent of box
  *    xmax                --  upper x extent of box
  *    ymax                --  upper y extent of box
- *    zmax                --  upper z extent of box 
+ *    zmax                --  upper z extent of box
  *  Returned value:       --  Error code
  */
 
@@ -2943,7 +2943,7 @@ extern int Zoltan_Order_Get_Num_Leaves(struct Zoltan_Struct *zz);
  *  Ouput:
  *    leaves              --  List of block indices that are leaves in the
  *                            elimination tree. -1 marks the end of the list.
- *                            The array must be of size num_leaves+1, known by 
+ *                            The array must be of size num_leaves+1, known by
  *                            calling Zoltan_Order_Get_Num_Leaves.
  */
 
@@ -2955,16 +2955,16 @@ extern void Zoltan_Order_Get_Block_Leaves(
 
 /**********************************************************/
 /* Interface routine for Graph Coloring                   */
-/**********************************************************/    
+/**********************************************************/
 int Zoltan_Color(
     struct Zoltan_Struct *zz, /* Zoltan structure */
     int num_gid_entries,     /* # of entries for a global id */
     int num_obj,              /* Input: number of objects */
     ZOLTAN_ID_PTR global_ids, /* Input: global ids of the vertices */
-                              /* The application must allocate enough space */    
+                              /* The application must allocate enough space */
     int *color_exp            /* Output: Colors assigned to local vertices */
                               /* The application must allocate enough space */
-    ); 
+    );
 
 /* Interface routine for Zoltan_Color_Test */
 int Zoltan_Color_Test(
@@ -2973,31 +2973,31 @@ int Zoltan_Color_Test(
     int *num_lid_entries,     /* # of entries for a local id */
     int num_obj,              /* Input: number of objects */
     ZOLTAN_ID_PTR global_ids, /* Input: global ids of the vertices */
-                              /* The application must allocate enough space */    
+                              /* The application must allocate enough space */
     ZOLTAN_ID_PTR local_ids,  /* Input: local ids of the vertices */
                               /* The application must allocate enough space */
     int *color_exp            /* Input: Colors assigned to local vertices */
-    ); 
-    
+    );
+
 
 /*****************************************************************************/
 /*
  *  Routine to compute the inverse map:  Given, for each processor, a list
  *  of objects to be received by a processor, compute the list of objects
- *  that processor needs to send to other processors to complete a 
- *  remapping.  Conversely, given a list of objects to be sent to other 
+ *  that processor needs to send to other processors to complete a
+ *  remapping.  Conversely, given a list of objects to be sent to other
  *  processors, compute the list of objects to be received.
  *
  *  Input:
- *    zz                  --  Zoltan structure for current 
+ *    zz                  --  Zoltan structure for current
  *                            balance.
- *    num_input           --  Number of objects known to be 
+ *    num_input           --  Number of objects known to be
  *                            sent/received.
  *    input_global_ids    --  Array of global IDs for known objects.
  *    input_local_ids     --  Array of local IDs for known objects.
  *    input_procs         --  Array of IDs of processors to/from whom the
  *                            known objects will be sent/received.
- *    input_to_part       --  Array of partition numbers to 
+ *    input_to_part       --  Array of partition numbers to
  *                            which the known objects should be assigned.
  *  Output:
  *    num_output          --  The number of objects will be received/sent.
@@ -3005,10 +3005,10 @@ int Zoltan_Color_Test(
  *                            objects to be received/sent.
  *    output_local_ids    --  Pointer to array of Local IDs for the
  *                            objects to be received/sent.
- *    output_procs        --  Pointer to array of Processor IDs 
+ *    output_procs        --  Pointer to array of Processor IDs
  *                            from/to which the output_global_ids will be
  *                            received/sent.
- *    output_to_part      --  Pointer to array of partition numbers to 
+ *    output_to_part      --  Pointer to array of partition numbers to
  *                            which the output_global_ids should be assigned.
  *  Returned value:       --  Error code
  */
@@ -3016,12 +3016,12 @@ int Zoltan_Color_Test(
 
 extern int Zoltan_Invert_Lists(
   struct Zoltan_Struct *zz,
-  int num_input, 
+  int num_input,
   ZOLTAN_ID_PTR input_global_ids,
-  ZOLTAN_ID_PTR input_local_ids, 
-  int *input_procs, 
-  int *input_to_part, 
-  int *num_output, 
+  ZOLTAN_ID_PTR input_local_ids,
+  int *input_procs,
+  int *input_to_part,
+  int *num_output,
   ZOLTAN_ID_PTR *output_global_ids,
   ZOLTAN_ID_PTR *output_local_ids,
   int **output_procs,
@@ -3029,24 +3029,24 @@ extern int Zoltan_Invert_Lists(
 );
 /*****************************************************************************/
 /*
- *  Wrapper around Zoltan_Invert_Lists, appropriate only when 
+ *  Wrapper around Zoltan_Invert_Lists, appropriate only when
  *  number of partitions == number of processors (or when partition information
  *  is not desired).
  *
  *  Input and Output:
  *    Arguments are analogous to Zoltan_Invert_Lists.  Arrays import_to_part
- *    and export_to_part are not included, as Zoltan_Compute_Destinations 
+ *    and export_to_part are not included, as Zoltan_Compute_Destinations
  *    assumes partitions and processors are equivalent.
  *  Returned value:       --  Error code
  */
 
 extern int Zoltan_Compute_Destinations(
   struct Zoltan_Struct *zz,
-  int num_input, 
+  int num_input,
   ZOLTAN_ID_PTR input_global_ids,
-  ZOLTAN_ID_PTR input_local_ids, 
-  int *input_procs, 
-  int *num_output, 
+  ZOLTAN_ID_PTR input_local_ids,
+  int *input_procs,
+  int *num_output,
   ZOLTAN_ID_PTR *output_global_ids,
   ZOLTAN_ID_PTR *output_local_ids,
   int **output_procs
@@ -3056,22 +3056,22 @@ extern int Zoltan_Compute_Destinations(
 /*
  *  Routine to help perform migration.  Zoltan_Migrate performs the following
  *  operations:
- *  - Call migration pre-processing routine (ZOLTAN_PRE_MIGRATE_PP_FN), if 
+ *  - Call migration pre-processing routine (ZOLTAN_PRE_MIGRATE_PP_FN), if
  *    specified.
  *  - Call a ZOLTAN_OBJ_SIZE_FN to obtain the size of the migrating objects.
  *  - Call the application-specified object packing routine (ZOLTAN_PACK_OBJ_FN)
- *    for each object to be exported.  
- *  - Develop the communication map to move the objects to other processors.  
- *  - Perform the communication according to the map. 
- *  - Call mid-migration processing routine (ZOLTAN_MID_MIGRATE_PP_FN), if 
+ *    for each object to be exported.
+ *  - Develop the communication map to move the objects to other processors.
+ *  - Perform the communication according to the map.
+ *  - Call mid-migration processing routine (ZOLTAN_MID_MIGRATE_PP_FN), if
  *    specified.
- *  - Call the application-specified object unpacking routine 
- *    (ZOLTAN_UNPACK_OBJ_FN) for each object imported. 
- *  - Call post-migration processing routine (ZOLTAN_POST_MIGRATE_PP_FN), if 
+ *  - Call the application-specified object unpacking routine
+ *    (ZOLTAN_UNPACK_OBJ_FN) for each object imported.
+ *  - Call post-migration processing routine (ZOLTAN_POST_MIGRATE_PP_FN), if
  *    specified.
  *
  *  Input:
- *    zz                  --  Zoltan structure for current 
+ *    zz                  --  Zoltan structure for current
  *                            balance.
  *    num_import          --  Number of non-local objects assigned to the
  *                            processor in the new decomposition.
@@ -3084,19 +3084,19 @@ extern int Zoltan_Compute_Destinations(
  *    import_procs        --  Array of processor IDs of processors owning
  *                            the non-local objects that are assigned to
  *                            this processor in the new decomposition.
- *    import_to_part      --  Pointer to array of partition numbers to 
+ *    import_to_part      --  Pointer to array of partition numbers to
  *                            which the imported objects should be assigned.
  *    num_export          --  The number of local objects that need to be
  *                            exported from the processor to establish
  *                            the new decomposition.
  *    export_global_ids   --  Array of Global IDs for the objects to be
  *                            exported from the current processor.
- *    export_local_ids    --  Array of Local IDs for the objects to be 
+ *    export_local_ids    --  Array of Local IDs for the objects to be
  *                            exported (local to the current processor).
  *    export_procs        --  Array of Processor IDs for the objects to
  *                            be exported (processor IDs of destination
  *                            processor).
- *    export_to_part      --  Pointer to array of partition numbers to 
+ *    export_to_part      --  Pointer to array of partition numbers to
  *                            which the exported objects should be assigned.
  *  Output:
  *    none                --  The objects are migrated to their new
@@ -3106,7 +3106,7 @@ extern int Zoltan_Compute_Destinations(
  */
 
 extern int Zoltan_Migrate(
-  struct Zoltan_Struct *zz, 
+  struct Zoltan_Struct *zz,
   int num_import,
   ZOLTAN_ID_PTR import_global_ids,
   ZOLTAN_ID_PTR import_local_ids,
@@ -3115,25 +3115,25 @@ extern int Zoltan_Migrate(
   int num_export,
   ZOLTAN_ID_PTR export_global_ids,
   ZOLTAN_ID_PTR export_local_ids,
-  int *export_procs, 
+  int *export_procs,
   int *export_to_part);
 
 /*****************************************************************************/
 /*
  *  Routine to help perform migration.  Can be used instead of Zoltan_Migrate
  *  if the number of partitions is equal to the number of processors.
- *  Calls ZOLTAN_PRE_MIGRATE_FN, ZOLTAN_MID_MIGRATE_FN, and 
+ *  Calls ZOLTAN_PRE_MIGRATE_FN, ZOLTAN_MID_MIGRATE_FN, and
  *  ZOLTAN_POST_MIGRATE_FN.
  *
  *  Input and Output:
  *    Arguments are analogous to Zoltan_Migrate.  Arrays import_to_part
- *    and export_to_part are not included, as Zoltan_Help_Migrate 
+ *    and export_to_part are not included, as Zoltan_Help_Migrate
  *    assumes partitions and processors are equivalent.
  *  Returned value:       --  Error code
  */
 
 extern int Zoltan_Help_Migrate(
-  struct Zoltan_Struct *zz, 
+  struct Zoltan_Struct *zz,
   int num_import,
   ZOLTAN_ID_PTR import_global_ids,
   ZOLTAN_ID_PTR import_local_ids,
@@ -3145,20 +3145,20 @@ extern int Zoltan_Help_Migrate(
 
 /*****************************************************************************/
 /*
- *  Routine to free the data arrays returned by Zoltan_LB_Partition, 
- *  Zoltan_LB_Balance, Zoltan_Invert_Lists, and 
+ *  Routine to free the data arrays returned by Zoltan_LB_Partition,
+ *  Zoltan_LB_Balance, Zoltan_Invert_Lists, and
  *  Zoltan_Compute_Destinations.  The arrays
  *  are freed and the pointers are set to NULL.
  *
  *  Input:
- *    global_ids   --  Pointer to array of global IDs 
- *    local_ids    --  Pointer to array of local IDs 
- *    procs        --  Pointer to array of processor IDs 
+ *    global_ids   --  Pointer to array of global IDs
+ *    local_ids    --  Pointer to array of local IDs
+ *    procs        --  Pointer to array of processor IDs
  *    to_proc      --  Pointer to array of partition assignments
  *  Returned value:       --  Error code
  */
 extern int Zoltan_LB_Free_Part(
-  ZOLTAN_ID_PTR *global_ids, 
+  ZOLTAN_ID_PTR *global_ids,
   ZOLTAN_ID_PTR *local_ids,
   int **procs,
   int **to_part
@@ -3170,25 +3170,25 @@ extern int Zoltan_LB_Free_Part(
  *  are freed and the pointers are set to NULL.
  *
  *  Input:
- *    import_global_ids   --  Pointer to array of global IDs for 
+ *    import_global_ids   --  Pointer to array of global IDs for
  *                            imported objects.
- *    import_local_ids    --  Pointer to array of local IDs for 
+ *    import_local_ids    --  Pointer to array of local IDs for
  *                            imported objects.
- *    import_procs        --  Pointer to array of processor IDs of 
+ *    import_procs        --  Pointer to array of processor IDs of
  *                            imported objects.
- *    export_global_ids   --  Pointer to array of global IDs for 
+ *    export_global_ids   --  Pointer to array of global IDs for
  *                            exported objects.
- *    export_local_ids    --  Pointer to array of local IDs for 
+ *    export_local_ids    --  Pointer to array of local IDs for
  *                            exported objects.
  *    export_procs        --  Pointer to array of destination processor
  *                            IDs of exported objects.
  *  Returned value:       --  Error code
  */
 extern int Zoltan_LB_Free_Data(
-  ZOLTAN_ID_PTR *import_global_ids, 
+  ZOLTAN_ID_PTR *import_global_ids,
   ZOLTAN_ID_PTR *import_local_ids,
   int **import_procs,
-  ZOLTAN_ID_PTR *export_global_ids, 
+  ZOLTAN_ID_PTR *export_global_ids,
   ZOLTAN_ID_PTR *export_local_ids,
   int **export_procs
 );
@@ -3196,12 +3196,12 @@ extern int Zoltan_LB_Free_Data(
 /*****************************************************************************/
 
 /*****************************************************************************/
-/* 
- * Routine to determine which processor and partition a new point should be 
+/*
+ * Routine to determine which processor and partition a new point should be
  * assigned to.
  * Note that this only works of the current partition was produced via a
  * geometric algorithm - currently RCB, RIB, HSFC.
- * 
+ *
  * Input:
  *   zz                   -- pointer to Zoltan structure
  *   coords               -- vector of coordinates of new point
@@ -3221,15 +3221,15 @@ extern int Zoltan_LB_Point_PP_Assign(
 );
 
 /*****************************************************************************/
-/* 
+/*
  * Routine to determine which processor a new point should be assigned to.
- * Can be used instead of Zoltan_LB_Point_PP_Assign when the number of 
+ * Can be used instead of Zoltan_LB_Point_PP_Assign when the number of
  * partitions equals the number of processors.
  * Note that this only works of the current partition was produced via a
  * geometric algorithm - currently RCB, RIB, HSFC.
- * 
+ *
  * Input:
- *    Arguments are analogous to Zoltan_LB_Point_PP_Assign.  
+ *    Arguments are analogous to Zoltan_LB_Point_PP_Assign.
  *    Variable part is not included, as Zoltan_LB_Point_Assign
  *    assumes partitions and processors are equivalent.
  *
@@ -3246,23 +3246,23 @@ extern int Zoltan_LB_Point_Assign(
 );
 
 /*****************************************************************************/
-/* 
- * Routine to determine which partitions and processors 
+/*
+ * Routine to determine which partitions and processors
  * a bounding box intersects.
  * Note that this only works of the current partition was produced via a
  * geometric algorithm - currently RCB, RIB, HSFC.
- * 
+ *
  * Input:
  *   zz                   -- pointer to Zoltan structure
  *   xmin, ymin, zmin     -- lower left corner of bounding box
  *   xmax, ymax, zmax     -- upper right corner of bounding box
  *
  * Output:
- *   procs                -- list of processors that box intersects.  
+ *   procs                -- list of processors that box intersects.
  *                           Note: application is
  *                               responsible for ensuring sufficient memory.
  *   numprocs             -- number of processors box intersects
- *   parts                -- list of partitions that box intersects.  
+ *   parts                -- list of partitions that box intersects.
  *                           Note: application is
  *                               responsible for ensuring sufficient memory.
  *   numparts             -- number of partitions box intersects (may differ
@@ -3286,18 +3286,18 @@ extern int Zoltan_LB_Box_PP_Assign(
 );
 
 /*****************************************************************************/
-/* 
+/*
  * Routine to determine which processors a bounding box intersects.
  * Note that this only works of the current partition was produced via a
  * geometric algorithm - currently RCB, RIB, HSFC.
- * 
+ *
  * Input:
  *   zz                   -- pointer to Zoltan structure
  *   xmin, ymin, zmin     -- lower left corner of bounding box
  *   xmax, ymax, zmax     -- upper right corner of bounding box
  *
  * Output:
- *   procs                -- list of processors that box intersects.  
+ *   procs                -- list of processors that box intersects.
  *                           Note: application is
  *                               responsible for ensuring sufficient memory.
  *   numprocs             -- number of processors box intersects
@@ -3318,7 +3318,7 @@ extern int Zoltan_LB_Box_Assign(
 );
 
 /*
- *  Function to set the desired partition sizes. 
+ *  Function to set the desired partition sizes.
  *
  *  Input:
  *    zz            --  The Zoltan structure to which this method
@@ -3327,21 +3327,21 @@ extern int Zoltan_LB_Box_Assign(
  *    len           --  Length of arrays wgt_idx, part_idx, part_sizes
  *    part_ids      --  Array of partition ids (local or global)
  *    wgt_idx       --  Array of indices between 0 and Obj_Wgt_Dim-1
- *    part_sizes    --  Array of floats that gives the desired partition 
- *                      size for each weight and each partition, i.e., 
+ *    part_sizes    --  Array of floats that gives the desired partition
+ *                      size for each weight and each partition, i.e.,
  *                      part_sizes[i] corresponds to wgt_idx[i] and part_id[i]
  *
  *  Output:
  *    Return value  --  Error code.
  */
-extern int Zoltan_LB_Set_Part_Sizes(struct Zoltan_Struct *zz, int global_num, 
+extern int Zoltan_LB_Set_Part_Sizes(struct Zoltan_Struct *zz, int global_num,
   int len, int *part_ids, int *wgt_idx, float *part_sizes);
 
 /*
  *  Function to generate data files.
  *
  *  Input:
- *    zz            --  The current Zoltan structure 
+ *    zz            --  The current Zoltan structure
  *    fname         --  Basename for files to be generated
  *    base_index    --  Start numbering of nodes and edges at 0 or 1?
  *    gen_geom      --  Write geometry file?
@@ -3353,12 +3353,12 @@ extern int Zoltan_LB_Set_Part_Sizes(struct Zoltan_Struct *zz, int global_num,
  */
 extern int Zoltan_Generate_Files(struct Zoltan_Struct *zz, char *fname, int base_index, int gen_geom, int gen_graph, int gen_hg);
 
-/* 
- * Returns sizeof(ZOLTAN_ID_TYPE) for the ZOLTAN_ID_TYPE used in building 
+/*
+ * Returns sizeof(ZOLTAN_ID_TYPE) for the ZOLTAN_ID_TYPE used in building
  * the library.  (Allows applications to check that their Zoltan include
  * files are consistent with the linked-in Zoltan libraries.)
  * Input/Output:
- *   name          -- if non-null on input, *name is set to a 
+ *   name          -- if non-null on input, *name is set to a
  *                    string describing ZOLTAN_ID_TYPE (e.g., "unsigned int")
  * Output:
  *   Return value  -- sizeof(ZOLTAN_ID_TYPE)

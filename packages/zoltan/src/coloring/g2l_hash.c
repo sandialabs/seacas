@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -49,7 +49,7 @@ extern "C" {
 #endif
 
 #include "zoltan_util.h"
-#include "coloring.h"    
+#include "coloring.h"
 #include "g2l_hash.h"
 
 
@@ -61,7 +61,7 @@ extern "C" {
  */
 
 #define MAX_PRIME 193
-    
+
 int Zoltan_GenPrime(int stopafter, int *prime_num)
 {
     static const int primes[MAX_PRIME]=
@@ -109,7 +109,7 @@ int Zoltan_GenPrime(int stopafter, int *prime_num)
 }
 
 #undef MAX_PRIME
-    
+
 
 int Zoltan_G2LHash_Create(G2LHash *hash, int maxsize, ZOLTAN_GNO_TYPE base, int nlvtx)
 {
@@ -198,7 +198,7 @@ int Zoltan_KVHash_Create(KVHash *hash, int maxsize)
 
     if (Zoltan_GenPrime(maxsize , &(hash->maxsize))==ZOLTAN_MEMERR)
       return ZOLTAN_MEMERR;
-    
+
     hash->table = NULL;
     hash->nodes = NULL;
     hash->size = 0;
@@ -218,12 +218,12 @@ int Zoltan_KVHash_Destroy(KVHash *hash)
     ZOLTAN_FREE(&hash->nodes);
 
     return ZOLTAN_OK;
-}    
+}
 
 int Zoltan_KVHash_Insert(KVHash *hash, ZOLTAN_GNO_TYPE key, int value)
 {
     int i;
-    
+
     G2LHashNode *ptr;
 
     i = Zoltan_Hash((ZOLTAN_ID_PTR) (void *)&key, hash->num_gid_entries, (unsigned int) hash->maxsize);
@@ -233,7 +233,7 @@ int Zoltan_KVHash_Insert(KVHash *hash, ZOLTAN_GNO_TYPE key, int value)
             ZOLTAN_PRINT_ERROR(-1, "Zoltan_KVHash_Insert", "Hash is full!");
             return -1;
         }
-        
+
         ptr = &(hash->nodes[hash->size]);
         ptr->gno = key;
         ptr->lno = value;
@@ -243,11 +243,11 @@ int Zoltan_KVHash_Insert(KVHash *hash, ZOLTAN_GNO_TYPE key, int value)
     } else
         value = ptr->lno;
 
-    return value;   
+    return value;
 }
 
 
-int Zoltan_KVHash_GetValue(KVHash *hash, ZOLTAN_GNO_TYPE key)    
+int Zoltan_KVHash_GetValue(KVHash *hash, ZOLTAN_GNO_TYPE key)
 {
     int i;
     G2LHashNode *ptr;
@@ -259,7 +259,7 @@ int Zoltan_KVHash_GetValue(KVHash *hash, ZOLTAN_GNO_TYPE key)
     else
         return ptr->lno;
 }
-    
+
 
 
 #ifdef __cplusplus

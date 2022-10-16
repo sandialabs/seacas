@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -91,7 +91,7 @@ int      *sum_recv_sizes)       /* sum of the sizes of the items I'll receive */
     MPI_Comm_rank(plan->comm, &my_proc);
     i = (sizes != NULL);
     MPI_Allreduce(&i, &var_sizes, 1, MPI_INT, MPI_LOR, plan->comm);
-    
+
 
     if (var_sizes && plan->indices_from != NULL) {
         /* Can't do w/o individual item sizes */
@@ -119,7 +119,7 @@ int      *sum_recv_sizes)       /* sum of the sizes of the items I'll receive */
 
 	plan->max_send_size = 0;
 	for (i = 0; i < nsends + self_msg; i++) {
-	    if (plan->procs_to[i] != my_proc && 
+	    if (plan->procs_to[i] != my_proc &&
 		plan->lengths_to[i] > plan->max_send_size) {
 	        plan->max_send_size = plan->lengths_to[i];
 	    }
@@ -180,7 +180,7 @@ int      *sum_recv_sizes)       /* sum of the sizes of the items I'll receive */
 	        for (k = 0; k < plan->lengths_to[i]; k++) {
 	 	    sizes_to[i] += sizes[j++];
 	        }
-	        if (sizes_to[i] > plan->max_send_size && 
+	        if (sizes_to[i] > plan->max_send_size &&
 		    plan->procs_to[i] != my_proc)
 	            plan->max_send_size = sizes_to[i];
 	    }
@@ -226,7 +226,7 @@ int      *sum_recv_sizes)       /* sum of the sizes of the items I'll receive */
 		    indices_to_ptr[j] = offset[plan->indices_to[j]];
 	 	    sizes_to[i] += sizes[plan->indices_to[j++]];
 	        }
-	        if (sizes_to[i] > plan->max_send_size && 
+	        if (sizes_to[i] > plan->max_send_size &&
 		    plan->procs_to[i] != my_proc)
 	            plan->max_send_size = sizes_to[i];
 		sum += sizes_to[i];
@@ -240,7 +240,7 @@ int      *sum_recv_sizes)       /* sum of the sizes of the items I'll receive */
 	/*      Should such functionality reside here? */
 
 	Zoltan_Comm_Exchange_Sizes(sizes_to, plan->procs_to, nsends, self_msg,
-	    sizes_from, plan->procs_from, nrecvs, 
+	    sizes_from, plan->procs_from, nrecvs,
 	    &plan->total_recv_size, my_proc, tag, plan->comm);
 
 	starts_from_ptr = (int *) ZOLTAN_MALLOC((nrecvs + self_msg) * sizeof(int));

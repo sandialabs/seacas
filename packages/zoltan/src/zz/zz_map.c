@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -369,7 +369,7 @@ int Zoltan_Map_Find_Add(ZZ *zz, ZOLTAN_MAP* map, char *key, intptr_t datain, int
 }
 
 /*****************************************************************
- * Find the key in the map.  If found, set data to the key value.  
+ * Find the key in the map.  If found, set data to the key value.
  * If not found, the data is set to an invalid value.
  * (Return ZOLTAN_OK, etc.)
  */

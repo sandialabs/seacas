@@ -2,7 +2,7 @@
 
 The \caps{\PROGRAM} program allows the user to manipulate data from a
 finite element program before it is plotted. The program reads the
-database output from an analysis program, manipulates the data using 
+database output from an analysis program, manipulates the data using
 algebraic expressions supplied by the user, and writes the new data to a
 database to be processed by a plot program such as \caps{BLOT}
 \cite{bib:blot}.
@@ -28,7 +28,7 @@ step in the analysis (e.g., the displacement in the x-direction).
 \item
 An element variable has a value for every element in the element block
 in which the variable is defined at each time step (e.g., the stress in the
-x-direction).  
+x-direction).
 
 \end{itemize}
 
@@ -70,7 +70,7 @@ of the mesh or by selecting elements by element block.
 
 \section{Changes since original printing}
 \begin{itemize}
-  \item Algebra will now add a timestep to an exodus file with no previous timesteps.  The equation 
+  \item Algebra will now add a timestep to an exodus file with no previous timesteps.  The equation
 	    defining the new variable(s) can access constants and coordinates.
 
   \item	Can remove elements by global id. The syntax is:
@@ -105,4 +105,3 @@ If the variable doesn't exist on an element block, then all of the elements in t
 
 \item Removed all mention of history variables which have been removed from \exo{} a long time ago.
 \end{itemize}
-

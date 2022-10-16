@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -49,7 +49,7 @@
 extern "C" {
 #endif
 
-#include "zz_sort.h"    
+#include "zz_sort.h"
 #include "phg.h"
 #include "zz_const.h"
 
@@ -59,13 +59,13 @@ void Zoltan_PHG_Plot_2D_Distrib(
   HGraph *phg
 )
 {
-/* Routine that produces gnuplot output of 2D data distribution in form of 
+/* Routine that produces gnuplot output of 2D data distribution in form of
  * a matrix.
  * One column for each vertex.
  * One row for each hyperedge.
  * Separate files are produced for each processor.
  * Vertex and edge global node numbers are used for "coordinates" in plotting.
- * No partitioning information is displayed; only the 2D data distribution 
+ * No partitioning information is displayed; only the 2D data distribution
  * is shown.
  */
 static int cnt = 0;
@@ -105,7 +105,7 @@ ZOLTAN_GNO_TYPE egno, vgno;
   }
 
   /* Sanity check to ensure Mirror is working correctly */
-  /* Don't need to generate both sets of files, but they should differ only 
+  /* Don't need to generate both sets of files, but they should differ only
    * in the order of the points */
   sprintf(filename, "phgmirror%02d.%02d", cnt, zz->Proc);
   fp = fopen(filename, "w");

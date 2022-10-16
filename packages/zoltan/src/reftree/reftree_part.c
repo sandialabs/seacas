@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -62,20 +62,20 @@ extern "C" {
 /* Prototypes for functions internal to this file */
 static int Zoltan_Reftree_Sum_Weights(ZZ *zz);
 
-static void Zoltan_Reftree_Sum_My_Weights(ZZ *zz, ZOLTAN_REFTREE *subroot, 
+static void Zoltan_Reftree_Sum_My_Weights(ZZ *zz, ZOLTAN_REFTREE *subroot,
        int *count, int wdim);
 static void Zoltan_Reftree_Sum_All_Weights(ZZ *zz, ZOLTAN_REFTREE *subroot, int wdim);
-static void Zoltan_Reftree_List_Other_Leaves(ZZ *zz, ZOLTAN_REFTREE *subroot, 
+static void Zoltan_Reftree_List_Other_Leaves(ZZ *zz, ZOLTAN_REFTREE *subroot,
        ZOLTAN_ID_PTR list, int *count);
-static int Zoltan_Reftree_Partition(ZZ *zz, float *part_sizes, int *num_export, 
-       ZOLTAN_ID_PTR *export_global_ids, ZOLTAN_ID_PTR *export_local_ids, 
+static int Zoltan_Reftree_Partition(ZZ *zz, float *part_sizes, int *num_export,
+       ZOLTAN_ID_PTR *export_global_ids, ZOLTAN_ID_PTR *export_local_ids,
        int **export_to_partition, int **export_procs);
 static int Zoltan_Reftree_Part_Recursive(ZZ *zz, ZOLTAN_REFTREE *subroot, int *part,
        float *current_size, int *num_exp, float *cutoff,
        int num_part);
-static int Zoltan_Reftree_Mark_and_Count(ZOLTAN_REFTREE *subroot, int part, 
+static int Zoltan_Reftree_Mark_and_Count(ZOLTAN_REFTREE *subroot, int part,
        int *num_exp, ZZ *zz);
-static int Zoltan_Reftree_Export_Lists(ZZ *zz, ZOLTAN_REFTREE *subroot, 
+static int Zoltan_Reftree_Export_Lists(ZZ *zz, ZOLTAN_REFTREE *subroot,
        int *num_export, ZOLTAN_ID_PTR *export_global_ids,
        ZOLTAN_ID_PTR *export_local_ids, int **export_to_partition,
        int **export_procs);
@@ -124,7 +124,7 @@ double time0 = 0, time1= 0, time2 = 0, time3 =0, time4 =0;
     if (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME) time0 = Zoltan_Time(zz->Timer);
     ierr = Zoltan_Reftree_Init(zz);
     if (ierr==ZOLTAN_FATAL || ierr==ZOLTAN_MEMERR) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                      "Error returned by Zoltan_Reftree_Init.");
       ZOLTAN_TRACE_EXIT(zz, yo);
       return(ierr);
@@ -144,7 +144,7 @@ double time0 = 0, time1= 0, time2 = 0, time3 =0, time4 =0;
 
   ierr = Zoltan_Reftree_Build(zz);
   if (ierr==ZOLTAN_FATAL || ierr==ZOLTAN_MEMERR) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Error returned by Zoltan_Reftree_Build.");
     ZOLTAN_TRACE_EXIT(zz, yo);
     return(ierr);
@@ -158,7 +158,7 @@ double time0 = 0, time1= 0, time2 = 0, time3 =0, time4 =0;
 
   ierr = Zoltan_Reftree_Sum_Weights(zz);
   if (ierr==ZOLTAN_FATAL || ierr==ZOLTAN_MEMERR) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Error returned by Zoltan_Reftree_Sum_Weights.");
     ZOLTAN_TRACE_EXIT(zz, yo);
     return(ierr);
@@ -173,7 +173,7 @@ double time0 = 0, time1= 0, time2 = 0, time3 =0, time4 =0;
   ierr = Zoltan_Reftree_Partition(zz, part_sizes, num_export, export_global_ids,
                           export_local_ids, export_to_partition, export_procs);
   if (ierr==ZOLTAN_FATAL || ierr==ZOLTAN_MEMERR) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Error returned by Zoltan_Reftree_Partition.");
     ZOLTAN_TRACE_EXIT(zz, yo);
     return(ierr);
@@ -186,7 +186,7 @@ double time0 = 0, time1= 0, time2 = 0, time3 =0, time4 =0;
       Zoltan_Print_Stats(zz->Communicator, zz->Debug_Proc, time1-time0,
                      "REFTREE Time to initialize :");
     }
-    Zoltan_Print_Stats(zz->Communicator, zz->Debug_Proc, time2-time1, 
+    Zoltan_Print_Stats(zz->Communicator, zz->Debug_Proc, time2-time1,
                    "REFTREE Time to build tree :");
     Zoltan_Print_Stats(zz->Communicator, zz->Debug_Proc, time3-time2,
                    "REFTREE Time to sum weights:");
@@ -220,9 +220,9 @@ ZOLTAN_REFTREE *root;         /* Root of the refinement tree */
 int wdim;                 /* Dimension of the weight array */
 int i,j;                  /* loop counters */
 int count;                /* counter */
-ZOLTAN_ID_PTR leaf_list = NULL;      
+ZOLTAN_ID_PTR leaf_list = NULL;
                           /* leaves for which some proc requests weight */
-ZOLTAN_ID_PTR all_leaflist = NULL;   
+ZOLTAN_ID_PTR all_leaflist = NULL;
                           /* leaf_list from all processors */
 int reqsize;              /* length of leaf_list */
 int *reqsize_all;         /* reqsize from all processors */
@@ -367,7 +367,7 @@ int num_gid_entries = zz->Num_GID; /* Number of array entries in a global ID */
 
     for (i=0; i<nproc; i++) reqsize_all[i] = reqsize_all[i]/num_gid_entries;
 
-  /* 
+  /*
    * Create a list with the partial sums this processor has
    */
 
@@ -445,7 +445,7 @@ int num_gid_entries = zz->Num_GID; /* Number of array entries in a global ID */
 /*****************************************************************************/
 /*****************************************************************************/
 
-static void Zoltan_Reftree_Sum_My_Weights(ZZ *zz, ZOLTAN_REFTREE *subroot, 
+static void Zoltan_Reftree_Sum_My_Weights(ZZ *zz, ZOLTAN_REFTREE *subroot,
        int *count, int wdim)
 
 {
@@ -548,7 +548,7 @@ int i, j;   /* loop counter */
 /*****************************************************************************/
 /*****************************************************************************/
 
-static void Zoltan_Reftree_List_Other_Leaves(ZZ *zz, ZOLTAN_REFTREE *subroot, 
+static void Zoltan_Reftree_List_Other_Leaves(ZZ *zz, ZOLTAN_REFTREE *subroot,
        ZOLTAN_ID_PTR list, int *count)
 
 {
@@ -585,8 +585,8 @@ int j;   /* loop counter */
 /*****************************************************************************/
 /*****************************************************************************/
 
-static int Zoltan_Reftree_Partition(ZZ *zz, float *part_sizes, int *num_export, 
-       ZOLTAN_ID_PTR *export_global_ids, ZOLTAN_ID_PTR *export_local_ids, 
+static int Zoltan_Reftree_Partition(ZZ *zz, float *part_sizes, int *num_export,
+       ZOLTAN_ID_PTR *export_global_ids, ZOLTAN_ID_PTR *export_local_ids,
        int **export_to_partition, int **export_procs)
 
 {
@@ -641,7 +641,7 @@ int wdim;             /* Max(zz->Obj_Weight_Dim, 1) */
 
   cutoff[0] = part_sizes[0];  /* TEMP SINGLE WEIGHT */
   wdim = ((zz->Obj_Weight_Dim == 0) ? 1 : zz->Obj_Weight_Dim);
-  for (part = 1; part < num_part; part++) 
+  for (part = 1; part < num_part; part++)
      cutoff[part] = cutoff[part-1] + part_sizes[part*wdim]; /* TEMP SINGLE WEIGHT */
   cutoff[num_part-1] = 1.0; /* just to make sure roundoff doesn't bite us */
 
@@ -863,7 +863,7 @@ int ierr;      /* error flag */
 /*****************************************************************************/
 /*****************************************************************************/
 
-static int Zoltan_Reftree_Mark_and_Count(ZOLTAN_REFTREE *subroot, int part, 
+static int Zoltan_Reftree_Mark_and_Count(ZOLTAN_REFTREE *subroot, int part,
                                          int *num_exp, ZZ *zz)
 {
 /*
@@ -890,7 +890,7 @@ int i, ierr;
 /*****************************************************************************/
 /*****************************************************************************/
 
-static int Zoltan_Reftree_Export_Lists(ZZ *zz, ZOLTAN_REFTREE *subroot, 
+static int Zoltan_Reftree_Export_Lists(ZZ *zz, ZOLTAN_REFTREE *subroot,
                             int *num_export, ZOLTAN_ID_PTR *export_global_ids,
                             ZOLTAN_ID_PTR *export_local_ids,
                             int **export_to_partition, int **export_procs)

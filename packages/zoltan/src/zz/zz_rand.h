@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -57,7 +57,7 @@ extern "C" {
 #define ZOLTAN_RAND_MAX 0x7fffffff
 #define ZOLTAN_RAND_INIT 123456789U
 
-extern unsigned int Zoltan_Seed();
+extern unsigned int Zoltan_Seed(void);
 extern unsigned int Zoltan_Rand(unsigned int *);
 extern unsigned int Zoltan_Rand_InRange(unsigned int *, unsigned int);
 extern void Zoltan_Srand(unsigned int, unsigned int *);

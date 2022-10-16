@@ -18,6 +18,5 @@
 int MPI_Comm_set_name( MPI_Comm com, char *name )
 {
   _MPI_COVERAGE();
-  return PMPI_Comm_set_name (com, name); 
+  return PMPI_Comm_set_name (com, name);
 }
-

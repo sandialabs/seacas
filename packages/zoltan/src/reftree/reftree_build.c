@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -54,11 +54,11 @@ static int order_hex3d_oct(ZZ *zz, int *vert1, int *order,
                            ZOLTAN_ID_PTR vertices, ZOLTAN_ID_PTR in_vertex,
                            ZOLTAN_ID_PTR out_vertex, ZOLTAN_REFTREE *subroot);
 static int hex_nshared(int elem1, int elem2, int *lvertices, int *vert1);
-static int order_other_ref(ZZ *zz, ZOLTAN_REFTREE *parent, int num_child, 
+static int order_other_ref(ZZ *zz, ZOLTAN_REFTREE *parent, int num_child,
                            int *num_vert, int *vert1, ZOLTAN_ID_PTR vertices,
                            int *order, ZOLTAN_ID_PTR in_vertex,
                            ZOLTAN_ID_PTR out_vertex);
-static void order_other_ref_recur(int new_entry, int level, int *order, 
+static void order_other_ref_recur(int new_entry, int level, int *order,
                           int *on_path,
                           int num_child, int *has_out, int **share_vert,
                           int max_share, int *solved);
@@ -300,7 +300,7 @@ int num_geom = 0;          /* number of dimensions in the geometry */
 
   num_obj = zz->Get_Num_Coarse_Obj(zz->Get_Num_Coarse_Obj_Data, &ierr);
   if (ierr) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Error returned from user function Get_Num_Coarse_Obj.");
     Zoltan_Reftree_Free_Structure(zz);
     ZOLTAN_TRACE_EXIT(zz, yo);
@@ -324,7 +324,7 @@ int num_geom = 0;          /* number of dimensions in the geometry */
     out_vertex = ZOLTAN_MALLOC_GID_ARRAY(zz,num_obj);
     num_obj -= 1;
 
-    if (local_gids == NULL || (nlid_ent > 0 && local_lids == NULL) || 
+    if (local_gids == NULL || (nlid_ent > 0 && local_lids == NULL) ||
         assigned   == NULL ||
         num_vert   == NULL || vertices   == NULL || in_vertex == NULL ||
         out_vertex == NULL) {
@@ -348,13 +348,13 @@ int num_geom = 0;          /* number of dimensions in the geometry */
    * Get objects via list
    */
 
-      zz->Get_Coarse_Obj_List(zz->Get_Coarse_Obj_List_Data, 
+      zz->Get_Coarse_Obj_List(zz->Get_Coarse_Obj_List_Data,
                               ngid_ent, nlid_ent,
-                              local_gids, local_lids, 
+                              local_gids, local_lids,
                               assigned, num_vert, vertices,
                               &in_order, in_vertex, out_vertex, &ierr);
       if (ierr) {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                       "Error returned from user function Get_Coarse_Obj_List.");
         Zoltan_Multifree(__FILE__, __LINE__, 8, &initpath_method,
                                                 &local_gids,
@@ -385,7 +385,7 @@ int num_geom = 0;          /* number of dimensions in the geometry */
       lid = (nlid_ent ? &(local_lids[count*nlid_ent]) : NULL);
       found = zz->Get_First_Coarse_Obj(zz->Get_First_Coarse_Obj_Data,
                                        ngid_ent, nlid_ent,
-                                       &local_gids[count*ngid_ent], 
+                                       &local_gids[count*ngid_ent],
                                        lid,
                                        &assigned[count],
                                        &num_vert[count],
@@ -395,7 +395,7 @@ int num_geom = 0;          /* number of dimensions in the geometry */
                                        &out_vertex[count*ngid_ent],
                                        &ierr);
       if (ierr) {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                      "Error returned from user function Get_First_Coarse_Obj.");
         Zoltan_Multifree(__FILE__, __LINE__, 8, &initpath_method,
                                                 &local_gids,
@@ -413,14 +413,14 @@ int num_geom = 0;          /* number of dimensions in the geometry */
 
       while (found && count <= num_obj) {
         count += 1;
-        prev_lid = (nlid_ent ? &(local_lids[(count-1)*nlid_ent]) 
+        prev_lid = (nlid_ent ? &(local_lids[(count-1)*nlid_ent])
                                     : NULL);
         lid = (nlid_ent ? &(local_lids[count*nlid_ent]) : NULL);
         found = zz->Get_Next_Coarse_Obj(zz->Get_Next_Coarse_Obj_Data,
                                       ngid_ent, nlid_ent,
-                                      &local_gids[(count-1)*ngid_ent], 
+                                      &local_gids[(count-1)*ngid_ent],
                                       prev_lid,
-                                      &local_gids[count*ngid_ent], 
+                                      &local_gids[count*ngid_ent],
                                       lid,
                                       &assigned[count],
                                       &num_vert[count],
@@ -429,7 +429,7 @@ int num_geom = 0;          /* number of dimensions in the geometry */
                                       &out_vertex[count*ngid_ent],
                                       &ierr);
         if (ierr) {
-          ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+          ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                       "Error returned from user function Get_Next_Coarse_Obj.");
           Zoltan_Multifree(__FILE__, __LINE__, 8, &initpath_method,
                                                   &local_gids,
@@ -548,10 +548,10 @@ int num_geom = 0;          /* number of dimensions in the geometry */
     }
     num_geom = zz->Get_Num_Geom(zz->Get_Num_Geom_Data, &ierr);
     if (ierr) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                          "Error returned from user function Get_Num_Geom.");
       ZOLTAN_TRACE_EXIT(zz, yo);
-      return(ierr); 
+      return(ierr);
     }
     if (!(num_geom==2 || num_geom==3)) {
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Geometry must be either 2D or 3D.");
@@ -591,14 +591,14 @@ int num_geom = 0;          /* number of dimensions in the geometry */
                                               &coords);
       ZOLTAN_TRACE_EXIT(zz, yo);
       return(ZOLTAN_MEMERR);
-    } 
+    }
 
 /* get the coordinates of each element */
 
-    if (zz->Get_Geom) { 
+    if (zz->Get_Geom) {
       for (i=0; i<num_obj; i++) {
 
-        zz->Get_Geom(zz->Get_Geom_Data, zz->Num_GID, zz->Num_LID, 
+        zz->Get_Geom(zz->Get_Geom_Data, zz->Num_GID, zz->Num_LID,
                      &(local_gids[ngid_ent*i]), &(local_lids[nlid_ent*i]),
                      &(coords[num_geom*i]),&ierr);
         if (ierr) {
@@ -719,7 +719,7 @@ int num_geom = 0;          /* number of dimensions in the geometry */
     recv_size_all[i-1] = (3*num_ass_all[i-1]+sum_ass_vert_all[i-1])*ngid_ent;
     displs[i] = displs[i-1] + recv_size_all[i-1];
   }
-  recv_size_all[nproc-1] = 
+  recv_size_all[nproc-1] =
               (3*num_ass_all[nproc-1]+sum_ass_vert_all[nproc-1])*ngid_ent;
   recv_size = displs[nproc-1] + recv_size_all[nproc-1];
 
@@ -759,11 +759,11 @@ int num_geom = 0;          /* number of dimensions in the geometry */
   sum_vert = 0;
   for (i=0; i<num_obj; i++) {
     if (assigned[i]) {
-      ZOLTAN_SET_GID(zz, &(send_id[count*ngid_ent]), 
+      ZOLTAN_SET_GID(zz, &(send_id[count*ngid_ent]),
                          &(local_gids[i*ngid_ent]));
-      ZOLTAN_SET_GID(zz, &(send_id[(count+1)*ngid_ent]), 
+      ZOLTAN_SET_GID(zz, &(send_id[(count+1)*ngid_ent]),
                          &(in_vertex[i*ngid_ent]));
-      ZOLTAN_SET_GID(zz, &(send_id[(count+2)*ngid_ent]), 
+      ZOLTAN_SET_GID(zz, &(send_id[(count+2)*ngid_ent]),
                          &(out_vertex[i*ngid_ent]));
       for (j=0; j<num_vert[i]; j++) {
         ZOLTAN_SET_GID(zz, &(send_id[(count+3+j)*ngid_ent]),
@@ -990,7 +990,7 @@ int num_geom = 0;          /* number of dimensions in the geometry */
     found = 0;
     for (j=0; j<num_obj && !found; j++) {
       if (ZOLTAN_EQ_GID(zz, &(full_gid[i*ngid_ent]),
-                        &(local_gids[j*ngid_ent]))) 
+                        &(local_gids[j*ngid_ent])))
         found = 1;
     }
     j--;
@@ -1168,7 +1168,7 @@ int num_geom = 0;          /* number of dimensions in the geometry */
       zz->Get_Child_Weight(zz->Get_Child_Weight_Data,
                            ngid_ent, nlid_ent,
                            &(full_gid[i*ngid_ent]),
-                           lid, zz->Obj_Weight_Dim, 
+                           lid, zz->Obj_Weight_Dim,
                            root->children[order[i]].weight, &ierr);
     }
     for (j=0; j<wdim; j++) {
@@ -1180,7 +1180,7 @@ int num_geom = 0;          /* number of dimensions in the geometry */
    * Copy the vertices
    */
 
-    for (j=0; j<full_num_vert[i]; j++) 
+    for (j=0; j<full_num_vert[i]; j++)
       ZOLTAN_SET_GID(zz,&(root->children[order[i]].vertices[j*ngid_ent]),
                         &(full_vertices[(sum_vert+j)*ngid_ent]));
     if (full_num_vert[i] > 0) sum_vert += full_num_vert[i];
@@ -1287,7 +1287,7 @@ int i;                     /* loop counter */
     if ( (root->children[i]).known_to_me) {
       ierr = Zoltan_Reftree_Build_Recursive(zz,&(root->children[i]));
       if (ierr==ZOLTAN_FATAL || ierr==ZOLTAN_MEMERR) {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                        "Error returned from Zoltan_Reftree_Build_Recursive.");
         ZOLTAN_TRACE_EXIT(zz, yo);
         return(ierr);
@@ -1357,11 +1357,11 @@ int existing;              /* existing child that agrees with GET_CHILD data */
    * Get the number of children of this node
    */
 
-  num_obj = zz->Get_Num_Child(zz->Get_Num_Child_Data, 
+  num_obj = zz->Get_Num_Child(zz->Get_Num_Child_Data,
                               ngid_ent, nlid_ent,
                               subroot->global_id, subroot->local_id, &ierr);
   if (ierr) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Error returned from user function Get_Num_Child.");
     Zoltan_Reftree_Free_Structure(zz);
     return(ierr);
@@ -1406,7 +1406,7 @@ int existing;              /* existing child that agrees with GET_CHILD data */
     svert1      = (int *) ZOLTAN_MALLOC((num_obj+1)*sizeof(int));
     sorder      = (int *) ZOLTAN_MALLOC(num_obj*sizeof(int));
     ssize = num_obj;
-    if (slocal_gids == NULL || (nlid_ent > 0 && slocal_lids == NULL) || 
+    if (slocal_gids == NULL || (nlid_ent > 0 && slocal_lids == NULL) ||
         sassigned   == NULL ||
         snum_vert   == NULL || svertices   == NULL || sin_vertex == NULL ||
         sout_vertex == NULL || svert1      == NULL) {
@@ -1425,14 +1425,14 @@ int existing;              /* existing child that agrees with GET_CHILD data */
       return(ZOLTAN_MEMERR);
     }
   }
-  zz->Get_Child_List(zz->Get_Child_List_Data, 
+  zz->Get_Child_List(zz->Get_Child_List_Data,
                      ngid_ent, nlid_ent,
-                     subroot->global_id, subroot->local_id, 
+                     subroot->global_id, subroot->local_id,
                      slocal_gids, slocal_lids, sassigned,
                      snum_vert, svertices, &ref_type, sin_vertex, sout_vertex,
                      &ierr);
   if (ierr) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                    "Error returned from user function Get_Child_List.");
     Zoltan_Reftree_Free_Structure(zz);
     return(ierr);
@@ -1519,7 +1519,7 @@ int existing;              /* existing child that agrees with GET_CHILD data */
         zz->Get_Child_Weight(zz->Get_Child_Weight_Data,
                              ngid_ent, nlid_ent,
                              subroot->children[i].global_id,
-                             lid, 
+                             lid,
                              zz->Obj_Weight_Dim,
                              subroot->children[i].weight, &ierr);
       }
@@ -1629,7 +1629,7 @@ int existing;              /* existing child that agrees with GET_CHILD data */
         zz->Get_Child_Weight(zz->Get_Child_Weight_Data,
                              ngid_ent, nlid_ent,
                              &(slocal_gids[i*ngid_ent]),
-                             lid, 
+                             lid,
                              zz->Obj_Weight_Dim,
                              subroot->children[sorder[i]].weight, &ierr);
       }
@@ -1690,7 +1690,7 @@ int existing;              /* existing child that agrees with GET_CHILD data */
 
 /*****************************************************************************/
 
-static int order_tri_bisect(ZZ *zz, int *vert1, int *order, 
+static int order_tri_bisect(ZZ *zz, int *vert1, int *order,
                             ZOLTAN_ID_PTR vertices, ZOLTAN_ID_PTR in_vertex,
                             ZOLTAN_ID_PTR out_vertex, ZOLTAN_REFTREE *subroot)
 {
@@ -2593,7 +2593,7 @@ int i,j,count,found;
 
 /*****************************************************************************/
 
-static int order_other_ref(ZZ *zz, ZOLTAN_REFTREE *parent, int num_child, 
+static int order_other_ref(ZZ *zz, ZOLTAN_REFTREE *parent, int num_child,
                            int *num_vert, int *vert1, ZOLTAN_ID_PTR vertices,
                            int *order, ZOLTAN_ID_PTR in_vertex,
                            ZOLTAN_ID_PTR out_vertex)
@@ -2648,7 +2648,7 @@ int ngid_ent = zz->Num_GID;  /* number of array entries in a global ID */
   share_vert = (int **) ZOLTAN_MALLOC(num_child*sizeof(int *));
   if (share_vert == NULL) {
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
-    Zoltan_Multifree(__FILE__, __LINE__, 3, &share_vert, 
+    Zoltan_Multifree(__FILE__, __LINE__, 3, &share_vert,
                                             &has_in,
                                             &has_out);
     return(ZOLTAN_MEMERR);
@@ -2658,7 +2658,7 @@ int ngid_ent = zz->Num_GID;  /* number of array entries in a global ID */
     if (share_vert[i] == NULL) {
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
       for (j=0; j<=i; j++) ZOLTAN_FREE(&(share_vert[j]));
-      Zoltan_Multifree(__FILE__, __LINE__, 3, &share_vert, 
+      Zoltan_Multifree(__FILE__, __LINE__, 3, &share_vert,
                                               &has_in,
                                               &has_out);
       return(ZOLTAN_MEMERR);
@@ -2701,7 +2701,7 @@ int ngid_ent = zz->Num_GID;  /* number of array entries in a global ID */
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
     for (j=0; j<num_child; j++) ZOLTAN_FREE(&(share_vert[j]));
     Zoltan_Multifree(__FILE__, __LINE__, 4, &on_path,
-                                            &share_vert, 
+                                            &share_vert,
                                             &has_in,
                                             &has_out);
     return(ZOLTAN_MEMERR);
@@ -2774,7 +2774,7 @@ int ngid_ent = zz->Num_GID;  /* number of array entries in a global ID */
 
 /*****************************************************************************/
 
-static void order_other_ref_recur(int new_entry, int level, int *order, 
+static void order_other_ref_recur(int new_entry, int level, int *order,
                           int *on_path,
                           int num_child, int *has_out, int **share_vert,
                           int max_share, int *solved)
@@ -3167,7 +3167,7 @@ int nlid_ent = zz->Num_LID;  /* number of array entries in a local ID */
 
     num_obj = zz->Get_Num_Coarse_Obj(zz->Get_Num_Coarse_Obj_Data, &ierr);
     if (ierr) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                      "Error returned from user function Get_Num_Coarse_Obj.");
       ZOLTAN_TRACE_EXIT(zz, yo);
       return(ierr);
@@ -3200,13 +3200,13 @@ int nlid_ent = zz->Num_LID;  /* number of array entries in a local ID */
         return(ZOLTAN_MEMERR);
       }
 
-      zz->Get_Coarse_Obj_List(zz->Get_Coarse_Obj_List_Data, 
+      zz->Get_Coarse_Obj_List(zz->Get_Coarse_Obj_List_Data,
                               ngid_ent, nlid_ent,
-                              local_gids, local_lids, 
+                              local_gids, local_lids,
                               assigned, num_vert, vertices,
                               &in_order, in_vertex, out_vertex, &ierr);
       if (ierr) {
-        ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+        ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                       "Error returned from user function Get_Coarse_Obj_List.");
         Zoltan_Multifree(__FILE__, __LINE__, 8, &local_gids,
                                                 &local_lids,
@@ -3238,7 +3238,7 @@ int nlid_ent = zz->Num_LID;  /* number of array entries in a local ID */
             tree_node->weight[0] = 0.0;
           else {
             lid = (nlid_ent ? &(local_lids[i*nlid_ent]) : NULL);
-            zz->Get_Child_Weight(zz->Get_Child_Weight_Data, 
+            zz->Get_Child_Weight(zz->Get_Child_Weight_Data,
                                ngid_ent, nlid_ent,
                                &(local_gids[i*ngid_ent]),
                                lid,
@@ -3271,8 +3271,8 @@ int nlid_ent = zz->Num_LID;  /* number of array entries in a local ID */
     plocal_gids = ZOLTAN_MALLOC_GID(zz);
     plocal_lids = ZOLTAN_MALLOC_LID(zz);
     vertices = ZOLTAN_MALLOC_GID_ARRAY(zz,MAXVERT);
-    if (local_gids == NULL || (nlid_ent > 0 && local_lids == NULL) || 
-        plocal_gids == NULL || (nlid_ent > 0 && plocal_lids == NULL) || 
+    if (local_gids == NULL || (nlid_ent > 0 && local_lids == NULL) ||
+        plocal_gids == NULL || (nlid_ent > 0 && plocal_lids == NULL) ||
         in_vertex == NULL || out_vertex == NULL ||
         vertices == NULL) {
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
@@ -3293,7 +3293,7 @@ int nlid_ent = zz->Num_LID;  /* number of array entries in a local ID */
                                      &inum_vert, vertices, &in_order,
                                      in_vertex, out_vertex, &ierr);
     if (ierr) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                      "Error returned from user function Get_First_Coarse_Obj.");
       Zoltan_Multifree(__FILE__, __LINE__, 7, &local_gids,
                                               &local_lids,
@@ -3319,7 +3319,7 @@ int nlid_ent = zz->Num_LID;  /* number of array entries in a local ID */
         if (zz->Obj_Weight_Dim == 0)
           tree_node->weight[0] = 0.0;
         else
-          zz->Get_Child_Weight(zz->Get_Child_Weight_Data, 
+          zz->Get_Child_Weight(zz->Get_Child_Weight_Data,
                              ngid_ent, nlid_ent,
                              local_gids, local_lids, zz->Obj_Weight_Dim,
                              tree_node->weight, &ierr);
@@ -3432,7 +3432,7 @@ int i, j;
 
 void Zoltan_Reftree_Get_Child_Order(ZZ *zz, int *order, int *ierr)
 {
-/* 
+/*
  * Return the order of the children in the refinement tree.
  * Upon return, order contains GIDs.  It contains
  * sets of entries consisting of the GID of an element followed by the

@@ -899,7 +899,7 @@ int i;
 }
 
 /***********************************************************************/
-static char *make_platform_name_string()
+static char *make_platform_name_string(void)
 {
 int i;
 int len;

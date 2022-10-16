@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
+COMPILER="${COMPILER:-gnu}"
 MPI="${MPI:-NO}"
+if [ "$COMPILER" == "mpi" ]
+then
+    MPI="YES"
+fi
+
 if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
@@ -10,7 +16,6 @@ then
   export CC=mpicc
   export CXX=mpicxx
 else
-  COMPILER="${COMPILER:-gnu}"
   if [ "$COMPILER" == "gnu" ]
   then
       export CC=gcc
@@ -20,6 +25,12 @@ else
   then
       export CC=clang
       export CXX=clang++
+  fi
+  if [ "$COMPILER" == "gnubrew" ]
+  then
+      VER=${VER:-10}
+      CXX=g++-${VER}
+      CC=gcc-${VER}
   fi
   if [ "$COMPILER" == "gnumacport" ]
   then

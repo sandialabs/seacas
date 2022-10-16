@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -80,7 +80,7 @@ static int Zoltan_Preprocess_Add_Weight (ZZ*, ZOLTAN_Third_Graph * gr,
                                   char * add_obj_weight);
 
 
-static int Zoltan_Preprocess_Scale_Weights(ZOLTAN_Third_Graph *, float *, 
+static int Zoltan_Preprocess_Scale_Weights(ZOLTAN_Third_Graph *, float *,
                                  weighttype**, int, int, int, ZZ*,
                                  char *, indextype);
 static int Zoltan_Preprocess_Extract_Geom(ZZ *zz,
@@ -154,7 +154,7 @@ int Zoltan_Preprocess_Graph(
 #else
     printf("Third party library weight type is %lu-byte floating point value\n",
            (unsigned long) (sizeof(weighttype)));
-#endif    
+#endif
 
 #if __parmetis__ + __metis__ + __ptscotch__ + __scotch__ > 1
     printf("Zoltan was compiled with support for: ");
@@ -276,7 +276,7 @@ int Zoltan_Preprocess_Graph(
     if (sizeof(indextype) != sizeof(ZOLTAN_GNO_TYPE)){
 
       /* Zoltan uses data type ZOLTAN_GNO_TYPE, third party library uses indextype */
-      
+
       j = zz->Num_Proc + 1;
       gr->vtxdist = (indextype *)ZOLTAN_MALLOC(sizeof(indextype) * j);
       if (!gr->vtxdist)
@@ -288,7 +288,7 @@ int Zoltan_Preprocess_Graph(
 
 
       j = (int)gr->xadj[gr->num_obj];
-      gr->adjncy = (indextype *)ZOLTAN_MALLOC(sizeof(indextype) * (j+1)); 
+      gr->adjncy = (indextype *)ZOLTAN_MALLOC(sizeof(indextype) * (j+1));
                    /* KDD 10/7/14  ParMETIS 4 doesn't like NULL adjncy array
                       when j (number of adjacencies) is 0; force non-NULL */
       if ((j+1) && !gr->adjncy)
@@ -344,7 +344,7 @@ int Zoltan_Preprocess_Graph(
       ierr = Zoltan_ZG_Vertex_Info(zz, graph, global_ids, local_ids, &float_vwgt, NULL);
     }
 
-    FIELD_DO_NOT_FREE_WHEN_DONE(graph->mtx.delete_flag, FIELD_YGID); 
+    FIELD_DO_NOT_FREE_WHEN_DONE(graph->mtx.delete_flag, FIELD_YGID);
 
     if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN){
       ZOLTAN_PARMETIS_ERROR(ierr, "Zoltan_Preprocess_Graph returned error.");
@@ -367,7 +367,7 @@ int Zoltan_Preprocess_Graph(
       if (sizeof(indextype) != sizeof(int)){
         /* Zoltan query function gets int data type, but TPL structures store indextype */
         prt->input_part = (indextype *) ZOLTAN_MALLOC(gr->num_obj*sizeof(indextype));
-        if (gr->num_obj > 0 && prt->input_part == NULL) 
+        if (gr->num_obj > 0 && prt->input_part == NULL)
           ZOLTAN_PARMETIS_ERROR(ZOLTAN_MEMERR, "Out of memory.");
 
         for (i=0; i < gr->num_obj; i++){
@@ -510,7 +510,7 @@ int Zoltan_Preprocess_Graph(
     else
       flag = 0; /* No output */
 
-    ierr = Zoltan_Verify_Graph(zz->Communicator, gr->vtxdist, gr->xadj, 
+    ierr = Zoltan_Verify_Graph(zz->Communicator, gr->vtxdist, gr->xadj,
                                gr->adjncy, gr->vwgt, gr->ewgts, gr->obj_wgt_dim,
                                gr->edge_wgt_dim, gr->graph_type, gr->check_graph,
                                flag);
@@ -573,7 +573,7 @@ Zoltan_Preprocess_Add_Weight (ZZ *zz,
       else if (add_type==2)
         /* weight is vertex degree (EBEB should we add +1?) */
         /*        vwgt_new[i*(gr->obj_wgt_dim+1)+gr->obj_wgt_dim] = 10*(gr->xadj[i+1] -gr->xadj[i]) + 1; */
-        vwgt_new[i*(gr->obj_wgt_dim+1)+gr->obj_wgt_dim] = 
+        vwgt_new[i*(gr->obj_wgt_dim+1)+gr->obj_wgt_dim] =
                                                  gr->xadj[i+1] - gr->xadj[i];
     }
         /* Use new vwgt array */
@@ -612,7 +612,7 @@ static int Zoltan_Preprocess_Scale_Weights(
     for (i99=0; i99 < (number <3 ? number : 3); i99++){
       for (k=0; k<gr->obj_wgt_dim; k++)
         sprintf(msg+10*k, "%.9f ", flt_wgt[i99*gr->obj_wgt_dim+k]);
-      printf("[%1d] Debug: before scaling weights for %s " TPL_IDX_SPEC 
+      printf("[%1d] Debug: before scaling weights for %s " TPL_IDX_SPEC
              " = %s\n", zz->Proc, name, offset+i99, msg);
     }
   }
@@ -624,7 +624,7 @@ static int Zoltan_Preprocess_Scale_Weights(
   }
 
   ierr = scale_round_weights(flt_wgt, *rnd_wgt, number, ndim, mode,
-                             MAX_WGT_SUM, zz->Debug_Level, 
+                             MAX_WGT_SUM, zz->Debug_Level,
                              zz->Communicator);
 
   if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN){
@@ -1018,9 +1018,9 @@ void Zoltan_Third_DisplayTime(ZZ* zz, double* times)
 
 /****************************************************************************/
 static int give_proc(
-  indextype vertex, 
-  const indextype *vtxdist, 
-  int numProc, 
+  indextype vertex,
+  const indextype *vtxdist,
+  int numProc,
   int *myproc
 )
 {
@@ -1033,13 +1033,13 @@ static int give_proc(
   }
 
   /* Assume that vertices are balanced */
-  currentproc = (int)(vertex / (vtxdist[1]-vtxdist[0]));  
+  currentproc = (int)(vertex / (vtxdist[1]-vtxdist[0]));
 
   if (currentproc >= numProc)
     currentproc = numProc - 1;
 
   if ((vertex < vtxdist[0])||( vertex >= vtxdist[numProc])) {
-    ZOLTAN_PRINT_WARN ((*myproc), "Symmetrize Graph problem (1)", 
+    ZOLTAN_PRINT_WARN ((*myproc), "Symmetrize Graph problem (1)",
                        "Unknown vertex");
     return (-1);
   }
@@ -1086,8 +1086,8 @@ static int Zoltan_LB_Add_Part_Sizes_Weight(
 /* Function to add one entry per part to part_sizes array.  Returns a new
  * array with the added entry.
  * The added entry for a part is set by default to the zeroth part_sizes entry
- * for the part. 
- * This function is invoked when parameter ADD_OBJ_WEIGHT is used. 
+ * for the part.
+ * This function is invoked when parameter ADD_OBJ_WEIGHT is used.
  */
 realtype *part_sizes;               /* New part_sizes array */
 int i, j;
@@ -1098,7 +1098,7 @@ int ierr = ZOLTAN_OK;
     goto End;
   }
 
-  /* new_part_dim will equal old_part_dim if obj_weight_dim = 0 
+  /* new_part_dim will equal old_part_dim if obj_weight_dim = 0
      and add_obj_weight != NONE */
   if (old_part_dim == new_part_dim) {
     *new_part_sizes = old_part_sizes;
@@ -1144,7 +1144,7 @@ int64_t maxindextype = (int64_t)(((uint64_t) 1<<((sizeof(indextype)<<3)-1))-1);
     char msg[500];
     sprintf(msg, "Graph TPL is built with integer type that is too small for "
             "the partitioning problem.  Max number of objects supported is "
-            "2^%lu-1; global number of objects is " ZOLTAN_GNO_SPEC "\n", 
+            "2^%lu-1; global number of objects is " ZOLTAN_GNO_SPEC "\n",
             ((sizeof(indextype)<<3)-1), global_num_obj);
     ZOLTAN_PRINT_ERROR(zz->Proc, "check_data_sizes", msg);
     ierr = ZOLTAN_FATAL;

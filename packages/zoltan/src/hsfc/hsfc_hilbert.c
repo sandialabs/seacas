@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -86,7 +86,7 @@ double Zoltan_HSFC_InvHilbert2d (ZZ *zz, double *coord)
    char *yo = "Zoltan_HSFC_InvHilbert2d";
 
    /* sanity check for input arguments */
-   if ((coord[0] < 0.0) || (coord[0] > 1.0) || (coord[1] < 0.0) 
+   if ((coord[0] < 0.0) || (coord[0] > 1.0) || (coord[1] < 0.0)
     || (coord[1] > 1.0))
       ZOLTAN_PRINT_ERROR (zz->Proc, yo, "Spatial Coordinates out of range.");
 
@@ -168,12 +168,12 @@ double Zoltan_HSFC_InvHilbert3d (ZZ *zz, double *coord)
    }
 
 
-   
+
 /* Note: the following code has been tested and is fine.  It was necessary
 during the testing for the new box assign algorithm.  Since it is potentially
 useful, I am leaving this code intact, but ifdef'ing it out because of the
 SQA coverage requirement. */
-   
+
 #ifdef RTHRTH
 /* Given the Hilbert key, returns it as the coordinate in [0,1] */
 void Zoltan_HSFC_Hilbert1d (ZZ *zz, double *coord, double key)
@@ -323,10 +323,9 @@ Change the declaration
 to
    static const int MAXLEVEL = 32;
 Eliminate the lines that convert the orginal double arguement of key to ikey.
-*/   
+*/
 
 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
-

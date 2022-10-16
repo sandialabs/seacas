@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -87,7 +87,7 @@ extern double *Zoltan_Array_Alloc();
 #endif
 
 extern void    Zoltan_Memory_Debug(int);
-extern int Zoltan_Memory_Get_Debug();
+extern int Zoltan_Memory_Get_Debug(void);
 extern void    Zoltan_Free(void **, char *, int);
 extern double *Zoltan_Calloc(size_t, size_t, char *, int);
 extern double *Zoltan_Malloc(size_t, char *, int);

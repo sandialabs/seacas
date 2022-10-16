@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -55,7 +55,7 @@ extern "C" {
 #endif
 
 /***************************************************************************
-*  The modules and data arrays in hsfc_hilbert.c and hsfc_box_assign.c are 
+*  The modules and data arrays in hsfc_hilbert.c and hsfc_box_assign.c are
 *  influenced by a series of papers:
 *  "Load balancing for the parallel adaptive solution of partial differential
 *    equations", 1994, deCougny, Devine, Flaherty, Loy, Ozturan, Shephard
@@ -75,7 +75,7 @@ extern "C" {
 *   data queries, etc. is "Fundamentals of Spatial Information Systems, 1992,
 *   Laurini, Thompson.
 *
-*  Useful code examples for the generation of Hilbert and Inverse Hilbert 
+*  Useful code examples for the generation of Hilbert and Inverse Hilbert
 *   coordinates came from Octree (in above papers) also using state tables,
 *   H. Carter Edwards (1997), (Ph.D. dissertation, code copyrighted 1997),
 *   Doug Moore, Rice University (copyrighted 1998-2000) whose code also

@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -283,7 +283,7 @@ static void quickpart_pointer_inc_gno_int(
 {
 int i, next;
 int key2, key2_next;
-ZOLTAN_GNO_TYPE key1, key1_next; 
+ZOLTAN_GNO_TYPE key1, key1_next;
 
   i = (end + start) / 2;
   key1 = val1 ? val1[sorted[i]] : 1;

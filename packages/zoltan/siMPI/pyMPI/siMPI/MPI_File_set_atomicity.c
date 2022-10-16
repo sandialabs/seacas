@@ -17,6 +17,5 @@
 int MPI_File_set_atomicity(MPI_File fh, int flag)
 {
   _MPI_COVERAGE();
-  return PMPI_File_set_atomicity (fh, flag); 
+  return PMPI_File_set_atomicity (fh, flag);
 }
-
