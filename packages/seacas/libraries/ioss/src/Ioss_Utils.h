@@ -535,9 +535,11 @@ namespace Ioss {
 
   inline std::ostream &DebugOut() { return *Utils::m_debugStream; }
 
-  inline std::ostream &WarnOut()
+  inline std::ostream &WarnOut(bool output_prewarning = true)
   {
-    *Utils::m_warningStream << Utils::m_preWarningText;
+    if (output_prewarning) {
+      *Utils::m_warningStream << Utils::m_preWarningText;
+    }
     return *Utils::m_warningStream;
   }
 

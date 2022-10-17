@@ -987,8 +987,10 @@ namespace {
     const std::vector<std::string> &in_qa_1 = input_region_1.get_qa_records();
     const std::vector<std::string> &in_qa_2 = input_region_2.get_qa_records();
 
+    bool printed = false;
     if (in_qa_1.size() != in_qa_2.size()) {
       fmt::print(Ioss::WarnOut(), COUNT_MISMATCH, "QA RECORD", in_qa_1.size(), in_qa_2.size());
+      printed = true;
     }
 
     // CHECK for missing QA records and COMPARE existing records
@@ -997,11 +999,13 @@ namespace {
       if (it == in_qa_2.end()) {
         // QA RECORD was not found
         fmt::print(Ioss::WarnOut(), NOTFOUND_2, "QA RECORD", in_qa_record_1);
+        printed = true;
         continue;
       }
 
       if (in_qa_record_1.compare(*it) != 0) {
         fmt::print(buf, VALUE_MISMATCH, "QA RECORD", in_qa_record_1, (*it));
+        printed        = true;
         overall_result = false;
       }
     }
@@ -1011,9 +1015,13 @@ namespace {
       if (it == in_qa_1.end()) {
         // QA RECORD was not found
         fmt::print(Ioss::WarnOut(), NOTFOUND_1, "QA RECORD", in_qa_record_2);
+        printed = true;
       }
     }
 
+    if (printed) {
+      fmt::print(Ioss::WarnOut(false), "\n");
+    }
     return overall_result;
   }
 

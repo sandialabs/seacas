@@ -439,7 +439,23 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
       }
       else {
         if (!quiet) {
-          fmt::print(Ioss::OUTPUT(), "{}: PROPERTY ({}) mismatch\n", name(), lhs_property);
+          auto lhs_prop = this->properties.get(lhs_property);
+          auto rhs_prop = rhs.properties.get(lhs_property);
+          if (lhs_prop.get_type() == Ioss::Property::STRING) {
+            auto p1_value = lhs_prop.get_string();
+            auto p2_value = rhs_prop.get_string();
+            fmt::print(Ioss::OUTPUT(),
+                       "{}: PROPERTY value mismatch [STRING] ({}): ('{}' vs '{}')\n", name(),
+                       lhs_property, p1_value, p2_value);
+          }
+          else if (lhs_prop.get_type() == Ioss::Property::INTEGER) {
+            fmt::print(Ioss::OUTPUT(), "{}: PROPERTY value mismatch [INTEGER] ({}): ({} vs {})\n",
+                       name(), lhs_property, lhs_prop.get_int(), rhs_prop.get_int());
+          }
+          else {
+            fmt::print(Ioss::OUTPUT(), "{}: PROPERTY value mismatch ({}): unsupported type\n",
+                       name(), lhs_property);
+          }
         }
         return false;
       }
