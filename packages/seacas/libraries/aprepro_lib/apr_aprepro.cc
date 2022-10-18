@@ -721,17 +721,7 @@ namespace SEAMS {
     (*infoStream) << "\n{\n";
     bool first = true;
 
-    // We want the output to be sorted, so move all symbol pointers to a vector...
-    // Could pre-filter the vector, but for now, just copy all and filter afterwards...
-    std::vector<SEAMS::symrec *> vsym_table;
-    vsym_table.reserve(sym_table->get().size());
-    for (const auto &sym : sym_table->get()) {
-      vsym_table.push_back(sym.second);
-    }
-    std::sort(vsym_table.begin(), vsym_table.end(),
-              [](const auto &a, const auto &b) { return a->name < b->name; });
-
-    for (const auto &ptr : vsym_table) {
+    for (const auto &ptr : get_sorted_sym_table()) {
       if (!ptr->isInternal) {
         if (ptr->type == Parser::token::VAR || ptr->type == Parser::token::IMMVAR) {
           (*infoStream) << (first ? "\"" : ",\n\"") << ptr->name << "\": " << std::setprecision(10)
@@ -761,21 +751,11 @@ namespace SEAMS {
       spre = pre;
     }
 
-    // We want the output to be sorted, so move all symbol pointers to a vector...
-    // Could pre-filter the vector, but for now, just copy all and filter afterwards...
-    std::vector<SEAMS::symrec *> vsym_table;
-    vsym_table.reserve(sym_table->get().size());
-    for (const auto &sym : sym_table->get()) {
-      vsym_table.push_back(sym.second);
-    }
-    std::sort(vsym_table.begin(), vsym_table.end(),
-              [](const auto &a, const auto &b) { return a->name < b->name; });
-
     if (type == Parser::token::VAR || type == Parser::token::SVAR || type == Parser::token::AVAR) {
       (*infoStream) << "\n" << comment << "   Variable    = Value" << '\n';
 
       int width = 10; // controls spacing/padding for the variable names
-      for (const auto &ptr : vsym_table) {
+      for (const auto &ptr : get_sorted_sym_table()) {
         if (spre.empty() || ptr->name.find(spre) != std::string::npos) {
           if (doInternal == ptr->isInternal) {
             if (ptr->type == Parser::token::VAR) {
@@ -823,7 +803,7 @@ namespace SEAMS {
              type == Parser::token::AFNCT) {
       int fwidth = 20; // controls spacing/padding for the function names
       (*infoStream) << trmclr::blue << "\nFunctions returning double:" << trmclr::normal << '\n';
-      for (const auto &ptr : vsym_table) {
+      for (const auto &ptr : get_sorted_sym_table()) {
         if (spre.empty() || ptr->name.find(spre) != std::string::npos) {
           if (ptr->type == Parser::token::FNCT) {
             (*infoStream) << std::left << trmclr::green << std::setw(fwidth) << ptr->syntax
@@ -834,7 +814,7 @@ namespace SEAMS {
 
       (*infoStream) << trmclr::blue << trmclr::blue
                     << "\nFunctions returning string:" << trmclr::normal << '\n';
-      for (const auto &ptr : vsym_table) {
+      for (const auto &ptr : get_sorted_sym_table()) {
         if (spre.empty() || ptr->name.find(spre) != std::string::npos) {
           if (ptr->type == Parser::token::SFNCT) {
             (*infoStream) << std::left << trmclr::green << std::setw(fwidth) << ptr->syntax
@@ -844,7 +824,7 @@ namespace SEAMS {
       }
 
       (*infoStream) << trmclr::blue << "\nFunctions returning array:" << trmclr::normal << '\n';
-      for (const auto &ptr : vsym_table) {
+      for (const auto &ptr : get_sorted_sym_table()) {
         if (spre.empty() || ptr->name.find(spre) != std::string::npos) {
           if (ptr->type == Parser::token::AFNCT) {
             (*infoStream) << std::left << trmclr::green << std::setw(fwidth) << ptr->syntax
@@ -887,6 +867,22 @@ namespace SEAMS {
       history.clear();
     }
   }
+
+  std::vector<SEAMS::symrec *> Aprepro::get_sorted_sym_table() const
+  {
+    // We want the output to be sorted, so move all symbol pointers to a vector...
+    // Could pre-filter the vector, but for now, just copy all and filter afterwards...
+    std::vector<SEAMS::symrec *> vsym_table;
+    vsym_table.reserve(sym_table->get().size());
+    for (const auto &sym : sym_table->get()) {
+      vsym_table.push_back(sym.second);
+    }
+    std::sort(vsym_table.begin(), vsym_table.end(),
+              [](const auto &a, const auto &b) { return a->name < b->name; });
+
+    return vsym_table;
+  }
+
 } // namespace SEAMS
 
 namespace {
