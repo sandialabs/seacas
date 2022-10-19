@@ -10,6 +10,7 @@ namespace Ioss {
   {
   public:
     Initializer();
+    ~Initializer();
     // Assignment operator
     // Copy constructor
   };
