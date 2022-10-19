@@ -29,6 +29,7 @@
 #include <utility>
 #include <vector>
 
+namespace Ioss {
 enum {
 
   // default behavior - just loges this assert
@@ -126,32 +127,30 @@ namespace SmartAssert {
 
 } // namespace SmartAssert
 
-namespace Ioss {
-  namespace Private {
-    void init_assert();
-    void set_default_log_stream(std::ostream &out);
-    void set_default_log_name(const char *str);
+namespace Private {
+  void init_assert();
+  void set_default_log_stream(std::ostream &out);
+  void set_default_log_name(const char *str);
 
-    // allows finding if a value is of type 'const char *'
-    // and is null; if so, we cannot print it to an ostream
-    // directly!!!
-    template <class T> struct is_null_finder
-    {
-      bool is(const T & /*unused*/) const { return false; }
-    };
+// allows finding if a value is of type 'const char *'
+// and is null; if so, we cannot print it to an ostream
+// directly!!!
+template <class T> struct is_null_finder
+{
+  bool is(const T & /*unused*/) const { return false; }
+};
 
-    template <> struct is_null_finder<char *>
-    {
-      bool is(char *const &val) { return val == nullptr; }
-    };
+template <> struct is_null_finder<char *>
+{
+  bool is(char *const &val) { return val == nullptr; }
+};
 
-    template <> struct is_null_finder<const char *>
-    {
-      bool is(const char *const &val) { return val == nullptr; }
-    };
+template <> struct is_null_finder<const char *>
+{
+  bool is(const char *const &val) { return val == nullptr; }
+};
 
-  } // namespace Private
-} // namespace Ioss
+} // namespace Private
 
 struct Assert
 {
@@ -334,7 +333,7 @@ namespace SmartAssert {
   if ((expr))                                                                                      \
     ;                                                                                              \
   else                                                                                             \
-    (void)::SmartAssert::make_assert(#expr).print_context(__FILE__, __LINE__).SMART_ASSERT_A /**/
+    (void)::Ioss::SmartAssert::make_assert(#expr).print_context(__FILE__, __LINE__).SMART_ASSERT_A /**/
 
 #else
 // "release" mode
@@ -342,7 +341,7 @@ namespace SmartAssert {
   if (true)                                                                                        \
     ;                                                                                              \
   else                                                                                             \
-    (void)::SmartAssert::make_assert("").SMART_ASSERT_A /**/
+    (void)::Ioss::SmartAssert::make_assert("").SMART_ASSERT_A /**/
 
 #endif // ifdef SMART_ASSERT_DEBUG
 
@@ -350,7 +349,7 @@ namespace SmartAssert {
   if ((expr))                                                                                      \
     ;                                                                                              \
   else                                                                                             \
-    (void)::SmartAssert::make_assert(#expr)                                                        \
+    (void)::Ioss::SmartAssert::make_assert(#expr)                                                  \
         .error()                                                                                   \
         .print_context(__FILE__, __LINE__)                                                         \
         .SMART_ASSERT_A /**/
@@ -359,6 +358,7 @@ namespace SmartAssert {
 #define SMART_ASSERT_B(x) SMART_ASSERT_OP(x, A)
 
 #define SMART_ASSERT_OP(x, next) SMART_ASSERT_A.print_current_val((x), #x).SMART_ASSERT_##next /**/
+} // namespace Ioss
 
 #if _MSC_VER > 1000
 #pragma warning(pop)
