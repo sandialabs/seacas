@@ -1055,7 +1055,7 @@ namespace {
 
   template <typename T>
   bool compare_blocks(const std::vector<T *> &in_blocks_1, const std::vector<T *>     &in_blocks_2,
-                      const Ioss::MeshCopyOptions & /* options */, std::ostringstream &buf)
+                      const Ioss::MeshCopyOptions & /* options */, std::ostringstream &/* buf */)
   {
     bool overall_result = true;
 
