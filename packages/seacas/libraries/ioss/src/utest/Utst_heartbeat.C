@@ -33,23 +33,34 @@ namespace {
     auto *db = create_heartbeat("test.hb");
     DOCTEST_CHECK(db->ok());
 
-    std::vector<double> field_data(1);
-    std::vector<int>    int_data(1);
-    Ioss::Region        region(db);
+    Ioss::Region region(db);
+
     region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
-    region.field_add({"testing", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT, 1});
-    region.field_add({"testint", Ioss::Field::INTEGER, "scalar", Ioss::Field::TRANSIENT, 1});
+    region.field_add({"double", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT, 1});
+    region.field_add({"integer", Ioss::Field::INTEGER, "scalar", Ioss::Field::TRANSIENT, 1});
+    region.field_add({"vector_3d", Ioss::Field::REAL, "vector_3d", Ioss::Field::TRANSIENT, 1});
+    region.field_add({"intvector", Ioss::Field::INTEGER, "vector_3d", Ioss::Field::TRANSIENT, 1});
     region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
+
+    std::vector<double> field_data(3);
+    std::vector<int>    int_data(3);
     region.begin_mode(Ioss::STATE_TRANSIENT);
     for (int i = 1; i < 10; i++) {
       region.add_state(i);
       region.begin_state(i);
-      field_data[0] = i;
-      int_data[0]   = i;
-      region.put_field_data("testing", field_data);
-      region.put_field_data("testint", int_data);
+      field_data[0] = (i % 2) ? i : -i;
+      field_data[1] = i * i;
+      field_data[2] = sqrt(i);
+      int_data[0]   = (i % 2) ? -i : i;
+      int_data[1]   = i / 2;
+      int_data[2]   = i * i;
+      region.put_field_data("double", field_data);
+      region.put_field_data("integer", int_data);
+      region.put_field_data("vector_3d", field_data);
+      region.put_field_data("intvector", int_data);
       region.end_state(i);
     }
+    region.end_mode(Ioss::STATE_TRANSIENT);
   }
 } // namespace
 
