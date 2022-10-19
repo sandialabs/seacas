@@ -5,6 +5,8 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
+#include "ioss_export.h"
+
 #if _MSC_VER > 1000
 
 // note:
@@ -47,7 +49,7 @@ enum {
 /*
     contains details about a failed assertion
 */
-class assert_context
+class IOSS_EXPORT assert_context
 {
   using string = std::string;
 
@@ -110,23 +112,23 @@ namespace SmartAssert {
   using assert_func = void (*)(const assert_context &);
 
   // helpers
-  std::string get_typeof_level(int nLevel);
-  void        dump_context_summary(const assert_context &context, std::ostream &out);
-  void        dump_context_detail(const assert_context &context, std::ostream &out);
+  IOSS_EXPORT std::string get_typeof_level(int nLevel);
+  IOSS_EXPORT void        dump_context_summary(const assert_context &context, std::ostream &out);
+  IOSS_EXPORT void        dump_context_detail(const assert_context &context, std::ostream &out);
 
   // defaults
-  void default_warn_handler(const assert_context &context);
-  void default_debug_handler(const assert_context &context);
-  void default_error_handler(const assert_context &context);
-  void default_fatal_handler(const assert_context &context);
-  void default_logger(const assert_context &context);
+  IOSS_EXPORT void default_warn_handler(const assert_context &context);
+  IOSS_EXPORT void default_debug_handler(const assert_context &context);
+  IOSS_EXPORT void default_error_handler(const assert_context &context);
+  IOSS_EXPORT void default_fatal_handler(const assert_context &context);
+  IOSS_EXPORT void default_logger(const assert_context &context);
 
 } // namespace SmartAssert
 
 namespace Private {
-  void init_assert();
-  void set_default_log_stream(std::ostream &out);
-  void set_default_log_name(const char *str);
+  IOSS_EXPORT void init_assert();
+  IOSS_EXPORT void set_default_log_stream(std::ostream &out);
+  IOSS_EXPORT void set_default_log_name(const char *str);
 
 // allows finding if a value is of type 'const char *'
 // and is null; if so, we cannot print it to an ostream
@@ -148,7 +150,7 @@ template <> struct is_null_finder<const char *>
 
 } // namespace Private
 
-struct Assert
+struct IOSS_EXPORT Assert
 {
   using assert_func = SmartAssert::assert_func;
 

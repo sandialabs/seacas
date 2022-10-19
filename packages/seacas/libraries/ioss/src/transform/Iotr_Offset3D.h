@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "iotr_export.h"
+
 #include <Ioss_Transform.h>    // for Transform, Factory
 #include <Ioss_VariableType.h> // for VariableType
 
@@ -18,7 +20,7 @@ namespace Ioss {
 
 namespace Iotr {
 
-  class Offset3D_Factory : public Factory
+  class IOTR_EXPORT Offset3D_Factory : public Factory
   {
   public:
     static const Offset3D_Factory *factory();
@@ -28,7 +30,7 @@ namespace Iotr {
     Ioss::Transform *make(const std::string & /*unused*/) const override;
   };
 
-  class Offset3D : public Ioss::Transform
+  class IOTR_EXPORT Offset3D : public Ioss::Transform
   {
     friend class Offset3D_Factory;
 

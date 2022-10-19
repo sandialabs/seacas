@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "ioss_export.h"
+
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_EntityType.h>
@@ -42,7 +44,7 @@ namespace Ioss {
 namespace Ioss {
   /* \brief Utility methods.
    */
-  class Utils
+  class IOSS_EXPORT Utils
   {
   public:
     Utils()  = default;

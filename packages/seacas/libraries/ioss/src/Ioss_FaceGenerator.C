@@ -333,8 +333,8 @@ namespace Ioss {
 
   FaceGenerator::FaceGenerator(Ioss::Region &region) : region_(region) {}
 
-  template void FaceGenerator::generate_faces(int, bool, bool);
-  template void FaceGenerator::generate_faces(int64_t, bool, bool);
+  template IOSS_EXPORT void FaceGenerator::generate_faces(int, bool, bool);
+  template IOSS_EXPORT void FaceGenerator::generate_faces(int64_t, bool, bool);
 
   template <typename INT>
   void FaceGenerator::generate_faces(INT /*dummy*/, bool block_by_block, bool local_ids)

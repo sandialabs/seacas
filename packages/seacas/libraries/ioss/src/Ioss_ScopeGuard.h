@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include "ioss_export.h"
+
 /*
   Scopeguard, by Andrei Alexandrescu and Petru Marginean, December 2000.
   Modified by Joshua Lehrer, FactSet Research Systems, November 2005.
@@ -25,7 +27,7 @@ public:
 
 template <class T> inline RefHolder<T> ByRef(T &t) { return RefHolder<T>(t); }
 
-class ScopeGuardImplBase
+class IOSS_EXPORT ScopeGuardImplBase
 {
   ScopeGuardImplBase &operator=(const ScopeGuardImplBase &) = delete;
 

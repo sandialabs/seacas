@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "ioss_export.h"
+
 #include <memory>
 #include <iostream>
 #include <string>
@@ -18,7 +20,7 @@ namespace Ioss {
 
     template <class charT> class Automata;
 
-    class Error : public std::exception
+    class IOSS_EXPORT Error : public std::exception
     {
     public:
       Error(const std::string &msg) : msg_{msg} {}
