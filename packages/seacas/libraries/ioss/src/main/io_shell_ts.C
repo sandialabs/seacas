@@ -981,7 +981,7 @@ namespace {
       size_t osize = oge->get_field(out_field_name).get_size();
       assert(isize == osize);
 
-      DataPool pool;
+      Ioss::DataPool pool;
       pool.data.resize(isize);
       switch (interFace.data_storage_type) {
       case 1: ige->get_field_data(field_name, pool.data.data(), isize); break;
@@ -1255,7 +1255,7 @@ namespace {
       return;
     }
 
-    DataPool pool;
+    Ioss::DataPool pool;
     pool.data.resize(isize);
     switch (interFace.data_storage_type) {
     case 1: ige->get_field_data(field_name, pool.data.data(), isize); break;
