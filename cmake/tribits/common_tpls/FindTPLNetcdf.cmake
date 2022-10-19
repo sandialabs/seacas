@@ -48,6 +48,19 @@ if (${CMAKE_VERSION} GREATER "3.13")
      cmake_policy(SET CMP0074 NEW)
 endif()
 
+message("DAN: using find_package(netCDF CONFIG)")
+find_package(netCDF CONFIG)
+message("DAN: netCDF_FOUND=${netCDF_FOUND}")
+if (netCDF_FOUND)
+  message("DAN: using tribits_extpkg_create_imported_all_libs_target_and_config_file")
+  tribits_extpkg_create_imported_all_libs_target_and_config_file(
+    Netcdf
+    INNER_FIND_PACKAGE_NAME netCDF
+    IMPORTED_TARGETS_FOR_ALL_LIBS netCDF::netcdf)
+  message("DAN: return")
+  return()
+endif()
+
 set(REQUIRED_HEADERS netcdf.h)
 set(REQUIRED_LIBS_NAMES netcdf)
 
