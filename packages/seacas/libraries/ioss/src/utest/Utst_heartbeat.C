@@ -1,0 +1,73 @@
+#define DOCTEST_CONFIG_IMPLEMENT
+#define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
+#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+#include <doctest.h>
+#include <string>
+
+#include <Ionit_Initializer.h>
+#include <Ioss_SubSystem.h>
+
+#include <fmt/format.h>
+
+namespace {
+  std::string filename = "test.hb";
+
+  Ioss::DatabaseIO *create_heartbeat(const std::string &filename)
+  {
+    Ioss::Init::Initializer init_db;
+
+    Ioss::PropertyManager properties;
+    properties.add(Ioss::Property("SHOW_LABELS", "no"));
+    properties.add(Ioss::Property("SHOW_LEGEND", "yes"));
+    properties.add(Ioss::Property("SHOW_TIME_STAMP", 1));
+    Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("heartbeat", filename, Ioss::WRITE_HEARTBEAT,
+                                                    Ioss::ParallelUtils::comm_world(), properties);
+    if (dbo == nullptr || !dbo->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
+    return dbo;
+  }
+  // BeginDocTest2
+  DOCTEST_TEST_CASE("Ioss::write_file")
+  {
+    auto *db = create_heartbeat("test.hb");
+    DOCTEST_CHECK(db->ok());
+
+    std::vector<double> field_data(1);
+    std::vector<int>    int_data(1);
+    Ioss::Region        region(db);
+    region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
+    region.field_add({"testing", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT, 1});
+    region.field_add({"testint", Ioss::Field::INTEGER, "scalar", Ioss::Field::TRANSIENT, 1});
+    region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
+    region.begin_mode(Ioss::STATE_TRANSIENT);
+    for (int i = 1; i < 10; i++) {
+      region.add_state(i);
+      region.begin_state(i);
+      field_data[0] = i;
+      int_data[0]   = i;
+      region.put_field_data("testing", field_data);
+      region.put_field_data("testint", int_data);
+      region.end_state(i);
+    }
+  }
+} // namespace
+
+int main(int argc, char **argv)
+{
+#ifdef SEACAS_HAVE_MPI
+  MPI_Init(&argc, &argv);
+  ON_BLOCK_EXIT(MPI_Finalize);
+#endif
+
+  doctest::Context context;
+
+  while (*++argv) {
+    if (std::string(*argv) == "--filename") {
+      filename = *++argv;
+      break;
+    }
+    fmt::print("'{}'\n", filename);
+  }
+  return context.run();
+}
