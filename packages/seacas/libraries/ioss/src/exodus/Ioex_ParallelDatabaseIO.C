@@ -3100,6 +3100,9 @@ int64_t ParallelDatabaseIO::read_ss_transient_field(const Ioss::Field &field, in
 
   for (size_t i = 0; i < comp_count; i++) {
     std::string var_name = get_component_name(field, Ioss::Field::InOut::INPUT, i + 1);
+    if (lowerCaseVariableNames) {
+      Ioss::Utils::fixup_name(var_name);
+    }
 
     // Read the variable...
     int  ierr     = 0;
