@@ -53,21 +53,47 @@ set(Netcdf_ALLOW_MODERN FALSE CACHE BOOL "Allow finding Netcdf as a modern CMake
 if (Netcdf_ALLOW_MODERN)
 
   message("-- Netcdf_ALLOW_MODERN=${Netcdf_ALLOW_MODERN}")
-  message("-- Using find_package(netCDF 4.7.4 CONFIG) ...")
-  find_package(netCDF 4.7.4 CONFIG)
+  message("-- Using find_package(netCDF ${minimum_netCDF_version} CONFIG) ...")
+  set(minimum_netCDF_version 4.7.4)
+  find_package(netCDF ${minimum_netCDF_version} CONFIG)
   if (netCDF_FOUND)
     message("-- Found netCDF_CONFIG=${netCDF_CONFIG}")
     message("-- Generating Netcdf::all_libs and NetcdfConfig.cmake")
-    tribits_extpkg_create_imported_all_libs_target_and_config_file(
-      Netcdf
-      INNER_FIND_PACKAGE_NAME netCDF
-      IMPORTED_TARGETS_FOR_ALL_LIBS netCDF::netcdf)
-    # The TriBITS documentation claims the above is all that is needed, but the following
-    # line is definitely needed because
-    # tribits_extpkg_create_imported_all_libs_target_and_config_file
-    # does *not* create this variable while
+    # instead of using tribits_extpkg_create_imported_all_libs_target_and_config_file,
+    # we will do what it does ourselves because we need to bring in two
+    # inner find packages (netCDF and hdf5) because netCDF does not properly
+    # do find_dependency(hdf5)
+    add_library(Netcdf::all_libs  INTERFACE  IMPORTED  GLOBAL)
+    target_link_libraries(Netcdf::all_libs  INTERFACE  netCDF::netcdf)
+    set(configFileStr "")
+    string(APPEND configFileStr
+      "include(CMakeFindDependencyMacro)\n" )
+    string(APPEND configFileStr
+      "set(netCDF_DIR \"${netCDF_DIR}\")\n" )
+    string(APPEND configFileStr
+      "find_dependency(netCDF ${minimum_netCDF_version} CONFIG)\n"
+      )
+    if (netCDF_HAS_HDF5)
+      find_package(hdf5 CONFIG REQUIRED)
+      string(APPEND configFileStr
+        "set(hdf5_DIR \"${hdf5_DIR}\")\n" )
+      string(APPEND configFileStr
+        "find_dependency(hdf5 CONFIG)\n"
+        )
+    endif()
+    string(APPEND configFileStr
+      "add_library(Netcdf::all_libs  INTERFACE  IMPORTED  GLOBAL)\n"
+      )
+    string(APPEND configFileStr
+      "target_link_libraries(Netcdf::all_libs  INTERFACE  netCDF::netcdf)\n")
+    set(buildDirExternalPkgsDir
+      "${${PROJECT_NAME}_BINARY_DIR}/${${PROJECT_NAME}_BUILD_DIR_EXTERNAL_PKGS_DIR}")
+    set(tplConfigFile
+      "${buildDirExternalPkgsDir}/Netcdf/NetcdfConfig.cmake")
+    file(WRITE "${tplConfigFile}" "${configFileStr}")
+    # the following gets set by tribits_tpl_find_include_dirs_and_libraries
+    # and it is not well-documented that you need to set it yourself if not using
     # tribits_tpl_find_include_dirs_and_libraries
-    # does create it
     set(TPL_Netcdf_NOT_FOUND FALSE)
     message("-- TPL_Netcdf_PARALLEL = netCDF_HAS_PARALLEL = ${netCDF_HAS_PARALLEL}")
     set(TPL_Netcdf_PARALLEL ${netCDF_HAS_PARALLEL})
