@@ -80,8 +80,10 @@ namespace {
                                     DataPool &pool, const std::string &field_name,
                                     const Ioss::MeshCopyOptions &options);
 
+#ifdef SEACAS_HAVE_MPI
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
+#endif
 
   template <typename T>
   std::pair<size_t, std::string>
@@ -1414,6 +1416,7 @@ namespace {
     }
   }
 
+#ifdef SEACAS_HAVE_MPI
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT /*dummy*/)
   {
@@ -1442,6 +1445,7 @@ namespace {
       }
     }
   }
+#endif
 
   void add_proc_id(Ioss::Region &region, int rank)
   {

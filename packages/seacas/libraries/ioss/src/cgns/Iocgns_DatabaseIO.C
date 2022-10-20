@@ -149,7 +149,6 @@ namespace {
       }
     }
   }
-#endif
 
   template <typename T> void pack(int &idx, std::vector<int> &pack, T *from, int count)
   {
@@ -157,6 +156,7 @@ namespace {
       pack[idx++] = from[i];
     }
   }
+#endif
 
   template <typename T> void unpack(int &idx, const T *pack, T *to, int count)
   {
