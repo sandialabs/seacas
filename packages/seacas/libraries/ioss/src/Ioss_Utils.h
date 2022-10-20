@@ -33,6 +33,12 @@ namespace Ioss {
 
 #define IOSS_ERROR(errmsg) throw std::runtime_error((errmsg).str())
 
+#ifdef NDEBUG
+#define IOSS_ASSERT_USED(x) (void)x
+#else
+#define IOSS_ASSERT_USED(x)
+#endif
+
 namespace {
   // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
   template <typename T> size_t unique(std::vector<T> &out, bool skip_first)
