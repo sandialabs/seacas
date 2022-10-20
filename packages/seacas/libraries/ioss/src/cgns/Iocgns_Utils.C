@@ -2232,7 +2232,7 @@ void Iocgns::Utils::add_transient_variables(int cgns_file_ptr, const std::vector
         auto *nb = const_cast<Ioss::NodeBlock *>(cnb);
         if (nb == nullptr) {
           std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: CGNS: Null entity accesing nodeblock for structured block {}.",
+          fmt::print(errmsg, "ERROR: CGNS: Null entity accessing nodeblock for structured block {}.",
                      block->name());
           IOSS_ERROR(errmsg);
         }

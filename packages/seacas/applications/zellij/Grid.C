@@ -243,7 +243,7 @@ void Grid::create_output_regions(SystemInterface &interFace)
   if (parallel_size() == 1) {
     properties.add(Ioss::Property("OMIT_EXODUS_NUM_MAPS", 1));
   }
-  // Disable this for now.  Readers need to be modified and propogated to allow this.
+  // Disable this for now.  Readers need to be modified and propagated to allow this.
   //   properties.add(Ioss::Property("MINIMAL_NEMESIS_DATA", 1));
 
   if (debug_level & 2) {

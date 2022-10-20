@@ -196,7 +196,7 @@ namespace Ioss {
 
       // For each face on the "front" (at the beginning the boundary sideset faces)
       // Set `element_chains` to the `face` "ID"
-      // We are only working on the elements that are in the curent block...
+      // We are only working on the elements that are in the current block...
       front_t<INT> next_front;
       while (!front.empty()) {
         if (debug & 16) {
