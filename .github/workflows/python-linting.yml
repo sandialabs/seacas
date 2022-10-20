@@ -18,8 +18,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8
           pip install pylint
-      - name: Lint with flake8
+      - name: Lint exodus.py
         run: |
-          flake8 packages/seacas/scripts/exodus3.in.py
-          flake8 packages/seacas/scripts/exomerge3.py
-          flake8 packages/seacas/scripts/tests
+          flake8 --ignore E501,E266,E302,E111,E221,E305,E261,E231,E303 packages/seacas/scripts/exodus3.in.py
+      - name: Lint exomerge.py
+        run: |
+          flake8 --ignore E501,E266,E302,E111,E221,E305,E261,E231,E303 packages/seacas/scripts/exomerge3.py
+      - name: Lint exodus tests
+        run: |
+          flake8 --ignore E501,E266,E302,E111,E221,E305,E261,E231,E303 packages/seacas/scripts/tests
