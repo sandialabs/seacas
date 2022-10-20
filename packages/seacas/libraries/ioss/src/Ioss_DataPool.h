@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <vector>
 
+namespace Ioss {
 struct DataPool
 {
   // Data space shared by most field input/output routines...
@@ -44,3 +45,4 @@ struct DataPool
   // have type std::complex entities.
 #endif
 };
+}
