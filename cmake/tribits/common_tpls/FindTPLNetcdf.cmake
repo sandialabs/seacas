@@ -97,6 +97,9 @@ if (Netcdf_ALLOW_MODERN)
     set(TPL_Netcdf_NOT_FOUND FALSE)
     message("-- TPL_Netcdf_PARALLEL = netCDF_HAS_PARALLEL = ${netCDF_HAS_PARALLEL}")
     set(TPL_Netcdf_PARALLEL ${netCDF_HAS_PARALLEL})
+    message("-- TPL_Netcdf_Enables_Netcdf4 = netCDF_HAS_NC4 = ${netCDF_HAS_NC4}")
+    set(TPL_Netcdf_Enables_Netcdf4 ${netCDF_HAS_NC4} CACHE BOOL
+      "True if netcdf enables netcdf-4")
   endif()
 
 else()
