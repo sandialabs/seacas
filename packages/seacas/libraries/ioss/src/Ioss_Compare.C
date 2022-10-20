@@ -1055,7 +1055,7 @@ namespace {
 
   template <typename T>
   bool compare_blocks(const std::vector<T *> &in_blocks_1, const std::vector<T *>     &in_blocks_2,
-                      const Ioss::MeshCopyOptions & /* options */, std::ostringstream &buf)
+                      const Ioss::MeshCopyOptions & /* options */, std::ostringstream &/* buf */)
   {
     bool overall_result = true;
 
@@ -1553,7 +1553,7 @@ namespace {
                    field.type_string(), field_name);
         return false;
       }
-    } break;
+    }
     default:
       if (field_name == "mesh_model_coordinates") {
         fmt::print(Ioss::WarnOut(), "data_storage option not recognized.");

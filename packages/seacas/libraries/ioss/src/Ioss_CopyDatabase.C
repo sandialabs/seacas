@@ -58,10 +58,6 @@ namespace {
   void transfer_commsets(Ioss::Region &region, Ioss::Region &output_region,
                          const Ioss::MeshCopyOptions &options, int rank);
 
-  template <typename T>
-  void transfer_fields(const std::vector<T *> &entities, Ioss::Region &output_region,
-                       Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options, int rank);
-
   void transfer_fields(const Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
                        Ioss::Field::RoleType role, const std::string &prefix = "");
 
@@ -84,8 +80,10 @@ namespace {
                                     DataPool &pool, const std::string &field_name,
                                     const Ioss::MeshCopyOptions &options);
 
+#ifdef SEACAS_HAVE_MPI
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
+#endif
 
   template <typename T>
   std::pair<size_t, std::string>
@@ -841,27 +839,6 @@ namespace {
   }
 
   template <typename T>
-  void transfer_fields(const std::vector<T *> &entities, Ioss::Region &output_region,
-                       Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options, int rank)
-  {
-    for (const auto &entity : entities) {
-      const std::string &name = entity->name();
-      if (options.debug && rank == 0) {
-        fmt::print(Ioss::DebugOut(), "{}, ", name);
-      }
-
-      // Find the corresponding output node_block...
-      Ioss::GroupingEntity *oeb = output_region.get_entity(name, entity->type());
-      if (oeb != nullptr) {
-        transfer_fields(entity, oeb, role);
-      }
-    }
-    if (options.debug && rank == 0) {
-      fmt::print(Ioss::DebugOut(), "\n");
-    }
-  }
-
-  template <typename T>
   void transfer_field_data(const std::vector<T *> &entities, Ioss::Region &output_region,
                            DataPool &pool, Ioss::Field::RoleType role,
                            const Ioss::MeshCopyOptions &options)
@@ -1439,6 +1416,7 @@ namespace {
     }
   }
 
+#ifdef SEACAS_HAVE_MPI
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT /*dummy*/)
   {
@@ -1467,6 +1445,7 @@ namespace {
       }
     }
   }
+#endif
 
   void add_proc_id(Ioss::Region &region, int rank)
   {

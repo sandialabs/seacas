@@ -671,7 +671,6 @@ namespace Ioss {
         IOSS_ERROR(errmsg);
       }
 
-      break;
       default: {
         std::ostringstream errmsg;
         fmt::print(errmsg, "Invalid nesting of begin/end pairs in {}",
@@ -1655,7 +1654,7 @@ namespace Ioss {
                "\n\nERROR: The entity named '{}' of type {} which is being aliased to '{}' does "
                "not exist in "
                "region '{}'.\n",
-               db_name, type, alias, name());
+               db_name, static_cast<int>(type), alias, name());
     IOSS_ERROR(errmsg);
   }
 
@@ -1876,7 +1875,6 @@ namespace Ioss {
           "that does not support duplicate names.",
           nfound, my_name, filename);
       IOSS_ERROR(errmsg);
-      return nullptr;
     }
     return entity;
   }

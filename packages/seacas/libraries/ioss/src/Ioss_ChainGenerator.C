@@ -192,7 +192,7 @@ namespace Ioss {
 
       // We want a vector giving us the Face for each face of each element in the block...
       connectivity_t face_connectivity(count);
-      generate_face_connectivity(face_generator.faces(adj_block), offset, face_connectivity);
+      generate_face_connectivity(face_generator.faces(adj_block), static_cast<int>(offset), face_connectivity);
 
       // For each face on the "front" (at the beginning the boundary sideset faces)
       // Set `element_chains` to the `face` "ID"
@@ -213,7 +213,7 @@ namespace Ioss {
           // See if there is an element attached to the `opp_side`
           if (opp_face->elementCount_ > 1) {
             // Determine which is current element and which is adjacent element...
-            int  index       = (opp_face->element[0] / 10 == element) ? 1 : 0;
+            int  index       = (opp_face->element[0] / 10 == static_cast<typename decltype(opp_face->element)::value_type>(element)) ? 1 : 0;
             auto nxt_element = opp_face->element[index] / 10;
             auto nxt_side    = opp_face->element[index] % 10;
             if (element_chains[nxt_element - 1] == Ioss::chain_entry_t<INT>()) {
@@ -223,7 +223,7 @@ namespace Ioss {
                 fmt::print("At element {}, side {} -- Next in chain is element {}, side {}\n",
                            element, side, nxt_element, nxt_side);
               }
-              next_front.push_back(std::make_pair(nxt_element, nxt_side + 1));
+              next_front.push_back(std::make_pair(static_cast<INT>(nxt_element), static_cast<int>(nxt_side + 1)));
             }
             else {
               if (debug & 16) {

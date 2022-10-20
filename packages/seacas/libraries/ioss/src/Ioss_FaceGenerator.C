@@ -34,6 +34,7 @@
 #define DO_TIMING 0
 
 namespace {
+#ifdef SEACAS_HAVE_MPI
   template <typename T> void generate_index(std::vector<T> &index)
   {
     T sum = 0;
@@ -43,6 +44,7 @@ namespace {
       sum += cnt;
     }
   }
+#endif
 
 #if defined(USE_MURMUR)
   uint64_t MurmurHash64A(const size_t key);

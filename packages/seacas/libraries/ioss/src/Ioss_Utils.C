@@ -80,9 +80,6 @@ std::string   Ioss::Utils::m_preWarningText = "\nIOSS WARNING: ";
 namespace {
   auto initial_time = std::chrono::steady_clock::now();
 
-  template <typename INT>
-  void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
-
   ////////////////////////////////////////////////////////////////////////
   bool is_separator(const char separator, const char value) { return separator == value; }
 
@@ -583,15 +580,15 @@ namespace {
         // It is possible that the first name(s) that match with two
         // suffices have a basename that match other names with only a
         // single suffix lc_cam_x, lc_cam_y, lc_sfarea.
-        for (int i = index + 1; i < num_names; i++) {
-          char                    *tst_name = names[i];
+        for (int id = index + 1; id < num_names; id++) {
+          char                    *tst_name = names[id];
           std::vector<std::string> subtokens;
           field_tokenize(tst_name, suffix_separator, subtokens);
-          if ((truth_table == nullptr || truth_table[i] == 1) && // Defined on this entity
+          if ((truth_table == nullptr || truth_table[id] == 1) && // Defined on this entity
               std::strncmp(name, tst_name, bn_len) == 0 &&       // base portion must match
               (!same_length || (strlen(tst_name) == name_length)) &&
               subtokens.size() == num_tokens) {
-            which_names.push_back(i);
+            which_names.push_back(id);
           }
         }
 

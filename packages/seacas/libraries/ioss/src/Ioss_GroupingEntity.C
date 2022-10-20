@@ -391,7 +391,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
   if (this->entityState != rhs.entityState) {
     if (!quiet) {
       fmt::print(Ioss::OUTPUT(), "GroupingEntity: entityState mismatch ([] vs. [])\n",
-                 this->entityState, rhs.entityState);
+                 static_cast<int>(this->entityState), static_cast<int>(rhs.entityState));
     }
     return false;
   }

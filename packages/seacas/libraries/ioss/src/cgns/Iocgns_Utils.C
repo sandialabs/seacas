@@ -263,7 +263,7 @@ namespace {
         fmt::print(Ioss::WarnOut(),
                    "On sideset '{}', the boundary condition type was previously set to {}"
                    " which does not match the current value of {}. It will keep the old value.\n",
-                   sset->name(), old_bocotype, bocotype);
+                   sset->name(), old_bocotype, static_cast<int>(bocotype));
       }
     }
     else {
