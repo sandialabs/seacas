@@ -52,10 +52,10 @@ set(Netcdf_ALLOW_MODERN FALSE CACHE BOOL "Allow finding Netcdf as a modern CMake
 
 if (Netcdf_ALLOW_MODERN)
 
+  set(minimum_modern_netCDF_version 4.7.4)
   message("-- Netcdf_ALLOW_MODERN=${Netcdf_ALLOW_MODERN}")
-  message("-- Using find_package(netCDF ${minimum_netCDF_version} CONFIG) ...")
-  set(minimum_netCDF_version 4.7.4)
-  find_package(netCDF ${minimum_netCDF_version} CONFIG)
+  message("-- Using find_package(netCDF ${minimum_modern_netCDF_version} CONFIG) ...")
+  find_package(netCDF ${minimum_modern_netCDF_version} CONFIG)
   if (netCDF_FOUND)
     message("-- Found netCDF_CONFIG=${netCDF_CONFIG}")
     message("-- Generating Netcdf::all_libs and NetcdfConfig.cmake")
@@ -71,7 +71,7 @@ if (Netcdf_ALLOW_MODERN)
     string(APPEND configFileStr
       "set(netCDF_DIR \"${netCDF_DIR}\")\n" )
     string(APPEND configFileStr
-      "find_dependency(netCDF ${minimum_netCDF_version} CONFIG)\n"
+      "find_dependency(netCDF ${minimum_modern_netCDF_version} CONFIG)\n"
       )
     if (netCDF_HAS_HDF5)
       find_package(hdf5 CONFIG REQUIRED)
