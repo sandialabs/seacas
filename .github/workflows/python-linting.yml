@@ -20,9 +20,6 @@ jobs:
           pip install pylint
       - name: Lint with flake8
         run: |
-          flake8 packages/seacas/scripts/exodus3.in.py --count --show-source --statistics
-          flake8 packages/seacas/scripts/exodus3.in.py --count --max-complexity=10 --max-line-length=79 --statistics
-          flake8 packages/seacas/scripts/exomerge3.py  --count --show-source --statistics
-          flake8 packages/seacas/scripts/exomerge3.py  --count --max-complexity=10 --max-line-length=79 --statistics
-          flake8 packages/seacas/scripts/tests  --count --show-source --statistics
-          flake8 packages/seacas/scripts/tests  --count --max-complexity=10 --max-line-length=79 --statistics
+          flake8 packages/seacas/scripts/exodus3.in.py
+          flake8 packages/seacas/scripts/exomerge3.py
+          flake8 packages/seacas/scripts/tests
