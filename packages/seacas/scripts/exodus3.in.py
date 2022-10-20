@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.15 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.16 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.15 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.16 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2022 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -5311,21 +5311,21 @@ class exodus:
         att.value_count = len(attribute.values)
 
         if (isinstance(attribute.values[0], int)):
-            eptr = (c_int * len(attribute.values))()
+            eptr = (ctypes.c_int * len(attribute.values))()
             for i in range(len(attribute.values)):
                eptr[i] = ctypes.c_int(attribute.values[i])
             att.values = ctypes.cast(eptr, ctypes.c_void_p)
             att.type = 4
 
         elif (isinstance(attribute.values[0], float)):
-            eptr = (c_double * len(attribute.values))()
+            eptr = (ctypes.c_double * len(attribute.values))()
             for i in range(len(attribute.values)):
               eptr[i] = ctypes.c_double(attribute.values[i])
             att.values = ctypes.cast(eptr, ctypes.c_void_p)
             att.type = 6
 
         elif (isinstance(attribute.values[0], str)):
-            eptr = (c_char * (len(attribute.values) + 1))()
+            eptr = (ctypes.c_char * (len(attribute.values) + 1))()
             eptr = attribute.values[0].encode('ascii')
             att.values = ctypes.cast(eptr, ctypes.c_void_p)
             att.type = 2

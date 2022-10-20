@@ -1743,7 +1743,7 @@ class ExomergeUnitTester:
         """
         source_code = inspect.getsource(source)
         return bool(
-            re.search('[^A-Za-z0-9_]' + target.__name__ + '[ \t\n\r]*(',
+            re.search('[^A-Za-z0-9_]' + target.__name__ + '[ \t\n\r]*\(',
                       source_code))
 
     def test(self):
