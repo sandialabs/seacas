@@ -58,10 +58,6 @@ namespace {
   void transfer_commsets(Ioss::Region &region, Ioss::Region &output_region,
                          const Ioss::MeshCopyOptions &options, int rank);
 
-  template <typename T>
-  void transfer_fields(const std::vector<T *> &entities, Ioss::Region &output_region,
-                       Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options, int rank);
-
   void transfer_fields(const Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
                        Ioss::Field::RoleType role, const std::string &prefix = "");
 
@@ -833,27 +829,6 @@ namespace {
           inb->get_field_data("owning_processor", pool.data.data(), isize);
           nb->put_field_data("owning_processor", pool.data.data(), isize);
         }
-      }
-    }
-    if (options.debug && rank == 0) {
-      fmt::print(Ioss::DebugOut(), "\n");
-    }
-  }
-
-  template <typename T>
-  void transfer_fields(const std::vector<T *> &entities, Ioss::Region &output_region,
-                       Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options, int rank)
-  {
-    for (const auto &entity : entities) {
-      const std::string &name = entity->name();
-      if (options.debug && rank == 0) {
-        fmt::print(Ioss::DebugOut(), "{}, ", name);
-      }
-
-      // Find the corresponding output node_block...
-      Ioss::GroupingEntity *oeb = output_region.get_entity(name, entity->type());
-      if (oeb != nullptr) {
-        transfer_fields(entity, oeb, role);
       }
     }
     if (options.debug && rank == 0) {

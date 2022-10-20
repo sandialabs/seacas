@@ -80,9 +80,6 @@ std::string   Ioss::Utils::m_preWarningText = "\nIOSS WARNING: ";
 namespace {
   auto initial_time = std::chrono::steady_clock::now();
 
-  template <typename INT>
-  void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
-
   ////////////////////////////////////////////////////////////////////////
   bool is_separator(const char separator, const char value) { return separator == value; }
 
