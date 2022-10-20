@@ -847,7 +847,7 @@ class exodus:
         exo_copy : exodus object opened in append mode by default
         """
         i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
-        fileId = EXODUS_LIB.ex_create_int(fileName.encode('ascii'), EX_NOCLOBBER|i64Status,
+        fileId = EXODUS_LIB.ex_create_int(fileName.encode('ascii'), EX_NOCLOBBER | i64Status,
                                           ctypes.byref(self.comp_ws),
                                           ctypes.byref(self.io_ws),
                                           EX_API_VERSION_NODOT)
@@ -889,7 +889,7 @@ class exodus:
         if include_transient:
             EXODUS_LIB.ex_copy_transient(self.fileId, file_id)
 
-        return file_id;
+        return file_id
 
     #
     # general info
@@ -1132,7 +1132,7 @@ class exodus:
         if inpFileName:
             fd = open(inpFileName.encode('ascii'), "w")
             for fileLine in sierra_inp:
-                fd.write(fileLine+"\n")
+                fd.write(fileLine + "\n")
             fd.close()
             return []
 
@@ -5220,7 +5220,7 @@ class exodus:
 
     def __ex_get_assembly(self, assem_struct):
         EXODUS_LIB.ex_get_assembly(self.fileId, ctypes.byref(assem_struct))
-        ptr = ctypes.create_string_buffer(MAX_NAME_LENGTH+1)
+        ptr = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
         assem_struct.name = ctypes.cast(ptr, ctypes.c_char_p)
         eptr = (ctypes.c_longlong * assem_struct.entity_count)()
         assem_struct.entity_list = eptr
@@ -5241,7 +5241,7 @@ class exodus:
 
     def __ex_get_blob(self, blob_struct):
         EXODUS_LIB.ex_get_blob(self.fileId, ctypes.byref(blob_struct))
-        ptr = ctypes.create_string_buffer(MAX_NAME_LENGTH+1)
+        ptr = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
         blob_struct.name = ctypes.cast(ptr, ctypes.c_char_p)
         EXODUS_LIB.ex_get_blob(self.fileId, ctypes.byref(blob_struct))
 
@@ -5283,7 +5283,7 @@ class exodus:
                 if (att[i].type == 2):
                     vals = ctypes.cast(att[i].values, ctypes.POINTER(ctypes.c_char))
                     tmp = []
-                    for j in range(att[i].value_count-1):
+                    for j in range(att[i].value_count - 1):
                         tmp.append(vals[j])
                     tmp_att.values = b''.join(tmp).decode('utf8')
 
@@ -5325,7 +5325,7 @@ class exodus:
             att.type = 6
 
         elif (isinstance(attribute.values[0], str)):
-            eptr = (c_char * (len(attribute.values)+1))()
+            eptr = (c_char * (len(attribute.values) + 1))()
             eptr = attribute.values[0].encode('ascii')
             att.values = ctypes.cast(eptr, ctypes.c_void_p)
             att.type = 2
