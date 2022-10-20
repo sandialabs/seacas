@@ -1655,7 +1655,7 @@ namespace Ioss {
                "\n\nERROR: The entity named '{}' of type {} which is being aliased to '{}' does "
                "not exist in "
                "region '{}'.\n",
-               db_name, type, alias, name());
+               db_name, static_cast<int>(type), alias, name());
     IOSS_ERROR(errmsg);
   }
 

@@ -1334,7 +1334,7 @@ namespace Iocgns {
                      "ERROR: CGNS: Zone {} adjacency data is not correct type. Require "
                      "Abutting1to1 and PointList."
                      " {}\t{}\t{}",
-                     zone, connect_type, ptset_type, donor_ptset_type);
+                     zone, static_cast<int>(connect_type), static_cast<int>(ptset_type), static_cast<int>(donor_ptset_type));
           IOSS_ERROR(errmsg);
         }
 

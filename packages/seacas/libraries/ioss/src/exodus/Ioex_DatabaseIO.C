@@ -1779,7 +1779,7 @@ namespace Ioex {
               fmt::print(errmsg,
                          "INTERNAL ERROR: Invalid setting for `split_type` {}. Something is wrong "
                          "in the Ioex::DatabaseIO class. Please report.\n",
-                         split_type);
+                         static_cast<int>(split_type));
               IOSS_ERROR(errmsg);
             }
             assert(elem_topo != nullptr);
