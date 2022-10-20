@@ -6,6 +6,7 @@
 
 #include <Ionit_Initializer.h>
 #include <Ioss_SubSystem.h>
+#include <Ioss_ScopeGuard.h>
 
 #include <fmt/format.h>
 
