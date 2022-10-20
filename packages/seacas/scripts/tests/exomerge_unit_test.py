@@ -917,7 +917,7 @@ class ExomergeUnitTester:
         if len(self.model.element_blocks) < 2:
             return False
         (id1, id2) = _random_subset(self.model.get_element_block_ids(),
-                                         count=2)
+                                    count=2)
         connectivity_1 = self.model.get_connectivity(id1)
         connectivity_2 = self.model.get_connectivity(id2)
         if not connectivity_1 or not connectivity_2:
@@ -1743,7 +1743,7 @@ class ExomergeUnitTester:
         """
         source_code = inspect.getsource(source)
         return bool(
-            re.search('[^A-Za-z0-9_]' + target.__name__ + '[ \t\n\r]*\(',
+            re.search('[^A-Za-z0-9_]' + target.__name__ + '[ \t\n\r]*(',
                       source_code))
 
     def test(self):
@@ -1780,8 +1780,8 @@ class ExomergeUnitTester:
                 matched_unit_tests.append(unit_test)
         if unmatched:
             print(('\nWARNING: Found %d unit test(s) without a matching '
-                  'public function\nUnit tests:\n  %s'
-                  % (len(unmatched), '\n  '.join(unmatched))))
+                   'public function\nUnit tests:\n  %s'
+                   % (len(unmatched), '\n  '.join(unmatched))))
             print('')
         unit_tests = matched_unit_tests
         # If a public function exists without a unit test, issue a warning
@@ -1794,8 +1794,8 @@ class ExomergeUnitTester:
                 unmatched.append(name)
         if unmatched:
             print(('\nWARNING: Found %d public functions without a matching '
-                  'unit test\nPublic functions:\n  %s'
-                  % (len(unmatched), '\n  '.join(unmatched))))
+                   'unit test\nPublic functions:\n  %s'
+                   % (len(unmatched), '\n  '.join(unmatched))))
             print('')
         # make sure unit tests call the appropriate function
         # i.e. _test_create_nodes better call create_nodes somewhere
@@ -1807,8 +1807,8 @@ class ExomergeUnitTester:
                 bad_unit_tests.append(name)
         if bad_unit_tests:
             print(('\nWARNING: Found %d unit tests which do not call their '
-                  'corresponding public functions:\n  %s'
-                  % (len(bad_unit_tests), '\n  '.join(bad_unit_tests))))
+                   'corresponding public functions:\n  %s'
+                   % (len(bad_unit_tests), '\n  '.join(bad_unit_tests))))
             print('')
         # start off the model
         input_dir = os.path.dirname(__file__)
