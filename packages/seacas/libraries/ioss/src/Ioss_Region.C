@@ -671,7 +671,6 @@ namespace Ioss {
         IOSS_ERROR(errmsg);
       }
 
-      break;
       default: {
         std::ostringstream errmsg;
         fmt::print(errmsg, "Invalid nesting of begin/end pairs in {}",
@@ -1876,7 +1875,6 @@ namespace Ioss {
           "that does not support duplicate names.",
           nfound, my_name, filename);
       IOSS_ERROR(errmsg);
-      return nullptr;
     }
     return entity;
   }

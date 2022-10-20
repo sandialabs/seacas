@@ -725,7 +725,6 @@ namespace Iocgns {
       }
 
       IOSS_ERROR(errmsg);
-      return false;
     }
     return true;
   }

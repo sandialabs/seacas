@@ -1553,7 +1553,7 @@ namespace {
                    field.type_string(), field_name);
         return false;
       }
-    } break;
+    }
     default:
       if (field_name == "mesh_model_coordinates") {
         fmt::print(Ioss::WarnOut(), "data_storage option not recognized.");
