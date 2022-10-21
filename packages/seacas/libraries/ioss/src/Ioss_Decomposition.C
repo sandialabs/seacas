@@ -20,10 +20,6 @@
 extern "C" int Zoltan_get_global_id_type(char **name);
 #endif
 
-#if defined(SEACAS_HAVE_CGNS)
-#include <cgns/Iocgns_IOFactory.h>
-#endif
-
 namespace {
   template <typename INT>
   inline std::vector<INT> get_entity_dist(size_t proc_count, size_t my_proc, size_t entity_count,
