@@ -4227,9 +4227,10 @@ void ParallelDatabaseIO::write_nodal_transient_field(const Ioss::Field     &fiel
                                     proc_offset + 1, file_count, temp.data());
       if (ierr < 0) {
         std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "Problem outputting nodal variable '{}' with index = {} on processor {}\n",
-                   var_name, var_index, myProcessor);
+        fmt::print(
+            errmsg,
+            "Problem outputting nodal variable '{}' with index = {} to file '{}' on processor {}\n",
+            var_name, var_index, get_filename(), myProcessor);
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, errmsg.str());
       }
     }
