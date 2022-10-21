@@ -109,9 +109,9 @@ namespace {
     }
   }
 
+#if defined(SEACAS_HAVE_EXODUS)
   int print_groups(int exoid, std::string prefix)
   {
-#if defined(SEACAS_HAVE_EXODUS)
     int   idum;
     float rdum;
     char  group_name[33];
@@ -126,9 +126,9 @@ namespace {
     for (int i = 0; i < num_children; i++) {
       print_groups(children[i], prefix);
     }
-#endif
     return 0;
   }
+#endif
 
   void group_info(Info::Interface &interFace)
   {
