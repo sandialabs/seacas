@@ -105,7 +105,7 @@ class TestAssemblies(unittest.TestCase):
             assembly_ids = temp_exofile.get_ids("EX_ASSEMBLY")
             assemblies = [temp_exofile.get_assembly(assembly) for assembly in assembly_ids]
         root = exo.assembly(name='Root', type='EX_ASSEMBLY', id=100)
-        root.entity_list = [100, 200, 300, 400]
+        root.entity_list = [200, 300, 400]
         self.assertEqual(str(root), str(assemblies[0]))
 
     def test_get_assemblies(self):
@@ -119,7 +119,7 @@ class TestAssemblies(unittest.TestCase):
                     exo.assembly(name='NewAssembly', type='EX_ASSEMBLY', id=222),
                     exo.assembly(name='FromPython', type='EX_ASSEMBLY', id=333)]
         for i, x in enumerate(expected):
-            entity_lists = [[100, 200, 300, 400],
+            entity_lists = [[200, 300, 400],
                             [10, 11, 12, 13],
                             [14, 15, 16],
                             [10, 16],
