@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.16 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.17 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.16 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.17 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2022 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -297,9 +297,18 @@ class ex_inquiry(Enum):
 
 
 class ex_type(Enum):
+    EX_CHAR = 2 # NC_CHAR (from netcdf.h)
     EX_INTEGER = 4 # NC_INT (from netcdf.h)
     EX_DOUBLE = 6  # NC_DOUBLE (from netcdf.h)
-    EX_CHAR = 2 # NC_CHAR (from netcdf.h)
+    EX_INVALID = -1
+
+
+def ex_type_map(type):
+    """
+    Map the exodus inquiry flags to an enum value.
+    """
+    print("EX_TYPE_MAP: ", type)
+    return ex_type[type].value
 
 
 def ex_inquiry_map(inquiry):
@@ -573,12 +582,21 @@ class attribute:
 class ex_attribute(ctypes.Structure):
     """
     Used for accessing underlying exodus library...
+
+    Parameters
+    ----------
+    entity_type : ex_entity_type
+    entity_id : int64_t
+    name : char[257]
+    type : ex_type
+    value_count : int
+    values : void*
     """
     _fields_ = [("entity_type", ctypes.c_int),
                 ("entity_id", ctypes.c_longlong),
-                ("name", ctypes.c_char * 256),
+                ("name", ctypes.c_char * 257),
                 ("type", ctypes.c_int),
-                ("value_count", ctypes.c_longlong),
+                ("value_count", ctypes.c_int),
                 ("values", ctypes.c_void_p)]
 
 #
@@ -5266,6 +5284,16 @@ class exodus:
 
     # --------------------------------------------------------------------
 
+    def __ex_get_attribute_count(self, objType, objId):
+        # Get attribute count...
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        att_count = EXODUS_LIB.ex_get_attribute_count(self.fileId, obj_type, obj_id)
+
+        return att_count
+
+    # --------------------------------------------------------------------
+
     def __ex_get_attributes(self, objType, objId):
         # Get attribute count...
         obj_type = ctypes.c_int(get_entity_type(objType))
@@ -5278,7 +5306,7 @@ class exodus:
             EXODUS_LIB.ex_get_attribute_param(self.fileId, obj_type, obj_id, ctypes.byref(att))
             for i in range(att_count):
                 EXODUS_LIB.ex_get_attribute(self.fileId, ctypes.byref(att[i]))
-                tmp_att = attribute(att[i].name.decode('utf8'), ex_obj_to_name(att[i].entity_type), att[i].entity_id)
+                tmp_att = attribute(att[i].name.decode('utf8'), att[i].entity_type, att[i].entity_id)
 
                 if (att[i].type == 2):
                     vals = ctypes.cast(att[i].values, ctypes.POINTER(ctypes.c_char))
