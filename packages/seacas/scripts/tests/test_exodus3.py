@@ -62,7 +62,7 @@ class TestAssemblies(unittest.TestCase):
                 temp_exofile2.put_assembly(new)
                 copied_output = [assem for assem in temp_exofile2.get_ids('EX_ASSEMBLY')]
                 self.assertNotEqual(temp_exofile.modeChar, temp_exofile2.modeChar)
-        self.assertNotEquals(expected, copied_output)
+        self.assertNotEqual(expected, copied_output)
 
     def test_copy_opened_in_read_mode(self):
         temp_exo_path2 = self.temp_exo_path + '2'
@@ -71,7 +71,7 @@ class TestAssemblies(unittest.TestCase):
                 expected = [assem for assem in temp_exofile.get_ids('EX_ASSEMBLY')]
                 copied_output = [assem for assem in temp_exofile2.get_ids('EX_ASSEMBLY')]
                 self.assertEqual(temp_exofile.modeChar, temp_exofile2.modeChar)
-        self.assertEquals(expected, copied_output)
+        self.assertEqual(expected, copied_output)
 
     def test_setup_ex_assembly(self):
         assem = exo.assembly(name='Unit_test', type='EX_ASSEMBLY', id=444)
@@ -128,6 +128,13 @@ class TestAssemblies(unittest.TestCase):
             x.entity_list = entity_lists[i]
         self.maxDiff = None
         self.assertEqual(str(expected), str(assemblies))
+
+    def test_get_attributes_assembly(self):
+        with exo.exodus(self.temp_exo_path) as temp_exofile:
+            count = temp_exofile.get_attribute_count("EX_ASSEMBLY", 100)
+            self.assertEqual(count, 2)
+            attributes = temp_exofile.get_attributes("EX_ASSEMBLY", 100)
+            print (attributes)
 
     def test_put_qa(self):
         new = [("name","1.2.3-4","20220801","12:34:56")]
