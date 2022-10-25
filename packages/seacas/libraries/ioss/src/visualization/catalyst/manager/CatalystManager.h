@@ -27,9 +27,10 @@ namespace Iovs {
   {
 
   public:
-    using CatalystPipelineID             = unsigned int;
-    using CatalystInputName              = std::string;
-    using CatalystMultiInputPipelineName = std::string;
+    const std::string catalystPluginVersion = "2.0.0";
+    using CatalystPipelineID                = unsigned int;
+    using CatalystInputName                 = std::string;
+    using CatalystMultiInputPipelineName    = std::string;
 
     CatalystManager();
     ~CatalystManager();
@@ -37,6 +38,8 @@ namespace Iovs {
     void parsePhactoriFile(const std::string &filepath, ParseResult &pres);
 
     void parsePhactoriString(const std::string &phactori, ParseResult &pres);
+
+    std::string getCatalystPluginVersion();
 
     std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
     createCatalystExodusMesh(CatalystExodusMeshInit &cmInit);
@@ -63,8 +66,8 @@ namespace Iovs {
 
     // Description:
     // Calls the ParaView Catalyst pipeline to run co-processing for this time iteration.
-    void PerformCoProcessing(std::vector<int> &          error_and_warning_codes,
-                             std::vector<std::string> &  error_and_warning_messages,
+    void PerformCoProcessing(std::vector<int>           &error_and_warning_codes,
+                             std::vector<std::string>   &error_and_warning_messages,
                              const CatalystPipelineInfo &cpi);
 
     // Description:
@@ -83,7 +86,6 @@ namespace Iovs {
     void WriteToLogFile(const CatalystPipelineInfo &cpi);
 
   private:
-
     void initCatalystPythonSystemPaths();
 
     class CatalystPipelineState
@@ -142,7 +144,7 @@ namespace Iovs {
     typedef std::pair<clock_t, clock_t>            TimerPair;
     typedef std::pair<TimerPair, vtkDoubleArray *> LoggingPair;
 
-    CatalystManager(const CatalystManager &) = delete;
+    CatalystManager(const CatalystManager &)            = delete;
     CatalystManager &operator=(const CatalystManager &) = delete;
 
     void               initializeIfNeeded();
@@ -163,7 +165,7 @@ namespace Iovs {
 
     CatalystPipelineID                                           catalystOutputIDNumber;
     CatalystPipelineID                                           catalystOutputReferenceCount;
-    vtkCPProcessor *                                             coProcessor;
+    vtkCPProcessor                                              *coProcessor;
     std::map<CatalystPipelineID, CatalystPipelineState>          pipelines;
     std::map<CatalystPipelineID, LoggingPair>                    logging;
     std::map<CatalystMultiInputPipelineName, CatalystPipelineID> multiInputPipelines;

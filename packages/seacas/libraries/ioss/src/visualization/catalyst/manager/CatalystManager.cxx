@@ -56,6 +56,8 @@ namespace Iovs {
     Py_DECREF(path);
   }
 
+  std::string CatalystManager::getCatalystPluginVersion() { return catalystPluginVersion; }
+
   int CatalystManager::getCatalystOutputIDNumber() { return catalystOutputIDNumber; }
 
   void CatalystManager::initializeIfNeeded()
@@ -239,7 +241,7 @@ namespace Iovs {
           cmInit.catalystMeshFilePerProcPrefix);
     }
 
-    vtkFieldData *  fd = vtkFieldData::New();
+    vtkFieldData   *fd = vtkFieldData::New();
     vtkStringArray *sa = vtkStringArray::New();
     sa->SetName("catalyst_sierra_data");
     vtkIntArray *ec = vtkIntArray::New();
@@ -278,7 +280,7 @@ namespace Iovs {
     em->Delete();
   }
 
-  void CatalystManager::addInputToPipeline(vtkMultiBlockDataSet *      mbds,
+  void CatalystManager::addInputToPipeline(vtkMultiBlockDataSet       *mbds,
                                            const CatalystPipelineInfo &cpi)
   {
 
@@ -312,8 +314,8 @@ namespace Iovs {
     finalizeIfNeeded();
   }
 
-  void CatalystManager::PerformCoProcessing(std::vector<int> &          error_and_warning_codes,
-                                            std::vector<std::string> &  error_and_warning_messages,
+  void CatalystManager::PerformCoProcessing(std::vector<int>           &error_and_warning_codes,
+                                            std::vector<std::string>   &error_and_warning_messages,
                                             const CatalystPipelineInfo &cpi)
   {
 
@@ -337,13 +339,13 @@ namespace Iovs {
         return;
       }
 
-      vtkCPPythonPipeline * pl              = pipelines[id].getPipeline();
+      vtkCPPythonPipeline  *pl              = pipelines[id].getPipeline();
       vtkCPDataDescription *dataDescription = pipelines[id].getDataDescription();
       coProcessor->AddPipeline(pl);
       coProcessor->CoProcess(dataDescription);
 
       vtkFieldData *fd = pipelines[id].getDataDescription()->GetUserData();
-      vtkIntArray * ec =
+      vtkIntArray  *ec =
           vtkIntArray::SafeDownCast(fd->GetAbstractArray("catalyst_sierra_error_codes"));
       vtkStringArray *em =
           vtkStringArray::SafeDownCast(fd->GetAbstractArray("catalyst_sierra_error_messages"));
@@ -391,8 +393,8 @@ namespace Iovs {
 
     if (this->logging.find(id) != this->logging.end()) {
       vtksys::SystemInformation sysInfo;
-      vtkProcessModule *        pm   = vtkProcessModule::GetProcessModule();
-      vtkMPIController *        mpic = vtkMPIController::SafeDownCast(pm->GetGlobalController());
+      vtkProcessModule         *pm   = vtkProcessModule::GetProcessModule();
+      vtkMPIController         *mpic = vtkMPIController::SafeDownCast(pm->GetGlobalController());
       double                    measurements[3];
       measurements[0]                = sysInfo.GetProcMemoryUsed() * (1.0 / 1024.0); // Store in MB
       measurements[1]                = sysInfo.GetHostMemoryUsed() * (1.0 / 1024.0);
@@ -412,7 +414,7 @@ namespace Iovs {
     if (this->logging.find(id) != this->logging.end()) {
       vtkProcessModule *pm         = vtkProcessModule::GetProcessModule();
       vtkMPIController *mpic       = vtkMPIController::SafeDownCast(pm->GetGlobalController());
-      vtkDoubleArray *  logData    = this->logging[id].second;
+      vtkDoubleArray   *logData    = this->logging[id].second;
       clock_t           begin_time = this->logging[id].first.first;
       if (mpic && mpic->GetNumberOfProcesses() > 1) {
         vtkDoubleArray *recvBufferMin = vtkDoubleArray::New();

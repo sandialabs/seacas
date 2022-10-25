@@ -34,6 +34,8 @@ namespace Iovs {
 
     virtual int getCatalystOutputIDNumber() = 0;
 
+    virtual std::string getCatalystPluginVersion() = 0;
+
     // Parameters:
     //   cataystPythonFilename - Python file with instructions for Catalyst.
     //   restartTag - if not empty, contains the current restart iteration string, ie s0001
