@@ -93,8 +93,8 @@ Authors:
 # show the banner on first use
 SHOW_BANNER = True
 
-## Documentation is generated on a Mac laptop using:
-## pdoc --force --html ../lib/exodus.py
+# Documentation is generated on a Mac laptop using:
+# pdoc --force --html ../lib/exodus.py
 
 sys.dont_write_bytecode = True
 
@@ -127,7 +127,7 @@ def getExodusVersion():
                     fields[1] == 'EXODUS_VERSION_MINOR'):
                 version_minor = int(fields[2])
             if (version_major > 0 and version_minor >= 0):
-               return 100 * version_major + version_minor
+                return 100 * version_major + version_minor
     return 0
 
 
@@ -158,6 +158,7 @@ class ex_options(Enum):
     EX_DEBUG       = 2
     EX_ABORT       = 4
     EX_NULLVERBOSE = 8
+
 
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
 if os.uname()[0] == 'Darwin':
@@ -297,9 +298,9 @@ class ex_inquiry(Enum):
 
 
 class ex_type(Enum):
-    EX_CHAR = 2 # NC_CHAR (from netcdf.h)
-    EX_INTEGER = 4 # NC_INT (from netcdf.h)
-    EX_DOUBLE = 6  # NC_DOUBLE (from netcdf.h)
+    EX_CHAR = 2     # NC_CHAR (from netcdf.h)
+    EX_INTEGER = 4  # NC_INT (from netcdf.h)
+    EX_DOUBLE = 6   # NC_DOUBLE (from netcdf.h)
     EX_INVALID = -1
 
 
@@ -5341,14 +5342,14 @@ class exodus:
         if (isinstance(attribute.values[0], int)):
             eptr = (ctypes.c_int * len(attribute.values))()
             for i in range(len(attribute.values)):
-               eptr[i] = ctypes.c_int(attribute.values[i])
+                eptr[i] = ctypes.c_int(attribute.values[i])
             att.values = ctypes.cast(eptr, ctypes.c_void_p)
             att.type = 4
 
         elif (isinstance(attribute.values[0], float)):
             eptr = (ctypes.c_double * len(attribute.values))()
             for i in range(len(attribute.values)):
-              eptr[i] = ctypes.c_double(attribute.values[i])
+                eptr[i] = ctypes.c_double(attribute.values[i])
             att.values = ctypes.cast(eptr, ctypes.c_void_p)
             att.type = 6
 
