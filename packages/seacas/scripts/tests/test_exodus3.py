@@ -134,7 +134,7 @@ class TestAssemblies(unittest.TestCase):
             count = temp_exofile.get_attribute_count("EX_ASSEMBLY", 100)
             self.assertEqual(count, 2)
             attributes = temp_exofile.get_attributes("EX_ASSEMBLY", 100)
-            print (attributes)
+            print(attributes)
 
     def test_put_qa(self):
         new = [("name","1.2.3-4","20220801","12:34:56")]
