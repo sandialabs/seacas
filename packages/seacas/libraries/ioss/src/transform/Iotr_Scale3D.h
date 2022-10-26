@@ -6,10 +6,11 @@
 
 #pragma once
 
-#include "Ioss_VariableType.h" // for VariableType
+#include <Ioss_VariableType.h> // for VariableType
 #include <Ioss_Transform.h>    // for Transform, Factory
-#include <string>              // for string
-#include <vector>              // for vector
+
+#include <string>
+#include <vector>
 namespace Ioss {
   class Field;
 } // namespace Ioss
