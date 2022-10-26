@@ -31,6 +31,7 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_Transform.h>
+#include <transform/Iotr_Factory.h>
 
 #include "EJ_CodeTypes.h"
 #include "EJ_SystemInterface.h"

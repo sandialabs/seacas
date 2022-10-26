@@ -158,9 +158,9 @@ namespace {
 
 namespace Ioss {
 
-  template Ioss::chain_t<int>     generate_element_chains(Ioss::Region &region, const std::string &,
+  template IOSS_EXPORT Ioss::chain_t<int>     generate_element_chains(Ioss::Region &region, const std::string &,
                                                           int, int);
-  template Ioss::chain_t<int64_t> generate_element_chains(Ioss::Region &region, const std::string &,
+  template IOSS_EXPORT Ioss::chain_t<int64_t> generate_element_chains(Ioss::Region &region, const std::string &,
                                                           int, int64_t);
 
   template <typename INT>

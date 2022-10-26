@@ -6,13 +6,15 @@
 
 #pragma once
 
+#include "iohb_export.h"
+
 #include <fmt/ostream.h>
 #include <sstream>
 #include <string>
 #include <vector>
 
 namespace Iohb {
-  class Layout
+  class IOHB_EXPORT Layout
   {
   public:
     Layout(bool show_labels, int precision, std::string separator, int field_width);

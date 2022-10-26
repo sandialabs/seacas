@@ -5,7 +5,10 @@
 
 #pragma once
 
+#include "ioss_export.h"
+
 #include <memory>
+#include <iostream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -17,10 +20,11 @@ namespace Ioss {
 
     template <class charT> class Automata;
 
-    class Error : public std::exception
+    class IOSS_EXPORT Error : public std::exception
     {
     public:
       Error(const std::string &msg) : msg_{msg} {}
+      ~Error();
 
       const char *what() const throw() override { return msg_.c_str(); }
 
