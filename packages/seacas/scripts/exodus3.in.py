@@ -308,7 +308,6 @@ def ex_type_map(type):
     """
     Map the exodus inquiry flags to an enum value.
     """
-    print("EX_TYPE_MAP: ", type)
     return ex_type[type].value
 
 
@@ -440,7 +439,10 @@ def get_entity_type(varType):
     try:
         return ex_entity_type[varType].value
     except KeyError:
-        return varType.value
+        if (isinstance(varType, int)):
+            return varType
+        else:
+            return varType.value
 
 # init params struct
 class ex_init_params(ctypes.Structure):
@@ -573,6 +575,10 @@ class ex_blob(ctypes.Structure):
 class attribute:
     def __init__(self, name, type, id):
         self.name = name
+        if isinstance(type, str):
+            type = ex_entity_type[type].value
+        if isinstance(type, ex_entity_type):
+            type = type.value
         self.entity_type = type
         self.entity_id = id
         self.values = []

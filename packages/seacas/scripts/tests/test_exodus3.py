@@ -135,8 +135,8 @@ class TestAssemblies(unittest.TestCase):
             self.assertEqual(count, 2)
             
             attributes = temp_exofile.get_attributes("EX_ASSEMBLY", 100)
-            expected = [exo.attribute('Scale', 16, 100), 
-                        exo.attribute('Units', 16, 100)]
+            expected = [exo.attribute('Scale', 'EX_ASSEMBLY', 100), 
+                        exo.attribute('Units', 'EX_ASSEMBLY', 100)]
             expected[0].values=[1.5]
             expected[1].values=[1, 0, 0, -1]
 
@@ -144,6 +144,23 @@ class TestAssemblies(unittest.TestCase):
             self.assertEqual(str(expected[0]), str(attributes['Scale']))
             self.assertEqual(str(expected[1]), str(attributes['Units']))
 
+
+    def test_put_attributes_assembly(self):
+        with exo.exodus(self.temp_exo_path, mode='a') as temp_exofile:
+            
+            new = [exo.attribute('Scale', 'EX_ASSEMBLY', 222), 
+                   exo.attribute('Units', 'EX_ASSEMBLY', 333)]
+            new[0].values=[3.14159]
+            new[1].values=[0, 1, -1, 0]
+
+            temp_exofile.put_attribute(new[0])
+            temp_exofile.put_attribute(new[1])
+            att1 = temp_exofile.get_attributes("EX_ASSEMBLY", 222)
+            att2 = temp_exofile.get_attributes("EX_ASSEMBLY", 333)
+
+            self.maxDiff = None
+            self.assertEqual(str(att1['Scale']), str(new[0]))
+            self.assertEqual(str(att2['Units']), str(new[1]))
 
     def test_put_qa(self):
         new = [("name","1.2.3-4","20220801","12:34:56")]
