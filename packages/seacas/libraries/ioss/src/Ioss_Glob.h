@@ -21,6 +21,7 @@ namespace Ioss {
     {
     public:
       Error(const std::string &msg) : msg_{msg} {}
+      ~Error();
 
       const char *what() const throw() override { return msg_.c_str(); }
 
