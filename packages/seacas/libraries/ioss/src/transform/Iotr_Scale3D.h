@@ -10,6 +10,7 @@
 
 #include <Ioss_VariableType.h> // for VariableType
 #include <Ioss_Transform.h>    // for Transform, Factory
+#include <transform/Iotr_Factory.h>
 
 #include <string>
 #include <vector>

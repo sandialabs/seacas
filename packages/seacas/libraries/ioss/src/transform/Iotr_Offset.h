@@ -9,6 +9,7 @@
 #include "iotr_export.h"
 
 #include <Ioss_Transform.h> // for Transform, Factory
+#include <transform/Iotr_Factory.h>
 
 #include <string> // for string
 

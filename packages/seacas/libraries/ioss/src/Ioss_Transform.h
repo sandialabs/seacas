@@ -9,10 +9,9 @@
 #include "ioss_export.h"
 
 #include <Ioss_CodeTypes.h>
-#include <functional> // for less
-#include <map>        // for map, map<>::value_compare
-#include <string>     // for string
-#include <vector>     // for vector
+
+#include <string>
+#include <vector>
 
 namespace Ioss {
   class Field;
@@ -38,26 +37,3 @@ namespace Ioss {
     virtual bool internal_execute(const Ioss::Field &field, void *data) = 0;
   };
 } // namespace Ioss
-
-namespace Iotr {
-  class Factory;
-  using FactoryMap = std::map<std::string, Factory *, std::less<std::string>>;
-
-  class IOSS_EXPORT Factory
-  {
-  public:
-    virtual ~Factory() = default;
-    static Ioss::Transform *create(const std::string &type);
-
-    static int            describe(Ioss::NameList *names);
-    static Ioss::NameList describe();
-
-  protected:
-    explicit Factory(const std::string &type);
-    virtual Ioss::Transform *make(const std::string &) const = 0;
-    static void              alias(const std::string &base, const std::string &syn);
-
-  private:
-    static FactoryMap &registry();
-  };
-} // namespace Iotr

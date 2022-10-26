@@ -16,6 +16,7 @@
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Transform.h>
 #include <Ioss_Utils.h>
+#include <transform/Iotr_Factory.h>
 #include <fmt/format.h>
 
 #include <algorithm>

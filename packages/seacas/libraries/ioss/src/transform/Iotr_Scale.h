@@ -10,6 +10,7 @@
 
 #include <Ioss_Transform.h>
 #include <Ioss_VariableType.h>
+#include <transform/Iotr_Factory.h>
 
 #include <string>
 

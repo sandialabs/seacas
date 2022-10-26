@@ -6,6 +6,7 @@
 
 #include <Ioss_Transform.h>
 #include <Ioss_Utils.h>
+#include <transform/Iotr_Factory.h>
 
 #include <cstddef>
 #include <map>
