@@ -7,7 +7,6 @@
 #pragma once
 
 #include <Ioss_Transform.h> // for Transform, Factory
-#include <transform/Iotr_Offset.h>
 
 #include <string> // for string
 
