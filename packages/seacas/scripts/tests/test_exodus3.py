@@ -171,14 +171,11 @@ class TestAssemblies(unittest.TestCase):
 
     def test_copy_file(self):
         new = [("name","1.2.3-4","20220801","12:34:56")]
+        new_path = os.path.join(self.tempdir.name, "temp-test-assembly_new.exo")
         with exo.exodus(self.temp_exo_path) as exofile:
             qa_recs = exofile.get_qa_records()
-        new_path = self.temp_exo_path.split(".exo")
-        new_path.extend(["_new", ".exo"])
-        new_path = "".join(new_path)
         with exo.exodus(new_path, mode='w+') as exofile:
-            QA = qa_recs + new
-            exofile.put_qa_records(QA)
+            exofile.put_qa_records(qa_recs + new)
             with exo.exodus(self.temp_exo_path) as orig:
                 orig.copy_file(exofile.fileId, include_transient=True)
                 self.assertIn(new[0], exofile.get_qa_records())
