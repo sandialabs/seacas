@@ -133,12 +133,12 @@ class TestAssemblies(unittest.TestCase):
         with exo.exodus(self.temp_exo_path) as temp_exofile:
             count = temp_exofile.get_attribute_count("EX_ASSEMBLY", 100)
             self.assertEqual(count, 2)
-            
+
             attributes = temp_exofile.get_attributes("EX_ASSEMBLY", 100)
-            expected = [exo.attribute('Scale', 'EX_ASSEMBLY', 100), 
+            expected = [exo.attribute('Scale', 'EX_ASSEMBLY', 100),
                         exo.attribute('Units', 'EX_ASSEMBLY', 100)]
-            expected[0].values=[1.5]
-            expected[1].values=[1, 0, 0, -1]
+            expected[0].values = [1.5]
+            expected[1].values = [1, 0, 0, -1]
 
             self.maxDiff = None
             self.assertEqual(str(expected[0]), str(attributes['Scale']))
@@ -147,11 +147,11 @@ class TestAssemblies(unittest.TestCase):
 
     def test_put_attributes_assembly(self):
         with exo.exodus(self.temp_exo_path, mode='a') as temp_exofile:
-            
-            new = [exo.attribute('Scale', 'EX_ASSEMBLY', 222), 
+
+            new = [exo.attribute('Scale', 'EX_ASSEMBLY', 222),
                    exo.attribute('Units', 'EX_ASSEMBLY', 333)]
-            new[0].values=[3.14159]
-            new[1].values=[0, 1, -1, 0]
+            new[0].values = [3.14159]
+            new[1].values = [0, 1, -1, 0]
 
             temp_exofile.put_attribute(new[0])
             temp_exofile.put_attribute(new[1])
