@@ -1,5 +1,22 @@
 #! /usr/bin/env bash
 
+if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi
+
+CXX_WARNING_FLAGS=""
+C_WARNING_FLAGS=""
+F77_WARNING_FLAGS=""
+FFLAGS=""
+SANITIZE=""
+EXTRA_LIB=""
+KOKKOS_SYMBOLS=""
+MPI_SYMBOLS=""
+FAODEL_SYMBOLS=""
+MPI_BIN=""
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
 # Text color variables
 if [[ $TERM != *"xterm"* ]]; then
     export TERM=dumb
@@ -13,7 +30,7 @@ txtcyn=$(tput setaf 6)    # Cyan
 #txtwht=$(tput setaf 7)    # White
 txtrst=$(tput sgr0)       # Text reset
 
-if [ "${TRAVIS}" == "true" ]
+if [[ "${TRAVIS:-false}" == "true" ]]
 then
   BUILDDIR=${1:-build}
   mkdir $BUILDDIR && cd $BUILDDIR
@@ -23,7 +40,7 @@ fi
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 ### If not, then define "ACCESS" to point to the root of the SEACAS source code.
-if [ "$ACCESS" == "" ]
+if [[ "${ACCESS:-""}" == "" ]]
 then
     ACCESS=$(cd ..; pwd)
 fi
@@ -35,11 +52,11 @@ function check_valid()
 {
     if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ]; then
 	echo "YES"
-	return 1
+	return 0
     fi
     if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ]; then
 	echo "NO"
-	return 1
+	return 0
     fi
     echo "Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF"
     exit 1
@@ -75,7 +92,7 @@ METIS_PATH=${METIS_PATH:-${INSTALL_PATH}}
 PARMETIS_PATH=${PARMETIS_PATH:-${INSTALL_PATH}}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-if [ "${MPI}" = "" ]
+if [ "${MPI:-""}" = "" ]
 then
   netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
   if [ "${netcdf_parallel}" == "yes" ]
@@ -498,7 +515,6 @@ ${EXTRA_LIB} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
 -D TPL_ENABLE_fmt:BOOL=ON \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
-${THREAD_SAFE_OPT} \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
