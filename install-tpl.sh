@@ -1,12 +1,5 @@
 #! /usr/bin/env bash
 
-# Following fails on some 'make installs' due to sub-scripts doing a 'mkdir' on existing directories...
-# set -o errexit
-set -o nounset
-set -o pipefail
-
-if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi
-
 # Text color variables
 if [[ $TERM != *"xterm"* ]]; then
     export TERM=dumb
@@ -34,11 +27,11 @@ function check_valid()
 {
     if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ]; then
         echo "YES"
-        return 0
+        return 1
     fi
     if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ]; then
         echo "NO"
-        return 0
+        return 1
     fi
     echo "${txtred}Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF${txtrst}"
     exit 1
@@ -61,7 +54,7 @@ DEBUG=$(check_valid DEBUG)
 # Shared libraries or static libraries?
 # For CRAY, must explicitly specify SHARED=YES, or it will default to NO
 # All other platforms default to SHARED=YES
-if [ "${CRAY:-NO}" == "YES" ]
+if [ "$CRAY" == "YES" ]
 then
     SHARED="${SHARED:-NO}"
 else
@@ -249,7 +242,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd libaec-${szip_version} || exit
-            mkdir -p build
+            mkdir build
             cd build || exit
 
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash -x ../../runcmake.sh
@@ -291,7 +284,7 @@ else
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd szip-${szip_version} || exit
-            # mkdir -p build
+            # mkdir build
             # cd build || exit
 
             ./configure --prefix=${INSTALL_PATH}
@@ -339,7 +332,7 @@ then
                 cd zlib-ng || exit
                 git checkout ${zlib_ng_version}
                 rm -rf build
-                mkdir -p build
+                mkdir build
                 cmake -Bbuild -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} -DZLIB_COMPAT=YES .
                 if [[ $? != 0 ]]
                 then
@@ -444,7 +437,7 @@ then
         echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version} || exit
         rm -rf build
-        mkdir -p build
+        mkdir build
         cd build || exit
         CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
         #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
@@ -461,9 +454,9 @@ then
         fi
     fi
     # Create default plugin directory...
-    mkdir -p  ${INSTALL_PATH}/lib/hdf5
-    mkdir -p  ${INSTALL_PATH}/lib/hdf5/lib
-    mkdir -p  ${INSTALL_PATH}/lib/hdf5/lib/plugin
+    mkdir  ${INSTALL_PATH}/lib/hdf5
+    mkdir  ${INSTALL_PATH}/lib/hdf5/lib
+    mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin
 else
     echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
@@ -543,7 +536,7 @@ then
                git checkout $net_version
         fi
         rm -rf build
-        mkdir -p build
+        mkdir build
         cd build || exit
         export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin
         CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
@@ -584,7 +577,7 @@ then
             cd CGNS || exit
             git checkout v4.3.0
             rm -rf build
-            mkdir -p build
+            mkdir build
             cd build || exit
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
@@ -712,7 +705,7 @@ then
             cd matio || exit
             git checkout ${matio_version}
             rm -rf build
-            mkdir -p build
+            mkdir build
             cd build || exit
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
@@ -755,7 +748,7 @@ then
             cd fmt || exit
             git checkout ${fmt_version}
             rm -rf build
-            mkdir -p build
+            mkdir build
             cd build || exit
             cmake -DCMAKE_CXX_COMPILER:FILEPATH=${CXX} -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} -DCMAKE_INSTALL_LIBDIR:PATH=lib -DFMT_TEST:BOOL=OFF -DBUILD_SHARED_LIBS=${SHARED} ..
             if [[ $? != 0 ]]
@@ -800,7 +793,7 @@ then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd kokkos-${kokkos_version} || exit
             rm -rf build
-            mkdir -p build
+            mkdir build
             cd build || exit
             CUDA=${CUDA} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
@@ -842,7 +835,7 @@ then
             cd ADIOS2 || exit
             git checkout v2.5.0
             rm -rf build
-            mkdir -p build
+            mkdir build
             cd build || exit
             CRAY=${CRAY} SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
@@ -884,7 +877,7 @@ then
             cd catalyst || exit
                   git checkout master #todo: a specific version
             rm -rf build
-            mkdir -p build
+            mkdir build
             cd build || exit
             CRAY=${CRAY} SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
@@ -926,7 +919,7 @@ then
             cd googletest || exit
             git checkout release-1.11.0
             rm -rf build
-            mkdir -p build
+            mkdir build
             cd build || exit
             CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
@@ -1005,7 +998,7 @@ then
     if [ "$BUILD" == "YES" ]
     then
       echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-      mkdir -p ${faodel_base}/build
+      mkdir ${faodel_base}/build
       cd ${faodel_base}/build || exit
       echo "------------- ${faodel_base}"
       echo "------------- $(pwd)"
@@ -1037,7 +1030,7 @@ then
     cd $ACCESS || exit
     CEREAL_DIR="TPL/cereal"
     if [ ! -d "${CEREAL_DIR}" ]; then
-      mkdir -p ${CEREAL_DIR}
+      mkdir ${CEREAL_DIR}
     fi
     cd ${CEREAL} || exit
     if [ "$DOWNLOAD" == "YES" ]
