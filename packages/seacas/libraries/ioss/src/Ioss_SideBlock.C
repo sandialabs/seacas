@@ -157,9 +157,9 @@ namespace {
   template <typename INT> int internal_consistent_side_number(std::vector<INT> &element_side)
   {
     size_t ecount = element_side.size();
-    int    side   = ecount > 0 ? element_side[1] : 0;
+    int    side   = ecount > 0 ? static_cast<INT>(element_side[1]) : 0;
     for (size_t i = 3; i < ecount; i += 2) {
-      int this_side = element_side[i];
+      int this_side = static_cast<INT>(element_side[i]);
       if (this_side != side) {
         side = 999; // Indicates the sides are not consistent ;
         break;

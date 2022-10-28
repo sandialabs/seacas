@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -72,11 +72,11 @@ int ex_get_block(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, char *
     }
   }
   else {
-    int *n_entries_this_blk = num_entries_this_blk;
-    int *n_nodes_per_entry  = num_nodes_per_entry;
-    int *n_edges_per_entry  = num_edges_per_entry;
-    int *n_faces_per_entry  = num_faces_per_entry;
-    int *n_attr_per_entry   = num_attr_per_entry;
+    int *n_entries_this_blk = (int)num_entries_this_blk;
+    int *n_nodes_per_entry  = (int)num_nodes_per_entry;
+    int *n_edges_per_entry  = (int)num_edges_per_entry;
+    int *n_faces_per_entry  = (int)num_faces_per_entry;
+    int *n_attr_per_entry   = (int)num_attr_per_entry;
 
     if (n_entries_this_blk) {
       *n_entries_this_blk = block.num_entry;

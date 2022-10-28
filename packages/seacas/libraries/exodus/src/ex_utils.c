@@ -1579,7 +1579,7 @@ static void ex_int_iisort64(int64_t v[], int64_t iv[], int64_t N)
  *       representable as 'int'.
  * \internal
  */
-void ex__iqsort(int v[], int iv[], int N)
+void ex__iqsort(int v[], int iv[], size_t N)
 {
   /* Thread-safe, reentrant */
   ex_int_iqsort(v, iv, 0, N - 1);
