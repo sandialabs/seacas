@@ -108,6 +108,15 @@ namespace Ioss {
       }
     }
 
+    static bool is_path_absolute(const std::string &path)
+    {
+#ifdef __IOSS_WINDOWS__
+      return path[0] == '\\' || path[1] == ':';
+#else
+      return path[0] == '/';
+#endif
+    }
+
     /** \brief guess file type from extension */
     static std::string get_type_from_file(const std::string &filename);
 
