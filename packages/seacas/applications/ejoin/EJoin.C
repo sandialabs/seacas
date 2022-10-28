@@ -771,7 +771,7 @@ namespace {
   {
     // copy values to master sideset value information
     T *local_values = &values[0];
-    for (int j = 0; j < entity_count; j++) {
+    for (size_t j = 0; j < entity_count; j++) {
       global_values[j + loffset] = local_values[j];
     }
   }
