@@ -437,7 +437,7 @@ int ex__get_names(int exoid, int varid, size_t num_names, char **names, ex_entit
   int api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
   int name_size     = db_name_size < api_name_size ? db_name_size : api_name_size;
 
-  for (int i = 0; i < num_names; i++) {
+  for (size_t i = 0; i < num_names; i++) {
     int status = ex__get_name(exoid, varid, i, names[i], name_size, obj_type, routine);
     if (status != NC_NOERR) {
       return (status);
