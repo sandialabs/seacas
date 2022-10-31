@@ -32,8 +32,8 @@ namespace {
                       int rank);
   void define_transient_fields(Ioss::Region &region, Ioss::Region &output_region,
                                const Ioss::MeshCopyOptions &options, int rank);
-  void transfer_step(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &pool, int istep,
-                     const Ioss::MeshCopyOptions &options, int rank);
+  void transfer_step(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &pool,
+                     int istep, const Ioss::MeshCopyOptions &options, int rank);
 
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &pool,
                           const Ioss::MeshCopyOptions &options, int rank);
@@ -68,9 +68,9 @@ namespace {
                            Ioss::DataPool &pool, Ioss::Field::RoleType role,
                            const Ioss::MeshCopyOptions &options);
 
-  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge, Ioss::DataPool &pool,
-                           Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
-                           const std::string &prefix = "");
+  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+                           Ioss::DataPool &pool, Ioss::Field::RoleType role,
+                           const Ioss::MeshCopyOptions &options, const std::string &prefix = "");
 
   void transfer_properties(const Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge);
 
@@ -276,7 +276,7 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   // to the output region based on values in `options`
   std::vector<int> selected_steps = get_selected_steps(region, options);
 
-  int step_count = region.get_property("state_count").get_int();
+  int step_count = (int)region.get_property("state_count").get_int();
 #ifdef SEACAS_HAVE_MPI
   int min_step_count = dbi->util().global_minmax(step_count, Ioss::ParallelUtils::DO_MIN);
   int max_step_count = dbi->util().global_minmax(step_count, Ioss::ParallelUtils::DO_MAX);
@@ -315,7 +315,7 @@ namespace {
     // This routine checks all steps of the input database and selects those which
     // meet the requirements specified in `options`.  The returned (1-based) vector will have a
     // value of `1` if the step is to be output and `0` if skipped.
-    int              step_count = region.get_property("state_count").get_int();
+    int              step_count = (int)region.get_property("state_count").get_int();
     std::vector<int> selected_steps(step_count + 1);
 
     // If user specified a list of times to transfer to output database,
@@ -894,7 +894,7 @@ namespace {
         // were read from the input mesh.  This is used in
         // testing to verify that we handle zone reordering
         // correctly.
-        for (int i = blocks.size() - 1; i >= 0; i--) {
+        for (int i = static_cast<int>(blocks.size()) - 1; i >= 0; i--) {
           const auto        &iblock = blocks[i];
           const std::string &name   = iblock->name();
           if (options.debug && rank == 0) {
@@ -1104,9 +1104,9 @@ namespace {
     }
   }
 
-  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge, Ioss::DataPool &pool,
-                           Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
-                           const std::string &prefix)
+  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+                           Ioss::DataPool &pool, Ioss::Field::RoleType role,
+                           const Ioss::MeshCopyOptions &options, const std::string &prefix)
   {
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
