@@ -165,7 +165,6 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
 
   PartVector part_mesh(interFace.processor_count());
   for (int p = 0; p < interFace.processor_count(); p++) {
-
     std::string root_dir = interFace.root_dir();
     std::string sub_dir  = interFace.sub_dir();
     std::string prepend;
@@ -364,7 +363,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
             pnb.field_describe(Ioss::Field::TRANSIENT, &fields);
             for (const auto &field_name : fields) {
               if (is_field_valid(variable_list, field_name)) {
-                Ioss::Field field = pblock->get_field(field_name);
+                Ioss::Field field = pnb.get_field(field_name);
                 if (!onb.field_exists(field_name)) {
                   field.reset_count(num_node);
                   // If the field does not already exist, add it to the output block...
