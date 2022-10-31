@@ -205,9 +205,9 @@ namespace {
     if (!nb.is_nonglobal_nodeblock()) {
       info_aliases(region, &nb, false, true);
     }
-    Ioss::Utils::info_fields(&nb, Ioss::Field::MAP, prefix + "\tMap Fields: ");
-    Ioss::Utils::info_fields(&nb, Ioss::Field::ATTRIBUTE, prefix + "\tAttributes: ");
-    Ioss::Utils::info_fields(&nb, Ioss::Field::TRANSIENT, prefix + "\tTransient:  ");
+    Ioss::Utils::info_fields(&nb, Ioss::Field::MAP, prefix + "\tMap Fields: ", "\n\t\t" + prefix);
+    Ioss::Utils::info_fields(&nb, Ioss::Field::ATTRIBUTE, prefix + "\tAttributes: ", "\n\t\t" + prefix);
+    Ioss::Utils::info_fields(&nb, Ioss::Field::TRANSIENT, prefix + "\tTransient:  ", "\n\t\t" + prefix);
 
     if (interFace.compute_bbox()) {
       print_bbox(nb);

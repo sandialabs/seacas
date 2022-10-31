@@ -1503,7 +1503,7 @@ void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::Role
     fmt::print("{1:>{0}s}:{2}  ", max_width, field_name, comp_count);
     cur_out += max_width + 4;
     if (cur_out + max_width >= width) {
-      fmt::print("\n\t");
+      fmt::print(suffix);
       cur_out = 8;
     }
   }
