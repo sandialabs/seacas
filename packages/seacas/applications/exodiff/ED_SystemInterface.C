@@ -367,7 +367,7 @@ void SystemInterface::enroll_options()
                   "Interpolate times on file2 to match times on file1.", nullptr);
   options_.enroll(
       "final_time_tolerance", GetLongOption::MandatoryValue,
-      "Tolerance on matching of final times on database when interpolate option specified\n."
+      "Tolerance on matching of final times on database when interpolate option specified.\n"
       "\t\tIf final times do not match within this tolerance, files are different.",
       nullptr, nullptr, true);
 
