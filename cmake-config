@@ -239,6 +239,14 @@ then
 fi
 fi
 
+MODERN=${MODERN:-NO}
+if [ "${MODERN}" == "YES" ]
+then
+    MODERN_ARG="-D TPL_ENABLE_HDF5:BOOL=ON -D Netcdf_ALLOW_MODERN:BOOL=ON"
+else
+    MODERN_ARG=""
+fi
+
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
 
 # If using an XLF compiler on an IBM system, may need to add the following:
@@ -484,6 +492,7 @@ ${SUBSET_OPTIONS} \
 -D Seacas_ENABLE_DOXYGEN:BOOL=${DOXYGEN} \
 -D Seacas_ENABLE_Fortran=${FORTRAN} \
 ${EXTRA_LIB} \
+${MODERN_ARG} \
 \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
