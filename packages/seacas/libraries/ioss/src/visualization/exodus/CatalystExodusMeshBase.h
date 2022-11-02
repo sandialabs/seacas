@@ -22,7 +22,7 @@ namespace Iovs_exodus {
     // Description:
     // Calls the ParaView Catalyst pipeline to run co-processing
     // for this time iteration.
-    virtual void PerformCoProcessing(std::vector<int> &        error_and_warning_codes,
+    virtual void PerformCoProcessing(std::vector<int>         &error_and_warning_codes,
                                      std::vector<std::string> &error_and_warning_messages) = 0;
 
     // Description:
@@ -48,14 +48,20 @@ namespace Iovs_exodus {
     // Description:
     // Creates a global variable on the vtkExodusIIMultiBlockDataSet.
     // Creates the global variable on all element blocks.
-    virtual void CreateGlobalVariable(std::vector<std::string> &component_names,
-                                      const double *            data) = 0;
+    virtual void CreateGlobalVariable(const std::string &variable_name, int num_comps,
+                                      const double *data) = 0;
 
     // Description:
     // Creates a global variable on the vtkExodusIIMultiBlockDataSet.
     // Creates the global variable on all element blocks.
-    virtual void CreateGlobalVariable(std::vector<std::string> &component_names,
-                                      const int *               data) = 0;
+    virtual void CreateGlobalVariable(const std::string &variable_name, int num_comps,
+                                      const int *data) = 0;
+
+    // Description:
+    // Creates a global variable on the vtkExodusIIMultiBlockDataSet.
+    // Creates the global variable on all element blocks.
+    virtual void CreateGlobalVariable(const std::string &variable_name, int num_comps,
+                                      const int64_t *data) = 0;
 
     // Description:
     // Initializes the vtkMultiBlockDataSet with a global array of points
@@ -109,33 +115,33 @@ namespace Iovs_exodus {
 
     // Description:
     // Creates an element variable the vtkExodusIIMultiBlockDataSet.
-    virtual void CreateElementVariable(std::vector<std::string> &component_names, int elem_block_id,
-                                       const double *data) = 0;
+    virtual void CreateElementVariable(const std::string &variable_name, int num_comps,
+                                       int elem_block_id, const double *data) = 0;
 
     // Description:
     // Creates an element variable the vtkExodusIIMultiBlockDataSet.
-    virtual void CreateElementVariable(std::vector<std::string> &component_names, int elem_block_id,
-                                       const int *data) = 0;
+    virtual void CreateElementVariable(const std::string &variable_name, int num_comps,
+                                       int elem_block_id, const int *data) = 0;
 
     // Description:
     // Creates an element variable the vtkExodusIIMultiBlockDataSet.
-    virtual void CreateElementVariable(std::vector<std::string> &component_names, int elem_block_id,
-                                       const int64_t *data) = 0;
+    virtual void CreateElementVariable(const std::string &variable_name, int num_comps,
+                                       int elem_block_id, const int64_t *data) = 0;
 
     // Description:
     // Creates a nodal variable the vtkExodusIIMultiBlockDataSet.
-    virtual void CreateNodalVariable(std::vector<std::string> &component_names,
-                                     const double *            data) = 0;
+    virtual void CreateNodalVariable(const std::string &variable_name, int num_comps,
+                                     const double *data) = 0;
 
     // Description:
     // Creates a nodal variable the vtkExodusIIMultiBlockDataSet.
-    virtual void CreateNodalVariable(std::vector<std::string> &component_names,
-                                     const int *               data) = 0;
+    virtual void CreateNodalVariable(const std::string &variable_name, int num_comps,
+                                     const int *data) = 0;
 
     // Description:
     // Creates a nodal variable the vtkExodusIIMultiBlockDataSet.
-    virtual void CreateNodalVariable(std::vector<std::string> &component_names,
-                                     const int64_t *           data) = 0;
+    virtual void CreateNodalVariable(const std::string &variable_name, int num_comps,
+                                     const int64_t *data) = 0;
   };
 
 } // namespace Iovs_exodus

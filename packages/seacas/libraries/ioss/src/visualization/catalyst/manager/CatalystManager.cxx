@@ -475,12 +475,16 @@ namespace Iovs {
   bool CatalystManager::writeMeshON(const CatalystPipelineInfo &cpi)
   {
 
+    bool retVal = false;
+
     CatalystPipelineID id = cpi.catalystPipelineID;
 
     if (pipelines.find(id) != pipelines.end()) {
       auto mw = pipelines[id].getMeshWriter();
-      return mw->outputCatalystMeshOneFileON() || mw->outputCatalystMeshFilePerProcON();
+      retVal = mw->outputCatalystMeshOneFileON() || mw->outputCatalystMeshFilePerProcON();
     }
+
+    return retVal;
   }
 
   void CatalystManager::writeMesh(const CatalystPipelineInfo &cpi)

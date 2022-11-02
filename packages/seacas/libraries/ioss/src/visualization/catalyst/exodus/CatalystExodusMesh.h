@@ -39,9 +39,11 @@ namespace Iovs_exodus {
 
     void Delete();
 
-    void CreateGlobalVariable(std::vector<std::string> &component_names, const double *data);
+    void CreateGlobalVariable(const std::string &variable_name, int num_comps, const double *data);
 
-    void CreateGlobalVariable(std::vector<std::string> &component_names, const int *data);
+    void CreateGlobalVariable(const std::string &variable_name, int num_comps, const int *data);
+
+    void CreateGlobalVariable(const std::string &variable_name, int num_comps, const int64_t *data);
 
     void InitializeGlobalPoints(int num_points, int dimension, const double *data);
 
@@ -66,20 +68,20 @@ namespace Iovs_exodus {
     void CreateSideSet(const char *ss_owner_name, int side_set_id, int num_ids,
                        const int64_t *element_ids, const int64_t *face_ids);
 
-    void CreateElementVariable(std::vector<std::string> &component_names, int elem_block_id,
+    void CreateElementVariable(const std::string &variable_name, int num_comps, int elem_block_id,
                                const double *data);
 
-    void CreateElementVariable(std::vector<std::string> &component_names, int elem_block_id,
+    void CreateElementVariable(const std::string &variable_name, int num_comps, int elem_block_id,
                                const int *data);
 
-    void CreateElementVariable(std::vector<std::string> &component_names, int elem_block_id,
+    void CreateElementVariable(const std::string &variable_name, int num_comps, int elem_block_id,
                                const int64_t *data);
 
-    void CreateNodalVariable(std::vector<std::string> &component_names, const double *data);
+    void CreateNodalVariable(const std::string &variable_name, int num_comps, const double *data);
 
-    void CreateNodalVariable(std::vector<std::string> &component_names, const int *data);
+    void CreateNodalVariable(const std::string &variable_name, int num_comps, const int *data);
 
-    void CreateNodalVariable(std::vector<std::string> &component_names, const int64_t *data);
+    void CreateNodalVariable(const std::string &variable_name, int num_comps, const int64_t *data);
 
     // Description:
     // If true (the default), vector variables will contain a
@@ -153,29 +155,29 @@ namespace Iovs_exodus {
     std::string                       catalystMeshFilePrefix;
 
     std::string FindComponentNameStem(const std::vector<std::string> &component_names);
-    bool isComponentNamesValid(const std::vector<std::string> &component_names);
+    bool        isComponentNamesValid(const std::vector<std::string> &component_names);
 
     void CreateElementBlockInternal(const char *elem_block_name, int elem_block_id,
                                     const std::string &elem_type, int nodes_per_elem, int num_elem,
                                     vtkVariant &v, const int64_t *global_elem_ids,
                                     void *connectivity);
 
-    void CreateGlobalVariableVariant(std::vector<std::string> &component_names, vtkVariant &v,
+    void CreateGlobalVariableVariant(const std::string &variable_name, int num_comps, vtkVariant &v,
                                      const void *data);
-    void CreateGlobalVariableInternal(std::vector<std::string> &component_names,
+    void CreateGlobalVariableInternal(const std::string &variable_name, int num_comps,
                                       vtkMultiBlockDataSet *eb, unsigned int bid, vtkVariant &v,
                                       const void *data);
 
-    void CreateNodalVariableVariant(std::vector<std::string> &component_names, vtkVariant &v,
+    void CreateNodalVariableVariant(const std::string &variable_name, int num_comps, vtkVariant &v,
                                     const void *data);
-    void CreateNodalVariableInternal(std::vector<std::string> &component_names,
+    void CreateNodalVariableInternal(const std::string &variable_name, int num_comps,
                                      vtkMultiBlockDataSet *eb, std::map<int, unsigned int> &id_map,
                                      std::map<int, std::map<int, int>> &point_map, vtkVariant &v,
                                      const void *data);
 
-    void CreateElementVariableVariant(std::vector<std::string> &component_names, int elem_block_id,
-                                      vtkVariant &v, const void *data);
-    void CreateElementVariableInternal(std::vector<std::string> &component_names,
+    void CreateElementVariableVariant(const std::string &variable_name, int num_comps,
+                                      int elem_block_id, vtkVariant &v, const void *data);
+    void CreateElementVariableInternal(const std::string &variable_name, int num_comps,
                                        vtkMultiBlockDataSet *eb, unsigned int bid, vtkVariant &v,
                                        const void *data);
 
