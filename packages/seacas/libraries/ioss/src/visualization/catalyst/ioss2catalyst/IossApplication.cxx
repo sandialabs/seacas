@@ -99,6 +99,7 @@ void IossApplication::runApplication()
   }
 
   callCatalystIOSSDatabaseOnRank();
+  sync();
 
   exitApplicationSuccess();
 }
@@ -704,7 +705,6 @@ void IossApplication::callCatalystIOSSDatabaseOnRankMultiGrid(bool sendAllGridsT
   for (ii = 0; ii < numInputRegions; ii++) {
     Ioss::PropertyManager *newProps = new (Ioss::PropertyManager);
     SetUpDefaultProperties(newProps);
-    addAdditionalProperties(newProps);
     if (sendAllGridsToOnePipeline) {
       newProps->add(Ioss::Property("CATALYST_MULTI_INPUT_PIPELINE_NAME", "multipipe1"));
     }
@@ -813,6 +813,7 @@ void IossApplication::SetUpDefaultProperties(Ioss::PropertyManager *outputProper
   }
 
   outputProperties->add(Ioss::Property("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME", applicationName));
+  addAdditionalProperties(outputProperties);
 }
 
 void IossApplication::callCatalystIOSSDatabaseOnRankOneGrid()
@@ -820,13 +821,6 @@ void IossApplication::callCatalystIOSSDatabaseOnRankOneGrid()
   Ioss::PropertyManager outputProperties;
 
   SetUpDefaultProperties(&outputProperties);
-  addAdditionalProperties(&outputProperties);
-
-  Ioss::NameList nlist;
-  outputProperties.describe(&nlist);
-  for (auto &name : nlist) {
-    std::cout << "prop name = " << name << "\n";
-  }
 
   Ioss::DatabaseIO *dbo =
       Ioss::IOFactory::create(getCatalystDatabaseType(0), "catalyst", Ioss::WRITE_RESULTS,

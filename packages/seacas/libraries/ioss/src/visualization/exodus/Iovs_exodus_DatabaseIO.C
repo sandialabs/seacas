@@ -170,7 +170,6 @@ namespace Iovs_exodus {
     size_t                num_to_get = field.verify(data_size);
     Ioss::Field::RoleType role       = field.get_role();
     if ((role == Ioss::Field::TRANSIENT || role == Ioss::Field::REDUCTION) && num_to_get == 1) {
-      // const char            *complex_suffix[] = {".re", ".im"};
       Ioss::Field::BasicType ioss_type  = field.get_type();
       std::string            field_name = field.get_name();
       int                    comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
@@ -189,42 +188,6 @@ namespace Iovs_exodus {
         this->catExoMesh->CreateGlobalVariable(field_name, comp_count,
                                                static_cast<int64_t *>(data));
       }
-      /*auto                  *rvar             = static_cast<double *>(data);
-      int                   *ivar             = static_cast<int *>(data);
-      auto                  *ivar64           = static_cast<int64_t *>(data);
-
-      int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
-
-      int re_im = 1;
-      if (field.get_type() == Ioss::Field::COMPLEX) {
-        re_im = 2;
-      }
-      for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-        std::string field_name = field.get_name();
-        if (re_im == 2) {
-          field_name += complex_suffix[complex_comp];
-        }
-
-        // std::vector<std::string> component_names;
-        std::vector<double> globalValues;
-        for (int i = 0; i < comp_count; i++) {
-          // std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
-          // component_names.push_back(var_name);
-
-          // Transfer from 'variables' array.
-          if (ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::COMPLEX) {
-            globalValues.push_back(rvar[i]);
-          }
-          else if (ioss_type == Ioss::Field::INTEGER) {
-            globalValues.push_back(ivar[i]);
-          }
-          else if (ioss_type == Ioss::Field::INT64) {
-            globalValues.push_back(ivar64[i]);
-          }
-        }
-        // this->catExoMesh->CreateGlobalVariable(component_names, globalValues.data());
-        this->catExoMesh->CreateGlobalVariable(field_name, comp_count, globalValues.data());
-      }*/
     }
     else if (num_to_get != 1) {
       // There should have been a warning/error message printed to the
@@ -277,9 +240,7 @@ namespace Iovs_exodus {
         }
       }
       else if (role == Ioss::Field::TRANSIENT) {
-        // const char            *complex_suffix[] = {".re", ".im"};
         Ioss::Field::BasicType ioss_type = field.get_type();
-        // std::vector<double>    temp(num_to_get);
         int         comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         std::string field_name = field.get_name();
 
@@ -298,46 +259,6 @@ namespace Iovs_exodus {
           this->catExoMesh->CreateNodalVariable(field_name, comp_count,
                                                 static_cast<int64_t *>(data));
         }
-
-        /*int                    re_im      = 1;
-        if (ioss_type == Ioss::Field::COMPLEX) {
-          re_im = 2;
-        }
-        for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-          std::string field_name = field.get_name();
-          if (re_im == 2) {
-            field_name += complex_suffix[complex_comp];
-          }
-
-          std::vector<double> interleaved_data(num_to_get * comp_count);
-          // std::vector<std::string> component_names;
-          for (int i = 0; i < comp_count; i++) {
-            // std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
-            // component_names.push_back(var_name);
-
-            size_t begin_offset = (re_im * i) + complex_comp;
-            size_t stride       = re_im * comp_count;
-
-            if (ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::COMPLEX) {
-              this->nodeMap.map_field_to_db_scalar_order(static_cast<double *>(data), temp,
-                                                         begin_offset, num_to_get, stride, 0);
-            }
-            else if (ioss_type == Ioss::Field::INTEGER) {
-              this->nodeMap.map_field_to_db_scalar_order(static_cast<int *>(data), temp,
-                                                         begin_offset, num_to_get, stride, 0);
-            }
-            else if (ioss_type == Ioss::Field::INT64) {
-              this->nodeMap.map_field_to_db_scalar_order(static_cast<int64_t *>(data), temp,
-                                                         begin_offset, num_to_get, stride, 0);
-            }
-
-            for (unsigned int j = 0; j < num_to_get; j++) {
-              interleaved_data[j * comp_count + i] = temp[j];
-            }
-          }
-          // this->catExoMesh->CreateNodalVariable(component_names, interleaved_data.data());
-          this->catExoMesh->CreateNodalVariable(field_name, comp_count, interleaved_data.data());
-        }*/
       }
       else if (role == Ioss::Field::REDUCTION) {
       }
@@ -405,9 +326,7 @@ namespace Iovs_exodus {
         /* TODO */
       }
       else if (role == Ioss::Field::TRANSIENT) {
-        // const char            *complex_suffix[] = {".re", ".im"};
         Ioss::Field::BasicType ioss_type = field.get_type();
-        // std::vector<double>    temp(num_to_get);
         int64_t     eb_offset  = eb->get_offset();
         int         comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         int         bid        = get_id(eb, &ids_);
@@ -429,46 +348,6 @@ namespace Iovs_exodus {
           this->catExoMesh->CreateElementVariable(field_name, comp_count, bid,
                                                   static_cast<int64_t *>(data));
         }
-
-        // int re_im = 1;
-        // if (ioss_type == Ioss::Field::COMPLEX) {
-        //   re_im = 2;
-        // }
-        /*for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-          std::string field_name = field.get_name();
-          if (re_im == 2) {
-            field_name += complex_suffix[complex_comp];
-          }
-
-          std::vector<double>      interleaved_data(num_to_get * comp_count);
-          //std::vector<std::string> component_names;
-          for (int i = 0; i < comp_count; i++) {
-            //std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
-            //component_names.push_back(var_name);
-
-            int64_t begin_offset = (re_im * i) + complex_comp;
-            int64_t stride       = re_im * comp_count;
-
-            if (ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::COMPLEX) {
-              this->elemMap.map_field_to_db_scalar_order(
-                  static_cast<double *>(data), temp, begin_offset, num_to_get, stride, eb_offset);
-            }
-            else if (ioss_type == Ioss::Field::INTEGER) {
-              this->elemMap.map_field_to_db_scalar_order(
-                  static_cast<int *>(data), temp, begin_offset, num_to_get, stride, eb_offset);
-            }
-            else if (ioss_type == Ioss::Field::INT64) {
-              this->elemMap.map_field_to_db_scalar_order(
-                  static_cast<int64_t *>(data), temp, begin_offset, num_to_get, stride, eb_offset);
-            }
-            for (unsigned int j = 0; j < num_to_get; j++) {
-              interleaved_data[j * comp_count + i] = temp[j];
-            }
-          }*/
-        // this->catExoMesh->CreateElementVariable(component_names, bid, interleaved_data.data());
-        // this->catExoMesh->CreateElementVariable(field_name, comp_count, bid,
-        // interleaved_data.data());
-        //}
       }
       else if (role == Ioss::Field::REDUCTION) {
       }

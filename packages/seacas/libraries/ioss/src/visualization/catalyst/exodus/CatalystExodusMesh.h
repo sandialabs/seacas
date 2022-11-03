@@ -154,9 +154,6 @@ namespace Iovs_exodus {
     bool                              writeCatalystMesh;
     std::string                       catalystMeshFilePrefix;
 
-    std::string FindComponentNameStem(const std::vector<std::string> &component_names);
-    bool        isComponentNamesValid(const std::vector<std::string> &component_names);
-
     void CreateElementBlockInternal(const char *elem_block_name, int elem_block_id,
                                     const std::string &elem_type, int nodes_per_elem, int num_elem,
                                     vtkVariant &v, const int64_t *global_elem_ids,
