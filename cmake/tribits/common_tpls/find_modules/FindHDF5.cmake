@@ -468,7 +468,7 @@ else()
 
     # Search for the high-level (HL) library
     find_library(_HDF5_HL_LIBRARY
-                 NAMES hdf5_hl
+                 NAMES hdf5_hl hdf5_serial_hl
                  HINTS ${_hdf5_LIBRARY_SEARCH_DIRS}
                  ${_hdf5_FIND_OPTIONS})
 

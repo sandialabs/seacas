@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -73,15 +73,15 @@ namespace {
                       const Ioss::Field::RoleType role, std::ostringstream &buf);
   template <typename T>
   bool compare_field_data(const std::vector<T *> &in_entities_1,
-                          const std::vector<T *> &in_entities_2, DataPool &pool,
+                          const std::vector<T *> &in_entities_2, Ioss::DataPool &pool,
                           const Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
                           std::ostringstream &buf);
   bool compare_field_data(const Ioss::GroupingEntity *ige_1, const Ioss::GroupingEntity *ige_2,
-                          DataPool &pool, const Ioss::Field::RoleType role,
+                          Ioss::DataPool &pool, const Ioss::Field::RoleType role,
                           const Ioss::MeshCopyOptions &options, std::ostringstream &buf,
                           const std::string &prefix = "");
   bool compare_field_data_internal(const Ioss::GroupingEntity *ige_1,
-                                   const Ioss::GroupingEntity *ige_2, DataPool &in_pool,
+                                   const Ioss::GroupingEntity *ige_2, Ioss::DataPool &in_pool,
                                    const std::string           &field_name,
                                    const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
 } // namespace
@@ -929,11 +929,13 @@ namespace {
       const Ioss::Property &ige_property_2 = ige_2->get_property(property);
       if (ige_property_1 != ige_property_2) {
         if (ige_property_1.get_type() == Ioss::Property::STRING) {
-          fmt::print(buf, "\tPROPERTY value mismatch ({}): ({} vs {})\n", property,
-                     ige_property_1.get_string(), ige_property_2.get_string());
+          auto p1_value = ige_property_1.get_string();
+          auto p2_value = ige_property_2.get_string();
+          fmt::print(buf, "\tPROPERTY value mismatch [STRING] ({}): ('{}' vs '{}')\n", property,
+                     p1_value, p2_value);
         }
         else if (ige_property_1.get_type() == Ioss::Property::INTEGER) {
-          fmt::print(buf, "\tPROPERTY value mismatch ({}): ({} vs {})\n", property,
+          fmt::print(buf, "\tPROPERTY value mismatch [INTEGER] ({}): ({} vs {})\n", property,
                      ige_property_1.get_int(), ige_property_2.get_int());
         }
         else {
@@ -985,8 +987,10 @@ namespace {
     const std::vector<std::string> &in_qa_1 = input_region_1.get_qa_records();
     const std::vector<std::string> &in_qa_2 = input_region_2.get_qa_records();
 
+    bool printed = false;
     if (in_qa_1.size() != in_qa_2.size()) {
       fmt::print(Ioss::WarnOut(), COUNT_MISMATCH, "QA RECORD", in_qa_1.size(), in_qa_2.size());
+      printed = true;
     }
 
     // CHECK for missing QA records and COMPARE existing records
@@ -995,11 +999,13 @@ namespace {
       if (it == in_qa_2.end()) {
         // QA RECORD was not found
         fmt::print(Ioss::WarnOut(), NOTFOUND_2, "QA RECORD", in_qa_record_1);
+        printed = true;
         continue;
       }
 
       if (in_qa_record_1.compare(*it) != 0) {
         fmt::print(buf, VALUE_MISMATCH, "QA RECORD", in_qa_record_1, (*it));
+        printed        = true;
         overall_result = false;
       }
     }
@@ -1009,9 +1015,13 @@ namespace {
       if (it == in_qa_1.end()) {
         // QA RECORD was not found
         fmt::print(Ioss::WarnOut(), NOTFOUND_1, "QA RECORD", in_qa_record_2);
+        printed = true;
       }
     }
 
+    if (printed) {
+      fmt::print(Ioss::WarnOut(false), "\n");
+    }
     return overall_result;
   }
 
@@ -1045,7 +1055,7 @@ namespace {
 
   template <typename T>
   bool compare_blocks(const std::vector<T *> &in_blocks_1, const std::vector<T *>     &in_blocks_2,
-                      const Ioss::MeshCopyOptions & /* options */, std::ostringstream &buf)
+                      const Ioss::MeshCopyOptions & /* options */, std::ostringstream &/* buf */)
   {
     bool overall_result = true;
 
@@ -1365,7 +1375,7 @@ namespace {
 
   template <typename T>
   bool compare_field_data(const std::vector<T *> &in_entities_1,
-                          const std::vector<T *> &in_entities_2, DataPool &pool,
+                          const std::vector<T *> &in_entities_2, Ioss::DataPool &pool,
                           const Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
                           std::ostringstream &buf)
   {
@@ -1399,7 +1409,7 @@ namespace {
   }
 
   bool compare_field_data(const Ioss::GroupingEntity *ige_1, const Ioss::GroupingEntity *ige_2,
-                          DataPool &pool, const Ioss::Field::RoleType role,
+                          Ioss::DataPool &pool, const Ioss::Field::RoleType role,
                           const Ioss::MeshCopyOptions &options, std::ostringstream &buf,
                           const std::string &prefix)
   {
@@ -1452,14 +1462,14 @@ namespace {
   }
 
   bool compare_field_data_internal(const Ioss::GroupingEntity *ige_1,
-                                   const Ioss::GroupingEntity *ige_2, DataPool &in_pool,
+                                   const Ioss::GroupingEntity *ige_2, Ioss::DataPool &in_pool,
                                    const std::string           &field_name,
                                    const Ioss::MeshCopyOptions &options, std::ostringstream &buf)
   {
     size_t isize = ige_1->get_field(field_name).get_size();
     size_t osize = ige_2->get_field(field_name).get_size();
 
-    DataPool in_pool_2;
+    Ioss::DataPool in_pool_2;
 
     if (isize != osize) {
       fmt::print(buf, "\n\tFIELD size mismatch for field '{}', ({} vs. {}) on {}", field_name,
@@ -1543,7 +1553,7 @@ namespace {
                    field.type_string(), field_name);
         return false;
       }
-    } break;
+    }
     default:
       if (field_name == "mesh_model_coordinates") {
         fmt::print(Ioss::WarnOut(), "data_storage option not recognized.");

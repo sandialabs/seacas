@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "ioss_export.h"
+
 #include <Ioss_CodeTypes.h>
 #include <cstddef> // for size_t
 #include <cstdint> // for int64_t
@@ -40,7 +42,7 @@ namespace Ioss {
   // using ReverseMapContainer = tsl::robin_pg_map<int64_t, int64_t>;
 #endif
 
-  class Map
+  class IOSS_EXPORT Map
   {
   public:
     Map() = default;

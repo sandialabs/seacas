@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.15 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.17 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.15 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.17 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2022 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -93,8 +93,8 @@ Authors:
 # show the banner on first use
 SHOW_BANNER = True
 
-## Documentation is generated on a Mac laptop using:
-## pdoc --force --html ../lib/exodus.py
+# Documentation is generated on a Mac laptop using:
+# pdoc --force --html ../lib/exodus.py
 
 sys.dont_write_bytecode = True
 
@@ -127,7 +127,7 @@ def getExodusVersion():
                     fields[1] == 'EXODUS_VERSION_MINOR'):
                 version_minor = int(fields[2])
             if (version_major > 0 and version_minor >= 0):
-               return 100 * version_major + version_minor
+                return 100 * version_major + version_minor
     return 0
 
 
@@ -158,6 +158,7 @@ class ex_options(Enum):
     EX_DEBUG       = 2
     EX_ABORT       = 4
     EX_NULLVERBOSE = 8
+
 
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
 if os.uname()[0] == 'Darwin':
@@ -223,83 +224,91 @@ EXODUS_LIB.ex_opts(exErrPrintMode)
 
 
 class ex_inquiry(Enum):
-        EX_INQ_FILE_TYPE = 1                    # inquire EXODUS file type
-        EX_INQ_API_VERS = 2                     # inquire API version number
-        EX_INQ_DB_VERS = 3                      # inquire database version number
-        EX_INQ_TITLE = 4                        # inquire database title
-        EX_INQ_DIM = 5                          # inquire number of dimensions
-        EX_INQ_NODES = 6                        # inquire number of nodes
-        EX_INQ_ELEM = 7                         # inquire number of elements
-        EX_INQ_ELEM_BLK = 8                     # inquire number of element blocks
-        EX_INQ_NODE_SETS = 9                    # inquire number of node sets
-        EX_INQ_NS_NODE_LEN = 10                 # inquire length of node set node list
-        EX_INQ_SIDE_SETS = 11                   # inquire number of side sets
-        EX_INQ_SS_NODE_LEN = 12                 # inquire length of side set node list
-        EX_INQ_SS_ELEM_LEN = 13                 # inquire length of side set element list
-        EX_INQ_QA = 14                          # inquire number of QA records
-        EX_INQ_INFO = 15                        # inquire number of info records
-        EX_INQ_TIME = 16                        # inquire number of time steps in the database
-        EX_INQ_EB_PROP = 17                     # inquire number of element block properties
-        EX_INQ_NS_PROP = 18                     # inquire number of node set properties
-        EX_INQ_SS_PROP = 19                     # inquire number of side set properties
-        # inquire length of node set distribution factor list
-        EX_INQ_NS_DF_LEN = 20
-        # inquire length of side set distribution factor list
-        EX_INQ_SS_DF_LEN = 21
-        EX_INQ_LIB_VERS = 22                    # inquire API Lib vers number
-        EX_INQ_EM_PROP = 23                     # inquire number of element map properties
-        EX_INQ_NM_PROP = 24                     # inquire number of node map properties
-        EX_INQ_ELEM_MAP = 25                    # inquire number of element maps
-        EX_INQ_NODE_MAP = 26                    # inquire number of node maps
-        EX_INQ_EDGE = 27                        # inquire number of edges
-        EX_INQ_EDGE_BLK = 28                    # inquire number of edge blocks
-        EX_INQ_EDGE_SETS = 29                   # inquire number of edge sets
-        # inquire length of concat edge set edge list
-        EX_INQ_ES_LEN = 30
-        # inquire length of concat edge set dist factor list
-        EX_INQ_ES_DF_LEN = 31
-        # inquire number of properties stored per edge block
-        EX_INQ_EDGE_PROP = 32
-        # inquire number of properties stored per edge set
-        EX_INQ_ES_PROP = 33
-        EX_INQ_FACE = 34                        # inquire number of faces
-        EX_INQ_FACE_BLK = 35                    # inquire number of face blocks
-        EX_INQ_FACE_SETS = 36                   # inquire number of face sets
-        # inquire length of concat face set face list
-        EX_INQ_FS_LEN = 37
-        # inquire length of concat face set dist factor list
-        EX_INQ_FS_DF_LEN = 38
-        # inquire number of properties stored per face block
-        EX_INQ_FACE_PROP = 39
-        # inquire number of properties stored per face set
-        EX_INQ_FS_PROP = 40
-        EX_INQ_ELEM_SETS = 41                   # inquire number of element sets
-        # inquire length of concat element set element list
-        EX_INQ_ELS_LEN = 42
-        # inquire length of concat element set dist factor list
-        EX_INQ_ELS_DF_LEN = 43
-        # inquire number of properties stored per elem set
-        EX_INQ_ELS_PROP = 44
-        EX_INQ_EDGE_MAP = 45                    # inquire number of edge maps
-        EX_INQ_FACE_MAP = 46                    # inquire number of face maps
-        EX_INQ_COORD_FRAMES = 47                # inquire number of coordinate frames
-        # inquire size of MAX_NAME_LENGTH dimension on database
-        EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH = 48
-        # inquire size of MAX_NAME_LENGTH dimension on database
-        EX_INQ_DB_MAX_USED_NAME_LENGTH = 49
-        # inquire client-specified max size of returned names
-        EX_INQ_MAX_READ_NAME_LENGTH = 50
-        # inquire size of floating-point values stored on database
-        EX_INQ_DB_FLOAT_SIZE = 51
-        EX_INQ_ASSEMBLY = 60
-        EX_INQ_BLOB = 61
-        EX_INQ_INVALID = -1
+    EX_INQ_FILE_TYPE = 1                    # inquire EXODUS file type
+    EX_INQ_API_VERS = 2                     # inquire API version number
+    EX_INQ_DB_VERS = 3                      # inquire database version number
+    EX_INQ_TITLE = 4                        # inquire database title
+    EX_INQ_DIM = 5                          # inquire number of dimensions
+    EX_INQ_NODES = 6                        # inquire number of nodes
+    EX_INQ_ELEM = 7                         # inquire number of elements
+    EX_INQ_ELEM_BLK = 8                     # inquire number of element blocks
+    EX_INQ_NODE_SETS = 9                    # inquire number of node sets
+    EX_INQ_NS_NODE_LEN = 10                 # inquire length of node set node list
+    EX_INQ_SIDE_SETS = 11                   # inquire number of side sets
+    EX_INQ_SS_NODE_LEN = 12                 # inquire length of side set node list
+    EX_INQ_SS_ELEM_LEN = 13                 # inquire length of side set element list
+    EX_INQ_QA = 14                          # inquire number of QA records
+    EX_INQ_INFO = 15                        # inquire number of info records
+    EX_INQ_TIME = 16                        # inquire number of time steps in the database
+    EX_INQ_EB_PROP = 17                     # inquire number of element block properties
+    EX_INQ_NS_PROP = 18                     # inquire number of node set properties
+    EX_INQ_SS_PROP = 19                     # inquire number of side set properties
+    # inquire length of node set distribution factor list
+    EX_INQ_NS_DF_LEN = 20
+    # inquire length of side set distribution factor list
+    EX_INQ_SS_DF_LEN = 21
+    EX_INQ_LIB_VERS = 22                    # inquire API Lib vers number
+    EX_INQ_EM_PROP = 23                     # inquire number of element map properties
+    EX_INQ_NM_PROP = 24                     # inquire number of node map properties
+    EX_INQ_ELEM_MAP = 25                    # inquire number of element maps
+    EX_INQ_NODE_MAP = 26                    # inquire number of node maps
+    EX_INQ_EDGE = 27                        # inquire number of edges
+    EX_INQ_EDGE_BLK = 28                    # inquire number of edge blocks
+    EX_INQ_EDGE_SETS = 29                   # inquire number of edge sets
+    # inquire length of concat edge set edge list
+    EX_INQ_ES_LEN = 30
+    # inquire length of concat edge set dist factor list
+    EX_INQ_ES_DF_LEN = 31
+    # inquire number of properties stored per edge block
+    EX_INQ_EDGE_PROP = 32
+    # inquire number of properties stored per edge set
+    EX_INQ_ES_PROP = 33
+    EX_INQ_FACE = 34                        # inquire number of faces
+    EX_INQ_FACE_BLK = 35                    # inquire number of face blocks
+    EX_INQ_FACE_SETS = 36                   # inquire number of face sets
+    # inquire length of concat face set face list
+    EX_INQ_FS_LEN = 37
+    # inquire length of concat face set dist factor list
+    EX_INQ_FS_DF_LEN = 38
+    # inquire number of properties stored per face block
+    EX_INQ_FACE_PROP = 39
+    # inquire number of properties stored per face set
+    EX_INQ_FS_PROP = 40
+    EX_INQ_ELEM_SETS = 41                   # inquire number of element sets
+    # inquire length of concat element set element list
+    EX_INQ_ELS_LEN = 42
+    # inquire length of concat element set dist factor list
+    EX_INQ_ELS_DF_LEN = 43
+    # inquire number of properties stored per elem set
+    EX_INQ_ELS_PROP = 44
+    EX_INQ_EDGE_MAP = 45                    # inquire number of edge maps
+    EX_INQ_FACE_MAP = 46                    # inquire number of face maps
+    EX_INQ_COORD_FRAMES = 47                # inquire number of coordinate frames
+    # inquire size of MAX_NAME_LENGTH dimension on database
+    EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH = 48
+    # inquire size of MAX_NAME_LENGTH dimension on database
+    EX_INQ_DB_MAX_USED_NAME_LENGTH = 49
+    # inquire client-specified max size of returned names
+    EX_INQ_MAX_READ_NAME_LENGTH = 50
+    # inquire size of floating-point values stored on database
+    EX_INQ_DB_FLOAT_SIZE = 51
+    EX_INQ_ASSEMBLY = 60
+    EX_INQ_BLOB = 61
+    EX_INQ_INVALID = -1
 
 
 class ex_type(Enum):
-    EX_INTEGER = 4 # NC_INT (from netcdf.h)
-    EX_DOUBLE = 6  # NC_DOUBLE (from netcdf.h)
-    EX_CHAR = 2 # NC_CHAR (from netcdf.h)
+    EX_CHAR = 2     # NC_CHAR (from netcdf.h)
+    EX_INTEGER = 4  # NC_INT (from netcdf.h)
+    EX_DOUBLE = 6   # NC_DOUBLE (from netcdf.h)
+    EX_INVALID = -1
+
+
+def ex_type_map(type):
+    """
+    Map the exodus inquiry flags to an enum value.
+    """
+    return ex_type[type].value
 
 
 def ex_inquiry_map(inquiry):
@@ -430,7 +439,10 @@ def get_entity_type(varType):
     try:
         return ex_entity_type[varType].value
     except KeyError:
-        return varType.value
+        if (isinstance(varType, int)):
+            return varType
+        else:
+            return varType.value
 
 # init params struct
 class ex_init_params(ctypes.Structure):
@@ -563,6 +575,10 @@ class ex_blob(ctypes.Structure):
 class attribute:
     def __init__(self, name, type, id):
         self.name = name
+        if isinstance(type, str):
+            type = ex_entity_type[type].value
+        if isinstance(type, ex_entity_type):
+            type = type.value
         self.entity_type = type
         self.entity_id = id
         self.values = []
@@ -573,12 +589,21 @@ class attribute:
 class ex_attribute(ctypes.Structure):
     """
     Used for accessing underlying exodus library...
+
+    Parameters
+    ----------
+    entity_type : ex_entity_type
+    entity_id : int64_t
+    name : char[257]
+    type : ex_type
+    value_count : int
+    values : void*
     """
     _fields_ = [("entity_type", ctypes.c_int),
                 ("entity_id", ctypes.c_longlong),
-                ("name", ctypes.c_char * 256),
+                ("name", ctypes.c_char * 257),
                 ("type", ctypes.c_int),
-                ("value_count", ctypes.c_longlong),
+                ("value_count", ctypes.c_int),
                 ("values", ctypes.c_void_p)]
 
 #
@@ -808,7 +833,7 @@ class exodus:
         if len(p.title) > MAX_LINE_LENGTH:
             print("WARNING: Exodus title \"{}\" exceeds maximum line length ({}). It will be truncated."
                   .format(p.title, MAX_LINE_LENGTH))
-            p.title = p.title[-1*MAX_LINE_LENGTH:]
+            p.title = p.title[-1 * MAX_LINE_LENGTH:]
 
         self.Title = ctypes.create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
         self.numDim = ctypes.c_longlong(p.num_dim)
@@ -827,6 +852,7 @@ class exodus:
     # copy to a new database
     #
     # --------------------------------------------------------------------
+
     def copy(self, fileName, include_transient=False, mode='a'):
         """
         Copies exodus database to file_name and returns an opened copy as a
@@ -846,7 +872,7 @@ class exodus:
         exo_copy : exodus object opened in append mode by default
         """
         i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
-        fileId = EXODUS_LIB.ex_create_int(fileName.encode('ascii'), EX_NOCLOBBER|i64Status,
+        fileId = EXODUS_LIB.ex_create_int(fileName.encode('ascii'), EX_NOCLOBBER | i64Status,
                                           ctypes.byref(self.comp_ws),
                                           ctypes.byref(self.io_ws),
                                           EX_API_VERSION_NODOT)
@@ -861,6 +887,7 @@ class exodus:
     # copy to a new already created database
     #
     # --------------------------------------------------------------------
+
     def copy_file(self, file_id, include_transient=False):
         """
         Copies exodus database to the database pointed to by `fileId`
@@ -881,13 +908,13 @@ class exodus:
         Returns
         -------
         file_id: The file_id of the copied to file
-        
+
         """
         EXODUS_LIB.ex_copy(self.fileId, file_id)
         if include_transient:
             EXODUS_LIB.ex_copy_transient(self.fileId, file_id)
 
-        return file_id;
+        return file_id
 
     #
     # general info
@@ -1046,6 +1073,7 @@ class exodus:
         return int(self.__ex_inquire_int(ex_inquiry_map('EX_INQ_INFO')))
 
     # --------------------------------------------------------------------
+
     def get_info_records(self):
         """
         get a list info records where each entry in the list is one info
@@ -1129,7 +1157,7 @@ class exodus:
         if inpFileName:
             fd = open(inpFileName.encode('ascii'), "w")
             for fileLine in sierra_inp:
-                fd.write(fileLine+"\n")
+                fd.write(fileLine + "\n")
             fd.close()
             return []
 
@@ -2230,6 +2258,7 @@ class exodus:
         return True
 
     # --------------------------------------------------------------------
+
     def get_variable_values(self, objType, entityId, name, step):
         """
         get list of `objType` variable values for a specified object id
@@ -2281,6 +2310,7 @@ class exodus:
 
 
     # --------------------------------------------------------------------
+
     def put_variable_values(self, objType, entityId, name, step, values):
         """
         store a list of element variable values for a specified element
@@ -2322,6 +2352,7 @@ class exodus:
 
     # Attributes (meta-data attributes; not the per-element bulk-data kind)
     # --------------------------------------------------------------------
+
     def get_attribute_count(self, objType, objId):
         """
         IS THIS NEEDED, PYTHONIC WAY MAY BE TO JUST GET THEM...
@@ -2371,6 +2402,7 @@ class exodus:
 
     # Assemblies...
     # --------------------------------------------------------------------
+
     def num_assembly(self):
         """
         get the number of assemblies in the model
@@ -2425,6 +2457,7 @@ class exodus:
 
     # Blobs...
     # --------------------------------------------------------------------
+
     def num_blob(self):
         """
         get the number of blobs in the model
@@ -4563,7 +4596,7 @@ class exodus:
         # write them all
         EXODUS_LIB.ex_put_var(self.fileId,
                               ctypes.c_int(step),
-                              ctypes.c_int(get_entity_type('EX_GLOBAL')), 
+                              ctypes.c_int(get_entity_type('EX_GLOBAL')),
                               ctypes.c_int(1),
                               ctypes.c_int(0),
                               ctypes.c_int(numVals),
@@ -4596,7 +4629,7 @@ class exodus:
             gvalues[i] = ctypes.c_double(values[i])
         EXODUS_LIB.ex_put_var(self.fileId,
                               ctypes.c_int(step),
-                              ctypes.c_int(get_entity_type('EX_GLOBAL')), 
+                              ctypes.c_int(get_entity_type('EX_GLOBAL')),
                               ctypes.c_int(1),
                               ctypes.c_int(0),
                               ctypes.c_int(numVals),
@@ -5171,8 +5204,8 @@ class exodus:
         for i in range(num_objs):
             obj_type = ctypes.c_int(get_entity_type(objType))
             obj_name_ptrs[i] = ctypes.pointer(
-                    ctypes.create_string_buffer(
-                            MAX_NAME_LENGTH + 1))
+                ctypes.create_string_buffer(
+                    MAX_NAME_LENGTH + 1))
 
         EXODUS_LIB.ex_get_names(self.fileId, obj_type, ctypes.byref(obj_name_ptrs))
         obj_names = []
@@ -5212,7 +5245,7 @@ class exodus:
 
     def __ex_get_assembly(self, assem_struct):
         EXODUS_LIB.ex_get_assembly(self.fileId, ctypes.byref(assem_struct))
-        ptr = ctypes.create_string_buffer(MAX_NAME_LENGTH+1)
+        ptr = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
         assem_struct.name = ctypes.cast(ptr, ctypes.c_char_p)
         eptr = (ctypes.c_longlong * assem_struct.entity_count)()
         assem_struct.entity_list = eptr
@@ -5233,7 +5266,7 @@ class exodus:
 
     def __ex_get_blob(self, blob_struct):
         EXODUS_LIB.ex_get_blob(self.fileId, ctypes.byref(blob_struct))
-        ptr = ctypes.create_string_buffer(MAX_NAME_LENGTH+1)
+        ptr = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
         blob_struct.name = ctypes.cast(ptr, ctypes.c_char_p)
         EXODUS_LIB.ex_get_blob(self.fileId, ctypes.byref(blob_struct))
 
@@ -5258,6 +5291,16 @@ class exodus:
 
     # --------------------------------------------------------------------
 
+    def __ex_get_attribute_count(self, objType, objId):
+        # Get attribute count...
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        att_count = EXODUS_LIB.ex_get_attribute_count(self.fileId, obj_type, obj_id)
+
+        return att_count
+
+    # --------------------------------------------------------------------
+
     def __ex_get_attributes(self, objType, objId):
         # Get attribute count...
         obj_type = ctypes.c_int(get_entity_type(objType))
@@ -5270,12 +5313,12 @@ class exodus:
             EXODUS_LIB.ex_get_attribute_param(self.fileId, obj_type, obj_id, ctypes.byref(att))
             for i in range(att_count):
                 EXODUS_LIB.ex_get_attribute(self.fileId, ctypes.byref(att[i]))
-                tmp_att = attribute(att[i].name.decode('utf8'), ex_obj_to_name(att[i].entity_type), att[i].entity_id)
+                tmp_att = attribute(att[i].name.decode('utf8'), att[i].entity_type, att[i].entity_id)
 
                 if (att[i].type == 2):
                     vals = ctypes.cast(att[i].values, ctypes.POINTER(ctypes.c_char))
                     tmp = []
-                    for j in range(att[i].value_count-1):
+                    for j in range(att[i].value_count - 1):
                         tmp.append(vals[j])
                     tmp_att.values = b''.join(tmp).decode('utf8')
 
@@ -5303,21 +5346,21 @@ class exodus:
         att.value_count = len(attribute.values)
 
         if (isinstance(attribute.values[0], int)):
-            eptr = (c_int * len(attribute.values))()
+            eptr = (ctypes.c_int * len(attribute.values))()
             for i in range(len(attribute.values)):
-               eptr[i] = ctypes.c_int(attribute.values[i])
+                eptr[i] = ctypes.c_int(attribute.values[i])
             att.values = ctypes.cast(eptr, ctypes.c_void_p)
             att.type = 4
 
         elif (isinstance(attribute.values[0], float)):
-            eptr = (c_double * len(attribute.values))()
+            eptr = (ctypes.c_double * len(attribute.values))()
             for i in range(len(attribute.values)):
-              eptr[i] = ctypes.c_double(attribute.values[i])
+                eptr[i] = ctypes.c_double(attribute.values[i])
             att.values = ctypes.cast(eptr, ctypes.c_void_p)
             att.type = 6
 
         elif (isinstance(attribute.values[0], str)):
-            eptr = (c_char * (len(attribute.values)+1))()
+            eptr = (ctypes.c_char * (len(attribute.values) + 1))()
             eptr = attribute.values[0].encode('ascii')
             att.values = ctypes.cast(eptr, ctypes.c_void_p)
             att.type = 2
@@ -5978,8 +6021,8 @@ class exodus:
             side_set_elem_list = (ctypes.c_int * num_side_in_set)()
             side_set_side_list = (ctypes.c_int * num_side_in_set)()
         EXODUS_LIB.ex_get_set(
-            self.fileId, 
-            ctypes.c_int(get_entity_type('EX_SIDE_SET')), 
+            self.fileId,
+            ctypes.c_int(get_entity_type('EX_SIDE_SET')),
             side_set_id,
             ctypes.byref(side_set_elem_list),
             ctypes.byref(side_set_side_list))
@@ -6003,7 +6046,7 @@ class exodus:
                 side_set_side_list[i] = ctypes.c_int(sideSetSides[i])
         EXODUS_LIB.ex_put_set(
             self.fileId,
-            ctypes.c_int(get_entity_type('EX_SIDE_SET')), 
+            ctypes.c_int(get_entity_type('EX_SIDE_SET')),
             side_set_id,
             side_set_elem_list,
             side_set_side_list)

@@ -67,11 +67,21 @@ INCLUDE_DIRECTORIES(
   "${Zoltan_INCLUDE_DIRS}"
   )
 
+list(APPEND HEADERS
+  "${CMAKE_CURRENT_BINARY_DIR}/ioss_export.h")
+
 TRIBITS_ADD_LIBRARY(
   Ioss
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}
   )
+
+include(GenerateExportHeader)
+generate_export_header(Ioss)
+target_include_directories(Ioss
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
+
 IF (MINGW)
   target_link_libraries(Ioss PUBLIC psapi)
 ENDIF ()
