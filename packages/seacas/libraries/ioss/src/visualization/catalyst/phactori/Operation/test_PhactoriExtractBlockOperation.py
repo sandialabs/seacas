@@ -34,30 +34,52 @@ from phactori import *
 import unittest
 #from vtk import *
 import vtk
-from Operation.PhactoriContourOperation import *
+from Operation.PhactoriExtractBlockOperation import *
 import paraview.simple
 
-class TestPhactoriContourOperation(unittest.TestCase):
+class TestPhactoriExtractBlockOperation(unittest.TestCase):
 
-  def test_ContourTest1(self):
-    testWavelet = Wavelet()
-    testWavelet.UpdatePipeline()
+  def test_ExtractOneBlockFromAGroupWithThreeBlocks(self):
+    cone1 = Cone(registrationName = "cone1")
+    sphere1 = Sphere(registrationName = "sphere1")
+    cylinder1 = Sphere(registrationName = "cylinder1")
+    group1 = GroupDatasets(registrationName = "group1", Input = [cone1, sphere1, cylinder1])
+    group1.UpdatePipeline()
+
     newOperationBlock = PhactoriOperationBlock()
     newOperationBlock.mName = "testoperation"
-    operationParams = {
-      "variable scalar":"RTData",
-      "contour value":[100.0, 150.0, 200.0]
-    }
+    operationParams = {"include blocks": ["/Root/cone1"]}
     ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
-              'contour',
-              PhactoriContourOperation,
+              'extractblock',
+              PhactoriExtractBlockOperation,
               operationParams)
-    ConstructPipelineOperationFromParsedOperationBlockC_ForTest(newOperationBlock, testWavelet)
+    ConstructPipelineOperationFromParsedOperationBlockC_ForTest(newOperationBlock, group1)
     newOperationBlock.GetPvFilter().UpdatePipeline()
-    pointData = newOperationBlock.GetPvFilter().PointData
-    rtdataArry = pointData.GetArray("RTData")
-    numPoints = rtdataArry.GetNumberOfTuples()
-    self.assertEqual(numPoints, 6260)
+    csdata = newOperationBlock.GetPvFilter().GetClientSideObject().GetOutputDataObject(0)
+    if PhactoriDbg(100):
+      myDebugPrint3("group number of blocks:" + str(csdata.GetNumberOfBlocks()))
+    self.assertEqual(csdata.GetNumberOfBlocks(), 1)
+
+  def test_ExtractTwoBlocksFromAGroupWithThgeeBlocks(self):
+    cone1 = Cone(registrationName = "cone1")
+    sphere1 = Sphere(registrationName = "sphere1")
+    cylinder1 = Sphere(registrationName = "cylinder1")
+    group1 = GroupDatasets(registrationName = "group1", Input = [cone1, sphere1, cylinder1])
+    group1.UpdatePipeline()
+
+    newOperationBlock = PhactoriOperationBlock()
+    newOperationBlock.mName = "testoperation"
+    operationParams = {"include blocks": ["/Root/cone1", "/Root/cylinder1"]}
+    ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'extractblock',
+              PhactoriExtractBlockOperation,
+              operationParams)
+    ConstructPipelineOperationFromParsedOperationBlockC_ForTest(newOperationBlock, group1)
+    newOperationBlock.GetPvFilter().UpdatePipeline()
+    csdata = newOperationBlock.GetPvFilter().GetClientSideObject().GetOutputDataObject(0)
+    if PhactoriDbg(100):
+      myDebugPrint3("group number of blocks:" + str(csdata.GetNumberOfBlocks()))
+    self.assertEqual(csdata.GetNumberOfBlocks(), 2)
 
 if __name__ == '__main__':
     cc = Cone()

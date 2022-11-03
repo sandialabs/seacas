@@ -31,37 +31,41 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from phactori import *
-import unittest
-#from vtk import *
-import vtk
-from Operation.PhactoriContourOperation import *
-import paraview.simple
+from paraview.simple import *
 
-class TestPhactoriContourOperation(unittest.TestCase):
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriPointDataToCellDataOperation(PhactoriOperationSpecifics):
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.passPointData = 0
+    return
 
-  def test_ContourTest1(self):
-    testWavelet = Wavelet()
-    testWavelet.UpdatePipeline()
-    newOperationBlock = PhactoriOperationBlock()
-    newOperationBlock.mName = "testoperation"
-    operationParams = {
-      "variable scalar":"RTData",
-      "contour value":[100.0, 150.0, 200.0]
-    }
-    ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
-              'contour',
-              PhactoriContourOperation,
-              operationParams)
-    ConstructPipelineOperationFromParsedOperationBlockC_ForTest(newOperationBlock, testWavelet)
-    newOperationBlock.GetPvFilter().UpdatePipeline()
-    pointData = newOperationBlock.GetPvFilter().PointData
-    rtdataArry = pointData.GetArray("RTData")
-    numPoints = rtdataArry.GetNumberOfTuples()
-    self.assertEqual(numPoints, 6260)
+  def ParseParametersFromJson(self, inJson):
+    key1 = "pass point data"
+    if key1 in inJson:
+      self.passPointData = inJson[key1]
+    return
 
-if __name__ == '__main__':
-    cc = Cone()
-    rr = Show()
-    unittest.main()
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriPointDataToCellDataOperation:CreateParaViewFilter entered\n', 100)
 
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
 
+    savedActiveSource = GetActiveSource()
+    newParaViewFilter = PointDatatoCellData(Input = inInputFilter)
+    if self.passPointData:
+      newParaViewFilter.PassPointData = 1
+    else:
+      newParaViewFilter.PassPointData = 0
+
+    SetActiveSource(newParaViewFilter)
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriPointDataToCellDataOperation.CreateParaViewFilter returning\n', 100)
+
+    return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
