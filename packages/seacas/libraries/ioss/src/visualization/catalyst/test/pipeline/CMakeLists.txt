@@ -38,6 +38,11 @@ ADD_EXECUTABLE(CatalystMultiBlockMeshTests
 TARGET_LINK_LIBRARIES(CatalystMultiBlockMeshTests
                       catalystiosstest)
 
+ADD_EXECUTABLE(TwoGridsTwoPipelinesTests
+               TwoGridsTwoPipelinesTests.cxx)
+TARGET_LINK_LIBRARIES(TwoGridsTwoPipelinesTests
+                      catalystiosstest)
+
 addCatalystTest("Catalyst_Logging_Pipeline" "1;4"
     ${CMAKE_CURRENT_BINARY_DIR}/CatalystLoggingPipelineTests "")
 
@@ -61,3 +66,7 @@ addCatalystTest("CatalystV2ScriptFromParaViewGuiTest1" "1;4"
 
 addCatalystTest("CatalystMultiBlockMeshTests" "1;4"
     ${CMAKE_CURRENT_BINARY_DIR}/CatalystMultiBlockMeshTests "")
+
+addCatalystTest("TwoGridsTwoPipelinesTests" "1;4"
+    ${CMAKE_CURRENT_BINARY_DIR}/TwoGridsTwoPipelinesTests "")
+

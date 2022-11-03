@@ -29,6 +29,11 @@ public:
   void runPhactoriJSONTestTwoGrid(const std::string &jsonFile, const std::string &inputFileA,
                                   const std::string &inputFileB);
 
+  void runPhactoriJSONTestTwoGridTwoPipe(const std::string &jsonFileA,
+                                         const std::string &inputFileA,
+                                         const std::string &jsonFileB,
+                                         const std::string &inputFileB);
+
   void runParaViewGuiScriptTest(const std::string &pythonScript, const std::string &inputFile);
 
   void runCatalystLoggingTest(Ioss::PropertyManager *logging_properties,

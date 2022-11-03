@@ -31,13 +31,6 @@ void CatalystTestFixture::runParaViewGuiScriptTest(const std::string &pythonScri
   ioapp.addFileName(td + inputFile);
   ioapp.runApplication();
   REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
-
-  // ioapp.setOutputCatalystMeshOneFileON();
-
-  // vtkXMLMultiBlockDataReader* p = vtkXMLMultiBlockDataReader::New();
-  // if(p != nullptr) {
-  //   p->Delete();
-  // }
 }
 
 void CatalystTestFixture::checkMeshOutputVariables(const std::string        &inputFile,
@@ -93,7 +86,7 @@ void CatalystTestFixture::runPhactoriJSONTest(const std::string &jsonFile,
 {
 
   std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
-  ioapp.setPhactoriInputJSON(td + jsonFile);
+  ioapp.addPhactoriInputJSON(td + jsonFile);
   ioapp.addFileName(td + inputFile);
   ioapp.runApplication();
   REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
@@ -105,11 +98,28 @@ void CatalystTestFixture::runPhactoriJSONTestTwoGrid(const std::string &jsonFile
 {
 
   std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
-  ioapp.setPhactoriInputJSON(td + jsonFile);
+  ioapp.addPhactoriInputJSON(td + jsonFile);
   ioapp.addFileName(td + inputFileA);
   ioapp.addFileName(td + inputFileB);
   ioapp.runApplication();
   REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
+}
+
+void CatalystTestFixture::runPhactoriJSONTestTwoGridTwoPipe(const std::string &jsonFileA,
+                                                            const std::string &inputFileA,
+                                                            const std::string &jsonFileB,
+                                                            const std::string &inputFileB)
+{
+
+  ioapp.setSendMultipleGridsToTheSamePipeline(false);
+  std::string td = std::string(TEST_DATA_DIRECTORY_PATH);
+  ioapp.addPhactoriInputJSON(td + jsonFileA);
+  ioapp.addFileName(td + inputFileA);
+  ioapp.addPhactoriInputJSON(td + jsonFileB);
+  ioapp.addFileName(td + inputFileB);
+  ioapp.runApplication();
+  REQUIRE(ioapp.getApplicationExitCode() == EXIT_SUCCESS);
+  ioapp.setSendMultipleGridsToTheSamePipeline(true);
 }
 
 void CatalystTestFixture::runCatalystLoggingTest(Ioss::PropertyManager *logging_properties,
