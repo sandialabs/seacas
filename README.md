@@ -63,6 +63,7 @@ manually as detailed in
 | DEBUG           | YES, NO | NO  | Build debug executable; default is optimized
 | SHARED          | YES, NO | YES | Build shared libraries if YES, archive (.a) if NO |
 | CRAY            | YES, NO | YES | Is this a Cray system (special parallel options) |
+| MODERN          | YES, NO | NO  | Use "modern" CMake configuration files for netCDF and HDF5 |
 | NEEDS_ZLIB      | YES, NO | NO  | If system does not have zlib installed, download and install it (HDF5 compression). |
 | USE\_ZLIB\_NG   | YES, NO | NO  | Should the improved [zlib-ng](https://github.com/zlib-ng/zlib-ng) library be used to provide ZLIB capability |
 | NEEDS_SZIP      | YES, NO | NO  | If system does not have szip installed, download and install it (HDF5 compression). |
