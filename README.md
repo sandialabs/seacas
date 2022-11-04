@@ -63,7 +63,6 @@ manually as detailed in
 | DEBUG           | YES, NO | NO  | Build debug executable; default is optimized
 | SHARED          | YES, NO | YES | Build shared libraries if YES, archive (.a) if NO |
 | CRAY            | YES, NO | YES | Is this a Cray system (special parallel options) |
-| MODERN          | YES, NO | NO  | Use "modern" CMake configuration files for netCDF and HDF5 |
 | NEEDS_ZLIB      | YES, NO | NO  | If system does not have zlib installed, download and install it (HDF5 compression). |
 | USE\_ZLIB\_NG   | YES, NO | NO  | Should the improved [zlib-ng](https://github.com/zlib-ng/zlib-ng) library be used to provide ZLIB capability |
 | NEEDS_SZIP      | YES, NO | NO  | If system does not have szip installed, download and install it (HDF5 compression). |
@@ -110,6 +109,7 @@ to configure the SEACAS CMake build.
 | FORTRAN         | YES, NO | YES  | Should fortran libraries and applications be built (see `cmake-config`) |
 | ZOLTAN          | YES, NO | YES  | Should zoltan library and nem_slice be built |
 | BUILD_TYPE      | debug, release | release | what type of build |
+| MODERN          | YES, NO | NO   | Use "modern" CMake configuration files for netCDF and HDF5 |
 | DEBUG           | -none-  |      | If specified, then do a debug build. Can't be used with `BUILD_TYPE` |
 | HAVE_X11        | YES, NO | YES  | Does the system have X11 libraries and include files; used for blot, fastq |
 | THREADSAFE      | YES, NO | NO   | Compile a thread-safe IOSS and Exodus library |
