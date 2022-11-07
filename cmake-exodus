@@ -145,6 +145,14 @@ then
   fi
 fi
 
+MODERN=${MODERN:-NO}
+if [ "${MODERN}" == "YES" ]
+then
+    MODERN_ARG="-D TPL_ENABLE_HDF5:BOOL=ON -D Netcdf_ALLOW_MODERN:BOOL=ON"
+else
+    MODERN_ARG=""
+fi
+
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
 
 CRAY="${CRAY:-NO}"
@@ -348,6 +356,7 @@ cmake -G "${GENERATOR}" \
 -D Seacas_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 -D Seacas_ENABLE_Fortran=${FORTRAN} \
 ${EXTRA_LIB} \
+${MODERN_ARG} \
 \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
