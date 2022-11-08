@@ -35,7 +35,7 @@ jobs:
           echo $HOME
           mkdir build
           cd build
-          NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=/usr bash ../cmake-config
+          MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=/usr bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
