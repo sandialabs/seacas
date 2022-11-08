@@ -17,10 +17,7 @@ jobs:
     
     strategy:
       matrix:
-        compiler: [ gnu, clang, mpi ]
-        hdf5: [ V18, V110, V112 ]
-        netcdf: [ 4.9.0 ]
-        cgns: [ 4.3.0 ]
+        compiler: [ gnu, clang ]
     steps:
 
       - uses: actions/checkout@v3
@@ -35,7 +32,7 @@ jobs:
           echo $HOME
           mkdir build
           cd build
-          MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=/usr bash ../cmake-config
+          HDF5_DIR=/usr NETCDF_DIR=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
