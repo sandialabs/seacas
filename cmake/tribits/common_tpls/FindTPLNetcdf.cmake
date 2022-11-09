@@ -46,7 +46,7 @@ set(Netcdf_ALLOW_MODERN FALSE CACHE BOOL "Allow finding Netcdf as a modern CMake
 #if (Netcdf_ALLOW_MODERN AND HDF5_FOUND_MODERN_CONFIG_FILE)
 if (Netcdf_ALLOW_MODERN)
 
-  set(minimum_modern_netCDF_version 4.7.4)
+  set(minimum_modern_netCDF_version 4.7.3)
   print_var(Netcdf_ALLOW_MODERN)
   message("-- Using find_package(netCDF ${minimum_modern_netCDF_version} CONFIG) ...")
   find_package(netCDF ${minimum_modern_netCDF_version} CONFIG)
