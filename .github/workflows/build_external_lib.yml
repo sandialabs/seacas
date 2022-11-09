@@ -26,21 +26,13 @@ jobs:
         shell: bash -l {0}
         run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake libzip-dev openmpi-bin libopenmpi-dev libnetcdf-dev libhdf5-dev libcgns-dev libmatio-dev libfmt-dev
 
-      - name: See what installed
-        shell: bash -l {0}
-        run: |
-          echo $HOME
-          ls /usr/lib      
-          ls /usr/lib/cmake
-          find /usr/ -name \*.cmake -print
-
       - name: Run cmake
         shell: bash -l {0}
         run: |
           echo $HOME
           mkdir build
           cd build
-          HDF5_DIR=/usr HDF5_PATH=/usr NETCDF_PATH=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash ../cmake-config
+          HDF5_DIR=/usr HDF5_PATH=/usr NetCDF_ROOT=/usr NETCDF_PATH=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
