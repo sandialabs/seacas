@@ -32,7 +32,7 @@ jobs:
           echo $HOME
           mkdir build
           cd build
-          HDF5_DIR=/usr HDF5_PATH=/usr NetCDF_ROOT=/usr NETCDF_PATH=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash ../cmake-config
+          HDF5_DIR=/usr NetCDF_ROOT=/usr NETCDF_PATH=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
