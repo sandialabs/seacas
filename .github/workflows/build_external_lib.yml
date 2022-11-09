@@ -30,7 +30,7 @@ jobs:
         shell: bash -l {0}
         run: |
           echo $HOME
-	  find /usr/include -name cgnslib.h
+          find /usr/include -name cgnslib.h
           mkdir build
           cd build
           NETCDF_PATH=/usr CGNS_ROOT=/usr HDF5_DIR=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash ../cmake-config
