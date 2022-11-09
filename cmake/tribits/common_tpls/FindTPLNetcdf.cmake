@@ -43,11 +43,11 @@ endif()
 
 set(Netcdf_ALLOW_MODERN FALSE CACHE BOOL "Allow finding Netcdf as a modern CMake config file with exported targets (and only this way)")
 
-if (Netcdf_ALLOW_MODERN AND HDF5_FOUND_MODERN_CONFIG_FILE)
-#if (Netcdf_ALLOW_MODERN)
+if ((Netcdf_ALLOW_MODERN AND HDF5_FOUND_MODERN_CONFIG_FILE) OR Netcdf_FORCE_MODERN)
 
   set(minimum_modern_netCDF_version 4.7.3)
   print_var(Netcdf_ALLOW_MODERN)
+  print_var(Netcdf_FORCE_MODERN)
   message("-- Using find_package(netCDF ${minimum_modern_netCDF_version} CONFIG) ...")
   find_package(netCDF ${minimum_modern_netCDF_version} CONFIG)
   if (netCDF_FOUND)
