@@ -32,7 +32,8 @@ jobs:
           echo $HOME
           mkdir build
           cd build
-          HDF5_DIR=/usr HDF5_PATH=/usr NetCDF_ROOT=/usr NETCDF_PATH=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash ../cmake-config
+          HDF5_DIR=/usr HDF5_PATH=/usr NetCDF_ROOT=/usr NETCDF_PATH=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash ../cmake-config "-D CMAKE_VERBOSE_MAKEFILE:BOOL=ON -D Seacas_VERBOSE_CONFIGURE=ON"
+
 
       - name: Build 
         shell: bash -l {0}
