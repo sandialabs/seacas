@@ -917,8 +917,8 @@ class ExomergeUnitTester:
     def _test_merge_nodes(self):
         if not self.model.nodes:
             return False
-        self.model._duplicate_nodes(_random_subset(range(len(self.model.nodes)), 1), [])
         x = len(self.model.nodes)
+        self.model._duplicate_nodes(_random_subset(list(range(len(self.model.nodes))), 1), [])
         self.model.merge_nodes(suppress_warnings=True)
         assert len(self.model.nodes) < x
 
