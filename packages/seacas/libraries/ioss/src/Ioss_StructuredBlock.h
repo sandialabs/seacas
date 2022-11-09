@@ -362,7 +362,7 @@ namespace Ioss {
   };
 } // namespace Ioss
 
-#if FMT_VERSION > 90000
+#if FMT_VERSION >= 90000
 namespace fmt {
   template <> struct formatter<Ioss::BoundaryCondition> : ostream_formatter
   {
