@@ -33,7 +33,7 @@ jobs:
           find /usr/include -name cgnslib.h
           mkdir build
           cd build
-          NETCDF_PATH=/usr CGNS_PATH=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash -xv ../cmake-config
+          NETCDF_PATH=/usr MODERN=YES NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME} bash ../cmake-config
 
       - name: Build 
         shell: bash -l {0}
