@@ -30,9 +30,9 @@ jobs:
         shell: bash -l {0}
         run: |
           echo $HOME
-	  ls /usr/lib      
-	  ls /usr/lib/cmake
-	  find /usr/ -name \*.cmake -print
+          ls /usr/lib      
+          ls /usr/lib/cmake
+          find /usr/ -name \*.cmake -print
 
       - name: Run cmake
         shell: bash -l {0}
