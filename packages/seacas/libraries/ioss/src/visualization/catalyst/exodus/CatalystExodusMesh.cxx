@@ -527,18 +527,10 @@ namespace Iovs_exodus {
         ->Set(vtkCompositeDataSet::NAME(), elem_block_name);
     points->Delete();
 
-    //std::vector<std::string> element_block_name;
-    //element_block_name.push_back("ElementBlockIds");
     vtkVariant vb((int)this->ebidmap[elem_block_id]);
     int        bid = this->ebidmap[elem_block_id];
-    //this->CreateGlobalVariableInternal(element_block_name, eb, this->ebidmap[elem_block_id], vb,
-    //                                   &bid);
     this->CreateGlobalVariableInternal("ElementBlockIds", 1, eb, this->ebidmap[elem_block_id], vb,
                                        &bid);
-
-    //std::vector<std::string> component_names;
-    //component_names.push_back("ObjectId");
-    //this->CreateElementVariableInternal(component_names, eb, bid, vb, &object_ids[0]);
     this->CreateElementVariableInternal("ObjectId", 1, eb, bid, vb, &object_ids[0]);
   }
 

@@ -16,8 +16,6 @@ TARGET_LINK_LIBRARIES(catalystiossapp
     PUBLIC
         -L${SEACAS_INSTALL_DIR}/lib
         SEACASIoss::all_libs
- #       Ionit
- #       Ioss
         MPI::MPI_C
     PRIVATE
         ${Python3_LIBRARY})
