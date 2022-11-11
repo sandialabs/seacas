@@ -20,6 +20,7 @@
 *  [SPACK](#spack)
 *  [Docker](#docker)
 *  [CMake Example Usage](#cmake-example-usage)
+*  [Requred Software: Mac](#required-software)
 *  [License](#license)
 *  [Contact information](#contact-information)
 *  NOTE: The old imake-based build has been removed.
@@ -218,6 +219,57 @@ CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake -G "Unix Makefiles" ..
 make
 ```
 And you would then get `exo_write` compiled and linked against the Exodus library.
+
+## Required Software
+
+The SEACAS system requires that there be some libraries and
+applications already existing on the chosen system prior to building
+SEACAS and its required Third-Party Liberaries.
+
+These include:
+* The `git` application is used to access the SEACAS and TPL git
+repositories
+* CMake is used to generate the build system.
+* C, C++, and (optionally) Fortran compilers.  The C compiler must
+support the C11 standard and C++ must support C+++14.  GNU, Clang,
+Intel, Cray, compilers are supported and tested regularly.
+* For parallel capability, an MPI library is needed.  We have used
+openmpi, mpich, mvapich, intel, and cray MPI libraries. It is
+recommended to use as current an MPI library as possible.
+* Automake is used to configure some of the TPL builds
+* wget is needed to download some of the TPL library source code.
+* python is required to use the `exodus.py` and `exomerge.py`
+Python interfaces to Exodus databases. Python3 is recommended.
+* To use the `blot` and `fastq` applications, an X11 development
+environment is needed.
+* Flex and Bison are optional if you are developing new capabilities
+in aprepro.
+* M4 is needed to build the netCDF library.
+
+### Mac
+On a mac system, I use the `brew` system which provides all of the
+applications listed above.  The X11 system I use is `XQuartz`.  The
+Mac also requires `XCode`
+
+### Linux
+On an ubuntu system, the following is used to set up the basic
+packages needed to compile SEACAS:
+```
+apt install -y libaec-dev zlib1g-dev automake autoconf \
+libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake \
+libzip-dev openmpi-bin libopenmpi-dev \
+```
+
+### Windows
+On windows, I have used the following packages for MINGW64:
+```
+git mingw-w64-x86_64-toolchain make mingw-w64-x86_64-hdf5 \
+mingw-w64-x86_64-cgns mingw-w64-x86_64-netcdf mingw-w64-x86_64-zlib \
+mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc-libgfortran \
+mingw-w64-x86_64-cmake mingw-w64-x86_64-fmt
+```
+There is also a Visual Studio build performed at each commit to the
+SEACAS git repository.  See the file `.appveyor.yml` for more details.
 
 ## License
 
