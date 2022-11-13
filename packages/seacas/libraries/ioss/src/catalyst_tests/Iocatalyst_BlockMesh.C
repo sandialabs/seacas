@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <catalyst/blockmesh/Iocatalyst_BlockMesh.h>
+#include <catalyst_tests/Iocatalyst_BlockMesh.h>
 #include <Ioss_Utils.h>
 
 namespace Iocatalyst {
@@ -41,7 +41,7 @@ namespace Iocatalyst {
     }
     if(numBlocks.x <= 0 || numBlocks.y <= 0 || numBlocks.z <= 0) {
         std::ostringstream errmsg;
-        errmsg << "Invalid numBlocks: x = " << numBlocks.x << 
+        errmsg << "Invalid numBlocks: x = " << numBlocks.x <<
           std::string(", y = ") << numBlocks.y << std::string(", z = ") <<
             numBlocks.z << "\n";
         IOSS_ERROR(errmsg);
@@ -54,8 +54,8 @@ namespace Iocatalyst {
   void BlockMesh::setBlockLength(const Point& length) {
     if(length.x < 0 || length.y < 0 || length.z < 0) {
         std::ostringstream errmsg;
-        errmsg << "Invalid length: x = " << length.x << 
-          std::string(", y = ") << length.y << std::string(", z = ") << 
+        errmsg << "Invalid length: x = " << length.x <<
+          std::string(", y = ") << length.y << std::string(", z = ") <<
             length.z << "\n";
         IOSS_ERROR(errmsg);
     }
@@ -64,7 +64,7 @@ namespace Iocatalyst {
 
   void BlockMesh::splitBlock() {
     // Split algorithm from vtkExtentTranslator.cxx SplitExtent()
-    
+
     unsigned long size[3];
     int numPiecesInFirstHalf;
     int splitAxis;

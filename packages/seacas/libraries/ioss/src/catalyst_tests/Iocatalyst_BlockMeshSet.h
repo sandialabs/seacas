@@ -9,7 +9,7 @@
 
 #include <Ioss_Region.h>
 #include <catalyst.hpp>
-#include <catalyst/blockmesh/Iocatalyst_BlockMesh.h>
+#include <catalyst_tests/Iocatalyst_BlockMesh.h>
 
 namespace Iocatalyst {
 
@@ -23,14 +23,15 @@ namespace Iocatalyst {
     void  writeCGNSFile(const std::string &fileName);
     void  writeCatalystCGNSFile(const std::string &fileName);
     void  printCatalystConduitNode();
-    //void *getCatalystConduitNode() { return conduit_cpp::c_node(&conduitNode); }
+    void *getCatalystConduitNode() { return conduit_cpp::c_node(&conduitNode); }
 
   private:
-    std::vector<BlockMesh>        bms;
-    std::unique_ptr<Ioss::Region> region;
-    Ioss::DatabaseIO *            databaseIO;
-    int                           numTimeSteps;
+    std::vector<BlockMesh>         bms;
+    std::unique_ptr<Ioss::Region>  region;
+    Ioss::DatabaseIO              *databaseIO;
+    int                            numTimeSteps;
     std::vector<conduit_cpp::Node> conduitNodes;
+    conduit_cpp::Node              conduitNode;
 
     void        writeFile(const std::string &fileName, const std::string &dbType);
     void        openIOSSDatabase(const std::string &fileName, const std::string &dbType);

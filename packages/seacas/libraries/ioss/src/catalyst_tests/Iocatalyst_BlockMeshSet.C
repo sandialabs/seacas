@@ -12,7 +12,7 @@
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
 #include <catalyst/Iocatalyst_DatabaseIO.h>
-#include <catalyst/blockmesh/Iocatalyst_BlockMeshSet.h>
+#include <catalyst_tests/Iocatalyst_BlockMeshSet.h>
 
 namespace Iocatalyst {
 
