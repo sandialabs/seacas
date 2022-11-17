@@ -127,6 +127,7 @@ namespace Iopg {
     NOOP_GFI(Ioss::ElementSet)
     NOOP_GFI(Ioss::SideSet)
     NOOP_GFI(Ioss::Blob)
+    NOOP_GFI(Ioss::Assembly)
 
     // Input only database -- these will never be called...
     NOOP_PFI(Ioss::Region)
