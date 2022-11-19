@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.14 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.20.15 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -115,17 +115,14 @@ def getExodusVersion():
     """
     version_major = -1
     version_minor = -1
-    with open(ACCESS + "/@SEACAS_INCLUDEDIR@/exodusII.h") as header_file:
+    with open(f"{ACCESS}/@SEACAS_INCLUDEDIR@/exodusII.h") as header_file:
         for line in header_file:
             fields = line.split()
-            if (len(fields) == 3 and
-                    fields[0] == '#define' and
-                    fields[1] == 'EXODUS_VERSION_MAJOR'):
-                version_major = int(fields[2])
-            if (len(fields) == 3 and
-                    fields[0] == '#define' and
-                    fields[1] == 'EXODUS_VERSION_MINOR'):
-                version_minor = int(fields[2])
+            if len(fields) == 3 and fields[0] == '#define':
+                if fields[1] == 'EXODUS_VERSION_MAJOR':
+                    version_major = int(fields[2])
+                if fields[1] == 'EXODUS_VERSION_MINOR':
+                    version_minor = int(fields[2])
             if (version_major > 0 and version_minor >= 0):
                 return 100 * version_major + version_minor
     return 0
@@ -162,9 +159,9 @@ class ex_options(Enum):
 
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
 if os.uname()[0] == 'Darwin':
-    EXODUS_SO = ACCESS + "/@SEACAS_LIBDIR@/libexodus.dylib"
+    EXODUS_SO = f"{ACCESS}/@SEACAS_LIBDIR@/libexodus.dylib"
 else:
-    EXODUS_SO = ACCESS + "/@SEACAS_LIBDIR@/libexodus.so"
+    EXODUS_SO = f"{ACCESS}/@SEACAS_LIBDIR@/libexodus.so"
 EXODUS_LIB = ctypes.cdll.LoadLibrary(EXODUS_SO)
 
 MAX_STR_LENGTH = 32      # match exodus default
@@ -172,10 +169,7 @@ MAX_NAME_LENGTH = 256     # match exodus default
 MAX_LINE_LENGTH = 80      # match exodus default
 
 EX_API_VERSION_NODOT = getExodusVersion()
-if EX_API_VERSION_NODOT >= 608:
-    EX_READ = 0x0002  # ex_open(): open file for reading (default)
-else:
-    EX_READ = 0x0000  # ex_open(): open file for reading (default)
+EX_READ = 0x0002 if EX_API_VERSION_NODOT >= 608 else 0x0000
 EX_WRITE = 0x0001  # ex_open(): open existing file for appending.
 EX_NOCLOBBER = 0x0004  # does not overwrite existing exodus file
 EX_CLOBBER = 0x0008  # overwrites existing exodus file
@@ -439,10 +433,7 @@ def get_entity_type(varType):
     try:
         return ex_entity_type[varType].value
     except KeyError:
-        if (isinstance(varType, int)):
-            return varType
-        else:
-            return varType.value
+        return varType if (isinstance(varType, int)) else varType.value
 
 # init params struct
 class ex_init_params(ctypes.Structure):
@@ -702,7 +693,7 @@ class exodus:
         self.fileId = None
         self.__open(io_size=io_size)
         EXODUS_LIB.ex_set_max_name_length(self.fileId, MAX_NAME_LENGTH)
-        if mode.lower() == 'w' or mode.lower() == 'w+':
+        if mode.lower() in ['w', 'w+']:
             if init_params is not None:
                 self.init_params = init_params
                 if title is not None:
@@ -763,15 +754,10 @@ class exodus:
         ```
         """
 
-        total_sides = 0
         sidesets = self.get_ids('EX_SIDE_SET')
-        for sideset in sidesets:
-            total_sides += self.num_faces_in_side_set(sideset)
-
-        total_ns_nodes = 0
+        total_sides = sum(self.num_faces_in_side_set(sideset) for sideset in sidesets)
         nodesets = self.get_ids('EX_NODE_SET')
-        for nodeset in nodesets:
-            total_ns_nodes += self.num_nodes_in_node_set(nodeset)
+        total_ns_nodes = sum(self.num_nodes_in_node_set(nodeset) for nodeset in nodesets)
 
         num_glo_vars = self.get_variable_number('EX_GLOBAL')
         num_nod_vars = self.get_variable_number('EX_NODAL')
@@ -831,8 +817,8 @@ class exodus:
         >>> e.put_info_ext(info_struct)
         """
         if len(p.title) > MAX_LINE_LENGTH:
-            print("WARNING: Exodus title \"{}\" exceeds maximum line length ({}). It will be truncated."
-                  .format(p.title, MAX_LINE_LENGTH))
+            print(f'WARNING: Exodus title \"{p.title}\" exceeds maximum line length ({MAX_LINE_LENGTH}). It will be truncated.')
+
             p.title = p.title[-1 * MAX_LINE_LENGTH:]
 
         self.Title = ctypes.create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
@@ -1086,8 +1072,7 @@ class exodus:
         info_recs : <list<string>>
 
         """
-        info_recs = self.__ex_get_info_recs()
-        return info_recs
+        return self.__ex_get_info_recs()
 
     # --------------------------------------------------------------------
 
@@ -1143,7 +1128,7 @@ class exodus:
             vals = rec.split()
             if not begin:  # have not reached Sierra block
                 if len(vals) >= 2 and vals[0].lower() == "begin" and vals[1].lower() == "sierra":
-                    begin = True
+                begin = True
             if begin:  # inside Sierra block
                 sierra_inp.append(rec)
                 if len(rec) > MAX_LINE_LENGTH:
@@ -1155,10 +1140,9 @@ class exodus:
                     break  # end of Sierra block
 
         if inpFileName:
-            fd = open(inpFileName.encode('ascii'), "w")
-            for fileLine in sierra_inp:
-                fd.write(fileLine + "\n")
-            fd.close()
+            with open(inpFileName.encode('ascii'), "w") as fd:
+                for fileLine in sierra_inp:
+                    fd.write(fileLine + "\n")
             return []
 
         return sierra_inp
@@ -1258,8 +1242,7 @@ class exodus:
         -------
             <list<string>>  coord_names
         """
-        names = self.__ex_get_coord_names()
-        return names
+        return self.__ex_get_coord_names()
 
     # --------------------------------------------------------------------
 
@@ -1403,8 +1386,7 @@ class exodus:
         -------
             <list<ctypes.c_int>>  node_id_map
         """
-        nodeNumMap = self.__ex_get_node_num_map()
-        return nodeNumMap
+        return self.__ex_get_node_num_map()
 
     # --------------------------------------------------------------------
 
@@ -1512,7 +1494,7 @@ class exodus:
         """
         NDvarNames = self.get_variable_names('EX_NODAL')
         if name in NDvarNames:
-            print("WARNING: node variable \"{}\" already exists.".format(name))
+            print(f'WARNING: node variable \"{name}\" already exists.')
         if index > len(NDvarNames):
             raise Exception("ERROR: variable index out of range.")
         self.__ex_put_variable_name('EX_NODAL', index, name)
@@ -1725,8 +1707,7 @@ class exodus:
         -------
             <list<ctypes.c_int>>  elem_id_map
         """
-        elemNumMap = self.__ex_get_elem_num_map()
-        return elemNumMap
+        return self.__ex_get_elem_num_map()
 
     # --------------------------------------------------------------------
 
@@ -1853,8 +1834,7 @@ class exodus:
         -------
         name : string
         """
-        name = self.__ex_get_name(object_type, object_id)
-        return name
+        return self.__ex_get_name(object_type, object_id)
 
     # --------------------------------------------------------------------
 
@@ -1898,8 +1878,7 @@ class exodus:
         -------
             <list<string>>  names
         """
-        names = self.__ex_get_names(object_type)
-        return names
+        return self.__ex_get_names(object_type)
 
     # --------------------------------------------------------------------
 
@@ -2032,10 +2011,9 @@ class exodus:
             True for variable defined in an entity, False otherwise
         """
         if entId is None:
-            truthTable = self.__ex_get_truth_table(objType)
+            return = self.__ex_get_truth_table(objType)
         else:
-            truthTable = self.__ex_get_object_truth_vector(objType, entId)
-        return truthTable
+            return self.__ex_get_object_truth_vector(objType, entId)
 
     # --------------------------------------------------------------------
 
@@ -2210,7 +2188,7 @@ class exodus:
         """
         varNames = self.get_variable_names(objType)
         if name in varNames:
-            print("WARNING: variable \"{}\" already exists.".format(name))
+            print(f'WARNING: variable \"{name}\" already exists.')
         if index > len(varNames):
             raise Exception("ERROR: variable index out of range.")
         self.__ex_put_variable_name(objType, index, name)
@@ -2251,7 +2229,7 @@ class exodus:
         """
         varNames = self.get_reduction_variable_names(objType)
         if name in varNames:
-            print("WARNING: variable \"{}\" already exists.".format(name))
+            print(f'WARNING: variable \"{name}\" already exists.')
         if index > len(varNames):
             raise Exception("ERROR: variable index out of range.")
         self.__ex_put_reduction_variable_name(objType, index, name)
@@ -2570,8 +2548,7 @@ class exodus:
         -------
         elem_blk_names : <list<string>>
         """
-        elemBlkNames = self.__ex_get_names('EX_ELEM_BLOCK')
-        return elemBlkNames
+        return self.__ex_get_names('EX_ELEM_BLOCK')
 
     # --------------------------------------------------------------------
 
@@ -2973,8 +2950,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  evar_vals
         """
-        values = self.get_variable_values('EX_ELEM_BLOCK', blockId, name, step)
-        return values
+        return self.get_variable_values('EX_ELEM_BLOCK', blockId, name, step)
 
     # --------------------------------------------------------------------
 
@@ -3123,7 +3099,7 @@ class exodus:
         """
         EBvarNames = self.get_variable_names('EX_ELEM_BLOCK')
         if name in EBvarNames:
-            print("WARNING: element variable \"{}\" already exists.".format(name))
+            print(f'WARNING: element variable \"{name}\" already exists.')
         if index > len(EBvarNames):
             print(("index", index, "len", len(EBvarNames)))
             raise Exception("ERROR: variable index out of range.")
@@ -3326,8 +3302,7 @@ class exodus:
         -------
             <list<string>>  node_set_names
         """
-        nodeSetNames = self.__ex_get_names('EX_NODE_SET')
-        return nodeSetNames
+        return self.__ex_get_names('EX_NODE_SET')
 
     # --------------------------------------------------------------------
 
@@ -3556,7 +3531,7 @@ class exodus:
         """
         NSvarNames = self.get_variable_names('EX_NODE_SET')
         if name in NSvarNames:
-            print("WARNING: Node set variable \"{}\" already exists.".format(name))
+            print(f'WARNING: Node set variable \"{name}\" already exists.')
         if index > len(NSvarNames):
             raise Exception("ERROR: variable index out of range.")
         self.__ex_put_variable_name('EX_NODE_SET', index, name)
@@ -3589,8 +3564,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  nsvar_vals
         """
-        values = self.get_variable_values('EX_NODE_SET', object_id, name, step)
-        return values
+        return self.get_variable_values('EX_NODE_SET', object_id, name, step)
 
     # --------------------------------------------------------------------
 
@@ -4258,7 +4232,7 @@ class exodus:
         """
         SSvarNames = self.get_variable_names('EX_SIDE_SET')
         if name in SSvarNames:
-            print("WARNING: Side set variable \"{}\" already exists.".format(name))
+            print(f'WARNING: Side set variable \"{name}\" already exists.')
         if index > len(SSvarNames):
             raise Exception("ERROR: variable index out of range.")
         self.__ex_put_variable_name('EX_SIDE_SET', index, name)
@@ -4290,8 +4264,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  ssvar_vals
         """
-        values = self.get_variable_values('EX_SIDE_SET', object_id, name, step)
-        return values
+        return self.get_variable_values('EX_SIDE_SET', object_id, name, step)
 
     # --------------------------------------------------------------------
 
@@ -4499,7 +4472,7 @@ class exodus:
         """
         GlobVarNames = self.get_variable_names('EX_GLOBAL')
         if name in GlobVarNames:
-            print("WARNING: Global variable \"{}\" already exists.".format(name))
+            print(f'WARNING: Global variable \"{name}\" already exists.')
         if index > len(GlobVarNames):
             print(("index", index, "len", len(GlobVarNames)))
             raise Exception("ERROR: variable index out of range.")
@@ -4555,9 +4528,7 @@ class exodus:
         """
         num = self.__ex_get_variable_param('EX_GLOBAL')
         gvalues = self.__ex_get_var(step, 'EX_GLOBAL', 0, 1, num.value)
-        values = []
-        for i in range(num.value):
-            values.append(gvalues[i])
+        values = [gvalues[i] for i in range(num.value)]
         if self.use_numpy:
             values = self.np.array(values)
         return values
@@ -4871,7 +4842,7 @@ class exodus:
         Can only be called once for an exodus object, and once called
         all methods for that object become inoperable
         """
-        print(("Closing exodus file: " + self.fileName))
+        print(f"Closing exodus file: {self.fileName}")
         errorInt = EXODUS_LIB.ex_close(self.fileId)
         if errorInt != 0:
             raise Exception(
@@ -4886,7 +4857,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __open(self, io_size=0):
-        print(("Opening exodus file: " + self.fileName))
+        print(f"Opening exodus file: {self.fileName}")
         self.mode = EX_READ
         if self.modeChar.lower() == "a":
             self.mode = EX_WRITE
@@ -4900,8 +4871,8 @@ class exodus:
                 self.fileName +
                 " for read. Does not exist.")
         elif self.modeChar.lower() == "w" and os.path.isfile(self.fileName):
-            raise Exception("ERROR: Cowardly not opening " + self.fileName +
-                            " for write. File already exists.")
+            raise Exception(f"ERROR: Cowardly not opening {self.fileName} for write. File already exists.")
+
         elif self.modeChar.lower() not in ["a", "r", "w", "w+"]:
             raise Exception(
                 "ERROR: File open mode " +
@@ -4996,7 +4967,6 @@ class exodus:
             num_nodes_per_elem = (ctypes.c_longlong * len(elemBlkIDs))()
             num_nodes_per_elem[:] = numNodesPerElem
             num_attr = (ctypes.c_longlong * len(elemBlkIDs))()
-            num_attr[:] = numAttr
         else:
             elem_blk_ids = (ctypes.c_int * len(elemBlkIDs))()
             elem_blk_ids[:] = elemBlkIDs
@@ -5005,7 +4975,7 @@ class exodus:
             num_nodes_per_elem = (ctypes.c_int * len(elemBlkIDs))()
             num_nodes_per_elem[:] = numNodesPerElem
             num_attr = (ctypes.c_int * len(elemBlkIDs))()
-            num_attr[:] = numAttr
+        num_attr[:] = numAttr
         elem_type = (ctypes.c_char_p * len(elemBlkIDs))()
         elem_type[:] = elemType
         define_maps = ctypes.c_int(defineMaps)
@@ -5031,9 +5001,7 @@ class exodus:
             EXODUS_LIB.ex_get_qa(self.fileId, ctypes.byref(qa_rec_ptrs))
         qa_recs = []
         for qara in qa_rec_ptrs:
-            qa_rec_list = []
-            for ptr in qara:
-                qa_rec_list.append(ptr.contents.value.decode("utf8"))
+            qa_rec_list = [ptr.contents.value.decode("utf8") for ptr in qara]
             qa_rec_tuple = tuple(qa_rec_list)
             assert len(qa_rec_tuple) == 4
             qa_recs.append(qa_rec_tuple)
@@ -5060,10 +5028,7 @@ class exodus:
             info_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(MAX_LINE_LENGTH + 1))
         if num_infos.value:
             EXODUS_LIB.ex_get_info(self.fileId, ctypes.byref(info_ptrs))
-        info_recs = []
-        for irp in info_ptrs:
-            info_recs.append(irp.contents.value.decode("utf8"))
-        return info_recs
+        return [irp.contents.value.decode("utf8") for irp in info_ptrs]
 
     # --------------------------------------------------------------------
 
@@ -5073,9 +5038,7 @@ class exodus:
         for i in range(num_infos.value):
             info_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(MAX_LINE_LENGTH + 1))
         EXODUS_LIB.ex_get_info(self.fileId, ctypes.byref(info_ptrs))
-        info_recs = []
-        for irp in info_ptrs:
-            info_recs.append(irp.contents.value.decode("utf8"))
+        info_recs = [irp.contents.value.decode("utf8") for irp in info_ptrs]
         for rec in info_recs:
             if len(rec) > MAX_LINE_LENGTH:
                 print("WARNING: max line length reached for one or more info records;")
@@ -5139,10 +5102,7 @@ class exodus:
                 ctypes.create_string_buffer(
                     MAX_NAME_LENGTH + 1))
         EXODUS_LIB.ex_get_coord_names(self.fileId, ctypes.byref(coord_name_ptrs))
-        coord_names = []
-        for cnp in coord_name_ptrs:
-            coord_names.append(cnp.contents.value.decode('utf8'))
-        return coord_names
+        return [cnp.contents.value.decode('utf8') for cnp in coord_name_ptrs]
 
     # --------------------------------------------------------------------
 
@@ -5208,10 +5168,7 @@ class exodus:
                     MAX_NAME_LENGTH + 1))
 
         EXODUS_LIB.ex_get_names(self.fileId, obj_type, ctypes.byref(obj_name_ptrs))
-        obj_names = []
-        for onp in obj_name_ptrs:
-            obj_names.append(onp.contents.value.decode('utf8'))
-        return obj_names
+        return [onp.contents.value.decode('utf8') for onp in obj_name_ptrs]
 
     # --------------------------------------------------------------------
 
@@ -5295,9 +5252,7 @@ class exodus:
         # Get attribute count...
         obj_type = ctypes.c_int(get_entity_type(objType))
         obj_id = ctypes.c_longlong(objId)
-        att_count = EXODUS_LIB.ex_get_attribute_count(self.fileId, obj_type, obj_id)
-
-        return att_count
+        return EXODUS_LIB.ex_get_attribute_count(self.fileId, obj_type, obj_id)
 
     # --------------------------------------------------------------------
 
@@ -5307,7 +5262,7 @@ class exodus:
         obj_id = ctypes.c_longlong(objId)
         att_count = EXODUS_LIB.ex_get_attribute_count(self.fileId, obj_type, obj_id)
 
-        attributes = dict()
+        attributes = {}
         if att_count > 0:
             att = (ex_attribute * att_count)()
             EXODUS_LIB.ex_get_attribute_param(self.fileId, obj_type, obj_id, ctypes.byref(att))
@@ -5317,9 +5272,7 @@ class exodus:
 
                 if (att[i].type == 2):
                     vals = ctypes.cast(att[i].values, ctypes.POINTER(ctypes.c_char))
-                    tmp = []
-                    for j in range(att[i].value_count - 1):
-                        tmp.append(vals[j])
+                    tmp = [vals[j] for j in range(att[i].value_count - 1)]
                     tmp_att.values = b''.join(tmp).decode('utf8')
 
                 if (att[i].type == 4):
@@ -5468,11 +5421,7 @@ class exodus:
 
         truth_tab = (ctypes.c_int * (num_objs * num_vars))()
         for i, boolVal in enumerate(truthTab):
-            if boolVal:
-                truth_tab[i] = ctypes.c_int(1)
-            else:
-                truth_tab[i] = ctypes.c_int(0)
-
+            truth_tab[i] = ctypes.c_int(1) if boolVal else ctypes.c_int(0)
         EXODUS_LIB.ex_put_truth_table(
             self.fileId, obj_type, num_objs, num_vars, truth_tab)
         return True
@@ -5535,9 +5484,7 @@ class exodus:
         else:
             id_map = (ctypes.c_int * numObjs)()
         EXODUS_LIB.ex_get_id_map(self.fileId, obj_type, ctypes.byref(id_map))
-        idMap = []
-        for i in range(numObjs):
-            idMap.append(id_map[i])
+        idMap = [id_map[i] for i in range(numObjs)]
         if self.use_numpy:
             idMap = self.np.array(idMap)
         return idMap
@@ -5790,10 +5737,7 @@ class exodus:
             var_type,
             num_vars,
             ctypes.byref(var_name_ptrs))
-        var_names = []
-        for vnp in var_name_ptrs:
-            var_names.append(vnp.contents.value.decode('utf8'))
-        return var_names
+        return [vnp.contents.value.decode('utf8') for vnp in var_name_ptrs]
 
     # --------------------------------------------------------------------
 
@@ -5920,10 +5864,7 @@ class exodus:
             var_type,
             num_vars,
             ctypes.byref(var_name_ptrs))
-        var_names = []
-        for vnp in var_name_ptrs:
-            var_names.append(vnp.contents.value.decode('utf8'))
-        return var_names
+        return [vnp.contents.value.decode('utf8') for vnp in var_name_ptrs]
 
     # --------------------------------------------------------------------
 
@@ -6138,10 +6079,7 @@ class exodus:
             attr_name_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(len_name + 1))
         EXODUS_LIB.ex_get_elem_attr_names(
             self.fileId, object_id, ctypes.byref(attr_name_ptrs))
-        attr_names = []
-        for cnp in attr_name_ptrs:
-            attr_names.append(cnp.contents.value.decode('utf8'))
-        return attr_names
+        return [cnp.contents.value.decode('utf8') for cnp in attr_name_ptrs]
 
     # --------------------------------------------------------------------
 
@@ -6172,10 +6110,7 @@ class exodus:
                     MAX_STR_LENGTH + 1))
         EXODUS_LIB.ex_get_prop_names(
             self.fileId, var_type, ctypes.byref(prop_name_ptrs))
-        prop_names = []
-        for cnp in prop_name_ptrs:
-            prop_names.append(cnp.contents.value.decode('utf8'))
-        return prop_names
+        return [cnp.contents.value.decode('utf8') for cnp in prop_name_ptrs]
 
     # --------------------------------------------------------------------
 
@@ -6338,15 +6273,13 @@ def collectLocalElemToLocalElems(
         nodeList = list(connectivity[localElemId])
         newConnectedElems = []
         for n in nodeList:
-            for elem in localNodeToLocalElems[n]:
-                newConnectedElems.append(elem)
+            newConnectedElems.extend(iter(localNodeToLocalElems[n]))
         localElemToLocalElems[localElemId] = list(set(newConnectedElems))
 
 # --------------------------------------------------------------------
 
 
-def copy_mesh(fromFileName, toFileName, exoFromObj=None,
-              additionalElementAttributes=[], array_type='ctype'):
+def copy_mesh(fromFileName, toFileName, exoFromObj=None, additionalElementAttributes=None, array_type='ctype'):
     """
     Copies the mesh data from an existing exodus database to a new exodus
     database.
@@ -6384,8 +6317,8 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
     attributes are set to their defaults so that the user can populate them
     later.
     """
-    debugPrint = False
-
+    if additionalElementAttributes is None:
+        additionalElementAttributes = []
     # If the user did not supply a exodus object to copy from, attempt to read an
     # exodus database with the name "fromFileName"
     if exoFromObj is None:
@@ -6412,6 +6345,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
     exo_to = exodus(toFileName, mode="w", array_type=array_type,
                     title=title, init_params=ex_pars)
 
+    debugPrint = False
     if debugPrint:
         print("Transfer QA records")
     qaRecords = exoFrom.get_qa_records()
@@ -6433,12 +6367,12 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
     # The exodus library does not provide a way to add only new element
     # attributes, so we must collect both the new and the old element
     # attributes
-    e_attr_names = dict()
-    e_attr_vals = dict()
+    e_attr_names = {}
+    e_attr_vals = {}
     # Collect the old element attribute names and the number of elements in each
     # block
     blk_ids = exoFrom.get_ids('EX_ELEM_BLOCK')
-    blk_num_elem = dict()
+    blk_num_elem = {}
     for blk_id in blk_ids:
         (elemType, numElem, nodesPerElem, numAttr) = exoFrom.elem_blk_info(blk_id)
         e_attr_names[blk_id] = []
@@ -6460,10 +6394,8 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
             e_attr_name = item
             e_attr_blk_ids = blk_ids
         else:
-            print((
-                "Warning additional element attribute item " +
-                item +
-                " is not right type to add."))
+            print(f"Warning additional element attribute item {item} is not right type to add.")
+
             print("should be a string or tuple, skipping")
         for blk_id in e_attr_blk_ids:
             if blk_id in blk_ids:
@@ -6555,15 +6487,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
     return exo_to
 
 
-def transfer_variables(
-        exoFrom,
-        exo_to,
-        array_type='ctype',
-        additionalGlobalVariables=[],
-        additionalNodalVariables=[],
-        additionalElementVariables=[],
-        additionalNodeSetVariables=[],
-        additionalSideSetVariables=[]):
+def transfer_variables(exoFrom, exo_to, array_type='ctype', additionalGlobalVariables=None, additionalNodalVariables=None, additionalElementVariables=None, additionalNodeSetVariables=None, additionalSideSetVariables=None):
     """
     This function transfers variables from `exoFrom` to `exo_to` and allows
     additional variables to be added with `additionalGlobalVariables`,
@@ -6590,6 +6514,16 @@ def transfer_variables(
         tuples `(name, blkIds)` where `name` is the element variable to add
         and `blkIds` is a list of block ids to add it to.
     """
+    if additionalGlobalVariables is None:
+        additionalGlobalVariables = []
+    if additionalNodalVariables is None:
+        additionalNodalVariables = []
+    if additionalElementVariables is None:
+        additionalElementVariables = []
+    if additionalNodeSetVariables is None:
+        additionalNodeSetVariables = []
+    if additionalSideSetVariables is None:
+        additionalSideSetVariables = []
     # IDEA: It may make sense to make transfer_variables() strictly transfer
     # variables, and use add_variables() to add new variables.  Alternatively,
     # add_variables() could be called within transfer_variables() to add
@@ -6630,9 +6564,7 @@ def transfer_variables(
         print("Add Global Variables")
     nNewGlobalVars = len(additionalGlobalVariables)
     nGlobalVars = exoFrom.get_variable_number('EX_GLOBAL') + nNewGlobalVars
-    defaultNewVarVals = []
-    for _i in range(nNewGlobalVars):
-        defaultNewVarVals.append(0.0)
+    defaultNewVarVals = [0.0 for _ in range(nNewGlobalVars)]
     if nGlobalVars > 0:
         exo_to.set_variable_number('EX_GLOBAL', nGlobalVars)
         gVarNames = exoFrom.get_variable_names('EX_GLOBAL')
@@ -6684,10 +6616,7 @@ def internal_transfer_variables(exoFrom, exo_to, obj_type, additionalVariables, 
     for item in additionalVariables:
         if isinstance(item, tuple):
             newVariableNames.append(item[0])
-            inBlks = []
-            for blkId in item[1]:
-                if blkId in blkIds:
-                    inBlks.append(blkId)
+            inBlks = [blkId for blkId in item[1] if blkId in blkIds]
             newVariableBlocks.append(inBlks)
         elif isinstance(item, str):
             newVariableNames.append(item)
@@ -6740,7 +6669,7 @@ def internal_transfer_variables(exoFrom, exo_to, obj_type, additionalVariables, 
             truthIndex = truthIndex + nNewVars
 
 
-def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[], node_set_vars=[], side_set_vars=[]):
+def add_variables(exo, global_vars=None, nodal_vars=None, element_vars=None, node_set_vars=None, side_set_vars=None):
     """
     This function adds variables to the exodus object.  The values of the
     variables are set to their defaults so that the user can populate them later.
@@ -6777,6 +6706,16 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[], node_set_
     This function does not allow one to add element attributes to an exodus
     database.  See `exodus.copy_mesh` function for that capability.
     """
+    if global_vars is None:
+        global_vars = []
+    if nodal_vars is None:
+        nodal_vars = []
+    if element_vars is None:
+        element_vars = []
+    if node_set_vars is None:
+        node_set_vars = []
+    if side_set_vars is None:
+        side_set_vars = []
     debugPrint = False
 
     if not isinstance(global_vars, list):
@@ -6846,31 +6785,27 @@ def internal_add_variables(exo, obj_type, entvars, debugPrint):
     if debugPrint:
         print("Construct Truth Table for additional variables")
 
-    new_var_names = []
     new_var_blks = []
     blk_ids = exo.get_ids(obj_type)
+    new_var_names = []
     for item in entvars:
         if isinstance(item, tuple):
             new_var_names.append(item[0])
-            in_blks = []
-            for blk_id in item[1]:
-                if blk_id in blk_ids:
-                    in_blks.append(blk_id)
+            in_blks = [blk_id for blk_id in item[1] if blk_id in blk_ids]
             new_var_blks.append(in_blks)
         elif isinstance(item, str):
             new_var_names.append(item)
             new_var_blks.append(blk_ids)
         else:
-            print(("Warning additional variable item " +
-                   item + " is not right type to add."))
+            print(f"Warning additional variable item {item} is not right type to add.")
             print("should be a string or tuple, skipping")
 
     if debugPrint:
         print("Add Variables")
     n_new_vars = len(new_var_names)
-    n_old_vars = exo.get_variable_number(obj_type)
-    n_vars = n_old_vars + n_new_vars
     if n_new_vars > 0:
+        n_old_vars = exo.get_variable_number(obj_type)
+        n_vars = n_old_vars + n_new_vars
         exo.set_variable_number(obj_type, n_vars)
         old_truth_table = []
         if n_old_vars > 0:
@@ -6891,16 +6826,7 @@ def internal_add_variables(exo, obj_type, entvars, debugPrint):
             exo.put_variable_name(obj_type, var_name, n_old_vars + i + 1)
 
 
-def copyTransfer(
-        fromFileName,
-        toFileName,
-        array_type='ctype',
-        additionalGlobalVariables=[],
-        additionalNodalVariables=[],
-        additionalElementVariables=[],
-        additionalNodeSetVariables=[],
-        additionalSideSetVariables=[],
-        additionalElementAttributes=[]):
+def copyTransfer(fromFileName, toFileName, array_type='ctype', additionalGlobalVariables=None, additionalNodalVariables=None, additionalElementVariables=None, additionalNodeSetVariables=None, additionalSideSetVariables=None, additionalElementAttributes=None):
     """
     This function creates an exodus file `toFileName` and copies
     everything from exodus file `fromFileName` returning a file handle
@@ -6956,23 +6882,33 @@ def copyTransfer(
     >>> toFileHandle.close()
     """
 
-    exoFrom = exodus(fromFileName, "r", array_type=array_type)
+    if additionalGlobalVariables is None:
+        additionalGlobalVariables = []
+    if additionalNodalVariables is None:
+        additionalNodalVariables = []
+    if additionalElementVariables is None:
+        additionalElementVariables = []
+    if additionalNodeSetVariables is None:
+        additionalNodeSetVariables = []
+    if additionalSideSetVariables is None:
+        additionalSideSetVariables = []
+    if additionalElementAttributes is None:
+        additionalElementAttributes = []
+    with exodus(fromFileName, "r", array_type=array_type) as exoFrom:
+        exo_to = copy_mesh(fromFileName, toFileName, exoFromObj=exoFrom,
+                        additionalElementAttributes=additionalElementAttributes,
+                        array_type=array_type)
 
-    exo_to = copy_mesh(fromFileName, toFileName, exoFromObj=exoFrom,
-                       additionalElementAttributes=additionalElementAttributes,
-                       array_type=array_type)
+        exo_to = transfer_variables(
+            exoFrom,
+            exo_to,
+            additionalGlobalVariables=additionalGlobalVariables,
+            additionalNodalVariables=additionalNodalVariables,
+            additionalElementVariables=additionalElementVariables,
+            additionalNodeSetVariables=additionalNodeSetVariables,
+            additionalSideSetVariables=additionalSideSetVariables,
+            array_type=array_type)
 
-    exo_to = transfer_variables(
-        exoFrom,
-        exo_to,
-        additionalGlobalVariables=additionalGlobalVariables,
-        additionalNodalVariables=additionalNodalVariables,
-        additionalElementVariables=additionalElementVariables,
-        additionalNodeSetVariables=additionalNodeSetVariables,
-        additionalSideSetVariables=additionalSideSetVariables,
-        array_type=array_type)
-
-    exoFrom.close()
     return exo_to
 
 
