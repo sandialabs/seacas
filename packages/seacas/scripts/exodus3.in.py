@@ -1128,7 +1128,7 @@ class exodus:
             vals = rec.split()
             if not begin:  # have not reached Sierra block
                 if len(vals) >= 2 and vals[0].lower() == "begin" and vals[1].lower() == "sierra":
-                begin = True
+                  begin = True
             if begin:  # inside Sierra block
                 sierra_inp.append(rec)
                 if len(rec) > MAX_LINE_LENGTH:
