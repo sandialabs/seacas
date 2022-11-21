@@ -741,15 +741,15 @@ class exodus:
         Outputs a summary of the exodus file data. Output is similar to:
         ```
         Database: base_ioshell_copy.e
-        Title:	This is the title
+        Title:  This is the title
 
-        Number of spatial dimensions = 3		                              	 Number of global variables     = 10
-        Number of node blocks        = 1	 Number of nodes              = 1,331	 Number of nodal variables      =  2
-        Number of element blocks     = 1	 Number of elements           = 1,000	 Number of element variables    =  5
-        Number of node sets          = 3	 Length of node list          =   363	 Number of nodeset variables    =  4
-        Number of element side sets  = 3	 Length of element sides      =   300	 Number of sideset variables    =  3
-        Number of assemblies         = 4         	                              	 Number of assembly variables   = 10
-        Number of blobs              = 0         	                              	 Number of blob     variables   =  0
+        Number of spatial dimensions = 3                                                 Number of global variables     = 10
+        Number of node blocks        = 1         Number of nodes              = 1,331    Number of nodal variables      =  2
+        Number of element blocks     = 1         Number of elements           = 1,000    Number of element variables    =  5
+        Number of node sets          = 3         Length of node list          =   363    Number of nodeset variables    =  4
+        Number of element side sets  = 3         Length of element sides      =   300    Number of sideset variables    =  3
+        Number of assemblies         = 4                                                 Number of assembly variables   = 10
+        Number of blobs              = 0                                                 Number of blob     variables   =  0
         Number of time steps         = 5
         ```
         """
@@ -1128,7 +1128,7 @@ class exodus:
             vals = rec.split()
             if not begin:  # have not reached Sierra block
                 if len(vals) >= 2 and vals[0].lower() == "begin" and vals[1].lower() == "sierra":
-                  begin = True
+                    begin = True
             if begin:  # inside Sierra block
                 sierra_inp.append(rec)
                 if len(rec) > MAX_LINE_LENGTH:
@@ -6896,8 +6896,8 @@ def copyTransfer(fromFileName, toFileName, array_type='ctype', additionalGlobalV
         additionalElementAttributes = []
     with exodus(fromFileName, "r", array_type=array_type) as exoFrom:
         exo_to = copy_mesh(fromFileName, toFileName, exoFromObj=exoFrom,
-                        additionalElementAttributes=additionalElementAttributes,
-                        array_type=array_type)
+                           additionalElementAttributes=additionalElementAttributes,
+                           array_type=array_type)
 
         exo_to = transfer_variables(
             exoFrom,
