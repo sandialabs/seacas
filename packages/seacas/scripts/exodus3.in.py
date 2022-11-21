@@ -2011,7 +2011,7 @@ class exodus:
             True for variable defined in an entity, False otherwise
         """
         if entId is None:
-            return = self.__ex_get_truth_table(objType)
+            return self.__ex_get_truth_table(objType)
         else:
             return self.__ex_get_object_truth_vector(objType, entId)
 
