@@ -23,12 +23,12 @@ jobs:
           pip install pylint
       - name: Lint exodus.py
         run: |
-          flake8 --ignore E301,E302,E303,E221,E231,E402,E501,W503,W504,W505,W605 packages/seacas/scripts/exodus3.in.py
+          flake8 --ignore E501 packages/seacas/scripts/exodus3.in.py
       - name: Lint exomerge.py
         if: success() || failure()
         run: |
-          flake8 --ignore E301,E302,E303,E221,E231,E402,E501,W503,W504,W505,W605 packages/seacas/scripts/exomerge3.py
+          flake8 --ignore E501,W503,W504 packages/seacas/scripts/exomerge3.py
       - name: Lint exodus tests
         if: success() || failure()
         run: |
-          flake8 --ignore E301,E302,E303,E221,E231,E402,E501,W503,W504,W505,W605 packages/seacas/scripts/tests
+          flake8 --ignore E501,E402,W503,W605 packages/seacas/scripts/tests
