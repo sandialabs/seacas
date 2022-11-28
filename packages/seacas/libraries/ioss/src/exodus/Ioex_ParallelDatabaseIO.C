@@ -2407,7 +2407,6 @@ int64_t ParallelDatabaseIO::get_Xset_field_internal(const Ioss::EntitySet *ns,
 
   // Find corresponding set in file decomp class...
   if (role == Ioss::Field::MESH) {
-    ex_entity_type type = Ioex::map_exodus_type(ns->type());
     int64_t        id   = Ioex::get_id(ns, &ids_);
 
     if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
@@ -3788,8 +3787,8 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
   int64_t               my_element_count = eb->entity_count();
   Ioss::Field::RoleType role             = field.get_role();
 
-  size_t proc_offset = eb->get_optional_property("_processor_offset", 0);
-  size_t file_count  = eb->get_optional_property("locally_owned_count", num_to_get);
+  auto proc_offset = eb->get_optional_property("_processor_offset", 0);
+  auto file_count  = eb->get_optional_property("locally_owned_count", num_to_get);
 
   if (role == Ioss::Field::MESH) {
     // Handle the MESH fields required for an ExodusII file model.
@@ -3886,11 +3885,11 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
           index += comp_count;
         }
       }
-      size_t eb_offset =
+      auto eb_offset =
           eb->get_offset(); // Offset of beginning of the element block elements for this block
-      size_t proc_offset = eb->get_optional_property(
+      auto proc_offset = eb->get_optional_property(
           "_processor_offset", 0); // Offset of this processors elements within that block.
-      size_t file_count = eb->get_optional_property("locally_owned_count", my_element_count);
+      auto file_count = eb->get_optional_property("locally_owned_count", my_element_count);
       int    index =
           -1 * (field.get_index() + comp); // Negative since specifying index, not id to exodus API.
 
