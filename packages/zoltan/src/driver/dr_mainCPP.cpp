@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -78,7 +78,7 @@ double Total_Partition_Time = 0.0;  /* Total over Number_Iterations */
 
 static int read_mesh(int, int, PROB_INFO_PTR, PARIO_INFO_PTR, MESH_INFO_PTR);
 static void initialize_mesh(MESH_INFO_PTR);
-static void print_input_info(ostream &os, int Num_Proc, PROB_INFO_PTR prob, 
+static void print_input_info(ostream &os, int Num_Proc, PROB_INFO_PTR prob,
 PARIO_INFO_PTR pio, float zoltan_version);
 
 /****************************************************************************/
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 
   // We must use the C bindings to MPI because the C++ bindings are
   // are not available or not complete on some of our platforms.
- 
+
   MPI_Init(&argc, &argv);
 
   /* get some machine information */
@@ -148,12 +148,12 @@ int main(int argc, char *argv[])
     break;
   }
 
-  /* Initialize Zoltan 
+  /* Initialize Zoltan
    *  Not part of C++ interface at this time. (C++ wishlist)
    */
 
   float version;
-  
+
   if ((error = Zoltan_Initialize(argc, argv, &version)) != ZOLTAN_OK) {
     sprintf(cmesg, "fatal: Zoltan_Initialize returned error code, %d", error);
     Gen_Error(0, cmesg);
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
   }
 
   /*
-   *  Create a Zoltan structure.  
+   *  Create a Zoltan structure.
    *  No exception handling at this time. (C++ wishlist)
    *  We must dynamically create the object so that we can delete it
    *  before MPI_Finalize().  (If zz is created on the stack, it will
@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
         print_output = 0;
         goto End;
       }
-      /* 
+      /*
        *  Create a Zoltan DD for tracking elements during repartitioning.
        */
 
@@ -319,7 +319,7 @@ int main(int argc, char *argv[])
         }
       /* change the ParMETIS Seed */
       sprintf(str, "%d", iteration%10000);
-#ifdef ZOLTAN_PARMETIS      
+#ifdef ZOLTAN_PARMETIS
       zz->Set_Param("PARMETIS_SEED", str);
 #endif
     }
@@ -336,7 +336,7 @@ int main(int argc, char *argv[])
   }
 
 End:
-  
+
   if (mesh.data_type == ZOLTAN_HYPERGRAPH)
   {
     destroy_elem_dd();
@@ -415,7 +415,7 @@ static int read_mesh(
   else if (pio_info->file_type == MATRIXMARKET_PLUS_FILE) {
     if (!read_mtxplus_file(Proc, Num_Proc, prob, pio_info, mesh)) {
         Gen_Error(0, "fatal: Error returned from read_mtxplus_file\n");
-        
+
     }
   }
   else if (pio_info->file_type == NO_FILE_POINTS) {
@@ -433,7 +433,7 @@ static int read_mesh(
 
 /*****************************************************************************/
 /*****************************************************************************/
-static void print_input_info(ostream &os, int Num_Proc, PROB_INFO_PTR prob, 
+static void print_input_info(ostream &os, int Num_Proc, PROB_INFO_PTR prob,
 PARIO_INFO_PTR pio, float zoltan_version)
 {
 int i;

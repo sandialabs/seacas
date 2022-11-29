@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -54,7 +54,7 @@
 static Zoltan_DD *dd = NULL;
 
 /****************************************************************************/
-int build_elem_dd(MESH_INFO_PTR mesh) 
+int build_elem_dd(MESH_INFO_PTR mesh)
 {
   destroy_elem_dd();
 
@@ -101,14 +101,14 @@ int update_elem_dd(MESH_INFO_PTR mesh)
 
   delete [] gids;
   delete [] parts;
-  
+
   return rc;
 }
 
 /****************************************************************************/
 int update_hvertex_proc(MESH_INFO_PTR mesh)
 {
-  if (dd->Find(mesh->hvertex, NULL, NULL, NULL, 
+  if (dd->Find(mesh->hvertex, NULL, NULL, NULL,
                      mesh->hindex[mesh->nhedges], mesh->hvertex_proc) != 0) {
     Gen_Error(0, "fatal:  NULL returned from Zoltan_DD::Find()\n");
     return 0;

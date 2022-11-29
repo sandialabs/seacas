@@ -349,7 +349,7 @@ then
             fi
         else
             echo "${txtgrn}+++ ZLIB${txtrst}"
-            zlib_version="1.2.12"
+            zlib_version="1.2.13"
 
             cd $ACCESS || exit
             cd TPL || exit
