@@ -1257,6 +1257,98 @@ namespace Ioss {
 
     return {xx.first, yy.first, zz.first, xx.second, yy.second, zz.second};
   }
+
+  std::vector<size_t> DatabaseIO::get_all_block_offset(const std::string& field_name) const
+  {
+    const Ioss::ElementBlockContainer& elem_blocks = get_region()->get_element_blocks();
+    size_t num_blocks = elem_blocks.size();
+
+    std::vector<size_t> offset(num_blocks + 1, 0);
+
+    for(size_t i=0; i<num_blocks; i++) {
+      Ioss::ElementBlock *entity = elem_blocks[i];
+
+      if(entity->field_exists(field_name)) {
+        Ioss::Field field = entity->get_field(field_name);
+        offset[i+1] = entity->entity_count() * field.raw_storage()->component_count();
+      }
+    }
+
+    for(size_t i=1; i<=num_blocks; ++i) {
+      offset[i] += offset[i-1];
+    }
+
+    return offset;
+  }
+
+  std::vector<size_t> DatabaseIO::get_all_block_connectivity_offset() const
+  {
+    return get_all_block_offset("connectivity");
+  }
+
+  std::vector<size_t> DatabaseIO::get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const
+  {
+    assert(field_name == "connectivity" || field_name == "connectivity_raw");
+    return get_all_block_data(data, data_size, field_name);
+  }
+
+  std::vector<size_t> DatabaseIO::get_all_block_data(void *data, size_t data_size,
+                                                     const std::string& field_name) const
+  {
+    size_t num_blocks = get_region()->get_element_blocks().size();
+
+    std::vector<size_t> offset = get_all_block_field_data(field_name, data, data_size);
+    return offset;
+  }
+
+  std::vector<size_t> DatabaseIO::get_all_block_field_data(const std::string &field_name,
+                                                           void *data, size_t data_size) const
+  {
+    const Ioss::ElementBlockContainer& elem_blocks = get_region()->get_element_blocks();
+    size_t num_blocks = elem_blocks.size();
+
+    std::vector<size_t> offset = get_all_block_offset(field_name);
+
+    int64_t num_to_get = offset[num_blocks];
+
+    for(size_t i=0; i<num_blocks; i++) {
+
+      Ioss::ElementBlock *entity = elem_blocks[i];
+
+      if(entity->field_exists(field_name)) {
+        auto num_to_get_for_block = offset[i+1] - offset[i];
+        Ioss::Field field = entity->get_field(field_name);
+        size_t field_byte_size = field.get_basic_size();
+        size_t block_data_size = num_to_get_for_block * field_byte_size;
+        size_t block_data_offset = offset[i] * field_byte_size;
+        size_t block_component_count = field.raw_storage()->component_count();
+
+        size_t expected_data_size = offset[i+1] * field_byte_size;
+        if (data_size < expected_data_size) {
+          std::ostringstream errmsg;
+          fmt::print(errmsg, "ERROR: Connectivity data size {} on region {} is less than expected size {}\n\n", data_size,
+              get_region()->name(), expected_data_size);
+          IOSS_ERROR(errmsg);
+        }
+
+        auto retval  = get_field_internal(entity, field, data + block_data_offset, block_data_size);
+
+        if(num_to_get_for_block != retval*block_component_count) {
+          std::ostringstream errmsg;
+          fmt::print(errmsg, "ERROR: Data length {} for field {} on block {} is not expected length {}\n\n",
+              retval*block_component_count, field_name, entity->name(), num_to_get_for_block);
+          IOSS_ERROR(errmsg);
+        }
+
+        if (retval >= 0) {
+          field.transform(data + block_data_offset);
+        }
+      }
+    }
+
+    return offset;
+  }
+
 } // namespace Ioss
 
 namespace {

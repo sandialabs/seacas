@@ -2721,4 +2721,70 @@ namespace Ioss {
     }
   }
 
+
+  Field::RoleType Region::verify_field_exists_on_any_element_block(const std::string &field_name,
+                                                                   const std::string &inout) const
+  {
+    bool found = false;
+    Field::RoleType role = Field::RoleType::INTERNAL;
+
+    for(auto elementBlock : get_element_blocks()) {
+      if (elementBlock->field_exists(field_name)) {
+        Field field = elementBlock->get_field(field_name);
+
+        if(found == true && field.get_role() != role) {
+          std::string        filename = get_database()->get_filename();
+          std::ostringstream errmsg;
+          fmt::print(errmsg, "\nERROR: On database '{}', Field '{}' does not have a consistent role across element blocks on {}\n\n",
+              filename, field_name, name());
+          IOSS_ERROR(errmsg);
+        }
+
+        found = true;
+        role = field.get_role();
+      }
+    }
+
+    if (!found) {
+      std::string        filename = get_database()->get_filename();
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "\nERROR: On database '{}', Field '{}' does not exist for any {} element blocks on {} {}\n\n",
+          filename, field_name, inout, type_string(), name());
+      IOSS_ERROR(errmsg);
+    }
+
+    return role;
+  }
+
+  size_t Region::get_all_block_field_data_count(const std::string &field_name) const
+  {
+    size_t count = 0;
+
+    for(auto elementBlock : get_element_blocks()) {
+      if (elementBlock->field_exists(field_name)) {
+        Ioss::Field field = elementBlock->get_field(field_name);
+
+        count += elementBlock->entity_count() * field.raw_storage()->component_count();
+      }
+    }
+
+    return count;
+  }
+
+  std::vector<size_t> Region::internal_get_all_block_field_data(const std::string &field_name, void *data,
+                                                                size_t data_size) const
+  {
+    return get_database()->get_all_block_field_data(field_name, data, data_size);
+  }
+
+  std::vector<size_t> Region::get_all_block_connectivity_offset() const
+  {
+    return get_database()->get_all_block_connectivity_offset();
+  }
+
+  std::vector<size_t> Region::get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const
+  {
+    return get_database()->get_all_block_connectivity(field_name, data, data_size);
+  }
+
 } // namespace Ioss

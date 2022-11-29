@@ -9,6 +9,7 @@
 #include "ioss_export.h"
 
 #include <Ioss_CodeTypes.h>
+#include <Ioss_Field.h>
 #include <cstddef> // for size_t
 #include <cstdint> // for int64_t
 #include <string>  // for string
@@ -22,10 +23,6 @@
 #elif defined MAP_USE_ROBIN
 #include <robin_map.h>
 #endif
-
-namespace Ioss {
-  class Field;
-} // namespace Ioss
 
 namespace Ioss {
 
@@ -80,6 +77,7 @@ namespace Ioss {
 
     void reverse_map_data(void *data, const Ioss::Field &field, size_t count) const;
     void map_data(void *data, const Ioss::Field &field, size_t count) const;
+    void map_data(void *data, const Ioss::Field::BasicType type, size_t count) const;
     void map_implicit_data(void *data, const Ioss::Field &field, size_t count, size_t offset) const;
 
     template <typename T>

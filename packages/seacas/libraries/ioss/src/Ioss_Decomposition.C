@@ -161,6 +161,128 @@ namespace Ioss {
     return valid_methods;
   }
 
+  size_t get_all_block_ioss_element_size(const std::vector<BlockDecompositionData> &blocks)
+  {
+    size_t count = 0;
+
+    for(size_t blk_seq = 0; blk_seq < blocks.size(); blk_seq++) {
+      const Ioss::BlockDecompositionData& block = blocks[blk_seq];
+
+      // Determine number of file decomp elements are in this block and the offset into the block.
+      count += (block.importMap.size() + block.localMap.size());
+    }
+
+    return count;
+  }
+
+  size_t get_all_block_ioss_offset_size(const std::vector<BlockDecompositionData> &blocks,
+                                        const std::vector<int>& block_component_count)
+  {
+    size_t count = 0;
+
+    for(size_t blk_seq = 0; blk_seq < blocks.size(); blk_seq++) {
+      const Ioss::BlockDecompositionData& block = blocks[blk_seq];
+
+      // Determine number of file decomp elements are in this block and the offset into the block.
+      count += block_component_count[blk_seq]*(block.importMap.size() + block.localMap.size());
+    }
+
+    return count;
+  }
+
+  std::vector<size_t> get_all_block_ioss_offset(const std::vector<BlockDecompositionData> &blocks,
+                                                const std::vector<int>& block_component_count)
+  {
+    std::vector<size_t> ioss_offset(blocks.size()+1, 0);
+
+    for(size_t blk_seq = 0; blk_seq < blocks.size(); blk_seq++) {
+      const Ioss::BlockDecompositionData& block = blocks[blk_seq];
+
+      // Determine number of file decomp elements are in this block and the offset into the block.
+      ioss_offset [blk_seq+1] = block_component_count[blk_seq]*(block.importMap.size() + block.localMap.size());
+    }
+
+    for(size_t i=1; i<=blocks.size(); ++i) {
+      ioss_offset[i]  += ioss_offset[i-1];
+    }
+
+    return ioss_offset;
+  }
+
+  std::vector<size_t> get_all_block_import_offset(const std::vector<BlockDecompositionData> &blocks,
+                                                  const std::vector<int>& block_component_count)
+  {
+    std::vector<size_t> ioss_offset(blocks.size()+1, 0);
+
+    for(size_t blk_seq = 0; blk_seq < blocks.size(); blk_seq++) {
+      const Ioss::BlockDecompositionData& block = blocks[blk_seq];
+
+      // Determine number of file decomp elements are in this block and the offset into the block.
+      ioss_offset [blk_seq+1] = block_component_count[blk_seq]*block.importMap.size();
+    }
+
+    for(size_t i=1; i<=blocks.size(); ++i) {
+      ioss_offset[i]  += ioss_offset[i-1];
+    }
+
+    return ioss_offset;
+  }
+
+  std::vector<int>
+  get_all_block_connectivity_ioss_component_count(const std::vector<BlockDecompositionData> &blocks)
+  {
+    std::vector<int> component_count(blocks.size());
+
+    for(size_t blk_seq = 0; blk_seq < blocks.size(); blk_seq++) {
+      const Ioss::BlockDecompositionData& block = blocks[blk_seq];
+      component_count[blk_seq] = block.nodesPerEntity;
+    }
+
+    return component_count;
+  }
+
+  size_t get_all_block_connectivity_ioss_offset_size(const std::vector<BlockDecompositionData> &blocks)
+  {
+    size_t count = 0;
+
+    for(size_t blk_seq = 0; blk_seq < blocks.size(); blk_seq++) {
+      const Ioss::BlockDecompositionData& block = blocks[blk_seq];
+
+      // Determine number of file decomp elements are in this block and the offset into the block.
+      int npe = block.nodesPerEntity;
+      count += npe*(block.importMap.size() + block.localMap.size());
+    }
+
+    return count;
+  }
+
+  std::vector<size_t>
+  get_all_block_connectivity_ioss_offset(const std::vector<BlockDecompositionData> &blocks)
+  {
+    return get_all_block_ioss_offset(blocks, get_all_block_connectivity_ioss_component_count(blocks));
+  }
+
+  std::vector<size_t>
+  get_all_block_connectivity_import_offset(const std::vector<BlockDecompositionData> &blocks)
+  {
+    std::vector<size_t> import_offset(blocks.size()+1, 0);
+
+    for(size_t blk_seq = 0; blk_seq < blocks.size(); blk_seq++) {
+      const Ioss::BlockDecompositionData& block = blocks[blk_seq];
+
+      // Determine number of file decomp elements are in this block and the offset into the block.
+      int npe = block.nodesPerEntity;
+
+      import_offset[blk_seq+1] = npe*(block.importMap.size());
+    }
+
+    for(size_t i=1; i<=blocks.size(); ++i) {
+      import_offset[i] += import_offset[i-1];
+    }
+
+    return import_offset;
+  }
+
   template IOSS_EXPORT Decomposition<int>::Decomposition(const Ioss::PropertyManager &props,
                                              Ioss_MPI_Comm                comm);
   template IOSS_EXPORT Decomposition<int64_t>::Decomposition(const Ioss::PropertyManager &props,
