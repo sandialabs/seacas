@@ -229,21 +229,30 @@ SEACAS and its required Third-Party Liberaries.
 These include:
 * The `git` application is used to access the SEACAS and TPL git
 repositories
+
 * CMake is used to generate the build system.
+
 * C, C++, and (optionally) Fortran compilers.  The C compiler must
 support the C11 standard and C++ must support C+++14.  GNU, Clang,
 Intel, Cray, compilers are supported and tested regularly.
+
 * For parallel capability, an MPI library is needed.  We have used
 openmpi, mpich, mvapich, intel, and cray MPI libraries. It is
 recommended to use as current an MPI library as possible.
+
 * Automake is used to configure some of the TPL builds
+
 * wget is needed to download some of the TPL library source code.
+
 * python is required to use the `exodus.py` and `exomerge.py`
 Python interfaces to Exodus databases. Python3 is recommended.
+
 * To use the `blot` and `fastq` applications, an X11 development
 environment is needed.
+
 * Flex and Bison are optional if you are developing new capabilities
 in aprepro.
+
 * M4 is needed to build the netCDF library.
 
 ### Mac
@@ -254,7 +263,7 @@ Mac also requires `XCode`
 ### Linux
 On an ubuntu system, the following is used to set up the basic
 packages needed to compile SEACAS:
-```
+```sh
 apt install -y libaec-dev zlib1g-dev automake autoconf \
 libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake \
 libzip-dev openmpi-bin libopenmpi-dev \
@@ -262,7 +271,7 @@ libzip-dev openmpi-bin libopenmpi-dev \
 
 ### Windows
 On windows, I have used the following packages for MINGW64:
-```
+```sh
 git mingw-w64-x86_64-toolchain make mingw-w64-x86_64-hdf5 \
 mingw-w64-x86_64-cgns mingw-w64-x86_64-netcdf mingw-w64-x86_64-zlib \
 mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc-libgfortran \
