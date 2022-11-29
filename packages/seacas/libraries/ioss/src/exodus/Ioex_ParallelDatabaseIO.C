@@ -4915,11 +4915,6 @@ std::vector<int> ParallelDatabaseIO::get_all_block_connectivity_component_count(
  return decomp->get_all_block_connectivity_component_count();
 }
 
-std::vector<size_t> ParallelDatabaseIO::get_all_block_connectivity_offset() const
-{
- return decomp->get_all_block_connectivity_offset();
-}
-
 std::vector<size_t> ParallelDatabaseIO::get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const
 {
  size_t num_to_get = decomp->get_all_block_connectivity_size();
@@ -5076,7 +5071,7 @@ std::vector<size_t> ParallelDatabaseIO::get_all_block_transient_field_data(const
        size_t field_byte_size = field.get_basic_size();
        size_t block_data_offset = ioss_offset[iblk]*field_byte_size;
 
-       field.transform(data + block_data_offset);
+       field.transform((char*)data + block_data_offset);
      }
    }
  }

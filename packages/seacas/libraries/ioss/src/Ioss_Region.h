@@ -265,7 +265,6 @@ namespace Ioss {
     void add_qa_record(const std::string &code, const std::string &code_qa,
                        const std::string &date = "", const std::string &time = "");
 
-    std::vector<size_t> get_all_block_connectivity_offset() const;
     std::vector<size_t> get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const;
 
     template <typename T>

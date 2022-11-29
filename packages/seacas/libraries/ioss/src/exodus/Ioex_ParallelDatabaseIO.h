@@ -75,7 +75,6 @@ namespace Ioex {
     bool needs_shared_node_information() const override { return true; }
 
     std::vector<size_t> get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const override;
-    std::vector<size_t> get_all_block_connectivity_offset() const override;
     std::vector<size_t> get_all_block_field_data(const std::string &field_name,
                                                  void *data, size_t data_size) const override;
 

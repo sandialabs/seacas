@@ -85,7 +85,6 @@ namespace Ioex {
 
     std::vector<size_t> get_all_block_connectivity(int filePtr, void *data) const;
     size_t get_all_block_connectivity_size() const;
-    std::vector<size_t> get_all_block_connectivity_offset() const;
     std::vector<int> get_all_block_connectivity_component_count() const;
 
     std::vector<size_t> get_all_block_offset(const std::vector<int>& block_component_count) const;

@@ -1281,11 +1281,6 @@ namespace Ioss {
     return offset;
   }
 
-  std::vector<size_t> DatabaseIO::get_all_block_connectivity_offset() const
-  {
-    return get_all_block_offset("connectivity");
-  }
-
   std::vector<size_t> DatabaseIO::get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const
   {
     assert(field_name == "connectivity" || field_name == "connectivity_raw");
@@ -1295,8 +1290,6 @@ namespace Ioss {
   std::vector<size_t> DatabaseIO::get_all_block_data(void *data, size_t data_size,
                                                      const std::string& field_name) const
   {
-    size_t num_blocks = get_region()->get_element_blocks().size();
-
     std::vector<size_t> offset = get_all_block_field_data(field_name, data, data_size);
     return offset;
   }
@@ -1331,7 +1324,7 @@ namespace Ioss {
           IOSS_ERROR(errmsg);
         }
 
-        auto retval  = get_field_internal(entity, field, data + block_data_offset, block_data_size);
+        auto retval  = get_field_internal(entity, field, (char*)data + block_data_offset, block_data_size);
 
         if(num_to_get_for_block != retval*block_component_count) {
           std::ostringstream errmsg;
@@ -1341,7 +1334,7 @@ namespace Ioss {
         }
 
         if (retval >= 0) {
-          field.transform(data + block_data_offset);
+          field.transform((char*)data + block_data_offset);
         }
       }
     }

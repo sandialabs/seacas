@@ -1293,12 +1293,6 @@ namespace Ioex {
     return component_count;
   }
 
-  std::vector<size_t> DecompositionDataBase::get_all_block_connectivity_offset() const
-  {
-    std::vector<size_t> offset = Ioss::get_all_block_connectivity_ioss_offset(el_blocks);
-    return offset;
-  }
-
   std::vector<size_t> DecompositionDataBase::get_all_block_file_offset(const std::vector<int>& block_component_count) const
   {
     std::vector<size_t> offset;

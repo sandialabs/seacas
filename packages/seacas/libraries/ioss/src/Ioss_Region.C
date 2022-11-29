@@ -2777,11 +2777,6 @@ namespace Ioss {
     return get_database()->get_all_block_field_data(field_name, data, data_size);
   }
 
-  std::vector<size_t> Region::get_all_block_connectivity_offset() const
-  {
-    return get_database()->get_all_block_connectivity_offset();
-  }
-
   std::vector<size_t> Region::get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const
   {
     return get_database()->get_all_block_connectivity(field_name, data, data_size);
