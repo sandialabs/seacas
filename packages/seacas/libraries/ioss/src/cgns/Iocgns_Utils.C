@@ -620,7 +620,7 @@ namespace {
   }
 #endif
 
-  void consolidate_zgc(const Ioss::Region &region)
+  void consolidate_zgc(IOSS_MAYBE_UNUSED const Ioss::Region &region)
   {
     // In parallel, the zgc are not necessarily consistent across processors...
     // and the owner/donor ranges are processor specific.
@@ -2232,7 +2232,8 @@ void Iocgns::Utils::add_transient_variables(int cgns_file_ptr, const std::vector
         auto *nb = const_cast<Ioss::NodeBlock *>(cnb);
         if (nb == nullptr) {
           std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: CGNS: Null entity accessing nodeblock for structured block {}.",
+          fmt::print(errmsg,
+                     "ERROR: CGNS: Null entity accessing nodeblock for structured block {}.",
                      block->name());
           IOSS_ERROR(errmsg);
         }

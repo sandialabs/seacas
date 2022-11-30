@@ -526,7 +526,8 @@ namespace Iovs {
     }
   }
 
-  void Utils::broadCastString(std::string &s, const DatabaseInfo &dbinfo)
+  void Utils::broadCastString(IOSS_MAYBE_UNUSED std::string        &s,
+                              IOSS_MAYBE_UNUSED const DatabaseInfo &dbinfo)
   {
     IOSS_PAR_UNUSED(s);
     IOSS_PAR_UNUSED(dbinfo);
@@ -540,7 +541,8 @@ namespace Iovs {
 #endif
   }
 
-  void Utils::broadCastStatusCode(bool &statusCode, const DatabaseInfo &dbinfo)
+  void Utils::broadCastStatusCode(IOSS_MAYBE_UNUSED bool               &statusCode,
+                                  IOSS_MAYBE_UNUSED const DatabaseInfo &dbinfo)
   {
     IOSS_PAR_UNUSED(statusCode);
     IOSS_PAR_UNUSED(dbinfo);
