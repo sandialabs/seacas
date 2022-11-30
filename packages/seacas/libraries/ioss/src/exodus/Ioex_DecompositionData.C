@@ -554,10 +554,14 @@ namespace Ioex {
       } while (entitys_to_read > 0);
     }
 
-    // Each processor knows how many of the entityset entities it owns;
-    // broadcast that information (the count) to the other
-    // processors. The first processor with non-zero entity count is
-    // the "root" for this entityset.
+    // Each processor knows how many of the entityset entities it
+    // owns; 
+    // 
+    // The first processor with non-zero entity count is the
+    // "root" for this entityset.  
+    // 
+    // A split communicator is created
+    // containing only the ranks that have non-zero entity count
     {
       std::vector<int> has_entitys_local(set_count);
       for (size_t i = 0; i < set_count; i++) {
@@ -571,13 +575,11 @@ namespace Ioex {
       for (size_t i = 0; i < set_count; i++) {
         entity_sets[i].hasEntities.resize(m_processorCount);
         entity_sets[i].root_ = m_processorCount;
-        int count            = 0;
         for (int p = 0; p < m_processorCount; p++) {
           if (p < entity_sets[i].root_ && has_entitys[p * set_count + i] != 0) {
             entity_sets[i].root_ = p;
           }
           entity_sets[i].hasEntities[p] = has_entitys[p * set_count + i];
-          count += has_entitys[p * set_count + i];
         }
         int color = entity_sets[i].hasEntities[m_processor] ? 1 : MPI_UNDEFINED;
         MPI_Comm_split(comm_, color, m_processor, &entity_sets[i].setComm_);
