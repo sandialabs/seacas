@@ -1730,7 +1730,7 @@ namespace {
     }
     progress("\tProc_node reserved");
 
-    size_t            sum_on_proc_count = 0;
+    IOSS_MAYBE_UNUSED size_t            sum_on_proc_count = 0;
     Ioss::DatabaseIO *db                = region.get_database();
 
     const auto &ebs         = region.get_element_blocks();
