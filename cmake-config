@@ -107,8 +107,8 @@ then
       CXX=g++
       CC=gcc
       FC=gfortran
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "gnubrew" ]
@@ -117,8 +117,8 @@ then
       CXX=g++-${VER}
       CC=gcc-${VER}
       FC=gfortran-${VER}
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "gnumacport" ]
@@ -127,8 +127,8 @@ then
       CXX=g++-mp-${VER}
       CC=gcc-mp-${VER}
       FC=gfortran-mp-${VER}
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "clangmacport" ]
@@ -137,8 +137,8 @@ then
       CXX=clang++-mp-${VER}.0
       CC=clang-mp-${VER}.0
       FC=gfortran
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "nvidia" ]
@@ -153,8 +153,8 @@ then
       CXX=clang++
       CC=clang
       FC=${FC:-gfortran}
-      CFLAGS="-Wall -Wunused -pedantic"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "intel" ]
@@ -163,7 +163,7 @@ then
       CC=icc
       FC=ifort
       CFLAGS="-Wall -Wunused"
-      CXXFLAGS="-Wall -Wunused"
+      CXXFLAGS="-Wall -Wextra  -Wunused"
   fi
 
   # When building:  "scan-build make -j8"
