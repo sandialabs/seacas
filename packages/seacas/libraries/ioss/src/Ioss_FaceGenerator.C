@@ -115,9 +115,9 @@ namespace {
   void resolve_parallel_faces(Ioss::Region &region, Ioss::FaceUnorderedSet &faces,
                               const std::vector<size_t> &hash_ids, INT /*dummy*/)
   {
-    PAR_UNUSED(region);
-    PAR_UNUSED(faces);
-    PAR_UNUSED(hash_ids);
+    IOSS_PAR_UNUSED(region);
+    IOSS_PAR_UNUSED(faces);
+    IOSS_PAR_UNUSED(hash_ids);
 
 #ifdef SEACAS_HAVE_MPI
     size_t proc_count = region.get_database()->util().parallel_size();

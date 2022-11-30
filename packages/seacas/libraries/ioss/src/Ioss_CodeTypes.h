@@ -46,15 +46,15 @@ inline const std::string IOSS_SYM_TENSOR() { return std::string("sym_tensor_33")
 #endif
 
 #if defined(SEACAS_HAVE_MPI)
-#include <mpi.h>
-#define PAR_UNUSED(x)
 using Ioss_MPI_Comm = MPI_Comm;
+#include <mpi.h>
+#define IOSS_PAR_UNUSED(x)
 #else
-#define PAR_UNUSED(x)                                                                              \
+using Ioss_MPI_Comm  = int;
+#define IOSS_PAR_UNUSED(x)                                                                              \
   do {                                                                                             \
     (void)(x);                                                                                     \
   } while (0)
-using Ioss_MPI_Comm  = int;
 #endif
 
 #ifdef SEACAS_HAVE_KOKKOS
@@ -95,12 +95,12 @@ using Kokkos_Complex = Kokkos::complex<double>;
 #endif
 
 // For use to create a no-op get or put_field_internal function...
-#define NOOP_GFI(type)                                                                             \
+#define IOSS_NOOP_GFI(type)                                                                             \
   int64_t get_field_internal(const type *, const Ioss::Field &, void *, size_t) const override     \
   {                                                                                                \
     return -1;                                                                                     \
   }
-#define NOOP_PFI(type)                                                                             \
+#define IOSS_NOOP_PFI(type)                                                                             \
   int64_t put_field_internal(const type *, const Ioss::Field &, void *, size_t) const override     \
   {                                                                                                \
     return -1;                                                                                     \
