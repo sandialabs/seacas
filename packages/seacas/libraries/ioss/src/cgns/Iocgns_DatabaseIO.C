@@ -762,8 +762,8 @@ namespace Iocgns {
   void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t & /* num_node */)
   {
     SMART_ASSERT(isParallel);
-    PAR_UNUSED(base);
-    PAR_UNUSED(num_zones);
+    IOSS_PAR_UNUSED(base);
+    IOSS_PAR_UNUSED(num_zones);
 #if CG_BUILD_PARALLEL
     // Each processor may have a different set of zones.  This routine
     // will sync the information such that at return, each procesosr

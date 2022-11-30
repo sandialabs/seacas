@@ -87,8 +87,8 @@ namespace Ioss {
 
   int FileInfo::parallel_exists(Ioss_MPI_Comm communicator, std::string &where) const
   {
-    PAR_UNUSED(communicator);
-    PAR_UNUSED(where);
+    IOSS_PAR_UNUSED(communicator);
+    IOSS_PAR_UNUSED(where);
     int sum = exists_ ? 1 : 0;
 
 #ifdef SEACAS_HAVE_MPI
@@ -382,7 +382,7 @@ namespace Ioss {
 
   void FileInfo::create_path(const std::string &filename, Ioss_MPI_Comm communicator)
   {
-    PAR_UNUSED(communicator);
+    IOSS_PAR_UNUSED(communicator);
 #ifdef SEACAS_HAVE_MPI
     int                error_found = 0;
     std::ostringstream errmsg;

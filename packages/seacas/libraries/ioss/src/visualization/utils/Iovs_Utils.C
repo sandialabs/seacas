@@ -528,8 +528,8 @@ namespace Iovs {
 
   void Utils::broadCastString(std::string &s, const DatabaseInfo &dbinfo)
   {
-    PAR_UNUSED(s);
-    PAR_UNUSED(dbinfo);
+    IOSS_PAR_UNUSED(s);
+    IOSS_PAR_UNUSED(dbinfo);
 #ifdef SEACAS_HAVE_MPI
     int size = s.size();
     dbinfo.parallelUtils->broadcast(size);
@@ -542,8 +542,8 @@ namespace Iovs {
 
   void Utils::broadCastStatusCode(bool &statusCode, const DatabaseInfo &dbinfo)
   {
-    PAR_UNUSED(statusCode);
-    PAR_UNUSED(dbinfo);
+    IOSS_PAR_UNUSED(statusCode);
+    IOSS_PAR_UNUSED(dbinfo);
 #ifdef SEACAS_HAVE_MPI
 
     int code = statusCode;

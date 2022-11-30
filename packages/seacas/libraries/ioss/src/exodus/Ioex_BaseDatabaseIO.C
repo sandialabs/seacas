@@ -3083,10 +3083,10 @@ namespace {
   void check_variable_consistency(const ex_var_params &exo_params, int my_processor,
                                   const std::string &filename, const Ioss::ParallelUtils &util)
   {
-    PAR_UNUSED(exo_params);
-    PAR_UNUSED(my_processor);
-    PAR_UNUSED(filename);
-    PAR_UNUSED(util);
+    IOSS_PAR_UNUSED(exo_params);
+    IOSS_PAR_UNUSED(my_processor);
+    IOSS_PAR_UNUSED(filename);
+    IOSS_PAR_UNUSED(util);
 #ifdef SEACAS_HAVE_MPI
     const int        num_types = 10;
     std::vector<int> var_counts(num_types);
