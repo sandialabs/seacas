@@ -63,7 +63,8 @@ namespace Ioss {
       m_isActive = has_faces();
     }
 
-    ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
+    ZoneConnectivity(const ZoneConnectivity &copy_from)            = default;
+    ZoneConnectivity &operator=(const ZoneConnectivity &copy_from) = default;
 
     // Return number of nodes in the connection shared with the donor zone.
     size_t get_shared_node_count() const

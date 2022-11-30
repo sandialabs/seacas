@@ -5,8 +5,8 @@
 #include <string>
 
 #include <Ionit_Initializer.h>
-#include <Ioss_SubSystem.h>
 #include <Ioss_ScopeGuard.h>
+#include <Ioss_SubSystem.h>
 
 #include <fmt/format.h>
 
@@ -65,7 +65,7 @@ namespace {
   }
 } // namespace
 
-int main(int argc, char **argv)
+int main(IOSS_MAYBE_UNUSED int argc, char **argv)
 {
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
