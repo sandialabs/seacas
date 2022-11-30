@@ -161,20 +161,22 @@ void Zoltan_LB_Serialize(struct Zoltan_Struct const *zz, char **buf)
   struct Zoltan_LB_Struct const *lb = &(zz->LB);
 
   /* Copy 12 integers; if add more, update Zoltan_LB_Serialize_Size */
-  int *intptr = (int *) bufptr;
-  *intptr = lb->Num_Global_Parts; intptr++;
-  *intptr = lb->Num_Global_Parts_Param; intptr++;
-  *intptr = lb->Num_Local_Parts_Param; intptr++;
-  *intptr = lb->Prev_Global_Parts_Param; intptr++;
-  *intptr = lb->Prev_Local_Parts_Param; intptr++;
-  *intptr = lb->Single_Proc_Per_Part; intptr++;
-  *intptr = lb->Part_Info_Max_Len; intptr++;
-  *intptr = lb->Part_Info_Len; intptr++;
-  *intptr = lb->Remap_Flag; intptr++;
-  *intptr = lb->Return_Lists; intptr++;
-  *intptr = lb->Uniform_Parts; intptr++;
-  *intptr = lb->Imb_Tol_Len; intptr++;
-  bufptr = (char *) intptr;
+  {
+    int *intptr = (int *) bufptr;
+    *intptr = lb->Num_Global_Parts; intptr++;
+    *intptr = lb->Num_Global_Parts_Param; intptr++;
+    *intptr = lb->Num_Local_Parts_Param; intptr++;
+    *intptr = lb->Prev_Global_Parts_Param; intptr++;
+    *intptr = lb->Prev_Local_Parts_Param; intptr++;
+    *intptr = lb->Single_Proc_Per_Part; intptr++;
+    *intptr = lb->Part_Info_Max_Len; intptr++;
+    *intptr = lb->Part_Info_Len; intptr++;
+    *intptr = lb->Remap_Flag; intptr++;
+    *intptr = lb->Return_Lists; intptr++;
+    *intptr = lb->Uniform_Parts; intptr++;
+    *intptr = lb->Imb_Tol_Len; intptr++;
+    bufptr = (char *) intptr;
+  }
 
   /* Copy LB_Method name */
   strcpy(bufptr, lb->Method_Name);
@@ -228,20 +230,22 @@ void Zoltan_LB_Deserialize(struct Zoltan_Struct *zz, char **buf)
   int orig_Imb_Tol_Len = lb->Imb_Tol_Len;
 
   /* Copy 12 integers into zz->LB */
-  int *intptr = (int *) bufptr;
-  lb->Num_Global_Parts = *intptr; intptr++;
-  lb->Num_Global_Parts_Param = *intptr; intptr++;
-  lb->Num_Local_Parts_Param = *intptr; intptr++;
-  lb->Prev_Global_Parts_Param = *intptr; intptr++;
-  lb->Prev_Local_Parts_Param = *intptr; intptr++;
-  lb->Single_Proc_Per_Part = *intptr; intptr++;
-  lb->Part_Info_Max_Len = *intptr; intptr++;
-  lb->Part_Info_Len = *intptr; intptr++;
-  lb->Remap_Flag = *intptr; intptr++;
-  lb->Return_Lists = *intptr; intptr++;
-  lb->Uniform_Parts = *intptr; intptr++;
-  lb->Imb_Tol_Len = *intptr; intptr++;
-  bufptr = (char *) intptr;
+  {
+    int *intptr = (int *) bufptr;
+    lb->Num_Global_Parts = *intptr; intptr++;
+    lb->Num_Global_Parts_Param = *intptr; intptr++;
+    lb->Num_Local_Parts_Param = *intptr; intptr++;
+    lb->Prev_Global_Parts_Param = *intptr; intptr++;
+    lb->Prev_Local_Parts_Param = *intptr; intptr++;
+    lb->Single_Proc_Per_Part = *intptr; intptr++;
+    lb->Part_Info_Max_Len = *intptr; intptr++;
+    lb->Part_Info_Len = *intptr; intptr++;
+    lb->Remap_Flag = *intptr; intptr++;
+    lb->Return_Lists = *intptr; intptr++;
+    lb->Uniform_Parts = *intptr; intptr++;
+    lb->Imb_Tol_Len = *intptr; intptr++;
+    bufptr = (char *) intptr;
+  }
 
   /* Reset the functions (Point_Assign, etc.) associated with the LB_Method */
   strcpy(lb->Method_Name, bufptr);
@@ -273,7 +277,7 @@ void Zoltan_LB_Deserialize(struct Zoltan_Struct *zz, char **buf)
 
   /* Copy Remap array; needed by Point_Assign  */
   int nbytes = lb->Num_Global_Parts * sizeof(int);
-  intptr = (int *) bufptr;
+  int *intptr = (int *) bufptr;
   bufptr += sizeof(int);
   if (*intptr) {  // Remap data was sent
     lb->Remap = (int *) ZOLTAN_MALLOC(nbytes);
