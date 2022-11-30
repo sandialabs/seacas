@@ -51,9 +51,9 @@ fi
 
 if [ "${H5VERSION}" == "V18" ]
 then
-    ./configure --prefix=${INSTALL_PATH} ${ZLIB_YES_NO} ${SZIP_YES_NO} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_YES_NO} --enable-static-exec $1
+    ./configure --prefix=${INSTALL_PATH}  ${BUILD_MODE} ${USE_SHARED} --enable-static-exec $1
 else
-    ./configure --prefix=${INSTALL_PATH} ${ZLIB_YES_NO} ${SZIP_YES_NO} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_YES_NO} --with-default-api-version=v18 --enable-static-exec $1
+    ./configure --prefix=${INSTALL_PATH} ${ZLIB_YES_NO} ${SZIP_YES_NO} ${BUILD_MODE} ${USE_SHARED} --with-default-api-version=v18 --enable-static-exec $1
 fi
 
 echo ""
