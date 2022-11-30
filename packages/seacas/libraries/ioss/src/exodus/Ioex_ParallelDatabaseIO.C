@@ -11,6 +11,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <Ioss_CodeTypes.h>
 #include <exodus/Ioex_ParallelDatabaseIO.h>
 #if defined PARALLEL_AWARE_EXODUS
 #include <algorithm>
@@ -35,8 +36,6 @@
 #endif
 #include <utility>
 #include <vector>
-
-#include <Ioss_CodeTypes.h>
 
 #include <exodus/Ioex_DecompositionData.h>
 #include <exodus/Ioex_Internals.h>
@@ -2407,7 +2406,7 @@ int64_t ParallelDatabaseIO::get_Xset_field_internal(const Ioss::EntitySet *ns,
 
   // Find corresponding set in file decomp class...
   if (role == Ioss::Field::MESH) {
-    int64_t        id   = Ioex::get_id(ns, &ids_);
+    int64_t id = Ioex::get_id(ns, &ids_);
 
     if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
       if (field.get_type() == Ioss::Field::INTEGER) {
@@ -3890,7 +3889,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
       auto proc_offset = eb->get_optional_property(
           "_processor_offset", 0); // Offset of this processors elements within that block.
       auto file_count = eb->get_optional_property("locally_owned_count", my_element_count);
-      int    index =
+      int  index =
           -1 * (field.get_index() + comp); // Negative since specifying index, not id to exodus API.
 
       ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, index,
@@ -5095,5 +5094,5 @@ std::vector<size_t> ParallelDatabaseIO::get_all_block_field_data(const std::stri
 
 } // namespace Ioex
 #else
-const char ioss_exodus_parallel_database_unused_symbol_dummy = '\0';
+IOSS_MAYBE_UNUSED const char ioss_exodus_parallel_database_unused_symbol_dummy = '\0';
 #endif

@@ -29,7 +29,7 @@
 
 // Options for generating hash function key...
 #define USE_MURMUR
-//#define USE_RANDOM
+// #define USE_RANDOM
 
 #define DO_TIMING 0
 
@@ -112,8 +112,9 @@ namespace {
   }
 
   template <typename INT>
-  void resolve_parallel_faces(Ioss::Region &region, Ioss::FaceUnorderedSet &faces,
-                              const std::vector<size_t> &hash_ids, INT /*dummy*/)
+  void resolve_parallel_faces(IOSS_MAYBE_UNUSED Ioss::Region &region,
+                              IOSS_MAYBE_UNUSED Ioss::FaceUnorderedSet &faces,
+                              IOSS_MAYBE_UNUSED const std::vector<size_t> &hash_ids, INT /*dummy*/)
   {
     IOSS_PAR_UNUSED(region);
     IOSS_PAR_UNUSED(faces);
