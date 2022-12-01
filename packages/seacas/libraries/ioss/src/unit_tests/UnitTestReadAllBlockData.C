@@ -160,7 +160,7 @@ void define_transient(const Ioss::Region& i_region, Ioss::Region& o_region, cons
   o_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
 }
 
-void write_transient(const Ioss::Region& i_region, Ioss::Region& o_region, const std::string& elemFieldName)
+void write_transient(Ioss::Region& o_region, const std::string& elemFieldName)
 {
   o_region.begin_mode(Ioss::STATE_TRANSIENT);
   int step = o_region.add_state(0.0);
@@ -189,19 +189,19 @@ void generate_randomized_many_block_mesh_from_textmesh(int numBlocks, const std:
 {
   Ioss::Init::Initializer io;
 
-  Ioss::ParallelUtils util(MPI_COMM_WORLD);
+  Ioss::ParallelUtils util(Ioss::ParallelUtils::comm_world());
 
   if(util.parallel_rank() == 0) {
     std::string meshDesc = get_randomized_many_block_mesh_desc(numBlocks);
 
     Ioss::PropertyManager propertyManager;
 
-    Ioss::DatabaseIO* i_database = Ioss::IOFactory::create("textmesh", meshDesc, Ioss::READ_MODEL, MPI_COMM_SELF, propertyManager);
+    Ioss::DatabaseIO* i_database = Ioss::IOFactory::create("textmesh", meshDesc, Ioss::READ_MODEL, Ioss::ParallelUtils::comm_self(), propertyManager);
     Ioss::Region i_region(i_database, "input_model");
     EXPECT_TRUE(i_database != nullptr);
     EXPECT_TRUE(i_database->ok(true));
 
-    Ioss::DatabaseIO *o_database = Ioss::IOFactory::create("exodus", outFile, Ioss::WRITE_RESULTS, MPI_COMM_SELF, propertyManager);
+    Ioss::DatabaseIO *o_database = Ioss::IOFactory::create("exodus", outFile, Ioss::WRITE_RESULTS, Ioss::ParallelUtils::comm_self(), propertyManager);
     Ioss::Region o_region(o_database, "output_model");
     EXPECT_TRUE(o_database != nullptr);
     EXPECT_TRUE(o_database->ok(true));
@@ -210,7 +210,7 @@ void generate_randomized_many_block_mesh_from_textmesh(int numBlocks, const std:
     write_model(i_region, o_region);
 
     define_transient(i_region, o_region, elemFieldName);
-    write_transient(i_region, o_region, elemFieldName);
+    write_transient(o_region, elemFieldName);
 
     o_database->finalize_database();
     o_database->flush_database();
@@ -235,7 +235,7 @@ std::pair<double, double> do_connectivity_timing_impl(const Ioss::Region& region
     int64_t iblk = elemBlocks[i]->get_optional_property("iblk", int64_t(i));
 
     std::vector<INT> connectivity;
-    double startTime = wall_time();
+    startTime = wall_time();
     int64_t numToGet = entity->get_field_data("connectivity", connectivity);
     elapsedConnectivityTime += wall_time() - startTime;
 
@@ -339,7 +339,7 @@ TEST(TestReadAllBlock, readManyBlockMesh)
 
 
   {
-    MPI_Comm comm = MPI_COMM_WORLD;
+    Ioss_MPI_Comm comm = Ioss::ParallelUtils::comm_world();
     Ioss::ParallelUtils util(comm);
     util.barrier();
 
