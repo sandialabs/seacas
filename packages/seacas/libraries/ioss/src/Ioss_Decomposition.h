@@ -137,26 +137,26 @@ namespace Ioss {
     bool distributionFactorConstant{false}; // T if all distribution factors the same value.
   };
 
-  size_t get_all_block_ioss_element_size(const std::vector<BlockDecompositionData> &blocks);
+  IOSS_EXPORT size_t get_all_block_ioss_element_size(const std::vector<BlockDecompositionData> &blocks);
 
-  size_t get_all_block_ioss_offset_size(const std::vector<BlockDecompositionData> &blocks,
+  IOSS_EXPORT size_t get_all_block_ioss_offset_size(const std::vector<BlockDecompositionData> &blocks,
                                           const std::vector<int>& block_component_count);
 
-  std::vector<size_t> get_all_block_ioss_offset(const std::vector<BlockDecompositionData> &blocks,
+  IOSS_EXPORT std::vector<size_t> get_all_block_ioss_offset(const std::vector<BlockDecompositionData> &blocks,
                                                 const std::vector<int>& block_component_count);
 
-  std::vector<size_t> get_all_block_import_offset(const std::vector<BlockDecompositionData> &blocks,
+  IOSS_EXPORT std::vector<size_t> get_all_block_import_offset(const std::vector<BlockDecompositionData> &blocks,
                                                   const std::vector<int>& block_component_count);
 
-  std::vector<int>
+  IOSS_EXPORT std::vector<int>
   get_all_block_connectivity_ioss_component_count(const std::vector<BlockDecompositionData> &blocks);
 
-  size_t get_all_block_connectivity_ioss_offset_size(const std::vector<BlockDecompositionData> &blocks);
+  IOSS_EXPORT size_t get_all_block_connectivity_ioss_offset_size(const std::vector<BlockDecompositionData> &blocks);
 
-  std::vector<size_t>
+  IOSS_EXPORT std::vector<size_t>
   get_all_block_connectivity_ioss_offset(const std::vector<BlockDecompositionData> &blocks);
 
-  std::vector<size_t>
+  IOSS_EXPORT std::vector<size_t>
   get_all_block_connectivity_import_offset(const std::vector<BlockDecompositionData> &blocks);
 
   template <typename INT> class Decomposition
