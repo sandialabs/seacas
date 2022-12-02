@@ -197,7 +197,7 @@ namespace Ioss {
     size_t       field_count() const;
     size_t       field_count(Field::RoleType role) const;
 
-    bool         check_for_duplicate(const Ioss::Field &new_field) const;
+    bool check_for_duplicate(const Ioss::Field &new_field) const;
 
     // Put this fields data into 'data'.
 
@@ -315,7 +315,7 @@ namespace Ioss {
  *
  *  \param[in] new_prop The property to add.
  */
-inline void Ioss::GroupingEntity::property_add(const Ioss::Property &new_prop)
+IOSS_EXPORT inline void Ioss::GroupingEntity::property_add(const Ioss::Property &new_prop)
 {
   properties.add(new_prop);
 }
@@ -327,7 +327,7 @@ inline void Ioss::GroupingEntity::property_add(const Ioss::Property &new_prop)
  *  \param[in] property_name The name of the property to remove.
  *
  */
-inline void Ioss::GroupingEntity::property_erase(const std::string &property_name)
+IOSS_EXPORT inline void Ioss::GroupingEntity::property_erase(const std::string &property_name)
 {
   properties.erase(property_name);
 }
@@ -337,7 +337,8 @@ inline void Ioss::GroupingEntity::property_erase(const std::string &property_nam
  *  \param[in] property_name The property to check
  *  \returns True if the property exists.
  */
-inline bool Ioss::GroupingEntity::property_exists(const std::string &property_name) const
+IOSS_EXPORT inline bool
+Ioss::GroupingEntity::property_exists(const std::string &property_name) const
 {
   return properties.exists(property_name);
 }
@@ -348,18 +349,20 @@ inline bool Ioss::GroupingEntity::property_exists(const std::string &property_na
  *  \returns The property
  *
  */
-inline Ioss::Property Ioss::GroupingEntity::get_property(const std::string &property_name) const
+IOSS_EXPORT inline Ioss::Property
+Ioss::GroupingEntity::get_property(const std::string &property_name) const
 {
   return properties.get(property_name);
 }
 
-inline int64_t Ioss::GroupingEntity::get_optional_property(const std::string &property_name,
-                                                           int64_t            optional_value) const
+IOSS_EXPORT inline int64_t
+Ioss::GroupingEntity::get_optional_property(const std::string &property_name,
+                                            int64_t            optional_value) const
 {
   return properties.get_optional(property_name, optional_value);
 }
 
-inline std::string
+IOSS_EXPORT inline std::string
 Ioss::GroupingEntity::get_optional_property(const std::string &property_name,
                                             const std::string &optional_value) const
 {
@@ -370,7 +373,7 @@ Ioss::GroupingEntity::get_optional_property(const std::string &property_name,
  *
  * \returns The property names in the property manager.
  */
-inline Ioss::NameList Ioss::GroupingEntity::property_describe() const
+IOSS_EXPORT inline Ioss::NameList Ioss::GroupingEntity::property_describe() const
 {
   return properties.describe();
 }
@@ -380,18 +383,19 @@ inline Ioss::NameList Ioss::GroupingEntity::property_describe() const
  * \param[out] names All the property names in the property manager.
  * \returns The number of properties extracted from the property manager.
  */
-inline int Ioss::GroupingEntity::property_describe(NameList *names) const
+IOSS_EXPORT inline int Ioss::GroupingEntity::property_describe(NameList *names) const
 {
   return properties.describe(names);
 }
 
-inline Ioss::NameList Ioss::GroupingEntity::property_describe(Ioss::Property::Origin origin) const
+IOSS_EXPORT inline Ioss::NameList
+Ioss::GroupingEntity::property_describe(Ioss::Property::Origin origin) const
 {
   return properties.describe(origin);
 }
 
-inline int Ioss::GroupingEntity::property_describe(Ioss::Property::Origin origin,
-                                                   NameList              *names) const
+IOSS_EXPORT inline int Ioss::GroupingEntity::property_describe(Ioss::Property::Origin origin,
+                                                               NameList              *names) const
 {
   return properties.describe(origin, names);
 }
@@ -400,7 +404,10 @@ inline int Ioss::GroupingEntity::property_describe(Ioss::Property::Origin origin
  *
  *  \returns The number of properties.
  */
-inline size_t Ioss::GroupingEntity::property_count() const { return properties.count(); }
+IOSS_EXPORT inline size_t Ioss::GroupingEntity::property_count() const
+{
+  return properties.count();
+}
 
 // ------------------------------------------------------------------------
 
@@ -408,7 +415,10 @@ inline size_t Ioss::GroupingEntity::property_count() const { return properties.c
  *
  * \param[in] role Remove all fields (if any) of type `role`
  */
-inline void Ioss::GroupingEntity::field_erase(Ioss::Field::RoleType role) { fields.erase(role); }
+IOSS_EXPORT inline void Ioss::GroupingEntity::field_erase(Ioss::Field::RoleType role)
+{
+  fields.erase(role);
+}
 
 /** \brief Remove a field from the entity's field manager.
  *
@@ -416,7 +426,7 @@ inline void Ioss::GroupingEntity::field_erase(Ioss::Field::RoleType role) { fiel
  *
  * \param[in] field_name The name of the field to remove.
  */
-inline void Ioss::GroupingEntity::field_erase(const std::string &field_name)
+IOSS_EXPORT inline void Ioss::GroupingEntity::field_erase(const std::string &field_name)
 {
   fields.erase(field_name);
 }
@@ -427,7 +437,7 @@ inline void Ioss::GroupingEntity::field_erase(const std::string &field_name)
  * \returns True if the field exists in the entity's field manager.
  *
  */
-inline bool Ioss::GroupingEntity::field_exists(const std::string &field_name) const
+IOSS_EXPORT inline bool Ioss::GroupingEntity::field_exists(const std::string &field_name) const
 {
   return fields.exists(field_name);
 }
@@ -438,7 +448,7 @@ inline bool Ioss::GroupingEntity::field_exists(const std::string &field_name) co
  *  \returns The field object.
  *
  */
-inline Ioss::Field Ioss::GroupingEntity::get_field(const std::string &field_name) const
+IOSS_EXPORT inline Ioss::Field Ioss::GroupingEntity::get_field(const std::string &field_name) const
 {
   return fields.get(field_name);
 }
@@ -449,7 +459,8 @@ inline Ioss::Field Ioss::GroupingEntity::get_field(const std::string &field_name
  *  \returns A reference to the field object.
  *
  */
-inline const Ioss::Field &Ioss::GroupingEntity::get_fieldref(const std::string &field_name) const
+IOSS_EXPORT inline const Ioss::Field &
+Ioss::GroupingEntity::get_fieldref(const std::string &field_name) const
 {
   return fields.getref(field_name);
 }
@@ -459,7 +470,10 @@ inline const Ioss::Field &Ioss::GroupingEntity::get_fieldref(const std::string &
  * \returns All field names in the entity's field manager.
  *
  */
-inline Ioss::NameList Ioss::GroupingEntity::field_describe() const { return fields.describe(); }
+IOSS_EXPORT inline Ioss::NameList Ioss::GroupingEntity::field_describe() const
+{
+  return fields.describe();
+}
 
 /** \brief Get the names of all fields in the entity's field manager.
  *
@@ -467,7 +481,7 @@ inline Ioss::NameList Ioss::GroupingEntity::field_describe() const { return fiel
  * \returns The number of fields extracted from the entity's field manager.
  *
  */
-inline int Ioss::GroupingEntity::field_describe(NameList *names) const
+IOSS_EXPORT inline int Ioss::GroupingEntity::field_describe(NameList *names) const
 {
   return fields.describe(names);
 }
@@ -478,7 +492,8 @@ inline int Ioss::GroupingEntity::field_describe(NameList *names) const
  * \returns All field names of the specified RoleType in the entity's field manager.
  *
  */
-inline Ioss::NameList Ioss::GroupingEntity::field_describe(Ioss::Field::RoleType role) const
+IOSS_EXPORT inline Ioss::NameList
+Ioss::GroupingEntity::field_describe(Ioss::Field::RoleType role) const
 {
   return fields.describe(role);
 }
@@ -490,7 +505,8 @@ inline Ioss::NameList Ioss::GroupingEntity::field_describe(Ioss::Field::RoleType
  * \returns The number of fields extracted from the entity's field manager.
  *
  */
-inline int Ioss::GroupingEntity::field_describe(Ioss::Field::RoleType role, NameList *names) const
+IOSS_EXPORT inline int Ioss::GroupingEntity::field_describe(Ioss::Field::RoleType role,
+                                                            NameList             *names) const
 {
   return fields.describe(role, names);
 }
@@ -499,7 +515,7 @@ inline int Ioss::GroupingEntity::field_describe(Ioss::Field::RoleType role, Name
  *
  *  \returns The number of fields in the entity's field manager.
  */
-inline size_t Ioss::GroupingEntity::field_count() const { return fields.count(); }
+IOSS_EXPORT inline size_t Ioss::GroupingEntity::field_count() const { return fields.count(); }
 
 /** \brief Read type 'T' field data from the database file into memory using a std::vector.
  *
