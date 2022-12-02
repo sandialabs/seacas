@@ -446,9 +446,10 @@ static void io_gl_yank(void)
     if (io_gl_overwrite == 0) {
       if (io_gl_cnt + len >= IO_GL_BUF_SIZE - 1)
         io_gl_error("\n*** Error: getline(): input buffer overflow\n");
-      for (int i = io_gl_cnt; i >= io_gl_pos; i--)
+      int i;
+      for (i = io_gl_cnt; i >= io_gl_pos; i--)
         io_gl_buf[i + len] = io_gl_buf[i];
-      for (int i = 0; i < len; i++)
+      for (i = 0; i < len; i++)
         io_gl_buf[io_gl_pos + i] = io_gl_killbuf[i];
       io_gl_fixup(io_gl_prompt, io_gl_pos, io_gl_pos + len);
     }
@@ -458,7 +459,8 @@ static void io_gl_yank(void)
           io_gl_error("\n*** Error: getline(): input buffer overflow\n");
         io_gl_buf[io_gl_pos + len] = '\0';
       }
-      for (int i = 0; i < len; i++)
+      int i;
+      for (i = 0; i < len; i++)
         io_gl_buf[io_gl_pos + i] = io_gl_killbuf[i];
       io_gl_extent = len;
       io_gl_fixup(io_gl_prompt, io_gl_pos, io_gl_pos + len);
@@ -511,8 +513,8 @@ static void io_gl_del(int loc, int killsave)
  */
 {
   if ((loc == -1 && io_gl_pos > 0) || (loc == 0 && io_gl_pos < io_gl_cnt)) {
-    int j = 0;
-    for (int i = io_gl_pos + loc; i < io_gl_cnt; i++) {
+    int i, j = 0;
+    for (i = io_gl_pos + loc; i < io_gl_cnt; i++) {
       if ((j == 0) && (killsave != 0)) {
         io_gl_killbuf[0] = io_gl_buf[i];
         io_gl_killbuf[1] = '\0';
@@ -641,13 +643,14 @@ static void io_gl_fixup(const char *prompt, int change, int cursor)
   pad -= (off_right) ? io_gl_width - 1 : io_gl_cnt - io_gl_shift;
   pad = (pad < 0) ? 0 : pad;
   if (left <= right) { /* clean up screen */
-    for (int i = 0; i < backup; i++)
+    int i;
+    for (i = 0; i < backup; i++)
       io_gl_putc('\b');
     if (left == io_gl_shift && off_left) {
       io_gl_putc('$');
       left++;
     }
-    for (int i = left; i < new_right; i++)
+    for (i = left; i < new_right; i++)
       io_gl_putc(io_gl_buf[i]);
     io_gl_pos = new_right;
     if (off_right && new_right == right) {
@@ -655,7 +658,7 @@ static void io_gl_fixup(const char *prompt, int change, int cursor)
       io_gl_pos++;
     }
     else {
-      for (int i = 0; i < pad; i++) /* erase remains of prev line */
+      for (i = 0; i < pad; i++) /* erase remains of prev line */
         io_gl_putc(' ');
       io_gl_pos += pad;
     }
@@ -666,7 +669,8 @@ static void io_gl_fixup(const char *prompt, int change, int cursor)
       io_gl_putc('\b');
   }
   else {
-    for (int ii = io_gl_pos; ii < cursor; ii++)
+    int ii;
+    for (ii = io_gl_pos; ii < cursor; ii++)
       io_gl_putc(io_gl_buf[ii]);
   }
   io_gl_pos = cursor;
@@ -685,7 +689,8 @@ static char  hist_empty_elem[2] = "";
 static void hist_init(void)
 {
   hist_buf[0] = hist_empty_elem;
-  for (int i = 1; i < HIST_SIZE; i++)
+  int i;
+  for (i = 1; i < HIST_SIZE; i++)
     hist_buf[i] = NULL;
 }
 
