@@ -177,8 +177,8 @@ namespace Ioss {
     inline size_t      property_count() const;
     /** Add a property, or change its value if it already exists with
         a different value */
-    inline void property_update(const std::string &property, int64_t value) const;
-    inline void property_update(const std::string &property, const std::string &value) const;
+    void property_update(const std::string &property, int64_t value) const;
+    void property_update(const std::string &property, const std::string &value) const;
 
     // ========================================================================
     //                                FIELDS
@@ -195,7 +195,7 @@ namespace Ioss {
     inline int          field_describe(Field::RoleType role, NameList *names) const;
     inline NameList     field_describe(Field::RoleType role) const;
     inline size_t       field_count() const;
-    inline size_t       field_count(Field::RoleType role) const;
+    size_t              field_count(Field::RoleType role) const;
 
     bool check_for_duplicate(const Ioss::Field &new_field) const;
 
