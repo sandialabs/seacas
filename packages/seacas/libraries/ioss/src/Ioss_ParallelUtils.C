@@ -424,9 +424,10 @@ template IOSS_EXPORT void Ioss::ParallelUtils::broadcast(int &value, int) const;
 /// \relates Ioss::ParallelUtils::broadcast
 template IOSS_EXPORT void Ioss::ParallelUtils::broadcast(int64_t &value, int) const;
 
+namespace Ioss {
 template <>
-void Ioss::ParallelUtils::broadcast(IOSS_MAYBE_UNUSED std::string &my_str,
-                                    IOSS_MAYBE_UNUSED int          root) const
+void ParallelUtils::broadcast(IOSS_MAYBE_UNUSED std::string &my_str,
+                              IOSS_MAYBE_UNUSED int          root) const
 {
   IOSS_PAR_UNUSED(my_str);
   IOSS_PAR_UNUSED(root);
@@ -442,6 +443,8 @@ void Ioss::ParallelUtils::broadcast(IOSS_MAYBE_UNUSED std::string &my_str,
   }
 #endif
 }
+} // namespace Ioss
+
 
 template <typename T>
 void Ioss::ParallelUtils::broadcast(IOSS_MAYBE_UNUSED T &my_value, IOSS_MAYBE_UNUSED int root) const
@@ -471,10 +474,16 @@ template IOSS_EXPORT void Ioss::ParallelUtils::broadcast(std::vector<long long> 
 /// \relates Ioss::ParallelUtils::broadcast
 template IOSS_EXPORT void Ioss::ParallelUtils::broadcast(std::vector<char> &, int) const;
 /// \relates Ioss::ParallelUtils::broadcast
+namespace Ioss {
 template <>
 IOSS_EXPORT void
+<<<<<<< HEAD
 Ioss::ParallelUtils::broadcast(IOSS_MAYBE_UNUSED std::vector<std::pair<int, int>> &my_value,
                                IOSS_MAYBE_UNUSED int                               root) const
+=======
+ParallelUtils::broadcast(IOSS_MAYBE_UNUSED std::vector<std::pair<int, int>> &my_value,
+                         IOSS_MAYBE_UNUSED int                               root) const
+>>>>>>> upstream/master
 {
   IOSS_PAR_UNUSED(my_value);
   IOSS_PAR_UNUSED(root);
@@ -490,6 +499,7 @@ Ioss::ParallelUtils::broadcast(IOSS_MAYBE_UNUSED std::vector<std::pair<int, int>
   }
 #endif
 }
+} // namespace Ioss
 
 template <typename T>
 void Ioss::ParallelUtils::broadcast(IOSS_MAYBE_UNUSED std::vector<T> &my_value,
