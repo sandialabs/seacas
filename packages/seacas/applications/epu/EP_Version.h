@@ -5,13 +5,10 @@
  *
  * See packages/seacas/LICENSE for details
  */
-#ifndef SEACAS_Version_h
-#define SEACAS_Version_h
+#pragma once
 
 static char const *qainfo[] = {
     "epu --  E Pluribus Unum",
     "6.05",
     "2022/02/18",
 };
-
-#endif // SEACAS_Version_h
