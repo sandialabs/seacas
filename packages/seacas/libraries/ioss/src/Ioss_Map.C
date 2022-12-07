@@ -30,6 +30,35 @@ namespace {
     }
     return one2one;
   }
+
+#if defined MAP_USE_SORTED_VECTOR
+  // map global to local ids
+
+  // Class to support storing global/local element id map in sorted vector...
+  class IdPairCompare
+  {
+  public:
+    IdPairCompare() = default;
+    bool operator()(const Ioss::IdPair &lhs, const Ioss::IdPair &rhs) const
+    {
+      return lhs.first < rhs.first;
+    }
+    bool operator()(const Ioss::IdPair &lhs, const Ioss::IdPair::first_type &k) const
+    {
+      return lhs.first < k;
+    }
+  };
+
+  class IdPairEqual
+  {
+  public:
+    IdPairEqual() = default;
+    bool operator()(const Ioss::IdPair &lhs, const Ioss::IdPair &rhs) const
+    {
+      return lhs.first == rhs.first;
+    }
+  };
+#endif
 } // namespace
 
 void Ioss::Map::release_memory()
@@ -103,6 +132,64 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     return;
   }
 
+#if defined MAP_USE_SORTED_VECTOR
+  ReverseMapContainer new_ids;
+  if (m_reverse.empty()) {
+    // This is first time that the m_reverse map is being built..
+    // m_map is no longer  1-to-1.
+    // Just iterate m_map and add all values that are non-zero
+    new_ids.reserve(m_map.size() - 1);
+    for (size_t i = 1; i < m_map.size(); i++) {
+      if (m_map[i] != 0) {
+        new_ids.emplace_back(m_map[i], i);
+      }
+    }
+  }
+  else {
+    new_ids.reserve(num_to_get);
+    for (int64_t i = 0; i < num_to_get; i++) {
+      int64_t local_id = offset + i + 1;
+      new_ids.emplace_back(m_map[i], i);
+
+      if (m_map[local_id] <= 0) {
+        std::ostringstream errmsg;
+        fmt::print(errmsg,
+                   "\nERROR: {0} map detected non-positive global id {1} for {0} with local id {2} "
+                   "on processor {3}.\n",
+                   m_entityType, m_map[local_id], local_id, m_myProcessor);
+        IOSS_ERROR(errmsg);
+      }
+    }
+  }
+
+  // new_ids is a vector of pairs <global_id, local_id>
+  Ioss::qsort(new_ids);
+
+  int64_t new_id_min = new_ids.empty() ? 0 : new_ids.front().first;
+  int64_t old_id_max = m_reverse.empty() ? 0 : m_reverse.back().first;
+  if (new_ids.size() + 1 == m_map.size()) {
+    SMART_ASSERT(m_reverse.empty() || m_reverse.size() + 1 == m_map.size());
+    new_ids.swap(m_reverse);
+  }
+  else if (new_id_min > old_id_max) {
+    m_reverse.insert(m_reverse.end(), new_ids.begin(), new_ids.end());
+  }
+  else {
+    // Copy reverseElementMap to old_ids, empty reverseElementMap.
+    ReverseMapContainer old_ids;
+    old_ids.swap(m_reverse);
+    SMART_ASSERT(m_reverse.empty());
+
+    // Merge old_ids and new_ids to reverseElementMap.
+    m_reverse.reserve(old_ids.size() + new_ids.size());
+    std::merge(old_ids.begin(), old_ids.end(), new_ids.begin(), new_ids.end(),
+               std::inserter(m_reverse, m_reverse.begin()), IdPairCompare());
+  }
+
+  // Check for duplicate ids...
+  // Maybe debug only...
+  verify_no_duplicate_ids(m_reverse);
+#else
   if (m_reverse.empty()) {
     // This is first time that the m_reverse map is being built..
     // m_map is no longer  1-to-1.
@@ -148,7 +235,27 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
       }
     }
   }
+#endif
 }
+
+#if defined MAP_USE_SORTED_VECTOR
+void        Ioss::Map::verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map)
+{
+  // Check for duplicate ids...
+  auto dup = std::adjacent_find(reverse_map.begin(), reverse_map.end(), IdPairEqual());
+
+  if (dup != reverse_map.end()) {
+    auto               other = dup + 1;
+    std::ostringstream errmsg;
+    fmt::print(errmsg,
+               "\nERROR: Duplicate {0} global id detected on processor {1}, filename '{2}'.\n"
+               "       Global id {3} assigned to local {0}s {4} and {5}.\n",
+               m_entityType, m_myProcessor, m_filename, (*dup).first, (*dup).second,
+               (*other).second);
+    IOSS_ERROR(errmsg);
+  }
+}
+#endif
 
 template IOSS_EXPORT bool Ioss::Map::set_map(int *ids, size_t count, size_t offset,
                                              bool in_define_mode);
@@ -469,6 +576,16 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
     // reverseMap is empty (which implied one-to-one) if the ORIGINAL mapping defined
     // during dbState == STATE_MODEL was one-to-one, but there is a
     // reordering which is due to new id ordering defined after STATE_MODEL...
+#if defined MAP_USE_SORTED_VECTOR
+    auto iter = std::lower_bound(m_reverse.begin(), m_reverse.end(), global, IdPairCompare());
+    if (iter != m_reverse.end() && iter->first == global) {
+      if (iter != m_reverse.end()) {
+        local = iter->second;
+      }
+      else {
+        local = 0;
+      }
+#else
     auto iter = m_reverse.find(global);
     if (iter != m_reverse.end()) {
       local = iter->second;
@@ -476,32 +593,33 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
     else {
       local = 0;
     }
+#endif
+    }
+    else if (!must_exist && global > static_cast<int64_t>(m_map.size()) - 1) {
+      local = 0;
+    }
+    else {
+      local = global - m_offset;
+    }
+    if (local > static_cast<int64_t>(m_map.size()) - 1) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: Ioss Mapping routines detected {0} with global id equal to {1} returns a "
+                 "local id of {2} which is\n"
+                 "larger than the local {0} count {5} on processor {3}, filename '{4}'.\n"
+                 "This should not happen, please report.\n",
+                 m_entityType, global, local, m_myProcessor, m_filename, m_map.size() - 1);
+      IOSS_ERROR(errmsg);
+    }
+    else if (local <= 0 && must_exist) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: Ioss Mapping routines could not find a {0} with global id equal to {1} in "
+                 "the {0} map\n"
+                 "on processor {2}, filename '{3}'.\n"
+                 "This should not happen, please report.\n",
+                 m_entityType, global, m_myProcessor, m_filename);
+      IOSS_ERROR(errmsg);
+    }
+    return local;
   }
-  else if (!must_exist && global > static_cast<int64_t>(m_map.size()) - 1) {
-    local = 0;
-  }
-  else {
-    local = global - m_offset;
-  }
-  if (local > static_cast<int64_t>(m_map.size()) - 1) {
-    std::ostringstream errmsg;
-    fmt::print(errmsg,
-               "ERROR: Ioss Mapping routines detected {0} with global id equal to {1} returns a "
-               "local id of {2} which is\n"
-               "larger than the local {0} count {5} on processor {3}, filename '{4}'.\n"
-               "This should not happen, please report.\n",
-               m_entityType, global, local, m_myProcessor, m_filename, m_map.size() - 1);
-    IOSS_ERROR(errmsg);
-  }
-  else if (local <= 0 && must_exist) {
-    std::ostringstream errmsg;
-    fmt::print(errmsg,
-               "ERROR: Ioss Mapping routines could not find a {0} with global id equal to {1} in "
-               "the {0} map\n"
-               "on processor {2}, filename '{3}'.\n"
-               "This should not happen, please report.\n",
-               m_entityType, global, m_myProcessor, m_filename);
-    IOSS_ERROR(errmsg);
-  }
-  return local;
-}
