@@ -124,7 +124,7 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     new_ids.reserve(num_to_get);
     for (int64_t i = 0; i < num_to_get; i++) {
       int64_t local_id = offset + i + 1;
-      new_ids.emplace_back(m_map[i], i);
+      new_ids.emplace_back(m_map[local_id], local_id);
 
       if (m_map[local_id] <= 0) {
         std::ostringstream errmsg;
@@ -607,9 +607,9 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
       if (iter != m_reverse.end()) {
         local = iter->second;
       }
-      else {
-        local = 0;
-      }
+    }
+    else {
+      local = 0;
     }
 #else
     auto iter = m_reverse.find(global);
