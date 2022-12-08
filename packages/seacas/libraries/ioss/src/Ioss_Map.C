@@ -17,6 +17,9 @@
 #include <string>
 #include <vector> // for vector, vector<>::iterator, etc
 
+// If defined, then only build m_reverseMap when it is used.
+#undef USE_LAZY_REVERSE
+
 namespace {
   template <typename INT> bool is_one2one(INT *ids, size_t num_to_get, size_t offset)
   {
@@ -98,9 +101,13 @@ bool Ioss::Map::is_sequential(bool check_all) const
   IOSS_FUNC_ENTER(m_);
   auto  &new_map  = const_cast<Ioss::MapContainer &>(m_map);
   size_t map_size = m_map.size();
+  if (m_offset == -1) {
+    m_offset = m_map[1] - 1;
+  }
   for (int64_t i = 1; i < (int64_t)map_size; i++) {
     if (m_map[i] != i + m_offset) {
       new_map[0] = 1;
+      m_offset   = -1;
       return false;
     }
   }
@@ -289,7 +296,11 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
       // that can be done, need to build a reverseMap of the current
       // one-to-one data...
       set_is_sequential(false);
-      build_reverse_map__(m_map.size() - 1, 0);
+#if !defined USE_LAZY_REVERSE
+      if (m_map.size() - 1 > count) {
+        build_reverse_map__(m_map.size() - 1, 0);
+      }
+#endif
       m_offset = 0;
     }
     else {
@@ -300,17 +311,29 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     }
   }
 
+  // Determine if `changed` which means an entity was redefined...
+  // This is used to determine whether a `reorder` map is needed.
   bool changed = false; // True if redefining an entry
   for (size_t i = 0; i < count; i++) {
     int64_t local_id = offset + i + 1;
     SMART_ASSERT((size_t)local_id < m_map.size())(local_id)(m_map.size());
     if (m_map[local_id] > 0 && m_map[local_id] != ids[i]) {
       changed = true;
+      break;
     }
-    m_map[local_id] = ids[i];
-    if (local_id != ids[i] - m_offset) {
-      set_is_sequential(false);
-    }
+  }
+
+#if defined USE_LAZY_REVERSE
+  // Build this now before we redefine an entry
+  if (!in_define_mode && changed) {
+    build_reverse_map__(m_map.size() - 1, 0);
+  }
+#endif
+
+  for (size_t i = 0; i < count; i++) {
+    int64_t local_id = offset + i + 1;
+    SMART_ASSERT((size_t)local_id < m_map.size())(local_id)(m_map.size());
+
     if (ids[i] <= 0) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
@@ -319,13 +342,20 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
                  m_entityType, ids[i], local_id, m_myProcessor, m_filename);
       IOSS_ERROR(errmsg);
     }
+
+    m_map[local_id] = ids[i];
+    if (local_id != ids[i] - m_offset) {
+      set_is_sequential(false);
+    }
   }
 
   if (in_define_mode) {
     if (changed) {
       m_reverse.clear();
     }
+#if !defined USE_LAZY_REVERSE
     build_reverse_map__(count, offset);
+#endif
   }
   else if (changed) {
     // Build the reorderEntityMap which does a direct mapping from
@@ -511,25 +541,31 @@ void Ioss::Map::build_reorder_map__(int64_t start, int64_t count)
   // using -1 as invalid value...)
 
   // Note: To further add confusion, the reorder map is 0-based
-  // and the reverse map and 'map' are 1-baed. This is
+  // and the reverse map and 'map' are 1-based. This is
   // just a consequence of how they are intended to be used...
   //
-  // start is based on a 0-based array -- start of the reorderMap to build.
+  // `start` is based on a 0-based array -- start of the reorderMap to build.
 
   if (m_reorder.empty()) {
     // See if actually need a reorder map first...
-    bool    need_reorder_map = false;
-    int64_t my_end           = start + count;
-    for (int64_t i = start; i < my_end; i++) {
-      int64_t global_id     = m_map[i + 1];
-      int64_t orig_local_id = global_to_local__(global_id) - 1;
+    bool need_reorder_map = false;
+    if (m_reverse.empty()) {
+      need_reorder_map = true;
+    }
+    else {
+      int64_t my_end = start + count;
+      for (int64_t i = start; i < my_end; i++) {
+        int64_t global_id     = m_map[i + 1];
+        int64_t orig_local_id = global_to_local__(global_id) - 1;
 
-      // The reordering should only be a permutation of the original
-      // ordering within this entity block...
-      SMART_ASSERT(orig_local_id >= start && orig_local_id <= my_end)(orig_local_id)(start)(my_end);
-      if (i != orig_local_id) {
-        need_reorder_map = true;
-        break;
+        // The reordering should only be a permutation of the original
+        // ordering within this entity block...
+        SMART_ASSERT(orig_local_id >= start && orig_local_id <= my_end)
+        (orig_local_id)(start)(my_end);
+        if (i != orig_local_id) {
+          need_reorder_map = true;
+          break;
+        }
       }
     }
     if (need_reorder_map) {
@@ -571,6 +607,13 @@ int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
 int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
 {
   int64_t local = global;
+#if defined USE_LAZY_REVERSE
+  if (!is_sequential() && m_reverse.empty() && m_reorder.empty()) {
+    auto *new_this = const_cast<Ioss::Map *>(this);
+    new_this->build_reverse_map_no_lock();
+  }
+#endif
+
   if (!is_sequential() && !m_reverse.empty()) {
     // Possible for !is_sequential() which means non-one-to-one, but
     // reverseMap is empty (which implied one-to-one) if the ORIGINAL mapping defined

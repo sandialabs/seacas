@@ -9,12 +9,12 @@
 #include "ioss_export.h"
 
 #include <Ioss_CodeTypes.h>
-#include <cstddef> // for size_t
-#include <cstdint> // for int64_t
-#include <string>  // for string
-#include <vector>  // for vector
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
 
-#define MAP_USE_HOPSCOTCH
+#define MAP_USE_STD
 #if defined MAP_USE_STD
 #include <unordered_map>
 #elif defined MAP_USE_HOPSCOTCH
@@ -117,7 +117,7 @@ namespace Ioss {
     ReverseMapContainer m_reverse{};
     std::string         m_entityType{"unknown"}; // node, element, edge, face
     std::string         m_filename{"undefined"}; // For error messages only.
-    int64_t             m_offset{-1};            // local to global offset if m_map is sequential.
+    mutable int64_t     m_offset{-1};            // local to global offset if m_map is sequential.
     int                 m_myProcessor{0};        // For error messages...
     bool m_defined{false}; // For use by some clients; not all, so don't read too much into value...
   };
