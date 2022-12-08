@@ -13,17 +13,19 @@
 #include "vtkCPInputDataDescription.h"
 #include "vtkCPProcessor.h"
 #include "vtkCPPythonPipeline.h"
+#include "vtkDataObject.h"
 #include "vtkDoubleArray.h"
 #include "vtkFieldData.h"
 #include "vtkIntArray.h"
 #include "vtkMPIController.h"
-#include "vtkMultiBlockDataSet.h"
 #include "vtkMultiProcessController.h"
 #include "vtkProcessModule.h"
 #include "vtkPython.h"
 #include "vtkStringArray.h"
 #include "vtkTrivialProducer.h"
 #include "vtkXMLPMultiBlockDataWriter.h"
+#include "vtkMultiBlockDataSet.h"
+#include "vtkPartitionedDataSetCollection.h"
 #include <fstream>
 #include <sstream>
 #include <vtksys/SystemInformation.hxx>
@@ -111,7 +113,7 @@ namespace Iovs {
 
     Iovs_cgns::CatalystCGNSMesh *cgm = new Iovs_cgns::CatalystCGNSMesh(this, cpi);
 
-    registerMeshInPipeline(cmInit, cgm->getMultiBlockDataSet(), cpi);
+    registerMeshInPipeline(cmInit, cgm->getPartitionedDataSetCollection(), cpi);
 
     return std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>(
         dynamic_cast<Iovs_cgns::CatalystCGNSMeshBase *>(cgm));
@@ -151,18 +153,18 @@ namespace Iovs {
     return id;
   }
 
-  void CatalystManager::registerMeshInPipeline(CatalystMeshInit &cmInit, vtkMultiBlockDataSet *mbds,
+  void CatalystManager::registerMeshInPipeline(CatalystMeshInit &cmInit, vtkDataObject *vobj,
                                                const CatalystPipelineInfo &cpi)
   {
 
     if (pipelines.find(cpi.catalystPipelineID) == pipelines.end()) {
-      initCatalystPipeline(cmInit, mbds, cpi);
+      initCatalystPipeline(cmInit, vobj, cpi);
       if (cmInit.enableLogging) {
         initCatalystLogging(cpi);
       }
     }
     else {
-      addInputToPipeline(mbds, cpi);
+      addInputToPipeline(vobj, cpi);
     }
   }
 
@@ -210,7 +212,7 @@ namespace Iovs {
     }
   }
 
-  void CatalystManager::initCatalystPipeline(CatalystMeshInit &cmInit, vtkMultiBlockDataSet *mbds,
+  void CatalystManager::initCatalystPipeline(CatalystMeshInit &cmInit, vtkDataObject *vobj,
                                              const CatalystPipelineInfo &cpi)
   {
 
@@ -229,7 +231,7 @@ namespace Iovs {
     pipelines[id]
         .getDataDescription()
         ->GetInputDescriptionByName(cpi.catalystInputName.c_str())
-        ->SetGrid(mbds);
+        ->SetGrid(vobj);
 
     pipelines[id].getMeshWriter() = std::make_shared<CatalystMeshWriter>();
     if (cmInit.writeCatalystMeshOneFile) {
@@ -280,8 +282,7 @@ namespace Iovs {
     em->Delete();
   }
 
-  void CatalystManager::addInputToPipeline(vtkMultiBlockDataSet       *mbds,
-                                           const CatalystPipelineInfo &cpi)
+  void CatalystManager::addInputToPipeline(vtkDataObject *vobj, const CatalystPipelineInfo &cpi)
   {
 
     CatalystPipelineID id = cpi.catalystPipelineID;
@@ -290,7 +291,7 @@ namespace Iovs {
     pipelines[id]
         .getDataDescription()
         ->GetInputDescriptionByName(cpi.catalystInputName.c_str())
-        ->SetGrid(mbds);
+        ->SetGrid(vobj);
   }
 
   void CatalystManager::DeletePipeline(const CatalystPipelineInfo &cpi)
@@ -481,7 +482,7 @@ namespace Iovs {
 
     if (pipelines.find(id) != pipelines.end()) {
       auto mw = pipelines[id].getMeshWriter();
-      retVal = mw->outputCatalystMeshOneFileON() || mw->outputCatalystMeshFilePerProcON();
+      retVal  = mw->outputCatalystMeshOneFileON() || mw->outputCatalystMeshFilePerProcON();
     }
 
     return retVal;
@@ -493,18 +494,17 @@ namespace Iovs {
     CatalystPipelineID id = cpi.catalystPipelineID;
 
     if (pipelines.find(id) != pipelines.end()) {
-      auto                  mw   = pipelines[id].getMeshWriter();
-      vtkMultiBlockDataSet *mbds = vtkMultiBlockDataSet::SafeDownCast(
-          pipelines[id]
-              .getDataDescription()
-              ->GetInputDescriptionByName(cpi.catalystInputName.c_str())
-              ->GetGrid());
+      auto           mw   = pipelines[id].getMeshWriter();
+      vtkDataObject *vobj = pipelines[id]
+                                .getDataDescription()
+                                ->GetInputDescriptionByName(cpi.catalystInputName.c_str())
+                                ->GetGrid();
       int timeStep = pipelines[id].getDataDescription()->GetTimeStep();
       if (mw->outputCatalystMeshOneFileON()) {
-        mw->writeCatalystMeshOneFile(mbds, timeStep);
+        mw->writeCatalystMeshOneFile(vobj, timeStep);
       }
       if (mw->outputCatalystMeshFilePerProcON()) {
-        mw->writeCatalystMeshFilePerProc(mbds, timeStep);
+        mw->writeCatalystMeshFilePerProc(vobj, timeStep);
       }
     }
   }

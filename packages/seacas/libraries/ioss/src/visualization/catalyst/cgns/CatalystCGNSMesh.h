@@ -11,6 +11,8 @@
 #include <vector>
 #include <visualization/catalyst/manager/CatalystManager.h>
 #include <visualization/cgns/CatalystCGNSMeshBase.h>
+#include "vtkPartitionedDataSetCollection.h"
+#include "vtkNew.h"
 
 class vtkMultiBlockDataSet;
 
@@ -39,12 +41,10 @@ namespace Iovs_cgns {
 
     void CreateBase(int base_id, const std::string &base_name);
 
-    void AddStructuredZoneData(int base_id, int zone_id, const std::string &zone_name,
-                               const std::string &data_name, int ni, int nj, int nk, int comp_count,
-                               bool is_cell_field, char field_suffix_separator, double *data,
-                               int size);
+    void AddStructuredZoneData(const ZoneData& zoneData);
 
     vtkMultiBlockDataSet *getMultiBlockDataSet();
+    vtkPartitionedDataSetCollection *getPartitionedDataSetCollection();
 
   private:
     const unsigned int BASES_BLOCK_ID   = 0;
@@ -69,6 +69,7 @@ namespace Iovs_cgns {
     std::map<int, base> base_id_to_base_map;
 
     vtkMultiBlockDataSet * multiBlock = nullptr;
+    vtkNew<vtkPartitionedDataSetCollection> vpdc;
     Iovs::CatalystManager *catManager = nullptr;
     bool                   writeCatalystMesh;
     std::string            catalystMeshFilePrefix;

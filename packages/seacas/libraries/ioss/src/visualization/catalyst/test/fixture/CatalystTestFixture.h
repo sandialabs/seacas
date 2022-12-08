@@ -15,6 +15,7 @@ class CatalystTestFixture
 {
 public:
   typedef std::vector<std::pair<std::string, int>> VarAndCompCountVec;
+  typedef std::vector<std::string> StringVec;
 
   CatalystTestFixture();
   ~CatalystTestFixture();
@@ -44,6 +45,11 @@ public:
   void checkMeshOutputVariables(const std::string &inputFile, const VarAndCompCountVec &cellVars,
                                 const VarAndCompCountVec &pointVars,
                                 const VarAndCompCountVec &globalVars);
+
+  void checkPartitionedDataSetCollectionStructure(const std::string       &inputFile,
+                                                  const StringVec& partitions,
+                                                  int numCells,
+                                                  const StringVec& searchQueries);
 
   static bool isFileExists(const char *fileName);
   static void checkTestOutputFileExists(const char *fileName);

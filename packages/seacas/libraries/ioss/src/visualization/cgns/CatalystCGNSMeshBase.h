@@ -46,10 +46,23 @@ namespace Iovs_cgns {
 
     virtual void CreateBase(int base_id, const std::string &base_name) = 0;
 
-    virtual void AddStructuredZoneData(int base_id, int zone_id, const std::string &zone_name,
-                                       const std::string &data_name, int ni, int nj, int nk,
-                                       int comp_count, bool is_cell_field,
-                                       char field_suffix_separator, double *data, int size) = 0;
+    struct ZoneData
+    {
+      int grouping_entity_id;
+      int base_id;
+      int zone_id;
+      std::string zone_name;
+      std::string data_name;
+      int ni;
+      int nj;
+      int nk;
+      int comp_count;
+      bool is_cell_field;
+      double *data;
+      int size;
+    };
+
+    virtual void AddStructuredZoneData(const ZoneData& zoneData) = 0;
   };
 
 } // namespace Iovs_cgns

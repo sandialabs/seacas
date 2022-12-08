@@ -14,8 +14,13 @@
 #include "vtkFieldData.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
+#include "vtkPartitionedDataSetCollection.h"
+#include "vtkPartitionedDataSet.h"
 #include "vtkPointData.h"
 #include "vtkXMLMultiBlockDataReader.h"
+#include "vtkXMLPartitionedDataSetCollectionReader.h"
+#include "vtkInformation.h"
+#include "vtkDataAssembly.h"
 #include <Iovs_Utils.h>
 #include <cstdlib>
 
@@ -70,6 +75,36 @@ void CatalystTestFixture::checkMeshOutputVariables(const std::string        &inp
   }
 
   REQUIRE(foundBlockThatHasAllVars);
+}
+
+void CatalystTestFixture::checkPartitionedDataSetCollectionStructure(const std::string &inputFile,
+                                                                     const StringVec   &partitions,
+                                                                     int numCells,
+                                                                     const StringVec &searchQueries)
+{
+
+  vtkNew<vtkXMLPartitionedDataSetCollectionReader> vpdcr;
+
+  vpdcr->SetFileName(inputFile.c_str());
+  vpdcr->Update();
+  vtkPartitionedDataSetCollection *vpdc =
+      vtkPartitionedDataSetCollection::SafeDownCast(vpdcr->GetOutput());
+  REQUIRE(vpdc->GetDataAssembly() != nullptr);
+  REQUIRE(vpdc->GetDataAssembly()->GetRootNodeName() == std::string("IOSS"));
+  REQUIRE(vpdc->GetNumberOfPartitionedDataSets() == partitions.size());
+  int numCellsCount = 0;
+  for (int i = 0; i < vpdc->GetNumberOfPartitionedDataSets(); i++) {
+    REQUIRE(vpdc->HasMetaData(i));
+    REQUIRE(vpdc->GetMetaData(i)->Get(vtkCompositeDataSet::NAME()) == partitions[i]);
+    for(int j = 0; j < vpdc->GetPartitionedDataSet(i)->GetNumberOfPartitions(); j++) {
+      int partNumCells = vpdc->GetPartitionedDataSet(i)->GetPartition(j)->GetNumberOfCells();
+      REQUIRE(partNumCells > 0);
+      numCellsCount += partNumCells;
+    }
+    REQUIRE(numCells == numCellsCount);
+  }
+  auto ids = vpdc->GetDataAssembly()->SelectNodes(searchQueries);
+  REQUIRE(ids.size() > 0);
 }
 
 void CatalystTestFixture::runCatalystMultiBlockMeshTest(const std::string &inputFile)

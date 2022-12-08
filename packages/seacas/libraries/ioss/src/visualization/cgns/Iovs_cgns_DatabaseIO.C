@@ -112,10 +112,20 @@ namespace Iovs_cgns {
           field.get_name() == "mesh_model_coordinates_y" ||
           field.get_name() == "mesh_model_coordinates_z") {
 
-        this->catCGNSMesh->AddStructuredZoneData(
-            base, zone, sb->name(), field.get_name(), sb->get_property("ni").get_int(),
-            sb->get_property("nj").get_int(), sb->get_property("nk").get_int(), comp_count,
-            is_cell_field, field_suffix_separator, rdata, num_to_get);
+        CatalystCGNSMeshBase::ZoneData zoneData;
+        zoneData.base_id = base;
+        zoneData.zone_id = zone;
+        zoneData.zone_name = sb->name();
+        zoneData.data_name = field.get_name();
+        zoneData.ni = sb->get_property("ni").get_int();
+        zoneData.nj = sb->get_property("nj").get_int();
+        zoneData.nk = sb->get_property("nk").get_int();
+        zoneData.comp_count = comp_count;
+        zoneData.is_cell_field = is_cell_field;
+        zoneData.data = rdata;
+        zoneData.size = num_to_get;
+
+        this->catCGNSMesh->AddStructuredZoneData(zoneData);
       }
       else if (field.get_name() == "mesh_model_coordinates") {
         int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
@@ -135,10 +145,25 @@ namespace Iovs_cgns {
             coord[i] = rdata[phys_dimension * i + ordinal];
           }
 
-          this->catCGNSMesh->AddStructuredZoneData(
+          CatalystCGNSMeshBase::ZoneData zoneData;
+          zoneData.base_id = base;
+          zoneData.zone_id = zone;
+          zoneData.zone_name = sb->name();
+          zoneData.data_name = ordinate;
+          zoneData.ni = sb->get_property("ni").get_int();
+          zoneData.nj = sb->get_property("nj").get_int();
+          zoneData.nk = sb->get_property("nk").get_int();
+          zoneData.comp_count = comp_count;
+          zoneData.is_cell_field = is_cell_field;
+          zoneData.data = coord.data();
+          zoneData.size = num_to_get;
+
+          this->catCGNSMesh->AddStructuredZoneData(zoneData);
+
+          /*this->catCGNSMesh->AddStructuredZoneData(
               base, zone, sb->name(), ordinate, sb->get_property("ni").get_int(),
               sb->get_property("nj").get_int(), sb->get_property("nk").get_int(), comp_count,
-              is_cell_field, field_suffix_separator, coord.data(), num_to_get);
+              is_cell_field, field_suffix_separator, coord.data(), num_to_get);*/
         };
         // ========================================================================
 
@@ -154,10 +179,20 @@ namespace Iovs_cgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      this->catCGNSMesh->AddStructuredZoneData(
-          base, zone, sb->name(), field.get_name(), sb->get_property("ni").get_int(),
-          sb->get_property("nj").get_int(), sb->get_property("nk").get_int(), comp_count,
-          is_cell_field, field_suffix_separator, rdata, num_to_get);
+      CatalystCGNSMeshBase::ZoneData zoneData;
+      zoneData.base_id = base;
+      zoneData.zone_id = zone;
+      zoneData.zone_name = sb->name();
+      zoneData.data_name = field.get_name();
+      zoneData.ni = sb->get_property("ni").get_int();
+      zoneData.nj = sb->get_property("nj").get_int();
+      zoneData.nk = sb->get_property("nk").get_int();
+      zoneData.comp_count = comp_count;
+      zoneData.is_cell_field = is_cell_field;
+      zoneData.data = rdata;
+      zoneData.size = num_to_get;
+
+      this->catCGNSMesh->AddStructuredZoneData(zoneData);
     }
     return num_to_get;
   }

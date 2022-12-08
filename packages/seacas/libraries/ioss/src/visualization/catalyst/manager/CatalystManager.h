@@ -17,7 +17,7 @@ class coProcessor;
 class vtkDoubleArray;
 class vtkCPPythonPipeline;
 class vtkCPProcessor;
-class vtkMultiBlockDataSet;
+class vtkDataObject;
 
 namespace Iovs {
 
@@ -155,13 +155,13 @@ namespace Iovs {
     void               writeMesh(const CatalystPipelineInfo &cpi);
     CatalystPipelineID getCatalystPipelineID(CatalystMeshInit &cmInit);
 
-    void initCatalystLogging(const CatalystPipelineInfo &cpi);
-    void initCatalystPipeline(CatalystMeshInit &cmInit, vtkMultiBlockDataSet *mbds,
-                              const CatalystPipelineInfo &cpi);
-    void addInputToPipeline(vtkMultiBlockDataSet *mbds, const CatalystPipelineInfo &cpi);
+    void                 initCatalystLogging(const CatalystPipelineInfo &cpi);
+    void                 initCatalystPipeline(CatalystMeshInit &cmInit, vtkDataObject *vobj,
+                                              const CatalystPipelineInfo &cpi);
+    void                 addInputToPipeline(vtkDataObject *vobj, const CatalystPipelineInfo &cpi);
     CatalystPipelineInfo createCatalystPipelineInfo(CatalystMeshInit &cmInit);
-    void registerMeshInPipeline(CatalystMeshInit &cmInit, vtkMultiBlockDataSet *mbds,
-                                const CatalystPipelineInfo &cpi);
+    void                 registerMeshInPipeline(CatalystMeshInit &cmInit, vtkDataObject *vobj,
+                                                const CatalystPipelineInfo &cpi);
 
     CatalystPipelineID                                           catalystOutputIDNumber;
     CatalystPipelineID                                           catalystOutputReferenceCount;
