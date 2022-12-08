@@ -106,10 +106,7 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
 void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
 {
   // Stored as an unordered map -- key:global_id, value:local_id
-  if (is_sequential()) {
-    return;
-  }
-
+  if (!is_sequential()) {
 #if defined MAP_USE_SORTED_VECTOR
   ReverseMapContainer new_ids;
   if (m_reverse.empty()) {
@@ -174,6 +171,7 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     // This is first time that the m_reverse map is being built..
     // m_map is no longer  1-to-1.
     // Just iterate m_map and add all values that are non-zero
+    m_reverse.max_load_factor(0.95);
     m_reverse.reserve(m_map.size());
     for (size_t i = 1; i < m_map.size(); i++) {
       if (m_map[i] != 0) {
@@ -215,7 +213,15 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
       }
     }
   }
+#if IOSS_DEBUG_OUTPUT
+  fmt::print("[{}] ({}) Map Size         = {}\n", m_myProcessor, m_entityType, m_map.size());
+  fmt::print("[{}] ({}) Size             = {}\n", m_myProcessor, m_entityType, m_reverse.size());
+  fmt::print("[{}] ({}) Bucket Count     = {}\n", m_myProcessor, m_entityType, m_reverse.bucket_count());
+  fmt::print("[{}] ({}) Load Factor      = {}\n", m_myProcessor, m_entityType, m_reverse.load_factor());
+  fmt::print("[{}] ({}) Max Load Factor  = {}\n\n", m_myProcessor, m_entityType, m_reverse.max_load_factor());
 #endif
+#endif
+}
 }
 
 #if defined MAP_USE_SORTED_VECTOR
