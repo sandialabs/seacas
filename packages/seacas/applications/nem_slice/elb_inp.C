@@ -1756,11 +1756,9 @@ namespace {
      Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
      02111-1307 USA.  */
 
-  char *strchrnul(const char *s, int c)
+  const char *strchrnul(const char *s, int c)
   {
-    char *result;
-
-    result = strchr(s, c);
+    const char *result = strchr(s, c);
 
     if (!result) {
       result = (char *)s + strlen(s);
@@ -1777,27 +1775,24 @@ namespace {
      token or at the terminating NUL character.  */
   int getsubopt(char **optionp, char *const *tokens, char **valuep)
   {
-    char *endp, *vstart;
-    int   cnt;
-
     if (**optionp == '\0')
       return -1;
 
     /* Find end of next token.  */
-    endp = strchrnul(*optionp, ',');
+    char *endp = (char *)strchrnul(*optionp, ',');
 
     /* Find start of value.  */
-    vstart = memchr(*optionp, '=', endp - *optionp);
-    if (vstart == NULL)
+    char *vstart = (char *)memchr(*optionp, '=', endp - *optionp);
+    if (vstart == nullptr)
       vstart = endp;
 
     /* Try to match the characters between *OPTIONP and VSTART against
        one of the TOKENS.  */
-    for (cnt = 0; tokens[cnt] != NULL; ++cnt)
+    for (int cnt = 0; tokens[cnt] != nullptr; ++cnt)
       if (strncmp(*optionp, tokens[cnt], vstart - *optionp) == 0 &&
           tokens[cnt][vstart - *optionp] == '\0') {
         /* We found the current option in TOKENS.  */
-        *valuep = vstart != endp ? vstart + 1 : NULL;
+        *valuep = vstart != endp ? vstart + 1 : nullptr;
 
         if (*endp != '\0')
           *endp++ = '\0';
