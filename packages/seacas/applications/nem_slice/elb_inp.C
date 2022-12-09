@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -175,11 +175,6 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
     case 'w':
       /* Weighting options */
       sub_opt = optarg;
-#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
-    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
-      fmt::print(stderr, "Windows build does not use getsubopt yet...\n");
-      exit(1);
-#else
       while (sub_opt != nullptr && *sub_opt != '\0') {
         switch (getsubopt(&sub_opt, (char *const *)weight_subopts, &value)) {
         case READ_EXO:
@@ -329,8 +324,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
 
         } /* End "switch(getsubopt(&sub_opt, weight_subopts, &value))" */
 
-      } /* End "while(*sub_opt != '\0')" */
-#endif
+      }      /* End "while(*sub_opt != '\0')" */
       break; /* End "case 'w'" */
 
     case 'a':
@@ -371,11 +365,6 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       if (sub_opt != nullptr) {
         string_to_lower(sub_opt, '\0');
       }
-#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
-    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
-      fmt::print(stderr, "Windows build does not use getsubopt yet...\n");
-      exit(1);
-#else
       while (sub_opt != nullptr && *sub_opt != '\0') {
 
         /* Switch over the machine description */
@@ -467,8 +456,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
 
         } /* End "switch(getsubopt(&sub_opt, mach_subopts, &value))" */
 
-      } /* End "while(*sub_opt != '\0')" */
-#endif
+      }      /* End "while(*sub_opt != '\0')" */
       break; /* End "case 'm'" */
 
     case 'l':
@@ -477,11 +465,6 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       if (sub_opt != nullptr) {
         string_to_lower(sub_opt, '\0');
       }
-#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
-    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
-      fmt::print(stderr, "Windows build does not use getsubopt yet...\n");
-      exit(1);
-#else
       while (sub_opt != nullptr && *sub_opt != '\0') {
         switch (getsubopt(&sub_opt, (char *const *)lb_subopts, &value)) {
         case MULTIKL: lb->type = MULTIKL; break;
@@ -562,8 +545,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
 
         } /* End "switch(getsubopt(&sup_opt, mach_subopts, &value))" */
 
-      } /* End "while(*sup_opt != '\0')" */
-#endif
+      }      /* End "while(*sup_opt != '\0')" */
       break; /* End "case 'l'" */
 
     case 'S': prob->no_sph = 1; break;
@@ -574,11 +556,6 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       if (sub_opt != nullptr) {
         string_to_lower(sub_opt, '\0');
       }
-#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
-    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
-      fmt::print(stderr, "Windows build does not use getsubopt yet...\n");
-      exit(1);
-#else
       while (sub_opt != nullptr && *sub_opt != '\0') {
         switch (getsubopt(&sub_opt, (char *const *)solve_subopts, &value)) {
         case TOLER:
@@ -622,8 +599,7 @@ value\n");
 
         } /* End "switch(getsubopt(&sub_opt, solve_subopts, &value))" */
 
-      } /* End "while(sub_opt != '\0')" */
-#endif
+      }      /* End "while(sub_opt != '\0')" */
       break; /* End "case 's'" */
 
     case 'g':
