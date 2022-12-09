@@ -23,6 +23,7 @@ SET_AND_INC_DIRS(DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 SET(HEADERS
   include/exodusII.h
+  include/exodusII_int.h
   include/exodusII_par.h
   ${CMAKE_CURRENT_BINARY_DIR}/exodus_config.h
 )

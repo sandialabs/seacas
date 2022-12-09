@@ -148,8 +148,10 @@ int Zoltan_ParMetis(
   realtype *imb_tols;
   indextype ncon;
   indextype edgecut;
+#ifdef ZOLTAN_PARMETIS
   indextype wgtflag;
   indextype numflag = 0;
+#endif
   indextype num_part = zz->LB.Num_Global_Parts; /* passed to ParMETIS. */
 
   ZOLTAN_TRACE_ENTER(zz, yo);
@@ -255,8 +257,10 @@ int Zoltan_ParMetis(
 
   /* Get ready to call ParMETIS */
   edgecut = -1;
+#ifdef ZOLTAN_PARMETIS
   wgtflag = 2*(gr.obj_wgt_dim>0) + (gr.edge_wgt_dim>0);
   numflag = 0;
+#endif
   ncon = (gr.obj_wgt_dim > 0 ? gr.obj_wgt_dim : 1);
 
   if (!prt.part_sizes){
@@ -570,8 +574,8 @@ int Zoltan_ParMetis_Order(
 #ifdef ZOLTAN_PARMETIS
   MPI_Comm comm = zz->Communicator;/* don't want to risk letting external
                                       packages changing our communicator */
-#endif
   indextype numflag = 0;
+#endif
 
   int timer_p = 0;
   int get_times = 0;

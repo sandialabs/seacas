@@ -3,13 +3,10 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#ifndef ZE_Version_h
-#define ZE_Version_h
+#pragma once
 
 static char const *qainfo[] = {
     "zellij",
     "2022/09/21",
     "1.5.3",
 };
-
-#endif

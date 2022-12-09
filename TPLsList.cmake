@@ -54,25 +54,25 @@
 
 SET( Seacas_TPLS_FINDMODS_CLASSIFICATIONS
   GTest           "cmake/TPLs/"    PT
-  Zlib            "cmake/TPLs/"    SS
+  Zlib            "cmake/TPLs/"    ST
   Pthread         "cmake/TPLs/"    PT
   MPI             "${${PROJECT_NAME}_TRIBITS_DIR}/core/std_tpls/" PT
-  HDF5            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
-  Pnetcdf         "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
-  Netcdf          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
-  CGNS            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
-  DataWarp        "cmake/TPLs/"    SS
-  METIS           "cmake/TPLs/"    TS
-  ParMETIS        "cmake/TPLs/"    SS
-  Pamgen          "cmake/TPLs/"    SS
-  Matio           "cmake/TPLs/"    SS
-  X11             "cmake/TPLs/"    SS
+  HDF5            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  ST
+  Pnetcdf         "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  ST
+  Netcdf          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  ST
+  CGNS            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  ST
+  DataWarp        "cmake/TPLs/"    ST
+  METIS           "cmake/TPLs/"    TT
+  ParMETIS        "cmake/TPLs/"    ST
+  Pamgen          "cmake/TPLs/"    ST
+  Matio           "cmake/TPLs/"    ST
+  X11             "cmake/TPLs/"    ST
   DLlib           "cmake/TPLs/"    ST
-  CUDA            "cmake/TPLs/"    SS
-  fmt             "cmake/TPLs/"    SS
-  Kokkos          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
-  Faodel          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
-  Cereal          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    SS
+  CUDA            "cmake/TPLs/"    ST
+  fmt             "cmake/TPLs/"    ST
+  Kokkos          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  ST
+  Faodel          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    ST
+  Cereal          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    ST
   ADIOS2          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/FindTPLADIOS2.cmake"    EX
   Catalyst2       "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/FindTPLCatalyst2.cmake" EX
   )

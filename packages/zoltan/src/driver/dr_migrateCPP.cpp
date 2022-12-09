@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -79,14 +79,14 @@ ZOLTAN_UNPACK_OBJ_MULTI_FN migrate_unpack_elem_multi;
 /*
  *  Static global variables to help with migration.
  */
-static ZOLTAN_ID_TYPE *New_Elem_Index = NULL;    /* Array containing globalIDs of 
+static ZOLTAN_ID_TYPE *New_Elem_Index = NULL;    /* Array containing globalIDs of
                                          elements in the new decomposition,
                                          ordered in the same order as the
                                          elements array.
                                          Built in migrate_pre_process; used
                                          in migrate_pre_process to adjust
-                                         element adjacencies; used in 
-                                         migrate_unpack_elem to store 
+                                         element adjacencies; used in
+                                         migrate_unpack_elem to store
                                          imported elements.                  */
 static int New_Elem_Index_Size = 0;   /* Number of integers allocated in
                                          New_Elem_Index.                     */
@@ -100,7 +100,7 @@ int migrate_elements(
   int Proc,
   MESH_INFO_PTR mesh,
   Zoltan &zz,
-  int num_gid_entries, 
+  int num_gid_entries,
   int num_lid_entries,
   int num_imp,
   ZOLTAN_ID_PTR imp_gids,
@@ -151,7 +151,7 @@ const char *yo = "migrate_elements";
       Gen_Error(0, "fatal:  error returned from Set_Pack_Obj_Multi_Fn()\n");
       return 0;
     }
-  
+
     if (zz.Set_Unpack_Obj_Multi_Fn(migrate_unpack_elem_multi,
                       (void *) mesh) == ZOLTAN_FATAL) {
       Gen_Error(0, "fatal:  error returned from Set_Unpack_Obj_Multi_Fn()\n");
@@ -211,7 +211,7 @@ const char *yo = "migrate_elements";
         return 0;
       }
     }
-    migrate_post_process((void *) mesh, 1, 1,  
+    migrate_post_process((void *) mesh, 1, 1,
                          num_imp, imp_gids, imp_lids, imp_procs, imp_to_part,
                          num_exp, exp_gids, exp_lids, exp_procs, exp_to_part,
                          &ierr);
@@ -225,8 +225,8 @@ const char *yo = "migrate_elements";
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
-void migrate_pre_process(void *data, int num_gid_entries, int num_lid_entries, 
-                         int num_import, 
+void migrate_pre_process(void *data, int num_gid_entries, int num_lid_entries,
+                         int num_import,
                          ZOLTAN_ID_PTR import_global_ids,
                          ZOLTAN_ID_PTR import_local_ids, int *import_procs,
                          int *import_to_part,
@@ -250,7 +250,7 @@ char msg[256];
 
   /*
    *  Set some flags. Assume if true for one element, true for all elements.
-   *  Note that some procs may have no elements. 
+   *  Note that some procs may have no elements.
    */
 
   int k = 0;
@@ -265,9 +265,9 @@ char msg[256];
   /*
    *  For all elements, update adjacent elements' processor information.
    *  That way, when perform migration, will be migrating updated adjacency
-   *  information.  
+   *  information.
    */
-  
+
   int proc = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &proc);
 
@@ -276,7 +276,7 @@ char msg[256];
    */
 
   New_Elem_Index_Size = mesh->num_elems + num_import - num_export;
-  if (mesh->elem_array_len > New_Elem_Index_Size) 
+  if (mesh->elem_array_len > New_Elem_Index_Size)
     New_Elem_Index_Size = mesh->elem_array_len;
 
   New_Elem_Index = new ZOLTAN_ID_TYPE [New_Elem_Index_Size];
@@ -320,7 +320,7 @@ char msg[256];
     if (num_lid_entries)
       exp_elem = export_local_ids[lid+i*num_lid_entries];
     else  /* testing num_lid_entries == 0 */
-      search_by_global_id(mesh, export_global_ids[gid+i*num_gid_entries], 
+      search_by_global_id(mesh, export_global_ids[gid+i*num_gid_entries],
                           &exp_elem);
 
     if (export_procs[i] != proc) {
@@ -335,15 +335,15 @@ char msg[256];
       /* Import is moving from a new processor, not just from a new partition */
       /* search for first free location */
       int j=0;
-      for (j = 0; j < New_Elem_Index_Size; j++) 
+      for (j = 0; j < New_Elem_Index_Size; j++)
         if (New_Elem_Index[j] == ZOLTAN_ID_INVALID) break;
 
       New_Elem_Index[j] = import_global_ids[gid+i*num_gid_entries];
     }
   }
 
-  /* 
-   * Update local information 
+  /*
+   * Update local information
    */
 
   /* Set change flag for elements whose adjacent elements are being exported */
@@ -355,12 +355,12 @@ char msg[256];
     if (num_lid_entries)
       exp_elem = export_local_ids[lid+i*num_lid_entries];
     else  /* testing num_lid_entries == 0 */
-      search_by_global_id(mesh, export_global_ids[gid+i*num_gid_entries], 
+      search_by_global_id(mesh, export_global_ids[gid+i*num_gid_entries],
                           &exp_elem);
 
     elements[exp_elem].my_part = export_to_part[i];
 
-    if (export_procs[i] == proc) 
+    if (export_procs[i] == proc)
       continue;  /* No adjacency changes needed if export is changing
                     only partition, not processor. */
 
@@ -400,13 +400,13 @@ char msg[256];
   delete [] change;
 
   /*
-   * Update off-processor information 
+   * Update off-processor information
    */
 
   int maxlen = 0;
   int *send_vec = NULL;
 
-  for (int i = 0; i < mesh->necmap; i++) 
+  for (int i = 0; i < mesh->necmap; i++)
     maxlen += mesh->ecmap_cnt[i];
 
   if (maxlen > 0) {
@@ -435,7 +435,7 @@ char msg[256];
   /*  Perform boundary exchange */
 
   boundary_exchange(mesh, 1, send_vec, recv_vec);
-  
+
   /* Unload receive vector */
 
   int offset = 0;
@@ -508,7 +508,7 @@ char msg[256];
 /*****************************************************************************/
 /*****************************************************************************/
 void migrate_post_process(void *data, int num_gid_entries, int num_lid_entries,
-                          int num_import, 
+                          int num_import,
                           ZOLTAN_ID_PTR import_global_ids,
                           ZOLTAN_ID_PTR import_local_ids, int *import_procs,
                           int *import_to_part,
@@ -588,7 +588,7 @@ void migrate_post_process(void *data, int num_gid_entries, int num_lid_entries,
     for (int k=0; k<MAX_CPU_WGTS; k++)
       elements[last].cpu_wgt[k] = 0;
     elements[last].mem_wgt = 0;
-    elements[last].avg_coord[0] = elements[last].avg_coord[1] 
+    elements[last].avg_coord[0] = elements[last].avg_coord[1]
                                 = elements[last].avg_coord[2] = 0.;
     elements[last].coord = NULL;
     elements[last].connect = NULL;
@@ -600,7 +600,7 @@ void migrate_post_process(void *data, int num_gid_entries, int num_lid_entries,
   if (New_Elem_Index != NULL) {
     delete [] New_Elem_Index;
     New_Elem_Index = NULL;
-   } 
+   }
 
   New_Elem_Index_Size = 0;
 
@@ -641,7 +641,7 @@ int idx = 0;
     return 0;
   }
   MESH_INFO_PTR mesh = (MESH_INFO_PTR) data;
-  ELEM_INFO *current_elem = (num_lid_entries 
+  ELEM_INFO *current_elem = (num_lid_entries
                    ? &(mesh->elements[elem_lid[lid]])
                    : search_by_global_id(mesh, elem_gid[gid], &idx));
   int num_nodes = mesh->eb_nnodes[current_elem->elem_blk];
@@ -653,7 +653,7 @@ int idx = 0;
   /* 152 is hardcoded size of ELEM_INFO for 64-bit archs;
    * Need it to make 32-bit and 64-bit repartitioning results match. */
   int size = (sizeof(ELEM_INFO) > 152 ? sizeof(ELEM_INFO) : 152);
- 
+
   /* Add space to correct alignment so casts work in (un)packing. */
   size = Zoltan_Align(size);
 
@@ -677,7 +677,7 @@ int idx = 0;
   /* Add space for coordinate info */
   size = Zoltan_Align(size);
   size += num_nodes * mesh->num_dims * sizeof(float);
-  
+
   return (size);
 }
 
@@ -703,7 +703,7 @@ void migrate_pack_elem(void *data, int num_gid_entries, int num_lid_entries,
 
   int idx;
 
-  ELEM_INFO *current_elem = (num_lid_entries 
+  ELEM_INFO *current_elem = (num_lid_entries
                    ? &(elem[elem_lid[lid]])
                    : search_by_global_id(mesh, elem_gid[gid], &idx));
 
@@ -722,7 +722,7 @@ void migrate_pack_elem(void *data, int num_gid_entries, int num_lid_entries,
    */
 
   /* Pad the buffer so the following casts will work.  */
-  
+
   size = Zoltan_Align(size);
 
   ZOLTAN_ID_TYPE *buf_id_type = (ZOLTAN_ID_TYPE *) (buf + size);
@@ -739,7 +739,7 @@ void migrate_pack_elem(void *data, int num_gid_entries, int num_lid_entries,
   /* send globalID for all adjacencies */
 
   for (int i =  0; i < current_elem->adj_len; i++) {
-    if (current_elem->adj[i] != ZOLTAN_ID_INVALID && current_elem->adj_proc[i] == proc) 
+    if (current_elem->adj[i] != ZOLTAN_ID_INVALID && current_elem->adj_proc[i] == proc)
       *buf_id_type++ = New_Elem_Index[current_elem->adj[i]];
     else
       *buf_id_type++ = current_elem->adj[i];
@@ -797,7 +797,7 @@ void migrate_pack_elem(void *data, int num_gid_entries, int num_lid_entries,
 
   /*
    * need to remove this entry from this procs list of elements
-   * do so by setting the globalID to ZOLTAN_ID_INVALID. 
+   * do so by setting the globalID to ZOLTAN_ID_INVALID.
    */
   current_elem->globalID = ZOLTAN_ID_INVALID;
   free_element_arrays(current_elem, mesh);
@@ -807,7 +807,7 @@ void migrate_pack_elem(void *data, int num_gid_entries, int num_lid_entries,
    * number of nodes on this processor until all of the migration is
    * completed.
    */
-  if (size > elem_data_size) 
+  if (size > elem_data_size)
     *ierr = ZOLTAN_WARN;
   else
     *ierr = ZOLTAN_OK;
@@ -816,7 +816,7 @@ void migrate_pack_elem(void *data, int num_gid_entries, int num_lid_entries,
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
-void migrate_unpack_elem(void *data, int num_gid_entries, ZOLTAN_ID_PTR elem_gid, 
+void migrate_unpack_elem(void *data, int num_gid_entries, ZOLTAN_ID_PTR elem_gid,
                          int elem_data_size, char *buf, int *ierr)
 {
   int gid = num_gid_entries-1;
@@ -917,7 +917,7 @@ void migrate_unpack_elem(void *data, int num_gid_entries, ZOLTAN_ID_PTR elem_gid
       size = Zoltan_Align(size);
       buf_float = (float *) (buf + size);
 
-      current_elem->edge_wgt = (float *) malloc(current_elem->adj_len 
+      current_elem->edge_wgt = (float *) malloc(current_elem->adj_len
                                               * sizeof(float));
       if (current_elem->edge_wgt == NULL) {
         Gen_Error(0, "fatal: insufficient memory");
@@ -965,7 +965,7 @@ void migrate_unpack_elem(void *data, int num_gid_entries, ZOLTAN_ID_PTR elem_gid
   mesh->num_elems++;
   mesh->eb_cnts[current_elem->elem_blk]++;
 
-  if (size > elem_data_size) 
+  if (size > elem_data_size)
     *ierr = ZOLTAN_WARN;
   else
     *ierr = ZOLTAN_OK;

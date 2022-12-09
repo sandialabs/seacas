@@ -77,13 +77,19 @@ PARMETIS_PATH=${PARMETIS_PATH:-${INSTALL_PATH}}
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 if [ "${MPI}" = "" ]
 then
-  netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
-  if [ "${netcdf_parallel}" == "yes" ]
-  then
-      MPI=YES
-  else
-      MPI=NO
-  fi
+    if [[ -f "$NETCDF_PATH/bin/nc-config" ]]; then
+	netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
+	if [ "${netcdf_parallel}" == "yes" ]
+	then
+	    MPI=YES
+	else
+	    MPI=NO
+	fi
+    else
+	echo "Unable to determine whether netCDF is parallel or serial.  Assuming serial"
+	echo "Set either \"NETCDF_PATH\" or \"MPI\" manually if the assumption is incorrect."
+	MPI=NO
+    fi
 fi
 
 MPI=$(check_valid MPI)
@@ -101,8 +107,8 @@ then
       CXX=g++
       CC=gcc
       FC=gfortran
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "gnubrew" ]
@@ -111,8 +117,8 @@ then
       CXX=g++-${VER}
       CC=gcc-${VER}
       FC=gfortran-${VER}
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "gnumacport" ]
@@ -121,8 +127,8 @@ then
       CXX=g++-mp-${VER}
       CC=gcc-mp-${VER}
       FC=gfortran-mp-${VER}
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "clangmacport" ]
@@ -131,8 +137,8 @@ then
       CXX=clang++-mp-${VER}.0
       CC=clang-mp-${VER}.0
       FC=gfortran
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow -std=c11"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "nvidia" ]
@@ -147,8 +153,8 @@ then
       CXX=clang++
       CC=clang
       FC=${FC:-gfortran}
-      CFLAGS="-Wall -Wunused -pedantic"
-      CXXFLAGS="-Wall -Wunused -pedantic"
+      CFLAGS="-Wall -Wunused -pedantic -Wshadow"
+      CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
   if [ "$COMPILER" == "intel" ]
@@ -157,7 +163,7 @@ then
       CC=icc
       FC=ifort
       CFLAGS="-Wall -Wunused"
-      CXXFLAGS="-Wall -Wunused"
+      CXXFLAGS="-Wall -Wextra  -Wunused"
   fi
 
   # When building:  "scan-build make -j8"
@@ -242,9 +248,10 @@ fi
 MODERN=${MODERN:-NO}
 if [ "${MODERN}" == "YES" ]
 then
-    MODERN_ARG="-D TPL_ENABLE_HDF5:BOOL=ON -D Netcdf_ALLOW_MODERN:BOOL=ON"
+#    MODERN_ARG="-D TPL_ENABLE_HDF5:BOOL=ON -D Netcdf_ALLOW_MODERN:BOOL=ON"
+    MODERN_ARG="-DNetcdf_FORCE_MODERN:BOOL=ON -DCGNS_FORCE_MODERN:BOOL=ON"
 else
-    MODERN_ARG=""
+    MODERN_ARG="-D HDF5_NO_SYSTEM_PATHS=YES"
 fi
 
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
@@ -521,8 +528,9 @@ ${FAODEL_SYMBOLS} \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
--D HDF5_NO_SYSTEM_PATHS=ON \
+-D HDF5_DIR:PATH=${HDF5_PATH} \
 -D CGNS_ROOT:PATH=${CGNS_PATH} \
+-D CGNS_DIR:PATH=${CGNS_PATH} \
 -D Matio_ROOT:PATH=${MATIO_PATH} \
 -D Metis_ROOT:PATH=${METIS_PATH} \
 -D ParMETIS_ROOT:PATH=${PARMETIS_PATH} \

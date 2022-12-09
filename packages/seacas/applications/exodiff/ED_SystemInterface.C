@@ -1549,7 +1549,8 @@ namespace {
     cmd_file.getline(line, 256);
     xline = line;
     while (!cmd_file.eof()) {
-      if (xline.empty() || (xline[0] != '\t' && first_character(xline) != '#')) {
+      if (xline.empty() ||
+          ((xline[0] != '\t' && xline[0] != ' ') && first_character(xline) != '#')) {
         break;
       }
 

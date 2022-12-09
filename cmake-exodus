@@ -44,13 +44,19 @@ HDF5_PATH=${HDF5_PATH:-${INSTALL_PATH}}
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 if [ "${MPI}" = "" ]
 then
-  netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
-  if [ "${netcdf_parallel}" == "yes" ]
-  then
-      MPI=YES
-  else
-      MPI=NO
-  fi
+    if [[ -f "$NETCDF_PATH/bin/nc-config" ]]; then
+	netcdf_parallel=$($NETCDF_PATH/bin/nc-config --has-parallel)
+	if [ "${netcdf_parallel}" == "yes" ]
+	then
+	    MPI=YES
+	else
+	    MPI=NO
+	fi
+    else
+	echo "Unable to determine whether netCDF is parallel or serial.  Assuming serial"
+	echo "Set either `NETCDF_PATH` or `MPI` manually if the assumption is incorrect."
+	MPI=NO
+    fi
 fi
 
 MPI=$(check_valid MPI)
@@ -143,6 +149,14 @@ then
       CC=xlc
       FC=xlf
   fi
+fi
+
+MODERN=${MODERN:-NO}
+if [ "${MODERN}" == "YES" ]
+then
+    MODERN_ARG="-D TPL_ENABLE_HDF5:BOOL=ON -D Netcdf_ALLOW_MODERN:BOOL=ON"
+else
+    MODERN_ARG=""
 fi
 
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
@@ -348,6 +362,7 @@ cmake -G "${GENERATOR}" \
 -D Seacas_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 -D Seacas_ENABLE_Fortran=${FORTRAN} \
 ${EXTRA_LIB} \
+${MODERN_ARG} \
 \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \

@@ -19,6 +19,8 @@ if (Netcdf_ALLOW_MODERN)
       INNER_FIND_PACKAGE_NAME  HDF5
       IMPORTED_TARGETS_FOR_ALL_LIBS   ${HDF5_EXPORT_LIBRARIES})
     set(HDF5_INTERNAL_IS_MODERN TRUE)
+  else()
+    message("-- Could not find HDF5_CONFIG (FindTPLHDF5.cmake)")
   endif()
 
 endif()
