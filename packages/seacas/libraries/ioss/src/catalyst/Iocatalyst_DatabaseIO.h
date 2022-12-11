@@ -74,7 +74,7 @@ namespace Iocatalyst {
      */
     bool deep_copy() const { return this->useDeepCopy; }
 
-    void* get_catalyst_conduit_node();
+    void *get_catalyst_conduit_node();
 
     void print_catalyst_conduit_node();
 
@@ -128,8 +128,8 @@ namespace Iocatalyst {
                                void * /*data*/, size_t /*data_size*/) const override;
     int64_t get_field_internal(const Ioss::Blob * /*bl*/, const Ioss::Field & /*field*/,
                                void * /*data*/, size_t /*data_size*/) const override;
-    int64_t get_field_internal(const Ioss::StructuredBlock * sb, const Ioss::Field & field,
-                               void * data, size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+                               void *data, size_t data_size) const override;
 
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override
@@ -162,8 +162,8 @@ namespace Iocatalyst {
                                void * /*data*/, size_t /*data_size*/) const override;
     int64_t put_field_internal(const Ioss::Blob * /*bl*/, const Ioss::Field & /*field*/,
                                void * /*data*/, size_t /*data_size*/) const override;
-    int64_t put_field_internal(const Ioss::StructuredBlock * sb, const Ioss::Field & field,
-                               void * data, size_t data_size) const override;
+    int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+                               void *data, size_t data_size) const override;
 
     class ImplementationT;
     std::unique_ptr<ImplementationT> Impl;

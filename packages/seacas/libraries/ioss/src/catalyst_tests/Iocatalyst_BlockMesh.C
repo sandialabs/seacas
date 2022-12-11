@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <catalyst_tests/Iocatalyst_BlockMesh.h>
 #include <Ioss_Utils.h>
+#include <catalyst_tests/Iocatalyst_BlockMesh.h>
 
 namespace Iocatalyst {
 
@@ -32,46 +32,47 @@ namespace Iocatalyst {
 
   BlockMesh::~BlockMesh() {}
 
-  void BlockMesh::init(const Partition &part, const Extent &numBlocks) {
-    if(part.id < 0 || part.size < 0 || part.id >= part.size) {
-        std::ostringstream errmsg;
-        errmsg << "Invalid partition: id = " << part.id <<
-          std::string(", size = ") << part.size << "\n";
-        IOSS_ERROR(errmsg);
+  void BlockMesh::init(const Partition &part, const Extent &numBlocks)
+  {
+    if (part.id < 0 || part.size < 0 || part.id >= part.size) {
+      std::ostringstream errmsg;
+      errmsg << "Invalid partition: id = " << part.id << std::string(", size = ") << part.size
+             << "\n";
+      IOSS_ERROR(errmsg);
     }
-    if(numBlocks.x <= 0 || numBlocks.y <= 0 || numBlocks.z <= 0) {
-        std::ostringstream errmsg;
-        errmsg << "Invalid numBlocks: x = " << numBlocks.x <<
-          std::string(", y = ") << numBlocks.y << std::string(", z = ") <<
-            numBlocks.z << "\n";
-        IOSS_ERROR(errmsg);
+    if (numBlocks.x <= 0 || numBlocks.y <= 0 || numBlocks.z <= 0) {
+      std::ostringstream errmsg;
+      errmsg << "Invalid numBlocks: x = " << numBlocks.x << std::string(", y = ") << numBlocks.y
+             << std::string(", z = ") << numBlocks.z << "\n";
+      IOSS_ERROR(errmsg);
     }
-    this->partition = part;
+    this->partition       = part;
     this->globalNumBlocks = numBlocks;
     splitBlock();
   }
 
-  void BlockMesh::setBlockLength(const Point& length) {
-    if(length.x < 0 || length.y < 0 || length.z < 0) {
-        std::ostringstream errmsg;
-        errmsg << "Invalid length: x = " << length.x <<
-          std::string(", y = ") << length.y << std::string(", z = ") <<
-            length.z << "\n";
-        IOSS_ERROR(errmsg);
+  void BlockMesh::setBlockLength(const Point &length)
+  {
+    if (length.x < 0 || length.y < 0 || length.z < 0) {
+      std::ostringstream errmsg;
+      errmsg << "Invalid length: x = " << length.x << std::string(", y = ") << length.y
+             << std::string(", z = ") << length.z << "\n";
+      IOSS_ERROR(errmsg);
     }
     this->blockLength = length;
   }
 
-  void BlockMesh::splitBlock() {
+  void BlockMesh::splitBlock()
+  {
     // Split algorithm from vtkExtentTranslator.cxx SplitExtent()
 
     unsigned long size[3];
-    int numPiecesInFirstHalf;
-    int splitAxis;
-    long int mid;
-    int ext[6];
-    int numPieces = getPartition().size;
-    int piece = getPartition().id;
+    int           numPiecesInFirstHalf;
+    int           splitAxis;
+    long int      mid;
+    int           ext[6];
+    int           numPieces = getPartition().size;
+    int           piece     = getPartition().id;
     fillExtents(ext);
     setLocalBlockFromExtents(ext);
 
@@ -104,24 +105,25 @@ namespace Iocatalyst {
       }
       else {
         numPiecesInFirstHalf = (numPieces / 2);
-        mid = size[splitAxis];
-        mid = (mid * numPiecesInFirstHalf) / numPieces + ext[splitAxis * 2];
+        mid                  = size[splitAxis];
+        mid                  = (mid * numPiecesInFirstHalf) / numPieces + ext[splitAxis * 2];
         if (piece < numPiecesInFirstHalf) {
           ext[splitAxis * 2 + 1] = mid;
-          numPieces = numPiecesInFirstHalf;
+          numPieces              = numPiecesInFirstHalf;
         }
         else {
           ext[splitAxis * 2] = mid;
-          numPieces = numPieces - numPiecesInFirstHalf;
+          numPieces          = numPieces - numPiecesInFirstHalf;
           piece -= numPiecesInFirstHalf;
+        }
       }
     }
-  }
-  setLocalBlockFromExtents(ext);
+    setLocalBlockFromExtents(ext);
   }
 
-  void BlockMesh::fillExtents(int* ext) {
-    if(getGlobalNumBlocks().x == 0) {
+  void BlockMesh::fillExtents(int *ext)
+  {
+    if (getGlobalNumBlocks().x == 0) {
       ext[0] = 0;
       ext[1] = -1;
     }
@@ -130,7 +132,7 @@ namespace Iocatalyst {
       ext[1] = getGlobalNumBlocks().x;
     }
 
-    if(getGlobalNumBlocks().y == 0) {
+    if (getGlobalNumBlocks().y == 0) {
       ext[2] = 0;
       ext[3] = -1;
     }
@@ -139,7 +141,7 @@ namespace Iocatalyst {
       ext[3] = getGlobalNumBlocks().y;
     }
 
-    if(getGlobalNumBlocks().z == 0) {
+    if (getGlobalNumBlocks().z == 0) {
       ext[4] = 0;
       ext[5] = -1;
     }
@@ -149,26 +151,28 @@ namespace Iocatalyst {
     }
   }
 
-  void BlockMesh::setLocalBlockFromExtents(int *ext) {
+  void BlockMesh::setLocalBlockFromExtents(int *ext)
+  {
     int sizeX = ext[1] - ext[0];
     int sizeY = ext[3] - ext[2];
     int sizeZ = ext[5] - ext[4];
-    if(sizeX <= 0 || sizeY <= 0 || sizeZ <= 0) {
+    if (sizeX <= 0 || sizeY <= 0 || sizeZ <= 0) {
       setLocalBlockEmpty();
       return;
     }
 
-    localNumBlocks.x = sizeX;
+    localNumBlocks.x  = sizeX;
     localBlockStart.x = ext[0];
 
-    localNumBlocks.y = sizeY;
+    localNumBlocks.y  = sizeY;
     localBlockStart.y = ext[2];
 
-    localNumBlocks.z = sizeZ;
+    localNumBlocks.z  = sizeZ;
     localBlockStart.z = ext[4];
   }
 
-  void BlockMesh::setLocalBlockEmpty() {
+  void BlockMesh::setLocalBlockEmpty()
+  {
     localNumBlocks.x  = 0;
     localNumBlocks.y  = 0;
     localNumBlocks.z  = 0;
@@ -177,10 +181,9 @@ namespace Iocatalyst {
     localBlockStart.z = 0;
   }
 
-  bool BlockMesh::isLocalBlockEmpty() {
-    return localNumBlocks.x == 0 ||
-      localNumBlocks.y == 0 ||
-        localNumBlocks.z == 0;
+  bool BlockMesh::isLocalBlockEmpty()
+  {
+    return localNumBlocks.x == 0 || localNumBlocks.y == 0 || localNumBlocks.z == 0;
   }
 
 } // namespace Iocatalyst

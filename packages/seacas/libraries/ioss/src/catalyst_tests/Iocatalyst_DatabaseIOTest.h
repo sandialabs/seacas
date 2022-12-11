@@ -13,6 +13,7 @@ protected:
   Iocatalyst::BlockMeshSet         bmSet;
   Iocatalyst::BlockMesh::Partition part;
   Iocatalyst::BlockMesh::Extent    numBlocks;
+  Ioss::ParallelUtils              putils;
 
   Iocatalyst_DatabaseIOTest();
 

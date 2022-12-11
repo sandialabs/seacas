@@ -6,11 +6,12 @@
 
 #include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
 
-TEST_F(Iocatalyst_DatabaseIOTest, WriteOneStructuredMeshBlockWithOneCell)
+TEST_F(Iocatalyst_DatabaseIOTest, WriteOneStructuredMeshBlockWith8Cells)
 {
   Iocatalyst::BlockMesh bm;
+  initBlock(bm, 2, 2, 2);
   bmSet.addBlockMesh(bm);
-  runTest("test_sb_1_cells_1");
+  runTest("test_sb_1_cells_8");
 }
 
 TEST_F(Iocatalyst_DatabaseIOTest, WriteOneStructuredMeshBlocksWith200Cells)
@@ -34,21 +35,3 @@ TEST_F(Iocatalyst_DatabaseIOTest, WriteThreeStructuredMeshBlocksWith835Cells)
   bmSet.addBlockMesh(bmThree);
   runTest("test_sb_3_cells_835");
 }
-
-TEST_F(Iocatalyst_DatabaseIOTest, WriteOneStructuredMeshBlockWithOneCellandOneTimeStep)
-{
-  Iocatalyst::BlockMesh bm;
-  bmSet.setNumberOfTimeSteps(1);
-  bmSet.addBlockMesh(bm);
-  runTest("test_sb_1_cells_1_ts_1");
-  bmSet.writeCGNSFile("test_sb_1_cells_1_ts_1.cgns");
-}
-
-/*TEST_F(BlockMeshSetTest, WriteOneStructuredMeshBlockWithOneCellandTenTimeSteps)
-{
-  Iocatalyst::BlockMesh bm;
-  bmSet.setNumberOfTimeSteps(10);
-  bmSet.addBlockMesh(bm);
-  runTest("test_sb_1_cells_1_ts_10");
-  // bmSet.writeCGNSFile("test_sb_1_cells_1_ts_1.cgns");
-}*/

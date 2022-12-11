@@ -34,3 +34,9 @@ TRIBITS_ADD_TEST(
 	NAME Iocatalyst_StructuredBlockTest
 	NUM_MPI_PROCS 1
 )
+
+TRIBITS_ADD_TEST(
+	Iocatalyst_StructuredBlockTest
+	NAME Iocatalyst_StructuredBlockTest
+	NUM_MPI_PROCS 4
+)
