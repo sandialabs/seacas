@@ -1766,9 +1766,7 @@ namespace Iocgns {
     if (!is_input()) {
       m_timesteps.push_back(time);
       SMART_ASSERT(m_timesteps.size() == (size_t)state);
-    }
 
-    if (!is_input()) {
       bool do_flush = true;
       if (m_flushInterval != 1) {
         if (m_flushInterval == 0 || state % m_flushInterval != 0) {
