@@ -545,7 +545,6 @@ namespace Ioss {
       }
     }
 
-    virtual std::vector<size_t> get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const;
     virtual std::vector<size_t> get_all_block_field_data(const std::string &field_name,
                                                          void *data, size_t data_size) const;
 
@@ -817,9 +816,6 @@ namespace Ioss {
                                        void * /*data*/, size_t /*data_size*/) const = 0;
     virtual int64_t put_field_internal(const StructuredBlock * /*sb*/, const Field & /*field*/,
                                        void * /*data*/, size_t /*data_size*/) const = 0;
-
-    virtual std::vector<size_t> get_all_block_offset(const std::string& field_name) const;
-    std::vector<size_t> get_all_block_data(void *data, size_t data_size, const std::string& field_name) const;
 
     mutable std::map<std::string, AxisAlignedBoundingBox> elementBlockBoundingBoxes;
 

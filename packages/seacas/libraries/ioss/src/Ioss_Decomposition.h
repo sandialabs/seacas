@@ -21,10 +21,6 @@
 
 #include <Ioss_Utils.h>
 #include <Ioss_ParallelUtils.h>
-#include <fmt/ostream.h>
-
-#include <fstream>
-#include <iostream>                     // for operator<<, basic_ostream, etc
 
 #if !defined(NO_PARMETIS_SUPPORT)
 #include <parmetis.h>
@@ -528,9 +524,6 @@ namespace Ioss {
                                                       const std::vector<size_t> &file_offset,
                                                       const std::vector<int>& block_component_count) const
     {
-      Ioss::ParallelUtils util_(m_comm);
-      int nProc = util_.parallel_size();
-
       size_t export_size = 0;
       size_t import_size = 0;
 
@@ -544,7 +537,9 @@ namespace Ioss {
 
       std::vector<U> exports;
       exports.reserve(export_size);
-      std::vector<U> imports(import_size);
+
+      Ioss::ParallelUtils util_(m_comm);
+      int nProc = util_.parallel_size();
 
       for(int proc = 0; proc<nProc; proc++) {
         for(size_t blk_seq = 0; blk_seq < blocks.size(); blk_seq++) {
@@ -564,10 +559,10 @@ namespace Ioss {
         }
       }
 
-      std::vector<int> export_count(nProc, 0);
-      std::vector<int> export_disp(nProc, 0);
-      std::vector<int> import_count(nProc, 0);
-      std::vector<int> import_disp(nProc, 0);
+      std::vector<int64_t> export_count(nProc, 0);
+      std::vector<int64_t> export_disp(nProc, 0);
+      std::vector<int64_t> import_count(nProc, 0);
+      std::vector<int64_t> import_disp(nProc, 0);
 
       for(size_t blk_seq = 0; blk_seq < blocks.size(); blk_seq++) {
         const Ioss::BlockDecompositionData& blk = blocks[blk_seq];
@@ -590,6 +585,7 @@ namespace Ioss {
       Ioss::Utils::generate_index(export_disp);
       Ioss::Utils::generate_index(import_disp);
 
+      std::vector<U> imports(import_size);
       Ioss::MY_Alltoallv(exports, export_count, export_disp, imports, import_count, import_disp, m_comm);
       show_progress("\tCommunication 1 finished");
 

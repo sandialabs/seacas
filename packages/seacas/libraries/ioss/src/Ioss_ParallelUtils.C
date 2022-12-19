@@ -477,13 +477,8 @@ template IOSS_EXPORT void Ioss::ParallelUtils::broadcast(std::vector<char> &, in
 namespace Ioss {
 template <>
 IOSS_EXPORT void
-<<<<<<< HEAD
-Ioss::ParallelUtils::broadcast(IOSS_MAYBE_UNUSED std::vector<std::pair<int, int>> &my_value,
-                               IOSS_MAYBE_UNUSED int                               root) const
-=======
 ParallelUtils::broadcast(IOSS_MAYBE_UNUSED std::vector<std::pair<int, int>> &my_value,
                          IOSS_MAYBE_UNUSED int                               root) const
->>>>>>> upstream/master
 {
   IOSS_PAR_UNUSED(my_value);
   IOSS_PAR_UNUSED(root);

@@ -265,8 +265,6 @@ namespace Ioss {
     void add_qa_record(const std::string &code, const std::string &code_qa,
                        const std::string &date = "", const std::string &time = "");
 
-    std::vector<size_t> get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const;
-
     template <typename T>
     std::vector<size_t> get_all_block_field_data(const std::string &field_name, std::vector<T> &field_data) const;
 
@@ -278,8 +276,6 @@ namespace Ioss {
                                     size_t data_size = 0) const override;
 
   private:
-    Field::RoleType verify_field_exists_on_any_element_block(const std::string &field_name, const std::string &inout) const;
-    size_t get_all_block_field_data_count(const std::string &field_name) const;
     std::vector<size_t> internal_get_all_block_field_data(const std::string &field_name, void *data, size_t data_size = 0) const;
 
     // Add the name 'alias' as an alias for the database entity with the
@@ -403,33 +399,5 @@ inline const std::vector<std::string> &Ioss::Region::get_qa_records() const
 {
   IOSS_FUNC_ENTER(m_);
   return get_database()->get_qa_records();
-}
-
-template <typename T>
-std::vector<size_t> Ioss::Region::get_all_block_field_data(const std::string &field_name,
-                                                           std::vector<T>    &field_data) const
-{
-  Field::RoleType role = verify_field_exists_on_any_element_block(field_name, "input");
-
-  size_t field_count = get_all_block_field_data_count(field_name);
-
-  field_data.resize(field_count);
-  size_t data_size = field_count * sizeof(T);
-
-  std::vector<size_t> retval;
-
-  if (role == Ioss::Field::MESH) {
-    if(field_name == "connectivity" || field_name == "connectivity_raw") {
-      retval = get_all_block_connectivity(field_name, field_data.data(), data_size);
-    }
-  }
-  else if (role == Ioss::Field::TRANSIENT) {
-    retval = internal_get_all_block_field_data(field_name, field_data.data(), data_size);
-  }
-
-  assert(retval.size() == (get_element_blocks().size() + 1));
-  assert(retval[get_element_blocks().size()] == field_count);
-
-  return retval;
 }
 

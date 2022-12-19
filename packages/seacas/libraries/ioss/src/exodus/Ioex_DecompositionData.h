@@ -30,9 +30,9 @@ namespace Ioss {
   class Field;
 }
 namespace Ioex {
-  struct BlockFieldData {
-    int64_t id = 0;
-    size_t comp_count = 0;
+  struct IOEX_EXPORT BlockFieldData {
+    int64_t id{0};
+    size_t comp_count{0};
     std::vector<std::string> var_name;
     std::vector<size_t> var_index;
 

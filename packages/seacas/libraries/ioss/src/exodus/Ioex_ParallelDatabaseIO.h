@@ -74,7 +74,6 @@ namespace Ioex {
     int  get_file_pointer() const override; // Open file and set exodusFilePtr.
     bool needs_shared_node_information() const override { return true; }
 
-    std::vector<size_t> get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const override;
     std::vector<size_t> get_all_block_field_data(const std::string &field_name,
                                                  void *data, size_t data_size) const override;
 
@@ -241,11 +240,7 @@ namespace Ioex {
     int64_t put_side_field(const Ioss::SideBlock *sd_blk, const Ioss::Field &field, void *data,
                            size_t data_size) const;
 
-    std::vector<size_t> get_all_block_offset(const std::vector<int>& block_component_count) const ;
-    std::vector<int> get_all_block_connectivity_component_count() const ;
-
-    std::vector<int> get_all_block_component_count(const std::string& field_name) const;
-    size_t get_all_block_field_data_size(const std::string& field_name) const;
+    std::vector<size_t> get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const;
     std::vector<size_t> get_all_block_transient_field_data(const Ioex::VariableNameMap &variables,
                                                            const std::string &field_name, void *data) const;
 

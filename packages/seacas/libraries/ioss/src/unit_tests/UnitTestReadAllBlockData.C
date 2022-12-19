@@ -7,8 +7,6 @@
 #include <string>
 #include <vector>
 
-#include <sys/time.h>  // for gettimeofday, timeval, timezone
-
 #ifdef SEACAS_HAVE_MPI
 #include "mpi.h"
 #endif
@@ -33,18 +31,9 @@
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Region.h>
 
+#include <Ioss_Utils.h>
+
 namespace {
-double wall_time()
-{
-  timeval tp;
-  struct timezone tz;
-  ::gettimeofday(&tp, &tz);
-
-  double seconds = tp.tv_sec;
-  double milliseconds = tp.tv_usec*1.0e-6;
-
-  return seconds + milliseconds;
-}
 
 std::string get_randomized_many_block_mesh_desc(unsigned numBlocks)
 {
@@ -225,9 +214,9 @@ std::pair<double, double> do_connectivity_timing_impl(const Ioss::Region& region
 
   std::vector<INT> allConnectivity;
 
-  double startTime = wall_time();
+  double startTime = Ioss::Utils::timer();
   std::vector<size_t> dataOffset = region.get_all_block_field_data("connectivity", allConnectivity);
-  double elapsedAllBlockConnectivityTime = wall_time() - startTime;
+  double elapsedAllBlockConnectivityTime = Ioss::Utils::timer() - startTime;
 
   double elapsedConnectivityTime = 0.0;
   for(unsigned i=0; i<elemBlocks.size(); i++) {
@@ -235,9 +224,9 @@ std::pair<double, double> do_connectivity_timing_impl(const Ioss::Region& region
     int64_t iblk = elemBlocks[i]->get_optional_property("iblk", int64_t(i));
 
     std::vector<INT> connectivity;
-    startTime = wall_time();
+    startTime = Ioss::Utils::timer();
     int64_t numToGet = entity->get_field_data("connectivity", connectivity);
-    elapsedConnectivityTime += wall_time() - startTime;
+    elapsedConnectivityTime += Ioss::Utils::timer() - startTime;
 
     unsigned numComponents = entity->topology()->number_nodes();
     int64_t numEntities = entity->entity_count();
@@ -282,9 +271,9 @@ std::pair<double, double> do_field_timing_and_verification(const Ioss::Region& r
 
   std::vector<double> allFieldData;
 
-  double startAllBlockFieldTime = wall_time();
+  double startAllBlockFieldTime = Ioss::Utils::timer();
   std::vector<size_t> dataOffset = region.get_all_block_field_data(fieldName, allFieldData);
-  double elapsedAllBlockFieldTime = wall_time() - startAllBlockFieldTime;
+  double elapsedAllBlockFieldTime = Ioss::Utils::timer() - startAllBlockFieldTime;
 
   double elapsedFieldTime = 0.0;
 
@@ -296,9 +285,9 @@ std::pair<double, double> do_field_timing_and_verification(const Ioss::Region& r
     int64_t iblk = elemBlocks[i]->get_optional_property("iblk", int64_t(i));
 
     if(entity->field_exists(fieldName)) {
-      double startFieldTime = wall_time();
+      double startFieldTime = Ioss::Utils::timer();
       int64_t numToGet = entity->get_field_data(fieldName, blockFieldData);
-      elapsedFieldTime += wall_time() - startFieldTime;
+      elapsedFieldTime += Ioss::Utils::timer() - startFieldTime;
 
       Ioss::Field iossField = entity->get_field(fieldName);
       unsigned numComponents = iossField.raw_storage()->component_count();
@@ -336,7 +325,6 @@ TEST(TestReadAllBlock, readManyBlockMesh)
   std::string outFile(oss.str());
   std::string elemFieldName = "elem_field";
   generate_randomized_many_block_mesh_from_textmesh(numBlocks, elemFieldName, outFile);
-
 
   {
     Ioss_MPI_Comm comm = Ioss::ParallelUtils::comm_world();
