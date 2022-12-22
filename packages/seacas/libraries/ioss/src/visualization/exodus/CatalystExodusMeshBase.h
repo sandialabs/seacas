@@ -63,15 +63,17 @@ namespace Iovs_exodus {
     virtual void CreateGlobalVariable(const std::string &variable_name, int num_comps,
                                       const int64_t *data) = 0;
 
+
     // Description:
     // Initializes the vtkMultiBlockDataSet with a global array of points
     // defined by num_points, dimension (2,3), and data.  Clears any existing data.
     virtual void InitializeGlobalPoints(int num_points, int dimension, const double *data) = 0;
 
+    using ElementBlockIdNameList = std::vector<std::pair<int, std::string>>;
     // Description:
-    // Initializes the element blocks to NULL data sets with ids in element_block_id_list.
+    // Initializes the element blocks to NULL data sets with ids and names in elemBlkIdNameList.
     // This method must be called first.
-    virtual void InitializeElementBlocks(const std::vector<int> &element_block_id_list) = 0;
+    virtual void InitializeElementBlocks(const ElementBlockIdNameList &elemBlkIdNameList) = 0;
 
     // Description:
     // Creates a vtkUnstructuredGrid on the vtkExodusIIMultiBlockDataSet

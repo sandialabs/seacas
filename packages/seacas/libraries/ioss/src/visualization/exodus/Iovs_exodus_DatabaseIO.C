@@ -73,12 +73,13 @@ namespace Iovs_exodus {
     Ioss::Region *region = this->get_region();
 
     if (state == Ioss::STATE_MODEL) {
-      std::vector<int>                   element_block_id_list;
+      //std::vector<int>                   element_block_id_list;
+      CatalystExodusMeshBase::ElementBlockIdNameList ebinList;
       Ioss::ElementBlockContainer const &ebc = region->get_element_blocks();
       for (auto i : ebc) {
-        element_block_id_list.push_back(get_id(i, &ids_));
+        ebinList.emplace_back(get_id(i, &ids_), i->name());
       }
-      this->catExoMesh->InitializeElementBlocks(element_block_id_list);
+      this->catExoMesh->InitializeElementBlocks(ebinList);
     }
     return true;
   }

@@ -96,15 +96,22 @@ void CatalystTestFixture::checkPartitionedDataSetCollectionStructure(const std::
   for (int i = 0; i < vpdc->GetNumberOfPartitionedDataSets(); i++) {
     REQUIRE(vpdc->HasMetaData(i));
     REQUIRE(vpdc->GetMetaData(i)->Get(vtkCompositeDataSet::NAME()) == partitions[i]);
-    for(int j = 0; j < vpdc->GetPartitionedDataSet(i)->GetNumberOfPartitions(); j++) {
-      int partNumCells = vpdc->GetPartitionedDataSet(i)->GetPartition(j)->GetNumberOfCells();
+    std::cout << "NAME = " << vpdc->GetMetaData(i)->Get(vtkCompositeDataSet::NAME()) << "\n";
+    auto pds = vpdc->GetPartitionedDataSet(i);
+    REQUIRE(pds != nullptr);
+    auto num_parts = pds->GetNumberOfPartitions();
+    std::cout << "num_parts = " << num_parts << "\n";
+    for(int j = 0; j < num_parts; j++) {
+      auto ds = pds->GetPartition(j);
+      int partNumCells = pds->GetPartition(j)->GetNumberOfCells();
+      std::cout << "partNumCells = " << partNumCells << "\n";
       REQUIRE(partNumCells > 0);
       numCellsCount += partNumCells;
     }
-    REQUIRE(numCells == numCellsCount);
   }
+  REQUIRE(numCells == numCellsCount);
   auto ids = vpdc->GetDataAssembly()->SelectNodes(searchQueries);
-  REQUIRE(ids.size() > 0);
+  REQUIRE(ids.size() == searchQueries.size());
 }
 
 void CatalystTestFixture::runCatalystMultiBlockMeshTest(const std::string &inputFile)

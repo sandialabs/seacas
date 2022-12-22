@@ -11,6 +11,8 @@
 #include <vector>
 #include <visualization/catalyst/manager/CatalystManager.h>
 #include <visualization/exodus/CatalystExodusMeshBase.h>
+#include "vtkPartitionedDataSetCollection.h"
+#include "vtkNew.h"
 
 class vtkMultiBlockDataSet;
 class vtkVariant;
@@ -47,7 +49,7 @@ namespace Iovs_exodus {
 
     void InitializeGlobalPoints(int num_points, int dimension, const double *data);
 
-    void InitializeElementBlocks(const std::vector<int> &element_block_id_list);
+    void InitializeElementBlocks(const ElementBlockIdNameList &elemBlockNameIdList);
 
     void CreateElementBlock(const char *elem_block_name, int elem_block_id,
                             const std::string &elem_type, int nodes_per_elem, int num_elem,
@@ -100,6 +102,7 @@ namespace Iovs_exodus {
     void SetApplyDisplacements(bool status);
 
     vtkMultiBlockDataSet *getMultiBlockDataSet();
+    vtkPartitionedDataSetCollection *getPartitionedDataSetCollection();
 
   private:
     const unsigned int ELEMENT_BLOCK_MBDS_ID   = 0;
@@ -191,6 +194,7 @@ namespace Iovs_exodus {
     CatalystExodusMesh &operator=(const CatalystExodusMesh &) = delete;
 
     vtkMultiBlockDataSet  *multiBlock = nullptr;
+    vtkNew<vtkPartitionedDataSetCollection> vpdc;
     Iovs::CatalystManager *catManager = nullptr;
     bool                   UnderscoreVectors;
     bool                   ApplyDisplacements;

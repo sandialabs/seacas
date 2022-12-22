@@ -22,8 +22,6 @@
 #include "vtkProcessModule.h"
 #include "vtkPython.h"
 #include "vtkStringArray.h"
-#include "vtkTrivialProducer.h"
-#include "vtkXMLPMultiBlockDataWriter.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkPartitionedDataSetCollection.h"
 #include <fstream>
@@ -98,7 +96,7 @@ namespace Iovs {
     cem->SetUnderscoreVectors(cmInit.underScoreVectors);
     cem->SetApplyDisplacements(cmInit.applyDisplacements);
 
-    registerMeshInPipeline(cmInit, cem->getMultiBlockDataSet(), cpi);
+    registerMeshInPipeline(cmInit, cem->getPartitionedDataSetCollection(), cpi);
 
     return std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>(
         dynamic_cast<Iovs_exodus::CatalystExodusMeshBase *>(cem));

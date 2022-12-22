@@ -155,7 +155,7 @@ namespace Iovs_cgns {
 
       const auto                    pdsIdx = vpdc->GetNumberOfPartitionedDataSets();
       vtkNew<vtkPartitionedDataSet> pds;
-      pds->SetPartition(pdsIdx, sg);
+      pds->SetPartition(pds->GetNumberOfPartitions(), sg);
       vpdc->SetPartitionedDataSet(pdsIdx, pds);
       vpdc->GetMetaData(pdsIdx)->Set(vtkCompositeDataSet::NAME(), zoneData.zone_name);
 
