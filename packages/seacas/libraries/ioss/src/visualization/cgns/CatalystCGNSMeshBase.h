@@ -44,12 +44,8 @@ namespace Iovs_cgns {
 
     virtual void Delete() = 0;
 
-    virtual void CreateBase(int base_id, const std::string &base_name) = 0;
-
     struct ZoneData
     {
-      int grouping_entity_id;
-      int base_id;
       int zone_id;
       std::string zone_name;
       std::string data_name;

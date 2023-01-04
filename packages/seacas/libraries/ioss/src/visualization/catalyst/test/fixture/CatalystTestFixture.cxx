@@ -9,18 +9,16 @@
 #include "catch.hpp"
 #include "vtkAbstractArray.h"
 #include "vtkCellData.h"
+#include "vtkDataAssembly.h"
 #include "vtkDataObjectTreeIterator.h"
 #include "vtkDataSet.h"
 #include "vtkFieldData.h"
-#include "vtkMultiBlockDataSet.h"
-#include "vtkNew.h"
-#include "vtkPartitionedDataSetCollection.h"
-#include "vtkPartitionedDataSet.h"
-#include "vtkPointData.h"
-#include "vtkXMLMultiBlockDataReader.h"
-#include "vtkXMLPartitionedDataSetCollectionReader.h"
 #include "vtkInformation.h"
-#include "vtkDataAssembly.h"
+#include "vtkNew.h"
+#include "vtkPartitionedDataSet.h"
+#include "vtkPartitionedDataSetCollection.h"
+#include "vtkPointData.h"
+#include "vtkXMLPartitionedDataSetCollectionReader.h"
 #include <Iovs_Utils.h>
 #include <cstdlib>
 
@@ -41,36 +39,48 @@ void CatalystTestFixture::runParaViewGuiScriptTest(const std::string &pythonScri
 void CatalystTestFixture::checkMeshOutputVariables(const std::string        &inputFile,
                                                    const VarAndCompCountVec &cellVars,
                                                    const VarAndCompCountVec &pointVars,
-                                                   const VarAndCompCountVec &globalVars)
+                                                   const VarAndCompCountVec &globalVars,
+                                                   const std::string        &blockPath)
 {
-  vtkNew<vtkXMLMultiBlockDataReader> mbr;
-  mbr->SetFileName(inputFile.c_str());
-  mbr->Update();
-  vtkMultiBlockDataSet *mbds = vtkMultiBlockDataSet::SafeDownCast(mbr->GetOutput());
+  vtkNew<vtkXMLPartitionedDataSetCollectionReader> vpdcr;
 
-  vtkNew<vtkDataObjectTreeIterator> iter;
-  iter->SetDataSet(mbds);
+  vpdcr->SetFileName(inputFile.c_str());
+  vpdcr->Update();
+  vtkPartitionedDataSetCollection *vpdc =
+      vtkPartitionedDataSetCollection::SafeDownCast(vpdcr->GetOutput());
+  REQUIRE(vpdc->GetDataAssembly() != nullptr);
+
+  auto assembly   = vpdc->GetDataAssembly();
+  auto childNodes = assembly->GetChildNodes(assembly->GetFirstNodeByPath(blockPath.c_str()));
   bool foundBlockThatHasAllVars = false;
-  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem()) {
-    vtkDataSet *ds                 = vtkDataSet::SafeDownCast(iter->GetCurrentDataObject());
-    bool        leafNodeHasAllVars = true;
-
-    auto hasAllVars = [](vtkFieldData *fd, const VarAndCompCountVec &vars) {
-      for (auto vv : vars) {
-        vtkAbstractArray *ar = fd->GetAbstractArray(vv.first.c_str());
-        if (ar == nullptr) {
-          return false;
+  for (int i = 0; i < childNodes.size(); i++) {
+    auto dsi = assembly->GetDataSetIndices(childNodes[i]);
+    for (int j = 0; j < dsi.size(); j++) {
+      auto pds = vpdc->GetPartitionedDataSet(dsi[j]);
+      for (int k = 0; k < pds->GetNumberOfPartitions(); k++) {
+        vtkDataSet *ds = pds->GetPartition(k);
+        if (ds == nullptr) {
+          continue;
         }
-        if (ar->GetNumberOfComponents() != vv.second) {
-          return false;
+
+        auto hasAllVars = [](vtkFieldData *fd, const VarAndCompCountVec &vars) {
+          for (auto vv : vars) {
+            vtkAbstractArray *ar = fd->GetAbstractArray(vv.first.c_str());
+            if (ar == nullptr) {
+              return false;
+            }
+            if (ar->GetNumberOfComponents() != vv.second) {
+              return false;
+            }
+          }
+          return true;
+        };
+
+        if (hasAllVars(ds->GetCellData(), cellVars) && hasAllVars(ds->GetPointData(), pointVars) &&
+            hasAllVars(ds->GetFieldData(), globalVars)) {
+          foundBlockThatHasAllVars = true;
         }
       }
-      return true;
-    };
-
-    if (hasAllVars(ds->GetCellData(), cellVars) && hasAllVars(ds->GetPointData(), pointVars) &&
-        hasAllVars(ds->GetFieldData(), globalVars)) {
-      foundBlockThatHasAllVars = true;
     }
   }
 
@@ -79,7 +89,7 @@ void CatalystTestFixture::checkMeshOutputVariables(const std::string        &inp
 
 void CatalystTestFixture::checkPartitionedDataSetCollectionStructure(const std::string &inputFile,
                                                                      const StringVec   &partitions,
-                                                                     int numCells,
+                                                                     int                numCells,
                                                                      const StringVec &searchQueries)
 {
 
@@ -96,15 +106,12 @@ void CatalystTestFixture::checkPartitionedDataSetCollectionStructure(const std::
   for (int i = 0; i < vpdc->GetNumberOfPartitionedDataSets(); i++) {
     REQUIRE(vpdc->HasMetaData(i));
     REQUIRE(vpdc->GetMetaData(i)->Get(vtkCompositeDataSet::NAME()) == partitions[i]);
-    std::cout << "NAME = " << vpdc->GetMetaData(i)->Get(vtkCompositeDataSet::NAME()) << "\n";
     auto pds = vpdc->GetPartitionedDataSet(i);
     REQUIRE(pds != nullptr);
     auto num_parts = pds->GetNumberOfPartitions();
-    std::cout << "num_parts = " << num_parts << "\n";
-    for(int j = 0; j < num_parts; j++) {
-      auto ds = pds->GetPartition(j);
-      int partNumCells = pds->GetPartition(j)->GetNumberOfCells();
-      std::cout << "partNumCells = " << partNumCells << "\n";
+    for (int j = 0; j < num_parts; j++) {
+      auto ds           = pds->GetPartition(j);
+      int  partNumCells = pds->GetPartition(j)->GetNumberOfCells();
       REQUIRE(partNumCells > 0);
       numCellsCount += partNumCells;
     }

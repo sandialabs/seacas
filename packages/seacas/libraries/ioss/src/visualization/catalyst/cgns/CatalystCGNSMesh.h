@@ -39,19 +39,11 @@ namespace Iovs_cgns {
 
     void Delete();
 
-    void CreateBase(int base_id, const std::string &base_name);
-
     void AddStructuredZoneData(const ZoneData& zoneData);
 
-    vtkMultiBlockDataSet *getMultiBlockDataSet();
     vtkPartitionedDataSetCollection *getPartitionedDataSetCollection();
 
   private:
-    const unsigned int BASES_BLOCK_ID   = 0;
-    const char *       BASES_BLOCK_NAME = "Bases";
-
-    const unsigned int ZONES_BLOCK_ID   = 0;
-    const char *       ZONES_BLOCK_NAME = "Zones";
 
     CatalystCGNSMesh();
     CatalystCGNSMesh(const CatalystCGNSMesh &) = delete;
@@ -60,15 +52,8 @@ namespace Iovs_cgns {
     std::string createFieldVariableName(std::string fieldNamePrefix, char fieldSuffixSeparator,
                                         int componentIndex, int componentCount);
 
-    struct base
-    {
-      int                base_location;
-      std::map<int, int> zone_id_to_zone_location_map;
-    };
+    std::map<int, int> zone_id_to_zone_location_map;
 
-    std::map<int, base> base_id_to_base_map;
-
-    vtkMultiBlockDataSet * multiBlock = nullptr;
     vtkNew<vtkPartitionedDataSetCollection> vpdc;
     Iovs::CatalystManager *catManager = nullptr;
     bool                   writeCatalystMesh;
