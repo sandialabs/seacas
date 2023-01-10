@@ -174,11 +174,11 @@ bool Ioss::GroupingEntity::check_for_duplicate(const Ioss::Field &new_field) con
   // See if a field with the same name exists...
   if (field_exists(new_field.get_name())) {
     auto behavior = get_database()->get_duplicate_field_behavior();
-    if (behavior != DuplicateFieldBehavior::IGNORE) {
+    if (behavior != DuplicateFieldBehavior::IGNORE_) {
       // Get the existing field so we can compare with `new_field`
       const Ioss::Field &field = fields.getref(new_field.get_name());
       if (field != new_field) {
-        std::string        warn_err = behavior == DuplicateFieldBehavior::WARNING ? "" : "ERROR: ";
+        std::string        warn_err = behavior == DuplicateFieldBehavior::WARNING_ ? "" : "ERROR: ";
         std::ostringstream errmsg;
         fmt::print(errmsg,
                    "{}Duplicate incompatible fields named '{}' on {} {}:\n"
@@ -188,7 +188,7 @@ bool Ioss::GroupingEntity::check_for_duplicate(const Ioss::Field &new_field) con
                    field.type_string(), field.get_size(), field.role_string(),
                    field.raw_storage()->name(), new_field.raw_count(), new_field.type_string(),
                    new_field.get_size(), new_field.role_string(), new_field.raw_storage()->name());
-        if (behavior == DuplicateFieldBehavior::WARNING) {
+        if (behavior == DuplicateFieldBehavior::WARNING_) {
           IOSS_ERROR(errmsg);
         }
         else {

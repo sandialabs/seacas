@@ -50,7 +50,7 @@ namespace Ioss {
 namespace Ioss {
   class EntityBlock;
 
-  enum class DuplicateFieldBehavior { UNSET, IGNORE, WARNING, ERROR };
+  enum class DuplicateFieldBehavior { UNSET_, IGNORE_, WARNING_, ERROR_ };
 
   // Contains (parent_element, side) topology pairs
   using TopoContainer = std::vector<std::pair<const ElementTopology *, const ElementTopology *>>;
@@ -829,7 +829,7 @@ namespace Ioss {
 #endif
     Region                *region_{nullptr};
     char                   fieldSeparator{'_'};
-    DuplicateFieldBehavior duplicateFieldBehavior{DuplicateFieldBehavior::UNSET};
+    DuplicateFieldBehavior duplicateFieldBehavior{DuplicateFieldBehavior::UNSET_};
 
     bool fieldSeparatorSpecified{false};
     bool enableFieldRecognition{true};

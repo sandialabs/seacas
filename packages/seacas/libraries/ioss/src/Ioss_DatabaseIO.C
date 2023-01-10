@@ -212,13 +212,13 @@ namespace Ioss {
     if (properties.exists("DUPLICATE_FIELD_NAME_BEHAVIOR")) {
       auto prop = properties.get("DUPLICATE_FIELD_NAME_BEHAVIOR").get_string();
       if (prop == "IGNORE") {
-        duplicateFieldBehavior = DuplicateFieldBehavior::IGNORE;
+        duplicateFieldBehavior = DuplicateFieldBehavior::IGNORE_;
       }
       else if (prop == "WARNING") {
-        duplicateFieldBehavior = DuplicateFieldBehavior::WARNING;
+        duplicateFieldBehavior = DuplicateFieldBehavior::WARNING_;
       }
       else if (prop == "ERROR") {
-        duplicateFieldBehavior = DuplicateFieldBehavior::ERROR;
+        duplicateFieldBehavior = DuplicateFieldBehavior::ERROR_;
       }
       else {
         std::ostringstream errmsg;
@@ -233,10 +233,10 @@ namespace Ioss {
       bool allow_duplicate = false;
       Utils::check_set_bool_property(properties, "IGNORE_DUPLICATE_FIELD_NAMES", allow_duplicate);
       if (allow_duplicate) {
-        duplicateFieldBehavior = DuplicateFieldBehavior::WARNING;
+        duplicateFieldBehavior = DuplicateFieldBehavior::WARNING_;
       }
       else {
-        duplicateFieldBehavior = DuplicateFieldBehavior::ERROR;
+        duplicateFieldBehavior = DuplicateFieldBehavior::ERROR_;
       }
     }
 
