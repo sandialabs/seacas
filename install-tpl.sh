@@ -113,7 +113,7 @@ USE_AEC=$(check_valid USE_AEC)
 KOKKOS=${KOKKOS:-NO}
 KOKKOS=$(check_valid KOKKOS)
 
-H5VERSION=${H5VERSION:-V110}
+H5VERSION=${H5VERSION:-V114}
 
 FAODEL=${FAODEL:-NO}
 FAODEL=$(check_valid FAODEL)
@@ -406,6 +406,9 @@ then
     elif [ "${H5VERSION}" == "V113" ]; then
         hdf_version="1.13.1"
         hdf_base="1.13"
+    elif [ "${H5VERSION}" == "V114" ]; then
+        hdf_version="1.14.0"
+        hdf_base="1.14"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
     else
