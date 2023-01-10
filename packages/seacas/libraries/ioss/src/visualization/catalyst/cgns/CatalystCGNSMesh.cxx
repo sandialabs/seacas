@@ -24,8 +24,8 @@ namespace Iovs_cgns {
   {
 
     vtkNew<vtkDataAssembly> assembly;
-    assembly->SetRootNodeName("IOSS");
-    auto id = assembly->AddNode("structured_blocks");
+    assembly->SetRootNodeName(ASSEMBLY_ROOT_NAME.c_str());
+    auto id = assembly->AddNode(ASSEMBLY_STRUCTURED_BLOCKS.c_str());
     this->vpdc->SetDataAssembly(assembly);
 
     this->catManager           = cm;
@@ -72,102 +72,109 @@ namespace Iovs_cgns {
     if ((zoneData.ni == 0) or (zoneData.nj == 0) or (zoneData.nk == 0)) {
       if (zone_id_to_zone_location_map.find(zoneData.zone_id) ==
           zone_id_to_zone_location_map.end()) {
-        const auto         pdsIdx                      = vpdc->GetNumberOfPartitionedDataSets();
-        zone_id_to_zone_location_map[zoneData.zone_id] = pdsIdx;
-
-        vtkNew<vtkPartitionedDataSet> pds;
-        vpdc->SetPartitionedDataSet(pdsIdx, pds);
-        vpdc->GetMetaData(pdsIdx)->Set(vtkCompositeDataSet::NAME(), zoneData.zone_name);
-        auto assembly = vpdc->GetDataAssembly();
-        auto node     = assembly->AddNode(zoneData.zone_name.c_str(),
-                                          assembly->GetFirstNodeByPath("/IOSS/structured_blocks"));
-        assembly->SetAttribute(node, "label", zoneData.zone_name.c_str());
-        assembly->AddDataSetIndex(node, pdsIdx);
+        createPartitionedDataSet(zoneData, nullptr);
+      }
+      return;
     }
-    return;
+
+    if (zone_id_to_zone_location_map.find(zoneData.zone_id) == zone_id_to_zone_location_map.end()) {
+      vtkStructuredGrid *sg  = vtkStructuredGrid::New();
+      vtkPoints         *pts = vtkPoints::New();
+      sg->SetDimensions(dims);
+      pts->Allocate(dims[0] * dims[1] * dims[2]);
+      sg->SetPoints(pts);
+      pts->Delete();
+      createPartitionedDataSet(zoneData, sg);
+      sg->Delete();
+    }
+
+    vtkStructuredGrid *sg = getStucturedGrid(zoneData);
+
+    int index = -1;
+    if (zoneData.data_name == "mesh_model_coordinates_x") {
+      index = 0;
+    }
+    else if (zoneData.data_name == "mesh_model_coordinates_y") {
+      index = 1;
+    }
+    else if (zoneData.data_name == "mesh_model_coordinates_z") {
+      index = 2;
+    }
+
+    if (index >= 0) {
+      vtkPoints *pts = sg->GetPoints();
+      for (int i = 0; i < zoneData.size; i++) {
+        double p[3];
+        pts->GetPoint(i, p);
+        p[index] = zoneData.data[i];
+        pts->InsertPoint(i, p);
+      }
+    }
+    else {
+      vtkDoubleArray *da = vtkDoubleArray::New();
+      da->SetName(zoneData.data_name.c_str());
+      da->SetNumberOfComponents(zoneData.comp_count);
+      da->SetNumberOfTuples(zoneData.size);
+      for (int j = 0; j < zoneData.size; j++) {
+        da->InsertTuple(j, zoneData.data + (zoneData.comp_count * j));
+      }
+
+      if (zoneData.is_cell_field) {
+        sg->GetCellData()->AddArray(da);
+      }
+      else {
+        sg->GetPointData()->AddArray(da);
+      }
+      da->Delete();
+    }
   }
 
-  if (zone_id_to_zone_location_map.find(zoneData.zone_id) == zone_id_to_zone_location_map.end()) {
-    const auto         pdsIdx = vpdc->GetNumberOfPartitionedDataSets();
-    vtkStructuredGrid *sg     = vtkStructuredGrid::New();
-    vtkPoints         *pts    = vtkPoints::New();
-    sg->SetDimensions(dims);
-    pts->Allocate(dims[0] * dims[1] * dims[2]);
-    sg->SetPoints(pts);
-    pts->Delete();
-    zone_id_to_zone_location_map[zoneData.zone_id] = pdsIdx;
+  std::string CatalystCGNSMesh::createFieldVariableName(std::string fieldNamePrefix,
+                                                        char        fieldSuffixSeparator,
+                                                        int componentIndex, int componentCount)
+  {
+    std::string name;
+    if (componentCount == 1) {
+      name = fieldNamePrefix;
+    }
+    else {
+      std::ostringstream oss;
+      oss << componentIndex + 1;
+      name = fieldNamePrefix + fieldSuffixSeparator + oss.str();
+    }
 
+    return name;
+  }
+
+  int CatalystCGNSMesh::getStructuredBlocksAssemblyNode()
+  {
+    auto assembly = vpdc->GetDataAssembly();
+    return assembly->GetFirstNodeByPath(
+        ("/" + ASSEMBLY_ROOT_NAME + "/" + ASSEMBLY_STRUCTURED_BLOCKS).c_str());
+  }
+
+  void CatalystCGNSMesh::createPartitionedDataSet(const ZoneData &zoneData, vtkStructuredGrid *sg)
+  {
+    const auto pdsIdx                              = vpdc->GetNumberOfPartitionedDataSets();
+    zone_id_to_zone_location_map[zoneData.zone_id] = pdsIdx;
     vtkNew<vtkPartitionedDataSet> pds;
-    pds->SetPartition(pds->GetNumberOfPartitions(), sg);
-    sg->Delete();
+    if (sg != nullptr) {
+      pds->SetPartition(PDS_STRUCTURED_GRID_INDEX, sg);
+    }
     vpdc->SetPartitionedDataSet(pdsIdx, pds);
     vpdc->GetMetaData(pdsIdx)->Set(vtkCompositeDataSet::NAME(), zoneData.zone_name);
-
     auto assembly = vpdc->GetDataAssembly();
-    auto node     = assembly->AddNode(zoneData.zone_name.c_str(),
-                                      assembly->GetFirstNodeByPath("/IOSS/structured_blocks"));
-    assembly->SetAttribute(node, "label", zoneData.zone_name.c_str());
+    auto node = assembly->AddNode(zoneData.zone_name.c_str(), getStructuredBlocksAssemblyNode());
+    assembly->SetAttribute(node, ASSEMBLY_LABEL.c_str(), zoneData.zone_name.c_str());
     assembly->AddDataSetIndex(node, pdsIdx);
   }
 
-  int                zone_location = zone_id_to_zone_location_map[zoneData.zone_id];
-  vtkStructuredGrid *sg =
-      vtkStructuredGrid::SafeDownCast(vpdc->GetPartitionedDataSet(zone_location)->GetPartition(0));
-
-  int index = -1;
-  if (zoneData.data_name == "mesh_model_coordinates_x") {
-    index = 0;
+  vtkStructuredGrid *CatalystCGNSMesh::getStucturedGrid(const ZoneData &zoneData)
+  {
+    int                zone_location = zone_id_to_zone_location_map[zoneData.zone_id];
+    vtkStructuredGrid *sg            = vtkStructuredGrid::SafeDownCast(
+        vpdc->GetPartitionedDataSet(zone_location)->GetPartition(PDS_STRUCTURED_GRID_INDEX));
+    return sg;
   }
-  else if (zoneData.data_name == "mesh_model_coordinates_y") {
-    index = 1;
-  }
-  else if (zoneData.data_name == "mesh_model_coordinates_z") {
-    index = 2;
-  }
-
-  if (index >= 0) {
-    vtkPoints *pts = sg->GetPoints();
-    for (int i = 0; i < zoneData.size; i++) {
-      double p[3];
-      pts->GetPoint(i, p);
-      p[index] = zoneData.data[i];
-      pts->InsertPoint(i, p);
-    }
-  }
-  else {
-    vtkDoubleArray *da = vtkDoubleArray::New();
-    da->SetName(zoneData.data_name.c_str());
-    da->SetNumberOfComponents(zoneData.comp_count);
-    da->SetNumberOfTuples(zoneData.size);
-    for (int j = 0; j < zoneData.size; j++) {
-      da->InsertTuple(j, zoneData.data + (zoneData.comp_count * j));
-    }
-
-    if (zoneData.is_cell_field) {
-      sg->GetCellData()->AddArray(da);
-    }
-    else {
-      sg->GetPointData()->AddArray(da);
-    }
-    da->Delete();
-  }
-}
-
-std::string CatalystCGNSMesh::createFieldVariableName(std::string fieldNamePrefix,
-                                                      char fieldSuffixSeparator, int componentIndex,
-                                                      int componentCount)
-{
-  std::string name;
-  if (componentCount == 1) {
-    name = fieldNamePrefix;
-  }
-  else {
-    std::ostringstream oss;
-    oss << componentIndex + 1;
-    name = fieldNamePrefix + fieldSuffixSeparator + oss.str();
-  }
-
-  return name;
-}
 
 } // namespace Iovs_cgns

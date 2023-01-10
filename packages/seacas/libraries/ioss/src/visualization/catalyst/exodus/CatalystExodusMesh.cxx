@@ -14,7 +14,6 @@
 #include "vtkDoubleArray.h"
 #include "vtkFieldData.h"
 #include "vtkInformation.h"
-#include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
 #include "vtkPartitionedDataSet.h"
 #include "vtkPointData.h"
@@ -29,7 +28,6 @@ namespace Iovs_exodus {
   {
 
     this->catalystPipelineInfo = catalystPipelineInfo;
-    this->multiBlock           = vtkMultiBlockDataSet::New();
     this->catManager           = cm;
     this->global_points        = nullptr;
     this->num_global_points    = 0;
@@ -38,8 +36,8 @@ namespace Iovs_exodus {
     this->writeCatalystMesh    = false;
 
     vtkNew<vtkDataAssembly> assembly;
-    assembly->SetRootNodeName("IOSS");
-    assembly->AddNode("element_blocks");
+    assembly->SetRootNodeName(ASSEMBLY_ROOT_NAME.c_str());
+    assembly->AddNode(ASSEMBLY_ELEMENT_BLOCKS.c_str());
     this->vpdc->SetDataAssembly(assembly);
   }
 
@@ -51,20 +49,6 @@ namespace Iovs_exodus {
     this->global_elem_id_map.clear();
     this->global_point_id_to_global_elem_id.clear();
     this->ebidmap.clear();
-    this->nsmap.clear();
-    this->nsidmap.clear();
-    this->ssmap.clear();
-    this->ssidmap.clear();
-    std::map<int, Ve2mSideSetInfo *>::iterator ssinfomapiter;
-    for (ssinfomapiter = this->ssinfomap.begin(); ssinfomapiter != this->ssinfomap.end();
-         ssinfomapiter++) {
-      if (ssinfomapiter->second != NULL) {
-        delete ssinfomapiter->second;
-      }
-    }
-    this->ssinfomap.clear();
-    this->multiBlock->Delete();
-    this->multiBlock = nullptr;
   }
 
   void CatalystExodusMesh::ReleaseGlobalPoints()
@@ -74,8 +58,6 @@ namespace Iovs_exodus {
       this->global_points = nullptr;
     }
   }
-
-  vtkMultiBlockDataSet *CatalystExodusMesh::getMultiBlockDataSet() { return this->multiBlock; }
 
   vtkPartitionedDataSetCollection *CatalystExodusMesh::getPartitionedDataSetCollection()
   {
@@ -131,44 +113,22 @@ namespace Iovs_exodus {
                                                        int num_comps, vtkVariant &v,
                                                        const void *data)
   {
-
-    vtkMultiBlockDataSet *eb =
-        vtkMultiBlockDataSet::SafeDownCast(this->multiBlock->GetBlock(ELEMENT_BLOCK_MBDS_ID));
-
     for (std::map<int, unsigned int>::iterator iter = this->ebidmap.begin();
          iter != this->ebidmap.end(); ++iter) {
-      this->CreateGlobalVariableInternal(variable_name, num_comps, eb, iter->second, v, data);
+      vtkUnstructuredGrid *ug = getUnstructuredGrid(iter->second);
+      this->CreateGlobalVariableInternal(variable_name, num_comps, ug, v, data);
     }
-
-    /*
-        eb = vtkMultiBlockDataSet::SafeDownCast(\
-            this->multiBlock->GetBlock(NODE_SETS_MBDS_ID));
-
-        for (std::map<int, unsigned int>::iterator iter = this->nsidmap.begin();
-             iter != this->nsidmap.end(); ++iter) {
-            this->CreateGlobalVariableInternal(component_names, eb,
-                iter->second, v, data);
-        }
-
-        eb = vtkMultiBlockDataSet::SafeDownCast(\
-            this->multiBlock->GetBlock(SIDE_SETS_MBDS_ID));
-
-        for (std::map<int, unsigned int>::iterator iter = this->ssidmap.begin();
-             iter != this->ssidmap.end(); ++iter) {
-            this->CreateGlobalVariableInternal(component_names, eb,
-                iter->second, v, data);
-        }
-    */
   }
 
   void CatalystExodusMesh::CreateGlobalVariableInternal(const std::string &variable_name,
-                                                        int num_comps, vtkMultiBlockDataSet *eb,
-                                                        unsigned int bid, vtkVariant &v,
-                                                        const void *data)
+                                                        int num_comps, vtkUnstructuredGrid *ug,
+                                                        vtkVariant &v, const void *data)
   {
-    vtkUnstructuredGrid *ug        = vtkUnstructuredGrid::SafeDownCast(eb->GetBlock(bid));
-    vtkFieldData        *fieldData = ug->GetFieldData();
-    vtkDataArray        *da        = fieldData->GetArray(variable_name.c_str());
+    if (ug == nullptr) {
+      return;
+    }
+    vtkFieldData *fieldData = ug->GetFieldData();
+    vtkDataArray *da        = fieldData->GetArray(variable_name.c_str());
     if (da) {
       fieldData->RemoveArray(variable_name.c_str());
     }
@@ -210,57 +170,25 @@ namespace Iovs_exodus {
   void
   CatalystExodusMesh::InitializeElementBlocks(const ElementBlockIdNameList &elemBlockNameIdList)
   {
-
-    this->multiBlock->Initialize();
     this->ReleaseGlobalPoints();
     this->ebmap.clear();
     this->ebmap_reverse.clear();
     this->global_elem_id_map.clear();
     this->global_point_id_to_global_elem_id.clear();
     this->ebidmap.clear();
-    this->nsmap.clear();
-    this->nsidmap.clear();
-    this->ssmap.clear();
-    this->ssidmap.clear();
-
-    vtkMultiBlockDataSet *eb = vtkMultiBlockDataSet::New();
-    this->multiBlock->SetBlock(ELEMENT_BLOCK_MBDS_ID, eb);
-    this->multiBlock->GetMetaData(ELEMENT_BLOCK_MBDS_ID)
-        ->Set(vtkCompositeDataSet::NAME(), ELEMENT_BLOCK_MBDS_NAME);
 
     for (unsigned int i = 0; i < elemBlockNameIdList.size(); i++) {
       this->ebidmap[elemBlockNameIdList[i].first] = i;
-      vtkUnstructuredGrid *ug                     = vtkUnstructuredGrid::New();
-      eb->SetBlock(i, ug);
-      eb->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), elemBlockNameIdList[i].second);
-      ug->Delete();
-
       unsigned int                  pdsIdx = vpdc->GetNumberOfPartitionedDataSets();
       vtkNew<vtkPartitionedDataSet> pds;
-      //pds->SetPartition(pds->GetNumberOfPartitions(), ug);
       vpdc->SetPartitionedDataSet(pdsIdx, pds);
       vpdc->GetMetaData(pdsIdx)->Set(vtkCompositeDataSet::NAME(), elemBlockNameIdList[i].second);
       auto assembly = vpdc->GetDataAssembly();
-      auto node = assembly->AddNode(elemBlockNameIdList[i].second.c_str(),
-        assembly->GetFirstNodeByPath("/IOSS/element_blocks"));
-      assembly->SetAttribute(node, "label", elemBlockNameIdList[i].second.c_str());
+      auto node =
+          assembly->AddNode(elemBlockNameIdList[i].second.c_str(), getElementBlocksAssemblyNode());
+      assembly->SetAttribute(node, ASSEMBLY_LABEL.c_str(), elemBlockNameIdList[i].second.c_str());
       assembly->AddDataSetIndex(node, pdsIdx);
     }
-    eb->Delete();
-
-    /*
-        eb = vtkMultiBlockDataSet::New();
-        this->multiBlock->SetBlock(SIDE_SETS_MBDS_ID, eb);
-        this->multiBlock->GetMetaData(SIDE_SETS_MBDS_ID)->\
-            Set(vtkCompositeDataSet::NAME(), SIDE_SETS_MBDS_NAME);
-        eb->Delete();
-
-        eb = vtkMultiBlockDataSet::New();
-        this->multiBlock->SetBlock(NODE_SETS_MBDS_ID, eb);
-        this->multiBlock->GetMetaData(NODE_SETS_MBDS_ID)->\
-            Set(vtkCompositeDataSet::NAME(), NODE_SETS_MBDS_NAME);
-        eb->Delete();
-    */
   }
 
   void CatalystExodusMesh::CreateElementBlock(const char *elem_block_name, int elem_block_id,
@@ -433,13 +361,11 @@ namespace Iovs_exodus {
     else if ((elemType.substr(0, 4) == "NULL") && (num_elem == 0)) {
       std::cout << "NULL element block found";
       std::cout << "Unable to create element block " << elem_block_name;
-      this->multiBlock->RemoveBlock(ELEMENT_BLOCK_MBDS_ID);
       return; // silently ignore empty element blocks
     }
     else {
       std::cout << "Unsupported element type: " << elemType.c_str();
       std::cout << "Unable to create element block " << elem_block_name;
-      this->multiBlock->RemoveBlock(ELEMENT_BLOCK_MBDS_ID);
       return;
       // cell types not currently handled
       // quadratic wedge - 15,16 nodes
@@ -509,10 +435,7 @@ namespace Iovs_exodus {
       }
     }
 
-    vtkMultiBlockDataSet *eb =
-        vtkMultiBlockDataSet::SafeDownCast(this->multiBlock->GetBlock(ELEMENT_BLOCK_MBDS_ID));
-    vtkUnstructuredGrid *ug =
-        vtkUnstructuredGrid::SafeDownCast(eb->GetBlock(this->ebidmap[elem_block_id]));
+    vtkUnstructuredGrid *ug = vtkUnstructuredGrid::New();
     vtkPoints *points = vtkPoints::New();
     double     x[3];
     vtkIdType  i = 0;
@@ -553,243 +476,18 @@ namespace Iovs_exodus {
     }
 
     ug->SetPoints(points);
-    //eb->GetMetaData(this->ebidmap[elem_block_id])
-    //    ->Set(vtkCompositeDataSet::NAME(), elem_block_name);
-    //vpdc->GetMetaData(this->ebidmap[elem_block_id])
-    //    ->Set(vtkCompositeDataSet::NAME(), elem_block_name);
-    //auto assembly = vpdc->GetDataAssembly();
-    //auto node =
-    //    assembly->AddNode(elem_block_name, assembly->GetFirstNodeByPath("/IOSS/element_blocks"));
-    //assembly->SetAttribute(node, "label", elem_block_name);
-    //assembly->AddDataSetIndex(node, this->ebidmap[elem_block_id]);
 
-    vpdc->GetPartitionedDataSet(this->ebidmap[elem_block_id])->SetPartition(0,ug);
+    vpdc->GetPartitionedDataSet(this->ebidmap[elem_block_id])
+        ->SetPartition(PDS_UNSTRUCTURED_GRID_INDEX, ug);
 
+    ug->Delete();
     points->Delete();
 
     vtkVariant vb((int)this->ebidmap[elem_block_id]);
     int        bid = this->ebidmap[elem_block_id];
-    this->CreateGlobalVariableInternal("ElementBlockIds", 1, eb, this->ebidmap[elem_block_id], vb,
-                                       &bid);
-    this->CreateElementVariableInternal("ObjectId", 1, eb, bid, vb, &object_ids[0]);
-  }
 
-  void CatalystExodusMesh::CreateNodeSet(const char *node_set_name, int node_set_id, int num_ids,
-                                         const int *data)
-  {
-
-    vtkVariant v((int)0);
-    this->CreateNodeSetVariant(node_set_name, node_set_id, num_ids, v, data);
-  }
-
-  void CatalystExodusMesh::CreateNodeSet(const char *node_set_name, int node_set_id, int num_ids,
-                                         const int64_t *data)
-  {
-
-    vtkVariant v((int64_t)0);
-    this->CreateNodeSetVariant(node_set_name, node_set_id, num_ids, v, data);
-  }
-
-  void CatalystExodusMesh::CreateNodeSetVariant(const char *node_set_name, int node_set_id,
-                                                int num_ids, vtkVariant &v, const void *ids)
-  {
-
-    vtkMultiBlockDataSet *eb =
-        vtkMultiBlockDataSet::SafeDownCast(this->multiBlock->GetBlock(NODE_SETS_MBDS_ID));
-    unsigned int         bid    = eb->GetNumberOfBlocks();
-    vtkUnstructuredGrid *ug     = vtkUnstructuredGrid::New();
-    vtkPoints           *points = vtkPoints::New();
-    points->SetNumberOfPoints(num_ids);
-    this->nsidmap[node_set_id] = bid;
-    std::vector<int> object_ids;
-    std::vector<int> global_element_id;
-
-    for (int i = 0; i < num_ids; i++) {
-      double    x[3];
-      vtkIdType ptids[1];
-      int       id = (int)this->GetArrayValue(v, ids, i) - 1;
-      this->global_points->GetPoint(id, x);
-      ptids[0] = (vtkIdType)i;
-      points->SetPoint(i, x);
-      ug->InsertNextCell(VTK_VERTEX, 1, ptids);
-      this->nsmap[node_set_id][id] = i;
-      object_ids.push_back(node_set_id);
-
-      global_element_id.push_back(this->global_point_id_to_global_elem_id[id]);
-    }
-
-    ug->SetPoints(points);
-    eb->SetBlock(bid, ug);
-    eb->GetMetaData(bid)->Set(vtkCompositeDataSet::NAME(), node_set_name);
-    ug->Delete();
-    points->Delete();
-
-    if (num_ids > 0) {
-      vtkVariant val((int)0);
-      this->CreateElementVariableInternal("ObjectId", 1, eb, bid, val, &object_ids[0]);
-      this->CreateElementVariableInternal("GlobalElementId", 1, eb, bid, val,
-                                          &global_element_id[0]);
-    }
-  }
-
-  void CatalystExodusMesh::CreateSideSet(const char *ss_owner_name, int side_set_id, int num_ids,
-                                         const int *element_ids, const int *face_ids)
-  {
-    /*NOTE: Jeff Mauldin JAM 2015Oct8
-    CreateSideSet is called once for each block which the sideset
-    spans, and the side_set_name for the side set is the ss_owner_name
-    with additional characters to indicate which block we are doing.
-    The current implementation of the sierra sideset construction
-    creates a single independent sideset and collects all the
-    nodes and elements from the side set from each block spanned by
-    the sideset into that single sideset.  It needs to have the
-    ss_owner_name, not the side_set_name, because that is the name
-    in the input deck for the sideset for reference for things like
-    extractblock.  It may become necessary at a later date to
-    pass in both, but for now we
-    are just passing in ss_owner_name to give us correct
-    functionality while not changing the function interface*/
-
-    vtkVariant v((int)0);
-    this->CreateSideSetVariant(ss_owner_name, side_set_id, num_ids, v, element_ids, face_ids);
-  }
-
-  void CatalystExodusMesh::CreateSideSet(const char *ss_owner_name, int side_set_id, int num_ids,
-                                         const int64_t *element_ids, const int64_t *face_ids)
-  {
-
-    vtkVariant v((int64_t)0);
-    this->CreateSideSetVariant(ss_owner_name, side_set_id, num_ids, v, element_ids, face_ids);
-  }
-
-  void CatalystExodusMesh::CreateSideSetVariant(const char *ss_owner_name, int side_set_id,
-                                                int num_ids, vtkVariant &v, const void *element_ids,
-                                                const void *face_ids)
-  {
-
-    vtkMultiBlockDataSet *ssb =
-        vtkMultiBlockDataSet::SafeDownCast(this->multiBlock->GetBlock(SIDE_SETS_MBDS_ID));
-    vtkMultiBlockDataSet *eb =
-        vtkMultiBlockDataSet::SafeDownCast(this->multiBlock->GetBlock(ELEMENT_BLOCK_MBDS_ID));
-
-    // side set can span multiple blocks; we appear to get callback for same
-    // side set once per block in which the side set exists
-    // we need to track this situation and only construct one unstructured grid
-    // per sideset, but put info from every block the sideset spans into the
-    // unstructured grid (and the map of the point ids)
-    int                  newSideSetFlag;
-    vtkPoints           *points = nullptr;
-    vtkUnstructuredGrid *ug     = nullptr;
-    unsigned int         bid    = -1;
-
-    Ve2mSideSetInfo                           *ssinfo = nullptr;
-    std::map<int, Ve2mSideSetInfo *>::iterator ssinfomapiter;
-    ssinfomapiter = this->ssinfomap.find(side_set_id);
-    if (ssinfomapiter != ssinfomap.end()) {
-      // we have already seen this side_set_id, so we add this side set rather
-      // than constructing a new one
-      newSideSetFlag = 0;
-      ssinfo         = ssinfomapiter->second;
-      bid            = ssinfo->bid;
-      ug             = vtkUnstructuredGrid::SafeDownCast(ssb->GetBlock(bid));
-      points         = ug->GetPoints();
-    }
-    else {
-      // we have not seen this side_set_id, so we need to create it and add
-      // it to the map of information about existing side sets
-      newSideSetFlag             = 1;
-      bid                        = ssb->GetNumberOfBlocks();
-      ug                         = vtkUnstructuredGrid::New();
-      points                     = vtkPoints::New();
-      ssinfo                     = new Ve2mSideSetInfo();
-      ssinfomap[side_set_id]     = ssinfo;
-      ssinfo->bid                = bid;
-      this->ssidmap[side_set_id] = bid;
-    }
-
-    vtkIdType point_index = ssinfo->unique_points.size();
-
-    for (int i = 0; i < num_ids; i++) {
-      int                  e_id;
-      int                  e_bid;
-      int                  face_id;
-      vtkUnstructuredGrid *eb_ug = 0;
-      vtkCell             *cell  = 0;
-
-      for (std::map<int, unsigned int>::iterator iter = this->ebidmap.begin();
-           iter != this->ebidmap.end(); ++iter) {
-
-        eb_ug = vtkUnstructuredGrid::SafeDownCast(eb->GetBlock(this->ebidmap[iter->first]));
-        e_id  = this->GetArrayValue(v, element_ids, i);
-        if (this->global_elem_id_map[iter->first].find(e_id) !=
-            this->global_elem_id_map[iter->first].end()) {
-
-          face_id = this->GetArrayValue(v, face_ids, i) - 1;
-          e_id    = this->global_elem_id_map[iter->first][e_id];
-          e_bid   = iter->first;
-          cell    = eb_ug->GetCell(e_id);
-          break;
-        }
-      }
-
-      if (cell != 0 && cell->GetCellType() != VTK_EMPTY_CELL) {
-        if (cell->GetCellType() == VTK_HEXAHEDRON ||
-            cell->GetCellType() == VTK_QUADRATIC_HEXAHEDRON ||
-            cell->GetCellType() == VTK_TRIQUADRATIC_HEXAHEDRON) {
-
-          face_id = HEXAHEDRON_FACE_MAP[face_id];
-        }
-        else if (cell->GetCellType() == VTK_WEDGE || cell->GetCellType() == VTK_QUADRATIC_WEDGE) {
-          face_id = WEDGE_FACE_MAP[face_id];
-        }
-        else {
-        }
-
-        vtkCell *face = eb_ug->GetCell(e_id)->GetFace(face_id);
-        if (!face) {
-          face = eb_ug->GetCell(e_id)->GetEdge(face_id);
-        }
-        vtkPoints *face_points = face->GetPoints();
-        double     x[3];
-        vtkIdType  pts[face_points->GetNumberOfPoints()];
-
-        for (int j = 0; j < face_points->GetNumberOfPoints(); j++) {
-          int global_point_id = this->ebmap_reverse[e_bid][face->GetPointId(j)];
-          if (ssinfo->unique_points.find(global_point_id) != ssinfo->unique_points.end()) {
-
-            pts[j] = ssinfo->unique_points[global_point_id];
-            if (pts[j] >= points->GetNumberOfPoints()) {
-              std::cerr << "ERROR!!!  BAD INDEX\n";
-            }
-          }
-          else {
-            if (point_index > points->GetNumberOfPoints()) {
-              std::cerr << "ERROR!!!  BAD INDEX\n";
-            }
-            ssinfo->unique_points[global_point_id]    = point_index;
-            this->ssmap[side_set_id][global_point_id] = point_index;
-            pts[j]                                    = point_index++;
-            face_points->GetPoint(j, x);
-            points->InsertNextPoint(x);
-          }
-        }
-        ug->InsertNextCell(face->GetCellType(), face->GetNumberOfPoints(), pts);
-        ssinfo->object_ids.push_back(side_set_id);
-      }
-    }
-
-    if (newSideSetFlag) {
-      ug->SetPoints(points);
-      ssb->SetBlock(bid, ug);
-      ssb->GetMetaData(bid)->Set(vtkCompositeDataSet::NAME(), ss_owner_name);
-      ug->Delete();
-      points->Delete();
-    }
-
-    if (num_ids > 0) {
-      vtkVariant val((int)0);
-      this->CreateElementVariableInternal("ObjectId", 1, ssb, bid, val, &(ssinfo->object_ids)[0]);
-    }
+    this->CreateGlobalVariableInternal("ElementBlockIds", 1, ug, vb, &bid);
+    this->CreateElementVariableInternal("ObjectId", 1, ug, vb, &object_ids[0]);
   }
 
   void CatalystExodusMesh::CreateElementVariable(const std::string &variable_name, int num_comps,
@@ -820,21 +518,19 @@ namespace Iovs_exodus {
                                                         int num_comps, int elem_block_id,
                                                         vtkVariant &v, const void *data)
   {
-
-    vtkMultiBlockDataSet *eb =
-        vtkMultiBlockDataSet::SafeDownCast(this->multiBlock->GetBlock(ELEMENT_BLOCK_MBDS_ID));
-    this->CreateElementVariableInternal(variable_name, num_comps, eb, this->ebidmap[elem_block_id],
-                                        v, data);
+    vtkUnstructuredGrid *ug = getUnstructuredGrid(this->ebidmap[elem_block_id]);
+    this->CreateElementVariableInternal(variable_name, num_comps, ug, v, data);
   }
 
   void CatalystExodusMesh::CreateElementVariableInternal(const std::string &variable_name,
-                                                         int num_comps, vtkMultiBlockDataSet *eb,
-                                                         unsigned int bid, vtkVariant &v,
-                                                         const void *data)
+                                                         int num_comps, vtkUnstructuredGrid *ug,
+                                                         vtkVariant &v, const void *data)
   {
-    vtkUnstructuredGrid *ug        = vtkUnstructuredGrid::SafeDownCast(eb->GetBlock(bid));
-    vtkFieldData        *cell_data = ug->GetCellData();
-    vtkDataArray        *da        = cell_data->GetArray(variable_name.c_str());
+    if (ug == nullptr) {
+      return;
+    }
+    vtkFieldData *cell_data = ug->GetCellData();
+    vtkDataArray *da        = cell_data->GetArray(variable_name.c_str());
     if (da) {
       cell_data->RemoveArray(variable_name.c_str());
     }
@@ -880,84 +576,67 @@ namespace Iovs_exodus {
                                                       int num_comps, vtkVariant &v,
                                                       const void *data)
   {
-
-    vtkMultiBlockDataSet *eb =
-        vtkMultiBlockDataSet::SafeDownCast(this->multiBlock->GetBlock(ELEMENT_BLOCK_MBDS_ID));
-
-    this->CreateNodalVariableInternal(variable_name, num_comps, eb, this->ebidmap, this->ebmap, v,
-                                      data);
-
-    /*
-        eb = vtkMultiBlockDataSet::SafeDownCast(\
-            this->multiBlock->GetBlock(NODE_SETS_MBDS_ID));
-
-        this->CreateNodalVariableInternal(component_names, eb, this->nsidmap,
-            this->nsmap, v, data);
-
-        eb = vtkMultiBlockDataSet::SafeDownCast(\
-            this->multiBlock->GetBlock(SIDE_SETS_MBDS_ID));
-
-        this->CreateNodalVariableInternal(component_names, eb, this->ssidmap,
-            this->ssmap, v, data);
-    */
+    for (std::map<int, unsigned int>::iterator iter = this->ebidmap.begin();
+         iter != this->ebidmap.end(); ++iter) {
+      vtkUnstructuredGrid *ug = getUnstructuredGrid(iter->second);
+      this->CreateNodalVariableInternal(variable_name, num_comps, ug, iter->first, this->ebmap, v,
+                                        data);
+    }
   }
 
   void CatalystExodusMesh::CreateNodalVariableInternal(const std::string &variable_name,
-                                                       int num_comps, vtkMultiBlockDataSet *eb,
-                                                       std::map<int, unsigned int>       &id_map,
+                                                       int num_comps, vtkUnstructuredGrid *ug,
+                                                       int element_block_id,
                                                        std::map<int, std::map<int, int>> &point_map,
                                                        vtkVariant &v, const void *data)
   {
+    if (ug == nullptr) {
+      return;
+    }
+
     bool displace_nodes = false;
     if ((variable_name.substr(0, 3) == "DIS") || (variable_name.substr(0, 3) == "dis")) {
       displace_nodes = true;
     }
 
-    for (std::map<int, unsigned int>::iterator iter = id_map.begin(); iter != id_map.end();
-         ++iter) {
+    if (ug->GetNumberOfCells() == 0) {
+      return;
+    }
+    vtkFieldData *point_data = ug->GetPointData();
+    vtkDataArray *da         = point_data->GetArray(variable_name.c_str());
+    if (da) {
+      point_data->RemoveArray(variable_name.c_str());
+    }
+    vtkDataArray *arr = vtkDataArray::CreateDataArray(v.GetType());
+    arr->SetName(variable_name.c_str());
+    arr->SetNumberOfComponents(num_comps);
+    arr->SetNumberOfTuples(ug->GetPoints()->GetNumberOfPoints());
+    point_data->AddArray(arr);
+    arr->Delete();
 
-      vtkUnstructuredGrid *ug = vtkUnstructuredGrid::SafeDownCast(eb->GetBlock(iter->second));
-      if (!ug) {
-        continue;
-      }
-      if (ug->GetNumberOfCells() == 0) {
-        continue;
-      }
-      vtkFieldData *point_data = ug->GetPointData();
-      vtkDataArray *da         = point_data->GetArray(variable_name.c_str());
-      if (da) {
-        point_data->RemoveArray(variable_name.c_str());
-      }
-      vtkDataArray *arr = vtkDataArray::CreateDataArray(v.GetType());
-      arr->SetName(variable_name.c_str());
-      arr->SetNumberOfComponents(num_comps);
-      arr->SetNumberOfTuples(ug->GetPoints()->GetNumberOfPoints());
-      point_data->AddArray(arr);
-      arr->Delete();
+    int index = 0;
+    for (int i = 0; i < this->num_global_points; i++) {
+      std::map<int, int>::iterator mit = point_map[element_block_id].find(i);
 
-      int index = 0;
-      for (int i = 0; i < this->num_global_points; i++) {
-        std::map<int, int>::iterator mit = point_map[iter->first].find(i);
-
-        for (int c = 0; c < num_comps; c++) {
-          if (mit != point_map[iter->first].end()) {
-            arr->SetComponent(point_map[iter->first][i], c, this->GetArrayValue(v, data, index++));
-          }
-          else {
-            index++;
-          }
+      for (int c = 0; c < num_comps; c++) {
+        if (mit != point_map[element_block_id].end()) {
+          arr->SetComponent(point_map[element_block_id][i], c,
+                            this->GetArrayValue(v, data, index++));
         }
+        else {
+          index++;
+        }
+      }
 
-        if (displace_nodes) {
-          if (mit != point_map[iter->first].end()) {
-            vtkPoints *points = ug->GetPoints();
-            double     x[3];
-            this->global_points->GetPoint(i, x);
-            for (int c = 0; c < num_comps; c++) {
-              x[c] += arr->GetComponent(point_map[iter->first][i], c);
-            }
-            points->SetPoint(point_map[iter->first][i], x);
+      if (displace_nodes) {
+        if (mit != point_map[element_block_id].end()) {
+          vtkPoints *points = ug->GetPoints();
+          double     x[3];
+          this->global_points->GetPoint(i, x);
+          for (int c = 0; c < num_comps; c++) {
+            x[c] += arr->GetComponent(point_map[element_block_id][i], c);
           }
+          points->SetPoint(point_map[element_block_id][i], x);
         }
       }
     }
@@ -965,20 +644,11 @@ namespace Iovs_exodus {
 
   void CatalystExodusMesh::ReleaseMemory()
   {
-
-    vtkMultiBlockDataSet *eb =
-        vtkMultiBlockDataSet::SafeDownCast(this->multiBlock->GetBlock(ELEMENT_BLOCK_MBDS_ID));
-    this->ReleaseMemoryInternal(eb);
-
-    /*
-        eb = vtkMultiBlockDataSet::SafeDownCast(\
-            this->multiBlock->GetBlock(NODE_SETS_MBDS_ID));
-        this->ReleaseMemoryInternal(eb);
-
-        eb = vtkMultiBlockDataSet::SafeDownCast(\
-            this->multiBlock->GetBlock(SIDE_SETS_MBDS_ID));
-        this->ReleaseMemoryInternal(eb);
-    */
+    for (std::map<int, unsigned int>::iterator iter = this->ebidmap.begin();
+         iter != this->ebidmap.end(); ++iter) {
+      vtkUnstructuredGrid *ug = getUnstructuredGrid(iter->second);
+      this->ReleaseMemoryInternal(ug);
+    }
 
     this->ebmap_reverse.clear();
     this->global_elem_id_map.clear();
@@ -987,55 +657,51 @@ namespace Iovs_exodus {
     this->catManager->WriteToLogFile(catalystPipelineInfo);
   }
 
-  void CatalystExodusMesh::ReleaseMemoryInternal(vtkMultiBlockDataSet *eb)
+  void CatalystExodusMesh::ReleaseMemoryInternal(vtkUnstructuredGrid *ug)
   {
-
-    vtkCompositeDataIterator *iter = eb->NewIterator();
-    for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem()) {
-
-      vtkUnstructuredGrid *ug   = vtkUnstructuredGrid::SafeDownCast(iter->GetCurrentDataObject());
-      vtkFieldData        *data = ug->GetCellData();
-      vtkDataArray        *global_element_ids = nullptr;
-      vtkDataArray        *object_id          = nullptr;
-      while (data->GetNumberOfArrays() > 0) {
-        if (std::string(data->GetArray(0)->GetName()) == "GlobalElementId") {
-
-          global_element_ids = data->GetArray(0);
-          global_element_ids->Register(0);
-        }
-        if (std::string(data->GetArray(0)->GetName()) == "ObjectId") {
-          object_id = data->GetArray(0);
-          object_id->Register(0);
-        }
-        data->RemoveArray(data->GetArray(0)->GetName());
-      }
-
-      if (global_element_ids) {
-        data->AddArray(global_element_ids);
-        global_element_ids->Delete();
-      }
-
-      if (object_id) {
-        data->AddArray(object_id);
-        object_id->Delete();
-      }
-
-      data                          = ug->GetPointData();
-      vtkDataArray *global_node_ids = 0;
-      while (data->GetNumberOfArrays() > 0) {
-        if (std::string(data->GetArray(0)->GetName()) == "GlobalNodeId") {
-          global_node_ids = data->GetArray(0);
-          global_node_ids->Register(0);
-        }
-        data->RemoveArray(data->GetArray(0)->GetName());
-      }
-
-      if (global_node_ids) {
-        data->AddArray(global_node_ids);
-        global_node_ids->Delete();
-      }
+    if (ug == nullptr) {
+      return;
     }
-    iter->Delete();
+    vtkFieldData *data               = ug->GetCellData();
+    vtkDataArray *global_element_ids = nullptr;
+    vtkDataArray *object_id          = nullptr;
+    while (data->GetNumberOfArrays() > 0) {
+      if (std::string(data->GetArray(0)->GetName()) == "GlobalElementId") {
+
+        global_element_ids = data->GetArray(0);
+        global_element_ids->Register(0);
+      }
+      if (std::string(data->GetArray(0)->GetName()) == "ObjectId") {
+        object_id = data->GetArray(0);
+        object_id->Register(0);
+      }
+      data->RemoveArray(data->GetArray(0)->GetName());
+    }
+
+    if (global_element_ids) {
+      data->AddArray(global_element_ids);
+      global_element_ids->Delete();
+    }
+
+    if (object_id) {
+      data->AddArray(object_id);
+      object_id->Delete();
+    }
+
+    data                          = ug->GetPointData();
+    vtkDataArray *global_node_ids = 0;
+    while (data->GetNumberOfArrays() > 0) {
+      if (std::string(data->GetArray(0)->GetName()) == "GlobalNodeId") {
+        global_node_ids = data->GetArray(0);
+        global_node_ids->Register(0);
+      }
+      data->RemoveArray(data->GetArray(0)->GetName());
+    }
+
+    if (global_node_ids) {
+      data->AddArray(global_node_ids);
+      global_node_ids->Delete();
+    }
   }
 
   void CatalystExodusMesh::logMemoryUsageAndTakeTimerReading()
@@ -1066,6 +732,20 @@ namespace Iovs_exodus {
       std::cout << "Unhandled type found in GetArrayValue: " << v.GetTypeAsString();
       return 0.0;
     }
+  }
+
+  int CatalystExodusMesh::getElementBlocksAssemblyNode()
+  {
+    auto assembly = vpdc->GetDataAssembly();
+    return assembly->GetFirstNodeByPath(
+        ("/" + ASSEMBLY_ROOT_NAME + "/" + ASSEMBLY_ELEMENT_BLOCKS).c_str());
+  }
+
+  vtkUnstructuredGrid *CatalystExodusMesh::getUnstructuredGrid(int blockId)
+  {
+    vtkDataSet *ds = vpdc->GetPartitionedDataSet(blockId)
+                        ->GetPartition(PDS_UNSTRUCTURED_GRID_INDEX);
+    return  vtkUnstructuredGrid::SafeDownCast(ds);
   }
 
 } // namespace Iovs_exodus

@@ -32,16 +32,16 @@ namespace Iovs_exodus {
     virtual void SetTimeData(double currentTime, int timeStep) = 0;
 
     // Description:
-    // Clears all nodal and element variables from the vtkMultiBlockDataSet.
-    // Clears the global vtkPoints.
-    virtual void ReleaseMemory() = 0;
-
-    // Description:
     // Collects memory usage information from all processors and
     // writes the min, max, and mean to the log file.  Also writes the
     // min, max, and mean of the elapsed time since this method was
     // last called.
     virtual void logMemoryUsageAndTakeTimerReading() = 0;
+
+    // Description:
+    // Clears memory buffers used in mesh construction and field data
+    // for the current time-step. Clears the global vtkPoints.
+    virtual void ReleaseMemory() = 0;
 
     virtual void Delete() = 0;
 
@@ -63,16 +63,15 @@ namespace Iovs_exodus {
     virtual void CreateGlobalVariable(const std::string &variable_name, int num_comps,
                                       const int64_t *data) = 0;
 
-
     // Description:
     // Initializes the vtkMultiBlockDataSet with a global array of points
     // defined by num_points, dimension (2,3), and data.  Clears any existing data.
     virtual void InitializeGlobalPoints(int num_points, int dimension, const double *data) = 0;
 
-    using ElementBlockIdNameList = std::vector<std::pair<int, std::string>>;
     // Description:
     // Initializes the element blocks to NULL data sets with ids and names in elemBlkIdNameList.
     // This method must be called first.
+    using ElementBlockIdNameList = std::vector<std::pair<int, std::string>>;
     virtual void InitializeElementBlocks(const ElementBlockIdNameList &elemBlkIdNameList) = 0;
 
     // Description:
@@ -90,30 +89,6 @@ namespace Iovs_exodus {
     virtual void CreateElementBlock(const char *elem_block_name, int elem_block_id,
                                     const std::string &elem_type, int nodes_per_elem, int num_elem,
                                     const int64_t *global_elem_ids, int64_t *connectivity) = 0;
-
-    // Description:
-    // Creates a vtkUnstructuredGrid representing the node set in the Exodus II
-    // data. Node sets are arbitrary lists of mesh point ids.
-    virtual void CreateNodeSet(const char *node_set_name, int node_set_id, int num_ids,
-                               const int *data) = 0;
-
-    // Description:
-    // Creates a vtkUnstructuredGrid representing the node set in the Exodus II
-    // data. Node sets are arbitrary lists of mesh point ids.
-    virtual void CreateNodeSet(const char *node_set_name, int node_set_id, int num_ids,
-                               const int64_t *data) = 0;
-
-    // Description:
-    // Creates a vtkUnstructuredGrid representing the side set (also Side Block) in
-    // the Exodus II data. Side sets are collections of element faces and edges.
-    virtual void CreateSideSet(const char *ss_owner_name, int side_set_id, int num_ids,
-                               const int *element_ids, const int *face_ids) = 0;
-
-    // Description:
-    // Creates a vtkUnstructuredGrid representing the side set (also Side Block) in
-    // the Exodus II data. Side sets are collections of element faces and edges.
-    virtual void CreateSideSet(const char *ss_owner_name, int side_set_id, int num_ids,
-                               const int64_t *element_ids, const int64_t *face_ids) = 0;
 
     // Description:
     // Creates an element variable the vtkExodusIIMultiBlockDataSet.

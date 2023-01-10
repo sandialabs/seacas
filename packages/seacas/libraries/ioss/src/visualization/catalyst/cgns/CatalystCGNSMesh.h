@@ -14,7 +14,7 @@
 #include "vtkPartitionedDataSetCollection.h"
 #include "vtkNew.h"
 
-class vtkMultiBlockDataSet;
+class vtkStructuredGrid;
 
 namespace Iovs_cgns {
 
@@ -59,6 +59,13 @@ namespace Iovs_cgns {
     bool                   writeCatalystMesh;
     std::string            catalystMeshFilePrefix;
     CatalystPipelineInfo   catalystPipelineInfo;
+    const std::string ASSEMBLY_LABEL = "label";
+    const std::string ASSEMBLY_ROOT_NAME = "IOSS";
+    const std::string ASSEMBLY_STRUCTURED_BLOCKS = "structured_blocks";
+    const int PDS_STRUCTURED_GRID_INDEX = 0;
+    int getStructuredBlocksAssemblyNode();
+    void createPartitionedDataSet(const ZoneData& zoneData, vtkStructuredGrid* sg);
+    vtkStructuredGrid* getStucturedGrid(const ZoneData& zoneData);
   };
 
 } // namespace Iovs_cgns
