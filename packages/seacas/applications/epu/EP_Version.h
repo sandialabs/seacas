@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -9,6 +9,6 @@
 
 static char const *qainfo[] = {
     "epu --  E Pluribus Unum",
-    "6.05",
-    "2022/02/18",
+    "6.06",
+    "2023/01/11",
 };
