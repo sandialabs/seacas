@@ -1496,7 +1496,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
             if (debug_level & 2) {
               for (size_t j = 0; j < node_count; j++) {
                 size_t nodal_value = local_node_to_global[p][j];
-                if (master_values[nodal_value] != fill_value &&
+                if (master_values[nodal_value] != fill_val &&
                     master_values[nodal_value] != values[j]) {
                   fmt::print(stderr, "Variable {}, Node {}, old = {}, new = {}\n", i + 1,
                              fmt::group_digits(nodal_value), master_values[nodal_value], values[j]);
