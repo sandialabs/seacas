@@ -42,7 +42,7 @@ fi
 if [ "$MPI" == "YES" ]
 then
     cd ..
-    git am ../mpi.patch
+    patch -p1 < ../mpi.patch
     cd -
 fi
 
