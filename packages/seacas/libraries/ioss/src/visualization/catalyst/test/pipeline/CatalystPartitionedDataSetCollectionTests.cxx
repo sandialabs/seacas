@@ -18,9 +18,10 @@ TEST_CASE_METHOD(CatalystTestFixture, "CatalystCGNSVariableComponents",
   checkTestOutputFileExists("iossDatabaseCatalystMesh_time_3.vtpc");
   checkTestOutputFileExists("iossDatabaseCatalystMesh_time_4.vtpc");
 
-  CatalystTestFixture::VarAndCompCountVec cellVariables = {
-       {"density", 1}, {"pressure", 1}, {"temperature", 1}, {"velocity", 3}};
-  CatalystTestFixture::VarAndCompCountVec pointVariables;
+  CatalystTestFixture::VarAndCompCountVec cellVariables  = {{"density", 1},     {"pressure", 1},
+                                                            {"temperature", 1}, {"velocity", 3},
+                                                            {"object_id", 1},   {"cell_ids", 1}};
+  CatalystTestFixture::VarAndCompCountVec pointVariables = {{"cell_node_ids", 1}};
   CatalystTestFixture::VarAndCompCountVec globalVariables;
 
   checkMeshOutputVariables("iossDatabaseCatalystMesh_time_4.vtpc", cellVariables, pointVariables,
@@ -35,9 +36,10 @@ TEST_CASE_METHOD(CatalystTestFixture, "CatalystExodusVariableComponents",
   checkTestOutputFileExists("iossDatabaseCatalystMesh_time_0.vtpc");
   checkTestOutputFileExists("iossDatabaseCatalystMesh_time_10.vtpc");
 
-  CatalystTestFixture::VarAndCompCountVec cellVariables  = {{"vonmises", 1}, {"stress", 6}};
+  CatalystTestFixture::VarAndCompCountVec cellVariables = {
+      {"vonmises", 1}, {"stress", 6}, {"object_id", 1}, {"ids", 1}};
   CatalystTestFixture::VarAndCompCountVec pointVariables = {
-      {"cetan", 1}, {"cftan", 1}, {"vel", 3}, {"displ", 3}};
+      {"cetan", 1}, {"cftan", 1}, {"vel", 3}, {"displ", 3}, {"ids", 1}};
   CatalystTestFixture::VarAndCompCountVec globalVariables = {{"momentum", 3}, {"kineticenergy", 1}};
 
   checkMeshOutputVariables("iossDatabaseCatalystMesh_time_0.vtpc", cellVariables, pointVariables,

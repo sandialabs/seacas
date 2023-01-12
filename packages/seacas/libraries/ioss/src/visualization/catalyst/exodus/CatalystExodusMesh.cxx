@@ -179,7 +179,7 @@ namespace Iovs_exodus {
 
     for (unsigned int i = 0; i < elemBlockNameIdList.size(); i++) {
       this->ebidmap[elemBlockNameIdList[i].first] = i;
-      unsigned int                  pdsIdx = vpdc->GetNumberOfPartitionedDataSets();
+      unsigned int                  pdsIdx        = vpdc->GetNumberOfPartitionedDataSets();
       vtkNew<vtkPartitionedDataSet> pds;
       vpdc->SetPartitionedDataSet(pdsIdx, pds);
       vpdc->GetMetaData(pdsIdx)->Set(vtkCompositeDataSet::NAME(), elemBlockNameIdList[i].second);
@@ -435,10 +435,10 @@ namespace Iovs_exodus {
       }
     }
 
-    vtkUnstructuredGrid *ug = vtkUnstructuredGrid::New();
-    vtkPoints *points = vtkPoints::New();
-    double     x[3];
-    vtkIdType  i = 0;
+    vtkUnstructuredGrid *ug     = vtkUnstructuredGrid::New();
+    vtkPoints           *points = vtkPoints::New();
+    double               x[3];
+    vtkIdType            i = 0;
     for (std::map<int, int>::iterator ii = this->ebmap[elem_block_id].begin();
          ii != this->ebmap[elem_block_id].end(); ++ii) {
 
@@ -482,12 +482,6 @@ namespace Iovs_exodus {
 
     ug->Delete();
     points->Delete();
-
-    vtkVariant vb((int)this->ebidmap[elem_block_id]);
-    int        bid = this->ebidmap[elem_block_id];
-
-    this->CreateGlobalVariableInternal("ElementBlockIds", 1, ug, vb, &bid);
-    this->CreateElementVariableInternal("ObjectId", 1, ug, vb, &object_ids[0]);
   }
 
   void CatalystExodusMesh::CreateElementVariable(const std::string &variable_name, int num_comps,
@@ -666,12 +660,11 @@ namespace Iovs_exodus {
     vtkDataArray *global_element_ids = nullptr;
     vtkDataArray *object_id          = nullptr;
     while (data->GetNumberOfArrays() > 0) {
-      if (std::string(data->GetArray(0)->GetName()) == "GlobalElementId") {
-
+      if (std::string(data->GetArray(0)->GetName()) == "ids") {
         global_element_ids = data->GetArray(0);
         global_element_ids->Register(0);
       }
-      if (std::string(data->GetArray(0)->GetName()) == "ObjectId") {
+      if (std::string(data->GetArray(0)->GetName()) == "object_id") {
         object_id = data->GetArray(0);
         object_id->Register(0);
       }
@@ -680,6 +673,7 @@ namespace Iovs_exodus {
 
     if (global_element_ids) {
       data->AddArray(global_element_ids);
+      ug->GetCellData()->SetActiveGlobalIds("ids");
       global_element_ids->Delete();
     }
 
@@ -691,7 +685,7 @@ namespace Iovs_exodus {
     data                          = ug->GetPointData();
     vtkDataArray *global_node_ids = 0;
     while (data->GetNumberOfArrays() > 0) {
-      if (std::string(data->GetArray(0)->GetName()) == "GlobalNodeId") {
+      if (std::string(data->GetArray(0)->GetName()) == "ids") {
         global_node_ids = data->GetArray(0);
         global_node_ids->Register(0);
       }
@@ -700,6 +694,7 @@ namespace Iovs_exodus {
 
     if (global_node_ids) {
       data->AddArray(global_node_ids);
+      ug->GetPointData()->SetActiveGlobalIds("ids");
       global_node_ids->Delete();
     }
   }
@@ -743,9 +738,9 @@ namespace Iovs_exodus {
 
   vtkUnstructuredGrid *CatalystExodusMesh::getUnstructuredGrid(int blockId)
   {
-    vtkDataSet *ds = vpdc->GetPartitionedDataSet(blockId)
-                        ->GetPartition(PDS_UNSTRUCTURED_GRID_INDEX);
-    return  vtkUnstructuredGrid::SafeDownCast(ds);
+    vtkDataSet *ds =
+        vpdc->GetPartitionedDataSet(blockId)->GetPartition(PDS_UNSTRUCTURED_GRID_INDEX);
+    return vtkUnstructuredGrid::SafeDownCast(ds);
   }
 
 } // namespace Iovs_exodus

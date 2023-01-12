@@ -131,10 +131,13 @@ namespace Iovs_exodus {
     for (I = element_blocks.begin(); I != element_blocks.end(); ++I) {
       int     bid       = get_id((*I), &ids_);
       int64_t eb_offset = (*I)->get_offset();
-      this->catExoMesh->CreateElementVariable("GlobalElementId", 1, bid,
+      this->catExoMesh->CreateElementVariable("ids", 1, bid,
                                               &this->elemMap.map()[eb_offset + 1]);
+      std::vector<int> object_id((*I)->entity_count(), bid);
+      this->catExoMesh->CreateElementVariable("object_id", 1, bid,
+                                              object_id.data());
     }
-    this->catExoMesh->CreateNodalVariable("GlobalNodeId", 1, &this->nodeMap.map()[1]);
+    this->catExoMesh->CreateNodalVariable("ids", 1, &this->nodeMap.map()[1]);
 
     this->globalNodeAndElementIDsCreated = true;
   }

@@ -8,9 +8,9 @@
 #define Iovs_cgns_DatabaseIO_h
 
 #include <Ioss_DatabaseIO.h>
+#include <visualization/cgns/CatalystCGNSMeshBase.h>
 
 namespace Iovs_cgns {
-  class CatalystCGNSMeshBase;
 
   class DatabaseIO : public Ioss::DatabaseIO
   {
@@ -133,7 +133,10 @@ namespace Iovs_cgns {
       return 0;
     }
     int64_t put_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
+                               size_t data_size) const override
+    {
+      return 0;
+    }
     int64_t put_field_internal(const Ioss::SideBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override
     {
@@ -183,6 +186,12 @@ namespace Iovs_cgns {
     }
 
     std::unique_ptr<CatalystCGNSMeshBase> catCGNSMesh;
+    bool                                  isIdOutputCreated;
+    void initZoneDataFromStructuredBlock(CatalystCGNSMeshBase::ZoneData &zoneData,
+                                         const Ioss::StructuredBlock    *sb) const;
+    void createIdOutput();
+    void outputId(const std::string idName, std::vector<int64_t> &ids, bool isCellField,
+                  const Ioss::StructuredBlock *sb);
   };
 } // namespace Iovs_cgns
 

@@ -21,7 +21,7 @@ namespace Iovs_cgns {
 
     // Description:
     // Calls the ParaView Catalyst pipeline to run co-processing for this time iteration.
-    virtual void PerformCoProcessing(std::vector<int> &        error_and_warning_codes,
+    virtual void PerformCoProcessing(std::vector<int>         &error_and_warning_codes,
                                      std::vector<std::string> &error_and_warning_messages) = 0;
 
     // Description:
@@ -46,19 +46,24 @@ namespace Iovs_cgns {
 
     struct ZoneData
     {
-      int zone_id;
+      int         zone_id;
       std::string zone_name;
       std::string data_name;
-      int ni;
-      int nj;
-      int nk;
-      int comp_count;
-      bool is_cell_field;
-      double *data;
+      int         ni;
+      int         nj;
+      int         nk;
+      int         comp_count;
+      bool        is_cell_field;
+      enum { T_DOUBLE, T_INT, T_INT64 } data_type;
+      union {
+        int     *p_int;
+        int64_t *p_int64;
+        double  *p_double;
+      } data;
       int size;
     };
 
-    virtual void AddStructuredZoneData(const ZoneData& zoneData) = 0;
+    virtual void AddStructuredZoneData(const ZoneData &zoneData) = 0;
   };
 
 } // namespace Iovs_cgns

@@ -8,7 +8,7 @@
 #include "CatalystManager.h"
 #include "vtkCellData.h"
 #include "vtkDataAssembly.h"
-#include "vtkDoubleArray.h"
+#include "vtkAOSDataArrayTemplate.h"
 #include "vtkInformation.h"
 #include "vtkObjectFactory.h"
 #include "vtkPartitionedDataSet.h"
@@ -18,6 +18,46 @@
 #include <sstream>
 
 namespace Iovs_cgns {
+
+  namespace detail {
+
+    template <typename T>
+    void addStructuredZoneArray(T *data, const CatalystCGNSMeshBase::ZoneData &zoneData, int index,
+                                vtkStructuredGrid *sg)
+    {
+      if (index >= 0) {
+        vtkPoints *pts = sg->GetPoints();
+        for (int i = 0; i < zoneData.size; i++) {
+          double p[3];
+          pts->GetPoint(i, p);
+          p[index] = data[i];
+          pts->InsertPoint(i, p);
+        }
+      }
+      else {
+        vtkAOSDataArrayTemplate<T> *da = vtkAOSDataArrayTemplate<T>::New();
+        da->SetName(zoneData.data_name.c_str());
+        da->SetNumberOfComponents(zoneData.comp_count);
+        da->SetNumberOfTuples(zoneData.size);
+        for (int j = 0; j < zoneData.size; j++) {
+          double d[zoneData.comp_count];
+          for (int i = 0; i < zoneData.comp_count; i++) {
+            d[i] = data[(zoneData.comp_count * j) + i];
+          }
+          da->InsertTuple(j, d);
+        }
+
+        if (zoneData.is_cell_field) {
+          sg->GetCellData()->AddArray(da);
+        }
+        else {
+          sg->GetPointData()->AddArray(da);
+        }
+        da->Delete();
+      }
+    }
+
+  } // namespace detail
 
   CatalystCGNSMesh::CatalystCGNSMesh(Iovs::CatalystManager *cm,
                                      CatalystPipelineInfo  &catalystPipelineInfo)
@@ -101,49 +141,15 @@ namespace Iovs_cgns {
       index = 2;
     }
 
-    if (index >= 0) {
-      vtkPoints *pts = sg->GetPoints();
-      for (int i = 0; i < zoneData.size; i++) {
-        double p[3];
-        pts->GetPoint(i, p);
-        p[index] = zoneData.data[i];
-        pts->InsertPoint(i, p);
-      }
+    if (zoneData.data_type == zoneData.T_INT) {
+      detail::addStructuredZoneArray(zoneData.data.p_int, zoneData, index, sg);
+    }
+    else if (zoneData.data_type == zoneData.T_INT64) {
+      detail::addStructuredZoneArray(zoneData.data.p_int64, zoneData, index, sg);
     }
     else {
-      vtkDoubleArray *da = vtkDoubleArray::New();
-      da->SetName(zoneData.data_name.c_str());
-      da->SetNumberOfComponents(zoneData.comp_count);
-      da->SetNumberOfTuples(zoneData.size);
-      for (int j = 0; j < zoneData.size; j++) {
-        da->InsertTuple(j, zoneData.data + (zoneData.comp_count * j));
-      }
-
-      if (zoneData.is_cell_field) {
-        sg->GetCellData()->AddArray(da);
-      }
-      else {
-        sg->GetPointData()->AddArray(da);
-      }
-      da->Delete();
+      detail::addStructuredZoneArray(zoneData.data.p_double, zoneData, index, sg);
     }
-  }
-
-  std::string CatalystCGNSMesh::createFieldVariableName(std::string fieldNamePrefix,
-                                                        char        fieldSuffixSeparator,
-                                                        int componentIndex, int componentCount)
-  {
-    std::string name;
-    if (componentCount == 1) {
-      name = fieldNamePrefix;
-    }
-    else {
-      std::ostringstream oss;
-      oss << componentIndex + 1;
-      name = fieldNamePrefix + fieldSuffixSeparator + oss.str();
-    }
-
-    return name;
   }
 
   int CatalystCGNSMesh::getStructuredBlocksAssemblyNode()
