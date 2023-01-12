@@ -124,6 +124,8 @@ jobs:
           cd build
           source /opt/intel/oneapi/setvars.sh
           printenv >> $GITHUB_ENV
+	  ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
+	  ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/include
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
       - name: Build 
