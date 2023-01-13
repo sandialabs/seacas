@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -180,13 +180,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       while (sub_opt != nullptr && *sub_opt != '\0') {
         switch (my_getsubopt(&sub_opt, (char *const *)weight_subopts, &value)) {
         case READ_EXO:
-          if (value == nullptr) {
-            ctemp =
-                fmt::format("FATAL: must specify a file name with {}", weight_subopts[READ_EXO]);
-            Gen_Error(0, ctemp);
-            return 0;
-          }
-          if (strlen(value) == 0) {
+          if (value == nullptr || strlen(value) == 0) {
             ctemp =
                 fmt::format("FATAL: must specify a file name with {}", weight_subopts[READ_EXO]);
             Gen_Error(0, ctemp);
@@ -210,12 +204,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
           break; /* End "case READ_EXO" */
 
         case VAR_INDX:
-          if (value == nullptr) {
-            ctemp = fmt::format("FATAL: must specify a value with {}", weight_subopts[VAR_INDX]);
-            Gen_Error(0, ctemp);
-            return 0;
-          }
-          if (strlen(value) == 0) {
+          if (value == nullptr || strlen(value) == 0) {
             ctemp = fmt::format("FATAL: must specify a value with {}", weight_subopts[VAR_INDX]);
             Gen_Error(0, ctemp);
             return 0;
@@ -230,12 +219,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
           break;
 
         case TIME_INDX:
-          if (value == nullptr) {
-            ctemp = fmt::format("FATAL: must specify a value with {}", weight_subopts[TIME_INDX]);
-            Gen_Error(0, ctemp);
-            return 0;
-          }
-          if (strlen(value) == 0) {
+          if (value == nullptr || strlen(value) == 0) {
             ctemp = fmt::format("FATAL: must specify a value with {}", weight_subopts[TIME_INDX]);
             Gen_Error(0, ctemp);
             return 0;
@@ -250,12 +234,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
           break;
 
         case VAR_NAME:
-          if (value == nullptr) {
-            ctemp = fmt::format("FATAL: must specify a value with {}", weight_subopts[VAR_NAME]);
-            Gen_Error(0, ctemp);
-            return 0;
-          }
-          if (strlen(value) == 0) {
+          if (value == nullptr || strlen(value) == 0) {
             ctemp = fmt::format("FATAL: must specify a value with {}", weight_subopts[VAR_NAME]);
             Gen_Error(0, ctemp);
             return 0;
