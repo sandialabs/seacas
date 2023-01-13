@@ -165,9 +165,9 @@ function execute_loadbalance {
 	return -1
     fi
 
-    date=`date '+%m/%d/%y'`
-    time=`date '+%H:%M:%S'`
-    prob_dir=`pwd | sed "s/.*\///g"`
+    date=$(date '+%m/%d/%y')
+    time=$(date '+%H:%M:%S')
+    prob_dir=$(pwd | sed "s/.*\///g")
 
     if [ -n "$input" -a -e "$input" ]
     then
@@ -276,12 +276,12 @@ decomp_type="-e"
 decomp_method="-l inertial"
 nem_slice_flag="-c"
 weighting=''
-rootdir="`pwd`/"
+rootdir="$(pwd)/"
 subdir="."
 suffix_spread=''
 spheres="-S"
 do_viz=""
-curdir=`pwd`
+curdir=$(pwd)
 use64=""
 
 if [ "$ACCESS" == "" ]
@@ -319,7 +319,7 @@ fi
 
 ########################################################################
 # Test that the getopt being used will handle the long options...
-TEST=`getopt -T`
+TEST=$(getopt -T)
 if [ $? != 4 ] ; then
   old_getopt
   OLDGETOPT=1
@@ -334,12 +334,12 @@ fi
 ########################################################################
 # decomp options:
 if [ $OLDGETOPT -eq 1 ] ; then
-   TEMP=`getopt Hh6ENn:i:o:p:j:r:R:S:X:sl:vVd: $*`
+   TEMP=$(getopt Hh6ENn:i:o:p:j:r:R:S:X:sl:vVd: $*)
 else
-   TEMP=`getopt -o Hh6ENn:i:o:p:j:r:R:S:X:sl:vVd:w: -a \
+    TEMP=$(getopt -o Hh6ENn:i:o:p:j:r:R:S:X:sl:vVd:w: -a \
        --long input:,help,nem_slice_flag,64,processors:,rootdir:,subdir:,spread_suffix:,spheres_linear,viz_mesh,verbose,debug:,nodal,elemental \
        --long multikl,rcb,rcb_ignore_z,rib,hsfc,spectral,inertial,linear,random,scattered,brick,zpinch,weight: \
-       -n 'decomp' -- "$@"`
+       -n 'decomp' -- "$@")
 fi
 
 if [ $? != 0 ] ; then usage ; exit 1 ; fi
@@ -512,12 +512,12 @@ else
     time_used="0.000u 0.000s 0:00.00 0.0% 0+0k 0+0io 0pf+0w "
 
 # Get name of user running code
-    userid=`echo $LOGNAME`
+    userid=$(echo $LOGNAME)
 
 # Write info to audit.log file
     if [ -w ${ACCESS}/etc/audit.log ]
     then
-       echo "decomp ${userid} `date` ${time_used} `hostname`" >> ${ACCESS}/etc/audit.log
+       echo "decomp ${userid} $(date) ${time_used} $(hostname)" >> ${ACCESS}/etc/audit.log
     fi
 fi
 
