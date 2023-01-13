@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1913,7 +1913,7 @@ namespace {
       Ioss::copy_database(region, output_region, options);
 
       // KLUGE: The metadata has already been written on
-      // output_region, but we couln't define the maps until now, so
+      // output_region, but we couldn't define the maps until now, so
       // need to update the metadata with map information and hope
       // that no other maps exist on the database...
       if (interFace.outputDecompMap_) {
