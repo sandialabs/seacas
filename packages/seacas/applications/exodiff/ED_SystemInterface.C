@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -610,8 +610,15 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  default_tol.value    = options_.get_option_value("t", default_tol.value);
-  default_tol.value    = options_.get_option_value("tolerance", default_tol.value);
+  auto t1 = options_.get_option_value("t", default_tol.value);
+  auto t2 = options_.get_option_value("tolerance", default_tol.value);
+  if (t1 != default_tol.value) {
+    default_tol.value = t1;
+  }
+  else if (t2 != default_tol.value) {
+    default_tol.value = t2;
+  }
+
   coord_tol.value      = options_.get_option_value("coordinate_tolerance", coord_tol.value);
   default_tol.floor    = options_.get_option_value("Floor", default_tol.floor);
   final_time_tol.value = options_.get_option_value("final_time_tolerance", final_time_tol.value);
