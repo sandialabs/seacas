@@ -18,9 +18,10 @@ namespace {
     Ioss::Init::Initializer init_db;
 
     Ioss::PropertyManager properties;
-    properties.add(Ioss::Property("SHOW_LABELS", "no"));
-    properties.add(Ioss::Property("SHOW_LEGEND", "yes"));
+    properties.add(Ioss::Property("SHOW_LABELS", "yes"));
+    properties.add(Ioss::Property("SHOW_LEGEND", "no"));
     properties.add(Ioss::Property("SHOW_TIME_STAMP", 1));
+    properties.add(Ioss::Property("TIME_STAMP_FORMAT", "{%F %H:%M:%S}"));
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("heartbeat", filename, Ioss::WRITE_HEARTBEAT,
                                                     Ioss::ParallelUtils::comm_world(), properties);
     if (dbo == nullptr || !dbo->ok(true)) {

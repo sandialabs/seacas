@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -50,7 +50,7 @@ namespace Iohb {
     }
 
     if (showLabels && name != "") {
-      fmt::print("{}=", name);
+      fmt::print(layout_, "{}=", name);
     }
   }
 
@@ -85,7 +85,7 @@ namespace Iohb {
     }
     else {
       output_common(name);
-      fmt::print(layout_, "{0: {2}.{1}e}", fmt::join(value, separator_), precision_, fieldWidth_);
+      fmt::print(layout_, "{0:{2}.{1}e}", fmt::join(value, separator_), precision_, fieldWidth_);
     }
   }
 
