@@ -189,14 +189,14 @@ bool Ioss::GroupingEntity::check_for_duplicate(const Ioss::Field &new_field) con
                    field.raw_storage()->name(), new_field.raw_count(), new_field.type_string(),
                    new_field.get_size(), new_field.role_string(), new_field.raw_storage()->name());
         if (behavior == DuplicateFieldBehavior::WARNING_) {
-          IOSS_ERROR(errmsg);
-        }
-        else {
           auto util = get_database()->util();
           if (util.parallel_rank() == 0) {
             fmt::print(Ioss::WarnOut(), "{}\n", errmsg.str());
           }
           return true;
+        }
+        else {
+          IOSS_ERROR(errmsg);
         }
       }
     }
