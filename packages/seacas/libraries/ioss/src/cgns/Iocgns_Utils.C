@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1315,6 +1315,17 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
           donor_range[4] -= zgc.m_donorOffset[1];
           donor_range[5] -= zgc.m_donorOffset[2];
         }
+
+        if (is_parallel_io || !is_parallel) {
+          if (zgc.m_ownerZone == zgc.m_donorZone && zgc.m_ownerRangeBeg == zgc.m_donorRangeBeg &&
+              zgc.m_ownerRangeEnd == zgc.m_donorRangeEnd) {
+#if IOSS_DEBUG_OUTPUT
+            fmt::print("Removing ZGC {} on zone {}\n", connect_name, db_zone);
+#endif
+            continue;
+          }
+        }
+
         CGERR(cg_1to1_write(file_ptr, base, db_zone, connect_name.c_str(), donor_name.c_str(),
                             owner_range.data(), donor_range.data(), zgc.m_transform.data(),
                             &zgc_idx));
