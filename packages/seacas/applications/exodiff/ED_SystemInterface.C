@@ -488,8 +488,8 @@ void SystemInterface::enroll_options()
 
   options_.enroll("maxnames", GetLongOption::MandatoryValue, "[deprecated -- no longer needed]",
                   "1000");
-  options_.enroll("t", GetLongOption::MandatoryValue,
-                  "Backward-compatible option for -tolerance", "1.0E-6");
+  options_.enroll("t", GetLongOption::MandatoryValue, "Backward-compatible option for -tolerance",
+                  "1.0E-6");
   options_.enroll("m", GetLongOption::NoValue, "Backward-compatible option for -map", nullptr);
   options_.enroll("p", GetLongOption::NoValue, "Backward-compatible option for -partial.", nullptr);
   options_.enroll("s", GetLongOption::NoValue, "Backward-compatible option for -short", nullptr);
@@ -610,13 +610,15 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  auto t1 = options_.get_option_value("t", default_tol.value);
-  auto t2 = options_.get_option_value("tolerance", default_tol.value);
-  if (t1 != default_tol.value) {
-    default_tol.value = t1;
-  }
-  else if (t2 != default_tol.value) {
-    default_tol.value = t2;
+  {
+    auto t1 = options_.get_option_value("t", default_tol.value);
+    auto t2 = options_.get_option_value("tolerance", default_tol.value);
+    if (t1 != default_tol.value) {
+      default_tol.value = t1;
+    }
+    else if (t2 != default_tol.value) {
+      default_tol.value = t2;
+    }
   }
 
   coord_tol.value      = options_.get_option_value("coordinate_tolerance", coord_tol.value);
