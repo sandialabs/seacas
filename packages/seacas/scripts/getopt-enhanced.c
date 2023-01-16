@@ -287,13 +287,12 @@ static void add_short_options(struct getopt_control *ctl, char *options)
  */
 static void add_long_options(struct getopt_control *ctl, char *options)
 {
-  int   arg_opt;
   char *tokptr = strtok(options, ", \t\n");
 
   while (tokptr) {
     size_t len = strlen(tokptr);
 
-    arg_opt = no_argument;
+    int arg_opt = no_argument;
     if (len > 0) {
       if (tokptr[len - 1] == ':') {
         if (tokptr[len - 2] == ':') {

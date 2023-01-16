@@ -38,7 +38,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v2-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -229,6 +229,20 @@ jobs:
             extra: "OMIT_DEPRECATED=YES",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
+        - {
+            name: "Use modern CMake configure of netCDF and HDF5 packages",
+            os: ubuntu-latest,
+            compiler: "mpi",
+            debug: "NO",
+            threadsafe: "NO",
+            fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
+            use_catalyst2: "NO",
+            gtest: "NO",
+            extra: "MODERN=YES",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
     steps:
 
       - uses: actions/checkout@v3
@@ -242,7 +256,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v1-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v2-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
