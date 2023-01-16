@@ -165,11 +165,7 @@ function execute_loadbalance {
 	return -1
     fi
 
-    date=$(date '+%m/%d/%y')
-    time=$(date '+%H:%M:%S')
-    prob_dir=$(pwd | sed "s/.*\///g")
-
-    if [ -n "$input" -a -e "$input" ]
+    if [ -n "$input" ] && [ -e "$input" ]
     then
 	echo ${txtblu}
 	echo "Executing:"
@@ -281,7 +277,6 @@ subdir="."
 suffix_spread=''
 spheres="-S"
 do_viz=""
-curdir=$(pwd)
 use64=""
 
 if [ "$ACCESS" == "" ]
@@ -306,7 +301,7 @@ popd > /dev/null
 # 3. If not, then assume we are running in the cmake build directory
 #    and update the paths to nem_slice and nem_spread accordingly...
 
-if [ -x ${basedir}/nem_slice -a -x ${basedir}/nem_spread ]; then
+if [ -x ${basedir}/nem_slice ] && [ -x ${basedir}/nem_spread ]; then
   NEM_SLICE=${basedir}/nem_slice
   NEM_SPREAD=${basedir}/nem_spread
 elif [ "${basedir}" == "${instdir}" ] ; then
@@ -334,7 +329,7 @@ fi
 ########################################################################
 # decomp options:
 if [ $OLDGETOPT -eq 1 ] ; then
-   TEMP=$(getopt Hh6ENn:i:o:p:j:r:R:S:X:sl:vVd: $*)
+   TEMP=$(getopt Hh6ENn:i:o:p:j:r:R:S:X:sl:vVd: "$@")
 else
     TEMP=$(getopt -o Hh6ENn:i:o:p:j:r:R:S:X:sl:vVd:w: -a \
        --long input:,help,nem_slice_flag,64,processors:,rootdir:,subdir:,spread_suffix:,spheres_linear,viz_mesh,verbose,debug:,nodal,elemental \
@@ -348,9 +343,7 @@ if [ $? != 0 ] ; then usage ; exit 1 ; fi
 eval set -- "$TEMP"
 while true ; do
 	case "$1" in
-	    -h|--help)
-	      usage ; shift ;;
-	    -H|--help)
+	    -h|-H|--help)
 	      usage_new ; shift ;;
 	    -v|--verbose)
 	      set -x ; shift ;;
@@ -512,12 +505,13 @@ else
     time_used="0.000u 0.000s 0:00.00 0.0% 0+0k 0+0io 0pf+0w "
 
 # Get name of user running code
-    userid=$(echo $LOGNAME)
+    userid=$LOGNAME
 
 # Write info to audit.log file
     if [ -w ${ACCESS}/etc/audit.log ]
     then
-       echo "decomp ${userid} $(date) ${time_used} $(hostname)" >> ${ACCESS}/etc/audit.log
+       date=$(date '+%m/%d/%y')
+       echo "decomp ${userid} ${date} ${time_used} $(hostname)" >> ${ACCESS}/etc/audit.log
     fi
 fi
 
