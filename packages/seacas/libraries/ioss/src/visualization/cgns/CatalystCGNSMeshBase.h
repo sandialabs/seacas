@@ -31,7 +31,7 @@ namespace Iovs_cgns {
     virtual void SetTimeData(double currentTime, int timeStep) = 0;
 
     // Description:
-    // Clears all nodal and element variables from the vtkMultiBlockDataSet.
+    // Clears all nodal and element variables
     // Clears the global vtkPoints.
     virtual void ReleaseMemory() = 0;
 

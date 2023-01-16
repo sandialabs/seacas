@@ -46,25 +46,25 @@ namespace Iovs_exodus {
     virtual void Delete() = 0;
 
     // Description:
-    // Creates a global variable on the vtkExodusIIMultiBlockDataSet.
+    // Creates a global variable
     // Creates the global variable on all element blocks.
     virtual void CreateGlobalVariable(const std::string &variable_name, int num_comps,
                                       const double *data) = 0;
 
     // Description:
-    // Creates a global variable on the vtkExodusIIMultiBlockDataSet.
+    // Creates a global variable
     // Creates the global variable on all element blocks.
     virtual void CreateGlobalVariable(const std::string &variable_name, int num_comps,
                                       const int *data) = 0;
 
     // Description:
-    // Creates a global variable on the vtkExodusIIMultiBlockDataSet.
+    // Creates a global variable
     // Creates the global variable on all element blocks.
     virtual void CreateGlobalVariable(const std::string &variable_name, int num_comps,
                                       const int64_t *data) = 0;
 
     // Description:
-    // Initializes the vtkMultiBlockDataSet with a global array of points
+    // Initializes the global array of points
     // defined by num_points, dimension (2,3), and data.  Clears any existing data.
     virtual void InitializeGlobalPoints(int num_points, int dimension, const double *data) = 0;
 
@@ -75,7 +75,7 @@ namespace Iovs_exodus {
     virtual void InitializeElementBlocks(const ElementBlockIdNameList &elemBlkIdNameList) = 0;
 
     // Description:
-    // Creates a vtkUnstructuredGrid on the vtkExodusIIMultiBlockDataSet
+    // Creates a vtkUnstructuredGrid
     // that represents and element block in the Exodus II data.  The global_points
     // array contains all of the points in the Exodus II file.
     virtual void CreateElementBlock(const char *elem_block_name, int elem_block_id,
@@ -83,7 +83,7 @@ namespace Iovs_exodus {
                                     const int64_t *global_elem_ids, int *connectivity) = 0;
 
     // Description:
-    // Creates a vtkUnstructuredGrid on the vtkExodusIIMultiBlockDataSet
+    // Creates a vtkUnstructuredGrid
     // that represents and element block in the Exodus II data.  The global_points
     // array contains all of the points in the Exodus II file.
     virtual void CreateElementBlock(const char *elem_block_name, int elem_block_id,
@@ -91,32 +91,32 @@ namespace Iovs_exodus {
                                     const int64_t *global_elem_ids, int64_t *connectivity) = 0;
 
     // Description:
-    // Creates an element variable the vtkExodusIIMultiBlockDataSet.
+    // Creates an element variable
     virtual void CreateElementVariable(const std::string &variable_name, int num_comps,
                                        int elem_block_id, const double *data) = 0;
 
     // Description:
-    // Creates an element variable the vtkExodusIIMultiBlockDataSet.
+    // Creates an element variable
     virtual void CreateElementVariable(const std::string &variable_name, int num_comps,
                                        int elem_block_id, const int *data) = 0;
 
     // Description:
-    // Creates an element variable the vtkExodusIIMultiBlockDataSet.
+    // Creates an element variable
     virtual void CreateElementVariable(const std::string &variable_name, int num_comps,
                                        int elem_block_id, const int64_t *data) = 0;
 
     // Description:
-    // Creates a nodal variable the vtkExodusIIMultiBlockDataSet.
+    // Creates a nodal variable
     virtual void CreateNodalVariable(const std::string &variable_name, int num_comps,
                                      const double *data) = 0;
 
     // Description:
-    // Creates a nodal variable the vtkExodusIIMultiBlockDataSet.
+    // Creates a nodal variable
     virtual void CreateNodalVariable(const std::string &variable_name, int num_comps,
                                      const int *data) = 0;
 
     // Description:
-    // Creates a nodal variable the vtkExodusIIMultiBlockDataSet.
+    // Creates a nodal variable
     virtual void CreateNodalVariable(const std::string &variable_name, int num_comps,
                                      const int64_t *data) = 0;
   };

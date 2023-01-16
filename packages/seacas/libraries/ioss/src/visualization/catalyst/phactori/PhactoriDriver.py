@@ -120,7 +120,8 @@ global gParaViewCatalystVersionFlag
 #gParaViewCatalystVersionFlag = 40100
 #gParaViewCatalystVersionFlag = 50400
 #gParaViewCatalystVersionFlag = 50502
-gParaViewCatalystVersionFlag = 51000
+#gParaViewCatalystVersionFlag = 51000
+gParaViewCatalystVersionFlag = 51100
 
 #attempt to use paraview.simple.GetParaViewVersion() to set version
 try:
@@ -11336,7 +11337,11 @@ class PhactoriSliceWithPlaneOperation(PhactoriPlaneOpBase):
     savedActiveSource = GetActiveSource()
 
     newParaViewFilter = SliceWithPlane(Input=inInputFilter)
-    newParaViewFilter.Plane = 'Plane'
+    global gParaViewCatalystVersionFlag
+    if gParaViewCatalystVersionFlag < 51100:
+      newParaViewFilter.Plane = 'Plane'
+    else:
+      newParaViewFilter.PlaneType = 'Plane'
 
     self.UpdateSlice(inInputFilter, newParaViewFilter)
 
@@ -11381,11 +11386,14 @@ class PhactoriSliceWithPlaneOperation(PhactoriPlaneOpBase):
     if PhactoriDbg():
       myDebugPrint3('  updateslice using normal: ' + \
               str(normalToUse) + '\n')
-    ioOutgoingPvFilter.Plane.Normal = normalToUse
-
-    if PhactoriDbg():
       myDebugPrint3('  updateslice using origin: ' + str(originToUse) + '\n')
-    ioOutgoingPvFilter.Plane.Origin = originToUse
+    global gParaViewCatalystVersionFlag
+    if gParaViewCatalystVersionFlag < 51100:
+      ioOutgoingPvFilter.Plane.Normal = normalToUse
+      ioOutgoingPvFilter.Plane.Origin = originToUse
+    else:
+      ioOutgoingPvFilter.PlaneType.Normal = normalToUse
+      ioOutgoingPvFilter.PlaneType.Origin = originToUse
 
     if PhactoriDbg():
       myDebugPrint3("PhactoriSliceWithPlanePlaneOperation::UpdateSlice returning\n")

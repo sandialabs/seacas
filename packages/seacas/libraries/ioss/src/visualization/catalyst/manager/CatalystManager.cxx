@@ -22,7 +22,6 @@
 #include "vtkProcessModule.h"
 #include "vtkPython.h"
 #include "vtkStringArray.h"
-#include "vtkMultiBlockDataSet.h"
 #include "vtkPartitionedDataSetCollection.h"
 #include <fstream>
 #include <sstream>

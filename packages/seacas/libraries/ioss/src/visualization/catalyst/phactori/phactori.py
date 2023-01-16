@@ -78,7 +78,8 @@ global gParaViewCatalystVersionFlag
 #gParaViewCatalystVersionFlag = 40100
 #gParaViewCatalystVersionFlag = 50400
 #gParaViewCatalystVersionFlag = 50502
-gParaViewCatalystVersionFlag = 51000
+#gParaViewCatalystVersionFlag = 51000
+gParaViewCatalystVersionFlag = 51100
 
 #attempt to use paraview.simple.GetParaViewVersion() to set version
 try:
