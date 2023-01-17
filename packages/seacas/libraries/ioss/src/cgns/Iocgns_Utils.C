@@ -288,9 +288,11 @@ namespace {
     // size will be processor dependent.
     auto            &sblocks = region->get_structured_blocks();
     std::vector<int> fld_count;
-    fld_count.reserve(sblocks.size());
+    fld_count.reserve(2 * sblocks.size());
     for (const auto &block : sblocks) {
       fld_count.push_back(block->field_count(Ioss::Field::TRANSIENT));
+      const auto &nb = block->get_node_block();
+      fld_count.push_back(nb.field_count(Ioss::Field::TRANSIENT));
     }
     auto par = region->get_database()->util();
     par.global_array_minmax(fld_count, Ioss::ParallelUtils::DO_MAX);
@@ -315,7 +317,22 @@ namespace {
         }
       }
       else {
-        offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[i];
+        offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[2*i];
+      }
+      const auto &nb = block->get_node_block();
+      Ioss::NameList node_fields = nb.field_describe(Ioss::Field::TRANSIENT);
+      if (!node_fields.empty()) {
+        for (const auto &field_name : node_fields) {
+          const Ioss::Field &field = nb.get_fieldref(field_name);
+          std::string        type  = field.raw_storage()->name();
+          Ioss::Utils::copy_string(&fld_names[offset], field_name, CGNS_MAX_NAME_LENGTH + 1);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+          Ioss::Utils::copy_string(&fld_names[offset], type, CGNS_MAX_NAME_LENGTH + 1);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+        }
+      }
+      else {
+        offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[2*i+1];
       }
     }
 
@@ -325,16 +342,15 @@ namespace {
     // names.  Now need to add the missing fields to the blocks that
     // are not 'native' to this processor...
     //
+    offset = 0;
     for (size_t i = 0; i < sblocks.size(); i++) {
       auto &block = sblocks[i];
-      if (block->field_count(Ioss::Field::TRANSIENT) != (size_t)fld_count[i]) {
+      if (block->field_count(Ioss::Field::TRANSIENT) != (size_t)fld_count[2*i]) {
         // Verify that either has 0 or correct number of fields...
         assert(block->field_count(Ioss::Field::TRANSIENT) == 0);
 
         // Extract the field name and storage type...
-        offset = (CGNS_MAX_NAME_LENGTH + 1) * 2 * i;
-
-        for (int nf = 0; nf < fld_count[i]; nf++) {
+        for (int nf = 0; nf < fld_count[2 * i]; nf++) {
           std::string fld_name(&fld_names[offset]);
           offset += CGNS_MAX_NAME_LENGTH + 1;
           std::string fld_type(&fld_names[offset]);
@@ -344,7 +360,31 @@ namespace {
               Ioss::Field(fld_name, Ioss::Field::DOUBLE, fld_type, Ioss::Field::TRANSIENT, 0));
         }
       }
-      assert(block->field_count(Ioss::Field::TRANSIENT) == (size_t)fld_count[i]);
+      else {
+	offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[2*i];
+      }
+      assert(block->field_count(Ioss::Field::TRANSIENT) == (size_t)fld_count[2 * i]);
+
+      auto &nb = block->get_node_block();
+      if (nb.field_count(Ioss::Field::TRANSIENT) != (size_t)fld_count[2*i + 1]) {
+        // Verify that either has 0 or correct number of fields...
+        assert(nb.field_count(Ioss::Field::TRANSIENT) == 0);
+
+        // Extract the field name and storage type...
+        for (int nf = 0; nf < fld_count[2 * i + 1]; nf++) {
+          std::string fld_name(&fld_names[offset]);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+          std::string fld_type(&fld_names[offset]);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+
+          nb.field_add(
+              Ioss::Field(fld_name, Ioss::Field::DOUBLE, fld_type, Ioss::Field::TRANSIENT, 0));
+        }
+      }
+      else {
+	offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[2*i+1];
+      }
+      assert(nb.field_count(Ioss::Field::TRANSIENT) == (size_t)fld_count[2 * i + 1]);
     }
   }
 
