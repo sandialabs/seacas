@@ -7,11 +7,17 @@
 #ifndef IOSS_IOVS_CATALYST_VERSION_H
 #define IOSS_IOVS_CATALYST_VERSION_H
 
+#ifndef __CATALYST_PLUGIN_BUILD
+#include "iovs_export.h"
+#else
+#define IOVS_EXPORT
+#endif
+
 #include <string>
 
 namespace Iovs {
 
-  class CatalystVersion
+  class IOVS_EXPORT CatalystVersion
   {
   public:
     const std::string iossCatalystInterfaceVersion = "2.0.0";

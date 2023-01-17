@@ -36,9 +36,9 @@ IF("${isSystemDir}" STREQUAL "-1")
    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF()
 
-TRIBITS_INCLUDE_DIRECTORIES("manager")
-TRIBITS_INCLUDE_DIRECTORIES("parser")
-TRIBITS_INCLUDE_DIRECTORIES("../../")
+INCLUDE_DIRECTORIES("manager")
+INCLUDE_DIRECTORIES("parser")
+INCLUDE_DIRECTORIES("../../")
 
 ADD_SUBDIRECTORY(manager)
 ADD_SUBDIRECTORY(parser)
@@ -46,6 +46,7 @@ ADD_LIBRARY(${PVCSA_LIBRARY_NAME} SHARED manager/CatalystManager.cxx
                                          manager/CatalystMeshWriter.cxx
                                          exodus/CatalystExodusMesh.cxx
                                          cgns/CatalystCGNSMesh.cxx)
+TARGET_COMPILE_DEFINITIONS(${PVCSA_LIBRARY_NAME} PRIVATE __CATALYST_PLUGIN_BUILD)
 
 TARGET_INCLUDE_DIRECTORIES(${PVCSA_LIBRARY_NAME}
     PUBLIC
@@ -70,13 +71,9 @@ IF(BUILD_IOSS_2_CATALYST_APPLICATION)
     FIND_PACKAGE(SEACAS REQUIRED)
 
     IF(SEACAS_FOUND)
-        IF("CGNS" IN_LIST SEACAS_TPL_LIST)
-            ADD_SUBDIRECTORY(ioss2catalyst)
-            ENABLE_TESTING()
-            ADD_SUBDIRECTORY(test)
-        ELSE()
-            MESSAGE(FATAL_ERROR "Must build SEACAS with CGNS TPL enabled.")
-        ENDIF()
+        ADD_SUBDIRECTORY(ioss2catalyst)
+        ENABLE_TESTING()
+        ADD_SUBDIRECTORY(test)
     ENDIF()
 ENDIF()
 

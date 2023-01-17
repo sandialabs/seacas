@@ -7,7 +7,11 @@
 #ifndef __CATALYST_MANAGER_BASE_H
 #define __CATALYST_MANAGER_BASE_H
 
+#ifndef __CATALYST_PLUGIN_BUILD
 #include "iovs_export.h"
+#else
+#define IOVS_EXPORT
+#endif
 
 #include "visualization/cgns/CatalystCGNSMeshBase.h"
 #include "visualization/exodus/CatalystExodusMeshBase.h"
