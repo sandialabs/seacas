@@ -38,7 +38,7 @@ namespace Iovs_cgns {
 
   DatabaseIO::~DatabaseIO() { this->catCGNSMesh->Delete(); }
 
-  bool DatabaseIO::begin__(Ioss::State state) { return true; }
+  bool DatabaseIO::begin__(Ioss::State /*state*/) { return true; }
 
   bool DatabaseIO::end__(Ioss::State state)
   {
@@ -63,7 +63,7 @@ namespace Iovs_cgns {
     return true;
   }
 
-  bool DatabaseIO::end_state__(int state, double time)
+  bool DatabaseIO::end_state__(int /*state*/, double /*time*/)
   {
     std::vector<int>         error_codes;
     std::vector<std::string> error_messages;
@@ -144,7 +144,6 @@ namespace Iovs_cgns {
     auto   var_type               = field.transformed_storage();
     auto   ioss_type              = field.get_type();
     int    comp_count             = var_type->component_count();
-    char   field_suffix_separator = get_field_separator();
     void  *rdata                  = num_to_get > 0 ? data : nullptr;
 
     bool is_cell_field = true;

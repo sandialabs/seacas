@@ -313,7 +313,6 @@ namespace Iovs_exodus {
       }
       else if (role == Ioss::Field::TRANSIENT) {
         Ioss::Field::BasicType ioss_type = field.get_type();
-        int64_t     eb_offset  = eb->get_offset();
         int         comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
         int         bid        = get_id(eb, &ids_);
         std::string field_name = field.get_name();
