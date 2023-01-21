@@ -2,7 +2,7 @@
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
-  ACCESS=$(cd ../../..; pwd)
+  ACCESS=$(cd ../../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
@@ -37,6 +37,13 @@ NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
    LOCAL_ZLIB="-DZLIB_INCLUDE_DIR:PATH=${INSTALL_PATH}/include -DZLIB_LIBRARY:FILEPATH=${INSTALL_PATH}/lib/libz.${LD_EXT}"
+fi
+
+if [ "$MPI" == "YES" ]
+then
+    cd ..
+    patch -p1 < ../mpi.patch
+    cd -
 fi
 
 rm -f config.cache

@@ -4,10 +4,14 @@
 //
 // See packages/seacas/LICENSE for details
 
+#pragma once
+
+#include "iocatalyst_export.h"
+
 #include "gtest/gtest.h"
 #include <catalyst_tests/Iocatalyst_BlockMeshSet.h>
 
-class Iocatalyst_DatabaseIOTest : public ::testing::Test
+class IOCATALYST_EXPORT Iocatalyst_DatabaseIOTest : public ::testing::Test
 {
 protected:
   Iocatalyst::BlockMeshSet         bmSet;

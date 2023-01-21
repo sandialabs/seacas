@@ -8,7 +8,7 @@ SOURCES
         Iocatalyst_BlockMesh.C
         Iocatalyst_BlockMeshSet.C
         Iocatalyst_DatabaseIOTest.C
-	    Iocatalyst_TestDriverMain.C
+        Iocatalyst_TestDriverMain.C
 )
 
 TRIBITS_ADD_EXECUTABLE(

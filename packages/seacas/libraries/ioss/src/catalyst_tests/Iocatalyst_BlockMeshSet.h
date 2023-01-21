@@ -4,8 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#ifndef IOSS_Iocatalyst_Block_Mesh_Set_h
-#define IOSS_Iocatalyst_Block_Mesh_Set_h
+#pragma once
+
+#include "iocatalyst_export.h"
 
 #include <Ioss_Region.h>
 #include <catalyst.hpp>
@@ -13,7 +14,7 @@
 
 namespace Iocatalyst {
 
-  class BlockMeshSet
+  class IOCATALYST_EXPORT BlockMeshSet
   {
   public:
     BlockMeshSet();
@@ -49,4 +50,3 @@ namespace Iocatalyst {
   };
 
 } // namespace Iocatalyst
-#endif

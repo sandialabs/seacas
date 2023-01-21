@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         compiler: [ intel, mpi ]
-        hdf5: [ V112 ]
+        hdf5: [ V114 ]
         netcdf: [ 4.9.0 ]
         cgns: [ 4.3.0 ]
 
@@ -55,7 +55,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-        key: TPL-v1intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+        key: TPL-v4intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
     - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
       if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -75,7 +75,7 @@ jobs:
     strategy:
       matrix:
         compiler: [ intel, mpi ]
-        hdf5: [ V112 ]
+        hdf5: [ V114 ]
         netcdf: [ 4.9.0 ]
         cgns: [ 4.3.0 ]
     steps:
@@ -107,7 +107,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v1intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v4intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
@@ -116,6 +116,13 @@ jobs:
 ###
 # Configure and build
 ###
+      - name: List directory
+        shell: bash -l {0}
+        run: |
+          echo $HOME
+          ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
+          ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/include
+
       - name: Run cmake
         shell: bash -l {0}
         run: |

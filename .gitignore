@@ -5,6 +5,7 @@
 *.e
 *.g.*
 *.e.*
+*.pyc
 .libs
 Makefile
 Makefile.bak

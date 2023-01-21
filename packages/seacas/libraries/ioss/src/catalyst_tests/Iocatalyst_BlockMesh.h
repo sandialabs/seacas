@@ -4,12 +4,13 @@
 //
 // See packages/seacas/LICENSE for details
 
-#ifndef IOSS_Iocatalyst_Block_Mesh_h
-#define IOSS_Iocatalyst_Block_Mesh_h
+#pragma once
+
+#include "iocatalyst_export.h"
 
 namespace Iocatalyst {
 
-  class BlockMesh
+  class IOCATALYST_EXPORT BlockMesh
   {
   public:
     struct Partition
@@ -66,4 +67,3 @@ namespace Iocatalyst {
   };
 
 } // namespace Iocatalyst
-#endif

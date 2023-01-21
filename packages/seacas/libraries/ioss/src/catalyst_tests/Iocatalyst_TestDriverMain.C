@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "iocatalyst_export.h"
 #include <gtest/gtest.h>
 #include <SEACASIoss_config.h>
 #include <Ionit_Initializer.h>
@@ -12,7 +13,7 @@
 #include <mpi.h>
 #endif
 
-int main(int argc, char **argv)
+int IOCATALYST_EXPORT main(int argc, char **argv)
 {
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);

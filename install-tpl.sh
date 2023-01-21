@@ -113,7 +113,7 @@ USE_AEC=$(check_valid USE_AEC)
 KOKKOS=${KOKKOS:-NO}
 KOKKOS=$(check_valid KOKKOS)
 
-H5VERSION=${H5VERSION:-V110}
+H5VERSION=${H5VERSION:-V114}
 
 FAODEL=${FAODEL:-NO}
 FAODEL=$(check_valid FAODEL)
@@ -349,7 +349,7 @@ then
             fi
         else
             echo "${txtgrn}+++ ZLIB${txtrst}"
-            zlib_version="1.2.12"
+            zlib_version="1.2.13"
 
             cd $ACCESS || exit
             cd TPL || exit
@@ -367,10 +367,10 @@ then
             then
                 echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
                 cd zlib-${zlib_version} || exit
-		if [ "$SHARED" == "NO" ]
-		then
-		    USE_STATIC="--static"
-		fi
+                if [ "$SHARED" == "NO" ]
+                then
+                    USE_STATIC="--static"
+                fi
                 ./configure --prefix=${INSTALL_PATH} ${USE_STATIC}
                 if [[ $? != 0 ]]
                 then
@@ -396,16 +396,19 @@ then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]; then
         hdf_version="1.8.21"
-	hdf_base="1.8"
+        hdf_base="1.8"
     elif [ "${H5VERSION}" == "V110" ]; then
         hdf_version="1.10.9"
-	hdf_base="1.10"
+        hdf_base="1.10"
     elif [ "${H5VERSION}" == "V112" ]; then
         hdf_version="1.12.2"
-	hdf_base="1.12"
+        hdf_base="1.12"
     elif [ "${H5VERSION}" == "V113" ]; then
         hdf_version="1.13.1"
-	hdf_base="1.13"
+        hdf_base="1.13"
+    elif [ "${H5VERSION}" == "V114" ]; then
+        hdf_version="1.14.0"
+        hdf_base="1.14"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
     else
@@ -456,7 +459,7 @@ then
     # Create default plugin directory...
     mkdir  ${INSTALL_PATH}/lib/hdf5
     mkdir  ${INSTALL_PATH}/lib/hdf5/lib
-    mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin 
+    mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin
 else
     echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
@@ -538,7 +541,7 @@ then
         rm -rf build
         mkdir build
         cd build || exit
-        export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin 
+        export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin
         CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
@@ -686,6 +689,7 @@ then
     check_exec automake
     check_exec autoconf
 
+    matio_version="1.5.23"
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
         echo "${txtgrn}+++ MatIO${txtrst}"
@@ -702,6 +706,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio || exit
+            git checkout ${matio_version}
             rm -rf build
             mkdir build
             cd build || exit
@@ -731,6 +736,8 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
+        fmt_version="9.1.0"
+
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -742,6 +749,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd fmt || exit
+            git checkout ${fmt_version}
             rm -rf build
             mkdir build
             cd build || exit

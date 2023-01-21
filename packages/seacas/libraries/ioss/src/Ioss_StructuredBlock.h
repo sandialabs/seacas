@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "ioss_export.h"
+
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityBlock.h>
@@ -30,7 +32,7 @@ using IOSS_SB_INT = int;
 namespace Ioss {
   class Region;
 
-  struct BoundaryCondition
+  struct IOSS_EXPORT BoundaryCondition
   {
     BoundaryCondition(std::string name, std::string fam_name, Ioss::IJK_t range_beg,
                       Ioss::IJK_t range_end)
@@ -50,7 +52,8 @@ namespace Ioss {
     // necessary.
     BoundaryCondition() = default;
 
-    BoundaryCondition(const BoundaryCondition &copy_from) = default;
+    BoundaryCondition(const BoundaryCondition &copy_from)            = default;
+    BoundaryCondition &operator=(const BoundaryCondition &copy_from) = default;
 
     // Determine which "face" of the parent block this BC is applied to.
     int which_face() const;
@@ -85,11 +88,13 @@ namespace Ioss {
     bool equal_(const Ioss::BoundaryCondition &rhs, bool quiet) const;
   };
 
+  IOSS_EXPORT std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc);
+
   class DatabaseIO;
 
   /** \brief A structured zone -- i,j,k
    */
-  class StructuredBlock : public EntityBlock
+  class IOSS_EXPORT StructuredBlock : public EntityBlock
   {
   public:
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
@@ -358,8 +363,10 @@ namespace Ioss {
   };
 } // namespace Ioss
 
+#if FMT_VERSION >= 90000
 namespace fmt {
   template <> struct formatter<Ioss::BoundaryCondition> : ostream_formatter
   {
   };
 } // namespace fmt
+#endif

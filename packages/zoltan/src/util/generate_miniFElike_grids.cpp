@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -50,7 +50,7 @@
 //    a.out x y z filename
 // where x,y,z are the number of grid points in the x, y, and z directions,
 // respectively, and filename is the base filename to be used for the output.
-// 
+//
 // Output files are in Chaco and Matrix-Market format.
 // Output files include filename.coords, filename.graph and filename.mtx.
 //
@@ -140,7 +140,7 @@ int main(int narg, char *arg[])
   int ny_m_two = ny - 2;
   int nz_m_two = nz - 2;
 
-  int64_t nedge = 
+  int64_t nedge =
       // interior vertices
       27 * nx_gt_one * ny_gt_one * nz_gt_one * nx_m_two * ny_m_two * nz_m_two
       // face vertices
@@ -152,7 +152,7 @@ int main(int narg, char *arg[])
     + 12 * (nx_gt_one+nz_gt_one) * (nx_gt_one+nz_gt_one) * ny_gt_one * ny_m_two
     + 12 * (nx_gt_one+ny_gt_one) * (nx_gt_one+ny_gt_one) * nz_gt_one * nz_m_two
       // corner vertices
-    + (1+nx_gt_one) * (1+nx_gt_one) * (1+ny_gt_one) * (1+ny_gt_one) 
+    + (1+nx_gt_one) * (1+nx_gt_one) * (1+ny_gt_one) * (1+ny_gt_one)
        * (1+nz_gt_one) * (1+nz_gt_one);
 
   char *basename = arg[4];
