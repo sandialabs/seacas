@@ -137,7 +137,7 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build 
-          make -j 4
+          make VERBOSE=1 -j 4
         if: ${{ success() }}
 
       - name: Install
