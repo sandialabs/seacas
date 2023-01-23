@@ -160,7 +160,7 @@ then
 
   if [ "$COMPILER" == "intel" ]
   then
-      CXX=icx
+      CXX=icpx
       CC=icx
       FC=ifort
       CFLAGS="-Wall -Wunused"
