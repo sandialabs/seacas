@@ -15,9 +15,13 @@ name: Checkmarx Scan
 
 # Controls when the workflow will run
 on:
+  push:
+    branches:
+    - master
   pull_request:
     types: [opened, reopened, synchronize]
     branches: [ "master" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
