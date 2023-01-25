@@ -722,7 +722,7 @@ namespace Ioex {
     // defining of the output database should be the same except
     // we don't write anything since it is already there.  We do
     // need the number of steps though...
-    if (open_create_behavior() == Ioss::DB_APPEND) {
+    if (open_create_behavior() == Ioss::DB_APPEND || dbUsage == Ioss::QUERY_TIMESTEPS_ONLY) {
       get_step_times__();
       return;
     }
