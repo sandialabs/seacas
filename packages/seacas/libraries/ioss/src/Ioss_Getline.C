@@ -427,7 +427,7 @@ namespace {
 
   /* adds the character c to the input buffer at current location */
   {
-    if (io_gl_cnt >= IO_GL_BUF_SIZE - 1)
+    if (io_gl_cnt > IO_GL_BUF_SIZE)
       io_gl_error("\n*** Error: getline(): input buffer overflow\n");
     if (io_gl_overwrite == 0 || io_gl_pos == io_gl_cnt) {
       int i;
@@ -449,7 +449,7 @@ namespace {
     int len = strlen(io_gl_killbuf);
     if (len > 0) {
       if (io_gl_overwrite == 0) {
-        if (io_gl_cnt + len >= IO_GL_BUF_SIZE - 1)
+        if (io_gl_cnt + len > IO_GL_BUF_SIZE)
           io_gl_error("\n*** Error: getline(): input buffer overflow\n");
         for (int i = io_gl_cnt; i >= io_gl_pos; i--)
           io_gl_buf[i + len] = io_gl_buf[i];
@@ -459,7 +459,7 @@ namespace {
       }
       else {
         if (io_gl_pos + len > io_gl_cnt) {
-          if (io_gl_pos + len >= IO_GL_BUF_SIZE - 1)
+          if (io_gl_pos + len > IO_GL_BUF_SIZE)
             io_gl_error("\n*** Error: getline(): input buffer overflow\n");
           io_gl_buf[io_gl_pos + len] = '\0';
         }
@@ -497,7 +497,7 @@ namespace {
     int len    = io_gl_cnt;
     int loc    = io_gl_width - 5; /* shifts line back to start position */
 
-    if (io_gl_cnt >= IO_GL_BUF_SIZE - 1)
+    if (io_gl_cnt > IO_GL_BUF_SIZE)
       io_gl_error("\n*** Error: getline(): input buffer overflow\n");
     if (loc > len)
       loc = len;
