@@ -83,9 +83,11 @@ namespace {
   void io_gl_char_cleanup(void); /* undo io_gl_char_init */
                                  /* returns printable prompt width */
 
-  void io_gl_addchar(int c);               /* install specified char */
-  void io_gl_del(int loc, int);            /* del, either left (-1) or cur (0) */
-  void io_gl_error(const char *const buf); /* write error msg and die */
+  void io_gl_addchar(int c);    /* install specified char */
+  void io_gl_del(int loc, int); /* del, either left (-1) or cur (0) */
+
+  [[noreturn]] void io_gl_error(const char *const buf); /* write error msg and die */
+
   void io_gl_fixup(const char *prompt, int change,
                    int cursor);           /* fixup state variables and screen */
   int  io_gl_getc(void);                  /* read one char from terminal */
@@ -255,7 +257,7 @@ namespace {
     }
   }
 
-  void io_gl_error(const char *const buf)
+  [[noreturn]] void io_gl_error(const char *const buf)
   {
     int len = strlen(buf);
 
