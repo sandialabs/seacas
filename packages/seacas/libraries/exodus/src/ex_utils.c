@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -194,10 +194,10 @@ int ex__check_file_type(const char *path, int *type)
       ex_err(__func__, errmsg, EX_WRONGFILETYPE);
       EX_FUNC_LEAVE(EX_FATAL);
     }
-    int i                   = fread(magic, MAGIC_NUMBER_LEN, 1, fp);
+    int i                   = fread(magic, 1, MAGIC_NUMBER_LEN, fp);
     magic[MAGIC_NUMBER_LEN] = '\0';
     fclose(fp);
-    if (i != 1) {
+    if (i != MAGIC_NUMBER_LEN) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Could not read magic data from file '%s', err = %s.",
                path, strerror(errno));
