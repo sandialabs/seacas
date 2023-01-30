@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -110,10 +110,7 @@ Ioss::Scalar::Scalar() : Ioss::VariableType(scalar(), 1)
 std::string Ioss::Scalar::label(int which, const char /*suffix_sep*/) const
 {
   assert(which > 0 && which <= component_count());
-  switch (which) {
-  case 1: return "";
-  default: return "";
-  }
+  return "";
 }
 
 std::string Ioss::Scalar::label_name(const std::string &base, int /*which*/,
