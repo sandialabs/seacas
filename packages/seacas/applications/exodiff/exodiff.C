@@ -1506,7 +1506,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       const std::string &name = (interFace.glob_var_names)[out_idx];
       int idx1 = find_string(file1.Global_Var_Names(), name, interFace.nocase_var_names);
       int idx2 = find_string(file2.Global_Var_Names(), name, interFace.nocase_var_names);
-      if (idx1 < 0 || idx2 < 0 || vals2 == nullptr) {
+      if (idx1 < 0 || idx2 < 0) {
         Error(fmt::format("Unable to find global variable named '{}' on database.\n", name));
       }
       gvals[out_idx] = FileDiff(vals1[idx1], vals2[idx2], interFace.output_type);
