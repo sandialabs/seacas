@@ -115,7 +115,7 @@ namespace {
     }
   }
 
-  void exodus_error(int lineno)
+  [[noreturn]] void exodus_error(int lineno)
   {
     std::ostringstream errmsg;
     fmt::print(errmsg,
