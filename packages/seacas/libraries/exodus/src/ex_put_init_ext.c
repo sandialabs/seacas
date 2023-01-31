@@ -221,14 +221,13 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
   int ssetdim      = 0;
   int dim_str_name = 0;
   int dim[2];
-  int temp     = 0;
-  int nmapdim  = 0;
-  int edmapdim = 0;
-  int famapdim = 0;
-  int emapdim  = 0;
-  int timedim  = 0;
-  int status   = 0;
-  ;
+  int temp      = 0;
+  int nmapdim   = 0;
+  int edmapdim  = 0;
+  int famapdim  = 0;
+  int emapdim   = 0;
+  int timedim   = 0;
+  int status    = 0;
   int title_len = 0;
 #if 0
   /* used for header size calculations which are turned off for now */
