@@ -1792,7 +1792,9 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
         if (el_flag >= 0) {
           if (elmt_map.empty()) {
-            v2 = vals2[e];
+            if (vals2 != nullptr) {
+              v2 = vals2[e];
+            }
           }
           else {
             // With mapping, map global index from file 1 to global index
