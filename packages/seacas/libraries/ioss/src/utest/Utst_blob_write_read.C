@@ -170,7 +170,7 @@ void write_blob()
   region.begin_mode(Ioss::STATE_TRANSIENT);
   const size_t num_ts = 10;
   for (size_t ts = 0; ts < num_ts; ts++) {
-    double time = ts / 10.0;
+    double time = ts;
     auto   step = region.add_state(time);
     region.begin_state(step);
 
