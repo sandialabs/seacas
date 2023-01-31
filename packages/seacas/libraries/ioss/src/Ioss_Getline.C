@@ -271,8 +271,8 @@ namespace {
   {
     if (io_gl_init_done < 0) { /* -1 only on startup */
       const char *cp = (const char *)getenv("COLUMNS");
-      if (cp != NULL) {
-        int w = strtol(cp, NULL, 10);
+      if (cp != nullptr) {
+        int w = strtol(cp, nullptr, 10);
         if (w > 20)
           io_gl_setwidth(w);
       }
@@ -712,13 +712,13 @@ namespace {
   {
     hist_buf[0] = hist_empty_elem;
     for (int i = 1; i < HIST_SIZE; i++) {
-      hist_buf[i] = NULL;
+      hist_buf[i] = nullptr;
     }
   }
 } // namespace
 void io_gl_histadd(const char *buf)
 {
-  static char *prev = NULL;
+  static char *prev = nullptr;
 
   /* in case we call io_gl_histadd() before we call getline() */
   if (io_gl_init_done < 0) { /* -1 only on startup */
@@ -734,7 +734,7 @@ void io_gl_histadd(const char *buf)
     if (strchr(p, '\n')) { /* previously line already has NL stripped */
       len--;
     }
-    if ((prev == NULL) || ((int)strlen(prev) != len) || strncmp(prev, buf, (size_t)len) != 0) {
+    if ((prev == nullptr) || ((int)strlen(prev) != len) || strncmp(prev, buf, (size_t)len) != 0) {
       hist_buf[hist_last] = hist_save(buf);
       prev                = hist_buf[hist_last];
       hist_last           = (hist_last + 1) % HIST_SIZE;
@@ -751,14 +751,14 @@ namespace {
   char *hist_prev(void)
   /* loads previous hist entry into input buffer, sticks on first */
   {
-    char *p    = NULL;
+    char *p    = nullptr;
     int   next = (hist_pos - 1 + HIST_SIZE) % HIST_SIZE;
 
-    if (hist_buf[hist_pos] != NULL && next != hist_last) {
+    if (hist_buf[hist_pos] != nullptr && next != hist_last) {
       hist_pos = next;
       p        = hist_buf[hist_pos];
     }
-    if (p == NULL) {
+    if (p == nullptr) {
       p = hist_empty_elem;
       io_gl_beep();
     }
@@ -768,13 +768,13 @@ namespace {
   char *hist_next(void)
   /* loads next hist entry into input buffer, clears on last */
   {
-    char *p = NULL;
+    char *p = nullptr;
 
     if (hist_pos != hist_last) {
       hist_pos = (hist_pos + 1) % HIST_SIZE;
       p        = hist_buf[hist_pos];
     }
-    if (p == NULL) {
+    if (p == nullptr) {
       p = hist_empty_elem;
       io_gl_beep();
     }
@@ -785,22 +785,22 @@ namespace {
 
   /* makes a copy of the string */
   {
-    char       *s   = NULL;
+    char       *s   = nullptr;
     size_t      len = strlen(p);
     const char *nl  = strpbrk(p, "\n\r");
 
     if (nl) {
-      if ((s = (char *)malloc(len)) != NULL) {
+      if ((s = (char *)malloc(len)) != nullptr) {
         copy_string(s, p, len);
         s[len - 1] = '\0';
       }
     }
     else {
-      if ((s = (char *)malloc(len + 1)) != NULL) {
+      if ((s = (char *)malloc(len + 1)) != nullptr) {
         copy_string(s, p, len + 1);
       }
     }
-    if (s == NULL) {
+    if (s == nullptr) {
       io_gl_error("\n*** Error: hist_save() failed on malloc\n");
     }
     return s;
@@ -864,8 +864,8 @@ namespace {
       copy_string(io_gl_buf, hist_buf[hist_pos], IO_GL_BUF_SIZE);
     }
 
-    char *loc = NULL;
-    if ((loc = strstr(io_gl_buf, search_string)) != NULL) {
+    char *loc = nullptr;
+    if ((loc = strstr(io_gl_buf, search_string)) != nullptr) {
       io_gl_fixup(search_prompt, 0, loc - io_gl_buf);
     }
     else if (search_pos > 0) {
@@ -910,7 +910,7 @@ namespace {
           io_gl_fixup(search_prompt, 0, 0);
           found = true;
         }
-        else if ((loc = strstr(p, search_string)) != NULL) {
+        else if ((loc = strstr(p, search_string)) != nullptr) {
           copy_string(io_gl_buf, p, IO_GL_BUF_SIZE);
           io_gl_fixup(search_prompt, 0, loc - p);
           if (new_search)
@@ -945,7 +945,7 @@ namespace {
           io_gl_fixup(search_prompt, 0, 0);
           found = true;
         }
-        else if ((loc = strstr(p, search_string)) != NULL) {
+        else if ((loc = strstr(p, search_string)) != nullptr) {
           copy_string(io_gl_buf, p, IO_GL_BUF_SIZE);
           io_gl_fixup(search_prompt, 0, loc - p);
           if (new_search)
