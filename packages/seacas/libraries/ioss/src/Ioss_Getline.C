@@ -287,8 +287,9 @@ namespace {
   void io_gl_cleanup(void)
   /* undo effects of io_gl_init, as necessary */
   {
-    if (io_gl_init_done > 0)
+    if (io_gl_init_done > 0) {
       io_gl_char_cleanup();
+    }
     io_gl_init_done = 0;
 #ifdef __windows__
     Sleep(40);
@@ -299,8 +300,9 @@ namespace {
 
 void io_gl_setwidth(int w)
 {
-  if (w > 250)
+  if (w > 250) {
     w = 250;
+  }
   if (w > 20) {
     io_gl_termw  = w;
     io_gl_scroll = w / 3;
@@ -451,22 +453,27 @@ namespace {
     int len = strlen(io_gl_killbuf);
     if (len > 0) {
       if (io_gl_overwrite == 0) {
-        if (io_gl_cnt + len > IO_GL_BUF_SIZE)
+        if (io_gl_cnt + len > IO_GL_BUF_SIZE) {
           io_gl_error("\n*** Error: getline(): input buffer overflow\n");
-        for (int i = io_gl_cnt; i >= io_gl_pos; i--)
+        }
+        for (int i = io_gl_cnt; i >= io_gl_pos; i--) {
           io_gl_buf[i + len] = io_gl_buf[i];
-        for (int i = 0; i < len; i++)
+        }
+        for (int i = 0; i < len; i++) {
           io_gl_buf[io_gl_pos + i] = io_gl_killbuf[i];
+        }
         io_gl_fixup(io_gl_prompt, io_gl_pos, io_gl_pos + len);
       }
       else {
         if (io_gl_pos + len > io_gl_cnt) {
-          if (io_gl_pos + len > IO_GL_BUF_SIZE)
+          if (io_gl_pos + len > IO_GL_BUF_SIZE) {
             io_gl_error("\n*** Error: getline(): input buffer overflow\n");
+          }
           io_gl_buf[io_gl_pos + len] = '\0';
         }
-        for (int i = 0; i < len; i++)
+        for (int i = 0; i < len; i++) {
           io_gl_buf[io_gl_pos + i] = io_gl_killbuf[i];
+        }
         io_gl_extent = len;
         io_gl_fixup(io_gl_prompt, io_gl_pos, io_gl_pos + len);
       }
@@ -485,8 +492,9 @@ namespace {
       io_gl_extent             = 2;
       io_gl_fixup(io_gl_prompt, io_gl_pos - 1, io_gl_pos);
     }
-    else
+    else {
       io_gl_beep();
+    }
   }
 
   void io_gl_newline(void)
@@ -499,10 +507,12 @@ namespace {
     int len    = io_gl_cnt;
     int loc    = io_gl_width - 5; /* shifts line back to start position */
 
-    if (io_gl_cnt > IO_GL_BUF_SIZE)
+    if (io_gl_cnt > IO_GL_BUF_SIZE) {
       io_gl_error("\n*** Error: getline(): input buffer overflow\n");
-    if (loc > len)
+    }
+    if (loc > len) {
       loc = len;
+    }
     io_gl_fixup(io_gl_prompt, change, loc); /* must do this before appending \n */
     io_gl_buf[len]     = '\n';
     io_gl_buf[len + 1] = '\0';
@@ -529,8 +539,9 @@ namespace {
       }
       io_gl_fixup(io_gl_prompt, io_gl_pos + loc, io_gl_pos + loc);
     }
-    else
+    else {
       io_gl_beep();
+    }
   }
 
   void io_gl_kill(int pos)
@@ -542,8 +553,9 @@ namespace {
       io_gl_buf[pos] = '\0';
       io_gl_fixup(io_gl_prompt, pos, pos);
     }
-    else
+    else {
       io_gl_beep();
+    }
   }
 
   void io_gl_redraw(void)
@@ -600,8 +612,9 @@ namespace {
     int backup = io_gl_pos - io_gl_shift; /* how far to backup before fixing */
     if (change >= 0) {
       io_gl_cnt = strlen(io_gl_buf);
-      if (change > io_gl_cnt)
+      if (change > io_gl_cnt) {
         change = io_gl_cnt;
+      }
     }
     if (cursor > io_gl_cnt) {
       if (cursor != IO_GL_BUF_SIZE) { /* IO_GL_BUF_SIZE means end of line */
@@ -624,8 +637,9 @@ namespace {
       new_shift /= io_gl_scroll;
       new_shift *= io_gl_scroll;
     }
-    else
+    else {
       new_shift = 0;
+    }
     if (new_shift != io_gl_shift) { /* scroll occurs */
       io_gl_shift = new_shift;
       off_left    = (io_gl_shift) ? 1 : 0;
@@ -648,33 +662,38 @@ namespace {
     pad -= (off_right) ? io_gl_width - 1 : io_gl_cnt - io_gl_shift;
     pad = (pad < 0) ? 0 : pad;
     if (left <= right) { /* clean up screen */
-      for (int i = 0; i < backup; i++)
+      for (int i = 0; i < backup; i++) {
         io_gl_putc('\b');
+      }
       if (left == io_gl_shift && off_left) {
         io_gl_putc('$');
         left++;
       }
-      for (int i = left; i < new_right; i++)
+      for (int i = left; i < new_right; i++) {
         io_gl_putc(io_gl_buf[i]);
+      }
       io_gl_pos = new_right;
       if (off_right && new_right == right) {
         io_gl_putc('$');
         io_gl_pos++;
       }
       else {
-        for (int i = 0; i < pad; i++) /* erase remains of prev line */
+        for (int i = 0; i < pad; i++) { /* erase remains of prev line */
           io_gl_putc(' ');
+        }
         io_gl_pos += pad;
       }
     }
     int i = io_gl_pos - cursor; /* move to final cursor location */
     if (i > 0) {
-      while (i--)
+      while (i--) {
         io_gl_putc('\b');
+      }
     }
     else {
-      for (int ii = io_gl_pos; ii < cursor; ii++)
+      for (int ii = io_gl_pos; ii < cursor; ii++) {
         io_gl_putc(io_gl_buf[ii]);
+      }
     }
     io_gl_pos = cursor;
   }
@@ -692,8 +711,9 @@ namespace {
   void hist_init(void)
   {
     hist_buf[0] = hist_empty_elem;
-    for (int i = 1; i < HIST_SIZE; i++)
+    for (int i = 1; i < HIST_SIZE; i++) {
       hist_buf[i] = NULL;
+    }
   }
 } // namespace
 void io_gl_histadd(const char *buf)
@@ -706,12 +726,14 @@ void io_gl_histadd(const char *buf)
     io_gl_init_done = 0;
   }
   const char *p = buf;
-  while (*p == ' ' || *p == '\t' || *p == '\n')
+  while (*p == ' ' || *p == '\t' || *p == '\n') {
     p++;
+  }
   if (*p) {
     int len = strlen(buf);
-    if (strchr(p, '\n')) /* previously line already has NL stripped */
+    if (strchr(p, '\n')) { /* previously line already has NL stripped */
       len--;
+    }
     if ((prev == NULL) || ((int)strlen(prev) != len) || strncmp(prev, buf, (size_t)len) != 0) {
       hist_buf[hist_last] = hist_save(buf);
       prev                = hist_buf[hist_last];
@@ -778,8 +800,9 @@ namespace {
         copy_string(s, p, len + 1);
       }
     }
-    if (s == NULL)
+    if (s == NULL) {
       io_gl_error("\n*** Error: hist_save() failed on malloc\n");
+    }
     return s;
   }
 
@@ -796,6 +819,7 @@ namespace {
     if (c == 0) {
       search_pos       = 0;
       search_string[0] = '\0';
+
       search_prompt[0] = '?';
       search_prompt[1] = ' ';
       search_prompt[2] = '\0';
@@ -803,6 +827,7 @@ namespace {
     else if (c > 0) {
       search_string[search_pos]     = (char)c;
       search_string[search_pos + 1] = (char)0;
+
       search_prompt[search_pos]     = (char)c;
       search_prompt[search_pos + 1] = (char)'?';
       search_prompt[search_pos + 2] = (char)' ';
@@ -812,7 +837,8 @@ namespace {
     else {
       if (search_pos > 0) {
         search_pos--;
-        search_string[search_pos]     = (char)0;
+        search_string[search_pos] = (char)0;
+
         search_prompt[search_pos]     = (char)'?';
         search_prompt[search_pos + 1] = (char)' ';
         search_prompt[search_pos + 2] = (char)0;
@@ -858,8 +884,9 @@ namespace {
   void search_term(void)
   {
     io_gl_search_mode = 0;
-    if (io_gl_buf[0] == 0) /* not found, reset hist list */
+    if (io_gl_buf[0] == 0) { /* not found, reset hist list */
       hist_pos = hist_last;
+    }
     io_gl_fixup(io_gl_prompt, 0, io_gl_pos);
   }
 
@@ -874,21 +901,21 @@ namespace {
       io_gl_fixup(search_prompt, 0, 0);
     }
     else if (search_pos > 0) {
-      int found = 0;
+      bool found = false;
       while (!found) {
         char *loc;
         char *p = hist_prev();
         if (*p == 0) { /* not found, done looking */
           io_gl_buf[0] = '\0';
           io_gl_fixup(search_prompt, 0, 0);
-          found = 1;
+          found = true;
         }
         else if ((loc = strstr(p, search_string)) != NULL) {
           copy_string(io_gl_buf, p, IO_GL_BUF_SIZE);
           io_gl_fixup(search_prompt, 0, loc - p);
           if (new_search)
             search_last = hist_pos;
-          found = 1;
+          found = true;
         }
       }
     }
@@ -910,20 +937,20 @@ namespace {
       io_gl_fixup(search_prompt, 0, 0);
     }
     else if (search_pos > 0) {
-      int found = 0;
+      bool found = false;
       while (!found) {
         char *p = hist_next();
         if (*p == 0) { /* not found, done looking */
           io_gl_buf[0] = '\0';
           io_gl_fixup(search_prompt, 0, 0);
-          found = 1;
+          found = true;
         }
         else if ((loc = strstr(p, search_string)) != NULL) {
           copy_string(io_gl_buf, p, IO_GL_BUF_SIZE);
           io_gl_fixup(search_prompt, 0, loc - p);
           if (new_search)
             search_last = hist_pos;
-          found = 1;
+          found = true;
         }
       }
     }
