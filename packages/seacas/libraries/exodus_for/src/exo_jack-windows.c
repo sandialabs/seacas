@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -46,7 +46,7 @@
 
 #if defined(Build64) && !defined(DEFAULT_REAL_INT)
 /* 64-bit */
-#define real double
+#define real      double
 #define entity_id ex_entity_id
 #ifdef ADDC_
 #define F2C(name) name##4_
@@ -56,7 +56,7 @@
 
 #else
 /* 32-bit */
-#define real float
+#define real      float
 #define entity_id int
 #ifdef ADDC_
 #define F2C(name) name##_
@@ -94,9 +94,13 @@ static void ex_fcdcpy(char *fstring, /* output string to be blank-filled */
 static void ex_fstrncpy(char *target, /* space to be copied into */
                         char *source, /* string to be copied */
                         int   maxlen)
-{ /* maximum length of *source */
-  int len = maxlen;
+{
+  if (*source == '\0') {
+    *target = '\0';
+    return;
+  }
 
+  int len = maxlen;
   while (len-- && *source != '\0')
     *target++ = *source++;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -104,9 +104,13 @@ static void ex_fcdcpy(char *fstring, /* output string to be blank-filled */
 static void ex_fstrncpy(char *target, /* space to be copied into */
                         char *source, /* string to be copied */
                         int   maxlen)
-{ /* maximum length of *source */
-  int len = maxlen;
+{
+  if (*source == '\0') {
+    *target = '\0';
+    return;
+  }
 
+  int len = maxlen;
   while (len-- && *source != '\0') {
     *target++ = *source++;
   }
