@@ -465,10 +465,10 @@ namespace {
         gl_fixup(gl_prompt, gl_pos, gl_pos + len);
       }
       else {
+        if (gl_pos + len >= GL_BUF_SIZE) {
+          gl_error("\n*** Error: getline(): input buffer overflow\n");
+        }
         if (gl_pos + len > gl_cnt) {
-          if (gl_pos + len >= GL_BUF_SIZE) {
-            gl_error("\n*** Error: getline(): input buffer overflow\n");
-          }
           gl_buf[gl_pos + len] = '\0';
         }
         for (int i = 0; i < len; i++) {
