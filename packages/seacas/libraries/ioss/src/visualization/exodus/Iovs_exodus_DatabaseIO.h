@@ -174,7 +174,6 @@ namespace Iovs_exodus {
                                size_t data_size) const override;
 
     void write_meta_data();
-    size_t get_num_to_get(const Ioss::Field &field, size_t data_size) const;
 
     int64_t handle_node_ids(void *ids, int64_t num_to_get);
     int64_t handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get);

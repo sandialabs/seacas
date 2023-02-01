@@ -26,6 +26,7 @@ namespace { // Internal helper functions
   int64_t get_id(const Ioss::GroupingEntity *entity, Iovs_exodus::EntityIdSet *idset);
   bool    set_id(const Ioss::GroupingEntity *entity, Iovs_exodus::EntityIdSet *idset);
   int64_t extract_id(const std::string &name_id);
+  size_t  get_num_to_get(const Ioss::Field &field, size_t data_size);
 } // End anonymous namespace
 
 namespace Iovs_exodus {
@@ -627,14 +628,15 @@ namespace Iovs_exodus {
   {
     return get_num_to_get(field, data_size);
   }
-  size_t DatabaseIO::get_num_to_get(const Ioss::Field &field, size_t data_size) const
+} // namespace Iovs_exodus
+
+namespace {
+
+  size_t get_num_to_get(const Ioss::Field &field, size_t data_size)
   {
     size_t num_to_get = field.verify(data_size);
     return num_to_get;
   }
-} // namespace Iovs_exodus
-
-namespace {
 
   int64_t get_id(const Ioss::GroupingEntity *entity, Iovs_exodus::EntityIdSet *idset)
   {
