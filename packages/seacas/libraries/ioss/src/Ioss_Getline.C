@@ -485,7 +485,7 @@ namespace {
   void gl_transpose(void)
   /* switch character under cursor and to left of cursor */
   {
-    if (gl_pos > 0 && gl_cnt > gl_pos) {
+    if (gl_pos > 0 && gl_cnt > gl_pos && gl_pos < GL_BUF_SIZE) {
       int c              = gl_buf[gl_pos - 1];
       gl_buf[gl_pos - 1] = gl_buf[gl_pos];
       gl_buf[gl_pos]     = (char)c;
@@ -530,12 +530,17 @@ namespace {
     if ((loc == -1 && gl_pos > 0) || (loc == 0 && gl_pos < gl_cnt)) {
       int j = 0;
       for (int i = gl_pos + loc; i < gl_cnt; i++) {
-        if ((j == 0) && (killsave != 0)) {
-          gl_killbuf[0] = gl_buf[i];
-          gl_killbuf[1] = '\0';
-          j             = 1;
+        if (i < GL_BUF_SIZE - 1) {
+          if ((j == 0) && (killsave != 0)) {
+            gl_killbuf[0] = gl_buf[i];
+            gl_killbuf[1] = '\0';
+            j             = 1;
+          }
+          gl_buf[i] = gl_buf[i + 1];
         }
-        gl_buf[i] = gl_buf[i + 1];
+        else {
+          gl_error("\n*** Error: getline(): logic error in gl_del().\n");
+        }
       }
       gl_fixup(gl_prompt, gl_pos + loc, gl_pos + loc);
     }
@@ -548,7 +553,7 @@ namespace {
 
   /* delete from pos to the end of line */
   {
-    if (pos < gl_cnt) {
+    if (pos < gl_cnt && pos < GL_BUF_SIZE) {
       copy_string(gl_killbuf, gl_buf + pos, GL_BUF_SIZE);
       gl_buf[pos] = '\0';
       gl_fixup(gl_prompt, pos, pos);
@@ -691,8 +696,13 @@ namespace {
       }
     }
     else {
-      for (int ii = gl_pos; ii < cursor; ii++) {
-        gl_putc(gl_buf[ii]);
+      if (cursor < GL_BUF_SIZE) {
+        for (int ii = gl_pos; ii < cursor; ii++) {
+          gl_putc(gl_buf[ii]);
+        }
+      }
+      else {
+        gl_error("\n*** Error: getline(): logic error in gl_fixup().\n");
       }
     }
     gl_pos = cursor;
