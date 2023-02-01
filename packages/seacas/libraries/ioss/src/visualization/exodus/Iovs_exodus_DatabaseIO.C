@@ -38,8 +38,8 @@ namespace Iovs_exodus {
       : Ioss::DatabaseIO(region,
                          Iovs::Utils::getInstance().getDatabaseOutputFilePath(filename, props),
                          db_usage, communicator, props),
-        isInput(false), singleProcOnly(false), doLogging(false),
-        nodeBlockCount(0), elementBlockCount(0)
+        isInput(false), singleProcOnly(false), doLogging(false), nodeBlockCount(0),
+        elementBlockCount(0)
   {
 
     Iovs::Utils::DatabaseInfo dbinfo;
@@ -65,7 +65,7 @@ namespace Iovs_exodus {
 
     if (state == Ioss::STATE_MODEL) {
       CatalystExodusMeshBase::ElementBlockIdNameList ebinList;
-      Ioss::ElementBlockContainer const &ebc = region->get_element_blocks();
+      Ioss::ElementBlockContainer const             &ebc = region->get_element_blocks();
       for (auto i : ebc) {
         ebinList.emplace_back(get_id(i, &ids_), i->name());
       }
@@ -131,11 +131,9 @@ namespace Iovs_exodus {
     for (I = element_blocks.begin(); I != element_blocks.end(); ++I) {
       int     bid       = get_id((*I), &ids_);
       int64_t eb_offset = (*I)->get_offset();
-      this->catExoMesh->CreateElementVariable("ids", 1, bid,
-                                              &this->elemMap.map()[eb_offset + 1]);
+      this->catExoMesh->CreateElementVariable("ids", 1, bid, &this->elemMap.map()[eb_offset + 1]);
       std::vector<int> object_id((*I)->entity_count(), bid);
-      this->catExoMesh->CreateElementVariable("object_id", 1, bid,
-                                              object_id.data());
+      this->catExoMesh->CreateElementVariable("object_id", 1, bid, object_id.data());
     }
     this->catExoMesh->CreateNodalVariable("ids", 1, &this->nodeMap.map()[1]);
 
@@ -226,9 +224,9 @@ namespace Iovs_exodus {
         }
       }
       else if (role == Ioss::Field::TRANSIENT) {
-        Ioss::Field::BasicType ioss_type = field.get_type();
-        int         comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
-        std::string field_name = field.get_name();
+        Ioss::Field::BasicType ioss_type  = field.get_type();
+        int                    comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+        std::string            field_name = field.get_name();
 
         if (ioss_type == Ioss::Field::COMPLEX) {
           comp_count *= 2;
@@ -312,10 +310,10 @@ namespace Iovs_exodus {
         /* TODO */
       }
       else if (role == Ioss::Field::TRANSIENT) {
-        Ioss::Field::BasicType ioss_type = field.get_type();
-        int         comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
-        int         bid        = get_id(eb, &ids_);
-        std::string field_name = field.get_name();
+        Ioss::Field::BasicType ioss_type  = field.get_type();
+        int                    comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
+        int                    bid        = get_id(eb, &ids_);
+        std::string            field_name = field.get_name();
 
         if (ioss_type == Ioss::Field::COMPLEX) {
           comp_count *= 2;
@@ -566,6 +564,73 @@ namespace Iovs_exodus {
     Ioss::WarnOut() << ge->type() << " '" << ge->name() << "'. Unknown " << inout << " field '"
                     << field.get_name() << "'";
     return -4;
+  }
+
+  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeBlock * /*eb*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::FaceBlock * /*fb*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock * /*sb*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::NodeSet * /*ns*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeSet * /*es*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::FaceSet * /*fs*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::ElementSet * /*es*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet * /*ss*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::CommSet * /*cs*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::StructuredBlock * /*sb*/,
+                                         const Ioss::Field &field, void * /*data*/,
+                                         size_t             data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::Assembly * /*as*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::Blob * /*bl*/, const Ioss::Field &field,
+                                         void * /*data*/, size_t data_size) const
+  {
+    return get_num_to_get(field, data_size);
+  }
+  size_t DatabaseIO::get_num_to_get(const Ioss::Field &field, size_t data_size) const
+  {
+    size_t num_to_get = field.verify(data_size);
+    return num_to_get;
   }
 } // namespace Iovs_exodus
 
