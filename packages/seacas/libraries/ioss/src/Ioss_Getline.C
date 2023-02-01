@@ -18,7 +18,6 @@
 /*
  * Note:  This version has been updated by Mike Gleason <mgleason@ncftp.com>
  */
-
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64)
 
@@ -429,7 +428,7 @@ namespace {
   {
 
     if (gl_overwrite == 0 || gl_pos == gl_cnt) {
-      if (gl_cnt > GL_BUF_SIZE - 1) {
+      if (gl_cnt > GL_BUF_SIZE - 2) {
         gl_error("\n*** Error: getline(): input buffer overflow\n");
       }
       for (int i = gl_cnt; i >= gl_pos; i--) {
@@ -454,7 +453,7 @@ namespace {
     int len = strlen(gl_killbuf);
     if (len > 0) {
       if (gl_overwrite == 0) {
-        if (gl_cnt + len > GL_BUF_SIZE) {
+        if (gl_cnt + len >= GL_BUF_SIZE) {
           gl_error("\n*** Error: getline(): input buffer overflow\n");
         }
         for (int i = gl_cnt; i >= gl_pos; i--) {
@@ -467,7 +466,7 @@ namespace {
       }
       else {
         if (gl_pos + len > gl_cnt) {
-          if (gl_pos + len > GL_BUF_SIZE) {
+          if (gl_pos + len >= GL_BUF_SIZE) {
             gl_error("\n*** Error: getline(): input buffer overflow\n");
           }
           gl_buf[gl_pos + len] = '\0';
@@ -508,7 +507,7 @@ namespace {
     int len    = gl_cnt;
     int loc    = gl_width - 5; /* shifts line back to start position */
 
-    if (gl_cnt > GL_BUF_SIZE - 1) {
+    if (gl_cnt >= GL_BUF_SIZE - 1) {
       gl_error("\n*** Error: getline(): input buffer overflow\n");
     }
     if (loc > len) {
