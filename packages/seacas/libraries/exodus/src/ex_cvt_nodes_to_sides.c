@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -287,13 +287,14 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
      distinguish between 2d TRIs and 3d TRIs */
   ndim = ex_inquire_int(exoid, EX_INQ_DIM);
 
-  int_size = sizeof(int);
-  if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+  bool ints_64 = ex_int64_status(exoid) & EX_BULK_INT64_API;
+  int_size     = sizeof(int);
+  if (ints_64) {
     int_size = sizeof(int64_t);
   }
 
   /* First count up # of elements in the side sets*/
-  if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+  if (ints_64) {
     for (i = 0; i < num_side_sets; i++) {
       tot_num_ss_elem += ((int64_t *)num_elem_per_set)[i];
     }
@@ -334,7 +335,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
 
   /* Allocate space for the element block ids */
   ids_size = sizeof(int);
-  if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
+  if (ints_64) {
     ids_size = sizeof(int64_t);
   }
 
@@ -366,7 +367,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
   elem_ctr = 0;
   for (i = 0; i < num_elem_blks; i++) {
     ex_entity_id id;
-    if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
+    if (ints_64) {
       id = ((int64_t *)elem_blk_ids)[i];
     }
     else {
@@ -420,7 +421,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
   }
 
   same_elem_type[0] = true;
-  if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+  if (ints_64) {
     elem_ctr = ((int64_t *)num_elem_per_set)[0];
     for (i = 0, k = 0; i < tot_num_ss_elem; i++) {
       int64_t elem = ((int64_t *)side_sets_elem_list)[i];
@@ -714,7 +715,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
         case EX_EL_SHELL: {
           /* use table to find which node to compare to next */
 
-          if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+          if (ints_64) {
             num_node_per_side =
                 ((int64_t *)ss_elem_node_ndx)[idx + 1] - ((int64_t *)ss_elem_node_ndx)[idx];
           }
