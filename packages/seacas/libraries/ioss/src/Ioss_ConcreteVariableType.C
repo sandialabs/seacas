@@ -107,7 +107,7 @@ Ioss::Scalar::Scalar() : Ioss::VariableType(scalar(), 1)
   Ioss::VariableType::alias("scalar", "unsigned integer");
 }
 
-std::string Ioss::Scalar::label(int which, const char /*suffix_sep*/) const
+std::string Ioss::Scalar::label(IOSS_MAYBE_UNUSED int which, const char /*suffix_sep*/) const
 {
   assert(which > 0 && which <= component_count());
   return "";
