@@ -111,12 +111,13 @@ static void ex_fstrncpy(char *target, /* space to be copied into */
   }
 
   int len = maxlen;
+  int lcp = 0;
   while (len-- && *source != '\0') {
     *target++ = *source++;
+    lcp++;
   }
 
-  len = maxlen;
-  while (len-- && *(--target) == ' ') {
+  while (lcp-- && *(--target) == ' ') {
     ; /* strip blanks */
   }
   *(++target) = '\0'; /* insert new EOS marker */
