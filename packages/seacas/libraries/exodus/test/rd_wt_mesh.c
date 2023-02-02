@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -239,14 +239,13 @@ int main(int argc, char **argv)
                      num_element_fields, num_timesteps, files_per_domain, sleep_time,
                      num_iterations, loc_num_nodes, node_map, loc_num_elems, elem_map, x_coords,
                      y_coords, z_coords, loc_connect, close_files);
-
-      free(elem_map);
-      free(loc_connect);
-      free(node_map);
-      free(x_coords);
-      free(y_coords);
-      free(z_coords);
     }
+    free(elem_map);
+    free(loc_connect);
+    free(node_map);
+    free(x_coords);
+    free(y_coords);
+    free(z_coords);
   }
 #ifdef PARALLEL_AWARE_EXODUS
   MPI_Finalize();
@@ -774,6 +773,14 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
 
         if (exoid[npd] < 0) {
           printf("after ex_create\n");
+          if (elem_var_tab) {
+            free(elem_var_tab);
+            elem_var_tab = NULL;
+          }
+          if (globals) {
+            free(globals);
+            globals = NULL;
+          }
           free(exoid);
           return (1);
         }
@@ -952,6 +959,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
 
         if (npd == files_per_domain - 1) {
           free(elem_var_tab);
+          elem_var_tab = NULL;
           for (j = 0; j < num_element_fields; j++) {
             free(evar_name[j]);
           }
@@ -1174,6 +1182,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
   free(exoid);
   if (num_global_fields > 0) {
     free(globals);
+    globals = NULL;
   }
   return (0);
 }

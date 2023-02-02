@@ -289,10 +289,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
   ndim = ex_inquire_int(exoid, EX_INQ_DIM);
 
   bool ints_64 = ex_int64_status(exoid) & EX_BULK_INT64_API;
-  int_size     = sizeof(int);
-  if (ints_64) {
-    int_size = sizeof(int64_t);
-  }
+  int_size     = ints_64 ? sizeof(int64_t) : sizeof(int);
 
   /* First count up # of elements in the side sets*/
   if (ints_64) {
