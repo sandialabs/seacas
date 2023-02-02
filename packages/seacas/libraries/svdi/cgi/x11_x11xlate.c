@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -5236,11 +5236,11 @@ static int inside_bnd(point *v, point *bmin, point *bmax, int bound_num)
 {
   /* this routine assumes a rectangular boundary */
   switch (bound_num) {
-  case 0: return (v->y <= bmax->y); break; /* top */
-  case 1: return (v->x <= bmax->x); break; /* right */
-  case 2: return (v->y >= bmin->y); break; /* bottom */
-  case 3: return (v->x >= bmin->x); break; /* left */
-  default: return (FALSE); break;
+  case 0: return (v->y <= bmax->y); /* top */
+  case 1: return (v->x <= bmax->x); /* right */
+  case 2: return (v->y >= bmin->y); /* bottom */
+  case 3: return (v->x >= bmin->x); /* left */
+  default: return (FALSE);
   } /* end switch */
 } /* end inside_bnd */
 
