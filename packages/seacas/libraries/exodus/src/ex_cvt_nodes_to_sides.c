@@ -8,6 +8,7 @@
 
 #include "exodusII.h"     // for ex_err, ex_block, etc
 #include "exodusII_int.h" // for elem_blk_parm, EX_FATAL, etc
+#include <assert.h>
 #include <stdbool.h>
 
 static int64_t get_node(void_int *connect, size_t index, size_t int_size)
@@ -680,6 +681,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
         }
         case EX_EL_TRISHELL: {
           /* use table to find which node to compare to next */
+          assert(n < 3);
           if (ss_node1 ==
               get_node(connect,
                        num_nodes_per_elem * (elem_num_pos) + (trishell_table[0][2 * n] - 1),
@@ -707,6 +709,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
         }
         case EX_EL_SHELL: {
           /* use table to find which node to compare to next */
+          assert(n < 4);
 
           if (ints_64) {
             num_node_per_side =
@@ -771,6 +774,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
         }
         case EX_EL_HEX: {
           /* use table to find which node to compare to next */
+          assert(n < 8);
 
           if (ss_node1 == get_node(connect,
                                    num_nodes_per_elem * (elem_num_pos) + (hex_table[0][3 * n] - 1),
@@ -802,6 +806,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
         }
         case EX_EL_TETRA: {
           /* use table to find which node to compare to next */
+          assert(n < 4);
 
           if (ss_node1 ==
               get_node(connect, num_nodes_per_elem * (elem_num_pos) + (tetra_table[0][3 * n] - 1),
