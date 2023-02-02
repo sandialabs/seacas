@@ -632,7 +632,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
         tmp_z   = z_ptr;
         tmp_v2p = lb->vertex2proc;
 
-        for (int cnt = 0; cnt < machine->num_dims; cnt++) {
+        int upper = machine->num_dims > 3 ? 3 : machine->num_dims;
+        for (int cnt = 0; cnt < upper; cnt++) {
           tmpdim[cnt] = machine->dim[cnt];
         }
         if (machine->type == MESH) {
