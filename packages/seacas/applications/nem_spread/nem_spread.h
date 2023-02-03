@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -59,13 +59,16 @@ public:
 
   void process_lb_data(INT *Integer_Vector, int indx);
   void read_proc_init(int lb_exoid, int proc_info[], int **proc_ids_ptr);
-  void read_lb_init(int lb_exoid, INT *Int_Space, INT *Int_Node_Num, INT *Bor_Node_Num,
-                    INT *Ext_Node_Num, INT *Int_Elem_Num, INT *Bor_Elem_Num, INT *Node_Comm_Num,
-                    INT *Elem_Comm_Num, char *Title);
+  void read_lb_init(int lb_exoid, std::vector<INT> &Int_Space, std::vector<INT> &Int_Node_Num,
+                    std::vector<INT> &Bor_Node_Num, std::vector<INT> &Ext_Node_Num,
+                    std::vector<INT> &Int_Elem_Num, std::vector<INT> &Bor_Elem_Num,
+                    std::vector<INT> &Node_Comm_Num, std::vector<INT> &Elem_Comm_Num, char *Title);
 
-  void read_cmap_params(int lb_exoid, INT *Node_Comm_Num, INT *Elem_Comm_Num, INT *Num_N_Comm_Maps,
-                        INT *Num_E_Comm_Maps, ELEM_COMM_MAP<INT> **E_Comm_Map,
-                        NODE_COMM_MAP<INT> **N_Comm_Map, INT *cmap_max_size, INT **comm_vec);
+  void read_cmap_params(int lb_exoid, INT *Node_Comm_Num, INT *Elem_Comm_Num,
+                        std::vector<INT> &Num_N_Comm_Maps, std::vector<INT> &Num_E_Comm_Maps,
+                        std::vector<ELEM_COMM_MAP<INT>> &E_Comm_Map,
+                        std::vector<NODE_COMM_MAP<INT>> &N_Comm_Map, INT *cmap_max_size,
+                        INT **comm_vec);
 
   void create_elem_types();
   void read_mesh_param();

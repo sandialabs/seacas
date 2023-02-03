@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -17,19 +17,19 @@
 /*---------------------------------------------------------------------------*/
 template <typename INT> struct ELEM_COMM_MAP
 {
-  size_t map_id{0};
-  size_t elem_cnt{0};
-  INT   *elem_ids{nullptr};
-  INT   *side_ids{nullptr};
-  INT   *proc_ids{nullptr};
+  size_t           map_id{0};
+  size_t           elem_cnt{0};
+  std::vector<INT> elem_ids{};
+  std::vector<INT> side_ids{};
+  std::vector<INT> proc_ids{};
 };
 
 template <typename INT> struct NODE_COMM_MAP
 {
-  size_t map_id{0};
-  size_t node_cnt{0};
-  INT   *node_ids{nullptr};
-  INT   *proc_ids{nullptr};
+  size_t           map_id{0};
+  size_t           node_cnt{0};
+  std::vector<INT> node_ids{};
+  std::vector<INT> proc_ids{};
 };
 
 /*---------------------------------------------------------------------------*/
@@ -61,23 +61,21 @@ public:
   /*            THAT ARE THE DIFFERENT ON EACH PROCESSOR                     */
   /*---------------------------------------------------------------------------*/
 
-  INT *Num_Internal_Nodes{nullptr}; /* Number of internal nodes on the current proc*/
-  INT *Num_Border_Nodes{nullptr};   /* Number of border nodes on the current proc  */
-  INT *Num_External_Nodes{nullptr}; /* Number of external nodes on the current proc*/
-  INT *Num_Internal_Elems{nullptr}; /* Number of Elements on the local processor.  */
+  std::vector<INT> Num_Internal_Nodes{}; /* Number of internal nodes on the current proc*/
+  std::vector<INT> Num_Border_Nodes{};   /* Number of border nodes on the current proc  */
+  std::vector<INT> Num_External_Nodes{}; /* Number of external nodes on the current proc*/
+  std::vector<INT> Num_Internal_Elems{}; /* Number of Elements on the local processor.  */
 
-  INT *Num_Border_Elems{nullptr}; /* Number of Elements on the local processor *
-                                   * and shared by other processors. */
+  std::vector<INT> Num_Border_Elems{}; /* Number of Elements on the local processor *
+                                        * and shared by other processors. */
 
-  INT *Num_N_Comm_Maps{nullptr}; /* Number of nodal communication maps */
+  std::vector<INT> Num_N_Comm_Maps{}; /* Number of nodal communication maps */
+  std::vector<INT> Num_E_Comm_Maps{}; /* Number of elemental communication maps */
 
-  INT *Num_E_Comm_Maps{nullptr}; /* Number of elemental communication maps */
+  std::vector<ELEM_COMM_MAP<INT>> E_Comm_Map{}; /* Elemental communication map structure */
+  std::vector<NODE_COMM_MAP<INT>> N_Comm_Map{}; /* Nodal communication map structure */
 
-  ELEM_COMM_MAP<INT> **E_Comm_Map{nullptr}; /* Elemental communication map structure */
-
-  NODE_COMM_MAP<INT> **N_Comm_Map{nullptr}; /* Nodal communication map structure */
-
-  INT **GNodes{nullptr}; /* Data structure which contains the internal, *
+  std::vector<std::vector<INT>> GNodes{}; /* Data structure which contains the internal, *
                  * border, and external nodes on each processor*
                  * They are structured in that order, and      *
                  * monotonically within each category          *
@@ -85,12 +83,14 @@ public:
                  *       (Num_Internal_Nodes + Num_Border_Nodes*
                  Num_External_Nodes)                 */
 
-  INT **GElems{nullptr}; /* Data structure which contains the internal  *
-                          * elements on each processor.  It is a map    *
-                          * from the local element number to the global *
-                          * element number.                           *
-                          *  Type: int vector of length                 *
-                          *        Num_Internal_Elems                   */
+  std::vector<std::vector<INT>> GElems{}; /* Data structure which contains the internal  *
+                                           * elements on each processor.  It is a map    *
+                                           * from the local element number to the global *
+                                           * element number.                           *
+                                           *  Type: int vector of length                 *
+                                           *        Num_Internal_Elems                   */
+
+  std::vector<std::vector<INT>> Elem_Map{}; /* Map for Nemesis output */
 
   INT **Proc_Global_Node_Id_Map{nullptr}; /* Data structure which contains the internal  *
                                            * nodes on each processor.  It is a map       *
@@ -106,8 +106,6 @@ public:
                                            * element id (as found in elem_num_map)            *
                                            *  Type: int vector of length                 *
                                            *        Num_Internal_Elems                   */
-
-  INT **Elem_Map{nullptr}; /* Map for Nemesis output */
 
   INT **GElem_Blks{nullptr}; /* Data structure which contains the mapping   *
                               * from the local element block number to the  *

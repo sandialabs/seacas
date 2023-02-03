@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -697,16 +697,9 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
     if (globals.Proc_SS_Dist_Fact[iproc]) {
       safe_free((void **)&(globals.Proc_SS_Dist_Fact[iproc]));
     }
-
-    if (globals.N_Comm_Map[iproc]) {
-      safe_free((void **)&(globals.N_Comm_Map[iproc]));
-    }
-    if (globals.E_Comm_Map[iproc]) {
-      safe_free((void **)&(globals.E_Comm_Map[iproc]));
-    }
   }
-  free(globals.N_Comm_Map);
-  free(globals.E_Comm_Map);
+  globals.N_Comm_Map.clear();
+  globals.E_Comm_Map.clear();
   fmt::print("\n");
 
 } /* END of routine load_mesh () *********************************************/
@@ -1130,7 +1123,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::extract_elem_blk()
     /* Sort globals.GElems so that each element block is monotonic */
     size_t j = 0;
     for (int i = 0; i < globals.Proc_Num_Elem_Blk[iproc]; i++) {
-      gds_qsort((globals.GElems[iproc]) + j, globals.Proc_Num_Elem_In_Blk[iproc][i]);
+      gds_qsort((globals.GElems[iproc].data()) + j, globals.Proc_Num_Elem_In_Blk[iproc][i]);
       j += globals.Proc_Num_Elem_In_Blk[iproc][i];
     }
 
@@ -1927,7 +1920,7 @@ void NemSpread<T, INT>::find_elem_block(INT *proc_elem_blk, int iproc, int /*pro
    */
 
   my_sort(globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc], proc_elem_blk,
-          globals.GElems[iproc]);
+          globals.GElems[iproc].data());
 
   /* Now change proc_elem_blk to be a list of global element block IDs */
   for (INT i = 0; i < globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc]; i++) {

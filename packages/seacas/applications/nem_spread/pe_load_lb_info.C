@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -8,7 +8,7 @@
 #include <cassert>
 #include <cstddef> // for size_t
 #include <cstdio>  // for stderr, etc
-#include <cstdlib> // for exit, malloc
+#include <cstdlib> // for exit
 #include <string>
 
 #include "exodusII.h" // for ex_inquire, ex_opts, etc
@@ -98,43 +98,36 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
   read_proc_init(lb_exoid, Proc_Info, &Proc_Ids);
 
   /* Allocate space for the counts */
-  globals.Num_Internal_Nodes =
-      (INT *)array_alloc(__FILE__, __LINE__, 1, 7 * Proc_Info[2], sizeof(INT));
-  globals.Num_Border_Nodes   = globals.Num_Internal_Nodes + Proc_Info[2];
-  globals.Num_External_Nodes = globals.Num_Border_Nodes + Proc_Info[2];
-  globals.Num_Internal_Elems = globals.Num_External_Nodes + Proc_Info[2];
-  globals.Num_Border_Elems   = globals.Num_Internal_Elems + Proc_Info[2];
-  globals.Num_N_Comm_Maps    = globals.Num_Border_Elems + Proc_Info[2];
-  globals.Num_E_Comm_Maps    = globals.Num_N_Comm_Maps + Proc_Info[2];
+  globals.Num_Internal_Nodes.resize(Proc_Info[2]);
+  globals.Num_Border_Nodes.resize(Proc_Info[2]);
+  globals.Num_External_Nodes.resize(Proc_Info[2]);
+  globals.Num_Internal_Elems.resize(Proc_Info[2]);
+  globals.Num_Border_Elems.resize(Proc_Info[2]);
+  globals.Num_N_Comm_Maps.resize(Proc_Info[2]);
+  globals.Num_E_Comm_Maps.resize(Proc_Info[2]);
 
   /* Allocate space for each processor entity */
-  globals.GNodes   = (INT **)array_alloc(__FILE__, __LINE__, 1, 3 * Proc_Info[2], sizeof(INT *));
-  globals.GElems   = globals.GNodes + Proc_Info[2];
-  globals.Elem_Map = globals.GElems + Proc_Info[2];
+  globals.GNodes.resize(Proc_Info[2]);
+  globals.GElems.resize(Proc_Info[2]);
+  globals.Elem_Map.resize(Proc_Info[2]);
 
   /* Allocate contiguous space for the pointer vectors on all processors */
-  INT *Int_Space = (INT *)array_alloc(__FILE__, __LINE__, 1, (7 * Proc_Info[0] + 1), sizeof(INT));
-  INT *Int_Node_Num  = Int_Space + 1;
-  INT *Bor_Node_Num  = Int_Node_Num + Proc_Info[0];
-  INT *Ext_Node_Num  = Bor_Node_Num + Proc_Info[0];
-  INT *Int_Elem_Num  = Ext_Node_Num + Proc_Info[0];
-  INT *Bor_Elem_Num  = Int_Elem_Num + Proc_Info[0];
-  INT *Node_Comm_Num = Bor_Elem_Num + Proc_Info[0];
-  INT *Elem_Comm_Num = Node_Comm_Num + Proc_Info[0];
+  std::vector<INT> Int_Space(1);
+  std::vector<INT> Int_Node_Num(Proc_Info[0]);
+  std::vector<INT> Bor_Node_Num(Proc_Info[0]);
+  std::vector<INT> Ext_Node_Num(Proc_Info[0]);
+  std::vector<INT> Int_Elem_Num(Proc_Info[0]);
+  std::vector<INT> Bor_Elem_Num(Proc_Info[0]);
+  std::vector<INT> Node_Comm_Num(Proc_Info[0]);
+  std::vector<INT> Elem_Comm_Num(Proc_Info[0]);
 
   /* Read the initial information contained in the load balance file */
   read_lb_init(lb_exoid, Int_Space, Int_Node_Num, Bor_Node_Num, Ext_Node_Num, Int_Elem_Num,
                Bor_Elem_Num, Node_Comm_Num, Elem_Comm_Num, Title);
 
   /* Allocate memory for the communication map arrays */
-  globals.N_Comm_Map =
-      static_cast<NODE_COMM_MAP<INT> **>(malloc(Proc_Info[2] * sizeof(NODE_COMM_MAP<INT> *)));
-  globals.E_Comm_Map =
-      static_cast<ELEM_COMM_MAP<INT> **>(malloc(Proc_Info[2] * sizeof(ELEM_COMM_MAP<INT> *)));
-  if (!globals.N_Comm_Map || !globals.E_Comm_Map) {
-    fmt::print(stderr, "[{}] ERROR: Insufficient memory!\n", __func__);
-    exit(1);
-  }
+  globals.N_Comm_Map.resize(Proc_Info[2]);
+  globals.E_Comm_Map.resize(Proc_Info[2]);
 
   for (int iproc = 0; iproc < Proc_Info[2]; iproc++) {
 
@@ -151,35 +144,14 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
       exit(1);
     }
     else {
-
       /* Always allocate at least one and initialize the counts to 0 */
-      globals.N_Comm_Map[iproc] = static_cast<NODE_COMM_MAP<INT> *>(
-          malloc(PEX_MAX(1, globals.Num_N_Comm_Maps[iproc]) * sizeof(NODE_COMM_MAP<INT>)));
-      if (globals.N_Comm_Map[iproc] == nullptr && globals.Num_N_Comm_Maps[iproc] > 0) {
-        fmt::print(stderr, "[{}] ERROR. Insufficient memory for nodal comm. map!\n", __func__);
-        exit(1);
-      }
-
-      for (INT ijump = 0; ijump < PEX_MAX(1, globals.Num_N_Comm_Maps[iproc]); ijump++) {
-        ((globals.N_Comm_Map[iproc]) + ijump)->node_cnt = 0;
-      }
-
-      globals.E_Comm_Map[iproc] = static_cast<ELEM_COMM_MAP<INT> *>(
-          malloc(PEX_MAX(1, globals.Num_E_Comm_Maps[iproc]) * sizeof(ELEM_COMM_MAP<INT>)));
-      if (globals.E_Comm_Map[iproc] == nullptr && globals.Num_E_Comm_Maps[iproc] > 0) {
-        fmt::print(stderr, "[{}] ERROR. Insufficient memory for elemental comm. map!\n", __func__);
-        exit(1);
-      }
-
-      for (INT ijump = 0; ijump < PEX_MAX(1, globals.Num_E_Comm_Maps[iproc]); ijump++) {
-        ((globals.E_Comm_Map[iproc]) + ijump)->elem_cnt = 0;
-      }
+      globals.N_Comm_Map[iproc].node_cnt = 0;
+      globals.E_Comm_Map[iproc].elem_cnt = 0;
     }
-
   } /* End "for (int iproc=0; iproc <Proc_Info[2]; iproc++)" */
 
   /* Set up each processor for the communication map parameters */
-  read_cmap_params(lb_exoid, Node_Comm_Num, Elem_Comm_Num, globals.Num_N_Comm_Maps,
+  read_cmap_params(lb_exoid, Node_Comm_Num.data(), Elem_Comm_Num.data(), globals.Num_N_Comm_Maps,
                    globals.Num_E_Comm_Maps, globals.E_Comm_Map, globals.N_Comm_Map, &cmap_max_size,
                    &comm_vec);
 
@@ -287,8 +259,6 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
     safe_free(reinterpret_cast<void **>(&inf_record_ptr));
   }
 
-  safe_free((void **)&Int_Space);
-
   safe_free((void **)&comm_vec);
 
   for (int iproc = 0; iproc < Proc_Info[2]; iproc++) {
@@ -361,12 +331,12 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
       if (globals.Num_N_Comm_Maps[iproc] > 0) {
         fmt::print("\tNodal Comm Map for the current processor\n");
         fmt::print("\t\tnode IDs:");
-        for (size_t i = 0; i < globals.N_Comm_Map[iproc]->node_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.N_Comm_Map[iproc]->node_ids[i]);
+        for (size_t i = 0; i < globals.N_Comm_Map[iproc].node_cnt; i++) {
+          fmt::print(" {}", (size_t)globals.N_Comm_Map[iproc].node_ids[i]);
         }
         fmt::print("\n\t\tproc IDs:");
-        for (size_t i = 0; i < globals.N_Comm_Map[iproc]->node_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.N_Comm_Map[iproc]->proc_ids[i]);
+        for (size_t i = 0; i < globals.N_Comm_Map[iproc].node_cnt; i++) {
+          fmt::print(" {}", (size_t)globals.N_Comm_Map[iproc].proc_ids[i]);
         }
 
         fmt::print("\n");
@@ -375,16 +345,16 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
       if (globals.Num_E_Comm_Maps[iproc] > 0) {
         fmt::print("\tElemental Comm Map for the current processor\n");
         fmt::print("\t\telement IDs:");
-        for (size_t i = 0; i < globals.E_Comm_Map[iproc]->elem_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.E_Comm_Map[iproc]->elem_ids[i]);
+        for (size_t i = 0; i < globals.E_Comm_Map[iproc].elem_cnt; i++) {
+          fmt::print(" {}", (size_t)globals.E_Comm_Map[iproc].elem_ids[i]);
         }
         fmt::print("\n\t\tside IDs:");
-        for (size_t i = 0; i < globals.E_Comm_Map[iproc]->elem_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.E_Comm_Map[iproc]->side_ids[i]);
+        for (size_t i = 0; i < globals.E_Comm_Map[iproc].elem_cnt; i++) {
+          fmt::print(" {}", (size_t)globals.E_Comm_Map[iproc].side_ids[i]);
         }
         fmt::print("\n\t\tproc IDs:");
-        for (size_t i = 0; i < globals.E_Comm_Map[iproc]->elem_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.E_Comm_Map[iproc]->proc_ids[i]);
+        for (size_t i = 0; i < globals.E_Comm_Map[iproc].elem_cnt; i++) {
+          fmt::print(" {}", (size_t)globals.E_Comm_Map[iproc].proc_ids[i]);
         }
 
         fmt::print("\n");
@@ -428,23 +398,15 @@ void NemSpread<T, INT>::process_lb_data(INT *Integer_Vector, int indx)
   itotal_elems = globals.Num_Internal_Elems[indx] + globals.Num_Border_Elems[indx];
 
   /* Allocate Permanent Arrays on the current processor */
-  globals.GNodes[indx] = (INT *)array_alloc(__FILE__, __LINE__, 1,
-                                            itotal_nodes + 2 * itotal_elems +
-                                                2 * (globals.N_Comm_Map[indx]->node_cnt) +
-                                                3 * (globals.E_Comm_Map[indx]->elem_cnt),
-                                            sizeof(INT));
+  globals.GNodes[indx].resize(itotal_nodes);
+  globals.GElems[indx].resize(itotal_elems);
+  globals.Elem_Map[indx].resize(itotal_elems);
 
-  globals.GElems[indx]               = globals.GNodes[indx] + itotal_nodes;
-  globals.Elem_Map[indx]             = globals.GElems[indx] + itotal_elems;
-  globals.N_Comm_Map[indx]->node_ids = globals.Elem_Map[indx] + itotal_elems;
-  globals.N_Comm_Map[indx]->proc_ids =
-      globals.N_Comm_Map[indx]->node_ids + globals.N_Comm_Map[indx]->node_cnt;
-  globals.E_Comm_Map[indx]->elem_ids =
-      globals.N_Comm_Map[indx]->proc_ids + globals.N_Comm_Map[indx]->node_cnt;
-  globals.E_Comm_Map[indx]->side_ids =
-      globals.E_Comm_Map[indx]->elem_ids + globals.E_Comm_Map[indx]->elem_cnt;
-  globals.E_Comm_Map[indx]->proc_ids =
-      globals.E_Comm_Map[indx]->side_ids + globals.E_Comm_Map[indx]->elem_cnt;
+  globals.N_Comm_Map[indx].node_ids.resize(globals.N_Comm_Map[indx].node_cnt);
+  globals.N_Comm_Map[indx].proc_ids.resize(globals.N_Comm_Map[indx].node_cnt);
+  globals.E_Comm_Map[indx].elem_ids.resize(globals.E_Comm_Map[indx].elem_cnt);
+  globals.E_Comm_Map[indx].side_ids.resize(globals.E_Comm_Map[indx].elem_cnt);
+  globals.E_Comm_Map[indx].proc_ids.resize(globals.E_Comm_Map[indx].elem_cnt);
 
   /*
    *            Extract the load balance information, and store it in
@@ -478,28 +440,28 @@ void NemSpread<T, INT>::process_lb_data(INT *Integer_Vector, int indx)
     ig_count++;
   }
 
-  for (size_t i = 0; i < globals.N_Comm_Map[indx]->node_cnt; i++) {
-    (globals.N_Comm_Map[indx]->node_ids)[i] = Integer_Vector[icount++];
+  for (size_t i = 0; i < globals.N_Comm_Map[indx].node_cnt; i++) {
+    (globals.N_Comm_Map[indx].node_ids)[i] = Integer_Vector[icount++];
   }
-  for (size_t i = 0; i < globals.N_Comm_Map[indx]->node_cnt; i++) {
-    (globals.N_Comm_Map[indx]->proc_ids)[i] = Integer_Vector[icount++];
+  for (size_t i = 0; i < globals.N_Comm_Map[indx].node_cnt; i++) {
+    (globals.N_Comm_Map[indx].proc_ids)[i] = Integer_Vector[icount++];
   }
-  for (size_t i = 0; i < globals.E_Comm_Map[indx]->elem_cnt; i++) {
-    (globals.E_Comm_Map[indx]->elem_ids)[i] = Integer_Vector[icount++];
+  for (size_t i = 0; i < globals.E_Comm_Map[indx].elem_cnt; i++) {
+    (globals.E_Comm_Map[indx].elem_ids)[i] = Integer_Vector[icount++];
   }
-  for (size_t i = 0; i < globals.E_Comm_Map[indx]->elem_cnt; i++) {
-    (globals.E_Comm_Map[indx]->side_ids)[i] = Integer_Vector[icount++];
+  for (size_t i = 0; i < globals.E_Comm_Map[indx].elem_cnt; i++) {
+    (globals.E_Comm_Map[indx].side_ids)[i] = Integer_Vector[icount++];
   }
-  for (size_t i = 0; i < globals.E_Comm_Map[indx]->elem_cnt; i++) {
-    (globals.E_Comm_Map[indx]->proc_ids)[i] = Integer_Vector[icount++];
+  for (size_t i = 0; i < globals.E_Comm_Map[indx].elem_cnt; i++) {
+    (globals.E_Comm_Map[indx].proc_ids)[i] = Integer_Vector[icount++];
   }
 
   /*
    * Sort the local element numbers in ascending global element numbers.
    * This means that globals.GElems will be monotonic.
    */
-  gds_qsort(globals.GElems[indx], globals.Num_Internal_Elems[indx]);
-  gds_qsort(globals.Elem_Map[indx], globals.Num_Internal_Elems[indx]);
+  gds_qsort(globals.GElems[indx].data(), globals.Num_Internal_Elems[indx]);
+  gds_qsort(globals.Elem_Map[indx].data(), globals.Num_Internal_Elems[indx]);
 
 /* Check that globals.GNodes is monotonic, from i = 0 to Num_Internal_Nodes */
 #ifdef DEBUG
@@ -561,10 +523,12 @@ void NemSpread<T, INT>::read_proc_init(int lb_exoid, int proc_info[], int **proc
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::read_lb_init(int lb_exoid, INT *Int_Space, INT *Int_Node_Num,
-                                     INT *Bor_Node_Num, INT *Ext_Node_Num, INT *Int_Elem_Num,
-                                     INT *Bor_Elem_Num, INT *Node_Comm_Num, INT *Elem_Comm_Num,
-                                     char * /*Title*/)
+void NemSpread<T, INT>::read_lb_init(int lb_exoid, std::vector<INT> &Int_Space,
+                                     std::vector<INT> &Int_Node_Num, std::vector<INT> &Bor_Node_Num,
+                                     std::vector<INT> &Ext_Node_Num, std::vector<INT> &Int_Elem_Num,
+                                     std::vector<INT> &Bor_Elem_Num,
+                                     std::vector<INT> &Node_Comm_Num,
+                                     std::vector<INT> &Elem_Comm_Num, char * /*Title*/)
 
 /*
  *    read_lb_init:
@@ -693,13 +657,13 @@ in mesh file",
 
   /* Each processor extracts the information that it needs */
   for (int i = 0; i < Proc_Info[2]; i++) {
-    globals.Num_Internal_Nodes[i] = Int_Space[1 + Proc_Ids[i]];
-    globals.Num_Border_Nodes[i]   = Int_Space[1 + Proc_Ids[i] + Proc_Info[0]];
-    globals.Num_External_Nodes[i] = Int_Space[1 + Proc_Ids[i] + 2 * Proc_Info[0]];
-    globals.Num_Internal_Elems[i] = Int_Space[1 + Proc_Ids[i] + 3 * Proc_Info[0]];
-    globals.Num_Border_Elems[i]   = Int_Space[1 + Proc_Ids[i] + 4 * Proc_Info[0]];
-    globals.Num_N_Comm_Maps[i]    = Int_Space[1 + Proc_Ids[i] + 5 * Proc_Info[0]];
-    globals.Num_E_Comm_Maps[i]    = Int_Space[1 + Proc_Ids[i] + 6 * Proc_Info[0]];
+    globals.Num_Internal_Nodes[i] = Int_Node_Num[i];
+    globals.Num_Border_Nodes[i]   = Bor_Node_Num[i];
+    globals.Num_External_Nodes[i] = Ext_Node_Num[i];
+    globals.Num_Internal_Elems[i] = Int_Elem_Num[i];
+    globals.Num_Border_Elems[i]   = Bor_Elem_Num[i];
+    globals.Num_N_Comm_Maps[i]    = Node_Comm_Num[i];
+    globals.Num_E_Comm_Maps[i]    = Elem_Comm_Num[i];
   }
 
   /*
@@ -731,10 +695,11 @@ in mesh file",
 
 template <typename T, typename INT>
 void NemSpread<T, INT>::read_cmap_params(int lb_exoid, INT *Node_Comm_Num, INT *Elem_Comm_Num,
-                                         INT * /*Num_N_Comm_Maps*/, INT * /*Num_E_Comm_Maps*/,
-                                         ELEM_COMM_MAP<INT> **E_Comm_Map,
-                                         NODE_COMM_MAP<INT> **N_Comm_Map, INT *cmap_max_size,
-                                         INT **comm_vec)
+                                         std::vector<INT> & /*Num_N_Comm_Maps*/,
+                                         std::vector<INT> & /*Num_E_Comm_Maps*/,
+                                         std::vector<ELEM_COMM_MAP<INT>> &E_Comm_Map,
+                                         std::vector<NODE_COMM_MAP<INT>> &N_Comm_Map,
+                                         INT *cmap_max_size, INT **comm_vec)
 /*
  * read_cmap_params:
  *
@@ -809,12 +774,12 @@ void NemSpread<T, INT>::read_cmap_params(int lb_exoid, INT *Node_Comm_Num, INT *
      * maps per processor are supported.
      */
     if (Node_Comm_Num[iproc] > 0) {
-      N_Comm_Map[i1]->map_id   = node_cm_ids[0];
-      N_Comm_Map[i1]->node_cnt = node_cm_cnts[0];
+      N_Comm_Map[i1].map_id   = node_cm_ids[0];
+      N_Comm_Map[i1].node_cnt = node_cm_cnts[0];
     }
     if (Elem_Comm_Num[iproc] > 0) {
-      E_Comm_Map[i1]->map_id   = elem_cm_ids[0];
-      E_Comm_Map[i1]->elem_cnt = elem_cm_cnts[0];
+      E_Comm_Map[i1].map_id   = elem_cm_ids[0];
+      E_Comm_Map[i1].elem_cnt = elem_cm_cnts[0];
     }
   }
 
@@ -841,11 +806,8 @@ void NemSpread<T, INT>::read_cmap_params(int lb_exoid, INT *Node_Comm_Num, INT *
       fmt::print("\t------------------------------------------------\n");
       for (int iproc = 0; iproc < Proc_Info[2]; iproc++) {
         if (globals.Num_N_Comm_Maps[iproc] > 0) {
-          for (int i1 = 0; i1 < globals.Num_N_Comm_Maps[iproc]; i1++) {
-            fmt::print("\t     {}\t\t    {}\t\t    {}\n", (size_t)Proc_Ids[iproc],
-                       (size_t)(N_Comm_Map[iproc] + i1)->map_id,
-                       (size_t)(N_Comm_Map[iproc] + i1)->node_cnt);
-          }
+          fmt::print("\t     {}\t\t    {}\t\t    {}\n", Proc_Ids[iproc], N_Comm_Map[iproc].map_id,
+                     N_Comm_Map[iproc].node_cnt);
         }
       }
     }
@@ -855,11 +817,8 @@ void NemSpread<T, INT>::read_cmap_params(int lb_exoid, INT *Node_Comm_Num, INT *
       fmt::print("\t------------------------------------------------\n");
       for (int iproc = 0; iproc < Proc_Info[2]; iproc++) {
         if (globals.Num_E_Comm_Maps[iproc] > 0) {
-          for (int i1 = 0; i1 < globals.Num_E_Comm_Maps[iproc]; i1++) {
-            fmt::print("\t     {}\t\t    {}\t\t    {}\n", (size_t)Proc_Ids[iproc],
-                       (size_t)(E_Comm_Map[iproc] + i1)->map_id,
-                       (size_t)(E_Comm_Map[iproc] + i1)->elem_cnt);
-          }
+          fmt::print("\t     {}\t\t    {}\t\t    {}\n", Proc_Ids[iproc], E_Comm_Map[iproc].map_id,
+                     E_Comm_Map[iproc].elem_cnt);
         }
       }
     }
