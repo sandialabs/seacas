@@ -74,26 +74,20 @@
 namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
 
-  std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
-  const char *complex_suffix[] = {".re", ".im"};
+  const std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
+  const std::array<std::string, 2> complex_suffix{".re", ".im"};
 
   void get_connectivity_data(int exoid, void *data, ex_entity_type type, ex_entity_id id,
                              int position)
   {
     int ierr = 0;
     if ((ex_int64_status(exoid) & EX_BULK_INT64_API) != 0) {
-      int64_t *conn[3];
-      conn[0]        = nullptr;
-      conn[1]        = nullptr;
-      conn[2]        = nullptr;
+      std::array<int64_t *, 3> conn{nullptr, nullptr, nullptr};
       conn[position] = static_cast<int64_t *>(data);
       ierr           = ex_get_conn(exoid, type, id, conn[0], conn[1], conn[2]);
     }
     else {
-      int *conn[3];
-      conn[0]        = nullptr;
-      conn[1]        = nullptr;
-      conn[2]        = nullptr;
+      std::array<int *, 3> conn{nullptr, nullptr, nullptr};
       conn[position] = static_cast<int *>(data);
       ierr           = ex_get_conn(exoid, type, id, conn[0], conn[1], conn[2]);
     }
@@ -164,8 +158,8 @@ namespace Ioex {
           open_create_behavior() == Ioss::DB_APPEND_GROUP ||
           open_create_behavior() == Ioss::DB_MODIFY) {
         // Append to file if it already exists -- See if the file exists.
-        Ioss::FileInfo file = Ioss::FileInfo(decoded_filename());
-        fileExists          = file.exists();
+        auto file  = Ioss::FileInfo(decoded_filename());
+        fileExists = file.exists();
       }
     }
 
