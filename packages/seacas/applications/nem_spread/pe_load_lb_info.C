@@ -5,12 +5,6 @@
  *
  * See packages/seacas/LICENSE for details
  */
-#include <cassert>
-#include <cstddef> // for size_t
-#include <cstdio>  // for stderr, etc
-#include <cstdlib> // for exit
-#include <string>
-
 #include "exodusII.h" // for ex_inquire, ex_opts, etc
 #include "fmt/ostream.h"
 #include "globals.h"     // for ELEM_COMM_MAP, etc
@@ -20,6 +14,11 @@
 #include "rf_io_const.h" // for Debug_Flag, Exo_LB_File
 #include "rf_util.h"     // for print_line
 #include "sort_utils.h"  // for gds_qsort
+#include <cassert>
+#include <cstddef> // for size_t
+#include <cstdio>  // for stderr, etc
+#include <cstdlib> // for exit
+#include <string>
 
 char **qa_record_ptr, **inf_record_ptr;
 int    num_inf_rec = 0, num_qa_rec = 0, length_qa = 0;
@@ -290,14 +289,14 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
       fmt::print("\n\t***For Processor {}***\n", Proc_Ids[iproc]);
       fmt::print("\tInternal nodes owned by the current processor\n\t");
       for (INT i = 0; i < globals.Num_Internal_Nodes[iproc]; i++) {
-        fmt::print(" ", (size_t)globals.GNodes[iproc][i]);
+        fmt::print(" {}", globals.GNodes[iproc][i]);
       }
 
       fmt::print("\n");
 
       fmt::print("\tBorder nodes owned by the current processor\n\t");
       for (INT i = 0; i < globals.Num_Border_Nodes[iproc]; i++) {
-        fmt::print(" ", (size_t)globals.GNodes[iproc][i + globals.Num_Internal_Nodes[iproc]]);
+        fmt::print(" {}", globals.GNodes[iproc][i + globals.Num_Internal_Nodes[iproc]]);
       }
 
       fmt::print("\n");
@@ -305,8 +304,8 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
       if (globals.Num_External_Nodes[iproc] > 0) {
         fmt::print("\tExternal nodes needed by the current processor\n\t");
         for (INT i = 0; i < globals.Num_External_Nodes[iproc]; i++) {
-          fmt::print(" {}", (size_t)globals.GNodes[iproc][i + globals.Num_Internal_Nodes[iproc] +
-                                                          globals.Num_Border_Nodes[iproc]]);
+          fmt::print(" {}", globals.GNodes[iproc][i + globals.Num_Internal_Nodes[iproc] +
+                                                  globals.Num_Border_Nodes[iproc]]);
         }
 
         fmt::print("\n");
@@ -314,7 +313,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
 
       fmt::print("\tInternal elements owned by the current processor\n\t");
       for (INT i = 0; i < globals.Num_Internal_Elems[iproc]; i++) {
-        fmt::print(" {}", (size_t)globals.GElems[iproc][i]);
+        fmt::print(" {}", globals.GElems[iproc][i]);
       }
 
       fmt::print("\n");
@@ -322,7 +321,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
       if (globals.Num_Border_Elems[iproc] > 0) {
         fmt::print("\tBorder elements owned by the current processor\n\t");
         for (INT i = 0; i < globals.Num_Border_Elems[iproc]; i++) {
-          fmt::print(" {}", (size_t)globals.GElems[iproc][i + globals.Num_Internal_Elems[iproc]]);
+          fmt::print(" {}", globals.GElems[iproc][i + globals.Num_Internal_Elems[iproc]]);
         }
 
         fmt::print("\n");
@@ -332,11 +331,11 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
         fmt::print("\tNodal Comm Map for the current processor\n");
         fmt::print("\t\tnode IDs:");
         for (size_t i = 0; i < globals.N_Comm_Map[iproc].node_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.N_Comm_Map[iproc].node_ids[i]);
+          fmt::print(" {}", globals.N_Comm_Map[iproc].node_ids[i]);
         }
         fmt::print("\n\t\tproc IDs:");
         for (size_t i = 0; i < globals.N_Comm_Map[iproc].node_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.N_Comm_Map[iproc].proc_ids[i]);
+          fmt::print(" {}", globals.N_Comm_Map[iproc].proc_ids[i]);
         }
 
         fmt::print("\n");
@@ -346,15 +345,15 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
         fmt::print("\tElemental Comm Map for the current processor\n");
         fmt::print("\t\telement IDs:");
         for (size_t i = 0; i < globals.E_Comm_Map[iproc].elem_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.E_Comm_Map[iproc].elem_ids[i]);
+          fmt::print(" {}", globals.E_Comm_Map[iproc].elem_ids[i]);
         }
         fmt::print("\n\t\tside IDs:");
         for (size_t i = 0; i < globals.E_Comm_Map[iproc].elem_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.E_Comm_Map[iproc].side_ids[i]);
+          fmt::print(" {}", globals.E_Comm_Map[iproc].side_ids[i]);
         }
         fmt::print("\n\t\tproc IDs:");
         for (size_t i = 0; i < globals.E_Comm_Map[iproc].elem_cnt; i++) {
-          fmt::print(" {}", (size_t)globals.E_Comm_Map[iproc].proc_ids[i]);
+          fmt::print(" {}", globals.E_Comm_Map[iproc].proc_ids[i]);
         }
 
         fmt::print("\n");
@@ -678,11 +677,11 @@ in mesh file",
     print_line("-", 79);
     fmt::print("\n");
     for (int i = 0; i < Proc_Info[2]; i++) {
-      fmt::print("{:6d}  {:6d}  {:6d}   {:6d}    {:6d}    {:6d}     {:6d}     {:6d}\n",
-                 (size_t)Proc_Ids[i], (size_t)globals.Num_Internal_Nodes[i],
-                 (size_t)globals.Num_Border_Nodes[i], (size_t)globals.Num_External_Nodes[i],
-                 (size_t)globals.Num_Internal_Elems[i], (size_t)globals.Num_Border_Elems[i],
-                 (size_t)globals.Num_N_Comm_Maps[i], (size_t)globals.Num_E_Comm_Maps[i]);
+      fmt::print("{:6d}  {:6d}  {:6d}   {:6d}    {:6d}    {:6d}     {:6d}     {:6d}\n", Proc_Ids[i],
+                 globals.Num_Internal_Nodes[i], globals.Num_Border_Nodes[i],
+                 globals.Num_External_Nodes[i], globals.Num_Internal_Elems[i],
+                 globals.Num_Border_Elems[i], globals.Num_N_Comm_Maps[i],
+                 globals.Num_E_Comm_Maps[i]);
     }
     print_line("=", 79);
     fmt::print("\n\n");
@@ -786,7 +785,7 @@ void NemSpread<T, INT>::read_cmap_params(int lb_exoid, INT *Node_Comm_Num, INT *
   if (Debug_Flag >= 4) {
     print_line("=", 79);
     fmt::print("\t\tCOMMUNICATION MAP INFORMATION\n");
-    fmt::print("\t\t   largest cmap = {} integers\n", (size_t)*cmap_max_size);
+    fmt::print("\t\t   largest cmap = {} integers\n", *cmap_max_size);
     print_line("=", 79);
 
     int bprnt_n = 0;

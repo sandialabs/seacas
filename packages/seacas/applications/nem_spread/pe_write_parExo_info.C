@@ -61,27 +61,33 @@ extern std::string GeomTitle;
 /****************************************************************************/
 
 template void NemSpread<float, int>::write_parExo_data(int mesh_exoid, int max_name_length,
-                                                       int iproc, int *Num_Nodes_In_NS,
-                                                       int *Num_Elems_In_SS, int *Num_Elems_In_EB);
+                                                       int iproc, std::vector<int> &Num_Nodes_In_NS,
+                                                       std::vector<int> &Num_Elems_In_SS,
+                                                       std::vector<int> &Num_Elems_In_EB);
 
 template void NemSpread<double, int>::write_parExo_data(int mesh_exoid, int max_name_length,
-                                                        int iproc, int *Num_Nodes_In_NS,
-                                                        int *Num_Elems_In_SS, int *Num_Elems_In_EB);
+                                                        int               iproc,
+                                                        std::vector<int> &Num_Nodes_In_NS,
+                                                        std::vector<int> &Num_Elems_In_SS,
+                                                        std::vector<int> &Num_Elems_In_EB);
 
 template void NemSpread<double, int64_t>::write_parExo_data(int mesh_exoid, int max_name_length,
-                                                            int iproc, int64_t *Num_Nodes_In_NS,
-                                                            int64_t *Num_Elems_In_SS,
-                                                            int64_t *Num_Elems_In_EB);
+                                                            int                   iproc,
+                                                            std::vector<int64_t> &Num_Nodes_In_NS,
+                                                            std::vector<int64_t> &Num_Elems_In_SS,
+                                                            std::vector<int64_t> &Num_Elems_In_EB);
 
 template void NemSpread<float, int64_t>::write_parExo_data(int mesh_exoid, int max_name_length,
-                                                           int iproc, int64_t *Num_Nodes_In_NS,
-                                                           int64_t *Num_Elems_In_SS,
-                                                           int64_t *Num_Elems_In_EB);
+                                                           int                   iproc,
+                                                           std::vector<int64_t> &Num_Nodes_In_NS,
+                                                           std::vector<int64_t> &Num_Elems_In_SS,
+                                                           std::vector<int64_t> &Num_Elems_In_EB);
 
 template <typename T, typename INT>
 void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, int iproc,
-                                          INT *Num_Nodes_In_NS, INT *Num_Elems_In_SS,
-                                          INT *Num_Elems_In_EB)
+                                          std::vector<INT> &Num_Nodes_In_NS,
+                                          std::vector<INT> &Num_Elems_In_SS,
+                                          std::vector<INT> &Num_Elems_In_EB)
 {
   /* Performance metrics. */
   size_t bytes_out      = 0;
@@ -277,8 +283,8 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
     fmt::print("\tNumber External Nodes: {}\n", globals.Num_External_Nodes[iproc]);
     fmt::print("\tNumber Internal Elements: {}\n", globals.Num_Internal_Elems[iproc]);
     fmt::print("\tNumber Border Elements: {}\n", globals.Num_Border_Elems[iproc]);
-    fmt::print("\tNumber Nodal Cmaps: {}\n", static_cast<size_t>(ncomm_cnt));
-    fmt::print("\tNumber Elemental Cmaps: {}\n", static_cast<size_t>(ecomm_cnt));
+    fmt::print("\tNumber Nodal Cmaps: {}\n", ncomm_cnt);
+    fmt::print("\tNumber Elemental Cmaps: {}\n", ecomm_cnt);
     fmt::print("\tProccesor For: {}\n", proc_for);
   }
 
@@ -387,8 +393,8 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
     bytes_out += 3 * globals.Num_Node_Set * sizeof(INT);
     tt1 = second();
 
-    if (ex_put_ns_param_global(mesh_exoid, Node_Set_Ids, Num_Nodes_In_NS, glob_ns_df_cnts.data()) <
-        0) {
+    if (ex_put_ns_param_global(mesh_exoid, Node_Set_Ids.data(), Num_Nodes_In_NS.data(),
+                               glob_ns_df_cnts.data()) < 0) {
       fmt::print(stderr, "[{}]: ERROR, unable to output global node-set params\n", __func__);
       ex_close(mesh_exoid);
       exit(1);
@@ -406,8 +412,8 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
     bytes_out += 3 * globals.Num_Side_Set * sizeof(INT);
     tt1 = second();
 
-    if (ex_put_ss_param_global(mesh_exoid, Side_Set_Ids, Num_Elems_In_SS, glob_ss_df_cnts.data()) <
-        0) {
+    if (ex_put_ss_param_global(mesh_exoid, Side_Set_Ids.data(), Num_Elems_In_SS.data(),
+                               glob_ss_df_cnts.data()) < 0) {
       fmt::print(stderr, "[{}]: ERROR, unable to output global side-set params\n", __func__);
       ex_close(mesh_exoid);
       exit(1);
@@ -420,7 +426,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
   bytes_out += globals.Num_Elem_Blk * sizeof(INT);
   tt1 = second();
 
-  if (ex_put_eb_info_global(mesh_exoid, Elem_Blk_Ids, Num_Elems_In_EB) < 0) {
+  if (ex_put_eb_info_global(mesh_exoid, Elem_Blk_Ids.data(), Num_Elems_In_EB.data()) < 0) {
     fmt::print(stderr, "[{}]: ERROR, unable to output global elem blk IDs\n", __func__);
     ex_close(mesh_exoid);
     exit(1);

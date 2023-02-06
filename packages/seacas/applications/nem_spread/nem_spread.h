@@ -14,7 +14,7 @@
 #include "rf_io_const.h"
 
 #define UTIL_NAME "nem_spread"
-#define VER_STR   "7.01 (2021/03/19)"
+#define VER_STR   "7.02 (2023/02/06)"
 
 extern void   check_exodus_error(int, const char *);
 extern double second();
@@ -35,12 +35,14 @@ public:
   void extract_elem_attr(T *elem_attr, int icurrent_elem_blk, size_t istart_elem, size_t iend_elem,
                          int natt_p_elem, int iproc);
   void find_elem_block(INT *proc_elem_blk, int iproc, int proc_for);
-  void read_node_set_ids(int mesh_exoid, INT /*num_nodes_in_node_set*/[], INT /*num_df_in_nsets*/[],
-                         int max_name_length);
-  void read_side_set_ids(int mesh_exoid, INT /*num_elem_in_ssets*/[], INT /*num_df_in_ssets*/[],
-                         int max_name_length);
-  void read_node_sets(int exoid, INT * /*num_nodes_in_node_set*/, INT * /*num_df_in_nsets*/);
-  void read_side_sets(int exoid, INT * /*num_elem_in_ssets*/, INT * /*num_df_in_ssets*/);
+  void read_node_set_ids(int mesh_exoid, std::vector<INT> &num_nodes_in_node_set,
+                         std::vector<INT> &num_df_in_nsets, int max_name_length);
+  void read_side_set_ids(int mesh_exoid, std::vector<INT> &num_elem_in_ssets,
+                         std::vector<INT> &num_df_in_ssets, int max_name_length);
+  void read_node_sets(int exoid, std::vector<INT> &num_nodes_in_node_set,
+                      std::vector<INT> &num_df_in_nsets);
+  void read_side_sets(int exoid, std::vector<INT> &num_elem_in_ssets,
+                      std::vector<INT> &num_df_in_ssets);
 
   void read_nodal_vars(int mesh_exoid);
 
@@ -51,8 +53,9 @@ public:
                       int num_nset, char **ns_names, int *local_nstt, int num_sset, char **ss_names,
                       int *local_sstt);
 
-  void write_parExo_data(int mesh_exoid, int max_name_length, int iproc, INT *Num_Nodes_In_NS,
-                         INT *Num_Elems_In_SS, INT *Num_Elems_In_EB);
+  void write_parExo_data(int mesh_exoid, int max_name_length, int iproc,
+                         std::vector<INT> &Num_Nodes_In_NS, std::vector<INT> &Num_Elems_In_SS,
+                         std::vector<INT> &Num_Elems_In_EB);
 
   void write_var_timestep(int exoid, int proc, int time_step, INT *eb_ids_global,
                           INT *ss_ids_global, INT *ns_ids_global);
@@ -107,22 +110,22 @@ public:
    *
    *----------------------------------------------------------------------------*/
 
-  INT *Node_Set_Ids{nullptr};           /* Vector of node set ids             *
+  std::vector<INT> Node_Set_Ids;        /* Vector of node set ids             *
                                          * (ptr to vector of length,          *
                                          *  Num_Node_Set)                     */
-  INT *Side_Set_Ids{nullptr};           /* Side set ids                       *
+  std::vector<INT> Side_Set_Ids;        /* Side set ids                       *
                                          * (ptr to vector of length,          *
                                          *  Num_Side_Set)                     */
-  INT *Num_Elem_In_Blk{nullptr};        /* Number of elements in each element *
+  std::vector<INT> Num_Elem_In_Blk;     /* Number of elements in each element *
                                          * block (ptr to vector of length,    *
                                          *        Num_Elem_Blk)               */
-  INT *Num_Nodes_Per_Elem{nullptr};     /* Number of nodes per element in each*
+  std::vector<INT> Num_Nodes_Per_Elem;  /* Number of nodes per element in each*
                                          * elem block (ptr to vector of       *
                                          * length, Num_Elem_Blk)              */
-  INT *Num_Attr_Per_Elem{nullptr};      /* Number of attributes per element in*
+  std::vector<INT> Num_Attr_Per_Elem;   /* Number of attributes per element in*
                                          * each block (ptr to vector of       *
                                          * length, Num_Elem_Blk)              */
-  INT *Elem_Blk_Ids{nullptr};           /* Element block id's of each element *
+  std::vector<INT> Elem_Blk_Ids;        /* Element block id's of each element *
                                          * block (ptr to vector of length,    *
                                          *        Num_Elem_Blk)               */
   char **Elem_Blk_Types{nullptr};       /* Element block types for each       *

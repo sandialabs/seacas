@@ -33,26 +33,26 @@ template <typename T, typename INT> class Globals;
 /*****************************************************************************/
 namespace {
   template <typename T, typename INT>
-  int check_sizes(int num_proc, INT *Elem_Blk_Ids, INT *Node_Set_Ids, INT *Side_Set_Ids,
-                  Globals<T, INT> &globals)
+  int check_sizes(int num_proc, std::vector<INT> &Elem_Blk_Ids, std::vector<INT> &Node_Set_Ids,
+                  std::vector<INT> &Side_Set_Ids, Globals<T, INT> &globals)
   {
     /* Do we need 64-bit to write the entity (block/set) ids? */
     bool ids64bit = false;
-    if (Elem_Blk_Ids) {
+    if (!Elem_Blk_Ids.empty()) {
       for (int i = 0; i < globals.Num_Elem_Blk && !ids64bit; i++) {
         if (Elem_Blk_Ids[i] >= INT_MAX) {
           ids64bit = true;
         }
       }
     }
-    if (Node_Set_Ids) {
+    if (!Node_Set_Ids.empty()) {
       for (int i = 0; i < globals.Num_Node_Set && !ids64bit; i++) {
         if (Node_Set_Ids[i] >= INT_MAX) {
           ids64bit = true;
         }
       }
     }
-    if (Side_Set_Ids) {
+    if (!Side_Set_Ids.empty()) {
       for (int i = 0; i < globals.Num_Side_Set && !ids64bit; i++) {
         if (Side_Set_Ids[i] >= INT_MAX) {
           ids64bit = true;
@@ -168,9 +168,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
 
   /* Local variables */
 
-  INT   *num_nodes_in_node_set = nullptr;
-  int    mesh_exoid            = 0;
-  INT   *num_elem_in_ssets = nullptr, *num_df_in_ssets = nullptr, *num_df_in_nsets = nullptr;
+  int    mesh_exoid = 0;
   int    cpu_ws;
   float  version;
   double start_time = 0.0;
@@ -387,48 +385,39 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
    * structure may be assumed during later broadcast routines)
    */
 
-  if (globals.Num_Elem_Blk > 0) {
-    Num_Elem_In_Blk =
-        (INT *)array_alloc(__FILE__, __LINE__, 1, (4 * globals.Num_Elem_Blk), sizeof(INT));
-    Num_Nodes_Per_Elem = Num_Elem_In_Blk + globals.Num_Elem_Blk;
-    Num_Attr_Per_Elem  = Num_Nodes_Per_Elem + globals.Num_Elem_Blk;
-    Elem_Blk_Ids       = Num_Attr_Per_Elem + globals.Num_Elem_Blk;
-    Elem_Blk_Types     = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Elem_Blk,
-                                              MAX_STR_LENGTH + 1, sizeof(char));
-    Elem_Blk_Names     = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Elem_Blk,
-                                              max_name_length + 1, sizeof(char));
-    Elem_Blk_Attr_Names =
-        (char ***)array_alloc(__FILE__, __LINE__, 1, globals.Num_Elem_Blk, sizeof(char **));
-  }
-  else {
+  if (globals.Num_Elem_Blk <= 0) {
     fmt::print(stderr, "ERROR, globals.Num_Elem_Blk = {}\n", globals.Num_Elem_Blk);
     exit(1);
   }
 
+  Num_Elem_In_Blk.resize(globals.Num_Elem_Blk);
+  Num_Nodes_Per_Elem.resize(globals.Num_Elem_Blk);
+  Num_Attr_Per_Elem.resize(globals.Num_Elem_Blk);
+  Elem_Blk_Ids.resize(globals.Num_Elem_Blk);
+
+  Elem_Blk_Types = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Elem_Blk,
+                                        MAX_STR_LENGTH + 1, sizeof(char));
+  Elem_Blk_Names = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Elem_Blk,
+                                        max_name_length + 1, sizeof(char));
+  Elem_Blk_Attr_Names =
+      (char ***)array_alloc(__FILE__, __LINE__, 1, globals.Num_Elem_Blk, sizeof(char **));
+
+  Node_Set_Ids.resize(globals.Num_Node_Set);
+  std::vector<INT> num_nodes_in_node_set(globals.Num_Node_Set);
+  std::vector<INT> num_df_in_nsets(globals.Num_Node_Set);
+
   if (globals.Num_Node_Set > 0) {
-    Node_Set_Ids =
-        (INT *)array_alloc(__FILE__, __LINE__, 1, (3 * globals.Num_Node_Set), sizeof(INT));
-    num_nodes_in_node_set = Node_Set_Ids + globals.Num_Node_Set;
-    num_df_in_nsets       = num_nodes_in_node_set + globals.Num_Node_Set;
-    Node_Set_Names        = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Node_Set,
-                                                 max_name_length + 1, sizeof(char));
-  }
-  else {
-    Node_Set_Ids   = nullptr;
-    Node_Set_Names = nullptr;
+    Node_Set_Names = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Node_Set,
+                                          max_name_length + 1, sizeof(char));
   }
 
+  Side_Set_Ids.resize(globals.Num_Side_Set);
+  std::vector<INT> num_elem_in_ssets(globals.Num_Side_Set);
+  std::vector<INT> num_df_in_ssets(globals.Num_Side_Set);
+
   if (globals.Num_Side_Set > 0) {
-    Side_Set_Ids =
-        (INT *)array_alloc(__FILE__, __LINE__, 1, (3 * globals.Num_Side_Set), sizeof(INT));
-    num_elem_in_ssets = Side_Set_Ids + globals.Num_Side_Set;
-    num_df_in_ssets   = num_elem_in_ssets + globals.Num_Side_Set;
-    Side_Set_Names    = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Side_Set,
-                                             max_name_length + 1, sizeof(char));
-  }
-  else {
-    Side_Set_Ids   = nullptr;
-    Side_Set_Names = nullptr;
+    Side_Set_Names = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Side_Set,
+                                          max_name_length + 1, sizeof(char));
   }
 
   /*
@@ -664,11 +653,11 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
   }
 
   /* Free some local arrays */
-  safe_free((void **)&Num_Elem_In_Blk);
-  safe_free((void **)&Elem_Blk_Types);
-  safe_free((void **)&Node_Set_Ids);
-  safe_free((void **)&Side_Set_Ids);
+  Num_Elem_In_Blk.clear();
+  Node_Set_Ids.clear();
+  Side_Set_Ids.clear();
 
+  safe_free((void **)&Elem_Blk_Types);
   safe_free((void **)&Node_Set_Names);
   safe_free((void **)&Side_Set_Names);
   safe_free((void **)&Elem_Blk_Names);
@@ -724,7 +713,7 @@ void NemSpread<T, INT>::read_elem_blk_ids(int mesh_exoid, int max_name_length)
    */
 
   /* Get the Element Block IDs from the input file */
-  check_exodus_error(ex_get_ids(mesh_exoid, EX_ELEM_BLOCK, Elem_Blk_Ids), "ex_get_ids");
+  check_exodus_error(ex_get_ids(mesh_exoid, EX_ELEM_BLOCK, Elem_Blk_Ids.data()), "ex_get_ids");
 
   check_exodus_error(ex_get_names(mesh_exoid, EX_ELEM_BLOCK, Elem_Blk_Names), "ex_get_names");
 
@@ -764,8 +753,9 @@ void NemSpread<T, INT>::read_elem_blk_ids(int mesh_exoid, int max_name_length)
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::read_node_set_ids(int mesh_exoid, INT num_nodes_in_node_set[],
-                                          INT num_df_in_nsets[], int /*max_name_length*/)
+void NemSpread<T, INT>::read_node_set_ids(int mesh_exoid, std::vector<INT> &num_nodes_in_node_set,
+                                          std::vector<INT> &num_df_in_nsets,
+                                          int /*max_name_length*/)
 
 /*
  * This function reads part of the node set info from the EXODUS file.  It
@@ -778,7 +768,7 @@ void NemSpread<T, INT>::read_node_set_ids(int mesh_exoid, INT num_nodes_in_node_
 
 {
   if (globals.Num_Node_Set > 0) {
-    int error = ex_get_ids(mesh_exoid, EX_NODE_SET, Node_Set_Ids);
+    int error = ex_get_ids(mesh_exoid, EX_NODE_SET, Node_Set_Ids.data());
     check_exodus_error(error, "ex_get_node_set_ids");
 
     error = ex_get_names(mesh_exoid, EX_NODE_SET, Node_Set_Names);
@@ -801,8 +791,7 @@ void NemSpread<T, INT>::read_node_set_ids(int mesh_exoid, INT num_nodes_in_node_
 
     if (globals.Num_Node_Set > 0) {
       for (int i = 0; i < globals.Num_Node_Set; i++) {
-        fmt::print("{:6d}{:11d}{:12d}\n", i, (size_t)Node_Set_Ids[i],
-                   (size_t)num_nodes_in_node_set[i]);
+        fmt::print("{:6d}{:11d}{:12d}\n", i, Node_Set_Ids[i], num_nodes_in_node_set[i]);
       }
     }
 
@@ -819,8 +808,9 @@ void NemSpread<T, INT>::read_node_set_ids(int mesh_exoid, INT num_nodes_in_node_
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::read_side_set_ids(int mesh_exoid, INT num_elem_in_ssets[],
-                                          INT num_df_in_ssets[], int /*max_name_length*/)
+void NemSpread<T, INT>::read_side_set_ids(int mesh_exoid, std::vector<INT> &num_elem_in_ssets,
+                                          std::vector<INT> &num_df_in_ssets,
+                                          int /*max_name_length*/)
 
 /* This function reads part of the side set info from the EXODUS file.  It
  * reads all information having a length equal to the number of side sets,
@@ -832,7 +822,7 @@ void NemSpread<T, INT>::read_side_set_ids(int mesh_exoid, INT num_elem_in_ssets[
 
 {
   if (globals.Num_Side_Set > 0) {
-    int error = ex_get_ids(mesh_exoid, EX_SIDE_SET, Side_Set_Ids);
+    int error = ex_get_ids(mesh_exoid, EX_SIDE_SET, Side_Set_Ids.data());
     check_exodus_error(error, "ex_get_side_set_ids");
 
     error = ex_get_names(mesh_exoid, EX_SIDE_SET, Side_Set_Names);
@@ -1291,14 +1281,14 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk(int ex
 
       if (Debug_Flag > 1) {
         fmt::print("\n\nMessage summary for Element Block number {}, ", ielem_blk);
-        fmt::print("having a block id of {}:\n", (size_t)Elem_Blk_Ids[ielem_blk]);
+        fmt::print("having a block id of {}:\n", Elem_Blk_Ids[ielem_blk]);
         fmt::print("\tNumber of messages needed for the element connectivity "
                    "vector = {}\n",
                    num_elem_messages);
         fmt::print("\tNumber of elements per message = {}\n", num_elem_per_message);
-        fmt::print("\tNumber of nodes per element = {}\n", (size_t)Num_Nodes_Per_Elem[ielem_blk]);
+        fmt::print("\tNumber of nodes per element = {}\n", Num_Nodes_Per_Elem[ielem_blk]);
         fmt::print("\tLength of each message = {} bytes\n",
-                   (size_t)(Num_Nodes_Per_Elem[ielem_blk] * num_elem_per_message * sizeof(INT)));
+                   (Num_Nodes_Per_Elem[ielem_blk] * num_elem_per_message * sizeof(INT)));
         if (num_attr_messages > 0) {
           fmt::print("\tNumber of attribute messages: {}\n\tNumber "
                      "of attributes per message: {}\n\n",
@@ -1372,14 +1362,14 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk(int ex
           fmt::print("Printout of Element connectivity list obtained from "
                      "Exodus file:\n");
           fmt::print("\tGlobal element block number = {}\n", ielem_blk);
-          fmt::print("\tElement ID number     = {}\n", (size_t)Elem_Blk_Ids[ielem_blk]);
+          fmt::print("\tElement ID number     = {}\n", Elem_Blk_Ids[ielem_blk]);
           fmt::print("\tMessage number        = {}\n", i);
           print_line("-", 79);
           ipos = 0;
           for (size_t j = 0; j < num_to_get; j++) {
             fmt::print("\t elem: {}, nodes:", j);
             for (int k = 0; k < Num_Nodes_Per_Elem[ielem_blk]; k++) {
-              fmt::print(" {}", (size_t)elem_blk[ipos++]);
+              fmt::print(" {}", elem_blk[ipos++]);
             }
             fmt::print("\n");
           }
@@ -1868,7 +1858,7 @@ void NemSpread<T, INT>::find_elem_block(INT *proc_elem_blk, int iproc, int /*pro
         fmt::print(stderr,
                    "\tElement {} not found in any element "
                    "block.\n",
-                   (size_t)i);
+                   i);
         exit(1);
       }
     }
@@ -1906,7 +1896,7 @@ void NemSpread<T, INT>::find_elem_block(INT *proc_elem_blk, int iproc, int /*pro
         fmt::print(stderr,
                    "\tElement {} not found in any element "
                    "block.\n",
-                   (size_t)i);
+                   i);
         exit(1);
       }
     }
@@ -1955,7 +1945,8 @@ void NemSpread<T, INT>::find_elem_block(INT *proc_elem_blk, int iproc, int /*pro
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::read_node_sets(int exoid, INT *num_nodes_in_node_set, INT *num_df_in_nsets)
+void NemSpread<T, INT>::read_node_sets(int exoid, std::vector<INT> &num_nodes_in_node_set,
+                                       std::vector<INT> &num_df_in_nsets)
 
 /* Function which reads the node sets information from an EXODUS database.
  * It read information in chunks.  Then, it broadcasts the chunk to all
@@ -2100,8 +2091,8 @@ void NemSpread<T, INT>::read_node_sets(int exoid, INT *num_nodes_in_node_set, IN
                         &num_left_over);
 
       if (Debug_Flag > 1) {
-        fmt::print("\nMessage summary for Node Set number {}, with an ID of {}:\n",
-                   static_cast<size_t>(i), (size_t)Node_Set_Ids[i]);
+        fmt::print("\nMessage summary for Node Set number {}, with an ID of {}:\n", i,
+                   Node_Set_Ids[i]);
         fmt::print("\tNumber of messages need for node set = {}\n", num_messages);
         fmt::print("\tNumber of node IDs and dist. factors per message = {}\n",
                    num_node_per_message);
@@ -2313,7 +2304,8 @@ void NemSpread<T, INT>::read_node_sets(int exoid, INT *num_nodes_in_node_set, IN
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::read_side_sets(int exoid, INT *num_elem_in_ssets, INT *num_df_in_ssets)
+void NemSpread<T, INT>::read_side_sets(int exoid, std::vector<INT> &num_elem_in_ssets,
+                                       std::vector<INT> &num_df_in_ssets)
 {
   /*
    * Function which reads the side sets information from an EXODUS database
@@ -2455,7 +2447,7 @@ void NemSpread<T, INT>::read_side_sets(int exoid, INT *num_elem_in_ssets, INT *n
 
       if (Debug_Flag >= 2) {
         fmt::print("Message summary for Side Set number {}, with an ID of {}:\n", i,
-                   (size_t)Side_Set_Ids[i]);
+                   Side_Set_Ids[i]);
         fmt::print("\tNumber of messages needed for element and side list = {}\n", num_messages);
         fmt::print("\tNumber of element and side IDs per message = {}\n", num_elem_per_message);
         fmt::print("\tLength of each message = {}\n", iss_size * num_elem_per_message);
@@ -2638,12 +2630,12 @@ void NemSpread<T, INT>::read_side_sets(int exoid, INT *num_elem_in_ssets, INT *n
 
         if (Debug_Flag >= 4) {
           fmt::print("Message summary for Side Set number {}, with ID of {}:\n", i,
-                     (size_t)Side_Set_Ids[i]);
+                     Side_Set_Ids[i]);
           fmt::print("\tNumber of messages needed for distribution "
                      "factors = {}\n",
                      num_messages);
           fmt::print("\tNumber of dist. factors in each message = {}\n", num_elem_per_message);
-          fmt::print("\tLength of each message = {}\n", (size_t)(num_elem_per_message * sizeof(T)));
+          fmt::print("\tLength of each message = {}\n", (num_elem_per_message * sizeof(T)));
         }
 
         std::vector<T> ss_dist_fact(num_elem_per_message); /* side-set distribution factors */
