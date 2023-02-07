@@ -22,7 +22,7 @@
 #include <functional>
 #include <stdexcept>
 #include <numeric>
-#include <cstrings>
+#include <strings.h>
 
 // clang-format on
 // #######################   End Clang Header Tool Managed Headers  ########################
