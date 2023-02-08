@@ -10,7 +10,6 @@
 #include <array>
 
 #include "globals.h"
-#include "nem_spread.h"        // for NemSpread, etc
 #include "pe_str_util_const.h" // for strip_string, token_compare, etc
 #include "rf_allo.h"
 #include "rf_io_const.h"
