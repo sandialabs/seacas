@@ -92,20 +92,22 @@ public:
 
   std::vector<std::vector<INT>> Elem_Map{}; /* Map for Nemesis output */
 
-  INT **Proc_Global_Node_Id_Map{nullptr}; /* Data structure which contains the internal  *
-                                           * nodes on each processor.  It is a map       *
-                                           * from the local node number to the global    *
-                                           * node id (as found in node_num_map)       *
-                                           *  Type: int vector of length                 *
-                                           *       (Num_Internal_Nodes + Num_Border_Nodes*
-                                           *        Num_External_Nodes)               */
+  std::vector<std::vector<INT>>
+      Proc_Global_Node_Id_Map{}; /* Data structure which contains the internal  *
+                                  * nodes on each processor.  It is a map       *
+                                  * from the local node number to the global    *
+                                  * node id (as found in node_num_map)       *
+                                  *  Type: int vector of length                 *
+                                  *       (Num_Internal_Nodes + Num_Border_Nodes*
+                                  *        Num_External_Nodes)               */
 
-  INT **Proc_Global_Elem_Id_Map{nullptr}; /* Data structure which contains the internal  *
-                                           * elements on each processor.  It is a map    *
-                                           * from the local element number to the global *
-                                           * element id (as found in elem_num_map)            *
-                                           *  Type: int vector of length                 *
-                                           *        Num_Internal_Elems                   */
+  std::vector<std::vector<INT>>
+      Proc_Global_Elem_Id_Map{}; /* Data structure which contains the internal  *
+                                  * elements on each processor.  It is a map    *
+                                  * from the local element number to the global *
+                                  * element id (as found in elem_num_map)            *
+                                  *  Type: int vector of length                 *
+                                  *        Num_Internal_Elems                   */
 
   INT **GElem_Blks{nullptr}; /* Data structure which contains the mapping   *
                               * from the local element block number to the  *

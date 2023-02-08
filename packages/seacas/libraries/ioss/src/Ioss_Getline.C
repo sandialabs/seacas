@@ -38,7 +38,8 @@
 #endif
 
 #include <termios.h>
-struct termios io_new_termios, io_old_termios;
+struct termios io_new_termios;
+struct termios io_old_termios;
 #endif
 
 /********************* C library headers ********************************/

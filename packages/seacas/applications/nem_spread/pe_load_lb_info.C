@@ -94,7 +94,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
   }
 
   /* Read information about the processor configuration */
-  read_proc_init(lb_exoid, Proc_Info, &Proc_Ids);
+  read_proc_init(lb_exoid, Proc_Info, Proc_Ids);
 
   /* Allocate space for the counts */
   globals.Num_Internal_Nodes.resize(Proc_Info[2]);
@@ -481,7 +481,8 @@ void NemSpread<T, INT>::process_lb_data(INT *Integer_Vector, int indx)
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::read_proc_init(int lb_exoid, int proc_info[], int **proc_ids_ptr)
+void NemSpread<T, INT>::read_proc_init(int lb_exoid, std::array<int, 6> &proc_info,
+                                       std::vector<int> &proc_ids)
 
 /*----------------------------------------------------------------------------
  *  read_proc_init:
@@ -507,15 +508,11 @@ void NemSpread<T, INT>::read_proc_init(int lb_exoid, int proc_info[], int **proc
 
   /* Calculate which processor is responsible for what */
   proc_info[2] = proc_info[0];
-  int *proc_ids =
-      reinterpret_cast<int *>(array_alloc(__FILE__, __LINE__, 1, proc_info[2], sizeof(int)));
+  proc_ids.resize(proc_info[2]);
 
   for (int i1 = 0; i1 < proc_info[2]; i1++) {
     proc_ids[i1] = i1;
   }
-
-  *proc_ids_ptr = proc_ids;
-
 } /* End of read_proc_init() *************************************************/
 /*****************************************************************************/
 /*****************************************************************************/

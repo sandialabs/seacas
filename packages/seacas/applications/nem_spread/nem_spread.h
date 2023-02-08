@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include <array>
+
 #include "globals.h"
 #include "nem_spread.h"        // for NemSpread, etc
 #include "pe_str_util_const.h" // for strip_string, token_compare, etc
@@ -28,8 +30,8 @@ public:
   void   read_elem_blk_ids(int mesh_exoid, int max_name_length);
   void   read_elem_blk(int exoid);
   void   extract_elem_blk();
-  void   extract_global_element_ids(INT global_ids[], size_t Num_Elem, int iproc);
-  void   extract_global_node_ids(INT global_ids[], size_t Num_Node, int iproc);
+  void   extract_global_element_ids(const std::vector<INT> &global_ids, size_t Num_Elem, int iproc);
+  void   extract_global_node_ids(const std::vector<INT> &global_ids, size_t Num_Node, int iproc);
   size_t extract_elem_connect(INT elem_blk[], int icurrent_elem_blk, size_t istart_elem,
                               size_t iend_elem, int *local_ielem_blk, int iproc);
   void extract_elem_attr(T *elem_attr, int icurrent_elem_blk, size_t istart_elem, size_t iend_elem,
@@ -61,7 +63,7 @@ public:
                           INT *ss_ids_global, INT *ns_ids_global);
 
   void process_lb_data(INT *Integer_Vector, int indx);
-  void read_proc_init(int lb_exoid, int proc_info[], int **proc_ids_ptr);
+  void read_proc_init(int lb_exoid, std::array<int, 6> &proc_info, std::vector<int> &proc_ids);
   void read_lb_init(int lb_exoid, std::vector<INT> &Int_Space, std::vector<INT> &Int_Node_Num,
                     std::vector<INT> &Bor_Node_Num, std::vector<INT> &Ext_Node_Num,
                     std::vector<INT> &Int_Elem_Num, std::vector<INT> &Bor_Elem_Num,
@@ -157,14 +159,10 @@ public:
 
   char *Coord_Name[3]{}; /* The name(s) of the coordinate axes.   */
 
-  int  Proc_Info[6]{};
-  int *Proc_Ids{nullptr};
+  std::array<int, 6> Proc_Info;
+  std::vector<int>   Proc_Ids{};
 
-  NemSpread()
-  {
-    Coord_Name[0] = Coord_Name[1] = Coord_Name[2] = nullptr;
-    Proc_Info[0] = Proc_Info[1] = Proc_Info[2] = Proc_Info[3] = Proc_Info[4] = Proc_Info[5] = 0;
-  }
+  NemSpread() { Coord_Name[0] = Coord_Name[1] = Coord_Name[2] = nullptr; }
 
   ~NemSpread() { safe_free((void **)&GM_Elem_Types); }
 };

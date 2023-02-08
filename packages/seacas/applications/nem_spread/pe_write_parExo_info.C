@@ -633,7 +633,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
 
   /* If non-nullptr, output the global node id map which preserves
      the global node ids in the original mesh */
-  if (globals.Proc_Global_Node_Id_Map[iproc] != nullptr) {
+  if (!globals.Proc_Global_Node_Id_Map[iproc].empty()) {
     bytes_out += itotal_nodes * sizeof(INT);
     if (ex_put_map_param(mesh_exoid, 1, 0) < 0) {
       fmt::print(stderr, "[{}]: ERROR, unable to define global node map parameters!\n", __func__);
@@ -641,7 +641,8 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
       exit(1);
     }
 
-    if (ex_put_num_map(mesh_exoid, EX_NODE_MAP, 1, globals.Proc_Global_Node_Id_Map[iproc]) < 0) {
+    if (ex_put_num_map(mesh_exoid, EX_NODE_MAP, 1, globals.Proc_Global_Node_Id_Map[iproc].data()) <
+        0) {
       fmt::print(stderr, "[{}]: ERROR, unable to output global node id map!\n", __func__);
       ex_close(mesh_exoid);
       exit(1);
@@ -823,7 +824,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
 
     /* If non-nullptr, output the global element id map which preserves
        the global element ids in the original mesh */
-    if (globals.Proc_Global_Elem_Id_Map[iproc] != nullptr) {
+    if (!globals.Proc_Global_Elem_Id_Map[iproc].empty()) {
       bytes_out +=
           globals.Num_Internal_Elems[iproc] * globals.Num_Border_Elems[iproc] * sizeof(INT);
       if (ex_put_map_param(mesh_exoid, 0, 1) < 0) {
@@ -832,7 +833,8 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
         exit(1);
       }
 
-      if (ex_put_num_map(mesh_exoid, EX_ELEM_MAP, 1, globals.Proc_Global_Elem_Id_Map[iproc]) < 0) {
+      if (ex_put_num_map(mesh_exoid, EX_ELEM_MAP, 1,
+                         globals.Proc_Global_Elem_Id_Map[iproc].data()) < 0) {
         fmt::print(stderr, "[{}]: ERROR, unable to output global id map!\n", __func__);
         ex_close(mesh_exoid);
         exit(1);

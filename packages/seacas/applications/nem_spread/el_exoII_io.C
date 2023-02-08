@@ -192,35 +192,36 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
     globals.Proc_SS_Elem_List_Length[iproc] = 0;
   }
 
-  globals.GElem_Blks = (INT **)array_alloc(__FILE__, __LINE__, 1, 26 * Proc_Info[2], sizeof(INT *));
-  globals.Proc_Nodes_Per_Elem     = globals.GElem_Blks + Proc_Info[2];
-  globals.Proc_Elem_Blk_Ids       = globals.Proc_Nodes_Per_Elem + Proc_Info[2];
-  globals.Proc_Elem_Blk_Types     = globals.Proc_Elem_Blk_Ids + Proc_Info[2];
-  globals.Proc_Num_Attr           = globals.Proc_Elem_Blk_Types + Proc_Info[2];
-  globals.Proc_Num_Elem_In_Blk    = globals.Proc_Num_Attr + Proc_Info[2];
-  globals.Proc_Connect_Ptr        = globals.Proc_Num_Elem_In_Blk + Proc_Info[2];
-  globals.Proc_Elem_Connect       = globals.Proc_Connect_Ptr + Proc_Info[2];
-  globals.Proc_NS_Ids             = globals.Proc_Elem_Connect + Proc_Info[2];
-  globals.Proc_NS_Count           = globals.Proc_NS_Ids + Proc_Info[2];
-  globals.Proc_NS_DF_Count        = globals.Proc_NS_Count + Proc_Info[2];
-  globals.Proc_NS_Pointers        = globals.Proc_NS_DF_Count + Proc_Info[2];
-  globals.Proc_NS_List            = globals.Proc_NS_Pointers + Proc_Info[2];
-  globals.GNode_Sets              = globals.Proc_NS_List + Proc_Info[2];
-  globals.Proc_NS_GNMap_List      = globals.GNode_Sets + Proc_Info[2];
-  globals.Proc_SS_Ids             = globals.Proc_NS_GNMap_List + Proc_Info[2];
-  globals.Proc_SS_Elem_Count      = globals.Proc_SS_Ids + Proc_Info[2];
-  globals.Proc_SS_DF_Count        = globals.Proc_SS_Elem_Count + Proc_Info[2];
-  globals.Proc_SS_Elem_Pointers   = globals.Proc_SS_DF_Count + Proc_Info[2];
-  globals.Proc_SS_Elem_List       = globals.Proc_SS_Elem_Pointers + Proc_Info[2];
-  globals.Proc_SS_Side_List       = globals.Proc_SS_Elem_List + Proc_Info[2];
-  globals.Proc_SS_DF_Pointers     = globals.Proc_SS_Side_List + Proc_Info[2];
-  globals.GSide_Sets              = globals.Proc_SS_DF_Pointers + Proc_Info[2];
-  globals.Proc_SS_GEMap_List      = globals.GSide_Sets + Proc_Info[2];
-  globals.Proc_Global_Elem_Id_Map = globals.Proc_SS_GEMap_List + Proc_Info[2];
-  globals.Proc_Global_Node_Id_Map = globals.Proc_Global_Elem_Id_Map + Proc_Info[2];
+  globals.GElem_Blks = (INT **)array_alloc(__FILE__, __LINE__, 1, 24 * Proc_Info[2], sizeof(INT *));
+  globals.Proc_Nodes_Per_Elem   = globals.GElem_Blks + Proc_Info[2];
+  globals.Proc_Elem_Blk_Ids     = globals.Proc_Nodes_Per_Elem + Proc_Info[2];
+  globals.Proc_Elem_Blk_Types   = globals.Proc_Elem_Blk_Ids + Proc_Info[2];
+  globals.Proc_Num_Attr         = globals.Proc_Elem_Blk_Types + Proc_Info[2];
+  globals.Proc_Num_Elem_In_Blk  = globals.Proc_Num_Attr + Proc_Info[2];
+  globals.Proc_Connect_Ptr      = globals.Proc_Num_Elem_In_Blk + Proc_Info[2];
+  globals.Proc_Elem_Connect     = globals.Proc_Connect_Ptr + Proc_Info[2];
+  globals.Proc_NS_Ids           = globals.Proc_Elem_Connect + Proc_Info[2];
+  globals.Proc_NS_Count         = globals.Proc_NS_Ids + Proc_Info[2];
+  globals.Proc_NS_DF_Count      = globals.Proc_NS_Count + Proc_Info[2];
+  globals.Proc_NS_Pointers      = globals.Proc_NS_DF_Count + Proc_Info[2];
+  globals.Proc_NS_List          = globals.Proc_NS_Pointers + Proc_Info[2];
+  globals.GNode_Sets            = globals.Proc_NS_List + Proc_Info[2];
+  globals.Proc_NS_GNMap_List    = globals.GNode_Sets + Proc_Info[2];
+  globals.Proc_SS_Ids           = globals.Proc_NS_GNMap_List + Proc_Info[2];
+  globals.Proc_SS_Elem_Count    = globals.Proc_SS_Ids + Proc_Info[2];
+  globals.Proc_SS_DF_Count      = globals.Proc_SS_Elem_Count + Proc_Info[2];
+  globals.Proc_SS_Elem_Pointers = globals.Proc_SS_DF_Count + Proc_Info[2];
+  globals.Proc_SS_Elem_List     = globals.Proc_SS_Elem_Pointers + Proc_Info[2];
+  globals.Proc_SS_Side_List     = globals.Proc_SS_Elem_List + Proc_Info[2];
+  globals.Proc_SS_DF_Pointers   = globals.Proc_SS_Side_List + Proc_Info[2];
+  globals.GSide_Sets            = globals.Proc_SS_DF_Pointers + Proc_Info[2];
+  globals.Proc_SS_GEMap_List    = globals.GSide_Sets + Proc_Info[2];
+
+  globals.Proc_Global_Elem_Id_Map.resize(Proc_Info[2]);
+  globals.Proc_Global_Node_Id_Map.resize(Proc_Info[2]);
 
   /* Initialize */
-  for (int iproc = 0; iproc < 25 * Proc_Info[2]; iproc++) {
+  for (int iproc = 0; iproc < 24 * Proc_Info[2]; iproc++) {
     globals.GElem_Blks[iproc] = nullptr;
   }
 
@@ -922,9 +923,9 @@ void NemSpread<T, INT>::read_coord(int exoid, int max_name_length)
   }
 
   /* Handle global node ids... */
-  INT *global_node_ids = (INT *)array_alloc(__FILE__, __LINE__, 1, globals.Num_Node, sizeof(INT));
+  std::vector<INT> global_node_ids(globals.Num_Node);
 
-  check_exodus_error(ex_get_id_map(exoid, EX_NODE_MAP, global_node_ids), "ex_get_id_map");
+  check_exodus_error(ex_get_id_map(exoid, EX_NODE_MAP, global_node_ids.data()), "ex_get_id_map");
   /*
    * Check whether map is sequential (1..globals.Num_Node). If it is, then it
    * provides no information and we don't need to store it in the
@@ -959,19 +960,11 @@ void NemSpread<T, INT>::read_coord(int exoid, int max_name_length)
 
         size_t itotal_nodes = globals.Num_Internal_Nodes[iproc] + globals.Num_Border_Nodes[iproc] +
                               globals.Num_External_Nodes[iproc];
-        globals.Proc_Global_Node_Id_Map[iproc] =
-            (INT *)array_alloc(__FILE__, __LINE__, 1, itotal_nodes, sizeof(INT));
 
+        globals.Proc_Global_Node_Id_Map[iproc].resize(itotal_nodes);
         extract_global_node_ids(global_node_ids, globals.Num_Node, iproc);
       }
     }
-    else {
-      /* Should be nullptr already, but make it more clear */
-      for (int iproc = Proc_Info[4]; iproc < Proc_Info[4] + Proc_Info[5]; iproc++) {
-        globals.Proc_Global_Node_Id_Map[iproc] = nullptr;
-      }
-    }
-    safe_free((void **)&global_node_ids);
   }
 } /* END of routine read_coord */
 
@@ -1199,7 +1192,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk(int ex
    */
   GM_Elem_Types = (int *)array_alloc(__FILE__, __LINE__, 1, globals.Num_Elem, sizeof(int));
 
-  INT *global_ids = (INT *)array_alloc(__FILE__, __LINE__, 1, globals.Num_Elem, sizeof(INT));
+  std::vector<INT> global_ids(globals.Num_Elem);
 
   for (int iproc = Proc_Info[4]; iproc < Proc_Info[4] + Proc_Info[5]; iproc++) {
 
@@ -1446,7 +1439,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk(int ex
   } /* End "for(ielem_blk=0; ielem_blk < globals.Num_Elem_Blk; ielem_blk++)" */
 
   /* Handle global element ids... */
-  check_exodus_error(ex_get_id_map(exoid, EX_ELEM_MAP, global_ids), "ex_get_id_map");
+  check_exodus_error(ex_get_id_map(exoid, EX_ELEM_MAP, global_ids.data()), "ex_get_id_map");
 
   /*
    * Check whether map is sequential (1..globals.Num_Elem). If it is, then it
@@ -1479,21 +1472,17 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk(int ex
 
     if (!sequential) {
       for (int iproc = Proc_Info[4]; iproc < Proc_Info[4] + Proc_Info[5]; iproc++) {
-
-        globals.Proc_Global_Elem_Id_Map[iproc] = (INT *)array_alloc(
-            __FILE__, __LINE__, 1,
-            globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc], sizeof(INT));
-
+        globals.Proc_Global_Elem_Id_Map[iproc].resize(globals.Num_Internal_Elems[iproc] +
+                                                      globals.Num_Border_Elems[iproc]);
         extract_global_element_ids(global_ids, globals.Num_Elem, iproc);
       }
     }
     else {
       /* Should be nullptr already, but make it more clear */
       for (int iproc = Proc_Info[4]; iproc < Proc_Info[4] + Proc_Info[5]; iproc++) {
-        globals.Proc_Global_Elem_Id_Map[iproc] = nullptr;
+        globals.Proc_Global_Elem_Id_Map[iproc].clear();
       }
     }
-    safe_free((void **)&global_ids);
   }
 } /* read_elem_blk */
 
@@ -1502,7 +1491,8 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk(int ex
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::extract_global_element_ids(INT global_ids[], size_t /*Num_Elem*/, int iproc)
+void NemSpread<T, INT>::extract_global_element_ids(const std::vector<INT> &global_ids,
+                                                   size_t /*Num_Elem*/, int iproc)
 {
   /*
    * globals.Num_Elem -- number of elements in serial mesh.
@@ -1524,7 +1514,8 @@ void NemSpread<T, INT>::extract_global_element_ids(INT global_ids[], size_t /*Nu
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::extract_global_node_ids(INT global_ids[], size_t /*Num_Node*/, int iproc)
+void NemSpread<T, INT>::extract_global_node_ids(const std::vector<INT> &global_ids,
+                                                size_t /*Num_Node*/, int iproc)
 {
   /*
    * Num_Elem -- number of elements in serial mesh.
