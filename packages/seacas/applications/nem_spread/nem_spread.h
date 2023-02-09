@@ -71,8 +71,7 @@ public:
   void read_cmap_params(int lb_exoid, INT *Node_Comm_Num, INT *Elem_Comm_Num,
                         std::vector<INT> &Num_N_Comm_Maps, std::vector<INT> &Num_E_Comm_Maps,
                         std::vector<ELEM_COMM_MAP<INT>> &E_Comm_Map,
-                        std::vector<NODE_COMM_MAP<INT>> &N_Comm_Map, INT *cmap_max_size,
-                        INT **comm_vec);
+                        std::vector<NODE_COMM_MAP<INT>> &N_Comm_Map, INT *cmap_max_size);
 
   void create_elem_types();
   void read_mesh_param();

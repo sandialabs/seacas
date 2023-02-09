@@ -71,7 +71,6 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
 
   int   lb_exoid      = 0;
   INT   cmap_max_size = 0;
-  INT  *comm_vec;
   char  Title[MAX_LINE_LENGTH + 1];
   float version;
 
@@ -151,12 +150,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
 
   /* Set up each processor for the communication map parameters */
   read_cmap_params(lb_exoid, Node_Comm_Num.data(), Elem_Comm_Num.data(), globals.Num_N_Comm_Maps,
-                   globals.Num_E_Comm_Maps, globals.E_Comm_Map, globals.N_Comm_Map, &cmap_max_size,
-                   &comm_vec);
-
-  /* Allocate enough space to read the LB_data for one processor */
-  INT *Integer_Vector =
-      (INT *)array_alloc(__FILE__, __LINE__, 1, Int_Space[0] + cmap_max_size, sizeof(INT));
+                   globals.Num_E_Comm_Maps, globals.E_Comm_Map, globals.N_Comm_Map, &cmap_max_size);
 
   /*
    * loop through the processors, one at a time, to read
@@ -166,31 +160,38 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
    *       or elemental communication maps.
    */
 
-  size_t ijump = 0; /* keep track of where in comm_vec we are */
   for (int iproc = 0; iproc < Proc_Info[0]; iproc++) {
 
     /* Get the node map for processor "iproc" */
+    size_t itotal_nodes = globals.Num_Internal_Nodes[iproc] + globals.Num_Border_Nodes[iproc] +
+                          globals.Num_External_Nodes[iproc];
+    globals.GNodes[iproc].resize(itotal_nodes);
     if (ex_get_processor_node_maps(
-            lb_exoid, &Integer_Vector[0], &Integer_Vector[Int_Node_Num[iproc]],
-            &Integer_Vector[Int_Node_Num[iproc] + Bor_Node_Num[iproc]], iproc) < 0) {
+            lb_exoid, &globals.GNodes[iproc][0], &globals.GNodes[iproc][Int_Node_Num[iproc]],
+            &globals.GNodes[iproc][Int_Node_Num[iproc] + Bor_Node_Num[iproc]], iproc) < 0) {
       fmt::print(stderr, "[{}] ERROR, failed to get node map for Proc {}!\n", __func__, iproc);
       exit(1);
     }
 
-    size_t vec_indx = Int_Node_Num[iproc] + Bor_Node_Num[iproc] + Ext_Node_Num[iproc];
-
     /* Get the element map for processor number "iproc" */
-    if (ex_get_processor_elem_maps(lb_exoid, &Integer_Vector[vec_indx],
-                                   &Integer_Vector[vec_indx + Int_Elem_Num[iproc]], iproc) < 0) {
+    size_t itotal_elems = globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc];
+    globals.GElems[iproc].resize(itotal_elems);
+    globals.Elem_Map[iproc].resize(itotal_elems);
+
+    if (ex_get_processor_elem_maps(lb_exoid, &globals.GElems[iproc][0],
+                                   &globals.GElems[iproc][Int_Elem_Num[iproc]], iproc) < 0) {
       fmt::print(stderr, "[{}] ERROR, failed to get element map for Proc {}!\n", __func__, iproc);
       exit(1);
     }
+    globals.Elem_Map[iproc] = globals.GElems[iproc];
 
     if (Node_Comm_Num[iproc] > 0) {
-      vec_indx += Int_Elem_Num[iproc] + Bor_Elem_Num[iproc];
+      globals.N_Comm_Map[iproc].node_ids.resize(globals.N_Comm_Map[iproc].node_cnt);
+      globals.N_Comm_Map[iproc].proc_ids.resize(globals.N_Comm_Map[iproc].node_cnt);
 
-      if (ex_get_node_cmap(lb_exoid, comm_vec[ijump], &Integer_Vector[vec_indx],
-                           &Integer_Vector[vec_indx + comm_vec[ijump + 1]], iproc) < 0) {
+      if (ex_get_node_cmap(lb_exoid, globals.N_Comm_Map[iproc].map_id,
+                           globals.N_Comm_Map[iproc].node_ids.data(),
+                           globals.N_Comm_Map[iproc].proc_ids.data(), iproc) < 0) {
         /*
          * If there are disconnected mesh pieces, then it is
          * possible that there is no communication between the
@@ -203,11 +204,14 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
     }
 
     if (Elem_Comm_Num[iproc] > 0) {
-      vec_indx += 2 * comm_vec[ijump + 1];
+      globals.E_Comm_Map[iproc].elem_ids.resize(globals.E_Comm_Map[iproc].elem_cnt);
+      globals.E_Comm_Map[iproc].side_ids.resize(globals.E_Comm_Map[iproc].elem_cnt);
+      globals.E_Comm_Map[iproc].proc_ids.resize(globals.E_Comm_Map[iproc].elem_cnt);
 
-      if (ex_get_elem_cmap(lb_exoid, comm_vec[ijump + 2], &Integer_Vector[vec_indx],
-                           &Integer_Vector[vec_indx + comm_vec[ijump + 3]],
-                           &Integer_Vector[vec_indx + 2 * comm_vec[ijump + 3]], iproc) < 0) {
+      if (ex_get_elem_cmap(lb_exoid, globals.E_Comm_Map[iproc].map_id,
+                           globals.E_Comm_Map[iproc].elem_ids.data(),
+                           globals.E_Comm_Map[iproc].side_ids.data(),
+                           globals.E_Comm_Map[iproc].proc_ids.data(), iproc) < 0) {
         fmt::print(stderr, "[{}] ERROR. Failed to get elemental comm map for Proc {}!\n", __func__,
                    iproc);
         exit(1);
@@ -219,18 +223,25 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
      *   - if iproc = Proc_Ids[*] then process the data instead.
      */
     assert(Proc_Ids[iproc] == iproc);
-    process_lb_data(Integer_Vector, iproc);
 
     /*
-     * now move ijump to the next communications map
-     * make sure to check if there are any for this processor
+     * Sort the local element numbers in ascending global element numbers.
+     * This means that globals.GElems will be monotonic.
      */
-    if (Node_Comm_Num[iproc] > 0) {
-      ijump += 2;
-    }
-    if (Elem_Comm_Num[iproc] > 0) {
-      ijump += 2;
-    }
+    gds_qsort(globals.GElems[iproc].data(), globals.Num_Internal_Elems[iproc]);
+    gds_qsort(globals.Elem_Map[iproc].data(), globals.Num_Internal_Elems[iproc]);
+
+    /* Check that globals.GNodes is monotonic, from i = 0 to Num_Internal_Nodes */
+#ifdef DEBUG
+    assert(check_monot(globals.GNodes[iproc], globals.Num_Internal_Nodes[iproc]));
+
+    /*
+     * Check that globals.GNodes is monotonic, from i = Num_Internal_Nodes to
+     *    (Num_Internal_Nodes + Num_Border_Nodes)
+     */
+    assert(check_monot(&(globals.GNodes[iproc][globals.Num_Internal_Nodes[iproc]]),
+                       globals.Num_Border_Nodes[iproc]));
+#endif
   }
 
   /* Close the load balance file - we are finished with it */
@@ -240,9 +251,6 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
   }
 
   /************************* Cleanup and Printout Phase ***********************/
-
-  /* Free temporary memory */
-  safe_free((void **)&Integer_Vector);
 
   if (num_qa_rec > 0) {
     for (int i = 0; i < length_qa; i++) {
@@ -257,8 +265,6 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
     }
     safe_free(reinterpret_cast<void **>(&inf_record_ptr));
   }
-
-  safe_free((void **)&comm_vec);
 
   for (int iproc = 0; iproc < Proc_Info[2]; iproc++) {
     if (globals.Num_Internal_Nodes[iproc] == 0 && globals.Num_Border_Nodes[iproc] == 0 &&
@@ -364,119 +370,6 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
   }
 
 } /* END of routine load_lb_info () ******************************************/
-/*****************************************************************************/
-/*****************************************************************************/
-
-template <typename T, typename INT>
-void NemSpread<T, INT>::process_lb_data(INT *Integer_Vector, int indx)
-
-/*
- *       Function which reads the load balance information from the processor's
- *       communication buffer.
- *
- *       Author:          Scott Hutchinson (1421)
- *       Date:            11 March 1993
- *       Revised:         11 March 1993
- *
- * int *Integer_Vector;   Data structure for sending int data to processors
- *               (ptr to vector of length, length_int)
- *
- */
-{
-  /* Local variables */
-  INT icount = 0;
-  INT itotal_nodes;
-  INT itotal_elems;
-  INT ig_count = 0;
-
-  /***************************** execution begins ******************************/
-
-  /* Calculate the length of the globals.GNodes and globals.GElems global variable */
-  itotal_nodes = globals.Num_Internal_Nodes[indx] + globals.Num_Border_Nodes[indx] +
-                 globals.Num_External_Nodes[indx];
-  itotal_elems = globals.Num_Internal_Elems[indx] + globals.Num_Border_Elems[indx];
-
-  /* Allocate Permanent Arrays on the current processor */
-  globals.GNodes[indx].resize(itotal_nodes);
-  globals.GElems[indx].resize(itotal_elems);
-  globals.Elem_Map[indx].resize(itotal_elems);
-
-  globals.N_Comm_Map[indx].node_ids.resize(globals.N_Comm_Map[indx].node_cnt);
-  globals.N_Comm_Map[indx].proc_ids.resize(globals.N_Comm_Map[indx].node_cnt);
-  globals.E_Comm_Map[indx].elem_ids.resize(globals.E_Comm_Map[indx].elem_cnt);
-  globals.E_Comm_Map[indx].side_ids.resize(globals.E_Comm_Map[indx].elem_cnt);
-  globals.E_Comm_Map[indx].proc_ids.resize(globals.E_Comm_Map[indx].elem_cnt);
-
-  /*
-   *            Extract the load balance information, and store it in
-   *            permanent vectors:
-   *              -   globals.GNodes[0]          - Internal_Nodes
-   *                  globals.GNodes[+]          - Border_Nodes
-   *                  globals.GNodes[+]          - External_Nodes
-   *                  globals.GElems[0]          - Internal_Elems
-   *                  globals.GElems[+]          - Border_Elems
-   */
-
-  for (INT i = 0; i < globals.Num_Internal_Nodes[indx]; i++) {
-    globals.GNodes[indx][ig_count++] = Integer_Vector[icount++];
-  }
-  for (INT i = 0; i < globals.Num_Border_Nodes[indx]; i++) {
-    globals.GNodes[indx][ig_count++] = Integer_Vector[icount++];
-  }
-  for (INT i = 0; i < globals.Num_External_Nodes[indx]; i++) {
-    globals.GNodes[indx][ig_count++] = Integer_Vector[icount++];
-  }
-
-  ig_count = 0;
-  for (INT i = 0; i < globals.Num_Internal_Elems[indx]; i++) {
-    globals.GElems[indx][ig_count]   = Integer_Vector[icount++];
-    globals.Elem_Map[indx][ig_count] = globals.GElems[indx][ig_count];
-    ig_count++;
-  }
-  for (INT i = 0; i < globals.Num_Border_Elems[indx]; i++) {
-    globals.GElems[indx][ig_count]   = Integer_Vector[icount++];
-    globals.Elem_Map[indx][ig_count] = globals.GElems[indx][ig_count];
-    ig_count++;
-  }
-
-  for (size_t i = 0; i < globals.N_Comm_Map[indx].node_cnt; i++) {
-    (globals.N_Comm_Map[indx].node_ids)[i] = Integer_Vector[icount++];
-  }
-  for (size_t i = 0; i < globals.N_Comm_Map[indx].node_cnt; i++) {
-    (globals.N_Comm_Map[indx].proc_ids)[i] = Integer_Vector[icount++];
-  }
-  for (size_t i = 0; i < globals.E_Comm_Map[indx].elem_cnt; i++) {
-    (globals.E_Comm_Map[indx].elem_ids)[i] = Integer_Vector[icount++];
-  }
-  for (size_t i = 0; i < globals.E_Comm_Map[indx].elem_cnt; i++) {
-    (globals.E_Comm_Map[indx].side_ids)[i] = Integer_Vector[icount++];
-  }
-  for (size_t i = 0; i < globals.E_Comm_Map[indx].elem_cnt; i++) {
-    (globals.E_Comm_Map[indx].proc_ids)[i] = Integer_Vector[icount++];
-  }
-
-  /*
-   * Sort the local element numbers in ascending global element numbers.
-   * This means that globals.GElems will be monotonic.
-   */
-  gds_qsort(globals.GElems[indx].data(), globals.Num_Internal_Elems[indx]);
-  gds_qsort(globals.Elem_Map[indx].data(), globals.Num_Internal_Elems[indx]);
-
-/* Check that globals.GNodes is monotonic, from i = 0 to Num_Internal_Nodes */
-#ifdef DEBUG
-
-  assert(check_monot(globals.GNodes[indx], globals.Num_Internal_Nodes[indx]));
-
-  /*
-   * Check that globals.GNodes is monotonic, from i = Num_Internal_Nodes to
-   *    (Num_Internal_Nodes + Num_Border_Nodes)
-   */
-  assert(check_monot(&(globals.GNodes[indx][globals.Num_Internal_Nodes[indx]]),
-                     globals.Num_Border_Nodes[indx]));
-#endif
-
-} /* END of process_lb_data () ***********************************************/
-/*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
 
@@ -695,88 +588,31 @@ void NemSpread<T, INT>::read_cmap_params(int lb_exoid, INT *Node_Comm_Num, INT *
                                          std::vector<INT> & /*Num_E_Comm_Maps*/,
                                          std::vector<ELEM_COMM_MAP<INT>> &E_Comm_Map,
                                          std::vector<NODE_COMM_MAP<INT>> &N_Comm_Map,
-                                         INT *cmap_max_size, INT **comm_vec)
-/*
- * read_cmap_params:
- *
- *      This function reads the parameters for the communication maps.
- * Processor 0 reads each processors parameters and then a broadcast of
- * this information is performed and each processor extracts it's
- * information.
- */
+                                         INT                             *cmap_max_size)
 {
-  /*
-   * Calculate the length of the longest vector needed. There is a
-   * factor of 2 here, one for the counts, and one for the IDs.
-   */
-  size_t read_len = 0;
-  for (int iproc = 0; iproc < Proc_Info[0]; iproc++) {
-    read_len += 2 * Node_Comm_Num[iproc] + 2 * Elem_Comm_Num[iproc];
-  }
-
-  /* Allocate a buffer */
-  if (read_len != 0) {
-    *comm_vec = (INT *)array_alloc(__FILE__, __LINE__, 1, read_len, sizeof(INT));
-  }
-  else {
-    *comm_vec = nullptr;
-  }
-
-  size_t vec_start = 0;
   for (int iproc = 0; iproc < Proc_Info[0]; iproc++) {
 
-    /* Reset pointer for this processors information */
-    INT *node_cm_ids  = *comm_vec + vec_start;
-    INT *node_cm_cnts = node_cm_ids + Node_Comm_Num[iproc];
-    INT *elem_cm_ids  = node_cm_cnts + Node_Comm_Num[iproc];
-    INT *elem_cm_cnts = elem_cm_ids + Elem_Comm_Num[iproc];
+    assert(Node_Comm_Num[iproc] <= 1);
+    assert(Elem_Comm_Num[iproc] <= 1);
+    std::array<INT, 1> node_cm_ids{0};
+    std::array<INT, 1> node_cm_cnts{0};
+    std::array<INT, 1> elem_cm_ids{0};
+    std::array<INT, 1> elem_cm_cnts{0};
 
     /* Read the communication map IDs for processor "iproc" */
-    if (ex_get_cmap_params(lb_exoid, node_cm_ids, node_cm_cnts, elem_cm_ids, elem_cm_cnts, iproc) <
-        0) {
+    if (ex_get_cmap_params(lb_exoid, node_cm_ids.data(), node_cm_cnts.data(), elem_cm_ids.data(),
+                           elem_cm_cnts.data(), iproc) < 0) {
       fmt::print(stderr, "[{}] ERROR, unable to read communication map params\n", __func__);
       exit(1);
     }
 
-    /* Increment starting pointer */
-    vec_start += 2 * Node_Comm_Num[iproc] + 2 * Elem_Comm_Num[iproc];
+    N_Comm_Map[iproc].map_id   = node_cm_ids[0];
+    N_Comm_Map[iproc].node_cnt = node_cm_cnts[0];
+    E_Comm_Map[iproc].map_id   = elem_cm_ids[0];
+    E_Comm_Map[iproc].elem_cnt = elem_cm_cnts[0];
 
-    /* For processor and node IDs */
-    INT psum = 0;
-    for (int i1 = 0; i1 < Node_Comm_Num[iproc]; i1++) {
-      psum += 2 * node_cm_cnts[i1];
-    }
-
-    /* For processor, element and side IDs */
-    for (int i1 = 0; i1 < Elem_Comm_Num[iproc]; i1++) {
-      psum += 3 * elem_cm_cnts[i1];
-    }
-
-    *cmap_max_size = PEX_MAX(*cmap_max_size, psum);
-
-    /*
-     * NOTE: This code all assumes that the information for each
-     * processor is read sequentially by processor 0.
-     */
-    int i1;
-    for (i1 = 0; i1 < Proc_Info[2]; i1++) {
-      if (Proc_Ids[i1] == iproc) {
-        break;
-      }
-    }
-
-    /*
-     * This would need to be changed when multiple node/element
-     * maps per processor are supported.
-     */
-    if (Node_Comm_Num[iproc] > 0) {
-      N_Comm_Map[i1].map_id   = node_cm_ids[0];
-      N_Comm_Map[i1].node_cnt = node_cm_cnts[0];
-    }
-    if (Elem_Comm_Num[iproc] > 0) {
-      E_Comm_Map[i1].map_id   = elem_cm_ids[0];
-      E_Comm_Map[i1].elem_cnt = elem_cm_cnts[0];
-    }
+    INT psum       = 2 * node_cm_cnts[0] + 3 * elem_cm_cnts[0];
+    *cmap_max_size = std::max(*cmap_max_size, psum);
   }
 
   if (Debug_Flag >= 4) {
