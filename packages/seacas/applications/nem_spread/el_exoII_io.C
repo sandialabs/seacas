@@ -889,14 +889,20 @@ void NemSpread<T, INT>::read_coord(int exoid, int max_name_length)
   }
 
   /* Allocate temporary space to hold 1 dimensions worth of coordinates... */
-  T *coord = (T *)array_alloc(__FILE__, __LINE__, 1, globals.Num_Node, sizeof(T));
+  std::vector<T> coord(globals.Num_Node);
 
   /* Read in the coordinates and broadcast to the processors */
   for (int idim = 0; idim < globals.Num_Dim; idim++) {
     switch (idim) {
-    case 0: check_exodus_error(ex_get_coord(exoid, coord, nullptr, nullptr), "ex_get_coord"); break;
-    case 1: check_exodus_error(ex_get_coord(exoid, nullptr, coord, nullptr), "ex_get_coord"); break;
-    case 2: check_exodus_error(ex_get_coord(exoid, nullptr, nullptr, coord), "ex_get_coord"); break;
+    case 0:
+      check_exodus_error(ex_get_coord(exoid, coord.data(), nullptr, nullptr), "ex_get_coord");
+      break;
+    case 1:
+      check_exodus_error(ex_get_coord(exoid, nullptr, coord.data(), nullptr), "ex_get_coord");
+      break;
+    case 2:
+      check_exodus_error(ex_get_coord(exoid, nullptr, nullptr, coord.data()), "ex_get_coord");
+      break;
     }
 
     for (int iproc = Proc_Info[4]; iproc < Proc_Info[4] + Proc_Info[5]; iproc++) {
@@ -909,7 +915,7 @@ void NemSpread<T, INT>::read_coord(int exoid, int max_name_length)
       }
     }
   }
-  safe_free((void **)&coord);
+  coord.clear();
 
   for (int i = 0; i < globals.Num_Dim; i++) {
     Coord_Name[i] = reinterpret_cast<char *>(
@@ -1015,7 +1021,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::extract_elem_blk()
  */
 
 {
-  INT *proc_elem_blk = nullptr;
+  std::vector<INT> proc_elem_blk{};
 
   /* Element blocks local to the current processor */
 
@@ -1029,9 +1035,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::extract_elem_blk()
 
   for (int iproc = Proc_Info[4]; iproc < Proc_Info[4] + Proc_Info[5]; iproc++) {
 
-    proc_elem_blk = (INT *)array_alloc(
-        __FILE__, __LINE__, 1, globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc],
-        sizeof(INT));
+    proc_elem_blk.resize(globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc]);
 
     /* Find out which element block each element in this processor belongs to.
      * Fill this information into the temporary vector, proc_elem_blk.  Also,
@@ -1109,10 +1113,6 @@ template <typename T, typename INT> void NemSpread<T, INT>::extract_elem_blk()
       gds_qsort((globals.GElems[iproc].data()) + j, globals.Proc_Num_Elem_In_Blk[iproc][i]);
       j += globals.Proc_Num_Elem_In_Blk[iproc][i];
     }
-
-    /* Free temporary vectors */
-    safe_free((void **)&proc_elem_blk);
-
   } /* End "for(iproc=0; iproc <Proc_Info[2]; iproc++)" */
 
   if (Debug_Flag >= 5) {
@@ -1762,7 +1762,8 @@ void NemSpread<T, INT>::extract_elem_attr(T *elem_attr, int icurrent_elem_blk, s
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::find_elem_block(INT *proc_elem_blk, int iproc, int /*proc_for*/)
+void NemSpread<T, INT>::find_elem_block(std::vector<INT> &proc_elem_blk, int iproc,
+                                        int /*proc_for*/)
 
 {
   /* Function which finds the element block which owns each element on the
@@ -1900,7 +1901,7 @@ void NemSpread<T, INT>::find_elem_block(INT *proc_elem_blk, int iproc, int /*pro
    * later operations.
    */
 
-  my_sort(globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc], proc_elem_blk,
+  my_sort(globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc], proc_elem_blk.data(),
           globals.GElems[iproc].data());
 
   /* Now change proc_elem_blk to be a list of global element block IDs */

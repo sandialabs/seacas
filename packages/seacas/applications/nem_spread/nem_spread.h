@@ -35,7 +35,7 @@ public:
                               size_t iend_elem, int *local_ielem_blk, int iproc);
   void extract_elem_attr(T *elem_attr, int icurrent_elem_blk, size_t istart_elem, size_t iend_elem,
                          int natt_p_elem, int iproc);
-  void find_elem_block(INT *proc_elem_blk, int iproc, int proc_for);
+  void find_elem_block(std::vector<INT> &proc_elem_blk, int iproc, int proc_for);
   void read_node_set_ids(int mesh_exoid, std::vector<INT> &num_nodes_in_node_set,
                          std::vector<INT> &num_df_in_nsets, int max_name_length);
   void read_side_set_ids(int mesh_exoid, std::vector<INT> &num_elem_in_ssets,

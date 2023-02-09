@@ -135,10 +135,13 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
   int glob_method = 0;
   int start_proc  = 0;
 
-  INT             *tmp_start = nullptr, *tmp_adj = nullptr;
+  INT             *tmp_start = nullptr;
+  INT             *tmp_adj   = nullptr;
   int             *tmp_vwgts = nullptr;
   size_t           tmp_nv;
-  std::vector<int> nprocg, nelemg, nadjg;
+  std::vector<int> nprocg;
+  std::vector<int> nelemg;
+  std::vector<int> nadjg;
   size_t           max_vtx;
   size_t           max_adj;
   int              group;
@@ -149,9 +152,15 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
   int              tmp_lev;
   int             *tmp_v2p = nullptr;
 
-  float             *x_node_ptr = nullptr, *y_node_ptr = nullptr, *z_node_ptr = nullptr;
-  std::vector<float> x_elem_ptr, y_elem_ptr, z_elem_ptr;
-  float             *tmp_x = nullptr, *tmp_y = nullptr, *tmp_z = nullptr;
+  float             *x_node_ptr = nullptr;
+  float             *y_node_ptr = nullptr;
+  float             *z_node_ptr = nullptr;
+  std::vector<float> x_elem_ptr;
+  std::vector<float> y_elem_ptr;
+  std::vector<float> z_elem_ptr;
+  float             *tmp_x     = nullptr;
+  float             *tmp_y     = nullptr;
+  float             *tmp_z     = nullptr;
   float             *tmp_ewgts = nullptr;
 
   long    seed = 1;
