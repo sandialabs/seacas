@@ -2696,7 +2696,7 @@ class exodus:
         elem_attr_names = self.get_element_attribute_names(elem_blk_id)
         a_ndx = elem_attr_names.index(elem_attr_name)
 
-        values = self.__ex_get_one_attr('EX_ELEM_BLOCK', elem_blk_id, a_ndx+1)
+        values = self.__ex_get_one_attr('EX_ELEM_BLOCK', elem_blk_id, a_ndx + 1)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
