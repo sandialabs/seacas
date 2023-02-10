@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.18 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.20.19 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.18 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.19 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.18 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.19 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2022 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -2696,7 +2696,7 @@ class exodus:
         elem_attr_names = self.get_element_attribute_names(elem_blk_id)
         a_ndx = elem_attr_names.index(elem_attr_name)
 
-        values = self.__ex_get_one_attr('EX_ELEM_BLOCK', elem_blk_id, a_ndx)
+        values = self.__ex_get_one_attr('EX_ELEM_BLOCK', elem_blk_id, a_ndx+1)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
@@ -2742,7 +2742,7 @@ class exodus:
         # Determine index of requested attribute in attribute list
         elem_attr_names = self.get_element_attribute_names(elem_blk_id)
         a_ndx = elem_attr_names.index(elem_attr_name)
-        self.__ex_put_one_attr('EX_ELEM_BLOCK', elem_blk_id, a_ndx, values)
+        self.__ex_put_one_attr('EX_ELEM_BLOCK', elem_blk_id, a_ndx + 1, values)
 
     def elem_type(self, object_id):
         """
