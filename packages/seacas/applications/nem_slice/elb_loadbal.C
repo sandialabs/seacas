@@ -208,19 +208,19 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
 
     switch (mesh->num_dims) {
     case 3:
-      x_node_ptr = (mesh->coords);
-      y_node_ptr = (mesh->coords) + (mesh->num_nodes);
-      z_node_ptr = (mesh->coords) + 2 * (mesh->num_nodes);
+      x_node_ptr = mesh->coords.data();
+      y_node_ptr = mesh->coords.data() + (mesh->num_nodes);
+      z_node_ptr = mesh->coords.data() + 2 * (mesh->num_nodes);
       break;
 
     case 2:
-      x_node_ptr = (mesh->coords);
-      y_node_ptr = (mesh->coords) + (mesh->num_nodes);
+      x_node_ptr = mesh->coords.data();
+      y_node_ptr = mesh->coords.data() + (mesh->num_nodes);
       z_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       break;
 
     case 1:
-      x_node_ptr = (mesh->coords);
+      x_node_ptr = mesh->coords.data();
       y_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       z_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       break;

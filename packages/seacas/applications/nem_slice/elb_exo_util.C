@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -316,9 +316,9 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
 
   if (problem->read_coords == ELB_TRUE) {
     switch (mesh->num_dims) {
-    case 3: zptr = (mesh->coords) + 2 * (mesh->num_nodes); FALL_THROUGH;
-    case 2: yptr = (mesh->coords) + (mesh->num_nodes); FALL_THROUGH;
-    case 1: xptr = mesh->coords;
+    case 3: zptr = mesh->coords.data() + 2 * (mesh->num_nodes); FALL_THROUGH;
+    case 2: yptr = mesh->coords.data() + (mesh->num_nodes); FALL_THROUGH;
+    case 1: xptr = mesh->coords.data();
     }
 
     if (ex_get_coord(exoid, xptr, yptr, zptr) < 0) {

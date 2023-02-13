@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -184,8 +184,8 @@ template <typename INT> struct Mesh_Description
   size_t              max_np_elem{0};
   size_t              ns_list_len{0};
   char                title[MAX_LINE_LENGTH + 1]{};
-  float              *coords{nullptr};
-  E_Type             *elem_type{nullptr};
+  std::vector<float>  coords{};
+  std::vector<E_Type> elem_type{};
   INT               **connect;
 
   Mesh_Description() : connect(nullptr) {}
