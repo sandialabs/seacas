@@ -324,7 +324,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
   }
 
   /* Sort the globals.GNodes array using the index array 'loc_index' */
-  INT *loc_index = (INT *)array_alloc(__FILE__, __LINE__, 1, itotal_nodes, sizeof(INT));
+  std::vector<INT> loc_index(itotal_nodes);
 
   /* Initialize index array */
   for (size_t i2 = 0; i2 < itotal_nodes; i2++) {
@@ -335,12 +335,12 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
    * Sort the globals.GNodes[iproc] array via the index array
    * 'loc_index'
    */
-  gds_iqsort(globals.GNodes[iproc].data(), loc_index, itotal_nodes);
+  gds_iqsort(globals.GNodes[iproc].data(), loc_index.data(), itotal_nodes);
 
   /* Convert nodal IDs in the comm map to local numbering */
   for (INT i0 = 0; i0 < ncomm_cnt; i0++) {
     reverse_map(n_comm_map[i0].node_ids, 0, n_comm_map[i0].node_cnt, globals.GNodes[iproc],
-                loc_index, n_comm_map[i0].node_ids);
+                loc_index.data(), n_comm_map[i0].node_ids);
   }
 
   PIO_Time_Array[3] = 0.0;
@@ -617,14 +617,12 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
    * The Nemesis node maps are lists of internal, border and external
    * FEM node numbers. These are output as local node numbers.
    */
-  INT *nem_node_mapi = (INT *)array_alloc(__FILE__, __LINE__, 1, itotal_nodes, sizeof(INT));
-  INT *nem_node_mapb = nem_node_mapi + globals.Num_Internal_Nodes[iproc];
-  INT *nem_node_mape = nem_node_mapb + globals.Num_Border_Nodes[iproc];
+  std::vector<INT> nem_node_mapi(globals.Num_Internal_Nodes[iproc], 1);
+  std::vector<INT> nem_node_mapb(globals.Num_Border_Nodes[iproc], 1);
+  std::vector<INT> nem_node_mape(globals.Num_External_Nodes[iproc], 1);
 
-  std::iota(nem_node_mapi, nem_node_mapi + itotal_nodes, (INT)1);
-
-  if (ex_put_processor_node_maps(mesh_exoid, nem_node_mapi, nem_node_mapb, nem_node_mape,
-                                 proc_for) < 0) {
+  if (ex_put_processor_node_maps(mesh_exoid, nem_node_mapi.data(), nem_node_mapb.data(),
+                                 nem_node_mape.data(), proc_for) < 0) {
     fmt::print(stderr, "[{}]: ERROR, could not write Nemesis nodal number map!\n", __func__);
     check_exodus_error(ex_close(mesh_exoid), "ex_close");
     ex_close(mesh_exoid);
@@ -657,7 +655,9 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
   PIO_Time_Array[11] = (second() - tt1);
   total_out_time += PIO_Time_Array[11];
 
-  safe_free((void **)&nem_node_mapi);
+  nem_node_mapi.clear();
+  nem_node_mapb.clear();
+  nem_node_mape.clear();
 
   PIO_Time_Array[13] = 0.0;
   PIO_Time_Array[14] = 0.0;
@@ -896,7 +896,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
           std::vector<INT> proc_local_conn(tmp_cnt);
 
           reverse_map(&globals.Proc_Elem_Connect[iproc][iIndex0], 1, tmp_cnt,
-                      globals.GNodes[iproc].data(), loc_index, proc_local_conn.data());
+                      globals.GNodes[iproc].data(), loc_index.data(), proc_local_conn.data());
 
           bytes_out += globals.Proc_Nodes_Per_Elem[iproc][ilocal] *
                        globals.Proc_Num_Elem_In_Blk[iproc][ilocal] * sizeof(INT);
@@ -960,10 +960,10 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
     proc_local_ns.resize(globals.Proc_NS_List_Length[iproc]);
 
     reverse_map(&globals.Proc_NS_List[iproc][0], 1, globals.Proc_NS_List_Length[iproc],
-                globals.GNodes[iproc].data(), loc_index, proc_local_ns.data());
+                globals.GNodes[iproc].data(), loc_index.data(), proc_local_ns.data());
   }
 
-  safe_free((void **)&loc_index);
+  loc_index.clear();
 
   PIO_Time_Array[16] = 0.0;
   PIO_Time_Array[17] = 0.0;
@@ -1511,15 +1511,11 @@ namespace {
      * both arrays.
      */
 
-    INT *tmp_index = (INT *)array_alloc(__FILE__, __LINE__, 1, gsize, sizeof(INT));
-
-    /* Initialize index array */
-    for (size_t i2 = 0; i2 < gsize; i2++) {
-      tmp_index[i2] = i2;
-    }
+    std::vector<INT> tmp_index(gsize);
+    std::iota(tmp_index.begin(), tmp_index.end(), 0);
 
     /* Sort the 'global' array via the index array 'tmp_index' */
-    gds_iqsort(global, tmp_index, gsize);
+    gds_iqsort(global, tmp_index.data(), gsize);
 
     size_t i3 = 0;
     if (index != nullptr) {
@@ -1548,6 +1544,5 @@ namespace {
         mapout[tmp_index[i2]] = i3 + 1;
       }
     }
-    safe_free((void **)&tmp_index);
   }
 } // namespace
