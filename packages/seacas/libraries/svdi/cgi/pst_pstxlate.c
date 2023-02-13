@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -343,6 +343,7 @@
 
 /* end cgipst.h */
 #include "data_def.h"
+#include <assert.h>
 #include <ctype.h>
 #include <math.h>
 #include <stdio.h>
@@ -2471,6 +2472,7 @@ static void xcca(anything **params, int num_surfaces, anything **surf_list)
           /* reorder the cell colors */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
+              assert(count < MAX_ARRAY);
               varray[count++] = cells[index--];
             }
 
@@ -2516,6 +2518,7 @@ static void xcca(anything **params, int num_surfaces, anything **surf_list)
           /* store as much info as possible before calling vdpixl */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
+              assert(count < MAX_ARRAY);
               rarray[count] = (float)cells[index++] / 255.0f;
               garray[count] = (float)cells[index++] / 255.0f;
               barray[count] = (float)cells[index++] / 255.0f;
@@ -2551,6 +2554,7 @@ static void xcca(anything **params, int num_surfaces, anything **surf_list)
           /* store as much info as possible before calling vdpixl */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
+              assert(count < MAX_ARRAY);
               rarray[count] = (float)cells[index] / 255.0f;
               garray[count] = (float)cells[index + 1] / 255.0f;
               barray[count] = (float)cells[index + 2] / 255.0f;
@@ -2858,6 +2862,7 @@ static void xcpxa(anything **params, int num_surfaces, anything **surf_list)
           /* reorder the pixel colors */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
+              assert(count < MAX_ARRAY);
               varray[count++] = pxclrs[index--];
             }
 
@@ -2902,6 +2907,7 @@ static void xcpxa(anything **params, int num_surfaces, anything **surf_list)
           /* store as much info as possible before calling vdpixl */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
+              assert(count < MAX_ARRAY);
               rarray[count] = (float)pxclrs[index++] / 255.0f;
               garray[count] = (float)pxclrs[index++] / 255.0f;
               barray[count] = (float)pxclrs[index++] / 255.0f;
@@ -2937,6 +2943,7 @@ static void xcpxa(anything **params, int num_surfaces, anything **surf_list)
           /* store as much info as possible before calling vdpixl */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
+              assert(count < MAX_ARRAY);
               rarray[count] = (float)pxclrs[index] / 255.0f;
               garray[count] = (float)pxclrs[index + 1] / 255.0f;
               barray[count] = (float)pxclrs[index + 2] / 255.0f;
