@@ -572,7 +572,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
               for (int cnt = graph->start[ecnt]; cnt < graph->start[ecnt + 1]; cnt++) {
                 if (elem_map[graph->adj[cnt] - 1] > 0) {
                   tmp_adj[adjp] = elem_map[graph->adj[cnt] - 1];
-                  if (!weight->edges.empty()) {
+                  if (!weight->edges.empty() && tmp_ewgts != nullptr) {
                     tmp_ewgts[adjp] = weight->edges[cnt];
                   }
                   adjp++;
@@ -580,7 +580,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
               }
               tmp_start[elemp + 1] = adjp;
             }
-            if (!weight->vertices.empty()) {
+            if (!weight->vertices.empty() && tmp_vwgts != nullptr) {
               tmp_vwgts[elemp] = weight->vertices[ecnt];
             }
 
