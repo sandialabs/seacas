@@ -232,14 +232,9 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
     globals.Coor[iproc] = nullptr;
   }
 
-  globals.Proc_Elem_Attr = (T **)array_alloc(__FILE__, __LINE__, 1, 3 * Proc_Info[2], sizeof(T *));
-  globals.Proc_NS_Dist_Fact = globals.Proc_Elem_Attr + Proc_Info[2];
-  globals.Proc_SS_Dist_Fact = globals.Proc_NS_Dist_Fact + Proc_Info[2];
-
-  /* Initialize */
-  for (int iproc = 0; iproc < 3 * Proc_Info[2]; iproc++) {
-    globals.Proc_Elem_Attr[iproc] = nullptr;
-  }
+  globals.Proc_Elem_Attr.resize(Proc_Info[2]);
+  globals.Proc_NS_Dist_Fact.resize(Proc_Info[2]);
+  globals.Proc_SS_Dist_Fact.resize(Proc_Info[2]);
 
   /* Check for a problem which has too many processors for a given mesh */
 
@@ -678,18 +673,15 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
     safe_free((void **)&(globals.Proc_Elem_Connect[iproc]));
 
     safe_free((void **)&(globals.Coor[iproc]));
-    if (globals.Proc_Elem_Attr[iproc]) {
-      safe_free((void **)&(globals.Proc_Elem_Attr[iproc]));
-    }
-    if (globals.Proc_NS_Dist_Fact[iproc]) {
-      safe_free((void **)&(globals.Proc_NS_Dist_Fact[iproc]));
-    }
-    if (globals.Proc_SS_Dist_Fact[iproc]) {
-      safe_free((void **)&(globals.Proc_SS_Dist_Fact[iproc]));
-    }
+    globals.Proc_Elem_Attr[iproc].clear();
+    globals.Proc_NS_Dist_Fact[iproc].clear();
+    globals.Proc_SS_Dist_Fact[iproc].clear();
   }
   globals.N_Comm_Map.clear();
   globals.E_Comm_Map.clear();
+  globals.Proc_Elem_Attr.clear();
+  globals.Proc_NS_Dist_Fact.clear();
+  globals.Proc_SS_Dist_Fact.clear();
   fmt::print("\n");
 
 } /* END of routine load_mesh () *********************************************/
@@ -1236,8 +1228,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk(int ex
       iattr_length += globals.Proc_Num_Attr[iproc][i] * globals.Proc_Num_Elem_In_Blk[iproc][i];
     }
     if (iattr_length > 0) {
-      globals.Proc_Elem_Attr[iproc] =
-          (T *)array_alloc(__FILE__, __LINE__, 1, iattr_length, sizeof(T));
+      globals.Proc_Elem_Attr[iproc].resize(iattr_length);
     }
   } /* End "for(iproc=0; iproc <Proc_Info[2]; iproc)" */
 
@@ -2244,11 +2235,7 @@ void NemSpread<T, INT>::read_node_sets(int exoid, std::vector<INT> &num_nodes_in
           (INT *)array_alloc(__FILE__, __LINE__, 1, list_length[iproc], sizeof(INT));
 
       if (list_length[iproc] > 0) {
-        globals.Proc_NS_Dist_Fact[iproc] =
-            (T *)array_alloc(__FILE__, __LINE__, 1, list_length[iproc], sizeof(T));
-      }
-      else {
-        globals.Proc_NS_Dist_Fact[iproc] = nullptr;
+        globals.Proc_NS_Dist_Fact[iproc].resize(list_length[iproc]);
       }
     }
     else {
@@ -2863,11 +2850,7 @@ void NemSpread<T, INT>::read_side_sets(int exoid, std::vector<INT> &num_elem_in_
           globals.Proc_SS_DF_Pointers[iproc][i - 1] + proc_ss_df_cnt[iproc][i - 1];
 
       if (globals.Proc_SS_DF_Pointers[iproc][i] > 0) {
-        globals.Proc_SS_Dist_Fact[iproc] = (T *)array_alloc(
-            __FILE__, __LINE__, 1, globals.Proc_SS_DF_Pointers[iproc][i], sizeof(T));
-      }
-      else {
-        globals.Proc_SS_Dist_Fact[iproc] = nullptr;
+        globals.Proc_SS_Dist_Fact[iproc].resize(globals.Proc_SS_DF_Pointers[iproc][i]);
       }
     }
 

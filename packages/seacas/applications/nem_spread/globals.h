@@ -159,9 +159,9 @@ public:
                                      * required by the current processor          *
                                      *  Type: int vector of variable length       */
 
-  T **Proc_Elem_Attr{nullptr}; /* Attribute list for the elements        *
-                                * required by the current processor      *
-                                *  Type: float vector of variable length */
+  std::vector<std::vector<T>> Proc_Elem_Attr{}; /* Attribute list for the elements        *
+                                                 * required by the current processor      *
+                                                 *  Type: float vector of variable length */
 
   /*---------------------------------------------------------------------------*/
   /*    VARIABLES THAT DEAL WITH SPECIFICATION OF ELEMENT BLOCK PROPERTIES     */
@@ -240,7 +240,7 @@ public:
                                 *  Type: int vector of length                 *
                                 *        Proc_NS_List_Length                  */
 
-  T **Proc_NS_Dist_Fact{nullptr};
+  std::vector<std::vector<T>> Proc_NS_Dist_Fact{};
   /* Node sets distribution factors for the node *
    * sets on a given processor                   *
    *  Type: float vector of length               *
@@ -282,7 +282,7 @@ public:
    *  Type: int array of dimensions              *
    *    Proc_Num_Side_Sets            */
 
-  T **Proc_SS_Dist_Fact{nullptr};
+  std::vector<std::vector<T>> Proc_SS_Dist_Fact{};
   /* Pointer for storage of the distribution     *
    * factors.                                    */
 
