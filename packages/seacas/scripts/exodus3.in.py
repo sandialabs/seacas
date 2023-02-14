@@ -2822,26 +2822,8 @@ class exodus:
         -------
             <int>  num_blk_elems
         """
-        (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_block('EX_ELEM_BLOCK', object_id)
-        return numElem.value
-
-    def num_entities_in_blk(self, object_id):
-        """
-        get the number of elements in an element block
-
-        >>> num_blk_elems = exo.num_elems_in_blk(elem_blk_id)
-
-        Parameters
-        ----------
-        elem_blk_id : int
-            element block *ID* (not *INDEX*)
-
-        Returns
-        -------
-            <int>  num_blk_elems
-        """
-        (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_block('EX_ELEM_BLOCK', object_id)
-        return numElem.value
+        vals = self.get_entity_count('EX_ELEM_BLOCK', object_id)
+        return vals
 
     def num_nodes_per_elem(self, object_id):
         """
@@ -5610,7 +5592,7 @@ class exodus:
     def __ex_get_elem_attr(self, elemBlkID):
         elem_blk_id = ctypes.c_longlong(elemBlkID)
         numAttrThisBlk = self.num_attr(elemBlkID)
-        numElemsThisBlk = self.num_elems_in_blk(elemBlkID)
+        numElemsThisBlk = self.get_entity_count('EX_ELEM_BLOCK', elemBlkID)
         totalAttr = numAttrThisBlk * numElemsThisBlk
         attrib = (ctypes.c_double * totalAttr)()
         EXODUS_LIB.ex_get_attr(
