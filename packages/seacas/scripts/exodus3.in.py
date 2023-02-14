@@ -2223,10 +2223,10 @@ class exodus:
             or objType == "EX_FACE_BLOCK"
             or objType == "EX_EDGE_BLOCK"
         ):
-            (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_block(
+            (_elemType, numVals, _nodesPerElem, _numAttr) = self.__ex_get_block(
                 objType, entityId
             )
-            return numElem.value
+
         elif (
             objType == "EX_NODE_SET"
             or objType == "EX_EDGE_SET"
@@ -2531,7 +2531,7 @@ class exodus:
             <int>     num_elem_attrs  number of attributes per element
         """
         (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_block('EX_ELEM_BLOCK', object_id)
-        return elemType.value, numElem.value, nodesPerElem.value, numAttr.value
+        return elemType, numElem, nodesPerElem, numAttr
 
     def put_elem_blk_info(self, elem_blk_id, elem_type, num_blk_elems,
                           num_elem_nodes, num_elem_attrs):
@@ -2627,7 +2627,7 @@ class exodus:
         if self.use_numpy:
             elem_block_connectivity = ctype_to_numpy(
                 self, elem_block_connectivity)
-        return elem_block_connectivity, num_elem_this_blk.value, num_nodes_per_elem.value
+        return elem_block_connectivity, num_elem_this_blk, num_nodes_per_elem
 
     def put_elem_connectivity(self, object_id, connectivity):
         """
@@ -2798,7 +2798,7 @@ class exodus:
             <string>  elem_type
         """
         (elemType, _numElem, _nodesPerElem, _numAttr) = self.__ex_get_block('EX_ELEM_BLOCK', object_id)
-        return elemType.value
+        return elemType
 
     def num_attr(self, object_id):
         """
@@ -2816,7 +2816,7 @@ class exodus:
             <int>  num_elem_attrs
         """
         (_elemType, _numElem, _nodesPerElem, numAttr) = self.__ex_get_block('EX_ELEM_BLOCK', object_id)
-        return numAttr.value
+        return numAttr
 
     def num_elems_in_blk(self, object_id):
         """
@@ -2852,7 +2852,7 @@ class exodus:
             <int>  num_elem_nodes
         """
         (_elemType, _numElem, nodesPerElem, _numAttr) = self.__ex_get_block('EX_ELEM_BLOCK', object_id)
-        return nodesPerElem.value
+        return nodesPerElem
 
     def get_element_variable_truth_table(self, entId=None):
         """
@@ -5422,9 +5422,9 @@ class exodus:
         entity_id = ctypes.c_longlong(id)
         _, numObjs, _, _ = self.__ex_get_block('EX_ELEM_BLOCK', id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
-            id_map = (ctypes.c_longlong * numObjs.value)()
+            id_map = (ctypes.c_longlong * numObjs)()
         else:
-            id_map = (ctypes.c_int * numObjs.value)()
+            id_map = (ctypes.c_int * numObjs)()
         EXODUS_LIB.ex_get_block_id_map(self.fileId, obj_type, entity_id, id_map)
         if self.use_numpy:
             id_map = ctype_to_numpy(self, id_map)
@@ -5498,7 +5498,7 @@ class exodus:
             ctypes.byref(num_edges_per_elem),
             ctypes.byref(num_faces_per_elem),
             ctypes.byref(num_attr))
-        return blk_type, num_elem_this_blk, num_nodes_per_elem, num_attr
+        return blk_type.value, int(num_elem_this_blk.value), int(num_nodes_per_elem.value), int(num_attr.value)
 
     def __ex_put_block(
             self,
@@ -5528,10 +5528,10 @@ class exodus:
         elem_block_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             elem_block_connectivity = (
-                ctypes.c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_longlong * (num_elem_this_blk * num_nodes_per_elem))()
         else:
             elem_block_connectivity = (
-                ctypes.c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_int * (num_elem_this_blk * num_nodes_per_elem))()
         EXODUS_LIB.ex_get_conn(
             self.fileId,
             ctypes.c_int(get_entity_type('EX_ELEM_BLOCK')),
@@ -5545,13 +5545,13 @@ class exodus:
         elem_block_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             elem_block_connectivity = (
-                ctypes.c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
-            for i in range(num_elem_this_blk.value * num_nodes_per_elem.value):
+                ctypes.c_longlong * (num_elem_this_blk * num_nodes_per_elem))()
+            for i in range(num_elem_this_blk * num_nodes_per_elem):
                 elem_block_connectivity[i] = ctypes.c_longlong(connectivity[i])
         else:
             elem_block_connectivity = (
-                ctypes.c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
-            for i in range(num_elem_this_blk.value * num_nodes_per_elem.value):
+                ctypes.c_int * (num_elem_this_blk * num_nodes_per_elem))()
+            for i in range(num_elem_this_blk * num_nodes_per_elem):
                 elem_block_connectivity[i] = ctypes.c_int(connectivity[i])
         EXODUS_LIB.ex_put_conn(
             self.fileId,
