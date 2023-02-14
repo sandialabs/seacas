@@ -2214,7 +2214,7 @@ class exodus:
         entityId : int
             id of the entity (block, set) *ID* (not *INDEX*)
         """
-        
+
         numVals = 0
         if objType == 'EX_NODAL':
             numVals = self.num_nodes()
