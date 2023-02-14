@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.19 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.20.20 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.19 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.20 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.19 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.20 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2022 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -5490,17 +5490,30 @@ class exodus:
             attr_index,
             attrib)
 
-    def __ex_get_one_attr(self, objType, elemBlkID, attrIndx):
-        elem_blk_id = ctypes.c_longlong(elemBlkID)
+    def __ex_get_one_attr(self, objType, entityId, attrIndx):
+        entity_id = ctypes.c_longlong(entityId)
         obj_type = ctypes.c_int(get_entity_type(objType))
         attr_index = ctypes.c_longlong(attrIndx)
-        inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        num_objs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
-        attrib = (ctypes.c_double * num_objs)()
+
+        numVals = 0
+        if objType == 'EX_NODAL':
+            numVals = self.num_nodes()
+        elif objType == 'EX_ELEM_BLOCK':
+            numVals = self.num_elems_in_blk(entityId)
+        elif objType == 'EX_NODE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+        elif objType == 'EX_EDGE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+        elif objType == 'EX_FACE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+        elif objType == 'EX_SIDE_SET':
+            (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
+
+        attrib = (ctypes.c_double * numVals)()
         EXODUS_LIB.ex_get_one_attr(
             self.fileId,
             obj_type,
-            elem_blk_id,
+            entity_id,
             attr_index,
             ctypes.byref(attrib))
         return attrib
