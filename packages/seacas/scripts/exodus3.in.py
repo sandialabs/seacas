@@ -2216,12 +2216,23 @@ class exodus:
         """
 
         numVals = 0
-        if objType == 'EX_NODAL':
+        if objType == "EX_NODAL":
             numVals = self.num_nodes()
-        elif objType == 'EX_ELEM_BLOCK' or objType == 'EX_FACE_BLOCK' or objType == 'EX_EDGE_BLOCK':
-            (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_block(objType, entityId)
+        elif (
+            objType == "EX_ELEM_BLOCK"
+            or objType == "EX_FACE_BLOCK"
+            or objType == "EX_EDGE_BLOCK"
+        ):
+            (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_block(
+                objType, entityId
+            )
             return numElem.value
-        elif objType == 'EX_NODE_SET' or objType == 'EX_EDGE_SET' or objType == 'EX_FACE_SET' or objType == 'EX_SIDE_SET':
+        elif (
+            objType == "EX_NODE_SET"
+            or objType == "EX_EDGE_SET"
+            or objType == "EX_FACE_SET"
+            or objType == "EX_SIDE_SET"
+        ):
             (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
 
         return numVals
