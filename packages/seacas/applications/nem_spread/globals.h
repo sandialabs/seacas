@@ -357,8 +357,6 @@ public:
     safe_free((void **)&Proc_SS_Elem_List_Length);
 
     safe_free((void **)&Coor);
-    safe_free((void **)&Proc_Elem_Attr);
-    safe_free((void **)&Num_Internal_Nodes);
 
     safe_free((void **)&Info_Record);
     safe_free((void **)&GElem_Blks);

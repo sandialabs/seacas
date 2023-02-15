@@ -157,7 +157,7 @@ public:
 
   char *Coord_Name[3]{}; /* The name(s) of the coordinate axes.   */
 
-  std::array<int, 6> Proc_Info;
+  std::array<int, 6> Proc_Info{};
   std::vector<int>   Proc_Ids{};
 
   NemSpread() { Coord_Name[0] = Coord_Name[1] = Coord_Name[2] = nullptr; }

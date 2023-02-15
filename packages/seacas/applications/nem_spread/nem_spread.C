@@ -319,11 +319,9 @@ int nem_spread(NemSpread<T, INT> &spreader, const char *salsa_cmd_file, int subc
 
   fmt::print("Write of parallel exodus complete\n");
 
-  safe_free((void **)&(spreader.Proc_Ids));
   safe_free(reinterpret_cast<void **>(&(PIO_Info.RDsk_List)));
 
   for (int i = 0; i < spreader.Proc_Info[0]; i++) {
-    safe_free((void **)&spreader.globals.GNodes[i]);
     if (spreader.globals.Elem_Type != nullptr) {
       safe_free((void **)&spreader.globals.Elem_Type[i]);
     }
@@ -337,6 +335,5 @@ int nem_spread(NemSpread<T, INT> &spreader, const char *salsa_cmd_file, int subc
     spreader.globals.Proc_Global_Node_Id_Map[i].clear();
   }
   safe_free((void **)&spreader.globals.Elem_Type);
-  safe_free((void **)&spreader.globals.GNodes);
   return 0;
 }
