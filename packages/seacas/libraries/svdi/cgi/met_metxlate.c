@@ -5156,8 +5156,10 @@ static int poly_clip(point *cmin, point *cmax, float *vx, float *vy, int vlen, f
     else { /* after 1st time through, use new vertex list */
       curlen  = *lenout;
       *lenout = 0;
-      s.x     = xout[curlen - 1];
-      s.y     = yout[curlen - 1];
+      if (curlen > 0) {
+        s.x = xout[curlen - 1];
+        s.y = yout[curlen - 1];
+      }
     }
 
     for (i = 0; i < curlen; i++) { /* loop through all vertices */
