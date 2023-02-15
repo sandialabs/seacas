@@ -741,7 +741,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
       for (npd = 0; npd < files_per_domain; npd++) {
         /* create the EXODUS file */
 
-        sprintf(base_name, "%s_%d", file_name, npd);
+        snprintf(base_name, MAX_STRING_LEN, "%s_%d", file_name, npd);
         get_file_name(base_name, EXODUS_FILE_TYPE, rank, num_domains, WRITE_FILE_TYPE, tmp_name);
         exoid[npd] = ex_create(tmp_name, EX_CLOBBER, &CPU_word_size, &IO_word_size);
 
@@ -767,7 +767,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
 
       if (close_files) {
         /* create the EXODUS file */
-        sprintf(base_name, "%s_%d", file_name, npd);
+        snprintf(base_name, MAX_STRING_LEN, "%s_%d", file_name, npd);
         get_file_name(base_name, EXODUS_FILE_TYPE, rank, num_domains, WRITE_FILE_TYPE, tmp_name);
         exoid[npd] = ex_create(tmp_name, EX_CLOBBER, &CPU_word_size, &IO_word_size);
 
@@ -915,7 +915,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
           assert(nvar_name);
           for (j = 0; j < num_nodal_fields; j++) {
             nvar_name[j] = malloc((MAX_STRING_LEN + 1) * sizeof(char));
-            sprintf(nvar_name[j], "node_field_%d", j + 1);
+            snprintf(nvar_name[j], MAX_STRING_LEN + 1, "node_field_%d", j + 1);
           }
         }
         err = ex_put_variable_names(exoid[npd], EX_NODAL, num_nodal_fields, nvar_name);
@@ -933,7 +933,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
           gvar_name = malloc(num_global_fields * sizeof(char *));
           for (j = 0; j < num_global_fields; j++) {
             gvar_name[j] = malloc((MAX_STRING_LEN + 1) * sizeof(char));
-            sprintf(gvar_name[j], "global_field_%d", j + 1);
+            snprintf(gvar_name[j], MAX_STRING_LEN + 1, "global_field_%d", j + 1);
             globals[j] = j;
           }
         }
@@ -953,7 +953,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
           evar_name = malloc(num_element_fields * sizeof(char *));
           for (j = 0; j < num_element_fields; j++) {
             evar_name[j] = malloc((MAX_STRING_LEN + 1) * sizeof(char));
-            sprintf(evar_name[j], "element_field_%d", j + 1);
+            snprintf(evar_name[j], MAX_STRING_LEN + 1, "element_field_%d", j + 1);
           }
         }
 
@@ -986,7 +986,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
 
           if (close_files) {
             float version;
-            sprintf(base_name, "%s_%d", file_name, npd);
+            snprintf(base_name, MAX_STRING_LEN, "%s_%d", file_name, npd);
             t_tmp1 = my_timer();
             get_file_name(base_name, EXODUS_FILE_TYPE, rank, num_domains, WRITE_FILE_TYPE,
                           tmp_name);
@@ -1225,7 +1225,7 @@ void get_file_name(const char *base, const char *ext, int rank, int nprocs, cons
     strcat(output, ".");
 
     char cTemp[128];
-    sprintf(cTemp, "%d", nprocs);
+    snprintf(cTemp, 128, "%d", nprocs);
     strcat(output, cTemp);
     strcat(output, ".");
 
@@ -1236,7 +1236,7 @@ void get_file_name(const char *base, const char *ext, int rank, int nprocs, cons
       strcat(output, "0");
     }
 
-    sprintf(cTemp, "%d", rank);
+    snprintf(cTemp, 128, "%d", rank);
     strcat(output, cTemp);
   }
 }
