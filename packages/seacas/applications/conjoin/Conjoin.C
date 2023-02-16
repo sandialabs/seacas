@@ -1198,7 +1198,7 @@ namespace {
           blocks[p][b].nodesPerElement = block_param.num_nodes_per_entry;
           blocks[p][b].attributeCount  = block_param.num_attribute;
           blocks[p][b].offset_         = block_param.num_entry;
-          copy_string(blocks[p][b].elType, block_param.topology);
+          blocks[p][b].elType          = block_param.topology;
 
           // NOTE: This is not correct, but fixed below.
           glob_blocks[b].elementCount += block_param.num_entry;
@@ -1212,7 +1212,7 @@ namespace {
           }
 
           glob_blocks[b].position_ = b;
-          copy_string(glob_blocks[b].elType, block_param.topology);
+          glob_blocks[b].elType    = block_param.topology;
         }
 
         if (block_param.num_attribute > 0 && glob_blocks[b].attributeNames.empty()) {

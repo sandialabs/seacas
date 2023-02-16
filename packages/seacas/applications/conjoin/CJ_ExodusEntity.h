@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -7,6 +7,7 @@
 
 #define NO_NETCDF_2
 #include "CJ_ObjectType.h"
+#include <array>
 #include <copy_string_cpp.h>
 #include <cstring>
 #include <exodusII.h>
@@ -55,14 +56,14 @@ namespace Excn {
 
   struct Block
   {
-    Block() { copy_string(elType, ""); }
+    Block() = default;
 
     Block(const Block &other)
         : truthTable(other.truthTable), attributeNames(other.attributeNames), name_(other.name_),
           id(other.id), elementCount(other.elementCount), nodesPerElement(other.nodesPerElement),
-          attributeCount(other.attributeCount), offset_(other.offset_), position_(other.position_)
+          attributeCount(other.attributeCount), offset_(other.offset_), position_(other.position_),
+          elType(other.elType)
     {
-      copy_string(elType, other.elType);
     }
 
     ~Block() = default;
@@ -78,7 +79,7 @@ namespace Excn {
     size_t                   attributeCount{0};
     size_t                   offset_{0};
     size_t                   position_{0};
-    char                     elType[MAX_STR_LENGTH + 1]{};
+    std::string              elType{};
 
     Block &operator=(const Block &other)
     {
@@ -91,8 +92,8 @@ namespace Excn {
       attributeNames  = other.attributeNames;
       offset_         = other.offset_;
       position_       = other.position_;
-      copy_string(elType, other.elType);
-      name_ = other.name_;
+      elType          = other.elType;
+      name_           = other.name_;
       return *this;
     }
   };
