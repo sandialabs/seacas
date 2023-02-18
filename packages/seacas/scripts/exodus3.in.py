@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.20 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.20.21 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.20 (seacas-py3)"
+EXODUS_PY_VERSION = "1.20.21 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.20 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.20.21 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2022 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -2218,21 +2218,9 @@ class exodus:
         numVals = 0
         if objType == "EX_NODAL":
             numVals = self.num_nodes()
-        elif (
-            objType == "EX_ELEM_BLOCK"
-            or objType == "EX_FACE_BLOCK"
-            or objType == "EX_EDGE_BLOCK"
-        ):
-            (_elemType, numVals, _nodesPerElem, _numAttr) = self.__ex_get_block(
-                objType, entityId
-            )
-
-        elif (
-            objType == "EX_NODE_SET"
-            or objType == "EX_EDGE_SET"
-            or objType == "EX_FACE_SET"
-            or objType == "EX_SIDE_SET"
-        ):
+        elif objType in ['EX_ELEM_BLOCK', 'EX_FACE_BLOCK', 'EX_EDGE_BLOCK']:
+            (_elemType, numVals, _nodesPerElem, _numAttr) = self.__ex_get_block(objType, entityId)
+        elif objType in ['EX_NODE_SET', 'EX_EDGE_SET', 'EX_FACE_SET', 'EX_SIDE_SET']:
             (numVals, _numDistFactInSet) = self.__ex_get_set_param(objType, entityId)
 
         return numVals
@@ -2749,14 +2737,14 @@ class exodus:
         ----------
         elem_blk_id : int
             element block *ID* (not *INDEX*)
-            <list<float>>  elem_attrs     list of all attribute values for all
-              elements in the block; the list
-              cycles through all attributes of
-              the first element, then all attributes
-              of the second element, etc. Attributes
-              are ordered by the ordering of the
-              names returned by
-              exo.get_attribute_names()
+        <list<float>>  elem_attrs     list of all attribute values for all
+            elements in the block; the list
+            cycles through all attributes of
+            the first element, then all attributes
+            of the second element, etc. Attributes
+            are ordered by the ordering of the
+            names returned by
+            exo.get_attribute_names()
         """
         self.__ex_put_elem_attr(elem_blk_id, elem_attrs)
 
@@ -2770,12 +2758,12 @@ class exodus:
         ----------
         elem_blk_id : int
             element block *ID* (not *INDEX*)
-            <string>       elem_attr_name element attribute name
-            <list<float>>  values         list of values for a single attribute
-                                          on a element block.  List dimensions
-                                          should be 1 x N_elem, where N_elem is
-                                          the number of elements on the element
-                                          block.
+        <string>       elem_attr_name element attribute name
+        <list<float>>  values         list of values for a single attribute
+                                        on a element block.  List dimensions
+                                        should be 1 x N_elem, where N_elem is
+                                        the number of elements on the element
+                                        block.
         """
         # Determine index of requested attribute in attribute list
         elem_attr_names = self.get_attribute_names('EX_ELEM_BLOCK', elem_blk_id)
