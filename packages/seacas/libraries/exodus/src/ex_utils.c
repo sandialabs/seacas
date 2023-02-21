@@ -2376,7 +2376,9 @@ char *ex__canonicalize_filename(char const *file_path)
       free(file_path_copy);
     }
   }
-  fprintf(stderr, "Path: %s, Canonical: %s\n", file_path, canonical_file_path);
+  if (canonical_file_path != NULL) {
+    fprintf(stderr, "Path: %s, Canonical: %s\n", file_path, canonical_file_path);
+  }
   return canonical_file_path;
 #endif
 }
