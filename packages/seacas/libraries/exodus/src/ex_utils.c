@@ -2322,7 +2322,7 @@ char *ex__canonicalize_filename(char const *file_path)
 {
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
-  return _fullpath(NULL, rel_path, _MAX_PATH);
+  return _fullpath(NULL, file_path, _MAX_PATH);
 #else
   char        *canonical_file_path = NULL;
   unsigned int file_path_len       = strlen(file_path);
