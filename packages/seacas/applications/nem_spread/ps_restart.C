@@ -153,53 +153,6 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
   /* allocate space for the global variables */
   Restart_Info.Glob_Vals.resize(Restart_Info.NVar_Glob);
 
-  /*
-   * in order to speed up finding matches in the global element
-   * number map, set up an array of pointers to the start of
-   * each element block's global element number map. That way
-   * only entries for the current element block have to be searched
-   */
-  eb_map_ptr = (INT ***)array_alloc(__FILE__, __LINE__, 2, Proc_Info[2], globals.Num_Elem_Blk,
-                                    sizeof(INT *));
-  if (!eb_map_ptr) {
-    fmt::print(stderr, "[{}]: ERROR, insufficient memory!\n", __func__);
-    exit(1);
-  }
-  eb_cnts_local =
-      (INT **)array_alloc(__FILE__, __LINE__, 2, Proc_Info[2], globals.Num_Elem_Blk, sizeof(INT));
-  if (!eb_cnts_local) {
-    fmt::print(stderr, "[{}]: ERROR, insufficient memory!\n", __func__);
-    exit(1);
-  }
-
-  /*
-   * for now, assume that element blocks have been
-   * stored in the same order as the global blocks
-   */
-  for (int iproc = 0; iproc < Proc_Info[2]; iproc++) {
-    int    ifound = 0;
-    size_t offset = 0;
-    int    ilocal;
-    for (int cnt = 0; cnt < globals.Num_Elem_Blk; cnt++) {
-      for (ilocal = ifound; ilocal < globals.Proc_Num_Elem_Blk[iproc]; ilocal++) {
-        if (globals.Proc_Elem_Blk_Ids[iproc][ilocal] == eb_ids_global[cnt]) {
-          break;
-        }
-      }
-
-      if (ilocal < globals.Proc_Num_Elem_Blk[iproc]) {
-        eb_map_ptr[iproc][cnt]    = &globals.GElems[iproc][offset];
-        eb_cnts_local[iproc][cnt] = globals.Proc_Num_Elem_In_Blk[iproc][ilocal];
-        offset += globals.Proc_Num_Elem_In_Blk[iproc][ilocal];
-        ifound = ilocal; /* don't search the same part of the list over */
-      }
-      else {
-        eb_map_ptr[iproc][cnt]    = nullptr;
-        eb_cnts_local[iproc][cnt] = 0;
-      }
-    }
-  }
-
   if (Restart_Info.NVar_Elem > 0) {
 
     /* allocate storage space */
@@ -226,6 +179,53 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
         fmt::print(stderr, "{}: unable to get element count for block id {}", __func__,
                    (size_t)eb_ids_global[cnt]);
         exit(1);
+      }
+    }
+
+    /*
+     * in order to speed up finding matches in the global element
+     * number map, set up an array of pointers to the start of
+     * each element block's global element number map. That way
+     * only entries for the current element block have to be searched
+     */
+    eb_map_ptr = (INT ***)array_alloc(__FILE__, __LINE__, 2, Proc_Info[2], globals.Num_Elem_Blk,
+                                      sizeof(INT *));
+    if (!eb_map_ptr) {
+      fmt::print(stderr, "[{}]: ERROR, insufficient memory!\n", __func__);
+      exit(1);
+    }
+    eb_cnts_local =
+        (INT **)array_alloc(__FILE__, __LINE__, 2, Proc_Info[2], globals.Num_Elem_Blk, sizeof(INT));
+    if (!eb_cnts_local) {
+      fmt::print(stderr, "[{}]: ERROR, insufficient memory!\n", __func__);
+      exit(1);
+    }
+
+    /*
+     * for now, assume that element blocks have been
+     * stored in the same order as the global blocks
+     */
+    for (int iproc = 0; iproc < Proc_Info[2]; iproc++) {
+      int    ifound = 0;
+      size_t offset = 0;
+      int    ilocal;
+      for (int cnt = 0; cnt < globals.Num_Elem_Blk; cnt++) {
+        for (ilocal = ifound; ilocal < globals.Proc_Num_Elem_Blk[iproc]; ilocal++) {
+          if (globals.Proc_Elem_Blk_Ids[iproc][ilocal] == eb_ids_global[cnt]) {
+            break;
+          }
+        }
+
+        if (ilocal < globals.Proc_Num_Elem_Blk[iproc]) {
+          eb_map_ptr[iproc][cnt]    = &globals.GElems[iproc][offset];
+          eb_cnts_local[iproc][cnt] = globals.Proc_Num_Elem_In_Blk[iproc][ilocal];
+          offset += globals.Proc_Num_Elem_In_Blk[iproc][ilocal];
+          ifound = ilocal; /* don't search the same part of the list over */
+        }
+        else {
+          eb_map_ptr[iproc][cnt]    = nullptr;
+          eb_cnts_local[iproc][cnt] = 0;
+        }
       }
     }
 
