@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -27,6 +27,7 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
+#include <stdlib.h>
 /*!
 \ingroup Utilities
 
@@ -98,7 +99,7 @@ exoid = ex_open ("test.exo",     \co{filename path}
  *       `ex_open_int` with an additional argument to make sure
  *       library and include file are consistent
  */
-int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *version,
+int ex_open_int(const char *rel_path, int mode, int *comp_ws, int *io_ws, float *version,
                 int run_version)
 {
   int     exoid         = -1;
@@ -125,12 +126,20 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
+    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
+  char *path = _fullpath(NULL, rel_path, _MAX_PATH);
+#else
+  char *path = realpath(rel_path, NULL);
+#endif
+
   /* Verify that this file is not already open for read or write...
      In theory, should be ok for the file to be open multiple times
      for read, but bad things can happen if being read and written
      at the same time...
   */
   if (ex__check_multiple_open(path, mode, __func__)) {
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -239,6 +248,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
                  "\t\tthen try `nccopy bad_file.g fixed_file.g`.",
                  path, type);
         ex_err(__func__, errmsg, status);
+        free(path);
         EX_FUNC_LEAVE(EX_FATAL);
       }
       snprintf(errmsg, MAX_ERR_LENGTH,
@@ -247,6 +257,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
                "format issue.",
                path, type);
       ex_err(__func__, errmsg, status);
+      free(path);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -268,6 +279,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
                "issue.",
                path);
       ex_err(__func__, errmsg, status);
+      free(path);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -276,6 +288,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d named %s",
                exoid, path);
       ex_err_fn(exoid, __func__, errmsg, status);
+      free(path);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -288,6 +301,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to place file id %d named %s into define mode", exoid, path);
         ex_err_fn(exoid, __func__, errmsg, status);
+        free(path);
         EX_FUNC_LEAVE(EX_FATAL);
       }
 
@@ -298,6 +312,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to add maximum_name_length attribute in file id %d", exoid);
           ex_err_fn(exoid, __func__, errmsg, status);
+          free(path);
           EX_FUNC_LEAVE(EX_FATAL);
         }
       }
@@ -312,12 +327,14 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
                    "ERROR: failed to define string name dimension in file id %d named %s", exoid,
                    path);
           ex_err_fn(exoid, __func__, errmsg, status);
+          free(path);
           EX_FUNC_LEAVE(EX_FATAL);
         }
       }
       if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to exit define mode in file id %d", exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
+        free(path);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -331,6 +348,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database version for file id: %d",
              exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -339,6 +357,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Unsupported file version %.2f in file id: %d",
              *version, exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -349,6 +368,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get file wordsize from file id: %d",
                exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
+      free(path);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -382,6 +402,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
              exoid, path);
     ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
     nc_close(exoid);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -391,8 +412,10 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to initialize conversion routines in file id %d named %s", exoid, path);
     ex_err_fn(exoid, __func__, errmsg, EX_LASTERR);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+  free(path);
   EX_FUNC_LEAVE(exoid);
 }

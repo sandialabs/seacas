@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -31,6 +31,7 @@
 #include "exodusII.h"
 #include "exodusII_int.h"
 #include <mpi.h>
+#include <stdlib.h>
 /*!
 \ingroup Utilities
 
@@ -116,7 +117,7 @@ struct ncvar /* variable */
  *       calls `ex_open_par_int` with an additional argument to make
  *       sure library and include file are consistent
  */
-int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float *version,
+int ex_open_par_int(const char *rel_path, int mode, int *comp_ws, int *io_ws, float *version,
                     MPI_Comm comm, MPI_Info info, int run_version)
 {
   int  exoid         = -1;
@@ -145,12 +146,15 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+  char *path = ex__canonicalize_filename(rel_path);
+
   /* Verify that this file is not already open for read or write...
      In theory, should be ok for the file to be open multiple times
      for read, but bad things can happen if being read and written
      at the same time...
   */
   if (ex__check_multiple_open(path, mode, __func__)) {
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -277,6 +281,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
              "issue.",
              path);
     ex_err(__func__, errmsg, status);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -296,6 +301,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
       if ((status = nc_redef(exoid)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
+        free(path);
         EX_FUNC_LEAVE(EX_FATAL);
       }
       in_redef = true;
@@ -304,6 +310,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     if ((status = nc_set_fill(exoid, NC_NOFILL, &old_fill)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d", exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
+      free(path);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -317,6 +324,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode",
                    exoid);
           ex_err_fn(exoid, __func__, errmsg, status);
+          free(path);
           EX_FUNC_LEAVE(EX_FATAL);
         }
         in_redef = true;
@@ -337,6 +345,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
 
     if (in_redef) {
       if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
+        free(path);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -351,36 +360,32 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
    */
   if (!is_pnetcdf) {
 
-  /* If this is a parallel execution and we are appending, then we
-   * need to set the parallel access method for all transient variables to NC_COLLECTIVE since
-   * they will be being extended.
-   */
-  int ndims;    /* number of dimensions */
-  int nvars;    /* number of variables */
-  int ngatts;   /* number of global attributes */
-  int recdimid; /* id of unlimited dimension */
+    /* If this is a parallel execution and we are appending, then we
+     * need to set the parallel access method for all transient variables to NC_COLLECTIVE since
+     * they will be being extended.
+     */
+    int ndims;    /* number of dimensions */
+    int nvars;    /* number of variables */
+    int ngatts;   /* number of global attributes */
+    int recdimid; /* id of unlimited dimension */
 
-  int varid;
+    int varid;
 
-  /* Determine number of variables on the database... */
-  nc_inq(exoid, &ndims, &nvars, &ngatts, &recdimid);
+    /* Determine number of variables on the database... */
+    nc_inq(exoid, &ndims, &nvars, &ngatts, &recdimid);
 
-  for (varid = 0; varid < nvars; varid++) {
-    struct ncvar var;
-    nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
-    
-    if (((strncmp(var.name, "vals_", 5) == 0) && (strncmp(var.name, "vals_red_", 9) != 0)) ||
-	(strcmp(var.name, VAR_WHOLE_TIME) == 0) ||
-	(strncmp(var.name, "coord", 5) == 0) ||
-	(strcmp(var.name, "connect") == 0) ||
-	(strcmp(var.name, "edgconn") == 0) ||
-	(strcmp(var.name, "ebconn") == 0) ||
-	(strcmp(var.name, "facconn") == 0) ||
-	(strcmp(var.name, "fbconn") == 0) ||
-	(strcmp(var.name, "attrib") == 0)) {
-      nc_var_par_access(exoid, varid, NC_COLLECTIVE);
+    for (varid = 0; varid < nvars; varid++) {
+      struct ncvar var;
+      nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
+
+      if (((strncmp(var.name, "vals_", 5) == 0) && (strncmp(var.name, "vals_red_", 9) != 0)) ||
+          (strcmp(var.name, VAR_WHOLE_TIME) == 0) || (strncmp(var.name, "coord", 5) == 0) ||
+          (strcmp(var.name, "connect") == 0) || (strcmp(var.name, "edgconn") == 0) ||
+          (strcmp(var.name, "ebconn") == 0) || (strcmp(var.name, "facconn") == 0) ||
+          (strcmp(var.name, "fbconn") == 0) || (strcmp(var.name, "attrib") == 0)) {
+        nc_var_par_access(exoid, varid, NC_COLLECTIVE);
+      }
     }
-  }
   }
 
   /* determine version of EXODUS file, and the word size of
@@ -391,6 +396,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database version for file id: %d",
              exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -399,6 +405,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Unsupported file version %.2f in file id: %d",
              *version, exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -409,6 +416,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get file wordsize from file id: %d",
                exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
+      free(path);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -442,6 +450,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
              exoid, path);
     ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
     nc_close(exoid);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -451,9 +460,11 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to initialize conversion routines in file id %d", exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_LASTERR);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+  free(path);
   EX_FUNC_LEAVE(exoid);
 }
 #else

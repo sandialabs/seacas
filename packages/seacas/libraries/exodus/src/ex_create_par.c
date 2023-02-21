@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -127,14 +127,16 @@ exoid = ex_create ("test.exo"       \comment{filename path}
 #if defined(PARALLEL_AWARE_EXODUS)
 
 #include "exodusII_int.h"
+#include <libgen.h>
 #include <mpi.h>
+#include <stdlib.h>
 
 /* NOTE: Do *not* call `ex_create_par_int()` directly.  The public API
  *       function name is `ex_create_par()` which is a wrapper that calls
  *       `ex_create_par_int` with an additional argument to make sure
  *       library and include file are consistent
  */
-int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI_Comm comm,
+int ex_create_par_int(const char *rel_path, int cmode, int *comp_ws, int *io_ws, MPI_Comm comm,
                       MPI_Info info, int run_version)
 {
   int  exoid  = -1;
@@ -157,12 +159,15 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   EX_FUNC_LEAVE(EX_FATAL);
 #endif
 
+  char *path = ex__canonicalize_filename(rel_path);
+
   /* Verify that this file is not already open for read or write...
      In theory, should be ok for the file to be open multiple times
      for read, but bad things can happen if being read and written
      at the same time...
   */
   if (ex__check_multiple_open(path, EX_WRITE, __func__)) {
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -204,13 +209,16 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
 #endif
     }
     ex_err(__func__, errmsg, status);
+    free(path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   status = ex__populate_header(exoid, path, my_mode, is_parallel, comp_ws, io_ws);
   if (status != EX_NOERR) {
+    free(path);
     EX_FUNC_LEAVE(status);
   }
+  free(path);
   EX_FUNC_LEAVE(exoid);
 }
 #else
