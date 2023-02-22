@@ -570,7 +570,7 @@ namespace {
         idx_t              common     = get_common_node_count(region);
         idx_t              proc_count = interFace.processor_count();
         idx_t              obj_val    = 0;
-        std::vector<idx_t> options(METIS_NOPTIONS);
+        std::vector<idx_t> options((METIS_NOPTIONS));
         METIS_SetDefaultOptions(&options[0]);
         if (interFace.decomposition_method() == "kway") {
           options[METIS_OPTION_PTYPE] = METIS_PTYPE_KWAY;

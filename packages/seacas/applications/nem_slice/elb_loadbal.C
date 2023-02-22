@@ -135,10 +135,13 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
   int glob_method = 0;
   int start_proc  = 0;
 
-  INT             *tmp_start = nullptr, *tmp_adj = nullptr;
+  INT             *tmp_start = nullptr;
+  INT             *tmp_adj   = nullptr;
   int             *tmp_vwgts = nullptr;
   size_t           tmp_nv;
-  std::vector<int> nprocg, nelemg, nadjg;
+  std::vector<int> nprocg;
+  std::vector<int> nelemg;
+  std::vector<int> nadjg;
   size_t           max_vtx;
   size_t           max_adj;
   int              group;
@@ -149,9 +152,15 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
   int              tmp_lev;
   int             *tmp_v2p = nullptr;
 
-  float             *x_node_ptr = nullptr, *y_node_ptr = nullptr, *z_node_ptr = nullptr;
-  std::vector<float> x_elem_ptr, y_elem_ptr, z_elem_ptr;
-  float             *tmp_x = nullptr, *tmp_y = nullptr, *tmp_z = nullptr;
+  float             *x_node_ptr = nullptr;
+  float             *y_node_ptr = nullptr;
+  float             *z_node_ptr = nullptr;
+  std::vector<float> x_elem_ptr;
+  std::vector<float> y_elem_ptr;
+  std::vector<float> z_elem_ptr;
+  float             *tmp_x     = nullptr;
+  float             *tmp_y     = nullptr;
+  float             *tmp_z     = nullptr;
   float             *tmp_ewgts = nullptr;
 
   long    seed = 1;
@@ -199,19 +208,19 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
 
     switch (mesh->num_dims) {
     case 3:
-      x_node_ptr = (mesh->coords);
-      y_node_ptr = (mesh->coords) + (mesh->num_nodes);
-      z_node_ptr = (mesh->coords) + 2 * (mesh->num_nodes);
+      x_node_ptr = mesh->coords.data();
+      y_node_ptr = mesh->coords.data() + (mesh->num_nodes);
+      z_node_ptr = mesh->coords.data() + 2 * (mesh->num_nodes);
       break;
 
     case 2:
-      x_node_ptr = (mesh->coords);
-      y_node_ptr = (mesh->coords) + (mesh->num_nodes);
+      x_node_ptr = mesh->coords.data();
+      y_node_ptr = mesh->coords.data() + (mesh->num_nodes);
       z_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       break;
 
     case 1:
-      x_node_ptr = (mesh->coords);
+      x_node_ptr = mesh->coords.data();
       y_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       z_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       break;
@@ -563,7 +572,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
               for (int cnt = graph->start[ecnt]; cnt < graph->start[ecnt + 1]; cnt++) {
                 if (elem_map[graph->adj[cnt] - 1] > 0) {
                   tmp_adj[adjp] = elem_map[graph->adj[cnt] - 1];
-                  if (!weight->edges.empty()) {
+                  if (!weight->edges.empty() && tmp_ewgts != nullptr) {
                     tmp_ewgts[adjp] = weight->edges[cnt];
                   }
                   adjp++;
@@ -571,7 +580,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
               }
               tmp_start[elemp + 1] = adjp;
             }
-            if (!weight->vertices.empty()) {
+            if (!weight->vertices.empty() && tmp_vwgts != nullptr) {
               tmp_vwgts[elemp] = weight->vertices[ecnt];
             }
 
