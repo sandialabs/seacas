@@ -113,7 +113,7 @@ USE_AEC=$(check_valid USE_AEC)
 KOKKOS=${KOKKOS:-NO}
 KOKKOS=$(check_valid KOKKOS)
 
-H5VERSION=${H5VERSION:-V114}
+H5VERSION=${H5VERSION:-V112}
 
 FAODEL=${FAODEL:-NO}
 FAODEL=$(check_valid FAODEL)
@@ -526,7 +526,7 @@ then
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-   net_version="v4.9.0"
+   net_version="v4.9.1"
 #   net_version="v4.8.1"
 #   net_version="master"
 

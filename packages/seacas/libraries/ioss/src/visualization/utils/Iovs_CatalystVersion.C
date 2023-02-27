@@ -19,7 +19,7 @@ namespace Iovs {
     std::vector<int>   iver(SEMANTIC_VERSION_LENGTH, 0);
     std::vector<int>   pver(SEMANTIC_VERSION_LENGTH, 0);
 
-    for (int i = 0; i < SEMANTIC_VERSION_LENGTH; i++) {
+    for (unsigned int i = 0; i < SEMANTIC_VERSION_LENGTH; i++) {
       interface_version_parser >> iver[i];
       plugin_version_parser >> pver[i];
       interface_version_parser.get();

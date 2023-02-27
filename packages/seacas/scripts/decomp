@@ -356,7 +356,7 @@ else
        --long scattered \
        --long brick \
        --long zpinch \
-       --long weight:
+       --long weight: \
        -n 'decomp' -- "$@")
 fi
 

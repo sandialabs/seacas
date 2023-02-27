@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -78,12 +78,10 @@ namespace {
     // At this point, the variable_list contains one or more entries
     // of fields that should be output on combined file.  Run through
     // list and see if `field_name` is in the list.
-    for (const auto &valid : variable_list) {
-      if (Ioss::Utils::str_equal(valid, field_name) == 0) {
-        return true;
-      }
-    }
-    return false;
+    return std::any_of(variable_list.begin(), variable_list.end(),
+                       [&field_name](const auto &valid) {
+                         return Ioss::Utils::str_equal(valid, field_name) == 0;
+                       });
   }
 
   int verify_timestep_count(const PartVector &part_mesh)
