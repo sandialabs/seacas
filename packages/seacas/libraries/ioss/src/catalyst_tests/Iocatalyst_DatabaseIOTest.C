@@ -17,19 +17,21 @@ Iocatalyst_DatabaseIOTest::Iocatalyst_DatabaseIOTest()
 }
 
 bool Iocatalyst_DatabaseIOTest::regionsAreEqual(const std::string &fileName,
-                                                const std::string &catFileName)
+                                                const std::string &catFileName,
+                                                const std::string &iossDatabaseType)
 {
 
   Ioss::PropertyManager dbProps;
-  Ioss::DatabaseIO *dbi =
-      Ioss::IOFactory::create("cgns", fileName, Ioss::READ_RESTART, Ioss::ParallelUtils::comm_world(), dbProps);
+  Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(iossDatabaseType, fileName, Ioss::READ_RESTART,
+                                                  Ioss::ParallelUtils::comm_world(), dbProps);
   if (dbi == nullptr || !dbi->ok(true)) {
     return false;
   }
 
   Ioss::PropertyManager dbCatProps;
-  Ioss::DatabaseIO *dbiCat =
-      Ioss::IOFactory::create("cgns", catFileName, Ioss::READ_RESTART, Ioss::ParallelUtils::comm_world(), dbCatProps);
+  Ioss::DatabaseIO     *dbiCat =
+      Ioss::IOFactory::create(iossDatabaseType, catFileName, Ioss::READ_RESTART,
+                              Ioss::ParallelUtils::comm_world(), dbCatProps);
   if (dbiCat == nullptr || !dbiCat->ok(true)) {
     return false;
   }
@@ -41,13 +43,24 @@ bool Iocatalyst_DatabaseIOTest::regionsAreEqual(const std::string &fileName,
   return Ioss::Compare::compare_database(ir, rCat, options);
 }
 
-void Iocatalyst_DatabaseIOTest::runTest(const std::string &testName)
+void Iocatalyst_DatabaseIOTest::runStructuredTest(const std::string &testName)
 {
-  std::string cgnsFileName     = testName + "_np_" + std::to_string(part.size) + ".cgns";
-  std::string catalystFileName = "catalyst_" + testName + "_np_" + std::to_string(part.size) + ".cgns";
-  bmSet.writeCGNSFile(cgnsFileName);
-  bmSet.writeCatalystCGNSFile(catalystFileName);
-  EXPECT_TRUE(regionsAreEqual(cgnsFileName, catalystFileName));
+  std::string cgnsFileName =
+      testName + CATALYST_TEST_FILE_NP + std::to_string(part.size) + CGNS_FILE_EXTENSION;
+  std::string catalystFileName = CATALYST_TEST_FILE_PREFIX + testName + CATALYST_TEST_FILE_NP +
+                                 std::to_string(part.size) + CGNS_FILE_EXTENSION;
+  bmSet.writeIOSSFile(cgnsFileName, CGNS_DATABASE_TYPE);
+  bmSet.writeCatalystIOSSFile(catalystFileName, CGNS_DATABASE_TYPE);
+  EXPECT_TRUE(regionsAreEqual(cgnsFileName, catalystFileName, CGNS_DATABASE_TYPE));
+}
+
+void Iocatalyst_DatabaseIOTest::runUnstructuredTest(const std::string &testName)
+{
+  std::string exodusFileName =
+      testName + CATALYST_TEST_FILE_NP + std::to_string(part.size) + EXODUS_FILE_EXTENSION;
+  std::string catalystFileName = CATALYST_TEST_FILE_PREFIX + testName + CATALYST_TEST_FILE_NP +
+                                 std::to_string(part.size) + EXODUS_FILE_EXTENSION;
+  //bmSet.writeIOSSFile(exodusFileName, EXODUS_DATABASE_TYPE);
 }
 
 void Iocatalyst_DatabaseIOTest::initBlock(Iocatalyst::BlockMesh &blockMesh, int x, int y, int z)

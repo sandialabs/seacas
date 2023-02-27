@@ -20,8 +20,8 @@ namespace Iocatalyst {
     BlockMeshSet();
     ~BlockMeshSet();
     void  addBlockMesh(const BlockMesh &blockMesh);
-    void  writeCGNSFile(const std::string &fileName);
-    void  writeCatalystCGNSFile(const std::string &fileName);
+    void  writeIOSSFile(const std::string &fileName, const std::string &dbType);
+    void  writeCatalystIOSSFile(const std::string &fileName, const std::string &dbType);
     void  printCatalystConduitNode();
     void *getCatalystConduitNode();
 
@@ -31,22 +31,34 @@ namespace Iocatalyst {
     Ioss::DatabaseIO             *databaseIO;
     conduit_cpp::Node             conduitNode;
 
-    void writeFile(const std::string &fileName, const std::string &dbType);
     void openIOSSDatabase(const std::string &fileName, const std::string &dbType);
+    void closeIOSSDatabase();
+
     void switchStateDefineModel();
     void switchStateModel();
     void switchStateDefineTransient();
     void switchStateTransient();
-    void closeIOSSDatabase();
+
     void writeStructuredBlockDefinitions();
     void writeStructuredBlockBulkData();
-    void writeTransientFieldDefinitions();
-    void writeTransientBulkData();
+    void writeStructuredTransientFieldDefinitions();
+    void writeStructuredTransientBulkData();
+
     void saveConduitNode();
-    bool isIOSSDatabaseCatalystType;
 
     std::string getStructuredBlockName(int index);
     std::string getStructuredNodeBlockName(int index);
+
+    bool isWriteCatalyst;
+    bool isWriteStructured;
+
+    const std::string CGNS_DATABASE_TYPE      = "cgns";
+    const std::string EXODUS_DATABASE_TYPE    = "exodus";
+    const std::string CATALYST_DATABASE_TYPE  = "catalyst";
+    const std::string CATALYST_DUMMY_DATABASE = "dummy.db";
+    const std::string IOSS_CELL_FIELD         = "cell";
+    const std::string IOSS_POINT_FIELD        = "point";
+    const std::string IOSS_SCALAR_STORAGE     = "scalar";
   };
 
 } // namespace Iocatalyst

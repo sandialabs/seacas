@@ -21,9 +21,19 @@ protected:
 
   Iocatalyst_DatabaseIOTest();
 
-  bool regionsAreEqual(const std::string &fileName, const std::string &catFileName);
+  bool regionsAreEqual(const std::string &fileName, const std::string &catFileName,
+                       const std::string &iossDatabaseType);
 
-  void runTest(const std::string &testName);
+  void runStructuredTest(const std::string &testName);
+
+  void runUnstructuredTest(const std::string &testName);
 
   void initBlock(Iocatalyst::BlockMesh &blockMesh, int x, int y, int z);
+
+  const std::string CGNS_DATABASE_TYPE        = "cgns";
+  const std::string CGNS_FILE_EXTENSION       = ".cgns";
+  const std::string EXODUS_DATABASE_TYPE      = "exodus";
+  const std::string EXODUS_FILE_EXTENSION     = ".ex2";
+  const std::string CATALYST_TEST_FILE_PREFIX = "catalyst_";
+  const std::string CATALYST_TEST_FILE_NP     = "_np_";
 };

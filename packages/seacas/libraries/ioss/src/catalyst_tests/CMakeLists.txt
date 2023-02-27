@@ -29,14 +29,23 @@ TRIBITS_ADD_EXECUTABLE(
     Iocatalyst_StructuredBlockTest.C
 )
 
-TRIBITS_ADD_TEST(
-	Iocatalyst_StructuredBlockTest
-	NAME Iocatalyst_StructuredBlockTest
-	NUM_MPI_PROCS 1
+TRIBITS_ADD_EXECUTABLE(
+    Iocatalyst_ElementBlockTest
+ SOURCES
+    Iocatalyst_ElementBlockTest.C
 )
 
-TRIBITS_ADD_TEST(
-	Iocatalyst_StructuredBlockTest
-	NAME Iocatalyst_StructuredBlockTest
-	NUM_MPI_PROCS 4
+SET(CATALYST_IOSS_ENTITY_TESTS
+    Iocatalyst_StructuredBlockTest
+    Iocatalyst_ElementBlockTest
 )
+
+FOREACH(CATALYST_TEST ${CATALYST_IOSS_ENTITY_TESTS})
+    FOREACH(MPI_RANKS 1 4)
+        TRIBITS_ADD_TEST(
+	        ${CATALYST_TEST}
+	        NAME ${CATALYST_TEST}
+	        NUM_MPI_PROCS ${MPI_RANKS}
+        )
+    ENDFOREACH()
+ENDFOREACH()

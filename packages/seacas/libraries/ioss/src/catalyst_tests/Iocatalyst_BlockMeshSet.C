@@ -17,7 +17,7 @@
 namespace Iocatalyst {
 
   BlockMeshSet::BlockMeshSet()
-      : region(nullptr), databaseIO(nullptr), isIOSSDatabaseCatalystType(false)
+      : databaseIO(nullptr), isWriteCatalyst(false), isWriteStructured(true), region(nullptr)
   {
   }
 
@@ -31,35 +31,28 @@ namespace Iocatalyst {
 
   void BlockMeshSet::addBlockMesh(const BlockMesh &blockMesh) { bms.push_back(blockMesh); }
 
-  void BlockMeshSet::writeCGNSFile(const std::string &fileName) { writeFile(fileName, "cgns"); }
-
   void *BlockMeshSet::getCatalystConduitNode() { return conduit_cpp::c_node(&conduitNode); }
 
-  void BlockMeshSet::writeCatalystCGNSFile(const std::string &fileName)
+  void BlockMeshSet::writeCatalystIOSSFile(const std::string &fileName, const std::string &dbType)
   {
-    writeFile("dummy.db", "catalyst");
+    writeIOSSFile(CATALYST_DUMMY_DATABASE, CATALYST_DATABASE_TYPE);
     Ioss::PropertyManager cdbProps;
-    //cdbProps.add(Ioss::Property("INTEGER_SIZE_API", 8));
-    //cdbProps.add(Ioss::Property("INTEGER_SIZE_DB", 8));
     cdbProps.add(Ioss::Property("CATALYST_CONDUIT_NODE", getCatalystConduitNode()));
 
-    Ioss::DatabaseIO *cdbi = Ioss::IOFactory::create("catalyst", "dummy.db",
-      Ioss::READ_RESTART, Ioss::ParallelUtils::comm_world(), cdbProps);
+    Ioss::DatabaseIO *cdbi =
+        Ioss::IOFactory::create(CATALYST_DATABASE_TYPE, CATALYST_DUMMY_DATABASE, Ioss::READ_RESTART,
+                                Ioss::ParallelUtils::comm_world(), cdbProps);
     if (cdbi == nullptr || !cdbi->ok(true)) {
       return;
     }
 
     Ioss::PropertyManager properties;
-    //properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
-    //properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
-    //properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
-    Ioss::DatabaseIO *cdbo =
-        Ioss::IOFactory::create("cgns", fileName, Ioss::WRITE_RESULTS,
-          Ioss::ParallelUtils::comm_world(), properties);
+    Ioss::DatabaseIO     *cdbo = Ioss::IOFactory::create(dbType, fileName, Ioss::WRITE_RESULTS,
+                                                         Ioss::ParallelUtils::comm_world(), properties);
 
     if (cdbo == nullptr || !cdbo->ok(true)) {
       std::ostringstream errmsg;
-      errmsg << "Unable to open IOSS database cat.cgns\n";
+      errmsg << "Unable to open IOSS database " + fileName + "\n";
       IOSS_ERROR(errmsg);
     }
 
@@ -70,7 +63,7 @@ namespace Iocatalyst {
     Ioss::copy_database(cir, cor, options);
   }
 
-  void BlockMeshSet::writeFile(const std::string &fileName, const std::string &dbType)
+  void BlockMeshSet::writeIOSSFile(const std::string &fileName, const std::string &dbType)
   {
     openIOSSDatabase(fileName, dbType);
     switchStateDefineModel();
@@ -83,11 +76,8 @@ namespace Iocatalyst {
   void BlockMeshSet::openIOSSDatabase(const std::string &fileName, const std::string &dbType)
   {
     Ioss::PropertyManager properties;
-    //properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
-    //properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
-    //properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
-    databaseIO =
-        Ioss::IOFactory::create(dbType, fileName, Ioss::WRITE_RESULTS, Ioss::ParallelUtils::comm_world(), properties);
+    databaseIO = Ioss::IOFactory::create(dbType, fileName, Ioss::WRITE_RESULTS,
+                                         Ioss::ParallelUtils::comm_world(), properties);
 
     if (databaseIO == nullptr || !databaseIO->ok(true)) {
       std::ostringstream errmsg;
@@ -95,37 +85,55 @@ namespace Iocatalyst {
       IOSS_ERROR(errmsg);
     }
     region = std::unique_ptr<Ioss::Region>(new Ioss::Region(databaseIO));
-    if (dbType == "catalyst") {
-      isIOSSDatabaseCatalystType = true;
+    if (dbType == CATALYST_DATABASE_TYPE) {
+      isWriteCatalyst = true;
+    }
+    if (dbType == EXODUS_DATABASE_TYPE) {
+      isWriteStructured = false;
     }
   }
 
   void BlockMeshSet::closeIOSSDatabase()
   {
     region.reset();
-    databaseIO                 = nullptr;
-    isIOSSDatabaseCatalystType = false;
+    databaseIO        = nullptr;
+    isWriteCatalyst   = false;
+    isWriteStructured = true;
   }
 
   void BlockMeshSet::switchStateDefineModel()
   {
     region->begin_mode(Ioss::STATE_DEFINE_MODEL);
-    writeStructuredBlockDefinitions();
+    if (isWriteStructured) {
+      writeStructuredBlockDefinitions();
+    }
+    else {
+    }
     region->end_mode(Ioss::STATE_DEFINE_MODEL);
   }
 
   void BlockMeshSet::switchStateModel()
   {
     region->begin_mode(Ioss::STATE_MODEL);
-    writeStructuredBlockBulkData();
-    saveConduitNode();
+    if (isWriteStructured) {
+      writeStructuredBlockBulkData();
+    }
+    else {
+    }
+    if (isWriteCatalyst) {
+      saveConduitNode();
+    }
     region->end_mode(Ioss::STATE_MODEL);
   }
 
   void BlockMeshSet::switchStateDefineTransient()
   {
     region->begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
-    writeTransientFieldDefinitions();
+    if (isWriteStructured) {
+      writeStructuredTransientFieldDefinitions();
+    }
+    else {
+    }
     region->end_mode(Ioss::STATE_DEFINE_TRANSIENT);
   }
   void BlockMeshSet::switchStateTransient()
@@ -133,19 +141,23 @@ namespace Iocatalyst {
     region->begin_mode(Ioss::STATE_TRANSIENT);
     int tstep = region->add_state(0.0);
     region->begin_state(tstep);
-    writeTransientBulkData();
+    if (isWriteStructured) {
+      writeStructuredTransientBulkData();
+    }
+    else {
+    }
     region->end_state(tstep);
-    saveConduitNode();
+    if (isWriteCatalyst) {
+      saveConduitNode();
+    }
     region->end_mode(Ioss::STATE_TRANSIENT);
   }
 
   void BlockMeshSet::saveConduitNode()
   {
-    if (isIOSSDatabaseCatalystType) {
-      auto c_node = reinterpret_cast<conduit_node *>(
-          ((Iocatalyst::DatabaseIO *)databaseIO)->get_catalyst_conduit_node());
-      conduit_node_set_node(conduit_cpp::c_node(&conduitNode), c_node);
-    }
+    auto c_node = reinterpret_cast<conduit_node *>(
+        ((Iocatalyst::DatabaseIO *)databaseIO)->get_catalyst_conduit_node());
+    conduit_node_set_node(conduit_cpp::c_node(&conduitNode), c_node);
   }
 
   void BlockMeshSet::writeStructuredBlockDefinitions()
@@ -159,7 +171,6 @@ namespace Iocatalyst {
           {bm.getGlobalNumBlocks().x, bm.getGlobalNumBlocks().y, bm.getGlobalNumBlocks().z}};
       Ioss::IJK_t localSizes = {
           {bm.getLocalNumBlocks().x, bm.getLocalNumBlocks().y, bm.getLocalNumBlocks().z}};
-      std::cout << bm.isLocalBlockEmpty() << "\n";
       Ioss::StructuredBlock *iossBlock =
           new Ioss::StructuredBlock(databaseIO, getStructuredBlockName(i), spatialDims, localSizes,
                                     parentOffsets, globalSizes);
@@ -213,7 +224,7 @@ namespace Iocatalyst {
     }
   }
 
-  void BlockMeshSet::writeTransientFieldDefinitions()
+  void BlockMeshSet::writeStructuredTransientFieldDefinitions()
   {
     for (int i = 0; i < bms.size(); i++) {
       BlockMesh &bm        = bms[i];
@@ -222,14 +233,14 @@ namespace Iocatalyst {
       const int  numK      = bm.getLocalNumBlocks().z + 1;
       const int  numPoints = numI * numJ * numK;
       auto       iossBlock = region->get_structured_block(getStructuredBlockName(i));
-      iossBlock->field_add(
-          Ioss::Field("cell", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT));
-      iossBlock->get_node_block().field_add(
-          Ioss::Field("point", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT));
+      iossBlock->field_add(Ioss::Field(IOSS_CELL_FIELD, Ioss::Field::REAL, IOSS_SCALAR_STORAGE,
+                                       Ioss::Field::TRANSIENT));
+      iossBlock->get_node_block().field_add(Ioss::Field(
+          IOSS_POINT_FIELD, Ioss::Field::REAL, IOSS_SCALAR_STORAGE, Ioss::Field::TRANSIENT));
     }
   }
 
-  void BlockMeshSet::writeTransientBulkData()
+  void BlockMeshSet::writeStructuredTransientBulkData()
   {
 
     std::vector<double> values;
@@ -237,16 +248,17 @@ namespace Iocatalyst {
       values.clear();
       BlockMesh &bm        = bms[i];
       auto       iossBlock = region->get_structured_block(getStructuredBlockName(i));
-      for (int j = 0; j < iossBlock->get_field("cell").raw_count(); j++) {
+      for (int j = 0; j < iossBlock->get_field(IOSS_CELL_FIELD).raw_count(); j++) {
         values.push_back(bm.getPartition().id);
       }
-      iossBlock->put_field_data("cell", values);
+      iossBlock->put_field_data(IOSS_CELL_FIELD, values);
 
       values.clear();
-      for (int j = 0; j < iossBlock->get_node_block().get_field("point").raw_count(); j++) {
+      for (int j = 0; j < iossBlock->get_node_block().get_field(IOSS_POINT_FIELD).raw_count();
+           j++) {
         values.push_back(bm.getPartition().id);
       }
-      iossBlock->get_node_block().put_field_data("point", values);
+      iossBlock->get_node_block().put_field_data(IOSS_POINT_FIELD, values);
     }
   }
 

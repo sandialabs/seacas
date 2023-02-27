@@ -6,23 +6,23 @@
 
 #include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
 
-TEST_F(Iocatalyst_DatabaseIOTest, WriteOneStructuredMeshBlockWith8Cells)
+TEST_F(Iocatalyst_DatabaseIOTest, WriteOneStructuredBlockWith8Cells)
 {
   Iocatalyst::BlockMesh bm;
   initBlock(bm, 2, 2, 2);
   bmSet.addBlockMesh(bm);
-  runTest("test_sb_1_cells_8");
+  runStructuredTest("test_sb_1_cells_8");
 }
 
-TEST_F(Iocatalyst_DatabaseIOTest, WriteOneStructuredMeshBlocksWith200Cells)
+TEST_F(Iocatalyst_DatabaseIOTest, WriteOneStructuredBlockWith200Cells)
 {
   Iocatalyst::BlockMesh bm;
   initBlock(bm, 10, 10, 2);
   bmSet.addBlockMesh(bm);
-  runTest("test_sb_1_cells_200");
+  runStructuredTest("test_sb_1_cells_200");
 }
 
-TEST_F(Iocatalyst_DatabaseIOTest, WriteThreeStructuredMeshBlocksWith835Cells)
+TEST_F(Iocatalyst_DatabaseIOTest, WriteThreeStructuredBlocksWith835Cells)
 {
   Iocatalyst::BlockMesh bmOne;
   initBlock(bmOne, 5, 15, 3);
@@ -33,5 +33,5 @@ TEST_F(Iocatalyst_DatabaseIOTest, WriteThreeStructuredMeshBlocksWith835Cells)
   bmSet.addBlockMesh(bmOne);
   bmSet.addBlockMesh(bmTwo);
   bmSet.addBlockMesh(bmThree);
-  runTest("test_sb_3_cells_835");
+  runStructuredTest("test_sb_3_cells_835");
 }
