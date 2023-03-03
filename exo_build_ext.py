@@ -1,3 +1,4 @@
+import contextlib
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import subprocess
@@ -35,7 +36,15 @@ class cmake_build_ext(build_ext):
             # Config
             print(site.getusersitepackages())
             print(os.getcwd())
-            subprocess.check_call(['../cmake-exodus'] + cmake_args)
+            build_dir = os.path.join(os.getcwd(), "build")
+            env = dict(os.environ)
+            env["JOBS"] = str(os.cpu_count())
+            env["MPI"] = "YES"
+            subprocess.check_call(['./install-tpl.sh'] + cmake_args, env=env)
+            with contextlib.suppress(Exception):
+                os.mkdir("build")
+            subprocess.check_call(['../cmake-exodus'] + cmake_args, cwd=build_dir, env=env)
 
             # Build
-            subprocess.check_call(['cmake', '--build', '.'])
+            subprocess.check_call(['cmake', '--build', '.'], cwd=build_dir, env=env)
+            subprocess.check_call(['cmake', '--install', '.'], cwd=build_dir, env=env)
