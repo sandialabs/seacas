@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -179,7 +179,7 @@ bool Ioss::SideSet::equal_(const SideSet &rhs, const bool /* quiet */) const
   // COMPARE SideBlocks
   for (auto &lhs_side_block : lhs_side_blocks) {
     std::vector<SideBlock *>::iterator it;
-    for (it = rhs_side_blocks.begin(); it != rhs_side_blocks.end(); it++) {
+    for (it = rhs_side_blocks.begin(); it != rhs_side_blocks.end(); ++it) {
       if ((*(*it)).operator==(*lhs_side_block))
         break;
     }
@@ -198,7 +198,7 @@ bool Ioss::SideSet::equal_(const SideSet &rhs, const bool /* quiet */) const
 
   for (auto &lhs_block_member : lhs_block_membership) {
     std::vector<std::string>::iterator it;
-    for (it = rhs_block_membership.begin(); it != rhs_block_membership.end(); it++) {
+    for (it = rhs_block_membership.begin(); it != rhs_block_membership.end(); ++it) {
       if ((*it).compare(lhs_block_member) == 0)
         break;
     }

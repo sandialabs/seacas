@@ -573,7 +573,7 @@ namespace {
     if (tokens != nullptr) {
       std::string        token_string(tokens);
       Cpup::StringVector var_list = SLIB::tokenize(token_string, ",");
-      for (auto &var : var_list) {
+      for (const auto &var : var_list) {
         std::string low_var = LowerCase(var);
         (*variable_list).push_back(low_var);
       }

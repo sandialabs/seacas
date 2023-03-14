@@ -1,4 +1,4 @@
-// Copyright(C) 2021, 2022 National Technology & Engineering Solutions
+// Copyright(C) 2021, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -160,10 +160,10 @@ bool Grid::initialize(size_t i, size_t j, const std::string &key)
   if (unit_cells().find(key) == unit_cells().end()) {
     return false;
   }
-  auto &unit_cell = unit_cells()[key];
+  const auto &unit_cell = unit_cells()[key];
   SMART_ASSERT(unit_cell->m_region != nullptr)(i)(j)(key);
 
-  auto &cell = get_cell(i, j);
+  const auto &cell = get_cell(i, j);
   cell.initialize(i, j, unit_cell);
   return true;
 }
@@ -174,7 +174,7 @@ void Grid::add_unit_cell(const std::string &key, const std::string &unit_filenam
   if (!minimize_open_files(Minimize::UNIT) && unit_cells().size() >= open_files) {
     // Just hit the limit...  Close all previous unit_cell files and set the minimize_open_files
     // behavior to UNIT.
-    for (auto &unit_cell : m_unitCells) {
+    for (const auto &unit_cell : m_unitCells) {
       unit_cell.second->m_region->get_database()->closeDatabase();
     }
     fmt::print(stderr, fmt::fg(fmt::color::yellow),
@@ -329,35 +329,35 @@ void Grid::categorize_processor_boundaries()
     for (size_t i = 0; i < II(); i++) {
       auto &cell = get_cell(i, j);
       if (i > 0) {
-        auto &left = get_cell(i - 1, j);
+        const auto &left = get_cell(i - 1, j);
         cell.set_rank(Loc::L, left.rank(Loc::C));
         if (j > 0) {
-          auto &BL = get_cell(i - 1, j - 1);
+          const auto &BL = get_cell(i - 1, j - 1);
           cell.set_rank(Loc::BL, BL.rank(Loc::C));
         }
         if (j < JJ() - 1) {
-          auto &TL = get_cell(i - 1, j + 1);
+          const auto &TL = get_cell(i - 1, j + 1);
           cell.set_rank(Loc::TL, TL.rank(Loc::C));
         }
       }
       if (i < II() - 1) {
-        auto &right = get_cell(i + 1, j);
+        const auto &right = get_cell(i + 1, j);
         cell.set_rank(Loc::R, right.rank(Loc::C));
         if (j > 0) {
-          auto &BR = get_cell(i + 1, j - 1);
+          const auto &BR = get_cell(i + 1, j - 1);
           cell.set_rank(Loc::BR, BR.rank(Loc::C));
         }
         if (j < JJ() - 1) {
-          auto &TR = get_cell(i + 1, j + 1);
+          const auto &TR = get_cell(i + 1, j + 1);
           cell.set_rank(Loc::TR, TR.rank(Loc::C));
         }
       }
       if (j > 0) {
-        auto &B = get_cell(i, j - 1);
+        const auto &B = get_cell(i, j - 1);
         cell.set_rank(Loc::B, B.rank(Loc::C));
       }
       if (j < JJ() - 1) {
-        auto &T = get_cell(i, j + 1);
+        const auto &T = get_cell(i, j + 1);
         cell.set_rank(Loc::T, T.rank(Loc::C));
       }
     }
@@ -605,7 +605,7 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
 
   int rank = cell.rank(Loc::C);
 
-  std::array<int, 6> boundary_rank{
+  const std::array<int, 6> boundary_rank{
       cell.rank(Loc::L), cell.rank(Loc::R), cell.rank(Loc::B), cell.rank(Loc::T), -1, -1};
   std::array<enum Flg, 6> boundary_flag{Flg::MIN_I, Flg::MAX_I, Flg::MIN_J,
                                         Flg::MAX_J, Flg::MIN_K, Flg::MAX_K};

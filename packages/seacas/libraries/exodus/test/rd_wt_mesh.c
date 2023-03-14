@@ -925,6 +925,11 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
           }
           free(nvar_name);
         }
+        if (err) {
+          fprintf(stderr, "after ex_put_variable_names, error = %d\n", err);
+          ex_close(exoid[npd]);
+          exit(1);
+        }
       }
 
       if (num_global_fields > 0) {

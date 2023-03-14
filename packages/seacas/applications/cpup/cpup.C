@@ -220,7 +220,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   GlobalBlockMap all_blocks;
   GlobalIJKMap   global_block;
   for (const auto &part : part_mesh) {
-    auto &blocks = part->get_structured_blocks();
+    const auto &blocks = part->get_structured_blocks();
     for (const auto &block : blocks) {
       auto &name       = block->name();
       all_blocks[name] = block;
@@ -328,7 +328,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   //        .. Add each valid block and node_block field
   const auto &variable_list = interFace.var_names();
   if (!(variable_list.size() == 1 && Ioss::Utils::str_equal(variable_list[0], "none") == 0)) {
-    auto &blocks = output_region.get_structured_blocks();
+    const auto &blocks = output_region.get_structured_blocks();
     for (const auto &block : blocks) {
       int64_t num_cell = block->get_property("cell_count").get_int();
       int64_t num_node = block->get_property("node_count").get_int();
@@ -337,7 +337,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
 
       // Find all corresponding blocks on the input part meshes...
       for (const auto &prt : part_mesh) {
-        auto &pblocks = prt->get_structured_blocks();
+        const auto &pblocks = prt->get_structured_blocks();
         for (const auto &pblock : pblocks) {
           auto &name      = pblock->name();
           auto  name_proc = Iocgns::Utils::decompose_name(name, true);
@@ -496,7 +496,7 @@ namespace {
       for (const auto &block : blocks) {
         Ioss::IJK_t offset    = block->get_ijk_offset();
         auto        name_proc = Iocgns::Utils::decompose_name(block->name(), true);
-        auto       &sb_bc     = block->m_boundaryConditions;
+        const auto &sb_bc     = block->m_boundaryConditions;
         for (const auto &bc : sb_bc) {
           auto &gbc = global_bc[std::make_pair(name_proc.first, bc.m_bcName)];
           if (gbc.m_bcName.empty()) {
@@ -571,7 +571,7 @@ namespace {
 
         // Find all corresponding blocks on the input part meshes...
         for (const auto &part : part_mesh) {
-          auto &pblocks = part->get_structured_blocks();
+          const auto &pblocks = part->get_structured_blocks();
           for (const auto &pblock : pblocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
@@ -761,7 +761,7 @@ namespace {
 
         // Find all corresponding blocks on the input part meshes...
         for (const auto &part : part_mesh) {
-          auto &pblocks = part->get_structured_blocks();
+          const auto &pblocks = part->get_structured_blocks();
           for (const auto &pblock : pblocks) {
             auto &name      = pblock->name();
             auto  name_proc = Iocgns::Utils::decompose_name(name, true);
