@@ -163,7 +163,7 @@ bool Grid::initialize(size_t i, size_t j, const std::string &key)
   const auto &unit_cell = unit_cells()[key];
   SMART_ASSERT(unit_cell->m_region != nullptr)(i)(j)(key);
 
-  const auto &cell = get_cell(i, j);
+  auto &cell = get_cell(i, j);
   cell.initialize(i, j, unit_cell);
   return true;
 }
@@ -380,7 +380,7 @@ void Grid::categorize_processor_boundaries()
 void Grid::generate_sidesets()
 {
   if (m_generatedSideSets != 0) {
-    for (auto &unit_cell : m_unitCells) {
+    for (const auto &unit_cell : m_unitCells) {
       unit_cell.second->generate_boundary_faces(m_generatedSideSets);
     }
   }
@@ -465,7 +465,7 @@ template <typename INT> void Grid::output_model(INT /*dummy*/)
   for (int r = m_startRank; r < m_startRank + m_rankCount; r++) {
     for (size_t j = 0; j < JJ(); j++) {
       for (size_t i = 0; i < II(); i++) {
-        auto &cell = get_cell(i, j);
+        const auto &cell = get_cell(i, j);
         if (cell.rank(Loc::C) == r) {
           output_nodal_coordinates(cell);
         }
