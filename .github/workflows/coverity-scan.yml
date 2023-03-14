@@ -13,7 +13,7 @@ jobs:
       matrix:
         compiler: [ gnu ]
         hdf5: [ V110 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.1 ]
         cgns: [ 4.3.0 ]
     steps:
 
@@ -54,7 +54,7 @@ jobs:
       matrix:
         compiler: [ gnu ]
         hdf5: [ V110 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.1 ]
         cgns: [ 4.3.0 ]
     steps:
 

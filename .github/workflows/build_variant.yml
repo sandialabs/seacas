@@ -20,7 +20,7 @@ jobs:
       matrix:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V110 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.1 ]
         cgns: [ 4.3.0 ]
     steps:
 
@@ -58,7 +58,7 @@ jobs:
       fail-fast: false
       matrix:
         hdf5: [ V110 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.1 ]
         cgns: [ 4.3.0 ]
         config: 
         - {
