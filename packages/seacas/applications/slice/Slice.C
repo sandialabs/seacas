@@ -870,7 +870,7 @@ namespace {
 
       // * Assign all elements in the chain to `max_proc`.
       // * Update the deltas for all processors that gain/lose elements...
-      for (auto &element : chain_elements) {
+      for (const auto &element : chain_elements) {
         if (elem_to_proc[element - 1] != max_proc) {
           auto old_proc             = elem_to_proc[element - 1];
           elem_to_proc[element - 1] = max_proc;

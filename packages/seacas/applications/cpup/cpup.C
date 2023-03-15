@@ -602,7 +602,7 @@ namespace {
     do {
       change_made = false;
       for (const auto &part : part_mesh) {
-        auto &blocks = part->get_structured_blocks();
+        const auto &blocks = part->get_structured_blocks();
         for (const auto &block : blocks) {
           for (const auto &zgc : block->m_zoneConnectivity) {
             if (zgc.is_from_decomp()) {
@@ -629,7 +629,7 @@ namespace {
   void update_global_ijk(const PartVector &part_mesh, GlobalIJKMap &global_block)
   {
     for (const auto &part : part_mesh) {
-      auto &blocks = part->get_structured_blocks();
+      const auto &blocks = part->get_structured_blocks();
       for (const auto &block : blocks) {
         auto  ijk_o      = block->get_ijk_offset();
         auto  ijk_g      = block->get_ijk_global();
@@ -642,7 +642,7 @@ namespace {
     }
 
     for (const auto &part : part_mesh) {
-      auto &blocks = part->get_structured_blocks();
+      const auto &blocks = part->get_structured_blocks();
       for (const auto &block : blocks) {
         auto  name_proc  = Iocgns::Utils::decompose_name(block->name(), true);
         auto &cur_global = global_block[name_proc.first];

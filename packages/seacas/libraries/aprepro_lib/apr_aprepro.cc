@@ -57,7 +57,7 @@ namespace SEAMS {
     Symtable() = default;
     ~Symtable()
     {
-      for (auto &sym : sym_table) {
+      for (const auto &sym : sym_table) {
         const auto &ptr = sym.second;
         delete ptr;
       }

@@ -627,7 +627,7 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
       elements.reserve(count);
       faces.reserve(count);
 
-      for (auto &block_faces : boundary.m_faces) {
+      for (const auto &block_faces : boundary.m_faces) {
         const auto &block_name = block_faces.first;
         const auto &bnd_faces  = block_faces.second;
 
