@@ -4641,6 +4641,8 @@ def SetForCorrectColorByVariable(inImagesetInfo, inPhactoriOperation,
       elif colorVarInfo.mVariableType == 'element':
         myVariableArrayType = gCellsString
       else:
+        if PhactoriDbg():
+          myDebugPrint3(errStr)
         errStr = 'CreateParaviewItemsForImagesetC error:\n'\
           'image set ' + inImagesetInfo.mName + \
           'operation ' + inPhactoriOperation.mName + \
@@ -4648,8 +4650,6 @@ def SetForCorrectColorByVariable(inImagesetInfo, inPhactoriOperation,
           '\ncolor variable name: ' + \
           colorVarInfo.mVariableName +\
           '\nvariable should be node or element at this point and is not'
-        if PhactoriDbg():
-          myDebugPrint3(errStr)
         raise Exception(errStr)
     else:
       #variable type not detected, deal with it
@@ -5456,14 +5456,14 @@ def CreateParaViewRepresentationAndViewFromInfoC(inImageset, inLookDirection, in
       elif theRepresentation.mColorVariableInfo.mVariableType == 'element':
         myVariableArrayType = gCellsString
       else:
+        if PhactoriDbg():
+          myDebugPrint3(errStr)
         errStr = 'CreateParaviewItemsForImagesetC error:\n'\
           'image set ' + inImageset.mName + \
           ' representation ' + theRepresentation.mName + \
           '\ncolor variable name: ' + \
           theRepresentation.mColorVariableInfo.mVariableName +\
           '\nvariable should be node or element at this point and is not'
-        if PhactoriDbg():
-          myDebugPrint3(errStr)
         raise Exception(errStr)
     else:
       #variable type not detected, deal with it

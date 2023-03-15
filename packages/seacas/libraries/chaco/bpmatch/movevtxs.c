@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -80,9 +80,7 @@ void movevtxs(struct vtx_data **graph,               /* data structure with vert
     for (i = 0; i < nsets; i++) {
       active[i] = FALSE;
     }
-    if (badset >= 0) {
-      active[badset] = TRUE;
-    }
+    active[badset] = TRUE;
 
     done = FALSE;
     while (!done) {
