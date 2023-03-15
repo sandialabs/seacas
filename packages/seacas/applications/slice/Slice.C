@@ -851,7 +851,7 @@ namespace {
       }
 
       std::vector<INT> chain_proc_count(proc_count);
-      auto            &chain_elements = chain.second;
+      const auto      &chain_elements = chain.second;
 
       // * get processors used by elements in the chain...
       for (const auto &element : chain_elements) {
