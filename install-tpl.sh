@@ -526,7 +526,8 @@ then
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-   net_version="v4.9.1"
+#   net_version="v4.9.1"
+    net_version="v4.9.2"
 #   net_version="v4.8.1"
 #   net_version="master"
 
