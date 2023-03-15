@@ -943,7 +943,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
           }
         }
 
-        err = ex_put_variable_names(exoid[npd], EX_GLOBAL, num_global_fields, gvar_name);
+        ex_put_variable_names(exoid[npd], EX_GLOBAL, num_global_fields, gvar_name);
 
         if (npd == files_per_domain - 1) {
           for (j = 0; j < num_global_fields; j++) {
@@ -962,7 +962,7 @@ int write_exo_mesh(char *file_name, int rank, int num_dim, int num_domains, int 
           }
         }
 
-        err = ex_put_variable_names(exoid[npd], EX_ELEM_BLOCK, num_element_fields, evar_name);
+        ex_put_variable_names(exoid[npd], EX_ELEM_BLOCK, num_element_fields, evar_name);
 
         if (npd == files_per_domain - 1) {
           free(elem_var_tab);

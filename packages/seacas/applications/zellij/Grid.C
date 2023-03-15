@@ -638,7 +638,7 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
         // the output file.
         size_t global_offset = output_region(rank)->get_element_block(block_name)->get_offset();
 
-        for (auto &bface : bnd_faces) {
+        for (const auto &bface : bnd_faces) {
           elements.push_back(bface / 10 + element_offset + global_offset);
           faces.push_back(bface % 10 + 1);
         }
@@ -1157,9 +1157,9 @@ namespace {
 
     for (size_t j = 0; j < grid.JJ(); j++) {
       for (size_t i = 0; i < grid.II(); i++) {
-        auto              &cell = grid.get_cell(i, j);
-        auto               rank = cell.rank(Loc::C);
-        std::array<int, 6> boundary_rank{
+        auto                    &cell = grid.get_cell(i, j);
+        auto                     rank = cell.rank(Loc::C);
+        const std::array<int, 6> boundary_rank{
             cell.rank(Loc::L), cell.rank(Loc::R), cell.rank(Loc::B), cell.rank(Loc::T), -1, -1};
 
         for (int face = 0; face < 6; face++) {

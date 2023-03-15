@@ -1998,7 +1998,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     NodeBlock *ge = nullptr;
-    for (auto &nb : nodeBlocks) {
+    for (const auto &nb : nodeBlocks) {
       if (db_hash == nb->hash() && nb->name() == db_name) {
         ge = nb;
         break;
@@ -2514,7 +2514,7 @@ namespace Ioss {
 
     if (my_name == "node_count") {
       int64_t count = 0;
-      for (auto &nb : nodeBlocks) {
+      for (const auto &nb : nodeBlocks) {
         count += nb->entity_count();
       }
       return Property(my_name, count);

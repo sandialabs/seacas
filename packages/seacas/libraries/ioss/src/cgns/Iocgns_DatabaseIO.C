@@ -1248,7 +1248,7 @@ namespace Iocgns {
 
     // If parallel, then all need to update the donor offset field since that was not known
     // at time of definition...
-    for (auto &block : blocks) {
+    for (const auto &block : blocks) {
       for (auto &conn : block->m_zoneConnectivity) {
         if (conn.m_donorZone < 0) {
           auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
@@ -1363,8 +1363,8 @@ namespace Iocgns {
                                 donor_datatype, donors.data()));
 
           // Fill in entries in m_blockLocalNodeMap for the shared nodes...
-          auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
-          auto &block_map = m_blockLocalNodeMap[zone];
+          const auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
+          auto       &block_map = m_blockLocalNodeMap[zone];
           for (int j = 0; j < npnts; j++) {
             cgsize_t point       = points[j];
             cgsize_t donor       = donors[j];

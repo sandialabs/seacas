@@ -142,7 +142,7 @@ namespace {
   {
     int num_include = 0;
     int num_exclude = 0;
-    for (auto &name : names) {
+    for (const auto &name : names) {
       SMART_ASSERT(name != "");
       if (name[0] == '!') {
         ++num_exclude;
