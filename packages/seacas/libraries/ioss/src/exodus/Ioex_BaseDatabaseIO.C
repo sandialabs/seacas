@@ -893,7 +893,7 @@ namespace Ioex {
         }
       }
 
-      for (auto &bl : blobs) {
+      for (const auto &bl : blobs) {
         delete[] bl.name;
       }
     }
@@ -1229,11 +1229,6 @@ namespace Ioex {
       re_im = 2;
     }
     for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-      std::string field_name = field.get_name();
-      if (re_im == 2) {
-        field_name += complex_suffix[complex_comp];
-      }
-
       for (int i = 0; i < comp_count; i++) {
         std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
@@ -1979,11 +1974,6 @@ namespace Ioex {
         re_im = 2;
       }
       for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-        std::string field_name = field.get_name();
-        if (re_im == 2) {
-          field_name += complex_suffix[complex_comp];
-        }
-
         for (int i = 1; i <= field.get_component_count(Ioss::Field::InOut::OUTPUT); i++) {
           std::string var_string = get_component_name(field, Ioss::Field::InOut::OUTPUT, i);
 
@@ -2040,11 +2030,6 @@ namespace Ioex {
             re_im = 2;
           }
           for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-            std::string field_name = field.get_name();
-            if (re_im == 2) {
-              field_name += complex_suffix[complex_comp];
-            }
-
             for (int i = 1; i <= field.get_component_count(Ioss::Field::InOut::OUTPUT); i++) {
               std::string var_string = get_component_name(field, Ioss::Field::InOut::OUTPUT, i);
               // Find position of 'var_string' in 'm_variables[]'
@@ -2680,7 +2665,7 @@ namespace Ioex {
         int64_t df_count     = 0;
 
         const Ioss::SideBlockContainer &side_blocks = set->get_side_blocks();
-        for (auto &block : side_blocks) {
+        for (const auto &block : side_blocks) {
           // Add  "*_offset" properties to specify at what offset
           // the data for this block appears in the containing set.
           auto *new_block = const_cast<Ioss::SideBlock *>(block);

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -100,7 +100,6 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
   IOSS_PAR_UNUSED(sync_parallel);
 #ifdef SEACAS_HAVE_MPI
   char             *result_string = nullptr;
-  std::vector<char> broadcast_string;
 
   int string_length = 0;
 
@@ -114,7 +113,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
     broadcast(string_length);
 
     if (string_length > 0) {
-      broadcast_string.resize(string_length + 1);
+      std::vector<char> broadcast_string(string_length + 1);
       if (rank == 0) {
         Ioss::Utils::copy_string(broadcast_string.data(), result_string,
                                  static_cast<size_t>(string_length) + 1);

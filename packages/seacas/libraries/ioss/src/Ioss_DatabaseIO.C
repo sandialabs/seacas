@@ -93,7 +93,7 @@ namespace {
                          double &xmax, double &ymax, double &zmax)
   {
     std::vector<int> elem_block_nodes(node_count);
-    for (auto &node : connectivity) {
+    for (const auto &node : connectivity) {
       elem_block_nodes[node - 1] = 1;
     }
 
@@ -1313,7 +1313,7 @@ namespace {
                  current_state, state_time);
 
       double total = 0.0;
-      for (auto &p_time : all_times) {
+     for (const auto &p_time : all_times) {
         total += p_time;
       }
 
