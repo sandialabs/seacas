@@ -127,7 +127,6 @@ exoid = ex_create ("test.exo"       \comment{filename path}
 #if defined(PARALLEL_AWARE_EXODUS)
 
 #include "exodusII_int.h"
-#include <libgen.h>
 #include <mpi.h>
 #include <stdlib.h>
 
