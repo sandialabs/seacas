@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         compiler: [ gnu, clang, mpi ]
-        hdf5: [ V18, V110, V112 ]
-        netcdf: [ 4.9.1 ]
+        hdf5: [ V18, V110, V114 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
     steps:
 
@@ -58,8 +58,8 @@ jobs:
     strategy:
       matrix:
         compiler: [ gnu, clang, mpi ]
-        hdf5: [ V18, V110, V112 ]
-        netcdf: [ 4.9.1 ]
+        hdf5: [ V18, V110, V114 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
     steps:
 
