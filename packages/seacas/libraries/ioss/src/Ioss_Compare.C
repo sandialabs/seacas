@@ -667,7 +667,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
             const std::string &sbname = isb->name();
 
             typename std::vector<Ioss::SideBlock *>::const_iterator iter;
-            for (iter = in_sbs_2.begin(); iter != in_sbs_2.end(); iter++) {
+            for (iter = in_sbs_2.begin(); iter != in_sbs_2.end(); ++iter) {
               if (sbname.compare((*iter)->name()) == 0) {
                 break;
               }
@@ -865,7 +865,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
             const std::string &sbname = isb->name();
 
             typename std::vector<Ioss::SideBlock *>::const_iterator iter;
-            for (iter = in_sbs_2.begin(); iter != in_sbs_2.end(); iter++) {
+            for (iter = in_sbs_2.begin(); iter != in_sbs_2.end(); ++iter) {
               if (sbname.compare((*iter)->name()) == 0) {
                 break;
               }

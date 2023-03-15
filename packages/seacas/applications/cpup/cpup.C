@@ -492,7 +492,7 @@ namespace {
   {
     GlobalBcMap global_bc;
     for (const auto &part : part_mesh) {
-      auto &blocks = part->get_structured_blocks();
+      const auto &blocks = part->get_structured_blocks();
       for (const auto &block : blocks) {
         Ioss::IJK_t offset    = block->get_ijk_offset();
         auto        name_proc = Iocgns::Utils::decompose_name(block->name(), true);

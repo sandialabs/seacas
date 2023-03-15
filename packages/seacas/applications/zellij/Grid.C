@@ -628,8 +628,8 @@ template <typename INT> void Grid::output_generated_surfaces(Cell &cell, INT /*d
       faces.reserve(count);
 
       for (auto &block_faces : boundary.m_faces) {
-        auto &block_name = block_faces.first;
-        auto &bnd_faces  = block_faces.second;
+        const auto &block_name = block_faces.first;
+        const auto &bnd_faces  = block_faces.second;
 
         // This is the offset within this element block -- i.e., the 'element_offsetth' element in
         // this block.

@@ -362,7 +362,7 @@ namespace Ioss {
     // Region owns all sub-grouping entities it contains...
     try {
       IOSS_FUNC_ENTER(m_);
-      for (auto &nb : nodeBlocks) {
+      for (const auto &nb : nodeBlocks) {
         delete (nb);
       }
 

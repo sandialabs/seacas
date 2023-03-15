@@ -854,7 +854,7 @@ namespace {
       auto            &chain_elements = chain.second;
 
       // * get processors used by elements in the chain...
-      for (auto &element : chain_elements) {
+      for (const auto &element : chain_elements) {
         auto proc = elem_to_proc[element - 1];
         chain_proc_count[proc]++;
       }

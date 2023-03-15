@@ -1109,7 +1109,7 @@ namespace Ioad {
     BlockInfoType infos;
     // For each time step.
     for (const auto &blockpair : allblocks) {
-      std::vector<typename adios2::Variable<T>::Info> &blocks = blockpair.second;
+      const std::vector<typename adios2::Variable<T>::Info> &blocks = blockpair.second;
       // Find in vector if this variable is defined for the current rank process. This means
       // that there is one block for which the rank encoded as the first value in the `Start` array
       // matches the current rank.

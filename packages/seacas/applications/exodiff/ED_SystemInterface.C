@@ -906,10 +906,11 @@ void SystemInterface::Parse_Command_File()
   SMART_ASSERT(cmd_file.good());
 
   char        line[256];
-  std::string xline, tok1, tok2, tok3;
+  std::string xline, tok2, tok3;
   cmd_file.getline(line, 256);
   xline = line;
   while (!cmd_file.eof()) {
+    std::string tok1;
     // Skip blank lines and comment lines.
     if (count_tokens(xline, " \t") > 0 && (tok1 = extract_token(xline, " \t"))[0] != '#') {
       to_lower(tok1); // Make case insensitive.

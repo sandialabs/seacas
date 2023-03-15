@@ -1487,7 +1487,7 @@ namespace Ioex {
       }
 
       // Zero global variable array...
-      for (auto &type : exodus_types) {
+      for (const auto &type : exodus_types) {
         auto &id_values = m_reductionValues[type];
         for (auto &values : id_values) {
           auto &vals = values.second;
