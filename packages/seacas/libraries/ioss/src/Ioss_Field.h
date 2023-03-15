@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -127,6 +127,9 @@ namespace Ioss {
     void set_suffices_uppercase(bool true_false) { sufficesUppercase_ = true_false; }
     bool get_suffices_uppercase() const { return sufficesUppercase_; }
 
+    void set_zero_copy_enabled(bool true_false);
+    bool zero_copy_enabled() const { return zeroCopyable_; }
+
     /** \brief Get the basic data type of the data held in the field.
      *
      * \returns the basic data type of the data held in the field.
@@ -162,7 +165,7 @@ namespace Ioss {
     // throws exception if the types don't match.
     void check_type(BasicType the_type) const;
 
-    bool               is_type(BasicType the_type) const { return the_type == type_; }
+    bool is_type(BasicType the_type) const { return the_type == type_; }
 
     std::string        type_string() const;
     static std::string type_string(BasicType type);
@@ -192,6 +195,7 @@ namespace Ioss {
     std::vector<Transform *> transforms_;
     char                     suffixSeparator_{1}; // Value = 1 means unset; use database default.
     bool sufficesUppercase_{false}; // True if the suffices are uppercase on database...
+    bool zeroCopyable_{false};      // True if the field is zero-copyable.
 
     bool equal_(const Ioss::Field &rhs, bool quiet) const;
   };
