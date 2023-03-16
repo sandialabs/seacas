@@ -1261,7 +1261,7 @@ namespace tsl {
                              truncated_hash_type my_hash, value_type &value)
       {
         tsl_rh_assert(dist_from_ideal_bucket > m_buckets[ibucket].dist_from_ideal_bucket());
-        m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket, hash, value);
+        m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket, my_hash, value);
         ibucket = next_bucket(ibucket);
         dist_from_ideal_bucket++;
 
