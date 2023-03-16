@@ -1665,7 +1665,7 @@ class exodus:
         defined entity id; id_map is ordered by the entity
         *INDEX* ordering, a 1-based system going from 1 to
         exo.num_XXX(), used by exodus for storage and input/output
-        of array data stored on the entitys; a user or application
+        of array data stored on the entities; a user or application
         can optionally use a separate entity *ID* numbering system,
         so the elem_id_map points to the entity *ID* for each
         entity *INDEX*
