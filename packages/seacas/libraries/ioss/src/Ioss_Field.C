@@ -162,7 +162,7 @@ void Ioss::Field::check_type(BasicType the_type) const
   }
 }
 
-void Ioss::Field::set_zero_copy_enabled(bool true_false)
+Ioss::Field &Ioss::Field::set_zero_copy_enabled(bool true_false)
 {
   if (has_transform()) {
     std::ostringstream errmsg;
@@ -173,6 +173,7 @@ void Ioss::Field::set_zero_copy_enabled(bool true_false)
     IOSS_ERROR(errmsg);
   }
   zeroCopyable_ = true_false;
+  return *this;
 }
 
 void Ioss::Field::reset_count(size_t new_count)

@@ -139,8 +139,8 @@ namespace {
     // The chain / line data will be stored as an element map...
     const auto &blocks = region.get_element_blocks();
     for (const auto &block : blocks) {
-      Ioss::Field field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
-      field.set_index(1);
+      auto field =
+          Ioss::Field("chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP).set_index(1);
       block->field_add(field);
     }
   }
@@ -167,12 +167,13 @@ namespace {
     // The chain / line data will be stored as an element map...
     const auto &blocks = region.get_element_blocks();
     for (const auto &block : blocks) {
-      Ioss::Field field{decomp_variable_name, Ioss::Field::INT32, IOSS_SCALAR(), Ioss::Field::MAP};
-      field.set_index(1);
+      auto field =
+          Ioss::Field(decomp_variable_name, Ioss::Field::INT32, IOSS_SCALAR(), Ioss::Field::MAP)
+              .set_index(1);
       block->field_add(field);
       if (add_chain_info) {
-        Ioss::Field ch_field{"chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP};
-        ch_field.set_index(2);
+        auto ch_field =
+            Ioss::Field("chain", region.field_int_type(), "Real[2]", Ioss::Field::MAP).set_index(2);
         block->field_add(ch_field);
       }
     }
