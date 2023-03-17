@@ -83,8 +83,6 @@ namespace {
 
   const size_t max_line_length = MAX_LINE_LENGTH;
 
-  const char *complex_suffix[] = {".re", ".im"};
-
   void check_variable_consistency(const ex_var_params &exo_params, int my_processor,
                                   const std::string &filename, const Ioss::ParallelUtils &util);
 
