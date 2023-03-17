@@ -13,6 +13,7 @@
 #include <Ioss_CopyDatabase.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_MemoryUtils.h>
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_Region.h>
 #include <Ioss_SubSystem.h>
@@ -73,7 +74,7 @@ namespace {
       auto                          now  = std::chrono::steady_clock::now();
       std::chrono::duration<double> diff = now - start;
       fmt::print(stderr, " [{:.2f} - {}]\t{}\n", diff.count(),
-                 fmt::group_digits(Ioss::Utils::get_memory_info()), output);
+                 fmt::group_digits(Ioss::MemoryUtils::get_memory_info()), output);
     }
   }
 
@@ -447,7 +448,7 @@ int main(int argc, char *argv[])
   MPI_Finalize();
 #endif
   fmt::print(stderr, "\nHigh-Water Memory Use: {} bytes\n",
-             fmt::group_digits(Ioss::Utils::get_hwm_memory_info()));
+             fmt::group_digits(Ioss::MemoryUtils::get_hwm_memory_info()));
   fmt::print(stderr, "Total execution time = {:.5}\n", seacas_timer() - begin);
   fmt::print(stderr, "\nSlice execution successful.\n");
   return EXIT_SUCCESS;
