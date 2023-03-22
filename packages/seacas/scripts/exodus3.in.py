@@ -5703,21 +5703,6 @@ class exodus:
             idMap = [id_map[i] for i in range(numObjs)]
             return idMap
 
-    def __ex_get_block_id_map(self, obj_type, id):
-        obj_type = ctypes.c_int(get_entity_type(obj_type))
-        entity_id = ctypes.c_longlong(id)
-        _, numObjs,_,_ = self.__ex_get_block('EX_ELEM_BLOCK', id)
-        if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
-            id_map = (ctypes.c_longlong * numObjs.value)()
-        else:
-            id_map = (ctypes.c_int * numObjs.value)()
-        EXODUS_LIB.ex_get_block_id_map(self.fileId, obj_type, entity_id, id_map)
-        if self.use_numpy:
-            id_map = ctype_to_numpy(self, id_map)
-        return id_map
-
-    # --------------------------------------------------------------------
-
     def __ex_put_id_map(self, objType, idMap):
         inqType = ex_obj_to_inq(objType)
         obj_type = ctypes.c_int(get_entity_type(objType))

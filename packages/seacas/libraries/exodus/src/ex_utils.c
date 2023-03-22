@@ -2354,37 +2354,45 @@ int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
     if (status != 0) {
       if (status == EX_NULLENTITY) { /* NULL object?    */
         return EX_NOERR;
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to locate %s id  %" PRId64 " in id array in file id %d",
+                 ex_name_of_object(obj_type), id, exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        return EX_FATAL;
       }
+    }
+
+    switch (obj_type) {
+    case EX_NODE_SET: entryptr = VAR_NODE_NS(id_ndx); break;
+    case EX_EDGE_SET: entryptr = VAR_EDGE_ES(id_ndx); break;
+    case EX_FACE_SET: entryptr = VAR_FACE_FS(id_ndx); break;
+    case EX_SIDE_SET: entryptr = VAR_ELEM_SS(id_ndx); break;
+    case EX_ELEM_SET: entryptr = VAR_ELEM_ELS(id_ndx); break;
+    case EX_EDGE_BLOCK: entryptr = VAR_EBCONN(id_ndx); break;
+    case EX_FACE_BLOCK: entryptr = VAR_FBCONN(id_ndx); break;
+    case EX_ELEM_BLOCK: entryptr = VAR_CONN(id_ndx); break;
+    default:
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s",
+               obj_type, __func__);
+      ex_err(__func__, errmsg, EX_BADPARAM);
+      return EX_FATAL;
+    }
+
+    if ((status = nc_inq_varid(exoid, entryptr, &varid)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to locate %s id  %" PRId64 " in id array in file id %d",
+               "ERROR: failed to locate entity list array for %s %" PRId64 " in file id %d",
                ex_name_of_object(obj_type), id, exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       return EX_FATAL;
     }
-  }
 
-  switch (obj_type) {
-  case EX_NODE_SET: entryptr = VAR_NODE_NS(id_ndx); break;
-  case EX_EDGE_SET: entryptr = VAR_EDGE_ES(id_ndx); break;
-  case EX_FACE_SET: entryptr = VAR_FACE_FS(id_ndx); break;
-  case EX_SIDE_SET: entryptr = VAR_ELEM_SS(id_ndx); break;
-  case EX_ELEM_SET: entryptr = VAR_ELEM_ELS(id_ndx); break;
-  case EX_EDGE_BLOCK: entryptr = VAR_EBCONN(id_ndx); break;
-  case EX_FACE_BLOCK: entryptr = VAR_FBCONN(id_ndx); break;
-  case EX_ELEM_BLOCK: entryptr = VAR_CONN(id_ndx); break;
-  default:
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
-             __func__);
-    ex_err(__func__, errmsg, EX_BADPARAM);
-    return EX_FATAL;
-  }
-
-  if ((status = nc_inq_varid(exoid, entryptr, &varid)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to locate entity list array for %s %" PRId64 " in file id %d",
-             ex_name_of_object(obj_type), id, exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return EX_FATAL;
+    if ((status = nc_inq_varid(exoid, entryptr, &varid)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to locate entity list array for %s %" PRId64 " in file id %d",
+               ex_name_of_object(obj_type), id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      return EX_FATAL;
+    }
   }
   return varid;
 }
