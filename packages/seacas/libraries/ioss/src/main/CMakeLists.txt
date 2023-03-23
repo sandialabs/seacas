@@ -292,15 +292,19 @@ TRIBITS_ADD_TEST(
   COMM mpi serial
  )
 
+if (TPL_ENABLE_MPI)
+  set(EXTERNAL "--compose=external")
+endif()
+
 TRIBITS_ADD_TEST(
-  io_shell ARGS "${DECOMP_ARG} ${JOIN_ARG} --compose=external --out_type=null --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
+  io_shell ARGS "${DECOMP_ARG} ${JOIN_ARG} ${EXTERNAL} --out_type=null --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
   NAME generated_to_null_fpp
   NOEXEPREFIX NOEXESUFFIX
   COMM mpi serial
  )
 
 TRIBITS_ADD_TEST(
-  io_shell ARGS "${DECOMP_ARG} ${JOIN_ARG} --compose=external --out_type=exonull --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
+  io_shell ARGS "${DECOMP_ARG} ${JOIN_ARG} ${EXTERNAL} --out_type=exonull --in_type=generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4 null_file"
   NAME generated_to_exonull_fpp
   NOEXEPREFIX NOEXESUFFIX
   COMM mpi serial
