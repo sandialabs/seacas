@@ -62,7 +62,6 @@ namespace Ionull {
 
     // Could call Ionull::ParallelDatabaseIO constructor directly, but that leads to some circular
     // dependencies and other yuks.
-#if defined(SEACAS_HAVE_MPI)
     if (decompose)
       return new Ionull::ParallelDatabaseIO(nullptr, filename, db_usage, communicator, properties);
     else

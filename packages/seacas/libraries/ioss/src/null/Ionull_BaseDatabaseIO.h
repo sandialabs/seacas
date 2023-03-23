@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -14,8 +14,6 @@
 #include <Ioss_Field.h>
 #include <Ioss_Map.h>
 #include <Ioss_Utils.h>
-
-#include <exodusII.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -97,9 +95,6 @@ namespace Ionull {
     bool ok__(bool write_message = false, std::string *error_message = nullptr,
               int *bad_count = nullptr) const override;
 
-    bool open_group__(const std::string &group_name) override;
-    bool create_subgroup__(const std::string &group_name) override;
-
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
 
@@ -119,13 +114,6 @@ namespace Ionull {
         maximumNameLength = requested_symbol_size;
       }
     }
-
-    size_t handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
-                            Ioss::Map &entity_map, void *ids, size_t num_to_get,
-                            size_t offset) const;
-
-    void compute_block_membership__(Ioss::SideBlock          *efblock,
-                                    std::vector<std::string> &block_membership) const override;
 
     int  int_byte_size_db() const override;
     void set_int_byte_size_api(Ioss::DataSize size) const override;
@@ -204,15 +192,10 @@ namespace Ionull {
       closeDW();
     }
 
-    int get_file_pointer() const override = 0; // Open file and set nullFilePtr.
+    virtual int get_file_pointer() const override;
+    virtual int free_file_pointer() const; // Close file and set nullFilePtr.
 
-    virtual int free_file_pointer() const;     // Close file and set nullFilePtr.
-
-    virtual bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
-                                 bool abort_if_error) const                    = 0;
-    virtual bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
-                                    bool overwrite, bool abort_if_error) const = 0;
-    void         finalize_file_open() const;
+    void finalize_file_open() const;
 
     int  get_current_state() const; // Get current state with error checks and usage message.
     void put_qa();

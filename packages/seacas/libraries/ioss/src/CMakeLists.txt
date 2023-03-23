@@ -130,6 +130,7 @@ IF (TPL_ENABLE_Catalyst2)
   ADD_SUBDIRECTORY(catalyst)
 ENDIF()
 
+ADD_SUBDIRECTORY(null)
 ADD_SUBDIRECTORY(visualization)
 ADD_SUBDIRECTORY(generated)
 ADD_SUBDIRECTORY(text_mesh)

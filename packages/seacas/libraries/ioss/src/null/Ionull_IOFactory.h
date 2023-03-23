@@ -29,6 +29,5 @@ namespace Ionull {
     Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
                               Ioss_MPI_Comm                communicator,
                               const Ioss::PropertyManager &properties) const override;
-    std::string       show_config() const override;
   };
 } // namespace Ionull

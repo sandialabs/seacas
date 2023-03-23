@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -42,6 +42,8 @@
 #include <visualization/cgns/Iovs_cgns_IOFactory.h>
 #include <visualization/exodus/Iovs_exodus_IOFactory.h>
 
+#include <null/Ionull_IOFactory.h>
+
 namespace {
 #if defined(IOSS_THREADSAFE)
   std::mutex m_;
@@ -83,10 +85,11 @@ namespace Ioss {
       Iovs_cgns::IOFactory::factory();   // Visualization Catalyst CGNS
       Iovs_exodus::IOFactory::factory(); // Visualization Catalyst Exodus
 #endif
-      Iohb::IOFactory::factory(); // HeartBeat
-      Iogn::IOFactory::factory(); // Generated
-      Iotm::IOFactory::factory(); // TextMesh
-      Iogs::IOFactory::factory(); // Structured Mesh Generator
+      Iohb::IOFactory::factory();        // HeartBeat
+      Iogn::IOFactory::factory();        // Generated
+      Iotm::IOFactory::factory();        // TextMesh
+      Iogs::IOFactory::factory();        // Structured Mesh Generator
+      Ionull::IOFactory::factory();
       Ioss::StorageInitializer();
       Ioss::Initializer();
       Iotr::Initializer();
