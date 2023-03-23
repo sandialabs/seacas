@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include "ioex_export.h"
+#include "ioexnl_export.h"
 
 #include <Ioss_CoordinateFrame.h>
 #include <Ioss_ElementBlock.h>
@@ -41,7 +41,7 @@ namespace Ioexnl {
   using SideSetMap  = std::map<std::string, const std::string, std::less<const std::string>>;
 
   using NameTopoKey = std::pair<std::string, const Ioss::ElementTopology *>;
-  struct IOEX_EXPORT NameTopoKeyCompare
+  struct IOEXNL_EXPORT NameTopoKeyCompare
   {
     bool operator()(const NameTopoKey &lhs, const NameTopoKey &rhs) const
     {
@@ -52,7 +52,7 @@ namespace Ioexnl {
     }
   };
 
-  struct IOEX_EXPORT NameTopoKeyHash
+  struct IOEXNL_EXPORT NameTopoKeyHash
   {
     size_t operator()(const NameTopoKey &name_topo) const
     {
@@ -70,47 +70,49 @@ namespace Ioexnl {
   using TopologyMap = std::map<NameTopoKey, int, NameTopoKeyCompare>;
 #endif
 
-  IOEX_EXPORT const char *Version();
-  IOEX_EXPORT bool        check_processor_info(const std::string &filename, int exodusFilePtr,
-                                               int processor_count, int processor_id);
+  IOEXNL_EXPORT const char *Version();
+  IOEXNL_EXPORT bool        check_processor_info(const std::string &filename, int exodusFilePtr,
+                                                 int processor_count, int processor_id);
 
-  IOEX_EXPORT Ioss::EntityType map_exodus_type(ex_entity_type type);
-  IOEX_EXPORT ex_entity_type   map_exodus_type(Ioss::EntityType type);
+  IOEXNL_EXPORT Ioss::EntityType map_exodus_type(ex_entity_type type);
+  IOEXNL_EXPORT ex_entity_type   map_exodus_type(Ioss::EntityType type);
 
-  IOEX_EXPORT void update_last_time_attribute(int exodusFilePtr, double value);
-  IOEX_EXPORT bool read_last_time_attribute(int exodusFilePtr, double *value);
+  IOEXNL_EXPORT void update_last_time_attribute(int exodusFilePtr, double value);
+  IOEXNL_EXPORT bool read_last_time_attribute(int exodusFilePtr, double *value);
 
-  IOEX_EXPORT bool    type_match(const std::string &type, const char *substring);
-  IOEX_EXPORT int64_t extract_id(const std::string &name_id);
-  IOEX_EXPORT bool    set_id(const Ioss::GroupingEntity *entity, Ioexnl::EntityIdSet *idset);
-  IOEX_EXPORT int64_t get_id(const Ioss::GroupingEntity *entity, Ioexnl::EntityIdSet *idset);
-  IOEX_EXPORT void    decode_surface_name(Ioexnl::SideSetMap &fs_map, Ioexnl::SideSetSet &fs_set,
-                                          const std::string &name);
-  IOEX_EXPORT void    fix_bad_name(char *name);
+  IOEXNL_EXPORT bool    type_match(const std::string &type, const char *substring);
+  IOEXNL_EXPORT int64_t extract_id(const std::string &name_id);
+  IOEXNL_EXPORT bool    set_id(const Ioss::GroupingEntity *entity, Ioexnl::EntityIdSet *idset);
+  IOEXNL_EXPORT int64_t get_id(const Ioss::GroupingEntity *entity, Ioexnl::EntityIdSet *idset);
+  IOEXNL_EXPORT void    decode_surface_name(Ioexnl::SideSetMap &fs_map, Ioexnl::SideSetSet &fs_set,
+                                            const std::string &name);
+  IOEXNL_EXPORT void    fix_bad_name(char *name);
 
-  IOEX_EXPORT void exodus_error(int exoid, int lineno, const char *function, const char *filename);
-  IOEX_EXPORT void exodus_error(int exoid, int lineno, const char *function, const char *filename,
-                                const std::string &extra);
+  IOEXNL_EXPORT void exodus_error(int exoid, int lineno, const char *function,
+                                  const char *filename);
+  IOEXNL_EXPORT void exodus_error(int exoid, int lineno, const char *function, const char *filename,
+                                  const std::string &extra);
 
-  IOEX_EXPORT int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
-                                 size_t name_length);
+  IOEXNL_EXPORT int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
+                                   size_t name_length);
 
-  IOEX_EXPORT void add_coordinate_frames(int exoid, Ioss::Region *region);
-  IOEX_EXPORT void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames);
+  IOEXNL_EXPORT void add_coordinate_frames(int exoid, Ioss::Region *region);
+  IOEXNL_EXPORT void write_coordinate_frames(int                                   exoid,
+                                             const Ioss::CoordinateFrameContainer &frames);
 
-  IOEX_EXPORT bool find_displacement_field(Ioss::NameList             &fields,
-                                           const Ioss::GroupingEntity *block, int ndim,
-                                           std::string *disp_name);
+  IOEXNL_EXPORT bool find_displacement_field(Ioss::NameList             &fields,
+                                             const Ioss::GroupingEntity *block, int ndim,
+                                             std::string *disp_name);
 
-  IOEX_EXPORT std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                                          const std::string &basename, int length,
-                                          bool &db_has_name);
+  IOEXNL_EXPORT std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
+                                            const std::string &basename, int length,
+                                            bool &db_has_name);
 
-  IOEX_EXPORT void filter_element_list(Ioss::Region *region, Ioss::Int64Vector &elements,
-                                       Ioss::Int64Vector &sides, bool remove_omitted_elements);
+  IOEXNL_EXPORT void filter_element_list(Ioss::Region *region, Ioss::Int64Vector &elements,
+                                         Ioss::Int64Vector &sides, bool remove_omitted_elements);
 
-  IOEX_EXPORT bool filter_node_list(Ioss::Int64Vector                &nodes,
-                                    const std::vector<unsigned char> &node_connectivity_status);
+  IOEXNL_EXPORT bool filter_node_list(Ioss::Int64Vector                &nodes,
+                                      const std::vector<unsigned char> &node_connectivity_status);
 
   template <typename T>
   void filter_node_list(T *data, std::vector<T> &dbvals,
@@ -121,17 +123,17 @@ namespace Ioexnl {
     }
   }
 
-  IOEX_EXPORT void filter_element_list(Ioss::Region *region, Ioss::Int64Vector &elements,
-                                       Ioss::Int64Vector &sides, bool remove_omitted_elements);
+  IOEXNL_EXPORT void filter_element_list(Ioss::Region *region, Ioss::Int64Vector &elements,
+                                         Ioss::Int64Vector &sides, bool remove_omitted_elements);
 
-  IOEX_EXPORT void separate_surface_element_sides(Ioss::Int64Vector &element,
-                                                  Ioss::Int64Vector &sides, Ioss::Region *region,
-                                                  Ioexnl::TopologyMap   &topo_map,
-                                                  Ioexnl::TopologyMap   &side_map,
-                                                  Ioss::SurfaceSplitType split_type,
-                                                  const std::string     &surface_name);
+  IOEXNL_EXPORT void separate_surface_element_sides(Ioss::Int64Vector &element,
+                                                    Ioss::Int64Vector &sides, Ioss::Region *region,
+                                                    Ioexnl::TopologyMap   &topo_map,
+                                                    Ioexnl::TopologyMap   &side_map,
+                                                    Ioss::SurfaceSplitType split_type,
+                                                    const std::string     &surface_name);
 
-  IOEX_EXPORT void           write_reduction_attributes(int exoid, const Ioss::GroupingEntity *ge);
+  IOEXNL_EXPORT void         write_reduction_attributes(int exoid, const Ioss::GroupingEntity *ge);
   template <typename T> void write_reduction_attributes(int exoid, const std::vector<T *> &entities)
   {
     // For the entity, write all "reduction attributes"

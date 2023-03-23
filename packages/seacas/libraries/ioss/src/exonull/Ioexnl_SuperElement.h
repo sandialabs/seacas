@@ -5,7 +5,7 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
-#include "ioex_export.h"
+#include "ioexnl_export.h"
 
 #include "Ioss_EntityType.h"     // for EntityType, etc
 #include "Ioss_Property.h"       // for Property
@@ -22,7 +22,7 @@ namespace Ioss {
 } // namespace Ioss
 
 namespace Ioexnl {
-  class IOEX_EXPORT SuperElement : public Ioss::GroupingEntity
+  class IOEXNL_EXPORT SuperElement : public Ioss::GroupingEntity
   {
   public:
     SuperElement(std::string filename, const std::string &my_name);

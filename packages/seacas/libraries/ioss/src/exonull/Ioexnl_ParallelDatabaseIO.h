@@ -7,7 +7,7 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ioex_export.h"
+#include "ioexnl_export.h"
 
 #include <exodusII.h>
 #if defined PARALLEL_AWARE_EXODUS
@@ -61,7 +61,7 @@ namespace Ioss {
  *  parallel exodus database format.
  */
 namespace Ioexnl {
-  class IOEX_EXPORT ParallelDatabaseIO : public Ioexnl::BaseDatabaseIO
+  class IOEXNL_EXPORT ParallelDatabaseIO : public Ioexnl::BaseDatabaseIO
   {
   public:
     ParallelDatabaseIO(Ioss::Region *region, const std::string &filename,

@@ -12,6 +12,7 @@
 #include <Ioss_VariableType.h>
 #include <algorithm>
 #include <cstring>
+#include <exodusII.h>
 #include <exodusII_int.h>
 #include <exonull/Ioexnl_Utils.h>
 #include <fmt/ostream.h>
@@ -58,32 +59,6 @@ namespace {
           ex_put_coordinate_frames(exoid, nframes, ids.data(), coordinates.data(), tags.data());
       if (ierr < 0) {
         Ioexnl::exodus_error(exoid, __LINE__, __func__, __FILE__);
-      }
-    }
-  }
-
-  template <typename INT>
-  void internal_add_coordinate_frames(int exoid, Ioss::Region *region, INT /*dummy*/)
-  {
-    // Query number of coordinate frames...
-    int nframes = 0;
-    int ierr    = ex_get_coordinate_frames(exoid, &nframes, nullptr, nullptr, nullptr);
-    if (ierr < 0) {
-      Ioexnl::exodus_error(exoid, __LINE__, __func__, __FILE__);
-    }
-
-    if (nframes > 0) {
-      std::vector<char>   tags(nframes);
-      std::vector<double> coord(nframes * 9);
-      std::vector<INT>    ids(nframes);
-      ierr = ex_get_coordinate_frames(exoid, &nframes, ids.data(), coord.data(), tags.data());
-      if (ierr < 0) {
-        Ioexnl::exodus_error(exoid, __LINE__, __func__, __FILE__);
-      }
-
-      for (int i = 0; i < nframes; i++) {
-        Ioss::CoordinateFrame cf(ids[i], tags[i], &coord[9 * i]);
-        region->add(cf);
       }
     }
   }
@@ -445,49 +420,6 @@ namespace Ioexnl {
     }
   }
 
-  std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                              const std::string &basename, int length, bool &db_has_name)
-  {
-    std::vector<char> buffer(length + 1);
-    buffer[0] = '\0';
-    int error = ex_get_name(exoid, type, id, buffer.data());
-    if (error < 0) {
-      exodus_error(exoid, __LINE__, __func__, __FILE__);
-    }
-    if (buffer[0] != '\0') {
-      Ioss::Utils::fixup_name(buffer.data());
-      // Filter out names of the form "basename_id" if the name
-      // id doesn't match the id in the name...
-      size_t base_size = basename.size();
-      if (std::strncmp(basename.c_str(), &buffer[0], base_size) == 0) {
-        int64_t name_id = extract_id(buffer.data());
-
-        // See if name is truly of form "basename_name_id" (e.g. "surface_{id}")
-        std::string tmp_name = Ioss::Utils::encode_entity_name(basename, name_id);
-        if (tmp_name == buffer.data()) {
-          if (name_id > 0) {
-            db_has_name = false;
-            if (name_id != id) {
-              std::string new_name = Ioss::Utils::encode_entity_name(basename, id);
-              fmt::print(Ioss::WarnOut(),
-                         "The entity named '{}' has the id {} which does not match the "
-                         "embedded id {}.\n"
-                         "         This can cause issues later; the entity will be renamed to '{}' "
-                         "(IOSS)\n\n",
-                         buffer.data(), id, name_id, new_name);
-              return new_name;
-            }
-            return tmp_name;
-          }
-        }
-      }
-      db_has_name = true;
-      return (std::string(buffer.data()));
-    }
-    db_has_name = false;
-    return Ioss::Utils::encode_entity_name(basename, id);
-  }
-
   void exodus_error(int exoid, int lineno, const char *function, const char *filename)
   {
     std::string empty{};
@@ -514,70 +446,6 @@ namespace Ioexnl {
     IOSS_ERROR(errmsg);
   }
 
-  int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
-                     size_t name_length)
-  {
-    // Check for optional element maps...
-    int map_count = ex_inquire_int(exoid, EX_INQ_ELEM_MAP);
-    if (map_count <= 0) {
-      return map_count;
-    }
-
-    // Get the names of the maps...
-    char **names = Ioss::Utils::get_name_array(map_count, name_length);
-    int    ierr  = ex_get_names(exoid, EX_ELEM_MAP, names);
-    if (ierr < 0) {
-      Ioexnl::exodus_error(exoid, __LINE__, __func__, __FILE__);
-    }
-
-    // Convert to lowercase.
-    for (int i = 0; i < map_count; i++) {
-      Ioss::Utils::fixup_name(names[i]);
-    }
-
-    for (int i = 0; i < map_count; i++) {
-      // If the name does *not* contain a `:`, then assume that this is a scalar map and add to the
-      // block.
-      std::string name{names[i]};
-      if (name.find(':') == std::string::npos) {
-        auto field = Ioss::Field(name, block->field_int_type(), IOSS_SCALAR(), Ioss::Field::MAP,
-                                 my_element_count)
-                         .set_index(i + 1);
-        block->field_add(field);
-        continue;
-      }
-
-      // Name does contain a `:` which is a loose convention for naming of maps in IOSS.
-      // If multiple maps start with the same substring before the `:`, then they are considered
-      // components of the same Ioss::Field::MAP field.
-      // Count the number of names that begin with the same substring...
-      auto base = name.substr(0, name.find(':'));
-
-      // Now see if the following name(s) contain the same substring...
-      int ii = i;
-      while (++ii < map_count) {
-        std::string next{names[ii]};
-        std::string next_base = next.substr(0, next.find(':'));
-        if (base != next_base) {
-          break;
-        }
-      }
-
-      int comp_count = ii - i;
-
-      std::string storage = fmt::format("Real[{}]", comp_count);
-      auto        field =
-          Ioss::Field(base, block->field_int_type(), storage, Ioss::Field::MAP, my_element_count)
-              .set_index(i + 1);
-      block->field_add(field);
-
-      i = ii - 1;
-    }
-
-    Ioss::Utils::delete_name_array(names, map_count);
-    return map_count;
-  }
-
   void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames)
   {
     if ((ex_int64_status(exoid) & EX_BULK_INT64_API) != 0) {
@@ -585,16 +453,6 @@ namespace Ioexnl {
     }
     else {
       internal_write_coordinate_frames(exoid, frames, 0);
-    }
-  }
-
-  void add_coordinate_frames(int exoid, Ioss::Region *region)
-  {
-    if ((ex_int64_status(exoid) & EX_BULK_INT64_API) != 0) {
-      internal_add_coordinate_frames(exoid, region, static_cast<int64_t>(0));
-    }
-    else {
-      internal_add_coordinate_frames(exoid, region, 0);
     }
   }
 

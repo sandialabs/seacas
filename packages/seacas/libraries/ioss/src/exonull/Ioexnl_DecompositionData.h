@@ -10,7 +10,7 @@
 #include <exodusII.h>
 #if defined PARALLEL_AWARE_EXODUS
 
-#include "ioex_export.h"
+#include "ioexnl_export.h"
 
 #include <Ioss_CodeTypes.h>
 #include <vector>
@@ -31,7 +31,7 @@ namespace Ioss {
 }
 namespace Ioexnl {
 
-  class IOEX_EXPORT DecompositionDataBase
+  class IOEXNL_EXPORT DecompositionDataBase
   {
   public:
     DecompositionDataBase(Ioss_MPI_Comm comm) : comm_(comm) {}
@@ -65,9 +65,6 @@ namespace Ioexnl {
     std::vector<Ioss::SetDecompositionData>   side_sets;
 
     const Ioss::SetDecompositionData &get_decomp_set(ex_entity_type type, ex_entity_id id) const;
-
-    template <typename T>
-    void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
     template <typename T>
     void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
@@ -123,66 +120,11 @@ namespace Ioexnl {
     size_t decomp_elem_offset() const { return m_decomposition.file_elem_offset(); }
     size_t decomp_elem_count() const { return m_decomposition.file_elem_count(); }
 
-    std::vector<double> &centroids() { return m_decomposition.m_centroids; }
-
-    template <typename T>
-    void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const
-    {
-      m_decomposition.communicate_element_data(file_data, ioss_data, comp_count);
-    }
-
-    template <typename T>
-    void communicate_set_data(T *file_data, T *ioss_data, const Ioss::SetDecompositionData &set,
-                              size_t comp_count) const
-    {
-      m_decomposition.communicate_set_data(file_data, ioss_data, set, comp_count);
-    }
-
-    template <typename T>
-    void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const
-    {
-      m_decomposition.communicate_node_data(file_data, ioss_data, comp_count);
-    }
-
-    void   get_block_connectivity(int filePtr, INT *data, int64_t id, size_t blk_seq,
-                                  size_t nnpe) const;
-    size_t get_commset_node_size() const { return m_decomposition.m_nodeCommMap.size() / 2; }
-
-    int get_attr(int filePtr, ex_entity_type obj_type, ex_entity_id id, size_t attr_count,
-                 double *attrib) const;
-    int get_one_attr(int filePtr, ex_entity_type obj_type, ex_entity_id id, int attrib_index,
-                     double *attrib) const;
-
-    int get_var(int filePtr, int step, ex_entity_type type, int var_index, ex_entity_id id,
-                int64_t num_entity, std::vector<double> &data) const;
-
-    int get_user_map(int exoid, ex_entity_type obj_type, ex_entity_id id, int map_index,
-                     size_t offset, size_t num_entity, void *map_data) const;
-
-    template <typename T>
-    int get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
-                         const Ioss::Field &field, T *ioss_data) const;
-
-    size_t get_block_seq(ex_entity_type type, ex_entity_id id) const;
-    size_t get_block_element_count(size_t blk_seq) const;
-    size_t get_block_element_offset(size_t blk_seq) const;
-
     void create_implicit_global_map(const std::vector<int> &owning_proc,
                                     std::vector<int64_t> &global_implicit_map, Ioss::Map &node_map,
                                     int64_t *locally_owned_count, int64_t *processor_offset);
 
   private:
-#if !defined(NO_ZOLTAN_SUPPORT)
-    void zoltan_decompose(const std::string &method);
-#endif
-
-#if !defined(NO_PARMETIS_SUPPORT)
-    void metis_decompose(const std::string &method, const std::vector<INT> &element_dist);
-
-    void internal_metis_decompose(const std::string &method, idx_t *element_dist, idx_t *pointer,
-                                  idx_t *adjacency, idx_t *elem_partition);
-#endif
-
     void simple_decompose(const std::string &method, const std::vector<INT> &element_dist)
     {
       m_decomposition.simple_decompose(method, element_dist);
@@ -192,30 +134,6 @@ namespace Ioexnl {
 
     template <typename T>
     int handle_sset_df(int filePtr, ex_entity_id id, const Ioss::Field &field, T *ioss_data) const;
-
-    int get_one_set_attr(int filePtr, ex_entity_type type, ex_entity_id id, int attr_index,
-                         double *ioss_data) const;
-    int get_one_node_attr(int filePtr, ex_entity_id id, int attr_index, double *ioss_data) const;
-    int get_one_elem_attr(int filePtr, ex_entity_id id, int attr_index, double *ioss_data) const;
-
-    int get_set_attr(int filePtr, ex_entity_type type, ex_entity_id id, size_t comp_count,
-                     double *ioss_data) const;
-    int get_node_attr(int filePtr, ex_entity_id id, size_t comp_count, double *ioss_data) const;
-    int get_elem_attr(int filePtr, ex_entity_id id, size_t comp_count, double *ioss_data) const;
-
-    int get_elem_map(int filePtr, ex_entity_id blk_id, int map_index, size_t offset, size_t count,
-                     void *ioss_data) const;
-    int get_node_map(int filePtr, int map_index, size_t offset, size_t count,
-                     void *ioss_data) const;
-
-    int get_node_var(int filePtr, int step, int var_index, ex_entity_id id, int64_t num_entity,
-                     std::vector<double> &ioss_data) const;
-
-    int get_elem_var(int filePtr, int step, int var_index, ex_entity_id id, int64_t num_entity,
-                     std::vector<double> &ioss_data) const;
-
-    int get_set_var(int filePtr, int step, int var_index, ex_entity_type type, ex_entity_id id,
-                    int64_t num_entity, std::vector<double> &ioss_data) const;
 
     bool i_own_node(size_t node) const
     {
@@ -247,29 +165,7 @@ namespace Ioexnl {
       return m_decomposition.build_global_to_local_elem_map();
     }
 
-    void get_element_block_communication()
-    {
-      m_decomposition.get_element_block_communication(el_blocks);
-    }
-
-    void generate_adjacency_list(int filePtr, Ioss::Decomposition<INT> &decomposition);
-
-    void get_common_set_data(int filePtr, ex_entity_type set_type,
-                             std::vector<Ioss::SetDecompositionData> &sets,
-                             const std::string                       &set_type_name);
-
-    void get_nodeset_data(int filePtr, size_t set_count);
-
-    void get_sideset_data(int filePtr, size_t set_count);
-
-    void calculate_element_centroids(int filePtr, const std::vector<INT> &node_dist);
-#if !defined(NO_ZOLTAN_SUPPORT)
-    void get_local_element_list(const ZOLTAN_ID_PTR &export_global_ids, size_t export_count);
-#endif
-
     void get_shared_node_list() { m_decomposition.get_shared_node_list(); }
-
-    int get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;
 
     void get_local_node_list() { m_decomposition.get_local_node_list(); }
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "ioex_export.h"
+#include "ioexnl_export.h"
 
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
 #include <Ioss_CodeTypes.h>
@@ -19,7 +19,7 @@ namespace Ioss {
 
 namespace Ioexnl {
 
-  class IOEX_EXPORT IOFactory : public Ioss::IOFactory
+  class IOEXNL_EXPORT IOFactory : public Ioss::IOFactory
   {
   public:
     static const IOFactory *factory();
