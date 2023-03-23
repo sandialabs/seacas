@@ -347,16 +347,13 @@ namespace Ioexnl {
                                                     const Ioss::GroupingEntity *ge,
                                                     void                       *data) const
   {
-    std::string att_name   = ge->name() + SEP() + field.get_name();
     int64_t     num_entity = ge->entity_count();
     int64_t     offset     = field.get_index();
 
-    int64_t id = Ioexnl::get_id(ge, &ids_);
     assert(offset > 0);
     assert(offset - 1 + field.get_component_count(Ioss::Field::InOut::OUTPUT) <=
            ge->get_property("attribute_count").get_int());
 
-    size_t  proc_offset = ge->get_optional_property("_processor_offset", 0);
     int64_t file_count  = ge->get_optional_property("locally_owned_count", num_entity);
 
     Ioss::Field::BasicType ioss_type = field.get_type();
@@ -670,7 +667,6 @@ namespace Ioexnl {
     int ierr = 0;
 
     // Get the element block id and element count
-    int64_t               id               = Ioexnl::get_id(eb, &ids_);
     int64_t               my_element_count = eb->entity_count();
     Ioss::Field::RoleType role             = field.get_role();
 
@@ -1070,9 +1066,7 @@ namespace Ioexnl {
           }
 
           // Write the variable...
-          size_t proc_offset = nb->get_optional_property("_processor_offset", 0);
           size_t file_count  = nb->get_optional_property("locally_owned_count", num_out);
-
           check_node_owning_processor_data(nodeOwningProcessor, file_count);
           filter_owned_nodes(nodeOwningProcessor, myProcessor, temp.data());
         }
@@ -1188,17 +1182,13 @@ namespace Ioexnl {
       size_t entity_count = ns->entity_count();
       size_t num_to_get   = field.verify(data_size);
 
-      int64_t               id   = Ioexnl::get_id(ns, &ids_);
       Ioss::Field::RoleType role = field.get_role();
-
       if (role == Ioss::Field::MESH) {
 
-        void                *out_data = data;
         std::vector<int>     i32data;
         std::vector<int64_t> i64data;
         std::vector<double>  dbldata;
 
-        size_t proc_offset = ns->get_optional_property("_processor_offset", 0);
         size_t file_count  = ns->get_optional_property("locally_owned_count", num_to_get);
 
         ex_entity_type type = Ioexnl::map_exodus_type(ns->type());
@@ -1220,7 +1210,6 @@ namespace Ioexnl {
               assert(i32data.size() == file_count);
               // Maps local to "global_implicit"
               map_local_to_global_implicit(i32data.data(), file_count, nodeGlobalImplicitMap);
-              out_data = i32data.data();
             }
             else {
               i64data.reserve(file_count);
@@ -1229,7 +1218,6 @@ namespace Ioexnl {
                                   reinterpret_cast<int64_t *>(data), num_to_get, i64data);
               assert(i64data.size() == file_count);
               map_local_to_global_implicit(i64data.data(), file_count, nodeGlobalImplicitMap);
-              out_data = i64data.data();
             }
           }
         }
@@ -1318,33 +1306,11 @@ namespace Ioexnl {
       int64_t id         = Ioexnl::get_id(sb, &ids_);
 
       size_t entity_count = sb->entity_count();
-      size_t offset       = sb->get_property("set_offset").get_int();
 
       Ioss::Field::RoleType role = field.get_role();
 
       if (role == Ioss::Field::MESH) {
         if (field.get_name() == "side_ids" && sb->name() == "universal_sideset") {
-          // The side ids are being stored as the distribution factor
-          // field on the universal sideset.  There should be no other
-          // side sets that request this field...  (Eventually,
-          // create an id field to store this info.
-
-          // Need to convert 'ints' to 'double' for storage on mesh...
-          // FIX 64
-          if (field.get_type() == Ioss::Field::INTEGER) {
-            int                *ids = static_cast<int *>(data);
-            std::vector<double> real_ids(num_to_get);
-            for (size_t i = 0; i < num_to_get; i++) {
-              real_ids[i] = static_cast<double>(ids[i]);
-            }
-          }
-          else {
-            int64_t            *ids = static_cast<int64_t *>(data);
-            std::vector<double> real_ids(num_to_get);
-            for (size_t i = 0; i < num_to_get; i++) {
-              real_ids[i] = static_cast<double>(ids[i]);
-            }
-          }
         }
 
         else if (field.get_name() == "side_ids") {
@@ -1360,10 +1326,6 @@ namespace Ioexnl {
         }
 
         else if (field.get_name() == "distribution_factors") {
-          int    ierr;
-          size_t df_offset      = sb->get_property("set_df_offset").get_int();
-          size_t proc_df_offset = sb->get_property("processor_df_offset").get_int();
-          size_t df_count       = sb->get_property("distribution_factor_count").get_int();
         }
         else if (field.get_name() == "element_side") {
           // In exodusII, the 'side block' is stored as a sideset.  A
@@ -1513,16 +1475,7 @@ namespace Ioexnl {
         if (!omit_info) {
           put_info();
         }
-
-        // Write the metadata to the exodusII file...
-        Ioexnl::Internals data(get_file_pointer(), maximumNameLength, util());
         mesh.comm.outputNemesis = false;
-
-        int ierr = data.write_meta_data(mesh);
-
-        if (ierr < 0) {
-          Ioexnl::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-        }
       }
 
       metaDataWritten = true;

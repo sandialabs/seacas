@@ -1043,54 +1043,8 @@ namespace Ioexnl {
   }
 
   // common
-  void BaseDatabaseIO::output_results_names(ex_entity_type, VariableNameMap &variables, bool) const
+  void BaseDatabaseIO::output_results_names(ex_entity_type, VariableNameMap &, bool) const
   {
-    bool lowercase_names =
-        (properties.exists("VARIABLE_NAME_CASE") &&
-         Ioss::Utils::lowercase(properties.get("VARIABLE_NAME_CASE").get_string()) == "lower");
-    bool uppercase_names =
-        (properties.exists("VARIABLE_NAME_CASE") &&
-         Ioss::Utils::lowercase(properties.get("VARIABLE_NAME_CASE").get_string()) == "upper");
-
-    size_t var_count = variables.size();
-
-    if (var_count > 0) {
-      size_t name_length = 0;
-      // Push into a char** array...
-      std::vector<char *>      var_names(var_count);
-      std::vector<std::string> variable_names(var_count);
-      for (const auto &variable : variables) {
-        size_t index = variable.second;
-        assert(index > 0 && index <= var_count);
-        variable_names[index - 1] = variable.first;
-        if (uppercase_names) {
-          variable_names[index - 1] = Ioss::Utils::uppercase(variable_names[index - 1]);
-        }
-        else if (lowercase_names) {
-          variable_names[index - 1] = Ioss::Utils::lowercase(variable_names[index - 1]);
-        }
-        var_names[index - 1] = const_cast<char *>(variable_names[index - 1].c_str());
-        size_t name_len      = variable_names[index - 1].length();
-        name_length          = name_len > name_length ? name_len : name_length;
-      }
-
-      // Should handle this automatically, but by the time we get to defining transient fields, we
-      // have already created the output database and populated the set/block names. At this point,
-      // it is too late to change the size of the names stored on the output database... (I think...
-      // try changing DIM_STR_NAME value and see if works...)
-      if (name_length > static_cast<size_t>(maximumNameLength)) {
-        if (myProcessor == 0) {
-          fmt::print(Ioss::WarnOut(),
-                     "There are variables names whose name length ({0}) exceeds the current "
-                     "maximum name length ({1})\n         set for this database ({2}).\n"
-                     "         You should either reduce the length of the variable name, or "
-                     "set the 'MAXIMUM_NAME_LENGTH' property\n"
-                     "         to at least {0}.\n         Contact gdsjaar@sandia.gov for more "
-                     "information.\n\n",
-                     name_length, maximumNameLength, get_filename());
-        }
-      }
-    }
   }
 
   // common

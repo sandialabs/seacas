@@ -149,7 +149,6 @@ namespace Ioexnl {
   int64_t DatabaseIO::write_attribute_field(const Ioss::Field          &field,
                                             const Ioss::GroupingEntity *ge, void *data) const
   {
-    std::string att_name   = ge->name() + SEP() + field.get_name();
     int64_t     num_entity = ge->entity_count();
     int64_t     fld_offset = field.get_index();
 
@@ -747,18 +746,11 @@ namespace Ioexnl {
     // and add suffix to base 'field_name'.  Look up index
     // of this name in 'm_variables[EX_NODE_BLOCK]' map
     int comp_count = field.get_component_count(Ioss::Field::InOut::OUTPUT);
-    int var_index  = 0;
-
     int re_im = 1;
     if (ioss_type == Ioss::Field::COMPLEX) {
       re_im = 2;
     }
     for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-      std::string field_name = field.get_name();
-      if (re_im == 2) {
-        field_name += complex_suffix[complex_comp];
-      }
-
       for (int i = 0; i < comp_count; i++) {
         std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
@@ -768,7 +760,7 @@ namespace Ioexnl {
           fmt::print(errmsg, "ERROR: Could not find nodal variable '{}'\n", var_name);
           IOSS_ERROR(errmsg);
         }
-        var_index = var_iter->second;
+        int var_index = var_iter->second;
 
         size_t  begin_offset = (re_im * i) + complex_comp;
         size_t  stride       = re_im * comp_count;
@@ -1141,27 +1133,6 @@ namespace Ioexnl {
 
       if (role == Ioss::Field::MESH) {
         if (field.get_name() == "side_ids" && fb->name() == "universal_sideset") {
-          // The side ids are being stored as the distribution factor
-          // field on the universal sideset.  There should be no other
-          // side sets that request this field...  (Eventually,
-          // create an id field to store this info.
-
-          // Need to convert 'ints' to 'double' for storage on mesh...
-          // FIX 64
-          if (field.get_type() == Ioss::Field::INTEGER) {
-            int                *ids = static_cast<int *>(data);
-            std::vector<double> real_ids(num_to_get);
-            for (size_t i = 0; i < num_to_get; i++) {
-              real_ids[i] = static_cast<double>(ids[i]);
-            }
-          }
-          else {
-            auto               *ids = static_cast<int64_t *>(data);
-            std::vector<double> real_ids(num_to_get);
-            for (size_t i = 0; i < num_to_get; i++) {
-              real_ids[i] = static_cast<double>(ids[i]);
-            }
-          }
         }
 
         else if (field.get_name() == "side_ids") {
@@ -1358,8 +1329,6 @@ namespace Ioexnl {
           put_info();
         }
 
-        // Write the metadata to the exodus file...
-        Ioexnl::Internals data(get_file_pointer(), maximumNameLength, util());
         output_other_meta_data();
       }
     }

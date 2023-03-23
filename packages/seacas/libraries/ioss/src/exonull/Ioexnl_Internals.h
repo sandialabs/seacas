@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -354,66 +354,5 @@ namespace Ioexnl {
     std::vector<SideSet>   sidesets{};
     CommunicationMetaData  comm{};
     Ioss::ParallelUtils    parallelUtil;
-  };
-
-  class IOEXNL_EXPORT Internals
-  {
-  public:
-    Internals(int exoid, int maximum_name_length, const Ioss::ParallelUtils &util);
-    Internals(const Internals &from)            = delete;
-    Internals &operator=(const Internals &from) = delete;
-
-    int initialize_state_file(Mesh &mesh, const ex_var_params &var_params,
-                              const std::string &base_filename);
-
-    int write_meta_data(Mesh &mesh);
-
-    /* Special use for updating assembly data in-place in existing db file */
-    /* See src/main/io_assembly.C for current use */
-    static void update_assembly_data(int exoid, std::vector<Assembly> &assemblies, int stage = 0);
-
-    // Simple wrapper around `ex_copy`, but keeps users from including `exodusII.h`
-    static void copy_database(int in_file, int out_file, bool transient_also = true);
-
-  private:
-    int put_metadata(const Mesh &mesh, const CommunicationMetaData &comm);
-    int put_metadata(const std::vector<Assembly> &assemblies);
-    int put_metadata(const std::vector<Blob> &blobs);
-    int put_metadata(const std::vector<NodeBlock> &nodeblocks, bool count_only = false);
-    int put_metadata(const std::vector<EdgeBlock> &blocks, bool count_only = false);
-    int put_metadata(const std::vector<FaceBlock> &blocks, bool count_only = false);
-    int put_metadata(const std::vector<ElemBlock> &blocks, bool count_only = false);
-
-    int put_metadata(const std::vector<NodeSet> &nodesets, bool count_only = false);
-    int put_metadata(const std::vector<EdgeSet> &edgesets, bool count_only = false);
-    int put_metadata(const std::vector<FaceSet> &facesets, bool count_only = false);
-    int put_metadata(const std::vector<ElemSet> &elemsets, bool count_only = false);
-
-    int put_metadata(const std::vector<SideSet> &sidesets, bool count_only = false);
-
-    int put_non_define_data(const CommunicationMetaData &comm, bool minimal_nemesis_data);
-    int put_non_define_data(const std::vector<Assembly> &assemblies);
-    int put_non_define_data(const std::vector<Blob> &blobs);
-    int put_non_define_data(const std::vector<NodeBlock> &nodeblocks);
-    int put_non_define_data(const std::vector<EdgeBlock> &blocks);
-    int put_non_define_data(const std::vector<FaceBlock> &blocks);
-    int put_non_define_data(const std::vector<ElemBlock> &blocks, bool output_global_data);
-
-    int put_non_define_data(const std::vector<NodeSet> &nodesets, bool output_global_data);
-    int put_non_define_data(const std::vector<EdgeSet> &edgesets);
-    int put_non_define_data(const std::vector<FaceSet> &facesets);
-    int put_non_define_data(const std::vector<ElemSet> &elemsets);
-
-    int put_non_define_data(const std::vector<SideSet> &sidesets, bool output_global_data);
-
-    int max_name_length() const { return maximumNameLength; }
-
-    int                 exodusFilePtr{0};
-    int                 nodeMapVarID[3];
-    int                 elementMapVarID[2];
-    int                 commIndexVar{0};
-    int                 elemCommIndexVar{0};
-    int                 maximumNameLength{32};
-    Ioss::ParallelUtils parallelUtil;
   };
 } // namespace Ioexnl
