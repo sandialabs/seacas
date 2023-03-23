@@ -1339,12 +1339,6 @@ namespace Ioexnl {
     Ioexnl::write_reduction_attributes(get_file_pointer(), get_region()->get_blobs());
 
     // Write coordinate names...
-    if (!get_region()->get_node_blocks().empty()) {
-      char const *labels[3];
-      labels[0] = "x";
-      labels[1] = "y";
-      labels[2] = "z";
-    }
 
     // Determine number of node, element maps (client-specified)
     // Set the index/order of the maps for later output.

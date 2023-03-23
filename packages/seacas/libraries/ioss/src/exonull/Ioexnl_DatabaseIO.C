@@ -72,8 +72,6 @@
 // ========================================================================
 namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
-
-  const std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
   const std::array<std::string, 2> complex_suffix{".re", ".im"};
 
   template <typename T>
@@ -850,8 +848,6 @@ namespace Ioexnl {
         fmt::print(errmsg, "ERROR: Could not find field '{}'\n", var_name);
         IOSS_ERROR(errmsg);
       }
-      int var_index = var_iter->second;
-      assert(var_index > 0);
       return;
     }
     int re_im = 1;
@@ -868,9 +864,6 @@ namespace Ioexnl {
           fmt::print(errmsg, "ERROR: Could not find field '{}'\n", var_name);
           IOSS_ERROR(errmsg);
         }
-        int var_index = var_iter->second;
-        assert(var_index > 0);
-
         // var is a [count,comp,re_im] array;  re_im = 1(real) or 2(complex)
         // beg_offset = (re_im*i)+complex_comp
         // number_values = count
