@@ -664,8 +664,6 @@ namespace Ioexnl {
   {
     size_t num_to_get = field.verify(data_size);
 
-    int ierr = 0;
-
     // Get the element block id and element count
     int64_t               my_element_count = eb->entity_count();
     Ioss::Field::RoleType role             = field.get_role();
@@ -748,10 +746,6 @@ namespace Ioexnl {
             index += comp_count;
           }
         }
-        auto eb_offset =
-            eb->get_offset();    // Offset of beginning of the element block elements for this block
-        int index = -1 * (field.get_index() +
-                          comp); // Negative since specifying index, not id to exodus API.
       }
     }
       else if (role == Ioss::Field::ATTRIBUTE)
@@ -785,10 +779,7 @@ namespace Ioexnl {
     {
       size_t num_to_get = field.verify(data_size);
 
-      int ierr = 0;
-
       // Get the face block id and face count
-      int64_t               id            = Ioexnl::get_id(eb, &ids_);
       int64_t               my_face_count = eb->entity_count();
       Ioss::Field::RoleType role          = field.get_role();
 
@@ -844,8 +835,6 @@ namespace Ioexnl {
         const Ioss::EdgeBlock *eb, const Ioss::Field &field, void *data, size_t data_size) const
     {
       size_t num_to_get = field.verify(data_size);
-
-      int ierr = 0;
 
       // Get the edge block id and edge count
       int64_t               id            = Ioexnl::get_id(eb, &ids_);
@@ -1019,11 +1008,6 @@ namespace Ioexnl {
         re_im = 2;
       }
       for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-        std::string field_name = field.get_name();
-        if (re_im == 2) {
-          field_name += complex_suffix[complex_comp];
-        }
-
         for (int i = 0; i < comp_count; i++) {
           std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, i + 1);
 
@@ -1162,11 +1146,7 @@ namespace Ioexnl {
           }
 
           // Write the variable...
-          size_t proc_offset = ge->get_optional_property("_processor_offset", 0);
           size_t file_count  = ge->get_optional_property("locally_owned_count", count);
-
-          int64_t id = Ioexnl::get_id(ge, &ids_);
-          int     ierr;
           if (type == EX_NODE_SET) {
             std::vector<double> file_data;
             file_data.reserve(file_count);
@@ -1184,11 +1164,6 @@ namespace Ioexnl {
 
       Ioss::Field::RoleType role = field.get_role();
       if (role == Ioss::Field::MESH) {
-
-        std::vector<int>     i32data;
-        std::vector<int64_t> i64data;
-        std::vector<double>  dbldata;
-
         size_t file_count  = ns->get_optional_property("locally_owned_count", num_to_get);
 
         ex_entity_type type = Ioexnl::map_exodus_type(ns->type());
@@ -1203,6 +1178,7 @@ namespace Ioexnl {
           if (type == EX_NODE_SET) {
             nodesetOwnedNodes[ns].reserve(file_count);
             if (int_byte_size_api() == 4) {
+	      std::vector<int>     i32data;
               i32data.reserve(file_count);
               check_node_owning_processor_data(nodeOwningProcessor, file_count);
               map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
@@ -1212,6 +1188,7 @@ namespace Ioexnl {
               map_local_to_global_implicit(i32data.data(), file_count, nodeGlobalImplicitMap);
             }
             else {
+	      std::vector<int64_t> i64data;
               i64data.reserve(file_count);
               check_node_owning_processor_data(nodeOwningProcessor, file_count);
               map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
@@ -1224,8 +1201,8 @@ namespace Ioexnl {
         else if (field.get_name() == "orientation") {
         }
         else if (field.get_name() == "distribution_factors") {
-          int ierr = 0;
           if (type == EX_NODE_SET) {
+	    std::vector<double>  dbldata;
             map_nodeset_data(nodesetOwnedNodes[ns], reinterpret_cast<double *>(data), dbldata);
           }
         }
@@ -1303,8 +1280,6 @@ namespace Ioexnl {
         const Ioss::SideBlock *sb, const Ioss::Field &field, void *data, size_t data_size) const
     {
       size_t  num_to_get = field.verify(data_size);
-      int64_t id         = Ioexnl::get_id(sb, &ids_);
-
       size_t entity_count = sb->entity_count();
 
       Ioss::Field::RoleType role = field.get_role();
@@ -1346,15 +1321,12 @@ namespace Ioexnl {
           // See if edges or faces...
           size_t side_offset = Ioss::Utils::get_side_offset(sb);
 
-          size_t index = 0;
-
-          size_t proc_offset = sb->get_optional_property("_processor_offset", 0);
-
           if (field.get_type() == Ioss::Field::INTEGER) {
             Ioss::IntVector element(num_to_get);
             Ioss::IntVector side(num_to_get);
             int            *el_side = reinterpret_cast<int *>(data);
 
+	    size_t index = 0;
             for (size_t i = 0; i < num_to_get; i++) {
               element[i] = elemMap.global_to_local(el_side[index++]);
               side[i]    = el_side[index++] + side_offset;
@@ -1367,6 +1339,7 @@ namespace Ioexnl {
             Ioss::Int64Vector side(num_to_get);
             int64_t          *el_side = reinterpret_cast<int64_t *>(data);
 
+	    size_t index = 0;
             for (size_t i = 0; i < num_to_get; i++) {
               element[i] = elemMap.global_to_local(el_side[index++]);
               side[i]    = el_side[index++] + side_offset;
@@ -1531,12 +1504,9 @@ namespace Ioexnl {
         if (node_blocks.empty()) {
           return;
         }
-        assert(node_blocks[0]->property_exists("_processor_offset"));
         assert(node_blocks[0]->property_exists("locally_owned_count"));
-        size_t processor_offset    = node_blocks[0]->get_property("_processor_offset").get_int();
         size_t locally_owned_count = node_blocks[0]->get_property("locally_owned_count").get_int();
 
-        int ierr = 0;
         if (nodeMap.defined() && nodeGlobalImplicitMapDefined) {
 
           if (int_byte_size_api() == 4) {

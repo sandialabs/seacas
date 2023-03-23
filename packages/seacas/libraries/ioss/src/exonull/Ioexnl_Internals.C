@@ -324,7 +324,7 @@ void Mesh::populate(Ioss::Region *region)
   // Assemblies --
   {
     const auto &assem = region->get_assemblies();
-    for (auto &assembly : assem) {
+    for (const auto &assembly : assem) {
       Ioexnl::Assembly T(*(assembly));
       assemblies.push_back(T);
     }
@@ -333,7 +333,7 @@ void Mesh::populate(Ioss::Region *region)
   // Blobs --
   {
     const auto &blbs = region->get_blobs();
-    for (auto &blob : blbs) {
+    for (const auto &blob : blbs) {
       Ioexnl::Blob T(*(blob));
       blobs.push_back(T);
     }
@@ -342,7 +342,7 @@ void Mesh::populate(Ioss::Region *region)
   // Edge Blocks --
   {
     const Ioss::EdgeBlockContainer &edge_blocks = region->get_edge_blocks();
-    for (auto &edge_block : edge_blocks) {
+    for (const auto &edge_block : edge_blocks) {
       Ioexnl::EdgeBlock T(*(edge_block));
       edgeblocks.push_back(T);
     }
@@ -351,7 +351,7 @@ void Mesh::populate(Ioss::Region *region)
   // Face Blocks --
   {
     const Ioss::FaceBlockContainer &face_blocks = region->get_face_blocks();
-    for (auto &face_block : face_blocks) {
+    for (const auto &face_block : face_blocks) {
       Ioexnl::FaceBlock T(*(face_block));
       faceblocks.push_back(T);
     }
@@ -360,7 +360,7 @@ void Mesh::populate(Ioss::Region *region)
   // Element Blocks --
   {
     const Ioss::ElementBlockContainer &element_blocks = region->get_element_blocks();
-    for (auto &element_block : element_blocks) {
+    for (const auto &element_block : element_blocks) {
       Ioexnl::ElemBlock T(*(element_block));
       elemblocks.push_back(T);
     }
@@ -369,7 +369,7 @@ void Mesh::populate(Ioss::Region *region)
   // NodeSets ...
   {
     const Ioss::NodeSetContainer &node_sets = region->get_nodesets();
-    for (auto &set : node_sets) {
+    for (const auto &set : node_sets) {
       const Ioexnl::NodeSet T(*(set));
       nodesets.push_back(T);
     }
@@ -378,7 +378,7 @@ void Mesh::populate(Ioss::Region *region)
   // EdgeSets ...
   {
     const Ioss::EdgeSetContainer &edge_sets = region->get_edgesets();
-    for (auto &set : edge_sets) {
+    for (const auto &set : edge_sets) {
       const Ioexnl::EdgeSet T(*(set));
       edgesets.push_back(T);
     }
@@ -387,7 +387,7 @@ void Mesh::populate(Ioss::Region *region)
   // FaceSets ...
   {
     const Ioss::FaceSetContainer &face_sets = region->get_facesets();
-    for (auto &set : face_sets) {
+    for (const auto &set : face_sets) {
       const Ioexnl::FaceSet T(*(set));
       facesets.push_back(T);
     }
@@ -396,7 +396,7 @@ void Mesh::populate(Ioss::Region *region)
   // ElementSets ...
   {
     const Ioss::ElementSetContainer &element_sets = region->get_elementsets();
-    for (auto &set : element_sets) {
+    for (const auto &set : element_sets) {
       const Ioexnl::ElemSet T(*(set));
       elemsets.push_back(T);
     }
@@ -405,7 +405,7 @@ void Mesh::populate(Ioss::Region *region)
   // SideSets ...
   {
     const Ioss::SideSetContainer &ssets = region->get_sidesets();
-    for (auto &set : ssets) {
+    for (const auto &set : ssets) {
       // Add a SideSet corresponding to this SideSet/SideBlock
       Ioexnl::SideSet T(*set);
       sidesets.push_back(T);
@@ -424,39 +424,39 @@ void Mesh::get_global_counts()
   std::vector<int64_t> counts;
   std::vector<int64_t> global_counts;
 
-  for (auto &nodeblock : nodeblocks) {
+  for (const auto &nodeblock : nodeblocks) {
     counts.push_back(nodeblock.localOwnedCount);
   }
-  for (auto &edgeblock : edgeblocks) {
+  for (const auto &edgeblock : edgeblocks) {
     counts.push_back(edgeblock.entityCount);
   }
-  for (auto &faceblock : faceblocks) {
+  for (const auto &faceblock : faceblocks) {
     counts.push_back(faceblock.entityCount);
   }
-  for (auto &elemblock : elemblocks) {
+  for (const auto &elemblock : elemblocks) {
     counts.push_back(elemblock.entityCount);
   }
-  for (auto &nodeset : nodesets) {
+  for (const auto &nodeset : nodesets) {
     counts.push_back(nodeset.localOwnedCount);
     counts.push_back(nodeset.dfCount);
   }
-  for (auto &edgeset : edgesets) {
+  for (const auto &edgeset : edgesets) {
     counts.push_back(edgeset.entityCount);
     counts.push_back(edgeset.dfCount);
   }
-  for (auto &faceset : facesets) {
+  for (const auto &faceset : facesets) {
     counts.push_back(faceset.entityCount);
     counts.push_back(faceset.dfCount);
   }
-  for (auto &elemset : elemsets) {
+  for (const auto &elemset : elemsets) {
     counts.push_back(elemset.entityCount);
     counts.push_back(elemset.dfCount);
   }
-  for (auto &sideset : sidesets) {
+  for (const auto &sideset : sidesets) {
     counts.push_back(sideset.entityCount);
     counts.push_back(sideset.dfCount);
   }
-  for (auto &blob : blobs) {
+  for (const auto &blob : blobs) {
     counts.push_back(blob.entityCount);
   }
 
