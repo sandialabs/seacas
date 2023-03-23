@@ -670,7 +670,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
       }
 
       for (int pcnt = 0; pcnt < machine->num_procs; pcnt++) {
-        for (auto &elem : lb->bor_nodes[pcnt]) {
+        for (const auto &elem : lb->bor_nodes[pcnt]) {
           proc_vals[elem] = machine->num_procs + 1;
         }
       }

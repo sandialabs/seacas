@@ -19,7 +19,7 @@
 namespace {
   // Opposite side IDs in a hex according to Exodus II convention
 
-  std::array<int, 6> hex_opp_side{3, 4, 1, 2, 6, 5};
+  const std::array<int, 6> hex_opp_side{3, 4, 1, 2, 6, 5};
 
   /*! @brief Given an element and a side, find the adjacent element to that side
     @param cur_elem  Current element under consideration

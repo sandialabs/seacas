@@ -205,7 +205,7 @@ int read_mesh_params(const std::string &exo_file, Problem_Description *problem,
   }
 
   /* Allocate and initialize memory for the sphere adjustment */
-  sphere->adjust = (int *)malloc(sizeof(int) * 3 * (mesh->num_el_blks));
+  sphere->adjust = new int[3 * (mesh->num_el_blks)];
   if (!(sphere->adjust)) {
     Gen_Error(0, "fatal: insufficient memory");
     ex_close(exoid);
@@ -335,14 +335,11 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
       continue;
     }
 
-    INT *blk_connect = (INT *)malloc(sizeof(INT) * mesh->eb_cnts[cnt] * mesh->eb_npe[cnt]);
-    if (!blk_connect) {
-      Gen_Error(0, "fatal: insufficient memory");
-      return 0;
-    }
+    std::vector<INT> blk_connect(mesh->eb_cnts[cnt] * mesh->eb_npe[cnt]);
 
     /* Get the connectivity for this element block */
-    if (ex_get_conn(exoid, EX_ELEM_BLOCK, mesh->eb_ids[cnt], blk_connect, nullptr, nullptr) < 0) {
+    if (ex_get_conn(exoid, EX_ELEM_BLOCK, mesh->eb_ids[cnt], blk_connect.data(), nullptr, nullptr) <
+        0) {
       Gen_Error(0, "fatal: failed to get element connectivity");
       return 0;
     }
@@ -434,9 +431,6 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
         gelem_cnt++;
       }
     }
-    /* Free up memory */
-    free(blk_connect);
-
   } /* End "for(cnt=0; cnt < mesh->num_el_blks; cnt++)" */
 
   /* if there is a group designator, then parse it here */

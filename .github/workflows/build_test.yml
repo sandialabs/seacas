@@ -18,7 +18,7 @@ jobs:
       matrix:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V18, V110, V114 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
     steps:
 
@@ -59,7 +59,7 @@ jobs:
       matrix:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V18, V110, V114 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
     steps:
 

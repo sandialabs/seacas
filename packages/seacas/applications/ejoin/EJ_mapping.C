@@ -217,8 +217,8 @@ void build_local_element_map(RegionVector &part_mesh, std::vector<INT> &local_el
     Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
 
     while (i != ebs.end()) {
-      Ioss::ElementBlock *eb       = *i++;
-      size_t              num_elem = eb->entity_count();
+      const auto *eb       = *i++;
+      size_t      num_elem = eb->entity_count();
       if (entity_is_omitted(eb)) {
         // Fill local_element_map with -1 for the omitted elements.
         for (size_t j = 0; j < num_elem; j++) {

@@ -233,7 +233,7 @@ repositories
 * CMake is used to generate the build system.
 
 * C, C++, and (optionally) Fortran compilers.  The C compiler must
-support the C11 standard and C++ must support C+++14.  GNU, Clang,
+support the C11 standard and C++ must support C+++17.  GNU, Clang,
 Intel, Cray, compilers are supported and tested regularly.
 
 * For parallel capability, an MPI library is needed.  We have used

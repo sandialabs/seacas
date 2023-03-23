@@ -379,7 +379,7 @@ template <typename INT> int internal_main(int argc, char *argv[], INT /* dummy *
 
   /* free up memory */
   if (sphere.adjust) {
-    free(sphere.adjust);
+    delete[] sphere.adjust;
   }
 
 #ifdef PRINT_VERT

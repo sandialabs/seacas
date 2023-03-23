@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -64,7 +64,7 @@ template int parse_groups(Mesh_Description<int64_t> *mesh, Problem_Description *
 template <typename INT> int parse_groups(Mesh_Description<INT> *mesh, Problem_Description *prob)
 {
   /* allocate memory for the groups */
-  prob->group_no = (int *)malloc(mesh->num_el_blks * sizeof(int));
+  prob->group_no = new int[mesh->num_el_blks];
   if (!(prob->group_no)) {
     Gen_Error(0, "fatal: insufficient memory");
     return 0;
@@ -124,7 +124,7 @@ template <typename INT> int parse_groups(Mesh_Description<INT> *mesh, Problem_De
   }
 
   /* finished with the group designator string */
-  free(prob->groups);
+  delete[] prob->groups;
 
   return 1;
 }

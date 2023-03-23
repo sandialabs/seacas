@@ -123,7 +123,6 @@ exoid = ex_create ("test.exo"       \comment{filename path}
 */
 #include "exodusII.h"
 #include "exodusII_int.h"
-#include <libgen.h>
 #include <stdlib.h>
 
 /* NOTE: Do *not* call `ex_create_int()` directly.  The public API

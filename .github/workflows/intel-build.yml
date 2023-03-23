@@ -17,7 +17,7 @@ jobs:
       matrix:
         compiler: [ intel, mpi ]
         hdf5: [ V114 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
 
     defaults:
@@ -76,7 +76,7 @@ jobs:
       matrix:
         compiler: [ intel, mpi ]
         hdf5: [ V114 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
     steps:
 
