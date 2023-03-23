@@ -757,6 +757,7 @@ namespace Ioexnl {
         int index = -1 * (field.get_index() +
                           comp); // Negative since specifying index, not id to exodus API.
       }
+    }
       else if (role == Ioss::Field::ATTRIBUTE)
       {
         num_to_get = write_attribute_field(field, eb, data);

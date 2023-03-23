@@ -40,7 +40,6 @@ namespace Ioexnl {
 
     virtual ~DecompositionDataBase()            = default;
     virtual int    int_size() const             = 0;
-    virtual void   decompose_model(int filePtr) = 0;
     virtual size_t ioss_node_count() const      = 0;
     virtual size_t ioss_elem_count() const      = 0;
 
@@ -53,8 +52,6 @@ namespace Ioexnl {
     virtual size_t decomp_elem_offset() const = 0;
     virtual size_t decomp_elem_count() const  = 0;
 
-    virtual std::vector<double> &centroids() = 0;
-
     Ioss_MPI_Comm comm_;
 
     int m_processor{0};
@@ -63,38 +60,6 @@ namespace Ioexnl {
     std::vector<Ioss::BlockDecompositionData> el_blocks;
     std::vector<Ioss::SetDecompositionData>   node_sets;
     std::vector<Ioss::SetDecompositionData>   side_sets;
-
-    const Ioss::SetDecompositionData &get_decomp_set(ex_entity_type type, ex_entity_id id) const;
-
-    template <typename T>
-    void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
-
-    void get_block_connectivity(int filePtr, void *data, int64_t id, size_t blk_seq,
-                                size_t nnpe) const;
-
-    void read_elem_proc_map(int filePtr, void *data) const;
-
-    void get_node_entity_proc_data(void *entity_proc, const Ioss::MapContainer &node_map,
-                                   bool do_map) const;
-
-    int get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
-                         const Ioss::Field &field, void *ioss_data) const;
-
-    int get_set_mesh_double(int filePtr, ex_entity_type type, ex_entity_id id,
-                            const Ioss::Field &field, double *ioss_data) const;
-
-    virtual size_t get_commset_node_size() const = 0;
-
-    virtual int get_node_coordinates(int filePtr, double *ioss_data,
-                                     const Ioss::Field &field) const                 = 0;
-    virtual int get_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
-                             int attrib_index, double *attrib) const                 = 0;
-    virtual int get_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, size_t attr_count,
-                         double *attrib) const                                       = 0;
-    virtual int get_var(int filePtr, int step, ex_entity_type type, int var_index, ex_entity_id id,
-                        int64_t num_entity, std::vector<double> &data) const         = 0;
-    virtual int get_user_map(int exoid, ex_entity_type obj_type, ex_entity_id id, int map_index,
-                             size_t offset, size_t num_entity, void *map_data) const = 0;
   };
 
   template <typename INT> class DecompositionData : public DecompositionDataBase
@@ -104,8 +69,6 @@ namespace Ioexnl {
     ~DecompositionData() = default;
 
     int int_size() const { return sizeof(INT); }
-
-    void decompose_model(int filePtr);
 
     int spatial_dimension() const { return m_decomposition.m_spatialDimension; }
 

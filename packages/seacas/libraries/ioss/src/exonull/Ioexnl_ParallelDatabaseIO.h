@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -79,49 +79,13 @@ namespace Ioexnl {
 
     void release_memory__() override;
 
-    void get_step_times__() override;
+    void get_step_times__() override {}
 
-    bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
-                         bool abort_if_error) const override;
     bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
                             bool overwrite, bool abort_if_error) const override;
     bool check_valid_file_ptr(bool write_message, std::string *error_msg, int *bad_count,
                               bool abort_if_error) const;
 
-    int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::StructuredBlock * /* sb */,
-                               const Ioss::Field & /* field */, void * /* data */,
-                               size_t /* data_size */) const override
-    {
-      return -1;
-    }
-    int64_t get_field_internal(const Ioss::SideBlock *sb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::EdgeSet *ns, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::FaceSet *ns, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::ElementSet *ns, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::SideSet *fs, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::Assembly *sb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::Blob *sb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,

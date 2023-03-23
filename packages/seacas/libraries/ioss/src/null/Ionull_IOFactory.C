@@ -7,9 +7,6 @@
 #include <null/Ionull_DatabaseIO.h>
 #include <null/Ionull_IOFactory.h>
 
-#if defined(SEACAS_HAVE_MPI)
-#include <null/Ionull_ParallelDatabaseIO.h>
-#endif
 #include <tokenize.h>
 
 #include <cstddef>          // for nullptr
@@ -23,15 +20,6 @@
 namespace Ioss {
   class DatabaseIO;
 } // namespace Ioss
-
-#if defined(SEACAS_HAVE_MPI)
-namespace {
-  std::string check_decomposition_property(const Ioss::PropertyManager &properties,
-                                           Ioss::DatabaseUsage          db_usage);
-  bool        check_composition_property(const Ioss::PropertyManager &properties,
-                                         Ioss::DatabaseUsage          db_usage);
-} // namespace
-#endif
 
 namespace Ionull {
 
@@ -47,45 +35,6 @@ namespace Ionull {
                                        Ioss_MPI_Comm                communicator,
                                        const Ioss::PropertyManager &properties) const
   {
-#if defined(SEACAS_HAVE_MPI)
-    Ioss::ParallelUtils pu(communicator);
-    int                 proc_count = pu.parallel_size();
-
-    bool decompose = false;
-    if (proc_count > 1) {
-      if (db_usage == Ioss::WRITE_RESULTS || db_usage == Ioss::WRITE_RESTART) {
-        if (check_composition_property(properties, db_usage)) {
-          decompose = true;
-        }
-      }
-    }
-
-    // Could call Ionull::ParallelDatabaseIO constructor directly, but that leads to some circular
-    // dependencies and other yuks.
-    if (decompose)
-      return new Ionull::ParallelDatabaseIO(nullptr, filename, db_usage, communicator, properties);
-    else
-#endif
-      return new Ionull::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
+    return new Ionull::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
   }
 } // namespace Ionull
-
-#if defined(SEACAS_HAVE_MPI)
-namespace {
-  bool check_composition_property(const Ioss::PropertyManager &properties,
-                                  Ioss::DatabaseUsage          db_usage)
-  {
-    bool        compose          = false;
-    std::string compose_property = "COMPOSE_INVALID";
-    if (db_usage == Ioss::WRITE_RESULTS) {
-      compose_property = "COMPOSE_RESULTS";
-    }
-    else if (db_usage == Ioss::WRITE_RESTART) {
-      compose_property = "COMPOSE_RESTART";
-    }
-
-    Ioss::Utils::check_set_bool_property(properties, compose_property, compose);
-    return compose;
-  }
-} // namespace
-#endif
