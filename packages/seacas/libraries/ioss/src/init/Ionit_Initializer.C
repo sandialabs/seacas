@@ -42,6 +42,7 @@
 #include <visualization/cgns/Iovs_cgns_IOFactory.h>
 #include <visualization/exodus/Iovs_exodus_IOFactory.h>
 
+#include <exonull/Ioexnl_IOFactory.h>
 #include <null/Ionull_IOFactory.h>
 
 namespace {
@@ -90,6 +91,7 @@ namespace Ioss {
       Iotm::IOFactory::factory();        // TextMesh
       Iogs::IOFactory::factory();        // Structured Mesh Generator
       Ionull::IOFactory::factory();
+      Ioexnl::IOFactory::factory();
       Ioss::StorageInitializer();
       Ioss::Initializer();
       Iotr::Initializer();
