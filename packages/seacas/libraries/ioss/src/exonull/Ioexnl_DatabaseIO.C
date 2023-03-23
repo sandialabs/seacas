@@ -7,7 +7,6 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_ParallelUtils.h>
-#include <Ioss_SerializeIO.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
@@ -133,118 +132,11 @@ namespace Ioexnl {
                          const Ioss::PropertyManager &props)
       : Ioexnl::BaseDatabaseIO(region, filename, db_usage, communicator, props)
   {
-    if (!is_input()) {
-      // Check whether appending to or modify existing file...
-      if (open_create_behavior() == Ioss::DB_APPEND ||
-          open_create_behavior() == Ioss::DB_APPEND_GROUP ||
-          open_create_behavior() == Ioss::DB_MODIFY) {
-        // Append to file if it already exists -- See if the file exists.
-        auto file  = Ioss::FileInfo(decoded_filename());
-        fileExists = file.exists();
-      }
-    }
-
-    if (properties.exists("processor_count") && properties.exists("my_processor")) {
-      if (!isParallel) {
-        isSerialParallel = true;
-      }
-      else {
-        std::ostringstream errmsg;
-        fmt::print(
-            errmsg,
-            "ERROR: Processor id and processor count are specified via the "
-            "'processor_count' and 'processor_id' properties which indicates that this "
-            "database is "
-            "being run in 'serial-parallel' mode, but the database constructor was passed an "
-            "mpi communicator which has more than 1 processor. This is not allowed.\n");
-        IOSS_ERROR(errmsg);
-      }
-    }
   }
 
-  bool DatabaseIO::check_valid_file_ptr(bool write_message, std::string *error_msg, int *bad_count,
-                                        bool abort_if_error) const
-  {
-    bool no_collective_calls = Ioss::SerializeIO::isEnabled();
-    if (isParallel && no_collective_calls) {
-      // Can't output a nice error message on processor 0 and throw a consistent error.
-      // Have to just write message on processors that have issue and throw exception.
-      if (m_exodusFilePtr < 0) {
-        std::ostringstream errmsg;
-        std::string        open_create = is_input() ? "open input" : "create output";
-        fmt::print(errmsg, "ERROR: Unable to {} exodus decomposed database file '{}'\n",
-                   open_create, decoded_filename());
+  bool DatabaseIO::check_valid_file_ptr(bool, std::string *, int *, bool) const { return true; }
 
-        if (abort_if_error) {
-          IOSS_ERROR(errmsg);
-        }
-        Ioss::WarnOut() << errmsg.str();
-        return false;
-      }
-      return true; // At least on this processor...
-    }
-
-    // Check for valid exodus_file_ptr (valid >= 0; invalid < 0)
-    int global_file_ptr = m_exodusFilePtr;
-    if (isParallel) {
-      global_file_ptr = util().global_minmax(m_exodusFilePtr, Ioss::ParallelUtils::DO_MIN);
-    }
-
-    if (global_file_ptr < 0) {
-      if (write_message || error_msg != nullptr || bad_count != nullptr) {
-        Ioss::IntVector status;
-        if (isParallel) {
-          util().all_gather(m_exodusFilePtr, status);
-        }
-        else {
-          status.push_back(m_exodusFilePtr);
-        }
-
-        std::string open_create = is_input() ? "open input" : "create output";
-        if (write_message || error_msg != nullptr) {
-          // See which processors could not open/create the file...
-          std::ostringstream errmsg;
-          if (isParallel) {
-            fmt::print(errmsg, "ERROR: Unable to {} exodus decomposed database files:\n",
-                       open_create);
-            for (int i = 0; i < util().parallel_size(); i++) {
-              if (status[i] < 0) {
-                fmt::print(errmsg, "\t{}\n",
-                           Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size()));
-              }
-            }
-          }
-          else {
-            fmt::print(errmsg, "ERROR: Unable to {} database '{}' of type 'exodusII'", open_create,
-                       get_filename());
-          }
-          fmt::print(errmsg, "\n");
-          if (error_msg != nullptr) {
-            *error_msg = errmsg.str();
-          }
-          if (write_message && myProcessor == 0) {
-            Ioss::WarnOut() << errmsg.str();
-          }
-        }
-        if (bad_count != nullptr) {
-          *bad_count = std::count_if(status.begin(), status.end(), [](int i) { return i < 0; });
-        }
-        if (abort_if_error) {
-          std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: Cannot {} file '{}'\n", open_create, get_filename());
-          IOSS_ERROR(errmsg);
-        }
-      }
-      return false;
-    }
-    return true;
-  }
-
-  bool DatabaseIO::handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
-                                      bool overwrite, bool abort_if_error) const
-  {
-    return true;
-  }
+  bool DatabaseIO::handle_output_file(bool, std::string *, int *, bool, bool) const { return true; }
 
   int DatabaseIO::get_file_pointer() const { return 0; }
 
@@ -261,9 +153,7 @@ namespace Ioexnl {
     int64_t     num_entity = ge->entity_count();
     int64_t     fld_offset = field.get_index();
 
-    ex_entity_type type            = Ioexnl::map_exodus_type(ge->type());
-    int64_t        id              = Ioexnl::get_id(ge, &ids_);
-    int            attribute_count = ge->get_property("attribute_count").get_int();
+    int attribute_count = ge->get_property("attribute_count").get_int();
     assert(fld_offset > 0);
     assert(fld_offset - 1 + field.get_component_count(Ioss::Field::InOut::OUTPUT) <=
            attribute_count);
@@ -280,19 +170,13 @@ namespace Ioexnl {
         field.get_component_count(Ioss::Field::InOut::OUTPUT) == attribute_count) {
       // Write all attributes in one big chunk...
       std::vector<double> temp;
-      double             *rdata = nullptr;
       if (ioss_type == Ioss::Field::INTEGER) {
         int *idata = static_cast<int *>(data);
         extract_data(temp, idata, attribute_count * num_entity, 1, 0);
-        rdata = temp.data();
       }
       else if (ioss_type == Ioss::Field::INT64) {
         auto *idata = static_cast<int64_t *>(data);
         extract_data(temp, idata, attribute_count * num_entity, 1, 0);
-        rdata = temp.data();
-      }
-      else {
-        rdata = static_cast<double *>(data);
       }
     }
     else {
@@ -300,19 +184,13 @@ namespace Ioexnl {
       // if higher-order (vector3d, ..) write each component.
       if (field.get_component_count(Ioss::Field::InOut::OUTPUT) == 1) {
         std::vector<double> temp;
-        double             *rdata = nullptr;
         if (ioss_type == Ioss::Field::INTEGER) {
           int *idata = static_cast<int *>(data);
           extract_data(temp, idata, num_entity, 1, 0);
-          rdata = temp.data();
         }
         else if (ioss_type == Ioss::Field::INT64) {
           auto *idata = static_cast<int64_t *>(data);
           extract_data(temp, idata, num_entity, 1, 0);
-          rdata = temp.data();
-        }
-        else {
-          rdata = static_cast<double *>(data);
         }
       }
       else {
@@ -350,8 +228,6 @@ namespace Ioexnl {
                                          void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
-
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
 
@@ -444,8 +320,6 @@ namespace Ioexnl {
                                          void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
-
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
 
@@ -500,8 +374,6 @@ namespace Ioexnl {
                                          void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
-
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
 
@@ -556,15 +428,10 @@ namespace Ioexnl {
                                          void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
-
       size_t num_to_get = field.verify(data_size);
 
       if (num_to_get > 0) {
-        int ierr = 0;
-
         // Get the element block id and element count
-        int64_t               id               = Ioexnl::get_id(eb, &ids_);
         size_t                my_element_count = eb->entity_count();
         Ioss::Field::RoleType role             = field.get_role();
 
@@ -629,8 +496,6 @@ namespace Ioexnl {
                 index += comp_count;
               }
             }
-            size_t eb_offset = eb->get_offset();
-            int    index     = -1 * (field.get_index() + comp);
           }
         }
         else if (role == Ioss::Field::ATTRIBUTE) {
@@ -659,15 +524,10 @@ namespace Ioexnl {
                                          void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
-
       size_t num_to_get = field.verify(data_size);
 
       if (num_to_get > 0) {
-        int ierr = 0;
-
         // Get the face block id and face count
-        int64_t               id            = Ioexnl::get_id(eb, &ids_);
         int64_t               my_face_count = eb->entity_count();
         Ioss::Field::RoleType role          = field.get_role();
 
@@ -725,15 +585,10 @@ namespace Ioexnl {
                                          void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
-
       size_t num_to_get = field.verify(data_size);
 
       if (num_to_get > 0) {
-        int ierr = 0;
-
         // Get the edge block id and edge count
-        int64_t               id            = Ioexnl::get_id(eb, &ids_);
         int64_t               my_edge_count = eb->entity_count();
         Ioss::Field::RoleType role          = field.get_role();
 
@@ -996,7 +851,6 @@ namespace Ioexnl {
     if (comp_count == 1 && ioss_type == Ioss::Field::REAL && type != EX_SIDE_SET &&
         !map->reorders()) {
       // Simply output the variable...
-      int64_t     id       = Ioexnl::get_id(ge, &ids_);
       std::string var_name = get_component_name(field, Ioss::Field::InOut::OUTPUT, 1);
       auto        var_iter = m_variables[type].find(var_name);
       if (var_iter == m_variables[type].end()) {
@@ -1049,15 +903,6 @@ namespace Ioexnl {
           map->map_field_to_db_scalar_order(static_cast<int64_t *>(variables), temp, begin_offset,
                                             count, stride, eb_offset);
         }
-
-        // Write the variable...
-        int64_t id = Ioexnl::get_id(ge, &ids_);
-        int     ierr;
-        if (type == EX_SIDE_SET) {
-          size_t offset = ge->get_property("set_offset").get_int();
-        }
-        else {
-        }
       }
     }
   }
@@ -1070,8 +915,6 @@ namespace Ioexnl {
       size_t num_to_get   = field.verify(data_size);
       if (num_to_get > 0) {
 
-        ex_entity_type        type = Ioexnl::map_exodus_type(ns->type());
-        int64_t               id   = Ioexnl::get_id(ns, &ids_);
         Ioss::Field::RoleType role = field.get_role();
 
         if (role == Ioss::Field::MESH) {
@@ -1160,7 +1003,6 @@ namespace Ioexnl {
       std::vector<char> procs(entity_count * int_byte_size_api());
 
       if (type == "node") {
-        Ioss::SerializeIO serializeIO__(this);
         // Convert global node id to local node id and store in 'entities'
         if (int_byte_size_api() == 4) {
           int *entity_proc = static_cast<int *>(data);
@@ -1217,7 +1059,6 @@ namespace Ioexnl {
         }
       }
       else if (type == "side") {
-        Ioss::SerializeIO serializeIO__(this);
         std::vector<char> sides(entity_count * int_byte_size_api());
         if (int_byte_size_api() == 4) {
           int *entity_proc = static_cast<int *>(data);
@@ -1292,16 +1133,11 @@ namespace Ioexnl {
   int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    Ioss::SerializeIO serializeIO__(this);
-    size_t            num_to_get = field.verify(data_size);
+    size_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
 
-      int64_t id = Ioexnl::get_id(fb, &ids_);
-
-      size_t entity_count = fb->entity_count();
-      size_t offset       = fb->get_property("set_offset").get_int();
-
-      Ioss::Field::RoleType role = field.get_role();
+      size_t                entity_count = fb->entity_count();
+      Ioss::Field::RoleType role         = field.get_role();
 
       if (role == Ioss::Field::MESH) {
         if (field.get_name() == "side_ids" && fb->name() == "universal_sideset") {
@@ -1341,9 +1177,6 @@ namespace Ioexnl {
         }
 
         else if (field.get_name() == "distribution_factors") {
-          int    ierr;
-          size_t df_offset = fb->get_property("set_df_offset").get_int();
-          size_t df_count  = fb->get_property("distribution_factor_count").get_int();
         }
         else if (field.get_name() == "element_side") {
           // In exodus, the 'side block' is stored as a sideset.  A
@@ -1509,7 +1342,6 @@ namespace Ioexnl {
         mesh.full_nemesis_data = false;
       }
 
-      Ioss::SerializeIO serializeIO__(this);
       mesh.populate(region);
       gather_communication_metadata(&mesh.comm);
 

@@ -559,114 +559,106 @@ namespace Ioexnl {
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Blob *blob, const Ioss::Field &field,
                                                  void *data, size_t data_size) const
   {
-    {
-      Ioss::SerializeIO serializeIO__(this);
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
 
-      size_t num_to_get = field.verify(data_size);
-      if (num_to_get > 0) {
+      Ioss::Field::RoleType role = field.get_role();
 
-        Ioss::Field::RoleType role = field.get_role();
-
-        if (role == Ioss::Field::MESH) {
-          if (field.get_name() == "ids") {
-            // The ids coming in are the global ids; their position is the
-            // local id -1 (That is, data[0] contains the global id of local
-            // node 1)
-            //          handle_node_ids(data, num_to_get);
-          }
-          else if (field.get_name() == "connectivity") {
-            // Do nothing, just handles an idiosyncrasy of the GroupingEntity
-          }
-          else if (field.get_name() == "connectivity_raw") {
-            // Do nothing, just handles an idiosyncrasy of the GroupingEntity
-          }
-          else if (field.get_name() == "node_connectivity_status") {
-            // Do nothing, input only field.
-          }
-          else if (field.get_name() == "implicit_ids") {
-            // Do nothing, input only field.
-          }
-          else {
-            return Ioss::Utils::field_warning(blob, field, "mesh output");
-          }
+      if (role == Ioss::Field::MESH) {
+        if (field.get_name() == "ids") {
+          // The ids coming in are the global ids; their position is the
+          // local id -1 (That is, data[0] contains the global id of local
+          // node 1)
+          //          handle_node_ids(data, num_to_get);
         }
-        else if (role == Ioss::Field::TRANSIENT) {
-          // Check if the specified field exists on this node block.
-          // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
-          // exist on the database as scalars with the appropriate
-          // extensions.
-
-          // Transfer each component of the variable into 'data' and then
-          // output.  Need temporary storage area of size 'number of
-          // nodes in this block.
-          write_entity_transient_field(field, blob, num_to_get, data);
+        else if (field.get_name() == "connectivity") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
         }
-        else if (role == Ioss::Field::REDUCTION) {
-          store_reduction_field(field, blob, data);
+        else if (field.get_name() == "connectivity_raw") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
         }
-        else if (role == Ioss::Field::ATTRIBUTE) {
-          num_to_get = write_attribute_field(field, blob, data);
+        else if (field.get_name() == "node_connectivity_status") {
+          // Do nothing, input only field.
+        }
+        else if (field.get_name() == "implicit_ids") {
+          // Do nothing, input only field.
+        }
+        else {
+          return Ioss::Utils::field_warning(blob, field, "mesh output");
         }
       }
-      return num_to_get;
+      else if (role == Ioss::Field::TRANSIENT) {
+        // Check if the specified field exists on this node block.
+        // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
+        // exist on the database as scalars with the appropriate
+        // extensions.
+
+        // Transfer each component of the variable into 'data' and then
+        // output.  Need temporary storage area of size 'number of
+        // nodes in this block.
+        write_entity_transient_field(field, blob, num_to_get, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        store_reduction_field(field, blob, data);
+      }
+      else if (role == Ioss::Field::ATTRIBUTE) {
+        num_to_get = write_attribute_field(field, blob, data);
+      }
     }
+    return num_to_get;
   }
 
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Assembly *assembly,
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
-    {
-      Ioss::SerializeIO serializeIO__(this);
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
 
-      size_t num_to_get = field.verify(data_size);
-      if (num_to_get > 0) {
+      Ioss::Field::RoleType role = field.get_role();
 
-        Ioss::Field::RoleType role = field.get_role();
-
-        if (role == Ioss::Field::MESH) {
-          if (field.get_name() == "ids") {
-            // The ids coming in are the global ids; their position is the
-            // local id -1 (That is, data[0] contains the global id of local
-            // node 1)
-            //          handle_node_ids(data, num_to_get);
-          }
-          else if (field.get_name() == "connectivity") {
-            // Do nothing, just handles an idiosyncrasy of the GroupingEntity
-          }
-          else if (field.get_name() == "connectivity_raw") {
-            // Do nothing, just handles an idiosyncrasy of the GroupingEntity
-          }
-          else if (field.get_name() == "node_connectivity_status") {
-            // Do nothing, input only field.
-          }
-          else if (field.get_name() == "implicit_ids") {
-            // Do nothing, input only field.
-          }
-          else {
-            return Ioss::Utils::field_warning(assembly, field, "mesh output");
-          }
+      if (role == Ioss::Field::MESH) {
+        if (field.get_name() == "ids") {
+          // The ids coming in are the global ids; their position is the
+          // local id -1 (That is, data[0] contains the global id of local
+          // node 1)
+          //          handle_node_ids(data, num_to_get);
         }
-        else if (role == Ioss::Field::TRANSIENT) {
-          // Check if the specified field exists on this node block.
-          // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
-          // exist on the database as scalars with the appropriate
-          // extensions.
-
-          // Transfer each component of the variable into 'data' and then
-          // output.  Need temporary storage area of size 'number of
-          // nodes in this block.
-          write_entity_transient_field(field, assembly, num_to_get, data);
+        else if (field.get_name() == "connectivity") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
         }
-        else if (role == Ioss::Field::REDUCTION) {
-          store_reduction_field(field, assembly, data);
+        else if (field.get_name() == "connectivity_raw") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
         }
-        else if (role == Ioss::Field::ATTRIBUTE) {
-          num_to_get = write_attribute_field(field, assembly, data);
+        else if (field.get_name() == "node_connectivity_status") {
+          // Do nothing, input only field.
+        }
+        else if (field.get_name() == "implicit_ids") {
+          // Do nothing, input only field.
+        }
+        else {
+          return Ioss::Utils::field_warning(assembly, field, "mesh output");
         }
       }
-      return num_to_get;
+      else if (role == Ioss::Field::TRANSIENT) {
+        // Check if the specified field exists on this node block.
+        // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
+        // exist on the database as scalars with the appropriate
+        // extensions.
+
+        // Transfer each component of the variable into 'data' and then
+        // output.  Need temporary storage area of size 'number of
+        // nodes in this block.
+        write_entity_transient_field(field, assembly, num_to_get, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        store_reduction_field(field, assembly, data);
+      }
+      else if (role == Ioss::Field::ATTRIBUTE) {
+        num_to_get = write_attribute_field(field, assembly, data);
+      }
     }
+    return num_to_get;
   }
 
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,

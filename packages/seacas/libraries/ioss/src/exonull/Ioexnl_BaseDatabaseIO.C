@@ -9,7 +9,6 @@
 #include <Ioss_FileInfo.h>
 #include <Ioss_IOFactory.h>
 #include <Ioss_ParallelUtils.h>
-#include <Ioss_SerializeIO.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
@@ -73,8 +72,6 @@
 // Static internal helper functions
 // ========================================================================
 namespace {
-  static bool sixty_four_bit_message_output = false;
-
   std::vector<ex_entity_type> exodus_types({EX_GLOBAL, EX_BLOB, EX_ASSEMBLY, EX_NODE_BLOCK,
                                             EX_EDGE_BLOCK, EX_FACE_BLOCK, EX_ELEM_BLOCK,
                                             EX_NODE_SET, EX_EDGE_SET, EX_FACE_SET, EX_ELEM_SET,
@@ -238,39 +235,7 @@ namespace Ioexnl {
 
   int BaseDatabaseIO::free_file_pointer() const { return 0; }
 
-  bool BaseDatabaseIO::ok__(bool write_message, std::string *error_message, int *bad_count) const
-  {
-    // For input, we try to open the existing file.
-
-    // For output, we do not want to overwrite or clobber the output
-    // file if it already exists since the app might be reading the restart
-    // data from this file and then later clobbering it and then writing
-    // restart data to the same file. So, for output, we first check
-    // whether the file exists and if it it and is writable, assume
-    // that we can later create a new or append to existing file.
-
-    // Returns the number of processors on which this file is *NOT* ok in 'bad_count' if not null.
-    // Will return 'true' only if file ok on all processors.
-
-    if (fileExists) {
-      // File has already been opened at least once...
-      return dbState != Ioss::STATE_INVALID;
-    }
-
-    bool abort_if_error = false;
-    bool is_ok;
-    if (!is_input()) {
-      // See if file exists... Don't overwrite (yet) it it exists.
-      bool overwrite = false;
-      is_ok =
-          handle_output_file(write_message, error_message, bad_count, overwrite, abort_if_error);
-      // Close all open files...
-      if (m_exodusFilePtr >= 0) {
-        m_exodusFilePtr = -1;
-      }
-    }
-    return is_ok;
-  }
+  bool BaseDatabaseIO::ok__(bool, std::string *, int *) const { return true; }
 
   // common
   void BaseDatabaseIO::put_qa()
@@ -384,7 +349,6 @@ namespace Ioexnl {
       util().broadcast(total_lines);
     }
 
-    int ierr = 0;
     if (!using_parallel_io() || myProcessor == 0) {
       Ioss::Utils::delete_name_array(info, total_lines);
     }
@@ -408,9 +372,9 @@ namespace Ioexnl {
     return step;
   }
 
-  size_t BaseDatabaseIO::handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
+  size_t BaseDatabaseIO::handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type,
                                           Ioss::Map &entity_map, void *ids, size_t num_to_get,
-                                          size_t offset) const
+                                          size_t) const
   {
     /*!
      * NOTE: "element" is generic for "element", "face", or "edge"
@@ -547,8 +511,6 @@ namespace Ioexnl {
     // and output them all at one time.  The storage location is a
     // 'globalVariables' array
     {
-      Ioss::SerializeIO serializeIO__(this);
-
       Ioss::Field::RoleType role       = field.get_role();
       size_t                num_to_get = field.verify(data_size);
 
@@ -753,19 +715,7 @@ namespace Ioexnl {
   }
 
   // common
-  void BaseDatabaseIO::write_reduction_fields() const
-  {
-    int step = get_current_state();
-    step     = get_database_step(step);
-    for (const auto &type : exodus_types) {
-      const auto &id_values = m_reductionValues[type];
-      for (const auto &values : id_values) {
-        int64_t id    = values.first;
-        auto   &vals  = values.second;
-        size_t  count = vals.size();
-      }
-    }
-  }
+  void BaseDatabaseIO::write_reduction_fields() const {}
 
   // common
   bool BaseDatabaseIO::begin__(Ioss::State state)
@@ -795,8 +745,6 @@ namespace Ioexnl {
     }
 
     {
-      Ioss::SerializeIO serializeIO__(this);
-
       if (!is_input()) {
         if (minimizeOpenFiles) {
           free_file_pointer();
@@ -808,12 +756,8 @@ namespace Ioexnl {
     return true;
   }
 
-  bool BaseDatabaseIO::begin_state__(int state, double time)
+  bool BaseDatabaseIO::begin_state__(int, double)
   {
-    Ioss::SerializeIO serializeIO__(this);
-
-    time /= timeScaleFactor;
-
     if (!is_input()) {
       // Zero global variable array...
       for (const auto &type : exodus_types) {
@@ -830,8 +774,6 @@ namespace Ioexnl {
   // common
   bool BaseDatabaseIO::end_state__(int state, double time)
   {
-    Ioss::SerializeIO serializeIO__(this);
-
     if (!is_input()) {
       write_reduction_fields();
       time /= timeScaleFactor;
@@ -1101,8 +1043,7 @@ namespace Ioexnl {
   }
 
   // common
-  void BaseDatabaseIO::output_results_names(ex_entity_type type, VariableNameMap &variables,
-                                            bool reduction) const
+  void BaseDatabaseIO::output_results_names(ex_entity_type, VariableNameMap &variables, bool) const
   {
     bool lowercase_names =
         (properties.exists("VARIABLE_NAME_CASE") &&
@@ -1177,7 +1118,7 @@ namespace Ioexnl {
   // common
   void BaseDatabaseIO::flush_database__() const {}
 
-  void BaseDatabaseIO::finalize_write(int state, double sim_time) {}
+  void BaseDatabaseIO::finalize_write(int, double) {}
 
   void BaseDatabaseIO::common_write_meta_data(Ioss::IfDatabaseExistsBehavior behavior)
   {
@@ -1554,7 +1495,7 @@ namespace Ioexnl {
 
 namespace {
   template <typename T>
-  void write_attribute_names(int exoid, ex_entity_type type, const std::vector<T *> &entities)
+  void write_attribute_names(int, ex_entity_type, const std::vector<T *> &entities)
   {
     // For the entity, determine the attribute fields and the correct
     // order. Write the names of these fields.  However, be aware that
@@ -1591,7 +1532,6 @@ namespace {
                 const_cast<char *>(names_str[field_offset - 1 + i].c_str());
           }
         }
-        size_t ge_id = ge->get_property("id").get_int();
       }
     }
   }
