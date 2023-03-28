@@ -283,7 +283,7 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string &field_name, void
   int64_t     retval = -1;
   Ioss::Field field  = get_field(field_name);
   if (field.zero_copy_enabled()) {
-    retval = internal_get_field_data(field, data, data_size);
+    retval = internal_get_zc_field_data(field, data, data_size);
   }
   else {
     retval     = -2;
@@ -293,8 +293,8 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string &field_name, void
   return retval;
 }
 
-int64_t Ioss::GroupingEntity::internal_get_field_data(const Ioss::Field &field, void ** /*data*/,
-                                                      size_t * /*data_size*/) const
+int64_t Ioss::GroupingEntity::internal_get_zc_field_data(const Ioss::Field &field, void ** /*data*/,
+                                                         size_t * /*data_size*/) const
 {
   // Dummy version to avoid putting empty virtual functions in all databases that don't support
   // zero-copy;

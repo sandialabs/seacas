@@ -296,8 +296,8 @@ namespace Ioss {
     virtual int64_t internal_put_field_data(const Field &field, void *data,
                                             size_t data_size = 0) const = 0;
 
-    virtual int64_t internal_get_field_data(const Field &field, void **data,
-                                            size_t *data_size) const;
+    virtual int64_t internal_get_zc_field_data(const Field &field, void **data,
+                                               size_t *data_size) const;
 
     int64_t entityCount = 0;
 
