@@ -2328,7 +2328,6 @@ char *ex__canonicalize_filename(char const *file_path)
   unsigned int file_path_len       = strlen(file_path);
 
   if (file_path_len > 0) {
-    fprintf(stderr, "Input Path: %s\n", file_path);
     canonical_file_path = realpath(file_path, NULL);
     if (canonical_file_path == NULL && errno == ENOENT) {
       // The file was not found. Back up to a segment which exists,
