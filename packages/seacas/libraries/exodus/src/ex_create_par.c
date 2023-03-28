@@ -34,7 +34,7 @@ causes of errors include:
  to create files there.
   -  Passing an invalid file clobber mode.
 
-\param path The file name of the new exodus file. This can be given as either an
+\param rel_path The file name of the new exodus file. This can be given as either an
             absolute path name (from the root of the file system) or a relative
             path name (from the current directory).
 

@@ -34,7 +34,7 @@ causes of errors include:
  to create files there.
   -  Passing an invalid file clobber mode.
 
-\param path The file name of the new exodus file. This can be given as either an
+\param rel_path The file name of the new exodus file. This can be given as either an
             absolute path name (from the root of the file system) or a relative
             path name (from the current directory).
 
@@ -144,7 +144,6 @@ int ex_create_int(const char *rel_path, int cmode, int *comp_ws, int *io_ws, int
 
   nc_mode = ex__handle_mode(my_mode, is_parallel, run_version);
 
-  fprintf(stderr, "EX_CREATE: %s\n", rel_path);
   char *path = ex__canonicalize_filename(rel_path);
 
   /* Verify that this file is not already open for read or write...

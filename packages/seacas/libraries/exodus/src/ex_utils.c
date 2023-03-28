@@ -1099,20 +1099,20 @@ void ex__rm_stat_ptr(int exoid, struct ex__obj_stats **obj_ptr)
   struct ex__obj_stats *tmp_ptr            = *obj_ptr;
   struct ex__obj_stats *last_head_list_ptr = *obj_ptr; /* save last head pointer */
 
-  while (tmp_ptr) /* Walk linked list of file ids/vals */
+  while (tmp_ptr)                                      /* Walk linked list of file ids/vals */
   {
-    if (exoid == tmp_ptr->exoid) /* linear search for exodus file id */
+    if (exoid == tmp_ptr->exoid)                       /* linear search for exodus file id */
     {
-      if (tmp_ptr == *obj_ptr) {     /* Are we at the head of the list? */
-        *obj_ptr = (*obj_ptr)->next; /*   yes, reset ptr to head of list */
+      if (tmp_ptr == *obj_ptr) {                       /* Are we at the head of the list? */
+        *obj_ptr = (*obj_ptr)->next;                   /*   yes, reset ptr to head of list */
       }
-      else { /*   no, remove this record from chain*/
+      else {                                           /*   no, remove this record from chain*/
         last_head_list_ptr->next = tmp_ptr->next;
       }
       free(tmp_ptr->id_vals); /* free up memory */
       free(tmp_ptr->stat_vals);
       free(tmp_ptr);
-      break; /* Quit if found */
+      break;                            /* Quit if found */
     }
     last_head_list_ptr = tmp_ptr;       /* save last head pointer */
     tmp_ptr            = tmp_ptr->next; /* Loop back if not */
@@ -1199,12 +1199,12 @@ struct ex__list_item **ex__get_counter_list(ex_entity_type obj_type)
 int ex__inc_file_item(int                    exoid,    /* file id */
                       struct ex__list_item **list_ptr) /* ptr to ptr to list_item */
 {
-  struct ex__list_item *tlist_ptr = *list_ptr; /* use temp list ptr to walk linked list */
-  while (tlist_ptr) {                          /* Walk linked list of file ids/vals */
-    if (exoid == tlist_ptr->exo_id) {          /* linear search for exodus file id */
-      break;                                   /* Quit if found */
+  struct ex__list_item *tlist_ptr = *list_ptr;         /* use temp list ptr to walk linked list */
+  while (tlist_ptr) {                                  /* Walk linked list of file ids/vals */
+    if (exoid == tlist_ptr->exo_id) {                  /* linear search for exodus file id */
+      break;                                           /* Quit if found */
     }
-    tlist_ptr = tlist_ptr->next; /* Loop back if not */
+    tlist_ptr = tlist_ptr->next;                       /* Loop back if not */
   }
 
   if (!tlist_ptr) { /* ptr NULL? */
@@ -1257,7 +1257,7 @@ int ex__get_file_item(int                    exoid,    /* file id */
     if (exoid == tlist_ptr->exo_id) {          /* linear search for exodus file id */
       break;                                   /* Quit if found */
     }
-    tlist_ptr = tlist_ptr->next; /* Loop back if not */
+    tlist_ptr = tlist_ptr->next;               /* Loop back if not */
   }
 
   if (!tlist_ptr) { /* ptr NULL? */
@@ -1304,11 +1304,11 @@ void ex__rm_file_item(int                    exoid,    /* file id */
       if (tlist_ptr == *list_ptr) {    /* Are we at the head of the list? */
         *list_ptr = (*list_ptr)->next; /*   yes, reset ptr to head of list */
       }
-      else { /*   no, remove this record from chain*/
+      else {                           /*   no, remove this record from chain*/
         last_head_list_ptr->next = tlist_ptr->next;
       }
-      free(tlist_ptr); /* free up memory */
-      break;           /* Quit if found */
+      free(tlist_ptr);                    /* free up memory */
+      break;                              /* Quit if found */
     }
     last_head_list_ptr = tlist_ptr;       /* save last head pointer */
     tlist_ptr          = tlist_ptr->next; /* Loop back if not */
@@ -2268,11 +2268,11 @@ int ex__populate_header(int exoid, const char *path, int my_mode, int is_paralle
 #else
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
 #endif
-  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-  ex_err_fn(exoid, __func__, errmsg, status);
-  return (EX_FATAL);
-}
-return EX_NOERR;
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    return (EX_FATAL);
+  }
+  return EX_NOERR;
 }
 
 /*!
@@ -2375,9 +2375,6 @@ char *ex__canonicalize_filename(char const *file_path)
 
       free(file_path_copy);
     }
-  }
-  if (canonical_file_path != NULL) {
-    fprintf(stderr, "Path: %s, Canonical: %s\n", file_path, canonical_file_path);
   }
   return canonical_file_path;
 #endif

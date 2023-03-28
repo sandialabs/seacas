@@ -47,7 +47,7 @@ number. Possible causes of errors include:
 \fparam{#EX_READ} or \fparam{#EX_WRITE}.
   -  Database version is earlier than 2.0.
 
-\param path The file name of the exodus file. This can be given as either an
+\param rel_path The file name of the exodus file. This can be given as either an
             absolute path name (from the root of the file system) or a relative
             path name (from the current directory).
 
