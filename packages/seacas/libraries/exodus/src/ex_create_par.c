@@ -158,6 +158,12 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   EX_FUNC_LEAVE(EX_FATAL);
 #endif
 
+  if (!path || strlen(path) == 0) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Filename is not specified.");
+    ex_err(__func__, errmsg, EX_BADFILEMODE);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
   char *canon_path = ex__canonicalize_filename(path);
 
   /* Verify that this file is not already open for read or write...

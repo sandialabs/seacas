@@ -126,6 +126,12 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+  if (!path || strlen(path) == 0) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Filename is not specified.");
+    ex_err(__func__, errmsg, EX_BADFILEMODE);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
   char *canon_path = ex__canonicalize_filename(path);
 
   /* Verify that this file is not already open for read or write...

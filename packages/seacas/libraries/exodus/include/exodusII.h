@@ -1810,6 +1810,7 @@ EXODUS_EXPORT int ex_get_idx(int         exoid,       /**< NetCDF/Exodus file ID
 #define EX_INTERNAL      1006  /**< internal logic error                     */
 #define EX_DUPLICATEID   1007  /**< duplicate id found                       */
 #define EX_DUPLICATEOPEN 1008  /**< duplicate open                           */
+#define EX_BADFILENAME   1009  /**< empty or null filename specified         */
 #define EX_MSG           -1000 /**< message print code - no error implied    */
 #define EX_PRTLASTMSG    -1001 /**< print last error message msg code        */
 #define EX_NOTROOTID     -1002 /**< file id is not the root id; it is a subgroup id */
