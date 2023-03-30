@@ -130,7 +130,7 @@ exoid = ex_create ("test.exo"       \comment{filename path}
  *       `ex_create_int` with an additional argument to make sure
  *       library and include file are consistent
  */
-int ex_create_int(const char *rel_path, int cmode, int *comp_ws, int *io_ws, int run_version)
+int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run_version)
 {
   int  exoid  = 0;
   int  status = 0;
@@ -144,16 +144,21 @@ int ex_create_int(const char *rel_path, int cmode, int *comp_ws, int *io_ws, int
 
   nc_mode = ex__handle_mode(my_mode, is_parallel, run_version);
 
-  fprintf(stderr, "EX_CREATE: %s\n", rel_path);
-  char *path = ex__canonicalize_filename(rel_path);
+  if (!path || strlen(path) == 0) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Filename is not specified.");
+    ex_err(__func__, errmsg, EX_BADFILEMODE);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  char *canon_path = ex__canonicalize_filename(path);
 
   /* Verify that this file is not already open for read or write...
      In theory, should be ok for the file to be open multiple times
      for read, but bad things can happen if being read and written
      at the same time...
   */
-  if (ex__check_multiple_open(path, EX_WRITE, __func__)) {
-    free(path);
+  if (ex__check_multiple_open(canon_path, EX_WRITE, __func__)) {
+    free(canon_path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -169,29 +174,29 @@ int ex_create_int(const char *rel_path, int cmode, int *comp_ws, int *io_ws, int
 
   if ((status = nc_create(path, nc_mode, &exoid)) != NC_NOERR) {
 #if NC_HAS_HDF5
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s", path);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s", canon_path);
 #else
     if (my_mode & EX_NETCDF4) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: file create failed for %s in NETCDF4 "
                "mode.\n\tThis library does not support netcdf-4 files.",
-               path);
+               canon_path);
     }
     else {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s", path);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s", canon_path);
     }
 #endif
     ex_err(__func__, errmsg, status);
-    free(path);
+    free(canon_path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  status = ex__populate_header(exoid, path, my_mode, is_parallel, comp_ws, io_ws);
+  status = ex__populate_header(exoid, canon_path, my_mode, is_parallel, comp_ws, io_ws);
   if (status != EX_NOERR) {
-    free(path);
+    free(canon_path);
     EX_FUNC_LEAVE(status);
   }
 
-  free(path);
+  free(canon_path);
   EX_FUNC_LEAVE(exoid);
 }
