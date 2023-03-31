@@ -138,7 +138,7 @@ namespace {
     }
   }
 
-  void Check_Parsed_Names(std::vector<std::string> &names, bool &all_flag)
+  void Check_Parsed_Names(const std::vector<std::string> &names, bool &all_flag)
   {
     int num_include = 0;
     int num_exclude = 0;

@@ -56,17 +56,10 @@ namespace Excn {
 
   struct Block
   {
-    Block() = default;
-
-    Block(const Block &other)
-        : truthTable(other.truthTable), attributeNames(other.attributeNames), name_(other.name_),
-          id(other.id), elementCount(other.elementCount), nodesPerElement(other.nodesPerElement),
-          attributeCount(other.attributeCount), offset_(other.offset_), position_(other.position_),
-          elType(other.elType)
-    {
-    }
-
-    ~Block() = default;
+    Block()                              = default;
+    Block(const Block &other)            = default;
+    ~Block()                             = default;
+    Block &operator=(const Block &other) = default;
 
     size_t entity_count() const { return elementCount; }
 
@@ -80,22 +73,6 @@ namespace Excn {
     size_t                   offset_{0};
     size_t                   position_{0};
     std::string              elType{};
-
-    Block &operator=(const Block &other)
-    {
-      truthTable      = other.truthTable;
-      attributeNames  = other.attributeNames;
-      id              = other.id;
-      elementCount    = other.elementCount;
-      nodesPerElement = other.nodesPerElement;
-      attributeCount  = other.attributeCount;
-      attributeNames  = other.attributeNames;
-      offset_         = other.offset_;
-      position_       = other.position_;
-      elType          = other.elType;
-      name_           = other.name_;
-      return *this;
-    }
   };
 
   template <typename INT> struct NodeSet

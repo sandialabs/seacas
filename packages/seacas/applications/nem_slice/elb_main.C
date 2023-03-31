@@ -378,9 +378,9 @@ template <typename INT> int internal_main(int argc, char *argv[], INT /* dummy *
   }
 
   /* free up memory */
-  if (sphere.adjust) {
-    delete[] sphere.adjust;
-  }
+  sphere.adjust.clear();
+  sphere.begin.clear();
+  sphere.end.clear();
 
 #ifdef PRINT_VERT
   for (size_t cnt = 0; cnt < problem.num_vertices; cnt++)
