@@ -29,10 +29,10 @@ Decomposition methods: [0..3] = speed ranking 0=fastest
  --spectral:  [2] use eigenvectors of a matrix constructed from the
                   graph to partition the graph.
  --hsfc       [?] Hilbert Space-Filling Curve (uses Zoltan)
- --rib:       [?] Recursive Inertial Bisection (uses Zoltan)
+ --rib:       [?] (default) Recursive Inertial Bisection (uses Zoltan)
  --rcb:       [?] Recursive Coordinate Bisection (uses Zoltan)
  --rcb_ignore_z:       [?] Recursive Coordinate Bisection (uses Zoltan), ignoring the z dimension coordinates
- --inertial:  [1] (default) vertices divided into sets of equal mass by planes
+ --inertial:  [1] vertices divided into sets of equal mass by planes
                   orthogonal to the principle axis. Good, fast, medium memory
  --linear:    [0] vertices in order first n/p to proc 0, next to proc 1.
                   (fast and sometimes good).
@@ -88,10 +88,10 @@ Decomposition methods: [0..3] = speed ranking 0=fastest
  -l spectral:  [2] use eigenvectors of a matrix constructed from the
                   graph to partition the graph.
  -l hsfc       [?] Hilbert Space-Filling Curve (uses Zoltan)
- -l rib:       [?] Recursive Inertial Bisection (uses Zoltan)
+ -l rib:       [?] (default) Recursive Inertial Bisection (uses Zoltan)
  -l rcb:       [?] Recursive Coordinate Bisection (uses Zoltan)
  -l rcb_ignore_z:       [?] Recursive Coordinate Bisection (uses Zoltan) ignoring the z dimension coordinates
- -l inertial:  [1] (default) vertices divided into sets of equal mass by planes
+ -l inertial:  [1] vertices divided into sets of equal mass by planes
                   orthogonal to the principle axis. Good, fast, medium memory
  -l linear:    [0] vertices in order first n/p to proc 0, next to proc 1.
                   (fast and sometimes good).
@@ -290,7 +290,7 @@ basename=''
 processors=''
 debug_level='0'
 decomp_type="-e"
-decomp_method="-l inertial"
+decomp_method="-l rib"
 nem_slice_flag="-c"
 weighting=''
 rootdir="`pwd`/"
