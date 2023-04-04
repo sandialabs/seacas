@@ -163,7 +163,7 @@ else:
 pip_path = os.path.dirname(__file__)
 pip_so_path = os.path.join(pip_path, "libexodus.so")
 try:
-    EXODUS_LIB = ctypes.cdll.LoadLibrary(pip_path)
+    EXODUS_LIB = ctypes.cdll.LoadLibrary(pip_so_path)
 except: 
     EXODUS_LIB = ctypes.cdll.LoadLibrary(EXODUS_SO)
 
