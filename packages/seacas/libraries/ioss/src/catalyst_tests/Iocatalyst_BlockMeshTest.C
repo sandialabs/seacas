@@ -198,3 +198,219 @@ TEST_F(BlockMeshTest, InitPartitionSizeThree)
   checkLocalNumBlocks(bmThree, 2, 1, 1);
   checkLocalBlockStart(bmThree, 0, 1, 0);
 }
+
+TEST_F(BlockMeshTest, GetLocalPointIDsSizeOneOneBlock)
+{
+  std::vector<int> points = {1, 2, 3, 4, 5, 6, 7, 8};
+  EXPECT_EQ(bmOne.getLocalPointIDs(), points);
+}
+
+TEST_F(BlockMeshTest, GetLocalPointIDsSizeOneTwoBlocksInX)
+{
+  part.id     = 0;
+  part.size   = 1;
+  numBlocks.x = 2;
+  numBlocks.y = 1;
+  numBlocks.z = 1;
+  bmOne.init(part, numBlocks);
+  std::vector<int> points = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  EXPECT_EQ(bmOne.getLocalPointIDs(), points);
+}
+
+TEST_F(BlockMeshTest, GetLocalPointIDsSizeTwoOneBlock)
+{
+
+  part.id     = 0;
+  part.size   = 2;
+  numBlocks.x = 1;
+  numBlocks.y = 1;
+  numBlocks.z = 1;
+  bmOne.init(part, numBlocks);
+  std::vector<int> points = {1, 2, 3, 4, 5, 6, 7, 8};
+  EXPECT_EQ(bmOne.getLocalPointIDs(), points);
+  part.id = 1;
+  bmTwo.init(part, numBlocks);
+  points.clear();
+  EXPECT_EQ(bmTwo.getLocalPointIDs(), points);
+}
+
+TEST_F(BlockMeshTest, GetLocalPointIDsSizeTwoTwoBlocksInY)
+{
+  part.id     = 0;
+  part.size   = 2;
+  numBlocks.x = 1;
+  numBlocks.y = 2;
+  numBlocks.z = 1;
+  bmOne.init(part, numBlocks);
+  std::vector<int> points = {1, 2, 3, 4, 7, 8, 9, 10};
+  EXPECT_EQ(bmOne.getLocalPointIDs(), points);
+  part.id = 1;
+  bmTwo.init(part, numBlocks);
+  std::vector<int> pointsTwo = {3, 4, 5, 6, 9, 10, 11, 12};
+  EXPECT_EQ(bmTwo.getLocalPointIDs(), pointsTwo);
+}
+
+TEST_F(BlockMeshTest, GetLocalPointIDsSizeFourEightBlocks)
+{
+  part.id     = 0;
+  part.size   = 4;
+  numBlocks.x = 2;
+  numBlocks.y = 2;
+  numBlocks.z = 2;
+  bmOne.init(part, numBlocks);
+  std::vector<int> points = {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15};
+  EXPECT_EQ(bmOne.getLocalPointIDs(), points);
+  part.id = 1;
+  bmTwo.init(part, numBlocks);
+  std::vector<int> pointsTwo = {4, 5, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18};
+  EXPECT_EQ(bmTwo.getLocalPointIDs(), pointsTwo);
+  part.id = 2;
+  bmThree.init(part, numBlocks);
+  std::vector<int> pointsThree = {10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24};
+  EXPECT_EQ(bmThree.getLocalPointIDs(), pointsThree);
+  part.id = 3;
+  bmFour.init(part, numBlocks);
+  std::vector<int> pointsFour = {13, 14, 15, 16, 17, 18, 22, 23, 24, 25, 26, 27};
+  EXPECT_EQ(bmFour.getLocalPointIDs(), pointsFour);
+}
+
+TEST_F(BlockMeshTest, GetPointCoordsForGlobalIDSizeOneOneBlock)
+{
+  Iocatalyst::BlockMesh::Point p = bmOne.getPointCoordsForGlobalPointID(8);
+  EXPECT_DOUBLE_EQ(p.x, 1.0);
+  EXPECT_DOUBLE_EQ(p.y, 1.0);
+  EXPECT_DOUBLE_EQ(p.z, 1.0);
+}
+
+TEST_F(BlockMeshTest, GetPointCoordsForGlobalIDSizeOneEightBlocks)
+{
+  part.id     = 0;
+  part.size   = 1;
+  numBlocks.x = 2;
+  numBlocks.y = 2;
+  numBlocks.z = 2;
+  bmOne.init(part, numBlocks);
+  Iocatalyst::BlockMesh::Point length;
+  length.x = 2.0;
+  length.y = 2.0;
+  length.z = 2.0;
+  bmOne.setBlockLength(length);
+  bmOne.setOrigin(length);
+  Iocatalyst::BlockMesh::Point p = bmOne.getPointCoordsForGlobalPointID(27);
+  EXPECT_DOUBLE_EQ(p.x, 6.0);
+  EXPECT_DOUBLE_EQ(p.y, 6.0);
+  EXPECT_DOUBLE_EQ(p.z, 6.0);
+  p = bmOne.getPointCoordsForGlobalPointID(1);
+  EXPECT_DOUBLE_EQ(p.x, 2.0);
+  EXPECT_DOUBLE_EQ(p.y, 2.0);
+  EXPECT_DOUBLE_EQ(p.z, 2.0);
+  p = bmOne.getPointCoordsForGlobalPointID(10);
+  EXPECT_DOUBLE_EQ(p.x, 2.0);
+  EXPECT_DOUBLE_EQ(p.y, 2.0);
+  EXPECT_DOUBLE_EQ(p.z, 4.0);
+}
+
+TEST_F(BlockMeshTest, GetLocalBlockIDsSizeOneOneBlock)
+{
+  std::vector<int> points = {1};
+  EXPECT_EQ(bmOne.getLocalBlockIDs(), points);
+}
+
+TEST_F(BlockMeshTest, GetLocalBlockIDsSizeOneTwoBlocksInX)
+{
+  part.id     = 0;
+  part.size   = 1;
+  numBlocks.x = 2;
+  numBlocks.y = 1;
+  numBlocks.z = 1;
+  bmOne.init(part, numBlocks);
+  std::vector<int> ids = {1, 2};
+  EXPECT_EQ(bmOne.getLocalBlockIDs(), ids);
+}
+
+TEST_F(BlockMeshTest, GetLocalBlockIDsSizeTwoOneBlock)
+{
+
+  part.id     = 0;
+  part.size   = 2;
+  numBlocks.x = 1;
+  numBlocks.y = 1;
+  numBlocks.z = 1;
+  bmOne.init(part, numBlocks);
+  std::vector<int> ids = {1};
+  EXPECT_EQ(bmOne.getLocalBlockIDs(), ids);
+  part.id = 1;
+  bmTwo.init(part, numBlocks);
+  ids.clear();
+  EXPECT_EQ(bmTwo.getLocalBlockIDs(), ids);
+}
+
+TEST_F(BlockMeshTest, GetLocalBlockIDsSizeTwoTwoBlocksInY)
+{
+  part.id     = 0;
+  part.size   = 2;
+  numBlocks.x = 1;
+  numBlocks.y = 2;
+  numBlocks.z = 1;
+  bmOne.init(part, numBlocks);
+  std::vector<int> ids = {1};
+  EXPECT_EQ(bmOne.getLocalBlockIDs(), ids);
+  part.id = 1;
+  bmTwo.init(part, numBlocks);
+  std::vector<int> idsTwo = {2};
+  EXPECT_EQ(bmTwo.getLocalBlockIDs(), idsTwo);
+}
+
+TEST_F(BlockMeshTest, GetLocalBlockIDsSizeFourEightBlocks)
+{
+  part.id     = 0;
+  part.size   = 4;
+  numBlocks.x = 2;
+  numBlocks.y = 2;
+  numBlocks.z = 2;
+  bmOne.init(part, numBlocks);
+  std::vector<int> ids = {1,2};
+  EXPECT_EQ(bmOne.getLocalBlockIDs(), ids);
+  part.id = 1;
+  bmTwo.init(part, numBlocks);
+  std::vector<int> idsTwo = {3,4};
+  EXPECT_EQ(bmTwo.getLocalBlockIDs(), idsTwo);
+  part.id = 2;
+  bmThree.init(part, numBlocks);
+  std::vector<int> idsThree = {5,6};
+  EXPECT_EQ(bmThree.getLocalBlockIDs(), idsThree);
+  part.id = 3;
+  bmFour.init(part, numBlocks);
+  std::vector<int> idsFour = {7,8};
+  EXPECT_EQ(bmFour.getLocalBlockIDs(), idsFour);
+}
+
+TEST_F(BlockMeshTest, GetBlockGlobalPointIDsSizeOneOneBlock)
+{
+  Iocatalyst::BlockMesh::BlockConn ids = {1,2,4,3,5,6,8,7};
+  EXPECT_EQ(bmOne.getBlockConnectivityGlobalPointIDs(1), ids);
+}
+
+TEST_F(BlockMeshTest, GetBlockGlobalPointIDsSizeOneTwoBlocksInX)
+{
+  part.id     = 0;
+  part.size   = 1;
+  numBlocks.x = 2;
+  numBlocks.y = 1;
+  numBlocks.z = 1;
+  bmOne.init(part, numBlocks);
+  Iocatalyst::BlockMesh::BlockConn ids = {2,3,6,5,8,9,12,11};
+  EXPECT_EQ(bmOne.getBlockConnectivityGlobalPointIDs(2), ids);
+}
+
+TEST_F(BlockMeshTest, GetBlockGlobalPointIDsSizeOneEightBlocks)
+{
+  part.id     = 0;
+  part.size   = 1;
+  numBlocks.x = 2;
+  numBlocks.y = 2;
+  numBlocks.z = 2;
+  bmOne.init(part, numBlocks);
+  Iocatalyst::BlockMesh::BlockConn ids = {14,15,18,17, 23,24,27,26};
+  EXPECT_EQ(bmOne.getBlockConnectivityGlobalPointIDs(8), ids);
+}

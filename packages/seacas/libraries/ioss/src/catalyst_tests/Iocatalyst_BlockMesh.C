@@ -186,4 +186,79 @@ namespace Iocatalyst {
     return localNumBlocks.x == 0 || localNumBlocks.y == 0 || localNumBlocks.z == 0;
   }
 
+  BlockMesh::IDList BlockMesh::getLocalPointIDs() { return getLocalIDs(POINT_OFFSET); }
+
+  int BlockMesh::getGlobalPointIDfromCoords(int i, int j, int k)
+  {
+    return getGlobalIDfromCoords(i, j, k, POINT_OFFSET);
+  }
+
+  BlockMesh::Point BlockMesh::getPointCoordsForGlobalPointID(int globalPointID)
+  {
+    BlockMesh::Point p;
+    BlockMesh::IJK   ijk = getCoordsForGlobalID(globalPointID, POINT_OFFSET);
+    int              i   = ijk[0];
+    int              j   = ijk[1];
+    int              k   = ijk[2];
+    p.x                  = origin.x + i * blockLength.x;
+    p.y                  = origin.y + j * blockLength.y;
+    p.z                  = origin.z + k * blockLength.z;
+    return p;
+  }
+
+  BlockMesh::IDList BlockMesh::getLocalBlockIDs() { return getLocalIDs(BLOCK_OFFSET); }
+
+  BlockMesh::BlockConn BlockMesh::getBlockConnectivityGlobalPointIDs(int globalBlockID)
+  {
+    BlockMesh::BlockConn conn;
+    BlockMesh::IJK       ijk = getCoordsForGlobalID(globalBlockID, BLOCK_OFFSET);
+    int                  i   = ijk[0];
+    int                  j   = ijk[1];
+    int                  k   = ijk[2];
+    conn[0]                  = getGlobalPointIDfromCoords(i, j, k);
+    conn[1]                  = getGlobalPointIDfromCoords(i + 1, j, k);
+    conn[2]                  = getGlobalPointIDfromCoords(i + 1, j + 1, k);
+    conn[3]                  = getGlobalPointIDfromCoords(i, j + 1, k);
+    conn[4]                  = getGlobalPointIDfromCoords(i, j, k + 1);
+    conn[5]                  = getGlobalPointIDfromCoords(i + 1, j, k + 1);
+    conn[6]                  = getGlobalPointIDfromCoords(i + 1, j + 1, k + 1);
+    conn[7]                  = getGlobalPointIDfromCoords(i, j + 1, k + 1);
+    return conn;
+  }
+
+  BlockMesh::IDList BlockMesh::getLocalIDs(int offset)
+  {
+    BlockMesh::IDList ids;
+    if (!isLocalBlockEmpty()) {
+      for (int k = localBlockStart.z; k < localBlockStart.z + localNumBlocks.z + offset; k++) {
+        for (int j = localBlockStart.y; j < localBlockStart.y + localNumBlocks.y + offset; j++) {
+          for (int i = localBlockStart.x; i < localBlockStart.x + localNumBlocks.x + offset; i++) {
+            ids.push_back(getGlobalIDfromCoords(i, j, k, offset));
+          }
+        }
+      }
+    }
+    return ids;
+  }
+
+  int BlockMesh::getGlobalIDfromCoords(int i, int j, int k, int offset)
+  {
+    int numPointsX = globalNumBlocks.x + offset;
+    int numPointsY = globalNumBlocks.y + offset;
+    return k * numPointsX * numPointsY + j * numPointsX + i + 1;
+  }
+
+  BlockMesh::IJK BlockMesh::getCoordsForGlobalID(int globalID, int offset)
+  {
+    BlockMesh::IJK ijk;
+    int            zeroBasedID = globalID - 1;
+    int            numBlocksX  = globalNumBlocks.x + offset;
+    int            numBlocksY  = globalNumBlocks.y + offset;
+    int            numBlocksXY = numBlocksX * numBlocksY;
+    ijk[2]                     = zeroBasedID / numBlocksXY;
+    ijk[1]                     = (zeroBasedID - ijk[2] * numBlocksXY) / numBlocksX;
+    ijk[0]                     = zeroBasedID - ijk[2] * numBlocksXY - ijk[1] * numBlocksX;
+    return ijk;
+  }
+
 } // namespace Iocatalyst

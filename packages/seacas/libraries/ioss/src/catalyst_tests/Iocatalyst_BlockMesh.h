@@ -7,6 +7,8 @@
 #pragma once
 
 #include "iocatalyst_export.h"
+#include <vector>
+#include <array>
 
 namespace Iocatalyst {
 
@@ -33,6 +35,12 @@ namespace Iocatalyst {
       int z;
     };
 
+    using BlockConn = std::array<int,8>;
+    using IJK = std::array<int,3>;
+    using IDList = std::vector<int>;
+    const int BLOCK_OFFSET = 0;
+    const int POINT_OFFSET = 1;
+
     BlockMesh();
     ~BlockMesh();
 
@@ -53,6 +61,13 @@ namespace Iocatalyst {
 
     bool isLocalBlockEmpty();
 
+    IDList getLocalBlockIDs();
+    BlockConn getBlockConnectivityGlobalPointIDs(int globalBlockID);
+
+    IDList getLocalPointIDs();
+    int getGlobalPointIDfromCoords(int i, int j, int k);
+    Point getPointCoordsForGlobalPointID(int globalPointID);
+
   private:
     Partition partition;
     Point     origin;
@@ -64,6 +79,9 @@ namespace Iocatalyst {
     void      fillExtents(int *ext);
     void      setLocalBlockFromExtents(int *ext);
     void      setLocalBlockEmpty();
+    IDList getLocalIDs(int offset);
+    int getGlobalIDfromCoords(int i, int j, int k, int offset);
+    IJK getCoordsForGlobalID(int globalID, int offset);
   };
 
 } // namespace Iocatalyst

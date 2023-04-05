@@ -60,7 +60,7 @@ void Iocatalyst_DatabaseIOTest::runUnstructuredTest(const std::string &testName)
       testName + CATALYST_TEST_FILE_NP + std::to_string(part.size) + EXODUS_FILE_EXTENSION;
   std::string catalystFileName = CATALYST_TEST_FILE_PREFIX + testName + CATALYST_TEST_FILE_NP +
                                  std::to_string(part.size) + EXODUS_FILE_EXTENSION;
-  //bmSet.writeIOSSFile(exodusFileName, EXODUS_DATABASE_TYPE);
+  bmSet.writeIOSSFile(exodusFileName, EXODUS_DATABASE_TYPE);
 }
 
 void Iocatalyst_DatabaseIOTest::initBlock(Iocatalyst::BlockMesh &blockMesh, int x, int y, int z)
