@@ -1,14 +1,15 @@
 import contextlib
+import shutil
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+from pathlib import Path
 import subprocess
 import sys
 import os
-import site
 
 class CMakeExtension(Extension):
-    def __init__(self, name, cmake_lists_dir='.', **kwa):
-        Extension.__init__(self, name, sources=[], **kwa)
+    def __init__(self, name, cmake_lists_dir='.', **kwargs):
+        Extension.__init__(self, name, sources=[], **kwargs)
         self.cmake_lists_dir = os.path.abspath(cmake_lists_dir)
 
 class cmake_build_ext(build_ext):
@@ -34,8 +35,6 @@ class cmake_build_ext(build_ext):
                 os.makedirs(self.build_temp)
 
             # Config
-            print(site.getusersitepackages())
-            print(os.getcwd())
             build_dir = os.path.join(os.getcwd(), "build")
             env = dict(os.environ)
             env["JOBS"] = str(os.cpu_count())
@@ -48,3 +47,5 @@ class cmake_build_ext(build_ext):
             # Build
             subprocess.check_call(['cmake', '--build', '.'], cwd=build_dir, env=env)
             subprocess.check_call(['cmake', '--install', '.'], cwd=build_dir, env=env)
+            for sofile in list(Path('lib/').glob('*.so*')):
+                shutil.copy(str(sofile), extdir)
