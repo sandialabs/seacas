@@ -11,6 +11,7 @@
 #include <Ioss_FaceGenerator.h>
 #include <Ioss_Hex20.h>
 #include <Ioss_Hex27.h>
+#include <Ioss_IOFactory.h>
 #include <Ioss_Hex8.h>
 #include <Ioss_Node.h>
 #include <Ioss_Pyramid13.h>
@@ -34,6 +35,7 @@
 #include <Ioss_Wedge18.h>
 #include <Ioss_Wedge6.h>
 
+#include <fmt/chrono.h>
 #include <fmt/color.h>
 #include <fmt/ostream.h>
 #include <numeric>
@@ -1056,8 +1058,27 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   CGERR(cg_base_write(file_ptr, "Base", phys_dimension, phys_dimension, &base));
 
   CGERR(cg_goto(file_ptr, base, "end"));
-  std::string version = "IOSS: CGNS Writer version " + std::string{__DATE__} + ", " +
-                        Ioss::Utils::platform_information();
+  std::time_t t    = std::time(nullptr);
+  std::string date = fmt::format("{:%Y/%m/%d}", fmt::localtime(t));
+  std::string time = fmt::format("{:%H:%M:%S}", fmt::localtime(t));
+
+  std::string code_version = region.get_optional_property("code_version", "unknown");
+  std::string code_name = region.get_optional_property("code_name", "unknown");
+
+  std::string mpi_version = "";
+#if CG_BUILD_PARALLEL
+  {
+    char version[MPI_MAX_LIBRARY_VERSION_STRING];
+    int  length = 0;
+    MPI_Get_library_version(version, &length);
+    mpi_version = fmt::format("MPI Version: {}", version);
+  }
+#endif
+
+  std::string config = Iocgns::Utils::show_config();
+  auto version = fmt::format("Written by `{}-{}` on {} at {}\n{}{}\nIOSS: CGNS Writer version {}\nPlatform: {}",
+			     code_name, code_version, date, time, config,
+			     mpi_version, __DATE__, Ioss::Utils::platform_information());
 
 #if CG_BUILD_PARALLEL
   if (is_parallel_io) {
