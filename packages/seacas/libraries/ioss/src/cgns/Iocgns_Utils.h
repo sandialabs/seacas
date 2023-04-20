@@ -29,7 +29,7 @@
     if ((funcall) != CG_OK) {                                                                      \
       Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, myProcessor);         \
     }                                                                                              \
-    while (0)
+  } while (0)
 
 // Member function -- can access m_cgnsFilePtr
 #define CGCHECKM(funcall)                                                                          \
@@ -37,14 +37,14 @@
     if ((funcall) != CG_OK) {                                                                      \
       Iocgns::Utils::cgns_error(m_cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);         \
     }                                                                                              \
-    while (0)
+  } while (0)
 
 #define CGCHECKNP(funcall)                                                                         \
   do {                                                                                             \
     if ((funcall) != CG_OK) {                                                                      \
       Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, -1);                  \
     }                                                                                              \
-    while (0)
+  } while (0)
 
 // Used in Iocgns_Decomposition.C
 #define CGCHECK2(funcall)                                                                          \
@@ -53,7 +53,7 @@
       Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,                             \
                                 m_decomposition.m_processor);                                      \
     }                                                                                              \
-    while (0)
+  } while (0)
 
 namespace Iocgns {
   class StructuredZoneData;
