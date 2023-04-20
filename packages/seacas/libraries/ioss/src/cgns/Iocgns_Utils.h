@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -25,26 +25,35 @@
 // Used in Iocgns_DatabaseIO.C and Iocgns_ParallelDatabase.C
 // non-Member function -- can't access m_cgnsFilePtr; make sure cgns_file_ptr is passed in...
 #define CGCHECK(funcall)                                                                           \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, myProcessor);           \
-  }
+  do {                                                                                             \
+    if ((funcall) != CG_OK) {                                                                      \
+      Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, myProcessor);         \
+    }                                                                                              \
+    while (0)
 
 // Member function -- can access m_cgnsFilePtr
 #define CGCHECKM(funcall)                                                                          \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(m_cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);           \
-  }
+  do {                                                                                             \
+    if ((funcall) != CG_OK) {                                                                      \
+      Iocgns::Utils::cgns_error(m_cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);         \
+    }                                                                                              \
+    while (0)
 
 #define CGCHECKNP(funcall)                                                                         \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, -1);                    \
-  }
+  do {                                                                                             \
+    if ((funcall) != CG_OK) {                                                                      \
+      Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, -1);                  \
+    }                                                                                              \
+    while (0)
 
 // Used in Iocgns_Decomposition.C
 #define CGCHECK2(funcall)                                                                          \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor); \
-  }
+  do {                                                                                             \
+    if ((funcall) != CG_OK) {                                                                      \
+      Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,                             \
+                                m_decomposition.m_processor);                                      \
+    }                                                                                              \
+    while (0)
 
 namespace Iocgns {
   class StructuredZoneData;

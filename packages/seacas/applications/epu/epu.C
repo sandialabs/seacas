@@ -485,7 +485,7 @@ int main(int argc, char *argv[])
     int part_count = interFace.part_count();
     if (part_count <= 1) {
       fmt::print("INFO: Only one processor or part, no concatenation needed.\n");
-      return (EXIT_SUCCESS);
+      return EXIT_SUCCESS;
     }
 
     int error = 0;
@@ -674,7 +674,7 @@ int main(int argc, char *argv[])
     if (rank == 0) {
       add_to_log(argv[0], static_cast<int>(end_time - begin_time));
     }
-    return (error);
+    return error;
   }
   catch (std::exception &e) {
     fmt::print(stderr, "{}\n", e.what());
@@ -1657,7 +1657,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
              "END *******\n",
              seacas_timer() - execution_time,
              fmt::group_digits((get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024)));
-  return (0);
+  return 0;
 }
 
 namespace {
@@ -4721,7 +4721,7 @@ namespace {
     const char *c2 = s2;
     for (;;) {
       if (::toupper(*c1) != ::toupper(*c2)) {
-        return (::toupper(*c1) - ::toupper(*c2));
+        return ::toupper(*c1) - ::toupper(*c2);
       }
       if (*c1 == '\0') {
         return 0;
@@ -4745,7 +4745,7 @@ namespace {
   inline bool is_whitespace(char c)
   {
     static char white_space[] = {' ', '\t', '\n', '\r', ',', '\0'};
-    return (strchr(white_space, c) != nullptr);
+    return strchr(white_space, c) != nullptr;
   }
 
   void compress_white_space(char *str)

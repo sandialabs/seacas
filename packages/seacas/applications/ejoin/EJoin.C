@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
     MPI_Finalize();
 #endif
 
-    return (error);
+    return error;
   }
   catch (std::exception &e) {
     fmt::print(stderr, "ERROR: Standard exception: {}\n", e.what());
@@ -555,7 +555,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
     fmt::print(stderr, "\tMesh = {:.5} seconds; Timesteps = {:.5} seconds / step.\n\n",
                (ts_begin - begin), (end - ts_begin) / (double)(steps));
   }
-  return (end - begin);
+  return end - begin;
 }
 
 namespace {
