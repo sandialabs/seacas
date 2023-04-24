@@ -15,6 +15,7 @@
 #include "fmt/ostream.h"
 #include "format_time.h"
 #include "hwm.h"
+#include "open_file_limit.h"
 #include "time_stamp.h"
 
 #include <Ionit_Initializer.h>
@@ -52,8 +53,10 @@ namespace {
                               std::vector<double> &output);
   void   transfer_cell_field(const Ioss::StructuredBlock *sb, const std::vector<double> &input,
                              std::vector<double> &output);
-  void   transfer_nodal_coordinates(const PartVector &part_mesh, Ioss::Region &output_region);
-  double transfer_step(const PartVector &part_mesh, Ioss::Region &output_region, int istep);
+  void   transfer_nodal_coordinates(const PartVector &part_mesh, Ioss::Region &output_region,
+                                    bool minimize_open_files);
+  double transfer_step(const PartVector &part_mesh, Ioss::Region &output_region, int istep,
+                       bool minimize_open_files);
   void   union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j);
   void   union_bc_range(Ioss::IJK_t &g_beg, Ioss::IJK_t &g_end, const Ioss::IJK_t &l_beg,
                         const Ioss::IJK_t &l_end, const Ioss::IJK_t &offset);
@@ -161,6 +164,18 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
 {
   auto width = Ioss::Utils::number_width(interFace.processor_count(), false);
 
+  bool minimize_open_files = interFace.minimize_open_files();
+
+  if (!minimize_open_files) {
+    // Query the system to see if the number of files exceeds the system limit and we
+    // need to force use of minimize_open_files...
+    int max_files = open_file_limit() - 1; // We also have an output file.
+    if (interFace.processor_count() > max_files) {
+      minimize_open_files = true;
+      fmt::print("Single file mode... (Max open = {})\n", max_files);
+    }
+  }
+
   PartVector part_mesh(interFace.processor_count());
   for (int p = 0; p < interFace.processor_count(); p++) {
     std::string root_dir = interFace.root_dir();
@@ -209,6 +224,9 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
     if (debug_level & 2) {
       part_mesh[p]->output_summary(std::cerr);
       fmt::print(stderr, "\n");
+    }
+    if (minimize_open_files) {
+      part_mesh[p]->get_database()->closeDatabase();
     }
   }
 
@@ -317,7 +335,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
 
   output_region.begin_mode(Ioss::STATE_MODEL);
-  transfer_nodal_coordinates(part_mesh, output_region);
+  transfer_nodal_coordinates(part_mesh, output_region, minimize_open_files);
   output_region.end_mode(Ioss::STATE_MODEL);
 
   // ******* Transient Data...
@@ -408,7 +426,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   double cur_time   = start_time;
   for (int time_step = ts_min; time_step <= ts_max; time_step += ts_step) {
     time_step_out++;
-    double time_val = transfer_step(part_mesh, output_region, time_step);
+    double time_val = transfer_step(part_mesh, output_region, time_step, minimize_open_files);
 
     double time_per_step       = Ioss::Utils::timer() - cur_time;
     cur_time                   = Ioss::Utils::timer();
@@ -511,7 +529,8 @@ namespace {
     return global_bc;
   }
 
-  double transfer_step(const PartVector &part_mesh, Ioss::Region &output_region, int istep)
+  double transfer_step(const PartVector &part_mesh, Ioss::Region &output_region, int istep,
+                       bool minimize_open_files)
   {
     double time  = part_mesh[0]->get_state_time(istep);
     int    ostep = output_region.add_state(time);
@@ -549,6 +568,9 @@ namespace {
               break; // Should be only a single instance of each block on a part mesh.
             }
           }
+          if (minimize_open_files) {
+            part->get_database()->closeDatabase();
+          }
         }
         block->put_field_data(field_name, output);
       }
@@ -583,6 +605,9 @@ namespace {
               }
               break; // Should be only a single instance of each block on a part mesh.
             }
+          }
+          if (minimize_open_files) {
+            part->get_database()->closeDatabase();
           }
         }
         onb.put_field_data(field_name, output);
@@ -740,7 +765,8 @@ namespace {
     }
   }
 
-  void transfer_nodal_coordinates(const PartVector &part_mesh, Ioss::Region &output_region)
+  void transfer_nodal_coordinates(const PartVector &part_mesh, Ioss::Region &output_region,
+                                  bool minimize_open_files)
   {
     // This implementation results in having to iterate over the part
     // mesh 3 times -- once for each coordinate axis, but minimizes
@@ -771,6 +797,9 @@ namespace {
               transfer_nodal_field(pblock, lcoord, coord);
               break; // Should be only a single instance of each block on a part mesh.
             }
+          }
+          if (minimize_open_files) {
+            part->get_database()->closeDatabase();
           }
         }
         block->put_field_data(fields[dim], coord);
