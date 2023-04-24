@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -632,12 +632,12 @@ namespace {
                        work_width, proc_work[i] / avg_work, stars);
           }
           else if (proc_work[i] == min_work) {
-            fmt::print(fg(fmt::color::green), format, i, proc_width, proc_work[i], work_width,
-                       proc_work[i] / avg_work, stars);
+            fmt::print(fg(fmt::color::green), format, i, proc_width,
+                       fmt::group_digits(proc_work[i]), work_width, proc_work[i] / avg_work, stars);
           }
           else {
-            fmt::print(format, i, proc_width, proc_work[i], work_width, proc_work[i] / avg_work,
-                       stars);
+            fmt::print(format, i, proc_width, fmt::group_digits(proc_work[i]), work_width,
+                       proc_work[i] / avg_work, stars);
           }
           if (verbose) {
             for (const auto &zone : zones) {
