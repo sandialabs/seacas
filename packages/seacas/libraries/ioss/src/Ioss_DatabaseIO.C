@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cfloat>
+#include <cmath>
 #include <cstddef>
 #include <cstring>
 #include <fmt/ostream.h>
@@ -292,9 +293,15 @@ namespace Ioss {
     Utils::check_set_bool_property(properties, "ENABLE_TRACING", m_enableTracing);
     Utils::check_set_bool_property(properties, "TIME_STATE_INPUT_OUTPUT", m_timeStateInOut);
     {
-      bool logging;
+      bool logging = false;
       if (Utils::check_set_bool_property(properties, "LOGGING", logging)) {
         set_logging(logging);
+      }
+    }
+    {
+      bool nan_detection = false;
+      if (Utils::check_set_bool_property(properties, "NAN_DETECTION", nan_detection)) {
+        set_nan_detection(nan_detection);
       }
     }
 
@@ -551,6 +558,23 @@ namespace Ioss {
       }
     }
     return decodedFilename;
+  }
+
+  void DatabaseIO::verify_field_data(const Field &field, Ioss::Field::InOut in_out,
+                                     void *data) const
+  {
+    if (field.is_type(Ioss::Field::BasicType::DOUBLE)) {
+      double *rdata      = static_cast<double *>(data);
+      int     comp_count = field.get_component_count(in_out);
+      size_t  num_to_get = field.raw_count();
+      for (size_t i = 0; i < comp_count * num_to_get; i++) {
+        if (std::isnan(rdata[i])) {
+          std::string direction = in_out == Ioss::Field::InOut::OUTPUT ? "writing" : "reading";
+          fmt::print(Ioss::WarnOut(), "NaN detected at index {} while {} field {}.\n", i, direction,
+                     field.get_name());
+        }
+      }
+    }
   }
 
   void DatabaseIO::verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const
