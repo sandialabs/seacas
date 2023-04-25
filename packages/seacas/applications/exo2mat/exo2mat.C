@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -27,9 +27,11 @@
 */
 
 #include <algorithm>
+#include <array>
 #include <cstring> // for strlen, etc
 #include <iostream>
 #include <numeric>
+#include <string>
 #include <vector>
 
 #include "add_to_log.h" // for add_to_log
@@ -55,11 +57,7 @@ static FILE  *m_file   = nullptr; /* file for m file output */
 static mat_t *mat_file = nullptr; /* file for binary .mat output */
 static bool   debug    = false;
 
-static const char *qainfo[] = {
-    "exo2mat",
-    "2021/09/27",
-    "4.08",
-};
+static std::array<std::string, 3> qainfo{"exo2mat", "2021/09/27", "4.08"};
 
 void logger(const char *message)
 {
