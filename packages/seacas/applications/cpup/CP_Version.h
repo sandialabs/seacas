@@ -6,9 +6,6 @@
  * See packages/seacas/LICENSE for details
  */
 #pragma once
-
-static char const *qainfo[] = {
-    "cpup",
-    "0.95 beta",
-    "2023/04/25",
-};
+#include <array>
+#include <string>
+static std::array<std::string, 3> qainfo{"cpup", "0.95 beta", "2023/04/25"};

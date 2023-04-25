@@ -284,7 +284,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   // NOTE: 'output_region' owns 'dbo' pointer at this time
   Ioss::Region output_region(dbo, "cpup_output_region");
   output_region.property_add(Ioss::Property("code_name", qainfo[0]));
-  output_region.property_add(Ioss::Property("code_version", qainfo[2]));
+  output_region.property_add(Ioss::Property("code_version", qainfo[1] + ":" + qainfo[2]));
 
   output_region.begin_mode(Ioss::STATE_DEFINE_MODEL);
 
