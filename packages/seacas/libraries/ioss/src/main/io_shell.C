@@ -637,6 +637,10 @@ namespace {
       properties.add(Ioss::Property("LOGGING", 1));
     }
 
+    if (interFace.detect_nans) {
+      properties.add(Ioss::Property("NAN_DETECTION", 1));
+    }
+
     if (interFace.memory_statistics) {
       properties.add(Ioss::Property("ENABLE_TRACING", 1));
     }

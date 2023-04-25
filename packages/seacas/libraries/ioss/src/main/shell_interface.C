@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -295,6 +295,8 @@ void IOShell::Interface::enroll_options()
 #endif
 
   options_.enroll("debug", Ioss::GetLongOption::NoValue, "turn on debugging output", nullptr);
+  options_.enroll("detect_nans", Ioss::GetLongOption::NoValue, "check all real field data for NaNs",
+                  nullptr);
 
   options_.enroll("quiet", Ioss::GetLongOption::NoValue, "minimize output", nullptr);
 
@@ -345,7 +347,9 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     if (my_processor == 0) {
       options_.usage(std::cerr);
       fmt::print(stderr, "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.\n\n");
-      fmt::print(stderr, "\tDocumentation: https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#io-shell\n\n");
+      fmt::print(stderr,
+                 "\tDocumentation: "
+                 "https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#io-shell\n\n");
       fmt::print(stderr, "\t->->-> Send email to gdsjaar@sandia.gov for {} support.<-<-<-\n",
                  options_.program_name());
     }
@@ -497,6 +501,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
 
   minimize_open_files       = (options_.retrieve("minimize_open_files") != nullptr);
   debug                     = (options_.retrieve("debug") != nullptr);
+  detect_nans               = (options_.retrieve("detect_nans") != nullptr);
   file_per_state            = (options_.retrieve("file_per_state") != nullptr);
   reverse                   = (options_.retrieve("reverse") != nullptr);
   quiet                     = (options_.retrieve("quiet") != nullptr);
