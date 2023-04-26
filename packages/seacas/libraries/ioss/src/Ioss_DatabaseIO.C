@@ -590,9 +590,10 @@ namespace Ioss {
             }
           }
           if (!nans.empty()) {
-            fmt::print(Ioss::WarnOut(), "NaN detected {} field '{}' on {} '{}' at indicies {}.\n",
-                       direction, get_component_name(field, in_out, comp + 1), ge->type_string(),
-                       ge->name(), Ioss::Utils::format_id_list(nans));
+            fmt::print(Ioss::WarnOut(), "Found {} NaN{} {} field '{}' on {} '{}' at {} {}.\n",
+                       nans.size(), nans.size() > 1 ? "s" : "", direction,
+                       get_component_name(field, in_out, comp + 1), ge->type_string(), ge->name(),
+                       nans.size() > 1 ? "indices" : "index", Ioss::Utils::format_id_list(nans));
             nans.clear();
           }
         }
