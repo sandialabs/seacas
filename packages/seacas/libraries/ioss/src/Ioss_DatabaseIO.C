@@ -586,7 +586,7 @@ namespace Ioss {
           for (size_t i = 0; i < num_to_get; i++) {
             size_t idx = comp_count * i + comp;
             if (std::isnan(rdata[idx])) {
-              nans.push_back(idx);
+              nans.push_back(i);
             }
           }
           if (!nans.empty()) {
