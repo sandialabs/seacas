@@ -387,7 +387,7 @@ namespace Ioss {
       verify_and_log(reg, field, 1);
       int64_t retval = get_field_internal(reg, field, data, data_size);
       if (get_nan_detection()) {
-        verify_field_data(field, Ioss::Field::InOut::INPUT, data);
+        verify_field_data(reg, field, Ioss::Field::InOut::INPUT, data);
       }
       verify_and_log(nullptr, field, 1);
       return retval;
@@ -399,7 +399,7 @@ namespace Ioss {
       IOSS_FUNC_ENTER(m_);
       verify_and_log(reg, field, 0);
       if (get_nan_detection()) {
-        verify_field_data(field, Ioss::Field::InOut::OUTPUT, data);
+        verify_field_data(reg, field, Ioss::Field::InOut::OUTPUT, data);
       }
       int64_t retval = put_field_internal(reg, field, data, data_size);
       verify_and_log(nullptr, field, 0);
@@ -762,7 +762,8 @@ namespace Ioss {
 
     void compute_block_adjacencies() const;
 
-    void verify_field_data(const Field &field, Ioss::Field::InOut in_out, void *data) const;
+    bool verify_field_data(const GroupingEntity *ge, const Field &field, Ioss::Field::InOut in_out,
+                           void *data) const;
     void verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const;
 
     virtual int64_t get_field_internal(const Region *reg, const Field &field, void *data,
