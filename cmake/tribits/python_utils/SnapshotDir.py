@@ -401,7 +401,7 @@ def snapshotDirMainDriver(cmndLineArgs, defaultOptionsIn = None, stdout = None):
       return  # All done!
   
     #
-    # C) Execute the 
+    # C) Exectute the 
     #
   
     snapshotDir(options)

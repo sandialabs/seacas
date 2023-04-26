@@ -36,6 +36,9 @@
 #
 # ************************************************************************
 # @HEADER
+if (${CMAKE_VERSION} GREATER "3.13")
+     cmake_policy(SET CMP0074 NEW)
+endif()
 
 tribits_tpl_find_include_dirs_and_libraries( Pnetcdf
   REQUIRED_HEADERS pnetcdf.h

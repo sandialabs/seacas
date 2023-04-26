@@ -7,6 +7,21 @@
 # provides libraries that need to be cast as TriBITS CMake libraries.  To
 # make this even more interesting, the external software has dependencies on
 # upstream TriBITS packages.
+#
+# An overview of the basic tasks required are:
+#
+# a) Enumerate the upstream packages and TPLs needed (this is done in the
+# cmake/Dependencies.cmake file).
+#
+# b) Generate an export makefile for the upstream packages and TPLs
+#
+# c) Call the configure script for the external package passing the compilers,
+# compiler flags, and a pointer to the export makefile (which is just used to
+# lift the include dirs and libs).
+#
+# d) Define library targets for the external project and define a build rule
+# for generating those libraries given the list of header and source files in
+# the external project.
 
 tribits_package(WrapExternal)
 
@@ -51,50 +66,40 @@ endif()
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" upperBuildType)
 
-get_target_property(simpleCxx_IncludeDirs
-  SimpleCxx::simplecxx  INTERFACE_INCLUDE_DIRECTORIES)
-
-get_target_property(withSubpackagesA_IncludeDirs
-  WithSubpackagesA::pws_a  INTERFACE_INCLUDE_DIRECTORIES)
-
-set(includeDirsList ${withSubpackagesA_IncludeDirs} ${simpleCxx_IncludeDirs})
-
+set(includeDirsList
+  -I ${WithSubpackagesA_SOURCE_DIR}
+  -I ${SimpleCxx_SOURCE_DIR}/src
+  -I ${SimpleCxx_BINARY_DIR}/src
+  )
 if (${PACKAGE_NAME}_ENABLE_MixedLang)
-  get_target_property(mixedLang_IncludeDirs
-    MixedLang::mixedlang  INTERFACE_INCLUDE_DIRECTORIES)
-  list(PREPEND includeDirsList ${mixedLang_IncludeDirs})
+  list(PREPEND includeDirsList
+    -I ${MixedLang_SOURCE_DIR}/src
+    -I ${MixedLang_BINARY_DIR}/src
+    )
 endif()
-list(JOIN includeDirsList " -I" includeDirsCompileOptions)
-set(includeDirsCompileOptions "-I${includeDirsCompileOptions}")
+list(JOIN includeDirsList " " includeDirs)
+# NOTE: TriBITS export Makefile support used to handle the above stuff
+# automatically but that is what you give up when moving to modern CMake.
 
 #
-# C) Do configuration of the external project as a build target
+# C) Do configuration of the external project
 #
 
 set(EXTERNAL_FUNC_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_func)
 set(EXTERNAL_FUNC_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/external_func)
 set(EXTERNAL_FUNC_LIB_FILE ${EXTERNAL_FUNC_BINARY_DIR}/libexternal_func.a)
-set(EXTERNAL_FUNC_MAKEFILE ${EXTERNAL_FUNC_BINARY_DIR}/Makefile)
 
 file(MAKE_DIRECTORY ${EXTERNAL_FUNC_BINARY_DIR})
 
-add_custom_command(
-  OUTPUT ${EXTERNAL_FUNC_MAKEFILE}
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
-    ${EXTERNAL_FUNC_SOURCE_DIR}/configure.py
+execute_process(
   COMMAND ${PYTHON_EXECUTABLE} ${EXTERNAL_FUNC_SOURCE_DIR}/configure.py
     "--cxx=${CMAKE_CXX_COMPILER}"
     "--cxx-flags=${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${upperBuildType}}"
     "--ar=${CMAKE_AR}"
-    "--include-dirs=${includeDirsCompileOptions}"
+    "--include-dirs=${includeDirs}"
     "--src-dir=${EXTERNAL_FUNC_SOURCE_DIR}"
     "--build-dir=${EXTERNAL_FUNC_BINARY_DIR}"
   )
-
-# NOTE: Above, we have to run the configure.py script at build time after
-# generation because ${includeDirsCompileOptions} contains generation
-# expressions that are evaluated at generation time by the
-# add_custom_command() call.
 
 #
 # D) Define a custom build rule and target to create external_func library
@@ -104,7 +109,6 @@ add_custom_command(
   OUTPUT ${EXTERNAL_FUNC_LIB_FILE}
   DEPENDS ${EXTERNAL_FUNC_SOURCE_DIR}/external_func.hpp
     ${EXTERNAL_FUNC_SOURCE_DIR}/external_func.cpp
-    ${EXTERNAL_FUNC_MAKEFILE}
   COMMAND make ${CTEST_BUILD_FLAGS}
   WORKING_DIRECTORY ${EXTERNAL_FUNC_BINARY_DIR}
   )
@@ -133,13 +137,13 @@ add_dependencies(external_func build_external_func)
 
 # E.2) Make sure before we build the external library, we first build the
 # libraries.
-add_dependencies(build_external_func WithSubpackagesA::pws_a)
+add_dependencies(build_external_func pws_a)
 # NOTE: You have to put the lib dependencies on build target, not the imported
 # library target!
 
 # E.3) Update the TriBITS variables
 append_set(${PACKAGE_NAME}_LIB_TARGETS external_func)
-global_set(${PACKAGE_NAME}_LIBRARIES external_func WithSubpackagesA::pws_a)
+global_set(${PACKAGE_NAME}_LIBRARIES external_func pws_a)
 global_set(${PACKAGE_NAME}_HAS_NATIVE_LIBRARIES ON)
 tribits_include_directories(${EXTERNAL_FUNC_SOURCE_DIR})
 # NOTE: Above, you have to add the upstream dependent libraries to the current

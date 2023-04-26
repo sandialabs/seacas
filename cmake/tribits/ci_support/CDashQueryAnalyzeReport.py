@@ -2102,7 +2102,7 @@ class DictSortFunctor(object):
 #
 # limitRowsToDisplay [in]: The max number of rows to display.  The default is
 # None which will result in no limit to the number of rows displayed.  The top
-# limitRowsToDisplay items will be displayed after the list is sorted.
+# limitRowsToDisplay items will be dispalyed after the list is sorted.
 #
 def sortAndLimitListOfDicts(listOfDicts, sortKeyList = None,
    limitRowsToDisplay = None\
@@ -2405,7 +2405,7 @@ def getCDashDataSummaryHtmlTableTitleStr(dataTitle, dataCountAcronym, numItems,
 #
 # limitRowsToDisplay [in]: The max number of rows to display.  The default is
 # None which will result in no limit to the number of rows displayed.  The top
-# limitRowsToDisplay items will be displayed after the list is sorted.
+# limitRowsToDisplay items will be dispalyed after the list is sorted.
 #
 # htmlStyle [in]: The HTML style data (between <style></style>.  If None is
 # passed in then a default style is provided internally (see
@@ -2692,7 +2692,7 @@ class SingleBuildsetReporter(object):
   #
   #   verbose [in] If set to True then some more verbose info is printed to
   #   STDOUT.  If False, then nothing is printed to STDOUT (which is useful
-  #   for unit testing). The default is True.
+  #   for unit testsing). The default is True.
   #
   # On output, self.cdashReportData data will be updated with the summary and
   # table of this given build-set.  In particular, the following
