@@ -663,7 +663,7 @@ if __name__ == '__main__':
       CDQAR.MatchDictKeysValuesFunctor(nonpassingTestsSLOD)
 
     #
-    # D.3) Partition the varous list of tests into different sets that will
+    # D.3) Partition the various list of tests into different sets that will
     # be displayed in different tables.
     #
 
