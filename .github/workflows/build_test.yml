@@ -13,7 +13,7 @@ jobs:
   build-deps:
 
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         compiler: [ gnu, clang, mpi ]
@@ -51,7 +51,7 @@ jobs:
 ###
 
   seacas-build:
-  
+
     needs: build-deps
     runs-on: ubuntu-latest
 
@@ -91,17 +91,17 @@ jobs:
           cd build
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
-      - name: Build 
+      - name: Build
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4
         if: ${{ success() }}
 
       - name: Install
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4 install
         if: ${{ success() }}
 

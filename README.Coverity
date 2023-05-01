@@ -6,7 +6,7 @@ To trigger a scan by coverity, do the following:
 * make a change such that you can do a commit
 * Commit and then push
 
-This should fire off a run of coverity scan.  
+This should fire off a run of coverity scan.
 
 Do not make source code changes on the coverity_scan branch and don't
 merge the branch back into master since the .travis.yml file is
@@ -15,5 +15,3 @@ different between the branch and master.
 Commits to coverity_scan branch will only trigger the coverity scan
 and won't do the normal build and test.  Commits to master branch will
 do the normal clang and gcc builds and run tests.
-
-
