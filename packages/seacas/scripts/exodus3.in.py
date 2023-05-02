@@ -1604,7 +1604,7 @@ class exodus:
         >>> em_cnt = exo.inquire('EX_INQ_ELEM_MAP')
         >>> em     = exo.get_names('EX_ELEM_MAP')
         >>> map    = exo.get_num_map('EX_ELEM_MAP', 2)
-        
+
         """
         return self.__ex_get_num_map(mapType, idx)
 
@@ -1621,14 +1621,14 @@ class exodus:
             mapType   : ex_entity_type
                         type of map being written (`EX_ELEM_MAP`, `EX_NODE_MAP`, `EX_FACE_MAP`, `EX_EDGE_MAP`)
             idx       : int
-                        which map to write (1-based).  Use `put_map_param(node_map_cnt, elem_map_cnt)` prior to this 
+                        which map to write (1-based).  Use `put_map_param(node_map_cnt, elem_map_cnt)` prior to this
                         function to define number of maps on the database.
             <list<int>>  elem_id_map
 
 
         Usage
         -----
-        
+
         >>> exo.put_map_param(nm_cnt, em_cnt)
         >>> nm[0] = "My_Node_Map"
         >>> exo.put_names('EX_NODE_MAP', nm);
@@ -1640,14 +1640,14 @@ class exodus:
     def put_map_param(self, node_map_cnt, elem_map_cnt):
         """
         Define number of node and element maps that will be written to the database
-        
+
         Parameters
         ----------
         node_map_cnt  : int
                         number of node maps
         elem_map_cnt  : int
                         number of element maps
-        
+
         """
         return self.__ex_put_map_param(node_map_cnt, elem_map_cnt)
 
@@ -5495,7 +5495,7 @@ class exodus:
 
     def __ex_get_num_map(self, objType, idx):
         inqType = ex_obj_to_inq(objType)
-        map_id   = ctypes.c_longlong(idx)
+        map_id = ctypes.c_longlong(idx)
         obj_type = ctypes.c_int(get_entity_type(objType))
         inq_type = ctypes.c_int(ex_inquiry_map(inqType))
         num_objs = ctypes.c_int(self.__ex_inquire_int(inq_type))
@@ -5523,7 +5523,7 @@ class exodus:
 
     def __ex_put_num_map(self, objType, idx, numMap):
         inqType = ex_obj_to_inq(objType)
-        map_id   = ctypes.c_longlong(idx)
+        map_id = ctypes.c_longlong(idx)
         obj_type = ctypes.c_int(get_entity_type(objType))
         inq_type = ctypes.c_int(ex_inquiry_map(inqType))
         num_objs = ctypes.c_int(self.__ex_inquire_int(inq_type))
