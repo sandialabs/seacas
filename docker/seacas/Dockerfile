@@ -29,6 +29,7 @@ RUN apt-get update && \
         zlib1g-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+RUN snap install cmake –classic
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
 WORKDIR /seacas
