@@ -30,7 +30,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
-RUN wget -qO- "https://cmake.org/files/v3.26/cmake-3.26.0-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
 RUN git clone --depth 1 https://github.com/sandialabs/seacas.git
 WORKDIR /seacas
 RUN ./install-tpl.sh
