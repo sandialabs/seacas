@@ -115,11 +115,11 @@ C     ... See if all attributes are the same
          do ia = 1, natr
             iel = lisel(ifrst)-iel0
             aval = atrib(ia, iel)
-            do ix = ifrst+1, numel
+            do ix = ifrst+1, numel - iel0
                iel = lisel(ix)
                if (iel .eq. 0) cycle
-               iel = iel - iel0
-               if (aval .ne. atrib(ia, iel)) then
+               ne = iel - iel0
+               if (aval .ne. atrib(ia, ne)) then
                   allsam = .false.
                   go to 190
                end if
@@ -143,7 +143,7 @@ C     ... Print either all values (if not all same), or the common values
             else
                WRITE (*, 10000) 'Attributes'
             end if
-            DO IX = ifrst, numel
+            DO IX = ifrst, numel - iel0
                IEL = LISEL(IX)
                if (iel .eq. 0) cycle
                NE = IEL - IEL0
