@@ -32,7 +32,7 @@
 #endif
 
 namespace {
-  const char *version_string = "6.12 (2023/05/03)";
+  const std::string version_string{"6.12 (2023/05/03)"};
 
   void output_copyright();
 
