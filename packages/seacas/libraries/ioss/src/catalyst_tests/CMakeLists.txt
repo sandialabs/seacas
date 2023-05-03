@@ -24,6 +24,18 @@ TRIBITS_ADD_TEST(
 )
 
 TRIBITS_ADD_EXECUTABLE(
+    Iocatalyst_BlockMeshSetTest
+ SOURCES
+    Iocatalyst_BlockMeshSetTest.C
+)
+
+TRIBITS_ADD_TEST(
+	Iocatalyst_BlockMeshSetTest
+	NAME Iocatalyst_BlockMeshSetTest
+	NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE(
     Iocatalyst_StructuredBlockTest
  SOURCES
     Iocatalyst_StructuredBlockTest.C

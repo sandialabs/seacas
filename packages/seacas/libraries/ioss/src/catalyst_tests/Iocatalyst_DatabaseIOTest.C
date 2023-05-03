@@ -12,8 +12,14 @@
 
 Iocatalyst_DatabaseIOTest::Iocatalyst_DatabaseIOTest()
 {
-  part.id   = putils.parallel_rank();
-  part.size = putils.parallel_size();
+  part.id         = putils.parallel_rank();
+  part.size       = putils.parallel_size();
+  blockMeshSize.i = 2;
+  blockMeshSize.j = 2;
+  blockMeshSize.k = 2;
+  origin.i        = 0;
+  origin.j        = 0;
+  origin.k        = 0;
 }
 
 bool Iocatalyst_DatabaseIOTest::regionsAreEqual(const std::string &fileName,
@@ -61,12 +67,26 @@ void Iocatalyst_DatabaseIOTest::runUnstructuredTest(const std::string &testName)
   std::string catalystFileName = CATALYST_TEST_FILE_PREFIX + testName + CATALYST_TEST_FILE_NP +
                                  std::to_string(part.size) + EXODUS_FILE_EXTENSION;
   bmSet.writeIOSSFile(exodusFileName, EXODUS_DATABASE_TYPE);
+  bmSet.writeCatalystIOSSFile(catalystFileName, EXODUS_DATABASE_TYPE);
+  EXPECT_TRUE(regionsAreEqual(exodusFileName, catalystFileName, EXODUS_DATABASE_TYPE));
 }
 
-void Iocatalyst_DatabaseIOTest::initBlock(Iocatalyst::BlockMesh &blockMesh, int x, int y, int z)
+void Iocatalyst_DatabaseIOTest::setBlockMeshSize(unsigned int i, unsigned int j, unsigned int k)
 {
-  numBlocks.x = x;
-  numBlocks.y = y;
-  numBlocks.z = z;
-  blockMesh.init(part, numBlocks);
+  blockMeshSize.i = i;
+  blockMeshSize.j = j;
+  blockMeshSize.k = k;
+}
+
+void Iocatalyst_DatabaseIOTest::setOrigin(unsigned int i, unsigned int j, unsigned int k)
+{
+  origin.i = i;
+  origin.j = j;
+  origin.k = k;
+}
+
+void Iocatalyst_DatabaseIOTest::addBlockMesh(Iocatalyst::BlockMesh &blockMesh)
+{
+  blockMesh.init(part, blockMeshSize, origin);
+  bmSet.addBlockMesh(blockMesh);
 }

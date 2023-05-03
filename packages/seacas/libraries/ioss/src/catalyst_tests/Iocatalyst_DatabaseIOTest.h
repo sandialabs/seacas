@@ -16,7 +16,8 @@ class IOCATALYST_EXPORT Iocatalyst_DatabaseIOTest : public ::testing::Test
 protected:
   Iocatalyst::BlockMeshSet         bmSet;
   Iocatalyst::BlockMesh::Partition part;
-  Iocatalyst::BlockMesh::Extent    numBlocks;
+  Iocatalyst::BlockMesh::Extent    blockMeshSize;
+  Iocatalyst::BlockMesh::Extent    origin;
   Ioss::ParallelUtils              putils;
 
   Iocatalyst_DatabaseIOTest();
@@ -28,7 +29,9 @@ protected:
 
   void runUnstructuredTest(const std::string &testName);
 
-  void initBlock(Iocatalyst::BlockMesh &blockMesh, int x, int y, int z);
+  void setBlockMeshSize(unsigned int i, unsigned int j, unsigned int k);
+  void setOrigin(unsigned int i, unsigned int j, unsigned int k);
+  void addBlockMesh(Iocatalyst::BlockMesh &blockMesh);
 
   const std::string CGNS_DATABASE_TYPE        = "cgns";
   const std::string CGNS_FILE_EXTENSION       = ".cgns";

@@ -7,8 +7,8 @@
 #pragma once
 
 #include "iocatalyst_export.h"
-#include <vector>
 #include <array>
+#include <vector>
 
 namespace Iocatalyst {
 
@@ -30,58 +30,74 @@ namespace Iocatalyst {
 
     struct Extent
     {
-      int x;
-      int y;
-      int z;
+      unsigned int i;
+      unsigned int j;
+      unsigned int k;
     };
 
-    using BlockConn = std::array<int,8>;
-    using IJK = std::array<int,3>;
-    using IDList = std::vector<int>;
-    const int BLOCK_OFFSET = 0;
-    const int POINT_OFFSET = 1;
+    using BlockConn                        = std::array<int, 8>;
+    using IDList                           = std::vector<int>;
+    using ID                               = unsigned int;
+    static const unsigned int BLOCK_OFFSET = 0;
+    static const unsigned int POINT_OFFSET = 1;
+    static constexpr double   BLOCK_LENGTH = 1.0;
+
+    static const unsigned int I_GLOBAL = 1000;
+    static const unsigned int J_GLOBAL = 1000;
+    static const unsigned int K_GLOBAL = 1000;
 
     BlockMesh();
     ~BlockMesh();
 
-    void init(const Partition &part, const Extent &numBlocks);
+    void init(const Partition &part, const Extent &numBlocks, const Extent &origin);
 
     const Partition &getPartition() const { return partition; }
 
-    const Point &getOrigin() const { return origin; }
-    void         setOrigin(const Point &origin) { this->origin = origin; }
+    const Extent &getOrigin() const { return origin; }
 
-    const Extent &getGlobalNumBlocks() const { return globalNumBlocks; }
+    const Extent &getExtents() const { return extents; }
 
-    const Point &getBlockLength() const { return blockLength; }
-    void         setBlockLength(const Point &length);
+    const Extent &getPartitionExtents() const { return partitionExtents; }
+    const Extent &getPartitionStart() const { return partitionStart; }
 
-    const Extent &getLocalNumBlocks() const { return localNumBlocks; }
-    const Extent &getLocalBlockStart() const { return localBlockStart; }
+    ID getID() const;
 
-    bool isLocalBlockEmpty();
+    bool isPartitionEmpty() const;
 
-    IDList getLocalBlockIDs();
-    BlockConn getBlockConnectivityGlobalPointIDs(int globalBlockID);
+    int           getNumBlocks() const;
+    int           getNumPartitionBlocks() const;
+    IDList        getPartitionBlockIDs() const;
+    BlockConn     getBlockConnectivityPointIDs(ID blockID) const;
+    static Extent getGlobalBlockExtents() { return {I_GLOBAL, J_GLOBAL, K_GLOBAL}; };
+    ID            getGlobalIDForBlockID(ID blockID);
 
-    IDList getLocalPointIDs();
-    int getGlobalPointIDfromCoords(int i, int j, int k);
-    Point getPointCoordsForGlobalPointID(int globalPointID);
+    int           getNumPoints() const;
+    int           getNumPartitionPoints() const;
+    IDList        getPartitionPointIDs() const;
+    ID            getPointIDfromCoords(unsigned int i, unsigned int j, unsigned int k) const;
+    Point         getPointCoordsForPointID(ID pointID) const;
+    static Extent getGlobalPointExtents() { return {I_GLOBAL + 1, J_GLOBAL + 1, K_GLOBAL + 1}; };
+    ID            getGlobalIDForPointID(ID pointID);
+
+    static Extent getCoordsForID(ID id, Extent bounds);
+    static ID     getIDfromCoords(Extent coords, Extent bounds);
 
   private:
     Partition partition;
-    Point     origin;
-    Extent    globalNumBlocks;
-    Point     blockLength;
-    Extent    localNumBlocks;
-    Extent    localBlockStart;
+    Extent    origin;
+    Extent    extents;
+    Extent    partitionExtents;
+    Extent    partitionStart;
+    Extent    globalBlockExtents;
     void      splitBlock();
     void      fillExtents(int *ext);
-    void      setLocalBlockFromExtents(int *ext);
-    void      setLocalBlockEmpty();
-    IDList getLocalIDs(int offset);
-    int getGlobalIDfromCoords(int i, int j, int k, int offset);
-    IJK getCoordsForGlobalID(int globalID, int offset);
+    void      setPartitionFromExtents(int ext[6]);
+    void      setPartitionEmpty();
+    IDList    getPartitionIDs(unsigned int offset) const;
+    int       getNumInPartition(unsigned int offset) const;
+    int       getNumInBlockMesh(unsigned int offset) const;
+    ID        id;
+    static ID _id;
   };
 
 } // namespace Iocatalyst

@@ -64,7 +64,7 @@ namespace Iocatalyst {
     {
       const auto name = node.name();
       return new Ioss::ElementBlock(dbase, name,
-                                    node["properties/original_topology_type/value"].as_string(),
+                                    node["properties/topology_type/value"].as_string(),
                                     node["properties/entity_count/value"].as_int64());
     }
 
@@ -192,8 +192,6 @@ namespace Iocatalyst {
       const auto num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
-        std::cerr << "putField path = " + getFieldPath(containerName, groupName, field.get_name())
-                  << "\n";
         auto &&node = this->DBNode[getFieldPath(containerName, groupName, field.get_name())];
         node["role"].set(static_cast<std::int8_t>(field.get_role()));
         node["type"].set(static_cast<std::int8_t>(field.get_type()));
@@ -254,7 +252,6 @@ namespace Iocatalyst {
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
         auto path = getFieldPath(containerName, groupName, field.get_name()) + "/value";
-        std::cerr << "getField path = " + path << "\n";
 
         const auto &&node = this->DBNode[path];
         switch (field.get_type()) {
@@ -475,9 +472,12 @@ namespace Iocatalyst {
     bool readProperties(const conduit_cpp::Node &&parent, GroupingEntityT *block) const
     {
       for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
-        auto     &&child  = parent[idx];
-        const auto name   = child.name();
+        auto     &&child = parent[idx];
+        const auto name  = child.name();
         const auto origin = static_cast<Ioss::Property::Origin>(child["origin"].as_int8());
+        if (block->property_exists(name) && block->get_property(name).is_implicit()) {
+          continue;
+        }
         switch (child["type"].as_int8()) {
         // TODO: missing origin
         case Ioss::Property::BasicType::REAL:
@@ -823,6 +823,12 @@ namespace Iocatalyst {
     if (impl.hasField(blockPath, nb, field.get_name())) {
       return impl.getField(blockPath, nb, field, data, data_size);
     }
+    else if ((field.get_name() == "mesh_model_coordinates") &&
+             (impl.hasField(blockPath, nb, "mesh_model_coordinates_x") &&
+              impl.hasField(blockPath, nb, "mesh_model_coordinates_y") &&
+              impl.hasField(blockPath, nb, "mesh_model_coordinates_z"))) {
+      return impl.getMeshModelCoordinates(blockPath, nb, field, data, data_size);
+    }
     else {
       fmt::print(stderr, "WARNING in {} : {}\n", __func__,
                  "field not available, " + field.get_name() + ", in container " + blockPath + "\n");
@@ -937,12 +943,16 @@ namespace Iocatalyst {
   int64_t DatabaseIO::get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    auto &impl = (*this->Impl.get());
-    if (impl.hasField("structured_blocks", sb, field.get_name())) {
-      return impl.getField("structured_blocks", sb, field, data, data_size);
+    std::string blockPath = "structured_blocks";
+    auto       &impl      = (*this->Impl.get());
+    if (impl.hasField(blockPath, sb, field.get_name())) {
+      return impl.getField(blockPath, sb, field, data, data_size);
     }
-    else if (field.get_name() == "mesh_model_coordinates") {
-      return impl.getMeshModelCoordinates("structured_blocks", sb, field, data, data_size);
+    else if ((field.get_name() == "mesh_model_coordinates") &&
+             (impl.hasField(blockPath, sb, "mesh_model_coordinates_x") &&
+              impl.hasField(blockPath, sb, "mesh_model_coordinates_y") &&
+              impl.hasField(blockPath, sb, "mesh_model_coordinates_z"))) {
+      return impl.getMeshModelCoordinates(blockPath, sb, field, data, data_size);
     }
     else {
       fmt::print(stderr, "WARNING in {} : {}\n", __func__,

@@ -9,30 +9,27 @@
 
 namespace Iocatalyst {
 
+  BlockMesh::ID BlockMesh::_id = 1;
+
   BlockMesh::BlockMesh()
   {
-    partition.id      = 0;
-    partition.size    = 1;
-    origin.x          = 0.0;
-    origin.y          = 0.0;
-    origin.z          = 0.0;
-    globalNumBlocks.x = 1;
-    globalNumBlocks.y = 1;
-    globalNumBlocks.z = 1;
-    blockLength.x     = 1.0;
-    blockLength.y     = 1.0;
-    blockLength.z     = 1.0;
-    localNumBlocks.x  = 1;
-    localNumBlocks.y  = 1;
-    localNumBlocks.z  = 1;
-    localBlockStart.x = 0;
-    localBlockStart.y = 0;
-    localBlockStart.z = 0;
+    partition.id       = 0;
+    partition.size     = 1;
+    extents.i          = 1;
+    extents.j          = 1;
+    extents.k          = 1;
+    partitionExtents.i = 1;
+    partitionExtents.j = 1;
+    partitionExtents.k = 1;
+    partitionStart.i   = 0;
+    partitionStart.j   = 0;
+    partitionStart.k   = 0;
+    id                 = _id++;
   }
 
   BlockMesh::~BlockMesh() {}
 
-  void BlockMesh::init(const Partition &part, const Extent &numBlocks)
+  void BlockMesh::init(const Partition &part, const Extent &numBlocks, const Extent &origin)
   {
     if (part.id < 0 || part.size < 0 || part.id >= part.size) {
       std::ostringstream errmsg;
@@ -40,26 +37,10 @@ namespace Iocatalyst {
              << "\n";
       IOSS_ERROR(errmsg);
     }
-    if (numBlocks.x <= 0 || numBlocks.y <= 0 || numBlocks.z <= 0) {
-      std::ostringstream errmsg;
-      errmsg << "Invalid numBlocks: x = " << numBlocks.x << std::string(", y = ") << numBlocks.y
-             << std::string(", z = ") << numBlocks.z << "\n";
-      IOSS_ERROR(errmsg);
-    }
-    this->partition       = part;
-    this->globalNumBlocks = numBlocks;
+    this->partition = part;
+    this->extents   = numBlocks;
+    this->origin    = origin;
     splitBlock();
-  }
-
-  void BlockMesh::setBlockLength(const Point &length)
-  {
-    if (length.x < 0 || length.y < 0 || length.z < 0) {
-      std::ostringstream errmsg;
-      errmsg << "Invalid length: x = " << length.x << std::string(", y = ") << length.y
-             << std::string(", z = ") << length.z << "\n";
-      IOSS_ERROR(errmsg);
-    }
-    this->blockLength = length;
   }
 
   void BlockMesh::splitBlock()
@@ -74,7 +55,7 @@ namespace Iocatalyst {
     int           numPieces = getPartition().size;
     int           piece     = getPartition().id;
     fillExtents(ext);
-    setLocalBlockFromExtents(ext);
+    setPartitionFromExtents(ext);
 
     while (numPieces > 1) {
       size[0] = ext[1] - ext[0];
@@ -99,7 +80,7 @@ namespace Iocatalyst {
           numPieces = 1;
         }
         else {
-          setLocalBlockEmpty();
+          setPartitionEmpty();
           return;
         }
       }
@@ -118,122 +99,164 @@ namespace Iocatalyst {
         }
       }
     }
-    setLocalBlockFromExtents(ext);
+    setPartitionFromExtents(ext);
   }
 
   void BlockMesh::fillExtents(int *ext)
   {
-    if (getGlobalNumBlocks().x == 0) {
+    if (getExtents().i == 0) {
       ext[0] = 0;
       ext[1] = -1;
     }
     else {
       ext[0] = 0;
-      ext[1] = getGlobalNumBlocks().x;
+      ext[1] = getExtents().i;
     }
 
-    if (getGlobalNumBlocks().y == 0) {
+    if (getExtents().j == 0) {
       ext[2] = 0;
       ext[3] = -1;
     }
     else {
       ext[2] = 0;
-      ext[3] = getGlobalNumBlocks().y;
+      ext[3] = getExtents().j;
     }
 
-    if (getGlobalNumBlocks().z == 0) {
+    if (getExtents().k == 0) {
       ext[4] = 0;
       ext[5] = -1;
     }
     else {
       ext[4] = 0;
-      ext[5] = getGlobalNumBlocks().z;
+      ext[5] = getExtents().k;
     }
   }
 
-  void BlockMesh::setLocalBlockFromExtents(int *ext)
+  void BlockMesh::setPartitionFromExtents(int ext[6])
   {
     int sizeX = ext[1] - ext[0];
     int sizeY = ext[3] - ext[2];
     int sizeZ = ext[5] - ext[4];
     if (sizeX <= 0 || sizeY <= 0 || sizeZ <= 0) {
-      setLocalBlockEmpty();
+      setPartitionEmpty();
       return;
     }
 
-    localNumBlocks.x  = sizeX;
-    localBlockStart.x = ext[0];
+    partitionExtents.i = sizeX;
+    partitionStart.i   = ext[0];
 
-    localNumBlocks.y  = sizeY;
-    localBlockStart.y = ext[2];
+    partitionExtents.j = sizeY;
+    partitionStart.j   = ext[2];
 
-    localNumBlocks.z  = sizeZ;
-    localBlockStart.z = ext[4];
+    partitionExtents.k = sizeZ;
+    partitionStart.k   = ext[4];
   }
 
-  void BlockMesh::setLocalBlockEmpty()
+  void BlockMesh::setPartitionEmpty()
   {
-    localNumBlocks.x  = 0;
-    localNumBlocks.y  = 0;
-    localNumBlocks.z  = 0;
-    localBlockStart.x = 0;
-    localBlockStart.y = 0;
-    localBlockStart.z = 0;
+    partitionExtents.i = 0;
+    partitionExtents.j = 0;
+    partitionExtents.k = 0;
+    partitionStart.i   = 0;
+    partitionStart.j   = 0;
+    partitionStart.k   = 0;
   }
 
-  bool BlockMesh::isLocalBlockEmpty()
+  bool BlockMesh::isPartitionEmpty() const
   {
-    return localNumBlocks.x == 0 || localNumBlocks.y == 0 || localNumBlocks.z == 0;
+    return partitionExtents.i == 0 || partitionExtents.j == 0 || partitionExtents.k == 0;
   }
 
-  BlockMesh::IDList BlockMesh::getLocalPointIDs() { return getLocalIDs(POINT_OFFSET); }
+  BlockMesh::ID BlockMesh::getID() const { return id; }
 
-  int BlockMesh::getGlobalPointIDfromCoords(int i, int j, int k)
+  int BlockMesh::getNumPoints() const { return getNumInBlockMesh(POINT_OFFSET); }
+
+  int BlockMesh::getNumPartitionPoints() const { return getNumInPartition(POINT_OFFSET); }
+
+  BlockMesh::IDList BlockMesh::getPartitionPointIDs() const
   {
-    return getGlobalIDfromCoords(i, j, k, POINT_OFFSET);
+    return getPartitionIDs(POINT_OFFSET);
   }
 
-  BlockMesh::Point BlockMesh::getPointCoordsForGlobalPointID(int globalPointID)
+  BlockMesh::ID BlockMesh::getPointIDfromCoords(unsigned int i, unsigned int j,
+                                                unsigned int k) const
   {
-    BlockMesh::Point p;
-    BlockMesh::IJK   ijk = getCoordsForGlobalID(globalPointID, POINT_OFFSET);
-    int              i   = ijk[0];
-    int              j   = ijk[1];
-    int              k   = ijk[2];
-    p.x                  = origin.x + i * blockLength.x;
-    p.y                  = origin.y + j * blockLength.y;
-    p.z                  = origin.z + k * blockLength.z;
+    Extent coords = {i, j, k};
+    Extent bounds = {extents.i + POINT_OFFSET, extents.j + POINT_OFFSET, extents.k + POINT_OFFSET};
+    return getIDfromCoords(coords, bounds);
+  }
+
+  BlockMesh::Point BlockMesh::getPointCoordsForPointID(ID pointID) const
+  {
+    Point  p;
+    Extent bounds = {extents.i + POINT_OFFSET, extents.j + POINT_OFFSET, extents.k + POINT_OFFSET};
+    Extent ext    = getCoordsForID(pointID, bounds);
+    p.x           = origin.i + ext.i * BLOCK_LENGTH;
+    p.y           = origin.j + ext.j * BLOCK_LENGTH;
+    p.z           = origin.k + ext.k * BLOCK_LENGTH;
     return p;
   }
 
-  BlockMesh::IDList BlockMesh::getLocalBlockIDs() { return getLocalIDs(BLOCK_OFFSET); }
-
-  BlockMesh::BlockConn BlockMesh::getBlockConnectivityGlobalPointIDs(int globalBlockID)
+  BlockMesh::ID BlockMesh::getGlobalIDForPointID(ID pointID)
   {
-    BlockMesh::BlockConn conn;
-    BlockMesh::IJK       ijk = getCoordsForGlobalID(globalBlockID, BLOCK_OFFSET);
-    int                  i   = ijk[0];
-    int                  j   = ijk[1];
-    int                  k   = ijk[2];
-    conn[0]                  = getGlobalPointIDfromCoords(i, j, k);
-    conn[1]                  = getGlobalPointIDfromCoords(i + 1, j, k);
-    conn[2]                  = getGlobalPointIDfromCoords(i + 1, j + 1, k);
-    conn[3]                  = getGlobalPointIDfromCoords(i, j + 1, k);
-    conn[4]                  = getGlobalPointIDfromCoords(i, j, k + 1);
-    conn[5]                  = getGlobalPointIDfromCoords(i + 1, j, k + 1);
-    conn[6]                  = getGlobalPointIDfromCoords(i + 1, j + 1, k + 1);
-    conn[7]                  = getGlobalPointIDfromCoords(i, j + 1, k + 1);
+    Extent pointExt = getExtents();
+    pointExt.i += 1;
+    pointExt.j += 1;
+    pointExt.k += 1;
+    auto coords = getCoordsForID(pointID, pointExt);
+    coords.i += origin.i;
+    coords.j += origin.j;
+    coords.k += origin.k;
+    return getIDfromCoords(coords, getGlobalPointExtents());
+  }
+
+  int BlockMesh::getNumBlocks() const { return getNumInBlockMesh(BLOCK_OFFSET); }
+
+  int BlockMesh::getNumPartitionBlocks() const { return getNumInPartition(BLOCK_OFFSET); }
+
+  BlockMesh::IDList BlockMesh::getPartitionBlockIDs() const
+  {
+    return getPartitionIDs(BLOCK_OFFSET);
+  }
+
+  BlockMesh::BlockConn BlockMesh::getBlockConnectivityPointIDs(ID blockID) const
+  {
+    BlockConn conn;
+    Extent bounds = {extents.i + BLOCK_OFFSET, extents.j + BLOCK_OFFSET, extents.k + BLOCK_OFFSET};
+    Extent e      = getCoordsForID(blockID, bounds);
+    conn[0]       = getPointIDfromCoords(e.i, e.j, e.k);
+    conn[1]       = getPointIDfromCoords(e.i + 1, e.j, e.k);
+    conn[2]       = getPointIDfromCoords(e.i + 1, e.j + 1, e.k);
+    conn[3]       = getPointIDfromCoords(e.i, e.j + 1, e.k);
+    conn[4]       = getPointIDfromCoords(e.i, e.j, e.k + 1);
+    conn[5]       = getPointIDfromCoords(e.i + 1, e.j, e.k + 1);
+    conn[6]       = getPointIDfromCoords(e.i + 1, e.j + 1, e.k + 1);
+    conn[7]       = getPointIDfromCoords(e.i, e.j + 1, e.k + 1);
     return conn;
   }
 
-  BlockMesh::IDList BlockMesh::getLocalIDs(int offset)
+  BlockMesh::ID BlockMesh::getGlobalIDForBlockID(ID blockID)
+  {
+    auto coords = getCoordsForID(blockID, getExtents());
+    coords.i += origin.i;
+    coords.j += origin.j;
+    coords.k += origin.k;
+    return getIDfromCoords(coords, getGlobalBlockExtents());
+  }
+
+  BlockMesh::IDList BlockMesh::getPartitionIDs(unsigned int offset) const
   {
     BlockMesh::IDList ids;
-    if (!isLocalBlockEmpty()) {
-      for (int k = localBlockStart.z; k < localBlockStart.z + localNumBlocks.z + offset; k++) {
-        for (int j = localBlockStart.y; j < localBlockStart.y + localNumBlocks.y + offset; j++) {
-          for (int i = localBlockStart.x; i < localBlockStart.x + localNumBlocks.x + offset; i++) {
-            ids.push_back(getGlobalIDfromCoords(i, j, k, offset));
+    Extent            bounds = {extents.i + offset, extents.j + offset, extents.k + offset};
+    if (!isPartitionEmpty()) {
+      for (unsigned int k = partitionStart.k; k < partitionStart.k + partitionExtents.k + offset;
+           k++) {
+        for (unsigned int j = partitionStart.j; j < partitionStart.j + partitionExtents.j + offset;
+             j++) {
+          for (unsigned int i = partitionStart.i;
+               i < partitionStart.i + partitionExtents.i + offset; i++) {
+            Extent coords = {i, j, k};
+            ids.push_back(getIDfromCoords(coords, bounds));
           }
         }
       }
@@ -241,24 +264,31 @@ namespace Iocatalyst {
     return ids;
   }
 
-  int BlockMesh::getGlobalIDfromCoords(int i, int j, int k, int offset)
+  BlockMesh::ID BlockMesh::getIDfromCoords(Extent coords, Extent bounds)
   {
-    int numPointsX = globalNumBlocks.x + offset;
-    int numPointsY = globalNumBlocks.y + offset;
-    return k * numPointsX * numPointsY + j * numPointsX + i + 1;
+    return coords.k * bounds.i * bounds.j + coords.j * bounds.i + coords.i + 1;
   }
 
-  BlockMesh::IJK BlockMesh::getCoordsForGlobalID(int globalID, int offset)
+  BlockMesh::Extent BlockMesh::getCoordsForID(ID id, Extent bounds)
   {
-    BlockMesh::IJK ijk;
-    int            zeroBasedID = globalID - 1;
-    int            numBlocksX  = globalNumBlocks.x + offset;
-    int            numBlocksY  = globalNumBlocks.y + offset;
-    int            numBlocksXY = numBlocksX * numBlocksY;
-    ijk[2]                     = zeroBasedID / numBlocksXY;
-    ijk[1]                     = (zeroBasedID - ijk[2] * numBlocksXY) / numBlocksX;
-    ijk[0]                     = zeroBasedID - ijk[2] * numBlocksXY - ijk[1] * numBlocksX;
-    return ijk;
+    Extent       ext;
+    int          zeroBasedID = id - 1;
+    unsigned int sizeXY      = bounds.i * bounds.j;
+    ext.k                    = zeroBasedID / sizeXY;
+    ext.j                    = (zeroBasedID - ext.k * sizeXY) / bounds.i;
+    ext.i                    = zeroBasedID - ext.k * sizeXY - ext.j * bounds.i;
+    return ext;
+  }
+
+  int BlockMesh::getNumInPartition(unsigned int offset) const
+  {
+    return (partitionExtents.i + offset) * (partitionExtents.j + offset) *
+           (partitionExtents.k + offset);
+  }
+
+  int BlockMesh::getNumInBlockMesh(unsigned int offset) const
+  {
+    return (extents.i + offset) * (extents.j + offset) * (extents.k + offset);
   }
 
 } // namespace Iocatalyst

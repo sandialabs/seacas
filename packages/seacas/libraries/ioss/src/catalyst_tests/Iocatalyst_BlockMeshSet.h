@@ -11,6 +11,7 @@
 #include <Ioss_Region.h>
 #include <catalyst.hpp>
 #include <catalyst_tests/Iocatalyst_BlockMesh.h>
+#include <vector>
 
 namespace Iocatalyst {
 
@@ -19,16 +20,20 @@ namespace Iocatalyst {
   public:
     BlockMeshSet();
     ~BlockMeshSet();
+
     void  addBlockMesh(const BlockMesh &blockMesh);
     void  writeIOSSFile(const std::string &fileName, const std::string &dbType);
     void  writeCatalystIOSSFile(const std::string &fileName, const std::string &dbType);
     void  printCatalystConduitNode();
     void *getCatalystConduitNode();
+    int   getNumLocalPointsInMeshSet();
 
   private:
     std::vector<BlockMesh>        bms;
-    std::unique_ptr<Ioss::Region> region;
     Ioss::DatabaseIO             *databaseIO;
+    bool                          isWriteCatalyst;
+    bool                          isWriteStructured;
+    std::unique_ptr<Ioss::Region> region;
     conduit_cpp::Node             conduitNode;
 
     void openIOSSDatabase(const std::string &fileName, const std::string &dbType);
@@ -44,13 +49,17 @@ namespace Iocatalyst {
     void writeStructuredTransientFieldDefinitions();
     void writeStructuredTransientBulkData();
 
+    void writeUnstructuredBlockDefinitions();
+    void writeUnstructuredBlockBulkData();
+    void writeUnstructuredTransientFieldDefinitions();
+    void writeUnstructuredTransientBulkData();
+
     void saveConduitNode();
 
     std::string getStructuredBlockName(int index);
     std::string getStructuredNodeBlockName(int index);
 
-    bool isWriteCatalyst;
-    bool isWriteStructured;
+    std::string getUnstructuredBlockName(int index);
 
     const std::string CGNS_DATABASE_TYPE      = "cgns";
     const std::string EXODUS_DATABASE_TYPE    = "exodus";
