@@ -313,6 +313,12 @@ namespace SEAMS {
     }
   }
 
+  void Aprepro::set_error_streams(std::ostream *c_error, std::ostream *c_warning,
+                                  std::ostream *c_info)
+  {
+    set_error_streams(c_error, c_warning, c_info, false, false, false);
+  }
+
   /* Two methods for opening files:
 
      In OPEN_FILE, the file must exist or else the code will exit in
