@@ -102,7 +102,7 @@ int Excn::Internals::write_meta_data(const Mesh<INT> &mesh, const std::vector<Bl
   // the block id and not the block order, so we don't need to fix
   // them.
   for (size_t i = 0; i < blocks.size(); i++) {
-    const_cast<Excn::Block &>(blocks[i]).position_ = i;
+    blocks[i].position_ = i;
   }
 
   // Check whether current order is consistent.  The problem with just
@@ -138,8 +138,8 @@ int Excn::Internals::write_meta_data(const Mesh<INT> &mesh, const std::vector<Bl
 
     // Now, update the position_ field based on the sorted order.
     for (size_t i = 0; i < blocks.size(); i++) {
-      size_t orig_position                                       = sorted_blocks[i].position_;
-      const_cast<Excn::Block &>(blocks[orig_position]).position_ = i;
+      size_t orig_position            = sorted_blocks[i].position_;
+      blocks[orig_position].position_ = i;
       SMART_ASSERT(blocks[orig_position].id == sorted_blocks[i].id);
     }
   }
