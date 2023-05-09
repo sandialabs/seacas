@@ -14,7 +14,7 @@
 #include "ifdefx.h"
 #include "mdcgi.h"
 
-void cgix11_(void); /* tell linker to load driver */
+void cgix11_(anything **, int, anything **); /* tell linker to load driver */
 
 void cgisx11(void) /* make name external so linker will load file*/ {}
 
