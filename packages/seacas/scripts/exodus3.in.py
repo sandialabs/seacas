@@ -2492,14 +2492,6 @@ class exodus:
         self.__ex_get_blob(blob)
         return blob
 
-    def get_init_ext(self):
-        """
-        gets the extended init information
-        """
-        params = ex_init_params()
-        EXODUS_LIB.ex_get_init_ext(self.fileId, ctypes.byref(params))
-        return params
-
     def num_blks(self):
         """
         get the number of element blocks in the model
@@ -5266,12 +5258,6 @@ class exodus:
             eptr = (ctypes.c_longlong * assem_struct.entity_count)()
             assem_struct.entity_list = eptr
         EXODUS_LIB.ex_get_assemblies(self.fileId, assem_list)
-
-    def __ex_get_init_ext(self, blob_struct):
-        EXODUS_LIB.ex_get_blob(self.fileId, ctypes.byref(blob_struct))
-        ptr = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
-        blob_struct.name = ctypes.cast(ptr, ctypes.c_char_p)
-        EXODUS_LIB.ex_get_blob(self.fileId, ctypes.byref(blob_struct))
 
     def __ex_get_blob(self, blob_struct):
         EXODUS_LIB.ex_get_blob(self.fileId, ctypes.byref(blob_struct))
