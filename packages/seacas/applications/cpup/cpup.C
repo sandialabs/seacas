@@ -180,7 +180,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   for (int p = 0; p < interFace.processor_count(); p++) {
     std::string root_dir = interFace.root_dir();
     std::string sub_dir  = interFace.sub_dir();
-    std::string prepend;
+    std::string prepend{""};
 
     if (!root_dir.empty()) {
       prepend = root_dir + "/";
