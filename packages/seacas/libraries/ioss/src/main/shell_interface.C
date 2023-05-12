@@ -63,6 +63,16 @@ void IOShell::Interface::enroll_options()
                   "unknown");
   options_.enroll("compare", Ioss::GetLongOption::NoValue,
                   "Compare the contents of the INPUT and OUTPUT files.", nullptr);
+  options_.enroll(
+      "relative", Ioss::GetLongOption::MandatoryValue,
+      "Relative tolerance to use if comparing real field data. (diff > abs && diff > rel).",
+      nullptr);
+  options_.enroll(
+      "absolute", Ioss::GetLongOption::MandatoryValue,
+      "Absolute tolerance to use if comparing real field data. (diff > abs && diff > rel)",
+      nullptr);
+  options_.enroll("floor", Ioss::GetLongOption::MandatoryValue,
+                  "Only compare values if `|a| > floor && |b| > floor`", nullptr);
   options_.enroll("ignore_qa_info", Ioss::GetLongOption::NoValue,
                   "If comparing databases, do not compare the qa and info records.", nullptr,
                   nullptr, true);
@@ -390,6 +400,25 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   }
   compare        = (options_.retrieve("compare") != nullptr);
   ignore_qa_info = (options_.retrieve("ignore_qa_info") != nullptr);
+
+  {
+    const char *temp = options_.retrieve("absolute");
+    if (temp != nullptr) {
+      abs_tolerance = std::strtod(temp, nullptr);
+    }
+  }
+  {
+    const char *temp = options_.retrieve("relative");
+    if (temp != nullptr) {
+      rel_tolerance = std::strtod(temp, nullptr);
+    }
+  }
+  {
+    const char *temp = options_.retrieve("floor");
+    if (temp != nullptr) {
+      tol_floor = std::strtod(temp, nullptr);
+    }
+  }
 
   {
     const char *temp = options_.retrieve("compress");

@@ -45,6 +45,9 @@ namespace IOShell {
     double                   minimum_time{-std::numeric_limits<double>::max()};
     double                   append_time{std::numeric_limits<double>::max()};
     double                   timestep_delay{0.0};
+    double                   rel_tolerance{0.0};
+    double                   abs_tolerance{0.0};
+    double                   tol_floor{0.0};
     int                      append_step{std::numeric_limits<int>::max()};
     int                      surface_split_type{-1};
     int                      data_storage_type{0};
