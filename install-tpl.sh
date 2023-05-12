@@ -394,6 +394,7 @@ fi
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
+    hdf_suffix=""
     if [ "${H5VERSION}" == "V18" ]; then
         hdf_version="1.8.23"
         hdf_base="1.8"
@@ -409,6 +410,7 @@ then
     elif [ "${H5VERSION}" == "V114" ]; then
         hdf_version="1.14.1"
         hdf_base="1.14"
+	hdf_suffix="-2"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
     else
@@ -426,12 +428,12 @@ then
         if [ "${H5VERSION}" == "develop" ]; then
             git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
         else
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}${hdf_suffix}.tar.bz2
         fi
         if [ "${H5VERSION}" != "develop" ]
         then
-            tar -jxf hdf5-${hdf_version}.tar.bz2
-            rm -f hdf5-${hdf_version}.tar.bz2
+            tar -jxf hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+            rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
         fi
     fi
 
