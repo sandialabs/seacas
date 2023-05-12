@@ -155,6 +155,9 @@ static int bpm_improve1(struct vtx_data **graph,       /* list of graph info for
   int        nleft = 0, nright = 0; /* # vtxs in two sides on bp graph */
   int        i, j;                  /* loop counter */
 
+  make_bpgraph(graph, sets, *pbndy_list, *sep_size, set_match, &pointers, &indices, &vweight,
+               &loc2glob, &nleft, &nright, using_vwgts);
+
   old_sep_size   = *sep_size;
   old_sep_weight = *sep_weight;
   if (!using_vwgts) {
