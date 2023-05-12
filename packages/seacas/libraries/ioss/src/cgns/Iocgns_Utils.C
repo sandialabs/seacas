@@ -2925,7 +2925,7 @@ int Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, d
     }
 
     // Revert `zones` back to original version (with no zones split)
-    zones       = original_zones;
+    zones       = std::move(original_zones);
     new_zone_id = pre_split(zones, avg_work, new_load_balance, proc_rank, proc_count, verbose);
   }
   return new_zone_id;

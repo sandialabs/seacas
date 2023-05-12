@@ -216,7 +216,7 @@ namespace {
 
       // second pass collects the excluded time steps
 
-      exclude_arg        = arg_copy;
+      exclude_arg        = std::move(arg_copy);
       num_excluded_steps = 0;
 
       tok = extract_token(exclude_arg, ",");

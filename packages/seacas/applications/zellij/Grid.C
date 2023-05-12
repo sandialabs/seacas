@@ -302,7 +302,7 @@ void Grid::set_sideset_names(const std::string &names)
     // Update the name in the list of generated sideset names...
     auto index = axis_index(axis);
     SMART_ASSERT(index >= 0)(axis)(index);
-    generated_surface_names[index] = ss_name;
+    generated_surface_names[index] = std::move(ss_name);
   }
 }
 
