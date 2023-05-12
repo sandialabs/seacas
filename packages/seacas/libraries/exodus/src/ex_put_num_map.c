@@ -132,11 +132,9 @@ int ex_put_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, cons
       ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
     }
-  }
 
-  /*   NOTE: ex__inc_file_item  is used to find the number of maps
-       for a specific file and returns that value incremented. */
-  if (!overwrite_map) {
+    /*   NOTE: ex__inc_file_item  is used to find the number of maps
+         for a specific file and returns that value incremented. */
     cur_num_maps = ex__inc_file_item(exoid, ex__get_counter_list(map_type));
   }
 
