@@ -395,10 +395,10 @@ if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]; then
-        hdf_version="1.8.21"
+        hdf_version="1.8.23"
         hdf_base="1.8"
     elif [ "${H5VERSION}" == "V110" ]; then
-        hdf_version="1.10.9"
+        hdf_version="1.10.10"
         hdf_base="1.10"
     elif [ "${H5VERSION}" == "V112" ]; then
         hdf_version="1.12.2"
@@ -407,7 +407,7 @@ then
         hdf_version="1.13.1"
         hdf_base="1.13"
     elif [ "${H5VERSION}" == "V114" ]; then
-        hdf_version="1.14.0"
+        hdf_version="1.14.1"
         hdf_base="1.14"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
@@ -470,7 +470,7 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
-        pnet_version="1.12.2"
+        pnet_version="1.12.3"
         pnet_base="pnetcdf"
         cd $ACCESS || exit
         cd TPL/pnetcdf || exit
@@ -737,7 +737,7 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="9.1.0"
+        fmt_version="10.0.0"
 
         if [ "$DOWNLOAD" == "YES" ]
         then
