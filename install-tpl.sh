@@ -423,8 +423,8 @@ then
     if [ "$DOWNLOAD" == "YES" ]
     then
         echo "${txtgrn}+++ Downloading...${txtrst}"
-        rm -rf hdf5-${hdf_version}
-        rm -f hdf5-${hdf_version}.tar.bz2
+        rm -rf hdf5-${hdf_version}${hdf_suffix}
+        rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
         if [ "${H5VERSION}" == "develop" ]; then
             git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
         else
@@ -440,7 +440,7 @@ then
     if [ "$BUILD" == "YES" ]
     then
         echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-        cd hdf5-${hdf_version} || exit
+        cd hdf5-${hdf_version}${hdf_suffix} || exit
         rm -rf build
         mkdir build
         cd build || exit
