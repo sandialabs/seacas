@@ -2335,7 +2335,7 @@ namespace Ioex {
           }
           else {
             std::string att_name = "thickness";
-            block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, IOSS_SCALAR(),
+            block->field_add(Ioss::Field(std::move(att_name), Ioss::Field::REAL, IOSS_SCALAR(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, 1));
             unknown_attributes = attribute_count - 1;
           }

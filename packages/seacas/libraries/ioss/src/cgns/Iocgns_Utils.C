@@ -360,8 +360,8 @@ namespace {
           std::string fld_type(&fld_names[offset]);
           offset += CGNS_MAX_NAME_LENGTH + 1;
 
-          block->field_add(
-              Ioss::Field(fld_name, Ioss::Field::DOUBLE, fld_type, Ioss::Field::TRANSIENT, 0));
+          block->field_add(Ioss::Field(std::move(fld_name), Ioss::Field::DOUBLE, fld_type,
+                                       Ioss::Field::TRANSIENT, 0));
         }
       }
       else {
