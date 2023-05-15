@@ -280,6 +280,24 @@ mingw-w64-x86_64-cmake mingw-w64-x86_64-fmt
 There is also a Visual Studio build performed at each commit to the
 SEACAS git repository.  See the file `.appveyor.yml` for more details.
 
+## Example For External Build
+The `cmake-use-example` directory contains a sample `CMakeLists.txt`
+file which provides an example of how to build and link a C or Fortran
+program with the Exodus library installed as part of a build of this
+package.
+
+To use this, copy the contents of the directory to your own filespace
+and modify the contents as needed.  The example provides a C
+executable and a Fortran Executable which both are linked to the
+Exodus library.
+
+To configure and build, you would do something like:
+```
+  mkdir build; cd build
+  CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake ..
+  make
+```
+
 ## License
 
 SEACAS is licensed under the Modified BSD License.  See the [LICENSE](LICENSE) file for details.
