@@ -13,7 +13,7 @@ jobs:
   build-deps:
 
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         compiler: [ gnu, clang, mpi ]
@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v3-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v4-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -51,7 +51,7 @@ jobs:
 ###
 
   seacas-build:
-  
+
     needs: build-deps
     runs-on: ubuntu-latest
 
@@ -74,7 +74,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v3-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v4-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
@@ -91,17 +91,17 @@ jobs:
           cd build
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
-      - name: Build 
+      - name: Build
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4
         if: ${{ success() }}
 
       - name: Install
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4 install
         if: ${{ success() }}
 

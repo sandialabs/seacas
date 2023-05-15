@@ -394,11 +394,12 @@ fi
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
+    hdf_suffix=""
     if [ "${H5VERSION}" == "V18" ]; then
-        hdf_version="1.8.21"
+        hdf_version="1.8.23"
         hdf_base="1.8"
     elif [ "${H5VERSION}" == "V110" ]; then
-        hdf_version="1.10.9"
+        hdf_version="1.10.10"
         hdf_base="1.10"
     elif [ "${H5VERSION}" == "V112" ]; then
         hdf_version="1.12.2"
@@ -407,8 +408,9 @@ then
         hdf_version="1.13.1"
         hdf_base="1.13"
     elif [ "${H5VERSION}" == "V114" ]; then
-        hdf_version="1.14.0"
+        hdf_version="1.14.1"
         hdf_base="1.14"
+	hdf_suffix="-2"
     elif [ "${H5VERSION}" == "develop" ]; then
         hdf_version="develop"
     else
@@ -421,24 +423,24 @@ then
     if [ "$DOWNLOAD" == "YES" ]
     then
         echo "${txtgrn}+++ Downloading...${txtrst}"
-        rm -rf hdf5-${hdf_version}
-        rm -f hdf5-${hdf_version}.tar.bz2
+        rm -rf hdf5-${hdf_version}${hdf_suffix}
+        rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
         if [ "${H5VERSION}" == "develop" ]; then
             git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
         else
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}${hdf_suffix}.tar.bz2
         fi
         if [ "${H5VERSION}" != "develop" ]
         then
-            tar -jxf hdf5-${hdf_version}.tar.bz2
-            rm -f hdf5-${hdf_version}.tar.bz2
+            tar -jxf hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+            rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
         fi
     fi
 
     if [ "$BUILD" == "YES" ]
     then
         echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-        cd hdf5-${hdf_version} || exit
+        cd hdf5-${hdf_version}${hdf_suffix} || exit
         rm -rf build
         mkdir build
         cd build || exit
@@ -470,7 +472,7 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
-        pnet_version="1.12.2"
+        pnet_version="1.12.3"
         pnet_base="pnetcdf"
         cd $ACCESS || exit
         cd TPL/pnetcdf || exit
@@ -737,7 +739,7 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="9.1.0"
+        fmt_version="10.0.0"
 
         if [ "$DOWNLOAD" == "YES" ]
         then

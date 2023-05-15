@@ -17,9 +17,10 @@
 #include <algorithm> // for sort, lower_bound, copy, etc
 #include <cassert>
 #include <cmath>
-#include <cstddef>   // for size_t
-#include <cstdint>   // for int64_t
-#include <cstdlib>   // for nullptrr
+#include <cstddef> // for size_t
+#include <cstdint> // for int64_t
+#include <cstdlib> // for nullptrr
+#include <filesystem>
 #include <iostream>  // for ostringstream, etcstream, etc
 #include <stdexcept> // for runtime_error
 #include <string>    // for string
@@ -110,11 +111,11 @@ namespace Ioss {
 
     static bool is_path_absolute(const std::string &path)
     {
-#ifdef __IOSS_WINDOWS__
-      return path[0] == '\\' || path[1] == ':';
-#else
-      return path[0] == '/';
-#endif
+      if (!path.empty()) {
+        std::filesystem::path p1 = path;
+        return p1.is_absolute();
+      }
+      return false;
     }
 
     /** \brief guess file type from extension */

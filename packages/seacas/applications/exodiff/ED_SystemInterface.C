@@ -138,7 +138,7 @@ namespace {
     }
   }
 
-  void Check_Parsed_Names(std::vector<std::string> &names, bool &all_flag)
+  void Check_Parsed_Names(const std::vector<std::string> &names, bool &all_flag)
   {
     int num_include = 0;
     int num_exclude = 0;
@@ -216,7 +216,7 @@ namespace {
 
       // second pass collects the excluded time steps
 
-      exclude_arg        = arg_copy;
+      exclude_arg        = std::move(arg_copy);
       num_excluded_steps = 0;
 
       tok = extract_token(exclude_arg, ",");

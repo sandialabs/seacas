@@ -57,13 +57,23 @@ namespace Iohb {
   template <typename T> inline void Layout::add(const std::string &name, const T &value)
   {
     output_common(name);
-    fmt::print(layout_, "{0:{1}}", value, fieldWidth_);
+    if (fieldWidth_ > 0) {
+      fmt::print(layout_, "{0:{1}}", value, fieldWidth_);
+    }
+    else {
+      fmt::print(layout_, "{}", value);
+    }
   }
 
   template <> inline void Layout::add(const std::string &name, const double &value)
   {
     output_common(name);
-    fmt::print(layout_, "{0: {1}.{2}e}", value, fieldWidth_, precision_);
+    if (fieldWidth_ > 0) {
+      fmt::print(layout_, "{0:{1}.{2}e}", value, fieldWidth_, precision_);
+    }
+    else {
+      fmt::print(layout_, "{0:.{1}e}", value, precision_);
+    }
   }
 
   template <typename T>
@@ -74,7 +84,12 @@ namespace Iohb {
     }
     else {
       output_common(name);
-      fmt::print(layout_, "{0:{1}}", fmt::join(value, separator_), fieldWidth_);
+      if (fieldWidth_ > 0) {
+        fmt::print(layout_, "{0:{1}}", fmt::join(value, separator_), fieldWidth_);
+      }
+      else {
+        fmt::print(layout_, "{}", fmt::join(value, separator_));
+      }
     }
   }
 
@@ -85,7 +100,12 @@ namespace Iohb {
     }
     else {
       output_common(name);
-      fmt::print(layout_, "{0:{2}.{1}e}", fmt::join(value, separator_), precision_, fieldWidth_);
+      if (fieldWidth_ > 0) {
+        fmt::print(layout_, "{0:{2}.{1}e}", fmt::join(value, separator_), precision_, fieldWidth_);
+      }
+      else {
+        fmt::print(layout_, "{0:.{1}e}", fmt::join(value, separator_), precision_);
+      }
     }
   }
 

@@ -130,9 +130,9 @@ void do_summaries(ExoII_Read<INT> &file, int time_step, std::vector<MinMaxData> 
 
 template <typename INT>
 void do_diffs(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int time_step1, const TimeInterp &t2,
-              int out_file_id, const std::vector<INT> &node_map, const INT *node_id_map,
-              const std::vector<INT> &elmt_map, const INT *elem_id_map, Exo_Block<INT> **blocks2,
-              std::vector<double> &var_vals, bool *diff_flag);
+              int out_file_id, int output_step, const std::vector<INT> &node_map,
+              const INT *node_id_map, const std::vector<INT> &elmt_map, const INT *elem_id_map,
+              Exo_Block<INT> **blocks2, std::vector<double> &var_vals, bool *diff_flag);
 
 template <typename INT>
 bool summarize_globals(ExoII_Read<INT> &file, int step, std::vector<MinMaxData> &mm_glob);
@@ -152,15 +152,15 @@ bool summarize_faceblock(ExoII_Read<INT> &file, int step, std::vector<MinMaxData
 
 template <typename INT>
 bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, std::vector<double> &gvals);
+                  int out_file_id, int output_step, std::vector<double> &gvals);
 template <typename INT>
 bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                 int out_file_id, const std::vector<INT> &node_map, const INT *id_map,
-                 std::vector<double> &nvals);
+                 int out_file_id, int output_step, const std::vector<INT> &node_map,
+                 const INT *id_map, std::vector<double> &nvals);
 template <typename INT>
 bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, const std::vector<INT> &elmt_map, const INT *id_map,
-                  Exo_Block<INT> **blocks2, std::vector<double> &evals);
+                  int out_file_id, int output_step, const std::vector<INT> &elmt_map,
+                  const INT *id_map, Exo_Block<INT> **blocks2, std::vector<double> &evals);
 
 template <typename INT>
 bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2,
@@ -169,11 +169,11 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2,
 
 template <typename INT>
 bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, const INT *id_map, std::vector<double> &vals);
+                  int out_file_id, int output_step, const INT *id_map, std::vector<double> &vals);
 
 template <typename INT>
 bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, const INT *id_map, std::vector<double> &vals);
+                  int out_file_id, int output_step, const INT *id_map, std::vector<double> &vals);
 
 template <typename INT>
 bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *id_map);
@@ -605,6 +605,7 @@ namespace {
     }
 
     int min_num_times = file1.Num_Times();
+    int output_step   = 1;
 
     MinMaxData mm_time;
     mm_time.type = ToleranceType::mm_time;
@@ -674,8 +675,8 @@ namespace {
                      &diff_flag);
       }
       else {
-        do_diffs(file1, file2, ts1, t2, out_file_id, node_map, node_id_map, elmt_map, elem_id_map,
-                 blocks2, var_vals, &diff_flag);
+        do_diffs(file1, file2, ts1, t2, out_file_id, output_step, node_map, node_id_map, elmt_map,
+                 elem_id_map, blocks2, var_vals, &diff_flag);
       }
     }
     else {
@@ -858,7 +859,7 @@ namespace {
 
         if (out_file_id >= 0) {
           double t = file1.Time(time_step1);
-          ex_put_time(out_file_id, time_step1, &t);
+          ex_put_time(out_file_id, output_step, &t);
         }
 
         if (interFace.interpolating && (t2.step1 == -1 || t2.step2 == -1)) {
@@ -870,10 +871,11 @@ namespace {
                        elmt_map, &diff_flag);
         }
         else {
-          do_diffs(file1, file2, time_step1, t2, out_file_id, node_map, node_id_map, elmt_map,
-                   elem_id_map, blocks2, var_vals, &diff_flag);
+          do_diffs(file1, file2, time_step1, t2, out_file_id, output_step, node_map, node_id_map,
+                   elmt_map, elem_id_map, blocks2, var_vals, &diff_flag);
         }
 
+        output_step++;
       } // End of time step loop.
 
       // Make sure there is an operation to perform (compare times, variables, ...)
@@ -1377,44 +1379,49 @@ bool summarize_faceblock(ExoII_Read<INT> &file, int step, std::vector<MinMaxData
 
 template <typename INT>
 void do_diffs(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int time_step1, const TimeInterp &t2,
-              int out_file_id, const std::vector<INT> &node_map, const INT *node_id_map,
-              const std::vector<INT> &elmt_map, const INT *elem_id_map, Exo_Block<INT> **blocks2,
-              std::vector<double> &var_vals, bool *diff_flag)
+              int out_file_id, int output_step, const std::vector<INT> &node_map,
+              const INT *node_id_map, const std::vector<INT> &elmt_map, const INT *elem_id_map,
+              Exo_Block<INT> **blocks2, std::vector<double> &var_vals, bool *diff_flag)
 {
   SMART_ASSERT(!interFace.summary_flag);
-  if (diff_globals(file1, file2, time_step1, t2, out_file_id, var_vals)) {
+  if (diff_globals(file1, file2, time_step1, t2, out_file_id, output_step, var_vals)) {
     *diff_flag = true;
   }
 
   // Nodal variables.
-  if (diff_nodals(file1, file2, time_step1, t2, out_file_id, node_map, node_id_map, var_vals)) {
+  if (diff_nodals(file1, file2, time_step1, t2, out_file_id, output_step, node_map, node_id_map,
+                  var_vals)) {
     *diff_flag = true;
   }
 
   // Element variables.
-  if (diff_element(file1, file2, time_step1, t2, out_file_id, elmt_map, elem_id_map, blocks2,
-                   var_vals)) {
+  if (diff_element(file1, file2, time_step1, t2, out_file_id, output_step, elmt_map, elem_id_map,
+                   blocks2, var_vals)) {
     *diff_flag = true;
   }
 
   if (interFace.map_flag != MapType::PARTIAL) {
     // Nodeset variables.
-    if (diff_nodeset(file1, file2, time_step1, t2, out_file_id, node_id_map, var_vals)) {
+    if (diff_nodeset(file1, file2, time_step1, t2, out_file_id, output_step, node_id_map,
+                     var_vals)) {
       *diff_flag = true;
     }
 
     // Sideset variables.
-    if (diff_sideset(file1, file2, time_step1, t2, out_file_id, elem_id_map, var_vals)) {
+    if (diff_sideset(file1, file2, time_step1, t2, out_file_id, output_step, elem_id_map,
+                     var_vals)) {
       *diff_flag = true;
     }
 
     // Edge Block variables.
-    if (diff_edgeblock(file1, file2, time_step1, t2, out_file_id, elem_id_map, var_vals)) {
+    if (diff_edgeblock(file1, file2, time_step1, t2, out_file_id, output_step, elem_id_map,
+                       var_vals)) {
       *diff_flag = true;
     }
 
     // Face Block variables.
-    if (diff_faceblock(file1, file2, time_step1, t2, out_file_id, elem_id_map, var_vals)) {
+    if (diff_faceblock(file1, file2, time_step1, t2, out_file_id, output_step, elem_id_map,
+                       var_vals)) {
       *diff_flag = true;
     }
   }
@@ -1476,7 +1483,7 @@ void output_norms(Norm &norm, const std::string &name)
 
 template <typename INT>
 bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, std::vector<double> &gvals)
+                  int out_file_id, int output_step, std::vector<double> &gvals)
 {
   bool diff_flag = false;
   if (interFace.glob_var_names.empty()) {
@@ -1509,7 +1516,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       }
       gvals[out_idx] = FileDiff(vals1[idx1], vals2[idx2], interFace.output_type);
     }
-    ex_put_var(out_file_id, t2.step1, EX_GLOBAL, 1, 0, interFace.glob_var_names.size(),
+    ex_put_var(out_file_id, output_step, EX_GLOBAL, 1, 0, interFace.glob_var_names.size(),
                gvals.data());
     return diff_flag;
   }
@@ -1557,8 +1564,8 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
 template <typename INT>
 bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                 int out_file_id, const std::vector<INT> &node_map, const INT *id_map,
-                 std::vector<double> &nvals)
+                 int out_file_id, int output_step, const std::vector<INT> &node_map,
+                 const INT *id_map, std::vector<double> &nvals)
 {
   bool diff_flag = false;
 
@@ -1598,7 +1605,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, cons
           nvals[n] = 0.;
         }
       } // End of node iteration...
-      ex_put_var(out_file_id, step2, EX_NODAL, n_idx + 1, 0, file1.Num_Nodes(), nvals.data());
+      ex_put_var(out_file_id, output_step, EX_NODAL, n_idx + 1, 0, file1.Num_Nodes(), nvals.data());
       file1.Free_Nodal_Results(idx1);
       file2.Free_Nodal_Results(idx2);
     }
@@ -1687,8 +1694,8 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, cons
 
 template <typename INT>
 bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, const std::vector<INT> &elmt_map, const INT *id_map,
-                  Exo_Block<INT> **blocks2, std::vector<double> &evals)
+                  int out_file_id, int output_step, const std::vector<INT> &elmt_map,
+                  const INT *id_map, Exo_Block<INT> **blocks2, std::vector<double> &evals)
 {
   bool diff_flag = false;
 
@@ -1839,8 +1846,8 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       }
 
       if (out_file_id >= 0) {
-        ex_put_var(out_file_id, t2.step1, EX_ELEM_BLOCK, e_idx + 1, eblock1->Id(), eblock1->Size(),
-                   evals.data());
+        ex_put_var(out_file_id, output_step, EX_ELEM_BLOCK, e_idx + 1, eblock1->Id(),
+                   eblock1->Size(), evals.data());
       }
 
       eblock1->Free_Results();
@@ -1873,7 +1880,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
 template <typename INT>
 bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, const INT *id_map, std::vector<double> &vals)
+                  int out_file_id, int output_step, const INT *id_map, std::vector<double> &vals)
 {
   bool diff_flag = false;
 
@@ -1943,7 +1950,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         }
 
         if (out_file_id >= 0) {
-          ex_put_var(out_file_id, t2.step1, EX_NODE_SET, e_idx + 1, nset1->Id(), nset1->Size(),
+          ex_put_var(out_file_id, output_step, EX_NODE_SET, e_idx + 1, nset1->Id(), nset1->Size(),
                      vals.data());
         }
       }
@@ -1982,7 +1989,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
 template <typename INT>
 bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                  int out_file_id, const INT *id_map, std::vector<double> &vals)
+                  int out_file_id, int output_step, const INT *id_map, std::vector<double> &vals)
 {
   bool diff_flag = false;
 
@@ -2053,7 +2060,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
           norm.add_value(vals1[ind1], vals2[ind2]);
         }
         if (out_file_id >= 0) {
-          ex_put_var(out_file_id, t2.step1, EX_SIDE_SET, e_idx + 1, sset1->Id(), sset1->Size(),
+          ex_put_var(out_file_id, output_step, EX_SIDE_SET, e_idx + 1, sset1->Id(), sset1->Size(),
                      vals.data());
         }
       }
@@ -2238,7 +2245,8 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
 
 template <typename INT>
 bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                    int out_file_id, const INT * /* id_map */, std::vector<double> &vals)
+                    int out_file_id, int output_step, const INT * /* id_map */,
+                    std::vector<double> &vals)
 {
   bool diff_flag = false;
 
@@ -2307,7 +2315,7 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
           norm.add_value(vals1[ind1], vals2[ind2]);
         }
         if (out_file_id >= 0) {
-          ex_put_var(out_file_id, t2.step1, EX_EDGE_BLOCK, e_idx + 1, eblock1->Id(),
+          ex_put_var(out_file_id, output_step, EX_EDGE_BLOCK, e_idx + 1, eblock1->Id(),
                      eblock1->Size(), vals.data());
         }
       }
@@ -2347,7 +2355,8 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
 
 template <typename INT>
 bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
-                    int out_file_id, const INT * /* id_map */, std::vector<double> &vals)
+                    int out_file_id, int output_step, const INT * /* id_map */,
+                    std::vector<double> &vals)
 {
   bool diff_flag = false;
 
@@ -2416,7 +2425,7 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
           norm.add_value(vals1[ind1], vals2[ind2]);
         }
         if (out_file_id >= 0) {
-          ex_put_var(out_file_id, t2.step1, EX_FACE_BLOCK, f_idx + 1, fblock1->Id(),
+          ex_put_var(out_file_id, output_step, EX_FACE_BLOCK, f_idx + 1, fblock1->Id(),
                      fblock1->Size(), vals.data());
         }
       }

@@ -22,7 +22,7 @@
 #include <cstring>          // for strlen, memset, etc
 #include <ctime>            // for asctime, localtime, time, etc
 #include <numeric>
-#include <vector> // for vector
+#include <vector>           // for vector
 template <typename INT> struct ELEM_COMM_MAP;
 template <typename INT> struct NODE_COMM_MAP;
 
@@ -940,7 +940,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
 
       } /* End "if(ilocal < globals.Num_Elem_Blk[iproc])" */
 
-    } /* End "for(i1=0; i1 < globals.Num_Elem_Block; i1++)" */
+    }   /* End "for(i1=0; i1 < globals.Num_Elem_Block; i1++)" */
   }
   total_out_time += (PIO_Time_Array[13] + PIO_Time_Array[14] + PIO_Time_Array[15]);
 
@@ -1453,7 +1453,7 @@ namespace {
 
     /* Initialize index array */
     for (size_t i2 = 0; i2 < gsize; i2++) {
-      tmp_index[i2] = i2;
+      tmp_index[i2] = (INT)i2;
     }
 
     /* Sort the 'global' array via the index array 'tmp_index' */

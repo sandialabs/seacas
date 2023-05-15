@@ -4,7 +4,7 @@
 
 # Must set the project name as a variable at very beginning before including anything else
 # We set the project name in a separate file so CTest scripts can use it.
-INCLUDE(${CMAKE_SOURCE_DIR}/ProjectName.cmake)
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/ProjectName.cmake)
 
 SET(Seacas_ENABLE_CXX11_DEFAULT ON)
 SET(Seacas_ENABLE_Zoltan_DEFAULT ON)

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -89,7 +89,7 @@ static int  last_err_num;
   \ingroup Utilities
   \undoc
 */
-void ex__reset_error_status()
+void ex__reset_error_status(void)
 {
 #if !defined(EXODUS_THREADSAFE)
   exerrval   = 0;

@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cfloat>
+#include <cmath>
 #include <cstddef>
 #include <cstring>
 #include <fmt/ostream.h>
@@ -292,9 +293,15 @@ namespace Ioss {
     Utils::check_set_bool_property(properties, "ENABLE_TRACING", m_enableTracing);
     Utils::check_set_bool_property(properties, "TIME_STATE_INPUT_OUTPUT", m_timeStateInOut);
     {
-      bool logging;
+      bool logging = false;
       if (Utils::check_set_bool_property(properties, "LOGGING", logging)) {
         set_logging(logging);
+      }
+    }
+    {
+      bool nan_detection = false;
+      if (Utils::check_set_bool_property(properties, "NAN_DETECTION", nan_detection)) {
+        set_nan_detection(nan_detection);
       }
     }
 
@@ -551,6 +558,48 @@ namespace Ioss {
       }
     }
     return decodedFilename;
+  }
+
+  bool DatabaseIO::verify_field_data(const GroupingEntity *ge, const Field &field,
+                                     Ioss::Field::InOut in_out, void *data) const
+  {
+    bool nan_found = false;
+    if (field.is_type(Ioss::Field::BasicType::DOUBLE)) {
+
+      double *rdata      = static_cast<double *>(data);
+      size_t  comp_count = field.get_component_count(in_out);
+      size_t  num_to_get = field.raw_count();
+
+      // First, let's just see if there are ANY nans...
+      nan_found = std::find_if(rdata, rdata + comp_count * num_to_get, [](double v) {
+                    return std::isnan(v);
+                  }) != rdata + comp_count * num_to_get;
+
+      if (nan_found) {
+        // We know there is at least on nan.  Now we will do a slower run through the data so can
+        // give user a more accurate idea of how many and where they exist...
+        std::string direction = in_out == Ioss::Field::InOut::OUTPUT ? "writing" : "reading";
+        std::vector<size_t> nans;
+        nans.reserve(num_to_get / 10);
+
+        for (size_t comp = 0; comp < comp_count; comp++) {
+          for (size_t i = 0; i < num_to_get; i++) {
+            size_t idx = comp_count * i + comp;
+            if (std::isnan(rdata[idx])) {
+              nans.push_back(i);
+            }
+          }
+          if (!nans.empty()) {
+            fmt::print(Ioss::WarnOut(), "Found {} NaN{} {} field '{}' on {} '{}' at {} {}.\n",
+                       nans.size(), nans.size() > 1 ? "s" : "", direction,
+                       get_component_name(field, in_out, comp + 1), ge->type_string(), ge->name(),
+                       nans.size() > 1 ? "indices" : "index", Ioss::Utils::format_id_list(nans));
+            nans.clear();
+          }
+        }
+      }
+    }
+    return nan_found;
   }
 
   void DatabaseIO::verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const

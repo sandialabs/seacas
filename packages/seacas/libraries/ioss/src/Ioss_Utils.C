@@ -561,7 +561,7 @@ namespace {
           std::vector<std::string> subtokens;
           field_tokenize(tst_name, suffix_separator, subtokens);
           if ((truth_table == nullptr || truth_table[id] == 1) && // Defined on this entity
-              std::strncmp(name, tst_name, bn_len) == 0 &&       // base portion must match
+              std::strncmp(name, tst_name, bn_len) == 0 &&        // base portion must match
               (!same_length || (strlen(tst_name) == name_length)) &&
               subtokens.size() == num_tokens) {
             which_names.push_back(id);
@@ -838,7 +838,7 @@ std::string Ioss::Utils::platform_information()
       fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
                   sys_info.release, sys_info.version, sys_info.machine);
 #else
-  std::string                 info = "Node: Unknown, OS: Unknown, Machine: Unknown";
+  std::string info = "Node: Unknown, OS: Unknown, Machine: Unknown";
 #endif
   return info;
 }
@@ -1219,7 +1219,7 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t com
   // scope names unique...
   std::string s = std::string(name).substr(len - maxlen, len);
   assert(s.length() <= maxlen);
-  new_str = s;
+  new_str = std::move(s);
 
   // NOTE: The hash is not added if the name is not shortened.
   std::string hash_string = two_letter_hash(name.c_str());

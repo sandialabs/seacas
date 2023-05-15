@@ -67,24 +67,26 @@ INSTALL_PATH=${ACCESS}
 ### Using SEMS (Software Engineering Maintenance & Support) provided libraries...
 ### https://sems.sandia.gov/
 module purge
-module load sems-env
-module load sems-gcc/9.2.0
-module load sparc-cmake/3.23.2
-#module load sems-cmake/3.19.1
+source /projects/sems/modulefiles/utils/sems-modules-init.sh  
+module load sems-gcc/10.1.0
+module load sems-fmt/9.1.0
+module load sems-cmake/3.24.3
 module load sems-doxygen
-module load sems-zlib/1.2.8/base
+module load sems-zlib
 
 if [ "$MPI" == "YES" ]
 then
   module load sems-openmpi
-  module load sems-hdf5/1.10.6/parallel
-  module load sems-netcdf/4.7.3/parallel
-  module load sems-parmetis/4.0.3/64bit_parallel
-  module load sems-cgns/4.1.1/parallel
+  module load sems-hdf5/1.12.2_parallel
+  module load sems-netcdf-c/4.8.1_parallel
+  module load sems-parallel-netcdf/1.12.1
+  module load sems-parmetis-int64/4.0.3
+  module load sems-cgns/4.3.0_parallel
 else
-  module load sems-hdf5/1.10.6/base
-  module load sems-netcdf/4.7.3/base
-  module load sems-cgns/4.1.1/base
+  module load sems-hdf5/1.12.2_serial
+  module load sems-netcdf-c/4.8.1_serial
+  module load sems-cgns/4.3.0_serial
+  module load sems-metis-int64/5.1.0
 fi
 
 HAVE_NETCDF=YES
@@ -159,11 +161,8 @@ cmake  \
 -D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_MACOSX_RPATH:BOOL=ON \
--D CMAKE_INSTALL_RPATH:PATH=${LD_LIBRARY_PATH} \
--D CMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=TRUE \
--D CMAKE_SKIP_BUILD_RPATH:BOOL=FALSE \
--D CMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=TRUE \
--D BUILD_SHARED_LIBS:BOOL=OFF \
+-D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib:${LD_LIBRARY_PATH} \
+-D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
 -D Seacas_ENABLE_ALL_PACKAGES:BOOL=ON \
 -D Seacas_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \

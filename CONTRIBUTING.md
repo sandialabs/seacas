@@ -4,10 +4,10 @@
   *   Sign on (via web) to https://github.com/sandialabs/seacas
   *   Make sure you are signed in to github
   *   Click on the 'Fork' button near the top right of the page.
-*   Clone your fork of seacas with 
+*   Clone your fork of seacas with
   *   `git clone git@github.com:<username>/seacas`.
   *   Or: `git clone https://github.com/<username>/seacas`
-*   Each time you clone your fork, 
+*   Each time you clone your fork,
   *   `git remote add upstream git@github.com:sandialabs/seacas` to add the original seacas repository as the `upstream` remote.
   *   Or: `git remote add upstream https://github.com/sandialabs/seacas'
 

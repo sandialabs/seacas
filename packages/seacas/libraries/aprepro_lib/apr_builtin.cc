@@ -50,7 +50,7 @@ namespace {
     if (tokenized_strings.find(key) == tokenized_strings.end()) {
       std::string temp       = string;
       auto        tokens     = SEAMS::tokenize(temp, delm);
-      tokenized_strings[key] = tokens;
+      tokenized_strings[key] = std::move(tokens);
     }
     return tokenized_strings[key];
   }

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -9,7 +9,7 @@
 #include <Ioss_Field.h>        // for Field, etc
 #include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_Hex8.h>
-#include <Ioss_Property.h> // for Property
+#include <Ioss_Property.h>     // for Property
 #include <Ioss_Region.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_StructuredBlock.h>
@@ -17,8 +17,8 @@
 
 #include <cstddef> // for size_t
 #include <numeric>
-#include <string> // for string
-#include <vector> // for vector
+#include <string>  // for string
+#include <vector>  // for vector
 
 namespace {
   template <typename T> bool vec_equal(const std::vector<T> &lhs, const std::vector<T> &rhs)
@@ -142,6 +142,21 @@ namespace Ioss {
 
     SMART_ASSERT(global_cell_count >= cell_count)(global_cell_count)(cell_count);
     SMART_ASSERT(global_node_count >= node_count)(global_node_count)(node_count);
+
+    if ((m_ijkGlobal[0] < m_ijk[0] + m_offset[0]) || (m_ijkGlobal[1] < m_ijk[1] + m_offset[1]) ||
+        (m_ijkGlobal[2] < m_ijk[2] + m_offset[2])) {
+      auto               util = get_database()->util();
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "\nERROR: Inconsistent Structured Block parameters for block {} on rank {}.\n"
+                 "       Global IJK: {} x {} x {}; Local IJK: {} x {} x {}; Offset: {} x {} x {}\n"
+                 "       Global must be >= Local + Offset.\n",
+                 my_name, util.parallel_rank(), m_ijkGlobal[0], m_ijkGlobal[1], m_ijkGlobal[2],
+                 m_ijk[0], m_ijk[1], m_ijk[2], m_offset[0], m_offset[1], m_offset[2]);
+      std::cerr << errmsg.str();
+      IOSS_ERROR(errmsg);
+    }
+
     SMART_ASSERT(m_ijkGlobal[0] >= m_ijk[0])(m_ijkGlobal[0])(m_ijk[0]);
     SMART_ASSERT(m_ijkGlobal[1] >= m_ijk[1])(m_ijkGlobal[1])(m_ijk[1]);
     SMART_ASSERT(m_ijkGlobal[2] >= m_ijk[2])(m_ijkGlobal[2])(m_ijk[2]);
