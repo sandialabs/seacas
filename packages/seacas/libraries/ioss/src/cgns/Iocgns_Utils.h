@@ -19,6 +19,7 @@
 #include <Ioss_Utils.h>
 #include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
+#include <fmt/format.h>
 #include <ostream>
 #include <string>
 
@@ -54,6 +55,14 @@
                                 m_decomposition.m_processor);                                      \
     }                                                                                              \
   } while (0)
+
+inline auto format_as(CGNS_ENUMT(BCType_t) t) { return BCTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(DataType_t) t) { return DataTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(ElementType_t) t) { return ElementTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(GridConnectivityType_t) t) { return GridConnectivityTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(GridLocation_t) t) { return GridLocationName[t]; }
+inline auto format_as(CGNS_ENUMT(PointSetType_t) t) { return PointSetTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(ZoneType_t) t) { return ZoneTypeName[t]; }
 
 namespace Iocgns {
   class StructuredZoneData;
