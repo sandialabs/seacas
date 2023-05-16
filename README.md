@@ -55,7 +55,7 @@ manually as detailed in
 | Variable        | Values          | Default | Description |
 |-----------------|:---------------:|:-------:|-------------|
 | INSTALL_PATH    | path to install | pwd | Root of install path; default is current location |
-| COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build. Must have C++-14 capability. |
+| COMPILER        | clang, gnu, intel, ibm nvidia | gnu | What compiler should be used for non-parallel build. Must have C++-17 capability. |
 | MPI             | YES, NO | NO  | If YES, then build parallel capability |
 | FORCE           | YES, NO | NO  | Force downloading and building even if lib is already installed. |
 | BUILD           | YES, NO | YES | Should TPLs be built and installed. |

@@ -6,7 +6,6 @@
 # We set the project name in a separate file so CTest scripts can use it.
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/ProjectName.cmake)
 
-SET(Seacas_ENABLE_CXX11_DEFAULT ON)
 SET(Seacas_ENABLE_Zoltan_DEFAULT ON)
 SET(TRIBITS_HIDE_DEPRECATED_INCLUDE_DIRECTORIES_OVERRIDE TRUE)
 
