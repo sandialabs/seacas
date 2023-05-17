@@ -116,5 +116,5 @@ jobs:
         shell: bash -l {0}
         run: |
           cd SEACAS-Test
-          make BIN=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/bin test
+          make BASE=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} test
         if: ${{ success() }}
