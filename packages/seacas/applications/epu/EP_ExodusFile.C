@@ -197,7 +197,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
 
   // create exo names
   for (int p = 0; p < partCount_; p++) {
-    std::string name = std::move(file_prefix);
+    std::string name = file_prefix;
     if (!exodus_suffix.empty()) {
       name += "." + exodus_suffix;
     }
