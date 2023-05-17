@@ -116,5 +116,5 @@ jobs:
         shell: bash -l {0}
         run: |
           cd SEACAS-Test
-	  make test
+          make test
         if: ${{ success() }}
