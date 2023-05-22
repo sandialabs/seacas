@@ -11,6 +11,7 @@
 \usepackage{makeidx}
 \usepackage{amsmath,amssymb,amsfonts,textcomp}
 \usepackage{hyperref}
+\usepackage{titleref}
 %\usepackage{showkeys}
 \usepackage{longtable}
 \hypersetup{colorlinks=true, linkcolor=blue, filecolor=blue, urlcolor=blue}
@@ -44,9 +45,9 @@
 \newcommand{\cfunc}[1]
    {\lstinline[basicstyle=\normalsize]\!#1\!}
 \newcommand{\cfuncref}[1]
-   {\hyperlink{#1}{\lstinline[basicstyle=\normalsize]\!#1\!}}
+   {\hyperref[func:#1]{\lstinline[basicstyle=\normalsize]\!#1\!}}
 \newcommand{\cfuncreftwo}[2]
-   {\hyperlink{#1}{\lstinline[basicstyle=\normalsize]\!#1#2\!} [See Section~\ref{#1}]}
+   {\hyperref[func:#1]{\lstinline[basicstyle=\normalsize]\!#1#2\!} [See Section~\ref{#1}]}
 \newcommand{\dfunc}[1]
    {\lstinline[basicstyle=\normalsize]\!#1\!\index{#1!Deprecated}\index{Deprecated Functions!#1}}
 \newcommand{\cmd}[1]
@@ -57,9 +58,9 @@
    {\mbox{\bf\em #1}\null}
 
 \newcommand{\funcdef}[2]
- {\label{#1}\color{BrickRed}\begin{tabular}{@{}l@{}p{0.5in}}\large\bf\tt int \hypertarget{#1}{#1}\enspace(&\large\bf\tt #2)\\\index{#1!Definition}\end{tabular}\color{black}}
+ {\label{func:#1}\color{BrickRed}\begin{tabular}{@{}l@{}p{0.5in}}\large\bf\tt int \hypertarget{#1}{#1}\enspace(&\large\bf\tt #2)\\\index{#1!Definition}\end{tabular}\color{black}}
 \newcommand{\funcdefv}[2]
- {\label{#1}\color{BrickRed}\begin{tabular}{@{}l@{}p{0.5in}}\large\bf\tt void #1\enspace(&\large\bf\tt #2)\\\index{#1!Definition}\end{tabular}\color{black}}
+ {\label{func:#1}\color{BrickRed}\begin{tabular}{@{}l@{}p{0.5in}}\large\bf\tt void \hypertarget{#1}{#1}\enspace(&\large\bf\tt #2)\\\index{#1!Definition}\end{tabular}\color{black}}
 %
 % Set left margin and counter
 \setlength{\oddsidemargin}{0.25in}
