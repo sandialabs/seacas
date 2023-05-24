@@ -163,6 +163,12 @@ namespace {
       ymin = ymax = 0.0;
     }
   }
+
+  template <typename ENTITY>
+  int64_t zero_copy_not_enabled(const ENTITY *entity, const Ioss::Field &field)
+  {
+    return 0;
+  }
 } // namespace
 
 namespace Ioss {
@@ -1339,6 +1345,97 @@ namespace Ioss {
 
     return {xx.first, yy.first, zz.first, xx.second, yy.second, zz.second};
   }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(reg, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(nb, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::EdgeBlock *nb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(nb, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::FaceBlock *nb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(nb, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(eb, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::SideBlock *fb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(fb, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(ns, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::EdgeSet *ns, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(ns, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::FaceSet *ns, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(ns, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::ElementSet *ns, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(ns, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::SideSet *fs, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(fs, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(cs, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::Assembly *as, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(as, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::Blob *bl, const Ioss::Field &field, void **,
+                                            size_t *) const
+  {
+    return zero_copy_not_enabled(bl, field);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::StructuredBlock *sb,
+                                            const Ioss::Field &field, void **, size_t *) const
+  {
+    return zero_copy_not_enabled(sb, field);
+  }
+
 } // namespace Ioss
 
 namespace {

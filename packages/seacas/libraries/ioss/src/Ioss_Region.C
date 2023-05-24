@@ -2540,6 +2540,12 @@ namespace Ioss {
     return get_database()->put_field(this, field, data, data_size);
   }
 
+  int64_t Region::internal_get_zc_field_data(const Field &field, void **data,
+                                             size_t *data_size) const
+  {
+    return get_database()->get_zc_field(this, field, data, data_size);
+  }
+
   /** \brief Transfer all relevant aliases from this region to another region
    *
    *  \param[in] to The region to which the aliases are to be transferred.
