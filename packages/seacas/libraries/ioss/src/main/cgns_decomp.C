@@ -75,6 +75,11 @@ namespace {
         communication_map      = temp.find("c") != std::string::npos;
       }
 
+      if (options_.retrieve("version") != nullptr) {
+        fmt::print(stderr, "Version: {}\n", version);
+        exit(0);
+      }
+
       {
         const char *temp = options_.retrieve("processors");
         if (temp != nullptr) {
@@ -181,7 +186,7 @@ namespace {
       return true;
     }
 
-    Interface()
+    Interface(const std::string app_version) : version(app_version)
     {
       options_.usage("[options] input_file");
       options_.enroll("help", Ioss::GetLongOption::NoValue, "Print this summary and exit", nullptr);
@@ -206,6 +211,7 @@ namespace {
                       "What is printed: z=zone-proc assignment, h=histogram, w=work-per-processor, "
                       "c=comm map, v=verbose.",
                       "zhwc");
+      options_.enroll("version", Ioss::GetLongOption::NoValue, "Print version and exit", nullptr);
     }
     Ioss::GetLongOption options_;
     int                 proc_count{0};
@@ -214,6 +220,7 @@ namespace {
     std::string         filename{};
     std::string         filetype{"cgns"};
     std::string         line_decomposition{};
+    std::string         version{};
     bool                verbose{false};
     bool                histogram{true};
     bool                work_per_processor{true};
@@ -223,7 +230,7 @@ namespace {
 } // namespace
 namespace {
   std::string codename;
-  //  std::string version = "0.97";
+  std::string version = "0.97";
 
   void cleanup(std::vector<Iocgns::StructuredZoneData *> &zones)
   {
@@ -703,7 +710,7 @@ int main(int argc, char *argv[])
 
   Ioss::Utils::set_all_streams(std::cout);
 
-  Interface interFace;
+  Interface interFace(version);
   bool      success = interFace.parse_options(argc, argv);
   if (!success) {
     exit(EXIT_FAILURE);
