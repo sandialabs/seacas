@@ -186,7 +186,7 @@ namespace {
       return true;
     }
 
-    Interface(const std::string app_version) : version(app_version)
+    explicit Interface(const std::string &app_version) : version(app_version)
     {
       options_.usage("[options] input_file");
       options_.enroll("help", Ioss::GetLongOption::NoValue, "Print this summary and exit", nullptr);
