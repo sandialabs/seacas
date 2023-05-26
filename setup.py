@@ -4,7 +4,7 @@ from setuptools import setup, Extension
 from glob import glob
 from exo_build_ext import cmake_build_ext
 
-s = setup(name='exodus',
+s = setup(name='seacas-exodus',
       description='A python wrapper of some of the exodus library',
       version='1.21.1',
       url='https://github.com/sandialabs/seacas',

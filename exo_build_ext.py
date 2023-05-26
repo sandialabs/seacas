@@ -47,5 +47,5 @@ class cmake_build_ext(build_ext):
             # Build
             subprocess.check_call(['cmake', '--build', '.'], cwd=build_dir, env=env)
             subprocess.check_call(['cmake', '--install', '.'], cwd=build_dir, env=env)
-            for sofile in list(Path('lib/').glob('*.so*')):
-                shutil.copy(str(sofile), extdir)
+            # for sofile in list(Path('lib/').glob('*.so*')):
+                # shutil.copy(str(sofile), extdir)
