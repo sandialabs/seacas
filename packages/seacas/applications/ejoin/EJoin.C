@@ -80,6 +80,7 @@ namespace {
                               const std::vector<INT> &local_node_map, SystemInterface &interFace);
   void process_nset_omissions(RegionVector &part_mesh, const Omissions &omit);
   void process_sset_omissions(RegionVector &part_mesh, const Omissions &omit);
+  void process_assembly_omissions(RegionVector &part_mesh, const Omissions &omit);
 
   int count_omissions(Ioss::Region *region)
   {
@@ -123,7 +124,9 @@ namespace {
 } // namespace
 
 namespace {
-  void transfer_elementblock(Ioss::Region &region, Ioss::Region &output_region, bool debug);
+  void transfer_elementblock(Ioss::Region &region, Ioss::Region &output_region,
+                             bool create_assemblies, bool debug);
+  void transfer_assembly(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_nodesets(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_sidesets(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void create_nodal_nodeset(Ioss::Region &region, Ioss::Region &output_region, bool debug);
@@ -240,6 +243,7 @@ int main(int argc, char *argv[])
 
     process_nset_omissions(part_mesh, interFace.nset_omissions());
     process_sset_omissions(part_mesh, interFace.sset_omissions());
+    process_assembly_omissions(part_mesh, interFace.assembly_omissions());
 
     double time = 0.0;
 
@@ -404,7 +408,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
 
   // Add element blocks, nodesets, sidesets
   for (size_t p = 0; p < part_count; p++) {
-    transfer_elementblock(*part_mesh[p], output_region, false);
+    transfer_elementblock(*part_mesh[p], output_region, interFace.create_assemblies(), false);
     if (interFace.convert_nodes_to_nodesets(p + 1)) {
       create_nodal_nodeset(*part_mesh[p], output_region, false);
     }
@@ -414,6 +418,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
     if (!interFace.omit_sidesets()) {
       transfer_sidesets(*part_mesh[p], output_region, false);
     }
+    transfer_assembly(*part_mesh[p], output_region, false);
   }
 
   if (!interFace.information_record_parts().empty()) {
@@ -565,10 +570,18 @@ namespace {
     return omitted;
   }
 
-  void transfer_elementblock(Ioss::Region &region, Ioss::Region &output_region, bool debug)
+  void transfer_elementblock(Ioss::Region &region, Ioss::Region &output_region,
+                             bool create_assemblies, bool debug)
   {
     static int         used_blocks = 0;
     const std::string &prefix      = region.name();
+
+    Ioss::Assembly *assem = nullptr;
+    if (create_assemblies) {
+      assem = new Ioss::Assembly(output_region.get_database(), region.name());
+      output_region.add(assem);
+      assem->property_add(Ioss::Property("name_in_output", region.name()));
+    }
 
     const Ioss::ElementBlockContainer &ebs = region.get_element_blocks();
     for (const auto &eb : ebs) {
@@ -581,6 +594,8 @@ namespace {
             exit(EXIT_FAILURE);
           }
         }
+        eb->property_add(Ioss::Property("name_in_output", name));
+
         if (debug) {
           fmt::print(stderr, "{}, ", name);
         }
@@ -600,6 +615,54 @@ namespace {
 
             // Set the new property
             ebn->property_add(Ioss::Property("original_topology_type", oes));
+          }
+
+          if (create_assemblies) {
+            assem->add(ebn);
+          }
+        }
+      }
+    }
+  }
+
+  void transfer_assembly(Ioss::Region &region, Ioss::Region &output_region, bool debug)
+  {
+    // All assemblies on the input parts will be transferred to the output mesh
+    // Possibly renamed if a name conflict
+    // Also need to update names of the entities in the assembly since they were possibly
+    // renamed on the output...
+    // TODO: handle renamed nested assemblies...
+    const std::string &prefix = region.name();
+
+    const Ioss::AssemblyContainer &assems = region.get_assemblies();
+    for (const auto &as : assems) {
+      if (!entity_is_omitted(as)) {
+        std::string name = as->name();
+        if (output_region.get_assembly(name) != nullptr) {
+          name = prefix + "_" + as->name();
+          if (output_region.get_assembly(name) != nullptr) {
+            fmt::print(stderr, "ERROR: Duplicate assemblies named '{}'\n", name);
+            exit(EXIT_FAILURE);
+          }
+        }
+        as->property_add(Ioss::Property("name_in_output", name));
+
+        if (debug) {
+          fmt::print(stderr, "{}, ", name);
+        }
+        size_t num_members = as->entity_count();
+        if (num_members > 0) {
+          auto member_type = as->get_member_type();
+          auto asn         = new Ioss::Assembly(output_region.get_database(), name);
+          output_region.add(asn);
+
+          const auto &members = as->get_members();
+          for (const auto &member : members) {
+            auto output_name = member->get_property("name_in_output").get_string();
+
+            auto *entity = output_region.get_entity(output_name, member_type);
+            assert(entity != nullptr);
+            asn->add(entity);
           }
         }
       }
@@ -621,6 +684,7 @@ namespace {
             exit(EXIT_FAILURE);
           }
         }
+        fs->property_add(Ioss::Property("name_in_output", name));
         if (debug) {
           fmt::print(stderr, "{}, ", name);
         }
@@ -633,6 +697,7 @@ namespace {
           if (debug) {
             fmt::print(stderr, "{}, ", fbname);
           }
+          fb->property_add(Ioss::Property("name_in_output", fbname));
           std::string fbtype   = fb->topology()->name();
           std::string partype  = fb->parent_element_topology()->name();
           size_t      num_side = fb->entity_count();
@@ -747,6 +812,7 @@ namespace {
             exit(EXIT_FAILURE);
           }
         }
+        ns->property_add(Ioss::Property("name_in_output", name));
         if (debug) {
           fmt::print(stderr, "{}, ", name);
         }
@@ -1487,6 +1553,30 @@ namespace {
             Ioss::SideSet *ss = part_mesh[p]->get_sideset(omitted);
             if (ss != nullptr) {
               ss->property_add(Ioss::Property(std::string("omitted"), 1));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void process_assembly_omissions(RegionVector &part_mesh, const Omissions &omit)
+  {
+    size_t part_count = part_mesh.size();
+    for (size_t p = 0; p < part_count; p++) {
+      if (!omit[p].empty()) {
+        // Get the assemblies for this part and set the "omitted" property on the assembly
+        if (omit[p][0] == "ALL") {
+          const auto &assemblies = part_mesh[p]->get_assemblies();
+          for (auto &as : assemblies) {
+            as->property_add(Ioss::Property(std::string("omitted"), 1));
+          }
+        }
+        else {
+          for (const auto &omitted : omit[p]) {
+            auto *as = part_mesh[p]->get_assembly(omitted);
+            if (as != nullptr) {
+              as->property_add(Ioss::Property(std::string("omitted"), 1));
             }
           }
         }
