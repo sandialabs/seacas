@@ -36,9 +36,9 @@ int ex__put_assembly_name(int exoid, ex_entity_type obj_type, ex_entity_id entit
   */
   /* See if an assembly with this id has already been defined or exists on file... */
   int  entlst_id = 0;
-  int  status    = 0;
   char errmsg[MAX_ERR_LENGTH];
   if (nc_inq_varid(exoid, VAR_ENTITY_ASSEMBLY(entity_id), &entlst_id) == NC_NOERR) {
+    int status;
     if ((status = nc_redef(exoid)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
