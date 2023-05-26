@@ -52,7 +52,6 @@ int ex__put_assembly_name(int exoid, ex_entity_type obj_type, ex_entity_id entit
       if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to exit define mode in file id %d", exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
       }
       EX_FUNC_LEAVE(EX_FATAL);
     }
@@ -96,7 +95,7 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
   }
 
   switch (obj_type) {
-  case EX_ASSEMBLY: return ex__put_assembly_name(exoid, obj_type, entity_id, name); break;
+  case EX_ASSEMBLY: return ex__put_assembly_name(exoid, obj_type, entity_id, name);
   case EX_EDGE_BLOCK: vobj = VAR_NAME_ED_BLK; break;
   case EX_FACE_BLOCK: vobj = VAR_NAME_FA_BLK; break;
   case EX_ELEM_BLOCK: vobj = VAR_NAME_EL_BLK; break;
@@ -137,7 +136,7 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
   }
 
   /* If this is a null entity, then 'ent_ndx' will be negative.
-   * We don't care in this __func__, so make it positive and continue...
+   * We don't care in this function, so make it positive and continue...
    */
   if (ent_ndx < 0) {
     ent_ndx = -ent_ndx;
