@@ -9,7 +9,7 @@
 #include <Ioss_Field.h>        // for Field, etc
 #include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_Hex8.h>
-#include <Ioss_Property.h>     // for Property
+#include <Ioss_Property.h> // for Property
 #include <Ioss_Region.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_StructuredBlock.h>
@@ -17,8 +17,8 @@
 
 #include <cstddef> // for size_t
 #include <numeric>
-#include <string>  // for string
-#include <vector>  // for vector
+#include <string> // for string
+#include <vector> // for vector
 
 namespace {
   template <typename T> bool vec_equal(const std::vector<T> &lhs, const std::vector<T> &rhs)
@@ -304,6 +304,12 @@ namespace Ioss {
                                                    size_t data_size) const
   {
     return get_database()->put_field(this, field, data, data_size);
+  }
+
+  int64_t StructuredBlock::internal_get_zc_field_data(const Field &field, void **data,
+                                                      size_t *data_size) const
+  {
+    return get_database()->get_zc_field(this, field, data, data_size);
   }
 
   AxisAlignedBoundingBox StructuredBlock::get_bounding_box() const

@@ -211,8 +211,8 @@ namespace Ioss {
 
     std::vector<Transform *> transforms_{};
     char                     suffixSeparator_{1}; // Value = 1 means unset; use database default.
-    bool sufficesUppercase_{false}; // True if the suffices are uppercase on database...
-    bool zeroCopyable_{false};      // True if the field is zero-copyable.
+    bool         sufficesUppercase_{false}; // True if the suffices are uppercase on database...
+    mutable bool zeroCopyable_{false};      // True if the field is zero-copyable.
 
     bool equal_(const Ioss::Field &rhs, bool quiet) const;
   };

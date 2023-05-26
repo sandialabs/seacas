@@ -125,6 +125,12 @@ int64_t Ioss::SideSet::internal_put_field_data(const Ioss::Field &field, void *d
   return get_database()->put_field(this, field, data, data_size);
 }
 
+int64_t Ioss::SideSet::internal_get_zc_field_data(const Field &field, void **data,
+                                                  size_t *data_size) const
+{
+  return get_database()->get_zc_field(this, field, data, data_size);
+}
+
 Ioss::Property Ioss::SideSet::get_implicit_property(const std::string &my_name) const
 {
   if (my_name == "side_block_count") {
