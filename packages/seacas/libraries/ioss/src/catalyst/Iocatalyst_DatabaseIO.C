@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <cstddef>
 #include <tokenize.h>
 
 #include "Ioss_CommSet.h"         // for CommSet
@@ -63,8 +64,7 @@ namespace Iocatalyst {
                                                               Ioss::DatabaseIO        *dbase)
     {
       const auto name = node.name();
-      return new Ioss::ElementBlock(dbase, name,
-                                    node["properties/topology_type/value"].as_string(),
+      return new Ioss::ElementBlock(dbase, name, node["properties/topology_type/value"].as_string(),
                                     node["properties/entity_count/value"].as_int64());
     }
 
@@ -472,8 +472,8 @@ namespace Iocatalyst {
     bool readProperties(const conduit_cpp::Node &&parent, GroupingEntityT *block) const
     {
       for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
-        auto     &&child = parent[idx];
-        const auto name  = child.name();
+        auto     &&child  = parent[idx];
+        const auto name   = child.name();
         const auto origin = static_cast<Ioss::Property::Origin>(child["origin"].as_int8());
         if (block->property_exists(name) && block->get_property(name).is_implicit()) {
           continue;
@@ -511,11 +511,17 @@ namespace Iocatalyst {
         const auto index   = child["index"].as_int64();
         const auto storage = child["storage"].as_string();
         if (!block->field_exists(name)) {
-          block->field_add(Ioss::Field(name, type, storage, role, count, index));
+          block->field_add(
+              Ioss::Field(name, type, storage, role, count, index).set_zero_copy_enabled());
         }
         else {
           // TODO verify field details.
-          assert(block->get_field(name).get_type() == type);
+          auto field = block->get_field(name);
+          assert(field.get_type() == type);
+          //if (!field.has_transform()) {
+          //  block->field_erase(name);
+          //  block->field_add(field.set_zero_copy_enabled());
+          //}
         }
       }
 
@@ -709,6 +715,15 @@ namespace Iocatalyst {
     auto &impl = (*this->Impl.get());
     impl.print();
   }
+
+ /* int64_t DatabaseIO::internal_get_zc_field_data(const Ioss::Field &field, void **data,
+                                                 size_t *data_size) const
+  {
+    *data      = nullptr;
+    *data_size = 0;
+    return *data_size;
+  }
+  */
 
   int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
                                          void *data, size_t data_size) const

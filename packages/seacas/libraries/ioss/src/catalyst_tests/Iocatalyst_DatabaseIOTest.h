@@ -10,6 +10,7 @@
 
 #include "gtest/gtest.h"
 #include <catalyst_tests/Iocatalyst_BlockMeshSet.h>
+#include <cstddef>
 
 class IOCATALYST_EXPORT Iocatalyst_DatabaseIOTest : public ::testing::Test
 {
@@ -28,6 +29,32 @@ protected:
   void runStructuredTest(const std::string &testName);
 
   void runUnstructuredTest(const std::string &testName);
+
+  void checkZeroCopyFields();
+
+  template <typename EntityContainer>
+  void checkEntityContainerZeroCopyFields(const EntityContainer &ge)
+  {
+    for (auto g : ge) {
+      auto nameList = g->field_describe();
+      for (auto name : nameList) {
+        auto field = g->get_field(name);
+        if(field.zero_copy_enabled()) {
+          std::cout << "ZERO COPY ON\n";
+          std::vector<std::byte> buffer(field.get_size());
+          g->get_field_data(name, buffer.data(), buffer.size());
+          void* data;
+          size_t dataSize;
+          g->get_field_data(name, &data, &dataSize);
+          std::cout << "field size = " << buffer.size() << "\n";
+        }
+        else {
+          std::cout << "ZERO COPY OFF\n";
+        }
+        std::cout << name << "\n";
+      }
+    }
+  }
 
   void setBlockMeshSize(unsigned int i, unsigned int j, unsigned int k);
   void setOrigin(unsigned int i, unsigned int j, unsigned int k);

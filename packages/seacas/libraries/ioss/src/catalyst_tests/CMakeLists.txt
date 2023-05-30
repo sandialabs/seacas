@@ -36,6 +36,30 @@ TRIBITS_ADD_TEST(
 )
 
 TRIBITS_ADD_EXECUTABLE(
+    Iocatalyst_LoggingTest
+ SOURCES
+    Iocatalyst_LoggingTest.C
+)
+
+TRIBITS_ADD_TEST(
+	Iocatalyst_LoggingTest
+	NAME Iocatalyst_LoggingTest
+	NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE(
+    Iocatalyst_ManagerTest
+ SOURCES
+    Iocatalyst_ManagerTest.C
+)
+
+TRIBITS_ADD_TEST(
+	Iocatalyst_ManagerTest
+	NAME Iocatalyst_ManagerTest
+	NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_EXECUTABLE(
     Iocatalyst_StructuredBlockTest
  SOURCES
     Iocatalyst_StructuredBlockTest.C

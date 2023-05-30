@@ -8,6 +8,9 @@
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_IOFactory.h>
 #include <Ioss_MeshCopyOptions.h>
+#include <Ioss_NodeBlock.h>
+#include <Ioss_ElementBlock.h>
+#include <Ioss_StructuredBlock.h>
 #include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
 
 Iocatalyst_DatabaseIOTest::Iocatalyst_DatabaseIOTest()
@@ -55,8 +58,11 @@ void Iocatalyst_DatabaseIOTest::runStructuredTest(const std::string &testName)
       testName + CATALYST_TEST_FILE_NP + std::to_string(part.size) + CGNS_FILE_EXTENSION;
   std::string catalystFileName = CATALYST_TEST_FILE_PREFIX + testName + CATALYST_TEST_FILE_NP +
                                  std::to_string(part.size) + CGNS_FILE_EXTENSION;
-  bmSet.writeIOSSFile(cgnsFileName, CGNS_DATABASE_TYPE);
-  bmSet.writeCatalystIOSSFile(catalystFileName, CGNS_DATABASE_TYPE);
+  Iocatalyst::BlockMeshSet::IOSSparams iop(cgnsFileName, CGNS_DATABASE_TYPE);
+  bmSet.writeIOSSFile(iop);
+  iop.fileName = catalystFileName;
+  bmSet.writeCatalystIOSSFile(iop);
+  //checkZeroCopyFields();
   EXPECT_TRUE(regionsAreEqual(cgnsFileName, catalystFileName, CGNS_DATABASE_TYPE));
 }
 
@@ -66,9 +72,31 @@ void Iocatalyst_DatabaseIOTest::runUnstructuredTest(const std::string &testName)
       testName + CATALYST_TEST_FILE_NP + std::to_string(part.size) + EXODUS_FILE_EXTENSION;
   std::string catalystFileName = CATALYST_TEST_FILE_PREFIX + testName + CATALYST_TEST_FILE_NP +
                                  std::to_string(part.size) + EXODUS_FILE_EXTENSION;
-  bmSet.writeIOSSFile(exodusFileName, EXODUS_DATABASE_TYPE);
-  bmSet.writeCatalystIOSSFile(catalystFileName, EXODUS_DATABASE_TYPE);
+  Iocatalyst::BlockMeshSet::IOSSparams iop(exodusFileName, EXODUS_DATABASE_TYPE);
+  bmSet.writeIOSSFile(iop);
+  iop.fileName = catalystFileName;
+  bmSet.writeCatalystIOSSFile(iop);
+  //checkZeroCopyFields();
   EXPECT_TRUE(regionsAreEqual(exodusFileName, catalystFileName, EXODUS_DATABASE_TYPE));
+}
+
+void Iocatalyst_DatabaseIOTest::checkZeroCopyFields()
+{
+  Ioss::PropertyManager cdbProps;
+  //cdbProps.add(Ioss::Property("CATALYST_CONDUIT_NODE", bmSet.getCatalystConduitNode()));
+
+  Ioss::DatabaseIO *cdbi =
+      Ioss::IOFactory::create(Iocatalyst::BlockMeshSet::CATALYST_DATABASE_TYPE,
+                              Iocatalyst::BlockMeshSet::CATALYST_DUMMY_DATABASE, Ioss::READ_RESTART,
+                              Ioss::ParallelUtils::comm_world(), cdbProps);
+  if (cdbi == nullptr || !cdbi->ok(true)) {
+    return;
+  }
+
+  Ioss::Region cir(cdbi);
+  checkEntityContainerZeroCopyFields(cir.get_node_blocks());
+  checkEntityContainerZeroCopyFields(cir.get_element_blocks());
+  checkEntityContainerZeroCopyFields(cir.get_structured_blocks());
 }
 
 void Iocatalyst_DatabaseIOTest::setBlockMeshSize(unsigned int i, unsigned int j, unsigned int k)

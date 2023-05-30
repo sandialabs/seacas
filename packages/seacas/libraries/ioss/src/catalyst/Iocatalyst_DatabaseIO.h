@@ -80,6 +80,9 @@ namespace Iocatalyst {
 
     void print_catalyst_conduit_node();
 
+    //virtual int64_t Ioss::GroupingEntity::internal_get_zc_field_data(const Ioss::Field &field, void **data,
+    //                                   size_t *data_size) const;
+
   private:
     bool open_group__(const std::string & /* group_name */) override { return false; }
     bool create_subgroup__(const std::string & /* group_name */) override { return false; }
