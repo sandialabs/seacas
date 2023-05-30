@@ -2,7 +2,7 @@
 # ************************************************************************
 #
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016, 2022 Sandia Corporation
+#                    Copyright 2016, 2022, 2023 Sandia Corporation
 #
 # Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 # the U.S. Government retains certain rights in this software.
@@ -41,18 +41,18 @@ set(CNGS_ALLOW_MODERN FALSE CACHE BOOL "Allow finding CGNS as a modern CMake con
 
 if ((CGNS_ALLOW_MODERN AND HDF5_FOUND_MODERN_CONFIG_FILE) OR CGNS_FORCE_MODERN)
 
-  set(minimum_modern_CGNS_version 3.4.0)
+  set(minimum_modern_CGNS_version 4.0)
   print_var(CGNS_ALLOW_MODERN)
   print_var(CGNS_FORCE_MODERN)
   message("-- Using find_package(CGNS ${minimum_modern_CGNS_version} CONFIG) ...")
-  find_package(CGNS ${minimum_modern_CGNS_version} CONFIG)
+  find_package(CGNS ${minimum_modern_CGNS_version} CONFIG NAMES cgns)
   if (CGNS_FOUND)
     message("-- Found CGNS_CONFIG=${CGNS_CONFIG}")
     message("-- Generating CGNS::all_libs and CGNSConfig.cmake")
     tribits_extpkg_create_imported_all_libs_target_and_config_file(
       CGNS
       INNER_FIND_PACKAGE_NAME  CGNS
-      IMPORTED_TARGETS_FOR_ALL_LIBS   CGNS::cgns)
+      IMPORTED_TARGETS_FOR_ALL_LIBS   cgns)
     set(TPL_CGNS_NOT_FOUND FALSE)
   endif()
 

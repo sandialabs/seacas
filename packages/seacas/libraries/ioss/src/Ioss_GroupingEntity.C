@@ -293,23 +293,6 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string &field_name, void
   return retval;
 }
 
-int64_t Ioss::GroupingEntity::internal_get_zc_field_data(const Ioss::Field &field, void ** /*data*/,
-                                                         size_t * /*data_size*/) const
-{
-  // Dummy version to avoid putting empty virtual functions in all databases that don't support
-  // zero-copy;
-  std::ostringstream errmsg;
-  fmt::print(
-      errmsg,
-      "\nINTERNAL ERROR: Something is wrong on a database.  The field '{}' indicates that it"
-      " is zero-copyable, but the database containing that field does not implement the zero-copy"
-      " `get_field_internal()` function.\n\n",
-      field.get_name(), name());
-  IOSS_ERROR(errmsg);
-
-  return -2;
-}
-
 /** \brief Write field data from memory into the database file using a pointer.
  *
  *  \param[in] field_name The name of the field to write.

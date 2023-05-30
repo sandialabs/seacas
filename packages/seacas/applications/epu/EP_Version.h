@@ -11,6 +11,6 @@
 
 static std::array<std::string, 3> qainfo{
     "epu --  E Pluribus Unum",
-    "6.06",
-    "2023/01/11",
+    "6.07",
+    "2023/05/17",
 };

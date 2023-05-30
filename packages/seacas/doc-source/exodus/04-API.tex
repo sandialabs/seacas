@@ -403,7 +403,7 @@ error = ex_put_init (exoid, "This is the title", num_dim,
 \subsection{Read Initialization Parameters}
 
 The function \cfuncref{ex_get_init} reads the
-initializationinitialization parameters from an opened
+initialization parameters from an opened
 \exo{} file.
 
 In case of an error, \cfuncref{ex_get_init} returns a negative number;
@@ -1486,7 +1486,7 @@ error = ex_put_node_num_map(exoid, node_map);
 \subsection{Read Node Number Map}
 
 The function \cfuncref{ex_get_node_num_map} reads the optional node
-number mapnode number map from the database. See Section~\ref{s:nnm} for a
+number map from the database. See Section~\ref{s:nnm} for a
 description of the node number map. If a node number map is
 not stored in the data file, a default array (1,2,3,. .. \cmd{num_nodes})
 is returned. Memory must be allocated for the node number map array
@@ -1675,12 +1675,12 @@ error = ex_put_map(exoid, elem_map);
 
 \subsection{Read Element Order Map}
 
-The function \cfuncref{ex_get_map} reads the element order mapelement
-order map from the database. See Section~\ref{s:eom} for a description
-of the element order map. If an element order map is not stored in the
-data file, a default array (1,2,3,. .. \cmd{num_elem}) is
-returned. Memory must be allocated for the element map array
-({num_elem} in length) before this call is made.
+The function \cfuncref{ex_get_map} reads the element order map from
+the database. See Section~\ref{s:eom} for a description of the element
+order map. If an element order map is not stored in the data file, a
+default array (1,2,3,. .. \cmd{num_elem}) is returned. Memory must be
+allocated for the element map array ({num_elem} in length) before this
+call is made.
 
 In case of an error, \cfuncref{ex_get_map} returns a negative number; a
 warning will return a positive number. Possible causes of errors
@@ -1838,7 +1838,7 @@ int~*num_nodes_per_elem, int~*num_attr}
 The element block ID.
 
 \item[{char* elem_type \W{}}]
-Returned element typetype of elements in the element block.
+Returned element type of elements in the element block.
 The maximum length of this string is \param{MAX_STR_LENGTH}.
 
 \item[{int* num_elem_this_blk \W{}}]

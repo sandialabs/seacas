@@ -1883,7 +1883,8 @@ namespace Ioss {
       std::ostringstream errmsg;
       fmt::print(
           errmsg,
-          "ERROR: There are multiple ({}) blocks and/or sets with the name '{}' defined in the "
+          "ERROR: There are multiple ({}) blocks, sets, assemblies and/or blobs with the name '{}' "
+          "defined in the "
           "database file '{}'.\n"
           "\tThis is allowed in general, but this application uses an API function (get_entity) "
           "that does not support duplicate names.",
@@ -2540,6 +2541,12 @@ namespace Ioss {
     return get_database()->put_field(this, field, data, data_size);
   }
 
+  int64_t Region::internal_get_zc_field_data(const Field &field, void **data,
+                                             size_t *data_size) const
+  {
+    return get_database()->get_zc_field(this, field, data, data_size);
+  }
+
   /** \brief Transfer all relevant aliases from this region to another region
    *
    *  \param[in] to The region to which the aliases are to be transferred.
@@ -2726,7 +2733,8 @@ namespace Ioss {
         int64_t            id2      = old_ge->get_optional_property(id_str(), 0);
         std::ostringstream errmsg;
         fmt::print(errmsg,
-                   "ERROR: There are multiple blocks or sets with the same name defined in the "
+                   "ERROR: There are multiple blocks, sets, assemblies, and/or blobs with the same "
+                   "name defined in the "
                    "database file '{}'.\n"
                    "\tBoth {} {} and {} {} are named '{}'.  All names must be unique.",
                    filename, entity->type_string(), id1, old_ge->type_string(), id2, name);

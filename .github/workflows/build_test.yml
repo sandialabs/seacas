@@ -83,6 +83,15 @@ jobs:
 ###
 # Configure and build
 ###
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
+
+      - name: Install NumPy
+        shell: bash -l {0}
+        run: pip install numpy
+
       - name: Run cmake
         shell: bash -l {0}
         run: |
@@ -110,4 +119,11 @@ jobs:
         run: |
           cd build
           ctest -j 4 --output-on-failure
+        if: ${{ success() }}
+
+      - name: Run SEACAS-Test
+        shell: bash -l {0}
+        run: |
+          cd SEACAS-Test
+          make BASE=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} test
         if: ${{ success() }}

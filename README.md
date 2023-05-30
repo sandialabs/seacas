@@ -55,7 +55,7 @@ manually as detailed in
 | Variable        | Values          | Default | Description |
 |-----------------|:---------------:|:-------:|-------------|
 | INSTALL_PATH    | path to install | pwd | Root of install path; default is current location |
-| COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build. Must have C++-14 capability. |
+| COMPILER        | clang, gnu, intel, ibm nvidia | gnu | What compiler should be used for non-parallel build. Must have C++-17 capability. |
 | MPI             | YES, NO | NO  | If YES, then build parallel capability |
 | FORCE           | YES, NO | NO  | Force downloading and building even if lib is already installed. |
 | BUILD           | YES, NO | YES | Should TPLs be built and installed. |
@@ -202,23 +202,49 @@ docker pull mrbuche/exodus
 
 ## CMake Example Usage
 A simple example of using the SEACAS Exodus library in your external project.  Here is the CMakeLists.txt file:
+
 ```sh
-project(SeacasExodusExample)
-cmake_minimum_required(VERSION 3.12)
+project(ExodusCMakeExample VERSION 1.0 LANGUAGES C Fortran)
+cmake_minimum_required(VERSION 3.1...3.26)
 
-find_package(SEACASExodus REQUIRED)
+#### C ####
+find_package(SEACASExodus CONFIG)
+add_executable(ExodusWriteC ExodusWrite.c)
+target_link_libraries(ExodusWriteC PRIVATE SEACASExodus::all_libs)
 
-add_executable(exo_write exo_write.c)
-target_link_libraries(exo_write SEACASExodus::exodus)
+#### FORTRAN #####
+IF ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
+  SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fcray-pointer -fdefault-real-8 -fdefault-integer-8 -fno-range-check")
+ELSEIF ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "XL")
+  SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -qintsize=8 -qrealsize=8")
+ELSEIF ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Cray")
+  SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -sdefault64")
+ELSE()
+  SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -r8 -i8")
+ENDIF()
+
+find_package(SEACASExodus_for CONFIG)
+add_executable(ExodusReadFor ExodusRead.f)
+target_link_libraries(ExodusReadFor PRIVATE SEACASExodus_for::all_libs)
 ```
 
-This would then be used as:
+The `cmake-use-example` directory contains this sample
+`CMakeLists.txt` file and a couple C and Fortran files which provide
+an example of how to build and link a C or Fortran program with the
+Exodus library installed as part of a build of this package.
+
+To use this, copy the contents of the directory to your own filespace
+and modify the contents as needed.  The example provides a C
+executable and a Fortran Executable which both are linked to the
+Exodus library.
+
+To configure and build, you would do something like:
 ```sh
-mkdir build; cd build
-CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake -G "Unix Makefiles" ..
-make
+  mkdir build; cd build
+  CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake ..
+  make
 ```
-And you would then get `exo_write` compiled and linked against the Exodus library.
+And you would then get `ExodusWriteC` and `ExodusReadFor` compiled and linked against the Exodus library.
 
 ## Required Software
 
