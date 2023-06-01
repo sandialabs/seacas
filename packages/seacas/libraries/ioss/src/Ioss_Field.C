@@ -162,7 +162,7 @@ void Ioss::Field::check_type(BasicType the_type) const
   }
 }
 
-Ioss::Field &Ioss::Field::set_zero_copy_enabled(bool true_false)
+const Ioss::Field &Ioss::Field::set_zero_copy_enabled(bool true_false) const
 {
   if (has_transform()) {
     std::ostringstream errmsg;

@@ -135,8 +135,8 @@ namespace Ioss {
     }
     bool get_suffices_uppercase() const { return sufficesUppercase_; }
 
-    Field &set_zero_copy_enabled(bool true_false = true);
-    bool   zero_copy_enabled() const { return zeroCopyable_; }
+    const Field &set_zero_copy_enabled(bool true_false = true) const;
+    bool         zero_copy_enabled() const { return zeroCopyable_; }
 
     /** \brief Get the basic data type of the data held in the field.
      *
