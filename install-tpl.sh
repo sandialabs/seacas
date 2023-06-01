@@ -69,8 +69,10 @@ BB=$(check_valid BB)
 CRAY=${CRAY:-NO}
 CRAY=$(check_valid CRAY)
 
-# Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
-CGNS=${CGNS:-YES}
+# Which TPLS? (NetCDF always, PnetCDF if MPI=ON)
+HDF5=${HDF5:-YES}
+HDF5=$(check_valid HDF5)
+CGNS=${CGNS:-${HDF5}}
 CGNS=$(check_valid CGNS)
 
 MATIO=${MATIO:-YES}
@@ -186,6 +188,7 @@ if [ $# -gt 0 ]; then
         echo "   DEBUG        = ${DEBUG}"
         echo "   USE_PROXY    = ${USE_PROXY}"
         echo ""
+        echo "   HDF5         = ${HDF5}"
         echo "   H5VERSION    = ${H5VERSION}"
         echo "   CGNS         = ${CGNS}"
         echo "   MATIO        = ${MATIO}"
@@ -391,80 +394,84 @@ then
 fi
 
 # =================== BUILD HDF5 ===============
-if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
+if [ "$HDF5" == "YES" ]
 then
-    echo "${txtgrn}+++ HDF5${txtrst}"
-    hdf_suffix=""
-    if [ "${H5VERSION}" == "V18" ]; then
-        hdf_version="1.8.23"
-        hdf_base="1.8"
-    elif [ "${H5VERSION}" == "V110" ]; then
-        hdf_version="1.10.10"
-        hdf_base="1.10"
-    elif [ "${H5VERSION}" == "V112" ]; then
-        hdf_version="1.12.2"
-        hdf_base="1.12"
-    elif [ "${H5VERSION}" == "V113" ]; then
-        hdf_version="1.13.1"
-        hdf_base="1.13"
-    elif [ "${H5VERSION}" == "V114" ]; then
-        hdf_version="1.14.1"
-        hdf_base="1.14"
-	hdf_suffix="-2"
-    elif [ "${H5VERSION}" == "develop" ]; then
-        hdf_version="develop"
-    else
-        echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
-        exit 1
-    fi
-
-    cd $ACCESS || exit
-    cd TPL/hdf5 || exit
-    if [ "$DOWNLOAD" == "YES" ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
     then
-        echo "${txtgrn}+++ Downloading...${txtrst}"
-        rm -rf hdf5-${hdf_version}${hdf_suffix}
-        rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
-        if [ "${H5VERSION}" == "develop" ]; then
-            git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
-        else
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}${hdf_suffix}.tar.bz2
-        fi
-        if [ "${H5VERSION}" != "develop" ]
-        then
-            tar -jxf hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+	echo "${txtgrn}+++ HDF5${txtrst}"
+	hdf_suffix=""
+	if [ "${H5VERSION}" == "V18" ]; then
+            hdf_version="1.8.23"
+            hdf_base="1.8"
+	elif [ "${H5VERSION}" == "V110" ]; then
+            hdf_version="1.10.10"
+            hdf_base="1.10"
+	elif [ "${H5VERSION}" == "V112" ]; then
+            hdf_version="1.12.2"
+            hdf_base="1.12"
+	elif [ "${H5VERSION}" == "V113" ]; then
+            hdf_version="1.13.1"
+            hdf_base="1.13"
+	elif [ "${H5VERSION}" == "V114" ]; then
+            hdf_version="1.14.1"
+            hdf_base="1.14"
+	    hdf_suffix="-2"
+	elif [ "${H5VERSION}" == "develop" ]; then
+            hdf_version="develop"
+	else
+            echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
+            exit 1
+	fi
+	
+	cd $ACCESS || exit
+	cd TPL/hdf5 || exit
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf hdf5-${hdf_version}${hdf_suffix}
             rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
-        fi
+            if [ "${H5VERSION}" == "develop" ]; then
+		git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
+            else
+		wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+            fi
+            if [ "${H5VERSION}" != "develop" ]
+            then
+		tar -jxf hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+		rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+            fi
+	fi
+	
+	if [ "$BUILD" == "YES" ]
+	then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd hdf5-${hdf_version}${hdf_suffix} || exit
+            rm -rf build
+            mkdir build
+            cd build || exit
+            CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
+            #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
+		exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make "V=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t build hdf5. exiting.${txtrst}
+		exit 1
+            fi
+	fi
+	# Create default plugin directory...
+	mkdir  ${INSTALL_PATH}/lib/hdf5
+	mkdir  ${INSTALL_PATH}/lib/hdf5/lib
+	mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin
+    else
+	echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
     fi
-
-    if [ "$BUILD" == "YES" ]
-    then
-        echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-        cd hdf5-${hdf_version}${hdf_suffix} || exit
-        rm -rf build
-        mkdir build
-        cd build || exit
-        CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
-        #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
-        if [[ $? != 0 ]]
-        then
-            echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
-            exit 1
-        fi
-        make -j${JOBS} && ${SUDO} make "V=${VERBOSE}" install
-        if [[ $? != 0 ]]
-        then
-            echo 1>&2 ${txtred}couldn\'t build hdf5. exiting.${txtrst}
-            exit 1
-        fi
-    fi
-    # Create default plugin directory...
-    mkdir  ${INSTALL_PATH}/lib/hdf5
-    mkdir  ${INSTALL_PATH}/lib/hdf5/lib
-    mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin
-else
-    echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
+
 # =================== INSTALL PnetCDF if parallel build ===============
 if [ "$MPI" == "YES" ]
 then
@@ -544,8 +551,11 @@ then
         rm -rf build
         mkdir build
         cd build || exit
-        export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin
-        CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
+	if [ "$HDF5" == "YES" ]
+	then
+           export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin
+	fi
+        CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} HDF5=${HDF5} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure cmake for NetCDF. exiting.${txtrst}
@@ -563,7 +573,7 @@ else
     echo "${txtylw}+++ NetCDF already installed.  Skipping download and installation.${txtrst}"
 fi
 # =================== INSTALL CGNS ===============
-if [ "$CGNS" == "YES" ]
+if [ "$CGNS" == "YES" ] && [ "$HDF5" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
@@ -602,6 +612,10 @@ then
     else
         echo "${txtylw}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
     fi
+fi
+if [ "$CGNS" == "YES" ] && [ "$HDF5" == "NO" ]
+then
+    echo "${txtred}+++ CGNS requested, but HDF5 is not enabled.  Cannot build CGNS without HDF5.${txtrst}"
 fi
 
 # =================== INSTALL METIS  ===============
@@ -713,7 +727,7 @@ then
             rm -rf build
             mkdir build
             cd build || exit
-            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} bash -x ../../runcmake.sh
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} HDF5=${HDF5} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure MatIO. exiting.${txtrst}
