@@ -62,7 +62,7 @@ void Iocatalyst_DatabaseIOTest::runStructuredTest(const std::string &testName)
   bmSet.writeIOSSFile(iop);
   iop.fileName = catalystFileName;
   bmSet.writeCatalystIOSSFile(iop);
-  //checkZeroCopyFields();
+  checkZeroCopyFields(iop);
   EXPECT_TRUE(regionsAreEqual(cgnsFileName, catalystFileName, CGNS_DATABASE_TYPE));
 }
 
@@ -76,14 +76,14 @@ void Iocatalyst_DatabaseIOTest::runUnstructuredTest(const std::string &testName)
   bmSet.writeIOSSFile(iop);
   iop.fileName = catalystFileName;
   bmSet.writeCatalystIOSSFile(iop);
-  //checkZeroCopyFields();
+  checkZeroCopyFields(iop);
   EXPECT_TRUE(regionsAreEqual(exodusFileName, catalystFileName, EXODUS_DATABASE_TYPE));
 }
 
-void Iocatalyst_DatabaseIOTest::checkZeroCopyFields()
+void Iocatalyst_DatabaseIOTest::checkZeroCopyFields(Iocatalyst::BlockMeshSet::IOSSparams &iop)
 {
   Ioss::PropertyManager cdbProps;
-  //cdbProps.add(Ioss::Property("CATALYST_CONDUIT_NODE", bmSet.getCatalystConduitNode()));
+  cdbProps.add(Ioss::Property("CATALYST_CONDUIT_NODE", iop.getCatalystConduitNode()));
 
   Ioss::DatabaseIO *cdbi =
       Ioss::IOFactory::create(Iocatalyst::BlockMeshSet::CATALYST_DATABASE_TYPE,
@@ -93,7 +93,9 @@ void Iocatalyst_DatabaseIOTest::checkZeroCopyFields()
     return;
   }
 
+  std::cout << "Check zero copy fields before region constructor\n";
   Ioss::Region cir(cdbi);
+  std::cout << "Check zero copy fields after region constructor\n";
   checkEntityContainerZeroCopyFields(cir.get_node_blocks());
   checkEntityContainerZeroCopyFields(cir.get_element_blocks());
   checkEntityContainerZeroCopyFields(cir.get_structured_blocks());

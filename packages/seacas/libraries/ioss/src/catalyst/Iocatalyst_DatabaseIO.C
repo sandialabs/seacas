@@ -516,12 +516,20 @@ namespace Iocatalyst {
         }
         else {
           // TODO verify field details.
-          auto field = block->get_field(name);
+          auto field = block->get_fieldref(name);
+          std::cout << "NAME = " << name << ", ENABLED = " << field.zero_copy_enabled() << "\n";
+          if (!field.has_transform()) {
+            // block->get_fieldref(name).set_zero_copy_enabled();
+            std::cout << "NAME = " << name << ", ENABLED = " << field.zero_copy_enabled() << "\n";
+          }
           assert(field.get_type() == type);
-          //if (!field.has_transform()) {
-          //  block->field_erase(name);
-          //  block->field_add(field.set_zero_copy_enabled());
-          //}
+          auto f = block->get_fieldref(name);
+          std::cout << "NAME = " << name << ", ENABLED = " << f.zero_copy_enabled() << "\n";
+
+          // if (!field.has_transform()) {
+          //   block->field_erase(name);
+          //   block->field_add(field.set_zero_copy_enabled());
+          // }
         }
       }
 
@@ -716,14 +724,14 @@ namespace Iocatalyst {
     impl.print();
   }
 
- /* int64_t DatabaseIO::internal_get_zc_field_data(const Ioss::Field &field, void **data,
-                                                 size_t *data_size) const
-  {
-    *data      = nullptr;
-    *data_size = 0;
-    return *data_size;
-  }
-  */
+  /* int64_t DatabaseIO::internal_get_zc_field_data(const Ioss::Field &field, void **data,
+                                                  size_t *data_size) const
+   {
+     *data      = nullptr;
+     *data_size = 0;
+     return *data_size;
+   }
+   */
 
   int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
@@ -974,6 +982,23 @@ namespace Iocatalyst {
                  "field not available, " + field.get_name() + ", in container structured_blocks\n");
       return -1;
     }
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
+                                            void **data, size_t *data_size) const
+  {
+    return -1;
+  }
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
+                                            void **data, size_t *data_size) const
+  {
+    return -1;
+  }
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::StructuredBlock *sb,
+                                            const Ioss::Field &field, void **data,
+                                            size_t *data_size) const
+  {
+    return -1;
   }
 
 } // namespace Iocatalyst

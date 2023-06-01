@@ -30,7 +30,7 @@ protected:
 
   void runUnstructuredTest(const std::string &testName);
 
-  void checkZeroCopyFields();
+  void checkZeroCopyFields(Iocatalyst::BlockMeshSet::IOSSparams &iop);
 
   template <typename EntityContainer>
   void checkEntityContainerZeroCopyFields(const EntityContainer &ge)
@@ -38,9 +38,9 @@ protected:
     for (auto g : ge) {
       auto nameList = g->field_describe();
       for (auto name : nameList) {
-        auto field = g->get_field(name);
+        auto field = g->get_fieldref(name);
         if(field.zero_copy_enabled()) {
-          std::cout << "ZERO COPY ON\n";
+          std::cout << name << ": ZERO COPY ON\n";
           std::vector<std::byte> buffer(field.get_size());
           g->get_field_data(name, buffer.data(), buffer.size());
           void* data;
@@ -49,9 +49,8 @@ protected:
           std::cout << "field size = " << buffer.size() << "\n";
         }
         else {
-          std::cout << "ZERO COPY OFF\n";
+          std::cout << name << ": ZERO COPY OFF\n";
         }
-        std::cout << name << "\n";
       }
     }
   }
