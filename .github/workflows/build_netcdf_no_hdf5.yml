@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: SEACAS Variant builds
+name: SEACAS no-hdf5-netcdf builds
 
 # Controls when the action will run. Triggers the workflow on push
 on:
