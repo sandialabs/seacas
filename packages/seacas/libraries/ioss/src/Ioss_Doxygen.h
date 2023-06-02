@@ -31,7 +31,7 @@ exodusII         | Input/Output  | alias for exodus
 exodusii         | Input/Output  | alias for exodus
 genesis          | Input/Output  | alias for exodus
 gen_struc        | Input         | Generate a structured mesh using a token string (IxJxK)
-generated        | Input         | Generate an unstructured hex/shell mesh using a token string
+generated        | Input         | Generate an unstructured hex/shell mesh using a token string (Iogn::GeneratedMesh::GeneratedMesh)
 heartbeat        | Output        | A text based output for global values
 exonull          | Output        | No data written to disk, but uses all of the exodus io database infrastructure/calculations
 null             | Output        | No data written to disk, no calculations done by ioss
