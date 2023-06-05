@@ -247,7 +247,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       ex_err_fn(exoid, __func__, errmsg, status);                                                  \
       goto error_ret; /* exit define mode and return */                                            \
     }                                                                                              \
-    int fill = NC_FILL_CHAR;
+    int fill = NC_FILL_CHAR;                                                                       \
     nc_def_var_fill(exoid, temp, 0, &fill);                                                        \
   }
 #else
