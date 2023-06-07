@@ -38,14 +38,9 @@ class cmake_build_ext(build_ext):
             build_dir = os.path.join(os.getcwd(), "build")
             env = dict(os.environ)
             env["JOBS"] = str(os.cpu_count())
-            env["MPI"] = "YES"
-            subprocess.check_call(['./install-tpl.sh'] + cmake_args, env=env)
-            with contextlib.suppress(Exception):
-                os.mkdir("build")
+            env["MPI"] = "NO"
             subprocess.check_call(['../cmake-exodus'] + cmake_args, cwd=build_dir, env=env)
 
             # Build
             subprocess.check_call(['cmake', '--build', '.'], cwd=build_dir, env=env)
             subprocess.check_call(['cmake', '--install', '.'], cwd=build_dir, env=env)
-            # for sofile in list(Path('lib/').glob('*.so*')):
-                # shutil.copy(str(sofile), extdir)
