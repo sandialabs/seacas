@@ -1,8 +1,5 @@
-import contextlib
-import shutil
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
-from pathlib import Path
 import subprocess
 import sys
 import os

@@ -27,3 +27,8 @@ s = setup(name='seacas-exodus',
       cmdclass = {'build_ext': cmake_build_ext},
       ext_modules = [Extension("exodus", [""])]
 )
+wheels = os.listdir("dist")
+platform = "linux_x86_64"
+subprocess.run(["python", "-m", "pip", "install", "auditwheel", "patchelf"])
+for wheel in wheels:
+      subprocess.run(["python", "-m", "auditwheel", "repair", "--plat", platform, f"dist/{wheel}"])
