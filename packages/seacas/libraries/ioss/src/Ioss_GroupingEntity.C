@@ -461,6 +461,10 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
       continue;
     }
 
+    if (lhs_property.compare("IOSS_INTERNAL_CONTAINED_IN") == 0) {
+      continue;
+    }
+
     if (this->properties.get(lhs_property) != rhs.properties.get(lhs_property)) {
       // EMPIRICALLY, different representations (e.g., CGNS vs. Exodus) of the same mesh
       // can have different values for the "original_block_order" property.
