@@ -530,7 +530,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
     {
       std::ostringstream buf;
       fmt::print(buf, TRANSIENT_FIELD_VALUE_MISMATCH, "region");
-      rc = compare_fields(&input_region_1, &input_region_2, Ioss::Field::TRANSIENT, buf);
+      rc = compare_fields(&input_region_1, &input_region_2, Ioss::Field::REDUCTION, buf);
       if (rc == false) {
         overall_result = false;
         fmt::print(Ioss::OUTPUT(), "{}", buf.str());
@@ -722,7 +722,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
       {
         std::ostringstream buf;
         fmt::print(buf, TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "region", istep);
-        rc = compare_field_data(&input_region_1, &input_region_2, data_pool, Ioss::Field::TRANSIENT,
+        rc = compare_field_data(&input_region_1, &input_region_2, data_pool, Ioss::Field::REDUCTION,
                                 options, buf);
         if (rc == false) {
           overall_result = false;
