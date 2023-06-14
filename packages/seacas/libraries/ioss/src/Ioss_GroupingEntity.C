@@ -456,7 +456,12 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
       if (!quiet) {
         fmt::print(Ioss::OUTPUT(), "WARNING: {}: INPUT property ({}) not found in OUTPUT\n", name(),
                    lhs_property);
+        same = false;
       }
+      continue;
+    }
+
+    if (lhs_property.compare("IOSS_INTERNAL_CONTAINED_IN") == 0) {
       continue;
     }
 
@@ -491,8 +496,11 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
                        name(), lhs_property);
           }
         }
-        return false;
+        else {
+          return false;
+        }
       }
+      same = false;
     }
   }
 
@@ -502,6 +510,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
       if (it == lhs_properties.end()) {
         fmt::print(Ioss::OUTPUT(), "WARNING: {}: OUTPUT property ({}) not found in INPUT\n", name(),
                    rhs_property);
+        same = false;
       }
     }
   }

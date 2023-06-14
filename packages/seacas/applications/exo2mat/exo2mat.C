@@ -67,17 +67,19 @@ void logger(const char *message)
 
 void usage()
 {
+  auto v5default = MAT_FT_DEFAULT == MAT_FT_MAT5 ? "[default]" : "";
+  auto v7default = MAT_FT_DEFAULT == MAT_FT_MAT73 ? "[default]" : "";
   fmt::print("exo2mat [options] exodus_file_name.\n"
              "   the exodus_file_name is required (exodus only).\n"
              "   Options:\n"
              "   -t    write a text (.m) file rather than a binary .mat\n"
              "   -o    output file name (rather than auto generate)\n"
              "   -c    use cell arrays for transient variables.\n"
-             "   -v5   output version 5 mat file\n"
-             "   -v73  output version 7.3 mat file (hdf5-based) [default]\n"
+             "   -v5   output version 5 mat file {}\n"
+             "   -v73  output version 7.3 mat file (hdf5-based) {}\n"
              "   -v7.3 output version 7.3 mat file (hdf5-based)\n"
              " ** note **\n"
-             "Binary files are written by default on all platforms.\n");
+             "Binary files are written by default on all platforms.\n", v5default, v7default);
 }
 
 /* put a string into an m file. If the string has
@@ -928,7 +930,7 @@ int main(int argc, char *argv[])
   size_t num_nodes    = 0;
   size_t num_elements = 0;
 
-  int  mat_version     = 73;
+  enum mat_ft mat_version     = MAT_FT_DEFAULT;
   bool use_cell_arrays = false;
 
   /* process arguments */
@@ -958,20 +960,20 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[j], "-v73") == 0) { /* Version 7.3 */
       del_arg(&argc, argv, j);
-      mat_version = 73;
+      mat_version = MAT_FT_MAT73;
       j--;
       continue;
     }
     // This matches the option used in matlab
     if ((strcmp(argv[j], "-v7.3") == 0) || (strcmp(argv[j], "-V7.3") == 0)) { /* Version 7.3 */
       del_arg(&argc, argv, j);
-      mat_version = 73;
+      mat_version = MAT_FT_MAT73;
       j--;
       continue;
     }
     if (strcmp(argv[j], "-v5") == 0) { /* Version 5 (default) */
       del_arg(&argc, argv, j);
-      mat_version = 50;
+      mat_version = MAT_FT_MAT5;
       j--;
       continue;
     }
@@ -1028,13 +1030,7 @@ int main(int argc, char *argv[])
     }
   }
   else {
-    if (mat_version == 50) {
-      mat_file = Mat_CreateVer(filename.c_str(), nullptr, MAT_FT_MAT5);
-    }
-    else if (mat_version == 73) {
-      mat_file = Mat_CreateVer(filename.c_str(), nullptr, MAT_FT_MAT73);
-    }
-
+    mat_file = Mat_CreateVer(filename.c_str(), nullptr, mat_version);
     if (mat_file == nullptr) {
       fmt::print(stderr, "ERROR: Unable to create matlab file '{}'\n", filename);
       exit(1);

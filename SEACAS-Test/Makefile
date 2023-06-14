@@ -2,7 +2,7 @@ NPROCA = 31
 NPROCB = 32
 NPROCC = 33
 
-ROOT = ..
+BASE ?= ".."
 BIN = $(BASE)/bin
 
 PYTHON  =       python

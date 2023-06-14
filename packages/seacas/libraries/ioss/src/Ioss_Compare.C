@@ -73,6 +73,10 @@ namespace {
   bool compare_fields(const std::vector<T *> &in_entities_1, const std::vector<T *> &in_entities_2,
                       const Ioss::Field::RoleType role, std::ostringstream &buf);
 
+  bool compare_fields(const std::vector<Ioss::StructuredBlock *> &in_entities_1,
+                      const std::vector<Ioss::StructuredBlock *> &in_entities_2,
+                      const Ioss::Field::RoleType role, std::ostringstream &buf);
+
   bool compare_fields(const Ioss::GroupingEntity *ige_1, const Ioss::GroupingEntity *ige_2,
                       const Ioss::Field::RoleType role, std::ostringstream &buf);
   template <typename T>
@@ -80,6 +84,10 @@ namespace {
                           const std::vector<T *> &in_entities_2, Ioss::DataPool &pool,
                           const Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
                           std::ostringstream &buf);
+  bool compare_field_data(const std::vector<Ioss::StructuredBlock *> &in_entities_1,
+                          const std::vector<Ioss::StructuredBlock *> &in_entities_2,
+                          Ioss::DataPool &pool, const Ioss::Field::RoleType role,
+                          const Ioss::MeshCopyOptions &options, std::ostringstream &buf);
   bool compare_field_data(const Ioss::GroupingEntity *ige_1, const Ioss::GroupingEntity *ige_2,
                           Ioss::DataPool &pool, const Ioss::Field::RoleType role,
                           const Ioss::MeshCopyOptions &options, std::ostringstream &buf,
@@ -530,7 +538,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
     {
       std::ostringstream buf;
       fmt::print(buf, TRANSIENT_FIELD_VALUE_MISMATCH, "region");
-      rc = compare_fields(&input_region_1, &input_region_2, Ioss::Field::TRANSIENT, buf);
+      rc = compare_fields(&input_region_1, &input_region_2, Ioss::Field::REDUCTION, buf);
       if (rc == false) {
         overall_result = false;
         fmt::print(Ioss::OUTPUT(), "{}", buf.str());
@@ -722,7 +730,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
       {
         std::ostringstream buf;
         fmt::print(buf, TRANSIENT_FIELD_STEP_VALUE_MISMATCH, "region", istep);
-        rc = compare_field_data(&input_region_1, &input_region_2, data_pool, Ioss::Field::TRANSIENT,
+        rc = compare_field_data(&input_region_1, &input_region_2, data_pool, Ioss::Field::REDUCTION,
                                 options, buf);
         if (rc == false) {
           overall_result = false;
@@ -1157,6 +1165,11 @@ namespace {
           if (!in_block_1->equal(*in_block_2)) {
             overall_result = false;
           }
+          const auto &nb1 = in_block_1->get_node_block();
+          const auto &nb2 = in_block_2->get_node_block();
+          if (!nb1.equal(nb2)) {
+            overall_result = false;
+          }
           break;
         }
       }
@@ -1360,6 +1373,50 @@ namespace {
     return overall_result;
   }
 
+  bool compare_fields(const std::vector<Ioss::StructuredBlock *> &in_entities_1,
+                      const std::vector<Ioss::StructuredBlock *> &in_entities_2,
+                      const Ioss::Field::RoleType role, std::ostringstream &buf)
+  {
+    bool overall_result = true;
+
+    if (in_entities_1.size() != in_entities_2.size()) {
+      std::string type = "ENTITY";
+      if (!in_entities_1.empty()) {
+        type = in_entities_1[0]->type_string();
+      }
+      else {
+        type = in_entities_2[0]->type_string();
+      }
+      fmt::print(Ioss::WarnOut(), COUNT_MISMATCH, type, in_entities_1.size(), in_entities_2.size());
+      return false;
+    }
+
+    for (const auto &in_entity_1 : in_entities_1) {
+      const std::string &name = in_entity_1->name();
+
+      typename std::vector<Ioss::StructuredBlock *>::const_iterator it;
+      for (it = in_entities_2.begin(); it != in_entities_2.end(); ++it) {
+        if (name.compare((*it)->name()) == 0) {
+          break;
+        }
+      }
+      if (it == in_entities_2.end()) {
+        fmt::print(Ioss::WarnOut(), NOTFOUND_2, in_entity_1->type_string(), name);
+        overall_result = false;
+        continue;
+      }
+
+      overall_result &= compare_fields(in_entity_1, (*it), role, buf);
+
+      if (role == Ioss::Field::TRANSIENT) {
+        const auto &nb1 = in_entity_1->get_node_block();
+        const auto &nb2 = (*it)->get_node_block();
+        overall_result &= compare_fields(&nb1, &nb2, role, buf);
+      }
+    }
+    return overall_result;
+  }
+
   bool compare_fields(const Ioss::GroupingEntity *ige_1, const Ioss::GroupingEntity *ige_2,
                       const Ioss::Field::RoleType role, std::ostringstream &buf)
   {
@@ -1428,6 +1485,52 @@ namespace {
     return overall_result;
   }
 
+  bool compare_field_data(const std::vector<Ioss::StructuredBlock *> &in_entities_1,
+                          const std::vector<Ioss::StructuredBlock *> &in_entities_2,
+                          Ioss::DataPool &pool, const Ioss::Field::RoleType role,
+                          const Ioss::MeshCopyOptions &options, std::ostringstream &buf)
+  {
+    bool overall_result = true;
+
+    if (in_entities_1.size() != in_entities_2.size()) {
+      std::string type = "ENTITY";
+      if (!in_entities_1.empty()) {
+        type = in_entities_1[0]->type_string();
+      }
+      else {
+        type = in_entities_2[0]->type_string();
+      }
+      fmt::print(Ioss::WarnOut(), COUNT_MISMATCH, type, in_entities_1.size(), in_entities_2.size());
+      return false;
+    }
+
+    for (const auto &in_entity_1 : in_entities_1) {
+      const std::string &name = in_entity_1->name();
+
+      std::vector<Ioss::StructuredBlock *>::const_iterator it;
+      for (it = in_entities_2.begin(); it != in_entities_2.end(); ++it) {
+        if (name.compare((*it)->name()) == 0) {
+          break;
+        }
+      }
+      if (it == in_entities_2.end()) {
+        //        fmt::print(Ioss::WarnOut(), NOTFOUND_2, in_entity_1->type_string(), name);
+        overall_result = false;
+        continue;
+      }
+
+      overall_result &= compare_field_data(in_entity_1, (*it), pool, role, options, buf);
+
+      if (role == Ioss::Field::TRANSIENT) {
+        const auto &nb1 = in_entity_1->get_node_block();
+        const auto &nb2 = (*it)->get_node_block();
+        overall_result &= compare_field_data(&nb1, &nb2, pool, role, options, buf);
+      }
+    }
+
+    return overall_result;
+  }
+
   bool compare_field_data(const Ioss::GroupingEntity *ige_1, const Ioss::GroupingEntity *ige_2,
                           Ioss::DataPool &pool, const Ioss::Field::RoleType role,
                           const Ioss::MeshCopyOptions &options, std::ostringstream &buf,
@@ -1467,7 +1570,33 @@ namespace {
   {
     int  width = Ioss::Utils::number_width(count - 1);
     bool first = true;
-    for (size_t i = 0; i < count; i++) {
+    for (size_t i = 0; i < count * component_count; i++) {
+      if (data1[i] != data2[i]) {
+        auto idx = i / component_count;
+        auto cmp = i % component_count;
+        if (first) {
+          fmt::print(buf,
+                     "\n\tFIELD ({}) on {} -- mismatch at [index.component]:\n\t\t[{:{}}.{}]: "
+                     "{}\tvs. {}",
+                     field_name, entity_name, idx + 1, width, cmp, data1[i], data2[i]);
+          first = false;
+        }
+        else {
+          fmt::print(buf, "\n\t\t[{:{}}.{}]: {}\tvs. {}", idx + 1, width, cmp, data1[i], data2[i]);
+        }
+      }
+    }
+    return first;
+  }
+
+  template <>
+  bool compare_field_data(double *data1, double *data2, size_t count, size_t component_count,
+                          const std::string &field_name, const std::string &entity_name,
+                          std::ostringstream &buf)
+  {
+    int  width = Ioss::Utils::number_width(count - 1);
+    bool first = true;
+    for (size_t i = 0; i < count * component_count; i++) {
       if (data1[i] != data2[i]) {
         double abs_data1 = std::abs(data1[i]);
         double abs_data2 = std::abs(data2[i]);
@@ -1482,14 +1611,14 @@ namespace {
               fmt::print(buf,
                          "\n\tFIELD ({}) on {} -- mismatch at [index.component]:\n\t\t[{:{}}.{}]: "
                          "{:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
-                         field_name, entity_name, idx, width, cmp, data1[i], data2[i], abs_diff,
+                         field_name, entity_name, idx + 1, width, cmp, data1[i], data2[i], abs_diff,
                          rel_diff);
               first = false;
             }
             else {
               fmt::print(
                   buf, "\n\t\t[{:{}}.{}]: {:20.13e}\tvs. {:20.13e}\tabs: {:12.5e},\trel: {:12.5e}",
-                  idx, width, cmp, data1[i], data2[i], abs_diff, rel_diff);
+                  idx + 1, width, cmp, data1[i], data2[i], abs_diff, rel_diff);
             }
           }
         }
