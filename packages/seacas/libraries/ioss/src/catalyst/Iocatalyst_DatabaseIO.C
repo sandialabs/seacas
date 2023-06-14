@@ -53,7 +53,6 @@ namespace Iocatalyst {
     Ioss::NodeBlock *createEntityGroup<Ioss::NodeBlock>(const conduit_cpp::Node &node,
                                                         Ioss::DatabaseIO        *dbase)
     {
-      const auto name = node.name();
       return new Ioss::NodeBlock(dbase, node["properties/name/value"].as_string(),
                                  node["properties/entity_count/value"].as_int64(),
                                  node["properties/component_degree/value"].as_int64());
@@ -63,8 +62,8 @@ namespace Iocatalyst {
     Ioss::ElementBlock *createEntityGroup<Ioss::ElementBlock>(const conduit_cpp::Node &node,
                                                               Ioss::DatabaseIO        *dbase)
     {
-      const auto name = node.name();
-      return new Ioss::ElementBlock(dbase, name, node["properties/topology_type/value"].as_string(),
+      return new Ioss::ElementBlock(dbase, node["properties/name/value"].as_string(),
+                                    node["properties/topology_type/value"].as_string(),
                                     node["properties/entity_count/value"].as_int64());
     }
 
@@ -72,24 +71,21 @@ namespace Iocatalyst {
     Ioss::NodeSet *createEntityGroup<Ioss::NodeSet>(const conduit_cpp::Node &node,
                                                     Ioss::DatabaseIO        *dbase)
     {
-      const auto name = node.name();
-      return new Ioss::NodeSet(dbase, name, node["properties/entity_count/value"].as_int64());
+      return new Ioss::NodeSet(dbase, node["properties/name/value"].as_string(),
+                               node["properties/entity_count/value"].as_int64());
     }
 
     template <>
     Ioss::SideSet *createEntityGroup<Ioss::SideSet>(const conduit_cpp::Node &node,
                                                     Ioss::DatabaseIO        *dbase)
     {
-      const auto name = node.name();
-      return new Ioss::SideSet(dbase, name);
+      return new Ioss::SideSet(dbase, node["properties/name/value"].as_string());
     }
 
     template <>
     Ioss::StructuredBlock *createEntityGroup<Ioss::StructuredBlock>(const conduit_cpp::Node &node,
                                                                     Ioss::DatabaseIO        *dbase)
     {
-      const auto name = node.name();
-
       Ioss::IJK_t localSizes    = {{(int)node["properties/ni/value"].as_int64(),
                                     (int)node["properties/nj/value"].as_int64(),
                                     (int)node["properties/nk/value"].as_int64()}};
@@ -136,7 +132,9 @@ namespace Iocatalyst {
       node       = conduit_cpp::Node();
 
       node["database/int_byte_size_api"].set_int8(region->get_database()->int_byte_size_api());
-
+      RegionContainer rc;
+      rc.push_back(region);
+      this->defineEntityGroup(node["region"], rc);
       this->defineEntityGroup(node["node_blocks"], region->get_node_blocks());
       this->defineEntityGroup(node["edge_blocks"], region->get_edge_blocks());
       this->defineEntityGroup(node["face_blocks"], region->get_face_blocks());
@@ -152,28 +150,7 @@ namespace Iocatalyst {
       return true;
     }
 
-    bool readModel(Ioss::Region *region)
-    {
-      auto &node = this->DBNode;
-      region->get_database()->set_int_byte_size_api(
-          static_cast<Ioss::DataSize>(node["database/int_byte_size_api"].as_int8()));
-      if (node.has_path("region/time")) {
-        region->add_state(node["region/time"].to_float64());
-      }
-      this->readEntityGroup<Ioss::NodeBlock>(node["node_blocks"], region);
-      this->readEntityGroup<Ioss::ElementBlock>(node["element_blocks"], region);
-      // this->readEntityGroup<Ioss::EdgeBlock>(node["edge_blocks"], region);
-      // this->readEntityGroup<Ioss::FaceBlock>(node["face_blocks"], region);
-      // this->readEntityGroup<Ioss::SideSet>(node["sidesets"], region);
-      // this->readEntityGroup<Ioss::NodeSet>(node["nodesets"], region);
-      // this->readEntityGroup<Ioss::EdgeSet>(node["edgesets"], region);
-      // this->readEntityGroup<Ioss::FaceSet>(node["facesets"], region);
-      // this->readEntityGroup<Ioss::ElementSet>(node["elementsets"], region);
-      this->readEntityGroup(node["structured_blocks"], region);
-      // this->readEntityGroup<Ioss::Assembly>(node["assemblies"], region);
-
-      return this->readTime(region);
-    }
+    bool readModel(Ioss::Region *region);
 
     bool readTime(Ioss::Region *region)
     {
@@ -188,7 +165,7 @@ namespace Iocatalyst {
     int64_t putField(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
                      const Ioss::Field &field, void *data, size_t data_size, bool deep_copy)
     {
-      const auto groupName      = entityGroup->name();
+      const auto groupName      = getName(entityGroup);
       const auto num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
@@ -247,7 +224,7 @@ namespace Iocatalyst {
     int64_t getField(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
                      const Ioss::Field &field, void *data, size_t data_size)
     {
-      const auto groupName      = entityGroup->name();
+      const auto groupName      = getName(entityGroup);
       auto       num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
@@ -283,11 +260,58 @@ namespace Iocatalyst {
       return num_to_get;
     }
 
+    int64_t getFieldZeroCopy(const std::string          &containerName,
+                             const Ioss::GroupingEntity *entityGroup, const Ioss::Field &field,
+                             void **data, size_t *data_size)
+
+    {
+      *data      = nullptr;
+      *data_size = 0;
+      if (!hasField(containerName, entityGroup, field.get_name())) {
+        fmt::print(stderr, "WARNING in {} : {}\n", __func__,
+                   "field not available, " + field.get_name() + ", in container " + containerName +
+                       "\n");
+        return -1;
+      }
+
+      const auto groupName      = getName(entityGroup);
+      auto       num_to_get     = field.verify(0);
+      const auto num_components = field.raw_storage()->component_count();
+      if (num_to_get > 0) {
+        auto path = getFieldPath(containerName, groupName, field.get_name()) + "/value";
+
+        const auto &&node = this->DBNode[path];
+        *data_size        = num_to_get * num_components;
+        switch (field.get_type()) {
+        case Ioss::Field::BasicType::DOUBLE:
+          *data = const_cast<double *>(node.as_double_ptr());
+          break;
+
+        case Ioss::Field::BasicType::INT32:
+          *data = const_cast<int32_t *>(node.as_int32_ptr());
+          break;
+
+        case Ioss::Field::BasicType::INT64:
+          *data = const_cast<int64_t *>(node.as_int64_ptr());
+          break;
+
+        case Ioss::Field::BasicType::CHARACTER:
+          *data = const_cast<char *>(node.as_char_ptr());
+          break;
+        default:
+          fmt::print(stderr, "ERROR in {} {}: {} ({}), unsupported field type: {}\n", __func__,
+                     containerName, field.get_name(), num_to_get, field.type_string());
+        }
+      }
+      fmt::print(stderr, "get_field {}: {} ({})\n", containerName, field.get_name(), num_to_get);
+      return num_to_get;
+    }
+
     int64_t getMeshModelCoordinates(const std::string          &containerName,
                                     const Ioss::GroupingEntity *entityGroup,
                                     const Ioss::Field &field, void *data, size_t data_size)
     {
-      const auto groupName      = entityGroup->name();
+      const auto groupName      = getName(entityGroup);
       auto       num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
@@ -326,7 +350,7 @@ namespace Iocatalyst {
     bool hasField(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
                   const std::string &fieldName)
     {
-      const auto groupName = entityGroup->name();
+      const auto groupName = getName(entityGroup);
       return this->DBNode.has_path(getFieldPath(containerName, groupName, fieldName));
     }
 
@@ -339,7 +363,7 @@ namespace Iocatalyst {
     bool hasProperty(const std::string &containerName, const Ioss::GroupingEntity *entityGroup,
                      const std::string &propertyName)
     {
-      const auto groupName = entityGroup->name();
+      const auto groupName = getName(entityGroup);
       return this->DBNode.has_path(getPropertyPath(containerName, groupName, propertyName));
     }
 
@@ -347,6 +371,15 @@ namespace Iocatalyst {
                                 const std::string &propertyName)
     {
       return containerName + "/" + groupName + "/properties/" + propertyName;
+    }
+
+    std::string getName(const Ioss::GroupingEntity *entityGroup)
+    {
+      std::string retVal = entityGroup->name();
+      if (retVal.empty()) {
+        retVal = entityGroup->generic_name();
+      }
+      return retVal;
     }
 
     Ioss::Map &get_node_map(const Ioss::DatabaseIO *dbase) const
@@ -377,7 +410,7 @@ namespace Iocatalyst {
                            const std::vector<GroupingEntityT *> &container)
     {
       for (auto group : container) {
-        this->addProperties(parent[group->name()], group);
+        this->addProperties(parent[getName(group)], group);
       }
       return true;
     }
@@ -386,7 +419,7 @@ namespace Iocatalyst {
                            const Ioss::StructuredBlockContainer &container)
     {
       for (auto group : container) {
-        this->addProperties(parent[group->name()], group);
+        this->addProperties(parent[getName(group)], group);
         // this->addProperties(parent[group->name() + "/node_block"], &group->get_node_block());
       }
       return true;
@@ -447,27 +480,6 @@ namespace Iocatalyst {
       return true;
     }
 
-    bool readEntityGroup(conduit_cpp::Node &&parent, Ioss::Region *region)
-    {
-      for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
-        auto &&child = parent[idx];
-        auto   block =
-            detail::createEntityGroup<Ioss::StructuredBlock>(child, region->get_database());
-        region->add(block);
-        auto parent = block->get_node_block().get_property("IOSS_INTERNAL_CONTAINED_IN");
-        this->readProperties(child["properties"], block);
-        this->readProperties(child[block->get_node_block().name() + "/properties"],
-                             &block->get_node_block());
-        block->get_node_block().property_add(parent);
-
-        // read fields (meta-data only)
-        this->readFields(child["fields"], block);
-        this->readFields(child[block->get_node_block().name() + "/fields"],
-                         &block->get_node_block());
-      }
-      return true;
-    }
-
     template <typename GroupingEntityT>
     bool readProperties(const conduit_cpp::Node &&parent, GroupingEntityT *block) const
     {
@@ -517,25 +529,78 @@ namespace Iocatalyst {
         else {
           // TODO verify field details.
           auto field = block->get_fieldref(name);
-          std::cout << "NAME = " << name << ", ENABLED = " << field.zero_copy_enabled() << "\n";
           if (!field.has_transform()) {
-            // block->get_fieldref(name).set_zero_copy_enabled();
-            std::cout << "NAME = " << name << ", ENABLED = " << field.zero_copy_enabled() << "\n";
+            block->get_fieldref(name).set_zero_copy_enabled();
           }
           assert(field.get_type() == type);
           auto f = block->get_fieldref(name);
-          std::cout << "NAME = " << name << ", ENABLED = " << f.zero_copy_enabled() << "\n";
-
-          // if (!field.has_transform()) {
-          //   block->field_erase(name);
-          //   block->field_add(field.set_zero_copy_enabled());
-          // }
         }
       }
 
       return true;
     }
   };
+
+  template <>
+  bool DatabaseIO::ImplementationT::readEntityGroup<Ioss::Region>(conduit_cpp::Node &&parent,
+                                                                  Ioss::Region       *region)
+  {
+    for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
+      auto &&child = parent[idx];
+      this->readProperties(child["properties"], region);
+
+      // read fields (meta-data only)
+      this->readFields(child["fields"], region);
+    }
+    return true;
+  }
+
+  template <>
+  bool
+  DatabaseIO::ImplementationT::readEntityGroup<Ioss::StructuredBlock>(conduit_cpp::Node &&parent,
+                                                                      Ioss::Region       *region)
+  {
+    for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
+      auto &&child = parent[idx];
+      auto block = detail::createEntityGroup<Ioss::StructuredBlock>(child, region->get_database());
+      region->add(block);
+      auto parent = block->get_node_block().get_property("IOSS_INTERNAL_CONTAINED_IN");
+      this->readProperties(child["properties"], block);
+      this->readProperties(child[getName(&block->get_node_block()) + "/properties"],
+                           &block->get_node_block());
+      block->get_node_block().property_add(parent);
+
+      // read fields (meta-data only)
+      this->readFields(child["fields"], block);
+      this->readFields(child[getName(&block->get_node_block()) + "/fields"],
+                       &block->get_node_block());
+    }
+    return true;
+  }
+
+  bool DatabaseIO::ImplementationT::readModel(Ioss::Region *region)
+  {
+    auto &node = this->DBNode;
+    region->get_database()->set_int_byte_size_api(
+        static_cast<Ioss::DataSize>(node["database/int_byte_size_api"].as_int8()));
+    if (node.has_path("region/time")) {
+      region->add_state(node["region/time"].to_float64());
+    }
+    this->readEntityGroup<Ioss::Region>(node["region"], region);
+    this->readEntityGroup<Ioss::NodeBlock>(node["node_blocks"], region);
+    this->readEntityGroup<Ioss::ElementBlock>(node["element_blocks"], region);
+    // this->readEntityGroup<Ioss::EdgeBlock>(node["edge_blocks"], region);
+    // this->readEntityGroup<Ioss::FaceBlock>(node["face_blocks"], region);
+    // this->readEntityGroup<Ioss::SideSet>(node["sidesets"], region);
+    // this->readEntityGroup<Ioss::NodeSet>(node["nodesets"], region);
+    // this->readEntityGroup<Ioss::EdgeSet>(node["edgesets"], region);
+    // this->readEntityGroup<Ioss::FaceSet>(node["facesets"], region);
+    // this->readEntityGroup<Ioss::ElementSet>(node["elementsets"], region);
+    this->readEntityGroup<Ioss::StructuredBlock>(node["structured_blocks"], region);
+    // this->readEntityGroup<Ioss::Assembly>(node["assemblies"], region);
+
+    return this->readTime(region);
+  }
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, Ioss_MPI_Comm communicator,
@@ -724,14 +789,12 @@ namespace Iocatalyst {
     impl.print();
   }
 
-  /* int64_t DatabaseIO::internal_get_zc_field_data(const Ioss::Field &field, void **data,
-                                                  size_t *data_size) const
-   {
-     *data      = nullptr;
-     *data_size = 0;
-     return *data_size;
-   }
-   */
+  int64_t DatabaseIO::put_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
+                                         void *data, size_t data_size) const
+  {
+    auto &impl = (*this->Impl.get());
+    return impl.putField("region", reg, field, data, data_size, this->deep_copy());
+  }
 
   int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
@@ -739,7 +802,7 @@ namespace Iocatalyst {
     auto       &impl      = (*this->Impl.get());
     std::string blockPath = "node_blocks";
     if (nb->is_nonglobal_nodeblock()) {
-      blockPath = "structured_blocks/" + nb->contained_in()->name();
+      blockPath = "structured_blocks/" + impl.getName(nb->contained_in());
     }
     return impl.putField(blockPath, nb, field, data, data_size, this->deep_copy());
   }
@@ -833,6 +896,13 @@ namespace Iocatalyst {
     return impl.putField("structured_blocks", sb, field, data, data_size, this->deep_copy());
   }
 
+  int64_t DatabaseIO::get_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
+                                         void *data, size_t data_size) const
+  {
+    auto &impl = (*this->Impl.get());
+    return impl.getField("region", reg, field, data, data_size);
+  }
+
   int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
@@ -840,7 +910,7 @@ namespace Iocatalyst {
 
     std::string blockPath = "node_blocks";
     if (nb->is_nonglobal_nodeblock()) {
-      blockPath = "structured_blocks/" + nb->contained_in()->name();
+      blockPath = "structured_blocks/" + impl.getName(nb->contained_in());
     }
 
     if (impl.hasField(blockPath, nb, field.get_name())) {
@@ -984,21 +1054,39 @@ namespace Iocatalyst {
     }
   }
 
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
+                                            void **data, size_t *data_size) const
+  {
+    std::string blockPath = "region";
+    auto       &impl      = (*this->Impl.get());
+    return impl.getFieldZeroCopy(blockPath, reg, field, data, data_size);
+  }
   int64_t DatabaseIO::get_zc_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
                                             void **data, size_t *data_size) const
   {
-    return -1;
+
+    auto       &impl      = (*this->Impl.get());
+    std::string blockPath = "node_blocks";
+    if (nb->is_nonglobal_nodeblock()) {
+      blockPath = "structured_blocks/" + impl.getName(nb->contained_in());
+    }
+
+    return impl.getFieldZeroCopy(blockPath, nb, field, data, data_size);
   }
   int64_t DatabaseIO::get_zc_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
                                             void **data, size_t *data_size) const
   {
-    return -1;
+    std::string blockPath = "element_blocks";
+    auto       &impl      = (*this->Impl.get());
+    return impl.getFieldZeroCopy(blockPath, eb, field, data, data_size);
   }
   int64_t DatabaseIO::get_zc_field_internal(const Ioss::StructuredBlock *sb,
                                             const Ioss::Field &field, void **data,
                                             size_t *data_size) const
   {
-    return -1;
+    std::string blockPath = "structured_blocks";
+    auto       &impl      = (*this->Impl.get());
+    return impl.getFieldZeroCopy(blockPath, sb, field, data, data_size);
   }
 
 } // namespace Iocatalyst

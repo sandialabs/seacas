@@ -12,6 +12,7 @@
 #include <Ioss_ElementBlock.h>
 #include <Ioss_StructuredBlock.h>
 #include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
+#include <catalyst/Iocatalyst_DatabaseIO.h>
 
 Iocatalyst_DatabaseIOTest::Iocatalyst_DatabaseIOTest()
 {
@@ -93,9 +94,10 @@ void Iocatalyst_DatabaseIOTest::checkZeroCopyFields(Iocatalyst::BlockMeshSet::IO
     return;
   }
 
-  std::cout << "Check zero copy fields before region constructor\n";
   Ioss::Region cir(cdbi);
-  std::cout << "Check zero copy fields after region constructor\n";
+  Iocatalyst::DatabaseIO::RegionContainer rc;
+  rc.push_back(&cir);
+  checkEntityContainerZeroCopyFields(rc);
   checkEntityContainerZeroCopyFields(cir.get_node_blocks());
   checkEntityContainerZeroCopyFields(cir.get_element_blocks());
   checkEntityContainerZeroCopyFields(cir.get_structured_blocks());

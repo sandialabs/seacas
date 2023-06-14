@@ -39,17 +39,15 @@ protected:
       auto nameList = g->field_describe();
       for (auto name : nameList) {
         auto field = g->get_fieldref(name);
-        if(field.zero_copy_enabled()) {
-          std::cout << name << ": ZERO COPY ON\n";
-          std::vector<std::byte> buffer(field.get_size());
-          g->get_field_data(name, buffer.data(), buffer.size());
-          void* data;
+        if (field.zero_copy_enabled()) {
+          std::vector<std::byte> dcBuffer(field.get_size());
+          g->get_field_data(name, dcBuffer.data(), dcBuffer.size());
+          void  *data;
           size_t dataSize;
           g->get_field_data(name, &data, &dataSize);
-          std::cout << "field size = " << buffer.size() << "\n";
-        }
-        else {
-          std::cout << name << ": ZERO COPY OFF\n";
+          std::byte             *b = static_cast<std::byte *>(data);
+          std::vector<std::byte> zcBuffer(b, b + field.get_size());
+          EXPECT_EQ(dcBuffer, zcBuffer);
         }
       }
     }

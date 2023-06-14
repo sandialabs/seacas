@@ -79,7 +79,7 @@ namespace Iocatalyst {
   void BlockMeshSet::openIOSSDatabase(IOSSparams &iop)
   {
     Ioss::PropertyManager properties;
-    std::string dbType = iop.dbType;
+    std::string           dbType = iop.dbType;
     if (iop.isCatalyst) {
       dbType = CATALYST_DATABASE_TYPE;
     }
@@ -320,6 +320,8 @@ namespace Iocatalyst {
 
   void BlockMeshSet::writeUnstructuredTransientFieldDefinitions(IOSSparams &iop)
   {
+    iop.region->field_add(Ioss::Field(IOSS_GLOBAL_FIELD, Ioss::Field::REAL, IOSS_SCALAR_STORAGE,
+                                      Ioss::Field::TRANSIENT));
     for (auto bm : bms) {
       auto elemBlock = iop.region->get_element_block(getUnstructuredBlockName(bm.getID()));
       elemBlock->field_add(Ioss::Field(IOSS_CELL_FIELD, Ioss::Field::REAL, IOSS_SCALAR_STORAGE,
@@ -333,6 +335,8 @@ namespace Iocatalyst {
   void BlockMeshSet::writeUnstructuredTransientBulkData(IOSSparams &iop)
   {
     std::vector<double> values;
+    values.push_back(3.14);
+    iop.region->put_field_data(IOSS_GLOBAL_FIELD, values);
     for (auto bm : bms) {
       values.clear();
       auto elemBlock = iop.region->get_element_block(getUnstructuredBlockName(bm.getID()));
