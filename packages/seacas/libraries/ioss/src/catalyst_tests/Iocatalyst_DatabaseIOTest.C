@@ -30,10 +30,13 @@ bool Iocatalyst_DatabaseIOTest::regionsAreEqual(const std::string &fileName,
                                                 const std::string &catFileName,
                                                 const std::string &iossDatabaseType)
 {
-
   Ioss::PropertyManager dbProps;
+  auto mpi_comm = Ioss::ParallelUtils::comm_world();
+  if(iossDatabaseType == CGNS_DATABASE_TYPE) {
+    mpi_comm = Ioss::ParallelUtils::comm_self();
+  }
   Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(iossDatabaseType, fileName, Ioss::READ_RESTART,
-                                                  Ioss::ParallelUtils::comm_world(), dbProps);
+                                                  mpi_comm, dbProps);
   if (dbi == nullptr || !dbi->ok(true)) {
     return false;
   }
@@ -41,7 +44,7 @@ bool Iocatalyst_DatabaseIOTest::regionsAreEqual(const std::string &fileName,
   Ioss::PropertyManager dbCatProps;
   Ioss::DatabaseIO     *dbiCat =
       Ioss::IOFactory::create(iossDatabaseType, catFileName, Ioss::READ_RESTART,
-                              Ioss::ParallelUtils::comm_world(), dbCatProps);
+                              mpi_comm, dbCatProps);
   if (dbiCat == nullptr || !dbiCat->ok(true)) {
     return false;
   }
