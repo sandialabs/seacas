@@ -577,11 +577,6 @@ namespace {
     const std::string &prefix      = region.name();
 
     Ioss::Assembly *assem = nullptr;
-    if (create_assemblies) {
-      assem = new Ioss::Assembly(output_region.get_database(), region.name());
-      output_region.add(assem);
-      assem->property_add(Ioss::Property("name_in_output", region.name()));
-    }
 
     const Ioss::ElementBlockContainer &ebs = region.get_element_blocks();
     for (const auto &eb : ebs) {
@@ -618,6 +613,11 @@ namespace {
           }
 
           if (create_assemblies) {
+            if (assem == nullptr) {
+              assem = new Ioss::Assembly(output_region.get_database(), region.name());
+              output_region.add(assem);
+              assem->property_add(Ioss::Property("name_in_output", region.name()));
+            }
             assem->add(ebn);
           }
         }
