@@ -10,6 +10,9 @@
 #include "aprepro.h"        // for Aprepro, symrec, file_rec, etc
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
 #include "terminal_color.h"
+#if defined(FMT_SUPPORT)
+#include <fmt/ostream.h>
+#endif
 #include <cstdlib>  // for exit, EXIT_SUCCESS, etc
 #include <cstring>  // for strcmp
 #include <fstream>  // for operator<<, basic_ostream, etc
@@ -750,8 +753,13 @@ namespace SEAMS {
     for (const auto &ptr : get_sorted_sym_table()) {
       if (!ptr->isInternal) {
         if (ptr->type == Parser::token::VAR || ptr->type == Parser::token::IMMVAR) {
+#if defined(FMT_SUPPORT)
+          fmt::print((*infoStream), "{}{}\": {}", (first ? "\"" : ",\n\""), ptr->name,
+                     ptr->value.var);
+#else
           (*infoStream) << (first ? "\"" : ",\n\"") << ptr->name << "\": " << std::setprecision(10)
                         << ptr->value.var;
+#endif
           first = false;
         }
         else if (ptr->type == Parser::token::UNDVAR) {
@@ -785,13 +793,23 @@ namespace SEAMS {
         if (spre.empty() || ptr->name.find(spre) != std::string::npos) {
           if (doInternal == ptr->isInternal) {
             if (ptr->type == Parser::token::VAR) {
+#if defined(FMT_SUPPORT)
+              fmt::print((*infoStream), "{}  {{{:<{}}\t= {}}}\n", comment, ptr->name, width,
+                         ptr->value.var);
+#else
               (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
                             << "\t= " << std::setprecision(10) << ptr->value.var << "}" << '\n';
+#endif
             }
             else if (ptr->type == Parser::token::IMMVAR) {
+#if defined(FMT_SUPPORT)
+              fmt::print((*infoStream), "{}  {{{:<{}}\t= {}}} (immutable)\n", comment, ptr->name,
+                         width, ptr->value.var);
+#else
               (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
                             << "\t= " << std::setprecision(10) << ptr->value.var << "} (immutable)"
                             << '\n';
+#endif
             }
             else if (ptr->type == Parser::token::SVAR) {
               if (strchr(ptr->value.svar.c_str(), '\n') != nullptr ||
