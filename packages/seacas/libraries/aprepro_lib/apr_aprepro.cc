@@ -32,7 +32,7 @@
 #endif
 
 namespace {
-  const std::string version_string{"6.12 (2023/05/03)"};
+  const std::string version_string{"6.13 (2023/06/19)"};
 
   void output_copyright();
 
@@ -541,6 +541,12 @@ namespace SEAMS {
         ptr->value.svar = comment;
       }
     }
+    else if (option.find("--full_precision") != std::string::npos || (option[1] == 'p')) {
+      symrec *ptr = getsym("_FORMAT");
+      if (ptr != nullptr) {
+        ptr->value.svar = "";
+      }
+    }
 
     else if (option == "--help" || option == "-h") {
       std::cerr
@@ -569,6 +575,12 @@ namespace SEAMS {
           << "            --info=file: Output INFO messages (e.g. DUMP() output) to file.\n"
           << "      --nowarning or -W: Do not print WARN messages              \n"
           << "  --comment=char or -c=char: Change comment character to 'char'  \n"
+#if defined(FMT_SUPPORT)
+          << "    --full_precision -p: Floating point output uses as many digits as needed.\n"
+#else
+          << "    --full_precision -p: (Not supported in this build) Floating point output uses as "
+             "many digits as needed.\n"
+#endif
           << "      --copyright or -C: Print copyright message                 \n"
           << "   --keep_history or -k: Keep a history of aprepro substitutions.\n"
           << "                         (not for general interactive use)       \n"
