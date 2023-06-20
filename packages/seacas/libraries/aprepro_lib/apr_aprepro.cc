@@ -35,7 +35,7 @@
 #endif
 
 namespace {
-  const std::string version_string{"6.13 (2023/06/19)"};
+  const std::string version_string{"6.14 (2023/06/20)"};
 
   void output_copyright();
 
@@ -442,6 +442,21 @@ namespace SEAMS {
     return ptr;
   }
 
+  namespace {
+    bool match_option(const std::string &option, const std::string &long_opt,
+                      const std::string &short_opt, size_t min_length)
+    {
+      // NOTE: `option` contains two leading `--` or `-` and a single character...
+      if (!short_opt.empty() && option.size() == 2 && option.substr(1) == short_opt) {
+        return true;
+      }
+
+      // Now deal with long options...
+      auto len_option = std::max(option.size() - 2, min_length);
+      return option.substr(2, len_option) == long_opt.substr(0, len_option);
+    }
+  } // namespace
+
   int Aprepro::set_option(const std::string &option, const std::string &optional_value)
   {
     // Option should be of the form "--option" or "-O"
@@ -454,53 +469,56 @@ namespace SEAMS {
     // Some options (--include)
     int ret_value = 0;
 
-    if (option == "--debug" || option == "-d") {
+    if (match_option(option, "debug", "d", 3)) {
       ap_options.debugging = true;
     }
-    if (option == "--dumpvars" || option == "-D") {
-      ap_options.dumpvars = true;
-    }
-    else if (option == "--dumpvars_json" || option == "-J") {
+    else if (match_option(option, "dumpvars_json", "J", 13)) {
       ap_options.dumpvars_json = true;
     }
-    else if (option == "--version" || option == "-v") {
+    if (match_option(option, "dumpvars", "D", 4)) {
+      ap_options.dumpvars = true;
+    }
+    else if (match_option(option, "version", "v", 3)) {
       std::cerr << "Algebraic Preprocessor (Aprepro) version " << version() << "\n";
       exit(EXIT_SUCCESS);
     }
-    else if (option == "--nowarning" || option == "-W") {
+    else if (match_option(option, "quiet", "q", 5)) {
+      // Do nothing, but don't report an error/warning.  Handled elsewhere.
+    }
+    else if (match_option(option, "nowarning", "W", 6)) {
       ap_options.warning_msg = false;
     }
-    else if (option == "--copyright" || option == "-C") {
+    else if (match_option(option, "copyright", "C", 4)) {
       output_copyright();
       exit(EXIT_SUCCESS);
     }
-    else if (option == "--message" || option == "-M") {
+    else if (match_option(option, "message", "M", 4)) {
       ap_options.info_msg = true;
     }
-    else if (option == "--immutable" || option == "-X") {
+    else if (match_option(option, "immutable", "X", 3)) {
       ap_options.immutable = true;
       stateImmutable       = true;
     }
-    else if (option == "--errors_fatal" || option == "-f") {
+    else if (match_option(option, "errors_fatal", "f", 8)) {
       ap_options.errors_fatal = true;
     }
-    else if (option == "--errors_and_warnings_fatal" || option == "-F") {
+    else if (match_option(option, "errors_and_warnings_fatal", "F", 9)) {
       ap_options.errors_and_warnings_fatal = true;
       ap_options.errors_fatal              = true;
     }
-    else if (option == "--require_defined" || option == "-R") {
+    else if (match_option(option, "require_defined", "R", 3)) {
       ap_options.require_defined = true;
     }
-    else if (option == "--trace" || option == "-t") {
+    else if (match_option(option, "trace", "t", 3)) {
       ap_options.trace_parsing = true;
     }
-    else if (option == "--interactive" || option == "-i") {
+    else if (match_option(option, "interactive", "i", 3)) {
       ap_options.interactive = true;
     }
-    else if (option == "--one_based_index" || option == "-1") {
+    else if (match_option(option, "one_based_index", "1", 3)) {
       ap_options.one_based_index = true;
     }
-    else if (option == "--exit_on" || option == "-e") {
+    else if (match_option(option, "exit_on", "e", 3)) {
       ap_options.end_on_exit = true;
     }
     else if (option.find("--info") != std::string::npos) {
@@ -525,11 +543,11 @@ namespace SEAMS {
         ap_options.include_file = value;
       }
     }
-    else if (option == "--keep_history" || option == "-k") {
+    else if (match_option(option, "keep_history", "k", 4)) {
       ap_options.keep_history = true;
     }
 
-    else if (option.find("--comment") != std::string::npos || (option[1] == 'c')) {
+    else if (match_option(option, "comment", "", 3) || (option[1] == 'c')) {
       std::string comment;
       // In short version, do not require equal sign (-c# -c// )
       if (option[1] == 'c' && option.length() > 2 && option[2] != '=') {
@@ -544,14 +562,14 @@ namespace SEAMS {
         ptr->value.svar = comment;
       }
     }
-    else if (option.find("--full_precision") != std::string::npos || (option[1] == 'p')) {
+    else if (match_option(option, "full_precision", "p", 3)) {
       symrec *ptr = getsym("_FORMAT");
       if (ptr != nullptr) {
         ptr->value.svar = "";
       }
     }
 
-    else if (option == "--help" || option == "-h") {
+    else if (match_option(option, "help", "h", 3)) {
       std::cerr
           << "\nAprepro version " << version() << "\n"
           << "\nUsage: aprepro [options] [-I path] [-c char] [var=val] [filein] [fileout]\n"
@@ -599,6 +617,9 @@ namespace SEAMS {
              "https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#aprepro\n\n"
           << "\t->->-> Send email to gdsjaar@sandia.gov for aprepro support.\n\n";
       exit(EXIT_SUCCESS);
+    }
+    else {
+      warning("Unrecgonized option '" + option + "'.  This option will be ignored.\n", false);
     }
     return ret_value;
   }
