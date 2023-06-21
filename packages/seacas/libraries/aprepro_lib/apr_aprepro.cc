@@ -446,13 +446,22 @@ namespace SEAMS {
     bool match_option(const std::string &option, const std::string &long_opt,
                       const std::string &short_opt, size_t min_length)
     {
+      // See if `option` starts with 1 or 2 leading `-`.
+      int number_dash = option[0] == '-' ? (option[1] == '-' ? 2 : 1) : 0;
+
+      // See if `option` contains a `=`, save position...
+      auto equals = option.find('=');
+      if (equals == std::string::npos) {
+        equals = option.size();
+      }
+
       // NOTE: `option` contains two leading `--` or `-` and a single character...
-      if (!short_opt.empty() && option.size() == 2 && option.substr(1) == short_opt) {
+      if (!short_opt.empty() && number_dash == 1 && option.substr(1, equals) == short_opt) {
         return true;
       }
 
       // Now deal with long options...
-      auto len_option = std::max(option.size() - 2, min_length);
+      auto len_option = std::max(equals - 2, min_length);
       return option.substr(2, len_option) == long_opt.substr(0, len_option);
     }
   } // namespace
@@ -521,7 +530,7 @@ namespace SEAMS {
     else if (match_option(option, "exit_on", "e", 3)) {
       ap_options.end_on_exit = true;
     }
-    else if (option.find("--info") != std::string::npos) {
+    else if (match_option(option, "info", "", 4)) {
       std::string value = get_value(option, optional_value);
       ret_value         = value == optional_value ? 1 : 0;
 
@@ -532,7 +541,7 @@ namespace SEAMS {
         }
       }
     }
-    else if (option.find("--include") != std::string::npos || (option[1] == 'I')) {
+    else if (match_option(option, "include", "I", 3)) {
       std::string value = get_value(option, optional_value);
       ret_value         = value == optional_value ? 1 : 0;
 
@@ -573,7 +582,8 @@ namespace SEAMS {
       std::cerr
           << "\nAprepro version " << version() << "\n"
           << "\nUsage: aprepro [options] [-I path] [-c char] [var=val] [filein] [fileout]\n"
-          << "  --debug or -d: Dump all variables, debug loops/if/endif and keep temporary files\n"
+          << "          --debug or -d: Dump all variables, debug loops/if/endif and keep temporary "
+             "files\n"
           << "       --dumpvars or -D: Dump all variables at end of run        \n"
           << "  --dumpvars_json or -J: Dump all variables at end of run in json format\n"
           << "        --version or -v: Print version number to stderr          \n"
