@@ -6,6 +6,7 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
+HDF5="${HDF5:-YES}"
 DEBUG="${DEBUG:-NO}"
 if [ "$DEBUG" == "YES" ]
 then
@@ -26,6 +27,13 @@ then
 else
   LD_EXT="a"
   EXTRA_DEPS="-DNC_EXTRA_DEPS=-ldl\;-lz"
+fi
+
+if [[ "$HDF5" == "ON" || "$HDF5" == "YES" ]]
+then
+    HDF5_INFO="-DHDF5_ROOT:PATH=${INSTALL_PATH} -DHDF5_DIR:PATH=${INSTALL_PATH} -DENABLE_NETCDF4:BOOL=ON"
+else
+    HDF5_INFO="-DENABLE_HDF5=OFF -DENABLE_NETCDF4:BOOL=OFF"
 fi
 
 NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
@@ -54,7 +62,6 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
 	 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-         -DENABLE_NETCDF_4:BOOL=ON \
          -DENABLE_PNETCDF:BOOL=${MPI} \
          -DENABLE_CDF5=ON \
          -DENABLE_MMAP:BOOL=ON \
@@ -63,9 +70,8 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          ${LOCAL_ZLIB} \
          ${LOCAL_SZIP} \
          ${EXTRA_DEPS} \
-         -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
-         -DHDF5_ROOT:PATH=${INSTALL_PATH} \
-         -DHDF5_DIR:PATH=${INSTALL_PATH}
+	 ${HDF5_INFO} \
+         -DENABLE_CONVERSION_WARNINGS:BOOL=OFF
 
 echo ""
 echo "         MPI: ${MPI}"

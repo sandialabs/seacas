@@ -15,12 +15,12 @@ jobs:
   build-deps:
 
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         compiler: [ gnu, clang, mpi ]
         hdf5: [ V110 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
     steps:
 
@@ -38,7 +38,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v4-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -58,9 +58,9 @@ jobs:
       fail-fast: false
       matrix:
         hdf5: [ V110 ]
-        netcdf: [ 4.9.0 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
-        config: 
+        config:
         - {
             name: "Debug serial build",
             os: ubuntu-latest,
@@ -256,7 +256,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v1-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v4-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
@@ -268,7 +268,7 @@ jobs:
           set -x
           COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} GNU_PARALLEL=OFF GTEST=${{ matrix.config.gtest }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
           ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
-        
+
 ###
 # Configure and build
 ###
@@ -280,17 +280,17 @@ jobs:
           cd build
           NUMPROCS=2 ${{ matrix.config.extra }} THREADSAFE=${{ matrix.config.threadsafe }} DEBUG=${{ matrix.config.debug }} FORTRAN=${{ matrix.config.fortran }} SANITIZER=${{ matrix.config.sanitizer }} COMPILER=${{ matrix.config.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
-      - name: Build 
+      - name: Build
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4
         if: ${{ success() }}
 
       - name: Install
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4 install
         if: ${{ success() }}
 
@@ -298,7 +298,7 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
-          ctest -j 4 --output-on-failure 
+          ctest -j 4 --output-on-failure
         if: ${{ success() && matrix.config.sanitizer == 'NO' &&  matrix.config.threadsafe == 'NO' }}
 
       - name: Run sanitized/threadsafe Tests

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -17,9 +17,10 @@
 #include <algorithm> // for sort, lower_bound, copy, etc
 #include <cassert>
 #include <cmath>
-#include <cstddef>   // for size_t
-#include <cstdint>   // for int64_t
-#include <cstdlib>   // for nullptrr
+#include <cstddef> // for size_t
+#include <cstdint> // for int64_t
+#include <cstdlib> // for nullptrr
+#include <filesystem>
 #include <iostream>  // for ostringstream, etcstream, etc
 #include <stdexcept> // for runtime_error
 #include <string>    // for string
@@ -33,7 +34,10 @@ namespace Ioss {
   class PropertyManager;
 } // namespace Ioss
 
-#define IOSS_ERROR(errmsg) throw std::runtime_error((errmsg).str())
+[[noreturn]] inline void IOSS_ERROR(const std::ostringstream &errmsg)
+{
+  throw std::runtime_error((errmsg).str());
+}
 
 #ifdef NDEBUG
 #define IOSS_ASSERT_USED(x) (void)x
@@ -110,11 +114,11 @@ namespace Ioss {
 
     static bool is_path_absolute(const std::string &path)
     {
-#ifdef __IOSS_WINDOWS__
-      return path[0] == '\\' || path[1] == ':';
-#else
-      return path[0] == '/';
-#endif
+      if (!path.empty()) {
+        std::filesystem::path p1 = path;
+        return p1.is_absolute();
+      }
+      return false;
     }
 
     /** \brief guess file type from extension */
@@ -415,10 +419,6 @@ namespace Ioss {
      *  \returns The platform information string.
      */
     static std::string platform_information();
-
-    /** \brief Return amount of memory being used on this processor */
-    static size_t get_memory_info();
-    static size_t get_hwm_memory_info();
 
     /** \brief Get a filename relative to the specified working directory (if any)
      *         of the current execution.

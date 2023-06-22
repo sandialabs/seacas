@@ -5,6 +5,7 @@
 *.e
 *.g.*
 *.e.*
+*.pyc
 .libs
 Makefile
 Makefile.bak
@@ -135,3 +136,4 @@ TPL/faodel/faodel*/
 TPL/catalyst2/catalyst/
 TPL/fmt/fmt/
 build/
+.scannerwork

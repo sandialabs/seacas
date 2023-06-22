@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -115,7 +115,7 @@ namespace {
     }
   }
 
-  void exodus_error(int lineno)
+  [[noreturn]] void exodus_error(int lineno)
   {
     std::ostringstream errmsg;
     fmt::print(errmsg,
@@ -485,7 +485,7 @@ int main(int argc, char *argv[])
     int part_count = interFace.part_count();
     if (part_count <= 1) {
       fmt::print("INFO: Only one processor or part, no concatenation needed.\n");
-      return (EXIT_SUCCESS);
+      return EXIT_SUCCESS;
     }
 
     int error = 0;
@@ -674,7 +674,7 @@ int main(int argc, char *argv[])
     if (rank == 0) {
       add_to_log(argv[0], static_cast<int>(end_time - begin_time));
     }
-    return (error);
+    return error;
   }
   catch (std::exception &e) {
     fmt::print(stderr, "{}\n", e.what());
@@ -1477,9 +1477,10 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     }
 
     if (nodal_vars.count(InOut::OUT) > 0) {
+      T fill_val = -std::numeric_limits<T>::max();
       for (int i = 0; i < nodal_vars.count(InOut::IN); i++) {
         if (debug_level & 2) {
-          std::fill(master_values.begin(), master_values.end(), T(0.0));
+          std::fill(master_values.begin(), master_values.end(), fill_val);
         }
 
         for (p = 0; p < part_count; p++) {
@@ -1495,7 +1496,8 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
             if (debug_level & 2) {
               for (size_t j = 0; j < node_count; j++) {
                 size_t nodal_value = local_node_to_global[p][j];
-                if (master_values[nodal_value] != 0 && master_values[nodal_value] != values[j]) {
+                if (master_values[nodal_value] != fill_val &&
+                    master_values[nodal_value] != values[j]) {
                   fmt::print(stderr, "Variable {}, Node {}, old = {}, new = {}\n", i + 1,
                              fmt::group_digits(nodal_value), master_values[nodal_value], values[j]);
                 }
@@ -1655,7 +1657,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
              "END *******\n",
              seacas_timer() - execution_time,
              fmt::group_digits((get_hwm_memory_info() + 1024 * 1024 - 1) / (1024 * 1024)));
-  return (0);
+  return 0;
 }
 
 namespace {
@@ -3893,6 +3895,7 @@ namespace {
           size_t maximum_nodes = edgeblocks[p][b].entity_count();
           maximum_nodes *= edgeblocks[p][b].nodesPerEdge;
           std::vector<INT> local_linkage(maximum_nodes);
+          SMART_ASSERT(block_linkage != nullptr);
 
           ex_entity_id bid = edgeblocks[p][b].id;
           error = ex_get_conn(id, EX_EDGE_BLOCK, bid, local_linkage.data(), nullptr, nullptr);
@@ -4269,6 +4272,7 @@ namespace {
           size_t maximum_nodes = faceblocks[p][b].entity_count();
           maximum_nodes *= faceblocks[p][b].nodesPerFace;
           std::vector<INT> local_linkage(maximum_nodes);
+          SMART_ASSERT(block_linkage != nullptr);
 
           ex_entity_id bid = faceblocks[p][b].id;
           error = ex_get_conn(id, EX_FACE_BLOCK, bid, local_linkage.data(), nullptr, nullptr);
@@ -4717,7 +4721,7 @@ namespace {
     const char *c2 = s2;
     for (;;) {
       if (::toupper(*c1) != ::toupper(*c2)) {
-        return (::toupper(*c1) - ::toupper(*c2));
+        return ::toupper(*c1) - ::toupper(*c2);
       }
       if (*c1 == '\0') {
         return 0;
@@ -4741,7 +4745,7 @@ namespace {
   inline bool is_whitespace(char c)
   {
     static char white_space[] = {' ', '\t', '\n', '\r', ',', '\0'};
-    return (strchr(white_space, c) != nullptr);
+    return strchr(white_space, c) != nullptr;
   }
 
   void compress_white_space(char *str)

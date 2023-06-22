@@ -5,7 +5,7 @@
 //    strange cases
 //
 //
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -84,7 +84,7 @@ namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
 
   const std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
-  const char       *complex_suffix[] = {".re", ".im"};
+  const std::array<std::string, 2> complex_suffix{".re", ".im"};
 
   void check_node_owning_processor_data(const Ioss::IntVector &nop, size_t file_node_count)
   {
@@ -118,19 +118,13 @@ namespace {
   {
     int ierr = 0;
     if (int_size_api == 8) {
-      int64_t *conn[3];
-      conn[0]        = nullptr;
-      conn[1]        = nullptr;
-      conn[2]        = nullptr;
+      std::array<int64_t *, 3> conn{nullptr, nullptr, nullptr};
       conn[position] = static_cast<int64_t *>(data);
       assert(1 == 0 && "Unimplemented fixme");
       ierr = ex_get_conn(exoid, type, id, conn[0], conn[1], conn[2]); // FIXME
     }
     else {
-      int *conn[3];
-      conn[0]        = nullptr;
-      conn[1]        = nullptr;
-      conn[2]        = nullptr;
+      std::array<int *, 3> conn{nullptr, nullptr, nullptr};
       conn[position] = static_cast<int *>(data);
       assert(1 == 0 && "Unimplemented fixme");
       ierr = ex_get_conn(exoid, type, id, conn[0], conn[1], conn[2]); // FIXME
@@ -374,8 +368,8 @@ namespace Ioex {
           open_create_behavior() == Ioss::DB_APPEND_GROUP ||
           open_create_behavior() == Ioss::DB_MODIFY) {
         // Append to file if it already exists -- See if the file exists.
-        Ioss::FileInfo file = Ioss::FileInfo(get_filename());
-        fileExists          = file.exists();
+        auto file  = Ioss::FileInfo(get_filename());
+        fileExists = file.exists();
         if (fileExists && myProcessor == 0) {
           fmt::print(Ioss::WarnOut(),
                      "Appending to existing database in parallel single-file "
@@ -385,6 +379,8 @@ namespace Ioex {
       }
     }
   }
+
+  ParallelDatabaseIO::~ParallelDatabaseIO() = default;
 
   void ParallelDatabaseIO::release_memory__()
   {
@@ -758,7 +754,7 @@ namespace Ioex {
     // defining of the output database should be the same except
     // we don't write anything since it is already there.  We do
     // need the number of steps though...
-    if (open_create_behavior() == Ioss::DB_APPEND) {
+    if (open_create_behavior() == Ioss::DB_APPEND || dbUsage == Ioss::QUERY_TIMESTEPS_ONLY) {
       get_step_times__();
       return;
     }
@@ -3905,7 +3901,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
         int *comp32 = reinterpret_cast<int *>(component.data());
 
         int index = comp;
-        for (size_t i = 0; i < my_element_count; i++) {
+        for (int64_t i = 0; i < my_element_count; i++) {
           comp32[i] = data32[index];
           index += comp_count;
         }
@@ -3915,17 +3911,14 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
         int64_t *comp64 = reinterpret_cast<int64_t *>(component.data());
 
         int index = comp;
-        for (size_t i = 0; i < my_element_count; i++) {
+        for (int64_t i = 0; i < my_element_count; i++) {
           comp64[i] = data64[index];
           index += comp_count;
         }
       }
       auto eb_offset =
           eb->get_offset(); // Offset of beginning of the element block elements for this block
-      auto proc_offset = eb->get_optional_property(
-          "_processor_offset", 0); // Offset of this processors elements within that block.
-      auto file_count = eb->get_optional_property("locally_owned_count", my_element_count);
-      int  index =
+      int index =
           -1 * (field.get_index() + comp); // Negative since specifying index, not id to exodus API.
 
       ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, index,

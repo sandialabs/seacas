@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -802,7 +802,7 @@ namespace Iotm {
           std::ostringstream errmsg;
           fmt::print(errmsg,
                      "Error: Failed to find entity of type {} with name {} for Assembly {}.\n",
-                     type, members[j], assem->name());
+                     Ioss::Utils::entity_type_to_string(type), members[j], assem->name());
           IOSS_ERROR(errmsg);
         }
       }

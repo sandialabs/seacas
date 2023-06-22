@@ -75,4 +75,9 @@ SET( Seacas_TPLS_FINDMODS_CLASSIFICATIONS
   Cereal          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    ST
   ADIOS2          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/FindTPLADIOS2.cmake"    EX
   Catalyst2       "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/FindTPLCatalyst2.cmake" EX
+  # TPLs defined in Zoltan/cmake/Dependencies.cmake that are never enabled
+  PaToH           "cmake/TPLs/"    EX
+  Scotch          "cmake/TPLs/"    EX
+  CCOLAMD         "cmake/TPLs/"    EX
+  OVIS            "cmake/TPLs/"    EX
   )

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -49,6 +49,8 @@ namespace Ioss {
 
 namespace Ioss {
   class EntityBlock;
+
+  enum class DuplicateFieldBehavior { UNSET_, IGNORE_, WARNING_, ERROR_ };
 
   // Contains (parent_element, side) topology pairs
   using TopoContainer = std::vector<std::pair<const ElementTopology *, const ElementTopology *>>;
@@ -369,6 +371,8 @@ namespace Ioss {
 
     bool get_logging() const { return doLogging && !singleProcOnly; }
     void set_logging(bool on_off) { doLogging = on_off; }
+    bool get_nan_detection() const { return doNanDetection; }
+    void set_nan_detection(bool on_off) { doNanDetection = on_off; }
 
     // The get_field and put_field functions are just a wrapper around the
     // pure virtual get_field_internal and put_field_internal functions,
@@ -382,6 +386,9 @@ namespace Ioss {
       IOSS_FUNC_ENTER(m_);
       verify_and_log(reg, field, 1);
       int64_t retval = get_field_internal(reg, field, data, data_size);
+      if (get_nan_detection()) {
+        verify_field_data(reg, field, Ioss::Field::InOut::INPUT, data);
+      }
       verify_and_log(nullptr, field, 1);
       return retval;
     }
@@ -391,8 +398,24 @@ namespace Ioss {
     {
       IOSS_FUNC_ENTER(m_);
       verify_and_log(reg, field, 0);
+      if (get_nan_detection()) {
+        verify_field_data(reg, field, Ioss::Field::InOut::OUTPUT, data);
+      }
       int64_t retval = put_field_internal(reg, field, data, data_size);
       verify_and_log(nullptr, field, 0);
+      return retval;
+    }
+
+    template <typename T>
+    int64_t get_zc_field(const T *reg, const Field &field, void **data, size_t *data_size) const
+    {
+      IOSS_FUNC_ENTER(m_);
+      verify_and_log(reg, field, 1);
+      int64_t retval = get_zc_field_internal(reg, field, data, data_size);
+      if (get_nan_detection()) {
+        verify_field_data(reg, field, Ioss::Field::InOut::INPUT, data);
+      }
+      verify_and_log(nullptr, field, 1);
       return retval;
     }
 
@@ -432,6 +455,8 @@ namespace Ioss {
     void        set_field_separator(char separator);
     void        set_field_recognition(bool yes_no) { enableFieldRecognition = yes_no; }
     void        set_field_strip_trailing_(bool yes_no) { fieldStripTrailing_ = yes_no; }
+
+    DuplicateFieldBehavior get_duplicate_field_behavior() const { return duplicateFieldBehavior; }
 
     void set_lower_case_variable_names(bool true_false) const
     {
@@ -753,69 +778,102 @@ namespace Ioss {
 
     void compute_block_adjacencies() const;
 
+    bool verify_field_data(const GroupingEntity *ge, const Field &field, Ioss::Field::InOut in_out,
+                           void *data) const;
     void verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const;
 
     virtual int64_t get_field_internal(const Region *reg, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const NodeBlock *nb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const EdgeBlock *nb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const FaceBlock *nb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const ElementBlock *eb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const SideBlock *fb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const NodeSet *ns, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const EdgeSet *ns, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const FaceSet *ns, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const ElementSet *ns, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const SideSet *fs, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t get_field_internal(const CommSet *cs, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
-    virtual int64_t get_field_internal(const Assembly * /*as*/, const Field & /*field*/,
-                                       void * /*data*/, size_t /*data_size*/) const = 0;
-    virtual int64_t get_field_internal(const Blob * /*bl*/, const Field & /*field*/,
-                                       void * /*data*/, size_t /*data_size*/) const = 0;
-    virtual int64_t get_field_internal(const StructuredBlock * /*sb*/, const Field & /*field*/,
-                                       void * /*data*/, size_t /*data_size*/) const = 0;
+                                       size_t data_size) const = 0;
+    virtual int64_t get_field_internal(const Assembly *as, const Field &field, void *data,
+                                       size_t data_size) const = 0;
+    virtual int64_t get_field_internal(const Blob *bl, const Field &field, void *data,
+                                       size_t data_size) const = 0;
+    virtual int64_t get_field_internal(const StructuredBlock *sb, const Field &field, void *data,
+                                       size_t data_size) const = 0;
 
     virtual int64_t put_field_internal(const Region *reg, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const NodeBlock *nb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const EdgeBlock *nb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const FaceBlock *nb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const ElementBlock *eb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const SideBlock *fb, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const NodeSet *ns, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const EdgeSet *ns, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const FaceSet *ns, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const ElementSet *ns, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const SideSet *fs, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
+                                       size_t data_size) const = 0;
     virtual int64_t put_field_internal(const CommSet *cs, const Field &field, void *data,
-                                       size_t data_size) const                      = 0;
-    virtual int64_t put_field_internal(const Assembly * /*as*/, const Field & /*field*/,
-                                       void * /*data*/, size_t /*data_size*/) const = 0;
-    virtual int64_t put_field_internal(const Blob * /*bl*/, const Field & /*field*/,
-                                       void * /*data*/, size_t /*data_size*/) const = 0;
-    virtual int64_t put_field_internal(const StructuredBlock * /*sb*/, const Field & /*field*/,
-                                       void * /*data*/, size_t /*data_size*/) const = 0;
+                                       size_t data_size) const = 0;
+    virtual int64_t put_field_internal(const Assembly *as, const Field &field, void *data,
+                                       size_t data_size) const = 0;
+    virtual int64_t put_field_internal(const Blob *bl, const Field &field, void *data,
+                                       size_t data_size) const = 0;
+    virtual int64_t put_field_internal(const StructuredBlock *sb, const Field &field, void *data,
+                                       size_t data_size) const = 0;
+
+    virtual int64_t get_zc_field_internal(const Region *reg, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const NodeBlock *nb, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const EdgeBlock *nb, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const FaceBlock *nb, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const ElementBlock *eb, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const SideBlock *fb, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const NodeSet *ns, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const EdgeSet *ns, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const FaceSet *ns, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const ElementSet *ns, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const SideSet *fs, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const CommSet *cs, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const Assembly *as, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const Blob *bl, const Field &field, void **data,
+                                          size_t *data_size) const;
+    virtual int64_t get_zc_field_internal(const StructuredBlock *sb, const Field &field,
+                                          void **data, size_t *data_size) const;
 
     mutable std::map<std::string, AxisAlignedBoundingBox> elementBlockBoundingBoxes;
 
@@ -826,20 +884,23 @@ namespace Ioss {
 
   private:
 #endif
-    Region *region_{nullptr};
-    char    fieldSeparator{'_'};
-    bool    fieldSeparatorSpecified{false};
-    bool    enableFieldRecognition{true};
-    bool    fieldStripTrailing_{false};
-    bool    isInput;
-    bool    isParallelConsistent{
+    Region                *region_{nullptr};
+    char                   fieldSeparator{'_'};
+    DuplicateFieldBehavior duplicateFieldBehavior{DuplicateFieldBehavior::UNSET_};
+
+    bool fieldSeparatorSpecified{false};
+    bool enableFieldRecognition{true};
+    bool fieldStripTrailing_{false};
+    bool isInput;
+    bool isParallelConsistent{
         true}; // True if application will make field data get/put calls parallel
-                  // consistently.
-                  // True is default and required for parallel-io databases.
+               // consistently.
+               // True is default and required for parallel-io databases.
     // Even if false, metadata operations must be called by all processors
 
     bool singleProcOnly{false}; // True if history or heartbeat which is only written from proc 0...
     bool doLogging{false};      // True if logging field input/output
+    bool doNanDetection{false}; // True if checking all floating point field data for NaNs
     bool useGenericCanonicalName{
         false}; // True if "block_id" is used as canonical name instead of the name
     // given on the mesh file e.g. "fireset".  Both names are still aliases.

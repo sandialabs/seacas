@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -415,55 +415,55 @@ namespace Ioss {
     // Region owns all sub-grouping entities it contains...
     try {
       IOSS_FUNC_ENTER(m_);
-      for (auto &nb : nodeBlocks) {
+      for (const auto &nb : nodeBlocks) {
         delete (nb);
       }
 
-      for (auto &eb : edgeBlocks) {
+      for (const auto &eb : edgeBlocks) {
         delete (eb);
       }
 
-      for (auto &fb : faceBlocks) {
+      for (const auto &fb : faceBlocks) {
         delete (fb);
       }
 
-      for (auto &eb : elementBlocks) {
+      for (const auto &eb : elementBlocks) {
         delete (eb);
       }
 
-      for (auto &sb : structuredBlocks) {
+      for (const auto &sb : structuredBlocks) {
         delete (sb);
       }
 
-      for (auto &ss : sideSets) {
+      for (const auto &ss : sideSets) {
         delete (ss);
       }
 
-      for (auto &ns : nodeSets) {
+      for (const auto &ns : nodeSets) {
         delete (ns);
       }
 
-      for (auto &es : edgeSets) {
+      for (const auto &es : edgeSets) {
         delete (es);
       }
 
-      for (auto &fs : faceSets) {
+      for (const auto &fs : faceSets) {
         delete (fs);
       }
 
-      for (auto &es : elementSets) {
+      for (const auto &es : elementSets) {
         delete (es);
       }
 
-      for (auto &cs : commSets) {
+      for (const auto &cs : commSets) {
         delete (cs);
       }
 
-      for (auto &as : assemblies) {
+      for (const auto &as : assemblies) {
         delete (as);
       }
 
-      for (auto &bl : blobs) {
+      for (const auto &bl : blobs) {
         delete (bl);
       }
 
@@ -521,7 +521,7 @@ namespace Ioss {
     int64_t total_sides = 0;
     {
       const Ioss::SideSetContainer &sss = get_sidesets();
-      for (auto &fs : sss) {
+      for (const auto &fs : sss) {
         total_sides += get_entity_count(fs->get_side_blocks());
       }
     }
@@ -1936,7 +1936,8 @@ namespace Ioss {
       std::ostringstream errmsg;
       fmt::print(
           errmsg,
-          "ERROR: There are multiple ({}) blocks and/or sets with the name '{}' defined in the "
+          "ERROR: There are multiple ({}) blocks, sets, assemblies and/or blobs with the name '{}' "
+          "defined in the "
           "database file '{}'.\n"
           "\tThis is allowed in general, but this application uses an API function (get_entity) "
           "that does not support duplicate names.",
@@ -2051,7 +2052,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     NodeBlock *ge = nullptr;
-    for (auto &nb : nodeBlocks) {
+    for (const auto &nb : nodeBlocks) {
       if (db_hash == nb->hash() && nb->name() == db_name) {
         ge = nb;
         break;
@@ -2567,7 +2568,7 @@ namespace Ioss {
 
     if (my_name == "node_count") {
       int64_t count = 0;
-      for (auto &nb : nodeBlocks) {
+      for (const auto &nb : nodeBlocks) {
         count += nb->entity_count();
       }
       return Property(my_name, count);
@@ -2591,6 +2592,12 @@ namespace Ioss {
   int64_t Region::internal_put_field_data(const Field &field, void *data, size_t data_size) const
   {
     return get_database()->put_field(this, field, data, data_size);
+  }
+
+  int64_t Region::internal_get_zc_field_data(const Field &field, void **data,
+                                             size_t *data_size) const
+  {
+    return get_database()->get_zc_field(this, field, data, data_size);
   }
 
   /** \brief Transfer all relevant aliases from this region to another region
@@ -2779,7 +2786,8 @@ namespace Ioss {
         int64_t            id2      = old_ge->get_optional_property(id_str(), 0);
         std::ostringstream errmsg;
         fmt::print(errmsg,
-                   "ERROR: There are multiple blocks or sets with the same name defined in the "
+                   "ERROR: There are multiple blocks, sets, assemblies, and/or blobs with the same "
+                   "name defined in the "
                    "database file '{}'.\n"
                    "\tBoth {} {} and {} {} are named '{}'.  All names must be unique.",
                    filename, entity->type_string(), id1, old_ge->type_string(), id2, name);

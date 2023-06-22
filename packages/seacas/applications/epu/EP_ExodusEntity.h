@@ -1,12 +1,11 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
  * See packages/seacas/LICENSE for details
  */
-#ifndef SEACAS_ExodusEntity_H
-#define SEACAS_ExodusEntity_H
+#pragma once
 
 #define NO_NETCDF_2
 #include "EP_ObjectType.h"
@@ -97,7 +96,7 @@ namespace Excn {
     char                     elType[MAX_STR_LENGTH + 1]{};
     std::string              name_{""};
     std::vector<std::string> attributeNames{};
-    int64_t                  id{0};
+    ex_entity_id             id{0};
     int64_t                  elementCount{0};
     int                      nodesPerElement{0};
     int                      attributeCount{0};
@@ -153,7 +152,6 @@ namespace Excn {
     }
   };
 
-  using Side = std::pair<int64_t, int64_t>;
   template <typename INT> class SideSet
   {
   public:
@@ -196,7 +194,7 @@ namespace Excn {
     char                     elType[MAX_STR_LENGTH + 1]{};
     std::string              name_{""};
     std::vector<std::string> attributeNames{};
-    int64_t                  id{0};
+    ex_entity_id             id{0};
     int64_t                  edgeCount{0};
     int                      nodesPerEdge{0};
     int                      attributeCount{0};
@@ -242,7 +240,7 @@ namespace Excn {
     char                     elType[MAX_STR_LENGTH + 1]{};
     std::string              name_{""};
     std::vector<std::string> attributeNames{};
-    int64_t                  id{0};
+    ex_entity_id             id{0};
     int64_t                  faceCount{0};
     int                      nodesPerFace{0};
     int                      attributeCount{0};
@@ -279,9 +277,9 @@ namespace Excn {
         : id(the_id), entityCount(count), type(the_type)
     {
     }
-    int64_t id{0};
-    int64_t entityCount{0};
-    char    type{'U'}; // 'n' for node, 'e' for element
+    ex_entity_id id{0};
+    int64_t      entityCount{0};
+    char         type{'U'}; // 'n' for node, 'e' for element
   };
 
   class CommunicationMetaData
@@ -305,4 +303,3 @@ namespace Excn {
     int64_t elementsBorder{0};
   };
 } // namespace Excn
-#endif /* SEACAS_ExodusEntity_H */

@@ -73,6 +73,7 @@ GTEST_PATH=${GTEST_PATH:-${INSTALL_PATH}}
 KOKKOS_PATH=${KOKKOS_PATH:-${INSTALL_PATH}}
 METIS_PATH=${METIS_PATH:-${INSTALL_PATH}}
 PARMETIS_PATH=${PARMETIS_PATH:-${INSTALL_PATH}}
+FMT_PATH=${FMT_PATH:-${INSTALL_PATH}}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 if [ "${MPI}" = "" ]
@@ -159,8 +160,8 @@ then
 
   if [ "$COMPILER" == "intel" ]
   then
-      CXX=icpc
-      CC=icc
+      CXX=icpx
+      CC=icx
       FC=ifort
       CFLAGS="-Wall -Wunused"
       CXXFLAGS="-Wall -Wextra  -Wunused"
@@ -527,6 +528,7 @@ ${FAODEL_SYMBOLS} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
+-D netCDF_ROOT:PATH=${NETCDF_PATH} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_DIR:PATH=${HDF5_PATH} \
 -D CGNS_ROOT:PATH=${CGNS_PATH} \
@@ -535,7 +537,8 @@ ${FAODEL_SYMBOLS} \
 -D Metis_ROOT:PATH=${METIS_PATH} \
 -D ParMETIS_ROOT:PATH=${PARMETIS_PATH} \
 -D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
-\
+-D fmt_LIBRARY_DIRS:PATH=${FMT_PATH}/lib \
+-D fmt_INCLUDE_DIRS:PATH=${FMT_PATH}/include \
 $EXTRA_ARGS \
 ${ACCESS}
 

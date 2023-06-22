@@ -13,12 +13,12 @@ jobs:
   build-deps:
 
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         compiler: [ gnu, clang, mpi ]
-        hdf5: [ V18, V110, V112 ]
-        netcdf: [ 4.9.0 ]
+        hdf5: [ V18, V110, V114 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
     steps:
 
@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v4-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -51,15 +51,15 @@ jobs:
 ###
 
   seacas-build:
-  
+
     needs: build-deps
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         compiler: [ gnu, clang, mpi ]
-        hdf5: [ V18, V110, V112 ]
-        netcdf: [ 4.9.0 ]
+        hdf5: [ V18, V110, V114 ]
+        netcdf: [ 4.9.2 ]
         cgns: [ 4.3.0 ]
     steps:
 
@@ -74,7 +74,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v4-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
@@ -83,6 +83,15 @@ jobs:
 ###
 # Configure and build
 ###
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
+
+      - name: Install NumPy
+        shell: bash -l {0}
+        run: pip install numpy
+
       - name: Run cmake
         shell: bash -l {0}
         run: |
@@ -91,17 +100,17 @@ jobs:
           cd build
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
-      - name: Build 
+      - name: Build
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4
         if: ${{ success() }}
 
       - name: Install
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4 install
         if: ${{ success() }}
 
@@ -110,4 +119,11 @@ jobs:
         run: |
           cd build
           ctest -j 4 --output-on-failure
+        if: ${{ success() }}
+
+      - name: Run SEACAS-Test
+        shell: bash -l {0}
+        run: |
+          cd SEACAS-Test
+          make BASE=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} test
         if: ${{ success() }}

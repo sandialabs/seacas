@@ -521,7 +521,7 @@ HEX      & \\ \hline
 
 Node sets provide a means to reference a group of nodes with a single
 ID. Node sets may be used to specify load or boundary
-conditionsboundary conditions, or to identify nodes for a special
+conditions, or to identify nodes for a special
 output request. A particular node may appear in any number of node
 sets, but may be in a single node set only once. (This restriction is
 not checked by \exo{} routines.) Node sets may be accessed
@@ -535,6 +535,7 @@ was used to output them.
 
 \begin{spacing}{1.5}
 \api \cfuncref{ex_put_node_set_param}, \cfuncref{ex_get_node_set_param}, \cfuncref{ex_get_node_set_ids}
+\api \cfuncref{ex_put_set_param}, \cfuncref{ex_get_set_param}, \cfuncref{ex_get_set_ids}
 \end{spacing}
 
 {The following parameters define each node set:}
@@ -909,7 +910,7 @@ lists:
 
 Certain \exo{} objects (currently element blocks, node
 sets, and side sets) can be given integer properties, providing
-the following capabilitities:
+the following capabilities:
 \begin{enumerate}
 \item assign a specific integer value to a named property of
 an object.

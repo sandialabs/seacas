@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -6,29 +6,16 @@
 
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
-#include <Ioss_CommSet.h>
-#include <Ioss_DBUsage.h>
-#include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementTopology.h>
-#include <Ioss_EntityBlock.h>
-#include <Ioss_Field.h>
 #include <Ioss_FileInfo.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_NodeBlock.h>
 #include <Ioss_ParallelUtils.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
-#include <Ioss_SerializeIO.h>
-#include <Ioss_SideBlock.h>
-#include <Ioss_SideSet.h>
 #include <Ioss_Sort.h>
 #include <Ioss_State.h>
-#include <Ioss_StructuredBlock.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
+#include <Ioss_SubSystem.h>
 #include <algorithm>
 #include <cassert>
 #include <cfloat>
+#include <cmath>
 #include <cstddef>
 #include <cstring>
 #include <fmt/ostream.h>
@@ -93,7 +80,7 @@ namespace {
                          double &xmax, double &ymax, double &zmax)
   {
     std::vector<int> elem_block_nodes(node_count);
-    for (auto &node : connectivity) {
+    for (const auto &node : connectivity) {
       elem_block_nodes[node - 1] = 1;
     }
 
@@ -185,6 +172,18 @@ namespace {
 
     return offsets;
   }
+
+  template <typename ENTITY>
+  int64_t zero_copy_not_enabled(const ENTITY *entity, const Ioss::Field &field,
+                                const Ioss::DatabaseIO *db)
+  {
+    std::ostringstream errmsg;
+    fmt::print(errmsg,
+               "On {} {}, the field {} is specified as zero-copy enabled, but the database {} does "
+               "not support zero-copy for this field and/or entity type.\n",
+               entity->type_string(), entity->name(), field.get_name(), db->get_filename());
+    IOSS_ERROR(errmsg);
+  }
 } // namespace
 
 namespace Ioss {
@@ -229,6 +228,39 @@ namespace Ioss {
     // vz to be a 3-component field 'v'.
     Utils::check_set_bool_property(properties, "FIELD_STRIP_TRAILING_UNDERSCORE",
                                    fieldStripTrailing_);
+
+    // Determine how to handle duplicate incompatible fields (transient and attribute field with
+    // same name, ...)
+    if (properties.exists("DUPLICATE_FIELD_NAME_BEHAVIOR")) {
+      auto prop = properties.get("DUPLICATE_FIELD_NAME_BEHAVIOR").get_string();
+      if (prop == "IGNORE") {
+        duplicateFieldBehavior = DuplicateFieldBehavior::IGNORE_;
+      }
+      else if (prop == "WARNING") {
+        duplicateFieldBehavior = DuplicateFieldBehavior::WARNING_;
+      }
+      else if (prop == "ERROR") {
+        duplicateFieldBehavior = DuplicateFieldBehavior::ERROR_;
+      }
+      else {
+        std::ostringstream errmsg;
+        fmt::print(errmsg,
+                   "Invalid value ({}) for property `DUPLICATE_FIELD_NAME_BEHAVIOR`.\n"
+                   "\tValid values are `IGNORE`, `WARNING`, or `ERROR`\n",
+                   prop);
+        IOSS_ERROR(errmsg);
+      }
+    }
+    else {
+      bool allow_duplicate = false;
+      Utils::check_set_bool_property(properties, "IGNORE_DUPLICATE_FIELD_NAMES", allow_duplicate);
+      if (allow_duplicate) {
+        duplicateFieldBehavior = DuplicateFieldBehavior::WARNING_;
+      }
+      else {
+        duplicateFieldBehavior = DuplicateFieldBehavior::ERROR_;
+      }
+    }
 
     if (properties.exists("SURFACE_SPLIT_TYPE")) {
       Ioss::SurfaceSplitType split_type = Ioss::SPLIT_INVALID;
@@ -282,9 +314,15 @@ namespace Ioss {
     Utils::check_set_bool_property(properties, "ENABLE_TRACING", m_enableTracing);
     Utils::check_set_bool_property(properties, "TIME_STATE_INPUT_OUTPUT", m_timeStateInOut);
     {
-      bool logging;
+      bool logging = false;
       if (Utils::check_set_bool_property(properties, "LOGGING", logging)) {
         set_logging(logging);
+      }
+    }
+    {
+      bool nan_detection = false;
+      if (Utils::check_set_bool_property(properties, "NAN_DETECTION", nan_detection)) {
+        set_nan_detection(nan_detection);
       }
     }
 
@@ -541,6 +579,48 @@ namespace Ioss {
       }
     }
     return decodedFilename;
+  }
+
+  bool DatabaseIO::verify_field_data(const GroupingEntity *ge, const Field &field,
+                                     Ioss::Field::InOut in_out, void *data) const
+  {
+    bool nan_found = false;
+    if (field.is_type(Ioss::Field::BasicType::DOUBLE)) {
+
+      double *rdata      = static_cast<double *>(data);
+      size_t  comp_count = field.get_component_count(in_out);
+      size_t  num_to_get = field.raw_count();
+
+      // First, let's just see if there are ANY nans...
+      nan_found = std::find_if(rdata, rdata + comp_count * num_to_get, [](double v) {
+                    return std::isnan(v);
+                  }) != rdata + comp_count * num_to_get;
+
+      if (nan_found) {
+        // We know there is at least on nan.  Now we will do a slower run through the data so can
+        // give user a more accurate idea of how many and where they exist...
+        std::string direction = in_out == Ioss::Field::InOut::OUTPUT ? "writing" : "reading";
+        std::vector<size_t> nans;
+        nans.reserve(num_to_get / 10);
+
+        for (size_t comp = 0; comp < comp_count; comp++) {
+          for (size_t i = 0; i < num_to_get; i++) {
+            size_t idx = comp_count * i + comp;
+            if (std::isnan(rdata[idx])) {
+              nans.push_back(i);
+            }
+          }
+          if (!nans.empty()) {
+            fmt::print(Ioss::WarnOut(), "Found {} NaN{} {} field '{}' on {} '{}' at {} {}.\n",
+                       nans.size(), nans.size() > 1 ? "s" : "", direction,
+                       get_component_name(field, in_out, comp + 1), ge->type_string(), ge->name(),
+                       nans.size() > 1 ? "indices" : "index", Ioss::Utils::format_id_list(nans));
+            nans.clear();
+          }
+        }
+      }
+    }
+    return nan_found;
   }
 
   void DatabaseIO::verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const
@@ -948,7 +1028,7 @@ namespace Ioss {
         if (int_byte_size_api() == 8) {
           std::vector<int64_t> conn;
           eb->get_field_data("connectivity_raw", conn);
-          for (auto &node : conn) {
+          for (const auto &node : conn) {
             assert(node > 0 && node - 1 < nodeCount);
             node_used[node - 1] = blk_position + 1;
           }
@@ -956,7 +1036,7 @@ namespace Ioss {
         else {
           std::vector<int> conn;
           eb->get_field_data("connectivity_raw", conn);
-          for (auto &node : conn) {
+          for (const auto &node : conn) {
             assert(node > 0 && node - 1 < nodeCount);
             node_used[node - 1] = blk_position + 1;
           }
@@ -1335,6 +1415,96 @@ namespace Ioss {
     return offset;
   }
 
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(reg, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(nb, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::EdgeBlock *nb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(nb, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::FaceBlock *nb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(nb, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(eb, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::SideBlock *fb, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(fb, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(ns, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::EdgeSet *ns, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(ns, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::FaceSet *ns, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(ns, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::ElementSet *ns, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(ns, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::SideSet *fs, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(fs, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(cs, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::Assembly *as, const Ioss::Field &field,
+                                            void **, size_t *) const
+  {
+    return zero_copy_not_enabled(as, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::Blob *bl, const Ioss::Field &field, void **,
+                                            size_t *) const
+  {
+    return zero_copy_not_enabled(bl, field, this);
+  }
+
+  int64_t DatabaseIO::get_zc_field_internal(const Ioss::StructuredBlock *sb,
+                                            const Ioss::Field &field, void **, size_t *) const
+  {
+    return zero_copy_not_enabled(sb, field, this);
+  }
+
 } // namespace Ioss
 
 namespace {
@@ -1358,7 +1528,7 @@ namespace {
                  current_state, state_time);
 
       double total = 0.0;
-      for (auto &p_time : all_times) {
+      for (const auto &p_time : all_times) {
         total += p_time;
       }
 
@@ -1404,7 +1574,7 @@ namespace {
         fmt::print(strm, "{} [{:.5f}]\t", symbol, diff.count());
 
         int64_t total = 0;
-        for (auto &p_size : all_sizes) {
+        for (const auto &p_size : all_sizes) {
           total += p_size;
         }
         // Now append each processors size onto the stream...
@@ -1414,7 +1584,7 @@ namespace {
                      total / all_sizes.size());
         }
         else {
-          for (auto &p_size : all_sizes) {
+          for (const auto &p_size : all_sizes) {
             fmt::print(strm, "{:8d}:", p_size);
           }
         }

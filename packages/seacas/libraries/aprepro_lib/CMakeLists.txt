@@ -15,7 +15,11 @@ IF (${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodus)
   ADD_DEFINITIONS(-DEXODUS_SUPPORT)
 ENDIF()
 
-INCLUDE_DIRECTORIES(
+IF (${TPL_ENABLE_fmt})
+  ADD_DEFINITIONS(-DFMT_SUPPORT)
+ENDIF()
+
+TRIBITS_INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -41,7 +45,7 @@ SET(SOURCES
  apr_units.cc
  apr_tokenize.cc
  apr_scanner.cc
- apr_getline_int.c
+ apr_getline.cc
  ${BISON_LIB_SOURCE}
  apr_exodus.cc
  apr_array.cc
