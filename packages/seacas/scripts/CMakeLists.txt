@@ -137,6 +137,16 @@ IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
 		   ${CMAKE_CURRENT_BINARY_DIR}/tests/exomerge_unit_test.py
 		   @ONLY
 		   )
+	CONFIGURE_FILE(
+		   ${CMAKE_CURRENT_SOURCE_DIR}/exomerge3.py
+		   ${CMAKE_CURRENT_BINARY_DIR}/exomerge3.py
+		   @ONLY
+		   )
+	CONFIGURE_FILE(
+		   ${CMAKE_CURRENT_SOURCE_DIR}/exomerge2.py
+		   ${CMAKE_CURRENT_BINARY_DIR}/exomerge2.py
+		   @ONLY
+		   )
 	 CONFIGURE_FILE(
 		   ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_exodus3.py
 		   ${CMAKE_CURRENT_BINARY_DIR}/tests/test_exodus3.py
@@ -154,8 +164,8 @@ IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
 	 INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/tests/exomerge_unit_test.py DESTINATION lib/tests/)
 	 INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/tests/test-assembly.exo DESTINATION lib/tests/)
 	 INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/tests/exomerge_unit_test.e DESTINATION lib/tests/)
-	 INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/exomerge2.py DESTINATION lib)
-	 INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/exomerge3.py DESTINATION lib)
+	 INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exomerge2.py DESTINATION lib)
+	 INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exomerge3.py DESTINATION lib)
 
 	 if (${CMAKE_PROJECT_NAME} STREQUAL "Seacas")
 	    InstallSymLink(${EXODUSPY} ${CMAKE_INSTALL_PREFIX}/lib/exodus.py)

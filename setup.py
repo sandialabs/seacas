@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import subprocess
@@ -22,13 +22,14 @@ s = setup(name='seacas-exodus',
       description='A python wrapper of the exodus library',
       version='1.21.1',
       url='https://github.com/sandialabs/seacas',
-      py_modules=['exodus3'],
+      py_modules=['exodus3', 'exomerge3'],
       package_dir={"":"build/packages/seacas/scripts"},
       cmdclass = {'build_ext': cmake_build_ext},
       ext_modules = [Extension("exodus", [""])]
 )
+
 wheels = os.listdir("dist")
 platform = "linux_x86_64"
-subprocess.run(["python", "-m", "pip", "install", "auditwheel", "patchelf"])
-for wheel in wheels:
+subprocess.run(["python", "-m", "pip", "install", "--user", "auditwheel", "patchelf>=0.14"])
+for wheel in [x for x in wheels if x.endswith(".whl")]:
       subprocess.run(["python", "-m", "auditwheel", "repair", "--plat", platform, f"dist/{wheel}"])

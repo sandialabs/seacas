@@ -25,8 +25,7 @@ class TestExodus(unittest.TestCase):
         input_dir = os.path.dirname(__file__)
         self.tempdir = tempfile.TemporaryDirectory()
         self.temp_exo_path = os.path.join(self.tempdir.name, "temp-test-assembly.exo")
-        with exo.exodus(os.path.join(input_dir, "test-assembly.exo"), mode="r"
-        ) as exofile:
+        with exo.exodus(os.path.join(input_dir, "test-assembly.exo"), mode="r") as exofile:
             self.exofile = exofile
             with self.exofile.copy(self.temp_exo_path, True) as temp_exofile:
                 self.temp_exofile = temp_exofile
@@ -120,9 +119,7 @@ class TestExodus(unittest.TestCase):
     def test_get_assembly(self):
         with exo.exodus(self.temp_exo_path) as temp_exofile:
             assembly_ids = temp_exofile.get_ids("EX_ASSEMBLY")
-            assemblies = [
-                temp_exofile.get_assembly(assembly) for assembly in assembly_ids
-            ]
+            assemblies = [temp_exofile.get_assembly(assembly) for assembly in assembly_ids]
         root = exo.assembly(name="Root", type="EX_ASSEMBLY", id=100)
         root.entity_list = [200, 300, 400]
         self.assertEqual(str(root), str(assemblies[0]))

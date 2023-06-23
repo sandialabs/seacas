@@ -115,7 +115,8 @@ def getExodusVersion():
     found.
     """
 
-    return _parse_exodus_version('@EXODUS_VERSION@') 
+    return _parse_exodus_version('@EXODUS_VERSION@')
+
 
 def _parse_exodus_version(version_string):
     if version_string:
@@ -164,7 +165,7 @@ pip_path = os.path.dirname(__file__)
 pip_so_path = os.path.join(pip_path, "libexodus.so")
 try:
     EXODUS_LIB = ctypes.cdll.LoadLibrary(pip_so_path)
-except: 
+except Exception:
     EXODUS_LIB = ctypes.cdll.LoadLibrary(EXODUS_SO)
 
 MAX_STR_LENGTH = 32      # match exodus default
