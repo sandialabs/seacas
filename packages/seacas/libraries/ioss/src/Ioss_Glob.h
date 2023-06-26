@@ -635,7 +635,7 @@ namespace Ioss::glob {
   public:
     static const char kEndOfInput = -1;
 
-    Lexer(const String<charT> &str) : str_(str), pos_{0}, c_{str[0]} {}
+    Lexer(const String<charT> &str) : str_(str), c_{str[0]} {}
 
     std::vector<Token<charT>> Scanner()
     {

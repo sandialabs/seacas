@@ -564,9 +564,9 @@ namespace Ioss {
     bool nan_found = false;
     if (field.is_type(Ioss::Field::BasicType::DOUBLE)) {
 
-      double *rdata      = static_cast<double *>(data);
-      size_t  comp_count = field.get_component_count(in_out);
-      size_t  num_to_get = field.raw_count();
+      auto  *rdata      = static_cast<double *>(data);
+      size_t comp_count = field.get_component_count(in_out);
+      size_t num_to_get = field.raw_count();
 
       // First, let's just see if there are ANY nans...
       nan_found = std::find_if(rdata, rdata + comp_count * num_to_get, [](double v) {
