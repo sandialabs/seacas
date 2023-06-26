@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -23,6 +23,7 @@ namespace Ioss {
 
     static void factory();
     ~Wedge18() override;
+    Wedge18(const Wedge18 &) = delete;
 
     ElementShape shape() const override { return ElementShape::WEDGE; }
     int          spatial_dimension() const override;
@@ -53,8 +54,5 @@ namespace Ioss {
 
   protected:
     Wedge18();
-
-  private:
-    Wedge18(const Wedge18 &) = delete;
   };
 } // namespace Ioss
