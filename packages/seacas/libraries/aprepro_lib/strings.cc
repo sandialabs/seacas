@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
   strings.emplace_back("{_i = 0} {_SAVE = _FORMAT}");
   strings.emplace_back("{loop(20)}");
   strings.emplace_back(
-      R("{IO(++_i)} Using the format {_FORMAT = \"%.\" // tostring(_i) // " g "}, PI = {PI}"));
+      R("{IO(++_i)} Using the format {_FORMAT = " %." // tostring(_i) // " g "}, PI = {PI}"));
   strings.emplace_back("{endloop}");
   strings.emplace_back("Reset format to default: {_FORMAT = _SAVE}");
   strings.emplace_back("");
@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
   strings.emplace_back("{Test = '  This is line 1: {a = atan2(0,-1)}");
   strings.emplace_back("        This is line 2: {sin(a/4)}");
   strings.emplace_back("   This is line 3: {cos(a/4)}'}");
-  strings.emplace_back("{Test2 = 'This has an embedded string: {T = \"This is a string\"}'}");
+  strings.emplace_back(R("{Test2 = 'This has an embedded string: {T = " This is a string "}'}"));
   strings.emplace_back("{ECHO(ON)}");
   strings.emplace_back("Original String:");
   strings.emplace_back("{Test}");
@@ -219,27 +219,31 @@ int main(int argc, char *argv[])
   strings.emplace_back("{rescan(Test2)} ");
   strings.emplace_back("Print Value of variable T = {T}");
   strings.emplace_back("");
-  strings.emplace_back("Original String: {t1 = \"atan2(0,-1)\"}");
+  strings.emplace_back(R("Original String: {t1 = " atan2(0, -1) "}"));
   strings.emplace_back("Executed String: {execute(t1)}");
   strings.emplace_back("");
-  strings.emplace_back("string = {_string = \" one two, three\"}");
+  strings.emplace_back(R("string = {_string = " one two, three "}"));
   strings.emplace_back(R("delimiter " { _delm = " ," } ""));
   strings.emplace_back("word count = {word_count(_string,_delm)}");
-  strings.emplace_back("second word = \"{get_word(2,_string,_delm)}\"");
+  strings.emplace_back(R("second word = " { get_word(2, _string, _delm) } ""));
   strings.emplace_back("");
-  strings.emplace_back("string = {_string = \" (one two, three * four - five\"}");
-  strings.emplace_back(R("delimiter " { _delm = " ,(*-" } ""));
+  strings.emplace_back(R("string = {_string = " (one two, three * four - five"}"));
+  strings.emplace_back(R("delimiter " {
+    _delm = " ,(*-" } ""));
   strings.emplace_back("word count = {word_count(_string,_delm)}");
-  strings.emplace_back("second word = \"{get_word(2,_string,_delm)}\"");
+       strings.emplace_back(R("second word = "{
+    get_word(2, _string, _delm)}""));
   strings.emplace_back("");
   strings.emplace_back("");
-  strings.emplace_back("string = {_string = \" one two, three\"}");
-  strings.emplace_back(R("delimiter " { _delm = " ," } ""));
+  strings.emplace_back(R("string = {_string = " one two, three"}"));
+  strings.emplace_back(R("delimiter " {
+    _delm = " ," } ""));
   strings.emplace_back("word count = { iwords = word_count(_string,_delm)}");
   strings.emplace_back("");
   strings.emplace_back("{_n = 0}");
   strings.emplace_back("{loop(iwords)}");
-  strings.emplace_back("word {++_n} = \"{get_word(_n,_string,_delm)}\"");
+  strings.emplace_back(R("word {++_n} = "{
+    get_word(_n, _string, _delm)}""));
   strings.emplace_back("{endloop}");
   strings.emplace_back("");
   strings.emplace_back("$ Check parsing of escaped braces...");
