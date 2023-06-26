@@ -666,11 +666,11 @@ namespace {
 
   void *transfer_fields_ts(void *varg)
   {
-    param *arg           = static_cast<param *>(varg);
-    auto   entity        = arg->entity;
-    auto   output_region = arg->output_region;
-    auto   interFace     = arg->interFace;
-    auto   role          = arg->role;
+    auto *arg           = static_cast<param *>(varg);
+    auto  entity        = arg->entity;
+    auto  output_region = arg->output_region;
+    auto  interFace     = arg->interFace;
+    auto  role          = arg->role;
 
     const std::string &name = entity->name();
     if (interFace->debug) {
@@ -715,11 +715,11 @@ namespace {
 
   void *transfer_field_data_ts(void *varg)
   {
-    param *arg           = static_cast<param *>(varg);
-    auto   entity        = arg->entity;
-    auto   output_region = arg->output_region;
-    auto   interFace     = arg->interFace;
-    auto   role          = arg->role;
+    auto *arg           = static_cast<param *>(varg);
+    auto  entity        = arg->entity;
+    auto  output_region = arg->output_region;
+    auto  interFace     = arg->interFace;
+    auto  role          = arg->role;
 
     const std::string &name = entity->name();
 

@@ -23,9 +23,9 @@ namespace Ioss::glob {
   {
   public:
     explicit Error(const std::string &msg) : msg_{msg} {}
-    ~Error();
+    ~Error() override;
 
-    const char *what() const throw() override { return msg_.c_str(); }
+    const char *what() const noexcept override { return msg_.c_str(); }
 
   private:
     std::string msg_;
@@ -407,8 +407,7 @@ namespace Ioss::glob {
 
     StateGroup(Automata<charT> &states, Type type,
                std::vector<std::unique_ptr<Automata<charT>>> &&automatas)
-        : State<charT>(StateType::GROUP, states), type_{type}, automatas_{std::move(automatas)},
-          match_one_{false}
+        : State<charT>(StateType::GROUP, states), type_{type}, automatas_{std::move(automatas)}
     {
     }
 
@@ -574,7 +573,7 @@ namespace Ioss::glob {
   private:
     Type                                          type_{};
     std::vector<std::unique_ptr<Automata<charT>>> automatas_;
-    bool                                          match_one_;
+    bool                                          match_one_{false};
   };
 
 #define TOKEN(X, Y) X,
@@ -794,7 +793,7 @@ namespace Ioss::glob {
     }
 
     String<charT> str_;
-    size_t        pos_;
+    size_t        pos_{0};
     charT         c_;
   };
 
@@ -867,7 +866,7 @@ namespace Ioss::glob {
   public:
     explicit CharNode(charT c) : AstNode<charT>(AstNode<charT>::Type::CHAR), c_{c} {}
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitCharNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitCharNode(this); }
 
     char GetValue() const { return c_; }
 
@@ -884,7 +883,7 @@ namespace Ioss::glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitRangeNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitRangeNode(this); }
 
     AstNode<charT> *GetStart() const { return start_.get(); }
 
@@ -903,7 +902,7 @@ namespace Ioss::glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitSetItemsNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitSetItemsNode(this); }
 
     std::vector<AstNodePtr<charT>> &GetItems() { return items_; }
 
@@ -919,7 +918,7 @@ namespace Ioss::glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitPositiveSetNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitPositiveSetNode(this); }
 
     AstNode<charT> *GetSet() { return set_.get(); }
 
@@ -935,7 +934,7 @@ namespace Ioss::glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitNegativeSetNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitNegativeSetNode(this); }
 
     AstNode<charT> *GetSet() { return set_.get(); }
 
@@ -948,7 +947,7 @@ namespace Ioss::glob {
   public:
     StarNode() : AstNode<charT>(AstNode<charT>::Type::STAR) {}
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitStarNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitStarNode(this); }
   };
 
   template <class charT> class AnyNode : public AstNode<charT>
@@ -956,7 +955,7 @@ namespace Ioss::glob {
   public:
     AnyNode() : AstNode<charT>(AstNode<charT>::Type::ANY) {}
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitAnyNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitAnyNode(this); }
   };
 
   template <class charT> class GroupNode : public AstNode<charT>
@@ -970,7 +969,7 @@ namespace Ioss::glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitGroupNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitGroupNode(this); }
 
     AstNode<charT> *GetGlob() { return glob_.get(); }
 
@@ -989,7 +988,7 @@ namespace Ioss::glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitConcatNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitConcatNode(this); }
 
     std::vector<AstNodePtr<charT>> &GetBasicGlobs() { return basic_glob_; }
 
@@ -1005,7 +1004,7 @@ namespace Ioss::glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitUnionNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitUnionNode(this); }
 
     std::vector<AstNodePtr<charT>> &GetItems() { return items_; }
 
@@ -1021,7 +1020,7 @@ namespace Ioss::glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitGlobNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitGlobNode(this); }
 
     AstNode<charT> *GetConcat() { return glob_.get(); }
 
@@ -1291,8 +1290,8 @@ namespace Ioss::glob {
 
     void ExecChar(AstNode<charT> *node, Automata<charT> &automata)
     {
-      CharNode<charT> *char_node = static_cast<CharNode<charT> *>(node);
-      char             c         = char_node->GetValue();
+      auto *char_node = static_cast<CharNode<charT> *>(node);
+      char  c         = char_node->GetValue();
       NewState<StateChar<charT>>(automata, c);
     }
 

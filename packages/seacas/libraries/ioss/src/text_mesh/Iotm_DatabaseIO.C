@@ -793,8 +793,8 @@ namespace Iotm {
       Ioss::EntityType               type    = m_textMesh->get_assembly_type(name);
       const std::vector<std::string> members = m_textMesh->get_assembly_members(name);
 
-      for (size_t j = 0; j < members.size(); j++) {
-        auto *ge = get_region()->get_entity(members[j], type);
+      for (const auto &member : members) {
+        auto *ge = get_region()->get_entity(member, type);
         if (ge != nullptr) {
           assem->add(ge);
         }
@@ -802,7 +802,7 @@ namespace Iotm {
           std::ostringstream errmsg;
           fmt::print(errmsg,
                      "Error: Failed to find entity of type {} with name {} for Assembly {}.\n",
-                     Ioss::Utils::entity_type_to_string(type), members[j], assem->name());
+                     Ioss::Utils::entity_type_to_string(type), member, assem->name());
           IOSS_ERROR(errmsg);
         }
       }

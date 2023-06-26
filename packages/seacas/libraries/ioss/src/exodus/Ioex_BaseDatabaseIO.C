@@ -153,11 +153,11 @@ namespace {
     {
       for (size_t i = 0; i < m_assemblies.size(); ++i) {
         if (m_visitedAssemblies[i]) {
-          assemblyFilterList.push_back(m_assemblies[i].name);
+          assemblyFilterList.emplace_back(m_assemblies[i].name);
         }
       }
 
-      std::sort(assemblyFilterList.begin(), assemblyFilterList.end(), std::less<std::string>());
+      std::sort(assemblyFilterList.begin(), assemblyFilterList.end(), std::less<>());
       auto endIter = std::unique(assemblyFilterList.begin(), assemblyFilterList.end());
       assemblyFilterList.resize(endIter - assemblyFilterList.begin());
     }
@@ -3140,7 +3140,7 @@ namespace {
   void insert_sort_and_unique(const std::vector<std::string> &src, std::vector<std::string> &dest)
   {
     dest.insert(dest.end(), src.begin(), src.end());
-    std::sort(dest.begin(), dest.end(), std::less<std::string>());
+    std::sort(dest.begin(), dest.end(), std::less<>());
     auto endIter = std::unique(dest.begin(), dest.end());
     dest.resize(endIter - dest.begin());
   }

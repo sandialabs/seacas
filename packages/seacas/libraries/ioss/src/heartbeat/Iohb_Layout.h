@@ -49,7 +49,7 @@ namespace Iohb {
       fmt::print(layout_, "{}", separator_);
     }
 
-    if (showLabels && name != "") {
+    if (showLabels && !name.empty()) {
       fmt::print(layout_, "{}=", name);
     }
   }

@@ -75,7 +75,7 @@ namespace Ioss {
     // [Value, corresponding string]
     const vals_array &get_vals_array() const { return vals_; }
     // adds one value and its corresponding string
-    void add_val(const string &val, const string &str) { vals_.push_back(val_and_str(val, str)); }
+    void add_val(const string &val, const string &str) { vals_.emplace_back(val, str); }
 
     // get/set level of assertion
     void set_level(int nLevel) { level_ = nLevel; }

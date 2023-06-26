@@ -66,7 +66,7 @@ namespace Ioss {
 
   using CoordinateFrameContainer = std::vector<CoordinateFrame>;
 
-  using AliasMap = std::map<std::string, std::string, std::less<std::string>>;
+  using AliasMap = std::map<std::string, std::string, std::less<>>;
 
   /** \brief A grouping entity that contains other grouping entities.
    *
