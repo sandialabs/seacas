@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.23 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.21.1 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.23 (seacas-py3)"
+EXODUS_PY_VERSION = "1.21.1 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.23 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.21.1 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2023 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -114,19 +114,16 @@ def getExodusVersion():
     Parse the exodusII.h header file and return the version number or 0 if not
     found.
     """
-    version_major = -1
-    version_minor = -1
-    with open(f"{ACCESS}/@SEACAS_INCLUDEDIR@/exodusII.h") as header_file:
-        for line in header_file:
-            fields = line.split()
-            if len(fields) == 3 and fields[0] == '#define':
-                if fields[1] == 'EXODUS_VERSION_MAJOR':
-                    version_major = int(fields[2])
-                if fields[1] == 'EXODUS_VERSION_MINOR':
-                    version_minor = int(fields[2])
-            if (version_major > 0 and version_minor >= 0):
-                return 100 * version_major + version_minor
-    return 0
+
+    return _parse_exodus_version('@EXODUS_VERSION@')
+
+
+def _parse_exodus_version(version_string):
+    if version_string:
+        assert version_string.startswith("#define EXODUS_VERSION "), "Received a incorrectly formated verstion string. Please check the CMakeLists.txt"
+        return int(version_string.strip().split()[-1].strip('"').replace('.', ''))
+    else:
+        return 0
 
 
 try:
@@ -164,7 +161,12 @@ if os.uname()[0] == 'Darwin':
     EXODUS_SO = f"{ACCESS}/@SEACAS_LIBDIR@/libexodus.dylib"
 else:
     EXODUS_SO = f"{ACCESS}/@SEACAS_LIBDIR@/libexodus.so"
-EXODUS_LIB = ctypes.cdll.LoadLibrary(EXODUS_SO)
+pip_path = os.path.dirname(__file__)
+pip_so_path = os.path.join(pip_path, "libexodus.so")
+try:
+    EXODUS_LIB = ctypes.cdll.LoadLibrary(pip_so_path)
+except Exception:
+    EXODUS_LIB = ctypes.cdll.LoadLibrary(EXODUS_SO)
 
 MAX_STR_LENGTH = 32      # match exodus default
 MAX_NAME_LENGTH = 256     # match exodus default
