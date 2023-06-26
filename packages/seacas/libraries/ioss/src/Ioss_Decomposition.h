@@ -134,10 +134,10 @@ namespace Ioss {
   {
   public:
     Decomposition(const Ioss::PropertyManager &props, Ioss_MPI_Comm comm);
-    Decomposition(Decomposition const&) = default;
-    Decomposition(Decomposition&&) = default;
-    Decomposition& operator=(Decomposition const&) = default;
-    Decomposition& operator=(Decomposition&&) = default;
+    Decomposition(Decomposition const &)            = default;
+    Decomposition(Decomposition &&)                 = default;
+    Decomposition &operator=(Decomposition const &) = default;
+    Decomposition &operator=(Decomposition &&)      = default;
 
     size_t global_node_count() const { return m_globalNodeCount; }
     size_t global_elem_count() const { return m_globalElementCount; }
@@ -425,8 +425,8 @@ namespace Ioss {
       show_progress(__func__);
       if (m_method == "LINEAR") {
         assert(block.localIossOffset == 0);
-        assert(block.exportMap.size() == 0);
-        assert(block.importMap.size() == 0);
+        assert(block.exportMap.empty());
+        assert(block.importMap.empty());
         // For "LINEAR" decomposition method, the `file_data` is the
         // same as `ioss_data` Transfer all local data from file_data
         // to ioss_data...

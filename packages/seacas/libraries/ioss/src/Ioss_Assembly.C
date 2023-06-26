@@ -81,11 +81,6 @@ Ioss::Assembly::Assembly(Ioss::DatabaseIO *io_database, const std::string &my_na
   properties.add(Ioss::Property(this, "member_type", Ioss::Property::INTEGER));
 }
 
-Ioss::Assembly::Assembly(const Ioss::Assembly &other)
-    : GroupingEntity(other), m_members(other.m_members), m_type(other.m_type)
-{
-}
-
 const Ioss::EntityContainer &Ioss::Assembly::get_members() const { return m_members; }
 
 const Ioss::GroupingEntity *Ioss::Assembly::get_member(const std::string &my_name) const

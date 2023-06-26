@@ -98,7 +98,7 @@ namespace {
 
       // determine if current character is a separator
       bool is_sep = is_separator(separator, curr_char);
-      if (is_sep && curr_token != "") {
+      if (is_sep && !curr_token.empty()) {
         // we just completed a token
         tokens.push_back(curr_token);
         curr_token.clear();
@@ -111,7 +111,7 @@ namespace {
         curr_token += curr_char;
       }
     }
-    if (curr_token != "") {
+    if (!curr_token.empty()) {
       tokens.push_back(curr_token);
     }
   }
