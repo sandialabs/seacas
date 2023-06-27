@@ -270,13 +270,15 @@ namespace {
       const char *cp = (const char *)getenv("COLUMNS");
       if (cp != nullptr) {
         int w = strtol(cp, nullptr, 10);
-        if (w > 20)
+        if (w > 20) {
           Ioss::gl_setwidth(w);
+        }
       }
       hist_init();
     }
-    if (isatty(0) == 0 || isatty(1) == 0)
+    if (isatty(0) == 0 || isatty(1) == 0) {
       gl_error("\n*** Error: getline(): not interactive, use stdio.\n");
+    }
     gl_char_init();
     gl_init_done = 1;
   }
@@ -413,8 +415,9 @@ namespace Ioss {
           gl_yank(); /* ^Y */
           break;
         default:
-          if (c > 0)
+          if (c > 0) {
             gl_beep();
+          }
           break;
         }
       }
@@ -481,8 +484,9 @@ namespace {
         gl_fixup(gl_prompt, gl_pos, gl_pos + len);
       }
     }
-    else
+    else {
       gl_beep();
+    }
   }
 
   void gl_transpose()
@@ -923,8 +927,9 @@ namespace {
         else if ((loc = strstr(p, search_string)) != nullptr) {
           copy_string(gl_buf, p, GL_BUF_SIZE);
           gl_fixup(search_prompt, 0, loc - p);
-          if (new_search)
+          if (new_search) {
             search_last = hist_pos;
+          }
           found = true;
         }
       }
@@ -958,8 +963,9 @@ namespace {
         else if ((loc = strstr(p, search_string)) != nullptr) {
           copy_string(gl_buf, p, GL_BUF_SIZE);
           gl_fixup(search_prompt, 0, loc - p);
-          if (new_search)
+          if (new_search) {
             search_last = hist_pos;
+          }
           found = true;
         }
       }

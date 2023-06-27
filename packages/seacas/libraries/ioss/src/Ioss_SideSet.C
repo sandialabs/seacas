@@ -147,7 +147,7 @@ int Ioss::SideSet::max_parametric_dimension() const
 {
   IOSS_FUNC_ENTER(m_);
   int max_par_dim = 0;
-  for (auto &sideblock : sideBlocks) {
+  for (const auto &sideblock : sideBlocks) {
     int parametric_dim = sideblock->topology()->parametric_dimension();
     if (parametric_dim > max_par_dim) {
       max_par_dim = parametric_dim;
@@ -186,8 +186,9 @@ bool Ioss::SideSet::equal_(const SideSet &rhs, const bool /* quiet */) const
   for (const auto &lhs_side_block : lhs_side_blocks) {
     std::vector<SideBlock *>::iterator it;
     for (it = rhs_side_blocks.begin(); it != rhs_side_blocks.end(); ++it) {
-      if ((*(*it)).operator==(*lhs_side_block))
+      if ((*(*it)).operator==(*lhs_side_block)) {
         break;
+      }
     }
 
     if (it == rhs_side_blocks.end()) {
@@ -205,8 +206,9 @@ bool Ioss::SideSet::equal_(const SideSet &rhs, const bool /* quiet */) const
   for (const auto &lhs_block_member : lhs_block_membership) {
     std::vector<std::string>::iterator it;
     for (it = rhs_block_membership.begin(); it != rhs_block_membership.end(); ++it) {
-      if ((*it).compare(lhs_block_member) == 0)
+      if ((*it) == lhs_block_member) {
         break;
+      }
     }
 
     if (it == rhs_block_membership.end()) {

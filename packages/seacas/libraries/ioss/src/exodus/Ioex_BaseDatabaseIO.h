@@ -80,7 +80,7 @@ namespace Ioex {
 
     ~BaseDatabaseIO() override;
 
-    const std::string get_format() const override { return "Exodus"; }
+    std::string get_format() const override { return "Exodus"; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -201,7 +201,7 @@ namespace Ioex {
     void closeDatabase__() const override
     {
       free_file_pointer();
-      closeDW();
+      close_dw();
     }
 
     int get_file_pointer() const override = 0; // Open file and set exodusFilePtr.

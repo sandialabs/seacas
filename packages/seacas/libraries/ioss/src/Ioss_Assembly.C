@@ -17,8 +17,8 @@
 #include <vector>
 
 namespace {
-  const std::string id_str() { return std::string("id"); }
-  void              check_is_valid(const Ioss::Assembly *assem, const Ioss::GroupingEntity *member)
+  std::string id_str() { return std::string("id"); }
+  void        check_is_valid(const Ioss::Assembly *assem, const Ioss::GroupingEntity *member)
   {
     // Ensure that `member` is not already a member and that its type matches
     // the current type.

@@ -262,7 +262,7 @@ std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int6
 
 char **Ioss::Utils::get_name_array(size_t count, int size)
 {
-  auto names = new char *[count];
+  auto *names = new char *[count];
   for (size_t i = 0; i < count; i++) {
     names[i] = new char[size + 1];
     std::memset(names[i], '\0', size + 1);
@@ -1329,13 +1329,11 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
   if (extension == "e" || extension == "g" || extension == "gen" || extension == "exo") {
     return "exodus";
   }
-  else if (extension == "cgns") {
+  if (extension == "cgns") {
     return "cgns";
   }
-  else {
-    // "exodus" is default...
-    return "exodus";
-  }
+  // "exodus" is default...
+  return "exodus";
 }
 
 void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
@@ -1460,5 +1458,4 @@ void Ioss::Utils::copyright(std::ostream &out, const std::string &year_range)
              "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n"
              "\n",
              year_range);
-  return;
 }

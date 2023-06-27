@@ -80,7 +80,7 @@ namespace Ioexnl {
 
     ~BaseDatabaseIO() override;
 
-    const std::string get_format() const override { return "ExoNull"; }
+    std::string get_format() const override { return "ExoNull"; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -183,7 +183,7 @@ namespace Ioexnl {
     void closeDatabase__() const override
     {
       free_file_pointer();
-      closeDW();
+      close_dw();
     }
 
     int get_file_pointer() const override = 0; // Open file and set exodusFilePtr.

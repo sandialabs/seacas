@@ -104,7 +104,7 @@ Ioss::Field::Field(std::string name, const Ioss::Field::BasicType type,
 
 int Ioss::Field::get_component_count(Ioss::Field::InOut in_out) const
 {
-  auto *storage = (in_out == InOut::INPUT) ? raw_storage() : transformed_storage();
+  const auto *storage = (in_out == InOut::INPUT) ? raw_storage() : transformed_storage();
   return storage->component_count();
 }
 
@@ -114,7 +114,7 @@ std::string Ioss::Field::get_component_name(int component_index, InOut in_out, c
   if (suffix_separator == 1) {
     suffix_separator = suffix != 1 ? suffix : '_';
   }
-  auto *storage = (in_out == InOut::INPUT) ? raw_storage() : transformed_storage();
+  const auto *storage = (in_out == InOut::INPUT) ? raw_storage() : transformed_storage();
   return storage->label_name(get_name(), component_index, suffix_separator,
                              get_suffices_uppercase());
 }
@@ -200,7 +200,7 @@ size_t Ioss::Field::get_size() const
 
     new_this->transCount_   = rawCount_;
     new_this->transStorage_ = rawStorage_;
-    for (auto &my_transform : transforms_) {
+    for (const auto &my_transform : transforms_) {
       new_this->transCount_   = my_transform->output_count(transCount_);
       new_this->transStorage_ = my_transform->output_storage(transStorage_);
       size_t size             = internal_get_size(type_, transCount_, transStorage_);
@@ -263,7 +263,7 @@ bool Ioss::Field::transform(void *data)
 
 bool Ioss::Field::equal_(const Ioss::Field &rhs, bool quiet) const
 {
-  if (Ioss::Utils::str_equal(this->name_, rhs.name_) == false) {
+  if (!Ioss::Utils::str_equal(this->name_, rhs.name_)) {
     if (!quiet) {
       fmt::print(Ioss::OUTPUT(), "\n\tFIELD name mismatch ({} v. {})", this->name_, rhs.name_);
     }

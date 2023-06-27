@@ -195,9 +195,7 @@ bool Ioss::GroupingEntity::check_for_duplicate(const Ioss::Field &new_field) con
           }
           return true;
         }
-        else {
-          IOSS_ERROR(errmsg);
-        }
+        IOSS_ERROR(errmsg);
       }
     }
   }
@@ -389,10 +387,10 @@ void Ioss::GroupingEntity::property_update(const std::string &property,
   }
 }
 
-bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool quiet) const
+bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, bool quiet) const
 {
   bool same = true;
-  if (this->entityName.compare(rhs.entityName) != 0) {
+  if (this->entityName == rhs.entityName) {
     if (quiet) {
       return false;
     }
@@ -461,14 +459,14 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, const bool qu
       continue;
     }
 
-    if (lhs_property.compare("IOSS_INTERNAL_CONTAINED_IN") == 0) {
+    if (lhs_property == "IOSS_INTERNAL_CONTAINED_IN") {
       continue;
     }
 
     if (this->properties.get(lhs_property) != rhs.properties.get(lhs_property)) {
       // EMPIRICALLY, different representations (e.g., CGNS vs. Exodus) of the same mesh
       // can have different values for the "original_block_order" property.
-      if (lhs_property.compare("original_block_order") == 0) {
+      if (lhs_property == "original_block_order") {
         if (!quiet) {
           fmt::print(Ioss::OUTPUT(),
                      "WARNING: {}: values for \"original_block_order\" DIFFER ({} vs. {})\n",

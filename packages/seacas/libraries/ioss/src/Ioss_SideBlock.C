@@ -235,9 +235,7 @@ bool Ioss::SideBlock::equal_(const Ioss::SideBlock &rhs, bool quiet) const
   if (!quiet) {
     return Ioss::EntityBlock::equal(rhs);
   }
-  else {
-    return Ioss::EntityBlock::operator==(rhs);
-  }
+  return Ioss::EntityBlock::operator==(rhs);
 }
 
 bool Ioss::SideBlock::operator==(const Ioss::SideBlock &rhs) const { return equal_(rhs, true); }

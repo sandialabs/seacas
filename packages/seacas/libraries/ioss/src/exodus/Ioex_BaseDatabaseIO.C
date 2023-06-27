@@ -416,7 +416,7 @@ namespace Ioex {
       double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
       ex_close(m_exodusFilePtr);
-      closeDW();
+      close_dw();
       if (do_timer && isParallel) {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);

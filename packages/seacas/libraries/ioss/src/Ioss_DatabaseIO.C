@@ -315,7 +315,7 @@ namespace Ioss {
       }
     }
 
-    check_setDW();
+    check_set_dw();
 
     if (!is_input()) {
       // Create full path to the output file at this point if it doesn't
@@ -383,7 +383,7 @@ namespace Ioss {
    *
    * We currently only want output files to be directed to BB.
    */
-  void DatabaseIO::check_setDW() const
+  void DatabaseIO::check_set_dw() const
   {
     if (!is_input()) {
       bool set_dw = false;
@@ -424,12 +424,12 @@ namespace Ioss {
    * storage available across all compute nodes accessible via high
    * speed NIC.
    */
-  void DatabaseIO::openDW(const std::string &filename) const
+  void DatabaseIO::open_dw(const std::string &filename) const
   {
-    set_pfsname(filename); // Name on permanent-file-store
-    if (using_dw()) {      // We are about to write to a output database in BB
+    set_pfs_name(filename); // Name on permanent-file-store
+    if (using_dw()) {       // We are about to write to a output database in BB
       Ioss::FileInfo path{filename};
-      Ioss::FileInfo bb_file{get_dwPath() + path.tailname()};
+      Ioss::FileInfo bb_file{get_dw_path() + path.tailname()};
       if (bb_file.exists() && !bb_file.is_writable()) {
         // already existing file which has been closed If we can't
         // write to the file on the BB, then it is a file which is
@@ -454,17 +454,17 @@ namespace Ioss {
         fmt::print(Ioss::DebugOut(), "DW: (FAKE) dw_wait_file_stage({});\n", bb_file.filename());
 #endif
       }
-      set_dwname(bb_file.filename());
+      set_dw_name(bb_file.filename());
     }
     else {
-      set_dwname(filename);
+      set_dw_name(filename);
     }
   }
 
   /** \brief This function gets called inside closeDatabase__(), which checks if Cray Datawarp (DW)
    * is in use, if so, we want to call a stageout before actual close of this file.
    */
-  void DatabaseIO::closeDW() const
+  void DatabaseIO::close_dw() const
   {
     if (using_dw()) {
       if (!using_parallel_io() || myProcessor == 0) {
@@ -485,7 +485,7 @@ namespace Ioss {
             IOSS_ERROR(errmsg);
           }
 #if IOSS_DEBUG_OUTPUT
-          dw_query_file_stage(get_dwname().c_str(), &complete, &pending, &deferred, &failed);
+          dw_query_file_stage(get_dw_name().c_str(), &complete, &pending, &deferred, &failed);
           fmt::print(Ioss::DebugOut(), "Query: {}, {}, {}, {}\n", complete, pending, deferred,
                      failed);
 #endif
@@ -493,10 +493,10 @@ namespace Ioss {
 
 #if IOSS_DEBUG_OUTPUT
         fmt::print(Ioss::DebugOut(), "\nDW: BEGIN dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
-                   get_dwname(), get_pfsname());
+                   get_dw_name(), get_pfs_name());
 #endif
         int ret =
-            dw_stage_file_out(get_dwname().c_str(), get_pfsname().c_str(), DW_STAGE_IMMEDIATE);
+            dw_stage_file_out(get_dw_name().c_str(), get_pfs_name().c_str(), DW_STAGE_IMMEDIATE);
 
 #if IOSS_DEBUG_OUTPUT
         auto                          time_now = std::chrono::steady_clock::now();
@@ -506,13 +506,13 @@ namespace Ioss {
         if (ret < 0) {
           std::ostringstream errmsg;
           fmt::print(errmsg, "ERROR: file staging of `{}` to `{}` failed at close: {}\n",
-                     get_dwname(), get_pfsname(), std::strerror(-ret));
+                     get_dw_name(), get_pfs_name(), std::strerror(-ret));
           IOSS_ERROR(errmsg);
         }
 #else
         fmt::print(Ioss::DebugOut(),
-                   "\nDW: (FAKE) dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n", get_dwname(),
-                   get_pfsname());
+                   "\nDW: (FAKE) dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n", get_dw_name(),
+                   get_pfs_name());
 #endif
       }
       if (using_parallel_io()) {
@@ -521,9 +521,9 @@ namespace Ioss {
     }
   }
 
-  void DatabaseIO::openDatabase__() const { openDW(get_filename()); }
+  void DatabaseIO::openDatabase__() const { open_dw(get_filename()); }
 
-  void DatabaseIO::closeDatabase__() const { closeDW(); }
+  void DatabaseIO::closeDatabase__() const { close_dw(); }
 
   IfDatabaseExistsBehavior DatabaseIO::open_create_behavior() const
   {
@@ -549,10 +549,10 @@ namespace Ioss {
         decodedFilename = get_filename();
       }
 
-      openDW(decodedFilename);
+      open_dw(decodedFilename);
       if (using_dw()) {
         // Note that if using_dw(), then we need to set the decodedFilename to the BB name.
-        decodedFilename = get_dwname();
+        decodedFilename = get_dw_name();
       }
     }
     return decodedFilename;
@@ -715,7 +715,7 @@ namespace Ioss {
     int64_t df_count     = 0;
 
     // Create the new set...
-    auto new_set = new SideSet(this, group_spec[0]);
+    auto *new_set = new SideSet(this, group_spec[0]);
 
     get_region()->add(new_set);
 
@@ -724,9 +724,9 @@ namespace Ioss {
       SideSet *set = get_region()->get_sideset(group_spec[i]);
       if (set != nullptr) {
         const SideBlockContainer &side_blocks = set->get_side_blocks();
-        for (auto &sbold : side_blocks) {
+        for (const auto &sbold : side_blocks) {
           size_t  side_count = sbold->entity_count();
-          auto    sbnew      = new SideBlock(this, sbold->name(), sbold->topology()->name(),
+          auto   *sbnew      = new SideBlock(this, sbold->name(), sbold->topology()->name(),
                                              sbold->parent_element_topology()->name(), side_count);
           int64_t id         = sbold->get_property("id").get_int();
           sbnew->property_add(Property("set_offset", entity_count));
@@ -768,7 +768,7 @@ namespace Ioss {
 
     bool                         first          = true;
     const ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
-    for (auto block : element_blocks) {
+    for (auto *block : element_blocks) {
       size_t element_count = block->entity_count();
 
       // Check face types.
@@ -885,7 +885,7 @@ namespace Ioss {
       const ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
 
       bool all_sphere = true;
-      for (auto &block : element_blocks) {
+      for (const auto &block : element_blocks) {
         const ElementTopology *elem_type = block->topology();
         const ElementTopology *side_type = elem_type->boundary_type();
         if (side_type == nullptr) {
@@ -1248,7 +1248,7 @@ namespace Ioss {
       std::vector<double>                minmax;
       minmax.reserve(6 * nblock);
 
-      for (auto &block : element_blocks) {
+      for (const auto &block : element_blocks) {
         double xmin, ymin, zmin, xmax, ymax, zmax;
         if (block->get_database()->int_byte_size_api() == 8) {
           std::vector<int64_t> connectivity;

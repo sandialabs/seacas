@@ -218,8 +218,8 @@ namespace Ioss {
 
   StructuredBlock *StructuredBlock::clone(DatabaseIO *database) const
   {
-    int  index_dim = properties.get("component_degree").get_int();
-    auto block     = new StructuredBlock(database, name(), index_dim, m_ijk, m_offset, m_ijkGlobal);
+    int   index_dim = properties.get("component_degree").get_int();
+    auto *block = new StructuredBlock(database, name(), index_dim, m_ijk, m_offset, m_ijkGlobal);
 
     block->m_zoneConnectivity    = m_zoneConnectivity;
     block->m_boundaryConditions  = m_boundaryConditions;
@@ -531,12 +531,10 @@ namespace Ioss {
     if (quiet && this->m_zoneConnectivity != rhs.m_zoneConnectivity) {
       return false;
     }
-    else {
-      if (!vec_equal(this->m_zoneConnectivity, rhs.m_zoneConnectivity)) {
-        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Zone Connectivity mismatch (size {} vs {})\n",
-                   this->m_zoneConnectivity.size(), rhs.m_zoneConnectivity.size());
-        same = false;
-      }
+    if (!vec_equal(this->m_zoneConnectivity, rhs.m_zoneConnectivity)) {
+      fmt::print(Ioss::OUTPUT(), "StructuredBlock: Zone Connectivity mismatch (size {} vs {})\n",
+                 this->m_zoneConnectivity.size(), rhs.m_zoneConnectivity.size());
+      same = false;
     }
 
     // NOTE: this comparison assumes that the elements of this vector will
@@ -544,11 +542,9 @@ namespace Ioss {
     if (quiet && this->m_boundaryConditions != rhs.m_boundaryConditions) {
       return false;
     }
-    else {
-      if (!vec_equal(this->m_boundaryConditions, rhs.m_boundaryConditions)) {
-        fmt::print(Ioss::OUTPUT(), "StructuredBlock: Boundary Conditions mismatch\n");
-        same = false;
-      }
+    if (!vec_equal(this->m_boundaryConditions, rhs.m_boundaryConditions)) {
+      fmt::print(Ioss::OUTPUT(), "StructuredBlock: Boundary Conditions mismatch\n");
+      same = false;
     }
 
     if (!quiet) {

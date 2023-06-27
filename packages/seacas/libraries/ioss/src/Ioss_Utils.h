@@ -528,8 +528,9 @@ namespace Ioss {
     // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
     template <typename T> static size_t unique(std::vector<T> &out, bool skip_first)
     {
-      if (out.empty())
+      if (out.empty()) {
         return 0;
+      }
       size_t i    = 1;
       size_t pos  = 1;
       T      oldv = out[0];

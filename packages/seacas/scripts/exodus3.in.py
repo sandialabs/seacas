@@ -1583,12 +1583,12 @@ class exodus:
         get user-defined map of exodus element/node/edge/face index to user- or
         application- defined element/node/edge/face values. Map values are arbitary integers
 
-        >>> elem_num_map = exo.get_num_map(`EX_ELEM_MAP`, 1)
+        >>> elem_num_map = exo.get_num_map('EX_ELEM_MAP', 1)
 
         Parameters
         ----------
             mapType   : ex_entity_type
-                        type of map being queried (`EX_ELEM_MAP`, `EX_NODE_MAP`, `EX_FACE_MAP`, `EX_EDGE_MAP`)
+                        type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
             idx       : int
                         which map to return (1-based).  Use `inquire(mapType)` to get number of maps stored on database.
         Returns
@@ -1621,7 +1621,7 @@ class exodus:
         Parameters
         ----------
             mapType   : ex_entity_type
-                        type of map being written (`EX_ELEM_MAP`, `EX_NODE_MAP`, `EX_FACE_MAP`, `EX_EDGE_MAP`)
+                        type of map being written ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
             idx       : int
                         which map to write (1-based).  Use `put_map_param(node_map_cnt, elem_map_cnt)` prior to this
                         function to define number of maps on the database.
@@ -1666,12 +1666,12 @@ class exodus:
         so the id_map points to the element/node/edge/face *ID* for each
         *INDEX*
 
-        >>> elem_id_map = exo.get_id_map(`EX_ELEM_MAP`)
+        >>> elem_id_map = exo.get_id_map('EX_ELEM_MAP')
 
         Parameters
         ----------
             mapType   : ex_entity_type
-                        type of map being queried (`EX_ELEM_MAP`, `EX_NODE_MAP`, `EX_FACE_MAP`, `EX_EDGE_MAP`)
+                        type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
         Returns
         -------
 
@@ -1754,7 +1754,7 @@ class exodus:
         Parameters
         ----------
             ex_entity_type   map_type
-                        type of map being queried (`EX_ELEM_MAP`, `EX_NODE_MAP`, `EX_FACE_MAP`, `EX_EDGE_MAP`)
+                        type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
             <list<int>>  elem_id_map
 
         Returns

@@ -43,7 +43,7 @@ namespace Ioss::glob {
   };
 
   // From cppreference.com
-  template <class T, class U = T> const T exchange(T &obj, U &&new_value)
+  template <class T, class U = T> T exchange(T &obj, U &&new_value)
   {
     T old_value = std::move(obj);
     obj         = std::forward<U>(new_value);
@@ -210,11 +210,9 @@ namespace Ioss::glob {
 
         return std::tuple<bool, size_t>(false, str_pos);
       }
-      else {
-        // if comp_end is false, compare only if the states reached the
-        // match state
-        return std::tuple<bool, size_t>(state_pos == match_state_, str_pos);
-      }
+      // if comp_end is false, compare only if the states reached the
+      // match state
+      return std::tuple<bool, size_t>(state_pos == match_state_, str_pos);
     }
 
     void ResetStates()
@@ -527,9 +525,7 @@ namespace Ioss::glob {
             new_pos == str.length()) {
           return std::tuple<size_t, size_t>(GetNextStates()[1], new_pos);
         }
-        else {
-          return std::tuple<size_t, size_t>(GetNextStates()[0], new_pos);
-        }
+        return std::tuple<size_t, size_t>(GetNextStates()[0], new_pos);
       }
 
       return std::tuple<size_t, size_t>(GetNextStates()[1], pos);
@@ -550,9 +546,7 @@ namespace Ioss::glob {
             new_pos == str.length()) {
           return std::tuple<size_t, size_t>(GetNextStates()[1], new_pos);
         }
-        else {
-          return std::tuple<size_t, size_t>(GetNextStates()[0], new_pos);
-        }
+        return std::tuple<size_t, size_t>(GetNextStates()[0], new_pos);
       }
 
       // case where the next state matches and the group already matched
@@ -565,9 +559,7 @@ namespace Ioss::glob {
       if (match_one_) {
         return std::tuple<size_t, size_t>(GetNextStates()[1], pos);
       }
-      else {
-        return std::tuple<size_t, size_t>(GetAutomata().FailState(), new_pos);
-      }
+      return std::tuple<size_t, size_t>(GetAutomata().FailState(), new_pos);
     }
 
   private:
@@ -749,10 +741,8 @@ namespace Ioss::glob {
           if (c_ == kEndOfInput) {
             throw Error("No valid char after '\\'");
           }
-          else if (IsSpecialChar(c_)) {
-            tokens.push_back(Select(TokenKind::CHAR, c_));
-            Advance();
-          }
+          tokens.push_back(Select(TokenKind::CHAR, c_));
+          Advance();
           break;
         }
 
@@ -761,10 +751,8 @@ namespace Ioss::glob {
             tokens.push_back(Select(TokenKind::EOS));
             return tokens;
           }
-          else {
-            tokens.push_back(Select(TokenKind::CHAR, c_));
-            Advance();
-          }
+          tokens.push_back(Select(TokenKind::CHAR, c_));
+          Advance();
         }
         }
       }
@@ -1091,12 +1079,10 @@ namespace Ioss::glob {
       if (tk == TokenKind::LBRACKET) {
         return AstNodePtr<charT>(new PositiveSetNode<charT>(ParserSetItems()));
       }
-      else if (tk == TokenKind::NEGLBRACKET) {
+      if (tk == TokenKind::NEGLBRACKET) {
         return AstNodePtr<charT>(new NegativeSetNode<charT>(ParserSetItems()));
       }
-      else {
-        throw Error("set expected");
-      }
+      throw Error("set expected");
     }
 
     AstNodePtr<charT> ParserBasicGlob()
@@ -1209,16 +1195,18 @@ namespace Ioss::glob {
 
     inline const Token<charT> &PeekAhead() const
     {
-      if (pos_ >= (tok_vec_.size() - 1))
+      if (pos_ >= (tok_vec_.size() - 1)) {
         return tok_vec_.back();
+      }
 
       return tok_vec_.at(pos_ + 1);
     }
 
     inline Token<charT> &NextToken()
     {
-      if (pos_ >= (tok_vec_.size() - 1))
+      if (pos_ >= (tok_vec_.size() - 1)) {
         return tok_vec_.back();
+      }
 
       Token<charT> &tk = tok_vec_.at(pos_);
       pos_++;
@@ -1227,8 +1215,9 @@ namespace Ioss::glob {
 
     inline bool Advance()
     {
-      if (pos_ == tok_vec_.size() - 1)
+      if (pos_ == tok_vec_.size() - 1) {
         return false;
+      }
 
       ++pos_;
       return true;
@@ -1341,7 +1330,7 @@ namespace Ioss::glob {
         char  c         = char_node->GetValue();
         return std::unique_ptr<SetItem<charT>>(new SetItemChar<charT>(c));
       }
-      else if (node->GetType() == AstNode<charT>::Type::RANGE) {
+      if (node->GetType() == AstNode<charT>::Type::RANGE) {
         auto *range_node = static_cast<RangeNode<charT> *>(node);
         auto *start_node = static_cast<CharNode<charT> *>(range_node->GetStart());
         auto *end_node   = static_cast<CharNode<charT> *>(range_node->GetEnd());
@@ -1350,9 +1339,7 @@ namespace Ioss::glob {
         char end_char   = end_node->GetValue();
         return std::unique_ptr<SetItem<charT>>(new SetItemRange<charT>(start_char, end_char));
       }
-      else {
-        throw Error("Not valid set item");
-      }
+      throw Error("Not valid set item");
     }
 
     void ExecGroup(AstNode<charT> *node, Automata<charT> &automata)
@@ -1418,7 +1405,6 @@ namespace Ioss::glob {
       preview_state_ = current_state_;
     }
 
-  private:
     int    preview_state_ = -1;
     size_t current_state_ = 0;
   };

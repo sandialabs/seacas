@@ -77,7 +77,7 @@ namespace Ioss {
     std::string name() const;
 
     static std::string  numeric_label(int which, int ncomp, const std::string &name);
-    virtual std::string label(int which, const char suffix_sep = '_') const = 0;
+    virtual std::string label(int which, char suffix_sep = '_') const = 0;
     virtual std::string label_name(const std::string &base, int which, char suffix_sep = '_',
                                    bool suffices_uppercase = false) const;
     virtual bool        match(const std::vector<Suffix> &suffices) const;

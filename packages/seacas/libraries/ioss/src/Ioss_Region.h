@@ -87,9 +87,9 @@ namespace Ioss {
     std::string contains_string() const override { return "Entities"; }
     EntityType  type() const override { return REGION; }
 
-    MeshType          mesh_type() const;
-    const std::string mesh_type_string() const;
-    bool              node_major() const;
+    MeshType    mesh_type() const;
+    std::string mesh_type_string() const;
+    bool        node_major() const;
 
     void output_summary(std::ostream &strm, bool do_transient = true) const;
 
@@ -201,7 +201,7 @@ namespace Ioss {
 
     // Not guaranteed to be efficient...
     // Note that not all GroupingEntity's are guaranteed to have an 'id'...
-    GroupingEntity *get_entity(const int64_t id, EntityType io_type) const;
+    GroupingEntity *get_entity(int64_t id, EntityType io_type) const;
 
     const CoordinateFrame &get_coordinate_frame(int64_t id) const;
 
@@ -322,7 +322,7 @@ inline int Ioss::Region::get_current_state() const { return currentState; }
 
 inline bool Ioss::Region::supports_field_type(Ioss::EntityType fld_type) const
 {
-  return static_cast<unsigned int>((get_database()->entity_field_support() & fld_type) != 0u) != 0u;
+  return static_cast<unsigned int>((get_database()->entity_field_support() & fld_type) != 0U) != 0U;
 }
 
 inline int64_t Ioss::Region::node_global_to_local(int64_t global, bool must_exist) const
