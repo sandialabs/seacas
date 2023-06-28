@@ -67,8 +67,8 @@ void logger(const char *message)
 
 void usage()
 {
-  auto v5default = MAT_FT_DEFAULT == MAT_FT_MAT5 ? "[default]" : "";
-  auto v7default = MAT_FT_DEFAULT == MAT_FT_MAT73 ? "[default]" : "";
+  const auto *v5default = MAT_FT_DEFAULT == MAT_FT_MAT5 ? "[default]" : "";
+  const auto *v7default = MAT_FT_DEFAULT == MAT_FT_MAT73 ? "[default]" : "";
   fmt::print("exo2mat [options] exodus_file_name.\n"
              "   the exodus_file_name is required (exodus only).\n"
              "   Options:\n"
@@ -79,7 +79,8 @@ void usage()
              "   -v73  output version 7.3 mat file (hdf5-based) {}\n"
              "   -v7.3 output version 7.3 mat file (hdf5-based)\n"
              " ** note **\n"
-             "Binary files are written by default on all platforms.\n", v5default, v7default);
+             "Binary files are written by default on all platforms.\n",
+             v5default, v7default);
 }
 
 /* put a string into an m file. If the string has
@@ -258,7 +259,7 @@ int PutDbl(const std::string &name, int n1, int n2, double *pd)
 
 char **get_exodus_names(size_t count, int size)
 {
-  auto names = new char *[count];
+  auto *names = new char *[count];
   for (size_t i = 0; i < count; i++) {
     names[i] = new char[size + 1];
     std::memset(names[i], '\0', size + 1);
@@ -931,7 +932,7 @@ int main(int argc, char *argv[])
   size_t num_elements = 0;
 
   enum mat_ft mat_version     = MAT_FT_DEFAULT;
-  bool use_cell_arrays = false;
+  bool        use_cell_arrays = false;
 
   /* process arguments */
   for (int j = 1; j < argc && argv[j][0] == '-'; j++) {

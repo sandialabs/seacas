@@ -70,7 +70,7 @@ namespace Excn {
     ObjectType entity_type() const { return type_; }
 
     ex_entity_id         id{0};
-    std::string          name_{""};
+    std::string          name_;
     ObjectType           type_{Excn::ObjectType::UNSET};
     int                  entityCount{0};
     std::vector<int64_t> entityList;
@@ -94,7 +94,7 @@ namespace Excn {
     size_t entity_count() const { return elementCount; }
 
     char                     elType[MAX_STR_LENGTH + 1]{};
-    std::string              name_{""};
+    std::string              name_;
     std::vector<std::string> attributeNames{};
     ex_entity_id             id{0};
     int64_t                  elementCount{0};
@@ -128,7 +128,7 @@ namespace Excn {
     int64_t      dfCount{0};
     int64_t      offset_{0};
     int          position_{-1};
-    std::string  name_{""};
+    std::string  name_;
 
     std::vector<INT> nodeSetNodes{};
     std::vector<INT> nodeOrderMap{};
@@ -162,7 +162,7 @@ namespace Excn {
     int64_t      dfCount{0};
     int64_t      offset_{-1};
     int          position_{-1};
-    std::string  name_{""};
+    std::string  name_;
 
     std::vector<INT> elems{};
     std::vector<INT> sides{};
@@ -192,7 +192,7 @@ namespace Excn {
     ~EdgeBlock() = default;
 
     char                     elType[MAX_STR_LENGTH + 1]{};
-    std::string              name_{""};
+    std::string              name_;
     std::vector<std::string> attributeNames{};
     ex_entity_id             id{0};
     int64_t                  edgeCount{0};
@@ -238,7 +238,7 @@ namespace Excn {
     ~FaceBlock() = default;
 
     char                     elType[MAX_STR_LENGTH + 1]{};
-    std::string              name_{""};
+    std::string              name_;
     std::vector<std::string> attributeNames{};
     ex_entity_id             id{0};
     int64_t                  faceCount{0};
