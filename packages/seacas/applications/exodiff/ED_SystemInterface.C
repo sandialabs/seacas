@@ -1578,7 +1578,7 @@ namespace {
           // A "!" in front of a name means to exclude the name so no
           // need to look for difference type and tolerance.
           std::string tmp = tok;
-          if (extract_token(tmp, "!") != "") {
+          if (!extract_token(tmp, "!").empty()) {
             names.push_back(tok);
             toler.push_back(def_tol);
           }
