@@ -470,17 +470,17 @@ namespace Ioss {
       if (!using_parallel_io() || myProcessor == 0) {
 #if defined SEACAS_HAVE_DATAWARP
         int complete = 0, pending = 0, deferred = 0, failed = 0;
-        dw_query_file_stage(get_dwname().c_str(), &complete, &pending, &deferred, &failed);
+        dw_query_file_stage(get_dw_name().c_str(), &complete, &pending, &deferred, &failed);
 #if IOSS_DEBUG_OUTPUT
         auto initial = std::chrono::steady_clock::now();
         fmt::print(Ioss::DebugOut(), "Query: {}, {}, {}, {}\n", complete, pending, deferred,
                    failed);
 #endif
         if (pending > 0) {
-          int dwret = dw_wait_file_stage(get_dwname().c_str());
+          int dwret = dw_wait_file_stage(get_dw_name().c_str());
           if (dwret < 0) {
             std::ostringstream errmsg;
-            fmt::print(errmsg, "ERROR: failed waiting for file stage `{}`: {}\n", get_dwname(),
+            fmt::print(errmsg, "ERROR: failed waiting for file stage `{}`: {}\n", get_dw_name(),
                        std::strerror(-dwret));
             IOSS_ERROR(errmsg);
           }
