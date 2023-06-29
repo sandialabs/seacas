@@ -118,14 +118,14 @@ namespace Ioss {
     static bool is_path_absolute(const std::string &path)
     {
       if (!path.empty()) {
-#if HAS_FILESYSTEM
+#ifdef HAS_FILESYSTEM
         std::filesystem::path p1 = path;
         return p1.is_absolute();
 #else
 #ifdef __IOSS_WINDOWS__
-	return path[0] == '\\' && path[1] == ':';
+        return path[0] == '\\' && path[1] == ':';
 #else
-	return path[0] == '/';
+        return path[0] == '/';
 #endif
 #endif
       }
