@@ -4961,9 +4961,8 @@ namespace Ioex {
       }
     }
   }
-}
 
-std::vector<size_t> ParallelDatabaseIO::get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const
+  std::vector<size_t> ParallelDatabaseIO::get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const
 {
   size_t num_to_get = decomp->get_all_block_connectivity_size();
   size_t expected_data_size = num_to_get * decomp->int_size();
