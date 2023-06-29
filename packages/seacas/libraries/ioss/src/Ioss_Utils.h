@@ -20,7 +20,10 @@
 #include <cstddef> // for size_t
 #include <cstdint> // for int64_t
 #include <cstdlib> // for nullptrr
+#if __has_include(<filesystem>)
 #include <filesystem>
+#define HAS_FILESYSTEM
+#endif
 #include <iostream>  // for ostringstream, etcstream, etc
 #include <stdexcept> // for runtime_error
 #include <string>    // for string
@@ -115,8 +118,16 @@ namespace Ioss {
     static bool is_path_absolute(const std::string &path)
     {
       if (!path.empty()) {
+#if HAS_FILESYSTEM
         std::filesystem::path p1 = path;
         return p1.is_absolute();
+#else
+#ifdef __IOSS_WINDOWS__
+	return path[0] == '\\' && path[1] == ':';
+#else
+	return path[0] == '/';
+#endif
+#endif
       }
       return false;
     }
