@@ -29,7 +29,7 @@ namespace Ioss {
   {
   public:
     SideSet(DatabaseIO *io_database, const std::string &my_name);
-    SideSet(const SideSet &);
+    SideSet(const SideSet &other);
     ~SideSet() override;
 
     std::string type_string() const override { return "SideSet"; }
@@ -53,9 +53,9 @@ namespace Ioss {
     Property get_implicit_property(const std::string &my_name) const override;
 
     int  max_parametric_dimension() const;
-    bool operator==(const SideSet &) const;
-    bool operator!=(const SideSet &) const;
-    bool equal(const SideSet &) const;
+    bool operator==(const SideSet &rhs) const;
+    bool operator!=(const SideSet &rhs) const;
+    bool equal(const SideSet &rhs) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
@@ -67,7 +67,7 @@ namespace Ioss {
     int64_t internal_get_zc_field_data(const Field &field, void **data,
                                        size_t *data_size) const override;
 
-    bool equal_(const SideSet &rhs, const bool quiet) const;
+    bool equal_(const SideSet &rhs, bool quiet) const;
 
   private:
     SideBlockContainer       sideBlocks;

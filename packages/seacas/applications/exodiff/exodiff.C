@@ -224,7 +224,7 @@ void floating_point_exception_handler(int signo)
 namespace {
   int get_int_size(const std::string &file_name)
   {
-    if (file_name == "") {
+    if (file_name.empty()) {
       return 0;
     }
 
@@ -343,7 +343,7 @@ int main(int argc, char *argv[])
   std::string file1_name = interFace.file1;
   std::string file2_name = interFace.file2;
 
-  if (interFace.summary_flag && file1_name == "") {
+  if (interFace.summary_flag && file1_name.empty()) {
     Error(fmt::format("Summary option specified but an exodus "
                       "file was not specified.\n"));
   }
@@ -544,7 +544,8 @@ namespace {
     int out_file_id = -1;
     if (!interFace.summary_flag) {
       std::string diffile_name = interFace.diff_file;
-      Check_Compatible_Meshes(file1, file2, (diffile_name == ""), node_map, elmt_map, node_id_map);
+      Check_Compatible_Meshes(file1, file2, (diffile_name.empty()), node_map, elmt_map,
+                              node_id_map);
       // Doesn't return if meshes are not compatible...
 
       out_file_id = Create_File(file1, file2, diffile_name, &diff_flag);
@@ -971,17 +972,17 @@ double FileDiff(double v1, double v2, ToleranceMode type)
     double tol = 1.0 < max ? max : 1.0;
     return fabs(v1 - v2) / tol;
   }
-  else if (type == ToleranceMode::ABSOLUTE_) {
+  if (type == ToleranceMode::ABSOLUTE_) {
     return (v1 - v2);
   }
-  else if (type == ToleranceMode::EIGEN_REL_) { // relative diff
+  if (type == ToleranceMode::EIGEN_REL_) { // relative diff
     if (v1 == 0.0 && v2 == 0.0) {
       return 0.0;
     }
     double max = fabs(v1) < fabs(v2) ? fabs(v2) : fabs(v1);
     return (fabs(v1) - fabs(v2)) / max;
   }
-  else if (type == ToleranceMode::EIGEN_COM_) {
+  if (type == ToleranceMode::EIGEN_COM_) {
     // if (Abs(x - y) <= Max(absTol, relTol * Max(Abs(x), Abs(y))))
     // In the current implementation, absTol == relTol;
     // In summary, use abs tolerance if both values are less than 1.0;
@@ -991,12 +992,10 @@ double FileDiff(double v1, double v2, ToleranceMode type)
     double tol = 1.0 < max ? max : 1.0;
     return fabs(fabs(v1) - fabs(v2)) / tol;
   }
-  else if (type == ToleranceMode::EIGEN_ABS_) {
+  if (type == ToleranceMode::EIGEN_ABS_) {
     return (fabs(v1) - fabs(v2));
   }
-  else {
-    return 0.0;
-  }
+  return 0.0;
 }
 
 void Die_TS(double ts)

@@ -17,8 +17,8 @@
 #include <vector>
 
 namespace {
-  const std::string id_str() { return std::string("id"); }
-  void              check_is_valid(const Ioss::Assembly *assem, const Ioss::GroupingEntity *member)
+  std::string id_str() { return std::string("id"); }
+  void        check_is_valid(const Ioss::Assembly *assem, const Ioss::GroupingEntity *member)
   {
     // Ensure that `member` is not already a member and that its type matches
     // the current type.
@@ -79,11 +79,6 @@ Ioss::Assembly::Assembly(Ioss::DatabaseIO *io_database, const std::string &my_na
 {
   properties.add(Ioss::Property(this, "member_count", Ioss::Property::INTEGER));
   properties.add(Ioss::Property(this, "member_type", Ioss::Property::INTEGER));
-}
-
-Ioss::Assembly::Assembly(const Ioss::Assembly &other)
-    : GroupingEntity(other), m_members(other.m_members), m_type(other.m_type)
-{
 }
 
 const Ioss::EntityContainer &Ioss::Assembly::get_members() const { return m_members; }

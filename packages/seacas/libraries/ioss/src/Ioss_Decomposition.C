@@ -58,10 +58,7 @@ namespace {
   bool check_valid_decomp_method(const std::string &method)
   {
     const auto &valid_methods = Ioss::valid_decomp_methods();
-    if (std::find(valid_methods.begin(), valid_methods.end(), method) != valid_methods.end()) {
-      return true;
-    }
-    return false;
+    return std::find(valid_methods.begin(), valid_methods.end(), method) != valid_methods.end();
   }
 
   std::string get_decomposition_method(const Ioss::PropertyManager &properties)
@@ -286,19 +283,19 @@ namespace Ioss {
   }
 
   template IOSS_EXPORT void
-  Decomposition<int>::generate_entity_distributions(size_t globalNodeCount,
-                                                    size_t globalElementCount);
+  Decomposition<int>::generate_entity_distributions(size_t global_node_count,
+                                                    size_t global_element_count);
   template IOSS_EXPORT void
-  Decomposition<int64_t>::generate_entity_distributions(size_t globalNodeCount,
-                                                        size_t globalElementCount);
+  Decomposition<int64_t>::generate_entity_distributions(size_t global_node_count,
+                                                        size_t global_element_count);
 
   template <typename INT>
-  void Decomposition<INT>::generate_entity_distributions(size_t globalNodeCount,
-                                                         size_t globalElementCount)
+  void Decomposition<INT>::generate_entity_distributions(size_t global_node_count,
+                                                         size_t global_element_count)
   {
     show_progress(__func__);
-    m_globalNodeCount    = globalNodeCount;
-    m_globalElementCount = globalElementCount;
+    m_globalNodeCount    = global_node_count;
+    m_globalElementCount = global_element_count;
 
     m_elementDist = get_entity_dist<INT>(m_processorCount, m_processor, m_globalElementCount,
                                          &m_elementOffset, &m_elementCount);
@@ -1147,7 +1144,7 @@ namespace Ioss {
       std::vector<std::pair<int, int>> export_map;
       export_map.reserve(num_export);
       for (int i = 0; i < num_export; i++) {
-        export_map.emplace_back(std::make_pair(export_procs[i], export_global_ids[i]));
+        export_map.emplace_back(export_procs[i], export_global_ids[i]);
       }
 
       Ioss::sort(export_map.begin(), export_map.end());

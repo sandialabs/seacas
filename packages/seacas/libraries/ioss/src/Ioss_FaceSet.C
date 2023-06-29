@@ -53,7 +53,7 @@ int64_t Ioss::FaceSet::internal_get_zc_field_data(const Field &field, void **dat
 
 Ioss::Property Ioss::FaceSet::get_implicit_property(const std::string &my_name) const
 {
-  return Ioss::GroupingEntity::get_implicit_property(my_name);
+  return Ioss::EntitySet::get_implicit_property(my_name);
 }
 
 void Ioss::FaceSet::block_membership(std::vector<std::string> & /*block_members*/) {}

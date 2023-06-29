@@ -441,7 +441,7 @@ void Cpup::SystemInterface::dump(std::ostream & /*unused*/) const {}
 
 std::string Cpup::SystemInterface::output_suffix() const
 {
-  if (outExtension_ == "") {
+  if (outExtension_.empty()) {
     return inExtension_;
   }
   return outExtension_;

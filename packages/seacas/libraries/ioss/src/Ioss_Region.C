@@ -493,7 +493,7 @@ namespace Ioss {
     return MeshType::UNSTRUCTURED;
   }
 
-  const std::string Region::mesh_type_string() const
+  std::string Region::mesh_type_string() const
   {
     switch (mesh_type()) {
     case MeshType::UNKNOWN: return "Unknown";
@@ -571,7 +571,7 @@ namespace Ioss {
     size_t                        num_ss_vars = 0;
     Ioss::NameList                names;
     const Ioss::SideSetContainer &sss = get_sidesets();
-    for (auto &ss : sss) {
+    for (const auto &ss : sss) {
       const auto &sbs = ss->get_side_blocks();
       for (const auto &sb : sbs) {
         sb->field_describe(Ioss::Field::TRANSIENT, &names);
@@ -1133,7 +1133,7 @@ namespace Ioss {
       // than one block; use default for first block (or user-defined
       // values)
       if (!structuredBlocks.empty()) {
-        auto   prev_block = structuredBlocks.back();
+        auto  *prev_block = structuredBlocks.back();
         size_t num_node   = prev_block->get_property("node_count").get_int();
         size_t num_cell   = prev_block->get_property("cell_count").get_int();
         num_node += prev_block->get_node_offset();
@@ -1727,7 +1727,7 @@ namespace Ioss {
 
   bool Region::add_alias(const std::string &db_name, const std::string &alias)
   {
-    auto entity = get_entity(db_name);
+    auto *entity = get_entity(db_name);
     IOSS_FUNC_ENTER(m_);
     if (entity != nullptr) {
       return add_alias__(db_name, alias, entity->type());
@@ -1822,25 +1822,25 @@ namespace Ioss {
     if (io_type == NODESET) {
       return get_nodeset(my_name);
     }
-    else if (io_type == EDGESET) {
+    if (io_type == EDGESET) {
       return get_edgeset(my_name);
     }
-    else if (io_type == FACESET) {
+    if (io_type == FACESET) {
       return get_faceset(my_name);
     }
-    else if (io_type == ELEMENTSET) {
+    if (io_type == ELEMENTSET) {
       return get_elementset(my_name);
     }
-    else if (io_type == COMMSET) {
+    if (io_type == COMMSET) {
       return get_commset(my_name);
     }
-    else if (io_type == SIDEBLOCK) {
+    if (io_type == SIDEBLOCK) {
       return get_sideblock(my_name);
     }
-    else if (io_type == ASSEMBLY) {
+    if (io_type == ASSEMBLY) {
       return get_assembly(my_name);
     }
-    else if (io_type == BLOB) {
+    if (io_type == BLOB) {
       return get_blob(my_name);
     }
     return nullptr;
@@ -1977,22 +1977,22 @@ namespace Ioss {
     if (io_type == NODESET) {
       return get_entity_internal(id, get_nodesets());
     }
-    else if (io_type == EDGESET) {
+    if (io_type == EDGESET) {
       return get_entity_internal(id, get_edgesets());
     }
-    else if (io_type == FACESET) {
+    if (io_type == FACESET) {
       return get_entity_internal(id, get_facesets());
     }
-    else if (io_type == ELEMENTSET) {
+    if (io_type == ELEMENTSET) {
       return get_entity_internal(id, get_elementsets());
     }
-    else if (io_type == COMMSET) {
+    if (io_type == COMMSET) {
       return get_entity_internal(id, get_commsets());
     }
-    else if (io_type == ASSEMBLY) {
+    if (io_type == ASSEMBLY) {
       return get_entity_internal(id, get_assemblies());
     }
-    else if (io_type == BLOB) {
+    if (io_type == BLOB) {
       return get_entity_internal(id, get_blobs());
     }
     return nullptr;
@@ -2010,7 +2010,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     Assembly *ge = nullptr;
-    for (auto &as : assemblies) {
+    for (const auto &as : assemblies) {
       if (db_hash == as->hash() && as->name() == db_name) {
         ge = as;
         break;
@@ -2031,7 +2031,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     Blob *ge = nullptr;
-    for (auto &bl : blobs) {
+    for (const auto &bl : blobs) {
       if (db_hash == bl->hash() && bl->name() == db_name) {
         ge = bl;
         break;
@@ -2073,7 +2073,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     EdgeBlock *ge = nullptr;
-    for (auto &eb : edgeBlocks) {
+    for (const auto &eb : edgeBlocks) {
       if (db_hash == eb->hash() && eb->name() == db_name) {
         ge = eb;
         break;
@@ -2094,7 +2094,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     FaceBlock *ge = nullptr;
-    for (auto &fb : faceBlocks) {
+    for (const auto &fb : faceBlocks) {
       if (db_hash == fb->hash() && fb->name() == db_name) {
         ge = fb;
         break;
@@ -2115,7 +2115,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     ElementBlock *ge = nullptr;
-    for (auto &eb : elementBlocks) {
+    for (const auto &eb : elementBlocks) {
       if (db_hash == eb->hash() && eb->name() == db_name) {
         ge = eb;
         break;
@@ -2136,7 +2136,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     StructuredBlock *ge = nullptr;
-    for (auto &sb : structuredBlocks) {
+    for (const auto &sb : structuredBlocks) {
       if (db_hash == sb->hash() && sb->name() == db_name) {
         ge = sb;
         break;
@@ -2157,7 +2157,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     SideSet *ge = nullptr;
-    for (auto &ss : sideSets) {
+    for (const auto &ss : sideSets) {
       if (db_hash == ss->hash() && ss->name() == db_name) {
         ge = ss;
         break;
@@ -2175,7 +2175,7 @@ namespace Ioss {
   {
     IOSS_FUNC_ENTER(m_);
     SideBlock *ge = nullptr;
-    for (auto &ss : sideSets) {
+    for (const auto &ss : sideSets) {
       ge = ss->get_side_block(my_name);
       if (ge != nullptr) {
         break;
@@ -2196,7 +2196,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     NodeSet *ge = nullptr;
-    for (auto &ns : nodeSets) {
+    for (const auto &ns : nodeSets) {
       if (db_hash == ns->hash() && ns->name() == db_name) {
         ge = ns;
         break;
@@ -2217,7 +2217,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     EdgeSet *ge = nullptr;
-    for (auto &es : edgeSets) {
+    for (const auto &es : edgeSets) {
       if (db_hash == es->hash() && es->name() == db_name) {
         ge = es;
         break;
@@ -2238,7 +2238,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     FaceSet *ge = nullptr;
-    for (auto &fs : faceSets) {
+    for (const auto &fs : faceSets) {
       if (db_hash == fs->hash() && fs->name() == db_name) {
         ge = fs;
         break;
@@ -2259,7 +2259,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     ElementSet *ge = nullptr;
-    for (auto &es : elementSets) {
+    for (const auto &es : elementSets) {
       if (db_hash == es->hash() && es->name() == db_name) {
         ge = es;
         break;
@@ -2280,7 +2280,7 @@ namespace Ioss {
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     CommSet *ge = nullptr;
-    for (auto &cs : commSets) {
+    for (const auto &cs : commSets) {
       if (db_hash == cs->hash() && cs->name() == db_name) {
         ge = cs;
         break;
@@ -2297,7 +2297,7 @@ namespace Ioss {
   const CoordinateFrame &Region::get_coordinate_frame(int64_t id) const
   {
     IOSS_FUNC_ENTER(m_);
-    for (auto &coor_frame : coordinateFrames) {
+    for (const auto &coor_frame : coordinateFrames) {
       if (coor_frame.id() == id) {
         return coor_frame;
       }
@@ -2322,79 +2322,79 @@ namespace Ioss {
     // If found, then set 'type' (if non-nullptr) to the type of the entity
     // (the 'type' values are from client code that was developed prior
     // to this function, so they are somewhat exodusII specific...).
-    if (((io_type & NODEBLOCK) != 0u) && get_node_block(my_name) != nullptr) {
+    if (((io_type & NODEBLOCK) != 0U) && get_node_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "NODE_BLOCK";
       }
       return true;
     }
-    if (((io_type & ASSEMBLY) != 0u) && get_assembly(my_name) != nullptr) {
+    if (((io_type & ASSEMBLY) != 0U) && get_assembly(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "ASSEMBLY";
       }
       return true;
     }
-    if (((io_type & BLOB) != 0u) && get_blob(my_name) != nullptr) {
+    if (((io_type & BLOB) != 0U) && get_blob(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "BLOB";
       }
       return true;
     }
-    if (((io_type & EDGEBLOCK) != 0u) && get_edge_block(my_name) != nullptr) {
+    if (((io_type & EDGEBLOCK) != 0U) && get_edge_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "EDGE_BLOCK";
       }
       return true;
     }
-    if (((io_type & FACEBLOCK) != 0u) && get_face_block(my_name) != nullptr) {
+    if (((io_type & FACEBLOCK) != 0U) && get_face_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "FACE_BLOCK";
       }
       return true;
     }
-    if (((io_type & ELEMENTBLOCK) != 0u) && get_element_block(my_name) != nullptr) {
+    if (((io_type & ELEMENTBLOCK) != 0U) && get_element_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "ELEMENT_BLOCK";
       }
       return true;
     }
-    if (((io_type & STRUCTUREDBLOCK) != 0u) && get_structured_block(my_name) != nullptr) {
+    if (((io_type & STRUCTUREDBLOCK) != 0U) && get_structured_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "STRUCTURED_BLOCK";
       }
       return true;
     }
-    if (((io_type & SIDESET) != 0u) && get_sideset(my_name) != nullptr) {
+    if (((io_type & SIDESET) != 0U) && get_sideset(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "SURFACE";
       }
       return true;
     }
-    else if (((io_type & NODESET) != 0u) && get_nodeset(my_name) != nullptr) {
+    if (((io_type & NODESET) != 0U) && get_nodeset(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "NODESET";
       }
       return true;
     }
-    else if (((io_type & EDGESET) != 0u) && get_edgeset(my_name) != nullptr) {
+    if (((io_type & EDGESET) != 0U) && get_edgeset(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "EDGESET";
       }
       return true;
     }
-    else if (((io_type & FACESET) != 0u) && get_faceset(my_name) != nullptr) {
+    if (((io_type & FACESET) != 0U) && get_faceset(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "FACESET";
       }
       return true;
     }
-    else if (((io_type & ELEMENTSET) != 0u) && get_elementset(my_name) != nullptr) {
+    if (((io_type & ELEMENTSET) != 0U) && get_elementset(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "ELEMENTSET";
       }
       return true;
     }
-    else if (((io_type & COMMSET) != 0u) && get_commset(my_name) != nullptr) {
+    if (((io_type & COMMSET) != 0U) && get_commset(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "COMMSET";
       }
@@ -2415,7 +2415,7 @@ namespace Ioss {
   ElementBlock *Region::get_element_block(size_t local_id) const
   {
     IOSS_FUNC_ENTER(m_);
-    for (auto &eb : elementBlocks) {
+    for (const auto &eb : elementBlocks) {
       if (eb->contains(local_id)) {
         return eb;
       }
@@ -2438,7 +2438,7 @@ namespace Ioss {
   StructuredBlock *Region::get_structured_block(size_t global_offset) const
   {
     IOSS_FUNC_ENTER(m_);
-    for (auto &sb : structuredBlocks) {
+    for (const auto &sb : structuredBlocks) {
       if (sb->contains(global_offset)) {
         return sb;
       }
@@ -2536,7 +2536,7 @@ namespace Ioss {
 
     if (my_name == "element_count") {
       int64_t count = 0;
-      for (auto &eb : elementBlocks) {
+      for (const auto &eb : elementBlocks) {
         count += eb->entity_count();
       }
       return Property(my_name, count);
@@ -2544,7 +2544,7 @@ namespace Ioss {
 
     if (my_name == "cell_count") {
       int64_t count = 0;
-      for (auto &eb : structuredBlocks) {
+      for (const auto &eb : structuredBlocks) {
         count += eb->get_property("cell_count").get_int();
       }
       return Property(my_name, count);
@@ -2552,7 +2552,7 @@ namespace Ioss {
 
     if (my_name == "face_count") {
       int64_t count = 0;
-      for (auto &fb : faceBlocks) {
+      for (const auto &fb : faceBlocks) {
         count += fb->entity_count();
       }
       return Property(my_name, count);
@@ -2560,7 +2560,7 @@ namespace Ioss {
 
     if (my_name == "edge_count") {
       int64_t count = 0;
-      for (auto &eb : edgeBlocks) {
+      for (const auto &eb : edgeBlocks) {
         count += eb->entity_count();
       }
       return Property(my_name, count);

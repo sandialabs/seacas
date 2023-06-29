@@ -1,5 +1,5 @@
 """
-exodus.py v 1.20.23 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.21.1 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.20.23 (seacas-py3)"
+EXODUS_PY_VERSION = "1.21.1 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.20.23 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.21.1 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2023 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -114,19 +114,16 @@ def getExodusVersion():
     Parse the exodusII.h header file and return the version number or 0 if not
     found.
     """
-    version_major = -1
-    version_minor = -1
-    with open(f"{ACCESS}/@SEACAS_INCLUDEDIR@/exodusII.h") as header_file:
-        for line in header_file:
-            fields = line.split()
-            if len(fields) == 3 and fields[0] == '#define':
-                if fields[1] == 'EXODUS_VERSION_MAJOR':
-                    version_major = int(fields[2])
-                if fields[1] == 'EXODUS_VERSION_MINOR':
-                    version_minor = int(fields[2])
-            if (version_major > 0 and version_minor >= 0):
-                return 100 * version_major + version_minor
-    return 0
+
+    return _parse_exodus_version('@EXODUS_VERSION@')
+
+
+def _parse_exodus_version(version_string):
+    if version_string:
+        assert version_string.startswith("#define EXODUS_VERSION "), "Received a incorrectly formated verstion string. Please check the CMakeLists.txt"
+        return int(version_string.strip().split()[-1].strip('"').replace('.', ''))
+    else:
+        return 0
 
 
 try:
@@ -164,7 +161,12 @@ if os.uname()[0] == 'Darwin':
     EXODUS_SO = f"{ACCESS}/@SEACAS_LIBDIR@/libexodus.dylib"
 else:
     EXODUS_SO = f"{ACCESS}/@SEACAS_LIBDIR@/libexodus.so"
-EXODUS_LIB = ctypes.cdll.LoadLibrary(EXODUS_SO)
+pip_path = os.path.dirname(__file__)
+pip_so_path = os.path.join(pip_path, "libexodus.so")
+try:
+    EXODUS_LIB = ctypes.cdll.LoadLibrary(pip_so_path)
+except Exception:
+    EXODUS_LIB = ctypes.cdll.LoadLibrary(EXODUS_SO)
 
 MAX_STR_LENGTH = 32      # match exodus default
 MAX_NAME_LENGTH = 256     # match exodus default
@@ -1581,12 +1583,12 @@ class exodus:
         get user-defined map of exodus element/node/edge/face index to user- or
         application- defined element/node/edge/face values. Map values are arbitary integers
 
-        >>> elem_num_map = exo.get_num_map(`EX_ELEM_MAP`, 1)
+        >>> elem_num_map = exo.get_num_map('EX_ELEM_MAP', 1)
 
         Parameters
         ----------
             mapType   : ex_entity_type
-                        type of map being queried (`EX_ELEM_MAP`, `EX_NODE_MAP`, `EX_FACE_MAP`, `EX_EDGE_MAP`)
+                        type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
             idx       : int
                         which map to return (1-based).  Use `inquire(mapType)` to get number of maps stored on database.
         Returns
@@ -1619,7 +1621,7 @@ class exodus:
         Parameters
         ----------
             mapType   : ex_entity_type
-                        type of map being written (`EX_ELEM_MAP`, `EX_NODE_MAP`, `EX_FACE_MAP`, `EX_EDGE_MAP`)
+                        type of map being written ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
             idx       : int
                         which map to write (1-based).  Use `put_map_param(node_map_cnt, elem_map_cnt)` prior to this
                         function to define number of maps on the database.
@@ -1664,12 +1666,12 @@ class exodus:
         so the id_map points to the element/node/edge/face *ID* for each
         *INDEX*
 
-        >>> elem_id_map = exo.get_id_map(`EX_ELEM_MAP`)
+        >>> elem_id_map = exo.get_id_map('EX_ELEM_MAP')
 
         Parameters
         ----------
             mapType   : ex_entity_type
-                        type of map being queried (`EX_ELEM_MAP`, `EX_NODE_MAP`, `EX_FACE_MAP`, `EX_EDGE_MAP`)
+                        type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
         Returns
         -------
 
@@ -1752,7 +1754,7 @@ class exodus:
         Parameters
         ----------
             ex_entity_type   map_type
-                        type of map being queried (`EX_ELEM_MAP`, `EX_NODE_MAP`, `EX_FACE_MAP`, `EX_EDGE_MAP`)
+                        type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
             <list<int>>  elem_id_map
 
         Returns

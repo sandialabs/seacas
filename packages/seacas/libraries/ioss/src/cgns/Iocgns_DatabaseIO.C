@@ -377,7 +377,8 @@ namespace {
     }
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print("[{}] CGNS DatabaseIO has decomp flag? {}; names? {}\n", myProcessor, has_decomp_flag, has_decomp_names);
+    fmt::print("[{}] CGNS DatabaseIO has decomp flag? {}; names? {}\n", myProcessor,
+               has_decomp_flag, has_decomp_names);
 #endif
 
     for (int i = 0; i < nconn; i++) {
@@ -403,8 +404,9 @@ namespace {
                          (!has_decomp_names || name_is_decomp(connectname));
       }
 #if IOSS_DEBUG_OUTPUT
-      fmt::print("[{}] ZGC Name: {}, Has decomp descriptor: {}. Name is decomp: {}.  Is_from_decomp: {}\n", 
-		 myProcessor, connectname, has_decomp_flag, name_is_decomp(connectname), is_from_decomp);
+      fmt::print(
+          "[{}] ZGC Name: {}, Has decomp descriptor: {}. Name is decomp: {}.  Is_from_decomp: {}\n",
+          myProcessor, connectname, has_decomp_flag, name_is_decomp(connectname), is_from_decomp);
 #endif
 
       if (is_from_decomp) {
@@ -664,7 +666,7 @@ namespace Iocgns {
   {
     if (m_cgnsFilePtr > 0) {
       CGCHECKM(cg_close(m_cgnsFilePtr));
-      closeDW();
+      close_dw();
       m_cgnsFilePtr = -1;
     }
   }

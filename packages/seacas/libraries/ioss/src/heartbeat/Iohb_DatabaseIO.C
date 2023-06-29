@@ -46,7 +46,7 @@ namespace Ioss {
 namespace {
   std::string time_stamp(const std::string &format)
   {
-    if (format == "") {
+    if (format.empty()) {
       return std::string("");
     }
     const int   length = 256;
@@ -297,7 +297,7 @@ namespace Iohb {
     initialize();
 
     layout_ = std::make_unique<Layout>(showLabels, precision_, separator_, fieldWidth_);
-    if (tsFormat != "") {
+    if (!tsFormat.empty()) {
       layout_->add_literal("+");
       layout_->add_literal(time_stamp(tsFormat));
       layout_->add_literal(" ");

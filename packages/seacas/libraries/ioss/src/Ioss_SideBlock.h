@@ -110,9 +110,9 @@ namespace Ioss {
     int  get_consistent_side_number() const;
     void set_consistent_side_number(int side) { consistentSideNumber = side; }
 
-    bool operator==(const SideBlock &) const;
-    bool operator!=(const SideBlock &) const;
-    bool equal(const SideBlock &) const;
+    bool operator==(const SideBlock &rhs) const;
+    bool operator!=(const SideBlock &rhs) const;
+    bool equal(const SideBlock &rhs) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
@@ -125,7 +125,7 @@ namespace Ioss {
                                        size_t *data_size) const override;
 
   private:
-    bool equal_(const SideBlock &, bool quiet) const;
+    bool equal_(const SideBlock &rhs, bool quiet) const;
 
     const SideSet     *owner_{nullptr};
     ElementTopology   *parentTopology_{nullptr}; // Topology of parent element (if any)

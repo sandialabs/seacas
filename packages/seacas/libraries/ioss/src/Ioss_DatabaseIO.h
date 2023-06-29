@@ -133,35 +133,33 @@ namespace Ioss {
     virtual void finalize_database() const {}
 
     // Let's save the name on disk after Filename gets modified, e.g: decoded_filename
-    void set_pfsname(const std::string &name) const { pfsName = name; }
+    void set_pfs_name(const std::string &name) const { pfsName = name; }
 
-    std::string get_pfsname() const { return pfsName; }
+    std::string get_pfs_name() const { return pfsName; }
 
     /** \brief this will be the name in BB namespace
      */
-    void set_dwname(const std::string &name) const { bbName = name; }
+    void set_dw_name(const std::string &name) const { bbName = name; }
 
-    std::string get_dwname() const
+    std::string get_dw_name() const
     {
       if (!bbName.empty() && !is_input() && using_dw()) {
         return bbName;
       }
-      else {
-        return get_filename();
-      }
+      return get_filename();
     }
 
     /** \brief We call this ONLY after we assure that using_dw() is TRUE
      *  \ returns mount point of Datawarp namespace, e.g: `/opt/cray/....<jobid>`
      */
-    std::string get_dwPath() const { return dwPath; }
+    std::string get_dw_path() const { return dwPath; }
 
     /** Determine whether Cray Datawarp module is loaded and we have BB capacity allocated for this
      * job ( i.e: DW_JOB_STRIPED is set) && IOSS property to use DATAWARP is set to Y/YES (i.e
      * environmental variable ENABLE_DATAWARP) . If we are using DW then set some pathnames for
      * writing directly to BB instead of PFS(i.e Lustre)
      */
-    void check_setDW() const;
+    void check_set_dw() const;
 
     /** Set if  Cray Datawarp exists and allocated space is found , i.e PATH to DW name space
      */
@@ -186,7 +184,7 @@ namespace Ioss {
     const std::string &decoded_filename() const;
 
     /** Return a string specifying underlying format of database (exodus, cgns, ...) */
-    virtual const std::string get_format() const = 0;
+    virtual std::string get_format() const = 0;
 
     /** \brief Determine whether the database is an input database.
      *
@@ -219,11 +217,11 @@ namespace Ioss {
      * for all related subsequent functions(e.g: get_filename, get_file_ptr etc) once burst buffer
      * is found and set to be used.
      */
-    void openDW(const std::string &filename) const;
+    void open_dw(const std::string &filename) const;
 
     /** \brief  Function which invokes stageout  from BB to Disk, prior to completion of final close
      */
-    void closeDW() const;
+    void close_dw() const;
 
     void openDatabase() const
     {

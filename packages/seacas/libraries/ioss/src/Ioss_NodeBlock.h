@@ -32,7 +32,7 @@ namespace Ioss {
     NodeBlock(DatabaseIO *io_database, const std::string &my_name, int64_t node_count,
               int64_t degrees_of_freedom);
 
-    NodeBlock(const NodeBlock &);
+    NodeBlock(const NodeBlock &other);
 
     ~NodeBlock() override;
 
@@ -46,12 +46,10 @@ namespace Ioss {
     const GroupingEntity *contained_in() const override
     {
       if (properties.exists("IOSS_INTERNAL_CONTAINED_IN")) {
-        auto ge = properties.get("IOSS_INTERNAL_CONTAINED_IN").get_pointer();
+        auto *ge = properties.get("IOSS_INTERNAL_CONTAINED_IN").get_pointer();
         return static_cast<const GroupingEntity *>(ge);
       }
-      else {
-        return GroupingEntity::contained_in();
-      }
+      return GroupingEntity::contained_in();
     }
 
     // Handle implicit properties -- These are calcuated from data stored

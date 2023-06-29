@@ -663,7 +663,7 @@ namespace SEAMS {
   {
     auto &tokens = get_tokenized_strings(string, delm);
 
-    size_t in = static_cast<size_t>(n);
+    auto in = static_cast<size_t>(n);
     if (tokens.size() >= in) {
       char *word = nullptr;
       new_string(tokens[in - 1], &word);
@@ -1025,7 +1025,7 @@ namespace SEAMS {
 
   array *do_csv_array(const char *filename, double skip)
   {
-    size_t rows_to_skip = static_cast<size_t>(skip);
+    auto rows_to_skip = static_cast<size_t>(skip);
 
     std::fstream *file = aprepro->open_file(filename, "r");
     if (file != nullptr) {

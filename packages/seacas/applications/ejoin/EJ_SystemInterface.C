@@ -28,7 +28,6 @@ namespace {
   }
 
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);
-  void parse_variable_names(const char *tokens, StringIdVector *variable_list);
   void parse_offset(const char *tokens, vector3d *offset);
   void parse_integer_list(const char *tokens, std::vector<int> *list);
   void parse_part_list(const char *tokens, std::vector<int> *list);
@@ -464,10 +463,8 @@ bool SystemInterface::convert_nodes_to_nodesets(int part_number) const
   if (nodesetConvertParts_[0] == 0) {
     return true;
   }
-  else {
-    return std::find(nodesetConvertParts_.cbegin(), nodesetConvertParts_.cend(), part_number) !=
-           nodesetConvertParts_.cend();
-  }
+  return std::find(nodesetConvertParts_.cbegin(), nodesetConvertParts_.cend(), part_number) !=
+         nodesetConvertParts_.cend();
 }
 
 void SystemInterface::parse_step_option(const char *tokens)

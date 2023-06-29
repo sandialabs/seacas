@@ -13,6 +13,7 @@
 #if defined(FMT_SUPPORT)
 #include <fmt/ostream.h>
 #endif
+#include <cstdio>
 #include <cstdlib>  // for exit, EXIT_SUCCESS, etc
 #include <cstring>  // for strcmp
 #include <fstream>  // for operator<<, basic_ostream, etc
@@ -20,7 +21,6 @@
 #include <iostream> // for left, cerr, cout, streampos
 #include <stack>    // for stack
 #include <stdexcept>
-#include <stdio.h>
 #include <string> // for string, operator==, etc
 #include <unistd.h>
 #include <vector> // for allocator, vector
@@ -91,7 +91,7 @@ namespace SEAMS {
 
   Aprepro::Aprepro() : sym_table(new Symtable())
   {
-    ap_file_list.push(file_rec());
+    ap_file_list.emplace(file_rec());
     init_table("$");
     aprepro = this;
   }

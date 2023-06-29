@@ -52,7 +52,9 @@
 mat_t *mat_file = nullptr; /* file for binary .mat input */
 
 /**********************************************************************/
-static std::array<std::string, 3> qainfo{"mat2exo", "2021/09/27", "4.06"};
+namespace {
+  std::array<std::string, 3> qainfo{"mat2exo", "2021/09/27", "4.06"};
+}
 
 /**********************************************************************/
 void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std::string &name);
