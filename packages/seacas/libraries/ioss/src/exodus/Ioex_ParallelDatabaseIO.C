@@ -4961,7 +4961,6 @@ namespace Ioex {
       }
     }
   }
-}
 
 std::vector<size_t> ParallelDatabaseIO::get_all_block_connectivity(const std::string &field_name, void *data, size_t data_size) const
 {
