@@ -31,20 +31,25 @@ bool Iocatalyst_DatabaseIOTest::regionsAreEqual(const std::string &fileName,
                                                 const std::string &iossDatabaseType)
 {
   Ioss::PropertyManager dbProps;
-  auto mpi_comm = Ioss::ParallelUtils::comm_world();
-  if(iossDatabaseType == CGNS_DATABASE_TYPE) {
-    mpi_comm = Ioss::ParallelUtils::comm_self();
+  auto inputFileName = fileName;
+  auto inputCatalystFileName = catFileName;
+  Ioss::ParallelUtils pu;
+  int numRanks = pu.parallel_size();
+  int rank = pu.parallel_rank();
+  if(iossDatabaseType == EXODUS_DATABASE_TYPE && numRanks > 1) {
+    inputFileName += "." + std::to_string(numRanks) + "." + std::to_string(rank);
+    inputCatalystFileName +=  "." + std::to_string(numRanks) + "." + std::to_string(rank);
   }
-  Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(iossDatabaseType, fileName, Ioss::READ_RESTART,
-                                                  mpi_comm, dbProps);
+  Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(iossDatabaseType, inputFileName, Ioss::READ_RESTART,
+                                                  Ioss::ParallelUtils::comm_self(), dbProps);
   if (dbi == nullptr || !dbi->ok(true)) {
     return false;
   }
 
   Ioss::PropertyManager dbCatProps;
   Ioss::DatabaseIO     *dbiCat =
-      Ioss::IOFactory::create(iossDatabaseType, catFileName, Ioss::READ_RESTART,
-                              mpi_comm, dbCatProps);
+      Ioss::IOFactory::create(iossDatabaseType, inputCatalystFileName, Ioss::READ_RESTART,
+                              Ioss::ParallelUtils::comm_self(), dbCatProps);
   if (dbiCat == nullptr || !dbiCat->ok(true)) {
     return false;
   }
