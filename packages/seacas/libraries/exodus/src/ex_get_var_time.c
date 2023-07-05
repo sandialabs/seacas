@@ -169,9 +169,8 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
    */
 
   i = 0;
-
   if (stat_vals[i] != 0) {
-    if ((status = nc_inq_dimid(exoid, ex__dim_num_entries_in_object(var_type, i), &dimid)) !=
+    if ((status = nc_inq_dimid(exoid, ex__dim_num_entries_in_object(var_type, i + 1), &dimid)) !=
         NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to locate number of entries in %zuth %s in file id %d", i,
@@ -270,8 +269,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
   /* read values of object variable */
   start[0] = --beg_time_step;
   start[1] = offset;
-  printf("%d", start[0]);
-  printf("%d", start[1]);
+
   end_time_step--;
 
   count[0] = end_time_step - beg_time_step + 1;
@@ -279,14 +277,9 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
 
   if (ex__comp_ws(exoid) == 4) {
     status = nc_get_vara_float(exoid, varid, start, count, var_vals);
-    printf("1: %d", status);
-
   }
   else {
     status = nc_get_vara_double(exoid, varid, start, count, var_vals);
-    printf("2: %d", status);
-
-
   }
 
   if (status != NC_NOERR) {
