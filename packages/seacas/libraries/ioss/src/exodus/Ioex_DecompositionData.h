@@ -30,15 +30,16 @@ namespace Ioss {
   class Field;
 }
 namespace Ioex {
-  struct IOEX_EXPORT BlockFieldData {
-    int64_t id{0};
-    size_t comp_count{0};
+  struct IOEX_EXPORT BlockFieldData
+  {
+    int64_t                  id{0};
+    size_t                   comp_count{0};
     std::vector<std::string> var_name;
-    std::vector<size_t> var_index;
+    std::vector<size_t>      var_index;
 
     BlockFieldData() : id(0), comp_count(0) {}
     BlockFieldData(const int64_t id_) : id(id_), comp_count(0) {}
-    BlockFieldData(const int64_t id_, size_t comp_count_) : id(id_), comp_count(comp_count_) { }
+    BlockFieldData(const int64_t id_, size_t comp_count_) : id(id_), comp_count(comp_count_) {}
   };
 
   class IOEX_EXPORT DecompositionDataBase
@@ -86,14 +87,15 @@ namespace Ioex {
                                 size_t nnpe) const;
 
     std::vector<size_t> get_all_block_connectivity(int filePtr, void *data) const;
-    size_t get_all_block_connectivity_size() const;
-    std::vector<int> get_all_block_connectivity_component_count() const;
+    size_t              get_all_block_connectivity_size() const;
+    std::vector<int>    get_all_block_connectivity_component_count() const;
 
-    std::vector<size_t> get_all_block_offset(const std::vector<int>& block_component_count) const;
-    std::vector<size_t> get_all_block_file_offset(const std::vector<int>& block_component_count) const;
+    std::vector<size_t> get_all_block_offset(const std::vector<int> &block_component_count) const;
+    std::vector<size_t>
+    get_all_block_file_offset(const std::vector<int> &block_component_count) const;
 
-    void get_all_block_field(int filePtr, void *data,
-                             size_t step, const std::vector<BlockFieldData>& block_data) const;
+    void get_all_block_field(int filePtr, void *data, size_t step,
+                             const std::vector<BlockFieldData> &block_data) const;
 
     void read_elem_proc_map(int filePtr, void *data) const;
 
@@ -164,15 +166,16 @@ namespace Ioex {
       m_decomposition.communicate_node_data(file_data, ioss_data, comp_count);
     }
 
-    void   get_block_connectivity(int filePtr, INT *data, int64_t id, size_t blk_seq,
-                                  size_t nnpe) const;
+    void get_block_connectivity(int filePtr, INT *data, int64_t id, size_t blk_seq,
+                                size_t nnpe) const;
 
     std::vector<size_t> get_all_block_connectivity(int filePtr, INT *data) const;
 
-    void get_all_block_field_impl(int filePtr, void *data,
-                                  size_t step, const std::vector<BlockFieldData>& block_data) const;
+    void get_all_block_field_impl(int filePtr, void *data, size_t step,
+                                  const std::vector<BlockFieldData> &block_data) const;
 
-    std::vector<size_t> get_all_block_file_offset_impl(const std::vector<int>& block_component_count) const;
+    std::vector<size_t>
+    get_all_block_file_offset_impl(const std::vector<int> &block_component_count) const;
 
     size_t get_commset_node_size() const { return m_decomposition.m_nodeCommMap.size() / 2; }
 
@@ -272,10 +275,7 @@ namespace Ioex {
       return m_decomposition.elem_global_to_local(global_index);
     }
 
-    void build_global_to_local_elem_map()
-    {
-      m_decomposition.build_global_to_local_elem_map();
-    }
+    void build_global_to_local_elem_map() { m_decomposition.build_global_to_local_elem_map(); }
 
     void get_element_block_communication()
     {

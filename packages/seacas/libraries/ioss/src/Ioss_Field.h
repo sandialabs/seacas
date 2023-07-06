@@ -150,7 +150,7 @@ namespace Ioss {
     size_t raw_count() const { return rawCount_; }           // Number of items in field
     size_t transformed_count() const { return transCount_; } // Number of items in field
 
-    size_t get_size() const; // data size (in bytes) required to hold entire field
+    size_t get_size() const;       // data size (in bytes) required to hold entire field
     size_t get_basic_size() const; // data size (in bytes) of the basic type
 
     /** \brief Get the role (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc.) of the data in the field.

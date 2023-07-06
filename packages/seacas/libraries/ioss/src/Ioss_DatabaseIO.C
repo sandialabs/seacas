@@ -151,23 +151,24 @@ namespace {
   }
 
   template <typename T>
-  std::vector<size_t> get_all_block_offsets(const std::string& field_name, const std::vector<T*>& entity_container)
+  std::vector<size_t> get_all_block_offsets(const std::string      &field_name,
+                                            const std::vector<T *> &entity_container)
   {
     size_t num_blocks = entity_container.size();
 
     std::vector<size_t> offsets(num_blocks + 1, 0);
 
-    for(size_t i=0; i<num_blocks; i++) {
+    for (size_t i = 0; i < num_blocks; i++) {
       T *entity = entity_container[i];
 
-      if(entity->field_exists(field_name)) {
+      if (entity->field_exists(field_name)) {
         Ioss::Field field = entity->get_field(field_name);
-        offsets[i+1] = entity->entity_count() * field.raw_storage()->component_count();
+        offsets[i + 1]    = entity->entity_count() * field.raw_storage()->component_count();
       }
     }
 
-    for(size_t i=1; i<=num_blocks; ++i) {
-      offsets[i] += offsets[i-1];
+    for (size_t i = 1; i <= num_blocks; ++i) {
+      offsets[i] += offsets[i - 1];
     }
 
     return offsets;
@@ -1364,50 +1365,56 @@ namespace Ioss {
   std::vector<size_t> DatabaseIO::get_all_block_field_data(const std::string &field_name,
                                                            void *data, size_t data_size) const
   {
-    const Ioss::ElementBlockContainer& elem_blocks = get_region()->get_element_blocks();
-    size_t num_blocks = elem_blocks.size();
+    const Ioss::ElementBlockContainer &elem_blocks = get_region()->get_element_blocks();
+    size_t                             num_blocks  = elem_blocks.size();
 
     std::vector<size_t> offset = get_all_block_offsets(field_name, elem_blocks);
 
-    for(size_t i=0; i<num_blocks; i++) {
+    for (size_t i = 0; i < num_blocks; i++) {
 
       Ioss::ElementBlock *entity = elem_blocks[i];
 
-      if(entity->field_exists(field_name)) {
-        auto num_to_get_for_block = offset[i+1] - offset[i];
-        Ioss::Field field = entity->get_field(field_name);
-        size_t field_byte_size = field.get_basic_size();
-        size_t block_data_size = num_to_get_for_block * field_byte_size;
+      if (entity->field_exists(field_name)) {
+        auto        num_to_get_for_block = offset[i + 1] - offset[i];
+        Ioss::Field field                = entity->get_field(field_name);
+        size_t      field_byte_size      = field.get_basic_size();
+        size_t      block_data_size      = num_to_get_for_block * field_byte_size;
 
         if (block_data_size != field.get_size()) {
           std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: Field '{}' data size {} on entity {} does not match computed size {}\n\n",
-                     field_name, field.get_size(), entity->name(), block_data_size);
+          fmt::print(
+              errmsg,
+              "ERROR: Field '{}' data size {} on entity {} does not match computed size {}\n\n",
+              field_name, field.get_size(), entity->name(), block_data_size);
           IOSS_ERROR(errmsg);
         }
 
-
-        size_t expected_data_size = offset[i+1] * field_byte_size;
+        size_t expected_data_size = offset[i + 1] * field_byte_size;
         if (data_size < expected_data_size) {
           std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: Field '{}' data size {} on entity {} is less than expected size {}\n\n",
-                     field_name, data_size, entity->name(), expected_data_size);
+          fmt::print(
+              errmsg,
+              "ERROR: Field '{}' data size {} on entity {} is less than expected size {}\n\n",
+              field_name, data_size, entity->name(), expected_data_size);
           IOSS_ERROR(errmsg);
         }
 
         size_t block_data_offset = offset[i] * field_byte_size;
-        auto retval  = get_field_internal(entity, field, (char*)data + block_data_offset, block_data_size);
+        auto   retval =
+            get_field_internal(entity, field, (char *)data + block_data_offset, block_data_size);
 
         size_t block_component_count = field.raw_storage()->component_count();
-        if(num_to_get_for_block != retval*block_component_count) {
+        if (num_to_get_for_block != retval * block_component_count) {
           std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: Data length {} for field {} on block {} is not expected length {}\n\n",
-              retval*block_component_count, field_name, entity->name(), num_to_get_for_block);
+          fmt::print(errmsg,
+                     "ERROR: Data length {} for field {} on block {} is not expected length {}\n\n",
+                     retval * block_component_count, field_name, entity->name(),
+                     num_to_get_for_block);
           IOSS_ERROR(errmsg);
         }
 
         if (retval >= 0) {
-          field.transform((char*)data + block_data_offset);
+          field.transform((char *)data + block_data_offset);
         }
       }
     }
