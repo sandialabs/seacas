@@ -20,6 +20,7 @@
 namespace {
   size_t internal_get_size(Ioss::Field::BasicType type, size_t count,
                            const Ioss::VariableType *storage);
+  size_t internal_get_basic_size(Ioss::Field::BasicType type);
 
   void error_message(const Ioss::Field &field, Ioss::Field::BasicType requested_type)
   {
@@ -212,6 +213,12 @@ size_t Ioss::Field::get_size() const
   return size_;
 }
 
+size_t Ioss::Field::get_basic_size() const
+{
+  // Calculate size of the low-level data type
+  return internal_get_basic_size(type_);
+}
+
 bool Ioss::Field::add_transform(Transform *my_transform)
 {
   if (zero_copy_enabled()) {
@@ -368,8 +375,7 @@ std::string Ioss::Field::role_string(Ioss::Field::RoleType role)
 }
 
 namespace {
-  size_t internal_get_size(Ioss::Field::BasicType type, size_t count,
-                           const Ioss::VariableType *storage)
+  size_t internal_get_basic_size(Ioss::Field::BasicType type)
   {
     // Calculate size of the low-level data type
     size_t basic_size = 0;
@@ -382,6 +388,16 @@ namespace {
     case Ioss::Field::CHARACTER: basic_size = sizeof(char); break;
     case Ioss::Field::INVALID: basic_size = 0; break;
     }
+
+    return basic_size;
+  }
+
+  size_t internal_get_size(Ioss::Field::BasicType type, size_t count,
+                           const Ioss::VariableType *storage)
+  {
+    // Calculate size of the low-level data type
+    size_t basic_size = internal_get_basic_size(type);
+
     // Calculate size of the storage type
     size_t storage_size = storage->component_count();
 

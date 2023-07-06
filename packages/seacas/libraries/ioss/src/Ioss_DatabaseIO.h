@@ -568,6 +568,9 @@ namespace Ioss {
       }
     }
 
+    virtual std::vector<size_t> get_all_block_field_data(const std::string &field_name,
+                                                         void *data, size_t data_size) const;
+
   protected:
     DatabaseIO(Region *region, std::string filename, Ioss::DatabaseUsage db_usage,
                Ioss_MPI_Comm communicator, const Ioss::PropertyManager &props);

@@ -13,6 +13,7 @@
 #include <Ioss_EntityType.h>      // for EntityType, etc
 #include <Ioss_GroupingEntity.h>  // for GroupingEntity
 #include <Ioss_MeshType.h>
+#include <Ioss_Field.h>
 #include <Ioss_Property.h> // for Property
 #include <Ioss_State.h>    // for State
 #include <cstddef>         // for size_t, nullptr
@@ -264,6 +265,9 @@ namespace Ioss {
     void add_qa_record(const std::string &code, const std::string &code_qa,
                        const std::string &date = "", const std::string &time = "");
 
+    template <typename T>
+    std::vector<size_t> get_all_block_field_data(const std::string &field_name, std::vector<T> &field_data) const;
+
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size = 0) const override;
@@ -275,6 +279,8 @@ namespace Ioss {
                                        size_t *data_size) const override;
 
   private:
+    std::vector<size_t> internal_get_all_block_field_data(const std::string &field_name, void *data, size_t data_size = 0) const;
+
     // Add the name 'alias' as an alias for the database entity with the
     // name 'db_name'. Returns true if alias added; false if problems
     // adding alias. Not protected by mutex -- call internally only.
@@ -397,3 +403,4 @@ inline const std::vector<std::string> &Ioss::Region::get_qa_records() const
   IOSS_FUNC_ENTER(m_);
   return get_database()->get_qa_records();
 }
+

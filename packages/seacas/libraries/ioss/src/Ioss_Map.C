@@ -412,9 +412,9 @@ template <typename INT> void Ioss::Map::map_data(INT *data, size_t count) const
   }
 }
 
-void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) const
+void Ioss::Map::map_data(void *data, const Ioss::Field::BasicType type, size_t count) const
 {
-  if (field.get_type() == Ioss::Field::INTEGER) {
+  if (type == Ioss::Field::INTEGER) {
     int *datum = static_cast<int *>(data);
     map_data(datum, count);
   }
@@ -422,6 +422,11 @@ void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) con
     auto *datum = static_cast<int64_t *>(data);
     map_data(datum, count);
   }
+}
+
+void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) const
+{
+  map_data(data, field.get_type(), count);
 }
 
 #ifndef DOXYGEN_SKIP_THIS
