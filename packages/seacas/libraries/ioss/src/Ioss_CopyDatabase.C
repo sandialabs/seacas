@@ -382,7 +382,7 @@ namespace {
       }
 
       // Get vector of all boundary faces which will be output as the skin...
-      auto &faces = face_generator.faces("ALL");
+      const auto &faces = face_generator.faces("ALL");
       for (const auto &face : faces) {
         if (face.elementCount_ == 1) {
           boundary.push_back(face);
