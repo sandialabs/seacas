@@ -120,7 +120,7 @@ IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
                SET( SEACAS_LIBDIR "lib" )
             ENDIF()
          ENDIF()
-		 FILE(GLOB_RECURSE EXODUSIIH "${CMAKE_SOURCE_DIR}/packages/*exodusII.h")
+		 FILE(GLOB_RECURSE EXODUSIIH "${CMAKE_SOURCE_DIR}/packages/seacas/*exodusII.h")
 		 FILE(STRINGS "${EXODUSIIH}" EXODUS_VERSION REGEX "#define EXODUS_VERSION .*")
 	 CONFIGURE_FILE(
 		   ${CMAKE_CURRENT_SOURCE_DIR}/exodus2.in.py
