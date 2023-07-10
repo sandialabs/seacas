@@ -1,5 +1,5 @@
 """
-exodus.py v 1.21.1 (seacas-py3) is a python wrapper of some of the exodus library
+exodus.py v 1.21.2 (seacas-py3) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -70,10 +70,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.21.1 (seacas-py3)"
+EXODUS_PY_VERSION = "1.21.2 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.21.1 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.21.2 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013-2023 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -5791,7 +5791,7 @@ class exodus:
         start_index = ctypes.c_longlong(startIndex)
         num_values = ctypes.c_longlong(numValues)
         var_vals = (ctypes.c_double * num_values.value)()
-        EXODUS_LIB.ex_get_var(
+        EXODUS_LIB.ex_get_partial_var(
             self.fileId,
             step,
             var_type,
