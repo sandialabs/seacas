@@ -5824,7 +5824,7 @@ class exodus:
         var_type = ctypes.c_int(get_entity_type(varType))
         var_id = ctypes.c_int(varId)
         entity_id = ctypes.c_longlong(entityID)
-        num_steps = end_step - start_step + 1)
+        num_steps = end_step - start_step + 1
         var_vals = (ctypes.c_double * num_steps)()
         EXODUS_LIB.ex_get_var_time(self.fileId, var_type, var_id, entity_id, s_step, e_step, var_vals)
         return var_vals
