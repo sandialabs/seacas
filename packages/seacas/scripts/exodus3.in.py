@@ -2315,6 +2315,43 @@ class exodus:
 
         return numVals
 
+    def get_variable_values_time(self, objType, entityId, var_name, start_step, end_step):
+        """
+        get list of `objType` variable values for a specified object id
+        block, variable name, and range of time steps
+
+        >>> evar_vals = exo.get_variable_values_time('EX_ELEM_BLOCK', entity_id,
+        ...                                            var_name, start_step, end_step)
+
+        Parameters
+        ----------
+        objType   : ex_entity_type
+            type of object being queried
+        entityId : int
+            id of the entity (block, set) *ID* (not *INDEX*)
+        var_name : string
+            name of variable
+        start_step : int
+            1-based index of time step
+        end_step : int
+            1-based index of time step
+
+        Returns
+        -------
+
+            if array_type == 'ctype':
+              <list<ctypes.c_double>>  evar_vals
+
+            if array_type == 'numpy':
+              <np_array<double>>  evar_vals
+        """
+        names = self.get_variable_names(objType)
+        var_id = names.index(var_name) + 1
+        values = self.__ex_get_var_time(objType, var_id, entityId, start_step, end_step)
+        if self.use_numpy:
+            values = ctype_to_numpy(self, values)
+        return values
+
     def get_variable_values(self, objType, entityId, name, step):
         """
         get list of `objType` variable values for a specified object id
@@ -5781,6 +5818,17 @@ class exodus:
             block_id,
             num_values,
             var_vals)
+        return var_vals
+
+    def __ex_get_var_time(self, varType, varId, entityID, start_step, end_step):
+        s_step = ctypes.c_int(start_step)
+        e_step = ctypes.c_int(end_step)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        var_id = ctypes.c_int(varId)
+        entity_id = ctypes.c_longlong(entityID)
+        num_steps = end_step - start_step + 1
+        var_vals = (ctypes.c_double * num_steps)()
+        EXODUS_LIB.ex_get_var_time(self.fileId, var_type, var_id, entity_id, s_step, e_step, var_vals)
         return var_vals
 
     def __ex_get_partial_var(self, timeStep, varType, varId, blkId, startIndex, numValues):
