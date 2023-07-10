@@ -68,7 +68,12 @@ namespace Iohb {
   template <> inline void Layout::add(const std::string &name, const double &value)
   {
     output_common(name);
-    if (fieldWidth_ > 0) {
+    if (precision_ == -1) {
+      // Use lib::fmt full precision output -- as many digits as needed to fully represent the
+      // double
+      fmt::print(layout_, "{}", value);
+    }
+    else if (fieldWidth_ > 0) {
       fmt::print(layout_, "{0:{1}.{2}e}", value, fieldWidth_, precision_);
     }
     else {
@@ -100,7 +105,12 @@ namespace Iohb {
     }
     else {
       output_common(name);
-      if (fieldWidth_ > 0) {
+      if (precision_ == -1) {
+        // Use lib::fmt full precision output -- as many digits as needed to fully represent the
+        // double
+        fmt::print(layout_, "{}", fmt::join(value, separator_));
+      }
+      else if (fieldWidth_ > 0) {
         fmt::print(layout_, "{0:{2}.{1}e}", fmt::join(value, separator_), precision_, fieldWidth_);
       }
       else {
