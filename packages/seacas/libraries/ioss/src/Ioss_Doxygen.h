@@ -10,7 +10,7 @@ https://github.com/sandialabs/seacas
 
 For bug reports, documentation errors, and enhancement suggestions, contact:
 - Gregory D. Sjaardema
-- WEB:   https://github.com/sandialabs/seacas/issues
+- WEB:   https://github.com/sandialabs/seacas
 - EMAIL: gdsjaar@sandia.gov
 - EMAIL: gsjaardema@gmail.com
 - PHONE: (505) 844-2701 (office)
@@ -181,7 +181,7 @@ file. Then, the first file will be reopened and steps 0.7, 0.8, and
 ## Properties for the heartbeat output
  Property              | Value  | Description
 -----------------------|:------:|-----------------------------------------------------------
-  FILE_FORMAT          | [default], spyhis, csv, ts_csv, text, ts_text | predefined formats for heartbeat output. `ts_` outputs timestamp.
+  FILE_FORMAT          | [default], spyhis, csv, ts_csv, text, ts_text | predefined formats for heartbeat output. The ones starting with `ts_` output timestamps.
   FLUSH_INTERVAL       | int   | Minimum time interval between flushing heartbeat data to disk.  Default is 10 seconds
   TIME_STAMP_FORMAT    | [%H:%M:%S] | Format used to format time stamp.  See strftime man page
   SHOW_TIME_STAMP      | on/off | Should the output lines be preceded by the timestamp
