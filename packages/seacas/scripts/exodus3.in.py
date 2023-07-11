@@ -25,31 +25,37 @@ The data in Exodus files can be divided into three primary categories:
 initialization data, model data, and results data.
 
 * Initialization data includes sizing parameters (number of
-nodes, number of elements, etc.), optional quality assurance
-information (names of codes that have operated on the data),
-and optional informational text.
+  nodes, number of elements, etc.), optional quality assurance
+  information (names of codes that have operated on the data),
+  and optional informational text.
 
 * The model is described by data which are static (do not change
-through time). This data includes nodal coordinates, element
-connectivity (node lists for each element), element attributes,
-and node sets and side sets (used to aid in applying loading
-conditions and boundary constraints).
+  through time). This data includes nodal coordinates, element
+  connectivity (node lists for each element), element attributes,
+  and node sets and side sets (used to aid in applying loading
+  conditions and boundary constraints).
 
 * The results are optional and include five types of variables -- nodal,
-element, nodeset, sideset, and global -- each of which is stored
-through time. Nodal results are output (at each time step) for all the
-nodes in the model. An example of a nodal variable is displacement in
-the X direction. Element, nodeset, and sideset results are output (at
-each time step) for all entities (elements, nodes, sides) in one or
-more entity block. For example, stress may be an element
-variable. Another use of element variables is to record element status
-(a binary flag indicating whether each element is "alive" or "dead")
-through time. Global results are output (at each time step) for a
-single element or node, or for a single property. Linear momentum of a
-structure and the acceleration at a particular point are both examples
-of global variables. Although these examples correspond to typical FE
-applications, the data format is flexible enough to accommodate a
-spectrum of uses.
+  element, nodeset, sideset, and global -- each of which is stored
+  through time.
+
+  * Nodal results are output (at each time step) for all the
+    nodes in the model. An example of a nodal variable is displacement in
+    the X direction. 
+  * Element, nodeset, and sideset results are output (at
+    each time step) for all entities (elements, nodes, sides) in one or
+    more entity block. For example, stress may be an element
+    variable. 
+  * Another use of element variables is to record element status
+    (a binary flag indicating whether each element is "alive" or "dead")
+    through time. 
+  * Global results are output (at each time step) for a
+    single element or node, or for a single property. Linear momentum of a
+    structure and the acceleration at a particular point are both examples
+    of global variables. 
+  * Although these examples correspond to typical FE
+    applications, the data format is flexible enough to accommodate a
+    spectrum of uses.
 
 Copyright(C) 1999-2023 National Technology & Engineering Solutions
 of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
@@ -528,7 +534,7 @@ class ex_assembly(ctypes.Structure):
     """
     Structure defining the assembly parameters.
 
-    Parameters
+    Attributes
     ----------
     id : int64_t
     name : char *
@@ -564,7 +570,7 @@ class ex_blob(ctypes.Structure):
     """
     Structure defining the blob parameters.
 
-    Parameters
+    Attributes
     ----------
     id : int64_t
     name : char *
@@ -594,7 +600,7 @@ class ex_attribute(ctypes.Structure):
     """
     Used for accessing underlying exodus library...
 
-    Parameters
+    Attributes
     ----------
     entity_type : ex_entity_type
     entity_id : int64_t
@@ -659,12 +665,9 @@ class exodus:
         exo : exodus object
             the open exodus database
 
-        Usage
-        -----
 
         >>> ex_pars = ex_init_params(num_dim=numDims, num_nodes=numNodes,
         ...                          num_elem=numElems, num_elem_blk=numElemBlocks, num_assembly=numAssembly)
-
         >>> exo = exodus(file_name, mode=mode, title=title,
         ...             array_type=array_type, init_params=ex_pars)
         >>> with exodus(file_name, mode=mode, title=title,\
@@ -748,20 +751,19 @@ class exodus:
 
     def summarize(self):
         """
-        Outputs a summary of the exodus file data. Output is similar to:
-        ```
-        Database: base_ioshell_copy.e
-        Title:  This is the title
+        Outputs a summary of the exodus file data. Output is similar to::
 
-        Number of spatial dimensions = 3                                                 Number of global variables     = 10
-        Number of node blocks        = 1         Number of nodes              = 1,331    Number of nodal variables      =  2
-        Number of element blocks     = 1         Number of elements           = 1,000    Number of element variables    =  5
-        Number of node sets          = 3         Length of node list          =   363    Number of nodeset variables    =  4
-        Number of element side sets  = 3         Length of element sides      =   300    Number of sideset variables    =  3
-        Number of assemblies         = 4                                                 Number of assembly variables   = 10
-        Number of blobs              = 0                                                 Number of blob     variables   =  0
-        Number of time steps         = 5
-        ```
+           Database: base_ioshell_copy.e
+           Title:  This is the title
+        
+           Number of spatial dimensions = 3                                                 Number of global variables     = 10
+           Number of node blocks        = 1         Number of nodes              = 1,331    Number of nodal variables      =  2
+           Number of element blocks     = 1         Number of elements           = 1,000    Number of element variables    =  5
+           Number of node sets          = 3         Length of node list          =   363    Number of nodeset variables    =  4
+           Number of element side sets  = 3         Length of element sides      =   300    Number of sideset variables    =  3
+           Number of assemblies         = 4                                                 Number of assembly variables   = 10
+           Number of blobs              = 0                                                 Number of blob     variables   =  0
+           Number of time steps         = 5
         """
 
         sidesets = self.get_ids('EX_SIDE_SET')
@@ -1004,8 +1006,8 @@ class exodus:
 
         >>> status = exo.put_qa_records()
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         qa_recs : <list<tuple[4]<string>>>
 
         Returns
@@ -1296,7 +1298,7 @@ class exodus:
         z_coord : double
             global z-direction coordinate
 
-        Note:
+        Notes
         -----
         >>> x_coords, y_coords, z_coords = exo.get_coords()
         >>> x_coord = x_coords[node_index-1]
@@ -1373,7 +1375,7 @@ class exodus:
 
         Parameters
         ----------
-            <list<int>>  node_id_map
+        node_id_map : <list<int>> 
 
         Returns
         -------
@@ -1443,16 +1445,18 @@ class exodus:
 
         Parameters
         ----------
-            <string>  nvar_name   name of new nodal variable
-            <int>     nvar_index  1-based index of new nodal variable
+        nvar_name : string
+            name of new nodal variable
+        nvar_index : int 
+            1-based index of new nodal variable
 
         Returns
         -------
         status : bool
             True = successful execution
 
-        Note:
-        ----
+        Notes
+        -----
         this method is often called within the following sequence:
 
         >>> num_nvars = exo.get_node_variable_number()
@@ -1601,8 +1605,6 @@ class exodus:
               <np_array<int>>  num_map
 
 
-        Usage
-        -----
         >>> em_cnt = exo.inquire('EX_INQ_ELEM_MAP')
         >>> em     = exo.get_names('EX_ELEM_MAP')
         >>> map    = exo.get_num_map('EX_ELEM_MAP', 2)
@@ -1627,9 +1629,6 @@ class exodus:
                         function to define number of maps on the database.
             <list<int>>  elem_id_map
 
-
-        Usage
-        -----
 
         >>> exo.put_map_param(nm_cnt, em_cnt)
         >>> nm[0] = "My_Node_Map"
@@ -1660,7 +1659,7 @@ class exodus:
         get mapping of exodus element/node/edge/face index to user- or
         application- defined element/node/edge/face id; id_map is ordered by the
         *INDEX* ordering, a 1-based system going from 1 to
-        exo.num_???s(), used by exodus for storage and input/output
+        `exo.num_elem`, `exo.num_node`, used by exodus for storage and input/output
         of array data stored on the elements/nodes/edges/faces; a user or application
         can optionally use a separate *ID* numbering system,
         so the id_map points to the element/node/edge/face *ID* for each
@@ -1670,8 +1669,9 @@ class exodus:
 
         Parameters
         ----------
-            mapType   : ex_entity_type
-                        type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
+        mapType   : ex_entity_type
+                   type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
+
         Returns
         -------
 
@@ -2233,8 +2233,8 @@ class exodus:
         status : bool
             True = successful execution
 
-        Note:
-        ----
+        Notes
+        -----
         this method is often called within the following sequence:
 
         >>> num_nvars = exo.get_variable_number('EX_NODAL')
@@ -2274,8 +2274,8 @@ class exodus:
         status : bool
             True = successful execution
 
-        Note:
-        ----
+        Notes
+        -----
         this method is often called within the following sequence:
 
         >>> num_assem_vars = exo.get_reduction_variable_number('EX_ASSEMBLY')
@@ -2755,14 +2755,15 @@ class exodus:
         ----------
         elem_blk_id : int
             element block *ID* (not *INDEX*)
-            <list<int>>  elem_conn    ordered list of node *INDICES* that
-              define the connectivity of each
-              element in the block; the list cycles
-              through all nodes of the first element,
-              then all nodes of the second element,
-              etc.
-              (see `exodus.get_id_map` for explanation
-              of node *INDEX* versus node *ID*)
+        connectivity : <list<int>>  
+            ordered list of node *INDICES* that
+            define the connectivity of each
+            element in the block; the list cycles
+            through all nodes of the first element,
+            then all nodes of the second element,
+            etc.
+            (see `exodus.get_id_map` for explanation
+            of node *INDEX* versus node *ID*)
         """
         _d1, numBlkElems, numNodesPerElem, _d2 = self.elem_blk_info(object_id)
         assert len(connectivity) == (numBlkElems * numNodesPerElem)
@@ -3142,8 +3143,8 @@ class exodus:
         status : bool
             True = successful execution
 
-        Note:
-        ----
+        Notes
+        -----
         this method is often called within the following sequence:
 
         >>> num_evars = exo.get_element_variable_number()
@@ -3527,9 +3528,10 @@ class exodus:
 
         Parameters
         ----------
-            <int>          node_set_id    node set *ID* (not *INDEX*)
-            <list<float>>  ns_dist_facts  a list of distribution factors,
-              e.g. nodal 'weights'
+        object_id : int
+            node set *ID* (not *INDEX*)
+        nodeSetDistFact : <list<float>>
+            a list of distribution factors, e.g. nodal 'weights'
         """
         self.__ex_put_node_set_dist_fact(object_id, nodeSetDistFact)
 
@@ -3543,7 +3545,7 @@ class exodus:
 
         Returns
         -------
-              <int>  num_nsvars
+        num_nsvars : int
         """
         return self.__ex_get_variable_param('EX_NODE_SET').value
 
@@ -3619,7 +3621,7 @@ class exodus:
         status : bool
             True = successful execution
 
-        Note:
+        Notes
         -----
         this method is often called within the following sequence:
 
@@ -4023,7 +4025,7 @@ class exodus:
             <int>  tot_num_ss_nodes
             <int>  tot_num_ss_dist_facts
 
-        Note:
+        Notes
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4056,7 +4058,7 @@ class exodus:
             <int>  num_ss_sides
             <int>  num_ss_dist_facts
 
-        Note:
+        Notes
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4080,7 +4082,7 @@ class exodus:
             <int>  num_ss_dist_facts  number of nodal distribution factors
               (e.g. nodal 'weights')
 
-        Note:
+        Notes
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4161,7 +4163,7 @@ class exodus:
                 factors, e.g. nodal
                 'weights'
 
-        Note:
+        Notes
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4182,11 +4184,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>          node_set_id    node set *ID* (not *INDEX*)
-            <list<float>>  ns_dist_facts  a list of distribution factors,
-              e.g. nodal 'weights'
+        object_id : int 
+            node set *ID* (not *INDEX*)
+        sideSetDistFact : <list<float>> 
+            a list of distribution factors, e.g. nodal 'weights'
 
-        Note:
+        Notes
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4219,7 +4222,7 @@ class exodus:
               <np_array<int>>  ss_num_side_nodes
               <np_array<int>>  ss_nodes
 
-        Note:
+        Notes
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4319,7 +4322,7 @@ class exodus:
         status : bool
             True = successful execution
 
-        Note:
+        Notes
         -----
         this method is often called within the following sequence:
 
@@ -4560,7 +4563,7 @@ class exodus:
         status : bool
             True = successful execution
 
-        Note:
+        Notes
         -----
         this method is often called within the following sequence:
 
@@ -4937,7 +4940,7 @@ class exodus:
 
         >>> exo.close()
 
-        Note:
+        Notes
         -----
         Can only be called once for an exodus object, and once called
         all methods for that object become inoperable
@@ -6183,8 +6186,6 @@ def collectElemConnectivity(exodusHandle, connectivity):
     """
       This function generates a list of lists that represent the element connectivity.
 
-    Usage:
-    ------
     >>> with exodus("file.g", "r") as exodusHandle:
     >>>     connectivity = []
     >>>     collectElemConnectivity(exodusHandle, connectivity)
@@ -6215,8 +6216,6 @@ def collectLocalNodeToLocalElems(
       This function generates a list of lists to go from local node id
       to local elem id.
 
-    Usage:
-    ------
     >>> connectivity = [] ## If this is not empty it will assume it is already filled.
     >>> localNodeToLocalElems = []
     >>> with exodus("file.g", "r") as exodusHandle:
@@ -6256,8 +6255,6 @@ def collectLocalElemToLocalElems(
       This function generates a list of lists to go from local elem id
       to connected local elem ids.
 
-    Usage:
-    ------
     >>> connectivity = [] ## If this is not empty it will assume it is already filled.
     >>> localNodeToLocalElems = [] ## If this is not empty it will assume it is already filled.
     >>> localElemToLocalElems = []
@@ -6325,7 +6322,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None, additionalElementAttrib
     exo_to : exodus object
         New exodus mesh
 
-    Note:
+    Notes
     -----
     This function also allows one to add new element attributes during the copy
     process.  The number of element attributes is permanently set when the
@@ -6718,8 +6715,8 @@ def add_variables(exo, global_vars=None, nodal_vars=None, element_vars=None, nod
         Exodus database with variables added to it.  (The values of the variables
         are set to their defaults so that the user can populate them later.)
 
-    Note
-    ----
+    Notes
+    -----
     This function does not allow one to add element attributes to an exodus
     database.  See `exodus.copy_mesh` function for that capability.
     """
@@ -6873,12 +6870,11 @@ def copyTransfer(fromFileName, toFileName, array_type='ctype', additionalGlobalV
         it to.
     additionalElementAttributes: list
         list of element attribute names to
-         add to all blocks or tuples ( name, blkIds ) where name is the
-         element attribute to add and blkIds is a list of blkIds to add it
-         to.
+        add to all blocks or tuples ( name, blkIds ) where name is the
+        element attribute to add and blkIds is a list of blkIds to add it
+        to.
 
-    Usage:
-    ------
+
     >>> fromFileName = "input.e"
     >>> toFileName = "output.e"
     >>> addGlobalVariables = [] ## Do not add any new global variables
@@ -6888,12 +6884,12 @@ def copyTransfer(fromFileName, toFileName, array_type='ctype', additionalGlobalV
     >>> addElementVariables = [ ("elem_dummy1", [1, 2, 3]), "elem_dummy2" ]
     >>> ## Add elem_attr_dummy1 on blkIds 1,2,3 and elem_attr_dummy2 on all blocks
     >>> addElementAttributes = [ ("elem_attr_dummy1",[1,2,3]), "elem_attr_dummy2" ]
-
+    >>>
     >>> toFileHandle = copyTransfer(fromFileName,toFileName,addGlobalVariables,addNodeVariables,
     ...                             addElementVariables,addElementAttributes)
-
+    >>>
     >>> ## Fill in new variables
-
+    >>>
     >>> toFileHandle.close()
     """
 
