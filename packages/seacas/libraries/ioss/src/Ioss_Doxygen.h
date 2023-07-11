@@ -186,6 +186,7 @@ file. Then, the first file will be reopened and steps 0.7, 0.8, and
   TIME_STAMP_FORMAT    | [%H:%M:%S] | Format used to format time stamp.  See strftime man page
   SHOW_TIME_STAMP      | on/off | Should the output lines be preceded by the timestamp
   FIELD_SEPARATOR      | [, ]   | separator to be used between output fields.
+  FULL_PRECISION       | on/[off] | output will contain as many digits as needed to fully represent the doubles value.  FIELD_WIDTH will be ignored for doubles if this is specified.
   PRECISION            | -1..16 [5] | Precision used for floating point output. If set to `-1`, then the output will contain as many digits as needed to fully represent the doubles value.  FIELD_WIDTH will be ignored for doubles if precision is set to -1.
   FIELD_WIDTH          | 0.. |  Width of an output field. If 0, then use natural width.
   SHOW_LABELS          | on/[off]  | Should each field be preceded by its name (ke=1.3e9, ie=2.0e9)

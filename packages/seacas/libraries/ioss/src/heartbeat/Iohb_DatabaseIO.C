@@ -257,6 +257,14 @@ namespace Iohb {
 
       Ioss::Utils::check_set_bool_property(properties, "SHOW_TIME_FIELD", new_this->addTimeField);
 
+      if (properties.exists("FULL_PRECISION")) {
+        bool precision = true;
+        Ioss::Utils::check_set_bool_property(properties, "FULL_PRECISION", precision);
+        if (precision) {
+          new_this->precision_ = -1;
+        }
+      }
+
       // SpyHis format is specific format, so don't override these settings:
       if (fileFormat == Iohb::Format::SPYHIS) {
         new_this->addTimeField = true;
