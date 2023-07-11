@@ -142,7 +142,7 @@ class ex_options(Enum):
     """
     `ex_opts()` function codes - codes are OR'ed into exopts
 
-    Parameters
+    Attributes
     ----------
     EX_DEFAULT
          Application responsible for calling `ex_err()` to get error and warning messages to output; library is quiet
@@ -375,7 +375,7 @@ class ex_entity_type(Enum):
     """
     The ex_entity_type enum from the exodusII.h include file
 
-    Parameters
+    Attributes
     ----------
     EX_NODAL
          nodal \"block\" for variables
@@ -452,7 +452,7 @@ class ex_init_params(ctypes.Structure):
     """
     Parameters defining the model dimension, note that many are optional.
 
-    Parameters
+    Attributes
     ----------
     num_dim : int
         number of model dimensions
@@ -992,7 +992,7 @@ class exodus:
 
         Returns
         -------
-        qa_recs : <list<tuple[4]<string>>>
+        qa_recs : list<tuple[4]<string>>
         """
         return self.__ex_get_qa()
 
@@ -1008,7 +1008,7 @@ class exodus:
 
         Parameters
         ----------
-        qa_recs : <list<tuple[4]<string>>>
+        qa_recs : list<tuple[4]<string>>
 
         Returns
         ------
@@ -1042,7 +1042,7 @@ class exodus:
 
         Returns
         -------
-        info_recs : <list<string>>
+        info_recs : list<string>
 
         """
         return self.__ex_get_info_recs()
@@ -1056,7 +1056,7 @@ class exodus:
 
         Parameters
         ----------
-        info_recs : <list<tuple[4]<string>>>
+        info_recs : list<tuple[4]<string>>
 
         Returns
         -------
@@ -1211,7 +1211,7 @@ class exodus:
 
         Returns
         -------
-            <list<string>>  coord_names
+            list<string>  coord_names
         """
         return self.__ex_get_coord_names()
 
@@ -1226,7 +1226,7 @@ class exodus:
 
         Parameters
         ----------
-            <list<string>>  coord_names
+        coord_names : list<string>
         """
         self.__ex_put_coord_names(names)
 
@@ -1298,7 +1298,7 @@ class exodus:
         z_coord : double
             global z-direction coordinate
 
-        Notes
+        Note
         -----
         >>> x_coords, y_coords, z_coords = exo.get_coords()
         >>> x_coord = x_coords[node_index-1]
@@ -1322,11 +1322,11 @@ class exodus:
 
         Parameters
         ----------
-        x_coord : <list<float>>
+        x_coord : list<float>
             global x-direction coordinates
-        y_coord : <list<float>>
+        y_coord : list<float>
             global y-direction coordinates
-        z_coord : <list<float>>
+        z_coord : list<float>
             global z-direction coordinates
 
         Returns
@@ -1355,7 +1355,7 @@ class exodus:
 
         Returns
         -------
-            <list<ctypes.c_int>>  node_id_map
+            list<ctypes.c_int>  node_id_map
         """
         return self.__ex_get_node_num_map()
 
@@ -1375,7 +1375,7 @@ class exodus:
 
         Parameters
         ----------
-        node_id_map : <list<int>> 
+        node_id_map : list<int>
 
         Returns
         -------
@@ -1455,8 +1455,8 @@ class exodus:
         status : bool
             True = successful execution
 
-        Notes
-        -----
+        Example
+        -------
         this method is often called within the following sequence:
 
         >>> num_nvars = exo.get_node_variable_number()
@@ -1484,8 +1484,10 @@ class exodus:
 
         Parameters
         ----------
-            <string>  nvar_name  name of nodal variable
-            <int>     time_step  1-based index of time step
+        name : string
+            name of nodal variable
+        step : int
+            1-based index of time step
 
         Returns
         -------
@@ -1516,10 +1518,14 @@ class exodus:
 
         Parameters
         ----------
-            <string>  nvar_name   name of nodal variable
-            <int>     time_step   1-based index of time step
-            <int>     start_index 1-based index of node to start returning data
-            <int>     num_nodes   number of nodes to return data for.
+        nvar_name : string
+             name of nodal variable
+        time_step  : int
+             1-based index of time step
+        start_index : int
+             1-based index of node to start returning data
+        num_nodes : int  
+             number of nodes to return data for.
 
         Returns
         -------
@@ -1548,9 +1554,11 @@ class exodus:
 
         Parameters
         ----------
-            <string>       nvar_name  name of nodal variable
-            <int>          time_step  1-based index of time step
-            <list<float>>  nvar_vals
+        nvar_name : string
+             name of nodal variable
+        time_step : int
+             1-based index of time step
+        nvar_vals : list<float>
 
         Returns
         -------
@@ -1591,10 +1599,10 @@ class exodus:
 
         Parameters
         ----------
-            mapType   : ex_entity_type
-                        type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
-            idx       : int
-                        which map to return (1-based).  Use `inquire(mapType)` to get number of maps stored on database.
+        mapType   : ex_entity_type
+             type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
+        idx       : int
+             which map to return (1-based).  Use `inquire(mapType)` to get number of maps stored on database.
         Returns
         -------
 
@@ -1627,7 +1635,7 @@ class exodus:
             idx       : int
                         which map to write (1-based).  Use `put_map_param(node_map_cnt, elem_map_cnt)` prior to this
                         function to define number of maps on the database.
-            <list<int>>  elem_id_map
+            elem_id_map : list<int>
 
 
         >>> exo.put_map_param(nm_cnt, em_cnt)
@@ -1727,7 +1735,7 @@ class exodus:
 
         Parameters
         ----------
-            <list<int>>  elem_id_map
+            elem_id_map : list<int>
 
         Returns
         -------
@@ -1753,9 +1761,9 @@ class exodus:
 
         Parameters
         ----------
-            ex_entity_type   map_type
+            map_type : ex_entity_type   
                         type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
-            <list<int>>  elem_id_map
+            elem_id_map : list<int>
 
         Returns
         -------
@@ -1884,7 +1892,7 @@ class exodus:
         ----------
         object_type : int
             block/set type
-        object_id : int
+        object_id : ex_entity_type
             block/set *ID* (not *INDEX*)
 
         Returns
@@ -1905,7 +1913,7 @@ class exodus:
         ----------
         object_type : int
             block/set type
-        object_id : int
+        object_id : ex_entity_id
             block/set *ID* (not *INDEX*)
         name : string
             block/set name
@@ -1951,7 +1959,7 @@ class exodus:
         Parameters
         ----------
         object_type : int
-        names : <list<string>>
+        names : list<string>
         """
 
         self.__ex_put_names(object_type, names)
@@ -2004,10 +2012,11 @@ class exodus:
         ----------
         objType : ex_entity_type
             type of object begin queried
-        id : int
+        id : ex_entity_id
             element block *ID* (not *INDEX*)
-            <int>          time_step    1-based index of time step
-            <list<float>>  evar_vals
+        step : int
+            1-based index of time step
+        values : list<float>
 
         Returns
         -------
@@ -2059,12 +2068,14 @@ class exodus:
 
         Parameters
         ----------
-        entId : int, optional
+        objType : ex_entity_type
+            type of object begin queried
+        entid : ex_entity_id, optional
             entity *ID* (not *INDEX*)
 
         Returns
         -------
-        truth_tab : <list<bool>>
+        truth_tab : list<bool>
             True for variable defined in an entity, False otherwise
         """
         if entId is None:
@@ -2084,7 +2095,9 @@ class exodus:
 
         Parameters
         ----------
-        table : <list<bool>>
+        objType : ex_entity_type
+            type of object begin queried
+        table : list<bool>
             True for variable defined in a node set, False otherwise
 
         Returns
@@ -2180,7 +2193,9 @@ class exodus:
 
         Parameters
         ----------
-        num_nvars :               <int>
+        objType : ex_entity_type
+            type of object begin queried
+        number : int
 
         Returns
         -------
@@ -2200,7 +2215,9 @@ class exodus:
 
         Parameters
         ----------
-        num_nvars :               <int>
+        objType : ex_entity_type
+            type of object begin queried
+        number : int
 
         Returns
         -------
@@ -2221,8 +2238,8 @@ class exodus:
 
         Parameters
         ----------
-        objType : string
-            object type
+        objType : ex_entity_type
+            type of object begin queried
         var_name : string
             name of new variable
         nvar_index : int
@@ -2233,8 +2250,8 @@ class exodus:
         status : bool
             True = successful execution
 
-        Notes
-        -----
+        Example
+        -------
         this method is often called within the following sequence:
 
         >>> num_nvars = exo.get_variable_number('EX_NODAL')
@@ -2262,20 +2279,20 @@ class exodus:
 
         Parameters
         ----------
-        objType : string
-            object type
+        objType : ex_entity_type
+            type of object begin queried
         var_name : string
             name of new variable
-        nvar_index : int
-            1-based index of new nodal variable
+        index : int
+            1-based index of new variable
 
         Returns
         -------
         status : bool
             True = successful execution
 
-        Notes
-        -----
+        Example
+        -------
         this method is often called within the following sequence:
 
         >>> num_assem_vars = exo.get_reduction_variable_number('EX_ASSEMBLY')
@@ -2301,7 +2318,7 @@ class exodus:
         ----------
         objType   : ex_entity_type
             type of object being queried
-        entityId : int
+        entityid : ex_entity_id
             id of the entity (block, set) *ID* (not *INDEX*)
         """
 
@@ -2327,7 +2344,7 @@ class exodus:
         ----------
         objType   : ex_entity_type
             type of object being queried
-        entityId : int
+        entityid : ex_entity_id
             id of the entity (block, set) *ID* (not *INDEX*)
         var_name : string
             name of variable
@@ -2364,7 +2381,7 @@ class exodus:
         ----------
         objType   : ex_entity_type
             type of object being queried
-        entityId : int
+        entityid : ex_entity_id
             id of the entity (block, set) *ID* (not *INDEX*)
         name : string
             name of variable
@@ -2399,10 +2416,14 @@ class exodus:
 
         Parameters
         ----------
-        entityId : int  entity *ID* (not *INDEX*)
-            <string>    name    name of variable
-            <int>          time_step    1-based index of time step
-            <list<float>>  values the variable values to be output
+        entityid : ex_entity_id
+           entity *ID* (not *INDEX*)
+        name : string
+           name of variable
+        time_step : int
+           1-based index of time step
+        values : list<float>
+           the variable values to be output
 
         Returns
         -------
@@ -2428,12 +2449,12 @@ class exodus:
         ----------
         objType   : ex_entity_type
             type of object being queried
-        id        : int
+        objId        : int
             entity *ID* (not *INDEX*)
 
         Returns
         -------
-            <int>  num_attribute
+            num_attribute : int
         """
         return self.__ex_get_attribute_count(objType, objId)
 
@@ -2441,9 +2462,16 @@ class exodus:
         """
         >>> attributes = exo.get_attributes('EX_ASSEMBLY', 100)
 
+        Parameters
+        ----------
+        objType   : ex_entity_type
+            type of object being queried
+        objId        : int
+            entity *ID* (not *INDEX*)
+
         Returns
         -------
-            <ex_attribute list> attributes
+            attributes : <ex_attribute list> 
         """
 
         return self.__ex_get_attributes(objType, objId)
@@ -2456,7 +2484,7 @@ class exodus:
 
         Returns
         -------
-            <ex_attribute list> attributes
+            attributes : ex_attribute list
         """
 
         return self.__ex_put_attribute(attribute)
@@ -2469,7 +2497,7 @@ class exodus:
 
         Returns
         -------
-            <int>  num_assembly
+            num_assembly : int
         """
         return self.inquire('EX_INQ_ASSEMBLY')
 
@@ -2575,7 +2603,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        object_id : ex_entity_id
             element block *ID* (not *INDEX*)
 
         Returns
@@ -2592,7 +2620,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
         elem_blk_name : string
         """
@@ -2608,7 +2636,7 @@ class exodus:
 
         Returns
         -------
-        elem_blk_names : <list<string>>
+        elem_blk_names : list<string>
         """
         return self.__ex_get_names('EX_ELEM_BLOCK')
 
@@ -2622,7 +2650,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_names : <list<string>>
+        elem_blk_names : list<string>
         """
         self.__ex_put_names('EX_ELEM_BLOCK', names)
 
@@ -2635,7 +2663,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
 
         Returns
@@ -2658,7 +2686,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
         elem_type : string
             element type (all caps), e.g. 'HEX8'
@@ -2682,15 +2710,16 @@ class exodus:
 
         Parameters
         ----------
-            <list<int>>     elem_blk_ids     element block *ID* (not *INDEX*)
-              for each block
-            <list<string>>  elem_types       element type for each block
-            <list<int>>     num_blk_elems    number of elements for each
-              block
-            <list<int>>     num_elem_nodes   number of nodes per element
-              for each block
-            <list<int>>     num_elem_attrs   number of attributes per
-              element for each block
+        elem_blk_ids : list<int>    
+              element block *ID* (not *INDEX*) for each block
+        elem_types   : list<string>    
+              element type for each block
+        num_blk_elems : list<int>
+              number of elements for each block
+        num_elem_nodes : list<int>
+              number of nodes per element for each block
+        num_elem_attrs : list<int>  
+              number of attributes per element for each block
 
         Returns
         -------
@@ -2716,7 +2745,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
 
         Returns
@@ -2753,9 +2782,9 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
-        connectivity : <list<int>>  
+        connectivity : list<int>
             ordered list of node *INDICES* that
             define the connectivity of each
             element in the block; the list cycles
@@ -2777,7 +2806,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
 
         Returns
@@ -2805,8 +2834,10 @@ class exodus:
 
         Parameters
         ----------
-            <int>    elem_blk_id     element block *ID* (not *INDEX*)
-            <string> elem_attr_name  element attribute name
+        elem_blk_id : ex_entity_id
+             element block *ID* (not *INDEX*)
+        elem_attr_name : string
+             element attribute name
 
         Returns
         -------
@@ -2834,8 +2865,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>    elem_blk_id     element block *ID* (not *INDEX*)
-            <string> elem_attr_name  element attribute name
+        objType   : ex_entity_type
+            type of object being queried
+        elem_blk_id : ex_entity_id
+             element block *ID* (not *INDEX*)
+        elem_attr_name : string
+             element attribute name
 
         Returns
         -------
@@ -2863,9 +2898,10 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
-        <list<float>>  elem_attrs     list of all attribute values for all
+        elem_attrs  : list<float>
+            list of all attribute values for all
             elements in the block; the list
             cycles through all attributes of
             the first element, then all attributes
@@ -2884,14 +2920,15 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
-        <string>       elem_attr_name element attribute name
-        <list<float>>  values         list of values for a single attribute
-                                        on a element block.  List dimensions
-                                        should be 1 x N_elem, where N_elem is
-                                        the number of elements on the element
-                                        block.
+        elem_attr_name : string
+            element attribute name
+        values : list<float>
+            list of values for a single attribute
+            on a element block.  List dimensions
+            should be 1 x N_elem, where N_elem is
+            the number of elements on the element block.
         """
         # Determine index of requested attribute in attribute list
         elem_attr_names = self.get_attribute_names('EX_ELEM_BLOCK', elem_blk_id)
@@ -2906,7 +2943,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        object_id : ex_entity_id
             element block *ID* (not *INDEX*)
 
         Returns
@@ -2924,7 +2961,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        object_id : ex_entity_id
             element block *ID* (not *INDEX*)
 
         Returns
@@ -2942,7 +2979,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        object_id : ex_entity_id
             element block *ID* (not *INDEX*)
 
         Returns
@@ -2960,7 +2997,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        object_id : ex_entity_id
             element block *ID* (not *INDEX*)
 
         Returns
@@ -2992,7 +3029,7 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
         evar_name : string
             name of element variable
@@ -3020,11 +3057,11 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        blockid : ex_entity_id
             element block *ID* (not *INDEX*)
-        evar_name : string
+        name : string
             name of element variable
-        time_step : int
+        step : int
             1-based index of time step
         start_index: int
             1-based index of element in block to start returning data
@@ -3059,11 +3096,13 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        blockid : ex_entity_id
             element block *ID* (not *INDEX*)
-            <string>       evar_name    name of element variable
-            <int>          time_step    1-based index of time step
-            <list<float>>  evar_vals
+        name : string
+            name of element variable
+        step : int
+            1-based index of time step
+        values : list<float>
 
         Returns
         -------
@@ -3097,7 +3136,7 @@ class exodus:
 
         Parameters
         ----------
-              <int>  num_evars
+        number : int
 
         Returns
         -------
@@ -3135,16 +3174,18 @@ class exodus:
 
         Parameters
         ----------
-            <string>  evar_name   name of new element variable
-            <int>     evar_index  1-based index of new element variable
+            name : string
+               name of new element variable
+            index : int
+               1-based index of new element variable
 
         Returns
         -------
         status : bool
             True = successful execution
 
-        Notes
-        -----
+        Example
+        -------
         this method is often called within the following sequence:
 
         >>> num_evars = exo.get_element_variable_number()
@@ -3172,14 +3213,14 @@ class exodus:
 
         Parameters
         ----------
-        objType:
+        objType : ex_entity_type
             entity type
-        blkId : int
+        blkid : ex_entity_id
             block/set *ID* (not *INDEX*)
 
         Returns
         -------
-            <list<string>>  attr_names
+            attr_names : list<string>
         """
         names = self.__ex_get_attr_names(objType, blkId)
         return list(names)
@@ -3194,12 +3235,12 @@ class exodus:
 
         Parameters
         ----------
-        blkId : int
+        blkid : ex_entity_id
             block/set *ID* (not *INDEX*)
 
         Returns
         -------
-            <list<string>>  attr_names
+            attr_names : list<string>
         """
         names = self.__ex_get_attr_names('EX_ELEM_BLOCK', blkId)
         return list(names)
@@ -3216,9 +3257,9 @@ class exodus:
         ----------
         objType:
             entity type
-        blkId : int
+        blkid : ex_entity_id
             block/set  *ID* (not *INDEX*)
-        <list<string>>  attr_names
+        attr_names : list<string>
 
         Returns
         -------
@@ -3237,9 +3278,9 @@ class exodus:
 
         Parameters
         ----------
-        blkId : int
+        blkid : ex_entity_id
             block/set *ID* (not *INDEX*)
-        <list<string>>  attr_names
+        names : list<string>
 
         Returns
         -------
@@ -3275,13 +3316,13 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
-            <string>  eprop_name
+        name : string
 
         Returns
         -------
-            <int>  eprop_val
+            eprop_val : int
         """
         propVal = self.__ex_get_prop('EX_ELEM_BLOCK', object_id, name)
         return int(propVal)
@@ -3299,10 +3340,11 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_id : int
+        elem_blk_id : ex_entity_id
             element block *ID* (not *INDEX*)
-            <string>  eprop_name
-            <int>     eprop_val
+        eprop_name : string
+
+        eprop_val : int
 
         Returns
         -------
@@ -3366,11 +3408,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>  node_set_id  node set *ID* (not *INDEX*)
+            node_set_id : ex_entity_id
+              node set *ID* (not *INDEX*)
 
         Returns
         -------
-            <string>  node_set_name
+            node_set_name : string
         """
         return self.__ex_get_name('EX_NODE_SET', object_id)
 
@@ -3384,8 +3427,9 @@ class exodus:
 
         Parameters
         ----------
-            <int>     node_set_id    node set *ID* (not *INDEX*)
-            <string>  node_set_name
+            node_set_id : ex_entity_id
+               node set *ID* (not *INDEX*)
+            node_set_name : string
         """
         self.__ex_put_name('EX_NODE_SET', object_id, name)
 
@@ -3417,7 +3461,7 @@ class exodus:
 
         Parameters
         ----------
-            <list<string>>  node_set_names
+            names : list<string>
         """
         self.__ex_put_names('EX_NODE_SET', names)
 
@@ -3431,7 +3475,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>  node_set_id  node set *ID* (not *INDEX*)
+            node_set_id  : ex_entity_id
+               node set *ID* (not *INDEX*)
 
         Returns
         -------
@@ -3452,7 +3497,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>  node_set_id  node set *ID* (not *INDEX*)
+            node_set_id : ex_entity_id
+               node set *ID* (not *INDEX*)
 
         Returns
         -------
@@ -3483,8 +3529,9 @@ class exodus:
 
         Parameters
         ----------
-            <int>        node_set_id  node set *ID* (not *INDEX*)
-            <list<int>>  ns_nodes
+            node_set_id : ex_entity_id
+               node set *ID* (not *INDEX*)
+            ns_nodes : list<int>
         """
         self.__ex_put_node_set(object_id, nodeSetNodes)
 
@@ -3498,7 +3545,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>        node_set_id  node set *ID* (not *INDEX*)
+            node_set_id : ex_entity_id
+               node set *ID* (not *INDEX*)
 
         Returns
         -------
@@ -3528,9 +3576,9 @@ class exodus:
 
         Parameters
         ----------
-        object_id : int
+        object_id : ex_entity_id
             node set *ID* (not *INDEX*)
-        nodeSetDistFact : <list<float>>
+        nodeSetDistFact : list<float>
             a list of distribution factors, e.g. nodal 'weights'
         """
         self.__ex_put_node_set_dist_fact(object_id, nodeSetDistFact)
@@ -3559,7 +3607,7 @@ class exodus:
 
         Parameters
         ----------
-              <int>  num_nsvars
+              number : int
 
         Returns
         -------
@@ -3613,16 +3661,18 @@ class exodus:
 
         Parameters
         ----------
-            <string>  nsvar_name   name of new node set variable
-            <int>     nsvar_index  1-based index of new node set variable
+            name   : string
+                name of new node set variable
+            index  : int
+                1-based index of new node set variable
 
         Returns
         -------
         status : bool
             True = successful execution
 
-        Notes
-        -----
+        Example
+        -------
         this method is often called within the following sequence:
 
         >>> num_nsvars = exo.get_node_set_variable_number()
@@ -3653,9 +3703,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>     node_set_id  node set *ID* (not *INDEX*)
-            <string>  nsvar_name   name of node set variable
-            <int>     time_step    1-based index of time step
+        node_set_id : ex_entity_id
+             node set *ID* (not *INDEX*)
+        nsvar_name  : string
+             name of node set variable
+        time_step   : int
+             1-based index of time step
 
         Returns
         -------
@@ -3682,11 +3735,16 @@ class exodus:
 
         Parameters
         ----------
-            <int>     node_set_id  node set *ID* (not *INDEX*)
-            <string>  nsvar_name   name of node set variable
-            <int>     time_step    1-based index of time step
-            <int>     start_index 1-based index of node to start returning data
-            <int>     num_nodes   number of nodes to return data for.
+        node_set_id : ex_entity_id
+           node set *ID* (not *INDEX*)
+        nsvar_name  : string  
+           name of node set variable
+        time_step   : int
+           1-based index of time step
+        start_index : int
+           1-based index of node to start returning data
+        num_nodes   : int
+           number of nodes to return data for.
 
         Returns
         -------
@@ -3718,10 +3776,13 @@ class exodus:
 
         Parameters
         ----------
-            <int>          node_set_id  node set *ID* (not *INDEX*)
-            <string>       nsvar_name   name of node set variable
-            <int>          time_step    1-based index of time step
-            <list<float>>  nsvar_vals
+        node_set_id : ex_entity_id
+           node set *ID* (not *INDEX*)
+        nsvar_name  : string
+           name of node set variable
+        time_step   : int
+           1-based index of time step
+        nsvar_vals  : list<float>
 
         Returns
         -------
@@ -3743,8 +3804,8 @@ class exodus:
 
         Returns
         -------
-            <int>  tot_num_ns_nodes
-            <int>  tot_num_ns_dist_facts
+            tot_num_ns_nodes : int
+            tot_num_ns_dist_facts : int
         """
         nodeSetIds = self.__ex_get_ids('EX_NODE_SET')
         totNumSetNodes, totNumSetDistFacts = 0, 0
@@ -3766,7 +3827,7 @@ class exodus:
 
         Parameters
         ----------
-        set_id : int
+        set_id : ex_entity_id
             set *ID* (not *INDEX*)
 
         Returns
@@ -3788,7 +3849,7 @@ class exodus:
 
         Parameters
         ----------
-        set_id : int
+        set_id : ex_entity_id
             set *ID* (not *INDEX*)
         num_set_entity : int
             number of nodes/edges/faces/elements to be added to set
@@ -3845,8 +3906,9 @@ class exodus:
 
         Parameters
         ----------
-            <int>     node_set_id  node set *ID* (not *INDEX*)
-            <string>  nsprop_name
+            node_set_id : ex_entity_id
+              node set *ID* (not *INDEX*)
+            name : string
 
         Returns
         -------
@@ -3867,9 +3929,10 @@ class exodus:
 
         Parameters
         ----------
-            <int>     node_set_id  node set *ID* (not *INDEX*)
-            <string>  nsprop_name
-            <int>     nsprop_val
+            node_set_id : ex_entity_id
+                node set *ID* (not *INDEX*)
+            name : string
+            value : int
 
         Returns
         -------
@@ -3931,11 +3994,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>  side_set_id  side set *ID* (not *INDEX*)
+            object_id : ex_entity_id
+               side set *ID* (not *INDEX*)
 
         Returns
         -------
-            <string>  side_set_name
+            side_set_name : string
         """
         return self.__ex_get_name('EX_SIDE_SET', object_id)
 
@@ -3949,8 +4013,9 @@ class exodus:
 
         Parameters
         ----------
-            <int>     side_set_id    side set *ID* (not *INDEX*)
-            <string>  side_set_name
+            side_set_id : ex_entity_id
+               side set *ID* (not *INDEX*)
+            side_set_name : string
         """
         self.__ex_put_name('EX_SIDE_SET', object_id, name)
 
@@ -3966,7 +4031,7 @@ class exodus:
 
         Returns
         -------
-            <list<string>>  side_set_names
+            side_set_names : list<string>
         """
         return self.__ex_get_names('EX_SIDE_SET')
 
@@ -3982,7 +4047,7 @@ class exodus:
 
         Parameters
         ----------
-            <list<string>>  side_set_names
+            side_set_names : list<string>
         """
         self.__ex_put_names('EX_SIDE_SET', names)
 
@@ -3996,11 +4061,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>  side_set_id  side set *ID* (not *INDEX*)
+            side_set_id : ex_entity_id
+               side set *ID* (not *INDEX*)
 
         Returns
         -------
-            <int>  num_ss_faces
+            num_ss_faces : int
         """
         ssids = self.get_ids('EX_SIDE_SET')
         if object_id not in ssids:
@@ -4021,11 +4087,11 @@ class exodus:
 
         Returns
         -------
-            <int>  tot_num_ss_sides
-            <int>  tot_num_ss_nodes
-            <int>  tot_num_ss_dist_facts
+        tot_num_ss_sides : int
+        tot_num_ss_nodes : int
+        tot_num_ss_dist_facts : int
 
-        Notes
+        Note
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4051,14 +4117,15 @@ class exodus:
 
         Parameters
         ----------
-            <int>  side_set_id  side set *ID* (not *INDEX*)
+        side_set_id : ex_entity_id
+             side set *ID* (not *INDEX*)
 
         Returns
         -------
-            <int>  num_ss_sides
-            <int>  num_ss_dist_facts
+            num_ss_sides : int
+            num_ss_dist_facts : int
 
-        Notes
+        Note
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4077,12 +4144,14 @@ class exodus:
 
         Parameters
         ----------
-            <int>  side_set_id        side set *ID* (not *INDEX*)
-            <int>  num_ss_sides       number of sides to be added to set
-            <int>  num_ss_dist_facts  number of nodal distribution factors
-              (e.g. nodal 'weights')
+            side_set_id : ex_entity_id
+                side set *ID* (not *INDEX*)
+            num_ss_sides : int
+                number of sides to be added to set
+            num_ss_dist_facts : int
+                number of nodal distribution factors (e.g. nodal 'weights')
 
-        Notes
+        Note
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4102,7 +4171,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>  side_set_id  side set *ID* (not *INDEX*)
+            side_set_id : ex_entity_id
+               side set *ID* (not *INDEX*)
 
         Returns
         -------
@@ -4133,9 +4203,10 @@ class exodus:
 
         Parameters
         ----------
-            <int>        side_set_id  side set *ID* (not *INDEX*)
-            <list<int>>  ss_elems
-            <list<int>>  ss_sides
+        side_set_id : ex_entity_id
+            side set *ID* (not *INDEX*)
+        ss_elems : list<int>
+        ss_sides : list<int>
         """
         self.__ex_put_side_set(object_id, sideSetElements, sideSetSides)
 
@@ -4149,7 +4220,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>        side_set_id  side set *ID* (not *INDEX*)
+        side_set_id : ex_entity_id
+             side set *ID* (not *INDEX*)
 
         Returns
         -------
@@ -4163,7 +4235,7 @@ class exodus:
                 factors, e.g. nodal
                 'weights'
 
-        Notes
+        Note
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4184,12 +4256,12 @@ class exodus:
 
         Parameters
         ----------
-        object_id : int 
+        object_id : ex_entity_id
             node set *ID* (not *INDEX*)
-        sideSetDistFact : <list<float>> 
+        sideSetDistFact : list<float>
             a list of distribution factors, e.g. nodal 'weights'
 
-        Notes
+        Note
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4209,7 +4281,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>        side_set_id  side set *ID* (not *INDEX*)
+        side_set_id : ex_entity_id
+             side set *ID* (not *INDEX*)
 
         Returns
         -------
@@ -4222,7 +4295,7 @@ class exodus:
               <np_array<int>>  ss_num_side_nodes
               <np_array<int>>  ss_nodes
 
-        Notes
+        Note
         -----
         The number of nodes (and distribution factors) in a side set is
         the sum of all face nodes.  A single node can be counted more
@@ -4276,7 +4349,7 @@ class exodus:
 
         Parameters
         ----------
-              <int>  num_ssvars
+        number : int
 
         Returns
         -------
@@ -4314,16 +4387,18 @@ class exodus:
 
         Parameters
         ----------
-            <string>  ssvar_name   name of new side set variable
-            <int>     ssvar_index  1-based index of new side set variable
+        name : string
+           name of new side set variable
+        index : int
+           1-based index of new side set variable
 
         Returns
         -------
         status : bool
             True = successful execution
 
-        Notes
-        -----
+        Example
+        -------
         this method is often called within the following sequence:
 
         >>> num_ssvars = exo.get_side_set_variable_number()
@@ -4354,9 +4429,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>     side_set_id  side set *ID* (not *INDEX*)
-            <string>  ssvar_name   name of side set variable
-            <int>     time_step    1-based index of time step
+        side_set_id : ex_entity_id
+            side set *ID* (not *INDEX*)
+        ssvar_name  : string
+            name of side set variable
+        time_step   : int
+            1-based index of time step
 
         Returns
         -------
@@ -4382,11 +4460,16 @@ class exodus:
 
         Parameters
         ----------
-            <int>     side_set_id  side set *ID* (not *INDEX*)
-            <string>  ssvar_name   name of side set variable
-            <int>     time_step    1-based index of time step
-            <int>     start_index 1-based index of side to start returning data
-            <int>     num_nodes   number of sides to return data for.
+        object_id : ex_entity_id
+            side set *ID* (not *INDEX*)
+        name  : string
+            name of side set variable
+        step   : int
+            1-based index of time step
+        start_index : int
+            1-based index of side to start returning data
+        num_sides : int
+            number of sides to return data for.
 
         Returns
         -------
@@ -4417,10 +4500,13 @@ class exodus:
 
         Parameters
         ----------
-            <int>          side_set_id  side set *ID* (not *INDEX*)
-            <string>       ssvar_name   name of side set variable
-            <int>          time_step    1-based index of time step
-            <list<float>>  ssvar_vals
+        object_id  : ex_entity_id
+            side set *ID* (not *INDEX*)
+        name   : string
+            name of side set variable
+        step    : int
+            1-based index of time step
+        values   : list<float>
 
         Returns
         -------
@@ -4441,7 +4527,7 @@ class exodus:
 
         Returns
         -------
-            <list<string>>  ssprop_names
+            ssprop_names : list<string>
         """
         names = self.__ex_get_prop_names('EX_SIDE_SET', 'EX_INQ_SS_PROP')
         return list(names)
@@ -4457,12 +4543,14 @@ class exodus:
 
         Parameters
         ----------
-            <int>     side_set_id  side set *ID* (not *INDEX*)
-            <string>  ssprop_name
+        object_id  : ex_entity_id
+            side set *ID* (not *INDEX*)
+        name   : string
+            name of side set property
 
         Returns
         -------
-            <int>  ssprop_val
+            ssprop_val : int
         """
         propVal = self.__ex_get_prop('EX_SIDE_SET', object_id, name)
         return int(propVal)
@@ -4479,9 +4567,11 @@ class exodus:
 
         Parameters
         ----------
-            <int>     side_set_id  side set *ID* (not *INDEX*)
-            <string>  ssprop_name
-            <int>     ssprop_val
+        object_id  : ex_entity_id
+            side set *ID* (not *INDEX*)
+        name   : string
+            name of side set property
+        value : int
 
         Returns
         -------
@@ -4517,7 +4607,7 @@ class exodus:
 
         Parameters
         ----------
-              <int>  num_gvars
+        number : int
 
         Returns
         -------
@@ -4555,16 +4645,18 @@ class exodus:
 
         Parameters
         ----------
-            <string>  gvar_name   name of new global variable
-            <int>     gvar_index  1-based index of new global variable
+        name : string
+           name of new global variable
+        index : int
+           1-based index of new global variable
 
         Returns
         -------
         status : bool
             True = successful execution
 
-        Notes
-        -----
+        Example
+        -------
         this method is often called within the following sequence:
 
         >>> num_gvars = exo.get_global_variable_number()
@@ -4593,8 +4685,10 @@ class exodus:
 
         Parameters
         ----------
-            <string>  gvar_name  name of global variable
-            <int>     time_step  1-based index of time step
+        name : string
+           name of global variable
+        step : int
+           1-based index of time step
 
         Returns
         -------
@@ -4618,7 +4712,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>     time_step  1-based index of time step
+        step : int
+           1-based index of time step
 
         Returns
         -------
@@ -4647,9 +4742,11 @@ class exodus:
 
         Parameters
         ----------
-            <string>  gvar_name  name of global variable
-            <int>     time_step  1-based index of time step
-            <float>   gvar_val
+        name : string
+            name of global variable
+        step : int
+            1-based index of time step
+        value  : float
 
         Returns
         -------
@@ -4689,8 +4786,9 @@ class exodus:
 
         Parameters
         ----------
-            <int>          time_step  1-based index of time step
-            <list<float>>  gvar_vals
+            step : int
+               1-based index of time step
+            values : list<float>
 
         Returns
         -------
@@ -4721,7 +4819,8 @@ class exodus:
 
         Parameters
         ----------
-            <string>  gvar_name  name of global variable
+            name : string
+              name of global variable
 
         Returns
         -------
@@ -4757,10 +4856,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>     blkID               id of the block to be added
-            <int>     num_elems_this_blk
-            <int>     num_faces  total number of faces in this block
-            <int>     num_attr_per_elem
+        blkID : ex_entity_id
+            id of the block to be added
+        num_elems_this_blk : int
+        num_faces  : int
+            total number of faces in this block
+        num_attr_per_elem : int
 
         Returns
         -------
@@ -4792,10 +4893,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>     blkID               id of the block to be added
-            <int>     num_faces_this_blk
-            <int>     num_nodes           total number of nodes in this block
-            <int>     num_attr_per_face
+        blkID : ex_entity_id
+            id of the block to be added
+        num_faces_this_blk : int
+        num_nodes  : int
+            total number of nodes in this block
+        num_attr_per_face : int
 
         Returns
         -------
@@ -4822,7 +4925,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>     blkID               id of the block to be added
+            blkID : ex_entity_id
+                id of the block to be added
 
             if array_type == 'ctype':
               <list<float>>  entityCounts
@@ -4852,7 +4956,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>     blkID               id of the block to be added
+            blkID : ex_entity_id
+                id of the block to be added
 
             if array_type == 'ctype':
               <list<float>>  entityCounts
@@ -4882,7 +4987,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>     blkID               id of the elem block to be added
+            blkID : ex_entity_id
+                id of the block to be added
 
             if array_type == 'ctype':
               <list<float>>  elemFaceConn  (raveled/flat list)
@@ -4912,7 +5018,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>     blkID               id of the face block to be added
+            blkID : ex_entity_id
+                id of the block to be added
 
             if array_type == 'ctype':
               <list<float>>  faceNodeConn  (raveled/flat list)
@@ -4940,7 +5047,7 @@ class exodus:
 
         >>> exo.close()
 
-        Notes
+        Note
         -----
         Can only be called once for an exodus object, and once called
         all methods for that object become inoperable
@@ -6322,7 +6429,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None, additionalElementAttrib
     exo_to : exodus object
         New exodus mesh
 
-    Notes
+    Note
     -----
     This function also allows one to add new element attributes during the copy
     process.  The number of element attributes is permanently set when the
@@ -6715,7 +6822,7 @@ def add_variables(exo, global_vars=None, nodal_vars=None, element_vars=None, nod
         Exodus database with variables added to it.  (The values of the variables
         are set to their defaults so that the user can populate them later.)
 
-    Notes
+    Note
     -----
     This function does not allow one to add element attributes to an exodus
     database.  See `exodus.copy_mesh` function for that capability.
@@ -6887,9 +6994,9 @@ def copyTransfer(fromFileName, toFileName, array_type='ctype', additionalGlobalV
     >>>
     >>> toFileHandle = copyTransfer(fromFileName,toFileName,addGlobalVariables,addNodeVariables,
     ...                             addElementVariables,addElementAttributes)
-    >>>
+    ...
     >>> ## Fill in new variables
-    >>>
+    ...
     >>> toFileHandle.close()
     """
 
