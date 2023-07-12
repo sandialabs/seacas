@@ -48,7 +48,7 @@ namespace Iocatalyst {
     void finalize_database() const override {}
 
     /** Return a string specifying underlying format of database (exodus, cgns, ...) */
-    std::string get_format() const { return "CATALYST2"; }
+    std::string get_format() const override { return "CATALYST2"; }
 
     /** \brief Determine whether the database needs information about process ownership of nodes.
      *
