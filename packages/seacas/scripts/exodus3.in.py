@@ -22,8 +22,8 @@ The uses of the Exodus data model include the following:
   data interrogation, and analysis tracking.
 
 The data in Exodus files can be divided into three primary categories:
-* initialization data, 
-* model data, and 
+* initialization data,
+* model data, and
 * results data.
 
 * Initialization data includes sizing parameters (number of
@@ -43,18 +43,18 @@ The data in Exodus files can be divided into three primary categories:
 
   * Nodal results are output (at each time step) for all the
     nodes in the model. An example of a nodal variable is displacement in
-    the X direction. 
+    the X direction.
   * Element, nodeset, and sideset results are output (at
     each time step) for all entities (elements, nodes, sides) in one or
     more entity block. For example, stress may be an element
-    variable. 
+    variable.
   * Another use of element variables is to record element status
     (a binary flag indicating whether each element is "alive" or "dead")
-    through time. 
+    through time.
   * Global results are output (at each time step) for a
     single element or node, or for a single property. Linear momentum of a
     structure and the acceleration at a particular point are both examples
-    of global variables. 
+    of global variables.
   * Although these examples correspond to typical FE
     applications, the data format is flexible enough to accommodate a
     spectrum of uses.
@@ -754,7 +754,7 @@ class exodus:
 
            Database: base_ioshell_copy.e
            Title:  This is the title
-        
+
            Number of spatial dimensions = 3                                                 Number of global variables     = 10
            Number of node blocks        = 1         Number of nodes              = 1,331    Number of nodal variables      =  2
            Number of element blocks     = 1         Number of elements           = 1,000    Number of element variables    =  5
@@ -1210,7 +1210,7 @@ class exodus:
 
         Returns
         -------
-        coord_names : list<string>  
+        coord_names : list<string>
         """
         return self.__ex_get_coord_names()
 
@@ -1354,7 +1354,7 @@ class exodus:
 
         Returns
         -------
-        node_id_map : list<ctypes.c_int>  
+        node_id_map : list<ctypes.c_int>
         """
         return self.__ex_get_node_num_map()
 
@@ -1393,7 +1393,7 @@ class exodus:
 
         Returns
         -------
-        nvar_names : list<string>  
+        nvar_names : list<string>
         """
         if self.__ex_get_variable_param('EX_NODAL').value == 0:
             return []
@@ -1446,7 +1446,7 @@ class exodus:
         ----------
         nvar_name : string
             name of new nodal variable
-        nvar_index : int 
+        nvar_index : int
             1-based index of new nodal variable
 
         Returns
@@ -1523,7 +1523,7 @@ class exodus:
              1-based index of time step
         start_index : int
              1-based index of node to start returning data
-        num_nodes : int  
+        num_nodes : int
              number of nodes to return data for.
 
         Returns
@@ -1760,7 +1760,7 @@ class exodus:
 
         Parameters
         ----------
-            map_type : ex_entity_type   
+            map_type : ex_entity_type
                         type of map being queried ('EX_ELEM_MAP', 'EX_NODE_MAP', 'EX_FACE_MAP', 'EX_EDGE_MAP')
             elem_id_map : list<int>
 
@@ -1969,7 +1969,7 @@ class exodus:
 
         Returns
         -------
-        names : list<string>  
+        names : list<string>
         """
         return self.__ex_get_names(object_type)
 
@@ -2713,15 +2713,15 @@ class exodus:
 
         Parameters
         ----------
-        elem_blk_ids : list<int>    
+        elem_blk_ids : list<int>
               element block *ID* (not *INDEX*) for each block
-        elem_types   : list<string>    
+        elem_types   : list<string>
               element type for each block
         num_blk_elems : list<int>
               number of elements for each block
         num_elem_nodes : list<int>
               number of nodes per element for each block
-        num_elem_attrs : list<int>  
+        num_elem_attrs : list<int>
               number of attributes per element for each block
 
         Returns
@@ -3735,7 +3735,7 @@ class exodus:
         ----------
         node_set_id : ex_entity_id
            node set *ID* (not *INDEX*)
-        nsvar_name  : string  
+        nsvar_name  : string
            name of node set variable
         time_step   : int
            1-based index of time step
@@ -4625,7 +4625,7 @@ class exodus:
 
         Returns
         -------
-        gvar_names : list<string>  
+        gvar_names : list<string>
         """
         if self.get_variable_number('EX_GLOBAL') == 0:
             return []
