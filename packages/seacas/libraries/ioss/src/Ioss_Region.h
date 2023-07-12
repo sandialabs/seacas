@@ -265,9 +265,10 @@ namespace Ioss {
     void add_qa_record(const std::string &code, const std::string &code_qa,
                        const std::string &date = "", const std::string &time = "");
 
-    template <typename T>
-    std::vector<size_t> get_all_block_field_data(const std::string &field_name,
-                                                 std::vector<T>    &field_data) const;
+    template <typename T, typename U>
+    std::vector<size_t> get_entity_field_data(const std::string &field_name,
+                                              const std::vector<T*> &entity_container,
+                                              std::vector<U> &field_data) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
@@ -280,8 +281,11 @@ namespace Ioss {
                                        size_t *data_size) const override;
 
   private:
-    std::vector<size_t> internal_get_all_block_field_data(const std::string &field_name, void *data,
-                                                          size_t data_size = 0) const;
+
+    template <typename T>
+    std::vector<size_t> internal_get_entity_field_data(const std::string &field_name,
+                                                       const std::vector<T*> &entity_container,
+                                                       void *data, size_t data_size = 0) const;
 
     // Add the name 'alias' as an alias for the database entity with the
     // name 'db_name'. Returns true if alias added; false if problems
@@ -404,4 +408,81 @@ inline const std::vector<std::string> &Ioss::Region::get_qa_records() const
 {
   IOSS_FUNC_ENTER(m_);
   return get_database()->get_qa_records();
+}
+
+namespace Ioss {
+
+template <typename T>
+bool verify_field_exists_in_entity_group(const std::string &field_name,
+                                         const std::vector<T*> &entity_container)
+{
+  bool found = false;
+  Ioss::Field::RoleType role = Ioss::Field::RoleType::INTERNAL;
+
+  for(const T* entity : entity_container) {
+    if (entity->field_exists(field_name)) {
+      Ioss::Field field = entity->get_field(field_name);
+
+      if(found == true) {
+        assert(field.get_role() == role);
+      }
+
+      found = true;
+      role = field.get_role();
+    }
+  }
+
+  return found;
+}
+
+namespace impl {
+template <typename T>
+size_t get_field_data_count_for_entities(const std::string &field_name, const std::vector<T*> &entity_container)
+{
+  size_t count = 0;
+
+  for(const T* entity : entity_container) {
+    if (entity->field_exists(field_name)) {
+      Ioss::Field field = entity->get_field(field_name);
+
+      count += entity->entity_count() * field.raw_storage()->component_count();
+    }
+  }
+
+  return count;
+}
+}
+}
+
+template <typename T, typename U>
+std::vector<size_t> Ioss::Region::get_entity_field_data(const std::string &field_name,
+                                                        const std::vector<T*> &entity_container,
+                                                        std::vector<U>    &field_data) const
+{
+  bool field_exists = verify_field_exists_in_entity_group(field_name, entity_container);
+
+  if (!field_exists) {
+    return std::vector<size_t>(entity_container.size() + 1, 0);
+  }
+
+  size_t field_count = impl::get_field_data_count_for_entities(field_name, entity_container);
+
+  field_data.resize(field_count);
+  size_t data_size = field_count * sizeof(U);
+
+  std::vector<size_t> offsets = internal_get_entity_field_data(field_name, entity_container, field_data.data(), data_size);
+
+  assert(offsets.size() == (entity_container.size() + 1));
+  assert(offsets[entity_container.size()] == field_count);
+
+  return offsets;
+}
+
+template <typename T>
+std::vector<size_t> Ioss::Region::internal_get_entity_field_data(const std::string &field_name,
+                                                                 const std::vector<T*> &entity_container,
+                                                                 void *data,
+                                                                 size_t data_size) const
+{
+  return get_database()->get_entity_field_data(field_name, entity_container, data, data_size);
 }

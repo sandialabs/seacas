@@ -5,6 +5,8 @@
 // See packages/seacas/LICENSE for details
 
 #include <gtest/gtest.h>
+#include <Ioss_CodeTypes.h>
+
 #ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
 #endif
