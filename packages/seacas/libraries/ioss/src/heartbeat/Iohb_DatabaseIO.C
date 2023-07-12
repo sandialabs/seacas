@@ -46,7 +46,7 @@ namespace Ioss {
 namespace {
   std::string time_stamp(const std::string &format)
   {
-    if (format == "") {
+    if (format.empty()) {
       return std::string("");
     }
     const int   length = 256;
@@ -257,6 +257,14 @@ namespace Iohb {
 
       Ioss::Utils::check_set_bool_property(properties, "SHOW_TIME_FIELD", new_this->addTimeField);
 
+      if (properties.exists("FULL_PRECISION")) {
+        bool precision = true;
+        Ioss::Utils::check_set_bool_property(properties, "FULL_PRECISION", precision);
+        if (precision) {
+          new_this->precision_ = -1;
+        }
+      }
+
       // SpyHis format is specific format, so don't override these settings:
       if (fileFormat == Iohb::Format::SPYHIS) {
         new_this->addTimeField = true;
@@ -297,7 +305,7 @@ namespace Iohb {
     initialize();
 
     layout_ = std::make_unique<Layout>(showLabels, precision_, separator_, fieldWidth_);
-    if (tsFormat != "") {
+    if (!tsFormat.empty()) {
       layout_->add_literal("+");
       layout_->add_literal(time_stamp(tsFormat));
       layout_->add_literal(" ");

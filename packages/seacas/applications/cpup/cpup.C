@@ -74,17 +74,16 @@ namespace {
   bool is_field_valid(const Cpup::StringVector &variable_list, const std::string &field_name)
   {
     if (variable_list.empty() ||
-        (variable_list.size() == 1 && Ioss::Utils::str_equal(variable_list[0], "all") == 0)) {
+        (variable_list.size() == 1 && Ioss::Utils::str_equal(variable_list[0], "all"))) {
       return true;
     }
 
     // At this point, the variable_list contains one or more entries
     // of fields that should be output on combined file.  Run through
     // list and see if `field_name` is in the list.
-    return std::any_of(variable_list.begin(), variable_list.end(),
-                       [&field_name](const auto &valid) {
-                         return Ioss::Utils::str_equal(valid, field_name) == 0;
-                       });
+    return std::any_of(
+        variable_list.begin(), variable_list.end(),
+        [&field_name](const auto &valid) { return Ioss::Utils::str_equal(valid, field_name); });
   }
 
   int verify_timestep_count(const PartVector &part_mesh)
@@ -180,7 +179,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   for (int p = 0; p < interFace.processor_count(); p++) {
     std::string root_dir = interFace.root_dir();
     std::string sub_dir  = interFace.sub_dir();
-    std::string prepend{""};
+    std::string prepend{};
 
     if (!root_dir.empty()) {
       prepend = root_dir + "/";
@@ -240,7 +239,7 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   for (const auto &part : part_mesh) {
     const auto &blocks = part->get_structured_blocks();
     for (const auto &block : blocks) {
-      auto &name       = block->name();
+      const auto &name = block->name();
       all_blocks[name] = block;
 
       // Build map of unique blocks in the mesh.
@@ -295,8 +294,8 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
 
   // Create the output structured blocks...
   for (auto &block_range : global_block) {
-    auto &block_name = block_range.first;
-    auto  block      = new Ioss::StructuredBlock(dbo, block_name, 3, block_range.second);
+    const auto &block_name = block_range.first;
+    auto       *block      = new Ioss::StructuredBlock(dbo, block_name, 3, block_range.second);
     output_region.add(block);
 
     // Add BC to the block...
@@ -318,13 +317,13 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
   auto       &part  = part_mesh[0];
   const auto &ssets = part->get_sidesets();
   for (const auto &sset : ssets) {
-    auto oss = new Ioss::SideSet(*sset);
+    auto *oss = new Ioss::SideSet(*sset);
     output_region.add(oss);
   }
 
   const auto &assems = part->get_assemblies();
   for (const auto &assem : assems) {
-    auto oass = new Ioss::Assembly(*assem);
+    auto *oass = new Ioss::Assembly(*assem);
     output_region.add(oass);
   }
 
@@ -357,8 +356,8 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
       for (const auto &prt : part_mesh) {
         const auto &pblocks = prt->get_structured_blocks();
         for (const auto &pblock : pblocks) {
-          auto &name      = pblock->name();
-          auto  name_proc = Iocgns::Utils::decompose_name(name, true);
+          const auto &name      = pblock->name();
+          auto        name_proc = Iocgns::Utils::decompose_name(name, true);
           if (name_proc.first == block->name()) {
             Ioss::NameList fields = pblock->field_describe(Ioss::Field::TRANSIENT);
 
@@ -558,8 +557,8 @@ namespace {
         for (const auto &part : part_mesh) {
           const auto &pblocks = part->get_structured_blocks();
           for (const auto &pblock : pblocks) {
-            auto &name      = pblock->name();
-            auto  name_proc = Iocgns::Utils::decompose_name(name, true);
+            const auto &name      = pblock->name();
+            auto        name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
               if (pblock->field_exists(field_name)) {
                 pblock->get_field_data(field_name, input);
@@ -595,8 +594,8 @@ namespace {
         for (const auto &part : part_mesh) {
           const auto &pblocks = part->get_structured_blocks();
           for (const auto &pblock : pblocks) {
-            auto &name      = pblock->name();
-            auto  name_proc = Iocgns::Utils::decompose_name(name, true);
+            const auto &name      = pblock->name();
+            auto        name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
               auto &inb = pblock->get_node_block();
               if (inb.field_exists(field_name)) {
@@ -635,10 +634,10 @@ namespace {
               if (plane < 3) {
                 // This zone connects to another zone "below" it.
                 // Find the connecting zone and adjust the correct offset
-                auto donor     = all_blocks[zgc.m_donorName];
-                auto offset    = donor->get_ijk_offset();
-                auto range     = donor->get_ijk_local();
-                auto my_offset = block->get_ijk_offset();
+                const auto *donor     = all_blocks[zgc.m_donorName];
+                auto        offset    = donor->get_ijk_offset();
+                auto        range     = donor->get_ijk_local();
+                auto        my_offset = block->get_ijk_offset();
                 if (my_offset[plane] != range[plane] + offset[plane]) {
                   block->set_ijk_offset(plane, range[plane] + offset[plane]);
                   change_made = true;
@@ -789,8 +788,8 @@ namespace {
         for (const auto &part : part_mesh) {
           const auto &pblocks = part->get_structured_blocks();
           for (const auto &pblock : pblocks) {
-            auto &name      = pblock->name();
-            auto  name_proc = Iocgns::Utils::decompose_name(name, true);
+            const auto &name      = pblock->name();
+            auto        name_proc = Iocgns::Utils::decompose_name(name, true);
             if (name_proc.first == block->name()) {
               std::vector<double> lcoord;
               pblock->get_field_data(fields[dim], lcoord);

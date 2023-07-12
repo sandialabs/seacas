@@ -98,7 +98,7 @@ namespace {
 
       // determine if current character is a separator
       bool is_sep = is_separator(separator, curr_char);
-      if (is_sep && curr_token != "") {
+      if (is_sep && !curr_token.empty()) {
         // we just completed a token
         tokens.push_back(curr_token);
         curr_token.clear();
@@ -111,7 +111,7 @@ namespace {
         curr_token += curr_char;
       }
     }
-    if (curr_token != "") {
+    if (!curr_token.empty()) {
       tokens.push_back(curr_token);
     }
   }
@@ -262,7 +262,7 @@ std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int6
 
 char **Ioss::Utils::get_name_array(size_t count, int size)
 {
-  auto names = new char *[count];
+  auto *names = new char *[count];
   for (size_t i = 0; i < count; i++) {
     names[i] = new char[size + 1];
     std::memset(names[i], '\0', size + 1);
@@ -1259,7 +1259,7 @@ void Ioss::Utils::generate_history_mesh(Ioss::Region *region)
   }
 }
 
-// Safer than Ioss::Utils::copy_string -- guarantees null termination
+// Safer than strcpy -- guarantees null termination
 void Ioss::Utils::copy_string(char *dest, char const *source, size_t elements)
 {
   char *d;
@@ -1329,13 +1329,11 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
   if (extension == "e" || extension == "g" || extension == "gen" || extension == "exo") {
     return "exodus";
   }
-  else if (extension == "cgns") {
+  if (extension == "cgns") {
     return "cgns";
   }
-  else {
-    // "exodus" is default...
-    return "exodus";
-  }
+  // "exodus" is default...
+  return "exodus";
 }
 
 void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
@@ -1460,5 +1458,4 @@ void Ioss::Utils::copyright(std::ostream &out, const std::string &year_range)
              "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n"
              "\n",
              year_range);
-  return;
 }

@@ -153,11 +153,11 @@ namespace {
     {
       for (size_t i = 0; i < m_assemblies.size(); ++i) {
         if (m_visitedAssemblies[i]) {
-          assemblyFilterList.push_back(m_assemblies[i].name);
+          assemblyFilterList.emplace_back(m_assemblies[i].name);
         }
       }
 
-      std::sort(assemblyFilterList.begin(), assemblyFilterList.end(), std::less<std::string>());
+      std::sort(assemblyFilterList.begin(), assemblyFilterList.end(), std::less<>());
       auto endIter = std::unique(assemblyFilterList.begin(), assemblyFilterList.end());
       assemblyFilterList.resize(endIter - assemblyFilterList.begin());
     }
@@ -416,7 +416,7 @@ namespace Ioex {
       double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
       ex_close(m_exodusFilePtr);
-      closeDW();
+      close_dw();
       if (do_timer && isParallel) {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
@@ -626,7 +626,7 @@ namespace Ioex {
       std::replace(std::begin(config), std::end(config), '\t', ' ');
       auto lines = Ioss::tokenize(config, "\n");
       lines.erase(std::remove_if(lines.begin(), lines.end(),
-                                 [](const std::string &line) { return line == ""; }),
+                                 [](const std::string &line) { return line.empty(); }),
                   lines.end());
 
       // See if the client added any "information_records"
@@ -3140,7 +3140,7 @@ namespace {
   void insert_sort_and_unique(const std::vector<std::string> &src, std::vector<std::string> &dest)
   {
     dest.insert(dest.end(), src.begin(), src.end());
-    std::sort(dest.begin(), dest.end(), std::less<std::string>());
+    std::sort(dest.begin(), dest.end(), std::less<>());
     auto endIter = std::unique(dest.begin(), dest.end());
     dest.resize(endIter - dest.begin());
   }

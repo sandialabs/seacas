@@ -130,21 +130,20 @@ namespace {
             }
           }
           else {
-            for (size_t i = 0; i < stemp.size(); i++) {
-              if (stemp[i] == 'i' || stemp[i] == 'I') {
+            for (char &st : stemp) {
+              if (st == 'i' || st == 'I') {
                 ordinal |= Iocgns::Ordinal::I;
               }
-              else if (stemp[i] == 'j' || stemp[i] == 'J') {
+              else if (st == 'j' || st == 'J') {
                 ordinal |= Iocgns::Ordinal::J;
               }
-              else if (stemp[i] == 'k' || stemp[i] == 'K') {
+              else if (st == 'k' || st == 'K') {
                 ordinal |= Iocgns::Ordinal::K;
               }
               else {
                 fmt::print(
                     stderr,
-                    "\nERROR: Invalid ordinal ('{}') specified.  Must be 'i', 'j', or 'k'.\n",
-                    stemp[i]);
+                    "\nERROR: Invalid ordinal ('{}') specified.  Must be 'i', 'j', or 'k'.\n", st);
                 options_.usage(std::cerr);
                 exit(EXIT_FAILURE);
               }
@@ -374,8 +373,8 @@ namespace {
               if (zgc.is_active()) {
                 int p1 = zgc.m_ownerProcessor;
                 int p2 = zgc.m_donorProcessor;
-                comms.emplace(std::make_pair(std::make_pair(adam_zone->m_name, p1),
-                                             std::make_pair(zgc.m_donorName, p2)));
+                comms.emplace(std::make_pair(adam_zone->m_name, p1),
+                              std::make_pair(zgc.m_donorName, p2));
               }
             }
           }

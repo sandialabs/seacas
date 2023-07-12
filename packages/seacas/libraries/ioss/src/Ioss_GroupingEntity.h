@@ -72,8 +72,8 @@ namespace Ioss {
 
     GroupingEntity() = default;
     GroupingEntity(DatabaseIO *io_database, const std::string &my_name, int64_t entity_count);
-    GroupingEntity(const GroupingEntity &);
-    GroupingEntity &operator=(const GroupingEntity &) = delete;
+    GroupingEntity(const GroupingEntity &other);
+    GroupingEntity &operator=(const GroupingEntity &rhs) = delete;
 
     virtual ~GroupingEntity();
 
@@ -305,7 +305,7 @@ namespace Ioss {
     mutable std::mutex m_;
 #endif
 
-    bool equal_(const GroupingEntity &rhs, const bool quiet) const;
+    bool equal_(const GroupingEntity &rhs, bool quiet) const;
 
   private:
     void verify_field_exists(const std::string &field_name, const std::string &inout) const;

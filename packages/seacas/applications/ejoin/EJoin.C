@@ -400,7 +400,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   // Define a node block...
   std::string block_name        = "nodeblock_1";
   int         spatial_dimension = part_mesh[0]->get_property("spatial_dimension").get_int();
-  auto        block =
+  auto       *block =
       new Ioss::NodeBlock(output_region.get_database(), block_name, node_count, spatial_dimension);
   block->property_add(Ioss::Property("id", 1));
 
@@ -577,11 +577,6 @@ namespace {
     const std::string &prefix      = region.name();
 
     Ioss::Assembly *assem = nullptr;
-    if (create_assemblies) {
-      assem = new Ioss::Assembly(output_region.get_database(), region.name());
-      output_region.add(assem);
-      assem->property_add(Ioss::Property("name_in_output", region.name()));
-    }
 
     const Ioss::ElementBlockContainer &ebs = region.get_element_blocks();
     for (const auto &eb : ebs) {
@@ -603,7 +598,7 @@ namespace {
         size_t      num_elem = eb->entity_count();
 
         if (num_elem > 0) {
-          auto ebn = new Ioss::ElementBlock(output_region.get_database(), name, type, num_elem);
+          auto *ebn = new Ioss::ElementBlock(output_region.get_database(), name, type, num_elem);
           ebn->property_add(Ioss::Property("original_block_order", used_blocks++));
           output_region.add(ebn);
           transfer_fields(eb, ebn, Ioss::Field::ATTRIBUTE);
@@ -618,6 +613,11 @@ namespace {
           }
 
           if (create_assemblies) {
+            if (assem == nullptr) {
+              assem = new Ioss::Assembly(output_region.get_database(), region.name());
+              output_region.add(assem);
+              assem->property_add(Ioss::Property("name_in_output", region.name()));
+            }
             assem->add(ebn);
           }
         }
@@ -652,8 +652,8 @@ namespace {
         }
         size_t num_members = as->entity_count();
         if (num_members > 0) {
-          auto member_type = as->get_member_type();
-          auto asn         = new Ioss::Assembly(output_region.get_database(), name);
+          auto  member_type = as->get_member_type();
+          auto *asn         = new Ioss::Assembly(output_region.get_database(), name);
           output_region.add(asn);
 
           const auto &members = as->get_members();
@@ -674,7 +674,7 @@ namespace {
     const std::string &prefix = region.name();
 
     const Ioss::SideSetContainer &fss = region.get_sidesets();
-    for (auto &fs : fss) {
+    for (const auto &fs : fss) {
       if (!entity_is_omitted(fs)) {
         std::string name = fs->name();
         if (output_region.get_sideset(name) != nullptr) {
@@ -688,11 +688,11 @@ namespace {
         if (debug) {
           fmt::print(stderr, "{}, ", name);
         }
-        auto surf = new Ioss::SideSet(output_region.get_database(), name);
+        auto *surf = new Ioss::SideSet(output_region.get_database(), name);
         set_id(fs, surf);
 
         const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
-        for (auto &fb : fbs) {
+        for (const auto &fb : fbs) {
           const std::string &fbname = prefix + "_" + fb->name();
           if (debug) {
             fmt::print(stderr, "{}, ", fbname);
@@ -702,7 +702,7 @@ namespace {
           std::string partype  = fb->parent_element_topology()->name();
           size_t      num_side = fb->entity_count();
 
-          auto block =
+          auto *block =
               new Ioss::SideBlock(output_region.get_database(), fbname, fbtype, partype, num_side);
           surf->add(block);
         }
@@ -726,7 +726,7 @@ namespace {
       fmt::print(stderr, "{}, ", name);
     }
     size_t count = region.get_property("node_count").get_int();
-    auto   ns    = new Ioss::NodeSet(output_region.get_database(), name, count);
+    auto  *ns    = new Ioss::NodeSet(output_region.get_database(), name, count);
     output_region.add(ns);
   }
 
@@ -802,7 +802,7 @@ namespace {
     const std::string &prefix = region.name();
 
     const Ioss::NodeSetContainer &nss = region.get_nodesets();
-    for (auto &ns : nss) {
+    for (const auto &ns : nss) {
       if (!entity_is_omitted(ns)) {
         std::string name = ns->name();
         if (output_region.get_nodeset(name) != nullptr) {
@@ -817,7 +817,7 @@ namespace {
           fmt::print(stderr, "{}, ", name);
         }
         size_t count    = ns->entity_count();
-        auto   node_set = new Ioss::NodeSet(output_region.get_database(), name, count);
+        auto  *node_set = new Ioss::NodeSet(output_region.get_database(), name, count);
         output_region.add(node_set);
         set_id(ns, node_set);
       }
@@ -829,7 +829,7 @@ namespace {
                         std::vector<T> &global_values, INT *part_loc_elem_to_global)
   {
     // copy values to master element value information
-    T *local_values = &values[0];
+    T *local_values = values.data();
     for (size_t j = 0; j < entity_count; j++) {
       size_t global_block_pos         = part_loc_elem_to_global[(j + loffset)] - goffset;
       global_values[global_block_pos] = local_values[j];
@@ -841,7 +841,7 @@ namespace {
                         std::vector<T> &global_values)
   {
     // copy values to master sideset value information
-    T *local_values = &values[0];
+    T *local_values = values.data();
     for (size_t j = 0; j < entity_count; j++) {
       global_values[j + loffset] = local_values[j];
     }
@@ -906,7 +906,7 @@ namespace {
       generate_element_ids(part_mesh, local_element_map, ids);
     }
     size_t element_offset = 0;
-    for (auto &eb : ebs) {
+    for (const auto &eb : ebs) {
       eb->put_field_data("ids", &ids[element_offset], ids.size() * sizeof(INT));
       element_offset += eb->entity_count();
     }
@@ -918,7 +918,7 @@ namespace {
       const Ioss::ElementBlockContainer &iebs        = pm->get_element_blocks();
       size_t                             node_offset = pm->get_property("node_offset").get_int();
 
-      for (auto &ieb : iebs) {
+      for (const auto &ieb : iebs) {
         if (entity_is_omitted(ieb)) {
           continue;
         }
@@ -963,7 +963,7 @@ namespace {
     for (const auto &pm : part_mesh) {
       size_t                        node_offset = pm->get_property("node_offset").get_int();
       const Ioss::NodeSetContainer &ins         = pm->get_nodesets();
-      for (auto &in : ins) {
+      for (const auto &in : ins) {
         if (!entity_is_omitted(in)) {
           std::vector<INT> nodelist;
           in->get_field_data("ids", nodelist);
@@ -1003,7 +1003,7 @@ namespace {
 
     Ioss::SideBlockContainer out_eb;
     // Put all output side blocks in the same list...
-    for (auto &oss : os) {
+    for (const auto &oss : os) {
       const Ioss::SideBlockContainer &obs = oss->get_side_blocks();
       std::copy(obs.begin(), obs.end(), std::back_inserter(out_eb));
     }
@@ -1016,11 +1016,11 @@ namespace {
       size_t element_offset = pm->get_property("element_offset").get_int();
 
       const Ioss::SideSetContainer &is = pm->get_sidesets();
-      for (auto &iss : is) {
+      for (const auto &iss : is) {
         if (!entity_is_omitted(iss)) {
           const Ioss::SideBlockContainer &ebs = iss->get_side_blocks();
 
-          for (auto &eb : ebs) {
+          for (const auto &eb : ebs) {
             SMART_ASSERT((eb->name() == (*II)->name()) ||
                          (pm->name() + "_" + eb->name() == (*II)->name()))
             (eb->name())((*II)->name());
@@ -1135,7 +1135,7 @@ namespace {
   {
     for (const auto &pm : part_mesh) {
       const Ioss::ElementBlockContainer &iebs = pm->get_element_blocks();
-      for (auto &ieb : iebs) {
+      for (const auto &ieb : iebs) {
         if (!entity_is_omitted(ieb)) {
           std::string         name = pm->name() + "_" + ieb->name();
           Ioss::ElementBlock *oeb  = output_region.get_element_block(name);
@@ -1164,7 +1164,7 @@ namespace {
 
     for (const auto &pm : part_mesh) {
       const Ioss::NodeSetContainer &ins = pm->get_nodesets();
-      for (auto &in : ins) {
+      for (const auto &in : ins) {
         if (!entity_is_omitted(in)) {
           std::string    name = pm->name() + "_" + in->name();
           Ioss::NodeSet *ons  = output_region.get_nodeset(name);
@@ -1194,7 +1194,7 @@ namespace {
 
     Ioss::SideBlockContainer out_eb;
     // Put all output side blocks in the same list...
-    for (auto &oss : os) {
+    for (const auto &oss : os) {
       const Ioss::SideBlockContainer &obs = oss->get_side_blocks();
       std::copy(obs.begin(), obs.end(), std::back_inserter(out_eb));
     }
@@ -1205,10 +1205,10 @@ namespace {
 
     for (const auto &pm : part_mesh) {
       const Ioss::SideSetContainer &is = pm->get_sidesets();
-      for (auto &iss : is) {
+      for (const auto &iss : is) {
         if (!entity_is_omitted(iss)) {
           const Ioss::SideBlockContainer &ebs = iss->get_side_blocks();
-          for (auto &eb : ebs) {
+          for (const auto &eb : ebs) {
             SMART_ASSERT((pm->name() + "_" + eb->name() == (*II)->name()) ||
                          (eb->name() == (*II)->name()));
             Ioss::NameList fields = eb->field_describe(Ioss::Field::TRANSIENT);
@@ -1376,7 +1376,7 @@ namespace {
     }
     for (const auto &pm : part_mesh) {
       const Ioss::ElementBlockContainer &iebs = pm->get_element_blocks();
-      for (auto &ieb : iebs) {
+      for (const auto &ieb : iebs) {
         if (!entity_is_omitted(ieb)) {
           std::string         name = pm->name() + "_" + ieb->name();
           Ioss::ElementBlock *oeb  = output_region.get_element_block(name);
@@ -1409,7 +1409,7 @@ namespace {
 
     for (const auto &pm : part_mesh) {
       const Ioss::NodeSetContainer &ins = pm->get_nodesets();
-      for (auto &in : ins) {
+      for (const auto &in : ins) {
         if (!entity_is_omitted(in)) {
           std::string    name = pm->name() + "_" + in->name();
           Ioss::NodeSet *ons  = output_region.get_nodeset(name);
@@ -1442,7 +1442,7 @@ namespace {
 
     Ioss::SideBlockContainer out_eb;
     // Put all output side blocks in the same list...
-    for (auto &oss : os) {
+    for (const auto &oss : os) {
       const Ioss::SideBlockContainer &obs = oss->get_side_blocks();
       std::copy(obs.begin(), obs.end(), std::back_inserter(out_eb));
     }
@@ -1453,11 +1453,11 @@ namespace {
 
     for (const auto &pm : part_mesh) {
       const Ioss::SideSetContainer &is = pm->get_sidesets();
-      for (auto &iss : is) {
+      for (const auto &iss : is) {
         if (!entity_is_omitted(iss)) {
           size_t                          id  = iss->get_property("id").get_int();
           const Ioss::SideBlockContainer &ebs = iss->get_side_blocks();
-          for (auto &eb : ebs) {
+          for (const auto &eb : ebs) {
             SMART_ASSERT((pm->name() + "_" + eb->name() == (*II)->name()) ||
                          (eb->name() == (*II)->name()));
             Ioss::NameList fields = eb->field_describe(Ioss::Field::TRANSIENT);
@@ -1520,7 +1520,7 @@ namespace {
         // Get the nodesets for this part and set the "omitted" property on the nodeset
         if (omit[p][0] == "ALL") {
           const Ioss::NodeSetContainer &nodesets = part_mesh[p]->get_nodesets();
-          for (auto &ns : nodesets) {
+          for (const auto &ns : nodesets) {
             ns->property_add(Ioss::Property(std::string("omitted"), 1));
           }
         }
@@ -1544,7 +1544,7 @@ namespace {
         // Get the sidesets for this part and set the "omitted" property on the sideset
         if (omit[p][0] == "ALL") {
           const Ioss::SideSetContainer &sidesets = part_mesh[p]->get_sidesets();
-          for (auto &ss : sidesets) {
+          for (const auto &ss : sidesets) {
             ss->property_add(Ioss::Property(std::string("omitted"), 1));
           }
         }
@@ -1568,7 +1568,7 @@ namespace {
         // Get the assemblies for this part and set the "omitted" property on the assembly
         if (omit[p][0] == "ALL") {
           const auto &assemblies = part_mesh[p]->get_assemblies();
-          for (auto &as : assemblies) {
+          for (const auto &as : assemblies) {
             as->property_add(Ioss::Property(std::string("omitted"), 1));
           }
         }
