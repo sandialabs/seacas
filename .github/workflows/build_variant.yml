@@ -188,16 +188,16 @@ jobs:
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
-            name: "CATALYST2, serial",
+            name: "CATALYST2, parallel",
             os: ubuntu-latest,
-            compiler: "clang",
+            compiler: "mpi",
             debug: "NO",
             threadsafe: "NO",
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "YES",
-            gtest: "NO",
+            gtest: "YES",
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
