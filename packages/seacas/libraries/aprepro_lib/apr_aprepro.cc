@@ -35,7 +35,7 @@
 #endif
 
 namespace {
-  const std::string version_string{"6.14 (2023/06/20)"};
+  const std::string version_string{"6.15 (2023/07/12)"};
 
   void output_copyright();
 
@@ -484,7 +484,7 @@ namespace SEAMS {
     else if (match_option(option, "dumpvars_json", "J", 13)) {
       ap_options.dumpvars_json = true;
     }
-    if (match_option(option, "dumpvars", "D", 4)) {
+    else if (match_option(option, "dumpvars", "D", 4)) {
       ap_options.dumpvars = true;
     }
     else if (match_option(option, "version", "v", 3)) {
