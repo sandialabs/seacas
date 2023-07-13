@@ -54,7 +54,6 @@ namespace Ioss {
 
   // Contains (parent_element, side) topology pairs
   using TopoContainer = std::vector<std::pair<const ElementTopology *, const ElementTopology *>>;
-  using ElementBlockContainer = std::vector<ElementBlock *>;
 
   /** \brief An input or output Database.
    *

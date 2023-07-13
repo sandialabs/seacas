@@ -1379,7 +1379,7 @@ namespace Ioss {
 
     for(size_t i=0; i<num_container; i++) {
 
-      auto entity = entity_container[i];
+      const auto * entity = entity_container[i];
 
       if (entity->field_exists(field_name)) {
         auto        num_to_get_for_block = offset[i + 1] - offset[i];
