@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -79,7 +79,7 @@ int ex__put_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num
 {
   int    status;
   int    varid;
-  size_t start[3], count[3];
+  size_t start[2], count[2];
   char   errmsg[MAX_ERR_LENGTH];
 
   if ((status = nc_inq_varid(exoid, VAR_NOD_VAR_NEW(nodal_var_index), &varid)) != NC_NOERR) {
@@ -90,11 +90,9 @@ int ex__put_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num
   }
   start[0] = --time_step;
   start[1] = 0;
-  start[2] = 0;
 
   count[0] = 1;
   count[1] = num_nodes;
-  count[2] = 0;
 
   if (ex__comp_ws(exoid) == 4) {
     status = nc_put_vara_float(exoid, varid, start, count, nodal_var_vals);
