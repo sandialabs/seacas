@@ -230,7 +230,7 @@ jobs:
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
-            name: "Use modern CMake configure of netCDF and HDF5 packages",
+            name: "Use modern CMake configure of netCDF and HDF5 packages with GTest",
             os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
@@ -239,7 +239,7 @@ jobs:
             use_kokkos: "NO",
             use_adios2: "NO",
             use_catalyst2: "NO",
-            gtest: "NO",
+            gtest: "YES",
             extra: "MODERN=YES",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
