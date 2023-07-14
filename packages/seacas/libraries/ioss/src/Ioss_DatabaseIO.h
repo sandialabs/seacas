@@ -150,7 +150,7 @@ namespace Ioss {
     }
 
     /** \brief We call this ONLY after we assure that using_dw() is TRUE
-     *  \ returns mount point of Datawarp namespace, e.g: `/opt/cray/....<jobid>`
+     *  \returns mount point of Datawarp namespace, e.g: `/opt/cray/....<jobid>`
      */
     std::string get_dw_path() const { return dwPath; }
 
@@ -179,7 +179,7 @@ namespace Ioss {
 
     /** \brief Get a file-per-processor filename associated with the database.
      *
-     * \ returns The file-per-processor name for a file on this processor.
+     * \returns The file-per-processor name for a file on this processor.
      */
     const std::string &decoded_filename() const;
 
