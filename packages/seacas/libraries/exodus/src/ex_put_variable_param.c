@@ -18,7 +18,6 @@ static int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char 
   int varid;
   int dims[2];
   int dim_str_name;
-  int fill = NC_FILL_CHAR;
 
   char errmsg[MAX_ERR_LENGTH];
 
@@ -61,7 +60,10 @@ static int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char 
     return (EX_FATAL); /* exit define mode and return */
   }
   ex__set_compact_storage(exoid, varid);
+#if defined(EX_CAN_USE_NC_DEF_VAR_FILL)
+  int fill = NC_FILL_CHAR;
   nc_def_var_fill(exoid, varid, 0, &fill);
+#endif
   return (EX_NOERR);
 }
 /*! \endcond */
