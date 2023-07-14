@@ -1,11 +1,10 @@
-========================================================================
 ## Documentation
 See SEACAS (including Exodus) documentation at http://sandialabs.github.io/seacas-docs/
 
 ## Installation
 Installation directions are available at http://github.com/sandialabs/seacas
 
-## CONTACT:
+## Contact
 
 Greg Sjaardema,
 Sandia National Laboratories,
