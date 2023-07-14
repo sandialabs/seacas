@@ -4,7 +4,6 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
 #include <gtest/gtest.h>
 #include <Ioss_CodeTypes.h>
 

@@ -141,7 +141,7 @@ namespace Ioss {
 
     ElementBlockBatchOffset()                                = delete;
     ElementBlockBatchOffset(const ElementBlockBatchOffset &) = delete;
-    ElementBlockBatchOffset(ElementBlockBatchOffset &&)      = default;
+    ElementBlockBatchOffset(ElementBlockBatchOffset &&)      = delete;
 
     ~ElementBlockBatchOffset() = default;
 
@@ -628,18 +628,18 @@ namespace Ioss {
 
         for (size_t i = 0; i < block.localMap.size(); i++) {
           for (size_t j = 0; j < comp_count; j++) {
-            unsigned fileIndex = fileOffset[bsi] + block.localMap[i] * comp_count + j;
-            unsigned iossIndex = iossOffset[bsi] + (i + block.localIossOffset) * comp_count + j;
+            size_t fileIndex = fileOffset[bsi] + block.localMap[i] * comp_count + j;
+            size_t iossIndex = iossOffset[bsi] + (i + block.localIossOffset) * comp_count + j;
             ioss_data[iossIndex] = file_data[fileIndex];
           }
         }
 
         for (size_t i = 0; i < block.importMap.size(); i++) {
           for (size_t j = 0; j < comp_count; j++) {
-            unsigned importIndex = importOffset[bsi] + i * comp_count + j;
+            size_t importIndex = importOffset[bsi] + i * comp_count + j;
 
             size_t dataOffset = iossOffset[bsi];
-            unsigned iossIndex = dataOffset + block.importMap[i] * comp_count + j;
+            size_t iossIndex = dataOffset + block.importMap[i] * comp_count + j;
 
             ioss_data[iossIndex] = imports[importIndex];
           }

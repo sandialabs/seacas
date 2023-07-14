@@ -24,6 +24,9 @@
 #include <string>          // for string, operator<
 #include <utility>         // for pair
 #include <vector>          // for vector
+#include <sstream>
+#include <fmt/ostream.h>
+
 namespace Ioss {
   class Assembly;
   class Blob;
@@ -423,8 +426,12 @@ bool verify_field_exists_in_entity_group(const std::string &field_name,
     if (entity->field_exists(field_name)) {
       Ioss::Field field = entity->get_field(field_name);
 
-      if(found == true) {
-        assert(field.get_role() == role);
+      if(found == true && field.get_role() != role) {
+        std::ostringstream errmsg;
+        fmt::print(errmsg,
+                   "ERROR: Field {} with role {} on entity {} does not match previously found role {}.\n",
+                   field.get_name(), field.get_role(), entity->name(), role);
+        IOSS_ERROR(errmsg);
       }
 
       found = true;
