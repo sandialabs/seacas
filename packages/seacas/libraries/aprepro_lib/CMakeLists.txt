@@ -130,8 +130,26 @@ TRIBITS_ADD_ADVANCED_TEST(
 TRIBITS_ADD_ADVANCED_TEST(
  aprepro_lib_array_test
  TEST_0 EXEC aprepro_lib_test
-	ARGS --info=test-array.dump --include=${CMAKE_CURRENT_SOURCE_DIR} -o test-array.out
-	     ${CMAKE_CURRENT_SOURCE_DIR}/test-array.i
+	ARGS --info=test-array.dump --include=${CMAKE_CURRENT_SOURCE_DIR} -o test-array.out test-array.i
+  NOEXEPREFIX NOEXESUFFIX
+  PASS_ANY
+ TEST_1 CMND diff ARGS -w
+		       ${CMAKE_CURRENT_SOURCE_DIR}/test-array.gold
+		       ${CMAKE_CURRENT_BINARY_DIR}/test-array.out
+ TEST_2 CMND diff ARGS -w
+		       ${CMAKE_CURRENT_SOURCE_DIR}/test-array.stderr.gold
+		       ${CMAKE_CURRENT_BINARY_DIR}/test-array.dump
+ COMM mpi serial
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION
+ XHOSTTYPE Windows
+)
+
+TRIBITS_ADD_ADVANCED_TEST(
+ aprepro_lib_array_test_short_opt
+ TEST_0 EXEC aprepro_lib_test
+	ARGS --info=test-array.dump -I=${CMAKE_CURRENT_SOURCE_DIR} -o test-array.out
+	     test-array.i
   NOEXEPREFIX NOEXESUFFIX
   PASS_ANY
  TEST_1 CMND diff ARGS -w
