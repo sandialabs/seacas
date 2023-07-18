@@ -114,7 +114,7 @@ The format of the lattice description file is fairly simple, but is also very ri
 ### Unit Cell Dictionary
 The unit cell dictionary defines the unit cell template meshes that will be placed in the lattice.  The dictionary begins with a line containing `BEGIN_DICTIONARY` followed by one or more lines defining the unit cells and is then ended with a line containing `END_DICTIONARY`
 
-The syntax of the lines defining the unit cells consists of two fields -- an arbitrary _key_ and the filename containing the Exodus file defining the mesh for this unit cell.  The only restriction on the _key_ is that it must be unique in the dictionary.  The filenames must specify the path (either absolute or relative to the current execution directory) to the Exodus file; it can optionally be delimited by double quotes (`"`).  The filenames do not need to be unique, but it is more efficient in both memory and time if each unit cell template mesh is unique.
+The syntax of the lines defining the unit cells consists of two fields -- an arbitrary _key_ and the filename containing the Exodus file defining the mesh for this unit cell.  The only restriction on the _key_ is that it must be unique in the dictionary.  The filenames must specify the path (either absolute or relative to the current execution directory) to the Exodus file; it can optionally be delimited by double quotes.  The filenames do not need to be unique, but it is more efficient in both memory and time if each unit cell template mesh is unique.
 
 As an example, here is a valid dictionary definition:
 
