@@ -2103,10 +2103,56 @@ namespace Ioex {
     }
   }
 
+  std::vector<int> ElementBlockBatchReader::get_block_component_count(const std::vector<int64_t>& blockSubsetIndex,
+                                                                      const std::vector<BlockFieldData>& blockFieldData) const
+  {
+    size_t num_blocks = blockSubsetIndex.size();
+    std::vector<int> blockComponentCount(num_blocks);
+
+    for(size_t blk_seq = 0; blk_seq < blockSubsetIndex.size(); blk_seq++) {
+      blockComponentCount[blk_seq] = blockFieldData[blk_seq].comp_count;
+    }
+
+    return blockComponentCount;
+  }
+
+  template <typename INT>
+  void ElementBlockBatchReader::load_field_data(int filePtr, double *fileData,
+                                                const std::vector<int64_t>& blockSubsetIndex, size_t step,
+                                                const std::vector<BlockFieldData>& blockFieldData,
+                                                const std::vector<int>& blockComponentCount,
+                                                const std::vector<size_t>& fileConnOffset) const
+  {
+    const DecompositionData<INT> *decompData = dynamic_cast<const DecompositionData<INT> *>(m_decompositionDB);
+    Ioss::Utils::check_dynamic_cast(decompData);
+
+    decompData->m_decomposition.show_progress("\tex_get_partial_var (elem)");
+
+    for(size_t i = 0; i < blockSubsetIndex.size(); i++) {
+      int64_t blk_seq = blockSubsetIndex[i];
+      const Ioss::BlockDecompositionData& blk = decompData->el_blocks[blk_seq];
+      int64_t id = blk.id();
+      size_t offset = decompData->get_block_element_offset(blk_seq);
+      size_t count  = decompData->get_block_element_count(blk_seq);
+
+      for(size_t comp=0; comp<blockFieldData[i].comp_count; comp++) {
+        size_t var_index = blockFieldData[i].var_index[comp];
+        size_t file_index = fileConnOffset[i] + count*comp;
+
+        int ierr = ex_get_partial_var(filePtr, step, EX_ELEM_BLOCK, var_index, id, offset + 1, count,
+                                      &fileData[file_index]);
+
+        if (ierr < 0) {
+          Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+        }
+      }
+    }
+  }
+
   template <typename INT>
   void ElementBlockBatchReader::get_field_data_impl(int filePtr, void *iossData,
                                                     const std::vector<int64_t>& blockSubsetIndex, size_t step,
-                                                    const std::vector<BlockFieldData>& block_data) const
+                                                    const std::vector<BlockFieldData>& blockFieldData) const
   {
     const DecompositionData<INT> *decompData = dynamic_cast<const DecompositionData<INT> *>(m_decompositionDB);
     Ioss::Utils::check_dynamic_cast(decompData);
@@ -2114,64 +2160,21 @@ namespace Ioex {
     decompData->m_decomposition.show_progress(__func__);
 
     double *data = reinterpret_cast<double *>(iossData);
-    size_t num_blocks = blockSubsetIndex.size();
 
-    std::vector<int> blockComponentCount(num_blocks);
-    for(size_t blk_seq = 0; blk_seq < blockSubsetIndex.size(); blk_seq++) {
-      blockComponentCount[blk_seq] = block_data[blk_seq].comp_count;
-    }
-
+    std::vector<int> blockComponentCount = get_block_component_count(blockSubsetIndex, blockFieldData);
     std::vector<size_t> fileConnOffset = get_file_offset<INT>(blockSubsetIndex, blockComponentCount);
-    size_t file = m_batchOffset.get_ioss_element_size(blockSubsetIndex);
-
-    decompData->m_decomposition.show_progress("\tex_get_partial_var (elem)");
 
     if (decompData->m_decomposition.m_method == "LINEAR") {
-
-      for(size_t i = 0; i < blockSubsetIndex.size(); i++) {
-        int64_t blk_seq = blockSubsetIndex[i];
-        const Ioss::BlockDecompositionData& blk = decompData->el_blocks[blk_seq];
-        int64_t id = blk.id();
-        size_t offset = decompData->get_block_element_offset(blk_seq);
-        size_t count  = decompData->get_block_element_count(blk_seq);
-
-        for(size_t comp=0; comp<block_data[i].comp_count; comp++) {
-          size_t var_index = block_data[i].var_index[comp];
-          size_t file_index = fileConnOffset[i] + count*comp;
-
-          int ierr = ex_get_partial_var(filePtr, step, EX_ELEM_BLOCK, var_index, id, offset + 1, count,
-                                        &data[file_index]);
-
-          if (ierr < 0) {
-            Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
-          }
-        }
-      }
+      load_field_data<INT>(filePtr, data, blockSubsetIndex, step, blockFieldData,
+                           blockComponentCount, fileConnOffset);
     }
     else {
-      std::vector<double> file_data(fileConnOffset[num_blocks]);
+      size_t numBlocks = blockSubsetIndex.size();
+      std::vector<double> fileData(fileConnOffset[numBlocks]);
+      load_field_data<INT>(filePtr, fileData.data(), blockSubsetIndex, step, blockFieldData,
+                           blockComponentCount, fileConnOffset);
 
-      for(size_t i = 0; i < blockSubsetIndex.size(); i++) {
-        int64_t blk_seq = blockSubsetIndex[i];
-        const Ioss::BlockDecompositionData& blk = decompData->el_blocks[blk_seq];
-        int64_t id = blk.id();
-        size_t offset = decompData->get_block_element_offset(blk_seq);
-        size_t count  = decompData->get_block_element_count(blk_seq);
-
-        for(size_t comp=0; comp<block_data[i].comp_count; comp++) {
-          size_t var_index = block_data[i].var_index[comp];
-          size_t file_index = fileConnOffset[i] + count*comp;
-
-          int ierr = ex_get_partial_var(filePtr, step, EX_ELEM_BLOCK, var_index, id, offset + 1, count,
-                                        &file_data[file_index]);
-
-          if (ierr < 0) {
-            Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
-          }
-        }
-      }
-
-      decompData->m_decomposition.communicate_entity_data(file_data.data(), data,
+      decompData->m_decomposition.communicate_entity_data(fileData.data(), data,
                                                           decompData->el_blocks, blockSubsetIndex,
                                                           fileConnOffset, blockComponentCount);
     }

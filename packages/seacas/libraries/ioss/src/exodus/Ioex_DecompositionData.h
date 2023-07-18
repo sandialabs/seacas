@@ -331,6 +331,17 @@ namespace Ioex {
                                         const std::vector<int>& block_component_count) const;
 
     std::vector<int> get_connectivity_component_count(const std::vector<int64_t>& blocks_subset_index) const;
+
+    std::vector<int> get_block_component_count(const std::vector<int64_t>& blockSubsetIndex,
+                                               const std::vector<BlockFieldData>& blockFieldData) const;
+
+    template <typename INT>
+    void load_field_data(int filePtr, double *fileData,
+                         const std::vector<int64_t>& blockSubsetIndex, size_t step,
+                         const std::vector<BlockFieldData>& blockFieldData,
+                         const std::vector<int>& blockComponentCount,
+                         const std::vector<size_t>& fileConnOffset) const;
+
   };
 } // namespace Ioex
 #endif
