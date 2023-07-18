@@ -820,6 +820,18 @@ EXODUS_EXPORT int ex__get_nodal_var_time(int exoid, int nodal_var_index, int64_t
                                          int beg_time_step, int end_time_step,
                                          void *nodal_var_vals);
 
+EXODUS_EXPORT int ex__put_nodal_var_multi_time(int exoid, int nodal_var_index, int64_t num_nodes,
+                                               int beg_time_step, int end_time_step,
+                                               const void *nodal_var_vals);
+
+EXODUS_EXPORT int ex__get_nodal_var_multi_time(int exoid, int nodal_var_index, int64_t node_number,
+                                               int beg_time_step, int end_time_step,
+                                               void *nodal_var_vals);
+
+EXODUS_EXPORT int ex__put_nodal_var_time(int exoid, int nodal_var_index, int64_t num_nodes,
+                                         int beg_time_step, int end_time_step,
+                                         const void *nodal_var_vals);
+
 EXODUS_EXPORT int ex__get_partial_nodal_var(int exoid, int time_step, int nodal_var_index,
                                             int64_t start_node, int64_t num_nodes, void *var_vals);
 
@@ -828,6 +840,9 @@ EXODUS_EXPORT int ex__put_partial_nodal_var(int exoid, int time_step, int nodal_
                                             const void *nodal_var_vals);
 EXODUS_EXPORT int ex__get_glob_vars(int exoid, int time_step, int num_glob_vars,
                                     void *glob_var_vals);
+
+EXODUS_EXPORT int ex__get_glob_vars_multi_time(int exoid, int num_glob_vars, int beg_time_step,
+                                               int end_time_step, void *glob_var_vals);
 
 EXODUS_EXPORT int ex__get_glob_var_time(int exoid, int glob_var_index, int beg_time_step,
                                         int end_time_step, void *glob_var_vals);
