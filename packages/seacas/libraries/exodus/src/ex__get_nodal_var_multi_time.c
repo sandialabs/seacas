@@ -12,11 +12,11 @@
 /*!
 \internal
 \ingroup ResultsData
-\note This function is called internally by ex_get_var() to handle
+\note This function is called internally by ex_get_var_multi_time() to handle
 the reading of nodal variable values.
 
-The function ex__get_nodal_var() reads the values of a single nodal
-variable for a single time step. Memory must be allocated for the
+The function ex__get_nodal_var_multi_time() reads the values of a single nodal
+variable for a one or more time steps. Memory must be allocated for the
 nodal variable values array before this function is invoked.
 
 Because nodal variables are floating point values, the application
@@ -24,7 +24,7 @@ code must declare the array passed to be the appropriate type
 (float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
-\return In case of an error, ex__get_nodal_var() returns a negative
+\return In case of an error, ex__get_nodal_var_multi_time() returns a negative
 number; a warning will return a positive number. Possible causes of
 errors include:
 -  data file not properly opened with call to ex_create() or ex_open()
@@ -35,24 +35,16 @@ errors include:
 ex_create()
 or ex_open().
 
-\param[in] time_step            The time step, as described under ex_put_time(),
-at which the
-nodal variable values are desired. This is
-essentially an index (in
-the time dimension) into the nodal variable
-values array stored in
-the database. The first time step is 1.
-
 \param[in] nodal_var_index      The index of the desired nodal variable. The
-first variable
-has an index of 1.
+                                first variable has an index of 1.
 
 \param[in] num_nodes            The number of nodal points.
 
+\param[in] beg_time_step        The first time step to get values for.
+\param[in] end_time_step        The last time step to get values for.
 \param[out]  nodal_var_vals     Returned array of num_nodes values of the
-nodal_var_index-th
-nodal variable for the time_step-th time
-step.
+                                nodal_var_index-th nodal variable for the
+                                desired timesteps.
 
 For example, the following demonstrates how this function would be
 used:
@@ -66,8 +58,8 @@ time_step = 1;
 var_index = 2;
 
 var_values = (float *) calloc (num_nodes, sizeof(float));
-error = ex_get_nodal_var(exoid, time_step, var_index, num_nodes,
-var_values);
+error = ex__get_nodal_var_multi_time(exoid, var_index, num_nodes,
+                                     time_step, time_step, var_values);
 ~~~
 
 */
