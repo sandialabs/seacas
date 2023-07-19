@@ -430,7 +430,7 @@ bool verify_field_exists_in_entity_group(const std::string &field_name,
         std::ostringstream errmsg;
         fmt::print(errmsg,
                    "ERROR: Field {} with role {} on entity {} does not match previously found role {}.\n",
-                   field.get_name(), field.get_role(), entity->name(), role);
+                   field.get_name(), field.role_string(), entity->name(), Ioss::Field::role_string(role));
         IOSS_ERROR(errmsg);
       }
 
