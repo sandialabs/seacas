@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
   if (readfile) {
     std::cerr << "Aprepro: There were " << aprepro.get_error_count()
               << " errors detected during parsing.\n";
-    return 0;
+    return aprepro.get_error_count() == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
   }
 
   // Read and parse a string's worth of data at a time.
@@ -131,4 +131,5 @@ int main(int argc, char *argv[])
   }
   std::cerr << "Aprepro: There were " << aprepro.get_error_count()
             << " errors detected during parsing.\n";
+  return aprepro.get_error_count() == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
