@@ -5,8 +5,16 @@
 // See packages/seacas/LICENSE for details
 
 #include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
+#include <catalyst_tests/Iocatalyst_LoggingTest.h>
+#include <catalyst/Iocatalyst_CatalystManager.h>
 
-TEST_F(Iocatalyst_DatabaseIOTest, LoggingDefault)
+TEST_F(LoggingTest, LoggingDefault)
 {
+    Iocatalyst::CatalystManager::getInstance();
+
+    //log.setProperties(&props);
+    //writeToCatalystLogFile(const DatabaseInfo &dbinfo, const Ioss::PropertyManager &props)
+    //log.writeToLogFile();
+
 
 }

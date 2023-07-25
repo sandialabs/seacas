@@ -4,30 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "gtest/gtest.h"
-#include <catalyst/Iocatalyst_CatalystLogging.h>
-
-class LoggingTest : public ::testing::Test
-{
-protected:
-  Iocatalyst::CatalystLogging log;
-  Ioss::PropertyManager       props;
-
-  ~LoggingTest() { remove(log.getLogFileName().c_str()); }
-
-  void checkTestOutputFileExists(const char *fileName) { EXPECT_TRUE(isFileExists(fileName)); }
-
-  bool isFileExists(const char *fileName)
-  {
-    FILE *fp               = fopen(fileName, "r");
-    bool  outputFileExists = false;
-    if (fp != NULL) {
-      outputFileExists = true;
-      fclose(fp);
-    }
-    return outputFileExists;
-  }
-};
+#include <catalyst_tests/Iocatalyst_LoggingTest.h>
 
 TEST_F(LoggingTest, Defaults)
 {

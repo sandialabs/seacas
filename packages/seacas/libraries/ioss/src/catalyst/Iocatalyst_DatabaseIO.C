@@ -229,7 +229,6 @@ namespace Iocatalyst {
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
         auto path = getFieldPath(containerName, groupName, field.get_name()) + "/value";
-
         const auto &&node = this->DBNode[path];
         switch (field.get_type()) {
         case Ioss::Field::BasicType::DOUBLE:
@@ -376,7 +375,10 @@ namespace Iocatalyst {
     std::string getName(const Ioss::GroupingEntity *entityGroup)
     {
       std::string retVal = entityGroup->name();
-      if (retVal.empty()) {
+      if (dynamic_cast<const Ioss::Region *>(entityGroup) != nullptr) {
+        retVal = "region_0";
+      }
+      else if (retVal.empty()) {
         retVal = entityGroup->generic_name();
       }
       return retVal;
