@@ -514,7 +514,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
 
     // Clear out allocated memory for assembly entity_list...
     for (auto &assembly : globals.Assemblies) {
-      delete[] assembly.name;
+      free assembly.name;
       delete[] assembly.entity_list;
       assembly.name        = nullptr;
       assembly.entity_list = nullptr;
