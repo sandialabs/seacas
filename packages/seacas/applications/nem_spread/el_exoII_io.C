@@ -643,6 +643,14 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
     safe_free((void **)&globals.Coordinate_Frame_Tags);
   }
 
+  // Clear out allocated memory for assembly entity_list...
+  for (auto &assembly : globals.Assemblies) {
+    free(assembly.name);
+    delete[] assembly.entity_list;
+    assembly.name        = nullptr;
+    assembly.entity_list = nullptr;
+  }
+
   /* done with the Coordinate names */
   for (int i1 = 0; i1 < globals.Num_Dim; i1++) {
     safe_free((void **)&(Coord_Name[i1]));
