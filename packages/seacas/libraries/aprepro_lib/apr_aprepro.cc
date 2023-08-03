@@ -100,7 +100,10 @@ namespace SEAMS {
   {
     if (!outputStream.empty()) {
       outputStream.top()->flush();
-      delete outputStream.top();
+      if (outputStream.size() > 1) {
+        std::ostream *output = outputStream.top();
+        delete output;
+      }
     }
 
     // May need to delete this if set via --info=filename command.
