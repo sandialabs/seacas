@@ -5783,7 +5783,7 @@ class exodus:
             numAttrsPerElem):
         obj_type = ctypes.c_int(get_entity_type(object_type))
         block_id = ctypes.c_longlong(object_id)
-        if type(eType) == str:
+        if type(eType) is str:
             eType = eType.encode('ascii')
         elem_type = ctypes.create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
         num_elem_this_blk = ctypes.c_longlong(numElems)

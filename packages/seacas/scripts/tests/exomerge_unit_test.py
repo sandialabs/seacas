@@ -114,7 +114,7 @@ def compares_equal_with_nan(one, two):
     floats.  They can be nested.
 
     """
-    if type(one) != type(two):
+    if type(one) is not type(two):
         return False
     if isinstance(one, dict):
         if sorted(one.keys()) != sorted(two.keys()):
