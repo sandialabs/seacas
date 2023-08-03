@@ -34,20 +34,20 @@ errors include:
 \param[in] exoid        exodus file ID returned from a previous call to
 ex_create() or ex_open().
 
-\param[in]  var_type    block/variable type node, edge/face/element block, or
+\param[in] var_type    block/variable type node, edge/face/element block, or
                         node/edge/face/side/element set of type ex_entity_type.
-\param[in]  var_index   variable index; 1-based
-\param[in]  obj_id      object id, see ex_get_ids()
-\param[in]  num_entry_this_obj The number of entities in this object stored in the database.
-\param[in] beg_step    The first time step to access variable data from.  1-based.
-\param[in] end_step    The last time step to access variable data from.  1-based.
+\param[in] var_index   variable index; 1-based
+\param[in] obj_id      object id, see ex_get_ids()
+\param[in] num_entry_this_obj The number of entities in this object stored in the database.
+\param[in] beg_time_step    The first time step to access variable data from.  1-based.
+\param[in] end_time_step    The last time step to access variable data from.  1-based.
 
 \param[out] var_vals  Returned array of num_entry_this_obj variable values
                           for the time_step'th time step.
 
-The following is an example code segment that reads the 10th element variable for element block with
-id 100
-at time step 5.  There are 'num_elements_this_block' elements in element block 100.
+The following is an example code segment that reads the 10th element
+variable for element block with id 100 over all 10 time steps. There
+are 'num_elements_this_block' elements in element block 100.
 
 ~~~{.c}
 int num_elements_this_block, error, time_step;
