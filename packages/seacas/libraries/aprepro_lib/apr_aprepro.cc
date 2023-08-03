@@ -35,7 +35,7 @@
 #endif
 
 namespace {
-  const std::string version_string{"6.17 (2023/07/20)"};
+  const std::string version_string{"6.18 (2023/08/03)"};
 
   void output_copyright();
 
@@ -100,6 +100,7 @@ namespace SEAMS {
   {
     if (!outputStream.empty()) {
       outputStream.top()->flush();
+      delete outputStream.top();
     }
 
     // May need to delete this if set via --info=filename command.
