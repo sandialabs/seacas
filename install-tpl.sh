@@ -853,7 +853,6 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2 || exit
-            git checkout v2.5.0
             rm -rf build
             mkdir build
             cd build || exit

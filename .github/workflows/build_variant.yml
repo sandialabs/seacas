@@ -243,6 +243,20 @@ jobs:
             extra: "MODERN=YES",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
+        - {
+            name: "ADIOS2 enabled",
+            os: ubuntu-latest,
+            compiler: "mpi",
+            debug: "NO",
+            threadsafe: "NO",
+            fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "YES",
+            use_catalyst2: "NO",
+            gtest: "YES",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
     steps:
 
       - uses: actions/checkout@v3
