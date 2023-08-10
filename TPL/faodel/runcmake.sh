@@ -8,12 +8,9 @@ fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 . ${ACCESS}/TPL/compiler.sh
 
-BOOST_ROOT=${BOOST_ROOT:-${INSTALL_PATH}}
 if [ "X$BOOST_ROOT" == "X" ] ; then
-  BOOST_ROOT=$(cd ../../../..; pwd)
   echo "Faodel requires these Boost packages: atomic log log_setup serialization"
   echo "Please set BOOST_ROOT."
-  exit 0
 fi
 
 rm -f CMakeCache.txt
