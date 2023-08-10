@@ -70,6 +70,7 @@ jobs:
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "",
@@ -84,6 +85,7 @@ jobs:
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "",
@@ -98,6 +100,7 @@ jobs:
             fortran: "NO",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "",
@@ -112,6 +115,7 @@ jobs:
             fortran: "NO",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "",
@@ -126,6 +130,7 @@ jobs:
             fortran: "NO",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "",
@@ -140,6 +145,7 @@ jobs:
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "",
@@ -154,6 +160,7 @@ jobs:
             fortran: "NO",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "",
@@ -168,6 +175,7 @@ jobs:
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "YES",
             extra: "",
@@ -182,6 +190,7 @@ jobs:
             fortran: "NO",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "APPLICATIONS=NO LEGACY=NO",
@@ -196,6 +205,7 @@ jobs:
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "YES",
             gtest: "YES",
             extra: "",
@@ -210,6 +220,7 @@ jobs:
             fortran: "YES",
             use_kokkos: "YES",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "",
@@ -224,6 +235,7 @@ jobs:
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "NO",
             extra: "OMIT_DEPRECATED=YES",
@@ -238,6 +250,7 @@ jobs:
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "NO",
+            use_faodel: "NO",
             use_catalyst2: "NO",
             gtest: "YES",
             extra: "MODERN=YES",
@@ -252,6 +265,22 @@ jobs:
             fortran: "YES",
             use_kokkos: "NO",
             use_adios2: "YES",
+            use_faodel: "NO",
+            use_catalyst2: "NO",
+            gtest: "YES",
+            extra: "",
+            sanitizer: "NO" # address, integer, thread, memory, undefined
+          }
+        - {
+            name: "FAODEL enabled",
+            os: ubuntu-latest,
+            compiler: "mpi",
+            debug: "NO",
+            threadsafe: "NO",
+            fortran: "YES",
+            use_kokkos: "NO",
+            use_adios2: "NO",
+            use_faodel: "YES",
             use_catalyst2: "NO",
             gtest: "YES",
             extra: "",
@@ -277,10 +306,10 @@ jobs:
         run: ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
       - name: install additional TPL
-        if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' || matrix.config.gtest == 'YES' || matrix.config.use_catalyst == 'YES' }}
+        if: ${{ matrix.config.use_kokkos == 'YES' || matrix.config.use_adios2 == 'YES' || matrix.config.gtest == 'YES' || matrix.config.use_faodel == 'YES' || matrix.config.use_catalyst == 'YES' }}
         run: |
           set -x
-          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} GNU_PARALLEL=OFF GTEST=${{ matrix.config.gtest }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
+          COMPILER=${{ matrix.config.compiler }} KOKKOS=${{ matrix.config.use_kokkos }} ADIOS2=${{ matrix.config.use_adios2 }} CATALYST2=${{ matrix.config.use_catalyst2 }} FAODEL=${{ matrix.config.use_faodel }} GNU_PARALLEL=OFF GTEST=${{ matrix.config.gtest }} INSTALL_PATH=${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} ./install-tpl.sh
           ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
 ###

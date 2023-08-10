@@ -120,13 +120,16 @@ H5VERSION=${H5VERSION:-V114}
 FAODEL=${FAODEL:-NO}
 FAODEL=$(check_valid FAODEL)
 
+BOOST=${BOOST:-${FAODEL}}
+BOOST=$(check_valid BOOST)
+
 ADIOS2=${ADIOS2:-NO}
 ADIOS2=$(check_valid ADIOS2)
 
 CATALYST2=${CATALYST2:-NO}
 CATALYST2=$(check_valid CATALYST2)
 
-GTEST=${GTEST:-NO}
+GTEST=${GTEST:-${FAODEL}}
 GTEST=$(check_valid GTEST)
 
 MPI=${MPI:-NO}
@@ -837,7 +840,7 @@ fi
 # =================== INSTALL ADIOS2  ===============
 if [ "$ADIOS2" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2_c.${LD_EXT} ]
     then
         echo "${txtgrn}+++ ADIOS2${txtrst}"
         cd $ACCESS || exit
@@ -998,10 +1001,37 @@ then
     fi
 fi
 
+# =================== INSTALL BOOST ===============
+if [ "$BOOST" == "YES" ]
+then
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/boost ]
+  then
+    # FAODEL Requires Boost... For now, just download and install
+    echo "${txtgrn}+++ Installing Boost as dependency of Faodel${txtrst}"
+    cd $ACCESS || exit
+    cd TPL/boost || exit
+    BOOST_VER="1_82_0"
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+	wget --no-check-certificate "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_${BOOST_VER}.tar.bz2" 
+	tar xf boost_${BOOST_VER}.tar.bz2
+    fi
+    if [ "$BUILD" == "YES" ]
+    then
+	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+	cd boost_${BOOST_VER}
+	./bootstrap.sh --prefix=${INSTALL_PATH}
+	./b2 -a install
+    fi
+  else
+    echo "${txtylw}+++ Boost already installed.  Skipping download and installation.${txtrst}"
+  fi
+fi
+
 # =================== INSTALL FAODEL ===============
 if [ "$FAODEL" == "YES" ]
 then
-  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.a ]
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.${LD_EXT} ]
   then
     faodel_base="faodel"
     echo "${txtgrn}+++ Faodel${txtrst}"
@@ -1011,7 +1041,7 @@ then
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
       rm -rf faodel*
-      git clone git@github.com:faodel/faodel.git
+      git clone https://github.com/sandialabs/faodel.git
     fi
 
     if [ "$BUILD" == "YES" ]
