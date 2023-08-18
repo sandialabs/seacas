@@ -756,7 +756,7 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="10.0.0"
+        fmt_version="10.1.0"
 
         if [ "$DOWNLOAD" == "YES" ]
         then
