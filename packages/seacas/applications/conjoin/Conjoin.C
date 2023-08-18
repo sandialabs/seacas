@@ -53,6 +53,7 @@
 #include "CJ_Version.h"
 
 namespace {
+  bool                       check_variable_params(size_t p, Excn::Variables &vars);
   template <typename T> void clear(std::vector<T> &vec)
   {
     vec.clear();
@@ -695,6 +696,20 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
 
     get_truth_table(global, sidesets, glob_ssets, sideset_vars, 16);
     filter_truth_table(id, global, glob_ssets, sideset_vars, interFace.sset_var_names());
+  }
+
+  // Check that the variable counts are the same on the subsequent files...
+  // Error out if there is a difference...
+  bool found_error = false;
+  for (size_t p = 1; p < part_count; p++) {
+    found_error |= check_variable_params(p, global_vars);
+    found_error |= check_variable_params(p, nodal_vars);
+    found_error |= check_variable_params(p, element_vars);
+    found_error |= check_variable_params(p, nodeset_vars);
+    found_error |= check_variable_params(p, sideset_vars);
+  }
+  if (found_error) {
+    return 1;
   }
 
   // There is a slightly tricky situation here. The truthTable block order
@@ -2008,6 +2023,38 @@ namespace {
       vars.outputCount = nz_count;
       return;
     }
+  }
+
+  bool check_variable_params(size_t p, Excn::Variables &vars)
+  {
+    // Determines the number of variables of type 'type()' that will
+    // be written to the output database. The 'variable_list' vector
+    // specifies a possibly empty list of variable names that the user
+    // wants transferred to the output database. If 'variable_list' is
+    // empty, then all variables of that type will be transferred; if
+    // the 'variable_list' size is 1 and it contains the string 'NONE',
+    // then no variables of that type will be transferred; if size is 1
+    // and it contains the string 'ALL', then all variables of that type
+    // will be transferred.
+    //
+    // Returns the number of variables which will be output Also creates
+    // a 'var_index'.  The var_index is zero-based and of size
+    // 'input_variable_count'. If:
+    // var_index[i] ==0, variable not written to output database
+    // var_index[i] > 0, variable written; is variable 'var_index[i]'
+
+    // If 'type' is ELEMENT or NODE, then reserve space for the 'status' variable.
+    int  extra = vars.addStatus ? 1 : 0;
+    int  num_vars;
+    auto id = Excn::ExodusFile(p);
+    ex_get_variable_param(id, vars.type(), &num_vars);
+    if ((size_t)num_vars != vars.index_.size() - extra) {
+      fmt::print("ERROR: Part mesh {} has a different number of {} variables ({}) than the root "
+                 "part mesh ({}) which is not allowed.\n",
+                 p, vars.label(), num_vars, vars.index_.size() - extra);
+      return false;
+    }
+    return true;
   }
 
   template <typename INT> void put_mesh_summary(const Excn::Mesh<INT> &mesh)
