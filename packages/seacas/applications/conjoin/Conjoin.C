@@ -2052,9 +2052,9 @@ namespace {
       fmt::print("ERROR: Part mesh {} has a different number of {} variables ({}) than the root "
                  "part mesh ({}) which is not allowed.\n",
                  p, vars.label(), num_vars, vars.index_.size() - extra);
-      return false;
+      return true;
     }
-    return true;
+    return false;
   }
 
   template <typename INT> void put_mesh_summary(const Excn::Mesh<INT> &mesh)
