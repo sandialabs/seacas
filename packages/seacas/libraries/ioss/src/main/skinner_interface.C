@@ -58,6 +58,11 @@ void Skinner::Interface::enroll_options()
   options_.enroll("no_output", Ioss::GetLongOption::NoValue,
                   "Do not produce output file, just generate the faces", nullptr);
 
+  options_.enroll(
+      "output_transient", Ioss::GetLongOption::NoValue,
+      "Add transient data from the input mesh to the ouutput mesh (nodal variables only right now)",
+      nullptr);
+
   options_.enroll("ignore_face_hash_ids", Ioss::GetLongOption::NoValue,
                   "Don't use face ids from hash of node ids; just use 1..num_face", nullptr);
 
@@ -177,14 +182,15 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
     exit(0);
   }
 
-  ints64Bit_      = options_.retrieve("64-bit") != nullptr;
-  netcdf4_        = options_.retrieve("netcdf4") != nullptr;
-  shuffle         = options_.retrieve("shuffle") != nullptr;
-  noOutput_       = options_.retrieve("no_output") != nullptr;
-  useFaceHashIds_ = options_.retrieve("ignore_face_hash_ids") == nullptr;
-  debug           = options_.retrieve("debug") != nullptr;
-  statistics      = options_.retrieve("statistics") != nullptr;
-  blocks_         = options_.retrieve("blocks") != nullptr;
+  ints64Bit_       = options_.retrieve("64-bit") != nullptr;
+  netcdf4_         = options_.retrieve("netcdf4") != nullptr;
+  shuffle          = options_.retrieve("shuffle") != nullptr;
+  noOutput_        = options_.retrieve("no_output") != nullptr;
+  outputTransient_ = options_.retrieve("output_transient") != nullptr;
+  useFaceHashIds_  = options_.retrieve("ignore_face_hash_ids") == nullptr;
+  debug            = options_.retrieve("debug") != nullptr;
+  statistics       = options_.retrieve("statistics") != nullptr;
+  blocks_          = options_.retrieve("blocks") != nullptr;
 
   {
     const char *temp = options_.retrieve("compress");

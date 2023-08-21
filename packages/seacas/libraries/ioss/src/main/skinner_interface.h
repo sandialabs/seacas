@@ -25,6 +25,7 @@ namespace Skinner {
     bool ints_64_bit() const { return ints64Bit_; }
 
     bool no_output() const { return noOutput_; }
+    bool output_transient() const { return outputTransient_; }
 
     std::string input_filename() const { return inputFile_; }
     std::string output_filename() const { return outputFile_; }
@@ -52,6 +53,7 @@ namespace Skinner {
     bool        netcdf4_{false};
     bool        useFaceHashIds_{true};
     bool        noOutput_{false};
+    bool        outputTransient_{false};
     bool        blocks_{false};
   };
 } // namespace Skinner

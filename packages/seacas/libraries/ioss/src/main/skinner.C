@@ -37,11 +37,13 @@
 #include "skinner_interface.h"
 
 // ========================================================================
-
 namespace {
   template <typename INT> void skinner(Skinner::Interface &interFace, INT /*dummy*/);
   std::string                  codename;
-  std::string                  version = "0.99";
+  std::string                  version = "1.01";
+
+  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+                           Ioss::Field::RoleType role, const std::vector<int> &ref_nodes);
 
   void output_table(const Ioss::ElementBlockContainer              &ebs,
                     std::map<std::string, std::vector<Ioss::Face>> &boundary_faces)
@@ -319,6 +321,39 @@ namespace {
       block->put_field_data("connectivity", conn);
     }
     output_region.end_mode(Ioss::STATE_MODEL);
+
+    size_t ts_count = region.get_optional_property("state_count", 0);
+    if (ts_count > 0 && interFace.output_transient()) {
+
+      // Transfer all nodal variable names to the output database.
+      Ioss::NodeBlock *nbi = region.get_node_blocks()[0];
+
+      output_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
+      Ioss::NameList fields = nbi->field_describe(Ioss::Field::TRANSIENT);
+      for (const auto &field_name : fields) {
+        Ioss::Field field = nbi->get_field(field_name);
+        field.reset_count(ref_count);
+        nbo->field_add(field);
+      }
+      output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
+
+      output_region.begin_mode(Ioss::STATE_TRANSIENT);
+      for (size_t istep = 1; istep <= ts_count; istep++) {
+        double time  = region.get_state_time(istep);
+        int    ostep = output_region.add_state(time);
+        fmt::print(stderr, "\r\tTime step {:5d} at time {:10.5e}", istep, time);
+
+        output_region.begin_state(ostep);
+        region.begin_state(istep);
+
+        transfer_field_data(nbi, nbo, Ioss::Field::TRANSIENT, ref_nodes);
+
+        output_region.end_state(ostep);
+        region.end_state(istep);
+      }
+      output_region.end_mode(Ioss::STATE_TRANSIENT);
+    }
+
     if (my_rank == 0) {
       output_region.output_summary(std::cerr, false);
     }
@@ -365,4 +400,45 @@ namespace {
 
     return properties;
   }
+
+  void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+                                    const std::string      &field_name,
+                                    const std::vector<int> &ref_nodes)
+  {
+    if (oge->field_exists(field_name)) {
+      std::vector<double> in;
+      ige->get_field_data(field_name, in);
+
+      // Determine component count...
+      auto                field      = ige->get_field(field_name);
+      int                 comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
+      std::vector<double> out;
+      out.reserve(oge->entity_count() * comp_count);
+
+      for (size_t i = 0; i < ref_nodes.size(); i++) {
+        if (ref_nodes[i] == 1) {
+          for (int j = 0; j < comp_count; j++) {
+            auto value = in[comp_count * i + j];
+            out.push_back(value);
+          }
+        }
+      }
+      oge->put_field_data(field_name, out);
+    }
+  }
+
+  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+                           Ioss::Field::RoleType role, const std::vector<int> &ref_nodes)
+  {
+    // Iterate through the TRANSIENT-role fields of the input
+    // database and transfer to output database.
+    Ioss::NameList state_fields = ige->field_describe(role);
+
+    for (const auto &field_name : state_fields) {
+      if (oge->field_exists(field_name)) {
+        transfer_field_data_internal(ige, oge, field_name, ref_nodes);
+      }
+    }
+  }
+
 } // namespace
