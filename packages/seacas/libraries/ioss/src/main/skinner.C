@@ -40,7 +40,7 @@
 namespace {
   template <typename INT> void skinner(Skinner::Interface &interFace, INT /*dummy*/);
   std::string                  codename;
-  std::string                  version = "1.01";
+  std::string                  version = "1.02";
 
   void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
                            Ioss::Field::RoleType role, const std::vector<int> &ref_nodes);
@@ -75,6 +75,55 @@ namespace {
                  fmt::group_digits(boundary_faces[name].size()));
     }
     fmt::print("\t+{2:-^{0}}+{2:-^{1}}+\n", max_name, max_face, "");
+  }
+
+  std::vector<int> get_selected_steps(Ioss::Region &region, const Skinner::Interface &options)
+  {
+    // This routine checks all steps of the input database and selects those which
+    // meet the requirements specified in `options`.  The returned (1-based) vector will have a
+    // value of `1` if the step is to be output and `0` if skipped.
+    int              step_count = (int)region.get_property("state_count").get_int();
+    std::vector<int> selected_steps(step_count + 1);
+
+    // If user specified a list of times to transfer to output database,
+    // process the list and find the times on the input database that are
+    // closest to the times in the list.
+    if (!options.selected_times.empty()) {
+      int selected_step = 0;
+      for (auto time : options.selected_times) {
+        double diff = std::numeric_limits<double>::max();
+        for (int step = 1; step <= step_count; step++) {
+          double db_time  = region.get_state_time(step);
+          double cur_diff = std::abs(db_time - time);
+          if (cur_diff < diff) {
+            diff          = std::abs(db_time - time);
+            selected_step = step;
+          }
+        }
+        if (selected_step > 0) {
+          selected_steps[selected_step] = 1;
+        }
+      }
+    }
+    else {
+      // User did not select specific times to be output...
+      // Just select them all
+      for (int i = 1; i <= step_count; i++) {
+        selected_steps[i] = 1;
+      }
+    }
+
+    // Now, filter by min and max time...
+    for (int istep = 1; istep <= step_count; istep++) {
+      double time = region.get_state_time(istep);
+      if (time < options.minimum_time) {
+        selected_steps[istep] = 0;
+      }
+      if (time > options.maximum_time) {
+        selected_steps[istep] = 0;
+      }
+    }
+    return selected_steps;
   }
 } // namespace
 
@@ -357,11 +406,16 @@ namespace {
 
       output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
 
+      auto selected_steps = get_selected_steps(region, interFace);
+
       output_region.begin_mode(Ioss::STATE_TRANSIENT);
       for (size_t istep = 1; istep <= ts_count; istep++) {
+        if (selected_steps[istep] != 1) {
+          continue;
+        }
         double time  = region.get_state_time(istep);
         int    ostep = output_region.add_state(time);
-        fmt::print(stderr, "\r\tTime step {:5d} at time {:10.5e}", istep, time);
+        fmt::print(stderr, "\r\tTime step {:5d} at time {:10.5e}", ostep, time);
 
         output_region.begin_state(ostep);
         region.begin_state(istep);

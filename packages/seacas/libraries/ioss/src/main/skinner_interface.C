@@ -8,6 +8,7 @@
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Utils.h"
 #include "skinner_interface.h"
+#include "tokenize.h"
 #include <cstddef> // for nullptr
 #include <cstdlib> // for exit, EXIT_SUCCESS, getenv
 #include <fmt/format.h>
@@ -56,12 +57,21 @@ void Skinner::Interface::enroll_options()
                   "unknown");
 
   options_.enroll("no_output", Ioss::GetLongOption::NoValue,
-                  "Do not produce output file, just generate the faces", nullptr);
+                  "Do not produce output file, just generate the faces", nullptr, nullptr, true);
 
   options_.enroll(
       "output_transient", Ioss::GetLongOption::NoValue,
-      "Transfer nodal and element transient data from the input mesh to the output mesh.", nullptr,
-      nullptr, true);
+      "Transfer nodal and element transient data from the input mesh to the output mesh.", nullptr);
+
+  options_.enroll("Maximum_Time", Ioss::GetLongOption::MandatoryValue,
+                  "Maximum time on input database to transfer to output database", nullptr);
+
+  options_.enroll("Minimum_Time", Ioss::GetLongOption::MandatoryValue,
+                  "Minimum time on input database to transfer to output database", nullptr);
+
+  options_.enroll("select_times", Ioss::GetLongOption::MandatoryValue,
+                  "comma-separated list of times that should be transferred to output database",
+                  nullptr, nullptr, true);
 
   options_.enroll("ignore_face_hash_ids", Ioss::GetLongOption::NoValue,
                   "Don't use face ids from hash of node ids; just use 1..num_face", nullptr);
@@ -194,6 +204,21 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   statistics       = options_.retrieve("statistics") != nullptr;
   blocks_          = options_.retrieve("blocks") != nullptr;
 
+  maximum_time = options_.get_option_value("Maximum_Time", maximum_time);
+  minimum_time = options_.get_option_value("Minimum_Time", minimum_time);
+
+  {
+    const char *temp = options_.retrieve("select_times");
+    if (temp != nullptr) {
+      auto time_str = Ioss::tokenize(std::string(temp), ",");
+      for (const auto &str : time_str) {
+        auto time = std::stod(str);
+        selected_times.push_back(time);
+      }
+      Ioss::sort(selected_times.begin(), selected_times.end());
+    }
+  }
+
   {
     const char *temp = options_.retrieve("compress");
     if (temp != nullptr) {
@@ -266,7 +291,7 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("copyright") != nullptr) {
-    Ioss::Utils::copyright(std::cerr, "1999-2022");
+    Ioss::Utils::copyright(std::cerr, "1999-2023");
     exit(EXIT_SUCCESS);
   }
 
