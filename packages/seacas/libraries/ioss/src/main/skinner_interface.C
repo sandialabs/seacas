@@ -60,14 +60,14 @@ void Skinner::Interface::enroll_options()
 
   options_.enroll(
       "output_transient", Ioss::GetLongOption::NoValue,
-      "Add transient data from the input mesh to the ouutput mesh (nodal variables only right now)",
-      nullptr);
+      "Transfer nodal and element transient data from the input mesh to the output mesh.", nullptr,
+      nullptr, true);
 
   options_.enroll("ignore_face_hash_ids", Ioss::GetLongOption::NoValue,
                   "Don't use face ids from hash of node ids; just use 1..num_face", nullptr);
 
   options_.enroll("blocks", Ioss::GetLongOption::NoValue,
-                  "Skin block-by-block instead of entire model boundary", nullptr);
+                  "Skin block-by-block instead of entire model boundary", nullptr, nullptr, true);
 
   options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
                   "Output database will be a netcdf4 "
@@ -81,13 +81,14 @@ void Skinner::Interface::enroll_options()
 
   options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
                   "Specify the hdf5 compression level [0..9] to be used on the output file.",
-                  nullptr);
+                  nullptr, nullptr, true);
 
+#if defined(SEACAS_HAVE_MPI)
   options_.enroll(
       "compose", Ioss::GetLongOption::OptionalValue,
       "If no argument, specify single-file output; if 'external', then file-per-processor.\n"
       "\t\tAll other options are ignored and just exist for backward-compatibility",
-      nullptr, "true");
+      nullptr, "nullptr, true");
 
   options_.enroll(
       "rcb", Ioss::GetLongOption::NoValue,
@@ -137,7 +138,8 @@ void Skinner::Interface::enroll_options()
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
-                  nullptr);
+                  nullptr, nullptr, true);
+#endif
 
   options_.enroll("debug", Ioss::GetLongOption::NoValue, "turn on debugging output", nullptr);
 
@@ -199,6 +201,7 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
     }
   }
 
+#if defined(SEACAS_HAVE_MPI)
   if (options_.retrieve("rcb") != nullptr) {
     decomp_method = "RCB";
   }
@@ -238,6 +241,7 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   if (options_.retrieve("external") != nullptr) {
     decomp_method = "EXTERNAL";
   }
+#endif
 
   {
     const char *temp = options_.retrieve("in_type");

@@ -45,6 +45,10 @@ namespace {
   void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
                            Ioss::Field::RoleType role, const std::vector<int> &ref_nodes);
 
+  void transfer_field_data(Ioss::EntityBlock *ige, Ioss::EntityBlock *oge,
+                           Ioss::Field::RoleType          role,
+                           const std::vector<Ioss::Face> &boundary_faces);
+
   void output_table(const Ioss::ElementBlockContainer              &ebs,
                     std::map<std::string, std::vector<Ioss::Face>> &boundary_faces)
   {
@@ -335,6 +339,22 @@ namespace {
         field.reset_count(ref_count);
         nbo->field_add(field);
       }
+
+      // All element block variables...
+      for (auto &eb : ebs) {
+        const std::string &name = eb->name();
+        auto              *ebo  = output_region.get_element_block(name);
+        if (ebo != nullptr) {
+          auto           ebo_count = ebo->entity_count();
+          Ioss::NameList efields   = eb->field_describe(Ioss::Field::TRANSIENT);
+          for (const auto &field_name : efields) {
+            Ioss::Field field = eb->get_field(field_name);
+            field.reset_count(ebo_count);
+            ebo->field_add(field);
+          }
+        }
+      }
+
       output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
 
       output_region.begin_mode(Ioss::STATE_TRANSIENT);
@@ -347,6 +367,15 @@ namespace {
         region.begin_state(istep);
 
         transfer_field_data(nbi, nbo, Ioss::Field::TRANSIENT, ref_nodes);
+
+        // All element block variables...
+        for (auto &eb : ebs) {
+          const std::string &name = eb->name();
+          auto              *ebo  = output_region.get_element_block(name);
+          if (ebo != nullptr) {
+            transfer_field_data(eb, ebo, Ioss::Field::TRANSIENT, boundary_faces[name]);
+          }
+        }
 
         output_region.end_state(ostep);
         region.end_state(istep);
@@ -423,6 +452,7 @@ namespace {
           }
         }
       }
+      assert(out.size() == (size_t)oge->entity_count() * (size_t)comp_count);
       oge->put_field_data(field_name, out);
     }
   }
@@ -437,6 +467,49 @@ namespace {
     for (const auto &field_name : state_fields) {
       if (oge->field_exists(field_name)) {
         transfer_field_data_internal(ige, oge, field_name, ref_nodes);
+      }
+    }
+  }
+
+  void transfer_field_data_internal(Ioss::EntityBlock *ieb, Ioss::EntityBlock *oeb,
+                                    const std::string             &field_name,
+                                    const std::vector<Ioss::Face> &boundary_faces)
+  {
+    if (oeb->field_exists(field_name)) {
+      std::vector<double> in;
+      ieb->get_field_data(field_name, in);
+
+      // Determine component count...
+      auto                field      = ieb->get_field(field_name);
+      int                 comp_count = field.get_component_count(Ioss::Field::InOut::INPUT);
+      std::vector<double> out;
+      out.reserve(oeb->entity_count() * comp_count);
+
+      auto offset = ieb->get_offset();
+      for (size_t i = 0; i < boundary_faces.size(); i++) {
+        const auto &face       = boundary_faces[i];
+        auto        element_id = face.element[0] / 10 - 1;
+        for (int j = 0; j < comp_count; j++) {
+          auto value = in[comp_count * (element_id - offset) + j];
+          out.push_back(value);
+        }
+      }
+      assert(out.size() == (size_t)oeb->entity_count() * (size_t)comp_count);
+      oeb->put_field_data(field_name, out);
+    }
+  }
+
+  void transfer_field_data(Ioss::EntityBlock *ieb, Ioss::EntityBlock *oeb,
+                           Ioss::Field::RoleType          role,
+                           const std::vector<Ioss::Face> &boundary_faces)
+  {
+    // Iterate through the TRANSIENT-role fields of the input
+    // database and transfer to output database.
+    Ioss::NameList state_fields = ieb->field_describe(role);
+
+    for (const auto &field_name : state_fields) {
+      if (oeb->field_exists(field_name)) {
+        transfer_field_data_internal(ieb, oeb, field_name, boundary_faces);
       }
     }
   }
