@@ -241,6 +241,14 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   if (options_.retrieve("external") != nullptr) {
     decomp_method = "EXTERNAL";
   }
+
+  {
+    const char *temp = options_.retrieve("compose");
+    if (temp != nullptr) {
+      compose_output = Ioss::Utils::lowercase(temp);
+    }
+  }
+
 #endif
 
   {
@@ -254,13 +262,6 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("out_type");
     if (temp != nullptr) {
       outFiletype_ = temp;
-    }
-  }
-
-  {
-    const char *temp = options_.retrieve("compose");
-    if (temp != nullptr) {
-      compose_output = Ioss::Utils::lowercase(temp);
     }
   }
 
