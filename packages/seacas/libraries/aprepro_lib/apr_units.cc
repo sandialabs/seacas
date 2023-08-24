@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -349,7 +349,6 @@ namespace {
     double S = 1;
     double GeV     = 1;
 
-    double meter  = base[0].value;
     double m      = base[0].value;
     double sec    = base[1].value;
     double kg     = base[2].value;
