@@ -35,7 +35,7 @@
 #endif
 
 namespace {
-  const std::string version_string{"6.18 (2023/08/03)"};
+  const std::string version_string{"6.19 (2023/08/24)"};
 
   void output_copyright();
 

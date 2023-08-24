@@ -358,6 +358,7 @@ namespace SEAMS {
   // clang-format on
 
   svar_init svariables[] = {{"_FORMAT", "%.10g"}, /* Default output format */
+                            {"_UNITS_SYSTEM", "none"},
                             {nullptr, nullptr}};
   /* NOTE: The current comment is stored in "_C_"
    *     Since it can be changed by user on command line, we
