@@ -322,7 +322,11 @@ unit_systems systems[] =
         aprepro->add_variable(systems[i].base[j].vname, systems[i].base[j].value, true);
       }
 
+      symrec *var = aprepro->getsym("_UNITS_SYSTEM");
+      var->value.svar = type;
+
       load_conversion(systems[i].base, systems[i].label);
+      load_constants();
       return (" ");
     }
 
@@ -331,6 +335,79 @@ unit_systems systems[] =
   }
 
 namespace {
+void load_constants()
+{
+  define_var("Ohm", 1, "Ohm");
+  define_var("Hz", 1, "Hz");
+  define_var("Ampere", 1, "Ampere");
+  define_var("Columb", 1, "Columb");
+  define_var("Farad", 1, "Farad");
+  define_var("Volt", 1, "Volt");
+  define_var("Tesla", 1, "Tesla");
+  define_var("mole", 1, "mole");
+  define_var("Siemens", 1, "Siemens");
+  define_var("GeV", 1, "GeV");
+
+define_var("Avogadro_constant",  6.02214076E23 / mole, "");
+define_var("Bohr_magneton",  9.2740100783E-24~J / Tesla, "");
+define_var("Bohr_radius",  5.29177210903E-11~meter, "");
+define_var("Boltzmann_constant",  1.380649E-23~J / degK, "");
+define_var("Coulomb_constant",  8.9875517923E9~N * meter^2 / Columb^2, "");
+define_var("Faraday_constant",  96485.3321233100184~Columb/mole, "");
+define_var("Fermi_coupling_constant",  1.166378710E-5/GeV^2, "");
+define_var("Hartree_energy",  4.3597447222071E-18~J, "");
+define_var("Josephson_constant",  483597.8484E9~Hz / Volt, "");
+define_var("Newtonian_constant_of_gravitation",  6.67430E-11~m^3 / kg / second^2, "");
+define_var("Gravitational_constant",  Newtonian_constant_of_gravitation, "");
+define_var("Planck_constant",  6.62607015E-34~J/Hz, "");
+define_var("Rydberg_constant",  10973731.568160/meter, "");
+define_var("Rydberg_unit_of_energy",  2.1798723611035E-18~J, "");
+define_var("Stefan_Boltzmann_constant",  5.670374419E-8~W / meter^2 / degK^4, "");
+define_var("Thomson_cross_section",  6.6524587321E-29~meter^2, "");
+define_var("W_to_Z_mass_ratio",  0.88153, "");
+define_var("Wien_entropy_displacement_law_constant",  3.002916077E-3~meter * degK, "");
+define_var("Wien_frequency_displacement_law_constant",  5.878925757E10~Hz / degK, "");
+define_var("Wien_wavelength_displacement_law_constant",  2.897771955E-3~meter * degK, "");
+define_var("atomic_mass_constant",  1.66053906660E-27~kg, "");
+define_var("atomic_mass_of_carbon_12",  1.99264687992E-26~kg, "");
+define_var("characteristic_impedance_of_vacuum",  376.730313668~Ohm, "");
+define_var("classical_electron_radius",  2.8179403262E-15~meter, "");
+define_var("conductance_quantum",  7.748091729E-5~Siemens, "");
+
+define_var("cosmological_constant",  1.089E-521/meter^2, "");
+define_var("electron_g_factor",  -2.00231930436256, "");
+define_var("electron_mass",  9.1093837015E-31~kg, "");
+define_var("elementary_charge",  1.602176634E-19~Columb, "");
+define_var("fine_structure_constant",  7.2973525693E-3, "");
+define_var("first_radiation_constant",  3.741771852E-16~W * meter^2, "");
+define_var("hyperfine_transition_frequency_of_133Cs",  9192631770~Hz, "");
+define_var("inverse_conductance_quantum",  12906.40372~Ohm, "");
+define_var("inverse_fine_structure_constant",  137.035999084, "");
+define_var("magnetic_flux_quantum",  2.067833848E-15~Volt * second, "");
+define_var("molar_Planck_constant",  3.9903127128934314E-10~J * second / mole, "");
+define_var("molar_gas_constant",  8.31446261815324~J /mole/degK, "");
+define_var("molar_mass_constant",  0.99999999965E-3~kg / mole, "");
+define_var("molar_mass_of_carbon_12",  11.9999999958E-3~kg / mole, "");
+
+define_var("muon_g_factor",  -2.0023318418, "");
+define_var("muon_mass",  1.883531627E-28~kg, "");
+define_var("neutron_mass",  1.67492749804E-27~kg, "");
+define_var("nuclear_magneton",  5.0507837461E-27~ J / Tesla, "");
+define_var("proton_g_factor",  5.5856946893, "");
+define_var("proton_mass",  1.67262192369E-27~kg, "");
+define_var("proton_to_electron_mass_ratio",  1836.15267343, "");
+define_var("quantum_of_circulation",  3.6369475516E-4~meter^2 / second, "");
+define_var("reduced_Planck_constant",  1.054571817E-34~J * second, "");
+define_var("second_radiation_constant",  1.438776877E-2~meter * degK, "");
+define_var("speed_of_light_in_vacuum",  299792458~meter/second, "");
+define_var("tau_mass",  3.16754E-27~kg, "");
+define_var("top_quark_mass",  3.0784E-25~kg, "");
+define_var("vacuum_electric_permittivity",  8.8541878128E-12~Farad / meter, "");
+define_var("vacuum_magnetic_permeability",  1.25663706212E-6~N / Ampere^2, "");
+define_var("von_Klitzing_constant",  25812.80745~Ohm, "");
+define_var("weak_mixing_angle",  0.22290, "");
+}
+
 void load_conversion(var_init *base, svar_init *label)
 {
   const char *tout = label[ 0].value;
@@ -359,7 +436,7 @@ void load_conversion(var_init *base, svar_init *label)
   std::string title_prefix = "\n";
   for(size_t i = 0; i < 3; i++) {
     title_prefix += comment();
-}
+  }
   title_prefix += " ";
 
   if (echo != 0) {
