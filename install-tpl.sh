@@ -416,9 +416,9 @@ then
             hdf_version="1.13.1"
             hdf_base="1.13"
 	elif [ "${H5VERSION}" == "V114" ]; then
-            hdf_version="1.14.1"
+            hdf_version="1.14.2"
             hdf_base="1.14"
-	    hdf_suffix="-2"
+	    hdf_suffix=""
 	elif [ "${H5VERSION}" == "develop" ]; then
             hdf_version="develop"
 	else
