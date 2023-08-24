@@ -35,7 +35,7 @@
 #endif
 
 namespace {
-  const std::string version_string{"6.19 (2023/08/24)"};
+  const std::string version_string{"6.20 (2023/08/24)"};
 
   void output_copyright();
 
@@ -100,8 +100,9 @@ namespace SEAMS {
   {
     if (!outputStream.empty()) {
       outputStream.top()->flush();
-      if (outputStream.size() > 1) {
+      while (outputStream.size() > 1) {
         std::ostream *output = outputStream.top();
+        outputStream.pop();
         delete output;
       }
     }
