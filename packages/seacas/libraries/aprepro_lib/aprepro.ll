@@ -23,7 +23,7 @@
 #include "apr_scanner.h"
 #include "aprepro.h"
 #include "apr_util.h"
-#include "apr_getline_int.h"
+#include "apr_getline.h"
 
 #define YY_NO_UNISTD_H
 /* import the parser's token type into a local typedef */
@@ -769,7 +769,7 @@ integer {D}+({E})?
     }
 
     if (aprepro.ap_options.interactive && yyin == &std::cin && isatty(0) != 0 && isatty(1) != 0) {
-      char *line = ap_getline_int(nullptr);
+      char *line = SEAMS::getline_int(nullptr);
 
       if (strlen(line) == 0) {
         return 0;
@@ -780,7 +780,7 @@ integer {D}+({E})?
                 "be parsed incorrectly.");
       }
 
-      ap_gl_histadd(line);
+      SEAMS::gl_histadd(line);
 
       if (strlen(line) > (size_t)max_size - 2) {
         yyerror("input line is too long");
