@@ -41,6 +41,8 @@ typedef SEAMS::Parser::token_type token_type;
  }
 
 namespace {
+  bool begin_double_brace = false;
+  bool end_double_brace = false;
   bool string_is_ascii(const char *line, size_t len)
   {
     for (size_t i = 0; i < len; i++) {
@@ -649,9 +651,46 @@ integer {D}+({E})?
 }
 
 
+<PARSING>"}}" {
+  if (begin_double_brace) {
+    end_double_brace = true;
+  }
+  else {
+    yyerror("Found an unexpected double end brace ('}}').\n\t"
+            "It can only end an expression started with a double brace ('{{').\n\tCheck syntax.");
+  }
+
+  // Add to the history string
+  save_history_string();
+
+  if (switch_skip_to_endcase)
+    BEGIN(END_CASE_SKIP);
+  else
+    BEGIN(if_state[if_lvl]);
+  return(token::RBRACE);
+}
+
+
 \\\{                      { if (echo) LexerOutput("{", 1); }
 
 \\\}                      { if (echo) LexerOutput("}", 1); }
+
+"{{"  {
+    // Check if we need to save the substitution history first.
+    if(aprepro.ap_options.keep_history &&
+            (aprepro.ap_file_list.top().name != "_string_"))
+    {
+      if (curr_index > (size_t)yyleng)
+        hist_start = curr_index - yyleng;
+      else
+        hist_start = 0;
+    }
+
+    BEGIN(PARSING);
+    echo = false;
+    begin_double_brace = true;
+    return(token::LBRACE);
+  }
 
 "{"  {
     // Check if we need to save the substitution history first.
@@ -687,7 +726,13 @@ integer {D}+({E})?
 .                          { if (echo && if_state[if_lvl] != IF_SKIP) ECHO; }
 
 "\n"                       { if (echo && !suppress_nl) ECHO; suppress_nl = false;
-                             aprepro.ap_file_list.top().lineno++;}
+                             if (end_double_brace) {
+                                echo = true;
+                                begin_double_brace = false;
+                                end_double_brace = false;
+                             }
+                             aprepro.ap_file_list.top().lineno++;
+                           }
 
 %%
 
