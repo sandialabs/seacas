@@ -45,7 +45,7 @@ namespace {
   {
     for (size_t i = 0; i < len; i++) {
       if (!(std::isspace(line[i]) || std::isprint(line[i]))) {
-	return false;
+        return false;
       }
     }
     return true;
@@ -117,7 +117,7 @@ integer {D}+({E})?
   "{VERBATIM(OFF)}" { BEGIN(INITIAL);   }
   [A-Za-z0-9_ ]* |
     .               { if (echo) ECHO; }
-  "\n"              { if (echo) ECHO; aprepro.ap_file_list.top().lineno++;   }
+    "\n"            { if (echo) ECHO; aprepro.ap_file_list.top().lineno++; }
 }
 
 <INITIAL>{
@@ -191,7 +191,7 @@ integer {D}+({E})?
 
         temp_f = get_temp_filename();
         SEAMS::file_rec new_file(temp_f, 0, true, (int)s->value.var);
-	outer_file = &aprepro.ap_file_list.top();
+        outer_file = &aprepro.ap_file_list.top();
         aprepro.ap_file_list.push(new_file);
 
         tmp_file = new std::fstream(temp_f, std::ios::out);
@@ -335,7 +335,7 @@ integer {D}+({E})?
   suppress_nl = false;
   if (aprepro.ap_options.debugging)
     fprintf (stderr, "DEBUG SWITCH: 'endswitch' at line %d\n",
-	     aprepro.ap_file_list.top().lineno);
+             aprepro.ap_file_list.top().lineno);
 }
 
 <END_CASE_SKIP>.*"\n" {  aprepro.ap_file_list.top().lineno++; }
@@ -516,7 +516,7 @@ integer {D}+({E})?
       if (if_state[if_lvl] == IF_SKIP ||
           if_state[if_lvl] == INITIAL) {
             BEGIN(INITIAL);
-	    suppress_nl = false;
+            suppress_nl = false;
       }
                            /* If neither is true, this is a nested
                               if that should be skipped */
@@ -710,9 +710,9 @@ integer {D}+({E})?
     while (aprepro.ap_file_list.size() > 1) {
       auto kk = aprepro.ap_file_list.top();
       if (kk.name != "STDIN") {
-	yyFlexLexer::yy_load_buffer_state();
-	delete yyin;
-	yyin = nullptr;
+        yyFlexLexer::yy_load_buffer_state();
+        delete yyin;
+        yyin = nullptr;
       }
       aprepro.ap_file_list.pop();
       yyFlexLexer::yypop_buffer_state();
@@ -799,10 +799,10 @@ integer {D}+({E})?
         return -1;
       }
       else {
-	if (!string_is_ascii(buf, yyin->gcount())) {
-	  yyerror("input file contains non-ASCII (probably UTF-8) characters which will most likely "
-		  "be parsed incorrectly.");
-	}
+        if (!string_is_ascii(buf, yyin->gcount())) {
+          yyerror("input file contains non-ASCII (probably UTF-8) characters which will most likely "
+                  "be parsed incorrectly.");
+        }
         return yyin->gcount();
       }
     }
@@ -1114,7 +1114,7 @@ integer {D}+({E})?
 
     // Don't do it if the file is the one used by execute and rescan.
     if (aprepro.ap_file_list.top().name == "_string_" ||
-	aprepro.ap_file_list.top().name == "standard input") {
+        aprepro.ap_file_list.top().name == "standard input") {
       return;
     }
 
