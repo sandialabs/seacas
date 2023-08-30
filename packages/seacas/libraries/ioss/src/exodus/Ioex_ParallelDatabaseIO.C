@@ -869,7 +869,7 @@ namespace Ioex {
         char *qa_record[1][4];
       };
 
-      auto qa = new qa_element[num_qa];
+      std::vector<qa_element> qa(num_qa);
       for (int i = 0; i < num_qa; i++) {
         for (int j = 0; j < 4; j++) {
           qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
@@ -886,7 +886,6 @@ namespace Ioex {
           delete[] qa[i].qa_record[0][j];
         }
       }
-      delete[] qa;
     }
 
     // Get information records from database and add to informationRecords...
