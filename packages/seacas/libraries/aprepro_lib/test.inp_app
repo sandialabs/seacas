@@ -185,9 +185,9 @@ $ Test looping - print sin, cos from 0 to 90 by 5
 {EndLoop}
 
 $$$$ Test formatting and string concatenation
-{_i = 0} {_SAVE = _FORMAT}
+{_SAVE = _FORMAT}
 {loop(20)}
-{IO(++_i)} Using the format {_FORMAT = "%." // tostring(_i) // "g"},	PI = {PI}
+{IO(__loop_1+1)} Using the format {_FORMAT = "%." // tostring(__loop_1+1) // "g"},	PI = {PI}
 {endloop}
 Reset format to default: {_FORMAT = _SAVE}
 
