@@ -1,7 +1,7 @@
 /* -*- Mode: c++ -*- */
 
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -698,7 +698,7 @@ integer {D}+({E})?
     if(aprepro.ap_options.keep_history &&
             (aprepro.ap_file_list.top().name != "_string_"))
     {
-      if (curr_index > (size_t)yyleng)
+      if (curr_index > yyleng)
         hist_start = curr_index - yyleng;
       else
         hist_start = 0;
@@ -715,7 +715,7 @@ integer {D}+({E})?
     if(aprepro.ap_options.keep_history &&
             (aprepro.ap_file_list.top().name != "_string_"))
     {
-      if (curr_index > (size_t)yyleng)
+      if (curr_index > yyleng)
         hist_start = curr_index - yyleng;
       else
         hist_start = 0;
