@@ -3,7 +3,7 @@ $
 Test number representations
 {1}	{10e-1}	{10.e-1}	{.1e+1}	{.1e1}
 {1}	{10E-1}	{10.E-1}	{.1E+1}	{.1E1}
-	
+
 Test assign statements:
 {_a = 5}	{b=_a}	$ Should print 5 5
 {_a +=b}	{_a} 	$ Should print 10 10

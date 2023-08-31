@@ -111,6 +111,7 @@ endif()
 
 if (${PACKAGE_NAME}_ENABLE_TESTS)
   TRIBITS_ADD_EXECUTABLE(aprepro_lib_test NOEXEPREFIX NOEXESUFFIX INSTALLABLE SOURCES apr_test.cc LINKER_LANGUAGE CXX)
+  TRIBITS_ADD_EXECUTABLE(aprepro_strings_test NOEXEPREFIX NOEXESUFFIX INSTALLABLE SOURCES strings.cc LINKER_LANGUAGE CXX)
 
 TRIBITS_ADD_ADVANCED_TEST(
  aprepro_lib_unit_test
@@ -121,6 +122,22 @@ TRIBITS_ADD_ADVANCED_TEST(
  TEST_1 CMND diff ARGS -w
 		       ${CMAKE_CURRENT_SOURCE_DIR}/test_standard.out
 		       ${CMAKE_CURRENT_BINARY_DIR}/test.output
+ COMM mpi serial
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION
+ XHOSTTYPE Windows
+)
+
+TRIBITS_ADD_ADVANCED_TEST(
+ aprepro_lib_unit_test_strings
+ TEST_0 EXEC aprepro_strings_test
+ OUTPUT_FILE test-strings.output
+  NOEXEPREFIX NOEXESUFFIX
+  PASS_ANY
+ TEST_1 CMND grep ARGS -v Aprepro: test-strings.output OUTPUT_FILE grepped-strings.out
+ TEST_2 CMND diff ARGS -w
+		       ${CMAKE_CURRENT_SOURCE_DIR}/test_standard.out
+		       ${CMAKE_CURRENT_BINARY_DIR}/grepped-strings.out
  COMM mpi serial
  OVERALL_NUM_MPI_PROCS 1
  FINAL_PASS_REGULAR_EXPRESSION
