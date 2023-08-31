@@ -325,17 +325,70 @@ ignored.
 \subsection{Loops} Repeated processing of a group of lines can be controlled
 with the \cmd{loop(control)}, and \cmd{endloop} commands. The syntax is:
 \begin{apinp}
-\{loop(variable)\}
-\ldots Process these lines \var{variable} times
+\{loop(variable, index\_variable, initial\_value, increment)\}
+\ldots Process these lines \var{variable} times.  
 \{endloop\}
 \end{apinp}
 
-Loops can be nested. A numerical variable or constant must be specified as the
-loop control specifier. You cannot use an algebraic expression such as
+The number of iterations of the loop is specified by \var{variable} which can be an explicit integer value, or an existing variable.  If it is a variable, then the truncated integer value of the variable will be used.  For example, if the variable contains the value 3.14, then the loop will be iterated 3 times.
 
-\cmd{\{loop(3+5)\}}.
+The optional \var{index\_variable} will be automatically initialized
+to the optional \var{initial\_value} (0 if not specified) at the
+beginning of the loop and incremented by the optional \var{increment}
+(1 if not specified) value each time through the loop.  Loops can be
+nested.
+
+If the \var{index\_variable} is not specified in the \cmd{loop}
+command, then the variable \var{\_\_loop\_\#} will be used where ``\#''
+represents the one-based nesting level of the current loop.
+
+A numerical variable or constant must be specified as the loop control
+specifier. You cannot use an algebraic expression such as
+
+\begin{apinp}
+\{loop(3+5)\}  \ldots INVALID
+\end{apinp}
 
 The \cmd{endloop} command must be on a line by itself with no other text except optional whitespace (spaces or tabs).
+
+These are all valid loop invocations:
+\begin{apinp}
+\{loop(variable, index\_variable, initial\_value, increment)\}
+\end{apinp}
+
+\begin{apinp}
+\{loop(variable, index\_variable, initial\_value)\}
+\ldots same as \{loop(variable, index\_variable, initial\_value, 1)\}
+\end{apinp}
+
+\begin{apinp}
+\{loop(variable, index\_variable)\}
+\ldots same as \{loop(variable, index\_variable, 0, 1)\}
+\end{apinp}
+
+\begin{apinp}
+\{loop(variable)\}
+\ldots same as \{loop(variable, \_\_loop\_1, 0, 1\}
+\end{apinp}
+
+A couple examples of using loops are shown here:
+\begin{apinp}
+\{loop(10, \_i, 1, 2)\}
+\ldots These lines will be executed 10 times.
+\ldots The variable \var{\_i} will have the values 1, 3, 5, \ldots, 19. 
+\{endloop\}
+\end{apinp}
+
+\begin{apinp}
+\{outer=10\} \{inner=4\}
+\{loop(outer, \_i)\}
+\{loop(inner)\}
+\ldots These lines will be executed $10 * 4$ times.
+\ldots The variable \var{\_i} will have the values 0 through 9. 
+\ldots The variable \var{\_\_loop\_2} will have the values 0, 1, 2, 3 and incremented in each iteration of the inner loop.
+\{endloop\}
+\{endloop\}
+\end{apinp}
 
 \subsection{ECHO}\label{echo} The printing of lines to the output file can be controlled
 through the use of the \cmd{ECHO(OFF)} and \cmd{ECHO(ON)}
@@ -350,6 +403,17 @@ commands. The syntax is:
 
 \cmd{ECHO} will automatically be turned on at the end of an included file. The
 commands \cmd{ECHO} and \cmd{NOECHO} are synonyms for \cmd{ECHO(ON)} and \cmd{ECHO(OFF)}.
+
+\subsection{Suppress individual expression output}
+In addition to the \cmd{ECHO} option shown in the previous section, it
+is possible to suppress the echoing of the results of an expression by
+surrouding the expression with double braces instead of the normal
+single braces.  For example:
+\begin{apinp}
+\{\{\_i = 0\}\}
+\end{apinp}
+Will disable the echoing of that expression (although the newline will
+still be echoed). 
 
 \subsection{VERBATIM} The printing of all lines to the output file without processing
 can be controlled through the use of the \cmd{VERBATIM(ON)} and \cmd{VERBATIM(OFF)}

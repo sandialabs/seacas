@@ -309,8 +309,7 @@ The following example illustrates the basic usage of the \aprepro{} units conver
 
 \begin{apinp}
 \$ Aprepro Units Utility Example
-\$ \{ECHO(OFF)\} \textit{\ldots{}Turn off echoing of the conversion factors}
-\$ \{Units(``shock'')\} \textit{\ldots{}Select the shock units system}
+\$ \{\{Units(``shock'')\}\} \textit{\ldots{}Select the shock units system, use double brace to suppress echoing}
 \$  NOTE:  Dimensions  -  \{lout\},  \{mout\},  \{dout\},  \{pout\}
 \textit{\ldots{}This will document what quantities are used in the file after it is run through Aprepro}
 \{len1  = 10.0 * inch\}  \textit{\ldots{}Define a length in an english unit (inches)}
@@ -374,7 +373,7 @@ Point  130 0   0.254  \textit{\ldots{}Lengths have all been converted to metres}
 A few additional comments and warnings on the use of the units system are detailed
 below.
 
-Omitting the \{ECHO(OFF)\} line prior to the \{Units(``unit\_system'')\}
+Using only single braces for the \{Units(``unit\_system'')\}
 function will print out the contents of the units header and conversion files.
 Each line in the output will be preceded by the current comment character which
 is \$ by default.
