@@ -145,7 +145,7 @@ csv\_array(filename, [skip]) &  Create a 2D array from the data in a CSV (Comma-
 array\_from\_string(string, delim)  & Create a 1D array from the data in a delimited \var{string}. The array double values are separated by one or more of the characters in the string variable \var{delim}. \\
 identity(size)      &  Create a 2D identity array with \var{size} rows and columns. The elements along the diagonal are equal to 1.0 \\
 linear\_array(init, final, count) &  Create a 1D array of \var{count} rows. Values are linearly spaced from \var{init} to \var{final}. \\
-make\_array(rows, cols, init=0) &  Create a 2D array of size \var{rows} by \var{cols} initialized to \var{init}. The array is initialized to 0 if `var{init} is not specified. \\
+make\_array(rows, cols, init=0) &  Create a 2D array of size \var{rows} by \var{cols} initialized to \var{init}. The array is initialized to 0 if \var{init} is not specified. \\
 transpose(array)    &  Return the transpose of input array \\
 \hline
 \end{longtable}
@@ -407,7 +407,7 @@ commands \cmd{ECHO} and \cmd{NOECHO} are synonyms for \cmd{ECHO(ON)} and \cmd{EC
 \subsection{Suppress individual expression output}
 In addition to the \cmd{ECHO} option shown in the previous section, it
 is possible to suppress the echoing of the results of an expression by
-surrouding the expression with double braces instead of the normal
+surrounding the expression with double braces instead of the normal
 single braces.  For example:
 \begin{apinp}
 \{\{\_i = 0\}\}
@@ -462,7 +462,7 @@ then the current output file is closed and output is again written to
 the standard output which is where output is written by default.
 
 \subsection{\exo{} Metadata Extraction} \aprepro{} can parse the
-metadata from a binary \exo{}~\cite{exodus} file and create several
+metadata from a binary \exo{}~\cite{bib:exodus} file and create several
 variables which can then be used for calculations or decisions.  The
 function syntax is \cmd{exodus\_meta(filename)}. The
 argument to the function is a string containing the filename of the
