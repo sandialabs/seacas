@@ -94,6 +94,8 @@ namespace SEAMS {
     ap_file_list.emplace(file_rec());
     init_table("$");
     aprepro = this;
+
+    add_variable("__loop_level__", 0, false, true);
   }
 
   Aprepro::~Aprepro()
