@@ -2446,7 +2446,7 @@ namespace {
 #ifdef USE_ZOLTAN
     size_t element_count = region.get_property("element_count").get_int();
 
-    // Below here are Zoltan decompositions...
+    // Calculate element centroids...
     std::vector<double> x(element_count);
     std::vector<double> y(element_count);
     std::vector<double> z(element_count);
@@ -2476,6 +2476,7 @@ namespace {
         el++;
       }
     }
+    Ioss::Utils::clear(coor);
 
     /* Copy mesh data and pointers into structure accessible from callback fns. */
     Zoltan_Data.ndot = element_count;
