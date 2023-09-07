@@ -131,7 +131,9 @@ namespace {
           auto &chain_entry = chains[j + offset];
           // TODO: Map this from global to local element number...
           size_t loc_elem =
-              proc_region[p]->get_database()->element_global_to_local(chain_entry.element);
+              chain_entry.element > 0
+                  ? proc_region[p]->get_database()->element_global_to_local(chain_entry.element)
+                  : 0;
           map[p].push_back(loc_elem);
           map[p].push_back(chain_entry.link);
         }
