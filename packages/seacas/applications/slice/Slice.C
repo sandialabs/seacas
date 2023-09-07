@@ -108,43 +108,36 @@ namespace {
                          INT /* dummy */)
   {
     progress(__func__);
+
+    // Build the proc-local chain map and then output it on a block-by-block basis...
+    size_t                        proc_count = proc_region.size();
+    std::vector<std::vector<INT>> map(proc_count);
+
+    size_t global_element_count = elem_to_proc.size();
+    for (size_t j = 0; j < global_element_count; j++) {
+      size_t p = elem_to_proc[j];
+      if (p >= proc_begin && p < proc_begin + proc_size) {
+        auto &chain_entry = chains[j];
+        // TODO: Map this from global to local element number...
+        size_t loc_elem =
+            chain_entry.element > 0
+                ? proc_region[p]->get_database()->element_global_to_local(chain_entry.element)
+                : 0;
+        map[p].push_back(loc_elem);
+        map[p].push_back(chain_entry.link);
+      }
+    }
+
+    // Now iterate through the blocks on each rank and output that portion of the map...
     size_t block_count = proc_region[0]->get_property("element_block_count").get_int();
 
-    size_t offset = 0;
-    for (size_t b = 0; b < block_count; b++) {
-      if (debug_level & 4) {
-        progress("\tBlock " + std::to_string(b + 1));
-      }
-
-      size_t                        proc_count = proc_region.size();
-      std::vector<std::vector<INT>> map(proc_count);
-      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
-        const auto &proc_ebs           = proc_region[p]->get_element_blocks();
-        size_t      proc_element_count = proc_ebs[b]->entity_count();
-        map[p].reserve(proc_element_count * 2);
-      }
-
-      size_t global_element_count = elem_to_proc.size();
-      for (size_t j = 0; j < global_element_count; j++) {
-        size_t p = elem_to_proc[offset + j];
-        if (p >= proc_begin && p < proc_begin + proc_size) {
-          auto &chain_entry = chains[j + offset];
-          // TODO: Map this from global to local element number...
-          size_t loc_elem =
-              chain_entry.element > 0
-                  ? proc_region[p]->get_database()->element_global_to_local(chain_entry.element)
-                  : 0;
-          map[p].push_back(loc_elem);
-          map[p].push_back(chain_entry.link);
-        }
-      }
-      offset += global_element_count;
-
-      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
-        const auto &proc_ebs = proc_region[p]->get_element_blocks();
-        proc_ebs[b]->put_field_data("chain", map[p]);
-        map[p].clear();
-        proc_progress(p, proc_count);
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+      const auto &proc_ebs = proc_region[p]->get_element_blocks();
+      size_t      offset   = 0;
+      for (size_t b = 0; b < block_count; b++) {
+        size_t proc_element_count = proc_ebs[b]->entity_count();
+        proc_ebs[b]->put_field_data("chain", &map[p][offset], proc_element_count * 2 * sizeof(INT));
+        offset += proc_element_count;
       }
     }
   }
@@ -2448,7 +2441,7 @@ namespace {
 #ifdef USE_ZOLTAN
     size_t element_count = region.get_property("element_count").get_int();
 
-    // Calculate element centroids...
+    // Below here are Zoltan decompositions...
     std::vector<double> x(element_count);
     std::vector<double> y(element_count);
     std::vector<double> z(element_count);
@@ -2478,7 +2471,6 @@ namespace {
         el++;
       }
     }
-    Ioss::Utils::clear(coor);
 
     /* Copy mesh data and pointers into structure accessible from callback fns. */
     Zoltan_Data.ndot = element_count;
