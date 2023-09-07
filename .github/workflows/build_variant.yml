@@ -286,7 +286,7 @@ jobs:
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
         - {
-            name: "FAODEL enabled",
+            name: "FAODEL and METIS enabled",
             os: ubuntu-latest,
             compiler: "mpi",
             debug: "NO",
