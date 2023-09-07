@@ -74,6 +74,10 @@ int           debug_level = 0;
 size_t partial_count = 1'000'000'000;
 
 namespace {
+  template <typename INT>
+  void create_adjacency_list(const Ioss::Region &region, std::vector<idx_t> &pointer,
+                             std::vector<idx_t> &adjacency, INT);
+
   void progress(const std::string &output)
   {
     static auto start = std::chrono::steady_clock::now();
