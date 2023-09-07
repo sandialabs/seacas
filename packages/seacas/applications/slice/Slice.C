@@ -376,8 +376,9 @@ namespace {
     return common_nodes;
   }
 
+  template <typename INT>
   void decompose_metis(const Ioss::Region &region, SystemInterface &interFace,
-                       std::vector<int> &elem_to_proc)
+                       std::vector<int> &elem_to_proc, IOSS_MAYBE_UNUSED INT dummy)
   {
     size_t element_count = region.get_property("element_count").get_int();
 
@@ -658,7 +659,7 @@ namespace {
     else if (interFace.decomposition_method() == "rb" ||
              interFace.decomposition_method() == "kway") {
 #if USE_METIS
-      decompose_metis(region, interFace, elem_to_proc);
+      decompose_metis(region, interFace, elem_to_proc, dummy);
 #else
       fmt::print(stderr, "ERROR: Metis library not enabled in this version of slice.\n"
                          "       The 'rb' and 'kway' methods are not available.\n\n");
