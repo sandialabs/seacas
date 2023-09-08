@@ -2513,10 +2513,7 @@ namespace {
     ZCHECK(Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "0"));
     ZCHECK(Zoltan_Set_Param(zz, "REMAP", "0"));
     ZCHECK(Zoltan_Set_Param(zz, "RETURN_LISTS", "PARTITION_ASSIGNMENTS"));
-    if (Zoltan_Data.vwgt != nullptr) {
-      ZCHECK(Zoltan_Set_Param(zz, "OBJ_WEIGHT_DIM", "1"));
-    }
-    ZCHECK(Zoltan_Set_Param(zz, "RCB_RECTILINEAR_BLOCKS", "1"));
+    ZCHECK(Zoltan_Set_Param(zz, "RCB_RECTILINEAR_BLOCKS", "0"));
 
     /* Call partitioner */
     {
