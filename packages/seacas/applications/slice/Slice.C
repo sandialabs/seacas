@@ -2147,7 +2147,7 @@ namespace {
       output_connectivity(region, proc_region, elem_to_proc, proc_begin, proc_size, (INT)1);
       end = seacas_timer();
 
-      fmt::print(stderr, "Connectivity Output = {:.5}\n", end - start);
+      fmt::print(stderr, "\tConnectivity Output = {:.5}\n", end - start);
 
       start = seacas_timer();
 #if 0
