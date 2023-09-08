@@ -42,7 +42,7 @@ SystemInterface::~SystemInterface() = default;
 
 void SystemInterface::enroll_options()
 {
-  options_.usage("[options] file_to_split");
+  options_.usage("[options] file_to_split [output_file]");
 
   options_.enroll("help", GetLongOption::NoValue, "Print this summary and exit", nullptr);
 
