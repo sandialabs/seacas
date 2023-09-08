@@ -279,7 +279,6 @@ int ex_put_var_multi_time(int exoid, ex_entity_type var_type, int var_index, ex_
     status = ex__put_nodal_var_time(exoid, var_index, num_entries_this_obj, beg_time_step,
                                     end_time_step, var_vals);
     EX_FUNC_LEAVE(status);
-    break;
   case EX_ASSEMBLY:
     status = ex__look_up_var(exoid, var_type, var_index, obj_id, "", VAR_ASSEMBLY_TAB,
                              DIM_NUM_ASSEMBLY, DIM_NUM_ASSEMBLY_VAR, &varid);
