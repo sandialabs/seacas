@@ -18,6 +18,8 @@
 #include <Ioss_Utils.h>
 
 #include <cassert>
+#include <fstream>
+
 #include <exodusII.h>
 #include <fmt/color.h>
 #include <fmt/format.h>
