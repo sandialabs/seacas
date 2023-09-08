@@ -2396,9 +2396,9 @@ namespace {
      * gids are array indices for coordinate and vwgts arrays.
      * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
      */
-    for (size_t i = 0; i < Zoltan_Data.ndot; i++) {
-      gids[i] = i;
-      if (wdim != 0) {
+    std::iota(gids, gids + Zoltan_Data.ndot, 0);
+    if (wdim != 0) {
+      for (size_t i = 0; i < Zoltan_Data.ndot; i++) {
         wgts[i] = static_cast<float>(Zoltan_Data.vwgt[i]);
       }
     }
@@ -2480,78 +2480,73 @@ namespace {
     Zoltan_Data.z    = z.data();
 
     /* Initialize Zoltan */
-    int           argc   = 0;
-    char        **argv   = nullptr;
-    ZOLTAN_ID_PTR zgids  = nullptr;
-    ZOLTAN_ID_PTR zlids  = nullptr; /* Useful output from Zoltan_LB_Partition */
-    int          *zprocs = nullptr; /* Useful output from Zoltan_LB_Partition */
-    int          *zparts = nullptr; /* Useful output from Zoltan_LB_Partition */
+    int    argc = 0;
+    char **argv = nullptr;
 
-    int   ierr = 0;
-    float ver  = 0.0;
+    float ver = 0.0;
     Zoltan_Initialize(argc, argv, &ver);
-    struct Zoltan_Struct *zz = Zoltan_Create(Ioss::ParallelUtils::comm_world());
+    fmt::print("Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver), method);
+
+    Zoltan zz(Ioss::ParallelUtils::comm_world());
 
     /* Register Callback functions */
     /* Using global Zoltan_Data; could register it here instead as data field. */
-    ZCHECK(Zoltan_Set_Fn(zz, ZOLTAN_NUM_GEOM_FN_TYPE,
-                         reinterpret_cast<ZOLTAN_VOID_FN *>(zoltan_num_dim), nullptr));
-    ZCHECK(Zoltan_Set_Fn(zz, ZOLTAN_NUM_OBJ_FN_TYPE,
-                         reinterpret_cast<ZOLTAN_VOID_FN *>(zoltan_num_obj), nullptr));
-    ZCHECK(Zoltan_Set_Fn(zz, ZOLTAN_OBJ_LIST_FN_TYPE,
-                         reinterpret_cast<ZOLTAN_VOID_FN *>(zoltan_obj_list), nullptr));
-    ZCHECK(Zoltan_Set_Fn(zz, ZOLTAN_GEOM_MULTI_FN_TYPE,
-                         reinterpret_cast<ZOLTAN_VOID_FN *>(zoltan_geom), nullptr));
+    zz.Set_Num_Obj_Fn(zoltan_num_obj, nullptr);
+    zz.Set_Obj_List_Fn(zoltan_obj_list, nullptr);
+    zz.Set_Num_Geom_Fn(zoltan_num_dim, nullptr);
+    zz.Set_Geom_Multi_Fn(zoltan_geom, nullptr);
 
     /* Set parameters for Zoltan */
-    ZCHECK(Zoltan_Set_Param(zz, "DEBUG_LEVEL", "0"));
-    {
-      std::string str = fmt::format("{}", ranks);
-      ZCHECK(Zoltan_Set_Param(zz, "NUM_GLOBAL_PARTITIONS", str.c_str()));
-      ZCHECK(Zoltan_Set_Param(zz, "LB_METHOD", method.c_str()));
-    }
-    ZCHECK(Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "0"));
-    ZCHECK(Zoltan_Set_Param(zz, "REMAP", "0"));
-    ZCHECK(Zoltan_Set_Param(zz, "RETURN_LISTS", "PARTITION_ASSIGNMENTS"));
-    ZCHECK(Zoltan_Set_Param(zz, "RCB_RECTILINEAR_BLOCKS", "0"));
+    zz.Set_Param("DEBUG_LEVEL", "0");
+    std::string str = fmt::format("{}", ranks);
+    zz.Set_Param("NUM_GLOBAL_PARTS", str);
+    zz.Set_Param("LB_METHOD", method);
+    zz.Set_Param("NUM_LID_ENTRIES", "0");
+    zz.Set_Param("REMAP", "0");
+    zz.Set_Param("RETURN_LISTS", "PARTITION_ASSIGNMENTS");
+    zz.Set_Param("RCB_RECTILINEAR_BLOCKS", "1");
+
+    int num_global = sizeof(INT) / sizeof(ZOLTAN_ID_TYPE);
+    num_global     = num_global < 1 ? 1 : num_global;
 
     /* Call partitioner */
-    {
-      fmt::print(" Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver), method);
-      int           zngid_ent = 0;
-      int           znlid_ent = 0; /* Useful output from Zoltan_LB_Partition */
-      int           znobj     = 0;
-      ZOLTAN_ID_PTR dummy1    = nullptr;
-      ZOLTAN_ID_PTR dummy2    = nullptr; /* Empty output from Zoltan_LB_Partition */
-      int           dummy0    = 0;
-      int          *dummy3    = nullptr;
-      int          *dummy4    = nullptr;
-      int           changes   = 0;
+    int           changes           = 0;
+    int           num_local         = 0;
+    int           num_import        = 1;
+    int           num_export        = 1;
+    ZOLTAN_ID_PTR import_global_ids = nullptr;
+    ZOLTAN_ID_PTR import_local_ids  = nullptr;
+    ZOLTAN_ID_PTR export_global_ids = nullptr;
+    ZOLTAN_ID_PTR export_local_ids  = nullptr;
+    int          *import_procs      = nullptr;
+    int          *import_to_part    = nullptr;
+    int          *export_procs      = nullptr;
+    int          *export_to_part    = nullptr;
+    int rc = zz.LB_Partition(changes, num_global, num_local, num_import, import_global_ids,
+                             import_local_ids, import_procs, import_to_part, num_export,
+                             export_global_ids, export_local_ids, export_procs, export_to_part);
 
-      ZCHECK(Zoltan_LB_Partition(zz, &changes, &zngid_ent, &znlid_ent, &dummy0, &dummy1, &dummy2,
-                                 &dummy3, &dummy4, &znobj, &zgids, &zlids, &zprocs, &zparts));
+    if (rc != ZOLTAN_OK) {
+      fmt::print(stderr, "ERROR: Problem during call to Zoltan LB_Partition.\n");
+      goto End;
+    }
 
-      /* Sanity check */
-      if (element_count != static_cast<size_t>(znobj)) {
-        fmt::print(stderr, "Sanity check failed; ndot {} != znobj {}.\n", element_count,
-                   static_cast<size_t>(znobj));
-        goto End;
-      }
+    /* Sanity check */
+    if (element_count != static_cast<size_t>(num_export)) {
+      fmt::print(stderr, "Sanity check failed; ndot {} != num_export {}.\n", element_count,
+                 static_cast<size_t>(num_export));
+      goto End;
+    }
 
-      elem_to_proc.resize(element_count);
-      for (size_t i = 0; i < element_count; i++) {
-        elem_to_proc[i] = zparts[i];
-      }
+    elem_to_proc.resize(element_count);
+    for (size_t i = 0; i < element_count; i++) {
+      elem_to_proc[i] = export_to_part[i];
     }
 
   End:
     /* Clean up */
-    Zoltan_LB_Free_Part(&zgids, &zlids, &zprocs, &zparts);
-    Zoltan_Destroy(&zz);
-    if (ierr != 0) {
-      MPI_Finalize();
-      exit(-1);
-    }
+    zz.LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
+    zz.LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
 #endif
   }
 } // namespace
