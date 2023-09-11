@@ -116,18 +116,6 @@ namespace {
   }
 
 #ifdef USE_ZOLTAN
-#define STRINGIFY(x) #x
-#define TOSTRING(x)  STRINGIFY(x)
-#define ZCHECK(funcall)                                                                            \
-  do {                                                                                             \
-    ierr = (funcall);                                                                              \
-    if (ierr == ZOLTAN_FATAL) {                                                                    \
-      fmt::print(stderr, "Error returned from {} ({}:{})\n", TOSTRING(funcall), __FILE__,          \
-                 __LINE__);                                                                        \
-      goto End;                                                                                    \
-    }                                                                                              \
-  } while (0)
-
   /*****************************************************************************/
   /***** Global data structure used by Zoltan callbacks.                   *****/
   /***** Could implement Zoltan callbacks without global data structure,   *****/
@@ -207,20 +195,19 @@ namespace {
 
     *ierr = ZOLTAN_OK;
   }
-#endif
 
   template <typename INT>
-  void decompose_zoltan(const Ioss::Region &region, int ranks, const std::string &method,
+  void decompose_zoltan(const Ioss::Region &region, int ranks, SystemInterface &interFace,
                         std::vector<int> &elem_to_proc, IOSS_MAYBE_UNUSED INT dummy)
   {
     if (ranks == 1) {
       return;
     }
 
-#ifdef USE_ZOLTAN
     size_t element_count = region.get_property("element_count").get_int();
 
-    // Below here are Zoltan decompositions...
+    // The zoltan methods supported in slice are all geometry based
+    // and use the element centroid.
     std::vector<double> x(element_count);
     std::vector<double> y(element_count);
     std::vector<double> z(element_count);
@@ -251,35 +238,50 @@ namespace {
       }
     }
 
-    /* Copy mesh data and pointers into structure accessible from callback fns. */
+    // Copy mesh data and pointers into structure accessible from callback fns.
     Zoltan_Data.ndot = element_count;
     Zoltan_Data.vwgt = nullptr;
-    Zoltan_Data.x    = x.data();
-    Zoltan_Data.y    = y.data();
-    Zoltan_Data.z    = z.data();
+    if (interFace.ignore_x_) {
+      Zoltan_Data.x = y.data();
+      Zoltan_Data.y = z.data();
+    }
+    else if (interFace.ignore_y_) {
+      Zoltan_Data.x = x.data();
+      Zoltan_Data.y = z.data();
+    }
+    else if (!interFace.ignore_z_) {
+      Zoltan_Data.x = x.data();
+      Zoltan_Data.y = y.data();
+    }
+    else {
+      Zoltan_Data.x = x.data();
+      Zoltan_Data.y = y.data();
+      Zoltan_Data.z = z.data();
+    }
 
-    /* Initialize Zoltan */
+    // Initialize Zoltan
     int    argc = 0;
     char **argv = nullptr;
 
     float ver = 0.0;
     Zoltan_Initialize(argc, argv, &ver);
-    fmt::print("Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver), method);
+    fmt::print("Using Zoltan version {:.2}, method {}\n", static_cast<double>(ver),
+               interFace.decomposition_method());
 
     Zoltan zz(Ioss::ParallelUtils::comm_world());
 
-    /* Register Callback functions */
-    /* Using global Zoltan_Data; could register it here instead as data field. */
+    // Register Callback functions
+    // Using global Zoltan_Data; could register it here instead as data field.
     zz.Set_Num_Obj_Fn(zoltan_num_obj, nullptr);
     zz.Set_Obj_List_Fn(zoltan_obj_list, nullptr);
     zz.Set_Num_Geom_Fn(zoltan_num_dim, nullptr);
     zz.Set_Geom_Multi_Fn(zoltan_geom, nullptr);
 
-    /* Set parameters for Zoltan */
+    // Set parameters for Zoltan
     zz.Set_Param("DEBUG_LEVEL", "0");
     std::string str = fmt::format("{}", ranks);
     zz.Set_Param("NUM_GLOBAL_PARTS", str);
-    zz.Set_Param("LB_METHOD", method);
+    zz.Set_Param("LB_METHOD", interFace.decomposition_method());
     zz.Set_Param("NUM_LID_ENTRIES", "0");
     zz.Set_Param("REMAP", "0");
     zz.Set_Param("RETURN_LISTS", "PARTITION_ASSIGNMENTS");
@@ -288,7 +290,7 @@ namespace {
     int num_global = sizeof(INT) / sizeof(ZOLTAN_ID_TYPE);
     num_global     = num_global < 1 ? 1 : num_global;
 
-    /* Call partitioner */
+    // Call partitioner
     int           changes           = 0;
     int           num_local         = 0;
     int           num_import        = 1;
@@ -310,7 +312,7 @@ namespace {
       goto End;
     }
 
-    /* Sanity check */
+    // Sanity check
     if (element_count != static_cast<size_t>(num_export)) {
       fmt::print(stderr, "Sanity check failed; ndot {} != num_export {}.\n", element_count,
                  static_cast<size_t>(num_export));
@@ -483,6 +485,57 @@ namespace {
     fmt::print("\n");
   }
 
+  void scale_decomp(std::vector<int> &elem_to_proc, int iscale, size_t num_proc)
+  {
+    // Do the scaling (integer division...)
+    if (iscale == 0) {
+      // Auto scaling was asked for.  Determine max entry in `elem_to_proc` and
+      // set the scale factor.
+      auto max_proc = *std::max_element(elem_to_proc.begin(), elem_to_proc.end());
+
+      iscale = (max_proc + 1) / num_proc;
+      fmt::print(" Element Processor Map automatic scaling factor = {}\n", iscale);
+
+      if (iscale == 0) {
+        fmt::print(stderr,
+                   "ERROR: Max value in element processor map is {} which is\n"
+                   "\tless than the processor count ({}). Scaling values is not possible.",
+                   max_proc, num_proc);
+        exit(EXIT_FAILURE);
+      }
+    }
+    std::transform(elem_to_proc.begin(), elem_to_proc.end(), elem_to_proc.begin(),
+                   [iscale](int p) { return p / iscale; });
+  }
+
+  std::pair<int, std::string> extract_iscale_name(const std::string &var_name,
+                                                  const std::string &var_type)
+  {
+    if (var_name.empty()) {
+      fmt::print(stderr, "\nERROR: No element decomposition {} specified.\n", var_type);
+      exit(EXIT_FAILURE);
+    }
+    // If the "var_name" string contains a comma, then the value
+    // following the comma is either an integer "scale" which is
+    // divided into each entry in `elem_to_proc`, or it is the
+    // string "auto" which will automatically scale all values by
+    // the *integer* "max/processorCount"
+    //
+    // NOTE: integer division with *no* rounding is used.
+    int  iscale = 1;
+    auto pos    = var_name.find(",");
+    if (pos != std::string::npos) {
+      // Extract the string following the comma...
+      auto scale = var_name.substr(pos + 1);
+      if (scale == "AUTO" || scale == "auto") {
+        iscale = 0;
+      }
+      else {
+        iscale = std::stoi(scale);
+      }
+    }
+    return std::make_pair(iscale, var_name.substr(0, pos));
+  }
 } // namespace
 template void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
                                  std::vector<int> &elem_to_proc, IOSS_MAYBE_UNUSED int dummy);
@@ -532,7 +585,8 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
       elem_beg = elem_end;
     }
   }
-  else if (interFace.decomposition_method() == "scattered") {
+  else if (interFace.decomposition_method() == "scattered" ||
+           interFace.decomposition_method() == "random") {
     // Scattered...
     size_t proc = 0;
     for (size_t elem = 0; elem < element_count; elem++) {
@@ -541,13 +595,20 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
         proc = 0;
       }
     }
+    if (interFace.decomposition_method() == "random") {
+      // Random...  Use scattered method and then random_shuffle() the vector.
+      // Ensures that each processor has correct number of elements, but
+      // they are randomly distributed.
+      std::random_device rd;
+      std::mt19937       g(rd());
+      std::shuffle(elem_to_proc.begin(), elem_to_proc.end(), g);
+    }
   }
 
   else if (interFace.decomposition_method() == "rcb" || interFace.decomposition_method() == "rib" ||
            interFace.decomposition_method() == "hsfc") {
 #if USE_ZOLTAN
-    decompose_zoltan(region, interFace.processor_count(), interFace.decomposition_method(),
-                     elem_to_proc, dummy);
+    decompose_zoltan(region, interFace.processor_count(), interFace, elem_to_proc, dummy);
 #else
     fmt::print(stderr, "ERROR: Zoltan library not enabled in this version of slice.\n"
                        "       The 'rcb', 'rib', and 'hsfc' methods are not available.\n\n");
@@ -565,28 +626,10 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
 #endif
   }
 
-  else if (interFace.decomposition_method() == "random") {
-    // Random...  Use scattered method and then random_shuffle() the vector.
-    // Ensures that each processor has correct number of elements, but
-    // they are randomly distributed.
-    size_t proc = 0;
-    for (size_t elem = 0; elem < element_count; elem++) {
-      elem_to_proc.push_back(proc++);
-      if (proc >= interFace.processor_count()) {
-        proc = 0;
-      }
-    }
-    std::random_device rd;
-    std::mt19937       g(rd());
-    std::shuffle(elem_to_proc.begin(), elem_to_proc.end(), g);
-  }
-
   else if (interFace.decomposition_method() == "variable") {
-    const std::string &elem_variable = interFace.decomposition_variable();
-    if (elem_variable.empty()) {
-      fmt::print(stderr, "\nERROR: No element decomposition variable specified.\n");
-      exit(EXIT_FAILURE);
-    }
+    auto [iscale, elem_variable] =
+        extract_iscale_name(interFace.decomposition_variable(), "variable");
+
     // Get all element blocks and cycle through each reading the
     // values for the processor...
     const auto &blocks   = region.get_element_blocks();
@@ -605,35 +648,10 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
         elem_to_proc.push_back((int)tmp_vals[i]);
       }
     }
+    scale_decomp(elem_to_proc, iscale, interFace.processor_count());
   }
   else if (interFace.decomposition_method() == "map") {
-    std::string map_name = interFace.decomposition_variable();
-    if (map_name.empty()) {
-      fmt::print(stderr, "\nERROR: No element decomposition map specified.\n");
-      exit(EXIT_FAILURE);
-    }
-
-    // If the "map_name" string contains a comma, then the value
-    // following the comma is either an integer "scale" which is
-    // divided into each entry in `elem_to_proc`, or it is the
-    // string "auto" which will automatically scale all values by
-    // the *integer* "max/processorCount"
-    //
-    // NOTE: integer division with *no* rounding is used.
-
-    int  iscale = 1;
-    auto pos    = map_name.find(",");
-    if (pos != std::string::npos) {
-      // Extract the string following the comma...
-      auto scale = map_name.substr(pos + 1);
-      if (scale == "AUTO" || scale == "auto") {
-        iscale = 0;
-      }
-      else {
-        iscale = std::stoi(scale);
-      }
-    }
-    map_name = map_name.substr(0, pos);
+    auto [iscale, map_name] = extract_iscale_name(interFace.decomposition_variable(), "map");
 
     Ioss::DatabaseIO *db    = region.get_database();
     int               exoid = db->get_file_pointer();
@@ -669,25 +687,7 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
       exit(EXIT_FAILURE);
     }
 
-    // Do the scaling (integer division...)
-    if (iscale == 0) {
-      // Auto scaling was asked for.  Determine max entry in `elem_to_proc` and
-      // set the scale factor.
-      auto max_proc = *std::max_element(elem_to_proc.begin(), elem_to_proc.end());
-
-      iscale = (max_proc + 1) / interFace.processor_count();
-      fmt::print(" Element Processor Map automatic scaling factor = {}\n", iscale);
-
-      if (iscale == 0) {
-        fmt::print(stderr,
-                   "ERROR: Max value in element processor map is {} which is\n"
-                   "\tless than the processor count ({}). Scaling values is not possible.",
-                   max_proc, interFace.processor_count());
-        exit(EXIT_FAILURE);
-      }
-    }
-    std::transform(elem_to_proc.begin(), elem_to_proc.end(), elem_to_proc.begin(),
-                   [iscale](int p) { return p / iscale; });
+    scale_decomp(elem_to_proc, iscale, interFace.processor_count());
   }
   else if (interFace.decomposition_method() == "file") {
     // Read the element decomposition mapping from a file.  The

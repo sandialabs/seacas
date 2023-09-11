@@ -90,6 +90,21 @@ void SystemInterface::enroll_options()
                   "\t\tIf two integers (count proc), they specify that the next\n"
                   "\t\t\t'count' elements are on processor 'proc'",
                   nullptr);
+
+#if USE_ZOLTAN
+  options_.enroll(
+      "ignore_x", GetLongOption::NoValue,
+      "If using `rcb`, `rib`, or `hsfc`, decompose as if mesh in yz plane. Ignore x dimension.",
+      nullptr);
+  options_.enroll(
+      "ignore_y", GetLongOption::NoValue,
+      "If using `rcb`, `rib`, or `hsfc`, decompose as if mesh in xz plane. Ignore y dimension.",
+      nullptr);
+  options_.enroll(
+      "ignore_z", GetLongOption::NoValue,
+      "If using `rcb`, `rib`, or `hsfc`, decompose as if mesh in xy plane. Ignore z dimension.",
+      nullptr);
+#endif
   options_.enroll("contiguous_decomposition", GetLongOption::NoValue,
                   "If the input mesh is contiguous, create contiguous decompositions", nullptr,
                   nullptr);
@@ -101,7 +116,6 @@ void SystemInterface::enroll_options()
                   "\t\tOmit or enter 'ALL' for all surfaces in model\n"
                   "\t\tDo not split a line/column across processors.",
                   nullptr, "ALL", true);
-
   options_.enroll("output_decomp_map", GetLongOption::NoValue,
                   "Do not output the split files; instead write the decomposition information to "
                   "an element map.\n"
@@ -331,6 +345,16 @@ bool SystemInterface::parse_options(int argc, char **argv)
   contig_            = options_.retrieve("contiguous_decomposition") != nullptr;
   outputDecompMap_   = options_.retrieve("output_decomp_map") != nullptr;
   outputDecompField_ = options_.retrieve("output_decomp_field") != nullptr;
+#if USE_ZOLTAN
+  ignore_x_ = options_.retrieve("ignore_x") != nullptr;
+  ignore_y_ = options_.retrieve("ignore_y") != nullptr;
+  ignore_z_ = options_.retrieve("ignore_z") != nullptr;
+  if ((ignore_x_ ? 1 : 0) + (ignore_y_ ? 1 : 0) + (ignore_z_ ? 1 : 0) > 1) {
+    fmt::print(stderr,
+               "\nERROR: Can only specify one of `ignore_x`, `ignore_y`, or `ignore_z`.\n\n");
+    exit(EXIT_FAILURE);
+  }
+#endif
 
   if (outputDecompMap_ && outputDecompField_) {
     fmt::print(
