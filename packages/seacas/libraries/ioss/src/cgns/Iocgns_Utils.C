@@ -63,7 +63,7 @@
   } while (0)
 
 namespace {
-#if defined(__IOSS_WINDOWS__)
+#if defined(__IOSS_WINDOWS__) || defined(__CYGWIN__)
   const char *strcasestr(const char *haystack, const char *needle)
   {
     std::string lneedle(Ioss::Utils::lowercase(needle));
