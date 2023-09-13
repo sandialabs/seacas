@@ -116,6 +116,45 @@ namespace {
   }
 
 #ifdef USE_ZOLTAN
+  template <typename INT>
+  std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+  get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED INT dummy)
+  {
+    size_t element_count = region.get_property("element_count").get_int();
+
+    // The zoltan methods supported in slice are all geometry based
+    // and use the element centroid.
+    std::vector<double> x(element_count);
+    std::vector<double> y(element_count);
+    std::vector<double> z(element_count);
+
+    const auto         *nb = region.get_node_blocks()[0];
+    std::vector<double> coor;
+    nb->get_field_data("mesh_model_coordinates", coor);
+
+    const auto &blocks = region.get_element_blocks();
+    size_t      el     = 0;
+    for (auto &eb : blocks) {
+      std::vector<INT> connectivity;
+      eb->get_field_data("connectivity_raw", connectivity);
+      size_t blk_element_count = eb->entity_count();
+      size_t blk_element_nodes = eb->topology()->number_nodes();
+
+      for (size_t j = 0; j < blk_element_count; j++) {
+        for (size_t k = 0; k < blk_element_nodes; k++) {
+          auto node = connectivity[j * blk_element_nodes + k] - 1;
+          x[el] += coor[node * 3 + 0];
+          y[el] += coor[node * 3 + 1];
+          z[el] += coor[node * 3 + 2];
+        }
+        x[el] /= blk_element_nodes;
+        y[el] /= blk_element_nodes;
+        z[el] /= blk_element_nodes;
+        el++;
+      }
+    }
+    return {x, y, z};
+  }
   /*****************************************************************************/
   /***** Global data structure used by Zoltan callbacks.                   *****/
   /***** Could implement Zoltan callbacks without global data structure,   *****/
@@ -204,43 +243,12 @@ namespace {
       return;
     }
 
-    size_t element_count = region.get_property("element_count").get_int();
-
-    // The zoltan methods supported in slice are all geometry based
-    // and use the element centroid.
-    std::vector<double> x(element_count);
-    std::vector<double> y(element_count);
-    std::vector<double> z(element_count);
-
-    const auto         *nb = region.get_node_blocks()[0];
-    std::vector<double> coor;
-    nb->get_field_data("mesh_model_coordinates", coor);
-
-    const auto &blocks = region.get_element_blocks();
-    size_t      el     = 0;
-    for (auto &eb : blocks) {
-      std::vector<INT> connectivity;
-      eb->get_field_data("connectivity_raw", connectivity);
-      size_t blk_element_count = eb->entity_count();
-      size_t blk_element_nodes = eb->topology()->number_nodes();
-
-      for (size_t j = 0; j < blk_element_count; j++) {
-        for (size_t k = 0; k < blk_element_nodes; k++) {
-          auto node = connectivity[j * blk_element_nodes + k] - 1;
-          x[el] += coor[node * 3 + 0];
-          y[el] += coor[node * 3 + 1];
-          z[el] += coor[node * 3 + 2];
-        }
-        x[el] /= blk_element_nodes;
-        y[el] /= blk_element_nodes;
-        z[el] /= blk_element_nodes;
-        el++;
-      }
-    }
+    auto [x, y, z] = get_element_centroid(region, dummy);
 
     // Copy mesh data and pointers into structure accessible from callback fns.
-    Zoltan_Data.ndot = element_count;
-    Zoltan_Data.vwgt = nullptr;
+    size_t element_count = region.get_property("element_count").get_int();
+    Zoltan_Data.ndot     = element_count;
+    Zoltan_Data.vwgt     = nullptr;
     if (interFace.ignore_x_) {
       Zoltan_Data.x = y.data();
       Zoltan_Data.y = z.data();
