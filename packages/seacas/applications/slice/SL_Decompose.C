@@ -336,8 +336,8 @@ namespace {
     /* Clean up */
     zz.LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
     zz.LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
-#endif
   }
+#endif
 
 #if USE_METIS
   int get_common_node_count(const Ioss::Region &region)
@@ -542,9 +542,10 @@ namespace {
         iscale = std::stoi(scale);
       }
     }
-    return std::make_pair(iscale, var_name.substr(0, pos));
+    return {iscale, var_name.substr(0, pos)};
   }
 } // namespace
+
 template void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
                                  std::vector<int> &elem_to_proc, IOSS_MAYBE_UNUSED int dummy);
 template void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
