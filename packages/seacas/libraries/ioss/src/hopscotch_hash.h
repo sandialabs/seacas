@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2017, 2022 Thibaut Goetghebuer-Planchon <tessil@gmx.com>
+ * Copyright (c) 2017, 2022, 2023 Thibaut Goetghebuer-Planchon <tessil@gmx.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,7 @@
 #define TSL_HH_NO_RANGE_ERASE_WITH_CONST_ITERATOR
 #endif
 
+// NOLINTBEGIN
 namespace tsl {
   namespace detail_hopscotch_hash {
 
@@ -708,8 +709,8 @@ namespace tsl {
       hopscotch_hash &operator=(const hopscotch_hash &other)
       {
         if (&other != this) {
-          Hash::        operator=(other);
-          KeyEqual::    operator=(other);
+          Hash::operator=(other);
+          KeyEqual::operator=(other);
           GrowthPolicy::operator=(other);
 
           m_buckets_data      = other.m_buckets_data;
@@ -1862,5 +1863,6 @@ namespace tsl {
   } // end namespace detail_hopscotch_hash
 
 } // end namespace tsl
+// NOLINTEND
 
 #endif

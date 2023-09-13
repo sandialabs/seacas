@@ -17,7 +17,7 @@
 #include <vector>
 
 namespace {
-  std::string id_str() { return std::string("id"); }
+  std::string id_str() { return {"id"}; }
   void        check_is_valid(const Ioss::Assembly *assem, const Ioss::GroupingEntity *member)
   {
     // Ensure that `member` is not already a member and that its type matches
@@ -147,10 +147,10 @@ int64_t Ioss::Assembly::internal_get_zc_field_data(const Field &field, void **da
 Ioss::Property Ioss::Assembly::get_implicit_property(const std::string &my_name) const
 {
   if (my_name == "member_count") {
-    return Ioss::Property(my_name, static_cast<int>(m_members.size()));
+    return {my_name, static_cast<int>(m_members.size())};
   }
   if (my_name == "member_type") {
-    return Ioss::Property(my_name, static_cast<int>(m_type));
+    return {my_name, static_cast<int>(m_type)};
   }
 
   return Ioss::GroupingEntity::get_implicit_property(my_name);

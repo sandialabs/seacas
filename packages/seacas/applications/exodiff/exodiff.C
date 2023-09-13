@@ -1063,8 +1063,7 @@ bool Equal_Values(const double *values, size_t count, double *value)
 {
   SMART_ASSERT(values != nullptr);
   *value = values[0];
-  return (std::adjacent_find(values, values + count, std::not_equal_to<double>()) ==
-          values + count);
+  return (std::adjacent_find(values, values + count, std::not_equal_to<>()) == values + count);
 }
 
 template <typename INT>

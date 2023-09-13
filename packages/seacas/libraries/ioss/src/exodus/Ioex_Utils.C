@@ -482,7 +482,7 @@ namespace Ioex {
         }
       }
       db_has_name = true;
-      return (std::string(buffer.data()));
+      return {buffer.data()};
     }
     db_has_name = false;
     return Ioss::Utils::encode_entity_name(basename, id);

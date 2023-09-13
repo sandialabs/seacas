@@ -540,9 +540,8 @@ namespace {
       out.reserve(oeb->entity_count() * comp_count);
 
       auto offset = ieb->get_offset();
-      for (size_t i = 0; i < boundary_faces.size(); i++) {
-        const auto &face       = boundary_faces[i];
-        auto        element_id = face.element[0] / 10 - 1;
+      for (const auto &face : boundary_faces) {
+        auto element_id = face.element[0] / 10 - 1;
         for (int j = 0; j < comp_count; j++) {
           auto value = in[comp_count * (element_id - offset) + j];
           out.push_back(value);

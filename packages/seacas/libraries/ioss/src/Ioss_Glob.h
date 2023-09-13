@@ -22,7 +22,7 @@ namespace Ioss::glob {
   class IOSS_EXPORT Error : public std::exception
   {
   public:
-    explicit Error(const std::string &msg) : msg_{msg} {}
+    explicit Error(std::string msg) : msg_{std::move(msg)} {}
     ~Error() override;
 
     const char *what() const noexcept override { return msg_.c_str(); }
@@ -94,7 +94,7 @@ namespace Ioss::glob {
 
     std::tuple<size_t, size_t> Next(const String<charT> &, size_t pos) override
     {
-      return std::tuple<size_t, size_t>(0, ++pos);
+      return {0, ++pos};
     }
   };
 
@@ -107,7 +107,7 @@ namespace Ioss::glob {
 
     std::tuple<size_t, size_t> Next(const String<charT> &, size_t pos) override
     {
-      return std::tuple<size_t, size_t>(0, ++pos);
+      return {0, ++pos};
     }
   };
 
@@ -205,14 +205,14 @@ namespace Ioss::glob {
       // the string
       if (comp_end) {
         if ((state_pos == match_state_) && (str_pos == str.length())) {
-          return std::tuple<bool, size_t>(state_pos == match_state_, str_pos);
+          return {state_pos == match_state_, str_pos};
         }
 
-        return std::tuple<bool, size_t>(false, str_pos);
+        return {false, str_pos};
       }
       // if comp_end is false, compare only if the states reached the
       // match state
-      return std::tuple<bool, size_t>(state_pos == match_state_, str_pos);
+      return {state_pos == match_state_, str_pos};
     }
 
     void ResetStates()
@@ -422,11 +422,11 @@ namespace Ioss::glob {
       for (auto &automata : automatas_) {
         std::tie(r, str_pos) = automata->Exec(str_part, false);
         if (r) {
-          return std::tuple<bool, size_t>(r, pos + str_pos);
+          return {r, pos + str_pos};
         }
       }
 
-      return std::tuple<bool, size_t>(false, pos + str_pos);
+      return {false, pos + str_pos};
     }
 
     bool Check(const String<charT> &str, size_t pos) override
@@ -472,7 +472,7 @@ namespace Ioss::glob {
         return NextNeg(str, pos);
       }
       }
-      return std::tuple<size_t, size_t>(0, 0);
+      return {0, 0};
     }
 
     std::tuple<size_t, size_t> NextNeg(const String<charT> &str, size_t pos)

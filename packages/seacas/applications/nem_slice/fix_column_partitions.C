@@ -317,14 +317,14 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
 
     std::vector<INT> colelems;
     colelems.reserve(nabove + nbelow + 1);
-    typename std::vector<INT>::reverse_iterator rit = above_list.rbegin();
+    auto rit = above_list.rbegin();
     while (rit != above_list.rend()) {
       colelems.push_back(*rit);
       ++rit;
     }
     colelems.push_back(i);
 
-    typename std::vector<INT>::iterator it = below_list.begin();
+    auto it = below_list.begin();
     while (it != below_list.end()) {
       colelems.push_back(*it);
       ++it;
@@ -347,16 +347,16 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       std::pair<std::map<int, int>::iterator, bool> status =
           procid_elcount.insert(std::pair<int, int>(procid, 1));
       if (!status.second) { // procid already in map; could not insert
-        std::map<int, int>::iterator itmap = status.first;
+        auto itmap = status.first;
         (itmap->second)++;
       }
       ++it;
     }
 
     // Which processor has a dominant presence in this column?
-    int                          max_procid = -1;
-    int                          max_elems  = 0;
-    std::map<int, int>::iterator itmap      = procid_elcount.begin();
+    int  max_procid = -1;
+    int  max_elems  = 0;
+    auto itmap      = procid_elcount.begin();
     while (itmap != procid_elcount.end()) {
       if (itmap->second > max_elems) {
         max_procid = itmap->first;

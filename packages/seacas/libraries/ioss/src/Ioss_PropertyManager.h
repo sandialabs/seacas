@@ -34,8 +34,8 @@ namespace Ioss {
   class IOSS_EXPORT PropertyManager
   {
   public:
-    PropertyManager() = default;
-    PropertyManager(const PropertyManager &from);
+    PropertyManager()                                       = default;
+    PropertyManager(const PropertyManager &from)            = default;
     PropertyManager &operator=(const PropertyManager &from) = delete;
     ~PropertyManager();
 

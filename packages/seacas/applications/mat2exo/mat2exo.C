@@ -357,7 +357,7 @@ std::vector<std::string> matGetStr(const std::string &name)
 {
   matvar_t *matvar = Mat_VarRead(mat_file, name.c_str());
   if (matvar == nullptr) {
-    return std::vector<std::string>();
+    return {};
   }
 
   if (matvar->dims[0] != 1) {

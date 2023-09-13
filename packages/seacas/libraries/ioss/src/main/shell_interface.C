@@ -21,7 +21,7 @@
 #include <string>   // for string, char_traits
 #include <vector>   // for vector
 
-IOShell::Interface::Interface(const std::string &app_version) : version(app_version)
+IOShell::Interface::Interface(std::string app_version) : version(std::move(app_version))
 {
   enroll_options();
 }

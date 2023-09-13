@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -409,8 +409,8 @@ namespace Ioex {
     int max_name_length() const { return maximumNameLength; }
 
     int                 exodusFilePtr{0};
-    int                 nodeMapVarID[3];
-    int                 elementMapVarID[2];
+    int                 nodeMapVarID[3]{};
+    int                 elementMapVarID[2]{};
     int                 commIndexVar{0};
     int                 elemCommIndexVar{0};
     int                 maximumNameLength{32};

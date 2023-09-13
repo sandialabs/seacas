@@ -71,10 +71,10 @@ Ioss::EntityBlock::EntityBlock(Ioss::DatabaseIO *io_database, const std::string 
 Ioss::Property Ioss::EntityBlock::get_implicit_property(const std::string &my_name) const
 {
   if (my_name == "topology_node_count") {
-    return Ioss::Property(my_name, topology()->number_nodes());
+    return {my_name, topology()->number_nodes()};
   }
   if (my_name == "topology_type") {
-    return Ioss::Property(my_name, topology()->name());
+    return {my_name, topology()->name()};
   }
 
   return Ioss::GroupingEntity::get_implicit_property(my_name);

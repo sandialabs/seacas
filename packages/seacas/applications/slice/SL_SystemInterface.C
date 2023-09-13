@@ -431,10 +431,7 @@ void SystemInterface::parse_step_option(const char *tokens)
     if (strchr(tokens, ':') != nullptr) {
       // The string contains a separator
 
-      int vals[3];
-      vals[0] = stepMin_;
-      vals[1] = stepMax_;
-      vals[2] = stepInterval_;
+      std::array<int, 3> vals = {stepMin_, stepMax_, stepInterval_};
 
       int j = 0;
       for (int &val : vals) {

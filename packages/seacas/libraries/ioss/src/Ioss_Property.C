@@ -16,14 +16,14 @@ namespace {
   std::string type_string(Ioss::Property::BasicType type)
   {
     switch (type) {
-    case Ioss::Property::INVALID: return std::string("invalid");
-    case Ioss::Property::REAL: return std::string("real");
-    case Ioss::Property::INTEGER: return std::string("integer");
-    case Ioss::Property::POINTER: return std::string("pointer");
-    case Ioss::Property::STRING: return std::string("string");
-    case Ioss::Property::VEC_INTEGER: return std::string("vector<int>");
-    case Ioss::Property::VEC_DOUBLE: return std::string("vector<double>");
-    default: return std::string("internal error");
+    case Ioss::Property::INVALID: return {"invalid"};
+    case Ioss::Property::REAL: return {"real"};
+    case Ioss::Property::INTEGER: return {"integer"};
+    case Ioss::Property::POINTER: return {"pointer"};
+    case Ioss::Property::STRING: return {"string"};
+    case Ioss::Property::VEC_INTEGER: return {"vector<int>"};
+    case Ioss::Property::VEC_DOUBLE: return {"vector<double>"};
+    default: return {"internal error"};
     }
   }
 

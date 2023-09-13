@@ -9,13 +9,14 @@
 /* FILE  ***********    mpi_implementation.h   ********************/
 /******************************************************************/
 /* Author : Lisa Alano June 18 2002                               */
-/* Copyright (c) 2002 University of California Regents            */
+/* Copyright (c) 2002, 2023 University of California Regents            */
 /******************************************************************/
 
 #ifndef _MPI_IMPL_H
 #define _MPI_IMPL_H
 
 #ifdef __cplusplus
+  // NOLINTBEGIN
 extern "C" {
 #endif
 
@@ -257,6 +258,7 @@ int _MPI_Find_free (void);
 
 #ifdef __cplusplus
 }
+  // NOLINTEND
 #endif
 
 #endif

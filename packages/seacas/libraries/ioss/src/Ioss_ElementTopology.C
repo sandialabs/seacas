@@ -298,7 +298,7 @@ Ioss::IntVector Ioss::ElementTopology::boundary_connectivity(int bnd_number) con
       return Ioss::IntVector{bnd_number - 1};
     }
   }
-  return Ioss::IntVector();
+  return {};
 }
 
 Ioss::ElementTopology *Ioss::ElementTopology::boundary_type(int bnd_number) const

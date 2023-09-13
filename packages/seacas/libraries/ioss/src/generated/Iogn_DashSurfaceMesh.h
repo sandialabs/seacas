@@ -35,9 +35,9 @@ namespace Iogn {
   inline std::string getTopologyName(Topology topology)
   {
     switch (topology) {
-    case Shell4: return std::string(Ioss::Shell4::name);
-    case Hex8: return std::string(Ioss::Hex8::name);
-    case Beam2: return std::string(Ioss::Beam2::name);
+    case Shell4: return {Ioss::Shell4::name};
+    case Hex8: return {Ioss::Hex8::name};
+    case Beam2: return {Ioss::Beam2::name};
     }
     throw std::exception();
   }

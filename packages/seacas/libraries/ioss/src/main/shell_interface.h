@@ -20,7 +20,7 @@ namespace IOShell {
   class Interface
   {
   public:
-    explicit Interface(const std::string &app_version);
+    explicit Interface(std::string app_version);
     ~Interface();
 
     bool parse_options(int argc, char **argv, int my_processor);

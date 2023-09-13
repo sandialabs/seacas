@@ -33,7 +33,9 @@ namespace {
 
 template <typename INT> ExoII_Read<INT>::ExoII_Read() = default;
 
-template <typename INT> ExoII_Read<INT>::ExoII_Read(const std::string &fname) : file_name(fname) {}
+template <typename INT> ExoII_Read<INT>::ExoII_Read(std::string fname) : file_name(std::move(fname))
+{
+}
 
 template <typename INT> ExoII_Read<INT>::~ExoII_Read()
 {
@@ -1005,7 +1007,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
 
   coord_names.clear();
   for (int i = 0; i < dimension; ++i) {
-    coord_names.push_back(coords[i]);
+    coord_names.emplace_back(coords[i]);
   }
   free_name_array(coords, 3);
 

@@ -19,9 +19,9 @@ namespace glob {
   class Error : public std::exception
   {
   public:
-    Error(const std::string &msg) : msg_{msg} {}
+    Error(std::string msg) : msg_{std::move(msg)} {}
 
-    const char *what() const throw() override { return msg_.c_str(); }
+    const char *what() const noexcept override { return msg_.c_str(); }
 
   private:
     std::string msg_;
@@ -90,7 +90,7 @@ namespace glob {
 
     std::tuple<size_t, size_t> Next(const String<charT> &, size_t pos) override
     {
-      return std::tuple<size_t, size_t>(0, ++pos);
+      return {0, ++pos};
     }
   };
 
@@ -103,7 +103,7 @@ namespace glob {
 
     std::tuple<size_t, size_t> Next(const String<charT> &, size_t pos) override
     {
-      return std::tuple<size_t, size_t>(0, ++pos);
+      return {0, ++pos};
     }
   };
 
@@ -118,8 +118,8 @@ namespace glob {
 
     Automata(Automata<charT> &&automata)
         : states_{std::move(automata.states_)}, match_state_{automata.match_state_},
-          fail_state_{exchange(automata.fail_state_, 0)}, start_state_{
-                                                              exchange(automata.start_state_, 0)}
+          fail_state_{exchange(automata.fail_state_, 0)},
+          start_state_{exchange(automata.start_state_, 0)}
     {
     }
 
@@ -201,15 +201,15 @@ namespace glob {
       // the string
       if (comp_end) {
         if ((state_pos == match_state_) && (str_pos == str.length())) {
-          return std::tuple<bool, size_t>(state_pos == match_state_, str_pos);
+          return {state_pos == match_state_, str_pos};
         }
 
-        return std::tuple<bool, size_t>(false, str_pos);
+        return {false, str_pos};
       }
       else {
         // if comp_end is false, compare only if the states reached the
         // match state
-        return std::tuple<bool, size_t>(state_pos == match_state_, str_pos);
+        return {state_pos == match_state_, str_pos};
       }
     }
 
@@ -403,8 +403,7 @@ namespace glob {
 
     StateGroup(Automata<charT> &states, Type type,
                std::vector<std::unique_ptr<Automata<charT>>> &&automatas)
-        : State<charT>(StateType::GROUP, states), type_{type}, automatas_{std::move(automatas)},
-          match_one_{false}
+        : State<charT>(StateType::GROUP, states), type_{type}, automatas_{std::move(automatas)}
     {
     }
 
@@ -421,11 +420,11 @@ namespace glob {
       for (auto &automata : automatas_) {
         std::tie(r, str_pos) = automata->Exec(str_part, false);
         if (r) {
-          return std::tuple<bool, size_t>(r, pos + str_pos);
+          return {r, pos + str_pos};
         }
       }
 
-      return std::tuple<bool, size_t>(false, pos + str_pos);
+      return {false, pos + str_pos};
     }
 
     bool Check(const String<charT> &str, size_t pos) override
@@ -471,7 +470,7 @@ namespace glob {
         return NextNeg(str, pos);
       }
       }
-      return std::tuple<size_t, size_t>(0, 0);
+      return {0, 0};
     }
 
     std::tuple<size_t, size_t> NextNeg(const String<charT> &str, size_t pos)
@@ -484,7 +483,7 @@ namespace glob {
         return std::tuple<size_t, size_t>(GetAutomata().FailState(), new_pos);
       }
 
-      return std::tuple<size_t, size_t>(GetNextStates()[1], pos);
+      return {GetNextStates()[1], pos};
     }
 
     std::tuple<size_t, size_t> NextBasic(const String<charT> &str, size_t pos)
@@ -494,10 +493,10 @@ namespace glob {
       std::tie(r, new_pos) = BasicCheck(str, pos);
       if (r) {
         this->SetMatchedStr(this->MatchedStr() + str.substr(pos, new_pos - pos));
-        return std::tuple<size_t, size_t>(GetNextStates()[1], new_pos);
+        return {GetNextStates()[1], new_pos};
       }
 
-      return std::tuple<size_t, size_t>(GetAutomata().FailState(), new_pos);
+      return {GetAutomata().FailState(), new_pos};
     }
 
     std::tuple<size_t, size_t> NextAny(const String<charT> &str, size_t pos)
@@ -507,10 +506,10 @@ namespace glob {
       std::tie(r, new_pos) = BasicCheck(str, pos);
       if (r) {
         this->SetMatchedStr(this->MatchedStr() + str.substr(pos, new_pos - pos));
-        return std::tuple<size_t, size_t>(GetNextStates()[1], new_pos);
+        return {GetNextStates()[1], new_pos};
       }
 
-      return std::tuple<size_t, size_t>(GetNextStates()[1], pos);
+      return {GetNextStates()[1], pos};
     }
 
     std::tuple<size_t, size_t> NextStar(const String<charT> &str, size_t pos)
@@ -522,14 +521,14 @@ namespace glob {
         this->SetMatchedStr(this->MatchedStr() + str.substr(pos, new_pos - pos));
         if (GetAutomata().GetState(GetNextStates()[1]).Type() == StateType::MATCH &&
             new_pos == str.length()) {
-          return std::tuple<size_t, size_t>(GetNextStates()[1], new_pos);
+          return {GetNextStates()[1], new_pos};
         }
         else {
-          return std::tuple<size_t, size_t>(GetNextStates()[0], new_pos);
+          return {GetNextStates()[0], new_pos};
         }
       }
 
-      return std::tuple<size_t, size_t>(GetNextStates()[1], pos);
+      return {GetNextStates()[1], pos};
     }
 
     std::tuple<size_t, size_t> NextPlus(const String<charT> &str, size_t pos)
@@ -545,10 +544,10 @@ namespace glob {
         // state is the match state, goes to next state to avoid state mistake
         if (GetAutomata().GetState(GetNextStates()[1]).Type() == StateType::MATCH &&
             new_pos == str.length()) {
-          return std::tuple<size_t, size_t>(GetNextStates()[1], new_pos);
+          return {GetNextStates()[1], new_pos};
         }
         else {
-          return std::tuple<size_t, size_t>(GetNextStates()[0], new_pos);
+          return {GetNextStates()[0], new_pos};
         }
       }
 
@@ -556,21 +555,21 @@ namespace glob {
       // one time -> goes to next state
       bool res = GetAutomata().GetState(GetNextStates()[1]).Check(str, pos);
       if (res && match_one_) {
-        return std::tuple<size_t, size_t>(GetNextStates()[1], pos);
+        return {GetNextStates()[1], pos};
       }
 
       if (match_one_) {
-        return std::tuple<size_t, size_t>(GetNextStates()[1], pos);
+        return {GetNextStates()[1], pos};
       }
       else {
-        return std::tuple<size_t, size_t>(GetAutomata().FailState(), new_pos);
+        return {GetAutomata().FailState(), new_pos};
       }
     }
 
   private:
     Type                                          type_{};
     std::vector<std::unique_ptr<Automata<charT>>> automatas_;
-    bool                                          match_one_;
+    bool                                          match_one_{false};
   };
 
 #define TOKEN(X, Y) X,
@@ -632,7 +631,7 @@ namespace glob {
   public:
     static const char kEndOfInput = -1;
 
-    Lexer(const String<charT> &str) : str_(str), pos_{0}, c_{str[0]} {}
+    Lexer(const String<charT> &str) : str_(str), c_{str[0]} {}
 
     std::vector<Token<charT>> Scanner()
     {
@@ -790,7 +789,7 @@ namespace glob {
     }
 
     String<charT> str_;
-    size_t        pos_;
+    size_t        pos_{0};
     charT         c_;
   };
 
@@ -863,7 +862,7 @@ namespace glob {
   public:
     CharNode(charT c) : AstNode<charT>(AstNode<charT>::Type::CHAR), c_{c} {}
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitCharNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitCharNode(this); }
 
     char GetValue() const { return c_; }
 
@@ -875,12 +874,12 @@ namespace glob {
   {
   public:
     RangeNode(AstNodePtr<charT> &&start, AstNodePtr<charT> &&end)
-        : AstNode<charT>(AstNode<charT>::Type::RANGE), start_{std::move(start)}, end_{
-                                                                                     std::move(end)}
+        : AstNode<charT>(AstNode<charT>::Type::RANGE), start_{std::move(start)},
+          end_{std::move(end)}
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitRangeNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitRangeNode(this); }
 
     AstNode<charT> *GetStart() const { return start_.get(); }
 
@@ -899,7 +898,7 @@ namespace glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitSetItemsNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitSetItemsNode(this); }
 
     std::vector<AstNodePtr<charT>> &GetItems() { return items_; }
 
@@ -915,7 +914,7 @@ namespace glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitPositiveSetNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitPositiveSetNode(this); }
 
     AstNode<charT> *GetSet() { return set_.get(); }
 
@@ -931,7 +930,7 @@ namespace glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitNegativeSetNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitNegativeSetNode(this); }
 
     AstNode<charT> *GetSet() { return set_.get(); }
 
@@ -944,7 +943,7 @@ namespace glob {
   public:
     StarNode() : AstNode<charT>(AstNode<charT>::Type::STAR) {}
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitStarNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitStarNode(this); }
   };
 
   template <class charT> class AnyNode : public AstNode<charT>
@@ -952,7 +951,7 @@ namespace glob {
   public:
     AnyNode() : AstNode<charT>(AstNode<charT>::Type::ANY) {}
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitAnyNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitAnyNode(this); }
   };
 
   template <class charT> class GroupNode : public AstNode<charT>
@@ -961,12 +960,12 @@ namespace glob {
     enum class GroupType { BASIC, ANY, STAR, PLUS, NEG, AT };
 
     GroupNode(GroupType group_type, AstNodePtr<charT> &&glob)
-        : AstNode<charT>(AstNode<charT>::Type::GROUP), glob_{std::move(glob)}, group_type_{
-                                                                                   group_type}
+        : AstNode<charT>(AstNode<charT>::Type::GROUP), glob_{std::move(glob)},
+          group_type_{group_type}
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitGroupNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitGroupNode(this); }
 
     AstNode<charT> *GetGlob() { return glob_.get(); }
 
@@ -985,7 +984,7 @@ namespace glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitConcatNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitConcatNode(this); }
 
     std::vector<AstNodePtr<charT>> &GetBasicGlobs() { return basic_glob_; }
 
@@ -1001,7 +1000,7 @@ namespace glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitUnionNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitUnionNode(this); }
 
     std::vector<AstNodePtr<charT>> &GetItems() { return items_; }
 
@@ -1017,7 +1016,7 @@ namespace glob {
     {
     }
 
-    virtual void Accept(AstVisitor<charT> *visitor) { visitor->VisitGlobNode(this); }
+    void Accept(AstVisitor<charT> *visitor) override { visitor->VisitGlobNode(this); }
 
     AstNode<charT> *GetConcat() { return glob_.get(); }
 
@@ -1258,8 +1257,8 @@ namespace glob {
   private:
     void ExecConcat(AstNode<charT> *node, Automata<charT> &automata)
     {
-      ConcatNode<charT>              *concat_node = static_cast<ConcatNode<charT> *>(node);
-      std::vector<AstNodePtr<charT>> &basic_globs = concat_node->GetBasicGlobs();
+      auto *concat_node = static_cast<ConcatNode<charT> *>(node);
+      auto &basic_globs = concat_node->GetBasicGlobs();
 
       for (auto &basic_glob : basic_globs) {
         ExecBasicGlob(basic_glob.get(), automata);
@@ -1287,8 +1286,8 @@ namespace glob {
 
     void ExecChar(AstNode<charT> *node, Automata<charT> &automata)
     {
-      CharNode<charT> *char_node = static_cast<CharNode<charT> *>(node);
-      char             c         = char_node->GetValue();
+      auto *char_node = static_cast<CharNode<charT> *>(node);
+      char  c         = char_node->GetValue();
       NewState<StateChar<charT>>(automata, c);
     }
 
@@ -1305,7 +1304,7 @@ namespace glob {
 
     void ExecPositiveSet(AstNode<charT> *node, Automata<charT> &automata)
     {
-      PositiveSetNode<charT> *pos_set_node = static_cast<PositiveSetNode<charT> *>(node);
+      auto *pos_set_node = static_cast<PositiveSetNode<charT> *>(node);
 
       auto items = ProcessSetItems(pos_set_node->GetSet());
       NewState<StateSet<charT>>(automata, std::move(items));
@@ -1313,7 +1312,7 @@ namespace glob {
 
     void ExecNegativeSet(AstNode<charT> *node, Automata<charT> &automata)
     {
-      NegativeSetNode<charT> *pos_set_node = static_cast<NegativeSetNode<charT> *>(node);
+      auto *pos_set_node = static_cast<NegativeSetNode<charT> *>(node);
 
       auto items = ProcessSetItems(pos_set_node->GetSet());
       NewState<StateSet<charT>>(automata, std::move(items), /*neg*/ true);
@@ -1321,7 +1320,7 @@ namespace glob {
 
     std::vector<std::unique_ptr<SetItem<charT>>> ProcessSetItems(AstNode<charT> *node)
     {
-      SetItemsNode<charT> *set_node = static_cast<SetItemsNode<charT> *>(node);
+      auto *set_node = static_cast<SetItemsNode<charT> *>(node);
       std::vector<std::unique_ptr<SetItem<charT>>> vec;
       auto                                        &items = set_node->GetItems();
       for (auto &item : items) {
@@ -1334,15 +1333,14 @@ namespace glob {
     std::unique_ptr<SetItem<charT>> ProcessSetItem(AstNode<charT> *node)
     {
       if (node->GetType() == AstNode<charT>::Type::CHAR) {
-        CharNode<charT> *char_node = static_cast<CharNode<charT> *>(node);
-        char             c         = char_node->GetValue();
+        auto *char_node = static_cast<CharNode<charT> *>(node);
+        char  c         = char_node->GetValue();
         return std::unique_ptr<SetItem<charT>>(new SetItemChar<charT>(c));
       }
       else if (node->GetType() == AstNode<charT>::Type::RANGE) {
-        RangeNode<charT> *range_node = static_cast<RangeNode<charT> *>(node);
-        CharNode<charT>  *start_node = static_cast<CharNode<charT> *>(range_node->GetStart());
-
-        CharNode<charT> *end_node = static_cast<CharNode<charT> *>(range_node->GetEnd());
+        auto *range_node = static_cast<RangeNode<charT> *>(node);
+        auto *start_node = static_cast<CharNode<charT> *>(range_node->GetStart());
+        auto *end_node   = static_cast<CharNode<charT> *>(range_node->GetEnd());
 
         char start_char = start_node->GetValue();
         char end_char   = end_node->GetValue();
@@ -1355,9 +1353,9 @@ namespace glob {
 
     void ExecGroup(AstNode<charT> *node, Automata<charT> &automata)
     {
-      GroupNode<charT> *group_node = static_cast<GroupNode<charT> *>(node);
-      AstNode<charT>   *union_node = group_node->GetGlob();
-      std::vector<std::unique_ptr<Automata<charT>>> automatas = ExecUnion(union_node);
+      auto *group_node = static_cast<GroupNode<charT> *>(node);
+      auto *union_node = group_node->GetGlob();
+      auto  automatas  = ExecUnion(union_node);
 
       typename StateGroup<charT>::Type state_group_type{};
       switch (group_node->GetGroupType()) {
@@ -1386,8 +1384,8 @@ namespace glob {
 
     std::vector<std::unique_ptr<Automata<charT>>> ExecUnion(AstNode<charT> *node)
     {
-      UnionNode<charT> *union_node = static_cast<UnionNode<charT> *>(node);
-      auto             &items      = union_node->GetItems();
+      auto *union_node = static_cast<UnionNode<charT> *>(node);
+      auto &items      = union_node->GetItems();
       std::vector<std::unique_ptr<Automata<charT>>> vec_automatas;
       for (auto &item : items) {
         std::unique_ptr<Automata<charT>> automata_ptr(new Automata<charT>);

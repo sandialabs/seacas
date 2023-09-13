@@ -2,7 +2,7 @@
 
 // Skeleton interface for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2015, 2018-2021 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015, 2018-2021, 2023 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #ifndef YY_SEAMS_APREPRO_PARSER_H_INCLUDED
 #define YY_SEAMS_APREPRO_PARSER_H_INCLUDED
 
+// NOLINTBEGIN
 #include <cstdlib> // std::abort
 #include <iostream>
 #include <stdexcept>
@@ -792,4 +793,5 @@ namespace SEAMS {
 } // namespace SEAMS
 #line 881 "aprepro_parser.h"
 
+// NOLINTEND
 #endif // !YY_SEAMS_APREPRO_PARSER_H_INCLUDED

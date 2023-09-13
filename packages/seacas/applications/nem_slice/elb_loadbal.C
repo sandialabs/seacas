@@ -1998,8 +1998,8 @@ namespace {
      */
     time1 = get_time();
     for (INT pcnt = 1; pcnt < machine->num_procs; pcnt++) {
-      int     save_fv1 = 0;
-      int64_t size =
+      int  save_fv1 = 0;
+      auto size =
           static_cast<int64_t>(lb->e_cmap_procs[pcnt].size()); /* Define shortcuts size and procs */
       std::vector<INT> procs = lb->e_cmap_procs[pcnt];
 

@@ -1287,7 +1287,7 @@ namespace {
       }
     }
     for (size_t p = 0; p < proc_count; p++) {
-      Ioss::NodeBlock *nb =
+      auto *nb =
           new Ioss::NodeBlock(proc_region[p]->get_database(), "node_block1", on_proc_count[p], 3);
       proc_region[p]->add(nb);
       if (debug_level & 2) {

@@ -61,7 +61,7 @@ namespace Ioss {
 #ifndef _MSC_VER
   __attribute__((unused))
 #endif
-  typedef const ScopeGuardImplBase &ScopeGuard;
+  typedef const ScopeGuardImplBase &ScopeGuard; // NOLINT
 
   template <typename F> class ScopeGuardImpl0 : public ScopeGuardImplBase
   {

@@ -274,22 +274,22 @@ namespace Ioss {
   Property StructuredBlock::get_implicit_property(const std::string &my_name) const
   {
     if (my_name == "ni_global") {
-      return Ioss::Property(my_name, m_ijkGlobal[0]);
+      return {my_name, m_ijkGlobal[0]};
     }
     if (my_name == "nj_global") {
-      return Ioss::Property(my_name, m_ijkGlobal[1]);
+      return {my_name, m_ijkGlobal[1]};
     }
     if (my_name == "nk_global") {
-      return Ioss::Property(my_name, m_ijkGlobal[2]);
+      return {my_name, m_ijkGlobal[2]};
     }
     if (my_name == "offset_i") {
-      return Ioss::Property(my_name, m_offset[0]);
+      return {my_name, m_offset[0]};
     }
     if (my_name == "offset_j") {
-      return Ioss::Property(my_name, m_offset[1]);
+      return {my_name, m_offset[1]};
     }
     if (my_name == "offset_k") {
-      return Ioss::Property(my_name, m_offset[2]);
+      return {my_name, m_offset[2]};
     }
     return EntityBlock::get_implicit_property(my_name);
   }

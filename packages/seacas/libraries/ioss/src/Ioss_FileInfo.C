@@ -283,7 +283,7 @@ namespace Ioss {
       return filename_.substr(ind + 1, filename_.size());
     }
 
-    return std::string();
+    return {};
   }
 
   std::string FileInfo::pathname() const
@@ -293,7 +293,7 @@ namespace Ioss {
       return filename_.substr(0, ind);
     }
 
-    return std::string();
+    return {};
   }
 
   std::string FileInfo::tailname() const
