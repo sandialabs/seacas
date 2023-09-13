@@ -69,7 +69,14 @@ BB=$(check_valid BB)
 CRAY=${CRAY:-NO}
 CRAY=$(check_valid CRAY)
 
-# Which TPLS? (NetCDF always, PnetCDF if MPI=ON)
+MPI=${MPI:-NO}
+MPI=$(check_valid MPI)
+
+# Which TPLS? (NetCDF always, but can be disabled if using an external version, PnetCDF if MPI=ON)
+NETCDF=${NETCDF:-YES}
+NETCDF=$(check_valid NETCDF)
+PNETCDF=${PNETCDF:-${MPI}}
+PNETCDF=$(check_valid PNETCDF)
 HDF5=${HDF5:-YES}
 HDF5=$(check_valid HDF5)
 CGNS=${CGNS:-${HDF5}}
@@ -132,8 +139,6 @@ CATALYST2=$(check_valid CATALYST2)
 GTEST=${GTEST:-${FAODEL}}
 GTEST=$(check_valid GTEST)
 
-MPI=${MPI:-NO}
-MPI=$(check_valid MPI)
 
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
@@ -181,7 +186,7 @@ if [ $# -gt 0 ]; then
         echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
         echo "   INSTALL_PATH = ${txtgrn}${INSTALL_PATH}${txtcyn}"
         echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
-        echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm)"
+        echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm gnubrew gnumacport clangmacport nvidia)"
         echo "   MPI          = ${MPI} (Parallel Build?)"
         echo ""
         echo "   FORCE        = ${FORCE}"
@@ -191,6 +196,8 @@ if [ $# -gt 0 ]; then
         echo "   DEBUG        = ${DEBUG}"
         echo "   USE_PROXY    = ${USE_PROXY}"
         echo ""
+        echo "   NETCDF       = ${NETCDF}"
+        echo "   PNETCDF      = ${PNETCDF}"
         echo "   HDF5         = ${HDF5}"
         echo "   H5VERSION    = ${H5VERSION}"
         echo "   CGNS         = ${CGNS}"
@@ -476,7 +483,7 @@ then
 fi
 
 # =================== INSTALL PnetCDF if parallel build ===============
-if [ "$MPI" == "YES" ]
+if [ "$PNETCDF" == "YES" ] && [ "$MPI" == "YES" ]
 then
     # PnetCDF currently only builds static library...
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
@@ -526,6 +533,8 @@ then
 fi
 
 # =================== INSTALL NETCDF ===============
+if [ "$NETCDF" == "YES" ]
+then
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
     echo "${txtgrn}+++ NetCDF${txtrst}"
@@ -574,6 +583,7 @@ then
     fi
 else
     echo "${txtylw}+++ NetCDF already installed.  Skipping download and installation.${txtrst}"
+fi
 fi
 # =================== INSTALL CGNS ===============
 if [ "$CGNS" == "YES" ] && [ "$HDF5" == "YES" ]
