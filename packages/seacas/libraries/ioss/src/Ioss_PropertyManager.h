@@ -34,8 +34,10 @@ namespace Ioss {
   class IOSS_EXPORT PropertyManager
   {
   public:
-    PropertyManager()                                       = default;
-    PropertyManager(const PropertyManager &from)            = default;
+    PropertyManager() = default;
+    PropertyManager(const PropertyManager &from) : m_properties(from.m_properties)
+    { /* Do not make this `=default` since that breaks the thread-safe build */
+    }
     PropertyManager &operator=(const PropertyManager &from) = delete;
     ~PropertyManager();
 

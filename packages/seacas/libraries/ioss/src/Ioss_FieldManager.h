@@ -34,8 +34,11 @@ namespace Ioss {
   class IOSS_EXPORT FieldManager
   {
   public:
-    FieldManager()                                = default;
-    FieldManager(const FieldManager &other)       = default;
+    FieldManager() = default;
+    FieldManager(const FieldManager &other) : fields(other.fields)
+    { /* Do not make this `=default` since that breaks the thread-safe build */
+    }
+
     FieldManager &operator=(const FieldManager &) = delete;
     ~FieldManager()                               = default;
 
