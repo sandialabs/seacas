@@ -242,18 +242,28 @@ namespace {
       return;
     }
 
-    auto [x, y, z] = get_element_centroid(region, dummy);
-
-    // Copy mesh data and pointers into structure accessible from callback fns.
     size_t element_count = region.get_property("element_count").get_int();
     if (element_count != static_cast<size_t>(static_cast<int>(element_count))) {
       fmt::print(stderr, "ERROR: Cannot have a mesh with more than 2.1 Billion elements in a "
                          "Zoltan decomposition.\n");
       exit(EXIT_FAILURE);
     }
+
+    auto [x, y, z] = get_element_centroid(region, dummy);
+
+    // Copy mesh data and pointers into structure accessible from callback fns.
     Zoltan_Data.ndot = element_count;
     Zoltan_Data.vwgt = nullptr;
-    if (interFace.ignore_x_) {
+    if (interFace.ignore_x_ && interFace.ignore_y_) {
+      Zoltan_Data.x = z.data();
+    }
+    else if (interFace.ignore_x_ && interFace.ignore_z_) {
+      Zoltan_Data.x = y.data();
+    }
+    else if (interFace.ignore_y_ && interFace.ignore_z_) {
+      Zoltan_Data.x = x.data();
+    }
+    else if (interFace.ignore_x_) {
       Zoltan_Data.x = y.data();
       Zoltan_Data.y = z.data();
     }

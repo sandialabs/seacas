@@ -349,11 +349,6 @@ bool SystemInterface::parse_options(int argc, char **argv)
   ignore_x_ = options_.retrieve("ignore_x") != nullptr;
   ignore_y_ = options_.retrieve("ignore_y") != nullptr;
   ignore_z_ = options_.retrieve("ignore_z") != nullptr;
-  if ((ignore_x_ ? 1 : 0) + (ignore_y_ ? 1 : 0) + (ignore_z_ ? 1 : 0) > 1) {
-    fmt::print(stderr,
-               "\nERROR: Can only specify one of `ignore_x`, `ignore_y`, or `ignore_z`.\n\n");
-    exit(EXIT_FAILURE);
-  }
 #endif
 
   if (outputDecompMap_ && outputDecompField_) {
