@@ -46,6 +46,7 @@
 
 #if defined FMT_SUPPORT
 #include <fmt/format.h>
+#include <fmt/printf.h>
 #endif
 #include <cerrno>
 #include <cfenv>
@@ -542,10 +543,8 @@ namespace SEAMS {
 #endif
               }
               else {
-                static char tmpstr[512];
-                int         len =
-                    snprintf(tmpstr, 512, format->value.svar.c_str(), (yystack_[1].value.val));
-                aprepro.lexer->LexerOutput(tmpstr, len);
+                auto tmpstr = fmt::sprintf(format->value.svar, (yystack_[1].value.val));
+                aprepro.lexer->LexerOutput(tmpstr.c_str(), tmpstr.size());
               }
             }
           }

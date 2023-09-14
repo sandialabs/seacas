@@ -22,6 +22,11 @@
 #include <utility>
 #include <vector>
 
+#if defined FMT_SUPPORT
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+#endif
+
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
 #include <io.h>
@@ -947,7 +952,18 @@ namespace SEAMS {
         }
         lines << "\t";
         for (int ic = 0; ic < cols; ic++) {
+#if defined FMT_SUPPORT
+          SEAMS::symrec *format = aprepro->getsym("_FORMAT");
+          if (format->value.svar.empty()) {
+            fmt::print(lines, "{}", my_array_data->data[idx++]);
+          }
+          else {
+            auto tmpstr = fmt::sprintf(format->value.svar, my_array_data->data[idx++]);
+            lines << tmpstr;
+          }
+#else
           lines << my_array_data->data[idx++];
+#endif
           if (ic < cols - 1) {
             lines << "\t";
           }
@@ -1199,6 +1215,30 @@ namespace SEAMS {
       array_data->data[idx++] = std::stod(token);
     }
     assert(idx == array_data->rows);
+    return array_data;
+  }
+
+  array *do_sym_tensor_from_string(const char *string, const char *delm)
+  {
+    auto array_data = aprepro->make_array(3, 3);
+    auto tokens     = SEAMS::tokenize(string, delm);
+    if (tokens.size() != 6) {
+      aprepro->error("Incorrect number of values found in sym_tensor_from_string function.  Must "
+                     "be 6: xx, yy, zz, xy, yz, xz.\n",
+                     false);
+      return array_data;
+    }
+
+    array_data->data[0] = std::stod(tokens[0]);
+    array_data->data[4] = std::stod(tokens[1]);
+    array_data->data[8] = std::stod(tokens[2]);
+    array_data->data[1] = std::stod(tokens[3]);
+    array_data->data[5] = std::stod(tokens[4]);
+    array_data->data[2] = std::stod(tokens[5]);
+    array_data->data[3] = array_data->data[1];
+    array_data->data[7] = array_data->data[5];
+    array_data->data[6] = array_data->data[2];
+
     return array_data;
   }
 } // namespace SEAMS

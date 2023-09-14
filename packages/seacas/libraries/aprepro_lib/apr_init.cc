@@ -317,6 +317,10 @@ namespace SEAMS {
        " The array double values are\n\t\t\tseparated by one or more of the characters in the "
        "string "
        "variable delim."},
+      {"sym_tensor_from_string", do_sym_tensor_from_string, "sym_tensor_from_string(string, delim)",
+       "Create a 3x3 symmetric array from the data in a delimited string."
+       " The six array values are\n\t\t\tseparated by one or more of the characters in the "
+       "string variable delim. Order is xx, yy, zz, xy, yz, xz."},
       {nullptr, nullptr, nullptr, nullptr}};
 
   array_ddd_init array_ddd_fncts[] = {
