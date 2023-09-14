@@ -204,38 +204,38 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
   */
 
   /*   1     2     3     4                                          node 1 */
-  static int shell_table[2][8] = {
+  static const int shell_table[2][8] = {
       {2, 4, 3, 1, 4, 2, 1, 3}, /* node 2 */
       {1, 2, 1, 2, 1, 2, 1, 2}  /* side # */
   };
 
   /*    1     2   3    4                                          node 1 */
-  static int shell_edge_table[2][8] = {
+  static const int shell_edge_table[2][8] = {
       {2, 4, 3, 1, 4, 2, 1, 3}, /* node 2 */
       {3, 6, 4, 3, 5, 4, 6, 5}  /* side # */
   };
 
   /*   1     2     3                                               node 1 */
-  static int trishell_table[2][6] = {
+  static const int trishell_table[2][6] = {
       {2, 3, 3, 1, 1, 2}, /* node 2 */
       {1, 2, 1, 2, 1, 2}  /* side # */
   };
 
   /*     1      2      3      4                                   node 1 */
-  static int tetra_table[2][12] = {
+  static const int tetra_table[2][12] = {
       {2, 3, 4, 1, 3, 4, 4, 1, 2, 1, 2, 3}, /* node 2 */
       {1, 4, 3, 4, 2, 1, 2, 3, 4, 1, 2, 3}  /* side # */
   };
 
 #if 0
-  static int wedge_table[2][18]  = {
+  static const int wedge_table[2][18]  = {
     /*     1      2      3      4      5      6                     node 1 */
     {2,4,3, 5,1,3, 6,1,2, 1,6,5, 6,2,4, 4,3,5},              /* node 2 */
     {1,3,4, 1,4,2, 2,3,4, 1,3,5, 5,2,1, 5,3,2}               /* side # */
   };
 #endif
 
-  static int hex_table[2][24] = {
+  static const int hex_table[2][24] = {
       /*     1        2        3        4        5        6        7        8       node 1 */
       {4, 2, 5, 1, 3, 6, 7, 4, 2, 3, 1, 8, 6, 8, 1, 5, 2, 7, 8, 6, 3, 7, 5, 4}, /* node 2 */
       {5, 1, 4, 5, 2, 1, 2, 3, 5, 5, 4, 3, 6, 4, 1, 1, 2, 6, 6, 2, 3, 3, 6, 4}  /* side # */
