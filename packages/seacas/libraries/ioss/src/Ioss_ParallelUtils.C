@@ -602,7 +602,7 @@ void Ioss::ParallelUtils::progress(const std::string &output) const
 {
   static double begin = Utils::timer();
 
-  int64_t MiB = 1024 * 1024;
+  int64_t MiB = static_cast<int64_t>(1024) * static_cast<int64_t>(1024);
   int64_t min = 0, max = 0, avg = 0;
   memory_stats(min, max, avg);
 

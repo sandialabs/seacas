@@ -220,7 +220,7 @@ namespace {
      * Using global data structure Zoltan_Data, initialized in ZOLTAN_RCB_assign.
      */
 
-    for (int i = 0; i < nobj; i++) {
+    for (size_t i = 0; i < static_cast<size_t>(nobj); i++) {
       size_t j       = gids[i];
       geom[i * ndim] = Zoltan_Data.x[j];
       if (ndim > 1) {
@@ -246,8 +246,13 @@ namespace {
 
     // Copy mesh data and pointers into structure accessible from callback fns.
     size_t element_count = region.get_property("element_count").get_int();
-    Zoltan_Data.ndot     = element_count;
-    Zoltan_Data.vwgt     = nullptr;
+    if (element_count != static_cast<size_t>(static_cast<int>(element_count))) {
+      fmt::print(stderr, "ERROR: Cannot have a mesh with more than 2.1 Billion elements in a "
+                         "Zoltan decomposition.\n");
+      exit(EXIT_FAILURE);
+    }
+    Zoltan_Data.ndot = element_count;
+    Zoltan_Data.vwgt = nullptr;
     if (interFace.ignore_x_) {
       Zoltan_Data.x = y.data();
       Zoltan_Data.y = z.data();

@@ -242,8 +242,9 @@ namespace {
   double surface_ratio(const Iocgns::StructuredZoneData *zone)
   {
     size_t surf =
-        2 * (zone->m_ordinal[0] * zone->m_ordinal[1] + zone->m_ordinal[0] * zone->m_ordinal[2] +
-             zone->m_ordinal[1] * zone->m_ordinal[2]);
+        (zone->m_ordinal[0] * zone->m_ordinal[1] + zone->m_ordinal[0] * zone->m_ordinal[2] +
+         zone->m_ordinal[1] * zone->m_ordinal[2]) *
+        static_cast<size_t>(2);
     size_t vol = zone->cell_count();
 
     // If a 'perfect' cube, then would be pl=cbrt(vol) on a side and surf would be 6*pl*pl
