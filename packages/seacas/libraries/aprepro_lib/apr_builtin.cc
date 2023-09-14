@@ -1021,6 +1021,76 @@ namespace SEAMS {
     return array_data;
   }
 
+  array *do_principal(const array *a)
+  {
+    // Good calculator and a version of malvern's method at:
+    // https://www.continuummechanics.org/principalstress.html
+
+    auto array_data = aprepro->make_array(3, 1);
+
+    if (a->rows != 3 || a->cols != 3) {
+      aprepro->error("Invalid array size.  Must be 3x3 for principal values calculation.\n", false);
+      return array_data;
+    }
+    if (a->data[1] != a->data[3] || a->data[2] != a->data[6] || a->data[5] != a->data[7]) {
+      aprepro->error("Array is not symmetric in principal values calculation.\n", false);
+      return array_data;
+    }
+
+    const double third = 1.0 / 3.0;
+    const double sqrt3 = sqrt(3.0);
+
+    // Find principal trial stresses and directions -
+    // [ 0 1 2 ]  [ sk1 sk4 sk6 ]
+    // [ 3 4 5 ]  [ sk4 sk2 sk5 ]
+    // [ 6 7 8 ]  [ sk6 sk5 sk3 ]
+
+    const double sk1 = a->data[0];
+    const double sk2 = a->data[4];
+    const double sk3 = a->data[8];
+    const double sk4 = a->data[1];
+    const double sk5 = a->data[5];
+    const double sk6 = a->data[2];
+
+    double dsk12 = sk1 - sk2;
+    double dsk13 = sk1 - sk3;
+    double dsk23 = sk2 - sk3;
+
+    double i1 = (sk1 + sk2 + sk3);
+    double i2 =
+        (dsk12 * dsk12 + dsk13 * dsk13 + dsk23 * dsk23) / 6.0 + sk4 * sk4 + sk5 * sk5 + sk6 * sk6;
+
+    double s1 = (dsk12 + dsk13) * third;
+    double s2 = (-dsk12 + dsk23) * third;
+    double s3 = (-dsk13 - dsk23) * third;
+
+    double i3 = s1 * s2 * s3 + (2. * sk4 * sk5 * sk6) - (s1 * sk5 * sk5) - (s2 * sk6 * sk6) -
+                (s3 * sk4 * sk4);
+
+    // calculate constants for malvern method  (p92)
+    double fi2 = (i2 == 0.0) ? 1.0 : i2;
+
+    double cos3al = sqrt3 * 1.5 * i3 / fi2 / sqrt(fi2);
+    //    cos3al = sign( min( 1.0, abs(cos3al) ),cos3al );
+
+    double calpha = cos(acos(cos3al) / 3.0);
+    double salpha = sqrt(1.0 - calpha * calpha);
+
+    double t  = sqrt3 * sqrt(i2);
+    double p1 = (i1 + t * 2. * calpha) * third;
+    double p2 = (i1 - t * (calpha + salpha * sqrt3)) * third;
+    double p3 = (i1 - t * (calpha - salpha * sqrt3)) * third;
+
+    array_data->data[0] = p1;
+    array_data->data[1] = p2;
+    array_data->data[2] = p3;
+
+    // ... Sort Into Correct Position (p1 > p2 > p3)
+    std::sort(array_data->data.begin(), array_data->data.end(), std::greater<double>());
+
+    return array_data;
+  }
+
   array *do_csv_array1(const char *filename) { return do_csv_array(filename, 0.0); }
 
   array *do_csv_array(const char *filename, double skip)

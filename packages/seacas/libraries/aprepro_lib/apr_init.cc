@@ -338,6 +338,8 @@ namespace SEAMS {
 
   array_a_init array_a_fncts[] = {
       {"transpose", do_transpose, "transpose(array)", "Return the transpose of input array"},
+      {"principal_stress", do_principal, "principal_stress(array)",
+       "Calculate principal stresses of symmetric 3x3 stress tensor (array)."},
       {nullptr, nullptr, nullptr, nullptr}};
 
   // clang-format off
