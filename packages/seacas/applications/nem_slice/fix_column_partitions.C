@@ -108,8 +108,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
   // - if not, fix it
 
   for (size_t i = 0; i < nel; i++) {
-    if (processed_flag[i])
+    if (processed_flag[i]) {
       continue;
+    }
 
     E_Type etype = mesh->elem_type[i];
 
@@ -167,8 +168,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
             break;
           }
         }
-        if (!found)
+        if (!found) {
           Gen_Error(0, "FATAL: side/face node not found in element node list?");
+        }
       }
 
       std::array<double, 3> normal{0.0, 0.0, 0.0};

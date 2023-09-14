@@ -465,9 +465,9 @@ namespace SEAMS {
   {
     double seconds = h * 3600.0 + mi * 60 + se;
 
-    long m = static_cast<long>(mon);
-    long d = static_cast<long>(day);
-    long y = static_cast<long>(year);
+    int64_t m = static_cast<int64_t>(mon);
+    int64_t d = static_cast<int64_t>(day);
+    int64_t y = static_cast<int64_t>(year);
 
     if (m > 2) {
       m -= 3;
@@ -476,9 +476,9 @@ namespace SEAMS {
       m += 9;
       --y;
     }
-    long c  = y / 100L;
-    long ya = y - (100L * c);
-    long j  = (146097L * c) / 4L + (1461L * ya) / 4L + (153L * m + 2L) / 5L + d + 1721119L;
+    int64_t c  = y / 100L;
+    int64_t ya = y - (100L * c);
+    int64_t j  = (146097L * c) / 4L + (1461L * ya) / 4L + (153L * m + 2L) / 5L + d + 1721119L;
     if (seconds < 12 * 3600.0) {
       j--;
       seconds += 12.0 * 3600.0;

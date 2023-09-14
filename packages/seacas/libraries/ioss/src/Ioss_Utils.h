@@ -226,7 +226,7 @@ namespace Ioss {
       if (number == 0) {
         return 1;
       }
-      int width = int(std::floor(std::log10(number))) + 1;
+      int width = static_cast<int>(std::floor(std::log10(number))) + 1;
       if (use_commas) {
         width += ((width - 1) / 3);
       }

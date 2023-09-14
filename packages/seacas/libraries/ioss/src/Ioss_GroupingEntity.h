@@ -524,7 +524,7 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string &field_name,
   verify_field_exists(field_name, "input");
 
   Ioss::Field field = get_field(field_name);
-  field.check_type(Ioss::Field::get_field_type(T(0)));
+  field.check_type(Ioss::Field::get_field_type(static_cast<T>(0)));
 
   data.resize(field.raw_count() * field.raw_storage()->component_count());
   size_t data_size = data.size() * sizeof(T);
@@ -572,7 +572,7 @@ int64_t Ioss::GroupingEntity::put_field_data(const std::string &field_name,
   verify_field_exists(field_name, "output");
 
   Ioss::Field field = get_field(field_name);
-  field.check_type(Ioss::Field::get_field_type(T(0)));
+  field.check_type(Ioss::Field::get_field_type(static_cast<T>(0)));
   size_t data_size = data.size() * sizeof(T);
   T     *my_data   = const_cast<T *>(data.data());
   field.transform(my_data);

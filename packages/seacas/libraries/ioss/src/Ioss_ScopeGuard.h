@@ -21,7 +21,7 @@ namespace Ioss {
 
   public:
     explicit RefHolder(T &ref) : ref_(ref) {}
-    operator T &() const { return ref_; }
+    explicit   operator T &() const { return ref_; }
     RefHolder &operator=(const RefHolder &) = delete;
   };
 

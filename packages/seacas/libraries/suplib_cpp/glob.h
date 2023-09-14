@@ -19,7 +19,7 @@ namespace glob {
   class Error : public std::exception
   {
   public:
-    Error(std::string msg) : msg_{std::move(msg)} {}
+    explicit Error(std::string msg) : msg_{std::move(msg)} {}
 
     const char *what() const noexcept override { return msg_.c_str(); }
 
@@ -84,7 +84,7 @@ namespace glob {
   template <class charT> class StateFail : public State<charT>
   {
   public:
-    StateFail(Automata<charT> &states) : State<charT>(StateType::FAIL, states) {}
+    explicit StateFail(Automata<charT> &states) : State<charT>(StateType::FAIL, states) {}
 
     bool Check(const String<charT> &, size_t) override { return false; }
 
@@ -97,7 +97,7 @@ namespace glob {
   template <class charT> class StateMatch : public State<charT>
   {
   public:
-    StateMatch(Automata<charT> &states) : State<charT>(StateType::MATCH, states) {}
+    explicit StateMatch(Automata<charT> &states) : State<charT>(StateType::MATCH, states) {}
 
     bool Check(const String<charT> &, size_t) override { return true; }
 
@@ -256,7 +256,7 @@ namespace glob {
     using State<charT>::GetAutomata;
 
   public:
-    StateAny(Automata<charT> &states) : State<charT>(StateType::QUESTION, states) {}
+    explicit StateAny(Automata<charT> &states) : State<charT>(StateType::QUESTION, states) {}
 
     bool Check(const String<charT> &, size_t) override
     {
@@ -278,7 +278,7 @@ namespace glob {
     using State<charT>::GetAutomata;
 
   public:
-    StateStar(Automata<charT> &states) : State<charT>(StateType::MULT, states) {}
+    explicit StateStar(Automata<charT> &states) : State<charT>(StateType::MULT, states) {}
 
     bool Check(const String<charT> &, size_t) override
     {
@@ -322,7 +322,7 @@ namespace glob {
   template <class charT> class SetItemChar : public SetItem<charT>
   {
   public:
-    SetItemChar(charT c) : c_{c} {}
+    explicit SetItemChar(charT c) : c_{c} {}
 
     bool Check(charT c) const override { return c == c_; }
 
@@ -597,7 +597,7 @@ namespace glob {
   template <class charT> class Token
   {
   public:
-    Token(TokenKind kind) : kind_{kind} {}
+    explicit Token(TokenKind kind) : kind_{kind} {}
     Token(TokenKind kind, charT value) : kind_{kind}, value_{value} {}
     TokenKind Kind() const { return kind_; }
 
@@ -631,7 +631,7 @@ namespace glob {
   public:
     static const char kEndOfInput = -1;
 
-    Lexer(const String<charT> &str) : str_(str), c_{str[0]} {}
+    explicit Lexer(const String<charT> &str) : str_(str), c_{str[0]} {}
 
     std::vector<Token<charT>> Scanner()
     {
@@ -839,7 +839,7 @@ namespace glob {
     virtual void Accept(AstVisitor<charT> *visitor) = 0;
 
   protected:
-    AstNode(Type type) : type_{type} {}
+    explicit AstNode(Type type) : type_{type} {}
 
   private:
     Type type_;
@@ -860,7 +860,7 @@ namespace glob {
   template <class charT> class CharNode : public AstNode<charT>
   {
   public:
-    CharNode(charT c) : AstNode<charT>(AstNode<charT>::Type::CHAR), c_{c} {}
+    explicit CharNode(charT c) : AstNode<charT>(AstNode<charT>::Type::CHAR), c_{c} {}
 
     void Accept(AstVisitor<charT> *visitor) override { visitor->VisitCharNode(this); }
 
@@ -893,7 +893,7 @@ namespace glob {
   template <class charT> class SetItemsNode : public AstNode<charT>
   {
   public:
-    SetItemsNode(std::vector<AstNodePtr<charT>> &&items)
+    explicit SetItemsNode(std::vector<AstNodePtr<charT>> &&items)
         : AstNode<charT>(AstNode<charT>::Type::SET_ITEMS), items_{std::move(items)}
     {
     }
@@ -909,7 +909,7 @@ namespace glob {
   template <class charT> class PositiveSetNode : public AstNode<charT>
   {
   public:
-    PositiveSetNode(AstNodePtr<charT> &&set)
+    explicit PositiveSetNode(AstNodePtr<charT> &&set)
         : AstNode<charT>(AstNode<charT>::Type::POS_SET), set_{std::move(set)}
     {
     }
@@ -925,7 +925,7 @@ namespace glob {
   template <class charT> class NegativeSetNode : public AstNode<charT>
   {
   public:
-    NegativeSetNode(AstNodePtr<charT> &&set)
+    explicit NegativeSetNode(AstNodePtr<charT> &&set)
         : AstNode<charT>(AstNode<charT>::Type::NEG_SET), set_{std::move(set)}
     {
     }
@@ -979,7 +979,7 @@ namespace glob {
   template <class charT> class ConcatNode : public AstNode<charT>
   {
   public:
-    ConcatNode(std::vector<AstNodePtr<charT>> &&basic_glob)
+    explicit ConcatNode(std::vector<AstNodePtr<charT>> &&basic_glob)
         : AstNode<charT>(AstNode<charT>::Type::CONCAT_GLOB), basic_glob_{std::move(basic_glob)}
     {
     }
@@ -995,7 +995,7 @@ namespace glob {
   template <class charT> class UnionNode : public AstNode<charT>
   {
   public:
-    UnionNode(std::vector<AstNodePtr<charT>> &&items)
+    explicit UnionNode(std::vector<AstNodePtr<charT>> &&items)
         : AstNode<charT>(AstNode<charT>::Type::UNION), items_{std::move(items)}
     {
     }
@@ -1011,7 +1011,7 @@ namespace glob {
   template <class charT> class GlobNode : public AstNode<charT>
   {
   public:
-    GlobNode(AstNodePtr<charT> &&glob)
+    explicit GlobNode(AstNodePtr<charT> &&glob)
         : AstNode<charT>(AstNode<charT>::Type::GLOB), glob_{std::move(glob)}
     {
     }
@@ -1029,7 +1029,7 @@ namespace glob {
   public:
     Parser() = delete;
 
-    Parser(std::vector<Token<charT>> &&tok_vec) : tok_vec_{std::move(tok_vec)}, pos_{0} {}
+    explicit Parser(std::vector<Token<charT>> &&tok_vec) : tok_vec_{std::move(tok_vec)}, pos_{0} {}
 
     AstNodePtr<charT> GenAst() { return ParserGlob(); }
 
@@ -1205,17 +1205,18 @@ namespace glob {
 
     inline const Token<charT> &PeekAhead() const
     {
-      if (pos_ >= (tok_vec_.size() - 1))
+      if (pos_ >= (tok_vec_.size() - 1)) {
         return tok_vec_.back();
+      }
 
       return tok_vec_.at(pos_ + 1);
     }
 
     inline Token<charT> &NextToken()
     {
-      if (pos_ >= (tok_vec_.size() - 1))
+      if (pos_ >= (tok_vec_.size() - 1)) {
         return tok_vec_.back();
-
+      }
       Token<charT> &tk = tok_vec_.at(pos_);
       pos_++;
       return tk;
@@ -1223,8 +1224,9 @@ namespace glob {
 
     inline bool Advance()
     {
-      if (pos_ == tok_vec_.size() - 1)
+      if (pos_ == tok_vec_.size() - 1) {
         return false;
+      }
 
       ++pos_;
       return true;
@@ -1422,7 +1424,7 @@ namespace glob {
   template <class charT> class ExtendedGlob
   {
   public:
-    ExtendedGlob(const String<charT> &pattern)
+    explicit ExtendedGlob(const String<charT> &pattern)
     {
       Lexer<charT>              l(pattern);
       std::vector<Token<charT>> tokens = l.Scanner();
@@ -1460,7 +1462,7 @@ namespace glob {
   template <class charT> class SimpleGlob
   {
   public:
-    SimpleGlob(const String<charT> &pattern) { Parser(pattern); }
+    explicit SimpleGlob(const String<charT> &pattern) { Parser(pattern); }
 
     SimpleGlob(const SimpleGlob &)      = delete;
     SimpleGlob &operator=(SimpleGlob &) = delete;
@@ -1538,7 +1540,7 @@ namespace glob {
   template <class charT, class globT = extended_glob<charT>> class BasicGlob
   {
   public:
-    BasicGlob(const String<charT> &pattern) : glob_{pattern} {}
+    explicit BasicGlob(const String<charT> &pattern) : glob_{pattern} {}
 
     BasicGlob(const BasicGlob &)      = delete;
     BasicGlob &operator=(BasicGlob &) = delete;

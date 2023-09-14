@@ -58,8 +58,9 @@ namespace NasModules {
     for (;;) {
 
       this->inStream->getline(buff, 511);
-      if (this->inStream->eof())
+      if (this->inStream->eof()) {
         break;
+      }
       ++count;
     }
 

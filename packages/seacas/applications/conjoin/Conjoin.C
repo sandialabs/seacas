@@ -313,8 +313,9 @@ namespace {
   // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
   template <typename T> size_t unique(std::vector<T> &out)
   {
-    if (out.empty())
+    if (out.empty()) {
       return 0;
+    }
     size_t pos  = 1;
     T      oldv = out[0];
     for (size_t i = 1; i < out.size(); ++i) {
@@ -1003,7 +1004,7 @@ namespace {
       char *qa_record[1][4];
     };
 
-    int  num_qa_records = ex_inquire_int(id, EX_INQ_QA);
+    int                     num_qa_records = ex_inquire_int(id, EX_INQ_QA);
     std::vector<qa_element> qaRecord(num_qa_records + 1);
     for (int i = 0; i < num_qa_records + 1; i++) {
       for (int j = 0; j < 4; j++) {

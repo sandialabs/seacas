@@ -594,7 +594,7 @@ namespace Ioss::glob {
   template <class charT> class Token
   {
   public:
-    Token(TokenKind kind) : kind_{kind} {}
+    explicit Token(TokenKind kind) : kind_{kind} {}
     Token(TokenKind kind, charT value) : kind_{kind}, value_{value} {}
     TokenKind Kind() const { return kind_; }
 
@@ -628,7 +628,7 @@ namespace Ioss::glob {
   public:
     static const char kEndOfInput = -1;
 
-    Lexer(const String<charT> &str) : str_(str), c_{str[0]} {}
+    explicit Lexer(const String<charT> &str) : str_(str), c_{str[0]} {}
 
     std::vector<Token<charT>> Scanner()
     {
@@ -832,7 +832,7 @@ namespace Ioss::glob {
     virtual void Accept(AstVisitor<charT> *visitor) = 0;
 
   protected:
-    AstNode(Type type) : type_{type} {}
+    explicit AstNode(Type type) : type_{type} {}
 
   private:
     Type type_;
@@ -1413,7 +1413,7 @@ namespace Ioss::glob {
   template <class charT> class ExtendedGlob
   {
   public:
-    ExtendedGlob(const String<charT> &pattern)
+    explicit ExtendedGlob(const String<charT> &pattern)
     {
       Lexer<charT>              l(pattern);
       std::vector<Token<charT>> tokens = l.Scanner();
@@ -1451,7 +1451,7 @@ namespace Ioss::glob {
   template <class charT> class SimpleGlob
   {
   public:
-    SimpleGlob(const String<charT> &pattern) { Parser(pattern); }
+    explicit SimpleGlob(const String<charT> &pattern) { Parser(pattern); }
 
     SimpleGlob(const SimpleGlob &)      = delete;
     SimpleGlob &operator=(SimpleGlob &) = delete;

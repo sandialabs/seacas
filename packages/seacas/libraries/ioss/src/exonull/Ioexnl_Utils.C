@@ -359,7 +359,7 @@ namespace Ioexnl {
     // extracted from the entities name. Increment it until it is
     // unique...
     ex_entity_type type = map_exodus_type(entity->type());
-    while (idset->find(std::make_pair(int(type), id)) != idset->end()) {
+    while (idset->find(std::make_pair(static_cast<int>(type), id)) != idset->end()) {
       ++id;
     }
 

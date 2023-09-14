@@ -40,6 +40,7 @@
 #include <utility>
 #include <vector>
 
+// NOLINTBEGIN
 #include "robin_growth_policy.h"
 
 namespace tsl::detail_robin_hash {
@@ -140,7 +141,7 @@ namespace tsl::detail_robin_hash {
     truncated_hash_type truncated_hash() const noexcept { return m_hash; }
 
   protected:
-    void set_hash(truncated_hash_type my_hash) noexcept { m_hash = truncated_hash_type(my_hash); }
+    void set_hash(truncated_hash_type my_hash) noexcept { m_hash = my_hash; }
 
   private:
     truncated_hash_type m_hash;
@@ -1577,5 +1578,6 @@ namespace tsl::detail_robin_hash {
   };
 
 } // namespace tsl::detail_robin_hash
+// NOLINTEND
 
 #endif
