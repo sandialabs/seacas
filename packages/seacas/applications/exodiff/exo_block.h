@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -34,7 +34,7 @@ public:
   const INT              *Connectivity(size_t elmt_index) const; // 1-offset connectivity
 
   // Misc:
-  int Check_State() const;
+  int Check_State() const override;
 
   int64_t offset() const { return offset_; }
   void    offset(int64_t off) { offset_ = off; }

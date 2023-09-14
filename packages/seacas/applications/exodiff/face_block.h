@@ -22,7 +22,7 @@ public:
 
   size_t Face_Index(size_t position) const;
 
-  int Check_State() const;
+  int Check_State() const override;
 
 private:
   void entity_load_params() override;

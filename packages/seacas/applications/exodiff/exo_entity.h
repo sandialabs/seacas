@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -37,7 +37,7 @@ public:
   size_t Id() const { return id_; }
   size_t Index() const { return index_; }
 
-  int Check_State() const;
+  virtual int Check_State() const = 0;
 
   void initialize(int file_id, size_t id);
 

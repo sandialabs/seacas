@@ -56,14 +56,6 @@ Exo_Entity::~Exo_Entity()
   }
 }
 
-int Exo_Entity::Check_State() const
-{
-  SMART_ASSERT(id_ >= EX_INVALID_ID);
-
-  SMART_ASSERT(!(id_ == EX_INVALID_ID && numEntity > 0));
-  return 1;
-}
-
 void Exo_Entity::initialize(int file_id, size_t id)
 {
   fileId = file_id;

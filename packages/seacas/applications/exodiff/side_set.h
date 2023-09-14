@@ -30,7 +30,7 @@ public:
   const double       *Distribution_Factors() const;
   void                Free_Distribution_Factors() const;
 
-  int    Check_State() const;
+  int    Check_State() const override;
   size_t Distribution_Factor_Count() const { return num_dist_factors; }
 
 private:
