@@ -123,9 +123,6 @@ namespace Ioexnl {
     }
   }
 
-  IOEXNL_EXPORT void filter_element_list(Ioss::Region *region, Ioss::Int64Vector &elements,
-                                         Ioss::Int64Vector &sides, bool remove_omitted_elements);
-
   IOEXNL_EXPORT void separate_surface_element_sides(Ioss::Int64Vector &element,
                                                     Ioss::Int64Vector &sides, Ioss::Region *region,
                                                     Ioexnl::TopologyMap   &topo_map,

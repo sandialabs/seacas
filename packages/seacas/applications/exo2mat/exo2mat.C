@@ -757,7 +757,7 @@ namespace {
           num_sideset_sides[i] = n1;
           num_sideset_dfac[i]  = n2;
 
-          bool has_ss_dfac = !(n2 == 0 || n1 == n2);
+          bool has_ss_dfac = (n2 != 0 && n1 != n2);
           if (!has_ss_dfac) {
             num_sideset_dfac[i] = num_sideset_nodes[i];
           }

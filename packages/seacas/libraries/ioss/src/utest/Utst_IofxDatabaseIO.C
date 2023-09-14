@@ -280,9 +280,9 @@ namespace {
       const auto *topology = block->topology();
       int         block_id = block->get_property("id").get_int();
 
-      std::string name         = block->name();
-      std::string exotype      = topology->name();
-      int64_t     num_elements = block->entity_count();
+      const std::string &name         = block->name();
+      std::string        exotype      = topology->name();
+      int64_t            num_elements = block->entity_count();
 
       auto *output_element_block = new Ioss::ElementBlock(db_out, name, exotype, num_elements);
       output_element_block->property_add(Ioss::Property("original_topology_type", exotype));
@@ -298,8 +298,8 @@ namespace {
 
     const auto &nodesets_input = input_region.get_nodesets();
     for (const auto &nset : nodesets_input) {
-      std::string nodeset_name            = nset->name();
-      int64_t     number_nodes_in_nodeset = nset->entity_count();
+      const std::string &nodeset_name            = nset->name();
+      int64_t            number_nodes_in_nodeset = nset->entity_count();
 
       auto *const nodeset = new Ioss::NodeSet(db_out, nodeset_name, number_nodes_in_nodeset);
       output_region.add(nodeset);
@@ -309,7 +309,7 @@ namespace {
 
     const auto &sidesets_input = input_region.get_sidesets();
     for (const auto &sset : sidesets_input) {
-      std::string sideset_name = sset->name();
+      const std::string &sideset_name = sset->name();
 
       auto *const sideset_output = new Ioss::SideSet(db_out, sideset_name);
       output_region.add(sideset_output);

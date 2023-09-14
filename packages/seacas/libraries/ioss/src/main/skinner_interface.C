@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -170,7 +170,7 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
                "variable:\n"
                "\t{}\n\n",
                options);
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, Ioss::GetLongOption::basename(*argv));
   }
 
   int option_index = options_.parse(argc, argv);

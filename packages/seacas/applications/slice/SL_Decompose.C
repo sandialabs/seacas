@@ -35,7 +35,6 @@ using idx_t = int;
 #if USE_ZOLTAN
 #include <zoltan.h>     // for Zoltan_Initialize
 #include <zoltan_cpp.h> // for Zoltan
-extern "C" int Zoltan_get_global_id_type(char **name);
 #endif
 
 extern int    debug_level;
@@ -334,8 +333,8 @@ namespace {
 
   End:
     /* Clean up */
-    zz.LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
-    zz.LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
+    Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
+    Zoltan::LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
   }
 #endif
 
@@ -531,7 +530,7 @@ namespace {
     //
     // NOTE: integer division with *no* rounding is used.
     int  iscale = 1;
-    auto pos    = var_name.find(",");
+    auto pos    = var_name.find(',');
     if (pos != std::string::npos) {
       // Extract the string following the comma...
       auto scale = var_name.substr(pos + 1);

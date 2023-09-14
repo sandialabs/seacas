@@ -1067,7 +1067,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   std::string code_version = region.get_optional_property("code_version", "unknown");
   std::string code_name    = region.get_optional_property("code_name", "unknown");
 
-  std::string mpi_version = "";
+  std::string mpi_version{};
 #if CG_BUILD_PARALLEL
   {
     char version[MPI_MAX_LIBRARY_VERSION_STRING];

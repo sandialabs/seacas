@@ -74,7 +74,7 @@
 // Static internal helper functions
 // ========================================================================
 namespace {
-  static bool sixty_four_bit_message_output = false;
+  bool sixty_four_bit_message_output = false;
 
   std::vector<ex_entity_type> exodus_types({EX_GLOBAL, EX_BLOB, EX_ASSEMBLY, EX_NODE_BLOCK,
                                             EX_EDGE_BLOCK, EX_FACE_BLOCK, EX_ELEM_BLOCK,
@@ -110,7 +110,7 @@ namespace {
     {
       // Walk the tree without cyclic dependency
       if (assemblyIndex < m_assemblies.size()) {
-        if (m_visitedAssemblies[assemblyIndex] == false) {
+        if (!m_visitedAssemblies[assemblyIndex]) {
           m_visitedAssemblies[assemblyIndex] = true;
 
           const auto            &assembly     = m_assemblies[assemblyIndex];

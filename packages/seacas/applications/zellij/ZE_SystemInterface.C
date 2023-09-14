@@ -293,7 +293,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
           "\t{}\n\n",
           options);
     }
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, Ioss::GetLongOption::basename(*argv));
   }
 
   outputName_ = options_.get_option_value("output", outputName_);

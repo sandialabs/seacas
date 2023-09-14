@@ -266,7 +266,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
           "\t{}\n\n",
           options);
     }
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, GetLongOption::basename(*argv));
   }
 
   int option_index = options_.parse(argc, argv);

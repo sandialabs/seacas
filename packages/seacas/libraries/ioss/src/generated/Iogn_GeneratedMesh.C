@@ -1557,7 +1557,6 @@ namespace Iogn {
                (cnt == int64_t(3 * element_count_proc(block_number)) && createTets));
       }
     }
-    return;
   }
 
   void GeneratedMesh::nodeset_nodes(int64_t id, Ioss::Int64Vector &nodes) const

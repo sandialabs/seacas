@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -90,6 +90,8 @@ namespace Ioss {
       // find a difference and the function will return 'true'
       // However, for some reason, removing this check does not change the execution time
       // appreiciably...
+
+      // TODO: Loop can probably be replaced by std::all_of...
       for (auto lvert : left.connectivity_) {
         if (std::find(right.connectivity_.cbegin(), right.connectivity_.cend(), lvert) ==
             right.connectivity_.cend()) {

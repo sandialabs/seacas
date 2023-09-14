@@ -114,7 +114,6 @@ namespace Ioexnl {
     int64_t get_Xset_field_internal(const Ioss::EntitySet *ns, const Ioss::Field &field, void *data,
                                     size_t data_size) const;
 
-  private:
     int64_t read_nodal_coordinates();
     void    read_elements(const Ioss::ElementBlock &block);
 

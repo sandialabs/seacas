@@ -361,6 +361,7 @@ namespace Ioss::glob {
 
     bool SetCheck(const String<charT> &str, size_t pos) const
     {
+      // TODO: Replace with std::any_of()
       for (auto &item : items_) {
         // if any item match, then the set match with char
         if (item.get()->Check(str[pos])) {

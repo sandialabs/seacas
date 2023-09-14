@@ -18,8 +18,8 @@ namespace Excn {
     //: processors onto disk files.
 
   public:
-    ParallelDisks();
-    ~ParallelDisks();
+    ParallelDisks()                                 = default;
+    ~ParallelDisks()                                = default;
     ParallelDisks(const ParallelDisks &)            = delete;
     ParallelDisks &operator=(const ParallelDisks &) = delete;
 

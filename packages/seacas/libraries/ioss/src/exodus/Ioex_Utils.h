@@ -106,9 +106,6 @@ namespace Ioex {
                                           const std::string &basename, int length,
                                           bool &db_has_name);
 
-  IOEX_EXPORT void filter_element_list(Ioss::Region *region, Ioss::Int64Vector &elements,
-                                       Ioss::Int64Vector &sides, bool remove_omitted_elements);
-
   IOEX_EXPORT bool filter_node_list(Ioss::Int64Vector                &nodes,
                                     const std::vector<unsigned char> &node_connectivity_status);
 

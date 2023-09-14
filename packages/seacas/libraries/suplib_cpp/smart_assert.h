@@ -291,7 +291,6 @@ private:
     return (*handlers().find(lvl_debug)).second;
   }
 
-private:
   assert_context context_{};
   mutable bool   needs_handling_{true};
 };

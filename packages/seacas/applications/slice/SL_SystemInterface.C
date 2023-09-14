@@ -279,7 +279,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
         "\nThe following options were specified via the SLICE_OPTIONS environment variable:\n"
         "\t{}\n\n",
         options);
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, GetLongOption::basename(*argv));
   }
 
   processorCount_   = options_.get_option_value("processors", processorCount_);

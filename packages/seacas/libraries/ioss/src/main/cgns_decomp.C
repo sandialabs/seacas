@@ -68,11 +68,11 @@ namespace {
 
       if (options_.retrieve("output") != nullptr) {
         const std::string temp = options_.retrieve("output");
-        histogram              = temp.find("h") != std::string::npos;
-        work_per_processor     = temp.find("w") != std::string::npos;
-        zone_proc_assignment   = temp.find("z") != std::string::npos;
-        verbose                = temp.find("v") != std::string::npos || verbose;
-        communication_map      = temp.find("c") != std::string::npos;
+        histogram              = temp.find('h') != std::string::npos;
+        work_per_processor     = temp.find('w') != std::string::npos;
+        zone_proc_assignment   = temp.find('z') != std::string::npos;
+        verbose                = temp.find('v') != std::string::npos || verbose;
+        communication_map      = temp.find('c') != std::string::npos;
       }
 
       if (options_.retrieve("version") != nullptr) {

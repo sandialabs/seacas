@@ -195,7 +195,6 @@ namespace Iocgns {
     const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, int64_t file_offset,
                              int64_t file_count, entity_type type) const;
 
-  private:
     mutable int m_cgnsFilePtr{-1};
     mutable int m_cgnsBasePtr{
         -1}; // If using links to file-per-state, the file pointer for "base" file.

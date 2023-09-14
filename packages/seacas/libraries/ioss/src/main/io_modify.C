@@ -988,7 +988,7 @@ namespace {
       }
 
       // Now get name of attribute/property to create...
-      std::string att_name = tokens[3];
+      const std::string &att_name = tokens[3];
 
       // Now, the attribute type and whether vector or scalar...
       size_t value_count = tokens.size() - 5;
@@ -1096,7 +1096,7 @@ namespace {
 
     // See if asking for actual entity by name or by type + id
     Ioss::GroupingEntity *ge       = nullptr;
-    std::string           new_name = tokens[tokens.size() - 1];
+    const std::string    &new_name = tokens[tokens.size() - 1];
 
     if (tokens.size() == 5 && Ioss::Utils::str_equal(tokens[3], "to")) {
       // Type + ID
@@ -1257,8 +1257,8 @@ namespace {
       while (!(Ioss::Utils::str_equal(tokens[idx], "x") ||
                Ioss::Utils::str_equal(tokens[idx], "y") ||
                Ioss::Utils::str_equal(tokens[idx], "z"))) {
-        auto  name = tokens[idx++];
-        auto *ge   = region.get_entity(name, Ioss::ELEMENTBLOCK);
+        const auto &name = tokens[idx++];
+        auto       *ge   = region.get_entity(name, Ioss::ELEMENTBLOCK);
         if (ge == nullptr) {
           ge = region.get_entity(name, Ioss::ASSEMBLY);
         }
@@ -1306,9 +1306,9 @@ namespace {
 
       // Get rotation axis...
       do {
-        std::string axis  = tokens[idx++];
-        double      angle = std::stod(tokens[idx++]);
-        auto        ok    = update_rotation_matrix(rotation_matrix, axis, angle);
+        const std::string &axis  = tokens[idx++];
+        double             angle = std::stod(tokens[idx++]);
+        auto               ok    = update_rotation_matrix(rotation_matrix, axis, angle);
         if (!ok) {
           return false;
         }
@@ -1325,8 +1325,8 @@ namespace {
 
       // Get scale axis and scale factor...
       do {
-        std::string axis   = tokens[idx++];
-        double      factor = std::stod(tokens[idx++]);
+        const std::string &axis   = tokens[idx++];
+        double             factor = std::stod(tokens[idx++]);
         if (Ioss::Utils::substr_equal(axis, "x")) {
           scale[0] = factor;
         }
@@ -1349,8 +1349,8 @@ namespace {
 
       // Get offset axis and offset factor...
       do {
-        std::string axis   = tokens[idx++];
-        double      factor = std::stod(tokens[idx++]);
+        const std::string &axis   = tokens[idx++];
+        double             factor = std::stod(tokens[idx++]);
         if (Ioss::Utils::substr_equal(axis, "x")) {
           offset[0] = factor;
         }
