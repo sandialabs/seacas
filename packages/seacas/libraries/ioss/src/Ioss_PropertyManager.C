@@ -34,7 +34,7 @@ void Ioss::PropertyManager::add(const Ioss::Property &new_prop)
   if (iter != m_properties.end()) {
     m_properties.erase(iter);
   }
-  m_properties.insert(ValuePair(new_prop.get_name(), new_prop));
+  m_properties.emplace(new_prop.get_name(), new_prop);
 }
 
 /** \brief Checks if a property exists in the database.
