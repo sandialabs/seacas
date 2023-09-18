@@ -162,8 +162,9 @@ void build_reverse_node_map(Ioss::Region & /*global*/, RegionVector &part_mesh,
         if (cur_pos == global_node_map.end() || *cur_pos != global_node) {
           auto iter = std::lower_bound(global_node_map.begin(), global_node_map.end(), global_node);
           if (iter == global_node_map.end()) {
-            fmt::print("{}\n", fmt::group_digits(global_node));
-            SMART_ASSERT(iter != global_node_map.end());
+            fmt::print(stderr, "ERROR: Could not find global node {} in global node map.\n",
+                       fmt::group_digits(global_node));
+            exit(EXIT_FAILURE);
           }
           cur_pos = iter;
         }

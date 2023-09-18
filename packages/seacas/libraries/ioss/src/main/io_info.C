@@ -583,8 +583,6 @@ namespace Ioss {
 
   void io_info_set_db_properties(const Info::Interface &interFace, Ioss::DatabaseIO *dbi)
   {
-    std::string inpfile = interFace.filename();
-
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -605,6 +603,7 @@ namespace Ioss {
     if (!interFace.groupname().empty()) {
       bool success = dbi->open_group(interFace.groupname());
       if (!success) {
+        std::string inpfile = interFace.filename();
         fmt::print("ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupname(),
                    inpfile);
         return;

@@ -212,7 +212,7 @@ namespace Ioexnl {
     const char *s = substring;
     const char *t = type.c_str();
 
-    SMART_ASSERT(s != nullptr && t != nullptr);
+    SMART_ASSERT(s != nullptr);
     while (*s != '\0' && *t != '\0') {
       if (*s++ != tolower(*t++)) {
         return false;
@@ -384,14 +384,14 @@ namespace Ioexnl {
     // VECTOR_3D).  If found, it returns the name.
     //
 
-    static char displace[] = "displacement";
+    static const std::string &displace = "displacement";
 
     size_t max_span = 0;
     for (const auto &name : fields) {
       std::string lc_name(name);
 
       Ioss::Utils::fixup_name(lc_name);
-      size_t span = match(lc_name.c_str(), displace);
+      size_t span = match(lc_name.c_str(), displace.c_str());
       if (span > max_span) {
         const Ioss::VariableType *var_type   = block->get_field(name).transformed_storage();
         int                       comp_count = var_type->component_count();

@@ -501,8 +501,8 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
       }
       else {
         if (global_times.size() != times.size()) {
-          fmt::print(stderr, "ERROR: Time step sizes must match.");
-          SMART_ASSERT(global_times.size() == times.size())(global_times.size())(times.size())(p);
+          fmt::print(stderr, "ERROR: Time step sizes must match. (Global = {}, Part {} = {}",
+                     global_times.size(), p, times.size());
           exit(EXIT_FAILURE);
         }
 

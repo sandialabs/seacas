@@ -1182,19 +1182,15 @@ namespace {
   }
 
   template <typename T>
-  bool compare_sets(const std::vector<T *> &in_sets_1, const std::vector<T *> &in_sets_const_2,
+  bool compare_sets(const std::vector<T *> &in_sets_1, const std::vector<T *> &in_sets_2,
                     const Ioss::MeshCopyOptions & /* options */, std::ostringstream & /* buf */)
   {
     bool overall_result = true;
 
-    if (in_sets_1.size() != in_sets_const_2.size()) {
-      fmt::print(Ioss::WarnOut(), COUNT_MISMATCH, "set", in_sets_1.size(), in_sets_const_2.size());
+    if (in_sets_1.size() != in_sets_2.size()) {
+      fmt::print(Ioss::WarnOut(), COUNT_MISMATCH, "set", in_sets_1.size(), in_sets_2.size());
       return false;
     }
-
-    // COPY the const input vector so that we remove elements as they're matched without
-    // affecting the original data structure.
-    std::vector<T *> in_sets_2 = in_sets_const_2;
 
     if (!in_sets_1.empty()) {
       for (const auto &in_set_1 : in_sets_1) {

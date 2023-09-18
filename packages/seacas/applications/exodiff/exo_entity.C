@@ -73,7 +73,6 @@ bool Exo_Entity::is_valid_var(size_t var_index) const
   SMART_ASSERT((int)var_index < numVars);
   if (truth_ == nullptr) {
     get_truth_table();
-    SMART_ASSERT(truth_ != nullptr);
   }
 
   return (truth_[var_index] != 0);
@@ -101,7 +100,6 @@ std::string Exo_Entity::Load_Results(int time_step, int var_index)
 
   if (truth_ == nullptr) {
     get_truth_table();
-    SMART_ASSERT(truth_ != nullptr);
   }
 
   if (truth_[var_index] != 0) {
@@ -158,7 +156,6 @@ std::string Exo_Entity::Load_Results(int t1, int t2, double proportion, int var_
 
   if (truth_ == nullptr) {
     get_truth_table();
-    SMART_ASSERT(truth_ != nullptr);
   }
 
   if (truth_[var_index] != 0) {

@@ -35,6 +35,11 @@ namespace {
     return len;
   }
 
+  size_t match(const std::string &name1, const std::string &name2)
+  {
+    return match(name1.c_str(), name2.c_str());
+  }
+
   template <typename INT>
   void internal_write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames,
                                         INT /*dummy*/)
@@ -237,7 +242,7 @@ namespace Ioex {
     const char *s = substring;
     const char *t = type.c_str();
 
-    SMART_ASSERT(s != nullptr && t != nullptr);
+    SMART_ASSERT(s != nullptr);
     while (*s != '\0' && *t != '\0') {
       if (*s++ != tolower(*t++)) {
         return false;
@@ -409,14 +414,14 @@ namespace Ioex {
     // VECTOR_3D).  If found, it returns the name.
     //
 
-    static char displace[] = "displacement";
+    static const std::string displace = "displacement";
 
     size_t max_span = 0;
     for (const auto &name : fields) {
       std::string lc_name(name);
 
       Ioss::Utils::fixup_name(lc_name);
-      size_t span = match(lc_name.c_str(), displace);
+      size_t span = match(lc_name, displace);
       if (span > max_span) {
         const Ioss::VariableType *var_type   = block->get_field(name).transformed_storage();
         int                       comp_count = var_type->component_count();
