@@ -45,7 +45,7 @@ namespace {
  *  \param[in] origin The origin of the property - IMPLICIT, or EXTERNAL, or ATTRIBUTE
  */
 Ioss::Property::Property(std::string name, int value, Origin origin)
-    : name_(std::move(name)), type_(INTEGER), origin_(origin), data_(value)
+    : name_(std::move(name)), type_(INTEGER), origin_(origin), data_(static_cast<int64_t>(value))
 {
 }
 
