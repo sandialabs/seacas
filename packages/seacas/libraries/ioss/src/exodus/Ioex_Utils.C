@@ -18,11 +18,11 @@
 #include <tokenize.h>
 
 namespace {
-  size_t match(const char *name1, const char *name2)
+  size_t match(const std::string &name1, const std::string &name2)
   {
-    size_t l1  = std::strlen(name1);
-    size_t l2  = std::strlen(name2);
-    size_t len = l1 < l2 ? l1 : l2;
+    size_t l1  = name1.size();
+    size_t l2  = name2.size();
+    size_t len = std::min(l1, l2);
     for (size_t i = 0; i < len; i++) {
       if (name1[i] != name2[i]) {
         while (i > 0 && (isdigit(name1[i - 1]) != 0) && (isdigit(name2[i - 1]) != 0)) {
@@ -33,11 +33,6 @@ namespace {
       }
     }
     return len;
-  }
-
-  size_t match(const std::string &name1, const std::string &name2)
-  {
-    return match(name1.c_str(), name2.c_str());
   }
 
   template <typename INT>
