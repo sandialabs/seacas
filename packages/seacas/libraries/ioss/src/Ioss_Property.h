@@ -10,6 +10,7 @@
 
 #include <cstdint> // for int64_t
 #include <string>  // for string
+#include <variant>
 #include <vector>
 
 namespace Ioss {
