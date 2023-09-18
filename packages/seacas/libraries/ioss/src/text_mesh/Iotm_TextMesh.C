@@ -148,7 +148,7 @@ namespace Iotm {
   {
     int64_t count = 0;
 
-    for (auto part : m_blockPartition) {
+    for (const auto &part : m_blockPartition) {
       count += part.second.elemIds.size();
     }
 
