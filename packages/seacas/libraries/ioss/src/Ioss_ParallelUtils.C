@@ -594,7 +594,7 @@ void Ioss::ParallelUtils::all_gather(std::vector<T> &my_values, std::vector<T> &
     result = my_values;
   }
 #else
-  result    = my_values;
+  result = my_values;
 #endif
 }
 

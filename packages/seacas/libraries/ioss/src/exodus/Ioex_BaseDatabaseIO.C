@@ -1521,7 +1521,7 @@ namespace Ioex {
 #if GLOBALS_ARE_TRANSIENT
     int field_count = add_results_fields(get_region());
 #else
-    int field_count     = add_reduction_results_fields(get_region());
+    int field_count = add_reduction_results_fields(get_region());
 #endif
     m_reductionValues[EX_GLOBAL][0].resize(field_count);
     add_mesh_reduction_fields(0, get_region());

@@ -9,9 +9,9 @@
 
 #include <tokenize.h>
 
-#include <cstddef>          // for nullptr
+#include <cstddef> // for nullptr
 #include <fmt/ostream.h>
-#include <string>           // for string
+#include <string> // for string
 
 #include "Ioss_CodeTypes.h" // for Ioss_MPI_Comm
 #include "Ioss_DBUsage.h"   // for DatabaseUsage

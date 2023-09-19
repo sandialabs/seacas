@@ -22,8 +22,8 @@
 #define X_OK   1 /* execute permission - unsupported in windows*/
 #define F_OK   0 /* Test for existence.  */
 #ifndef S_ISREG
-#define S_ISREG(m) (((m)&_S_IFMT) == _S_IFREG)
-#define S_ISDIR(m) (((m)&_S_IFMT) == _S_IFDIR)
+#define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
+#define S_ISDIR(m) (((m) & _S_IFMT) == _S_IFDIR)
 #endif
 #else
 #include <unistd.h>

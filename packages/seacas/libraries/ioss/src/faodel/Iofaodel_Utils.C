@@ -38,9 +38,8 @@
 namespace Iofaodel {
 
   state_entry_t::state_entry_t(const Ioss::Region &r)
-      : count(r.get_property("state_count").get_int()), value{0,
-                                                              count *
-                                                                  sizeof(state_entry_t::basic_type)}
+      : count(r.get_property("state_count").get_int()),
+        value{0, count * sizeof(state_entry_t::basic_type)}
   {
   }
 

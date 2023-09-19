@@ -29,7 +29,7 @@
 namespace Ioss {
   class Field;
   class ElementBlock;
-}
+} // namespace Ioss
 namespace Ioex {
   struct IOEX_EXPORT BlockFieldData
   {
@@ -198,7 +198,6 @@ namespace Ioex {
     }
 
   private:
-
 #if !defined(NO_ZOLTAN_SUPPORT)
     void zoltan_decompose(const std::string &method);
 #endif
@@ -256,10 +255,7 @@ namespace Ioex {
       return m_decomposition.i_own_elem(elem);
     }
 
-    void build_global_to_local_elem_map()
-    {
-      m_decomposition.build_global_to_local_elem_map();
-    }
+    void build_global_to_local_elem_map() { m_decomposition.build_global_to_local_elem_map(); }
 
     void get_element_block_communication()
     {
@@ -291,57 +287,59 @@ namespace Ioex {
     Ioss::Decomposition<INT> m_decomposition;
   };
 
-  class IOEX_EXPORT ElementBlockBatchReader {
+  class IOEX_EXPORT ElementBlockBatchReader
+  {
   public:
-    ElementBlockBatchReader(const DecompositionDataBase* decompDB);
+    ElementBlockBatchReader(const DecompositionDataBase *decompDB);
     ~ElementBlockBatchReader() = default;
 
-    size_t get_connectivity_size(const std::vector<int64_t>& blocks_subset_index) const;
+    size_t get_connectivity_size(const std::vector<int64_t> &blocks_subset_index) const;
 
-    std::vector<size_t> get_connectivity(int filePtr,
-                                         const std::vector<int64_t>& blocks_subset_index,
-                                         void *data) const;
+    std::vector<size_t> get_connectivity(int                         filePtr,
+                                         const std::vector<int64_t> &blocks_subset_index,
+                                         void                       *data) const;
 
-    std::vector<size_t> get_offset(const std::vector<int64_t>& blocks_subset_index,
-                                   const std::vector<int>& block_component_count) const;
+    std::vector<size_t> get_offset(const std::vector<int64_t> &blocks_subset_index,
+                                   const std::vector<int>     &block_component_count) const;
 
-    void get_field_data(int filePtr, void *data,
-                        const std::vector<int64_t>& blocks_subset_index,
-                        size_t step, const std::vector<BlockFieldData>& block_data) const;
+    void get_field_data(int filePtr, void *data, const std::vector<int64_t> &blocks_subset_index,
+                        size_t step, const std::vector<BlockFieldData> &block_data) const;
 
   private:
-    const DecompositionDataBase* m_decompositionDB{nullptr};
+    const DecompositionDataBase  *m_decompositionDB{nullptr};
     Ioss::ElementBlockBatchOffset m_batchOffset;
 
     template <typename INT>
-    std::vector<size_t> get_connectivity_impl(int filePtr,
-                                              const std::vector<int64_t>& blocks_subset_index,
-                                              void *data) const;
+    std::vector<size_t> get_connectivity_impl(int                         filePtr,
+                                              const std::vector<int64_t> &blocks_subset_index,
+                                              void                       *data) const;
 
     template <typename INT>
     void get_field_data_impl(int filePtr, void *iossData,
-                             const std::vector<int64_t>& blocks_subset_index, size_t step,
-                             const std::vector<BlockFieldData>& block_data) const;
+                             const std::vector<int64_t> &blocks_subset_index, size_t step,
+                             const std::vector<BlockFieldData> &block_data) const;
 
     template <typename INT>
-    std::vector<size_t> get_connectivity_file_offset(const std::vector<int64_t>& blocks_subset_index) const;
+    std::vector<size_t>
+    get_connectivity_file_offset(const std::vector<int64_t> &blocks_subset_index) const;
 
     template <typename INT>
-    std::vector<size_t> get_file_offset(const std::vector<int64_t>& blocks_subset_index,
-                                        const std::vector<int>& block_component_count) const;
+    std::vector<size_t> get_file_offset(const std::vector<int64_t> &blocks_subset_index,
+                                        const std::vector<int>     &block_component_count) const;
 
-    std::vector<int> get_connectivity_component_count(const std::vector<int64_t>& blocks_subset_index) const;
+    std::vector<int>
+    get_connectivity_component_count(const std::vector<int64_t> &blocks_subset_index) const;
 
-    std::vector<int> get_block_component_count(const std::vector<int64_t>& blockSubsetIndex,
-                                               const std::vector<BlockFieldData>& blockFieldData) const;
+    std::vector<int>
+    get_block_component_count(const std::vector<int64_t>        &blockSubsetIndex,
+                              const std::vector<BlockFieldData> &blockFieldData) const;
 
     template <typename INT>
     void load_field_data(int filePtr, double *fileData,
-                         const std::vector<int64_t>& blockSubsetIndex, size_t step,
-                         const std::vector<BlockFieldData>& blockFieldData,
-                         const std::vector<int>& blockComponentCount,
-                         const std::vector<size_t>& fileConnOffset) const;
-
+                         const std::vector<int64_t> &blockSubsetIndex, size_t step,
+                         const std::vector<BlockFieldData> &blockFieldData,
+                         const std::vector<int>            &blockComponentCount,
+                         const std::vector<size_t>         &fileConnOffset) const;
   };
 } // namespace Ioex
 #endif

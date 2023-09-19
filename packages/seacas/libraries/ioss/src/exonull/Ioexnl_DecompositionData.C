@@ -20,7 +20,7 @@
 #include <cassert>   // for assert
 #include <climits>   // for INT_MAX
 #include <cmath>
-#include <cstdlib>   // for exit, EXIT_FAILURE
+#include <cstdlib> // for exit, EXIT_FAILURE
 #include <cstring>
 #include <fmt/ostream.h>
 #include <iostream> // for operator<<, ostringstream, etc

@@ -424,8 +424,8 @@ DOCTEST_TEST_CASE("Ioad")
 {
 
   Ioss::Init::Initializer init_db;
-  std::string exodus_db_name = "phantom.e";
-  std::string adios_db_name  = "phantom.bp";
+  std::string             exodus_db_name = "phantom.e";
+  std::string             adios_db_name  = "phantom.bp";
   create_database("exodus", exodus_db_name);
   create_database("adios", adios_db_name);
   // Database pointers are deleted by their respective region destructors.

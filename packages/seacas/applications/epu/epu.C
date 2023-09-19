@@ -1755,7 +1755,7 @@ namespace {
       char *qa_record[1][4];
     };
 
-    int   num_qa_records = ex_inquire_int(id, EX_INQ_QA);
+    int                     num_qa_records = ex_inquire_int(id, EX_INQ_QA);
     std::vector<qa_element> qaRecord(num_qa_records + 1);
     for (int i = 0; i < num_qa_records + 1; i++) {
       for (int j = 0; j < 4; j++) {

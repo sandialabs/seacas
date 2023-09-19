@@ -84,7 +84,7 @@ using Complex = std::complex<float>;
 using Kokkos_Complex = Kokkos::complex<float>;
 #endif
 #else
-using Complex        = std::complex<double>;
+using Complex = std::complex<double>;
 #ifdef SEACAS_HAVE_KOKKOS
 using Kokkos_Complex = Kokkos::complex<double>;
 #endif

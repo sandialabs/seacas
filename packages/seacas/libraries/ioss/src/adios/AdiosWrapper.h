@@ -70,7 +70,7 @@ namespace Ioad {
 
     const std::string m_MetaSeparator{"::"};
 
-    const int      m_Rank;
+    const int           m_Rank;
     const Ioss_MPI_Comm m_Communicator;
 
     bool m_OpenStep;

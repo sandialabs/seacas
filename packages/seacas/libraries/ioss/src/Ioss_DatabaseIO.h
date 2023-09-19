@@ -568,9 +568,10 @@ namespace Ioss {
       }
     }
 
-    virtual std::vector<size_t> get_entity_field_data(const std::string &field_name,
-                                                      const std::vector<Ioss::ElementBlock*>& elem_blocks,
-                                                      void *data, size_t data_size) const;
+    virtual std::vector<size_t>
+    get_entity_field_data(const std::string                       &field_name,
+                          const std::vector<Ioss::ElementBlock *> &elem_blocks, void *data,
+                          size_t data_size) const;
 
   protected:
     DatabaseIO(Region *region, std::string filename, Ioss::DatabaseUsage db_usage,
@@ -875,8 +876,8 @@ namespace Ioss {
                                           void **data, size_t *data_size) const;
 
     template <typename T>
-    std::vector<size_t> get_entity_field_data_internal(const std::string &field_name,
-                                                       const std::vector<T*>& entity_container,
+    std::vector<size_t> get_entity_field_data_internal(const std::string      &field_name,
+                                                       const std::vector<T *> &entity_container,
                                                        void *data, size_t data_size) const;
 
     mutable std::map<std::string, AxisAlignedBoundingBox> elementBlockBoundingBoxes;

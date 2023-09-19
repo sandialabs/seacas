@@ -151,7 +151,8 @@ namespace {
   }
 
   template <typename T>
-  std::vector<size_t> get_entity_offsets(const std::string& field_name, const std::vector<T*>& entity_container)
+  std::vector<size_t> get_entity_offsets(const std::string      &field_name,
+                                         const std::vector<T *> &entity_container)
   {
     size_t num_blocks = entity_container.size();
 
@@ -1362,24 +1363,25 @@ namespace Ioss {
   }
 
 #ifndef DOXYGEN_SKIP_THIS
-  template
-  std::vector<size_t> DatabaseIO::get_entity_field_data_internal(const std::string &field_name,
-                                                                 const std::vector<Ioss::ElementBlock*>& elem_blocks,
-                                                                 void *data, size_t data_size) const;
+  template std::vector<size_t>
+  DatabaseIO::get_entity_field_data_internal(const std::string                       &field_name,
+                                             const std::vector<Ioss::ElementBlock *> &elem_blocks,
+                                             void *data, size_t data_size) const;
 #endif
 
   template <typename T>
-  std::vector<size_t> DatabaseIO::get_entity_field_data_internal(const std::string &field_name,
-                                                                 const std::vector<T*>& entity_container,
-                                                                 void *data, size_t data_size) const
+  std::vector<size_t>
+  DatabaseIO::get_entity_field_data_internal(const std::string      &field_name,
+                                             const std::vector<T *> &entity_container, void *data,
+                                             size_t data_size) const
   {
     size_t num_container = entity_container.size();
 
     std::vector<size_t> offset = get_entity_offsets(field_name, entity_container);
 
-    for(size_t i=0; i<num_container; i++) {
+    for (size_t i = 0; i < num_container; i++) {
 
-      const auto * entity = entity_container[i];
+      const auto *entity = entity_container[i];
 
       if (entity->field_exists(field_name)) {
         auto        num_to_get_for_block = offset[i + 1] - offset[i];
@@ -1396,7 +1398,7 @@ namespace Ioss {
           IOSS_ERROR(errmsg);
         }
 
-        size_t expected_data_size = offset[i+1] * field_byte_size;
+        size_t expected_data_size = offset[i + 1] * field_byte_size;
 
         if (data_size < expected_data_size) {
           std::ostringstream errmsg;
@@ -1409,7 +1411,8 @@ namespace Ioss {
 
         size_t block_data_offset = offset[i] * field_byte_size;
 
-        auto retval = get_field_internal(entity, field, (char*)data + block_data_offset, block_data_size);
+        auto retval =
+            get_field_internal(entity, field, (char *)data + block_data_offset, block_data_size);
 
         size_t block_component_count = field.raw_storage()->component_count();
         if (num_to_get_for_block != retval * block_component_count) {
@@ -1430,9 +1433,10 @@ namespace Ioss {
     return offset;
   }
 
-  std::vector<size_t> DatabaseIO::get_entity_field_data(const std::string &field_name,
-                                                        const std::vector<Ioss::ElementBlock*>& elem_blocks,
-                                                        void *data, size_t data_size) const
+  std::vector<size_t>
+  DatabaseIO::get_entity_field_data(const std::string                       &field_name,
+                                    const std::vector<Ioss::ElementBlock *> &elem_blocks,
+                                    void *data, size_t data_size) const
   {
     return get_entity_field_data_internal(field_name, elem_blocks, data, data_size);
   }
