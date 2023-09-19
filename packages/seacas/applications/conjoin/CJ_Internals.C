@@ -352,8 +352,8 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
     }
 
     // Define the node map here to avoid a later redefine call
-    int dims[] = {numnoddim};
-    status     = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims, &varid);
+    std::array dims{numnoddim};
+    status = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -382,9 +382,9 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
     }
 
     // Define the element map here to avoid a later redefine call
-    int dims[1] = {numelemdim};
-    varid       = 0;
-    status      = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims, &varid);
+    std::array dims{numelemdim};
+    varid  = 0;
+    status = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -533,10 +533,10 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
         return EX_FATAL;
       }
 
-      int dims[] = {numelbdim, numattrdim};
-      int varid  = 0;
-      status = nc_def_var(exodusFilePtr, VAR_ATTRIB(iblk + 1), nc_flt_code(exodusFilePtr), 2, dims,
-                          &varid);
+      std::array dims{numelbdim, numattrdim};
+      int        varid = 0;
+      status = nc_def_var(exodusFilePtr, VAR_ATTRIB(iblk + 1), nc_flt_code(exodusFilePtr), 2,
+                          dims.data(), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         errmsg =
@@ -548,9 +548,10 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
       ex__compress_variable(exodusFilePtr, varid, 2);
 
       // Attribute name array...
-      int adims[] = {numattrdim, namestrdim};
+      std::array adims{numattrdim, namestrdim};
 
-      status = nc_def_var(exodusFilePtr, VAR_NAME_ATTRIB(iblk + 1), NC_CHAR, 2, adims, &varid);
+      status =
+          nc_def_var(exodusFilePtr, VAR_NAME_ATTRIB(iblk + 1), NC_CHAR, 2, adims.data(), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         errmsg = fmt::format("Error: failed to define attribute name array for element block {}"
@@ -562,11 +563,11 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
     }
 
     // element connectivity array
-    int dims[] = {numelbdim, nelnoddim};
+    std::array dims{numelbdim, nelnoddim};
 
     int bulk_type = get_type(exodusFilePtr, EX_BULK_INT64_DB);
     int connid;
-    status = nc_def_var(exodusFilePtr, VAR_CONN(iblk + 1), bulk_type, 2, dims, &connid);
+    status = nc_def_var(exodusFilePtr, VAR_CONN(iblk + 1), bulk_type, 2, dims.data(), &connid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to create connectivity array for block {} in file id {}",
@@ -685,11 +686,11 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Node
     }
 
     // define variable to store node set node list here instead of in expns
-    int bulk_type = get_type(exodusFilePtr, EX_BULK_INT64_DB);
-    int dims[]    = {dimid};
-    int varid;
-    status =
-        nc_def_var(exodusFilePtr, VAR_NODE_NS(cur_num_node_sets + 1), bulk_type, 1, dims, &varid);
+    int        bulk_type = get_type(exodusFilePtr, EX_BULK_INT64_DB);
+    std::array dims{dimid};
+    int        varid;
+    status = nc_def_var(exodusFilePtr, VAR_NODE_NS(cur_num_node_sets + 1), bulk_type, 1,
+                        dims.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -722,7 +723,7 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Node
 
       // create variable for distribution factors
       status = nc_def_var(exodusFilePtr, VAR_FACT_NS(cur_num_node_sets + 1),
-                          nc_flt_code(exodusFilePtr), 1, dims, &varid);
+                          nc_flt_code(exodusFilePtr), 1, dims.data(), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -832,11 +833,11 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Side
       return EX_FATAL;
     }
 
-    int bulk_type = get_type(exodusFilePtr, EX_BULK_INT64_DB);
-    int dims[]    = {dimid};
-    int varid     = 0;
-    status =
-        nc_def_var(exodusFilePtr, VAR_ELEM_SS(cur_num_side_sets + 1), bulk_type, 1, dims, &varid);
+    int        bulk_type = get_type(exodusFilePtr, EX_BULK_INT64_DB);
+    std::array dims{dimid};
+    int        varid = 0;
+    status           = nc_def_var(exodusFilePtr, VAR_ELEM_SS(cur_num_side_sets + 1), bulk_type, 1,
+                                  dims.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -854,8 +855,8 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Side
     ex__compress_variable(exodusFilePtr, varid, 1);
 
     // create side list variable for side set
-    status =
-        nc_def_var(exodusFilePtr, VAR_SIDE_SS(cur_num_side_sets + 1), bulk_type, 1, dims, &varid);
+    status = nc_def_var(exodusFilePtr, VAR_SIDE_SS(cur_num_side_sets + 1), bulk_type, 1,
+                        dims.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -894,7 +895,7 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Side
       // create distribution factor list variable for side set
       dims[0] = dimid;
       status  = nc_def_var(exodusFilePtr, VAR_FACT_SS(cur_num_side_sets + 1),
-                           nc_flt_code(exodusFilePtr), 1, dims, &varid);
+                           nc_flt_code(exodusFilePtr), 1, dims.data(), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
