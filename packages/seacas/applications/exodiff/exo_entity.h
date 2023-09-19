@@ -37,8 +37,6 @@ public:
   size_t Id() const { return id_; }
   size_t Index() const { return index_; }
 
-  virtual int Check_State() const = 0;
-
   void initialize(int file_id, size_t id);
 
   bool        is_valid_var(size_t var_index) const;
@@ -65,9 +63,6 @@ public:
   // Return "block", "nodelist", "surface", depending on underlying type.
   virtual const char *short_label() const = 0;
 
-  // Return EX_ELEM_BLOCK, EX_NODE_SET, ... of underlying type
-  virtual EXOTYPE exodus_type() const = 0;
-
 protected:
   std::string  name_{};
   int          fileId{-1};
@@ -76,6 +71,10 @@ protected:
   size_t       numEntity{0}; // Number of items (nodes, sides, elements)
 
 private:
+  // Return EX_ELEM_BLOCK, EX_NODE_SET, ... of underlying type
+  virtual EXOTYPE exodus_type() const = 0;
+
+  virtual int  Check_State() const  = 0;
   virtual void entity_load_params() = 0;
   void         internal_load_params();
 

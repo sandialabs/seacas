@@ -34,12 +34,11 @@ public:
   const INT              *Connectivity(size_t elmt_index) const; // 1-offset connectivity
 
   // Misc:
-  int Check_State() const override;
-
   int64_t offset() const { return offset_; }
   void    offset(int64_t off) { offset_ = off; }
 
 private:
+  int  Check_State() const override;
   void entity_load_params() override;
 
   EXOTYPE     exodus_type() const override;

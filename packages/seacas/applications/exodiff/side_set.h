@@ -30,10 +30,10 @@ public:
   const double       *Distribution_Factors() const;
   void                Free_Distribution_Factors() const;
 
-  int    Check_State() const override;
   size_t Distribution_Factor_Count() const { return num_dist_factors; }
 
 private:
+  int  Check_State() const override;
   void load_sides(const std::vector<INT> &elmt_map) const;
   void load_df() const;
   void entity_load_params() override;

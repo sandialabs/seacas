@@ -29,9 +29,8 @@ public:
   const double *Distribution_Factors() const;
   void          Free_Distribution_Factors() const;
 
-  int Check_State() const override;
-
 private:
+  int  Check_State() const override;
   void entity_load_params() override;
 
   EXOTYPE     exodus_type() const override;
