@@ -32,8 +32,6 @@ namespace {
 
     return NC_INT;
   }
-  bool lessOffset(const Excn::Block &b1, const Excn::Block &b2) { return b1.offset_ < b2.offset_; }
-
   int define_netcdf_vars(int exoid, const char *type, size_t count, const char *dim_num,
                          const char *stat_var, const char *id_var, const char *name_var);
 
@@ -134,7 +132,8 @@ int Excn::Internals::write_meta_data(const Mesh<INT> &mesh, const std::vector<Bl
 
   std::vector<Block> sorted_blocks(blocks);
   if (!order_ok) {
-    std::sort(sorted_blocks.begin(), sorted_blocks.end(), lessOffset);
+    std::sort(sorted_blocks.begin(), sorted_blocks.end(),
+              [](const Block &b1, const Block &b2) { return b1.offset_ < b2.offset_; });
 
     // Now, update the position_ field based on the sorted order.
     for (size_t i = 0; i < blocks.size(); i++) {
