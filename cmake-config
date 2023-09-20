@@ -122,16 +122,6 @@ then
       CXXFLAGS="-Wall -Wextra  -Wunused -pedantic -Wshadow"
   fi
 
-  if [ "$COMPILER" == "gnubrew" ]
-  then
-      VER=${VER:-10}
-      CXX=g++-${VER}
-      CC=gcc-${VER}
-      FC=gfortran-${VER}
-      CFLAGS="-Wall -Wunused -pedantic -std=c11"
-      CXXFLAGS="-Wall -Wunused -pedantic"
-  fi
-
   if [ "$COMPILER" == "gnumacport" ]
   then
       VER=${VER:-10}
