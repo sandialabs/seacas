@@ -325,9 +325,9 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
   }
 
   {
-    int dim[] = {timedim};
-    if ((status = nc_def_var(exodusFilePtr, VAR_WHOLE_TIME, nc_flt_code(exodusFilePtr), 1, dim,
-                             &varid)) != NC_NOERR) {
+    std::array dim{timedim};
+    if ((status = nc_def_var(exodusFilePtr, VAR_WHOLE_TIME, nc_flt_code(exodusFilePtr), 1,
+                             dim.data(), &varid)) != NC_NOERR) {
       errmsg = fmt::format("Error: failed to define whole time step variable in file id {}",
                            exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
@@ -1020,14 +1020,14 @@ namespace {
   {
     std::string errmsg;
     int         status;
-    int         dim[2];
     int         varid;
 
     if (nodes > 0) {
       // node coordinate arrays -- separate storage...
-      dim[0] = node_dim;
+      std::array dim{node_dim};
       if (dimension > 0) {
-        status = nc_def_var(exodusFilePtr, VAR_COORD_X, nc_flt_code(exodusFilePtr), 1, dim, &varid);
+        status = nc_def_var(exodusFilePtr, VAR_COORD_X, nc_flt_code(exodusFilePtr), 1, dim.data(),
+                            &varid);
         if (status != NC_NOERR) {
           ex_opts(EX_VERBOSE);
           errmsg = fmt::format("Error: failed to define node x coordinate array in file id {}",
@@ -1039,7 +1039,8 @@ namespace {
       }
 
       if (dimension > 1) {
-        status = nc_def_var(exodusFilePtr, VAR_COORD_Y, nc_flt_code(exodusFilePtr), 1, dim, &varid);
+        status = nc_def_var(exodusFilePtr, VAR_COORD_Y, nc_flt_code(exodusFilePtr), 1, dim.data(),
+                            &varid);
         if (status != NC_NOERR) {
           ex_opts(EX_VERBOSE);
           errmsg = fmt::format("Error: failed to define node y coordinate array in file id {}",
@@ -1051,7 +1052,8 @@ namespace {
       }
 
       if (dimension > 2) {
-        status = nc_def_var(exodusFilePtr, VAR_COORD_Z, nc_flt_code(exodusFilePtr), 1, dim, &varid);
+        status = nc_def_var(exodusFilePtr, VAR_COORD_Z, nc_flt_code(exodusFilePtr), 1, dim.data(),
+                            &varid);
         if (status != NC_NOERR) {
           ex_opts(EX_VERBOSE);
           errmsg = fmt::format("Error: failed to define node z coordinate array in file id {}",
@@ -1064,10 +1066,8 @@ namespace {
     }
 
     // coordinate names array
-    dim[0] = dim_dim;
-    dim[1] = str_dim;
-
-    status = nc_def_var(exodusFilePtr, VAR_NAME_COOR, NC_CHAR, 2, dim, &varid);
+    std::array dim{dim_dim, str_dim};
+    status = nc_def_var(exodusFilePtr, VAR_NAME_COOR, NC_CHAR, 2, dim.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg =
@@ -1081,9 +1081,8 @@ namespace {
   int define_netcdf_vars(int exoid, const char *type, size_t count, const char *dim_num,
                          const char *stat_var, const char *id_var, const char *name_var)
   {
-    int         dimid = 0;
-    int         varid = 0;
-    int         dim[2];
+    int         dimid      = 0;
+    int         varid      = 0;
     int         namestrdim = 0;
     std::string errmsg;
 
@@ -1104,8 +1103,8 @@ namespace {
     }
 
     // id status array:
-    dim[0] = dimid;
-    status = nc_def_var(exoid, stat_var, NC_INT, 1, dim, &varid);
+    std::array dim{dimid};
+    status = nc_def_var(exoid, stat_var, NC_INT, 1, dim.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define side {} status in file id {}", type, exoid);
@@ -1115,7 +1114,7 @@ namespace {
 
     // id array:
     int ids_type = get_type(exoid, EX_IDS_INT64_DB);
-    status       = nc_def_var(exoid, id_var, ids_type, 1, dim, &varid);
+    status       = nc_def_var(exoid, id_var, ids_type, 1, dim.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define {} property in file id {}", type, exoid);
@@ -1133,10 +1132,8 @@ namespace {
       return EX_FATAL;
     }
 
-    dim[0] = dimid;
-    dim[1] = namestrdim;
-
-    status = nc_def_var(exoid, name_var, NC_CHAR, 2, dim, &varid);
+    std::array dims{dimid, namestrdim};
+    status = nc_def_var(exoid, name_var, NC_CHAR, 2, dims.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define {} name array in file id {}", type, exoid);
