@@ -1892,9 +1892,9 @@ namespace {
     gnodes.reserve(node_cmap.size());
     gprocs.reserve(node_cmap.size());
 
-    for (auto &np : node_cmap) {
-      gnodes.push_back(np.first);
-      gprocs.push_back(np.second);
+    for (auto &[node, proc] : node_cmap) {
+      gnodes.push_back(node);
+      gprocs.push_back(proc);
     }
 
     // NOTE: This is inefficient in general since going in and out of define mode.
@@ -4566,10 +4566,10 @@ namespace {
 
     std::string var_name;
     int         out_position = -1;
-    for (const auto &variable_name : variable_names) {
-      if (variable_name.second > 0) {
-        if (var_name != variable_name.first) {
-          var_name = variable_name.first;
+    for (const auto &[variable_name, variable_block] : variable_names) {
+      if (variable_block > 0) {
+        if (var_name != variable_name) {
+          var_name = variable_name;
           // Find which exodus variable matches this name
           out_position = -1;
           for (size_t j = 0; j < exo_names.size(); j++) {
@@ -4592,7 +4592,7 @@ namespace {
         // Find out which block corresponds to the specified id.
         int block = -1;
         for (size_t b = 0; b < global.count(vars.objectType); b++) {
-          if (glob_blocks[b].id == variable_name.second) {
+          if (glob_blocks[b].id == variable_block) {
             block = b;
             break;
           }
@@ -4603,7 +4603,7 @@ namespace {
           fmt::print(
               errmsg,
               "ERROR: (EPU) User-specified block id of {} for variable '{}' does not exist.\n",
-              variable_name.second, variable_name.first);
+              variable_block, variable_name);
           throw std::runtime_error(errmsg.str());
         }
 
@@ -4611,7 +4611,7 @@ namespace {
         if (global.truthTable[static_cast<int>(vars.objectType)][truth_table_loc] == 0) {
           std::ostringstream errmsg;
           fmt::print(errmsg, "ERROR: (EPU) Variable '{}' does not exist on block {}.\n",
-                     variable_name.first, variable_name.second);
+                     variable_name, variable_block);
           throw std::runtime_error(errmsg.str());
         }
         global.truthTable[static_cast<int>(vars.objectType)][truth_table_loc] = 1;
