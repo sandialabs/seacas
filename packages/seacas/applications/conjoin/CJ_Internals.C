@@ -29,7 +29,6 @@ namespace {
     if ((ex_int64_status(exoid) & type) != 0U) {
       return NC_INT64;
     }
-
     return NC_INT;
   }
   int define_netcdf_vars(int exoid, const char *type, size_t count, const char *dim_num,
@@ -260,22 +259,12 @@ int Excn::Internals::write_meta_data(const Mesh<INT> &mesh, const std::vector<Bl
 template <typename INT>
 int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMetaData & /*unused*/)
 {
-  int numdimdim  = 0;
-  int numnoddim  = 0;
-  int numelemdim = 0;
-  int timedim    = 0;
-  int namestrdim = 0;
-  int varid      = 0;
-
-  int map_type = get_type(exodusFilePtr, EX_MAPS_INT64_DB);
-
-  std::string errmsg;
-
   // define some attributes...
   int status = nc_put_att_text(exodusFilePtr, NC_GLOBAL, ATT_TITLE, mesh.title.length() + 1,
                                mesh.title.c_str());
   if (status != NC_NOERR) {
-    errmsg = fmt::format("Error: failed to define title attribute to file id {}", exodusFilePtr);
+    std::string errmsg =
+        fmt::format("Error: failed to define title attribute to file id {}", exodusFilePtr);
     ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
     return EX_FATAL;
   }
@@ -288,8 +277,8 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
     status = nc_put_att_int(exodusFilePtr, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &current_len);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to define ATT_MAX_NAME_LENGTH attribute to file id {}",
-                           exodusFilePtr);
+      std::string errmsg = fmt::format(
+          "Error: failed to define ATT_MAX_NAME_LENGTH attribute to file id {}", exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return EX_FATAL;
     }
@@ -299,36 +288,42 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
   if (maximumNameLength < 32) {
     maximumNameLength = 32;
   }
-  status = nc_def_dim(exodusFilePtr, DIM_STR_NAME, maximumNameLength + 1, &namestrdim);
+  int namestrdim = 0;
+  status         = nc_def_dim(exodusFilePtr, DIM_STR_NAME, maximumNameLength + 1, &namestrdim);
   if (status != NC_NOERR) {
     ex_opts(EX_VERBOSE);
-    errmsg = fmt::format("Error: failed to define name string length in file id {}", exodusFilePtr);
+    std::string errmsg =
+        fmt::format("Error: failed to define name string length in file id {}", exodusFilePtr);
     ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
     return EX_FATAL;
   }
 
   // ...and some dimensions..
-  status = nc_def_dim(exodusFilePtr, DIM_NUM_DIM, mesh.dimensionality, &numdimdim);
+  int numdimdim = 0;
+  status        = nc_def_dim(exodusFilePtr, DIM_NUM_DIM, mesh.dimensionality, &numdimdim);
   if (status != NC_NOERR) {
     ex_opts(EX_VERBOSE);
-    errmsg =
+    std::string errmsg =
         fmt::format("Error: failed to define number of dimensions in file id {}", exodusFilePtr);
     ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
     return EX_FATAL;
   }
 
+  int timedim = 0;
   if ((status = nc_def_dim(exodusFilePtr, DIM_TIME, NC_UNLIMITED, &timedim)) != NC_NOERR) {
-    errmsg = fmt::format("Error: failed to define time dimension in file id {}", exodusFilePtr);
+    std::string errmsg =
+        fmt::format("Error: failed to define time dimension in file id {}", exodusFilePtr);
     ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
     return EX_FATAL;
   }
 
+  int varid = 0;
   {
     std::array dim{timedim};
     if ((status = nc_def_var(exodusFilePtr, VAR_WHOLE_TIME, nc_flt_code(exodusFilePtr), 1,
                              dim.data(), &varid)) != NC_NOERR) {
-      errmsg = fmt::format("Error: failed to define whole time step variable in file id {}",
-                           exodusFilePtr);
+      std::string errmsg = fmt::format(
+          "Error: failed to define whole time step variable in file id {}", exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return EX_FATAL;
     }
@@ -341,11 +336,14 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
     ex__compress_variable(exodusFilePtr, varid, -2); /* don't compress, but do set collective io */
   }
 
+  int map_type  = get_type(exodusFilePtr, EX_MAPS_INT64_DB);
+  int numnoddim = 0;
   if (mesh.nodeCount > 0) {
     status = nc_def_dim(exodusFilePtr, DIM_NUM_NODES, mesh.nodeCount, &numnoddim);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to define number of nodes in file id {}", exodusFilePtr);
+      std::string errmsg =
+          fmt::format("Error: failed to define number of nodes in file id {}", exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return EX_FATAL;
     }
@@ -356,13 +354,13 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
-        errmsg =
+        std::string errmsg =
             fmt::format("Error: node numbering map already exists in file id {}", exodusFilePtr);
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
       else {
-        errmsg = fmt::format("Error: failed to create node numbering map array in file id {}",
-                             exodusFilePtr);
+        std::string errmsg = fmt::format(
+            "Error: failed to create node numbering map array in file id {}", exodusFilePtr);
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
       return EX_FATAL;
@@ -371,10 +369,11 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
   }
 
   if (mesh.elementCount > 0) {
-    status = nc_def_dim(exodusFilePtr, DIM_NUM_ELEM, mesh.elementCount, &numelemdim);
+    int numelemdim = 0;
+    status         = nc_def_dim(exodusFilePtr, DIM_NUM_ELEM, mesh.elementCount, &numelemdim);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
-      errmsg =
+      std::string errmsg =
           fmt::format("Error: failed to define number of elements in file id {}", exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return EX_FATAL;
@@ -387,13 +386,13 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
-        errmsg =
+        std::string errmsg =
             fmt::format("Error: element numbering map already exists in file id {}", exodusFilePtr);
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
       else {
-        errmsg = fmt::format("Error: failed to create element numbering map in file id {}",
-                             exodusFilePtr);
+        std::string errmsg = fmt::format(
+            "Error: failed to create element numbering map in file id {}", exodusFilePtr);
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
       return EX_FATAL;
@@ -951,14 +950,11 @@ int Excn::Internals::put_non_define_data(const std::vector<SideSet<INT>> &sidese
 namespace {
   int put_int_array(int exoid, const char *var_type, const std::vector<int> &array)
   {
-    std::string errmsg;
-    int         var_id;
-    int         status;
-
-    status = nc_inq_varid(exoid, var_type, &var_id);
+    int var_id;
+    int status = nc_inq_varid(exoid, var_type, &var_id);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to locate {} in file id {}", var_type, exoid);
+      std::string errmsg = fmt::format("Error: failed to locate {} in file id {}", var_type, exoid);
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return EX_FATAL;
     }
@@ -966,7 +962,8 @@ namespace {
     status = nc_put_var_int(exoid, var_id, array.data());
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
-      errmsg = fmt::format("Error: failed to write {} array in file id {}", var_type, exoid);
+      std::string errmsg =
+          fmt::format("Error: failed to write {} array in file id {}", var_type, exoid);
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return EX_FATAL;
     }
@@ -1080,12 +1077,10 @@ namespace {
   int define_netcdf_vars(int exoid, const char *type, size_t count, const char *dim_num,
                          const char *stat_var, const char *id_var, const char *name_var)
   {
-    int         dimid      = 0;
-    int         varid      = 0;
-    int         namestrdim = 0;
     std::string errmsg;
 
-    int status = nc_inq_dimid(exoid, DIM_STR_NAME, &namestrdim);
+    int namestrdim = 0;
+    int status     = nc_inq_dimid(exoid, DIM_STR_NAME, &namestrdim);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to get string name dimension in file id {}", exoid);
@@ -1093,7 +1088,8 @@ namespace {
       return EX_FATAL;
     }
 
-    status = nc_def_dim(exoid, dim_num, count, &dimid);
+    int dimid = 0;
+    status    = nc_def_dim(exoid, dim_num, count, &dimid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define number of {}s in file id {}", type, exoid);
@@ -1103,7 +1099,8 @@ namespace {
 
     // id status array:
     std::array dim{dimid};
-    status = nc_def_var(exoid, stat_var, NC_INT, 1, dim.data(), &varid);
+    int        varid = 0;
+    status           = nc_def_var(exoid, stat_var, NC_INT, 1, dim.data(), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define side {} status in file id {}", type, exoid);
