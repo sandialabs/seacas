@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -21,6 +21,11 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
+#if defined FMT_SUPPORT
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+#endif
 
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
@@ -50,7 +55,7 @@ namespace {
     if (tokenized_strings.find(key) == tokenized_strings.end()) {
       std::string temp       = string;
       auto        tokens     = SEAMS::tokenize(temp, delm);
-      tokenized_strings[key] = tokens;
+      tokenized_strings[key] = std::move(tokens);
     }
     return tokenized_strings[key];
   }
@@ -92,6 +97,10 @@ namespace SEAMS {
     time_t timer = time(nullptr);
     return timer;
   }
+
+  double do_FtoC(double F) { return (F - 32.0) / 1.8; }
+
+  double do_CtoF(double C) { return (C * 1.8) + 32.0; }
 
   // DO_INT:  Calculate integer nearest to zero from value
   double do_int(double x)
@@ -461,9 +470,9 @@ namespace SEAMS {
   {
     double seconds = h * 3600.0 + mi * 60 + se;
 
-    long m = static_cast<long>(mon);
-    long d = static_cast<long>(day);
-    long y = static_cast<long>(year);
+    int64_t m = static_cast<int64_t>(mon);
+    int64_t d = static_cast<int64_t>(day);
+    int64_t y = static_cast<int64_t>(year);
 
     if (m > 2) {
       m -= 3;
@@ -472,9 +481,9 @@ namespace SEAMS {
       m += 9;
       --y;
     }
-    long c  = y / 100L;
-    long ya = y - (100L * c);
-    long j  = (146097L * c) / 4L + (1461L * ya) / 4L + (153L * m + 2L) / 5L + d + 1721119L;
+    int64_t c  = y / 100L;
+    int64_t ya = y - (100L * c);
+    int64_t j  = (146097L * c) / 4L + (1461L * ya) / 4L + (153L * m + 2L) / 5L + d + 1721119L;
     if (seconds < 12 * 3600.0) {
       j--;
       seconds += 12.0 * 3600.0;
@@ -590,7 +599,7 @@ namespace SEAMS {
 
     SEAMS::symrec *format;
     format = aprepro->getsym("_FORMAT");
-    sprintf(tmpstr, format->value.svar.c_str(), x);
+    snprintf(tmpstr, 128, format->value.svar.c_str(), x);
     new_string(tmpstr, &tmp);
     return (tmp);
   }
@@ -645,7 +654,7 @@ namespace SEAMS {
 
   double do_find_word(char *word, char *string, char *delm)
   {
-    auto       &tokens = get_tokenized_strings(string, delm);
+    const auto &tokens = get_tokenized_strings(string, delm);
     std::string sword{word};
     for (size_t i = 0; i < tokens.size(); i++) {
       if (tokens[i] == sword) {
@@ -659,7 +668,7 @@ namespace SEAMS {
   {
     auto &tokens = get_tokenized_strings(string, delm);
 
-    size_t in = static_cast<size_t>(n);
+    auto in = static_cast<size_t>(n);
     if (tokens.size() >= in) {
       char *word = nullptr;
       new_string(tokens[in - 1], &word);
@@ -796,15 +805,14 @@ namespace SEAMS {
     // Using 'intout(val)', val will be converted to a string
     // using an integer format
 
-    char       *tmp;
-    static char tmpstr[128];
+    char *tmp;
     if (intval == 0.0) {
       new_string("0", &tmp);
       return (tmp);
     }
 
-    sprintf(tmpstr, "%d", static_cast<int>(intval));
-    new_string(tmpstr, &tmp);
+    std::string tmpstr = std::to_string(static_cast<int>(intval));
+    new_string(tmpstr.c_str(), &tmp);
     return (tmp);
   }
 
@@ -944,7 +952,18 @@ namespace SEAMS {
         }
         lines << "\t";
         for (int ic = 0; ic < cols; ic++) {
+#if defined FMT_SUPPORT
+          SEAMS::symrec *format = aprepro->getsym("_FORMAT");
+          if (format->value.svar.empty()) {
+            fmt::print(lines, "{}", my_array_data->data[idx++]);
+          }
+          else {
+            auto tmpstr = fmt::sprintf(format->value.svar, my_array_data->data[idx++]);
+            lines << tmpstr;
+          }
+#else
           lines << my_array_data->data[idx++];
+#endif
           if (ic < cols - 1) {
             lines << "\t";
           }
@@ -1018,11 +1037,81 @@ namespace SEAMS {
     return array_data;
   }
 
+  array *do_principal(const array *a)
+  {
+    // Good calculator and a version of malvern's method at:
+    // https://www.continuummechanics.org/principalstress.html
+
+    auto array_data = aprepro->make_array(3, 1);
+
+    if (a->rows != 3 || a->cols != 3) {
+      aprepro->error("Invalid array size.  Must be 3x3 for principal values calculation.\n", false);
+      return array_data;
+    }
+    if (a->data[1] != a->data[3] || a->data[2] != a->data[6] || a->data[5] != a->data[7]) {
+      aprepro->error("Array is not symmetric in principal values calculation.\n", false);
+      return array_data;
+    }
+
+    const double third = 1.0 / 3.0;
+    const double sqrt3 = sqrt(3.0);
+
+    // Find principal trial stresses and directions -
+    // [ 0 1 2 ]  [ sk1 sk4 sk6 ]
+    // [ 3 4 5 ]  [ sk4 sk2 sk5 ]
+    // [ 6 7 8 ]  [ sk6 sk5 sk3 ]
+
+    const double sk1 = a->data[0];
+    const double sk2 = a->data[4];
+    const double sk3 = a->data[8];
+    const double sk4 = a->data[1];
+    const double sk5 = a->data[5];
+    const double sk6 = a->data[2];
+
+    double dsk12 = sk1 - sk2;
+    double dsk13 = sk1 - sk3;
+    double dsk23 = sk2 - sk3;
+
+    double i1 = (sk1 + sk2 + sk3);
+    double i2 =
+        (dsk12 * dsk12 + dsk13 * dsk13 + dsk23 * dsk23) / 6.0 + sk4 * sk4 + sk5 * sk5 + sk6 * sk6;
+
+    double s1 = (dsk12 + dsk13) * third;
+    double s2 = (-dsk12 + dsk23) * third;
+    double s3 = (-dsk13 - dsk23) * third;
+
+    double i3 = s1 * s2 * s3 + (2. * sk4 * sk5 * sk6) - (s1 * sk5 * sk5) - (s2 * sk6 * sk6) -
+                (s3 * sk4 * sk4);
+
+    // calculate constants for malvern method  (p92)
+    double fi2 = (i2 == 0.0) ? 1.0 : i2;
+
+    double cos3al = sqrt3 * 1.5 * i3 / fi2 / sqrt(fi2);
+    //    cos3al = sign( min( 1.0, abs(cos3al) ),cos3al );
+
+    double calpha = cos(acos(cos3al) / 3.0);
+    double salpha = sqrt(1.0 - calpha * calpha);
+
+    double t  = sqrt3 * sqrt(i2);
+    double p1 = (i1 + t * 2. * calpha) * third;
+    double p2 = (i1 - t * (calpha + salpha * sqrt3)) * third;
+    double p3 = (i1 - t * (calpha - salpha * sqrt3)) * third;
+
+    array_data->data[0] = p1;
+    array_data->data[1] = p2;
+    array_data->data[2] = p3;
+
+    // ... Sort Into Correct Position (p1 > p2 > p3)
+    std::sort(array_data->data.begin(), array_data->data.end(), std::greater<double>());
+
+    return array_data;
+  }
+
   array *do_csv_array1(const char *filename) { return do_csv_array(filename, 0.0); }
 
   array *do_csv_array(const char *filename, double skip)
   {
-    size_t rows_to_skip = static_cast<size_t>(skip);
+    auto rows_to_skip = static_cast<size_t>(skip);
 
     std::fstream *file = aprepro->open_file(filename, "r");
     if (file != nullptr) {
@@ -1126,6 +1215,30 @@ namespace SEAMS {
       array_data->data[idx++] = std::stod(token);
     }
     assert(idx == array_data->rows);
+    return array_data;
+  }
+
+  array *do_sym_tensor_from_string(const char *string, const char *delm)
+  {
+    auto array_data = aprepro->make_array(3, 3);
+    auto tokens     = SEAMS::tokenize(string, delm);
+    if (tokens.size() != 6) {
+      aprepro->error("Incorrect number of values found in sym_tensor_from_string function.  Must "
+                     "be 6: xx, yy, zz, xy, yz, xz.\n",
+                     false);
+      return array_data;
+    }
+
+    array_data->data[0] = std::stod(tokens[0]);
+    array_data->data[4] = std::stod(tokens[1]);
+    array_data->data[8] = std::stod(tokens[2]);
+    array_data->data[1] = std::stod(tokens[3]);
+    array_data->data[5] = std::stod(tokens[4]);
+    array_data->data[2] = std::stod(tokens[5]);
+    array_data->data[3] = array_data->data[1];
+    array_data->data[7] = array_data->data[5];
+    array_data->data[6] = array_data->data[2];
+
     return array_data;
   }
 } // namespace SEAMS

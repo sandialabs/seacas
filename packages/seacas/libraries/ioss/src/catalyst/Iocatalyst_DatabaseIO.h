@@ -1,10 +1,12 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
 #pragma once
+
+#include "iocatalyst_export.h"
 
 #include "Ioss_EntitySet.h"
 #include "Ioss_Region.h"  // for Region, SideSetContainer, etc
@@ -19,7 +21,7 @@
 /** \brief A namespace for the Catalyst 2.0 database format.
  */
 namespace Iocatalyst {
-  class DatabaseIO : public Ioss::DatabaseIO
+  class IOCATALYST_EXPORT DatabaseIO : public Ioss::DatabaseIO
   {
     using Superclass = Ioss::DatabaseIO;
 
@@ -46,7 +48,7 @@ namespace Iocatalyst {
     void finalize_database() const override {}
 
     /** Return a string specifying underlying format of database (exodus, cgns, ...) */
-    const std::string get_format() const { return "CATALYST2"; }
+    std::string get_format() const override { return "CATALYST2"; }
 
     /** \brief Determine whether the database needs information about process ownership of nodes.
      *

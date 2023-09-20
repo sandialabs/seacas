@@ -66,7 +66,7 @@ changes that were made are shown below along with the name of the
 Exodus API function in which the changes were made.
 
 Alternatively, you can look at the changes that were made to the API at
-http://github.com/gsjaardema/seacas/packages/seacas/libraries/exodus/src.
+http://github.com/sandialabs/seacas/packages/seacas/libraries/exodus/src.
 The files that were changed are:
 
 \note The filenames have been changed since this was written.

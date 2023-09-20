@@ -68,7 +68,7 @@ You should have the following directories::
 Create a TriBITS package
 ------------------------
 
-Any TriBITS package needs to have atleast 3 files.
+Any TriBITS package needs to have at least 3 files.
 
 - a top level CMakeLists file
 - a file that track package dependencies
@@ -150,7 +150,7 @@ single line::
   
   set(PROJECT_NAME TribitsHelloWorld)
 
-**PackageList.cmake** defeines which packages are in the project.  We
+**PackageList.cmake** defines which packages are in the project.  We
  will just need to tell it the name and location of our one package::
 
   tribits_repository_define_packages(
@@ -163,7 +163,7 @@ single line::
  have the following contents::
 
   # To be safe, define your minimum CMake version
-  cmake_minimum_required(VERSION 3.17.0 FATAL_ERROR)
+  cmake_minimum_required(VERSION 3.23.0 FATAL_ERROR)
   
   # Make CMake set WIN32 with CYGWIN for older CMake versions
   set(CMAKE_LEGACY_CYGWIN_WIN32 1 CACHE BOOL "" FORCE)
@@ -182,7 +182,7 @@ single line::
   # Include the TriBITS system
   include("${${PROJECT_NAME}_TRIBITS_DIR}/TriBITS.cmake")
   
-  # MPI and Fortran are enabled by defualt, turn them off for this project
+  # MPI and Fortran are enabled by default, turn them off for this project
   set(TPL_ENABLE_MPI OFF CACHE BOOL "" FORCE)
   # Turn off Fortran support by default
   set(${PROJECT_NAME}_ENABLE_Fortran_DEFAULT OFF)
@@ -220,7 +220,7 @@ project::
   cmake ../
 
 The configure step will have created several files inside your build
-directory, most notably it will have created nessesary make files to
+directory, most notably it will have created necessary make files to
 actually build your project.  The other file I will mention here is
 the CMakeCache.txt which stores information about how the project was
 configured. To build your project just type::
@@ -327,7 +327,7 @@ have already specified for example::
   PASS_REGULAR_EXPRESSION "Hello World")
 
 will run "Hello-Executable-Name" and verify that the output is "Hello
-World".  You can also add a test and an exectuable att he same
+World".  You can also add a test and an executable att he same
 time. for example::
 
   tribits_add_executable_and_test(unit_tests SOURCES
@@ -411,13 +411,13 @@ to a diecroyr called "Install" in the current source tree::
 
   set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/Install)
 
-now clear the contents ofthe build directory and reconfigure, biuld,
+now clear the contents of the build directory and reconfigure, biuld,
 and install the project with::
 
   cmake ../
   make install
 
-Now you should see a directory calle "Install" in the top level of the
+Now you should see a directory called "Install" in the top level of the
 project with contents::
 
   tree
@@ -425,8 +425,6 @@ project with contents::
   |__ bin
   |   |__ Hello-Executable-Name.exe
   |__ include
-  |   |__ Makefile.export.HelloPackage
-  |   |__ Makefile.export.TribitsGreetings
   |   |__ hello_world_lib.hpp
   |__ lib
       |__ cmake

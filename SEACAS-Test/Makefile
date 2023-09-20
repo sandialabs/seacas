@@ -2,7 +2,9 @@ NPROCA = 31
 NPROCB = 32
 NPROCC = 33
 
-BIN = ../bin
+BASE ?= ".."
+BIN = $(BASE)/bin
+
 PYTHON  =       python
 APREPRO	=	$(BIN)/aprepro
 FASTQ	=	$(BIN)/fastq
@@ -104,7 +106,7 @@ base_ioshell.g:
 python: baseline.g base_ioshell.g
 	$(RM) baseline*copy*.e
 	$(RM) base_ioshell*copy*.e
-	PYTHONPATH=../lib:$$PYTHONPATH $(PYTHON) test_exo.py
+	PYTHONPATH=$(BASE)/lib:$$PYTHONPATH $(PYTHON) test_exo.py
 	$(EXODIFF) -stat -pedantic baseline.g baseline_numpy_copy.e
 	$(EXODIFF) -stat -pedantic baseline.g baseline_ctype_copy.e
 	$(EXODIFF) -stat -pedantic base_ioshell.g base_ioshell_copy.e

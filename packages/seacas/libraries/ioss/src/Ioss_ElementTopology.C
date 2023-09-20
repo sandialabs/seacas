@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -28,7 +28,7 @@ void Ioss::ETRegistry::insert(const Ioss::ETM_VP &value, bool delete_me)
 
 Ioss::ETRegistry::~ETRegistry()
 {
-  for (auto &entry : m_deleteThese) {
+  for (const auto &entry : m_deleteThese) {
     delete entry;
   }
 }
@@ -93,6 +93,23 @@ Ioss::ElementTopology *Ioss::ElementTopology::factory(const std::string &type, b
         std::string sub_type = ltype.substr(0, dash);
         iter                 = registry().find(sub_type);
       }
+    }
+  }
+
+  // See if we can recognize an element topology consisting of the first 3 or 4 letters
+  // of the name concatenated with the digits at the end of the name (if any)...
+  if (iter == registry().end()) {
+    auto first_three    = ltype.substr(0, 3);
+    auto first_four     = ltype.substr(0, 4);
+    auto node_count_str = Ioss::Utils::get_trailing_digits(ltype);
+    if (!node_count_str.empty()) {
+      first_three += node_count_str;
+      first_four += node_count_str;
+    }
+
+    iter = registry().find(first_four);
+    if (iter == registry().end()) {
+      iter = registry().find(first_three);
     }
   }
 
@@ -267,10 +284,8 @@ Ioss::IntVector Ioss::ElementTopology::boundary_connectivity(int bnd_number) con
       if (number_edges() > 1) {
         return edge_connectivity(bnd_number);
       }
-      else {
-        // Spring-type element -- has node as boundary.
-        return Ioss::IntVector{bnd_number - 1};
-      }
+      // Spring-type element -- has node as boundary.
+      return Ioss::IntVector{bnd_number - 1};
     }
   }
   else {
@@ -278,8 +293,12 @@ Ioss::IntVector Ioss::ElementTopology::boundary_connectivity(int bnd_number) con
       assert(spatial_dimension() == 3);
       return edge_connectivity(bnd_number);
     }
+    if (parametric_dimension() == 1) {
+      // Spring/line-type element -- has node as boundary.
+      return Ioss::IntVector{bnd_number - 1};
+    }
   }
-  return Ioss::IntVector();
+  return {};
 }
 
 Ioss::ElementTopology *Ioss::ElementTopology::boundary_type(int bnd_number) const
@@ -309,10 +328,8 @@ Ioss::ElementTopology *Ioss::ElementTopology::boundary_type(int bnd_number) cons
       if (number_edges() > 1) {
         return edge_type(bnd_number);
       }
-      else {
-        // Spring-type element -- has node as boundary.
-        return Ioss::ElementTopology::factory("node");
-      }
+      // Spring-type element -- has node as boundary.
+      return Ioss::ElementTopology::factory("node");
     }
   }
   else {
@@ -320,13 +337,17 @@ Ioss::ElementTopology *Ioss::ElementTopology::boundary_type(int bnd_number) cons
       assert(spatial_dimension() == 3);
       return edge_type(bnd_number);
     }
+    if (parametric_dimension() == 1) {
+      assert(spatial_dimension() == 3 || spatial_dimension() == 2);
+      return Ioss::ElementTopology::factory("node");
+    }
   }
   return nullptr;
 }
 
 bool Ioss::ElementTopology::equal_(const Ioss::ElementTopology &rhs, bool quiet) const
 {
-  if (this->name_.compare(rhs.name_) != 0) {
+  if (this->name_ != rhs.name_) {
     if (!quiet) {
       fmt::print(Ioss::OUTPUT(), "Element Topology: NAME mismatch ({} vs. {})\n",
                  this->name_.c_str(), rhs.name_.c_str());
@@ -334,7 +355,7 @@ bool Ioss::ElementTopology::equal_(const Ioss::ElementTopology &rhs, bool quiet)
     return false;
   }
 
-  if (this->masterElementName_.compare(rhs.masterElementName_) != 0) {
+  if (this->masterElementName_ != rhs.masterElementName_) {
     if (!quiet) {
       fmt::print(Ioss::OUTPUT(), "Element Topology: MASTER ELEMENT NAME mismatch ({} vs. {})\n",
                  this->masterElementName_.c_str(), rhs.masterElementName_.c_str());
@@ -362,7 +383,7 @@ bool Ioss::ElementTopology::equal(const Ioss::ElementTopology &rhs) const
 
 Ioss::ElementPermutation *Ioss::ElementTopology::permutation() const
 {
-  auto perm = Ioss::ElementPermutation::factory(base_topology_permutation_name());
+  auto *perm = Ioss::ElementPermutation::factory(base_topology_permutation_name());
   assert(perm != nullptr);
   if (validate_permutation_nodes()) {
     if (static_cast<int>(perm->num_permutation_nodes()) != number_corner_nodes()) {

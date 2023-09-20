@@ -5,6 +5,7 @@
 *.e
 *.g.*
 *.e.*
+*.pyc
 .libs
 Makefile
 Makefile.bak
@@ -110,7 +111,7 @@ SNTools.project
 *.settings
 *ioss.doxygen.warn
 *ioss.tags
-SEACASProjRepoVersion.txt
+SeacasRepoVersion.txt
 TPL/adios2/ADIOS2/
 TPL/cgns/CGNS/
 TPL/data-warehouse-release
@@ -135,3 +136,4 @@ TPL/faodel/faodel*/
 TPL/catalyst2/catalyst/
 TPL/fmt/fmt/
 build/
+.scannerwork

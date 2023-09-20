@@ -1,0 +1,147 @@
+<!-------- @HEADER
+ !
+ ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ !
+ !  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+ !                  Copyright 2012 Sandia Corporation
+ !
+ ! Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
+ ! the U.S. Government retains certain rights in this software.
+ !
+ ! Redistribution and use in source and binary forms, with or without
+ ! modification, are permitted provided that the following conditions are
+ ! met:
+ !
+ ! 1. Redistributions of source code must retain the above copyright
+ ! notice, this list of conditions and the following disclaimer.
+ !
+ ! 2. Redistributions in binary form must reproduce the above copyright
+ ! notice, this list of conditions and the following disclaimer in the
+ ! documentation and/or other materials provided with the distribution.
+ !
+ ! 3. Neither the name of the Corporation nor the names of the
+ ! contributors may be used to endorse or promote products derived from
+ ! this software without specific prior written permission.
+ !
+ ! THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
+ ! EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ ! IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ ! PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
+ ! CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ ! EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ ! PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ ! PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ ! LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ ! NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ ! SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ !
+ ! Questions? Contact Karen Devine	kddevin@sandia.gov
+ !                    Erik Boman	egboman@sandia.gov
+ !
+ ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ !
+ ! @HEADER
+-------> 
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (X11; U; Linux 2.4.2-2smp i686) [Netscape]">
+  <meta name="sandia.approval_type" content="formal">
+  <meta name="sandia.approved" content="SAND2007-4748W">
+  <meta name="author" content="Zoltan PI">
+
+   <title>Zoltan User's Guide:  Nested Dissection by ParMETIS</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<div align=right><b><i><a href="ug.html">Zoltan User's Guide</a>&nbsp;
+|&nbsp; <a href="ug_order_ptscotch.html">Next</a>&nbsp; |&nbsp; <a href="ug_order.html">Previous</a></i></b></div>
+
+<h2>
+<a NAME="METIS"></a>Nested Dissection by METIS/ParMETIS</h2>
+Nested Dissection (ND) is a popular method to compute fill-reducing orderings
+for sparse matrices. It can also be used for other ordering purposes.&nbsp;
+The algorithm recursively finds a separator (bisector) in a graph,
+orders the nodes in the two subsets first, and nodes in the separator last.
+In METIS/ParMETIS, the recursion is stopped when the graph is smaller than
+a certain size, and some version of minimum degree ordering is applied
+to the remaining graph.
+<p>METIS computes a (local) ordering of the objects (currently only for serial runs), while
+ParMETIS performs a global ordering of all the objects. ParMETIS currently
+(version 3.1, supported by Zoltan) requires that the number of processors is a power
+of two.
+<p>
+<!--
+** NOT TRUE at the moment
+The generic name for this method is NODEND.
+If GRAPH_TYPE=GLOBAL
+ParMETIS is called, but if it is LOCAL, METIS is called. Alternatively,
+the user can simply set ORDER_METHOD to METIS or PARMETIS.
+-->
+
+If ORDER_METHOD=PARMETIS
+ParMETIS is called, but if it is METIS, METIS is called. 
+
+<br>&nbsp;
+<br>&nbsp;
+<table WIDTH="100%" NOSAVE >
+<tr>
+<td VALIGN=TOP><b>Order_Method String:</b></td>
+
+<td><b>METIS or PARMETIS</b></td>
+</tr>
+
+<tr>
+<td><b>Parameters:</b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>&nbsp;&nbsp; See <a href="ug_alg_parmetis.html">ParMETIS</a>.</td>
+
+<td>Note that the PARMETIS options are ignored when METIS is called.&nbsp;</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><b>Required Query Functions:</b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td><b><a href="ug_query_lb.html#ZOLTAN_NUM_OBJ_FN">ZOLTAN_NUM_OBJ_FN</a></b></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td><b><a href="ug_query_lb.html#ZOLTAN_OBJ_LIST_FN">ZOLTAN_OBJ_LIST_FN</a></b>
+</td>
+</tr>
+
+<tr VALIGN=TOP>
+
+<td></td>
+<td NOSAVE>
+<b><a href="ug_query_lb.html#ZOLTAN_NUM_EDGES_MULTI_FN">ZOLTAN_NUM_EDGES_MULTI_F
+N</a></b> or
+<b><a href="ug_query_lb.html#ZOLTAN_NUM_EDGES_FN">ZOLTAN_NUM_EDGES_FN</a></b>
+<br>
+<b><a href="ug_query_lb.html#ZOLTAN_EDGE_LIST_MULTI_FN">ZOLTAN_EDGE_LIST_MULTI_F
+N</a></b> or
+<b><a href="ug_query_lb.html#ZOLTAN_EDGE_LIST_FN">ZOLTAN_EDGE_LIST_FN</a></b>
+</td>
+
+</tr>
+
+</table>
+
+<p>
+<hr WIDTH="100%">[<a href="ug.html">Table of Contents</a>&nbsp; | <a href="ug_order_ptscotch.html">Next:&nbsp;
+Ordering by PT-Scotch</a> |&nbsp; <a href="ug_order.html">Previous:&nbsp; Ordering Algorithms</a>&nbsp; |&nbsp; <a href="https://www.sandia.gov/general/privacy-security/index.html">Privacy and Security</a>]
+</body>
+</html>

@@ -1,11 +1,9 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-
-#ifndef EXO_ENTITY_H
-#define EXO_ENTITY_H
+#pragma once
 
 #include <exodusII.h>
 #include <iostream>
@@ -39,8 +37,6 @@ public:
   size_t Id() const { return id_; }
   size_t Index() const { return index_; }
 
-  int Check_State() const;
-
   void initialize(int file_id, size_t id);
 
   bool        is_valid_var(size_t var_index) const;
@@ -67,9 +63,6 @@ public:
   // Return "block", "nodelist", "surface", depending on underlying type.
   virtual const char *short_label() const = 0;
 
-  // Return EX_ELEM_BLOCK, EX_NODE_SET, ... of underlying type
-  virtual EXOTYPE exodus_type() const = 0;
-
 protected:
   std::string  name_{};
   int          fileId{-1};
@@ -78,6 +71,10 @@ protected:
   size_t       numEntity{0}; // Number of items (nodes, sides, elements)
 
 private:
+  // Return EX_ELEM_BLOCK, EX_NODE_SET, ... of underlying type
+  virtual EXOTYPE exodus_type() const = 0;
+
+  virtual int  Check_State() const  = 0;
   virtual void entity_load_params() = 0;
   void         internal_load_params();
 
@@ -95,4 +92,3 @@ private:
 
   template <typename INT> friend class ExoII_Read;
 };
-#endif

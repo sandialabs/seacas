@@ -1,10 +1,12 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
 #pragma once
+
+#include "ioss_export.h"
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementPermutation.h> // for ElementPermutation
@@ -35,10 +37,10 @@ namespace Ioss {
   };
 
   using ElementShapeMap    = std::map<ElementShape, std::string>;
-  using ElementTopologyMap = std::map<std::string, ElementTopology *, std::less<std::string>>;
+  using ElementTopologyMap = std::map<std::string, ElementTopology *, std::less<>>;
   using ETM_VP             = ElementTopologyMap::value_type;
 
-  class ETRegistry
+  class IOSS_EXPORT ETRegistry
   {
   public:
     void                         insert(const Ioss::ETM_VP &value, bool delete_me);
@@ -60,7 +62,7 @@ namespace Ioss {
    *
    *  Defines node, edge, and face connectivity information of an element.
    */
-  class ElementTopology
+  class IOSS_EXPORT ElementTopology
   {
   public:
     void alias(const std::string &base, const std::string &syn);

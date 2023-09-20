@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -267,7 +267,6 @@ namespace {
       std::vector<char *> vars(names.size());
       for (unsigned i = 0; i < names.size(); ++i) {
         vars[i] = const_cast<char *>(names[i].c_str());
-        SMART_ASSERT(vars[i] != nullptr);
       }
       ex_put_variable_names(file_id, type, names.size(), vars.data());
     }
@@ -301,7 +300,7 @@ namespace {
   {
     if (!names.empty()) {
       fmt::print("{} variables to be differenced:\n", type);
-      for (auto &name : names) {
+      for (const auto &name : names) {
         fmt::print("\t{}\n", name);
       }
     }
@@ -325,8 +324,8 @@ namespace {
     }
 
     if (do_all_flag) {
-      auto name_length = var_names1.size();
-      for (size_t n = 0; n < name_length; ++n) {
+      auto length_name = var_names1.size();
+      for (size_t n = 0; n < length_name; ++n) {
         const std::string &name = var_names1[n];
         if (!interFace.summary_flag &&
             find_string(var_names2, name, interFace.nocase_var_names) < 0) {
@@ -357,8 +356,8 @@ namespace {
       }
 
       if (!interFace.noSymmetricNameCheck) {
-        name_length = var_names2.size();
-        for (size_t n = 0; n < name_length; ++n) {
+        length_name = var_names2.size();
+        for (size_t n = 0; n < length_name; ++n) {
           const std::string &name = var_names2[n];
           if (!interFace.summary_flag &&
               find_string(var_names1, name, interFace.nocase_var_names) < 0) {

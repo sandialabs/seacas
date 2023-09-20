@@ -1,5 +1,5 @@
 #
-# Define the SEACASProj packages
+# Define the Seacas packages
 #
 TRIBITS_REPOSITORY_DEFINE_PACKAGES(
   Zoltan                packages/zoltan                   PT
@@ -7,4 +7,4 @@ TRIBITS_REPOSITORY_DEFINE_PACKAGES(
   )
 
 # Allow builds even if some packages are missing
-TRIBITS_DISABLE_PACKAGE_ON_PLATFORMS(Zoltan Windows)
+

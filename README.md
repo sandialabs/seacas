@@ -1,12 +1,14 @@
-# SEACAS  [[Documentation](http://gsjaardema.github.io/seacas-docs/)] [[Wiki](https://github.com/gsjaardema/seacas/wiki)]
+# SEACAS  [[Documentation](http://sandialabs.github.io/seacas-docs/)] [[Wiki](https://github.com/sandialabs/seacas/wiki)]
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/838c6d845e9e4ce4a7cd02bd06b4d2ad)](https://www.codacy.com/gh/gsjaardema/seacas/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gsjaardema/seacas&amp;utm_campaign=Badge_Grade)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 [![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
 [![Appveyor Build](https://ci.appveyor.com/api/projects/status/pis4gok72yh0wwfs/branch/master?svg=true)](https://ci.appveyor.com/project/gsjaardema/seacas/branch/master)
-[![Github Actions -- CI Serial](https://github.com/gsjaardema/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/gsjaardema/seacas)
-[![Github Actions -- CI Variants](https://github.com/gsjaardema/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/gsjaardema/seacas)
-[![Github Actions -- CI Intel](https://github.com/gsjaardema/seacas/actions/workflows/intel-build.yml/badge.svg)](https://github.com/gsjaardema/seacas)
-[![Github Actions -- CI MSYS2](https://github.com/gsjaardema/seacas/actions/workflows/msys2.yml/badge.svg)](https://github.com/gsjaardema/seacas)
+[![SEACAS Docker](https://img.shields.io/github/actions/workflow/status/sandialabs/seacas/docker-seacas.yml?branch=master&label=SEACAS&logo=docker&logoColor=0db7ed)](https://hub.docker.com/r/mrbuche/seacas)
+[![Exodus Docker](https://img.shields.io/github/actions/workflow/status/sandialabs/seacas/docker-exodus.yml?branch=master&label=Exodus&logo=docker&logoColor=0db7ed)](https://hub.docker.com/r/mrbuche/exodus)
+[![Github Actions -- CI Serial](https://github.com/sandialabs/seacas/actions/workflows/build_test.yml/badge.svg)](https://github.com/sandialabs/seacas)
+[![Github Actions -- CI Variants](https://github.com/sandialabs/seacas/actions/workflows/build_variant.yml/badge.svg)](https://github.com/sandialabs/seacas)
+[![Github Actions -- CI Intel](https://github.com/sandialabs/seacas/actions/workflows/intel-build.yml/badge.svg)](https://github.com/sandialabs/seacas)
+[![Github Actions -- CI MSYS2](https://github.com/sandialabs/seacas/actions/workflows/msys2.yml/badge.svg)](https://github.com/sandialabs/seacas)
 
 *  [Get the sources](#get-the-sources)
 *  [Build instructions](#build-instructions)
@@ -16,13 +18,16 @@
 *  [Exodus](#exodus)
 *  [Trilinos](#trilinos)
 *  [SPACK](#spack)
+*  [Docker](#docker)
+*  [CMake Example Usage](#cmake-example-usage)
+*  [Requred Software: Mac](#required-software)
 *  [License](#license)
 *  [Contact information](#contact-information)
 *  NOTE: The old imake-based build has been removed.
 
 ## Get the sources
 ```sh
-git clone https://github.com/gsjaardema/seacas.git
+git clone https://github.com/sandialabs/seacas.git
 ```
 This will create a directory that will be referred to as _seacas_ in
 the instructions that follow. You can rename this directory to any
@@ -50,7 +55,7 @@ manually as detailed in
 | Variable        | Values          | Default | Description |
 |-----------------|:---------------:|:-------:|-------------|
 | INSTALL_PATH    | path to install | pwd | Root of install path; default is current location |
-| COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build. Must have C++-14 capability. |
+| COMPILER        | clang, gnu, intel, ibm nvidia | gnu | What compiler should be used for non-parallel build. Must have C++-17 capability. |
 | MPI             | YES, NO | NO  | If YES, then build parallel capability |
 | FORCE           | YES, NO | NO  | Force downloading and building even if lib is already installed. |
 | BUILD           | YES, NO | YES | Should TPLs be built and installed. |
@@ -72,7 +77,7 @@ manually as detailed in
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | FMT             | YES, NO | YES | Should Lib::FMT TPL be built. |
-| H5VERSION       | V112, V110, V18 | V110 | Use HDF5-1.12.X, HDF5-1.10.X or HDF5-1.8.X |
+| H5VERSION       | V114, V110, V18 | V110 | Use HDF5-1.14.X, HDF5-1.10.X or HDF5-1.8.X |
 | BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
 | JOBS            | {count} |  2   | Number of "jobs" used for simultaneous compiles |
 | SUDO            | "" or sudo | "" | If need to be superuser to install |
@@ -105,6 +110,7 @@ to configure the SEACAS CMake build.
 | FORTRAN         | YES, NO | YES  | Should fortran libraries and applications be built (see `cmake-config`) |
 | ZOLTAN          | YES, NO | YES  | Should zoltan library and nem_slice be built |
 | BUILD_TYPE      | debug, release | release | what type of build |
+| MODERN          | YES, NO | NO   | Use "modern" CMake configuration files for netCDF and HDF5 |
 | DEBUG           | -none-  |      | If specified, then do a debug build. Can't be used with `BUILD_TYPE` |
 | HAVE_X11        | YES, NO | YES  | Does the system have X11 libraries and include files; used for blot, fastq |
 | THREADSAFE      | YES, NO | NO   | Compile a thread-safe IOSS and Exodus library |
@@ -134,7 +140,7 @@ parallel capability enabled (if applicable).  You can then continue
 with the steps outlined in the previous section.
 
 ## Testing
-There are a few unit tests for zoltan, exodus, ioss, and aprepro that can be run via `make test` or `ctest` if you configured with `-D SEACASProj_ENABLE_TESTS=YES`.
+There are a few unit tests for zoltan, exodus, ioss, and aprepro that can be run via `make test` or `ctest` if you configured with `-D Seacas_ENABLE_TESTS=YES`.
 
 There is also a system-level test that just verifies that the applications can read and write exodus files correctly.  This test runs off of the installed applications.  To run do:
 
@@ -163,7 +169,7 @@ using `SEACAS_SOURCE_DIR_OVERRIDE`.  Here is how you do it:
 
 ```sh
 cd Trilinos/
-git clone https://github.com/gsjaardema/seacas.git
+git clone https://github.com/sandialabs/seacas.git
 cd BUILD/
 cmake -DSEACAS_SOURCE_DIR_OVERRIDE:STRING=seacas/packages/seacas -DTrilinos_ENABLE_SEACAS [other options] ..
 ```
@@ -180,7 +186,125 @@ git clone https://github.com/spack/spack.git
 spack install seacas~mpi   # Serial build (most common)
 ```
 
-Enter `spack info seacas` to see information on supported variants and other information about the SEACAS package.
+## Docker
+
+An Ubuntu-based Docker image, with SEACAS built and installed, is available on [Docker Hub](https://hub.docker.com/r/mrbuche/seacas).
+
+```sh
+docker pull mrbuche/seacas
+```
+
+SEACAS is located in `/seacas` when running the container. There is also a similar image available on [Docker Hub](https://hub.docker.com/r/mrbuche/exodus) with only Exodus built and installed.
+
+```sh
+docker pull mrbuche/exodus
+```
+
+## CMake Example Usage
+A simple example of using the SEACAS Exodus library in your external project.  Here is the CMakeLists.txt file:
+
+```sh
+project(ExodusCMakeExample VERSION 1.0 LANGUAGES C Fortran)
+cmake_minimum_required(VERSION 3.1...3.26)
+
+#### C ####
+find_package(SEACASExodus CONFIG)
+add_executable(ExodusWriteC ExodusWrite.c)
+target_link_libraries(ExodusWriteC PRIVATE SEACASExodus::all_libs)
+
+#### FORTRAN #####
+IF ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
+  SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fcray-pointer -fdefault-real-8 -fdefault-integer-8 -fno-range-check")
+ELSEIF ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "XL")
+  SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -qintsize=8 -qrealsize=8")
+ELSEIF ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Cray")
+  SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -sdefault64")
+ELSE()
+  SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -r8 -i8")
+ENDIF()
+
+find_package(SEACASExodus_for CONFIG)
+add_executable(ExodusReadFor ExodusRead.f)
+target_link_libraries(ExodusReadFor PRIVATE SEACASExodus_for::all_libs)
+```
+
+The `cmake-use-example` directory contains this sample
+`CMakeLists.txt` file and a couple C and Fortran files which provide
+an example of how to build and link a C or Fortran program with the
+Exodus library installed as part of a build of this package.
+
+To use this, copy the contents of the directory to your own filespace
+and modify the contents as needed.  The example provides a C
+executable and a Fortran Executable which both are linked to the
+Exodus library.
+
+To configure and build, you would do something like:
+```sh
+  mkdir build; cd build
+  CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake ..
+  make
+```
+And you would then get `ExodusWriteC` and `ExodusReadFor` compiled and linked against the Exodus library.
+
+## Required Software
+
+The SEACAS system requires that there be some libraries and
+applications already existing on the chosen system prior to building
+SEACAS and its required Third-Party Liberaries.
+
+These include:
+* The `git` application is used to access the SEACAS and TPL git
+repositories
+
+* CMake is used to generate the build system.
+
+* C, C++, and (optionally) Fortran compilers.  The C compiler must
+support the C11 standard and C++ must support C+++17.  GNU, Clang,
+Intel, Cray, compilers are supported and tested regularly.
+
+* For parallel capability, an MPI library is needed.  We have used
+openmpi, mpich, mvapich, intel, and cray MPI libraries. It is
+recommended to use as current an MPI library as possible.
+
+* Automake is used to configure some of the TPL builds
+
+* wget is needed to download some of the TPL library source code.
+
+* python is required to use the `exodus.py` and `exomerge.py`
+Python interfaces to Exodus databases. Python3 is recommended.
+
+* To use the `blot` and `fastq` applications, an X11 development
+environment is needed.
+
+* Flex and Bison are optional if you are developing new capabilities
+in aprepro.
+
+* M4 is needed to build the netCDF library.
+
+### Mac
+On a mac system, I use the `brew` system which provides all of the
+applications listed above.  The X11 system I use is `XQuartz`.  The
+Mac also requires `XCode`
+
+### Linux
+On an ubuntu system, the following is used to set up the basic
+packages needed to compile SEACAS:
+```sh
+apt install -y libaec-dev zlib1g-dev automake autoconf \
+libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake \
+libzip-dev openmpi-bin libopenmpi-dev \
+```
+
+### Windows
+On windows, I have used the following packages for MINGW64:
+```sh
+git mingw-w64-x86_64-toolchain make mingw-w64-x86_64-hdf5 \
+mingw-w64-x86_64-cgns mingw-w64-x86_64-netcdf mingw-w64-x86_64-zlib \
+mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc-libgfortran \
+mingw-w64-x86_64-cmake mingw-w64-x86_64-fmt
+```
+There is also a Visual Studio build performed at each commit to the
+SEACAS git repository.  See the file `.appveyor.yml` for more details.
 
 ## License
 

@@ -92,7 +92,7 @@ void xcoon(anything **surface_id) /* which surface to turn output on for*/
 #if defined(ADDC_)
 void xcact_(void (*device_fn)(anything **, int, anything **), anything **p_surface_id)
 #else
-void xcact(void (*device_fn)(void), anything **p_surface_id)
+void xcact(void (*device_fn)(anything **, int, anything **), anything **p_surface_id)
 #endif
 {
   /* is device already initialized? */

@@ -47,7 +47,6 @@ include(MessageWrapper)
 include(TribitsSortListAccordingToMasterList)
 
 
-#
 # @MACRO: tribits_project_define_extra_repositories()
 #
 # Declare a set of extra repositories for the `TriBITS Project`_ (i.e. in the
@@ -137,7 +136,7 @@ include(TribitsSortListAccordingToMasterList)
 #
 # NOTE: These repositories must be listed in the order of package
 # dependencies.  That is, all of the packages listed in repository ``i`` must
-# have upstream TPL and SE package dependencies listed before this package in
+# have upstream TPL and package dependencies listed before this package in
 # this repository or in upstream repositories ``i-1``, ``i-2``, etc.
 #
 # NOTE: This module just sets the local variable::
@@ -242,8 +241,8 @@ function(tribits_parse_extrarepo_packstat  PACKSTAT_IN
 endfunction()
 
 #
-# Macro that processes the list varaible contents in
-# ${PROJECT_NAME}_EXTRAREPOS_DIR_VCTYPE_REPOURL_PACKSTAT_CATEGORY into sperate arrays:
+# Macro that processes the list variable contents in
+# ${PROJECT_NAME}_EXTRAREPOS_DIR_VCTYPE_REPOURL_PACKSTAT_CATEGORY into separate arrays:
 #
 #   ${PROJECT_NAME}_PRE_REPOSITORIES_DEFAULT
 #   ${PROJECT_NAME}_EXTRA_REPOSITORIES_DEFAULT
@@ -443,10 +442,10 @@ endmacro()
 
 
 #
-# Assert the existance and the order of the list of extra repositories in
+# Assert the existence and the order of the list of extra repositories in
 # ${PROJECT_NAME}_PRE_REPOSITORIES listed in
 # ${PROJECT_NAME}_EXTRA_REPOSITORIES according to the list read in from the
-# extra repos file as determined by the varaible
+# extra repos file as determined by the variable
 # ${PROJECT_NAME}_ALL_EXTRA_REPOSITORIES_DEFAULT.
 #
 function(tribits_extra_repositories_assert_subset_and_order_wrt_file)
@@ -498,7 +497,7 @@ endfunction()
 # If ${PROJECT_NAME}_IGNORE_MISSING_EXTRA_REPOSITORIES==TRUE, then the set of
 # repos will be filtered based on what repos are present.  If
 # ${PROJECT_NAME}_IGNORE_MISSING_EXTRA_REPOSITORIES==FALSE, then all of the
-# repos must exist or messsage(FATAL_ERROR ...) is called and will fail the
+# repos must exist or message(FATAL_ERROR ...) is called and will fail the
 # configure.
 #
 # On output the variables:
@@ -727,7 +726,7 @@ endfunction()
 #   ${PROJECT_NAME}_ALL_EXTRA_REPOSITORIES_HASPKGS
 #   ${PROJECT_NAME}_ALL_EXTRA_REPOSITORIES_CATEGORIES
 #
-# On output, the following varaibles are set:
+# On output, the following variables are set:
 #
 #   ${PROJECT_NAME}_ALL_EXTRA_REPOSITORIES
 #   ${PROJECT_NAME}_ALL_EXTRA_REPOSITORIES_DIRS

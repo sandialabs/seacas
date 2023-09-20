@@ -1,12 +1,11 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
  * See packages/seacas/LICENSE for details
  */
-#ifndef SEACAS_ExodusFile_H
-#define SEACAS_ExodusFile_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -27,9 +26,9 @@ namespace Excn {
     static bool create_output(const SystemInterface &si, int cycle);
     static void close_all();
 
-    static int  output();
-    static int  io_word_size() { return ioWordSize_; }
-                operator int() const;
+    static int output();
+    static int io_word_size() { return ioWordSize_; }
+    operator int() const;
     static int  max_name_length() { return maximumNameLength_; }
     static void unlink_temporary_files();
 
@@ -50,4 +49,3 @@ namespace Excn {
     static int                      mode64bit_;
   };
 } // namespace Excn
-#endif /* SEACAS_ExodusFil_H */

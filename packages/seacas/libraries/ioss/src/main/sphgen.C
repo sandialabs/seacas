@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include <fmt/ostream.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -30,14 +31,9 @@
 #include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
 
-#define DO_OUTPUT std::cerr
-
 // ========================================================================
 
 namespace {
-  // Data space shared by most field input/output routines...
-  std::vector<char> data;
-
   struct Globals
   {
     std::string working_directory{};
@@ -57,7 +53,7 @@ namespace {
 
 namespace {
   std::string codename;
-  std::string version = "0.9";
+  std::string version = "0.91";
 } // namespace
 
 int main(int argc, char *argv[])
@@ -140,43 +136,40 @@ int main(int argc, char *argv[])
     return (EXIT_FAILURE);
   }
 
-  DO_OUTPUT << "Input:    '" << in_file << "', Type: " << in_type << '\n';
-  DO_OUTPUT << "Output:   '" << out_file << "', Type: " << out_type << '\n';
-  DO_OUTPUT << '\n';
+  fmt::print(stderr, "Input:    '{}', Type: {}\n", in_file, in_type);
+  fmt::print(stderr, "Output:   '{}', Type: {}\n\n", out_file, out_type);
 
   create_sph(in_file, in_type, out_file, out_type, globals);
 
-  DO_OUTPUT << "\n" << codename << " execution successful.\n";
+  fmt::print(stderr, "\n{} execution successful.\n", codename);
   return EXIT_SUCCESS;
 }
 
 namespace {
   void show_usage(const std::string &prog)
   {
-    DO_OUTPUT
-        << "\nUSAGE: " << prog << " in_file out_file\n"
-        << "...or: " << prog << " command_file\n"
-        << "       version: " << version << "\n\n"
-        << "\tConverts all HEX element blocks to SPHERE element blocks\n"
-        << "\tand creates a nodeset for each element block containing the node at the center of "
-           "the sphere.\n"
-        << "\tignores all other element block types and deletes all existing nodesets.\n"
-        << "Options:\n"
-        << "\t--directory or -d {dir}  : specifies current working directory\n"
-        << "\t--input     or -i {file} : read input and output filename data from file\n"
-        << "\t--in_type {pamgen|generated|exodus} : set input type to the argument. Default "
-           "exodus\n"
-        << "\t--out_type {exodus} : set output type to the argument. Default exodus\n"
-        << "\t--scale_factor : radius = (volume/scale_factor)^1/3; default = 8.0\n"
-        << "\t\t which gives the half-side-length of a cube with that volume\n"
-        << "\t\t use 4*pi/3 = 4.18879 for the radius of a sphere with that volume.\n";
+    fmt::print(
+        stderr,
+        "\nUSAGE: {} in_file out_file\n"
+        "...or: {} command_file\n"
+        "       version: {}\n\n"
+        "\tConverts all HEX element blocks to SPHERE element blocks\n"
+        "\tand creates a nodeset for each element block containing the node at the center of "
+        "the sphere.\n"
+        "\tignores all other element block types and deletes all existing nodesets.\n"
+        "Options:\n"
+        "\t--directory or -d {{dir}}  : specifies current working directory\n"
+        "\t--input     or -i {{file}} : read input and output filename data from file\n"
+        "\t--in_type {{pamgen|generated|exodus}} : set input type to the argument. Default "
+        "exodus\n"
+        "\t--out_type {{exodus}} : set output type to the argument. Default exodus\n"
+        "\t--scale_factor : radius = (volume/scale_factor)^1/3; default = 8.0\n"
+        "\t\t which gives the half-side-length of a cube with that volume\n"
+        "\t\t use 4*pi/3 = 4.18879 for the radius of a sphere with that volume.\n",
+        prog, prog, version);
 
     Ioss::NameList db_types = Ioss::IOFactory::describe();
-    DO_OUTPUT << "\nSupports database types:\n\t";
-    for (const auto &db : db_types) {
-      DO_OUTPUT << db << "  ";
-    }
-    DO_OUTPUT << "\n\n";
+    fmt::print(stderr, "\nSupports database types:\n\t{}\n\n", fmt::join(db_types, " "));
   }
 
   void create_sph(const std::string &inpfile, const std::string &input_type,
@@ -196,7 +189,7 @@ namespace {
     Ioss::Region region(dbi, "region_1");
 
     if (!region.get_nodesets().empty()) {
-      DO_OUTPUT << " *** All nodesets will be replaced by element block nodesets\n";
+      fmt::print(stderr, " *** All nodesets will be replaced by element block nodesets\n");
     }
 
     //========================================================================
@@ -232,9 +225,9 @@ namespace {
     // The first time, just count the number of hex elements since
     // that will be the number of output element and nodes in the
     // sphere mesh.
-    size_t                                      sph_node_count = 0;
-    const Ioss::ElementBlockContainer          &ebs            = region.get_element_blocks();
-    Ioss::ElementBlockContainer::const_iterator I              = ebs.begin();
+    size_t      sph_node_count = 0;
+    const auto &ebs            = region.get_element_blocks();
+    auto        I              = ebs.begin();
     while (I != ebs.end()) {
       Ioss::ElementBlock *eb = *I;
       ++I;
@@ -243,11 +236,10 @@ namespace {
         sph_node_count += eb->entity_count();
 
         // Add the element block...
-        int                 num_elem = eb->entity_count();
-        std::string         name     = eb->name();
-        Ioss::ElementBlock *ebn =
-            new Ioss::ElementBlock(output_region.get_database(), name, "sphere", num_elem);
-        int id = eb->get_property("id").get_int();
+        int         num_elem = eb->entity_count();
+        std::string name     = eb->name();
+        auto *ebn = new Ioss::ElementBlock(output_region.get_database(), name, "sphere", num_elem);
+        int   id  = eb->get_property("id").get_int();
         ebn->property_add(Ioss::Property("id", id));
         ebn->field_add(Ioss::Field("radius", Ioss::Field::REAL, "scalar", Ioss::Field::ATTRIBUTE,
                                    num_elem, 1));
@@ -275,11 +267,11 @@ namespace {
 
     output_region.begin_mode(Ioss::STATE_MODEL);
 
-    Ioss::NodeBlock    *nb = region.get_node_blocks()[0];
+    auto               *nb = region.get_node_blocks()[0];
     std::vector<double> coordinates;
     nb->get_field_data("mesh_model_coordinates", coordinates);
 
-    Ioss::NodeBlock *onb = output_region.get_node_blocks()[0];
+    auto            *onb = output_region.get_node_blocks()[0];
     std::vector<int> node_ids(sph_node_count);
     for (size_t i = 0; i < sph_node_count; i++) {
       node_ids[i] = i + 1;
@@ -299,16 +291,15 @@ namespace {
         hex_volume(*I, coordinates, &centroids[3 * offset], volume, radius, globals.scale_factor);
 
         // Find corresponding output element block...
-        Ioss::ElementBlock *output_eb = output_region.get_element_block((*I)->name());
+        auto *output_eb = output_region.get_element_block((*I)->name());
         if (output_eb == nullptr) {
-          std::cerr << "ERROR: Could not put find element block " << (*I)->name() << "\n";
+          fmt::print(stderr, "ERROR: Could not find output element block '{}'\n", (*I)->name());
           std::exit(EXIT_FAILURE);
         }
 
-        Ioss::NodeSet *output_ns = output_region.get_nodeset((*I)->name() + "_nodes");
+        auto *output_ns = output_region.get_nodeset((*I)->name() + "_nodes");
         if (output_ns == nullptr) {
-          std::cerr << "ERROR: Could not put find node set " << (*I)->name() + "_nodes"
-                    << "\n";
+          fmt::print(stderr, "ERROR: Could not find output node set '{}_nodes'\n", (*I)->name());
           std::exit(EXIT_FAILURE);
         }
 

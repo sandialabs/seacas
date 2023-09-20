@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -44,7 +44,16 @@
 #error "Requires exodusII version 4.68 or later"
 #endif
 
+#include "CJ_ExodusEntity.h"
+#include "CJ_ExodusFile.h"
+#include "CJ_Internals.h"
+#include "CJ_ObjectType.h"
+#include "CJ_SystemInterface.h"
+#include "CJ_Variables.h"
+#include "CJ_Version.h"
+
 namespace {
+  bool                       check_variable_params(size_t p, Excn::Variables &vars);
   template <typename T> void clear(std::vector<T> &vec)
   {
     vec.clear();
@@ -68,7 +77,9 @@ struct NodeInfo
   NodeInfo() = default;
   NodeInfo(size_t id_, double x_, double y_, double z_) : id(id_), x(x_), y(y_), z(z_) {}
   size_t id{0};
-  double x{0.0}, y{0.0}, z{0.0};
+  double x{0.0};
+  double y{0.0};
+  double z{0.0};
 
   bool operator==(const NodeInfo &other) const
   {
@@ -110,14 +121,6 @@ struct NodeInfo
 
 using GlobalMap = std::vector<NodeInfo>;
 using GMapIter  = GlobalMap::iterator;
-
-#include "CJ_ExodusEntity.h"
-#include "CJ_ExodusFile.h"
-#include "CJ_Internals.h"
-#include "CJ_ObjectType.h"
-#include "CJ_SystemInterface.h"
-#include "CJ_Variables.h"
-#include "CJ_Version.h"
 
 extern double seacas_timer();
 
@@ -310,8 +313,9 @@ namespace {
   // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
   template <typename T> size_t unique(std::vector<T> &out)
   {
-    if (out.empty())
+    if (out.empty()) {
       return 0;
+    }
     size_t pos  = 1;
     T      oldv = out[0];
     for (size_t i = 1; i < out.size(); ++i) {
@@ -396,7 +400,7 @@ int          main(int argc, char *argv[])
 
     time_t end_time = time(nullptr);
     add_to_log(argv[0], end_time - begin_time);
-    return (error);
+    return error;
   }
   catch (std::exception &e) {
     fmt::print(stderr, "ERROR: Standard exception: {}\n", e.what());
@@ -408,10 +412,10 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
 {
   SMART_ASSERT(sizeof(T) == Excn::ExodusFile::io_word_size());
 
-  const double alive      = interFace.alive_value();
-  size_t       part_count = interFace.inputFiles_.size();
+  const T alive      = interFace.alive_value();
+  size_t  part_count = interFace.inputFiles_.size();
 
-  auto mytitle = new char[MAX_LINE_LENGTH + 1];
+  auto *mytitle = new char[MAX_LINE_LENGTH + 1];
   memset(mytitle, '\0', MAX_LINE_LENGTH + 1);
 
   Excn::Mesh<INT> global;
@@ -695,6 +699,20 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     filter_truth_table(id, global, glob_ssets, sideset_vars, interFace.sset_var_names());
   }
 
+  // Check that the variable counts are the same on the subsequent files...
+  // Error out if there is a difference...
+  bool found_error = false;
+  for (size_t p = 1; p < part_count; p++) {
+    found_error |= check_variable_params(p, global_vars);
+    found_error |= check_variable_params(p, nodal_vars);
+    found_error |= check_variable_params(p, element_vars);
+    found_error |= check_variable_params(p, nodeset_vars);
+    found_error |= check_variable_params(p, sideset_vars);
+  }
+  if (found_error) {
+    return 1;
+  }
+
   // There is a slightly tricky situation here. The truthTable block order
   // is based on the ordering of the blocks on the input databases.
   // These blocks may have been reordered on output to make the 'offset'
@@ -936,7 +954,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     fmt::print("{}", time_stamp(tsFormat));
   }
   fmt::print("******* END *******\n");
-  return (error);
+  return error;
 }
 
 namespace {
@@ -986,8 +1004,8 @@ namespace {
       char *qa_record[1][4];
     };
 
-    int  num_qa_records = ex_inquire_int(id, EX_INQ_QA);
-    auto qaRecord       = new qa_element[num_qa_records + 1];
+    int                     num_qa_records = ex_inquire_int(id, EX_INQ_QA);
+    std::vector<qa_element> qaRecord(num_qa_records + 1);
     for (int i = 0; i < num_qa_records + 1; i++) {
       for (int j = 0; j < 4; j++) {
         qaRecord[i].qa_record[0][j]    = new char[MAX_STR_LENGTH + 1];
@@ -1018,7 +1036,6 @@ namespace {
         delete[] qaRecord[i].qa_record[0][j];
       }
     }
-    delete[] qaRecord;
   }
 
   template <typename T, typename INT>
@@ -1198,7 +1215,7 @@ namespace {
           blocks[p][b].nodesPerElement = block_param.num_nodes_per_entry;
           blocks[p][b].attributeCount  = block_param.num_attribute;
           blocks[p][b].offset_         = block_param.num_entry;
-          copy_string(blocks[p][b].elType, block_param.topology);
+          blocks[p][b].elType          = block_param.topology;
 
           // NOTE: This is not correct, but fixed below.
           glob_blocks[b].elementCount += block_param.num_entry;
@@ -1212,7 +1229,7 @@ namespace {
           }
 
           glob_blocks[b].position_ = b;
-          copy_string(glob_blocks[b].elType, block_param.topology);
+          glob_blocks[b].elType    = block_param.topology;
         }
 
         if (block_param.num_attribute > 0 && glob_blocks[b].attributeNames.empty()) {
@@ -1974,7 +1991,7 @@ namespace {
       // element blocks...
       std::string var_name;
       int         var_count = 0;
-      for (auto &elem : variable_list) {
+      for (const auto &elem : variable_list) {
         if (var_name == elem.first) {
           continue;
         }
@@ -2006,6 +2023,38 @@ namespace {
       vars.outputCount = nz_count;
       return;
     }
+  }
+
+  bool check_variable_params(size_t p, Excn::Variables &vars)
+  {
+    // Determines the number of variables of type 'type()' that will
+    // be written to the output database. The 'variable_list' vector
+    // specifies a possibly empty list of variable names that the user
+    // wants transferred to the output database. If 'variable_list' is
+    // empty, then all variables of that type will be transferred; if
+    // the 'variable_list' size is 1 and it contains the string 'NONE',
+    // then no variables of that type will be transferred; if size is 1
+    // and it contains the string 'ALL', then all variables of that type
+    // will be transferred.
+    //
+    // Returns the number of variables which will be output Also creates
+    // a 'var_index'.  The var_index is zero-based and of size
+    // 'input_variable_count'. If:
+    // var_index[i] ==0, variable not written to output database
+    // var_index[i] > 0, variable written; is variable 'var_index[i]'
+
+    // If 'type' is ELEMENT or NODE, then reserve space for the 'status' variable.
+    int  extra = vars.addStatus ? 1 : 0;
+    int  num_vars;
+    auto id = Excn::ExodusFile(p);
+    ex_get_variable_param(id, vars.type(), &num_vars);
+    if ((size_t)num_vars != vars.index_.size() - extra) {
+      fmt::print("ERROR: Part mesh {} has a different number of {} variables ({}) than the root "
+                 "part mesh ({}) which is not allowed.\n",
+                 p, vars.label(), num_vars, vars.index_.size() - extra);
+      return true;
+    }
+    return false;
   }
 
   template <typename INT> void put_mesh_summary(const Excn::Mesh<INT> &mesh)
@@ -2567,10 +2616,10 @@ namespace {
 
     std::string var_name;
     int         out_position = -1;
-    for (auto &variable_name : variable_names) {
-      if (variable_name.second > 0) {
-        if (var_name != variable_name.first) {
-          var_name = variable_name.first;
+    for (auto [v_name, v_blkid] : variable_names) {
+      if (v_blkid > 0) {
+        if (var_name != v_name) {
+          var_name = v_name;
           // Find which exodus variable matches this name
           out_position = -1;
           for (size_t j = 0; j < exo_names.size(); j++) {
@@ -2582,7 +2631,7 @@ namespace {
           if (out_position < 0) {
             fmt::print(stderr,
                        "ERROR: Variable '{}' does not exist on any block in this database.\n",
-                       variable_name.first);
+                       v_name);
             exit(EXIT_FAILURE);
           }
 
@@ -2592,10 +2641,10 @@ namespace {
           // variable truly exists for the block that the user specified.
           found_it = false;
           for (size_t b = 0; b < global.count(vars.objectType); b++) {
-            if (glob_blocks[b].id == variable_name.second) {
+            if (glob_blocks[b].id == v_blkid) {
               if (glob_blocks[b].truthTable[out_position] == 0) {
-                fmt::print(stderr, "ERROR: Variable '{}' does not exist on block {}.\n",
-                           variable_name.first, variable_name.second);
+                fmt::print(stderr, "ERROR: Variable '{}' does not exist on block {}.\n", v_name,
+                           v_blkid);
                 exit(EXIT_FAILURE);
               }
               else {
@@ -2612,7 +2661,7 @@ namespace {
           if (!found_it) {
             fmt::print(stderr,
                        "ERROR: User-specified block id of {} for variable '{}' does not exist.\n",
-                       variable_name.second, variable_name.first);
+                       v_blkid, v_name);
             exit(EXIT_FAILURE);
           }
         }
@@ -2699,7 +2748,7 @@ namespace {
     const char *c2 = s2.c_str();
     for (;;) {
       if (::toupper(*c1) != ::toupper(*c2)) {
-        return (::toupper(*c1) - ::toupper(*c2));
+        return ::toupper(*c1) - ::toupper(*c2);
       }
       if (*c1 == '\0') {
         return 0;
@@ -2722,7 +2771,7 @@ namespace {
   inline bool is_whitespace(char c)
   {
     static char white_space[] = {' ', '\t', '\n', '\r', ',', '\0'};
-    return (std::strchr(white_space, c) != nullptr);
+    return std::strchr(white_space, c) != nullptr;
   }
 
   void compress_white_space(char *str)

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -10,6 +10,7 @@
 #include "elb_elem.h"
 #include "elb_err.h"
 #include "fix_column_partitions.h"
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <map>
@@ -18,7 +19,7 @@
 namespace {
   // Opposite side IDs in a hex according to Exodus II convention
 
-  int hex_opp_side[6] = {3, 4, 1, 2, 6, 5};
+  const std::array<int, 6> hex_opp_side{3, 4, 1, 2, 6, 5};
 
   /*! @brief Given an element and a side, find the adjacent element to that side
     @param cur_elem  Current element under consideration
@@ -39,17 +40,17 @@ namespace {
 
     // Get nodes of this side (face) of the element
 
-    int nsnodes = is_hex(etype) ? 4 : 3;
-    INT side_nodes[9]; // SHELL9 has 9 nodes on a face.
+    int                nsnodes = is_hex(etype) ? 4 : 3;
+    std::array<INT, 9> side_nodes{}; // SHELL9 has 9 nodes on a face.
 
     INT *elnodes = mesh->connect[cur_elem];
-    ss_to_node_list(etype, elnodes, side_id, side_nodes);
+    ss_to_node_list(etype, elnodes, side_id, side_nodes.data());
 
     // How would these side's nodes be if they were viewed from the
     // adjacent element
 
-    INT side_nodes_flipped[9]; // Realistically: 4, max possible: 9
-    get_ss_mirror(etype, side_nodes, side_id, side_nodes_flipped);
+    std::array<INT, 9> side_nodes_flipped{0}; // Realistically: 4, max possible: 9
+    get_ss_mirror(etype, side_nodes.data(), side_id, side_nodes_flipped.data());
 
     for (int i = 0; i < nadj; i++) {
       INT    adj_elem_id = adj[i] - 1; // Adjacency graph entries start from 1
@@ -64,8 +65,8 @@ namespace {
 
       int skip_check  = 2;
       int partial_adj = 1;
-      *adj_side =
-          get_side_id(etype2, elnodes2, nsnodes, side_nodes_flipped, skip_check, partial_adj);
+      *adj_side = get_side_id(etype2, elnodes2, nsnodes, side_nodes_flipped.data(), skip_check,
+                              partial_adj);
 
       if (*adj_side > 0) {
         *adj_elem = adj_elem_id;
@@ -107,8 +108,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
   // - if not, fix it
 
   for (size_t i = 0; i < nel; i++) {
-    if (processed_flag[i])
+    if (processed_flag[i]) {
       continue;
+    }
 
     E_Type etype = mesh->elem_type[i];
 
@@ -139,7 +141,8 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
 
     int count = 0;
     for (int j = 0; j < nelfaces; j++) {
-      INT fnodes[9]; // Should only need 4, but ss_to_node_list can potentially access 9 (SHELL9).
+      std::array<INT, 9>
+          fnodes{}; // Should only need 4, but ss_to_node_list can potentially access 9 (SHELL9).
 
       int nfn = 4;
       if (is_wedge(etype)) {
@@ -152,10 +155,10 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       }
 
       // Nodes of the side/face
-      ss_to_node_list(etype, mesh->connect[i], j + 1, fnodes);
+      ss_to_node_list(etype, mesh->connect[i], j + 1, fnodes.data());
 
       // Translate global IDs of side nodes to local IDs in element
-      int fnodes_loc[9];
+      std::array<int, 9> fnodes_loc{0};
       for (int k = 0; k < nfn; k++) {
         bool found = false;
         for (int k2 = 0; k2 < nelnodes; k2++) {
@@ -165,14 +168,15 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
             break;
           }
         }
-        if (!found)
+        if (!found) {
           Gen_Error(0, "FATAL: side/face node not found in element node list?");
+        }
       }
 
-      double normal[3] = {0.0, 0.0, 0.0};
+      std::array<double, 3> normal{0.0, 0.0, 0.0};
       if (nfn == 3) {
-        double v0[3];
-        double v1[3];
+        std::array<double, 3> v0;
+        std::array<double, 3> v1;
         for (int d = 0; d < 3; d++) {
           v0[d] = elcoord[fnodes_loc[1]][d] - elcoord[fnodes_loc[0]][d];
           v1[d] = elcoord[fnodes_loc[nfn - 1]][d] - elcoord[fnodes_loc[0]][d];
@@ -185,8 +189,8 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       }
       else {
         for (int k = 0; k < nfn; k++) {
-          double v0[3];
-          double v1[3];
+          std::array<double, 3> v0;
+          std::array<double, 3> v1;
           for (int d = 0; d < 3; d++) {
             v0[d] = elcoord[fnodes_loc[(k + 1) % nfn]][d] - elcoord[fnodes_loc[k]][d];
             v1[d] = elcoord[fnodes_loc[(k - 1 + nfn) % nfn]][d] - elcoord[fnodes_loc[k]][d];
@@ -315,14 +319,14 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
 
     std::vector<INT> colelems;
     colelems.reserve(nabove + nbelow + 1);
-    typename std::vector<INT>::reverse_iterator rit = above_list.rbegin();
+    auto rit = above_list.rbegin();
     while (rit != above_list.rend()) {
       colelems.push_back(*rit);
       ++rit;
     }
     colelems.push_back(i);
 
-    typename std::vector<INT>::iterator it = below_list.begin();
+    auto it = below_list.begin();
     while (it != below_list.end()) {
       colelems.push_back(*it);
       ++it;
@@ -344,17 +348,17 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
 
       std::pair<std::map<int, int>::iterator, bool> status =
           procid_elcount.insert(std::pair<int, int>(procid, 1));
-      if (status.second == false) { // procid already in map; could not insert
-        std::map<int, int>::iterator itmap = status.first;
+      if (!status.second) { // procid already in map; could not insert
+        auto itmap = status.first;
         (itmap->second)++;
       }
       ++it;
     }
 
     // Which processor has a dominant presence in this column?
-    int                          max_procid = -1;
-    int                          max_elems  = 0;
-    std::map<int, int>::iterator itmap      = procid_elcount.begin();
+    int  max_procid = -1;
+    int  max_elems  = 0;
+    auto itmap      = procid_elcount.begin();
     while (itmap != procid_elcount.end()) {
       if (itmap->second > max_elems) {
         max_procid = itmap->first;

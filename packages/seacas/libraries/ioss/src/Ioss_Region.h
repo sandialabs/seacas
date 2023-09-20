@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -6,21 +6,27 @@
 
 #pragma once
 
+#include "ioss_export.h"
+
 #include <Ioss_CoordinateFrame.h> // for CoordinateFrame
 #include <Ioss_DatabaseIO.h>      // for DatabaseIO
 #include <Ioss_EntityType.h>      // for EntityType, etc
-#include <Ioss_GroupingEntity.h>  // for GroupingEntity
+#include <Ioss_Field.h>
+#include <Ioss_GroupingEntity.h> // for GroupingEntity
 #include <Ioss_MeshType.h>
 #include <Ioss_Property.h> // for Property
 #include <Ioss_State.h>    // for State
 #include <cstddef>         // for size_t, nullptr
 #include <cstdint>         // for int64_t
-#include <functional>      // for less
-#include <iosfwd>          // for ostream
-#include <map>             // for map, map<>::value_compare
-#include <string>          // for string, operator<
-#include <utility>         // for pair
-#include <vector>          // for vector
+#include <fmt/ostream.h>
+#include <functional> // for less
+#include <iosfwd>     // for ostream
+#include <map>        // for map, map<>::value_compare
+#include <sstream>
+#include <string>  // for string, operator<
+#include <utility> // for pair
+#include <vector>  // for vector
+
 namespace Ioss {
   class Assembly;
   class Blob;
@@ -64,7 +70,7 @@ namespace Ioss {
 
   using CoordinateFrameContainer = std::vector<CoordinateFrame>;
 
-  using AliasMap = std::map<std::string, std::string, std::less<std::string>>;
+  using AliasMap = std::map<std::string, std::string, std::less<>>;
 
   /** \brief A grouping entity that contains other grouping entities.
    *
@@ -73,7 +79,7 @@ namespace Ioss {
    * GroupingEntities is through the Region class; clients of the IO subsystem have no direct
    * access to the underlying GroupingEntities (other than the Region).
    */
-  class Region : public GroupingEntity
+  class IOSS_EXPORT Region : public GroupingEntity
   {
   public:
     explicit Region(DatabaseIO *iodatabase = nullptr, const std::string &my_name = "");
@@ -85,9 +91,9 @@ namespace Ioss {
     std::string contains_string() const override { return "Entities"; }
     EntityType  type() const override { return REGION; }
 
-    MeshType          mesh_type() const;
-    const std::string mesh_type_string() const;
-    bool              node_major() const;
+    MeshType    mesh_type() const;
+    std::string mesh_type_string() const;
+    bool        node_major() const;
 
     void output_summary(std::ostream &strm, bool do_transient = true) const;
 
@@ -127,6 +133,10 @@ namespace Ioss {
      *  \returns True if the metadata related to the transient data has been set.
      */
     bool transient_defined() const { return transientDefined; }
+
+    /** \brief Remove all fields of the specified `role` from all entities in the region
+     */
+    void erase_fields(Field::RoleType role);
 
     // Return a pair consisting of the step (1-based) corresponding to
     // the maximum time on the database and the corresponding maximum
@@ -195,7 +205,7 @@ namespace Ioss {
 
     // Not guaranteed to be efficient...
     // Note that not all GroupingEntity's are guaranteed to have an 'id'...
-    GroupingEntity *get_entity(const int64_t id, EntityType io_type) const;
+    GroupingEntity *get_entity(int64_t id, EntityType io_type) const;
 
     const CoordinateFrame &get_coordinate_frame(int64_t id) const;
 
@@ -258,6 +268,11 @@ namespace Ioss {
     void add_qa_record(const std::string &code, const std::string &code_qa,
                        const std::string &date = "", const std::string &time = "");
 
+    template <typename T, typename U>
+    std::vector<size_t> get_entity_field_data(const std::string      &field_name,
+                                              const std::vector<T *> &entity_container,
+                                              std::vector<U>         &field_data) const;
+
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size = 0) const override;
@@ -265,7 +280,15 @@ namespace Ioss {
     int64_t internal_put_field_data(const Field &field, void *data,
                                     size_t data_size = 0) const override;
 
+    int64_t internal_get_zc_field_data(const Field &field, void **data,
+                                       size_t *data_size) const override;
+
   private:
+    template <typename T>
+    std::vector<size_t> internal_get_entity_field_data(const std::string      &field_name,
+                                                       const std::vector<T *> &entity_container,
+                                                       void *data, size_t data_size = 0) const;
+
     // Add the name 'alias' as an alias for the database entity with the
     // name 'db_name'. Returns true if alias added; false if problems
     // adding alias. Not protected by mutex -- call internally only.
@@ -313,7 +336,7 @@ inline int Ioss::Region::get_current_state() const { return currentState; }
 
 inline bool Ioss::Region::supports_field_type(Ioss::EntityType fld_type) const
 {
-  return static_cast<unsigned int>((get_database()->entity_field_support() & fld_type) != 0u) != 0u;
+  return static_cast<unsigned int>((get_database()->entity_field_support() & fld_type) != 0U) != 0U;
 }
 
 inline int64_t Ioss::Region::node_global_to_local(int64_t global, bool must_exist) const
@@ -387,4 +410,89 @@ inline const std::vector<std::string> &Ioss::Region::get_qa_records() const
 {
   IOSS_FUNC_ENTER(m_);
   return get_database()->get_qa_records();
+}
+
+namespace Ioss {
+
+  template <typename T>
+  bool verify_field_exists_in_entity_group(const std::string      &field_name,
+                                           const std::vector<T *> &entity_container)
+  {
+    bool                  found = false;
+    Ioss::Field::RoleType role  = Ioss::Field::RoleType::INTERNAL;
+
+    for (const T *entity : entity_container) {
+      if (entity->field_exists(field_name)) {
+        Ioss::Field field = entity->get_field(field_name);
+
+        if (found && field.get_role() != role) {
+          std::ostringstream errmsg;
+          fmt::print(errmsg,
+                     "ERROR: Field {} with role {} on entity {} does not match previously found "
+                     "role {}.\n",
+                     field.get_name(), field.role_string(), entity->name(),
+                     Ioss::Field::role_string(role));
+          IOSS_ERROR(errmsg);
+        }
+
+        found = true;
+        role  = field.get_role();
+      }
+    }
+
+    return found;
+  }
+
+  namespace impl {
+    template <typename T>
+    size_t get_field_data_count_for_entities(const std::string      &field_name,
+                                             const std::vector<T *> &entity_container)
+    {
+      size_t count = 0;
+
+      for (const T *entity : entity_container) {
+        if (entity->field_exists(field_name)) {
+          Ioss::Field field = entity->get_field(field_name);
+
+          count += entity->entity_count() * field.raw_storage()->component_count();
+        }
+      }
+
+      return count;
+    }
+  } // namespace impl
+} // namespace Ioss
+
+template <typename T, typename U>
+std::vector<size_t> Ioss::Region::get_entity_field_data(const std::string      &field_name,
+                                                        const std::vector<T *> &entity_container,
+                                                        std::vector<U>         &field_data) const
+{
+  bool field_exists = verify_field_exists_in_entity_group(field_name, entity_container);
+
+  if (!field_exists) {
+    return std::vector<size_t>(entity_container.size() + 1, 0);
+  }
+
+  size_t field_count = impl::get_field_data_count_for_entities(field_name, entity_container);
+
+  field_data.resize(field_count);
+  size_t data_size = field_count * sizeof(U);
+
+  std::vector<size_t> offsets =
+      internal_get_entity_field_data(field_name, entity_container, field_data.data(), data_size);
+
+  assert(offsets.size() == (entity_container.size() + 1));
+  assert(offsets[entity_container.size()] == field_count);
+
+  return offsets;
+}
+
+template <typename T>
+std::vector<size_t>
+Ioss::Region::internal_get_entity_field_data(const std::string      &field_name,
+                                             const std::vector<T *> &entity_container, void *data,
+                                             size_t data_size) const
+{
+  return get_database()->get_entity_field_data(field_name, entity_container, data, data_size);
 }

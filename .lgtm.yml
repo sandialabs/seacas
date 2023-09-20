@@ -11,7 +11,7 @@ path_classifiers:
 extraction:
   cpp:
      prepare:
-        packages: 
+        packages:
           - hdf5
           - netcdf
      configure:

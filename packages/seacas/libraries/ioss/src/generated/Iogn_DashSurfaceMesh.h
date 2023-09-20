@@ -1,10 +1,12 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
 #pragma once
+
+#include "iogn_export.h"
 
 #include <Ioss_Beam2.h>
 #include <Ioss_Hex8.h>
@@ -21,7 +23,7 @@ namespace Iogn {
 
   enum { INVALID = -1, NUMBER_OF_SURFACES = 2, SPATIAL_DIMENSION = 3, NUM_NODES_PER_QUAD_FACE = 4 };
 
-  struct SharedNode
+  struct IOGN_EXPORT SharedNode
   {
     SharedNode() = default;
     int nodeId{-1};
@@ -33,14 +35,14 @@ namespace Iogn {
   inline std::string getTopologyName(Topology topology)
   {
     switch (topology) {
-    case Shell4: return std::string(Ioss::Shell4::name);
-    case Hex8: return std::string(Ioss::Hex8::name);
-    case Beam2: return std::string(Ioss::Beam2::name);
+    case Shell4: return {Ioss::Shell4::name};
+    case Hex8: return {Ioss::Hex8::name};
+    case Beam2: return {Ioss::Beam2::name};
     }
     throw std::exception();
   }
 
-  struct ExodusData
+  struct IOGN_EXPORT ExodusData
   {
     std::vector<double>                 coordinates{};
     const std::vector<std::vector<int>> elementBlockConnectivity;
@@ -63,7 +65,7 @@ namespace Iogn {
     std::vector<std::vector<int>>         sidesetConnectivity;
     std::vector<std::vector<std::string>> sidesetTouchingBlocks;
 
-    ExodusData() {}
+    ExodusData() = delete;
     ExodusData(std::vector<double> coords, std::vector<std::vector<int>> elemBlockConnectivity,
                std::vector<int> globalNumOfElemsInBlock, std::vector<int> localNumOfElemsInBlock,
                std::vector<Topology> blockTopoData, int globalNumNodes,
@@ -84,7 +86,7 @@ namespace Iogn {
     }
   };
 
-  struct DashSurfaceData
+  struct IOGN_EXPORT DashSurfaceData
   {
     const std::vector<double> coordinates{};
     const std::vector<int>    surfaceAConnectivity{};
@@ -131,7 +133,7 @@ namespace Iogn {
     }
   };
 
-  class DashSurfaceMesh : public GeneratedMesh
+  class IOGN_EXPORT DashSurfaceMesh : public GeneratedMesh
   {
   public:
     explicit DashSurfaceMesh(DashSurfaceData &dashSurfaceData) : mDashSurfaceData(dashSurfaceData)
@@ -189,7 +191,7 @@ namespace Iogn {
     DashSurfaceData mDashSurfaceData;
   };
 
-  class ExodusMesh : public GeneratedMesh
+  class IOGN_EXPORT ExodusMesh : public GeneratedMesh
   {
   public:
     explicit ExodusMesh(const ExodusData &exodusData);

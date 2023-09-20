@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "iotm_export.h"
+
 // #######################  Start Clang Header Tool Managed Headers ########################
 // clang-format off
 #include <ctype.h>                                   // for toupper
@@ -42,7 +44,7 @@ namespace Iotm {
 
       Topology topology(const std::string &textMeshName) const
       {
-        auto it = m_nameToTopology.find(textMeshName);
+        const auto &it = m_nameToTopology.find(textMeshName);
         return (it != m_nameToTopology.end() ? it->second : invalid_topology());
       }
 
@@ -53,7 +55,7 @@ namespace Iotm {
       std::unordered_map<std::string, Topology> m_nameToTopology;
     };
 
-    class PartIdMapping
+    class IOTM_EXPORT PartIdMapping
     {
     public:
       PartIdMapping() : m_idsAssigned(false)
@@ -102,7 +104,7 @@ namespace Iotm {
         std::vector<std::string> names;
         names.reserve(m_parts.size());
 
-        for (auto iter : m_parts) {
+        for (const auto &iter : m_parts) {
           names.push_back(iter.second);
         }
 
@@ -218,7 +220,7 @@ namespace Iotm {
 
       const std::vector<double> &operator[](const EntityId nodeId) const
       {
-        auto it(m_nodalCoords.find(nodeId));
+        auto it = m_nodalCoords.find(nodeId);
 
         if (it == m_nodalCoords.end()) {
           std::ostringstream errmsg;

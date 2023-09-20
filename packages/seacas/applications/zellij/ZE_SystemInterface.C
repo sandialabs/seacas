@@ -1,4 +1,4 @@
-// Copyright(C) 2021, 2022 National Technology & Engineering Solutions
+// Copyright(C) 2021, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -37,38 +37,38 @@ void SystemInterface::enroll_options()
                   "Name of output file to create. Default is `zellij-out.e`", "zellij-out.e",
                   nullptr, true);
 
-  options_.enroll(
-      "rcb", Ioss::GetLongOption::NoValue,
-      "Use recursive coordinate bisection method to decompose the input mesh in a parallel run.",
-      nullptr);
+  options_.enroll("rcb", Ioss::GetLongOption::NoValue,
+                  "Use recursive coordinate bisection method to decompose the input lattice for "
+                  "parallel output.",
+                  nullptr);
   options_.enroll(
       "rib", Ioss::GetLongOption::NoValue,
-      "Use recursive inertial bisection method to decompose the input mesh in a parallel run.",
+      "Use recursive inertial bisection method to decompose the input lattice for parallel output.",
       nullptr);
 
   options_.enroll("hsfc", Ioss::GetLongOption::NoValue,
-                  "Use hilbert space-filling curve method to decompose the input mesh in a "
-                  "parallel run. [default]",
+                  "Use hilbert space-filling curve method to decompose the input lattice for "
+                  "parallel output. [default]",
                   nullptr);
 
   options_.enroll("linear", Ioss::GetLongOption::NoValue,
-                  "Use the linear method to decompose the input mesh in a parallel run.\n"
+                  "Use the linear method to decompose the input lattice for parallel output.\n"
                   "\t\tElements in order first n/p to proc 0, next to proc 1.",
                   nullptr);
 
   options_.enroll("cyclic", Ioss::GetLongOption::NoValue,
-                  "Use the cyclic method to decompose the input mesh in a parallel run.\n"
+                  "Use the cyclic method to decompose the input lattice for parallel output.\n"
                   "\t\tElements handed out to id % proc_count",
                   nullptr);
 
   options_.enroll("random", Ioss::GetLongOption::NoValue,
-                  "Use the random method to decompose the input mesh in a parallel run.\n"
+                  "Use the random method to decompose the input lattice for parallel output.\n"
                   "\t\tElements assigned randomly to processors in a way that preserves balance\n"
                   "\t\t(do *not* use for a real run)",
                   nullptr, nullptr, true);
 
   options_.enroll("ranks", Ioss::GetLongOption::MandatoryValue,
-                  "Number of ranks to decompose mesh across", "1");
+                  "Number of ranks to decompose mesh/lattice across", "1");
 
   options_.enroll("start_rank", Ioss::GetLongOption::MandatoryValue,
                   "In partial output mode, start outputting decomposed files at this rank", "0");
@@ -180,8 +180,8 @@ void SystemInterface::enroll_options()
 
   options_.enroll("debug", Ioss::GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
-                  "\t\t   1 = Time stamp information.\n"
-                  "\t\t   2 = Memory information.\n"
+                  "\t\t   1 = Exodus Verbose mode.\n"
+                  "\t\t   2 = Memory and time stamp information.\n"
                   "\t\t   4 = Verbose Unit Cell information.\n"
                   "\t\t   8 = Verbose output of Grid finalization calculations.\n"
                   "\t\t  16 = Put exodus library into verbose mode.\n"
@@ -205,6 +205,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
     if (myRank_ == 0) {
       options_.usage();
       fmt::print("\n\tCan also set options via ZELLIJ_OPTIONS environment variable.\n"
+                 "\n\tDocumentation: "
+                 "https://sandialabs.github.io/seacas-docs/sphinx/html/index.html#zellij\n"
                  "\n\t->->-> Send email to gdsjaar@sandia.gov for zellij support.<-<-<-\n");
     }
     exit(EXIT_SUCCESS);
@@ -291,7 +293,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
           "\t{}\n\n",
           options);
     }
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, Ioss::GetLongOption::basename(*argv));
   }
 
   outputName_ = options_.get_option_value("output", outputName_);
@@ -377,9 +379,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
     return false;
   }
-  else {
-    return true;
-  }
+  return true;
 }
 
 void SystemInterface::show_version()

@@ -6,13 +6,16 @@
 
 #pragma once
 
+#include "ioad_export.h"
+
+#include <Ioss_CodeTypes.h>
 #include <Ioss_PropertyManager.h>
 #include <adios2.h>
 #include <string>
 
 namespace Ioad {
 
-  class AdiosWrapper : private adios2::ADIOS, private adios2::IO, private adios2::Engine
+  class IOAD_EXPORT AdiosWrapper : private adios2::ADIOS, private adios2::IO, private adios2::Engine
   {
   public:
     AdiosWrapper(Ioss_MPI_Comm communicator, const std::string &filename, bool is_input,
@@ -67,7 +70,7 @@ namespace Ioad {
 
     const std::string m_MetaSeparator{"::"};
 
-    const int      m_Rank;
+    const int           m_Rank;
     const Ioss_MPI_Comm m_Communicator;
 
     bool m_OpenStep;

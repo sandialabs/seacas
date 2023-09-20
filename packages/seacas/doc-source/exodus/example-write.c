@@ -1,202 +1,151 @@
-#include "exodusII.h"
+/*
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+ * NTESS, the U.S. Government retains certain rights in this software.
+ *
+ * See packages/seacas/LICENSE for details
+ */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "exodusII.h"
+#include "exodusII_int.h"
+
+/* Somewhat cleaner way to check for and report exodus errors... */
+#define STRINGIFY(x) #x
+#define TOSTRING(x)  STRINGIFY(x)
+
+#define EXCHECK(funcall)                                                                           \
+  do {                                                                                             \
+    int f_error = (funcall);                                                                       \
+    printf("after %s, error = %d\n", TOSTRING(funcall), f_error);                                  \
+    if (f_error != EX_NOERR && f_error != EX_WARN) {                                               \
+      fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                    \
+      ex_close(exoid);                                                                             \
+      exit(-1);                                                                                    \
+    }                                                                                              \
+  } while (0)
+/* End of check */
 
 int main(int argc, char **argv)
 {
-  int  exoid, num_dim, num_nodes, num_elem, num_elem_blk;
-  int  num_elem_in_block[10], num_nodes_per_elem[10];
-  int  num_face_in_sset[10], num_nodes_in_nset[10];
-  int  num_node_sets, num_side_sets;
-  int  i, j, k, m, *elem_map, *connect;
-  int  node_list[100], elem_list[100], side_list[100];
-  int  ebids[10], ssids[10], nsids[10];
-  int  num_qa_rec, num_info;
-  int  num_glo_vars, num_nod_vars, num_ele_vars, num_sset_vars, num_nset_vars;
-  int *truth_tab;
-  int  whole_time_step, num_time_steps;
-  int  CPU_word_size, IO_word_size;
-  int  prop_array[2];
-
-  float *glob_var_vals, *nodal_var_vals, *elem_var_vals;
-  float *sset_var_vals, *nset_var_vals;
-  float  time_value;
-  float  x[100], y[100], z[100];
-  float  attrib[1], dist_fact[100];
-  char * coord_names[3], *qa_record[2][4], *info[3], *var_names[3];
-  char * block_names[10], *nset_names[10], *sset_names[10];
-  char * prop_names[2], *attrib_names[2];
-
-  ex_opts(EX_VERBOSE | EX_ABORT);
+  ex_opts(EX_VERBOSE);
 
   /* Specify compute and i/o word size */
-
-  CPU_word_size = 0; /* sizeof(float) */
-  IO_word_size  = 4; /* (4 bytes) */
+  int CPU_word_size = 0; /* sizeof(float) */
+  int IO_word_size  = 4; /* (4 bytes) */
 
   /* create EXODUS II file */
-  exoid = ex_create("test.exo",     /* filename path */
-                    EX_CLOBBER,     /* create mode */
-                    &CPU_word_size, /* CPU float word size in bytes */
-                    &IO_word_size); /* I/O float word size in bytes */
+  int exoid = ex_create("test.exo",     /* filename path */
+                        EX_CLOBBER,     /* create mode */
+                        &CPU_word_size, /* CPU float word size in bytes */
+                        &IO_word_size); /* I/O float word size in bytes */
+  printf("after ex_create for test.exo, exoid = %d\n", exoid);
   printf(" cpu word size: %d io word size: %d\n", CPU_word_size, IO_word_size);
 
   /* initialize file with parameters */
-  num_dim       = 3;
-  num_nodes     = 33;
-  num_elem      = 7;
-  num_elem_blk  = 7;
-  num_node_sets = 2;
-  num_side_sets = 5;
+  int num_dim       = 3;
+  int num_nodes     = 33;
+  int num_elem      = 7;
+  int num_elem_blk  = 7;
+  int num_node_sets = 2;
+  int num_side_sets = 5;
 
-  ex_put_init(exoid, "This is a test", num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets,
-              num_side_sets);
+  char *title = "This is a test";
+  EXCHECK(ex_put_init(exoid, title, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets,
+                      num_side_sets));
 
+  /* clang-format off */
   /* write nodal coordinates values and names to database */
 
   /* Quad #1 */
-  x[0] = 0.0;
-  y[0] = 0.0;
-  z[0] = 0.0;
-  x[1] = 1.0;
-  y[1] = 0.0;
-  z[1] = 0.0;
-  x[2] = 1.0;
-  y[2] = 1.0;
-  z[2] = 0.0;
-  x[3] = 0.0;
-  y[3] = 1.0;
-  z[3] = 0.0;
+  float x[100], y[100], z[100];
+  x[0] = 0.0;  y[0] = 0.0;  z[0] = 0.0;
+  x[1] = 1.0;  y[1] = 0.0;  z[1] = 0.0;
+  x[2] = 1.0;  y[2] = 1.0;  z[2] = 0.0;
+  x[3] = 0.0;  y[3] = 1.0;  z[3] = 0.0;
 
   /* Quad #2 */
-  x[4] = 1.0;
-  y[4] = 0.0;
-  z[4] = 0.0;
-  x[5] = 2.0;
-  y[5] = 0.0;
-  z[5] = 0.0;
-  x[6] = 2.0;
-  y[6] = 1.0;
-  z[6] = 0.0;
-  x[7] = 1.0;
-  y[7] = 1.0;
-  z[7] = 0.0;
+  x[4] = 1.0;  y[4] = 0.0;  z[4] = 0.0;
+  x[5] = 2.0;  y[5] = 0.0;  z[5] = 0.0;
+  x[6] = 2.0;  y[6] = 1.0;  z[6] = 0.0;
+  x[7] = 1.0;  y[7] = 1.0;  z[7] = 0.0;
 
   /* Hex #1 */
-  x[8]  = 0.0;
-  y[8]  = 0.0;
-  z[8]  = 0.0;
-  x[9]  = 10.0;
-  y[9]  = 0.0;
-  z[9]  = 0.0;
-  x[10] = 10.0;
-  y[10] = 0.0;
-  z[10] = -10.0;
-  x[11] = 1.0;
-  y[11] = 0.0;
-  z[11] = -10.0;
-  x[12] = 1.0;
-  y[12] = 10.0;
-  z[12] = 0.0;
-  x[13] = 10.0;
-  y[13] = 10.0;
-  z[13] = 0.0;
-  x[14] = 10.0;
-  y[14] = 10.0;
-  z[14] = -10.0;
-  x[15] = 1.0;
-  y[15] = 10.0;
-  z[15] = -10.0;
+  x[8]  = 0.0;   y[8]  = 0.0;  z[8]  = 0.0;
+  x[9]  = 10.0;  y[9]  = 0.0;  z[9]  = 0.0;
+  x[10] = 10.0;  y[10] = 0.0;  z[10] = -10.0;
+  x[11] = 1.0;   y[11] = 0.0;  z[11] = -10.0;
+  x[12] = 1.0;   y[12] = 10.0; z[12] = 0.0;
+  x[13] = 10.0;  y[13] = 10.0; z[13] = 0.0;
+  x[14] = 10.0;  y[14] = 10.0; z[14] = -10.0;
+  x[15] = 1.0;   y[15] = 10.0; z[15] = -10.0;
 
   /* Tetra #1 */
-  x[16] = 0.0;
-  y[16] = 0.0;
-  z[16] = 0.0;
-  x[17] = 1.0;
-  y[17] = 0.0;
-  z[17] = 5.0;
-  x[18] = 10.0;
-  y[18] = 0.0;
-  z[18] = 2.0;
-  x[19] = 7.0;
-  y[19] = 5.0;
-  z[19] = 3.0;
+  x[16] = 0.0;  y[16] = 0.0;  z[16] = 0.0;
+  x[17] = 1.0;  y[17] = 0.0;  z[17] = 5.0;
+  x[18] = 10.0; y[18] = 0.0;  z[18] = 2.0;
+  x[19] = 7.0;  y[19] = 5.0;  z[19] = 3.0;
 
   /* Wedge #1 */
-  x[20] = 3.0;
-  y[20] = 0.0;
-  z[20] = 6.0;
-  x[21] = 6.0;
-  y[21] = 0.0;
-  z[21] = 0.0;
-  x[22] = 0.0;
-  y[22] = 0.0;
-  z[22] = 0.0;
-  x[23] = 3.0;
-  y[23] = 2.0;
-  z[23] = 6.0;
-  x[24] = 6.0;
-  y[24] = 2.0;
-  z[24] = 2.0;
-  x[25] = 0.0;
-  y[25] = 2.0;
-  z[25] = 0.0;
+  x[20] = 3.0;  y[20] = 0.0;  z[20] = 6.0;
+  x[21] = 6.0;  y[21] = 0.0;  z[21] = 0.0;
+  x[22] = 0.0;  y[22] = 0.0;  z[22] = 0.0;
+  x[23] = 3.0;  y[23] = 2.0;  z[23] = 6.0;
+  x[24] = 6.0;  y[24] = 2.0;  z[24] = 2.0;
+  x[25] = 0.0;  y[25] = 2.0;  z[25] = 0.0;
 
   /* Tetra #2 */
-  x[26] = 2.7;
-  y[26] = 1.7;
-  z[26] = 2.7;
-  x[27] = 6.0;
-  y[27] = 1.7;
-  z[27] = 3.3;
-  x[28] = 5.7;
-  y[28] = 1.7;
-  z[28] = 1.7;
-  x[29] = 3.7;
-  y[29] = 0.0;
-  z[29] = 2.3;
+  x[26] = 2.7;  y[26] = 1.7;  z[26] = 2.7;
+  x[27] = 6.0;  y[27] = 1.7;  z[27] = 3.3;
+  x[28] = 5.7;  y[28] = 1.7;  z[28] = 1.7;
+  x[29] = 3.7;  y[29] = 0.0;  z[29] = 2.3;
 
   /* 3d Tri */
-  x[30] = 0.0;
-  y[30] = 0.0;
-  z[30] = 0.0;
-  x[31] = 10.0;
-  y[31] = 0.0;
-  z[31] = 0.0;
-  x[32] = 10.0;
-  y[32] = 10.0;
-  z[32] = 10.0;
+  x[30] = 0.0;  y[30] = 0.0;  z[30] = 0.0;
+  x[31] = 10.0; y[31] = 0.0;  z[31] = 0.0;
+  x[32] = 10.0; y[32] = 10.0; z[32] = 10.0;
+  /* clang-format on */
 
-  ex_put_coord(exoid, x, y, z);
+  EXCHECK(ex_put_coord(exoid, x, y, z));
 
-  coord_names[0] = "x";
-  coord_names[1] = "y";
-  coord_names[2] = "z";
-
-  ex_put_coord_names(exoid, coord_names);
+  char *coord_names[] = {"xcoor", "ycoor", "zcoor"};
+  EXCHECK(ex_put_coord_names(exoid, coord_names));
 
   /* Add nodal attributes */
-  ex_put_attr_param(exoid, EX_NODAL, 0, 2);
+  EXCHECK(ex_put_attr_param(exoid, EX_NODAL, 0, 2));
+  EXCHECK(ex_put_one_attr(exoid, EX_NODAL, 0, 1, x));
+  EXCHECK(ex_put_one_attr(exoid, EX_NODAL, 0, 2, y));
 
-  ex_put_one_attr(exoid, EX_NODAL, 0, 1, x);
-  ex_put_one_attr(exoid, EX_NODAL, 0, 2, y);
-
-  attrib_names[0] = "Node_attr_1";
-  attrib_names[1] = "Node_attr_2";
-  ex_put_attr_names(exoid, EX_NODAL, 0, attrib_names);
-
-  /* write element order map */
-
-  elem_map = (int *)calloc(num_elem, sizeof(int));
-
-  for (i = 1; i <= num_elem; i++) {
-    elem_map[i - 1] = i;
+  {
+    char *attrib_names[] = {"Node_attr_1", "Node_attr_2"};
+    EXCHECK(ex_put_attr_names(exoid, EX_NODAL, 0, attrib_names));
   }
 
-  ex_put_map(exoid, elem_map);
+  /* write element id map */
+  int *elem_map = (int *)calloc(num_elem, sizeof(int));
+  for (int i = 1; i <= num_elem; i++) {
+    elem_map[i - 1] = i * 10;
+  }
+
+  EXCHECK(ex_put_id_map(exoid, EX_ELEM_MAP, elem_map));
+
   free(elem_map);
 
   /* write element block parameters */
+  struct ex_block blocks[10];
+  for (int i = 0; i < 10; i++) {
+    blocks[i].type                = EX_ELEM_BLOCK;
+    blocks[i].id                  = 0;
+    blocks[i].num_entry           = 0;
+    blocks[i].num_nodes_per_entry = 0;
+    blocks[i].num_edges_per_entry = 0;
+    blocks[i].num_faces_per_entry = 0;
+    blocks[i].num_attribute       = 0;
+  }
+
+  char *block_names[10];
   block_names[0] = "block_1";
   block_names[1] = "block_2";
   block_names[2] = "block_3";
@@ -205,386 +154,318 @@ int main(int argc, char **argv)
   block_names[5] = "block_6";
   block_names[6] = "block_7";
 
-  num_elem_in_block[0] = 1;
-  num_elem_in_block[1] = 1;
-  num_elem_in_block[2] = 1;
-  num_elem_in_block[3] = 1;
-  num_elem_in_block[4] = 1;
-  num_elem_in_block[5] = 1;
-  num_elem_in_block[6] = 1;
+  ex_copy_string(blocks[0].topology, "quad", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[1].topology, "quad", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[2].topology, "hex", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[3].topology, "tetra", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[4].topology, "wedge", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[5].topology, "tetra", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[6].topology, "tri", MAX_STR_LENGTH + 1);
 
-  num_nodes_per_elem[0] = 4; /* elements in block #1 are 4-node quads  */
-  num_nodes_per_elem[1] = 4; /* elements in block #2 are 4-node quads  */
-  num_nodes_per_elem[2] = 8; /* elements in block #3 are 8-node hexes  */
-  num_nodes_per_elem[3] = 4; /* elements in block #4 are 4-node tetras */
-  num_nodes_per_elem[4] = 6; /* elements in block #5 are 6-node wedges */
-  num_nodes_per_elem[5] = 8; /* elements in block #6 are 8-node tetras */
-  num_nodes_per_elem[6] = 3; /* elements in block #7 are 3-node tris   */
+  blocks[0].num_entry = 1;
+  blocks[1].num_entry = 1;
+  blocks[2].num_entry = 1;
+  blocks[3].num_entry = 1;
+  blocks[4].num_entry = 1;
+  blocks[5].num_entry = 1;
+  blocks[6].num_entry = 1;
 
-  ebids[0] = 10;
-  ebids[1] = 11;
-  ebids[2] = 12;
-  ebids[3] = 13;
-  ebids[4] = 14;
-  ebids[5] = 15;
-  ebids[6] = 16;
+  blocks[0].num_attribute = 1;
+  blocks[1].num_attribute = 1;
+  blocks[2].num_attribute = 1;
+  blocks[3].num_attribute = 1;
+  blocks[4].num_attribute = 1;
+  blocks[5].num_attribute = 1;
+  blocks[6].num_attribute = 1;
 
-  ex_put_elem_block(exoid, ebids[0], "quad", num_elem_in_block[0], num_nodes_per_elem[0], 1);
-  ex_put_elem_block(exoid, ebids[1], "quad", num_elem_in_block[1], num_nodes_per_elem[1], 1);
-  ex_put_elem_block(exoid, ebids[2], "hex", num_elem_in_block[2], num_nodes_per_elem[2], 1);
-  ex_put_elem_block(exoid, ebids[3], "tetra", num_elem_in_block[3], num_nodes_per_elem[3], 1);
+  blocks[0].num_nodes_per_entry = 4; /* elements in block #1 are 4-node quads  */
+  blocks[1].num_nodes_per_entry = 4; /* elements in block #2 are 4-node quads  */
+  blocks[2].num_nodes_per_entry = 8; /* elements in block #3 are 8-node hexes  */
+  blocks[3].num_nodes_per_entry = 4; /* elements in block #4 are 4-node tetras */
+  blocks[4].num_nodes_per_entry = 6; /* elements in block #5 are 6-node wedges */
+  blocks[5].num_nodes_per_entry = 8; /* elements in block #6 are 8-node tetras */
+  blocks[6].num_nodes_per_entry = 3; /* elements in block #7 are 3-node tris   */
 
-  /* Use alternative function to do same thing... */
-  ex_put_block(exoid, EX_ELEM_BLOCK, ebids[4], "wedge", num_elem_in_block[4], num_nodes_per_elem[4],
-               0, 0, 1);
-  ex_put_block(exoid, EX_ELEM_BLOCK, ebids[5], "tetra", num_elem_in_block[5], num_nodes_per_elem[5],
-               0, 0, 1);
-  ex_put_block(exoid, EX_ELEM_BLOCK, ebids[6], "tri", num_elem_in_block[6], num_nodes_per_elem[6],
-               0, 0, 1);
+  blocks[0].id = 10;
+  blocks[1].id = 11;
+  blocks[2].id = 12;
+  blocks[3].id = 13;
+  blocks[4].id = 14;
+  blocks[5].id = 15;
+  blocks[6].id = 16;
+
+  /* Generate an error that name is not found since blocks have not
+     yet been defined
+  */
+  int error = ex_put_name(exoid, EX_ELEM_BLOCK, blocks[0].id, block_names[0]);
+  printf("after ex_put_name, error = %d\n", error);
+
+  EXCHECK(ex_put_block_params(exoid, num_elem_blk, blocks));
 
   /* Write element block names */
-  ex_put_names(exoid, EX_ELEM_BLOCK, block_names);
+  for (int i = 0; i < num_elem_blk; i++) {
+    EXCHECK(ex_put_name(exoid, EX_ELEM_BLOCK, blocks[i].id, block_names[i]));
+  }
 
   /* write element block properties */
-
   /*               12345678901234567890123456789012 */
+  char *prop_names[2];
   prop_names[0] = "MATERIAL_PROPERTY_LONG_NAME_32CH";
   prop_names[1] = "DENSITY";
-  ex_put_prop_names(exoid, EX_ELEM_BLOCK, 2, prop_names);
-  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[0], prop_names[0], 10);
-  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[1], prop_names[0], 20);
-  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[2], prop_names[0], 30);
-  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[3], prop_names[0], 40);
-  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[4], prop_names[0], 50);
-  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[5], prop_names[0], 60);
-  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[6], prop_names[0], 70);
+
+  EXCHECK(ex_put_prop_names(exoid, EX_ELEM_BLOCK, 2, prop_names));
+  EXCHECK(ex_put_prop(exoid, EX_ELEM_BLOCK, blocks[0].id, prop_names[0], 10));
+  EXCHECK(ex_put_prop(exoid, EX_ELEM_BLOCK, blocks[1].id, prop_names[0], 20));
+  EXCHECK(ex_put_prop(exoid, EX_ELEM_BLOCK, blocks[2].id, prop_names[0], 30));
+  EXCHECK(ex_put_prop(exoid, EX_ELEM_BLOCK, blocks[3].id, prop_names[0], 40));
+  EXCHECK(ex_put_prop(exoid, EX_ELEM_BLOCK, blocks[4].id, prop_names[0], 50));
+  EXCHECK(ex_put_prop(exoid, EX_ELEM_BLOCK, blocks[5].id, prop_names[0], 60));
+  EXCHECK(ex_put_prop(exoid, EX_ELEM_BLOCK, blocks[6].id, prop_names[0], 70));
 
   /* write element connectivity */
-  connect    = (int *)calloc(8, sizeof(int));
-  connect[0] = 1;
-  connect[1] = 2;
-  connect[2] = 3;
-  connect[3] = 4;
-  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[0], connect, 0, 0);
+  {
+    int connect[] = {1, 2, 3, 4};
+    EXCHECK(ex_put_conn(exoid, EX_ELEM_BLOCK, blocks[0].id, connect, NULL, NULL));
+  }
 
-  connect[0] = 5;
-  connect[1] = 6;
-  connect[2] = 7;
-  connect[3] = 8;
-  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[1], connect, 0, 0);
+  {
+    int connect[] = {5, 6, 7, 8};
+    EXCHECK(ex_put_conn(exoid, EX_ELEM_BLOCK, blocks[1].id, connect, NULL, NULL));
+  }
 
-  connect[0] = 9;
-  connect[1] = 10;
-  connect[2] = 11;
-  connect[3] = 12;
-  connect[4] = 13;
-  connect[5] = 14;
-  connect[6] = 15;
-  connect[7] = 16;
-  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[2], connect, 0, 0);
+  {
+    int connect[] = {9, 10, 11, 12, 13, 14, 15, 16};
+    EXCHECK(ex_put_conn(exoid, EX_ELEM_BLOCK, blocks[2].id, connect, NULL, NULL));
+  }
 
-  connect[0] = 17;
-  connect[1] = 18;
-  connect[2] = 19;
-  connect[3] = 20;
-  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[3], connect, 0, 0);
+  {
+    int connect[] = {17, 18, 19, 20};
+    EXCHECK(ex_put_conn(exoid, EX_ELEM_BLOCK, blocks[3].id, connect, NULL, NULL));
+  }
 
-  connect[0] = 21;
-  connect[1] = 22;
-  connect[2] = 23;
-  connect[3] = 24;
-  connect[4] = 25;
-  connect[5] = 26;
-  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[4], connect, 0, 0);
+  {
+    int connect[] = {21, 22, 23, 24, 25, 26};
+    EXCHECK(ex_put_conn(exoid, EX_ELEM_BLOCK, blocks[4].id, connect, NULL, NULL));
+  }
 
-  connect[0] = 17;
-  connect[1] = 18;
-  connect[2] = 19;
-  connect[3] = 20;
-  connect[4] = 27;
-  connect[5] = 28;
-  connect[6] = 30;
-  connect[7] = 29;
-  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[5], connect, 0, 0);
+  {
+    int connect[] = {17, 18, 19, 20, 27, 28, 30, 29};
+    EXCHECK(ex_put_conn(exoid, EX_ELEM_BLOCK, blocks[5].id, connect, NULL, NULL));
+  }
 
-  /* Use "old" API function just to show syntax */
-  connect[0] = 31;
-  connect[1] = 32;
-  connect[2] = 33;
-  ex_put_elem_conn(exoid, ebids[6], connect);
-
-  free(connect);
+  {
+    int connect[] = {31, 32, 33};
+    EXCHECK(ex_put_conn(exoid, EX_ELEM_BLOCK, blocks[6].id, connect, NULL, NULL));
+  }
 
   /* write element block attributes */
+  float attrib[1];
   attrib[0] = 3.14159;
-  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[0], attrib);
-  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[0], attrib);
+  EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[0].id, attrib));
+  EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[0].id, attrib));
 
   attrib[0] = 6.14159;
-  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[1], attrib);
-  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[2], attrib);
-  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[3], attrib);
-  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[4], attrib);
-  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[5], attrib);
-  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[6], attrib);
+  EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[1].id, attrib));
+  EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[2].id, attrib));
+  EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[3].id, attrib));
+  EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[4].id, attrib));
+  EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[5].id, attrib));
+  EXCHECK(ex_put_attr(exoid, EX_ELEM_BLOCK, blocks[6].id, attrib));
 
-  attrib_names[0] = "THICKNESS";
-  for (i = 0; i < 7; i++) {
-    ex_put_attr_names(exoid, EX_ELEM_BLOCK, ebids[i], attrib_names);
+  {
+    char *attrib_names[] = {"THICKNESS"};
+    for (int i = 0; i < num_elem_blk; i++) {
+      EXCHECK(ex_put_attr_names(exoid, EX_ELEM_BLOCK, blocks[i].id, attrib_names));
+    }
   }
 
   /* write individual node sets */
-  num_nodes_in_nset[0] = 5;
-  num_nodes_in_nset[1] = 3;
+  int num_nodes_in_nset[] = {5, 3};
+  int nsids[]             = {20, 21};
 
-  nsids[0] = 20;
-  nsids[1] = 21;
+  {
+    EXCHECK(ex_put_set_param(exoid, EX_NODE_SET, nsids[0], 5, 5));
 
-  ex_put_set_param(exoid, EX_NODE_SET, nsids[0], 5, 5);
+    int   node_list[] = {10, 11, 12, 13, 14};
+    float dist_fact[] = {1.0, 2.0, 3.0, 4.0, 5.0};
 
-  node_list[0] = 100;
-  node_list[1] = 101;
-  node_list[2] = 102;
-  node_list[3] = 103;
-  node_list[4] = 104;
-  ex_put_set(exoid, EX_NODE_SET, nsids[0], node_list, 0);
+    EXCHECK(ex_put_set(exoid, EX_NODE_SET, nsids[0], node_list, NULL));
+    EXCHECK(ex_put_set_dist_fact(exoid, EX_NODE_SET, nsids[0], dist_fact));
+  }
 
-  dist_fact[0] = 1.0;
-  dist_fact[1] = 2.0;
-  dist_fact[2] = 3.0;
-  dist_fact[3] = 4.0;
-  dist_fact[4] = 5.0;
-  ex_put_set_dist_fact(exoid, EX_NODE_SET, nsids[0], dist_fact);
+  {
+    EXCHECK(ex_put_set_param(exoid, EX_NODE_SET, nsids[1], 3, 3));
 
-  ex_put_set_param(exoid, EX_NODE_SET, nsids[1], 3, 3);
+    int   node_list[] = {20, 21, 22};
+    float dist_fact[] = {1.1, 2.1, 3.1};
 
-  node_list[0] = 200;
-  node_list[1] = 201;
-  node_list[2] = 202;
-  ex_put_set(exoid, EX_NODE_SET, nsids[1], node_list, 0);
-
-  dist_fact[0] = 1.1;
-  dist_fact[1] = 2.1;
-  dist_fact[2] = 3.1;
-  ex_put_set_dist_fact(exoid, EX_NODE_SET, nsids[1], dist_fact);
+    EXCHECK(ex_put_set(exoid, EX_NODE_SET, nsids[1], node_list, NULL));
+    EXCHECK(ex_put_set_dist_fact(exoid, EX_NODE_SET, nsids[1], dist_fact));
+  }
 
   /* Write node set names */
-  nset_names[0] = "nset_1";
-  nset_names[1] = "nset_2";
+  char *nset_names[] = {"nset_1", "nset_2"};
+  EXCHECK(ex_put_names(exoid, EX_NODE_SET, nset_names));
+  EXCHECK(ex_put_prop(exoid, EX_NODE_SET, nsids[0], "FACE", 4));
+  EXCHECK(ex_put_prop(exoid, EX_NODE_SET, nsids[1], "FACE", 5));
 
-  ex_put_names(exoid, EX_NODE_SET, nset_names);
-  ex_put_prop(exoid, EX_NODE_SET, nsids[0], "FACE", 4);
-  ex_put_prop(exoid, EX_NODE_SET, nsids[1], "FACE", 5);
-
-  prop_array[0] = 1000;
-  prop_array[1] = 2000;
-
-  ex_put_prop_array(exoid, EX_NODE_SET, "VELOCITY", prop_array);
+  int prop_array[] = {1000, 2000};
+  EXCHECK(ex_put_prop_array(exoid, EX_NODE_SET, "VELOCITY", prop_array));
 
   /* Add nodeset attributes */
-  ex_put_attr_param(exoid, EX_NODE_SET, nsids[0], 1);
-  ex_put_attr(exoid, EX_NODE_SET, nsids[0], x);
+  EXCHECK(ex_put_attr_param(exoid, EX_NODE_SET, nsids[0], 1));
+  EXCHECK(ex_put_attr(exoid, EX_NODE_SET, nsids[0], x));
 
-  attrib_names[0] = "Nodeset_attribute";
-  ex_put_attr_names(exoid, EX_NODE_SET, nsids[0], attrib_names);
+  {
+    char *attrib_names[] = {"Nodeset_attribute"};
+    EXCHECK(ex_put_attr_names(exoid, EX_NODE_SET, nsids[0], attrib_names));
+  }
 
   /* write individual side sets */
-  num_face_in_sset[0] = 2;
-  num_face_in_sset[1] = 2;
-  num_face_in_sset[2] = 7;
-  num_face_in_sset[3] = 8;
-  num_face_in_sset[4] = 10;
+  int num_face_in_sset[] = {2, 2, 7, 8, 10};
+  int ssids[]            = {30, 31, 32, 33, 34};
 
-  ssids[0] = 30;
-  ssids[1] = 31;
-  ssids[2] = 32;
-  ssids[3] = 33;
-  ssids[4] = 34;
+  {
+    /* side set #1  - quad */
+    EXCHECK(ex_put_set_param(exoid, EX_SIDE_SET, ssids[0], 2, 4));
 
-  /* side set #1  - quad */
-  ex_put_set_param(exoid, EX_SIDE_SET, ssids[0], 2, 4);
+    int   elem_list[] = {2, 2};
+    int   side_list[] = {4, 2};
+    float dist_fact[] = {30.0, 30.1, 30.2, 30.3};
 
-  elem_list[0] = 2;
-  elem_list[1] = 2;
-  side_list[0] = 4;
-  side_list[1] = 2;
-  dist_fact[0] = 30.0;
-  dist_fact[1] = 30.1;
-  dist_fact[2] = 30.2;
-  dist_fact[3] = 30.3;
+    EXCHECK(ex_put_set(exoid, EX_SIDE_SET, 30, elem_list, side_list));
+    EXCHECK(ex_put_set_dist_fact(exoid, EX_SIDE_SET, 30, dist_fact));
+  }
 
-  ex_put_set(exoid, EX_SIDE_SET, 30, elem_list, side_list);
-  ex_put_set_dist_fact(exoid, EX_SIDE_SET, 30, dist_fact);
+  {
+    /* side set #2  - quad, spanning 2 elements  */
+    EXCHECK(ex_put_set_param(exoid, EX_SIDE_SET, 31, 2, 4));
 
-  /* side set #2  - quad, spanning 2 elements  */
-  ex_put_set_param(exoid, EX_SIDE_SET, 31, 2, 4);
+    int   elem_list[] = {1, 2};
+    int   side_list[] = {2, 3};
+    float dist_fact[] = {31.0, 31.1, 31.2, 31.3};
 
-  elem_list[0] = 1;
-  elem_list[1] = 2;
-  side_list[0] = 2;
-  side_list[1] = 3;
-  dist_fact[0] = 31.0;
-  dist_fact[1] = 31.1;
-  dist_fact[2] = 31.2;
-  dist_fact[3] = 31.3;
+    EXCHECK(ex_put_set(exoid, EX_SIDE_SET, 31, elem_list, side_list));
+    EXCHECK(ex_put_set_dist_fact(exoid, EX_SIDE_SET, 31, dist_fact));
+  }
 
-  ex_put_set(exoid, EX_SIDE_SET, 31, elem_list, side_list);
-  ex_put_set_dist_fact(exoid, EX_SIDE_SET, 31, dist_fact);
+  {
+    /* side set #3  - hex */
+    EXCHECK(ex_put_set_param(exoid, EX_SIDE_SET, 32, 7, 0));
 
-  /* side set #3  - hex */
-  ex_put_set_param(exoid, EX_SIDE_SET, 32, 7, 0);
+    int elem_list[] = {3, 3, 3, 3, 3, 3, 3};
+    int side_list[] = {5, 3, 3, 2, 4, 1, 6};
 
-  elem_list[0] = 3;
-  elem_list[1] = 3;
-  elem_list[2] = 3;
-  elem_list[3] = 3;
-  elem_list[4] = 3;
-  elem_list[5] = 3;
-  elem_list[6] = 3;
+    EXCHECK(ex_put_set(exoid, EX_SIDE_SET, 32, elem_list, side_list));
+  }
 
-  side_list[0] = 5;
-  side_list[1] = 3;
-  side_list[2] = 3;
-  side_list[3] = 2;
-  side_list[4] = 4;
-  side_list[5] = 1;
-  side_list[6] = 6;
+  {
+    /* side set #4  - tetras */
+    EXCHECK(ex_put_set_param(exoid, EX_SIDE_SET, 33, 8, 0));
 
-  ex_put_set(exoid, EX_SIDE_SET, 32, elem_list, side_list);
+    int elem_list[] = {4, 4, 4, 4, 6, 6, 6, 6};
+    int side_list[] = {1, 2, 3, 4, 1, 2, 3, 4};
 
-  /* side set #4  - tetras */
-  ex_put_set_param(exoid, EX_SIDE_SET, 33, 8, 0);
+    EXCHECK(ex_put_set(exoid, EX_SIDE_SET, 33, elem_list, side_list));
+  }
 
-  elem_list[0] = 4;
-  elem_list[1] = 4;
-  elem_list[2] = 4;
-  elem_list[3] = 4;
-  elem_list[4] = 6;
-  elem_list[5] = 6;
-  elem_list[6] = 6;
-  elem_list[7] = 6;
+  {
+    /* side set #5  - wedges and tris */
+    EXCHECK(ex_put_set_param(exoid, EX_SIDE_SET, 34, 10, 0));
 
-  side_list[0] = 1;
-  side_list[1] = 2;
-  side_list[2] = 3;
-  side_list[3] = 4;
-  side_list[4] = 1;
-  side_list[5] = 2;
-  side_list[6] = 3;
-  side_list[7] = 4;
+    int elem_list[] = {5, 5, 5, 5, 5, 7, 7, 7, 7, 7};
+    int side_list[] = {1, 2, 3, 4, 5, 1, 2, 3, 4, 5};
 
-  ex_put_set(exoid, EX_SIDE_SET, 33, elem_list, side_list);
-
-  /* side set #5  - wedges and tris */
-  ex_put_set_param(exoid, EX_SIDE_SET, 34, 10, 0);
-
-  elem_list[0] = 5;
-  elem_list[1] = 5;
-  elem_list[2] = 5;
-  elem_list[3] = 5;
-  elem_list[4] = 5;
-  elem_list[5] = 7;
-  elem_list[6] = 7;
-  elem_list[7] = 7;
-  elem_list[8] = 7;
-  elem_list[9] = 7;
-
-  side_list[0] = 1;
-  side_list[1] = 2;
-  side_list[2] = 3;
-  side_list[3] = 4;
-  side_list[4] = 5;
-  side_list[5] = 1;
-  side_list[6] = 2;
-  side_list[7] = 3;
-  side_list[8] = 4;
-  side_list[9] = 5;
-
-  ex_put_set(exoid, EX_SIDE_SET, 34, elem_list, side_list);
+    EXCHECK(ex_put_set(exoid, EX_SIDE_SET, 34, elem_list, side_list));
+  }
 
   /* Write side set names */
-  sset_names[0] = "sset_1";
-  sset_names[1] = "sset_2";
-  sset_names[2] = "sset_3";
-  sset_names[3] = "sset_4";
-  sset_names[4] = "sset_5";
-
-  ex_put_names(exoid, EX_SIDE_SET, sset_names);
-  ex_put_prop(exoid, EX_SIDE_SET, 30, "COLOR", 100);
-  ex_put_prop(exoid, EX_SIDE_SET, 31, "COLOR", 101);
+  char *sset_names[] = {"sset_1", "sset_2", "sset_3", "sset_4", "sset_5"};
+  EXCHECK(ex_put_names(exoid, EX_SIDE_SET, sset_names));
+  EXCHECK(ex_put_prop(exoid, EX_SIDE_SET, 30, "COLOR", 100));
+  EXCHECK(ex_put_prop(exoid, EX_SIDE_SET, 31, "COLOR", 101));
 
   /* write QA records; test empty and just blank-filled records */
-  num_qa_rec = 2;
-
+  int   num_qa_rec = 2;
+  char *qa_record[2][4];
   qa_record[0][0] = "TESTWT";
   qa_record[0][1] = "testwt";
   qa_record[0][2] = "07/07/93";
   qa_record[0][3] = "15:41:33";
-  qa_record[1][0] = "";
+  qa_record[1][0] = "Thirty-Two character QA Record|";
   qa_record[1][1] = "                            ";
   qa_record[1][2] = "";
   qa_record[1][3] = "                        ";
 
-  ex_put_qa(exoid, num_qa_rec, qa_record);
+  EXCHECK(ex_put_qa(exoid, num_qa_rec, qa_record));
 
   /* write information records; test empty and just blank-filled records */
-  num_info = 3;
-
+  char *info[3];
   info[0] = "This is the first information record.";
   info[1] = "";
-  info[2] = "                                     ";
+  info[2] = "This info record is exactly 80 characters long.  last character should be pipe |";
 
-  ex_put_info(exoid, num_info, info);
+  int num_info = 3;
+  EXCHECK(ex_put_info(exoid, num_info, info));
 
   /* write results variables parameters and names */
-  num_glo_vars = 1;
-  var_names[0] = "glo_vars";
-  ex_put_variable_param(exoid, EX_GLOBAL, num_glo_vars);
-  ex_put_variable_names(exoid, EX_GLOBAL, num_glo_vars, var_names);
+  int num_glo_vars = 1;
+  {
+    char *var_names[] = {"glo_vars"};
 
-  num_nod_vars = 2;
-  /*              12345678901234567890123456789012 */
-  var_names[0] = "node_variable_a_very_long_name_0";
-  var_names[1] = "nod_var1";
+    EXCHECK(ex_put_variable_param(exoid, EX_GLOBAL, num_glo_vars));
+    EXCHECK(ex_put_variable_names(exoid, EX_GLOBAL, num_glo_vars, var_names));
+  }
 
-  ex_put_variable_param(exoid, EX_NODAL, num_nod_vars);
-  ex_put_variable_names(exoid, EX_NODAL, num_nod_vars, var_names);
+  int num_nod_vars = 2;
+  {
+    /*                    12345678901234567890123456789012 */
+    char *var_names[] = {"node_variable_a_very_long_name_0", "nod_var1"};
 
-  num_ele_vars = 3;
-  var_names[0] = "ele_var0";
-  var_names[1] = "ele_var1";
-  var_names[2] = "ele_var2";
+    EXCHECK(ex_put_variable_param(exoid, EX_NODAL, num_nod_vars));
+    EXCHECK(ex_put_variable_names(exoid, EX_NODAL, num_nod_vars, var_names));
+  }
 
-  ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_ele_vars);
-  ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_ele_vars, var_names);
+  int num_ele_vars = 3;
+  {
+    /* 0        1         2         3   */
+    /* 12345678901234567890123456789012 */
+    char *var_names[] = {"this_variable_name_is_short", "this_variable_name_is_just_right",
+                         "this_variable_name_is_tooooo_long"};
 
-  num_nset_vars = 3;
-  var_names[0]  = "ns_var0";
-  var_names[1]  = "ns_var1";
-  var_names[2]  = "ns_var2";
+    EXCHECK(ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_ele_vars));
+    EXCHECK(ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_ele_vars, var_names));
+  }
 
-  ex_put_variable_param(exoid, EX_NODE_SET, num_nset_vars);
-  ex_put_variable_names(exoid, EX_NODE_SET, num_nset_vars, var_names);
+  int num_nset_vars = 3;
+  {
+    char *var_names[] = {"ns_var0", "ns_var1", "ns_var2"};
 
-  num_sset_vars = 3;
-  var_names[0]  = "ss_var0";
-  var_names[1]  = "ss_var1";
-  var_names[2]  = "ss_var2";
+    EXCHECK(ex_put_variable_param(exoid, EX_NODE_SET, num_nset_vars));
+    EXCHECK(ex_put_variable_names(exoid, EX_NODE_SET, num_nset_vars, var_names));
+  }
 
-  ex_put_variable_param(exoid, EX_SIDE_SET, num_sset_vars);
-  ex_put_variable_names(exoid, EX_SIDE_SET, num_sset_vars, var_names);
+  int num_sset_vars = 3;
+  {
+    char *var_names[] = {"ss_var0", "ss_var1", "ss_var2"};
+
+    EXCHECK(ex_put_variable_param(exoid, EX_SIDE_SET, num_sset_vars));
+    EXCHECK(ex_put_variable_names(exoid, EX_SIDE_SET, num_sset_vars, var_names));
+  }
 
   /* write element variable truth table */
-  truth_tab = (int *)calloc((num_elem_blk * num_ele_vars), sizeof(int));
+  int *truth_tab = (int *)calloc((num_elem_blk * num_ele_vars), sizeof(int));
 
-  k = 0;
-  for (i = 0; i < num_elem_blk; i++) {
-    for (j = 0; j < num_ele_vars; j++) {
-      truth_tab[k++] = 1;
+  {
+    int k = 0;
+    for (int i = 0; i < num_elem_blk; i++) {
+      for (int j = 0; j < num_ele_vars; j++) {
+        truth_tab[k++] = 1;
+      }
     }
   }
 
-  ex_put_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab);
+  EXCHECK(ex_put_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab));
   free(truth_tab);
 
   /* for each time step, write the analysis results;
@@ -593,75 +474,72 @@ int main(int argc, char **argv)
    * obviously the analysis code will populate these arrays
    */
 
-  whole_time_step = 1;
-  num_time_steps  = 10;
+  float *glob_var_vals  = (float *)calloc(num_glo_vars, CPU_word_size);
+  float *nodal_var_vals = (float *)calloc(num_nodes, CPU_word_size);
+  float *elem_var_vals  = (float *)calloc(num_ele_vars, CPU_word_size);
+  float *sset_var_vals  = (float *)calloc(10, CPU_word_size); /* max sides_in_sset */
+  float *nset_var_vals  = (float *)calloc(5, CPU_word_size);  /* max nodes_in_nset */
 
-  glob_var_vals  = (float *)calloc(num_glo_vars, CPU_word_size);
-  nodal_var_vals = (float *)calloc(num_nodes, CPU_word_size);
-  elem_var_vals  = (float *)calloc(4, CPU_word_size);
-  sset_var_vals  = (float *)calloc(10, CPU_word_size);
-  nset_var_vals  = (float *)calloc(10, CPU_word_size);
-
-  for (i = 0; i < num_time_steps; i++) {
-    time_value = (float)(i + 1) / 100.;
+  int num_time_steps = 10;
+  for (int i = 0; i < num_time_steps; i++) {
+    int   whole_time_step = i + 1;
+    float time_value      = (float)(i + 1) / 100.;
 
     /* write time value */
-    ex_put_time(exoid, whole_time_step, &time_value);
+    EXCHECK(ex_put_time(exoid, whole_time_step, &time_value));
 
     /* write global variables */
-    for (j = 0; j < num_glo_vars; j++) {
+    for (int j = 0; j < num_glo_vars; j++) {
       glob_var_vals[j] = (float)(j + 2) * time_value;
     }
-
-    ex_put_var(exoid, whole_time_step, EX_GLOBAL, 1, 0, num_glo_vars, glob_var_vals);
+    EXCHECK(ex_put_var(exoid, whole_time_step, EX_GLOBAL, 1, 1, num_glo_vars, glob_var_vals));
 
     /* write nodal variables */
-    for (k = 1; k <= num_nod_vars; k++) {
-      for (j = 0; j < num_nodes; j++) {
+    for (int k = 1; k <= num_nod_vars; k++) {
+      for (int j = 0; j < num_nodes; j++) {
         nodal_var_vals[j] = (float)k + ((float)(j + 1) * time_value);
       }
-      ex_put_var(exoid, whole_time_step, EX_NODAL, k, 1, num_nodes, nodal_var_vals);
+      EXCHECK(ex_put_var(exoid, whole_time_step, EX_NODAL, k, 1, num_nodes, nodal_var_vals));
     }
 
     /* write element variables */
-    for (k = 1; k <= num_ele_vars; k++) {
-      for (j = 0; j < num_elem_blk; j++) {
-        for (m = 0; m < num_elem_in_block[j]; m++) {
+    for (int k = 1; k <= num_ele_vars; k++) {
+      for (int j = 0; j < num_elem_blk; j++) {
+        for (int m = 0; m < blocks[j].num_entry; m++) {
           elem_var_vals[m] = (float)(k + 1) + (float)(j + 2) + ((float)(m + 1) * time_value);
+          /* printf("elem_var_vals[%d]: %f\n",m,elem_var_vals[m]); */
         }
-        ex_put_var(exoid, whole_time_step, EX_ELEM_BLOCK, k, ebids[j], num_elem_in_block[j],
-                   elem_var_vals);
+        EXCHECK(ex_put_var(exoid, whole_time_step, EX_ELEM_BLOCK, k, blocks[j].id,
+                           blocks[j].num_entry, elem_var_vals));
       }
     }
 
     /* write sideset variables */
-    for (k = 1; k <= num_sset_vars; k++) {
-      for (j = 0; j < num_side_sets; j++) {
-        for (m = 0; m < num_face_in_sset[j]; m++) {
+    for (int k = 1; k <= num_sset_vars; k++) {
+      for (int j = 0; j < num_side_sets; j++) {
+        for (int m = 0; m < num_face_in_sset[j]; m++) {
           sset_var_vals[m] = (float)(k + 2) + (float)(j + 3) + ((float)(m + 1) * time_value);
         }
-        ex_put_var(exoid, whole_time_step, EX_SIDE_SET, k, ssids[j], num_face_in_sset[j],
-                   sset_var_vals);
+        EXCHECK(ex_put_var(exoid, whole_time_step, EX_SIDE_SET, k, ssids[j], num_face_in_sset[j],
+                           sset_var_vals));
       }
     }
 
     /* write nodeset variables */
-    for (k = 1; k <= num_nset_vars; k++) {
-      for (j = 0; j < num_node_sets; j++) {
-        for (m = 0; m < num_nodes_in_nset[j]; m++) {
+    for (int k = 1; k <= num_nset_vars; k++) {
+      for (int j = 0; j < num_node_sets; j++) {
+        for (int m = 0; m < num_nodes_in_nset[j]; m++) {
           nset_var_vals[m] = (float)(k + 3) + (float)(j + 4) + ((float)(m + 1) * time_value);
         }
-        ex_put_var(exoid, whole_time_step, EX_NODE_SET, k, nsids[j], num_nodes_in_nset[j],
-                   nset_var_vals);
+        EXCHECK(ex_put_var(exoid, whole_time_step, EX_NODE_SET, k, nsids[j], num_nodes_in_nset[j],
+                           nset_var_vals));
       }
     }
 
-    whole_time_step++;
-
-    /* update the data file; this should be done at the end of every
-     * time step to ensure that no data is lost if the analysis dies
+    /* update the data file; this should be done at the end of every time step
+     * to ensure that no data is lost if the analysis dies
      */
-    ex_update(exoid);
+    EXCHECK(ex_update(exoid));
   }
   free(glob_var_vals);
   free(nodal_var_vals);
@@ -669,7 +547,8 @@ int main(int argc, char **argv)
   free(sset_var_vals);
   free(nset_var_vals);
 
-  /* close the EXODUS files */
-  ex_close(exoid);
+  /* close the EXODUS files
+   */
+  EXCHECK(ex_close(exoid));
   return 0;
 }

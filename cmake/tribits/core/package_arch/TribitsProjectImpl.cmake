@@ -59,13 +59,14 @@ endif()
 
 include(TribitsConstants)
 tribits_asesrt_minimum_cmake_version()
-include(TribitsCMakePolicies)
+include(TribitsCMakePolicies  NO_POLICY_SCOPE)
 
 include(TribitsIncludeDirectories)
 include(TribitsFindPythonInterp)
 include(TribitsGlobalMacros)
 include(TribitsConfigureCTestCustom)
 include(TribitsGenerateResourceSpecFile)
+include(TribitsPackageDependencies)
 include(TribitsPrintDependencyInfo)
 
 include(AdvancedSet)
@@ -116,7 +117,7 @@ macro(tribits_project_impl)
 
   # Since the version header file is now configured the root build
   # dir needs to be on the include path
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+  tribits_include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
   #
   # B) Set up user options and global variables that will be used throughout
@@ -188,10 +189,6 @@ macro(tribits_project_impl)
   #
   # G) Go get the information for all enabled TPLS
   #
-
-  message("")
-  message("Getting information for all enabled TPLs ...")
-  message("")
 
   tribits_process_enabled_tpls()
 
@@ -323,7 +320,6 @@ macro(tribits_project_impl)
 endmacro()
 
 
-#
 # @MACRO: tribits_project_enable_all()
 #
 # Process a project where you enable all of the packages by default.

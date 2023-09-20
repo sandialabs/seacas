@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -18,10 +18,6 @@
 
 #if !defined(NO_ZOLTAN_SUPPORT)
 extern "C" int Zoltan_get_global_id_type(char **name);
-#endif
-
-#if defined(SEACAS_HAVE_CGNS)
-#include <cgns/Iocgns_IOFactory.h>
 #endif
 
 namespace {
@@ -62,10 +58,7 @@ namespace {
   bool check_valid_decomp_method(const std::string &method)
   {
     const auto &valid_methods = Ioss::valid_decomp_methods();
-    if (std::find(valid_methods.begin(), valid_methods.end(), method) != valid_methods.end()) {
-      return true;
-    }
-    return false;
+    return std::find(valid_methods.begin(), valid_methods.end(), method) != valid_methods.end();
   }
 
   std::string get_decomposition_method(const Ioss::PropertyManager &properties)
@@ -144,7 +137,7 @@ namespace {
 
 namespace Ioss {
 
-  const std::vector<std::string> &valid_decomp_methods()
+  IOSS_EXPORT const std::vector<std::string> &valid_decomp_methods()
   {
     static const std::vector<std::string> valid_methods
     {
@@ -165,10 +158,122 @@ namespace Ioss {
     return valid_methods;
   }
 
-  template Decomposition<int>::Decomposition(const Ioss::PropertyManager &props,
-                                             Ioss_MPI_Comm                comm);
-  template Decomposition<int64_t>::Decomposition(const Ioss::PropertyManager &props,
-                                                 Ioss_MPI_Comm                comm);
+  size_t
+  ElementBlockBatchOffset::get_ioss_element_size(const std::vector<int64_t> &blockSubsetIndex) const
+  {
+    size_t count = 0;
+
+    // Determine total number of ioss subset decomp elements
+    for (int64_t i : blockSubsetIndex) {
+      const Ioss::BlockDecompositionData &block = m_data[i];
+      count += (block.importMap.size() + block.localMap.size());
+    }
+
+    return count;
+  }
+
+  size_t ElementBlockBatchOffset::get_ioss_offset_size(
+      const std::vector<int64_t> &blockSubsetIndex,
+      const std::vector<int>     &blockSubsetFieldComponentCount) const
+  {
+    size_t count = 0;
+
+    for (size_t i = 0; i < blockSubsetIndex.size(); i++) {
+      int64_t                             blk_seq = blockSubsetIndex[i];
+      const Ioss::BlockDecompositionData &block   = m_data[blk_seq];
+      // Determine total number of ioss decomp entries based on subset field component count per
+      // block.
+      count += blockSubsetFieldComponentCount[i] * (block.importMap.size() + block.localMap.size());
+    }
+
+    return count;
+  }
+
+  std::vector<size_t> ElementBlockBatchOffset::get_ioss_offset(
+      const std::vector<int64_t> &blockSubsetIndex,
+      const std::vector<int>     &blockSubsetFieldComponentCount) const
+  {
+    std::vector<size_t> offset(blockSubsetIndex.size() + 1, 0);
+
+    for (size_t i = 0; i < blockSubsetIndex.size(); i++) {
+      int64_t                             blk_seq = blockSubsetIndex[i];
+      const Ioss::BlockDecompositionData &block   = m_data[blk_seq];
+
+      // Determine number of ioss decomp entries based on subset field component count per block.
+      offset[i + 1] =
+          blockSubsetFieldComponentCount[i] * (block.importMap.size() + block.localMap.size());
+    }
+
+    // Compute offsets
+    for (size_t i = 1; i <= blockSubsetIndex.size(); ++i) {
+      offset[i] += offset[i - 1];
+    }
+
+    return offset;
+  }
+
+  std::vector<size_t> ElementBlockBatchOffset::get_import_offset(
+      const std::vector<int64_t> &blockSubsetIndex,
+      const std::vector<int>     &blockSubsetFieldComponentCount) const
+  {
+    std::vector<size_t> offset(blockSubsetIndex.size() + 1, 0);
+
+    for (size_t i = 0; i < blockSubsetIndex.size(); i++) {
+      int64_t                             blk_seq = blockSubsetIndex[i];
+      const Ioss::BlockDecompositionData &block   = m_data[blk_seq];
+
+      // Determine number of imported ioss decomp entries based on subset field component count per
+      // block.
+      offset[i + 1] = blockSubsetFieldComponentCount[i] * block.importMap.size();
+    }
+
+    // Compute offsets
+    for (size_t i = 1; i <= blockSubsetIndex.size(); ++i) {
+      offset[i] += offset[i - 1];
+    }
+
+    return offset;
+  }
+
+  std::vector<int> ElementBlockBatchOffset::get_connectivity_ioss_component_count(
+      const std::vector<int64_t> &blockSubsetIndex) const
+  {
+    std::vector<int> blockSubsetConnectivityComponentCount(blockSubsetIndex.size());
+
+    for (size_t i = 0; i < blockSubsetIndex.size(); i++) {
+      int64_t                             blk_seq = blockSubsetIndex[i];
+      const Ioss::BlockDecompositionData &block   = m_data[blk_seq];
+      blockSubsetConnectivityComponentCount[i]    = block.nodesPerEntity;
+    }
+
+    return blockSubsetConnectivityComponentCount;
+  }
+
+  size_t ElementBlockBatchOffset::get_connectivity_ioss_offset_size(
+      const std::vector<int64_t> &blockSubsetIndex) const
+  {
+    return get_ioss_offset_size(blockSubsetIndex,
+                                get_connectivity_ioss_component_count(blockSubsetIndex));
+  }
+
+  std::vector<size_t> ElementBlockBatchOffset::get_connectivity_ioss_offset(
+      const std::vector<int64_t> &blockSubsetIndex) const
+  {
+    return get_ioss_offset(blockSubsetIndex,
+                           get_connectivity_ioss_component_count(blockSubsetIndex));
+  }
+
+  std::vector<size_t> ElementBlockBatchOffset::get_connectivity_import_offset(
+      const std::vector<int64_t> &blockSubsetIndex) const
+  {
+    return get_import_offset(blockSubsetIndex,
+                             get_connectivity_ioss_component_count(blockSubsetIndex));
+  }
+
+  template IOSS_EXPORT Decomposition<int>::Decomposition(const Ioss::PropertyManager &props,
+                                                         Ioss_MPI_Comm                comm);
+  template IOSS_EXPORT Decomposition<int64_t>::Decomposition(const Ioss::PropertyManager &props,
+                                                             Ioss_MPI_Comm                comm);
 
   template <typename INT>
   Decomposition<INT>::Decomposition(const Ioss::PropertyManager &props, Ioss_MPI_Comm comm)
@@ -193,18 +298,20 @@ namespace Ioss {
     }
   }
 
-  template void Decomposition<int>::generate_entity_distributions(size_t globalNodeCount,
-                                                                  size_t globalElementCount);
-  template void Decomposition<int64_t>::generate_entity_distributions(size_t globalNodeCount,
-                                                                      size_t globalElementCount);
+  template IOSS_EXPORT void
+  Decomposition<int>::generate_entity_distributions(size_t global_node_count,
+                                                    size_t global_element_count);
+  template IOSS_EXPORT void
+  Decomposition<int64_t>::generate_entity_distributions(size_t global_node_count,
+                                                        size_t global_element_count);
 
   template <typename INT>
-  void Decomposition<INT>::generate_entity_distributions(size_t globalNodeCount,
-                                                         size_t globalElementCount)
+  void Decomposition<INT>::generate_entity_distributions(size_t global_node_count,
+                                                         size_t global_element_count)
   {
     show_progress(__func__);
-    m_globalNodeCount    = globalNodeCount;
-    m_globalElementCount = globalElementCount;
+    m_globalNodeCount    = global_node_count;
+    m_globalElementCount = global_element_count;
 
     m_elementDist = get_entity_dist<INT>(m_processorCount, m_processor, m_globalElementCount,
                                          &m_elementOffset, &m_elementCount);
@@ -283,16 +390,19 @@ namespace Ioss {
     }
   }
 
-  template void Decomposition<int>::decompose_model(
+  // ========================================================================
+  // Decompose model function (confusing with all the #if...
+  template IOSS_EXPORT void Decomposition<int>::decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
       Zoltan &zz,
 #endif
       std::vector<BlockDecompositionData> &element_blocks);
-  template void Decomposition<int64_t>::decompose_model(
+  template IOSS_EXPORT void Decomposition<int64_t>::decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
       Zoltan &zz,
 #endif
       std::vector<BlockDecompositionData> &element_blocks);
+
   template <typename INT>
   void Decomposition<INT>::decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -377,12 +487,10 @@ namespace Ioss {
     show_progress("\tIoss::decompose model finished");
   }
 
-  template void Decomposition<int>::calculate_element_centroids(const std::vector<double> &x,
-                                                                const std::vector<double> &y,
-                                                                const std::vector<double> &z);
-  template void Decomposition<int64_t>::calculate_element_centroids(const std::vector<double> &x,
-                                                                    const std::vector<double> &y,
-                                                                    const std::vector<double> &z);
+  template IOSS_EXPORT void Decomposition<int>::calculate_element_centroids(
+      const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &z);
+  template IOSS_EXPORT void Decomposition<int64_t>::calculate_element_centroids(
+      const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &z);
 
   template <typename INT>
   void Decomposition<INT>::calculate_element_centroids(const std::vector<double> &x,
@@ -643,7 +751,7 @@ namespace Ioss {
     importElementCount.resize(m_processorCount + 1);
     importElementIndex.resize(m_processorCount + 1);
 
-    for (auto &proc : m_elementToProc) {
+    for (const auto &proc : m_elementToProc) {
       exportElementCount[proc]++;
     }
 
@@ -1052,7 +1160,7 @@ namespace Ioss {
       std::vector<std::pair<int, int>> export_map;
       export_map.reserve(num_export);
       for (int i = 0; i < num_export; i++) {
-        export_map.emplace_back(std::make_pair(export_procs[i], export_global_ids[i]));
+        export_map.emplace_back(export_procs[i], export_global_ids[i]);
       }
 
       Ioss::sort(export_map.begin(), export_map.end());
@@ -1143,8 +1251,8 @@ namespace Ioss {
   }
 #endif
 
-  template void Decomposition<int>::build_global_to_local_elem_map();
-  template void Decomposition<int64_t>::build_global_to_local_elem_map();
+  template IOSS_EXPORT void Decomposition<int>::build_global_to_local_elem_map();
+  template IOSS_EXPORT void Decomposition<int64_t>::build_global_to_local_elem_map();
 
   template <typename INT> void Decomposition<INT>::build_global_to_local_elem_map()
   {

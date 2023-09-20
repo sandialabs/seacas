@@ -1,6 +1,6 @@
 #
 # cmake -P script to get the CTest testing XML directory
-# <build>/Testing/<buildstarttime> given just the <bulid> directory path.
+# <build>/Testing/<buildstarttime> given just the <build> directory path.
 #
 # Usage:
 #
@@ -13,6 +13,8 @@
 # This script reads in the <build-dir>/Testing/TAG to get <bulidstarttime> and
 # then prints the directory <build>/Testing/<buildstarttime> to STDOUT.
 #
+
+cmake_minimum_required(VERSION 3.23.0 FATAL_ERROR)
 
 if ("${PROJECT_NAME}" STREQUAL "")
   message(FATAL_ERROR "Error, PROJECT_NAME must be set!")
@@ -36,6 +38,6 @@ include(TribitsReadTagFile)
 
 set(TAG_FILE "${CTEST_BUILD_DIR}/Testing/TAG")
 
-tribits_read_ctest_tag_file("${TAG_FILE}" BUILD_START_TIME  CDASH_TRACK)
+tribits_read_ctest_tag_file("${TAG_FILE}" buildStartTime  cdashGroup  cdashModel)
 
-message("${CTEST_BUILD_DIR}/Testing/${BUILD_START_TIME}")
+message("${CTEST_BUILD_DIR}/Testing/${buildStartTime}")

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -12,6 +12,7 @@
 #include <Ioss_Hex20.h>
 #include <Ioss_Hex27.h>
 #include <Ioss_Hex8.h>
+#include <Ioss_IOFactory.h>
 #include <Ioss_Node.h>
 #include <Ioss_Pyramid13.h>
 #include <Ioss_Pyramid14.h>
@@ -34,6 +35,7 @@
 #include <Ioss_Wedge18.h>
 #include <Ioss_Wedge6.h>
 
+#include <fmt/chrono.h>
 #include <fmt/color.h>
 #include <fmt/ostream.h>
 #include <numeric>
@@ -54,12 +56,14 @@
 #include <cgns/Iocgns_Defines.h>
 
 #define CGERR(funcall)                                                                             \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(file_ptr, __FILE__, __func__, __LINE__, -1);                         \
-  }
+  do {                                                                                             \
+    if ((funcall) != CG_OK) {                                                                      \
+      Iocgns::Utils::cgns_error(file_ptr, __FILE__, __func__, __LINE__, -1);                       \
+    }                                                                                              \
+  } while (0)
 
 namespace {
-#if defined(__IOSS_WINDOWS__)
+#if defined(__IOSS_WINDOWS__) || defined(__CYGWIN__)
   const char *strcasestr(const char *haystack, const char *needle)
   {
     std::string lneedle(Ioss::Utils::lowercase(needle));
@@ -263,7 +267,7 @@ namespace {
         fmt::print(Ioss::WarnOut(),
                    "On sideset '{}', the boundary condition type was previously set to {}"
                    " which does not match the current value of {}. It will keep the old value.\n",
-                   sset->name(), old_bocotype, bocotype);
+                   sset->name(), old_bocotype, static_cast<int>(bocotype));
       }
     }
     else {
@@ -288,9 +292,11 @@ namespace {
     // size will be processor dependent.
     auto            &sblocks = region->get_structured_blocks();
     std::vector<int> fld_count;
-    fld_count.reserve(sblocks.size());
+    fld_count.reserve(2 * sblocks.size());
     for (const auto &block : sblocks) {
       fld_count.push_back(block->field_count(Ioss::Field::TRANSIENT));
+      const auto &nb = block->get_node_block();
+      fld_count.push_back(nb.field_count(Ioss::Field::TRANSIENT));
     }
     auto par = region->get_database()->util();
     par.global_array_minmax(fld_count, Ioss::ParallelUtils::DO_MAX);
@@ -315,7 +321,22 @@ namespace {
         }
       }
       else {
-        offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[i];
+        offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[2 * i];
+      }
+      const auto    &nb          = block->get_node_block();
+      Ioss::NameList node_fields = nb.field_describe(Ioss::Field::TRANSIENT);
+      if (!node_fields.empty()) {
+        for (const auto &field_name : node_fields) {
+          const Ioss::Field &field = nb.get_fieldref(field_name);
+          std::string        type  = field.raw_storage()->name();
+          Ioss::Utils::copy_string(&fld_names[offset], field_name, CGNS_MAX_NAME_LENGTH + 1);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+          Ioss::Utils::copy_string(&fld_names[offset], type, CGNS_MAX_NAME_LENGTH + 1);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+        }
+      }
+      else {
+        offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[2 * i + 1];
       }
     }
 
@@ -325,26 +346,49 @@ namespace {
     // names.  Now need to add the missing fields to the blocks that
     // are not 'native' to this processor...
     //
+    offset = 0;
     for (size_t i = 0; i < sblocks.size(); i++) {
       auto &block = sblocks[i];
-      if (block->field_count(Ioss::Field::TRANSIENT) != (size_t)fld_count[i]) {
+      if (block->field_count(Ioss::Field::TRANSIENT) != (size_t)fld_count[2 * i]) {
         // Verify that either has 0 or correct number of fields...
         assert(block->field_count(Ioss::Field::TRANSIENT) == 0);
 
         // Extract the field name and storage type...
-        offset = (CGNS_MAX_NAME_LENGTH + 1) * 2 * i;
-
-        for (int nf = 0; nf < fld_count[i]; nf++) {
+        for (int nf = 0; nf < fld_count[2 * i]; nf++) {
           std::string fld_name(&fld_names[offset]);
           offset += CGNS_MAX_NAME_LENGTH + 1;
           std::string fld_type(&fld_names[offset]);
           offset += CGNS_MAX_NAME_LENGTH + 1;
 
-          block->field_add(
+          block->field_add(Ioss::Field(std::move(fld_name), Ioss::Field::DOUBLE, fld_type,
+                                       Ioss::Field::TRANSIENT, 0));
+        }
+      }
+      else {
+        offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[2 * i];
+      }
+      assert(block->field_count(Ioss::Field::TRANSIENT) == (size_t)fld_count[2 * i]);
+
+      auto &nb = block->get_node_block();
+      if (nb.field_count(Ioss::Field::TRANSIENT) != (size_t)fld_count[2 * i + 1]) {
+        // Verify that either has 0 or correct number of fields...
+        assert(nb.field_count(Ioss::Field::TRANSIENT) == 0);
+
+        // Extract the field name and storage type...
+        for (int nf = 0; nf < fld_count[2 * i + 1]; nf++) {
+          std::string fld_name(&fld_names[offset]);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+          std::string fld_type(&fld_names[offset]);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+
+          nb.field_add(
               Ioss::Field(fld_name, Ioss::Field::DOUBLE, fld_type, Ioss::Field::TRANSIENT, 0));
         }
       }
-      assert(block->field_count(Ioss::Field::TRANSIENT) == (size_t)fld_count[i]);
+      else {
+        offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[2 * i + 1];
+      }
+      assert(nb.field_count(Ioss::Field::TRANSIENT) == (size_t)fld_count[2 * i + 1]);
     }
   }
 
@@ -620,7 +664,7 @@ namespace {
   }
 #endif
 
-  void consolidate_zgc(const Ioss::Region &region)
+  void consolidate_zgc(IOSS_MAYBE_UNUSED const Ioss::Region &region)
   {
     // In parallel, the zgc are not necessarily consistent across processors...
     // and the owner/donor ranges are processor specific.
@@ -637,7 +681,7 @@ namespace {
     // 3 int[3] transform; (values range from -3 to +3 (could store as single int)
     // CGNS_MAX_NAME_LENGTH characters + 17 ints / connection.
 
-    PAR_UNUSED(region);
+    IOSS_PAR_UNUSED(region);
 #if CG_BUILD_PARALLEL
     const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH;
     const int INT_PER_ZGC   = 17;
@@ -1016,8 +1060,27 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   CGERR(cg_base_write(file_ptr, "Base", phys_dimension, phys_dimension, &base));
 
   CGERR(cg_goto(file_ptr, base, "end"));
-  std::string version = "IOSS: CGNS Writer version " + std::string{__DATE__} + ", " +
-                        Ioss::Utils::platform_information();
+  std::time_t t    = std::time(nullptr);
+  std::string date = fmt::format("{:%Y/%m/%d}", fmt::localtime(t));
+  std::string time = fmt::format("{:%H:%M:%S}", fmt::localtime(t));
+
+  std::string code_version = region.get_optional_property("code_version", "unknown");
+  std::string code_name    = region.get_optional_property("code_name", "unknown");
+
+  std::string mpi_version{};
+#if CG_BUILD_PARALLEL
+  {
+    char version[MPI_MAX_LIBRARY_VERSION_STRING];
+    int  length = 0;
+    MPI_Get_library_version(version, &length);
+    mpi_version = fmt::format("MPI Version: {}", version);
+  }
+#endif
+
+  std::string config  = Iocgns::Utils::show_config();
+  auto        version = fmt::format(
+      "Written by `{}-{}` on {} at {}\n{}{}\nIOSS: CGNS Writer version {}\nPlatform: {}", code_name,
+      code_version, date, time, config, mpi_version, __DATE__, Ioss::Utils::platform_information());
 
 #if CG_BUILD_PARALLEL
   if (is_parallel_io) {
@@ -1036,7 +1099,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   CGERR(cg_dataclass_write(CGNS_ENUMV(Dimensional)));
   CGERR(cg_units_write(CGNS_ENUMV(MassUnitsUserDefined), CGNS_ENUMV(LengthUnitsUserDefined),
                        CGNS_ENUMV(TimeUnitsUserDefined), CGNS_ENUMV(TemperatureUnitsUserDefined),
-                       CGNS_ENUMV(AngleUnitsUserDefined)))
+                       CGNS_ENUMV(AngleUnitsUserDefined)));
 
   // Output the sidesets as Family_t nodes
   region.get_database()->progress("\tOutput Sidesets");
@@ -1315,6 +1378,17 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
           donor_range[4] -= zgc.m_donorOffset[1];
           donor_range[5] -= zgc.m_donorOffset[2];
         }
+
+        if (is_parallel_io || !is_parallel) {
+          if (zgc.m_ownerZone == zgc.m_donorZone && zgc.m_ownerRangeBeg == zgc.m_donorRangeBeg &&
+              zgc.m_ownerRangeEnd == zgc.m_donorRangeEnd) {
+#if IOSS_DEBUG_OUTPUT
+            fmt::print("Removing ZGC {} on zone {}\n", connect_name, db_zone);
+#endif
+            continue;
+          }
+        }
+
         CGERR(cg_1to1_write(file_ptr, base, db_zone, connect_name.c_str(), donor_name.c_str(),
                             owner_range.data(), donor_range.data(), zgc.m_transform.data(),
                             &zgc_idx));
@@ -2229,7 +2303,14 @@ void Iocgns::Utils::add_transient_variables(int cgns_file_ptr, const std::vector
             (block->type() == Ioss::STRUCTUREDBLOCK)
                 ? &(dynamic_cast<Ioss::StructuredBlock *>(block)->get_node_block())
                 : region->get_node_blocks()[0];
-        auto  *nb           = const_cast<Ioss::NodeBlock *>(cnb);
+        auto *nb = const_cast<Ioss::NodeBlock *>(cnb);
+        if (nb == nullptr) {
+          std::ostringstream errmsg;
+          fmt::print(errmsg,
+                     "ERROR: CGNS: Null entity accessing nodeblock for structured block {}.",
+                     block->name());
+          IOSS_ERROR(errmsg);
+        }
         size_t entity_count = nb->entity_count();
         Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
                                 region->get_database(), nullptr, fields);
@@ -2497,7 +2578,7 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
       fmt::print(Ioss::DebugOut(), "\n\nWorkload threshold exceeded on {} processors.\n", px);
     }
     bool single_zone = zones.size() == 1;
-    if (single_zone) {
+    if (single_zone) { // GDS: Don't understand this code...  !single_zone?
       auto active = std::count_if(zones.begin(), zones.end(),
                                   [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
       if (active >= proc_count) {
@@ -2633,19 +2714,21 @@ int Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, d
   int  new_zone_id = static_cast<int>(zones.size()) + 1;
 
   // See if can split each zone over a set of procs...
-  std::vector<int> splits(zones.size());
+  std::vector<int> splits(zones.size(), 1);
 
-  for (size_t i = 0; i < zones.size(); i++) {
-    auto zone = zones[i];
-    if (zone->m_lineOrdinal != 7) {
-      double work = zone->work();
-      if (load_balance <= 1.2) {
-        splits[i] = int(std::ceil(work / avg_work));
+  if ((int)zones.size() < proc_count) {
+    for (size_t i = 0; i < zones.size(); i++) {
+      auto zone = zones[i];
+      if (zone->m_lineOrdinal != 7) {
+        double work = zone->work();
+        if (load_balance <= 1.2) {
+          splits[i] = int(std::ceil(work / avg_work));
+        }
+        else {
+          splits[i] = int(std::round(work / avg_work + 0.2));
+        }
+        splits[i] = splits[i] == 0 ? 1 : splits[i];
       }
-      else {
-        splits[i] = int(std::round(work / avg_work + 0.2));
-      }
-      splits[i] = splits[i] == 0 ? 1 : splits[i];
     }
   }
 
@@ -2653,32 +2736,34 @@ int Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, d
   int  diff              = proc_count - num_splits;
   bool adjustment_needed = diff > 0;
 
-  while (diff != 0) {
-    // Adjust splits so sum is equal to proc_count.
-    // Adjust the largest split count(s)
-    int    step      = diff < 0 ? -1 : 1;
-    size_t min_z     = 0;
-    double min_delta = 1.0e27;
-    for (size_t i = 0; i < zones.size(); i++) {
-      auto   zone = zones[i];
-      double work = zone->work();
+  if (num_splits != (int)zones.size()) {
+    while (diff != 0) {
+      // Adjust splits so sum is equal to proc_count.
+      // Adjust the largest split count(s)
+      int    step      = diff < 0 ? -1 : 1;
+      size_t min_z     = 0;
+      double min_delta = 1.0e27;
+      for (size_t i = 0; i < zones.size(); i++) {
+        auto   zone = zones[i];
+        double work = zone->work();
 
-      if (splits[i] == 0) {
-        continue;
-      }
-      if ((splits[i] + step) > 0) {
-        double delta = std::abs(avg_work - work / (double)(splits[i] + step));
-        if (delta < min_delta) {
-          min_delta = delta;
-          min_z     = i;
+        if (splits[i] == 0) {
+          continue;
+        }
+        if ((splits[i] + step) > 0) {
+          double delta = std::abs(avg_work - work / (double)(splits[i] + step));
+          if (delta < min_delta) {
+            min_delta = delta;
+            min_z     = i;
+          }
         }
       }
+      splits[min_z] += step;
+      diff -= step;
     }
-    splits[min_z] += step;
-    diff -= step;
+    assert(diff == 0);
+    assert(std::accumulate(splits.begin(), splits.end(), 0) == proc_count);
   }
-  assert(diff == 0);
-  assert(std::accumulate(splits.begin(), splits.end(), 0) == proc_count);
 
   // See if splits result in avg_work for all zones in range...
   double min_avg      = avg_work / load_balance;
@@ -2844,7 +2929,7 @@ int Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, d
     }
 
     // Revert `zones` back to original version (with no zones split)
-    zones       = original_zones;
+    zones       = std::move(original_zones);
     new_zone_id = pre_split(zones, avg_work, new_load_balance, proc_rank, proc_count, verbose);
   }
   return new_zone_id;

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -6,8 +6,11 @@
 
 #pragma once
 
+#include "ioss_export.h"
+
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_EntityType.h>
 #include <Ioss_Field.h>
 #include <Ioss_Property.h>
 #include <Ioss_Sort.h>
@@ -30,36 +33,21 @@ namespace Ioss {
   class PropertyManager;
 } // namespace Ioss
 
-#define IOSS_ERROR(errmsg) throw std::runtime_error((errmsg).str())
+[[noreturn]] inline void IOSS_ERROR(const std::ostringstream &errmsg)
+{
+  throw std::runtime_error((errmsg).str());
+}
 
-namespace {
-  // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
-  template <typename T> size_t unique(std::vector<T> &out, bool skip_first)
-  {
-    if (out.empty())
-      return 0;
-    size_t i    = 1;
-    size_t pos  = 1;
-    T      oldv = out[0];
-    if (skip_first) {
-      i    = 2;
-      pos  = 2;
-      oldv = out[1];
-    }
-    for (; i < out.size(); ++i) {
-      T newv   = out[i];
-      out[pos] = newv;
-      pos += (newv != oldv);
-      oldv = newv;
-    }
-    return pos;
-  }
-} // namespace
+#ifdef NDEBUG
+#define IOSS_ASSERT_USED(x) (void)x
+#else
+#define IOSS_ASSERT_USED(x)
+#endif
 
 namespace Ioss {
   /* \brief Utility methods.
    */
-  class Utils
+  class IOSS_EXPORT Utils
   {
   public:
     Utils()  = default;
@@ -121,6 +109,22 @@ namespace Ioss {
         errmsg << "INTERNAL ERROR: Invalid dynamic cast returned nullptr\n";
         IOSS_ERROR(errmsg);
       }
+    }
+
+    // NOTE: This code previously checked for existance of filesystem include, but
+    //       gcc-8.X has the include but needs a library, also intel and clang
+    //       pretend to be gcc, so macro to test for usability of filesystem
+    //       was complicated and we can easily get by with the following code.
+    static bool is_path_absolute(const std::string &path)
+    {
+      if (!path.empty()) {
+#ifdef __IOSS_WINDOWS__
+        return path[0] == '\\' && path[1] == ':';
+#else
+        return path[0] == '/';
+#endif
+      }
+      return false;
     }
 
     /** \brief guess file type from extension */
@@ -222,7 +226,7 @@ namespace Ioss {
       if (number == 0) {
         return 1;
       }
-      int width = int(std::floor(std::log10(number))) + 1;
+      int width = static_cast<int>(std::floor(std::log10(number))) + 1;
       if (use_commas) {
         width += ((width - 1) / 3);
       }
@@ -244,7 +248,8 @@ namespace Ioss {
       return pow2;
     }
 
-    template <typename T> static bool check_block_order(const std::vector<T *> &blocks)
+    template <typename T>
+    static bool check_block_order(IOSS_MAYBE_UNUSED const std::vector<T *> &blocks)
     {
 #ifndef NDEBUG
       // Verify that element blocks are defined in sorted offset order...
@@ -290,6 +295,12 @@ namespace Ioss {
     static int         get_number(const std::string &suffix);
     static int         extract_id(const std::string &name_id);
     static std::string encode_entity_name(const std::string &entity_type, int64_t id);
+
+    /** Return the trailing digits (if any) from `name`
+     * `hex20` would return the string `20`
+     * `tetra` would return an empty string.
+     */
+    static std::string get_trailing_digits(const std::string &name);
 
     /** \brief create a string that describes the list of input `ids` collapsing ranges if possible.
      *
@@ -398,6 +409,13 @@ namespace Ioss {
      */
     static bool substr_equal(const std::string &prefix, const std::string &str);
 
+    /** Check all values in `data` to make sure that if they are converted to a double and
+     * back again, there will be no data loss.  This requires that the value be less than 2^53.
+     * This is done in the exodus database since it stores all transient data as doubles...
+     */
+    static bool check_int_to_real_overflow(const Ioss::Field &field, int64_t *data,
+                                           size_t num_entity);
+
     /** \brief Get a string containing `uname` output.
      *
      *  This output contains information about the current computing platform.
@@ -407,10 +425,6 @@ namespace Ioss {
      *  \returns The platform information string.
      */
     static std::string platform_information();
-
-    /** \brief Return amount of memory being used on this processor */
-    static size_t get_memory_info();
-    static size_t get_hwm_memory_info();
 
     /** \brief Get a filename relative to the specified working directory (if any)
      *         of the current execution.
@@ -496,6 +510,8 @@ namespace Ioss {
 
     static std::string shape_to_string(const Ioss::ElementShape &shape);
 
+    static std::string entity_type_to_string(const Ioss::EntityType &type);
+
     /** \brief Create a nominal mesh for use in history databases.
      *
      *  The model for a history file is a single sphere element (1 node, 1 element).
@@ -513,15 +529,41 @@ namespace Ioss {
     static void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
                               const std::string &header, const std::string &suffix = "\n\t",
                               bool print_empty = false);
+
+  private:
+    // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
+    template <typename T> static size_t unique(std::vector<T> &out, bool skip_first)
+    {
+      if (out.empty()) {
+        return 0;
+      }
+      size_t i    = 1;
+      size_t pos  = 1;
+      T      oldv = out[0];
+      if (skip_first) {
+        i    = 2;
+        pos  = 2;
+        oldv = out[1];
+      }
+      for (; i < out.size(); ++i) {
+        T newv   = out[i];
+        out[pos] = newv;
+        pos += (newv != oldv);
+        oldv = newv;
+      }
+      return pos;
+    }
   };
 
   inline std::ostream &OUTPUT() { return *Utils::m_outputStream; }
 
   inline std::ostream &DebugOut() { return *Utils::m_debugStream; }
 
-  inline std::ostream &WarnOut()
+  inline std::ostream &WarnOut(bool output_prewarning = true)
   {
-    *Utils::m_warningStream << Utils::m_preWarningText;
+    if (output_prewarning) {
+      *Utils::m_warningStream << Utils::m_preWarningText;
+    }
     return *Utils::m_warningStream;
   }
 

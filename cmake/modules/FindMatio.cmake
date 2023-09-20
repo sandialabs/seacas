@@ -170,7 +170,16 @@ else(Matio_LIBRARIES AND Matio_INCLUDE_DIRS)
     # Need to find the Matio config script to check for HDF5
     message(STATUS "Assuming that Matio requires HDF5")
     if ( NOT TARGET hdf5)
-      add_package_dependency(Matio DEPENDS_ON HDF5)
+     assert_defined(Matio_INCLUDE_DIRS)
+     find_path(inc_path
+        NAMES "matio_pubconf.h"
+        HINTS ${Matio_INCLUDE_DIRS}
+        NO_DEFAULT_PATH)
+     file(STRINGS "${inc_path}/matio_pubconf.h" matio_default_version REGEX " MAT_FT_DEFAULT ")
+     string(REGEX MATCH "4|73" default_version "${matio_default_version}")
+     if (default_version EQUAL 73)
+        add_package_dependency(Matio DEPENDS_ON HDF5)
+     endif()
     endif()
 
 endif(Matio_LIBRARIES AND Matio_INCLUDE_DIRS )    

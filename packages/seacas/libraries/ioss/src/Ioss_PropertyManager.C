@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -13,11 +13,6 @@
 #include <ostream>
 #include <string>
 #include <utility>
-
-Ioss::PropertyManager::PropertyManager(const PropertyManager &from)
-    : m_properties(from.m_properties)
-{
-}
 
 Ioss::PropertyManager::~PropertyManager()
 {
@@ -39,7 +34,7 @@ void Ioss::PropertyManager::add(const Ioss::Property &new_prop)
   if (iter != m_properties.end()) {
     m_properties.erase(iter);
   }
-  m_properties.insert(ValuePair(new_prop.get_name(), new_prop));
+  m_properties.emplace(new_prop.get_name(), new_prop);
 }
 
 /** \brief Checks if a property exists in the database.

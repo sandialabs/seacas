@@ -4,7 +4,7 @@
  * ***********************************************************************
  *
  *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
+ *                  Copyright 2012, 2023 Sandia Corporation
  *
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
  * the U.S. Government retains certain rights in this software.
@@ -67,7 +67,7 @@ extern "C" {
 
 static unsigned int zidum = ZOLTAN_RAND_INIT;
 
-unsigned int Zoltan_Seed()
+unsigned int Zoltan_Seed(void)
 {
 /* Function that returns the current value of the Zoltan seed. */
   return zidum;

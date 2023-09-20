@@ -65,7 +65,7 @@ include(PrintVar)
 #  ADDITIONAL_OUTPUT_DIRS
 #
 #    If set, then the files will be copied to an additional output
-#    directories as well.  These must be abolute paths.
+#    directories as well.  These must be absolute paths.
 #
 # The default file extensions are:
 #
@@ -128,14 +128,14 @@ function(tribits_create_client_template_headers BASE_DIR)
 
     # Create the client header file
     set(CLIENT_HEADER_STR "")
-    append_string_var(CLIENT_HEADER_STR
+    string(APPEND CLIENT_HEADER_STR
       "#include \"${DECL_HEADER_BASE}${${PARENT_PACKAGE_NAME}_TEMPLATE_DECL_EXT}\"\n"
        )
     if (HAVE_${PARENT_PACKAGE_NAME_UC}_EXPLICIT_INSTANTIATION)
         set(TEMPLATE_INSTANT_TYPE_NAME "explicit instantiation")
     else()
       set(TEMPLATE_INSTANT_TYPE_NAME "implicit instantiation")
-       append_string_var(CLIENT_HEADER_STR
+       string(APPEND CLIENT_HEADER_STR
         "#include \"${DECL_HEADER_BASE}${${PARENT_PACKAGE_NAME}_TEMPLATE_DEF_EXT}\"\n"
          )
     endif()
@@ -143,7 +143,7 @@ function(tribits_create_client_template_headers BASE_DIR)
     set(WRITE_NEW_HEADER_FILE TRUE)
     if (EXISTS "${BIN_HEADER_FILE}")
       # See if the file is the same and if it is, skip writing it again to avoid
-      # unecessarily rebuilding object code.
+      # unnecessarily rebuilding object code.
       file(READ "${BIN_HEADER_FILE}" EXISTING_BIN_HEADER_STR)
       if (CLIENT_HEADER_STR STREQUAL EXISTING_BIN_HEADER_STR)
         set(WRITE_NEW_HEADER_FILE FALSE)
@@ -161,7 +161,7 @@ function(tribits_create_client_template_headers BASE_DIR)
     # Create the SIERRA BJAM version of the header file
     foreach(OUTPUT_DIR ${PARSE_ADDITIONAL_OUTPUT_DIRS})
       set(EXTERNAL_CLIENT_HEADER_STR "")
-      append_string_var(EXTERNAL_CLIENT_HEADER_STR
+      string(APPEND EXTERNAL_CLIENT_HEADER_STR
         "#include \"${DECL_HEADER_BASE}${${PARENT_PACKAGE_NAME}_TEMPLATE_DECL_EXT}\"\n"
         "#ifndef HAVE_${PARENT_PACKAGE_NAME_UC}_EXPLICIT_INSTANTIATION\n"
         "#  include \"${DECL_HEADER_BASE}${${PARENT_PACKAGE_NAME}_TEMPLATE_DEF_EXT}\"\n"

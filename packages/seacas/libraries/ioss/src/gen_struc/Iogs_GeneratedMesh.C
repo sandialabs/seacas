@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -310,7 +310,7 @@ namespace Iogs {
 
       if (doRotation) {
         fmt::print(Ioss::OUTPUT(), "\tRotation Matrix: \n\t");
-        for (auto &elem : rotmat) {
+        for (const auto &elem : rotmat) {
           for (double jj : elem) {
             fmt::print(Ioss::OUTPUT(), "{:14.e}\t", jj);
           }
@@ -347,12 +347,14 @@ namespace Iogs {
   int64_t GeneratedMesh::element_count(int64_t block_number) const
   {
     assert(block_number <= structured_block_count());
+    IOSS_ASSERT_USED(block_number);
     return numX * numY * numZ;
   }
 
   int64_t GeneratedMesh::element_count_proc(int64_t block_number) const
   {
     assert(block_number <= structured_block_count());
+    IOSS_ASSERT_USED(block_number);
     return numX * numY * myNumZ;
   }
 
@@ -403,6 +405,7 @@ namespace Iogs {
   std::pair<std::string, int> GeneratedMesh::topology_type(int64_t block_number) const
   {
     assert(block_number <= structured_block_count() && block_number > 0);
+    IOSS_ASSERT_USED(block_number);
     return std::make_pair(std::string(Ioss::Hex8::name), 8);
   }
 

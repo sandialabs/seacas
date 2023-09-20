@@ -39,7 +39,7 @@
 
 # Define the TriBITS minimum required CMake version
 
-set(TRIBITS_CMAKE_MINIMUM_REQUIRED 3.17.0)
+set(TRIBITS_CMAKE_MINIMUM_REQUIRED 3.22.0)
 
 macro(tribits_asesrt_minimum_cmake_version)
 
@@ -49,12 +49,6 @@ macro(tribits_asesrt_minimum_cmake_version)
   endif()
   
 endmacro()
-
-# Misc constants
-
-set(${PROJECT_NAME}_CTEST_USE_NEW_AAO_FEATURES TRUE)
-# NOTE: This is left to maintain backward compatiblity after upgrade to CMake
-# 3.17 but this option is now hard-coded to TRUE in the implementation.
 
 # File names for TriBITS system
 
@@ -94,13 +88,17 @@ set(${PROJECT_NAME}_PACKAGE_DEPS_TABLE_HTML_FILE_NAME ${PROJECT_NAME}PackageDepe
 
 set(${PROJECT_NAME}_PACKAGE_DEPS_FILES_DIR "cmake/dependencies")
 
+set(${PROJECT_NAME}_BUILD_DIR_EXTERNAL_PKGS_DIR "external_packages")
+
+set(${PROJECT_NAME}_BUILD_DIR_CMAKE_PKGS_DIR "cmake_packages")
+
 # Other stuff
 
-if(WIN32)
+if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
   #Apparently FIND_PROGRAM looks for an exact match of the file name.
   #So even though "git clone ..." is valid to use on windows we need to give the
   #full name of the command we want to run.
   set(GIT_NAME git.cmd)
-else(WIN32)
+else()
   set(GIT_NAME git)
-endif(WIN32)
+endif()

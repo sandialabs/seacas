@@ -1,10 +1,13 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
+#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+#define DOCTEST_CONFIG_NO_MULTITHREADING
 #include <doctest.h>
 
 #include <Ioss_CodeTypes.h>
@@ -28,11 +31,11 @@ template <typename INT>
 void verify_global_to_local(const Ioss::Map &my_map, const std::vector<INT> &init)
 {
   size_t count = my_map.map().size() - 1;
-  REQUIRE(count == init.size());
+  DOCTEST_REQUIRE_EQ(count, init.size());
 
   for (size_t i = 0; i < count; i++) {
     INT global = init[i];
-    REQUIRE((size_t)my_map.global_to_local(global) == i + 1);
+    DOCTEST_REQUIRE_EQ((size_t)my_map.global_to_local(global), i + 1);
   }
 }
 
@@ -47,19 +50,19 @@ template <typename INT> void test_reorder(Ioss::Map &my_map, std::vector<INT> &i
   initialize_data(init);
 
   my_map.set_map(init.data(), init.size(), 0, false);
-  REQUIRE(!my_map.is_sequential());
+  DOCTEST_REQUIRE(!my_map.is_sequential());
 
   // Check that we get the *original* ordering back from global_to_local.
   size_t count = init.size();
   for (size_t i = 0; i < count; i++) {
-    REQUIRE(my_map.global_to_local(init[i]) == int(init[i] - offset));
+    DOCTEST_REQUIRE_EQ(my_map.global_to_local(init[i]), int(init[i] - offset));
   }
 
   // Check that we get the the `reordered` vector has been put into `db` order.
   std::vector<double> reordered(count);
   my_map.map_field_to_db_scalar_order(init.data(), reordered, 0, count, 1, 0);
   for (size_t i = 0; i < count; i++) {
-    REQUIRE(reordered[i] == offset + i + 1);
+    DOCTEST_REQUIRE_EQ(reordered[i], offset + i + 1);
   }
 }
 
@@ -81,9 +84,9 @@ DOCTEST_TEST_CASE("test random ids")
 
   my_map.set_map(init.data(), init.size(), 0, true);
 
-  REQUIRE(!my_map.is_sequential());
-  REQUIRE(!my_map.is_sequential(true));
-  REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+  DOCTEST_REQUIRE(!my_map.is_sequential());
+  DOCTEST_REQUIRE(!my_map.is_sequential(true));
+  DOCTEST_REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 }
 
 DOCTEST_TEST_CASE("test sequential map with offset")
@@ -111,9 +114,9 @@ DOCTEST_TEST_CASE("test sequential map with offset")
 
       my_map.set_map(init.data(), init.size(), 0, true);
 
-      REQUIRE(my_map.is_sequential());
-      REQUIRE(my_map.is_sequential(true));
-      REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+      DOCTEST_REQUIRE(my_map.is_sequential());
+      DOCTEST_REQUIRE(my_map.is_sequential(true));
+      DOCTEST_REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 
       DOCTEST_SUBCASE("Reorder-1")
       {
@@ -134,7 +137,7 @@ DOCTEST_TEST_CASE("test segmented map creation")
   my_map.set_size(count);
 
   size_t seg_size = count / segments;
-  CHECK(count % segments == 0);
+  DOCTEST_CHECK_EQ(count % segments, 0);
 
   std::vector<int> init(count);
 
@@ -153,9 +156,9 @@ DOCTEST_TEST_CASE("test segmented map creation")
                        true); // make sure handles empty segments
       }
 
-      REQUIRE(my_map.is_sequential());     // Based on m_map[0] setting.
-      REQUIRE(my_map.is_sequential(true)); // Based on checking all values.
-      REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+      DOCTEST_REQUIRE(my_map.is_sequential());     // Based on m_map[0] setting.
+      DOCTEST_REQUIRE(my_map.is_sequential(true)); // Based on checking all values.
+      DOCTEST_REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
     }
   }
 }
@@ -169,7 +172,7 @@ DOCTEST_TEST_CASE("test reverse segmented map creation")
   my_map.set_size(count);
 
   size_t seg_size = count / segments;
-  CHECK(count % segments == 0);
+  DOCTEST_CHECK_EQ(count % segments, 0);
 
   std::vector<int> init(count);
 
@@ -189,9 +192,9 @@ DOCTEST_TEST_CASE("test reverse segmented map creation")
                        true); // make sure handles empty segments
       }
 
-      REQUIRE(my_map.is_sequential());
-      REQUIRE(my_map.is_sequential(true));
-      REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+      DOCTEST_REQUIRE(my_map.is_sequential());
+      DOCTEST_REQUIRE(my_map.is_sequential(true));
+      DOCTEST_REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
     }
   }
 }
@@ -203,7 +206,7 @@ DOCTEST_TEST_CASE("test segment gap")
   size_t segments = 4;
   size_t count    = 128;
   size_t seg_size = count / segments;
-  CHECK(count % segments == 0);
+  DOCTEST_CHECK_EQ(count % segments, 0);
 
   Ioss::Map my_map;
   my_map.set_size(count);
@@ -230,9 +233,9 @@ DOCTEST_TEST_CASE("test segment gap")
         size_t i = segments - j - 1;
         my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
       }
-      REQUIRE(!my_map.is_sequential());
-      REQUIRE(!my_map.is_sequential(true));
-      REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+      DOCTEST_REQUIRE(!my_map.is_sequential());
+      DOCTEST_REQUIRE(!my_map.is_sequential(true));
+      DOCTEST_REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
     }
   }
 }
@@ -248,9 +251,9 @@ DOCTEST_TEST_CASE("test small reverse")
   my_map.set_map(&init[1], 1, 1, true);
   my_map.set_map(&init[0], 1, 0, true);
 
-  REQUIRE(!my_map.is_sequential());
-  REQUIRE(!my_map.is_sequential(true));
-  REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+  DOCTEST_REQUIRE(!my_map.is_sequential());
+  DOCTEST_REQUIRE(!my_map.is_sequential(true));
+  DOCTEST_REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 }
 
 DOCTEST_TEST_CASE("test small swap front back")
@@ -266,9 +269,9 @@ DOCTEST_TEST_CASE("test small swap front back")
   my_map.set_map(&init[8], 8, 8, true);
   my_map.set_map(&init[0], 8, 0, true);
 
-  REQUIRE(!my_map.is_sequential());
-  REQUIRE(!my_map.is_sequential(true));
-  REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+  DOCTEST_REQUIRE(!my_map.is_sequential());
+  DOCTEST_REQUIRE(!my_map.is_sequential(true));
+  DOCTEST_REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 }
 
 DOCTEST_TEST_CASE("test map_data sequential")
@@ -289,9 +292,9 @@ DOCTEST_TEST_CASE("test map_data sequential")
 
       my_map.set_map(init.data(), init.size(), 0, true);
 
-      REQUIRE(my_map.is_sequential());
-      REQUIRE(my_map.is_sequential(true));
-      REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+      DOCTEST_REQUIRE(my_map.is_sequential());
+      DOCTEST_REQUIRE(my_map.is_sequential(true));
+      DOCTEST_REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 
       Ioss::StorageInitializer();
       Ioss::Field int_field("int_field", Ioss::Field::INTEGER, "invalid", Ioss::Field::MESH, count);
@@ -303,7 +306,7 @@ DOCTEST_TEST_CASE("test map_data sequential")
         std::vector<int> local(count);
         std::iota(local.begin(), local.end(), 1);
         my_map.map_data(local.data(), int_field, count);
-        REQUIRE(init == local);
+        DOCTEST_REQUIRE_EQ(init, local);
 
         DOCTEST_SUBCASE("reverse_map")
         {
@@ -311,7 +314,7 @@ DOCTEST_TEST_CASE("test map_data sequential")
           my_map.reverse_map_data(local.data(), int_field, count);
           std::vector<int> seq(count);
           std::iota(seq.begin(), seq.end(), 1);
-          REQUIRE(local == seq);
+          DOCTEST_REQUIRE_EQ(local, seq);
         }
       }
 
@@ -321,7 +324,7 @@ DOCTEST_TEST_CASE("test map_data sequential")
         // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
         std::vector<int> local(count);
         my_map.map_implicit_data(local.data(), int_field, count, 0);
-        REQUIRE(init == local);
+        DOCTEST_REQUIRE_EQ(init, local);
       }
     }
   }
@@ -344,9 +347,9 @@ DOCTEST_TEST_CASE("test map_data random")
 
   my_map.set_map(init.data(), init.size(), 0, true);
 
-  REQUIRE(!my_map.is_sequential());
-  REQUIRE(!my_map.is_sequential(true));
-  REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+  DOCTEST_REQUIRE(!my_map.is_sequential());
+  DOCTEST_REQUIRE(!my_map.is_sequential(true));
+  DOCTEST_REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 
   Ioss::StorageInitializer();
   Ioss::Field int_field("int_field", Ioss::Field::INTEGER, "invalid", Ioss::Field::MESH, count);
@@ -358,7 +361,7 @@ DOCTEST_TEST_CASE("test map_data random")
     std::vector<int> local(count);
     std::iota(local.begin(), local.end(), 1);
     my_map.map_data(local.data(), int_field, count);
-    REQUIRE(init == local);
+    DOCTEST_REQUIRE_EQ(init, local);
 
     DOCTEST_SUBCASE("reverse_map")
     {
@@ -366,7 +369,7 @@ DOCTEST_TEST_CASE("test map_data random")
       my_map.reverse_map_data(local.data(), int_field, count);
       std::vector<int> seq(count);
       std::iota(seq.begin(), seq.end(), 1);
-      REQUIRE(local == seq);
+      DOCTEST_REQUIRE_EQ(local, seq);
     }
   }
 
@@ -376,6 +379,6 @@ DOCTEST_TEST_CASE("test map_data random")
     // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
     std::vector<int> local(count);
     my_map.map_implicit_data(local.data(), int_field, count, 0);
-    REQUIRE(init == local);
+    DOCTEST_REQUIRE_EQ(init, local);
   }
 }

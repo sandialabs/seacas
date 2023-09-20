@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -88,14 +88,14 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
      the outward normal.
   */
   /* triangle */
-  static int tri_table[3][3] = {
+  static const int tri_table[3][3] = {
       {1, 2, 4}, /* side 1 */
       {2, 3, 5}, /* side 2 */
       {3, 1, 6}  /* side 3 */
   };
 
   /* triangle 3d */
-  static int tri3_table[5][7] = {
+  static const int tri3_table[5][7] = {
       {1, 2, 3, 4, 5, 6, 7}, /* side 1 (face) */
       {3, 2, 1, 6, 5, 4, 7}, /* side 2 (face) */
       {1, 2, 4, 0, 0, 0, 0}, /* side 3 (edge) */
@@ -104,7 +104,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* quad */
-  static int quad_table[4][3] = {
+  static const int quad_table[4][3] = {
       {1, 2, 5}, /* side 1 */
       {2, 3, 6}, /* side 2 */
       {3, 4, 7}, /* side 3 */
@@ -112,7 +112,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* shell */
-  static int shell_table[6][9] = {
+  static const int shell_table[6][9] = {
       {1, 2, 3, 4, 5, 6, 7, 8, 9}, /* side 1 (face) */
       {1, 4, 3, 2, 8, 7, 6, 5, 9}, /* side 2 (face) */
       {1, 2, 5, 0, 0, 0, 0, 0, 0}, /* side 3 (edge) */
@@ -122,7 +122,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* tetra */
-  static int tetra_table[4][7] = {
+  static const int tetra_table[4][7] = {
       {1, 2, 4, 5, 9, 8, 14},  /* Side 1 nodes */
       {2, 3, 4, 6, 10, 9, 12}, /* Side 2 nodes */
       {1, 4, 3, 8, 10, 7, 13}, /* Side 3 nodes */
@@ -131,7 +131,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
 
   /* wedge */
   /* wedge 6 or 7 */
-  static int wedge6_table[5][4] = {
+  static const int wedge6_table[5][4] = {
       {1, 2, 5, 4}, /* Side 1 nodes -- quad     */
       {2, 3, 6, 5}, /* Side 2 nodes -- quad     */
       {1, 4, 6, 3}, /* Side 3 nodes -- quad     */
@@ -140,7 +140,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* wedge 12 -- localization element  */
-  static int wedge12_table[5][6] = {
+  static const int wedge12_table[5][6] = {
       {1, 2, 5, 4, 7, 10},  /* Side 1 nodes -- quad     */
       {2, 3, 6, 5, 8, 11},  /* Side 2 nodes -- quad     */
       {1, 4, 6, 3, 9, 12},  /* Side 3 nodes -- quad     */
@@ -149,7 +149,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* wedge 15 or 16 */
-  static int wedge15_table[5][8] = {
+  static const int wedge15_table[5][8] = {
       {1, 2, 5, 4, 7, 11, 13, 10}, /* Side 1 nodes -- quad     */
       {2, 3, 6, 5, 8, 12, 14, 11}, /* Side 2 nodes -- quad     */
       {1, 4, 6, 3, 10, 15, 12, 9}, /* Side 3 nodes -- quad     */
@@ -158,7 +158,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* wedge 20 */
-  static int wedge20_table[5][9] = {
+  static const int wedge20_table[5][9] = {
       {1, 2, 5, 4, 7, 11, 13, 10, 20}, /* Side 1 nodes -- quad     */
       {2, 3, 6, 5, 8, 12, 14, 11, 18}, /* Side 2 nodes -- quad     */
       {1, 4, 6, 3, 10, 15, 12, 9, 19}, /* Side 3 nodes -- quad     */
@@ -167,7 +167,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* wedge 21 */
-  static int wedge21_table[5][9] = {
+  static const int wedge21_table[5][9] = {
       {1, 2, 5, 4, 7, 11, 13, 10, 21}, /* Side 1 nodes -- quad     */
       {2, 3, 6, 5, 8, 12, 14, 11, 19}, /* Side 2 nodes -- quad     */
       {1, 4, 6, 3, 10, 15, 12, 9, 20}, /* Side 3 nodes -- quad     */
@@ -176,7 +176,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* wedge 18 */
-  static int wedge18_table[5][9] = {
+  static const int wedge18_table[5][9] = {
       {1, 2, 5, 4, 7, 11, 13, 10, 16}, /* Side 1 nodes -- quad     */
       {2, 3, 6, 5, 8, 12, 14, 11, 17}, /* Side 2 nodes -- quad     */
       {1, 4, 6, 3, 10, 15, 12, 9, 18}, /* Side 3 nodes -- quad     */
@@ -185,7 +185,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* hex */
-  static int hex_table[6][9] = {
+  static const int hex_table[6][9] = {
       {1, 2, 6, 5, 9, 14, 17, 13, 26},  /* side 1 */
       {2, 3, 7, 6, 10, 15, 18, 14, 25}, /* side 2 */
       {3, 4, 8, 7, 11, 16, 19, 15, 27}, /* side 3 */
@@ -195,7 +195,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* hex 16 -- localization element */
-  static int hex16_table[6][8] = {
+  static const int hex16_table[6][8] = {
       {1, 2, 6, 5, 9, 13, 0, 0},   /* side 1 -- 6 node quad */
       {2, 3, 7, 6, 10, 14, 0, 0},  /* side 2 -- 6 node quad */
       {3, 4, 8, 7, 11, 15, 0, 0},  /* side 3 -- 6 node quad */
@@ -205,7 +205,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   };
 
   /* pyramid */
-  static int pyramid_table[5][9] = {
+  static const int pyramid_table[5][9] = {
       {1, 2, 5, 0, 6, 11, 10, 0, 15}, /* side 1 (tri) */
       {2, 3, 5, 0, 7, 12, 11, 0, 16}, /* side 2 (tri) */
       {3, 4, 5, 0, 8, 13, 12, 0, 17}, /* side 3 (tri) */
@@ -606,8 +606,16 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
 
     case EX_EL_BEAM: { /* Note: no side-node lookup table is used for this
                           simple case */
-      for (i = 0; i < num_nodes_per_elem; i++) {
-        get_nodes(exoid, side_set_node_list, node_pos + i, connect, connect_offset + i);
+      if (side_num == 0) {
+        for (i = 0; i < num_nodes_per_elem; i++) {
+          get_nodes(exoid, side_set_node_list, node_pos + i, connect, connect_offset + i);
+        }
+      }
+      else {
+        for (i = 0; i < num_nodes_per_elem; i++) {
+          int nn = num_nodes_per_elem - i - 1;
+          get_nodes(exoid, side_set_node_list, node_pos + i, connect, connect_offset + nn);
+        }
       }
       break;
     }

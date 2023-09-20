@@ -1,10 +1,12 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
 #pragma once
+
+#include "ioss_export.h"
 
 #include <Ioss_CodeTypes.h>
 #include <string>
@@ -23,13 +25,13 @@ namespace Ioss {
   class IOFactory;
 
   using NameList     = std::vector<std::string>;
-  using IOFactoryMap = std::map<std::string, IOFactory *, std::less<std::string>>;
+  using IOFactoryMap = std::map<std::string, IOFactory *, std::less<>>;
 
   class DatabaseIO;
 
   /** \brief The main public user interface for creating Ioss::DatabaseIO objects.
    */
-  class IOFactory
+  class IOSS_EXPORT IOFactory
   {
   public:
     virtual ~IOFactory() = default;
@@ -50,7 +52,7 @@ namespace Ioss {
                                 Ioss_MPI_Comm                communicator,
                                 const Ioss::PropertyManager &properties) const = 0;
 
-    virtual std::string show_config() const { return std::string(""); }
+    virtual std::string show_config() const { return {""}; }
 
     static void alias(const std::string &base, const std::string &syn);
 

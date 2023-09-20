@@ -4,7 +4,7 @@
  * ***********************************************************************
  *
  *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
+ *                  Copyright 2012, 2023 Sandia Corporation
  *
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
  * the U.S. Government retains certain rights in this software.
@@ -104,7 +104,7 @@ void Zoltan_Memory_Debug(int new_level) {
 }
 
 /******************************************************************************/
-int Zoltan_Memory_Get_Debug() {
+int Zoltan_Memory_Get_Debug(void) {
   return DEBUG_MEMORY;
 }
 
@@ -601,7 +601,7 @@ va_dcl
 
 /* Print out status of malloc/free calls.  Flag any memory leaks. */
 
-void Zoltan_Memory_Stats()
+void Zoltan_Memory_Stats(void)
 {
     struct malloc_debug_data *dbptr;	/* loops through debug list */
     int       proc;		/* processor ID */

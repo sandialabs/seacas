@@ -54,7 +54,7 @@ namespace Iocatalyst {
 
     template <>
     Ioss::NodeBlock *createEntityGroup<Ioss::NodeBlock>(const conduit_cpp::Node &node,
-                                                        Ioss::DatabaseIO *       dbase)
+                                                        Ioss::DatabaseIO        *dbase)
     {
       const auto name = node.name();
       return new Ioss::NodeBlock(dbase, name, node["properties/entity_count/value"].as_int64(),
@@ -63,7 +63,7 @@ namespace Iocatalyst {
 
     template <>
     Ioss::ElementBlock *createEntityGroup<Ioss::ElementBlock>(const conduit_cpp::Node &node,
-                                                              Ioss::DatabaseIO *       dbase)
+                                                              Ioss::DatabaseIO        *dbase)
     {
       const auto name = node.name();
       return new Ioss::ElementBlock(dbase, name,
@@ -73,7 +73,7 @@ namespace Iocatalyst {
 
     template <>
     Ioss::NodeSet *createEntityGroup<Ioss::NodeSet>(const conduit_cpp::Node &node,
-                                                    Ioss::DatabaseIO *       dbase)
+                                                    Ioss::DatabaseIO        *dbase)
     {
       const auto name = node.name();
       return new Ioss::NodeSet(dbase, name, node["properties/entity_count/value"].as_int64());
@@ -81,7 +81,7 @@ namespace Iocatalyst {
 
     template <>
     Ioss::SideSet *createEntityGroup<Ioss::SideSet>(const conduit_cpp::Node &node,
-                                                    Ioss::DatabaseIO *       dbase)
+                                                    Ioss::DatabaseIO        *dbase)
     {
       const auto name = node.name();
       return new Ioss::SideSet(dbase, name);
@@ -156,7 +156,7 @@ namespace Iocatalyst {
 
     bool readTime(Ioss::Region *region)
     {
-      auto &     node = this->DBNode;
+      auto      &node = this->DBNode;
       const auto time = node["state_time"].as_float64();
       region->add_state(time);
       return true;
@@ -354,7 +354,7 @@ namespace Iocatalyst {
     bool readProperties(const conduit_cpp::Node &&parent, GroupingEntityT *block) const
     {
       for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
-        auto &&    child  = parent[idx];
+        auto     &&child  = parent[idx];
         const auto name   = child.name();
         const auto origin = static_cast<Ioss::Property::Origin>(child["origin"].as_int8());
         switch (child["type"].as_int8()) {
@@ -382,7 +382,7 @@ namespace Iocatalyst {
     bool readFields(const conduit_cpp::Node &&parent, GroupingEntityT *block) const
     {
       for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
-        auto &&    child   = parent[idx];
+        auto     &&child   = parent[idx];
         const auto name    = child.name();
         const auto type    = static_cast<Ioss::Field::BasicType>(child["type"].as_int8());
         const auto role    = static_cast<Ioss::Field::RoleType>(child["role"].as_int8());
@@ -526,8 +526,7 @@ namespace Iocatalyst {
   // common
   bool DatabaseIO::end_state__(int state, double time)
   {
-    if (this->is_input()) {
-    }
+    if (this->is_input()) {}
     else {
       // invoke catalyst.
       auto &impl = (*this->Impl.get());

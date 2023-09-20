@@ -1,10 +1,12 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
 #pragma once
+
+#include "iocgns_export.h"
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DatabaseIO.h>
@@ -17,37 +19,55 @@
 #include <Ioss_Utils.h>
 #include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
+#include <fmt/format.h>
 #include <ostream>
 #include <string>
 
 // Used in Iocgns_DatabaseIO.C and Iocgns_ParallelDatabase.C
 // non-Member function -- can't access m_cgnsFilePtr; make sure cgns_file_ptr is passed in...
 #define CGCHECK(funcall)                                                                           \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, myProcessor);           \
-  }
+  do {                                                                                             \
+    if ((funcall) != CG_OK) {                                                                      \
+      Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, myProcessor);         \
+    }                                                                                              \
+  } while (0)
 
 // Member function -- can access m_cgnsFilePtr
 #define CGCHECKM(funcall)                                                                          \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(m_cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);           \
-  }
+  do {                                                                                             \
+    if ((funcall) != CG_OK) {                                                                      \
+      Iocgns::Utils::cgns_error(m_cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);         \
+    }                                                                                              \
+  } while (0)
 
 #define CGCHECKNP(funcall)                                                                         \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, -1);                    \
-  }
+  do {                                                                                             \
+    if ((funcall) != CG_OK) {                                                                      \
+      Iocgns::Utils::cgns_error(cgns_file_ptr, __FILE__, __func__, __LINE__, -1);                  \
+    }                                                                                              \
+  } while (0)
 
 // Used in Iocgns_Decomposition.C
 #define CGCHECK2(funcall)                                                                          \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor); \
-  }
+  do {                                                                                             \
+    if ((funcall) != CG_OK) {                                                                      \
+      Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,                             \
+                                m_decomposition.m_processor);                                      \
+    }                                                                                              \
+  } while (0)
+
+inline auto format_as(CGNS_ENUMT(BCType_t) t) { return BCTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(DataType_t) t) { return DataTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(ElementType_t) t) { return ElementTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(GridConnectivityType_t) t) { return GridConnectivityTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(GridLocation_t) t) { return GridLocationName[t]; }
+inline auto format_as(CGNS_ENUMT(PointSetType_t) t) { return PointSetTypeName[t]; }
+inline auto format_as(CGNS_ENUMT(ZoneType_t) t) { return ZoneTypeName[t]; }
 
 namespace Iocgns {
   class StructuredZoneData;
 
-  struct ZoneBC
+  struct IOCGNS_EXPORT ZoneBC
   {
     ZoneBC(std::string bc_name, std::array<cgsize_t, 2> &point_range)
         : name(std::move(bc_name)), range_beg(point_range[0]), range_end(point_range[1])
@@ -59,7 +79,7 @@ namespace Iocgns {
     cgsize_t    range_end;
   };
 
-  class Utils
+  class IOCGNS_EXPORT Utils
   {
   public:
     Utils()  = default;
@@ -164,21 +184,21 @@ namespace Iocgns {
 
       switch (parent_topo->shape()) {
       case Ioss::ElementShape::HEX: {
-        static int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
+        static std::array<int, 7> hex_map = {0, 5, 1, 2, 3, 4, 6};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = hex_map[idata[2 * i + 1]];
         }
       } break;
 
       case Ioss::ElementShape::TET: {
-        static int tet_map[] = {0, 4, 1, 2, 3};
+        static std::array<int, 5> tet_map = {0, 4, 1, 2, 3};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = tet_map[idata[2 * i + 1]];
         }
       } break;
 
       case Ioss::ElementShape::PYRAMID: {
-        static int pyr_map[] = {0, 5, 1, 2, 3, 4};
+        static std::array<int, 6> pyr_map = {0, 5, 1, 2, 3, 4};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = pyr_map[idata[2 * i + 1]];
         }
@@ -186,7 +206,7 @@ namespace Iocgns {
 
       case Ioss::ElementShape::WEDGE:
 #if 0
-          static int wed_map[] = {0, 1, 2, 3, 4, 5}; // Same
+	static std::array<int, 6> wed_map = {0, 1, 2, 3, 4, 5}; // Same
           // Not needed -- maps 1 to 1
           for (size_t i=0; i < num_to_get; i++) {
             idata[2*i+1] = wed_map[idata[2*i+1]];

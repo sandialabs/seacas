@@ -1,11 +1,9 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-
-#ifndef EXO_BLOCK_H
-#define EXO_BLOCK_H
+#pragma once
 
 #include "exo_entity.h"
 #include <iostream>
@@ -36,12 +34,11 @@ public:
   const INT              *Connectivity(size_t elmt_index) const; // 1-offset connectivity
 
   // Misc:
-  int Check_State() const;
-
   int64_t offset() const { return offset_; }
   void    offset(int64_t off) { offset_ = off; }
 
 private:
+  int  Check_State() const override;
   void entity_load_params() override;
 
   EXOTYPE     exodus_type() const override;
@@ -55,5 +52,3 @@ private:
 
   friend class ExoII_Read<INT>;
 };
-
-#endif

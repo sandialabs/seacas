@@ -32,7 +32,7 @@ If using your own cmake script or directly calling cmake, be sure to do the foll
 If using CUDA as the backend, OpenMP can still be enabled.
 
 ```bash
--D SEACASProj_ENABLE_OpenMP:Bool=ON
+-D Seacas_ENABLE_OpenMP:Bool=ON
 -D TPL_ENABLE_Pthread:Bool=OFF
 ```
 

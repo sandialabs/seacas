@@ -69,8 +69,17 @@ BB=$(check_valid BB)
 CRAY=${CRAY:-NO}
 CRAY=$(check_valid CRAY)
 
-# Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
-CGNS=${CGNS:-YES}
+MPI=${MPI:-NO}
+MPI=$(check_valid MPI)
+
+# Which TPLS? (NetCDF always, but can be disabled if using an external version, PnetCDF if MPI=ON)
+NETCDF=${NETCDF:-YES}
+NETCDF=$(check_valid NETCDF)
+PNETCDF=${PNETCDF:-${MPI}}
+PNETCDF=$(check_valid PNETCDF)
+HDF5=${HDF5:-YES}
+HDF5=$(check_valid HDF5)
+CGNS=${CGNS:-${HDF5}}
 CGNS=$(check_valid CGNS)
 
 MATIO=${MATIO:-YES}
@@ -113,10 +122,13 @@ USE_AEC=$(check_valid USE_AEC)
 KOKKOS=${KOKKOS:-NO}
 KOKKOS=$(check_valid KOKKOS)
 
-H5VERSION=${H5VERSION:-V110}
+H5VERSION=${H5VERSION:-V114}
 
 FAODEL=${FAODEL:-NO}
 FAODEL=$(check_valid FAODEL)
+
+BOOST=${BOOST:-NO}
+BOOST=$(check_valid BOOST)
 
 ADIOS2=${ADIOS2:-NO}
 ADIOS2=$(check_valid ADIOS2)
@@ -124,11 +136,9 @@ ADIOS2=$(check_valid ADIOS2)
 CATALYST2=${CATALYST2:-NO}
 CATALYST2=$(check_valid CATALYST2)
 
-GTEST=${GTEST:-NO}
+GTEST=${GTEST:-${FAODEL}}
 GTEST=$(check_valid GTEST)
 
-MPI=${MPI:-NO}
-MPI=$(check_valid MPI)
 
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
@@ -176,7 +186,7 @@ if [ $# -gt 0 ]; then
         echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
         echo "   INSTALL_PATH = ${txtgrn}${INSTALL_PATH}${txtcyn}"
         echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
-        echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm)"
+        echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm gnubrew gnumacport clangmacport nvidia)"
         echo "   MPI          = ${MPI} (Parallel Build?)"
         echo ""
         echo "   FORCE        = ${FORCE}"
@@ -186,6 +196,9 @@ if [ $# -gt 0 ]; then
         echo "   DEBUG        = ${DEBUG}"
         echo "   USE_PROXY    = ${USE_PROXY}"
         echo ""
+        echo "   NETCDF       = ${NETCDF}"
+        echo "   PNETCDF      = ${PNETCDF}"
+        echo "   HDF5         = ${HDF5}"
         echo "   H5VERSION    = ${H5VERSION}"
         echo "   CGNS         = ${CGNS}"
         echo "   MATIO        = ${MATIO}"
@@ -349,7 +362,7 @@ then
             fi
         else
             echo "${txtgrn}+++ ZLIB${txtrst}"
-            zlib_version="1.2.12"
+            zlib_version="1.2.13"
 
             cd $ACCESS || exit
             cd TPL || exit
@@ -367,7 +380,11 @@ then
             then
                 echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
                 cd zlib-${zlib_version} || exit
-                ./configure --prefix=${INSTALL_PATH}
+                if [ "$SHARED" == "NO" ]
+                then
+                    USE_STATIC="--static"
+                fi
+                ./configure --prefix=${INSTALL_PATH} ${USE_STATIC}
                 if [[ $? != 0 ]]
                 then
                     echo 1>&2 ${txtred}couldn\'t configure zlib. exiting.${txtrst}
@@ -387,85 +404,92 @@ then
 fi
 
 # =================== BUILD HDF5 ===============
-if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
+if [ "$HDF5" == "YES" ]
 then
-    echo "${txtgrn}+++ HDF5${txtrst}"
-    if [ "${H5VERSION}" == "V18" ]; then
-        hdf_version="1.8.22"
-    elif [ "${H5VERSION}" == "V110" ]; then
-        hdf_version="1.10.9"
-    elif [ "${H5VERSION}" == "V112" ]; then
-        hdf_version="1.12.2"
-    elif [ "${H5VERSION}" == "V113" ]; then
-        hdf_version="1.13.1"
-    elif [ "${H5VERSION}" == "develop" ]; then
-        hdf_version="develop"
-    else
-        echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
-        exit 1
-    fi
-
-    cd $ACCESS || exit
-    cd TPL/hdf5 || exit
-    if [ "$DOWNLOAD" == "YES" ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
     then
-        echo "${txtgrn}+++ Downloading...${txtrst}"
-        rm -rf hdf5-${hdf_version}
-        rm -f hdf5-${hdf_version}.tar.bz2
-        if [ "${H5VERSION}" == "V18" ]
-        then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "V110" ]; then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "V112" ]; then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "V113" ]; then
-            wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
-        elif [ "${H5VERSION}" == "develop" ]; then
-            git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
-        else
+	echo "${txtgrn}+++ HDF5${txtrst}"
+	hdf_suffix=""
+	if [ "${H5VERSION}" == "V18" ]; then
+            hdf_version="1.8.23"
+            hdf_base="1.8"
+	elif [ "${H5VERSION}" == "V110" ]; then
+            hdf_version="1.10.10"
+            hdf_base="1.10"
+	elif [ "${H5VERSION}" == "V112" ]; then
+            hdf_version="1.12.2"
+            hdf_base="1.12"
+	elif [ "${H5VERSION}" == "V113" ]; then
+            hdf_version="1.13.1"
+            hdf_base="1.13"
+	elif [ "${H5VERSION}" == "V114" ]; then
+            hdf_version="1.14.2"
+            hdf_base="1.14"
+	    hdf_suffix=""
+	elif [ "${H5VERSION}" == "develop" ]; then
+            hdf_version="develop"
+	else
             echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
             exit 1
-        fi
-        if [ "${H5VERSION}" != "develop" ]
-        then
-            tar -jxf hdf5-${hdf_version}.tar.bz2
-            rm -f hdf5-${hdf_version}.tar.bz2
-        fi
+	fi
+	
+	cd $ACCESS || exit
+	cd TPL/hdf5 || exit
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf hdf5-${hdf_version}${hdf_suffix}
+            rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+            if [ "${H5VERSION}" == "develop" ]; then
+		git clone https://github.com/HDFGroup/hdf5.git hdf5-develop
+            else
+		wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${hdf_base}/hdf5-${hdf_version}/src/hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+            fi
+            if [ "${H5VERSION}" != "develop" ]
+            then
+		tar -jxf hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+		rm -f hdf5-${hdf_version}${hdf_suffix}.tar.bz2
+            fi
+	fi
+	
+	if [ "$BUILD" == "YES" ]
+	then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd hdf5-${hdf_version}${hdf_suffix} || exit
+            rm -rf build
+            mkdir build
+            cd build || exit
+            CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
+            #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
+		exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make "V=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t build hdf5. exiting.${txtrst}
+		exit 1
+            fi
+	fi
+	# Create default plugin directory...
+	mkdir  ${INSTALL_PATH}/lib/hdf5
+	mkdir  ${INSTALL_PATH}/lib/hdf5/lib
+	mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin
+    else
+	echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
     fi
-
-    if [ "$BUILD" == "YES" ]
-    then
-        echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-        cd hdf5-${hdf_version} || exit
-        rm -rf build
-        mkdir build
-        cd build || exit
-        CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
-        #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
-        if [[ $? != 0 ]]
-        then
-            echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
-            exit 1
-        fi
-        make -j${JOBS} && ${SUDO} make "V=${VERBOSE}" install
-        if [[ $? != 0 ]]
-        then
-            echo 1>&2 ${txtred}couldn\'t build hdf5. exiting.${txtrst}
-            exit 1
-        fi
-    fi
-else
-    echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
+
 # =================== INSTALL PnetCDF if parallel build ===============
-if [ "$MPI" == "YES" ]
+if [ "$PNETCDF" == "YES" ] && [ "$MPI" == "YES" ]
 then
     # PnetCDF currently only builds static library...
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
-        pnet_version="1.12.2"
+        pnet_version="1.12.3"
         pnet_base="pnetcdf"
         cd $ACCESS || exit
         cd TPL/pnetcdf || exit
@@ -509,6 +533,8 @@ then
 fi
 
 # =================== INSTALL NETCDF ===============
+if [ "$NETCDF" == "YES" ]
+then
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
     echo "${txtgrn}+++ NetCDF${txtrst}"
@@ -521,7 +547,9 @@ then
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-   net_version="v4.8.1"
+#   net_version="v4.9.1"
+    net_version="v4.9.2"
+#   net_version="v4.8.1"
 #   net_version="master"
 
     if [ "$BUILD" == "YES" ]
@@ -535,7 +563,11 @@ then
         rm -rf build
         mkdir build
         cd build || exit
-        CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
+	if [ "$HDF5" == "YES" ]
+	then
+           export HDF5_PLUGIN_PATH=${INSTALL_PATH}/lib/hdf5/lib/plugin
+	fi
+        CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} HDF5=${HDF5} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure cmake for NetCDF. exiting.${txtrst}
@@ -552,8 +584,9 @@ then
 else
     echo "${txtylw}+++ NetCDF already installed.  Skipping download and installation.${txtrst}"
 fi
+fi
 # =================== INSTALL CGNS ===============
-if [ "$CGNS" == "YES" ]
+if [ "$CGNS" == "YES" ] && [ "$HDF5" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
@@ -592,6 +625,10 @@ then
     else
         echo "${txtylw}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
     fi
+fi
+if [ "$CGNS" == "YES" ] && [ "$HDF5" == "NO" ]
+then
+    echo "${txtred}+++ CGNS requested, but HDF5 is not enabled.  Cannot build CGNS without HDF5.${txtrst}"
 fi
 
 # =================== INSTALL METIS  ===============
@@ -682,6 +719,7 @@ then
     check_exec automake
     check_exec autoconf
 
+    matio_version="1.5.23"
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
         echo "${txtgrn}+++ MatIO${txtrst}"
@@ -698,10 +736,11 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio || exit
+            git checkout ${matio_version}
             rm -rf build
             mkdir build
             cd build || exit
-            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} bash -x ../../runcmake.sh
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} HDF5=${HDF5} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure MatIO. exiting.${txtrst}
@@ -727,6 +766,8 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
+        fmt_version="10.1.0"
+
         if [ "$DOWNLOAD" == "YES" ]
         then
             echo "${txtgrn}+++ Downloading...${txtrst}"
@@ -738,6 +779,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd fmt || exit
+            git checkout ${fmt_version}
             rm -rf build
             mkdir build
             cd build || exit
@@ -763,7 +805,7 @@ fi
 # =================== INSTALL KOKKOS  ===============
 if [ "$KOKKOS" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkoscore.${LD_EXT} ]
     then
         kokkos_version="3.6.00"
         echo "${txtgrn}+++ KOKKOS${txtrst}"
@@ -808,7 +850,7 @@ fi
 # =================== INSTALL ADIOS2  ===============
 if [ "$ADIOS2" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2_c.${LD_EXT} ]
     then
         echo "${txtgrn}+++ ADIOS2${txtrst}"
         cd $ACCESS || exit
@@ -824,7 +866,6 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2 || exit
-            git checkout v2.5.0
             rm -rf build
             mkdir build
             cd build || exit
@@ -970,10 +1011,37 @@ then
     fi
 fi
 
+# =================== INSTALL BOOST ===============
+if [ "$BOOST" == "YES" ]
+then
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/boost ]
+  then
+    # FAODEL Requires Boost... For now, just download and install
+    echo "${txtgrn}+++ Installing Boost as dependency of Faodel${txtrst}"
+    cd $ACCESS || exit
+    cd TPL/boost || exit
+    BOOST_VER="1_82_0"
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+	wget --no-check-certificate "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_${BOOST_VER}.tar.bz2" 
+	tar xf boost_${BOOST_VER}.tar.bz2
+    fi
+    if [ "$BUILD" == "YES" ]
+    then
+	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+	cd boost_${BOOST_VER}
+	./bootstrap.sh --prefix=${INSTALL_PATH}
+	./b2 -a install
+    fi
+  else
+    echo "${txtylw}+++ Boost already installed.  Skipping download and installation.${txtrst}"
+  fi
+fi
+
 # =================== INSTALL FAODEL ===============
 if [ "$FAODEL" == "YES" ]
 then
-  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.a ]
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.${LD_EXT} ]
   then
     faodel_base="faodel"
     echo "${txtgrn}+++ Faodel${txtrst}"
@@ -983,7 +1051,7 @@ then
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
       rm -rf faodel*
-      git clone git@github.com:faodel/faodel.git
+      git clone https://github.com/sandialabs/faodel.git
     fi
 
     if [ "$BUILD" == "YES" ]

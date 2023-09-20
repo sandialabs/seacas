@@ -1,4 +1,4 @@
-/* 
+/*
  * @HEADER
  *
  * ***********************************************************************
@@ -59,29 +59,29 @@
 // incorporate into a web page or report or mail to a friend.  It uses
 // Mesa to do off screen rendering so it can be run in places where
 // vtk_view can not be run.
-//                                                                          
-// Both can run with more or fewer processes than zdrive ran.  Choose   
-// the size of your vtk_view/vtk_write application based only on the 
+//
+// Both can run with more or fewer processes than zdrive ran.  Choose
+// the size of your vtk_view/vtk_write application based only on the
 // computational demands of reading and rendering the Chaco or Nemesis files.
-// 
+//
 // The inputs to vtk_view/vtk_write are:
-//                                                                          
-//   The Chaco or Nemesis files used by the zdrive test.                    
-//                                                                          
-//   The zdrive output files describing the calculated partitioning.        
-//                                                                          
-//   An input file similar to the input file used by zdrive, naming the     
+//
+//   The Chaco or Nemesis files used by the zdrive test.
+//
+//   The zdrive output files describing the calculated partitioning.
+//
+//   An input file similar to the input file used by zdrive, naming the
 //     Chaco or Nemesis files.  In fact, you can use the zdrive parameter
 //     file since it named those input files.  When visualizing parallel
-//     ExodusII/Nemesis files, it helps if you add the parameter "Zdrive Count" 
-//     to tell vtk_view how many zdrive processes there were.  If you omit 
+//     ExodusII/Nemesis files, it helps if you add the parameter "Zdrive Count"
+//     to tell vtk_view how many zdrive processes there were.  If you omit
 //     this, vtk_view will try to figure it out by searching for the
-//     zdrive output files.                
-//                                                                          
-// vtk_view requires that you obtain and compile VTK (the Visualization     
+//     zdrive output files.
+//
+// vtk_view requires that you obtain and compile VTK (the Visualization
 // Toolkit, available for free from Kitware, Inc. at www.vtk.org), version
-// 5.0 or later.  In the  Config.{arch} file that directed your compilation 
-// of Zoltan, add directives to indicate where the VTK, GL and X libraries 
+// 5.0 or later.  In the  Config.{arch} file that directed your compilation
+// of Zoltan, add directives to indicate where the VTK, GL and X libraries
 // are.  See "Config.generic" for an example of these directives.
 //
 // vtk_write must be compiled with a version of VTK libraries that were
@@ -200,9 +200,9 @@ static char *suffix[6] = {
 // parameters from zdrive-style input file
 
 #define LINELEN 80
- 
+
 static char *vis_opt_names[UNDEFINED_LIST_MAX]={
-  "zdrive count",     // number of zdrive processes 
+  "zdrive count",     // number of zdrive processes
   "image height",    // pixel height of image
   "image width",     // pixel width of image
   "output partition number", // visualize this partition number
@@ -248,7 +248,7 @@ static char vis_opt_values[UNDEFINED_LIST_MAX][UNDEFINED_LENGTH_MAX];
 
 // default option values
 
-static int zdriveCount = 0; 
+static int zdriveCount = 0;
 static int imageHeight = 300;
 static int imageWidth= 300;
 static int showPartitionNumber = -1;
@@ -272,15 +272,15 @@ static float outputViewUp[3] = {0, 1, 0};
 static char filePattern[ZMAXPATH]; // "printf"-like pattern: "%s/basename.0016.%04d"
 static char filePrefix[ZMAXPATH];  //   root directory for pattern
 static int fileRange[2];      //   file numbers for pattern
-static char **fileNames;  // OR list of all file names 
+static char **fileNames;  // OR list of all file names
 static char **fileNamesBase;
 static int specialSingleFile = 0;
-static int numNemesisFiles = 0; 
-static int lastPartition = 0; 
+static int numNemesisFiles = 0;
+static int lastPartition = 0;
 
 static int read_broadcast_input_options(int &argc, char **argv);
 static int read_mesh(vtkUnstructuredGrid *ug);
-static int create_field_array(vtkUnstructuredGrid *ug, char *ca, char *pa, 
+static int create_field_array(vtkUnstructuredGrid *ug, char *ca, char *pa,
   double *range);
 static int set_number_of_zdrive_processes(char *fname, char **disks);
 static int set_nemesis_file_names_or_pattern(char *baseName,
@@ -350,7 +350,7 @@ int main(int argc, char **argv)
     rc = set_nemesis_file_names_or_pattern(fname_opts.pexo_fname,
       fname_opts.num_dsk_ctrlrs,
       fname_opts.dsk_list_cnt, fname_opts.dsk_list,
-      fname_opts.pdsk_add_fact, fname_opts.zeros, 
+      fname_opts.pdsk_add_fact, fname_opts.zeros,
       fname_opts.pdsk_root, fname_opts.pdsk_subdir);
 
 
@@ -359,9 +359,9 @@ int main(int argc, char **argv)
     }
 
     if (rc > 0){
-      Controller->Finalize(); 
+      Controller->Finalize();
       Controller->Delete();
-    
+
       return 1;
     }
   }
@@ -371,19 +371,19 @@ int main(int argc, char **argv)
     // The chaco base name is in fname_opts.pexo_fname, but if we
     // are to read the zdrive output files, we need to know how many
     // zdrive processes there were.
-  
+
     if (zdriveCount == 0){
-      
+
       if (Proc == 0){
         rc = set_number_of_zdrive_processes(fname_opts.pexo_fname, NULL);
       }
-  
+
       if (NumProcs > 1){
         int vals[2];
         vals[0] = rc;
         vals[1] = zdriveCount;
         Comm->Broadcast(vals, 2, 0);
- 
+
         if (Proc > 0){
           rc = vals[0];
           zdriveCount = vals[1];
@@ -391,7 +391,7 @@ int main(int argc, char **argv)
       }
 
       if (rc){
-        return 1; 
+        return 1;
       }
     }
   }
@@ -435,7 +435,7 @@ static void Run(vtkMultiProcessController *c, void *arg)
 
   // If we were processing zdrive output files, we'll visualize the
   // partition number assigned by zdrive.  If not, and there are
-  // point or cell arrays other than global ID arrays, we'll visualize 
+  // point or cell arrays other than global ID arrays, we'll visualize
   // one of those.  If all else fails, we'll visualize the global element ID.
 
   char cellArray[128], pointArray[128];
@@ -449,8 +449,8 @@ static void Run(vtkMultiProcessController *c, void *arg)
   }
 
   // Redistribute the cells for more load balanced rendering.  This
-  // also creates ghost cells on each process if required for 
-  // correct rendering.  For a single process application with 
+  // also creates ghost cells on each process if required for
+  // correct rendering.  For a single process application with
   // distributed Exodus files, it removes duplicate points from
   // the vtkUnstructuredGrid output.
 
@@ -506,7 +506,7 @@ static void Run(vtkMultiProcessController *c, void *arg)
   for (vtkIdType i=0; i<nvals; i++){
     lut->SetTableValue(i, r0 + i*rdiff, g0 + i*gdiff, b0 + i*bdiff);
   }
- 
+
   mapper->SetLookupTable(lut);
 #endif
 
@@ -520,7 +520,7 @@ static void Run(vtkMultiProcessController *c, void *arg)
 #else
   vtkScalarBarActor *sb = NULL;
   vtkTextActor *capActor = NULL;
-  
+
   if (Proc == 0){
     if (!omitScalarBar){
       sb = vtkScalarBarActor::New();
@@ -534,7 +534,7 @@ static void Run(vtkMultiProcessController *c, void *arg)
       sb->SetLookupTable(mapper->GetLookupTable());
       sb->SetNumberOfLabels(4);
     }
-  
+
     if (!omitCaption || addCaption[0]){
       capActor = vtkTextActor::New();
       char *info = captionText(pointArray, cellArray);
@@ -542,7 +542,7 @@ static void Run(vtkMultiProcessController *c, void *arg)
       if (info){
         capActor->SetInput(info);
         delete [] info;
-      
+
         capActor->SetAlignmentPoint(0);
         capActor->GetTextProperty()->SetVerticalJustificationToBottom();
         capActor->GetTextProperty()->SetJustificationToLeft();
@@ -555,7 +555,7 @@ static void Run(vtkMultiProcessController *c, void *arg)
       }
     }
   }
-      
+
   vtkActor *actor = vtkActor::New();
   actor->SetMapper(mapper);
 
@@ -618,7 +618,7 @@ static void Run(vtkMultiProcessController *c, void *arg)
   if (Proc == 0){
     char fname[128];
     int skipFrames = outputStride - 1;
-    int i, ii; 
+    int i, ii;
 
     vtkWindowToImageFilter *wif = vtkWindowToImageFilter::New();
     wif->SetInput(renWin);
@@ -645,12 +645,12 @@ static void Run(vtkMultiProcessController *c, void *arg)
 
     if (outputStop == outputStart){
       sprintf(fname, "%s.%s", outputName, vis_opt_values[option_format]);
-    }           
+    }
 
     vtkCamera *camera = renderer->GetActiveCamera();
     camera->SetViewUp(outputViewUp[0], outputViewUp[1], outputViewUp[2]);
     camera->UpdateViewport(renderer);
-  
+
     for (i=0, ii=skipFrames; i<=outputStop; i++) {
       if (i >= outputStart) {
         if (ii == skipFrames) {
@@ -661,7 +661,7 @@ static void Run(vtkMultiProcessController *c, void *arg)
 
           wif->Modified();
           if (outputStop > outputStart){
-            sprintf(fname, "%s.%03d.%s", outputName, i, 
+            sprintf(fname, "%s.%03d.%s", outputName, i,
                     vis_opt_values[option_format]);
           }
 
@@ -687,7 +687,7 @@ static void Run(vtkMultiProcessController *c, void *arg)
 
 #else
 
-  renWin->SetPosition(0, 360*Proc); 
+  renWin->SetPosition(0, 360*Proc);
 prm->ResetCamera(renderer);
 prm->ResetCameraClippingRange(renderer);
   prm->StartInteractor(); // now you can interact with window
@@ -715,8 +715,8 @@ static int read_mesh(vtkUnstructuredGrid *ug)
     vtkPChacoReader *rdr = vtkPChacoReader::New();
     rdr->SetBaseName(fname_opts.pexo_fname);
 
-    rdr->GenerateGlobalElementIdArrayOn();  
-    rdr->GenerateGlobalNodeIdArrayOn();  
+    rdr->GenerateGlobalElementIdArrayOn();
+    rdr->GenerateGlobalNodeIdArrayOn();
 
     rdr->GetOutput()->SetUpdatePiece(Proc);
     rdr->GetOutput()->SetUpdateNumberOfPieces(NumProcs);
@@ -752,13 +752,13 @@ static int read_mesh(vtkUnstructuredGrid *ug)
       rdr->SetFileNames(numNemesisFiles, (const char **)fileNames);
     }
     else{
-      rdr->SetFilePrefix(filePrefix); 
+      rdr->SetFilePrefix(filePrefix);
       rdr->SetFilePattern(filePattern);
       rdr->SetFileRange(fileRange);
     }
 
-    rdr->GenerateGlobalElementIdArrayOn();  
-    rdr->GenerateGlobalNodeIdArrayOn();  
+    rdr->GenerateGlobalElementIdArrayOn();
+    rdr->GenerateGlobalNodeIdArrayOn();
     rdr->GetOutput()->SetUpdatePiece(Proc);
     rdr->GetOutput()->SetUpdateNumberOfPieces(NumProcs);
     rdr->SetTimeStep(0);
@@ -769,12 +769,12 @@ static int read_mesh(vtkUnstructuredGrid *ug)
 
     int nparrays = rdr->GetNumberOfPointArrays();
     if (nparrays > 0){
-      rdr->SetPointArrayStatus(0, 1); 
+      rdr->SetPointArrayStatus(0, 1);
     }
     else{
       int ncarrays = rdr->GetNumberOfCellArrays();
       if (ncarrays > 0){
-        rdr->SetCellArrayStatus(0, 1); 
+        rdr->SetCellArrayStatus(0, 1);
       }
     }
 
@@ -800,7 +800,7 @@ static int read_mesh(vtkUnstructuredGrid *ug)
   }
   return 0;
 }
-static int create_field_array(vtkUnstructuredGrid *ug, 
+static int create_field_array(vtkUnstructuredGrid *ug,
   char *ca, char *pa, double *range)
 {
   int rc = 0;
@@ -820,25 +820,25 @@ static int create_field_array(vtkUnstructuredGrid *ug,
     }
 
     rc = assign_partition_numbers(ug);
-  
+
     if (NumProcs > 1){
       rc = checkAllrc(rc, Comm);
     }
-  
+
     if (rc > 0){
       return 1;
     }
-  
+
     rc = check_partition_numbers(ug);
-  
+
     if (rc){
       cout << Proc << " failed to obtain all partition numbers" << endl;
     }
-  
+
     if (NumProcs > 1){
       rc = checkAllrc(rc, Comm);
     }
-  
+
     if (rc > 0){
       return 1;
     }
@@ -900,10 +900,10 @@ int read_broadcast_input_options(int &argc, char **argv)
 {
   // Options (same meaning as zdrive parameters):
   //   "File Type"     NemesisI or Chaco
-  //   "File Name"     base name of Nemesis (base.p.n) or 
+  //   "File Name"     base name of Nemesis (base.p.n) or
   //                     Chaco (base.coords, base.graph) files
   //   "Parallel Disk Info"
-  //   "Parallel file location" 
+  //   "Parallel file location"
   //
   // Special vtk_view options:
   //    See the "usage" functions in this source file.
@@ -937,11 +937,11 @@ int read_broadcast_input_options(int &argc, char **argv)
     return 1;
   }
   fname_opts.dsk_list_cnt         = -1;
-  fname_opts.num_dsk_ctrlrs       = -1; 
-  fname_opts.pdsk_add_fact        = -1; 
+  fname_opts.num_dsk_ctrlrs       = -1;
+  fname_opts.pdsk_add_fact        = -1;
   fname_opts.zeros                = -1;
-  fname_opts.file_type            = -1; 
-  fname_opts.pdsk_root[0]         = '\0'; 
+  fname_opts.file_type            = -1;
+  fname_opts.pdsk_root[0]         = '\0';
   fname_opts.pdsk_subdir[0]       = '\0';
   fname_opts.pexo_fname[0]        = '\0';
 
@@ -953,7 +953,7 @@ int read_broadcast_input_options(int &argc, char **argv)
 
   if (Proc == 0){
     input_ok = read_cmd_file(cmd_file, &prob_opts, &fname_opts, &extra_options);
-  
+
     if (input_ok){
       if (extra_options.list_size > 0){
         for (int i=0; input_ok && (i<extra_options.list_size); i++){
@@ -971,7 +971,7 @@ int read_broadcast_input_options(int &argc, char **argv)
               }
             }
           }
-        } 
+        }
       }
     }
 
@@ -988,21 +988,21 @@ int read_broadcast_input_options(int &argc, char **argv)
       // would be a call back where every hit of a key causes the
       // next hyperedge to by highlighted.  The color of the vertices
       // would represent the partition.  For small hypergraphs, we
-      // would be able to step through and see how the hyperedges are 
-      // cut.  More difficult would be offsetting the edges from the 
+      // would be able to step through and see how the hyperedges are
+      // cut.  More difficult would be offsetting the edges from the
       // vertices so we can see the separate overlapping hyperedges.
-  
+
       fname_opts.file_type = CHACO_FILE;
-  
+
       if (Proc == 0){
-        cout << 
+        cout <<
           "Warning: Hyperedge visualization not implemented yet." << endl;
-        cout << 
+        cout <<
           "We'll search for a Chaco file and display that if found." << endl;
       }
     }
-  
-    if (input_ok && 
+
+    if (input_ok &&
         (fname_opts.file_type != NO_FILE_TRIANGLES ) &&  /* zdrive generated a chaco file */
         (fname_opts.file_type != CHACO_FILE) &&
         (fname_opts.file_type != NEMESIS_FILE)){
@@ -1010,24 +1010,24 @@ int read_broadcast_input_options(int &argc, char **argv)
       cout << "Please specify either \"File Type = NemesisI\" or " << endl;
       cout << "\"File Type = Chaco\" in " << cmd_file << "." << endl;
       input_ok = 0;
-    } 
+    }
   }
 
   if (NumProcs > 1){
     Comm->Broadcast(&input_ok, 1, 0);
   }
-  
+
   if (!input_ok){
     if (Proc == 0){
       usage();
     }
     return 1;
   }
-  
+
   if (NumProcs > 1){
 
     Comm->Broadcast((char *)&fname_opts, sizeof(fname_opts), 0);
-  
+
     if (fname_opts.dsk_list_cnt > 0){
       if (Proc != 0){
         fname_opts.dsk_list = new int[fname_opts.dsk_list_cnt];
@@ -1062,7 +1062,7 @@ int read_broadcast_input_options(int &argc, char **argv)
     sscanf(vis_opt_values[option_width], "%d", &imageWidth);
   }
   if (vis_opt_values[option_partition_number][0]){
-    sscanf(vis_opt_values[option_partition_number], "%d", 
+    sscanf(vis_opt_values[option_partition_number], "%d",
       &showPartitionNumber);
     notPartitionNumber = (showPartitionNumber ? 0 : 1);
   }
@@ -1104,7 +1104,7 @@ int read_broadcast_input_options(int &argc, char **argv)
       }
 
       return 1;
-    } 
+    }
   }
 
   strcpy(vis_opt_values[option_format], suffix[outputFormat]);
@@ -1123,7 +1123,7 @@ int read_broadcast_input_options(int &argc, char **argv)
     sscanf(vis_opt_values[option_frame_stride], "%d", &outputStride);
   }
   if (vis_opt_values[option_view_up][0]){
-    int nvals = sscanf(vis_opt_values[option_view_up], "%f %f %f", 
+    int nvals = sscanf(vis_opt_values[option_view_up], "%f %f %f",
       outputViewUp, outputViewUp + 1, outputViewUp + 2);
 
     if (nvals != 3){
@@ -1217,7 +1217,7 @@ static void write_option_ignored(int option)
 #endif
 
 static int set_nemesis_file_names_or_pattern(char *baseName,
-  int numDisks, int diskListSize, int *diskList, 
+  int numDisks, int diskListSize, int *diskList,
   int diskOffset, int useZeros,
   char *dirRoot, char *subDir)
 {
@@ -1233,7 +1233,7 @@ static int set_nemesis_file_names_or_pattern(char *baseName,
   filePrefix[0] = '\0';
   fileRange[0] = fileRange[1] = -1;
 
-  if ((numDisks > 0) || (diskListSize > 0)){  // get list of directory names 
+  if ((numDisks > 0) || (diskListSize > 0)){  // get list of directory names
 
     int ndisks = (numDisks > 0) ? numDisks : diskListSize;
 
@@ -1243,7 +1243,7 @@ static int set_nemesis_file_names_or_pattern(char *baseName,
     else{
       nzeros = 0;
     }
-    
+
     len = strlen(dirRoot) + 32;
     if (subDir)  len += strlen(subDir);
 
@@ -1259,7 +1259,7 @@ static int set_nemesis_file_names_or_pattern(char *baseName,
   }
 
   if (zdriveCount == 0){
-    
+
     if (Proc == 0){
       // also sets numNemesisFiles, which is usually the same
       rc = set_number_of_zdrive_processes(baseName, disks);
@@ -1278,7 +1278,7 @@ static int set_nemesis_file_names_or_pattern(char *baseName,
         zdriveCount = counts[1];
         numNemesisFiles = counts[2];
         specialSingleFile = counts[3];
-      } 
+      }
     }
 
     if (rc){
@@ -1298,7 +1298,7 @@ static int set_nemesis_file_names_or_pattern(char *baseName,
   else if (numDisks > 1){
 
     // We need to provide the VTK reader with a list of all file names.
-    
+
     fileNames = new char *[numNemesisFiles];
     fileNamesBase = new char *[numNemesisFiles];
     len += (sizeof(baseName) + 64);
@@ -1313,7 +1313,7 @@ static int set_nemesis_file_names_or_pattern(char *baseName,
   else{
 
     // Sufficient to provide just the file name prefix, pattern and range.
-    
+
     fileRange[0] = 0;
     fileRange[1] = numNemesisFiles - 1;
 
@@ -1384,7 +1384,7 @@ static int set_number_of_zdrive_processes(char *fname, char **disks)
     }
 
     // find the rightmost slash, which separates directory from file name
-    
+
     char *c = strrchr(dn, slash);
     if (c==NULL){
       strcpy(dn, ".");
@@ -1437,16 +1437,16 @@ static int set_number_of_zdrive_processes(char *fname, char **disks)
     while ((de = readdir(dir)) != NULL){
       if (strncmp(fn, de->d_name, len) == 0){
         char *c = de->d_name + len;
-  
+
         if (*c == '.'){
           int nmatches = sscanf(c, ".%d.%d", &count, &fileno);
-  
+
           if (nmatches == 2){
             break;
           }
         }
         else if (!*c){
-          /* 
+          /*
            * The name given was not the base name for a distributed
            * file, it was the whole name of a single file.
            */
@@ -1547,7 +1547,7 @@ static void debug_partition_ids(vtkUnstructuredGrid *ug, vtkIntArray *partids)
     vtkCell *c = ug->GetCell(i);
     int subId = c->GetParametricCenter(pcoords);
     c->EvaluateLocation(subId, pcoords, center, weights);
-    
+
     cout << center[0] << " " << center[1] << " " << center[2] << ", ";
     cout << partids->GetTuple(i) << endl;
   }
@@ -1620,7 +1620,7 @@ int g, p, nvals;
     }
     fclose(fp);
   }
- 
+
   update_partition_id_map();
 
   return 0;
@@ -1754,13 +1754,13 @@ int assign_partition_numbers(vtkUnstructuredGrid *ug)
     hasCells = new int[NumProcs];
     procs    = new int[NumProcs];
     me = ((ncells > 0) ? 1 : 0);
-  
+
     Comm->AllGather(&me, hasCells, 1);
-  
+
     nprocs = 0;
     myrank = -1;
     group->Initialize(Controller);
-  
+
     for (int i=0; i<NumProcs; i++){
       if (hasCells[i]){
         procs[nprocs] = i;
@@ -1831,7 +1831,7 @@ int assign_partition_numbers(vtkUnstructuredGrid *ug)
     rc = pass_along_zdrive_output(procs[sndr], procs[recvr]);
 
     rc = checkAllrc(rc, subComm);
-    
+
     if (rc > 0){
       partids->Delete();
       partids = NULL;
@@ -1949,41 +1949,41 @@ static char *captionText(char *pnm, char *cnm)
     int dtype = fname_opts.init_dist_type;
     if ((fname_opts.file_type != NEMESIS_FILE) && (dtype != INITIAL_FILE)) {
       snprintf(buf1, LINELEN, "Chaco: %s, %s initial distribution, %s",
-        fname_opts.pexo_fname, 
-        (dtype == INITIAL_LINEAR ? 
-           "linear" : 
+        fname_opts.pexo_fname,
+        (dtype == INITIAL_LINEAR ?
+           "linear" :
            (dtype == INITIAL_CYCLIC ? "cyclic" : "owner")),
         prob_opts.method);
     }
     else{
       snprintf(buf1, LINELEN, "%s: %s, %s",
         (fname_opts.file_type != NEMESIS_FILE ? "Chaco" : "Exodus/Nemesis"),
-        fname_opts.pexo_fname, 
+        fname_opts.pexo_fname,
         prob_opts.method);
     }
-  
+
     used = snprintf(c, LINELEN+1, "%s\n", buf1);
-  
+
     c += used;
     lenleft -= used;
     linelen = 0;
-  
+
     if (prob_opts.num_params > 0) {
       for (int i=0; i<prob_opts.num_params; i++) {
         Parameter_Pair p = prob_opts.params[i];
         used = snprintf(buf1, LINELEN, "%s(%s) ", p.Name, p.Val);
-  
-        if (used >= lenleft){  
+
+        if (used >= lenleft){
           snprintf(c, lenleft, "...");
           break;  // that's all we have room for
         }
-  
+
         if (linelen + used >= LINELEN){
           *c++ = '\n';
           linelen = 0;
           lenleft--;
         }
-     
+
         strcpy(c, buf1);
         c += used;
         lenleft -= used;
@@ -1993,13 +1993,13 @@ static char *captionText(char *pnm, char *cnm)
 
     char *nm = get_zdrive_output_file_name();
     used = strlen(nm) + 1;
-  
+
     if (lenleft > used){
       sprintf(c, "\n%s", nm);
       lenleft -= used;
       c += used;
     }
-  
+
     delete [] nm;
   }
 
@@ -2106,7 +2106,7 @@ static void usage()
 #endif
 }
 
-  
+
 //----------------------------------------------------------------
 // We link in one source file from zdrive.  It references some
 // of the globals defined in another file.  We define the globals
@@ -2115,7 +2115,7 @@ static void usage()
 
 int Debug_Driver = 1;
 int Number_Iterations = 1;
-int Driver_Action = 1;  
+int Driver_Action = 1;
 int Chaco_In_Assign_Inv = 0;
 struct Test_Flags Test;
 struct Output_Flags Output;

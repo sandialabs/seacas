@@ -1,4 +1,4 @@
-IF (${SEACASProj_ENABLE_Kokkos})
+IF (${Seacas_ENABLE_Kokkos})
 
   PRINT_VAR(KOKKOS_ARCH)
 

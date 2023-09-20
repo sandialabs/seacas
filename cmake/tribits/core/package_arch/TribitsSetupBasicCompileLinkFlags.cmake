@@ -90,7 +90,7 @@ macro(tribits_set_language_buildtype_flags_override LANG BUILDTYPE)
   endif()
 
   # NOTE: Above, we can't just let users set CMAKE_${LANG}_FLAGS_${BUILDTYPE}
-  # in the cache because CMake overrides it.  We have ot add this override
+  # in the cache because CMake overrides it.  We have to add this override
   # option to allow them to override it.
 
 endmacro()
@@ -149,7 +149,7 @@ function(tribits_setup_basic_compile_link_flags)
   tribits_define_standard_compile_flags_vars(FALSE)
 
   #
-  # Set up coverge testing options
+  # Set up coverage testing options
   #
 
   if (${PROJECT_NAME}_ENABLE_COVERAGE_TESTING)

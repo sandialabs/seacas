@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -9,6 +9,7 @@
 #include <Ioss_Compare.h>
 #include <Ioss_CopyDatabase.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_MemoryUtils.h>
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_MeshType.h>
 #include <Ioss_ParallelUtils.h>
@@ -18,6 +19,7 @@
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 #include <fmt/ostream.h>
+#include <tokenize.h>
 
 #include <algorithm>
 #include <cstddef>
@@ -33,19 +35,23 @@
 
 namespace {
   std::string codename;
-  std::string version = "6.1 (2021/09/09)";
+  std::string version = "6.2 (2023/05/12)";
 
   bool mem_stats = false;
 
   void file_copy(IOShell::Interface &interFace, int rank);
-  void file_compare(IOShell::Interface &interFace, int rank);
+  bool file_compare(IOShell::Interface &interFace, int rank);
 
   Ioss::PropertyManager set_properties(IOShell::Interface &interFace);
   Ioss::MeshCopyOptions set_mesh_copy_options(IOShell::Interface &interFace)
   {
     Ioss::MeshCopyOptions options{};
     options.selected_times    = interFace.selected_times;
+    options.rel_tolerance     = interFace.rel_tolerance;
+    options.abs_tolerance     = interFace.abs_tolerance;
+    options.tol_floor         = interFace.tol_floor;
     options.verbose           = !interFace.quiet;
+    options.output_summary    = true;
     options.memory_statistics = interFace.memory_statistics;
     options.debug             = interFace.debug;
     options.ints_64_bit       = interFace.ints_64_bit;
@@ -82,13 +88,20 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  codename = interFace.options_.basename(argv[0]);
+  codename = Ioss::GetLongOption::basename(argv[0]);
 
   Ioss::SerializeIO::setGroupFactor(interFace.serialize_io_size);
   mem_stats = interFace.memory_statistics;
 
   Ioss::Init::Initializer io;
 
+  // See if a custom field is defined...
+  if (!interFace.customField.empty()) {
+    auto suffices = Ioss::tokenize(interFace.customField, ",");
+    if (suffices.size() > 1) {
+      Ioss::VariableType::create_named_suffix_field_type("UserDefined", suffices);
+    }
+  }
   std::string in_file  = interFace.inputFile[0];
   std::string out_file = interFace.outputFile;
 
@@ -96,8 +109,10 @@ int main(int argc, char *argv[])
     if (interFace.compare) {
       fmt::print(stderr,
                  "Input 1:   '{}', Type: {}\n"
-                 "Input 2:   '{}', Type: {}\n\n",
-                 in_file, interFace.inFiletype, out_file, interFace.outFiletype);
+                 "Input 2:   '{}', Type: {}\n"
+                 "\tTolerances: Absolute = {}, Relative = {}, Floor = {}\n\n",
+                 in_file, interFace.inFiletype, out_file, interFace.outFiletype,
+                 interFace.abs_tolerance, interFace.rel_tolerance, interFace.tol_floor);
     }
     else {
       fmt::print(stderr,
@@ -110,7 +125,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_KOKKOS
   if (rank == 0)
     fmt::print(stderr, "Kokkos default execution space configuration:\n");
-  Kokkos::DefaultExecutionSpace::print_configuration(std::cerr, false);
+  Kokkos::DefaultExecutionSpace().print_configuration(std::cerr, false);
   if (rank == 0)
     fmt::print(stderr, "\n");
 #endif
@@ -119,7 +134,7 @@ int main(int argc, char *argv[])
 
   try {
     if (interFace.compare) {
-      file_compare(interFace, rank);
+      success = file_compare(interFace, rank);
     }
     else {
       file_copy(interFace, rank);
@@ -158,8 +173,8 @@ int main(int argc, char *argv[])
                  fmt::group_digits(hwmax / MiB), fmt::group_digits(hwavg / MiB));
     }
 #else
-    int64_t mem = Ioss::Utils::get_memory_info();
-    int64_t hwm = Ioss::Utils::get_hwm_memory_info();
+    int64_t mem = Ioss::MemoryUtils::get_memory_info();
+    int64_t hwm = Ioss::MemoryUtils::get_hwm_memory_info();
     if (rank == 0) {
       fmt::print(stderr,
                  "\n\tCurrent Memory:    {}M\n"
@@ -171,7 +186,7 @@ int main(int argc, char *argv[])
   if (rank == 0) {
     fmt::print(stderr, "\n{} execution successful.\n", codename);
   }
-  return EXIT_SUCCESS;
+  return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 namespace {
@@ -406,148 +421,148 @@ namespace {
     } // loop over input files
   }
 
-  void file_compare(IOShell::Interface &interFace, int rank)
+  bool file_compare(IOShell::Interface &interFace, int rank)
   {
     Ioss::PropertyManager properties = set_properties(interFace);
-    for (const auto &inpfile : interFace.inputFile) {
+    const auto           &inpfile    = interFace.inputFile[0];
 
-      //========================================================================
-      // INPUT Database #1...
-      //========================================================================
-      Ioss::DatabaseIO *dbi1 =
-          Ioss::IOFactory::create(interFace.inFiletype, inpfile, Ioss::READ_MODEL,
-                                  Ioss::ParallelUtils::comm_world(), properties);
-      if (dbi1 == nullptr || !dbi1->ok(true)) {
-        std::exit(EXIT_FAILURE);
-      }
+    //========================================================================
+    // INPUT Database #1...
+    //========================================================================
+    Ioss::DatabaseIO *dbi1 =
+        Ioss::IOFactory::create(interFace.inFiletype, inpfile, Ioss::READ_MODEL,
+                                Ioss::ParallelUtils::comm_world(), properties);
+    if (dbi1 == nullptr || !dbi1->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
 
-      if (mem_stats) {
-        dbi1->progress("Database #1 Open");
-      }
-      if (!interFace.lower_case_variable_names) {
-        dbi1->set_lower_case_variable_names(false);
-      }
-      if (interFace.outFiletype == "cgns") {
-        // CGNS stores BCs (SideSets) on the zones which
-        // correspond to element blocks.  If split input sideblocks
-        // by element block, then output is much easier.
-        dbi1->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
-      }
-      else {
-        dbi1->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
-      }
-      dbi1->set_field_separator(interFace.fieldSuffixSeparator);
+    if (mem_stats) {
+      dbi1->progress("Database #1 Open");
+    }
+    if (!interFace.lower_case_variable_names) {
+      dbi1->set_lower_case_variable_names(false);
+    }
+    if (interFace.outFiletype == "cgns") {
+      // CGNS stores BCs (SideSets) on the zones which
+      // correspond to element blocks.  If split input sideblocks
+      // by element block, then output is much easier.
+      dbi1->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+    }
+    else {
+      dbi1->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
+    }
+    dbi1->set_field_separator(interFace.fieldSuffixSeparator);
 
-      dbi1->set_field_recognition(!interFace.disable_field_recognition);
+    dbi1->set_field_recognition(!interFace.disable_field_recognition);
 
-      if (interFace.ints_64_bit) {
-        dbi1->set_int_byte_size_api(Ioss::USE_INT64_API);
-      }
+    if (interFace.ints_64_bit) {
+      dbi1->set_int_byte_size_api(Ioss::USE_INT64_API);
+    }
 
-      if (!interFace.groupName.empty()) {
-        bool success = dbi1->open_group(interFace.groupName);
-        if (!success) {
-          if (rank == 0) {
-            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
-                       interFace.groupName, inpfile);
-          }
-          return;
+    if (!interFace.groupName.empty()) {
+      bool success = dbi1->open_group(interFace.groupName);
+      if (!success) {
+        if (rank == 0) {
+          fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupName,
+                     inpfile);
         }
+        return false;
       }
+    }
 
-      // NOTE: 'input_region1' owns 'dbi1' pointer at this time...
-      Ioss::Region input_region1(dbi1, "region_1");
+    // NOTE: 'input_region1' owns 'dbi1' pointer at this time...
+    Ioss::Region input_region1(dbi1, "region_1");
 
-      if (input_region1.mesh_type() == Ioss::MeshType::HYBRID) {
-        fmt::print(stderr,
-                   "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
-                   "'Structured' mesh is supported at this time.\n",
-                   input_region1.mesh_type_string());
-        return;
-      }
+    if (input_region1.mesh_type() == Ioss::MeshType::HYBRID) {
+      fmt::print(stderr,
+                 "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
+                 "'Structured' mesh is supported at this time.\n",
+                 input_region1.mesh_type_string());
+      return false;
+    }
 
-      // Get integer size being used on input file #1 and set it in
-      // the interFace.
-      int int_byte_size_api = dbi1->int_byte_size_api();
-      if (int_byte_size_api == 8) {
-        interFace.ints_64_bit = true;
-      }
+    // Get integer size being used on input file #1 and set it in
+    // the interFace.
+    int int_byte_size_api = dbi1->int_byte_size_api();
+    if (int_byte_size_api == 8) {
+      interFace.ints_64_bit = true;
+    }
 
-      //========================================================================
-      // INPUT Database #2...
-      //========================================================================
-      Ioss::DatabaseIO *dbi2 =
-          Ioss::IOFactory::create(interFace.outFiletype, interFace.outputFile, Ioss::READ_MODEL,
-                                  Ioss::ParallelUtils::comm_world(), properties);
-      if (dbi2 == nullptr || !dbi2->ok(true)) {
-        std::exit(EXIT_FAILURE);
-      }
+    //========================================================================
+    // INPUT Database #2...
+    //========================================================================
+    Ioss::DatabaseIO *dbi2 =
+        Ioss::IOFactory::create(interFace.outFiletype, interFace.outputFile, Ioss::READ_MODEL,
+                                Ioss::ParallelUtils::comm_world(), properties);
+    if (dbi2 == nullptr || !dbi2->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
 
-      if (mem_stats) {
-        dbi2->progress("Database #2 Open");
-      }
-      if (!interFace.lower_case_variable_names) {
-        dbi2->set_lower_case_variable_names(false);
-      }
-      if (interFace.outFiletype == "cgns") {
-        // CGNS stores BCs (SideSets) on the zones which
-        // correspond to element blocks.  If split input sideblocks
-        // by element block, then output is much easier.
-        dbi2->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
-      }
-      else {
-        dbi2->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
-      }
-      dbi2->set_field_separator(interFace.fieldSuffixSeparator);
+    if (mem_stats) {
+      dbi2->progress("Database #2 Open");
+    }
+    if (!interFace.lower_case_variable_names) {
+      dbi2->set_lower_case_variable_names(false);
+    }
+    if (interFace.outFiletype == "cgns") {
+      // CGNS stores BCs (SideSets) on the zones which
+      // correspond to element blocks.  If split input sideblocks
+      // by element block, then output is much easier.
+      dbi2->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+    }
+    else {
+      dbi2->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
+    }
+    dbi2->set_field_separator(interFace.fieldSuffixSeparator);
 
-      dbi2->set_field_recognition(!interFace.disable_field_recognition);
+    dbi2->set_field_recognition(!interFace.disable_field_recognition);
 
-      if (interFace.ints_64_bit) {
-        dbi2->set_int_byte_size_api(Ioss::USE_INT64_API);
-      }
+    if (interFace.ints_64_bit) {
+      dbi2->set_int_byte_size_api(Ioss::USE_INT64_API);
+    }
 
-      if (!interFace.groupName.empty()) {
-        bool success = dbi2->open_group(interFace.groupName);
-        if (!success) {
-          if (rank == 0) {
-            fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n",
-                       interFace.groupName, inpfile);
-          }
-          return;
+    if (!interFace.groupName.empty()) {
+      bool success = dbi2->open_group(interFace.groupName);
+      if (!success) {
+        if (rank == 0) {
+          fmt::print(stderr, "ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupName,
+                     inpfile);
         }
+        return false;
       }
+    }
 
-      // NOTE: 'input_region2' owns 'dbi2' pointer at this time...
-      Ioss::Region input_region2(dbi2, "region_2");
+    // NOTE: 'input_region2' owns 'dbi2' pointer at this time...
+    Ioss::Region input_region2(dbi2, "region_2");
 
-      if (input_region2.mesh_type() == Ioss::MeshType::HYBRID) {
-        fmt::print(stderr,
-                   "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
-                   "'Structured' mesh is supported at this time.\n",
-                   input_region2.mesh_type_string());
-        return;
-      }
+    if (input_region2.mesh_type() == Ioss::MeshType::HYBRID) {
+      fmt::print(stderr,
+                 "\nERROR: io_shell does not support '{}' meshes. Only 'Unstructured' or "
+                 "'Structured' mesh is supported at this time.\n",
+                 input_region2.mesh_type_string());
+      return false;
+    }
 
-      // Get integer size being used on input file #1 and set it in
-      // the interFace.
-      int_byte_size_api = dbi2->int_byte_size_api();
-      if (int_byte_size_api == 8) {
-        interFace.ints_64_bit = true;
-      }
+    // Get integer size being used on input file #1 and set it in
+    // the interFace.
+    int_byte_size_api = dbi2->int_byte_size_api();
+    if (int_byte_size_api == 8) {
+      interFace.ints_64_bit = true;
+    }
 
-      //========================================================================
-      // COMPARE the databases...
-      //========================================================================
-      auto options = set_mesh_copy_options(interFace);
+    //========================================================================
+    // COMPARE the databases...
+    //========================================================================
+    auto options = set_mesh_copy_options(interFace);
 
-      bool result = Ioss::Compare::compare_database(input_region1, input_region2, options);
-      if (result) {
-        fmt::print(stderr, "\n\nDATABASES are EQUAL");
-      }
-      else {
-        fmt::print(stderr, "\n\nDATABASES are NOT equal");
-      }
-    } // loop over input files
+    bool result = Ioss::Compare::compare_database(input_region1, input_region2, options);
+    if (result) {
+      fmt::print(stderr, "\n\nDATABASES are EQUAL");
+    }
+    else {
+      fmt::print(stderr, "\n\nDATABASES are NOT equal");
+    }
+    return result;
   }
 
   Ioss::PropertyManager set_properties(IOShell::Interface &interFace)
@@ -625,6 +640,10 @@ namespace {
 
     if (interFace.debug) {
       properties.add(Ioss::Property("LOGGING", 1));
+    }
+
+    if (interFace.detect_nans) {
+      properties.add(Ioss::Property("NAN_DETECTION", 1));
     }
 
     if (interFace.memory_statistics) {

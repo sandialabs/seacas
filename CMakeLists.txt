@@ -4,10 +4,10 @@
 
 # Must set the project name as a variable at very beginning before including anything else
 # We set the project name in a separate file so CTest scripts can use it.
-INCLUDE(${CMAKE_SOURCE_DIR}/ProjectName.cmake)
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/ProjectName.cmake)
 
-SET(SEACASProj_ENABLE_CXX11_DEFAULT ON)
-SET(SEACASProj_ENABLE_Zoltan_DEFAULT ON)
+SET(Seacas_ENABLE_Zoltan_DEFAULT ON)
+SET(TRIBITS_HIDE_DEPRECATED_INCLUDE_DIRECTORIES_OVERRIDE TRUE)
 
 # Define the TriBITS minimum required CMake version
 SET(TRIBITS_CMAKE_MINIMUM_REQUIRED 3.17.0)
@@ -40,7 +40,7 @@ SET(${PROJECT_NAME}_EXCLUDE_DISABLED_SUBPACKAGES_FROM_DISTRIBUTION_DEFAULT FALSE
 
 SET(TPL_ENABLE_Pthread OFF CACHE BOOL "")
 
-OPTION(SEACASProj_ENABLE_DOXYGEN "Enable Doxygen documentation creation." OFF)
+OPTION(Seacas_ENABLE_DOXYGEN "Enable Doxygen documentation creation." OFF)
 
 # Do all of the processing for this Tribits project
 TRIBITS_PROJECT()

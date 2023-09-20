@@ -1,0 +1,252 @@
+<!-------- @HEADER
+ !
+ ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ !
+ !  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
+ !                  Copyright 2012 Sandia Corporation
+ !
+ ! Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
+ ! the U.S. Government retains certain rights in this software.
+ !
+ ! Redistribution and use in source and binary forms, with or without
+ ! modification, are permitted provided that the following conditions are
+ ! met:
+ !
+ ! 1. Redistributions of source code must retain the above copyright
+ ! notice, this list of conditions and the following disclaimer.
+ !
+ ! 2. Redistributions in binary form must reproduce the above copyright
+ ! notice, this list of conditions and the following disclaimer in the
+ ! documentation and/or other materials provided with the distribution.
+ !
+ ! 3. Neither the name of the Corporation nor the names of the
+ ! contributors may be used to endorse or promote products derived from
+ ! this software without specific prior written permission.
+ !
+ ! THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
+ ! EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ ! IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ ! PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
+ ! CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ ! EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ ! PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ ! PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ ! LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ ! NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ ! SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ !
+ ! Questions? Contact Karen Devine	kddevin@sandia.gov
+ !                    Erik Boman	egboman@sandia.gov
+ !
+ ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ !
+ ! @HEADER
+-------> 
+
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (X11; U; Linux 2.4.2-2smp i686) [Netscape]">
+  <meta name="sandia.approval_type" content="formal">
+  <meta name="sandia.approved" content="SAND2007-4748W">
+  <meta name="author" content="Zoltan PI">
+
+   <title>Zoltan User's Guide:  Coloring Algorithms</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<div align=right><b><i><a href="ug.html">Zoltan User's Guide</a>&nbsp;
+|&nbsp; <a href="ug_color_parallel.html">Next</a>&nbsp; |&nbsp; <a href="ug_order_ptscotch.html">Previous</a></i></b></div>
+<!---------------------------------------------------------------------------->
+<h2>
+<a NAME="Coloring Algorithms"></a>Coloring Algorithms</h2>
+<p>The following coloring algorithms are currently included in the Zoltan
+library:
+<blockquote><a href="ug_color_parallel.html">Parallel Coloring
+</a></blockquote>
+They are accessed through calls to <b><a href="ug_interface_color.html#Zoltan_Color">Zoltan_Color</a></b>.
+<p><!---------------------------------------------------------------------------->
+<h3>
+<a NAME="Color Parameters"></a>
+<hr><b>Coloring Parameters</b></h3>
+While the overall behavior of Zoltan is controlled by <a href="ug_param.html">general
+Zoltan parameters</a>, the behavior of each coloring method is controlled
+by parameters specific to coloring which are also set by calls to <b><a href="ug_interface_init.html#Zoltan_Set_Param">Zoltan_Set_Param</a></b>.
+These parameters are described below.
+<br>&nbsp;
+<table WIDTH="100%" NOSAVE >
+<tr VALIGN=TOP>
+<td VALIGN=TOP><b>Parameters:</b></td>
+
+<td></td>
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td NOSAVE><a NAME="COLORING_PROBLEM"></a>&nbsp;&nbsp;<i>COLORING_PROBLEM</i></td>
+
+<td>
+The specific coloring problem to be solved. Supported values include
+"DISTANCE-1" (the standard vertex coloring problem), "DISTANCE-2"
+(useful for Jacobian coloring) and "PARTIAL-DISTANCE-2".  
+When called with "PARTIAL-DISTANCE-2", only the objects
+listed in <i>global_ids</i> (paramter of <b><a
+href="ug_interface_color.html#Zoltan_Color">Zoltan_Color</a></b>
+function) are colored. "BIPARTITE" is an alternative name for "PARTIAL-DISTANCE-2".
+</td>
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td NOSAVE><a NAME="SUPERSTEP_SIZE"></a>&nbsp;&nbsp;<i>SUPERSTEP_SIZE</i></td>
+
+<td>Number of local objects to be colored on each processor before
+exchanging color information. SUPERSTEP_SIZE should be greater than 0.
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td NOSAVE><a NAME="COMM_PATTERN"></a><i>&nbsp;&nbsp;COMM_PATTERN</i></td>
+
+<td>Valid values are "S" (synchronous) and "A" (asynchronous). If
+synchronous communication is selected, processors are forced to wait
+for the color information from all other processors to be received
+before proceeding with coloring of the next SUPERSTEP_SIZE number of
+local objects. If asynchronous communication is selected, there is no
+such restriction.
+</td>
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td NOSAVE><a NAME="VERTEX_VISIT_ORDER"></a><i>&nbsp;&nbsp;VERTEX_VISIT_ORDER</i></td>
+
+<td>Valid values are "I" (internal first), "B" (boundary first) and
+  "U" (unordered), "N" (natural), "L" (largest degree first), "S"
+  (smallest degree last). If "I" is selected, each processor colors
+  its internal objects before boundary objects. If "B" is selected,
+  each processor colors its boundary objects first. If "U" is
+  selected, there is no such distinction between internal and boundary
+  objects. "N" is equivalent to "U". If "L" is selected, the objects
+  are sorted according to their number of neighbors so that the object
+  with larger number of neighbors are colored first. If "S" is
+  selected, the order is dynamically constructed; the object with
+  smallest number of neighbors will be colored last and is
+  temporarily removed from the graph. This process repeats itself
+  until all objects are ordered. </td>
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td NOSAVE><a NAME="RECOLORING_NUM_OF_ITERATIONS"></a><i>&nbsp;&nbsp;RECOLORING_NUM_OF_ITERATIONS </i></td>
+
+<td>Number of distance-1 recoloring iterations to be performed after first
+  coloring phase. A value of zero disables recoloring.</td>
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td NOSAVE><a NAME="RECOLORING_TYPE"></a><i>&nbsp;&nbsp;RECOLORING_TYPE</i></td>
+
+<td> Valid values are "SYNCHRONOUS" and "ASYNCHRONOUS". If
+"SYNCHRONOUS" is selected, each processor waits for its neighboors to
+finish processing one color before processing the next one. If
+"ASYNCHRONOUS" is selected, each processor itself recolors all of its
+vertices in specified order, independent from other processors. It is
+then necessary to detect and resolve conflicts. </td>
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td NOSAVE><a NAME="RECOLORING_PERMUTATION"></a><i>&nbsp;&nbsp;RECOLORING_PERMUTATION</i></td>
+
+<td>Valid values are "FORWARD", "REVERSE", "NONDECREASING" and
+"NONINCREASING". The "FORWARD" permutation orders the colors in
+increasing order of their color identifiers. The "REVERSE" permutation
+is the opposite one. The "NONDECREASING" orders the colors in
+non-decreasing order of the number of time the colors are used in the
+whole graph. In other words, the less used colors are colored
+first. "NONINCREASING" is the opposite of "NONDECREASING".
+
+</td>
+</tr>
+
+<!-- commenting this section
+<tr VALIGN=TOP NOSAVE>
+<td NOSAVE><a NAME="COLORING_METHOD"></a><i>&nbsp;&nbsp;COLORING_METHOD</i></td>
+
+<td>Currently only "F" (first-fit) is implemented. By using "F", the
+smallest available color that will not cause a conflict is assigned to
+the object that is being colored. </td>
+</tr>
+-->
+
+<tr VALIGN=TOP NOSAVE>
+<td NOSAVE><a NAME="GRAPH_METHOD"></a><i>&nbsp;&nbsp;Options for graph build</i></td>
+
+<td>See more informations about graph build options on this <a href="ug_graph_build.html">page</a></td>
+</tr>
+
+<tr VALIGN=TOP>
+<td VALIGN=TOP><a NAME="Default_Parameter_Values"></a><b>Default Values:</b></td>
+
+<td></td>
+</tr>
+
+<tr VALIGN=TOP>
+<td></td>
+
+<td><i>COLORING_PROBLEM</i> = DISTANCE-1</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td></td>
+
+<td><i>SUPERSTEP_SIZE </i>= 100</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td></td>
+
+<td><i>COMM_PATTERN </i>= S</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td></td>
+
+<td><i>VERTEX_VISIT_ORDER</i> = I</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td></td>
+
+<tr VALIGN=TOP>
+<td></td>
+
+<td><i>RECOLORING_NUM_OF _ITERATIONS</i> = 0</td>
+</tr>
+
+<tr VALIGN=TOP>
+
+<tr VALIGN=TOP>
+<td></td>
+
+<td><i>RECOLORING_TYPE</i> = SYNCHRONOUS</td>
+</tr>
+
+<tr VALIGN=TOP>
+
+<tr VALIGN=TOP>
+<td></td>
+
+<td><i>RECOLORING_PERMUTATION</i> = NONDECREASING</td>
+</tr>
+
+<tr VALIGN=TOP>
+<!-- commenting 
+<td><i>COLORING_METHOD</i> = F</td>
+-->
+
+</tr>
+</table>
+
+<p><!---------------------------------------------------------------------------->
+<hr WIDTH="100%">[<a href="ug.html">Table of Contents</a>&nbsp; | <a href="ug_color_parallel.html">Next:&nbsp;
+Parallel Coloring</a>&nbsp; |&nbsp; <a href="ug_order_parmetis.html">Previous:&nbsp;
+Nested Dissection by ParMETIS</a>&nbsp; |&nbsp; <a href="https://www.sandia.gov/general/privacy-security/index.html">Privacy and Security</a>]
+</body>
+</html>

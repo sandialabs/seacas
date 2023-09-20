@@ -1,10 +1,11 @@
 name: CI Formatting
-on: [push, pull_request]
+on:
+  workflow_dispatch:
 
 jobs:
   trailing:
     name: Find Trailing Whitespace
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: harupy/find-trailing-whitespace@master

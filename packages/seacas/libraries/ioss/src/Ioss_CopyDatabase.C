@@ -1,4 +1,4 @@
-// Copyright(C) 2021, 2022 National Technology & Engineering Solutions
+// Copyright(C) 2021, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -24,18 +24,18 @@ namespace {
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank);
   std::vector<Ioss::Face> generate_boundary_faces(Ioss::Region                &region,
                                                   const Ioss::MeshCopyOptions &options);
-  void define_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
+  void define_model(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &data_pool,
                     const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
                     int rank);
-  void transfer_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &pool,
+  void transfer_model(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &pool,
                       const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
                       int rank);
   void define_transient_fields(Ioss::Region &region, Ioss::Region &output_region,
                                const Ioss::MeshCopyOptions &options, int rank);
-  void transfer_step(Ioss::Region &region, Ioss::Region &output_region, DataPool &pool, int istep,
-                     const Ioss::MeshCopyOptions &options, int rank);
+  void transfer_step(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &pool,
+                     int istep, const Ioss::MeshCopyOptions &options, int rank);
 
-  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, DataPool &pool,
+  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &pool,
                           const Ioss::MeshCopyOptions &options, int rank);
   void transfer_structuredblocks(Ioss::Region &region, Ioss::Region &output_region,
                                  const Ioss::MeshCopyOptions &options, int rank);
@@ -58,10 +58,6 @@ namespace {
   void transfer_commsets(Ioss::Region &region, Ioss::Region &output_region,
                          const Ioss::MeshCopyOptions &options, int rank);
 
-  template <typename T>
-  void transfer_fields(const std::vector<T *> &entities, Ioss::Region &output_region,
-                       Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options, int rank);
-
   void transfer_fields(const Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
                        Ioss::Field::RoleType role, const std::string &prefix = "");
 
@@ -69,23 +65,25 @@ namespace {
 
   template <typename T>
   void transfer_field_data(const std::vector<T *> &entities, Ioss::Region &output_region,
-                           DataPool &pool, Ioss::Field::RoleType role,
+                           Ioss::DataPool &pool, Ioss::Field::RoleType role,
                            const Ioss::MeshCopyOptions &options);
 
-  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge, DataPool &pool,
-                           Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
-                           const std::string &prefix = "");
+  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+                           Ioss::DataPool &pool, Ioss::Field::RoleType role,
+                           const Ioss::MeshCopyOptions &options, const std::string &prefix = "");
 
   void transfer_properties(const Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge);
 
   void transfer_qa_info(Ioss::Region &in, Ioss::Region &out);
 
   void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                                    DataPool &pool, const std::string &field_name,
+                                    Ioss::DataPool &pool, const std::string &field_name,
                                     const Ioss::MeshCopyOptions &options);
 
+#ifdef SEACAS_HAVE_MPI
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
+#endif
 
   template <typename T>
   std::pair<size_t, std::string>
@@ -163,7 +161,7 @@ void Ioss::transfer_assemblies(Ioss::Region &region, Ioss::Region &output_region
       // create a members list containing entities from input
       // database.  We need corresponding entities from output
       // database...
-      auto o_assem = new Ioss::Assembly(*assm);
+      auto *o_assem = new Ioss::Assembly(*assm);
       o_assem->remove_members();
 
       // Now, repopulate member list with corresponding entities from output database...
@@ -177,7 +175,7 @@ void Ioss::transfer_assemblies(Ioss::Region &region, Ioss::Region &output_region
       output_region.add(o_assem);
     }
 
-    if (options.verbose && rank == 0) {
+    if (options.output_summary && rank == 0) {
       fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n", "Assemblies",
                  fmt::group_digits(assem.size()));
     }
@@ -200,11 +198,11 @@ void Ioss::transfer_blobs(Ioss::Region &region, Ioss::Region &output_region,
       }
       size_t count = blob->entity_count();
       total_entities += count;
-      auto o_blob = new Ioss::Blob(*blob);
+      auto *o_blob = new Ioss::Blob(*blob);
       output_region.add(o_blob);
     }
 
-    if (options.verbose && rank == 0) {
+    if (options.output_summary && rank == 0) {
       fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}",
                  (*blobs.begin())->type_string() + "s", fmt::group_digits(blobs.size()));
       fmt::print(Ioss::DebugOut(), "\tLength of entity list = {:14}\n",
@@ -278,7 +276,7 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   // to the output region based on values in `options`
   std::vector<int> selected_steps = get_selected_steps(region, options);
 
-  int step_count = region.get_property("state_count").get_int();
+  int step_count = (int)region.get_property("state_count").get_int();
 #ifdef SEACAS_HAVE_MPI
   int min_step_count = dbi->util().global_minmax(step_count, Ioss::ParallelUtils::DO_MIN);
   int max_step_count = dbi->util().global_minmax(step_count, Ioss::ParallelUtils::DO_MAX);
@@ -305,7 +303,7 @@ void Ioss::copy_database(Ioss::Region &region, Ioss::Region &output_region,
   dbi->progress("END STATE_TRANSIENT (end) ... ");
   Ioss::Utils::clear(data_pool.data);
 
-  if (rank == 0) {
+  if (rank == 0 && options.output_summary) {
     fmt::print(std::cout, "\n\n Output Region summary for rank 0:");
     output_region.output_summary(std::cout);
   }
@@ -317,7 +315,7 @@ namespace {
     // This routine checks all steps of the input database and selects those which
     // meet the requirements specified in `options`.  The returned (1-based) vector will have a
     // value of `1` if the step is to be output and `0` if skipped.
-    int              step_count = region.get_property("state_count").get_int();
+    int              step_count = (int)region.get_property("state_count").get_int();
     std::vector<int> selected_steps(step_count + 1);
 
     // If user specified a list of times to transfer to output database,
@@ -365,6 +363,7 @@ namespace {
   {
     transfer_properties(input, output);
     transfer_fields(input, output, Ioss::Field::MESH);
+    transfer_fields(input, output, Ioss::Field::MAP);
     transfer_fields(input, output, Ioss::Field::ATTRIBUTE);
     transfer_fields(input, output, Ioss::Field::MESH_REDUCTION);
   }
@@ -383,8 +382,8 @@ namespace {
       }
 
       // Get vector of all boundary faces which will be output as the skin...
-      auto &faces = face_generator.faces("ALL");
-      for (auto &face : faces) {
+      const auto &faces = face_generator.faces("ALL");
+      for (const auto &face : faces) {
         if (face.elementCount_ == 1) {
           boundary.push_back(face);
         }
@@ -393,7 +392,7 @@ namespace {
     return boundary;
   }
 
-  void define_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
+  void define_model(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &data_pool,
                     const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
                     int rank)
   {
@@ -417,7 +416,7 @@ namespace {
     transfer_properties(&region, &output_region);
     transfer_qa_info(region, output_region);
 
-    if (rank == 0) {
+    if (rank == 0 && options.output_summary) {
       fmt::print(std::cout, "\n\n Input Region summary for rank 0:\n");
     }
     transfer_nodeblock(region, output_region, data_pool, options, rank);
@@ -449,14 +448,14 @@ namespace {
       // Get topology of the sideset faces. Using just block[0] since for what we are doing, doesn't
       // really matter.
       const auto &blocks    = region.get_element_blocks();
-      auto        topo      = blocks[0]->topology();
+      const auto *topo      = blocks[0]->topology();
       auto        elem_topo = topo->name();
       auto        face_topo = topo->boundary_type(0)->name();
 
-      auto ss = new Ioss::SideSet(output_region.get_database(), "boundary");
+      auto *ss = new Ioss::SideSet(output_region.get_database(), "boundary");
       output_region.add(ss);
-      auto sb = new Ioss::SideBlock(output_region.get_database(), "boundary", face_topo, elem_topo,
-                                    boundary.size());
+      auto *sb = new Ioss::SideBlock(output_region.get_database(), "boundary", face_topo, elem_topo,
+                                     boundary.size());
       ss->add(sb);
     }
 
@@ -477,7 +476,7 @@ namespace {
     dbi->progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
   }
 
-  void transfer_model(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
+  void transfer_model(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &data_pool,
                       const std::vector<Ioss::Face> &boundary, const Ioss::MeshCopyOptions &options,
                       int rank)
   {
@@ -499,6 +498,8 @@ namespace {
                           options);
       transfer_field_data(region.get_element_blocks(), output_region, data_pool,
                           Ioss::Field::ATTRIBUTE, options);
+      transfer_field_data(region.get_element_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                          options);
     }
 
     if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
@@ -506,6 +507,8 @@ namespace {
                           options);
       transfer_field_data(region.get_node_blocks(), output_region, data_pool,
                           Ioss::Field::ATTRIBUTE, options);
+      transfer_field_data(region.get_node_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                          options);
     }
 
     if (node_major) {
@@ -513,6 +516,8 @@ namespace {
                           options);
       transfer_field_data(region.get_element_blocks(), output_region, data_pool,
                           Ioss::Field::ATTRIBUTE, options);
+      transfer_field_data(region.get_element_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                          options);
     }
 
     // Structured Blocks -- Contain a NodeBlock that also needs its field data transferred...
@@ -552,10 +557,14 @@ namespace {
                         options);
     transfer_field_data(region.get_edge_blocks(), output_region, data_pool, Ioss::Field::ATTRIBUTE,
                         options);
+    transfer_field_data(region.get_edge_blocks(), output_region, data_pool, Ioss::Field::MAP,
+                        options);
 
     transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::MESH,
                         options);
     transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::ATTRIBUTE,
+                        options);
+    transfer_field_data(region.get_face_blocks(), output_region, data_pool, Ioss::Field::MAP,
                         options);
 
     transfer_field_data(region.get_nodesets(), output_region, data_pool, Ioss::Field::MESH,
@@ -624,7 +633,7 @@ namespace {
       if (options.define_geometry && options.boundary_sideset) {
         auto *ss = output_region.get_sideset("boundary");
         if (ss != nullptr) {
-          auto sb = ss->get_side_block("boundary");
+          auto *sb = ss->get_side_block("boundary");
           if (output_region.get_database()->int_byte_size_api() == 4) {
             output_boundary_sideset(sb, boundary, (int)0);
           }
@@ -652,7 +661,7 @@ namespace {
     dbi->progress("DEFINING TRANSIENT FIELDS ... ");
 
     if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), "\n Number of time steps on database = {}\n",
                    region.get_property("state_count").get_int());
       }
@@ -690,7 +699,7 @@ namespace {
       output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
     }
   }
-  void transfer_step(Ioss::Region &region, Ioss::Region &output_region, DataPool &data_pool,
+  void transfer_step(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &data_pool,
                      int istep, const Ioss::MeshCopyOptions &options, int rank)
   {
     double time  = region.get_state_time(istep);
@@ -786,7 +795,7 @@ namespace {
     }
   }
 
-  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, DataPool &pool,
+  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, Ioss::DataPool &pool,
                           const Ioss::MeshCopyOptions &options, int rank)
   {
     const auto &nbs = region.get_node_blocks();
@@ -797,7 +806,7 @@ namespace {
       }
       size_t num_nodes = inb->entity_count();
       size_t degree    = inb->get_property("component_degree").get_int();
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of Coordinates per Node = {:14}\n",
                    fmt::group_digits(degree));
         fmt::print(Ioss::DebugOut(), " Number of Nodes                = {:14}\n",
@@ -830,29 +839,8 @@ namespace {
   }
 
   template <typename T>
-  void transfer_fields(const std::vector<T *> &entities, Ioss::Region &output_region,
-                       Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options, int rank)
-  {
-    for (const auto &entity : entities) {
-      const std::string &name = entity->name();
-      if (options.debug && rank == 0) {
-        fmt::print(Ioss::DebugOut(), "{}, ", name);
-      }
-
-      // Find the corresponding output node_block...
-      Ioss::GroupingEntity *oeb = output_region.get_entity(name, entity->type());
-      if (oeb != nullptr) {
-        transfer_fields(entity, oeb, role);
-      }
-    }
-    if (options.debug && rank == 0) {
-      fmt::print(Ioss::DebugOut(), "\n");
-    }
-  }
-
-  template <typename T>
   void transfer_field_data(const std::vector<T *> &entities, Ioss::Region &output_region,
-                           DataPool &pool, Ioss::Field::RoleType role,
+                           Ioss::DataPool &pool, Ioss::Field::RoleType role,
                            const Ioss::MeshCopyOptions &options)
   {
     for (const auto &entity : entities) {
@@ -880,10 +868,10 @@ namespace {
         size_t count = iblock->entity_count();
         total_entities += count;
 
-        auto block = new T(*iblock);
+        auto *block = new T(*iblock);
         output_region.add(block);
       }
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
                    (*blocks.begin())->type_string() + "s", fmt::group_digits(blocks.size()));
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
@@ -906,7 +894,7 @@ namespace {
         // were read from the input mesh.  This is used in
         // testing to verify that we handle zone reordering
         // correctly.
-        for (int i = blocks.size() - 1; i >= 0; i--) {
+        for (int i = static_cast<int>(blocks.size()) - 1; i >= 0; i--) {
           const auto        &iblock = blocks[i];
           const std::string &name   = iblock->name();
           if (options.debug && rank == 0) {
@@ -915,7 +903,7 @@ namespace {
           size_t count = iblock->entity_count();
           total_entities += count;
 
-          auto block = iblock->clone(output_region.get_database());
+          auto *block = iblock->clone(output_region.get_database());
           output_region.add(block);
           transfer_mesh_info(iblock, block);
 
@@ -937,7 +925,7 @@ namespace {
           size_t count = iblock->entity_count();
           total_entities += count;
 
-          auto block = iblock->clone(output_region.get_database());
+          auto *block = iblock->clone(output_region.get_database());
           output_region.add(block);
           transfer_mesh_info(iblock, block);
 
@@ -951,7 +939,7 @@ namespace {
         }
       }
 
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
                    (*blocks.begin())->type_string() + "s", fmt::group_digits(blocks.size()));
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
@@ -993,7 +981,7 @@ namespace {
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DebugOut(), "{}, ", name);
       }
-      auto surf = new Ioss::SideSet(*ss);
+      auto *surf = new Ioss::SideSet(*ss);
       output_region.add(surf);
 
       // Fix up the optional 'owner_block' in copied SideBlocks...
@@ -1014,7 +1002,7 @@ namespace {
       }
     }
 
-    if (options.verbose && rank == 0 && !fss.empty()) {
+    if (options.output_summary && rank == 0 && !fss.empty()) {
       fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
                  (*fss.begin())->type_string() + "s", fmt::group_digits(fss.size()));
     }
@@ -1036,11 +1024,11 @@ namespace {
         }
         size_t count = set->entity_count();
         total_entities += count;
-        auto o_set = new T(*set);
+        auto *o_set = new T(*set);
         output_region.add(o_set);
       }
 
-      if (options.verbose && rank == 0) {
+      if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}",
                    (*sets.begin())->type_string() + "s", fmt::group_digits(sets.size()));
         fmt::print(Ioss::DebugOut(), "\tLength of entity list = {:14}\n",
@@ -1089,7 +1077,7 @@ namespace {
         const std::string &name = ics->name();
         fmt::print(Ioss::DebugOut(), "{}, ", name);
       }
-      auto cs = new Ioss::CommSet(*ics);
+      auto *cs = new Ioss::CommSet(*ics);
       output_region.add(cs);
     }
     if (options.debug && rank == 0) {
@@ -1116,9 +1104,9 @@ namespace {
     }
   }
 
-  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge, DataPool &pool,
-                           Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
-                           const std::string &prefix)
+  void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
+                           Ioss::DataPool &pool, Ioss::Field::RoleType role,
+                           const Ioss::MeshCopyOptions &options, const std::string &prefix)
   {
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
@@ -1152,7 +1140,7 @@ namespace {
   }
 
   void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                                    DataPool &pool, const std::string &field_name,
+                                    Ioss::DataPool &pool, const std::string &field_name,
                                     const Ioss::MeshCopyOptions &options)
   {
 
@@ -1423,11 +1411,12 @@ namespace {
 
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank)
   {
-    if (options.verbose && rank == 0) {
+    if (options.output_summary && rank == 0) {
       fmt::print(Ioss::DebugOut(), "\r\tTime step {:5d} at time {:10.5e}", istep, time);
     }
   }
 
+#ifdef SEACAS_HAVE_MPI
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT /*dummy*/)
   {
@@ -1456,18 +1445,19 @@ namespace {
       }
     }
   }
+#endif
 
   void add_proc_id(Ioss::Region &region, int rank)
   {
     region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
-    auto &sblocks = region.get_structured_blocks();
-    for (auto &sb : sblocks) {
+    const auto &sblocks = region.get_structured_blocks();
+    for (const auto &sb : sblocks) {
       sb->field_add(
           Ioss::Field("processor_id", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT));
     }
 
-    auto &eblocks = region.get_element_blocks();
-    for (auto &eb : eblocks) {
+    const auto &eblocks = region.get_element_blocks();
+    for (const auto &eb : eblocks) {
       eb->field_add(
           Ioss::Field("processor_id", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT));
     }
@@ -1478,12 +1468,12 @@ namespace {
     auto step = region.add_state(0.0);
     region.begin_state(step);
 
-    for (auto &sb : sblocks) {
+    for (const auto &sb : sblocks) {
       std::vector<double> proc_id(sb->entity_count(), rank);
       sb->put_field_data("processor_id", proc_id);
     }
 
-    for (auto &eb : eblocks) {
+    for (const auto &eb : eblocks) {
       std::vector<double> proc_id(eb->entity_count(), rank);
       eb->put_field_data("processor_id", proc_id);
     }

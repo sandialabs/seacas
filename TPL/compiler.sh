@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
+COMPILER="${COMPILER:-gnu}"
 MPI="${MPI:-NO}"
+if [ "$COMPILER" == "mpi" ]
+then
+    MPI="YES"
+fi
+
 if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
@@ -10,7 +16,6 @@ then
   export CC=mpicc
   export CXX=mpicxx
 else
-  COMPILER="${COMPILER:-gnu}"
   if [ "$COMPILER" == "gnu" ]
   then
       export CC=gcc
@@ -54,4 +59,10 @@ else
       export CC=xlc
       export CXX=xlc
   fi
+  if [ "$COMPILER" == "nvidia" ]
+  then
+      export CXX="nvcc -x c++"
+      expoort CC=nvcc
+  fi
+
 fi

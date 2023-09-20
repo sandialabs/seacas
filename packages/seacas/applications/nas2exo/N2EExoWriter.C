@@ -81,9 +81,9 @@ namespace ExoModules {
     this->writtenTets   = 0;
     this->writtenHexes  = 0;
 
-    result &= this->sections.size() > 0;
-    result &= this->gridList.size() >= 4;   // One Tet???
-    result &= this->elementList.size() > 0; // At least one element
+    result &= !this->sections.empty();
+    result &= this->gridList.size() >= 4; // One Tet???
+    result &= !this->elementList.empty(); // At least one element
 
     result &= this->writeFileParams();
     result &= this->writeCoords();
@@ -97,23 +97,22 @@ namespace ExoModules {
     bool result{true};
 
     // Now we write the nodes
-    size_t  num_nodes = this->gridList.size();
-    double *x         = new double[num_nodes];
-    double *y         = new double[num_nodes];
-    double *z         = new double[num_nodes];
+    size_t              num_nodes = this->gridList.size();
+    std::vector<double> x;
+    std::vector<double> y;
+    std::vector<double> z;
+    x.reserve(num_nodes);
+    y.reserve(num_nodes);
+    z.reserve(num_nodes);
     for (size_t i = 0; i < num_nodes; i++) {
 
       N2EPoint3D crd = std::get<1>(this->gridList[i]);
-      x[i]           = crd.x[0];
-      y[i]           = crd.x[1];
-      z[i]           = crd.x[2];
+      x.push_back(crd.x[0]);
+      y.push_back(crd.x[1]);
+      z.push_back(crd.x[2]);
     }
 
-    int ret = ex_put_coord(this->exoFileID, x, y, z);
-
-    delete[] x;
-    delete[] y;
-    delete[] z;
+    int ret = ex_put_coord(this->exoFileID, x.data(), y.data(), z.data());
 
     if (ret != 0) {
       std::cerr << "Problem writing node coordinates in N2EExoWriter::writeFile(). punching out.\n";
@@ -154,18 +153,18 @@ namespace ExoModules {
     for (const sectionType &sect : this->sections) {
 
       std::vector<elementType> thisBlock;
-      int64_t                  block = (int)std::get<0>(sect);
+      auto                     block = std::get<0>(sect);
 
       int retvalue{0};
 
       for (const elementType &elem : this->elementList) {
 
-        if ((int)std::get<1>(elem) == block) {
+        if (std::get<1>(elem) == block) {
           thisBlock.emplace_back(elem);
         }
       }
 
-      int64_t nodes_per_elem = (int)std::get<2>(thisBlock[0]);
+      auto nodes_per_elem = std::get<2>(thisBlock[0]);
 
       int n = nodes_per_elem == 4 ? 0 : 1;
 
@@ -192,8 +191,8 @@ namespace ExoModules {
         numNodesCopied += nodes_per_elem;
       }
 
-      retvalue =
-          ex_put_conn(this->exoFileID, thisElType.elementType, block, elemCon.data(), NULL, NULL);
+      retvalue = ex_put_conn(this->exoFileID, thisElType.elementType, block, elemCon.data(),
+                             nullptr, nullptr);
 
       switch (thisElType.numNodesPerElem) {
 

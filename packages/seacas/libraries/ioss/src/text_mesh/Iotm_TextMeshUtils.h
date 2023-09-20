@@ -1,8 +1,10 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 
 #pragma once
+
+#include "iotm_export.h"
 
 // #######################  Start Clang Header Tool Managed Headers ########################
 // clang-format off
@@ -37,7 +39,7 @@ namespace Iotm {
   namespace text_mesh {
     using ErrorHandler = std::function<void(const std::ostringstream &)>;
 
-    class TextMeshLexer
+    class IOTM_EXPORT TextMeshLexer
     {
     public:
       TextMeshLexer() : m_currentIndex(0), m_token(""), m_isNumber(false) {}
@@ -69,7 +71,7 @@ namespace Iotm {
 
       void get_newline() { read_next_token(); }
 
-      bool has_token() const { return m_token != ""; }
+      bool has_token() const { return !m_token.empty(); }
       bool has_newline() const { return m_token == "\n"; }
       bool has_number() const { return has_token() && m_isNumber; }
       bool has_string() const { return has_token() && !has_number() && !has_newline(); }
@@ -156,7 +158,7 @@ namespace Iotm {
       {
       }
 
-      TextMeshOptionParser(TextMeshData<EntityId, Topology> &data)
+      explicit TextMeshOptionParser(TextMeshData<EntityId, Topology> &data)
           : m_parsedOptionMask(PARSED_NONE), m_parsedDimension(INVALID_DIMENSION),
             m_constructorEnforcedDimension(INVALID_DIMENSION), m_data(data)
       {

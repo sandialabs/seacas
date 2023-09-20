@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -31,15 +31,14 @@
 namespace Iotm {
   void error_handler(const std::ostringstream &message) { throw std::logic_error((message).str()); }
 
-  TextMesh::TextMesh(int proc_count, int my_proc)
-      : m_processorCount(proc_count), m_myProcessor(my_proc)
+  TextMesh::TextMesh(int, int my_proc) : m_myProcessor(my_proc)
   {
     m_errorHandler = [](const std::ostringstream &errmsg) { error_handler(errmsg); };
     initialize();
   }
 
-  TextMesh::TextMesh(const std::string &parameters, int proc_count, int my_proc)
-      : m_processorCount(proc_count), m_myProcessor(my_proc)
+  TextMesh::TextMesh(const std::string &parameters, IOSS_MAYBE_UNUSED int proc_count, int my_proc)
+      : m_myProcessor(my_proc)
   {
     m_errorHandler = [](const std::ostringstream &errmsg) { error_handler(errmsg); };
 
@@ -149,8 +148,8 @@ namespace Iotm {
   {
     int64_t count = 0;
 
-    for (auto iter = m_blockPartition.begin(); iter != m_blockPartition.end(); iter++) {
-      count += iter->second.elemIds.size();
+    for (const auto &part : m_blockPartition) {
+      count += part.second.elemIds.size();
     }
 
     return count;
@@ -247,6 +246,9 @@ namespace Iotm {
   class NodeCommunicationMap
   {
   public:
+    NodeCommunicationMap()                             = delete;
+    NodeCommunicationMap(const NodeCommunicationMap &) = delete;
+
     NodeCommunicationMap(int myProc, Ioss::Int64Vector &map, std::vector<int> &processors)
         : m_myProcessor(myProc), m_nodeMap(map), m_processorMap(processors)
     {
@@ -270,9 +272,6 @@ namespace Iotm {
     }
 
   private:
-    NodeCommunicationMap();
-    NodeCommunicationMap(const NodeCommunicationMap &);
-
     void add_comm_map_pair(int64_t id, int proc)
     {
       m_nodeMap[m_fillIndex]      = id;

@@ -22,7 +22,7 @@
 # ************************************************************************
 #
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016, 2021 Sandia Corporation
+#                    Copyright 2016, 2021, 2022 Sandia Corporation
 #
 # Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 # the U.S. Government retains certain rights in this software.
@@ -367,11 +367,17 @@ else()
   if ( NOT HDF5_NO_HDF5_CMAKE )
 
     # Call find package only looking for CMake config files
+  if (WIN32) 
+    find_package(HDF5
+      HINTS ${HDF5_ROOT}/lib/cmake
+      QUIET
+      NO_MODULE)
+  else()
     find_package(HDF5
       HINTS ${HDF5_ROOT}/cmake/hdf5
       QUIET
       NO_MODULE)
-
+  endif()
     # If located a HDF5 configuration file
     if (HDF5_FOUND)
 
@@ -462,7 +468,7 @@ else()
 
     # Search for the high-level (HL) library
     find_library(_HDF5_HL_LIBRARY
-                 NAMES hdf5_hl
+                 NAMES hdf5_hl hdf5_serial_hl
                  HINTS ${_hdf5_LIBRARY_SEARCH_DIRS}
                  ${_hdf5_FIND_OPTIONS})
 

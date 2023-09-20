@@ -2,28 +2,30 @@ name: Intel OneAPI build
 
 on:
   push:
-    branches-ignore:
-      - 'coverity'
+    branches:
+    - master
   pull_request:
+    branches:
+    - master
 
 jobs:
   build-deps:
 
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         compiler: [ intel, mpi ]
-        hdf5: [ V112 ]
-        netcdf: [ 4.8.1 ]
-        cgns: [ 4.2.0 ]
+        hdf5: [ V114 ]
+        netcdf: [ 4.9.2 ]
+        cgns: [ 4.3.0 ]
 
     defaults:
       run:
         shell: bash --noprofile --norc {0}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: setup repo
       run: |
         wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
@@ -33,13 +35,12 @@ jobs:
         sudo apt-get update
     - name: install
       run: |
+        sudo apt-get install -y intel-basekit
         sudo apt-get install -y intel-oneapi-common-vars
-        sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic 
+        sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
         sudo apt-get install -y intel-oneapi-compiler-fortran
-        sudo apt-get install -y intel-oneapi-mpi 
-        sudo apt-get install -y intel-oneapi-mpi-devel 
-        sudo apt-get install -y intel-oneapi-mkl 
-        sudo apt-get install -y ninja-build 
+        sudo apt-get install -y intel-oneapi-mpi
+        sudo apt-get install -y intel-oneapi-mpi-devel
 
     - name: Install System dependencies
       shell: bash -l {0}
@@ -50,7 +51,7 @@ jobs:
       ###
     - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
       id: cache-TPL
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         key: TPL-v5intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
@@ -66,19 +67,19 @@ jobs:
         ls ${HOME} && ls ${HOME}/environments && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} && ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
 
   seacas-build:
-  
+
     needs: build-deps
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         compiler: [ intel, mpi ]
-        hdf5: [ V112 ]
-        netcdf: [ 4.8.1 ]
-        cgns: [ 4.2.0 ]
+        hdf5: [ V114 ]
+        netcdf: [ 4.9.2 ]
+        cgns: [ 4.3.0 ]
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: setup repo
         run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
@@ -88,13 +89,12 @@ jobs:
           sudo apt-get update
       - name: install
         run: |
+          sudo apt-get install -y intel-basekit
           sudo apt-get install -y intel-oneapi-common-vars
-          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic 
+          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
           sudo apt-get install -y intel-oneapi-compiler-fortran
-          sudo apt-get install -y intel-oneapi-mpi 
-          sudo apt-get install -y intel-oneapi-mpi-devel 
-          sudo apt-get install -y intel-oneapi-mkl 
-          sudo apt-get install -y ninja-build 
+          sudo apt-get install -y intel-oneapi-mpi
+          sudo apt-get install -y intel-oneapi-mpi-devel
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -102,7 +102,7 @@ jobs:
 
       - name: Fetch TPL Cache
         id: cache-TPL
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
           key: TPL-v5intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
@@ -114,6 +114,13 @@ jobs:
 ###
 # Configure and build
 ###
+      - name: List directory
+        shell: bash -l {0}
+        run: |
+          echo $HOME
+          ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/lib
+          ls ${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}/include
+
       - name: Run cmake
         shell: bash -l {0}
         run: |
@@ -124,17 +131,17 @@ jobs:
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
-      - name: Build 
+      - name: Build
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4
         if: ${{ success() }}
 
       - name: Install
         shell: bash -l {0}
         run: |
-          cd build 
+          cd build
           make -j 4 install
         if: ${{ success() }}
 

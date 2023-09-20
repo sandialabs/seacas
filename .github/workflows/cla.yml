@@ -1,7 +1,5 @@
 name: "CLA Assistant"
 on:
-  issue_comment:
-    types: [created]
   pull_request_target:
     types: [opened,closed,synchronize]
 
@@ -19,7 +17,7 @@ jobs:
           PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         with:
           path-to-signatures: 'signatures/version1/cla.json'
-          path-to-document: 'https://github.com/gsjaardema/seacas/blob/master/SEACAS-CLA.md'
+          path-to-document: 'https://github.com/sandialabs/seacas/blob/master/SEACAS-CLA.md'
           # branch should not be protected
           branch: 'master'
           allowlist: user1,bot*,*@sandia.gov

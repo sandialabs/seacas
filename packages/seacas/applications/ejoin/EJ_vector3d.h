@@ -1,11 +1,9 @@
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
-
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
+#pragma once
 
 class vector3d
 {
@@ -49,7 +47,7 @@ vector3d operator-(const vector3d &lhs, const vector3d &rhs);
 //----------------------------------------------------------------------------
 inline vector3d vector3d::cross(const vector3d &from) const
 {
-  return vector3d(y * from.z - z * from.y, z * from.x - x * from.z, x * from.y - y * from.x);
+  return {y * from.z - z * from.y, z * from.x - x * from.z, x * from.y - y * from.x};
 }
 //----------------------------------------------------------------------------
 inline vector3d &vector3d::operator+=(const vector3d &from)
@@ -93,5 +91,3 @@ inline vector3d &vector3d::operator-=(double scalar)
   z -= scalar;
   return *this;
 }
-
-#endif
