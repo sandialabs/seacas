@@ -10,6 +10,7 @@
 #include <EP_Internals.h>    // for Internals, Redefine
 
 #include <algorithm> // for sort
+#include <array>
 #include <copy_string_cpp.h>
 #include <cstddef> // for size_t
 #include <cstdint> // for int64_t
@@ -17,9 +18,8 @@
 #include <cstring> // for strlen, memset
 #include <fmt/ostream.h>
 #include <smart_assert.h> // for SMART_ASSERT
-
-#include <string> // for string, basic_string
-#include <vector> // for vector
+#include <string>         // for string, basic_string
+#include <vector>         // for vector
 
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
