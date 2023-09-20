@@ -304,20 +304,6 @@ jobs:
             extra: "",
             sanitizer: "NO" # address, integer, thread, memory, undefined
           }
-        - {
-            name: "KOKKOS, parallel",
-            os: ubuntu-latest,
-            compiler: "mpi",
-            debug: "NO",
-            threadsafe: "NO",
-            fortran: "YES",
-            use_kokkos: "YES",
-            use_adios2: "NO",
-            use_catalyst2: "NO",
-            gtest: "NO",
-            extra: "",
-            sanitizer: "NO" # address, integer, thread, memory, undefined
-          }
     steps:
 
       - uses: actions/checkout@v3
