@@ -33,7 +33,7 @@ namespace Ioexnl {
     std::string      contains_string() const override { return "Element"; }
     Ioss::EntityType type() const override { return Ioss::SUPERELEMENT; }
 
-    // Handle implicit properties -- These are calcuated from data stored
+    // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
     Ioss::Property get_implicit_property(const std::string &the_name) const override;

@@ -910,7 +910,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
         generate_graph(problem, mesh, graph, weight, sphere);
 
         /*
-         * adjacancy graph sent to identify_mechanisms must be 1 based
+         * adjacency graph sent to identify_mechanisms must be 1 based
          *
          */
 

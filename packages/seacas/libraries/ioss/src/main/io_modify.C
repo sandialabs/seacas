@@ -941,7 +941,7 @@ namespace {
         else {
           fmt::print(stderr, fg(fmt::color::red),
                      "ERROR: Requested Assembly '{}' was not created during this execution.  Not "
-                     "deleteable.\n",
+                     "deletable.\n",
                      tokens[1]);
           return false;
         }

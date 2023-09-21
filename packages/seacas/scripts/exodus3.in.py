@@ -125,7 +125,7 @@ def getExodusVersion():
 
 def _parse_exodus_version(version_string):
     if version_string:
-        assert version_string.startswith("#define EXODUS_VERSION "), "Received a incorrectly formated verstion string. Please check the CMakeLists.txt"
+        assert version_string.startswith("#define EXODUS_VERSION "), "Received a incorrectly formatted verstion string. Please check the CMakeLists.txt"
         return int(version_string.strip().split()[-1].strip('"').replace('.', ''))
     else:
         return 0
@@ -1592,7 +1592,7 @@ class exodus:
     def get_num_map(self, mapType, idx):
         """
         get user-defined map of exodus element/node/edge/face index to user- or
-        application- defined element/node/edge/face values. Map values are arbitary integers
+        application- defined element/node/edge/face values. Map values are arbitrary integers
 
         >>> elem_num_map = exo.get_num_map('EX_ELEM_MAP', 1)
 
@@ -1624,7 +1624,7 @@ class exodus:
     def put_num_map(self, mapType, idx, num_map):
         """
         put user-defined map of exodus element/node/edge/face index to user- or
-        application- defined element/node/edge/face values. Map values are arbitary integers
+        application- defined element/node/edge/face values. Map values are arbitrary integers
 
 
         Parameters

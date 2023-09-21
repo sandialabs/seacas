@@ -1,4 +1,4 @@
-C    Copyright(C) 1999-2020 National Technology & Engineering Solutions
+C    Copyright(C) 1999-2020, 2023 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
 C
@@ -228,7 +228,7 @@ C                  --Make sure values for undefined elements are zero
           RETURN
         END IF
 
-C        delete corrdinate arrays - no longer needed
+C        delete coordinate arrays - no longer needed
         IF (ISZOOM) THEN
           CALL MDDEL ('XN')
           CALL MDDEL ('YN')

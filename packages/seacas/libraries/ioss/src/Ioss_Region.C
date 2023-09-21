@@ -2399,7 +2399,7 @@ namespace Ioss {
     IOSS_ERROR(errmsg);
   }
 
-  /** \brief Get an implicit property -- These are calcuated from data stored
+  /** \brief Get an implicit property -- These are calculated from data stored
    *         in the grouping entity instead of having an explicit value assigned.
    *
    *  An example would be 'element_block_count' for a region.

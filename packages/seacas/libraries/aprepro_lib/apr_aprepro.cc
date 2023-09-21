@@ -418,7 +418,7 @@ namespace SEAMS {
     // it returns the same type which means that the "parser_type" is
     // the same.  If we have a function, see if it has already been
     // defined and if so, check that the parser_type matches and then
-    // retrn that pointer instead of creating a new symrec.
+    // return that pointer instead of creating a new symrec.
 
     if (is_function) {
       symrec *ptr = getsym(sym_name);

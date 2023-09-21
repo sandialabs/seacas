@@ -111,7 +111,7 @@ namespace Ioss {
       }
     }
 
-    // NOTE: This code previously checked for existance of filesystem include, but
+    // NOTE: This code previously checked for existence of filesystem include, but
     //       gcc-8.X has the include but needs a library, also intel and clang
     //       pretend to be gcc, so macro to test for usability of filesystem
     //       was complicated and we can easily get by with the following code.

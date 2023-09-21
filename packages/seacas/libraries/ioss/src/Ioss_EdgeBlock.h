@@ -39,7 +39,7 @@ namespace Ioss {
     std::string contains_string() const override { return "Edge"; }
     EntityType  type() const override { return EDGEBLOCK; }
 
-    // Handle implicit properties -- These are calcuated from data stored
+    // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'edge_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override;

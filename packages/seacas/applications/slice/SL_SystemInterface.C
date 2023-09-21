@@ -298,7 +298,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
       }
       else {
         fmt::print(stderr,
-                   "\nThe 'file' decompositon method was specified, but no element "
+                   "\nThe 'file' decomposition method was specified, but no element "
                    "to processor mapping file was specified via the -decomposition_file option\n");
         return false;
       }

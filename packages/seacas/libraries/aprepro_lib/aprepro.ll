@@ -217,7 +217,7 @@ integer {D}+({E})?
     BEGIN(LOOP);
     aprepro.isCollectingLoop = true;
     if (aprepro.ap_options.debugging) {
-      fmt::print(stderr, "DEBUG LOOP: iteration count = {}, loop_index variable = {}, intial value = {}, increment = {}\n",
+      fmt::print(stderr, "DEBUG LOOP: iteration count = {}, loop_index variable = {}, initial value = {}, increment = {}\n",
 		 loop_iterations, sym_name, init, new_file.loop_increment);
     }
   }

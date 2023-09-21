@@ -261,7 +261,7 @@ namespace SEAMS {
     // needs to be sent through Aprepro again later.
     bool doIncludeSubstitution{true};
 
-    // Flag to inidicate whether Aprepro is in the middle of collecting lines for a
+    // Flag to indicate whether Aprepro is in the middle of collecting lines for a
     // loop.
     bool isCollectingLoop{false};
 

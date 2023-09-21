@@ -4084,7 +4084,7 @@ static void xcqlna(anything **params, anything **surf_list)
   /* line type */
   *(int *)params[3] = cur_state->line_type;
 
-  /* line width spcification mode - only support scaled */
+  /* line width specification mode - only support scaled */
   *(int *)params[4] = CSCA;
 
   /* line width */
