@@ -326,7 +326,9 @@ typedef struct ex_field
   ex_field_type  type[EX_MAX_FIELD_NESTING];        /* ex_field_type of each nested field */
   int            cardinality[EX_MAX_FIELD_NESTING]; /* 0 to calculate based on type */
   char           component_separator[EX_MAX_FIELD_NESTING +
-                           1]; /* empty defaults to '_'; +1 so can be a string... */
+                           1];    /* empty defaults to '_'; +1 so can be a string... */
+  char           suffices[EX_MAX_NAME + 1]; /* Optional comma-separated list of suffices if type is
+                                               EX_FIELD_TYPE_USER_DEFINED */
 } ex_field;
 
 typedef struct ex_basis

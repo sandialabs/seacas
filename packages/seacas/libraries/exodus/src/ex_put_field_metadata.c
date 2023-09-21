@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2022 National Technology & Engineering Solutions
+ * Copyright(C) 2022, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -26,9 +26,6 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   int  status;
   char errmsg[MAX_ERR_LENGTH];
 
-  char       attribute_name[NC_MAX_NAME + 1];
-  static int count = 0;
-  count++;
   fprintf(stderr, "Field '%s' of type '%s' with separator '%s' on block %lld\n", field.name,
           ex_field_type_enum_to_string(field.type[0]), field.component_separator, field.entity_id);
 
@@ -45,6 +42,7 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   }
 
   static char *field_template = "Field@%s@%s";
+  char         attribute_name[NC_MAX_NAME + 1];
   sprintf(attribute_name, field_template, field.name, "type");
   if ((status = ex_put_integer_attribute(exoid, field.entity_type, field.entity_id, attribute_name,
                                          field.nesting, field.type)) != EX_NOERR) {
@@ -96,12 +94,11 @@ int ex__put_basis_attribute(int exoid, const char *basis_name, const char *type,
                             ex_entity_type entity_type, ex_entity_id id, ex_type value_type,
                             int cardinality, const void *basis_entry)
 {
-  char         attribute_name[NC_MAX_NAME + 1];
-  static char *basis_template = "Basis@%s";
-
   if (basis_entry != NULL) {
+    static char *basis_template = "Basis@%s";
+    char         attribute_name[NC_MAX_NAME + 1];
     sprintf(attribute_name, basis_template, type);
-    int status;
+    int status = EX_NOERR;
     if (value_type == EX_INTEGER) {
       status = ex_put_integer_attribute(exoid, entity_type, id, attribute_name, cardinality,
                                         basis_entry);

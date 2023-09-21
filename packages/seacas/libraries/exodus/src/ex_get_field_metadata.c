@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -28,24 +28,25 @@ static void ex__field_initialize(ex_field *field)
     field->component_separator[i] = '_';
   }
   field->component_separator[EX_MAX_FIELD_NESTING] = '\0';
+  field->suffices[0]                               = '\0';
 }
 
-static bool ex__is_field_metadata_attribute(char *name)
+static const char *ex__get_field_metadata_attribute(char *name)
 {
   /*
    * Each field attribute metadata attribute consists of 2 or more attributes.
-   * A mandatory attribute is of the form "Field@{name}@type".  We can therefore
-   * check whether the name ends with "@type" and increment count if found...
+   * Return the string corresponding to {type} in an attribute of the form "Field@{name}@{type}".
    */
 
   if (strncmp(name, "Field@", 6) == 0) {
     /* Return true if the passed in string ends with "@type" */
     char *suffix = strrchr(name, '@');
     if (suffix != NULL) {
-      return (strcmp(suffix, "@type") == 0);
+      suffix++;
+      return suffix;
     }
   }
-  return (false);
+  return NULL;
 }
 
 static const char *ex__get_field_metadata_name(char *attrib)
@@ -62,19 +63,6 @@ static const char *ex__get_field_metadata_name(char *attrib)
     name[i] = attrib[i + 6];
   }
   return name;
-}
-
-static const char *ex__get_field_metadata_type(char *attrib)
-{
-  /*
-   * PRECONDITION: `attrib` is a field metadata attribute of the form
-   * "Field@{name}@{type}"
-   *
-   * Returns pointer to `{type}` portion
-   */
-  char *begin = strrchr(attrib, '@');
-  assert(begin != NULL);
-  return ++begin;
 }
 
 static int ex__get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id, int *varid)
@@ -138,7 +126,8 @@ int ex_get_field_metadata_count(int exoid, ex_entity_type obj_type, ex_entity_id
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
-    if (ex__is_field_metadata_attribute(name)) {
+    const char *type = ex__get_field_metadata_attribute(name);
+    if (type != NULL && strcmp("type", type) == 0) {
       count++;
     }
   }
@@ -174,7 +163,8 @@ int ex_get_field_metadata(int exoid, ex_field *field)
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    if (ex__is_field_metadata_attribute(attr_name)) {
+    const char *fld_type = ex__get_field_metadata_attribute(attr_name);
+    if (fld_type != NULL) {
       /* Get the field name.  We know that the `name` is of the form "Field@{name}@{item}" */
       const char *fld_name = ex__get_field_metadata_name(attr_name);
 
@@ -197,12 +187,19 @@ int ex_get_field_metadata(int exoid, ex_field *field)
         EX_FUNC_LEAVE(EX_FATAL);
       }
 
-      const char *fld_type = ex__get_field_metadata_type(attr_name);
-
       if (strcmp(fld_type, "type") == 0) {
         status = nc_get_att(exoid, varid, attr_name, field[count].type);
         if (field[count].nesting == 0) {
           field[count].nesting = val_count;
+        }
+        if (field[count].type[0] == EX_FIELD_TYPE_USER_DEFINED && field[count].nesting != 1) {
+          char errmsg[MAX_ERR_LENGTH];
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: Invalid nesting for field %s on %s with id %" PRId64
+                   ". Must be 1 for user-defined field type.\n",
+                   field[count].name, ex_name_of_object(field->entity_type), field->entity_id);
+          ex_err_fn(exoid, __func__, errmsg, status);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       }
       else if (strcmp(fld_type, "separator") == 0) {
@@ -216,6 +213,9 @@ int ex_get_field_metadata(int exoid, ex_field *field)
         if (field[count].nesting == 0) {
           field[count].nesting = val_count;
         }
+      }
+      else if (strcmp(fld_type, "suffices") == 0) {
+        status = nc_get_att(exoid, varid, attr_name, field[count].suffices);
       }
       else {
         char errmsg[MAX_ERR_LENGTH];
@@ -308,29 +308,37 @@ int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id en
     return EX_FATAL;
   }
   basis->cardinality = cardinality[0];
-  fprintf(stderr, "Basis is named '%s' with cardinality %d\n", basis->name, basis->cardinality);
+  fprintf(stderr, "Basis is named '%s' with cardinality %d on %s with id %" PRId64 ".\n",
+          basis->name, basis->cardinality, ex_name_of_object(entity_type), entity_id);
 
   /* Now, for each non-NULL parameter of `basis`, query the data... */
   if (basis->subc_dim != NULL) {
     status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_dim);
   }
-  if (basis->subc_ordinal != NULL) {
+  if (status == NC_NOERR && basis->subc_ordinal != NULL) {
     status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_ordinal);
   }
-  if (basis->subc_dof_ordinal != NULL) {
+  if (status == NC_NOERR && basis->subc_dof_ordinal != NULL) {
     status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_dof_ordinal);
   }
-  if (basis->subc_num_dof != NULL) {
+  if (status == NC_NOERR && basis->subc_num_dof != NULL) {
     status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_num_dof);
   }
-  if (basis->xi != NULL) {
+  if (status == NC_NOERR && basis->xi != NULL) {
     status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->xi);
   }
-  if (basis->eta != NULL) {
+  if (status == NC_NOERR && basis->eta != NULL) {
     status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->eta);
   }
-  if (basis->zeta != NULL) {
+  if (status == NC_NOERR && basis->zeta != NULL) {
     status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->zeta);
+  }
+  if (status != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to read field Basis information on field %s on %s with id %" PRId64 ".",
+             basis->name, ex_name_of_object(entity_type), entity_id);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    return EX_FATAL;
   }
 
   return EX_NOERR;
