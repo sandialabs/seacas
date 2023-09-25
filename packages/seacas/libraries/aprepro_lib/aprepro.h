@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 
+#include "apr_symrec.h"
+
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
 #include <io.h>
@@ -29,8 +31,6 @@
 namespace SEAMS {
 
   struct Symtable;
-  struct symrec;
-  struct array;
 
   /* Global options */
   struct aprepro_options

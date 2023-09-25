@@ -7,7 +7,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "apr_symrec.h"
 #include "aprepro.h"
 
 // This function is used below in the example showing how an
