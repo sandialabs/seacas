@@ -5,7 +5,6 @@
 // See packages/seacas/LICENSE for details
 
 #include "apr_scanner.h" // for Scanner
-#include "apr_symrec.h"
 #include "apr_util.h"
 #include "aprepro.h"        // for Aprepro, symrec, file_rec, etc
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
@@ -35,7 +34,7 @@
 #endif
 
 namespace {
-  const std::string version_string{"6.20 (2023/08/24)"};
+  const std::string version_string{"6.21 (2023/09/25)"};
 
   void output_copyright();
 
