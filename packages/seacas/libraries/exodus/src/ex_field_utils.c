@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -9,8 +9,18 @@
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include <assert.h>
+#include <math.h>
 
 #define SIZE(X) sizeof(X) / sizeof(X[0])
+
+static int number_width(const size_t number)
+{
+  if (number == 0) {
+    return 1;
+  }
+  int width = (int)floor(log10(number)) + 1;
+  return width;
+}
 
 static void verify_valid_component(int component, size_t cardinality, size_t suffix_size)
 {
@@ -18,7 +28,38 @@ static void verify_valid_component(int component, size_t cardinality, size_t suf
   assert(component - 1 < suffix_size);
 }
 
-const char *ex_field_component_name(ex_field_type field_type, int component)
+const char *ex_component_field_namefix(ex_field *field, int component[EX_MAX_FIELD_NESTING])
+{
+  // Return the name of the field corresponding to the specified 1-based component(s)
+  static char field_name[EX_MAX_NAME];
+  const char *suffices[EX_MAX_FIELD_NESTING] = {NULL};
+  for (int i = 0; i < field->nesting; i++) {
+    suffices[i] = ex_field_component_suffix(field, i, component[i]);
+  }
+
+  switch (field->nesting) {
+  case 1:
+    sprintf(field_name, "%s%c%s", field->name, field->component_separator[0], suffices[0]);
+    break;
+  case 2:
+    sprintf(field_name, "%s%c%s%c%s", field->name, field->component_separator[0], suffices[0],
+            field->component_separator[1], suffices[1]);
+    break;
+  case 3:
+    sprintf(field_name, "%s%c%s%c%s%c%s", field->name, field->component_separator[0], suffices[0],
+            field->component_separator[1], suffices[1], field->component_separator[2], suffices[2]);
+    break;
+  case 4:
+    sprintf(field_name, "%s%c%s%c%s%c%s%c%s", field->name, field->component_separator[0],
+            suffices[0], field->component_separator[1], suffices[1], field->component_separator[2],
+            suffices[2], field->component_separator[3], suffices[3]);
+    break;
+  default: sprintf(field_name, "invalid");
+  }
+  return field_name;
+}
+
+const char *ex_field_component_suffix(ex_field *field, int nest_level, int component)
 {
 #define X "x"
 #define Y "y"
@@ -36,116 +77,150 @@ const char *ex_field_component_name(ex_field_type field_type, int component)
 #define ZY "zy"
 #define XZ "xz"
 
-  switch (field_type) {
+  switch (field->type[nest_level]) {
   case EX_VECTOR_1D: {
     static const char *suffix[] = {X};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_VECTOR_2D: {
     static const char *suffix[] = {X, Y};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_VECTOR_3D: {
     static const char *suffix[] = {X, Y, Z};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_QUATERNION_2D: {
     static const char *suffix[] = {S, Q};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_QUATERNION_3D: {
     static const char *suffix[] = {X, Y, Z, Q};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_36: {
     static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX, YX, ZY, XZ};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_32: {
     static const char *suffix[] = {XX, YY, ZZ, XY, YX};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_22: {
     static const char *suffix[] = {XX, YY, XY, YX};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_16: {
     static const char *suffix[] = {XX, XY, YZ, ZX, YX, ZY, XZ};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_FULL_TENSOR_12: {
     static const char *suffix[] = {XX, XY, YX};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_33: {
     static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_31: {
     static const char *suffix[] = {XX, YY, ZZ, XY};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_21: {
     static const char *suffix[] = {XX, YY, XY};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_13: {
     static const char *suffix[] = {XX, XY, YZ, ZX};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_11: {
     static const char *suffix[] = {XX, XY};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_SYM_TENSOR_10: {
     static const char *suffix[] = {XX};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_ASYM_TENSOR_03: {
     static const char *suffix[] = {XY, YZ, ZX};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_ASYM_TENSOR_02: {
     static const char *suffix[] = {XY, YZ};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_ASYM_TENSOR_01: {
     static const char *suffix[] = {XY};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_MATRIX_2X2: {
     static const char *suffix[] = {"11", "12", "21", "22"};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
   case EX_MATRIX_3X3: {
     static const char *suffix[] = {"11", "12", "13", "21", "22", "23", "31", "32", "33"};
-    verify_valid_component(component, ex_field_cardinality(field_type), SIZE(suffix));
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_FIELD_TYPE_USER_DEFINED:
-  case EX_FIELD_TYPE_SEQUENCE:
+  case EX_FIELD_TYPE_USER_DEFINED: {
+    if (field->suffices[nest_level] != NULL) {
+      static char user_suffix[32];
+      // `user_suffices` is a comma-separated string.  Assume component is valid.
+      char *string = strdup(&field->suffices[nest_level]);
+      char *tofree = string;
+      char *token  = strsep(&string, ",");
+      for (int i = 0; i < component - 1; i++) {
+        token = strsep(&string, ",");
+      }
+      if (token != NULL) {
+        ex_copy_string(user_suffix, token, 256);
+        free(tofree);
+        return user_suffix;
+      }
+      free(tofree);
+    }
+    return "invalid";
+  }
+  case EX_BASIS: {
+    // Suffices are just 1...#components.
+    static char user_suffix[32];
+    static char format[8];
+    int         width = number_width(field->cardinality[nest_level]);
+    sprintf(format, "%c%d%dd", '%', 0, width);
+    sprintf(user_suffix, format, component);
+    return user_suffix;
+  }
+  case EX_FIELD_TYPE_SEQUENCE: {
+    // Suffices are just 0...#components-1.
+    static char user_suffix[32];
+    static char format[8];
+    int         width = number_width(field->cardinality[nest_level]);
+    sprintf(format, "%c%d%dd", '%', 0, width);
+    sprintf(user_suffix, format, component - 1);
+    return user_suffix;
+  }
   case EX_QUADRATURE:
-  case EX_BASIS:
   case EX_SCALAR:
   case EX_FIELD_TYPE_INVALID:
   default: return "invalid";

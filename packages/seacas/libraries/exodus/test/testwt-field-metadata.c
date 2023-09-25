@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2022 National Technology & Engineering Solutions
+ * Copyright(C) 2022, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -99,8 +99,9 @@ int main(int argc, char **argv)
       "Gradient-X$3", "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4", "Gradient-Y$4",
       "Gradient-Z$4", "Gradient-X$5", "Gradient-Y$5", "Gradient-Z$5", "Gradient-X$6",
       "Gradient-Y$6", "Gradient-Z$6", "Gradient-X$7", "Gradient-Y$7", "Gradient-Z$7",
-      "Gradient-X$8", "Gradient-Y$8", "Gradient-Z$8", "User_h2o",     "User_gas",
-      "User_ch4",     "User_methane"};
+      "Gradient-X$8", "Gradient-Y$8", "Gradient-Z$8", "Curl@1",       "Curl@2",
+      "Curl@3",       "Curl@4",       "Curl@5",       "Curl@6",       "Curl@7",
+      "Curl@8",       "User_h2o",     "User_gas",     "User_ch4",     "User_methane"};
   int num_block_vars = sizeof(var_names) / sizeof(var_names[0]);
 
   EXCHECK(ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_block_vars));
@@ -152,6 +153,14 @@ int main(int argc, char **argv)
                                        .nesting             = 2,
                                        .component_separator = "-$"};
     EXCHECK(ex_put_field_metadata(exoid, field));
+
+    struct ex_field field2 = (ex_field){.entity_type         = EX_ELEM_BLOCK,
+                                        .entity_id           = blocks[1].id,
+                                        .name                = "Curl",
+                                        .type                = {EX_BASIS},
+                                        .nesting             = 1,
+                                        .component_separator = "@"};
+    EXCHECK(ex_put_field_metadata(exoid, field2));
   }
 
   {
