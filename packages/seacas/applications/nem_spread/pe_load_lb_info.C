@@ -88,7 +88,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
   int mode   = EX_READ | int64api;
   int iio_ws = 0; // Don't interfere with exodus files; this is the nemesis file.
   if ((lb_exoid = ex_open(Exo_LB_File.c_str(), mode, &cpu_ws, &iio_ws, &version)) == -1) {
-    fmt::print(stderr, "[{}] ERROR: Couldn\'t open lb file, {}\n", __func__, Exo_LB_File);
+    fmt::print(stderr, "[{}] ERROR: Could not open lb file, {}\n", __func__, Exo_LB_File);
     exit(1);
   }
 

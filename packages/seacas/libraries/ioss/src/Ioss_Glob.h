@@ -262,7 +262,7 @@ namespace Ioss::glob {
 
     bool Check(const String<charT> &, size_t) override
     {
-      // as it match any char, it is always tryed
+      // as it match any char, it is always tried
       return true;
     }
 
@@ -284,7 +284,7 @@ namespace Ioss::glob {
 
     bool Check(const String<charT> &, size_t) override
     {
-      // as it match any char, it is always tryed
+      // as it match any char, it is always tried
       return true;
     }
 
