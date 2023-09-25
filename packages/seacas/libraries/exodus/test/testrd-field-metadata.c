@@ -25,6 +25,50 @@
     }                                                                                              \
   } while (0)
 
+static void print_full_field_names(ex_field *field, ex_basis *basis)
+{
+  if (field->nesting == 1) {
+    for (int jj = 1; jj <= field->cardinality[0]; jj++) {
+      int         comp[4] = {jj};
+      const char *name    = ex_component_field_namefix(field, comp);
+      fprintf(stderr, "\tComponent %d, Full name = %s\n", jj, name);
+    }
+  }
+  else if (field->nesting == 2) {
+    for (int kk = 1; kk <= field->cardinality[1]; kk++) {
+      for (int jj = 1; jj <= field->cardinality[0]; jj++) {
+        int         comp[4] = {jj, kk};
+        const char *name    = ex_component_field_namefix(field, comp);
+        fprintf(stderr, "\tComponent %d %d, Full name = %s\n", jj, kk, name);
+      }
+    }
+  }
+  else if (field->nesting == 3) {
+    for (int ii = 1; ii <= field->cardinality[2]; ii++) {
+      for (int kk = 1; kk <= field->cardinality[1]; kk++) {
+        for (int jj = 1; jj <= field->cardinality[0]; jj++) {
+          int         comp[4] = {jj, kk, ii};
+          const char *name    = ex_component_field_namefix(field, comp);
+          fprintf(stderr, "\tComponent %d %d %d, Full name = %s\n", jj, kk, ii, name);
+        }
+      }
+    }
+  }
+  else if (field->nesting == 3) {
+    for (int mm = 1; mm <= field->cardinality[3]; mm++) {
+      for (int ii = 1; ii <= field->cardinality[2]; ii++) {
+        for (int kk = 1; kk <= field->cardinality[1]; kk++) {
+          for (int jj = 1; jj <= field->cardinality[0]; jj++) {
+            int         comp[4] = {jj, kk, ii};
+            const char *name    = ex_component_field_namefix(field, comp);
+            fprintf(stderr, "\tComponent %d %d %d %d, Full name = %s\n", jj, kk, ii, mm, name);
+          }
+        }
+      }
+    }
+  }
+}
+
 int main(int argc, char **argv)
 {
   ex_opts(EX_VERBOSE | EX_ABORT);
@@ -48,56 +92,31 @@ int main(int argc, char **argv)
   int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 10);
   assert(fld_cnt == 2);
 
-  fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 11);
-  assert(fld_cnt == 2);
-
-  fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 12);
-  assert(fld_cnt == 0);
-
-  ex_field fields[2];
+  ex_field fields[3];
   fields[0].entity_id   = 10;
   fields[1].entity_id   = 10;
   fields[0].entity_type = EX_ELEM_BLOCK;
   fields[1].entity_type = EX_ELEM_BLOCK;
   EXCHECK(ex_get_field_metadata(exoid, fields));
 
-  /* TODO: See if can construct the individual field component names */
-  for (int i = 0; i < 2; i++) {
-    int cardinality = fields[i].cardinality[0];
-    if (cardinality == 0) {
-      cardinality = ex_field_cardinality(fields[i].type[0]);
-    }
-    fprintf(
-        stderr,
-        "\nField %d Metadata: Name: %s, Nesting: %d, Type: %s, Cardinality: %d, Separator: %c\n", i,
-        fields[i].name, fields[i].nesting, ex_field_type_enum_to_string(fields[i].type[0]),
-        cardinality, fields[i].component_separator[0]);
-    if (fields[i].type[0] == EX_FIELD_TYPE_USER_DEFINED) {
-      fprintf(stderr, "\tUser-defined suffices: %s\n", fields[i].suffices);
-    }
-  }
-
-  fields[0].entity_id = 11;
-  fields[1].entity_id = 11;
-  EXCHECK(ex_get_field_metadata(exoid, fields));
-
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < fld_cnt; i++) {
     for (int j = 0; j < fields[i].nesting; j++) {
-      int cardinality = fields[i].cardinality[j];
-      if (cardinality == 0) {
-        cardinality = ex_field_cardinality(fields[i].type[j]);
+      if (fields[i].cardinality[j] == 0) {
+        fields[i].cardinality[j] = ex_field_cardinality(fields[i].type[j]);
       }
       fprintf(
           stderr,
-          "\nField Metadata %d: Name: %s, Nesting: %d, Type: %s, Cardinality: %d, Separator: %c\n",
+          "\nField %d Metadata: Name: %s, Nesting: %d, Type: %s, Cardinality: %d, Separator: %c\n",
           i, fields[i].name, fields[i].nesting, ex_field_type_enum_to_string(fields[i].type[j]),
-          cardinality, fields[i].component_separator[j]);
-      if (fields[i].type[j] == EX_FIELD_TYPE_USER_DEFINED) {
+          fields[i].cardinality[j], fields[i].component_separator[j]);
+      if (fields[i].type[0] == EX_FIELD_TYPE_USER_DEFINED) {
         fprintf(stderr, "\tUser-defined suffices: %s\n", fields[i].suffices);
       }
     }
+    print_full_field_names(&fields[i], NULL);
   }
 
+  // ------------------------------------------------------------------------
   struct ex_basis basis = (ex_basis){.name             = "",
                                      .cardinality      = 0,
                                      .subc_dim         = NULL,
@@ -108,7 +127,7 @@ int main(int argc, char **argv)
                                      .eta              = NULL,
                                      .zeta             = NULL};
   /* Query basis on a block where it doesn't exist */
-  fprintf(stderr, "EXPECT Warning/Error about no basis on block 10.\n");
+  fprintf(stderr, "\nEXPECT Warning/Error about no basis on block 10.");
   int status = ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 10, &basis);
   if (status != EX_NOTFOUND) {
     fprintf(stderr,
@@ -127,6 +146,38 @@ int main(int argc, char **argv)
   basis.eta              = calloc(basis.cardinality, sizeof(double));
   basis.zeta             = calloc(basis.cardinality, sizeof(double));
   EXCHECK(ex_get_basis_metadata(exoid, EX_ELEM_BLOCK, 11, &basis));
+
+  fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 11);
+  assert(fld_cnt == 3);
+
+  fields[0].entity_id = 11;
+  fields[1].entity_id = 11;
+  EXCHECK(ex_get_field_metadata(exoid, fields));
+
+  for (int i = 0; i < fld_cnt; i++) {
+    for (int j = 0; j < fields[i].nesting; j++) {
+      if (fields[i].cardinality[j] == 0) {
+        if (fields[i].type[j] == EX_BASIS) {
+          fields[i].cardinality[j] = basis.cardinality;
+        }
+        else {
+          fields[i].cardinality[j] = ex_field_cardinality(fields[i].type[j]);
+        }
+      }
+      fprintf(
+          stderr,
+          "\nField Metadata %d: Name: %s, Nesting: %d, Type: %s, Cardinality: %d, Separator: %c\n",
+          i, fields[i].name, fields[i].nesting, ex_field_type_enum_to_string(fields[i].type[j]),
+          fields[i].cardinality[j], fields[i].component_separator[j]);
+      if (fields[i].type[j] == EX_FIELD_TYPE_USER_DEFINED) {
+        fprintf(stderr, "\tUser-defined suffices: %s\n", fields[i].suffices);
+      }
+    }
+    print_full_field_names(&fields[i], &basis);
+  }
+
+  fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 12);
+  assert(fld_cnt == 0);
 
   int error = ex_close(exoid);
   printf("\nafter ex_close, error = %3d\n", error);
