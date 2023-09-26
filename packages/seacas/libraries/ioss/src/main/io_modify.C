@@ -967,7 +967,10 @@ namespace {
     if (Ioss::Utils::substr_equal(tokens[2], "add")) {
       // Must be at least 6 tokens...
       if (tokens.size() < 6) {
-        fmt::print(stderr, fg(fmt::color::red),
+        fmt::print(stderr, 
+#if !defined __NVCC__
+		   fg(fmt::color::red),
+#endif
                    "ERROR: ATTRIBUTE Command does not have enough tokens to be valid.\n"
                    "\t\t{}\n",
                    fmt::join(tokens, " "));
@@ -1086,7 +1089,10 @@ namespace {
 
     // Must be at least 4 tokens...
     if (tokens.size() < 4) {
-      fmt::print(stderr, fg(fmt::color::red),
+      fmt::print(stderr,
+#if !defined __NVCC__
+ fg(fmt::color::red),
+#endif
                  "ERROR: RENAME Command does not have enough tokens to be valid.\n"
                  "\t\t{}\n",
                  fmt::join(tokens, " "));
@@ -1123,7 +1129,11 @@ namespace {
       }
     }
     else {
-      fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized rename syntax '{}'\n",
+      fmt::print(stderr, 
+#if !defined __NVCC__
+		 fg(fmt::color::yellow), 
+#endif
+		 "\tWARNING: Unrecognized rename syntax '{}'\n",
                  fmt::join(tokens, " "));
       handle_help("rename");
     }
@@ -1203,7 +1213,10 @@ namespace {
     // TIME   SCALE  {{scale}}
     // TIME   OFFSET {{offset}
     if (tokens.size() < 3) {
-      fmt::print(stderr, fg(fmt::color::red),
+      fmt::print(stderr, 
+#if !defined __NVCC__
+		 fg(fmt::color::red),
+#endif
                  "ERROR: TIME Command does not have enough tokens to be valid.\n"
                  "\t\t{}\n",
                  fmt::join(tokens, " "));
@@ -1238,7 +1251,10 @@ namespace {
     // GEOMETRY   OFFSET {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{offset}} ...
 
     if (tokens.size() < 4) {
-      fmt::print(stderr, fg(fmt::color::red),
+      fmt::print(stderr, 
+#if !defined __NVCC__
+		 fg(fmt::color::red),
+#endif
                  "ERROR: GEOMETRY Command does not have enough tokens to be valid.\n"
                  "\t\t{}\n",
                  fmt::join(tokens, " "));
