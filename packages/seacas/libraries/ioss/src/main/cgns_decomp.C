@@ -45,7 +45,9 @@
 #include <utility>
 #include <vector>
 
+#if !defined __NVCC__
 #include <fmt/color.h>
+#endif
 #include <fmt/format.h>
 
 namespace {
@@ -391,7 +393,10 @@ namespace {
       auto        search = comms.find(std::make_pair(value, key));
       if (search == comms.end()) {
         valid = false;
-        fmt::print(stderr, fg(fmt::color::red),
+        fmt::print(stderr, 
+#if !defined __NVCC__
+		   fg(fmt::color::red),
+#endif
                    "ERROR: Could not find matching ZGC for {}, proc {} -> {}, proc {}\n", key.first,
                    key.second, value.first, value.second);
       }
@@ -442,7 +447,11 @@ namespace {
         for (const auto &proc : comms) {
           if (proc.second < 0) {
             // From decomposition
-            fmt::print(fg(fmt::color::yellow), "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second,
+            fmt::print(
+#if !defined __NVCC__
+		       fg(fmt::color::yellow), 
+#endif
+		       "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second,
                        pw);
           }
           else {
@@ -635,11 +644,19 @@ namespace {
           std::string stars(star_cnt, '*');
           std::string format = "\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n";
           if (proc_work[i] == max_work) {
-            fmt::print(fg(fmt::color::red), format, i, proc_width, fmt::group_digits(proc_work[i]),
+            fmt::print(
+#if !defined __NVCC__
+		       fg(fmt::color::red), 
+#endif
+		       format, i, proc_width, fmt::group_digits(proc_work[i]),
                        work_width, proc_work[i] / avg_work, stars);
           }
           else if (proc_work[i] == min_work) {
-            fmt::print(fg(fmt::color::green), format, i, proc_width,
+            fmt::print(
+#if !defined __NVCC__
+		       fg(fmt::color::green), 
+#endif
+		       format, i, proc_width,
                        fmt::group_digits(proc_work[i]), work_width, proc_work[i] / avg_work, stars);
           }
           else {
@@ -788,7 +805,10 @@ int main(int argc, char *argv[])
 
   auto valid = validate_symmetric_communications(zones);
   if (!valid) {
-    fmt::print(stderr, fg(fmt::color::red),
+    fmt::print(stderr, 
+#if !defined __NVCC__
+	       fg(fmt::color::red),
+#endif
                "\nERROR: Zone Grid Communication interfaces are not symmetric.  There is an error "
                "in the decomposition.\n");
   }
