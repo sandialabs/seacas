@@ -28,7 +28,7 @@ static void verify_valid_component(int component, size_t cardinality, size_t suf
   assert(component - 1 < suffix_size);
 }
 
-const char *ex_component_field_namefix(ex_field *field, int component[EX_MAX_FIELD_NESTING])
+const char *ex_component_field_name(ex_field *field, int component[EX_MAX_FIELD_NESTING])
 {
   // Return the name of the field corresponding to the specified 1-based component(s)
   static char field_name[EX_MAX_NAME];
@@ -37,35 +37,27 @@ const char *ex_component_field_namefix(ex_field *field, int component[EX_MAX_FIE
     suffices[i] = ex_field_component_suffix(field, i, component[i]);
   }
 
-  switch (field->nesting) {
-  case 1:
-    sprintf(field_name, "%s%c%s", field->name, field->component_separator[0], suffices[0]);
-    break;
-  case 2:
-    sprintf(field_name, "%s%c%s%c%s", field->name, field->component_separator[0], suffices[0],
-            field->component_separator[1], suffices[1]);
-    break;
-  case 3:
-    sprintf(field_name, "%s%c%s%c%s%c%s", field->name, field->component_separator[0], suffices[0],
-            field->component_separator[1], suffices[1], field->component_separator[2], suffices[2]);
-    break;
-  case 4:
-    sprintf(field_name, "%s%c%s%c%s%c%s%c%s", field->name, field->component_separator[0],
-            suffices[0], field->component_separator[1], suffices[1], field->component_separator[2],
-            suffices[2], field->component_separator[3], suffices[3]);
-    break;
-  default: sprintf(field_name, "invalid");
+  // Build up name incrementally which makes it easier to handle an empty component_separator...
+  sprintf(field_name, "%s", field->name);
+
+  for (int i = 0; i < field->nesting; i++) {
+    if (field->component_separator[i]) {
+      size_t fnl          = strlen(field_name);
+      field_name[fnl]     = field->component_separator[i];
+      field_name[fnl + 1] = '\0';
+    }
+    strlcat(field_name, suffices[0], EX_MAX_NAME);
   }
   return field_name;
 }
 
 const char *ex_field_component_suffix(ex_field *field, int nest_level, int component)
 {
-#define X "x"
-#define Y "y"
-#define Z "z"
-#define Q "q"
-#define S "s"
+#define X "X"
+#define Y "Y"
+#define Z "Z"
+#define Q "Q"
+#define S "S"
 
 #define XX "xx"
 #define YY "yy"
@@ -184,7 +176,7 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     return suffix[component - 1];
   }
   case EX_FIELD_TYPE_USER_DEFINED: {
-    if (field->suffices[nest_level] != NULL) {
+    if (&field->suffices[nest_level] != NULL) {
       static char user_suffix[32];
       // `user_suffices` is a comma-separated string.  Assume component is valid.
       char *string = strdup(&field->suffices[nest_level]);

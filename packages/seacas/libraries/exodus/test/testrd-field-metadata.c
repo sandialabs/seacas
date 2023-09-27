@@ -25,20 +25,47 @@
     }                                                                                              \
   } while (0)
 
-static void print_full_field_names(ex_field *field, ex_basis *basis)
+static void get_field_cardinality(ex_field *field, ex_basis *basis)
+{
+  for (int j = 0; j < field->nesting; j++) {
+    if (field->cardinality[j] == 0) {
+      if (field->type[j] == EX_BASIS) {
+        field->cardinality[j] = basis->cardinality;
+      }
+      else {
+        field->cardinality[j] = ex_field_cardinality(field->type[j]);
+      }
+    }
+  }
+}
+
+static void print_field_metadata(ex_field *field)
+{
+  fprintf(stderr, "\n");
+  for (int j = 0; j < field->nesting; j++) {
+    char sep = field->component_separator[j] == 0 ? ' ' : field->component_separator[j];
+    fprintf(stderr,
+            "Field Metadata: Name: %s, Nesting: %d, Type: %s, Cardinality: %d, Separator: \"%c\"\n",
+            field->name, field->nesting, ex_field_type_enum_to_string(field->type[j]),
+            field->cardinality[j], sep);
+    if (field->type[0] == EX_FIELD_TYPE_USER_DEFINED) {
+      fprintf(stderr, "\tUser-defined suffices: %s\n", field->suffices);
+    }
+  }
+}
+
+static void print_full_field_names(ex_field *field)
 {
   if (field->nesting == 1) {
     for (int jj = 1; jj <= field->cardinality[0]; jj++) {
-      int         comp[4] = {jj};
-      const char *name    = ex_component_field_namefix(field, comp);
+      const char *name = ex_component_field_name(field, (int[]){jj});
       fprintf(stderr, "\tComponent %d, Full name = %s\n", jj, name);
     }
   }
   else if (field->nesting == 2) {
     for (int kk = 1; kk <= field->cardinality[1]; kk++) {
       for (int jj = 1; jj <= field->cardinality[0]; jj++) {
-        int         comp[4] = {jj, kk};
-        const char *name    = ex_component_field_namefix(field, comp);
+        const char *name = ex_component_field_name(field, (int[]){jj, kk});
         fprintf(stderr, "\tComponent %d %d, Full name = %s\n", jj, kk, name);
       }
     }
@@ -47,20 +74,18 @@ static void print_full_field_names(ex_field *field, ex_basis *basis)
     for (int ii = 1; ii <= field->cardinality[2]; ii++) {
       for (int kk = 1; kk <= field->cardinality[1]; kk++) {
         for (int jj = 1; jj <= field->cardinality[0]; jj++) {
-          int         comp[4] = {jj, kk, ii};
-          const char *name    = ex_component_field_namefix(field, comp);
+          const char *name = ex_component_field_name(field, (int[]){jj, kk, ii});
           fprintf(stderr, "\tComponent %d %d %d, Full name = %s\n", jj, kk, ii, name);
         }
       }
     }
   }
-  else if (field->nesting == 3) {
+  else if (field->nesting == 4) {
     for (int mm = 1; mm <= field->cardinality[3]; mm++) {
       for (int ii = 1; ii <= field->cardinality[2]; ii++) {
         for (int kk = 1; kk <= field->cardinality[1]; kk++) {
           for (int jj = 1; jj <= field->cardinality[0]; jj++) {
-            int         comp[4] = {jj, kk, ii};
-            const char *name    = ex_component_field_namefix(field, comp);
+            const char *name = ex_component_field_name(field, (int[]){jj, kk, ii, mm});
             fprintf(stderr, "\tComponent %d %d %d %d, Full name = %s\n", jj, kk, ii, mm, name);
           }
         }
@@ -100,20 +125,9 @@ int main(int argc, char **argv)
   EXCHECK(ex_get_field_metadata(exoid, fields));
 
   for (int i = 0; i < fld_cnt; i++) {
-    for (int j = 0; j < fields[i].nesting; j++) {
-      if (fields[i].cardinality[j] == 0) {
-        fields[i].cardinality[j] = ex_field_cardinality(fields[i].type[j]);
-      }
-      fprintf(
-          stderr,
-          "\nField %d Metadata: Name: %s, Nesting: %d, Type: %s, Cardinality: %d, Separator: %c\n",
-          i, fields[i].name, fields[i].nesting, ex_field_type_enum_to_string(fields[i].type[j]),
-          fields[i].cardinality[j], fields[i].component_separator[j]);
-      if (fields[i].type[0] == EX_FIELD_TYPE_USER_DEFINED) {
-        fprintf(stderr, "\tUser-defined suffices: %s\n", fields[i].suffices);
-      }
-    }
-    print_full_field_names(&fields[i], NULL);
+    get_field_cardinality(&fields[i], NULL);
+    print_field_metadata(&fields[i]);
+    print_full_field_names(&fields[i]);
   }
 
   // ------------------------------------------------------------------------
@@ -155,25 +169,9 @@ int main(int argc, char **argv)
   EXCHECK(ex_get_field_metadata(exoid, fields));
 
   for (int i = 0; i < fld_cnt; i++) {
-    for (int j = 0; j < fields[i].nesting; j++) {
-      if (fields[i].cardinality[j] == 0) {
-        if (fields[i].type[j] == EX_BASIS) {
-          fields[i].cardinality[j] = basis.cardinality;
-        }
-        else {
-          fields[i].cardinality[j] = ex_field_cardinality(fields[i].type[j]);
-        }
-      }
-      fprintf(
-          stderr,
-          "\nField Metadata %d: Name: %s, Nesting: %d, Type: %s, Cardinality: %d, Separator: %c\n",
-          i, fields[i].name, fields[i].nesting, ex_field_type_enum_to_string(fields[i].type[j]),
-          fields[i].cardinality[j], fields[i].component_separator[j]);
-      if (fields[i].type[j] == EX_FIELD_TYPE_USER_DEFINED) {
-        fprintf(stderr, "\tUser-defined suffices: %s\n", fields[i].suffices);
-      }
-    }
-    print_full_field_names(&fields[i], &basis);
+    get_field_cardinality(&fields[i], &basis);
+    print_field_metadata(&fields[i]);
+    print_full_field_names(&fields[i]);
   }
 
   fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 12);

@@ -6,6 +6,7 @@
  * See packages/seacas/LICENSE for details
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -93,7 +94,7 @@ int main(int argc, char **argv)
   /* ======================================================================== */
   /* Transient Variables */
   char *var_names[] = {
-      "Disp-X",       "Disp-Y",       "Disp-Z",       "Velocity%X",   "Velocity%Y",
+      "DispX",        "DispY",        "DispZ",        "Velocity%X",   "Velocity%Y",
       "Velocity%Z",   "Gradient-X$0", "Gradient-Y$0", "Gradient-Z$0", "Gradient-X$1",
       "Gradient-Y$1", "Gradient-Z$1", "Gradient-X$2", "Gradient-Y$2", "Gradient-Z$2",
       "Gradient-X$3", "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4", "Gradient-Y$4",
@@ -107,24 +108,37 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_block_vars));
   EXCHECK(ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_block_vars, var_names));
 
+  int vname = 0;
   {
-    struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
-                                       .entity_id           = blocks[0].id,
-                                       .name                = "Disp",
-                                       .type                = {EX_VECTOR_3D},
-                                       .nesting             = 1,
-                                       .component_separator = "-"};
+    struct ex_field field = (ex_field){.entity_type            = EX_ELEM_BLOCK,
+                                       .entity_id              = blocks[0].id,
+                                       .name                   = "Disp",
+                                       .type                   = {EX_VECTOR_3D},
+                                       .nesting                = 1,
+                                       .component_separator[0] = 0};
     EXCHECK(ex_put_field_metadata(exoid, field));
+    int cardinality =
+        field.cardinality[0] != 0 ? field.cardinality[0] : ex_field_cardinality(field.type[0]);
+    for (int i = 0; i < cardinality; i++) {
+      const char *name = ex_component_field_name(&field, (int[]){i + 1});
+      assert(strcmp(var_names[vname++], name) == 0);
+    }
   }
 
   {
-    struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
-                                       .entity_id           = blocks[0].id,
-                                       .name                = "Velocity",
-                                       .type                = {EX_VECTOR_3D},
-                                       .nesting             = 1,
-                                       .component_separator = "%"};
+    struct ex_field field = (ex_field){.entity_type            = EX_ELEM_BLOCK,
+                                       .entity_id              = blocks[0].id,
+                                       .name                   = "Velocity",
+                                       .type                   = {EX_VECTOR_3D},
+                                       .nesting                = 1,
+                                       .component_separator[0] = '%'};
     EXCHECK(ex_put_field_metadata(exoid, field));
+    int cardinality =
+        field.cardinality[0] != 0 ? field.cardinality[0] : ex_field_cardinality(field.type[0]);
+    for (int i = 0; i < cardinality; i++) {
+      const char *name = ex_component_field_name(&field, (int[]){i + 1});
+      assert(strcmp(var_names[vname++], name) == 0);
+    }
   }
 
   {
@@ -151,7 +165,7 @@ int main(int argc, char **argv)
                                        .name                = "Gradient",
                                        .type                = {EX_VECTOR_3D, EX_BASIS},
                                        .nesting             = 2,
-                                       .component_separator = "-$"};
+                                       .component_separator = {'-', '$'}};
     EXCHECK(ex_put_field_metadata(exoid, field));
 
     struct ex_field field2 = (ex_field){.entity_type         = EX_ELEM_BLOCK,
@@ -159,7 +173,7 @@ int main(int argc, char **argv)
                                         .name                = "Curl",
                                         .type                = {EX_BASIS},
                                         .nesting             = 1,
-                                        .component_separator = "@"};
+                                        .component_separator = {'@'}};
     EXCHECK(ex_put_field_metadata(exoid, field2));
   }
 
@@ -170,7 +184,7 @@ int main(int argc, char **argv)
                                        .type                = {EX_FIELD_TYPE_USER_DEFINED},
                                        .nesting             = 1,
                                        .cardinality         = {4},
-                                       .component_separator = "_"};
+                                       .component_separator = {'_'}};
     EXCHECK(ex_put_field_metadata(exoid, field));
     EXCHECK(ex_put_field_suffices(exoid, field, "h2o,gas,ch4,methane"));
   }
