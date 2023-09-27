@@ -1435,8 +1435,7 @@ namespace {
         std::vector<INT> ids;
         ns->get_field_data("ids_raw", ids);
         owned = 0;
-        for (size_t n = 0; n < ids.size(); n++) {
-          INT id = ids[n];
+        for (auto id : ids) {
           if (my_data[id - 1] == my_processor) {
             ++owned;
           }
