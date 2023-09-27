@@ -323,10 +323,9 @@ typedef struct ex_field
   int64_t        entity_id;
   char           name[EX_MAX_NAME + 1]; /* Name of the field */
   int            nesting; /* Number of composite fields (vector at each quadrature point = 2) */
-  ex_field_type  type[EX_MAX_FIELD_NESTING];        /* ex_field_type of each nested field */
-  int            cardinality[EX_MAX_FIELD_NESTING]; /* 0 to calculate based on type */
-  char           component_separator[EX_MAX_FIELD_NESTING +
-                           1];    /* empty defaults to '_'; +1 so can be a string... */
+  ex_field_type  type[EX_MAX_FIELD_NESTING];                /* ex_field_type of each nested field */
+  int            cardinality[EX_MAX_FIELD_NESTING];         /* 0 to calculate based on type */
+  char           component_separator[EX_MAX_FIELD_NESTING]; /* empty defaults to '_'; */
   char           suffices[EX_MAX_NAME + 1]; /* Optional comma-separated list of suffices if type is
                                                EX_FIELD_TYPE_USER_DEFINED */
 } ex_field;
@@ -1289,8 +1288,8 @@ EXODUS_EXPORT int ex_put_elem_cmap(int             exoid,    /**< NetCDF/Exodus 
                                    int             processor /**< This processor ID */
 );
 
-EXODUS_EXPORT const char *ex_component_field_namefix(ex_field *field,
-                                                     int       component[EX_MAX_FIELD_NESTING]);
+EXODUS_EXPORT const char *ex_component_field_name(ex_field *field,
+                                                  int       component[EX_MAX_FIELD_NESTING]);
 EXODUS_EXPORT const char *ex_field_component_suffix(ex_field *field, int nest_level, int component);
 EXODUS_EXPORT int         ex_field_cardinality(const ex_field_type field_type);
 EXODUS_EXPORT const char *ex_field_name(const ex_field_type field_type);

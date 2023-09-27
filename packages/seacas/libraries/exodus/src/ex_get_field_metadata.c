@@ -27,8 +27,7 @@ static void ex__field_initialize(ex_field *field)
     field->cardinality[i]         = 0;
     field->component_separator[i] = '_';
   }
-  field->component_separator[EX_MAX_FIELD_NESTING] = '\0';
-  field->suffices[0]                               = '\0';
+  field->suffices[0] = '\0';
 }
 
 static const char *ex__get_field_metadata_attribute(char *name)
@@ -308,9 +307,6 @@ int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id en
     return EX_FATAL;
   }
   basis->cardinality = cardinality[0];
-  fprintf(stderr, "Basis is named '%s' with cardinality %d on %s with id %" PRId64 ".\n",
-          basis->name, basis->cardinality, ex_name_of_object(entity_type), entity_id);
-
   /* Now, for each non-NULL parameter of `basis`, query the data... */
   if (basis->subc_dim != NULL) {
     status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_dim);
