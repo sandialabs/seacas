@@ -10,6 +10,7 @@
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include <assert.h>
 #include <math.h>
+#include <string.h>
 
 #define SIZE(X) sizeof(X) / sizeof(X[0])
 
@@ -30,6 +31,9 @@ static void verify_valid_component(int component, size_t cardinality, size_t suf
 
 const char *ex_component_field_name(ex_field *field, int component[EX_MAX_FIELD_NESTING])
 {
+  // NOTE: This is not thread-safe.  Return value is pointer to static `field_name`
+  //       For thread-safety, it is up to calling code.
+
   // Return the name of the field corresponding to the specified 1-based component(s)
   static char field_name[EX_MAX_NAME];
   const char *suffices[EX_MAX_FIELD_NESTING] = {NULL};
@@ -59,15 +63,15 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
 #define Q "Q"
 #define S "S"
 
-#define XX "xx"
-#define YY "yy"
-#define ZZ "zz"
-#define XY "xy"
-#define YZ "yz"
-#define ZX "zx"
-#define YX "yx"
-#define ZY "zy"
-#define XZ "xz"
+#define XX "XX"
+#define YY "YY"
+#define ZZ "ZZ"
+#define XY "XY"
+#define YZ "YZ"
+#define ZX "ZC"
+#define YX "YX"
+#define ZY "ZY"
+#define XZ "XZ"
 
   switch (field->type[nest_level]) {
   case EX_VECTOR_1D: {
@@ -85,6 +89,7 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
+
   case EX_QUATERNION_2D: {
     static const char *suffix[] = {S, Q};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
@@ -95,18 +100,9 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_FULL_TENSOR_36: {
-    static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX, YX, ZY, XZ};
-    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
-    return suffix[component - 1];
-  }
-  case EX_FULL_TENSOR_32: {
-    static const char *suffix[] = {XX, YY, ZZ, XY, YX};
-    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
-    return suffix[component - 1];
-  }
-  case EX_FULL_TENSOR_22: {
-    static const char *suffix[] = {XX, YY, XY, YX};
+
+  case EX_FULL_TENSOR_12: {
+    static const char *suffix[] = {XX, XY, YX};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
@@ -115,28 +111,24 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_FULL_TENSOR_12: {
-    static const char *suffix[] = {XX, XY, YX};
+  case EX_FULL_TENSOR_22: {
+    static const char *suffix[] = {XX, YY, XY, YX};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_SYM_TENSOR_33: {
-    static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX};
+  case EX_FULL_TENSOR_32: {
+    static const char *suffix[] = {XX, YY, ZZ, XY, YX};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_SYM_TENSOR_31: {
-    static const char *suffix[] = {XX, YY, ZZ, XY};
+  case EX_FULL_TENSOR_36: {
+    static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX, YX, ZY, XZ};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_SYM_TENSOR_21: {
-    static const char *suffix[] = {XX, YY, XY};
-    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
-    return suffix[component - 1];
-  }
-  case EX_SYM_TENSOR_13: {
-    static const char *suffix[] = {XX, XY, YZ, ZX};
+
+  case EX_SYM_TENSOR_10: {
+    static const char *suffix[] = {XX};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
@@ -145,13 +137,29 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_SYM_TENSOR_10: {
-    static const char *suffix[] = {XX};
+  case EX_SYM_TENSOR_13: {
+    static const char *suffix[] = {XX, XY, YZ, ZX};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_ASYM_TENSOR_03: {
-    static const char *suffix[] = {XY, YZ, ZX};
+  case EX_SYM_TENSOR_21: {
+    static const char *suffix[] = {XX, YY, XY};
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_SYM_TENSOR_31: {
+    static const char *suffix[] = {XX, YY, ZZ, XY};
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
+    return suffix[component - 1];
+  }
+  case EX_SYM_TENSOR_33: {
+    static const char *suffix[] = {XX, YY, ZZ, XY, YZ, ZX};
+    verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
+    return suffix[component - 1];
+  }
+
+  case EX_ASYM_TENSOR_01: {
+    static const char *suffix[] = {XY};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
@@ -160,11 +168,12 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
-  case EX_ASYM_TENSOR_01: {
-    static const char *suffix[] = {XY};
+  case EX_ASYM_TENSOR_03: {
+    static const char *suffix[] = {XY, YZ, ZX};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
+
   case EX_MATRIX_2X2: {
     static const char *suffix[] = {"11", "12", "21", "22"};
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
@@ -175,6 +184,7 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     verify_valid_component(component, ex_field_cardinality(field->type[nest_level]), SIZE(suffix));
     return suffix[component - 1];
   }
+
   case EX_FIELD_TYPE_USER_DEFINED: {
     if (&field->suffices[nest_level] != NULL) {
       static char user_suffix[32];
@@ -194,15 +204,6 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     }
     return "invalid";
   }
-  case EX_BASIS: {
-    // Suffices are just 1...#components.
-    static char user_suffix[32];
-    static char format[8];
-    int         width = number_width(field->cardinality[nest_level]);
-    sprintf(format, "%c%d%dd", '%', 0, width);
-    sprintf(user_suffix, format, component);
-    return user_suffix;
-  }
   case EX_FIELD_TYPE_SEQUENCE: {
     // Suffices are just 0...#components-1.
     static char user_suffix[32];
@@ -210,6 +211,16 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
     int         width = number_width(field->cardinality[nest_level]);
     sprintf(format, "%c%d%dd", '%', 0, width);
     sprintf(user_suffix, format, component - 1);
+    return user_suffix;
+  }
+
+  case EX_BASIS: {
+    // Suffices are just 1...#components.
+    static char user_suffix[32];
+    static char format[8];
+    int         width = number_width(field->cardinality[nest_level]);
+    sprintf(format, "%c%d%dd", '%', 0, width);
+    sprintf(user_suffix, format, component);
     return user_suffix;
   }
   case EX_QUADRATURE:
@@ -227,27 +238,34 @@ int ex_field_cardinality(const ex_field_type field_type)
   case EX_QUADRATURE: return -1;
   case EX_BASIS: return -1;
   case EX_SCALAR: return 1;
+
   case EX_VECTOR_1D: return 1;
   case EX_VECTOR_2D: return 2;
   case EX_VECTOR_3D: return 3;
+
   case EX_QUATERNION_2D: return 2;
   case EX_QUATERNION_3D: return 4;
-  case EX_FULL_TENSOR_36: return 9;
-  case EX_FULL_TENSOR_32: return 5;
-  case EX_FULL_TENSOR_22: return 4;
-  case EX_FULL_TENSOR_16: return 7;
+
   case EX_FULL_TENSOR_12: return 3;
-  case EX_SYM_TENSOR_33: return 6;
-  case EX_SYM_TENSOR_31: return 4;
-  case EX_SYM_TENSOR_21: return 3;
-  case EX_SYM_TENSOR_13: return 4;
-  case EX_SYM_TENSOR_11: return 2;
+  case EX_FULL_TENSOR_16: return 7;
+  case EX_FULL_TENSOR_22: return 4;
+  case EX_FULL_TENSOR_32: return 5;
+  case EX_FULL_TENSOR_36: return 9;
+
   case EX_SYM_TENSOR_10: return 1;
-  case EX_ASYM_TENSOR_03: return 3;
-  case EX_ASYM_TENSOR_02: return 2;
+  case EX_SYM_TENSOR_11: return 2;
+  case EX_SYM_TENSOR_13: return 4;
+  case EX_SYM_TENSOR_21: return 3;
+  case EX_SYM_TENSOR_31: return 4;
+  case EX_SYM_TENSOR_33: return 6;
+
   case EX_ASYM_TENSOR_01: return 1;
+  case EX_ASYM_TENSOR_02: return 2;
+  case EX_ASYM_TENSOR_03: return 3;
+
   case EX_MATRIX_2X2: return 4;
   case EX_MATRIX_3X3: return 9;
+
   case EX_FIELD_TYPE_INVALID: return -1;
   }
   return -1;
