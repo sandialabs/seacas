@@ -919,7 +919,9 @@ class ExomergeUnitTester:
         if not self.model.nodes:
             return False
         x = len(self.model.nodes)
-        self.model._duplicate_nodes(_random_subset(list(range(len(self.model.nodes))), 1), [])
+        self.model._duplicate_nodes(
+            _random_subset(list(range(len(self.model.nodes))), 1), []
+        )
         self.model.merge_nodes(suppress_warnings=True)
         assert len(self.model.nodes) <= x
 
@@ -1766,9 +1768,7 @@ class ExomergeUnitTester:
         # get a list of all public functions in exomerge
         public_functions = []
 
-        for (function, _) in inspect.getmembers(
-            exomerge.ExodusModel, inspect.isfunction
-        ):
+        for function, _ in inspect.getmembers(exomerge.ExodusModel, inspect.isfunction):
             if not function.startswith("_"):
                 public_functions.append(function)
         print(
@@ -1861,7 +1861,7 @@ class ExomergeUnitTester:
         # if some tests did not successfully run, not that
         if len(passed_tests) != len(unit_tests):
             untested = []
-            for (x, _) in unit_tests:
+            for x, _ in unit_tests:
                 if x not in passed_tests:
                     untested.append(x)
             print(
