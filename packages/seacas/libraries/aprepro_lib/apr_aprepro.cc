@@ -34,7 +34,9 @@
 #endif
 
 namespace {
-  const std::string version_string{"6.21 (2023/09/25)"};
+  const std::string version_short{"6.22"};
+  const std::string version_date{"(2023/09/28)"};
+  const std::string version_string = version_short + " " + version_date;
 
   void output_copyright();
 
@@ -131,7 +133,8 @@ namespace SEAMS {
     cleanup_memory();
   }
 
-  std::string Aprepro::version() { return version_string; }
+  const std::string &Aprepro::version() { return version_string; }
+  const std::string &Aprepro::short_version() { return version_short; }
 
   std::string Aprepro::long_version() const
   {
@@ -226,7 +229,7 @@ namespace SEAMS {
       if (colorize) {
         (*errorStream) << trmclr::red;
       }
-      (*errorStream) << "Aprepro: ERROR: ";
+      (*errorStream) << "Aprepro-" << short_version() << ": ERROR: ";
     }
 
     ss << msg;

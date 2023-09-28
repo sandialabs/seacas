@@ -115,10 +115,13 @@ namespace SEAMS {
     const std::ostringstream &parsing_results() const { return parsingResults; }
     void                      clear_results();
 
-    /** Return string representation of current version of aprepro.  */
-    static std::string version();
+    /** Return string representation of current version of aprepro + commit date.  */
+    static const std::string &version();
 
-    /** Return long version: `# Algebraic Preprocessor (Aprepro) version X.X.X` */
+    /** Return string representation of current version of aprepro.  */
+    static const std::string &short_version();
+
+    /** Return long version: `# Algebraic Preprocessor (Aprepro) version X.X (date)` */
     std::string long_version() const;
 
     /** Invoke the scanner and parser for a stream.
