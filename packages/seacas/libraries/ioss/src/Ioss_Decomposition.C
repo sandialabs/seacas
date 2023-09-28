@@ -349,7 +349,7 @@ namespace Ioss {
         proc++;
       }
 
-      size_t b   = Ioss::Utils::find_index_location(elem, m_fileBlockIndex);
+      size_t b   = Ioss::Utils::find_index_location((size_t)elem, m_fileBlockIndex);
       size_t off = std::max(m_fileBlockIndex[b], m_elementOffset);
 
       if (!el_blocks[b].localMap.empty() && elem < el_blocks[b].localMap[0] + off) {
@@ -369,7 +369,7 @@ namespace Ioss {
         proc++;
       }
 
-      size_t b = Ioss::Utils::find_index_location(elem, m_fileBlockIndex);
+      size_t b = Ioss::Utils::find_index_location((size_t)elem, m_fileBlockIndex);
 
       size_t off = std::max(m_fileBlockIndex[b], m_elementOffset);
       el_blocks[b].exportMap.push_back(elem - off);
