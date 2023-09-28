@@ -1292,8 +1292,8 @@ EXODUS_EXPORT const char *ex_component_field_name(ex_field *field,
                                                   int       component[EX_MAX_FIELD_NESTING]);
 EXODUS_EXPORT const char *ex_field_component_suffix(ex_field *field, int nest_level, int component);
 EXODUS_EXPORT int         ex_field_cardinality(const ex_field_type field_type);
-EXODUS_EXPORT const char *ex_field_name(const ex_field_type field_type);
-EXODUS_EXPORT ex_field_type ex_field_string_to_field_type(const char *field_name);
+EXODUS_EXPORT const char *ex_field_type_name(const ex_field_type field_type);
+EXODUS_EXPORT ex_field_type ex_string_to_field_type_enum(const char *field_name);
 EXODUS_EXPORT const char   *ex_field_type_enum_to_string(const ex_field_type field_type);
 
 /*! @} */
