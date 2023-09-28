@@ -7,7 +7,7 @@
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
-#include <Ioss_Enumberate.h>
+#include <Ioss_Enumerate.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Sort.h>

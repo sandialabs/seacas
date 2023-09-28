@@ -6,6 +6,7 @@
 
 #include "apr_builtin.h"
 #include "apr_symrec.h"
+#include "enumerate.h"
 
 #include <cctype>
 #include <cerrno>
@@ -84,8 +85,8 @@ namespace SEAMS {
 
   extern SEAMS::Aprepro *aprepro;
 
-#define d2r(x) ((x)*PI / 180.)
-#define r2d(x) ((x)*180. / PI)
+#define d2r(x) ((x) * PI / 180.)
+#define r2d(x) ((x) * 180. / PI)
 
 #ifndef max
 #define max(x, y) (x) > (y) ? (x) : (y)
@@ -656,8 +657,8 @@ namespace SEAMS {
   {
     const auto &tokens = get_tokenized_strings(string, delm);
     std::string sword{word};
-    for (size_t i = 0; i < tokens.size(); i++) {
-      if (tokens[i] == sword) {
+    for (auto [i, token] : enumerate(tokens)) {
+      if (token == sword) {
         return i + 1;
       }
     }

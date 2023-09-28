@@ -14,12 +14,12 @@
 #include "apr_tokenize.h"
 #include "aprepro.h"      // for symrec, Aprepro, etc
 #include "init_structs.h" // for array_a_init, array_c_init, etc
-#include <string>         // for string
+#include <array>
+#include <string> // for string
 
 namespace SEAMS {
-  init arith_0_fncts[] = {
-      {"seconds", do_time, "seconds()", "Seconds since epoch (useful for srand())."},
-      {nullptr, nullptr, nullptr, nullptr}};
+  std::array<init, 1> arith_0_fncts = {
+      {"seconds", do_time, "seconds()", "Seconds since epoch (useful for srand())."}};
 
   init_d arith_fncts[] = {
       {"abs", do_fabs, "abs(x)", "Absolute value of x. |x|."},
