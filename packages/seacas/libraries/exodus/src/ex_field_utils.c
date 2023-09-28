@@ -186,9 +186,9 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
   }
 
   case EX_FIELD_TYPE_USER_DEFINED: {
-    if (&field->suffices[nest_level] != NULL) {
+    if (field->suffices[0] != '\0') {
       // `user_suffices` is a comma-separated string.  Assume component is valid.
-      char *string = strdup(&field->suffices[nest_level]);
+      char *string = strdup(field->suffices);
       char *tofree = string;
       char *token  = strsep(&string, ",");
       for (int i = 0; i < component - 1; i++) {
