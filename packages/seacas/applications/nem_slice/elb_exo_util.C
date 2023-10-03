@@ -19,9 +19,9 @@
 #include <string>
 #include <vector>
 
-#include "elb.h"        // for Weight_Description<INT>, etc
-#include "elb_elem.h"   // for get_elem_type, E_Type, etc
-#include "elb_err.h"    // for Gen_Error, MAX_ERR_MSG
+#include "elb.h"      // for Weight_Description<INT>, etc
+#include "elb_elem.h" // for get_elem_type, E_Type, etc
+#include "elb_err.h"  // for Gen_Error, MAX_ERR_MSG
 #include "elb_exo.h"
 #include "elb_groups.h" // for parse_groups
 #include "elb_util.h"   // for in_list, roundfloat

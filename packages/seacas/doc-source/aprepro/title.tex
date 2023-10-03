@@ -9,7 +9,6 @@
 \title{\theTitle}
 \ifsand
 \pdfbookmark[1]{Cover}{cover}
-\doCover
 \newpage
 \else
 \SANDmarks{cover}
@@ -20,8 +19,6 @@
 
 %\begin{titlepage}
 \begin{center}
-\SANDnumVar\\
-\SANDreleaseTypeVar\\
 \ifdraft
 Draft Date: \SANDprintDateVar\\
 \else
@@ -34,7 +31,6 @@ Printed \SANDprintDateVar\\
 \vspace{0.75in}
 \CoverFont{m}{12}{14pt}
 \SANDauthorVar\\
-Simulation Modeling Sciences Department\\
 Sandia National Laboratories\\
 Albuquerque, NM 87185-0380\\
 \vspace*{.5in}

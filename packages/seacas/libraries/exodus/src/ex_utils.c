@@ -1099,20 +1099,20 @@ void ex__rm_stat_ptr(int exoid, struct ex__obj_stats **obj_ptr)
   struct ex__obj_stats *tmp_ptr            = *obj_ptr;
   struct ex__obj_stats *last_head_list_ptr = *obj_ptr; /* save last head pointer */
 
-  while (tmp_ptr)                                      /* Walk linked list of file ids/vals */
+  while (tmp_ptr) /* Walk linked list of file ids/vals */
   {
-    if (exoid == tmp_ptr->exoid)                       /* linear search for exodus file id */
+    if (exoid == tmp_ptr->exoid) /* linear search for exodus file id */
     {
-      if (tmp_ptr == *obj_ptr) {                       /* Are we at the head of the list? */
-        *obj_ptr = (*obj_ptr)->next;                   /*   yes, reset ptr to head of list */
+      if (tmp_ptr == *obj_ptr) {     /* Are we at the head of the list? */
+        *obj_ptr = (*obj_ptr)->next; /*   yes, reset ptr to head of list */
       }
-      else {                                           /*   no, remove this record from chain*/
+      else { /*   no, remove this record from chain*/
         last_head_list_ptr->next = tmp_ptr->next;
       }
       free(tmp_ptr->id_vals); /* free up memory */
       free(tmp_ptr->stat_vals);
       free(tmp_ptr);
-      break;                            /* Quit if found */
+      break; /* Quit if found */
     }
     last_head_list_ptr = tmp_ptr;       /* save last head pointer */
     tmp_ptr            = tmp_ptr->next; /* Loop back if not */
@@ -1199,12 +1199,12 @@ struct ex__list_item **ex__get_counter_list(ex_entity_type obj_type)
 int ex__inc_file_item(int                    exoid,    /* file id */
                       struct ex__list_item **list_ptr) /* ptr to ptr to list_item */
 {
-  struct ex__list_item *tlist_ptr = *list_ptr;         /* use temp list ptr to walk linked list */
-  while (tlist_ptr) {                                  /* Walk linked list of file ids/vals */
-    if (exoid == tlist_ptr->exo_id) {                  /* linear search for exodus file id */
-      break;                                           /* Quit if found */
+  struct ex__list_item *tlist_ptr = *list_ptr; /* use temp list ptr to walk linked list */
+  while (tlist_ptr) {                          /* Walk linked list of file ids/vals */
+    if (exoid == tlist_ptr->exo_id) {          /* linear search for exodus file id */
+      break;                                   /* Quit if found */
     }
-    tlist_ptr = tlist_ptr->next;                       /* Loop back if not */
+    tlist_ptr = tlist_ptr->next; /* Loop back if not */
   }
 
   if (!tlist_ptr) { /* ptr NULL? */
@@ -1257,7 +1257,7 @@ int ex__get_file_item(int                    exoid,    /* file id */
     if (exoid == tlist_ptr->exo_id) {          /* linear search for exodus file id */
       break;                                   /* Quit if found */
     }
-    tlist_ptr = tlist_ptr->next;               /* Loop back if not */
+    tlist_ptr = tlist_ptr->next; /* Loop back if not */
   }
 
   if (!tlist_ptr) { /* ptr NULL? */
@@ -1304,11 +1304,11 @@ void ex__rm_file_item(int                    exoid,    /* file id */
       if (tlist_ptr == *list_ptr) {    /* Are we at the head of the list? */
         *list_ptr = (*list_ptr)->next; /*   yes, reset ptr to head of list */
       }
-      else {                           /*   no, remove this record from chain*/
+      else { /*   no, remove this record from chain*/
         last_head_list_ptr->next = tlist_ptr->next;
       }
-      free(tlist_ptr);                    /* free up memory */
-      break;                              /* Quit if found */
+      free(tlist_ptr); /* free up memory */
+      break;           /* Quit if found */
     }
     last_head_list_ptr = tlist_ptr;       /* save last head pointer */
     tlist_ptr          = tlist_ptr->next; /* Loop back if not */
@@ -1569,7 +1569,7 @@ static void ex_int_iisort64(int64_t v[], int64_t iv[], int64_t N)
  * \internal
  * The following 'indexed qsort' routine is modified from Sedgewicks
  * algorithm It selects the pivot based on the median of the left,
- * right, and center values to try to avoid degenerate cases ocurring
+ * right, and center values to try to avoid degenerate cases occurring
  * when a single value is chosen.  It performs a quicksort on
  * intervals down to the #EX_QSORT_CUTOFF size and then performs a final
  * insertion sort on the almost sorted final array.  Based on data in

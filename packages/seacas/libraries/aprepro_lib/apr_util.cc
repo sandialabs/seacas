@@ -1,10 +1,9 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include "apr_symrec.h"
 #include "aprepro.h"        // for symrec, Aprepro, etc
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
 
@@ -31,7 +30,7 @@
 #include <windows.h>
 
 #if !defined(S_ISDIR)
-#define S_ISDIR(mode) (((mode)&S_IFMT) == S_IFDIR)
+#define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
 
 #endif
 #else
@@ -140,8 +139,8 @@ namespace SEAMS {
 
   void immutable_modify(const SEAMS::Aprepro &apr, const SEAMS::symrec *var)
   {
-    apr.error("(IMMUTABLE) Variable " + var->name + " is immutable and cannot be modified", true,
-              false);
+    apr.warning("(IMMUTABLE) Variable " + var->name + " is immutable and cannot be modified", true,
+                false);
   }
 
   void undefined_error(const SEAMS::Aprepro &apr, const std::string &var)

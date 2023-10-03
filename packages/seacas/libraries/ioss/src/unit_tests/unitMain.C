@@ -6,6 +6,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <gtest/gtest.h>
+
 #ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
 #endif

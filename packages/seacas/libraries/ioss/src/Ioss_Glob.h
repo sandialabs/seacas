@@ -22,7 +22,7 @@ namespace Ioss::glob {
   class IOSS_EXPORT Error : public std::exception
   {
   public:
-    explicit Error(const std::string &msg) : msg_{msg} {}
+    explicit Error(std::string msg) : msg_{std::move(msg)} {}
     ~Error() override;
 
     const char *what() const noexcept override { return msg_.c_str(); }
@@ -94,7 +94,7 @@ namespace Ioss::glob {
 
     std::tuple<size_t, size_t> Next(const String<charT> &, size_t pos) override
     {
-      return std::tuple<size_t, size_t>(0, ++pos);
+      return {0, ++pos};
     }
   };
 
@@ -107,7 +107,7 @@ namespace Ioss::glob {
 
     std::tuple<size_t, size_t> Next(const String<charT> &, size_t pos) override
     {
-      return std::tuple<size_t, size_t>(0, ++pos);
+      return {0, ++pos};
     }
   };
 
@@ -205,14 +205,14 @@ namespace Ioss::glob {
       // the string
       if (comp_end) {
         if ((state_pos == match_state_) && (str_pos == str.length())) {
-          return std::tuple<bool, size_t>(state_pos == match_state_, str_pos);
+          return {state_pos == match_state_, str_pos};
         }
 
-        return std::tuple<bool, size_t>(false, str_pos);
+        return {false, str_pos};
       }
       // if comp_end is false, compare only if the states reached the
       // match state
-      return std::tuple<bool, size_t>(state_pos == match_state_, str_pos);
+      return {state_pos == match_state_, str_pos};
     }
 
     void ResetStates()
@@ -262,7 +262,7 @@ namespace Ioss::glob {
 
     bool Check(const String<charT> &, size_t) override
     {
-      // as it match any char, it is always trye
+      // as it match any char, it is always tried
       return true;
     }
 
@@ -284,7 +284,7 @@ namespace Ioss::glob {
 
     bool Check(const String<charT> &, size_t) override
     {
-      // as it match any char, it is always trye
+      // as it match any char, it is always tried
       return true;
     }
 
@@ -361,6 +361,7 @@ namespace Ioss::glob {
 
     bool SetCheck(const String<charT> &str, size_t pos) const
     {
+      // TODO: Replace with std::any_of()
       for (auto &item : items_) {
         // if any item match, then the set match with char
         if (item.get()->Check(str[pos])) {
@@ -422,11 +423,11 @@ namespace Ioss::glob {
       for (auto &automata : automatas_) {
         std::tie(r, str_pos) = automata->Exec(str_part, false);
         if (r) {
-          return std::tuple<bool, size_t>(r, pos + str_pos);
+          return {r, pos + str_pos};
         }
       }
 
-      return std::tuple<bool, size_t>(false, pos + str_pos);
+      return {false, pos + str_pos};
     }
 
     bool Check(const String<charT> &str, size_t pos) override
@@ -472,7 +473,7 @@ namespace Ioss::glob {
         return NextNeg(str, pos);
       }
       }
-      return std::tuple<size_t, size_t>(0, 0);
+      return {0, 0};
     }
 
     std::tuple<size_t, size_t> NextNeg(const String<charT> &str, size_t pos)
@@ -593,7 +594,7 @@ namespace Ioss::glob {
   template <class charT> class Token
   {
   public:
-    Token(TokenKind kind) : kind_{kind} {}
+    explicit Token(TokenKind kind) : kind_{kind} {}
     Token(TokenKind kind, charT value) : kind_{kind}, value_{value} {}
     TokenKind Kind() const { return kind_; }
 
@@ -627,7 +628,7 @@ namespace Ioss::glob {
   public:
     static const char kEndOfInput = -1;
 
-    Lexer(const String<charT> &str) : str_(str), c_{str[0]} {}
+    explicit Lexer(const String<charT> &str) : str_(str), c_{str[0]} {}
 
     std::vector<Token<charT>> Scanner()
     {
@@ -831,7 +832,7 @@ namespace Ioss::glob {
     virtual void Accept(AstVisitor<charT> *visitor) = 0;
 
   protected:
-    AstNode(Type type) : type_{type} {}
+    explicit AstNode(Type type) : type_{type} {}
 
   private:
     Type type_;
@@ -1412,7 +1413,7 @@ namespace Ioss::glob {
   template <class charT> class ExtendedGlob
   {
   public:
-    ExtendedGlob(const String<charT> &pattern)
+    explicit ExtendedGlob(const String<charT> &pattern)
     {
       Lexer<charT>              l(pattern);
       std::vector<Token<charT>> tokens = l.Scanner();
@@ -1450,7 +1451,7 @@ namespace Ioss::glob {
   template <class charT> class SimpleGlob
   {
   public:
-    SimpleGlob(const String<charT> &pattern) { Parser(pattern); }
+    explicit SimpleGlob(const String<charT> &pattern) { Parser(pattern); }
 
     SimpleGlob(const SimpleGlob &)      = delete;
     SimpleGlob &operator=(SimpleGlob &) = delete;

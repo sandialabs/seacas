@@ -25,7 +25,7 @@ abs(x)              &  Absolute value of $x$. $|x|$.\\
 acos(x)             &  Inverse cosine of $x$, returns radians.\\
 acosd(x)            &  Inverse cosine of $x$, returns degrees.\\
 acosh(x)            &  Inverse hyperbolic cosine of $x$.\\
-asin(x)             &  Inverse sine of $x$, returns degrees.\\
+asind(x)            &  Inverse sine of $x$, returns degrees.\\
 asin(x)             &  Inverse sine of $x$, returns radians.\\
 asinh(x)            &  Inverse hyperbolic sine of $x$.\\
 atan(x)             &  Inverse tangent of $x$, returns radians.\\
@@ -45,7 +45,8 @@ dist(x1,y1, x2,y2)  &  $\sqrt{(x_1-x_2)^2 + (y_1-y_2)^2}$ \\
 erf(x)              &  Error Function $\mathrm{erf}(x)=\frac{2}{\sqrt{\pi}}\int_{0}^{x}e^{-t^{2}}\, dt$ \\
 erfc(x)             &  Complementary Error Function $1-\mathrm{erf}(x)$ \\
 exp(x)              &  Exponential  $e^x$ \\
-find\_word(word,svar,del)&  Find 1-based index of \var{word} in \var{svar}. Words are separated by one or more of the characters in the string variable del. Returns 0 if \var{word} is not found.\\
+expm1(x)            &  Exponential. Accurate version of $e^x - 1.0$ for small $x$. \\
+find\_word(word,svar,del) &  Find 1-based index of \var{word} in \var{svar}. Words are separated by one or more of the characters in the string variable del. Returns 0 if \var{word} is not found.\\
 floor(x)            &  Largest integer not greater than $x$.\\
 fmod(x,y)           &  Floating-point remainder of $x/y$.\\
 FtoC(x)             &  Convert from degrees Fahrenheit to degrees Celsius. \\
@@ -69,6 +70,7 @@ rand(xl,xh)         &  Random value between $xl$ and $xh$; uniformly distributed
 rand\_lognormal(m,s)&  Random value with lognormal distribution with mean $m$ and stddev $s$.\\
 rand\_normal(m,s)   &  Random value normally distributed with mean $m$ and stddev $s$.\\
 rand\_weibull(a, b) &  Random value with weibull distribution with $\alpha=a$ and $\beta=b$. \\
+seconds()           &  Returns the number of  seconds since the epoch.  The value is useful as the \var{seed} value in the function \cmd{srand}.\\
 sign(x,y)           &  $x * \text{sgn}(y)$\\
 sin(x)              &  Sine of $x$, with $x$ in radians. \\
 sind(x)             &  Sine of $x$, with $x$ in degrees. \\
@@ -93,6 +95,7 @@ Syntax              & Description \\
 \hline
 \endhead
 DUMP()              &  Output a list of all defined variables and their value. \\
+DUMP\_JSON()        &  Output a list of all defined variables and their value in JSON format. \\
 DUMP\_FUNC()        &  Output a list of all double and string functions recognized by \aprepro{}. \\
 DUMP\_PREVAR()      &  Output a list of all predefined variables and their value. \\
 IO(x)               &  Convert x to an integer and then to a string. Can be used to output integer values if your output format (\cmd{\_FORMAT}) is set to something that doesn't output integers correctly.  \\
@@ -115,10 +118,11 @@ get\_word(n,svar,del&  Returns a string containing the \var{n}th word of \var{sv
 getenv(svar)        &  Returns a string containing the value of the environment variable \var{svar}. If the environment variable is not defined, an empty string is returned.  \\
 help()              &  Tell how to get help on variables, functions, \ldots \\
 include\_path(path) &  Specify an optional path to be prepended to a filename when opening a file. Can also be specified via the \cmd{-I} command line option when executing aprepro. \\
+import(svar)        &  include contents of the file specified by the value of \var{svar}.  See Section~\ref{sec:inclusion} for details. \\
 include(file)       &  include contents of the file.  See Section~\ref{sec:inclusion} for details. \\
 cinclude(file)      &  conditionally include contents of the file.  See Section~\ref{sec:inclusion} for details. \\
 import(svar)        &  include contents of the file pointed to by \var{svar}.  See Section~\ref{sec:inclusion} for details. \\
-output(filename)    &  Creates the file specified by filename and
+output(filename)    &  Creates the file specified by \var{filename} and
 sends all subsequent output from aprepro to that file. Calling \cmd{output(\"stdout\")} will close the current output file and return output to the terminal (standard output).\\
 output\_append(fn)  &  If file with name \var{fn} exists, append output to it; otherwise create the file and send all subsequent output from aprepro to that file. \\
 rescan(svar)        &  The difference between \cmd{execute(sv1)} and \cmd{rescan(sv2)} is that \var{sv1} must be a valid expression, but \var{sv2} can contain zero or more expressions.  \\
@@ -128,6 +132,33 @@ to\_string(x)       &  Returns a string representation of the numerical variable
 tostring(x)         &  Returns a string representation of the numerical variable \var{x}. The variable \var{x} is unchanged.  \\
 to\_upper(svar)     &  Translates all lowercase character in \var{svar} to uppercase. It modifies \var{svar} and returns the resulting string.  \\
 toupper(svar)       &  Translates all lowercase character in \var{svar} to uppercase. It modifies \var{svar} and returns the resulting string.  \\
+version()           &  Return the version string. (See also the \var{\_VERSION} variable). \\
+\hline
+\end{longtable}
+
+\begin{longtable}{lp{4.0in}}
+\caption{Array Functions}\label{t:arrayfunctions}\\
+Syntax              & Description \\
+\hline
+\endhead
+csv\_array(filename, [skip]) &  Create a 2D array from the data in a CSV (Comma-Separated-Value) file optionally skipping rows. If \var{skip} is an integer, then skip that many rows; if \var{skip} is a character, then skip lines beginning with that character.\\
+array\_from\_string(string, delim)  & Create a 1D array from the data in a delimited \var{string}. The array double values are separated by one or more of the characters in the string variable \var{delim}. \\
+identity(size)      &  Create a 2D identity array with \var{size} rows and columns. The elements along the diagonal are equal to 1.0 \\
+linear\_array(init, final, count) &  Create a 1D array of \var{count} rows. Values are linearly spaced from \var{init} to \var{final}. \\
+make\_array(rows, cols, init=0) &  Create a 2D array of size \var{rows} by \var{cols} initialized to \var{init}. The array is initialized to 0 if \var{init} is not specified. \\
+transpose(array)    &  Return the transpose of input array \\
+\hline
+\end{longtable}
+
+\begin{longtable}{lp{4.0in}}
+\caption{Functions with Array variables as parameters}\label{t:arrayparameters}\\
+Syntax              & Description \\
+\hline
+\endhead
+cols(array)         &  Returns the number of columns in the array \var{array}. \\
+rows(array)         &  Returns the number of rows in the array \var{array}. \\
+print\_array(array)  &  Prints the data in the array \var{array}. \\
+
 \hline
 \end{longtable}
 
@@ -294,17 +325,70 @@ ignored.
 \subsection{Loops} Repeated processing of a group of lines can be controlled
 with the \cmd{loop(control)}, and \cmd{endloop} commands. The syntax is:
 \begin{apinp}
-\{loop(variable)\}
-\ldots Process these lines \var{variable} times
+\{loop(variable, index\_variable, initial\_value, increment)\}
+\ldots Process these lines \var{variable} times.  
 \{endloop\}
 \end{apinp}
 
-Loops can be nested. A numerical variable or constant must be specified as the
-loop control specifier. You cannot use an algebraic expression such as
+The number of iterations of the loop is specified by \var{variable} which can be an explicit integer value, or an existing variable.  If it is a variable, then the truncated integer value of the variable will be used.  For example, if the variable contains the value 3.14, then the loop will be iterated 3 times.
 
-\cmd{\{loop(3+5)\}}.
+The optional \var{index\_variable} will be automatically initialized
+to the optional \var{initial\_value} (0 if not specified) at the
+beginning of the loop and incremented by the optional \var{increment}
+(1 if not specified) value each time through the loop.  Loops can be
+nested.
+
+If the \var{index\_variable} is not specified in the \cmd{loop}
+command, then the variable \var{\_\_loop\_\#} will be used where ``\#''
+represents the one-based nesting level of the current loop.
+
+A numerical variable or constant must be specified as the loop control
+specifier. You cannot use an algebraic expression such as
+
+\begin{apinp}
+\{loop(3+5)\}  \ldots INVALID
+\end{apinp}
 
 The \cmd{endloop} command must be on a line by itself with no other text except optional whitespace (spaces or tabs).
+
+These are all valid loop invocations:
+\begin{apinp}
+\{loop(variable, index\_variable, initial\_value, increment)\}
+\end{apinp}
+
+\begin{apinp}
+\{loop(variable, index\_variable, initial\_value)\}
+\ldots same as \{loop(variable, index\_variable, initial\_value, 1)\}
+\end{apinp}
+
+\begin{apinp}
+\{loop(variable, index\_variable)\}
+\ldots same as \{loop(variable, index\_variable, 0, 1)\}
+\end{apinp}
+
+\begin{apinp}
+\{loop(variable)\}
+\ldots same as \{loop(variable, \_\_loop\_1, 0, 1\}
+\end{apinp}
+
+A couple examples of using loops are shown here:
+\begin{apinp}
+\{loop(10, \_i, 1, 2)\}
+\ldots These lines will be executed 10 times.
+\ldots The variable \var{\_i} will have the values 1, 3, 5, \ldots, 19. 
+\{endloop\}
+\end{apinp}
+
+\begin{apinp}
+\{outer=10\} \{inner=4\}
+\{loop(outer, \_i)\}
+\{loop(inner)\}
+\ldots These lines will be executed $10 * 4$ times.
+\ldots The variable \var{\_i} will have the values 0 through 9. 
+\ldots The variable \var{\_\_loop\_2} will have the values 0, 1, 2, 3 and incremented in each iteration of the inner loop.
+\{endloop\}
+\{endloop\}
+\end{apinp}
 
 \subsection{ECHO}\label{echo} The printing of lines to the output file can be controlled
 through the use of the \cmd{ECHO(OFF)} and \cmd{ECHO(ON)}
@@ -319,6 +403,17 @@ commands. The syntax is:
 
 \cmd{ECHO} will automatically be turned on at the end of an included file. The
 commands \cmd{ECHO} and \cmd{NOECHO} are synonyms for \cmd{ECHO(ON)} and \cmd{ECHO(OFF)}.
+
+\subsection{Suppress individual expression output}
+In addition to the \cmd{ECHO} option shown in the previous section, it
+is possible to suppress the echoing of the results of an expression by
+surrounding the expression with double braces instead of the normal
+single braces.  For example:
+\begin{apinp}
+\{\{\_i = 0\}\}
+\end{apinp}
+Will disable the echoing of that expression (although the newline will
+still be echoed). 
 
 \subsection{VERBATIM} The printing of all lines to the output file without processing
 can be controlled through the use of the \cmd{VERBATIM(ON)} and \cmd{VERBATIM(OFF)}
@@ -367,7 +462,7 @@ then the current output file is closed and output is again written to
 the standard output which is where output is written by default.
 
 \subsection{\exo{} Metadata Extraction} \aprepro{} can parse the
-metadata from a binary \exo{}~\cite{exodus} file and create several
+metadata from a binary \exo{}~\cite{bib:exodus} file and create several
 variables which can then be used for calculations or decisions.  The
 function syntax is \cmd{exodus\_meta(filename)}. The
 argument to the function is a string containing the filename of the

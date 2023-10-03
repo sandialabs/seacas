@@ -594,7 +594,7 @@ void Ioss::ParallelUtils::all_gather(std::vector<T> &my_values, std::vector<T> &
     result = my_values;
   }
 #else
-  result    = my_values;
+  result = my_values;
 #endif
 }
 
@@ -602,7 +602,7 @@ void Ioss::ParallelUtils::progress(const std::string &output) const
 {
   static double begin = Utils::timer();
 
-  int64_t MiB = 1024 * 1024;
+  int64_t MiB = static_cast<int64_t>(1024) * static_cast<int64_t>(1024);
   int64_t min = 0, max = 0, avg = 0;
   memory_stats(min, max, avg);
 

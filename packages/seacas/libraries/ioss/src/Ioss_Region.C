@@ -51,10 +51,10 @@
 #include <vector>
 
 namespace {
-  std::string id_str() { return std::string("id"); }
-  std::string db_name_str() { return std::string("db_name"); }
-  std::string orig_topo_str() { return std::string("original_topology_type"); }
-  std::string orig_block_order() { return std::string("original_block_order"); }
+  std::string id_str() { return {"id"}; }
+  std::string db_name_str() { return {"db_name"}; }
+  std::string orig_topo_str() { return {"original_topology_type"}; }
+  std::string orig_block_order() { return {"original_block_order"}; }
 
   template <typename T>
   Ioss::GroupingEntity *get_entity_internal(int64_t id, const std::vector<T> &entities)
@@ -294,64 +294,6 @@ namespace {
     for (const auto &entity : entities) {
       entity->field_erase(role);
     }
-  }
-
-  template <typename T>
-  Ioss::Field::RoleType
-  verify_field_exists_on_any_entity_group(const std::string &field_name, const Ioss::Region &region,
-                                          const std::vector<T *> &entity_container,
-                                          const std::string      &inout)
-  {
-    bool                  found = false;
-    Ioss::Field::RoleType role  = Ioss::Field::RoleType::INTERNAL;
-
-    for (const T *entity : entity_container) {
-      if (entity->field_exists(field_name)) {
-        Ioss::Field field = entity->get_field(field_name);
-
-        if (found == true && field.get_role() != role) {
-          std::string        filename = region.get_database()->get_filename();
-          std::ostringstream errmsg;
-          fmt::print(errmsg,
-                     "\nERROR: On database '{}', Field '{}' does not have a consistent role across "
-                     "element blocks on {}\n\n",
-                     filename, field_name, region.name());
-          IOSS_ERROR(errmsg);
-        }
-
-        found = true;
-        role  = field.get_role();
-      }
-    }
-
-    if (!found) {
-      std::string        filename = region.get_database()->get_filename();
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "\nERROR: On database '{}', Field '{}' does not exist for any {} element blocks "
-                 "on {} {}\n\n",
-                 filename, field_name, inout, region.type_string(), region.name());
-      IOSS_ERROR(errmsg);
-    }
-
-    return role;
-  }
-
-  template <typename T>
-  size_t get_all_block_field_data_count(const std::string      &field_name,
-                                        const std::vector<T *> &entity_container)
-  {
-    size_t count = 0;
-
-    for (const T *entity : entity_container) {
-      if (entity->field_exists(field_name)) {
-        Ioss::Field field = entity->get_field(field_name);
-
-        count += entity->entity_count() * field.raw_storage()->component_count();
-      }
-    }
-
-    return count;
   }
 } // namespace
 
@@ -2457,7 +2399,7 @@ namespace Ioss {
     IOSS_ERROR(errmsg);
   }
 
-  /** \brief Get an implicit property -- These are calcuated from data stored
+  /** \brief Get an implicit property -- These are calculated from data stored
    *         in the grouping entity instead of having an explicit value assigned.
    *
    *  An example would be 'element_block_count' for a region.
@@ -2472,71 +2414,71 @@ namespace Ioss {
         return nodeBlocks[0]->get_property("component_degree");
       }
 
-      return Property(my_name, 0);
+      return {my_name, 0};
     }
 
     if (my_name == "node_block_count") {
-      return Property(my_name, static_cast<int>(nodeBlocks.size()));
+      return {my_name, static_cast<int>(nodeBlocks.size())};
     }
 
     if (my_name == "edge_block_count") {
-      return Property(my_name, static_cast<int>(edgeBlocks.size()));
+      return {my_name, static_cast<int>(edgeBlocks.size())};
     }
 
     if (my_name == "face_block_count") {
-      return Property(my_name, static_cast<int>(faceBlocks.size()));
+      return {my_name, static_cast<int>(faceBlocks.size())};
     }
 
     if (my_name == "element_block_count") {
-      return Property(my_name, static_cast<int>(elementBlocks.size()));
+      return {my_name, static_cast<int>(elementBlocks.size())};
     }
 
     if (my_name == "structured_block_count") {
-      return Property(my_name, static_cast<int>(structuredBlocks.size()));
+      return {my_name, static_cast<int>(structuredBlocks.size())};
     }
 
     if (my_name == "assembly_count") {
-      return Property(my_name, static_cast<int>(assemblies.size()));
+      return {my_name, static_cast<int>(assemblies.size())};
     }
 
     if (my_name == "blob_count") {
-      return Property(my_name, static_cast<int>(blobs.size()));
+      return {my_name, static_cast<int>(blobs.size())};
     }
 
     if (my_name == "side_set_count") {
-      return Property(my_name, static_cast<int>(sideSets.size()));
+      return {my_name, static_cast<int>(sideSets.size())};
     }
 
     if (my_name == "node_set_count") {
-      return Property(my_name, static_cast<int>(nodeSets.size()));
+      return {my_name, static_cast<int>(nodeSets.size())};
     }
 
     if (my_name == "edge_set_count") {
-      return Property(my_name, static_cast<int>(edgeSets.size()));
+      return {my_name, static_cast<int>(edgeSets.size())};
     }
 
     if (my_name == "face_set_count") {
-      return Property(my_name, static_cast<int>(faceSets.size()));
+      return {my_name, static_cast<int>(faceSets.size())};
     }
 
     if (my_name == "element_set_count") {
-      return Property(my_name, static_cast<int>(elementSets.size()));
+      return {my_name, static_cast<int>(elementSets.size())};
     }
 
     if (my_name == "comm_set_count") {
-      return Property(my_name, static_cast<int>(commSets.size()));
+      return {my_name, static_cast<int>(commSets.size())};
     }
 
     if (my_name == "coordinate_frame_count") {
-      return Property(my_name, static_cast<int>(coordinateFrames.size()));
+      return {my_name, static_cast<int>(coordinateFrames.size())};
     }
 
     if (my_name == "state_count") {
-      return Property(my_name, stateCount);
+      return {my_name, stateCount};
     }
 
     if (my_name == "current_state") {
-      return Property(my_name, currentState);
+      return {my_name, currentState};
     }
 
     if (my_name == "element_count") {
@@ -2544,7 +2486,7 @@ namespace Ioss {
       for (const auto &eb : elementBlocks) {
         count += eb->entity_count();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "cell_count") {
@@ -2552,7 +2494,7 @@ namespace Ioss {
       for (const auto &eb : structuredBlocks) {
         count += eb->get_property("cell_count").get_int();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "face_count") {
@@ -2560,7 +2502,7 @@ namespace Ioss {
       for (const auto &fb : faceBlocks) {
         count += fb->entity_count();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "edge_count") {
@@ -2568,7 +2510,7 @@ namespace Ioss {
       for (const auto &eb : edgeBlocks) {
         count += eb->entity_count();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "node_count") {
@@ -2576,12 +2518,12 @@ namespace Ioss {
       for (const auto &nb : nodeBlocks) {
         count += nb->entity_count();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "database_name") {
       std::string filename = get_database()->get_filename();
-      return Property(my_name, filename);
+      return {my_name, filename};
     }
 
     {
@@ -2799,43 +2741,6 @@ namespace Ioss {
         IOSS_ERROR(errmsg);
       }
     }
-  }
-
-  std::vector<size_t> Region::internal_get_all_block_field_data(const std::string &field_name,
-                                                                void *data, size_t data_size) const
-  {
-    return get_database()->get_all_block_field_data(field_name, data, data_size);
-  }
-
-  template IOSS_EXPORT std::vector<size_t>
-                       Region::get_all_block_field_data(const std::string &field_name,
-                                                        std::vector<int>  &field_data) const;
-  template IOSS_EXPORT std::vector<size_t>
-                       Region::get_all_block_field_data(const std::string    &field_name,
-                                                        std::vector<int64_t> &field_data) const;
-  template IOSS_EXPORT std::vector<size_t>
-                       Region::get_all_block_field_data(const std::string   &field_name,
-                                                        std::vector<double> &field_data) const;
-
-  template <typename T>
-  std::vector<size_t> Region::get_all_block_field_data(const std::string &field_name,
-                                                       std::vector<T>    &field_data) const
-  {
-    const Ioss::ElementBlockContainer &elem_blocks = get_element_blocks();
-
-    verify_field_exists_on_any_entity_group(field_name, *this, elem_blocks, "input");
-
-    size_t field_count = get_all_block_field_data_count(field_name, elem_blocks);
-    field_data.resize(field_count);
-
-    size_t              data_size = field_count * sizeof(T);
-    std::vector<size_t> offsets =
-        internal_get_all_block_field_data(field_name, field_data.data(), data_size);
-
-    assert(offsets.size() == (elem_blocks.size() + 1));
-    assert(offsets[elem_blocks.size()] == field_count);
-
-    return offsets;
   }
 
 } // namespace Ioss

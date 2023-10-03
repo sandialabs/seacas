@@ -51,7 +51,7 @@ namespace Ioss {
     void                   remove_members();
     size_t                 member_count() const { return m_members.size(); }
 
-    // Handle implicit properties -- These are calcuated from data stored
+    // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override;

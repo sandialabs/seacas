@@ -20,7 +20,7 @@
 #include <cstdlib> // for free, malloc
 #include <cstring> // for strchr, strlen
 #include <fmt/format.h>
-#include <vector>  // for vector
+#include <vector> // for vector
 
 /*****************************************************************************/
 namespace {

@@ -74,7 +74,7 @@
 // Static internal helper functions
 // ========================================================================
 namespace {
-  static bool sixty_four_bit_message_output = false;
+  bool sixty_four_bit_message_output = false;
 
   std::vector<ex_entity_type> exodus_types({EX_GLOBAL, EX_BLOB, EX_ASSEMBLY, EX_NODE_BLOCK,
                                             EX_EDGE_BLOCK, EX_FACE_BLOCK, EX_ELEM_BLOCK,
@@ -110,7 +110,7 @@ namespace {
     {
       // Walk the tree without cyclic dependency
       if (assemblyIndex < m_assemblies.size()) {
-        if (m_visitedAssemblies[assemblyIndex] == false) {
+        if (!m_visitedAssemblies[assemblyIndex]) {
           m_visitedAssemblies[assemblyIndex] = true;
 
           const auto            &assembly     = m_assemblies[assemblyIndex];
@@ -557,7 +557,7 @@ namespace Ioex {
       ex_put_qa(get_file_pointer(), num_qa_records + 1, nullptr);
     }
     else {
-      auto *qa = new qa_element[num_qa_records + 1];
+      std::vector<qa_element> qa(num_qa_records + 1);
       for (size_t i = 0; i < num_qa_records + 1; i++) {
         for (int j = 0; j < 4; j++) {
           qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
@@ -600,7 +600,6 @@ namespace Ioex {
           delete[] qa[i].qa_record[0][j];
         }
       }
-      delete[] qa;
     }
   }
 
@@ -1522,7 +1521,7 @@ namespace Ioex {
 #if GLOBALS_ARE_TRANSIENT
     int field_count = add_results_fields(get_region());
 #else
-    int field_count     = add_reduction_results_fields(get_region());
+    int field_count = add_reduction_results_fields(get_region());
 #endif
     m_reductionValues[EX_GLOBAL][0].resize(field_count);
     add_mesh_reduction_fields(0, get_region());

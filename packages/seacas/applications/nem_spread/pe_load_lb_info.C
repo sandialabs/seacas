@@ -88,7 +88,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
   int mode   = EX_READ | int64api;
   int iio_ws = 0; // Don't interfere with exodus files; this is the nemesis file.
   if ((lb_exoid = ex_open(Exo_LB_File.c_str(), mode, &cpu_ws, &iio_ws, &version)) == -1) {
-    fmt::print(stderr, "[{}] ERROR: Couldn\'t open lb file, {}\n", __func__, Exo_LB_File);
+    fmt::print(stderr, "[{}] ERROR: Could not open lb file, {}\n", __func__, Exo_LB_File);
     exit(1);
   }
 
@@ -149,7 +149,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
   } /* End "for (int iproc=0; iproc <Proc_Info[2]; iproc++)" */
 
   /* Set up each processor for the communication map parameters */
-  read_cmap_params(lb_exoid,globals.E_Comm_Map, globals.N_Comm_Map, &cmap_max_size);
+  read_cmap_params(lb_exoid, globals.E_Comm_Map, globals.N_Comm_Map, &cmap_max_size);
 
   /*
    * loop through the processors, one at a time, to read
@@ -582,8 +582,7 @@ in mesh file",
 /*****************************************************************************/
 
 template <typename T, typename INT>
-void NemSpread<T, INT>::read_cmap_params(int lb_exoid, 
-					 std::vector<ELEM_COMM_MAP<INT>> &E_Comm_Map,
+void NemSpread<T, INT>::read_cmap_params(int lb_exoid, std::vector<ELEM_COMM_MAP<INT>> &E_Comm_Map,
                                          std::vector<NODE_COMM_MAP<INT>> &N_Comm_Map,
                                          INT                             *cmap_max_size)
 {

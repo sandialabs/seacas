@@ -19,11 +19,11 @@
 #include <tokenize.h>
 
 namespace {
-  size_t match(const char *name1, const char *name2)
+  size_t match(const std::string &name1, const std::string &name2)
   {
-    size_t l1  = std::strlen(name1);
-    size_t l2  = std::strlen(name2);
-    size_t len = l1 < l2 ? l1 : l2;
+    size_t l1  = name1.size();
+    size_t l2  = name2.size();
+    size_t len = std::min(l1, l2);
     for (size_t i = 0; i < len; i++) {
       if (name1[i] != name2[i]) {
         while (i > 0 && (isdigit(name1[i - 1]) != 0) && (isdigit(name2[i - 1]) != 0)) {
@@ -212,7 +212,7 @@ namespace Ioexnl {
     const char *s = substring;
     const char *t = type.c_str();
 
-    SMART_ASSERT(s != nullptr && t != nullptr);
+    SMART_ASSERT(s != nullptr);
     while (*s != '\0' && *t != '\0') {
       if (*s++ != tolower(*t++)) {
         return false;
@@ -359,7 +359,7 @@ namespace Ioexnl {
     // extracted from the entities name. Increment it until it is
     // unique...
     ex_entity_type type = map_exodus_type(entity->type());
-    while (idset->find(std::make_pair(int(type), id)) != idset->end()) {
+    while (idset->find(std::make_pair(static_cast<int>(type), id)) != idset->end()) {
       ++id;
     }
 
@@ -384,14 +384,14 @@ namespace Ioexnl {
     // VECTOR_3D).  If found, it returns the name.
     //
 
-    static char displace[] = "displacement";
+    static const std::string displace = "displacement";
 
     size_t max_span = 0;
     for (const auto &name : fields) {
       std::string lc_name(name);
 
       Ioss::Utils::fixup_name(lc_name);
-      size_t span = match(lc_name.c_str(), displace);
+      size_t span = match(lc_name, displace);
       if (span > max_span) {
         const Ioss::VariableType *var_type   = block->get_field(name).transformed_storage();
         int                       comp_count = var_type->component_count();

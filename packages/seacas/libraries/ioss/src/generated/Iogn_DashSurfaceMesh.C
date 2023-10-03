@@ -149,7 +149,6 @@ namespace Iogn {
       map[i]  = mDashSurfaceData.sharedNodes[i].nodeId;
       proc[i] = mDashSurfaceData.sharedNodes[i].procId;
     }
-    return;
   }
 
   void DashSurfaceMesh::node_map(Ioss::IntVector &map) const

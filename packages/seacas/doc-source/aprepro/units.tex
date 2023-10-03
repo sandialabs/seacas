@@ -230,14 +230,86 @@ grade & Grade = 0.9 degree \\
 The conversion expressions were obtained from
 References~\cite{bib:isotopes}, \cite{bib:jaeger}, \cite{bib:lambe}, and~\cite{bib:simpson}.
 
+\section{Physical Constants}
+The units system also defines several physical constants which are
+listed in the following table. The values for these were obtained from
+\url{https://en.wikipedia.org/wiki/List_of_physical_constants}.
+Although the \aprepro{} units system should adjust the values
+correctly for different systems, it is recommended that the ``si''
+system be used to avoid any possible conversion errors.
+
+\begin{longtable}{l|l}
+\caption{Physical Constants} \\
+\hline
+Quantity      & Value \\
+\hline
+Avogadro\_constant & $                  6.02214076x10^{23}\ / mol $ \\
+Bohr\_magneton & $                      9.2740100783x10^{-24}\  J/T $ \\
+Bohr\_radius & $                        5.29177210903x10^{-11}\  m $ \\
+Boltzmann\_constant & $                 1.380649x10^{-23}\  J/{}^{\circ}K $ \\
+Coulomb\_constant & $                   8.9875517923x10^9\  N m^2\cdot C^{-2} $ \\
+Faraday\_constant & $                   96485.3321233100184\  C/mol $ \\
+Fermi\_coupling\_constant & $            1.166378710x10^{-5}\  GeV^{-2} $ \\
+Hartree\_energy & $                     4.3597447222071x10^{-18}\  J $ \\
+Josephson\_constant & $                 483597.8484x10^9\  Hz/V $ \\
+Newtonian\_constant\_of\_gravitation & $  6.67430x10^{-11}\  m^3/kg\cdot s^{-2} $ \\
+Gravitational\_constant & $             6.67430x10^{-11}\  m^3/kg\cdot s^{-2} $ \\
+Planck\_constant & $                    6.62607015x10^{-34}\  J/Hz $ \\
+Rydberg\_constant & $                   10973731.568160\  m $ \\
+Rydberg\_unit\_of\_energy & $             2.1798723611035x10^-{18}\  J $ \\
+Stefan\_Boltzmann\_constant & $          5.670374419x10^{-8}\  W\cdot m^{-2}\cdot {}^{\circ}K^{-4} $ \\
+Thomson\_cross\_section & $              6.6524587321x10^{-29}\  m^2 $ \\
+W\_to\_Z\_mass\_ratio & $                  0.88153 $ \\
+Wien\_entropy\_displacement\_law\_constant & $ 3.002916077x10^{-3}\  m\cdot {}^{\circ}K $ \\
+Wien\_frequency\_displacement\_law\_constant & $ 5.878925757x10^{10}\  Hz/{}^{\circ}K $ \\
+Wien\_wavelength\_displacement\_law\_constant & $ 2.897771955x10^{-3}\  m\cdot {}^{\circ}K $ \\
+atomic\_mass\_constant & $               1.66053906660x10^{-27}\  kg $ \\
+atomic\_mass\_of\_carbon\_12 & $           1.99264687992x10^{-26}\  kg $ \\
+characteristic\_impedance\_of\_vacuum & $ 376.730313668\  \Omega $ \\
+classical\_electron\_radius & $          2.8179403262x10^{-15}\  m $ \\
+conductance\_quantum & $                7.748091729x10^{-5}\  S $ \\
+cosmological\_constant & $              1.089x10^{-52}\  m^{-2} $ \\
+electron\_g\_factor & $                  -2.00231930436256 $ \\
+electron\_mass & $                      9.1093837015x10^{-31}\  kg $ \\
+elementary\_charge & $                  1.602176634x10^{-19}\  C $ \\
+fine\_structure\_constant & $            7.2973525693x10^{-3} $ \\
+first\_radiation\_constant & $           3.741771852x10^{-16}\  W\cdot m^2 $ \\
+hyperfine\_transition\_frequency\_of\_133Cs  & $   139192631770\  Hz $ \\
+inverse\_conductance\_quantum & $        12906.40372\  \Omega $ \\
+inverse\_fine\_structure\_constant & $    137.035999084 $ \\
+magnetic\_flux\_quantum & $              2.067833848x10^{-15}\  V\cdot s $ \\
+molar\_Planck\_constant & $              3.9903127128934314x10^{-10}\  J\cdot s / mol $ \\
+molar\_gas\_constant & $                 8.31446261815324\  J/mol/{}^{\circ}K $ \\
+molar\_mass\_constant & $                0.99999999965x10^{-3}\  kg/mol $ \\
+molar\_mass\_of\_carbon\_12 & $            11.9999999958x10^{-3}\  kg/mol $ \\
+muon\_g\_factor & $                      -2.0023318418 $ \\
+muon\_mass & $                          1.883531627x10^{-28}\  kg $ \\
+neutron\_mass & $                       1.67492749804x10^{-27}\  kg $ \\
+nuclear\_magneton & $                   5.0507837461x10^{-27}\   J/T $ \\
+proton\_g\_factor & $                    5.5856946893 $ \\
+proton\_mass & $                        1.67262192369x10^{-27}\  kg $ \\
+proton\_to\_electron\_mass\_ratio & $       1836.15267343 $ \\
+quantum\_of\_circulation & $             3.6369475516x10^{-4}\  m^2/s $ \\
+reduced\_Planck\_constant & $            1.054571817x10^{-34}\  J\cdot s $ \\
+sec\_radiation\_constant & $             1.438776877x10^{-2}\  m\cdot {}^{\circ}K $ \\
+speed\_of\_light\_in\_vacuum & $           299792458\ m/s $ \\
+tau\_mass & $                           3.16754x10^{-27}\  kg $ \\
+top\_quark\_mass & $                     3.0784x10^{-25}\  kg $ \\
+vacuum\_electric\_permittivity & $       8.8541878128x10^{-12}\  F/m $ \\
+vacuum\_magnetic\_permeability & $       1.25663706212x10^{-6}\  N\cdot A^{-2} $ \\
+von\_Klitzing\_constant & $              25812.80745\ \Omega $ \\
+weak\_mixing\_angle & $                  0.22290  $ \\
+\end{longtable}
+
+
+
 \section{Usage}
 
 The following example illustrates the basic usage of the \aprepro{} units conversion utility.
 
 \begin{apinp}
 \$ Aprepro Units Utility Example
-\$ \{ECHO(OFF)\} \textit{\ldots{}Turn off echoing of the conversion factors}
-\$ \{Units(``shock'')\} \textit{\ldots{}Select the shock units system}
+\$ \{\{Units(``shock'')\}\} \textit{\ldots{}Select the shock units system, use double brace to suppress echoing}
 \$  NOTE:  Dimensions  -  \{lout\},  \{mout\},  \{dout\},  \{pout\}
 \textit{\ldots{}This will document what quantities are used in the file after it is run through Aprepro}
 \{len1  = 10.0 * inch\}  \textit{\ldots{}Define a length in an english unit (inches)}
@@ -301,7 +373,7 @@ Point  130 0   0.254  \textit{\ldots{}Lengths have all been converted to metres}
 A few additional comments and warnings on the use of the units system are detailed
 below.
 
-Omitting the \{ECHO(OFF)\} line prior to the \{Units(``unit\_system'')\}
+Using only single braces for the \{Units(``unit\_system'')\}
 function will print out the contents of the units header and conversion files.
 Each line in the output will be preceded by the current comment character which
 is \$ by default.
@@ -331,3 +403,7 @@ you may get the incorrect value of that variable since it cannot be
 redefined from the value set by the units system. You can enter the
 command \cmd{DUMP()} to see a list of all defined variables and their
 current value.
+
+The \aprepro{} variable \cmd{\_UNITS\_SYSTEM} is defined to the name
+of the current units system that is loaded or ``none'' if no units
+system has been loaded.

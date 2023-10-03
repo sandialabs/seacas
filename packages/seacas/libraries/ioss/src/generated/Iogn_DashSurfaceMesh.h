@@ -35,9 +35,9 @@ namespace Iogn {
   inline std::string getTopologyName(Topology topology)
   {
     switch (topology) {
-    case Shell4: return std::string(Ioss::Shell4::name);
-    case Hex8: return std::string(Ioss::Hex8::name);
-    case Beam2: return std::string(Ioss::Beam2::name);
+    case Shell4: return {Ioss::Shell4::name};
+    case Hex8: return {Ioss::Hex8::name};
+    case Beam2: return {Ioss::Beam2::name};
     }
     throw std::exception();
   }
@@ -65,7 +65,7 @@ namespace Iogn {
     std::vector<std::vector<int>>         sidesetConnectivity;
     std::vector<std::vector<std::string>> sidesetTouchingBlocks;
 
-    ExodusData() = default;
+    ExodusData() = delete;
     ExodusData(std::vector<double> coords, std::vector<std::vector<int>> elemBlockConnectivity,
                std::vector<int> globalNumOfElemsInBlock, std::vector<int> localNumOfElemsInBlock,
                std::vector<Topology> blockTopoData, int globalNumNodes,

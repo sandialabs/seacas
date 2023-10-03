@@ -54,14 +54,16 @@ namespace Iofaodel {
 
   // Applies FieldFunction 'op' to all fields encountered in the
   // Ioss::GroupingEntity
-  IOFAODEL_EXPORT void map_fields(const Ioss::Region &region, const Ioss::GroupingEntity &grouping_entity,
-                  FieldFunction op);
+  IOFAODEL_EXPORT void map_fields(const Ioss::Region         &region,
+                                  const Ioss::GroupingEntity &grouping_entity, FieldFunction op);
 
-  IOFAODEL_EXPORT lunasa::DataObject pack_field(const Ioss::Region &region, const Ioss::GroupingEntity &entity,
-                                const Ioss::Field &field);
+  IOFAODEL_EXPORT lunasa::DataObject pack_field(const Ioss::Region         &region,
+                                                const Ioss::GroupingEntity &entity,
+                                                const Ioss::Field          &field);
 
-  IOFAODEL_EXPORT lunasa::DataObject pack_field(const Ioss::Region &r, const Ioss::GroupingEntity &e,
-                                const Ioss::Field &f, void *data, size_t data_size);
+  IOFAODEL_EXPORT lunasa::DataObject pack_field(const Ioss::Region         &r,
+                                                const Ioss::GroupingEntity &e, const Ioss::Field &f,
+                                                void *data, size_t data_size);
 
   // Put this in the meta data section of the LDO
   struct IOFAODEL_EXPORT field_entry_t

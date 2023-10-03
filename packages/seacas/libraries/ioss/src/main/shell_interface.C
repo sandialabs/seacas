@@ -21,7 +21,7 @@
 #include <string>   // for string, char_traits
 #include <vector>   // for vector
 
-IOShell::Interface::Interface(const std::string &app_version) : version(app_version)
+IOShell::Interface::Interface(std::string app_version) : version(std::move(app_version))
 {
   enroll_options();
 }
@@ -345,7 +345,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
         "\nThe following options were specified via the IO_SHELL_OPTIONS environment variable:\n"
         "\t{}\n\n",
         options);
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, Ioss::GetLongOption::basename(*argv));
   }
 
   int option_index = options_.parse(argc, argv);

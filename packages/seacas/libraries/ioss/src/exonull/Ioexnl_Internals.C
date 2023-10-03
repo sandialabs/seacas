@@ -13,15 +13,15 @@ extern "C" {
 #include <exodusII_int.h>
 }
 
-#include <cassert>  // for assert
-#include <cstddef>  // for size_t
-#include <cstdio>   // for nullptr
-#include <cstdlib>  // for exit, EXIT_FAILURE
-#include <cstring>  // for strlen
+#include <cassert> // for assert
+#include <cstddef> // for size_t
+#include <cstdio>  // for nullptr
+#include <cstdlib> // for exit, EXIT_FAILURE
+#include <cstring> // for strlen
 #include <fmt/format.h>
-#include <ostream>  // for operator<<, etc
-#include <string>   // for string, operator==, etc
-#include <vector>   // for vector
+#include <ostream> // for operator<<, etc
+#include <string>  // for string, operator==, etc
+#include <vector>  // for vector
 
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"

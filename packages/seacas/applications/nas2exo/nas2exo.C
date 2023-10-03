@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
   }
 
   // Save some memory
-  reader.reset(NULL);
+  reader.reset(nullptr);
 
   if (!writer.writeFile()) {
 

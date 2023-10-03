@@ -45,7 +45,9 @@
 #include <utility>
 #include <vector>
 
+#if !defined __NVCC__
 #include <fmt/color.h>
+#endif
 #include <fmt/format.h>
 
 namespace {
@@ -68,11 +70,11 @@ namespace {
 
       if (options_.retrieve("output") != nullptr) {
         const std::string temp = options_.retrieve("output");
-        histogram              = temp.find("h") != std::string::npos;
-        work_per_processor     = temp.find("w") != std::string::npos;
-        zone_proc_assignment   = temp.find("z") != std::string::npos;
-        verbose                = temp.find("v") != std::string::npos || verbose;
-        communication_map      = temp.find("c") != std::string::npos;
+        histogram              = temp.find('h') != std::string::npos;
+        work_per_processor     = temp.find('w') != std::string::npos;
+        zone_proc_assignment   = temp.find('z') != std::string::npos;
+        verbose                = temp.find('v') != std::string::npos || verbose;
+        communication_map      = temp.find('c') != std::string::npos;
       }
 
       if (options_.retrieve("version") != nullptr) {
@@ -185,7 +187,7 @@ namespace {
       return true;
     }
 
-    explicit Interface(const std::string &app_version) : version(app_version)
+    explicit Interface(std::string app_version) : version(std::move(app_version))
     {
       options_.usage("[options] input_file");
       options_.enroll("help", Ioss::GetLongOption::NoValue, "Print this summary and exit", nullptr);
@@ -242,8 +244,9 @@ namespace {
   double surface_ratio(const Iocgns::StructuredZoneData *zone)
   {
     size_t surf =
-        2 * (zone->m_ordinal[0] * zone->m_ordinal[1] + zone->m_ordinal[0] * zone->m_ordinal[2] +
-             zone->m_ordinal[1] * zone->m_ordinal[2]);
+        (zone->m_ordinal[0] * zone->m_ordinal[1] + zone->m_ordinal[0] * zone->m_ordinal[2] +
+         zone->m_ordinal[1] * zone->m_ordinal[2]) *
+        static_cast<size_t>(2);
     size_t vol = zone->cell_count();
 
     // If a 'perfect' cube, then would be pl=cbrt(vol) on a side and surf would be 6*pl*pl
@@ -390,7 +393,10 @@ namespace {
       auto        search = comms.find(std::make_pair(value, key));
       if (search == comms.end()) {
         valid = false;
-        fmt::print(stderr, fg(fmt::color::red),
+        fmt::print(stderr, 
+#if !defined __NVCC__
+		   fg(fmt::color::red),
+#endif
                    "ERROR: Could not find matching ZGC for {}, proc {} -> {}, proc {}\n", key.first,
                    key.second, value.first, value.second);
       }
@@ -441,7 +447,11 @@ namespace {
         for (const auto &proc : comms) {
           if (proc.second < 0) {
             // From decomposition
-            fmt::print(fg(fmt::color::yellow), "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second,
+            fmt::print(
+#if !defined __NVCC__
+		       fg(fmt::color::yellow), 
+#endif
+		       "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second,
                        pw);
           }
           else {
@@ -634,11 +644,19 @@ namespace {
           std::string stars(star_cnt, '*');
           std::string format = "\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n";
           if (proc_work[i] == max_work) {
-            fmt::print(fg(fmt::color::red), format, i, proc_width, fmt::group_digits(proc_work[i]),
+            fmt::print(
+#if !defined __NVCC__
+		       fg(fmt::color::red), 
+#endif
+		       format, i, proc_width, fmt::group_digits(proc_work[i]),
                        work_width, proc_work[i] / avg_work, stars);
           }
           else if (proc_work[i] == min_work) {
-            fmt::print(fg(fmt::color::green), format, i, proc_width,
+            fmt::print(
+#if !defined __NVCC__
+		       fg(fmt::color::green), 
+#endif
+		       format, i, proc_width,
                        fmt::group_digits(proc_work[i]), work_width, proc_work[i] / avg_work, stars);
           }
           else {
@@ -787,7 +805,10 @@ int main(int argc, char *argv[])
 
   auto valid = validate_symmetric_communications(zones);
   if (!valid) {
-    fmt::print(stderr, fg(fmt::color::red),
+    fmt::print(stderr, 
+#if !defined __NVCC__
+	       fg(fmt::color::red),
+#endif
                "\nERROR: Zone Grid Communication interfaces are not symmetric.  There is an error "
                "in the decomposition.\n");
   }

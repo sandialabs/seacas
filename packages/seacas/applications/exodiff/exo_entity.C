@@ -56,14 +56,6 @@ Exo_Entity::~Exo_Entity()
   }
 }
 
-int Exo_Entity::Check_State() const
-{
-  SMART_ASSERT(id_ >= EX_INVALID_ID);
-
-  SMART_ASSERT(!(id_ == EX_INVALID_ID && numEntity > 0));
-  return 1;
-}
-
 void Exo_Entity::initialize(int file_id, size_t id)
 {
   fileId = file_id;
@@ -81,7 +73,6 @@ bool Exo_Entity::is_valid_var(size_t var_index) const
   SMART_ASSERT((int)var_index < numVars);
   if (truth_ == nullptr) {
     get_truth_table();
-    SMART_ASSERT(truth_ != nullptr);
   }
 
   return (truth_[var_index] != 0);
@@ -109,7 +100,6 @@ std::string Exo_Entity::Load_Results(int time_step, int var_index)
 
   if (truth_ == nullptr) {
     get_truth_table();
-    SMART_ASSERT(truth_ != nullptr);
   }
 
   if (truth_[var_index] != 0) {
@@ -166,7 +156,6 @@ std::string Exo_Entity::Load_Results(int t1, int t2, double proportion, int var_
 
   if (truth_ == nullptr) {
     get_truth_table();
-    SMART_ASSERT(truth_ != nullptr);
   }
 
   if (truth_[var_index] != 0) {

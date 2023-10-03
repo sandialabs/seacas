@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 
   const std::string ext{".exo"};
   std::string       line(argv[1]);
-  line = line.substr(0, line.find("."));
+  line = line.substr(0, line.find('.'));
   line += ext;
   int exo_file = ex_create(line.c_str(), EX_CLOBBER, &cpu_word_size, &io_word_size);
   if (exo_file < 0) {
@@ -357,7 +357,7 @@ std::vector<std::string> matGetStr(const std::string &name)
 {
   matvar_t *matvar = Mat_VarRead(mat_file, name.c_str());
   if (matvar == nullptr) {
-    return std::vector<std::string>();
+    return {};
   }
 
   if (matvar->dims[0] != 1) {

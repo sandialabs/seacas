@@ -7,6 +7,8 @@
 #include "io_info.h"
 #include <Ioss_Hex8.h>
 #include <Ioss_Sort.h>
+#include <Ioss_StructuredBlock.h>
+#include <Ioss_ZoneConnectivity.h>
 #include <tokenize.h>
 #define FMT_DEPRECATED_OSTREAM
 #include <fmt/format.h>
@@ -118,7 +120,12 @@ namespace {
     char  group_name[33];
     // Print name of this group...
     ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name);
-    fmt::print("{}{}\n", prefix, group_name);
+    if (group_name[0] == '/') {
+      fmt::print("{}/ (root)\n", prefix);
+    }
+    else {
+      fmt::print("{}{}\n", prefix, group_name);
+    }
 
     int              num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
     std::vector<int> children(num_children);
@@ -142,7 +149,7 @@ namespace {
 
     int exoid = ex_open(inpfile.c_str(), EX_READ, &CPU_word_size, &IO_word_size, &vers);
 
-    print_groups(exoid, "");
+    print_groups(exoid, "\t");
 #endif
   }
 
@@ -258,7 +265,11 @@ namespace {
       if (!sb->m_zoneConnectivity.empty()) {
         fmt::print("\tConnectivity with other blocks:\n");
         for (const auto &zgc : sb->m_zoneConnectivity) {
-          fmt::print("{}\n", zgc);
+#if defined __NVCC__
+	  std::cout << zgc << "\n";
+#else
+	  fmt::print("{}\n", zgc);
+#endif
         }
       }
       if (!sb->m_boundaryConditions.empty()) {
@@ -272,7 +283,11 @@ namespace {
                    });
 
         for (const auto &bc : sb_bc) {
+#if defined __NVCC__
+	  std::cout << bc << "\n";
+#else
           fmt::print("{}\n", bc);
+#endif
         }
       }
       if (interFace.compute_bbox()) {
@@ -578,8 +593,6 @@ namespace Ioss {
 
   void io_info_set_db_properties(const Info::Interface &interFace, Ioss::DatabaseIO *dbi)
   {
-    std::string inpfile = interFace.filename();
-
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -600,6 +613,7 @@ namespace Ioss {
     if (!interFace.groupname().empty()) {
       bool success = dbi->open_group(interFace.groupname());
       if (!success) {
+        std::string inpfile = interFace.filename();
         fmt::print("ERROR: Unable to open group '{}' in file '{}'\n", interFace.groupname(),
                    inpfile);
         return;

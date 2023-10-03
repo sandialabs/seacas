@@ -5,7 +5,6 @@
 // See packages/seacas/LICENSE for details
 
 #include "apr_scanner.h" // for Scanner
-#include "apr_symrec.h"
 #include "apr_util.h"
 #include "aprepro.h"        // for Aprepro, symrec, file_rec, etc
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
@@ -35,7 +34,9 @@
 #endif
 
 namespace {
-  const std::string version_string{"6.15 (2023/07/12)"};
+  const std::string version_short{"6.22"};
+  const std::string version_date{"(2023/09/28)"};
+  const std::string version_string = version_short + " " + version_date;
 
   void output_copyright();
 
@@ -94,12 +95,19 @@ namespace SEAMS {
     ap_file_list.emplace(file_rec());
     init_table("$");
     aprepro = this;
+
+    add_variable("__loop_level__", 0, false, true);
   }
 
   Aprepro::~Aprepro()
   {
     if (!outputStream.empty()) {
       outputStream.top()->flush();
+      while (outputStream.size() > 1) {
+        std::ostream *output = outputStream.top();
+        outputStream.pop();
+        delete output;
+      }
     }
 
     // May need to delete this if set via --info=filename command.
@@ -125,7 +133,8 @@ namespace SEAMS {
     cleanup_memory();
   }
 
-  std::string Aprepro::version() { return version_string; }
+  const std::string &Aprepro::version() { return version_string; }
+  const std::string &Aprepro::short_version() { return version_short; }
 
   std::string Aprepro::long_version() const
   {
@@ -220,7 +229,7 @@ namespace SEAMS {
       if (colorize) {
         (*errorStream) << trmclr::red;
       }
-      (*errorStream) << "Aprepro: ERROR: ";
+      (*errorStream) << "Aprepro-" << short_version() << ": ERROR: ";
     }
 
     ss << msg;
@@ -411,7 +420,7 @@ namespace SEAMS {
     // it returns the same type which means that the "parser_type" is
     // the same.  If we have a function, see if it has already been
     // defined and if so, check that the parser_type matches and then
-    // retrn that pointer instead of creating a new symrec.
+    // return that pointer instead of creating a new symrec.
 
     if (is_function) {
       symrec *ptr = getsym(sym_name);
@@ -453,6 +462,9 @@ namespace SEAMS {
       auto equals = option.find('=');
       if (equals == std::string::npos) {
         equals = option.size();
+      }
+      else {
+        equals = equals - number_dash;
       }
 
       // NOTE: `option` contains two leading `--` or `-` and a single character...

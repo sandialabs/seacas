@@ -12,13 +12,14 @@
 /* FILE  ***********        mpi.h              ********************/
 /******************************************************************/
 /* Author : Lisa Alano June 18 2002                               */
-/* Copyright (c) 2002 University of California Regents            */
+/* Copyright (c) 2002, 2023 University of California Regents            */
 /******************************************************************/
 
 #ifndef _MPI_H
 #define _MPI_H
 
 #ifdef __cplusplus
+  // NOLINTBEGIN
 extern "C" {
 #endif
 
@@ -294,6 +295,7 @@ SKIP FOR NOW FORTRAN: EXTERNAL MPI_DUP_FN
 
 
 #ifdef __cplusplus
+  // NOLINTEND
 }
 #endif
 

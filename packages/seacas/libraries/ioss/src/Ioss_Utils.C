@@ -486,7 +486,7 @@ namespace {
 
     if (!found_valid) {
       // Return an invalid field...
-      return Ioss::Field("", Ioss::Field::INVALID, IOSS_SCALAR(), fld_role, 1);
+      return {"", Ioss::Field::INVALID, IOSS_SCALAR(), fld_role, 1};
     }
 
     // At this point, name[index] should be a valid potential field
@@ -617,7 +617,7 @@ namespace {
       }
       suffix_size--;
     }
-    return Ioss::Field("", Ioss::Field::INVALID, IOSS_SCALAR(), fld_role, 1);
+    return {"", Ioss::Field::INVALID, IOSS_SCALAR(), fld_role, 1};
   }
 
   // common
@@ -953,44 +953,44 @@ int64_t Ioss::Utils::get_side_offset(const Ioss::SideBlock *sb)
 std::string Ioss::Utils::shape_to_string(const Ioss::ElementShape &shape)
 {
   switch (shape) {
-  case Ioss::ElementShape::UNKNOWN: return std::string("Unknown");
-  case Ioss::ElementShape::POINT: return std::string("Point");
-  case Ioss::ElementShape::SPHERE: return std::string("Sphere");
-  case Ioss::ElementShape::LINE: return std::string("Line");
-  case Ioss::ElementShape::SPRING: return std::string("Spring");
-  case Ioss::ElementShape::TRI: return std::string("Tri");
-  case Ioss::ElementShape::QUAD: return std::string("Quad");
-  case Ioss::ElementShape::TET: return std::string("Tet");
-  case Ioss::ElementShape::PYRAMID: return std::string("Pyramid");
-  case Ioss::ElementShape::WEDGE: return std::string("Wedge");
-  case Ioss::ElementShape::HEX: return std::string("Hex");
-  case Ioss::ElementShape::SUPER: return std::string("Super");
+  case Ioss::ElementShape::UNKNOWN: return {"Unknown"};
+  case Ioss::ElementShape::POINT: return {"Point"};
+  case Ioss::ElementShape::SPHERE: return {"Sphere"};
+  case Ioss::ElementShape::LINE: return {"Line"};
+  case Ioss::ElementShape::SPRING: return {"Spring"};
+  case Ioss::ElementShape::TRI: return {"Tri"};
+  case Ioss::ElementShape::QUAD: return {"Quad"};
+  case Ioss::ElementShape::TET: return {"Tet"};
+  case Ioss::ElementShape::PYRAMID: return {"Pyramid"};
+  case Ioss::ElementShape::WEDGE: return {"Wedge"};
+  case Ioss::ElementShape::HEX: return {"Hex"};
+  case Ioss::ElementShape::SUPER: return {"Super"};
   }
-  return std::string("Invalid shape [") + std::to_string(unsigned(shape)) + std::string("]");
+  return fmt::format("Invalid shape [{}]", unsigned(shape));
 }
 
 std::string Ioss::Utils::entity_type_to_string(const Ioss::EntityType &type)
 {
   switch (type) {
-  case Ioss::EntityType::NODEBLOCK: return std::string("NODEBLOCK");
-  case Ioss::EntityType::EDGEBLOCK: return std::string("EDGEBLOCK");
-  case Ioss::EntityType::FACEBLOCK: return std::string("FACEBLOCK");
-  case Ioss::EntityType::ELEMENTBLOCK: return std::string("ELEMENTBLOCK");
-  case Ioss::EntityType::NODESET: return std::string("NODESET");
-  case Ioss::EntityType::EDGESET: return std::string("EDGESET");
-  case Ioss::EntityType::FACESET: return std::string("FACESET");
-  case Ioss::EntityType::ELEMENTSET: return std::string("ELEMENTSET");
-  case Ioss::EntityType::SIDESET: return std::string("SIDESET");
-  case Ioss::EntityType::COMMSET: return std::string("COMMSET");
-  case Ioss::EntityType::SIDEBLOCK: return std::string("SIDEBLOCK");
-  case Ioss::EntityType::REGION: return std::string("REGION");
-  case Ioss::EntityType::SUPERELEMENT: return std::string("SUPERELEMENT");
-  case Ioss::EntityType::STRUCTUREDBLOCK: return std::string("STRUCTUREDBLOCK");
-  case Ioss::EntityType::ASSEMBLY: return std::string("ASSEMBLY");
-  case Ioss::EntityType::BLOB: return std::string("BLOB");
-  case Ioss::EntityType::INVALID_TYPE: return std::string("INVALID_TYPE");
+  case Ioss::EntityType::NODEBLOCK: return {"NODEBLOCK"};
+  case Ioss::EntityType::EDGEBLOCK: return {"EDGEBLOCK"};
+  case Ioss::EntityType::FACEBLOCK: return {"FACEBLOCK"};
+  case Ioss::EntityType::ELEMENTBLOCK: return {"ELEMENTBLOCK"};
+  case Ioss::EntityType::NODESET: return {"NODESET"};
+  case Ioss::EntityType::EDGESET: return {"EDGESET"};
+  case Ioss::EntityType::FACESET: return {"FACESET"};
+  case Ioss::EntityType::ELEMENTSET: return {"ELEMENTSET"};
+  case Ioss::EntityType::SIDESET: return {"SIDESET"};
+  case Ioss::EntityType::COMMSET: return {"COMMSET"};
+  case Ioss::EntityType::SIDEBLOCK: return {"SIDEBLOCK"};
+  case Ioss::EntityType::REGION: return {"REGION"};
+  case Ioss::EntityType::SUPERELEMENT: return {"SUPERELEMENT"};
+  case Ioss::EntityType::STRUCTUREDBLOCK: return {"STRUCTUREDBLOCK"};
+  case Ioss::EntityType::ASSEMBLY: return {"ASSEMBLY"};
+  case Ioss::EntityType::BLOB: return {"BLOB"};
+  case Ioss::EntityType::INVALID_TYPE: return {"INVALID_TYPE"};
   }
-  return std::string("Invalid entity type [") + std::to_string(unsigned(type)) + std::string("]");
+  return fmt::format("Invalid entity type [{}]", unsigned(type));
 }
 
 unsigned int Ioss::Utils::hash(const std::string &name)
@@ -1159,7 +1159,7 @@ namespace {
     // Convert to base-26 'number'
     hashval %= HASHSIZE;
     char word[3] = {char(hashval / 26 + 'a'), char(hashval % 26 + 'a'), '\0'};
-    return (std::string(word));
+    return {word};
   }
 } // namespace
 

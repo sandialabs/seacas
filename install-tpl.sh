@@ -69,7 +69,14 @@ BB=$(check_valid BB)
 CRAY=${CRAY:-NO}
 CRAY=$(check_valid CRAY)
 
-# Which TPLS? (NetCDF always, PnetCDF if MPI=ON)
+MPI=${MPI:-NO}
+MPI=$(check_valid MPI)
+
+# Which TPLS? (NetCDF always, but can be disabled if using an external version, PnetCDF if MPI=ON)
+NETCDF=${NETCDF:-YES}
+NETCDF=$(check_valid NETCDF)
+PNETCDF=${PNETCDF:-${MPI}}
+PNETCDF=$(check_valid PNETCDF)
 HDF5=${HDF5:-YES}
 HDF5=$(check_valid HDF5)
 CGNS=${CGNS:-${HDF5}}
@@ -115,10 +122,13 @@ USE_AEC=$(check_valid USE_AEC)
 KOKKOS=${KOKKOS:-NO}
 KOKKOS=$(check_valid KOKKOS)
 
-H5VERSION=${H5VERSION:-V112}
+H5VERSION=${H5VERSION:-V114}
 
 FAODEL=${FAODEL:-NO}
 FAODEL=$(check_valid FAODEL)
+
+BOOST=${BOOST:-NO}
+BOOST=$(check_valid BOOST)
 
 ADIOS2=${ADIOS2:-NO}
 ADIOS2=$(check_valid ADIOS2)
@@ -126,11 +136,9 @@ ADIOS2=$(check_valid ADIOS2)
 CATALYST2=${CATALYST2:-NO}
 CATALYST2=$(check_valid CATALYST2)
 
-GTEST=${GTEST:-NO}
+GTEST=${GTEST:-${FAODEL}}
 GTEST=$(check_valid GTEST)
 
-MPI=${MPI:-NO}
-MPI=$(check_valid MPI)
 
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
@@ -178,7 +186,7 @@ if [ $# -gt 0 ]; then
         echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
         echo "   INSTALL_PATH = ${txtgrn}${INSTALL_PATH}${txtcyn}"
         echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
-        echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm)"
+        echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm gnubrew gnumacport clangmacport nvidia)"
         echo "   MPI          = ${MPI} (Parallel Build?)"
         echo ""
         echo "   FORCE        = ${FORCE}"
@@ -188,6 +196,8 @@ if [ $# -gt 0 ]; then
         echo "   DEBUG        = ${DEBUG}"
         echo "   USE_PROXY    = ${USE_PROXY}"
         echo ""
+        echo "   NETCDF       = ${NETCDF}"
+        echo "   PNETCDF      = ${PNETCDF}"
         echo "   HDF5         = ${HDF5}"
         echo "   H5VERSION    = ${H5VERSION}"
         echo "   CGNS         = ${CGNS}"
@@ -413,9 +423,9 @@ then
             hdf_version="1.13.1"
             hdf_base="1.13"
 	elif [ "${H5VERSION}" == "V114" ]; then
-            hdf_version="1.14.1"
+            hdf_version="1.14.2"
             hdf_base="1.14"
-	    hdf_suffix="-2"
+	    hdf_suffix=""
 	elif [ "${H5VERSION}" == "develop" ]; then
             hdf_version="develop"
 	else
@@ -473,7 +483,7 @@ then
 fi
 
 # =================== INSTALL PnetCDF if parallel build ===============
-if [ "$MPI" == "YES" ]
+if [ "$PNETCDF" == "YES" ] && [ "$MPI" == "YES" ]
 then
     # PnetCDF currently only builds static library...
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
@@ -523,6 +533,8 @@ then
 fi
 
 # =================== INSTALL NETCDF ===============
+if [ "$NETCDF" == "YES" ]
+then
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
     echo "${txtgrn}+++ NetCDF${txtrst}"
@@ -571,6 +583,7 @@ then
     fi
 else
     echo "${txtylw}+++ NetCDF already installed.  Skipping download and installation.${txtrst}"
+fi
 fi
 # =================== INSTALL CGNS ===============
 if [ "$CGNS" == "YES" ] && [ "$HDF5" == "YES" ]
@@ -753,7 +766,7 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="10.0.0"
+        fmt_version="10.1.0"
 
         if [ "$DOWNLOAD" == "YES" ]
         then
@@ -837,7 +850,7 @@ fi
 # =================== INSTALL ADIOS2  ===============
 if [ "$ADIOS2" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2_c.${LD_EXT} ]
     then
         echo "${txtgrn}+++ ADIOS2${txtrst}"
         cd $ACCESS || exit
@@ -853,7 +866,6 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2 || exit
-            git checkout v2.5.0
             rm -rf build
             mkdir build
             cd build || exit
@@ -999,10 +1011,37 @@ then
     fi
 fi
 
+# =================== INSTALL BOOST ===============
+if [ "$BOOST" == "YES" ]
+then
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/boost ]
+  then
+    # FAODEL Requires Boost... For now, just download and install
+    echo "${txtgrn}+++ Installing Boost as dependency of Faodel${txtrst}"
+    cd $ACCESS || exit
+    cd TPL/boost || exit
+    BOOST_VER="1_82_0"
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+	wget --no-check-certificate "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_${BOOST_VER}.tar.bz2" 
+	tar xf boost_${BOOST_VER}.tar.bz2
+    fi
+    if [ "$BUILD" == "YES" ]
+    then
+	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+	cd boost_${BOOST_VER}
+	./bootstrap.sh --prefix=${INSTALL_PATH}
+	./b2 -a install
+    fi
+  else
+    echo "${txtylw}+++ Boost already installed.  Skipping download and installation.${txtrst}"
+  fi
+fi
+
 # =================== INSTALL FAODEL ===============
 if [ "$FAODEL" == "YES" ]
 then
-  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.a ]
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.${LD_EXT} ]
   then
     faodel_base="faodel"
     echo "${txtgrn}+++ Faodel${txtrst}"
@@ -1012,7 +1051,7 @@ then
     then
       echo "${txtgrn}+++ Downloading...${txtrst}"
       rm -rf faodel*
-      git clone git@github.com:faodel/faodel.git
+      git clone https://github.com/sandialabs/faodel.git
     fi
 
     if [ "$BUILD" == "YES" ]

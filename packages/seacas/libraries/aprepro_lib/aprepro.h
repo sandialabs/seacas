@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 
+#include "apr_symrec.h"
+
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
 #include <io.h>
@@ -29,8 +31,6 @@
 namespace SEAMS {
 
   struct Symtable;
-  struct symrec;
-  struct array;
 
   /* Global options */
   struct aprepro_options
@@ -58,8 +58,11 @@ namespace SEAMS {
   struct file_rec
   {
     std::string name{"STDIN"};
+    symrec     *loop_index{nullptr};
+    double      loop_increment{1};
     int         lineno{1};
     int         loop_count{0};
+    int         loop_level{0};
     bool        tmp_file{false};
 
     file_rec(const char *my_name, int line_num, bool is_temp, int loop_cnt)
@@ -112,10 +115,13 @@ namespace SEAMS {
     const std::ostringstream &parsing_results() const { return parsingResults; }
     void                      clear_results();
 
-    /** Return string representation of current version of aprepro.  */
-    static std::string version();
+    /** Return string representation of current version of aprepro + commit date.  */
+    static const std::string &version();
 
-    /** Return long version: `# Algebraic Preprocessor (Aprepro) version X.X.X` */
+    /** Return string representation of current version of aprepro.  */
+    static const std::string &short_version();
+
+    /** Return long version: `# Algebraic Preprocessor (Aprepro) version X.X (date)` */
     std::string long_version() const;
 
     /** Invoke the scanner and parser for a stream.
@@ -258,7 +264,7 @@ namespace SEAMS {
     // needs to be sent through Aprepro again later.
     bool doIncludeSubstitution{true};
 
-    // Flag to inidicate whether Aprepro is in the middle of collecting lines for a
+    // Flag to indicate whether Aprepro is in the middle of collecting lines for a
     // loop.
     bool isCollectingLoop{false};
 

@@ -22,8 +22,8 @@
 #define X_OK   1 /* execute permission - unsupported in windows*/
 #define F_OK   0 /* Test for existence.  */
 #ifndef S_ISREG
-#define S_ISREG(m) (((m)&_S_IFMT) == _S_IFREG)
-#define S_ISDIR(m) (((m)&_S_IFMT) == _S_IFDIR)
+#define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
+#define S_ISDIR(m) (((m) & _S_IFMT) == _S_IFDIR)
 #endif
 #else
 #include <unistd.h>
@@ -283,7 +283,7 @@ namespace Ioss {
       return filename_.substr(ind + 1, filename_.size());
     }
 
-    return std::string();
+    return {};
   }
 
   std::string FileInfo::pathname() const
@@ -293,7 +293,7 @@ namespace Ioss {
       return filename_.substr(0, ind);
     }
 
-    return std::string();
+    return {};
   }
 
   std::string FileInfo::tailname() const

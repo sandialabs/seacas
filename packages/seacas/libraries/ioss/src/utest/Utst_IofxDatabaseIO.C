@@ -276,20 +276,20 @@ namespace {
     output_region.add(output_node_block);
 
     const auto &input_element_blocks = input_region.get_element_blocks();
-    for (size_t blk = 0; blk < input_element_blocks.size(); ++blk) {
-      const Ioss::ElementTopology *topology = input_element_blocks[blk]->topology();
-      int block_id = input_element_blocks[blk]->get_property("id").get_int();
+    for (const auto &block : input_element_blocks) {
+      const auto *topology = block->topology();
+      int         block_id = block->get_property("id").get_int();
 
-      std::string name         = input_element_blocks[blk]->name();
-      std::string exotype      = topology->name();
-      int64_t     num_elements = input_element_blocks[blk]->entity_count();
+      const std::string &name         = block->name();
+      std::string        exotype      = topology->name();
+      int64_t            num_elements = block->entity_count();
 
       auto *output_element_block = new Ioss::ElementBlock(db_out, name, exotype, num_elements);
       output_element_block->property_add(Ioss::Property("original_topology_type", exotype));
       output_element_block->property_add(Ioss::Property("id", block_id));
       output_region.add(output_element_block);
 
-      int num_attributes = input_element_blocks[blk]->get_property("attribute_count").get_int();
+      int num_attributes = block->get_property("attribute_count").get_int();
       for (int j = 0; j < num_attributes; ++j) {
         output_element_block->field_add(Ioss::Field("attribute", Ioss::Field::REAL, "scalar",
                                                     Ioss::Field::ATTRIBUTE, num_elements, j + 1));
@@ -297,9 +297,9 @@ namespace {
     }
 
     const auto &nodesets_input = input_region.get_nodesets();
-    for (size_t i = 0; i < nodesets_input.size(); ++i) {
-      std::string nodeset_name            = nodesets_input[i]->name();
-      int64_t     number_nodes_in_nodeset = nodesets_input[i]->entity_count();
+    for (const auto &nset : nodesets_input) {
+      const std::string &nodeset_name            = nset->name();
+      int64_t            number_nodes_in_nodeset = nset->entity_count();
 
       auto *const nodeset = new Ioss::NodeSet(db_out, nodeset_name, number_nodes_in_nodeset);
       output_region.add(nodeset);
@@ -308,24 +308,24 @@ namespace {
     }
 
     const auto &sidesets_input = input_region.get_sidesets();
-    for (size_t i = 0; i < sidesets_input.size(); ++i) {
-      std::string sideset_name = sidesets_input[i]->name();
+    for (const auto &sset : sidesets_input) {
+      const std::string &sideset_name = sset->name();
 
       auto *const sideset_output = new Ioss::SideSet(db_out, sideset_name);
       output_region.add(sideset_output);
 
-      const auto &side_blocks = sidesets_input[i]->get_side_blocks();
-      for (size_t k = 0; k < side_blocks.size(); ++k) {
-        const std::string &topo_name        = side_blocks[k]->topology()->name();
-        int64_t            side_count       = side_blocks[k]->entity_count();
-        const std::string &parent_topo_name = side_blocks[k]->parent_element_topology()->name();
-        const std::string &side_block_name  = side_blocks[k]->name();
+      const auto &side_blocks = sset->get_side_blocks();
+      for (const auto &sblock : side_blocks) {
+        const std::string &topo_name        = sblock->topology()->name();
+        int64_t            side_count       = sblock->entity_count();
+        const std::string &parent_topo_name = sblock->parent_element_topology()->name();
+        const std::string &side_block_name  = sblock->name();
         auto              *side_block =
             new Ioss::SideBlock(db_out, side_block_name, topo_name, parent_topo_name, side_count);
 
         sideset_output->add(side_block);
 
-        int         nodes_per_side = side_blocks[k]->topology()->number_nodes();
+        int         nodes_per_side = sblock->topology()->number_nodes();
         std::string storage_type   = "Real[";
         storage_type += std::to_string(nodes_per_side);
         storage_type += "]";

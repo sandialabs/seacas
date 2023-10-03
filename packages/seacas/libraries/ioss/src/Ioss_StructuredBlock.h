@@ -126,7 +126,7 @@ namespace Ioss {
      */
     bool is_active() const { return m_ijk[0] * m_ijk[1] * m_ijk[2] > 0; }
 
-    // Handle implicit properties -- These are calcuated from data stored
+    // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override;

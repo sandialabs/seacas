@@ -131,12 +131,12 @@ Ioss::Property Ioss::SideBlock::get_implicit_property(const std::string &my_name
     if (field_exists("distribution_factors")) {
       int64_t nnodes = topology()->number_nodes();
       int64_t nside  = entity_count();
-      return Ioss::Property(my_name, nnodes * nside);
+      return {my_name, nnodes * nside};
     }
-    return Ioss::Property(my_name, 0);
+    return {my_name, 0};
   }
   if (my_name == "parent_topology_type") {
-    return Ioss::Property(my_name, parent_element_topology()->name());
+    return {my_name, parent_element_topology()->name()};
   }
 
   return Ioss::EntityBlock::get_implicit_property(my_name);

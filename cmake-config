@@ -160,8 +160,8 @@ then
 
   if [ "$COMPILER" == "intel" ]
   then
-      CXX=icpx
-      CC=icx
+      CXX=icpc
+      CC=icc
       FC=ifort
       CFLAGS="-Wall -Wunused"
       CXXFLAGS="-Wall -Wextra  -Wunused"
@@ -382,6 +382,9 @@ then
 	LD_EXT="so"
     fi
 else
+# NOTE: Some systems may need `curl` added to Seacas_EXTRA_LINK_FLAGS`
+#       If you see missing symbols containing `_curl`, try adding `curl`
+#   EXTRA_LIB="-DSeacas_EXTRA_LINK_FLAGS=curl;z;dl -DSEACASExodus_ENABLE_SHARED:BOOL=OFF"
     EXTRA_LIB="-DSeacas_EXTRA_LINK_FLAGS=z;dl -DSEACASExodus_ENABLE_SHARED:BOOL=OFF"
     LD_EXT="a"
 fi

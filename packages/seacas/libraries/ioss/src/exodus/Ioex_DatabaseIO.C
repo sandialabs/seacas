@@ -608,7 +608,7 @@ namespace Ioex {
         char *qa_record[1][4];
       };
 
-      auto qa = new qa_element[num_qa];
+      std::vector<qa_element> qa(num_qa);
       for (int i = 0; i < num_qa; i++) {
         for (int j = 0; j < 4; j++) {
           qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
@@ -625,7 +625,6 @@ namespace Ioex {
           delete[] qa[i].qa_record[0][j];
         }
       }
-      delete[] qa;
     }
 
     // Get information records from database and add to informationRecords...
@@ -843,10 +842,10 @@ namespace Ioex {
     if (nemesis_file) {
       // A nemesis file typically separates nodes into multiple
       // communication sets by processor.  (each set specifies
-      // nodes/elements that communicate with only a single processor).
-      // For Sierra, we want a single node commun. map and a single
-      // element commun. map specifying all communications so we combine
-      // all sets into a single set.
+      // nodes/elements that communicate with only a single
+      // processor).  For Sierra, we want a single node communication
+      // map and a single element communication map specifying all
+      // communications so we combine all sets into a single set.
 
       if (int_byte_size_api() == 4) {
         int gn, ge, geb, gns, gss;

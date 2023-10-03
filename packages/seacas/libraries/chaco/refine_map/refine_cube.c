@@ -57,7 +57,7 @@ int refine_cube(struct vtx_data **comm_graph, /* graph for communication require
 
   /* This is really just ndims_tot different 1-D problems. */
 
-  /* Allocate space for and inititalize the vertex data. */
+  /* Allocate space for and initialize the vertex data. */
   vdata =
       (struct refine_vdata *)smalloc_ret((ndims_tot * nsets_tot + 1) * sizeof(struct refine_vdata));
   if (vdata == NULL) {

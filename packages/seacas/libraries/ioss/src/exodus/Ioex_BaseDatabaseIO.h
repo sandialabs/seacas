@@ -130,7 +130,6 @@ namespace Ioex {
     int  int_byte_size_db() const override;
     void set_int_byte_size_api(Ioss::DataSize size) const override;
 
-  protected:
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override             = 0;
     int64_t get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
@@ -264,8 +263,6 @@ namespace Ioex {
     void flush_database__() const override;
     void finalize_write(int state, double sim_time);
 
-    // Private member data...
-  protected:
     mutable int m_exodusFilePtr{-1};
     // If using links to file-per-state, the file pointer for "base" file.
     mutable int m_exodusBasePtr{-1};

@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <exonull/Ioexnl_DatabaseIO.h>         // for Ioexnl DatabaseIO
-#include <exonull/Ioexnl_IOFactory.h>          // for Ioexnl IOFactory
+#include <exonull/Ioexnl_DatabaseIO.h> // for Ioexnl DatabaseIO
+#include <exonull/Ioexnl_IOFactory.h>  // for Ioexnl IOFactory
 
 #if defined(PARALLEL_AWARE_EXODUS)             // Defined in exodusII.h
 #include <exonull/Ioexnl_ParallelDatabaseIO.h> // for Ioexnl ParallelDatabaseIO
@@ -15,7 +15,7 @@
 #include <cstddef> // for nullptr
 #include <exodusII.h>
 #include <fmt/ostream.h>
-#include <string>           // for string
+#include <string> // for string
 
 #include "Ioss_CodeTypes.h" // for Ioss_MPI_Comm
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
