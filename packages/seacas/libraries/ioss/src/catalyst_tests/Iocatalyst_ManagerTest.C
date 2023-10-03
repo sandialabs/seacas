@@ -7,10 +7,12 @@
 #include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
 #include <catalyst_tests/Iocatalyst_LoggingTest.h>
 #include <catalyst/Iocatalyst_CatalystManager.h>
+#include <Ioss_ParallelUtils.h>
 
 TEST_F(LoggingTest, LoggingDefault)
 {
-    Iocatalyst::CatalystManager::getInstance();
+    Ioss::ParallelUtils putils;
+    Iocatalyst::CatalystManager::getInstance().writeToCatalystLogFile(putils, props);
 
     //log.setProperties(&props);
     //writeToCatalystLogFile(const DatabaseInfo &dbinfo, const Ioss::PropertyManager &props)

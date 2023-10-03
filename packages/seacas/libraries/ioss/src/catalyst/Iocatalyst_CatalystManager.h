@@ -8,6 +8,7 @@
 #define IOSS_IOVS_CATALYST_MANAGER_H
 
 #include "iocatalyst_export.h"
+#include <Ioss_ParallelUtils.h>
 
 namespace Iocatalyst {
 
@@ -19,6 +20,9 @@ namespace Iocatalyst {
       static CatalystManager instance;
       return instance;
     }
+
+    void writeToCatalystLogFile(const Ioss::ParallelUtils   &putils,
+                                const Ioss::PropertyManager &props);
 
   private:
     CatalystManager();

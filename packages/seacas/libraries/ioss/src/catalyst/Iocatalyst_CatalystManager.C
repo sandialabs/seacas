@@ -8,8 +8,11 @@
 
 namespace Iocatalyst {
 
-    CatalystManager::CatalystManager() {}
+  CatalystManager::CatalystManager() {}
 
-    CatalystManager::~CatalystManager() {}
+  CatalystManager::~CatalystManager() {}
 
-}
+  void CatalystManager::writeToCatalystLogFile(const Ioss::ParallelUtils   &putils,
+                                               const Ioss::PropertyManager &props) {}
+
+} // namespace Iocatalyst
