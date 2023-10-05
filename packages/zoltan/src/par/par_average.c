@@ -53,6 +53,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
+#include "par_average_const.h"
 #include "par_median_const.h"
 #include "zz_const.h"
 

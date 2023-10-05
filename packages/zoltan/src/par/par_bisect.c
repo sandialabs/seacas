@@ -106,6 +106,8 @@ static double eval_cut_quality(int, double *, double *, double *, double *,
               int);
 static void compute_weight_sums( int, int *, int, double *, double,
             double *, double *, MPI_Comm, int, int, int, int);
+static void Zoltan_bisector_merge(void *in, void *inout, int *len, MPI_Datatype *dptr);
+            
 #endif /* RB_MAX_WGTS > 1 */
 
 /*****************************************************************************/
@@ -1251,7 +1253,7 @@ static double eval_cut_quality(
 
 
 */
-void Zoltan_bisector_merge(void *in, void *inout, int *len, MPI_Datatype *dptr)
+static void Zoltan_bisector_merge(void *in, void *inout, int *len, MPI_Datatype *dptr)
 {
   struct bisector *med1, *med2;
   int i, nwgts;
