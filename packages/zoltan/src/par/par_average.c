@@ -56,8 +56,6 @@ extern "C" {
 #include "par_median_const.h"
 #include "zz_const.h"
 
-#define TINY   1.0e-6
-
 /* prototypes for TFLOPS_SPECIAL */
 static void Zoltan_average_cuts_reduce(int, int, int, double *, double *,
    int, MPI_Datatype, MPI_Comm);
