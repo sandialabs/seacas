@@ -562,8 +562,8 @@ int Zoltan_Verify_Graph(MPI_Comm comm, indextype *vtxdist, indextype *xadj,
 /* comparison routine for bsearch */
 static int Zoltan_Compare_Indextypes(const void *key, const void *arg)
 {
-   if ( *(indextype*) key > (*(indextype*) arg))  return  1;
-   if ( *(indextype*) key < (*(indextype*) arg))  return -1;
+   if ( *(const indextype*) key > (*(const indextype*) arg))  return  1;
+   if ( *(const indextype*) key < (*(const indextype*) arg))  return -1;
 
    return 0;  /* equal */
 }
