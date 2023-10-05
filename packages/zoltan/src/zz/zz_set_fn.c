@@ -271,9 +271,11 @@ int ierr;
     ierr = Zoltan_Set_Hier_Method_Fn(zz,
 		  (ZOLTAN_HIER_METHOD_FN *) fn, data);
     break;
+  case ZOLTAN_PROC_NAME_FN_TYPE:
+  case ZOLTAN_MAX_FN_TYPES:
   default:
     sprintf(msg, "ZOLTAN_FN_TYPE %d is invalid.\n"
-            "Value must be in range 0 to %d.", fn_type, ZOLTAN_MAX_FN_TYPES);
+            "Value must be in range 0 to %d.", fn_type, ZOLTAN_MAX_FN_TYPES - 1);
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
     ierr = ZOLTAN_WARN;
   }
@@ -484,9 +486,11 @@ int ierr = ZOLTAN_OK;
     *fn = (ZOLTAN_VOID_FN *) zz->Get_Hier_Method;
     *data = zz->Get_Hier_Method_Data;
     break;
+  case ZOLTAN_PROC_NAME_FN_TYPE:
+  case ZOLTAN_MAX_FN_TYPES:
   default:
     sprintf(msg, "ZOLTAN_FN_TYPE %d is invalid.\n"
-            "Value must be in range 0 to %d.", fn_type, ZOLTAN_MAX_FN_TYPES);
+            "Value must be in range 0 to %d.", fn_type, ZOLTAN_MAX_FN_TYPES - 1);
     *fn = NULL;
     *data = NULL;
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
