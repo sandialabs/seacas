@@ -50,8 +50,7 @@
 
 include_guard()
 
-include("${CMAKE_CURRENT_LIST_DIR}/../common/TribitsCMakePolicies.cmake"
-  NO_POLICY_SCOPE)
+include(TribitsCMakePolicies  NO_POLICY_SCOPE)
 
 include(TribitsParseArgumentsHelpers)
 include(MessageWrapper)
