@@ -151,9 +151,9 @@ namespace {
                                   connectivity_t &face_connectivity)
   {
     for (const auto &face : faces) {
-      for (const auto &face_element : face.element) {
-        auto element                     = face_element / 10 - offset;
-        auto side                        = face_element % 10; // 0-based side
+      for (int i = 0; i < face.elementCount_; i++) {
+        auto element                     = face.element[i] / 10 - offset;
+        auto side                        = face.element[i] % 10; // 0-based side
         face_connectivity[element][side] = &face;
       }
     }

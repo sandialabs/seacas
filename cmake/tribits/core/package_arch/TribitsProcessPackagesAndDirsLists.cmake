@@ -535,8 +535,7 @@ macro(tribits_process_packages_and_dirs_lists  REPOSITORY_NAME  REPOSITORY_DIR)
 
       endif()
 
-      set(packageDependenciesFile "${PACKAGE_ABS_DIR}/cmake/Dependencies.cmake")
-      if (EXISTS "${packageDependenciesFile}")
+      if (EXISTS ${PACKAGE_ABS_DIR})
         set(PACKAGE_EXISTS TRUE)
       else()
         set(PACKAGE_EXISTS FALSE)
@@ -558,16 +557,9 @@ macro(tribits_process_packages_and_dirs_lists  REPOSITORY_NAME  REPOSITORY_DIR)
         )
         message(
           "\n***"
-          "\n*** Error, the package ${TRIBITS_PACKAGE} dependencies file"
-	    " '${packageDependenciesFile}' does *NOT* exist!"
+          "\n*** Error, the package ${TRIBITS_PACKAGE} directory ${PACKAGE_ABS_DIR} does not exist!"
           "\n***\n" )
         message(FATAL_ERROR "Stopping due to above error!")
-      elseif((NOT PACKAGE_EXISTS) AND (EXISTS "${PACKAGE_ABS_DIR}")
-          AND (${PROJECT_NAME}_ASSERT_DEFINED_DEPENDENCIES STREQUAL "WARNING")
-        )
-        message(WARNING "${TRIBITS_PACKAGE}: Package base directory '${PACKAGE_ABS_DIR}'"
-	  " exists but the dependencies file '${packageDependenciesFile}' does *NOT*"
-	  " exist!  Package is being ignored anyway!")
       endif()
 
       if (PACKAGE_EXISTS OR ${PROJECT_NAME}_IGNORE_PACKAGE_EXISTS_CHECK)

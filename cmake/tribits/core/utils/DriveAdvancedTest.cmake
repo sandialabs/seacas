@@ -37,13 +37,11 @@
 # ************************************************************************
 # @HEADER
 
-include_guard()
-
-include("${CMAKE_CURRENT_LIST_DIR}/PrintVar.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/AppendStringVar.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/Join.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/TimingUtils.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/TribitsGetCategoriesString.cmake")
+include(PrintVar)
+include(AppendStringVar)
+include(Join)
+include(TimingUtils)
+include(TribitsGetCategoriesString)
 
 
 function(print_current_date_time  PREFIX_STR)

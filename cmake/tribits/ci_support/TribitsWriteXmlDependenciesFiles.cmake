@@ -45,9 +45,6 @@
 ################################################################################
 
 
-include(TribitsConfigureTiming)
-
-
 # @MACRO: tribits_write_xml_dependency_files()
 #
 # Usage::

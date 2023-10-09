@@ -37,10 +37,10 @@
 # ************************************************************************
 # @HEADER
 
-include("${CMAKE_CURRENT_LIST_DIR}/../utils/FindListElement.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/../utils/MessageWrapper.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/../utils/Join.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/../utils/TribitsDeprecatedHelpers.cmake")
+include(FindListElement)
+include(MessageWrapper)
+include(Join)
+include(TribitsDeprecatedHelpers)
 
 
 # Define the valid categories that will be recognized in the CATEGORIES keyword

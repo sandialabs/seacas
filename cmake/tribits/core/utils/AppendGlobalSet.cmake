@@ -37,8 +37,8 @@
 # ************************************************************************
 # @HEADER
 
-include("${CMAKE_CURRENT_LIST_DIR}/GlobalSet.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/AssertDefined.cmake")
+include(GlobalSet)
+include(AssertDefined)
 
 
 # @FUNCTION: append_global_set()
