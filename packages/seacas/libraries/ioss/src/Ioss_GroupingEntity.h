@@ -28,8 +28,6 @@
 
 namespace Ioss {
 
-  class EntityBlock;
-
   /** \brief Base class for all 'grouping' entities.
    *  The following derived classes are typical:
    *
