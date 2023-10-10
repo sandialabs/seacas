@@ -25,6 +25,12 @@ jobs:
         shell: bash --noprofile --norc {0}
 
     steps:
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 512
+        swap-size-mb: 1024
+        remove-dotnet: 'true'
     - uses: actions/checkout@v3
     - name: setup repo
       run: |
@@ -32,7 +38,6 @@ jobs:
         sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
         rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
         sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-        sudo apt-get clean
         sudo apt-get update
     - name: install
       run: |
@@ -80,6 +85,12 @@ jobs:
         cgns: [ 4.3.0 ]
     steps:
 
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 512
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
       - uses: actions/checkout@v3
       - name: setup repo
         run: |
