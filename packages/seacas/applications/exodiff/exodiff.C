@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <fmt/chrono.h>
 #include <fmt/ostream.h>
 #include <fstream>
 #include <iostream>
@@ -55,11 +56,9 @@ struct TimeInterp
 
 std::string Date()
 {
-  char       tbuf[32];
   time_t     calendar_time = time(nullptr);
-  struct tm *local_time    = localtime(&calendar_time);
-  strftime(tbuf, 32, "%Y/%m/%d   %H:%M:%S %Z", local_time);
-  std::string time_string(tbuf);
+  auto const local_time    = fmt::localtime(calendar_time);
+  auto       time_string   = fmt::format("{:%Y/%m/%d   %H:%M:%S %Z}", local_time);
   return time_string;
 }
 
