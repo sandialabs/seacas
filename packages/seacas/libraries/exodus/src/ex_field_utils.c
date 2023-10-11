@@ -50,7 +50,7 @@ const char *ex_component_field_name(ex_field *field, int component[EX_MAX_FIELD_
       field_name[fnl]     = field->component_separator[i];
       field_name[fnl + 1] = '\0';
     }
-    strlcat(field_name, suffices[0], EX_MAX_NAME);
+    strlcat(field_name, suffices[i], EX_MAX_NAME);
   }
   return field_name;
 }
