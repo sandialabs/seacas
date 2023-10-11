@@ -116,8 +116,12 @@ int main(int argc, char *argv[])
         std::vector<SEAMS::history_data> hist = aprepro.get_history();
         for (const auto &curr_history : hist) {
 
-          std::cout << curr_history.original << " was substituted with "
-                    << curr_history.substitution << " at index " << curr_history.index << '\n';
+          auto substitution = curr_history.substitution;
+          if (substitution == "\n") {
+            substitution = "<not echoed>";
+          }
+          std::cout << "'" << curr_history.original << "' was substituted with '" << substitution
+                    << "' at index " << curr_history.index << '\n';
         }
 
         aprepro.clear_history();
