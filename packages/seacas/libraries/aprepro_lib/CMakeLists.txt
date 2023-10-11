@@ -36,7 +36,6 @@ SET(HEADERS
   aprepro.h
   apr_symrec.h
   apr_tokenize.h
-  aprepro_parser.h
 )
 
 SET(SOURCES
