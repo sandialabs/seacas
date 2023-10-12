@@ -1396,51 +1396,60 @@ YY_DECL
             }
           }
 
-          temp_f = get_temp_filename();
-          SEAMS::file_rec new_file(temp_f, 0, true, loop_iterations);
-          outer_file          = &aprepro.ap_file_list.top();
-          new_file.loop_level = outer_file->loop_level + 1;
-
-          // Get optional loop index...
-          std::string sym_name;
-          if (tokens.size() == 1) {
-            // Default loop index variable name if not specified in loop command.
-            sym_name = fmt::format("__loop_{}", new_file.loop_level);
+          if (loop_iterations <= 0) {
+            BEGIN(LOOP_SKIP);
+            if (aprepro.ap_options.debugging) {
+              fmt::print(stderr, "DEBUG LOOP: iteration count = {}, Skipping loop...\n",
+                         loop_iterations);
+            }
           }
           else {
-            sym_name = tokens[1];
-          }
-          SEAMS::symrec *li = aprepro.getsym(sym_name);
-          if (li == nullptr) {
-            li = aprepro.putsym(sym_name, SEAMS::Aprepro::SYMBOL_TYPE::VARIABLE, true);
-          }
+            temp_f = get_temp_filename();
+            SEAMS::file_rec new_file(temp_f, 0, true, loop_iterations);
+            outer_file          = &aprepro.ap_file_list.top();
+            new_file.loop_level = outer_file->loop_level + 1;
 
-          // Get optional loop index initial value.  Default to 0 if not specified.
-          double init = 0.0;
-          if (tokens.size() >= 3) {
-            init = std::stod(tokens[2]);
-          }
-          li->value.var = init;
+            // Get optional loop index...
+            std::string sym_name;
+            if (tokens.size() == 1) {
+              // Default loop index variable name if not specified in loop command.
+              sym_name = fmt::format("__loop_{}", new_file.loop_level);
+            }
+            else {
+              sym_name = tokens[1];
+            }
+            SEAMS::symrec *li = aprepro.getsym(sym_name);
+            if (li == nullptr) {
+              li = aprepro.putsym(sym_name, SEAMS::Aprepro::SYMBOL_TYPE::VARIABLE, true);
+            }
 
-          // Get optional loop index increment value.  Default to 1 if not specified.
-          if (tokens.size() >= 4) {
-            double increment        = std::stod(tokens[3]);
-            new_file.loop_increment = increment;
-          }
+            // Get optional loop index initial value.  Default to 0 if not specified.
+            double init = 0.0;
+            if (tokens.size() >= 3) {
+              init = std::stod(tokens[2]);
+            }
+            li->value.var = init;
 
-          new_file.loop_index = li;
-          aprepro.ap_file_list.push(new_file);
+            // Get optional loop index increment value.  Default to 1 if not specified.
+            if (tokens.size() >= 4) {
+              double increment        = std::stod(tokens[3]);
+              new_file.loop_increment = increment;
+            }
 
-          tmp_file = new std::fstream(temp_f, std::ios::out);
-          loop_lvl++;
-          BEGIN(LOOP);
-          aprepro.isCollectingLoop = true;
-          if (aprepro.ap_options.debugging) {
-            fmt::print(
-                stderr,
-                "DEBUG LOOP: iteration count = {}, loop_index variable = {}, initial value = "
-                "{}, increment = {}\n",
-                loop_iterations, sym_name, init, new_file.loop_increment);
+            new_file.loop_index = li;
+            aprepro.ap_file_list.push(new_file);
+
+            tmp_file = new std::fstream(temp_f, std::ios::out);
+            loop_lvl++;
+            BEGIN(LOOP);
+            aprepro.isCollectingLoop = true;
+            if (aprepro.ap_options.debugging) {
+              fmt::print(
+                  stderr,
+                  "DEBUG LOOP: iteration count = {}, loop_index variable = {}, initial value = "
+                  "{}, increment = {}\n",
+                  loop_iterations, sym_name, init, new_file.loop_increment);
+            }
           }
         }
         YY_BREAK

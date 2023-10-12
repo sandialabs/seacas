@@ -251,4 +251,10 @@ $ Test string tokenization optimization
 Word {_i} of list1 and list2 are {get_word(_i,list1,',')} and {get_word(_i,list2,',')}
 {endloop}
 
+{loop(0)}
+This should not be echoed
+{endloop}
+{loop(undefined)}
+This should not be echoed
+{endloop}
 $End of test file
