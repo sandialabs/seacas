@@ -385,6 +385,7 @@ integer {D}+({E})?
     unput('i');
     unput('_');
     unput('{');
+    curr_index = 0;
   }
 
   {WS}"{"[Ii]"fndef"{WS}"(" {
@@ -399,6 +400,7 @@ integer {D}+({E})?
     unput('i');
     unput('_');
     unput('{');
+    curr_index = 0;
   }
 }
 

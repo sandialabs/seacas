@@ -1643,6 +1643,7 @@ YY_DECL
           unput('i');
           unput('_');
           unput('{');
+          curr_index = 0;
         }
         YY_BREAK
       case 28:
@@ -1659,6 +1660,7 @@ YY_DECL
           unput('i');
           unput('_');
           unput('{');
+          curr_index = 0;
         }
         YY_BREAK
 
