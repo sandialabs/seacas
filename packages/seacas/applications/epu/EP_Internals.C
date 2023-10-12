@@ -21,11 +21,6 @@
 #include <string>         // for string, basic_string
 #include <vector>         // for vector
 
-#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
-    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
-#include <Shlwapi.h>
-#endif
-
 extern "C" {
 #define NO_NETCDF_2
 #include <exodusII.h>
