@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 
     if (result) {
       std::string res_str = aprepro.parsing_results().str();
-      std::cout << "         : " << res_str;
+      std::cout << "          : " << res_str;
 
       // Example showing how to get the substitution history for the current line.
       if (aprepro.ap_options.keep_history) {
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
           if (substitution == "\n") {
             substitution = "<not echoed>";
           }
-          std::cout << "'" << curr_history.original << "' was substituted with '" << substitution
+          std::cout << "\t'" << curr_history.original << "' was substituted with '" << substitution
                     << "' at index " << curr_history.index << '\n';
         }
 
