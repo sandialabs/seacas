@@ -389,8 +389,8 @@ else()
       set(HDF5_INCLUDE_DIRS ${HDF5_INCLUDE_DIR})
 
       # Define HDF5_C_LIBRARIES to contain hdf5 and hdf5_hl C libraries
-      if( HDF5_HL_LIBRARY AND HDF5_CLIBRARY)
-        set(HDF5_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_CLIBRARY})
+      if( HDF5_HL_LIBRARY AND HDF5_C_LIBRARY)
+        set(HDF5_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_C_LIBRARY})
       else()
         set(HDF5_LIBRARIES ${HDF5_HL_STATIC_LIBRARY} ${HDF5_C_STATIC_LIBRARY})
       endif()
