@@ -389,7 +389,11 @@ else()
       set(HDF5_INCLUDE_DIRS ${HDF5_INCLUDE_DIR})
 
       # Define HDF5_C_LIBRARIES to contain hdf5 and hdf5_hl C libraries
-      set(HDF5_C_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_CLIBRARY})
+      if( DF5_HL_LIBRARY AND HDF5_CLIBRARY)
+        set(HDF5_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_CLIBRARY})
+      else()
+        set(HDF5_LIBRARIES ${HDF5_HL_STATIC_LIBRARY} ${HDF5_C_STATIC_LIBRARY})
+      endif()
 
       if (HDF5_IS_PARALLEL)
         find_package(MPI)

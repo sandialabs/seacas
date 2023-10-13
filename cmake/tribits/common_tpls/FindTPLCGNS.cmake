@@ -52,7 +52,7 @@ if ((CGNS_ALLOW_MODERN AND HDF5_FOUND_MODERN_CONFIG_FILE) OR CGNS_FORCE_MODERN)
     tribits_extpkg_create_imported_all_libs_target_and_config_file(
       CGNS
       INNER_FIND_PACKAGE_NAME  CGNS
-      IMPORTED_TARGETS_FOR_ALL_LIBS   cgns)
+      IMPORTED_TARGETS_FOR_ALL_LIBS  CGNS::cgns_static)
     set(TPL_CGNS_NOT_FOUND FALSE)
   endif()
 

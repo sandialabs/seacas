@@ -11,13 +11,14 @@ if (Netcdf_ALLOW_MODERN)
   find_package(HDF5 CONFIG)
   if (HDF5_FOUND)
     message("-- Found HDF5_CONFIG=${HDF5_CONFIG}")
-    message("-- Generating Netcdf::all_libs and NetcdfConfig.cmake")
+    message("-- Generating HDF5::all_libs and HDF5Config.cmake")
     message("-- HDF5_EXPORT_LIBRARIES=${HDF5_EXPORT_LIBRARIES}")
     tribits_extpkg_create_imported_all_libs_target_and_config_file(
       HDF5
       INNER_FIND_PACKAGE_NAME  HDF5
       IMPORTED_TARGETS_FOR_ALL_LIBS   ${HDF5_EXPORT_LIBRARIES})
     set(HDF5_INTERNAL_IS_MODERN TRUE)
+    set(TPL_HDF5_NOT_FOUND FALSE)
   else()
     message("-- Could not find HDF5_CONFIG (FindTPLHDF5.cmake)")
   endif()
@@ -27,6 +28,7 @@ endif()
 set(HDF5_FOUND_MODERN_CONFIG_FILE ${HDF5_INTERNAL_IS_MODERN} CACHE INTERNAL "True if HDF5 was found by the modern method")
 
 if (NOT TARGET HDF5::all_libs)
+
 
   # First, set up the variables for the (backward-compatible) TriBITS way of
   # finding HDF5.  These are used in case find_package(HDF5 ...) is not called
