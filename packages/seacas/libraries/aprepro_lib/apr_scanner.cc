@@ -3655,7 +3655,9 @@ namespace SEAMS {
       return;
 
     // Clear any possible end-of-stream if e.g., reading from a istringstream.
-    yyin->clear();
+    if (aprepro.ap_file_list.top().name == "interactive_input") {
+      yyin->clear();
+    }
     // Go back in the stream to where we started keeping history.
     yyin->seekg(hist_start);
     if (!yyin->good()) {
