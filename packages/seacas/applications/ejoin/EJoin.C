@@ -790,7 +790,7 @@ namespace {
         for (const auto &field_name : fields) {
           if (valid_variable(field_name, 0, variable_list)) {
             Ioss::Field field = nb->get_field(field_name);
-            ons->field_add(field);
+            ons->field_add(std::move(field));
           }
         }
       }
@@ -1335,7 +1335,7 @@ namespace {
       for (const auto &field_name : fields) {
         if (valid_variable(field_name, 0, variable_list)) {
           Ioss::Field field = pm->get_field(field_name);
-          output_region.field_add(field);
+          output_region.field_add(std::move(field));
         }
       }
     }
@@ -1360,7 +1360,7 @@ namespace {
           if (valid_variable(field_name, 0, variable_list)) {
             Ioss::Field field = nb->get_field(field_name);
             field.reset_count(node_count);
-            onb->field_add(field);
+            onb->field_add(std::move(field));
           }
         }
       }
@@ -1390,7 +1390,7 @@ namespace {
             for (const auto &field_name : fields) {
               if (valid_variable(field_name, id, variable_list)) {
                 Ioss::Field field = ieb->get_field(field_name);
-                oeb->field_add(field);
+                oeb->field_add(std::move(field));
               }
             }
           }
@@ -1424,7 +1424,7 @@ namespace {
           for (const auto &field_name : fields) {
             if (valid_variable(field_name, id, variable_list)) {
               Ioss::Field field = in->get_field(field_name);
-              ons->field_add(field);
+              ons->field_add(std::move(field));
             }
           }
         }
@@ -1464,7 +1464,7 @@ namespace {
             for (const auto &field_name : fields) {
               if (valid_variable(field_name, id, variable_list)) {
                 Ioss::Field field = eb->get_field(field_name);
-                (*II)->field_add(field);
+                (*II)->field_add(std::move(field));
               }
             }
             ++II;
@@ -1488,7 +1488,7 @@ namespace {
           Ioss::Utils::substr_equal(prefix, field_name)) {
         // If the field does not already exist, add it to the output node block
         Ioss::Field field = ige->get_field(field_name);
-        oge->field_add(field);
+        oge->field_add(std::move(field));
       }
     }
   }

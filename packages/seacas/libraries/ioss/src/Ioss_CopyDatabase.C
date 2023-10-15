@@ -1099,7 +1099,7 @@ namespace {
       if (field_name != "ids" && !oge->field_exists(field_name) &&
           Ioss::Utils::substr_equal(prefix, field_name)) {
         // If the field does not already exist, add it to the output node block
-        oge->field_add(field);
+        oge->field_add(std::move(field));
       }
     }
   }

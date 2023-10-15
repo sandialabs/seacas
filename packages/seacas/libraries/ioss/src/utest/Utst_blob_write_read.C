@@ -142,7 +142,7 @@ void write_blob()
 
   blob1->field_add(x);
   blob1->field_add(dx);
-  blob1->field_add(ddx);
+  blob1->field_add(std::move(ddx));
 
   // Blobs can have different fields
   blob2->field_add(x);
