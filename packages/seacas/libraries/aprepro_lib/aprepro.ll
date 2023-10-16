@@ -51,7 +51,7 @@ namespace {
   bool string_is_ascii(const char *line, size_t len)
   {
     for (size_t i = 0; i < len; i++) {
-      if (!(std::isspace(line[i]) || std::isprint(line[i]))) {
+      if (!(std::isspace(static_cast<unsigned char>(line[i])) || std::isprint(static_cast<unsigned char>(line[i])))) {
         return false;
       }
     }
@@ -103,6 +103,8 @@ size_t hist_start = 0;
  * versions. */
 %option debug
 
+%option flex bison
+   
 /* enables the use of start condition stacks */
 %option stack
 
@@ -598,9 +600,9 @@ integer {D}+({E})?
       pt = yytext;
     }
 
-    add_include_file(pt, file_must_exist);
+    bool added = add_include_file(pt, file_must_exist);
 
-    if(!aprepro.doIncludeSubstitution)
+    if(added && !aprepro.doIncludeSubstitution)
       yy_push_state(VERBATIM);
 
     aprepro.ap_file_list.top().lineno++;
