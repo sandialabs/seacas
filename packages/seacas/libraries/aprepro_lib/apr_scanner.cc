@@ -3300,8 +3300,7 @@ namespace SEAMS {
       }
 
       if (!string_is_ascii(line, strlen(line))) {
-        yyerror("input line contains non-ASCII (probably UTF-8) characters which will most likely "
-                "be parsed incorrectly.");
+        aprepro.warning("input line contains non-ASCII (probably UTF-8) characters which might be parsed incorrectly.");
       }
 
       SEAMS::gl_histadd(line);
@@ -3324,9 +3323,8 @@ namespace SEAMS {
       }
       else {
         if (!string_is_ascii(buf, yyin->gcount())) {
-          yyerror(
-              "input file contains non-ASCII (probably UTF-8) characters which will most likely "
-              "be parsed incorrectly.");
+          aprepro.warning(
+		  "input file contains non-ASCII (probably UTF-8) characters which might be parsed incorrectly.");
         }
         return yyin->gcount();
       }
