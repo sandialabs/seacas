@@ -38,9 +38,8 @@
 # @HEADER
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/../test_support/TribitsAddTest.cmake")
-
 include(TribitsAddExecutable)
+include(TribitsAddTest)
 include(TribitsDeprecatedHelpers)
 
 

@@ -203,44 +203,6 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
      is also the side number.
   */
 
-  /*   1     2     3     4                                          node 1 */
-  static const int shell_table[2][8] = {
-      {2, 4, 3, 1, 4, 2, 1, 3}, /* node 2 */
-      {1, 2, 1, 2, 1, 2, 1, 2}  /* side # */
-  };
-
-  /*    1     2   3    4                                          node 1 */
-  static const int shell_edge_table[2][8] = {
-      {2, 4, 3, 1, 4, 2, 1, 3}, /* node 2 */
-      {3, 6, 4, 3, 5, 4, 6, 5}  /* side # */
-  };
-
-  /*   1     2     3                                               node 1 */
-  static const int trishell_table[2][6] = {
-      {2, 3, 3, 1, 1, 2}, /* node 2 */
-      {1, 2, 1, 2, 1, 2}  /* side # */
-  };
-
-  /*     1      2      3      4                                   node 1 */
-  static const int tetra_table[2][12] = {
-      {2, 3, 4, 1, 3, 4, 4, 1, 2, 1, 2, 3}, /* node 2 */
-      {1, 4, 3, 4, 2, 1, 2, 3, 4, 1, 2, 3}  /* side # */
-  };
-
-#if 0
-  static const int wedge_table[2][18]  = {
-    /*     1      2      3      4      5      6                     node 1 */
-    {2,4,3, 5,1,3, 6,1,2, 1,6,5, 6,2,4, 4,3,5},              /* node 2 */
-    {1,3,4, 1,4,2, 2,3,4, 1,3,5, 5,2,1, 5,3,2}               /* side # */
-  };
-#endif
-
-  static const int hex_table[2][24] = {
-      /*     1        2        3        4        5        6        7        8       node 1 */
-      {4, 2, 5, 1, 3, 6, 7, 4, 2, 3, 1, 8, 6, 8, 1, 5, 2, 7, 8, 6, 3, 7, 5, 4}, /* node 2 */
-      {5, 1, 4, 5, 2, 1, 2, 3, 5, 5, 4, 3, 6, 4, 1, 1, 2, 6, 6, 2, 3, 3, 6, 4}  /* side # */
-  };
-
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
@@ -678,6 +640,12 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
         }
         case EX_EL_TRISHELL: {
           /* use table to find which node to compare to next */
+          /*   1     2     3                                               node 1 */
+          static const int trishell_table[2][6] = {
+              {2, 3, 3, 1, 1, 2}, /* node 2 */
+              {1, 2, 1, 2, 1, 2}  /* side # */
+          };
+
           assert(n < 3);
           if (ss_node1 ==
               get_node(connect,
@@ -717,6 +685,12 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
           }
 
           if (num_node_per_side >= 4) {
+            /*   1     2     3     4                                          node 1 */
+            static const int shell_table[2][8] = {
+                {2, 4, 3, 1, 4, 2, 1, 3}, /* node 2 */
+                {1, 2, 1, 2, 1, 2, 1, 2}  /* side # */
+            };
+
             /* Front or Back side of shell */
             if (ss_node1 ==
                 get_node(connect, num_nodes_per_elem * (elem_num_pos) + (shell_table[0][2 * n] - 1),
@@ -743,6 +717,12 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
           }
           else {
             /* Edge sides of shell */
+            /*    1     2   3    4                                          node 1 */
+            static const int shell_edge_table[2][8] = {
+                {2, 4, 3, 1, 4, 2, 1, 3}, /* node 2 */
+                {3, 6, 4, 3, 5, 4, 6, 5}  /* side # */
+            };
+
             if (ss_node1 ==
                 get_node(connect,
                          num_nodes_per_elem * (elem_num_pos) + (shell_edge_table[0][2 * n] - 1),
@@ -771,6 +751,13 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
         }
         case EX_EL_HEX: {
           /* use table to find which node to compare to next */
+          static const int hex_table[2][24] = {
+              /*     1        2        3        4        5        6        7        8       node 1
+               */
+              {4, 2, 5, 1, 3, 6, 7, 4, 2, 3, 1, 8, 6, 8, 1, 5, 2, 7, 8, 6, 3, 7, 5, 4}, /* node 2 */
+              {5, 1, 4, 5, 2, 1, 2, 3, 5, 5, 4, 3, 6, 4, 1, 1, 2, 6, 6, 2, 3, 3, 6, 4}  /* side # */
+          };
+
           assert(n < 8);
 
           if (ss_node1 == get_node(connect,
@@ -803,6 +790,12 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
         }
         case EX_EL_TETRA: {
           /* use table to find which node to compare to next */
+          /*  1         2          3          4            node 1 */
+          static const int tetra_table[2][12] = {
+              {2, 3, 4, 1, 3, 4, 4, 1, 2, 1, 2, 3}, /* node 2 */
+              {1, 4, 3, 4, 2, 1, 2, 3, 4, 1, 2, 3}  /* side # */
+          };
+
           assert(n < 4);
 
           if (ss_node1 ==
@@ -847,6 +840,14 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
         case EX_EL_WEDGE: {
           /* NOTE: WEDGE elements in side set node lists are currently not
            * supported */
+#if 0
+	  static const int wedge_table[2][18]  = {
+	    /*     1      2      3      4      5      6                     node 1 */
+	    {2,4,3, 5,1,3, 6,1,2, 1,6,5, 6,2,4, 4,3,5},              /* node 2 */
+	    {1,3,4, 1,4,2, 2,3,4, 1,3,5, 5,2,1, 5,3,2}               /* side # */
+	  };
+#endif
+
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: unsupported WEDGE element found in side set "
                    "node list in file id %d",

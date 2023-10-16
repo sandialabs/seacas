@@ -1775,12 +1775,12 @@ namespace {
     copy_string(qaRecord[num_qa_records].qa_record[0][0], qainfo[0], MAX_STR_LENGTH + 1); // Code
     copy_string(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH + 1); // Version
 
-    time_t date_time = std::time(nullptr);
-    auto  *lt        = std::localtime(&date_time);
-    buffer           = fmt::format("{:%Y/%m/%d}", *lt);
+    time_t     date_time = std::time(nullptr);
+    auto const lt        = fmt::localtime(date_time);
+    buffer               = fmt::format("{:%Y/%m/%d}", lt);
     copy_string(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH + 1);
 
-    buffer = fmt::format("{:%H:%M:%S}", *lt);
+    buffer = fmt::format("{:%H:%M:%S}", lt);
     copy_string(qaRecord[num_qa_records].qa_record[0][3], buffer, MAX_STR_LENGTH + 1);
 
     error = ex_put_qa(id_out, num_qa_records + 1, qaRecord[0].qa_record);

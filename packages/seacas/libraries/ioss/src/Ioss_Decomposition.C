@@ -8,6 +8,7 @@
 
 #include <Ioss_Decomposition.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_Enumerate.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
@@ -178,9 +179,8 @@ namespace Ioss {
   {
     size_t count = 0;
 
-    for (size_t i = 0; i < blockSubsetIndex.size(); i++) {
-      int64_t                             blk_seq = blockSubsetIndex[i];
-      const Ioss::BlockDecompositionData &block   = m_data[blk_seq];
+    for (auto [i, blk_seq] : enumerate(blockSubsetIndex)) {
+      const Ioss::BlockDecompositionData &block = m_data[blk_seq];
       // Determine total number of ioss decomp entries based on subset field component count per
       // block.
       count += blockSubsetFieldComponentCount[i] * (block.importMap.size() + block.localMap.size());
@@ -195,9 +195,8 @@ namespace Ioss {
   {
     std::vector<size_t> offset(blockSubsetIndex.size() + 1, 0);
 
-    for (size_t i = 0; i < blockSubsetIndex.size(); i++) {
-      int64_t                             blk_seq = blockSubsetIndex[i];
-      const Ioss::BlockDecompositionData &block   = m_data[blk_seq];
+    for (auto [i, blk_seq] : enumerate(blockSubsetIndex)) {
+      const Ioss::BlockDecompositionData &block = m_data[blk_seq];
 
       // Determine number of ioss decomp entries based on subset field component count per block.
       offset[i + 1] =
@@ -218,9 +217,8 @@ namespace Ioss {
   {
     std::vector<size_t> offset(blockSubsetIndex.size() + 1, 0);
 
-    for (size_t i = 0; i < blockSubsetIndex.size(); i++) {
-      int64_t                             blk_seq = blockSubsetIndex[i];
-      const Ioss::BlockDecompositionData &block   = m_data[blk_seq];
+    for (auto [i, blk_seq] : enumerate(blockSubsetIndex)) {
+      const Ioss::BlockDecompositionData &block = m_data[blk_seq];
 
       // Determine number of imported ioss decomp entries based on subset field component count per
       // block.
@@ -240,10 +238,9 @@ namespace Ioss {
   {
     std::vector<int> blockSubsetConnectivityComponentCount(blockSubsetIndex.size());
 
-    for (size_t i = 0; i < blockSubsetIndex.size(); i++) {
-      int64_t                             blk_seq = blockSubsetIndex[i];
-      const Ioss::BlockDecompositionData &block   = m_data[blk_seq];
-      blockSubsetConnectivityComponentCount[i]    = block.nodesPerEntity;
+    for (auto [i, blk_seq] : enumerate(blockSubsetIndex)) {
+      const Ioss::BlockDecompositionData &block = m_data[blk_seq];
+      blockSubsetConnectivityComponentCount[i]  = block.nodesPerEntity;
     }
 
     return blockSubsetConnectivityComponentCount;
@@ -347,13 +344,12 @@ namespace Ioss {
     // local_map[0]
     size_t              proc = 0;
     std::vector<size_t> imp_index(el_blocks.size());
-    for (size_t i = 0; i < importElementMap.size(); i++) {
-      size_t elem = importElementMap[i];
+    for (auto [i, elem] : enumerate(importElementMap)) {
       while (i >= (size_t)importElementIndex[proc + 1]) {
         proc++;
       }
 
-      size_t b   = Ioss::Utils::find_index_location(elem, m_fileBlockIndex);
+      size_t b   = Ioss::Utils::find_index_location((size_t)elem, m_fileBlockIndex);
       size_t off = std::max(m_fileBlockIndex[b], m_elementOffset);
 
       if (!el_blocks[b].localMap.empty() && elem < el_blocks[b].localMap[0] + off) {
@@ -368,13 +364,12 @@ namespace Ioss {
 
     // Now for the exported data...
     proc = 0;
-    for (size_t i = 0; i < exportElementMap.size(); i++) {
-      size_t elem = exportElementMap[i];
+    for (auto [i, elem] : enumerate(exportElementMap)) {
       while (i >= (size_t)exportElementIndex[proc + 1]) {
         proc++;
       }
 
-      size_t b = Ioss::Utils::find_index_location(elem, m_fileBlockIndex);
+      size_t b = Ioss::Utils::find_index_location((size_t)elem, m_fileBlockIndex);
 
       size_t off = std::max(m_fileBlockIndex[b], m_elementOffset);
       el_blocks[b].exportMap.push_back(elem - off);
@@ -549,8 +544,7 @@ namespace Ioss {
     std::vector<INT> node_comm_send(sums);
     {
       std::vector<INT> recv_tmp(m_processorCount);
-      for (size_t i = 0; i < owner.size(); i++) {
-        int proc = owner[i];
+      for (auto [i, proc] : enumerate(owner)) {
         if (proc != m_processor) {
           INT    node              = m_adjacency[i];
           size_t position          = recv_disp[proc] + recv_tmp[proc]++;

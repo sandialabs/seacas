@@ -27,9 +27,12 @@
 #endif
 #else
 #include <unistd.h>
-#if defined(__APPLE__) && defined(__MACH__)
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__)
 #include <sys/mount.h>
 #include <sys/param.h>
+#elif defined(__OpenBSD__)
+#include <sys/mount.h>
+#include <sys/types.h>
 #else
 #include <sys/statfs.h>
 #endif
@@ -170,18 +173,13 @@ namespace Ioss {
   bool FileInfo::is_nfs() const
   {
 #if !defined(__IOSS_WINDOWS__)
-#define NFS_FS 0x6969 /* statfs defines that 0x6969 is NFS filesystem */
     auto tmp_path = pathname();
     if (tmp_path.empty()) {
       char *current_cwd = getcwd(nullptr, 0);
       tmp_path          = std::string(current_cwd);
       free(current_cwd);
     }
-#if defined(__IOSS_WINDOWS__)
-    char *path = _fullpath(nullptr, tmp_path.c_str(), _MAX_PATH);
-#else
     char *path = ::realpath(tmp_path.c_str(), nullptr);
-#endif
     if (path != nullptr) {
 
       struct statfs stat_fs;
@@ -193,7 +191,13 @@ namespace Ioss {
         IOSS_ERROR(errmsg);
       }
       free(path);
-      return (stat_fs.f_type == NFS_FS);
+
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+      return (0 == ::strcmp("nfs", stat_fs.f_fstypename));
+#else
+      /* linux statfs defines that 0x6969 is NFS filesystem */
+      return (stat_fs.f_type == 0x6969);
+#endif
     }
 #endif
     return false;

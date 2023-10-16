@@ -1099,7 +1099,7 @@ namespace {
       if (field_name != "ids" && !oge->field_exists(field_name) &&
           Ioss::Utils::substr_equal(prefix, field_name)) {
         // If the field does not already exist, add it to the output node block
-        oge->field_add(field);
+        oge->field_add(std::move(field));
       }
     }
   }
@@ -1435,8 +1435,7 @@ namespace {
         std::vector<INT> ids;
         ns->get_field_data("ids_raw", ids);
         owned = 0;
-        for (size_t n = 0; n < ids.size(); n++) {
-          INT id = ids[n];
+        for (auto id : ids) {
           if (my_data[id - 1] == my_processor) {
             ++owned;
           }

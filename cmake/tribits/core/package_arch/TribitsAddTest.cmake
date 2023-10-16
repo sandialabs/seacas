@@ -37,9 +37,8 @@
 # ************************************************************************
 # @HEADER
 
-
-include("${CMAKE_CURRENT_LIST_DIR}/../common/TribitsCMakePolicies.cmake"  NO_POLICY_SCOPE)
-include("${CMAKE_CURRENT_LIST_DIR}/TribitsAddTestHelpers.cmake")
+include(TribitsCMakePolicies  NO_POLICY_SCOPE)
+include(TribitsAddTestHelpers)
 
 
 # @FUNCTION: tribits_add_test()
@@ -818,8 +817,6 @@ function(tribits_add_test EXE_NAME)
     message("TRIBITS_ADD_TEST: ${EXE_NAME} ${ARGN}")
   endif()
 
-  tribits_set_tribits_package_name()
-
   global_set(TRIBITS_ADD_TEST_ADD_TEST_INPUT)
   global_set(TRIBITS_SET_TEST_PROPERTIES_INPUT)
   global_set(MESSAGE_WRAPPER_INPUT)
@@ -937,6 +934,8 @@ function(tribits_add_test EXE_NAME)
 
   tribits_add_test_adjust_directory( ${EXE_BINARY_NAME} "${PARSE_DIRECTORY}"
     EXECUTABLE_PATH)
+
+  #message("TRIBITS_ADD_TEST: ${EXE_NAME}: EXECUTABLE_PATH = ${EXECUTABLE_PATH}")
 
   #
   # D) Determine if we will add the serial or MPI tests based on input COMM

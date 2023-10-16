@@ -25,6 +25,14 @@ jobs:
         shell: bash --noprofile --norc {0}
 
     steps:
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 30000
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql:  'true'
     - uses: actions/checkout@v3
     - name: setup repo
       run: |
@@ -79,6 +87,14 @@ jobs:
         cgns: [ 4.3.0 ]
     steps:
 
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 30000
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql:  'true'
       - uses: actions/checkout@v3
       - name: setup repo
         run: |

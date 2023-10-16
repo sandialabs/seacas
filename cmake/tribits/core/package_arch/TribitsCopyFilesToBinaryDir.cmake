@@ -38,6 +38,7 @@
 # @HEADER
 
 
+include(TribitsAddTestHelpers)
 include(CMakeParseArguments)
 
 

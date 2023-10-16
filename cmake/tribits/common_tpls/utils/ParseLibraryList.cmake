@@ -100,7 +100,7 @@ function(parse_library_list)
     endforeach()
 
 
-    # Now set output variables
+    # Now set output vairables
     set(${PARSE_ARGS_DEBUG}     "${_debug_libs}" PARENT_SCOPE)
     set(${PARSE_ARGS_OPT}       "${_opt_libs}"   PARENT_SCOPE)
     set(${PARSE_ARGS_GENERAL}   "${_gen_libs}"   PARENT_SCOPE)

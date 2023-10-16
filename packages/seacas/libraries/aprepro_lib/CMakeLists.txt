@@ -172,7 +172,7 @@ TRIBITS_ADD_ADVANCED_TEST(
  OUTPUT_FILE test-strings.output
   NOEXEPREFIX NOEXESUFFIX
   PASS_ANY
- TEST_1 CMND grep ARGS -v Aprepro: test-strings.output OUTPUT_FILE grepped-strings.out
+ TEST_1 CMND grep ARGS -v ^Aprepro test-strings.output OUTPUT_FILE grepped-strings.out
  TEST_2 CMND diff ARGS -w
 		       ${CMAKE_CURRENT_SOURCE_DIR}/test_standard.out
 		       ${CMAKE_CURRENT_BINARY_DIR}/grepped-strings.out

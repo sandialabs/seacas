@@ -96,6 +96,7 @@ namespace SEAMS {
     Aprepro &operator=(const Aprepro &) = delete;
 
     enum class SYMBOL_TYPE {
+      INTERNAL                  = 0,
       VARIABLE                  = 1,
       STRING_VARIABLE           = 2,
       UNDEFINED_VARIABLE        = 5,
@@ -115,10 +116,13 @@ namespace SEAMS {
     const std::ostringstream &parsing_results() const { return parsingResults; }
     void                      clear_results();
 
-    /** Return string representation of current version of aprepro.  */
-    static std::string version();
+    /** Return string representation of current version of aprepro + commit date.  */
+    static const std::string &version();
 
-    /** Return long version: `# Algebraic Preprocessor (Aprepro) version X.X.X` */
+    /** Return string representation of current version of aprepro.  */
+    static const std::string &short_version();
+
+    /** Return long version: `# Algebraic Preprocessor (Aprepro) version X.X (date)` */
     std::string long_version() const;
 
     /** Invoke the scanner and parser for a stream.
@@ -168,6 +172,7 @@ namespace SEAMS {
 
     std::stack<std::ostream *> outputStream{};
 
+    SYMBOL_TYPE    get_symbol_type(const SEAMS::symrec *symbol) const;
     SEAMS::symrec *getsym(const char *sym_name) const;
     SEAMS::symrec *getsym(const std::string &sym_name) const;
     SEAMS::symrec *putsym(const std::string &sym_name, SYMBOL_TYPE sym_type, bool is_internal);

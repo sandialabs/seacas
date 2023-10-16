@@ -50,7 +50,7 @@ message("*******************************")
 message("")
 
 
-cmake_minimum_required(VERSION 3.23.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22.0 FATAL_ERROR)
 
 set(THIS_CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
@@ -137,10 +137,6 @@ if ("${CTEST_BINARY_DIRECTORY}" STREQUAL "")
   set(CTEST_BINARY_DIRECTORY $ENV{PWD}/BUILD)
 endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/../core/common/TribitsConstants.cmake")
-tribits_asesrt_minimum_cmake_version()
-include("${CMAKE_CURRENT_LIST_DIR}/../core/common/TribitsCMakePolicies.cmake"  NO_POLICY_SCOPE)
-
 #
 # Set CMAKE_MODULE_PATH
 #
@@ -148,12 +144,14 @@ set( CMAKE_MODULE_PATH
   "${TRIBITS_PROJECT_ROOT}"
   "${TRIBITS_PROJECT_ROOT}/cmake"
   "${${PROJECT_NAME}_TRIBITS_DIR}/core/utils"
-  "${${PROJECT_NAME}_TRIBITS_DIR}/core/common"
-  "${${PROJECT_NAME}_TRIBITS_DIR}/core/test_support"
   "${${PROJECT_NAME}_TRIBITS_DIR}/core/package_arch"
   "${${PROJECT_NAME}_TRIBITS_DIR}/ci_support"
   "${${PROJECT_NAME}_TRIBITS_DIR}/ctest_driver"
   )
+
+include(TribitsConstants)
+tribits_asesrt_minimum_cmake_version()
+include(TribitsCMakePolicies  NO_POLICY_SCOPE)
 
 include(Split)
 include(PrintVar)

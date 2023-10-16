@@ -1002,7 +1002,8 @@ namespace {
   bool string_is_ascii(const char *line, size_t len)
   {
     for (size_t i = 0; i < len; i++) {
-      if (!(std::isspace(line[i]) || std::isprint(line[i]))) {
+      if (!(std::isspace(static_cast<unsigned char>(line[i])) ||
+            std::isprint(static_cast<unsigned char>(line[i])))) {
         return false;
       }
     }
@@ -1396,51 +1397,60 @@ YY_DECL
             }
           }
 
-          temp_f = get_temp_filename();
-          SEAMS::file_rec new_file(temp_f, 0, true, loop_iterations);
-          outer_file          = &aprepro.ap_file_list.top();
-          new_file.loop_level = outer_file->loop_level + 1;
-
-          // Get optional loop index...
-          std::string sym_name;
-          if (tokens.size() == 1) {
-            // Default loop index variable name if not specified in loop command.
-            sym_name = fmt::format("__loop_{}", new_file.loop_level);
+          if (loop_iterations <= 0) {
+            BEGIN(LOOP_SKIP);
+            if (aprepro.ap_options.debugging) {
+              fmt::print(stderr, "DEBUG LOOP: iteration count = {}, Skipping loop...\n",
+                         loop_iterations);
+            }
           }
           else {
-            sym_name = tokens[1];
-          }
-          SEAMS::symrec *li = aprepro.getsym(sym_name);
-          if (li == nullptr) {
-            li = aprepro.putsym(sym_name, SEAMS::Aprepro::SYMBOL_TYPE::VARIABLE, true);
-          }
+            temp_f = get_temp_filename();
+            SEAMS::file_rec new_file(temp_f, 0, true, loop_iterations);
+            outer_file          = &aprepro.ap_file_list.top();
+            new_file.loop_level = outer_file->loop_level + 1;
 
-          // Get optional loop index initial value.  Default to 0 if not specified.
-          double init = 0.0;
-          if (tokens.size() >= 3) {
-            init = std::stod(tokens[2]);
-          }
-          li->value.var = init;
+            // Get optional loop index...
+            std::string sym_name;
+            if (tokens.size() == 1) {
+              // Default loop index variable name if not specified in loop command.
+              sym_name = fmt::format("__loop_{}", new_file.loop_level);
+            }
+            else {
+              sym_name = tokens[1];
+            }
+            SEAMS::symrec *li = aprepro.getsym(sym_name);
+            if (li == nullptr) {
+              li = aprepro.putsym(sym_name, SEAMS::Aprepro::SYMBOL_TYPE::VARIABLE, true);
+            }
 
-          // Get optional loop index increment value.  Default to 1 if not specified.
-          if (tokens.size() >= 4) {
-            double increment        = std::stod(tokens[3]);
-            new_file.loop_increment = increment;
-          }
+            // Get optional loop index initial value.  Default to 0 if not specified.
+            double init = 0.0;
+            if (tokens.size() >= 3) {
+              init = std::stod(tokens[2]);
+            }
+            li->value.var = init;
 
-          new_file.loop_index = li;
-          aprepro.ap_file_list.push(new_file);
+            // Get optional loop index increment value.  Default to 1 if not specified.
+            if (tokens.size() >= 4) {
+              double increment        = std::stod(tokens[3]);
+              new_file.loop_increment = increment;
+            }
 
-          tmp_file = new std::fstream(temp_f, std::ios::out);
-          loop_lvl++;
-          BEGIN(LOOP);
-          aprepro.isCollectingLoop = true;
-          if (aprepro.ap_options.debugging) {
-            fmt::print(
-                stderr,
-                "DEBUG LOOP: iteration count = {}, loop_index variable = {}, initial value = "
-                "{}, increment = {}\n",
-                loop_iterations, sym_name, init, new_file.loop_increment);
+            new_file.loop_index = li;
+            aprepro.ap_file_list.push(new_file);
+
+            tmp_file = new std::fstream(temp_f, std::ios::out);
+            loop_lvl++;
+            BEGIN(LOOP);
+            aprepro.isCollectingLoop = true;
+            if (aprepro.ap_options.debugging) {
+              fmt::print(
+                  stderr,
+                  "DEBUG LOOP: iteration count = {}, loop_index variable = {}, initial value = "
+                  "{}, increment = {}\n",
+                  loop_iterations, sym_name, init, new_file.loop_increment);
+            }
           }
         }
         YY_BREAK
@@ -1643,6 +1653,7 @@ YY_DECL
           unput('i');
           unput('_');
           unput('{');
+          curr_index = 0;
         }
         YY_BREAK
       case 28:
@@ -1659,6 +1670,7 @@ YY_DECL
           unput('i');
           unput('_');
           unput('{');
+          curr_index = 0;
         }
         YY_BREAK
 
@@ -1890,9 +1902,9 @@ YY_DECL
               pt = yytext;
             }
 
-            add_include_file(pt, file_must_exist);
+            bool added = add_include_file(pt, file_must_exist);
 
-            if (!aprepro.doIncludeSubstitution)
+            if (added && !aprepro.doIncludeSubstitution)
               yy_push_state(VERBATIM);
 
             aprepro.ap_file_list.top().lineno++;
@@ -3288,8 +3300,8 @@ namespace SEAMS {
       }
 
       if (!string_is_ascii(line, strlen(line))) {
-        yyerror("input line contains non-ASCII (probably UTF-8) characters which will most likely "
-                "be parsed incorrectly.");
+        aprepro.warning("input line contains non-ASCII (probably UTF-8) characters which might be "
+                        "parsed incorrectly.");
       }
 
       SEAMS::gl_histadd(line);
@@ -3312,9 +3324,8 @@ namespace SEAMS {
       }
       else {
         if (!string_is_ascii(buf, yyin->gcount())) {
-          yyerror(
-              "input file contains non-ASCII (probably UTF-8) characters which will most likely "
-              "be parsed incorrectly.");
+          aprepro.warning("input file contains non-ASCII (probably UTF-8) characters which might "
+                          "be parsed incorrectly.");
         }
         return yyin->gcount();
       }
@@ -3643,6 +3654,11 @@ namespace SEAMS {
     if (len <= 0)
       return;
 
+    // Clear any possible end-of-stream if e.g., reading from a istringstream.
+    std::ios::iostate state = yyin->rdstate();
+    size_t            loc   = yyin->tellg();
+    yyin->clear();
+
     // Go back in the stream to where we started keeping history.
     yyin->seekg(hist_start);
     if (!yyin->good()) {
@@ -3662,6 +3678,10 @@ namespace SEAMS {
     history_string = tmp;
     delete[] tmp;
     hist_start = 0;
+
+    // restore stream state
+    yyin->seekg(loc);
+    yyin->setstate(state);
   }
 } // namespace SEAMS
 

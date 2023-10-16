@@ -44,7 +44,7 @@
 # platforms so call with care.
 #
 
-include("${CMAKE_CURRENT_LIST_DIR}/Split.cmake")
+include(Split)
 
 
 # @FUNCTION: timer_get_raw_seconds()
