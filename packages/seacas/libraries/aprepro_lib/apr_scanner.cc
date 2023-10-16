@@ -3300,7 +3300,8 @@ namespace SEAMS {
       }
 
       if (!string_is_ascii(line, strlen(line))) {
-        aprepro.warning("input line contains non-ASCII (probably UTF-8) characters which might be parsed incorrectly.");
+        aprepro.warning("input line contains non-ASCII (probably UTF-8) characters which might be "
+                        "parsed incorrectly.");
       }
 
       SEAMS::gl_histadd(line);
@@ -3323,8 +3324,8 @@ namespace SEAMS {
       }
       else {
         if (!string_is_ascii(buf, yyin->gcount())) {
-          aprepro.warning(
-		  "input file contains non-ASCII (probably UTF-8) characters which might be parsed incorrectly.");
+          aprepro.warning("input file contains non-ASCII (probably UTF-8) characters which might "
+                          "be parsed incorrectly.");
         }
         return yyin->gcount();
       }
@@ -3654,9 +3655,10 @@ namespace SEAMS {
       return;
 
     // Clear any possible end-of-stream if e.g., reading from a istringstream.
-    if (aprepro.ap_file_list.top().name == "interactive_input") {
-      yyin->clear();
-    }
+    std::ios::iostate state = yyin->rdstate();
+    size_t            loc   = yyin->tellg();
+    yyin->clear();
+
     // Go back in the stream to where we started keeping history.
     yyin->seekg(hist_start);
     if (!yyin->good()) {
@@ -3676,6 +3678,10 @@ namespace SEAMS {
     history_string = tmp;
     delete[] tmp;
     hist_start = 0;
+
+    // restore stream state
+    yyin->seekg(loc);
+    yyin->setstate(state);
   }
 } // namespace SEAMS
 

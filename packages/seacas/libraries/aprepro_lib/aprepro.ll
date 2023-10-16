@@ -1204,9 +1204,10 @@ integer {D}+({E})?
       return;
 
     // Clear any possible end-of-stream if e.g., reading from a istringstream.
-    if (aprepro.ap_file_list.top().name == "interactive_input") {
-      yyin->clear();
-    }
+    std::ios::iostate state = yyin->rdstate();
+    size_t loc = yyin->tellg();
+    yyin->clear();
+
     // Go back in the stream to where we started keeping history.
     yyin->seekg(hist_start);
     if (!yyin->good()) {
@@ -1226,6 +1227,10 @@ integer {D}+({E})?
     history_string = tmp;
     delete[] tmp;
     hist_start = 0;
+
+    // restore stream state
+    yyin->seekg(loc);
+    yyin->setstate(state);
   }
 }
 
