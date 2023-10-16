@@ -31,8 +31,8 @@
 #include <sys/mount.h>
 #include <sys/param.h>
 #elif defined(__OpenBSD__)
-#include <sys/types.h>
 #include <sys/mount.h>
+#include <sys/types.h>
 #else
 #include <sys/statfs.h>
 #endif
@@ -172,9 +172,7 @@ namespace Ioss {
   //: Return TRUE if file is on an NFS filesystem...
   bool FileInfo::is_nfs() const
   {
-#if defined(__IOSS_WINDOWS__)
-    return false;
-#else
+#if !defined(__IOSS_WINDOWS__)
     auto tmp_path = pathname();
     if (tmp_path.empty()) {
       char *current_cwd = getcwd(nullptr, 0);
@@ -202,6 +200,7 @@ namespace Ioss {
 #endif
     }
 #endif
+    return false;
   }
 
   //: Time of last data modification. See 'man stat(2)'
