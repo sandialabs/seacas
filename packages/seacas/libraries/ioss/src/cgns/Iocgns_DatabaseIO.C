@@ -96,7 +96,7 @@ namespace {
     char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
     std::array<cgsize_t, 6> range;
     std::array<cgsize_t, 6> donor_range;
-    Ioss::IJK_t             transform;
+    Ioss::IJK_t             transform{};
 
     cg_1to1_read(cgns_file_ptr, base, zone, zgc_idx, connectname, donorname, range.data(),
                  donor_range.data(), transform.data());
@@ -386,7 +386,7 @@ namespace {
       char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t             transform;
+      Ioss::IJK_t             transform{};
 
       CGCHECK(cg_1to1_read(cgns_file_ptr, base, zone, i + 1, connectname, donorname, range.data(),
                            donor_range.data(), transform.data()));
@@ -1188,7 +1188,7 @@ namespace Iocgns {
       char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t             transform;
+      Ioss::IJK_t             transform{};
 
       CGCHECKM(cg_1to1_read(get_file_pointer(), base, zone, i + 1, connectname, donorname,
                             range.data(), donor_range.data(), transform.data()));
