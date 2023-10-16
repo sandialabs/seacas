@@ -53,8 +53,15 @@
 # ************************************************************************
 # @HEADER
 
+message("-- Using find_package(fmt CONFIG) ...")
+find_package(fmt CONFIG)
+if (fmt_FOUND)
+  message("-- Found fmt_CONFIG=${fmt_CONFIG}")
+  message("-- Generating fmt::all_libs and fmtConfig.cmake")
+  tribits_extpkg_create_imported_all_libs_target_and_config_file(
+    fmt
+    INNER_FIND_PACKAGE_NAME  fmt
+    IMPORTED_TARGETS_FOR_ALL_LIBS  fmt::fmt)
+  set(TPL_fmt_NOT_FOUND FALSE)
+endif()
 
-TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( fmt
-  REQUIRED_HEADERS fmt/format.h
-  REQUIRED_LIBS_NAMES  fmt
-  )
