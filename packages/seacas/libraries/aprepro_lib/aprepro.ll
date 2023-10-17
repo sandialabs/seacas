@@ -103,8 +103,6 @@ size_t hist_start = 0;
  * versions. */
 %option debug
 
-%option flex bison
-   
 /* enables the use of start condition stacks */
 %option stack
 
