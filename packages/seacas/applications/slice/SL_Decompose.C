@@ -21,7 +21,9 @@
 #include <fstream>
 
 #include <exodusII.h>
+#if !defined __NVCC__
 #include <fmt/color.h>
+#endif
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <init/Ionit_Initializer.h>
@@ -923,11 +925,19 @@ void output_decomposition_statistics(const std::vector<INT> &elem_to_proc, int p
       std::string stars(star_cnt, '*');
       std::string format = "\tProcessor {:{}}, work = {:{}}  ({:.2f})\t{}\n";
       if (elem_per_rank[i] == max_work) {
-        fmt::print(fg(fmt::color::red), format, i, proc_width, fmt::group_digits(elem_per_rank[i]),
+        fmt::print(
+#if !defined __NVCC__
+		   fg(fmt::color::red), 
+#endif
+		   format, i, proc_width, fmt::group_digits(elem_per_rank[i]),
                    work_width, (double)elem_per_rank[i] / avg_work, stars);
       }
       else if (elem_per_rank[i] == min_work) {
-        fmt::print(fg(fmt::color::green), format, i, proc_width,
+        fmt::print(
+#if !defined __NVCC__
+		   fg(fmt::color::green), 
+#endif
+		   format, i, proc_width,
                    fmt::group_digits(elem_per_rank[i]), work_width, elem_per_rank[i] / avg_work,
                    stars);
       }

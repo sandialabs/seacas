@@ -57,8 +57,15 @@ struct TimeInterp
 std::string Date()
 {
   time_t     calendar_time = time(nullptr);
+#if defined __NVCC__
+  char       tbuf[32];
+  struct tm *local_time    = localtime(&calendar_time);
+  strftime(tbuf, 32, "%Y/%m/%d   %H:%M:%S %Z", local_time);
+  std::string time_string(tbuf);
+#else
   auto const local_time    = fmt::localtime(calendar_time);
   auto       time_string   = fmt::format("{:%Y/%m/%d   %H:%M:%S %Z}", local_time);
+#endif
   return time_string;
 }
 
