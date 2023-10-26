@@ -96,6 +96,8 @@ namespace Ioss {
 
     Field(const Ioss::Field &from)      = default;
     Field &operator=(const Field &from) = default;
+    Field(Ioss::Field &&from)           = default;
+    Field &operator=(Field &&from)      = default;
     ~Field()                            = default;
 
     // Compare two fields (used for STL container)

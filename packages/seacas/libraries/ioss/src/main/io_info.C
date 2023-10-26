@@ -7,6 +7,8 @@
 #include "io_info.h"
 #include <Ioss_Hex8.h>
 #include <Ioss_Sort.h>
+#include <Ioss_StructuredBlock.h>
+#include <Ioss_ZoneConnectivity.h>
 #include <tokenize.h>
 #define FMT_DEPRECATED_OSTREAM
 #include <fmt/format.h>
@@ -263,7 +265,11 @@ namespace {
       if (!sb->m_zoneConnectivity.empty()) {
         fmt::print("\tConnectivity with other blocks:\n");
         for (const auto &zgc : sb->m_zoneConnectivity) {
-          fmt::print("{}\n", zgc);
+#if defined __NVCC__
+	  std::cout << zgc << "\n";
+#else
+	  fmt::print("{}\n", zgc);
+#endif
         }
       }
       if (!sb->m_boundaryConditions.empty()) {
@@ -277,7 +283,11 @@ namespace {
                    });
 
         for (const auto &bc : sb_bc) {
+#if defined __NVCC__
+	  std::cout << bc << "\n";
+#else
           fmt::print("{}\n", bc);
+#endif
         }
       }
       if (interFace.compute_bbox()) {

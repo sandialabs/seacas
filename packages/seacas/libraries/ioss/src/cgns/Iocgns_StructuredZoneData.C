@@ -8,8 +8,11 @@
 #include <Ioss_SmartAssert.h>
 #include <algorithm>
 #include <cgns/Iocgns_StructuredZoneData.h>
+#if !defined __NVCC__
 #include <fmt/color.h>
+#endif
 #include <fmt/ostream.h>
+#include <string>
 #include <tokenize.h>
 
 namespace {
@@ -362,7 +365,9 @@ namespace Iocgns {
       fmt::print(
           Ioss::DebugOut(), "{}",
           fmt::format(
+#if !defined __NVCC__
               fg(fmt::color::cyan),
+#endif
               "\nSplit Zone {} ({}) Adam {} ({}) with intervals {:>12},\twork = {:12}, offset {} "
               "{} {}, ordinal {}, ratio {:.3f}\n",
               m_name, m_zone, m_adam->m_name, m_adam->m_zone,

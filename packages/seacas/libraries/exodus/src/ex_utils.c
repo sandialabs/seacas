@@ -1569,7 +1569,7 @@ static void ex_int_iisort64(int64_t v[], int64_t iv[], int64_t N)
  * \internal
  * The following 'indexed qsort' routine is modified from Sedgewicks
  * algorithm It selects the pivot based on the median of the left,
- * right, and center values to try to avoid degenerate cases ocurring
+ * right, and center values to try to avoid degenerate cases occurring
  * when a single value is chosen.  It performs a quicksort on
  * intervals down to the #EX_QSORT_CUTOFF size and then performs a final
  * insertion sort on the almost sorted final array.  Based on data in

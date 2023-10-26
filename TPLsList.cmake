@@ -53,6 +53,9 @@
 #
 
 SET( Seacas_TPLS_FINDMODS_CLASSIFICATIONS
+  X11             "cmake/TPLs/"    ST
+  DLlib           "cmake/TPLs/"    ST
+  fmt             "cmake/TPLs/"    ST
   GTest           "cmake/TPLs/"    PT
   Zlib            "cmake/TPLs/"    ST
   Pthread         "cmake/TPLs/"    PT
@@ -66,10 +69,7 @@ SET( Seacas_TPLS_FINDMODS_CLASSIFICATIONS
   ParMETIS        "cmake/TPLs/"    ST
   Pamgen          "cmake/TPLs/"    ST
   Matio           "cmake/TPLs/"    ST
-  X11             "cmake/TPLs/"    ST
-  DLlib           "cmake/TPLs/"    ST
   CUDA            "cmake/TPLs/"    ST
-  fmt             "cmake/TPLs/"    ST
   Kokkos          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  ST
   Faodel          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    ST
   Cereal          "${PROJECT_SOURCE_DIR}/packages/seacas/cmake/tpls/"    ST

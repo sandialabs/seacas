@@ -842,10 +842,10 @@ namespace Ioex {
     if (nemesis_file) {
       // A nemesis file typically separates nodes into multiple
       // communication sets by processor.  (each set specifies
-      // nodes/elements that communicate with only a single processor).
-      // For Sierra, we want a single node commun. map and a single
-      // element commun. map specifying all communications so we combine
-      // all sets into a single set.
+      // nodes/elements that communicate with only a single
+      // processor).  For Sierra, we want a single node communication
+      // map and a single element communication map specifying all
+      // communications so we combine all sets into a single set.
 
       if (int_byte_size_api() == 4) {
         int gn, ge, geb, gns, gss;

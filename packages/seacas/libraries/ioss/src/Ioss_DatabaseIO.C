@@ -7,6 +7,7 @@
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_Enumerate.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Sort.h>
@@ -154,13 +155,10 @@ namespace {
   std::vector<size_t> get_entity_offsets(const std::string      &field_name,
                                          const std::vector<T *> &entity_container)
   {
-    size_t num_blocks = entity_container.size();
-
+    size_t              num_blocks = entity_container.size();
     std::vector<size_t> offsets(num_blocks + 1, 0);
 
-    for (size_t i = 0; i < num_blocks; i++) {
-      T *entity = entity_container[i];
-
+    for (auto [i, entity] : enumerate(entity_container)) {
       if (entity->field_exists(field_name)) {
         Ioss::Field field = entity->get_field(field_name);
         offsets[i + 1]    = entity->entity_count() * field.raw_storage()->component_count();
@@ -744,8 +742,8 @@ namespace Ioss {
     get_region()->add(new_set);
 
     // Find the member SideSets...
-    for (size_t i = 1; i < group_spec.size(); i++) {
-      SideSet *set = get_region()->get_sideset(group_spec[i]);
+    for (const auto &spec : group_spec) {
+      SideSet *set = get_region()->get_sideset(spec);
       if (set != nullptr) {
         const SideBlockContainer &side_blocks = set->get_side_blocks();
         for (const auto &sbold : side_blocks) {
@@ -777,7 +775,7 @@ namespace Ioss {
         fmt::print(Ioss::WarnOut(),
                    "While creating the grouped surface '{}', the surface '{}' does not exist. "
                    "This surface will skipped and not added to the group.\n\n",
-                   group_spec[0], group_spec[i]);
+                   group_spec[0], spec);
       }
     }
   }
@@ -1297,9 +1295,8 @@ namespace Ioss {
 
       util().global_array_minmax(minmax, Ioss::ParallelUtils::DO_MIN);
 
-      for (size_t i = 0; i < element_blocks.size(); i++) {
-        Ioss::ElementBlock    *block = element_blocks[i];
-        const std::string     &name  = block->name();
+      for (auto [i, block] : enumerate(element_blocks)) {
+        const std::string     &name = block->name();
         AxisAlignedBoundingBox bbox(minmax[6 * i + 0], minmax[6 * i + 1], minmax[6 * i + 2],
                                     -minmax[6 * i + 3], -minmax[6 * i + 4], -minmax[6 * i + 5]);
         elementBlockBoundingBoxes[name] = bbox;
@@ -1375,14 +1372,9 @@ namespace Ioss {
                                              const std::vector<T *> &entity_container, void *data,
                                              size_t data_size) const
   {
-    size_t num_container = entity_container.size();
-
     std::vector<size_t> offset = get_entity_offsets(field_name, entity_container);
 
-    for (size_t i = 0; i < num_container; i++) {
-
-      const auto *entity = entity_container[i];
-
+    for (const auto [i, entity] : enumerate(entity_container)) {
       if (entity->field_exists(field_name)) {
         auto        num_to_get_for_block = offset[i + 1] - offset[i];
         Ioss::Field field                = entity->get_field(field_name);

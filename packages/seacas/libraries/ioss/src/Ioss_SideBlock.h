@@ -79,7 +79,7 @@ namespace Ioss {
 
     void block_membership(std::vector<std::string> &block_members) override;
 
-    // Handle implicit properties -- These are calcuated from data stored
+    // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override;

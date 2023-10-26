@@ -36,10 +36,13 @@
 #include <Ioss_Wedge6.h>
 
 #include <fmt/chrono.h>
+#if !defined __NVCC__
 #include <fmt/color.h>
+#endif
 #include <fmt/ostream.h>
 #include <numeric>
 #include <set>
+#include <string>
 #include <tokenize.h>
 
 #include <cgns/Iocgns_StructuredZoneData.h>
@@ -2562,7 +2565,10 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
         px++;
         if (verbose && rank == 0) {
           fmt::print(Ioss::DebugOut(), "{}",
-                     fmt::format(fg(fmt::color::red),
+                     fmt::format(
+#if !defined __NVCC__
+				 fg(fmt::color::red),
+#endif
                                  "\nProcessor {} work: {}, workload ratio: {} (exceeds)", i,
                                  fmt::group_digits(work_vector[i]), workload_ratio));
         }

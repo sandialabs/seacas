@@ -564,7 +564,7 @@ namespace tsl::detail_robin_hash {
 #else
     /**
      * C++11 doesn't support the creation of a std::vector with a custom allocator
-     * and 'count' default-inserted elements. The needed contructor `explicit
+     * and 'count' default-inserted elements. The needed constructor `explicit
      * vector(size_type count, const Allocator& alloc = Allocator());` is only
      * available in C++14 and later. We thus must resize after using the
      * `vector(const Allocator& alloc)` constructor.
@@ -607,9 +607,10 @@ namespace tsl::detail_robin_hash {
     }
 
     robin_hash(robin_hash &&other) noexcept(
-        std::is_nothrow_move_constructible<Hash>::value &&std::is_nothrow_move_constructible<
-            KeyEqual>::value &&std::is_nothrow_move_constructible<GrowthPolicy>::value
-                             &&std::is_nothrow_move_constructible<buckets_container_type>::value)
+        std::is_nothrow_move_constructible<Hash>::value &&
+        std::is_nothrow_move_constructible<KeyEqual>::value &&
+        std::is_nothrow_move_constructible<GrowthPolicy>::value &&
+        std::is_nothrow_move_constructible<buckets_container_type>::value)
         : Hash(std::move(static_cast<Hash &>(other))),
           KeyEqual(std::move(static_cast<KeyEqual &>(other))),
           GrowthPolicy(std::move(static_cast<GrowthPolicy &>(other))),
@@ -1523,7 +1524,7 @@ namespace tsl::detail_robin_hash {
 
   private:
     /**
-     * Protocol version currenlty used for serialization.
+     * Protocol version currently used for serialization.
      */
     static const slz_size_type SERIALIZATION_PROTOCOL_VERSION = 1;
 
