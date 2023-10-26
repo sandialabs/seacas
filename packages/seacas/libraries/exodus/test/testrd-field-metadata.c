@@ -122,6 +122,20 @@ int main(int argc, char **argv)
     exit(1);
   }
 
+  /* Check for nodal fields... */
+  {
+    int fld_cnt = ex_get_field_metadata_count(exoid, EX_NODAL, 0);
+    assert(fld_cnt == 2);
+    ex_field fields[2] = {{.entity_type = EX_NODAL}, {.entity_type = EX_NODAL}};
+    EXCHECK(ex_get_field_metadata(exoid, fields));
+
+    for (int i = 0; i < fld_cnt; i++) {
+      get_field_cardinality(&fields[i], NULL);
+      print_field_metadata(&fields[i]);
+      print_full_field_names(&fields[i]);
+    }
+  }
+
   {
     int fld_cnt = ex_get_field_metadata_count(exoid, EX_ELEM_BLOCK, 10);
     assert(fld_cnt == 2);

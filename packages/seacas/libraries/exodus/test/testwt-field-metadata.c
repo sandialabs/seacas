@@ -104,9 +104,12 @@ int main(int argc, char **argv)
       "Curl@3",       "Curl@4",       "Curl@5",       "Curl@6",       "Curl@7",
       "Curl@8",       "User_h2o",     "User_gas",     "User_ch4",     "User_methane"};
   int num_block_vars = sizeof(var_names) / sizeof(var_names[0]);
+  int num_node_vars  = 6;
 
   EXCHECK(ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_block_vars));
   EXCHECK(ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_block_vars, var_names));
+  EXCHECK(ex_put_variable_param(exoid, EX_NODAL, num_node_vars));
+  EXCHECK(ex_put_variable_names(exoid, EX_NODAL, num_node_vars, var_names));
 
   int vname = 0;
   {
@@ -117,6 +120,11 @@ int main(int argc, char **argv)
                                        .nesting                = 1,
                                        .component_separator[0] = 0};
     EXCHECK(ex_put_field_metadata(exoid, field));
+
+    /* Put same field on the nodes... */
+    field.entity_type = EX_NODAL;
+    EXCHECK(ex_put_field_metadata(exoid, field));
+
     int cardinality =
         field.cardinality[0] != 0 ? field.cardinality[0] : ex_field_cardinality(field.type[0]);
     for (int i = 0; i < cardinality; i++) {
@@ -133,6 +141,11 @@ int main(int argc, char **argv)
                                        .nesting                = 1,
                                        .component_separator[0] = '%'};
     EXCHECK(ex_put_field_metadata(exoid, field));
+
+    /* Put same field on the nodes... */
+    field.entity_type = EX_NODAL;
+    EXCHECK(ex_put_field_metadata(exoid, field));
+
     int cardinality =
         field.cardinality[0] != 0 ? field.cardinality[0] : ex_field_cardinality(field.type[0]);
     for (int i = 0; i < cardinality; i++) {
