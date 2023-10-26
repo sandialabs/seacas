@@ -68,8 +68,8 @@ int ex_initialize_basis_struct(ex_basis *basis, int cardinality)
     basis->xi               = calloc(basis->cardinality, sizeof(double));
     basis->eta              = calloc(basis->cardinality, sizeof(double));
     basis->zeta             = calloc(basis->cardinality, sizeof(double));
-    if (basis->subc_dim == NULL | basis->subc_ordinal == NULL | basis->subc_dof_ordinal == NULL |
-        basis->subc_num_dof == NULL | basis->xi == NULL | basis->eta == NULL |
+    if (basis->subc_dim == NULL || basis->subc_ordinal == NULL || basis->subc_dof_ordinal == NULL ||
+        basis->subc_num_dof == NULL || basis->xi == NULL || basis->eta == NULL ||
         basis->zeta == NULL) {
       return EX_FATAL;
     }
