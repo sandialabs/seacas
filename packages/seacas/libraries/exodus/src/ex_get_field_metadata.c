@@ -312,22 +312,34 @@ int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id en
     status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_dim);
   }
   if (status == NC_NOERR && basis->subc_ordinal != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_ordinal);
+    status = nc_get_att(exoid, varid, "Basis@subc_ordinal", basis->subc_ordinal);
   }
   if (status == NC_NOERR && basis->subc_dof_ordinal != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_dof_ordinal);
+    status = nc_get_att(exoid, varid, "Basis@subc_dof_ordinal", basis->subc_dof_ordinal);
   }
   if (status == NC_NOERR && basis->subc_num_dof != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_num_dof);
+    status = nc_get_att(exoid, varid, "Basis@subc_num_dof", basis->subc_num_dof);
   }
   if (status == NC_NOERR && basis->xi != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->xi);
+    status = nc_get_att(exoid, varid, "Basis@xi", basis->xi);
   }
   if (status == NC_NOERR && basis->eta != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->eta);
+    status = nc_get_att(exoid, varid, "Basis@eta", basis->eta);
+    if (status == NC_ENOTATT) {
+      for (int i = 0; i < basis->cardinality; i++) {
+        basis->eta[i] = 0.0;
+      }
+      status = NC_NOERR;
+    }
   }
   if (status == NC_NOERR && basis->zeta != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->zeta);
+    status = nc_get_att(exoid, varid, "Basis@zeta", basis->zeta);
+    if (status == NC_ENOTATT) {
+      for (int i = 0; i < basis->cardinality; i++) {
+        basis->zeta[i] = 0.0;
+      }
+      status = NC_NOERR;
+    }
   }
   if (status != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
