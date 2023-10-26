@@ -2290,6 +2290,85 @@ char *ex_copy_string(char *dest, char const *source, size_t elements)
   return d;
 }
 
+/* Used by the entity attribute code `ex_get_attribute(s)` and `ex_put_attribute(s)` */
+int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
+{
+  if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  if (obj_type == EX_GLOBAL) {
+    return NC_GLOBAL;
+  }
+
+  int  status = 0;
+  char errmsg[MAX_ERR_LENGTH];
+
+  if (obj_type == EX_NODAL) {
+    /* For the nodal entity attributes, we store it on the
+    "coor_names" variable.  Not exactly logical, but it exists in any
+    model that has nodes, so it at least gives us a place to put the
+    attribute. Another possibility would be the nodal x-coordinate
+    varible...
+    */
+    int varid = 0;
+    if ((status = nc_inq_varid(exoid, VAR_NAME_COOR, &varid)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to locate node block variable id in file id %d", exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      return EX_FATAL;
+    }
+    return varid;
+  }
+
+  /* Everything else ... */
+  /* First, locate index of this objects id `obj_type` id array */
+  /* First, locate index of this objects id `obj_type` id array */
+  int id_ndx = ex__id_lkup(exoid, obj_type, id);
+  if (id_ndx <= 0) {
+    ex_get_err(NULL, NULL, &status);
+    if (status != 0) {
+      if (status == EX_NULLENTITY) { /* NULL object?    */
+        return EX_NOERR;
+      }
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to locate %s id  %" PRId64 " in id array in file id %d",
+               ex_name_of_object(obj_type), id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      return EX_FATAL;
+    }
+  }
+
+  const char *entryptr = NULL;
+  switch (obj_type) {
+  case EX_ASSEMBLY: entryptr = VAR_ENTITY_ASSEMBLY(id_ndx); break;
+  case EX_BLOB: entryptr = VAR_ENTITY_BLOB(id_ndx); break;
+  case EX_NODE_SET: entryptr = VAR_NODE_NS(id_ndx); break;
+  case EX_EDGE_SET: entryptr = VAR_EDGE_ES(id_ndx); break;
+  case EX_FACE_SET: entryptr = VAR_FACE_FS(id_ndx); break;
+  case EX_SIDE_SET: entryptr = VAR_ELEM_SS(id_ndx); break;
+  case EX_ELEM_SET: entryptr = VAR_ELEM_ELS(id_ndx); break;
+  case EX_EDGE_BLOCK: entryptr = VAR_EBCONN(id_ndx); break;
+  case EX_FACE_BLOCK: entryptr = VAR_FBCONN(id_ndx); break;
+  case EX_ELEM_BLOCK: entryptr = VAR_CONN(id_ndx); break;
+  default:
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
+    ex_err(__func__, errmsg, EX_BADPARAM);
+    return EX_FATAL;
+  }
+
+  int varid = 0;
+  if ((status = nc_inq_varid(exoid, entryptr, &varid)) != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to locate entity list array for %s %" PRId64 " in file id %d",
+             ex_name_of_object(obj_type), id, exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    return EX_FATAL;
+  }
+  return varid;
+}
+
 /*
  * Code from:
  * https://stackoverflow.com/questions/11034002/how-to-get-absolute-path-of-file-or-directory-that-does-not-exist
