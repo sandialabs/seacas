@@ -35,6 +35,7 @@ TRIBITS_ADD_LIBRARY(
 )
 
 set_property(TARGET exodus PROPERTY C_STANDARD 99)
+set_property(TARGET exodus PROPERTY C_EXTENSIONS ON)
 
 if (SEACASExodus_ENABLE_SHARED)
    if (NOT BUILD_SHARED_LIBS)
@@ -45,6 +46,7 @@ if (SEACASExodus_ENABLE_SHARED)
 	      IMPORTEDLIBS ${TPL_Netcdf_LIBRARIES}
       )
       set_property(TARGET exodus_shared PROPERTY C_STANDARD 99)
+      set_property(TARGET exodus PROPERTY C_EXTENSIONS ON)
       set_target_properties(exodus_shared PROPERTIES OUTPUT_NAME exodus)
       INSTALL(TARGETS exodus_shared DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
    endif()
