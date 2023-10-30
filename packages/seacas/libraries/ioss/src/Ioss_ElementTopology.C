@@ -4,19 +4,19 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>          // for IntVector
-#include <Ioss_ElementPermutation.h> // for ElementPermutation
+#include <Ioss_CodeTypes.h>
+#include <Ioss_ElementPermutation.h>
 #include <Ioss_ElementTopology.h>
-#include <Ioss_Super.h> // for Super
+#include <Ioss_Super.h>
 #include <Ioss_Utils.h>
 
-#include <cassert> // for assert
-#include <cstddef> // for size_t
+#include <cassert>
+#include <cstddef>
 #include <fmt/ostream.h>
-#include <ostream> // for basic_ostream, etc
-#include <string>  // for string, char_traits, etc
-#include <utility> // for pair
-#include <vector>  // for vector
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 void Ioss::ETRegistry::insert(const Ioss::ETM_VP &value, bool delete_me)
 {

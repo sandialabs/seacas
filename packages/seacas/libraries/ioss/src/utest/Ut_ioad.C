@@ -23,7 +23,7 @@
 #include "Ioss_VariableType.h"
 #include <Ioss_SubSystem.h>
 
-#include "Ioss_DatabaseIO.h" // for DatabaseIO
+#include "Ioss_DatabaseIO.h"
 
 #include "Ioss_IOFactory.h" // for IOFactory
 #include <init/Ionit_Initializer.h>

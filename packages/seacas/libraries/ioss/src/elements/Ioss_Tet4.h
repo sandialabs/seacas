@@ -8,9 +8,9 @@
 
 #include "ioss_export.h"
 
-#include <Ioss_CodeTypes.h>          // for IntVector
+#include <Ioss_CodeTypes.h>
 #include <Ioss_ElementPermutation.h> // for ElementPermutatio
-#include <Ioss_ElementTopology.h>    // for ElementTopology
+#include <Ioss_ElementTopology.h>
 
 // STL Includes
 

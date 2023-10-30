@@ -12,7 +12,7 @@
 #include <Ioss_Assembly.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_DBUsage.h>
-#include <Ioss_DatabaseIO.h> // for DatabaseIO
+#include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementBlock.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_EntityType.h>     // for EntityType, etc

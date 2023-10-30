@@ -9,8 +9,8 @@
 #include "ioss_export.h"
 
 #include <Ioss_CoordinateFrame.h> // for CoordinateFrame
-#include <Ioss_DatabaseIO.h>      // for DatabaseIO
-#include <Ioss_EntityType.h>      // for EntityType, etc
+#include <Ioss_DatabaseIO.h>
+#include <Ioss_EntityType.h> // for EntityType, etc
 #include <Ioss_Field.h>
 #include <Ioss_GroupingEntity.h> // for GroupingEntity
 #include <Ioss_MeshType.h>
@@ -430,9 +430,9 @@ namespace Ioss {
         if (found && field.get_role() != role) {
           std::ostringstream errmsg;
 #if defined BUILT_IN_SIERRA
-       errmsg << "ERROR: Field " << field.get_name() << " with role " << field.role_string() 
-              << " on entity " << entity->name() << " does not match previously found role " 
-              << Ioss::Field::role_string(role) << ".\n",
+          errmsg << "ERROR: Field " << field.get_name() << " with role " << field.role_string()
+                 << " on entity " << entity->name() << " does not match previously found role "
+                 << Ioss::Field::role_string(role) << ".\n",
 #else
           fmt::print(errmsg,
                      "ERROR: Field {} with role {} on entity {} does not match previously found "
@@ -440,7 +440,7 @@ namespace Ioss {
                      field.get_name(), field.role_string(), entity->name(),
                      Ioss::Field::role_string(role));
 #endif
-          IOSS_ERROR(errmsg);
+              IOSS_ERROR(errmsg);
         }
 
         found = true;

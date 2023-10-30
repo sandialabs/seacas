@@ -4,9 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_CodeTypes.h"           // for IntVector
-#include "Ioss_ElementTopology.h"     // for ElementTopology
-#include <Ioss_ElementVariableType.h> // for ElementVariableType
+#include "Ioss_CodeTypes.h"
+#include "Ioss_ElementTopology.h"
+#include <Ioss_ElementVariableType.h>
 #include <Ioss_Super.h>
 #include <cstddef> // for size_t
 #include <cstdlib>

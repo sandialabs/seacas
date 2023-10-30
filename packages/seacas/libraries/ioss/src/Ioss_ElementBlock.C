@@ -7,7 +7,7 @@
 #include "Ioss_BoundingBox.h"  // for AxisAlignedBoundingBox
 #include "Ioss_EntityBlock.h"  // for EntityBlock
 #include "Ioss_FieldManager.h" // for FieldManager
-#include <Ioss_DatabaseIO.h>   // for DatabaseIO
+#include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementBlock.h>
 #include <Ioss_Field.h>    // for Field, etc
 #include <Ioss_Property.h> // for Property

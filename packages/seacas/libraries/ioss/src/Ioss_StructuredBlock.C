@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_BoundingBox.h>  // for AxisAlignedBoundingBox
-#include <Ioss_DatabaseIO.h>   // for DatabaseIO
+#include <Ioss_BoundingBox.h> // for AxisAlignedBoundingBox
+#include <Ioss_DatabaseIO.h>
 #include <Ioss_Field.h>        // for Field, etc
 #include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_Hex8.h>

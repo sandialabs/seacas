@@ -8,7 +8,7 @@
 
 #include "ioex_export.h"
 
-#include "Ioss_DatabaseIO.h" // for DatabaseIO
+#include "Ioss_DatabaseIO.h"
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>   // for DatabaseUsage
 #include <Ioss_IOFactory.h> // for IOFactory

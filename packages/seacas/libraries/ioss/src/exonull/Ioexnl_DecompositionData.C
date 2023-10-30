@@ -7,27 +7,27 @@
 #include <Ioss_CodeTypes.h>
 #include <exonull/Ioexnl_DecompositionData.h>
 #if defined PARALLEL_AWARE_EXODUS
-#include <Ioss_ElementTopology.h> // for ElementTopology
-#include <Ioss_Field.h>           // for Field, etc
-#include <Ioss_Map.h>             // for Map, MapContainer
-#include <Ioss_PropertyManager.h> // for PropertyManager
+#include <Ioss_ElementTopology.h>
+#include <Ioss_Field.h>
+#include <Ioss_Map.h>
+#include <Ioss_PropertyManager.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
 #include <exonull/Ioexnl_Utils.h>
 
-#include <algorithm> // for lower_bound, copy, etc
-#include <cassert>   // for assert
-#include <climits>   // for INT_MAX
+#include <algorithm>
+#include <cassert>
+#include <climits>
 #include <cmath>
-#include <cstdlib> // for exit, EXIT_FAILURE
+#include <cstdlib>
 #include <cstring>
 #include <fmt/ostream.h>
-#include <iostream> // for operator<<, ostringstream, etc
-#include <iterator> // for distance
-#include <map>      // for map
-#include <numeric>  // for accumulate
-#include <utility>  // for pair, make_pair
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <numeric>
+#include <utility>
 
 namespace Ioexnl {
   template DecompositionData<int>::DecompositionData(const Ioss::PropertyManager &props,

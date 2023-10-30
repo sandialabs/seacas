@@ -8,8 +8,8 @@
 
 #include "ioss_export.h"
 
-#include <Ioss_VariableType.h> // for VariableType
-#include <string>              // for string
+#include <Ioss_VariableType.h>
+#include <string> // for string
 
 namespace Ioss {
   class IOSS_EXPORT ConstructedVariableType : public VariableType

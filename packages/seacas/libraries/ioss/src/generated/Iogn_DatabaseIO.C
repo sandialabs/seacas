@@ -4,9 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_CommSet.h"      // for CommSet
-#include "Ioss_DBUsage.h"      // for DatabaseUsage
-#include "Ioss_DatabaseIO.h"   // for DatabaseIO
+#include "Ioss_CommSet.h" // for CommSet
+#include "Ioss_DBUsage.h" // for DatabaseUsage
+#include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h" // for ElementBlock
 #include "Ioss_ElementTopology.h"
 #include "Ioss_EntityType.h"     // for EntityType, etc
@@ -22,13 +22,13 @@
 #include "Ioss_PropertyManager.h" // for PropertyManager
 #include "Ioss_Region.h"          // for Region
 #include "Ioss_SideSet.h"         // for SideSet
-#include "Ioss_VariableType.h"    // for VariableType
-#include <Ioss_CodeTypes.h>       // for Int64Vector, IntVector
-#include <Ioss_SideBlock.h>       // for SideBlock
-#include <Ioss_Utils.h>           // for Utils, IOSS_ERROR
-#include <algorithm>              // for copy
-#include <cassert>                // for assert
-#include <cmath>                  // for sqrt
+#include "Ioss_VariableType.h"
+#include <Ioss_CodeTypes.h> // for Int64Vector, IntVector
+#include <Ioss_SideBlock.h> // for SideBlock
+#include <Ioss_Utils.h>     // for Utils, IOSS_ERROR
+#include <algorithm>        // for copy
+#include <cassert>          // for assert
+#include <cmath>            // for sqrt
 #include <fmt/ostream.h>
 #include <generated/Iogn_DatabaseIO.h>
 #include <generated/Iogn_GeneratedMesh.h> // for GeneratedMesh

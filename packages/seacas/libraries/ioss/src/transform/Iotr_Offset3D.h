@@ -8,8 +8,8 @@
 
 #include "iotr_export.h"
 
-#include <Ioss_Transform.h>    // for Transform, Factory
-#include <Ioss_VariableType.h> // for VariableType
+#include <Ioss_Transform.h> // for Transform, Factory
+#include <Ioss_VariableType.h>
 #include <transform/Iotr_Factory.h>
 
 #include <string> // for string

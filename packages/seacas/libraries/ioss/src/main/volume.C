@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_DatabaseIO.h"   // for DatabaseIO
+#include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h" // for ElementBlock
 #include "Ioss_Property.h"     // for Property
 #include <algorithm>           // for max_element, min_element

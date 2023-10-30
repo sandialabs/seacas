@@ -19,10 +19,10 @@
 #include <string>    // for string, operator==, etc
 #include <utility>   // for pair
 
-#include "Ioss_Assembly.h"     // for Assembly
-#include "Ioss_CommSet.h"      // for CommSet
-#include "Ioss_DBUsage.h"      // for DatabaseUsage
-#include "Ioss_DatabaseIO.h"   // for DatabaseIO
+#include "Ioss_Assembly.h" // for Assembly
+#include "Ioss_CommSet.h"  // for CommSet
+#include "Ioss_DBUsage.h"  // for DatabaseUsage
+#include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h" // for ElementBlock
 #include "Ioss_ElementTopology.h"
 #include "Ioss_EntityType.h"     // for EntityType, etc
@@ -40,8 +40,8 @@
 #include "Ioss_SerializeIO.h"
 #include "Ioss_SideSet.h" // for SideSet
 #include "Ioss_Utils.h"
-#include "Ioss_VariableType.h" // for VariableType
-#include "Iotm_TextMesh.h"     // for TextMesh
+#include "Ioss_VariableType.h"
+#include "Iotm_TextMesh.h" // for TextMesh
 
 namespace {
   template <typename INT>

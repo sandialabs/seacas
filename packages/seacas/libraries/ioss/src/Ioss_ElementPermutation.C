@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h> // for IntVector
+#include <Ioss_CodeTypes.h>
 #include <Ioss_ElementPermutation.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_Utils.h>

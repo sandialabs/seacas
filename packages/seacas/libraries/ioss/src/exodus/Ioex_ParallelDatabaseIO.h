@@ -12,12 +12,12 @@
 #include <exodusII.h>
 #if defined PARALLEL_AWARE_EXODUS
 #include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>               // for DatabaseUsage
-#include <Ioss_Map.h>                   // for Map
-#include <Ioss_State.h>                 // for State
-#include <exodus/Ioex_BaseDatabaseIO.h> // for DatabaseIO
-#include <functional>                   // for less
-#include <map>                          // for map, map<>::value_compare
+#include <Ioss_DBUsage.h> // for DatabaseUsage
+#include <Ioss_Map.h>     // for Map
+#include <Ioss_State.h>   // for State
+#include <exodus/Ioex_BaseDatabaseIO.h>
+#include <functional> // for less
+#include <map>        // for map, map<>::value_compare
 #include <memory>
 #include <set>      // for set
 #include <stddef.h> // for size_t

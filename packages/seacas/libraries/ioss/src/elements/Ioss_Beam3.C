@@ -4,12 +4,12 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_CodeTypes.h"       // for IntVector
-#include "Ioss_ElementTopology.h" // for ElementTopology
+#include "Ioss_CodeTypes.h"
+#include "Ioss_ElementTopology.h"
 #include <Ioss_Beam3.h>
-#include <Ioss_ElementVariableType.h> // for ElementVariableType
-#include <cassert>                    // for assert
-#include <cstddef>                    // for nullptr
+#include <Ioss_ElementVariableType.h>
+#include <cassert> // for assert
+#include <cstddef> // for nullptr
 
 //------------------------------------------------------------------------
 // Define a variable type for storage of this elements connectivity

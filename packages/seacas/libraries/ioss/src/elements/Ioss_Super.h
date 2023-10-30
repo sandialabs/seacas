@@ -9,7 +9,7 @@
 #include "ioss_export.h"
 
 #include "Ioss_Super.h"
-#include <Ioss_CodeTypes.h>          // for IntVector
+#include <Ioss_CodeTypes.h>
 #include <Ioss_ElementPermutation.h> // for ElementPermutation
 #include <string>                    // for string
 namespace Ioss {

@@ -12,7 +12,6 @@
 
 #include <Ioss_CommSet.h>
 #include <Ioss_DatabaseIO.h>
-#include <Ioss_DatabaseIO.h> // for DatabaseIO
 #include <Ioss_EdgeBlock.h>
 #include <Ioss_EdgeSet.h>
 #include <Ioss_ElementBlock.h>

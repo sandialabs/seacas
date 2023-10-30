@@ -6,9 +6,9 @@
 
 // ========================================================================
 // Define a variable type for storage of this elements connectivity
-#include "Ioss_CodeTypes.h"           // for IntVector
-#include "Ioss_ElementTopology.h"     // for ElementTopology
-#include <Ioss_ElementVariableType.h> // for ElementVariableType
+#include "Ioss_CodeTypes.h"
+#include "Ioss_ElementTopology.h"
+#include <Ioss_ElementVariableType.h>
 #include <Ioss_Tri7.h>
 #include <cassert> // for assert
 #include <cstddef> // for nullptr

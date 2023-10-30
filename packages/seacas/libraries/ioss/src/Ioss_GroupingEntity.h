@@ -8,8 +8,8 @@
 
 #include "ioss_export.h"
 
-#include <Ioss_CodeTypes.h>       // for Complex
-#include <Ioss_DatabaseIO.h>      // for DatabaseIO
+#include <Ioss_CodeTypes.h> // for Complex
+#include <Ioss_DatabaseIO.h>
 #include <Ioss_EntityType.h>      // for EntityType
 #include <Ioss_Field.h>           // for Field, Field::RoleType, etc
 #include <Ioss_FieldManager.h>    // for FieldManager, NameList

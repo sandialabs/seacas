@@ -4,9 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_CommSet.h"         // for CommSet
-#include "Ioss_DBUsage.h"         // for DatabaseUsage
-#include "Ioss_DatabaseIO.h"      // for DatabaseIO
+#include "Ioss_CommSet.h" // for CommSet
+#include "Ioss_DBUsage.h" // for DatabaseUsage
+#include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h"    // for ElementBlock
 #include "Ioss_EntityType.h"      // for EntityType, etc
 #include "Ioss_Field.h"           // for Field, etc
@@ -20,13 +20,13 @@
 #include "Ioss_Region.h"          // for Region
 #include "Ioss_SideSet.h"         // for SideSet
 #include "Ioss_StructuredBlock.h"
-#include "Ioss_VariableType.h" // for VariableType
-#include <Ioss_CodeTypes.h>    // for Int64Vector, IntVector
-#include <Ioss_SideBlock.h>    // for SideBlock
-#include <Ioss_Utils.h>        // for Utils, IOSS_ERROR
-#include <algorithm>           // for copy
-#include <cassert>             // for assert
-#include <cmath>               // for sqrt
+#include "Ioss_VariableType.h"
+#include <Ioss_CodeTypes.h> // for Int64Vector, IntVector
+#include <Ioss_SideBlock.h> // for SideBlock
+#include <Ioss_Utils.h>     // for Utils, IOSS_ERROR
+#include <algorithm>        // for copy
+#include <cassert>          // for assert
+#include <cmath>            // for sqrt
 #include <gen_struc/Iogs_DatabaseIO.h>
 #include <gen_struc/Iogs_GeneratedMesh.h> // for GeneratedMesh
 #include <iostream>                       // for ostringstream, operator<<, etc
