@@ -6,13 +6,13 @@
 
 #include <Ioss_Compare.h>
 #include <Ioss_DatabaseIO.h>
+#include <Ioss_ElementBlock.h>
 #include <Ioss_IOFactory.h>
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_NodeBlock.h>
-#include <Ioss_ElementBlock.h>
 #include <Ioss_StructuredBlock.h>
-#include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
 #include <catalyst/Iocatalyst_DatabaseIO.h>
+#include <catalyst_tests/Iocatalyst_DatabaseIOTest.h>
 
 Iocatalyst_DatabaseIOTest::Iocatalyst_DatabaseIOTest()
 {
@@ -31,17 +31,18 @@ bool Iocatalyst_DatabaseIOTest::regionsAreEqual(const std::string &fileName,
                                                 const std::string &iossDatabaseType)
 {
   Ioss::PropertyManager dbProps;
-  auto inputFileName = fileName;
-  auto inputCatalystFileName = catFileName;
-  Ioss::ParallelUtils pu;
-  int numRanks = pu.parallel_size();
-  int rank = pu.parallel_rank();
-  if(iossDatabaseType == EXODUS_DATABASE_TYPE && numRanks > 1) {
+  auto                  inputFileName         = fileName;
+  auto                  inputCatalystFileName = catFileName;
+  Ioss::ParallelUtils   pu;
+  int                   numRanks = pu.parallel_size();
+  int                   rank     = pu.parallel_rank();
+  if (iossDatabaseType == EXODUS_DATABASE_TYPE && numRanks > 1) {
     inputFileName += "." + std::to_string(numRanks) + "." + std::to_string(rank);
-    inputCatalystFileName +=  "." + std::to_string(numRanks) + "." + std::to_string(rank);
+    inputCatalystFileName += "." + std::to_string(numRanks) + "." + std::to_string(rank);
   }
-  Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(iossDatabaseType, inputFileName, Ioss::READ_RESTART,
-                                                  Ioss::ParallelUtils::comm_self(), dbProps);
+  Ioss::DatabaseIO *dbi =
+      Ioss::IOFactory::create(iossDatabaseType, inputFileName, Ioss::READ_RESTART,
+                              Ioss::ParallelUtils::comm_self(), dbProps);
   if (dbi == nullptr || !dbi->ok(true)) {
     return false;
   }
@@ -102,7 +103,7 @@ void Iocatalyst_DatabaseIOTest::checkZeroCopyFields(Iocatalyst::BlockMeshSet::IO
     return;
   }
 
-  Ioss::Region cir(cdbi);
+  Ioss::Region                            cir(cdbi);
   Iocatalyst::DatabaseIO::RegionContainer rc;
   rc.push_back(&cir);
   checkEntityContainerZeroCopyFields(rc);
