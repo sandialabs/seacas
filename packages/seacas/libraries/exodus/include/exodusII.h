@@ -450,9 +450,9 @@ typedef struct ex_attribute
   int64_t        entity_id;
   char           name[EX_MAX_NAME + 1];
   ex_type        type; /* int, double, text */
-  size_t         value_count;
-  void          *values;         /* not accessed if NULL */
+  int            value_count;
   int            variable_index; /* For variable attributes only */
+  void          *values;         /* not accessed if NULL */
 } ex_attribute;
 
 typedef struct ex_blob
