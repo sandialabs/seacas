@@ -6,6 +6,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_ParallelUtils.h>
 #include <Ioss_Utils.h>
 #include <cstring>
 #include <ostream>

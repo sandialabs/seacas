@@ -26,6 +26,7 @@
 #include <tokenize.h>
 #include <vector>
 
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DataSize.h"
 #include "Ioss_DatabaseIO.h"

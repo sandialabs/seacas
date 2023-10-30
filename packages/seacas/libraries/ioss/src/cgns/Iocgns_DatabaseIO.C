@@ -37,6 +37,8 @@
 #error "Could not include cgnslib.h"
 #endif
 
+#include "tokenize.h"
+#include "Ioss_Assembly.h"
 #include "Ioss_CommSet.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DataSize.h"
@@ -58,6 +60,8 @@
 #include "Ioss_MeshType.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
+#include "Ioss_Quad4.h"
+#include "Ioss_Hex8.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"

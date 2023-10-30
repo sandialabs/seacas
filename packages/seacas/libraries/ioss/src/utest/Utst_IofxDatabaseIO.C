@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_Field.h"
 #include "Ioss_ParallelUtils.h"

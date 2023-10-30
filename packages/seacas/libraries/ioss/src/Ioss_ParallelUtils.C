@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <fmt/ostream.h>
 #include <iosfwd>
+#include <numeric>
 #include <string>
 #include <tokenize.h>
 #include <vector>

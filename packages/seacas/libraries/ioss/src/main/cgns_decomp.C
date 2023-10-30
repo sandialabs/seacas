@@ -31,6 +31,7 @@
 #include <string>
 #include <vector>
 
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"

@@ -18,6 +18,7 @@
 #include <exodus/Ioex_SuperElement.h>
 #include <stdlib.h>
 
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_Field.h"
 #include "Ioss_Property.h"
 #include "Ioss_Utils.h"
