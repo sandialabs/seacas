@@ -173,7 +173,7 @@ int main(int argc, char **argv)
                               .values      = units};
     EXCHECK(ex_put_attribute(exoid, attribute));
 
-    ex_attribute attr_offset = {EX_ASSEMBLY, 300, "Offset", EX_DOUBLE, 3, 0, offset};
+    ex_attribute attr_offset = {EX_ASSEMBLY, 300, "Offset", EX_DOUBLE, 3, offset};
     EXCHECK(ex_put_attribute(exoid, attr_offset));
 
     /* Make sure this works for non-assemblies also... */

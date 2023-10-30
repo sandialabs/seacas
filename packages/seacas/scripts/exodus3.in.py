@@ -613,7 +613,6 @@ class ex_attribute(ctypes.Structure):
                 ("name", ctypes.c_char * 257),
                 ("type", ctypes.c_int),
                 ("value_count", ctypes.c_int),
-                ("variable_index", ctypes.c_int),
                 ("values", ctypes.c_void_p)]
 
 

@@ -124,7 +124,7 @@ int main(int argc, char **argv)
                               .values      = units};
     EXCHECK(ex_put_attribute(exoid, attribute));
 
-    ex_attribute attr_offset = {EX_BLOB, 300, "Offset", EX_DOUBLE, 3, 0, offset};
+    ex_attribute attr_offset = {EX_BLOB, 300, "Offset", EX_DOUBLE, 3, offset};
     EXCHECK(ex_put_attribute(exoid, attr_offset));
 
     EXCHECK(ex_put_text_attribute(exoid, EX_GLOBAL, 0, "SOLID_MODEL", "STEP-X-43-1547836-Rev 0"));
