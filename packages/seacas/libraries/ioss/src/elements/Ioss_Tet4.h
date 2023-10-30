@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>          // for IntVector
 #include <Ioss_ElementPermutation.h> // for ElementPermutatio
 #include <Ioss_ElementTopology.h>    // for ElementTopology
+
+#include "ioss_export.h"
 
 // STL Includes
 
