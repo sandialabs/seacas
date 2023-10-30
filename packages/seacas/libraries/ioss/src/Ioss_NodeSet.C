@@ -8,10 +8,8 @@
 #include <Ioss_NodeSet.h>
 #include <Ioss_Property.h>
 #include <cstddef>
-#include <string>
 
 #include "Ioss_EntitySet.h"
-#include "Ioss_GroupingEntity.h"
 
 namespace Ioss {
   class Field;

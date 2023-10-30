@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <cstddef> // for size_t
-#include <string>  // for string
-#include <vector>  // for vector
+#include <stdint.h>
+#include <string> // for string
+#include <vector> // for vector
+
+#include "ioss_export.h"
+
 namespace Ioss {
   class GroupingEntity;
   class Transform;

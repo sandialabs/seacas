@@ -6,13 +6,15 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstddef>
 #include <map>
+#include <string>
+#include <vector>
+
+#include "ioss_export.h"
 
 #define FG_USE_ROBIN
 #if defined FG_USE_STD

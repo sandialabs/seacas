@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
-
+#include <stddef.h>
 #include <string>
 #include <vector>
+
+#include "ioss_export.h"
 
 namespace Ioss {
   class Field;

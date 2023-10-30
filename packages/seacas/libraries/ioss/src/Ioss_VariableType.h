@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
 #include <cstring>    // for strncmp
@@ -15,6 +13,8 @@
 #include <map>        // for map, map<>::value_compare
 #include <string>     // for string, operator<
 #include <vector>     // for vector
+
+#include "ioss_export.h"
 
 namespace Ioss {
   class VariableType;

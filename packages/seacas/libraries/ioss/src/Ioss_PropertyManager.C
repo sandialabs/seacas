@@ -9,10 +9,11 @@
 #include <Ioss_Utils.h>
 #include <cstddef>
 #include <fmt/ostream.h>
-#include <map>
 #include <ostream>
 #include <string>
-#include <utility>
+
+#include "Ioss_CodeTypes.h"
+#include "robin_hash.h"
 
 Ioss::PropertyManager::~PropertyManager()
 {

@@ -6,8 +6,7 @@
 #include <Ioss_GroupingEntity.h>
 #include <Ioss_Property.h>
 #include <Ioss_Utils.h>
-#include <algorithm>
-#include <cstddef>
+#include <assert.h>
 #include <fmt/ostream.h>
 #include <ostream>
 #include <string>

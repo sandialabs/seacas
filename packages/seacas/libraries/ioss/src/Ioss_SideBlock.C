@@ -5,7 +5,6 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_DatabaseIO.h>
-#include <Ioss_ElementBlock.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_EntityBlock.h>
 #include <Ioss_Field.h>
@@ -14,6 +13,7 @@
 #include <cassert>
 #include <cstddef>
 #include <fmt/ostream.h>
+#include <iosfwd>
 #include <string>
 #include <tokenize.h>
 #include <vector>
@@ -21,6 +21,7 @@
 #include "Ioss_FieldManager.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"
+#include "Ioss_Utils.h"
 
 /** \brief Create a side block.
  *

@@ -5,13 +5,15 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
+#include <exception>
 #include <iostream>
 #include <memory>
+#include <stddef.h>
 #include <string>
 #include <tuple>
 #include <vector>
+
+#include "ioss_export.h"
 
 namespace Ioss::glob {
 
@@ -804,6 +806,7 @@ namespace Ioss::glob {
 // declare all classes used for nodes
 #define DECLARE_TYPE_CLASS(type) template <class charT> class type;
   GLOB_AST_NODE_LIST(DECLARE_TYPE_CLASS)
+
 #undef DECLARE_TYPE_CLASS
 
   template <class charT> class AstNode

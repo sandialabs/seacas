@@ -6,14 +6,15 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <assert.h>
 #include <limits>
-#include <map>    // for map, map<>::value_compare
+#include <map> // for map, map<>::value_compare
+#include <stdint.h>
 #include <string> // for string, operator<
 #include <vector> // for vector
+
+#include "ioss_export.h"
 
 namespace Ioss {
   class ElementTopology;

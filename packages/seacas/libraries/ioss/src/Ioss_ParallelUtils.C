@@ -9,16 +9,15 @@
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_PropertyManager.h>
 #include <Ioss_Utils.h>
-#include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdlib>
-#include <cstring>
 #include <fmt/ostream.h>
-#include <numeric>
+#include <iosfwd>
 #include <string>
 #include <tokenize.h>
 #include <vector>
+
+#include "Ioss_Property.h"
 
 #ifdef SEACAS_HAVE_MPI
 #include <Ioss_SerializeIO.h>

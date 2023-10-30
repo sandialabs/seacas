@@ -6,14 +6,19 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_GroupingEntity.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <string>
+
+#include "Ioss_EntityType.h"
+#include "Ioss_Property.h"
+#include "ioss_export.h"
 
 namespace Ioss {
   class DatabaseIO;
+  class Field;
 
   class IOSS_EXPORT NullEntity : public GroupingEntity
   {
