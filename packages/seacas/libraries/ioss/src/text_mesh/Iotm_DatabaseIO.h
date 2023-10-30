@@ -6,20 +6,18 @@
 
 #pragma once
 
-#include "iotm_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>    // for DatabaseUsage
 #include <Ioss_DatabaseIO.h> // for DatabaseIO
 #include <Ioss_IOFactory.h>  // for IOFactory
 #include <Ioss_Map.h>        // for Map
-
-#include <cstddef> // for size_t
-#include <cstdint> // for int64_t
-#include <string>  // for string
-#include <vector>  // for vector
+#include <cstddef>           // for size_t
+#include <cstdint>           // for int64_t
+#include <string>            // for string
+#include <vector>            // for vector
 
 #include "Ioss_State.h" // for State
+#include "iotm_export.h"
 
 namespace Iotm {
   class TextMesh;
@@ -45,6 +43,9 @@ namespace Ioss {
 
 namespace Ioss {
   class EntityBlock;
+  class Assembly;
+  class Blob;
+  class Map;
 } // namespace Ioss
 
 /** \brief A namespace for the generated database format.

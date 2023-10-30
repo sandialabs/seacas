@@ -8,10 +8,10 @@
 #include <Ioss_VariableType.h>
 #include <cmath>
 #include <cstddef>
-#include <string>
 #include <transform/Iotr_VectorMagnitude.h>
 
 #include "Ioss_Transform.h"
+#include "Iotr_Factory.h"
 
 namespace Iotr {
 

@@ -24,6 +24,7 @@
 #include <fmt/ostream.h>
 #include <limits>
 #include <map>
+#include <netcdf_meta.h>
 #include <numeric>
 #include <sstream>
 #include <stdexcept>

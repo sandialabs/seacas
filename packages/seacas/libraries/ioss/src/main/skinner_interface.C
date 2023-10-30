@@ -5,15 +5,18 @@
  *
  * See packages/seacas/LICENSE for details
  */
+#include <cstdlib> // for exit, EXIT_SUCCESS, getenv
+#include <fmt/core.h>
+#include <iostream> // for operator<<, basic_ostream, etc
+#include <stdio.h>
+#include <string> // for char_traits, string
+
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
+#include "Ioss_Sort.h"
 #include "Ioss_Utils.h"
+#include "SEACASIoss_config.h"
 #include "skinner_interface.h"
 #include "tokenize.h"
-#include <cstddef> // for nullptr
-#include <cstdlib> // for exit, EXIT_SUCCESS, getenv
-#include <fmt/format.h>
-#include <iostream> // for operator<<, basic_ostream, etc
-#include <string>   // for char_traits, string
 
 Skinner::Interface::Interface() { enroll_options(); }
 

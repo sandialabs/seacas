@@ -5,14 +5,53 @@
 // See packages/seacas/LICENSE for details
 
 #include "io_info.h"
+
 #include <Ioss_Hex8.h>
 #include <Ioss_Sort.h>
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_ZoneConnectivity.h>
+#include <fmt/core.h>
+#include <stdint.h>
 #include <tokenize.h>
+
 #define FMT_DEPRECATED_OSTREAM
+#include <cstddef>
+#include <cstdlib>
 #include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_BoundingBox.h"
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
+#include "exodusII.h"
+#include "info_interface.h"
 #if defined(SEACAS_HAVE_CGNS)
 #include <cgnslib.h>
 #endif
@@ -266,9 +305,9 @@ namespace {
         fmt::print("\tConnectivity with other blocks:\n");
         for (const auto &zgc : sb->m_zoneConnectivity) {
 #if defined __NVCC__
-	  std::cout << zgc << "\n";
+          std::cout << zgc << "\n";
 #else
-	  fmt::print("{}\n", zgc);
+          fmt::print("{}\n", zgc);
 #endif
         }
       }
@@ -284,7 +323,7 @@ namespace {
 
         for (const auto &bc : sb_bc) {
 #if defined __NVCC__
-	  std::cout << bc << "\n";
+          std::cout << bc << "\n";
 #else
           fmt::print("{}\n", bc);
 #endif

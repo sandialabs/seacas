@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include "Ionit_Initializer.h"
+
 #include <Ioss_CodeTypes.h>
 
 #if defined(SEACAS_HAVE_EXODUS)
@@ -39,11 +40,13 @@
 
 #include <Ioss_ConcreteVariableType.h>
 #include <Ioss_Initializer.h>
+#include <null/Ionull_IOFactory.h>
 #include <transform/Iotr_Initializer.h>
 #include <visualization/cgns/Iovs_cgns_IOFactory.h>
 #include <visualization/exodus/Iovs_exodus_IOFactory.h>
 
-#include <null/Ionull_IOFactory.h>
+#include "Ioss_IOFactory.h"
+#include "SEACASIoss_config.h"
 
 namespace {
 #if defined(IOSS_THREADSAFE)

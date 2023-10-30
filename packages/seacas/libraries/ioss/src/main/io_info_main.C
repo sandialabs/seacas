@@ -6,9 +6,16 @@
  * See packages/seacas/LICENSE for details
  */
 
-#include "fmt/format.h"
+#include <fmt/core.h>
+#include <ostream>
+#include <stdlib.h>
+#include <string>
+
+#include "Ionit_Initializer.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_Utils.h"
+#include "info_interface.h"
 #include "io_info.h"
-#include <Ioss_ScopeGuard.h>
 
 // ========================================================================
 

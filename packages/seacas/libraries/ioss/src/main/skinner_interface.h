@@ -7,9 +7,12 @@
  */
 #pragma once
 
+#include <iosfwd> // for ostream
+#include <limits>
+#include <string> // for string
+#include <vector>
+
 #include "Ioss_GetLongOpt.h" // for GetLongOption
-#include <iosfwd>            // for ostream
-#include <string>            // for string
 
 /** \brief A special namespace for the skinner demonstration program interFace.
  */

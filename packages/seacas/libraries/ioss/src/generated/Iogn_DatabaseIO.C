@@ -4,15 +4,26 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_CommSet.h"      // for CommSet
-#include "Ioss_DBUsage.h"      // for DatabaseUsage
-#include "Ioss_DatabaseIO.h"   // for DatabaseIO
-#include "Ioss_ElementBlock.h" // for ElementBlock
-#include "Ioss_ElementTopology.h"
-#include "Ioss_EntityType.h"     // for EntityType, etc
-#include "Ioss_Field.h"          // for Field, etc
-#include "Ioss_GroupingEntity.h" // for GroupingEntity
-#include "Ioss_Hex8.h"
+#include <Ioss_CodeTypes.h> // for Int64Vector, IntVector
+#include <Ioss_SideBlock.h> // for SideBlock
+#include <Ioss_Utils.h>     // for Utils, IOSS_ERROR
+#include <cassert>          // for assert
+#include <cmath>            // for sqrt
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <generated/Iogn_DatabaseIO.h>
+#include <generated/Iogn_GeneratedMesh.h> // for GeneratedMesh
+#include <iostream>                       // for ostringstream
+#include <stdlib.h>
+#include <string> // for string, operator==, etc
+
+#include "Ioss_CommSet.h"         // for CommSet
+#include "Ioss_DBUsage.h"         // for DatabaseUsage
+#include "Ioss_DatabaseIO.h"      // for DatabaseIO
+#include "Ioss_ElementBlock.h"    // for ElementBlock
+#include "Ioss_EntityType.h"      // for EntityType, etc
+#include "Ioss_Field.h"           // for Field, etc
+#include "Ioss_GroupingEntity.h"  // for GroupingEntity
 #include "Ioss_IOFactory.h"       // for IOFactory
 #include "Ioss_Map.h"             // for Map, MapContainer
 #include "Ioss_NodeBlock.h"       // for NodeBlock
@@ -23,18 +34,6 @@
 #include "Ioss_Region.h"          // for Region
 #include "Ioss_SideSet.h"         // for SideSet
 #include "Ioss_VariableType.h"    // for VariableType
-#include <Ioss_CodeTypes.h>       // for Int64Vector, IntVector
-#include <Ioss_SideBlock.h>       // for SideBlock
-#include <Ioss_Utils.h>           // for Utils, IOSS_ERROR
-#include <algorithm>              // for copy
-#include <cassert>                // for assert
-#include <cmath>                  // for sqrt
-#include <fmt/ostream.h>
-#include <generated/Iogn_DatabaseIO.h>
-#include <generated/Iogn_GeneratedMesh.h> // for GeneratedMesh
-#include <iostream>                       // for ostringstream
-#include <string>                         // for string, operator==, etc
-#include <utility>                        // for pair
 
 namespace {
   template <typename INT>

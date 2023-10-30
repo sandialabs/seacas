@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iocgns_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementTopology.h>
@@ -17,10 +15,31 @@
 #include <Ioss_SideSet.h>
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
+#include <array>
 #include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
+#include <cgnstypes.h>
+#include <map>
 #include <ostream>
+#include <stddef.h>
 #include <string>
+#include <vector>
+
+#include "Ioss_Field.h"
+#include "iocgns_export.h"
+
+namespace Iocgns {
+  class Utils;
+} // namespace Iocgns
+namespace Ioss {
+  class Assembly;
+  class DatabaseIO;
+  class EntityBlock;
+  class GroupingEntity;
+  class Region;
+  class StructuredBlock;
+  enum class MeshType;
+} // namespace Ioss
 
 // Used in Iocgns_DatabaseIO.C and Iocgns_ParallelDatabase.C
 // non-Member function -- can't access m_cgnsFilePtr; make sure cgns_file_ptr is passed in...

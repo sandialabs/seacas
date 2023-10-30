@@ -7,10 +7,11 @@
 #include <Ioss_Field.h>
 #include <Ioss_VariableType.h>
 #include <cstddef>
-#include <string>
+#include <stdint.h>
 #include <transform/Iotr_Scale.h>
 
 #include "Ioss_Transform.h"
+#include "Iotr_Factory.h"
 
 namespace Iotr {
 

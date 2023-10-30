@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iogn_export.h"
-
 #include <Ioss_Beam2.h>
 #include <Ioss_Hex8.h>
 #include <Ioss_Shell4.h>
@@ -18,6 +16,8 @@
 #include <string>                         // for string
 #include <utility>                        // for pair
 #include <vector>                         // for vector
+
+#include "iogn_export.h"
 
 namespace Iogn {
 

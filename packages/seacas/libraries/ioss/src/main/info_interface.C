@@ -5,19 +5,17 @@
  *
  * See packages/seacas/LICENSE for details
  */
-#include "Ioss_CodeTypes.h"
+#include <cstdlib> // for exit, EXIT_SUCCESS, getenv
+#include <cstring>
+#include <fmt/core.h>
+#include <iostream> // for operator<<, basic_ostream, etc
+#include <stdio.h>
+#include <string> // for char_traits, string
+
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Utils.h"
-#include "fmt/ostream.h"
+#include "SEACASIoss_config.h"
 #include "info_interface.h"
-
-#include <cstddef>  // for nullptr
-#include <cstdlib>  // for exit, EXIT_SUCCESS, getenv
-#include <iostream> // for operator<<, basic_ostream, etc
-#include <string>   // for char_traits, string
-
-namespace {
-} // namespace
 
 Info::Interface::Interface() { enroll_options(); }
 

@@ -5,21 +5,20 @@
  *
  * See packages/seacas/LICENSE for details
  */
-#include "Ioss_CodeTypes.h"
+#include <cstdlib> // for exit, strtod, EXIT_SUCCESS, etc
+#include <cstring> // for strcmp
+#include <fmt/core.h>
+#include <iostream> // for operator<<, basic_ostream, etc
+#include <stdio.h>
+#include <string> // for string, char_traits
+#include <vector> // for vector
+
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Sort.h"
 #include "Ioss_Utils.h" // for Utils
+#include "SEACASIoss_config.h"
 #include "shell_interface.h"
 #include "tokenize.h"
-
-#include <cctype>  // for tolower
-#include <cstddef> // for nullptr
-#include <cstdlib> // for exit, strtod, EXIT_SUCCESS, etc
-#include <cstring> // for strcmp
-#include <fmt/ostream.h>
-#include <iostream> // for operator<<, basic_ostream, etc
-#include <string>   // for string, char_traits
-#include <vector>   // for vector
 
 IOShell::Interface::Interface(std::string app_version) : version(std::move(app_version))
 {

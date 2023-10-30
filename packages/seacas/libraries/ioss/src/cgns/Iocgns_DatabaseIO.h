@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iocgns_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>    // for DatabaseUsage
 #include <Ioss_DatabaseIO.h> // for DatabaseIO
@@ -15,14 +13,17 @@
 #include <Ioss_IOFactory.h> // for IOFactory
 #include <Ioss_Map.h>       // for Map
 #include <Ioss_State.h>     // for State
-#include <cstddef>          // for size_t
-#include <cstdint>          // for int64_t
-#include <iostream>         // for ostream
-#include <map>
-#include <string> // for string
-
 #include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
+#include <cgnstypes.h>
+#include <cstddef>  // for size_t
+#include <cstdint>  // for int64_t
+#include <iostream> // for ostream
+#include <map>
+#include <string> // for string
+#include <vector>
+
+#include "iocgns_export.h"
 
 namespace Ioss {
   class Assembly;
@@ -44,6 +45,8 @@ namespace Ioss {
   class SideSet;
   class EntityBlock;
   class StructuredBlock;
+  class Map;
+  class PropertyManager;
 } // namespace Ioss
 
 /** \brief A namespace for the CGNS database format.

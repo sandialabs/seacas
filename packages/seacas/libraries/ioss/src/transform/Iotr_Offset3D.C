@@ -8,11 +8,12 @@
 #include <Ioss_VariableType.h>
 #include <cassert>
 #include <cstddef>
-#include <string>
+#include <stdint.h>
 #include <transform/Iotr_Offset3D.h>
 #include <vector>
 
 #include "Ioss_Transform.h"
+#include "Iotr_Factory.h"
 
 namespace Iotr {
 
