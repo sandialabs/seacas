@@ -43,6 +43,7 @@
 #include <sys/errno.h>
 #include <sys/termios.h>
 /********************* C library headers ********************************/
+#include <ctype.h>
 #include <array>
 #include <cstdlib>
 #include <cstring>
