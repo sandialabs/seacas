@@ -10,10 +10,10 @@
 #include <exodusII.h>
 #if defined PARALLEL_AWARE_EXODUS
 
-#include "ioexnl_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <vector>
+
+#include "ioexnl_export.h"
 #if !defined(NO_PARMETIS_SUPPORT)
 #include <parmetis.h>
 #endif

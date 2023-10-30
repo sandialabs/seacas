@@ -7,19 +7,11 @@
 #include <exonull/Ioexnl_Internals.h> // for Internals, ElemBlock, etc
 #include <exonull/Ioexnl_Utils.h>
 
-#include "exodusII.h" // for ex_err, ex_opts, etc
-
 extern "C" {
-#include <exodusII_int.h>
 }
 
 #include <cassert> // for assert
-#include <cstddef> // for size_t
-#include <cstdio>  // for nullptr
-#include <cstdlib> // for exit, EXIT_FAILURE
 #include <cstring> // for strlen
-#include <fmt/format.h>
-#include <ostream> // for operator<<, etc
 #include <string>  // for string, operator==, etc
 #include <vector>  // for vector
 
@@ -29,9 +21,11 @@ extern "C" {
 #include "Ioss_EdgeSet.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
 #include "Ioss_FaceBlock.h"
 #include "Ioss_FaceSet.h"
 #include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
 #include "Ioss_Property.h"

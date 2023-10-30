@@ -7,24 +7,23 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ioexnl_export.h"
-
 #include <Ioss_DBUsage.h>
 #include <Ioss_Field.h>
 #include <Ioss_Map.h>
 #include <Ioss_Utils.h>
-#include <exonull/Ioexnl_BaseDatabaseIO.h>
-
-#include <exodusII.h>
-
 #include <algorithm>
 #include <cstdint>
 #include <ctime>
+#include <exodusII.h>
+#include <exonull/Ioexnl_BaseDatabaseIO.h>
 #include <map>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "Ioss_CodeTypes.h"
+#include "ioexnl_export.h"
 
 namespace Ioss {
   class GroupingEntity;
@@ -44,6 +43,11 @@ namespace Ioss {
   class StructuredBlock;
   class CommSet;
   class ElementTopology;
+  class Assembly;
+  class Blob;
+  class Field;
+  class Map;
+  class PropertyManager;
 } // namespace Ioss
 
 namespace Ioexnl {
