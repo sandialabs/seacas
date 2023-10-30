@@ -5,14 +5,15 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
-#include "ioex_export.h"
-
-#include "Ioss_EntityType.h"     // for EntityType, etc
-#include "Ioss_Property.h"       // for Property
 #include <Ioss_GroupingEntity.h> // for GroupingEntity
 #include <cstddef>               // for size_t
 #include <cstdint>               // for int64_t
 #include <string>                // for string
+
+#include "Ioss_EntityType.h" // for EntityType, etc
+#include "Ioss_Property.h"   // for Property
+#include "ioex_export.h"
+
 namespace Ioss {
   class Field;
 } // namespace Ioss

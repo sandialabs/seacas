@@ -6,20 +6,20 @@
 
 #include <exodus/Ioex_Internals.h> // for Internals, ElemBlock, etc
 #include <exodus/Ioex_Utils.h>
+#include <fmt/core.h>
 
+#include "Ioss_ElementTopology.h"
+#include "Ioss_GroupingEntity.h"
 #include "exodusII.h" // for ex_err, ex_opts, etc
 
 extern "C" {
 #include <exodusII_int.h>
 }
 
-#include <cstddef> // for size_t
-#include <cstdio>  // for nullptr
-#include <cstdlib> // for exit, EXIT_FAILURE
-#include <cstring> // for strlen
-#include <fmt/format.h>
+#include <array>
+#include <cstdlib>  // for exit, EXIT_FAILURE
+#include <cstring>  // for strlen
 #include <netcdf.h> // for NC_NOERR, nc_def_var, etc
-#include <ostream>  // for operator<<, etc
 #include <string>   // for string, operator==, etc
 #include <vector>   // for vector
 

@@ -7,9 +7,9 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ioex_export.h"
-
 #include <exodusII.h>
+
+#include "ioex_export.h"
 #if defined PARALLEL_AWARE_EXODUS
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>               // for DatabaseUsage
@@ -26,6 +26,7 @@
 #include <time.h>   // for nullptr, time_t
 #include <utility>  // for pair
 #include <vector>   // for vector
+
 namespace Ioex {
   class DecompositionDataBase;
   struct BlockFieldData;
