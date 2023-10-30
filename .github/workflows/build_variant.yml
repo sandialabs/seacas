@@ -10,8 +10,11 @@ on:
     branches:
     - master
 
-jobs:
+concurrency:  
+  group: ${{ github.workflow}}-${{ github.head_ref }}  
+  cancel-in-progress: true
 
+jobs:
   build-deps:
 
     runs-on: ubuntu-latest

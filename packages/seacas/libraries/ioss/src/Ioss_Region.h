@@ -18,7 +18,9 @@
 #include <Ioss_State.h>    // for State
 #include <cstddef>         // for size_t, nullptr
 #include <cstdint>         // for int64_t
+#if !defined BUILT_IN_SIERRA
 #include <fmt/ostream.h>
+#endif
 #include <functional> // for less
 #include <iosfwd>     // for ostream
 #include <map>        // for map, map<>::value_compare
@@ -427,11 +429,17 @@ namespace Ioss {
 
         if (found && field.get_role() != role) {
           std::ostringstream errmsg;
+#if defined BUILT_IN_SIERRA
+       errmsg << "ERROR: Field " << field.get_name() << " with role " << field.role_string() 
+              << " on entity " << entity->name() << " does not match previously found role " 
+              << Ioss::Field::role_string(role) << ".\n",
+#else
           fmt::print(errmsg,
                      "ERROR: Field {} with role {} on entity {} does not match previously found "
                      "role {}.\n",
                      field.get_name(), field.role_string(), entity->name(),
                      Ioss::Field::role_string(role));
+#endif
           IOSS_ERROR(errmsg);
         }
 
