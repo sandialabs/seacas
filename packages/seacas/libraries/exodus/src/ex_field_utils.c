@@ -23,7 +23,7 @@ char *strsep(char **stringp, const char *delim)
     if (**stringp)
       *(*stringp)++ = '\0';
     else
-      *stringp = 0;
+      *stringp = NULL;
   }
   return rv;
 }
