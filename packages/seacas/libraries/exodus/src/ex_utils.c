@@ -11,8 +11,8 @@
  *
  *****************************************************************************/
 
-#if defined(DEBUG_QSORT)
-#endif
+#define _GNU_SOURCE
+#include <stdlib.h>
 
 #include <errno.h>
 #include <stdbool.h>
