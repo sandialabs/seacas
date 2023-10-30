@@ -590,9 +590,10 @@ class attribute:
         self.entity_type = type
         self.entity_id = id
         self.values = []
+        self.variable_index = 0
 
     def __repr__(self):
-        return "attribute(name=%r, entity_type=%r, entity_id=%r, values=%r)" % (self.name, self.entity_type, self.entity_id, self.values)
+        return "attribute(name=%r, entity_type=%r, entity_id=%r, values=%r, variable_index=%r)" % (self.name, self.entity_type, self.entity_id, self.values, self.variable_index)
 
 
 class ex_attribute(ctypes.Structure):
@@ -613,7 +614,8 @@ class ex_attribute(ctypes.Structure):
                 ("name", ctypes.c_char * 257),
                 ("type", ctypes.c_int),
                 ("value_count", ctypes.c_int),
-                ("values", ctypes.c_void_p)]
+                ("values", ctypes.c_void_p),
+                ("varible_index", ctypes.c_int)]
 
 
 class exodus:
