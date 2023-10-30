@@ -543,7 +543,7 @@ namespace Ioex {
         auto field = Ioss::Field(name, block->field_int_type(), IOSS_SCALAR(), Ioss::Field::MAP,
                                  my_element_count)
                          .set_index(i + 1);
-        block->field_add(field);
+        block->field_add(std::move(field));
         continue;
       }
 
@@ -569,7 +569,7 @@ namespace Ioex {
       auto        field =
           Ioss::Field(base, block->field_int_type(), storage, Ioss::Field::MAP, my_element_count)
               .set_index(i + 1);
-      block->field_add(field);
+      block->field_add(std::move(field));
 
       i = ii - 1;
     }

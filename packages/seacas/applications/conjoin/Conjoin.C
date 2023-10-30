@@ -415,8 +415,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
   const T alive      = interFace.alive_value();
   size_t  part_count = interFace.inputFiles_.size();
 
-  auto *mytitle = new char[MAX_LINE_LENGTH + 1];
-  memset(mytitle, '\0', MAX_LINE_LENGTH + 1);
+  std::array<char, MAX_LINE_LENGTH + 1> mytitle{};
 
   Excn::Mesh<INT> global;
 
@@ -446,7 +445,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     local_mesh[p].sidesetCount   = info.num_side_sets;
 
     if (p == 0) {
-      global.title          = mytitle;
+      global.title          = mytitle.data();
       global.dimensionality = local_mesh[p].count(Excn::ObjectType::DIM);
       global.blockCount     = local_mesh[p].count(Excn::ObjectType::EBLK);
     }
@@ -463,8 +462,6 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     local_mesh[p].localElementToGlobal.resize(local_mesh[p].count(Excn::ObjectType::ELEM));
 
   } // end for (p=0..part_count)
-
-  delete[] mytitle;
 
   if (interFace.omit_nodesets()) {
     global.nodesetCount = 0;
@@ -1016,18 +1013,16 @@ namespace {
       error += ex_get_qa(id, qaRecord[0].qa_record);
     }
 
-    char buffer[MAX_STR_LENGTH + 1];
-
     copy_string(qaRecord[num_qa_records].qa_record[0][0], qainfo[0], MAX_STR_LENGTH + 1); // Code
     copy_string(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH + 1); // Version
 
-    time_t date_time = time(nullptr);
-    strftime(buffer, MAX_STR_LENGTH, "%Y/%m/%d", localtime(&date_time));
+    std::time_t date_time = std::time(nullptr);
 
-    copy_string(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH + 1);
+    auto date = fmt::format("{:%Y/%m/%d}", fmt::localtime(date_time));
+    copy_string(qaRecord[num_qa_records].qa_record[0][2], date.c_str(), MAX_STR_LENGTH + 1);
 
-    strftime(buffer, MAX_STR_LENGTH, "%H:%M:%S", localtime(&date_time));
-    copy_string(qaRecord[num_qa_records].qa_record[0][3], buffer, MAX_STR_LENGTH + 1);
+    auto time = fmt::format("{:%T}", fmt::localtime(date_time));
+    copy_string(qaRecord[num_qa_records].qa_record[0][3], time.c_str(), MAX_STR_LENGTH + 1);
 
     error += ex_put_qa(id_out, num_qa_records + 1, qaRecord[0].qa_record);
 

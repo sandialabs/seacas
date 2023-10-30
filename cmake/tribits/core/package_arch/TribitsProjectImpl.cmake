@@ -47,8 +47,6 @@ set(CMAKE_MODULE_PATH
    ${CMAKE_CURRENT_SOURCE_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}/cmake
    ${${PROJECT_NAME}_TRIBITS_DIR}/core/utils
-   ${${PROJECT_NAME}_TRIBITS_DIR}/core/common
-   ${${PROJECT_NAME}_TRIBITS_DIR}/core/test_support
    ${${PROJECT_NAME}_TRIBITS_DIR}/core/package_arch
    ${${PROJECT_NAME}_TRIBITS_DIR}/core/config_tests
    ${${PROJECT_NAME}_TRIBITS_DIR}/core/modules
@@ -59,11 +57,10 @@ if (${PROJECT_NAME}_VERBOSE_CONFIGURE)
   message("CMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'")
 endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/../common/TribitsConstants.cmake")
+include(TribitsConstants)
 tribits_asesrt_minimum_cmake_version()
-include("${CMAKE_CURRENT_LIST_DIR}/../common/TribitsCMakePolicies.cmake"  NO_POLICY_SCOPE)
+include(TribitsCMakePolicies  NO_POLICY_SCOPE)
 
-# TriBITS package_arch includes
 include(TribitsIncludeDirectories)
 include(TribitsFindPythonInterp)
 include(TribitsGlobalMacros)
@@ -71,10 +68,7 @@ include(TribitsConfigureCTestCustom)
 include(TribitsGenerateResourceSpecFile)
 include(TribitsPackageDependencies)
 include(TribitsPrintDependencyInfo)
-include(TribitsPackagingSupport)
-include(TribitsConfigureTiming)
 
-# TriBITS utils includes
 include(AdvancedSet)
 include(AdvancedOption)
 include(TimingUtils)

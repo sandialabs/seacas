@@ -34,8 +34,8 @@
 #endif
 
 namespace {
-  const std::string version_short{"6.22"};
-  const std::string version_date{"(2023/09/28)"};
+  const std::string version_short{"6.25"};
+  const std::string version_date{"(2023/10/12)"};
   const std::string version_string = version_short + " " + version_date;
 
   void output_copyright();
@@ -391,6 +391,22 @@ namespace SEAMS {
     return pointer;
   }
 
+  Aprepro::SYMBOL_TYPE Aprepro::get_symbol_type(const SEAMS::symrec *symbol) const
+  {
+    switch (symbol->type) {
+    case Parser::token::VAR: return SYMBOL_TYPE::VARIABLE;
+    case Parser::token::SVAR: return SYMBOL_TYPE::STRING_VARIABLE;
+    case Parser::token::AVAR: return SYMBOL_TYPE::ARRAY_VARIABLE;
+    case Parser::token::IMMVAR: return SYMBOL_TYPE::IMMUTABLE_VARIABLE;
+    case Parser::token::IMMSVAR: return SYMBOL_TYPE::IMMUTABLE_STRING_VARIABLE;
+    case Parser::token::UNDVAR: return SYMBOL_TYPE::UNDEFINED_VARIABLE;
+    case Parser::token::FNCT: return SYMBOL_TYPE::FUNCTION;
+    case Parser::token::SFNCT: return SYMBOL_TYPE::STRING_FUNCTION;
+    case Parser::token::AFNCT: return SYMBOL_TYPE::ARRAY_FUNCTION;
+    default: return SYMBOL_TYPE::INTERNAL;
+    }
+  }
+
   symrec *Aprepro::putsym(const std::string &sym_name, SYMBOL_TYPE sym_type, bool is_internal)
   {
     int  parser_type = 0;
@@ -414,6 +430,7 @@ namespace SEAMS {
       parser_type = Parser::token::AFNCT;
       is_function = true;
       break;
+    case SYMBOL_TYPE::INTERNAL: parser_type = Parser::token::UNDVAR; break;
     }
 
     // If the type is a function type, it can be overloaded as long as

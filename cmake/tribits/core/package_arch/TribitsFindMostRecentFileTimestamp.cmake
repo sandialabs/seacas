@@ -37,9 +37,6 @@
 # ************************************************************************
 # @HEADER
 
-
-include(TribitsConfigureTiming)
-
 include(CMakeParseArguments)
 
 

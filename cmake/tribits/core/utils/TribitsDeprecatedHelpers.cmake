@@ -37,10 +37,8 @@
 # ************************************************************************
 # @HEADER
 
-include_guard()
-
-include("${CMAKE_CURRENT_LIST_DIR}/MessageWrapper.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/TribitsParseArgumentsHelpers.cmake")
+include(MessageWrapper)
+include(TribitsParseArgumentsHelpers)
 
 
 set(TRIBITS_HANDLE_TRIBITS_DEPRECATED_CODE_VALUES_THAT_CALL_MESSAGE

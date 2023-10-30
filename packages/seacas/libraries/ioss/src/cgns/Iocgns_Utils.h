@@ -19,7 +19,6 @@
 #include <Ioss_Utils.h>
 #include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
-#include <fmt/format.h>
 #include <ostream>
 #include <string>
 

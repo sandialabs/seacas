@@ -96,6 +96,7 @@ namespace SEAMS {
     Aprepro &operator=(const Aprepro &) = delete;
 
     enum class SYMBOL_TYPE {
+      INTERNAL                  = 0,
       VARIABLE                  = 1,
       STRING_VARIABLE           = 2,
       UNDEFINED_VARIABLE        = 5,
@@ -171,6 +172,7 @@ namespace SEAMS {
 
     std::stack<std::ostream *> outputStream{};
 
+    SYMBOL_TYPE    get_symbol_type(const SEAMS::symrec *symbol) const;
     SEAMS::symrec *getsym(const char *sym_name) const;
     SEAMS::symrec *getsym(const std::string &sym_name) const;
     SEAMS::symrec *putsym(const std::string &sym_name, SYMBOL_TYPE sym_type, bool is_internal);

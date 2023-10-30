@@ -21,11 +21,6 @@
 #include <string>         // for string, basic_string
 #include <vector>         // for vector
 
-#if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
-    defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
-#include <Shlwapi.h>
-#endif
-
 extern "C" {
 #define NO_NETCDF_2
 #include <exodusII.h>
@@ -265,25 +260,10 @@ int Excn::Internals<INT>::write_meta_data(const Mesh &mesh, const std::vector<Bl
 
   // For now, put entity names using the ExodusII api...
   {
-    int max_entity = mesh.blockCount;
-    if (mesh.nodesetCount > max_entity) {
-      max_entity = mesh.nodesetCount;
-    }
-    if (mesh.sidesetCount > max_entity) {
-      max_entity = mesh.sidesetCount;
-    }
-    if (mesh.edgeBlockCount > max_entity) {
-      max_entity = mesh.edgeBlockCount;
-    }
-    if (mesh.faceBlockCount > max_entity) {
-      max_entity = mesh.faceBlockCount;
-    }
-    if (mesh.blockCount > 0) {
-      for (int i = 0; i < mesh.blockCount; i++) {
-        if (blocks[i].attributeCount > max_entity) {
-          max_entity = blocks[i].attributeCount;
-        }
-      }
+    int max_entity = std::max({mesh.blockCount, mesh.nodesetCount, mesh.sidesetCount,
+                               mesh.edgeBlockCount, mesh.faceBlockCount});
+    for (const auto &block : blocks) {
+      max_entity = std::max(max_entity, block.attributeCount);
     }
 
     size_t name_size = ex_inquire_int(exodusFilePtr, EX_INQ_MAX_READ_NAME_LENGTH);

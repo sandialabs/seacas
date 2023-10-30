@@ -36,8 +36,6 @@
 #include <string>
 #include <unordered_map>
 
-#include <fmt/ostream.h>
-
 #include <memory>
 #include <string>
 #include <strings.h>

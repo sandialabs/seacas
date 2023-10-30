@@ -38,7 +38,7 @@
 # @HEADER
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/../common/TribitsConstants.cmake")
+include(TribitsConstants)
 include(TribitsListHelpers)
 
 include(PrintVar)

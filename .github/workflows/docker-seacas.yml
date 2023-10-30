@@ -2,6 +2,11 @@ name: docker-seacas
 on:
   push:
     branches: [ "master" ]
+
+concurrency:  
+  group: ${{ github.workflow}}-${{ github.head_ref }}  
+  cancel-in-progress: true
+
 jobs:
   build-latest:
     runs-on: ubuntu-latest

@@ -772,7 +772,7 @@ namespace {
           Ioss::Utils::substr_equal(prefix, field_name)) {
         // If the field does not already exist, add it to the output node block
         Ioss::Field field = ige->get_field(field_name);
-        oge->field_add(field);
+        oge->field_add(std::move(field));
       }
     }
   }
@@ -1217,7 +1217,7 @@ namespace {
       int         num_nodes = nb->entity_count();
       Ioss::Field node_normal("node_normal", Ioss::Field::REAL, v3d, Ioss::Field::TRANSIENT,
                               num_nodes);
-      nb->field_add(node_normal);
+      nb->field_add(std::move(node_normal));
 
       // Iterate over the element blocks and calculate both node normals and face normals...
       const auto &ebs = output_region.get_element_blocks();
@@ -1225,7 +1225,7 @@ namespace {
         int         num_elem = eb->entity_count();
         Ioss::Field face_normal("face_normal", Ioss::Field::REAL, v3d, Ioss::Field::TRANSIENT,
                                 num_elem);
-        eb->field_add(face_normal);
+        eb->field_add(std::move(face_normal));
       }
       output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
     }

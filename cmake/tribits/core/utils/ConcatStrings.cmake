@@ -37,7 +37,7 @@
 # ************************************************************************
 # @HEADER
 
-include("${CMAKE_CURRENT_LIST_DIR}/PrintVar.cmake")
+include(PrintVar)
 
 
 # @FUNCTION: concat_strings()
