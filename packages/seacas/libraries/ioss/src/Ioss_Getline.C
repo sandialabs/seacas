@@ -46,8 +46,10 @@
 #include <cstring>
 #include <ctype.h>
 #ifndef _MSC_VER
-#include <sys/errno.h>
 #include <unistd.h>
+#endif
+#ifdef __unix__
+#include <sys/errno.h>
 #endif
 
 #include "Ioss_Getline.h"
