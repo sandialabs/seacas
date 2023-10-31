@@ -9,12 +9,13 @@
 #include <Ioss_GroupingEntity.h>
 #include <Ioss_Property.h>
 #include <Ioss_PropertyManager.h>
-#include <Ioss_Region.h>
-#include <algorithm>
 #include <cstddef>
 #include <fmt/ostream.h>
+#include <iosfwd>
 #include <string>
-#include <vector>
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Utils.h"
 
 namespace {
   std::string id_str() { return {"id"}; }

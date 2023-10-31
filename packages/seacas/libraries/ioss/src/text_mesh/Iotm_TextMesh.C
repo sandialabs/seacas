@@ -8,16 +8,13 @@
 
 #include <Ioss_Utils.h>
 #include <fmt/ostream.h>
-
-#include <algorithm>
-#include <array>
-#include <cassert> // for assert
-#include <cmath>   // for atan2, cos, sin
-#include <cstdlib> // for nullptr, exit, etc
 #include <iostream>
-#include <numeric>
+#include <stdexcept>
 #include <string>
 #include <vector> // for vector
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_EntityType.h"
 
 #define ThrowRequireMsg(expr, message)                                                             \
   do {                                                                                             \

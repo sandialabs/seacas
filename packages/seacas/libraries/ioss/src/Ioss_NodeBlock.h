@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_BoundingBox.h>
 #include <Ioss_EntityBlock.h>
 #include <Ioss_EntityType.h> // for EntityType, etc
@@ -15,6 +13,11 @@
 #include <cstddef>           // for size_t
 #include <cstdint>           // for int64_t
 #include <string>            // for string
+
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_PropertyManager.h"
+#include "ioss_export.h"
+
 namespace Ioss {
   class DatabaseIO;
 } // namespace Ioss

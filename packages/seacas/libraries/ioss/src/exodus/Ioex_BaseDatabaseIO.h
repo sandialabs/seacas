@@ -7,24 +7,25 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ioex_export.h"
-
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_Field.h>
 #include <Ioss_Map.h>
 #include <Ioss_Utils.h>
-
-#include <exodusII.h>
-
 #include <algorithm>
 #include <cstdint>
 #include <ctime>
+#include <exodusII.h>
 #include <map>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_State.h"
+#include "ioex_export.h"
 
 namespace Ioss {
   class Assembly;
@@ -46,6 +47,9 @@ namespace Ioss {
   class StructuredBlock;
   class CommSet;
   class ElementTopology;
+  class Field;
+  class Map;
+  class PropertyManager;
 } // namespace Ioss
 
 /** \brief A namespace for the exodus database format.

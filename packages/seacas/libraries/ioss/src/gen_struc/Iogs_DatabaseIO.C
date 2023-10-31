@@ -4,10 +4,20 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <Ioss_CodeTypes.h> // for Int64Vector, IntVector
+#include <Ioss_SideBlock.h> // for SideBlock
+#include <Ioss_Utils.h>     // for Utils, IOSS_ERROR
+#include <cassert>          // for assert
+#include <cmath>            // for sqrt
+#include <gen_struc/Iogs_DatabaseIO.h>
+#include <gen_struc/Iogs_GeneratedMesh.h> // for GeneratedMesh
+#include <iostream>                       // for ostringstream, operator<<, etc
+#include <stdlib.h>
+#include <string> // for string, operator==, etc
+
 #include "Ioss_CommSet.h"         // for CommSet
 #include "Ioss_DBUsage.h"         // for DatabaseUsage
 #include "Ioss_DatabaseIO.h"      // for DatabaseIO
-#include "Ioss_ElementBlock.h"    // for ElementBlock
 #include "Ioss_EntityType.h"      // for EntityType, etc
 #include "Ioss_Field.h"           // for Field, etc
 #include "Ioss_GroupingEntity.h"  // for GroupingEntity
@@ -21,32 +31,6 @@
 #include "Ioss_SideSet.h"         // for SideSet
 #include "Ioss_StructuredBlock.h"
 #include "Ioss_VariableType.h" // for VariableType
-#include <Ioss_CodeTypes.h>    // for Int64Vector, IntVector
-#include <Ioss_SideBlock.h>    // for SideBlock
-#include <Ioss_Utils.h>        // for Utils, IOSS_ERROR
-#include <algorithm>           // for copy
-#include <cassert>             // for assert
-#include <cmath>               // for sqrt
-#include <gen_struc/Iogs_DatabaseIO.h>
-#include <gen_struc/Iogs_GeneratedMesh.h> // for GeneratedMesh
-#include <iostream>                       // for ostringstream, operator<<, etc
-#include <string>                         // for string, operator==, etc
-#include <utility>                        // for pair
-namespace Ioss {
-  class EdgeBlock;
-} // namespace Ioss
-namespace Ioss {
-  class EdgeSet;
-} // namespace Ioss
-namespace Ioss {
-  class ElementSet;
-} // namespace Ioss
-namespace Ioss {
-  class FaceBlock;
-} // namespace Ioss
-namespace Ioss {
-  class FaceSet;
-} // namespace Ioss
 
 namespace {
   template <typename INT>

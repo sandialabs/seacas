@@ -8,13 +8,15 @@
 
 #pragma once
 
-#include "ioexnl_export.h"
+#include <cstdint>    // for int64_t
+#include <exodusII.h> // for MAX_LINE_LENGTH, etc
+#include <string>     // for string
+#include <vector>     // for vector
 
 #include "Ioss_ParallelUtils.h" // for ParallelUtils
-#include <cstdint>              // for int64_t
-#include <exodusII.h>           // for MAX_LINE_LENGTH, etc
-#include <string>               // for string
-#include <vector>               // for vector
+#include "Ioss_Utils.h"
+#include "ioexnl_export.h"
+
 namespace Ioss {
   class Assembly;
   class Blob;
@@ -28,6 +30,7 @@ namespace Ioss {
   class NodeSet;
   class SideBlock;
   class SideSet;
+  class Region;
 } // namespace Ioss
 
 using entity_id = int64_t;

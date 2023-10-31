@@ -4,25 +4,25 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <generated/Iogn_GeneratedMesh.h>
-
 #include <Ioss_Hex8.h>
 #include <Ioss_Pyramid5.h>
 #include <Ioss_Shell4.h>
 #include <Ioss_Tet4.h>
 #include <Ioss_TriShell3.h>
 #include <Ioss_Utils.h>
-
-#include <algorithm>
 #include <cassert> // for assert
 #include <cmath>   // for atan2, cos, sin
-#include <cstdlib> // for nullptr, exit, etc
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <generated/Iogn_GeneratedMesh.h>
 #include <iostream>
 #include <numeric>
 #include <string>
 #include <tokenize.h> // for tokenize
 #include <vector>     // for vector
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_EntityType.h"
 
 namespace {
   void output_help(std::ostream &output)

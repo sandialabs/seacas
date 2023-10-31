@@ -12,6 +12,8 @@
 #include <cstddef>
 #include <string>
 
+#include "Ioss_BoundingBox.h"
+#include "Ioss_CodeTypes.h"
 #include "Ioss_EntityBlock.h"
 #include "Ioss_FieldManager.h"
 #include "Ioss_PropertyManager.h"

@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iogs_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityType.h> // for EntityType
 #include <array>
@@ -17,6 +15,8 @@
 #include <string>  // for string
 #include <utility> // for pair
 #include <vector>  // for vector
+
+#include "iogs_export.h"
 
 namespace Iogs {
   class IOGS_EXPORT GeneratedMesh

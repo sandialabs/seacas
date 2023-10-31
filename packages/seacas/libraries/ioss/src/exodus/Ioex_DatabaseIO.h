@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -7,24 +7,23 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ioex_export.h"
-
 #include <Ioss_DBUsage.h>
 #include <Ioss_Field.h>
 #include <Ioss_Map.h>
 #include <Ioss_Utils.h>
-#include <exodus/Ioex_BaseDatabaseIO.h>
-
-#include <exodusII.h>
-
 #include <algorithm>
 #include <cstdint>
 #include <ctime>
+#include <exodus/Ioex_BaseDatabaseIO.h>
+#include <exodusII.h>
 #include <map>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "Ioss_CodeTypes.h"
+#include "ioex_export.h"
 
 namespace Ioss {
   class GroupingEntity;
@@ -44,6 +43,11 @@ namespace Ioss {
   class StructuredBlock;
   class CommSet;
   class ElementTopology;
+  class Assembly;
+  class Blob;
+  class Field;
+  class Map;
+  class PropertyManager;
 } // namespace Ioss
 
 namespace Ioex {

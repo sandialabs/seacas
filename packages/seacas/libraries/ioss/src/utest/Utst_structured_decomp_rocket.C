@@ -4,11 +4,18 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Iocgns_StructuredZoneData.h"
+#include "Ioss_CodeTypes.h"
+#include "Ioss_ZoneConnectivity.h"
 #include "Utst_structured_decomp.h"
+
 #define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 #define DOCTEST_CONFIG_NO_MULTITHREADING
 #include <doctest.h>
+#include <stddef.h>
+#include <string>
+#include <vector>
 
 // Disable these tests on NVCC. It tries to optimize and takes forever to build...
 #if !defined(__NVCC__) && !defined(__IOSS_WINDOWS__)

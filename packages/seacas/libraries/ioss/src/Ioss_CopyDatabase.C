@@ -4,19 +4,52 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
 #include <Ioss_CopyDatabase.h>
 #include <Ioss_DataPool.h>
 #include <Ioss_FaceGenerator.h>
 #include <Ioss_MeshCopyOptions.h>
-#include <Ioss_SubSystem.h>
-
+#include <array>
+#include <assert.h>
+#include <cmath>
+#include <cstdlib>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <iostream>
 #include <limits>
-
-// For Sleep...
-#include <chrono>
+#include <stdint.h>
+#include <string>
 #include <thread>
+#include <vector>
+
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_MeshType.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_State.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_Utils.h"
+#include "robin_hash.h"
 
 // For copy_database...
 namespace {

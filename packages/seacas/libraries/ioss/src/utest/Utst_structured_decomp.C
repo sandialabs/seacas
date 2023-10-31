@@ -8,16 +8,21 @@
 #define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 #define DOCTEST_CONFIG_NO_MULTITHREADING
-#include <doctest.h>
-
 #include <Ioss_ZoneConnectivity.h>
+#include <assert.h>
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
-#include <exception>
-#include <fmt/ostream.h>
+#include <doctest.h>
 #include <map>
 #include <numeric>
+#include <set>
+#include <stddef.h>
+#include <stdint.h>
+#include <string>
 #include <vector>
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Utils.h"
 
 namespace {
   int64_t generate_guid(size_t id, int rank, int proc_count)

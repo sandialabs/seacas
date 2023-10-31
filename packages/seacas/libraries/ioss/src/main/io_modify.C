@@ -4,40 +4,13 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "modify_interface.h"
-
-#include <array>
-#include <cassert>
-#include <cmath>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <regex>
-#include <string>
-#include <unistd.h>
-#include <utility>
-#include <vector>
-
 #include <Ionit_Initializer.h>
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_CommSet.h>
-#include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
-#include <Ioss_EdgeBlock.h>
-#include <Ioss_EdgeSet.h>
 #include <Ioss_ElementBlock.h>
-#include <Ioss_ElementSet.h>
 #include <Ioss_ElementTopology.h>
-#include <Ioss_FaceBlock.h>
-#include <Ioss_FaceSet.h>
-#include <Ioss_Field.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_Getline.h>
 #include <Ioss_Glob.h>
@@ -47,17 +20,36 @@
 #include <Ioss_NodeSet.h>
 #include <Ioss_Property.h>
 #include <Ioss_Region.h>
-#include <Ioss_ScopeGuard.h>
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
-#include <Ioss_VariableType.h>
-#include <tokenize.h>
-
+#include <cassert>
+#include <cgnslib.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <exception>
 #include <fmt/color.h>
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <iostream>
+#include <map>
+#include <regex>
+#include <stdint.h>
+#include <string>
+#include <tokenize.h>
+#include <unistd.h>
+#include <vector>
+
+#include "Ioss_ScopeGuard.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_State.h"
+#include "SEACASIoss_config.h"
+#include "modify_interface.h"
 
 #if defined(SEACAS_HAVE_EXODUS)
 #include <exodus/Ioex_Internals.h>
@@ -71,6 +63,7 @@
 
 #if defined(__IOSS_WINDOWS__)
 #include <io.h>
+
 #define isatty _isatty
 #endif
 // ========================================================================
@@ -967,9 +960,9 @@ namespace {
     if (Ioss::Utils::substr_equal(tokens[2], "add")) {
       // Must be at least 6 tokens...
       if (tokens.size() < 6) {
-        fmt::print(stderr, 
+        fmt::print(stderr,
 #if !defined __NVCC__
-		   fg(fmt::color::red),
+                   fg(fmt::color::red),
 #endif
                    "ERROR: ATTRIBUTE Command does not have enough tokens to be valid.\n"
                    "\t\t{}\n",
@@ -1091,7 +1084,7 @@ namespace {
     if (tokens.size() < 4) {
       fmt::print(stderr,
 #if !defined __NVCC__
- fg(fmt::color::red),
+                 fg(fmt::color::red),
 #endif
                  "ERROR: RENAME Command does not have enough tokens to be valid.\n"
                  "\t\t{}\n",
@@ -1129,12 +1122,11 @@ namespace {
       }
     }
     else {
-      fmt::print(stderr, 
+      fmt::print(stderr,
 #if !defined __NVCC__
-		 fg(fmt::color::yellow), 
+                 fg(fmt::color::yellow),
 #endif
-		 "\tWARNING: Unrecognized rename syntax '{}'\n",
-                 fmt::join(tokens, " "));
+                 "\tWARNING: Unrecognized rename syntax '{}'\n", fmt::join(tokens, " "));
       handle_help("rename");
     }
 
@@ -1213,9 +1205,9 @@ namespace {
     // TIME   SCALE  {{scale}}
     // TIME   OFFSET {{offset}
     if (tokens.size() < 3) {
-      fmt::print(stderr, 
+      fmt::print(stderr,
 #if !defined __NVCC__
-		 fg(fmt::color::red),
+                 fg(fmt::color::red),
 #endif
                  "ERROR: TIME Command does not have enough tokens to be valid.\n"
                  "\t\t{}\n",
@@ -1251,9 +1243,9 @@ namespace {
     // GEOMETRY   OFFSET {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{offset}} ...
 
     if (tokens.size() < 4) {
-      fmt::print(stderr, 
+      fmt::print(stderr,
 #if !defined __NVCC__
-		 fg(fmt::color::red),
+                 fg(fmt::color::red),
 #endif
                  "ERROR: GEOMETRY Command does not have enough tokens to be valid.\n"
                  "\t\t{}\n",

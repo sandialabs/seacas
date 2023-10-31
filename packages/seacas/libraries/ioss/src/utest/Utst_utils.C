@@ -9,13 +9,15 @@
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 #define DOCTEST_CONFIG_NO_MULTITHREADING
 #include <doctest.h>
-
-#include <Ioss_CodeTypes.h>
-#include <Ioss_ConcreteVariableType.h>
-#include <Ioss_Utils.h>
-#include <exception>
 #include <numeric>
+#include <stddef.h>
+#include <stdint.h>
+#include <string>
 #include <vector>
+
+#include "Ioss_ConcreteVariableType.h"
+#include "Ioss_Field.h"
+#include "Ioss_Utils.h"
 
 DOCTEST_TEST_CASE("number_width")
 {

@@ -6,12 +6,15 @@
 
 #pragma once
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 
 #include "Ioss_Region.h"
 
 namespace Ioss {
+  class Region;
+
   template <typename INT> struct chain_entry_t
   {
     bool    operator==(const chain_entry_t<INT> &other) const { return (other.element == element); }

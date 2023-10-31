@@ -9,12 +9,10 @@
 #include <Ioss_Field.h>
 #include <Ioss_Property.h>
 #include <cstddef>
-#include <string>
 #include <vector>
 
 #include "Ioss_EntitySet.h"
 #include "Ioss_FieldManager.h"
-#include "Ioss_GroupingEntity.h"
 
 Ioss::EdgeSet::EdgeSet() : Ioss::EntitySet(nullptr, "invalid", 0) {}
 

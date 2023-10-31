@@ -27,29 +27,52 @@
 #include <Ioss_Tet10.h>
 #include <Ioss_Tet4.h>
 #include <Ioss_Tri3.h>
-#include <Ioss_Tri4.h>
 #include <Ioss_Tri6.h>
 #include <Ioss_Unknown.h>
 #include <Ioss_Utils.h>
 #include <Ioss_Wedge15.h>
 #include <Ioss_Wedge18.h>
 #include <Ioss_Wedge6.h>
-
+#include <assert.h>
 #include <fmt/chrono.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <stdint.h>
+#include <stdlib.h>
 #if !defined __NVCC__
 #include <fmt/color.h>
 #endif
+#include <cgns/Iocgns_StructuredZoneData.h>
+#include <cgns/Iocgns_Utils.h>
+#include <cgnstypes.h>
+#include <cmath>
+#include <cstring>
+#include <ctime>
 #include <fmt/ostream.h>
+#include <limits>
 #include <numeric>
+#include <ostream>
 #include <set>
 #include <string>
 #include <tokenize.h>
 
-#include <cgns/Iocgns_StructuredZoneData.h>
-#include <cgns/Iocgns_Utils.h>
-
-#include <cgnsconfig.h>
-#include <cgnstypes.h>
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_MeshType.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_VariableType.h"
+#include "Ioss_ZoneConnectivity.h"
+#include "robin_hash.h"
+#include "robin_set.h"
 #if CG_BUILD_PARALLEL
 #include <pcgnslib.h>
 #else
@@ -2567,10 +2590,10 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
           fmt::print(Ioss::DebugOut(), "{}",
                      fmt::format(
 #if !defined __NVCC__
-				 fg(fmt::color::red),
+                         fg(fmt::color::red),
 #endif
-                                 "\nProcessor {} work: {}, workload ratio: {} (exceeds)", i,
-                                 fmt::group_digits(work_vector[i]), workload_ratio));
+                         "\nProcessor {} work: {}, workload ratio: {} (exceeds)", i,
+                         fmt::group_digits(work_vector[i]), workload_ratio));
         }
       }
       else {

@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>    // for DatabaseUsage, etc
@@ -25,6 +23,9 @@
 #include <string>  // for string
 #include <utility> // for pair
 #include <vector>  // for vector
+
+#include "Ioss_Field.h"
+#include "ioss_export.h"
 
 namespace Ioss {
   class Assembly;

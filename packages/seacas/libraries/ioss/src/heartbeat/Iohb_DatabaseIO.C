@@ -5,15 +5,13 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_CodeTypes.h>
-#include <heartbeat/Iohb_DatabaseIO.h>
-
 #include <cassert>
 #include <cstddef>
 #include <ctime>
 #include <fmt/ostream.h>
-#include <fstream>
+#include <heartbeat/Iohb_DatabaseIO.h>
+#include <heartbeat/Iohb_Layout.h>
 #include <string>
-
 #include <vector>
 
 #include "Ioss_DBUsage.h"
@@ -23,25 +21,9 @@
 #include "Ioss_IOFactory.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
-#include "Ioss_Region.h"
+#include "Ioss_PropertyManager.h"
 #include "Ioss_State.h"
 #include "Ioss_Utils.h"
-#include "Ioss_VariableType.h"
-#include <heartbeat/Iohb_Layout.h>
-
-namespace Ioss {
-  class CommSet;
-  class EdgeBlock;
-  class EdgeSet;
-  class ElementBlock;
-  class ElementSet;
-  class FaceBlock;
-  class FaceSet;
-  class NodeBlock;
-  class NodeSet;
-  class SideBlock;
-  class SideSet;
-} // namespace Ioss
 
 namespace {
   std::string time_stamp(const std::string &format)

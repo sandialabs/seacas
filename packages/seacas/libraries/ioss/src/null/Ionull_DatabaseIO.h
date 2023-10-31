@@ -7,12 +7,16 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ionull_export.h"
-
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
-
+#include <stddef.h>
+#include <stdint.h>
 #include <string>
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_State.h"
+#include "ionull_export.h"
 
 namespace Ioss {
   class GroupingEntity;
@@ -33,6 +37,9 @@ namespace Ioss {
   class StructuredBlock;
   class CommSet;
   class ElementTopology;
+  class Assembly;
+  class Blob;
+  class PropertyManager;
 } // namespace Ioss
 
 namespace Ionull {

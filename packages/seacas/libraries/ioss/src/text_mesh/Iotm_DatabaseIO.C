@@ -9,26 +9,23 @@
 #include <Ioss_CodeTypes.h> // for Int64Vector, IntVector
 #include <Ioss_SideBlock.h> // for SideBlock
 #include <Ioss_SmartAssert.h>
-#include <Ioss_Utils.h> // for Utils, IOSS_ERROR
+#include <cassert> // for assert
+#include <cmath>   // for sqrt
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <iostream> // for ostringstream
+#include <stdlib.h>
+#include <string> // for string, operator==, etc
+#include <vector>
 
-#include <algorithm> // for copy
-#include <cassert>   // for assert
-#include <cmath>     // for sqrt
-#include <iostream>  // for ostringstream
-#include <string>    // for string, operator==, etc
-#include <utility>   // for pair
-
-#include "Ioss_Assembly.h"     // for Assembly
-#include "Ioss_CommSet.h"      // for CommSet
-#include "Ioss_DBUsage.h"      // for DatabaseUsage
-#include "Ioss_DatabaseIO.h"   // for DatabaseIO
-#include "Ioss_ElementBlock.h" // for ElementBlock
-#include "Ioss_ElementTopology.h"
-#include "Ioss_EntityType.h"     // for EntityType, etc
-#include "Ioss_Field.h"          // for Field, etc
-#include "Ioss_GroupingEntity.h" // for GroupingEntity
-#include "Ioss_Hex8.h"
+#include "Ioss_Assembly.h"        // for Assembly
+#include "Ioss_CommSet.h"         // for CommSet
+#include "Ioss_DBUsage.h"         // for DatabaseUsage
+#include "Ioss_DatabaseIO.h"      // for DatabaseIO
+#include "Ioss_ElementBlock.h"    // for ElementBlock
+#include "Ioss_EntityType.h"      // for EntityType, etc
+#include "Ioss_Field.h"           // for Field, etc
+#include "Ioss_GroupingEntity.h"  // for GroupingEntity
 #include "Ioss_IOFactory.h"       // for IOFactory
 #include "Ioss_Map.h"             // for Map, MapContainer
 #include "Ioss_NodeBlock.h"       // for NodeBlock
@@ -42,6 +39,7 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h" // for VariableType
 #include "Iotm_TextMesh.h"     // for TextMesh
+#include "Iotm_TextMeshSidesetSplitter.h"
 
 namespace {
   template <typename INT>

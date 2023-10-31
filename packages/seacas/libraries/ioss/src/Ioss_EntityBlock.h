@@ -6,12 +6,13 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_GroupingEntity.h> // for GroupingEntity
 #include <Ioss_Property.h>       // for Property
 #include <cstddef>               // for size_t
 #include <string>                // for string
+
+#include "ioss_export.h"
+
 namespace Ioss {
   class DatabaseIO;
 } // namespace Ioss

@@ -6,17 +6,12 @@
 
 #include <Ioss_CodeTypes.h> // for IntVector
 #include <Ioss_ElementPermutation.h>
-#include <Ioss_ElementTopology.h>
 #include <Ioss_Utils.h>
-
-#include <cassert> // for assert
-#include <cstddef> // for size_t
+#include <assert.h>
+#include <fmt/ostream.h>
 #include <ostream> // for basic_ostream, etc
 #include <string>  // for string, char_traits, etc
-#include <utility> // for pair
 #include <vector>  // for vector
-
-#include <fmt/ostream.h>
 
 namespace Ioss {
   void EPRegistry::insert(const Ioss::EPM_VP &value, bool delete_me)

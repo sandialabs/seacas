@@ -12,6 +12,7 @@
 #include <transform/Iotr_Tensor.h>
 
 #include "Ioss_Transform.h"
+#include "Iotr_Factory.h"
 
 namespace Iotr {
 

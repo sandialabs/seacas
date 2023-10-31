@@ -6,17 +6,22 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityBlock.h>
 #include <Ioss_Property.h>
 #include <cassert>
+#include <stddef.h>
+#include <stdint.h>
 #include <string>
+#include <vector>
+
+#include "Ioss_EntityType.h"
+#include "ioss_export.h"
 
 namespace Ioss {
   class DatabaseIO;
+  class Field;
 
   /** \brief A collection of elements having the same topology.
    */

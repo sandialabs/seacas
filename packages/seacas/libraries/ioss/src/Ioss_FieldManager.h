@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Field.h> // for Field, Field::RoleType
 #include <cstddef>      // for size_t
 #include <string>       // for string
 #include <vector>       // for vector
+
+#include "ioss_export.h"
 
 #define USE_ROBIN_MAP
 #if defined USE_ROBIN_MAP

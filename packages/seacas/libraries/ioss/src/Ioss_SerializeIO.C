@@ -3,14 +3,13 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#include "Ioss_CodeTypes.h"     // for SEACAS_HAVE_MPI
 #include <Ioss_DatabaseIO.h>    // for DatabaseIO
 #include <Ioss_ParallelUtils.h> // for ParallelUtils
 #include <Ioss_SerializeIO.h>
 #include <Ioss_Utils.h> // for IOSS_ERROR, Ioss::WarnOut()
 #include <fmt/ostream.h>
-#include <ostream> // for operator<<, etc
-#include <string>  // for char_traits
+
+#include "Ioss_CodeTypes.h" // for SEACAS_HAVE_MPI
 
 namespace Ioss {
 

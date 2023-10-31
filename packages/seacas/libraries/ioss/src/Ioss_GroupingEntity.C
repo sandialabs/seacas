@@ -15,12 +15,12 @@
 #include <fmt/ostream.h>
 #include <iostream>
 #include <string>
-#include <vector>
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_EntityType.h"
 #include "Ioss_Field.h"
 #include "Ioss_FieldManager.h"
+#include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_State.h"
 

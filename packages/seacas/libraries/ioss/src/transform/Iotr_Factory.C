@@ -4,15 +4,17 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Transform.h>
 #include <Ioss_Utils.h>
-#include <transform/Iotr_Factory.h>
-
-#include <cstddef>
 #include <map>
 #include <ostream>
 #include <string>
-#include <utility>
+#include <transform/Iotr_Factory.h>
+
+#include "Ioss_CodeTypes.h"
+
+namespace Ioss {
+  class Transform;
+} // namespace Ioss
 
 namespace Iotr {
 

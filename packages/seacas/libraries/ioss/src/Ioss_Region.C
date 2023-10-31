@@ -4,10 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
+#include <Ioss_CodeTypes.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
@@ -16,7 +15,6 @@
 #include <Ioss_EdgeSet.h>
 #include <Ioss_ElementBlock.h>
 #include <Ioss_ElementSet.h>
-#include <Ioss_ElementTopology.h>
 #include <Ioss_EntityBlock.h>
 #include <Ioss_EntityType.h>
 #include <Ioss_FaceBlock.h>
@@ -34,21 +32,19 @@
 #include <Ioss_Sort.h>
 #include <Ioss_State.h>
 #include <Ioss_StructuredBlock.h>
-
-#include <algorithm>
-#include <cctype>
+#include <array>
 #include <climits>
 #include <cstddef>
+#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <iomanip>
-#include <iostream>
 #include <map>
 #include <string>
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
-#include <utility>
+#include <tuple>
 #include <vector>
+
+#include "Ioss_MeshType.h"
+#include "Ioss_ParallelUtils.h"
 
 namespace {
   std::string id_str() { return {"id"}; }

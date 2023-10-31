@@ -7,16 +7,19 @@
 #include <Ioss_EntityType.h> // for EntityType, etc
 #include <Ioss_Hex8.h>
 #include <Ioss_Utils.h>
-#include <algorithm>
 #include <cassert> // for assert
 #include <cmath>   // for atan2, cos, sin
-#include <cstdlib> // for nullptr, exit, etc
+#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <gen_struc/Iogs_GeneratedMesh.h>
+#include <iosfwd>
 #include <numeric>
 #include <string>
 #include <tokenize.h> // for tokenize
 #include <vector>     // for vector
+
+#include "Ioss_CodeTypes.h"
 
 namespace Iogs {
   GeneratedMesh::GeneratedMesh(int64_t /*num_x */, int64_t /* num_y */, int64_t /* num_z */,

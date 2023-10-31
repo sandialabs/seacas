@@ -8,7 +8,6 @@
 #include <Ioss_Utils.h>
 #include <cassert>
 #include <fmt/ostream.h>
-#include <iostream>
 
 namespace Ioss {
   int Tracer::level;

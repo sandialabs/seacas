@@ -6,14 +6,15 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h> // for Int64Vector, IntVector
 #include <Ioss_Utils.h>
 #include <cassert>
 #include <cstddef> // for size_t
-#include <string>  // for string
-#include <vector>  // for vector
+#include <stdint.h>
+#include <string> // for string
+#include <vector> // for vector
+
+#include "ioss_export.h"
 #if IOSS_DEBUG_OUTPUT
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -24,6 +25,7 @@
 #endif
 
 namespace Ioss {
+  class PropertyManager;
 
   class IOSS_EXPORT ParallelUtils
   {

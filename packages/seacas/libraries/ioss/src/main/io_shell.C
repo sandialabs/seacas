@@ -5,7 +5,6 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ionit_Initializer.h>
-#include <Ioss_CodeTypes.h>
 #include <Ioss_Compare.h>
 #include <Ioss_CopyDatabase.h>
 #include <Ioss_FileInfo.h>
@@ -13,22 +12,30 @@
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_MeshType.h>
 #include <Ioss_ParallelUtils.h>
-#include <Ioss_ScopeGuard.h>
 #include <Ioss_SerializeIO.h>
-#include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
-#include <fmt/ostream.h>
-#include <tokenize.h>
-
-#include <algorithm>
-#include <cstddef>
 #include <cstdlib>
-#include <cstring>
-#include <fstream>
+#include <exception>
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <limits>
+#include <stdint.h>
+#include <stdio.h>
 #include <string>
-#include <unistd.h>
+#include <tokenize.h>
+#include <vector>
 
+#include "Ioss_ScopeGuard.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_GetLongOpt.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
+#include "Ioss_VariableType.h"
 #include "shell_interface.h"
 
 // ========================================================================
