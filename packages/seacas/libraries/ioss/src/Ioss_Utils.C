@@ -18,7 +18,6 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <string>
-#include <sys/ttycom.h>
 #include <tokenize.h>
 #include <vector>
 
