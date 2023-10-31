@@ -37,7 +37,6 @@
 
 #ifndef __unix__
 #define __unix__ 1
-#include <sys/errno.h>
 #endif
 #endif
 
@@ -47,6 +46,7 @@
 #include <cstring>
 #include <ctype.h>
 #ifndef _MSC_VER
+#include <sys/errno.h>
 #include <unistd.h>
 #endif
 
