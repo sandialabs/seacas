@@ -945,7 +945,6 @@ namespace {
     bool overall_result = true;
 
     Ioss::NameList ige_properties_1 = ige_1->property_describe();
-    Ioss::NameList ige_properties_2 = ige_2->property_describe();
 
     for (const auto &property : ige_properties_1) {
       if (!ige_2->property_exists(property)) {
@@ -1563,7 +1562,6 @@ namespace {
     // Iterate through the `role` fields of the input
     // database and compare to second database.
     Ioss::NameList in_state_fields_1 = ige_1->field_describe(role);
-    Ioss::NameList in_state_fields_2 = ige_2->field_describe(role);
 
     for (const auto &field_name : in_state_fields_1) {
       // All of the 'Ioss::EntityBlock' derived classes have a

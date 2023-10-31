@@ -837,11 +837,11 @@ namespace {
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DebugOut(), "{}, ", name);
       }
-      size_t num_nodes = inb->entity_count();
-      size_t degree    = inb->get_property("component_degree").get_int();
       if (options.output_summary && rank == 0) {
+        size_t degree = inb->get_property("component_degree").get_int();
         fmt::print(Ioss::DebugOut(), " Number of Coordinates per Node = {:14}\n",
                    fmt::group_digits(degree));
+        size_t num_nodes = inb->entity_count();
         fmt::print(Ioss::DebugOut(), " Number of Nodes                = {:14}\n",
                    fmt::group_digits(num_nodes));
       }

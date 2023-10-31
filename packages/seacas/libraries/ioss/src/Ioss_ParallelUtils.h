@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -191,12 +191,12 @@ namespace Ioss {
     for (size_t i = 1; i < pow_2; i++) {
       MPI_Status status{};
 
-      int    tag           = 24713;
       size_t exchange_proc = i ^ my_processor;
       if (exchange_proc < static_cast<size_t>(processor_count)) {
         int snd_cnt = static_cast<int>(
             sendcounts[exchange_proc]); // Converts from int64_t to int as needed by mpi
         int rcv_cnt = static_cast<int>(recvcounts[exchange_proc]);
+        int tag     = 24713;
         if (static_cast<size_t>(my_processor) < exchange_proc) {
           MPI_Send((void *)&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)),
                    exchange_proc, tag, comm);

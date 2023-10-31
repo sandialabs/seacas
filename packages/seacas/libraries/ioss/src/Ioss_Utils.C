@@ -1367,10 +1367,7 @@ void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::Role
     max_width = max_width > field_name.length() ? max_width : field_name.length();
   }
 
-  size_t width = Ioss::Utils::term_width();
-  if (width == 0) {
-    width = 80;
-  }
+  size_t width   = Ioss::Utils::term_width();
   size_t cur_out = 8; // Tab width...
   if (!header.empty()) {
     cur_out = header.size() + suffix.size() + 16; // Assume 2 tabs...
