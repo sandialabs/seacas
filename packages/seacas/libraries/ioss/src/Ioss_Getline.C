@@ -37,16 +37,15 @@
 
 #ifndef __unix__
 #define __unix__ 1
+#include <sys/errno.h>
 #endif
 #endif
 
-#include <sys/errno.h>
-#include <sys/termios.h>
 /********************* C library headers ********************************/
-#include <ctype.h>
 #include <array>
 #include <cstdlib>
 #include <cstring>
+#include <ctype.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -122,6 +121,7 @@ namespace {
 
 namespace {
 #ifdef __unix__
+#include <sys/termios.h>
   struct termios io_new_termios;
   struct termios io_old_termios;
 #endif
