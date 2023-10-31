@@ -25,7 +25,6 @@
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
 #include <cassert>
-#include <cgnslib.h>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>

@@ -12,8 +12,6 @@
 #include <ostream>
 #include <stdlib.h>
 #include <string>
-#include <sys/errno.h>
-#include <sys/unistd.h>
 #include <tokenize.h>
 #include <vector>
 
