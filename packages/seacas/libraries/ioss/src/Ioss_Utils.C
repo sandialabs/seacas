@@ -17,6 +17,9 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fstream>
+#include <ostream>
+#include <sstream>
 #include <string>
 #include <tokenize.h>
 #include <vector>
