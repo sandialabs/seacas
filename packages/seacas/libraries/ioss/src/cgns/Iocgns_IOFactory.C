@@ -4,16 +4,15 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_DBUsage.h"           // for DatabaseUsage
-#include "Ioss_IOFactory.h"         // for IOFactory
 #include <cgns/Iocgns_DatabaseIO.h> // for DatabaseIO -- serial
 #include <cgns/Iocgns_IOFactory.h>
 #include <cgns/Iocgns_Utils.h>
-#include <cstddef> // for nullptr
-#include <string>  // for string
-#include <tokenize.h>
+#include <cgnstypes.h>
+#include <string> // for string
 
-#include <cgnsconfig.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DBUsage.h"   // for DatabaseUsage
+#include "Ioss_IOFactory.h" // for IOFactory
 #if CG_BUILD_PARALLEL
 #include <cgns/Iocgns_ParallelDatabaseIO.h> // for DatabaseIO -- parallel
 #endif

@@ -6,11 +6,37 @@
 
 #include <Ioss_DataPool.h>
 #include <Ioss_MeshCopyOptions.h>
-#include <Ioss_SubSystem.h>
-
-#include <fmt/chrono.h>
-#include <fmt/format.h>
+#include <assert.h>
+#include <cmath>
 #include <fmt/ostream.h>
+#include <iosfwd>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string>
+#include <vector>
+
+#include "Ioss_CommSet.h"
+#include "Ioss_Compare.h"
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_MeshType.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_Utils.h"
 
 /* These messages indicate a structural difference between the files
  * being compared.  Use Ioss::WarnOut().
@@ -919,7 +945,6 @@ namespace {
     bool overall_result = true;
 
     Ioss::NameList ige_properties_1 = ige_1->property_describe();
-    Ioss::NameList ige_properties_2 = ige_2->property_describe();
 
     for (const auto &property : ige_properties_1) {
       if (!ige_2->property_exists(property)) {
@@ -1182,19 +1207,15 @@ namespace {
   }
 
   template <typename T>
-  bool compare_sets(const std::vector<T *> &in_sets_1, const std::vector<T *> &in_sets_const_2,
+  bool compare_sets(const std::vector<T *> &in_sets_1, const std::vector<T *> &in_sets_2,
                     const Ioss::MeshCopyOptions & /* options */, std::ostringstream & /* buf */)
   {
     bool overall_result = true;
 
-    if (in_sets_1.size() != in_sets_const_2.size()) {
-      fmt::print(Ioss::WarnOut(), COUNT_MISMATCH, "set", in_sets_1.size(), in_sets_const_2.size());
+    if (in_sets_1.size() != in_sets_2.size()) {
+      fmt::print(Ioss::WarnOut(), COUNT_MISMATCH, "set", in_sets_1.size(), in_sets_2.size());
       return false;
     }
-
-    // COPY the const input vector so that we remove elements as they're matched without
-    // affecting the original data structure.
-    std::vector<T *> in_sets_2 = in_sets_const_2;
 
     if (!in_sets_1.empty()) {
       for (const auto &in_set_1 : in_sets_1) {
@@ -1541,7 +1562,6 @@ namespace {
     // Iterate through the `role` fields of the input
     // database and compare to second database.
     Ioss::NameList in_state_fields_1 = ige_1->field_describe(role);
-    Ioss::NameList in_state_fields_2 = ige_2->field_describe(role);
 
     for (const auto &field_name : in_state_fields_1) {
       // All of the 'Ioss::EntityBlock' derived classes have a

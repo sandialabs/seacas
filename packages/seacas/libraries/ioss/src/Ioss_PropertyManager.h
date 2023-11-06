@@ -6,13 +6,14 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Property.h> // for Property
 #include <cstddef>         // for size_t
-#include <string>          // for string, operator<
-#include <vector>          // for vector
+#include <stdint.h>
+#include <string> // for string, operator<
+#include <vector> // for vector
+
+#include "ioss_export.h"
 
 #define USE_ROBIN_MAP
 #if defined USE_ROBIN_MAP
@@ -35,7 +36,9 @@ namespace Ioss {
   {
   public:
     PropertyManager() = default;
-    PropertyManager(const PropertyManager &from);
+    PropertyManager(const PropertyManager &from) : m_properties(from.m_properties)
+    { /* Do not make this `=default` since that breaks the thread-safe build */
+    }
     PropertyManager &operator=(const PropertyManager &from) = delete;
     ~PropertyManager();
 

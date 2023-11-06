@@ -143,7 +143,7 @@ void ex_err(const char *module_name, const char *message, int err_num)
 The function ex_err_fn() logs an error to stderr. It is intended
 to provide explanatory messages for error codes returned from other
 exodus routines.  The main difference between ex_err_fn() and ex_err() is
-that ex_err_fn() will print the name of the exodus file that the error occured on.
+that ex_err_fn() will print the name of the exodus file that the error occurred on.
 
 The passed in error codes and corresponding messages are listed in
 \file{exodusII.h}. The programmer may supplement the error message printed

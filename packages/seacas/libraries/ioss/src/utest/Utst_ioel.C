@@ -5,7 +5,6 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_CodeTypes.h>
-
 #include <Ioss_ConcreteVariableType.h>
 #include <Ioss_ElementPermutation.h>
 #include <Ioss_ElementTopology.h>
@@ -13,11 +12,9 @@
 #include <Ioss_NullEntity.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
-
-#include <fmt/ostream.h>
-#include <iomanip>
-#include <iostream>
-#include <memory>
+#include <fmt/core.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <vector>
 

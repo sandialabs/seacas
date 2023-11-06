@@ -7,11 +7,11 @@
  */
 #pragma once
 
-#include "io_info_lib_export.h"
+#include <iosfwd> // for ostream
+#include <string> // for string
 
 #include "Ioss_GetLongOpt.h" // for GetLongOption
-#include <iosfwd>            // for ostream
-#include <string>            // for string
+#include "io_info_lib_export.h"
 
 /** \brief A special namespace for the io_info demonstration program interFace.
  */

@@ -372,10 +372,10 @@ namespace Iopg {
 
       // A nemesis file typically separates nodes into multiple
       // communication sets by processor.  (each set specifies
-      // nodes/elements that communicate with only a single processor).
-      // For Sierra, we want a single node commun. map and a single
-      // element commun. map specifying all communications so we combine
-      // all sets into a single set.
+      // nodes/elements that communicate with only a single
+      // processor).  For Sierra, we want a single node communication
+      // map and a single element communication map specifying all
+      // communications so we combine all sets into a single set.
       error = im_ne_get_init_global(get_file_pointer(), &global_nodes, &global_elements,
                                     &global_eblocks, &global_nsets, &global_ssets);
       if (error < 0)

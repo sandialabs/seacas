@@ -155,7 +155,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
         "\nThe following options were specified via the CONJOIN_OPTIONS environment variable:\n"
         "\t{}\n\n",
         options);
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, GetLongOption::basename(*argv));
   }
 
   if (options_.retrieve("help") != nullptr) {

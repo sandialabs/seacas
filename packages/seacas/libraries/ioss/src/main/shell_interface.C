@@ -5,23 +5,22 @@
  *
  * See packages/seacas/LICENSE for details
  */
-#include "Ioss_CodeTypes.h"
+#include <cstdlib> // for exit, strtod, EXIT_SUCCESS, etc
+#include <cstring> // for strcmp
+#include <fmt/core.h>
+#include <iostream> // for operator<<, basic_ostream, etc
+#include <stdio.h>
+#include <string> // for string, char_traits
+#include <vector> // for vector
+
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Sort.h"
 #include "Ioss_Utils.h" // for Utils
+#include "SEACASIoss_config.h"
 #include "shell_interface.h"
 #include "tokenize.h"
 
-#include <cctype>  // for tolower
-#include <cstddef> // for nullptr
-#include <cstdlib> // for exit, strtod, EXIT_SUCCESS, etc
-#include <cstring> // for strcmp
-#include <fmt/ostream.h>
-#include <iostream> // for operator<<, basic_ostream, etc
-#include <string>   // for string, char_traits
-#include <vector>   // for vector
-
-IOShell::Interface::Interface(const std::string &app_version) : version(app_version)
+IOShell::Interface::Interface(std::string app_version) : version(std::move(app_version))
 {
   enroll_options();
 }
@@ -345,7 +344,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
         "\nThe following options were specified via the IO_SHELL_OPTIONS environment variable:\n"
         "\t{}\n\n",
         options);
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, Ioss::GetLongOption::basename(*argv));
   }
 
   int option_index = options_.parse(argc, argv);

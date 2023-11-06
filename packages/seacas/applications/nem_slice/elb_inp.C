@@ -1750,37 +1750,42 @@ namespace {
      token or at the terminating NUL character.  */
   int my_getsubopt(char **optionp, char *const *tokens, char **valuep)
   {
-    if (**optionp == '\0')
+    if (**optionp == '\0') {
       return -1;
+    }
 
     /* Find end of next token.  */
     char *endp = (char *)my_strchrnul(*optionp, ',');
 
     /* Find start of value.  */
     char *vstart = (char *)memchr(*optionp, '=', endp - *optionp);
-    if (vstart == nullptr)
+    if (vstart == nullptr) {
       vstart = endp;
+    }
 
     /* Try to match the characters between *OPTIONP and VSTART against
        one of the TOKENS.  */
-    for (int cnt = 0; tokens[cnt] != nullptr; ++cnt)
+    for (int cnt = 0; tokens[cnt] != nullptr; ++cnt) {
       if (strncmp(*optionp, tokens[cnt], vstart - *optionp) == 0 &&
           tokens[cnt][vstart - *optionp] == '\0') {
         /* We found the current option in TOKENS.  */
         *valuep = vstart != endp ? vstart + 1 : nullptr;
 
-        if (*endp != '\0')
+        if (*endp != '\0') {
           *endp++ = '\0';
+        }
         *optionp = endp;
 
         return cnt;
       }
+    }
 
     /* The current suboption does not match any option.  */
     *valuep = *optionp;
 
-    if (*endp != '\0')
+    if (*endp != '\0') {
       *endp++ = '\0';
+    }
     *optionp = endp;
 
     return -1;

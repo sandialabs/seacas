@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iogs_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityType.h> // for EntityType
 #include <array>
@@ -17,6 +15,8 @@
 #include <string>  // for string
 #include <utility> // for pair
 #include <vector>  // for vector
+
+#include "iogs_export.h"
 
 namespace Iogs {
   class IOGS_EXPORT GeneratedMesh
@@ -324,7 +324,7 @@ namespace Iogs {
                              std::vector<double> &z) const;
 
     /**
-     * Return the coordinates for componenet 'comp' (1=x, 2=y, 3=z)
+     * Return the coordinates for component 'comp' (1=x, 2=y, 3=z)
      * for all nodes on this processor. The
      * vector will be resized to the size required to contain the
      * nodal coordinates; all information in the vector will be
@@ -335,7 +335,7 @@ namespace Iogs {
     virtual void coordinates(int component, std::vector<double> &xyz) const;
 
     /**
-     * Return the coordinates for componenet 'comp' (1=x, 2=y, 3=z, 0=all)
+     * Return the coordinates for component 'comp' (1=x, 2=y, 3=z, 0=all)
      * for all nodes in zone `zone` on this processor. The
      * vector will be resized to the size required to contain the
      * nodal coordinates; all information in the vector will be

@@ -347,14 +347,14 @@ std::string Ioss::Field::type_string() const { return type_string(get_type()); }
 std::string Ioss::Field::type_string(Ioss::Field::BasicType type)
 {
   switch (type) {
-  case Ioss::Field::REAL: return std::string("real");
-  case Ioss::Field::INTEGER: return std::string("integer");
-  case Ioss::Field::INT64: return std::string("64-bit integer");
-  case Ioss::Field::COMPLEX: return std::string("complex");
-  case Ioss::Field::STRING: return std::string("string");
-  case Ioss::Field::CHARACTER: return std::string("char");
-  case Ioss::Field::INVALID: return std::string("invalid");
-  default: return std::string("internal error");
+  case Ioss::Field::REAL: return {"real"};
+  case Ioss::Field::INTEGER: return {"integer"};
+  case Ioss::Field::INT64: return {"64-bit integer"};
+  case Ioss::Field::COMPLEX: return {"complex"};
+  case Ioss::Field::STRING: return {"string"};
+  case Ioss::Field::CHARACTER: return {"char"};
+  case Ioss::Field::INVALID: return {"invalid"};
+  default: return {"internal error"};
   }
 }
 
@@ -363,14 +363,14 @@ std::string Ioss::Field::role_string() const { return role_string(get_role()); }
 std::string Ioss::Field::role_string(Ioss::Field::RoleType role)
 {
   switch (role) {
-  case Ioss::Field::INTERNAL: return std::string("Internal");
-  case Ioss::Field::MESH: return std::string("Mesh");
-  case Ioss::Field::ATTRIBUTE: return std::string("Attribute");
-  case Ioss::Field::COMMUNICATION: return std::string("Communication");
-  case Ioss::Field::MESH_REDUCTION: return std::string("Mesh Reduction");
-  case Ioss::Field::REDUCTION: return std::string("Reduction");
-  case Ioss::Field::TRANSIENT: return std::string("Transient");
-  default: return std::string("internal error");
+  case Ioss::Field::INTERNAL: return {"Internal"};
+  case Ioss::Field::MESH: return {"Mesh"};
+  case Ioss::Field::ATTRIBUTE: return {"Attribute"};
+  case Ioss::Field::COMMUNICATION: return {"Communication"};
+  case Ioss::Field::MESH_REDUCTION: return {"Mesh Reduction"};
+  case Ioss::Field::REDUCTION: return {"Reduction"};
+  case Ioss::Field::TRANSIENT: return {"Transient"};
+  default: return {"internal error"};
   }
 }
 

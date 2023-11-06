@@ -8,6 +8,11 @@ on:
     branches:
     - master
 
+
+concurrency:  
+  group: ${{ github.workflow}}-${{ github.head_ref }}  
+  cancel-in-progress: true
+
 jobs:
   build-deps:
 
@@ -25,6 +30,14 @@ jobs:
         shell: bash --noprofile --norc {0}
 
     steps:
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 30000
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql:  'true'
     - uses: actions/checkout@v3
     - name: setup repo
       run: |
@@ -35,13 +48,12 @@ jobs:
         sudo apt-get update
     - name: install
       run: |
+        sudo apt-get install -y intel-basekit
         sudo apt-get install -y intel-oneapi-common-vars
         sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
         sudo apt-get install -y intel-oneapi-compiler-fortran
         sudo apt-get install -y intel-oneapi-mpi
         sudo apt-get install -y intel-oneapi-mpi-devel
-        sudo apt-get install -y intel-oneapi-mkl
-        sudo apt-get install -y ninja-build
 
     - name: Install System dependencies
       shell: bash -l {0}
@@ -80,6 +92,14 @@ jobs:
         cgns: [ 4.3.0 ]
     steps:
 
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 30000
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql:  'true'
       - uses: actions/checkout@v3
       - name: setup repo
         run: |
@@ -90,13 +110,12 @@ jobs:
           sudo apt-get update
       - name: install
         run: |
+          sudo apt-get install -y intel-basekit
           sudo apt-get install -y intel-oneapi-common-vars
           sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
           sudo apt-get install -y intel-oneapi-compiler-fortran
           sudo apt-get install -y intel-oneapi-mpi
           sudo apt-get install -y intel-oneapi-mpi-devel
-          sudo apt-get install -y intel-oneapi-mkl
-          sudo apt-get install -y ninja-build
 
       - name: Install System dependencies
         shell: bash -l {0}

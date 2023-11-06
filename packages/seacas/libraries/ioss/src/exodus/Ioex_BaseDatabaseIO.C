@@ -5,40 +5,30 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_CodeTypes.h>
-#include <Ioss_ElementTopology.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_IOFactory.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_SerializeIO.h>
-#include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
-#include <algorithm>
 #include <cassert>
 #include <cctype>
-#include <cfloat>
-#include <cstddef>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <exodus/Ioex_BaseDatabaseIO.h>
 #include <exodus/Ioex_Internals.h>
-#include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
+#include <fmt/core.h>
 #include <fmt/ostream.h>
-#include <functional>
-#include <iostream>
 #include <map>
-#include <set>
+#include <sstream>
 #include <string>
 #include <tokenize.h>
-#include <utility>
 #include <vector>
 
+#include "Ioex_Utils.h"
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
-#include "Ioss_CommSet.h"
-#include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_EdgeBlock.h"
@@ -46,24 +36,22 @@
 #include "Ioss_ElementBlock.h"
 #include "Ioss_ElementSet.h"
 #include "Ioss_EntityBlock.h"
-#include "Ioss_EntitySet.h"
 #include "Ioss_EntityType.h"
 #include "Ioss_FaceBlock.h"
 #include "Ioss_FaceSet.h"
 #include "Ioss_Field.h"
 #include "Ioss_GroupingEntity.h"
 #include "Ioss_Map.h"
+#include "Ioss_MeshType.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
 #include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_SmartAssert.h"
 #include "Ioss_State.h"
-#include "Ioss_VariableType.h"
-
-#include "Ioex_Utils.h"
 
 // Transitioning from treating global variables as Ioss::Field::TRANSIENT
 // to Ioss::Field::REDUCTION.  To get the old behavior, define the value
@@ -74,7 +62,7 @@
 // Static internal helper functions
 // ========================================================================
 namespace {
-  static bool sixty_four_bit_message_output = false;
+  bool sixty_four_bit_message_output = false;
 
   std::vector<ex_entity_type> exodus_types({EX_GLOBAL, EX_BLOB, EX_ASSEMBLY, EX_NODE_BLOCK,
                                             EX_EDGE_BLOCK, EX_FACE_BLOCK, EX_ELEM_BLOCK,
@@ -110,7 +98,7 @@ namespace {
     {
       // Walk the tree without cyclic dependency
       if (assemblyIndex < m_assemblies.size()) {
-        if (m_visitedAssemblies[assemblyIndex] == false) {
+        if (!m_visitedAssemblies[assemblyIndex]) {
           m_visitedAssemblies[assemblyIndex] = true;
 
           const auto            &assembly     = m_assemblies[assemblyIndex];
@@ -557,7 +545,7 @@ namespace Ioex {
       ex_put_qa(get_file_pointer(), num_qa_records + 1, nullptr);
     }
     else {
-      auto *qa = new qa_element[num_qa_records + 1];
+      std::vector<qa_element> qa(num_qa_records + 1);
       for (size_t i = 0; i < num_qa_records + 1; i++) {
         for (int j = 0; j < 4; j++) {
           qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
@@ -606,7 +594,6 @@ namespace Ioex {
           delete[] qa[i].qa_record[0][j];
         }
       }
-      delete[] qa;
     }
   }
 
@@ -1528,7 +1515,7 @@ namespace Ioex {
 #if GLOBALS_ARE_TRANSIENT
     int field_count = add_results_fields(get_region());
 #else
-    int field_count     = add_reduction_results_fields(get_region());
+    int field_count = add_reduction_results_fields(get_region());
 #endif
     m_reductionValues[EX_GLOBAL][0].resize(field_count);
     add_mesh_reduction_fields(0, get_region());

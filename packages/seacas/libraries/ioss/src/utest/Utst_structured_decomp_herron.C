@@ -4,8 +4,15 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Utst_structured_decomp.h"
 #include <doctest.h>
+#include <stddef.h>
+#include <string>
+#include <vector>
+
+#include "Iocgns_StructuredZoneData.h"
+#include "Ioss_CodeTypes.h"
+#include "Ioss_ZoneConnectivity.h"
+#include "Utst_structured_decomp.h"
 
 // Disable these tests on NVCC. It tries to optimize and takes forever to build...
 #if !defined(__NVCC__)

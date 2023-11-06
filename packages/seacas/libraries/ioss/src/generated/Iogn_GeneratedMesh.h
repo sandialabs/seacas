@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iogn_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityType.h> // for EntityType
 #include <array>
@@ -17,6 +15,8 @@
 #include <string>  // for string
 #include <utility> // for pair
 #include <vector>  // for vector
+
+#include "iogn_export.h"
 
 namespace Iogn {
   class IOGN_EXPORT GeneratedMesh
@@ -424,7 +424,7 @@ namespace Iogn {
                              std::vector<double> &z) const;
 
     /**
-     * Return the coordinates for componenet `comp` (1=x, 2=y, 3=z)
+     * Return the coordinates for component `comp` (1=x, 2=y, 3=z)
      * for all nodes on this processor. The
      * vector will be resized to the size required to contain the
      * nodal coordinates; all information in the vector will be

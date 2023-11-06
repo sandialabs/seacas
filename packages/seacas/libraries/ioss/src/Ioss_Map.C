@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -7,15 +7,14 @@
 #include <Ioss_Field.h> // for Field, etc
 #include <Ioss_Map.h>
 #include <Ioss_SmartAssert.h>
-#include <Ioss_Sort.h>
 #include <Ioss_Utils.h> // for IOSS_ERROR
 #include <cstddef>      // for size_t
 #include <fmt/ostream.h>
-#include <iterator> // for insert_iterator, inserter
 #include <numeric>
 #include <sstream>
-#include <string>
 #include <vector> // for vector, vector<>::iterator, etc
+
+#include "Ioss_CodeTypes.h"
 
 // If defined, then only build m_reverseMap when it is used.
 #undef USE_LAZY_REVERSE

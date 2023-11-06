@@ -11,46 +11,37 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
-#include <algorithm>
+#include <array>
 #include <cassert>
-#include <cctype>
 #include <cfloat>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <exodus/Ioex_DatabaseIO.h>
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <functional>
-#include <iostream>
 #include <limits>
 #include <map>
+#include <netcdf_meta.h>
 #include <numeric>
-#include <set>
+#include <sstream>
+#include <stdexcept>
 #include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <tokenize.h>
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
-#include <utility>
 #include <vector>
 
+#include "Ioex_BaseDatabaseIO.h"
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
 #include "Ioss_CommSet.h"
-#include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
-#include "Ioss_DatabaseIO.h"
 #include "Ioss_EdgeBlock.h"
 #include "Ioss_EdgeSet.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
 #include "Ioss_EntityBlock.h"
 #include "Ioss_EntitySet.h"
 #include "Ioss_EntityType.h"
@@ -62,11 +53,13 @@
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
 #include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_State.h"
 #include "Ioss_VariableType.h"
+#include "hopscotch_hash.h"
 
 // ========================================================================
 // Static internal helper functions
@@ -608,7 +601,7 @@ namespace Ioex {
         char *qa_record[1][4];
       };
 
-      auto qa = new qa_element[num_qa];
+      std::vector<qa_element> qa(num_qa);
       for (int i = 0; i < num_qa; i++) {
         for (int j = 0; j < 4; j++) {
           qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
@@ -625,7 +618,6 @@ namespace Ioex {
           delete[] qa[i].qa_record[0][j];
         }
       }
-      delete[] qa;
     }
 
     // Get information records from database and add to informationRecords...
@@ -843,10 +835,10 @@ namespace Ioex {
     if (nemesis_file) {
       // A nemesis file typically separates nodes into multiple
       // communication sets by processor.  (each set specifies
-      // nodes/elements that communicate with only a single processor).
-      // For Sierra, we want a single node commun. map and a single
-      // element commun. map specifying all communications so we combine
-      // all sets into a single set.
+      // nodes/elements that communicate with only a single
+      // processor).  For Sierra, we want a single node communication
+      // map and a single element communication map specifying all
+      // communications so we combine all sets into a single set.
 
       if (int_byte_size_api() == 4) {
         int gn, ge, geb, gns, gss;

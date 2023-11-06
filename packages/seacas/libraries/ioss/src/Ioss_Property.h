@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -10,6 +10,7 @@
 
 #include <cstdint> // for int64_t
 #include <string>  // for string
+#include <variant>
 #include <vector>
 
 namespace Ioss {
@@ -46,10 +47,12 @@ namespace Ioss {
     // To set implicit property
     Property(const GroupingEntity *ge, std::string name, BasicType type);
 
-    Property(const Property &from);
-    Property &operator=(Property rhs);
+    Property(const Property &from)           = default;
+    Property &operator=(const Property &rhs) = default;
+    Property(Property &&from)                = default;
+    Property &operator=(Property &&rhs)      = default;
 
-    ~Property();
+    ~Property() = default;
 
     std::string         get_string() const;
     int64_t             get_int() const;
@@ -101,6 +104,15 @@ namespace Ioss {
     bool operator!=(const Ioss::Property &rhs) const;
     bool operator==(const Ioss::Property &rhs) const;
 
+    friend void swap(Ioss::Property &first, Ioss::Property &second) // nothrow
+    {
+      using std::swap;
+      swap(first.name_, second.name_);
+      swap(first.type_, second.type_);
+      swap(first.origin_, second.origin_);
+      swap(first.data_, second.data_);
+    }
+
   private:
     std::string name_{};
     BasicType   type_{INVALID};
@@ -118,15 +130,8 @@ namespace Ioss {
 
     /// The actual value of the property.  Use 'type_' to
     /// discriminate the actual type of the property.
-    union Data {
-      std::string          *sval;
-      void                 *pval{nullptr};
-      const GroupingEntity *ge;
-      double                rval;
-      int64_t               ival;
-      std::vector<double>  *dvec;
-      std::vector<int>     *ivec;
-    };
-    Data data_{};
+    std::variant<std::string, const Ioss::GroupingEntity *, double, int64_t, std::vector<double>,
+                 std::vector<int>, void *>
+        data_;
   };
 } // namespace Ioss

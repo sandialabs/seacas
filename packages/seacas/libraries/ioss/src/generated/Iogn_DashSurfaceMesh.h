@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iogn_export.h"
-
 #include <Ioss_Beam2.h>
 #include <Ioss_Hex8.h>
 #include <Ioss_Shell4.h>
@@ -18,6 +16,8 @@
 #include <string>                         // for string
 #include <utility>                        // for pair
 #include <vector>                         // for vector
+
+#include "iogn_export.h"
 
 namespace Iogn {
 
@@ -35,9 +35,9 @@ namespace Iogn {
   inline std::string getTopologyName(Topology topology)
   {
     switch (topology) {
-    case Shell4: return std::string(Ioss::Shell4::name);
-    case Hex8: return std::string(Ioss::Hex8::name);
-    case Beam2: return std::string(Ioss::Beam2::name);
+    case Shell4: return {Ioss::Shell4::name};
+    case Hex8: return {Ioss::Hex8::name};
+    case Beam2: return {Ioss::Beam2::name};
     }
     throw std::exception();
   }

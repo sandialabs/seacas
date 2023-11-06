@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
-#include "Ioss_Super.h"
 #include <Ioss_CodeTypes.h>          // for IntVector
 #include <Ioss_ElementPermutation.h> // for ElementPermutation
 #include <string>                    // for string
+
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Super.h"
+#include "ioss_export.h"
+
 namespace Ioss {
   class ElementVariableType;
 } // namespace Ioss

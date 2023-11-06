@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iohb_export.h"
-
 #include <Iohb_Layout.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>
@@ -18,6 +16,9 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <time.h>
+
+#include "iohb_export.h"
 
 namespace Ioss {
   class GroupingEntity;
@@ -37,6 +38,8 @@ namespace Ioss {
   class SideBlock;
   class SideSet;
   class StructuredBlock;
+  class Assembly;
+  class Blob;
 } // namespace Ioss
 
 /** \brief A namespace for the heartbeat database format.

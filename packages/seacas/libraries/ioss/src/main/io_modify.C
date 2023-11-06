@@ -4,40 +4,13 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "modify_interface.h"
-
-#include <array>
-#include <cassert>
-#include <cmath>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <regex>
-#include <string>
-#include <unistd.h>
-#include <utility>
-#include <vector>
-
 #include <Ionit_Initializer.h>
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_CommSet.h>
-#include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
-#include <Ioss_EdgeBlock.h>
-#include <Ioss_EdgeSet.h>
 #include <Ioss_ElementBlock.h>
-#include <Ioss_ElementSet.h>
 #include <Ioss_ElementTopology.h>
-#include <Ioss_FaceBlock.h>
-#include <Ioss_FaceSet.h>
-#include <Ioss_Field.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_Getline.h>
 #include <Ioss_Glob.h>
@@ -47,17 +20,36 @@
 #include <Ioss_NodeSet.h>
 #include <Ioss_Property.h>
 #include <Ioss_Region.h>
-#include <Ioss_ScopeGuard.h>
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
-#include <Ioss_VariableType.h>
-#include <tokenize.h>
-
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <exception>
 #include <fmt/color.h>
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <regex>
+#include <stdint.h>
+#include <string>
+#include <tokenize.h>
+#include <unistd.h>
+#include <vector>
+
+#include "Ioss_ScopeGuard.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_State.h"
+#include "SEACASIoss_config.h"
+#include "modify_interface.h"
 
 #if defined(SEACAS_HAVE_EXODUS)
 #include <exodus/Ioex_Internals.h>
@@ -71,6 +63,7 @@
 
 #if defined(__IOSS_WINDOWS__)
 #include <io.h>
+
 #define isatty _isatty
 #endif
 // ========================================================================
@@ -941,7 +934,7 @@ namespace {
         else {
           fmt::print(stderr, fg(fmt::color::red),
                      "ERROR: Requested Assembly '{}' was not created during this execution.  Not "
-                     "deleteable.\n",
+                     "deletable.\n",
                      tokens[1]);
           return false;
         }
@@ -967,7 +960,10 @@ namespace {
     if (Ioss::Utils::substr_equal(tokens[2], "add")) {
       // Must be at least 6 tokens...
       if (tokens.size() < 6) {
-        fmt::print(stderr, fg(fmt::color::red),
+        fmt::print(stderr,
+#if !defined __NVCC__
+                   fg(fmt::color::red),
+#endif
                    "ERROR: ATTRIBUTE Command does not have enough tokens to be valid.\n"
                    "\t\t{}\n",
                    fmt::join(tokens, " "));
@@ -988,7 +984,7 @@ namespace {
       }
 
       // Now get name of attribute/property to create...
-      std::string att_name = tokens[3];
+      const std::string &att_name = tokens[3];
 
       // Now, the attribute type and whether vector or scalar...
       size_t value_count = tokens.size() - 5;
@@ -1086,7 +1082,10 @@ namespace {
 
     // Must be at least 4 tokens...
     if (tokens.size() < 4) {
-      fmt::print(stderr, fg(fmt::color::red),
+      fmt::print(stderr,
+#if !defined __NVCC__
+                 fg(fmt::color::red),
+#endif
                  "ERROR: RENAME Command does not have enough tokens to be valid.\n"
                  "\t\t{}\n",
                  fmt::join(tokens, " "));
@@ -1096,7 +1095,7 @@ namespace {
 
     // See if asking for actual entity by name or by type + id
     Ioss::GroupingEntity *ge       = nullptr;
-    std::string           new_name = tokens[tokens.size() - 1];
+    const std::string    &new_name = tokens[tokens.size() - 1];
 
     if (tokens.size() == 5 && Ioss::Utils::str_equal(tokens[3], "to")) {
       // Type + ID
@@ -1123,8 +1122,11 @@ namespace {
       }
     }
     else {
-      fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized rename syntax '{}'\n",
-                 fmt::join(tokens, " "));
+      fmt::print(stderr,
+#if !defined __NVCC__
+                 fg(fmt::color::yellow),
+#endif
+                 "\tWARNING: Unrecognized rename syntax '{}'\n", fmt::join(tokens, " "));
       handle_help("rename");
     }
 
@@ -1203,7 +1205,10 @@ namespace {
     // TIME   SCALE  {{scale}}
     // TIME   OFFSET {{offset}
     if (tokens.size() < 3) {
-      fmt::print(stderr, fg(fmt::color::red),
+      fmt::print(stderr,
+#if !defined __NVCC__
+                 fg(fmt::color::red),
+#endif
                  "ERROR: TIME Command does not have enough tokens to be valid.\n"
                  "\t\t{}\n",
                  fmt::join(tokens, " "));
@@ -1238,7 +1243,10 @@ namespace {
     // GEOMETRY   OFFSET {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{offset}} ...
 
     if (tokens.size() < 4) {
-      fmt::print(stderr, fg(fmt::color::red),
+      fmt::print(stderr,
+#if !defined __NVCC__
+                 fg(fmt::color::red),
+#endif
                  "ERROR: GEOMETRY Command does not have enough tokens to be valid.\n"
                  "\t\t{}\n",
                  fmt::join(tokens, " "));
@@ -1257,8 +1265,8 @@ namespace {
       while (!(Ioss::Utils::str_equal(tokens[idx], "x") ||
                Ioss::Utils::str_equal(tokens[idx], "y") ||
                Ioss::Utils::str_equal(tokens[idx], "z"))) {
-        auto  name = tokens[idx++];
-        auto *ge   = region.get_entity(name, Ioss::ELEMENTBLOCK);
+        const auto &name = tokens[idx++];
+        auto       *ge   = region.get_entity(name, Ioss::ELEMENTBLOCK);
         if (ge == nullptr) {
           ge = region.get_entity(name, Ioss::ASSEMBLY);
         }
@@ -1306,9 +1314,9 @@ namespace {
 
       // Get rotation axis...
       do {
-        std::string axis  = tokens[idx++];
-        double      angle = std::stod(tokens[idx++]);
-        auto        ok    = update_rotation_matrix(rotation_matrix, axis, angle);
+        const std::string &axis  = tokens[idx++];
+        double             angle = std::stod(tokens[idx++]);
+        auto               ok    = update_rotation_matrix(rotation_matrix, axis, angle);
         if (!ok) {
           return false;
         }
@@ -1325,8 +1333,8 @@ namespace {
 
       // Get scale axis and scale factor...
       do {
-        std::string axis   = tokens[idx++];
-        double      factor = std::stod(tokens[idx++]);
+        const std::string &axis   = tokens[idx++];
+        double             factor = std::stod(tokens[idx++]);
         if (Ioss::Utils::substr_equal(axis, "x")) {
           scale[0] = factor;
         }
@@ -1349,8 +1357,8 @@ namespace {
 
       // Get offset axis and offset factor...
       do {
-        std::string axis   = tokens[idx++];
-        double      factor = std::stod(tokens[idx++]);
+        const std::string &axis   = tokens[idx++];
+        double             factor = std::stod(tokens[idx++]);
         if (Ioss::Utils::substr_equal(axis, "x")) {
           offset[0] = factor;
         }

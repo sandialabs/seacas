@@ -15,12 +15,12 @@
 #include <fmt/ostream.h>
 #include <iostream>
 #include <string>
-#include <vector>
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_EntityType.h"
 #include "Ioss_Field.h"
 #include "Ioss_FieldManager.h"
+#include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_State.h"
 
@@ -106,7 +106,7 @@ std::string Ioss::GroupingEntity::get_filename() const
 {
   // Ok for database_ to be nullptr at this point.
   if (database_ == nullptr) {
-    return std::string();
+    return {};
   }
 
   return database_->get_filename();
@@ -146,7 +146,7 @@ Ioss::State Ioss::GroupingEntity::get_state() const { return entityState; }
 
 /** \brief Calculate and get an implicit property.
  *
- *  These are calcuated from data stored in the EntityBlock instead of having
+ *  These are calculated from data stored in the EntityBlock instead of having
  *  an explicit value assigned. An example would be 'element_block_count' for a region.
  *  Note that even though this is a pure virtual function, an implementation
  *  is provided to return properties that are common to all 'block'-type grouping entities.
@@ -159,7 +159,7 @@ Ioss::Property Ioss::GroupingEntity::get_implicit_property(const std::string &my
   // These include:
   if (my_name == "attribute_count") {
     count_attributes();
-    return Ioss::Property(my_name, static_cast<int>(attributeCount));
+    return {my_name, static_cast<int>(attributeCount)};
   }
 
   // End of the line. No property of this name exists.

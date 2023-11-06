@@ -119,7 +119,7 @@ struct Problem_Description
   int   mech_add_procs{-1};   /* adds processors in cases of mechanisms       */
   int   dsd_add_procs{-1};    /* adds processors in cases of disconnected subdomains */
   int   no_sph{-1};
-  int   fix_columns{0};       /* detect, fix vertical column partitioning */
+  int   fix_columns{0}; /* detect, fix vertical column partitioning */
   char *groups{nullptr};
   std::vector<int> group_no{};
   int              num_groups{-1};

@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <cstddef> // for size_t
-#include <string>  // for string
-#include <vector>  // for vector
+#include <stdint.h>
+#include <string> // for string
+#include <vector> // for vector
+
+#include "ioss_export.h"
+
 namespace Ioss {
   class GroupingEntity;
   class Transform;
@@ -96,6 +98,8 @@ namespace Ioss {
 
     Field(const Ioss::Field &from)      = default;
     Field &operator=(const Field &from) = default;
+    Field(Ioss::Field &&from)           = default;
+    Field &operator=(Field &&from)      = default;
     ~Field()                            = default;
 
     // Compare two fields (used for STL container)

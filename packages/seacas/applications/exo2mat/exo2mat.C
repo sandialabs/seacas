@@ -366,7 +366,7 @@ namespace {
           Mat_VarCreate(var_name.c_str(), MAT_C_CELL, MAT_T_CELL, 2, dims, nullptr, 0);
       assert(cell_array);
 
-      std::vector<double> scr(num_vars * num_time_steps * num_entity);
+      std::vector<double> scr(static_cast<size_t>(num_vars) * num_time_steps * num_entity);
       dims[0]       = num_entity;
       dims[1]       = num_time_steps;
       size_t offset = 0;
@@ -475,7 +475,7 @@ namespace {
         types[i]             = std::string(type);
         num_elem_in_block[i] = num_elem;
         num_node_per_elem[i] = num_node;
-        conn_size += num_elem * num_node;
+        conn_size += static_cast<size_t>(num_elem) * num_node;
       }
 
       std::vector<int> connect(conn_size);
@@ -534,7 +534,7 @@ namespace {
         types += type.data();
         types += "\n";
         num_elem_in_block[i] = num_elem;
-        connect.resize(num_elem * num_node);
+        connect.resize(static_cast<size_t>(num_elem) * num_node);
         ex_get_conn(exo_file, EX_ELEM_BLOCK, ids[i], connect.data(), nullptr, nullptr);
         std::string str = fmt::sprintf("blk%02d", i + 1);
         PutInt(str, num_node, num_elem, connect.data());
@@ -757,7 +757,7 @@ namespace {
           num_sideset_sides[i] = n1;
           num_sideset_dfac[i]  = n2;
 
-          bool has_ss_dfac = !(n2 == 0 || n1 == n2);
+          bool has_ss_dfac = (n2 != 0 && n1 != n2);
           if (!has_ss_dfac) {
             num_sideset_dfac[i] = num_sideset_nodes[i];
           }
@@ -1212,7 +1212,7 @@ int main(int argc, char *argv[])
       dims[1]              = num_nodal_vars;
       matvar_t *cell_array = Mat_VarCreate("nvar", MAT_C_CELL, MAT_T_CELL, 2, dims, nullptr, 0);
       assert(cell_array);
-      std::vector<double> scr(num_nodal_vars * num_time_steps * num_nodes);
+      std::vector<double> scr(static_cast<size_t>(num_nodal_vars) * num_time_steps * num_nodes);
       dims[0]       = num_nodes;
       dims[1]       = num_time_steps;
       size_t offset = 0;

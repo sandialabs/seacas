@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <fmt/chrono.h>
 #include <fmt/ostream.h>
 #include <fstream>
 #include <iostream>
@@ -55,11 +56,16 @@ struct TimeInterp
 
 std::string Date()
 {
-  char       tbuf[32];
   time_t     calendar_time = time(nullptr);
+#if defined __NVCC__
+  char       tbuf[32];
   struct tm *local_time    = localtime(&calendar_time);
   strftime(tbuf, 32, "%Y/%m/%d   %H:%M:%S %Z", local_time);
   std::string time_string(tbuf);
+#else
+  auto const local_time    = fmt::localtime(calendar_time);
+  auto       time_string   = fmt::format("{:%Y/%m/%d   %H:%M:%S %Z}", local_time);
+#endif
   return time_string;
 }
 
@@ -1063,8 +1069,7 @@ bool Equal_Values(const double *values, size_t count, double *value)
 {
   SMART_ASSERT(values != nullptr);
   *value = values[0];
-  return (std::adjacent_find(values, values + count, std::not_equal_to<double>()) ==
-          values + count);
+  return (std::adjacent_find(values, values + count, std::not_equal_to<>()) == values + count);
 }
 
 template <typename INT>

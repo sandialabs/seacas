@@ -6,24 +6,27 @@
 
 #pragma once
 
-#include "iotm_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityType.h> // for EntityType
-
-#include <cstddef> // for size_t
-#include <cstdint> // for int64_t
-#include <map>     // for map, etc
-#include <string>  // for string
+#include <cstddef>           // for size_t
+#include <cstdint>           // for int64_t
+#include <map>               // for map, etc
+#include <set>
+#include <string> // for string
 #include <unordered_map>
 #include <utility> // for pair
 #include <vector>  // for vector
 
 #include "Ioss_ElementTopology.h"
 #include "Ioss_StandardElementTypes.h"
-
+#include "Iotm_TextMeshAssembly.h"
+#include "Iotm_TextMeshDataTypes.h"
+#include "Iotm_TextMeshNodeset.h"
+#include "Iotm_TextMeshSideset.h"
+#include "Iotm_TextMeshSidesetSplitter.h"
 #include "Iotm_TextMeshTopologyMapping.h"
 #include "Iotm_TextMeshUtils.h"
+#include "iotm_export.h"
 
 namespace Iotm {
   using Topology       = TopologyMapEntry;
@@ -219,7 +222,7 @@ namespace Iotm {
                              std::vector<double> &z) const;
 
     /**
-     * Return the coordinates for componenet 'comp' (1=x, 2=y, 3=z)
+     * Return the coordinates for component 'comp' (1=x, 2=y, 3=z)
      * for all nodes on this processor. The
      * vector will be resized to the size required to contain the
      * nodal coordinates; all information in the vector will be

@@ -4,7 +4,7 @@
  * ***********************************************************************
  *
  *  Zoltan Toolkit for Load-balancing, Partitioning, Ordering and Coloring
- *                  Copyright 2012 Sandia Corporation
+ *                  Copyright 2012, 2023 Sandia Corporation
  *
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
  * the U.S. Government retains certain rights in this software.
@@ -63,6 +63,7 @@ typedef void ZOLTAN_VOID_FN(void);
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
+  // NOLINTBEGIN
 extern "C" {
 #endif
 
@@ -3431,6 +3432,7 @@ extern int Zoltan_Deserialize(
 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
+  // NOLINTEND
 #endif
 
 #endif /* !__ZOLTAN_H */

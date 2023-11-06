@@ -6,14 +6,11 @@ if [ "X$ACCESS" == "X" ] ; then
   echo "ACCESS set to ${ACCESS}"
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
-
 . ${ACCESS}/TPL/compiler.sh
 
 if [ "X$BOOST_ROOT" == "X" ] ; then
-  BOOST_ROOT=$(cd ../../../..; pwd)
   echo "Faodel requires these Boost packages: atomic log log_setup serialization"
   echo "Please set BOOST_ROOT."
-  exit 0
 fi
 
 rm -f CMakeCache.txt
@@ -27,7 +24,7 @@ cmake ..                                 \
   -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} \
   -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
   -DCMAKE_BUILD_TYPE=Release             \
-  -DBUILD_SHARED_LIBS:BOOL=OFF           \
+  -DBUILD_SHARED_LIBS:BOOL=ON            \
   -DGTEST_ROOT=${GTEST_ROOT}             \
   -DBOOST_ROOT=${BOOST_ROOT}             \
   -DFaodel_NETWORK_LIBRARY=nnti          \

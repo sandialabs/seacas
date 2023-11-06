@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_EntityType.h>
@@ -17,17 +15,16 @@
 #include <algorithm> // for sort, lower_bound, copy, etc
 #include <cassert>
 #include <cmath>
-#include <cstddef> // for size_t
-#include <cstdint> // for int64_t
-#include <cstdlib> // for nullptrr
-#if __has_include(<filesystem>)
-#include <filesystem>
-#define HAS_FILESYSTEM
-#endif
+#include <cstddef>   // for size_t
+#include <cstdint>   // for int64_t
+#include <cstdlib>   // for nullptrr
 #include <iostream>  // for ostringstream, etcstream, etc
 #include <stdexcept> // for runtime_error
 #include <string>    // for string
 #include <vector>    // for vector
+
+#include "ioss_export.h"
+
 namespace Ioss {
   class DatabaseIO;
   class Field;
@@ -35,6 +32,7 @@ namespace Ioss {
   class Region;
   class SideBlock;
   class PropertyManager;
+  enum class ElementShape : unsigned int;
 } // namespace Ioss
 
 [[noreturn]] inline void IOSS_ERROR(const std::ostringstream &errmsg)
@@ -115,18 +113,17 @@ namespace Ioss {
       }
     }
 
+    // NOTE: This code previously checked for existence of filesystem include, but
+    //       gcc-8.X has the include but needs a library, also intel and clang
+    //       pretend to be gcc, so macro to test for usability of filesystem
+    //       was complicated and we can easily get by with the following code.
     static bool is_path_absolute(const std::string &path)
     {
       if (!path.empty()) {
-#ifdef HAS_FILESYSTEM
-        std::filesystem::path p1 = path;
-        return p1.is_absolute();
-#else
 #ifdef __IOSS_WINDOWS__
         return path[0] == '\\' && path[1] == ':';
 #else
         return path[0] == '/';
-#endif
 #endif
       }
       return false;
@@ -231,7 +228,7 @@ namespace Ioss {
       if (number == 0) {
         return 1;
       }
-      int width = int(std::floor(std::log10(number))) + 1;
+      int width = static_cast<int>(std::floor(std::log10(number))) + 1;
       if (use_commas) {
         width += ((width - 1) / 3);
       }

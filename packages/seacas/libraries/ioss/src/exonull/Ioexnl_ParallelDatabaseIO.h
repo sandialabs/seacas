@@ -7,9 +7,9 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ioexnl_export.h"
-
 #include <exodusII.h>
+
+#include "ioexnl_export.h"
 #if defined PARALLEL_AWARE_EXODUS
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>                  // for DatabaseUsage
@@ -19,13 +19,14 @@
 #include <functional>                      // for less
 #include <map>                             // for map, map<>::value_compare
 #include <memory>
-#include <set>                             // for set
-#include <stddef.h>                        // for size_t
-#include <stdint.h>                        // for int64_t
-#include <string>                          // for string, operator<
-#include <time.h>                          // for nullptr, time_t
-#include <utility>                         // for pair
-#include <vector>                          // for vector
+#include <set>      // for set
+#include <stddef.h> // for size_t
+#include <stdint.h> // for int64_t
+#include <string>   // for string, operator<
+#include <time.h>   // for nullptr, time_t
+#include <utility>  // for pair
+#include <vector>   // for vector
+
 namespace Ioexnl {
   class DecompositionDataBase;
 }

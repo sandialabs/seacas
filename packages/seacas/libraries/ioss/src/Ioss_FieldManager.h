@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Field.h> // for Field, Field::RoleType
 #include <cstddef>      // for size_t
 #include <string>       // for string
 #include <vector>       // for vector
+
+#include "ioss_export.h"
 
 #define USE_ROBIN_MAP
 #if defined USE_ROBIN_MAP
@@ -35,7 +35,10 @@ namespace Ioss {
   {
   public:
     FieldManager() = default;
-    FieldManager(const FieldManager &other) : fields(other.fields) {}
+    FieldManager(const FieldManager &other) : fields(other.fields)
+    { /* Do not make this `=default` since that breaks the thread-safe build */
+    }
+
     FieldManager &operator=(const FieldManager &) = delete;
     ~FieldManager()                               = default;
 

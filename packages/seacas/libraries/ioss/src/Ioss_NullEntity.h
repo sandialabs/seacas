@@ -6,14 +6,19 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_GroupingEntity.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <string>
+
+#include "Ioss_EntityType.h"
+#include "Ioss_Property.h"
+#include "ioss_export.h"
 
 namespace Ioss {
   class DatabaseIO;
+  class Field;
 
   class IOSS_EXPORT NullEntity : public GroupingEntity
   {
@@ -26,7 +31,7 @@ namespace Ioss {
     std::string contains_string() const override { return "Nothing"; }
     EntityType  type() const override { return INVALID_TYPE; }
 
-    // Handle implicit properties -- These are calcuated from data stored
+    // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override

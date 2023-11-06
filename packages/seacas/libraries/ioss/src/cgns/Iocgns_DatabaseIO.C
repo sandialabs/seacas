@@ -11,25 +11,19 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_CodeTypes.h>
-#include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
+#include <array>
 #include <bitset>
 #include <cgns/Iocgns_DatabaseIO.h>
 #include <cgns/Iocgns_Utils.h>
+#include <cgnslib.h>
 #include <cstddef>
-#include <ctime>
+#include <fmt/core.h>
 #include <fmt/ostream.h>
-#include <fstream>
 #include <iostream>
 #include <numeric>
 #include <string>
-#if !defined(__IOSS_WINDOWS__)
-#include <sys/select.h>
-#endif
-#include <tokenize.h>
 #include <vector>
-
-#include <cgnslib.h>
 #ifndef CG_BUILD_PARALLEL
 #include <cgnsconfig.h>
 #endif
@@ -43,11 +37,44 @@
 #error "Could not include cgnslib.h"
 #endif
 
+#include "tokenize.h"
+#include "Ioss_Assembly.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceGenerator.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
 #include "Ioss_FileInfo.h"
-#include "Ioss_Hex8.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Map.h"
+#include "Ioss_MeshType.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
 #include "Ioss_Quad4.h"
+#include "Ioss_Hex8.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
 #include "Ioss_SmartAssert.h"
-#include "Ioss_SubSystem.h"
+#include "Ioss_State.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_VariableType.h"
+#include "Ioss_ZoneConnectivity.h"
+#include "robin_hash.h"
+#include "robin_set.h"
 
 // extern char hdf5_access[64];
 
@@ -96,7 +123,7 @@ namespace {
     char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
     std::array<cgsize_t, 6> range;
     std::array<cgsize_t, 6> donor_range;
-    Ioss::IJK_t             transform;
+    Ioss::IJK_t             transform{};
 
     cg_1to1_read(cgns_file_ptr, base, zone, zgc_idx, connectname, donorname, range.data(),
                  donor_range.data(), transform.data());
@@ -203,9 +230,9 @@ namespace {
     for (int ii = 0; ii < nconn; ii++) {
       char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
       char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
-      std::array<cgsize_t, 6> range;
-      std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t             transform;
+      std::array<cgsize_t, 6> range{};
+      std::array<cgsize_t, 6> donor_range{};
+      Ioss::IJK_t             transform{};
 
       CGCHECK(cg_1to1_read(cgns_file_ptr, base, db_zone, ii + 1, connectname, donorname,
                            range.data(), donor_range.data(), transform.data()));
@@ -386,7 +413,7 @@ namespace {
       char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t             transform;
+      Ioss::IJK_t             transform{};
 
       CGCHECK(cg_1to1_read(cgns_file_ptr, base, zone, i + 1, connectname, donorname, range.data(),
                            donor_range.data(), transform.data()));
@@ -1188,7 +1215,7 @@ namespace Iocgns {
       char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t             transform;
+      Ioss::IJK_t             transform{};
 
       CGCHECKM(cg_1to1_read(get_file_pointer(), base, zone, i + 1, connectname, donorname,
                             range.data(), donor_range.data(), transform.data()));

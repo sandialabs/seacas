@@ -8,16 +8,13 @@
 
 #include <Ioss_Utils.h>
 #include <fmt/ostream.h>
-
-#include <algorithm>
-#include <array>
-#include <cassert> // for assert
-#include <cmath>   // for atan2, cos, sin
-#include <cstdlib> // for nullptr, exit, etc
 #include <iostream>
-#include <numeric>
+#include <stdexcept>
 #include <string>
 #include <vector> // for vector
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_EntityType.h"
 
 #define ThrowRequireMsg(expr, message)                                                             \
   do {                                                                                             \
@@ -148,8 +145,8 @@ namespace Iotm {
   {
     int64_t count = 0;
 
-    for (auto iter = m_blockPartition.begin(); iter != m_blockPartition.end(); iter++) {
-      count += iter->second.elemIds.size();
+    for (const auto &part : m_blockPartition) {
+      count += part.second.elemIds.size();
     }
 
     return count;
@@ -246,6 +243,9 @@ namespace Iotm {
   class NodeCommunicationMap
   {
   public:
+    NodeCommunicationMap()                             = delete;
+    NodeCommunicationMap(const NodeCommunicationMap &) = delete;
+
     NodeCommunicationMap(int myProc, Ioss::Int64Vector &map, std::vector<int> &processors)
         : m_myProcessor(myProc), m_nodeMap(map), m_processorMap(processors)
     {
@@ -269,9 +269,6 @@ namespace Iotm {
     }
 
   private:
-    NodeCommunicationMap();
-    NodeCommunicationMap(const NodeCommunicationMap &);
-
     void add_comm_map_pair(int64_t id, int proc)
     {
       m_nodeMap[m_fillIndex]      = id;

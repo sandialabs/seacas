@@ -4,10 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
+#include <Ioss_CodeTypes.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
@@ -16,7 +15,6 @@
 #include <Ioss_EdgeSet.h>
 #include <Ioss_ElementBlock.h>
 #include <Ioss_ElementSet.h>
-#include <Ioss_ElementTopology.h>
 #include <Ioss_EntityBlock.h>
 #include <Ioss_EntityType.h>
 #include <Ioss_FaceBlock.h>
@@ -34,27 +32,25 @@
 #include <Ioss_Sort.h>
 #include <Ioss_State.h>
 #include <Ioss_StructuredBlock.h>
-
-#include <algorithm>
-#include <cctype>
+#include <array>
 #include <climits>
 #include <cstddef>
+#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <iomanip>
-#include <iostream>
 #include <map>
 #include <string>
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
-#include <utility>
+#include <tuple>
 #include <vector>
 
+#include "Ioss_MeshType.h"
+#include "Ioss_ParallelUtils.h"
+
 namespace {
-  std::string id_str() { return std::string("id"); }
-  std::string db_name_str() { return std::string("db_name"); }
-  std::string orig_topo_str() { return std::string("original_topology_type"); }
-  std::string orig_block_order() { return std::string("original_block_order"); }
+  std::string id_str() { return {"id"}; }
+  std::string db_name_str() { return {"db_name"}; }
+  std::string orig_topo_str() { return {"original_topology_type"}; }
+  std::string orig_block_order() { return {"original_block_order"}; }
 
   template <typename T>
   Ioss::GroupingEntity *get_entity_internal(int64_t id, const std::vector<T> &entities)
@@ -2399,7 +2395,7 @@ namespace Ioss {
     IOSS_ERROR(errmsg);
   }
 
-  /** \brief Get an implicit property -- These are calcuated from data stored
+  /** \brief Get an implicit property -- These are calculated from data stored
    *         in the grouping entity instead of having an explicit value assigned.
    *
    *  An example would be 'element_block_count' for a region.
@@ -2414,71 +2410,71 @@ namespace Ioss {
         return nodeBlocks[0]->get_property("component_degree");
       }
 
-      return Property(my_name, 0);
+      return {my_name, 0};
     }
 
     if (my_name == "node_block_count") {
-      return Property(my_name, static_cast<int>(nodeBlocks.size()));
+      return {my_name, static_cast<int>(nodeBlocks.size())};
     }
 
     if (my_name == "edge_block_count") {
-      return Property(my_name, static_cast<int>(edgeBlocks.size()));
+      return {my_name, static_cast<int>(edgeBlocks.size())};
     }
 
     if (my_name == "face_block_count") {
-      return Property(my_name, static_cast<int>(faceBlocks.size()));
+      return {my_name, static_cast<int>(faceBlocks.size())};
     }
 
     if (my_name == "element_block_count") {
-      return Property(my_name, static_cast<int>(elementBlocks.size()));
+      return {my_name, static_cast<int>(elementBlocks.size())};
     }
 
     if (my_name == "structured_block_count") {
-      return Property(my_name, static_cast<int>(structuredBlocks.size()));
+      return {my_name, static_cast<int>(structuredBlocks.size())};
     }
 
     if (my_name == "assembly_count") {
-      return Property(my_name, static_cast<int>(assemblies.size()));
+      return {my_name, static_cast<int>(assemblies.size())};
     }
 
     if (my_name == "blob_count") {
-      return Property(my_name, static_cast<int>(blobs.size()));
+      return {my_name, static_cast<int>(blobs.size())};
     }
 
     if (my_name == "side_set_count") {
-      return Property(my_name, static_cast<int>(sideSets.size()));
+      return {my_name, static_cast<int>(sideSets.size())};
     }
 
     if (my_name == "node_set_count") {
-      return Property(my_name, static_cast<int>(nodeSets.size()));
+      return {my_name, static_cast<int>(nodeSets.size())};
     }
 
     if (my_name == "edge_set_count") {
-      return Property(my_name, static_cast<int>(edgeSets.size()));
+      return {my_name, static_cast<int>(edgeSets.size())};
     }
 
     if (my_name == "face_set_count") {
-      return Property(my_name, static_cast<int>(faceSets.size()));
+      return {my_name, static_cast<int>(faceSets.size())};
     }
 
     if (my_name == "element_set_count") {
-      return Property(my_name, static_cast<int>(elementSets.size()));
+      return {my_name, static_cast<int>(elementSets.size())};
     }
 
     if (my_name == "comm_set_count") {
-      return Property(my_name, static_cast<int>(commSets.size()));
+      return {my_name, static_cast<int>(commSets.size())};
     }
 
     if (my_name == "coordinate_frame_count") {
-      return Property(my_name, static_cast<int>(coordinateFrames.size()));
+      return {my_name, static_cast<int>(coordinateFrames.size())};
     }
 
     if (my_name == "state_count") {
-      return Property(my_name, stateCount);
+      return {my_name, stateCount};
     }
 
     if (my_name == "current_state") {
-      return Property(my_name, currentState);
+      return {my_name, currentState};
     }
 
     if (my_name == "element_count") {
@@ -2486,7 +2482,7 @@ namespace Ioss {
       for (const auto &eb : elementBlocks) {
         count += eb->entity_count();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "cell_count") {
@@ -2494,7 +2490,7 @@ namespace Ioss {
       for (const auto &eb : structuredBlocks) {
         count += eb->get_property("cell_count").get_int();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "face_count") {
@@ -2502,7 +2498,7 @@ namespace Ioss {
       for (const auto &fb : faceBlocks) {
         count += fb->entity_count();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "edge_count") {
@@ -2510,7 +2506,7 @@ namespace Ioss {
       for (const auto &eb : edgeBlocks) {
         count += eb->entity_count();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "node_count") {
@@ -2518,12 +2514,12 @@ namespace Ioss {
       for (const auto &nb : nodeBlocks) {
         count += nb->entity_count();
       }
-      return Property(my_name, count);
+      return {my_name, count};
     }
 
     if (my_name == "database_name") {
       std::string filename = get_database()->get_filename();
-      return Property(my_name, filename);
+      return {my_name, filename};
     }
 
     {

@@ -9,19 +9,18 @@
 #include <Ioss_NamedSuffixVariableType.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
-#include <algorithm>
 #include <cassert>
-#include <cmath>
-#include <cstddef>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <map>
 #include <sstream>
 #include <string>
-#include <utility>
 #include <vector>
+
+#include "Ioss_CodeTypes.h"
 
 namespace Ioss {
   void Registry::insert(const VTM_ValuePair &value, bool delete_me)

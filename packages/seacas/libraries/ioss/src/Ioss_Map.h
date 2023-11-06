@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Field.h>
 #include <cstddef> // for size_t
 #include <cstdint> // for int64_t
 #include <string>  // for string
 #include <vector>  // for vector
+
+#include "ioss_export.h"
 
 #define MAP_USE_STD
 #if defined MAP_USE_STD

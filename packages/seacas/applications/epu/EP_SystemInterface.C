@@ -266,7 +266,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
           "\t{}\n\n",
           options);
     }
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, GetLongOption::basename(*argv));
   }
 
   int option_index = options_.parse(argc, argv);
@@ -663,13 +663,13 @@ namespace {
         StringVector name_id  = SLIB::tokenize(*I, ":");
         std::string  var_name = LowerCase(name_id[0]);
         if (name_id.size() == 1) {
-          (*variable_list).push_back(std::make_pair(var_name, 0));
+          (*variable_list).emplace_back(var_name, 0);
         }
         else {
           for (size_t i = 1; i < name_id.size(); i++) {
             // Convert string to integer...
             int id = std::stoi(name_id[i]);
-            (*variable_list).push_back(std::make_pair(var_name, id));
+            (*variable_list).emplace_back(var_name, id);
           }
         }
         ++I;

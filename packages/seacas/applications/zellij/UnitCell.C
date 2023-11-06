@@ -48,8 +48,9 @@ namespace {
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
     double diff = std::abs(A - B);
-    if (diff <= maxDiff)
+    if (diff <= maxDiff) {
       return true;
+    }
 
     A              = std::abs(A);
     B              = std::abs(B);

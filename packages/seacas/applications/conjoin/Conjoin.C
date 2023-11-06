@@ -53,6 +53,7 @@
 #include "CJ_Version.h"
 
 namespace {
+  bool                       check_variable_params(size_t p, Excn::Variables &vars);
   template <typename T> void clear(std::vector<T> &vec)
   {
     vec.clear();
@@ -312,8 +313,9 @@ namespace {
   // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
   template <typename T> size_t unique(std::vector<T> &out)
   {
-    if (out.empty())
+    if (out.empty()) {
       return 0;
+    }
     size_t pos  = 1;
     T      oldv = out[0];
     for (size_t i = 1; i < out.size(); ++i) {
@@ -413,8 +415,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
   const T alive      = interFace.alive_value();
   size_t  part_count = interFace.inputFiles_.size();
 
-  auto *mytitle = new char[MAX_LINE_LENGTH + 1];
-  memset(mytitle, '\0', MAX_LINE_LENGTH + 1);
+  std::array<char, MAX_LINE_LENGTH + 1> mytitle{};
 
   Excn::Mesh<INT> global;
 
@@ -444,7 +445,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     local_mesh[p].sidesetCount   = info.num_side_sets;
 
     if (p == 0) {
-      global.title          = mytitle;
+      global.title          = mytitle.data();
       global.dimensionality = local_mesh[p].count(Excn::ObjectType::DIM);
       global.blockCount     = local_mesh[p].count(Excn::ObjectType::EBLK);
     }
@@ -461,8 +462,6 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     local_mesh[p].localElementToGlobal.resize(local_mesh[p].count(Excn::ObjectType::ELEM));
 
   } // end for (p=0..part_count)
-
-  delete[] mytitle;
 
   if (interFace.omit_nodesets()) {
     global.nodesetCount = 0;
@@ -695,6 +694,20 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
 
     get_truth_table(global, sidesets, glob_ssets, sideset_vars, 16);
     filter_truth_table(id, global, glob_ssets, sideset_vars, interFace.sset_var_names());
+  }
+
+  // Check that the variable counts are the same on the subsequent files...
+  // Error out if there is a difference...
+  bool found_error = false;
+  for (size_t p = 1; p < part_count; p++) {
+    found_error |= check_variable_params(p, global_vars);
+    found_error |= check_variable_params(p, nodal_vars);
+    found_error |= check_variable_params(p, element_vars);
+    found_error |= check_variable_params(p, nodeset_vars);
+    found_error |= check_variable_params(p, sideset_vars);
+  }
+  if (found_error) {
+    return 1;
   }
 
   // There is a slightly tricky situation here. The truthTable block order
@@ -988,8 +1001,8 @@ namespace {
       char *qa_record[1][4];
     };
 
-    int  num_qa_records = ex_inquire_int(id, EX_INQ_QA);
-    auto qaRecord       = new qa_element[num_qa_records + 1];
+    int                     num_qa_records = ex_inquire_int(id, EX_INQ_QA);
+    std::vector<qa_element> qaRecord(num_qa_records + 1);
     for (int i = 0; i < num_qa_records + 1; i++) {
       for (int j = 0; j < 4; j++) {
         qaRecord[i].qa_record[0][j]    = new char[MAX_STR_LENGTH + 1];
@@ -1000,18 +1013,16 @@ namespace {
       error += ex_get_qa(id, qaRecord[0].qa_record);
     }
 
-    char buffer[MAX_STR_LENGTH + 1];
-
     copy_string(qaRecord[num_qa_records].qa_record[0][0], qainfo[0], MAX_STR_LENGTH + 1); // Code
     copy_string(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH + 1); // Version
 
-    time_t date_time = time(nullptr);
-    strftime(buffer, MAX_STR_LENGTH, "%Y/%m/%d", localtime(&date_time));
+    std::time_t date_time = std::time(nullptr);
 
-    copy_string(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH + 1);
+    auto date = fmt::format("{:%Y/%m/%d}", fmt::localtime(date_time));
+    copy_string(qaRecord[num_qa_records].qa_record[0][2], date.c_str(), MAX_STR_LENGTH + 1);
 
-    strftime(buffer, MAX_STR_LENGTH, "%H:%M:%S", localtime(&date_time));
-    copy_string(qaRecord[num_qa_records].qa_record[0][3], buffer, MAX_STR_LENGTH + 1);
+    auto time = fmt::format("{:%T}", fmt::localtime(date_time));
+    copy_string(qaRecord[num_qa_records].qa_record[0][3], time.c_str(), MAX_STR_LENGTH + 1);
 
     error += ex_put_qa(id_out, num_qa_records + 1, qaRecord[0].qa_record);
 
@@ -1020,7 +1031,6 @@ namespace {
         delete[] qaRecord[i].qa_record[0][j];
       }
     }
-    delete[] qaRecord;
   }
 
   template <typename T, typename INT>
@@ -2008,6 +2018,38 @@ namespace {
       vars.outputCount = nz_count;
       return;
     }
+  }
+
+  bool check_variable_params(size_t p, Excn::Variables &vars)
+  {
+    // Determines the number of variables of type 'type()' that will
+    // be written to the output database. The 'variable_list' vector
+    // specifies a possibly empty list of variable names that the user
+    // wants transferred to the output database. If 'variable_list' is
+    // empty, then all variables of that type will be transferred; if
+    // the 'variable_list' size is 1 and it contains the string 'NONE',
+    // then no variables of that type will be transferred; if size is 1
+    // and it contains the string 'ALL', then all variables of that type
+    // will be transferred.
+    //
+    // Returns the number of variables which will be output Also creates
+    // a 'var_index'.  The var_index is zero-based and of size
+    // 'input_variable_count'. If:
+    // var_index[i] ==0, variable not written to output database
+    // var_index[i] > 0, variable written; is variable 'var_index[i]'
+
+    // If 'type' is ELEMENT or NODE, then reserve space for the 'status' variable.
+    int  extra = vars.addStatus ? 1 : 0;
+    int  num_vars;
+    auto id = Excn::ExodusFile(p);
+    ex_get_variable_param(id, vars.type(), &num_vars);
+    if ((size_t)num_vars != vars.index_.size() - extra) {
+      fmt::print("ERROR: Part mesh {} has a different number of {} variables ({}) than the root "
+                 "part mesh ({}) which is not allowed.\n",
+                 p, vars.label(), num_vars, vars.index_.size() - extra);
+      return true;
+    }
+    return false;
   }
 
   template <typename INT> void put_mesh_summary(const Excn::Mesh<INT> &mesh)

@@ -7,24 +7,25 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ioexnl_export.h"
-
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_Field.h>
 #include <Ioss_Map.h>
 #include <Ioss_Utils.h>
-
-#include <exodusII.h>
-
 #include <algorithm>
 #include <cstdint>
 #include <ctime>
+#include <exodusII.h>
 #include <map>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_State.h"
+#include "ioexnl_export.h"
 
 namespace Ioss {
   class Assembly;
@@ -46,6 +47,9 @@ namespace Ioss {
   class StructuredBlock;
   class CommSet;
   class ElementTopology;
+  class Field;
+  class Map;
+  class PropertyManager;
 } // namespace Ioss
 
 /** \brief A namespace for the exodus database format.
@@ -127,7 +131,6 @@ namespace Ioexnl {
     int  int_byte_size_db() const override;
     void set_int_byte_size_api(Ioss::DataSize size) const override;
 
-  protected:
     IOSS_NOOP_GFI(Ioss::Region)
     IOSS_NOOP_GFI(Ioss::NodeBlock)
     IOSS_NOOP_GFI(Ioss::EdgeBlock)
@@ -243,8 +246,6 @@ namespace Ioexnl {
     void flush_database__() const override;
     void finalize_write(int state, double sim_time);
 
-    // Private member data...
-  protected:
     mutable int m_exodusFilePtr{-1};
     // If using links to file-per-state, the file pointer for "base" file.
     mutable int m_exodusBasePtr{-1};

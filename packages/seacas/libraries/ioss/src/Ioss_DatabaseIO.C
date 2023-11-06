@@ -7,26 +7,53 @@
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_Enumerate.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Sort.h>
-#include <Ioss_State.h>
-#include <Ioss_SubSystem.h>
 #include <algorithm>
 #include <cassert>
 #include <cfloat>
 #include <cmath>
 #include <cstddef>
-#include <cstring>
 #include <fmt/ostream.h>
-#include <iomanip>
 #include <iostream>
-#include <iterator>
+#include <map>
 #include <set>
+#include <stdint.h>
 #include <string>
 #include <tokenize.h>
 #include <utility>
 #include <vector>
+
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Map.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
+#include "Ioss_SerializeIO.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
 
 #if defined SEACAS_HAVE_DATAWARP
 extern "C" {
@@ -151,15 +178,13 @@ namespace {
   }
 
   template <typename T>
-  std::vector<size_t> get_entity_offsets(const std::string& field_name, const std::vector<T*>& entity_container)
+  std::vector<size_t> get_entity_offsets(const std::string      &field_name,
+                                         const std::vector<T *> &entity_container)
   {
-    size_t num_blocks = entity_container.size();
-
+    size_t              num_blocks = entity_container.size();
     std::vector<size_t> offsets(num_blocks + 1, 0);
 
-    for (size_t i = 0; i < num_blocks; i++) {
-      T *entity = entity_container[i];
-
+    for (auto [i, entity] : enumerate(entity_container)) {
       if (entity->field_exists(field_name)) {
         Ioss::Field field = entity->get_field(field_name);
         offsets[i + 1]    = entity->entity_count() * field.raw_storage()->component_count();
@@ -743,8 +768,8 @@ namespace Ioss {
     get_region()->add(new_set);
 
     // Find the member SideSets...
-    for (size_t i = 1; i < group_spec.size(); i++) {
-      SideSet *set = get_region()->get_sideset(group_spec[i]);
+    for (const auto &spec : group_spec) {
+      SideSet *set = get_region()->get_sideset(spec);
       if (set != nullptr) {
         const SideBlockContainer &side_blocks = set->get_side_blocks();
         for (const auto &sbold : side_blocks) {
@@ -776,7 +801,7 @@ namespace Ioss {
         fmt::print(Ioss::WarnOut(),
                    "While creating the grouped surface '{}', the surface '{}' does not exist. "
                    "This surface will skipped and not added to the group.\n\n",
-                   group_spec[0], group_spec[i]);
+                   group_spec[0], spec);
       }
     }
   }
@@ -1296,9 +1321,8 @@ namespace Ioss {
 
       util().global_array_minmax(minmax, Ioss::ParallelUtils::DO_MIN);
 
-      for (size_t i = 0; i < element_blocks.size(); i++) {
-        Ioss::ElementBlock    *block = element_blocks[i];
-        const std::string     &name  = block->name();
+      for (auto [i, block] : enumerate(element_blocks)) {
+        const std::string     &name = block->name();
         AxisAlignedBoundingBox bbox(minmax[6 * i + 0], minmax[6 * i + 1], minmax[6 * i + 2],
                                     -minmax[6 * i + 3], -minmax[6 * i + 4], -minmax[6 * i + 5]);
         elementBlockBoundingBoxes[name] = bbox;
@@ -1362,25 +1386,21 @@ namespace Ioss {
   }
 
 #ifndef DOXYGEN_SKIP_THIS
-  template
-  std::vector<size_t> DatabaseIO::get_entity_field_data_internal(const std::string &field_name,
-                                                                 const std::vector<Ioss::ElementBlock*>& elem_blocks,
-                                                                 void *data, size_t data_size) const;
+  template std::vector<size_t>
+  DatabaseIO::get_entity_field_data_internal(const std::string                       &field_name,
+                                             const std::vector<Ioss::ElementBlock *> &elem_blocks,
+                                             void *data, size_t data_size) const;
 #endif
 
   template <typename T>
-  std::vector<size_t> DatabaseIO::get_entity_field_data_internal(const std::string &field_name,
-                                                                 const std::vector<T*>& entity_container,
-                                                                 void *data, size_t data_size) const
+  std::vector<size_t>
+  DatabaseIO::get_entity_field_data_internal(const std::string      &field_name,
+                                             const std::vector<T *> &entity_container, void *data,
+                                             size_t data_size) const
   {
-    size_t num_container = entity_container.size();
-
     std::vector<size_t> offset = get_entity_offsets(field_name, entity_container);
 
-    for(size_t i=0; i<num_container; i++) {
-
-      const auto * entity = entity_container[i];
-
+    for (const auto [i, entity] : enumerate(entity_container)) {
       if (entity->field_exists(field_name)) {
         auto        num_to_get_for_block = offset[i + 1] - offset[i];
         Ioss::Field field                = entity->get_field(field_name);
@@ -1396,7 +1416,7 @@ namespace Ioss {
           IOSS_ERROR(errmsg);
         }
 
-        size_t expected_data_size = offset[i+1] * field_byte_size;
+        size_t expected_data_size = offset[i + 1] * field_byte_size;
 
         if (data_size < expected_data_size) {
           std::ostringstream errmsg;
@@ -1409,7 +1429,8 @@ namespace Ioss {
 
         size_t block_data_offset = offset[i] * field_byte_size;
 
-        auto retval = get_field_internal(entity, field, (char*)data + block_data_offset, block_data_size);
+        auto retval =
+            get_field_internal(entity, field, (char *)data + block_data_offset, block_data_size);
 
         size_t block_component_count = field.raw_storage()->component_count();
         if (num_to_get_for_block != retval * block_component_count) {
@@ -1430,9 +1451,10 @@ namespace Ioss {
     return offset;
   }
 
-  std::vector<size_t> DatabaseIO::get_entity_field_data(const std::string &field_name,
-                                                        const std::vector<Ioss::ElementBlock*>& elem_blocks,
-                                                        void *data, size_t data_size) const
+  std::vector<size_t>
+  DatabaseIO::get_entity_field_data(const std::string                       &field_name,
+                                    const std::vector<Ioss::ElementBlock *> &elem_blocks,
+                                    void *data, size_t data_size) const
   {
     return get_entity_field_data_internal(field_name, elem_blocks, data, data_size);
   }

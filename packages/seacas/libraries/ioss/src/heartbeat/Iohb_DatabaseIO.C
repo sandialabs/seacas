@@ -5,15 +5,14 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_CodeTypes.h>
-#include <heartbeat/Iohb_DatabaseIO.h>
-
 #include <cassert>
 #include <cstddef>
 #include <ctime>
 #include <fmt/ostream.h>
 #include <fstream>
+#include <heartbeat/Iohb_DatabaseIO.h>
+#include <heartbeat/Iohb_Layout.h>
 #include <string>
-
 #include <vector>
 
 #include "Ioss_DBUsage.h"
@@ -23,31 +22,15 @@
 #include "Ioss_IOFactory.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
-#include "Ioss_Region.h"
+#include "Ioss_PropertyManager.h"
 #include "Ioss_State.h"
 #include "Ioss_Utils.h"
-#include "Ioss_VariableType.h"
-#include <heartbeat/Iohb_Layout.h>
-
-namespace Ioss {
-  class CommSet;
-  class EdgeBlock;
-  class EdgeSet;
-  class ElementBlock;
-  class ElementSet;
-  class FaceBlock;
-  class FaceSet;
-  class NodeBlock;
-  class NodeSet;
-  class SideBlock;
-  class SideSet;
-} // namespace Ioss
 
 namespace {
   std::string time_stamp(const std::string &format)
   {
     if (format.empty()) {
-      return std::string("");
+      return {""};
     }
     const int   length = 256;
     static char time_string[length];
@@ -58,9 +41,9 @@ namespace {
     size_t error = strftime(time_string, length, format.c_str(), local_time);
     if (error != 0) {
       time_string[length - 1] = '\0';
-      return std::string(time_string);
+      return {time_string};
     }
-    return std::string("[ERROR]");
+    return {"[ERROR]"};
   }
 
   std::ostream *open_stream(const std::string &filename, bool *needs_delete, bool append_file)

@@ -6,17 +6,22 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityBlock.h>
 #include <Ioss_Property.h>
 #include <cassert>
+#include <stddef.h>
+#include <stdint.h>
 #include <string>
+#include <vector>
+
+#include "Ioss_EntityType.h"
+#include "ioss_export.h"
 
 namespace Ioss {
   class DatabaseIO;
+  class Field;
 
   /** \brief A collection of elements having the same topology.
    */
@@ -34,7 +39,7 @@ namespace Ioss {
     std::string contains_string() const override { return "Element"; }
     EntityType  type() const override { return ELEMENTBLOCK; }
 
-    // Handle implicit properties -- These are calcuated from data stored
+    // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override;

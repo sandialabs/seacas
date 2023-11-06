@@ -9,16 +9,16 @@
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_PropertyManager.h>
 #include <Ioss_Utils.h>
-#include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdlib>
-#include <cstring>
 #include <fmt/ostream.h>
+#include <iosfwd>
 #include <numeric>
 #include <string>
 #include <tokenize.h>
 #include <vector>
+
+#include "Ioss_Property.h"
 
 #ifdef SEACAS_HAVE_MPI
 #include <Ioss_SerializeIO.h>
@@ -594,7 +594,7 @@ void Ioss::ParallelUtils::all_gather(std::vector<T> &my_values, std::vector<T> &
     result = my_values;
   }
 #else
-  result    = my_values;
+  result = my_values;
 #endif
 }
 
@@ -602,7 +602,7 @@ void Ioss::ParallelUtils::progress(const std::string &output) const
 {
   static double begin = Utils::timer();
 
-  int64_t MiB = 1024 * 1024;
+  int64_t MiB = static_cast<int64_t>(1024) * static_cast<int64_t>(1024);
   int64_t min = 0, max = 0, avg = 0;
   memory_stats(min, max, avg);
 

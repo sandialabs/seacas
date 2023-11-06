@@ -25,7 +25,6 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <pthread.h>

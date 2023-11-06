@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CoordinateFrame.h> // for CoordinateFrame
 #include <Ioss_DatabaseIO.h>      // for DatabaseIO
 #include <Ioss_EntityType.h>      // for EntityType, etc
@@ -16,16 +14,24 @@
 #include <Ioss_MeshType.h>
 #include <Ioss_Property.h> // for Property
 #include <Ioss_State.h>    // for State
-#include <cstddef>         // for size_t, nullptr
-#include <cstdint>         // for int64_t
-#include <functional>      // for less
-#include <iosfwd>          // for ostream
-#include <map>             // for map, map<>::value_compare
-#include <string>          // for string, operator<
-#include <utility>         // for pair
-#include <vector>          // for vector
-#include <sstream>
+#include <assert.h>
+#include <cstddef> // for size_t, nullptr
+#include <cstdint> // for int64_t
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
+#include "ioss_export.h"
+#if !defined BUILT_IN_SIERRA
 #include <fmt/ostream.h>
+#endif
+#include <functional> // for less
+#include <iosfwd>     // for ostream
+#include <map>        // for map, map<>::value_compare
+#include <sstream>
+#include <string>  // for string, operator<
+#include <utility> // for pair
+#include <vector>  // for vector
 
 namespace Ioss {
   class Assembly;
@@ -49,6 +55,7 @@ namespace Ioss {
 namespace Ioss {
 
   class CoordinateFrame;
+  enum class MeshType;
 
   using AssemblyContainer = std::vector<Ioss::Assembly *>;
   using BlobContainer     = std::vector<Ioss::Blob *>;
@@ -255,7 +262,7 @@ namespace Ioss {
     // or greater than number of cell-nodes in database)
     StructuredBlock *get_structured_block(size_t global_offset) const;
 
-    // Handle implicit properties -- These are calcuated from data stored
+    // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override;
@@ -269,9 +276,9 @@ namespace Ioss {
                        const std::string &date = "", const std::string &time = "");
 
     template <typename T, typename U>
-    std::vector<size_t> get_entity_field_data(const std::string &field_name,
-                                              const std::vector<T*> &entity_container,
-                                              std::vector<U> &field_data) const;
+    std::vector<size_t> get_entity_field_data(const std::string      &field_name,
+                                              const std::vector<T *> &entity_container,
+                                              std::vector<U>         &field_data) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
@@ -284,10 +291,9 @@ namespace Ioss {
                                        size_t *data_size) const override;
 
   private:
-
     template <typename T>
-    std::vector<size_t> internal_get_entity_field_data(const std::string &field_name,
-                                                       const std::vector<T*> &entity_container,
+    std::vector<size_t> internal_get_entity_field_data(const std::string      &field_name,
+                                                       const std::vector<T *> &entity_container,
                                                        void *data, size_t data_size = 0) const;
 
     // Add the name 'alias' as an alias for the database entity with the
@@ -415,56 +421,65 @@ inline const std::vector<std::string> &Ioss::Region::get_qa_records() const
 
 namespace Ioss {
 
-template <typename T>
-bool verify_field_exists_in_entity_group(const std::string &field_name,
-                                         const std::vector<T*> &entity_container)
-{
-  bool found = false;
-  Ioss::Field::RoleType role = Ioss::Field::RoleType::INTERNAL;
+  template <typename T>
+  bool verify_field_exists_in_entity_group(const std::string      &field_name,
+                                           const std::vector<T *> &entity_container)
+  {
+    bool                  found = false;
+    Ioss::Field::RoleType role  = Ioss::Field::RoleType::INTERNAL;
 
-  for(const T* entity : entity_container) {
-    if (entity->field_exists(field_name)) {
-      Ioss::Field field = entity->get_field(field_name);
+    for (const T *entity : entity_container) {
+      if (entity->field_exists(field_name)) {
+        Ioss::Field field = entity->get_field(field_name);
 
-      if(found == true && field.get_role() != role) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg,
-                   "ERROR: Field {} with role {} on entity {} does not match previously found role {}.\n",
-                   field.get_name(), field.role_string(), entity->name(), Ioss::Field::role_string(role));
-        IOSS_ERROR(errmsg);
+        if (found && field.get_role() != role) {
+          std::ostringstream errmsg;
+#if defined BUILT_IN_SIERRA
+          errmsg << "ERROR: Field " << field.get_name() << " with role " << field.role_string()
+                 << " on entity " << entity->name() << " does not match previously found role "
+                 << Ioss::Field::role_string(role) << ".\n",
+#else
+          fmt::print(errmsg,
+                     "ERROR: Field {} with role {} on entity {} does not match previously found "
+                     "role {}.\n",
+                     field.get_name(), field.role_string(), entity->name(),
+                     Ioss::Field::role_string(role));
+#endif
+              IOSS_ERROR(errmsg);
+        }
+
+        found = true;
+        role  = field.get_role();
+      }
+    }
+
+    return found;
+  }
+
+  namespace impl {
+    template <typename T>
+    size_t get_field_data_count_for_entities(const std::string      &field_name,
+                                             const std::vector<T *> &entity_container)
+    {
+      size_t count = 0;
+
+      for (const T *entity : entity_container) {
+        if (entity->field_exists(field_name)) {
+          Ioss::Field field = entity->get_field(field_name);
+
+          count += entity->entity_count() * field.raw_storage()->component_count();
+        }
       }
 
-      found = true;
-      role = field.get_role();
+      return count;
     }
-  }
-
-  return found;
-}
-
-namespace impl {
-template <typename T>
-size_t get_field_data_count_for_entities(const std::string &field_name, const std::vector<T*> &entity_container)
-{
-  size_t count = 0;
-
-  for(const T* entity : entity_container) {
-    if (entity->field_exists(field_name)) {
-      Ioss::Field field = entity->get_field(field_name);
-
-      count += entity->entity_count() * field.raw_storage()->component_count();
-    }
-  }
-
-  return count;
-}
-}
-}
+  } // namespace impl
+} // namespace Ioss
 
 template <typename T, typename U>
-std::vector<size_t> Ioss::Region::get_entity_field_data(const std::string &field_name,
-                                                        const std::vector<T*> &entity_container,
-                                                        std::vector<U>    &field_data) const
+std::vector<size_t> Ioss::Region::get_entity_field_data(const std::string      &field_name,
+                                                        const std::vector<T *> &entity_container,
+                                                        std::vector<U>         &field_data) const
 {
   bool field_exists = verify_field_exists_in_entity_group(field_name, entity_container);
 
@@ -477,7 +492,8 @@ std::vector<size_t> Ioss::Region::get_entity_field_data(const std::string &field
   field_data.resize(field_count);
   size_t data_size = field_count * sizeof(U);
 
-  std::vector<size_t> offsets = internal_get_entity_field_data(field_name, entity_container, field_data.data(), data_size);
+  std::vector<size_t> offsets =
+      internal_get_entity_field_data(field_name, entity_container, field_data.data(), data_size);
 
   assert(offsets.size() == (entity_container.size() + 1));
   assert(offsets[entity_container.size()] == field_count);
@@ -486,10 +502,10 @@ std::vector<size_t> Ioss::Region::get_entity_field_data(const std::string &field
 }
 
 template <typename T>
-std::vector<size_t> Ioss::Region::internal_get_entity_field_data(const std::string &field_name,
-                                                                 const std::vector<T*> &entity_container,
-                                                                 void *data,
-                                                                 size_t data_size) const
+std::vector<size_t>
+Ioss::Region::internal_get_entity_field_data(const std::string      &field_name,
+                                             const std::vector<T *> &entity_container, void *data,
+                                             size_t data_size) const
 {
   return get_database()->get_entity_field_data(field_name, entity_container, data, data_size);
 }

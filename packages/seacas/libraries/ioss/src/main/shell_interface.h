@@ -7,12 +7,12 @@
  */
 #pragma once
 
-#include "Ioss_GetLongOpt.h"
-
 #include <iosfwd>
 #include <limits>
 #include <string>
 #include <vector>
+
+#include "Ioss_GetLongOpt.h"
 
 /** \brief A special namespace for the io_shell demonstration program interFace.
  */
@@ -20,7 +20,7 @@ namespace IOShell {
   class Interface
   {
   public:
-    explicit Interface(const std::string &app_version);
+    explicit Interface(std::string app_version);
     ~Interface();
 
     bool parse_options(int argc, char **argv, int my_processor);
@@ -40,7 +40,7 @@ namespace IOShell {
     std::string              decomp_method;
     std::string              decomp_extra{"processor_id"};
     std::string              compose_output{"default"};
-    std::string              customField{""};
+    std::string              customField{};
     double                   maximum_time{std::numeric_limits<double>::max()};
     double                   minimum_time{-std::numeric_limits<double>::max()};
     double                   append_time{std::numeric_limits<double>::max()};

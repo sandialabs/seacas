@@ -272,7 +272,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
         "\nThe following options were specified via the EJOIN_OPTIONS environment variable:\n"
         "\t{}\n\n",
         options);
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, GetLongOption::basename(*argv));
   }
 
   outputName_  = options_.get_option_value("output", outputName_);

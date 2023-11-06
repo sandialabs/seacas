@@ -1,14 +1,25 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-#include <doctest.h>
-#include <string>
-
 #include <Ionit_Initializer.h>
-#include <Ioss_ScopeGuard.h>
-#include <Ioss_SubSystem.h>
+#include <cstdlib>
+#include <doctest.h>
+#include <fmt/core.h>
+#include <math.h>
+#include <string>
+#include <vector>
 
-#include <fmt/format.h>
+#include "Ioss_ScopeGuard.h"
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_Field.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
+#include "Ioss_State.h"
 
 namespace {
   std::string tst_filename = "test.hb";

@@ -1390,6 +1390,7 @@ lib aprepro_lib
     exodus
     /tpl/netcdf-c//netcdf
   : <define>EXODUS_SUPPORT
+    <define>FMT_SUPPORT
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
     # builds only and will not be present for user builds.
@@ -1402,6 +1403,7 @@ lib aprepro_lib
     ]
   :
   : <define>EXODUS_SUPPORT
+    <define>FMT_SUPPORT
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
     # builds only and will not be present for user builds.
@@ -1472,6 +1474,7 @@ exe aprepro
   :
   $(seacas-root)/applications/aprepro/aprepro.C
     aprepro_lib
+    suplib_cpp
   : <include>$(seacas-root)/applications/aprepro
     <include>$(seacas-root)/applications/aprepro
     <tag>@utility-exec-tag
@@ -1499,6 +1502,7 @@ exe slice
   :
   $(seacas-root)/applications/slice/Slice.C
   $(seacas-root)/applications/slice/SL_SystemInterface.C
+  $(seacas-root)/applications/slice/SL_Decompose.C
     suplib_cpp
     suplib_c
     ioinit

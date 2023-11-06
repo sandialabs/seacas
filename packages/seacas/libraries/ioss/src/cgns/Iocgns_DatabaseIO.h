@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iocgns_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>    // for DatabaseUsage
 #include <Ioss_DatabaseIO.h> // for DatabaseIO
@@ -15,14 +13,17 @@
 #include <Ioss_IOFactory.h> // for IOFactory
 #include <Ioss_Map.h>       // for Map
 #include <Ioss_State.h>     // for State
-#include <cstddef>          // for size_t
-#include <cstdint>          // for int64_t
-#include <iostream>         // for ostream
-#include <map>
-#include <string> // for string
-
 #include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
+#include <cgnstypes.h>
+#include <cstddef>  // for size_t
+#include <cstdint>  // for int64_t
+#include <iostream> // for ostream
+#include <map>
+#include <string> // for string
+#include <vector>
+
+#include "iocgns_export.h"
 
 namespace Ioss {
   class Assembly;
@@ -44,6 +45,8 @@ namespace Ioss {
   class SideSet;
   class EntityBlock;
   class StructuredBlock;
+  class Map;
+  class PropertyManager;
 } // namespace Ioss
 
 /** \brief A namespace for the CGNS database format.
@@ -195,7 +198,6 @@ namespace Iocgns {
     const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, int64_t file_offset,
                              int64_t file_count, entity_type type) const;
 
-  private:
     mutable int m_cgnsFilePtr{-1};
     mutable int m_cgnsBasePtr{
         -1}; // If using links to file-per-state, the file pointer for "base" file.

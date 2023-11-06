@@ -5,7 +5,6 @@
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_Transform.h>
-#include <string>
 #include <vector>
 
 namespace Ioss {

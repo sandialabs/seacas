@@ -6,16 +6,23 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <array>
 #include <cassert>
+#include <cmath>
+#include <fmt/core.h>
 #include <fmt/ostream.h>
+#include <iosfwd>
+#include <stdlib.h>
 #include <string>
+#include <vector>
+
+#include "SEACASIoss_config.h"
+#include "ioss_export.h"
 
 #if defined(SEACAS_HAVE_CGNS) && !defined(BUILT_IN_SIERRA)
 #include <cgnstypes.h>
+
 using IOSS_ZC_INT = cgsize_t;
 #else
 // If this is not being built with CGNS, then default to using 32-bit integers.

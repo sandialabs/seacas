@@ -4,14 +4,16 @@
 //
 // See packages/seacas/LICENSE for details
 
-//------------------------------------------------------------------------
-// Define a variable type for storage of this elements connectivity
-#include "Ioss_CodeTypes.h"           // for IntVector
-#include "Ioss_ElementTopology.h"     // for ElementTopology
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
 #include <Ioss_Pyramid18.h>
 #include <cassert> // for assert
-#include <cstddef> // for nullptr
+#include <string>
+
+//------------------------------------------------------------------------
+// Define a variable type for storage of this elements connectivity
+#include "Ioss_CodeTypes.h"       // for IntVector
+#include "Ioss_ElementTopology.h" // for ElementTopology
+#include "Ioss_Utils.h"
 
 namespace Ioss {
   const char *Pyramid18::name = "pyramid18";

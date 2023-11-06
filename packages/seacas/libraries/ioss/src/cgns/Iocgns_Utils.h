@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "iocgns_export.h"
-
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementTopology.h>
@@ -17,11 +15,31 @@
 #include <Ioss_SideSet.h>
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
+#include <array>
 #include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
-#include <fmt/format.h>
+#include <cgnstypes.h>
+#include <map>
 #include <ostream>
+#include <stddef.h>
 #include <string>
+#include <vector>
+
+#include "Ioss_Field.h"
+#include "iocgns_export.h"
+
+namespace Iocgns {
+  class Utils;
+} // namespace Iocgns
+namespace Ioss {
+  class Assembly;
+  class DatabaseIO;
+  class EntityBlock;
+  class GroupingEntity;
+  class Region;
+  class StructuredBlock;
+  enum class MeshType;
+} // namespace Ioss
 
 // Used in Iocgns_DatabaseIO.C and Iocgns_ParallelDatabase.C
 // non-Member function -- can't access m_cgnsFilePtr; make sure cgns_file_ptr is passed in...
@@ -184,21 +202,21 @@ namespace Iocgns {
 
       switch (parent_topo->shape()) {
       case Ioss::ElementShape::HEX: {
-        static int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
+        static std::array<int, 7> hex_map = {0, 5, 1, 2, 3, 4, 6};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = hex_map[idata[2 * i + 1]];
         }
       } break;
 
       case Ioss::ElementShape::TET: {
-        static int tet_map[] = {0, 4, 1, 2, 3};
+        static std::array<int, 5> tet_map = {0, 4, 1, 2, 3};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = tet_map[idata[2 * i + 1]];
         }
       } break;
 
       case Ioss::ElementShape::PYRAMID: {
-        static int pyr_map[] = {0, 5, 1, 2, 3, 4};
+        static std::array<int, 6> pyr_map = {0, 5, 1, 2, 3, 4};
         for (size_t i = 0; i < num_to_get; i++) {
           idata[2 * i + 1] = pyr_map[idata[2 * i + 1]];
         }
@@ -206,7 +224,7 @@ namespace Iocgns {
 
       case Ioss::ElementShape::WEDGE:
 #if 0
-          static int wed_map[] = {0, 1, 2, 3, 4, 5}; // Same
+	static std::array<int, 6> wed_map = {0, 1, 2, 3, 4, 5}; // Same
           // Not needed -- maps 1 to 1
           for (size_t i=0; i < num_to_get; i++) {
             idata[2*i+1] = wed_map[idata[2*i+1]];

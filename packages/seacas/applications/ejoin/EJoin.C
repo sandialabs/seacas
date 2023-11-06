@@ -501,8 +501,8 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
       }
       else {
         if (global_times.size() != times.size()) {
-          fmt::print(stderr, "ERROR: Time step sizes must match.");
-          SMART_ASSERT(global_times.size() == times.size())(global_times.size())(times.size())(p);
+          fmt::print(stderr, "ERROR: Time step sizes must match. (Global = {}, Part {} = {}",
+                     global_times.size(), p, times.size());
           exit(EXIT_FAILURE);
         }
 
@@ -790,7 +790,7 @@ namespace {
         for (const auto &field_name : fields) {
           if (valid_variable(field_name, 0, variable_list)) {
             Ioss::Field field = nb->get_field(field_name);
-            ons->field_add(field);
+            ons->field_add(std::move(field));
           }
         }
       }
@@ -1010,7 +1010,7 @@ namespace {
 
     // Assuming (with checks) that the output side blocks will be
     // iterated in same order as input side blocks...
-    Ioss::SideBlockContainer::const_iterator II = out_eb.begin();
+    auto II = out_eb.begin();
 
     for (const auto &pm : part_mesh) {
       size_t element_offset = pm->get_property("element_offset").get_int();
@@ -1201,7 +1201,7 @@ namespace {
 
     // Assuming (with checks) that the output side blocks will be
     // iterated in same order as input side blocks...
-    Ioss::SideBlockContainer::const_iterator II = out_eb.begin();
+    auto II = out_eb.begin();
 
     for (const auto &pm : part_mesh) {
       const Ioss::SideSetContainer &is = pm->get_sidesets();
@@ -1335,7 +1335,7 @@ namespace {
       for (const auto &field_name : fields) {
         if (valid_variable(field_name, 0, variable_list)) {
           Ioss::Field field = pm->get_field(field_name);
-          output_region.field_add(field);
+          output_region.field_add(std::move(field));
         }
       }
     }
@@ -1360,7 +1360,7 @@ namespace {
           if (valid_variable(field_name, 0, variable_list)) {
             Ioss::Field field = nb->get_field(field_name);
             field.reset_count(node_count);
-            onb->field_add(field);
+            onb->field_add(std::move(field));
           }
         }
       }
@@ -1390,7 +1390,7 @@ namespace {
             for (const auto &field_name : fields) {
               if (valid_variable(field_name, id, variable_list)) {
                 Ioss::Field field = ieb->get_field(field_name);
-                oeb->field_add(field);
+                oeb->field_add(std::move(field));
               }
             }
           }
@@ -1424,7 +1424,7 @@ namespace {
           for (const auto &field_name : fields) {
             if (valid_variable(field_name, id, variable_list)) {
               Ioss::Field field = in->get_field(field_name);
-              ons->field_add(field);
+              ons->field_add(std::move(field));
             }
           }
         }
@@ -1438,33 +1438,33 @@ namespace {
     if (!variable_list.empty() && variable_list[0].first == "none") {
       return;
     }
-    const Ioss::SideSetContainer &os = output_region.get_sidesets();
+    const auto &os = output_region.get_sidesets();
 
     Ioss::SideBlockContainer out_eb;
     // Put all output side blocks in the same list...
     for (const auto &oss : os) {
-      const Ioss::SideBlockContainer &obs = oss->get_side_blocks();
+      const auto &obs = oss->get_side_blocks();
       std::copy(obs.begin(), obs.end(), std::back_inserter(out_eb));
     }
 
     // Assuming (with checks) that the output side blocks will be
     // iterated in same order as input side blocks...
-    Ioss::SideBlockContainer::const_iterator II = out_eb.begin();
+    auto II = out_eb.begin();
 
     for (const auto &pm : part_mesh) {
-      const Ioss::SideSetContainer &is = pm->get_sidesets();
+      const auto &is = pm->get_sidesets();
       for (const auto &iss : is) {
         if (!entity_is_omitted(iss)) {
-          size_t                          id  = iss->get_property("id").get_int();
-          const Ioss::SideBlockContainer &ebs = iss->get_side_blocks();
+          size_t      id  = iss->get_property("id").get_int();
+          const auto &ebs = iss->get_side_blocks();
           for (const auto &eb : ebs) {
             SMART_ASSERT((pm->name() + "_" + eb->name() == (*II)->name()) ||
                          (eb->name() == (*II)->name()));
-            Ioss::NameList fields = eb->field_describe(Ioss::Field::TRANSIENT);
+            auto fields = eb->field_describe(Ioss::Field::TRANSIENT);
             for (const auto &field_name : fields) {
               if (valid_variable(field_name, id, variable_list)) {
                 Ioss::Field field = eb->get_field(field_name);
-                (*II)->field_add(field);
+                (*II)->field_add(std::move(field));
               }
             }
             ++II;
@@ -1478,7 +1478,7 @@ namespace {
                        Ioss::Field::RoleType role, const std::string &prefix)
   {
     // Check for transient fields...
-    Ioss::NameList fields = ige->field_describe(role);
+    auto fields = ige->field_describe(role);
 
     // Iterate through results fields and transfer to output
     // database...  If a prefix is specified, only transfer fields
@@ -1488,7 +1488,7 @@ namespace {
           Ioss::Utils::substr_equal(prefix, field_name)) {
         // If the field does not already exist, add it to the output node block
         Ioss::Field field = ige->get_field(field_name);
-        oge->field_add(field);
+        oge->field_add(std::move(field));
       }
     }
   }

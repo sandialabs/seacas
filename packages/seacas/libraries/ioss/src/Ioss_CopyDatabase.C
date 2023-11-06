@@ -4,19 +4,52 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
 #include <Ioss_CopyDatabase.h>
 #include <Ioss_DataPool.h>
 #include <Ioss_FaceGenerator.h>
 #include <Ioss_MeshCopyOptions.h>
-#include <Ioss_SubSystem.h>
-
+#include <array>
+#include <assert.h>
+#include <cmath>
+#include <cstdlib>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <iostream>
 #include <limits>
-
-// For Sleep...
-#include <chrono>
+#include <stdint.h>
+#include <string>
 #include <thread>
+#include <vector>
+
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_MeshType.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_State.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_Utils.h"
+#include "robin_hash.h"
 
 // For copy_database...
 namespace {
@@ -804,11 +837,11 @@ namespace {
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DebugOut(), "{}, ", name);
       }
-      size_t num_nodes = inb->entity_count();
-      size_t degree    = inb->get_property("component_degree").get_int();
       if (options.output_summary && rank == 0) {
+        size_t degree = inb->get_property("component_degree").get_int();
         fmt::print(Ioss::DebugOut(), " Number of Coordinates per Node = {:14}\n",
                    fmt::group_digits(degree));
+        size_t num_nodes = inb->entity_count();
         fmt::print(Ioss::DebugOut(), " Number of Nodes                = {:14}\n",
                    fmt::group_digits(num_nodes));
       }
@@ -1099,7 +1132,7 @@ namespace {
       if (field_name != "ids" && !oge->field_exists(field_name) &&
           Ioss::Utils::substr_equal(prefix, field_name)) {
         // If the field does not already exist, add it to the output node block
-        oge->field_add(field);
+        oge->field_add(std::move(field));
       }
     }
   }
@@ -1435,8 +1468,7 @@ namespace {
         std::vector<INT> ids;
         ns->get_field_data("ids_raw", ids);
         owned = 0;
-        for (size_t n = 0; n < ids.size(); n++) {
-          INT id = ids[n];
+        for (auto id : ids) {
           if (my_data[id - 1] == my_processor) {
             ++owned;
           }
