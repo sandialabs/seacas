@@ -60,6 +60,7 @@ public:
   size_t             Num_Elements() const { return num_elmts; }
   size_t             Num_Faces() const { return num_faces; }
   size_t             Num_Edges() const { return num_edges; }
+  size_t             Num_Assemblies() const { return num_assemblies; }
   size_t             Num_Node_Sets() const { return num_node_sets; }
   size_t             Num_Side_Sets() const { return num_side_sets; }
   size_t             Num_Edge_Blocks() const { return num_edge_blocks; }
@@ -204,6 +205,7 @@ protected:
   size_t                   num_side_sets{0};
   size_t                   num_edge_blocks{0};
   size_t                   num_face_blocks{0};
+  size_t                   num_assemblies{0};
   float                    db_version{0.0};
   float                    api_version{0.0};
   int                      io_word_size{0}; // Note: The "compute word size" is always 8.

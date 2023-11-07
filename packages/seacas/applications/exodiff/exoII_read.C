@@ -965,6 +965,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   num_side_sets   = info.num_side_sets;
   num_edge_blocks = info.num_edge_blk;
   num_face_blocks = info.num_face_blk;
+  num_assemblies  = info.num_assembly;
   title           = info.title;
 
   if (err > 0 && !interFace.quiet_flag) {

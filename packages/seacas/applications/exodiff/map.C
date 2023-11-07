@@ -619,7 +619,7 @@ namespace {
       }
       else {
         Error(fmt::format("Unable to match {0} {1} in first file with {0} in second file.\n", type,
-                          file1_id_map[id1[i]]));
+                          fmt::group_digits(file1_id_map[id1[i]])));
       }
     }
 
