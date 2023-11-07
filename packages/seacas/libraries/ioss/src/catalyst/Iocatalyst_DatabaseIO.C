@@ -33,6 +33,7 @@
 
 #include <Ioss_Utils.h> // for Utils, IOSS_ERROR, etc
 #include <climits>
+#include <cstdlib>
 #include <fmt/ostream.h>
 
 #include <catalyst.hpp>
@@ -228,7 +229,7 @@ namespace Iocatalyst {
       auto       num_to_get     = field.verify(data_size);
       const auto num_components = field.raw_storage()->component_count();
       if (num_to_get > 0) {
-        auto path = getFieldPath(containerName, groupName, field.get_name()) + "/value";
+        auto         path = getFieldPath(containerName, groupName, field.get_name()) + "/value";
         const auto &&node = this->DBNode[path];
         switch (field.get_type()) {
         case Ioss::Field::BasicType::DOUBLE:
@@ -600,8 +601,7 @@ namespace Iocatalyst {
     // this->readEntityGroup<Ioss::ElementSet>(node["elementsets"], region);
     this->readEntityGroup<Ioss::StructuredBlock>(node["structured_blocks"], region);
     // this->readEntityGroup<Ioss::Assembly>(node["assemblies"], region);
-
-    return this->readTime(region);
+    return true;
   }
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
@@ -631,8 +631,8 @@ namespace Iocatalyst {
       else {
         // we'll use filename as the location for the data dumps and read those.
         std::ostringstream path;
-        path << filename << "/execute_invc43_params.conduit_bin." << util().parallel_size() << "."
-             << util().parallel_rank();
+        path << get_catalyst_dump_dir() << "execute_invc" << filename << "_params.conduit_bin."
+             << util().parallel_size() << "." << util().parallel_rank();
         auto &root  = this->Impl->root();
         auto &dbase = this->Impl->databaseNode();
         conduit_node_load(conduit_cpp::c_node(&root), path.str().c_str(), "conduit_bin");
@@ -789,6 +789,19 @@ namespace Iocatalyst {
   {
     auto &impl = (*this->Impl.get());
     impl.print();
+  }
+
+  std::string DatabaseIO::get_catalyst_dump_dir() const
+  {
+    std::string retVal;
+    auto        catalystDumpDir = std::getenv("CATALYST_DATA_DUMP_DIRECTORY");
+    if (catalystDumpDir) {
+      retVal = catalystDumpDir;
+    }
+    if (!retVal.empty() && retVal.back() != '/') {
+      retVal += '/';
+    }
+    return retVal;
   }
 
   int64_t DatabaseIO::put_field_internal(const Ioss::Region *reg, const Ioss::Field &field,

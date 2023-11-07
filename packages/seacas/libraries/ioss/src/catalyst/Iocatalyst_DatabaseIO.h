@@ -82,6 +82,8 @@ namespace Iocatalyst {
 
     void print_catalyst_conduit_node();
 
+    std::string get_catalyst_dump_dir() const;
+
   private:
     bool open_group__(const std::string & /* group_name */) override { return false; }
     bool create_subgroup__(const std::string & /* group_name */) override { return false; }
