@@ -783,7 +783,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd fmt || exit
-#            git checkout ${fmt_version}
+            git checkout ${fmt_version}
             rm -rf build
             mkdir build
             cd build || exit
