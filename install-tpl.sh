@@ -123,6 +123,9 @@ KOKKOS=${KOKKOS:-NO}
 KOKKOS=$(check_valid KOKKOS)
 
 H5VERSION=${H5VERSION:-V114}
+# Build/Install the HDF5 C++ library?
+H5CPP=${H5CPP:-NO}
+H5CPP=$(check_valid H5CPP)
 
 FAODEL=${FAODEL:-NO}
 FAODEL=$(check_valid FAODEL)
@@ -200,6 +203,7 @@ if [ $# -gt 0 ]; then
         echo "   PNETCDF      = ${PNETCDF}"
         echo "   HDF5         = ${HDF5}"
         echo "   H5VERSION    = ${H5VERSION}"
+        echo "   H5CPP        = ${H5CPP}"
         echo "   CGNS         = ${CGNS}"
         echo "   MATIO        = ${MATIO}"
         echo "   METIS        = ${METIS}"
@@ -459,7 +463,7 @@ then
             rm -rf build
             mkdir build
             cd build || exit
-            CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
+            CRAY=${CRAY} H5CPP=${H5CPP} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
             #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
@@ -779,7 +783,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd fmt || exit
-            git checkout ${fmt_version}
+#            git checkout ${fmt_version}
             rm -rf build
             mkdir build
             cd build || exit
