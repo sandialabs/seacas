@@ -5,7 +5,8 @@
  *
  * See packages/seacas/LICENSE for details
  */
-#include "exodusII.h" // for ex_inquire, ex_opts, etc
+#include "el_check_monot.h" // for check_monot
+#include "exodusII.h"       // for ex_inquire, ex_opts, etc
 #include "fmt/ostream.h"
 #include "globals.h"     // for ELEM_COMM_MAP, etc
 #include "nem_spread.h"  // for NemSpread, etc
@@ -232,7 +233,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
 
     /* Check that globals.GNodes is monotonic, from i = 0 to Num_Internal_Nodes */
 #ifdef DEBUG
-    assert(check_monot(globals.GNodes[iproc], globals.Num_Internal_Nodes[iproc]));
+    assert(check_monot(&globals.GNodes[iproc], globals.Num_Internal_Nodes[iproc]));
 
     /*
      * Check that globals.GNodes is monotonic, from i = Num_Internal_Nodes to

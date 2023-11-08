@@ -12,6 +12,7 @@
 #include "fix_column_partitions.h"
 #include <array>
 #include <cmath>
+#include <fmt/core.h>
 #include <iostream>
 #include <map>
 #include <vector>
