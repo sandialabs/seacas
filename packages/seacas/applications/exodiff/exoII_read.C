@@ -57,6 +57,7 @@ template <typename INT> ExoII_Read<INT>::~ExoII_Read()
     delete[] times;
     delete[] edge_blocks;
     delete[] face_blocks;
+    delete[] assemblies;
 
     if (results) {
       for (unsigned i = 0; i < nodal_vars.size(); ++i) {
