@@ -117,7 +117,7 @@ extern EX_mutex_t   EX_g;
 extern int          ex__mutex_lock(EX_mutex_t *mutex);
 extern int          ex__mutex_unlock(EX_mutex_t *mutex, const char *func, int line);
 extern void         ex__pthread_first_thread_init(void);
-extern EX_errval_t *exerrval_get();
+extern EX_errval_t *exerrval_get(void);
 
 #define EX_FUNC_ENTER()                                                                            \
   do {                                                                                             \
