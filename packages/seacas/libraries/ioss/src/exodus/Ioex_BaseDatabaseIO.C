@@ -418,7 +418,7 @@ namespace Ioex {
     return m_exodusFilePtr;
   }
 
-  bool BaseDatabaseIO::ok__(bool write_message, std::string *error_message, int *bad_count) const
+  bool BaseDatabaseIO::ok_nl(bool write_message, std::string *error_message, int *bad_count) const
   {
     // For input, we try to open the existing file.
 
@@ -480,7 +480,7 @@ namespace Ioex {
     ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
   }
 
-  bool BaseDatabaseIO::open_group__(const std::string &group_name)
+  bool BaseDatabaseIO::open_group_nl(const std::string &group_name)
   {
     // Get existing file pointer...
     bool success = false;
@@ -500,7 +500,7 @@ namespace Ioex {
     return success;
   }
 
-  bool BaseDatabaseIO::create_subgroup__(const std::string &group_name)
+  bool BaseDatabaseIO::create_subgroup_nl(const std::string &group_name)
   {
     bool success = false;
     if (!is_input()) {
@@ -683,7 +683,7 @@ namespace Ioex {
 
   void BaseDatabaseIO::update_block_omissions_from_assemblies()
   {
-    Ioss::SerializeIO serializeIO__(this);
+    Ioss::SerializeIO serializeIO_(this);
 
     if (!assemblyOmissions.empty()) {
       assert(blockInclusions.empty());
@@ -731,7 +731,7 @@ namespace Ioex {
 
   void BaseDatabaseIO::get_assemblies()
   {
-    Ioss::SerializeIO serializeIO__(this);
+    Ioss::SerializeIO serializeIO_(this);
 
     auto assemblies = get_exodus_assemblies(get_file_pointer());
     if (!assemblies.empty()) {
@@ -814,7 +814,7 @@ namespace Ioex {
 
   void BaseDatabaseIO::get_blobs()
   {
-    Ioss::SerializeIO serializeIO__(this);
+    Ioss::SerializeIO serializeIO_(this);
     // Query number of blobs...
     int nblob = ex_inquire_int(get_file_pointer(), EX_INQ_BLOB);
 
@@ -899,7 +899,7 @@ namespace Ioex {
 
     int num_attr = 0;
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
       int               ierr = ex_get_attr_param(get_file_pointer(), EX_NODE_BLOCK, 1, &num_attr);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
@@ -1008,8 +1008,8 @@ namespace Ioex {
   }
 
   // common
-  void BaseDatabaseIO::compute_block_membership__(Ioss::SideBlock          *efblock,
-                                                  std::vector<std::string> &block_membership) const
+  void BaseDatabaseIO::compute_block_membership_nl(Ioss::SideBlock          *efblock,
+                                                   std::vector<std::string> &block_membership) const
   {
     const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
@@ -1072,7 +1072,7 @@ namespace Ioex {
     // 'globalVariables' array
     {
       size_t            num_to_get = field.verify(data_size);
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       Ioss::Field::RoleType role = field.get_role();
 
@@ -1099,7 +1099,7 @@ namespace Ioex {
     // and output them all at one time.  The storage location is a
     // 'globalVariables' array
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       Ioss::Field::RoleType role       = field.get_role();
       size_t                num_to_get = field.verify(data_size);
@@ -1348,14 +1348,14 @@ namespace Ioex {
   }
 
   // common
-  bool BaseDatabaseIO::begin__(Ioss::State state)
+  bool BaseDatabaseIO::begin_nl(Ioss::State state)
   {
     dbState = state;
     return true;
   }
 
   // common
-  bool BaseDatabaseIO::end__(Ioss::State state)
+  bool BaseDatabaseIO::end_nl(Ioss::State state)
   {
     // Transitioning out of state 'state'
     assert(state == dbState);
@@ -1375,7 +1375,7 @@ namespace Ioex {
     }
 
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       if (!is_input()) {
         ex_update(get_file_pointer());
@@ -1454,9 +1454,9 @@ namespace Ioex {
     }
   }
 
-  bool BaseDatabaseIO::begin_state__(int state, double time)
+  bool BaseDatabaseIO::begin_state_nl(int state, double time)
   {
-    Ioss::SerializeIO serializeIO__(this);
+    Ioss::SerializeIO serializeIO_(this);
 
     time /= timeScaleFactor;
 
@@ -1488,9 +1488,9 @@ namespace Ioex {
   }
 
   // common
-  bool BaseDatabaseIO::end_state__(int state, double time)
+  bool BaseDatabaseIO::end_state_nl(int state, double time)
   {
-    Ioss::SerializeIO serializeIO__(this);
+    Ioss::SerializeIO serializeIO_(this);
 
     if (!is_input()) {
       write_reduction_fields();
@@ -1530,7 +1530,7 @@ namespace Ioex {
     // Get "global attributes"
     // These are single key-value per grouping entity
     // Stored as Ioss::Property with origin of ATTRIBUTE
-    Ioss::SerializeIO serializeIO__(this);
+    Ioss::SerializeIO serializeIO_(this);
     auto              type      = Ioex::map_exodus_type(entity->type());
     int               att_count = ex_get_attribute_count(get_file_pointer(), type, id);
 
@@ -1597,7 +1597,7 @@ namespace Ioex {
   {
     int nvar = 0;
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       int ierr = ex_get_variable_param(get_file_pointer(), type, &nvar);
       if (ierr < 0) {
@@ -1618,7 +1618,7 @@ namespace Ioex {
           std::fill(truth_table.begin(), truth_table.end(), 1);
         }
         else {
-          Ioss::SerializeIO serializeIO__(this);
+          Ioss::SerializeIO serializeIO_(this);
           int               ierr =
               ex_get_truth_table(get_file_pointer(), type, block_count, nvar, truth_table.data());
           if (ierr < 0) {
@@ -1645,7 +1645,7 @@ namespace Ioex {
       // Read the names...
       // (Currently, names are read for every block.  We could save them...)
       {
-        Ioss::SerializeIO serializeIO__(this);
+        Ioss::SerializeIO serializeIO_(this);
 
         int ierr = ex_get_variable_names(get_file_pointer(), type, nvar, names);
         if (ierr < 0) {
@@ -1697,7 +1697,7 @@ namespace Ioex {
     ex_entity_type type = Ioex::map_exodus_type(entity->type());
     int            nvar = 0;
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       int ierr = ex_get_reduction_variable_param(get_file_pointer(), type, &nvar);
       if (ierr < 0) {
@@ -1714,7 +1714,7 @@ namespace Ioex {
       // Read the names...
       // (Currently, names are read for every block.  We could save them...)
       {
-        Ioss::SerializeIO serializeIO__(this);
+        Ioss::SerializeIO serializeIO_(this);
 
         int ierr = ex_get_reduction_variable_names(get_file_pointer(), type, nvar, names);
         if (ierr < 0) {
@@ -1845,7 +1845,7 @@ namespace Ioex {
       }
 
       {
-        Ioss::SerializeIO serializeIO__(this);
+        Ioss::SerializeIO serializeIO_(this);
 
         int ierr = ex_put_all_var_param_ext(get_file_pointer(), &exo_params);
         if (ierr < 0) {
@@ -2118,7 +2118,7 @@ namespace Ioex {
   }
 
   // common
-  void BaseDatabaseIO::flush_database__() const
+  void BaseDatabaseIO::flush_database_nl() const
   {
     if (!is_input()) {
       if (isParallel || myProcessor == 0) {
@@ -2192,7 +2192,7 @@ namespace Ioex {
     }
 
     if (do_flush) {
-      flush_database__();
+      flush_database_nl();
     }
   }
 
@@ -2251,7 +2251,7 @@ namespace Ioex {
       else {
         // Use attribute names if they exist.
         {
-          Ioss::SerializeIO serializeIO__(this);
+          Ioss::SerializeIO serializeIO_(this);
           if (block->entity_count() != 0) {
             ex_entity_type entity_type = Ioex::map_exodus_type(block->type());
             int            ierr = ex_get_attr_names(get_file_pointer(), entity_type, id, &names[0]);

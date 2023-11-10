@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -476,13 +476,13 @@ namespace Iocatalyst {
     }
   }
 
-  bool DatabaseIO::begin__(Ioss::State state)
+  bool DatabaseIO::begin_nl(Ioss::State state)
   {
     this->dbState = state;
     return true;
   }
 
-  bool DatabaseIO::end__(Ioss::State state)
+  bool DatabaseIO::end_nl(Ioss::State state)
   {
     assert(this->dbState == state);
 
@@ -521,10 +521,10 @@ namespace Iocatalyst {
     return true;
   }
 
-  bool DatabaseIO::begin_state__(int state, double time) { return true; }
+  bool DatabaseIO::begin_state_nl(int state, double time) { return true; }
 
   // common
-  bool DatabaseIO::end_state__(int state, double time)
+  bool DatabaseIO::end_state_nl(int state, double time)
   {
     if (this->is_input()) {}
     else {
@@ -552,7 +552,7 @@ namespace Iocatalyst {
            Ioss::SIDEBLOCK | Ioss::REGION;
   }
 
-  void DatabaseIO::read_meta_data__()
+  void DatabaseIO::read_meta_data_nl()
   {
     auto region = this->get_region();
     assert(region != nullptr);
@@ -561,7 +561,7 @@ namespace Iocatalyst {
     impl.readModel(region);
   }
 
-  void DatabaseIO::get_step_times__()
+  void DatabaseIO::get_step_times_nl()
   {
     auto region = this->get_region();
     assert(region != nullptr);

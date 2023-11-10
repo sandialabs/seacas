@@ -301,13 +301,13 @@ mpisyncstart.enable true
 
   std::string DatabaseIO::get_format() const { return "faodel"; }
 
-  bool DatabaseIO::begin_state__(int /* state */, double /* time */) { return false; }
+  bool DatabaseIO::begin_state_nl(int /* state */, double /* time */) { return false; }
 
-  bool DatabaseIO::end_state__(int /* state */, double /* time */) { return false; }
+  bool DatabaseIO::end_state_nl(int /* state */, double /* time */) { return false; }
 
-  void DatabaseIO::read_meta_data__()
+  void DatabaseIO::read_meta_data_nl()
   {
-    this->get_step_times__();
+    this->get_step_times_nl();
 
     this->read_region();
 
@@ -325,7 +325,7 @@ mpisyncstart.enable true
     this->get_commsets();
   }
 
-  void DatabaseIO::get_step_times__()
+  void DatabaseIO::get_step_times_nl()
   {
     auto                     search_key = make_states_search_key(parallel_rank(), *get_region());
     kelpie::ObjectCapacities oc;

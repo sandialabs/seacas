@@ -29,7 +29,7 @@ namespace Ionull {
 
   DatabaseIO::~DatabaseIO() = default;
 
-  void DatabaseIO::read_meta_data__() {}
+  void DatabaseIO::read_meta_data_nl() {}
 
   unsigned DatabaseIO::entity_field_support() const
   {
@@ -39,13 +39,13 @@ namespace Ionull {
            Ioss::STRUCTUREDBLOCK;
   }
 
-  bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::begin_nl(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::end_nl(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state__(int /* state */, double) { return true; }
+  bool DatabaseIO::begin_state_nl(int /* state */, double) { return true; }
 
-  bool DatabaseIO::end_state__(int /* state */, double) { return true; }
+  bool DatabaseIO::end_state_nl(int /* state */, double) { return true; }
 
   int64_t DatabaseIO::put_field_internal(const Ioss::Region *, const Ioss::Field &field, void *,
                                          size_t data_size) const

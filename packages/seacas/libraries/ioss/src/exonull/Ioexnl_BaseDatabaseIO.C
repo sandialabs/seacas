@@ -220,7 +220,7 @@ namespace Ioexnl {
 
   int BaseDatabaseIO::free_file_pointer() const { return 0; }
 
-  bool BaseDatabaseIO::ok__(bool, std::string *, int *) const { return true; }
+  bool BaseDatabaseIO::ok_nl(bool, std::string *, int *) const { return true; }
 
   // common
   void BaseDatabaseIO::put_qa()
@@ -433,8 +433,8 @@ namespace Ioexnl {
   }
 
   // common
-  void BaseDatabaseIO::compute_block_membership__(Ioss::SideBlock          *efblock,
-                                                  std::vector<std::string> &block_membership) const
+  void BaseDatabaseIO::compute_block_membership_nl(Ioss::SideBlock          *efblock,
+                                                   std::vector<std::string> &block_membership) const
   {
     const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
@@ -702,14 +702,14 @@ namespace Ioexnl {
   void BaseDatabaseIO::write_reduction_fields() const {}
 
   // common
-  bool BaseDatabaseIO::begin__(Ioss::State state)
+  bool BaseDatabaseIO::begin_nl(Ioss::State state)
   {
     dbState = state;
     return true;
   }
 
   // common
-  bool BaseDatabaseIO::end__(Ioss::State state)
+  bool BaseDatabaseIO::end_nl(Ioss::State state)
   {
     // Transitioning out of state 'state'
     assert(state == dbState);
@@ -740,7 +740,7 @@ namespace Ioexnl {
     return true;
   }
 
-  bool BaseDatabaseIO::begin_state__(int, double)
+  bool BaseDatabaseIO::begin_state_nl(int, double)
   {
     if (!is_input()) {
       // Zero global variable array...
@@ -756,7 +756,7 @@ namespace Ioexnl {
   }
 
   // common
-  bool BaseDatabaseIO::end_state__(int state, double time)
+  bool BaseDatabaseIO::end_state_nl(int state, double time)
   {
     if (!is_input()) {
       write_reduction_fields();
@@ -1052,7 +1052,7 @@ namespace Ioexnl {
   }
 
   // common
-  void BaseDatabaseIO::flush_database__() const {}
+  void BaseDatabaseIO::flush_database_nl() const {}
 
   void BaseDatabaseIO::finalize_write(int, double) {}
 

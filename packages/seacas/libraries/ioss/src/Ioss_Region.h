@@ -116,9 +116,9 @@ namespace Ioss {
     virtual int add_state(double time)
     {
       IOSS_FUNC_ENTER(m_);
-      return add_state__(time);
+      return add_state_nl(time);
     }
-    virtual int add_state__(double time);
+    virtual int add_state_nl(double time);
 
     // Get time corresponding to specified state
 
@@ -223,7 +223,8 @@ namespace Ioss {
     bool        add_alias(const std::string &db_name, const std::string &alias);
     bool        add_alias(const GroupingEntity *ge);
     std::string get_alias(const std::string &alias, EntityType type) const;
-    std::string get_alias__(const std::string &alias, EntityType type) const; // Not locked by mutex
+    std::string get_alias_nl(const std::string &alias,
+                             EntityType         type) const; // Not locked by mutex
 
     const AliasMap &get_alias_map(EntityType entity_type) const;
 
@@ -299,11 +300,11 @@ namespace Ioss {
     // Add the name 'alias' as an alias for the database entity with the
     // name 'db_name'. Returns true if alias added; false if problems
     // adding alias. Not protected by mutex -- call internally only.
-    bool add_alias__(const std::string &db_name, const std::string &alias, EntityType type);
-    bool add_alias__(const GroupingEntity *ge);
+    bool add_alias_nl(const std::string &db_name, const std::string &alias, EntityType type);
+    bool add_alias_nl(const GroupingEntity *ge);
 
-    bool begin_mode__(State new_state);
-    bool end_mode__(State current_state);
+    bool begin_mode_nl(State new_state);
+    bool end_mode_nl(State current_state);
 
     void delete_database() override;
 

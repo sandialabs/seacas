@@ -95,14 +95,14 @@ void Ioss::Map::set_size(size_t entity_count)
 }
 
 void Ioss::Map::build_reverse_map() { build_reverse_map(m_map.size() - 1, 0); }
-void Ioss::Map::build_reverse_map_no_lock() { build_reverse_map__(m_map.size() - 1, 0); }
+void Ioss::Map::build_reverse_map_no_lock() { build_reverse_map_nl(m_map.size() - 1, 0); }
 void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
 {
   IOSS_FUNC_ENTER(m_);
-  build_reverse_map__(num_to_get, offset);
+  build_reverse_map_nl(num_to_get, offset);
 }
 
-void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
+void Ioss::Map::build_reverse_map_nl(int64_t num_to_get, int64_t offset)
 {
   // Stored as an unordered map -- key:global_id, value:local_id
   if (!is_sequential()) {
@@ -284,7 +284,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
       set_is_sequential(false);
 #if !defined USE_LAZY_REVERSE
       if (m_map.size() - 1 > count) {
-        build_reverse_map__(m_map.size() - 1, 0);
+        build_reverse_map_nl(m_map.size() - 1, 0);
       }
 #endif
       m_offset = 0;
@@ -312,7 +312,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
 #if defined USE_LAZY_REVERSE
   // Build this now before we redefine an entry
   if (!in_define_mode && changed) {
-    build_reverse_map__(m_map.size() - 1, 0);
+    build_reverse_map_nl(m_map.size() - 1, 0);
   }
 #endif
 
@@ -340,7 +340,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
       m_reverse.clear();
     }
 #if !defined USE_LAZY_REVERSE
-    build_reverse_map__(count, offset);
+    build_reverse_map_nl(count, offset);
 #endif
   }
   else if (changed) {
@@ -350,7 +350,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     // is if the ids order was redefined after the STATE_MODEL
     // phase... This is 0-based and used for
     // remapping output and input TRANSIENT fields.
-    build_reorder_map__(offset, count);
+    build_reorder_map_nl(offset, count);
   }
   return changed;
 }
@@ -376,7 +376,7 @@ template <typename INT> void Ioss::Map::reverse_map_data(INT *data, size_t count
   if (!is_sequential()) {
     for (size_t i = 0; i < count; i++) {
       INT global_id = data[i];
-      data[i]       = (INT)global_to_local__(global_id, true);
+      data[i]       = (INT)global_to_local_nl(global_id, true);
     }
   }
   else if (m_offset != 0) {
@@ -517,7 +517,7 @@ size_t Ioss::Map::map_field_to_db_scalar_order(T *variables, std::vector<double>
   return num_out;
 }
 
-void Ioss::Map::build_reorder_map__(int64_t start, int64_t count)
+void Ioss::Map::build_reorder_map_nl(int64_t start, int64_t count)
 {
   // This routine builds a map that relates the current node id order
   // to the original node ordering in affect at the time the file was
@@ -547,7 +547,7 @@ void Ioss::Map::build_reorder_map__(int64_t start, int64_t count)
       int64_t my_end = start + count;
       for (int64_t i = start; i < my_end; i++) {
         int64_t global_id     = m_map[i + 1];
-        int64_t orig_local_id = global_to_local__(global_id) - 1;
+        int64_t orig_local_id = global_to_local_nl(global_id) - 1;
 
         // The reordering should only be a permutation of the original
         // ordering within this entity block...
@@ -575,7 +575,7 @@ void Ioss::Map::build_reorder_map__(int64_t start, int64_t count)
   int64_t my_end = start + count;
   for (int64_t i = start; i < my_end; i++) {
     int64_t global_id     = m_map[i + 1];
-    int64_t orig_local_id = global_to_local__(global_id) - 1;
+    int64_t orig_local_id = global_to_local_nl(global_id) - 1;
 
     // The reordering should only be a permutation of the original
     // ordering within this entity block...
@@ -592,10 +592,10 @@ void Ioss::Map::build_reorder_map__(int64_t start, int64_t count)
 int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
 {
   IOSS_FUNC_ENTER(m_);
-  return global_to_local__(global, must_exist);
+  return global_to_local_nl(global, must_exist);
 }
 
-int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
+int64_t Ioss::Map::global_to_local_nl(int64_t global, bool must_exist) const
 {
   int64_t local = global;
 #if defined USE_LAZY_REVERSE

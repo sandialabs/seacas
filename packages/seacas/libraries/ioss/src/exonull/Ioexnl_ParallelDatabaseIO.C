@@ -296,7 +296,7 @@ namespace Ioexnl {
 
   ParallelDatabaseIO::~ParallelDatabaseIO() = default;
 
-  void ParallelDatabaseIO::release_memory__()
+  void ParallelDatabaseIO::release_memory_nl()
   {
     free_file_pointer();
     nodeMap.release_memory();
@@ -338,7 +338,7 @@ namespace Ioexnl {
     return Ioexnl::BaseDatabaseIO::free_file_pointer();
   }
 
-  void ParallelDatabaseIO::read_meta_data__() {}
+  void ParallelDatabaseIO::read_meta_data_nl() {}
 
   int64_t ParallelDatabaseIO::write_attribute_field(const Ioss::Field          &field,
                                                     const Ioss::GroupingEntity *ge,

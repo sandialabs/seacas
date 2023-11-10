@@ -84,30 +84,30 @@ namespace Iocgns {
     int get_file_pointer() const override;
 
   private:
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override;
-    int64_t element_global_to_local__(int64_t global) const override;
+    int64_t node_global_to_local_nl(int64_t global, bool must_exist) const override;
+    int64_t element_global_to_local_nl(int64_t global) const override;
 
-    void read_meta_data__() override;
+    void read_meta_data_nl() override;
 
     void open_state_file(int state);
     void free_state_pointer();
 
-    void openDatabase__() const override;
-    void closeDatabase__() const override;
+    void openDatabase_nl() const override;
+    void closeDatabase_nl() const override;
 
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
+    bool begin_nl(Ioss::State state) override;
+    bool end_nl(Ioss::State state) override;
 
-    bool begin_state__(int state, double time) override;
-    bool end_state__(int state, double time) override;
-    void flush_database__() const override;
+    bool begin_state_nl(int state, double time) override;
+    bool end_state_nl(int state, double time) override;
+    void flush_database_nl() const override;
 
     bool   check_valid_file_open(int status) const;
     void   create_structured_block(int base, int zone, size_t &num_node);
     void   create_structured_block_fpp(int base, int num_zones, size_t &num_node);
     size_t finalize_structured_blocks();
     void   finalize_database() const override;
-    void   get_step_times__() override;
+    void   get_step_times_nl() override;
 
     void create_unstructured_block(int base, int zone, size_t &num_node);
     void write_adjacency_data();
