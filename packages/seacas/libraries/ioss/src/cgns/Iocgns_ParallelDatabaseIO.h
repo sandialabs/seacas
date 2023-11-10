@@ -71,11 +71,6 @@ namespace Iocgns {
     // database supports that type (e.g. return_value & Ioss::FACESET)
     unsigned entity_field_support() const override;
 
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override;
-    int64_t element_global_to_local__(int64_t global) const override;
-
-    void release_memory__() override;
-
     int get_file_pointer() const override;
 
     bool node_major() const override { return false; }
@@ -87,11 +82,17 @@ namespace Iocgns {
     int int_byte_size_db() const override { return CG_SIZEOF_SIZE; }
 
     // Metadata-related functions.
-    void read_meta_data__() override;
     void write_meta_data();
     void write_results_meta_data();
 
   private:
+    void read_meta_data__() override;
+
+    int64_t node_global_to_local__(int64_t global, bool must_exist) const override;
+    int64_t element_global_to_local__(int64_t global) const override;
+
+    void release_memory__() override;
+
     void open_state_file(int state);
     void free_state_pointer();
 
