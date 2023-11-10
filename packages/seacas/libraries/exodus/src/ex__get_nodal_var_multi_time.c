@@ -15,7 +15,7 @@
 \note This function is called internally by ex_get_var_multi_time() to handle
 the reading of nodal variable values.
 
-The function ex__get_nodal_var_multi_time() reads the values of a single nodal
+The function exi_get_nodal_var_multi_time() reads the values of a single nodal
 variable for a one or more time steps. Memory must be allocated for the
 nodal variable values array before this function is invoked.
 
@@ -24,7 +24,7 @@ code must declare the array passed to be the appropriate type
 (float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
-\return In case of an error, ex__get_nodal_var_multi_time() returns a negative
+\return In case of an error, exi_get_nodal_var_multi_time() returns a negative
 number; a warning will return a positive number. Possible causes of
 errors include:
 -  data file not properly opened with call to ex_create() or ex_open()
@@ -58,13 +58,13 @@ time_step = 1;
 var_index = 2;
 
 var_values = (float *) calloc (num_nodes, sizeof(float));
-error = ex__get_nodal_var_multi_time(exoid, var_index, num_nodes,
+error = exi_get_nodal_var_multi_time(exoid, var_index, num_nodes,
                                      time_step, time_step, var_values);
 ~~~
 
 */
 
-int ex__get_nodal_var_multi_time(int exoid, int nodal_var_index, int64_t num_nodes,
+int exi_get_nodal_var_multi_time(int exoid, int nodal_var_index, int64_t num_nodes,
                                  int beg_time_step, int end_time_step, void *nodal_var_vals)
 {
   int    varid;
@@ -72,7 +72,7 @@ int ex__get_nodal_var_multi_time(int exoid, int nodal_var_index, int64_t num_nod
   size_t start[3], count[3];
   char   errmsg[MAX_ERR_LENGTH];
 
-  if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
+  if (exi_check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -117,7 +117,7 @@ int ex__get_nodal_var_multi_time(int exoid, int nodal_var_index, int64_t num_nod
     count[1] = num_nodes;
   }
 
-  if (ex__comp_ws(exoid) == 4) {
+  if (exi_comp_ws(exoid) == 4) {
     status = nc_get_vara_float(exoid, varid, start, count, nodal_var_vals);
   }
   else {

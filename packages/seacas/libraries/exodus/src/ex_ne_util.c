@@ -11,10 +11,10 @@
 /*****************************************************************************/
 /* Function(s) contained in this file:
  *
- *     ex__leavedef()
+ *     exi_leavedef()
  *     ne__id_lkup()
- *     ex__get_file_type()
- *     ex__put_nemesis_version()
+ *     exi_get_file_type()
+ *     exi_put_nemesis_version()
  *     ne__check_file_version()
  *     ex_get_idx()
  *
@@ -111,7 +111,7 @@ int ne__id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id n
 /* This function retrieves the file type from a Nemesis file.
  */
 /*****************************************************************************/
-int ex__get_file_type(int exoid, char *ftype)
+int exi_get_file_type(int exoid, char *ftype)
 {
   EX_FUNC_ENTER();
 
@@ -152,7 +152,7 @@ int ex__get_file_type(int exoid, char *ftype)
 /* This function outputs the Nemesis version information to the file.
  */
 /*****************************************************************************/
-int ex__put_nemesis_version(int exoid)
+int exi_put_nemesis_version(int exoid)
 {
   EX_FUNC_ENTER();
 

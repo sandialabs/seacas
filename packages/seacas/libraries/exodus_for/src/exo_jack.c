@@ -2424,9 +2424,9 @@ void F2C(expfrm, EXPFRM)(int *idexo, int *nframe, void_int *cfids, real *coord, 
 
 /*!
  *  Routine to return floating point word size
- * \sa ex__get_cpu_ws()
+ * \sa exi_get_cpu_ws()
  */
-int F2C(excpws, EXCPWS)(void) { return (ex__get_cpu_ws()); }
+int F2C(excpws, EXCPWS)(void) { return (exi_get_cpu_ws()); }
 
 /*!
  *  Routine to return large model setting
