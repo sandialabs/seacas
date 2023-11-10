@@ -870,9 +870,9 @@ EXODUS_EXPORT int exi_put_nemesis_version(int exoid);
 EXODUS_EXPORT int exi_put_homogenous_block_params(int exoid, size_t block_count,
                                                   const struct ex_block *blocks);
 
-EXODUS_EXPORT int ne__check_file_version(int exoid);
+EXODUS_EXPORT int nei_check_file_version(int exoid);
 
-EXODUS_EXPORT int ne__id_lkup(int          exoid,       /* NetCDF/Exodus file ID */
+EXODUS_EXPORT int nei_id_lkup(int          exoid,       /* NetCDF/Exodus file ID */
                               const char  *ne_var_name, /* Nemesis variable name */
                               int64_t     *idx,         /* index variable for variable, length 2 */
                               ex_entity_id ne_var_id    /* NetCDF variable ID */

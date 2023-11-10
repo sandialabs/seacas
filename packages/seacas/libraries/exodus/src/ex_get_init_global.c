@@ -71,7 +71,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
 
   /* Check the file version information */
   int dimid;
-  if ((dimid = ne__check_file_version(exoid)) != EX_NOERR) {
+  if ((dimid = nei_check_file_version(exoid)) != EX_NOERR) {
     EX_FUNC_LEAVE(dimid);
   }
 
