@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
