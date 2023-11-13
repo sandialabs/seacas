@@ -52,6 +52,7 @@ extern "C" {
 #include "zz_const.h"
 #include "zz_sort.h"
 #include "hsfc_hilbert_const.h"
+#include "hsfcOrder.h"
 
 
 int Zoltan_LocalHSFC_Order(

@@ -77,12 +77,12 @@ typedef struct _commStruct{
   MPI_Comm comm;
 }commStruct;
 
-int rb_sort_doubles_increasing(const void *a, const void *b)
+static int rb_sort_doubles_increasing(const void *a, const void *b)
 {
 double v1, v2;
 
-  v1 = *(double *)a;
-  v2 = *(double *)b;
+  v1 = *(const double *)a;
+  v2 = *(const double *)b;
 
   if (v1 < v2) return -1;
   else if (v1 > v2) return 1;

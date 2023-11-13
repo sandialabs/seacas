@@ -1114,7 +1114,6 @@ namespace {
             }
           }
           if (!found) {
-            name_not_found = true;
             fmt::print(Ioss::WarnOut(), NOTFOUND_1, type, in_set_2->name());
             overall_result = false;
           }

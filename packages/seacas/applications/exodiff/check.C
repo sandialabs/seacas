@@ -257,8 +257,8 @@ namespace {
     size_t matched = 0;
     for (size_t b = 0; b < file1.Num_Assembly(); ++b) {
       Assembly<INT> *assembly1 = file1.Get_Assembly_by_Index(b);
-      Assembly<INT> *assembly2 = nullptr;
       if (assembly1 != nullptr) {
+        Assembly<INT> *assembly2 = nullptr;
         if (interFace.by_name) {
           assembly2 = file2.Get_Assembly_by_Name(assembly1->Name());
         }
@@ -282,8 +282,8 @@ namespace {
     if (matched != file2.Num_Assembly()) {
       for (size_t b = 0; b < file2.Num_Assembly(); ++b) {
         Assembly<INT> *assembly2 = file2.Get_Assembly_by_Index(b);
-        Assembly<INT> *assembly1 = nullptr;
         if (assembly2 != nullptr) {
+          Assembly<INT> *assembly1 = nullptr;
           if (interFace.by_name) {
             assembly1 = file1.Get_Assembly_by_Name(assembly2->Name());
           }
