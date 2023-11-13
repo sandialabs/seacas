@@ -698,8 +698,8 @@ End:
 /* routine for bsearch locating the partition segment holding key */
 int Zoltan_HSFC_compare (const void *key, const void *arg)
    {
-   if ( *(double*) key >=  ((Partition*) arg)->r)  return  1;
-   if ( *(double*) key <   ((Partition*) arg)->l)  return -1;
+   if ( *(const double*) key >=  ((const Partition*) arg)->r)  return  1;
+   if ( *(const double*) key <   ((const Partition*) arg)->l)  return -1;
 
    return 0;     /* key in arg interval [l,r) */
    }

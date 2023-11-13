@@ -403,7 +403,7 @@ int Zoltan_Serialize(ZZ const *zz, size_t bufSize, char *buf)
   *intptr = zz->Debug_Proc; intptr++;
   *intptr = zz->Fortran; intptr++;
   *intptr = zz->Tflops_Special; intptr++;
-  *intptr = *((int*) &(zz->Seed)); intptr++;
+  *intptr = *((const int*) &(zz->Seed)); intptr++;
   *intptr = zz->Deterministic; intptr++;
   *intptr = zz->Obj_Weight_Dim; intptr++;
   *intptr = zz->Edge_Weight_Dim; intptr++;

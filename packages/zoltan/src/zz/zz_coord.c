@@ -816,7 +816,6 @@ static void order_decreasing(double *d, int *order)
  * Assume dim is 2 or 3.
  */
 
-#define SIGN(a,b) ((b) < 0 ? -fabs(a) : fabs(a))
 static int eigenvectors(double (*m)[3], double (*evecs)[3], int dim)
 {
   double temp[2][2];
