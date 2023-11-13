@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -101,9 +101,9 @@ namespace Ioss {
     template <typename INT> void map_data(INT *data, size_t count) const;
     template <typename INT> void map_implicit_data(INT *data, size_t count, size_t offset) const;
 
-    int64_t global_to_local__(int64_t global, bool must_exist = true) const;
-    void    build_reorder_map__(int64_t start, int64_t count);
-    void    build_reverse_map__(int64_t num_to_get, int64_t offset);
+    int64_t global_to_local_nl(int64_t global, bool must_exist = true) const;
+    void    build_reorder_map_nl(int64_t start, int64_t count);
+    void    build_reverse_map_nl(int64_t num_to_get, int64_t offset);
 #if defined MAP_USE_SORTED_VECTOR
     void verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map);
 #endif

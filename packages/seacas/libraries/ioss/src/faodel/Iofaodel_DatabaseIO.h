@@ -100,17 +100,17 @@ namespace Iofaodel {
 
     void finalize_database() const override;
 
-    void read_meta_data__() override;
+    void read_meta_data_nl() override;
 
-    bool begin_state__(int /* state */, double /* time */) override;
-    bool end_state__(int /* state */, double /* time */) override;
+    bool begin_state_nl(int /* state */, double /* time */) override;
+    bool end_state_nl(int /* state */, double /* time */) override;
 
-    bool begin__(Ioss::State state) override
+    bool begin_nl(Ioss::State state) override
     {
       dbState = state;
       return true;
     };
-    bool end__(Ioss::State state) override
+    bool end_nl(Ioss::State state) override
     {
       dbState = Ioss::STATE_UNKNOWN;
       return true;
@@ -126,7 +126,7 @@ namespace Iofaodel {
     /*
      * TODO identify all the get_*{blocks|sets} needed here
      */
-    void get_step_times__() override;
+    void get_step_times_nl() override;
 
     void get_edgeblocks();
     void get_elemblocks();

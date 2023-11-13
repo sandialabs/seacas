@@ -82,21 +82,21 @@ namespace Iohb {
     int int_byte_size_db() const override { return int_byte_size_api(); }
 
   private:
-    int64_t node_global_to_local__(int64_t /* global */, bool /* must_exist */) const override
+    int64_t node_global_to_local_nl(int64_t /* global */, bool /* must_exist */) const override
     {
       return 0;
     }
-    int64_t element_global_to_local__(int64_t /* global */) const override { return 0; }
+    int64_t element_global_to_local_nl(int64_t /* global */) const override { return 0; }
 
-    void read_meta_data__() override {}
+    void read_meta_data_nl() override {}
 
-    void flush_database__() const override;
+    void flush_database_nl() const override;
 
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
+    bool begin_nl(Ioss::State state) override;
+    bool end_nl(Ioss::State state) override;
 
-    bool begin_state__(int state, double time) override;
-    bool end_state__(int state, double time) override;
+    bool begin_state_nl(int state, double time) override;
+    bool end_state_nl(int state, double time) override;
 
     void initialize() const;
 

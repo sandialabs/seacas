@@ -120,11 +120,11 @@ namespace Ioexnl {
 
   int DatabaseIO::get_file_pointer() const { return 0; }
 
-  void DatabaseIO::read_meta_data__() {}
+  void DatabaseIO::read_meta_data_nl() {}
 
   void DatabaseIO::read_region() {}
 
-  void DatabaseIO::get_step_times__() {}
+  void DatabaseIO::get_step_times_nl() {}
 
   int64_t DatabaseIO::write_attribute_field(const Ioss::Field          &field,
                                             const Ioss::GroupingEntity *ge, void *data) const

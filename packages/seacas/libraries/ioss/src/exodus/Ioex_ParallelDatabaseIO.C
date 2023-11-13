@@ -395,7 +395,7 @@ namespace Ioex {
 
   ParallelDatabaseIO::~ParallelDatabaseIO() = default;
 
-  void ParallelDatabaseIO::release_memory__()
+  void ParallelDatabaseIO::release_memory_nl()
   {
     free_file_pointer();
     nodeMap.release_memory();
@@ -612,7 +612,7 @@ namespace Ioex {
 
     MPI_Info info        = MPI_INFO_NULL;
     int      app_opt_val = ex_opts(EX_VERBOSE);
-    Ioss::DatabaseIO::openDatabase__();
+    Ioss::DatabaseIO::openDatabase_nl();
 
     std::string filename = get_dw_name();
 
@@ -755,7 +755,7 @@ namespace Ioex {
     return Ioex::BaseDatabaseIO::free_file_pointer();
   }
 
-  void ParallelDatabaseIO::read_meta_data__()
+  void ParallelDatabaseIO::read_meta_data_nl()
   {
     int exoid = get_file_pointer(); // get_file_pointer() must be called first.
 
@@ -768,7 +768,7 @@ namespace Ioex {
     // we don't write anything since it is already there.  We do
     // need the number of steps though...
     if (open_create_behavior() == Ioss::DB_APPEND || dbUsage == Ioss::QUERY_TIMESTEPS_ONLY) {
-      get_step_times__();
+      get_step_times_nl();
       return;
     }
 
@@ -784,7 +784,7 @@ namespace Ioex {
     read_region();
     get_elemblocks();
 
-    get_step_times__();
+    get_step_times_nl();
 
     get_nodeblocks();
     get_edgeblocks();
@@ -903,7 +903,7 @@ namespace Ioex {
     }
   }
 
-  void ParallelDatabaseIO::get_step_times__()
+  void ParallelDatabaseIO::get_step_times_nl()
   {
     double              last_time      = DBL_MAX;
     int                 timestep_count = 0;
@@ -2046,7 +2046,7 @@ namespace Ioex {
                                                  void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
@@ -2096,7 +2096,7 @@ namespace Ioex {
                                                  size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
@@ -3729,7 +3729,7 @@ namespace Ioex {
                                                  void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
@@ -3786,7 +3786,7 @@ namespace Ioex {
                                                  size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {

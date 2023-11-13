@@ -7,7 +7,7 @@
  */
 
 #include "exodusII.h"     // for EX_FATAL, exerrval, ex_err, etc
-#include "exodusII_int.h" // for ex__get_counter_list, etc
+#include "exodusII_int.h" // for exi_get_counter_list, etc
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x)  STRINGIFY(x)
@@ -59,7 +59,7 @@ static int    cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm,
 static int    cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large);
 static void   update_structs(int out_exoid);
 static void   update_internal_structs(int out_exoid, ex_inquiry inqcode,
-                                      struct ex__list_item **ctr_list);
+                                      struct exi_list_item **ctr_list);
 
 static int is_truth_table_variable(const char *var_name)
 {
@@ -82,10 +82,10 @@ static int is_non_mesh_variable(const char *var_name)
 static int ex_copy_internal(int in_exoid, int out_exoid, int mesh_only)
 {
   EX_FUNC_ENTER();
-  if (ex__check_valid_file_id(in_exoid, __func__) != EX_NOERR) {
+  if (exi_check_valid_file_id(in_exoid, __func__) != EX_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
-  if (ex__check_valid_file_id(out_exoid, __func__) != EX_NOERR) {
+  if (exi_check_valid_file_id(out_exoid, __func__) != EX_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -120,7 +120,7 @@ static int ex_copy_internal(int in_exoid, int out_exoid, int mesh_only)
   EXCHECK(cpy_variables(in_exoid, out_exoid, in_large, mesh_only));
 
   /* take the output file out of define mode */
-  if (ex__leavedef(out_exoid, __func__) != NC_NOERR) {
+  if (exi_leavedef(out_exoid, __func__) != NC_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -432,7 +432,7 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
   int         temp;
   size_t      spatial_dim;
   const char *routine = NULL;
-  ex__get_dimension(in_id, DIM_NUM_DIM, "dimension", &spatial_dim, &temp, routine);
+  exi_get_dimension(in_id, DIM_NUM_DIM, "dimension", &spatial_dim, &temp, routine);
 
   /* output file will have coordx, coordy, coordz (if 3d).  See if
      they are already defined in output file. Assume either all or
@@ -459,16 +459,16 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
   int nbr_dim    = 1;
   int var_out_id = -1;
   EXCHECKI(nc_def_var(out_id, VAR_COORD_X, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
-  ex__compress_variable(out_id, var_out_id, 2);
+  exi_compress_variable(out_id, var_out_id, 2);
   if (spatial_dim > 1) {
     EXCHECKI(
         nc_def_var(out_id, VAR_COORD_Y, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
-    ex__compress_variable(out_id, var_out_id, 2);
+    exi_compress_variable(out_id, var_out_id, 2);
   }
   if (spatial_dim > 2) {
     EXCHECKI(
         nc_def_var(out_id, VAR_COORD_Z, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
-    ex__compress_variable(out_id, var_out_id, 2);
+    exi_compress_variable(out_id, var_out_id, 2);
   }
 
   return var_out_id; /* OK */
@@ -536,11 +536,11 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
 
   if ((var_type == NC_FLOAT) || (var_type == NC_DOUBLE)) {
     EXCHECKI(nc_def_var(out_id, var_nm, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
-    ex__compress_variable(out_id, var_out_id, 2);
+    exi_compress_variable(out_id, var_out_id, 2);
   }
   else {
     EXCHECKI(nc_def_var(out_id, var_nm, var_type, nbr_dim, dim_out_id, &var_out_id));
-    ex__compress_variable(out_id, var_out_id, 1);
+    exi_compress_variable(out_id, var_out_id, 1);
   }
   return var_out_id; /* OK */
 
@@ -744,8 +744,8 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
   const char *routine = NULL;
   int         temp;
   size_t      spatial_dim, num_nodes;
-  ex__get_dimension(in_id, DIM_NUM_DIM, "dimension", &spatial_dim, &temp, routine);
-  ex__get_dimension(in_id, DIM_NUM_NODES, "nodes", &num_nodes, &temp, routine);
+  exi_get_dimension(in_id, DIM_NUM_DIM, "dimension", &spatial_dim, &temp, routine);
+  exi_get_dimension(in_id, DIM_NUM_NODES, "nodes", &num_nodes, &temp, routine);
 
   /* output file will have coordx, coordy, coordz (if 3d). */
   /* Get the var_id for the requested variable from both files. */
@@ -796,31 +796,31 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
 /*! \internal */
 void update_structs(int out_exoid)
 {
-  update_internal_structs(out_exoid, EX_INQ_EDGE_BLK, ex__get_counter_list(EX_EDGE_BLOCK));
-  update_internal_structs(out_exoid, EX_INQ_FACE_BLK, ex__get_counter_list(EX_FACE_BLOCK));
-  update_internal_structs(out_exoid, EX_INQ_ELEM_BLK, ex__get_counter_list(EX_ELEM_BLOCK));
-  update_internal_structs(out_exoid, EX_INQ_ASSEMBLY, ex__get_counter_list(EX_ASSEMBLY));
-  update_internal_structs(out_exoid, EX_INQ_BLOB, ex__get_counter_list(EX_BLOB));
+  update_internal_structs(out_exoid, EX_INQ_EDGE_BLK, exi_get_counter_list(EX_EDGE_BLOCK));
+  update_internal_structs(out_exoid, EX_INQ_FACE_BLK, exi_get_counter_list(EX_FACE_BLOCK));
+  update_internal_structs(out_exoid, EX_INQ_ELEM_BLK, exi_get_counter_list(EX_ELEM_BLOCK));
+  update_internal_structs(out_exoid, EX_INQ_ASSEMBLY, exi_get_counter_list(EX_ASSEMBLY));
+  update_internal_structs(out_exoid, EX_INQ_BLOB, exi_get_counter_list(EX_BLOB));
 
-  update_internal_structs(out_exoid, EX_INQ_NODE_SETS, ex__get_counter_list(EX_NODE_SET));
-  update_internal_structs(out_exoid, EX_INQ_EDGE_SETS, ex__get_counter_list(EX_EDGE_SET));
-  update_internal_structs(out_exoid, EX_INQ_FACE_SETS, ex__get_counter_list(EX_FACE_SET));
-  update_internal_structs(out_exoid, EX_INQ_SIDE_SETS, ex__get_counter_list(EX_SIDE_SET));
-  update_internal_structs(out_exoid, EX_INQ_ELEM_SETS, ex__get_counter_list(EX_ELEM_SET));
+  update_internal_structs(out_exoid, EX_INQ_NODE_SETS, exi_get_counter_list(EX_NODE_SET));
+  update_internal_structs(out_exoid, EX_INQ_EDGE_SETS, exi_get_counter_list(EX_EDGE_SET));
+  update_internal_structs(out_exoid, EX_INQ_FACE_SETS, exi_get_counter_list(EX_FACE_SET));
+  update_internal_structs(out_exoid, EX_INQ_SIDE_SETS, exi_get_counter_list(EX_SIDE_SET));
+  update_internal_structs(out_exoid, EX_INQ_ELEM_SETS, exi_get_counter_list(EX_ELEM_SET));
 
-  update_internal_structs(out_exoid, EX_INQ_NODE_MAP, ex__get_counter_list(EX_NODE_MAP));
-  update_internal_structs(out_exoid, EX_INQ_EDGE_MAP, ex__get_counter_list(EX_EDGE_MAP));
-  update_internal_structs(out_exoid, EX_INQ_FACE_MAP, ex__get_counter_list(EX_FACE_MAP));
-  update_internal_structs(out_exoid, EX_INQ_ELEM_MAP, ex__get_counter_list(EX_ELEM_MAP));
+  update_internal_structs(out_exoid, EX_INQ_NODE_MAP, exi_get_counter_list(EX_NODE_MAP));
+  update_internal_structs(out_exoid, EX_INQ_EDGE_MAP, exi_get_counter_list(EX_EDGE_MAP));
+  update_internal_structs(out_exoid, EX_INQ_FACE_MAP, exi_get_counter_list(EX_FACE_MAP));
+  update_internal_structs(out_exoid, EX_INQ_ELEM_MAP, exi_get_counter_list(EX_ELEM_MAP));
 }
 
 /*! \internal */
-void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct ex__list_item **ctr_list)
+void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct exi_list_item **ctr_list)
 {
   int64_t number = ex_inquire_int(out_exoid, inqcode);
   if (number > 0) {
     for (int64_t i = 0; i < number; i++) {
-      ex__inc_file_item(out_exoid, ctr_list);
+      exi_inc_file_item(out_exoid, ctr_list);
     }
   }
 }

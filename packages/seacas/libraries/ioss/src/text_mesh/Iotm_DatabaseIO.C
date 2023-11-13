@@ -34,8 +34,7 @@
 #include "Ioss_Property.h"        // for Property
 #include "Ioss_PropertyManager.h" // for PropertyManager
 #include "Ioss_Region.h"          // for Region
-#include "Ioss_SerializeIO.h"
-#include "Ioss_SideSet.h" // for SideSet
+#include "Ioss_SideSet.h"         // for SideSet
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h" // for VariableType
 #include "Iotm_TextMesh.h"     // for TextMesh
@@ -132,7 +131,7 @@ namespace Iotm {
 
   DatabaseIO::~DatabaseIO() { delete m_textMesh; }
 
-  void DatabaseIO::read_meta_data__()
+  void DatabaseIO::read_meta_data_nl()
   {
     if (m_textMesh == nullptr) {
       if (get_filename() == "external") {
@@ -178,7 +177,7 @@ namespace Iotm {
     sidesetCount      = m_textMesh->sideset_count();
     assemblyCount     = m_textMesh->assembly_count();
 
-    get_step_times__();
+    get_step_times_nl();
 
     add_transient_fields(this_region);
     get_nodeblocks();
@@ -192,11 +191,11 @@ namespace Iotm {
         Ioss::Property(std::string("title"), std::string("TextMesh: ") += get_filename()));
   }
 
-  bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::begin_nl(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::end_nl(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state__(int /* state */, double time)
+  bool DatabaseIO::begin_state_nl(int /* state */, double time)
   {
     currentTime = time;
     return true;
@@ -556,51 +555,47 @@ namespace Iotm {
   int64_t DatabaseIO::get_field_internal(const Ioss::Assembly *assembly, const Ioss::Field &field,
                                          void * /* data */, size_t data_size) const
   {
-    {
-      Ioss::SerializeIO serializeIO__(this);
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
 
-      size_t num_to_get = field.verify(data_size);
-      if (num_to_get > 0) {
-
-        Ioss::Field::RoleType role = field.get_role();
-        if (role == Ioss::Field::MESH) {
-          if (field.get_name() == "ids") {
-            // Map the local ids in this node block
-            // (1...node_count) to global node ids.
-            //          get_map(EX_ASSEMBLY).map_implicit_data(data, field, num_to_get, 0);
-          }
-
-          else if (field.get_name() == "connectivity") {
-            // Do nothing, just handles an idiosyncrasy of the GroupingEntity
-          }
-          else if (field.get_name() == "connectivity_raw") {
-            // Do nothing, just handles an idiosyncrasy of the GroupingEntity
-          }
-          else {
-            num_to_get = Ioss::Utils::field_warning(assembly, field, "input");
-          }
+      Ioss::Field::RoleType role = field.get_role();
+      if (role == Ioss::Field::MESH) {
+        if (field.get_name() == "ids") {
+          // Map the local ids in this node block
+          // (1...node_count) to global node ids.
+          //          get_map(EX_ASSEMBLY).map_implicit_data(data, field, num_to_get, 0);
         }
-        else if (role == Ioss::Field::TRANSIENT) {
-          // Check if the specified field exists on this assembly.
-          // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
-          // exist on the database as scalars with the appropriate
-          // extensions.
 
-          // Read in each component of the variable and transfer into
-          // 'data'.  Need temporary storage area of size 'number of
-          // items in this assembly.
-          // num_to_get =
-          //    read_transient_field(EX_ASSEMBLY, m_variables[EX_ASSEMBLY], field, assembly, data);
+        else if (field.get_name() == "connectivity") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
         }
-        else if (role == Ioss::Field::REDUCTION) {
-          // get_reduction_field(EX_ASSEMBLY, field, assembly, data);
+        else if (field.get_name() == "connectivity_raw") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
         }
-        else if (role == Ioss::Field::ATTRIBUTE) {
-          // num_to_get = read_attribute_field(EX_ASSEMBLY, field, assembly, data);
+        else {
+          num_to_get = Ioss::Utils::field_warning(assembly, field, "input");
         }
       }
-      return num_to_get;
+      else if (role == Ioss::Field::TRANSIENT) {
+        // Check if the specified field exists on this assembly.
+        // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
+        // exist on the database as scalars with the appropriate
+        // extensions.
+
+        // Read in each component of the variable and transfer into
+        // 'data'.  Need temporary storage area of size 'number of
+        // items in this assembly.
+        // num_to_get =
+        //    read_transient_field(EX_ASSEMBLY, m_variables[EX_ASSEMBLY], field, assembly, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        // get_reduction_field(EX_ASSEMBLY, field, assembly, data);
+      }
+      else if (role == Ioss::Field::ATTRIBUTE) {
+        // num_to_get = read_attribute_field(EX_ASSEMBLY, field, assembly, data);
+      }
     }
+    return num_to_get;
   }
 
   const Ioss::Map &DatabaseIO::get_node_map() const
@@ -640,7 +635,7 @@ namespace Iotm {
     add_transient_fields(block);
   }
 
-  void DatabaseIO::get_step_times__()
+  void DatabaseIO::get_step_times_nl()
   {
     int time_step_count = m_textMesh->timestep_count();
     for (int i = 0; i < time_step_count; i++) {

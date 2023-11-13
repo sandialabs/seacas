@@ -485,12 +485,12 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
       return EX_FATAL;
     }
 
-    struct ex__file_item *file = ex__find_file_item(exodusFilePtr);
+    struct exi_file_item *file = exi_find_file_item(exodusFilePtr);
     if (file) {
       file->time_varid = varid;
     }
 
-    ex__compress_variable(exodusFilePtr, varid, -2); /* don't compress, but do set collective io */
+    exi_compress_variable(exodusFilePtr, varid, -2); /* don't compress, but do set collective io */
   }
 
   if (mesh.nodeCount > 0) {
@@ -521,7 +521,7 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
         }
         return EX_FATAL;
       }
-      ex__compress_variable(exodusFilePtr, varid, 1);
+      exi_compress_variable(exodusFilePtr, varid, 1);
     }
   }
 
@@ -555,7 +555,7 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
         }
         return EX_FATAL;
       }
-      ex__compress_variable(exodusFilePtr, varid, 1);
+      exi_compress_variable(exodusFilePtr, varid, 1);
     }
   }
 
@@ -658,7 +658,7 @@ template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector
   // Iterate over element blocks ...
   for (size_t iblk = 0; iblk < num_elem_blk; iblk++) {
 
-    ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_ELEM_BLOCK));
+    exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_ELEM_BLOCK));
 
     if (blocks[iblk].elementCount == 0) {
       continue;
@@ -723,7 +723,7 @@ template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return EX_FATAL;
       }
-      ex__compress_variable(exodusFilePtr, varid, 2);
+      exi_compress_variable(exodusFilePtr, varid, 2);
 
       // Attribute name array...
       dims[0] = numattrdim;
@@ -753,7 +753,7 @@ template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return EX_FATAL;
     }
-    ex__compress_variable(exodusFilePtr, connid, 1);
+    exi_compress_variable(exodusFilePtr, connid, 1);
 
     // store element type as attribute of connectivity variable
     status = nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
@@ -843,10 +843,10 @@ int Excn::Internals<INT>::put_metadata(const std::vector<NodeSet<INT>> &nodesets
 
   for (int i = 0; i < num_node_sets; i++) {
 
-    //  NOTE: ex__inc_file_item is used to find the number of node sets
+    //  NOTE: exi_inc_file_item is used to find the number of node sets
     // for a specific file and returns that value incremented.
     int cur_num_node_sets =
-        (int)ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_NODE_SET));
+        (int)exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_NODE_SET));
 
     if (nodesets[i].nodeCount == 0) {
       continue;
@@ -888,7 +888,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<NodeSet<INT>> &nodesets
       }
       return EX_FATAL;
     }
-    ex__compress_variable(exodusFilePtr, varid, 1);
+    exi_compress_variable(exodusFilePtr, varid, 1);
 
     // Create variable for distribution factors if required
     if (nodesets[i].dfCount > 0) {
@@ -921,7 +921,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<NodeSet<INT>> &nodesets
         }
         return EX_FATAL;
       }
-      ex__compress_variable(exodusFilePtr, varid, 2);
+      exi_compress_variable(exodusFilePtr, varid, 2);
     }
   }
   return EX_NOERR;
@@ -994,10 +994,10 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
 
   for (size_t i = 0; i < num_side_sets; i++) {
 
-    //  NOTE: ex__inc_file_item is used to find the number of side sets
+    //  NOTE: exi_inc_file_item is used to find the number of side sets
     // for a specific file and returns that value incremented.
     int cur_num_side_sets =
-        (int)ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_SIDE_SET));
+        (int)exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_SIDE_SET));
 
     if (sidesets[i].sideCount == 0) {
       continue;
@@ -1038,7 +1038,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
       }
       return EX_FATAL;
     }
-    ex__compress_variable(exodusFilePtr, varid, 1);
+    exi_compress_variable(exodusFilePtr, varid, 1);
 
     // create side list variable for side set
     status = nc_def_var(exodusFilePtr, VAR_SIDE_SS(cur_num_side_sets + 1), bulk_type, 1,
@@ -1057,7 +1057,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
       }
       return EX_FATAL;
     }
-    ex__compress_variable(exodusFilePtr, varid, 1);
+    exi_compress_variable(exodusFilePtr, varid, 1);
 
     // Create variable for distribution factors if required
     if (sidesets[i].dfCount > 0) {
@@ -1098,7 +1098,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
         }
         return EX_FATAL;
       }
-      ex__compress_variable(exodusFilePtr, varid, 2);
+      exi_compress_variable(exodusFilePtr, varid, 2);
     }
   }
   return EX_NOERR;
@@ -1171,10 +1171,10 @@ int Excn::Internals<INT>::put_metadata(const std::vector<EdgeBlock<INT>> &edgebl
 
   for (size_t i = 0; i < num_edge_blocks; i++) {
 
-    //  NOTE: ex__inc_file_item is used to find the number of edge blocks
+    //  NOTE: exi_inc_file_item is used to find the number of edge blocks
     // for a specific file and returns that value incremented.
     int cur_num_edge_blocks =
-        (int)ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_EDGE_BLOCK));
+        (int)exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_EDGE_BLOCK));
 
     if (edgeblocks[i].edgeCount == 0) {
       continue;
@@ -1224,7 +1224,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<EdgeBlock<INT>> &edgebl
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return EX_FATAL;
     }
-    ex__compress_variable(exodusFilePtr, connid, 1);
+    exi_compress_variable(exodusFilePtr, connid, 1);
 
     // store edge type as attribute of connectivity variable
     status = nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
@@ -1308,10 +1308,10 @@ int Excn::Internals<INT>::put_metadata(const std::vector<FaceBlock<INT>> &facebl
 
   for (size_t i = 0; i < num_face_blocks; i++) {
 
-    //  NOTE: ex__inc_file_item is used to find the number of face blocks
+    //  NOTE: exi_inc_file_item is used to find the number of face blocks
     // for a specific file and returns that value incremented.
     int cur_num_face_blocks =
-        (int)ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_FACE_BLOCK));
+        (int)exi_inc_file_item(exodusFilePtr, exi_get_counter_list(EX_FACE_BLOCK));
 
     if (faceblocks[i].faceCount == 0) {
       continue;
@@ -1362,7 +1362,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<FaceBlock<INT>> &facebl
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return EX_FATAL;
     }
-    ex__compress_variable(exodusFilePtr, connid, 1);
+    exi_compress_variable(exodusFilePtr, connid, 1);
 
     // store face type as attribute of connectivity variable
     status = nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
@@ -1503,7 +1503,7 @@ namespace {
           ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
           return EX_FATAL;
         }
-        ex__compress_variable(exodusFilePtr, varid, 2);
+        exi_compress_variable(exodusFilePtr, varid, 2);
       }
 
       if (dimension > 1) {
@@ -1516,7 +1516,7 @@ namespace {
           ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
           return EX_FATAL;
         }
-        ex__compress_variable(exodusFilePtr, varid, 2);
+        exi_compress_variable(exodusFilePtr, varid, 2);
       }
 
       if (dimension > 2) {
@@ -1529,7 +1529,7 @@ namespace {
           ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
           return EX_FATAL;
         }
-        ex__compress_variable(exodusFilePtr, varid, 2);
+        exi_compress_variable(exodusFilePtr, varid, 2);
       }
     }
 
