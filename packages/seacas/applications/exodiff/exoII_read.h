@@ -61,7 +61,6 @@ public:
   size_t             Num_Elements() const { return num_elmts; }
   size_t             Num_Faces() const { return num_faces; }
   size_t             Num_Edges() const { return num_edges; }
-  size_t             Num_Assemblies() const { return num_assemblies; }
   size_t             Num_Node_Sets() const { return num_node_sets; }
   size_t             Num_Side_Sets() const { return num_side_sets; }
   size_t             Num_Edge_Blocks() const { return num_edge_blocks; }

@@ -308,7 +308,7 @@ namespace {
         file.Num_Edge_Blocks(), file.Num_Face_Blocks(), file.Num_Global_Vars(),
         file.Num_Nodal_Vars(), file.Num_Element_Vars(), file.Num_NS_Vars(), file.Num_SS_Vars(),
         file.Num_Times(), file.Num_FB_Vars(), file.Num_EB_Vars(), count, file.Num_Faces(),
-        file.Num_Edges(), file.Num_Assemblies());
+        file.Num_Edges(), file.Num_Assembly());
   }
 
   void initialize(std::vector<MinMaxData> &mm_entity, size_t size, const ToleranceType &ttype)
