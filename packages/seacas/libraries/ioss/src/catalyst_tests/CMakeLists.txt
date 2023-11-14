@@ -145,3 +145,88 @@ catalyst_test_ioshell_generated("catalyst_ioshell_10x10x10_nodeset"
 catalyst_test_ioshell_generated("catalyst_ioshell_10x10x10_sideset"
     "10x10x10+sideset:xX:+times:2+variables:element,2,nodal,3,sideset,4"
     "ioshell_10x10x10_sideset.g" "1" "exodiff" "-pedantic")
+
+function(catalyst_test_ioshell_exodus_file test_name
+                                           input_file
+                                           test_time)
+
+set(CATALYST_FNAME catalyst_time_${test_time}_${input_file})
+set(IOSHELL_FNAME ioshell_time_${test_time}_${input_file})
+set(INPUT_FILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../main/test/${input_file})
+
+TRIBITS_ADD_ADVANCED_TEST(${test_name}
+    TEST_0 EXEC io_shell ARGS -out_type catalyst ${INPUT_FILE_PATH} ${test_time}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_1 EXEC io_shell ARGS -in_type catalyst ${test_time} ${CATALYST_FNAME}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_2 EXEC io_shell ARGS -select_times ${test_time} ${INPUT_FILE_PATH} ${IOSHELL_FNAME}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_3 EXEC exodiff ARGS -pedantic ${IOSHELL_FNAME} ${CATALYST_FNAME}
+      DIRECTORY ../../../../applications/exodiff
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    ENVIRONMENT CATALYST_DATA_DUMP_DIRECTORY=${CMAKE_CURRENT_BINARY_DIR}/${test_name}
+)
+endfunction()
+
+catalyst_test_ioshell_exodus_file("catalyst_ioshell_cube_g" "cube.g" "1")
+catalyst_test_ioshell_exodus_file("catalyst_ioshell_two_block_g" "two-block.g" "1")
+
+IF (TPL_ENABLE_CGNS)
+
+if ( CGNS_CGNSDIFF_BINARY )
+   # Do nothing. Set earlier in config process...
+else()
+   find_program (CGNS_CGNSDIFF_BINARY
+	     NAME cgnsdiff
+	     PATHS
+	       ${CGNS_BINARY_DIR}
+               ${CGNS_LIBRARY_DIRS}/../bin
+               $ENV{ACCESS}/bin
+               $ENV{CGNS_DIR}/bin
+               $ENV{CGNS_DIR}/cgnsdiff
+               ENV PATH
+	        ${CGNS_DIR}/bin
+	     )
+endif()
+
+if ( CGNS_CGNSDIFF_BINARY )
+
+function(catalyst_test_ioshell_cgns_file test_name
+                                         input_file
+                                         test_time)
+
+set(CATALYST_FNAME catalyst_time_${test_time}_${input_file})
+set(IOSHELL_FNAME ioshell_time_${test_time}_${input_file})
+set(INPUT_FILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../main/test/${input_file})
+
+TRIBITS_ADD_ADVANCED_TEST(${test_name}
+    TEST_0 EXEC io_shell ARGS -out_type catalyst ${INPUT_FILE_PATH} ${test_time}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_1 EXEC io_shell ARGS -in_type catalyst ${test_time} ${CATALYST_FNAME}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_2 EXEC io_shell ARGS -select_times ${test_time} ${INPUT_FILE_PATH} ${IOSHELL_FNAME}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_3 EXEC ${CGNS_CGNSDIFF_BINARY} ARGS -d ${IOSHELL_FNAME} ${CATALYST_FNAME}
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    ENVIRONMENT CATALYST_DATA_DUMP_DIRECTORY=${CMAKE_CURRENT_BINARY_DIR}/${test_name}
+)
+endfunction()
+
+catalyst_test_ioshell_cgns_file("catalyst_ioshell_sparc1_cgns" "sparc1.cgns" "1")
+
+endif()
+endif()
