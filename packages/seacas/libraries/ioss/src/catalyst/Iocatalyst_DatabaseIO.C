@@ -660,7 +660,7 @@ namespace Iocatalyst {
     // this->readEntityGroup<Ioss::FaceBlock>(node["faceblocks"], region);
     this->readEntityGroup<Ioss::SideBlock>(node["sideblocks"], region);
     this->readEntityGroup<Ioss::SideSet>(node["sidesets"], region);
-    //  this->readEntityGroup<Ioss::NodeSet>(node["nodesets"], region);
+    this->readEntityGroup<Ioss::NodeSet>(node["nodesets"], region);
     //  this->readEntityGroup<Ioss::EdgeSet>(node["edgesets"], region);
     //  this->readEntityGroup<Ioss::FaceSet>(node["facesets"], region);
     //  this->readEntityGroup<Ioss::ElementSet>(node["elementsets"], region);
