@@ -1586,7 +1586,7 @@ namespace Ioss {
     std::vector<INT> recv_comm_map_count(m_processorCount);
     MPI_Alltoall(send_comm_map_count.data(), 1, Ioss::mpi_type((INT)0), recv_comm_map_count.data(),
                  1, Ioss::mpi_type((INT)0), m_comm);
-    show_progress("\tCommuniation 1 finished");
+    show_progress("\tCommunication 1 finished");
 
     std::vector<INT> recv_comm_map_disp(recv_comm_map_count);
     Ioss::Utils::generate_index(recv_comm_map_disp);
@@ -1595,7 +1595,7 @@ namespace Ioss {
     Ioss::MY_Alltoallv(send_comm_map, send_comm_map_count, send_comm_map_disp, m_nodeCommMap,
                        recv_comm_map_count, recv_comm_map_disp, m_comm);
     Ioss::Utils::clear(send_comm_map);
-    show_progress("\tCommuniation 2 finished");
+    show_progress("\tCommunication 2 finished");
 
     // Map global 0-based index to local 1-based index.
     for (size_t i = 0; i < m_nodeCommMap.size(); i += 2) {
