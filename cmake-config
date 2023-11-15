@@ -162,7 +162,7 @@ then
   then
       CXX=icpc
       CC=icc
-      FC=ifort
+      FC=ifx
       CFLAGS="-Wall -Wunused"
       CXXFLAGS="-Wall -Wextra  -Wunused"
   fi
