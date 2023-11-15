@@ -1183,19 +1183,19 @@ mpisyncstart.enable true
       {
         auto field_x =
             Ioss::Field("mesh_model_coordinates_x", field.get_type(), "scalar", role, num_to_get);
-        this->get_field_internal(*sb, field_x, &data_x[0], component_data_size);
+        this->get_field_internal(*sb, field_x, data_x.data(), component_data_size);
       }
 
       if (dim > 1) {
         auto field_y =
             Ioss::Field("mesh_model_coordinates_y", field.get_type(), "scalar", role, num_to_get);
-        this->get_field_internal(*sb, field_y, &data_y[0], component_data_size);
+        this->get_field_internal(*sb, field_y, data_y.data(), component_data_size);
       }
 
       if (dim > 2) {
         auto field_z =
             Ioss::Field("mesh_model_coordinates_z", field.get_type(), "scalar", role, num_to_get);
-        this->get_field_internal(*sb, field_z, &data_z[0], component_data_size);
+        this->get_field_internal(*sb, field_z, data_z.data(), component_data_size);
       }
 
       size_t index(0);

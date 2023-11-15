@@ -17,7 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_CommSet.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
@@ -32,6 +31,7 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_State.h"
@@ -850,8 +850,8 @@ namespace {
     if (ige->type() == Ioss::SIDEBLOCK && field_name == "ids") {
       return;
     }
-    ige->get_field_data(field_name, &data[0], isize);
-    oge->put_field_data(field_name, &data[0], isize);
+    ige->get_field_data(field_name, data.data(), isize);
+    oge->put_field_data(field_name, data.data(), isize);
   }
 
   void transfer_properties(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge)
@@ -930,8 +930,8 @@ namespace {
 
           data.resize(isize);
 
-          (*i)->get_field_data("skin", &data[0], isize);
-          fb->put_field_data("element_side", &data[0], osize);
+          (*i)->get_field_data("skin", data.data(), isize);
+          fb->put_field_data("element_side", data.data(), osize);
           ++i;
         }
         else {
@@ -1013,11 +1013,11 @@ namespace {
             int isize = (*i)->get_field(field_name).get_size();
             int count = (*i)->get_field(field_name).raw_count();
             data.resize(isize);
-            auto *rdata = reinterpret_cast<double *>(&data[0]);
+            auto *rdata = reinterpret_cast<double *>(data.data());
             for (int ii = 0; ii < count; ii++) {
               rdata[ii] = globals.offset_pressure;
             }
-            fb->put_field_data(field_name, &data[0], isize);
+            fb->put_field_data(field_name, data.data(), isize);
             break;
           }
         }
@@ -1063,9 +1063,9 @@ namespace {
             int isize = (*i)->get_field(field_name).get_size();
             int count = (*i)->get_field(field_name).raw_count();
             data.resize(isize);
-            auto *rdata = reinterpret_cast<double *>(&data[0]);
+            auto *rdata = reinterpret_cast<double *>(data.data());
 
-            (*i)->get_field_data(field_name, &data[0], isize);
+            (*i)->get_field_data(field_name, data.data(), isize);
             for (int ii = 0; ii < count; ii++) {
               rdata[ii] -= zdata[ii];
             }
@@ -1075,19 +1075,19 @@ namespace {
                 rdata[ii] += globals.offset_pressure;
               }
             }
-            fb->put_field_data(field_name, &data[0], isize);
+            fb->put_field_data(field_name, data.data(), isize);
           }
           else if (globals.offset_pressure != 0.0 && field_name == cth_pressure) {
             int isize = (*i)->get_field(field_name).get_size();
             int count = (*i)->get_field(field_name).raw_count();
             data.resize(isize);
-            auto *rdata = reinterpret_cast<double *>(&data[0]);
+            auto *rdata = reinterpret_cast<double *>(data.data());
 
-            (*i)->get_field_data(field_name, &data[0], isize);
+            (*i)->get_field_data(field_name, data.data(), isize);
             for (int ii = 0; ii < count; ii++) {
               rdata[ii] += globals.offset_pressure;
             }
-            fb->put_field_data(field_name, &data[0], isize);
+            fb->put_field_data(field_name, data.data(), isize);
           }
           else if (Ioss::Utils::substr_equal("cth_", field_name)) {
             assert(fb->field_exists(field_name));
@@ -1154,11 +1154,11 @@ namespace {
               int isize = (*i)->get_field(field_name).get_size();
               int count = (*i)->get_field(field_name).raw_count();
               data.resize(isize);
-              auto *rdata = reinterpret_cast<double *>(&data[0]);
+              auto *rdata = reinterpret_cast<double *>(data.data());
               for (int ii = 0; ii < count; ii++) {
                 rdata[ii] = value;
               }
-              fb->put_field_data(field_name, &data[0], isize);
+              fb->put_field_data(field_name, data.data(), isize);
             }
             else {
               // Replicate first field as last field...
@@ -1242,7 +1242,7 @@ namespace {
     std::vector<double> coord(3 * num_nodes);
     assert(3 * num_nodes * sizeof(double) == (size_t)coord_size);
 
-    nb->get_field_data("mesh_model_coordinates", &coord[0], coord_size);
+    nb->get_field_data("mesh_model_coordinates", coord.data(), coord_size);
 
     // Also get an array for the average nodal normal vector...
     std::vector<double> node_normal(3 * num_nodes);

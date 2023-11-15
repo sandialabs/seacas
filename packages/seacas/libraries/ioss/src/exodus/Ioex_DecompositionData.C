@@ -1871,7 +1871,7 @@ namespace Ioex {
     // The number of locally-owned nodes on this processor is 'position'
     *locally_owned_count = position;
 
-    MPI_Allgather(locally_owned_count, 1, MPI_LONG_LONG_INT, &rcv_count[0], 1, MPI_LONG_LONG_INT,
+    MPI_Allgather(locally_owned_count, 1, MPI_LONG_LONG_INT, rcv_count.data(), 1, MPI_LONG_LONG_INT,
                   comm_);
     m_decomposition.show_progress("\tAllgather finished");
 

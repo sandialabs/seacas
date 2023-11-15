@@ -337,7 +337,7 @@ namespace Iogs {
         std::vector<int64_t> elem_side;
         m_generatedMesh->sideset_elem_sides(id, elem_side);
         if (field.get_name() == "element_side_raw") {
-          map_global_to_local(get_element_map(), elem_side.size(), 2, &elem_side[0]);
+          map_global_to_local(get_element_map(), elem_side.size(), 2, elem_side.data());
         }
 
         if (field.is_type(Ioss::Field::INTEGER)) {

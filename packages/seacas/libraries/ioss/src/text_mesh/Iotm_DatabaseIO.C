@@ -389,7 +389,7 @@ namespace Iotm {
         std::vector<int64_t> elem_side;
         m_textMesh->sideblock_elem_sides(id, ef_blk->name(), elem_side);
         if (field.get_name() == "element_side_raw") {
-          map_global_to_local(get_element_map(), elem_side.size(), 2, &elem_side[0]);
+          map_global_to_local(get_element_map(), elem_side.size(), 2, elem_side.data());
         }
 
         if (field.is_type(Ioss::Field::INTEGER)) {
@@ -446,7 +446,7 @@ namespace Iotm {
         std::vector<int64_t> nodes;
         m_textMesh->nodeset_nodes(id, nodes);
         if (field.get_name() == "ids_raw") {
-          map_global_to_local(get_node_map(), nodes.size(), 1, &nodes[0]);
+          map_global_to_local(get_node_map(), nodes.size(), 1, nodes.data());
         }
 
         if (field.is_type(Ioss::Field::INTEGER)) {

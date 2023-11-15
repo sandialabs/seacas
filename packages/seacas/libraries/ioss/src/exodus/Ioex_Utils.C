@@ -470,7 +470,7 @@ namespace Ioex {
       // Filter out names of the form "basename_id" if the name
       // id doesn't match the id in the name...
       size_t base_size = basename.size();
-      if (std::strncmp(basename.c_str(), &buffer[0], base_size) == 0) {
+      if (std::strncmp(basename.c_str(), buffer.data(), base_size) == 0) {
         int64_t name_id = extract_id(buffer.data());
 
         // See if name is truly of form "basename_name_id" (e.g. "surface_{id}")

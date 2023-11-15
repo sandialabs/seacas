@@ -348,7 +348,7 @@ namespace Iotm {
     /* create global coordinates */
     int64_t count = node_count_proc();
     coord.resize(count * spatial_dimension());
-    coordinates(&coord[0]);
+    coordinates(coord.data());
   }
 
   void TextMesh::coordinates(double *coord) const
@@ -504,7 +504,7 @@ namespace Iotm {
     int64_t npe = topo.num_nodes();
     connect.resize(element_count_proc(id) * npe);
 
-    raw_connectivity(id, &connect[0]);
+    raw_connectivity(id, connect.data());
   }
 
   void TextMesh::connectivity(int64_t id, Ioss::IntVector &connect) const
@@ -514,7 +514,7 @@ namespace Iotm {
     int64_t npe = topo.num_nodes();
     connect.resize(element_count_proc(id) * npe);
 
-    raw_connectivity(id, &connect[0]);
+    raw_connectivity(id, connect.data());
   }
 
   void TextMesh::connectivity(int64_t id, int64_t *connect) const { raw_connectivity(id, connect); }
