@@ -1385,7 +1385,7 @@ namespace Ioex {
                                  Ioss::Int64Vector &element, Ioss::Int64Vector &sides)
     {
       // Check whether we already populated the element/sides vectors.
-      if (element.empty() && sides.empty() && number_sides > 0) {
+      if (element.empty() && sides.empty()) {
         element.resize(number_sides);
         sides.resize(number_sides);
 
