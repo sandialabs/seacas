@@ -67,6 +67,7 @@ namespace Ioss {
     DatabaseIO()                              = delete;
     DatabaseIO(const DatabaseIO &)            = delete;
     DatabaseIO &operator=(const DatabaseIO &) = delete;
+    virtual ~DatabaseIO();
 
     /** \brief Check to see if database state is OK.
      *
@@ -118,8 +119,6 @@ namespace Ioss {
      *   not a node_major database.  Exodus is node major, CGNS is not.
      */
     virtual bool node_major() const { return true; }
-
-    virtual ~DatabaseIO();
 
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...
@@ -898,7 +897,7 @@ namespace Ioss {
     bool fieldSeparatorSpecified{false};
     bool enableFieldRecognition{true};
     bool fieldStripTrailing_{false};
-    bool isInput;
+    bool isInput{true}; // No good default...
     bool isParallelConsistent{
         true}; // True if application will make field data get/put calls parallel
                // consistently.
