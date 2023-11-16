@@ -150,6 +150,8 @@ jobs:
           cd build
           source /opt/intel/oneapi/setvars.sh
           ls /opt/intel/oneapi/compiler/2023.2.2/linux/bin/intel64/
+          find /opt/intel/oneapi -name if\* -print
+          printenv
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
