@@ -27,8 +27,6 @@
 #define R 10855L        /* remainder                 */
 #define MAX_VALUE (MOD - 1)
 
-#define EXP_VAL 1285562981L /* value for 10,000th draw */
-
 #define IMPOSSIBLE_RAND (-1)
 #define STARTUP_RANDS                                                                              \
   16 /* throw away this number of                                                                  \
@@ -135,6 +133,9 @@ double rand_rect_port(void) { return (double)rand_port() / (double)(MAX_VALUE + 
   use Russian peasant algorithm followed by approximate factoring */
 
 #if defined(TESTING)
+
+#define EXP_VAL 1285562981L /* value for 10,000th draw */
+
 /* Test the generator */
 #include <stdio.h>
 int main(void)

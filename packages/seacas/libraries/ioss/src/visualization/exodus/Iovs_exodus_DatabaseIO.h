@@ -54,13 +54,13 @@ namespace Iovs_exodus {
     int int_byte_size_db() const override { return int_byte_size_api(); }
 
   private:
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
+    bool begin_nl(Ioss::State state) override;
+    bool end_nl(Ioss::State state) override;
 
-    bool begin_state__(int state, double time) override;
-    bool end_state__(int state, double time) override;
+    bool begin_state_nl(int state, double time) override;
+    bool end_state_nl(int state, double time) override;
 
-    void read_meta_data__() override;
+    void read_meta_data_nl() override;
 
     // For the time being, treat vis as write only. Consider glue pipelines.
     int64_t get_field_internal(const Ioss::Region * /*reg*/, const Ioss::Field & /*field*/,

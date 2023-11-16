@@ -126,7 +126,7 @@ namespace Iogn {
 
   DatabaseIO::~DatabaseIO() { delete m_generatedMesh; }
 
-  void DatabaseIO::read_meta_data__()
+  void DatabaseIO::read_meta_data_nl()
   {
     if (m_generatedMesh == nullptr) {
       if (get_filename() == "external") {
@@ -172,7 +172,7 @@ namespace Iogn {
     nodesetCount      = m_generatedMesh->nodeset_count();
     sidesetCount      = m_generatedMesh->sideset_count();
 
-    get_step_times__();
+    get_step_times_nl();
 
     add_transient_fields(this_region);
     get_nodeblocks();
@@ -185,11 +185,11 @@ namespace Iogn {
         Ioss::Property(std::string("title"), std::string("GeneratedMesh: ") += get_filename()));
   }
 
-  bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::begin_nl(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::end_nl(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state__(int /* state */, double time)
+  bool DatabaseIO::begin_state_nl(int /* state */, double time)
   {
     currentTime = time;
     return true;
@@ -382,7 +382,7 @@ namespace Iogn {
         std::vector<int64_t> elem_side;
         m_generatedMesh->sideset_elem_sides(id, elem_side);
         if (field.get_name() == "element_side_raw") {
-          map_global_to_local(get_element_map(), elem_side.size(), 2, &elem_side[0]);
+          map_global_to_local(get_element_map(), elem_side.size(), 2, elem_side.data());
         }
 
         if (field.is_type(Ioss::Field::INTEGER)) {
@@ -439,7 +439,7 @@ namespace Iogn {
         std::vector<int64_t> nodes;
         m_generatedMesh->nodeset_nodes(id, nodes);
         if (field.get_name() == "ids_raw") {
-          map_global_to_local(get_node_map(), nodes.size(), 1, &nodes[0]);
+          map_global_to_local(get_node_map(), nodes.size(), 1, nodes.data());
         }
 
         if (field.is_type(Ioss::Field::INTEGER)) {
@@ -582,7 +582,7 @@ namespace Iogn {
     add_transient_fields(block);
   }
 
-  void DatabaseIO::get_step_times__()
+  void DatabaseIO::get_step_times_nl()
   {
     auto time_step_count = m_generatedMesh->timestep_count();
     for (int i = 0; i < time_step_count; i++) {

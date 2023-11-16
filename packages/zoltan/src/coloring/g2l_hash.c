@@ -62,7 +62,7 @@ extern "C" {
 
 #define MAX_PRIME 193
 
-int Zoltan_GenPrime(int stopafter, int *prime_num)
+static int Zoltan_GenPrime(int stopafter, int *prime_num)
 {
     static const int primes[MAX_PRIME]=
         {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 41, 47, 53, 59, 67, 79, 89,

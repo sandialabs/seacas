@@ -223,7 +223,8 @@ Zoltan_Postprocess_Order (ZZ *zz,
 
   /* Fill in the Zoltan Order Struct */
   /* EBEB: For now, discard separator info */
-  if (0){ /* DEBUG: Print separator sizes to file */
+#if 0
+  { /* DEBUG: Print separator sizes to file */
     FILE *fp;
     fp = fopen("separators.txt", "w");
     fprintf(fp, "%i\n", ord->num_part);
@@ -237,6 +238,7 @@ Zoltan_Postprocess_Order (ZZ *zz,
     fprintf(fp, "\n");
     fclose(fp);
   }
+#endif
 
   return (ierr);
 }

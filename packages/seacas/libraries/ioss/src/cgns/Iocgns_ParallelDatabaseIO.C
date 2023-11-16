@@ -169,7 +169,7 @@ namespace Iocgns {
       }
     }
 
-    Ioss::DatabaseIO::openDatabase__();
+    Ioss::DatabaseIO::openDatabase_nl();
   }
 
   ParallelDatabaseIO::~ParallelDatabaseIO()
@@ -178,8 +178,8 @@ namespace Iocgns {
       delete gtb.second;
     }
     try {
-      closeBaseDatabase__();
-      closeDatabase__();
+      closeBaseDatabase_nl();
+      closeDatabase_nl();
     }
     catch (...) {
     }
@@ -188,12 +188,12 @@ namespace Iocgns {
   int ParallelDatabaseIO::get_file_pointer() const
   {
     if (m_cgnsFilePtr < 0) {
-      openDatabase__();
+      openDatabase_nl();
     }
     return m_cgnsFilePtr;
   }
 
-  void ParallelDatabaseIO::openDatabase__() const
+  void ParallelDatabaseIO::openDatabase_nl() const
   {
     if (m_cgnsFilePtr < 0) {
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
@@ -229,7 +229,7 @@ namespace Iocgns {
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECKM(cgp_pio_mode(CGP_COLLECTIVE));
-      Ioss::DatabaseIO::openDatabase__();
+      Ioss::DatabaseIO::openDatabase_nl();
       int ierr = cgp_open(get_dw_name().c_str(), mode, &m_cgnsFilePtr);
 
       if (do_timer) {
@@ -279,7 +279,7 @@ namespace Iocgns {
     assert(m_cgnsFilePtr >= 0);
   }
 
-  void ParallelDatabaseIO::closeBaseDatabase__() const
+  void ParallelDatabaseIO::closeBaseDatabase_nl() const
   {
     if (m_cgnsBasePtr > 0) {
       bool do_timer = false;
@@ -300,7 +300,7 @@ namespace Iocgns {
     }
   }
 
-  void ParallelDatabaseIO::closeDatabase__() const
+  void ParallelDatabaseIO::closeDatabase_nl() const
   {
     if (m_cgnsFilePtr > 0) {
       bool do_timer = false;
@@ -345,7 +345,7 @@ namespace Iocgns {
     }
   }
 
-  void ParallelDatabaseIO::release_memory__()
+  void ParallelDatabaseIO::release_memory_nl()
   {
     nodeMap.release_memory();
     elemMap.release_memory();
@@ -356,21 +356,21 @@ namespace Iocgns {
     }
   }
 
-  int64_t ParallelDatabaseIO::node_global_to_local__(int64_t global, bool /* must_exist */) const
+  int64_t ParallelDatabaseIO::node_global_to_local_nl(int64_t global, bool /* must_exist */) const
   {
     // TODO: Fix
     return global;
   }
 
-  int64_t ParallelDatabaseIO::element_global_to_local__(int64_t global) const
+  int64_t ParallelDatabaseIO::element_global_to_local_nl(int64_t global) const
   {
     // TODO: Fix
     return global;
   }
 
-  void ParallelDatabaseIO::read_meta_data__()
+  void ParallelDatabaseIO::read_meta_data_nl()
   {
-    openDatabase__();
+    openDatabase_nl();
 
     // Determine the number of bases in the grid.
     // Currently only handle 1.
@@ -384,7 +384,7 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    get_step_times__();
+    get_step_times_nl();
 
     if (open_create_behavior() == Ioss::DB_APPEND) {
       return;
@@ -800,7 +800,7 @@ namespace Iocgns {
         Utils::common_write_meta_data(get_file_pointer(), *get_region(), m_zoneOffset, true);
   }
 
-  void ParallelDatabaseIO::get_step_times__()
+  void ParallelDatabaseIO::get_step_times_nl()
   {
     Utils::get_step_times(get_file_pointer(), m_timesteps, get_region(), timeScaleFactor,
                           myProcessor);
@@ -938,7 +938,7 @@ namespace Iocgns {
     }
   }
 
-  bool ParallelDatabaseIO::begin__(Ioss::State state)
+  bool ParallelDatabaseIO::begin_nl(Ioss::State state)
   {
     dbState = state;
     return true;
@@ -953,7 +953,7 @@ namespace Iocgns {
       m_cgnsBasePtr = m_cgnsFilePtr;
       m_cgnsFilePtr = -1;
     }
-    closeDatabase__();
+    closeDatabase_nl();
   }
 
   void ParallelDatabaseIO::open_state_file(int state)
@@ -977,7 +977,7 @@ namespace Iocgns {
     Iocgns::Utils::write_state_meta_data(get_file_pointer(), *get_region(), true);
   }
 
-  bool ParallelDatabaseIO::end__(Ioss::State state)
+  bool ParallelDatabaseIO::end_nl(Ioss::State state)
   {
     // Transitioning out of state 'state'
     switch (state) {
@@ -1008,7 +1008,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool ParallelDatabaseIO::begin_state__(int state, double /* time */)
+  bool ParallelDatabaseIO::begin_state_nl(int state, double /* time */)
   {
     if (is_input()) {
       return true;
@@ -1025,7 +1025,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool ParallelDatabaseIO::end_state__(int state, double time)
+  bool ParallelDatabaseIO::end_state_nl(int state, double time)
   {
     if (!is_input()) {
       m_timesteps.push_back(time);
@@ -1041,21 +1041,21 @@ namespace Iocgns {
       }
 
       if (do_flush) {
-        flush_database__();
+        flush_database_nl();
       }
     }
 
     return true;
   }
 
-  void ParallelDatabaseIO::flush_database__() const
+  void ParallelDatabaseIO::flush_database_nl() const
   {
     // For HDF5 files, it looks like we need to close the database between
     // writes if we want to have a valid database for external access or
     // to protect against a crash corrupting the file.
     finalize_database();
-    closeDatabase__();
-    m_cgnsFilePtr = -2; // Tell openDatabase__ that we want to append
+    closeDatabase_nl();
+    m_cgnsFilePtr = -2; // Tell openDatabase_nl that we want to append
   }
 
   const Ioss::Map &ParallelDatabaseIO::get_map(entity_type type) const

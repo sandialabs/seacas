@@ -89,6 +89,12 @@ static int search_hash_table(ZZ *, ZOLTAN_ID_PTR gid,
                          struct Hash_Node **ht, int tableSize);
 static void free_hash_table(struct Hash_Node **ht, int tableSize);
 
+static void Zoltan_PartDist_MPIOp(
+  void *in,
+  void *inout,
+  int *len,
+  MPI_Datatype *dptr);
+
 
 /****************************************************************************/
 /****************************************************************************/

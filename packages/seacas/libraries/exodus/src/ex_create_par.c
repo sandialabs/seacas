@@ -164,19 +164,19 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  char *canon_path = ex__canonicalize_filename(path);
+  char *canon_path = exi_canonicalize_filename(path);
 
   /* Verify that this file is not already open for read or write...
      In theory, should be ok for the file to be open multiple times
      for read, but bad things can happen if being read and written
      at the same time...
   */
-  if (ex__check_multiple_open(canon_path, EX_WRITE, __func__)) {
+  if (exi_check_multiple_open(canon_path, EX_WRITE, __func__)) {
     free(canon_path);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  nc_mode = ex__handle_mode(my_mode, is_parallel, run_version);
+  nc_mode = exi_handle_mode(my_mode, is_parallel, run_version);
 
 #if defined NC_NOATTCREORD
   /* Disable attribute creation order tracking if available... */
@@ -227,7 +227,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  status = ex__populate_header(exoid, canon_path, my_mode, is_parallel, comp_ws, io_ws);
+  status = exi_populate_header(exoid, canon_path, my_mode, is_parallel, comp_ws, io_ws);
   if (status != EX_NOERR) {
     free(canon_path);
     EX_FUNC_LEAVE(status);

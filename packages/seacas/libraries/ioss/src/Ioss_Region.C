@@ -627,7 +627,7 @@ namespace Ioss {
     bool success = false;
     {
       IOSS_FUNC_ENTER(m_);
-      success = begin_mode__(new_state);
+      success = begin_mode_nl(new_state);
     }
     // Pass the 'begin state' message on to the database so it can do any
     // cleanup/data checking/manipulations it needs to do.
@@ -645,7 +645,7 @@ namespace Ioss {
     return success;
   }
 
-  bool Region::begin_mode__(State new_state)
+  bool Region::begin_mode_nl(State new_state)
   {
     bool success = false;
     if (new_state == STATE_CLOSED) {
@@ -688,7 +688,7 @@ namespace Ioss {
   {
     {
       IOSS_FUNC_ENTER(m_);
-      end_mode__(current_state);
+      end_mode_nl(current_state);
     }
 
     // Pass the 'end state' message on to the database so it can do any
@@ -698,7 +698,7 @@ namespace Ioss {
     return success;
   }
 
-  bool Region::end_mode__(State current_state)
+  bool Region::end_mode_nl(State current_state)
   {
     bool success = true;
     // Check that 'current_state' matches the current state of the
@@ -796,7 +796,7 @@ namespace Ioss {
    *  \param[in] time The time at the new state.
    *  \returns The state index (1-based).
    */
-  int Region::add_state__(double time)
+  int Region::add_state_nl(double time)
   {
 
     // NOTE:  For restart input databases, it is possible that the time
@@ -1103,7 +1103,7 @@ namespace Ioss {
       structured_block->property_add(Ioss::Property("zone", (int)structuredBlocks.size()));
       structured_block->property_add(Ioss::Property("base", 1));
       // Add name as alias to itself to simplify later uses...
-      add_alias__(structured_block);
+      add_alias_nl(structured_block);
       return true;
     }
     return false;
@@ -1124,7 +1124,7 @@ namespace Ioss {
     if (get_state() == STATE_DEFINE_MODEL) {
       nodeBlocks.push_back(node_block);
       // Add name as alias to itself to simplify later uses...
-      add_alias__(node_block);
+      add_alias_nl(node_block);
 
       return true;
     }
@@ -1180,7 +1180,7 @@ namespace Ioss {
     if (get_state() == STATE_DEFINE_MODEL) {
       assemblies.push_back(assembly);
       // Add name as alias to itself to simplify later uses...
-      add_alias__(assembly);
+      add_alias_nl(assembly);
 
       return true;
     }
@@ -1202,7 +1202,7 @@ namespace Ioss {
     if (get_state() == STATE_DEFINE_MODEL) {
       blobs.push_back(blob);
       // Add name as alias to itself to simplify later uses...
-      add_alias__(blob);
+      add_alias_nl(blob);
 
       return true;
     }
@@ -1239,7 +1239,7 @@ namespace Ioss {
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
       // Add name as alias to itself to simplify later uses...
-      add_alias__(element_block);
+      add_alias_nl(element_block);
 
       // An input database defines these in the order matching the order
       // on the "file".  For output, we need to order based on the
@@ -1301,7 +1301,7 @@ namespace Ioss {
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
       // Add name as alias to itself to simplify later uses...
-      add_alias__(face_block);
+      add_alias_nl(face_block);
 
       // An input database defines these in the order matching the order
       // on the "file".  For output, we need to order based on the
@@ -1337,7 +1337,7 @@ namespace Ioss {
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
       // Add name as alias to itself to simplify later uses...
-      add_alias__(edge_block);
+      add_alias_nl(edge_block);
 
       // An input database defines these in the order matching the order
       // on the "file".  For output, we need to order based on the
@@ -1372,13 +1372,13 @@ namespace Ioss {
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
       // Add name as alias to itself to simplify later uses...
-      add_alias__(sideset);
+      add_alias_nl(sideset);
 
       // Also add "sideset_{id}" as an alias.
       auto id = sideset->get_optional_property(id_str(), -1);
       if (id != -1) {
         std::string ss_alias = fmt::format("sideset_{}", id);
-        add_alias__(sideset->name(), ss_alias, sideset->type());
+        add_alias_nl(sideset->name(), ss_alias, sideset->type());
       }
       sideSets.push_back(sideset);
       return true;
@@ -1399,13 +1399,13 @@ namespace Ioss {
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
       // Add name as alias to itself to simplify later uses...
-      add_alias__(nodeset);
+      add_alias_nl(nodeset);
 
       // Also add "nodeset_{id}" as an alias.
       auto id = nodeset->get_optional_property(id_str(), -1);
       if (id != -1) {
         std::string ns_alias = fmt::format("nodeset_{}", id);
-        add_alias__(nodeset->name(), ns_alias, nodeset->type());
+        add_alias_nl(nodeset->name(), ns_alias, nodeset->type());
       }
       nodeSets.push_back(nodeset);
       return true;
@@ -1426,7 +1426,7 @@ namespace Ioss {
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
       // Add name as alias to itself to simplify later uses...
-      add_alias__(edgeset);
+      add_alias_nl(edgeset);
       edgeSets.push_back(edgeset);
       return true;
     }
@@ -1446,7 +1446,7 @@ namespace Ioss {
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
       // Add name as alias to itself to simplify later uses...
-      add_alias__(faceset);
+      add_alias_nl(faceset);
       faceSets.push_back(faceset);
       return true;
     }
@@ -1466,7 +1466,7 @@ namespace Ioss {
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
       // Add name as alias to itself to simplify later uses...
-      add_alias__(elementset);
+      add_alias_nl(elementset);
       elementSets.push_back(elementset);
       return true;
     }
@@ -1486,7 +1486,7 @@ namespace Ioss {
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
       // Add name as alias to itself to simplify later uses...
-      add_alias__(commset);
+      add_alias_nl(commset);
       commSets.push_back(commset);
       return true;
     }
@@ -1585,14 +1585,14 @@ namespace Ioss {
   bool Region::add_alias(const GroupingEntity *ge)
   {
     IOSS_FUNC_ENTER(m_);
-    return add_alias__(ge);
+    return add_alias_nl(ge);
   }
 
-  bool Region::add_alias__(const GroupingEntity *ge)
+  bool Region::add_alias_nl(const GroupingEntity *ge)
   {
     // See if an entity with this name and type already exists...
     const auto       &db_name = ge->name();
-    const std::string alias   = get_alias__(db_name, ge->type());
+    const std::string alias   = get_alias_nl(db_name, ge->type());
 
     if (!alias.empty()) {
       const GroupingEntity *old_ge = get_entity(db_name, ge->type());
@@ -1611,13 +1611,13 @@ namespace Ioss {
         }
       }
     }
-    bool success = add_alias__(db_name, db_name, ge->type());
+    bool success = add_alias_nl(db_name, db_name, ge->type());
 
     // "db_name" property is used with the canonical name setting.
     if (success && ge->property_exists("db_name")) {
       std::string canon_name = ge->get_property("db_name").get_string();
       if (canon_name != db_name) {
-        success = add_alias__(db_name, canon_name, ge->type());
+        success = add_alias_nl(db_name, canon_name, ge->type());
       }
     }
 
@@ -1637,16 +1637,16 @@ namespace Ioss {
   bool Region::add_alias(const std::string &db_name, const std::string &alias, EntityType type)
   {
     IOSS_FUNC_ENTER(m_);
-    return add_alias__(db_name, alias, type);
+    return add_alias_nl(db_name, alias, type);
   }
 
-  bool Region::add_alias__(const std::string &db_name, const std::string &alias, EntityType type)
+  bool Region::add_alias_nl(const std::string &db_name, const std::string &alias, EntityType type)
   {
     // Possible that 'db_name' is itself an alias, resolve down to "canonical"
     // name...
     std::string canon = db_name;
     if (db_name != alias) {
-      canon = get_alias__(db_name, type);
+      canon = get_alias_nl(db_name, type);
     }
 
     if (!canon.empty()) {
@@ -1673,7 +1673,7 @@ namespace Ioss {
     auto *entity = get_entity(db_name);
     IOSS_FUNC_ENTER(m_);
     if (entity != nullptr) {
-      return add_alias__(db_name, alias, entity->type());
+      return add_alias_nl(db_name, alias, entity->type());
     }
     return false;
   }
@@ -1687,10 +1687,10 @@ namespace Ioss {
   std::string Region::get_alias(const std::string &alias, EntityType type) const
   {
     IOSS_FUNC_ENTER(m_);
-    return get_alias__(alias, type);
+    return get_alias_nl(alias, type);
   }
 
-  std::string Region::get_alias__(const std::string &alias, EntityType type) const
+  std::string Region::get_alias_nl(const std::string &alias, EntityType type) const
   {
     std::string ci_alias = Ioss::Utils::uppercase(alias);
     auto        I        = aliases_[type].find(ci_alias);
@@ -1949,7 +1949,7 @@ namespace Ioss {
   Assembly *Region::get_assembly(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, ASSEMBLY);
+    const std::string db_name = get_alias_nl(my_name, ASSEMBLY);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     Assembly *ge = nullptr;
@@ -1970,7 +1970,7 @@ namespace Ioss {
   Blob *Region::get_blob(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, BLOB);
+    const std::string db_name = get_alias_nl(my_name, BLOB);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     Blob *ge = nullptr;
@@ -1991,7 +1991,7 @@ namespace Ioss {
   NodeBlock *Region::get_node_block(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, NODEBLOCK);
+    const std::string db_name = get_alias_nl(my_name, NODEBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     NodeBlock *ge = nullptr;
@@ -2012,7 +2012,7 @@ namespace Ioss {
   EdgeBlock *Region::get_edge_block(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, EDGEBLOCK);
+    const std::string db_name = get_alias_nl(my_name, EDGEBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     EdgeBlock *ge = nullptr;
@@ -2033,7 +2033,7 @@ namespace Ioss {
   FaceBlock *Region::get_face_block(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, FACEBLOCK);
+    const std::string db_name = get_alias_nl(my_name, FACEBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     FaceBlock *ge = nullptr;
@@ -2054,7 +2054,7 @@ namespace Ioss {
   ElementBlock *Region::get_element_block(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, ELEMENTBLOCK);
+    const std::string db_name = get_alias_nl(my_name, ELEMENTBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     ElementBlock *ge = nullptr;
@@ -2075,7 +2075,7 @@ namespace Ioss {
   StructuredBlock *Region::get_structured_block(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, STRUCTUREDBLOCK);
+    const std::string db_name = get_alias_nl(my_name, STRUCTUREDBLOCK);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     StructuredBlock *ge = nullptr;
@@ -2096,7 +2096,7 @@ namespace Ioss {
   SideSet *Region::get_sideset(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, SIDESET);
+    const std::string db_name = get_alias_nl(my_name, SIDESET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     SideSet *ge = nullptr;
@@ -2135,7 +2135,7 @@ namespace Ioss {
   NodeSet *Region::get_nodeset(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, NODESET);
+    const std::string db_name = get_alias_nl(my_name, NODESET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     NodeSet *ge = nullptr;
@@ -2156,7 +2156,7 @@ namespace Ioss {
   EdgeSet *Region::get_edgeset(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, EDGESET);
+    const std::string db_name = get_alias_nl(my_name, EDGESET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     EdgeSet *ge = nullptr;
@@ -2177,7 +2177,7 @@ namespace Ioss {
   FaceSet *Region::get_faceset(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, FACESET);
+    const std::string db_name = get_alias_nl(my_name, FACESET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     FaceSet *ge = nullptr;
@@ -2198,7 +2198,7 @@ namespace Ioss {
   ElementSet *Region::get_elementset(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, ELEMENTSET);
+    const std::string db_name = get_alias_nl(my_name, ELEMENTSET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     ElementSet *ge = nullptr;
@@ -2219,7 +2219,7 @@ namespace Ioss {
   CommSet *Region::get_commset(const std::string &my_name) const
   {
     IOSS_FUNC_ENTER(m_);
-    const std::string db_name = get_alias__(my_name, COMMSET);
+    const std::string db_name = get_alias_nl(my_name, COMMSET);
     unsigned int      db_hash = Ioss::Utils::hash(db_name);
 
     CommSet *ge = nullptr;
@@ -2558,7 +2558,7 @@ namespace Ioss {
         std::string alias = alias_pair.first;
         std::string base  = alias_pair.second;
         if (alias != base && to->get_entity(base) != nullptr) {
-          to->add_alias__(base, alias, alias_map.first);
+          to->add_alias_nl(base, alias, alias_map.first);
         }
       }
     }
@@ -2704,7 +2704,7 @@ namespace Ioss {
         if (alias != base) {
           GroupingEntity *ge = get_entity(base);
           if (ge != nullptr) {
-            add_alias__(base, alias, alias_map.first);
+            add_alias_nl(base, alias, alias_map.first);
           }
         }
       }
@@ -2716,7 +2716,7 @@ namespace Ioss {
     const std::string &name = entity->name();
 
     // See if any alias with this name...
-    std::string alias = get_alias__(name, entity->type());
+    std::string alias = get_alias_nl(name, entity->type());
 
     if (!alias.empty()) {
       // There is an entity with this name...

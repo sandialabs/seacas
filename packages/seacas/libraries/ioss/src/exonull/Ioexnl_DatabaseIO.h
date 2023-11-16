@@ -71,7 +71,7 @@ namespace Ioexnl {
     int get_file_pointer() const override; // Open file and set exodusFilePtr.
 
   private:
-    void get_step_times__() override;
+    void get_step_times_nl() override;
 
     bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
                             bool overwrite, bool abort_if_error) const override;
@@ -124,7 +124,7 @@ namespace Ioexnl {
     void compute_node_status() const;
 
     // Metadata-related functions.
-    void read_meta_data__() override;
+    void read_meta_data_nl() override;
     void read_communication_metadata();
 
     int64_t read_transient_field(const Ioexnl::VariableNameMap &variables, const Ioss::Field &field,

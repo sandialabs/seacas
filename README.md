@@ -49,7 +49,8 @@ libraries using the `install-tpl.sh` script, or you can install them
 manually as detailed in
 [TPL-Manual-Install.md](TPL-Manual-Install.md).
 
-*  To use the script, simply type `./install-tpl.sh`
+*  The script requires bash and wget, which you may need to install.
+*  To use the script, simply type `bash ./install-tpl.sh`.
 *  The default behavior can be modified via a few environment variables:
 
 | Variable        | Values          | Default | Description |
@@ -77,7 +78,8 @@ manually as detailed in
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | FMT             | YES, NO | YES | Should Lib::FMT TPL be built. |
-| H5VERSION       | V114, V110, V18 | V110 | Use HDF5-1.14.X, HDF5-1.10.X or HDF5-1.8.X |
+| H5VERSION       | V114, V110, V18 | V114 | Use HDF5-1.14.X, HDF5-1.10.X or HDF5-1.8.X |
+| H5CPP           | YES, NO | NO  | Should the HDF5 C++ library be built/installed |
 | BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
 | JOBS            | {count} |  2   | Number of "jobs" used for simultaneous compiles |
 | SUDO            | "" or sudo | "" | If need to be superuser to install |
@@ -92,7 +94,7 @@ to configure the SEACAS CMake build.
 *  `cd $ACCESS`
 *  `mkdir build`
 *  `cd build`
-*  edit the `${ACCESS}cmake-config` file and adjust compilers and other settings as needed.
+*  edit the `${ACCESS}/cmake-config` file and adjust compilers and other settings as needed.
 *  enter the command `../cmake-config` and cmake should configure everything for the build.
 *  `make && make install`
 *  If everything works, your applications should be in `${ACCESS}/bin`
@@ -284,7 +286,7 @@ in aprepro.
 ### Mac
 On a mac system, I use the `brew` system which provides all of the
 applications listed above.  The X11 system I use is `XQuartz`.  The
-Mac also requires `XCode`
+Mac also requires `Xcode`
 
 ### Linux
 On an ubuntu system, the following is used to set up the basic

@@ -458,8 +458,8 @@ void Mesh::get_global_counts()
   // they can determine the offsets and totals...
   global_counts.resize(counts.size() * parallelUtil.parallel_size());
 
-  MPI_Allgather(&counts[0], counts.size(), MPI_LONG_LONG_INT, &global_counts[0], counts.size(),
-                MPI_LONG_LONG_INT, parallelUtil.communicator());
+  MPI_Allgather(counts.data(), counts.size(), MPI_LONG_LONG_INT, global_counts.data(),
+                counts.size(), MPI_LONG_LONG_INT, parallelUtil.communicator());
 
   std::vector<int64_t> offsets(counts.size());
 

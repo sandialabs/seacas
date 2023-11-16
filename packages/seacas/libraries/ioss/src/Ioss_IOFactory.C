@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -27,7 +27,7 @@ namespace {
   std::mutex m_;
 #endif
 
-  int describe__(Ioss::IOFactoryMap *registry, Ioss::NameList *names)
+  int describe_nl(Ioss::IOFactoryMap *registry, Ioss::NameList *names)
   {
     int                                count = 0;
     Ioss::IOFactoryMap::const_iterator I;
@@ -85,7 +85,7 @@ Ioss::DatabaseIO *Ioss::IOFactory::create(const std::string &type, const std::st
       std::ostringstream errmsg;
       fmt::print(errmsg, "ERROR: The database type '{}' is not supported.\n", type);
       Ioss::NameList db_types;
-      describe__(registry(), &db_types);
+      describe_nl(registry(), &db_types);
       fmt::print(errmsg, "\nSupported database types:\n\t{}\n\n",
                  fmt::join(db_types.begin(), db_types.end(), " "));
       IOSS_ERROR(errmsg);
@@ -117,7 +117,7 @@ Ioss::DatabaseIO *Ioss::IOFactory::create(const std::string &type, const std::st
 int Ioss::IOFactory::describe(NameList *names)
 {
   IOSS_FUNC_ENTER(m_);
-  return describe__(registry(), names);
+  return describe_nl(registry(), names);
 }
 
 /** \brief Get the names of database formats known to IOSS.

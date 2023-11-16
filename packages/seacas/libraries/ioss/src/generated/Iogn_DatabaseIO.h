@@ -102,14 +102,14 @@ namespace Iogn {
     const std::vector<std::string> &get_sideset_names() const { return m_sideset_names; }
 
   private:
-    void read_meta_data__() override;
+    void read_meta_data_nl() override;
 
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
+    bool begin_nl(Ioss::State state) override;
+    bool end_nl(Ioss::State state) override;
 
-    bool begin_state__(int state, double time) override;
+    bool begin_state_nl(int state, double time) override;
 
-    void        get_step_times__() override;
+    void        get_step_times_nl() override;
     void        get_nodeblocks();
     void        get_elemblocks();
     void        get_nodesets();

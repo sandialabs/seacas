@@ -110,7 +110,7 @@ namespace {
     }
   }
 
-  template <typename T, typename INT> void ex__iqsort(T *v, INT iv[], size_t N)
+  template <typename T, typename INT> void exi_iqsort(T *v, INT iv[], size_t N)
   {
     if (N <= 1) {
       return;
@@ -138,14 +138,14 @@ void index_coord_sort(const std::vector<double> &xyz, std::vector<INT> &index, i
   for (size_t i = axis; i < xyz.size(); i += 3) {
     comp[j++] = xyz[i];
   }
-  ex__iqsort(comp.data(), index.data(), index.size());
+  exi_iqsort(comp.data(), index.data(), index.size());
 }
 
 template <typename INT> void index_sort(const std::vector<INT> &ids, std::vector<INT> &index)
 {
   index.resize(ids.size());
   std::iota(index.begin(), index.end(), (INT)0);
-  ex__iqsort(ids.data(), index.data(), index.size());
+  exi_iqsort(ids.data(), index.data(), index.size());
 }
 
 template void index_coord_sort(const std::vector<double> &xyz, std::vector<int> &index, int axis);

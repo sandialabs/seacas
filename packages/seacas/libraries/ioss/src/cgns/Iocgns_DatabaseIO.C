@@ -37,7 +37,6 @@
 #error "Could not include cgnslib.h"
 #endif
 
-#include "tokenize.h"
 #include "Ioss_Assembly.h"
 #include "Ioss_CommSet.h"
 #include "Ioss_DBUsage.h"
@@ -56,15 +55,15 @@
 #include "Ioss_Field.h"
 #include "Ioss_FileInfo.h"
 #include "Ioss_GroupingEntity.h"
+#include "Ioss_Hex8.h"
 #include "Ioss_Map.h"
 #include "Ioss_MeshType.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
-#include "Ioss_Quad4.h"
-#include "Ioss_Hex8.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
+#include "Ioss_Quad4.h"
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
@@ -75,6 +74,7 @@
 #include "Ioss_ZoneConnectivity.h"
 #include "robin_hash.h"
 #include "robin_set.h"
+#include "tokenize.h"
 
 // extern char hdf5_access[64];
 
@@ -580,7 +580,7 @@ namespace Iocgns {
       }
     }
 
-    Ioss::DatabaseIO::openDatabase__();
+    Ioss::DatabaseIO::openDatabase_nl();
   }
 
   DatabaseIO::~DatabaseIO()
@@ -593,7 +593,7 @@ namespace Iocgns {
         CGCHECKM(cg_close(m_cgnsBasePtr));
         m_cgnsBasePtr = -1;
       }
-      closeDatabase__();
+      closeDatabase_nl();
     }
     catch (...) {
     }
@@ -602,12 +602,12 @@ namespace Iocgns {
   int DatabaseIO::get_file_pointer() const
   {
     if (m_cgnsFilePtr < 0) {
-      openDatabase__();
+      openDatabase_nl();
     }
     return m_cgnsFilePtr;
   }
 
-  void DatabaseIO::openDatabase__() const
+  void DatabaseIO::openDatabase_nl() const
   {
     if (m_cgnsFilePtr < 0) {
 #if 0
@@ -689,7 +689,7 @@ namespace Iocgns {
     SMART_ASSERT(m_cgnsFilePtr >= 0);
   }
 
-  void DatabaseIO::closeDatabase__() const
+  void DatabaseIO::closeDatabase_nl() const
   {
     if (m_cgnsFilePtr > 0) {
       CGCHECKM(cg_close(m_cgnsFilePtr));
@@ -782,12 +782,12 @@ namespace Iocgns {
     }
   }
 
-  int64_t DatabaseIO::node_global_to_local__(int64_t global, bool /*must_exist*/) const
+  int64_t DatabaseIO::node_global_to_local_nl(int64_t global, bool /*must_exist*/) const
   {
     return global;
   }
 
-  int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
+  int64_t DatabaseIO::element_global_to_local_nl(int64_t global) const { return global; }
 
   void DatabaseIO::create_structured_block_fpp(IOSS_MAYBE_UNUSED int base,
                                                IOSS_MAYBE_UNUSED int num_zones,
@@ -1529,7 +1529,7 @@ namespace Iocgns {
     }
   }
 
-  void DatabaseIO::read_meta_data__()
+  void DatabaseIO::read_meta_data_nl()
   {
     // Determine the number of bases in the grid.
     // Currently only handle 1.
@@ -1543,7 +1543,7 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    get_step_times__();
+    get_step_times_nl();
 
     if (open_create_behavior() == Ioss::DB_APPEND) {
       return;
@@ -1634,7 +1634,7 @@ namespace Iocgns {
         Utils::common_write_meta_data(get_file_pointer(), *get_region(), m_zoneOffset, false);
   }
 
-  void DatabaseIO::get_step_times__()
+  void DatabaseIO::get_step_times_nl()
   {
     Utils::get_step_times(get_file_pointer(), m_timesteps, get_region(), timeScaleFactor,
                           myProcessor);
@@ -1700,7 +1700,7 @@ namespace Iocgns {
     }
   }
 
-  bool DatabaseIO::begin__(Ioss::State state)
+  bool DatabaseIO::begin_nl(Ioss::State state)
   {
     dbState = state;
     return true;
@@ -1715,7 +1715,7 @@ namespace Iocgns {
       m_cgnsBasePtr = m_cgnsFilePtr;
       m_cgnsFilePtr = -1;
     }
-    closeDatabase__();
+    closeDatabase_nl();
   }
 
   void DatabaseIO::open_state_file(int state)
@@ -1739,7 +1739,7 @@ namespace Iocgns {
     Iocgns::Utils::write_state_meta_data(get_file_pointer(), *get_region(), false);
   }
 
-  bool DatabaseIO::end__(Ioss::State state)
+  bool DatabaseIO::end_nl(Ioss::State state)
   {
     // Transitioning out of state 'state'
     switch (state) {
@@ -1774,7 +1774,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool DatabaseIO::begin_state__(int state, double /* time */)
+  bool DatabaseIO::begin_state_nl(int state, double /* time */)
   {
     if (is_input()) {
       return true;
@@ -1791,7 +1791,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool DatabaseIO::end_state__(int state, double time)
+  bool DatabaseIO::end_state_nl(int state, double time)
   {
     if (!is_input()) {
       m_timesteps.push_back(time);
@@ -1805,21 +1805,21 @@ namespace Iocgns {
       }
 
       if (do_flush) {
-        flush_database__();
+        flush_database_nl();
       }
     }
 
     return true;
   }
 
-  void DatabaseIO::flush_database__() const
+  void DatabaseIO::flush_database_nl() const
   {
     // For HDF5 files, it looks like we need to close the database between
     // writes if we want to have a valid database for external access or
     // to protect against a crash corrupting the file.
     Utils::finalize_database(get_file_pointer(), m_timesteps, get_region(), myProcessor, false);
-    closeDatabase__();
-    m_cgnsFilePtr = -2; // Tell openDatabase__ that we want to append
+    closeDatabase_nl();
+    m_cgnsFilePtr = -2; // Tell openDatabase_nl that we want to append
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::Region *reg, const Ioss::Field &field,

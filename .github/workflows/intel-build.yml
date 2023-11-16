@@ -23,7 +23,7 @@ jobs:
         compiler: [ intel, mpi ]
         hdf5: [ V114 ]
         netcdf: [ 4.9.2 ]
-        cgns: [ 4.3.0 ]
+        cgns: [ 4.4.0 ]
 
     defaults:
       run:
@@ -67,7 +67,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-        key: TPL-v5intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+        key: TPL-v2intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
     - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
       if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -89,7 +89,7 @@ jobs:
         compiler: [ intel, mpi ]
         hdf5: [ V114 ]
         netcdf: [ 4.9.2 ]
-        cgns: [ 4.3.0 ]
+        cgns: [ 4.4.0 ]
     steps:
 
       - name: Maximize build space
@@ -121,12 +121,15 @@ jobs:
         shell: bash -l {0}
         run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake libzip-dev
 
+      - name: Setup Intel Fortran
+        uses: modflowpy/install-intelfortran-action@v1
+
       - name: Fetch TPL Cache
         id: cache-TPL
         uses: actions/cache@v3
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v5intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v2intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}

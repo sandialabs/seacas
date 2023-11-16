@@ -26,7 +26,7 @@ void _MPI_Default_Op ( void* a, void* b, int* len, MPI_Datatype* type )
 }
 
 /*==========================================================================*/
-void _MPI_Ops_init(int i)
+static void _MPI_Ops_init(int i)
 {
   _MPI_COVERAGE();
   _MPI_OP_LIST[i].valid = _MPI_NOT_VALID;

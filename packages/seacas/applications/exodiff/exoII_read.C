@@ -5,7 +5,8 @@
 // See packages/seacas/LICENSE for details
 
 #include "ED_SystemInterface.h" // for SystemInterface, etc
-#include "edge_block.h"         // for Edge_Block
+#include "assembly.h"
+#include "edge_block.h" // for Edge_Block
 #include "exoII_read.h"
 #include "exo_block.h"  // for Exo_Block
 #include "exodusII.h"   // for ex_init_params, ex_opts, etc
@@ -56,6 +57,7 @@ template <typename INT> ExoII_Read<INT>::~ExoII_Read()
     delete[] times;
     delete[] edge_blocks;
     delete[] face_blocks;
+    delete[] assemblies;
 
     if (results) {
       for (unsigned i = 0; i < nodal_vars.size(); ++i) {
@@ -189,6 +191,37 @@ Exo_Block<INT> *ExoII_Read<INT>::Get_Element_Block_by_Name(const std::string &na
 }
 
 template <typename INT>
+Assembly<INT> *ExoII_Read<INT>::Get_Assembly_by_Index(size_t block_index) const
+{
+  SMART_ASSERT(Check_State());
+  SMART_ASSERT(block_index < num_assemblies);
+  return &assemblies[block_index];
+}
+
+template <typename INT>
+Assembly<INT> *ExoII_Read<INT>::Get_Assembly_by_Name(const std::string &name) const
+{
+  SMART_ASSERT(Check_State());
+  for (size_t i = 0; i < num_assemblies; i++) {
+    if (assemblies[i].Name() == name) {
+      return &assemblies[i];
+    }
+  }
+  return nullptr;
+}
+
+template <typename INT> Assembly<INT> *ExoII_Read<INT>::Get_Assembly_by_Id(size_t set_id) const
+{
+  SMART_ASSERT(Check_State());
+  for (size_t i = 0; i < num_assemblies; i++) {
+    if (assemblies[i].Id() == set_id) {
+      return &assemblies[i];
+    }
+  }
+  return nullptr;
+}
+
+template <typename INT>
 Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Index(EXOTYPE type, size_t block_index) const
 {
   SMART_ASSERT(Check_State());
@@ -199,6 +232,7 @@ Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Index(EXOTYPE type, size_t block_inde
   case EX_SIDE_SET: SMART_ASSERT(block_index < num_side_sets); return &ssets[block_index];
   case EX_EDGE_BLOCK: SMART_ASSERT(block_index < num_edge_blocks); return &edge_blocks[block_index];
   case EX_FACE_BLOCK: SMART_ASSERT(block_index < num_face_blocks); return &face_blocks[block_index];
+  case EX_ASSEMBLY: SMART_ASSERT(block_index < num_assemblies); return &assemblies[block_index];
   default: return nullptr;
   }
 }
@@ -239,6 +273,13 @@ template <typename INT> Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Id(EXOTYPE ty
     for (size_t i = 0; i < num_face_blocks; i++) {
       if (face_blocks[i].Id() == id) {
         return &face_blocks[i];
+      }
+    }
+    break;
+  case EX_ASSEMBLY:
+    for (size_t i = 0; i < num_assemblies; i++) {
+      if (assemblies[i].Id() == id) {
+        return &assemblies[i];
       }
     }
     break;
@@ -284,6 +325,13 @@ Exo_Entity *ExoII_Read<INT>::Get_Entity_by_Name(EXOTYPE type, const std::string 
     for (size_t i = 0; i < num_face_blocks; i++) {
       if (face_blocks[i].Name() == name) {
         return &face_blocks[i];
+      }
+    }
+    break;
+  case EX_ASSEMBLY:
+    for (size_t i = 0; i < num_assemblies; i++) {
+      if (assemblies[i].Name() == name) {
+        return &assemblies[i];
       }
     }
     break;
@@ -965,6 +1013,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   num_side_sets   = info.num_side_sets;
   num_edge_blocks = info.num_edge_blk;
   num_face_blocks = info.num_face_blk;
+  num_assemblies  = info.num_assembly;
   title           = info.title;
 
   if (err > 0 && !interFace.quiet_flag) {
@@ -1011,6 +1060,32 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   }
   free_name_array(coords, 3);
 
+  // Assembly Data...
+  delete[] assemblies;
+  assemblies = nullptr;
+  if (num_assemblies > 0) {
+    assemblies = new Assembly<INT>[num_assemblies];
+    SMART_ASSERT(assemblies != nullptr);
+    std::vector<INT> ids(num_assemblies);
+
+    err = ex_get_ids(file_id, EX_ASSEMBLY, ids.data());
+
+    if (err < 0) {
+      Error("Failed to get assembly ids!  Aborting...\n");
+    }
+
+    for (size_t b = 0; b < num_assemblies; ++b) {
+      if (ids[b] <= EX_INVALID_ID) {
+        fmt::print(stderr,
+                   "EXODIFF  WARNING:  Assembly Id "
+                   "for assembly index {} is {} which is negative. This was returned by call to "
+                   "ex_get_ids().\n",
+                   b, ids[b]);
+      }
+
+      assemblies[b].initialize(file_id, ids[b]);
+    }
+  }
   //                 Element Block Data...
 
   delete[] eblocks;

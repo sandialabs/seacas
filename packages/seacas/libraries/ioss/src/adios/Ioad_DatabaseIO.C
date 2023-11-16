@@ -60,14 +60,14 @@ namespace Ioad {
   // Used to force `rank` initialization before creating `adios_wrapper`.
   int DatabaseIO::RankInit()
   {
-    Ioss::SerializeIO serializeIO__(this);
+    Ioss::SerializeIO serializeIO_(this);
     number_proc = Ioss::SerializeIO::getSize();
     return Ioss::SerializeIO::getRank();
   }
 
   DatabaseIO::~DatabaseIO() {}
 
-  bool DatabaseIO::begin__(Ioss::State state)
+  bool DatabaseIO::begin_nl(Ioss::State state)
   {
     // initialization
     Ioss::Region *this_region = get_region();
@@ -259,7 +259,7 @@ namespace Ioad {
     }
   }
 
-  bool DatabaseIO::end__(Ioss::State state)
+  bool DatabaseIO::end_nl(Ioss::State state)
   {
     // Transitioning out of state 'state'
     assert(state == dbState);
@@ -294,7 +294,7 @@ namespace Ioad {
     return true;
   }
 
-  bool DatabaseIO::begin_state__(int state, double time)
+  bool DatabaseIO::begin_state_nl(int state, double time)
   {
     Ioss::Region *this_region = get_region();
     if (!is_input()) {
@@ -321,7 +321,7 @@ namespace Ioad {
   }
 
   // common
-  bool DatabaseIO::end_state__(int state, double time)
+  bool DatabaseIO::end_state_nl(int state, double time)
   {
     Ioss::Region *this_region = get_region();
 
@@ -1191,7 +1191,7 @@ namespace Ioad {
   {
     // Check "time" attribute and global variable.
     timeScaleFactor = adios_wrapper.GetAttribute<double>(Time_scale_factor, true, 1.0);
-    Ioss::SerializeIO serializeIO__(this);
+    Ioss::SerializeIO serializeIO_(this);
     Ioss::Region     *this_region = get_region();
     if (globals_map.find(Time_meta) != globals_map.end()) {
       // Load time steps
@@ -1213,7 +1213,7 @@ namespace Ioad {
         adios_wrapper.GetSync(time_var, tsteps.data());
         for (size_t step = 0; step < time_var.Steps(); step++) {
           // if (tsteps[i] <= last_time) { TODO: Check last time step before writing everything
-          this_region->add_state__(tsteps[step] * timeScaleFactor);
+          this_region->add_state_nl(tsteps[step] * timeScaleFactor);
         }
       }
       else {
@@ -1226,7 +1226,7 @@ namespace Ioad {
     add_entity_properties(this_region, properties_map, region_name);
   }
 
-  void DatabaseIO::read_meta_data__()
+  void DatabaseIO::read_meta_data_nl()
   {
     check_processor_info();
     Ioss::Region *region = get_region();
@@ -1602,8 +1602,8 @@ namespace Ioad {
     }
   }
 
-  void DatabaseIO::compute_block_membership__(Ioss::SideBlock          *efblock,
-                                              std::vector<std::string> &block_membership) const
+  void DatabaseIO::compute_block_membership_nl(Ioss::SideBlock          *efblock,
+                                               std::vector<std::string> &block_membership) const
   {
     const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));

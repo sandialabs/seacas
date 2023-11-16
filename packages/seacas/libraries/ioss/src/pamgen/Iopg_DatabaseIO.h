@@ -81,14 +81,14 @@ namespace Iopg {
     std::string title() const { return databaseTitle; }
     int         maximum_symbol_length() const override { return 32; }
 
-    void compute_block_membership__(Ioss::SideBlock          *efblock,
-                                    std::vector<std::string> &block_membership) const override;
+    void compute_block_membership_nl(Ioss::SideBlock          *efblock,
+                                     std::vector<std::string> &block_membership) const override;
 
   private:
-    void read_meta_data__() override;
+    void read_meta_data_nl() override;
 
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
+    bool begin_nl(Ioss::State state) override;
+    bool end_nl(Ioss::State state) override;
 
     void read_region();
     void read_communication_metadata();

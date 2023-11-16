@@ -98,17 +98,17 @@ namespace Ioexnl {
     // If 'error_message' non-null, then put the warning message into the string and return it.
     // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
     //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
-    bool ok__(bool write_message = false, std::string *error_message = nullptr,
-              int *bad_count = nullptr) const override;
+    bool ok_nl(bool write_message = false, std::string *error_message = nullptr,
+               int *bad_count = nullptr) const override;
 
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
+    bool begin_nl(Ioss::State state) override;
+    bool end_nl(Ioss::State state) override;
 
     void open_state_file(int state);
 
-    bool begin_state__(int state, double time) override;
-    bool end_state__(int state, double time) override;
-    void get_step_times__() override = 0;
+    bool begin_state_nl(int state, double time) override;
+    bool end_state_nl(int state, double time) override;
+    void get_step_times_nl() override = 0;
 
     int maximum_symbol_length() const override { return maximumNameLength; }
 
@@ -125,8 +125,8 @@ namespace Ioexnl {
                             Ioss::Map &entity_map, void *ids, size_t num_to_get,
                             size_t offset) const;
 
-    void compute_block_membership__(Ioss::SideBlock          *efblock,
-                                    std::vector<std::string> &block_membership) const override;
+    void compute_block_membership_nl(Ioss::SideBlock          *efblock,
+                                     std::vector<std::string> &block_membership) const override;
 
     int  int_byte_size_db() const override;
     void set_int_byte_size_api(Ioss::DataSize size) const override;
@@ -181,9 +181,9 @@ namespace Ioexnl {
     virtual void write_meta_data(Ioss::IfDatabaseExistsBehavior behavior) = 0;
     void         write_results_metadata(bool gather_data, Ioss::IfDatabaseExistsBehavior behavior);
 
-    void openDatabase__() const override { get_file_pointer(); }
+    void openDatabase_nl() const override { get_file_pointer(); }
 
-    void closeDatabase__() const override
+    void closeDatabase_nl() const override
     {
       free_file_pointer();
       close_dw();
@@ -243,7 +243,7 @@ namespace Ioexnl {
     // Given the global region step, return the step on the database...
     int get_database_step(int global_step) const;
 
-    void flush_database__() const override;
+    void flush_database_nl() const override;
     void finalize_write(int state, double sim_time);
 
     mutable int m_exodusFilePtr{-1};

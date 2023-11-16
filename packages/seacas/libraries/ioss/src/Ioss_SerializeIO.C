@@ -48,7 +48,7 @@ namespace Ioss {
         do {
           util.barrier();
         } while (++s_owner != s_groupRank);
-        m_databaseIO->openDatabase__();
+        m_databaseIO->openDatabase_nl();
       }
       else {
         s_owner = s_groupRank;
@@ -65,7 +65,7 @@ namespace Ioss {
       IOSS_FUNC_ENTER(m_);
       if (!m_activeFallThru) {
         if (s_groupFactor > 0) {
-          m_databaseIO->closeDatabase__();
+          m_databaseIO->closeDatabase_nl();
           s_owner                        = s_groupRank;
           const Ioss::ParallelUtils util = m_databaseIO->util();
           do {
