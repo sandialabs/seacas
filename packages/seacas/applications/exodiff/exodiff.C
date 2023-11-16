@@ -442,6 +442,9 @@ namespace {
       if (!interFace.quiet_flag) {
         output_init(file1, 1, "");
         output_init(file2, 2, "");
+        if (interFace.pedantic) {
+          fmt::print("  Pedantic Checking Enabled\n");
+        }
         if (!interFace.command_file.empty()) {
           FileInfo fi(interFace.command_file);
           fmt::print("  COMMAND FILE: {}\n\n", fi.realpath());
