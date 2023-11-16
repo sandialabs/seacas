@@ -160,9 +160,9 @@ then
 
   if [ "$COMPILER" == "intel" ]
   then
-      CXX=icpc
-      CC=icc
-      FC=ifort
+      CXX=icx
+      CC=icx
+      FC=ifx
       CFLAGS="-Wall -Wunused"
       CXXFLAGS="-Wall -Wextra  -Wunused"
   fi

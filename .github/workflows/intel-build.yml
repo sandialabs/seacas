@@ -121,9 +121,6 @@ jobs:
         shell: bash -l {0}
         run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake libzip-dev
 
-      - name: Setup Intel Fortran
-        uses: modflowpy/install-intelfortran-action@v1
-
       - name: Fetch TPL Cache
         id: cache-TPL
         uses: actions/cache@v3
@@ -152,6 +149,12 @@ jobs:
           mkdir build
           cd build
           source /opt/intel/oneapi/setvars.sh
+          echo "------------"
+          ls /opt/intel/oneapi/2024.0/
+          echo "------------"
+          ls /opt/intel/oneapi/2024.0/bin/
+          echo "------------"
+          export PATH=/opt/intel/oneapi/2024.0/bin/:$PATH
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 
