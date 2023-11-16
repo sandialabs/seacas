@@ -121,9 +121,6 @@ jobs:
         shell: bash -l {0}
         run: sudo apt update && sudo apt install -y libaec-dev zlib1g-dev automake autoconf libcurl4-openssl-dev libjpeg-dev wget curl bzip2 m4 flex bison cmake libzip-dev
 
-      - name: Setup Intel Fortran
-        uses: modflowpy/install-intelfortran-action@v1
-
       - name: Fetch TPL Cache
         id: cache-TPL
         uses: actions/cache@v3
