@@ -1547,6 +1547,12 @@ namespace Ioex {
             Ioex::filter_element_list(get_region(), element, sides, true);
             number_sides = element.size();
             assert(element.size() == sides.size());
+
+            // Determine if there are any sides left on the sideset after filtering...
+            int64_t global_sides = util().global_minmax(number_sides, Ioss::ParallelUtils::DO_SUM);
+            if (global_sides == 0) {
+              continue;
+            }
           }
 
           if (split_type == Ioss::SPLIT_BY_TOPOLOGIES && sideTopology.size() == 1) {
