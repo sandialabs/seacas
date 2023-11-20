@@ -15,8 +15,8 @@
 #include "Ioss_SideSet.h"
 #include "Ioss_StructuredBlock.h"
 #include "Ioss_Utils.h"
+#include "cgns/Iocgns_Defines.h"
 #include <array>
-#include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
 #include <cgnstypes.h>
 #include <map>

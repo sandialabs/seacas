@@ -12,7 +12,7 @@
 // See packages/seacas/LICENSE for details
 
 #include "Ioss_CodeTypes.h"
-#include <exonull/Ioexnl_ParallelDatabaseIO.h>
+#include "exonull/Ioexnl_ParallelDatabaseIO.h"
 #if defined PARALLEL_AWARE_EXODUS
 #include <algorithm>
 #include <cassert>
@@ -37,10 +37,10 @@
 #include <utility>
 #include <vector>
 
+#include "exonull/Ioexnl_DecompositionData.h"
+#include "exonull/Ioexnl_Internals.h"
+#include "exonull/Ioexnl_Utils.h"
 #include <exodusII.h>
-#include <exonull/Ioexnl_DecompositionData.h>
-#include <exonull/Ioexnl_Internals.h>
-#include <exonull/Ioexnl_Utils.h>
 
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"

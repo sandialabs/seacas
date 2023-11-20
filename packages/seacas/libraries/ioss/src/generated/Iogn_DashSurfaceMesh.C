@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <generated/Iogn_DashSurfaceMesh.h>
+#include "generated/Iogn_DashSurfaceMesh.h"
 #include <vector> // for vector
 
 #include "Ioss_CodeTypes.h"

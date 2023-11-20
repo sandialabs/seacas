@@ -52,13 +52,13 @@
 #include "modify_interface.h"
 
 #if defined(SEACAS_HAVE_EXODUS)
-#include <exodus/Ioex_Internals.h>
-#include <exodus/Ioex_Utils.h>
+#include "exodus/Ioex_Internals.h"
+#include "exodus/Ioex_Utils.h"
 #include <exodusII.h>
 #endif
 
 #if defined(SEACAS_HAVE_CGNS)
-#include <cgns/Iocgns_Utils.h>
+#include "cgns/Iocgns_Utils.h"
 #endif
 
 #if defined(__IOSS_WINDOWS__)

@@ -10,11 +10,11 @@
 #include "Ioss_Tet4.h"
 #include "Ioss_TriShell3.h"
 #include "Ioss_Utils.h"
+#include "generated/Iogn_GeneratedMesh.h"
 #include <cassert> // for assert
 #include <cmath>   // for atan2, cos, sin
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <generated/Iogn_GeneratedMesh.h>
 #include <iostream>
 #include <numeric>
 #include <string>

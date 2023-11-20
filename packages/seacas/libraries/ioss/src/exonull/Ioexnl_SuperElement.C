@@ -10,9 +10,9 @@
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Utils.h"
+#include "exonull/Ioexnl_SuperElement.h" // for SuperElement
 #include <cassert>
 #include <cstddef>
-#include <exonull/Ioexnl_SuperElement.h> // for SuperElement
 #include <fmt/ostream.h>
 #include <iosfwd>
 #include <netcdf.h>

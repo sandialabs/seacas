@@ -8,13 +8,13 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_SmartAssert.h"
 #include "Ioss_Utils.h"
+#include "exonull/Ioexnl_DatabaseIO.h"
+#include "exonull/Ioexnl_Internals.h"
+#include "exonull/Ioexnl_Utils.h"
 #include <array>
 #include <cassert>
 #include <ctime>
 #include <exodusII.h>
-#include <exonull/Ioexnl_DatabaseIO.h>
-#include <exonull/Ioexnl_Internals.h>
-#include <exonull/Ioexnl_Utils.h>
 #include <fmt/ostream.h>
 #include <map>
 #include <sstream>

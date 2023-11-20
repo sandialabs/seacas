@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <heartbeat/Iohb_Layout.h>
+#include "heartbeat/Iohb_Layout.h"
 #include <string>
 
 namespace Iohb {

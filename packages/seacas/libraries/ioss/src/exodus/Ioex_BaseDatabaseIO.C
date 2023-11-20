@@ -10,13 +10,13 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_SerializeIO.h"
 #include "Ioss_Utils.h"
+#include "exodus/Ioex_BaseDatabaseIO.h"
+#include "exodus/Ioex_Internals.h"
 #include <cassert>
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <exodus/Ioex_BaseDatabaseIO.h>
-#include <exodus/Ioex_Internals.h>
 #include <exodusII.h>
 #include <fmt/core.h>
 #include <fmt/ostream.h>

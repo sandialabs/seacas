@@ -5,7 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include "Ioss_CodeTypes.h"
-#include <exonull/Ioexnl_DecompositionData.h>
+#include "exonull/Ioexnl_DecompositionData.h"
 #if defined PARALLEL_AWARE_EXODUS
 #include "Ioss_ElementTopology.h" // for ElementTopology
 #include "Ioss_Field.h"           // for Field, etc
@@ -14,7 +14,7 @@
 #include "Ioss_SmartAssert.h"
 #include "Ioss_Sort.h"
 #include "Ioss_Utils.h"
-#include <exonull/Ioexnl_Utils.h>
+#include "exonull/Ioexnl_Utils.h"
 
 #include <algorithm> // for lower_bound, copy, etc
 #include <cassert>   // for assert

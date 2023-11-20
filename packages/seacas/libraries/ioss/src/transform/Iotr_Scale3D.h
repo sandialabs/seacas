@@ -8,9 +8,9 @@
 
 #include "Ioss_Transform.h"    // for Transform, Factory
 #include "Ioss_VariableType.h" // for VariableType
+#include "transform/Iotr_Factory.h"
 #include <stddef.h>
 #include <string>
-#include <transform/Iotr_Factory.h>
 #include <vector>
 
 #include "iotr_export.h"

@@ -13,7 +13,7 @@
 #include "Ioss_IOFactory.h" // for IOFactory
 #include "Ioss_Map.h"       // for Map
 #include "Ioss_State.h"     // for State
-#include <cgns/Iocgns_Defines.h>
+#include "cgns/Iocgns_Defines.h"
 #include <cgnslib.h>
 #include <cgnstypes.h>
 #include <cstddef>  // for size_t

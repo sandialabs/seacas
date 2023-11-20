@@ -19,8 +19,8 @@
 #include "Ioss_Shell4.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "exodus/Ioex_DatabaseIO.h"
 #include <doctest.h>
-#include <exodus/Ioex_DatabaseIO.h>
 #include <fmt/core.h>
 #include <stdint.h>
 #include <stdio.h>

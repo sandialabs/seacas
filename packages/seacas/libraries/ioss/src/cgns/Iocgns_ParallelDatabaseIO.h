@@ -24,8 +24,8 @@
 #include <memory>
 #include <string> // for string
 
-#include <cgns/Iocgns_DecompositionData.h>
-#include <cgns/Iocgns_Defines.h>
+#include "cgns/Iocgns_DecompositionData.h"
+#include "cgns/Iocgns_Defines.h"
 
 #include <cgnslib.h>
 

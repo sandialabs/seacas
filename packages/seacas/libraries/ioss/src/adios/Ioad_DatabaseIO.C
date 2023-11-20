@@ -35,7 +35,7 @@
 
 #include <climits>
 
-#include <adios/Ioad_DatabaseIO.h>
+#include "adios/Ioad_DatabaseIO.h"
 
 namespace Ioss {
   class PropertyManager;

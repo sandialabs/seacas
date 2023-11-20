@@ -5,7 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include "Ioss_CodeTypes.h"
-#include <null/Ionull_DatabaseIO.h>
+#include "null/Ionull_DatabaseIO.h"
 
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"

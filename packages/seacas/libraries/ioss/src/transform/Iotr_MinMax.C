@@ -6,11 +6,11 @@
 
 #include "Ioss_Field.h"        // for Field, etc
 #include "Ioss_VariableType.h" // for VariableType
-#include <cmath>               // for fabs
-#include <cstddef>             // for size_t
+#include "transform/Iotr_MinMax.h"
+#include <cmath>   // for fabs
+#include <cstddef> // for size_t
 #include <stdint.h>
 #include <string> // for operator==, string
-#include <transform/Iotr_MinMax.h>
 
 #include "Ioss_Transform.h" // for Factory, Transform
 #include "Iotr_Factory.h"

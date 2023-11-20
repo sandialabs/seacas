@@ -42,8 +42,8 @@
 #if !defined __NVCC__
 #include <fmt/color.h>
 #endif
-#include <cgns/Iocgns_StructuredZoneData.h>
-#include <cgns/Iocgns_Utils.h>
+#include "cgns/Iocgns_StructuredZoneData.h"
+#include "cgns/Iocgns_Utils.h"
 #include <cgnstypes.h>
 #include <cmath>
 #include <cstring>
@@ -79,7 +79,7 @@
 #include <cgnslib.h>
 #endif
 
-#include <cgns/Iocgns_Defines.h>
+#include "cgns/Iocgns_Defines.h"
 
 #define CGERR(funcall)                                                                             \
   do {                                                                                             \

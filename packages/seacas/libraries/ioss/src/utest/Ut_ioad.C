@@ -26,7 +26,7 @@
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
 
 #include "Ioss_IOFactory.h" // for IOFactory
-#include <init/Ionit_Initializer.h>
+#include "init/Ionit_Initializer.h"
 
 #include "adios/Ioad_Constants.h"
 #include "adios/Ioad_Helper.h"

@@ -14,8 +14,8 @@
 
 #undef NDEBUG
 #include "Ioss_ConcreteVariableType.h"
+#include "exodus/Ioex_SuperElement.h"
 #include <cassert>
-#include <exodus/Ioex_SuperElement.h>
 #include <stdlib.h>
 
 #include "Ioss_Field.h"

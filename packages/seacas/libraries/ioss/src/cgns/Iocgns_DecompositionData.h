@@ -34,7 +34,7 @@
 #include "Ioss_MeshType.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_StructuredBlock.h"
-#include <cgns/Iocgns_StructuredZoneData.h>
+#include "cgns/Iocgns_StructuredZoneData.h"
 
 #include <cgnslib.h>
 

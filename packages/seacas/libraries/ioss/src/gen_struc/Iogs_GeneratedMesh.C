@@ -7,12 +7,12 @@
 #include "Ioss_EntityType.h" // for EntityType, etc
 #include "Ioss_Hex8.h"
 #include "Ioss_Utils.h"
+#include "gen_struc/Iogs_GeneratedMesh.h"
 #include <cassert> // for assert
 #include <cmath>   // for atan2, cos, sin
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <gen_struc/Iogs_GeneratedMesh.h>
 #include <iosfwd>
 #include <numeric>
 #include <string>
