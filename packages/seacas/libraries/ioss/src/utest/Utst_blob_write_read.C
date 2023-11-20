@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ionit_Initializer.h"
 #include "Ioss_Blob.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_IOFactory.h"
@@ -11,7 +12,6 @@
 #include "Ioss_Region.h"
 #include "Ioss_Sort.h"
 #include "Ioss_Utils.h"
-#include <Ionit_Initializer.h>
 #include <cstdlib>
 #include <iostream>
 #include <stdint.h>

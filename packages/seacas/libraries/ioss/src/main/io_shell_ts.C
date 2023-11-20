@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ionit_Initializer.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_DataPool.h"
 #include "Ioss_FileInfo.h"
@@ -16,7 +17,6 @@
 #include "Ioss_SurfaceSplit.h"
 #include "Ioss_Transform.h"
 #include "Ioss_Utils.h"
-#include <Ionit_Initializer.h>
 #include <fmt/format.h>
 #include <transform/Iotr_Factory.h>
 

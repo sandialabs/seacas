@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ionit_Initializer.h"
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
 #include "Ioss_DBUsage.h"
@@ -23,7 +24,6 @@
 #include "Ioss_SideSet.h"
 #include "Ioss_StructuredBlock.h"
 #include "Ioss_Utils.h"
-#include <Ionit_Initializer.h>
 #include <cassert>
 #include <cmath>
 #include <cstdio>

@@ -4,12 +4,12 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ionit_Initializer.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_FileInfo.h"
 #include "Ioss_Hex8.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Utils.h"
-#include <Ionit_Initializer.h>
 #include <cassert>
 #include <cgns/Iocgns_Utils.h>
 #include <cstdlib>

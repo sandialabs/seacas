@@ -4,9 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ionit_Initializer.h"
 #include "Ioss_Hex8.h"
 #include "Ioss_Wedge6.h"
-#include <Ionit_Initializer.h>
 #include <cassert>
 #include <cstdlib>
 #include <cstring>

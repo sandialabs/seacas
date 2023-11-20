@@ -7,6 +7,7 @@
 // Make asserts active even in non-debug build
 #undef NDEBUG
 
+#include "Ionit_Initializer.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_GetLongOpt.h"
 #include "Ioss_IOFactory.h"
@@ -15,7 +16,6 @@
 #include "Ioss_SmartAssert.h"
 #include "Ioss_Utils.h"
 #include "Ioss_ZoneConnectivity.h"
-#include <Ionit_Initializer.h>
 #include <array>
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>

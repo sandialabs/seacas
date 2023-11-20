@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ionit_Initializer.h"
 #include "Ioss_Compare.h"
 #include "Ioss_CopyDatabase.h"
 #include "Ioss_FileInfo.h"
@@ -14,7 +15,6 @@
 #include "Ioss_SerializeIO.h"
 #include "Ioss_SurfaceSplit.h"
 #include "Ioss_Utils.h"
-#include <Ionit_Initializer.h>
 #include <cstdlib>
 #include <exception>
 #include <fmt/core.h>

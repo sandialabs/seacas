@@ -7,6 +7,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+#include "Ionit_Initializer.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_ElementTopology.h"
@@ -18,7 +19,6 @@
 #include "Ioss_Shell4.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
-#include <Ionit_Initializer.h>
 #include <doctest.h>
 #include <exodus/Ioex_DatabaseIO.h>
 #include <fmt/core.h>

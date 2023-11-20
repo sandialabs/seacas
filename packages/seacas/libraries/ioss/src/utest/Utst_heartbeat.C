@@ -1,7 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-#include <Ionit_Initializer.h>
+#include "Ionit_Initializer.h"
 #include <cstdlib>
 #include <doctest.h>
 #include <fmt/core.h>
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
@@ -19,6 +18,7 @@
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
 
 namespace {

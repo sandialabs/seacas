@@ -8,6 +8,7 @@
 
 #include "Ioss_CodeTypes.h"
 
+#include "Ionit_Initializer.h"
 #include "Ioss_Assembly.h"
 #include "Ioss_CommSet.h"
 #include "Ioss_DBUsage.h"
@@ -27,7 +28,6 @@
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_StandardElementTypes.h"
-#include <Ionit_Initializer.h>
 
 #include <gtest/gtest.h>
 #ifdef SEACAS_HAVE_MPI

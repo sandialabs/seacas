@@ -20,13 +20,13 @@
 
 #include <unistd.h> // for unlink
 
+#include "Ionit_Initializer.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
 #include "Ioss_Field.h"      // for Field, etc
 #include "Ioss_IOFactory.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
-#include <Ionit_Initializer.h>
 
 #include "Ioss_ElementBlock.h"
 #include "Ioss_NodeBlock.h"
