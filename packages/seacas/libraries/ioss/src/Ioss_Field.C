@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Field.h>
-#include <Ioss_Transform.h>
-#include <Ioss_Utils.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_Field.h"
+#include "Ioss_Transform.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
 #include <cstddef>
 #include <cstdint>
 #include <fmt/ostream.h>
@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include <Ioss_CodeTypes.h>
+#include "Ioss_CodeTypes.h"
 
 namespace {
   size_t internal_get_size(Ioss::Field::BasicType type, size_t count,

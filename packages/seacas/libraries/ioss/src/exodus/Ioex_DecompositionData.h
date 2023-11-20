@@ -10,7 +10,7 @@
 #include <exodusII.h>
 #if defined PARALLEL_AWARE_EXODUS
 
-#include <Ioss_CodeTypes.h>
+#include "Ioss_CodeTypes.h"
 #include <vector>
 
 #include "ioex_export.h"
@@ -22,9 +22,9 @@
 #if !defined(NO_ZOLTAN_SUPPORT)
 #include <zoltan_cpp.h>
 #endif
-#include <Ioss_Decomposition.h>
-#include <Ioss_Map.h>
-#include <Ioss_PropertyManager.h>
+#include "Ioss_Decomposition.h"
+#include "Ioss_Map.h"
+#include "Ioss_PropertyManager.h"
 
 namespace Ioss {
   class Field;

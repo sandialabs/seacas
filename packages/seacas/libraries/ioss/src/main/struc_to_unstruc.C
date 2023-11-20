@@ -4,12 +4,12 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ioss_CodeTypes.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_Hex8.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Utils.h"
 #include <Ionit_Initializer.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_Hex8.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_Utils.h>
 #include <cassert>
 #include <cgns/Iocgns_Utils.h>
 #include <cstdlib>
@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h"
@@ -34,6 +33,7 @@
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_State.h"

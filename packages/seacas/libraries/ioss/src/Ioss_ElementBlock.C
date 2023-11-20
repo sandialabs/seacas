@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_DatabaseIO.h> // for DatabaseIO
-#include <Ioss_ElementBlock.h>
-#include <Ioss_Field.h>    // for Field, etc
-#include <Ioss_Property.h> // for Property
+#include "Ioss_DatabaseIO.h" // for DatabaseIO
+#include "Ioss_ElementBlock.h"
+#include "Ioss_Field.h"    // for Field, etc
+#include "Ioss_Property.h" // for Property
 #include <cstddef>         // for size_t
 #include <string>          // for string
 #include <vector>          // for vector

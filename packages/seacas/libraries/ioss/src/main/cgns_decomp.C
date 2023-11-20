@@ -7,15 +7,15 @@
 // Make asserts active even in non-debug build
 #undef NDEBUG
 
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_GetLongOpt.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Utils.h"
+#include "Ioss_ZoneConnectivity.h"
 #include <Ionit_Initializer.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_GetLongOpt.h>
-#include <Ioss_IOFactory.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Utils.h>
-#include <Ioss_ZoneConnectivity.h>
 #include <array>
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
@@ -31,10 +31,10 @@
 #include <string>
 #include <vector>
 
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_StructuredBlock.h"
 
 #if !defined __NVCC__

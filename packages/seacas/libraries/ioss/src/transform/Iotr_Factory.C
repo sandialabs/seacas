@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Utils.h>
+#include "Ioss_Utils.h"
 #include <map>
 #include <ostream>
 #include <string>

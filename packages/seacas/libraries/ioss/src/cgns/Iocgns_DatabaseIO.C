@@ -10,8 +10,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Utils.h"
 #include <array>
 #include <bitset>
 #include <cgns/Iocgns_DatabaseIO.h>

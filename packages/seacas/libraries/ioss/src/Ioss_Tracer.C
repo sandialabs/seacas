@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Tracer.h>
-#include <Ioss_Utils.h>
+#include "Ioss_Tracer.h"
+#include "Ioss_Utils.h"
 #include <cassert>
 #include <fmt/ostream.h>
 

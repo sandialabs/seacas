@@ -6,10 +6,10 @@
 
 #include "io_info.h"
 
-#include <Ioss_Hex8.h>
-#include <Ioss_Sort.h>
-#include <Ioss_StructuredBlock.h>
-#include <Ioss_ZoneConnectivity.h>
+#include "Ioss_Hex8.h"
+#include "Ioss_Sort.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_ZoneConnectivity.h"
 #include <fmt/core.h>
 #include <stdint.h>
 #include <tokenize.h>

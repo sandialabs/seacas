@@ -4,12 +4,12 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Field.h>
-#include <Ioss_FieldManager.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_Property.h>
-#include <Ioss_PropertyManager.h>
-#include <Ioss_Utils.h>
+#include "Ioss_Field.h"
+#include "Ioss_FieldManager.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Utils.h"
 #include <cassert>
 #include <cstddef>
 #include <exonull/Ioexnl_SuperElement.h> // for SuperElement

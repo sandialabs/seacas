@@ -4,9 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_EntityType.h> // for EntityType, etc
-#include <Ioss_Hex8.h>
-#include <Ioss_Utils.h>
+#include "Ioss_EntityType.h" // for EntityType, etc
+#include "Ioss_Hex8.h"
+#include "Ioss_Utils.h"
 #include <cassert> // for assert
 #include <cmath>   // for atan2, cos, sin
 #include <fmt/core.h>

@@ -6,7 +6,7 @@
 
 #include "Ionit_Initializer.h"
 
-#include <Ioss_CodeTypes.h>
+#include "Ioss_CodeTypes.h"
 
 #if defined(SEACAS_HAVE_EXODUS)
 #include <exodus/Ioex_IOFactory.h>
@@ -38,8 +38,8 @@
 #include <cgns/Iocgns_IOFactory.h>
 #endif
 
-#include <Ioss_ConcreteVariableType.h>
-#include <Ioss_Initializer.h>
+#include "Ioss_ConcreteVariableType.h"
+#include "Ioss_Initializer.h"
 #include <null/Ionull_IOFactory.h>
 #include <transform/Iotr_Initializer.h>
 #include <visualization/cgns/Iovs_cgns_IOFactory.h>

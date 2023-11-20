@@ -10,9 +10,9 @@
 
 #include <pamgen/Iopg_DatabaseIO.h>
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_SubSystem.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_SubSystem.h"
+#include "Ioss_Utils.h"
 
 #include <algorithm>
 #include <cctype>

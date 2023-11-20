@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_MemoryUtils.h>
+#include "Ioss_MemoryUtils.h"
 
 // For memory utilities...
 #if defined(__IOSS_WINDOWS__)

@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Field.h>        // for Field, etc
-#include <Ioss_VariableType.h> // for VariableType
+#include "Ioss_Field.h"        // for Field, etc
+#include "Ioss_VariableType.h" // for VariableType
 #include <cmath>               // for fabs
 #include <cstddef>             // for size_t
 #include <stdint.h>

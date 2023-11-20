@@ -4,26 +4,26 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_Getline.h"
+#include "Ioss_Glob.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_Utils.h"
 #include <Ionit_Initializer.h>
-#include <Ioss_Assembly.h>
-#include <Ioss_Blob.h>
-#include <Ioss_DBUsage.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_ElementBlock.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_Getline.h>
-#include <Ioss_Glob.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_IOFactory.h>
-#include <Ioss_NodeBlock.h>
-#include <Ioss_NodeSet.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
-#include <Ioss_SideBlock.h>
-#include <Ioss_SideSet.h>
-#include <Ioss_StructuredBlock.h>
-#include <Ioss_Utils.h>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -43,10 +43,10 @@
 #include <unistd.h>
 #include <vector>
 
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_EntityType.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
 #include "SEACASIoss_config.h"
 #include "modify_interface.h"

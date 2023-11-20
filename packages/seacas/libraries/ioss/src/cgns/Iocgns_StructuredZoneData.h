@@ -7,8 +7,8 @@
  */
 #pragma once
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_StructuredBlock.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_StructuredBlock.h"
 #include <cstddef>
 #include <cstdint>
 #include <string>

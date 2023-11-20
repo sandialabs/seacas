@@ -4,14 +4,14 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_CommSet.h>
-#include <Ioss_ElementBlock.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_FaceGenerator.h>
-#include <Ioss_NodeBlock.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_FaceGenerator.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
 #include <cassert>
 #include <fmt/ostream.h>
 #include <iosfwd>

@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>       // for IntVector
-#include <Ioss_ElementTopology.h> // for ElementTopology
+#include "Ioss_CodeTypes.h"       // for IntVector
+#include "Ioss_ElementTopology.h" // for ElementTopology
 #include <string>
 
 #include "ioss_export.h"

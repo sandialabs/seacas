@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_SmartAssert.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_SmartAssert.h"
 #include <assert.h>
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <fmt/core.h>

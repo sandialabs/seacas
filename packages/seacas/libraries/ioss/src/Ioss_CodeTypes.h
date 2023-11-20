@@ -95,7 +95,7 @@ using Kokkos_Complex = Kokkos::complex<double>;
 #else
 
 #if defined IOSS_TRACE
-#include <Ioss_Tracer.h>
+#include "Ioss_Tracer.h"
 #define IOSS_FUNC_ENTER(m) Ioss::Tracer m(__func__)
 #else
 #define IOSS_FUNC_ENTER(m)

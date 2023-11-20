@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Utils.h"
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -417,7 +417,7 @@ namespace Iovs {
 #if defined(__IOSS_WINDOWS__)
     char *cbuf = _fullpath(nullptr, sierraInsDir.c_str(), _MAX_PATH);
 #else
-    char *cbuf  = realpath(sierraInsDir.c_str(), nullptr);
+    char *cbuf = realpath(sierraInsDir.c_str(), nullptr);
 #endif
     std::string sierraInsPath = cbuf;
     free(cbuf);

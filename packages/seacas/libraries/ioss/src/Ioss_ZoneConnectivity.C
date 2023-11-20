@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Utils.h>
-#include <Ioss_ZoneConnectivity.h>
+#include "Ioss_Utils.h"
+#include "Ioss_ZoneConnectivity.h"
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <string> // for string

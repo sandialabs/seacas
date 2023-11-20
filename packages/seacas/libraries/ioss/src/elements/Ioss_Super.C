@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_ElementVariableType.h> // for ElementVariableType
-#include <Ioss_Super.h>
+#include "Ioss_ElementVariableType.h" // for ElementVariableType
+#include "Ioss_Super.h"
 #include <string> // for string
 
 #include "Ioss_CodeTypes.h"       // for IntVector

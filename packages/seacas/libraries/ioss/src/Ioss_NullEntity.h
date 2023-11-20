@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_GroupingEntity.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_GroupingEntity.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <string>

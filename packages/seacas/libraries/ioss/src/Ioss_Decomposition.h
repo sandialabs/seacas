@@ -9,18 +9,18 @@
 
 #include "ioss_export.h"
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Map.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_PropertyManager.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Map.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_PropertyManager.h"
 #include <algorithm>
 #include <cassert>
 #include <map>
 #include <string>
 #include <vector>
 
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_Utils.h>
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Utils.h"
 
 #if !defined(NO_PARMETIS_SUPPORT)
 #include <parmetis.h>

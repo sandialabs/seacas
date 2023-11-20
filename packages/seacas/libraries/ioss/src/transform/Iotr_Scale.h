@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_Transform.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_Transform.h"
+#include "Ioss_VariableType.h"
 #include <stddef.h>
 #include <string>
 #include <transform/Iotr_Factory.h>

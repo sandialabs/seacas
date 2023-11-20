@@ -8,11 +8,11 @@
 
 #include "iocatalyst_export.h"
 
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
 #include "Ioss_EntitySet.h"
 #include "Ioss_Region.h"  // for Region, SideSetContainer, etc
 #include "Ioss_SideSet.h" // for SideBlockContainer, SideSet
-#include <Ioss_DBUsage.h>
-#include <Ioss_DatabaseIO.h>
 
 #include "Ioss_Field.h" // for Field, etc
 

@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_ElementPermutation.h>
+#include "Ioss_ElementPermutation.h"
 
 #include "Ioss_Beam2.h"
 #include "Ioss_Beam3.h"

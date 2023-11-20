@@ -8,7 +8,7 @@
 #define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 #define DOCTEST_CONFIG_NO_MULTITHREADING
-#include <Ioss_ZoneConnectivity.h>
+#include "Ioss_ZoneConnectivity.h"
 #include <assert.h>
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>

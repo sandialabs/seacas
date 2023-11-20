@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Property.h> // for Property
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Property.h" // for Property
 #include <cstddef>         // for size_t
 #include <stdint.h>
 #include <string> // for string, operator<
