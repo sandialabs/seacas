@@ -687,11 +687,7 @@ class exodus:
             # the import only occurs if the user specifies a numpy array type.
             # This way, platforms without numpy installed can still import the
             # exodus.py module and just use ctype arrays.)
-            try:
-                import numpy as np
-            except ModuleNotFoundError as err:
-                # Error handling
-                print(err)            
+            import numpy as np
             self.np = np
             self.use_numpy = True
             # Warnings module is needed to suppress the invalid warning when
