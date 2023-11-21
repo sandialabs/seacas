@@ -38,7 +38,7 @@ inline std::string IOSS_SYM_TENSOR() { return {"sym_tensor_33"}; }
 /* #undef SEACAS_HAVE_FAODEL */
 #define SEACAS_HAVE_PAMGEN
 #else
-#include <SEACASIoss_config.h>
+#include "SEACASIoss_config.h"
 #endif
 
 #if defined(IOSS_THREADSAFE)

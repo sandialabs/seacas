@@ -23,7 +23,7 @@
 #endif
 
 #if defined(SEACAS_HAVE_CATALYST2)
-#include <catalyst/Iocatalyst_Initializer.h>
+#include "catalyst/Iocatalyst_Initializer.h"
 #endif
 
 #if defined(SEACAS_HAVE_PAMGEN)
@@ -31,7 +31,7 @@
 #endif
 
 #if defined(SEACAS_HAVE_FAODEL)
-#include <faodel/Iofaodel_DatabaseIO.h>
+#include "faodel/Iofaodel_DatabaseIO.h"
 #endif
 
 #if defined(SEACAS_HAVE_CGNS)
