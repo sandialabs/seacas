@@ -177,6 +177,7 @@ endfunction()
 
 catalyst_test_ioshell_exodus_file("catalyst_ioshell_cube_g" "cube.g" "1" "1")
 catalyst_test_ioshell_exodus_file("catalyst_ioshell_two_block_g" "two-block.g" "1" "1")
+catalyst_test_ioshell_exodus_file("catalyst_ioshell_eight_block_g" "8-block.g" "0.05" "5")
 
 IF (TPL_ENABLE_CGNS)
 

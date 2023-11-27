@@ -23,7 +23,7 @@
 namespace Iocatalyst {
   class IOCATALYST_EXPORT DatabaseIO : public Ioss::DatabaseIO
   {
-    using Superclass      = Ioss::DatabaseIO;
+    using Superclass = Ioss::DatabaseIO;
 
   public:
     DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
@@ -127,8 +127,8 @@ namespace Iocatalyst {
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::Assembly * /*as*/, const Ioss::Field & /*field*/,
-                               void * /*data*/, size_t /*data_size*/) const override;
+    int64_t get_field_internal(const Ioss::Assembly *as, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
     int64_t get_field_internal(const Ioss::Blob * /*bl*/, const Ioss::Field & /*field*/,
                                void * /*data*/, size_t /*data_size*/) const override;
     int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
@@ -167,8 +167,8 @@ namespace Iocatalyst {
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::Assembly * /*as*/, const Ioss::Field & /*field*/,
-                               void * /*data*/, size_t /*data_size*/) const override;
+    int64_t put_field_internal(const Ioss::Assembly *as, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
     int64_t put_field_internal(const Ioss::Blob * /*bl*/, const Ioss::Field & /*field*/,
                                void * /*data*/, size_t /*data_size*/) const override;
     int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,

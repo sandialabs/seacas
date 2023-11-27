@@ -24,6 +24,7 @@
 #include "Ioss_Property.h"        // for Property
 #include "Ioss_SideBlock.h"       // for SideBlock
 #include <Ioss_Assembly.h>        // for Assembly
+#include <Ioss_Blob.h>            // for Blob
 #include <Ioss_CodeTypes.h>       // for HAVE_MPI
 #include <Ioss_ElementTopology.h> // for NameList
 #include <Ioss_ParallelUtils.h>   // for ParallelUtils, etc
@@ -111,6 +112,13 @@ namespace Iocatalyst {
       return new Ioss::StructuredBlock(dbase, node["properties/name/value"].as_string(),
                                        node["properties/component_degree/value"].as_int64(),
                                        localSizes, parentOffsets, globalSizes);
+    }
+
+    template <>
+    Ioss::Assembly *createEntityGroup<Ioss::Assembly>(const conduit_cpp::Node &node,
+                                                      Ioss::DatabaseIO        *dbase)
+    {
+      return new Ioss::Assembly(dbase, node["properties/name/value"].as_string());
     }
 
   } // namespace detail
@@ -448,6 +456,18 @@ namespace Iocatalyst {
       return true;
     }
 
+    bool defineEntityGroup(conduit_cpp::Node parent, const Ioss::AssemblyContainer &container)
+    {
+      for (auto group : container) {
+        this->addProperties(parent[getName(group)], group);
+        parent[getName(group) + "/member_type"].set(group->get_member_type());
+        for (auto as : group->get_members()) {
+          parent[getName(group) + "/members"].append().set(as->name());
+        }
+      }
+      return true;
+    }
+
     bool defineEntityGroup(conduit_cpp::Node                     parent,
                            const Ioss::StructuredBlockContainer &container)
     {
@@ -698,6 +718,50 @@ namespace Iocatalyst {
   }
 
   template <>
+  bool DatabaseIO::ImplementationT::readEntityGroup<Ioss::Assembly>(conduit_cpp::Node &&parent,
+                                                                    Ioss::Region       *region)
+  {
+    for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
+      auto &&child = parent[idx];
+      auto   block = detail::createEntityGroup<Ioss::Assembly>(child, region->get_database());
+      auto member_type = child["member_type"].as_int();
+      for (int i = 0; i < child["members"].number_of_children(); i++) {
+        auto                  name = child["members"].child(i).as_string();
+        Ioss::GroupingEntity *ge   = nullptr;
+        switch (member_type) {
+        case Ioss::EntityType::NODEBLOCK: ge = region->get_node_block(name); break;
+        case Ioss::EntityType::EDGEBLOCK: ge = region->get_edge_block(name); break;
+        case Ioss::EntityType::EDGESET: ge = region->get_edgeset(name); break;
+        case Ioss::EntityType::FACEBLOCK: ge = region->get_face_block(name); break;
+        case Ioss::EntityType::ELEMENTBLOCK: ge = region->get_element_block(name); break;
+        case Ioss::EntityType::NODESET: ge = region->get_nodeset(name); break;
+        case Ioss::EntityType::FACESET: ge = region->get_faceset(name); break;
+        case Ioss::EntityType::ELEMENTSET: ge = region->get_elementset(name); break;
+        case Ioss::EntityType::SIDESET: ge = region->get_sideset(name); break;
+        case Ioss::EntityType::COMMSET: ge = region->get_commset(name); break;
+        case Ioss::EntityType::SIDEBLOCK: ge = region->get_sideblock(name); break;
+        case Ioss::EntityType::ASSEMBLY: ge = region->get_assembly(name); break;
+        case Ioss::EntityType::BLOB: ge = region->get_blob(name); break;
+        default:
+          fmt::print(stderr, "ERROR in {} {}: unknown grouping entity type.\n", __func__, name);
+        }
+        if (ge) {
+          block->add(ge);
+        }
+        else {
+          fmt::print(stderr, "ERROR in {} {}: grouping entity not found.\n", __func__, name);
+        }
+      }
+      region->add(block);
+      this->readProperties(child["properties"], block);
+
+      // read fields (meta-data only)
+      this->readFields(child["fields"], block);
+    }
+    return true;
+  }
+
+  template <>
   bool
   DatabaseIO::ImplementationT::readEntityGroup<Ioss::StructuredBlock>(conduit_cpp::Node &&parent,
                                                                       Ioss::Region       *region)
@@ -796,7 +860,7 @@ namespace Iocatalyst {
     //  this->readEntityGroup<Ioss::FaceSet>(node["facesets"], region);
     //  this->readEntityGroup<Ioss::ElementSet>(node["elementsets"], region);
     this->readEntityGroup<Ioss::StructuredBlock>(node["structuredblocks"], region);
-    // this->readEntityGroup<Ioss::Assembly>(node["assemblies"], region);
+    this->readEntityGroup<Ioss::Assembly>(node["assemblies"], region);
     return true;
   }
 
@@ -954,7 +1018,7 @@ namespace Iocatalyst {
   {
     return Ioss::NODEBLOCK | Ioss::EDGEBLOCK | Ioss::FACEBLOCK | Ioss::ELEMENTBLOCK |
            Ioss::NODESET | Ioss::EDGESET | Ioss::FACESET | Ioss::ELEMENTSET | Ioss::SIDESET |
-           Ioss::SIDEBLOCK | Ioss::STRUCTUREDBLOCK | Ioss::REGION;
+           Ioss::SIDEBLOCK | Ioss::STRUCTUREDBLOCK | Ioss::ASSEMBLY | Ioss::REGION;
   }
 
   void DatabaseIO::read_meta_data__()
@@ -1087,11 +1151,11 @@ namespace Iocatalyst {
     return -1;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::Assembly * /*as*/,
-                                         const Ioss::Field & /*field*/, void * /*data*/,
-                                         size_t /*data_size*/) const
+  int64_t DatabaseIO::put_field_internal(const Ioss::Assembly *as, const Ioss::Field &field,
+                                         void *data, size_t data_size) const
   {
-    return -1;
+    auto &impl = (*this->Impl.get());
+    return impl.putField("assemblies", as, field, data, data_size, this->deep_copy());
   }
 
   int64_t DatabaseIO::put_field_internal(const Ioss::Blob * /*bl*/, const Ioss::Field & /*field*/,
@@ -1234,11 +1298,11 @@ namespace Iocatalyst {
   {
     return -1;
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::Assembly * /*as*/,
-                                         const Ioss::Field & /*field*/, void * /*data*/,
-                                         size_t /*data_size*/) const
+  int64_t DatabaseIO::get_field_internal(const Ioss::Assembly *as, const Ioss::Field &field,
+                                         void *data, size_t data_size) const
   {
-    return -1;
+    auto &impl = (*this->Impl.get());
+    return impl.getField("assemblies", as, field, data, data_size);
   }
   int64_t DatabaseIO::get_field_internal(const Ioss::Blob * /*bl*/, const Ioss::Field & /*field*/,
                                          void * /*data*/, size_t /*data_size*/) const
