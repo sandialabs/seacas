@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Sort.h>
+#include "Ioss_Sort.h"
 #include <cassert>
 #include <iostream>
 #include <random>

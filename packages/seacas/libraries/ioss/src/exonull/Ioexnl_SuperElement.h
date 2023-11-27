@@ -5,7 +5,7 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
-#include <Ioss_GroupingEntity.h> // for GroupingEntity
+#include "Ioss_GroupingEntity.h" // for GroupingEntity
 #include <cstddef>               // for size_t
 #include <cstdint>               // for int64_t
 #include <string>                // for string

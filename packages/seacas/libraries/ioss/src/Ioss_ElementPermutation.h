@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>
+#include "Ioss_CodeTypes.h"
 #include <assert.h>
 #include <limits>
 #include <map> // for map, map<>::value_compare

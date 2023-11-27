@@ -4,21 +4,21 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_SerializeIO.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_SerializeIO.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
+#include "exodus/Ioex_DatabaseIO.h"
+#include "exodus/Ioex_Internals.h"
+#include "exodus/Ioex_Utils.h"
 #include <array>
 #include <cassert>
 #include <cfloat>
 #include <cstring>
 #include <ctime>
-#include <exodus/Ioex_DatabaseIO.h>
-#include <exodus/Ioex_Internals.h>
-#include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>

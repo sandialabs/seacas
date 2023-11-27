@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <exodus/Ioex_Internals.h> // for Internals, ElemBlock, etc
-#include <exodus/Ioex_Utils.h>
+#include "exodus/Ioex_Internals.h" // for Internals, ElemBlock, etc
+#include "exodus/Ioex_Utils.h"
 #include <fmt/core.h>
 
 #include "Ioss_ElementTopology.h"

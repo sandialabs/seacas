@@ -4,11 +4,11 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <exodus/Ioex_DatabaseIO.h> // for Ioex DatabaseIO
-#include <exodus/Ioex_IOFactory.h>  // for Ioex IOFactory
+#include "exodus/Ioex_DatabaseIO.h" // for Ioex DatabaseIO
+#include "exodus/Ioex_IOFactory.h"  // for Ioex IOFactory
 
 #if defined(PARALLEL_AWARE_EXODUS)          // Defined in exodusII.h
-#include <exodus/Ioex_ParallelDatabaseIO.h> // for Ioex ParallelDatabaseIO
+#include "exodus/Ioex_ParallelDatabaseIO.h" // for Ioex ParallelDatabaseIO
 #endif
 #include <exodusII.h>
 #include <fmt/ostream.h>

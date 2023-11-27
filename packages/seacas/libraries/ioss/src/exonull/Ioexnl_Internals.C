@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <exonull/Ioexnl_Internals.h> // for Internals, ElemBlock, etc
-#include <exonull/Ioexnl_Utils.h>
+#include "exonull/Ioexnl_Internals.h" // for Internals, ElemBlock, etc
+#include "exonull/Ioexnl_Utils.h"
 
 extern "C" {
 }

@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_IOFactory.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_Utils.h> // for IOSS_ERROR
-#include <Ioss_Version.h>
+#include "Ioss_IOFactory.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Utils.h" // for IOSS_ERROR
+#include "Ioss_Version.h"
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <map>     // for _Rb_tree_iterator, etc
@@ -19,7 +19,7 @@
 #include "Ioss_DBUsage.h" // for DatabaseUsage
 #include "Ioss_PropertyManager.h"
 #if defined(SEACAS_HAVE_MPI)
-#include <Ioss_Decomposition.h>
+#include "Ioss_Decomposition.h"
 #endif
 
 namespace {

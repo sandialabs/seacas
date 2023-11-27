@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>          // for IntVector
-#include <Ioss_ElementPermutation.h> // for ElementPermutation
-#include <Ioss_ElementTopology.h>    // for ElementTopology
+#include "Ioss_CodeTypes.h"          // for IntVector
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
+#include "Ioss_ElementTopology.h"    // for ElementTopology
 
 #include "ioss_export.h"
 

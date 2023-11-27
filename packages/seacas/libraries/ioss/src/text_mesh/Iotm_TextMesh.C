@@ -6,7 +6,7 @@
 
 #include "Iotm_TextMesh.h"
 
-#include <Ioss_Utils.h>
+#include "Ioss_Utils.h"
 #include <fmt/ostream.h>
 #include <iostream>
 #include <stdexcept>

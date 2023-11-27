@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Edge2D2.h>
-#include <Ioss_ElementVariableType.h> // for ElementVariableType
+#include "Ioss_Edge2D2.h"
+#include "Ioss_ElementVariableType.h" // for ElementVariableType
 #include <cassert>                    // for assert
 #include <string>
 

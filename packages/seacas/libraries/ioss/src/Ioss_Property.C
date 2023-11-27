@@ -3,9 +3,9 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_Property.h>
-#include <Ioss_Utils.h>
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Property.h"
+#include "Ioss_Utils.h"
 #include <assert.h>
 #include <fmt/ostream.h>
 #include <ostream>

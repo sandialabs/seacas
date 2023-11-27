@@ -7,7 +7,7 @@
 #ifndef Iovs_cgns_DatabaseIO_h
 #define Iovs_cgns_DatabaseIO_h
 
-#include <Ioss_DatabaseIO.h>
+#include "Ioss_DatabaseIO.h"
 #include <visualization/cgns/CatalystCGNSMeshBase.h>
 
 namespace Iovs_cgns {

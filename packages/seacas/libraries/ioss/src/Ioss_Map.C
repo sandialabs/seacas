@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Field.h> // for Field, etc
-#include <Ioss_Map.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Utils.h> // for IOSS_ERROR
+#include "Ioss_Field.h" // for Field, etc
+#include "Ioss_Map.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Utils.h" // for IOSS_ERROR
 #include <cstddef>      // for size_t
 #include <fmt/ostream.h>
 #include <numeric>

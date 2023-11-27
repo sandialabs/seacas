@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <Ioss_BoundingBox.h>
-#include <Ioss_EntityBlock.h>
-#include <Ioss_EntityType.h> // for EntityType, etc
-#include <Ioss_Property.h>   // for Property
+#include "Ioss_BoundingBox.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_EntityType.h" // for EntityType, etc
+#include "Ioss_Property.h"   // for Property
 #include <cstddef>           // for size_t
 #include <cstdint>           // for int64_t
 #include <string>            // for string

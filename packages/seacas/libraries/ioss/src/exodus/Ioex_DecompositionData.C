@@ -4,17 +4,17 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <exodus/Ioex_DecompositionData.h>
+#include "Ioss_CodeTypes.h"
+#include "exodus/Ioex_DecompositionData.h"
 #if defined PARALLEL_AWARE_EXODUS
-#include <Ioss_ElementTopology.h> // for ElementTopology
-#include <Ioss_Field.h>           // for Field, etc
-#include <Ioss_Map.h>             // for Map, MapContainer
-#include <Ioss_PropertyManager.h> // for PropertyManager
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Sort.h>
-#include <Ioss_Utils.h>
-#include <exodus/Ioex_Utils.h>
+#include "Ioss_ElementTopology.h" // for ElementTopology
+#include "Ioss_Field.h"           // for Field, etc
+#include "Ioss_Map.h"             // for Map, MapContainer
+#include "Ioss_PropertyManager.h" // for PropertyManager
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Sort.h"
+#include "Ioss_Utils.h"
+#include "exodus/Ioex_Utils.h"
 
 #include <algorithm> // for lower_bound, copy, etc
 #include <cassert>   // for assert

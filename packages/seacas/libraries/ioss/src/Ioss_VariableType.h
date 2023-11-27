@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Utils.h"
 #include <cstring>    // for strncmp
 #include <functional> // for less
 #include <map>        // for map, map<>::value_compare

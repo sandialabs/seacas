@@ -4,12 +4,12 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Field.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_Field.h"
+#include "Ioss_VariableType.h"
+#include "transform/Iotr_Offset3D.h"
 #include <cassert>
 #include <cstddef>
 #include <stdint.h>
-#include <transform/Iotr_Offset3D.h>
 #include <vector>
 
 #include "Ioss_Transform.h"

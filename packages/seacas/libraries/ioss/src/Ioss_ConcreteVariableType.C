@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_ConcreteVariableType.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_ConcreteVariableType.h"
+#include "Ioss_VariableType.h"
 #include <cassert>
 #include <string>
 

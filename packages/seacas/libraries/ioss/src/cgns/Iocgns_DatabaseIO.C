@@ -10,12 +10,12 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Utils.h"
+#include "cgns/Iocgns_DatabaseIO.h"
+#include "cgns/Iocgns_Utils.h"
 #include <array>
 #include <bitset>
-#include <cgns/Iocgns_DatabaseIO.h>
-#include <cgns/Iocgns_Utils.h>
 #include <cgnslib.h>
 #include <cstddef>
 #include <fmt/core.h>
@@ -31,7 +31,7 @@
 #include <pcgnslib.h>
 #endif
 
-#include <cgns/Iocgns_Defines.h>
+#include "cgns/Iocgns_Defines.h"
 
 #if !defined(CGNSLIB_H)
 #error "Could not include cgnslib.h"

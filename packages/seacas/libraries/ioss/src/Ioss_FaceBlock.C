@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_FaceBlock.h>
-#include <Ioss_Property.h>
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_Property.h"
 #include <cstddef>
 #include <string>
 

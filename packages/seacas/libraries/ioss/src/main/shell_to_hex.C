@@ -4,9 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ionit_Initializer.h>
-#include <Ioss_Hex8.h>
-#include <Ioss_Wedge6.h>
+#include "Ionit_Initializer.h"
+#include "Ioss_Hex8.h"
+#include "Ioss_Wedge6.h"
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
@@ -17,7 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h"
@@ -28,6 +27,7 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
 #include "Ioss_Utils.h"
 #include "vector3d.h"

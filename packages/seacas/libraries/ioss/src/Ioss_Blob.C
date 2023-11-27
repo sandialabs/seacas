@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Blob.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_Property.h>
+#include "Ioss_Blob.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Property.h"
 #include <cstddef>
 
 namespace Ioss {

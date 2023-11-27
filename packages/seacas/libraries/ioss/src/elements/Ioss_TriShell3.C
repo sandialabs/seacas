@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_ElementVariableType.h> // for ElementVariableType
-#include <Ioss_TriShell3.h>
+#include "Ioss_ElementVariableType.h" // for ElementVariableType
+#include "Ioss_TriShell3.h"
 #include <cassert> // for assert
 #include <string>
 

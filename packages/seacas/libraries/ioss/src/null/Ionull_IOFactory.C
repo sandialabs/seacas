@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <null/Ionull_DatabaseIO.h>
-#include <null/Ionull_IOFactory.h>
+#include "null/Ionull_DatabaseIO.h"
+#include "null/Ionull_IOFactory.h"
 
 #include "Ioss_CodeTypes.h" // for Ioss_MPI_Comm
 #include "Ioss_DBUsage.h"   // for DatabaseUsage

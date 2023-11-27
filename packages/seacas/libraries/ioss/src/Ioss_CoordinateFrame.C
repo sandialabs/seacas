@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CoordinateFrame.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_Utils.h"
 #include <fmt/ostream.h>
 
 namespace Ioss {

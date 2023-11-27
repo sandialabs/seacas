@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CopyDatabase.h>
-#include <Ioss_DataPool.h>
-#include <Ioss_FaceGenerator.h>
-#include <Ioss_MeshCopyOptions.h>
+#include "Ioss_CopyDatabase.h"
+#include "Ioss_DataPool.h"
+#include "Ioss_FaceGenerator.h"
+#include "Ioss_MeshCopyOptions.h"
 #include <array>
 #include <assert.h>
 #include <cmath>

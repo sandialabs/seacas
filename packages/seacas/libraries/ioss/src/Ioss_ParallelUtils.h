@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h> // for Int64Vector, IntVector
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h" // for Int64Vector, IntVector
+#include "Ioss_Utils.h"
 #include <cassert>
 #include <cstddef> // for size_t
 #include <stdint.h>
@@ -21,7 +21,7 @@
 #endif
 
 #ifdef SEACAS_HAVE_MPI
-#include <Ioss_SerializeIO.h>
+#include "Ioss_SerializeIO.h"
 #endif
 
 namespace Ioss {

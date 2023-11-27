@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>
+#include "Ioss_CodeTypes.h"
 #include <cstddef> // for size_t
 #include <stdint.h>
 #include <string> // for string
