@@ -32,6 +32,7 @@
 #include <Ioss_StructuredBlock.h> // for StructuredBlock
 
 #include <Ioss_Utils.h> // for Utils, IOSS_ERROR, etc
+#include <algorithm>
 #include <climits>
 #include <cstdlib>
 #include <fmt/ostream.h>
@@ -161,6 +162,10 @@ namespace Iocatalyst {
       this->defineEntityGroup(node["assemblies"], region->get_assemblies());
       return true;
     }
+
+    void        readZoneConnectivity(conduit_cpp::Node &&parent, Ioss::StructuredBlock *sb);
+    void        readBoundaryConditions(conduit_cpp::Node &&parent, Ioss::StructuredBlock *sb);
+    Ioss::IJK_t readIJK(conduit_cpp::Node &&parent);
 
     bool readModel(Ioss::Region *region);
 
@@ -393,6 +398,7 @@ namespace Iocatalyst {
       else if (retVal.empty()) {
         retVal = entityGroup->generic_name();
       }
+      std::replace(retVal.begin(), retVal.end(), '/', '-');
       return retVal;
     }
 
@@ -440,6 +446,75 @@ namespace Iocatalyst {
         this->defineEntityGroup(node["sideblocks"], group->get_side_blocks());
       }
       return true;
+    }
+
+    bool defineEntityGroup(conduit_cpp::Node                     parent,
+                           const Ioss::StructuredBlockContainer &container)
+    {
+      for (auto group : container) {
+        this->addProperties(parent[getName(group)], group);
+        conduit_cpp::Node n;
+        for (auto zc : group->m_zoneConnectivity) {
+          defineZoneConnectivity(n, zc);
+        }
+        parent[getName(group) + "/zoneconnectivity"].set(n);
+
+        n.set_node(conduit_cpp::Node());
+        for (auto bc : group->m_boundaryConditions) {
+          defineBoundaryCondition(n, bc);
+        }
+        parent[getName(group) + "/boundaryconditions"].set(n);
+
+        parent[getName(group) + "/blocklocalnodeindex"].set(group->m_blockLocalNodeIndex);
+
+        n.set_node(conduit_cpp::Node());
+        for (auto gm : group->m_globalIdMap) {
+          conduit_cpp::Node m;
+          m["key"]   = gm.first;
+          m["value"] = gm.second;
+          m.append().set(n);
+        }
+        parent[getName(group) + "/globalidmap"].set(n);
+      }
+      return true;
+    }
+
+    void defineZoneConnectivity(conduit_cpp::Node parent, Ioss::ZoneConnectivity &zc)
+    {
+      conduit_cpp::Node n;
+      n["m_connectionName"] = zc.m_connectionName;
+      n["m_donorName"]      = zc.m_donorName;
+      n["m_transform"]      = defineIJK(zc.m_transform);
+      n["m_ownerRangeBeg"]  = defineIJK(zc.m_ownerRangeBeg);
+      n["m_ownerRangeEnd"]  = defineIJK(zc.m_ownerRangeEnd);
+      n["m_ownerOffset"]    = defineIJK(zc.m_ownerOffset);
+      n["m_donorRangeBeg"]  = defineIJK(zc.m_donorRangeBeg);
+      n["m_donorRangeEnd"]  = defineIJK(zc.m_donorRangeEnd);
+      n["m_donorOffset"]    = defineIJK(zc.m_donorOffset);
+      n["m_ownerZone"]      = zc.m_ownerZone;
+      n["m_donorZone"]      = zc.m_donorZone;
+      n["m_fromDecomp"]     = zc.m_fromDecomp;
+      parent.append().set(n);
+    }
+
+    void defineBoundaryCondition(conduit_cpp::Node parent, Ioss::BoundaryCondition &bc)
+    {
+      conduit_cpp::Node n;
+      n["m_bcName"]   = bc.m_bcName;
+      n["m_famName"]  = bc.m_famName;
+      n["m_rangeBeg"] = defineIJK(bc.m_rangeBeg);
+      n["m_rangeEnd"] = defineIJK(bc.m_rangeEnd);
+      n["m_face"]     = bc.m_face;
+      parent.append().set(n);
+    }
+
+    conduit_cpp::Node defineIJK(Ioss::IJK_t &a)
+    {
+      conduit_cpp::Node n;
+      for (auto v : a) {
+        n.append().set(v);
+      }
+      return n;
     }
 
     template <typename GroupingEntityT>
@@ -641,8 +716,64 @@ namespace Iocatalyst {
       this->readFields(child["fields"], block);
       this->readFields(child[getName(&block->get_node_block()) + "/fields"],
                        &block->get_node_block());
+
+      readZoneConnectivity(child["zoneconnectivity"], block);
+      readBoundaryConditions(child["boundaryconditions"], block);
+
+      conduit_uint64 *my_vals = child["blocklocalnodeindex"].as_uint64_ptr();
+      block->m_blockLocalNodeIndex.clear();
+      for (int i = 0; i < child["blocklocalnodeindex"].number_of_elements(); i++) {
+        block->m_blockLocalNodeIndex.push_back(my_vals[i]);
+      }
+
+      conduit_cpp::Node &&n = child["globalidmap"];
+      block->m_globalIdMap.clear();
+      for (conduit_index_t i = 0, m = n.number_of_children(); i < m; ++i) {
+        auto &&c = n[i];
+        block->m_globalIdMap.push_back(
+            std::pair<size_t, size_t>(c["key"].as_int(), c["value"].as_int()));
+      }
     }
     return true;
+  }
+
+  void DatabaseIO::ImplementationT::readZoneConnectivity(conduit_cpp::Node    &&parent,
+                                                         Ioss::StructuredBlock *sb)
+  {
+    for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
+      auto                 &&child = parent[idx];
+      Ioss::ZoneConnectivity zc(child["m_connectionName"].as_string(),
+                                child["m_ownerZone"].as_int(), child["m_donorName"].as_string(),
+                                child["m_donorZone"].as_int(), readIJK(child["p_transform"]),
+                                readIJK(child["m_ownerRangeBeg"]),
+                                readIJK(child["m_ownerRangeEnd"]), readIJK(child["m_ownerOffset"]),
+                                readIJK(child["m_donorRangeBeg"]),
+                                readIJK(child["m_donorRangeEnd"]), readIJK(child["m_donorOffset"]));
+      zc.m_fromDecomp = child["m_fromDecomp"].as_int();
+      sb->m_zoneConnectivity.push_back(zc);
+    }
+  }
+
+  void DatabaseIO::ImplementationT::readBoundaryConditions(conduit_cpp::Node    &&parent,
+                                                           Ioss::StructuredBlock *sb)
+  {
+    for (conduit_index_t idx = 0, max = parent.number_of_children(); idx < max; ++idx) {
+
+      auto                  &&child = parent[idx];
+      Ioss::BoundaryCondition bc(child["m_bcName"].as_string(), child["m_famName"].as_string(),
+                                 readIJK(child["m_rangeBeg"]), readIJK(child["m_rangeEnd"]));
+      bc.m_face = child["m_face"].as_int();
+      sb->m_boundaryConditions.push_back(bc);
+    }
+  }
+
+  Ioss::IJK_t DatabaseIO::ImplementationT::readIJK(conduit_cpp::Node &&parent)
+  {
+    Ioss::IJK_t a{{0, 0, 0}};
+    for (auto i = 0; i < parent.number_of_children(); i++) {
+      a[i] = parent[i].as_int();
+    }
+    return a;
   }
 
   bool DatabaseIO::ImplementationT::readModel(Ioss::Region *region)
