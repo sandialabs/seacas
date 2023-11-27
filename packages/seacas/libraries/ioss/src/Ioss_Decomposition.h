@@ -136,7 +136,9 @@ namespace Ioss {
   class IOSS_EXPORT ElementBlockBatchOffset
   {
   public:
-    ElementBlockBatchOffset(const std::vector<BlockDecompositionData> &data) : m_data(data) {}
+    explicit ElementBlockBatchOffset(const std::vector<BlockDecompositionData> &data) : m_data(data)
+    {
+    }
 
     ElementBlockBatchOffset()                                = delete;
     ElementBlockBatchOffset(const ElementBlockBatchOffset &) = delete;

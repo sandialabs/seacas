@@ -615,9 +615,7 @@ int64_t Ioss::Map::global_to_local_nl(int64_t global, bool must_exist) const
         m_reverse.begin(), m_reverse.end(), global,
         [](const Ioss::IdPair &lhs, int64_t val) -> bool { return lhs.first < val; });
     if (iter != m_reverse.end() && iter->first == global) {
-      if (iter != m_reverse.end()) {
-        local = iter->second;
-      }
+      local = iter->second;
     }
     else {
       local = 0;

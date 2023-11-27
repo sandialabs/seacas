@@ -44,7 +44,5 @@ namespace Ioss {
     EntitySet(DatabaseIO *io_database, const std::string &my_name, size_t entity_cnt);
     EntitySet(const EntitySet &) = default;
     ~EntitySet() override        = default;
-
-    void count_attributes() const;
   };
 } // namespace Ioss

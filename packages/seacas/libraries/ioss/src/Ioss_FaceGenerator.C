@@ -127,12 +127,11 @@ namespace {
       // can only be shared with one other processor...
 
       // get nodal communication data CommSet...
-      Ioss::CommSet *css = region.get_commset("commset_node");
-
       std::vector<std::pair<INT, INT>> proc_entity;
       {
         // entity_processor consists of node,proc, node,proc, entries.
         std::vector<INT> entity_processor;
+        Ioss::CommSet   *css = region.get_commset("commset_node");
         css->get_field_data("entity_processor_raw", entity_processor);
 
         proc_entity.reserve(entity_processor.size() / 2);
