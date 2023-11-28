@@ -59,8 +59,8 @@ jobs:
             -Dsonar.projectKey=gsjaardema_seacas-fork
             -Dsonar.organization=gsjaardema
             # Comma-separated paths to directories containing main source files.
-            -Dsonar.sources=packages/seacas
-            -Dsonar.exclusions=**/libraries/chaco/**/*
+            #-Dsonar.sources=**/packages/seacas/**/*
+            #-Dsonar.exclusions=**/libraries/chaco/**/*
             #-Dsonar.sources= # optional, default is project base directory
             # When you need the analysis to take place in a directory other than the one from which it was launched
             #-Dsonar.projectBaseDir= # optional, default is .
