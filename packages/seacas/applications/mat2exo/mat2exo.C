@@ -53,7 +53,7 @@ mat_t *mat_file = nullptr; /* file for binary .mat input */
 
 /**********************************************************************/
 namespace {
-  std::array<std::string, 3> qainfo{"mat2exo", "2021/09/27", "4.06"};
+  const std::array<std::string, 3> qainfo{"mat2exo", "2021/09/27", "4.06"};
 }
 
 /**********************************************************************/
