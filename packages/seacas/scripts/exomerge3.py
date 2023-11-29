@@ -574,7 +574,7 @@ class ExodusModel(object):
         if name.startswith("__"):
             raise AttributeError
         # get non-special function names
-        names = [x for x in dir(self.__class__) if !x.startswith("__")]
+        names = [x for x in dir(self.__class__) if not x.startswith("__")]
         # if the name appears to be singular, search for the plural version
         if not name.endswith("s"):
             trial = name + "s"
