@@ -67,29 +67,28 @@ error = exi_get_nodal_var_multi_time(exoid, var_index, num_nodes,
 int exi_get_nodal_var_multi_time(int exoid, int nodal_var_index, int64_t num_nodes,
                                  int beg_time_step, int end_time_step, void *nodal_var_vals)
 {
-  int    varid;
-  int    status;
-  size_t start[3], count[3];
-  char   errmsg[MAX_ERR_LENGTH];
-
   if (exi_check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* inquire previously defined variable */
-
   /* Need to see how this works in the parallel-aware exodus... */
   if (num_nodes == 0) {
-    return (EX_NOERR);
+    return EX_NOERR;
   }
 
+  size_t start[3];
+  size_t count[3];
+  int    status;
+  int    varid;
   if (ex_large_model(exoid) == 0) {
     /* read values of the nodal variable */
     if ((status = nc_inq_varid(exoid, VAR_NOD_VAR, &varid)) != NC_NOERR) {
+      char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variables in file id %d",
                exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (EX_WARN);
+      return EX_WARN;
     }
 
     start[0] = --beg_time_step;
@@ -104,10 +103,11 @@ int exi_get_nodal_var_multi_time(int exoid, int nodal_var_index, int64_t num_nod
     /* read values of the nodal variable  -- stored as separate variables... */
     /* Get the varid.... */
     if ((status = nc_inq_varid(exoid, VAR_NOD_VAR_NEW(nodal_var_index), &varid)) != NC_NOERR) {
+      char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variable %d in file id %d",
                nodal_var_index, exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
-      return (EX_WARN);
+      return EX_WARN;
     }
 
     start[0] = --beg_time_step;
@@ -125,9 +125,10 @@ int exi_get_nodal_var_multi_time(int exoid, int nodal_var_index, int64_t num_nod
   }
 
   if (status != NC_NOERR) {
+    char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get nodal variables in file id %d", exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
-    return (EX_FATAL);
+    return EX_FATAL;
   }
-  return (EX_NOERR);
+  return EX_NOERR;
 }

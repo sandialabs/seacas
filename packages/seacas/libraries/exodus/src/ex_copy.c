@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -173,7 +173,7 @@ int ex_copy_transient(int in_exoid, int out_exoid)
 }
 
 /*! \cond INTERNAL */
-int cpy_variable_data(int in_exoid, int out_exoid, int in_large, int mesh_only)
+static int cpy_variable_data(int in_exoid, int out_exoid, int in_large, int mesh_only)
 {
   int nvars; /* number of variables */
   EXCHECKI(nc_inq(in_exoid, NULL, &nvars, NULL, NULL));
@@ -212,7 +212,7 @@ int cpy_variable_data(int in_exoid, int out_exoid, int in_large, int mesh_only)
 }
 
 /*! \cond INTERNAL */
-int cpy_variables(int in_exoid, int out_exoid, int in_large, int mesh_only)
+static int cpy_variables(int in_exoid, int out_exoid, int in_large, int mesh_only)
 {
   int recdimid; /* id of unlimited dimension */
   int nvars;    /* number of variables */
@@ -253,7 +253,7 @@ int cpy_variables(int in_exoid, int out_exoid, int in_large, int mesh_only)
 /*! \endcond */
 
 /*! \cond INTERNAL */
-int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
+static int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
 {
   int dim_out_id; /* dimension id */
 
@@ -339,7 +339,7 @@ int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
 }
 
 /*! \cond INTERNAL */
-int cpy_global_att(int in_exoid, int out_exoid)
+static int cpy_global_att(int in_exoid, int out_exoid)
 {
   struct ncatt att; /* attribute */
 
@@ -389,7 +389,7 @@ int cpy_global_att(int in_exoid, int out_exoid)
 /*! \endcond */
 
 /*! \cond INTERNAL */
-int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
+static int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
 {
   /* Routine to copy all the attributes from the input netCDF
      file to the output netCDF file. If var_in_id == NC_GLOBAL,
@@ -418,7 +418,7 @@ int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
 /*! \endcond */
 
 /*! \internal */
-int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_large)
+static int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_large)
 {
   /* Handle easiest situation first: in_large matches out_large (1) */
   if (in_large == 1) {
@@ -476,7 +476,7 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
 /*! \endcond */
 
 /*! \internal */
-int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
+static int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
 {
   /* Routine to copy the variable metadata from an input netCDF file
    * to an output netCDF file.
@@ -547,7 +547,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
 } /* end cpy_var_def() */
 
 /*! \internal */
-int cpy_var_val(int in_id, int out_id, char *var_nm)
+static int cpy_var_val(int in_id, int out_id, char *var_nm)
 {
   void *void_ptr = NULL;
   /* Routine to copy the variable data from an input netCDF file
@@ -727,7 +727,7 @@ err_ret:
 } /* end cpy_var_val() */
 
 /*! \internal */
-int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
+static int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
 {
   /* Routine to copy the coordinate data from an input netCDF file
    * to an output netCDF file.
@@ -794,7 +794,7 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
 } /* end cpy_coord_val() */
 
 /*! \internal */
-void update_structs(int out_exoid)
+static void update_structs(int out_exoid)
 {
   update_internal_structs(out_exoid, EX_INQ_EDGE_BLK, exi_get_counter_list(EX_EDGE_BLOCK));
   update_internal_structs(out_exoid, EX_INQ_FACE_BLK, exi_get_counter_list(EX_FACE_BLOCK));
@@ -815,7 +815,8 @@ void update_structs(int out_exoid)
 }
 
 /*! \internal */
-void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct exi_list_item **ctr_list)
+static void update_internal_structs(int out_exoid, ex_inquiry inqcode,
+                                    struct exi_list_item **ctr_list)
 {
   int64_t number = ex_inquire_int(out_exoid, inqcode);
   if (number > 0) {
@@ -825,7 +826,7 @@ void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct exi_list_
   }
 }
 
-size_t type_size(nc_type type)
+static size_t type_size(nc_type type)
 {
   if (type == NC_CHAR) {
     return sizeof(char); /* OK */
