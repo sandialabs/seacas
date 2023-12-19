@@ -9,6 +9,6 @@
 
 static const std::array<std::string, 3> qainfo{
     "conjoin",
-    "1.4.10",
-    "2023/08/18",
+    "1.5.00",
+    "2023/12/19",
 };
