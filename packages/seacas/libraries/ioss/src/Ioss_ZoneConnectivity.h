@@ -17,7 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "SEACASIoss_config.h"
 #include "ioss_export.h"
 
 #if defined(SEACAS_HAVE_CGNS) && !defined(BUILT_IN_SIERRA)

@@ -48,7 +48,6 @@
 #include "Ioss_PropertyManager.h"
 #include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
-#include "SEACASIoss_config.h"
 #include "modify_interface.h"
 
 #if defined(SEACAS_HAVE_EXODUS)

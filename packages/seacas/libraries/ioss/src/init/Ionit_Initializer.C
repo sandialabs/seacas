@@ -46,7 +46,6 @@
 #include "visualization/exodus/Iovs_exodus_IOFactory.h"
 
 #include "Ioss_IOFactory.h"
-#include "SEACASIoss_config.h"
 
 namespace {
 #if defined(IOSS_THREADSAFE)

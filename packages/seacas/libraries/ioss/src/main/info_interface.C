@@ -14,7 +14,6 @@
 
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Utils.h"
-#include "SEACASIoss_config.h"
 #include "info_interface.h"
 
 Info::Interface::Interface() { enroll_options(); }
