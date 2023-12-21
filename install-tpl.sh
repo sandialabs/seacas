@@ -723,7 +723,7 @@ then
     check_exec automake
     check_exec autoconf
 
-    matio_version="1.5.23"
+    matio_version="v1.5.26"
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
         echo "${txtgrn}+++ MatIO${txtrst}"
