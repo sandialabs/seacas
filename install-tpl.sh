@@ -608,7 +608,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS || exit
-            git checkout v4.3.0
+            git checkout v4.4.0
             rm -rf build
             mkdir build
             cd build || exit
@@ -770,7 +770,7 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="10.1.0"
+        fmt_version="10.2.0"
 
         if [ "$DOWNLOAD" == "YES" ]
         then
