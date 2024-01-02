@@ -30,6 +30,7 @@ inline std::string IOSS_VECTOR_3D() { return {"vector_3d"}; }
 inline std::string IOSS_SYM_TENSOR() { return {"sym_tensor_33"}; }
 
 #if defined(BUILT_IN_SIERRA)
+#define MAP_USE_SORTED_VECTOR
 #define SEACAS_HAVE_MPI
 /* #undef IOSS_THREADSAFE */
 /* #undef SEACAS_HAVE_KOKKOS */
