@@ -213,7 +213,7 @@ namespace Iohb {
         new_this->tsFormat = properties.get("TIME_STAMP_FORMAT").get_string();
       }
 
-      bool show_time_stamp = false;
+      bool show_time_stamp = !new_this->tsFormat.empty();
       Ioss::Utils::check_set_bool_property(properties, "SHOW_TIME_STAMP", show_time_stamp);
       if (show_time_stamp) {
         if (tsFormat.empty()) {
@@ -230,6 +230,10 @@ namespace Iohb {
 
       if (properties.exists("FIELD_WIDTH")) {
         new_this->fieldWidth_ = properties.get("FIELD_WIDTH").get_int();
+      }
+      else {
+        // +1.xxxxxxe+00 The x count is the precision the "+1.e+00" is the 7
+        new_this->fieldWidth_ = precision_ + 7;
       }
 
       Ioss::Utils::check_set_bool_property(properties, "SHOW_LABELS", new_this->showLabels);
