@@ -4,18 +4,29 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Assembly.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_Region.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Utils.h>
-#include <Ioss_VariableType.h>
-#include <algorithm>
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Region.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
+#include "exodus/Ioex_Utils.h"
 #include <cstring>
-#include <exodus/Ioex_Utils.h>
 #include <exodusII_int.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <iosfwd>
+#include <netcdf.h>
 #include <tokenize.h>
+
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "exodusII.h"
 
 namespace {
   size_t match(const std::string &name1, const std::string &name2)
@@ -459,7 +470,7 @@ namespace Ioex {
       // Filter out names of the form "basename_id" if the name
       // id doesn't match the id in the name...
       size_t base_size = basename.size();
-      if (std::strncmp(basename.c_str(), &buffer[0], base_size) == 0) {
+      if (std::strncmp(basename.c_str(), buffer.data(), base_size) == 0) {
         int64_t name_id = extract_id(buffer.data());
 
         // See if name is truly of form "basename_name_id" (e.g. "surface_{id}")

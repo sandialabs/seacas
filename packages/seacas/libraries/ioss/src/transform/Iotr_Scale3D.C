@@ -4,15 +4,16 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Field.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_Field.h"
+#include "Ioss_VariableType.h"
+#include "transform/Iotr_Scale3D.h"
 #include <cassert>
 #include <cstddef>
-#include <string>
-#include <transform/Iotr_Scale3D.h>
+#include <stdint.h>
 #include <vector>
 
 #include "Ioss_Transform.h"
+#include "Iotr_Factory.h"
 
 namespace Iotr {
 

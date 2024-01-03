@@ -4,24 +4,24 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_MemoryUtils.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_PropertyManager.h>
-#include <Ioss_Utils.h>
-#include <algorithm>
-#include <cassert>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_MemoryUtils.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Utils.h"
 #include <cstddef>
 #include <cstdlib>
-#include <cstring>
 #include <fmt/ostream.h>
+#include <iosfwd>
 #include <numeric>
 #include <string>
 #include <tokenize.h>
 #include <vector>
 
+#include "Ioss_Property.h"
+
 #ifdef SEACAS_HAVE_MPI
-#include <Ioss_SerializeIO.h>
+#include "Ioss_SerializeIO.h"
 #endif
 
 namespace {

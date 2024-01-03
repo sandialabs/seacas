@@ -4,21 +4,21 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <exodus/Ioex_SuperElement.h> // for SuperElement
-
-#include <Ioss_Field.h>
-#include <Ioss_Property.h>
-#include <Ioss_Utils.h>
-
+#include "Ioss_Field.h"
+#include "Ioss_FieldManager.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Utils.h"
+#include "exodus/Ioex_SuperElement.h" // for SuperElement
 #include <cassert>
 #include <cstddef>
 #include <fmt/ostream.h>
+#include <iosfwd>
 #include <netcdf.h>
 #include <string>
 
-#include <Ioss_FieldManager.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_PropertyManager.h>
+#include "Ioss_CodeTypes.h"
 
 namespace {
   int nc_get_array(int ncid, const char *name, double *data)

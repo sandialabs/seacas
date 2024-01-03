@@ -7,7 +7,7 @@
 #include <array>
 #include <string>
 
-static std::array<std::string, 3> qainfo{
+static const std::array<std::string, 3> qainfo{
     "ejoin",
     "2023/06/16",
     "1.6.1",

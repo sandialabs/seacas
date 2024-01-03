@@ -4,39 +4,25 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_IOFactory.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
-#include <algorithm>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Utils.h"
+#include "exonull/Ioexnl_BaseDatabaseIO.h"
 #include <cassert>
-#include <cctype>
-#include <cfloat>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <ctime>
 #include <exodusII.h>
-#include <exonull/Ioexnl_BaseDatabaseIO.h>
-#include <exonull/Ioexnl_Utils.h>
+#include <fmt/core.h>
 #include <fmt/ostream.h>
-#include <functional>
-#include <iostream>
 #include <map>
-#include <set>
+#include <sstream>
 #include <string>
 #include <tokenize.h>
-#include <utility>
 #include <vector>
 
+#include "Ioexnl_Utils.h"
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
-#include "Ioss_CommSet.h"
-#include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_EdgeBlock.h"
@@ -44,24 +30,23 @@
 #include "Ioss_ElementBlock.h"
 #include "Ioss_ElementSet.h"
 #include "Ioss_EntityBlock.h"
-#include "Ioss_EntitySet.h"
 #include "Ioss_EntityType.h"
 #include "Ioss_FaceBlock.h"
 #include "Ioss_FaceSet.h"
 #include "Ioss_Field.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_GroupingEntity.h"
 #include "Ioss_Map.h"
+#include "Ioss_MeshType.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
 #include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_SmartAssert.h"
 #include "Ioss_State.h"
-#include "Ioss_VariableType.h"
-
-#include "Ioexnl_Utils.h"
 
 // Transitioning from treating global variables as Ioss::Field::TRANSIENT
 // to Ioss::Field::REDUCTION.  To get the old behavior, define the value
@@ -235,7 +220,7 @@ namespace Ioexnl {
 
   int BaseDatabaseIO::free_file_pointer() const { return 0; }
 
-  bool BaseDatabaseIO::ok__(bool, std::string *, int *) const { return true; }
+  bool BaseDatabaseIO::ok_nl(bool, std::string *, int *) const { return true; }
 
   // common
   void BaseDatabaseIO::put_qa()
@@ -448,8 +433,8 @@ namespace Ioexnl {
   }
 
   // common
-  void BaseDatabaseIO::compute_block_membership__(Ioss::SideBlock          *efblock,
-                                                  std::vector<std::string> &block_membership) const
+  void BaseDatabaseIO::compute_block_membership_nl(Ioss::SideBlock          *efblock,
+                                                   std::vector<std::string> &block_membership) const
   {
     const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
@@ -717,14 +702,14 @@ namespace Ioexnl {
   void BaseDatabaseIO::write_reduction_fields() const {}
 
   // common
-  bool BaseDatabaseIO::begin__(Ioss::State state)
+  bool BaseDatabaseIO::begin_nl(Ioss::State state)
   {
     dbState = state;
     return true;
   }
 
   // common
-  bool BaseDatabaseIO::end__(Ioss::State state)
+  bool BaseDatabaseIO::end_nl(Ioss::State state)
   {
     // Transitioning out of state 'state'
     assert(state == dbState);
@@ -755,7 +740,7 @@ namespace Ioexnl {
     return true;
   }
 
-  bool BaseDatabaseIO::begin_state__(int, double)
+  bool BaseDatabaseIO::begin_state_nl(int, double)
   {
     if (!is_input()) {
       // Zero global variable array...
@@ -771,7 +756,7 @@ namespace Ioexnl {
   }
 
   // common
-  bool BaseDatabaseIO::end_state__(int state, double time)
+  bool BaseDatabaseIO::end_state_nl(int state, double time)
   {
     if (!is_input()) {
       write_reduction_fields();
@@ -1067,7 +1052,7 @@ namespace Ioexnl {
   }
 
   // common
-  void BaseDatabaseIO::flush_database__() const {}
+  void BaseDatabaseIO::flush_database_nl() const {}
 
   void BaseDatabaseIO::finalize_write(int, double) {}
 

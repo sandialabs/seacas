@@ -24,5 +24,4 @@ int PMPI_Abort( MPI_Comm comm, int errorcode )
    #endif
    _MPI_ERR_ROUTINE(errorcode, "MPI aborting...");
    abort();
-   return -1;
 }

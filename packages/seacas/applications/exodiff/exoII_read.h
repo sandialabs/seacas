@@ -27,6 +27,7 @@ template <typename INT> class Side_Set;
 
 template <typename INT> class Edge_Block;
 template <typename INT> class Face_Block;
+template <typename INT> class Assembly;
 
 template <typename INT> class ExoII_Read
 {
@@ -64,6 +65,7 @@ public:
   size_t             Num_Side_Sets() const { return num_side_sets; }
   size_t             Num_Edge_Blocks() const { return num_edge_blocks; }
   size_t             Num_Face_Blocks() const { return num_face_blocks; }
+  size_t             Num_Assembly() const { return num_assemblies; }
 
   // Times:
 
@@ -159,6 +161,10 @@ public:
   Exo_Entity *Get_Entity_by_Id(EXOTYPE type, size_t id) const;
   Exo_Entity *Get_Entity_by_Name(EXOTYPE type, const std::string &name) const;
 
+  Assembly<INT> *Get_Assembly_by_Id(size_t id) const;
+  Assembly<INT> *Get_Assembly_by_Index(size_t assembly_index) const;
+  Assembly<INT> *Get_Assembly_by_Name(const std::string &name) const;
+
   size_t          Block_Id(size_t block_index) const; // Returns associated block id.
   Exo_Block<INT> *Get_Element_Block_by_Id(size_t id) const;
   Exo_Block<INT> *Get_Element_Block_by_Index(size_t block_index) const;
@@ -204,6 +210,7 @@ protected:
   size_t                   num_side_sets{0};
   size_t                   num_edge_blocks{0};
   size_t                   num_face_blocks{0};
+  size_t                   num_assemblies{0};
   float                    db_version{0.0};
   float                    api_version{0.0};
   int                      io_word_size{0}; // Note: The "compute word size" is always 8.
@@ -213,6 +220,7 @@ protected:
   Side_Set<INT>   *ssets{nullptr};       // Array.
   Edge_Block<INT> *edge_blocks{nullptr}; // Array.
   Face_Block<INT> *face_blocks{nullptr}; // Array.
+  Assembly<INT>   *assemblies{nullptr};
 
   double *nodes{nullptr}; // Matrix;  dimension by num_nodes (row major form).
                           //          I.e., all x's then all y's, etc.

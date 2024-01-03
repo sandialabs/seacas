@@ -30,6 +30,7 @@ inline std::string IOSS_VECTOR_3D() { return {"vector_3d"}; }
 inline std::string IOSS_SYM_TENSOR() { return {"sym_tensor_33"}; }
 
 #if defined(BUILT_IN_SIERRA)
+#define MAP_USE_SORTED_VECTOR
 #define SEACAS_HAVE_MPI
 /* #undef IOSS_THREADSAFE */
 /* #undef SEACAS_HAVE_KOKKOS */
@@ -38,7 +39,7 @@ inline std::string IOSS_SYM_TENSOR() { return {"sym_tensor_33"}; }
 /* #undef SEACAS_HAVE_FAODEL */
 #define SEACAS_HAVE_PAMGEN
 #else
-#include <SEACASIoss_config.h>
+#include "SEACASIoss_config.h"
 #endif
 
 #if defined(IOSS_THREADSAFE)
@@ -95,7 +96,7 @@ using Kokkos_Complex = Kokkos::complex<double>;
 #else
 
 #if defined IOSS_TRACE
-#include <Ioss_Tracer.h>
+#include "Ioss_Tracer.h"
 #define IOSS_FUNC_ENTER(m) Ioss::Tracer m(__func__)
 #else
 #define IOSS_FUNC_ENTER(m)

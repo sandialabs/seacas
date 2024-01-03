@@ -7,12 +7,12 @@
  */
 #pragma once
 
-#include "Ioss_GetLongOpt.h"
-
 #include <iosfwd>
 #include <limits>
 #include <string>
 #include <vector>
+
+#include "Ioss_GetLongOpt.h"
 
 /** \brief A special namespace for the io_shell demonstration program interFace.
  */

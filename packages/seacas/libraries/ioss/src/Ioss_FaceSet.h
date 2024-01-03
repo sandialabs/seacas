@@ -8,9 +8,9 @@
 
 #include "ioss_export.h"
 
+#include "Ioss_EntitySet.h"  // for EntitySet
 #include "Ioss_EntityType.h" // for EntityType, etc
 #include "Ioss_Property.h"   // for Property
-#include <Ioss_EntitySet.h>  // for EntitySet
 #include <cstddef>           // for size_t
 #include <cstdint>           // for int64_t
 #include <string>            // for string

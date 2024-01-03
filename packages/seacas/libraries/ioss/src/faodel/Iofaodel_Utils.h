@@ -8,9 +8,9 @@
 
 #include "iofaodel_export.h"
 
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
 
 #include <kelpie/Key.hh>
 #include <lunasa/DataObject.hh>

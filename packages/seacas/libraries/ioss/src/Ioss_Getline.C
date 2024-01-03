@@ -24,8 +24,10 @@
 #define __windows__ 1
 #include <conio.h>
 #include <io.h>
+
 #define NOMINMAX
 #include <windows.h>
+
 #define sleep(a) Sleep(a * 1000)
 #ifndef write
 #define write _write
@@ -40,13 +42,14 @@
 
 /********************* C library headers ********************************/
 #include <array>
-#include <cctype>
-#include <cerrno>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctype.h>
 #ifndef _MSC_VER
 #include <unistd.h>
+#endif
+#ifdef __unix__
+#include <sys/errno.h>
 #endif
 
 #include "Ioss_Getline.h"
@@ -120,7 +123,7 @@ namespace {
 
 namespace {
 #ifdef __unix__
-#include <termios.h>
+#include <sys/termios.h>
   struct termios io_new_termios;
   struct termios io_old_termios;
 #endif

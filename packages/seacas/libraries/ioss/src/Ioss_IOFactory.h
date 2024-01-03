@@ -8,12 +8,12 @@
 
 #include "ioss_export.h"
 
-#include <Ioss_CodeTypes.h>
+#include "Ioss_CodeTypes.h"
 #include <string>
 
-#include <Ioss_DBUsage.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_PropertyManager.h>
+#include "Ioss_DBUsage.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_PropertyManager.h"
 
 #include <map>
 #include <vector>

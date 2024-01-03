@@ -8,7 +8,7 @@
 
 #include "ioss_export.h"
 
-#include <Ioss_VariableType.h> // for VariableType
+#include "Ioss_VariableType.h" // for VariableType
 #include <string>              // for string
 
 namespace Ioss {

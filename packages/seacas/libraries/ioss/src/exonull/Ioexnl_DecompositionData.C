@@ -4,17 +4,17 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <exonull/Ioexnl_DecompositionData.h>
+#include "Ioss_CodeTypes.h"
+#include "exonull/Ioexnl_DecompositionData.h"
 #if defined PARALLEL_AWARE_EXODUS
-#include <Ioss_ElementTopology.h> // for ElementTopology
-#include <Ioss_Field.h>           // for Field, etc
-#include <Ioss_Map.h>             // for Map, MapContainer
-#include <Ioss_PropertyManager.h> // for PropertyManager
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Sort.h>
-#include <Ioss_Utils.h>
-#include <exonull/Ioexnl_Utils.h>
+#include "Ioss_ElementTopology.h" // for ElementTopology
+#include "Ioss_Field.h"           // for Field, etc
+#include "Ioss_Map.h"             // for Map, MapContainer
+#include "Ioss_PropertyManager.h" // for PropertyManager
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Sort.h"
+#include "Ioss_Utils.h"
+#include "exonull/Ioexnl_Utils.h"
 
 #include <algorithm> // for lower_bound, copy, etc
 #include <cassert>   // for assert
@@ -90,7 +90,7 @@ namespace Ioexnl {
     // The number of locally-owned nodes on this processor is 'position'
     *locally_owned_count = position;
 
-    MPI_Allgather(locally_owned_count, 1, MPI_LONG_LONG_INT, &rcv_count[0], 1, MPI_LONG_LONG_INT,
+    MPI_Allgather(locally_owned_count, 1, MPI_LONG_LONG_INT, rcv_count.data(), 1, MPI_LONG_LONG_INT,
                   comm_);
     m_decomposition.show_progress("\tAllgather finished");
 

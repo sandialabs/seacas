@@ -26,6 +26,7 @@
 #include <fmt/chrono.h>
 #include <fmt/color.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <open_file_limit.h>
 #include <time_stamp.h>
 #include <tokenize.h>

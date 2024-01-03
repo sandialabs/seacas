@@ -118,7 +118,7 @@ static int *to_add_ptr;
 
 /* in this file the vertices are integers from 0 to nvert-1, but in the
    input/output arguments they are gids.  vertex_gid maps from int to gid */
-ZOLTAN_ID_PTR vertex_gid;
+static ZOLTAN_ID_PTR vertex_gid;
 
 /* variables for each element which define the path */
 static int *prev, *next, *in, *out, *onpath;

@@ -6,18 +6,22 @@
 
 #pragma once
 
-#include "ioss_export.h"
+#include "Ioss_CoordinateFrame.h" // for CoordinateFrame
+#include "Ioss_DatabaseIO.h"      // for DatabaseIO
+#include "Ioss_EntityType.h"      // for EntityType, etc
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h" // for GroupingEntity
+#include "Ioss_MeshType.h"
+#include "Ioss_Property.h" // for Property
+#include "Ioss_State.h"    // for State
+#include <assert.h>
+#include <cstddef> // for size_t, nullptr
+#include <cstdint> // for int64_t
 
-#include <Ioss_CoordinateFrame.h> // for CoordinateFrame
-#include <Ioss_DatabaseIO.h>      // for DatabaseIO
-#include <Ioss_EntityType.h>      // for EntityType, etc
-#include <Ioss_Field.h>
-#include <Ioss_GroupingEntity.h> // for GroupingEntity
-#include <Ioss_MeshType.h>
-#include <Ioss_Property.h> // for Property
-#include <Ioss_State.h>    // for State
-#include <cstddef>         // for size_t, nullptr
-#include <cstdint>         // for int64_t
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
+#include "ioss_export.h"
 #if !defined BUILT_IN_SIERRA
 #include <fmt/ostream.h>
 #endif
@@ -51,6 +55,7 @@ namespace Ioss {
 namespace Ioss {
 
   class CoordinateFrame;
+  enum class MeshType;
 
   using AssemblyContainer = std::vector<Ioss::Assembly *>;
   using BlobContainer     = std::vector<Ioss::Blob *>;
@@ -111,9 +116,9 @@ namespace Ioss {
     virtual int add_state(double time)
     {
       IOSS_FUNC_ENTER(m_);
-      return add_state__(time);
+      return add_state_nl(time);
     }
-    virtual int add_state__(double time);
+    virtual int add_state_nl(double time);
 
     // Get time corresponding to specified state
 
@@ -218,7 +223,8 @@ namespace Ioss {
     bool        add_alias(const std::string &db_name, const std::string &alias);
     bool        add_alias(const GroupingEntity *ge);
     std::string get_alias(const std::string &alias, EntityType type) const;
-    std::string get_alias__(const std::string &alias, EntityType type) const; // Not locked by mutex
+    std::string get_alias_nl(const std::string &alias,
+                             EntityType         type) const; // Not locked by mutex
 
     const AliasMap &get_alias_map(EntityType entity_type) const;
 
@@ -294,11 +300,11 @@ namespace Ioss {
     // Add the name 'alias' as an alias for the database entity with the
     // name 'db_name'. Returns true if alias added; false if problems
     // adding alias. Not protected by mutex -- call internally only.
-    bool add_alias__(const std::string &db_name, const std::string &alias, EntityType type);
-    bool add_alias__(const GroupingEntity *ge);
+    bool add_alias_nl(const std::string &db_name, const std::string &alias, EntityType type);
+    bool add_alias_nl(const GroupingEntity *ge);
 
-    bool begin_mode__(State new_state);
-    bool end_mode__(State current_state);
+    bool begin_mode_nl(State new_state);
+    bool end_mode_nl(State current_state);
 
     void delete_database() override;
 
@@ -430,9 +436,9 @@ namespace Ioss {
         if (found && field.get_role() != role) {
           std::ostringstream errmsg;
 #if defined BUILT_IN_SIERRA
-       errmsg << "ERROR: Field " << field.get_name() << " with role " << field.role_string() 
-              << " on entity " << entity->name() << " does not match previously found role " 
-              << Ioss::Field::role_string(role) << ".\n",
+          errmsg << "ERROR: Field " << field.get_name() << " with role " << field.role_string()
+                 << " on entity " << entity->name() << " does not match previously found role "
+                 << Ioss::Field::role_string(role) << ".\n",
 #else
           fmt::print(errmsg,
                      "ERROR: Field {} with role {} on entity {} does not match previously found "
@@ -440,7 +446,7 @@ namespace Ioss {
                      field.get_name(), field.role_string(), entity->name(),
                      Ioss::Field::role_string(role));
 #endif
-          IOSS_ERROR(errmsg);
+              IOSS_ERROR(errmsg);
         }
 
         found = true;

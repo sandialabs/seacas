@@ -123,6 +123,9 @@ KOKKOS=${KOKKOS:-NO}
 KOKKOS=$(check_valid KOKKOS)
 
 H5VERSION=${H5VERSION:-V114}
+# Build/Install the HDF5 C++ library?
+H5CPP=${H5CPP:-NO}
+H5CPP=$(check_valid H5CPP)
 
 FAODEL=${FAODEL:-NO}
 FAODEL=$(check_valid FAODEL)
@@ -200,6 +203,7 @@ if [ $# -gt 0 ]; then
         echo "   PNETCDF      = ${PNETCDF}"
         echo "   HDF5         = ${HDF5}"
         echo "   H5VERSION    = ${H5VERSION}"
+        echo "   H5CPP        = ${H5CPP}"
         echo "   CGNS         = ${CGNS}"
         echo "   MATIO        = ${MATIO}"
         echo "   METIS        = ${METIS}"
@@ -423,7 +427,7 @@ then
             hdf_version="1.13.1"
             hdf_base="1.13"
 	elif [ "${H5VERSION}" == "V114" ]; then
-            hdf_version="1.14.2"
+            hdf_version="1.14.3"
             hdf_base="1.14"
 	    hdf_suffix=""
 	elif [ "${H5VERSION}" == "develop" ]; then
@@ -459,7 +463,7 @@ then
             rm -rf build
             mkdir build
             cd build || exit
-            CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
+            CRAY=${CRAY} H5CPP=${H5CPP} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash -x ../../runcmake.sh
             #CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
@@ -604,7 +608,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS || exit
-            git checkout v4.3.0
+            git checkout v4.4.0
             rm -rf build
             mkdir build
             cd build || exit
@@ -719,7 +723,7 @@ then
     check_exec automake
     check_exec autoconf
 
-    matio_version="1.5.23"
+    matio_version="v1.5.26"
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
         echo "${txtgrn}+++ MatIO${txtrst}"
@@ -766,7 +770,7 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="10.1.0"
+        fmt_version="10.2.0"
 
         if [ "$DOWNLOAD" == "YES" ]
         then

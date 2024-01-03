@@ -9,18 +9,18 @@
 
 #include "ioss_export.h"
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Map.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_PropertyManager.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Map.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_PropertyManager.h"
 #include <algorithm>
 #include <cassert>
 #include <map>
 #include <string>
 #include <vector>
 
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_Utils.h>
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Utils.h"
 
 #if !defined(NO_PARMETIS_SUPPORT)
 #include <parmetis.h>
@@ -136,7 +136,9 @@ namespace Ioss {
   class IOSS_EXPORT ElementBlockBatchOffset
   {
   public:
-    ElementBlockBatchOffset(const std::vector<BlockDecompositionData> &data) : m_data(data) {}
+    explicit ElementBlockBatchOffset(const std::vector<BlockDecompositionData> &data) : m_data(data)
+    {
+    }
 
     ElementBlockBatchOffset()                                = delete;
     ElementBlockBatchOffset(const ElementBlockBatchOffset &) = delete;

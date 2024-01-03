@@ -5,9 +5,9 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
-#include "ioss_export.h"
+#include "Ioss_CodeTypes.h"
 
-#include <Ioss_CodeTypes.h>
+#include "ioss_export.h"
 
 namespace Ioss {
   class DatabaseIO;

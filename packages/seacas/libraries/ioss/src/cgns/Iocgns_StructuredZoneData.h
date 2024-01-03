@@ -7,13 +7,16 @@
  */
 #pragma once
 
-#include "iocgns_export.h"
-
-#include <Ioss_CodeTypes.h>
-#include <Ioss_StructuredBlock.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_StructuredBlock.h"
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <utility>
+#include <vector>
+
+#include "Ioss_ZoneConnectivity.h"
+#include "iocgns_export.h"
 
 namespace Iocgns {
   enum Ordinal {

@@ -172,7 +172,7 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
 
   /* Force LocalCoarsePartition if large global graph */
 #define LARGE_GRAPH_VTX   64000
-#define LARGE_GRAPH_PINS 256000
+/*#define LARGE_GRAPH_PINS 256000*/
   if (phg->dist_x[phg->comm->nProc_x] > LARGE_GRAPH_VTX){
     /* TODO: || (global_nPins > LARGE_GRAPH_PINS) */
     local_coarse_part = 1;

@@ -9,10 +9,10 @@
 
 #include "ioss_export.h"
 
-#include <Ioss_CodeTypes.h>
+#include "Ioss_CodeTypes.h"
 #include <string>
 
-#include <Ioss_VariableType.h>
+#include "Ioss_VariableType.h"
 
 namespace Ioss {
   class IOSS_EXPORT NamedSuffixVariableType : public VariableType

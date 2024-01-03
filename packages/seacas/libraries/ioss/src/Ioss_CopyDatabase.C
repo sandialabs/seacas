@@ -1,22 +1,55 @@
-// Copyright(C) 2021, 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 2021, 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_CopyDatabase.h>
-#include <Ioss_DataPool.h>
-#include <Ioss_FaceGenerator.h>
-#include <Ioss_MeshCopyOptions.h>
-#include <Ioss_SubSystem.h>
-
+#include "Ioss_CopyDatabase.h"
+#include "Ioss_DataPool.h"
+#include "Ioss_FaceGenerator.h"
+#include "Ioss_MeshCopyOptions.h"
+#include <array>
+#include <assert.h>
+#include <cmath>
+#include <cstdlib>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <iostream>
 #include <limits>
-
-// For Sleep...
-#include <chrono>
+#include <stdint.h>
+#include <string>
 #include <thread>
+#include <vector>
+
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_MeshType.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_State.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_Utils.h"
+#include "robin_hash.h"
 
 // For copy_database...
 namespace {
@@ -449,8 +482,8 @@ namespace {
       // really matter.
       const auto &blocks    = region.get_element_blocks();
       const auto *topo      = blocks[0]->topology();
-      auto        elem_topo = topo->name();
-      auto        face_topo = topo->boundary_type(0)->name();
+      const auto &elem_topo = topo->name();
+      const auto &face_topo = topo->boundary_type(0)->name();
 
       auto *ss = new Ioss::SideSet(output_region.get_database(), "boundary");
       output_region.add(ss);
@@ -804,11 +837,11 @@ namespace {
       if (options.debug && rank == 0) {
         fmt::print(Ioss::DebugOut(), "{}, ", name);
       }
-      size_t num_nodes = inb->entity_count();
-      size_t degree    = inb->get_property("component_degree").get_int();
       if (options.output_summary && rank == 0) {
+        size_t degree = inb->get_property("component_degree").get_int();
         fmt::print(Ioss::DebugOut(), " Number of Coordinates per Node = {:14}\n",
                    fmt::group_digits(degree));
+        size_t num_nodes = inb->entity_count();
         fmt::print(Ioss::DebugOut(), " Number of Nodes                = {:14}\n",
                    fmt::group_digits(num_nodes));
       }
@@ -988,8 +1021,8 @@ namespace {
       const auto &fbs = ss->get_side_blocks();
       for (const auto &ifb : fbs) {
         if (ifb->parent_block() != nullptr) {
-          auto  fb_name = ifb->parent_block()->name();
-          auto *parent  = dynamic_cast<Ioss::EntityBlock *>(
+          const auto &fb_name = ifb->parent_block()->name();
+          auto       *parent  = dynamic_cast<Ioss::EntityBlock *>(
               output_region.get_entity(fb_name, Ioss::ELEMENTBLOCK));
           if (parent == nullptr) {
             parent = dynamic_cast<Ioss::EntityBlock *>(

@@ -4,18 +4,21 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_Utils.h>
-#include <cstddef>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Utils.h"
 #include <cstring>
+#include <ostream>
+#include <stdlib.h>
 #include <string>
 #include <tokenize.h>
+#include <vector>
 
 #if defined(__IOSS_WINDOWS__)
 #include <direct.h>
 #include <io.h>
+
 #define access _access
 #define R_OK   4 /* Test for read permission.  */
 #define W_OK   2 /* Test for write permission.  */
@@ -29,7 +32,6 @@
 #include <unistd.h>
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__)
 #include <sys/mount.h>
-#include <sys/param.h>
 #elif defined(__OpenBSD__)
 #include <sys/mount.h>
 #include <sys/types.h>

@@ -47,7 +47,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
   /*-----------------------------Execution begins-----------------------------*/
 
   EX_FUNC_ENTER();
-  if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
+  if (exi_check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -134,7 +134,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
               cmap_id = ((int *)node_cmap_ids)[cnt];
             }
 
-            if ((map_idx = ne__id_lkup(exoid, VAR_N_COMM_IDS, cmap_info_idx, cmap_id)) < 0) {
+            if ((map_idx = nei_id_lkup(exoid, VAR_N_COMM_IDS, cmap_info_idx, cmap_id)) < 0) {
               snprintf(errmsg, MAX_ERR_LENGTH,
                        "ERROR: failed to find nodal comm map with ID %" PRId64 " in file ID %d",
                        cmap_id, exoid);
@@ -295,7 +295,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
               cmap_id = ((int *)elem_cmap_ids)[cnt];
             }
 
-            if ((map_idx = ne__id_lkup(exoid, VAR_E_COMM_IDS, cmap_info_idx, cmap_id)) < 0) {
+            if ((map_idx = nei_id_lkup(exoid, VAR_E_COMM_IDS, cmap_info_idx, cmap_id)) < 0) {
               snprintf(errmsg, MAX_ERR_LENGTH,
                        "ERROR: failed to find elemental comm map with ID %" PRId64 " in file ID %d",
                        cmap_id, exoid);

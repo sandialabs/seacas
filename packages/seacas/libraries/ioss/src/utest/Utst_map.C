@@ -8,16 +8,15 @@
 #define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 #define DOCTEST_CONFIG_NO_MULTITHREADING
+#include "Ioss_ConcreteVariableType.h"
+#include "Ioss_Field.h"
+#include "Ioss_Map.h"
+#include <cstddef>
 #include <doctest.h>
-
-#include <Ioss_CodeTypes.h>
-#include <Ioss_ConcreteVariableType.h>
-#include <Ioss_Field.h>
-#include <Ioss_Map.h>
-#include <algorithm>
-#include <exception>
 #include <numeric>
 #include <random>
+#include <stdint.h>
+#include <string>
 #include <vector>
 
 template <typename INT> void initialize_data(std::vector<INT> &init)

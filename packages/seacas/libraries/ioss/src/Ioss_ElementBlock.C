@@ -4,19 +4,19 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_BoundingBox.h"  // for AxisAlignedBoundingBox
-#include "Ioss_EntityBlock.h"  // for EntityBlock
-#include "Ioss_FieldManager.h" // for FieldManager
-#include <Ioss_DatabaseIO.h>   // for DatabaseIO
-#include <Ioss_ElementBlock.h>
-#include <Ioss_Field.h>    // for Field, etc
-#include <Ioss_Property.h> // for Property
+#include "Ioss_DatabaseIO.h" // for DatabaseIO
+#include "Ioss_ElementBlock.h"
+#include "Ioss_Field.h"    // for Field, etc
+#include "Ioss_Property.h" // for Property
 #include <cstddef>         // for size_t
 #include <string>          // for string
 #include <vector>          // for vector
 
+#include "Ioss_BoundingBox.h"  // for AxisAlignedBoundingBox
+#include "Ioss_EntityBlock.h"  // for EntityBlock
+#include "Ioss_FieldManager.h" // for FieldManager
+
 namespace Ioss {
-  class Field;
 
   /** \brief Create an element block.
    *

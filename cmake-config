@@ -160,11 +160,11 @@ then
 
   if [ "$COMPILER" == "intel" ]
   then
-      CXX=icpc
-      CC=icc
-      FC=ifort
+      CXX=icpx
+      CC=icx
+      FC=ifx
       CFLAGS="-Wall -Wunused"
-      CXXFLAGS="-Wall -Wextra  -Wunused"
+      CXXFLAGS="-Wall -Wextra  -Wunused -DFMT_HEADER_ONLY"
   fi
 
   # When building:  "scan-build make -j8"
@@ -555,6 +555,7 @@ echo "        CXX: ${CXX}"
 echo "         FC: ${FC}"
 echo "        MPI: ${MPI}"
 echo "     SHARED: ${SHARED}"
+echo "    FORTRAN: ${FORTRAN}"
 echo " BUILD_TYPE: ${BUILD_TYPE}"
 echo " THREADSAFE: ${THREADSAFE}"
 echo "       CRAY: ${CRAY}"

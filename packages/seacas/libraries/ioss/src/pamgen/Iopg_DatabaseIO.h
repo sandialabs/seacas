@@ -8,12 +8,12 @@
 
 #include "iopg_export.h"
 
-#include "Ioss_State.h" // for State
-#include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>    // for DatabaseUsage
-#include <Ioss_DatabaseIO.h> // for DatabaseIO
-#include <Ioss_IOFactory.h>  // for IOFactory
-#include <Ioss_Map.h>        // for Map
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DBUsage.h"    // for DatabaseUsage
+#include "Ioss_DatabaseIO.h" // for DatabaseIO
+#include "Ioss_IOFactory.h"  // for IOFactory
+#include "Ioss_Map.h"        // for Map
+#include "Ioss_State.h"      // for State
 #include <stddef.h>          // for size_t
 #include <stdint.h>          // for int64_t
 #include <string>            // for string
@@ -81,14 +81,14 @@ namespace Iopg {
     std::string title() const { return databaseTitle; }
     int         maximum_symbol_length() const override { return 32; }
 
-    void compute_block_membership__(Ioss::SideBlock          *efblock,
-                                    std::vector<std::string> &block_membership) const override;
+    void compute_block_membership_nl(Ioss::SideBlock          *efblock,
+                                     std::vector<std::string> &block_membership) const override;
 
   private:
-    void read_meta_data__() override;
+    void read_meta_data_nl() override;
 
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
+    bool begin_nl(Ioss::State state) override;
+    bool end_nl(Ioss::State state) override;
 
     void read_region();
     void read_communication_metadata();

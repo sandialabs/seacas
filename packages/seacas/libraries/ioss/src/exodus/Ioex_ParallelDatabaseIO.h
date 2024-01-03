@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -7,15 +7,15 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ioex_export.h"
-
 #include <exodusII.h>
+
+#include "ioex_export.h"
 #if defined PARALLEL_AWARE_EXODUS
-#include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>               // for DatabaseUsage
-#include <Ioss_Map.h>                   // for Map
-#include <Ioss_State.h>                 // for State
-#include <exodus/Ioex_BaseDatabaseIO.h> // for DatabaseIO
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DBUsage.h"               // for DatabaseUsage
+#include "Ioss_Map.h"                   // for Map
+#include "Ioss_State.h"                 // for State
+#include "exodus/Ioex_BaseDatabaseIO.h" // for DatabaseIO
 #include <functional>                   // for less
 #include <map>                          // for map, map<>::value_compare
 #include <memory>
@@ -26,6 +26,7 @@
 #include <time.h>   // for nullptr, time_t
 #include <utility>  // for pair
 #include <vector>   // for vector
+
 namespace Ioex {
   class DecompositionDataBase;
   struct BlockFieldData;
@@ -82,9 +83,9 @@ namespace Ioex {
   private:
     void compute_node_status() const;
 
-    void release_memory__() override;
+    void release_memory_nl() override;
 
-    void get_step_times__() override;
+    void get_step_times_nl() override;
 
     bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
                          bool abort_if_error) const override;
@@ -176,7 +177,7 @@ namespace Ioex {
     void output_node_map() const;
 
     // Metadata-related functions.
-    void read_meta_data__() override;
+    void read_meta_data_nl() override;
 
     int64_t read_transient_field(const Ioex::VariableNameMap &variables, const Ioss::Field &field,
                                  const Ioss::GroupingEntity *ge, void *data) const;

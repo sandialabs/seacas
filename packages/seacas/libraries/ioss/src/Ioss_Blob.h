@@ -6,14 +6,16 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
-#include "Ioss_EntityType.h" // for EntityType, etc
-#include "Ioss_Property.h"   // for Property
-#include <Ioss_GroupingEntity.h>
+#include "Ioss_GroupingEntity.h"
 #include <cstddef> // for size_t
 #include <cstdint> // for int64_t
 #include <string>  // for string
+#include <vector>
+
+#include "Ioss_EntityType.h" // for EntityType, etc
+#include "Ioss_Property.h"   // for Property
+#include "ioss_export.h"
+
 namespace Ioss {
   class DatabaseIO;
   class Field;

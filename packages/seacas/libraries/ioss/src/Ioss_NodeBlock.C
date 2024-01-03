@@ -4,14 +4,16 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_Field.h>
-#include <Ioss_NodeBlock.h>
-#include <Ioss_Property.h>
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_Field.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_Property.h"
 #include <cassert>
 #include <cstddef>
 #include <string>
 
+#include "Ioss_BoundingBox.h"
+#include "Ioss_CodeTypes.h"
 #include "Ioss_EntityBlock.h"
 #include "Ioss_FieldManager.h"
 #include "Ioss_PropertyManager.h"

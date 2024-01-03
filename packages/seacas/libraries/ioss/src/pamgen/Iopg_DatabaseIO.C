@@ -8,11 +8,11 @@
 #include <pamgen_im_exodusII.h>
 #include <pamgen_im_ne_nemesisI.h>
 
-#include <pamgen/Iopg_DatabaseIO.h>
+#include "pamgen/Iopg_DatabaseIO.h"
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_SubSystem.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_SubSystem.h"
+#include "Ioss_Utils.h"
 
 #include <algorithm>
 #include <cctype>
@@ -154,7 +154,7 @@ namespace Iopg {
     return mesh_description;
   }
 
-  void DatabaseIO::read_meta_data__()
+  void DatabaseIO::read_meta_data_nl()
   {
     // The file for pamgen contains the mesh description.
     // The Iopg routine is expecting the mesh description to be a
@@ -941,9 +941,9 @@ namespace Iopg {
     }
   } // namespace Iopg
 
-  bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::begin_nl(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::end_nl(Ioss::State /* state */) { return true; }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
@@ -1121,7 +1121,7 @@ namespace Iopg {
                                          void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       size_t num_to_get = field.verify(data_size);
 
@@ -1473,8 +1473,8 @@ namespace Iopg {
     return elemMap;
   }
 
-  void DatabaseIO::compute_block_membership__(Ioss::SideBlock          *sideblock,
-                                              std::vector<std::string> &block_membership) const
+  void DatabaseIO::compute_block_membership_nl(Ioss::SideBlock          *sideblock,
+                                               std::vector<std::string> &block_membership) const
   {
     Ioss::IntVector block_ids(elementBlockCount);
     if (elementBlockCount == 1) {

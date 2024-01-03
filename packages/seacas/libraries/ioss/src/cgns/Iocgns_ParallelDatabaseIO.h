@@ -11,21 +11,21 @@
 #include <cgnsconfig.h>
 #if CG_BUILD_PARALLEL
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>    // for DatabaseUsage
-#include <Ioss_DatabaseIO.h> // for DatabaseIO
-#include <Ioss_IOFactory.h>  // for IOFactory
-#include <Ioss_Map.h>        // for Map
-#include <Ioss_MeshType.h>
-#include <Ioss_State.h> // for State
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DBUsage.h"    // for DatabaseUsage
+#include "Ioss_DatabaseIO.h" // for DatabaseIO
+#include "Ioss_IOFactory.h"  // for IOFactory
+#include "Ioss_Map.h"        // for Map
+#include "Ioss_MeshType.h"
+#include "Ioss_State.h" // for State
 #include <cstddef>      // for size_t
 #include <cstdint>      // for int64_t
 #include <iostream>     // for ostream
 #include <memory>
 #include <string> // for string
 
-#include <cgns/Iocgns_DecompositionData.h>
-#include <cgns/Iocgns_Defines.h>
+#include "cgns/Iocgns_DecompositionData.h"
+#include "cgns/Iocgns_Defines.h"
 
 #include <cgnslib.h>
 
@@ -71,11 +71,6 @@ namespace Iocgns {
     // database supports that type (e.g. return_value & Ioss::FACESET)
     unsigned entity_field_support() const override;
 
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override;
-    int64_t element_global_to_local__(int64_t global) const override;
-
-    void release_memory__() override;
-
     int get_file_pointer() const override;
 
     bool node_major() const override { return false; }
@@ -87,31 +82,37 @@ namespace Iocgns {
     int int_byte_size_db() const override { return CG_SIZEOF_SIZE; }
 
     // Metadata-related functions.
-    void read_meta_data__() override;
     void write_meta_data();
     void write_results_meta_data();
 
   private:
+    void read_meta_data_nl() override;
+
+    int64_t node_global_to_local_nl(int64_t global, bool must_exist) const override;
+    int64_t element_global_to_local_nl(int64_t global) const override;
+
+    void release_memory_nl() override;
+
     void open_state_file(int state);
     void free_state_pointer();
 
-    void openDatabase__() const override;
-    void closeDatabase__() const override;
-    void closeBaseDatabase__() const;
+    void openDatabase_nl() const override;
+    void closeDatabase_nl() const override;
+    void closeBaseDatabase_nl() const;
 
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
+    bool begin_nl(Ioss::State state) override;
+    bool end_nl(Ioss::State state) override;
 
-    bool begin_state__(int state, double time) override;
-    bool end_state__(int state, double time) override;
-    void flush_database__() const override;
+    bool begin_state_nl(int state, double time) override;
+    bool end_state_nl(int state, double time) override;
+    void flush_database_nl() const override;
 
     void    handle_structured_blocks();
     void    handle_unstructured_blocks();
     size_t  finalize_structured_blocks();
     int64_t handle_node_ids(void *ids, int64_t num_to_get) const;
     void    finalize_database() const override;
-    void    get_step_times__() override;
+    void    get_step_times_nl() override;
     void    write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,

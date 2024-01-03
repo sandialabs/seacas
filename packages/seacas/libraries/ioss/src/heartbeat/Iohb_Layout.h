@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include "iohb_export.h"
-
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "iohb_export.h"
 
 namespace Iohb {
   class IOHB_EXPORT Layout

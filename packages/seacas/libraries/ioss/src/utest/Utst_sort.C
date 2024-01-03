@@ -1,14 +1,16 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Sort.h>
-#include <algorithm>
+#include "Ioss_Sort.h"
 #include <cassert>
 #include <iostream>
 #include <random>
+#include <stddef.h>
+#include <stdint.h>
+#include <vector>
 
 namespace {
   template <typename INT> bool verify_sorted(const std::vector<INT> &v)

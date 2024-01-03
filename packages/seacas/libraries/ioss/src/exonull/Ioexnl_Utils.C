@@ -4,19 +4,29 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Assembly.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_Region.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Utils.h>
-#include <Ioss_VariableType.h>
-#include <algorithm>
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Region.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
+#include "exonull/Ioexnl_Utils.h"
 #include <cstring>
 #include <exodusII.h>
 #include <exodusII_int.h>
-#include <exonull/Ioexnl_Utils.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <iosfwd>
+#include <netcdf.h>
 #include <tokenize.h>
+
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
 
 namespace {
   size_t match(const std::string &name1, const std::string &name2)

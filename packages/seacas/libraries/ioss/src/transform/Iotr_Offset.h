@@ -6,12 +6,13 @@
 
 #pragma once
 
-#include "iotr_export.h"
-
-#include <Ioss_Transform.h> // for Transform, Factory
-#include <transform/Iotr_Factory.h>
-
+#include "Ioss_Transform.h" // for Transform, Factory
+#include "transform/Iotr_Factory.h"
+#include <stddef.h>
 #include <string> // for string
+
+#include "Ioss_VariableType.h"
+#include "iotr_export.h"
 
 namespace Ioss {
   class Field;

@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <cstdint> // for int64_t
 #include <vector>  // for vector
+
+#include "ioss_export.h"
 
 namespace Ioss {
   class DatabaseIO;

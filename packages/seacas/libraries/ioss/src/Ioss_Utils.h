@@ -6,14 +6,12 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
-#include <Ioss_CodeTypes.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_EntityType.h>
-#include <Ioss_Field.h>
-#include <Ioss_Property.h>
-#include <Ioss_Sort.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_Field.h"
+#include "Ioss_Property.h"
+#include "Ioss_Sort.h"
 #include <algorithm> // for sort, lower_bound, copy, etc
 #include <cassert>
 #include <cmath>
@@ -24,6 +22,9 @@
 #include <stdexcept> // for runtime_error
 #include <string>    // for string
 #include <vector>    // for vector
+
+#include "ioss_export.h"
+
 namespace Ioss {
   class DatabaseIO;
   class Field;
@@ -31,6 +32,7 @@ namespace Ioss {
   class Region;
   class SideBlock;
   class PropertyManager;
+  enum class ElementShape : unsigned int;
 } // namespace Ioss
 
 [[noreturn]] inline void IOSS_ERROR(const std::ostringstream &errmsg)

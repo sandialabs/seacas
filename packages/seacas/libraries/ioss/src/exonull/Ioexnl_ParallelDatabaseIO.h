@@ -7,15 +7,15 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ioexnl_export.h"
-
 #include <exodusII.h>
+
+#include "ioexnl_export.h"
 #if defined PARALLEL_AWARE_EXODUS
-#include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>                  // for DatabaseUsage
-#include <Ioss_Map.h>                      // for Map
-#include <Ioss_State.h>                    // for State
-#include <exonull/Ioexnl_BaseDatabaseIO.h> // for DatabaseIO
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DBUsage.h"                  // for DatabaseUsage
+#include "Ioss_Map.h"                      // for Map
+#include "Ioss_State.h"                    // for State
+#include "exonull/Ioexnl_BaseDatabaseIO.h" // for DatabaseIO
 #include <functional>                      // for less
 #include <map>                             // for map, map<>::value_compare
 #include <memory>
@@ -26,6 +26,7 @@
 #include <time.h>   // for nullptr, time_t
 #include <utility>  // for pair
 #include <vector>   // for vector
+
 namespace Ioexnl {
   class DecompositionDataBase;
 }
@@ -77,9 +78,9 @@ namespace Ioexnl {
   private:
     void compute_node_status() const;
 
-    void release_memory__() override;
+    void release_memory_nl() override;
 
-    void get_step_times__() override {}
+    void get_step_times_nl() override {}
 
     bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
                             bool overwrite, bool abort_if_error) const override;
@@ -135,7 +136,7 @@ namespace Ioexnl {
     void output_node_map() const;
 
     // Metadata-related functions.
-    void read_meta_data__() override;
+    void read_meta_data_nl() override;
 
     int64_t read_transient_field(const Ioexnl::VariableNameMap &variables, const Ioss::Field &field,
                                  const Ioss::GroupingEntity *ge, void *data) const;

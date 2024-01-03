@@ -980,6 +980,7 @@ static yyconst flex_int16_t yy_rule_linenum[102] = {
 #include "aprepro.h"
 #include "fmt/format.h"
 #include "fmt/ostream.h"
+#include "fmt/ranges.h"
 
 #define YY_NO_UNISTD_H
 /* import the parser's token type into a local typedef */

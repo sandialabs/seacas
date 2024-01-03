@@ -4,30 +4,56 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_BoundingBox.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_Enumerate.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_Sort.h>
-#include <Ioss_State.h>
-#include <Ioss_SubSystem.h>
+#include "Ioss_BoundingBox.h"
+#include "Ioss_CodeTypes.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Enumerate.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Sort.h"
 #include <algorithm>
 #include <cassert>
 #include <cfloat>
 #include <cmath>
 #include <cstddef>
-#include <cstring>
 #include <fmt/ostream.h>
-#include <iomanip>
 #include <iostream>
-#include <iterator>
+#include <map>
 #include <set>
+#include <stdint.h>
 #include <string>
 #include <tokenize.h>
 #include <utility>
 #include <vector>
+
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Map.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
+#include "Ioss_SerializeIO.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
 
 #if defined SEACAS_HAVE_DATAWARP
 extern "C" {
@@ -483,7 +509,7 @@ namespace Ioss {
     }
   }
 
-  /** \brief This function gets called inside closeDatabase__(), which checks if Cray Datawarp (DW)
+  /** \brief This function gets called inside closeDatabase_nl(), which checks if Cray Datawarp (DW)
    * is in use, if so, we want to call a stageout before actual close of this file.
    */
   void DatabaseIO::close_dw() const
@@ -543,9 +569,9 @@ namespace Ioss {
     }
   }
 
-  void DatabaseIO::openDatabase__() const { open_dw(get_filename()); }
+  void DatabaseIO::openDatabase_nl() const { open_dw(get_filename()); }
 
-  void DatabaseIO::closeDatabase__() const { close_dw(); }
+  void DatabaseIO::closeDatabase_nl() const { close_dw(); }
 
   IfDatabaseExistsBehavior DatabaseIO::open_create_behavior() const
   {
@@ -640,12 +666,12 @@ namespace Ioss {
     if (m_timeStateInOut) {
       m_stateStart = std::chrono::steady_clock::now();
     }
-    return begin_state__(state, time);
+    return begin_state_nl(state, time);
   }
   bool DatabaseIO::end_state(int state, double time)
   {
     IOSS_FUNC_ENTER(m_);
-    bool res = end_state__(state, time);
+    bool res = end_state_nl(state, time);
     if (m_timeStateInOut) {
       auto finish = std::chrono::steady_clock::now();
       log_time(m_stateStart, finish, state, time, is_input(), singleProcOnly, util_);
@@ -655,9 +681,9 @@ namespace Ioss {
   }
 
   // Default versions do nothing...
-  bool DatabaseIO::begin_state__(int /* state */, double /* time */) { return true; }
+  bool DatabaseIO::begin_state_nl(int /* state */, double /* time */) { return true; }
 
-  bool DatabaseIO::end_state__(int /* state */, double /* time */) { return true; }
+  bool DatabaseIO::end_state_nl(int /* state */, double /* time */) { return true; }
 
   void DatabaseIO::handle_groups()
   {
@@ -947,8 +973,8 @@ namespace Ioss {
     assert(!sideTopology.empty());
   }
 
-  void DatabaseIO::get_block_adjacencies__(const Ioss::ElementBlock *eb,
-                                           std::vector<std::string> &block_adjacency) const
+  void DatabaseIO::get_block_adjacencies_nl(const Ioss::ElementBlock *eb,
+                                            std::vector<std::string> &block_adjacency) const
   {
     if (!blockAdjacenciesCalculated) {
       compute_block_adjacencies();
@@ -1014,7 +1040,7 @@ namespace Ioss {
     std::vector<std::vector<int>> inv_con(nodeCount);
 
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
       int               blk_position = -1;
       for (Ioss::ElementBlock *eb : element_blocks) {
         if (eb->property_exists("original_block_order")) {

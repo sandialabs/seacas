@@ -20,13 +20,13 @@
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "Ioss_SubSystem.h"
 #include "Ioss_VariableType.h"
-#include <Ioss_SubSystem.h>
 
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
 
 #include "Ioss_IOFactory.h" // for IOFactory
-#include <init/Ionit_Initializer.h>
+#include "init/Ionit_Initializer.h"
 
 #include "adios/Ioad_Constants.h"
 #include "adios/Ioad_Helper.h"

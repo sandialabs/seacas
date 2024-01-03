@@ -8,8 +8,8 @@
 
 #include "ioss_export.h"
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_VariableType.h"
 #include <string>
 
 namespace Ioss {

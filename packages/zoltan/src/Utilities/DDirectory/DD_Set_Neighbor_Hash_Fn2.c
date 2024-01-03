@@ -183,17 +183,17 @@ static unsigned int dd_nh2 (ZOLTAN_ID_PTR gid, int gid_length,
 
 static int compare_sort (const void *a, const void *b)
     {
-    if (((Range_Info*) a)->low < ((Range_Info *) b)->low) return -1;
-    if (((Range_Info*) a)->low > ((Range_Info *) b)->low) return  1;
+    if (((const Range_Info*) a)->low < ((const Range_Info *) b)->low) return -1;
+    if (((const Range_Info*) a)->low > ((const Range_Info *) b)->low) return  1;
     else return 0 ;
     }
 
 
 static int compare_search (const void *a, const void *b)
     {
-    int temp = (signed) *((ZOLTAN_ID_TYPE *) a);
-    if (temp < ((Range_Info*) b)->low)  return -1;
-    if (temp > ((Range_Info*) b)->high) return  1;
+    int temp = (signed) *((const ZOLTAN_ID_TYPE *) a);
+    if (temp < ((const Range_Info*) b)->low)  return -1;
+    if (temp > ((const Range_Info*) b)->high) return  1;
     else return 0 ;
     }
 

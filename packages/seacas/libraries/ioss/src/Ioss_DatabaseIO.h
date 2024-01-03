@@ -6,18 +6,16 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
-#include <Ioss_BoundingBox.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>    // for DatabaseUsage, etc
-#include <Ioss_DataSize.h>   // for DataSize
-#include <Ioss_EntityType.h> // for EntityType
-#include <Ioss_Map.h>
-#include <Ioss_ParallelUtils.h>   // for ParallelUtils
-#include <Ioss_PropertyManager.h> // for PropertyManager
-#include <Ioss_State.h>           // for State, State::STATE_INVALID
-#include <Ioss_SurfaceSplit.h>    // for SurfaceSplitType
+#include "Ioss_BoundingBox.h"
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DBUsage.h"    // for DatabaseUsage, etc
+#include "Ioss_DataSize.h"   // for DataSize
+#include "Ioss_EntityType.h" // for EntityType
+#include "Ioss_Map.h"
+#include "Ioss_ParallelUtils.h"   // for ParallelUtils
+#include "Ioss_PropertyManager.h" // for PropertyManager
+#include "Ioss_State.h"           // for State, State::STATE_INVALID
+#include "Ioss_SurfaceSplit.h"    // for SurfaceSplitType
 #include <chrono>
 #include <cstddef> // for size_t, nullptr
 #include <cstdint> // for int64_t
@@ -25,6 +23,9 @@
 #include <string>  // for string
 #include <utility> // for pair
 #include <vector>  // for vector
+
+#include "Ioss_Field.h"
+#include "ioss_export.h"
 
 namespace Ioss {
   class Assembly;
@@ -66,6 +67,7 @@ namespace Ioss {
     DatabaseIO()                              = delete;
     DatabaseIO(const DatabaseIO &)            = delete;
     DatabaseIO &operator=(const DatabaseIO &) = delete;
+    virtual ~DatabaseIO();
 
     /** \brief Check to see if database state is OK.
      *
@@ -81,7 +83,7 @@ namespace Ioss {
             int *bad_count = nullptr) const
     {
       IOSS_FUNC_ENTER(m_);
-      return ok__(write_message, error_message, bad_count);
+      return ok_nl(write_message, error_message, bad_count);
     }
 
     // Check capabilities of input/output database...  Returns an
@@ -102,13 +104,13 @@ namespace Ioss {
     int64_t node_global_to_local(int64_t global, bool must_exist) const
     {
       IOSS_FUNC_ENTER(m_);
-      return node_global_to_local__(global, must_exist);
+      return node_global_to_local_nl(global, must_exist);
     }
 
     int64_t element_global_to_local(int64_t global) const
     {
       IOSS_FUNC_ENTER(m_);
-      return element_global_to_local__(global);
+      return element_global_to_local_nl(global);
     }
 
     /** If there is a single block of nodes in the model, then it is
@@ -118,14 +120,12 @@ namespace Ioss {
      */
     virtual bool node_major() const { return true; }
 
-    virtual ~DatabaseIO();
-
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...
     void release_memory()
     {
       IOSS_FUNC_ENTER(m_);
-      release_memory__();
+      release_memory_nl();
     }
 
     // Do anything that might be needed to the database prior to it
@@ -227,21 +227,21 @@ namespace Ioss {
     {
       IOSS_FUNC_ENTER(m_);
       progress(__func__);
-      openDatabase__();
+      openDatabase_nl();
     }
 
     void closeDatabase() const
     {
       IOSS_FUNC_ENTER(m_);
       progress(__func__);
-      closeDatabase__();
+      closeDatabase_nl();
     }
 
     void flush_database() const
     {
       IOSS_FUNC_ENTER(m_);
       progress(__func__);
-      flush_database__();
+      flush_database_nl();
     }
 
     /** \brief If a database type supports groups and if the database
@@ -258,7 +258,7 @@ namespace Ioss {
     bool open_group(const std::string &group_name)
     {
       IOSS_FUNC_ENTER(m_);
-      return open_group__(group_name);
+      return open_group_nl(group_name);
     }
 
     /** \brief If a database type supports groups, create the specified
@@ -274,7 +274,7 @@ namespace Ioss {
     bool create_subgroup(const std::string &group_name)
     {
       IOSS_FUNC_ENTER(m_);
-      return create_subgroup__(group_name);
+      return create_subgroup_nl(group_name);
     }
 
     /** \brief Set the database to the given State.
@@ -295,7 +295,7 @@ namespace Ioss {
     {
       IOSS_FUNC_ENTER(m_);
       progress(__func__);
-      return begin__(state);
+      return begin_nl(state);
     }
 
     /** \brief Return the database to STATE_CLOSED.
@@ -312,7 +312,7 @@ namespace Ioss {
     {
       IOSS_FUNC_ENTER(m_);
       progress(__func__);
-      return end__(state);
+      return end_nl(state);
     }
 
     bool begin_state(int state, double time);
@@ -323,14 +323,14 @@ namespace Ioss {
     {
       IOSS_FUNC_ENTER(m_);
       progress("Begin read_meta_data()");
-      read_meta_data__();
+      read_meta_data_nl();
       progress("End read_meta_data()");
     }
 
     void get_step_times()
     {
       IOSS_FUNC_ENTER(m_);
-      return get_step_times__();
+      return get_step_times_nl();
     }
 
     virtual bool internal_edges_available() const { return false; }
@@ -478,12 +478,12 @@ namespace Ioss {
     void get_block_adjacencies(const Ioss::ElementBlock *eb,
                                std::vector<std::string> &block_adjacency) const
     {
-      return get_block_adjacencies__(eb, block_adjacency);
+      return get_block_adjacencies_nl(eb, block_adjacency);
     }
     void compute_block_membership(Ioss::SideBlock          *efblock,
                                   std::vector<std::string> &block_membership) const
     {
-      return compute_block_membership__(efblock, block_membership);
+      return compute_block_membership_nl(efblock, block_membership);
     }
 
     AxisAlignedBoundingBox get_bounding_box(const Ioss::NodeBlock *nb) const;
@@ -724,13 +724,13 @@ namespace Ioss {
 
     mutable std::vector<std::vector<bool>> blockAdjacency;
 
-    virtual void openDatabase__() const;
-    virtual void closeDatabase__() const;
-    virtual void flush_database__() const {}
+    virtual void openDatabase_nl() const;
+    virtual void closeDatabase_nl() const;
+    virtual void flush_database_nl() const {}
 
   private:
-    virtual bool ok__(bool /* write_message */, std::string * /* error_message */,
-                      int *bad_count) const
+    virtual bool ok_nl(bool /* write_message */, std::string * /* error_message */,
+                       int *bad_count) const
     {
       if (bad_count != nullptr) {
         *bad_count = 0;
@@ -738,17 +738,17 @@ namespace Ioss {
       return dbState != Ioss::STATE_INVALID;
     }
 
-    virtual int64_t node_global_to_local__(int64_t global, bool must_exist) const
+    virtual int64_t node_global_to_local_nl(int64_t global, bool must_exist) const
     {
       return nodeMap.global_to_local(global, must_exist);
     }
 
-    virtual int64_t element_global_to_local__(int64_t global) const
+    virtual int64_t element_global_to_local_nl(int64_t global) const
     {
       return elemMap.global_to_local(global);
     }
 
-    virtual void release_memory__()
+    virtual void release_memory_nl()
     {
       nodeMap.release_memory();
       edgeMap.release_memory();
@@ -756,23 +756,24 @@ namespace Ioss {
       elemMap.release_memory();
     }
 
-    virtual bool open_group__(const std::string & /* group_name */) { return false; }
-    virtual bool create_subgroup__(const std::string & /* group_name */) { return false; }
+    virtual bool open_group_nl(const std::string & /* group_name */) { return false; }
+    virtual bool create_subgroup_nl(const std::string & /* group_name */) { return false; }
 
-    virtual bool begin__(Ioss::State state) = 0;
-    virtual bool end__(Ioss::State state)   = 0;
+    virtual bool begin_nl(Ioss::State state) = 0;
+    virtual bool end_nl(Ioss::State state)   = 0;
 
-    virtual void read_meta_data__() = 0;
-    virtual void get_step_times__() {}
+    virtual void read_meta_data_nl() = 0;
+    virtual void get_step_times_nl() {}
 
-    virtual bool begin_state__(int state, double time);
-    virtual bool end_state__(int state, double time);
+    virtual bool begin_state_nl(int state, double time);
+    virtual bool end_state_nl(int state, double time);
 
-    void get_block_adjacencies__(const Ioss::ElementBlock *eb,
-                                 std::vector<std::string> &block_adjacency) const;
+    void get_block_adjacencies_nl(const Ioss::ElementBlock *eb,
+                                  std::vector<std::string> &block_adjacency) const;
 
-    virtual void compute_block_membership__(Ioss::SideBlock * /* efblock */,
-                                            std::vector<std::string> & /* block_membership */) const
+    virtual void
+    compute_block_membership_nl(Ioss::SideBlock * /* efblock */,
+                                std::vector<std::string> & /* block_membership */) const
     {
     }
 
@@ -896,7 +897,7 @@ namespace Ioss {
     bool fieldSeparatorSpecified{false};
     bool enableFieldRecognition{true};
     bool fieldStripTrailing_{false};
-    bool isInput;
+    bool isInput{true}; // No good default...
     bool isParallelConsistent{
         true}; // True if application will make field data get/put calls parallel
                // consistently.

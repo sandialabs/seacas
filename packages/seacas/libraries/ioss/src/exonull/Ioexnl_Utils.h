@@ -7,18 +7,28 @@
  */
 #pragma once
 
-#include "ioexnl_export.h"
-
-#include <Ioss_CoordinateFrame.h>
-#include <Ioss_ElementBlock.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_Utils.h>
-
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Utils.h"
 #include <cassert>
 #include <exodusII.h>
+#include <map>
 #include <set>
+#include <stddef.h>
+#include <stdint.h>
 #include <string>
 #include <vector>
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_SurfaceSplit.h"
+#include "ioexnl_export.h"
+
+namespace Ioss {
+  class ElementBlock;
+  class Region;
+} // namespace Ioss
 
 #define EXU_USE_HOPSCOTCH
 #if defined EXU_USE_HOPSCOTCH
@@ -32,6 +42,7 @@
 
 namespace Ioss {
   class GroupingEntity;
+
   using CoordinateFrameContainer = std::vector<CoordinateFrame>;
 } // namespace Ioss
 

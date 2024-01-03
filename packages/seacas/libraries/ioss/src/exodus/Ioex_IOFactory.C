@@ -4,17 +4,15 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <exodus/Ioex_DatabaseIO.h> // for Ioex DatabaseIO
-#include <exodus/Ioex_IOFactory.h>  // for Ioex IOFactory
+#include "exodus/Ioex_DatabaseIO.h" // for Ioex DatabaseIO
+#include "exodus/Ioex_IOFactory.h"  // for Ioex IOFactory
 
 #if defined(PARALLEL_AWARE_EXODUS)          // Defined in exodusII.h
-#include <exodus/Ioex_ParallelDatabaseIO.h> // for Ioex ParallelDatabaseIO
+#include "exodus/Ioex_ParallelDatabaseIO.h" // for Ioex ParallelDatabaseIO
 #endif
-#include <tokenize.h>
-
-#include <cstddef> // for nullptr
 #include <exodusII.h>
 #include <fmt/ostream.h>
+#include <ostream>
 #include <string> // for string
 
 #include "Ioss_CodeTypes.h" // for Ioss_MPI_Comm
@@ -24,9 +22,6 @@
 #if !defined(NO_PARMETIS_SUPPORT)
 #include <parmetis.h>
 #endif
-namespace Ioss {
-  class DatabaseIO;
-} // namespace Ioss
 
 #if defined(PARALLEL_AWARE_EXODUS)
 namespace {

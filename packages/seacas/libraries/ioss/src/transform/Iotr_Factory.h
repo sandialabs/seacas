@@ -6,15 +6,20 @@
 
 #pragma once
 
-#include "iotr_export.h"
-
-#include <Ioss_CodeTypes.h>
+#include "Ioss_CodeTypes.h"
 #include <functional>
 #include <map>
 #include <string>
 
+#include "iotr_export.h"
+
+namespace Ioss {
+  class Transform;
+} // namespace Ioss
+
 namespace Iotr {
   class Factory;
+
   using FactoryMap = std::map<std::string, Factory *, std::less<>>;
 
   class IOTR_EXPORT Factory

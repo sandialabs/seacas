@@ -6,18 +6,15 @@
 
 #include "Iotm_TextMesh.h"
 
-#include <Ioss_Utils.h>
+#include "Ioss_Utils.h"
 #include <fmt/ostream.h>
-
-#include <algorithm>
-#include <array>
-#include <cassert> // for assert
-#include <cmath>   // for atan2, cos, sin
-#include <cstdlib> // for nullptr, exit, etc
 #include <iostream>
-#include <numeric>
+#include <stdexcept>
 #include <string>
 #include <vector> // for vector
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_EntityType.h"
 
 #define ThrowRequireMsg(expr, message)                                                             \
   do {                                                                                             \
@@ -351,7 +348,7 @@ namespace Iotm {
     /* create global coordinates */
     int64_t count = node_count_proc();
     coord.resize(count * spatial_dimension());
-    coordinates(&coord[0]);
+    coordinates(coord.data());
   }
 
   void TextMesh::coordinates(double *coord) const
@@ -507,7 +504,7 @@ namespace Iotm {
     int64_t npe = topo.num_nodes();
     connect.resize(element_count_proc(id) * npe);
 
-    raw_connectivity(id, &connect[0]);
+    raw_connectivity(id, connect.data());
   }
 
   void TextMesh::connectivity(int64_t id, Ioss::IntVector &connect) const
@@ -517,7 +514,7 @@ namespace Iotm {
     int64_t npe = topo.num_nodes();
     connect.resize(element_count_proc(id) * npe);
 
-    raw_connectivity(id, &connect[0]);
+    raw_connectivity(id, connect.data());
   }
 
   void TextMesh::connectivity(int64_t id, int64_t *connect) const { raw_connectivity(id, connect); }

@@ -7,12 +7,16 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include "ionull_export.h"
-
-#include <Ioss_DBUsage.h>
-#include <Ioss_DatabaseIO.h>
-
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include <stddef.h>
+#include <stdint.h>
 #include <string>
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_State.h"
+#include "ionull_export.h"
 
 namespace Ioss {
   class GroupingEntity;
@@ -33,6 +37,9 @@ namespace Ioss {
   class StructuredBlock;
   class CommSet;
   class ElementTopology;
+  class Assembly;
+  class Blob;
+  class PropertyManager;
 } // namespace Ioss
 
 namespace Ionull {
@@ -57,13 +64,13 @@ namespace Ionull {
     int  int_byte_size_db() const override { return 8; }
     void set_int_byte_size_api(Ioss::DataSize) const override {}
 
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
+    bool begin_nl(Ioss::State state) override;
+    bool end_nl(Ioss::State state) override;
 
-    bool begin_state__(int state, double time) override;
-    bool end_state__(int state, double time) override;
+    bool begin_state_nl(int state, double time) override;
+    bool end_state_nl(int state, double time) override;
 
-    bool ok__(bool, std::string *, int *) const override { return true; }
+    bool ok_nl(bool, std::string *, int *) const override { return true; }
 
   private:
     // Input only database -- these will never be called...
@@ -83,8 +90,8 @@ namespace Ionull {
     IOSS_NOOP_GFI(Ioss::Assembly)
     IOSS_NOOP_GFI(Ioss::Blob)
 
-    void read_meta_data__() override;
-    void get_step_times__() override {}
+    void read_meta_data_nl() override;
+    void get_step_times_nl() override {}
 
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;

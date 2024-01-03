@@ -368,7 +368,7 @@ typedef enum ex_type ex_type;
 typedef struct ex_attribute
 {
   ex_entity_type entity_type;
-  int64_t        entity_id;
+  ex_entity_id   entity_id;
   char           name[NC_MAX_NAME + 1];
   ex_type        type; /* int, double, text */
   size_t         value_count;
@@ -377,23 +377,23 @@ typedef struct ex_attribute
 
 typedef struct ex_blob
 {
-  int64_t id;
-  char   *name;
-  int64_t num_entry;
+  ex_entity_id id;
+  char        *name;
+  int64_t      num_entry;
 } ex_blob;
 
 typedef struct ex_assembly
 {
-  int64_t        id;
+  ex_entity_id   id;
   char          *name;
   ex_entity_type type; /* EX_ELEM_BLOCK or EX_ASSEMBLY */
   int            entity_count;
-  int64_t       *entity_list;
+  ex_entity_id  *entity_list;
 } ex_assembly;
 
 typedef struct ex_block
 {
-  int64_t        id;
+  ex_entity_id   id;
   ex_entity_type type;
   char           topology[MAX_STR_LENGTH + 1];
   int64_t        num_entry;
@@ -405,7 +405,7 @@ typedef struct ex_block
 
 typedef struct ex_set
 {
-  int64_t        id;
+  ex_entity_id   id;
   ex_entity_type type;
   int64_t        num_entry;
   int64_t        num_distribution_factor;
@@ -642,8 +642,9 @@ EXODUS_EXPORT int ex_get_var_multi_time(int exoid, ex_entity_type var_type, int 
                                         int beg_time_step, int end_time_step, void *var_vals);
 
 /*  Read Edge Face or Element Variable Values Defined On Blocks or Sets Through Time */
-EXODUS_EXPORT int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t id,
-                                  int beg_time_step, int end_time_step, void *var_vals);
+EXODUS_EXPORT int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index,
+                                  ex_entity_id id, int beg_time_step, int end_time_step,
+                                  void *var_vals);
 
 /*  Read Partial Edge Face or Element Variable Values on Blocks or Sets at a Time Step */
 EXODUS_EXPORT int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type,
