@@ -14,6 +14,7 @@
 #include "Ioss_SmartAssert.h"
 #include "Ioss_Sort.h"
 #include "fmt/format.h"
+#include "fmt/ranges.h"
 
 //! \file
 

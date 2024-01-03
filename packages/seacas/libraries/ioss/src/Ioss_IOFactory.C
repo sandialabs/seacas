@@ -10,6 +10,7 @@
 #include "Ioss_Version.h"
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <map>     // for _Rb_tree_iterator, etc
 #include <ostream> // for basic_ostream, etc
 #include <set>

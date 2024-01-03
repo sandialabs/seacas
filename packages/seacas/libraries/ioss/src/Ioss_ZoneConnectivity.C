@@ -8,6 +8,7 @@
 #include "Ioss_ZoneConnectivity.h"
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <string> // for string
 #include <vector> // for vector
 

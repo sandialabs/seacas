@@ -16,6 +16,7 @@
 #include <cstddef> // for size_t
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <iostream>
 #include <stdlib.h>
 #include <string> // for string

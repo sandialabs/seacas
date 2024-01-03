@@ -26,6 +26,7 @@
 #endif
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <init/Ionit_Initializer.h>
 
 #if USE_METIS

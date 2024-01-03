@@ -16,6 +16,7 @@
 #include "exo_block.h"
 #include "exodusII.h"
 #include "fmt/ostream.h"
+#include "fmt/ranges.h"
 #include "node_set.h"
 #include "side_set.h"
 #include "smart_assert.h"

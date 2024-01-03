@@ -11,6 +11,7 @@
 #include "Ioss_StructuredBlock.h"
 #include "Ioss_ZoneConnectivity.h"
 #include <fmt/core.h>
+#include <fmt/ranges.h>
 #include <stdint.h>
 #include <tokenize.h>
 

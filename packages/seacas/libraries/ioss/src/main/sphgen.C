@@ -12,6 +12,7 @@
 #include <cstring>
 #include <fmt/core.h>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
