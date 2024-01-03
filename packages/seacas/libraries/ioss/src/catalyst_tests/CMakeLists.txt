@@ -90,30 +90,49 @@ function(catalyst_test_ioshell_generated test_name
                                          ioshell_gen_args
                                          ioshell_output_file_name
                                          test_time
-                                         test_time_step)
+                                         test_time_step
+                                         num_procs)
 
-set(CATALYST_FNAME catalyst_time_${test_time_step}_${ioshell_output_file_name})
-set(IOSHELL_FNAME ioshell_time_${test_time_step}_${ioshell_output_file_name})
+set(CATALYST_FNAME catalyst_time_${test_time_step}_np_${num_procs}_${ioshell_output_file_name})
+set(IOSHELL_FNAME ioshell_time_${test_time_step}_np_${num_procs}_${ioshell_output_file_name})
+
+if(num_procs GREATER 1)
+  set(CATALYST_FNAME_EPU ${CATALYST_FNAME}.${num_procs}.0)
+else()
+  set(CATALYST_FNAME_EPU ${CATALYST_FNAME})
+endif()
 
 TRIBITS_ADD_ADVANCED_TEST(${test_name}
-   TEST_0 EXEC io_shell ARGS --in_type generated ${ioshell_gen_args} ${ioshell_output_file_name}
+   TEST_0 EXEC io_shell ARGS --in_type generated ${ioshell_gen_args}
+          ${ioshell_output_file_name}
      DIRECTORY ../main
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1
-   TEST_1 EXEC io_shell ARGS -out_type catalyst ${ioshell_output_file_name} ${test_time_step}
+   TEST_1 EXEC decomp ARGS -p ${num_procs} ${ioshell_output_file_name}
+     DIRECTORY ../../../../scripts
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS 1
+   TEST_2 EXEC io_shell ARGS -out_type catalyst ${ioshell_output_file_name}
+          ${test_time_step}
+     DIRECTORY ../main
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${num_procs}
+   TEST_3 EXEC io_shell ARGS -in_type catalyst ${test_time_step}
+          ${CATALYST_FNAME}
+     DIRECTORY ../main
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${num_procs}
+   TEST_4 EXEC epu ARGS -auto ${CATALYST_FNAME_EPU}
+     DIRECTORY ../../../../applications/epu
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS 1
+   TEST_5 EXEC io_shell ARGS -select_times ${test_time}
+          ${ioshell_output_file_name} ${IOSHELL_FNAME}
      DIRECTORY ../main
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1
-   TEST_2 EXEC io_shell ARGS -in_type catalyst ${test_time_step} ${CATALYST_FNAME}
-     DIRECTORY ../main
-     NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
-   TEST_3 EXEC io_shell ARGS -select_times ${test_time} ${ioshell_output_file_name}
-         ${IOSHELL_FNAME}
-     DIRECTORY ../main
-     NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
-   TEST_4 EXEC exodiff ARGS -pedantic ${IOSHELL_FNAME} ${CATALYST_FNAME}
+   TEST_6 EXEC exodiff ARGS -pedantic ${IOSHELL_FNAME}
+          ${CATALYST_FNAME}
      DIRECTORY ../../../../applications/exodiff
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1
@@ -121,53 +140,85 @@ TRIBITS_ADD_ADVANCED_TEST(${test_name}
   )
 endfunction()
 
-catalyst_test_ioshell_generated("catalyst_ioshell_10x10x10"
+foreach(NUM_PROCS 1 4)
+
+  catalyst_test_ioshell_generated(
+    "catalyst_ioshell_10x10x10_np_${NUM_PROCS}"
     "10x10x10+times:4+variables:element,2,nodal,3"
-    "ioshell_10x10x10.g" "3" "3")
+    "ioshell_10x10x10.g" "3" "3" ${NUM_PROCS})
 
-catalyst_test_ioshell_generated("catalyst_ioshell_10x10x10_tets"
+  catalyst_test_ioshell_generated(
+    "catalyst_ioshell_10x10x10_tets_np_${NUM_PROCS}"
     "10x10x10+tets:+times:2+variables:element,2,nodal,3"
-    "ioshell_10x10x10_tets.g" "1" "1")
+    "ioshell_10x10x10_tets.g" "1" "1" ${NUM_PROCS})
 
-catalyst_test_ioshell_generated("catalyst_ioshell_10x10x10_pyramids"
+  catalyst_test_ioshell_generated(
+    "catalyst_ioshell_10x10x10_pyramids_np_${NUM_PROCS}"
     "10x10x10+pyramids:+times:2+variables:element,2,nodal,3"
-    "ioshell_10x10x10_pyramids.g" "1" "1")
+    "ioshell_10x10x10_pyramids.g" "1" "1" ${NUM_PROCS})
 
-catalyst_test_ioshell_generated("catalyst_ioshell_10x10x10_shell"
+  catalyst_test_ioshell_generated(
+    "catalyst_ioshell_10x10x10_shell_np_${NUM_PROCS}"
     "10x10x10+shell:xX:+times:2+variables:element,2,nodal,3"
-    "ioshell_10x10x10_shell.g" "1" "1")
+    "ioshell_10x10x10_shell.g" "1" "1" ${NUM_PROCS})
 
-catalyst_test_ioshell_generated("catalyst_ioshell_10x10x10_nodeset"
+  catalyst_test_ioshell_generated(
+    "catalyst_ioshell_10x10x10_nodeset_np_${NUM_PROCS}"
     "10x10x10+nodeset:xX:+times:2+variables:element,2,nodal,3,nodeset,4"
-    "ioshell_10x10x10_nodeset.g" "1" "1")
+    "ioshell_10x10x10_nodeset.g" "1" "1" ${NUM_PROCS})
 
-catalyst_test_ioshell_generated("catalyst_ioshell_10x10x10_sideset"
+  catalyst_test_ioshell_generated(
+    "catalyst_ioshell_10x10x10_sideset_np_${NUM_PROCS}"
     "10x10x10+sideset:xX:+times:2+variables:element,2,nodal,3,sideset,4"
-    "ioshell_10x10x10_sideset.g" "1" "1")
+    "ioshell_10x10x10_sideset.g" "1" "1" ${NUM_PROCS})
+
+endforeach()
 
 function(catalyst_test_ioshell_exodus_file test_name
                                            input_file
                                            test_time
-                                           test_time_step)
+                                           test_time_step
+                                           num_procs)
 
-set(CATALYST_FNAME catalyst_time_${test_time_step}_${input_file})
-set(IOSHELL_FNAME ioshell_time_${test_time_step}_${input_file})
+set(CATALYST_FNAME catalyst_time_${test_time_step}_np_${num_procs}_${input_file})
+set(IOSHELL_FNAME ioshell_time_${test_time_step}_np_${num_procs}_${input_file})
 set(INPUT_FILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../main/test/${input_file})
 
+if(num_procs GREATER 1)
+  set(CATALYST_FNAME_EPU ${CATALYST_FNAME}.${num_procs}.0)
+  set(CATALYST_INPUT_FNAME ${input_file})
+else()
+  set(CATALYST_FNAME_EPU ${CATALYST_FNAME})
+  set(CATALYST_INPUT_FNAME ${INPUT_FILE_PATH})
+endif()
+
 TRIBITS_ADD_ADVANCED_TEST(${test_name}
-    TEST_0 EXEC io_shell ARGS -out_type catalyst ${INPUT_FILE_PATH} ${test_time_step}
+    TEST_0 EXEC decomp ARGS -p
+           ${num_procs} ${INPUT_FILE_PATH}
+      DIRECTORY ../../../../scripts
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_1 EXEC io_shell ARGS -out_type catalyst
+           ${CATALYST_INPUT_FNAME} ${test_time_step}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS ${num_procs}
+    TEST_2 EXEC io_shell ARGS -in_type catalyst
+           ${test_time_step} ${CATALYST_FNAME}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS ${num_procs}
+    TEST_3 EXEC epu ARGS -auto ${CATALYST_FNAME_EPU}
+      DIRECTORY ../../../../applications/epu
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_4 EXEC io_shell ARGS -select_times
+           ${test_time} ${INPUT_FILE_PATH} ${IOSHELL_FNAME}
       DIRECTORY ../main
       NOEXEPREFIX NOEXESUFFIX
       NUM_MPI_PROCS 1
-    TEST_1 EXEC io_shell ARGS -in_type catalyst ${test_time_step} ${CATALYST_FNAME}
-      DIRECTORY ../main
-      NOEXEPREFIX NOEXESUFFIX
-      NUM_MPI_PROCS 1
-    TEST_2 EXEC io_shell ARGS -select_times ${test_time} ${INPUT_FILE_PATH} ${IOSHELL_FNAME}
-      DIRECTORY ../main
-      NOEXEPREFIX NOEXESUFFIX
-      NUM_MPI_PROCS 1
-    TEST_3 EXEC exodiff ARGS -pedantic ${IOSHELL_FNAME} ${CATALYST_FNAME}
+    TEST_5 EXEC exodiff ARGS -pedantic
+           ${IOSHELL_FNAME} ${CATALYST_FNAME}
       DIRECTORY ../../../../applications/exodiff
       NOEXEPREFIX NOEXESUFFIX
       NUM_MPI_PROCS 1
@@ -175,9 +226,63 @@ TRIBITS_ADD_ADVANCED_TEST(${test_name}
 )
 endfunction()
 
-catalyst_test_ioshell_exodus_file("catalyst_ioshell_cube_g" "cube.g" "1" "1")
-catalyst_test_ioshell_exodus_file("catalyst_ioshell_two_block_g" "two-block.g" "1" "1")
-catalyst_test_ioshell_exodus_file("catalyst_ioshell_eight_block_g" "8-block.g" "0.05" "5")
+foreach(NUM_PROCS 1 4)
+  catalyst_test_ioshell_exodus_file(
+    "catalyst_ioshell_cube_g_np_${NUM_PROCS}"
+    "cube.g" "1" "1" ${NUM_PROCS})
+  catalyst_test_ioshell_exodus_file(
+    "catalyst_ioshell_two_block_g_np_${NUM_PROCS}"
+    "two-block.g" "1" "1" ${NUM_PROCS})
+  catalyst_test_ioshell_exodus_file(
+    "catalyst_ioshell_eight_block_g_np_${NUM_PROCS}"
+    "8-block.g" "0.05" "5" ${NUM_PROCS})
+endforeach()
+
+if ( NETCDF_NCDUMP_BINARY )
+
+function(catalyst_test_ioshell_generated_exodus_file test_name
+                                                     gen_exo_file_command
+                                                     gen_exo_file_args
+                                                     gen_exo_file_name
+                                                     test_time
+                                                     test_time_step)
+
+set(CATALYST_FNAME catalyst_time_${test_time_step}_${gen_exo_file_name})
+set(IOSHELL_FNAME ioshell_time_${test_time_step}_${gen_exo_file_name})
+set(INPUT_FILE_PATH ${gen_exo_file_name})
+
+TRIBITS_ADD_ADVANCED_TEST(${test_name}
+    TEST_0 EXEC ${gen_exo_file_command} ARGS ${gen_exo_file_args}
+      DIRECTORY ../../../exodus/test
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_1 EXEC io_shell ARGS -out_type catalyst ${INPUT_FILE_PATH} ${test_time_step}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_2 EXEC io_shell ARGS -in_type catalyst ${test_time_step} ${CATALYST_FNAME}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_3 EXEC io_shell ARGS -select_times ${test_time} ${INPUT_FILE_PATH} ${IOSHELL_FNAME}
+      DIRECTORY ../main
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    TEST_4 EXEC exodiff ARGS -pedantic ${IOSHELL_FNAME} ${CATALYST_FNAME}
+      DIRECTORY ../../../../applications/exodiff
+      NOEXEPREFIX NOEXESUFFIX
+      NUM_MPI_PROCS 1
+    ENVIRONMENT CATALYST_DATA_DUMP_DIRECTORY=${CMAKE_CURRENT_BINARY_DIR}/${test_name}
+)
+endfunction()
+
+catalyst_test_ioshell_generated_exodus_file("catalyst_ioshell_test_blob_exo"
+  "testwt-blob" "" "test-blob.exo" "0.02" "1")
+
+catalyst_test_ioshell_generated_exodus_file("catalyst_ioshell_test_seacas_exodus_exoIIC"
+  "SEACASExodus_ExoIICTests.exe" "CreateEdgeFace" "edgeFace.exo" "1" "0")
+
+endif()
 
 IF (TPL_ENABLE_CGNS)
 
@@ -228,7 +333,8 @@ TRIBITS_ADD_ADVANCED_TEST(${test_name}
 )
 endfunction()
 
-catalyst_test_ioshell_cgns_file("catalyst_ioshell_sparc1_cgns" "sparc1.cgns" "15.992" "1")
+catalyst_test_ioshell_cgns_file(
+  "catalyst_ioshell_sparc1_cgns" "sparc1.cgns" "15.992" "1")
 
 endif()
 endif()
