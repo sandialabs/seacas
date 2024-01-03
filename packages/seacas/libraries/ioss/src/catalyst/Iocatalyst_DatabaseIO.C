@@ -1010,7 +1010,7 @@ namespace Iocatalyst {
     }
   }
 
-  bool DatabaseIO::begin__(Ioss::State state)
+  bool DatabaseIO::begin_nl(Ioss::State state)
   {
     this->dbState = state;
     if (is_input()) {
@@ -1023,7 +1023,7 @@ namespace Iocatalyst {
     return true;
   }
 
-  bool DatabaseIO::end__(Ioss::State state)
+  bool DatabaseIO::end_nl(Ioss::State state)
   {
     assert(this->dbState == state);
 
@@ -1062,10 +1062,10 @@ namespace Iocatalyst {
     return true;
   }
 
-  bool DatabaseIO::begin_state__(int state, double time) { return true; }
+  bool DatabaseIO::begin_state_nl(int state, double time) { return true; }
 
   // common
-  bool DatabaseIO::end_state__(int state, double time)
+  bool DatabaseIO::end_state_nl(int state, double time)
   {
     if (this->is_input()) {}
     else {
@@ -1097,7 +1097,7 @@ namespace Iocatalyst {
            Ioss::BLOB;
   }
 
-  void DatabaseIO::read_meta_data__()
+  void DatabaseIO::read_meta_data_nl()
   {
     auto region = this->get_region();
     assert(region != nullptr);
@@ -1106,7 +1106,7 @@ namespace Iocatalyst {
     impl.readModel(region);
   }
 
-  void DatabaseIO::get_step_times__()
+  void DatabaseIO::get_step_times_nl()
   {
     auto region = this->get_region();
     assert(region != nullptr);
