@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1333,7 +1333,7 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
   if (all_dig) {
     auto tokens = Ioss::tokenize(filename, ".");
     if (tokens.size() >= 4) {
-      auto proc_count = tokens[tokens.size() - 2];
+      const auto &proc_count = tokens[tokens.size() - 2];
       if (proc_count.find_first_not_of("0123456789") == std::string::npos) {
         extension = tokens[tokens.size() - 3];
       }

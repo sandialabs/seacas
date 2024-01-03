@@ -1,4 +1,4 @@
-// Copyright(C) 2021, 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 2021, 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -482,8 +482,8 @@ namespace {
       // really matter.
       const auto &blocks    = region.get_element_blocks();
       const auto *topo      = blocks[0]->topology();
-      auto        elem_topo = topo->name();
-      auto        face_topo = topo->boundary_type(0)->name();
+      const auto &elem_topo = topo->name();
+      const auto &face_topo = topo->boundary_type(0)->name();
 
       auto *ss = new Ioss::SideSet(output_region.get_database(), "boundary");
       output_region.add(ss);
@@ -1021,8 +1021,8 @@ namespace {
       const auto &fbs = ss->get_side_blocks();
       for (const auto &ifb : fbs) {
         if (ifb->parent_block() != nullptr) {
-          auto  fb_name = ifb->parent_block()->name();
-          auto *parent  = dynamic_cast<Ioss::EntityBlock *>(
+          const auto &fb_name = ifb->parent_block()->name();
+          auto       *parent  = dynamic_cast<Ioss::EntityBlock *>(
               output_region.get_entity(fb_name, Ioss::ELEMENTBLOCK));
           if (parent == nullptr) {
             parent = dynamic_cast<Ioss::EntityBlock *>(
