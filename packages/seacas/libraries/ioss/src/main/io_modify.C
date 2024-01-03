@@ -4,26 +4,26 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ionit_Initializer.h>
-#include <Ioss_Assembly.h>
-#include <Ioss_Blob.h>
-#include <Ioss_DBUsage.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_ElementBlock.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_Getline.h>
-#include <Ioss_Glob.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_IOFactory.h>
-#include <Ioss_NodeBlock.h>
-#include <Ioss_NodeSet.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
-#include <Ioss_SideBlock.h>
-#include <Ioss_SideSet.h>
-#include <Ioss_StructuredBlock.h>
-#include <Ioss_Utils.h>
+#include "Ionit_Initializer.h"
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_Getline.h"
+#include "Ioss_Glob.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_Utils.h"
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -43,22 +43,21 @@
 #include <unistd.h>
 #include <vector>
 
-#include "Ioss_ScopeGuard.h"
 #include "Ioss_EntityType.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_PropertyManager.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
-#include "SEACASIoss_config.h"
 #include "modify_interface.h"
 
 #if defined(SEACAS_HAVE_EXODUS)
-#include <exodus/Ioex_Internals.h>
-#include <exodus/Ioex_Utils.h>
+#include "exodus/Ioex_Internals.h"
+#include "exodus/Ioex_Utils.h"
 #include <exodusII.h>
 #endif
 
 #if defined(SEACAS_HAVE_CGNS)
-#include <cgns/Iocgns_Utils.h>
+#include "cgns/Iocgns_Utils.h"
 #endif
 
 #if defined(__IOSS_WINDOWS__)
@@ -72,7 +71,7 @@ using real = double;
 
 namespace {
   std::string codename;
-  std::string version = "2.03 (2022-05-26)";
+  std::string version = "2.04 (2023-12-18)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -653,17 +652,21 @@ namespace {
     }
     if (all || Ioss::Utils::substr_equal(topic, "geometry")) {
       fmt::print(fmt::emphasis::bold, "\n\tGEOMETRY ROTATE ");
-      fmt::print("{{X|Y|Z}} {{angle}}\n");
+      fmt::print("{{X|Y|Z}} {{angle}} ...\n");
+      fmt::print(fmt::emphasis::bold, "\tGEOMETRY MIRROR ");
+      fmt::print("{{X|Y|Z}} ...\n");
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY SCALE  ");
-      fmt::print("{{x}} {{y}} {{z}}\n");
+      fmt::print("{{X|Y|Z}} {{scale_factor}} ...\n");
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY OFFSET ");
-      fmt::print("{{x}} {{y}} {{z}}\n");
+      fmt::print("{{X|Y|Z}} {{offset}} ...\n");
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY ROTATE ");
-      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{angle}}\n");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{angle}} ...\n");
+      fmt::print(fmt::emphasis::bold, "\tGEOMETRY MIRROR ");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} ...\n");
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY SCALE  ");
-      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{x}} {{y}} {{z}}\n");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{scale_factor}} ...\n");
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY OFFSET ");
-      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{x}} {{y}} {{z}}\n");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{offset}} ...\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "time")) {
       fmt::print(fmt::emphasis::bold, "\n\tTIME SCALE  ");
@@ -1236,13 +1239,14 @@ namespace {
   {
     //     0        1        2         3         4       5...
     // GEOMETRY   ROTATE {{X|Y|Z}} {{angle}} ...
+    // GEOMETRY   MIRROR {{X|Y|Z}} ...
     // GEOMETRY   SCALE  {{X|Y|Z}} {{scale}} ...
     // GEOMETRY   OFFSET {{X|Y|Z}} {{offset}} ...
     // GEOMETRY   ROTATE {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{angle}}  ...
     // GEOMETRY   SCALE  {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{scale}}  ...
     // GEOMETRY   OFFSET {{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{offset}} ...
 
-    if (tokens.size() < 4) {
+    if (tokens.size() < 3) {
       fmt::print(stderr,
 #if !defined __NVCC__
                  fg(fmt::color::red),
@@ -1348,7 +1352,30 @@ namespace {
 
       // Do the transformation...
       scale_filtered_coordinates(region, scale, node_filter);
-      fmt::print(fg(fmt::color::cyan), "\t*** Database coordinates scaled.\n");
+      fmt::print(fg(fmt::color::cyan), "\t*** Database coordinate(s) scaled.\n");
+      return false;
+    }
+
+    if (Ioss::Utils::substr_equal(tokens[1], "mirror")) {
+      real scale[3] = {1.0, 1.0, 1.0};
+
+      // Get mirror axis ...
+      do {
+        const std::string &axis = tokens[idx++];
+        if (Ioss::Utils::substr_equal(axis, "x")) {
+          scale[0] = -1.0;
+        }
+        else if (Ioss::Utils::substr_equal(axis, "y")) {
+          scale[1] = -1.0;
+        }
+        else if (Ioss::Utils::substr_equal(axis, "z")) {
+          scale[2] = -1.0;
+        }
+      } while (idx < tokens.size());
+
+      // Do the transformation...
+      scale_filtered_coordinates(region, scale, node_filter);
+      fmt::print(fg(fmt::color::cyan), "\t*** Database coordinate(s) mirrored.\n");
       return false;
     }
 
@@ -1372,7 +1399,7 @@ namespace {
 
       // Do the transformation...
       offset_filtered_coordinates(region, offset, node_filter);
-      fmt::print(fg(fmt::color::cyan), "\t*** Database coordinates offset.\n");
+      fmt::print(fg(fmt::color::cyan), "\t*** Database coordinate(s) offset.\n");
       return false;
     }
 

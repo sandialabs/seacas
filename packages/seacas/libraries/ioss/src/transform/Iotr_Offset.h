@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <Ioss_Transform.h> // for Transform, Factory
+#include "Ioss_Transform.h" // for Transform, Factory
+#include "transform/Iotr_Factory.h"
 #include <stddef.h>
 #include <string> // for string
-#include <transform/Iotr_Factory.h>
 
 #include "Ioss_VariableType.h"
 #include "iotr_export.h"

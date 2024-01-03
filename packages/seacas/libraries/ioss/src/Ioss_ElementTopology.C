@@ -4,11 +4,11 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>          // for IntVector
-#include <Ioss_ElementPermutation.h> // for ElementPermutation
-#include <Ioss_ElementTopology.h>
-#include <Ioss_Super.h> // for Super
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"          // for IntVector
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Super.h" // for Super
+#include "Ioss_Utils.h"
 
 #include <cassert> // for assert
 #include <cstddef> // for size_t

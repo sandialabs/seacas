@@ -4,11 +4,11 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Utils.h>
+#include "Ioss_Utils.h"
+#include "transform/Iotr_Factory.h"
 #include <map>
 #include <ostream>
 #include <string>
-#include <transform/Iotr_Factory.h>
 
 #include "Ioss_CodeTypes.h"
 

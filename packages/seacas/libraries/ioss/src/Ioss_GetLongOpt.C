@@ -5,7 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 /* S Manoharan. Advanced Computer Research Institute. Lyon. France */
-#include <Ioss_GetLongOpt.h>
+#include "Ioss_GetLongOpt.h"
 #include <cstring>
 #include <fmt/color.h>
 #include <fmt/core.h>

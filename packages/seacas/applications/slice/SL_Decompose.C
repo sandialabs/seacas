@@ -116,7 +116,7 @@ namespace {
     }
   }
 
-#ifdef USE_ZOLTAN
+#if USE_ZOLTAN
   template <typename INT>
   std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
   get_element_centroid(const Ioss::Region &region, IOSS_MAYBE_UNUSED INT dummy)
@@ -927,19 +927,18 @@ void output_decomposition_statistics(const std::vector<INT> &elem_to_proc, int p
       if (elem_per_rank[i] == max_work) {
         fmt::print(
 #if !defined __NVCC__
-		   fg(fmt::color::red), 
+            fg(fmt::color::red),
 #endif
-		   format, i, proc_width, fmt::group_digits(elem_per_rank[i]),
-                   work_width, (double)elem_per_rank[i] / avg_work, stars);
+            format, i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
+            (double)elem_per_rank[i] / avg_work, stars);
       }
       else if (elem_per_rank[i] == min_work) {
         fmt::print(
 #if !defined __NVCC__
-		   fg(fmt::color::green), 
+            fg(fmt::color::green),
 #endif
-		   format, i, proc_width,
-                   fmt::group_digits(elem_per_rank[i]), work_width, elem_per_rank[i] / avg_work,
-                   stars);
+            format, i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,
+            elem_per_rank[i] / avg_work, stars);
       }
       else {
         fmt::print(format, i, proc_width, fmt::group_digits(elem_per_rank[i]), work_width,

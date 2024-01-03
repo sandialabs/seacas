@@ -4,15 +4,15 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_ElementTopology.h>
-#include <Ioss_Region.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Utils.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Region.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
+#include "exonull/Ioexnl_Utils.h"
 #include <cstring>
 #include <exodusII.h>
 #include <exodusII_int.h>
-#include <exonull/Ioexnl_Utils.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>

@@ -4,12 +4,12 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Field.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_Field.h"
+#include "Ioss_VariableType.h"
+#include "transform/Iotr_Tensor.h"
 #include <cassert>
 #include <cstddef>
 #include <string>
-#include <transform/Iotr_Tensor.h>
 
 #include "Ioss_Transform.h"
 #include "Iotr_Factory.h"

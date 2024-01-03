@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_ElementPermutation.h> // for ElementPermutation
+#include "Ioss_CodeTypes.h"
+#include "Ioss_ElementPermutation.h" // for ElementPermutation
 #include <map>                       // for map, map<>::value_compare
 #include <set>                       // for set
 #include <string>                    // for string, operator<

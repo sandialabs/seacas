@@ -6,16 +6,16 @@
 
 #include <cgnsconfig.h>
 #if CG_BUILD_PARALLEL
-#include <cgns/Iocgns_Defines.h>
+#include "cgns/Iocgns_Defines.h"
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Sort.h>
-#include <Ioss_StructuredBlock.h>
-#include <Ioss_Utils.h>
-#include <cgns/Iocgns_DecompositionData.h>
-#include <cgns/Iocgns_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Sort.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_Utils.h"
+#include "cgns/Iocgns_DecompositionData.h"
+#include "cgns/Iocgns_Utils.h"
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>

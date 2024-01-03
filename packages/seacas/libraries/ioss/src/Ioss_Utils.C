@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_Utils.h"
 #include <cassert>
 #include <cctype>
 #include <cstdint>

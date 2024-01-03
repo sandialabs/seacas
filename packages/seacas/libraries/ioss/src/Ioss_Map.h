@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Field.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Field.h"
 #include <cstddef> // for size_t
 #include <cstdint> // for int64_t
 #include <string>  // for string

@@ -8,9 +8,9 @@
 #define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 #define DOCTEST_CONFIG_NO_MULTITHREADING
-#include <Ioss_ConcreteVariableType.h>
-#include <Ioss_Field.h>
-#include <Ioss_Map.h>
+#include "Ioss_ConcreteVariableType.h"
+#include "Ioss_Field.h"
+#include "Ioss_Map.h"
 #include <cstddef>
 #include <doctest.h>
 #include <numeric>

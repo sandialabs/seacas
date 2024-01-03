@@ -14,7 +14,6 @@
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Sort.h"
 #include "Ioss_Utils.h"
-#include "SEACASIoss_config.h"
 #include "skinner_interface.h"
 #include "tokenize.h"
 

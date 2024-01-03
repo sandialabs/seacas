@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <Ioss_BoundingBox.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_EntityBlock.h>
-#include <Ioss_NodeBlock.h>
-#include <Ioss_Property.h>
-#include <Ioss_ZoneConnectivity.h>
+#include "Ioss_BoundingBox.h"
+#include "Ioss_CodeTypes.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_Property.h"
+#include "Ioss_ZoneConnectivity.h"
 #include <array>
 #include <cassert>
 #include <fmt/core.h>
@@ -23,7 +23,6 @@
 #include <vector>
 
 #include "Ioss_EntityType.h"
-#include "SEACASIoss_config.h"
 #include "ioss_export.h"
 
 #if defined(SEACAS_HAVE_CGNS) && !defined(BUILT_IN_SIERRA)

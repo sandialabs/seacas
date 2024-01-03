@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -7,10 +7,10 @@
  */
 #pragma once
 
-#include <Ionit_Initializer.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
+#include "Ionit_Initializer.h"
+#include "Ioss_CodeTypes.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -20,7 +20,6 @@
 #include <utility>
 #include <vector>
 
-#include "SEACASIoss_config.h"
 #include "info_interface.h"
 #include "io_info_lib_export.h"
 #if defined(SEACAS_HAVE_EXODUS)

@@ -92,8 +92,6 @@ template void NemSpread<float, int>::read_restart_data();
 template void NemSpread<double, int64_t>::read_restart_data();
 template void NemSpread<float, int64_t>::read_restart_data();
 
-template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
-
 /* Function which reads the restart variable data from the EXODUS II
  * database which contains the results information. Then distribute
  * it to the processors, and write it to the parallel exodus files.
@@ -110,7 +108,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
  *
  *----------------------------------------------------------------------------
  */
-
+template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
 {
   /* need to get the element block ids and counts */
   std::vector<INT> eb_ids_global(globals.Num_Elem_Blk);

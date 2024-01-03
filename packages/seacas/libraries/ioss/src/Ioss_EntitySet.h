@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_GroupingEntity.h> // for GroupingEntity
-#include <Ioss_Property.h>       // for Property
+#include "Ioss_GroupingEntity.h" // for GroupingEntity
+#include "Ioss_Property.h"       // for Property
 #include <cstddef>               // for size_t
 #include <string>                // for string
 
@@ -44,7 +44,5 @@ namespace Ioss {
     EntitySet(DatabaseIO *io_database, const std::string &my_name, size_t entity_cnt);
     EntitySet(const EntitySet &) = default;
     ~EntitySet() override        = default;
-
-    void count_attributes() const;
   };
 } // namespace Ioss

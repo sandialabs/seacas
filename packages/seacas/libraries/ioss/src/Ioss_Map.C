@@ -4,10 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Field.h> // for Field, etc
-#include <Ioss_Map.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Utils.h> // for IOSS_ERROR
+#include "Ioss_Field.h" // for Field, etc
+#include "Ioss_Map.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Utils.h" // for IOSS_ERROR
 #include <cstddef>      // for size_t
 #include <fmt/ostream.h>
 #include <numeric>
@@ -615,9 +615,7 @@ int64_t Ioss::Map::global_to_local_nl(int64_t global, bool must_exist) const
         m_reverse.begin(), m_reverse.end(), global,
         [](const Ioss::IdPair &lhs, int64_t val) -> bool { return lhs.first < val; });
     if (iter != m_reverse.end() && iter->first == global) {
-      if (iter != m_reverse.end()) {
-        local = iter->second;
-      }
+      local = iter->second;
     }
     else {
       local = 0;

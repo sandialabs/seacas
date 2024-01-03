@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_ElementVariableType.h> // for ElementVariableType
-#include <Ioss_Wedge15.h>
+#include "Ioss_ElementVariableType.h" // for ElementVariableType
+#include "Ioss_Wedge15.h"
 #include <cassert> // for assert
 #include <string>
 

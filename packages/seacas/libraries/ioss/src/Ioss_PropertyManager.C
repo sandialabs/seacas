@@ -4,9 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Property.h>
-#include <Ioss_PropertyManager.h>
-#include <Ioss_Utils.h>
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Utils.h"
 #include <cstddef>
 #include <fmt/ostream.h>
 #include <ostream>

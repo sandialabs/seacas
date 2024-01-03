@@ -8,11 +8,11 @@
 #include <pamgen_im_exodusII.h>
 #include <pamgen_im_ne_nemesisI.h>
 
-#include <pamgen/Iopg_DatabaseIO.h>
+#include "pamgen/Iopg_DatabaseIO.h"
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_SubSystem.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_SubSystem.h"
+#include "Ioss_Utils.h"
 
 #include <algorithm>
 #include <cctype>

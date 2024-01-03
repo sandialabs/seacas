@@ -1508,6 +1508,7 @@ exe slice
     ioinit
   : <include>$(seacas-root)/applications/slice
     <define>USE_METIS
+    <define>USE_ZOLTAN
     <tag>@utility-exec-tag
   ;
 

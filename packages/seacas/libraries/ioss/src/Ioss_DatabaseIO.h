@@ -6,16 +6,16 @@
 
 #pragma once
 
-#include <Ioss_BoundingBox.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>    // for DatabaseUsage, etc
-#include <Ioss_DataSize.h>   // for DataSize
-#include <Ioss_EntityType.h> // for EntityType
-#include <Ioss_Map.h>
-#include <Ioss_ParallelUtils.h>   // for ParallelUtils
-#include <Ioss_PropertyManager.h> // for PropertyManager
-#include <Ioss_State.h>           // for State, State::STATE_INVALID
-#include <Ioss_SurfaceSplit.h>    // for SurfaceSplitType
+#include "Ioss_BoundingBox.h"
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DBUsage.h"    // for DatabaseUsage, etc
+#include "Ioss_DataSize.h"   // for DataSize
+#include "Ioss_EntityType.h" // for EntityType
+#include "Ioss_Map.h"
+#include "Ioss_ParallelUtils.h"   // for ParallelUtils
+#include "Ioss_PropertyManager.h" // for PropertyManager
+#include "Ioss_State.h"           // for State, State::STATE_INVALID
+#include "Ioss_SurfaceSplit.h"    // for SurfaceSplitType
 #include <chrono>
 #include <cstddef> // for size_t, nullptr
 #include <cstdint> // for int64_t
@@ -67,6 +67,7 @@ namespace Ioss {
     DatabaseIO()                              = delete;
     DatabaseIO(const DatabaseIO &)            = delete;
     DatabaseIO &operator=(const DatabaseIO &) = delete;
+    virtual ~DatabaseIO();
 
     /** \brief Check to see if database state is OK.
      *
@@ -118,8 +119,6 @@ namespace Ioss {
      *   not a node_major database.  Exodus is node major, CGNS is not.
      */
     virtual bool node_major() const { return true; }
-
-    virtual ~DatabaseIO();
 
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...
@@ -898,7 +897,7 @@ namespace Ioss {
     bool fieldSeparatorSpecified{false};
     bool enableFieldRecognition{true};
     bool fieldStripTrailing_{false};
-    bool isInput;
+    bool isInput{true}; // No good default...
     bool isParallelConsistent{
         true}; // True if application will make field data get/put calls parallel
                // consistently.

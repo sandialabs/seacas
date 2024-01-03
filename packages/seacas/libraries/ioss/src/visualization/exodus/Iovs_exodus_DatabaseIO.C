@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
+#include "Ioss_CodeTypes.h"
 #include <tokenize.h>
 #include <visualization/exodus/Iovs_exodus_DatabaseIO.h>
 #include <visualization/utils/Iovs_Utils.h>
@@ -14,13 +14,13 @@
 #include <cstring>
 #include <iterator>
 
-#include <Ioss_ElementTopology.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_SerializeIO.h>
-#include <Ioss_SubSystem.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
+#include "Ioss_ElementTopology.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_SerializeIO.h"
+#include "Ioss_SubSystem.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
 
 namespace { // Internal helper functions
   int64_t get_id(const Ioss::GroupingEntity *entity, Iovs_exodus::EntityIdSet *idset);

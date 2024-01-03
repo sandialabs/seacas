@@ -402,9 +402,11 @@ namespace {
       is_same = false;
     }
     if (!interFace.by_name && assembly1->Name() != assembly2->Name()) {
-      Warning(fmt::format(".. Assembly {} names don't agree ('{}' != '{}').\n", assembly1->Id(),
-                          assembly1->Name(), assembly2->Name()));
-      is_same = false;
+      if (!assembly1->generatedName_ && !assembly2->generatedName_) {
+        Warning(fmt::format(".. Assembly {} names don't agree ('{}' != '{}').\n", assembly1->Id(),
+                            assembly1->Name(), assembly2->Name()));
+        is_same = false;
+      }
     }
     if (assembly1->Type() != assembly2->Type()) {
       Warning(fmt::format(".. Assembly '{}': entity types don't agree ({} != {}).\n",
@@ -441,12 +443,18 @@ namespace {
     if (interFace.by_name && block1->Id() != block2->Id()) {
       Warning(fmt::format(".. Block '{}' ids don't agree ({} != {}).\n", block1->Name(),
                           block1->Id(), block2->Id()));
-      is_same = false;
+      if (interFace.pedantic) {
+        is_same = false;
+      }
     }
     if (!interFace.by_name && block1->Name() != block2->Name()) {
-      Warning(fmt::format(".. Block {} names don't agree ({} != {}).\n", block1->Id(),
-                          block1->Name(), block2->Name()));
-      is_same = false;
+      if (!block1->generatedName_ && !block2->generatedName_) {
+        Warning(fmt::format(".. Block {} names don't agree ({} != {}).\n", block1->Id(),
+                            block1->Name(), block2->Name()));
+        if (interFace.pedantic) {
+          is_same = false;
+        }
+      }
     }
     if (!(no_case_equals(block1->Element_Type(), block2->Element_Type()))) {
       if (!interFace.short_block_check ||
@@ -519,6 +527,22 @@ namespace {
               set1->Id(), set1->Size(), set2->Size()));
           if (interFace.pedantic) {
             is_same = false;
+          }
+        }
+        if (interFace.by_name && set1->Id() != set2->Id()) {
+          Warning(fmt::format(".. Nodeset '{}' ids don't agree ({} != {}).\n", set1->Name(),
+                              set1->Id(), set2->Id()));
+          if (interFace.pedantic) {
+            is_same = false;
+          }
+        }
+        if (!interFace.by_name && set1->Name() != set2->Name()) {
+          if (!set1->generatedName_ && !set2->generatedName_) {
+            Warning(fmt::format(".. Nodeset {} names don't agree ({} != {}).\n", set1->Id(),
+                                set1->Name(), set2->Name()));
+            if (interFace.pedantic) {
+              is_same = false;
+            }
           }
         }
       }
@@ -629,6 +653,22 @@ namespace {
               set1->Id(), set1->Size(), set2->Size()));
           if (interFace.pedantic) {
             is_same = false;
+          }
+        }
+        if (interFace.by_name && set1->Id() != set2->Id()) {
+          Warning(fmt::format(".. Sideset '{}' ids don't agree ({} != {}).\n", set1->Name(),
+                              set1->Id(), set2->Id()));
+          if (interFace.pedantic) {
+            is_same = false;
+          }
+        }
+        if (!interFace.by_name && set1->Name() != set2->Name()) {
+          if (!set1->generatedName_ && !set2->generatedName_) {
+            Warning(fmt::format(".. Sideset {} names don't agree ({} != {}).\n", set1->Id(),
+                                set1->Name(), set2->Name()));
+            if (interFace.pedantic) {
+              is_same = false;
+            }
           }
         }
       }

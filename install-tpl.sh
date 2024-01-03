@@ -608,7 +608,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS || exit
-            git checkout v4.3.0
+            git checkout v4.4.0
             rm -rf build
             mkdir build
             cd build || exit
@@ -723,7 +723,7 @@ then
     check_exec automake
     check_exec autoconf
 
-    matio_version="1.5.23"
+    matio_version="v1.5.26"
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
         echo "${txtgrn}+++ MatIO${txtrst}"
@@ -770,7 +770,7 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="10.1.0"
+        fmt_version="10.2.0"
 
         if [ "$DOWNLOAD" == "YES" ]
         then

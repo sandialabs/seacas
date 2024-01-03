@@ -63,6 +63,8 @@ public:
   // Return "block", "nodelist", "surface", depending on underlying type.
   virtual const char *short_label() const = 0;
 
+  bool generatedName_{true};
+
 protected:
   std::string  name_{};
   int          fileId{-1};

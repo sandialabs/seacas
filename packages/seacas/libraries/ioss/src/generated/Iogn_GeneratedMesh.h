@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_EntityType.h> // for EntityType
+#include "Ioss_CodeTypes.h"
+#include "Ioss_EntityType.h" // for EntityType
 #include <array>
 #include <cstddef> // for size_t
 #include <cstdint> // for int64_t

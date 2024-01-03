@@ -4,14 +4,14 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_CommSet.h>
-#include <Ioss_ElementBlock.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_FaceGenerator.h>
-#include <Ioss_NodeBlock.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_FaceGenerator.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
 #include <cassert>
 #include <fmt/ostream.h>
 #include <iosfwd>
@@ -127,12 +127,11 @@ namespace {
       // can only be shared with one other processor...
 
       // get nodal communication data CommSet...
-      Ioss::CommSet *css = region.get_commset("commset_node");
-
       std::vector<std::pair<INT, INT>> proc_entity;
       {
         // entity_processor consists of node,proc, node,proc, entries.
         std::vector<INT> entity_processor;
+        Ioss::CommSet   *css = region.get_commset("commset_node");
         css->get_field_data("entity_processor_raw", entity_processor);
 
         proc_entity.reserve(entity_processor.size() / 2);

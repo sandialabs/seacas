@@ -58,7 +58,7 @@ namespace {
   mat_t *mat_file = nullptr; /* file for binary .mat output */
   bool   debug    = false;
 
-  std::array<std::string, 3> qainfo{"exo2mat", "2021/09/27", "4.08"};
+  const std::array<std::string, 3> qainfo{"exo2mat", "2021/09/27", "4.08"};
 
   void logger(const char *message)
   {

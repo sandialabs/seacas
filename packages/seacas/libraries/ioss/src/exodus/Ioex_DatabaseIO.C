@@ -4,21 +4,21 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_SerializeIO.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_SerializeIO.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
+#include "exodus/Ioex_DatabaseIO.h"
+#include "exodus/Ioex_Internals.h"
+#include "exodus/Ioex_Utils.h"
 #include <array>
 #include <cassert>
 #include <cfloat>
 #include <cstring>
 #include <ctime>
-#include <exodus/Ioex_DatabaseIO.h>
-#include <exodus/Ioex_Internals.h>
-#include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -792,7 +792,8 @@ namespace Ioex {
       nemesis_file = false;
       if (isParallel && util().parallel_size() > 1) {
         std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: Exodus file does not contain nemesis information.\n");
+        fmt::print(errmsg, "ERROR: Exodus file '{}' does not contain nemesis information.\n",
+                   get_filename());
         IOSS_ERROR(errmsg);
       }
       file_type[0] = 'p';
@@ -809,25 +810,28 @@ namespace Ioex {
 
     if (isParallel && num_proc != util().parallel_size() && util().parallel_size() > 1) {
       std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: Exodus file was decomposed for {} processors; application is currently "
-                 "being run on {} processors",
-                 num_proc, util().parallel_size());
+      fmt::print(
+          errmsg,
+          "ERROR: Exodus file '{}' was decomposed for {} processors; application is currently "
+          "being run on {} processors",
+          get_filename(), num_proc, util().parallel_size());
       IOSS_ERROR(errmsg);
     }
     if (num_proc_in_file != 1) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
-                 "ERROR: Exodus file contains data for {} processors; application requires 1 "
+                 "ERROR: Exodus file '{}' contains data for {} processors; application requires 1 "
                  "processor per file.",
-                 num_proc_in_file);
+                 get_filename(), num_proc_in_file);
       IOSS_ERROR(errmsg);
     }
     if (file_type[0] != 'p') {
       std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: Exodus file contains scalar nemesis data; application requires parallel "
-                 "nemesis data.");
+      fmt::print(
+          errmsg,
+          "ERROR: Exodus file '{}' contains scalar nemesis data; application requires parallel "
+          "nemesis data.",
+          get_filename());
       IOSS_ERROR(errmsg);
     }
 

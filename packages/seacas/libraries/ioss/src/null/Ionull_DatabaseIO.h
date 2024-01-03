@@ -7,8 +7,8 @@
 // -*- Mode: c++ -*-
 #pragma once
 
-#include <Ioss_DBUsage.h>
-#include <Ioss_DatabaseIO.h>
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <string>

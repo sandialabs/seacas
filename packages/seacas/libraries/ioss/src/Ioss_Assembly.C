@@ -4,11 +4,11 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Assembly.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_Property.h>
-#include <Ioss_PropertyManager.h>
+#include "Ioss_Assembly.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
 #include <cstddef>
 #include <fmt/ostream.h>
 #include <iosfwd>

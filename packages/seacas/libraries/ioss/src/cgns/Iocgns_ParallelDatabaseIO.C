@@ -11,14 +11,14 @@
 
 #include <cgnsconfig.h>
 #if CG_BUILD_PARALLEL
-#include <cgns/Iocgns_Defines.h>
+#include "cgns/Iocgns_Defines.h"
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Sort.h>
-#include <Ioss_Utils.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Sort.h"
+#include "Ioss_Utils.h"
+#include "cgns/Iocgns_ParallelDatabaseIO.h"
+#include "cgns/Iocgns_Utils.h"
 #include <cassert>
-#include <cgns/Iocgns_ParallelDatabaseIO.h>
-#include <cgns/Iocgns_Utils.h>
 #include <cstddef>
 #include <ctime>
 #include <fmt/ostream.h>

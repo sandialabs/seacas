@@ -3,9 +3,9 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_Property.h>
-#include <Ioss_Utils.h>
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Property.h"
+#include "Ioss_Utils.h"
 #include <assert.h>
 #include <fmt/ostream.h>
 #include <ostream>
@@ -132,9 +132,8 @@ Ioss::Property::Property(std::string name, void *value, Origin origin)
  *  \param[in] type The property type.
  */
 Ioss::Property::Property(const Ioss::GroupingEntity *ge, std::string name, const BasicType type)
-    : name_(std::move(name)), type_(type), origin_(IMPLICIT)
+    : name_(std::move(name)), type_(type), origin_(IMPLICIT), data_(ge)
 {
-  data_ = ge;
 }
 
 bool Ioss::Property::operator==(const Ioss::Property &rhs) const

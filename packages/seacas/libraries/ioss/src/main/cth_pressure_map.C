@@ -4,8 +4,8 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ionit_Initializer.h>
-#include <Ioss_Utils.h>
+#include "Ionit_Initializer.h"
+#include "Ioss_Utils.h"
 #include <cassert>
 #include <cstdlib>
 #include <cstring>

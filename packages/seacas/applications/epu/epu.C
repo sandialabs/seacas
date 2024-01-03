@@ -1680,6 +1680,7 @@ namespace {
 
       for (int i = 0; i < global.assemblyCount; i++) {
         delete[] assemblies[i].entity_list;
+        // This is `calloc`d in `ex_get_assemblies` call.
         free(assemblies[i].name);
       }
     }
@@ -1775,13 +1776,13 @@ namespace {
     copy_string(qaRecord[num_qa_records].qa_record[0][0], qainfo[0], MAX_STR_LENGTH + 1); // Code
     copy_string(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH + 1); // Version
 
-    time_t     date_time = std::time(nullptr);
+    time_t date_time = std::time(nullptr);
 #if defined __NVCC__
-    auto  *lt            = std::localtime(&date_time);
-    buffer               = fmt::format("{:%Y/%m/%d}", *lt);
+    auto *lt = std::localtime(&date_time);
+    buffer   = fmt::format("{:%Y/%m/%d}", *lt);
 #else
-    auto const lt        = fmt::localtime(date_time);
-    buffer               = fmt::format("{:%Y/%m/%d}", lt);
+    auto const lt = fmt::localtime(date_time);
+    buffer        = fmt::format("{:%Y/%m/%d}", lt);
 #endif
     copy_string(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH + 1);
 
