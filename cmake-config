@@ -164,7 +164,7 @@ then
       CC=icx
       FC=ifx
       CFLAGS="-Wall -Wunused"
-      CXXFLAGS="-Wall -Wextra  -Wunused"
+      CXXFLAGS="-Wall -Wextra  -Wunused -DFMT_HEADER_ONLY"
   fi
 
   # When building:  "scan-build make -j8"
