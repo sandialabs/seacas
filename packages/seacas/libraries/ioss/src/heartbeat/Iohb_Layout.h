@@ -59,7 +59,7 @@ namespace Iohb {
   template <typename T> inline void Layout::add(const std::string &name, const T &value)
   {
     output_common(name);
-    if (fieldWidth_ > 0) {
+    if (!showLabels && fieldWidth_ > 0) {
       fmt::print(layout_, "{0:{1}}", value, fieldWidth_);
     }
     else {
@@ -75,7 +75,7 @@ namespace Iohb {
       // double
       fmt::print(layout_, "{}", value);
     }
-    else if (fieldWidth_ > 0) {
+    else if (!showLabels && fieldWidth_ > 0) {
       fmt::print(layout_, "{0:{1}.{2}e}", value, fieldWidth_, precision_);
     }
     else {
@@ -91,7 +91,7 @@ namespace Iohb {
     }
     else {
       output_common(name);
-      if (fieldWidth_ > 0) {
+      if (!showLabels && fieldWidth_ > 0) {
         fmt::print(layout_, "{0:{1}}", fmt::join(value, separator_), fieldWidth_);
       }
       else {
@@ -112,7 +112,7 @@ namespace Iohb {
         // double
         fmt::print(layout_, "{}", fmt::join(value, separator_));
       }
-      else if (fieldWidth_ > 0) {
+      else if (!showLabels && fieldWidth_ > 0) {
         fmt::print(layout_, "{0:{2}.{1}e}", fmt::join(value, separator_), precision_, fieldWidth_);
       }
       else {
