@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -471,9 +471,9 @@ namespace SEAMS {
   {
     double seconds = h * 3600.0 + mi * 60 + se;
 
-    int64_t m = static_cast<int64_t>(mon);
-    int64_t d = static_cast<int64_t>(day);
-    int64_t y = static_cast<int64_t>(year);
+    auto m = static_cast<int64_t>(mon);
+    auto d = static_cast<int64_t>(day);
+    auto y = static_cast<int64_t>(year);
 
     if (m > 2) {
       m -= 3;
@@ -954,7 +954,7 @@ namespace SEAMS {
         lines << "\t";
         for (int ic = 0; ic < cols; ic++) {
 #if defined FMT_SUPPORT
-          SEAMS::symrec *format = aprepro->getsym("_FORMAT");
+          const SEAMS::symrec *format = aprepro->getsym("_FORMAT");
           if (format->value.svar.empty()) {
             fmt::print(lines, "{}", my_array_data->data[idx++]);
           }

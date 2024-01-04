@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -53,7 +53,7 @@
 #include "CJ_Version.h"
 
 namespace {
-  bool                       check_variable_params(size_t p, Excn::Variables &vars);
+  bool                       check_variable_params(size_t p, const Excn::Variables &vars);
   template <typename T> void clear(std::vector<T> &vec)
   {
     vec.clear();
@@ -290,19 +290,19 @@ namespace {
     bool problem = false;
     for (size_t p = 0; p < part_count; p++) {
       for (size_t i = 0; i < sets[p].size(); i++) {
-	if (sets[p][i].id == 0) {
-	  continue;
-	}
-	auto glob_pos = sets[p][i].position_;
+        if (sets[p][i].id == 0) {
+          continue;
+        }
+        auto glob_pos = sets[p][i].position_;
         if (global_sets[glob_pos].id != sets[p][i].id ||
             case_compare(global_sets[glob_pos].name_, sets[p][i].name_) != 0) {
           problem = true;
           fmt::print(stderr,
                      "\nERROR: {0} Mismatch on part {1}:\n"
-		     "\tpart {0} at position {2} has id {3} and name {4}\n"
-		     "\tglobal {0} at position {5} has id {6} and name {7}\n",
-                     type, p+1, i, sets[p][i].id, sets[p][i].name_,
-		     glob_pos, global_sets[glob_pos].id, global_sets[glob_pos].name_);
+                     "\tpart {0} at position {2} has id {3} and name {4}\n"
+                     "\tglobal {0} at position {5} has id {6} and name {7}\n",
+                     type, p + 1, i, sets[p][i].id, sets[p][i].name_, glob_pos,
+                     global_sets[glob_pos].id, global_sets[glob_pos].name_);
           global_sets[glob_pos].dump();
           sets[p][i].dump();
         }
@@ -2024,7 +2024,7 @@ namespace {
     }
   }
 
-  bool check_variable_params(size_t p, Excn::Variables &vars)
+  bool check_variable_params(size_t p, const Excn::Variables &vars)
   {
     // Determines the number of variables of type 'type()' that will
     // be written to the output database. The 'variable_list' vector
@@ -2372,7 +2372,7 @@ namespace {
             }
           }
           SMART_ASSERT(gi != gsset_size);
-          sets[p][i].position_     = gi;
+          sets[p][i].position_ = gi;
 
           // Get the parameters for this sideset...
           ex_set set{};
@@ -2422,23 +2422,26 @@ namespace {
         size_t      offset = 0;
 
         for (size_t p = 0; p < part_count; p++) {
-	  for (size_t lss = 0; lss < sets[p].size(); lss++) {
-	    if (sets[p][lss].position_ == ss) {
-	      Excn::ExodusFile id(p);
-	      sets[p][lss].elems.resize(sets[p][lss].sideCount);
-	      sets[p][lss].sides.resize(sets[p][lss].sideCount);
-	      ex_get_set(id, EX_SIDE_SET, ss_id, sets[p][lss].elems.data(), sets[p][lss].sides.data());
+          for (size_t lss = 0; lss < sets[p].size(); lss++) {
+            if (sets[p][lss].position_ == ss) {
+              Excn::ExodusFile id(p);
+              sets[p][lss].elems.resize(sets[p][lss].sideCount);
+              sets[p][lss].sides.resize(sets[p][lss].sideCount);
+              ex_get_set(id, EX_SIDE_SET, ss_id, sets[p][lss].elems.data(),
+                         sets[p][lss].sides.data());
 
-	      // Add these to the elem_side vector...
-	      for (size_t i = 0; i < sets[p][lss].sideCount; i++) {
-		size_t global_elem = local_mesh[p].localElementToGlobal[sets[p][lss].elems[i] - 1] + 1;
-		elem_side[offset + i] = std::make_pair((INT)global_elem, (INT)sets[p][lss].sides[i]);
-	      }
-	      offset += sets[p][lss].sideCount;
-	      break;
-	    }
-	  }
-	}
+              // Add these to the elem_side vector...
+              for (size_t i = 0; i < sets[p][lss].sideCount; i++) {
+                size_t global_elem =
+                    local_mesh[p].localElementToGlobal[sets[p][lss].elems[i] - 1] + 1;
+                elem_side[offset + i] =
+                    std::make_pair((INT)global_elem, (INT)sets[p][lss].sides[i]);
+              }
+              offset += sets[p][lss].sideCount;
+              break;
+            }
+          }
+        }
 
         uniquify(elem_side);
 
@@ -2461,21 +2464,22 @@ namespace {
           // Try the lower_bound searching of elem_side for now.  If
           // inefficient, fix later...
           for (size_t p = 0; p < part_count; p++) {
-	    for (size_t lss = 0; lss < sets[p].size(); lss++) {
-	      if (sets[p][lss].position_ == ss) {
-		sets[p][lss].elemOrderMap.resize(sets[p][lss].sideCount);
-		for (size_t i = 0; i < sets[p][lss].sideCount; i++) {
-		  size_t global_elem =
-		    local_mesh[p].localElementToGlobal[sets[p][lss].elems[i] - 1] + 1;
-		  std::pair<INT, INT> es = std::make_pair((INT)global_elem, (INT)sets[p][lss].sides[i]);
-		  
-		  auto   iter = std::lower_bound(elem_side.begin(), elem_side.end(), es);
-		  size_t pos  = iter - elem_side.begin();
-		  sets[p][lss].elemOrderMap[i] = pos;
-		}
-		break;
-	      }
-	    }
+            for (size_t lss = 0; lss < sets[p].size(); lss++) {
+              if (sets[p][lss].position_ == ss) {
+                sets[p][lss].elemOrderMap.resize(sets[p][lss].sideCount);
+                for (size_t i = 0; i < sets[p][lss].sideCount; i++) {
+                  size_t global_elem =
+                      local_mesh[p].localElementToGlobal[sets[p][lss].elems[i] - 1] + 1;
+                  std::pair<INT, INT> es =
+                      std::make_pair((INT)global_elem, (INT)sets[p][lss].sides[i]);
+
+                  auto   iter = std::lower_bound(elem_side.begin(), elem_side.end(), es);
+                  size_t pos  = iter - elem_side.begin();
+                  sets[p][lss].elemOrderMap[i] = pos;
+                }
+                break;
+              }
+            }
           }
         }
       }
@@ -2484,19 +2488,19 @@ namespace {
       for (size_t ss = 0; ss < glob_ssets.size(); ss++) {
         size_t sum = 0;
         for (size_t p = 0; p < part_count; p++) {
-	  for (size_t lss = 0; lss < sets[p].size(); lss++) {
-	    if (sets[p][lss].position_ == ss) {
-	      sets[p][lss].offset_ = sum;
-	      sum += sets[p][lss].entity_count();
+          for (size_t lss = 0; lss < sets[p].size(); lss++) {
+            if (sets[p][lss].position_ == ss) {
+              sets[p][lss].offset_ = sum;
+              sum += sets[p][lss].entity_count();
 
-	      if (debug_level & 16) {
-		fmt::print("Part {} ", p + 1);
-		sets[p][lss].dump();
-	      }
-	      break;
-	    }
-	  }
-	}
+              if (debug_level & 16) {
+                fmt::print("Part {} ", p + 1);
+                sets[p][lss].dump();
+              }
+              break;
+            }
+          }
+        }
       }
 
       // Free some memory which is no longer needed...
@@ -2628,53 +2632,50 @@ namespace {
     std::string var_name;
     int         out_position = -1;
     for (auto [v_name, v_blkid] : variable_names) {
-      if (v_blkid > 0) {
-        if (var_name != v_name) {
-          var_name = v_name;
-          // Find which exodus variable matches this name
-          out_position = -1;
-          for (size_t j = 0; j < exo_names.size(); j++) {
-            if (case_compare(exo_names[j], var_name) == 0) {
-              out_position = vars.index_[j] - 1;
+      if (v_blkid > 0 && var_name != v_name) {
+        var_name = v_name;
+        // Find which exodus variable matches this name
+        out_position = -1;
+        for (size_t j = 0; j < exo_names.size(); j++) {
+          if (case_compare(exo_names[j], var_name) == 0) {
+            out_position = vars.index_[j] - 1;
+            break;
+          }
+        }
+        if (out_position < 0) {
+          fmt::print(stderr, "ERROR: Variable '{}' does not exist on any block in this database.\n",
+                     v_name);
+          exit(EXIT_FAILURE);
+        }
+
+        // Set all truth table entries for this variable to negative
+        // of current value and then iterate over specified blocks and
+        // set those positive.  This way can make sure that the
+        // variable truly exists for the block that the user specified.
+        found_it = false;
+        for (size_t b = 0; b < global.count(vars.objectType); b++) {
+          if (glob_blocks[b].id == v_blkid) {
+            if (glob_blocks[b].truthTable[out_position] == 0) {
+              fmt::print(stderr, "ERROR: Variable '{}' does not exist on block {}.\n", v_name,
+                         v_blkid);
+              exit(EXIT_FAILURE);
+            }
+            else {
+              found_it = true;
               break;
             }
           }
-          if (out_position < 0) {
-            fmt::print(stderr,
-                       "ERROR: Variable '{}' does not exist on any block in this database.\n",
-                       v_name);
-            exit(EXIT_FAILURE);
+          else {
+            // User does not want this variable output on these blocks...
+            glob_blocks[b].truthTable[out_position] = 0;
           }
+        }
 
-          // Set all truth table entries for this variable to negative
-          // of current value and then iterate over specified blocks and
-          // set those positive.  This way can make sure that the
-          // variable truly exists for the block that the user specified.
-          found_it = false;
-          for (size_t b = 0; b < global.count(vars.objectType); b++) {
-            if (glob_blocks[b].id == v_blkid) {
-              if (glob_blocks[b].truthTable[out_position] == 0) {
-                fmt::print(stderr, "ERROR: Variable '{}' does not exist on block {}.\n", v_name,
-                           v_blkid);
-                exit(EXIT_FAILURE);
-              }
-              else {
-                found_it = true;
-                break;
-              }
-            }
-            else {
-              // User does not want this variable output on these blocks...
-              glob_blocks[b].truthTable[out_position] = 0;
-            }
-          }
-
-          if (!found_it) {
-            fmt::print(stderr,
-                       "ERROR: User-specified block id of {} for variable '{}' does not exist.\n",
-                       v_blkid, v_name);
-            exit(EXIT_FAILURE);
-          }
+        if (!found_it) {
+          fmt::print(stderr,
+                     "ERROR: User-specified block id of {} for variable '{}' does not exist.\n",
+                     v_blkid, v_name);
+          exit(EXIT_FAILURE);
         }
       }
     }

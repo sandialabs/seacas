@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -67,8 +67,8 @@
 namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
 
-  const std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
-  const std::array<std::string, 2> complex_suffix{".re", ".im"};
+  std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
+  std::array<std::string, 2> complex_suffix{".re", ".im"};
 
   void get_connectivity_data(int exoid, void *data, ex_entity_type type, ex_entity_id id,
                              int position)
