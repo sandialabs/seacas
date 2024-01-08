@@ -260,12 +260,7 @@ namespace {
       Assembly<INT> *assembly1 = file1.Get_Assembly_by_Index(b);
       if (assembly1 != nullptr) {
         Assembly<INT> *assembly2 = nullptr;
-        if (interFace.by_name) {
-          assembly2 = file2.Get_Assembly_by_Name(assembly1->Name());
-        }
-        else {
-          assembly2 = file2.Get_Assembly_by_Id(assembly1->Id());
-        }
+	assembly2 = file2.Get_Assembly_by_Name(assembly1->Name());
         if (assembly2 == nullptr) {
           Warning(fmt::format(".. Assembly '{}' with id {} exists in first "
                               "file but not the second.\n",
@@ -285,12 +280,7 @@ namespace {
         Assembly<INT> *assembly2 = file2.Get_Assembly_by_Index(b);
         if (assembly2 != nullptr) {
           Assembly<INT> *assembly1 = nullptr;
-          if (interFace.by_name) {
-            assembly1 = file1.Get_Assembly_by_Name(assembly2->Name());
-          }
-          else {
-            assembly1 = file1.Get_Assembly_by_Id(assembly2->Id());
-          }
+	  assembly1 = file1.Get_Assembly_by_Name(assembly2->Name());
           if (assembly1 == nullptr) {
             Warning(fmt::format(".. Assembly '{}' with id {} exists in second "
                                 "file but not the first.\n",
