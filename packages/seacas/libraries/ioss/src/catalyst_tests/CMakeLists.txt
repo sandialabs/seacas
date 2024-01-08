@@ -182,24 +182,21 @@ function(catalyst_test_ioshell_exodus_file test_name
 
 set(CATALYST_FNAME catalyst_time_${test_time_step}_np_${num_procs}_${input_file})
 set(IOSHELL_FNAME ioshell_time_${test_time_step}_np_${num_procs}_${input_file})
-set(INPUT_FILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../main/test/${input_file})
 
 if(num_procs GREATER 1)
   set(CATALYST_FNAME_EPU ${CATALYST_FNAME}.${num_procs}.0)
-  set(CATALYST_INPUT_FNAME ${input_file})
 else()
   set(CATALYST_FNAME_EPU ${CATALYST_FNAME})
-  set(CATALYST_INPUT_FNAME ${INPUT_FILE_PATH})
 endif()
 
 TRIBITS_ADD_ADVANCED_TEST(${test_name}
     TEST_0 EXEC decomp ARGS -p
-           ${num_procs} ${INPUT_FILE_PATH}
+           ${num_procs} ${input_file}
       DIRECTORY ../../../../scripts
       NOEXEPREFIX NOEXESUFFIX
       NUM_MPI_PROCS 1
     TEST_1 EXEC io_shell ARGS -out_type catalyst
-           ${CATALYST_INPUT_FNAME} ${test_time_step}
+           ${input_file} ${test_time_step}
       DIRECTORY ../main
       NOEXEPREFIX NOEXESUFFIX
       NUM_MPI_PROCS ${num_procs}
@@ -213,7 +210,7 @@ TRIBITS_ADD_ADVANCED_TEST(${test_name}
       NOEXEPREFIX NOEXESUFFIX
       NUM_MPI_PROCS 1
     TEST_4 EXEC io_shell ARGS -select_times
-           ${test_time} ${INPUT_FILE_PATH} ${IOSHELL_FNAME}
+           ${test_time} ${input_file} ${IOSHELL_FNAME}
       DIRECTORY ../main
       NOEXEPREFIX NOEXESUFFIX
       NUM_MPI_PROCS 1
@@ -226,6 +223,17 @@ TRIBITS_ADD_ADVANCED_TEST(${test_name}
 )
 endfunction()
 
+set(EXO_TEST_FILES
+    cube.g
+    two-block.g
+    8-block.g
+    can.ex2)
+
+foreach(fname ${EXO_TEST_FILES})
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../main/test/${fname}
+    ${fname} COPYONLY)
+endforeach()
+
 foreach(NUM_PROCS 1 4)
   catalyst_test_ioshell_exodus_file(
     "catalyst_ioshell_cube_g_np_${NUM_PROCS}"
@@ -236,6 +244,9 @@ foreach(NUM_PROCS 1 4)
   catalyst_test_ioshell_exodus_file(
     "catalyst_ioshell_eight_block_g_np_${NUM_PROCS}"
     "8-block.g" "0.05" "5" ${NUM_PROCS})
+  catalyst_test_ioshell_exodus_file(
+    "catalyst_ioshell_can_ex2_np_${NUM_PROCS}"
+    "can.ex2" "0.00219992" "22" ${NUM_PROCS})
 endforeach()
 
 if ( NETCDF_NCDUMP_BINARY )
