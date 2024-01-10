@@ -16,10 +16,7 @@ static int exi_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex
   int status;
   int dimid, time_dim, numobjdim, dims[2];
 
-  size_t obj_id_ndx;
-  size_t num_obj;
-  size_t num_obj_var;
-  size_t num_entity;
+  size_t obj_id_ndx = 0;
 
   int *obj_var_truth_tab;
   char errmsg[MAX_ERR_LENGTH];
@@ -49,7 +46,7 @@ static int exi_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex
   else {
     /* Determine index of obj_id in VOBJID array */
     obj_id_ndx = exi_id_lkup(exoid, var_type, obj_id);
-    if (obj_id_ndx <= 0) {
+    if (obj_id_ndx == 0) {
       ex_get_err(NULL, NULL, &status);
 
       if (status != 0) {
@@ -76,6 +73,9 @@ static int exi_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex
       /* check for the existence of an TNAME variable truth table */
       if (nc_inq_varid(exoid, VOBJTAB, varid) == NC_NOERR) {
         /* find out number of TNAMEs and TNAME variables */
+        size_t num_obj     = 0;
+        size_t num_obj_var = 0;
+
         status = exi_get_dimension(exoid, DNUMOBJ, ex_name_of_object(var_type), &num_obj, &dimid,
                                    __func__);
         if (status != NC_NOERR) {
@@ -123,6 +123,7 @@ static int exi_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex
         goto error_ret; /* exit define mode and return */
       }
 
+      size_t num_entity = 0;
       exi_get_dimension(exoid, exi_dim_num_entries_in_object(var_type, obj_id_ndx),
                         ex_name_of_object(var_type), &num_entity, &numobjdim, __func__);
 
