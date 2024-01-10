@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -23,6 +23,7 @@ public:
 
   ex_entity_type                   Type() const { return assembly_type; }
   const std::vector<ex_entity_id> &Entities() const { return entities; }
+  size_t                           Size() const override { return entities.size(); }
 
 private:
   int  Check_State() const override;

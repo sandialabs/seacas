@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -32,7 +32,7 @@ public:
   Exo_Entity(const Exo_Entity &)                  = delete;
   const Exo_Entity &operator=(const Exo_Entity &) = delete;
 
-  size_t Size() const { return numEntity; }
+  virtual size_t Size() const { return numEntity; }
 
   size_t Id() const { return id_; }
   size_t Index() const { return index_; }
