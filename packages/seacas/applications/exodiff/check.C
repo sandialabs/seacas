@@ -407,10 +407,10 @@ namespace {
     }
     if (assembly1->Size() != assembly2->Size()) {
       Warning(fmt::format(".. Assembly '{}': number of entities doesn't agree ({} != {}).\n",
-                          assembly1->Name(), assembly1->Size(), assembly2->Size()));
+                          assembly1->Name(), assembly1->Entities().size(), assembly2->Entities().size()));
       is_same = false;
     }
-    if ((assembly1->Type() == assembly2->Type()) && (assembly1->Size() == assembly2->Size())) {
+    if ((assembly1->Type() == assembly2->Type()) && (assembly1->Entities().size() == assembly2->Entities().size())) {
       // Check membership of the entities list...
       if (!std::is_permutation(assembly1->Entities().begin(), assembly1->Entities().end(),
                                assembly2->Entities().begin())) {
