@@ -26,6 +26,79 @@
   } while (false)
 
 namespace Iotm {
+
+class AssemblyTreeFilter
+{
+public:
+  AssemblyTreeFilter()                           = delete;
+  AssemblyTreeFilter(const AssemblyTreeFilter &) = delete;
+
+  AssemblyTreeFilter(Ioss::Region *region, const Ioss::EntityType filterType, const Assemblies &assemblies)
+      : m_region(region),
+        m_type(filterType),
+        m_assemblies(assemblies)
+  {
+    for (const std::string& assemblyName : m_assemblies.get_part_names()) {
+      m_visitedAssemblies[assemblyName] = false;
+    }
+  }
+
+  void update_list_from_assembly_tree(const AssemblyData *assembly, std::vector<std::string> &list)
+  {
+    // Walk the tree without cyclic dependency
+    if (nullptr != assembly) {
+      if (!m_visitedAssemblies[assembly->name]) {
+        m_visitedAssemblies[assembly->name] = true;
+
+        const Ioss::EntityType assemblyType = TextMesh::assembly_type_to_entity_type(assembly->get_assembly_type());
+        if (m_type == assemblyType) {
+          for (const std::string& assemblyMember : assembly->data) {
+            Ioss::GroupingEntity *ge = m_region->get_entity(assemblyMember, m_type);
+            if (nullptr != ge) {
+              list.push_back(ge->name());
+            }
+          }
+        }
+
+        if (Ioss::ASSEMBLY == assemblyType) {
+          for (const std::string& subAssemblyName : assembly->data) {
+            // Find the sub assembly
+            const AssemblyData *subAssembly = m_assemblies.get_group_data(subAssemblyName);
+
+            if (nullptr != subAssembly) {
+              update_list_from_assembly_tree(subAssembly, list);
+            } else {
+              std::ostringstream errmsg;
+              fmt::print(errmsg, "ERROR: Could not find sub-assembly with id: {} and name: {}",
+                         assembly->id, assembly->name);
+              IOSS_ERROR(errmsg);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void update_assembly_filter_list(std::vector<std::string> &assemblyFilterList)
+  {
+    for (const std::string& assemblyName : m_assemblies.get_part_names()) {
+      if (m_visitedAssemblies[assemblyName]) {
+        assemblyFilterList.emplace_back(assemblyName);
+      }
+    }
+
+    std::sort(assemblyFilterList.begin(), assemblyFilterList.end(), std::less<>());
+    auto endIter = std::unique(assemblyFilterList.begin(), assemblyFilterList.end());
+    assemblyFilterList.resize(endIter - assemblyFilterList.begin());
+  }
+
+private:
+  Ioss::Region                       *m_region = nullptr;
+  Ioss::EntityType                    m_type   = Ioss::INVALID_TYPE;
+  const Assemblies                   &m_assemblies;
+  mutable std::map<std::string,bool>  m_visitedAssemblies;
+};
+
   void error_handler(const std::ostringstream &message) { throw std::logic_error((message).str()); }
 
   TextMesh::TextMesh(int, int my_proc) : m_myProcessor(my_proc)
@@ -634,7 +707,7 @@ namespace Iotm {
     return assembly->id;
   }
 
-  Ioss::EntityType TextMesh::assembly_type_to_entity_type(const AssemblyType type) const
+  Ioss::EntityType TextMesh::assembly_type_to_entity_type(const AssemblyType type)
   {
     if (type == AssemblyType::BLOCK) {
       return Ioss::ELEMENTBLOCK;
@@ -844,4 +917,44 @@ namespace Iotm {
 
     return sideset->get_split_type();
   }
+
+  void TextMesh::update_block_omissions_from_assemblies(Ioss::Region *region,
+                                                        std::vector<std::string>& assemblyOmissions,
+                                                        std::vector<std::string>& assemblyInclusions,
+                                                        std::vector<std::string>& blockOmissions,
+                                                        std::vector<std::string>& blockInclusions) const
+  {
+    // Query number of assemblies...
+    if (assembly_count() > 0) {
+      std::vector<std::string> exclusions;
+      std::vector<std::string> inclusions;
+
+      AssemblyTreeFilter inclusionFilter(region, Ioss::ELEMENTBLOCK, m_data.assemblies);
+      AssemblyTreeFilter exclusionFilter(region, Ioss::ELEMENTBLOCK, m_data.assemblies);
+
+      for (const std::string& assemblyName : m_data.assemblies.get_part_names()) {
+        const AssemblyData *assembly = m_data.assemblies.get_group_data(assemblyName);
+
+        bool omitAssembly =
+            std::binary_search(assemblyOmissions.begin(), assemblyOmissions.end(), assembly->name);
+        bool includeAssembly =
+            std::binary_search(assemblyInclusions.begin(), assemblyInclusions.end(), assembly->name);
+
+        if (omitAssembly) {
+          exclusionFilter.update_list_from_assembly_tree(assembly, exclusions);
+        }
+
+        if (includeAssembly) {
+          inclusionFilter.update_list_from_assembly_tree(assembly, inclusions);
+        }
+      }
+
+      exclusionFilter.update_assembly_filter_list(assemblyOmissions);
+      inclusionFilter.update_assembly_filter_list(assemblyInclusions);
+
+      Ioss::Utils::insert_sort_and_unique(exclusions, blockOmissions);
+      Ioss::Utils::insert_sort_and_unique(inclusions, blockInclusions);
+    }
+  }
+
 } // namespace Iotm

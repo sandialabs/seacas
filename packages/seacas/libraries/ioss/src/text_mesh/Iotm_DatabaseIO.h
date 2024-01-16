@@ -103,6 +103,8 @@ namespace Iotm {
     void get_commsets();
     void get_assemblies();
 
+    void update_block_omissions_from_assemblies();
+
     const Ioss::Map &get_node_map() const;
     const Ioss::Map &get_element_map() const;
 
