@@ -27,20 +27,19 @@ namespace Iocatalyst {
     putils.barrier();
   }
 
-  CatalystManager::CatalystProps
-  CatalystManager::registerDatabase(const Ioss::PropertyManager &props,
-                                    const Ioss::ParallelUtils   &putils)
+  CatalystManager::CatalystProps CatalystManager::initialize(const Ioss::PropertyManager &props,
+                                                             const Ioss::ParallelUtils   &putils)
   {
     CatalystManager::CatalystProps catalystProps;
     catalystProps.catalystPipelineID = catalystOutputIDNumber;
     incrementOutputCounts();
 
-    if (props.exists("CATALYST_BLOCK_PARSE_JSON_STRING")) {
-      catalystProps.catalystBlockJSON = props.get("CATALYST_BLOCK_PARSE_JSON_STRING").get_string();
+    if (props.exists(CATALYST_BLOCK_PARSE_JSON_STRING)) {
+      catalystProps.catalystBlockJSON = props.get(CATALYST_BLOCK_PARSE_JSON_STRING).get_string();
     }
-    else if (props.exists("PHACTORI_JSON_SCRIPT")) {
+    else if (props.exists(PHACTORI_JSON_SCRIPT)) {
       bool        readOkay             = false;
-      std::string phactoriJSONFilePath = props.get("PHACTORI_JSON_SCRIPT").get_string();
+      std::string phactoriJSONFilePath = props.get(PHACTORI_JSON_SCRIPT).get_string();
       if (putils.parallel_rank() == 0) {
         std::ifstream f(phactoriJSONFilePath);
         if (f) {
@@ -61,42 +60,42 @@ namespace Iocatalyst {
       }
     }
 
-    if (props.exists("CATALYST_SCRIPT")) {
-      catalystProps.catalystPythonFilename = props.get("CATALYST_SCRIPT").get_string();
+    if (props.exists(CATALYST_SCRIPT)) {
+      catalystProps.catalystPythonFilename = props.get(CATALYST_SCRIPT).get_string();
     }
     else {
       catalystProps.catalystPythonFilename = this->getCatalystPythonDriverPath();
     }
 
-    if (props.exists("CATALYST_SCRIPT_EXTRA_FILE")) {
-      catalystProps.catalystScriptExtraFile = props.get("CATALYST_SCRIPT_EXTRA_FILE").get_string();
+    if (props.exists(CATALYST_SCRIPT_EXTRA_FILE)) {
+      catalystProps.catalystScriptExtraFile = props.get(CATALYST_SCRIPT_EXTRA_FILE).get_string();
     }
 
-    if (props.exists("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME")) {
+    if (props.exists(CATALYST_BLOCK_PARSE_INPUT_DECK_NAME)) {
       catalystProps.catalystInputDeckName =
-          props.get("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME").get_string();
+          props.get(CATALYST_BLOCK_PARSE_INPUT_DECK_NAME).get_string();
     }
 
-    if (props.exists("CATALYST_ENABLE_LOGGING")) {
-      catalystProps.enableLogging = props.get("CATALYST_ENABLE_LOGGING").get_int();
+    if (props.exists(CATALYST_ENABLE_LOGGING)) {
+      catalystProps.enableLogging = props.get(CATALYST_ENABLE_LOGGING).get_int();
     }
 
-    if (props.exists("CATALYST_DEBUG_LEVEL")) {
-      catalystProps.debugLevel = props.get("CATALYST_DEBUG_LEVEL").get_int();
+    if (props.exists(CATALYST_DEBUG_LEVEL)) {
+      catalystProps.debugLevel = props.get(CATALYST_DEBUG_LEVEL).get_int();
     }
 
-    if (props.exists("CATALYST_OUTPUT_DIRECTORY")) {
-      catalystProps.catalystOutputDirectory = props.get("CATALYST_OUTPUT_DIRECTORY").get_string();
+    if (props.exists(CATALYST_OUTPUT_DIRECTORY)) {
+      catalystProps.catalystOutputDirectory = props.get(CATALYST_OUTPUT_DIRECTORY).get_string();
     }
 
-    if (props.exists("CATALYST_INPUT_NAME")) {
-      catalystProps.catalystInputName = props.get("CATALYST_INPUT_NAME").get_string();
+    if (props.exists(CATALYST_INPUT_NAME)) {
+      catalystProps.catalystInputName = props.get(CATALYST_INPUT_NAME).get_string();
     }
 
-    if (props.exists("CATALYST_MULTI_INPUT_PIPELINE_NAME")) {
+    if (props.exists(CATALYST_MULTI_INPUT_PIPELINE_NAME)) {
       catalystProps.enableCatalystMultiInputPipeline = true;
       catalystProps.catalystMultiInputPipelineName =
-          props.get("CATALYST_MULTI_INPUT_PIPELINE_NAME").get_string();
+          props.get(CATALYST_MULTI_INPUT_PIPELINE_NAME).get_string();
     }
 
     return catalystProps;

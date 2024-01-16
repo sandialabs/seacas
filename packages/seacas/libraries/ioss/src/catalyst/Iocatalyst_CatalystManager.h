@@ -9,15 +9,30 @@
 
 #include "iocatalyst_export.h"
 #include <Ioss_ParallelUtils.h>
+#include <catalyst.hpp>
 
 namespace Iocatalyst {
 
   class IOCATALYST_EXPORT CatalystManager
   {
   public:
-    using CatalystPipelineID                                  = unsigned int;
-    inline static const std::string CATALYST_OUTPUT_DIRECTORY = "CatalystOutput";
-    inline static const std::string CATALYST_INPUT_NAME       = "input";
+    using CatalystPipelineID = unsigned int;
+
+    inline static const std::string CATALYST_BLOCK_PARSE_INPUT_DECK_NAME =
+        "CATALYST_BLOCK_PARSE_INPUT_DECK_NAME";
+    inline static const std::string CATALYST_BLOCK_PARSE_JSON_STRING =
+        "CATALYST_BLOCK_PARSE_JSON_STRING";
+    inline static const std::string CATALYST_DEBUG_LEVEL      = "CATALYST_DEBUG_LEVEL";
+    inline static const std::string CATALYST_ENABLE_LOGGING   = "CATALYST_ENABLE_LOGGING";
+    inline static const std::string CATALYST_OUTPUT_DIRECTORY = "CATALYST_OUTPUT_DIRECTORY";
+    inline static const std::string CATALYST_OUTPUT_DEFAULT   = "CatalystOutput";
+    inline static const std::string CATALYST_INPUT_NAME       = "CATALYST_INPUT_NAME";
+    inline static const std::string CATALYST_INPUT_DEFAULT    = "input";
+    inline static const std::string CATALYST_MULTI_INPUT_PIPELINE_NAME =
+        "CATALYST_MULTI_INPUT_PIPELINE_NAME";
+    inline static const std::string CATALYST_SCRIPT            = "CATALYST_SCRIPT";
+    inline static const std::string CATALYST_SCRIPT_EXTRA_FILE = "CATALYST_SCRIPT_EXTRA_FILE";
+    inline static const std::string PHACTORI_JSON_SCRIPT       = "PHACTORI_JSON_SCRIPT";
 
     static CatalystManager &getInstance()
     {
@@ -26,6 +41,8 @@ namespace Iocatalyst {
     }
 
     std::string getCatalystPythonDriverPath() { return "/todo/create/real/path"; }
+
+    const conduit_cpp::Node &getInitializeConduit() { return initializeConduit; };
 
     void writeToCatalystLogFile(const Ioss::ParallelUtils   &putils,
                                 const Ioss::PropertyManager &props);
@@ -37,8 +54,8 @@ namespace Iocatalyst {
         catalystPipelineID               = 0;
         enableLogging                    = false;
         debugLevel                       = 0;
-        catalystOutputDirectory          = CATALYST_OUTPUT_DIRECTORY;
-        catalystInputName                = CATALYST_INPUT_NAME;
+        catalystOutputDirectory          = CATALYST_OUTPUT_DEFAULT;
+        catalystInputName                = CATALYST_INPUT_DEFAULT;
         enableCatalystMultiInputPipeline = false;
       }
       CatalystPipelineID catalystPipelineID;
@@ -54,8 +71,7 @@ namespace Iocatalyst {
       std::string        catalystMultiInputPipelineName;
     };
 
-    CatalystProps registerDatabase(const Ioss::PropertyManager &props,
-                                   const Ioss::ParallelUtils   &putils);
+    CatalystProps initialize(const Ioss::PropertyManager &props, const Ioss::ParallelUtils &putils);
 
   private:
     CatalystManager();
@@ -69,6 +85,7 @@ namespace Iocatalyst {
     void incrementOutputCounts();
 
     CatalystPipelineID catalystOutputIDNumber;
+    conduit_cpp::Node  initializeConduit;
   };
 } // namespace Iocatalyst
 
