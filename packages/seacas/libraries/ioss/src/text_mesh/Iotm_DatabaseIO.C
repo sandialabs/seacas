@@ -645,8 +645,6 @@ namespace Iotm {
 
   void DatabaseIO::update_block_omissions_from_assemblies()
   {
-    Ioss::SerializeIO serializeIO_(this);
-
     if (!assemblyOmissions.empty()) {
       assert(blockInclusions.empty());
     }
