@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -210,9 +210,11 @@ namespace Ioss {
     {
       // global_index is 1-based index into global list of elements [1..global_element_count]
 #if defined(DC_USE_VECTOR)
-      return std::binary_search(elemGTL.begin(), elemGTL.end(), std::pair<INT,INT>{global_index,0},
-				[](const std::pair<INT,INT> &lhs, const std::pair<INT,INT> &val) -> bool {return lhs.first < val.first;});
-      return true;
+      return std::binary_search(
+          elemGTL.begin(), elemGTL.end(), std::pair<INT, INT>{global_index, 0},
+          [](const std::pair<INT, INT> &lhs, const std::pair<INT, INT> &val) -> bool {
+            return lhs.first < val.first;
+          });
 #else
       return elemGTL.find(global_index) != elemGTL.end();
 #endif
@@ -237,8 +239,10 @@ namespace Ioss {
       // return value is 1-based index into local list of elements on this
       // processor (ioss-decomposition)
 #if defined(DC_USE_VECTOR)
-      auto I = lower_bound(elemGTL.begin(), elemGTL.end(), global_index, [](const std::pair<INT,INT> &lhs, INT val) -> bool {return lhs.first < val;});
-      assert (I != elemGTL.end() && I->first == global_index);
+      auto I = lower_bound(
+          elemGTL.begin(), elemGTL.end(), global_index,
+          [](const std::pair<INT, INT> &lhs, INT val) -> bool { return lhs.first < val; });
+      assert(I != elemGTL.end() && I->first == global_index);
 #else
       auto I = elemGTL.find(global_index);
 #endif
