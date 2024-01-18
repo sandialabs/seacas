@@ -5,6 +5,11 @@ TRIBITS_ADD_EXECUTABLE(
 )
 
 TRIBITS_ADD_EXECUTABLE(
+ Utst_iotm
+ SOURCES unitMain.C UnitTestIotmDatabaseIO.C
+)
+
+TRIBITS_ADD_EXECUTABLE(
  Utst_blockbatchread
  SOURCES unitMain.C UnitTestElementBlockBatchRead.C
 )
@@ -49,6 +54,18 @@ TRIBITS_ADD_TEST(
         Utst_textmesh
         NAME Utst_textmesh
         NUM_MPI_PROCS 4
+)
+
+TRIBITS_ADD_TEST(
+        Utst_iotm
+        NAME Utst_iotm
+        NUM_MPI_PROCS 1
+)
+
+TRIBITS_ADD_TEST(
+        Utst_iotm
+        NAME Utst_iotm
+        NUM_MPI_PROCS 2
 )
 
 TRIBITS_INCLUDE_DIRECTORIES(

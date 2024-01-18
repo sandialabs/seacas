@@ -532,6 +532,14 @@ namespace Ioss {
                               const std::string &header, const std::string &suffix = "\n\t",
                               bool print_empty = false);
 
+    static void insert_sort_and_unique(const std::vector<std::string> &src, std::vector<std::string> &dest)
+    {
+      dest.insert(dest.end(), src.begin(), src.end());
+      std::sort(dest.begin(), dest.end(), std::less<>());
+      auto endIter = std::unique(dest.begin(), dest.end());
+      dest.resize(endIter - dest.begin());
+    }
+
   private:
     // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
     template <typename T> static size_t unique(std::vector<T> &out, bool skip_first)

@@ -79,8 +79,6 @@ namespace {
   template <typename T>
   void write_attribute_names(int exoid, ex_entity_type type, const std::vector<T *> &entities);
 
-  void insert_sort_and_unique(const std::vector<std::string> &src, std::vector<std::string> &dest);
-
   class AssemblyTreeFilter
   {
   public:
@@ -691,14 +689,6 @@ namespace Ioex {
   {
     Ioss::SerializeIO serializeIO_(this);
 
-    if (!assemblyOmissions.empty()) {
-      assert(blockInclusions.empty());
-    }
-
-    if (!assemblyInclusions.empty()) {
-      assert(blockOmissions.empty());
-    }
-
     // Query number of assemblies...
     auto assemblies = get_exodus_assemblies(get_file_pointer());
     if (!assemblies.empty()) {
@@ -730,8 +720,8 @@ namespace Ioex {
 
       cleanup_exodus_assembly_vector(assemblies);
 
-      insert_sort_and_unique(exclusions, blockOmissions);
-      insert_sort_and_unique(inclusions, blockInclusions);
+      Ioss::Utils::insert_sort_and_unique(exclusions, blockOmissions);
+      Ioss::Utils::insert_sort_and_unique(inclusions, blockInclusions);
     }
   }
 
@@ -3128,13 +3118,5 @@ namespace {
       throw x;
     }
 #endif
-  }
-
-  void insert_sort_and_unique(const std::vector<std::string> &src, std::vector<std::string> &dest)
-  {
-    dest.insert(dest.end(), src.begin(), src.end());
-    std::sort(dest.begin(), dest.end(), std::less<>());
-    auto endIter = std::unique(dest.begin(), dest.end());
-    dest.resize(endIter - dest.begin());
   }
 } // namespace
