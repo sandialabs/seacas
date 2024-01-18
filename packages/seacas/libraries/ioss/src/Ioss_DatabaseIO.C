@@ -887,6 +887,24 @@ namespace Ioss {
       IOSS_ERROR(errmsg);
     }
 
+    if (!assemblyOmissions.empty() && !inclusions.empty()) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: Only one of element block inclusion or assembly omission can be non-empty"
+                 "       [{}]\n",
+                 get_filename());
+      IOSS_ERROR(errmsg);
+    }
+
+    if (!assemblyInclusions.empty() && !omissions.empty()) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: Only one of element block omission or assembly inclusion can be non-empty"
+                 "       [{}]\n",
+                 get_filename());
+      IOSS_ERROR(errmsg);
+    }
+
     if (!omissions.empty()) {
       blockOmissions.assign(omissions.cbegin(), omissions.cend());
       Ioss::sort(blockOmissions.begin(), blockOmissions.end());
@@ -905,6 +923,24 @@ namespace Ioss {
       std::ostringstream errmsg;
       fmt::print(errmsg,
                  "ERROR: Only one of assembly omission or inclusion can be non-empty"
+                 "       [{}]\n",
+                 get_filename());
+      IOSS_ERROR(errmsg);
+    }
+
+    if (!blockOmissions.empty() && !inclusions.empty()) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: Only one of element block omission or assembly inclusion can be non-empty"
+                 "       [{}]\n",
+                 get_filename());
+      IOSS_ERROR(errmsg);
+    }
+
+    if (!blockInclusions.empty() && !omissions.empty()) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: Only one of element block inclusion or assembly omission can be non-empty"
                  "       [{}]\n",
                  get_filename());
       IOSS_ERROR(errmsg);
