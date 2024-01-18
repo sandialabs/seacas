@@ -645,14 +645,6 @@ namespace Iotm {
 
   void DatabaseIO::update_block_omissions_from_assemblies()
   {
-    if (!assemblyOmissions.empty()) {
-      assert(blockInclusions.empty());
-    }
-
-    if (!assemblyInclusions.empty()) {
-      assert(blockOmissions.empty());
-    }
-
     m_textMesh->update_block_omissions_from_assemblies(get_region(),
                                                        assemblyOmissions, assemblyInclusions,
                                                        blockOmissions, blockInclusions);

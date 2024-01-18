@@ -877,6 +877,16 @@ namespace Ioss {
   void DatabaseIO::set_block_omissions(const std::vector<std::string> &omissions,
                                        const std::vector<std::string> &inclusions)
   {
+    if (!omissions.empty() && !inclusions.empty()) {
+      // Only one can be non-empty
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: Only one of element block omission or inclusion can be non-empty"
+                 "       [{}]\n",
+                 get_filename());
+      IOSS_ERROR(errmsg);
+    }
+
     if (!omissions.empty()) {
       blockOmissions.assign(omissions.cbegin(), omissions.cend());
       Ioss::sort(blockOmissions.begin(), blockOmissions.end());

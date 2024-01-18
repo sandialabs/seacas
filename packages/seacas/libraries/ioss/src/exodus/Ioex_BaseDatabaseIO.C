@@ -689,14 +689,6 @@ namespace Ioex {
   {
     Ioss::SerializeIO serializeIO_(this);
 
-    if (!assemblyOmissions.empty()) {
-      assert(blockInclusions.empty());
-    }
-
-    if (!assemblyInclusions.empty()) {
-      assert(blockOmissions.empty());
-    }
-
     // Query number of assemblies...
     auto assemblies = get_exodus_assemblies(get_file_pointer());
     if (!assemblies.empty()) {
