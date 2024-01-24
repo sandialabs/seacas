@@ -34,7 +34,6 @@ namespace Ioss {
       ATTRIBUTE ///< Property created from an Exodus or Database Attribute
     };
 
-    Property() = default;
     Property(std::string name, int64_t value, Origin origin = INTERNAL);
     Property(std::string name, int value, Origin origin = INTERNAL);
     Property(std::string name, double value, Origin origin = INTERNAL);
@@ -46,11 +45,6 @@ namespace Ioss {
 
     // To set implicit property
     Property(const GroupingEntity *ge, std::string name, BasicType type);
-
-    Property(const Property &from)           = default;
-    Property &operator=(const Property &rhs) = default;
-    Property(Property &&from)                = default;
-    Property &operator=(Property &&rhs)      = default;
 
     std::string         get_string() const;
     int64_t             get_int() const;

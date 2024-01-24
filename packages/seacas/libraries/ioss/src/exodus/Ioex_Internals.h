@@ -72,8 +72,6 @@ namespace Ioss {
 namespace Ioex {
   struct IOEX_EXPORT NodeBlock
   {
-    NodeBlock()                       = default;
-    NodeBlock(const NodeBlock &other) = default;
     explicit NodeBlock(const Ioss::NodeBlock &other);
 
     std::string name{};
@@ -86,8 +84,6 @@ namespace Ioex {
 
   struct IOEX_EXPORT Assembly
   {
-    Assembly()                      = default;
-    Assembly(const Assembly &other) = default;
     explicit Assembly(const Ioss::Assembly &other);
 
     std::string          name{};

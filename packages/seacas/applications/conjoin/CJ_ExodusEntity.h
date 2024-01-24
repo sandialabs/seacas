@@ -22,8 +22,6 @@ namespace Excn {
 
   template <typename INT> struct Mesh
   {
-    Mesh() = default;
-
     size_t count(ObjectType type) const
     {
       switch (type) {
