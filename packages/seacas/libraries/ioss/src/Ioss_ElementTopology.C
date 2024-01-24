@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -60,8 +60,6 @@ Ioss::ETRegistry &Ioss::ElementTopology::registry()
   static ETRegistry registry_;
   return registry_;
 }
-
-Ioss::ElementTopology::~ElementTopology() = default;
 
 bool Ioss::ElementTopology::edges_similar() const { return true; }
 bool Ioss::ElementTopology::faces_similar() const { return true; }

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -60,7 +60,7 @@ FileInfo::FileInfo(const std::string &dirpath, const std::string &my_filename)
   if (!dirpath.empty()) {
     filename_ = dirpath;
     if (filename_.at(filename_.size() - 1) != '/') {
-      static std::string SLASH("/");
+      const static std::string SLASH("/");
       filename_ += SLASH;
     }
   }
@@ -68,8 +68,6 @@ FileInfo::FileInfo(const std::string &dirpath, const std::string &my_filename)
   readable_ = internal_access(filename_, R_OK);
   exists_   = readable_ || internal_access(filename_, F_OK);
 }
-
-FileInfo::~FileInfo() = default;
 
 //: Returns TRUE if the file exists (is readable)
 bool FileInfo::exists() const { return exists_; }

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -52,9 +52,6 @@ namespace Ioss {
   class IOSS_EXPORT Utils
   {
   public:
-    Utils()  = default;
-    ~Utils() = default;
-
     /**
      * \defgroup IossStreams Streams used for IOSS output
      *@{
@@ -405,8 +402,8 @@ namespace Ioss {
 
     /** \brief Case-insensitive substring comparison.
      *
-     *  \param[in] prefix
-     *  \param[in] str
+     *  \param[in] prefix The prefix that should start the string
+     *  \param[in] str The string which should begin with prefix
      *  \returns `true` if `str` begins with `prefix` or `prefix` is empty
      */
     static bool substr_equal(const std::string &prefix, const std::string &str);

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -21,7 +21,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~ShellLine2D2() override           = default;
     ShellLine2D2(const ShellLine2D2 &) = delete;
 
     ElementShape shape() const override { return ElementShape::LINE; }

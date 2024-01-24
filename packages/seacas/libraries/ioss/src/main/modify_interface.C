@@ -18,8 +18,6 @@
 
 Modify::Interface::Interface() { enroll_options(); }
 
-Modify::Interface::~Interface() = default;
-
 void Modify::Interface::enroll_options()
 {
   options_.usage("[options] basename");

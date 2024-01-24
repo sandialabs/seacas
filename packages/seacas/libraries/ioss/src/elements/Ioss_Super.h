@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -29,9 +29,9 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~Super() override;
     Super(const std::string &my_name, int node_count);
     Super(const Super &) = delete;
+    virtual ~Super() override;
 
     static void make_super(const std::string &type);
 

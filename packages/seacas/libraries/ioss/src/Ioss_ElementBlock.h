@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -32,7 +32,6 @@ namespace Ioss {
                  const std::string &element_type, int64_t number_elements);
 
     ElementBlock(const ElementBlock &) = default;
-    ~ElementBlock() override;
 
     std::string type_string() const override { return "ElementBlock"; }
     std::string short_type_string() const override { return "block"; }

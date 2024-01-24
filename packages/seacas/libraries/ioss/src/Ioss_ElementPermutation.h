@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -59,7 +59,7 @@ namespace Ioss {
     ElementPermutation(const ElementPermutation &)            = delete;
     ElementPermutation &operator=(const ElementPermutation &) = delete;
 
-    virtual ~ElementPermutation();
+    virtual ~ElementPermutation() = default;
 
     unsigned num_permutations() const;
 
@@ -139,7 +139,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~NullPermutation() override              = default;
     NullPermutation(const NullPermutation &) = delete;
 
   protected:
@@ -152,7 +151,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~SpherePermutation() override                = default;
     SpherePermutation(const SpherePermutation &) = delete;
 
   protected:
@@ -165,7 +163,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~LinePermutation() override              = default;
     LinePermutation(const LinePermutation &) = delete;
 
   protected:
@@ -178,7 +175,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~SpringPermutation() override                = default;
     SpringPermutation(const SpringPermutation &) = delete;
 
   protected:
@@ -191,7 +187,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~TriPermutation() override             = default;
     TriPermutation(const TriPermutation &) = delete;
 
   protected:
@@ -204,7 +199,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~QuadPermutation() override              = default;
     QuadPermutation(const QuadPermutation &) = delete;
 
   protected:
@@ -217,7 +211,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~TetPermutation() override             = default;
     TetPermutation(const TetPermutation &) = delete;
 
   protected:
@@ -230,7 +223,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~PyramidPermutation() override                 = default;
     PyramidPermutation(const PyramidPermutation &) = delete;
 
   protected:
@@ -243,7 +235,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~WedgePermutation() override               = default;
     WedgePermutation(const WedgePermutation &) = delete;
 
   protected:
@@ -256,7 +247,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~HexPermutation() override             = default;
     HexPermutation(const HexPermutation &) = delete;
 
   protected:
@@ -271,7 +261,6 @@ namespace Ioss {
     static void make_super(const std::string &type);
     static void factory();
     static void factory(unsigned n);
-    ~SuperPermutation() override               = default;
     SuperPermutation(const SuperPermutation &) = delete;
 
     static std::string get_name(unsigned n);

@@ -144,8 +144,6 @@ namespace Ioss {
     ElementBlockBatchOffset(const ElementBlockBatchOffset &) = delete;
     ElementBlockBatchOffset(ElementBlockBatchOffset &&)      = delete;
 
-    ~ElementBlockBatchOffset() = default;
-
     size_t get_ioss_element_size(const std::vector<int64_t> &blockSubsetIndex) const;
 
     std::vector<size_t> get_ioss_offset(const std::vector<int64_t> &blockSubsetIndex,

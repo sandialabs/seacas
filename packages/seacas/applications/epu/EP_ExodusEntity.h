@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -88,8 +88,6 @@ namespace Excn {
     {
       copy_string(elType, other.elType);
     }
-
-    ~Block() = default;
 
     size_t entity_count() const { return elementCount; }
 
@@ -189,7 +187,6 @@ namespace Excn {
     {
       copy_string(elType, other.elType);
     }
-    ~EdgeBlock() = default;
 
     char                     elType[MAX_STR_LENGTH + 1]{};
     std::string              name_;
@@ -235,7 +232,6 @@ namespace Excn {
     {
       copy_string(elType, other.elType);
     }
-    ~FaceBlock() = default;
 
     char                     elType[MAX_STR_LENGTH + 1]{};
     std::string              name_;

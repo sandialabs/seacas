@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -32,7 +32,6 @@ namespace Ioss {
   public:
     Blob()                  = default; // Used for template typing only
     Blob(const Blob &other) = default;
-    ~Blob() override        = default;
 
     Blob(DatabaseIO *io_database, const std::string &my_name, int64_t item_count);
 

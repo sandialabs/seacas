@@ -21,7 +21,6 @@ namespace Ioss {
     static const char *name;
 
     static void factory();
-    ~Edge2() override    = default;
     Edge2(const Edge2 &) = delete;
 
     ElementShape shape() const override { return ElementShape::LINE; }

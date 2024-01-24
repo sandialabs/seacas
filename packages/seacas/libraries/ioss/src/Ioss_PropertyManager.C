@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -14,15 +14,6 @@
 
 #include "Ioss_CodeTypes.h"
 #include "robin_hash.h"
-
-Ioss::PropertyManager::~PropertyManager()
-{
-  try {
-    m_properties.clear();
-  }
-  catch (...) {
-  }
-}
 
 /** \brief Add a property to the property manager.
  *

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -76,8 +76,6 @@ namespace Ioex {
     NodeBlock(const NodeBlock &other) = default;
     explicit NodeBlock(const Ioss::NodeBlock &other);
 
-    ~NodeBlock() = default;
-
     std::string name{};
     entity_id   id{0};
     int64_t     entityCount{0};
@@ -91,7 +89,6 @@ namespace Ioex {
     Assembly()                      = default;
     Assembly(const Assembly &other) = default;
     explicit Assembly(const Ioss::Assembly &other);
-    ~Assembly() = default;
 
     std::string          name{};
     entity_id            id{0};
@@ -106,7 +103,6 @@ namespace Ioex {
     Blob()                  = default;
     Blob(const Blob &other) = default;
     explicit Blob(const Ioss::Blob &other);
-    ~Blob() = default;
 
     std::string name{};
     entity_id   id{0};
@@ -129,8 +125,6 @@ namespace Ioex {
     }
 
     explicit EdgeBlock(const Ioss::EdgeBlock &other);
-
-    ~EdgeBlock() = default;
 
     char        elType[MAX_STR_LENGTH + 1]{};
     std::string name{};
@@ -156,8 +150,6 @@ namespace Ioex {
     }
 
     explicit FaceBlock(const Ioss::FaceBlock &other);
-
-    ~FaceBlock() = default;
 
     char        elType[MAX_STR_LENGTH + 1]{};
     std::string name{};
@@ -185,8 +177,6 @@ namespace Ioex {
     }
 
     explicit ElemBlock(const Ioss::ElementBlock &other);
-
-    ~ElemBlock() = default;
 
     char        elType[MAX_STR_LENGTH + 1]{};
     std::string name{};
