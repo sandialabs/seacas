@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -68,9 +68,6 @@ namespace Ioexnl {
     ParallelDatabaseIO(Ioss::Region *region, const std::string &filename,
                        Ioss::DatabaseUsage db_usage, Ioss_MPI_Comm communicator,
                        const Ioss::PropertyManager &properties);
-    ParallelDatabaseIO(const ParallelDatabaseIO &from)            = delete;
-    ParallelDatabaseIO &operator=(const ParallelDatabaseIO &from) = delete;
-    ~ParallelDatabaseIO();
 
     int  get_file_pointer() const override; // Open file and set exodusFilePtr.
     bool needs_shared_node_information() const override { return true; }

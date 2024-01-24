@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -66,7 +66,9 @@ namespace Ioss {
 
     DatabaseIO()                              = delete;
     DatabaseIO(const DatabaseIO &)            = delete;
+    DatabaseIO(DatabaseIO &&)                 = delete;
     DatabaseIO &operator=(const DatabaseIO &) = delete;
+    DatabaseIO &operator=(DatabaseIO &&)      = delete;
     virtual ~DatabaseIO();
 
     /** \brief Check to see if database state is OK.

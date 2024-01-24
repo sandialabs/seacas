@@ -63,8 +63,6 @@ namespace Ioexnl {
   public:
     DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
                Ioss_MPI_Comm communicator, const Ioss::PropertyManager &props);
-    DatabaseIO(const DatabaseIO &from)            = delete;
-    DatabaseIO &operator=(const DatabaseIO &from) = delete;
 
     // Kluge -- a few applications need access so can directly access exodus API
     int get_file_pointer() const override; // Open file and set exodusFilePtr.
