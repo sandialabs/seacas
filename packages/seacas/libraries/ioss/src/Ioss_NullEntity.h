@@ -23,7 +23,7 @@ namespace Ioss {
   class IOSS_EXPORT NullEntity : public GroupingEntity
   {
   public:
-    NullEntity() : Ioss::GroupingEntity(nullptr, "null_entity", 0) {}
+    NullEntity();
 
     std::string type_string() const override { return "NullEntity"; }
     std::string short_type_string() const override { return "null"; }
