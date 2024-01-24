@@ -17,7 +17,6 @@ template <typename INT> class Assembly : public Exo_Entity
 public:
   Assembly();
   Assembly(int file_id, size_t assembly_id);
-  ~Assembly() override                        = default;
   Assembly(const Assembly &)                  = delete;
   const Assembly &operator=(const Assembly &) = delete;
 
