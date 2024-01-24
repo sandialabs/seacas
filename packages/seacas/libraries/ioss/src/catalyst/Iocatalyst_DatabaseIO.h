@@ -15,6 +15,7 @@
 #include "Ioss_SideSet.h" // for SideBlockContainer, SideSet
 
 #include "Ioss_Field.h" // for Field, etc
+#include "Iocatalyst_CatalystManager.h"
 
 #include <memory> // for std::unique_ptr
 
@@ -96,6 +97,8 @@ namespace Iocatalyst {
 
     bool begin_state_nl(int state, double time) override;
     bool end_state_nl(int state, double time) override;
+
+    CatalystManager::CatalystPipelineID catPipeID;
 
     void
     compute_block_membership_nl(Ioss::SideBlock * /* efblock */,

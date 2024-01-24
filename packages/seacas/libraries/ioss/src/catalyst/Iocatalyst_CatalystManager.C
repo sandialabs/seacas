@@ -10,7 +10,7 @@
 
 namespace Iocatalyst {
 
-  CatalystManager::CatalystManager() { catalystOutputIDNumber = 0; }
+  CatalystManager::CatalystManager() { reset(); }
 
   CatalystManager::~CatalystManager() {}
 
@@ -27,9 +27,24 @@ namespace Iocatalyst {
     putils.barrier();
   }
 
-  CatalystManager::CatalystProps CatalystManager::initialize(const Ioss::PropertyManager &props,
-                                                             const Ioss::ParallelUtils   &putils)
+  std::string CatalystManager::getCatDataPath(const Ioss::PropertyManager &props)
   {
+    auto inputName = CATALYST_INPUT_DEFAULT;
+    if (props.exists(CATALYST_INPUT_NAME)) {
+      inputName = props.get(CATALYST_INPUT_NAME).get_string();
+    }
+    return CATALYST + FS + CHANNELS + FS + inputName + FS + DATA;
+  }
+
+  CatalystManager::CatalystPipelineID
+  CatalystManager::initialize(const Ioss::PropertyManager &props, const Ioss::ParallelUtils &putils)
+  {
+    if (getManagerState() != mInit) {
+      std::ostringstream errmsg;
+      errmsg << "Catalyst Manager not in mInit state";
+      IOSS_ERROR(errmsg);
+    }
+
     CatalystManager::CatalystProps catalystProps;
     catalystProps.catalystPipelineID = catalystOutputIDNumber;
     incrementOutputCounts();
@@ -98,7 +113,100 @@ namespace Iocatalyst {
           props.get(CATALYST_MULTI_INPUT_PIPELINE_NAME).get_string();
     }
 
-    return catalystProps;
+    catPipes[catalystProps.catalystPipelineID] = catalystProps;
+    return catalystProps.catalystPipelineID;
+  }
+
+  CatalystManager::CatalystProps &CatalystManager::getCatalystProps(CatalystPipelineID id)
+  {
+    if (catPipes.find(id) == catPipes.end()) {
+      std::ostringstream errmsg;
+      errmsg << "Catalyst Pipeline ID does not exist:  " << id << "\n";
+      IOSS_ERROR(errmsg);
+    }
+    return catPipes[id];
+  }
+
+  conduit_cpp::Node CatalystManager::execute(CatalystManager::CatalystPipelineID id, int state,
+                                             double time, conduit_cpp::Node &data)
+  {
+    if (getManagerState() == mFinalize) {
+      std::ostringstream errmsg;
+      errmsg << "Catalyst Manager in mFinalize state, cannot execute()";
+      IOSS_ERROR(errmsg);
+    }
+    auto p = getCatalystProps(id);
+    if (p.pipelineState != pExecute) {
+      std::ostringstream errmsg;
+      errmsg << "Database not in pExecute state, cannot execute()";
+      IOSS_ERROR(errmsg);
+    }
+    if (getManagerState() == mInit) {
+      auto n = getInitializeConduit();
+      catalyst_initialize(conduit_cpp::c_node(&n));
+      managerState = mExecute;
+    }
+
+    conduit_cpp::Node n;
+    addExecuteProps(n, p, state, time, data);
+    catalyst_execute(conduit_cpp::c_node(&n));
+    return n;
+  }
+
+  void CatalystManager::finalize(CatalystPipelineID id)
+  {
+    getCatalystProps(id).pipelineState = pFinalize;
+    managerState                       = mExecute;
+    bool canFinalizeManager            = true;
+    for (auto p : catPipes) {
+      canFinalizeManager &= p.second.pipelineState == pFinalize;
+    }
+    if (canFinalizeManager) {
+      managerState = mFinalize;
+      conduit_cpp::Node node;
+      catalyst_finalize(conduit_cpp::c_node(&node));
+    }
+  }
+
+  CatalystManager::pState CatalystManager::getPipelineState(CatalystPipelineID id)
+  {
+    return getCatalystProps(id).pipelineState;
+  }
+
+  conduit_cpp::Node CatalystManager::getInitializeConduit()
+  {
+    conduit_cpp::Node n;
+    for (auto p : catPipes) {
+      addScriptProps(n, p.second);
+    }
+    return n;
+  }
+
+  void CatalystManager::addScriptProps(conduit_cpp::Node &n, const CatalystProps &p)
+  {
+    n[getCatScriptFnamePath(p)] = p.catalystPythonFilename;
+    n[getCatScriptArgsPath(p)].append().set(p.catalystInputName);
+    n[getCatScriptArgsPath(p)].append().set(p.catalystBlockJSON);
+    n[getCatScriptArgsPath(p)].append().set(p.catalystScriptExtraFile);
+    n[getCatScriptArgsPath(p)].append().set(p.catalystInputDeckName);
+    n[getCatScriptArgsPath(p)].append().set(p.catalystOutputDirectory);
+    n[getCatScriptArgsPath(p)].append().set(std::to_string(p.enableLogging));
+    n[getCatScriptArgsPath(p)].append().set(std::to_string(p.debugLevel));
+  }
+
+  void CatalystManager::addExecuteProps(conduit_cpp::Node &n, const CatalystProps &p, int state,
+                                        double time, conduit_cpp::Node &data)
+  {
+    n[getCatStatePath() + TIMESTEP].set(state - 1);
+    n[getCatStatePath() + CYCLE].set(state - 1);
+    n[getCatStatePath() + TIME].set(time);
+    auto scriptName                                    = std::to_string(p.catalystPipelineID);
+    n[getCatStatePath() + PIPELINES + FS + scriptName] = scriptName;
+    auto ipath = getCatChannelsPath() + p.catalystInputName + FS;
+    n[ipath + TYPE].set(std::string(IOSS));
+    auto dpath = ipath + FS + DATA;
+    n[dpath].set_external(data);
+    n[dpath + FS + STATE_TIME].set(time);
   }
 
   void CatalystManager::incrementOutputCounts() { catalystOutputIDNumber++; }

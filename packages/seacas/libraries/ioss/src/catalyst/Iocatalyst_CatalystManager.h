@@ -18,6 +18,11 @@ namespace Iocatalyst {
   public:
     using CatalystPipelineID = unsigned int;
 
+    enum mState { mInit, mExecute, mFinalize };
+    enum pState { pExecute, pFinalize };
+
+    inline static const std::string ARGS     = "args";
+    inline static const std::string CATALYST = "catalyst";
     inline static const std::string CATALYST_BLOCK_PARSE_INPUT_DECK_NAME =
         "CATALYST_BLOCK_PARSE_INPUT_DECK_NAME";
     inline static const std::string CATALYST_BLOCK_PARSE_JSON_STRING =
@@ -32,7 +37,20 @@ namespace Iocatalyst {
         "CATALYST_MULTI_INPUT_PIPELINE_NAME";
     inline static const std::string CATALYST_SCRIPT            = "CATALYST_SCRIPT";
     inline static const std::string CATALYST_SCRIPT_EXTRA_FILE = "CATALYST_SCRIPT_EXTRA_FILE";
+    inline static const std::string CHANNELS                   = "channels";
+    inline static const std::string CYCLE                      = "cycle";
+    inline static const std::string DATA                       = "data";
     inline static const std::string PHACTORI_JSON_SCRIPT       = "PHACTORI_JSON_SCRIPT";
+    inline static const std::string PIPELINES                  = "pipelines";
+    inline static const std::string FILENAME                   = "filename";
+    inline static const std::string FS                         = "/";
+    inline static const std::string IOSS                       = "ioss";
+    inline static const std::string SCRIPTS                    = "scripts";
+    inline static const std::string STATE                      = "state";
+    inline static const std::string STATE_TIME                 = "state_time";
+    inline static const std::string TIME                       = "time";
+    inline static const std::string TIMESTEP                   = "timestep";
+    inline static const std::string TYPE                       = "type";
 
     static CatalystManager &getInstance()
     {
@@ -42,7 +60,11 @@ namespace Iocatalyst {
 
     std::string getCatalystPythonDriverPath() { return "/todo/create/real/path"; }
 
-    const conduit_cpp::Node &getInitializeConduit() { return initializeConduit; };
+    conduit_cpp::Node getInitializeConduit();
+
+    mState getManagerState() { return managerState; }
+
+    pState getPipelineState(CatalystPipelineID id);
 
     void writeToCatalystLogFile(const Ioss::ParallelUtils   &putils,
                                 const Ioss::PropertyManager &props);
@@ -57,21 +79,56 @@ namespace Iocatalyst {
         catalystOutputDirectory          = CATALYST_OUTPUT_DEFAULT;
         catalystInputName                = CATALYST_INPUT_DEFAULT;
         enableCatalystMultiInputPipeline = false;
+        pipelineState                    = pExecute;
       }
+
       CatalystPipelineID catalystPipelineID;
-      std::string        catalystBlockJSON;
-      std::string        catalystPythonFilename;
-      std::string        catalystScriptExtraFile;
-      std::string        catalystInputDeckName;
-      bool               enableLogging;
-      int                debugLevel;
-      std::string        catalystOutputDirectory;
-      std::string        catalystInputName;
+      pState             pipelineState;
       bool               enableCatalystMultiInputPipeline;
       std::string        catalystMultiInputPipelineName;
+      std::string        catalystPythonFilename;
+
+      std::string catalystInputName;
+      std::string catalystBlockJSON;
+      std::string catalystScriptExtraFile;
+      std::string catalystInputDeckName;
+      std::string catalystOutputDirectory;
+      bool        enableLogging;
+      int         debugLevel;
     };
 
-    CatalystProps initialize(const Ioss::PropertyManager &props, const Ioss::ParallelUtils &putils);
+    CatalystPipelineID initialize(const Ioss::PropertyManager &props,
+                                  const Ioss::ParallelUtils   &putils);
+    conduit_cpp::Node  execute(CatalystPipelineID id, int state, double time,
+                               conduit_cpp::Node &data);
+    void               finalize(CatalystPipelineID id);
+    void               addScriptProps(conduit_cpp::Node &n, const CatalystProps &p);
+    void addExecuteProps(conduit_cpp::Node &n, const CatalystProps &p, int state, double time,
+                         conduit_cpp::Node &data);
+    CatalystProps &getCatalystProps(CatalystPipelineID id);
+    std::string    getCatDataPath(const Ioss::PropertyManager &props);
+    void           reset()
+    {
+      catalystOutputIDNumber = 0;
+      catPipes.clear();
+      managerState = mInit;
+    }
+
+    std::string getCatScriptFnamePath(const CatalystProps &p)
+    {
+      return getCatScriptPath(p) + FILENAME;
+    }
+
+    std::string getCatScriptArgsPath(const CatalystProps &p) { return getCatScriptPath(p) + ARGS; }
+
+    std::string getCatScriptPath(const CatalystProps &p)
+    {
+      return CATALYST + FS + SCRIPTS + FS + std::to_string(p.catalystPipelineID) + FS;
+    }
+
+    std::string getCatStatePath() { return CATALYST + FS + STATE + FS; }
+
+    std::string getCatChannelsPath() { return CATALYST + FS + CHANNELS + FS; }
 
   private:
     CatalystManager();
@@ -84,8 +141,9 @@ namespace Iocatalyst {
 
     void incrementOutputCounts();
 
-    CatalystPipelineID catalystOutputIDNumber;
-    conduit_cpp::Node  initializeConduit;
+    CatalystPipelineID                          catalystOutputIDNumber;
+    std::map<CatalystPipelineID, CatalystProps> catPipes;
+    mState                                      managerState;
   };
 } // namespace Iocatalyst
 

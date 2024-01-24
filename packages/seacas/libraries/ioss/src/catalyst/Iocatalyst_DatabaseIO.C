@@ -76,8 +76,10 @@ namespace Iocatalyst {
     inline static const std::string CONNECTIVITYRAW    = "connectivity_raw";
     inline static const char        DASH_CHAR          = '-';
     inline static const std::string DATABASE           = "database";
+    inline static const std::string DOT                = ".";
     inline static const std::string ENTITYCOUNT        = "entity_count";
     inline static const std::string ENTITYTYPE         = "entity_type";
+    inline static const std::string EXECUTE_INVC       = "execute_invc";
     inline static const std::string FIELDS             = "fields";
     inline static const std::string FS                 = "/";
     inline static const char        FS_CHAR            = '/';
@@ -105,6 +107,7 @@ namespace Iocatalyst {
     inline static const std::string OFFSET_J           = "offset_j";
     inline static const std::string OFFSET_K           = "offset_k";
     inline static const std::string ORIGIN             = "origin";
+    inline static const std::string PARAMS_CONDUIT_BIN = "_params.conduit_bin.";
     inline static const std::string PARENTTOPOLOGYTYPE = "parent_topology_type";
     inline static const std::string PROPERTIES         = "properties";
     inline static const std::string REGION_ZERO        = "region_0";
@@ -1082,47 +1085,26 @@ namespace Iocatalyst {
       else {
         // we'll use filename as the location for the data dumps and read those.
         std::ostringstream path;
-        path << get_catalyst_dump_dir() << "execute_invc" << filename << "_params.conduit_bin."
-             << util().parallel_size() << "." << util().parallel_rank();
+        path << get_catalyst_dump_dir() << detail::EXECUTE_INVC << filename
+             << detail::PARAMS_CONDUIT_BIN << util().parallel_size() << detail::DOT
+             << util().parallel_rank();
         auto &root  = this->Impl->root();
         auto &dbase = this->Impl->databaseNode();
         conduit_node_load(conduit_cpp::c_node(&root), path.str().c_str(), "conduit_bin");
-        conduit_node_set_external_node(
-            conduit_cpp::c_node(&dbase),
-            conduit_node_fetch(conduit_cpp::c_node(&root), "catalyst/channels/dataset/data"));
+        auto dp = CatalystManager::getInstance().getCatDataPath(props);
+        conduit_node_set_external_node(conduit_cpp::c_node(&dbase),
+                                       conduit_node_fetch(conduit_cpp::c_node(&root), dp.c_str()));
       }
     }
     else {
-      // in output-mode, we're pass data on to Catalyst.
-      conduit_cpp::Node node;
-
-      // TODO: Here, we need to pass pipeline scripts to execute to the Catalyst
-      // implementation. ParaView Catalyst supports multiple scripts with args.
-      // We could support that via the property manager. There are several
-      // options:
-      //.
-      // We could support that via the property manager. There are several
-      // options:
-      //
-      // 1. the simulation can add bunch of properties that indicate which scripts
-      //    to run and we use those.
-      // 2. we could use the filename passed to the database as the
-      //    configuration file that provides the scripts to runs.
-      // 3. we could simply treat the filename passed to the database as the
-      //    pipeline script.
-      //
-      // Here, I am using the simplest option #3. I do that since that makes it
-      // easy for me to use existing tools like `io_shell` to test this database
-      node["catalyst"]["scripts"]["sample0"]["filename"].set(filename);
-      catalyst_initialize(conduit_cpp::c_node(&node));
+      catPipeID = CatalystManager::getInstance().initialize(props, this->util());
     }
   }
 
   DatabaseIO::~DatabaseIO()
   {
     if (!is_input()) {
-      conduit_cpp::Node node;
-      catalyst_finalize(conduit_cpp::c_node(&node));
+      CatalystManager::getInstance().finalize(catPipeID);
     }
   }
 
@@ -1184,20 +1166,10 @@ namespace Iocatalyst {
     else {
       // invoke catalyst.
       auto &impl = (*this->Impl.get());
-
       auto &dbaseNode = this->Impl->databaseNode();
       dbaseNode[detail::REGION + detail::FS + detail::TIME].set_float64(time);
-
-      // state is 1-based, need to offset by 1 to make it 0-based.
-      // timesteps start with 0.
       conduit_cpp::Node node;
-      node["catalyst/state/timestep"].set(state - 1);
-      node["catalyst/state/cycle"].set(state - 1);
-      node["catalyst/state/time"].set(time);
-      node["catalyst/channels/dataset/type"].set(std::string("ioss"));
-      node["catalyst/channels/dataset/data"].set_external(impl.databaseNode());
-      node["catalyst/channels/dataset/data/state_time"].set(time);
-      catalyst_execute(conduit_cpp::c_node(&node));
+      CatalystManager::getInstance().execute(catPipeID, state, time, impl.databaseNode());
     }
     return true;
   }

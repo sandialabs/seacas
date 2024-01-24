@@ -13,6 +13,7 @@
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
 #include <catalyst/Iocatalyst_DatabaseIO.h>
+#include <catalyst/Iocatalyst_CatalystManager.h>
 #include <catalyst_tests/Iocatalyst_BlockMeshSet.h>
 #include <unordered_set>
 
@@ -37,6 +38,7 @@ namespace Iocatalyst {
 
   void BlockMeshSet::writeCatalystIOSSFile(IOSSparams &iop)
   {
+    CatalystManager::getInstance().reset();
     iop.isCatalyst = true;
     writeIOSSFile(iop);
     Ioss::PropertyManager cdbProps;
