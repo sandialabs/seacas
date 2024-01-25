@@ -31,7 +31,7 @@
 #include <zoltan_cpp.h>
 #endif
 
-#define DC_USE_HOPSCOTCH
+#define DC_USE_VECTOR
 #if defined DC_USE_HOPSCOTCH
 #include <hopscotch_map.h>
 #elif defined DC_USE_ROBIN
