@@ -60,13 +60,13 @@ template int cmd_line_arg_parse(int argc, char *argv[], std::string &exoII_inp_f
                                 std::string &ascii_inp_file, std::string &nemI_out_file,
                                 Machine_Description *machine, LB_Description<int> *lb,
                                 Problem_Description *prob, Solver_Description *solver,
-                                Weight_Description<int> *weight);
+                                Weight_Description *weight);
 
 template int cmd_line_arg_parse(int argc, char *argv[], std::string &exoII_inp_file,
                                 std::string &ascii_inp_file, std::string &nemI_out_file,
                                 Machine_Description *machine, LB_Description<int64_t> *lb,
                                 Problem_Description *prob, Solver_Description *solver,
-                                Weight_Description<int64_t> *weight);
+                                Weight_Description *weight);
 
 template <typename INT>
 int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passed by main() */
@@ -77,7 +77,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
                        LB_Description<INT>     *lb,     /* Structure for load balance description */
                        Problem_Description     *prob,   /* Structure for various problem params */
                        Solver_Description      *solver, /* Structure for eigen solver params */
-                       Weight_Description<INT> *weight  /* Structure for weighting graph */
+                       Weight_Description *weight  /* Structure for weighting graph */
 )
 {
   int         opt_let;
@@ -633,17 +633,17 @@ value\n");
 template int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file,
                            std::string &nemI_out_file, Machine_Description *machine,
                            LB_Description<int> *lb, Problem_Description *problem,
-                           Solver_Description *solver, Weight_Description<int> *weight);
+                           Solver_Description *solver, Weight_Description *weight);
 template int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file,
                            std::string &nemI_out_file, Machine_Description *machine,
                            LB_Description<int64_t> *lb, Problem_Description *problem,
-                           Solver_Description *solver, Weight_Description<int64_t> *weight);
+                           Solver_Description *solver, Weight_Description *weight);
 
 template <typename INT>
 int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file,
                   std::string &nemI_out_file, Machine_Description *machine, LB_Description<INT> *lb,
                   Problem_Description *problem, Solver_Description *solver,
-                  Weight_Description<INT> *weight)
+                  Weight_Description *weight)
 {
   FILE       *inp_fd;
   std::string ctemp;
@@ -1301,18 +1301,18 @@ int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file,
 template int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
                              Machine_Description *machine, LB_Description<int> *lb,
                              Problem_Description *prob, Solver_Description *solver,
-                             Weight_Description<int> *weight);
+                             Weight_Description *weight);
 
 template int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
                              Machine_Description *machine, LB_Description<int64_t> *lb,
                              Problem_Description *prob, Solver_Description *solver,
-                             Weight_Description<int64_t> *weight);
+                             Weight_Description *weight);
 
 template <typename INT>
 int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
                     Machine_Description *machine, LB_Description<INT> *lb,
                     Problem_Description *prob, Solver_Description *solver,
-                    Weight_Description<INT> *weight)
+                    Weight_Description *weight)
 {
   /* Check that an input ExodusII file name was specified */
   if (exoII_inp_file.empty()) {

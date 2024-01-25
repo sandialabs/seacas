@@ -33,7 +33,7 @@ namespace {
 
   template <typename INT>
   int find_adjacency(Problem_Description * /*problem*/, Mesh_Description<INT> * /*mesh*/,
-                     Graph_Description<INT> * /*graph*/, Weight_Description<INT> * /*weight*/,
+                     Graph_Description<INT> * /*graph*/, Weight_Description * /*weight*/,
                      Sphere_Info * /*sphere*/);
 } // namespace
 /*****************************************************************************/
@@ -44,16 +44,16 @@ namespace {
  * This function does the work to generate the graph from the FE mesh.
  *****************************************************************************/
 template int generate_graph(Problem_Description *problem, Mesh_Description<int> *mesh,
-                            Graph_Description<int> *graph, Weight_Description<int> *weight,
+                            Graph_Description<int> *graph, Weight_Description *weight,
                             Sphere_Info *sphere);
 
 template int generate_graph(Problem_Description *problem, Mesh_Description<int64_t> *mesh,
-                            Graph_Description<int64_t> *graph, Weight_Description<int64_t> *weight,
+                            Graph_Description<int64_t> *graph, Weight_Description *weight,
                             Sphere_Info *sphere);
 
 template <typename INT>
 int generate_graph(Problem_Description *problem, Mesh_Description<INT> *mesh,
-                   Graph_Description<INT> *graph, Weight_Description<INT> *weight,
+                   Graph_Description<INT> *graph, Weight_Description *weight,
                    Sphere_Info *sphere)
 {
   double time1 = get_time();
@@ -180,7 +180,7 @@ namespace {
    *****************************************************************************/
   template <typename INT>
   int find_adjacency(Problem_Description *problem, Mesh_Description<INT> *mesh,
-                     Graph_Description<INT> *graph, Weight_Description<INT> *weight,
+                     Graph_Description<INT> *graph, Weight_Description *weight,
                      Sphere_Info *sphere)
   {
     std::vector<INT> pt_list;

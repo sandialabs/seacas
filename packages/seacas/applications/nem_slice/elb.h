@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#define ELB_VERSION "4.19"
+#define ELB_VERSION "4.20"
 #define UTIL_NAME   "nem_slice"
 #define ELB_FALSE   0
 #define ELB_TRUE    1
@@ -141,7 +141,7 @@ struct Solver_Description
 
 /* Structure used to store information about the weighting scheme, if
  * any, that is to be used. */
-template <typename INT> struct Weight_Description
+struct Weight_Description
 {
   int type{-1};   /* See weight type below for possible types */
   int ow_read{0}; /* 1 if element block settings overwrite exodus file read */
@@ -156,16 +156,16 @@ template <typename INT> struct Weight_Description
   int nvals{0};
 
   /* vectors to hold element block weights */
-  std::vector<INT> elemblk{};     /* Id of element block */
-  std::vector<INT> elemblk_wgt{}; /* Weight of that element block */
+  std::vector<int> elemblk{};     /* Id of element block */
+  std::vector<int> elemblk_wgt{}; /* Weight of that element block */
 
   /* vector to indicate if weight value has already been overwritten */
-  std::vector<INT> ow{};
+  std::vector<int> ow{};
 
   std::vector<int>   vertices{};
   std::vector<float> edges{};
 
-  Weight_Description<INT>() = default;
+  Weight_Description() = default;
 };
 
 /* Structure used to store information about the FEM mesh */
