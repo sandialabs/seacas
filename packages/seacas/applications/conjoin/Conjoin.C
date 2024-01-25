@@ -280,7 +280,7 @@ namespace {
                                std::vector<std::vector<Excn::NodeSet<INT>>> &nodesets,
                                std::vector<std::vector<Excn::SideSet<INT>>> &sidesets);
 
-  int case_compare(const std::string &s1, const std::string &s2);
+  bool case_compare(const std::string &s1, const std::string &s2);
 
   template <typename T>
   void verify_set_position_mapping(const std::string &type, size_t part_count,
@@ -295,7 +295,7 @@ namespace {
         }
         auto glob_pos = sets[p][i].position_;
         if (global_sets[glob_pos].id != sets[p][i].id ||
-            case_compare(global_sets[glob_pos].name_, sets[p][i].name_) != 0) {
+            !case_compare(global_sets[glob_pos].name_, sets[p][i].name_)) {
           problem = true;
           fmt::print(stderr,
                      "\nERROR: {0} Mismatch on part {1}:\n"
@@ -1871,7 +1871,7 @@ namespace {
       // See if any of the variable names conflict with the status variable name...
       if (status != "NONE") {
         for (size_t i = 0; i < static_cast<size_t>(vars.count(Excn::InOut::OUT_)) - 1; i++) {
-          if (case_compare(output_name_list[i], status) == 0) {
+          if (case_compare(output_name_list[i], status)) {
             // Error -- duplicate element variable names on output database.
             fmt::print(stderr,
                        "\nERROR: A {} variable already exists on the input database with the "
@@ -1913,7 +1913,7 @@ namespace {
         const std::string &comb_stat    = si.combined_mesh_status_variable();
         if (!comb_stat.empty()) {
           for (int i = 0; i < vars.count(Excn::InOut::OUT_); i++) {
-            if (case_compare(comb_stat, output_name_list[i]) == 0) {
+            if (case_compare(comb_stat, output_name_list[i])) {
               *combined_status_variable_index = i + 1;
               break;
             }
@@ -1960,7 +1960,7 @@ namespace {
     // If 'variable_list' is empty or specified 'ALL', then all
     // variables are to be output
     if (variable_list.empty() ||
-        (variable_list.size() == 1 && case_compare(variable_list[0].first, "all") == 0)) {
+        (variable_list.size() == 1 && case_compare(variable_list[0].first, "all"))) {
       std::iota(vars.index_.begin(), vars.index_.end(), 1);
       vars.outputCount = num_vars + extra;
       return;
@@ -1968,7 +1968,7 @@ namespace {
 
     // Another possibility is user specifies "NONE" for the variable
     // list so no variables will be written.  Just return 0.
-    if (variable_list.size() == 1 && case_compare(variable_list[0].first, "none") == 0) {
+    if (variable_list.size() == 1 && case_compare(variable_list[0].first, "none")) {
       vars.outputCount = extra;
       return;
     }
@@ -1997,7 +1997,7 @@ namespace {
         var_name   = elem.first;
         bool found = false;
         for (size_t j = 0; j < exo_names.size() && !found; j++) {
-          if (case_compare(exo_names[j], var_name) == 0) {
+          if (case_compare(exo_names[j], var_name)) {
             found          = true;
             vars.index_[j] = ++var_count;
           }
@@ -2637,7 +2637,7 @@ namespace {
         // Find which exodus variable matches this name
         out_position = -1;
         for (size_t j = 0; j < exo_names.size(); j++) {
-          if (case_compare(exo_names[j], var_name) == 0) {
+          if (case_compare(exo_names[j], var_name)) {
             out_position = vars.index_[j] - 1;
             break;
           }
@@ -2754,20 +2754,11 @@ namespace {
     }
   }
 
-  int case_compare(const std::string &s1, const std::string &s2)
+  bool case_compare(const std::string &s1, const std::string &s2)
   {
-    const char *c1 = s1.c_str();
-    const char *c2 = s2.c_str();
-    for (;;) {
-      if (::toupper(*c1) != ::toupper(*c2)) {
-        return ::toupper(*c1) - ::toupper(*c2);
-      }
-      if (*c1 == '\0') {
-        return 0;
-      }
-      c1++;
-      c2++;
-    }
+    return (s1.size() == s2.size()) &&
+      std::equal(s1.begin(), s1.end(), s2.begin(),
+		 [](char a, char b) { return std::tolower(a) == std::tolower(b); });
   }
 
   void add_info_record(char *info_record, int size)

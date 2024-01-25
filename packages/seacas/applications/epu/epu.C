@@ -169,8 +169,7 @@ namespace {
     names = nullptr;
   }
 
-  int case_compare(const char *s1, const char *s2);
-  int case_compare(const std::string &s1, const std::string &s2);
+  bool case_compare(const std::string &s1, const std::string &s2);
 
   template <typename INT>
   void get_id_map(int exoid, ex_entity_type type, ex_inquiry inq_type, std::vector<INT> &ids)
@@ -187,7 +186,7 @@ namespace {
       }
 
       for (int i = 0; i < map_count; i++) {
-        if (case_compare(names[i], "original_global_id_map") == 0) {
+        if (case_compare(names[i], "original_global_id_map")) {
           error = ex_get_num_map(exoid, type, i + 1, ids.data());
           if (error < 0) {
             exodus_error(__LINE__);
@@ -3018,7 +3017,7 @@ namespace {
         // If found, create an 'epu'-specific name; don't redo the check; assume ok...
         bool found = false;
         for (int i = 0; i < num_input_vars && !found; i++) {
-          if (case_compare(input_name_list[i], "processor_id") == 0) {
+          if (case_compare(input_name_list[i], "processor_id")) {
             found = true;
           }
         }
@@ -3125,7 +3124,7 @@ namespace {
     // If 'variable_list' is empty or specified 'ALL', then all
     // variables are to be output
     if (variable_list.empty() ||
-        (variable_list.size() == 1 && case_compare(variable_list[0].first, "all") == 0)) {
+        (variable_list.size() == 1 && case_compare(variable_list[0].first, "all"))) {
       for (size_t i = 0; i < vars.index_.size(); i++) {
         vars.index_[i] = i + 1;
       }
@@ -3136,7 +3135,7 @@ namespace {
     // Another possibility is user specifies "NONE" for the variable
     // list so no variables will be written.  Just return 0 or 1 based
     // on the 'add_processor_id' setting. Default var_index is ok.
-    if (variable_list.size() == 1 && case_compare(variable_list[0].first, "none") == 0) {
+    if (variable_list.size() == 1 && case_compare(variable_list[0].first, "none")) {
       vars.outputCount = extra;
       return;
     }
@@ -3165,7 +3164,7 @@ namespace {
         var_name   = elem.first;
         bool found = false;
         for (size_t j = 0; j < exo_names.size() && !found; j++) {
-          if (case_compare(exo_names[j], var_name) == 0) {
+          if (case_compare(exo_names[j], var_name)) {
             found          = true;
             vars.index_[j] = ++var_count;
           }
@@ -4583,7 +4582,7 @@ namespace {
           // Find which exodus variable matches this name
           out_position = -1;
           for (size_t j = 0; j < exo_names.size(); j++) {
-            if (case_compare(exo_names[j], var_name) == 0) {
+            if (case_compare(exo_names[j], var_name)) {
               out_position = vars.index_[j] - 1;
               break;
             }
@@ -4721,25 +4720,11 @@ namespace {
     }
   }
 
-  int case_compare(const char *s1, const char *s2)
+  bool case_compare(const std::string &s1, const std::string &s2)
   {
-    const char *c1 = s1;
-    const char *c2 = s2;
-    for (;;) {
-      if (::toupper(*c1) != ::toupper(*c2)) {
-        return ::toupper(*c1) - ::toupper(*c2);
-      }
-      if (*c1 == '\0') {
-        return 0;
-      }
-      c1++;
-      c2++;
-    }
-  }
-
-  int case_compare(const std::string &s1, const std::string &s2)
-  {
-    return case_compare(s1.c_str(), s2.c_str());
+    return (s1.size() == s2.size()) &&
+      std::equal(s1.begin(), s1.end(), s2.begin(),
+		 [](char a, char b) { return std::tolower(a) == std::tolower(b); });
   }
 
   void add_info_record(char *info_record, int size)

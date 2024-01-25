@@ -101,20 +101,11 @@ namespace {
     throw std::runtime_error(errmsg.str());
   }
 
-  int case_compare(const char *s1, const char *s2)
+  bool case_compare(const std::string &s1, const std::string &s2)
   {
-    const char *c1 = s1;
-    const char *c2 = s2;
-    for (;;) {
-      if (::toupper(*c1) != ::toupper(*c2)) {
-        return (::toupper(*c1) - ::toupper(*c2));
-      }
-      if (*c1 == '\0') {
-        return 0;
-      }
-      c1++;
-      c2++;
-    }
+    return (s1.size() == s2.size()) &&
+      std::equal(s1.begin(), s1.end(), s2.begin(),
+		 [](char a, char b) { return std::tolower(a) == std::tolower(b); });
   }
 
 #if USE_ZOLTAN
@@ -694,7 +685,7 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
       }
 
       for (int i = 0; i < map_count; i++) {
-        if (case_compare(names[i], map_name.c_str()) == 0) {
+        if (case_compare(names[i], map_name)) {
           elem_to_proc.resize(element_count);
           error = ex_get_num_map(exoid, EX_ELEM_MAP, i + 1, elem_to_proc.data());
           if (error < 0) {
