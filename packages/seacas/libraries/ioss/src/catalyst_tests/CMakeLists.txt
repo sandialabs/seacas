@@ -143,32 +143,32 @@ endfunction()
 foreach(NUM_PROCS 1 4)
 
   catalyst_test_ioshell_generated(
-    "catalyst_ioshell_10x10x10_np_${NUM_PROCS}"
+    "Iocatalyst_10x10x10_hex_MPI_${NUM_PROCS}"
     "10x10x10+times:4+variables:element,2,nodal,3"
     "ioshell_10x10x10.g" "3" "3" ${NUM_PROCS})
 
   catalyst_test_ioshell_generated(
-    "catalyst_ioshell_10x10x10_tets_np_${NUM_PROCS}"
+    "Iocatalyst_10x10x10_tets_MPI_${NUM_PROCS}"
     "10x10x10+tets:+times:2+variables:element,2,nodal,3"
     "ioshell_10x10x10_tets.g" "1" "1" ${NUM_PROCS})
 
   catalyst_test_ioshell_generated(
-    "catalyst_ioshell_10x10x10_pyramids_np_${NUM_PROCS}"
+    "Iocatalyst_10x10x10_pyramids_MPI_${NUM_PROCS}"
     "10x10x10+pyramids:+times:2+variables:element,2,nodal,3"
     "ioshell_10x10x10_pyramids.g" "1" "1" ${NUM_PROCS})
 
   catalyst_test_ioshell_generated(
-    "catalyst_ioshell_10x10x10_shell_np_${NUM_PROCS}"
+    "Iocatalyst_10x10x10_shell_MPI_${NUM_PROCS}"
     "10x10x10+shell:xX:+times:2+variables:element,2,nodal,3"
     "ioshell_10x10x10_shell.g" "1" "1" ${NUM_PROCS})
 
   catalyst_test_ioshell_generated(
-    "catalyst_ioshell_10x10x10_nodeset_np_${NUM_PROCS}"
+    "Iocatalyst_10x10x10_nodeset_MPI_${NUM_PROCS}"
     "10x10x10+nodeset:xX:+times:2+variables:element,2,nodal,3,nodeset,4"
     "ioshell_10x10x10_nodeset.g" "1" "1" ${NUM_PROCS})
 
   catalyst_test_ioshell_generated(
-    "catalyst_ioshell_10x10x10_sideset_np_${NUM_PROCS}"
+    "Iocatalyst_10x10x10_sideset_MPI_${NUM_PROCS}"
     "10x10x10+sideset:xX:+times:2+variables:element,2,nodal,3,sideset,4"
     "ioshell_10x10x10_sideset.g" "1" "1" ${NUM_PROCS})
 
@@ -236,16 +236,16 @@ endforeach()
 
 foreach(NUM_PROCS 1 4)
   catalyst_test_ioshell_exodus_file(
-    "catalyst_ioshell_cube_g_np_${NUM_PROCS}"
+    "Iocatalyst_cube_g_MPI_${NUM_PROCS}"
     "cube.g" "1" "1" ${NUM_PROCS})
   catalyst_test_ioshell_exodus_file(
-    "catalyst_ioshell_two_block_g_np_${NUM_PROCS}"
+    "Iocatalyst_two_block_g_MPI_${NUM_PROCS}"
     "two-block.g" "1" "1" ${NUM_PROCS})
   catalyst_test_ioshell_exodus_file(
-    "catalyst_ioshell_eight_block_g_np_${NUM_PROCS}"
+    "Iocatalyst_eight_block_g_MPI_${NUM_PROCS}"
     "8-block.g" "0.05" "5" ${NUM_PROCS})
   catalyst_test_ioshell_exodus_file(
-    "catalyst_ioshell_can_ex2_np_${NUM_PROCS}"
+    "Iocatalyst_can_ex2_MPI_${NUM_PROCS}"
     "can.ex2" "0.00219992" "22" ${NUM_PROCS})
 endforeach()
 
@@ -287,10 +287,10 @@ TRIBITS_ADD_ADVANCED_TEST(${test_name}
 )
 endfunction()
 
-catalyst_test_ioshell_generated_exodus_file("catalyst_ioshell_test_blob_exo"
+catalyst_test_ioshell_generated_exodus_file("Iocatalyst_test_blob_exo_MPI_1"
   "testwt-blob" "" "test-blob.exo" "0.02" "1")
 
-catalyst_test_ioshell_generated_exodus_file("catalyst_ioshell_test_seacas_exodus_exoIIC"
+catalyst_test_ioshell_generated_exodus_file("Iocatalyst_test_seacas_exodus_exoIIC_MPI_1"
   "SEACASExodus_ExoIICTests.exe" "CreateEdgeFace" "edgeFace.exo" "1" "0")
 
 endif()
@@ -345,7 +345,7 @@ TRIBITS_ADD_ADVANCED_TEST(${test_name}
 endfunction()
 
 catalyst_test_ioshell_cgns_file(
-  "catalyst_ioshell_sparc1_cgns" "sparc1.cgns" "15.992" "1")
+  "Iocatalyst_sparc1_cgns_MPI_1" "sparc1.cgns" "15.992" "1")
 
 endif()
 endif()

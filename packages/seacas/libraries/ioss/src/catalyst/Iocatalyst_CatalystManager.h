@@ -19,7 +19,7 @@ namespace Iocatalyst {
     using CatalystPipelineID = unsigned int;
 
     enum mState { mInit, mExecute, mFinalize };
-    enum pState { pExecute, pFinalize };
+    enum pState { pWaitExecute, pExecute, pFinalize };
 
     inline static const std::string ARGS     = "args";
     inline static const std::string CATALYST = "catalyst";
@@ -47,7 +47,6 @@ namespace Iocatalyst {
     inline static const std::string IOSS                       = "ioss";
     inline static const std::string SCRIPTS                    = "scripts";
     inline static const std::string STATE                      = "state";
-    inline static const std::string STATE_TIME                 = "state_time";
     inline static const std::string TIME                       = "time";
     inline static const std::string TIMESTEP                   = "timestep";
     inline static const std::string TYPE                       = "type";
@@ -80,6 +79,8 @@ namespace Iocatalyst {
         catalystInputName                = CATALYST_INPUT_DEFAULT;
         enableCatalystMultiInputPipeline = false;
         pipelineState                    = pExecute;
+        state                            = 0;
+        time                             = 0.0;
       }
 
       CatalystPipelineID catalystPipelineID;
@@ -87,6 +88,9 @@ namespace Iocatalyst {
       bool               enableCatalystMultiInputPipeline;
       std::string        catalystMultiInputPipelineName;
       std::string        catalystPythonFilename;
+      conduit_cpp::Node  data;
+      int                state;
+      double             time;
 
       std::string catalystInputName;
       std::string catalystBlockJSON;
@@ -99,14 +103,18 @@ namespace Iocatalyst {
 
     CatalystPipelineID initialize(const Ioss::PropertyManager &props,
                                   const Ioss::ParallelUtils   &putils);
-    conduit_cpp::Node  execute(CatalystPipelineID id, int state, double time,
-                               conduit_cpp::Node &data);
-    void               finalize(CatalystPipelineID id);
-    void               addScriptProps(conduit_cpp::Node &n, const CatalystProps &p);
-    void addExecuteProps(conduit_cpp::Node &n, const CatalystProps &p, int state, double time,
-                         conduit_cpp::Node &data);
+    void execute(CatalystPipelineID id, int state, double time, conduit_cpp::Node &data);
+    void finalize(CatalystPipelineID id);
+    void addScriptProps(conduit_cpp::Node &n, const CatalystProps &p);
+    void addExecuteProps(conduit_cpp::Node &n, const CatalystProps &p, int state, double time);
+    void addExecuteData(conduit_cpp::Node &n, const std::string &channelName, int state,
+                        double time, conduit_cpp::Node &data);
     CatalystProps &getCatalystProps(CatalystPipelineID id);
     std::string    getCatDataPath(const Ioss::PropertyManager &props);
+    void           setMultiInputWaitState(CatalystPipelineID id, int state, double time,
+                                          conduit_cpp::Node &data);
+    bool           canExecuteMultiInputScript(CatalystPipelineID id);
+    void           clearAllMultiInputWaitStates(CatalystPipelineID id);
     void           reset()
     {
       catalystOutputIDNumber = 0;

@@ -18,21 +18,52 @@ using namespace Iocatalyst;
 class ManagerTest : public ::testing::Test
 {
 protected:
-  Ioss::PropertyManager          props;
-  Ioss::ParallelUtils            putils;
-  CatalystManager::CatalystProps catalystProps;
-  void                           reset() { CatalystManager::getInstance().reset(); }
-  void                           initialize()
+  Ioss::PropertyManager               props;
+  Ioss::ParallelUtils                 putils;
+  CatalystManager::CatalystProps      catalystProps;
+  CatalystManager::CatalystPipelineID id;
+  conduit_cpp::Node                   n;
+  void                                reset() { CatalystManager::getInstance().reset(); }
+  void                                initialize()
   {
-    auto id       = CatalystManager::getInstance().initialize(props, putils);
+    id            = CatalystManager::getInstance().initialize(props, putils);
     catalystProps = CatalystManager::getInstance().getCatalystProps(id);
   }
-};
 
-void compareConduit(const conduit_cpp::Node &n, const conduit_cpp::Node &m)
-{
-  EXPECT_EQ(n.to_string(), m.to_string());
-}
+  void compareConduit(const conduit_cpp::Node &n, const conduit_cpp::Node &m)
+  {
+    EXPECT_EQ(n.to_string(), m.to_string());
+  }
+
+  void checkExecuteProps(const conduit_cpp::Node &n, CatalystManager::CatalystProps &p, int state,
+                         double time)
+  {
+    auto csp = CatalystManager::getInstance().getCatStatePath();
+    EXPECT_EQ(n[csp + CatalystManager::TIMESTEP].as_int(), state - 1);
+    EXPECT_EQ(n[csp + CatalystManager::CYCLE].as_int(), state - 1);
+    EXPECT_EQ(n[csp + CatalystManager::TIME].as_double(), time);
+    auto sn = std::to_string(p.catalystPipelineID);
+    EXPECT_EQ(n[csp + CatalystManager::PIPELINES + CatalystManager::FS + sn].as_string(), sn);
+  }
+
+  void checkExecuteData(const conduit_cpp::Node &n, std::string &channel_name, int state,
+                        double time, const conduit_cpp::Node &m)
+  {
+    auto ccp = CatalystManager::getInstance().getCatChannelsPath();
+    auto ip  = ccp + channel_name + CatalystManager::FS;
+    EXPECT_EQ(n[ip + CatalystManager::TYPE].as_string(), CatalystManager::IOSS);
+    auto              dp = ip + CatalystManager::FS + CatalystManager::DATA;
+    conduit_cpp::Node d;
+    d.set_node(n[dp]);
+    d.remove(CatalystManager::TIMESTEP);
+    d.remove(CatalystManager::CYCLE);
+    d.remove(CatalystManager::TIME);
+    compareConduit(d, m);
+    EXPECT_DOUBLE_EQ(n[dp + CatalystManager::FS + CatalystManager::TIME].as_double(), time);
+    EXPECT_EQ(n[dp + CatalystManager::FS + CatalystManager::CYCLE].as_int(), state - 1);
+    EXPECT_EQ(n[dp + CatalystManager::FS + CatalystManager::TIMESTEP].as_int(), state - 1);
+  }
+};
 
 TEST_F(LoggingTest, LoggingDefault)
 {
@@ -181,7 +212,6 @@ TEST_F(ManagerTest, CATALYST_MULTI_INPUT_PIPELINE_NAME)
 TEST_F(ManagerTest, InitializeConduitDefault)
 {
   reset();
-  conduit_cpp::Node n;
   compareConduit(CatalystManager::getInstance().getInitializeConduit(), n);
 }
 
@@ -191,7 +221,6 @@ TEST_F(ManagerTest, InitializeConduitCatalystFile)
   std::string catalystFileName = "/path/to/file/catalystFile.txt";
   props.add(Ioss::Property(CatalystManager::CATALYST_SCRIPT, catalystFileName));
   initialize();
-  conduit_cpp::Node n;
   CatalystManager::getInstance().addScriptProps(n, catalystProps);
   compareConduit(CatalystManager::getInstance().getInitializeConduit(), n);
 }
@@ -208,7 +237,6 @@ TEST_F(ManagerTest, InitializeConduitPhactoriJSON)
   props.add(Ioss::Property(CatalystManager::CATALYST_ENABLE_LOGGING, true));
   props.add(Ioss::Property(CatalystManager::CATALYST_DEBUG_LEVEL, 11));
   initialize();
-  conduit_cpp::Node n;
   CatalystManager::getInstance().addScriptProps(n, catalystProps);
   compareConduit(CatalystManager::getInstance().getInitializeConduit(), n);
 }
@@ -223,16 +251,15 @@ TEST_F(ManagerTest, InitializeConduitMultipleScripts)
   Ioss::PropertyManager propsOne;
   std::string           otherFile = "/path/to/other/file";
   props.add(Ioss::Property(CatalystManager::CATALYST_SCRIPT, otherFile));
-  auto id          = CatalystManager::getInstance().initialize(propsOne, putils);
-  auto catPropsOne = CatalystManager::getInstance().getCatalystProps(id);
+  auto idOne       = CatalystManager::getInstance().initialize(propsOne, putils);
+  auto catPropsOne = CatalystManager::getInstance().getCatalystProps(idOne);
 
   Ioss::PropertyManager propsTwo;
   std::string           js = "json";
   props.add(Ioss::Property(CatalystManager::CATALYST_BLOCK_PARSE_JSON_STRING, js));
-  id               = CatalystManager::getInstance().initialize(propsOne, putils);
-  auto catPropsTwo = CatalystManager::getInstance().getCatalystProps(id);
+  idOne            = CatalystManager::getInstance().initialize(propsOne, putils);
+  auto catPropsTwo = CatalystManager::getInstance().getCatalystProps(idOne);
 
-  conduit_cpp::Node n;
   CatalystManager::getInstance().addScriptProps(n, catalystProps);
   CatalystManager::getInstance().addScriptProps(n, catPropsOne);
   CatalystManager::getInstance().addScriptProps(n, catPropsTwo);
@@ -247,13 +274,13 @@ TEST_F(ManagerTest, ExecuteConduitOneScript)
   initialize();
 
   conduit_cpp::Node m;
-  m["some/data"] = 32;
-
-  auto c = CatalystManager::getInstance().execute(catalystProps.catalystPipelineID, 2, 10.2, m);
-
-  conduit_cpp::Node n;
-  CatalystManager::getInstance().addExecuteProps(n, catalystProps, 2, 10.2, m);
-  compareConduit(c, n);
+  int               state = 2;
+  double            time  = 10.4;
+  m["some/data"]          = 32;
+  CatalystManager::getInstance().addExecuteProps(n, catalystProps, state, time);
+  CatalystManager::getInstance().addExecuteData(n, catalystProps.catalystInputName, state, time, m);
+  checkExecuteProps(n, catalystProps, state, time);
+  checkExecuteData(n, catalystProps.catalystInputName, state, time, m);
 }
 
 TEST_F(ManagerTest, ExecuteConduitInputName)
@@ -266,12 +293,10 @@ TEST_F(ManagerTest, ExecuteConduitInputName)
   double            time  = 4.5;
   conduit_cpp::Node m;
   m["other/data"] = 90;
-
-  auto c = CatalystManager::getInstance().execute(catalystProps.catalystPipelineID, state, time, m);
-
-  conduit_cpp::Node n;
-  CatalystManager::getInstance().addExecuteProps(n, catalystProps, state, time, m);
-  compareConduit(c, n);
+  CatalystManager::getInstance().addExecuteProps(n, catalystProps, state, time);
+  CatalystManager::getInstance().addExecuteData(n, catalystProps.catalystInputName, state, time, m);
+  checkExecuteProps(n, catalystProps, state, time);
+  checkExecuteData(n, catalystProps.catalystInputName, state, time, m);
 }
 
 TEST_F(ManagerTest, ManagerStateDefault)
@@ -352,4 +377,171 @@ TEST_F(ManagerTest, ManagerGetCatDataPath)
   std::string name = "foo";
   props.add(Ioss::Property(CatalystManager::CATALYST_INPUT_NAME, name));
   EXPECT_EQ(CatalystManager::getInstance().getCatDataPath(props), "catalyst/channels/foo/data");
+}
+
+TEST_F(ManagerTest, ManagerMultiInputStateChange)
+{
+  reset();
+  std::string catalystMultiInputPipelineName = "multi";
+  props.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME,
+                           catalystMultiInputPipelineName));
+  initialize();
+  EXPECT_EQ(catalystProps.enableCatalystMultiInputPipeline, true);
+  EXPECT_EQ(catalystProps.catalystMultiInputPipelineName, catalystMultiInputPipelineName);
+  n["my/data"] = 12;
+  int    state = 12;
+  double time  = 55.3;
+  CatalystManager::getInstance().setMultiInputWaitState(id, state, time, n);
+  auto p = CatalystManager::getInstance().getCatalystProps(id);
+  EXPECT_EQ(p.pipelineState, CatalystManager::pWaitExecute);
+  compareConduit(p.data, n);
+  EXPECT_EQ(p.state, state);
+  EXPECT_DOUBLE_EQ(p.time, time);
+}
+
+TEST_F(ManagerTest, ManagerSetMultiInputStateError)
+{
+  reset();
+  initialize();
+  EXPECT_THROW(CatalystManager::getInstance().setMultiInputWaitState(id, 2, 7.6, n),
+               std::runtime_error);
+}
+
+TEST_F(ManagerTest, ManagerCanExecuteMultiInputScriptError)
+{
+  reset();
+  initialize();
+  EXPECT_THROW(CatalystManager::getInstance().canExecuteMultiInputScript(id), std::runtime_error);
+}
+
+TEST_F(ManagerTest, ManagerCanExecuteMultiInputScriptOneNoState)
+{
+  reset();
+  props.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, "multi"));
+  initialize();
+  EXPECT_FALSE(CatalystManager::getInstance().canExecuteMultiInputScript(id));
+}
+
+TEST_F(ManagerTest, ManagerCanExecuteMultiInputScriptOne)
+{
+  reset();
+  props.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, "multi"));
+  initialize();
+  CatalystManager::getInstance().setMultiInputWaitState(id, 3, 5.6, n);
+  EXPECT_TRUE(CatalystManager::getInstance().canExecuteMultiInputScript(id));
+}
+
+TEST_F(ManagerTest, ManagerCanExecuteMultiInputScriptFour)
+{
+  reset();
+  std::string name  = "multi";
+  int         state = 2;
+  double      time  = 8.9;
+  props.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, name));
+  initialize();
+  CatalystManager::getInstance().setMultiInputWaitState(id, state, time, n);
+
+  Ioss::PropertyManager propsOne;
+  CatalystManager::getInstance().initialize(propsOne, putils);
+  EXPECT_TRUE(CatalystManager::getInstance().canExecuteMultiInputScript(id));
+
+  Ioss::PropertyManager propsTwo;
+  propsTwo.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, name));
+  auto idTwo = CatalystManager::getInstance().initialize(propsTwo, putils);
+  EXPECT_FALSE(CatalystManager::getInstance().canExecuteMultiInputScript(id));
+  CatalystManager::getInstance().setMultiInputWaitState(idTwo, state, time, n);
+  EXPECT_TRUE(CatalystManager::getInstance().canExecuteMultiInputScript(idTwo));
+
+  Ioss::PropertyManager propsThree;
+  propsThree.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, "foo"));
+  auto idThree = CatalystManager::getInstance().initialize(propsThree, putils);
+  EXPECT_FALSE(CatalystManager::getInstance().canExecuteMultiInputScript(idThree));
+  CatalystManager::getInstance().setMultiInputWaitState(idThree, state, time, n);
+  EXPECT_TRUE(CatalystManager::getInstance().canExecuteMultiInputScript(idThree));
+  EXPECT_TRUE(CatalystManager::getInstance().canExecuteMultiInputScript(id));
+}
+
+TEST_F(ManagerTest, ManagerClearAllMultiInputWaitStatesError)
+{
+  reset();
+  initialize();
+  EXPECT_THROW(CatalystManager::getInstance().clearAllMultiInputWaitStates(id), std::runtime_error);
+}
+
+TEST_F(ManagerTest, ManagerClearAllMultiInputWaitStatesOne)
+{
+  reset();
+  std::string name  = "multi";
+  int         state = 2;
+  double      time  = 8.9;
+  props.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, name));
+  initialize();
+  n["my/value"] = 13.1;
+  CatalystManager::getInstance().setMultiInputWaitState(id, 3, 9.2, n);
+  EXPECT_TRUE(CatalystManager::getInstance().canExecuteMultiInputScript(id));
+  auto p = CatalystManager::getInstance().getCatalystProps(id);
+  compareConduit(p.data, n);
+  CatalystManager::getInstance().clearAllMultiInputWaitStates(id);
+  EXPECT_FALSE(CatalystManager::getInstance().canExecuteMultiInputScript(id));
+  p = CatalystManager::getInstance().getCatalystProps(id);
+  compareConduit(p.data, conduit_cpp::Node());
+}
+
+TEST_F(ManagerTest, ManagerClearAllMultiInputWaitStatesThree)
+{
+  reset();
+  std::string name  = "multi";
+  int         state = 2;
+  double      time  = 8.9;
+  props.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, name));
+  initialize();
+  CatalystManager::getInstance().setMultiInputWaitState(id, state, time, n);
+
+  Ioss::PropertyManager propsOne;
+  CatalystManager::getInstance().initialize(propsOne, putils);
+
+  Ioss::PropertyManager propsTwo;
+  propsTwo.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, name));
+  auto idTwo = CatalystManager::getInstance().initialize(propsTwo, putils);
+  CatalystManager::getInstance().setMultiInputWaitState(idTwo, state, time, n);
+
+  Ioss::PropertyManager propsThree;
+  propsThree.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, "foo"));
+  auto idThree = CatalystManager::getInstance().initialize(propsThree, putils);
+  CatalystManager::getInstance().setMultiInputWaitState(idThree, state, time, n);
+
+  EXPECT_TRUE(CatalystManager::getInstance().canExecuteMultiInputScript(idTwo));
+  EXPECT_TRUE(CatalystManager::getInstance().canExecuteMultiInputScript(idThree));
+
+  CatalystManager::getInstance().clearAllMultiInputWaitStates(id);
+  EXPECT_FALSE(CatalystManager::getInstance().canExecuteMultiInputScript(idTwo));
+  EXPECT_TRUE(CatalystManager::getInstance().canExecuteMultiInputScript(idThree));
+
+  CatalystManager::getInstance().clearAllMultiInputWaitStates(idThree);
+  EXPECT_FALSE(CatalystManager::getInstance().canExecuteMultiInputScript(idThree));
+}
+
+TEST_F(ManagerTest, ManagerAddExecuteDataThreeInputs)
+{
+  int               state = 6;
+  double            time  = 20.2;
+  conduit_cpp::Node m;
+  m["other/data"] = 90;
+
+  conduit_cpp::Node m1;
+  std::string       m1Channel = "m1";
+  m1["m1/data"]               = 100;
+
+  conduit_cpp::Node m2;
+  std::string       m2Channel = "m2";
+  m2["m2/data"]               = 500;
+
+  CatalystManager::getInstance().addExecuteProps(n, catalystProps, state, time);
+  CatalystManager::getInstance().addExecuteData(n, catalystProps.catalystInputName, state, time, m);
+  CatalystManager::getInstance().addExecuteData(n, m1Channel, state + 1, time + 1, m1);
+  CatalystManager::getInstance().addExecuteData(n, m2Channel, state + 2, time + 2, m2);
+  checkExecuteProps(n, catalystProps, state, time);
+  checkExecuteData(n, catalystProps.catalystInputName, state, time, m);
+  checkExecuteData(n, m1Channel, state + 1, time + 1, m1);
+  checkExecuteData(n, m2Channel, state + 2, time + 2, m2);
 }

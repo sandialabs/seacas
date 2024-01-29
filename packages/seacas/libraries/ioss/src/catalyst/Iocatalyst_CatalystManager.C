@@ -127,8 +127,8 @@ namespace Iocatalyst {
     return catPipes[id];
   }
 
-  conduit_cpp::Node CatalystManager::execute(CatalystManager::CatalystPipelineID id, int state,
-                                             double time, conduit_cpp::Node &data)
+  void CatalystManager::execute(CatalystManager::CatalystPipelineID id, int state, double time,
+                                conduit_cpp::Node &data)
   {
     if (getManagerState() == mFinalize) {
       std::ostringstream errmsg;
@@ -148,9 +148,31 @@ namespace Iocatalyst {
     }
 
     conduit_cpp::Node n;
-    addExecuteProps(n, p, state, time, data);
+    addExecuteProps(n, p, state, time);
+
+    if (p.enableCatalystMultiInputPipeline) {
+      setMultiInputWaitState(p.catalystPipelineID, state, time, data);
+      if (canExecuteMultiInputScript(p.catalystPipelineID)) {
+        for (auto p : catPipes) {
+          addExecuteData(n, p.second.catalystInputName, p.second.state, p.second.time,
+                          p.second.data);
+        }
+      }
+      else {
+        return;
+      }
+    }
+    else {
+      addExecuteData(n, p.catalystInputName, state, time, data);
+    }
+
     catalyst_execute(conduit_cpp::c_node(&n));
-    return n;
+
+    if (p.enableCatalystMultiInputPipeline) {
+      if (canExecuteMultiInputScript(p.catalystPipelineID)) {
+        clearAllMultiInputWaitStates(p.catalystPipelineID);
+      }
+    }
   }
 
   void CatalystManager::finalize(CatalystPipelineID id)
@@ -195,18 +217,77 @@ namespace Iocatalyst {
   }
 
   void CatalystManager::addExecuteProps(conduit_cpp::Node &n, const CatalystProps &p, int state,
-                                        double time, conduit_cpp::Node &data)
+                                        double time)
   {
     n[getCatStatePath() + TIMESTEP].set(state - 1);
     n[getCatStatePath() + CYCLE].set(state - 1);
     n[getCatStatePath() + TIME].set(time);
     auto scriptName                                    = std::to_string(p.catalystPipelineID);
     n[getCatStatePath() + PIPELINES + FS + scriptName] = scriptName;
-    auto ipath = getCatChannelsPath() + p.catalystInputName + FS;
+  }
+
+  void CatalystManager::addExecuteData(conduit_cpp::Node &n, const std::string &channelName,
+                                       int state, double time, conduit_cpp::Node &data)
+  {
+    auto ipath = getCatChannelsPath() + channelName + FS;
     n[ipath + TYPE].set(std::string(IOSS));
     auto dpath = ipath + FS + DATA;
     n[dpath].set_external(data);
-    n[dpath + FS + STATE_TIME].set(time);
+    n[dpath + FS + TIMESTEP].set(state - 1);
+    n[dpath + FS + CYCLE].set(state - 1);
+    n[dpath + FS + TIME].set(time);
+  }
+
+  void CatalystManager::setMultiInputWaitState(CatalystPipelineID id, int state, double time,
+                                               conduit_cpp::Node &data)
+  {
+    auto &p = CatalystManager::getInstance().getCatalystProps(id);
+    if (!p.enableCatalystMultiInputPipeline) {
+      std::ostringstream errmsg;
+      errmsg << "Catalyst pipeline is not a multi-input pipeline";
+      IOSS_ERROR(errmsg);
+    }
+    p.pipelineState = pWaitExecute;
+    p.data.set_external(data);
+    p.state = state;
+    p.time  = time;
+  }
+
+  bool CatalystManager::canExecuteMultiInputScript(CatalystPipelineID id)
+  {
+    bool  canExecute = true;
+    auto &p          = CatalystManager::getInstance().getCatalystProps(id);
+    if (!p.enableCatalystMultiInputPipeline) {
+      std::ostringstream errmsg;
+      errmsg << "Catalyst pipeline is not a multi-input pipeline";
+      IOSS_ERROR(errmsg);
+    }
+    auto name = p.catalystMultiInputPipelineName;
+    for (auto cp : catPipes) {
+      if (cp.second.enableCatalystMultiInputPipeline &&
+          cp.second.catalystMultiInputPipelineName == name) {
+        canExecute &= cp.second.pipelineState == pWaitExecute;
+      }
+    }
+    return canExecute;
+  }
+
+  void CatalystManager::clearAllMultiInputWaitStates(CatalystPipelineID id)
+  {
+    auto &p = CatalystManager::getInstance().getCatalystProps(id);
+    if (!p.enableCatalystMultiInputPipeline) {
+      std::ostringstream errmsg;
+      errmsg << "Catalyst pipeline is not a multi-input pipeline";
+      IOSS_ERROR(errmsg);
+    }
+    auto name = p.catalystMultiInputPipelineName;
+    for (auto &cp : catPipes) {
+      if (cp.second.enableCatalystMultiInputPipeline &&
+          cp.second.catalystMultiInputPipelineName == name) {
+        cp.second.pipelineState = pExecute;
+        cp.second.data.set(conduit_cpp::Node());
+      }
+    }
   }
 
   void CatalystManager::incrementOutputCounts() { catalystOutputIDNumber++; }
