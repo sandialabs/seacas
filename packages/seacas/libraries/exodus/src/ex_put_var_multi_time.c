@@ -16,7 +16,7 @@ static int exi_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex
   int status;
   int dimid, time_dim, numobjdim, dims[2];
 
-  size_t obj_id_ndx = 0;
+  int obj_id_ndx = 0;
 
   int *obj_var_truth_tab;
   char errmsg[MAX_ERR_LENGTH];
@@ -46,7 +46,7 @@ static int exi_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex
   else {
     /* Determine index of obj_id in VOBJID array */
     obj_id_ndx = exi_id_lkup(exoid, var_type, obj_id);
-    if (obj_id_ndx == 0) {
+    if (obj_id_ndx <= 0) {
       ex_get_err(NULL, NULL, &status);
 
       if (status != 0) {
