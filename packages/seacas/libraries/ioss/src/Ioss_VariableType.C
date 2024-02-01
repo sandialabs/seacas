@@ -38,8 +38,6 @@ namespace Ioss {
     }
   }
 
-  VariableType::~VariableType() = default;
-
   VariableType::VariableType(const std::string &type, int comp_count, bool delete_me)
       : name_(type), componentCount(comp_count)
   {

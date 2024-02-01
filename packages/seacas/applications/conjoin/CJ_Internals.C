@@ -567,7 +567,7 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
 
     // store element type as attribute of connectivity variable
     status = nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
-                             static_cast<int>(std::strlen(blocks[iblk].elType.c_str())) + 1,
+                             static_cast<int>(blocks[iblk].elType.size()) + 1,
                              blocks[iblk].elType.c_str());
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);

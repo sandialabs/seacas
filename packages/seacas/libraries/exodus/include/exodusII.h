@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -1813,27 +1813,31 @@ EXODUS_EXPORT int ex_get_idx(int         exoid,       /**< NetCDF/Exodus file ID
  * \defgroup ErrorReturnCodes Error return codes - #exerrval return values
  * @{
  */
-#define EX_MEMFAIL       1000  /**< memory allocation failure flag def       */
-#define EX_BADFILEMODE   1001  /**< bad file mode def                        */
-#define EX_BADFILEID     1002  /**< bad file id def                          */
-#define EX_WRONGFILETYPE 1003  /**< wrong file type for function             */
-#define EX_LOOKUPFAIL    1004  /**< id table lookup failed                   */
-#define EX_BADPARAM      1005  /**< bad parameter passed                     */
-#define EX_INTERNAL      1006  /**< internal logic error                     */
-#define EX_DUPLICATEID   1007  /**< duplicate id found                       */
-#define EX_DUPLICATEOPEN 1008  /**< duplicate open                           */
-#define EX_BADFILENAME   1009  /**< empty or null filename specified         */
-#define EX_MSG           -1000 /**< message print code - no error implied    */
-#define EX_PRTLASTMSG    -1001 /**< print last error message msg code        */
-#define EX_NOTROOTID     -1002 /**< file id is not the root id; it is a subgroup id */
-#define EX_LASTERR       -1003 /**< in ex_err, use existing err_num value */
-#define EX_NULLENTITY    -1006 /**< null entity found                        */
-#define EX_NOENTITY      -1007 /**< no entities of that type on database    */
-#define EX_NOTFOUND      -1008 /**< could not find requested variable on database */
+enum ex_error_return_code {
+  EX_MEMFAIL       = 1000,  /**< memory allocation failure flag def       */
+  EX_BADFILEMODE   = 1001,  /**< bad file mode def                        */
+  EX_BADFILEID     = 1002,  /**< bad file id def                          */
+  EX_WRONGFILETYPE = 1003,  /**< wrong file type for function             */
+  EX_LOOKUPFAIL    = 1004,  /**< id table lookup failed                   */
+  EX_BADPARAM      = 1005,  /**< bad parameter passed                     */
+  EX_INTERNAL      = 1006,  /**< internal logic error                     */
+  EX_DUPLICATEID   = 1007,  /**< duplicate id found                       */
+  EX_DUPLICATEOPEN = 1008,  /**< duplicate open                           */
+  EX_BADFILENAME   = 1009,  /**< empty or null filename specified         */
+  EX_MSG           = -1000, /**< message print code - no error implied    */
+  EX_PRTLASTMSG    = -1001, /**< print last error message msg code        */
+  EX_NOTROOTID     = -1002, /**< file id is not the root id; it is a subgroup id */
+  EX_LASTERR       = -1003, /**< in ex_err, use existing err_num value */
+  EX_NULLENTITY    = -1006, /**< null entity found                        */
+  EX_NOENTITY      = -1007, /**< no entities of that type on database    */
+  EX_NOTFOUND      = -1008, /**< could not find requested variable on database */
 
-#define EX_FATAL -1 /**< fatal error flag def                     */
-#define EX_NOERR 0  /**< no error flag def                        */
-#define EX_WARN  1  /**< warning flag def                         */
+  EX_FATAL = -1, /**< fatal error flag def                     */
+  EX_NOERR = 0,  /**< no error flag def                        */
+  EX_WARN  = 1   /**< warning flag def                         */
+};
+typedef enum ex_error_return_code ex_error_return_code;
+
 /** @} */
 
 #ifdef __cplusplus

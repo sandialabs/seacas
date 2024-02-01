@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -32,10 +32,6 @@ namespace Ioss {
   public:
     ParallelUtils() = default;
     explicit ParallelUtils(Ioss_MPI_Comm the_communicator);
-    ~ParallelUtils() = default;
-
-    // Assignment operator
-    // Copy constructor
 
     enum MinMax { DO_MAX, DO_MIN, DO_SUM };
 

@@ -643,6 +643,13 @@ namespace Iotm {
     }
   }
 
+  void DatabaseIO::update_block_omissions_from_assemblies()
+  {
+    m_textMesh->update_block_omissions_from_assemblies(get_region(),
+                                                       assemblyOmissions, assemblyInclusions,
+                                                       blockOmissions, blockInclusions);
+  }
+
   void DatabaseIO::get_elemblocks()
   {
     // Attributes of an element block are:
@@ -674,6 +681,37 @@ namespace Iotm {
       add_transient_fields(block);
 
       order++;
+    }
+
+    if (!assemblyOmissions.empty() || !assemblyInclusions.empty()) {
+      update_block_omissions_from_assemblies();
+    }
+
+    assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
+
+    // Handle all block omissions or inclusions...
+    if (!blockOmissions.empty()) {
+      for (const auto &name : blockOmissions) {
+        auto block = get_region()->get_element_block(name);
+        if (block != nullptr) {
+          block->property_add(Ioss::Property(std::string("omitted"), 1));
+        }
+      }
+    }
+
+    if (!blockInclusions.empty()) {
+      const auto &blocks = get_region()->get_element_blocks();
+      for (auto &block : blocks) {
+        block->property_add(Ioss::Property(std::string("omitted"), 1));
+      }
+
+      // Now, erase the property on any blocks in the inclusion list...
+      for (const auto &name : blockInclusions) {
+        auto block = get_region()->get_element_block(name);
+        if (block != nullptr) {
+          block->property_erase("omitted");
+        }
+      }
     }
   }
 

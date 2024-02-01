@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -116,7 +116,6 @@ namespace Ioex {
   {
   public:
     DecompositionData(const Ioss::PropertyManager &props, Ioss_MPI_Comm communicator);
-    ~DecompositionData() = default;
 
     int int_size() const { return sizeof(INT); }
 
@@ -291,7 +290,6 @@ namespace Ioex {
   {
   public:
     ElementBlockBatchReader(const DecompositionDataBase *decompDB);
-    ~ElementBlockBatchReader() = default;
 
     size_t get_connectivity_size(const std::vector<int64_t> &blocks_subset_index) const;
 

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -77,7 +77,7 @@ namespace {
     }
   }
 
-  Ioss::PropertyManager set_properties(SystemInterface &interFace)
+  Ioss::PropertyManager set_properties(const SystemInterface &interFace)
   {
     Ioss::PropertyManager properties;
     if (interFace.netcdf4_) {
@@ -243,10 +243,10 @@ namespace {
     const auto &blocks = region.get_element_blocks();
     for (const auto &block : blocks) {
       block->field_add(Ioss::Field(decomp_variable_name, region.field_int_type(), IOSS_SCALAR(),
-					     Ioss::Field::TRANSIENT));
+                                   Ioss::Field::TRANSIENT));
       if (add_chain_info) {
         block->field_add(
-			 Ioss::Field("chain", region.field_int_type(), "Real[2]", Ioss::Field::TRANSIENT));
+            Ioss::Field("chain", region.field_int_type(), "Real[2]", Ioss::Field::TRANSIENT));
       }
     }
     region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);

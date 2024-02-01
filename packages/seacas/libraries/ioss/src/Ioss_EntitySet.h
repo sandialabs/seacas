@@ -43,6 +43,5 @@ namespace Ioss {
   protected:
     EntitySet(DatabaseIO *io_database, const std::string &my_name, size_t entity_cnt);
     EntitySet(const EntitySet &) = default;
-    ~EntitySet() override        = default;
   };
 } // namespace Ioss

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -31,7 +31,7 @@
 #include <zoltan_cpp.h>
 #endif
 
-#define DC_USE_HOPSCOTCH
+#define DC_USE_VECTOR
 #if defined DC_USE_HOPSCOTCH
 #include <hopscotch_map.h>
 #elif defined DC_USE_ROBIN
@@ -144,8 +144,6 @@ namespace Ioss {
     ElementBlockBatchOffset(const ElementBlockBatchOffset &) = delete;
     ElementBlockBatchOffset(ElementBlockBatchOffset &&)      = delete;
 
-    ~ElementBlockBatchOffset() = default;
-
     size_t get_ioss_element_size(const std::vector<int64_t> &blockSubsetIndex) const;
 
     std::vector<size_t> get_ioss_offset(const std::vector<int64_t> &blockSubsetIndex,
@@ -209,7 +207,15 @@ namespace Ioss {
     bool i_own_elem(size_t global_index) const
     {
       // global_index is 1-based index into global list of elements [1..global_element_count]
+#if defined(DC_USE_VECTOR)
+      return std::binary_search(
+          elemGTL.begin(), elemGTL.end(), std::pair<INT, INT>{global_index, 0},
+          [](const std::pair<INT, INT> &lhs, const std::pair<INT, INT> &val) -> bool {
+            return lhs.first < val.first;
+          });
+#else
       return elemGTL.find(global_index) != elemGTL.end();
+#endif
     }
 
     size_t node_global_to_local(size_t global_index) const
@@ -230,8 +236,16 @@ namespace Ioss {
       // global_index is 1-based index into global list of elements [1..global_node_count]
       // return value is 1-based index into local list of elements on this
       // processor (ioss-decomposition)
+#if defined(DC_USE_VECTOR)
+      auto I = lower_bound(
+          elemGTL.begin(), elemGTL.end(), global_index,
+          [](const std::pair<INT, INT> &lhs, INT val) -> bool { return lhs.first < val; });
+      assert(I != elemGTL.end() && I->first == global_index);
+#else
       auto I = elemGTL.find(global_index);
+#endif
       assert(I != elemGTL.end());
+      assert(I->first == global_index);
       return I->second;
     }
 
@@ -871,6 +885,8 @@ namespace Ioss {
     tsl::hopscotch_pg_map<INT, INT> elemGTL; // Convert from global index to local index (1-based)
 #elif defined DC_USE_ROBIN
     tsl::robin_pg_map<INT, INT> elemGTL; // Convert from global index to local index (1-based)
+#elif defined DC_USE_VECTOR
+    std::vector<std::pair<INT, INT>> elemGTL; // Convert from global index to local index (1-based)
 #else
     // This is the original method that was used in IOSS prior to using hopscotch or robin map.
     std::map<INT, INT> elemGTL; // Convert from global index to local index (1-based)

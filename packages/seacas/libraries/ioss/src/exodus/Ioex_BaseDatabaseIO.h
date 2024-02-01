@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -79,8 +79,6 @@ namespace Ioex {
   public:
     BaseDatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
                    Ioss_MPI_Comm communicator, const Ioss::PropertyManager &props);
-    BaseDatabaseIO(const BaseDatabaseIO &from)            = delete;
-    BaseDatabaseIO &operator=(const BaseDatabaseIO &from) = delete;
 
     ~BaseDatabaseIO() override;
 
@@ -111,7 +109,6 @@ namespace Ioex {
 
     bool begin_state_nl(int state, double time) override;
     bool end_state_nl(int state, double time) override;
-    void get_step_times_nl() override = 0;
 
     int maximum_symbol_length() const override { return maximumNameLength; }
 

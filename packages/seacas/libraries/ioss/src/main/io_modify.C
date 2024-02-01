@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -763,9 +763,6 @@ namespace {
     int  size() const { return (int)m_vertices.size(); }
 
   public:
-    Graph()  = default; // Constructor
-    ~Graph() = default;
-
     void add_edge(const std::string &v, const std::string &w); // to add an edge to graph
     bool is_cyclic(); // returns true if there is a cycle in this graph
   };

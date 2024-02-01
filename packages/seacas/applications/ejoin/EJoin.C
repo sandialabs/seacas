@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -126,7 +126,7 @@ namespace {
 namespace {
   void transfer_elementblock(Ioss::Region &region, Ioss::Region &output_region,
                              bool create_assemblies, bool debug);
-  void transfer_assembly(Ioss::Region &region, Ioss::Region &output_region, bool debug);
+  void transfer_assembly(const Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_nodesets(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_sidesets(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void create_nodal_nodeset(Ioss::Region &region, Ioss::Region &output_region, bool debug);
@@ -625,7 +625,7 @@ namespace {
     }
   }
 
-  void transfer_assembly(Ioss::Region &region, Ioss::Region &output_region, bool debug)
+  void transfer_assembly(const Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
     // All assemblies on the input parts will be transferred to the output mesh
     // Possibly renamed if a name conflict

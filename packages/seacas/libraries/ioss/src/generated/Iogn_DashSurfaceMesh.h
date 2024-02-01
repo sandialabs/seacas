@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -140,8 +140,6 @@ namespace Iogn {
     {
     }
 
-    ~DashSurfaceMesh() override = default;
-
     int64_t node_count() const override;
     int64_t node_count_proc() const override;
 
@@ -195,8 +193,6 @@ namespace Iogn {
   {
   public:
     explicit ExodusMesh(const ExodusData &exodusData);
-
-    ~ExodusMesh() override = default;
 
     int64_t node_count() const override;
     int64_t node_count_proc() const override;

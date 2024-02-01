@@ -1253,26 +1253,41 @@ namespace Ioss {
     show_progress(__func__);
     // global_index is 1-based index into global list of elems
     // [1..global_elem_count]
-#if defined(DC_USE_HOPSCOTCH) || defined(DC_USE_ROBIN)
+#if defined(DC_USE_HOPSCOTCH) || defined(DC_USE_ROBIN) || defined(DC_USE_VECTOR)
     elemGTL.reserve(localElementMap.size() + m_importPreLocalElemIndex + importElementMap.size());
 #endif
     for (size_t i = 0; i < localElementMap.size(); i++) {
       size_t global_index = localElementMap[i] + m_elementOffset + 1;
       size_t local_index  = i + m_importPreLocalElemIndex + 1;
+#if defined(DC_USE_VECTOR)
+      elemGTL.emplace_back(global_index, local_index);
+#else
       elemGTL.insert({global_index, local_index});
+#endif
     }
 
     for (size_t i = 0; i < m_importPreLocalElemIndex; i++) {
       size_t global_index = importElementMap[i] + 1;
       size_t local_index  = i + 1;
+#if defined(DC_USE_VECTOR)
+      elemGTL.emplace_back(global_index, local_index);
+#else
       elemGTL.insert({global_index, local_index});
+#endif
     }
 
     for (size_t i = m_importPreLocalElemIndex; i < importElementMap.size(); i++) {
       size_t global_index = importElementMap[i] + 1;
       size_t local_index  = localElementMap.size() + i + 1;
+#if defined(DC_USE_VECTOR)
+      elemGTL.emplace_back(global_index, local_index);
+#else
       elemGTL.insert({global_index, local_index});
+#endif
     }
+#if defined(DC_USE_VECTOR)
+    Ioss::sort(elemGTL.begin(), elemGTL.end());
+#endif
     show_progress("build_global_to_local_elem_map end");
   }
 

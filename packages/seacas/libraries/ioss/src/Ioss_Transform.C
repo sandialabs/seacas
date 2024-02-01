@@ -11,9 +11,6 @@ namespace Ioss {
 
   class Field;
 
-  Transform::Transform()  = default;
-  Transform::~Transform() = default;
-
   bool Transform::execute(const Ioss::Field &field, void *data)
   {
     return internal_execute(field, data);

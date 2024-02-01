@@ -162,7 +162,7 @@ namespace {
 
   bool inputFileExists(const std::string &infile)
   {
-    std::ifstream inf(infile.c_str());
+    std::ifstream inf(infile);
     return inf.good();
   }
 

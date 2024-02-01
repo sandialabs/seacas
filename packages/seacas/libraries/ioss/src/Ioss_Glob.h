@@ -189,7 +189,7 @@ namespace Ioss::glob {
       return state_pos;
     }
 
-    size_t fail_state_;
+    size_t fail_state_{0};
 
   private:
     std::tuple<bool, size_t> ExecAux(const String<charT> &str, bool comp_end = true) const
@@ -207,7 +207,7 @@ namespace Ioss::glob {
       // the string
       if (comp_end) {
         if ((state_pos == match_state_) && (str_pos == str.length())) {
-          return {state_pos == match_state_, str_pos};
+          return {true, str_pos};
         }
 
         return {false, str_pos};
@@ -774,13 +774,6 @@ namespace Ioss::glob {
       }
 
       c_ = str_[++pos_];
-    }
-
-    inline bool IsSpecialChar(charT c)
-    {
-      bool b = c == '?' || c == '*' || c == '+' || c == '(' || c == ')' || c == '[' || c == ']' ||
-               c == '|' || c == '!' || c == '@' || c == '\\';
-      return b;
     }
 
     String<charT> str_;

@@ -332,11 +332,13 @@ void Exo_Entity::internal_load_params()
     if (name[0] != '\0') {
       name_ = name.data();
       to_lower(name_);
+      generatedName_ = false;
     }
     else {
       name_ = short_label();
       name_ += "_";
       name_ += std::to_string(id_);
+      generatedName_ = true;
     }
   }
   numVars = get_num_variables(fileId, exodus_type(), label());

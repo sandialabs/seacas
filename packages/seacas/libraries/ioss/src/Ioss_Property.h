@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -27,14 +27,13 @@ namespace Ioss {
   public:
     enum BasicType { INVALID = -1, REAL, INTEGER, POINTER, STRING, VEC_INTEGER, VEC_DOUBLE };
     enum Origin {
-      INTERNAL = -1, //<! Property is for internal use
-      IMPLICIT, //<! Property is calculated on the fly based on current state of entity containing
+      INTERNAL = -1, ///< Property is for internal use
+      IMPLICIT, ///< Property is calculated on the fly based on current state of entity containing
                 // property
-      EXTERNAL, //<! Property was created by client
-      ATTRIBUTE //<! Property created from an Exodus or Database Attribute
+      EXTERNAL, ///< Property was created by client
+      ATTRIBUTE ///< Property created from an Exodus or Database Attribute
     };
 
-    Property() = default;
     Property(std::string name, int64_t value, Origin origin = INTERNAL);
     Property(std::string name, int value, Origin origin = INTERNAL);
     Property(std::string name, double value, Origin origin = INTERNAL);
@@ -46,13 +45,6 @@ namespace Ioss {
 
     // To set implicit property
     Property(const GroupingEntity *ge, std::string name, BasicType type);
-
-    Property(const Property &from)           = default;
-    Property &operator=(const Property &rhs) = default;
-    Property(Property &&from)                = default;
-    Property &operator=(Property &&rhs)      = default;
-
-    ~Property() = default;
 
     std::string         get_string() const;
     int64_t             get_int() const;

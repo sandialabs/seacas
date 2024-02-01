@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -49,8 +49,6 @@ namespace Ioss {
     //! \param dirpath Directory Path
     //! \param my_filename base filename
     FileInfo(const std::string &dirpath, const std::string &my_filename);
-
-    ~FileInfo();
 
     //! returns the number of processors that this file exists.
     //! 0: Exists nowhere

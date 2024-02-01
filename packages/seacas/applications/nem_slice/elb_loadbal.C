@@ -104,12 +104,12 @@ namespace {
 template int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
                               Mesh_Description<int> *mesh, LB_Description<int> *lb,
                               Solver_Description *solve, Graph_Description<int> *graph,
-                              Weight_Description<int> *weight, Sphere_Info *sphere, int argc,
+                              Weight_Description *weight, Sphere_Info *sphere, int argc,
                               char *argv[]);
 template int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
                               Mesh_Description<int64_t> *mesh, LB_Description<int64_t> *lb,
                               Solver_Description *solve, Graph_Description<int64_t> *graph,
-                              Weight_Description<int64_t> *weight, Sphere_Info *sphere, int argc,
+                              Weight_Description *weight, Sphere_Info *sphere, int argc,
                               char *argv[]);
 
 /* Variables used in Chaco */
@@ -123,7 +123,7 @@ template <typename INT>
 int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
                      Mesh_Description<INT> *mesh, LB_Description<INT> *lb,
                      Solver_Description *solve, Graph_Description<INT> *graph,
-                     Weight_Description<INT> *weight, Sphere_Info *sphere, int argc, char *argv[])
+                     Weight_Description *weight, Sphere_Info *sphere, int argc, char *argv[])
 {
   const char *assignfile = nullptr;
 

@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "elb.h"      // for Weight_Description<INT>, etc
+#include "elb.h"      // for Weight_Description, etc
 #include "elb_elem.h" // for get_elem_type, E_Type, etc
 #include "elb_err.h"  // for Gen_Error, MAX_ERR_MSG
 #include "elb_exo.h"
@@ -34,11 +34,11 @@
  * This function reads the nodal or elemental values from an ExodusII file
  * which will be used by Chaco for weighting of the graph.
  *****************************************************************************/
-template int read_exo_weights(Problem_Description *prob, Weight_Description<int> *weight);
-template int read_exo_weights(Problem_Description *prob, Weight_Description<int64_t> *weight);
+template int read_exo_weights(Problem_Description *prob, Weight_Description *weight, int dummy);
+template int read_exo_weights(Problem_Description *prob, Weight_Description *weight, int64_t dummy);
 
 template <typename INT>
-int read_exo_weights(Problem_Description *prob, Weight_Description<INT> *weight)
+int read_exo_weights(Problem_Description *prob, Weight_Description *weight, INT /*dummy*/)
 {
   int exoid;
   /*---------------------------Execution Begins--------------------------------*/
@@ -276,13 +276,13 @@ int read_mesh_params(const std::string &exo_file, Problem_Description *problem,
  * This function reads in the finite element mesh.
  *****************************************************************************/
 template int read_mesh(const std::string &exo_file, Problem_Description *problem,
-                       Mesh_Description<int> *mesh, Weight_Description<int> *weight);
+                       Mesh_Description<int> *mesh, Weight_Description *weight);
 template int read_mesh(const std::string &exo_file, Problem_Description *problem,
-                       Mesh_Description<int64_t> *mesh, Weight_Description<int64_t> *weight);
+                       Mesh_Description<int64_t> *mesh, Weight_Description *weight);
 
 template <typename INT>
 int read_mesh(const std::string &exo_file, Problem_Description *problem,
-              Mesh_Description<INT> *mesh, Weight_Description<INT> *weight)
+              Mesh_Description<INT> *mesh, Weight_Description *weight)
 {
   float  version;
   float *xptr;
@@ -451,13 +451,13 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
  * This function initializes the weight structure given the current mesh.
  *****************************************************************************/
 template int init_weight_struct(Problem_Description *problem, Mesh_Description<int> *mesh,
-                                Weight_Description<int> *weight);
+                                Weight_Description *weight);
 template int init_weight_struct(Problem_Description *problem, Mesh_Description<int64_t> *mesh,
-                                Weight_Description<int64_t> *weight);
+                                Weight_Description *weight);
 
 template <typename INT>
 int init_weight_struct(Problem_Description *problem, Mesh_Description<INT> *mesh,
-                       Weight_Description<INT> *weight)
+                       Weight_Description *weight)
 {
   if (problem->type == NODAL) {
     weight->nvals = mesh->num_nodes;

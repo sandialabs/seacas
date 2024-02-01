@@ -12,7 +12,7 @@ struct Machine_Description;
 struct Problem_Description;
 struct Solver_Description;
 template <typename INT> struct LB_Description;
-template <typename INT> struct Weight_Description;
+struct Weight_Description;
 
 /* Prototype for command-line parsing function */
 template <typename INT>
@@ -30,7 +30,7 @@ int cmd_line_arg_parse(
                                           * information about the run */
     Solver_Description *solver,          /* Pointer to structure in which to place parameters
                                           * for the eigensolver */
-    Weight_Description<INT> *weight      /* Pointer to structure in which to place parameters
+    Weight_Description *weight      /* Pointer to structure in which to place parameters
                                           * for the graph weighting scheme */
 );
 
@@ -47,7 +47,7 @@ int read_cmd_file(std::string         &ascii_inp_file, /* The ASCII input file n
                                                  * information about the run */
                   Solver_Description *solver,   /* Pointer to structure in which to place parameters
                                                  * for the eigensolver */
-                  Weight_Description<INT> *weight /* Pointer to structure in which to place
+                  Weight_Description *weight /* Pointer to structure in which to place
                                                    * parameters for the eigensolver */
 );
 
@@ -63,7 +63,7 @@ int check_inp_specs(std::string         &exoII_inp_file, /* The ExodusII input F
                                                    * information about the run */
                     Solver_Description *solver, /* Pointer to structure in which to place parameters
                                                  * for the eigensolver */
-                    Weight_Description<INT> *weight /* Pointer to structure in which to place
+                    Weight_Description *weight /* Pointer to structure in which to place
                                                      * parameters for the weighting scheme */
 );
 

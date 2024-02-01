@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -196,16 +196,6 @@ namespace Ioexnl {
 
   // Returns byte size of integers stored on the database...
   int BaseDatabaseIO::int_byte_size_db() const { return 8; }
-
-  // common
-  BaseDatabaseIO::~BaseDatabaseIO()
-  {
-    try {
-      free_file_pointer();
-    }
-    catch (...) {
-    }
-  }
 
   // common
   unsigned BaseDatabaseIO::entity_field_support() const

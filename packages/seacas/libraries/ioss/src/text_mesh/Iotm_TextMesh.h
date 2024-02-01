@@ -8,6 +8,7 @@
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_EntityType.h" // for EntityType
+#include "Ioss_Region.h"
 #include <cstddef>           // for size_t
 #include <cstdint>           // for int64_t
 #include <map>               // for map, etc
@@ -34,6 +35,7 @@ namespace Iotm {
   using ElementData    = text_mesh::ElementData<int64_t, Topology>;
   using SidesetData    = text_mesh::SidesetData<int64_t, Topology>;
   using NodesetData    = text_mesh::NodesetData<int64_t>;
+  using Assemblies     = text_mesh::Assemblies<int64_t>;
   using AssemblyData   = text_mesh::AssemblyData;
   using Coordinates    = text_mesh::Coordinates<int64_t>;
   using TextMeshParser = text_mesh::TextMeshParser<int64_t, IossTopologyMapping>;
@@ -283,7 +285,13 @@ namespace Iotm {
     Ioss::EntityType         get_assembly_type(const std::string &name) const;
     std::vector<std::string> get_assembly_members(const std::string &name) const;
 
-    Ioss::EntityType assembly_type_to_entity_type(const AssemblyType type) const;
+    static Ioss::EntityType assembly_type_to_entity_type(const AssemblyType type);
+
+    void update_block_omissions_from_assemblies(Ioss::Region *region,
+                                                std::vector<std::string>& assemblyOmissions,
+                                                std::vector<std::string>& assemblyInclusions,
+                                                std::vector<std::string>& blockOmissions,
+                                                std::vector<std::string>& blockInclusions) const;
 
     unsigned spatial_dimension() const;
 

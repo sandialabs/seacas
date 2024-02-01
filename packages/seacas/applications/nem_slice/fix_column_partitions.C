@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -28,7 +28,7 @@ namespace {
     @param side_id   Side across which we want to find an adjacent element
     @param nadj      Number of elements adjacent to cur_elem (from graph description)
     @param adj       Pointer to elements adjacent to cur_elem (from graph description)
-    @param global_connect Global connectivity array
+    @param mesh      Mesh Description to get connectivity, element types, ...
     @param adj_elem  ID of adjacent element (-1 if not found)
     @param adj_side  Local ID of common side in adjacent element (0 if adj_elem not found)
   */

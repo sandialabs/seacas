@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -68,8 +68,6 @@ namespace Iotm {
   public:
     DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
                Ioss_MPI_Comm communicator, const Ioss::PropertyManager &props);
-    DatabaseIO(const DatabaseIO &from)            = delete;
-    DatabaseIO &operator=(const DatabaseIO &from) = delete;
 
     ~DatabaseIO() override;
 
@@ -102,6 +100,8 @@ namespace Iotm {
     void get_sidesets();
     void get_commsets();
     void get_assemblies();
+
+    void update_block_omissions_from_assemblies();
 
     const Ioss::Map &get_node_map() const;
     const Ioss::Map &get_element_map() const;
