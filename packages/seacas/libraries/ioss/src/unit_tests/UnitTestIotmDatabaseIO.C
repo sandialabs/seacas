@@ -22,6 +22,7 @@
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "text_mesh/Iotm_DatabaseIO.h"
+#include "text_mesh/Iotm_TextMeshTopologyMapping.h"
 #include <fmt/core.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -171,6 +172,267 @@ TEST(TextMesh, twoHexesParallel_skipBlock1)
 
   EXPECT_FALSE(include_entity(element_blocks[0]));
   EXPECT_TRUE(include_entity(element_blocks[1]));
+}
+
+TEST(TextMesh, surfaceToBlockMapping_noSplit)
+{
+  if (get_parallel_size() != 2) {
+    GTEST_SKIP();
+  }
+
+  std::string meshDesc =
+      "0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n"
+      "1,2,HEX_8,2,9,10,3,6,11,12,7,block_2\n"
+      "|sideset:name=left_surf;data=1,4";
+
+  Iotm::DatabaseIO *db_io = create_input_db_io(meshDesc);
+
+  Ioss::Region region(db_io);
+
+  EXPECT_TRUE(nullptr != db_io);
+  EXPECT_TRUE(db_io->ok());
+  EXPECT_EQ("TextMesh", db_io->get_format());
+
+  const std::vector<Ioss::ElementBlock *> &element_blocks = region.get_element_blocks();
+  EXPECT_EQ(2u, element_blocks.size());
+
+  const std::vector<Ioss::SideSet *> &sidesets = region.get_sidesets();
+  EXPECT_EQ(1u, sidesets.size());
+
+  {
+    std::string sideblockName("LEFT_SURF");
+    Ioss::SideBlock* sideblock = sidesets[0]->get_side_block(sideblockName);
+    EXPECT_TRUE(nullptr != sideblock);
+
+    std::vector<std::string> touchingBlocks;
+    db_io->compute_block_membership(sideblock, touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_1"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+}
+
+TEST(TextMesh, surfaceToBlockMapping_splitByBlock)
+{
+  if (get_parallel_size() != 1) {
+    GTEST_SKIP();
+  }
+
+  std::string meshDesc =
+      "0,1,TRI_3_2D,3,1,4,block_1\n"
+      "0,2,TRI_3_2D,1,2,4,block_1\n"
+      "0,3,TRI_3_2D,2,5,4,block_1\n"
+      "0,4,TRI_3_2D,5,7,4,block_2\n"
+      "0,5,TRI_3_2D,7,6,4,block_2\n"
+      "0,6,TRI_3_2D,6,3,4,block_2\n"
+      "|coordinates: 0,0,0.1,0,0,0.1,0.05,0.1,0.1,0.1,0,0.2,0.1,0.2"
+      "|dimension:2"
+      "|sideset:name=skinned_surf; skin=all; split=block"
+      "|sideset:name=shared_surf; data=1,1,6,1; split=block"
+      "|sideset:name=owned_surf; data=5,1; split=block";
+
+  Iotm::DatabaseIO *db_io = create_input_db_io(meshDesc);
+
+  Ioss::Region region(db_io);
+
+  EXPECT_TRUE(nullptr != db_io);
+  EXPECT_TRUE(db_io->ok());
+  EXPECT_EQ("TextMesh", db_io->get_format());
+
+  const std::vector<Ioss::ElementBlock *> &element_blocks = region.get_element_blocks();
+  EXPECT_EQ(2u, element_blocks.size());
+
+  const std::vector<Ioss::SideSet *> &sidesets = region.get_sidesets();
+  EXPECT_EQ(3u, sidesets.size());
+
+  Iotm::IossTopologyMapping topologyMapping;
+  topologyMapping.initialize_topology_map();
+
+  auto get_topology_name = [&topologyMapping](const std::string& textMeshTopologyName)
+  {
+    return topologyMapping.topology(textMeshTopologyName).name();
+  };
+
+  Ioss::SideSet* skinned_surf = region.get_sideset("SKINNED_SURF");
+  EXPECT_TRUE(nullptr != skinned_surf);
+  {
+    std::vector<std::string> touchingBlocks;
+    skinned_surf->block_membership(touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_1", "BLOCK_2"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+  {
+    std::string sideblockName("SKINNED_SURF_BLOCK_1_" + get_topology_name("LINE_2"));
+    sideblockName = Ioss::Utils::uppercase(sideblockName);
+
+    Ioss::SideBlock* sideblock = skinned_surf->get_side_block(sideblockName);
+    EXPECT_TRUE(nullptr != sideblock);
+
+    std::vector<std::string> touchingBlocks;
+    db_io->compute_block_membership(sideblock, touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_1"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+  {
+    std::string sideblockName("SKINNED_SURF_BLOCK_2_" + get_topology_name("LINE_2"));
+    sideblockName = Ioss::Utils::uppercase(sideblockName);
+
+    Ioss::SideBlock* sideblock = skinned_surf->get_side_block(sideblockName);
+    EXPECT_TRUE(nullptr != sideblock);
+
+    std::vector<std::string> touchingBlocks;
+    db_io->compute_block_membership(sideblock, touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_2"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+
+  Ioss::SideSet* shared_surf = region.get_sideset("SHARED_SURF");
+  EXPECT_TRUE(nullptr != shared_surf);
+  {
+    std::vector<std::string> touchingBlocks;
+    shared_surf->block_membership(touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_1", "BLOCK_2"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+  {
+    std::string sideblockName("SHARED_SURF_BLOCK_1_" + get_topology_name("LINE_2"));
+    sideblockName = Ioss::Utils::uppercase(sideblockName);
+
+    Ioss::SideBlock* sideblock = shared_surf->get_side_block(sideblockName);
+    EXPECT_TRUE(nullptr != sideblock);
+
+    std::vector<std::string> touchingBlocks;
+    db_io->compute_block_membership(sideblock, touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_1"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+  {
+    std::string sideblockName("SHARED_SURF_BLOCK_2_" + get_topology_name("LINE_2"));
+    sideblockName = Ioss::Utils::uppercase(sideblockName);
+
+    Ioss::SideBlock* sideblock = shared_surf->get_side_block(sideblockName);
+    EXPECT_TRUE(nullptr != sideblock);
+
+    std::vector<std::string> touchingBlocks;
+    db_io->compute_block_membership(sideblock, touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_2"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+
+  Ioss::SideSet* owned_surf = region.get_sideset("OWNED_SURF");
+  EXPECT_TRUE(nullptr != owned_surf);
+  {
+    std::vector<std::string> touchingBlocks;
+    owned_surf->block_membership(touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_2"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+  {
+    std::string sideblockName("OWNED_SURF_BLOCK_2_" + get_topology_name("LINE_2"));
+    sideblockName = Ioss::Utils::uppercase(sideblockName);
+
+    Ioss::SideBlock* sideblock = owned_surf->get_side_block(sideblockName);
+    EXPECT_TRUE(nullptr != sideblock);
+
+    std::vector<std::string> touchingBlocks;
+    db_io->compute_block_membership(sideblock, touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_2"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+}
+
+TEST(TextMesh, surfaceToBlockMapping_splitByTopology)
+{
+  if (get_parallel_size() != 1) {
+    GTEST_SKIP();
+  }
+
+  std::string meshDesc =
+      "0,1,PYRAMID_5,1,2,3,4,5,block_1\n"
+      "0,2,TET_4,2,3,5,6,block_2"
+      "|sideset:name=surface_1; skin=all; split=topology";
+
+  Iotm::DatabaseIO *db_io = create_input_db_io(meshDesc);
+
+  Ioss::Region region(db_io);
+
+  EXPECT_TRUE(nullptr != db_io);
+  EXPECT_TRUE(db_io->ok());
+  EXPECT_EQ("TextMesh", db_io->get_format());
+
+  const std::vector<Ioss::ElementBlock *> &element_blocks = region.get_element_blocks();
+  EXPECT_EQ(2u, element_blocks.size());
+
+  const std::vector<Ioss::SideSet *> &sidesets = region.get_sidesets();
+  EXPECT_EQ(1u, sidesets.size());
+
+  Iotm::IossTopologyMapping topologyMapping;
+  topologyMapping.initialize_topology_map();
+
+  auto get_topology_name = [&topologyMapping](const std::string& textMeshTopologyName)
+  {
+    return topologyMapping.topology(textMeshTopologyName).name();
+  };
+
+  Ioss::SideSet* surf_1 = region.get_sideset("SURFACE_1");
+  EXPECT_TRUE(nullptr != surf_1);
+  {
+    std::vector<std::string> touchingBlocks;
+    surf_1->block_membership(touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_1", "BLOCK_2"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+  {
+    std::string sideblockName("SURFACE_" + get_topology_name("PYRAMID_5") + "_" +
+                              get_topology_name("QUAD_4") + "_1");
+    sideblockName = Ioss::Utils::uppercase(sideblockName);
+
+    Ioss::SideBlock* sideblock = surf_1->get_side_block(sideblockName);
+    EXPECT_TRUE(nullptr != sideblock);
+
+    std::vector<std::string> touchingBlocks;
+    db_io->compute_block_membership(sideblock, touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_1"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+  {
+    std::string sideblockName("SURFACE_" + get_topology_name("PYRAMID_5") + "_" +
+                              get_topology_name("TRI_3") + "_1");
+    sideblockName = Ioss::Utils::uppercase(sideblockName);
+
+    Ioss::SideBlock* sideblock = surf_1->get_side_block(sideblockName);
+    EXPECT_TRUE(nullptr != sideblock);
+
+    std::vector<std::string> touchingBlocks;
+    db_io->compute_block_membership(sideblock, touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_1"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
+  {
+    std::string sideblockName("SURFACE_" + get_topology_name("TET_4") + "_" +
+                              get_topology_name("TRI_3") + "_1");
+    sideblockName = Ioss::Utils::uppercase(sideblockName);
+
+    Ioss::SideBlock* sideblock = surf_1->get_side_block(sideblockName);
+    EXPECT_TRUE(nullptr != sideblock);
+
+    std::vector<std::string> touchingBlocks;
+    db_io->compute_block_membership(sideblock, touchingBlocks);
+
+    std::vector<std::string> goldTouchingBlocks{"BLOCK_2"};
+    EXPECT_EQ(goldTouchingBlocks, touchingBlocks);
+  }
 }
 
 }
