@@ -856,4 +856,11 @@ namespace Iotm {
       entity->field_add(Ioss::Field(var_name, Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT));
     }
   }
+
+  void DatabaseIO::compute_block_membership_nl(Ioss::SideBlock *efblock,
+                                               std::vector<std::string> &block_membership) const
+  {
+    m_textMesh->compute_block_membership(efblock->owner()->name(), efblock->name(), block_membership);
+  }
+
 } // namespace Iotm

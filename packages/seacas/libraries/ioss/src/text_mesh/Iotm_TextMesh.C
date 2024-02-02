@@ -15,6 +15,7 @@
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_EntityType.h"
+#include "Ioss_Utils.h"
 
 #define ThrowRequireMsg(expr, message)                                                             \
   do {                                                                                             \
@@ -153,7 +154,7 @@ private:
 
   int64_t TextMesh::nodeset_count() const { return m_data.nodesets.get_group_data().size(); }
 
-  int64_t TextMesh::nodeset_node_count(int64_t id) const
+  int64_t TextMesh::nodeset_node_count(EntityId id) const
   {
     int64_t count = 0;
 
@@ -164,15 +165,15 @@ private:
     return count;
   }
 
-  int64_t TextMesh::nodeset_node_count_proc(int64_t id) const
+  int64_t TextMesh::nodeset_node_count_proc(EntityId id) const
   {
     int64_t count = 0;
 
-    const NodesetData       *nodeset = m_data.nodesets.get_group_data(id);
-    const std::set<int64_t> &myNodes = m_data.nodes_on_proc(m_myProcessor);
+    const NodesetData        *nodeset = m_data.nodesets.get_group_data(id);
+    const std::set<EntityId> &myNodes = m_data.nodes_on_proc(m_myProcessor);
 
     if (nullptr != nodeset) {
-      for (int64_t nodeId : nodeset->data) {
+      for (EntityId nodeId : nodeset->data) {
         if (myNodes.count(nodeId) > 0) {
           count++;
         }
@@ -183,7 +184,7 @@ private:
 
   int64_t TextMesh::sideset_count() const { return m_data.sidesets.get_group_data().size(); }
 
-  int64_t TextMesh::sideset_side_count(int64_t id) const
+  int64_t TextMesh::sideset_side_count(EntityId id) const
   {
     int64_t count = 0;
 
@@ -194,15 +195,15 @@ private:
     return count;
   }
 
-  int64_t TextMesh::sideset_side_count_proc(int64_t id) const
+  int64_t TextMesh::sideset_side_count_proc(EntityId id) const
   {
     int64_t count = 0;
 
     const SidesetData *sideset = m_data.sidesets.get_group_data(id);
     int                myProc  = m_myProcessor;
     if (nullptr != sideset) {
-      for (const std::pair<int64_t, int> &elemSidePair : sideset->data) {
-        int64_t elemId = elemSidePair.first;
+      for (const std::pair<EntityId, int> &elemSidePair : sideset->data) {
+        EntityId elemId = elemSidePair.first;
         auto iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
         if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
           count++;
@@ -225,7 +226,7 @@ private:
     return count;
   }
 
-  int64_t TextMesh::element_count(int64_t id) const
+  int64_t TextMesh::element_count(EntityId id) const
   {
     int64_t count = 0;
     for (const auto &elementData : m_data.elementDataVec) {
@@ -237,7 +238,7 @@ private:
     return count;
   }
 
-  int64_t TextMesh::element_count_proc(int64_t id) const
+  int64_t TextMesh::element_count_proc(EntityId id) const
   {
     int64_t count  = 0;
     int     myProc = m_myProcessor;
@@ -250,7 +251,7 @@ private:
     return count;
   }
 
-  Topology TextMesh::get_topology_for_part(int64_t id) const
+  Topology TextMesh::get_topology_for_part(EntityId id) const
   {
     unsigned    partId   = id;
     std::string partName = m_data.partIds.get(partId);
@@ -263,7 +264,7 @@ private:
     return topo;
   }
 
-  std::pair<std::string, int> TextMesh::topology_type(int64_t id) const
+  std::pair<std::string, int> TextMesh::topology_type(EntityId id) const
   {
     Topology topo = get_topology_for_part(id);
     return std::make_pair(topo.name(), topo.num_nodes());
@@ -342,7 +343,7 @@ private:
     }
 
   private:
-    void add_comm_map_pair(int64_t id, int proc)
+    void add_comm_map_pair(EntityId id, int proc)
     {
       m_nodeMap[m_fillIndex]      = id;
       m_processorMap[m_fillIndex] = proc;
@@ -350,7 +351,7 @@ private:
       m_fillIndex++;
     }
 
-    void fill_map_for_node(int64_t id, const TextMeshData &data)
+    void fill_map_for_node(EntityId id, const TextMeshData &data)
     {
       const std::set<int> &procs = data.procs_for_node(id);
 
@@ -375,17 +376,17 @@ private:
     commMap.fill_map_from_data(m_data);
   }
 
-  void TextMesh::element_map(int64_t block_number, Ioss::Int64Vector &map) const
+  void TextMesh::element_map(EntityId block_number, Ioss::Int64Vector &map) const
   {
     raw_element_map(block_number, map);
   }
 
-  void TextMesh::element_map(int64_t block_number, Ioss::IntVector &map) const
+  void TextMesh::element_map(EntityId block_number, Ioss::IntVector &map) const
   {
     raw_element_map(block_number, map);
   }
 
-  template <typename INT> void TextMesh::raw_element_map(int64_t id, std::vector<INT> &map) const
+  template <typename INT> void TextMesh::raw_element_map(EntityId id, std::vector<INT> &map) const
   {
     auto iter = m_blockPartition.find(id);
     ThrowRequireMsg(iter != m_blockPartition.end(),
@@ -497,7 +498,7 @@ private:
     }
   }
 
-  void TextMesh::nodeset_nodes(int64_t id, Ioss::Int64Vector &nodes) const
+  void TextMesh::nodeset_nodes(EntityId id, Ioss::Int64Vector &nodes) const
   {
     const NodesetData *nodeset = m_data.nodesets.get_group_data(id);
     if (nullptr == nodeset)
@@ -505,17 +506,17 @@ private:
 
     nodes.resize(nodeset_node_count_proc(id));
 
-    int64_t                  count   = 0;
-    const std::set<int64_t> &myNodes = m_data.nodes_on_proc(m_myProcessor);
+    int64_t                   count   = 0;
+    const std::set<EntityId> &myNodes = m_data.nodes_on_proc(m_myProcessor);
 
-    for (int64_t nodeId : nodeset->data) {
+    for (EntityId nodeId : nodeset->data) {
       if (myNodes.count(nodeId) > 0) {
         nodes[count++] = nodeId;
       }
     }
   }
 
-  void TextMesh::sideset_elem_sides(int64_t id, Ioss::Int64Vector &elemSides) const
+  void TextMesh::sideset_elem_sides(EntityId id, Ioss::Int64Vector &elemSides) const
   {
     const SidesetData *sideset = m_data.sidesets.get_group_data(id);
     if (nullptr == sideset)
@@ -526,10 +527,10 @@ private:
     int64_t count  = 0;
     int     myProc = m_myProcessor;
 
-    for (const std::pair<int64_t, int> &elemSidePair : sideset->data) {
-      int64_t elemId = elemSidePair.first;
-      int     side   = elemSidePair.second;
-      auto    iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
+    for (const std::pair<EntityId, int> &elemSidePair : sideset->data) {
+      EntityId elemId = elemSidePair.first;
+      int      side   = elemSidePair.second;
+      auto     iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
       if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
         elemSides[count++] = elemId;
         elemSides[count++] = side;
@@ -543,9 +544,9 @@ private:
 
     int myProc = m_myProcessor;
 
-    for (const std::pair<int64_t, int> &elemSidePair : sideset->data) {
-      int64_t elemId = elemSidePair.first;
-      auto    iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
+    for (const std::pair<EntityId, int> &elemSidePair : sideset->data) {
+      EntityId elemId = elemSidePair.first;
+      auto     iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
       if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
         touchedBlocks.insert(iter->partName);
       }
@@ -554,7 +555,7 @@ private:
     return touchedBlocks;
   }
 
-  std::vector<std::string> TextMesh::sideset_touching_blocks(int64_t setId) const
+  std::vector<std::string> TextMesh::sideset_touching_blocks(EntityId setId) const
   {
     std::vector<std::string> touchedBlocks;
 
@@ -570,7 +571,7 @@ private:
     return touchedBlocks;
   }
 
-  void TextMesh::connectivity(int64_t id, Ioss::Int64Vector &connect) const
+  void TextMesh::connectivity(EntityId id, Ioss::Int64Vector &connect) const
   {
     Topology topo = get_topology_for_part(id);
 
@@ -580,7 +581,7 @@ private:
     raw_connectivity(id, connect.data());
   }
 
-  void TextMesh::connectivity(int64_t id, Ioss::IntVector &connect) const
+  void TextMesh::connectivity(EntityId id, Ioss::IntVector &connect) const
   {
     Topology topo = get_topology_for_part(id);
 
@@ -590,11 +591,11 @@ private:
     raw_connectivity(id, connect.data());
   }
 
-  void TextMesh::connectivity(int64_t id, int64_t *connect) const { raw_connectivity(id, connect); }
+  void TextMesh::connectivity(EntityId id, int64_t *connect) const { raw_connectivity(id, connect); }
 
-  void TextMesh::connectivity(int64_t id, int *connect) const { raw_connectivity(id, connect); }
+  void TextMesh::connectivity(EntityId id, int *connect) const { raw_connectivity(id, connect); }
 
-  template <typename INT> void TextMesh::raw_connectivity(int64_t id, INT *connect) const
+  template <typename INT> void TextMesh::raw_connectivity(EntityId id, INT *connect) const
   {
     unsigned offset    = 0;
     auto     blockIter = m_blockPartition.find(id);
@@ -648,21 +649,21 @@ private:
     return m_data.partIds.get_part_names_sorted_by_id();
   }
 
-  int64_t TextMesh::get_part_id(const std::string &name) const { return m_data.partIds.get(name); }
+  EntityId TextMesh::get_part_id(const std::string &name) const { return m_data.partIds.get(name); }
 
   std::vector<std::string> TextMesh::get_nodeset_names() const
   {
     return m_data.nodesets.get_part_names();
   }
 
-  std::string TextMesh::get_nodeset_name(int64_t id) const
+  std::string TextMesh::get_nodeset_name(EntityId id) const
   {
     const NodesetData *nodeset = m_data.nodesets.get_group_data(id);
     ThrowRequireMsg(nullptr != nodeset, "Could not find nodeset with id" << id);
     return nodeset->name;
   }
 
-  int64_t TextMesh::get_nodeset_id(const std::string &name) const
+  EntityId TextMesh::get_nodeset_id(const std::string &name) const
   {
     const NodesetData *nodeset = m_data.nodesets.get_group_data(name);
     ThrowRequireMsg(nullptr != nodeset, "Could not find nodeset with name" << name);
@@ -674,14 +675,14 @@ private:
     return m_data.sidesets.get_part_names();
   }
 
-  std::string TextMesh::get_sideset_name(int64_t id) const
+  std::string TextMesh::get_sideset_name(EntityId id) const
   {
     const SidesetData *sideset = m_data.sidesets.get_group_data(id);
     ThrowRequireMsg(nullptr != sideset, "Could not find sideset with id" << id);
     return sideset->name;
   }
 
-  int64_t TextMesh::get_sideset_id(const std::string &name) const
+  EntityId TextMesh::get_sideset_id(const std::string &name) const
   {
     const SidesetData *sideset = m_data.sidesets.get_group_data(name);
     ThrowRequireMsg(nullptr != sideset, "Could not find sideset with name" << name);
@@ -693,14 +694,14 @@ private:
     return m_data.assemblies.get_part_names();
   }
 
-  std::string TextMesh::get_assembly_name(int64_t id) const
+  std::string TextMesh::get_assembly_name(EntityId id) const
   {
     const AssemblyData *assembly = m_data.assemblies.get_group_data(id);
     ThrowRequireMsg(nullptr != assembly, "Could not find assembly with id" << id);
     return assembly->name;
   }
 
-  int64_t TextMesh::get_assembly_id(const std::string &name) const
+  EntityId TextMesh::get_assembly_id(const std::string &name) const
   {
     const AssemblyData *assembly = m_data.assemblies.get_group_data(name);
     ThrowRequireMsg(nullptr != assembly, "Could not find assembly with name" << name);
@@ -744,10 +745,10 @@ private:
 
   int64_t TextMesh::assembly_count() const { return m_data.assemblies.get_group_data().size(); }
 
-  std::set<int64_t> TextMesh::get_local_element_ids_for_block(int64_t id) const
+  std::set<EntityId> TextMesh::get_local_element_ids_for_block(EntityId id) const
   {
-    size_t            count = element_count_proc(id);
-    std::set<int64_t> elemIds;
+    size_t             count = element_count_proc(id);
+    std::set<EntityId> elemIds;
 
     int myProc = m_myProcessor;
     for (const auto &elementData : m_data.elementDataVec) {
@@ -777,9 +778,9 @@ private:
     }
   }
 
-  std::vector<int64_t> TextMesh::get_part_ids(const std::vector<std::string> &partNames)
+  std::vector<EntityId> TextMesh::get_part_ids(const std::vector<std::string> &partNames)
   {
-    std::vector<int64_t> partIds;
+    std::vector<EntityId> partIds;
 
     size_t numParts = partNames.size();
     partIds.resize(numParts);
@@ -791,7 +792,7 @@ private:
     return partIds;
   }
 
-  std::vector<size_t> TextMesh::get_part_offsets(const std::vector<int64_t> &partIds)
+  std::vector<size_t> TextMesh::get_part_offsets(const std::vector<EntityId> &partIds)
   {
     std::vector<size_t> offsets;
 
@@ -812,14 +813,14 @@ private:
   void TextMesh::build_block_partition_map()
   {
     std::vector<std::string> partNames = get_part_names();
-    std::vector<int64_t>     partIds   = get_part_ids(partNames);
+    std::vector<EntityId>    partIds   = get_part_ids(partNames);
     std::vector<size_t>      offsets   = get_part_offsets(partIds);
 
     size_t numParts = partNames.size();
 
     for (size_t i = 0; i < numParts; ++i) {
       const std::string &name = partNames[i];
-      int64_t            id   = partIds[i];
+      EntityId           id   = partIds[i];
 
       BlockPartition partition(offsets[i], name, get_local_element_ids_for_block(id));
       m_blockPartition[id] = partition;
@@ -829,7 +830,7 @@ private:
   void TextMesh::build_element_connectivity_map()
   {
     int                  myProc = m_myProcessor;
-    std::vector<int64_t> nodeIds;
+    std::vector<EntityId> nodeIds;
 
     for (const auto &elementData : m_data.elementDataVec) {
       if (elementData.proc == myProc) {
@@ -843,7 +844,7 @@ private:
     }
   }
 
-  int64_t TextMesh::sideblock_side_count(int64_t id, const std::string &sideBlockName) const
+  int64_t TextMesh::sideblock_side_count(EntityId id, const std::string &sideBlockName) const
   {
     int64_t count = 0;
 
@@ -855,7 +856,7 @@ private:
     return count;
   }
 
-  int64_t TextMesh::sideblock_side_count_proc(int64_t id, const std::string &sideBlockName) const
+  int64_t TextMesh::sideblock_side_count_proc(EntityId id, const std::string &sideBlockName) const
   {
     int64_t count = 0;
 
@@ -867,7 +868,7 @@ private:
     return count;
   }
 
-  void TextMesh::sideblock_elem_sides(int64_t id, const std::string &sideBlockName,
+  void TextMesh::sideblock_elem_sides(EntityId id, const std::string &sideBlockName,
                                       Ioss::Int64Vector &elemSides) const
   {
     const SidesetData *sideset = m_data.sidesets.get_group_data(id);
@@ -883,7 +884,7 @@ private:
 
     for (size_t sideIndex : localSideIndex) {
       const SidesetData::DataType &elemSidePair = sideset->data[sideIndex];
-      int64_t                      elemId       = elemSidePair.first;
+      EntityId                     elemId       = elemSidePair.first;
       int                          side         = elemSidePair.second;
 
       elemSides[count++] = elemId;
@@ -955,6 +956,63 @@ private:
       Ioss::Utils::insert_sort_and_unique(exclusions, blockOmissions);
       Ioss::Utils::insert_sort_and_unique(inclusions, blockInclusions);
     }
+  }
+
+  void TextMesh::compute_block_membership_impl(const SidesetData& sidesetData,
+                                               const SideBlockInfo& sideBlock,
+                                               std::vector<std::string>& sideBlockTouchingBlockParts) const
+  {
+    std::vector<int> blockIndex(m_data.partIds.size(), 0);
+
+    std::vector<std::string> partNames = m_data.partIds.get_part_names_sorted_by_id();
+    std::sort(partNames.begin(), partNames.end());
+
+    if (blockIndex.size() == 1) {
+      blockIndex[0] = 1;
+    } else {
+      for (size_t sideIndex : sideBlock.sideIndex) {
+        EntityId elemId = sidesetData.data[sideIndex].first;
+        auto elemIter = text_mesh::bound_search(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId, ElementDataLess());
+        ThrowRequireMsg(elemIter != m_data.elementDataVec.end(),
+                        "Could not find reference element " << elemId << " in sideset: " << sidesetData.name);
+
+        const std::string& partName = elemIter->partName;
+
+        auto partNameIter = text_mesh::bound_search(partNames.begin(), partNames.end(), partName);
+        ThrowRequireMsg(partNameIter != partNames.end(),
+                        "Could not find part: " << partName << " referenced by element: " << elemId << " in list of registered parts");
+
+        unsigned index = std::distance(partNames.begin(), partNameIter);
+        ThrowRequireMsg(index < m_data.partIds.size(), "Fatal error in computing iterator distance");
+
+        blockIndex[index] = 1;
+      }
+    }
+
+    for(unsigned i=0; i<blockIndex.size(); i++) {
+      if(blockIndex[i] == 1) {
+        sideBlockTouchingBlockParts.push_back(partNames[i]);
+      }
+    }
+  }
+
+  void TextMesh::compute_block_membership(const std::string& sideSetName,
+                                          const std::string& sideBlockName,
+                                          std::vector<std::string> &block_membership) const
+  {
+    const SidesetData *sidesetData = m_data.sidesets.get_group_data(sideSetName);
+    ThrowRequireMsg(nullptr != sidesetData, "Could not find sideset with name: " << sideSetName);
+
+    SideBlockInfo sideBlock = sidesetData->get_side_block_info(sideBlockName);
+    block_membership.clear();
+
+    if(!sideBlock.touchingBlock.empty()) {
+      block_membership.push_back(sideBlock.touchingBlock);
+    } else {
+      compute_block_membership_impl(*sidesetData, sideBlock, block_membership);
+    }
+
+    std::sort(block_membership.begin(), block_membership.end());
   }
 
 } // namespace Iotm
