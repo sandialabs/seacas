@@ -27,7 +27,7 @@ jobs:
         cgns: [ 4.4.0 ]
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -38,7 +38,7 @@ jobs:
         ###
       - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         id: cache-TPL-mpi
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
           key: TPL-v1-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
@@ -306,7 +306,7 @@ jobs:
           }
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -314,7 +314,7 @@ jobs:
 
       - name: Fetch TPL Cache
         id: cache-TPL
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/environments/${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
           key: TPL-v1-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}

@@ -38,7 +38,7 @@ jobs:
         remove-android: 'true'
         remove-haskell: 'true'
         remove-codeql:  'true'
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: setup repo
       run: |
         wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
@@ -64,7 +64,7 @@ jobs:
       ###
     - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
       id: cache-TPL
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
         key: TPL-v2intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
@@ -100,7 +100,7 @@ jobs:
           remove-android: 'true'
           remove-haskell: 'true'
           remove-codeql:  'true'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup repo
         run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
@@ -123,7 +123,7 @@ jobs:
 
       - name: Fetch TPL Cache
         id: cache-TPL
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
           key: TPL-v2intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
