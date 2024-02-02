@@ -336,7 +336,6 @@ table.directory {
 .navpath li.navelem a {
 	height: 32px;
 	display: block;
-	text-decoration: none;
 	outline: none;
 	color: #FFF;
 	font-family: 'Lucida Grande', Geneva, Helvetica, Arial, sans-serif;
