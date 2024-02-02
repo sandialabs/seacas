@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -28,77 +28,79 @@
 
 namespace Iotm {
 
-class AssemblyTreeFilter
-{
-public:
-  AssemblyTreeFilter()                           = delete;
-  AssemblyTreeFilter(const AssemblyTreeFilter &) = delete;
-
-  AssemblyTreeFilter(Ioss::Region *region, const Ioss::EntityType filterType, const Assemblies &assemblies)
-      : m_region(region),
-        m_type(filterType),
-        m_assemblies(assemblies)
+  class AssemblyTreeFilter
   {
-    for (const std::string& assemblyName : m_assemblies.get_part_names()) {
-      m_visitedAssemblies[assemblyName] = false;
+  public:
+    AssemblyTreeFilter()                           = delete;
+    AssemblyTreeFilter(const AssemblyTreeFilter &) = delete;
+
+    AssemblyTreeFilter(Ioss::Region *region, const Ioss::EntityType filterType,
+                       const Assemblies &assemblies)
+        : m_region(region), m_type(filterType), m_assemblies(assemblies)
+    {
+      for (const std::string &assemblyName : m_assemblies.get_part_names()) {
+        m_visitedAssemblies[assemblyName] = false;
+      }
     }
-  }
 
-  void update_list_from_assembly_tree(const AssemblyData *assembly, std::vector<std::string> &list)
-  {
-    // Walk the tree without cyclic dependency
-    if (nullptr != assembly) {
-      if (!m_visitedAssemblies[assembly->name]) {
-        m_visitedAssemblies[assembly->name] = true;
+    void update_list_from_assembly_tree(const AssemblyData       *assembly,
+                                        std::vector<std::string> &list)
+    {
+      // Walk the tree without cyclic dependency
+      if (nullptr != assembly) {
+        if (!m_visitedAssemblies[assembly->name]) {
+          m_visitedAssemblies[assembly->name] = true;
 
-        const Ioss::EntityType assemblyType = TextMesh::assembly_type_to_entity_type(assembly->get_assembly_type());
-        if (m_type == assemblyType) {
-          for (const std::string& assemblyMember : assembly->data) {
-            Ioss::GroupingEntity *ge = m_region->get_entity(assemblyMember, m_type);
-            if (nullptr != ge) {
-              list.push_back(ge->name());
+          const Ioss::EntityType assemblyType =
+              TextMesh::assembly_type_to_entity_type(assembly->get_assembly_type());
+          if (m_type == assemblyType) {
+            for (const std::string &assemblyMember : assembly->data) {
+              Ioss::GroupingEntity *ge = m_region->get_entity(assemblyMember, m_type);
+              if (nullptr != ge) {
+                list.push_back(ge->name());
+              }
             }
           }
-        }
 
-        if (Ioss::ASSEMBLY == assemblyType) {
-          for (const std::string& subAssemblyName : assembly->data) {
-            // Find the sub assembly
-            const AssemblyData *subAssembly = m_assemblies.get_group_data(subAssemblyName);
+          if (Ioss::ASSEMBLY == assemblyType) {
+            for (const std::string &subAssemblyName : assembly->data) {
+              // Find the sub assembly
+              const AssemblyData *subAssembly = m_assemblies.get_group_data(subAssemblyName);
 
-            if (nullptr != subAssembly) {
-              update_list_from_assembly_tree(subAssembly, list);
-            } else {
-              std::ostringstream errmsg;
-              fmt::print(errmsg, "ERROR: Could not find sub-assembly with id: {} and name: {}",
-                         assembly->id, assembly->name);
-              IOSS_ERROR(errmsg);
+              if (nullptr != subAssembly) {
+                update_list_from_assembly_tree(subAssembly, list);
+              }
+              else {
+                std::ostringstream errmsg;
+                fmt::print(errmsg, "ERROR: Could not find sub-assembly with id: {} and name: {}",
+                           assembly->id, assembly->name);
+                IOSS_ERROR(errmsg);
+              }
             }
           }
         }
       }
     }
-  }
 
-  void update_assembly_filter_list(std::vector<std::string> &assemblyFilterList)
-  {
-    for (const std::string& assemblyName : m_assemblies.get_part_names()) {
-      if (m_visitedAssemblies[assemblyName]) {
-        assemblyFilterList.emplace_back(assemblyName);
+    void update_assembly_filter_list(std::vector<std::string> &assemblyFilterList)
+    {
+      for (const std::string &assemblyName : m_assemblies.get_part_names()) {
+        if (m_visitedAssemblies[assemblyName]) {
+          assemblyFilterList.emplace_back(assemblyName);
+        }
       }
+
+      std::sort(assemblyFilterList.begin(), assemblyFilterList.end(), std::less<>());
+      auto endIter = std::unique(assemblyFilterList.begin(), assemblyFilterList.end());
+      assemblyFilterList.resize(endIter - assemblyFilterList.begin());
     }
 
-    std::sort(assemblyFilterList.begin(), assemblyFilterList.end(), std::less<>());
-    auto endIter = std::unique(assemblyFilterList.begin(), assemblyFilterList.end());
-    assemblyFilterList.resize(endIter - assemblyFilterList.begin());
-  }
-
-private:
-  Ioss::Region                       *m_region = nullptr;
-  Ioss::EntityType                    m_type   = Ioss::INVALID_TYPE;
-  const Assemblies                   &m_assemblies;
-  mutable std::map<std::string,bool>  m_visitedAssemblies;
-};
+  private:
+    Ioss::Region                       *m_region = nullptr;
+    Ioss::EntityType                    m_type   = Ioss::INVALID_TYPE;
+    const Assemblies                   &m_assemblies;
+    mutable std::map<std::string, bool> m_visitedAssemblies;
+  };
 
   void error_handler(const std::ostringstream &message) { throw std::logic_error((message).str()); }
 
@@ -591,7 +593,10 @@ private:
     raw_connectivity(id, connect.data());
   }
 
-  void TextMesh::connectivity(EntityId id, int64_t *connect) const { raw_connectivity(id, connect); }
+  void TextMesh::connectivity(EntityId id, int64_t *connect) const
+  {
+    raw_connectivity(id, connect);
+  }
 
   void TextMesh::connectivity(EntityId id, int *connect) const { raw_connectivity(id, connect); }
 
@@ -822,14 +827,13 @@ private:
       const std::string &name = partNames[i];
       EntityId           id   = partIds[i];
 
-      BlockPartition partition(offsets[i], name, get_local_element_ids_for_block(id));
-      m_blockPartition[id] = partition;
+      m_blockPartition[id] = BlockPartition(offsets[i], name, get_local_element_ids_for_block(id));
     }
   }
 
   void TextMesh::build_element_connectivity_map()
   {
-    int                  myProc = m_myProcessor;
+    int                   myProc = m_myProcessor;
     std::vector<EntityId> nodeIds;
 
     for (const auto &elementData : m_data.elementDataVec) {
@@ -919,11 +923,10 @@ private:
     return sideset->get_split_type();
   }
 
-  void TextMesh::update_block_omissions_from_assemblies(Ioss::Region *region,
-                                                        std::vector<std::string>& assemblyOmissions,
-                                                        std::vector<std::string>& assemblyInclusions,
-                                                        std::vector<std::string>& blockOmissions,
-                                                        std::vector<std::string>& blockInclusions) const
+  void TextMesh::update_block_omissions_from_assemblies(
+      Ioss::Region *region, std::vector<std::string> &assemblyOmissions,
+      std::vector<std::string> &assemblyInclusions, std::vector<std::string> &blockOmissions,
+      std::vector<std::string> &blockInclusions) const
   {
     // Query number of assemblies...
     if (assembly_count() > 0) {
@@ -933,13 +936,13 @@ private:
       AssemblyTreeFilter inclusionFilter(region, Ioss::ELEMENTBLOCK, m_data.assemblies);
       AssemblyTreeFilter exclusionFilter(region, Ioss::ELEMENTBLOCK, m_data.assemblies);
 
-      for (const std::string& assemblyName : m_data.assemblies.get_part_names()) {
+      for (const std::string &assemblyName : m_data.assemblies.get_part_names()) {
         const AssemblyData *assembly = m_data.assemblies.get_group_data(assemblyName);
 
         bool omitAssembly =
             std::binary_search(assemblyOmissions.begin(), assemblyOmissions.end(), assembly->name);
-        bool includeAssembly =
-            std::binary_search(assemblyInclusions.begin(), assemblyInclusions.end(), assembly->name);
+        bool includeAssembly = std::binary_search(assemblyInclusions.begin(),
+                                                  assemblyInclusions.end(), assembly->name);
 
         if (omitAssembly) {
           exclusionFilter.update_list_from_assembly_tree(assembly, exclusions);
@@ -958,9 +961,9 @@ private:
     }
   }
 
-  void TextMesh::compute_block_membership_impl(const SidesetData& sidesetData,
-                                               const SideBlockInfo& sideBlock,
-                                               std::vector<std::string>& sideBlockTouchingBlockParts) const
+  void TextMesh::compute_block_membership_impl(
+      const SidesetData &sidesetData, const SideBlockInfo &sideBlock,
+      std::vector<std::string> &sideBlockTouchingBlockParts) const
   {
     std::vector<int> blockIndex(m_data.partIds.size(), 0);
 
@@ -969,35 +972,40 @@ private:
 
     if (blockIndex.size() == 1) {
       blockIndex[0] = 1;
-    } else {
+    }
+    else {
       for (size_t sideIndex : sideBlock.sideIndex) {
-        EntityId elemId = sidesetData.data[sideIndex].first;
-        auto elemIter = text_mesh::bound_search(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId, ElementDataLess());
+        EntityId elemId   = sidesetData.data[sideIndex].first;
+        auto     elemIter = text_mesh::bound_search(
+            m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId, ElementDataLess());
         ThrowRequireMsg(elemIter != m_data.elementDataVec.end(),
-                        "Could not find reference element " << elemId << " in sideset: " << sidesetData.name);
+                        "Could not find reference element " << elemId
+                                                            << " in sideset: " << sidesetData.name);
 
-        const std::string& partName = elemIter->partName;
+        const std::string &partName = elemIter->partName;
 
         auto partNameIter = text_mesh::bound_search(partNames.begin(), partNames.end(), partName);
         ThrowRequireMsg(partNameIter != partNames.end(),
-                        "Could not find part: " << partName << " referenced by element: " << elemId << " in list of registered parts");
+                        "Could not find part: " << partName << " referenced by element: " << elemId
+                                                << " in list of registered parts");
 
         unsigned index = std::distance(partNames.begin(), partNameIter);
-        ThrowRequireMsg(index < m_data.partIds.size(), "Fatal error in computing iterator distance");
+        ThrowRequireMsg(index < m_data.partIds.size(),
+                        "Fatal error in computing iterator distance");
 
         blockIndex[index] = 1;
       }
     }
 
-    for(unsigned i=0; i<blockIndex.size(); i++) {
-      if(blockIndex[i] == 1) {
+    for (unsigned i = 0; i < blockIndex.size(); i++) {
+      if (blockIndex[i] == 1) {
         sideBlockTouchingBlockParts.push_back(partNames[i]);
       }
     }
   }
 
-  void TextMesh::compute_block_membership(const std::string& sideSetName,
-                                          const std::string& sideBlockName,
+  void TextMesh::compute_block_membership(const std::string        &sideSetName,
+                                          const std::string        &sideBlockName,
                                           std::vector<std::string> &block_membership) const
   {
     const SidesetData *sidesetData = m_data.sidesets.get_group_data(sideSetName);
@@ -1006,9 +1014,10 @@ private:
     SideBlockInfo sideBlock = sidesetData->get_side_block_info(sideBlockName);
     block_membership.clear();
 
-    if(!sideBlock.touchingBlock.empty()) {
+    if (!sideBlock.touchingBlock.empty()) {
       block_membership.push_back(sideBlock.touchingBlock);
-    } else {
+    }
+    else {
       compute_block_membership_impl(*sidesetData, sideBlock, block_membership);
     }
 

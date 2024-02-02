@@ -227,7 +227,7 @@ namespace Ioss::glob {
     std::vector<std::unique_ptr<State<charT>>> states_;
     size_t                                     match_state_;
 
-    size_t start_state_;
+    size_t start_state_{0};
   };
 
   template <class charT> class StateChar : public State<charT>

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -471,9 +471,7 @@ TEST_F(ManagerTest, ManagerClearAllMultiInputWaitStatesError)
 TEST_F(ManagerTest, ManagerClearAllMultiInputWaitStatesOne)
 {
   reset();
-  std::string name  = "multi";
-  int         state = 2;
-  double      time  = 8.9;
+  std::string name = "multi";
   props.add(Ioss::Property(CatalystManager::CATALYST_MULTI_INPUT_PIPELINE_NAME, name));
   initialize();
   n["my/value"] = 13.1;
