@@ -52,6 +52,7 @@
 #include <sys/errno.h>
 #endif
 
+#include "Ioss_CodeTypes.h"
 #include "Ioss_Getline.h"
 
 namespace {
@@ -241,10 +242,12 @@ namespace {
   {
     char ch = (char)(unsigned char)c;
 
-    write(1, &ch, 1);
+    auto result = write(1, &ch, 1);
+    IOSS_PAR_UNUSED(result);
     if (ch == '\n') {
       ch = '\r';
-      write(1, &ch, 1); /* RAW mode needs '\r', does not hurt */
+      result = write(1, &ch, 1); /* RAW mode needs '\r', does not hurt */
+      IOSS_PAR_UNUSED(result);
     }
   }
 
@@ -254,7 +257,8 @@ namespace {
   {
     if (buf) {
       int len = strlen(buf);
-      write(1, buf, len);
+      auto result = write(1, buf, len);
+      IOSS_PAR_UNUSED(result);
     }
   }
 
@@ -263,7 +267,8 @@ namespace {
     int len = strlen(buf);
 
     gl_cleanup();
-    write(2, buf, len);
+    auto result = write(2, buf, len);
+    IOSS_PAR_UNUSED(result);
     exit(1);
   }
 
