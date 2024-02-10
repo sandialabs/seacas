@@ -48,7 +48,9 @@
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
-#ifdef __unix__
+#ifdef __EMSCRIPTEN__
+#include <errno.h>
+#elif __unix__
 #include <sys/errno.h>
 #endif
 
@@ -123,8 +125,12 @@ namespace {
 #endif
 
 namespace {
-#ifdef __unix__
+#if defined(__EMSCRIPTEN__) || defined(__unix__)
+#ifdef __EMSCRIPTEN__
+#include <termios.h>
+#elif __unix__
 #include <sys/termios.h>
+#endif
   struct termios io_new_termios;
   struct termios io_old_termios;
 #endif
