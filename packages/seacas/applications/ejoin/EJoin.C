@@ -749,6 +749,7 @@ namespace {
 
         std::vector<INT> nodelist;
         nb->get_field_data("ids", nodelist);
+        // This needs to make sure that the nodelist comes back as local id (1..numnodes)
         for (auto &node : nodelist) {
           size_t loc_node = part_mesh[p]->node_global_to_local(node, true) - 1;
           auto   gpos     = local_node_map[node_offset + loc_node];
@@ -756,7 +757,7 @@ namespace {
             node = gpos + 1;
           }
         }
-        ons->put_field_data("ids", nodelist);
+        ons->put_field_data("ids_raw", nodelist);
 
         // Output distribution factors -- set all to 1.0
         std::vector<double> factors(nodelist.size(), 1.0);
@@ -985,7 +986,7 @@ namespace {
               node = gpos + 1;
             }
           }
-          ons->put_field_data("ids", nodelist);
+          ons->put_field_data("ids_raw", nodelist);
 
           std::vector<double> df;
           in->get_field_data("distribution_factors", df);
