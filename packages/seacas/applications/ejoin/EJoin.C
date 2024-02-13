@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
       if (p > 0 && (offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0)) {
         Ioss::NodeBlock *nb        = part_mesh[p]->get_node_blocks()[0];
         Ioss::Field      coord     = nb->get_field("mesh_model_coordinates");
-        auto            *transform = Ioss::create_transform("offset3D");
+        auto            *transform = Ioss::Transform::create("offset3D");
         assert(transform != nullptr);
         std::vector<double> values(3);
         values[0] = offset.x * p;

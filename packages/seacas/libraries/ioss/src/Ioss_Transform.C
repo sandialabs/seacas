@@ -12,7 +12,7 @@ namespace Ioss {
 
   class Field;
 
-  Transform *create_transform(const std::string &transform)
+  Transform *Transform::create(const std::string &transform)
   {
     return TransformFactory::create(transform);
   }

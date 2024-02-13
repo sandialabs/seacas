@@ -31,11 +31,11 @@ namespace Ioss {
     virtual void set_properties(const std::string &name, const std::vector<int> &values);
     virtual void set_properties(const std::string &name, const std::vector<double> &values);
 
+    static Transform *create(const std::string &transform);
+
   protected:
     Transform() = default;
 
     virtual bool internal_execute(const Ioss::Field &field, void *data) = 0;
   };
-
-  IOSS_EXPORT Transform *create_transform(const std::string &transform);
 } // namespace Ioss
