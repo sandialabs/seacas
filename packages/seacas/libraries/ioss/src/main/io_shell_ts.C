@@ -948,11 +948,11 @@ namespace {
         Ioss::Field tr_field(out_field_name, field.get_type(), field.raw_storage(),
                              field.get_role(), field.raw_count());
 
-        Ioss::Transform *transform = Ioss::create_transform("vector magnitude");
+        auto *transform = Ioss::create_transform("vector magnitude");
         assert(transform != nullptr);
         tr_field.add_transform(transform);
 
-        Ioss::Transform *max_transform = Ioss::create_transform("absolute_maximum");
+        auto *max_transform = Ioss::create_transform("absolute_maximum");
         assert(max_transform != nullptr);
         tr_field.add_transform(max_transform);
 
