@@ -14,7 +14,7 @@ namespace Ioss {
 
   Transform *create_transform(const std::string &transform)
   {
-    return Ioss::TransformFactory::create(transform);
+    return TransformFactory::create(transform);
   }
 
   bool Transform::execute(const Ioss::Field &field, void *data)
