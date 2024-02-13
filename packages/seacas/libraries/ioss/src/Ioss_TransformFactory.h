@@ -1,4 +1,4 @@
-// Copyright(C) 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -11,32 +11,30 @@
 #include <map>
 #include <string>
 
-#include "iotr_export.h"
+#include "ioss_export.h"
 
 namespace Ioss {
   class Transform;
-} // namespace Ioss
 
-namespace Iotr {
-  class Factory;
+  class TransformFactory;
 
-  using FactoryMap = std::map<std::string, Factory *, std::less<>>;
+  using TransformFactoryMap = std::map<std::string, TransformFactory *, std::less<>>;
 
-  class IOTR_EXPORT Factory
+  class IOSS_EXPORT TransformFactory
   {
   public:
-    virtual ~Factory() = default;
+    virtual ~TransformFactory() = default;
     static Ioss::Transform *create(const std::string &type);
 
     static int            describe(Ioss::NameList *names);
     static Ioss::NameList describe();
 
   protected:
-    explicit Factory(const std::string &type);
+    explicit TransformFactory(const std::string &type);
     virtual Ioss::Transform *make(const std::string &) const = 0;
     static void              alias(const std::string &base, const std::string &syn);
 
   private:
-    static FactoryMap &registry();
+    static TransformFactoryMap &registry();
   };
-} // namespace Iotr
+} // namespace Ioss

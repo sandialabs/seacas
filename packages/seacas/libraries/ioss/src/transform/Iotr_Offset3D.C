@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "Ioss_Transform.h"
-#include "Iotr_Factory.h"
+#include "Ioss_TransformFactory.h"
 
 namespace Iotr {
 
@@ -23,9 +23,9 @@ namespace Iotr {
     return &registerThis;
   }
 
-  Offset3D_Factory::Offset3D_Factory() : Factory("offset3D")
+  Offset3D_Factory::Offset3D_Factory() : Ioss::TransformFactory("offset3D")
   {
-    Factory::alias("offset3D", "add3D");
+    Ioss::TransformFactory::alias("offset3D", "add3D");
   }
 
   Ioss::Transform *Offset3D_Factory::make(const std::string & /*unused*/) const
