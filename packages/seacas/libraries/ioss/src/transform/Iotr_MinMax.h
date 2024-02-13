@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2022 National Technology & Engineering Solutions
+// Copyright(C) 1999-2022, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "Ioss_Transform.h"    // for Transform, Factory
+#include "Ioss_Transform.h" // for Transform, Factory
+#include "Ioss_TransformFactory.h"
 #include "Ioss_VariableType.h" // for VariableType
-#include "transform/Iotr_Factory.h"
 #include <stddef.h>
 #include <string> // for string
 
@@ -20,7 +20,7 @@ namespace Ioss {
 
 namespace Iotr {
 
-  class IOTR_EXPORT MinMax_Factory : public Factory
+  class IOTR_EXPORT MinMax_Factory : public Ioss::TransformFactory
   {
   public:
     static const MinMax_Factory *factory();

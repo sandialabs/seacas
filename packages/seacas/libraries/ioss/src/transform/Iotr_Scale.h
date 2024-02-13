@@ -7,8 +7,8 @@
 #pragma once
 
 #include "Ioss_Transform.h"
+#include "Ioss_TransformFactory.h"
 #include "Ioss_VariableType.h"
-#include "transform/Iotr_Factory.h"
 #include <stddef.h>
 #include <string>
 
@@ -20,7 +20,7 @@ namespace Ioss {
 
 namespace Iotr {
 
-  class IOTR_EXPORT Scale_Factory : public Factory
+  class IOTR_EXPORT Scale_Factory : public Ioss::TransformFactory
   {
   public:
     static const Scale_Factory *factory();

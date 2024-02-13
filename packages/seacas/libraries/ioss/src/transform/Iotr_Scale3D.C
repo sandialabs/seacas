@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "Ioss_Transform.h"
-#include "Iotr_Factory.h"
+#include "Ioss_TransformFactory.h"
 
 namespace Iotr {
 
@@ -23,9 +23,9 @@ namespace Iotr {
     return &registerThis;
   }
 
-  Scale3D_Factory::Scale3D_Factory() : Factory("scale3D")
+  Scale3D_Factory::Scale3D_Factory() : Ioss::TransformFactory("scale3D")
   {
-    Factory::alias("scale3D", "multiply3D");
+    Ioss::TransformFactory::alias("scale3D", "multiply3D");
   }
 
   Ioss::Transform *Scale3D_Factory::make(const std::string & /*unused*/) const

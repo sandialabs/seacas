@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -11,7 +11,7 @@
 #include <cstddef>
 
 #include "Ioss_Transform.h"
-#include "Iotr_Factory.h"
+#include "Ioss_TransformFactory.h"
 
 namespace Iotr {
 
@@ -21,9 +21,9 @@ namespace Iotr {
     return &registerThis;
   }
 
-  VM_Factory::VM_Factory() : Factory("vector magnitude")
+  VM_Factory::VM_Factory() : Ioss::TransformFactory("vector magnitude")
   {
-    Factory::alias("vector magnitude", "length");
+    Ioss::TransformFactory::alias("vector magnitude", "length");
   }
 
   Ioss::Transform *VM_Factory::make(const std::string & /*unused*/) const

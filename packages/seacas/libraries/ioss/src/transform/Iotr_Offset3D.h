@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "Ioss_Transform.h"    // for Transform, Factory
+#include "Ioss_Transform.h" // for Transform, Factory
+#include "Ioss_TransformFactory.h"
 #include "Ioss_VariableType.h" // for VariableType
-#include "transform/Iotr_Factory.h"
 #include <stddef.h>
 #include <string> // for string
 #include <vector> // for vector
@@ -21,7 +21,7 @@ namespace Ioss {
 
 namespace Iotr {
 
-  class IOTR_EXPORT Offset3D_Factory : public Factory
+  class IOTR_EXPORT Offset3D_Factory : public Ioss::TransformFactory
   {
   public:
     static const Offset3D_Factory *factory();
