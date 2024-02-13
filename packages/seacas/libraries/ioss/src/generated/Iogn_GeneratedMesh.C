@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1073,7 +1073,7 @@ namespace Iogn {
     /* create global coordinates */
     int64_t count = node_count_proc();
     coord.resize(count * 3);
-    coordinates(coord.data());
+    coordinates(Data(coord));
   }
 
   void GeneratedMesh::coordinates(double *coord) const
@@ -1228,7 +1228,7 @@ namespace Iogn {
       int64_t npe = createTets ? 3 : 4;
       connect.resize(element_count_proc(block_number) * npe);
     }
-    raw_connectivity(block_number, connect.data());
+    raw_connectivity(block_number, Data(connect));
   }
 
   void GeneratedMesh::connectivity(int64_t block_number, Ioss::IntVector &connect) const
@@ -1241,7 +1241,7 @@ namespace Iogn {
       int64_t npe = createTets ? 3 : 4;
       connect.resize(element_count_proc(block_number) * npe);
     }
-    raw_connectivity(block_number, connect.data());
+    raw_connectivity(block_number, Data(connect));
   }
 
   void GeneratedMesh::connectivity(int64_t block_number, int64_t *connect) const

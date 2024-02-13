@@ -1,17 +1,9 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include "Ioss_CodeTypes.h"
-#include "Ioss_FileInfo.h"
-#include "Ioss_IOFactory.h"
-#include "Ioss_ParallelUtils.h"
-#include "Ioss_SerializeIO.h"
-#include "Ioss_Utils.h"
-#include "exodus/Ioex_BaseDatabaseIO.h"
-#include "exodus/Ioex_Internals.h"
 #include <cassert>
 #include <cctype>
 #include <cstdlib>
@@ -29,6 +21,7 @@
 #include "Ioex_Utils.h"
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
+#include "Ioss_CodeTypes.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_EdgeBlock.h"
@@ -40,18 +33,26 @@
 #include "Ioss_FaceBlock.h"
 #include "Ioss_FaceSet.h"
 #include "Ioss_Field.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
 #include "Ioss_Map.h"
 #include "Ioss_MeshType.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
+#include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
+#include "Ioss_SerializeIO.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_SmartAssert.h"
 #include "Ioss_State.h"
+#include "Ioss_Utils.h"
+
+#include "exodus/Ioex_BaseDatabaseIO.h"
+#include "exodus/Ioex_Internals.h"
 
 // Transitioning from treating global variables as Ioss::Field::TRANSIENT
 // to Ioss::Field::REDUCTION.  To get the old behavior, define the value
@@ -167,7 +168,7 @@ namespace {
         assembly.name = new char[max_name_length + 1];
       }
 
-      int ierr = ex_get_assemblies(exoid, assemblies.data());
+      int ierr = ex_get_assemblies(exoid, Data(assemblies));
       if (ierr < 0) {
         Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
       }
@@ -177,7 +178,7 @@ namespace {
         assembly.entity_list = new int64_t[assembly.entity_count];
       }
 
-      ierr = ex_get_assemblies(exoid, assemblies.data());
+      ierr = ex_get_assemblies(exoid, Data(assemblies));
       if (ierr < 0) {
         Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
       }
@@ -576,16 +577,16 @@ namespace Ioex {
       Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][0], codename, MAX_STR_LENGTH + 1);
       Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][1], version, MAX_STR_LENGTH + 1);
 
-    int ierr = 0;
-    if (isParallel && myProcessor != 0) {
-      ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, nullptr);
-    }
-    else {
-      ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
-    }
-    if (ierr < 0) {
-      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-    }
+      int ierr = 0;
+      if (isParallel && myProcessor != 0) {
+        ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, nullptr);
+      }
+      else {
+        ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
+      }
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
 
       for (size_t i = 0; i < num_qa_records + 1; i++) {
         for (int j = 0; j < 4; j++) {
@@ -821,7 +822,7 @@ namespace Ioex {
         bl.name = new char[max_name_length + 1];
       }
 
-      int ierr = ex_get_blobs(get_file_pointer(), blobs.data());
+      int ierr = ex_get_blobs(get_file_pointer(), Data(blobs));
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -1532,8 +1533,8 @@ namespace Ioex {
 
     if (att_count > 0) {
       std::vector<EX_attribute> attr(att_count);
-      ex_get_attribute_param(get_file_pointer(), type, id, attr.data());
-      ex_get_attributes(get_file_pointer(), att_count, attr.data());
+      ex_get_attribute_param(get_file_pointer(), type, id, Data(attr));
+      ex_get_attributes(get_file_pointer(), att_count, Data(attr));
 
       // Create a property on `entity` for each `attribute`
       for (const auto &att : attr) {
@@ -1616,7 +1617,7 @@ namespace Ioex {
         else {
           Ioss::SerializeIO serializeIO_(this);
           int               ierr =
-              ex_get_truth_table(get_file_pointer(), type, block_count, nvar, truth_table.data());
+              ex_get_truth_table(get_file_pointer(), type, block_count, nvar, Data(truth_table));
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
@@ -1824,14 +1825,14 @@ namespace Ioex {
       exo_params.num_sset  = m_variables[EX_SIDE_SET].size();
       exo_params.num_elset = m_variables[EX_ELEM_SET].size();
 
-      exo_params.edge_var_tab  = m_truthTable[EX_EDGE_BLOCK].data();
-      exo_params.face_var_tab  = m_truthTable[EX_FACE_BLOCK].data();
-      exo_params.elem_var_tab  = m_truthTable[EX_ELEM_BLOCK].data();
-      exo_params.nset_var_tab  = m_truthTable[EX_NODE_SET].data();
-      exo_params.eset_var_tab  = m_truthTable[EX_EDGE_SET].data();
-      exo_params.fset_var_tab  = m_truthTable[EX_FACE_SET].data();
-      exo_params.sset_var_tab  = m_truthTable[EX_SIDE_SET].data();
-      exo_params.elset_var_tab = m_truthTable[EX_ELEM_SET].data();
+      exo_params.edge_var_tab  = Data(m_truthTable[EX_EDGE_BLOCK]);
+      exo_params.face_var_tab  = Data(m_truthTable[EX_FACE_BLOCK]);
+      exo_params.elem_var_tab  = Data(m_truthTable[EX_ELEM_BLOCK]);
+      exo_params.nset_var_tab  = Data(m_truthTable[EX_NODE_SET]);
+      exo_params.eset_var_tab  = Data(m_truthTable[EX_EDGE_SET]);
+      exo_params.fset_var_tab  = Data(m_truthTable[EX_FACE_SET]);
+      exo_params.sset_var_tab  = Data(m_truthTable[EX_SIDE_SET]);
+      exo_params.elset_var_tab = Data(m_truthTable[EX_ELEM_SET]);
 
       if (isParallel) {
         // Check consistency among all processors.  They should all
@@ -2080,10 +2081,10 @@ namespace Ioex {
       int ierr = 0;
       if (reduction) {
         ierr =
-            ex_put_reduction_variable_names(get_file_pointer(), type, var_count, var_names.data());
+            ex_put_reduction_variable_names(get_file_pointer(), type, var_count, Data(var_names));
       }
       else {
-        ierr = ex_put_variable_names(get_file_pointer(), type, var_count, var_names.data());
+        ierr = ex_put_variable_names(get_file_pointer(), type, var_count, Data(var_names));
       }
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
@@ -2265,7 +2266,7 @@ namespace Ioex {
               std::memcpy(&cname[i * (maximumNameLength + 1)], names[i], maximumNameLength + 1);
             }
           }
-          util().attribute_reduction(attribute_count * (maximumNameLength + 1), cname.data());
+          util().attribute_reduction(attribute_count * (maximumNameLength + 1), Data(cname));
           for (int i = 0; i < attribute_count; i++) {
             std::memcpy(names[i], &cname[i * (maximumNameLength + 1)], maximumNameLength + 1);
           }
@@ -2860,7 +2861,7 @@ namespace {
           }
         }
         size_t ge_id = ge->get_property("id").get_int();
-        int    ierr  = ex_put_attr_names(exoid, type, ge_id, names.data());
+        int    ierr  = ex_put_attr_names(exoid, type, ge_id, Data(names));
         if (ierr < 0) {
           Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
         }
