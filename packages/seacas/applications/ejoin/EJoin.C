@@ -31,7 +31,6 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_Transform.h>
-#include <Ioss_TransformFactory.h>
 
 #include "EJ_CodeTypes.h"
 #include "EJ_SystemInterface.h"
@@ -228,7 +227,7 @@ int main(int argc, char *argv[])
       if (p > 0 && (offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0)) {
         Ioss::NodeBlock *nb        = part_mesh[p]->get_node_blocks()[0];
         Ioss::Field      coord     = nb->get_field("mesh_model_coordinates");
-        Ioss::Transform *transform = Ioss::TransformFactory::create("offset3D");
+        Ioss::Transform *transform = Ioss::create_transform("offset3D");
         assert(transform != nullptr);
         std::vector<double> values(3);
         values[0] = offset.x * p;

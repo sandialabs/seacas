@@ -37,4 +37,5 @@ namespace Ioss {
     virtual bool internal_execute(const Ioss::Field &field, void *data) = 0;
   };
 
+  Transform *create_transform(const std::string &transform);
 } // namespace Ioss
