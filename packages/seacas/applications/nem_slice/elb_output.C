@@ -151,7 +151,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     /* Sort node maps */
     std::sort(lb->int_nodes[proc].begin(), lb->int_nodes[proc].end());
     if (problem->type == NODAL) {
-      sort2(lb->ext_nodes[proc].size(), lb->ext_nodes[proc].data(), lb->ext_procs[proc].data());
+      sort2(lb->ext_nodes[proc].size(), Data(lb->ext_nodes[proc]), Data(lb->ext_procs[proc]));
     }
 
     /* Sort element maps */
@@ -299,14 +299,14 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     /* Output the node and element maps */
     for (int proc = 0; proc < machine->num_procs; proc++) {
       /* Output the nodal map */
-      if (ex_put_processor_node_maps(exoid, lb->int_nodes[proc].data(), lb->bor_nodes[proc].data(),
-                                     lb->ext_nodes[proc].data(), proc) < 0) {
+      if (ex_put_processor_node_maps(exoid, Data(lb->int_nodes[proc]), Data(lb->bor_nodes[proc]),
+                                     Data(lb->ext_nodes[proc]), proc) < 0) {
         Gen_Error(0, "fatal: failed to output node map");
         return 0;
       }
 
       /* Output the elemental map */
-      if (ex_put_processor_elem_maps(exoid, lb->int_elems[proc].data(), nullptr, proc) < 0) {
+      if (ex_put_processor_elem_maps(exoid, Data(lb->int_elems[proc]), nullptr, proc) < 0) {
         Gen_Error(0, "fatal: failed to output element map");
         return 0;
       }
@@ -320,7 +320,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
       qsort2(lb->ext_procs[proc], lb->ext_nodes[proc]);
 
       /* Output the nodal communication map */
-      if (ex_put_node_cmap(exoid, 1, lb->ext_nodes[proc].data(), lb->ext_procs[proc].data(), proc) <
+      if (ex_put_node_cmap(exoid, 1, Data(lb->ext_nodes[proc]), Data(lb->ext_procs[proc]), proc) <
           0) {
         Gen_Error(0, "fatal: failed to output nodal communication map");
         return 0;
@@ -368,14 +368,14 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     /* Output the node and element maps */
     for (int proc = 0; proc < machine->num_procs; proc++) {
       /* Output the nodal map */
-      if (ex_put_processor_node_maps(exoid, lb->int_nodes[proc].data(), lb->bor_nodes[proc].data(),
+      if (ex_put_processor_node_maps(exoid, Data(lb->int_nodes[proc]), Data(lb->bor_nodes[proc]),
                                      nullptr, proc) < 0) {
         Gen_Error(0, "fatal: failed to output node map");
         return 0;
       }
 
       /* Output the elemental map */
-      if (ex_put_processor_elem_maps(exoid, lb->int_elems[proc].data(), lb->bor_elems[proc].data(),
+      if (ex_put_processor_elem_maps(exoid, Data(lb->int_elems[proc]), Data(lb->bor_elems[proc]),
                                      proc) < 0) {
         Gen_Error(0, "fatal: failed to output element map");
         return 0;
@@ -418,8 +418,8 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
 
       /* Output the elemental communication map */
       if (!lb->e_cmap_elems[proc].empty()) {
-        if (ex_put_elem_cmap(exoid, 1, lb->e_cmap_elems[proc].data(), lb->e_cmap_sides[proc].data(),
-                             lb->e_cmap_procs[proc].data(), proc) < 0) {
+        if (ex_put_elem_cmap(exoid, 1, Data(lb->e_cmap_elems[proc]), Data(lb->e_cmap_sides[proc]),
+                             Data(lb->e_cmap_procs[proc]), proc) < 0) {
           Gen_Error(0, "fatal: unable to output elemental communication map");
           return 0;
         }

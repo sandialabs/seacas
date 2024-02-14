@@ -229,8 +229,8 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
      * Sort the local element numbers in ascending global element numbers.
      * This means that globals.GElems will be monotonic.
      */
-    gds_qsort(globals.GElems[iproc].data(), globals.Num_Internal_Elems[iproc]);
-    gds_qsort(globals.Elem_Map[iproc].data(), globals.Num_Internal_Elems[iproc]);
+    gds_qsort(Data(globals.GElems[iproc]), globals.Num_Internal_Elems[iproc]);
+    gds_qsort(Data(globals.Elem_Map[iproc]), globals.Num_Internal_Elems[iproc]);
 
     /* Check that globals.GNodes is monotonic, from i = 0 to Num_Internal_Nodes */
 #ifdef DEBUG
