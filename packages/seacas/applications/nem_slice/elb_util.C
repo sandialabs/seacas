@@ -193,100 +193,7 @@ void clean_string(char inp_str[], const char *tokens)
 } /*---------------- End clean_string() -----------------*/
 
 namespace {
-  /*
-   * The following 'qsort' routine is modified from Sedgewicks
-   * algorithm It selects the pivot based on the median of the left,
-   * right, and center values to try to avoid degenerate cases occurring
-   * when a single value is chosen.  It performs a quicksort on
-   * intervals down to the GDS_QSORT_CUTOFF size and then performs a final
-   * insertion sort on the almost sorted final array.  Based on data in
-   * Sedgewick, the GDS_QSORT_CUTOFF value should be between 5 and 20.
-   *
-   * See Sedgewick for further details
-   */
-
-#define GDS_QSORT_CUTOFF 12
-
-  template <typename INT> inline void ISWAP(INT *V, size_t I, size_t J)
-  {
-    INT _t = V[I];
-    V[I]   = V[J];
-    V[J]   = _t;
-  }
-
-  template <typename INT> size_t gds_median3(INT v[], size_t left, size_t right)
-  {
-    size_t center;
-    center = (left + right) / 2;
-
-    if (v[left] > v[center]) {
-      ISWAP(v, left, center);
-    }
-    if (v[left] > v[right]) {
-      ISWAP(v, left, right);
-    }
-    if (v[center] > v[right]) {
-      ISWAP(v, center, right);
-    }
-
-    ISWAP(v, center, right - 1);
-    return right - 1;
-  }
-
-  template <typename INT> void gds_qsort(INT v[], size_t left, size_t right)
-  {
-    if (left + GDS_QSORT_CUTOFF <= right) {
-      size_t pivot = gds_median3(v, left, right);
-      size_t i     = left;
-      size_t j     = right - 1;
-
-      for (;;) {
-        while (v[++i] < v[pivot]) {
-          ;
-        }
-        while (v[--j] > v[pivot]) {
-          ;
-        }
-        if (i < j) {
-          ISWAP(v, i, j);
-        }
-        else {
-          break;
-        }
-      }
-
-      ISWAP(v, i, right - 1);
-      gds_qsort(v, left, i - 1);
-      gds_qsort(v, i + 1, right);
-    }
-  }
-
-  template <typename INT> void gds_isort(INT v[], size_t N)
-  {
-    if (N <= 1) {
-      return;
-    }
-
-    size_t ndx       = 0;
-    INT    small_val = v[0];
-    for (size_t i = 1; i < N; i++) {
-      if (v[i] < small_val) {
-        small_val = v[i];
-        ndx       = i;
-      }
-    }
-    /* Put smallest value in slot 0 */
-    ISWAP(v, 0, ndx);
-
-    size_t j;
-    for (size_t i = 1; i < N; i++) {
-      INT tmp = v[i];
-      for (j = i; tmp < v[j - 1]; j--) {
-        v[j] = v[j - 1];
-      }
-      v[j] = tmp;
-    }
-  }
+  template <typename INT> inline void ISWAP(INT *V, size_t I, size_t J) { std::swap(V[I], V[J]); }
 
   template <typename INT> void siftDowniii(INT *a, INT *b, INT *c, size_t start, size_t end)
   {
@@ -298,9 +205,9 @@ namespace {
         child += 1;
       }
       if (a[root] < a[child]) {
-        SWAP(a[child], a[root]);
-        SWAP(b[child], b[root]);
-        SWAP(c[child], c[root]);
+        std::swap(a[child], a[root]);
+        std::swap(b[child], b[root]);
+        std::swap(c[child], c[root]);
         root = child;
       }
       else {
@@ -778,39 +685,44 @@ namespace {
  * Sort the values in 'v'
  */
 
-template void qsort4(int *v1, int *v2, int *v3, int *v4, size_t N);
-template void qsort4(int64_t *v1, int64_t *v2, int64_t *v3, int64_t *v4, size_t N);
+template void qsort4(std::vector<int> &v1, std::vector<int> &v2, std::vector<int> &v3,
+                     std::vector<int> &v4);
+template void qsort4(std::vector<int64_t> &v1, std::vector<int64_t> &v2, std::vector<int64_t> &v3,
+                     std::vector<int64_t> &v4);
 
-template <typename INT> void qsort4(INT *v1, INT *v2, INT *v3, INT *v4, size_t N)
+template <typename INT>
+void qsort4(std::vector<INT> &v1, std::vector<INT> &v2, std::vector<INT> &v3, std::vector<INT> &v4)
 {
+  auto N = v1.size();
   if (N <= 1) {
     return;
   }
-  internal_qsort_4(v1, v2, v3, v4, 0, N - 1);
-  internal_isort_4(v1, v2, v3, v4, N);
+  internal_qsort_4(v1.data(), v2.data(), v3.data(), v4.data(), 0, N - 1);
+  internal_isort_4(v1.data(), v2.data(), v3.data(), v4.data(), N);
 
 #if defined(DEBUG_QSORT)
   fmt::print(stderr, "Checking sort of {} values\n", (size_t)N + 1);
   for (size_t i = 1; i < N; i++) {
-    assert(is_less_than4v(v1, v2, v3, v4, i - 1, i));
+    assert(is_less_than4v(v1.data(), v2.data(), v3.data(), v4.data(), i - 1, i));
   }
 #endif
 }
 
-template void                qsort2(int *v1, int *v2, size_t N);
-template void                qsort2(int64_t *v1, int64_t *v2, size_t N);
-template <typename INT> void qsort2(INT *v1, INT *v2, size_t N)
+template void                qsort2(std::vector<int> &v1, std::vector<int> &v2);
+template void                qsort2(std::vector<int64_t> &v1, std::vector<int64_t> &v2);
+template <typename INT> void qsort2(std::vector<INT> &v1, std::vector<INT> &v2)
 {
+  auto N = v1.size();
   if (N <= 1) {
     return;
   }
-  internal_qsort_2(v1, v2, 0, N - 1);
-  internal_isort_2(v1, v2, N);
+  internal_qsort_2(v1.data(), v2.data(), 0, N - 1);
+  internal_isort_2(v1.data(), v2.data(), N);
 
 #if defined(DEBUG_QSORT)
   fmt::print(stderr, "Checking sort of {} values\n", (size_t)N + 1);
   for (size_t i = 1; i < N; i++) {
-    assert(is_less_than2v(v1, v2, i - 1, i));
+    assert(is_less_than2v(v1.data(), v2.data(), i - 1, i));
   }
 #endif
 }
@@ -828,9 +740,9 @@ template <typename INT> void sort3(int64_t count, INT ra[], INT rb[], INT rc[])
   }
 
   for (size_t end = count - 1; end > 0; end--) {
-    SWAP(ra[end], ra[0]);
-    SWAP(rb[end], rb[0]);
-    SWAP(rc[end], rc[0]);
+    std::swap(ra[end], ra[0]);
+    std::swap(rb[end], rb[0]);
+    std::swap(rc[end], rc[0]);
     siftDowniii(ra, rb, rc, 0, end);
   }
 }
@@ -864,16 +776,4 @@ template <typename INT> int64_t bin_search2(INT value, size_t num, INT List[])
     }
   }
   return -1;
-}
-
-template void gds_qsort(int v[], size_t N);
-template void gds_qsort(int64_t v[], size_t N);
-
-template <typename INT> void gds_qsort(INT v[], size_t N)
-{
-  if (N <= 1) {
-    return;
-  }
-  gds_qsort(v, 0, N - 1);
-  gds_isort(v, N);
 }

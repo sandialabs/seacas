@@ -1970,11 +1970,10 @@ namespace {
     time1 = get_time();
     for (int pcnt = 0; pcnt < machine->num_procs; pcnt++) {
       /* Note that this sort is multi-key */
-      qsort4(&lb->e_cmap_procs[pcnt][0],     /* 1st key */
-             &lb->e_cmap_elems[pcnt][0],     /* 2nd key */
-             &lb->e_cmap_neigh[pcnt][0],     /* 3rd key */
-             &lb->e_cmap_sides[pcnt][0],     /* 4th key */
-             lb->e_cmap_procs[pcnt].size()); /* Size */
+      qsort4(lb->e_cmap_procs[pcnt],  /* 1st key */
+             lb->e_cmap_elems[pcnt],  /* 2nd key */
+             lb->e_cmap_neigh[pcnt],  /* 3rd key */
+             lb->e_cmap_sides[pcnt]); /* 4th key */
     }
     /*
      * At this point, each processors arrays are sorted on three keys:
