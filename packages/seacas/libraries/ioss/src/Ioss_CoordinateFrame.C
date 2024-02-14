@@ -21,7 +21,7 @@ namespace Ioss {
   int64_t CoordinateFrame::id() const { return id_; }
   char    CoordinateFrame::tag() const { return tag_; }
 
-  const double *CoordinateFrame::coordinates() const { return pointList_.data(); }
+  const double *CoordinateFrame::coordinates() const { return Data(pointList_); }
   const double *CoordinateFrame::origin() const { return &pointList_[0]; }
   const double *CoordinateFrame::axis_3_point() const { return &pointList_[3]; }
   const double *CoordinateFrame::plane_1_3_point() const { return &pointList_[6]; }

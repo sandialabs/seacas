@@ -90,7 +90,7 @@ namespace Ioexnl {
     // The number of locally-owned nodes on this processor is 'position'
     *locally_owned_count = position;
 
-    MPI_Allgather(locally_owned_count, 1, MPI_LONG_LONG_INT, rcv_count.data(), 1, MPI_LONG_LONG_INT,
+    MPI_Allgather(locally_owned_count, 1, MPI_LONG_LONG_INT, Data(rcv_count), 1, MPI_LONG_LONG_INT,
                   comm_);
     m_decomposition.show_progress("\tAllgather finished");
 
@@ -107,7 +107,7 @@ namespace Ioexnl {
 
     // Now, tell the other processors how many nodes I will be sending
     // them (Nodes they own that I share with them)
-    MPI_Alltoall(snd_count.data(), 1, MPI_LONG_LONG_INT, rcv_count.data(), 1, MPI_LONG_LONG_INT,
+    MPI_Alltoall(Data(snd_count), 1, MPI_LONG_LONG_INT, Data(rcv_count), 1, MPI_LONG_LONG_INT,
                  comm_);
     m_decomposition.show_progress("\tCommunication 1 finished");
 

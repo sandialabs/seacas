@@ -457,7 +457,7 @@ namespace Ioexnl {
 
             if (int_byte_size_api() == 4) {
               int *data32 = reinterpret_cast<int *>(data);
-              int *comp32 = reinterpret_cast<int *>(component.data());
+              int *comp32 = reinterpret_cast<int *>(Data(component));
 
               int index = comp;
               for (size_t i = 0; i < my_element_count; i++) {
@@ -467,7 +467,7 @@ namespace Ioexnl {
             }
             else {
               auto *data64 = reinterpret_cast<int64_t *>(data);
-              auto *comp64 = reinterpret_cast<int64_t *>(component.data());
+              auto *comp64 = reinterpret_cast<int64_t *>(Data(component));
 
               int index = comp;
               for (size_t i = 0; i < my_element_count; i++) {
@@ -968,8 +968,8 @@ namespace Ioexnl {
         // Convert global node id to local node id and store in 'entities'
         if (int_byte_size_api() == 4) {
           int *entity_proc = static_cast<int *>(data);
-          int *ent         = reinterpret_cast<int *>(entities.data());
-          int *pro         = reinterpret_cast<int *>(procs.data());
+          int *ent         = reinterpret_cast<int *>(Data(entities));
+          int *pro         = reinterpret_cast<int *>(Data(procs));
           int  j           = 0;
           for (size_t i = 0; i < entity_count; i++) {
             int global_id = entity_proc[j++];
@@ -979,8 +979,8 @@ namespace Ioexnl {
         }
         else {
           auto   *entity_proc = static_cast<int64_t *>(data);
-          auto   *ent         = reinterpret_cast<int64_t *>(entities.data());
-          auto   *pro         = reinterpret_cast<int64_t *>(procs.data());
+          auto   *ent         = reinterpret_cast<int64_t *>(Data(entities));
+          auto   *pro         = reinterpret_cast<int64_t *>(Data(procs));
           int64_t j           = 0;
           for (size_t i = 0; i < entity_count; i++) {
             int64_t global_id = entity_proc[j++];
@@ -1009,13 +1009,13 @@ namespace Ioexnl {
 
           std::vector<char> internal(nodeCount * int_byte_size_api());
           if (int_byte_size_api() == 4) {
-            compute_internal_border_maps(reinterpret_cast<int *>(entities.data()),
-                                         reinterpret_cast<int *>(internal.data()), nodeCount,
+            compute_internal_border_maps(reinterpret_cast<int *>(Data(entities)),
+                                         reinterpret_cast<int *>(Data(internal)), nodeCount,
                                          entity_count);
           }
           else {
-            compute_internal_border_maps(reinterpret_cast<int64_t *>(entities.data()),
-                                         reinterpret_cast<int64_t *>(internal.data()), nodeCount,
+            compute_internal_border_maps(reinterpret_cast<int64_t *>(Data(entities)),
+                                         reinterpret_cast<int64_t *>(Data(internal)), nodeCount,
                                          entity_count);
           }
         }
@@ -1024,9 +1024,9 @@ namespace Ioexnl {
         std::vector<char> sides(entity_count * int_byte_size_api());
         if (int_byte_size_api() == 4) {
           int *entity_proc = static_cast<int *>(data);
-          int *ent         = reinterpret_cast<int *>(entities.data());
-          int *sid         = reinterpret_cast<int *>(sides.data());
-          int *pro         = reinterpret_cast<int *>(procs.data());
+          int *ent         = reinterpret_cast<int *>(Data(entities));
+          int *sid         = reinterpret_cast<int *>(Data(sides));
+          int *pro         = reinterpret_cast<int *>(Data(procs));
           int  j           = 0;
           for (size_t i = 0; i < entity_count; i++) {
             ent[i] = elemMap.global_to_local(entity_proc[j++]);
@@ -1036,9 +1036,9 @@ namespace Ioexnl {
         }
         else {
           auto   *entity_proc = static_cast<int64_t *>(data);
-          auto   *ent         = reinterpret_cast<int64_t *>(entities.data());
-          auto   *sid         = reinterpret_cast<int64_t *>(sides.data());
-          auto   *pro         = reinterpret_cast<int64_t *>(procs.data());
+          auto   *ent         = reinterpret_cast<int64_t *>(Data(entities));
+          auto   *sid         = reinterpret_cast<int64_t *>(Data(sides));
+          auto   *pro         = reinterpret_cast<int64_t *>(Data(procs));
           int64_t j           = 0;
           for (size_t i = 0; i < entity_count; i++) {
             ent[i] = elemMap.global_to_local(entity_proc[j++]);
@@ -1054,13 +1054,13 @@ namespace Ioexnl {
         // Iterate through array again and consolidate all '1's
         std::vector<char> internal(elementCount * int_byte_size_api());
         if (int_byte_size_api() == 4) {
-          compute_internal_border_maps(reinterpret_cast<int *>(entities.data()),
-                                       reinterpret_cast<int *>(internal.data()), elementCount,
+          compute_internal_border_maps(reinterpret_cast<int *>(Data(entities)),
+                                       reinterpret_cast<int *>(Data(internal)), elementCount,
                                        entity_count);
         }
         else {
-          compute_internal_border_maps(reinterpret_cast<int64_t *>(entities.data()),
-                                       reinterpret_cast<int64_t *>(internal.data()), elementCount,
+          compute_internal_border_maps(reinterpret_cast<int64_t *>(Data(entities)),
+                                       reinterpret_cast<int64_t *>(Data(internal)), elementCount,
                                        entity_count);
         }
       }

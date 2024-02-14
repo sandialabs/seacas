@@ -1208,7 +1208,7 @@ namespace Ioad {
           // errmsg << "ERROR: Streaming is not yet supported for reading.\n";
           // IOSS_ERROR(errmsg);
         }
-        adios_wrapper.GetSync(time_var, tsteps.data());
+        adios_wrapper.GetSync(time_var, Data(tsteps));
         for (size_t step = 0; step < time_var.Steps(); step++) {
           // if (tsteps[i] <= last_time) { TODO: Check last time step before writing everything
           this_region->add_state_nl(tsteps[step] * timeScaleFactor);
@@ -1335,8 +1335,8 @@ namespace Ioad {
         int64_t     id       = std::stoll(variable_pair.first);
         char        tag      = variable_pair.second.begin()->first[0];
         std::string var_name = variable_pair.second.begin()->second.first;
-        adios_wrapper.GetSync(var_name, coord.data());
-        Ioss::CoordinateFrame coordinate_frame(id, tag, coord.data());
+        adios_wrapper.GetSync(var_name, Data(coord));
+        Ioss::CoordinateFrame coordinate_frame(id, tag, Data(coord));
         region->add(coordinate_frame);
       }
     }
@@ -1433,7 +1433,7 @@ namespace Ioad {
           field.get_name() == "mesh_model_coordinates_z") {
         Ioss::Field         coord_field = nb->get_field("mesh_model_coordinates");
         std::vector<double> coord(num_to_get * spatialDimension);
-        get_field_internal_t(nb, coord_field, coord.data(), data_size * spatialDimension);
+        get_field_internal_t(nb, coord_field, Data(coord), data_size * spatialDimension);
 
         // Cast 'data' to correct size -- double
         double *rdata  = static_cast<double *>(data);

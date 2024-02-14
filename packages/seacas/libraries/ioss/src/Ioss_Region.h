@@ -494,7 +494,7 @@ std::vector<size_t> Ioss::Region::get_entity_field_data(const std::string      &
   size_t data_size = field_count * sizeof(U);
 
   std::vector<size_t> offsets =
-      internal_get_entity_field_data(field_name, entity_container, field_data.data(), data_size);
+      internal_get_entity_field_data(field_name, entity_container, Data(field_data), data_size);
 
   assert(offsets.size() == (entity_container.size() + 1));
   assert(offsets[entity_container.size()] == field_count);

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1072,7 +1072,7 @@ namespace Iotm {
 
         const double *get_nodal_coordinates(const EntityId &nodeId) const
         {
-          return (*this)[nodeId].data();
+          return Data((*this)[nodeId]);
         }
 
         void verify_nodal_coordinates(const EntityId &nodeId, const double *goldCoords,
