@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2022 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2022, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -103,11 +103,9 @@ extern int roundfloat(float value /* the value to be rounded */
 );
 
 template <typename INT>
-size_t find_inter(const INT set1[],     /* the first set of integers */
-                  const INT set2[],     /* the second set of integers */
-                  size_t    length1,    /* the length of the first set */
-                  size_t    length2,    /* the length of the second set */
-                  INT       inter_ptr[] /* the values in the intersection */
+size_t find_inter(const std::vector<INT> &set1,     /* the first set of integers */
+                  const std::vector<INT> &set2,     /* the second set of integers */
+                  std::vector<INT>       &inter_ptr /* the values in the intersection */
 );
 
 template <typename INT> int64_t bin_search2(INT value, size_t num, INT List[]);

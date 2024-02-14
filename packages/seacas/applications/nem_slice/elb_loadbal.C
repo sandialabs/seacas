@@ -1319,19 +1319,15 @@ namespace {
 
                       ss_to_node_list(etype2, mesh->connect[el2], (cnt + 1), side_nodes2);
 
-                      int nhold2 =
-                          find_inter(graph->sur_elem[side_nodes2[0]].data(),
-                                     graph->sur_elem[side_nodes2[1]].data(),
-                                     graph->sur_elem[side_nodes2[0]].size(),
-                                     graph->sur_elem[side_nodes2[1]].size(), Data(pt_list));
+                      int nhold2 = find_inter(graph->sur_elem[side_nodes2[0]],
+                                              graph->sur_elem[side_nodes2[1]], pt_list);
 
                       for (int i = 0; i < nhold2; i++) {
                         hold_elem[i] = graph->sur_elem[side_nodes2[0]][pt_list[i]];
                       }
 
                       size_t nelem =
-                          find_inter(Data(hold_elem), graph->sur_elem[side_nodes2[2]].data(),
-                                     nhold2, graph->sur_elem[side_nodes2[2]].size(), Data(pt_list));
+                          find_inter(hold_elem, graph->sur_elem[side_nodes2[2]], pt_list);
 
                       if (nelem >= 1) {
                         count++;
@@ -1592,9 +1588,7 @@ namespace {
 
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node '0' and node 'ncnt+1' */
-              nelem =
-                  find_inter(Data(hold_elem), graph->sur_elem[side_nodes[(ncnt + 1)]].data(), nhold,
-                             graph->sur_elem[side_nodes[(ncnt + 1)]].size(), Data(pt_list));
+              nelem = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]], pt_list);
 
               if (nelem < 2) {
                 break;
@@ -1656,10 +1650,8 @@ namespace {
             size_t nhold = 0;
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node 'inode' and node 'node' */
-              nelem = find_inter(graph->sur_elem[side_nodes[inode]].data(),
-                                 graph->sur_elem[side_nodes[node]].data(),
-                                 graph->sur_elem[side_nodes[inode]].size(),
-                                 graph->sur_elem[side_nodes[node]].size(), Data(pt_list));
+              nelem = find_inter(graph->sur_elem[side_nodes[inode]],
+                                 graph->sur_elem[side_nodes[node]], pt_list);
 
               if (nelem > 1) {
                 if (ncnt == 0) {
