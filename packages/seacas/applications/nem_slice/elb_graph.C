@@ -181,7 +181,6 @@ namespace {
   int find_adjacency(Problem_Description *problem, Mesh_Description<INT> *mesh,
                      Graph_Description<INT> *graph, Weight_Description *weight, Sphere_Info *sphere)
   {
-    std::vector<INT> pt_list;
     std::vector<INT> hold_elem;
     INT              side_nodes[MAX_SIDE_NODES + 2];
     INT              mirror_nodes[MAX_SIDE_NODES + 2];
@@ -229,7 +228,6 @@ namespace {
       /* for face adjacencies, need to allocate some memory */
       if (problem->face_adj) {
         /* allocate space to hold info about surrounding elements */
-        pt_list.resize(graph->max_nsur);
         hold_elem.resize(graph->max_nsur);
       }
       graph->nadj = 0;
@@ -394,6 +392,7 @@ namespace {
                   }
 
                   for (int ncnt = 0; ncnt < nnodes; ncnt++) {
+		    std::vector<INT> pt_list;
                     nelem = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]], pt_list);
 
                     /*  If less than 2 ( 0 or 1 ) elements only
@@ -425,6 +424,7 @@ namespace {
                   /* See if hexes share nodes 0 and nodes (ncnt+2) */
                   int inode = 0;
                   for (int ncnt = 0; ncnt < nnodes; ncnt++) {
+		    std::vector<INT> pt_list;
                     nelem = find_inter(graph->sur_elem[side_nodes[inode]],
                                        graph->sur_elem[side_nodes[(ncnt + 2)]], pt_list);
 
