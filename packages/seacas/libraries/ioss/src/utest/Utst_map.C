@@ -48,7 +48,7 @@ template <typename INT> void test_reorder(Ioss::Map &my_map, std::vector<INT> &i
   // using the `map_field_to_db_scalar_order` function and verify.
   initialize_data(init);
 
-  my_map.set_map(init.data(), init.size(), 0, false);
+  my_map.set_map(Data(init), init.size(), 0, false);
   DOCTEST_REQUIRE(!my_map.is_sequential());
 
   // Check that we get the *original* ordering back from global_to_local.
@@ -59,7 +59,7 @@ template <typename INT> void test_reorder(Ioss::Map &my_map, std::vector<INT> &i
 
   // Check that we get the the `reordered` vector has been put into `db` order.
   std::vector<double> reordered(count);
-  my_map.map_field_to_db_scalar_order(init.data(), reordered, 0, count, 1, 0);
+  my_map.map_field_to_db_scalar_order(Data(init), reordered, 0, count, 1, 0);
   for (size_t i = 0; i < count; i++) {
     DOCTEST_REQUIRE_EQ(reordered[i], offset + i + 1);
   }
@@ -81,7 +81,7 @@ DOCTEST_TEST_CASE("test random ids")
     e = 11 * e;
   }
 
-  my_map.set_map(init.data(), init.size(), 0, true);
+  my_map.set_map(Data(init), init.size(), 0, true);
 
   DOCTEST_REQUIRE(!my_map.is_sequential());
   DOCTEST_REQUIRE(!my_map.is_sequential(true));
@@ -111,7 +111,7 @@ DOCTEST_TEST_CASE("test sequential map with offset")
       std::size_t offset = offsets[i];
       std::iota(init.begin(), init.end(), int64_t(offset) + 1);
 
-      my_map.set_map(init.data(), init.size(), 0, true);
+      my_map.set_map(Data(init), init.size(), 0, true);
 
       DOCTEST_REQUIRE(my_map.is_sequential());
       DOCTEST_REQUIRE(my_map.is_sequential(true));
@@ -289,7 +289,7 @@ DOCTEST_TEST_CASE("test map_data sequential")
       std::size_t offset = offsets[ii];
       std::iota(init.begin(), init.end(), int(offset) + 1);
 
-      my_map.set_map(init.data(), init.size(), 0, true);
+      my_map.set_map(Data(init), init.size(), 0, true);
 
       DOCTEST_REQUIRE(my_map.is_sequential());
       DOCTEST_REQUIRE(my_map.is_sequential(true));
@@ -304,13 +304,13 @@ DOCTEST_TEST_CASE("test map_data sequential")
         // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
         std::vector<int> local(count);
         std::iota(local.begin(), local.end(), 1);
-        my_map.map_data(local.data(), int_field, count);
+        my_map.map_data(Data(local), int_field, count);
         DOCTEST_REQUIRE_EQ(init, local);
 
         DOCTEST_SUBCASE("reverse_map")
         {
           // If now reverse 'local', should get the original 1..count back
-          my_map.reverse_map_data(local.data(), int_field, count);
+          my_map.reverse_map_data(Data(local), int_field, count);
           std::vector<int> seq(count);
           std::iota(seq.begin(), seq.end(), 1);
           DOCTEST_REQUIRE_EQ(local, seq);
@@ -322,7 +322,7 @@ DOCTEST_TEST_CASE("test map_data sequential")
         // Now try 'map_data' call which is basically a bulk local-global.
         // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
         std::vector<int> local(count);
-        my_map.map_implicit_data(local.data(), int_field, count, 0);
+        my_map.map_implicit_data(Data(local), int_field, count, 0);
         DOCTEST_REQUIRE_EQ(init, local);
       }
     }
@@ -344,7 +344,7 @@ DOCTEST_TEST_CASE("test map_data random")
     e = 11 * e;
   }
 
-  my_map.set_map(init.data(), init.size(), 0, true);
+  my_map.set_map(Data(init), init.size(), 0, true);
 
   DOCTEST_REQUIRE(!my_map.is_sequential());
   DOCTEST_REQUIRE(!my_map.is_sequential(true));
@@ -359,13 +359,13 @@ DOCTEST_TEST_CASE("test map_data random")
     // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
     std::vector<int> local(count);
     std::iota(local.begin(), local.end(), 1);
-    my_map.map_data(local.data(), int_field, count);
+    my_map.map_data(Data(local), int_field, count);
     DOCTEST_REQUIRE_EQ(init, local);
 
     DOCTEST_SUBCASE("reverse_map")
     {
       // If now reverse 'local', should get the original 1..count back
-      my_map.reverse_map_data(local.data(), int_field, count);
+      my_map.reverse_map_data(Data(local), int_field, count);
       std::vector<int> seq(count);
       std::iota(seq.begin(), seq.end(), 1);
       DOCTEST_REQUIRE_EQ(local, seq);
@@ -377,7 +377,7 @@ DOCTEST_TEST_CASE("test map_data random")
     // Now try 'map_data' call which is basically a bulk local-global.
     // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
     std::vector<int> local(count);
-    my_map.map_implicit_data(local.data(), int_field, count, 0);
+    my_map.map_implicit_data(Data(local), int_field, count, 0);
     DOCTEST_REQUIRE_EQ(init, local);
   }
 }

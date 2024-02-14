@@ -393,9 +393,9 @@ void create_phantom(Ioss::DatabaseIO *db)
   }
   // Add coordinate frames
   std::vector<double>   coords(9, 0);
-  Ioss::CoordinateFrame cf1(0, 'a', coords.data());
+  Ioss::CoordinateFrame cf1(0, 'a', Data(coords));
   region->add(cf1);
-  Ioss::CoordinateFrame cf2(1, 'b', coords.data());
+  Ioss::CoordinateFrame cf2(1, 'b', Data(coords));
   region->add(cf2);
   // Fill up the fields with some values.
   region->end_mode(Ioss::STATE_DEFINE_MODEL);

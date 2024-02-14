@@ -1901,7 +1901,7 @@ namespace {
     std::vector<double> times(ts_count);
 
     int exoid = region.get_database()->get_file_pointer();
-    ex_get_all_times(exoid, times.data());
+    ex_get_all_times(exoid, Data(times));
 
     for (size_t step = 0; step < ts_count; step++) {
       times[step] = times[step] * scale + offset;

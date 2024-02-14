@@ -723,7 +723,7 @@ namespace Ioexnl {
 
         if (int_byte_size_api() == 4) {
           int *data32 = reinterpret_cast<int *>(data);
-          int *comp32 = reinterpret_cast<int *>(component.data());
+          int *comp32 = reinterpret_cast<int *>(Data(component));
 
           int index = comp;
           for (int64_t i = 0; i < my_element_count; i++) {
@@ -733,7 +733,7 @@ namespace Ioexnl {
         }
         else {
           int64_t *data64 = reinterpret_cast<int64_t *>(data);
-          int64_t *comp64 = reinterpret_cast<int64_t *>(component.data());
+          int64_t *comp64 = reinterpret_cast<int64_t *>(Data(component));
 
           int index = comp;
           for (int64_t i = 0; i < my_element_count; i++) {
@@ -1046,7 +1046,7 @@ namespace Ioexnl {
         // Write the variable...
         size_t file_count = nb->get_optional_property("locally_owned_count", num_out);
         check_node_owning_processor_data(nodeOwningProcessor, file_count);
-        filter_owned_nodes(nodeOwningProcessor, myProcessor, temp.data());
+        filter_owned_nodes(nodeOwningProcessor, myProcessor, Data(temp));
       }
     }
   }
@@ -1137,7 +1137,7 @@ namespace Ioexnl {
         if (type == EX_NODE_SET) {
           std::vector<double> file_data;
           file_data.reserve(file_count);
-          map_nodeset_data(nodesetOwnedNodes[ge], temp.data(), file_data);
+          map_nodeset_data(nodesetOwnedNodes[ge], Data(temp), file_data);
         }
       }
     }
@@ -1173,7 +1173,7 @@ namespace Ioexnl {
                                 reinterpret_cast<int *>(data), num_to_get, i32data);
             assert(i32data.size() == file_count);
             // Maps local to "global_implicit"
-            map_local_to_global_implicit(i32data.data(), file_count, nodeGlobalImplicitMap);
+            map_local_to_global_implicit(Data(i32data), file_count, nodeGlobalImplicitMap);
           }
           else {
             std::vector<int64_t> i64data;
@@ -1182,7 +1182,7 @@ namespace Ioexnl {
             map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
                                 reinterpret_cast<int64_t *>(data), num_to_get, i64data);
             assert(i64data.size() == file_count);
-            map_local_to_global_implicit(i64data.data(), file_count, nodeGlobalImplicitMap);
+            map_local_to_global_implicit(Data(i64data), file_count, nodeGlobalImplicitMap);
           }
         }
       }
@@ -1320,7 +1320,7 @@ namespace Ioexnl {
             side[i]    = el_side[index++] + side_offset;
           }
 
-          map_local_to_global_implicit(element.data(), num_to_get, elemGlobalImplicitMap);
+          map_local_to_global_implicit(Data(element), num_to_get, elemGlobalImplicitMap);
         }
         else {
           Ioss::Int64Vector element(num_to_get);
@@ -1333,7 +1333,7 @@ namespace Ioexnl {
             side[i]    = el_side[index++] + side_offset;
           }
 
-          map_local_to_global_implicit(element.data(), num_to_get, elemGlobalImplicitMap);
+          map_local_to_global_implicit(Data(element), num_to_get, elemGlobalImplicitMap);
         }
       }
       else if (field.get_name() == "element_side_raw") {

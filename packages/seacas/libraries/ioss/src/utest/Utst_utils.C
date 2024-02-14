@@ -74,7 +74,7 @@ DOCTEST_TEST_CASE("detect large int64")
 
   Ioss::Field field{"test", Ioss::Field::INT64, "vector_2d", Ioss::Field::RoleType::TRANSIENT, 3};
   std::vector<int64_t> data{0, max_double, max_double + 1, max_double - 1};
-  DOCTEST_REQUIRE(true == Ioss::Utils::check_int_to_real_overflow(field, data.data(), data.size()));
+  DOCTEST_REQUIRE(true == Ioss::Utils::check_int_to_real_overflow(field, Data(data), data.size()));
 }
 
 #if !defined __NVCC__
