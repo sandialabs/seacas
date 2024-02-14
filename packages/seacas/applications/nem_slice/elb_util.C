@@ -16,7 +16,6 @@
  *      sort2()
  *      sort3()
  *      find_first_last()
- *      find_int()
  *      in_list()
  *      roundfloat()
  *      find_max()
@@ -73,18 +72,12 @@ int token_compare(char *token, const char *key)
 /*****************************************************************************/
 void strip_string(char inp_str[], const char *tokens)
 {
-  int i;
-  int j;
-  int itok;
-  int ntokes;
-  int bval;
-
-  i      = 0;
-  ntokes = strlen(tokens);
+  int i      = 0;
+  int ntokes = strlen(tokens);
 
   while (inp_str[i] != '\0') {
-    bval = 0;
-    for (itok = 0; itok < ntokes; itok++) {
+    int bval = 0;
+    for (int itok = 0; itok < ntokes; itok++) {
       if (inp_str[i] == tokens[itok]) {
         i++;
         bval = 1;
@@ -97,7 +90,7 @@ void strip_string(char inp_str[], const char *tokens)
   }
 
   /* Move real part of string to the front */
-  j = 0;
+  int j = 0;
   while (inp_str[j + i] != '\0') {
     inp_str[j] = inp_str[j + i];
     j++;
@@ -107,8 +100,8 @@ void strip_string(char inp_str[], const char *tokens)
 
   /* Remove trailing tokens */
   while (j != -1) {
-    bval = 0;
-    for (itok = 0; itok < ntokes; itok++) {
+    int bval = 0;
+    for (int itok = 0; itok < ntokes; itok++) {
       if (inp_str[j] == tokens[itok]) {
         bval = 1;
         j--;
@@ -128,11 +121,8 @@ void strip_string(char inp_str[], const char *tokens)
 /*****************************************************************************/
 void string_to_lower(char in_string[], char cval)
 {
-  int len;
-  int cnt;
-
-  len = strlen(in_string);
-  for (cnt = 0; cnt < len; cnt++) {
+  int len = strlen(in_string);
+  for (int cnt = 0; cnt < len; cnt++) {
     if (in_string[cnt] == cval) {
       return;
     }
@@ -148,26 +138,19 @@ void string_to_lower(char in_string[], char cval)
 /*****************************************************************************/
 void clean_string(char inp_str[], const char *tokens)
 {
-  int i;
-  int j;
-  int itok;
-  int ntokes;
-  int bval;
-  int inplen;
+  int ntokes = strlen(tokens);
+  int inplen = strlen(inp_str);
 
-  ntokes = strlen(tokens);
-  inplen = strlen(inp_str);
-
-  i    = 0;
-  bval = 0;
+  int i    = 0;
+  int bval = 0;
   while (inp_str[i] != '\0') {
-    for (itok = 0; itok < ntokes; itok++) {
+    for (int itok = 0; itok < ntokes; itok++) {
       if (i < 0) {
         i = 0;
       }
       if (inp_str[i] == tokens[itok]) {
         /* Find out if the next character is also a token */
-        for (j = 0; j < ntokes; j++) {
+        for (int j = 0; j < ntokes; j++) {
           if (inp_str[i + 1] == tokens[j]) {
             bval = 1;
             break;
@@ -175,7 +158,7 @@ void clean_string(char inp_str[], const char *tokens)
         }
 
         if (bval == 1) {
-          for (j = i + 1; j < inplen; j++) {
+          for (int j = i + 1; j < inplen; j++) {
             inp_str[j] = inp_str[j + 1];
           }
 
@@ -193,9 +176,12 @@ void clean_string(char inp_str[], const char *tokens)
 } /*---------------- End clean_string() -----------------*/
 
 namespace {
-  template <typename INT> inline void ISWAP(INT *V, size_t I, size_t J) { std::swap(V[I], V[J]); }
+  template <typename INT> inline void ISWAP(std::vector<INT> &V, size_t I, size_t J)
+  {
+    std::swap(V[I], V[J]);
+  }
 
-  template <typename INT> void siftDowniii(INT *a, INT *b, INT *c, size_t start, size_t end)
+  template <typename INT> void siftDowniii(INT a[], INT b[], INT c[], size_t start, size_t end)
   {
     size_t root = start;
     while (root * 2 + 1 < end) {
@@ -271,22 +257,6 @@ void find_first_last(INT val, size_t vecsize, INT *vector, INT *first, INT *last
       *last = vecsize - 1;
     }
   }
-}
-
-/*****************************************************************************
- * Find the value in the integer array. Return -1 if not found.
- * New 1/21/97: change this so that it cross references a second
- *              array with a second value
- *****************************************************************************/
-template <typename INT>
-int64_t find_int(INT value1, INT value2, size_t start, size_t stop, INT *vector1, INT *vector2)
-{
-  for (size_t i = start; i <= stop; i++) {
-    if ((vector1[i] == value1) && (vector2[i] == value2)) {
-      return i;
-    }
-  }
-  return -1;
 }
 
 /*****************************************************************************/
@@ -382,7 +352,7 @@ size_t find_inter(const std::vector<INT> &set1, /* the first set of integers */
 {
   inter_ptr.clear();
   std::set_intersection(set1.begin(), set1.end(), set2.begin(), set2.end(),
-			std::back_inserter(inter_ptr));
+                        std::back_inserter(inter_ptr));
   return inter_ptr.size();
 }
 
@@ -428,7 +398,9 @@ namespace {
     return 0;
   }
 
-  template <typename INT> int is_less_than4v(INT *v1, INT *v2, INT *v3, INT *v4, size_t i, size_t j)
+  template <typename INT>
+  int is_less_than4v(std::vector<INT> &v1, std::vector<INT> &v2, std::vector<INT> &v3,
+                     std::vector<INT> &v4, size_t i, size_t j)
   {
     if (v1[i] < v1[j]) {
       return 1;
@@ -461,7 +433,9 @@ namespace {
     return 0;
   }
 
-  template <typename INT> void swap4(INT *v1, INT *v2, INT *v3, INT *v4, size_t i, size_t j)
+  template <typename INT>
+  void swap4(std::vector<INT> &v1, std::vector<INT> &v2, std::vector<INT> &v3, std::vector<INT> &v4,
+             size_t i, size_t j)
   {
     ISWAP(v1, i, j);
     ISWAP(v2, i, j);
@@ -470,10 +444,10 @@ namespace {
   }
 
   template <typename INT>
-  size_t internal_median3_4(INT *v1, INT *v2, INT *v3, INT *v4, size_t left, size_t right)
+  size_t internal_median3_4(std::vector<INT> &v1, std::vector<INT> &v2, std::vector<INT> &v3,
+                            std::vector<INT> &v4, size_t left, size_t right)
   {
-    size_t center;
-    center = (left + right) / 2;
+    size_t center = (left + right) / 2;
 
     if (is_less_than4v(v1, v2, v3, v4, center, left)) {
       swap4(v1, v2, v3, v4, left, center);
@@ -490,7 +464,8 @@ namespace {
   }
 
   template <typename INT>
-  void internal_qsort_4(INT *v1, INT *v2, INT *v3, INT *v4, size_t left, size_t right)
+  void internal_qsort_4(std::vector<INT> &v1, std::vector<INT> &v2, std::vector<INT> &v3,
+                        std::vector<INT> &v4, size_t left, size_t right)
   {
     if (left + QSORT_CUTOFF <= right) {
       size_t pivot = internal_median3_4(v1, v2, v3, v4, left, right);
@@ -518,7 +493,9 @@ namespace {
     }
   }
 
-  template <typename INT> void internal_isort_4(INT *v1, INT *v2, INT *v3, INT *v4, size_t N)
+  template <typename INT>
+  void internal_isort_4(std::vector<INT> &v1, std::vector<INT> &v2, std::vector<INT> &v3,
+                        std::vector<INT> &v4, size_t N)
   {
     size_t ndx = 0;
     for (size_t i = 1; i < N; i++) {
@@ -567,7 +544,8 @@ namespace {
     return 0;
   }
 
-  template <typename INT> int is_less_than2v(INT *v1, INT *v2, size_t i, size_t j)
+  template <typename INT>
+  int is_less_than2v(std::vector<INT> &v1, std::vector<INT> &v2, size_t i, size_t j)
   {
     if (v1[i] < v1[j]) {
       return 1;
@@ -584,13 +562,14 @@ namespace {
     return 0;
   }
 
-  template <typename INT> void swap2(INT *v1, INT *v2, size_t i, size_t j)
+  template <typename INT> void swap2(std::vector<INT> &v1, std::vector<INT> &v2, size_t i, size_t j)
   {
     ISWAP(v1, i, j);
     ISWAP(v2, i, j);
   }
 
-  template <typename INT> size_t internal_median3_2(INT *v1, INT *v2, size_t left, size_t right)
+  template <typename INT>
+  size_t internal_median3_2(std::vector<INT> &v1, std::vector<INT> &v2, size_t left, size_t right)
   {
     size_t center = (left + right) / 2;
 
@@ -608,7 +587,8 @@ namespace {
     return right - 1;
   }
 
-  template <typename INT> void internal_qsort_2(INT *v1, INT *v2, size_t left, size_t right)
+  template <typename INT>
+  void internal_qsort_2(std::vector<INT> &v1, std::vector<INT> &v2, size_t left, size_t right)
   {
     if (left + QSORT_CUTOFF <= right) {
       size_t pivot = internal_median3_2(v1, v2, left, right);
@@ -636,7 +616,8 @@ namespace {
     }
   }
 
-  template <typename INT> void internal_isort_2(INT *v1, INT *v2, size_t N)
+  template <typename INT>
+  void internal_isort_2(std::vector<INT> &v1, std::vector<INT> &v2, size_t N)
   {
     size_t ndx = 0;
     for (size_t i = 1; i < N; i++) {
@@ -678,13 +659,13 @@ void qsort4(std::vector<INT> &v1, std::vector<INT> &v2, std::vector<INT> &v3, st
   if (N <= 1) {
     return;
   }
-  internal_qsort_4(v1.data(), v2.data(), v3.data(), v4.data(), 0, N - 1);
-  internal_isort_4(v1.data(), v2.data(), v3.data(), v4.data(), N);
+  internal_qsort_4(v1, v2, v3, v4, 0, N - 1);
+  internal_isort_4(v1, v2, v3, v4, N);
 
 #if defined(DEBUG_QSORT)
   fmt::print(stderr, "Checking sort of {} values\n", (size_t)N + 1);
   for (size_t i = 1; i < N; i++) {
-    assert(is_less_than4v(v1.data(), v2.data(), v3.data(), v4.data(), i - 1, i));
+    assert(is_less_than4v(v1, v2, v3, v4, i - 1, i));
   }
 #endif
 }
@@ -697,13 +678,13 @@ template <typename INT> void qsort2(std::vector<INT> &v1, std::vector<INT> &v2)
   if (N <= 1) {
     return;
   }
-  internal_qsort_2(v1.data(), v2.data(), 0, N - 1);
-  internal_isort_2(v1.data(), v2.data(), N);
+  internal_qsort_2(v1, v2, 0, N - 1);
+  internal_isort_2(v1, v2, N);
 
 #if defined(DEBUG_QSORT)
   fmt::print(stderr, "Checking sort of {} values\n", (size_t)N + 1);
   for (size_t i = 1; i < N; i++) {
-    assert(is_less_than2v(v1.data(), v2.data(), i - 1, i));
+    assert(is_less_than2v(v1, v2, i - 1, i));
   }
 #endif
 }
