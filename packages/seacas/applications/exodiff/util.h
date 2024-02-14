@@ -6,6 +6,7 @@
  * See packages/seacas/LICENSE for details
  */
 #pragma once
+#include "vector_data.h"
 #include <fmt/color.h>
 #include <sstream>
 #include <string>
@@ -20,40 +21,3 @@ void              Warning(const std::string &x);
 void              ERR_OUT(std::ostringstream &buf);
 void DIFF_OUT(std::ostringstream &buf, fmt::detail::color_type color = fmt::color::red);
 void DIFF_OUT(const std::string &buf, fmt::detail::color_type color = fmt::color::red);
-
-// We have been relying on the assumption that calling `.data()` on an empty vector
-// will return `nullptr`.  However, according to cppreference (based on the standard):
-//
-// `If size() is ​0​, data() may or may not return a null pointer.`
-//
-// We don't have any systems on which we have found that (yet?), but this is proactive
-// in removing our use of `.data()` on potentially empty vectors...
-template <typename T> constexpr T *Data(std::vector<T> &vec)
-{
-  if (vec.empty()) {
-    return nullptr;
-  }
-  else {
-    return vec.data();
-  }
-}
-
-template <typename T> constexpr const T *Data(const std::vector<T> &vec)
-{
-  if (vec.empty()) {
-    return nullptr;
-  }
-  else {
-    return vec.data();
-  }
-}
-
-template <typename T, size_t N> constexpr T *Data(std::array<T, N> &arr)
-{
-  return N == 0 ? nullptr : arr.data();
-}
-
-template <typename T, size_t N> constexpr const T *Data(const std::array<T, N> &arr)
-{
-  return N == 0 ? nullptr : arr.data();
-}
