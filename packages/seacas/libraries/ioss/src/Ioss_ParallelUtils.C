@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -433,7 +433,7 @@ namespace Ioss {
     IOSS_PAR_UNUSED(root);
 #ifdef SEACAS_HAVE_MPI
     if (parallel_size() > 1) {
-      const int success = MPI_Bcast(const_cast<char *>(Data(my_str)), (int)my_str.size() + 1,
+      const int success = MPI_Bcast(const_cast<char *>(my_str.data()), (int)my_str.size() + 1,
                                     MPI_CHAR, root, communicator_);
       if (success != MPI_SUCCESS) {
         std::ostringstream errmsg;
