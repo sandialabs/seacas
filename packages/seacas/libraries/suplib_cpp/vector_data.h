@@ -7,7 +7,9 @@
 #pragma once
 
 #include <array>
+#include <cstdlib>
 #include <vector>
+
 // We have been relying on the assumption that calling `.data()` on an empty vector
 // will return `nullptr`.  However, according to cppreference (based on the standard):
 //
