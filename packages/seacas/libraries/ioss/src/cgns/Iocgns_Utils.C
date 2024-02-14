@@ -1416,8 +1416,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
         }
 
         CGERR(cg_1to1_write(file_ptr, base, db_zone, connect_name.c_str(), donor_name.c_str(),
-                            owner_range.data(), donor_range.data(), zgc.m_transform.data(),
-                            &zgc_idx));
+                            Data(owner_range), Data(donor_range), Data(zgc.m_transform), &zgc_idx));
 
         if (zgc.is_from_decomp()) {
           CGERR(cg_goto(file_ptr, base, "Zone_t", db_zone, "ZoneGridConnectivity", 0,
@@ -2995,7 +2994,7 @@ std::vector<Iocgns::ZoneBC> Iocgns::Utils::parse_zonebc_sideblocks(int cgns_file
     }
 
     std::array<cgsize_t, 2> point_range;
-    CGCHECK(cg_boco_read(cgns_file_ptr, base, zone, i + 1, point_range.data(), nullptr));
+    CGCHECK(cg_boco_read(cgns_file_ptr, base, zone, i + 1, Data(point_range), nullptr));
     zonebc.emplace_back(boco_name, point_range);
   }
   return zonebc;

@@ -199,7 +199,7 @@ namespace {
     {
       int idx = 0;
       proc    = data[idx++];
-      unpack(idx, data, range.data(), 3);
+      unpack(idx, data, Data(range), 3);
       local_zone = data[idx++];
     }
     std::string                      name{};
@@ -1218,7 +1218,7 @@ namespace Iocgns {
       Ioss::IJK_t             transform{};
 
       CGCHECKM(cg_1to1_read(get_file_pointer(), base, zone, i + 1, connectname, donorname,
-                            range.data(), donor_range.data(), transform.data()));
+                            Data(range), Data(donor_range), Data(transform)));
 
       auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, isParallel);
       std::string donor_name     = donorname_proc.first;
