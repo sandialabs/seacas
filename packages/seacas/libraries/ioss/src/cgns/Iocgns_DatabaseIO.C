@@ -125,8 +125,8 @@ namespace {
     std::array<cgsize_t, 6> donor_range;
     Ioss::IJK_t             transform{};
 
-    cg_1to1_read(cgns_file_ptr, base, zone, zgc_idx, connectname, donorname, Data(range),
-                 Data(donor_range), Data(transform));
+    cg_1to1_read(cgns_file_ptr, base, zone, zgc_idx, connectname, donorname, range.data(),
+                 donor_range.data(), transform.data());
 
     std::string name{connectname};
     bool        has_decomp_name = ((name.find_first_not_of("0123456789_-") == std::string::npos) &&
@@ -235,7 +235,7 @@ namespace {
       Ioss::IJK_t             transform{};
 
       CGCHECK(cg_1to1_read(cgns_file_ptr, base, db_zone, ii + 1, connectname, donorname,
-                           Data(range), Data(donor_range), Data(transform)));
+			   range.data(), donor_range.data(), transform.data()));
 
       auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, isParallel);
       std::string donor_name     = donorname_proc.first;
@@ -415,8 +415,8 @@ namespace {
       std::array<cgsize_t, 6> donor_range;
       Ioss::IJK_t             transform{};
 
-      CGCHECK(cg_1to1_read(cgns_file_ptr, base, zone, i + 1, connectname, donorname, Data(range),
-                           Data(donor_range), Data(transform)));
+      CGCHECK(cg_1to1_read(cgns_file_ptr, base, zone, i + 1, connectname, donorname, range.data(),
+                           donor_range.data(), transform.data()));
 
       auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, true);
       std::string donor_name     = donorname_proc.first;
@@ -974,9 +974,9 @@ namespace Iocgns {
             in += CGNS_MAX_NAME_LENGTH + 1;
           }
           all_data[id++] = block.proc;
-          pack(id, all_data, Data(block.range), 3);
-          pack(id, all_data, Data(block.glob_range), 3);
-          pack(id, all_data, Data(block.offset), 3);
+          pack(id, all_data, block.range.data(), 3);
+          pack(id, all_data, block.glob_range.data(), 3);
+          pack(id, all_data, block.offset.data(), 3);
         }
       }
       SMART_ASSERT(id % OUT_INT_PER_ZONE == 0);
@@ -999,9 +999,9 @@ namespace Iocgns {
       Ioss::IJK_t offset_ijk;
 
       zone_data[id++]; // proc field. Not currently used.
-      unpack(id, Data(zone_data), Data(local_ijk), 3);
-      unpack(id, Data(zone_data), Data(global_ijk), 3);
-      unpack(id, Data(zone_data), Data(offset_ijk), 3);
+      unpack(id, Data(zone_data), local_ijk.data(), 3);
+      unpack(id, Data(zone_data), global_ijk.data(), 3);
+      unpack(id, Data(zone_data), offset_ijk.data(), 3);
 
       Ioss::StructuredBlock *block =
           new Ioss::StructuredBlock(this, zone_name, 3, local_ijk, offset_ijk, global_ijk);
