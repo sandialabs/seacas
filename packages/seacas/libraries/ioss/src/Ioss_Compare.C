@@ -96,9 +96,9 @@ namespace {
 
   bool compare_fields(const Ioss::GroupingEntity *ige_1, const Ioss::GroupingEntity *ige_2,
                       Ioss::Field::RoleType role, std::ostringstream &buf);
-  template <typename T>
-  bool compare_field_data(const std::vector<T *> &in_entities_1,
-                          const std::vector<T *> &in_entities_2, Ioss::DataPool &pool,
+  template <typename T1, typename T2>
+  bool compare_field_data(const std::vector<T1 *> &in_entities_1,
+                          const std::vector<T2 *> &in_entities_2, Ioss::DataPool &pool,
                           Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
                           std::ostringstream &buf);
   bool compare_field_data(const std::vector<Ioss::StructuredBlock *> &in_entities_1,
@@ -485,7 +485,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
       }
 
       if (it == in_fss_2.end()) {
-        //        fmt::print(Ioss::WarnOut(), NOTFOUND_2, "SIDESET", name);
+        fmt::print(Ioss::WarnOut(), NOTFOUND_2, "SIDESET", name);
         continue;
       }
 
@@ -525,7 +525,7 @@ bool Ioss::Compare::compare_database(Ioss::Region &input_region_1, Ioss::Region 
           }
         }
         if (iter == in_sbs_2.end()) {
-          // fmt::print(Ioss::WarnOut(), NOTFOUND_2, "SIDEBLOCK", name);
+          fmt::print(Ioss::WarnOut(), NOTFOUND_2, "SIDEBLOCK", name);
           continue;
         }
 
@@ -1383,9 +1383,9 @@ namespace {
     return result;
   }
 
-  template <typename T>
-  bool compare_field_data(const std::vector<T *> &in_entities_1,
-                          const std::vector<T *> &in_entities_2, Ioss::DataPool &pool,
+  template <typename T1, typename T2>
+  bool compare_field_data(const std::vector<T1 *> &in_entities_1,
+                          const std::vector<T2 *> &in_entities_2, Ioss::DataPool &pool,
                           Ioss::Field::RoleType role, const Ioss::MeshCopyOptions &options,
                           std::ostringstream &buf)
   {
@@ -1404,10 +1404,10 @@ namespace {
     }
 
     for (const auto &in_entity_1 : in_entities_1) {
-      const std::string &name = in_entity_1->name();
+      const auto &name = in_entity_1->name();
 
-      typename std::vector<T *>::const_iterator it;
-      for (it = in_entities_2.begin(); it != in_entities_2.end(); ++it) {
+      auto it = in_entities_2.begin();
+      for (; it != in_entities_2.end(); ++it) {
         if (name == (*it)->name()) {
           break;
         }
@@ -1505,8 +1505,8 @@ namespace {
     return overall_result;
   }
 
-  template <typename T>
-  bool compare_field_data(T *data1, T *data2, size_t count, size_t component_count,
+  template <typename T1, typename T2>
+  bool compare_field_data(T1 *data1, T2 *data2, size_t count, size_t component_count,
                           const std::string &field_name, const std::string &entity_name,
                           std::ostringstream &buf)
   {
@@ -1574,17 +1574,6 @@ namespace {
                                    const std::string           &field_name,
                                    const Ioss::MeshCopyOptions &options, std::ostringstream &buf)
   {
-    size_t isize = ige_1->get_field(field_name).get_size();
-    size_t osize = ige_2->get_field(field_name).get_size();
-
-    Ioss::DataPool in_pool_2;
-
-    if (isize != osize) {
-      fmt::print(buf, "\n\tFIELD size mismatch for field '{}', ({} vs. {}) on {}", field_name,
-                 isize, osize, ige_1->name());
-      return false;
-    }
-
     if (field_name == "mesh_model_coordinates_x") {
       return true;
     }
@@ -1628,23 +1617,37 @@ namespace {
       return true;
     }
 
+    size_t icount = ige_1->get_field(field_name).raw_count();
+    size_t ocount = ige_2->get_field(field_name).raw_count();
+
+    if (icount != ocount) {
+      fmt::print(buf, "\n\tFIELD count mismatch for field '{}', ({} vs. {}) on {}", field_name,
+                 icount, ocount, ige_1->name());
+      return false;
+    }
+
+    size_t isize = ige_1->get_field(field_name).get_size();
+    size_t osize = ige_2->get_field(field_name).get_size();
+
+    Ioss::DataPool in_pool_2;
     if (options.data_storage_type == 1 || options.data_storage_type == 2) {
       if (in_pool.data.size() < isize) {
         in_pool.data.resize(isize);
       }
-      if (in_pool_2.data.size() < isize) {
-        in_pool_2.data.resize(isize);
+      if (in_pool_2.data.size() < osize) {
+        in_pool_2.data.resize(osize);
       }
     }
 
     assert(in_pool.data.size() >= isize);
-    assert(in_pool_2.data.size() >= isize);
+    assert(in_pool_2.data.size() >= osize);
 
     switch (options.data_storage_type) {
     case 1: {
       ige_1->get_field_data(field_name, Data(in_pool.data), isize);
       ige_2->get_field_data(field_name, Data(in_pool_2.data), isize);
-      const Ioss::Field &field = ige_1->get_field(field_name);
+      const Ioss::Field &field  = ige_1->get_field(field_name);
+      const Ioss::Field &field2 = ige_2->get_field(field_name);
 
       switch (field.get_type()) {
       case Ioss::Field::REAL:
@@ -1652,13 +1655,39 @@ namespace {
             (double *)Data(in_pool.data), (double *)Data(in_pool_2.data), field.raw_count(),
             field.get_component_count(Ioss::Field::InOut::OUTPUT), field_name, ige_1->name(), buf);
       case Ioss::Field::INTEGER:
-        return compare_field_data(
-            (int *)Data(in_pool.data), (int *)Data(in_pool_2.data), field.raw_count(),
-            field.get_component_count(Ioss::Field::InOut::OUTPUT), field_name, ige_1->name(), buf);
+        switch (field2.get_type()) {
+        case Ioss::Field::INTEGER:
+          return compare_field_data((int *)Data(in_pool.data), (int *)Data(in_pool_2.data),
+                                    field.raw_count(),
+                                    field.get_component_count(Ioss::Field::InOut::OUTPUT),
+                                    field_name, ige_1->name(), buf);
+        case Ioss::Field::INT64:
+          return compare_field_data((int *)Data(in_pool.data), (int64_t *)Data(in_pool_2.data),
+                                    field.raw_count(),
+                                    field.get_component_count(Ioss::Field::InOut::OUTPUT),
+                                    field_name, ige_1->name(), buf);
+        default:
+          fmt::print(Ioss::WarnOut(), "Field data_storage type {} not recognized for field {}.",
+                     field.type_string(), field_name);
+          return false;
+        }
       case Ioss::Field::INT64:
-        return compare_field_data(
-            (int64_t *)Data(in_pool.data), (int64_t *)Data(in_pool_2.data), field.raw_count(),
-            field.get_component_count(Ioss::Field::InOut::OUTPUT), field_name, ige_1->name(), buf);
+        switch (field2.get_type()) {
+        case Ioss::Field::INTEGER:
+          return compare_field_data((int64_t *)Data(in_pool.data), (int *)Data(in_pool_2.data),
+                                    field.raw_count(),
+                                    field.get_component_count(Ioss::Field::InOut::OUTPUT),
+                                    field_name, ige_1->name(), buf);
+        case Ioss::Field::INT64:
+          return compare_field_data((int64_t *)Data(in_pool.data),
+                                    (int64_t *)Data(in_pool_2.data), field.raw_count(),
+                                    field.get_component_count(Ioss::Field::InOut::OUTPUT),
+                                    field_name, ige_1->name(), buf);
+        default:
+          fmt::print(Ioss::WarnOut(), "Field data_storage type {} not recognized for field {}.",
+                     field.type_string(), field_name);
+          return false;
+        }
       default:
         fmt::print(Ioss::WarnOut(), "Field data_storage type {} not recognized for field {}.",
                    field.type_string(), field_name);

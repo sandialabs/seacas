@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Ioss_Transform.h" // for Transform, Factory
-#include "transform/Iotr_Factory.h"
+#include "Ioss_TransformFactory.h"
 #include <stddef.h>
 #include <string> // for string
 
@@ -20,7 +20,7 @@ namespace Ioss {
 
 namespace Iotr {
 
-  class IOTR_EXPORT Offset_Factory : public Factory
+  class IOTR_EXPORT Offset_Factory : public Ioss::TransformFactory
   {
   public:
     static const Offset_Factory *factory();

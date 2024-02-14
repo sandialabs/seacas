@@ -90,8 +90,6 @@ namespace Ioss {
       archive(m_bcName, m_famName, m_rangeBeg, m_rangeEnd, m_face);
     }
 
-    friend std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc);
-
   private:
     bool equal_(const Ioss::BoundaryCondition &rhs, bool quiet) const;
   };

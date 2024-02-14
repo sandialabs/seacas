@@ -296,7 +296,7 @@ namespace Iocatalyst {
                                         IOSS_MAYBE_UNUSED const Ioss::ParallelUtils &putils)
   {
     IOSS_PAR_UNUSED(s);
-    IOSS_PAR_UNUSED(dbinfo);
+    IOSS_PAR_UNUSED(putils);
 #ifdef SEACAS_HAVE_MPI
     int size = s.size();
     putils.broadcast(size);
@@ -311,7 +311,7 @@ namespace Iocatalyst {
                                             IOSS_MAYBE_UNUSED const Ioss::ParallelUtils &putils)
   {
     IOSS_PAR_UNUSED(statusCode);
-    IOSS_PAR_UNUSED(dbinfo);
+    IOSS_PAR_UNUSED(putils);
 #ifdef SEACAS_HAVE_MPI
 
     int code = statusCode;

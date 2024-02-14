@@ -48,10 +48,13 @@
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
-#ifdef __unix__
+#ifdef __EMSCRIPTEN__
+#include <errno.h>
+#elif __unix__
 #include <sys/errno.h>
 #endif
 
+#include "Ioss_CodeTypes.h"
 #include "Ioss_Getline.h"
 
 namespace {
@@ -122,8 +125,12 @@ namespace {
 #endif
 
 namespace {
-#ifdef __unix__
+#if defined(__EMSCRIPTEN__) || defined(__unix__)
+#ifdef __EMSCRIPTEN__
+#include <termios.h>
+#elif __unix__
 #include <sys/termios.h>
+#endif
   struct termios io_new_termios;
   struct termios io_old_termios;
 #endif
@@ -241,10 +248,12 @@ namespace {
   {
     char ch = (char)(unsigned char)c;
 
-    write(1, &ch, 1);
+    auto result = write(1, &ch, 1);
+    IOSS_PAR_UNUSED(result);
     if (ch == '\n') {
       ch = '\r';
-      write(1, &ch, 1); /* RAW mode needs '\r', does not hurt */
+      result = write(1, &ch, 1); /* RAW mode needs '\r', does not hurt */
+      IOSS_PAR_UNUSED(result);
     }
   }
 
@@ -254,7 +263,8 @@ namespace {
   {
     if (buf) {
       int len = strlen(buf);
-      write(1, buf, len);
+      auto result = write(1, buf, len);
+      IOSS_PAR_UNUSED(result);
     }
   }
 
@@ -263,7 +273,8 @@ namespace {
     int len = strlen(buf);
 
     gl_cleanup();
-    write(2, buf, len);
+    auto result = write(2, buf, len);
+    IOSS_PAR_UNUSED(result);
     exit(1);
   }
 

@@ -93,7 +93,6 @@ namespace Ioss {
     Ioss::IJK_t                inverse_transform(const Ioss::IJK_t &index_1) const;
 
     std::vector<int>     get_range(int ordinal) const;
-    friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
     /* COMPARE two ZoneConnectivity objects  */
     bool operator==(const Ioss::ZoneConnectivity &rhs) const;

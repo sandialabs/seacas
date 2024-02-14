@@ -31,6 +31,8 @@ namespace Ioss {
     virtual void set_properties(const std::string &name, const std::vector<int> &values);
     virtual void set_properties(const std::string &name, const std::vector<double> &values);
 
+    static Transform *create(const std::string &transform);
+
   protected:
     Transform() = default;
 

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -17,7 +17,6 @@
 #include "Ioss_SurfaceSplit.h"
 #include "Ioss_Transform.h"
 #include "Ioss_Utils.h"
-#include "transform/Iotr_Factory.h"
 #include <fmt/format.h>
 
 #include <algorithm>
@@ -949,11 +948,11 @@ namespace {
         Ioss::Field tr_field(out_field_name, field.get_type(), field.raw_storage(),
                              field.get_role(), field.raw_count());
 
-        Ioss::Transform *transform = Iotr::Factory::create("vector magnitude");
+        auto *transform = Ioss::Transform::create("vector magnitude");
         assert(transform != nullptr);
         tr_field.add_transform(transform);
 
-        Ioss::Transform *max_transform = Iotr::Factory::create("absolute_maximum");
+        auto *max_transform = Ioss::Transform::create("absolute_maximum");
         assert(max_transform != nullptr);
         tr_field.add_transform(max_transform);
 
