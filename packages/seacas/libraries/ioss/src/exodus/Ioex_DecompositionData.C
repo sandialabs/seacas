@@ -192,7 +192,7 @@ namespace Ioex {
           if (std::string(names[i]) == map_name) {
             m_decomposition.m_elementToProc.resize(decomp_elem_count());
             ex_get_partial_num_map(filePtr, EX_ELEM_MAP, i + 1, decomp_elem_offset() + 1,
-                                   decomp_elem_count(), m_decomposition.Data(m_elementToProc));
+                                   decomp_elem_count(), Data(m_decomposition.m_elementToProc));
             map_read = true;
             break;
           }
