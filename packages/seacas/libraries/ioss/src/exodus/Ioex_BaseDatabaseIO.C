@@ -1313,7 +1313,7 @@ namespace Ioex {
         auto   &vals  = values.second;
         size_t  count = vals.size();
         if (count > 0) {
-          int ierr = ex_put_reduction_vars(get_file_pointer(), step, type, id, count, vals.data());
+          int ierr = ex_put_reduction_vars(get_file_pointer(), step, type, id, count, Data(vals));
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
@@ -1335,7 +1335,7 @@ namespace Ioex {
         size_t  count = vals.size();
         if (count > 0) {
           int ierr = ex_get_reduction_vars(get_file_pointer(), step, type, id, count,
-                                           (double *)vals.data());
+                                           (double *)Data(vals));
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
