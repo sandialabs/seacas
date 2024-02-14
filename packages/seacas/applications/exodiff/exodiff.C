@@ -1524,7 +1524,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       gvals[out_idx] = FileDiff(vals1[idx1], vals2[idx2], interFace.output_type);
     }
     ex_put_var(out_file_id, output_step, EX_GLOBAL, 1, 0, interFace.glob_var_names.size(),
-               gvals.data());
+               Data(gvals));
     return diff_flag;
   }
 
@@ -1612,7 +1612,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, cons
           nvals[n] = 0.;
         }
       } // End of node iteration...
-      ex_put_var(out_file_id, output_step, EX_NODAL, n_idx + 1, 0, file1.Num_Nodes(), nvals.data());
+      ex_put_var(out_file_id, output_step, EX_NODAL, n_idx + 1, 0, file1.Num_Nodes(), Data(nvals));
       file1.Free_Nodal_Results(idx1);
       file2.Free_Nodal_Results(idx2);
     }
@@ -1854,7 +1854,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
       if (out_file_id >= 0) {
         ex_put_var(out_file_id, output_step, EX_ELEM_BLOCK, e_idx + 1, eblock1->Id(),
-                   eblock1->Size(), evals.data());
+                   eblock1->Size(), Data(evals));
       }
 
       eblock1->Free_Results();
@@ -1958,7 +1958,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
         if (out_file_id >= 0) {
           ex_put_var(out_file_id, output_step, EX_NODE_SET, e_idx + 1, nset1->Id(), nset1->Size(),
-                     vals.data());
+                     Data(vals));
         }
       }
       else {
@@ -2068,7 +2068,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         }
         if (out_file_id >= 0) {
           ex_put_var(out_file_id, output_step, EX_SIDE_SET, e_idx + 1, sset1->Id(), sset1->Size(),
-                     vals.data());
+                     Data(vals));
         }
       }
       else {
@@ -2323,7 +2323,7 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
         if (out_file_id >= 0) {
           ex_put_var(out_file_id, output_step, EX_EDGE_BLOCK, e_idx + 1, eblock1->Id(),
-                     eblock1->Size(), vals.data());
+                     eblock1->Size(), Data(vals));
         }
       }
       else {
@@ -2433,7 +2433,7 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
         if (out_file_id >= 0) {
           ex_put_var(out_file_id, output_step, EX_FACE_BLOCK, f_idx + 1, fblock1->Id(),
-                     fblock1->Size(), vals.data());
+                     fblock1->Size(), Data(vals));
         }
       }
       else {

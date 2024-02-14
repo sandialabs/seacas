@@ -104,8 +104,8 @@ namespace {
   bool case_compare(const std::string &s1, const std::string &s2)
   {
     return (s1.size() == s2.size()) &&
-      std::equal(s1.begin(), s1.end(), s2.begin(),
-		 [](char a, char b) { return std::tolower(a) == std::tolower(b); });
+           std::equal(s1.begin(), s1.end(), s2.begin(),
+                      [](char a, char b) { return std::tolower(a) == std::tolower(b); });
   }
 
 #if USE_ZOLTAN
@@ -249,30 +249,30 @@ namespace {
     Zoltan_Data.ndot = element_count;
     Zoltan_Data.vwgt = nullptr;
     if (interFace.ignore_x_ && interFace.ignore_y_) {
-      Zoltan_Data.x = z.data();
+      Zoltan_Data.x = Data(z);
     }
     else if (interFace.ignore_x_ && interFace.ignore_z_) {
-      Zoltan_Data.x = y.data();
+      Zoltan_Data.x = Data(y);
     }
     else if (interFace.ignore_y_ && interFace.ignore_z_) {
-      Zoltan_Data.x = x.data();
+      Zoltan_Data.x = Data(x);
     }
     else if (interFace.ignore_x_) {
-      Zoltan_Data.x = y.data();
-      Zoltan_Data.y = z.data();
+      Zoltan_Data.x = Data(y);
+      Zoltan_Data.y = Data(z);
     }
     else if (interFace.ignore_y_) {
-      Zoltan_Data.x = x.data();
-      Zoltan_Data.y = z.data();
+      Zoltan_Data.x = Data(x);
+      Zoltan_Data.y = Data(z);
     }
     else if (!interFace.ignore_z_) {
-      Zoltan_Data.x = x.data();
-      Zoltan_Data.y = y.data();
+      Zoltan_Data.x = Data(x);
+      Zoltan_Data.y = Data(y);
     }
     else {
-      Zoltan_Data.x = x.data();
-      Zoltan_Data.y = y.data();
-      Zoltan_Data.z = z.data();
+      Zoltan_Data.x = Data(x);
+      Zoltan_Data.y = Data(y);
+      Zoltan_Data.z = Data(z);
     }
 
     // Initialize Zoltan
@@ -687,7 +687,7 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
       for (int i = 0; i < map_count; i++) {
         if (case_compare(names[i], map_name)) {
           elem_to_proc.resize(element_count);
-          error = ex_get_num_map(exoid, EX_ELEM_MAP, i + 1, elem_to_proc.data());
+          error = ex_get_num_map(exoid, EX_ELEM_MAP, i + 1, Data(elem_to_proc));
           if (error < 0) {
             exodus_error(__LINE__);
           }

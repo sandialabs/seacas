@@ -941,8 +941,8 @@ namespace {
           count = node_count - beg + 1;
         }
 
-        ex_get_partial_coord(exoid, beg, count, glob_coord_x.data(), glob_coord_y.data(),
-                             glob_coord_z.data());
+        ex_get_partial_coord(exoid, beg, count, Data(glob_coord_x), Data(glob_coord_y),
+                             Data(glob_coord_z));
         progress("\tpartial_coord: " + std::to_string(beg) + " " + std::to_string(count));
 
         for (size_t i = 0; i < count; i++) {
@@ -1039,13 +1039,13 @@ namespace {
 
           switch (comp) {
           case 0:
-            ex_get_partial_coord(exoid, beg, count, glob_coord.data(), nullptr, nullptr);
+            ex_get_partial_coord(exoid, beg, count, Data(glob_coord), nullptr, nullptr);
             break;
           case 1:
-            ex_get_partial_coord(exoid, beg, count, nullptr, glob_coord.data(), nullptr);
+            ex_get_partial_coord(exoid, beg, count, nullptr, Data(glob_coord), nullptr);
             break;
           case 2:
-            ex_get_partial_coord(exoid, beg, count, nullptr, nullptr, glob_coord.data());
+            ex_get_partial_coord(exoid, beg, count, nullptr, nullptr, Data(glob_coord));
             break;
           }
           progress("\tpartial_coord: " + std::to_string(beg) + " " + std::to_string(count));
@@ -1133,7 +1133,7 @@ namespace {
             count = element_count - beg + 1;
           }
 
-          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
+          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, Data(glob_conn), nullptr,
                               nullptr);
           progress(fmt::format("\tpartial_conn-- start: {}\tcount: {}", fmt::group_digits(beg),
                                fmt::group_digits(count)));
@@ -1270,7 +1270,7 @@ namespace {
             count = element_count - beg + 1;
           }
 
-          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
+          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, Data(glob_conn), nullptr,
                               nullptr);
           progress(fmt::format("\tpartial_conn-- start: {}\tcount: {}", fmt::group_digits(beg),
                                fmt::group_digits(count)));

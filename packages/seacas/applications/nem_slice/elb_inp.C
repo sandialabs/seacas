@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -69,15 +69,15 @@ template int cmd_line_arg_parse(int argc, char *argv[], std::string &exoII_inp_f
                                 Weight_Description *weight);
 
 template <typename INT>
-int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passed by main() */
-                       std::string             &exoII_inp_file, /* The input ExodusII file name */
-                       std::string             &ascii_inp_file, /* The ASCII input file name */
-                       std::string             &nemI_out_file,  /* Output NemesisI file name */
-                       Machine_Description     *machine, /* Structure for machine description */
-                       LB_Description<INT>     *lb,     /* Structure for load balance description */
-                       Problem_Description     *prob,   /* Structure for various problem params */
-                       Solver_Description      *solver, /* Structure for eigen solver params */
-                       Weight_Description *weight  /* Structure for weighting graph */
+int cmd_line_arg_parse(int argc, char *argv[],              /* Args as passed by main() */
+                       std::string         &exoII_inp_file, /* The input ExodusII file name */
+                       std::string         &ascii_inp_file, /* The ASCII input file name */
+                       std::string         &nemI_out_file,  /* Output NemesisI file name */
+                       Machine_Description *machine,        /* Structure for machine description */
+                       LB_Description<INT> *lb,     /* Structure for load balance description */
+                       Problem_Description *prob,   /* Structure for various problem params */
+                       Solver_Description  *solver, /* Structure for eigen solver params */
+                       Weight_Description  *weight  /* Structure for weighting graph */
 )
 {
   int         opt_let;
@@ -1696,7 +1696,7 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
   if ((weight->type & EL_BLK) && (weight->ow_read)) {
     if (weight->elemblk.size() > 1) {
       /* start by sorting the two arrays by the element block number */
-      sort2(weight->elemblk.size(), weight->elemblk.data(), weight->elemblk_wgt.data());
+      sort2(weight->elemblk.size(), Data(weight->elemblk), Data(weight->elemblk_wgt));
 
       /* now loop through, and make sure that we don't have multiple values */
       for (int cnt = 1; cnt < (int)weight->elemblk.size(); cnt++) {

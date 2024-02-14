@@ -1068,7 +1068,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
     SMART_ASSERT(assemblies != nullptr);
     std::vector<INT> ids(num_assemblies);
 
-    err = ex_get_ids(file_id, EX_ASSEMBLY, ids.data());
+    err = ex_get_ids(file_id, EX_ASSEMBLY, Data(ids));
 
     if (err < 0) {
       Error("Failed to get assembly ids!  Aborting...\n");
@@ -1095,7 +1095,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
     SMART_ASSERT(eblocks != nullptr);
     std::vector<INT> ids(num_elmt_blocks);
 
-    err = ex_get_ids(file_id, EX_ELEM_BLOCK, ids.data());
+    err = ex_get_ids(file_id, EX_ELEM_BLOCK, Data(ids));
 
     if (err < 0) {
       Error("Failed to get element block ids!  Aborting...\n");
@@ -1144,7 +1144,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
     SMART_ASSERT(nsets != nullptr);
     std::vector<INT> ids(num_node_sets);
 
-    err = ex_get_ids(file_id, EX_NODE_SET, ids.data());
+    err = ex_get_ids(file_id, EX_NODE_SET, Data(ids));
 
     if (err < 0) {
       Error("Failed to get nodeset ids!  Aborting...\n");
@@ -1170,7 +1170,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
     SMART_ASSERT(ssets != nullptr);
     std::vector<INT> ids(num_side_sets);
 
-    err = ex_get_ids(file_id, EX_SIDE_SET, ids.data());
+    err = ex_get_ids(file_id, EX_SIDE_SET, Data(ids));
 
     if (err < 0) {
       Error("Failed to get sideset ids!  Aborting...\n");
@@ -1196,7 +1196,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
     SMART_ASSERT(edge_blocks != nullptr);
     std::vector<INT> ids(num_edge_blocks);
 
-    err = ex_get_ids(file_id, EX_EDGE_BLOCK, ids.data());
+    err = ex_get_ids(file_id, EX_EDGE_BLOCK, Data(ids));
 
     if (err < 0) {
       Error("Failed to get edgeblock ids!  Aborting...\n");
@@ -1222,7 +1222,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
     SMART_ASSERT(face_blocks != nullptr);
     std::vector<INT> ids(num_face_blocks);
 
-    err = ex_get_ids(file_id, EX_FACE_BLOCK, ids.data());
+    err = ex_get_ids(file_id, EX_FACE_BLOCK, Data(ids));
 
     if (err < 0) {
       Error("Failed to get faceblock ids!  Aborting...\n");
