@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 1991, 1992, 1993, 2021, 2022, 2023 by Chris Thewalt (thewalt@ce.berkeley.edu)
+ * Copyright (C) 1991, 1992, 1993, 2021, 2022, 2023, 2024 by Chris Thewalt (thewalt@ce.berkeley.edu)
  *
  * Permission to use, copy, modify, and distribute this software
  * for any purpose and without fee is hereby granted, provided
@@ -248,10 +248,10 @@ namespace {
   {
     char ch = (char)(unsigned char)c;
 
-    auto result = write(1, &ch, 1);
+    IOSS_MAYBE_UNUSED auto result = write(1, &ch, 1);
     IOSS_PAR_UNUSED(result);
     if (ch == '\n') {
-      ch = '\r';
+      ch     = '\r';
       result = write(1, &ch, 1); /* RAW mode needs '\r', does not hurt */
       IOSS_PAR_UNUSED(result);
     }
@@ -262,8 +262,8 @@ namespace {
   void gl_puts(const char *const buf)
   {
     if (buf) {
-      int len = strlen(buf);
-      auto result = write(1, buf, len);
+      int                    len    = strlen(buf);
+      IOSS_MAYBE_UNUSED auto result = write(1, buf, len);
       IOSS_PAR_UNUSED(result);
     }
   }
@@ -273,7 +273,7 @@ namespace {
     int len = strlen(buf);
 
     gl_cleanup();
-    auto result = write(2, buf, len);
+    IOSS_MAYBE_UNUSED auto result = write(2, buf, len);
     IOSS_PAR_UNUSED(result);
     exit(1);
   }
