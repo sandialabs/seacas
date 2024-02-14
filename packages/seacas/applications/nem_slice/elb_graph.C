@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -394,9 +394,7 @@ namespace {
                   }
 
                   for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-                    nelem = find_inter(Data(hold_elem), &graph->sur_elem[side_nodes[(ncnt + 1)]][0],
-                                       nhold, graph->sur_elem[side_nodes[(ncnt + 1)]].size(),
-                                       Data(pt_list));
+                    nelem = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]], pt_list);
 
                     /*  If less than 2 ( 0 or 1 ) elements only
                         touch nodes 0 and ncnt+1 then try next side node, i.e.,
@@ -427,11 +425,8 @@ namespace {
                   /* See if hexes share nodes 0 and nodes (ncnt+2) */
                   int inode = 0;
                   for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-                    nelem =
-                        find_inter(&graph->sur_elem[side_nodes[inode]][0],
-                                   &graph->sur_elem[side_nodes[(ncnt + 2)]][0],
-                                   graph->sur_elem[side_nodes[inode]].size(),
-                                   graph->sur_elem[side_nodes[(ncnt + 2)]].size(), Data(pt_list));
+                    nelem = find_inter(graph->sur_elem[side_nodes[inode]],
+                                       graph->sur_elem[side_nodes[(ncnt + 2)]], pt_list);
 
                     /*
                      * If there are multiple elements in the intersection, then

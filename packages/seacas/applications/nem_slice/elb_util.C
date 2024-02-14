@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -455,11 +455,9 @@ int roundfloat(float value)
  * and returns the number of values in the intersection.
  *****************************************************************************/
 template <typename INT>
-size_t find_inter(const INT set1[],  /* the first set of integers */
-                  const INT set2[],  /* the second set of integers */
-                  size_t    length1, /* the length of the first set */
-                  size_t    length2, /* the length of the second set */
-                  INT       inter_ptr[])   /* the values in the intersection */
+size_t find_inter(const std::vector<INT> &set1, /* the first set of integers */
+                  const std::vector<INT> &set2, /* the second set of integers */
+                  std::vector<INT>       &inter_ptr)  /* the values in the intersection */
 /*
  *
  *      Function which finds the intersection of two integer lists.
@@ -481,6 +479,9 @@ size_t find_inter(const INT set1[],  /* the first set of integers */
   size_t i       = 0;
   size_t j       = 0;
 
+  auto length1 = set1.size();
+  auto length2 = set2.size();
+
   while (i < length1 && j < length2) {
     if (set1[i] < set2[j]) {
       ++i;
@@ -497,10 +498,10 @@ size_t find_inter(const INT set1[],  /* the first set of integers */
   return counter;
 }
 
-template size_t find_inter(const int set1[], const int set2[], size_t length1, size_t length2,
-                           int inter_ptr[]);
-template size_t find_inter(const int64_t set1[], const int64_t set2[], size_t length1,
-                           size_t length2, int64_t inter_ptr[]);
+template size_t find_inter(const std::vector<int> &set1, const std::vector<int> &set2,
+                           std::vector<int> &inter_ptr);
+template size_t find_inter(const std::vector<int64_t> &set1, const std::vector<int64_t> &set2,
+                           std::vector<int64_t> &inter_ptr);
 
 #define QSORT_CUTOFF 12
 
