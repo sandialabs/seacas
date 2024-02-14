@@ -1187,9 +1187,9 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
       error = ex_put_all_var_param(
           ExodusFile::output(), global_vars.count(InOut::OUT), nodal_vars.count(InOut::OUT),
           element_vars.count(InOut::OUT), Data(elem_truth_table), nodeset_vars.count(InOut::OUT),
-          global.truthTable[static_cast<int>(Excn::ObjectType::NSET)].data(),
+          Data(global.truthTable[static_cast<int>(Excn::ObjectType::NSET)]),
           sideset_vars.count(InOut::OUT),
-          global.truthTable[static_cast<int>(Excn::ObjectType::SSET)].data());
+          Data(global.truthTable[static_cast<int>(Excn::ObjectType::SSET)]));
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -1203,7 +1203,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
         error =
             ex_put_truth_table(ExodusFile::output(), EX_EDGE_BLOCK, glob_edgeblocks.size(),
                                edgeblock_vars.count(InOut::OUT),
-                               global.truthTable[static_cast<int>(Excn::ObjectType::EDBLK)].data());
+                               Data(global.truthTable[static_cast<int>(Excn::ObjectType::EDBLK)]));
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -1218,7 +1218,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
         error =
             ex_put_truth_table(ExodusFile::output(), EX_FACE_BLOCK, glob_faceblocks.size(),
                                faceblock_vars.count(InOut::OUT),
-                               global.truthTable[static_cast<int>(Excn::ObjectType::FABLK)].data());
+                               Data(global.truthTable[static_cast<int>(Excn::ObjectType::FABLK)]));
         if (error < 0) {
           exodus_error(__LINE__);
         }
