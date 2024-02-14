@@ -790,7 +790,7 @@ namespace Iocatalyst {
         case Ioss::Property::BasicType::VEC_INTEGER: {
           std::vector<int> v(child[detail::VALUE].as_int_ptr(),
                              child[detail::VALUE].as_int_ptr() +
-                                 child[detail::VALUE].number_of_elements());
+                                 child[detail::VALUE].number_of_children());
           block->property_add(Ioss::Property(name, v, origin));
           break;
         }
@@ -798,7 +798,7 @@ namespace Iocatalyst {
         case Ioss::Property::BasicType::VEC_DOUBLE: {
           std::vector<double> v(child[detail::VALUE].as_double_ptr(),
                                 child[detail::VALUE].as_double_ptr() +
-                                    child[detail::VALUE].number_of_elements());
+                                    child[detail::VALUE].number_of_children());
           block->property_add(Ioss::Property(name, v, origin));
           break;
         }
@@ -979,7 +979,7 @@ namespace Iocatalyst {
 
       conduit_uint64 *my_vals = child[detail::BLOCKLOCNODEIND].as_uint64_ptr();
       block->m_blockLocalNodeIndex.clear();
-      for (int i = 0; i < child[detail::BLOCKLOCNODEIND].number_of_elements(); i++) {
+      for (int i = 0; i < child[detail::BLOCKLOCNODEIND].number_of_children(); i++) {
         block->m_blockLocalNodeIndex.push_back(my_vals[i]);
       }
 
