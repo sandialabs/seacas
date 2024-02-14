@@ -11,7 +11,7 @@
 #include "elb_elem.h" // for NNODES, get_elem_info
 #include "elb_err.h"  // for Gen_Error, error_lev
 #include "elb_output.h"
-#include "elb_util.h" // for gds_qsort, qsort2, in_list, etc
+#include "elb_util.h" // for qsort2, in_list, etc
 #include "fmt/chrono.h"
 #include "fmt/ostream.h"
 #include "scopeguard.h"
@@ -149,13 +149,13 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   for (int proc = 0; proc < machine->num_procs; proc++) {
 
     /* Sort node maps */
-    gds_qsort(lb->int_nodes[proc].data(), lb->int_nodes[proc].size());
+    std::sort(lb->int_nodes[proc].begin(), lb->int_nodes[proc].end());
     if (problem->type == NODAL) {
       sort2(lb->ext_nodes[proc].size(), lb->ext_nodes[proc].data(), lb->ext_procs[proc].data());
     }
 
     /* Sort element maps */
-    gds_qsort(lb->int_elems[proc].data(), lb->int_elems[proc].size());
+    std::sort(lb->int_elems[proc].begin(), lb->int_elems[proc].end());
   }
 
   /* Output the info records */
@@ -317,7 +317,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
        */
 
       /* This is a 2-key sort */
-      qsort2(lb->ext_procs[proc].data(), lb->ext_nodes[proc].data(), lb->ext_nodes[proc].size());
+      qsort2(lb->ext_procs[proc], lb->ext_nodes[proc]);
 
       /* Output the nodal communication map */
       if (ex_put_node_cmap(exoid, 1, lb->ext_nodes[proc].data(), lb->ext_procs[proc].data(), proc) <
@@ -407,7 +407,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
          * by processor and then by global ID.
          */
         /* This is a 2-key sort */
-        qsort2(Data(n_cmap_procs), Data(n_cmap_nodes), cnt3);
+        qsort2(n_cmap_procs, n_cmap_nodes);
 
         /* Output the nodal communication map */
         if (ex_put_node_cmap(exoid, 1, Data(n_cmap_nodes), Data(n_cmap_procs), proc) < 0) {

@@ -37,18 +37,10 @@ extern void string_to_lower(char in_string[], /* The string to convert to lower 
                             char cval         /* Character where to stop */
 );
 
-template <typename INT> void gds_qsort(INT v[], size_t N);
-
-template <typename INT> void qsort4(INT *v1, INT *v2, INT *v3, INT *v4, size_t N);
-
-template <typename INT> void qsort2(INT *v1, INT *v2, size_t N);
-
-template <typename INT> inline void SWAP(INT &r, INT &s)
-{
-  INT t = r;
-  r     = s;
-  s     = t;
-}
+template <typename INT> void gds_qsort(std::vector<INT> &v);
+template <typename INT>
+void qsort4(std::vector<INT> &v1, std::vector<INT> &v2, std::vector<INT> &v3, std::vector<INT> &v4);
+template <typename INT> void qsort2(std::vector<INT> &v1, std::vector<INT> &v2);
 
 template <typename INT> void siftDown(INT *a, INT *b, size_t start, size_t end)
 {
@@ -60,8 +52,8 @@ template <typename INT> void siftDown(INT *a, INT *b, size_t start, size_t end)
       child += 1;
     }
     if (a[root] < a[child]) {
-      SWAP(a[child], a[root]);
-      SWAP(b[child], b[root]);
+      std::swap(a[child], a[root]);
+      std::swap(b[child], b[root]);
       root = child;
     }
     else {
@@ -81,8 +73,8 @@ template <typename INT> void sort2(int64_t count, INT ra[], INT rb[])
   }
 
   for (size_t end = count - 1; end > 0; end--) {
-    SWAP(ra[end], ra[0]);
-    SWAP(rb[end], rb[0]);
+    std::swap(ra[end], ra[0]);
+    std::swap(rb[end], rb[0]);
     siftDown(ra, rb, 0, end);
   }
 }
