@@ -370,9 +370,7 @@ size_t find_inter(const std::vector<INT> &set1, /* the first set of integers */
  *      Function which finds the intersection of two integer lists.
  *      The points in set1 that belong in the intersection set are
  *      returned in the vector inter_pts, starting at position inter_pts[0].
- *      Enough space in inter_pts[] (min(length1, length2)) must
- *      have already been allocated in the calling program before this
- *      function is called.
+ *      inter_ptr is assumed to be empty.
  *
  *      Know that set1 and set2 are monotonically increasing
  *
@@ -382,27 +380,10 @@ size_t find_inter(const std::vector<INT> &set1, /* the first set of integers */
  */
 
 {
-  size_t counter = 0;
-  size_t i       = 0;
-  size_t j       = 0;
-
-  auto length1 = set1.size();
-  auto length2 = set2.size();
-
-  while (i < length1 && j < length2) {
-    if (set1[i] < set2[j]) {
-      ++i;
-    }
-    else if (set2[j] < set1[i]) {
-      ++j;
-    }
-    else {
-      inter_ptr[counter++] = i;
-      ++i;
-      ++j;
-    }
-  }
-  return counter;
+  inter_ptr.clear();
+  std::set_intersection(set1.begin(), set1.end(), set2.begin(), set2.end(),
+			std::back_inserter(inter_ptr));
+  return inter_ptr.size();
 }
 
 template size_t find_inter(const std::vector<int> &set1, const std::vector<int> &set2,

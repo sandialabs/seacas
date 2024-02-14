@@ -1229,7 +1229,6 @@ namespace {
 
     if (problem->global_mech == 1 || problem->local_mech == 1) {
 
-      std::vector<INT> pt_list(graph->max_nsur);
       std::vector<INT> hold_elem(graph->max_nsur);
       std::vector<int> problems(mesh->num_nodes);
       std::vector<int> proc_cnt(machine->num_procs);
@@ -1319,6 +1318,7 @@ namespace {
 
                       ss_to_node_list(etype2, mesh->connect[el2], (cnt + 1), side_nodes2);
 
+		      std::vector<INT> pt_list;
                       int nhold2 = find_inter(graph->sur_elem[side_nodes2[0]],
                                               graph->sur_elem[side_nodes2[1]], pt_list);
 
@@ -1326,6 +1326,7 @@ namespace {
                         hold_elem[i] = graph->sur_elem[side_nodes2[0]][pt_list[i]];
                       }
 
+		      pt_list.clear();
                       size_t nelem =
                           find_inter(hold_elem, graph->sur_elem[side_nodes2[2]], pt_list);
 
@@ -1524,7 +1525,6 @@ namespace {
     lb->e_cmap_neigh.resize(machine->num_procs);
 
     /* allocate space to hold info about surrounding elements */
-    std::vector<INT> pt_list(graph->max_nsur);
     std::vector<INT> hold_elem(graph->max_nsur);
 
     /* Find the internal and border elements */
@@ -1588,6 +1588,7 @@ namespace {
 
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node '0' and node 'ncnt+1' */
+	      std::vector<INT> pt_list;
               nelem = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]], pt_list);
 
               if (nelem < 2) {
@@ -1650,6 +1651,7 @@ namespace {
             size_t nhold = 0;
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node 'inode' and node 'node' */
+	      std::vector<INT> pt_list;
               nelem = find_inter(graph->sur_elem[side_nodes[inode]],
                                  graph->sur_elem[side_nodes[node]], pt_list);
 
