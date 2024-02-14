@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -534,7 +534,7 @@ bool Ioss::GroupingEntity::equal_(const Ioss::GroupingEntity &rhs, bool quiet) c
       if (rhs.field_exists(field)) {
         const auto &f2 = rhs.fields.get(field);
         if (!f1.equal(f2)) {
-          fmt::print(Ioss::OUTPUT(), "{}: FIELD ({}) mismatch\n", name(), field);
+          fmt::print(Ioss::OUTPUT(), "{}: FIELD ({}) mismatch\n\n", name(), field);
           same = false;
         }
       }

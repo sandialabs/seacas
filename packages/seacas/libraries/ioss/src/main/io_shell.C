@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -455,7 +455,7 @@ namespace {
       // by element block, then output is much easier.
       dbi1->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
     }
-    else {
+    else if (interFace.surface_split_type != Ioss::SPLIT_INVALID) {
       dbi1->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
     }
     dbi1->set_field_separator(interFace.fieldSuffixSeparator);
@@ -517,7 +517,7 @@ namespace {
       // by element block, then output is much easier.
       dbi2->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
     }
-    else {
+    else if (interFace.surface_split_type != Ioss::SPLIT_INVALID) {
       dbi2->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
     }
     dbi2->set_field_separator(interFace.fieldSuffixSeparator);

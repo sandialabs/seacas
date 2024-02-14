@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -270,70 +270,71 @@ bool Ioss::Field::transform(void *data)
 
 bool Ioss::Field::equal_(const Ioss::Field &rhs, bool quiet) const
 {
+  bool is_same = true;
   if (!Ioss::Utils::str_equal(this->name_, rhs.name_)) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\n\tFIELD name mismatch ({} v. {})", this->name_, rhs.name_);
+      fmt::print(Ioss::OUTPUT(), "\tFIELD name mismatch ({} v. {})\n", this->name_, rhs.name_);
     }
-    return false;
+    is_same = false;
   }
 
   if (this->type_ != rhs.type_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\n\tFIELD type mismatch ({} v. {})", this->type_string(),
+      fmt::print(Ioss::OUTPUT(), "\tFIELD type mismatch ({} v. {})\n", this->type_string(),
                  rhs.type_string());
     }
-    return false;
+    is_same = false;
   }
 
   if (this->role_ != rhs.role_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\n\tFIELD role mismatch ({} v. {})", this->role_string(),
+      fmt::print(Ioss::OUTPUT(), "\tFIELD role mismatch ({} v. {})\n", this->role_string(),
                  rhs.role_string());
     }
-    return false;
+    is_same = false;
   }
 
   if (this->rawCount_ != rhs.rawCount_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\n\tFIELD rawCount mismatch ({} v. {})", this->rawCount_,
+      fmt::print(Ioss::OUTPUT(), "\tFIELD rawCount mismatch ({} v. {})\n", this->rawCount_,
                  rhs.rawCount_);
     }
-    return false;
+    is_same = false;
   }
 
   if (this->transCount_ != rhs.transCount_) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\n\tFIELD transCount mismatch ({} v. {})", this->transCount_,
+      fmt::print(Ioss::OUTPUT(), "\tFIELD transCount mismatch ({} v. {})\n", this->transCount_,
                  rhs.transCount_);
     }
-    return false;
+    is_same = false;
   }
 
   if (this->get_size() != rhs.get_size()) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\n\tFIELD size mismatch ({} v. {})", this->get_size(),
+      fmt::print(Ioss::OUTPUT(), "\tFIELD size mismatch ({} v. {})\n", this->get_size(),
                  rhs.get_size());
     }
-    return false;
+    is_same = false;
   }
 
   if (this->get_suffices_uppercase() != rhs.get_suffices_uppercase()) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\n\tFIELD suffices_uppercase mismatch ({} v. {})",
+      fmt::print(Ioss::OUTPUT(), "\tFIELD suffices_uppercase mismatch ({} v. {})\n",
                  this->get_suffices_uppercase(), rhs.get_suffices_uppercase());
     }
-    return false;
+    is_same = false;
   }
 
   if (this->zero_copy_enabled() != rhs.zero_copy_enabled()) {
     if (!quiet) {
-      fmt::print(Ioss::OUTPUT(), "\n\tFIELD zero_copy_enabled mismatch ({} v. {})",
+      fmt::print(Ioss::OUTPUT(), "\tFIELD zero_copy_enabled mismatch ({} v. {})\n",
                  this->zero_copy_enabled(), rhs.zero_copy_enabled());
     }
-    return false;
+    is_same = false;
   }
 
-  return true;
+  return is_same;
 }
 
 bool Ioss::Field::operator==(const Ioss::Field &rhs) const { return equal_(rhs, true); }
