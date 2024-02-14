@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -15,6 +15,7 @@
 #include "rf_io_const.h" // for Debug_Flag, Exo_LB_File
 #include "rf_util.h"     // for print_line
 #include "sort_utils.h"  // for gds_qsort
+#include "vector_data.h"
 #include <cassert>
 #include <cstddef> // for size_t
 #include <cstdio>  // for stderr, etc
@@ -190,8 +191,8 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
       globals.N_Comm_Map[iproc].proc_ids.resize(globals.N_Comm_Map[iproc].node_cnt);
 
       if (ex_get_node_cmap(lb_exoid, globals.N_Comm_Map[iproc].map_id,
-                           globals.N_Comm_Map[iproc].node_ids.data(),
-                           globals.N_Comm_Map[iproc].proc_ids.data(), iproc) < 0) {
+                           Data(globals.N_Comm_Map[iproc].node_ids),
+                           Data(globals.N_Comm_Map[iproc].proc_ids), iproc) < 0) {
         /*
          * If there are disconnected mesh pieces, then it is
          * possible that there is no communication between the
@@ -209,9 +210,9 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
       globals.E_Comm_Map[iproc].proc_ids.resize(globals.E_Comm_Map[iproc].elem_cnt);
 
       if (ex_get_elem_cmap(lb_exoid, globals.E_Comm_Map[iproc].map_id,
-                           globals.E_Comm_Map[iproc].elem_ids.data(),
-                           globals.E_Comm_Map[iproc].side_ids.data(),
-                           globals.E_Comm_Map[iproc].proc_ids.data(), iproc) < 0) {
+                           Data(globals.E_Comm_Map[iproc].elem_ids),
+                           Data(globals.E_Comm_Map[iproc].side_ids),
+                           Data(globals.E_Comm_Map[iproc].proc_ids), iproc) < 0) {
         fmt::print(stderr, "[{}] ERROR. Failed to get elemental comm map for Proc {}!\n", __func__,
                    iproc);
         exit(1);
@@ -595,8 +596,8 @@ void NemSpread<T, INT>::read_cmap_params(int lb_exoid, std::vector<ELEM_COMM_MAP
     std::array<INT, 1> elem_cm_cnts{0};
 
     /* Read the communication map IDs for processor "iproc" */
-    if (ex_get_cmap_params(lb_exoid, node_cm_ids.data(), node_cm_cnts.data(), elem_cm_ids.data(),
-                           elem_cm_cnts.data(), iproc) < 0) {
+    if (ex_get_cmap_params(lb_exoid, Data(node_cm_ids), Data(node_cm_cnts), Data(elem_cm_ids),
+                           Data(elem_cm_cnts), iproc) < 0) {
       fmt::print(stderr, "[{}] ERROR, unable to read communication map params\n", __func__);
       exit(1);
     }

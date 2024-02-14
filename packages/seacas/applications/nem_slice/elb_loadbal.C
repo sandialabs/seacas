@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -208,19 +208,19 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
 
     switch (mesh->num_dims) {
     case 3:
-      x_node_ptr = mesh->coords.data();
-      y_node_ptr = mesh->coords.data() + (mesh->num_nodes);
-      z_node_ptr = mesh->coords.data() + 2 * (mesh->num_nodes);
+      x_node_ptr = Data(mesh->coords);
+      y_node_ptr = Data(mesh->coords) + (mesh->num_nodes);
+      z_node_ptr = Data(mesh->coords) + 2 * (mesh->num_nodes);
       break;
 
     case 2:
-      x_node_ptr = mesh->coords.data();
-      y_node_ptr = mesh->coords.data() + (mesh->num_nodes);
+      x_node_ptr = Data(mesh->coords);
+      y_node_ptr = Data(mesh->coords) + (mesh->num_nodes);
       z_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       break;
 
     case 1:
-      x_node_ptr = mesh->coords.data();
+      x_node_ptr = Data(mesh->coords);
       y_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       z_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       break;
@@ -277,9 +277,9 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       } /* End "for (cnt=0; cnt < mesh->num_elem; cnt++)" */
 
       /* and use different pointers for Chaco */
-      x_ptr = x_elem_ptr.data();
-      y_ptr = y_elem_ptr.data();
-      z_ptr = z_elem_ptr.data();
+      x_ptr = Data(x_elem_ptr);
+      y_ptr = Data(y_elem_ptr);
+      z_ptr = Data(z_elem_ptr);
 
     } /* End "if (problem->num_vertices > 0)" */
   }   /* End "if ((problem->type == ELEMENTAL) &&
@@ -368,8 +368,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     nprocg.resize(problem->num_groups);
     nelemg.resize(problem->num_groups);
 
-    if (!get_group_info(machine, problem, mesh, graph, lb->vertex2proc, nprocg.data(),
-                        nelemg.data(), &max_vtx, &max_adj)) {
+    if (!get_group_info(machine, problem, mesh, graph, lb->vertex2proc, Data(nprocg), Data(nelemg),
+                        &max_vtx, &max_adj)) {
       Gen_Error(0, "fatal: Error obtaining group information.");
       goto cleanup;
     }
@@ -408,8 +408,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       exit(-1);
     }
     else {
-      flag = INTER_FACE(problem->num_vertices, (int *)graph->start.data(), (int *)graph->adj.data(),
-                        weight->vertices.data(), weight->edges.data(), x_ptr, y_ptr, z_ptr,
+      flag = INTER_FACE(problem->num_vertices, (int *)Data(graph->start), (int *)Data(graph->adj),
+                        Data(weight->vertices), Data(weight->edges), x_ptr, y_ptr, z_ptr,
                         const_cast<char *>(assignfile), (char *)nullptr, lb->vertex2proc, tmp_arch,
                         tmp_lev, dim, goal, glob_method, refine, solve->rqi_flag, solve->vmax,
                         lb->num_sects, solve->tolerance, seed);
@@ -1098,7 +1098,7 @@ namespace {
         }
 
         size_t components =
-            extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
+            extract_connected_lists(nrow, Data(columns), Data(rows), Data(list), list_ptr);
 
         if (components) {
           fmt::print("There are {} connected components.\n", components);
@@ -1192,7 +1192,7 @@ namespace {
             }
 
             int components =
-                extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
+                extract_connected_lists(nrow, Data(columns), Data(rows), Data(list), list_ptr);
 
             if (components > 0) {
               fmt::print("For Processor {} there are {} connected components.\n", pcnt, components);
@@ -1323,15 +1323,15 @@ namespace {
                           find_inter(graph->sur_elem[side_nodes2[0]].data(),
                                      graph->sur_elem[side_nodes2[1]].data(),
                                      graph->sur_elem[side_nodes2[0]].size(),
-                                     graph->sur_elem[side_nodes2[1]].size(), pt_list.data());
+                                     graph->sur_elem[side_nodes2[1]].size(), Data(pt_list));
 
                       for (int i = 0; i < nhold2; i++) {
                         hold_elem[i] = graph->sur_elem[side_nodes2[0]][pt_list[i]];
                       }
 
-                      size_t nelem = find_inter(
-                          hold_elem.data(), graph->sur_elem[side_nodes2[2]].data(), nhold2,
-                          graph->sur_elem[side_nodes2[2]].size(), pt_list.data());
+                      size_t nelem =
+                          find_inter(Data(hold_elem), graph->sur_elem[side_nodes2[2]].data(),
+                                     nhold2, graph->sur_elem[side_nodes2[2]].size(), Data(pt_list));
 
                       if (nelem >= 1) {
                         count++;
@@ -1593,8 +1593,8 @@ namespace {
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node '0' and node 'ncnt+1' */
               nelem =
-                  find_inter(hold_elem.data(), graph->sur_elem[side_nodes[(ncnt + 1)]].data(),
-                             nhold, graph->sur_elem[side_nodes[(ncnt + 1)]].size(), pt_list.data());
+                  find_inter(Data(hold_elem), graph->sur_elem[side_nodes[(ncnt + 1)]].data(), nhold,
+                             graph->sur_elem[side_nodes[(ncnt + 1)]].size(), Data(pt_list));
 
               if (nelem < 2) {
                 break;
@@ -1659,7 +1659,7 @@ namespace {
               nelem = find_inter(graph->sur_elem[side_nodes[inode]].data(),
                                  graph->sur_elem[side_nodes[node]].data(),
                                  graph->sur_elem[side_nodes[inode]].size(),
-                                 graph->sur_elem[side_nodes[node]].size(), pt_list.data());
+                                 graph->sur_elem[side_nodes[node]].size(), Data(pt_list));
 
               if (nelem > 1) {
                 if (ncnt == 0) {
