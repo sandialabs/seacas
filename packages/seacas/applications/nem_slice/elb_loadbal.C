@@ -90,7 +90,8 @@ namespace {
                           Mesh_Description<INT> *mesh, LB_Description<INT> *lb,
                           Graph_Description<INT> *graph, int check_type);
 
-  int extract_connected_lists(int nrow, const int *columns, const int *rows, int *list,
+  int extract_connected_lists(int nrow, const std::vector<int> &columns,
+                              const std::vector<int> &rows, std::vector<int> &list,
                               std::vector<int> &list_ptr);
 } // namespace
 
@@ -1097,8 +1098,7 @@ namespace {
           }
         }
 
-        size_t components =
-            extract_connected_lists(nrow, Data(columns), Data(rows), Data(list), list_ptr);
+        size_t components = extract_connected_lists(nrow, columns, rows, list, list_ptr);
 
         if (components) {
           fmt::print("There are {} connected components.\n", components);
@@ -1191,8 +1191,7 @@ namespace {
               }
             }
 
-            int components =
-                extract_connected_lists(nrow, Data(columns), Data(rows), Data(list), list_ptr);
+            int components = extract_connected_lists(nrow, columns, rows, list, list_ptr);
 
             if (components > 0) {
               fmt::print("For Processor {} there are {} connected components.\n", pcnt, components);
@@ -1318,15 +1317,15 @@ namespace {
 
                       ss_to_node_list(etype2, mesh->connect[el2], (cnt + 1), side_nodes2);
 
-		      std::vector<INT> pt_list;
-                      int nhold2 = find_inter(graph->sur_elem[side_nodes2[0]],
-                                              graph->sur_elem[side_nodes2[1]], pt_list);
+                      std::vector<INT> pt_list;
+                      int              nhold2 = find_inter(graph->sur_elem[side_nodes2[0]],
+                                                           graph->sur_elem[side_nodes2[1]], pt_list);
 
                       for (int i = 0; i < nhold2; i++) {
                         hold_elem[i] = graph->sur_elem[side_nodes2[0]][pt_list[i]];
                       }
 
-		      pt_list.clear();
+                      pt_list.clear();
                       size_t nelem =
                           find_inter(hold_elem, graph->sur_elem[side_nodes2[2]], pt_list);
 
@@ -1588,7 +1587,7 @@ namespace {
 
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node '0' and node 'ncnt+1' */
-	      std::vector<INT> pt_list;
+              std::vector<INT> pt_list;
               nelem = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]], pt_list);
 
               if (nelem < 2) {
@@ -1651,7 +1650,7 @@ namespace {
             size_t nhold = 0;
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node 'inode' and node 'node' */
-	      std::vector<INT> pt_list;
+              std::vector<INT> pt_list;
               nelem = find_inter(graph->sur_elem[side_nodes[inode]],
                                  graph->sur_elem[side_nodes[node]], pt_list);
 
@@ -2137,22 +2136,10 @@ namespace {
    *   list_ptr={ 0     3 4 }
    */
 
-  int extract_connected_lists(int nrow, const int *columns, const int *rows, int *list,
+  int extract_connected_lists(int nrow, const std::vector<int> &columns,
+                              const std::vector<int> &rows, std::vector<int> &list,
                               std::vector<int> &list_ptr)
   {
-    int root;
-    int nordered;
-    int ni;
-    int nf;
-    int nni;
-    int nnf;
-    int i;
-    int ki;
-    int kf;
-    int k;
-    int j;
-    int components;
-    int too_many_components = 0;
     if (nrow == 0) {
       return (0);
     }
@@ -2161,15 +2148,16 @@ namespace {
     int pieces = 10 + (nrow / 10);
     list_ptr.resize(pieces);
     std::vector<int> mask(nrow, 1);
-    root = 1;
+    int              root = 1;
 
-    components               = 1;
-    nordered                 = 1;
+    bool too_many_components = false;
+    int  components          = 1;
+    int  nordered            = 1;
     list_ptr[components - 1] = nordered - 1;
     list[nordered - 1]       = root;
     mask[root - 1]           = 0;
-    ni                       = 1;
-    nf                       = 1;
+    int ni                   = 1;
+    int nf                   = 1;
     while (nordered < nrow) {
       if (nf == ni - 1) {
         ++components;
@@ -2177,9 +2165,9 @@ namespace {
           list_ptr[components - 1] = nordered;
         }
         else {
-          too_many_components = 1;
+          too_many_components = true;
         }
-        for (i = 0; i < nrow; i++) {
+        for (int i = 0; i < nrow; i++) {
           if (mask[i] == 1) {
             ++nordered;
             list[nordered - 1] = i + 1;
@@ -2189,13 +2177,13 @@ namespace {
           }
         }
       }
-      nni = nf + 1;
-      nnf = nni - 1;
-      for (i = ni; i <= nf; i++) {
-        ki = rows[list[i - 1] - 1] - 1;
-        kf = rows[list[i - 1]] - 2;
-        for (k = ki; k <= kf; k++) {
-          j = columns[k];
+      int nni = nf + 1;
+      int nnf = nni - 1;
+      for (int i = ni; i <= nf; i++) {
+        int ki = rows[list[i - 1] - 1] - 1;
+        int kf = rows[list[i - 1]] - 2;
+        for (int k = ki; k <= kf; k++) {
+          int j = columns[k];
           if (mask[j - 1] == 1) {
             ++nnf;
             ++nordered;
@@ -2207,7 +2195,7 @@ namespace {
       ni = nni;
       nf = nnf;
     }
-    if (too_many_components == 0) {
+    if (!too_many_components) {
       list_ptr[components] = nordered;
       return (components);
     }
@@ -2215,7 +2203,7 @@ namespace {
     /* Start over with list_ptr correctly allocated */
     list_ptr.resize(components);
     list_ptr.shrink_to_fit();
-    for (i = 0; i < nrow; i++) {
+    for (int i = 0; i < nrow; i++) {
       mask[i] = 1;
     }
 
@@ -2224,13 +2212,13 @@ namespace {
     list_ptr[components - 1] = nordered - 1;
     list[nordered - 1]       = root;
     mask[root - 1]           = 0;
-    ni                       = 1;
-    nf                       = 1;
+    int ni                   = 1;
+    int nf                   = 1;
     while (nordered < nrow) {
       if (nf == ni - 1) {
         ++components;
         list_ptr[components - 1] = nordered;
-        for (i = 0; i < nrow; i++) {
+        for (int i = 0; i < nrow; i++) {
           if (mask[i] == 1) {
             ++nordered;
             list[nordered - 1] = i + 1;
@@ -2240,13 +2228,13 @@ namespace {
           }
         }
       }
-      nni = nf + 1;
-      nnf = nni - 1;
-      for (i = ni; i <= nf; i++) {
-        ki = rows[list[i - 1] - 1] - 1;
-        kf = rows[list[i - 1]] - 2;
-        for (k = ki; k <= kf; k++) {
-          j = columns[k];
+      int nni = nf + 1;
+      int nnf = nni - 1;
+      for (int i = ni; i <= nf; i++) {
+        int ki = rows[list[i - 1] - 1] - 1;
+        int kf = rows[list[i - 1]] - 2;
+        for (int k = ki; k <= kf; k++) {
+          int j = columns[k];
           if (mask[j - 1] == 1) {
             ++nnf;
             ++nordered;
