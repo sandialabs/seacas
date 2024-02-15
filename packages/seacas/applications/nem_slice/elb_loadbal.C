@@ -1317,19 +1317,11 @@ namespace {
 
                       ss_to_node_list(etype2, mesh->connect[el2], (cnt + 1), side_nodes2);
 
-                      std::vector<INT> pt_list;
-                      int              nhold2 = find_inter(graph->sur_elem[side_nodes2[0]],
-                                                           graph->sur_elem[side_nodes2[1]], pt_list);
-
-                      for (int i = 0; i < nhold2; i++) {
-                        hold_elem[i] = graph->sur_elem[side_nodes2[0]][pt_list[i]];
-                      }
-
-                      pt_list.clear();
-                      size_t nelem =
-                          find_inter(hold_elem, graph->sur_elem[side_nodes2[2]], pt_list);
-
-                      if (nelem >= 1) {
+                      std::vector<INT> pt_list = find_inter(graph->sur_elem[side_nodes2[0]],
+							    graph->sur_elem[side_nodes2[1]]);
+		      hold_elem = pt_list;
+                      pt_list = find_inter(hold_elem, graph->sur_elem[side_nodes2[2]]);
+                      if (!pt_list.empty()) {
                         count++;
                         break;
                       }
@@ -1587,17 +1579,15 @@ namespace {
 
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node '0' and node 'ncnt+1' */
-              std::vector<INT> pt_list;
-              nelem = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]], pt_list);
+              std::vector<INT> pt_list = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]]);
+	      nelem = pt_list.size();
 
               if (nelem < 2) {
                 break;
               }
 
               nhold = nelem;
-              for (int ncnt2 = 0; ncnt2 < nelem; ncnt2++) {
-                hold_elem[ncnt2] = hold_elem[pt_list[ncnt2]];
-              }
+	      hold_elem = pt_list;
             }
           }
           else {
@@ -1650,16 +1640,13 @@ namespace {
             size_t nhold = 0;
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node 'inode' and node 'node' */
-              std::vector<INT> pt_list;
-              nelem = find_inter(graph->sur_elem[side_nodes[inode]],
-                                 graph->sur_elem[side_nodes[node]], pt_list);
-
+              std::vector<INT> pt_list = find_inter(graph->sur_elem[side_nodes[inode]],
+						    graph->sur_elem[side_nodes[node]]);
+	      nelem = pt_list.size();
               if (nelem > 1) {
                 if (ncnt == 0) {
                   nhold = nelem;
-                  for (int ncnt2 = 0; ncnt2 < nelem; ncnt2++) {
-                    hold_elem[ncnt2] = graph->sur_elem[side_nodes[inode]][pt_list[ncnt2]];
-                  }
+		  hold_elem = pt_list;
 
                   if (dflag) {
                     /*

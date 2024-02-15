@@ -392,8 +392,8 @@ namespace {
                   }
 
                   for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-		    std::vector<INT> pt_list;
-                    nelem = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]], pt_list);
+		    std::vector<INT> pt_list = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]]);
+		    nelem = pt_list.size();
 
                     /*  If less than 2 ( 0 or 1 ) elements only
                         touch nodes 0 and ncnt+1 then try next side node, i.e.,
@@ -403,9 +403,7 @@ namespace {
                     }
 
                     nhold = nelem;
-                    for (size_t i = 0; i < nelem; i++) {
-                      hold_elem[i] = hold_elem[pt_list[i]];
-                    }
+		    hold_elem = pt_list;
                   }
                 }
 
@@ -424,9 +422,9 @@ namespace {
                   /* See if hexes share nodes 0 and nodes (ncnt+2) */
                   int inode = 0;
                   for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-		    std::vector<INT> pt_list;
-                    nelem = find_inter(graph->sur_elem[side_nodes[inode]],
-                                       graph->sur_elem[side_nodes[(ncnt + 2)]], pt_list);
+		    std::vector<INT> pt_list = find_inter(graph->sur_elem[side_nodes[inode]],
+							  graph->sur_elem[side_nodes[(ncnt + 2)]]);
+		    nelem = pt_list.size();
 
                     /*
                      * If there are multiple elements in the intersection, then
@@ -437,9 +435,7 @@ namespace {
                     if (nelem > 1) {
 
                       /* Then get the correct elements out of the hold array */
-                      for (size_t i = 0; i < nelem; i++) {
-                        hold_elem[i] = graph->sur_elem[side_nodes[inode]][pt_list[i]];
-                      }
+		      hold_elem = pt_list;
                       break;
                     }
 

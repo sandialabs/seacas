@@ -330,39 +330,30 @@ int roundfloat(float value)
 /* Function find_inter() begins:
  *----------------------------------------------------------------------------
  * This function finds the intersection between two lists of integer values,
- * and returns the number of values in the intersection.
  *****************************************************************************/
 template <typename INT>
-size_t find_inter(const std::vector<INT> &set1, /* the first set of integers */
-                  const std::vector<INT> &set2, /* the second set of integers */
-                  std::vector<INT>       &inter_ptr)  /* the values in the intersection */
+std::vector<INT> find_inter(const std::vector<INT> &set1, /* the first set of integers */
+			    const std::vector<INT> &set2) /* the second set of integers */
 /*
  *
  *      Function which finds the intersection of two integer lists.
  *      The points in set1 that belong in the intersection set are
  *      returned in the vector inter_pts, starting at position inter_pts[0].
- *      inter_ptr is assumed to be empty.
  *
  *      Know that set1 and set2 are monotonically increasing
- *
- *      On return, find_inter returns 0 if there is no intersection.
- *      It returns the number of points in the intersection, if there
- *      is an intersection.
  */
 
 {
-  inter_ptr.clear();
+  std::vector<INT> inter_ptr;
   std::set_intersection(set1.begin(), set1.end(), set2.begin(), set2.end(),
                         std::back_inserter(inter_ptr));
-  return inter_ptr.size();
+  return inter_ptr;
 }
 
-template size_t find_inter(const std::vector<int> &set1, const std::vector<int> &set2,
-                           std::vector<int> &inter_ptr);
-template size_t find_inter(const std::vector<int64_t> &set1, const std::vector<int64_t> &set2,
-                           std::vector<int64_t> &inter_ptr);
+template std::vector<int> find_inter(const std::vector<int> &set1, const std::vector<int> &set2);
+template std::vector<int64_t> find_inter(const std::vector<int64_t> &set1, const std::vector<int64_t> &set2);
 
-#define QSORT_CUTOFF 12
+constexpr int QSORT_CUTOFF = 12;
 
 namespace {
   template <typename INT>
