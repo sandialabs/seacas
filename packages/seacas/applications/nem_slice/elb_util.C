@@ -23,6 +23,7 @@
  *      find_inter()
  *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 #include "elb_util.h"
+#include <algorithm>
 #include <cassert> // for assert
 #include <cctype>  // for isupper, tolower
 #include <cmath>   // for ceil, floor
