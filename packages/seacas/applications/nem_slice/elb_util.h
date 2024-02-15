@@ -92,9 +92,7 @@ extern int roundfloat(float value /* the value to be rounded */
 );
 
 template <typename INT>
-size_t find_inter(const std::vector<INT> &set1,     /* the first set of integers */
-                  const std::vector<INT> &set2,     /* the second set of integers */
-                  std::vector<INT>       &inter_ptr /* the values in the intersection */
-);
+std::vector<INT>  find_inter(const std::vector<INT> &set1,     /* the first set of integers */
+			     const std::vector<INT> &set2);    /* the second set of integers */
 
 template <typename INT> int64_t bin_search2(INT value, size_t num, INT List[]);
