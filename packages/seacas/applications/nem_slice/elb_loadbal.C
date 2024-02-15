@@ -2212,8 +2212,8 @@ namespace {
     list_ptr[components - 1] = nordered - 1;
     list[nordered - 1]       = root;
     mask[root - 1]           = 0;
-    int ni                   = 1;
-    int nf                   = 1;
+    ni                       = 1;
+    nf                       = 1;
     while (nordered < nrow) {
       if (nf == ni - 1) {
         ++components;
