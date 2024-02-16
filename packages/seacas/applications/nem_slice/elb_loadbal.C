@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -60,38 +60,37 @@ int ilog2i(size_t n)
 
 namespace {
   template <typename INT>
-  int nodal_dist(LB_Description<INT> * lb, Machine_Description * machine,
-                 Mesh_Description<INT> * mesh, Graph_Description<INT> *graph);
+  int nodal_dist(LB_Description<INT> * /*lb*/, Machine_Description * /*machine*/,
+                 Mesh_Description<INT> * /*mesh*/, Graph_Description<INT> * /*graph*/);
 
   template <typename INT>
-  int elemental_dist(LB_Description<INT> * lb, Machine_Description * machine,
-                     Mesh_Description<INT> * mesh, Graph_Description<INT> * graph,
-                     Problem_Description * problem);
+  int elemental_dist(LB_Description<INT> * /*lb*/, Machine_Description * /*machine*/,
+                     Mesh_Description<INT> * /*mesh*/, Graph_Description<INT> * /*graph*/,
+                     Problem_Description * /*problem*/);
 
   /* ZPINCH partitioning interface */
-  int ZPINCH_assign(Machine_Description * machine, int ndot, const float * x,
-                    const float * y, const float * z, int * part);
+  int ZPINCH_assign(Machine_Description * /*machine*/, int /*ndot*/, const float * /*x*/,
+                    const float * /*y*/, const float * /*z*/, int * /*part*/);
 
   /* BRICK partitioning interface */
-  int BRICK_assign(Machine_Description * machine, int ndot, const float * x,
-                   const float * y, const float * z, int * part);
+  int BRICK_assign(Machine_Description * /*machine*/, int /*ndot*/, const float * /*x*/,
+                   const float * /*y*/, const float * /*z*/, int * /*part*/);
 
 #ifdef USE_ZOLTAN
   /* ZOLTAN_RCB partitioning interface */
-  int ZOLTAN_assign(const char * method, int totalproc, size_t ndot, int * vwgt,
-                    float * x, float * y, float * z, int ignore_z, int * part,
-                    int argc, char ** argv);
+  int ZOLTAN_assign(const char * /*method*/, int /*totalproc*/, size_t /*ndot*/, int * /*vwgt*/,
+                    float * /*x*/, float * /*y*/, float * /*z*/, int /*ignore_z*/, int * /*part*/,
+                    int /*argc*/, char ** /*argv*/);
 #endif
-  void BALANCE_STATS(Machine_Description * machine, const int * wgt, size_t ndot,
-                     int * part);
+  void BALANCE_STATS(Machine_Description * /*machine*/, const int * /*wgt*/, size_t /*ndot*/,
+                     int * /*part*/);
 
   template <typename INT>
   int identify_mechanisms(Machine_Description *machine, Problem_Description *problem,
                           Mesh_Description<INT> *mesh, LB_Description<INT> *lb,
                           Graph_Description<INT> *graph, int check_type);
 
-  int extract_connected_lists(int nrow, const std::vector<int> &columns,
-                              const std::vector<int> &rows, std::vector<int> &list,
+  int extract_connected_lists(int nrow, const int *columns, const int *rows, int *list,
                               std::vector<int> &list_ptr);
 } // namespace
 
@@ -209,19 +208,19 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
 
     switch (mesh->num_dims) {
     case 3:
-      x_node_ptr = Data(mesh->coords);
-      y_node_ptr = Data(mesh->coords) + (mesh->num_nodes);
-      z_node_ptr = Data(mesh->coords) + 2 * (mesh->num_nodes);
+      x_node_ptr = mesh->coords.data();
+      y_node_ptr = mesh->coords.data() + (mesh->num_nodes);
+      z_node_ptr = mesh->coords.data() + 2 * (mesh->num_nodes);
       break;
 
     case 2:
-      x_node_ptr = Data(mesh->coords);
-      y_node_ptr = Data(mesh->coords) + (mesh->num_nodes);
+      x_node_ptr = mesh->coords.data();
+      y_node_ptr = mesh->coords.data() + (mesh->num_nodes);
       z_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       break;
 
     case 1:
-      x_node_ptr = Data(mesh->coords);
+      x_node_ptr = mesh->coords.data();
       y_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       z_node_ptr = (float *)calloc(mesh->num_nodes, sizeof(float));
       break;
@@ -278,9 +277,9 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       } /* End "for (cnt=0; cnt < mesh->num_elem; cnt++)" */
 
       /* and use different pointers for Chaco */
-      x_ptr = Data(x_elem_ptr);
-      y_ptr = Data(y_elem_ptr);
-      z_ptr = Data(z_elem_ptr);
+      x_ptr = x_elem_ptr.data();
+      y_ptr = y_elem_ptr.data();
+      z_ptr = z_elem_ptr.data();
 
     } /* End "if (problem->num_vertices > 0)" */
   }   /* End "if ((problem->type == ELEMENTAL) &&
@@ -369,8 +368,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     nprocg.resize(problem->num_groups);
     nelemg.resize(problem->num_groups);
 
-    if (!get_group_info(machine, problem, mesh, graph, lb->vertex2proc, Data(nprocg), Data(nelemg),
-                        &max_vtx, &max_adj)) {
+    if (!get_group_info(machine, problem, mesh, graph, lb->vertex2proc, nprocg.data(),
+                        nelemg.data(), &max_vtx, &max_adj)) {
       Gen_Error(0, "fatal: Error obtaining group information.");
       goto cleanup;
     }
@@ -409,8 +408,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       exit(-1);
     }
     else {
-      flag = INTER_FACE(problem->num_vertices, (int *)Data(graph->start), (int *)Data(graph->adj),
-                        Data(weight->vertices), Data(weight->edges), x_ptr, y_ptr, z_ptr,
+      flag = INTER_FACE(problem->num_vertices, (int *)graph->start.data(), (int *)graph->adj.data(),
+                        weight->vertices.data(), weight->edges.data(), x_ptr, y_ptr, z_ptr,
                         const_cast<char *>(assignfile), (char *)nullptr, lb->vertex2proc, tmp_arch,
                         tmp_lev, dim, goal, glob_method, refine, solve->rqi_flag, solve->vmax,
                         lb->num_sects, solve->tolerance, seed);
@@ -1098,7 +1097,8 @@ namespace {
           }
         }
 
-        size_t components = extract_connected_lists(nrow, columns, rows, list, list_ptr);
+        size_t components =
+            extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
 
         if (components) {
           fmt::print("There are {} connected components.\n", components);
@@ -1191,7 +1191,8 @@ namespace {
               }
             }
 
-            int components = extract_connected_lists(nrow, columns, rows, list, list_ptr);
+            int components =
+                extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
 
             if (components > 0) {
               fmt::print("For Processor {} there are {} connected components.\n", pcnt, components);
@@ -1228,6 +1229,7 @@ namespace {
 
     if (problem->global_mech == 1 || problem->local_mech == 1) {
 
+      std::vector<INT> pt_list(graph->max_nsur);
       std::vector<INT> hold_elem(graph->max_nsur);
       std::vector<int> problems(mesh->num_nodes);
       std::vector<int> proc_cnt(machine->num_procs);
@@ -1317,12 +1319,21 @@ namespace {
 
                       ss_to_node_list(etype2, mesh->connect[el2], (cnt + 1), side_nodes2);
 
-                      std::vector<INT> pt_list = find_inter(graph->sur_elem[side_nodes2[0]],
-							    graph->sur_elem[side_nodes2[1]]);
-		      hold_elem = pt_list;
-		      assert(hold_elem.size() == pt_list.size());
-                      pt_list = find_inter(hold_elem, graph->sur_elem[side_nodes2[2]]);
-                      if (!pt_list.empty()) {
+                      int nhold2 =
+                          find_inter(graph->sur_elem[side_nodes2[0]].data(),
+                                     graph->sur_elem[side_nodes2[1]].data(),
+                                     graph->sur_elem[side_nodes2[0]].size(),
+                                     graph->sur_elem[side_nodes2[1]].size(), pt_list.data());
+
+                      for (int i = 0; i < nhold2; i++) {
+                        hold_elem[i] = graph->sur_elem[side_nodes2[0]][pt_list[i]];
+                      }
+
+                      size_t nelem = find_inter(
+                          hold_elem.data(), graph->sur_elem[side_nodes2[2]].data(), nhold2,
+                          graph->sur_elem[side_nodes2[2]].size(), pt_list.data());
+
+                      if (nelem >= 1) {
                         count++;
                         break;
                       }
@@ -1517,6 +1528,7 @@ namespace {
     lb->e_cmap_neigh.resize(machine->num_procs);
 
     /* allocate space to hold info about surrounding elements */
+    std::vector<INT> pt_list(graph->max_nsur);
     std::vector<INT> hold_elem(graph->max_nsur);
 
     /* Find the internal and border elements */
@@ -1574,23 +1586,24 @@ namespace {
           if (!((etype == BAR2 || etype == SHELL2) && side_nodes[0] == side_nodes[1])) {
 
             size_t nhold = graph->sur_elem[side_nodes[0]].size();
-	    hold_elem.resize(nhold);
             for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
               hold_elem[ncnt] = graph->sur_elem[side_nodes[0]][ncnt];
             }
 
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node '0' and node 'ncnt+1' */
-	      assert(hold_elem.size() == nhold);
-              std::vector<INT> pt_list = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]]);
-	      nelem = pt_list.size();
+              nelem =
+                  find_inter(hold_elem.data(), graph->sur_elem[side_nodes[(ncnt + 1)]].data(),
+                             nhold, graph->sur_elem[side_nodes[(ncnt + 1)]].size(), pt_list.data());
 
               if (nelem < 2) {
                 break;
               }
 
               nhold = nelem;
-	      hold_elem = pt_list;
+              for (int ncnt2 = 0; ncnt2 < nelem; ncnt2++) {
+                hold_elem[ncnt2] = hold_elem[pt_list[ncnt2]];
+              }
             }
           }
           else {
@@ -1643,13 +1656,17 @@ namespace {
             size_t nhold = 0;
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node 'inode' and node 'node' */
-              std::vector<INT> pt_list = find_inter(graph->sur_elem[side_nodes[inode]],
-						    graph->sur_elem[side_nodes[node]]);
-	      nelem = pt_list.size();
+              nelem = find_inter(graph->sur_elem[side_nodes[inode]].data(),
+                                 graph->sur_elem[side_nodes[node]].data(),
+                                 graph->sur_elem[side_nodes[inode]].size(),
+                                 graph->sur_elem[side_nodes[node]].size(), pt_list.data());
+
               if (nelem > 1) {
                 if (ncnt == 0) {
                   nhold = nelem;
-		  hold_elem = pt_list;
+                  for (int ncnt2 = 0; ncnt2 < nelem; ncnt2++) {
+                    hold_elem[ncnt2] = graph->sur_elem[side_nodes[inode]][pt_list[ncnt2]];
+                  }
 
                   if (dflag) {
                     /*
@@ -1961,10 +1978,11 @@ namespace {
     time1 = get_time();
     for (int pcnt = 0; pcnt < machine->num_procs; pcnt++) {
       /* Note that this sort is multi-key */
-      qsort4(lb->e_cmap_procs[pcnt],  /* 1st key */
-             lb->e_cmap_elems[pcnt],  /* 2nd key */
-             lb->e_cmap_neigh[pcnt],  /* 3rd key */
-             lb->e_cmap_sides[pcnt]); /* 4th key */
+      qsort4(&lb->e_cmap_procs[pcnt][0],     /* 1st key */
+             &lb->e_cmap_elems[pcnt][0],     /* 2nd key */
+             &lb->e_cmap_neigh[pcnt][0],     /* 3rd key */
+             &lb->e_cmap_sides[pcnt][0],     /* 4th key */
+             lb->e_cmap_procs[pcnt].size()); /* Size */
     }
     /*
      * At this point, each processors arrays are sorted on three keys:
@@ -2126,10 +2144,22 @@ namespace {
    *   list_ptr={ 0     3 4 }
    */
 
-  int extract_connected_lists(int nrow, const std::vector<int> &columns,
-                              const std::vector<int> &rows, std::vector<int> &list,
+  int extract_connected_lists(int nrow, const int *columns, const int *rows, int *list,
                               std::vector<int> &list_ptr)
   {
+    int root;
+    int nordered;
+    int ni;
+    int nf;
+    int nni;
+    int nnf;
+    int i;
+    int ki;
+    int kf;
+    int k;
+    int j;
+    int components;
+    int too_many_components = 0;
     if (nrow == 0) {
       return (0);
     }
@@ -2138,16 +2168,15 @@ namespace {
     int pieces = 10 + (nrow / 10);
     list_ptr.resize(pieces);
     std::vector<int> mask(nrow, 1);
-    int              root = 1;
+    root = 1;
 
-    bool too_many_components = false;
-    int  components          = 1;
-    int  nordered            = 1;
+    components               = 1;
+    nordered                 = 1;
     list_ptr[components - 1] = nordered - 1;
     list[nordered - 1]       = root;
     mask[root - 1]           = 0;
-    int ni                   = 1;
-    int nf                   = 1;
+    ni                       = 1;
+    nf                       = 1;
     while (nordered < nrow) {
       if (nf == ni - 1) {
         ++components;
@@ -2155,9 +2184,9 @@ namespace {
           list_ptr[components - 1] = nordered;
         }
         else {
-          too_many_components = true;
+          too_many_components = 1;
         }
-        for (int i = 0; i < nrow; i++) {
+        for (i = 0; i < nrow; i++) {
           if (mask[i] == 1) {
             ++nordered;
             list[nordered - 1] = i + 1;
@@ -2167,13 +2196,13 @@ namespace {
           }
         }
       }
-      int nni = nf + 1;
-      int nnf = nni - 1;
-      for (int i = ni; i <= nf; i++) {
-        int ki = rows[list[i - 1] - 1] - 1;
-        int kf = rows[list[i - 1]] - 2;
-        for (int k = ki; k <= kf; k++) {
-          int j = columns[k];
+      nni = nf + 1;
+      nnf = nni - 1;
+      for (i = ni; i <= nf; i++) {
+        ki = rows[list[i - 1] - 1] - 1;
+        kf = rows[list[i - 1]] - 2;
+        for (k = ki; k <= kf; k++) {
+          j = columns[k];
           if (mask[j - 1] == 1) {
             ++nnf;
             ++nordered;
@@ -2185,7 +2214,7 @@ namespace {
       ni = nni;
       nf = nnf;
     }
-    if (!too_many_components) {
+    if (too_many_components == 0) {
       list_ptr[components] = nordered;
       return (components);
     }
@@ -2193,7 +2222,7 @@ namespace {
     /* Start over with list_ptr correctly allocated */
     list_ptr.resize(components);
     list_ptr.shrink_to_fit();
-    for (int i = 0; i < nrow; i++) {
+    for (i = 0; i < nrow; i++) {
       mask[i] = 1;
     }
 
@@ -2208,7 +2237,7 @@ namespace {
       if (nf == ni - 1) {
         ++components;
         list_ptr[components - 1] = nordered;
-        for (int i = 0; i < nrow; i++) {
+        for (i = 0; i < nrow; i++) {
           if (mask[i] == 1) {
             ++nordered;
             list[nordered - 1] = i + 1;
@@ -2218,13 +2247,13 @@ namespace {
           }
         }
       }
-      int nni = nf + 1;
-      int nnf = nni - 1;
-      for (int i = ni; i <= nf; i++) {
-        int ki = rows[list[i - 1] - 1] - 1;
-        int kf = rows[list[i - 1]] - 2;
-        for (int k = ki; k <= kf; k++) {
-          int j = columns[k];
+      nni = nf + 1;
+      nnf = nni - 1;
+      for (i = ni; i <= nf; i++) {
+        ki = rows[list[i - 1] - 1] - 1;
+        kf = rows[list[i - 1]] - 2;
+        for (k = ki; k <= kf; k++) {
+          j = columns[k];
           if (mask[j - 1] == 1) {
             ++nnf;
             ++nordered;
