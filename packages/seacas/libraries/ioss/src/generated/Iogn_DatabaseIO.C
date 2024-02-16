@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -249,8 +249,8 @@ namespace Iogn {
 
     const Ioss::Field &id_fld = nb->get_fieldref("ids");
     std::vector<char>  ids(id_fld.get_size());
-    get_field_internal(nb, id_fld, ids.data(), id_fld.get_size());
-    fill_transient_data(nb, field, data, ids.data(), num_to_get, currentTime);
+    get_field_internal(nb, id_fld, Data(ids), id_fld.get_size());
+    fill_transient_data(nb, field, data, Data(ids), num_to_get, currentTime);
 
     return num_to_get;
   }
@@ -326,8 +326,8 @@ namespace Iogn {
       // Fill the field with arbitrary data...
       const Ioss::Field &id_fld = eb->get_fieldref("ids");
       std::vector<char>  ids(id_fld.get_size());
-      get_field_internal(eb, id_fld, ids.data(), id_fld.get_size());
-      fill_transient_data(eb, field, data, ids.data(), num_to_get, currentTime);
+      get_field_internal(eb, id_fld, Data(ids), id_fld.get_size());
+      fill_transient_data(eb, field, data, Data(ids), num_to_get, currentTime);
     }
     else if (role == Ioss::Field::REDUCTION) {
       num_to_get = Ioss::Utils::field_warning(eb, field, "input reduction");
@@ -382,7 +382,7 @@ namespace Iogn {
         std::vector<int64_t> elem_side;
         m_generatedMesh->sideset_elem_sides(id, elem_side);
         if (field.get_name() == "element_side_raw") {
-          map_global_to_local(get_element_map(), elem_side.size(), 2, elem_side.data());
+          map_global_to_local(get_element_map(), elem_side.size(), 2, Data(elem_side));
         }
 
         if (field.is_type(Ioss::Field::INTEGER)) {
@@ -405,8 +405,8 @@ namespace Iogn {
         if (m_useVariableDf) {
           const Ioss::Field &id_fld = sd_blk->get_fieldref("ids");
           std::vector<char>  ids(id_fld.get_size());
-          get_field_internal(sd_blk, id_fld, ids.data(), id_fld.get_size());
-          fill_transient_data(sd_blk, field, data, ids.data(), num_to_get);
+          get_field_internal(sd_blk, id_fld, Data(ids), id_fld.get_size());
+          fill_transient_data(sd_blk, field, data, Data(ids), num_to_get);
         }
         else {
           fill_constant_data(field, data, 1.0);
@@ -420,8 +420,8 @@ namespace Iogn {
     else if (role == Ioss::Field::TRANSIENT) {
       const Ioss::Field &id_fld = sd_blk->get_fieldref("ids");
       std::vector<char>  ids(id_fld.get_size());
-      get_field_internal(sd_blk, id_fld, ids.data(), id_fld.get_size());
-      fill_transient_data(sd_blk, field, data, ids.data(), num_to_get, currentTime);
+      get_field_internal(sd_blk, id_fld, Data(ids), id_fld.get_size());
+      fill_transient_data(sd_blk, field, data, Data(ids), num_to_get, currentTime);
     }
     return num_to_get;
   }
@@ -439,7 +439,7 @@ namespace Iogn {
         std::vector<int64_t> nodes;
         m_generatedMesh->nodeset_nodes(id, nodes);
         if (field.get_name() == "ids_raw") {
-          map_global_to_local(get_node_map(), nodes.size(), 1, nodes.data());
+          map_global_to_local(get_node_map(), nodes.size(), 1, Data(nodes));
         }
 
         if (field.is_type(Ioss::Field::INTEGER)) {
@@ -462,8 +462,8 @@ namespace Iogn {
         if (m_useVariableDf) {
           const Ioss::Field &id_fld = ns->get_fieldref("ids");
           std::vector<char>  ids(id_fld.get_size());
-          get_field_internal(ns, id_fld, ids.data(), id_fld.get_size());
-          fill_transient_data(ns, field, data, ids.data(), num_to_get);
+          get_field_internal(ns, id_fld, Data(ids), id_fld.get_size());
+          fill_transient_data(ns, field, data, Data(ids), num_to_get);
         }
         else {
           fill_constant_data(field, data, 1.0);
@@ -476,8 +476,8 @@ namespace Iogn {
     else if (role == Ioss::Field::TRANSIENT) {
       const Ioss::Field &id_fld = ns->get_fieldref("ids");
       std::vector<char>  ids(id_fld.get_size());
-      get_field_internal(ns, id_fld, ids.data(), id_fld.get_size());
-      fill_transient_data(ns, field, data, ids.data(), num_to_get, currentTime);
+      get_field_internal(ns, id_fld, Data(ids), id_fld.get_size());
+      fill_transient_data(ns, field, data, Data(ids), num_to_get, currentTime);
     }
     return num_to_get;
   }
@@ -554,7 +554,7 @@ namespace Iogn {
       nodeMap.set_size(nodeCount);
       std::vector<int64_t> map;
       m_generatedMesh->node_map(map);
-      nodeMap.set_map(map.data(), map.size(), 0, true);
+      nodeMap.set_map(Data(map), map.size(), 0, true);
     }
     return nodeMap;
   }
@@ -567,7 +567,7 @@ namespace Iogn {
       elemMap.set_size(elementCount);
       std::vector<int64_t> map;
       m_generatedMesh->element_map(map);
-      elemMap.set_map(map.data(), map.size(), 0, true);
+      elemMap.set_map(Data(map), map.size(), 0, true);
     }
     return elemMap;
   }

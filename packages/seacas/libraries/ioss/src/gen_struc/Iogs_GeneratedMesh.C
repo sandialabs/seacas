@@ -610,7 +610,7 @@ namespace Iogs {
     /* create global coordinates */
     int64_t count = node_count_proc();
     coord.resize(count * 3);
-    coordinates(coord.data());
+    coordinates(Data(coord));
   }
 
   void GeneratedMesh::coordinates(double *coord) const
@@ -760,7 +760,7 @@ namespace Iogs {
     if (block_number == 1) { // HEX Element Block
       connect.resize(element_count_proc(block_number) * 8);
     }
-    raw_connectivity(block_number, connect.data());
+    raw_connectivity(block_number, Data(connect));
   }
 
   void GeneratedMesh::connectivity(int64_t block_number, Ioss::IntVector &connect) const
@@ -768,7 +768,7 @@ namespace Iogs {
     if (block_number == 1) { // HEX Element Block
       connect.resize(element_count_proc(block_number) * 8);
     }
-    raw_connectivity(block_number, connect.data());
+    raw_connectivity(block_number, Data(connect));
   }
 
   void GeneratedMesh::connectivity(int64_t block_number, int64_t *connect) const

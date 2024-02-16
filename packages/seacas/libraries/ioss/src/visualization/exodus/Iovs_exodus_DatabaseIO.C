@@ -134,7 +134,7 @@ namespace Iovs_exodus {
       int64_t eb_offset = (*I)->get_offset();
       this->catExoMesh->CreateElementVariable("ids", 1, bid, &this->elemMap.map()[eb_offset + 1]);
       std::vector<int> object_id((*I)->entity_count(), bid);
-      this->catExoMesh->CreateElementVariable("object_id", 1, bid, object_id.data());
+      this->catExoMesh->CreateElementVariable("object_id", 1, bid, Data(object_id));
     }
     this->catExoMesh->CreateNodalVariable("ids", 1, &this->nodeMap.map()[1]);
 

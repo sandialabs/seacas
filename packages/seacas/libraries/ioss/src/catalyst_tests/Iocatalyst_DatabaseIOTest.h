@@ -41,7 +41,7 @@ protected:
         auto field = g->get_fieldref(name);
         if (field.zero_copy_enabled()) {
           std::vector<std::byte> dcBuffer(field.get_size());
-          g->get_field_data(name, dcBuffer.data(), dcBuffer.size());
+          g->get_field_data(name, Data(dcBuffer), dcBuffer.size());
           void  *data;
           size_t dataSize;
           g->get_field_data(name, &data, &dataSize);

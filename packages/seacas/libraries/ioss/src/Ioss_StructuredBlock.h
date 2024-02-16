@@ -242,7 +242,7 @@ namespace Ioss {
     {
       size_t                   node_count = get_property("node_count").get_int();
       std::vector<IOSS_SB_INT> ids(node_count);
-      get_cell_node_ids(ids.data(), add_offset);
+      get_cell_node_ids(Data(ids), add_offset);
       return ids;
     }
 

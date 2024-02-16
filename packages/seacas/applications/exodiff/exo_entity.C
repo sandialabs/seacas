@@ -180,7 +180,7 @@ std::string Exo_Entity::Load_Results(int t1, int t2, double proportion, int var_
 
       if (t1 != t2) {
         results2.resize(numEntity);
-        err = ex_get_var(fileId, t2, exodus_type(), var_index + 1, id_, numEntity, results2.data());
+        err = ex_get_var(fileId, t2, exodus_type(), var_index + 1, id_, numEntity, Data(results2));
 
         if (err < 0) {
           Error(fmt::format("Exo_Entity::Load_Results(): Call to exodus routine"
@@ -328,9 +328,9 @@ void Exo_Entity::internal_load_params()
   int name_size = ex_inquire_int(fileId, EX_INQ_MAX_READ_NAME_LENGTH);
   {
     std::vector<char> name(name_size + 1);
-    ex_get_name(fileId, exodus_type(), id_, name.data());
+    ex_get_name(fileId, exodus_type(), id_, Data(name));
     if (name[0] != '\0') {
-      name_ = name.data();
+      name_ = Data(name);
       to_lower(name_);
       generatedName_ = false;
     }
@@ -400,7 +400,7 @@ namespace {
     size_t count = get_num_entities(file_id, exo_type);
     if ((ex_int64_status(file_id) & EX_IDS_INT64_API) != 0) {
       std::vector<int64_t> ids(count);
-      ex_get_ids(file_id, exo_type, ids.data());
+      ex_get_ids(file_id, exo_type, Data(ids));
 
       for (size_t i = 0; i < count; i++) {
         if (static_cast<size_t>(ids[i]) == id) {
@@ -410,7 +410,7 @@ namespace {
     }
     else {
       std::vector<int> ids(count);
-      ex_get_ids(file_id, exo_type, ids.data());
+      ex_get_ids(file_id, exo_type, Data(ids));
 
       for (size_t i = 0; i < count; i++) {
         if (static_cast<size_t>(ids[i]) == id) {

@@ -829,7 +829,7 @@ namespace {
                         std::vector<T> &global_values, INT *part_loc_elem_to_global)
   {
     // copy values to master element value information
-    T *local_values = values.data();
+    T *local_values = Data(values);
     for (size_t j = 0; j < entity_count; j++) {
       size_t global_block_pos         = part_loc_elem_to_global[(j + loffset)] - goffset;
       global_values[global_block_pos] = local_values[j];
@@ -841,7 +841,7 @@ namespace {
                         std::vector<T> &global_values)
   {
     // copy values to master sideset value information
-    T *local_values = values.data();
+    T *local_values = Data(values);
     for (size_t j = 0; j < entity_count; j++) {
       global_values[j + loffset] = local_values[j];
     }

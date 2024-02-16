@@ -41,7 +41,7 @@ template <typename INT> void Assembly<INT>::entity_load_params()
   entities.resize(entity_count);
 
   // Now fill in the entities list.
-  assembly.entity_list = entities.data();
+  assembly.entity_list = Data(entities);
   err                  = ex_get_assembly(fileId, &assembly);
 
   if (err < 0) {

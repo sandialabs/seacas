@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1416,8 +1416,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
         }
 
         CGERR(cg_1to1_write(file_ptr, base, db_zone, connect_name.c_str(), donor_name.c_str(),
-                            owner_range.data(), donor_range.data(), zgc.m_transform.data(),
-                            &zgc_idx));
+                            Data(owner_range), Data(donor_range), Data(zgc.m_transform), &zgc_idx));
 
         if (zgc.is_from_decomp()) {
           CGERR(cg_goto(file_ptr, base, "Zone_t", db_zone, "ZoneGridConnectivity", 0,
@@ -2190,7 +2189,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
   // Now write the timestep time values...
   CGCHECK(cg_goto(cgns_file_ptr, base, "BaseIterativeData_t", 1, "end"));
   cgsize_t dimtv[1] = {(cgsize_t)timesteps.size()};
-  CGCHECK(cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, dimtv, timesteps.data()));
+  CGCHECK(cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, dimtv, Data(timesteps)));
 
   // Output the ZoneIterativeData which maps a zones flow solutions to timesteps.
   // One per zone and the number of entries matches the number of timesteps...
@@ -2230,7 +2229,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
     if (has_cell_center_fields || has_nodal_fields) {
       CGCHECK(cg_ziter_write(cgns_file_ptr, base, zone, "ZoneIterativeData"));
       CGCHECK(cg_goto(cgns_file_ptr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
-      CGCHECK(cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, dim, names.data()));
+      CGCHECK(cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, dim, Data(names)));
 
       if (has_nodal_fields) {
         int index     = 1;
@@ -2241,7 +2240,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
         }
 
         CGCHECK(cg_array_write("VertexSolutionIndices", CGNS_ENUMV(Integer), 1, &dim[1],
-                               indices.data()));
+                               Data(indices)));
         CGCHECK(cg_descriptor_write("VertexPrefix", "Vertex"));
       }
       if (has_cell_center_fields) {
@@ -2253,7 +2252,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
         }
 
         CGCHECK(
-            cg_array_write("CellCenterIndices", CGNS_ENUMV(Integer), 1, &dim[1], indices.data()));
+            cg_array_write("CellCenterIndices", CGNS_ENUMV(Integer), 1, &dim[1], Data(indices)));
         CGCHECK(cg_descriptor_write("CellCenterPrefix", "CellCenter"));
       }
     }
@@ -2392,7 +2391,7 @@ int Iocgns::Utils::get_step_times(int cgns_file_ptr, std::vector<double> &timest
   // Read the timestep time values.
   CGCHECK(cg_goto(cgns_file_ptr, base, "BaseIterativeData_t", 1, "end"));
   std::vector<double> times(num_timesteps);
-  CGCHECK(cg_array_read_as(1, CGNS_ENUMV(RealDouble), times.data()));
+  CGCHECK(cg_array_read_as(1, CGNS_ENUMV(RealDouble), Data(times)));
 
   timesteps.reserve(num_timesteps);
   for (int i = 0; i < num_timesteps; i++) {
@@ -2995,7 +2994,7 @@ std::vector<Iocgns::ZoneBC> Iocgns::Utils::parse_zonebc_sideblocks(int cgns_file
     }
 
     std::array<cgsize_t, 2> point_range;
-    CGCHECK(cg_boco_read(cgns_file_ptr, base, zone, i + 1, point_range.data(), nullptr));
+    CGCHECK(cg_boco_read(cgns_file_ptr, base, zone, i + 1, Data(point_range), nullptr));
     zonebc.emplace_back(boco_name, point_range);
   }
   return zonebc;

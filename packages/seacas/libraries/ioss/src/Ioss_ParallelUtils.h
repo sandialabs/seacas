@@ -253,8 +253,8 @@ namespace Ioss {
       std::vector<int> send_dis(senddisp.begin(), senddisp.end());
       std::vector<int> recv_cnt(recvcnts.begin(), recvcnts.end());
       std::vector<int> recv_dis(recvdisp.begin(), recvdisp.end());
-      return MPI_Alltoallv((void *)sendbuf.data(), send_cnt.data(), send_dis.data(), mpi_type(T(0)),
-                           (void *)recvbuf.data(), recv_cnt.data(), recv_dis.data(), mpi_type(T(0)),
+      return MPI_Alltoallv((void *)Data(sendbuf), Data(send_cnt), Data(send_dis), mpi_type(T(0)),
+                           (void *)Data(recvbuf), Data(recv_cnt), Data(recv_dis), mpi_type(T(0)),
                            comm);
     }
     else {
@@ -290,9 +290,9 @@ namespace Ioss {
       }
     }
 #endif
-    return MPI_Alltoallv((void *)sendbuf.data(), const_cast<int *>(sendcnts.data()),
-                         const_cast<int *>(senddisp.data()), mpi_type(T(0)), recvbuf.data(),
-                         const_cast<int *>(recvcnts.data()), const_cast<int *>(recvdisp.data()),
+    return MPI_Alltoallv((void *)Data(sendbuf), const_cast<int *>(Data(sendcnts)),
+                         const_cast<int *>(Data(senddisp)), mpi_type(T(0)), Data(recvbuf),
+                         const_cast<int *>(Data(recvcnts)), const_cast<int *>(Data(recvdisp)),
                          mpi_type(T(0)), comm);
   }
 #endif
@@ -324,7 +324,7 @@ namespace Ioss {
       }
 
       const int success =
-          MPI_Allreduce((void *)(local_minmax.data()), maxout.data(),
+          MPI_Allreduce((void *)(Data(local_minmax)), Data(maxout),
                         static_cast<int>(local_minmax.size()), mpi_type(T()), oper, communicator_);
       if (success != MPI_SUCCESS) {
         std::ostringstream errmsg;

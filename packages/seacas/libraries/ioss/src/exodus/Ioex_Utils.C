@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -65,8 +65,7 @@ namespace {
           coordinates[9 * i + j] = coord[j];
         }
       }
-      int ierr =
-          ex_put_coordinate_frames(exoid, nframes, ids.data(), coordinates.data(), tags.data());
+      int ierr = ex_put_coordinate_frames(exoid, nframes, Data(ids), Data(coordinates), Data(tags));
       if (ierr < 0) {
         Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
       }
@@ -87,7 +86,7 @@ namespace {
       std::vector<char>   tags(nframes);
       std::vector<double> coord(nframes * 9);
       std::vector<INT>    ids(nframes);
-      ierr = ex_get_coordinate_frames(exoid, &nframes, ids.data(), coord.data(), tags.data());
+      ierr = ex_get_coordinate_frames(exoid, &nframes, Data(ids), Data(coord), Data(tags));
       if (ierr < 0) {
         Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
       }
@@ -461,21 +460,21 @@ namespace Ioex {
   {
     std::vector<char> buffer(length + 1);
     buffer[0] = '\0';
-    int error = ex_get_name(exoid, type, id, buffer.data());
+    int error = ex_get_name(exoid, type, id, Data(buffer));
     if (error < 0) {
       exodus_error(exoid, __LINE__, __func__, __FILE__);
     }
     if (buffer[0] != '\0') {
-      Ioss::Utils::fixup_name(buffer.data());
+      Ioss::Utils::fixup_name(Data(buffer));
       // Filter out names of the form "basename_id" if the name
       // id doesn't match the id in the name...
       size_t base_size = basename.size();
-      if (std::strncmp(basename.c_str(), buffer.data(), base_size) == 0) {
-        int64_t name_id = extract_id(buffer.data());
+      if (std::strncmp(basename.c_str(), Data(buffer), base_size) == 0) {
+        int64_t name_id = extract_id(Data(buffer));
 
         // See if name is truly of form "basename_name_id" (e.g. "surface_{id}")
         std::string tmp_name = Ioss::Utils::encode_entity_name(basename, name_id);
-        if (tmp_name == buffer.data()) {
+        if (tmp_name == Data(buffer)) {
           if (name_id > 0) {
             db_has_name = false;
             if (name_id != id) {
@@ -485,7 +484,7 @@ namespace Ioex {
                          "embedded id {}.\n"
                          "         This can cause issues later; the entity will be renamed to '{}' "
                          "(IOSS)\n\n",
-                         buffer.data(), id, name_id, new_name);
+                         Data(buffer), id, name_id, new_name);
               return new_name;
             }
             return tmp_name;
@@ -493,7 +492,7 @@ namespace Ioex {
         }
       }
       db_has_name = true;
-      return {buffer.data()};
+      return {Data(buffer)};
     }
     db_has_name = false;
     return Ioss::Utils::encode_entity_name(basename, id);
@@ -775,11 +774,11 @@ namespace Ioex {
         break;
       case Ioss::Property::BasicType::VEC_INTEGER:
         ex_put_integer_attribute(exoid, type, id, property_name.c_str(), prop.get_vec_int().size(),
-                                 prop.get_vec_int().data());
+                                 Data(prop.get_vec_int()));
         break;
       case Ioss::Property::BasicType::VEC_DOUBLE:
         ex_put_double_attribute(exoid, type, id, property_name.c_str(),
-                                prop.get_vec_double().size(), prop.get_vec_double().data());
+                                prop.get_vec_double().size(), Data(prop.get_vec_double()));
         break;
       default:; // Do nothing
       }

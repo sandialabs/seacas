@@ -95,13 +95,13 @@ namespace Iovs_cgns {
       size_t               node_count = sb->get_property("node_count").get_int();
       std::vector<int64_t> ids;
       ids.resize(node_count);
-      sb->get_cell_node_ids(ids.data(), true);
+      sb->get_cell_node_ids(Data(ids), true);
       bool isCellField = false;
       outputId("cell_node_ids", ids, isCellField, sb);
 
       size_t cell_count = sb->get_property("cell_count").get_int();
       ids.resize(cell_count);
-      sb->get_cell_ids(ids.data(), true);
+      sb->get_cell_ids(Data(ids), true);
       isCellField = true;
       outputId("cell_ids", ids, isCellField, sb);
 
@@ -121,7 +121,7 @@ namespace Iovs_cgns {
     zoneData.is_cell_field = isCellField;
     zoneData.size          = ids.size();
     zoneData.data_type     = zoneData.T_INT64;
-    zoneData.data.p_int64  = ids.data();
+    zoneData.data.p_int64  = Data(ids);
 
     this->catCGNSMesh->AddStructuredZoneData(zoneData);
   }
@@ -190,7 +190,7 @@ namespace Iovs_cgns {
         }
 
         zoneData.data_name     = ordinate;
-        zoneData.data.p_double = coord.data();
+        zoneData.data.p_double = Data(coord);
         this->catCGNSMesh->AddStructuredZoneData(zoneData);
       };
       // ========================================================================

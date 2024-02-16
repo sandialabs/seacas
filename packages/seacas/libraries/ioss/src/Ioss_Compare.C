@@ -1644,25 +1644,25 @@ namespace {
 
     switch (options.data_storage_type) {
     case 1: {
-      ige_1->get_field_data(field_name, in_pool.data.data(), isize);
-      ige_2->get_field_data(field_name, in_pool_2.data.data(), osize);
+      ige_1->get_field_data(field_name, Data(in_pool.data), isize);
+      ige_2->get_field_data(field_name, Data(in_pool_2.data), isize);
       const Ioss::Field &field  = ige_1->get_field(field_name);
       const Ioss::Field &field2 = ige_2->get_field(field_name);
 
       switch (field.get_type()) {
       case Ioss::Field::REAL:
         return compare_field_data(
-            (double *)in_pool.data.data(), (double *)in_pool_2.data.data(), field.raw_count(),
+            (double *)Data(in_pool.data), (double *)Data(in_pool_2.data), field.raw_count(),
             field.get_component_count(Ioss::Field::InOut::OUTPUT), field_name, ige_1->name(), buf);
       case Ioss::Field::INTEGER:
         switch (field2.get_type()) {
         case Ioss::Field::INTEGER:
-          return compare_field_data((int *)in_pool.data.data(), (int *)in_pool_2.data.data(),
+          return compare_field_data((int *)Data(in_pool.data), (int *)Data(in_pool_2.data),
                                     field.raw_count(),
                                     field.get_component_count(Ioss::Field::InOut::OUTPUT),
                                     field_name, ige_1->name(), buf);
         case Ioss::Field::INT64:
-          return compare_field_data((int *)in_pool.data.data(), (int64_t *)in_pool_2.data.data(),
+          return compare_field_data((int *)Data(in_pool.data), (int64_t *)Data(in_pool_2.data),
                                     field.raw_count(),
                                     field.get_component_count(Ioss::Field::InOut::OUTPUT),
                                     field_name, ige_1->name(), buf);
@@ -1674,13 +1674,13 @@ namespace {
       case Ioss::Field::INT64:
         switch (field2.get_type()) {
         case Ioss::Field::INTEGER:
-          return compare_field_data((int64_t *)in_pool.data.data(), (int *)in_pool_2.data.data(),
+          return compare_field_data((int64_t *)Data(in_pool.data), (int *)Data(in_pool_2.data),
                                     field.raw_count(),
                                     field.get_component_count(Ioss::Field::InOut::OUTPUT),
                                     field_name, ige_1->name(), buf);
         case Ioss::Field::INT64:
-          return compare_field_data((int64_t *)in_pool.data.data(),
-                                    (int64_t *)in_pool_2.data.data(), field.raw_count(),
+          return compare_field_data((int64_t *)Data(in_pool.data),
+                                    (int64_t *)Data(in_pool_2.data), field.raw_count(),
                                     field.get_component_count(Ioss::Field::InOut::OUTPUT),
                                     field_name, ige_1->name(), buf);
         default:

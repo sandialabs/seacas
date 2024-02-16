@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023,  National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024,  National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -9,6 +9,7 @@
 #include <EP_ExodusEntity.h> // for Block, Mesh
 #include <EP_Internals.h>    // for Internals, Redefine
 
+#include "vector_data.h"
 #include <algorithm> // for sort
 #include <array>
 #include <copy_string_cpp.h>
@@ -478,7 +479,7 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
     std::array dim{timedim};
     int        varid = 0;
     if ((status = nc_def_var(exodusFilePtr, VAR_WHOLE_TIME, nc_flt_code(exodusFilePtr), 1,
-                             dim.data(), &varid)) != NC_NOERR) {
+                             Data(dim), &varid)) != NC_NOERR) {
       errmsg = fmt::format("Error: failed to define whole time step variable in file id {}",
                            exodusFilePtr);
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
@@ -506,7 +507,7 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
     if (mesh.needNodeMap) {
       std::array dims{numnoddim};
       int        varid = 0;
-      status = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims.data(), &varid);
+      status = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, Data(dims), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -540,7 +541,7 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
     if (mesh.needElementMap) {
       std::array dims{numelemdim};
       int        varid = 0;
-      status = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims.data(), &varid);
+      status = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, Data(dims), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -714,7 +715,7 @@ template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector
       std::array dims{numelbdim, numattrdim};
       int        varid = 0;
       status = nc_def_var(exodusFilePtr, VAR_ATTRIB(iblk + 1), nc_flt_code(exodusFilePtr), 2,
-                          dims.data(), &varid);
+                          Data(dims), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         errmsg =
@@ -729,8 +730,7 @@ template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector
       dims[0] = numattrdim;
       dims[1] = namestrdim;
 
-      status =
-          nc_def_var(exodusFilePtr, VAR_NAME_ATTRIB(iblk + 1), NC_CHAR, 2, dims.data(), &varid);
+      status = nc_def_var(exodusFilePtr, VAR_NAME_ATTRIB(iblk + 1), NC_CHAR, 2, Data(dims), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         errmsg = fmt::format(
@@ -745,7 +745,7 @@ template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector
     std::array dims{numelbdim, nelnoddim};
 
     int connid;
-    status = nc_def_var(exodusFilePtr, VAR_CONN(iblk + 1), bulk_type, 2, dims.data(), &connid);
+    status = nc_def_var(exodusFilePtr, VAR_CONN(iblk + 1), bulk_type, 2, Data(dims), &connid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to create connectivity array for block {} in file id {}",
@@ -872,8 +872,8 @@ int Excn::Internals<INT>::put_metadata(const std::vector<NodeSet<INT>> &nodesets
     // define variable to store node set node list here instead of in expns
     std::array dims{dimid};
     int        varid = 0;
-    status           = nc_def_var(exodusFilePtr, VAR_NODE_NS(cur_num_node_sets + 1), bulk_type, 1,
-                                  dims.data(), &varid);
+    status = nc_def_var(exodusFilePtr, VAR_NODE_NS(cur_num_node_sets + 1), bulk_type, 1, Data(dims),
+                        &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -906,7 +906,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<NodeSet<INT>> &nodesets
 
       // create variable for distribution factors
       status = nc_def_var(exodusFilePtr, VAR_FACT_NS(cur_num_node_sets + 1),
-                          nc_flt_code(exodusFilePtr), 1, dims.data(), &varid);
+                          nc_flt_code(exodusFilePtr), 1, Data(dims), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -1022,8 +1022,8 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
 
     std::array dims{dimid};
     int        varid = 0;
-    status           = nc_def_var(exodusFilePtr, VAR_ELEM_SS(cur_num_side_sets + 1), bulk_type, 1,
-                                  dims.data(), &varid);
+    status = nc_def_var(exodusFilePtr, VAR_ELEM_SS(cur_num_side_sets + 1), bulk_type, 1, Data(dims),
+                        &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -1041,8 +1041,8 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
     exi_compress_variable(exodusFilePtr, varid, 1);
 
     // create side list variable for side set
-    status = nc_def_var(exodusFilePtr, VAR_SIDE_SS(cur_num_side_sets + 1), bulk_type, 1,
-                        dims.data(), &varid);
+    status = nc_def_var(exodusFilePtr, VAR_SIDE_SS(cur_num_side_sets + 1), bulk_type, 1, Data(dims),
+                        &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -1081,7 +1081,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
       // create distribution factor list variable for side set
       dims[0] = dimid;
       status  = nc_def_var(exodusFilePtr, VAR_FACT_SS(cur_num_side_sets + 1),
-                           nc_flt_code(exodusFilePtr), 1, dims.data(), &varid);
+                           nc_flt_code(exodusFilePtr), 1, Data(dims), &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -1215,7 +1215,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<EdgeBlock<INT>> &edgebl
     std::array dims{num_edges_in_edgeblock_dim, num_nodes_per_edge_dim};
     int        connid;
     status = nc_def_var(exodusFilePtr, VAR_EBCONN(cur_num_edge_blocks + 1), bulk_type, 2,
-                        dims.data(), &connid);
+                        Data(dims), &connid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg =
@@ -1353,7 +1353,7 @@ int Excn::Internals<INT>::put_metadata(const std::vector<FaceBlock<INT>> &facebl
 
     int connid;
     status = nc_def_var(exodusFilePtr, VAR_FBCONN(cur_num_face_blocks + 1), bulk_type, 2,
-                        dims.data(), &connid);
+                        Data(dims), &connid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg =
@@ -1427,10 +1427,10 @@ namespace {
     }
 
     if (sizeof(INT) == sizeof(int64_t)) {
-      status = nc_put_var_longlong(exoid, var_id, (long long int *)array.data());
+      status = nc_put_var_longlong(exoid, var_id, (long long int *)Data(array));
     }
     else {
-      status = nc_put_var_int(exoid, var_id, array.data());
+      status = nc_put_var_int(exoid, var_id, Data(array));
     }
 
     if (status != NC_NOERR) {
@@ -1458,7 +1458,7 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status = nc_put_var_longlong(exoid, var_id, (long long int *)ids.data());
+      status = nc_put_var_longlong(exoid, var_id, (long long int *)Data(ids));
     }
     else {
       // Have ex_entity_id (long long), need ints...
@@ -1471,7 +1471,7 @@ namespace {
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
-      status = nc_put_var_int(exoid, var_id, int_ids.data());
+      status = nc_put_var_int(exoid, var_id, Data(int_ids));
     }
 
     if (status != NC_NOERR) {
@@ -1494,7 +1494,7 @@ namespace {
       // node coordinate arrays -- separate storage...
       std::array dim{node_dim};
       if (dimension > 0) {
-        status = nc_def_var(exodusFilePtr, VAR_COORD_X, nc_flt_code(exodusFilePtr), 1, dim.data(),
+        status = nc_def_var(exodusFilePtr, VAR_COORD_X, nc_flt_code(exodusFilePtr), 1, Data(dim),
                             &varid);
         if (status != NC_NOERR) {
           ex_opts(EX_VERBOSE);
@@ -1507,7 +1507,7 @@ namespace {
       }
 
       if (dimension > 1) {
-        status = nc_def_var(exodusFilePtr, VAR_COORD_Y, nc_flt_code(exodusFilePtr), 1, dim.data(),
+        status = nc_def_var(exodusFilePtr, VAR_COORD_Y, nc_flt_code(exodusFilePtr), 1, Data(dim),
                             &varid);
         if (status != NC_NOERR) {
           ex_opts(EX_VERBOSE);
@@ -1520,7 +1520,7 @@ namespace {
       }
 
       if (dimension > 2) {
-        status = nc_def_var(exodusFilePtr, VAR_COORD_Z, nc_flt_code(exodusFilePtr), 1, dim.data(),
+        status = nc_def_var(exodusFilePtr, VAR_COORD_Z, nc_flt_code(exodusFilePtr), 1, Data(dim),
                             &varid);
         if (status != NC_NOERR) {
           ex_opts(EX_VERBOSE);
@@ -1535,7 +1535,7 @@ namespace {
 
     // coordinate names array
     std::array dims{dim_dim, str_dim};
-    status = nc_def_var(exodusFilePtr, VAR_NAME_COOR, NC_CHAR, 2, dims.data(), &varid);
+    status = nc_def_var(exodusFilePtr, VAR_NAME_COOR, NC_CHAR, 2, Data(dims), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg =
@@ -1572,7 +1572,7 @@ namespace {
 
     // id status array:
     std::array dim{dimid};
-    status = nc_def_var(exoid, stat_var, NC_INT, 1, dim.data(), &varid);
+    status = nc_def_var(exoid, stat_var, NC_INT, 1, Data(dim), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define side {} status in file id {}", type, exoid);
@@ -1582,7 +1582,7 @@ namespace {
 
     // id array:
     int ids_type = get_type(exoid, EX_IDS_INT64_DB);
-    status       = nc_def_var(exoid, id_var, ids_type, 1, dim.data(), &varid);
+    status       = nc_def_var(exoid, id_var, ids_type, 1, Data(dim), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define {} property in file id {}", type, exoid);
@@ -1601,7 +1601,7 @@ namespace {
     }
 
     std::array dims{dimid, namestrdim};
-    status = nc_def_var(exoid, name_var, NC_CHAR, 2, dims.data(), &varid);
+    status = nc_def_var(exoid, name_var, NC_CHAR, 2, Data(dims), &varid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       errmsg = fmt::format("Error: failed to define {} name array in file id {}", type, exoid);

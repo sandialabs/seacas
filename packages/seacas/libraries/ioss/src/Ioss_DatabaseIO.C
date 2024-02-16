@@ -1236,7 +1236,7 @@ namespace Ioss {
         IOSS_ERROR(errmsg);
       }
 
-      result = MPI_Waitall(req_cnt, request.data(), status.data());
+      result = MPI_Waitall(req_cnt, Data(request), Data(status));
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
@@ -1300,8 +1300,8 @@ namespace Ioss {
       }
 
       std::vector<unsigned> out_data(element_blocks.size() * bits_size);
-      MPI_Allreduce((void *)data.data(), out_data.data(), static_cast<int>(data.size()),
-                    MPI_UNSIGNED, MPI_BOR, util().communicator());
+      MPI_Allreduce((void *)Data(data), Data(out_data), static_cast<int>(data.size()), MPI_UNSIGNED,
+                    MPI_BOR, util().communicator());
 
       offset = 0;
       for (size_t jblk = 0; jblk < element_blocks.size(); jblk++) {

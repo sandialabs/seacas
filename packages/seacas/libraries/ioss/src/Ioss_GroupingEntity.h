@@ -526,11 +526,11 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string &field_name,
 
   data.resize(field.raw_count() * field.raw_storage()->component_count());
   size_t data_size = data.size() * sizeof(T);
-  auto   retval    = internal_get_field_data(field, data.data(), data_size);
+  auto   retval    = internal_get_field_data(field, Data(data), data_size);
 
   // At this point, transform the field if specified...
   if (retval >= 0) {
-    field.transform(data.data());
+    field.transform(Data(data));
   }
 
   return retval;
@@ -555,11 +555,11 @@ int64_t Ioss::GroupingEntity::put_field_data(const std::string    &field_name,
   if (field.has_transform()) {
     // Need non-const data since the transform will change the users data.
     std::vector<T> nc_data(data);
-    field.transform(nc_data.data());
-    return internal_put_field_data(field, nc_data.data(), data_size);
+    field.transform(Data(nc_data));
+    return internal_put_field_data(field, Data(nc_data), data_size);
   }
 
-  T *my_data = const_cast<T *>(data.data());
+  T *my_data = const_cast<T *>(Data(data));
   return internal_put_field_data(field, my_data, data_size);
 }
 
@@ -572,7 +572,7 @@ int64_t Ioss::GroupingEntity::put_field_data(const std::string &field_name,
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::get_field_type(static_cast<T>(0)));
   size_t data_size = data.size() * sizeof(T);
-  T     *my_data   = const_cast<T *>(data.data());
+  T     *my_data   = const_cast<T *>(Data(data));
   field.transform(my_data);
   return internal_put_field_data(field, my_data, data_size);
 }
@@ -607,7 +607,7 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string          &field_n
   typename ViewType::HostMirror host_data = Kokkos::create_mirror_view(data);
 
   // Extract a pointer to the underlying allocated memory of the host view.
-  T *host_data_ptr = host_data.data();
+  T *host_data_ptr = Data(host_data);
 
   // Extract the data from disk to the underlying memory pointed to by host_data_ptr.
   auto retval = internal_get_field_data(field, host_data_ptr, data_size);
@@ -711,7 +711,7 @@ int64_t Ioss::GroupingEntity::put_field_data(const std::string          &field_n
   Kokkos::deep_copy(host_data, data);
 
   // Extract a pointer to the underlying allocated memory of the host view.
-  T *host_data_ptr = host_data.data();
+  T *host_data_ptr = Data(host_data);
 
   // Transform the field
   field.transform(host_data_ptr);
