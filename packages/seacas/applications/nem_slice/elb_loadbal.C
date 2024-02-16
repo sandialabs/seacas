@@ -60,30 +60,30 @@ int ilog2i(size_t n)
 
 namespace {
   template <typename INT>
-  int nodal_dist(LB_Description<INT> * /*lb*/, Machine_Description * /*machine*/,
-                 Mesh_Description<INT> * /*mesh*/, Graph_Description<INT> * /*graph*/);
+  int nodal_dist(LB_Description<INT> * lb, Machine_Description * machine,
+                 Mesh_Description<INT> * mesh, Graph_Description<INT> *graph);
 
   template <typename INT>
-  int elemental_dist(LB_Description<INT> * /*lb*/, Machine_Description * /*machine*/,
-                     Mesh_Description<INT> * /*mesh*/, Graph_Description<INT> * /*graph*/,
-                     Problem_Description * /*problem*/);
+  int elemental_dist(LB_Description<INT> * lb, Machine_Description * machine,
+                     Mesh_Description<INT> * mesh, Graph_Description<INT> * graph,
+                     Problem_Description * problem);
 
   /* ZPINCH partitioning interface */
-  int ZPINCH_assign(Machine_Description * /*machine*/, int /*ndot*/, const float * /*x*/,
-                    const float * /*y*/, const float * /*z*/, int * /*part*/);
+  int ZPINCH_assign(Machine_Description * machine, int ndot, const float * x,
+                    const float * y, const float * z, int * part);
 
   /* BRICK partitioning interface */
-  int BRICK_assign(Machine_Description * /*machine*/, int /*ndot*/, const float * /*x*/,
-                   const float * /*y*/, const float * /*z*/, int * /*part*/);
+  int BRICK_assign(Machine_Description * machine, int ndot, const float * x,
+                   const float * y, const float * z, int * part);
 
 #ifdef USE_ZOLTAN
   /* ZOLTAN_RCB partitioning interface */
-  int ZOLTAN_assign(const char * /*method*/, int /*totalproc*/, size_t /*ndot*/, int * /*vwgt*/,
-                    float * /*x*/, float * /*y*/, float * /*z*/, int /*ignore_z*/, int * /*part*/,
-                    int /*argc*/, char ** /*argv*/);
+  int ZOLTAN_assign(const char * method, int totalproc, size_t ndot, int * vwgt,
+                    float * x, float * y, float * z, int ignore_z, int * part,
+                    int argc, char ** argv);
 #endif
-  void BALANCE_STATS(Machine_Description * /*machine*/, const int * /*wgt*/, size_t /*ndot*/,
-                     int * /*part*/);
+  void BALANCE_STATS(Machine_Description * machine, const int * wgt, size_t ndot,
+                     int * part);
 
   template <typename INT>
   int identify_mechanisms(Machine_Description *machine, Problem_Description *problem,
@@ -1320,6 +1320,7 @@ namespace {
                       std::vector<INT> pt_list = find_inter(graph->sur_elem[side_nodes2[0]],
 							    graph->sur_elem[side_nodes2[1]]);
 		      hold_elem = pt_list;
+		      assert(hold_elem.size() == pt_list.size());
                       pt_list = find_inter(hold_elem, graph->sur_elem[side_nodes2[2]]);
                       if (!pt_list.empty()) {
                         count++;
@@ -1573,12 +1574,14 @@ namespace {
           if (!((etype == BAR2 || etype == SHELL2) && side_nodes[0] == side_nodes[1])) {
 
             size_t nhold = graph->sur_elem[side_nodes[0]].size();
+	    hold_elem.resize(nhold);
             for (size_t ncnt = 0; ncnt < nhold; ncnt++) {
               hold_elem[ncnt] = graph->sur_elem[side_nodes[0]][ncnt];
             }
 
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connected to both node '0' and node 'ncnt+1' */
+	      assert(hold_elem.size() == nhold);
               std::vector<INT> pt_list = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]]);
 	      nelem = pt_list.size();
 
