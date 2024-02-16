@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2024 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2023 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -53,7 +53,8 @@ template int generate_graph(Problem_Description *problem, Mesh_Description<int64
 
 template <typename INT>
 int generate_graph(Problem_Description *problem, Mesh_Description<INT> *mesh,
-                   Graph_Description<INT> *graph, Weight_Description *weight, Sphere_Info *sphere)
+                   Graph_Description<INT> *graph, Weight_Description *weight,
+                   Sphere_Info *sphere)
 {
   double time1 = get_time();
   /* Find the elements surrounding a node */
@@ -179,8 +180,10 @@ namespace {
    *****************************************************************************/
   template <typename INT>
   int find_adjacency(Problem_Description *problem, Mesh_Description<INT> *mesh,
-                     Graph_Description<INT> *graph, Weight_Description *weight, Sphere_Info *sphere)
+                     Graph_Description<INT> *graph, Weight_Description *weight,
+                     Sphere_Info *sphere)
   {
+    std::vector<INT> pt_list;
     std::vector<INT> hold_elem;
     INT              side_nodes[MAX_SIDE_NODES + 2];
     INT              mirror_nodes[MAX_SIDE_NODES + 2];
@@ -228,6 +231,7 @@ namespace {
       /* for face adjacencies, need to allocate some memory */
       if (problem->face_adj) {
         /* allocate space to hold info about surrounding elements */
+        pt_list.resize(graph->max_nsur);
         hold_elem.resize(graph->max_nsur);
       }
       graph->nadj = 0;
@@ -392,8 +396,9 @@ namespace {
                   }
 
                   for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-		    std::vector<INT> pt_list = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt + 1)]]);
-		    nelem = pt_list.size();
+                    nelem = find_inter(
+                        hold_elem.data(), &graph->sur_elem[side_nodes[(ncnt + 1)]][0], nhold,
+                        graph->sur_elem[side_nodes[(ncnt + 1)]].size(), pt_list.data());
 
                     /*  If less than 2 ( 0 or 1 ) elements only
                         touch nodes 0 and ncnt+1 then try next side node, i.e.,
@@ -403,7 +408,9 @@ namespace {
                     }
 
                     nhold = nelem;
-		    hold_elem = pt_list;
+                    for (size_t i = 0; i < nelem; i++) {
+                      hold_elem[i] = hold_elem[pt_list[i]];
+                    }
                   }
                 }
 
@@ -422,9 +429,11 @@ namespace {
                   /* See if hexes share nodes 0 and nodes (ncnt+2) */
                   int inode = 0;
                   for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-		    std::vector<INT> pt_list = find_inter(graph->sur_elem[side_nodes[inode]],
-							  graph->sur_elem[side_nodes[(ncnt + 2)]]);
-		    nelem = pt_list.size();
+                    nelem =
+                        find_inter(&graph->sur_elem[side_nodes[inode]][0],
+                                   &graph->sur_elem[side_nodes[(ncnt + 2)]][0],
+                                   graph->sur_elem[side_nodes[inode]].size(),
+                                   graph->sur_elem[side_nodes[(ncnt + 2)]].size(), pt_list.data());
 
                     /*
                      * If there are multiple elements in the intersection, then
@@ -435,7 +444,9 @@ namespace {
                     if (nelem > 1) {
 
                       /* Then get the correct elements out of the hold array */
-		      hold_elem = pt_list;
+                      for (size_t i = 0; i < nelem; i++) {
+                        hold_elem[i] = graph->sur_elem[side_nodes[inode]][pt_list[i]];
+                      }
                       break;
                     }
 
