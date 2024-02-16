@@ -345,8 +345,29 @@ std::vector<INT> find_inter(const std::vector<INT> &set1, /* the first set of in
 
 {
   std::vector<INT> inter_ptr;
+#if 1
   std::set_intersection(set1.begin(), set1.end(), set2.begin(), set2.end(),
                         std::back_inserter(inter_ptr));
+#else
+  size_t i       = 0;
+  size_t j       = 0;
+  size_t length1 = set1.size();
+  size_t length2 = set2.size();
+
+  while (i < length1 && j < length2) {
+    if (set1[i] < set2[j]) {
+      ++i;
+    }
+    else if (set2[j] < set1[i]) {
+      ++j;
+    }
+    else {
+      inter_ptr.push_back(set1[i]);
+      ++i;
+      ++j;
+    }
+  }
+#endif
   return inter_ptr;
 }
 
