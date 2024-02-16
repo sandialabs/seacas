@@ -345,7 +345,7 @@ std::vector<INT> find_inter(const std::vector<INT> &set1, /* the first set of in
 
 {
   std::vector<INT> inter_ptr;
-#if 1
+#if 0
   std::set_intersection(set1.begin(), set1.end(), set2.begin(), set2.end(),
                         std::back_inserter(inter_ptr));
 #else
