@@ -53,8 +53,7 @@ template int generate_graph(Problem_Description *problem, Mesh_Description<int64
 
 template <typename INT>
 int generate_graph(Problem_Description *problem, Mesh_Description<INT> *mesh,
-                   Graph_Description<INT> *graph, Weight_Description *weight,
-                   Sphere_Info *sphere)
+                   Graph_Description<INT> *graph, Weight_Description *weight, Sphere_Info *sphere)
 {
   double time1 = get_time();
   /* Find the elements surrounding a node */
@@ -180,8 +179,7 @@ namespace {
    *****************************************************************************/
   template <typename INT>
   int find_adjacency(Problem_Description *problem, Mesh_Description<INT> *mesh,
-                     Graph_Description<INT> *graph, Weight_Description *weight,
-                     Sphere_Info *sphere)
+                     Graph_Description<INT> *graph, Weight_Description *weight, Sphere_Info *sphere)
   {
     std::vector<INT> pt_list;
     std::vector<INT> hold_elem;
@@ -396,9 +394,9 @@ namespace {
                   }
 
                   for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-                    nelem = find_inter(
-                        hold_elem.data(), &graph->sur_elem[side_nodes[(ncnt + 1)]][0], nhold,
-                        graph->sur_elem[side_nodes[(ncnt + 1)]].size(), pt_list.data());
+                    nelem = find_inter(Data(hold_elem), &graph->sur_elem[side_nodes[(ncnt + 1)]][0],
+                                       nhold, graph->sur_elem[side_nodes[(ncnt + 1)]].size(),
+                                       Data(pt_list));
 
                     /*  If less than 2 ( 0 or 1 ) elements only
                         touch nodes 0 and ncnt+1 then try next side node, i.e.,
@@ -433,7 +431,7 @@ namespace {
                         find_inter(&graph->sur_elem[side_nodes[inode]][0],
                                    &graph->sur_elem[side_nodes[(ncnt + 2)]][0],
                                    graph->sur_elem[side_nodes[inode]].size(),
-                                   graph->sur_elem[side_nodes[(ncnt + 2)]].size(), pt_list.data());
+                                   graph->sur_elem[side_nodes[(ncnt + 2)]].size(), Data(pt_list));
 
                     /*
                      * If there are multiple elements in the intersection, then
