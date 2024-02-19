@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1111,11 +1111,6 @@ namespace Iocatalyst {
   bool DatabaseIO::begin_nl(Ioss::State state)
   {
     this->dbState = state;
-    if (is_input()) {
-      if (state == Ioss::STATE_TRANSIENT) {
-        auto &impl = (*this->Impl.get());
-      }
-    }
     return true;
   }
 
@@ -1165,7 +1160,7 @@ namespace Iocatalyst {
     if (this->is_input()) {}
     else {
       // invoke catalyst.
-      auto &impl = (*this->Impl.get());
+      auto &impl      = (*this->Impl.get());
       auto &dbaseNode = this->Impl->databaseNode();
       dbaseNode[detail::REGION + detail::FS + detail::TIME].set_float64(time);
       conduit_cpp::Node node;
