@@ -322,7 +322,7 @@ namespace Ioss {
       return index;
     }
 
-    bool contains(size_t global_offset) const
+    bool contains_node(size_t global_offset) const
     {
       return (global_offset >= m_nodeOffset &&
               global_offset < m_nodeOffset + get_property("node_count").get_int());
