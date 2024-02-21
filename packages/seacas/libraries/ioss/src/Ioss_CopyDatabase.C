@@ -856,13 +856,13 @@ namespace {
         if (inb->field_exists("owning_processor")) {
           size_t isize = inb->get_field("ids").get_size();
           pool.data.resize(isize);
-          inb->get_field_data("ids", Data(pool.data), isize);
-          nb->put_field_data("ids", Data(pool.data), isize);
+          inb->get_field_data("ids", pool.data.data(), isize);
+          nb->put_field_data("ids", pool.data.data(), isize);
 
           isize = inb->get_field("owning_processor").get_size();
           pool.data.resize(isize);
-          inb->get_field_data("owning_processor", Data(pool.data), isize);
-          nb->put_field_data("owning_processor", Data(pool.data), isize);
+          inb->get_field_data("owning_processor", pool.data.data(), isize);
+          nb->put_field_data("owning_processor", pool.data.data(), isize);
         }
       }
     }
@@ -879,7 +879,7 @@ namespace {
     for (const auto &entity : entities) {
       const std::string &name = entity->name();
 
-      // Find the corresponding output block...
+      // Find the corresponding output entity (may not exist if omitted)
       Ioss::GroupingEntity *output = output_region.get_entity(name, entity->type());
       if (output != nullptr) {
         transfer_field_data(entity, output, pool, role, options);
@@ -894,15 +894,18 @@ namespace {
     if (!blocks.empty()) {
       size_t total_entities = 0;
       for (const auto &iblock : blocks) {
-        const std::string &name = iblock->name();
-        if (options.debug && rank == 0) {
-          fmt::print(Ioss::DebugOut(), "{}, ", name);
-        }
-        size_t count = iblock->entity_count();
-        total_entities += count;
-
-        auto *block = new T(*iblock);
-        output_region.add(block);
+	if (Ioss::Utils::block_is_omitted(iblock)) {
+	  continue;
+	}
+	const std::string &name = iblock->name();
+	if (options.debug && rank == 0) {
+	  fmt::print(Ioss::DebugOut(), "{}, ", name);
+	}
+	size_t count = iblock->entity_count();
+	total_entities += count;
+	
+	auto *block = new T(*iblock);
+	output_region.add(block);
       }
       if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
@@ -929,6 +932,9 @@ namespace {
         // correctly.
         for (int i = static_cast<int>(blocks.size()) - 1; i >= 0; i--) {
           const auto        &iblock = blocks[i];
+	  if (Ioss::Utils::block_is_omitted(iblock)) {
+	    continue;
+	  }
           const std::string &name   = iblock->name();
           if (options.debug && rank == 0) {
             fmt::print(Ioss::DebugOut(), "{}, ", name);
@@ -951,6 +957,9 @@ namespace {
       }
       else {
         for (const auto &iblock : blocks) {
+	  if (Ioss::Utils::block_is_omitted(iblock)) {
+	    continue;
+	  }
           const std::string &name = iblock->name();
           if (options.debug && rank == 0) {
             fmt::print(Ioss::DebugOut(), "{}, ", name);
@@ -1236,7 +1245,7 @@ namespace {
     assert(pool.data.size() >= isize);
 
     switch (options.data_storage_type) {
-    case 1: ige->get_field_data(field_name, Data(pool.data), isize); break;
+    case 1: ige->get_field_data(field_name, pool.data.data(), isize); break;
     case 2:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         ige->get_field_data(field_name, pool.data);
@@ -1272,7 +1281,7 @@ namespace {
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
         // Since data_view_complex cannot be a global variable.
-        ige->get_field_data(field_name, Data(pool.data), isize);
+        ige->get_field_data(field_name, pool.data.data(), isize);
       }
       else {
       }
@@ -1292,7 +1301,7 @@ namespace {
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
         // Since data_view_complex cannot be a global variable.
-        ige->get_field_data(field_name, Data(pool.data), isize);
+        ige->get_field_data(field_name, pool.data.data(), isize);
       }
       else {
       }
@@ -1316,7 +1325,7 @@ namespace {
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
         // Since data_view_complex cannot be a global variable.
-        ige->get_field_data(field_name, Data(pool.data), isize);
+        ige->get_field_data(field_name, pool.data.data(), isize);
       }
       else {
       }
@@ -1330,7 +1339,7 @@ namespace {
     }
 
     switch (options.data_storage_type) {
-    case 1: oge->put_field_data(field_name, Data(pool.data), isize); break;
+    case 1: oge->put_field_data(field_name, pool.data.data(), isize); break;
     case 2:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         oge->put_field_data(field_name, pool.data);
@@ -1366,7 +1375,7 @@ namespace {
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
         // Since data_view_complex cannot be a global variable.
-        oge->put_field_data(field_name, Data(pool.data), isize);
+        oge->put_field_data(field_name, pool.data.data(), isize);
       }
       else {
       }
@@ -1386,7 +1395,7 @@ namespace {
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
         // Since data_view_complex cannot be a global variable.
-        oge->put_field_data(field_name, Data(pool.data), isize);
+        oge->put_field_data(field_name, pool.data.data(), isize);
       }
       else {
       }
@@ -1410,7 +1419,7 @@ namespace {
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
         // Since data_view_complex cannot be a global variable.
-        oge->put_field_data(field_name, Data(pool.data), isize);
+        oge->put_field_data(field_name, pool.data.data(), isize);
       }
       else {
       }
