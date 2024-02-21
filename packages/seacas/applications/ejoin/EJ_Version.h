@@ -9,6 +9,6 @@
 
 static const std::array<std::string, 3> qainfo{
     "ejoin",
-    "2024/02/12",
-    "1.6.2",
+    "2024/02/21",
+    "1.6.3",
 };

@@ -72,7 +72,7 @@ void SystemInterface::enroll_options()
                   "\t\t\t '-omit_blocks p1:1:3:4,p2:2:3:4,p5:8'",
                   nullptr);
 
-  options_.enroll("omit_assemblies", GetLongOption::MandatoryValue,
+  options_.enroll("omit_assemblies", GetLongOption::OptionalValue,
                   "If no value, then don't transfer any assemblies to output file.\n"
                   "\t\tIf just p#,p#,... specified, then omit assemblies on specified parts\n"
                   "\t\tIf p#:id1:id2,p#:id2,id4... then omit the assemblies with the specified\n"
@@ -318,7 +318,15 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("omit_assemblies");
     if (temp != nullptr) {
-      parse_omissions(temp, &assemblyOmissions_, "assembly", true);
+      if (str_equal("ALL", temp)) {
+        omitAssemblies_ = true;
+      }
+      else {
+        parse_omissions(temp, &assemblyOmissions_, "assembly", true);
+      }
+    }
+    else {
+      omitAssemblies_ = false;
     }
   }
 
