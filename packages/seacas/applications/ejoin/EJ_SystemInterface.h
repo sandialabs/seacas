@@ -27,6 +27,7 @@ public:
   bool   match_elem_ids() const { return matchElemIds_; }
   bool   omit_nodesets() const { return omitNodesets_; }
   bool   omit_sidesets() const { return omitSidesets_; }
+  bool   omit_assemblies() const { return omitAssemblies_; }
   bool   convert_nodes_to_nodesets(int part_number) const;
   bool   create_assemblies() const { return createAssemblies_; }
 
@@ -89,6 +90,7 @@ private:
   int  compressionLevel_{0};
   bool omitNodesets_{false};
   bool omitSidesets_{false};
+  bool omitAssemblies_{false};
   bool matchNodeIds_{false};
   bool matchNodeXYZ_{false};
   bool matchElemIds_{false};
