@@ -318,20 +318,20 @@ bool Ioss::Field::equal_(const Ioss::Field &rhs, bool quiet) const
     is_same = false;
   }
 
-  if (this->get_suffices_uppercase() != rhs.get_suffices_uppercase()) {
-    if (!quiet) {
+  if (!quiet) {
+    if (this->get_suffices_uppercase() != rhs.get_suffices_uppercase()) {
       fmt::print(Ioss::OUTPUT(), "\tFIELD suffices_uppercase mismatch ({} v. {})\n",
                  this->get_suffices_uppercase(), rhs.get_suffices_uppercase());
+      is_same = false;
     }
-    is_same = false;
   }
 
-  if (this->zero_copy_enabled() != rhs.zero_copy_enabled()) {
-    if (!quiet) {
+  if (!quiet) {
+    if (this->zero_copy_enabled() != rhs.zero_copy_enabled()) {
       fmt::print(Ioss::OUTPUT(), "\tFIELD zero_copy_enabled mismatch ({} v. {})\n",
                  this->zero_copy_enabled(), rhs.zero_copy_enabled());
+      is_same = false;
     }
-    is_same = false;
   }
 
   return is_same;
