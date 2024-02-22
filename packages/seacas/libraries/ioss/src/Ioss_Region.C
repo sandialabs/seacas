@@ -801,16 +801,18 @@ namespace Ioss {
 
     // NOTE:  For restart input databases, it is possible that the time
     //        is not monotonically increasing...
-    if (!get_database()->is_input() && !stateTimes.empty() && time <= stateTimes.back()) {
-      // Check that time is increasing...
-      static bool warning_output = false;
-      if (!warning_output) {
-        fmt::print(Ioss::WarnOut(),
-                   "Current time {} is not greater than previous time {} in\n\t{}.\n"
-                   "This may cause problems in applications that assume monotonically increasing "
-                   "time values.\n",
-                   time, stateTimes.back(), get_database()->get_filename());
-        warning_output = true;
+    if (util.parallel_rank() == 0) {
+      if (!get_database()->is_input() && !stateTimes.empty() && time <= stateTimes.back()) {
+	// Check that time is increasing...
+	static bool warning_output = false;
+	if (!warning_output) {
+	  fmt::print(Ioss::WarnOut(),
+		     "Current time {} is not greater than previous time {} in\n\t{}.\n"
+		     "This may cause problems in applications that assume monotonically increasing "
+		     "time values.\n",
+		     time, stateTimes.back(), get_database()->get_filename());
+	  warning_output = true;
+	}
       }
     }
 
