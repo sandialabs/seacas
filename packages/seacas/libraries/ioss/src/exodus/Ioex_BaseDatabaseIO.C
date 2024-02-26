@@ -209,7 +209,12 @@ namespace Ioex {
       isParallel = false;
     }
 
+#ifdef SEACAS_HAVE_MPI
+    timeLastFlush = MPI_Wtime();
+#else
     timeLastFlush = time(nullptr);
+#endif
+
     dbState       = Ioss::STATE_UNKNOWN;
 
     // Set exodusII warning level.
@@ -2140,28 +2145,16 @@ namespace Ioex {
     Ioex::update_last_time_attribute(get_file_pointer(), sim_time);
 
     // Flush the files buffer to disk...
-    // If a history file, then only flush if there is more
+    // If:
+    //  flushInterval == -1 (default) -- flush if there is more
     // than 10 seconds since the last flush to avoid
     // the flush eating up cpu time for small fast jobs...
-    // NOTE: If decide to do this on all files, need to sync across
-    // processors to make sure they all flush at same time.
-
-    // GDS: 2011/03/30 -- Use for all non-parallel files, but shorten
-    // time for non history files.  Assume that can afford to lose ~10
-    // seconds worth of data...  (Flush was taking long time on some
-    // /scratch filesystems at SNL for short regression tests with
-    // lots of steps)
-    // GDS: 2011/07/27 -- shorten from 90 to 10.  Developers running
-    // small jobs were not able to view output until job
-    // finished. Hopefully the netcdf no-fsync fix along with this fix
-    // results in negligible impact on runtime with more syncs.
-
-    // Need to be able to handle a flushInterval == 1 to force flush
-    // every time step even in a serial run.
-    // The default setting for flushInterval is 1, but in the past,
-    // it was not checked for serial runs.  Now, set the default to -1
-    // and if that is the value and serial, then do the time-based
-    // check; otherwise, use flushInterval setting...
+    //
+    //  flushInterval == 0 -- do not flush until file is closed.
+    //
+    //  flushInterval == 1 -- flush every step
+    //
+    //  flushInterval > 1 -- flush if step % flushInterval == 0
 
     bool do_flush = true;
     if (flushInterval == 1) {
@@ -2170,9 +2163,12 @@ namespace Ioex {
     else if (flushInterval == 0) {
       do_flush = false;
     }
-    else if (dbUsage == Ioss::WRITE_HISTORY || !isParallel) {
-      assert(myProcessor == 0);
+    else if (flushInterval < 0) {
+#ifdef SEACAS_HAVE_MPI
+      double cur_time = MPI_Wtime();
+#else
       time_t cur_time = time(nullptr);
+#endif
       if (cur_time - timeLastFlush >= 10) {
         timeLastFlush = cur_time;
         do_flush      = true;
@@ -2180,9 +2176,13 @@ namespace Ioex {
       else {
         do_flush = false;
       }
+#ifdef SEACAS_HAVE_MPI
+      int iflush = do_flush ? 1 : 0;
+      util().broadcast(iflush);
+      do_flush = iflush == 1;
+#endif
     }
-
-    if (!do_flush && flushInterval > 0) {
+    else if (flushInterval > 1) {
       if (state % flushInterval == 0) {
         do_flush = true;
       }
