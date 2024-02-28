@@ -73,6 +73,19 @@ void IOShell::Interface::enroll_options()
                   "If comparing databases, do not compare the qa and info records.", nullptr,
                   nullptr, true);
 
+  options_.enroll("ignore_node_map", Ioss::GetLongOption::NoValue,
+                  "Do not read the global node id map (if any) from the input database.", nullptr,
+                  nullptr);
+  options_.enroll("ignore_element_map", Ioss::GetLongOption::NoValue,
+                  "Do not read the global element id map (if any) from the input database.", nullptr,
+                  nullptr);
+  options_.enroll("ignore_edge_map", Ioss::GetLongOption::NoValue,
+                  "Do not read the global edge id map (if any) from the input database.", nullptr,
+                  nullptr);
+  options_.enroll("ignore_face_map", Ioss::GetLongOption::NoValue,
+                  "Do not read the global face id map (if any) from the input database.", nullptr,
+                  nullptr, true);
+
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue, "Use 64-bit integers on output database",
                   nullptr);
 
@@ -363,7 +376,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   }
 
   if (options_.retrieve("version") != nullptr) {
-    fmt::print(stderr, "Version: {}\n", version);
+    fmt::print(stderr, "IO_SHELL\tVersion: {}\n", version);
     exit(0);
   }
 
@@ -396,6 +409,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   }
   compare        = (options_.retrieve("compare") != nullptr);
   ignore_qa_info = (options_.retrieve("ignore_qa_info") != nullptr);
+  ignore_node_map = (options_.retrieve("ignore_node_map") != nullptr);
+  ignore_elem_map = (options_.retrieve("ignore_element_map") != nullptr);
+  ignore_edge_map = (options_.retrieve("ignore_edge_map") != nullptr);
+  ignore_face_map = (options_.retrieve("ignore_face_map") != nullptr);
 
   {
     const char *temp = options_.retrieve("absolute");

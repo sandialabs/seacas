@@ -964,17 +964,39 @@ namespace Ioex {
   {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
+    bool read_exodus_map = true;
     if (entity_map.map().empty()) {
-      entity_map.set_size(entity_count);
+      switch(entity_type) {
+      case EX_NODE_MAP:
+	read_exodus_map = !properties.exists("IGNORE_NODE_MAP");
+	break;
+      case EX_ELEM_MAP:
+	read_exodus_map = !properties.exists("IGNORE_ELEMENT_MAP");
+	break;
+      case EX_FACE_MAP:
+	read_exodus_map = !properties.exists("IGNORE_FACE_MAP");
+	break;
+      case EX_EDGE_MAP:
+	read_exodus_map = !properties.exists("IGNORE_EDGE_MAP");
+	break;
+      default:
+	std::ostringstream errmsg;
+	fmt::print(errmsg, "INTERNAL ERROR: Invalid map type. "
+		   "Something is wrong in the Ioex::DatabaseIO::get_map() function. "
+		   "Please report.\n");
+	IOSS_ERROR(errmsg);
+      }
+
 
       if (is_input() || open_create_behavior() == Ioss::DB_APPEND) {
+	entity_map.set_size(entity_count);
 
         Ioss::SerializeIO serializeIO_(this);
         // Check whether there is a "original_global_id_map" map on
         // the database. If so, use it instead of the "node_num_map".
         bool map_read  = false;
         int  map_count = ex_inquire_int(get_file_pointer(), inquiry_type);
-        if (map_count > 0) {
+        if (read_exodus_map && map_count > 0) {
           char **names = Ioss::Utils::get_name_array(map_count, maximumNameLength);
           int    ierr  = ex_get_names(get_file_pointer(), entity_type, names);
           if (ierr < 0) {
@@ -1009,29 +1031,36 @@ namespace Ioex {
         }
 
         if (!map_read) {
-          int error = 0;
-          if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-            Ioss::Int64Vector tmp_map(entity_map.size());
-            error = ex_get_id_map(get_file_pointer(), entity_type, Data(tmp_map));
-            if (error >= 0) {
-              entity_map.set_map(Data(tmp_map), tmp_map.size(), 0, true);
-            }
-          }
-          else {
-            // Ioss stores as 64-bit, read as 32-bit and copy over...
-            Ioss::IntVector tmp_map(entity_map.size());
-            error = ex_get_id_map(get_file_pointer(), entity_type, Data(tmp_map));
-            if (error >= 0) {
-              entity_map.set_map(Data(tmp_map), tmp_map.size(), 0, true);
-            }
-          }
-          if (error < 0) {
-            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
-        }
+	  if (isParallel || read_exodus_map) {
+	    int error = 0;
+	    if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
+	      Ioss::Int64Vector tmp_map(entity_map.size());
+	      error = ex_get_id_map(get_file_pointer(), entity_type, Data(tmp_map));
+	      if (error >= 0) {
+		entity_map.set_map(Data(tmp_map), tmp_map.size(), 0, true);
+	      }
+	    }
+	    else {
+	      // Ioss stores as 64-bit, read as 32-bit and copy over...
+	      Ioss::IntVector tmp_map(entity_map.size());
+	      error = ex_get_id_map(get_file_pointer(), entity_type, Data(tmp_map));
+	      std::iota(tmp_map.begin(), tmp_map.end(), 1);
+	      if (error >= 0) {
+		entity_map.set_map(Data(tmp_map), tmp_map.size(), 0, true);
+	      }
+	    }
+	    if (error < 0) {
+	      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+	    }
+	  }
+	  else {
+	    // Ignoring exodus database map (if any)
+	    entity_map.set_default(entity_map.size());
+	  }
+	}
       }
       else {
-        // Output database; entity_map.map not set yet... Build a default map.
+	// Output database; entity_map.map not set yet... Build a default map.
         entity_map.set_default(entity_count);
       }
     }
