@@ -21,7 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "Ioss_ScopeGuard.h"
 #include "Ionit_Initializer.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DataSize.h"
@@ -39,6 +38,7 @@
 #include "Ioss_Property.h"
 #include "Ioss_PropertyManager.h"
 #include "Ioss_Region.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_State.h"
 #include "Ioss_Utils.h"
 #include "robin_hash.h"

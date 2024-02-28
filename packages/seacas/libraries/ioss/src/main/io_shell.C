@@ -663,10 +663,10 @@ namespace {
     }
     else {
       if (interFace.ignore_node_map) {
-	properties.add(Ioss::Property("IGNORE_NODE_MAP", true));
+        properties.add(Ioss::Property("IGNORE_NODE_MAP", true));
       }
       if (interFace.ignore_elem_map) {
-	properties.add(Ioss::Property("IGNORE_ELEM_MAP", true));
+        properties.add(Ioss::Property("IGNORE_ELEM_MAP", true));
       }
     }
     if (interFace.ignore_edge_map) {

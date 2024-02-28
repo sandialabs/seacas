@@ -211,7 +211,7 @@ namespace Ioex {
 
     timeLastFlush = time(nullptr);
 
-    dbState       = Ioss::STATE_UNKNOWN;
+    dbState = Ioss::STATE_UNKNOWN;
 
     // Set exodusII warning level.
     if (util().get_environment("EX_DEBUG", isParallel)) {
@@ -2170,9 +2170,9 @@ namespace Ioex {
       }
 #ifdef SEACAS_HAVE_MPI
       if (isParallel) {
-	int iflush = do_flush ? 1 : 0;
-	util().broadcast(iflush);
-	do_flush = iflush == 1;
+        int iflush = do_flush ? 1 : 0;
+        util().broadcast(iflush);
+        do_flush = iflush == 1;
       }
 #endif
     }
