@@ -359,9 +359,8 @@ void Ioss::Map::set_default(size_t count, size_t offset)
 {
   IOSS_FUNC_ENTER(m_);
   m_map.resize(count + 1);
-  for (size_t i = 1; i <= count; i++) {
-    m_map[i] = i + offset;
-  }
+  std::iota(m_map.begin()+1, m_map.end(), 1+offset);
+  m_offset = -offset;
   set_is_sequential(true);
 }
 
