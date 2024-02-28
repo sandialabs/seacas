@@ -618,12 +618,13 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
    * The Nemesis node maps are lists of internal, border and external
    * FEM node numbers. These are output as local node numbers.
    */
-  std::vector<INT> nem_node_mapi(globals.Num_Internal_Nodes[iproc], 1);
-  std::vector<INT> nem_node_mapb(globals.Num_Border_Nodes[iproc], 1);
-  std::vector<INT> nem_node_mape(globals.Num_External_Nodes[iproc], 1);
+  INT *nem_node_mapi = (INT *)array_alloc(__FILE__, __LINE__, 1, itotal_nodes, sizeof(INT));
+  INT *nem_node_mapb = nem_node_mapi + globals.Num_Internal_Nodes[iproc];
+  INT *nem_node_mape = nem_node_mapb + globals.Num_Border_Nodes[iproc];
+  std::iota(nem_node_mapi, nem_node_mapi + itotal_nodes, (INT)1);
 
-  if (ex_put_processor_node_maps(mesh_exoid, Data(nem_node_mapi), Data(nem_node_mapb),
-                                 Data(nem_node_mape), proc_for) < 0) {
+  if (ex_put_processor_node_maps(mesh_exoid, nem_node_mapi, nem_node_mapb, nem_node_mape,
+                                 proc_for) < 0) {
     fmt::print(stderr, "[{}]: ERROR, could not write Nemesis nodal number map!\n", __func__);
     check_exodus_error(ex_close(mesh_exoid), "ex_close");
     ex_close(mesh_exoid);
@@ -656,9 +657,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
   PIO_Time_Array[11] = (second() - tt1);
   total_out_time += PIO_Time_Array[11];
 
-  nem_node_mapi.clear();
-  nem_node_mapb.clear();
-  nem_node_mape.clear();
+  safe_free((void **)&nem_node_mapi);
 
   PIO_Time_Array[13] = 0.0;
   PIO_Time_Array[14] = 0.0;
@@ -1517,6 +1516,13 @@ namespace {
 
     /* Sort the 'global' array via the index array 'tmp_index' */
     gds_iqsort(global, Data(tmp_index), gsize);
+
+#if 0
+    for (size_t i2 = 0; i2 < gsize; i2++) {
+      INT gval = global[tmp_index[i2]] + p01;
+      fmt::print(stderr, "GLOBAL: {} {} {}\n", i2, tmp_index[i2], gval);
+    }
+#endif
 
     size_t i3 = 0;
     if (index != nullptr) {
