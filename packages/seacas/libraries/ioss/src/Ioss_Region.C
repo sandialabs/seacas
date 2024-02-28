@@ -798,9 +798,9 @@ namespace Ioss {
    */
   int Region::add_state_nl(double time)
   {
-
     // NOTE:  For restart input databases, it is possible that the time
     //        is not monotonically increasing...
+    auto util = get_database()->util();
     if (util.parallel_rank() == 0) {
       if (!get_database()->is_input() && !stateTimes.empty() && time <= stateTimes.back()) {
 	// Check that time is increasing...
