@@ -1659,9 +1659,22 @@ namespace {
             (int *)Data(in_pool.data), (int *)Data(in_pool_2.data), field.raw_count(),
             field.get_component_count(Ioss::Field::InOut::OUTPUT), field_name, ige_1->name(), buf);
       case Ioss::Field::INT64:
-        return compare_field_data(
-            (int64_t *)Data(in_pool.data), (int64_t *)Data(in_pool_2.data), field.raw_count(),
-            field.get_component_count(Ioss::Field::InOut::OUTPUT), field_name, ige_1->name(), buf);
+        switch (field2.get_type()) {
+        case Ioss::Field::INTEGER:
+          return compare_field_data((int64_t *)Data(in_pool.data), (int *)Data(in_pool_2.data),
+                                    field.raw_count(),
+                                    field.get_component_count(Ioss::Field::InOut::OUTPUT),
+                                    field_name, ige_1->name(), buf);
+        case Ioss::Field::INT64:
+          return compare_field_data((int64_t *)Data(in_pool.data), (int64_t *)Data(in_pool_2.data),
+                                    field.raw_count(),
+                                    field.get_component_count(Ioss::Field::InOut::OUTPUT),
+                                    field_name, ige_1->name(), buf);
+        default:
+          fmt::print(Ioss::WarnOut(), "Field data_storage type {} not recognized for field {}.",
+                     field.type_string(), field_name);
+          return false;
+        }
       default:
         fmt::print(Ioss::WarnOut(), "Field data_storage type {} not recognized for field {}.",
                    field.type_string(), field_name);

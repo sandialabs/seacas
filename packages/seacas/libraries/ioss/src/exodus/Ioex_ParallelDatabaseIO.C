@@ -1540,7 +1540,7 @@ namespace Ioex {
 
           Ioss::Int64Vector element;
           Ioss::Int64Vector sides;
-          bool have_element_sides_lists = false;
+          bool              have_element_sides_lists = false;
 
           if (!blockOmissions.empty() || !blockInclusions.empty()) {
             get_element_sides_lists(decomp, get_file_pointer(), id, int_byte_size_api(),

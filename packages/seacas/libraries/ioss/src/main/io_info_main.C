@@ -11,9 +11,9 @@
 #include <stdlib.h>
 #include <string>
 
-#include "Ioss_ScopeGuard.h"
 #include "Ionit_Initializer.h"
 #include "Ioss_IOFactory.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_Utils.h"
 #include "info_interface.h"
 #include "io_info.h"

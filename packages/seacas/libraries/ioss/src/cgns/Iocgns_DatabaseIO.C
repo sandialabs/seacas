@@ -235,7 +235,7 @@ namespace {
       Ioss::IJK_t             transform{};
 
       CGCHECK(cg_1to1_read(cgns_file_ptr, base, db_zone, ii + 1, connectname, donorname,
-			   range.data(), donor_range.data(), transform.data()));
+                           range.data(), donor_range.data(), transform.data()));
 
       auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, isParallel);
       std::string donor_name     = donorname_proc.first;

@@ -77,8 +77,8 @@ void IOShell::Interface::enroll_options()
                   "Do not read the global node id map (if any) from the input database.", nullptr,
                   nullptr);
   options_.enroll("ignore_element_map", Ioss::GetLongOption::NoValue,
-                  "Do not read the global element id map (if any) from the input database.", nullptr,
-                  nullptr);
+                  "Do not read the global element id map (if any) from the input database.",
+                  nullptr, nullptr);
   options_.enroll("ignore_edge_map", Ioss::GetLongOption::NoValue,
                   "Do not read the global edge id map (if any) from the input database.", nullptr,
                   nullptr);
@@ -407,8 +407,8 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     }
     return false;
   }
-  compare        = (options_.retrieve("compare") != nullptr);
-  ignore_qa_info = (options_.retrieve("ignore_qa_info") != nullptr);
+  compare         = (options_.retrieve("compare") != nullptr);
+  ignore_qa_info  = (options_.retrieve("ignore_qa_info") != nullptr);
   ignore_node_map = (options_.retrieve("ignore_node_map") != nullptr);
   ignore_elem_map = (options_.retrieve("ignore_element_map") != nullptr);
   ignore_edge_map = (options_.retrieve("ignore_edge_map") != nullptr);
