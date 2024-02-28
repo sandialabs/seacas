@@ -209,11 +209,7 @@ namespace Ioex {
       isParallel = false;
     }
 
-#ifdef SEACAS_HAVE_MPI
-    timeLastFlush = MPI_Wtime();
-#else
     timeLastFlush = time(nullptr);
-#endif
 
     dbState       = Ioss::STATE_UNKNOWN;
 
@@ -2164,11 +2160,7 @@ namespace Ioex {
       do_flush = false;
     }
     else if (flushInterval < 0) {
-#ifdef SEACAS_HAVE_MPI
-      double cur_time = MPI_Wtime();
-#else
       time_t cur_time = time(nullptr);
-#endif
       if (cur_time - timeLastFlush >= 10) {
         timeLastFlush = cur_time;
         do_flush      = true;
@@ -2177,9 +2169,11 @@ namespace Ioex {
         do_flush = false;
       }
 #ifdef SEACAS_HAVE_MPI
-      int iflush = do_flush ? 1 : 0;
-      util().broadcast(iflush);
-      do_flush = iflush == 1;
+      if (isParallel) {
+	int iflush = do_flush ? 1 : 0;
+	util().broadcast(iflush);
+	do_flush = iflush == 1;
+      }
 #endif
     }
     else if (flushInterval > 1) {
