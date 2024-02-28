@@ -1645,8 +1645,9 @@ namespace {
     switch (options.data_storage_type) {
     case 1: {
       ige_1->get_field_data(field_name, Data(in_pool.data), isize);
-      ige_2->get_field_data(field_name, Data(in_pool_2.data), isize);
-      const Ioss::Field &field = ige_1->get_field(field_name);
+      ige_2->get_field_data(field_name, Data(in_pool_2.data), osize);
+      const Ioss::Field &field  = ige_1->get_field(field_name);
+      const Ioss::Field &field2 = ige_2->get_field(field_name);
 
       switch (field.get_type()) {
       case Ioss::Field::REAL:
