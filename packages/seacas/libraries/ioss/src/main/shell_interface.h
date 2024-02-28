@@ -99,6 +99,10 @@ namespace IOShell {
     bool boundary_sideset{false};
     bool compare{false};
     bool ignore_qa_info{false};
+    bool ignore_node_map{false};
+    bool ignore_elem_map{false};
+    bool ignore_edge_map{false};
+    bool ignore_face_map{false};
     char fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell

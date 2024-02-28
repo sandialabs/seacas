@@ -42,7 +42,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "6.2 (2023/05/12)";
+  std::string version = "6.3 (2024/02/28)";
 
   bool mem_stats = false;
 
@@ -655,6 +655,25 @@ namespace {
 
     if (interFace.memory_statistics) {
       properties.add(Ioss::Property("ENABLE_TRACING", 1));
+    }
+
+    if (interFace.outFiletype == "cgns" && interFace.inFiletype == "exodus") {
+      properties.add(Ioss::Property("IGNORE_NODE_MAP", true));
+      properties.add(Ioss::Property("IGNORE_ELEMENT_MAP", true));
+    }
+    else {
+      if (interFace.ignore_node_map) {
+	properties.add(Ioss::Property("IGNORE_NODE_MAP", true));
+      }
+      if (interFace.ignore_elem_map) {
+	properties.add(Ioss::Property("IGNORE_ELEM_MAP", true));
+      }
+    }
+    if (interFace.ignore_edge_map) {
+      properties.add(Ioss::Property("IGNORE_EDGE_MAP", true));
+    }
+    if (interFace.ignore_face_map) {
+      properties.add(Ioss::Property("IGNORE_FACE_MAP", true));
     }
 
     if (!interFace.decomp_method.empty()) {
