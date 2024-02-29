@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2021 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2021, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -160,7 +160,7 @@ int exi_conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
 /* If the following line causes a compile-time error, then there is a problem
  * which will cause exodus to not work correctly on this platform.
  *
- * Contact Greg Sjaardema, gdsjaar@sandia.gov for asisstance.
+ * Contact Greg Sjaardema, gdsjaar@sandia.gov for assistance.
  */
 #define CT_ASSERT(e) extern char(*ct_assert(void))[sizeof(char[1 - 2 * !(e)])]
   CT_ASSERT((sizeof(float) == 4 || sizeof(float) == 8) &&

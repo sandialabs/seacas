@@ -899,7 +899,7 @@ namespace Ioexnl {
      * (the nodeMap.map and nodeMap.reverse are 1-based)
      *
      * To determine which map to update on a call to this function, we
-     * use the following hueristics:
+     * use the following heuristics:
      * -- If the database state is 'STATE_MODEL:', then update the
      *    'nodeMap.reverse' and 'nodeMap.map'
      *

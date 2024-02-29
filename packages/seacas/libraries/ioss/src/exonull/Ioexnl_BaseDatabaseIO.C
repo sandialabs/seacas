@@ -387,7 +387,7 @@ namespace Ioexnl {
      * elemMap.reverse[elemMap.map[eb_offset+i+1]]-eb_offset-1
      *
      * To determine which map to update on a call to this function, we
-     * use the following hueristics:
+     * use the following heuristics:
      * -- If the database state is 'Ioss::STATE_MODEL:', then update the
      *    'elemMap.reverse'.
      * -- If the database state is not Ioss::STATE_MODEL, then leave

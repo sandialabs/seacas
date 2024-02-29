@@ -3,7 +3,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -2540,7 +2540,7 @@ namespace Iocgns {
      * (the nodeMap.map and nodeMap.reverse are 1-based)
      *
      * To determine which map to update on a call to this function, we
-     * use the following hueristics:
+     * use the following heuristics:
      * -- If the database state is 'STATE_MODEL:', then update the
      *    'nodeMap.reverse' and 'nodeMap.map'
      *
