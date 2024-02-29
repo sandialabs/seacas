@@ -118,7 +118,7 @@ namespace {
     // Check the `zgc_idx`-th ZGC node to see if the name matches the
     // form described in the `name_is_decomp` function below.  We want to
     // see if there are *any* names that match this form and if so, we can
-    // use the kluge; otherwise we can't and need to rely on other hueristics.
+    // use the kluge; otherwise we can't and need to rely on other heuristics.
     char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
     char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
     std::array<cgsize_t, 6> range;
@@ -391,7 +391,7 @@ namespace {
     // See if any of the zgc have a "Decomp" descriptor node.  If so, then
     // We can unambiguously determine whether a ZGC is from decomp or is
     // normal inter-zone ZGC. If the descriptor does not exist, then have
-    // to rely on hueristics...
+    // to rely on heuristics...
     bool has_decomp_flag  = false;
     bool has_decomp_names = false;
     for (int i = 0; i < nconn; i++) {

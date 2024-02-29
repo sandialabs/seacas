@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2021, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2021, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -6,7 +6,7 @@
 /*!
  * The following 'indexed qsort' routine is modified from Sedgewicks
  * algorithm It selects the pivot based on the median of the left,
- * right, and center values to try to avoid degenerate cases ocurring
+ * right, and center values to try to avoid degenerate cases occurring
  * when a single value is chosen.  It performs a quicksort on
  * intervals down to the EX_QSORT_CUTOFF size and then performs a final
  * insertion sort on the almost sorted final array.  Based on data in

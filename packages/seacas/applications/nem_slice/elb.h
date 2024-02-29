@@ -113,7 +113,7 @@ struct Problem_Description
   int    skip_checks{-1};     /* put in to skip some error checks for some meshes  */
   int    face_adj{-1};        /* true if using face definition of adjacencies      */
   int    partial_adj{0};      /* true if allowing partial (3/4) of nodes to */
-                              /* determine adjancencies */
+                              /* determine adjacencies */
   int   global_mech{-1};      /* true if looking for mechanisms in original mesh   */
   int   local_mech{-1};       /* true if looking for mechanisms in subdivided mesh */
   int   find_cnt_domains{-1}; /* true if finding number of connected domains in a graph */

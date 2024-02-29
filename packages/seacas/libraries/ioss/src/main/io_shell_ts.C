@@ -248,7 +248,7 @@ namespace {
         properties.add(Ioss::Property("MAXIMUM_NAME_LENGTH", max_name_length));
       }
 
-      // Get integer size being used on the input file and propgate
+      // Get integer size being used on the input file and propagate
       // to output file...
       int int_byte_size_api = dbi->int_byte_size_api();
       if (!properties.exists("INTEGER_SIZE_API")) {
