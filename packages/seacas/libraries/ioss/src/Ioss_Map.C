@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -360,7 +360,7 @@ void Ioss::Map::set_default(size_t count, size_t offset)
   IOSS_FUNC_ENTER(m_);
   m_map.resize(count + 1);
   std::iota(m_map.begin() + 1, m_map.end(), 1 + offset);
-  m_offset = -offset;
+  m_offset = -1 * offset;
   set_is_sequential(true);
 }
 
