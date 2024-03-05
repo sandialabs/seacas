@@ -682,7 +682,7 @@ namespace Ioex {
 
         // For an exodus file, timesteps are global and are stored in the region.
         // Read the timesteps and add to the region
-        tsteps.resize(timestep_count);
+        tsteps.resize(timestep_count, -std::numeric_limits<double>::max());
 
         // The `EXODUS_CALL_GET_ALL_TIMES=NO` is typically only used in
         // isSerialParallel mode and the client is responsible for
