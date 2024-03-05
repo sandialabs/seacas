@@ -713,13 +713,7 @@ namespace Ioex {
         // Assume that if it exists on 1 processor, it exists on
         // all... Sync value among processors since could have a
         // corrupt step on only a single database.
-
-        // TODO? -- use gather instead so know what ranks have `last_time`
-        // larger than the minimum.  Can then output a warning saying which
-        // ranks have "corrupt" steps.
-        std::vector<double> last_times;
-        util().gather(last_time, last_times);
-        last_time = *std::min_element(last_times.begin(), last_times.end());
+        last_time = util().global_minmax(last_time, Ioss::ParallelUtils::DO_MIN);
       }
 
       // Only add states that are less than or equal to the
@@ -1035,7 +1029,6 @@ namespace Ioex {
               // Ioss stores as 64-bit, read as 32-bit and copy over...
               Ioss::IntVector tmp_map(entity_map.size());
               error = ex_get_id_map(get_file_pointer(), entity_type, Data(tmp_map));
-              std::iota(tmp_map.begin(), tmp_map.end(), 1);
               if (error >= 0) {
                 entity_map.set_map(Data(tmp_map), tmp_map.size(), 0, true);
               }

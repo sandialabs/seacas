@@ -49,7 +49,7 @@ namespace Ioss {
 // We have been relying on the assumption that calling `.data()` on an empty vector
 // will return `nullptr`.  However, according to cppreference (based on the standard):
 //
-// `If size() is ​0​, data() may or may not return a null pointer.`
+// `If size() is 0, data() may or may not return a null pointer.`
 //
 // We don't have any systems on which we have found that (yet?), but this is proactive
 // in removing our use of `.data()` on potentially empty vectors...
