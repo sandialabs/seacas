@@ -635,10 +635,6 @@ namespace {
   }
 
   using StringVector = std::vector<std::string>;
-  bool string_id_sort(const std::pair<std::string, int> &t1, const std::pair<std::string, int> &t2)
-  {
-    return t1.first < t2.first || (!(t2.first < t1.first) && t1.second < t2.second);
-  }
 
   void parse_variable_names(const char *tokens, Excn::StringIdVector *variable_list)
   {
@@ -672,8 +668,6 @@ namespace {
         }
         ++I;
       }
-      // Sort the list...
-      std::sort(variable_list->begin(), variable_list->end(), string_id_sort);
     }
   }
 
