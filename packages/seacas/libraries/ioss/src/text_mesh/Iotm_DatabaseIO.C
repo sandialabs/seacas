@@ -35,6 +35,8 @@
 #include "Ioss_PropertyManager.h" // for PropertyManager
 #include "Ioss_Region.h"          // for Region
 #include "Ioss_SideSet.h"         // for SideSet
+#include "Ioss_EdgeSet.h"         // for EdgeSet
+#include "Ioss_EdgeBlock.h"         // for EdgeBlock
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h" // for VariableType
 #include "Iotm_TextMesh.h"     // for TextMesh
@@ -175,6 +177,7 @@ namespace Iotm {
     elementBlockCount = m_textMesh->block_count();
     nodesetCount      = m_textMesh->nodeset_count();
     sidesetCount      = m_textMesh->sideset_count();
+    edgesetCount      = m_textMesh->edgeset_count();
     assemblyCount     = m_textMesh->assembly_count();
 
     get_step_times_nl();
@@ -184,6 +187,7 @@ namespace Iotm {
     get_elemblocks();
     get_nodesets();
     get_sidesets();
+    get_edgesets();
     get_commsets();
     get_assemblies();
 
@@ -598,6 +602,159 @@ namespace Iotm {
     return num_to_get;
   }
 
+  int64_t DatabaseIO::get_field_internal(const Ioss::EdgeSet *es, const Ioss::Field &field,
+                                         void *data, size_t data_size) const
+  {
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
+      int64_t               id   = es->get_property("id").get_int();
+      Ioss::Field::RoleType role = field.get_role();
+
+      if (role == Ioss::Field::MESH) {
+        if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
+          // An edgeset has a list of elements and a corresponding local
+          // element edge (1-based) The edge id is: edge_id =
+          // 12*element_id + local_edge_number
+          std::vector<int64_t> elem_edge;
+          m_textMesh->edgeset_elem_edges(id, elem_edge);
+          if (field.is_type(Ioss::Field::INTEGER)) {
+            int *ids = static_cast<int *>(data);
+            for (size_t i = 0; i < num_to_get; i++) {
+              ids[i] = static_cast<int>(12 * elem_edge[2 * i + 0] + elem_edge[2 * i + 1]);
+            }
+          }
+          else {
+            auto *ids = static_cast<int64_t *>(data);
+            for (size_t i = 0; i < num_to_get; i++) {
+              ids[i] = 12 * elem_edge[2 * i + 0] + elem_edge[2 * i + 1];
+            }
+          }
+        }
+        else if (field.get_name() == "orientation") {
+          if (field.is_type(Ioss::Field::INTEGER)) {
+            int *orientation = static_cast<int *>(data);
+            for (size_t i = 0; i < num_to_get; i++) {
+              orientation[i] = 1;
+            }
+          }
+          else {
+            auto *orientation = static_cast<int64_t *>(data);
+            for (size_t i = 0; i < num_to_get; i++) {
+              orientation[i] = 1;
+            }
+          }
+        }
+        else if (field.get_name() == "distribution_factors") {
+          if (m_useVariableDf) {
+            const Ioss::Field &id_fld = es->get_fieldref("ids");
+            std::vector<char>  ids(id_fld.get_size());
+            get_field_internal(es, id_fld, ids.data(), id_fld.get_size());
+            fill_transient_data(es, field, data, ids.data(), num_to_get);
+          }
+          else {
+            fill_constant_data(field, data, 1.0);
+          }
+        }
+        else {
+          num_to_get = Ioss::Utils::field_warning(es, field, "input");
+        }
+      }
+      else if (role == Ioss::Field::TRANSIENT) {
+        const Ioss::Field &id_fld = es->get_fieldref("ids");
+        std::vector<char>  ids(id_fld.get_size());
+        get_field_internal(es, id_fld, ids.data(), id_fld.get_size());
+        fill_transient_data(es, field, data, ids.data(), num_to_get, currentTime);
+      }
+    }
+    return num_to_get;
+  }
+
+  int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Field &field,
+                                         void *data, size_t data_size) const
+  {
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
+      int64_t               id            = eb->get_property("id").get_int();
+      int64_t               my_edge_count = eb->entity_count();
+      Ioss::Field::RoleType role          = field.get_role();
+
+      if (role == Ioss::Field::MESH) {
+        if (field.get_name() == "connectivity" || field.get_name() == "connectivity_raw") {
+          assert(field.get_component_count(Ioss::Field::InOut::INPUT) == eb->topology()->number_nodes());
+
+          if (field.is_type(Ioss::Field::INTEGER)) {
+            int *connect = static_cast<int *>(data);
+            m_textMesh->edge_connectivity(eb->name(), connect);
+
+            map_global_to_local(get_node_map(),
+                my_edge_count * field.raw_storage()->component_count(), 1, connect);
+          }
+          else {
+            auto *connect = static_cast<int64_t *>(data);
+            m_textMesh->edge_connectivity(eb->name(), connect);
+
+            map_global_to_local(get_node_map(),
+                my_edge_count * field.raw_storage()->component_count(), 1, connect);
+          }
+        }
+        else if (field.get_name() == "element_edge" || field.get_name() == "element_edge_raw") {
+          // Since we only have a single array, we need to allocate an extra
+          // array to store all of the data.  Note also that the element_id
+          // is the global id but only the local id is stored so we need to
+          // map from local_to_global prior to generating the side id...
+
+          std::vector<int64_t> elem_edge;
+          m_textMesh->edgeblock_elem_edges(id, eb->name(), elem_edge);
+          if (field.get_name() == "element_edge_raw") {
+            map_global_to_local(get_element_map(), elem_edge.size(), 2, Data(elem_edge));
+          }
+
+          if (field.is_type(Ioss::Field::INTEGER)) {
+            int *element_edge = static_cast<int *>(data);
+            for (size_t i = 0; i < num_to_get; i++) {
+              element_edge[2 * i + 0] = static_cast<int>(elem_edge[2 * i + 0]);
+              element_edge[2 * i + 1] = static_cast<int>(elem_edge[2 * i + 1]);
+            }
+          }
+          else {
+            auto *element_edge = static_cast<int64_t *>(data);
+            for (size_t i = 0; i < num_to_get; i++) {
+              element_edge[2 * i + 0] = elem_edge[2 * i + 0];
+              element_edge[2 * i + 1] = elem_edge[2 * i + 1];
+            }
+          }
+        }
+        else if (field.get_name() == "ids") {
+          // Map the local ids in this edge block to global edge ids.
+          std::vector<int64_t> elem_edge;
+          m_textMesh->edgeblock_elem_edges(id, eb->name(), elem_edge);
+          if (field.is_type(Ioss::Field::INTEGER)) {
+            int *ids = static_cast<int *>(data);
+            for (size_t i = 0; i < num_to_get; i++) {
+              ids[i] = static_cast<int>(12 * elem_edge[2 * i + 0] + elem_edge[2 * i + 1]);
+            }
+          }
+          else {
+            auto *ids = static_cast<int64_t *>(data);
+            for (size_t i = 0; i < num_to_get; i++) {
+              ids[i] = 12 * elem_edge[2 * i + 0] + elem_edge[2 * i + 1];
+            }
+          }
+        }
+        else {
+          num_to_get = Ioss::Utils::field_warning(eb, field, "input");
+        }
+      }
+      else if (role == Ioss::Field::TRANSIENT) {
+        const Ioss::Field &id_fld = eb->get_fieldref("ids");
+        std::vector<char>  ids(id_fld.get_size());
+        get_field_internal(eb, id_fld, ids.data(), id_fld.get_size());
+        fill_transient_data(eb, field, data, ids.data(), num_to_get, currentTime);
+      }
+    }
+    return num_to_get;
+  }
+
   const Ioss::Map &DatabaseIO::get_node_map() const
   {
     // Allocate space for node number map and read it in...
@@ -786,6 +943,54 @@ namespace Iotm {
         }
 
         add_transient_fields(sideblock);
+      }
+    }
+  }
+
+  void DatabaseIO::get_edgesets()
+  {
+    std::vector<std::string> edgesetNames = m_textMesh->get_edgeset_names();
+    for (const std::string &name : edgesetNames) {
+      int64_t id       = m_textMesh->get_edgeset_id(name);
+      size_t  numEdges = m_textMesh->edgeset_edge_count_proc(id);
+      auto    edgeset  = new Ioss::EdgeSet(this, name, numEdges);
+      edgeset->property_add(Ioss::Property("id", id));
+      edgeset->property_add(Ioss::Property("guid", util().generate_guid(id)));
+      get_region()->add(edgeset);
+
+      get_region()->add_alias(name, Ioss::Utils::encode_entity_name("edgeset", id), Ioss::EDGESET);
+
+      std::vector<EdgeBlockInfo> infoVec = m_textMesh->get_edge_block_info_for_edgeset(name);
+
+      for (const EdgeBlockInfo &info : infoVec) {
+        size_t edgeCount = m_textMesh->get_local_edge_block_indices(name, info).size();
+        auto   edgeblock = new Ioss::EdgeBlock(this, info.name, info.edgeTopology, edgeCount);
+        assert(edgeblock != nullptr);
+        get_region()->add(edgeblock);
+
+        edgeblock->field_add(
+            Ioss::Field("element_edge", edgeblock->field_int_type(), "pair", Ioss::Field::MESH, edgeCount));
+
+        // Same as element_edge except that the element id are the local
+        // element position (1-based) and not the global element id.
+        edgeblock->field_add(
+            Ioss::Field("element_edge_raw", edgeblock->field_int_type(), "pair", Ioss::Field::MESH, edgeCount));
+
+        // Note that all edgeblocks within a specific
+        // edgeset might have the same id.
+        edgeblock->property_add(Ioss::Property("id", id));
+        edgeblock->property_add(Ioss::Property("guid", util().generate_guid(id)));
+
+        auto split_type = m_textMesh->get_edgeset_split_type(name);
+        if (split_type != text_mesh::SplitType::NO_SPLIT) {
+          std::string storage = "Real[";
+          storage += std::to_string(info.numNodesPerEdge);
+          storage += "]";
+          edgeblock->field_add(
+              Ioss::Field("distribution_factors", Ioss::Field::REAL, storage, Ioss::Field::MESH));
+        }
+
+        add_transient_fields(edgeblock);
       }
     }
   }

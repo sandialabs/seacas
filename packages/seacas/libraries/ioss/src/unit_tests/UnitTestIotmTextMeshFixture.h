@@ -27,6 +27,8 @@
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
 #include "Ioss_StandardElementTypes.h"
 
 #include <gtest/gtest.h>
@@ -70,6 +72,8 @@ using SideAdjacencyGraph = Iotm::text_mesh::SideAdjacencyGraph<EntityId, Topolog
 using SideBlockInfo      = Iotm::text_mesh::SideBlockInfo;
 using SideEntry          = std::pair<EntityId, int>;
 using SideVector         = std::vector<SideEntry>;
+using EdgeEntry          = std::pair<EntityId, int>;
+using EdgeVector         = std::vector<EdgeEntry>;
 using SplitType          = Iotm::text_mesh::SplitType;
 
 struct Adjacency
@@ -105,6 +109,19 @@ struct Adjacency
 struct SideEntryLess
 {
   inline bool operator()(const SideEntry &lhs, const SideEntry &rhs) const
+  {
+    if (lhs.first < rhs.first)
+      return true;
+    else if (lhs.first == rhs.first && lhs.second < rhs.second)
+      return true;
+
+    return false;
+  }
+};
+
+struct EdgeEntryLess
+{
+  inline bool operator()(const EdgeEntry &lhs, const EdgeEntry &rhs) const
   {
     if (lhs.first < rhs.first)
       return true;
@@ -330,6 +347,86 @@ namespace Iotm {
         }
       }
 
+      void verify_num_edgesets(size_t goldCount)
+      {
+        ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
+        size_t count = m_region->get_edgesets().size();
+        EXPECT_EQ(goldCount, count);
+      }
+
+      std::vector<Ioss::EdgeBlock*> get_edge_blocks(const Ioss::EdgeSet *es)
+      {
+        std::vector<Ioss::EdgeBlock*> edgeBlocks;
+
+        int64_t id = es->get_property("id").get_int();
+
+        for (Ioss::EdgeBlock *eb : m_region->get_edge_blocks()) {
+
+          if(eb->get_property("id").get_int() == id) {
+            // Edge blocks are not stored as a subset of edge sets so we use id
+            edgeBlocks.push_back(eb);
+          }
+        }
+
+        return edgeBlocks;
+      }
+
+      void verify_edgeset_subset(const Ioss::EdgeSet *edgeset, const unsigned id,
+                                 const std::vector<std::string> &subsetNames)
+      {
+        ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
+        EXPECT_TRUE(nullptr != edgeset);
+        EXPECT_EQ(id, edgeset->get_property("id").get_int());
+
+        const size_t numEdgeBlocks = get_edge_blocks(edgeset).size();
+        if (subsetNames.empty()) {
+          EXPECT_EQ(1u, numEdgeBlocks);
+        }
+        else {
+          EXPECT_EQ(subsetNames.size(), numEdgeBlocks);
+        }
+
+        for (std::string subsetName : subsetNames) {
+          std::transform(subsetName.begin(), subsetName.end(), subsetName.begin(), ::toupper);
+          Ioss::EdgeBlock *edgeBlock = m_region->get_edge_block(subsetName);
+          EXPECT_TRUE(nullptr != edgeBlock);
+          EXPECT_EQ(id, edgeBlock->get_property("id").get_int());
+        }
+      }
+
+      void verify_single_edgeset(const std::string &name, const unsigned id,
+                                 const SideVector &goldElemEdgePairs)
+      {
+        verify_single_edgeset(name, id, std::vector<std::string>{}, goldElemEdgePairs);
+      }
+
+      void verify_single_edgeset(const std::string &name, const unsigned id,
+                                 const std::vector<std::string> &subsets,
+                                 const EdgeVector               &goldElemEdgePairs)
+      {
+        Ioss::EdgeSet *edgeset = get_edgeset(name);
+        verify_edgeset_subset(edgeset, id, subsets);
+
+        EXPECT_TRUE(nullptr != edgeset);
+
+        EdgeVector elemEdgePairs = get_element_edge_pairs_from_edgeset(edgeset);
+        std::sort(elemEdgePairs.begin(), elemEdgePairs.end(), EdgeEntryLess());
+
+        for (const EdgeEntry &edgeEntry : goldElemEdgePairs) {
+          EntityId elemId = edgeEntry.first;
+          int      edge   = edgeEntry.second;
+
+          ElementInfo info = get_element_info(elemId);
+          EXPECT_TRUE(is_valid_element(info));
+
+          EXPECT_TRUE(edge > 0);
+          EXPECT_TRUE(edge <= (int)info.topology->number_edges());
+
+          EXPECT_TRUE(std::binary_search(elemEdgePairs.begin(), elemEdgePairs.end(), edgeEntry,
+                                         EdgeEntryLess()));
+        }
+      }
+
       void verify_num_nodesets(size_t goldCount)
       {
         ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
@@ -542,6 +639,41 @@ namespace Iotm {
       }
 
       template <typename INT>
+      EdgeVector get_element_edge_pairs_from_edgeset_impl(const Ioss::EdgeSet *es) const
+      {
+        EdgeVector elemEdges;
+        int64_t id = es->get_property("id").get_int();
+
+        for (const Ioss::EdgeBlock *eb : m_region->get_edge_blocks()) {
+          if(eb->get_property("id").get_int() != id) {
+            // Edge blocks are not stored as a subset of edge sets so we use id
+            continue;
+          }
+
+          std::vector<INT> elemEdgeVec;
+          eb->get_field_data("element_edge", elemEdgeVec);
+
+          for (int64_t i = 0; i < eb->entity_count(); i++) {
+            EntityId elem = elemEdgeVec[2 * i + 0];
+            int      edge = elemEdgeVec[2 * i + 1];
+            elemEdges.push_back({elem, edge});
+          }
+        }
+
+        return elemEdges;
+      }
+
+      SideVector get_element_edge_pairs_from_edgeset(const Ioss::EdgeSet *es) const
+      {
+        if (db_api_int_size() == 4) {
+          return get_element_edge_pairs_from_edgeset_impl<int>(es);
+        }
+        else {
+          return get_element_edge_pairs_from_edgeset_impl<int64_t>(es);
+        }
+      }
+
+      template <typename INT>
       ElementInfo get_element_info_from_block_impl(EntityId                  elemId,
                                                    const Ioss::ElementBlock *block) const
       {
@@ -680,20 +812,28 @@ namespace Iotm {
         return validConnectivitySize && validNumNodes;
       }
 
+      template<typename Container>
+      typename Container::value_type get_ioss_entity(const Container& container, const std::string &blockName) const
+      {
+        using T = typename Container::value_type;
+        T rtnEntity  = nullptr;
+
+        for (T entity : container) {
+          if (strcasecmp(entity->name().c_str(), blockName.c_str()) == 0) {
+            rtnEntity = entity;
+            break;
+          }
+        }
+
+        return rtnEntity;
+      }
+
       Ioss::ElementBlock *get_element_block(const std::string &blockName) const
       {
         ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
 
         const Ioss::ElementBlockContainer &elemBlocks = m_region->get_element_blocks();
-        Ioss::ElementBlock                *elemBlock  = nullptr;
-
-        for (Ioss::ElementBlock *block : elemBlocks) {
-          if (strcasecmp(block->name().c_str(), blockName.c_str()) == 0) {
-            elemBlock = block;
-          }
-        }
-
-        return elemBlock;
+        return get_ioss_entity(elemBlocks, blockName);
       }
 
       Ioss::NodeSet *get_nodeset(const std::string &name) const
@@ -701,15 +841,7 @@ namespace Iotm {
         ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
 
         const Ioss::NodeSetContainer &nodesets = m_region->get_nodesets();
-        Ioss::NodeSet                *nodeset  = nullptr;
-
-        for (Ioss::NodeSet *ns : nodesets) {
-          if (strcasecmp(ns->name().c_str(), name.c_str()) == 0) {
-            nodeset = ns;
-          }
-        }
-
-        return nodeset;
+        return get_ioss_entity(nodesets, name);
       }
 
       Ioss::SideSet *get_sideset(const std::string &name) const
@@ -717,15 +849,15 @@ namespace Iotm {
         ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
 
         const Ioss::SideSetContainer &sidesets = m_region->get_sidesets();
-        Ioss::SideSet                *sideset  = nullptr;
+        return get_ioss_entity(sidesets, name);
+      }
 
-        for (Ioss::SideSet *ss : sidesets) {
-          if (strcasecmp(ss->name().c_str(), name.c_str()) == 0) {
-            sideset = ss;
-          }
-        }
+      Ioss::EdgeSet *get_edgeset(const std::string &name) const
+      {
+        ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
 
-        return sideset;
+        const Ioss::EdgeSetContainer &edgesets = m_region->get_edgesets();
+        return get_ioss_entity(edgesets, name);
       }
 
       Ioss::Assembly *get_assembly(const std::string &name) const
@@ -733,15 +865,7 @@ namespace Iotm {
         ThrowRequireWithMsg(m_region != nullptr, "Ioss region has not been created");
 
         const Ioss::AssemblyContainer &assemblies = m_region->get_assemblies();
-        Ioss::Assembly                *assembly   = nullptr;
-
-        for (Ioss::Assembly *ass : assemblies) {
-          if (strcasecmp(ass->name().c_str(), name.c_str()) == 0) {
-            assembly = ass;
-          }
-        }
-
-        return assembly;
+        return get_ioss_entity(assemblies, name);
       }
 
       void verify_block(Ioss::ElementBlock *block) { ASSERT_TRUE(block != nullptr); }
@@ -1114,4 +1238,9 @@ namespace {
   };
 
   using TestTextMeshSkin = TestTextMesh;
+  using TestTextMeshSideset = TestTextMesh;
+  using TestTextMeshEdgeset = TestTextMesh;
+  using TestTextMeshNodeset = TestTextMesh;
+  using TestTextMeshAssembly = TestTextMesh;
+
 } // namespace

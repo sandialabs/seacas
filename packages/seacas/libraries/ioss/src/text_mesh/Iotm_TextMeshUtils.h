@@ -30,6 +30,7 @@
 #include "Iotm_TextMeshDataTypes.h"
 #include "Iotm_TextMeshEntityGroup.h"
 #include "Iotm_TextMeshSideset.h"
+#include "Iotm_TextMeshEdgeset.h"
 #include "Iotm_TextMeshNodeset.h"
 #include "Iotm_TextMeshAssembly.h"
 
@@ -147,8 +148,9 @@ namespace Iotm {
         PARSED_DIMENSION   = 1L << 0,
         PARSED_COORDINATES = 1L << 1,
         PARSED_SIDESET     = 1L << 2,
-        PARSED_NODESET     = 1L << 3,
-        PARSED_ASSEMBLY    = 1L << 4
+        PARSED_EDGESET     = 1L << 3,
+        PARSED_NODESET     = 1L << 4,
+        PARSED_ASSEMBLY    = 1L << 5
       };
 
     public:
@@ -189,9 +191,11 @@ namespace Iotm {
         set_coordinates();
         m_data.partIds.finalize_parse();
         m_data.sidesets.finalize_parse(m_data);
+        m_data.edgesets.finalize_parse(m_data);
         m_data.nodesets.finalize_parse();
         m_data.assemblies.finalize_parse();
         validate_sidesets();
+        validate_edgesets();
         validate_nodesets();
         validate_assemblies();
       }
@@ -343,6 +347,7 @@ namespace Iotm {
       void check_sideset_name_collision()
       {
         check_name_collision_with_group(m_data.sidesets, m_data.partIds);
+        check_name_collision_with_group(m_data.sidesets, m_data.edgesets);
         check_name_collision_with_group(m_data.sidesets, m_data.nodesets);
         check_name_collision_with_group(m_data.sidesets, m_data.assemblies);
       }
@@ -351,6 +356,38 @@ namespace Iotm {
       {
         check_sideset_element_reference();
         check_sideset_name_collision();
+      }
+
+      void check_edgeset_element_reference()
+      {
+        for (const EdgesetData<EntityId, Topology> &edgesetData :
+             m_data.edgesets.get_group_data()) {
+          for (const std::pair<EntityId, int> &elemEdgePair : edgesetData.data) {
+            EntityId id = elemEdgePair.first;
+            if (!std::binary_search(m_data.elementDataVec.begin(), m_data.elementDataVec.end(),
+                                    id)) {
+              std::ostringstream errmsg;
+              errmsg << "Error!  Edgeset with id: " << edgesetData.id
+                     << " and name: " << edgesetData.name << " has reference to invalid element '"
+                     << id << "'.";
+              m_errorHandler(errmsg);
+            }
+          }
+        }
+      }
+
+      void check_edgeset_name_collision()
+      {
+        check_name_collision_with_group(m_data.edgesets, m_data.partIds);
+        check_name_collision_with_group(m_data.edgesets, m_data.sidesets);
+        check_name_collision_with_group(m_data.edgesets, m_data.nodesets);
+        check_name_collision_with_group(m_data.edgesets, m_data.assemblies);
+      }
+
+      void validate_edgesets()
+      {
+        check_edgeset_element_reference();
+        check_edgeset_name_collision();
       }
 
       void check_nodeset_node_reference()
@@ -372,6 +409,7 @@ namespace Iotm {
       {
         check_name_collision_with_group(m_data.nodesets, m_data.partIds);
         check_name_collision_with_group(m_data.nodesets, m_data.sidesets);
+        check_name_collision_with_group(m_data.nodesets, m_data.edgesets);
         check_name_collision_with_group(m_data.nodesets, m_data.assemblies);
       }
 
@@ -428,6 +466,7 @@ namespace Iotm {
       {
         check_name_collision_with_group(m_data.assemblies, m_data.partIds);
         check_name_collision_with_group(m_data.assemblies, m_data.sidesets);
+        check_name_collision_with_group(m_data.assemblies, m_data.edgesets);
         check_name_collision_with_group(m_data.assemblies, m_data.nodesets);
       }
 
@@ -462,6 +501,20 @@ namespace Iotm {
           sideset->set_split_type(parser.get_split_type());
           sideset->set_skin_blocks(parser.get_skin_blocks());
           m_parsedOptionMask |= PARSED_SIDESET;
+        }
+      }
+
+      void parse_edgeset_option(const std::vector<std::string> &edgesetOptionGroup)
+      {
+        if (edgesetOptionGroup.size() > 1) {
+          EdgesetParser<EntityId> parser;
+          parser.set_error_handler(m_errorHandler);
+          parser.parse(edgesetOptionGroup[1]);
+
+          EdgesetData<EntityId, Topology> *edgeset =
+              m_data.edgesets.add_group_data(parser.get_name(), parser.get_edgeset_data());
+          edgeset->set_split_type(parser.get_split_type());
+          m_parsedOptionMask |= PARSED_EDGESET;
         }
       }
 
@@ -504,6 +557,9 @@ namespace Iotm {
                "\t|sideset:[name=<name>;] data=elem_1,side_1,elem_2,side_2,....,elem_n,side_n; "
                "[split=<block|topology|none>;] [skin=<block list|all>;]"
                "(specifies sideset data)\n"
+               "\t|edgeset:[name=<name>;] data=elem_1,edge_1,elem_2,edge_2,....,elem_n,edge_n; "
+               "[split=<block|topology|none>;]"
+               "(specifies edgeset data)\n"
                "\t|nodeset:[name=<name>;] data=node_1,node_2,....,node_n (specifies nodeset data)\n"
                "\t|assembly:[name=<name>;] type=<assembly|block|sideset|nodeset>; "
                "member=member_1,...,member_n (specifies assembly hierarchy)\n"
@@ -533,6 +589,9 @@ namespace Iotm {
           }
           else if (optionType == "sideset") {
             parse_sideset_option(optionGroup);
+          }
+          else if (optionType == "edgeset") {
+            parse_edgeset_option(optionGroup);
           }
           else if (optionType == "nodeset") {
             parse_nodeset_option(optionGroup);
@@ -590,6 +649,7 @@ namespace Iotm {
         m_data.partIds.set_error_handler(errorHandler);
         m_data.coords.set_error_handler(errorHandler);
         m_data.sidesets.set_error_handler(errorHandler);
+        m_data.edgesets.set_error_handler(errorHandler);
         m_data.nodesets.set_error_handler(errorHandler);
         m_data.assemblies.set_error_handler(errorHandler);
         m_optionParser.set_error_handler(errorHandler);

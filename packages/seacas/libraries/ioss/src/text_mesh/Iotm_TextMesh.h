@@ -25,24 +25,30 @@
 #include "Iotm_TextMeshNodeset.h"
 #include "Iotm_TextMeshSideset.h"
 #include "Iotm_TextMeshSidesetSplitter.h"
+#include "Iotm_TextMeshEdgeset.h"
+#include "Iotm_TextMeshEdgesetSplitter.h"
 #include "Iotm_TextMeshTopologyMapping.h"
 #include "Iotm_TextMeshUtils.h"
 #include "iotm_export.h"
 
 namespace Iotm {
   using EntityId        = int64_t;
+  using TopologyMapping = IossTopologyMapping;
   using Topology        = TopologyMapEntry;
+  using Ordinal         = TopologyMapEntry::Ordinal;
   using TextMeshData    = text_mesh::TextMeshData<EntityId, Topology>;
   using ElementData     = text_mesh::ElementData<EntityId, Topology>;
   using ElementDataLess = text_mesh::ElementDataLess<EntityId, Topology>;
   using SidesetData     = text_mesh::SidesetData<EntityId, Topology>;
+  using EdgesetData     = text_mesh::EdgesetData<EntityId, Topology>;
   using NodesetData     = text_mesh::NodesetData<EntityId>;
   using Assemblies      = text_mesh::Assemblies<EntityId>;
   using AssemblyData    = text_mesh::AssemblyData;
   using Coordinates     = text_mesh::Coordinates<EntityId>;
-  using TextMeshParser  = text_mesh::TextMeshParser<EntityId, IossTopologyMapping>;
+  using TextMeshParser  = text_mesh::TextMeshParser<EntityId, TopologyMapping>;
   using ErrorHandler    = text_mesh::ErrorHandler;
   using SideBlockInfo   = text_mesh::SideBlockInfo;
+  using EdgeBlockInfo   = text_mesh::EdgeBlockInfo;
   using SplitType       = text_mesh::SplitType;
   using AssemblyType    = text_mesh::AssemblyType;
 
@@ -130,6 +136,33 @@ namespace Iotm {
     virtual int64_t sideblock_side_count_proc(EntityId id, const std::string &sideBlockName) const;
 
     /**
+     * Return number of edgesets in the entire model.
+     */
+    virtual int64_t edgeset_count() const;
+
+    /**
+     * Return number of edgeset 'edges' on edgeset 'id'
+     */
+    int64_t edgeset_edge_count(EntityId id) const;
+
+    /**
+     * Return number of edgeset 'edges' on edgeset 'id' on the current
+     * processor.
+     */
+    virtual int64_t edgeset_edge_count_proc(EntityId id) const;
+
+    /**
+     * Return number of edgeblock 'edges' on edgeset 'id' and edgeblock 'edgeBlockName'
+     */
+    int64_t edgeblock_edge_count(EntityId id, const std::string &edgeBlockName) const;
+
+    /**
+     * Return number of edgeset 'edges' on edgeset 'id' and edgeblock 'edgeBlockName' on the current
+     * processor.
+     */
+    virtual int64_t edgeblock_edge_count_proc(EntityId id, const std::string &edgeBlockName) const;
+
+    /**
      * Return number of elements in all element blocks in the model.
      */
     virtual int64_t element_count() const;
@@ -207,6 +240,21 @@ namespace Iotm {
     virtual void connectivity(EntityId block_number, int *connect) const;
 
     /**
+     * Return the connectivity for the edges on this processor in
+     * the block with name 'blockName'. If the edges in this block
+     * have 'npe' nodes per edge, then the first 'npe' entries in
+     * the 'conn' vector will be the nodal connectivity for the first
+     * edge; the next 'npe' entries are the nodal connectivity for
+     * the second edge.  The 'connect' vector will be resized to the
+     * size required to contain the nodal connectivity for the
+     * specified block; all information in 'connect' will be overwritten.
+     */
+    void         edge_connectivity(const std::string& blockName, Ioss::Int64Vector &connect) const;
+    void         edge_connectivity(const std::string& blockName, Ioss::IntVector &connect) const;
+    void         edge_connectivity(const std::string& blockName, EntityId *connect) const;
+    virtual void edge_connectivity(const std::string& blockName, int *connect) const;
+
+    /**
      * Return the coordinates for all nodes on this processor.  The
      * first 3 entries in the 'coord' vector are the x, y, and z
      * coordinates of the first node, etc.  The 'coord' vector will be
@@ -259,6 +307,21 @@ namespace Iotm {
 
     virtual std::vector<std::string> sideset_touching_blocks(EntityId set_id) const;
 
+    /**
+     * Return the list of the edge/ordinal pairs
+     * "elem_edges[local_position]   = element global_id" and
+     * "elem_edges[local_position+1] = element local edge id (0-based)"
+     * for the faces in edgeset 'id' on this
+     * processor.  The 'elem_edges' vector will be resized to the size
+     * required to contain the list. The element ids are global ids,
+     * the edge ordinal is 0-based.
+     */
+    virtual void edgeset_elem_edges(EntityId id, Ioss::Int64Vector &elemEdges) const;
+    virtual void edgeblock_elem_edges(EntityId edgesetId, const std::string &edgeBlockName,
+                                      Ioss::Int64Vector &elemEdges) const;
+
+    virtual std::vector<std::string> edgeset_touching_blocks(EntityId set_id) const;
+
     size_t get_variable_count(Ioss::EntityType type) const
     {
       return m_variableCount.find(type) != m_variableCount.end()
@@ -279,6 +342,11 @@ namespace Iotm {
     std::vector<std::string> get_sideset_names() const;
     std::string              get_sideset_name(EntityId id) const;
     EntityId                 get_sideset_id(const std::string &name) const;
+
+    // Edgeset query
+    std::vector<std::string> get_edgeset_names() const;
+    std::string              get_edgeset_name(EntityId id) const;
+    EntityId                 get_edgeset_id(const std::string &name) const;
 
     // Assembly query
     std::vector<std::string> get_assembly_names() const;
@@ -302,6 +370,11 @@ namespace Iotm {
                                                             const SideBlockInfo &info) const;
     SplitType                  get_sideset_split_type(const std::string &name) const;
 
+    std::vector<EdgeBlockInfo> get_edge_block_info_for_edgeset(const std::string &name) const;
+    std::vector<size_t>        get_local_edge_block_indices(const std::string   &name,
+                                                            const EdgeBlockInfo &info) const;
+    SplitType                  get_edgeset_split_type(const std::string &name) const;
+
     void compute_block_membership(const std::string& sideSetName,
                                   const std::string& sideBlockName,
                                   std::vector<std::string> &block_membership) const;
@@ -311,6 +384,11 @@ namespace Iotm {
     template <typename INT> void raw_element_map(std::vector<INT> &map) const;
     template <typename INT> void raw_connectivity(EntityId block_number, INT *connect) const;
     template <typename INT> void raw_node_map(std::vector<INT> &map) const;
+
+    template <typename INT> void raw_edge_connectivity(const EdgesetData *edgeset,
+                                                       const std::string& blockName, INT *connect) const;
+
+    int64_t get_edge_block_connectivity_size_proc(const EdgesetData *edgeset, const std::string& blockName) const;
 
     void set_variable_count(const std::string &type, size_t count);
 
@@ -325,9 +403,13 @@ namespace Iotm {
 
     Topology get_topology_for_part(EntityId id) const;
 
+    Topology get_topology_for_edge_block(const std::string& blockName) const;
+
     std::set<EntityId> get_local_element_ids_for_block(EntityId id) const;
 
     std::set<std::string> get_blocks_touched_by_sideset(const SidesetData *sideset) const;
+
+    std::set<std::string> get_blocks_touched_by_edgeset(const EdgesetData *edgeset) const;
 
     void compute_block_membership_impl(const SidesetData& sidesetData,
                                        const SideBlockInfo& sideBlock,
@@ -339,6 +421,8 @@ namespace Iotm {
     std::map<Ioss::EntityType, size_t> m_variableCount;
 
     TextMeshData m_data;
+
+    TopologyMapping m_topologyMapping;
 
     ErrorHandler m_errorHandler;
 
