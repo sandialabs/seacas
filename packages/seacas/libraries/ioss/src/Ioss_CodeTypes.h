@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -48,8 +48,10 @@ inline std::string IOSS_SYM_TENSOR() { return {"sym_tensor_33"}; }
 
 #if (__cplusplus >= 201703L)
 #define IOSS_MAYBE_UNUSED [[maybe_unused]]
+#define IOSS_NODISCARD [[nodiscard]]
 #else
 #define IOSS_MAYBE_UNUSED
+#define IOSS_NODISCARD
 #endif
 
 #if defined(SEACAS_HAVE_MPI)

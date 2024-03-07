@@ -7,6 +7,7 @@
 #pragma once
 
 #include "ioss_export.h"
+#include "Ioss_CodeTypes.h"
 
 #include <cstdint> // for int64_t
 #include <string>  // for string
@@ -46,55 +47,55 @@ namespace Ioss {
     // To set implicit property
     Property(const GroupingEntity *ge, std::string name, BasicType type);
 
-    std::string         get_string() const;
-    int64_t             get_int() const;
-    double              get_real() const;
-    void               *get_pointer() const;
-    std::vector<double> get_vec_double() const;
-    std::vector<int>    get_vec_int() const;
+    IOSS_NODISCARD std::string         get_string() const;
+    IOSS_NODISCARD int64_t             get_int() const;
+    IOSS_NODISCARD double              get_real() const;
+    IOSS_NODISCARD void               *get_pointer() const;
+    IOSS_NODISCARD std::vector<double> get_vec_double() const;
+    IOSS_NODISCARD std::vector<int>    get_vec_int() const;
 
     void   set_origin(Origin origin) { origin_ = origin; }
-    Origin get_origin() const { return origin_; }
+    IOSS_NODISCARD Origin get_origin() const { return origin_; }
 
     /** \brief Tells whether the property is calculated, rather than stored.
      *
      * \returns True if property is calculated; False if it is stored directly.
      */
-    bool is_implicit() const { return origin_ == IMPLICIT; }
+    IOSS_NODISCARD bool is_implicit() const { return origin_ == IMPLICIT; }
 
     /** \brief Tells whether the property is stored, rather than calculated.
      *
      * \returns True if property is stored directly; False if it is calculated.
      */
-    bool is_explicit() const { return origin_ != IMPLICIT; }
+    IOSS_NODISCARD bool is_explicit() const { return origin_ != IMPLICIT; }
 
     /** Tells whether the property has a valid type (currently REAL, INTEGER, POINTER, or STRING)
      *
      *  \returns True if the property type is valid.
      */
-    bool is_valid() const { return type_ != INVALID; }
+    IOSS_NODISCARD bool is_valid() const { return type_ != INVALID; }
 
     /** Tells whether the property has an invalid type (currently not one of REAL, INTEGER, POINTER,
      * or STRING)
      *
      *  \returns True if the property type is invalid.
      */
-    bool is_invalid() const { return type_ == INVALID; }
+    IOSS_NODISCARD bool is_invalid() const { return type_ == INVALID; }
 
     /** \brief Get the property name.
      *
      *  \returns The property name.
      */
-    std::string get_name() const { return name_; }
+    IOSS_NODISCARD std::string get_name() const { return name_; }
 
     /** \brief Get the property type.
      *
      *  \returns The property type.
      */
-    BasicType get_type() const { return type_; }
+    IOSS_NODISCARD BasicType get_type() const { return type_; }
 
-    bool operator!=(const Ioss::Property &rhs) const;
-    bool operator==(const Ioss::Property &rhs) const;
+    IOSS_NODISCARD bool operator!=(const Ioss::Property &rhs) const;
+    IOSS_NODISCARD bool operator==(const Ioss::Property &rhs) const;
 
     friend void swap(Ioss::Property &first, Ioss::Property &second) // nothrow
     {

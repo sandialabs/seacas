@@ -230,17 +230,17 @@ DOCTEST_TEST_CASE("format_id_list")
 
   DOCTEST_SUBCASE("detect unsorted two ids")
   {
-    DOCTEST_CHECK_THROWS(Ioss::Utils::format_id_list({2, 1}));
+    DOCTEST_CHECK_THROWS((void)Ioss::Utils::format_id_list({2, 1}));
   }
 
   DOCTEST_SUBCASE("detect unsorted ids")
   {
-    DOCTEST_CHECK_THROWS(Ioss::Utils::format_id_list({1, 2, 3, 4, 5, 1}));
+    DOCTEST_CHECK_THROWS((void)Ioss::Utils::format_id_list({1, 2, 3, 4, 5, 1}));
   }
 
   DOCTEST_SUBCASE("detect duplicate ids")
   {
-    DOCTEST_CHECK_THROWS(Ioss::Utils::format_id_list({1, 2, 3, 3, 4, 5, 6}));
+    DOCTEST_CHECK_THROWS((void)Ioss::Utils::format_id_list({1, 2, 3, 3, 4, 5, 6}));
   }
 }
 #endif

@@ -97,17 +97,17 @@ namespace Ioss {
           size_t value_count = 0, size_t index = 0);
 
     // Compare two fields (used for STL container)
-    bool operator<(const Field &other) const;
+    IOSS_NODISCARD bool operator<(const Field &other) const;
 
-    bool operator==(const Ioss::Field &rhs) const;
-    bool operator!=(const Ioss::Field &rhs) const;
-    bool equal(const Ioss::Field &rhs) const;
+    IOSS_NODISCARD bool operator==(const Ioss::Field &rhs) const;
+    IOSS_NODISCARD bool operator!=(const Ioss::Field &rhs) const;
+    IOSS_NODISCARD bool equal(const Ioss::Field &rhs) const;
 
-    bool is_valid() const { return type_ != INVALID; }
-    bool is_invalid() const { return type_ == INVALID; }
+    IOSS_NODISCARD bool is_valid() const { return type_ != INVALID; }
+    IOSS_NODISCARD bool is_invalid() const { return type_ == INVALID; }
 
-    const std::string &get_name() const { return name_; }
-    std::string       &get_name() { return name_; }
+    IOSS_NODISCARD const std::string &get_name() const { return name_; }
+    IOSS_NODISCARD std::string       &get_name() { return name_; }
 
     /** \brief Get name of the 'component_indexth` component (1-based)
      *
@@ -117,47 +117,47 @@ namespace Ioss {
      *            on the field is set to '1' which means 'unset'
      * \returns name of the specified component
      */
-    std::string get_component_name(int component_index, InOut in_out, char suffix = 1) const;
-    int         get_component_count(InOut in_out) const;
+    IOSS_NODISCARD std::string get_component_name(int component_index, InOut in_out, char suffix = 1) const;
+    IOSS_NODISCARD int         get_component_count(InOut in_out) const;
 
     Field &set_suffix_separator(char suffix_separator)
     {
       suffixSeparator_ = suffix_separator;
       return *this;
     }
-    char   get_suffix_separator() const { return suffixSeparator_; }
+    IOSS_NODISCARD char   get_suffix_separator() const { return suffixSeparator_; }
     Field &set_suffices_uppercase(bool true_false)
     {
       sufficesUppercase_ = true_false;
       return *this;
     }
-    bool get_suffices_uppercase() const { return sufficesUppercase_; }
+    IOSS_NODISCARD bool get_suffices_uppercase() const { return sufficesUppercase_; }
 
     const Field &set_zero_copy_enabled(bool true_false = true) const;
-    bool         zero_copy_enabled() const { return zeroCopyable_; }
+    IOSS_NODISCARD bool         zero_copy_enabled() const { return zeroCopyable_; }
 
     /** \brief Get the basic data type of the data held in the field.
      *
      * \returns the basic data type of the data held in the field.
      */
-    BasicType get_type() const { return type_; }
+    IOSS_NODISCARD BasicType get_type() const { return type_; }
 
-    const VariableType *raw_storage() const { return rawStorage_; }
-    const VariableType *transformed_storage() const { return transStorage_; }
+    IOSS_NODISCARD const VariableType *raw_storage() const { return rawStorage_; }
+    IOSS_NODISCARD const VariableType *transformed_storage() const { return transStorage_; }
 
-    size_t raw_count() const { return rawCount_; }           // Number of items in field
-    size_t transformed_count() const { return transCount_; } // Number of items in field
+    IOSS_NODISCARD size_t raw_count() const { return rawCount_; }           // Number of items in field
+    IOSS_NODISCARD size_t transformed_count() const { return transCount_; } // Number of items in field
 
-    size_t get_size() const;       // data size (in bytes) required to hold entire field
-    size_t get_basic_size() const; // data size (in bytes) of the basic type
+    IOSS_NODISCARD size_t get_size() const;       // data size (in bytes) required to hold entire field
+    IOSS_NODISCARD size_t get_basic_size() const; // data size (in bytes) of the basic type
 
     /** \brief Get the role (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc.) of the data in the field.
      *
      * \returns The RoleType of the data in the field.
      */
-    RoleType get_role() const { return role_; }
+    IOSS_NODISCARD RoleType get_role() const { return role_; }
 
-    size_t       get_index() const { return index_; }
+    IOSS_NODISCARD size_t       get_index() const { return index_; }
     const Field &set_index(size_t index) const
     {
       index_ = index;
@@ -181,17 +181,17 @@ namespace Ioss {
     // throws exception if the types don't match.
     void check_type(BasicType the_type) const;
 
-    bool is_type(BasicType the_type) const { return the_type == type_; }
+    IOSS_NODISCARD bool is_type(BasicType the_type) const { return the_type == type_; }
 
-    std::string        type_string() const;
-    static std::string type_string(BasicType type);
+    IOSS_NODISCARD std::string        type_string() const;
+    IOSS_NODISCARD static std::string type_string(BasicType type);
 
-    std::string        role_string() const;
-    static std::string role_string(RoleType role);
+    IOSS_NODISCARD std::string        role_string() const;
+    IOSS_NODISCARD static std::string role_string(RoleType role);
 
     bool add_transform(Transform *my_transform);
     bool transform(void *data);
-    bool has_transform() const { return !transforms_.empty(); }
+    IOSS_NODISCARD bool has_transform() const { return !transforms_.empty(); }
 
   private:
     std::string name_{};
