@@ -68,7 +68,7 @@ void IOShell::Interface::enroll_options()
       "Absolute tolerance to use if comparing real field data. (diff > abs && diff > rel)",
       nullptr);
   options_.enroll("floor", Ioss::GetLongOption::MandatoryValue,
-                  "Only compare values if `|a| > floor && |b| > floor`", nullptr);
+                  "Only compare values if `|a| > floor || |b| > floor`", nullptr);
   options_.enroll("ignore_qa_info", Ioss::GetLongOption::NoValue,
                   "If comparing databases, do not compare the qa and info records.", nullptr, nullptr, true);
 
