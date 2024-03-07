@@ -295,6 +295,13 @@ void IOShell::Interface::enroll_options()
                   "\t\tDefault is to ignore empty blocks.",
                   nullptr);
 
+  options_.enroll("omit_blocks", Ioss::GetLongOption::MandatoryValue,
+                  "comma-separated list of element block names that should NOT be transferred to "
+                  "output database\n"
+                  "\t\tNote that currently any nodes connected to only empty blocks will be "
+                  "retained in the output.",
+                  nullptr);
+
   options_.enroll("boundary_sideset", Ioss::GetLongOption::NoValue,
                   "Output a sideset for all boundary faces of the model", nullptr);
 
@@ -584,6 +591,16 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
     const char *temp = options_.retrieve("field_suffix_separator");
     if (temp != nullptr) {
       fieldSuffixSeparator = temp[0];
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("omit_blocks");
+    if (temp != nullptr) {
+      auto omit_str = Ioss::tokenize(std::string(temp), ",");
+      for (const auto &str : omit_str) {
+        omitted_blocks.push_back(str);
+      }
     }
   }
 

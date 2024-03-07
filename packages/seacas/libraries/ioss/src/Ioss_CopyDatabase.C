@@ -845,6 +845,19 @@ namespace {
         fmt::print(Ioss::DebugOut(), " Number of Nodes                = {:14}\n",
                    fmt::group_digits(num_nodes));
       }
+
+      if (options.omitted_blocks) {
+        size_t isize = inb->get_field("node_connectivity_status").get_size();
+        pool.data.resize(isize);
+        inb->get_field_data("node_connectivity_status", pool.data.data(), isize);
+
+        // Count number of "active" nodes
+        size_t active =
+            std::count_if(pool.data.begin(), pool.data.end(), [](auto &val) { return val >= 2; });
+        fmt::print(Ioss::DebugOut(), " Number of Active Nodes         = {:14}\n",
+                   fmt::group_digits(active));
+      }
+
       auto *nb = new Ioss::NodeBlock(*inb);
       output_region.add(nb);
 
@@ -894,18 +907,18 @@ namespace {
     if (!blocks.empty()) {
       size_t total_entities = 0;
       for (const auto &iblock : blocks) {
-	if (Ioss::Utils::block_is_omitted(iblock)) {
-	  continue;
-	}
-	const std::string &name = iblock->name();
-	if (options.debug && rank == 0) {
-	  fmt::print(Ioss::DebugOut(), "{}, ", name);
-	}
-	size_t count = iblock->entity_count();
-	total_entities += count;
-	
-	auto *block = new T(*iblock);
-	output_region.add(block);
+        if (Ioss::Utils::block_is_omitted(iblock)) {
+          continue;
+        }
+        const std::string &name = iblock->name();
+        if (options.debug && rank == 0) {
+          fmt::print(Ioss::DebugOut(), "{}, ", name);
+        }
+        size_t count = iblock->entity_count();
+        total_entities += count;
+
+        auto *block = new T(*iblock);
+        output_region.add(block);
       }
       if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
@@ -931,11 +944,11 @@ namespace {
         // testing to verify that we handle zone reordering
         // correctly.
         for (int i = static_cast<int>(blocks.size()) - 1; i >= 0; i--) {
-          const auto        &iblock = blocks[i];
-	  if (Ioss::Utils::block_is_omitted(iblock)) {
-	    continue;
-	  }
-          const std::string &name   = iblock->name();
+          const auto &iblock = blocks[i];
+          if (Ioss::Utils::block_is_omitted(iblock)) {
+            continue;
+          }
+          const std::string &name = iblock->name();
           if (options.debug && rank == 0) {
             fmt::print(Ioss::DebugOut(), "{}, ", name);
           }
@@ -957,9 +970,9 @@ namespace {
       }
       else {
         for (const auto &iblock : blocks) {
-	  if (Ioss::Utils::block_is_omitted(iblock)) {
-	    continue;
-	  }
+          if (Ioss::Utils::block_is_omitted(iblock)) {
+            continue;
+          }
           const std::string &name = iblock->name();
           if (options.debug && rank == 0) {
             fmt::print(Ioss::DebugOut(), "{}, ", name);
