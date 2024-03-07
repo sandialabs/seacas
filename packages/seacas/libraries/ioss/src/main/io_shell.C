@@ -42,7 +42,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "6.3 (2024/02/28)";
+  std::string version = "6.4 (2024/03/07)";
 
   bool mem_stats = false;
 
@@ -595,6 +595,13 @@ namespace {
 
     if (interFace.in_memory_write) {
       properties.add(Ioss::Property("MEMORY_WRITE", 1));
+    }
+
+    if (interFace.delete_qa) {
+      properties.add(Ioss::Property("IGNORE_QA_RECORDS", "YES"));
+    }
+    if (interFace.delete_info) {
+      properties.add(Ioss::Property("IGNORE_INFO_RECORDS", "YES"));
     }
 
     if (interFace.compression_level > 0 || interFace.shuffle || interFace.szip) {
