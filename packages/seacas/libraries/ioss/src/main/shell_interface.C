@@ -70,8 +70,7 @@ void IOShell::Interface::enroll_options()
   options_.enroll("floor", Ioss::GetLongOption::MandatoryValue,
                   "Only compare values if `|a| > floor && |b| > floor`", nullptr);
   options_.enroll("ignore_qa_info", Ioss::GetLongOption::NoValue,
-                  "If comparing databases, do not compare the qa and info records.", nullptr,
-                  nullptr, true);
+                  "If comparing databases, do not compare the qa and info records.", nullptr, nullptr, true);
 
   options_.enroll("ignore_node_map", Ioss::GetLongOption::NoValue,
                   "Do not read the global node id map (if any) from the input database.", nullptr,
@@ -245,10 +244,6 @@ void IOShell::Interface::enroll_options()
                   "comma-separated list of times that should be transferred to output database",
                   nullptr);
 
-  options_.enroll("delete_timesteps", Ioss::GetLongOption::NoValue,
-                  "Do not transfer any timesteps or transient data to the output database",
-                  nullptr);
-
   options_.enroll("append_after_time", Ioss::GetLongOption::MandatoryValue,
                   "add steps on input database after specified time on output database", nullptr);
 
@@ -259,7 +254,15 @@ void IOShell::Interface::enroll_options()
                   "Specify the number of steps between database flushes.\n"
                   "\t\tIf not specified, then the default database-dependent setting is used.\n"
                   "\t\tA value of 0 disables flushing.",
-                  nullptr, nullptr, true);
+                  nullptr);
+  options_.enroll("delete_timesteps", Ioss::GetLongOption::NoValue,
+                  "Do not transfer any timesteps or transient data to the output database",
+                  nullptr);
+
+  options_.enroll("delete_qa_records", Ioss::GetLongOption::NoValue,
+		  "Do not output qa records to output database.", nullptr);
+  options_.enroll("delete_info_records", Ioss::GetLongOption::NoValue,
+		  "Do not output info records to output database.", nullptr, nullptr, true);
 
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
                   "Character used to separate a field suffix from the field basename\n"
@@ -413,6 +416,8 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   ignore_elem_map = (options_.retrieve("ignore_element_map") != nullptr);
   ignore_edge_map = (options_.retrieve("ignore_edge_map") != nullptr);
   ignore_face_map = (options_.retrieve("ignore_face_map") != nullptr);
+  delete_qa       = (options_.retrieve("delete_qa_records") != nullptr);
+  delete_info     = (options_.retrieve("delete_info_records") != nullptr);
 
   {
     const char *temp = options_.retrieve("absolute");

@@ -103,6 +103,8 @@ namespace IOShell {
     bool ignore_elem_map{false};
     bool ignore_edge_map{false};
     bool ignore_face_map{false};
+    bool delete_qa{false};
+    bool delete_info{false};
     char fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell
