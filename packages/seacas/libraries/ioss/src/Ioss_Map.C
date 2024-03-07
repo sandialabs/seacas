@@ -360,7 +360,7 @@ void Ioss::Map::set_default(size_t count, size_t offset)
   IOSS_FUNC_ENTER(m_);
   m_map.resize(count + 1);
   std::iota(m_map.begin() + 1, m_map.end(), 1 + offset);
-  m_offset = -1 * int64_t(offset);
+  m_offset = -1 * static_cast<int64_t>(offset);
   set_is_sequential(true);
 }
 
