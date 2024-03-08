@@ -1542,7 +1542,7 @@ namespace {
       if (data1[i] != data2[i]) {
         double abs_data1 = std::abs(data1[i]);
         double abs_data2 = std::abs(data2[i]);
-        if (abs_data1 > tol_floor || abs_data2 > tol_floor) {
+        if (abs_data1 >= tol_floor && abs_data2 >= tol_floor) {
           auto idx      = i / component_count;
           auto cmp      = i % component_count;
           auto abs_diff = std::abs(data1[i] - data2[i]);
