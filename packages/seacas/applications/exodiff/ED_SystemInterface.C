@@ -1211,7 +1211,7 @@ void SystemInterface::Parse_Command_File()
 
         Check_Parsed_Names(glob_var_names, glob_var_do_all_flag);
 
-	line = xline;
+        line = xline;
         continue;
       }
       else if (abbreviation(tok1, "nodal", 4) && abbreviation(tok2, "variables", 3)) {
@@ -1221,7 +1221,7 @@ void SystemInterface::Parse_Command_File()
 
         Check_Parsed_Names(node_var_names, node_var_do_all_flag);
 
-	line = xline;
+        line = xline;
         continue;
       }
       else if (abbreviation(tok1, "element", 4) && abbreviation(tok2, "variables", 3)) {
@@ -1231,7 +1231,7 @@ void SystemInterface::Parse_Command_File()
 
         Check_Parsed_Names(elmt_var_names, elmt_var_do_all_flag);
 
-	line = xline;
+        line = xline;
         continue;
       }
       else if (tok1 == "nodeset" && abbreviation(tok2, "variables", 3)) {
@@ -1241,7 +1241,7 @@ void SystemInterface::Parse_Command_File()
 
         Check_Parsed_Names(ns_var_names, ns_var_do_all_flag);
 
-	line = xline;
+        line = xline;
         continue;
       }
       else if (abbreviation(tok1, "sideset", 4) && abbreviation(tok2, "variables", 3)) {
@@ -1251,7 +1251,7 @@ void SystemInterface::Parse_Command_File()
 
         Check_Parsed_Names(ss_var_names, ss_var_do_all_flag);
 
-	line = xline;
+        line = xline;
         continue;
       }
       else if (abbreviation(tok1, "sideset", 4) && abbreviation(tok2, "distribution", 4)) {
@@ -1345,7 +1345,7 @@ void SystemInterface::Parse_Command_File()
 
         Check_Parsed_Names(eb_var_names, eb_var_do_all_flag);
 
-	line = xline;
+        line = xline;
         continue;
       }
       else if (abbreviation(tok1, "faceblock", 4) && abbreviation(tok2, "variables", 3)) {
@@ -1355,7 +1355,7 @@ void SystemInterface::Parse_Command_File()
 
         Check_Parsed_Names(fb_var_names, fb_var_do_all_flag);
 
-	line = xline;
+        line = xline;
         continue;
       }
       else if (abbreviation(tok1, "element", 4) && abbreviation(tok2, "attributes", 3)) {
@@ -1365,7 +1365,7 @@ void SystemInterface::Parse_Command_File()
 
         Check_Parsed_Names(elmt_att_names, elmt_att_do_all_flag);
 
-	line = xline;
+        line = xline;
         continue;
       }
       else {
@@ -1383,8 +1383,6 @@ namespace {
                               Tolerance &def_tol, std::vector<std::string> &names,
                               std::vector<Tolerance> &toler)
   {
-    std::string line{};
-
     toler.clear();
     names.clear();
 
@@ -1510,6 +1508,7 @@ namespace {
       }
     }
 
+    std::string line{};
     std::getline(cmd_file, line);
     xline = line;
     while (!cmd_file.eof()) {
@@ -1533,7 +1532,7 @@ namespace {
             names.push_back(tok);
             toler.push_back(def_tol);
           }
-	  std::getline(cmd_file, line);
+          std::getline(cmd_file, line);
           xline = line;
           continue;
         }
