@@ -4032,13 +4032,3 @@ void F2C(exppcc, EXPPCC)(int *exoid, void_int *start_node_num, void_int *num_nod
   }
 }
 
-void F2C(cmalloc, CMALLOC)(int *size, int64_t* pointer)
-{
-  int64_t *tmp = malloc(*size);
-  *pointer = *tmp;
-}
-
-void F2C(cfree, CFREE)(int *pointer)
-{
-  //  free(pointer);
-}
