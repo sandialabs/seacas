@@ -418,7 +418,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
       transfer_sidesets(*part_mesh[p], output_region, false);
     }
     if (!interFace.omit_assemblies()) {
-    transfer_assembly(*part_mesh[p], output_region, false);
+      transfer_assembly(*part_mesh[p], output_region, false);
     }
   }
 
