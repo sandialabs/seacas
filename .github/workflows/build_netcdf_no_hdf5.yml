@@ -26,7 +26,7 @@ jobs:
         netcdf: [ 4.9.2 ]
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -37,10 +37,10 @@ jobs:
         ###
       - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.netcdf }}
         id: cache-TPL-mpi
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.netcdf }}
-          key: TPL-v4-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.netcdf }}
+          key: TPL-v5-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.netcdf }}
 
       - name: Build TPL-${{ matrix.compiler }}-${{ matrix.netcdf }}
         if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -84,7 +84,7 @@ jobs:
           }
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install System dependencies
         shell: bash -l {0}
@@ -92,10 +92,10 @@ jobs:
 
       - name: Fetch TPL Cache
         id: cache-TPL
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/environments/${{ matrix.config.compiler }}-${{ matrix.netcdf }}
-          key: TPL-v4-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.netcdf }}
+          key: TPL-v5-${{ runner.os }}-${{ matrix.config.compiler }}-${{ matrix.netcdf }}
 
       - name: Check Cache
         shell: bash -l {0}
