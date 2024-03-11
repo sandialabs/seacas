@@ -75,7 +75,7 @@
 #define DOCTEST_CPLUSPLUS __cplusplus
 #endif
 
-#define DOCTEST_COMPILER(MAJOR, MINOR, PATCH) ((MAJOR)*10000000 + (MINOR)*100000 + (PATCH))
+#define DOCTEST_COMPILER(MAJOR, MINOR, PATCH) ((MAJOR) * 10000000 + (MINOR) * 100000 + (PATCH))
 
 // GCC/Clang and GCC/MSVC are mutually exclusive, but Clang/MSVC are not because of clang-cl...
 #if defined(_MSC_VER) && defined(_MSC_FULL_VER)
@@ -1897,7 +1897,7 @@ namespace doctest {
           return true;
         }
         catch (...) {
-        }                       //! OCLINT -  empty catch statement
+        } //! OCLINT -  empty catch statement
 #endif                          // DOCTEST_CONFIG_NO_EXCEPTIONS
         static_cast<void>(res); // to silence -Wunused-parameter
         return false;
@@ -3677,7 +3677,7 @@ namespace doctest {
 #else  // DOCTEST_PLATFORM_WINDOWS
       using type = std::uint64_t;
 #endif // DOCTEST_PLATFORM_WINDOWS
-    }  // namespace timer_large_integer
+    } // namespace timer_large_integer
 
     using ticks_t = timer_large_integer::type;
 
@@ -3911,7 +3911,7 @@ namespace doctest {
     DOCTEST_THREAD_LOCAL bool g_no_colors;
 
 #endif // DOCTEST_CONFIG_DISABLE
-  }    // namespace detail
+  } // namespace detail
 
   char *String::allocate(size_type sz)
   {
@@ -5354,7 +5354,8 @@ namespace doctest {
       if (m_at & assertType::is_throws) { //! OCLINT bitwise operator in conditional
         m_failed = !m_threw;
       }
-      else if ((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) { //! OCLINT
+      else if ((m_at & assertType::is_throws_as) &&
+               (m_at & assertType::is_throws_with)) { //! OCLINT
         m_failed = !m_threw_as || !m_exception_string.check(m_exception);
       }
       else if (m_at & assertType::is_throws_as) { //! OCLINT bitwise operator in conditional
@@ -7522,8 +7523,8 @@ namespace {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
           try {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-            // MSVC 2015 diagnoses fatalConditionHandler as unused (because reset() is a static
-            // method)
+       // MSVC 2015 diagnoses fatalConditionHandler as unused (because reset() is a static
+       // method)
             DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101) // unreferenced local variable
             FatalConditionHandler fatalConditionHandler;  // Handle signals
             // execute the test

@@ -70,7 +70,8 @@ void IOShell::Interface::enroll_options()
   options_.enroll("floor", Ioss::GetLongOption::MandatoryValue,
                   "Only compare values if `|a| > floor || |b| > floor`", nullptr);
   options_.enroll("ignore_qa_info", Ioss::GetLongOption::NoValue,
-                  "If comparing databases, do not compare the qa and info records.", nullptr, nullptr, true);
+                  "If comparing databases, do not compare the qa and info records.", nullptr,
+                  nullptr, true);
 
   options_.enroll("ignore_node_map", Ioss::GetLongOption::NoValue,
                   "Do not read the global node id map (if any) from the input database.", nullptr,
@@ -260,9 +261,9 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("delete_qa_records", Ioss::GetLongOption::NoValue,
-		  "Do not output qa records to output database.", nullptr);
+                  "Do not output qa records to output database.", nullptr);
   options_.enroll("delete_info_records", Ioss::GetLongOption::NoValue,
-		  "Do not output info records to output database.", nullptr, nullptr, true);
+                  "Do not output info records to output database.", nullptr, nullptr, true);
 
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
                   "Character used to separate a field suffix from the field basename\n"
