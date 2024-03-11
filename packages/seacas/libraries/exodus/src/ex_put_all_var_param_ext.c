@@ -510,10 +510,10 @@ static int define_truth_table(ex_entity_type obj_type, int exoid, int num_ent, i
           }
           exi_compress_variable(exoid, varid, 2);
         }
-      }    /* if */
+      } /* if */
       k++; /* increment truth table pointer */
-    }      /* for j */
-  }        /* for i */
+    } /* for j */
+  } /* for i */
   return NC_NOERR;
 }
 

@@ -207,10 +207,10 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
               ((int *)node_cmap_node_cnts)[cnt] = 0;
             }
           } /* "for(cnt=0; cnt < num_n_comm_maps; cnt++)" */
-        }   /* "if (node_cmap_node_cnts != NULL)" */
-      }     /* "if (node_cmap_ids != NULL)" */
-    }       /* "if (num_n_comm_maps > 0)" */
-  }         /* End "if ((dimid = nc_inq_dimid(exoid, DIM_NUM_N_CMAPS)) != -1)" */
+        } /* "if (node_cmap_node_cnts != NULL)" */
+      } /* "if (node_cmap_ids != NULL)" */
+    } /* "if (num_n_comm_maps > 0)" */
+  } /* End "if ((dimid = nc_inq_dimid(exoid, DIM_NUM_N_CMAPS)) != -1)" */
 
   /*****************************************************************************/
   /*****************************************************************************/
@@ -368,10 +368,10 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
               ((int *)elem_cmap_elem_cnts)[cnt] = 0;
             }
           } /* "for(cnt=0; cnt < num_e_comm_maps; cnt++)" */
-        }   /* "if (elem_cmap_elem_cnts != NULL)" */
-      }     /* "if (elem_cmap_ids != NULL)" */
-    }       /* "if (num_e_comm_maps > 0)" */
-  }         /* End "if ((dimid = nc_inq_dimid(exoid, DIM_NUM_E_CMAPS(processor))) !=
-               -1)" */
+        } /* "if (elem_cmap_elem_cnts != NULL)" */
+      } /* "if (elem_cmap_ids != NULL)" */
+    } /* "if (num_e_comm_maps > 0)" */
+  } /* End "if ((dimid = nc_inq_dimid(exoid, DIM_NUM_E_CMAPS(processor))) !=
+       -1)" */
   EX_FUNC_LEAVE(EX_NOERR);
 }
