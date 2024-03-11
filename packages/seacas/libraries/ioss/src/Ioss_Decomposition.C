@@ -140,19 +140,27 @@ namespace Ioss {
 
   IOSS_EXPORT const std::vector<std::string> &valid_decomp_methods()
   {
-    static const std::vector<std::string> valid_methods
-    {
-      "EXTERNAL"
+    static const std::vector<std::string> valid_methods{"EXTERNAL"
 #ifdef SEACAS_HAVE_MPI
-          ,
-          "LINEAR", "MAP", "VARIABLE"
+                                                        ,
+                                                        "LINEAR",
+                                                        "MAP",
+                                                        "VARIABLE"
 #if !defined(NO_ZOLTAN_SUPPORT)
-          ,
-          "BLOCK", "CYCLIC", "RANDOM", "RCB", "RIB", "HSFC"
+                                                        ,
+                                                        "BLOCK",
+                                                        "CYCLIC",
+                                                        "RANDOM",
+                                                        "RCB",
+                                                        "RIB",
+                                                        "HSFC"
 #endif
 #if !defined(NO_PARMETIS_SUPPORT)
-          ,
-          "KWAY", "KWAY_GEOM", "GEOM_KWAY", "METIS_SFC"
+                                                        ,
+                                                        "KWAY",
+                                                        "KWAY_GEOM",
+                                                        "GEOM_KWAY",
+                                                        "METIS_SFC"
 #endif
 #endif
     };
@@ -313,7 +321,7 @@ namespace Ioss {
     m_elementDist = get_entity_dist<INT>(m_processorCount, m_processor, m_globalElementCount,
                                          &m_elementOffset, &m_elementCount);
     m_nodeDist    = get_entity_dist<INT>(m_processorCount, m_processor, m_globalNodeCount,
-                                      &m_nodeOffset, &m_nodeCount);
+                                         &m_nodeOffset, &m_nodeCount);
   }
 
   template <typename INT>

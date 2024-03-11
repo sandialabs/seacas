@@ -35,9 +35,9 @@ namespace Ioss {
   {
   public:
     FieldManager() = default;
-    FieldManager(const FieldManager &other) : fields(other.fields)
-    { /* Do not make this `=default` since that breaks the thread-safe build */
-    }
+    FieldManager(const FieldManager &other)
+        : fields(other.fields)
+    { /* Do not make this `=default` since that breaks the thread-safe build */ }
 
     FieldManager &operator=(const FieldManager &) = delete;
 

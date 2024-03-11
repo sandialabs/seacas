@@ -101,8 +101,8 @@ namespace Iotm {
     void get_commsets();
     void get_assemblies();
 
-    void compute_block_membership_nl(Ioss::SideBlock * efblock,
-                                     std::vector<std::string> & block_membership) const override;
+    void compute_block_membership_nl(Ioss::SideBlock          *efblock,
+                                     std::vector<std::string> &block_membership) const override;
 
     void update_block_omissions_from_assemblies();
 

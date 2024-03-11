@@ -36,9 +36,9 @@ namespace Ioss {
   {
   public:
     PropertyManager() = default;
-    PropertyManager(const PropertyManager &from) : m_properties(from.m_properties)
-    { /* Do not make this `=default` since that breaks the thread-safe build */
-    }
+    PropertyManager(const PropertyManager &from)
+        : m_properties(from.m_properties)
+    { /* Do not make this `=default` since that breaks the thread-safe build */ }
     PropertyManager &operator=(const PropertyManager &from) = delete;
 
     // Add the specified property to the list.

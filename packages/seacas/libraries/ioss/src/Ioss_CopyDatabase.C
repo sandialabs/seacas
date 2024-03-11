@@ -894,18 +894,18 @@ namespace {
     if (!blocks.empty()) {
       size_t total_entities = 0;
       for (const auto &iblock : blocks) {
-	if (Ioss::Utils::block_is_omitted(iblock)) {
-	  continue;
-	}
-	const std::string &name = iblock->name();
-	if (options.debug && rank == 0) {
-	  fmt::print(Ioss::DebugOut(), "{}, ", name);
-	}
-	size_t count = iblock->entity_count();
-	total_entities += count;
-	
-	auto *block = new T(*iblock);
-	output_region.add(block);
+        if (Ioss::Utils::block_is_omitted(iblock)) {
+          continue;
+        }
+        const std::string &name = iblock->name();
+        if (options.debug && rank == 0) {
+          fmt::print(Ioss::DebugOut(), "{}, ", name);
+        }
+        size_t count = iblock->entity_count();
+        total_entities += count;
+
+        auto *block = new T(*iblock);
+        output_region.add(block);
       }
       if (options.output_summary && rank == 0) {
         fmt::print(Ioss::DebugOut(), " Number of {:20s} = {:14}\n",
@@ -931,11 +931,11 @@ namespace {
         // testing to verify that we handle zone reordering
         // correctly.
         for (int i = static_cast<int>(blocks.size()) - 1; i >= 0; i--) {
-          const auto        &iblock = blocks[i];
-	  if (Ioss::Utils::block_is_omitted(iblock)) {
-	    continue;
-	  }
-          const std::string &name   = iblock->name();
+          const auto &iblock = blocks[i];
+          if (Ioss::Utils::block_is_omitted(iblock)) {
+            continue;
+          }
+          const std::string &name = iblock->name();
           if (options.debug && rank == 0) {
             fmt::print(Ioss::DebugOut(), "{}, ", name);
           }
@@ -957,9 +957,9 @@ namespace {
       }
       else {
         for (const auto &iblock : blocks) {
-	  if (Ioss::Utils::block_is_omitted(iblock)) {
-	    continue;
-	  }
+          if (Ioss::Utils::block_is_omitted(iblock)) {
+            continue;
+          }
           const std::string &name = iblock->name();
           if (options.debug && rank == 0) {
             fmt::print(Ioss::DebugOut(), "{}, ", name);
