@@ -139,21 +139,17 @@ int main(int argc, char *argv[])
       else {
         exit_status = EXIT_FAILURE;
         std::cerr << "There were " << aprepro.get_error_count() << " errors and "
-                  << aprepro.get_warning_count() << " warnings."
-                  << "\n";
+                  << aprepro.get_warning_count() << " warnings." << "\n";
         if (aprepro.ap_options.errors_and_warnings_fatal) {
-          std::cerr << "Errors and warnings are fatal. No output has been written"
-                    << "\n";
+          std::cerr << "Errors and warnings are fatal. No output has been written" << "\n";
         }
         else if (aprepro.ap_options.errors_fatal) {
-          std::cerr << "Errors are fatal. No output has been written."
-                    << "\n";
+          std::cerr << "Errors are fatal. No output has been written." << "\n";
         }
         else {
           std::cerr << "Neither errors nor warnings are fatal. "
                     << "If you see this message, then there is a bug in Aprepro. "
-                    << "No output has been written."
-                    << "\n";
+                    << "No output has been written." << "\n";
         }
       }
     }

@@ -284,7 +284,7 @@ void Compute_Maps(std::vector<INT> &node_map, std::vector<INT> &elmt_map, ExoII_
             Error(out);
           }
         } // End of local node loop on file1's element.
-      }   // End of local node search block.
+      } // End of local node search block.
 
       ++e1;
 
@@ -543,7 +543,7 @@ void Compute_Partial_Maps(std::vector<INT> &node_map, std::vector<INT> &elmt_map
             Error(out);
           }
         } // End of local node loop on file1's element.
-      }   // End of local node search block.
+      } // End of local node search block.
 
       ++e1;
 

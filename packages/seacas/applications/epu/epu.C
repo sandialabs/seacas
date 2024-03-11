@@ -2382,7 +2382,7 @@ namespace {
           part_block_offset += element_count;
 
         } // end if blocks[p][b].entity_count() (non-zero length block)
-      }   // end for p=0..part_count-1
+      } // end for p=0..part_count-1
     }
   }
 
@@ -4081,7 +4081,7 @@ namespace {
           part_block_offset += edge_count;
 
         } // end if edgeblocks[p][b].entity_count() (non-zero length block)
-      }   // end for p=0..part_count-1
+      } // end for p=0..part_count-1
     }
   }
 
@@ -4460,7 +4460,7 @@ namespace {
           part_block_offset += face_count;
 
         } // end if faceblocks[p][b].entity_count() (non-zero length block)
-      }   // end for p=0..part_count-1
+      } // end for p=0..part_count-1
     }
   }
 

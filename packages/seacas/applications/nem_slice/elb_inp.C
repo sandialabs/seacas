@@ -306,7 +306,7 @@ int cmd_line_arg_parse(int argc, char *argv[],              /* Args as passed by
 
         } /* End "switch(my_getsubopt(&sub_opt, weight_subopts, &value))" */
 
-      }      /* End "while(*sub_opt != '\0')" */
+      } /* End "while(*sub_opt != '\0')" */
       break; /* End "case 'w'" */
 
     case 'a':
@@ -438,7 +438,7 @@ int cmd_line_arg_parse(int argc, char *argv[],              /* Args as passed by
 
         } /* End "switch(my_getsubopt(&sub_opt, mach_subopts, &value))" */
 
-      }      /* End "while(*sub_opt != '\0')" */
+      } /* End "while(*sub_opt != '\0')" */
       break; /* End "case 'm'" */
 
     case 'l':
@@ -527,7 +527,7 @@ int cmd_line_arg_parse(int argc, char *argv[],              /* Args as passed by
 
         } /* End "switch(my_getsubopt(&sup_opt, mach_subopts, &value))" */
 
-      }      /* End "while(*sup_opt != '\0')" */
+      } /* End "while(*sup_opt != '\0')" */
       break; /* End "case 'l'" */
 
     case 'S': prob->no_sph = 1; break;
@@ -581,7 +581,7 @@ value\n");
 
         } /* End "switch(my_getsubopt(&sub_opt, solve_subopts, &value))" */
 
-      }      /* End "while(sub_opt != '\0')" */
+      } /* End "while(sub_opt != '\0')" */
       break; /* End "case 's'" */
 
     case 'g':

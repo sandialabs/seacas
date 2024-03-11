@@ -2184,8 +2184,8 @@ void NemSpread<T, INT>::read_node_sets(int exoid, std::vector<INT> &num_nodes_in
               ns_cntr[iproc]++;
             }
           } /* End "if(intersection)" */
-        }   /* End "for(iproc=0; iproc <Proc_Info[2]; iproc++)" */
-      }     /* End "for(imess=0; imess < num_messages; imess++)" */
+        } /* End "for(iproc=0; iproc <Proc_Info[2]; iproc++)" */
+      } /* End "for(imess=0; imess < num_messages; imess++)" */
 
       /*
        * If any part of this node-set is on the processor, update the various
@@ -2212,7 +2212,7 @@ void NemSpread<T, INT>::read_node_sets(int exoid, std::vector<INT> &num_nodes_in
         }
       }
     } /* END "if (num_nodes_in_node_set[i] > 0)" */
-  }   /* END "for (i = 0; i < globals.Num_Node_Set; i++)" */
+  } /* END "for (i = 0; i < globals.Num_Node_Set; i++)" */
 
   /*--------------------------------------------------------------------------*/
   /*             WRITE PERMANENT ARRAYS FOR NODE SET INFO                     */
@@ -2586,7 +2586,7 @@ void NemSpread<T, INT>::read_side_sets(int exoid, std::vector<INT> &num_elem_in_
                   ss_df_ptr[proc_es_pointer[iproc][j]];
             }
           } /* End "if(ipos_elem > 0)" */
-        }   /* End "for(iproc=0; iproc <Proc_Info[2]; iproc++)" */
+        } /* End "for(iproc=0; iproc <Proc_Info[2]; iproc++)" */
 #endif
       } /* End "for(imess=0; imess < num_messages; imess++)" */
 
@@ -2790,12 +2790,12 @@ void NemSpread<T, INT>::read_side_sets(int exoid, std::vector<INT> &num_elem_in_
                   }
                 }
               } /* End "for(j=0; j < num_elem_per_message; j++)" */
-            }   /* End "if(ntotal[iproc] > 0)" */
-          }     /* End "for(iproc=0; iproc <Proc_Info[2]; iproc++)" */
-        }       /* End "for(imess=0; imess < num_messages; imess++)" */
-      }         /* End "if(num_df_in_ssets[i] > 0)" */
-    }           /* END "if (num_elem_in_ssets[i] > 0)" */
-  }             /* END "for (i = 0; i < globals.Num_Side_Set; i++)" */
+            } /* End "if(ntotal[iproc] > 0)" */
+          } /* End "for(iproc=0; iproc <Proc_Info[2]; iproc++)" */
+        } /* End "for(imess=0; imess < num_messages; imess++)" */
+      } /* End "if(num_df_in_ssets[i] > 0)" */
+    } /* END "if (num_elem_in_ssets[i] > 0)" */
+  } /* END "for (i = 0; i < globals.Num_Side_Set; i++)" */
 
   /*-------------------------------------------------------------------------*/
   /*---------------- Store Structures back into a packed form ---------------*/
