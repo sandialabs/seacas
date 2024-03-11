@@ -1,10 +1,9 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#define DOCTEST_CONFIG_IMPLEMENT
-#include <doctest.h>
+#include <catch2/catch_all.hpp>
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_CommSet.h"      // for CommSet
@@ -52,7 +51,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
 #endif
-  const int result = doctest::Context().run();
+  const int result = Catch::Session().run(argc, argv);
 #ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
@@ -420,7 +419,7 @@ void create_database(std::string type, std::string file_name)
   db->closeDatabase();
 }
 
-DOCTEST_TEST_CASE("Ioad")
+TEST_CASE("Ioad")
 {
 
   Ioss::Init::Initializer init_db;
@@ -466,7 +465,7 @@ template <> const std::string get_entity_type_test<Ioss::SideBlock>()
   return sideblock.type_string();
 }
 
-DOCTEST_TEST_CASE("Ioad_BlockNames")
+TEST_CASE("Ioad_BlockNames")
 {
   REQUIRE(get_entity_type_test<Ioss::SideBlock>() == Ioad::get_entity_type<Ioss::SideBlock>());
   REQUIRE(get_entity_type_test<Ioss::SideSet>() == Ioad::get_entity_type<Ioss::SideSet>());
