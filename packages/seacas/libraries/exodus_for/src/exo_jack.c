@@ -2442,8 +2442,8 @@ void F2C(exgssn, EXGSSN)(int *idexo, entity_id *side_set_id, void_int *side_set_
 #if Build64
 void F2C(exgssc, EXGSSC)(int *idexo, entity_id *side_set_id, int64_t *side_set_node_cnt_list, int *ierr)
 {
-  int num_sides_in_set = 0;
-  int num_df_in_set = 0;
+  int64_t num_sides_in_set = 0;
+  int64_t num_df_in_set = 0;
   ex_get_set_param(*idexo, EX_SIDE_SET, *side_set_id, &num_sides_in_set, &num_df_in_set);
   int *cnt_list = malloc(num_sides_in_set * sizeof(int));
 
