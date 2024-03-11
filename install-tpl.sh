@@ -142,6 +142,9 @@ CATALYST2=$(check_valid CATALYST2)
 GTEST=${GTEST:-${FAODEL}}
 GTEST=$(check_valid GTEST)
 
+CATCH2=${CATCH2:-YES}
+CATCH2=$(check_valid CATCH2)
+
 
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
@@ -219,6 +222,7 @@ if [ $# -gt 0 ]; then
         echo "   FAODEL       = ${FAODEL}"
         echo "   ADIOS2       = ${ADIOS2}"
         echo "   CATALYST2    = ${CATALYST2}"
+        echo "   CATCH2       = ${CATCH2}"
         echo "   GTEST        = ${GTEST}"
         echo ""
         echo "   SUDO         = ${SUDO} (empty unless need superuser permission via 'sudo')"
@@ -973,6 +977,48 @@ then
         fi
     else
         echo "${txtylw}+++ gtest already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+# =================== INSTALL catch2  ===============
+if [ "$CATCH2" == "YES" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatch.a ]
+    then
+        echo "${txtgrn}+++ gtest${txtrst}"
+        cd $ACCESS || exit
+        cd TPL/catch2 || exit
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf Catch2
+            git clone https://github.com/catchorg/Catch2.git
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+            echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd Catch2 || exit
+            git checkout v3.5.3
+            rm -rf build
+            mkdir build
+            cd build || exit
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash -x ../../runcmake.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure cmake for Catch2. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make "VERBOSE=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build Catch2. exiting.${txtrst}
+                exit 1
+            fi
+        fi
+    else
+        echo "${txtylw}+++ Catch2 already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
