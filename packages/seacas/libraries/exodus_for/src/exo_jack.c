@@ -2428,7 +2428,7 @@ void F2C(excn2s, EXCN2S)(int *idexo, void_int *num_elem_per_set, void_int *num_n
  * read side set node list
  * \sa ex_get_side_set_node_list()
  */
-void F2C(exgssn, EXGSSN)(int *idexo, entity_id *side_set_id, int *side_set_node_cnt_list,
+void F2C(exgssn, EXGSSN)(int *idexo, entity_id *side_set_id, void_int *side_set_node_cnt_list,
                          void_int *side_set_node_list, int *ierr)
 {
   *ierr =
