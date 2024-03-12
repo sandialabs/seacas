@@ -276,10 +276,7 @@ TEST_CASE("cube_2blocks")
 
   for (size_t proc_count = 2; proc_count < 8; proc_count += 2) {
     std::string name = "cube_2blocks_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str())
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.1);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.1); }
   }
   cleanup(zones);
 }
@@ -385,7 +382,7 @@ TEST_CASE("farmer plenum")
 
   for (size_t proc_count = 2; proc_count < 20; proc_count++) {
     std::string name = "Plenum_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str()) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.75); }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.75); }
   }
   cleanup(zones);
 }
@@ -497,7 +494,7 @@ TEST_CASE("grv-nose")
 
   for (size_t proc_count = 3; proc_count <= 384; proc_count *= 2) {
     std::string name = "GRV-Nose_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str())
+    SECTION(name)
     {
       double load_balance_tolerance = 1.2;
       check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.2);
@@ -528,7 +525,7 @@ TEST_CASE("grv")
 
   for (size_t proc_count = 2; proc_count < 16; proc_count++) {
     std::string name = "GRV_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str())
+    SECTION(name)
     {
       double load_balance_tolerance = 1.3;
       check_split_assign(zones, load_balance_tolerance, proc_count, .7, 1.1);
@@ -559,7 +556,7 @@ TEST_CASE("grv-large")
 
   for (size_t proc_count = 2; proc_count < 8192; proc_count *= 2) {
     std::string name = "GRV-LARGE_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str())
+    SECTION(name)
     {
       double load_balance_tolerance = 1.3;
       check_split_assign(zones, load_balance_tolerance, proc_count, .7);
@@ -604,7 +601,7 @@ TEST_CASE("grv-large-ordinal")
 
   for (size_t proc_count = 2; proc_count < 8192; proc_count *= 2) {
     std::string name = "GRV-LARGE_ORDINAL_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str())
+    SECTION(name)
     {
       double load_balance_tolerance = 1.3;
       check_split_assign(zones, load_balance_tolerance, proc_count, .7);
@@ -662,7 +659,7 @@ TEST_CASE("mk21")
 
   for (size_t proc_count = 2; proc_count < 17; proc_count++) {
     std::string name = "MK21_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str()) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
   cleanup(zones);
 }
@@ -749,10 +746,7 @@ TEST_CASE("mk21-large")
 
   for (size_t proc_count = 2; proc_count < 257; proc_count *= 2) {
     std::string name = "MK21_Large_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str())
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count, .8, 1.2);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, .8, 1.2); }
   }
   cleanup(zones);
 }
@@ -785,7 +779,7 @@ TEST_CASE("farmer_h1_nozzle")
 
   for (size_t proc_count = 3; proc_count <= 384; proc_count *= 2) {
     std::string name = "NOZ_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str()) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
   cleanup(zones);
 }
@@ -1049,10 +1043,7 @@ TEST_CASE("farmer_h1_mk21")
 
   for (size_t proc_count = 3; proc_count <= 384; proc_count *= 2) {
     std::string name = "H1_MK21_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str())
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count, 0.75, 1.1);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.75, 1.1); }
   }
   cleanup(zones);
 }
@@ -1070,10 +1061,7 @@ TEST_CASE("bc-257x129x2")
 
   for (size_t proc_count = 4; proc_count <= 84; proc_count += 4) {
     std::string name = "BC_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str())
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.1);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.1); }
   }
   cleanup(zones);
 }
@@ -1091,7 +1079,7 @@ TEST_CASE("carnes-mesh")
 
   for (size_t proc_count = 2; proc_count <= 64; proc_count *= 2) {
     std::string name = "Carnes_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str()) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
   cleanup(zones);
 }
@@ -1109,7 +1097,7 @@ TEST_CASE("carnes-blunt-wedge")
 
   for (size_t proc_count = 2; proc_count <= 64; proc_count *= 2) {
     std::string name = "Carnes_BW_ProcCount_" + std::to_string(proc_count);
-    SECTION(name.c_str()) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
   cleanup(zones);
 }
@@ -1125,7 +1113,7 @@ TEST_CASE("64GiElem")
 
   for (size_t proc_count = 2; proc_count <= 1 << 15; proc_count *= 2) {
     std::string name = "64GiElem_PC_" + std::to_string(proc_count);
-    SECTION(name.c_str()) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
   cleanup(zones);
 }
@@ -1142,10 +1130,7 @@ TEST_CASE("LotsOfZones")
 
   for (size_t proc_count = 2; proc_count <= 1024; proc_count *= 4) {
     std::string name = "Lots_PC_" + std::to_string(proc_count);
-    SECTION(name.c_str())
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.1);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.1); }
   }
   cleanup(zones);
 }
@@ -1163,6 +1148,6 @@ TEST_CASE("half_sphere")
   double load_balance_tolerance = 1.4;
 
   std::string name = "half_sphere_8";
-  SECTION(name.c_str()) { check_split_assign(zones, load_balance_tolerance, 8, 0.9, 1.1); }
+  SECTION(name) { check_split_assign(zones, load_balance_tolerance, 8, 0.9, 1.1); }
   cleanup(zones);
 }
