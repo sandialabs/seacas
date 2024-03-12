@@ -985,7 +985,7 @@ if [ "$CATCH2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatch.a ]
     then
-        echo "${txtgrn}+++ gtest${txtrst}"
+        echo "${txtgrn}+++ Catch2${txtrst}"
         cd $ACCESS || exit
         cd TPL/catch2 || exit
         if [ "$DOWNLOAD" == "YES" ]
