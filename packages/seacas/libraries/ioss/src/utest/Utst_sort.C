@@ -74,44 +74,59 @@ TEST_CASE("sort")
 {
   std::string type[] = {"sawtooth", "do_rand", "stagger", "plateau", "shuffle"};
 
-  size_t n    = GENERATE(100, 1023, 1024, 1025, (2 << 16) - 1, 2 << 16, (2 << 16) + 1);
   auto   dist = GENERATE_COPY(sawtooth, do_rand, stagger, plateau, shuffle);
-
-  fmt::print("\nSize: {:8}, Type = {:12} ", n, type[dist - 1]);
+  size_t n    = GENERATE(100, 1023, 1024, 1025, (2 << 16) - 1, 2 << 16, (2 << 16) + 1);
 
   // 'm' shapes the values in the vector; all sorts are on vectors of size 'n'
-  for (size_t m = 1; m < 2 * n; m *= 2) {
-    fmt::print("{},", m);
+  size_t m = GENERATE(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
+                      65536, 131072, 262144);
+
+  CHECKED_IF(m < 2 * n)
+  {
+    fmt::print("Size: {:8}, Shape = {:8}, Type = {:12}\n", n, m, type[dist - 1]);
     std::vector<int64_t> x = generate_vector(dist, n, m);
     REQUIRE(x.size() == n);
 
-    auto xsave = x;
-    Ioss::sort(x); // Copy of x
-    REQUIRE(verify_sorted(x));
-
-    x = xsave;
-    std::reverse(x.begin(), x.end()); // Reversed
-    Ioss::sort(x);
-    REQUIRE(verify_sorted(x));
-
-    x = xsave;
-    std::reverse(&x[0], &x[n / 2]); // Front half reversed
-    Ioss::sort(x);
-    REQUIRE(verify_sorted(x));
-
-    x = xsave;
-    std::reverse(&x[n / 2], &x[n]); // Back half reversed
-    Ioss::sort(x);
-    REQUIRE(verify_sorted(x));
-
-    Ioss::sort(x); // Already sorted
-    REQUIRE(verify_sorted(x));
-
-    x = xsave;
-    for (size_t p = 0; p < n; p++) {
-      x[p] += p % 5;
+    SECTION("as generated")
+    {
+      Ioss::sort(x); // Copy of x
+      REQUIRE(verify_sorted(x));
     }
-    Ioss::sort(x); // Dithered
-    REQUIRE(verify_sorted(x));
+
+    SECTION("reversed")
+    {
+      std::reverse(x.begin(), x.end()); // Reversed
+      Ioss::sort(x);
+      REQUIRE(verify_sorted(x));
+    }
+
+    SECTION("front-half reversed")
+    {
+      std::reverse(&x[0], &x[n / 2]); // Front half reversed
+      Ioss::sort(x);
+      REQUIRE(verify_sorted(x));
+    }
+
+    SECTION("back-half reversed")
+    {
+      std::reverse(&x[n / 2], &x[n]); // Back half reversed
+      Ioss::sort(x);
+      REQUIRE(verify_sorted(x));
+      SECTION("already sorted")
+      {
+        REQUIRE(verify_sorted(x));
+        Ioss::sort(x); // Already sorted
+        REQUIRE(verify_sorted(x));
+      }
+    }
+
+    SECTION("dithered")
+    {
+      for (size_t p = 0; p < n; p++) {
+        x[p] += p % 5;
+      }
+      Ioss::sort(x); // Dithered
+      REQUIRE(verify_sorted(x));
+    }
   }
 }
