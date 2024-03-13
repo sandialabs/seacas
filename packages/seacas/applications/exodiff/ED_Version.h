@@ -5,5 +5,5 @@
 // See packages/seacas/LICENSE for details
 #pragma once
 
-static const std::string version("3.32");
-static const std::string verdate("2024-03-08");
+static const std::string version("3.33");
+static const std::string verdate("2024-03-13");
