@@ -70,7 +70,19 @@ void IOShell::Interface::enroll_options()
   options_.enroll("floor", Ioss::GetLongOption::MandatoryValue,
                   "Only compare values if `|a| > floor || |b| > floor`", nullptr);
   options_.enroll("ignore_qa_info", Ioss::GetLongOption::NoValue,
-                  "If comparing databases, do not compare the qa and info records.", nullptr,
+                  "If comparing databases, do not compare the qa and info records.", nullptr, nullptr, true);
+
+  options_.enroll("ignore_node_map", Ioss::GetLongOption::NoValue,
+                  "Do not read the global node id map (if any) from the input database.", nullptr,
+                  nullptr);
+  options_.enroll("ignore_element_map", Ioss::GetLongOption::NoValue,
+                  "Do not read the global element id map (if any) from the input database.",
+                  nullptr, nullptr);
+  options_.enroll("ignore_edge_map", Ioss::GetLongOption::NoValue,
+                  "Do not read the global edge id map (if any) from the input database.", nullptr,
+                  nullptr);
+  options_.enroll("ignore_face_map", Ioss::GetLongOption::NoValue,
+                  "Do not read the global face id map (if any) from the input database.", nullptr,
                   nullptr, true);
 
   options_.enroll("ignore_node_map", Ioss::GetLongOption::NoValue,

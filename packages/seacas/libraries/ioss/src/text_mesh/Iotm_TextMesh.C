@@ -134,12 +134,15 @@ namespace Iotm {
 
   void TextMesh::initialize()
   {
+    m_topologyMapping.initialize_topology_map();
+
     build_part_to_topology_map();
     build_block_partition_map();
     build_element_connectivity_map();
 
     m_variableCount[Ioss::NODESET]      = 0;
     m_variableCount[Ioss::SIDESET]      = 0;
+    m_variableCount[Ioss::EDGESET]      = 0;
     m_variableCount[Ioss::COMMSET]      = 0;
     m_variableCount[Ioss::ELEMENTBLOCK] = 0;
     m_variableCount[Ioss::INVALID_TYPE] = 0;
@@ -205,6 +208,37 @@ namespace Iotm {
     int                myProc  = m_myProcessor;
     if (nullptr != sideset) {
       for (const std::pair<EntityId, int> &elemSidePair : sideset->data) {
+        EntityId elemId = elemSidePair.first;
+        auto iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
+        if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
+          count++;
+        }
+      }
+    }
+    return count;
+  }
+
+  int64_t TextMesh::edgeset_count() const { return m_data.edgesets.get_group_data().size(); }
+
+  int64_t TextMesh::edgeset_edge_count(EntityId id) const
+  {
+    int64_t count = 0;
+
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(id);
+    if (nullptr != edgeset) {
+      count = edgeset->data.size();
+    }
+    return count;
+  }
+
+  int64_t TextMesh::edgeset_edge_count_proc(EntityId id) const
+  {
+    int64_t count = 0;
+
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(id);
+    int                myProc  = m_myProcessor;
+    if (nullptr != edgeset) {
+      for (const std::pair<EntityId, int> &elemSidePair : edgeset->data) {
         EntityId elemId = elemSidePair.first;
         auto iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
         if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
@@ -573,6 +607,61 @@ namespace Iotm {
     return touchedBlocks;
   }
 
+  void TextMesh::edgeset_elem_edges(EntityId id, Ioss::Int64Vector &elemEdges) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(id);
+    if (nullptr == edgeset)
+      return;
+
+    elemEdges.resize(2 * edgeset_edge_count_proc(id));
+
+    int64_t count  = 0;
+    int     myProc = m_myProcessor;
+
+    for (const std::pair<EntityId, int> &elemSidePair : edgeset->data) {
+      EntityId elemId = elemSidePair.first;
+      int      edge   = elemSidePair.second;
+      auto     iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
+      if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
+        elemEdges[count++] = elemId;
+        elemEdges[count++] = edge;
+      }
+    }
+  }
+
+  std::set<std::string> TextMesh::get_blocks_touched_by_edgeset(const EdgesetData *edgeset) const
+  {
+    std::set<std::string> touchedBlocks;
+
+    int myProc = m_myProcessor;
+
+    for (const std::pair<EntityId, int> &elemEdgePair : edgeset->data) {
+      EntityId elemId = elemEdgePair.first;
+      auto     iter = std::find(m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId);
+      if (iter != m_data.elementDataVec.end() && iter->proc == myProc) {
+        touchedBlocks.insert(iter->partName);
+      }
+    }
+
+    return touchedBlocks;
+  }
+
+  std::vector<std::string> TextMesh::edgeset_touching_blocks(EntityId setId) const
+  {
+    std::vector<std::string> touchedBlocks;
+
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(setId);
+    if (nullptr != edgeset) {
+      std::set<std::string> blockList = get_blocks_touched_by_edgeset(edgeset);
+      touchedBlocks.reserve(blockList.size());
+      for (const std::string &block : blockList) {
+        touchedBlocks.push_back(block);
+      }
+    }
+
+    return touchedBlocks;
+  }
+
   void TextMesh::connectivity(EntityId id, Ioss::Int64Vector &connect) const
   {
     Topology topo = get_topology_for_part(id);
@@ -618,6 +707,91 @@ namespace Iotm {
     }
   }
 
+  ///////////////////////
+  Topology TextMesh::get_topology_for_edge_block(const std::string& blockName) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_edge_block_parent(blockName);
+
+    ThrowRequireMsg(nullptr != edgeset,
+                    "Could not find parent edgeset for edge block named: " << blockName);
+
+    EdgeBlockInfo info = edgeset->get_edge_block_info(blockName);
+
+    return m_topologyMapping.topology(info.edgeTopology);
+  }
+
+  int64_t TextMesh::get_edge_block_connectivity_size_proc(const EdgesetData *edgeset, const std::string& blockName) const
+  {
+    ThrowRequireMsg(nullptr != edgeset,
+                    "Could not find parent edgeset for edge block named: " << blockName);
+
+    Topology topo = get_topology_for_edge_block(blockName);
+    int64_t npe = topo.num_nodes();
+
+    return edgeblock_edge_count_proc(edgeset->id, blockName) * npe;
+  }
+
+  void TextMesh::edge_connectivity(const std::string& blockName, Ioss::Int64Vector &connect) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_edge_block_parent(blockName);
+    connect.resize(get_edge_block_connectivity_size_proc(edgeset, blockName));
+    raw_edge_connectivity(edgeset, blockName, connect.data());
+  }
+
+  void TextMesh::edge_connectivity(const std::string& blockName, Ioss::IntVector &connect) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_edge_block_parent(blockName);
+    connect.resize(get_edge_block_connectivity_size_proc(edgeset, blockName));
+    raw_edge_connectivity(edgeset, blockName, connect.data());
+  }
+
+  void TextMesh::edge_connectivity(const std::string& blockName, int64_t *connect) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_edge_block_parent(blockName);
+    raw_edge_connectivity(edgeset, blockName, connect);
+  }
+
+  void TextMesh::edge_connectivity(const std::string& blockName, int *connect) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_edge_block_parent(blockName);
+    raw_edge_connectivity(edgeset, blockName, connect);
+  }
+
+  template <typename INT> void TextMesh::raw_edge_connectivity(const EdgesetData *edgeset,
+                                                               const std::string& blockName,
+                                                               INT *connect) const
+  {
+    ThrowRequireMsg(nullptr != edgeset,
+                    "Invalid parent edgeset for edgeblock with name: " << blockName);
+
+    EdgeBlockInfo info = edgeset->get_edge_block_info(blockName);
+    Topology topo = m_topologyMapping.topology(info.elementTopology);
+
+    std::vector<size_t> localEdgeIndex =
+        edgeset->get_edgeblock_indices_local_to_proc(info, m_myProcessor);
+
+    int count = 0;
+
+    for (size_t edgeIndex : localEdgeIndex) {
+      const auto &elemEdgePair = edgeset->data[edgeIndex];
+      EntityId    elemId       = elemEdgePair.first;
+      int         edge         = elemEdgePair.second;
+
+      std::vector<Ordinal> edgeOrdinals = topo.edge_topology_node_indices(edge);
+
+      auto     elemIter = text_mesh::bound_search(
+          m_data.elementDataVec.begin(), m_data.elementDataVec.end(), elemId, ElementDataLess());
+      ThrowRequireMsg(elemIter != m_data.elementDataVec.end(),
+                      "Could not find reference element " << elemId
+                                                          << " in edgeset: " << edgeset->name
+                                                          << " edgeblock: " << blockName);
+
+      for(Ordinal i : edgeOrdinals) {
+        connect[count++] = elemIter->nodeIds[i];
+      }
+    }
+  }
+
   void TextMesh::set_variable_count(const std::string &type, size_t count)
   {
     if (type == "global") {
@@ -632,6 +806,9 @@ namespace Iotm {
     else if (type == "nodeset") {
       m_variableCount[Ioss::NODESET] = count;
     }
+    else if (type == "edgeset") {
+      m_variableCount[Ioss::EDGEBLOCK] = count;
+    }
     else if (type == "surface" || type == "sideset") {
       m_variableCount[Ioss::SIDEBLOCK] = count;
     }
@@ -643,7 +820,7 @@ namespace Iotm {
       fmt::print(errmsg,
                  "ERROR: (Iotm::TextMesh::set_variable_count)\n"
                  "       Unrecognized variable type '{}'. Valid types are:\n"
-                 "       global, element, node, nodal, nodeset, surface, sideset, assembly.\n",
+                 "       global, element, node, nodal, nodeset, surface, sideset, edgeset, assembly.\n",
                  type);
       IOSS_ERROR(errmsg);
     }
@@ -692,6 +869,25 @@ namespace Iotm {
     const SidesetData *sideset = m_data.sidesets.get_group_data(name);
     ThrowRequireMsg(nullptr != sideset, "Could not find sideset with name" << name);
     return sideset->id;
+  }
+
+  std::vector<std::string> TextMesh::get_edgeset_names() const
+  {
+    return m_data.edgesets.get_part_names();
+  }
+
+  std::string TextMesh::get_edgeset_name(EntityId id) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(id);
+    ThrowRequireMsg(nullptr != edgeset, "Could not find edgeset with id" << id);
+    return edgeset->name;
+  }
+
+  EntityId TextMesh::get_edgeset_id(const std::string &name) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != edgeset, "Could not find edgeset with name" << name);
+    return edgeset->id;
   }
 
   std::vector<std::string> TextMesh::get_assembly_names() const
@@ -921,6 +1117,81 @@ namespace Iotm {
     ThrowRequireMsg(nullptr != sideset, "Could not find sideset with name" << name);
 
     return sideset->get_split_type();
+  }
+
+  int64_t TextMesh::edgeblock_edge_count(EntityId id, const std::string &edgeBlockName) const
+  {
+    int64_t count = 0;
+
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(id);
+    if (nullptr != edgeset) {
+      EdgeBlockInfo info = edgeset->get_edge_block_info(edgeBlockName);
+      count              = info.edgeIndex.size();
+    }
+    return count;
+  }
+
+  int64_t TextMesh::edgeblock_edge_count_proc(EntityId id, const std::string &edgeBlockName) const
+  {
+    int64_t count = 0;
+
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(id);
+    if (nullptr != edgeset) {
+      EdgeBlockInfo info = edgeset->get_edge_block_info(edgeBlockName);
+      count              = edgeset->get_edgeblock_indices_local_to_proc(info, m_myProcessor).size();
+    }
+    return count;
+  }
+
+  void TextMesh::edgeblock_elem_edges(EntityId id, const std::string &edgeBlockName,
+                                      Ioss::Int64Vector &elemEdges) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(id);
+    if (nullptr == edgeset)
+      return;
+
+    EdgeBlockInfo       info = edgeset->get_edge_block_info(edgeBlockName);
+    std::vector<size_t> localEdgeIndex =
+        edgeset->get_edgeblock_indices_local_to_proc(info, m_myProcessor);
+    elemEdges.resize(2 * localEdgeIndex.size());
+
+    int64_t count = 0;
+
+    for (size_t edgeIndex : localEdgeIndex) {
+      const EdgesetData::DataType &elemEdgePair = edgeset->data[edgeIndex];
+      EntityId                     elemId       = elemEdgePair.first;
+      int                          edge         = elemEdgePair.second;
+
+      elemEdges[count++] = elemId;
+      elemEdges[count++] = edge;
+    }
+  }
+
+  std::vector<EdgeBlockInfo>
+  TextMesh::get_edge_block_info_for_edgeset(const std::string &name) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != edgeset, "Could not find edgeset with name" << name);
+    return edgeset->get_edge_block_info();
+  }
+
+  std::vector<size_t> TextMesh::get_local_edge_block_indices(const std::string   &name,
+                                                             const EdgeBlockInfo &info) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != edgeset, "Could not find edgeset with name" << name);
+    ThrowRequireMsg(name == info.parentName,
+                    "EdgeBlock: " << info.name << " with parent: " << info.parentName
+                                  << " was not created from edgeset: " << name);
+    return edgeset->get_edgeblock_indices_local_to_proc(info, m_myProcessor);
+  }
+
+  SplitType TextMesh::get_edgeset_split_type(const std::string &name) const
+  {
+    const EdgesetData *edgeset = m_data.edgesets.get_group_data(name);
+    ThrowRequireMsg(nullptr != edgeset, "Could not find edgeset with name" << name);
+
+    return edgeset->get_split_type();
   }
 
   void TextMesh::update_block_omissions_from_assemblies(

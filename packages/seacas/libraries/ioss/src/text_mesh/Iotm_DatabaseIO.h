@@ -98,6 +98,7 @@ namespace Iotm {
     void get_elemblocks();
     void get_nodesets();
     void get_sidesets();
+    void get_edgesets();
     void get_commsets();
     void get_assemblies();
 
@@ -117,6 +118,10 @@ namespace Iotm {
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::SideBlock *ef_blk, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::EdgeSet *ns, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
     int64_t get_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
@@ -124,10 +129,8 @@ namespace Iotm {
     int64_t get_field_internal(const Ioss::Assembly *assem, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
 
-    IOSS_NOOP_GFI(Ioss::EdgeBlock)
     IOSS_NOOP_GFI(Ioss::FaceBlock)
     IOSS_NOOP_GFI(Ioss::StructuredBlock)
-    IOSS_NOOP_GFI(Ioss::EdgeSet)
     IOSS_NOOP_GFI(Ioss::FaceSet)
     IOSS_NOOP_GFI(Ioss::ElementSet)
     IOSS_NOOP_GFI(Ioss::SideSet)
@@ -160,6 +163,7 @@ namespace Iotm {
     int elementBlockCount{0};
     int nodesetCount{0};
     int sidesetCount{0};
+    int edgesetCount{0};
     int assemblyCount{0};
 
     bool m_useVariableDf{true};
