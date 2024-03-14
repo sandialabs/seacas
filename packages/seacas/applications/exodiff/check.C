@@ -260,7 +260,7 @@ namespace {
       Assembly<INT> *assembly1 = file1.Get_Assembly_by_Index(b);
       if (assembly1 != nullptr) {
         Assembly<INT> *assembly2 = nullptr;
-	assembly2 = file2.Get_Assembly_by_Name(assembly1->Name());
+        assembly2                = file2.Get_Assembly_by_Name(assembly1->Name());
         if (assembly2 == nullptr) {
           Warning(fmt::format(".. Assembly '{}' with id {} exists in first "
                               "file but not the second.\n",
@@ -280,7 +280,7 @@ namespace {
         Assembly<INT> *assembly2 = file2.Get_Assembly_by_Index(b);
         if (assembly2 != nullptr) {
           Assembly<INT> *assembly1 = nullptr;
-	  assembly1 = file1.Get_Assembly_by_Name(assembly2->Name());
+          assembly1                = file1.Get_Assembly_by_Name(assembly2->Name());
           if (assembly1 == nullptr) {
             Warning(fmt::format(".. Assembly '{}' with id {} exists in second "
                                 "file but not the first.\n",
@@ -407,10 +407,12 @@ namespace {
     }
     if (assembly1->Size() != assembly2->Size()) {
       Warning(fmt::format(".. Assembly '{}': number of entities doesn't agree ({} != {}).\n",
-                          assembly1->Name(), assembly1->Entities().size(), assembly2->Entities().size()));
+                          assembly1->Name(), assembly1->Entities().size(),
+                          assembly2->Entities().size()));
       is_same = false;
     }
-    if ((assembly1->Type() == assembly2->Type()) && (assembly1->Entities().size() == assembly2->Entities().size())) {
+    if ((assembly1->Type() == assembly2->Type()) &&
+        (assembly1->Entities().size() == assembly2->Entities().size())) {
       // Check membership of the entities list...
       if (!std::is_permutation(assembly1->Entities().begin(), assembly1->Entities().end(),
                                assembly2->Entities().begin())) {

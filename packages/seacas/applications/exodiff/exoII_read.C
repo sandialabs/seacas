@@ -663,8 +663,8 @@ template <typename INT>
 const double *ExoII_Read<INT>::Get_Nodal_Results(int t1, int t2, double proportion,
                                                  int var_index) const // Interpolated results.
 {
-  static double *st_results  = nullptr;
-  static double *st_results2 = nullptr;
+  static std::vector<double> st_results;
+  static std::vector<double> st_results2;
 
   SMART_ASSERT(Check_State());
   SMART_ASSERT(t1 > 0 && t1 <= num_times);
@@ -675,22 +675,22 @@ const double *ExoII_Read<INT>::Get_Nodal_Results(int t1, int t2, double proporti
     return nullptr;
   }
 
-  if (st_results == nullptr) {
-    st_results = new double[num_nodes];
+  if (st_results.empty()) {
+    st_results.resize(num_nodes);
   }
 
-  int err = ex_get_var(file_id, t1, EX_NODAL, var_index + 1, 0, num_nodes, st_results);
+  int err = ex_get_var(file_id, t1, EX_NODAL, var_index + 1, 0, num_nodes, st_results.data());
   if (err < 0) {
     Error("ExoII_Read::Get_Nodal_Results(): Failed to get "
           "nodal variable values!  Aborting...\n");
   }
 
   if (t1 != t2) {
-    if (st_results2 == nullptr) {
-      st_results2 = new double[num_nodes];
+    if (st_results2.empty()) {
+      st_results2.resize(num_nodes);
     }
 
-    err = ex_get_var(file_id, t2, EX_NODAL, var_index + 1, 0, num_nodes, st_results2);
+    err = ex_get_var(file_id, t2, EX_NODAL, var_index + 1, 0, num_nodes, st_results2.data());
     if (err < 0) {
       Error("ExoII_Read::Load_Nodal_Results(): Failed to get "
             "nodal variable values!  Aborting...\n");
@@ -701,7 +701,7 @@ const double *ExoII_Read<INT>::Get_Nodal_Results(int t1, int t2, double proporti
       st_results[i] = (1.0 - proportion) * st_results[i] + proportion * st_results2[i];
     }
   }
-  return st_results;
+  return st_results.data();
 }
 
 template <typename INT> void ExoII_Read<INT>::Free_Nodal_Results()

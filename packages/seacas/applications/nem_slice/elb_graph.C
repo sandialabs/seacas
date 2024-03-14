@@ -221,7 +221,7 @@ namespace {
             }
           }
         } /* End "for(ecnt=0; ecnt < graph->nsur_elem[ncnt]; ecnt++)" */
-      }   /* End "for(ncnt=0; ncnt < mesh->num_nodes; ncnt++)" */
+      } /* End "for(ncnt=0; ncnt < mesh->num_nodes; ncnt++)" */
     }
     /* Find the adjacency for a elemental based decomposition */
     else {
@@ -310,7 +310,7 @@ namespace {
                 }
               }
             } /* End "for(ncnt=0; ...)" */
-          }   /* End: "if (problem->face_adj == 0)" */
+          } /* End: "if (problem->face_adj == 0)" */
 
           /* So if this is a 3-d element and we're forcing face
            * adjacency, if it gets to this else below
@@ -608,12 +608,12 @@ namespace {
                           count++;
                           fmt::print("Now we have {} bad element connections.\n", count);
                         } /* End "if (sid > 0)" */
-                      }   /* End: "if(ecnt != entry)" */
+                      } /* End: "if(ecnt != entry)" */
                     }
                   } /* End: "for(i=0; i < nelem; i++)" */
-                }   /* End: "if (nelem > 1)" */
-              }     /* End: "for (nscnt = 0; nscnt < nsides; nscnt++)" */
-            }       /* End: "if(element_3d)" */
+                } /* End: "if (nelem > 1)" */
+              } /* End: "for (nscnt = 0; nscnt < nsides; nscnt++)" */
+            } /* End: "if(element_3d)" */
 
             else {
 
@@ -655,15 +655,15 @@ namespace {
                       }
                     }
                   } /* End: if(ecnt != entry) */
-                }   /* for(i=0; i < graph->nsur_elem[node]; i++) */
-              }     /* End "for(ncnt=0; ...)" */
-            }       /* End: "else" (if !element_3d) */
-          }         /* End: "else" (if face_adj != 0) */
+                } /* for(i=0; i < graph->nsur_elem[node]; i++) */
+              } /* End "for(ncnt=0; ...)" */
+            } /* End: "else" (if !element_3d) */
+          } /* End: "else" (if face_adj != 0) */
 
           cnt++;
 
         } /* End "if(etype != SPHERE)" */
-      }   /* End "for(ecnt=0; ecnt < mesh->num_elems; ecnt++)" */
+      } /* End "for(ecnt=0; ecnt < mesh->num_elems; ecnt++)" */
     }
 
     graph->start[problem->num_vertices] = graph->adj.size();

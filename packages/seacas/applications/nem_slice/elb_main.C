@@ -170,14 +170,14 @@ template <typename INT> int internal_main(int argc, char *argv[], INT /* dummy *
   std::string ascii_inp_file;
   std::string nemI_out_file;
 
-  Machine_Description     machine;
-  LB_Description<INT>     lb;
-  Problem_Description     problem;
-  Solver_Description      solver;
-  Weight_Description weight;
-  Mesh_Description<INT>   mesh;
-  Sphere_Info             sphere;
-  Graph_Description<INT>  graph;
+  Machine_Description    machine;
+  LB_Description<INT>    lb;
+  Problem_Description    problem;
+  Solver_Description     solver;
+  Weight_Description     weight;
+  Mesh_Description<INT>  mesh;
+  Sphere_Info            sphere;
+  Graph_Description<INT> graph;
 
 /*-----------------------------Execution Begins------------------------------*/
 #ifdef USE_ZOLTAN

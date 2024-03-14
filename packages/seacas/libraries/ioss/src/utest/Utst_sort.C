@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -6,6 +6,8 @@
 
 #include "Ioss_Sort.h"
 #include <cassert>
+#include <catch2/catch_all.hpp>
+#include <fmt/core.h>
 #include <iostream>
 #include <random>
 #include <stddef.h>
@@ -13,6 +15,15 @@
 #include <vector>
 
 namespace {
+  const int sawtooth = 1;
+  const int do_rand  = 2;
+  const int stagger  = 3;
+  const int plateau  = 4;
+  const int shuffle  = 5;
+
+  std::random_device rd;
+  std::mt19937_64    rng(rd());
+
   template <typename INT> bool verify_sorted(const std::vector<INT> &v)
   {
     auto it = std::adjacent_find(v.begin(), v.end(), std::greater<INT>());
@@ -22,87 +33,100 @@ namespace {
     }
     return true;
   }
+
+  std::vector<int64_t> generate_vector(int dist, size_t n, size_t m)
+  {
+    std::vector<int64_t> x;
+    x.reserve(n);
+    size_t i = 0, j = 0, k = 1;
+    switch (dist) {
+    case sawtooth:
+      for (; i < n; i++) {
+        x.push_back(i % m);
+      }
+      break;
+    case do_rand:
+      for (; i < n; i++) {
+        x.push_back(rng() % m);
+      }
+      break;
+    case stagger:
+      for (; i < n; i++) {
+        x.push_back((i * m + i) % n);
+      }
+      break;
+    case plateau:
+      for (; i < n; i++) {
+        x.push_back(std::min(i, m));
+      }
+      break;
+    case shuffle:
+      for (; i < n; i++) {
+        x.push_back((rng() % m) != 0u ? (j += 2) : (k += 2));
+      }
+      break;
+    }
+    return x;
+  }
 } // namespace
 
-int main()
+TEST_CASE("sort")
 {
-  std::random_device rd;
-  std::mt19937_64    rng(rd());
+  std::string type[] = {"sawtooth", "do_rand", "stagger", "plateau", "shuffle"};
 
-  const int sawtooth = 1;
-  const int do_rand  = 2;
-  const int stagger  = 3;
-  const int plateau  = 4;
-  const int shuffle  = 5;
+  auto   dist = GENERATE_COPY(sawtooth, do_rand, stagger, plateau, shuffle);
+  size_t n    = GENERATE(100, 1023, 1024, 1025, (2 << 16) - 1, 2 << 16, (2 << 16) + 1);
 
-  for (size_t n : {100, 1023, 1024, 1025, (2 << 16) - 1, 2 << 16, (2 << 16) + 1}) {
-    std::cerr << "\nSize: " << n << ": ";
-    // 'm' shapes the values in the vector; all sorts are on vectors of size 'n'
-    for (size_t m = 1; m < 2 * n; m *= 2) {
-      std::cerr << m;
-      for (auto dist : {sawtooth, do_rand, stagger, plateau, shuffle}) {
-        std::cerr << ".";
-        std::vector<int64_t> x(n);
+  // 'm' shapes the values in the vector; all sorts are on vectors of size 'n'
+  size_t m = GENERATE(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
+                      65536, 131072, 262144);
 
-        size_t i = 0, j = 0, k = 1;
-        switch (dist) {
-        case sawtooth:
-          for (; i < n; i++) {
-            x[i] = i % m;
-          }
-          break;
-        case do_rand:
-          for (; i < n; i++) {
-            x[i] = rng() % m;
-          }
-          break;
-        case stagger:
-          for (; i < n; i++) {
-            x[i] = (i * m + i) % n;
-          }
-          break;
-        case plateau:
-          for (; i < n; i++) {
-            x[i] = std::min(i, m);
-          }
-          break;
-        case shuffle:
-          for (; i < n; i++) {
-            x[i] = (rng() % m) != 0u ? (j += 2) : (k += 2);
-          }
-          break;
-        }
+  CHECKED_IF(m < 2 * n)
+  {
+    fmt::print("Size: {:8}, Shape = {:8}, Type = {:12}\n", n, m, type[dist - 1]);
+    std::vector<int64_t> x = generate_vector(dist, n, m);
+    REQUIRE(x.size() == n);
 
-        auto xsave = x;
-        Ioss::sort(x); // Copy of x
-        assert(verify_sorted(x));
+    SECTION("as generated")
+    {
+      Ioss::sort(x); // Copy of x
+      REQUIRE(verify_sorted(x));
+    }
 
-        x = xsave;
-        std::reverse(x.begin(), x.end()); // Reversed
-        Ioss::sort(x);
-        assert(verify_sorted(x));
+    SECTION("reversed")
+    {
+      std::reverse(x.begin(), x.end()); // Reversed
+      Ioss::sort(x);
+      REQUIRE(verify_sorted(x));
+    }
 
-        x = xsave;
-        std::reverse(&x[0], &x[n / 2]); // Front half reversed
-        Ioss::sort(x);
-        assert(verify_sorted(x));
+    SECTION("front-half reversed")
+    {
+      std::reverse(&x[0], &x[n / 2]); // Front half reversed
+      Ioss::sort(x);
+      REQUIRE(verify_sorted(x));
+    }
 
-        x = xsave;
-        std::reverse(&x[n / 2], &x[n]); // Back half reversed
-        Ioss::sort(x);
-        assert(verify_sorted(x));
-
+    SECTION("back-half reversed")
+    {
+      std::reverse(&x[n / 2], &x[n]); // Back half reversed
+      Ioss::sort(x);
+      REQUIRE(verify_sorted(x));
+      SECTION("already sorted")
+      {
+        REQUIRE(verify_sorted(x));
         Ioss::sort(x); // Already sorted
-        assert(verify_sorted(x));
-
-        x = xsave;
-        for (size_t p = 0; p < n; p++) {
-          x[p] += p % 5;
-        }
-        Ioss::sort(x); // Dithered
-        assert(verify_sorted(x));
+        REQUIRE(verify_sorted(x));
       }
     }
+
+    SECTION("dithered")
+    {
+      for (size_t p = 0; p < n; p++) {
+        x[p] += p % 5;
+      }
+      Ioss::sort(x); // Dithered
+      REQUIRE(verify_sorted(x));
+    }
   }
-  std::cerr << "\nDone\n";
 }

@@ -579,7 +579,7 @@ namespace Ioex {
       Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][1], version, MAX_STR_LENGTH + 1);
 
       int ierr = 0;
-      ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
+      ierr     = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }

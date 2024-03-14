@@ -9,9 +9,9 @@
 #include "Ioss_CodeTypes.h"
 #include "Ioss_EntityType.h" // for EntityType
 #include "Ioss_Region.h"
-#include <cstddef>           // for size_t
-#include <cstdint>           // for int64_t
-#include <map>               // for map, etc
+#include <cstddef> // for size_t
+#include <cstdint> // for int64_t
+#include <map>     // for map, etc
 #include <set>
 #include <string> // for string
 #include <unordered_map>
@@ -357,11 +357,11 @@ namespace Iotm {
 
     static Ioss::EntityType assembly_type_to_entity_type(const AssemblyType type);
 
-    void update_block_omissions_from_assemblies(Ioss::Region *region,
-                                                std::vector<std::string>& assemblyOmissions,
-                                                std::vector<std::string>& assemblyInclusions,
-                                                std::vector<std::string>& blockOmissions,
-                                                std::vector<std::string>& blockInclusions) const;
+    void update_block_omissions_from_assemblies(Ioss::Region             *region,
+                                                std::vector<std::string> &assemblyOmissions,
+                                                std::vector<std::string> &assemblyInclusions,
+                                                std::vector<std::string> &blockOmissions,
+                                                std::vector<std::string> &blockInclusions) const;
 
     unsigned spatial_dimension() const;
 
@@ -375,12 +375,12 @@ namespace Iotm {
                                                             const EdgeBlockInfo &info) const;
     SplitType                  get_edgeset_split_type(const std::string &name) const;
 
-    void compute_block_membership(const std::string& sideSetName,
-                                  const std::string& sideBlockName,
+    void compute_block_membership(const std::string &sideSetName, const std::string &sideBlockName,
                                   std::vector<std::string> &block_membership) const;
 
   private:
-    template <typename INT> void raw_element_map(EntityId block_number, std::vector<INT> &map) const;
+    template <typename INT>
+    void raw_element_map(EntityId block_number, std::vector<INT> &map) const;
     template <typename INT> void raw_element_map(std::vector<INT> &map) const;
     template <typename INT> void raw_connectivity(EntityId block_number, INT *connect) const;
     template <typename INT> void raw_node_map(std::vector<INT> &map) const;
@@ -411,9 +411,9 @@ namespace Iotm {
 
     std::set<std::string> get_blocks_touched_by_edgeset(const EdgesetData *edgeset) const;
 
-    void compute_block_membership_impl(const SidesetData& sidesetData,
-                                       const SideBlockInfo& sideBlock,
-                                       std::vector<std::string>& sideBlockTouchingBlockParts) const;
+    void compute_block_membership_impl(const SidesetData        &sidesetData,
+                                       const SideBlockInfo      &sideBlock,
+                                       std::vector<std::string> &sideBlockTouchingBlockParts) const;
 
     size_t m_myProcessor{0};
 

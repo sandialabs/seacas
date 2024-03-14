@@ -231,7 +231,7 @@ void Ioss::Map::build_reverse_map_nl(int64_t num_to_get, int64_t offset)
 }
 
 #if defined MAP_USE_SORTED_VECTOR
-void        Ioss::Map::verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map)
+void Ioss::Map::verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map)
 {
   // Check for duplicate ids...
   auto dup = std::adjacent_find(

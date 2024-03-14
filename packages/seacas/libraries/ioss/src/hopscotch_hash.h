@@ -1789,8 +1789,7 @@ namespace tsl {
     private:
       static const std::size_t MAX_PROBES_FOR_EMPTY_BUCKET = 12 * NeighborhoodSize;
       static constexpr float   MIN_LOAD_FACTOR_FOR_REHASH  = 0.1f;
-      template <typename T, typename U>
-      struct is_type_same
+      template <typename T, typename U> struct is_type_same
       {
         static_assert(std::is_unsigned<T>::value, "T must be an unsigned type");
         static_assert(std::is_unsigned<U>::value, "U must be an unsigned type");
