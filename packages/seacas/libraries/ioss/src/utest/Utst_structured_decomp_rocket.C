@@ -9,7 +9,7 @@
 #include "Ioss_ZoneConnectivity.h"
 #include "Utst_structured_decomp.h"
 
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <stddef.h>
 #include <string>
 #include <vector>
