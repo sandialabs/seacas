@@ -3,7 +3,7 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_CommSet.h"      // for CommSet
