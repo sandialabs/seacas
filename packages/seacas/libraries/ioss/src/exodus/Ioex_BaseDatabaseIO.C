@@ -261,6 +261,9 @@ namespace Ioex {
 
     if (properties.exists("FILE_TYPE")) {
       std::string type = properties.get("FILE_TYPE").get_string();
+      if (type == "netcdf3" || type == "netcdf-3") {
+        exodusMode = EX_CLOBBER; // Reset back to default...
+      }
       if (type == "netcdf4" || type == "netcdf-4" || type == "hdf5") {
         exodusMode |= EX_NETCDF4;
       }
