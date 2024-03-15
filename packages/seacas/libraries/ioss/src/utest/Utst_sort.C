@@ -82,52 +82,34 @@ TEST_CASE("sort")
   size_t m = GENERATE(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
                       65536, 131072, 262144);
 
-  CHECKED_IF(m < 2 * n)
-  {
-    fmt::print("Size: {:8}, Shape = {:8}, Type = {:12}\n", n, m, type[dist - 1]);
+  if (m < 2 * n) {
     std::vector<int64_t> x = generate_vector(dist, n, m);
     REQUIRE(x.size() == n);
 
-    SECTION("as generated")
-    {
-      Ioss::sort(x); // Copy of x
-      REQUIRE(verify_sorted(x));
-    }
+    fmt::print("Size: {:8}, Shape = {:8}, Type = {:12}\n", n, m, type[dist - 1]);
 
-    SECTION("reversed")
-    {
-      std::reverse(x.begin(), x.end()); // Reversed
-      Ioss::sort(x);
-      REQUIRE(verify_sorted(x));
-    }
+    Ioss::sort(x); // Copy of x
+    REQUIRE(verify_sorted(x));
 
-    SECTION("front-half reversed")
-    {
-      std::reverse(&x[0], &x[n / 2]); // Front half reversed
-      Ioss::sort(x);
-      REQUIRE(verify_sorted(x));
-    }
+    std::reverse(x.begin(), x.end()); // Reversed
+    Ioss::sort(x);
+    REQUIRE(verify_sorted(x));
 
-    SECTION("back-half reversed")
-    {
-      std::reverse(&x[n / 2], &x[n]); // Back half reversed
-      Ioss::sort(x);
-      REQUIRE(verify_sorted(x));
-      SECTION("already sorted")
-      {
-        REQUIRE(verify_sorted(x));
-        Ioss::sort(x); // Already sorted
-        REQUIRE(verify_sorted(x));
-      }
-    }
+    std::reverse(&x[0], &x[n / 2]); // Front half reversed
+    Ioss::sort(x);
+    REQUIRE(verify_sorted(x));
 
-    SECTION("dithered")
-    {
-      for (size_t p = 0; p < n; p++) {
-        x[p] += p % 5;
-      }
-      Ioss::sort(x); // Dithered
-      REQUIRE(verify_sorted(x));
+    std::reverse(&x[n / 2], &x[n]); // Back half reversed
+    Ioss::sort(x);
+    REQUIRE(verify_sorted(x));
+
+    Ioss::sort(x); // Already sorted
+    REQUIRE(verify_sorted(x));
+
+    for (size_t p = 0; p < n; p++) {
+      x[p] += p % 5;
     }
+    Ioss::sort(x); // Dithered
+    REQUIRE(verify_sorted(x));
   }
 }
