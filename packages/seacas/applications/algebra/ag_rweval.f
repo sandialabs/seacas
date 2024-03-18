@@ -706,12 +706,14 @@ C     Cumulative element counts for each output block
       IF (NVAREL .GT. 0) THEN
         CALL MDFIND ('ISEVOK', KIEVOK, NELBLK * NVAREL)
       END IF
-      if (iszoom .or. isfilter .or. (nelblk .ne. nelbo)) then
+      if (iszoom .or. isfilter .or. (nelblk .ne. nelbo) .or.
+     $     (numnpo .ne. numnp)) then
         call mdfind ('IXNODE', KXNODE, NUMNPO)
       else
         KXNODE = 1
       end if
-      if (iszoom .or. isfilter .or. (nelblk .ne. nelbo)) then
+      if (iszoom .or. isfilter .or. (nelblk .ne. nelbo) .or.
+     $     (numel0 .ne. numel)) then
         call mdfind ('IXELEM', KXELEM, NUMELO)
       else
         KXELEM = 1
