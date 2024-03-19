@@ -210,7 +210,7 @@ C                  --Make sure values for undefined elements are zero
             MERR = 1
             RETURN
           END IF
-          call exgmap (ndbin, a(kmapel), ierr)
+          call exgenm (ndbin, a(kmapel), ierr)
           CALL REMEL (A(KIXELB), A(KNLNK), A(KLINK), A(KVISEB),
      *      A(KXNODE), A(KIXEBO), A(KXELEM), A(KNODIX), A(KMAPEL))
           call mddel('mapel')
