@@ -34,6 +34,7 @@ namespace Ioss {
     bool reverse{false};          // Used for testing CGNS
     bool add_proc_id{false};      // CGNS: Add proc_id field.
     bool boundary_sideset{false}; // Output a sideset of the boundary faces of the model
+    bool omitted_blocks{false};
 
     // only used by Catalyst calls to `copy_database`; if false the
     // copy process skips the defining of the mesh geometry and the
