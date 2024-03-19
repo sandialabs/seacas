@@ -42,7 +42,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "6.4 (2024/03/07)";
+  std::string version = "6.5 (2024/03/14)";
 
   bool mem_stats = false;
 

@@ -283,8 +283,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       z_ptr = Data(z_elem_ptr);
 
     } /* End "if (problem->num_vertices > 0)" */
-  }   /* End "if ((problem->type == ELEMENTAL) &&
-         (lb->type==INERTIAL||ZPINCH||BRICK||ZOLTAN))"*/
+  } /* End "if ((problem->type == ELEMENTAL) &&
+       (lb->type==INERTIAL||ZPINCH||BRICK||ZOLTAN))"*/
 
   /* Allocate memory for the vertex to processor vector */
   if (problem->type == ELEMENTAL) {
@@ -767,7 +767,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
         }
       }
     } /* End: "for (iloop = 0; iloop < nloops; iloop++)" */
-  }   /* End: "if (sphere->num < mesh->num_elems)" */
+  } /* End: "if (sphere->num < mesh->num_elems)" */
 
   /* Free up coordinates if used */
   if (problem->read_coords == ELB_TRUE) {
@@ -1450,7 +1450,7 @@ namespace {
             }
           }
         } /* End "for(i=0; i < nnodes; i++)" */
-      }   /* End "for(ecnt=0; ecnt < graph->nsur_elem[ncnt]; ecnt++)" */
+      } /* End "for(ecnt=0; ecnt < graph->nsur_elem[ncnt]; ecnt++)" */
 
       if (internal) {
         /* "ncnt" is an internal node */
@@ -1877,11 +1877,11 @@ namespace {
                   return 0; /* and get out of here */
 
                 } /* End "if sid < 0 && !problem>skip_checks" */
-              }   /* End "if (sid > 0)" */
-            }     /* End "if (proc != proc2)" */
-          }       /* End "for (ncnt = 0; ncnt < nelem; ncnt++)" */
-        }         /* End "if (nelem > 1)" */
-      }           /* End "for (nscnt = 0; nscnt < nsides; nscnt++)" */
+              } /* End "if (sid > 0)" */
+            } /* End "if (proc != proc2)" */
+          } /* End "for (ncnt = 0; ncnt < nelem; ncnt++)" */
+        } /* End "if (nelem > 1)" */
+      } /* End "for (nscnt = 0; nscnt < nsides; nscnt++)" */
 
       if (internal) {
         lb->int_elems[proc].push_back(ecnt);
@@ -1931,8 +1931,8 @@ namespace {
               lb->bor_nodes[proc2].push_back(ncnt);
             }
           } /* if (proc != lb->vertex2proc[graph->sur_elem[ncnt][ecnt]]) */
-        }   /* for(ecnt=1; ecnt < graph->nsur_elem[ncnt]; ecnt++) */
-      }     /* if(graph->nsur_elem[ncnt]) */
+        } /* for(ecnt=1; ecnt < graph->nsur_elem[ncnt]; ecnt++) */
+      } /* if(graph->nsur_elem[ncnt]) */
 
       if (internal) {
         /*
@@ -1968,9 +1968,9 @@ namespace {
               lb->born_procs[pcnt][ncnt].push_back(proc);
             }
           } /* End "if(proc != pcnt)" */
-        }   /* End "for(ecnt=0; ecnt < graph->nsur_elems[node]; ecnt++)" */
-      }     /* End "for(ncnt=0; ncnt < lb->num_bor_nodes[pcnt]; ncnt++)" */
-    }       /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
+        } /* End "for(ecnt=0; ecnt < graph->nsur_elems[node]; ecnt++)" */
+      } /* End "for(ncnt=0; ncnt < lb->num_bor_nodes[pcnt]; ncnt++)" */
+    } /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
 
     time2 = get_time();
     fmt::print("Find procs for border nodes: {}s\n", time2 - time1);
@@ -2095,8 +2095,8 @@ namespace {
                 (&lb->e_cmap_sides[pcnt2][fv2]));
 
         } /* End "if(fv1 >= 0)" */
-      }   /* End "for(pcnt2=0; pcnt2 < pcnt; pcnt2++)" */
-    }     /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
+      } /* End "for(pcnt2=0; pcnt2 < pcnt; pcnt2++)" */
+    } /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
 
     time2 = get_time();
     fmt::print("Make cmaps consistent: {}s\n", time2 - time1);

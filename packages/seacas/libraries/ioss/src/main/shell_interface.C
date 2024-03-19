@@ -68,9 +68,10 @@ void IOShell::Interface::enroll_options()
       "Absolute tolerance to use if comparing real field data. (diff > abs && diff > rel)",
       nullptr);
   options_.enroll("floor", Ioss::GetLongOption::MandatoryValue,
-                  "Only compare values if `|a| > floor && |b| > floor`", nullptr);
+                  "Only compare values if `|a| > floor || |b| > floor`", nullptr);
   options_.enroll("ignore_qa_info", Ioss::GetLongOption::NoValue,
-                  "If comparing databases, do not compare the qa and info records.", nullptr, nullptr, true);
+                  "If comparing databases, do not compare the qa and info records.", nullptr,
+                  nullptr, true);
 
   options_.enroll("ignore_node_map", Ioss::GetLongOption::NoValue,
                   "Do not read the global node id map (if any) from the input database.", nullptr,
@@ -96,6 +97,9 @@ void IOShell::Interface::enroll_options()
   options_.enroll("float", Ioss::GetLongOption::NoValue,
                   "Use 32-bit floating point values on output database; default is 64-bits",
                   nullptr);
+
+  options_.enroll("netcdf3", Ioss::GetLongOption::NoValue,
+                  "Output database will be a classical netcdf (CDF3) file.", nullptr);
 
   options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
                   "Output database will be a netcdf4 "
@@ -260,9 +264,9 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("delete_qa_records", Ioss::GetLongOption::NoValue,
-		  "Do not output qa records to output database.", nullptr);
+                  "Do not output qa records to output database.", nullptr);
   options_.enroll("delete_info_records", Ioss::GetLongOption::NoValue,
-		  "Do not output info records to output database.", nullptr, nullptr, true);
+                  "Do not output info records to output database.", nullptr, nullptr, true);
 
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
                   "Character used to separate a field suffix from the field basename\n"
@@ -387,14 +391,23 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   ints_32_bit  = (options_.retrieve("32-bit") != nullptr);
   reals_32_bit = (options_.retrieve("float") != nullptr);
 
+  if (options_.retrieve("netcdf3") != nullptr) {
+    netcdf3     = true;
+    netcdf4     = false;
+    netcdf5     = false;
+    ints_32_bit = true;
+  }
+
   if (options_.retrieve("netcdf4") != nullptr) {
+    netcdf3 = false;
     netcdf4 = true;
     netcdf5 = false;
   }
 
   if (options_.retrieve("netcdf5") != nullptr) {
-    netcdf5 = true;
+    netcdf3 = false;
     netcdf4 = false;
+    netcdf5 = true;
   }
 
   shuffle = (options_.retrieve("shuffle") != nullptr);

@@ -301,10 +301,10 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
             exi_compress_variable(exoid, varid, 2);
           }
         }
-      }    /* if */
+      } /* if */
       k++; /* increment element truth table pointer */
-    }      /* for j */
-  }        /* for i */
+    } /* for j */
+  } /* for i */
 
   free(stat_vals);
 

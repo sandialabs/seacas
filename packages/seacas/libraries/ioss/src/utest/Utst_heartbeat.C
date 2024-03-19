@@ -1,9 +1,7 @@
-#define DOCTEST_CONFIG_IMPLEMENT
-#define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
-#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 #include "Ionit_Initializer.h"
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_session.hpp>
 #include <cstdlib>
-#include <doctest.h>
 #include <fmt/core.h>
 #include <math.h>
 #include <string>
@@ -42,10 +40,10 @@ namespace {
     return dbo;
   }
   // BeginDocTest2
-  DOCTEST_TEST_CASE("Ioss::write_file")
+  TEST_CASE("Ioss::write_file")
   {
     auto *db = create_heartbeat(tst_filename);
-    DOCTEST_CHECK(db->ok());
+    CHECK(db->ok());
 
     Ioss::Region region(db);
 
@@ -84,15 +82,23 @@ int main(IOSS_MAYBE_UNUSED int argc, char **argv)
   MPI_Init(&argc, &argv);
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
+  Catch::Session session; // There must be exactly one instance
 
-  doctest::Context context;
+  // Build a new parser on top of Catch2's
+  using namespace Catch::Clara;
+  auto cli = session.cli()                   // Get Catch2's command line parser
+             | Opt(tst_filename, "filename") // bind variable to a new option, with a hint string
+                   ["-f"]["--filename"]      // the option names it will respond to
+             ("Filename to write heartbeat data to."); // description string for the help output
 
-  while (*++argv) {
-    if (std::string(*argv) == "--filename") {
-      tst_filename = *++argv;
-      break;
-    }
-    fmt::print("'{}'\n", tst_filename);
-  }
-  return context.run();
+  // Now pass the new composite back to Catch2 so it uses that
+  session.cli(cli);
+
+  // Let Catch2 (using Clara) parse the command line
+  int returnCode = session.applyCommandLine(argc, argv);
+  if (returnCode != 0) // Indicates a command line error
+    return returnCode;
+
+  fmt::print("'{}'\n", tst_filename);
+  return session.run();
 }

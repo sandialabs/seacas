@@ -201,7 +201,7 @@ namespace Ioss {
             }
           }
         } /* end if */
-      }   /* end for */
+      } /* end for */
 
       if (matchStatus == PartialMatch) {
         int stat = setcell(pc, tmptoken, *(argv + 1), pname);
@@ -281,7 +281,7 @@ namespace Ioss {
             pc          = t;
           }
         } /* end if */
-      }   /* end for */
+      } /* end for */
 
       if (matchStatus == PartialMatch) {
         ladtoken = strtok(nullptr, " \t");
