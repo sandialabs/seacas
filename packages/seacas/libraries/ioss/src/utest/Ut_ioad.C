@@ -3,6 +3,7 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
+#include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include "Ioss_CodeTypes.h"
@@ -198,7 +199,6 @@ template <typename T> void CompareAllProperties(const T &obj1, const T &obj2)
         std::end(ignored_properties)) {
       continue;
     }
-    obj1->get_property(property_name1);
     auto property_name2 =
         std::find(std::begin(block2_property_list), std::end(block2_property_list), property_name1);
     if (property_name2 != block2_property_list.end()) {
