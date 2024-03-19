@@ -35,15 +35,15 @@ namespace Ioss {
 
     Blob(DatabaseIO *io_database, const std::string &my_name, int64_t item_count);
 
-    std::string type_string() const override { return "Blob"; }
-    std::string short_type_string() const override { return "blob"; }
-    std::string contains_string() const override { return "Entries"; }
-    EntityType  type() const override { return BLOB; }
+    IOSS_NODISCARD std::string type_string() const override { return "Blob"; }
+    IOSS_NODISCARD std::string short_type_string() const override { return "blob"; }
+    IOSS_NODISCARD std::string contains_string() const override { return "Entries"; }
+    IOSS_NODISCARD EntityType  type() const override { return BLOB; }
 
     // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string &my_name) const override;
+    IOSS_NODISCARD Property get_implicit_property(const std::string &my_name) const override;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

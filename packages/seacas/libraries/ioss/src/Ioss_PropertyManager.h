@@ -36,9 +36,9 @@ namespace Ioss {
   {
   public:
     PropertyManager() = default;
-    PropertyManager(const PropertyManager &from) : m_properties(from.m_properties)
-    { /* Do not make this `=default` since that breaks the thread-safe build */
-    }
+    PropertyManager(const PropertyManager &from)
+        : m_properties(from.m_properties)
+    { /* Do not make this `=default` since that breaks the thread-safe build */ }
     PropertyManager &operator=(const PropertyManager &from) = delete;
 
     // Add the specified property to the list.
@@ -48,24 +48,26 @@ namespace Ioss {
     void erase(const std::string &property_name);
 
     // Checks if a property with 'property_name' exists in the database.
-    bool exists(const std::string &property_name) const;
+    IOSS_NODISCARD bool exists(const std::string &property_name) const;
 
-    Property    get(const std::string &property_name) const;
-    double      get_optional(const std::string &property_name, double optional_value) const;
-    int64_t     get_optional(const std::string &property_name, int64_t optional_value) const;
-    int         get_optional(const std::string &property_name, int optional_value) const;
-    std::string get_optional(const std::string &property_name,
-                             const std::string &optional_value) const;
+    IOSS_NODISCARD Property get(const std::string &property_name) const;
+    IOSS_NODISCARD double   get_optional(const std::string &property_name,
+                                         double             optional_value) const;
+    IOSS_NODISCARD int64_t  get_optional(const std::string &property_name,
+                                         int64_t            optional_value) const;
+    IOSS_NODISCARD int get_optional(const std::string &property_name, int optional_value) const;
+    IOSS_NODISCARD std::string get_optional(const std::string &property_name,
+                                            const std::string &optional_value) const;
 
     // Returns the names of all properties
-    int      describe(NameList *names) const;
-    NameList describe() const;
+    int                     describe(NameList *names) const;
+    IOSS_NODISCARD NameList describe() const;
 
     // Returns the names of all properties or origin `origin`
-    int      describe(Ioss::Property::Origin origin, NameList *names) const;
-    NameList describe(Ioss::Property::Origin origin) const;
+    int                     describe(Ioss::Property::Origin origin, NameList *names) const;
+    IOSS_NODISCARD NameList describe(Ioss::Property::Origin origin) const;
 
-    size_t count() const;
+    IOSS_NODISCARD size_t count() const;
 
   private:
     PropMapType m_properties{};

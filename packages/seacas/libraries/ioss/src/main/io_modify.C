@@ -1907,7 +1907,7 @@ namespace {
       times[step] = times[step] * scale + offset;
       ex_put_time(exoid, step + 1, &times[step]);
     }
-    region.get_min_time();
+    (void)region.get_min_time(); // Triggers reloading region stateTimes vector.
   }
 
 } // nameSpace

@@ -56,15 +56,15 @@ namespace Ioss {
 
     void set_rank(int processor) { m_myProcessor = processor; }
 
-    void   set_size(size_t entity_count);
-    size_t size() const { return m_map.empty() ? 0 : m_map.size() - 1; }
+    void                  set_size(size_t entity_count);
+    IOSS_NODISCARD size_t size() const { return m_map.empty() ? 0 : m_map.size() - 1; }
 
     void set_is_sequential(bool yesno) { m_map[0] = yesno ? -1 : 1; }
 
     // Determines whether the input map is sequential (m_map[i] == i)
-    bool is_sequential(bool check_all = false) const;
+    IOSS_NODISCARD bool is_sequential(bool check_all = false) const;
 
-    int64_t global_to_local(int64_t global, bool must_exist = true) const;
+    IOSS_NODISCARD int64_t global_to_local(int64_t global, bool must_exist = true) const;
 
     template <typename INT>
     bool set_map(INT *ids, size_t count, size_t offset, bool in_define_mode = true);
@@ -87,13 +87,13 @@ namespace Ioss {
                                         size_t begin_offset, size_t count, size_t stride,
                                         size_t offset);
 
-    const MapContainer &map() const { return m_map; }
-    MapContainer       &map() { return m_map; }
+    IOSS_NODISCARD const MapContainer &map() const { return m_map; }
+    IOSS_NODISCARD MapContainer       &map() { return m_map; }
 
-    bool defined() const { return m_defined; }
-    void set_defined(bool yes_no) { m_defined = yes_no; }
+    IOSS_NODISCARD bool defined() const { return m_defined; }
+    void                set_defined(bool yes_no) { m_defined = yes_no; }
 
-    bool reorders() const { return !m_reorder.empty(); }
+    IOSS_NODISCARD bool reorders() const { return !m_reorder.empty(); }
 
   private:
     template <typename INT> void reverse_map_data(INT *data, size_t count) const;

@@ -35,10 +35,13 @@ namespace Ioss {
   class IOSS_EXPORT EPRegistry
   {
   public:
-    void                            insert(const Ioss::EPM_VP &value, bool delete_me);
-    ElementPermutationMap::iterator begin() { return m_registry.begin(); }
-    ElementPermutationMap::iterator end() { return m_registry.end(); }
-    ElementPermutationMap::iterator find(const std::string &type) { return m_registry.find(type); }
+    void           insert(const Ioss::EPM_VP &value, bool delete_me);
+    IOSS_NODISCARD ElementPermutationMap::iterator begin() { return m_registry.begin(); }
+    IOSS_NODISCARD ElementPermutationMap::iterator end() { return m_registry.end(); }
+    IOSS_NODISCARD ElementPermutationMap::iterator find(const std::string &type)
+    {
+      return m_registry.find(type);
+    }
 
     ~EPRegistry();
 
@@ -61,29 +64,29 @@ namespace Ioss {
 
     virtual ~ElementPermutation() = default;
 
-    unsigned num_permutations() const;
+    IOSS_NODISCARD unsigned num_permutations() const;
 
     // The number of positive permutations must be less than or equal to the total number of
     // permutations
-    unsigned num_positive_permutations() const;
+    IOSS_NODISCARD unsigned num_positive_permutations() const;
 
-    bool is_positive_polarity(Permutation permutation) const;
+    IOSS_NODISCARD bool is_positive_polarity(Permutation permutation) const;
 
     // Permutation type is unsigned so only need to check upper bound
-    bool valid_permutation(Permutation permutation) const;
+    IOSS_NODISCARD bool valid_permutation(Permutation permutation) const;
 
     // For a validated permutation, return the node ordinals
     bool fill_permutation_indices(Permutation           permutation,
                                   std::vector<Ordinal> &nodeOrdinalVector) const;
 
     // For a given permutation, return the node ordinals
-    std::vector<Ordinal> permutation_indices(Permutation permutation) const;
+    IOSS_NODISCARD std::vector<Ordinal> permutation_indices(Permutation permutation) const;
 
-    Permutation num_permutation_nodes() const;
+    IOSS_NODISCARD Permutation num_permutation_nodes() const;
 
-    const std::string &type() const;
+    IOSS_NODISCARD const std::string &type() const;
 
-    static ElementPermutation *factory(const std::string &type);
+    IOSS_NODISCARD static ElementPermutation *factory(const std::string &type);
 
     /** \brief Get the names of element permutations known to Ioss.
      *
@@ -96,11 +99,11 @@ namespace Ioss {
      *
      *  \returns The list of known element topology names.
      */
-    static NameList describe();
+    IOSS_NODISCARD static NameList describe();
 
-    bool operator==(const Ioss::ElementPermutation &rhs) const;
-    bool operator!=(const Ioss::ElementPermutation &rhs) const;
-    bool equal(const Ioss::ElementPermutation &rhs) const;
+    IOSS_NODISCARD bool operator==(const Ioss::ElementPermutation &rhs) const;
+    IOSS_NODISCARD bool operator!=(const Ioss::ElementPermutation &rhs) const;
+    IOSS_NODISCARD bool equal(const Ioss::ElementPermutation &rhs) const;
 
   protected:
     explicit ElementPermutation(std::string type, bool delete_me = false);
