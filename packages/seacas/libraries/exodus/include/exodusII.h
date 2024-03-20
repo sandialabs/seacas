@@ -477,7 +477,6 @@ typedef struct ex_var_params
 #endif
 #endif /* EXODUS_EXPORT */
 
-
 #ifndef EXODUS_EXPORT
 #define EXODUS_EXPORT extern
 #endif /* EXODUS_EXPORT */
@@ -540,11 +539,11 @@ EXODUS_EXPORT void ex_set_err(const char *module_name, const char *message, int 
 EXODUS_EXPORT const char *ex_strerror(int err_num);
 EXODUS_EXPORT void        ex_get_err(const char **msg, const char **func, int *err_num);
 EXODUS_EXPORT int         ex_opts(int options);
-EXODUS_EXPORT int         ex_inquire(int exoid, ex_inquiry req_info, void_int         */*ret_int*/,
-                                     float         */*ret_float*/, char         */*ret_char*/);
-EXODUS_EXPORT int64_t     ex_inquire_int(int exoid, ex_inquiry req_info);
-EXODUS_EXPORT unsigned    ex_int64_status(int exoid);
-EXODUS_EXPORT int         ex_set_int64_status(int exoid, int mode);
+EXODUS_EXPORT int ex_inquire(int exoid, ex_inquiry req_info, void_int *ret_int, float *ret_float,
+                             char *ret_char);
+EXODUS_EXPORT int64_t  ex_inquire_int(int exoid, ex_inquiry req_info);
+EXODUS_EXPORT unsigned ex_int64_status(int exoid);
+EXODUS_EXPORT int      ex_set_int64_status(int exoid, int mode);
 
 EXODUS_EXPORT void        ex_print_config(void);
 EXODUS_EXPORT const char *ex_config(void);
