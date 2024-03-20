@@ -366,7 +366,6 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
-	  ### See https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels
           sudo sysctl vm.mmap_rnd_bits=28
           ctest -j 4 --output-on-failure --exclude-regex test_exo
         if: ${{ success() && (matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO') }}
