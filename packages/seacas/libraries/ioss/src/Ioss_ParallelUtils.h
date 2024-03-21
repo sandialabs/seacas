@@ -36,14 +36,14 @@ namespace Ioss {
     enum MinMax { DO_MAX, DO_MIN, DO_SUM };
 
 #if defined(SEACAS_HAVE_MPI)
-    static Ioss_MPI_Comm comm_world() { return (Ioss_MPI_Comm)MPI_COMM_WORLD; }
-    static Ioss_MPI_Comm comm_self() { return (Ioss_MPI_Comm)MPI_COMM_SELF; }
-    static Ioss_MPI_Comm comm_null() { return (Ioss_MPI_Comm)MPI_COMM_NULL; }
+    IOSS_NODISCARD static Ioss_MPI_Comm comm_world() { return (Ioss_MPI_Comm)MPI_COMM_WORLD; }
+    IOSS_NODISCARD static Ioss_MPI_Comm comm_self() { return (Ioss_MPI_Comm)MPI_COMM_SELF; }
+    IOSS_NODISCARD static Ioss_MPI_Comm comm_null() { return (Ioss_MPI_Comm)MPI_COMM_NULL; }
 #else
     // NOTE: These values match those used in siMPI package.
-    static constexpr Ioss_MPI_Comm comm_world() { return -100; }
-    static constexpr Ioss_MPI_Comm comm_self() { return -100; }
-    static constexpr Ioss_MPI_Comm comm_null() { return 0; }
+    IOSS_NODISCARD static constexpr Ioss_MPI_Comm comm_world() { return -100; }
+    IOSS_NODISCARD static constexpr Ioss_MPI_Comm comm_self() { return -100; }
+    IOSS_NODISCARD static constexpr Ioss_MPI_Comm comm_null() { return 0; }
 #endif
 
     /*!
@@ -79,13 +79,13 @@ namespace Ioss {
      * getenv system call is only done on processor 0.
      * If '!sync_parallel', then don't push to other processors.
      */
-    bool get_environment(const std::string &name, IOSS_MAYBE_UNUSED bool sync_parallel) const;
+    IOSS_NODISCARD bool get_environment(const std::string &name, IOSS_MAYBE_UNUSED bool sync_parallel) const;
 
-    std::string decode_filename(const std::string &filename, bool is_parallel) const;
-
-    Ioss_MPI_Comm communicator() const { return communicator_; }
-    int           parallel_size() const;
-    int           parallel_rank() const;
+    IOSS_NODISCARD std::string decode_filename(const std::string &filename, bool is_parallel) const;
+    
+    IOSS_NODISCARD Ioss_MPI_Comm communicator() const { return communicator_; }
+    IOSS_NODISCARD int           parallel_size() const;
+    IOSS_NODISCARD int           parallel_rank() const;
 
     void barrier() const;
 
@@ -102,7 +102,7 @@ namespace Ioss {
      * Used by some applications for uniquely identifying an entity.
      * If `rank` == -1, then use parallel_rank; otherwise use rank
      */
-    int64_t generate_guid(IOSS_MAYBE_UNUSED size_t id, int rank = -1) const;
+    IOSS_NODISCARD int64_t generate_guid(IOSS_MAYBE_UNUSED size_t id, int rank = -1) const;
 
     /*! Return min, max, average memory used by any process */
     void memory_stats(int64_t &min, int64_t &max, int64_t &avg) const;
@@ -120,7 +120,7 @@ namespace Ioss {
     void global_count(const Int64Vector &local_counts, Int64Vector &global_counts) const;
 
     template <typename T>
-    T global_minmax(IOSS_MAYBE_UNUSED T local_minmax, IOSS_MAYBE_UNUSED MinMax which) const;
+    IOSS_NODISCARD T global_minmax(IOSS_MAYBE_UNUSED T local_minmax, IOSS_MAYBE_UNUSED MinMax which) const;
 
     template <typename T>
     void global_array_minmax(IOSS_MAYBE_UNUSED std::vector<T> &local_minmax,
@@ -146,15 +146,15 @@ namespace Ioss {
   };
 
 #ifdef SEACAS_HAVE_MPI
-  inline MPI_Datatype mpi_type(double /*dummy*/) { return MPI_DOUBLE; }
-  inline MPI_Datatype mpi_type(float /*dummy*/) { return MPI_FLOAT; }
-  inline MPI_Datatype mpi_type(int /*dummy*/) { return MPI_INT; }
-  inline MPI_Datatype mpi_type(long int /*dummy*/) { return MPI_LONG_LONG_INT; }
-  inline MPI_Datatype mpi_type(long long int /*dummy*/) { return MPI_LONG_LONG_INT; }
-  inline MPI_Datatype mpi_type(unsigned int /*dummy*/) { return MPI_UNSIGNED; }
-  inline MPI_Datatype mpi_type(unsigned long int /*dummy*/) { return MPI_UNSIGNED_LONG; }
-  inline MPI_Datatype mpi_type(unsigned long long int /*dummy*/) { return MPI_UNSIGNED_LONG_LONG; }
-  inline MPI_Datatype mpi_type(char /*dummy*/) { return MPI_CHAR; }
+  IOSS_NODISCARD inline MPI_Datatype mpi_type(double /*dummy*/) { return MPI_DOUBLE; }
+  IOSS_NODISCARD inline MPI_Datatype mpi_type(float /*dummy*/) { return MPI_FLOAT; }
+  IOSS_NODISCARD inline MPI_Datatype mpi_type(int /*dummy*/) { return MPI_INT; }
+  IOSS_NODISCARD inline MPI_Datatype mpi_type(long int /*dummy*/) { return MPI_LONG_LONG_INT; }
+  IOSS_NODISCARD inline MPI_Datatype mpi_type(long long int /*dummy*/) { return MPI_LONG_LONG_INT; }
+  IOSS_NODISCARD inline MPI_Datatype mpi_type(unsigned int /*dummy*/) { return MPI_UNSIGNED; }
+  IOSS_NODISCARD inline MPI_Datatype mpi_type(unsigned long int /*dummy*/) { return MPI_UNSIGNED_LONG; }
+  IOSS_NODISCARD inline MPI_Datatype mpi_type(unsigned long long int /*dummy*/) { return MPI_UNSIGNED_LONG_LONG; }
+  IOSS_NODISCARD inline MPI_Datatype mpi_type(char /*dummy*/) { return MPI_CHAR; }
 
   template <typename T>
   int MY_Alltoallv64(const std::vector<T> &sendbuf, const std::vector<int64_t> &sendcounts,

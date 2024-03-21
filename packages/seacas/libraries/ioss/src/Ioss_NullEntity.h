@@ -25,15 +25,15 @@ namespace Ioss {
   public:
     NullEntity();
 
-    std::string type_string() const override { return "NullEntity"; }
-    std::string short_type_string() const override { return "null"; }
-    std::string contains_string() const override { return "Nothing"; }
-    EntityType  type() const override { return INVALID_TYPE; }
+    IOSS_NODISCARD std::string type_string() const override { return "NullEntity"; }
+    IOSS_NODISCARD std::string short_type_string() const override { return "null"; }
+    IOSS_NODISCARD std::string contains_string() const override { return "Nothing"; }
+    IOSS_NODISCARD EntityType  type() const override { return INVALID_TYPE; }
 
     // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string &my_name) const override
+    IOSS_NODISCARD Property get_implicit_property(const std::string &my_name) const override
     {
       return Ioss::GroupingEntity::get_implicit_property(my_name);
     }

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -67,30 +67,30 @@ namespace Ioss {
      * sideblock faces. "UNKNOWN" if not homogeneous.
      * \returns The generated sideblock name.
      */
-    static std::string generate_sideblock_name(const std::string &sideset_name,
-                                               const std::string &block_or_element,
-                                               const std::string &face_topology_name);
+    IOSS_NODISCARD static std::string
+    generate_sideblock_name(const std::string &sideset_name, const std::string &block_or_element,
+                            const std::string &face_topology_name);
 
-    std::string type_string() const override { return "SideBlock"; }
-    std::string short_type_string() const override { return "sideblock"; }
-    std::string contains_string() const override { return "Element/Side pair"; }
-    EntityType  type() const override { return SIDEBLOCK; }
+    IOSS_NODISCARD std::string type_string() const override { return "SideBlock"; }
+    IOSS_NODISCARD std::string short_type_string() const override { return "sideblock"; }
+    IOSS_NODISCARD std::string contains_string() const override { return "Element/Side pair"; }
+    IOSS_NODISCARD EntityType  type() const override { return SIDEBLOCK; }
 
-    const SideSet              *owner() const { return owner_; }
-    const Ioss::GroupingEntity *contained_in() const override { return owner_; }
+    IOSS_NODISCARD const SideSet *owner() const { return owner_; }
+    IOSS_NODISCARD const Ioss::GroupingEntity *contained_in() const override { return owner_; }
 
     void block_membership(std::vector<std::string> &block_members) override;
 
     // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string &my_name) const override;
+    IOSS_NODISCARD Property get_implicit_property(const std::string &my_name) const override;
 
     // For faceblock, edgeblock, if they are split by element block, then this
     // will be non-nullptr and is a pointer to the parent element block for this
     // faceblock or edgeblock. Has no meaning for other EntityBlock types or split
     // types.
-    const ElementBlock *parent_element_block() const
+    IOSS_NODISCARD const ElementBlock *parent_element_block() const
     {
       return dynamic_cast<const ElementBlock *>(parentBlock_);
     }
@@ -100,21 +100,24 @@ namespace Ioss {
       parentBlock_ = element_block;
     }
 
-    const EntityBlock *parent_block() const { return parentBlock_; }
-    void               set_parent_block(const EntityBlock *block) { parentBlock_ = block; }
+    IOSS_NODISCARD const EntityBlock *parent_block() const { return parentBlock_; }
+    void set_parent_block(const EntityBlock *block) { parentBlock_ = block; }
 
     // Describes the contained entities element block topology
-    const ElementTopology *parent_element_topology() const { return parentTopology_; }
+    IOSS_NODISCARD const ElementTopology *parent_element_topology() const
+    {
+      return parentTopology_;
+    }
 
     // For faceblock, edgeblock, return whether the surface is applied
     // to the same face/edge for all elements in the surface. If not,
     // return 0; otherwise return the consistent face number.
-    int  get_consistent_side_number() const;
-    void set_consistent_side_number(int side) { consistentSideNumber = side; }
+    IOSS_NODISCARD int get_consistent_side_number() const;
+    void               set_consistent_side_number(int side) { consistentSideNumber = side; }
 
-    bool operator==(const SideBlock &rhs) const;
-    bool operator!=(const SideBlock &rhs) const;
-    bool equal(const SideBlock &rhs) const;
+    IOSS_NODISCARD bool operator==(const SideBlock &rhs) const;
+    IOSS_NODISCARD bool operator!=(const SideBlock &rhs) const;
+    IOSS_NODISCARD bool equal(const SideBlock &rhs) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

@@ -181,7 +181,6 @@ template <typename T> void CompareAllProperties(const T &obj1, const T &obj2)
         std::end(ignored_properties)) {
       continue;
     }
-    obj1->get_property(property_name1);
     auto property_name2 =
         std::find(std::begin(block2_property_list), std::end(block2_property_list), property_name1);
     if (property_name2 != block2_property_list.end()) {

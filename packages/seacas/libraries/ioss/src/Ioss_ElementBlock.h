@@ -33,22 +33,22 @@ namespace Ioss {
 
     ElementBlock(const ElementBlock &) = default;
 
-    std::string type_string() const override { return "ElementBlock"; }
-    std::string short_type_string() const override { return "block"; }
-    std::string contains_string() const override { return "Element"; }
-    EntityType  type() const override { return ELEMENTBLOCK; }
+    IOSS_NODISCARD std::string type_string() const override { return "ElementBlock"; }
+    IOSS_NODISCARD std::string short_type_string() const override { return "block"; }
+    IOSS_NODISCARD std::string contains_string() const override { return "Element"; }
+    IOSS_NODISCARD EntityType  type() const override { return ELEMENTBLOCK; }
 
     // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string &my_name) const override;
+    IOSS_NODISCARD Property get_implicit_property(const std::string &my_name) const override;
 
-    std::vector<std::string> get_block_adjacencies() const;
-    void                     get_block_adjacencies(std::vector<std::string> &block_adjacency) const;
-    AxisAlignedBoundingBox   get_bounding_box() const;
-    bool                     operator==(const Ioss::ElementBlock &rhs) const;
-    bool                     operator!=(const Ioss::ElementBlock &rhs) const;
-    bool                     equal(const Ioss::ElementBlock &rhs) const;
+    IOSS_NODISCARD std::vector<std::string> get_block_adjacencies() const;
+    void get_block_adjacencies(std::vector<std::string> &block_adjacency) const;
+    IOSS_NODISCARD AxisAlignedBoundingBox get_bounding_box() const;
+    IOSS_NODISCARD bool                   operator==(const Ioss::ElementBlock &rhs) const;
+    IOSS_NODISCARD bool                   operator!=(const Ioss::ElementBlock &rhs) const;
+    IOSS_NODISCARD bool                   equal(const Ioss::ElementBlock &rhs) const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

@@ -509,10 +509,10 @@ namespace Ioex {
     add_region_fields();
 
     if (!is_input() && open_create_behavior() == Ioss::DB_APPEND) {
-      get_map(EX_NODE_BLOCK);
-      get_map(EX_EDGE_BLOCK);
-      get_map(EX_FACE_BLOCK);
-      get_map(EX_ELEM_BLOCK);
+      (void)get_map(EX_NODE_BLOCK);
+      (void)get_map(EX_EDGE_BLOCK);
+      (void)get_map(EX_FACE_BLOCK);
+      (void)get_map(EX_ELEM_BLOCK);
     }
   }
 

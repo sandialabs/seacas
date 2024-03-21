@@ -27,7 +27,7 @@ namespace Iotr {
 
   private:
     MinMax_Factory();
-    Ioss::Transform *make(const std::string &type) const override;
+    IOSS_NODISCARD Ioss::Transform *make(const std::string &type) const override;
   };
 
   class IOTR_EXPORT MinMax : public Ioss::Transform
@@ -35,8 +35,9 @@ namespace Iotr {
     friend class MinMax_Factory;
 
   public:
-    const Ioss::VariableType *output_storage(const Ioss::VariableType *in) const override;
-    size_t                    output_count(size_t in) const override;
+    IOSS_NODISCARD const  Ioss::VariableType                       *
+    output_storage(const Ioss::VariableType *in) const override;
+    IOSS_NODISCARD size_t output_count(size_t in) const override;
 
   protected:
     explicit MinMax(const std::string &type);

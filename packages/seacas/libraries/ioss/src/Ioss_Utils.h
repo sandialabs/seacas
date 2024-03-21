@@ -53,7 +53,7 @@ namespace Ioss {
 //
 // We don't have any systems on which we have found that (yet?), but this is proactive
 // in removing our use of `.data()` on potentially empty vectors...
-template <typename T> constexpr T *Data(std::vector<T> &vec)
+template <typename T> IOSS_NODISCARD constexpr T *Data(std::vector<T> &vec)
 {
   if (vec.empty()) {
     return nullptr;
@@ -63,7 +63,7 @@ template <typename T> constexpr T *Data(std::vector<T> &vec)
   }
 }
 
-template <typename T> constexpr const T *Data(const std::vector<T> &vec)
+template <typename T> IOSS_NODISCARD constexpr const T *Data(const std::vector<T> &vec)
 {
   if (vec.empty()) {
     return nullptr;
@@ -73,12 +73,12 @@ template <typename T> constexpr const T *Data(const std::vector<T> &vec)
   }
 }
 
-template <typename T, size_t N> constexpr T *Data(std::array<T, N> &arr)
+template <typename T, size_t N> IOSS_NODISCARD constexpr T *Data(std::array<T, N> &arr)
 {
   return N == 0 ? nullptr : arr.data();
 }
 
-template <typename T, size_t N> constexpr const T *Data(const std::array<T, N> &arr)
+template <typename T, size_t N> IOSS_NODISCARD constexpr const T *Data(const std::array<T, N> &arr)
 {
   return N == 0 ? nullptr : arr.data();
 }
@@ -107,15 +107,15 @@ namespace Ioss {
 
     /** \brief get the debug stream.
      */
-    static std::ostream &get_debug_stream();
+    IOSS_NODISCARD static std::ostream &get_debug_stream();
 
     /** \brief get the warning stream.
      */
-    static std::ostream &get_warning_stream();
+    IOSS_NODISCARD static std::ostream &get_warning_stream();
 
     /** \brief get the output stream.
      */
-    static std::ostream &get_output_stream();
+    IOSS_NODISCARD static std::ostream &get_output_stream();
 
     /** \brief set the output stream to the specified `output_stream`
      */
@@ -164,7 +164,7 @@ namespace Ioss {
     }
 
     /** \brief guess file type from extension */
-    static std::string get_type_from_file(const std::string &filename);
+    IOSS_NODISCARD static std::string get_type_from_file(const std::string &filename);
 
     template <typename T> static void uniquify(std::vector<T> &vec, bool skip_first = false)
     {
@@ -188,7 +188,7 @@ namespace Ioss {
       index.back() = sum;
     }
 
-    template <typename T> static T find_index_location(T node, const std::vector<T> &index)
+    template <typename T> IOSS_NODISCARD static T find_index_location(T node, const std::vector<T> &index)
     {
       // 0-based node numbering
       // index[p] = first node (0-based) on processor p
@@ -257,7 +257,7 @@ namespace Ioss {
      * fmt::print("{:{}d}", number, number_width(number,false))
      * ```
      */
-    inline static int number_width(const size_t number, bool use_commas = false)
+    IOSS_NODISCARD inline static int number_width(const size_t number, bool use_commas = false)
     {
       if (number == 0) {
         return 1;
@@ -269,7 +269,7 @@ namespace Ioss {
       return width;
     }
 
-    inline static int power_2(int count)
+    IOSS_NODISCARD inline static int power_2(int count)
     {
       // Return the power of two which is equal to or greater than `count`
       // count = 15 -> returns 16
@@ -285,7 +285,7 @@ namespace Ioss {
     }
 
     template <typename T>
-    static bool check_block_order(IOSS_MAYBE_UNUSED const std::vector<T *> &blocks)
+    IOSS_NODISCARD static bool check_block_order(IOSS_MAYBE_UNUSED const std::vector<T *> &blocks)
     {
 #ifndef NDEBUG
       // Verify that element blocks are defined in sorted offset order...
@@ -307,11 +307,11 @@ namespace Ioss {
       return true;
     }
 
-    static int term_width();
+    IOSS_NODISCARD static int term_width();
 
-    static int log_power_2(uint64_t value);
+    IOSS_NODISCARD static int log_power_2(uint64_t value);
 
-    static char **get_name_array(size_t count, int size);
+    IOSS_NODISCARD static char **get_name_array(size_t count, int size);
     static void   delete_name_array(char **names, int count);
 
     /** \brief Get formatted time and date strings.
@@ -326,17 +326,17 @@ namespace Ioss {
      */
     static void time_and_date(char *time_string, char *date_string, size_t length);
 
-    static std::string decode_filename(const std::string &filename, int processor,
+    IOSS_NODISCARD static std::string decode_filename(const std::string &filename, int processor,
                                        int num_processors);
-    static int         get_number(const std::string &suffix);
-    static int         extract_id(const std::string &name_id);
-    static std::string encode_entity_name(const std::string &entity_type, int64_t id);
+    IOSS_NODISCARD static int         get_number(const std::string &suffix);
+    IOSS_NODISCARD static int         extract_id(const std::string &name_id);
+    IOSS_NODISCARD static std::string encode_entity_name(const std::string &entity_type, int64_t id);
 
     /** Return the trailing digits (if any) from `name`
      * `hex20` would return the string `20`
      * `tetra` would return an empty string.
      */
-    static std::string get_trailing_digits(const std::string &name);
+    IOSS_NODISCARD static std::string get_trailing_digits(const std::string &name);
 
     /** \brief create a string that describes the list of input `ids` collapsing ranges if possible.
      *
@@ -346,9 +346,9 @@ namespace Ioss {
      * The sequence of ids `1, 2, 3, 5, 6, 7` with `rng_sep=".."` will return the default
      * string `1..3, 5..8`
      */
-    static std::string format_id_list(const std::vector<size_t> &ids,
-                                      const std::string         &rng_sep = " to ",
-                                      const std::string         &seq_sep = ", ");
+    IOSS_NODISCARD static std::string format_id_list(const std::vector<size_t> &ids,
+						    const std::string         &rng_sep = " to ",
+						    const std::string         &seq_sep = ", ");
 
     /** \brief Convert a string to lower case, and convert spaces to `_`.
      *
@@ -388,7 +388,7 @@ namespace Ioss {
      *  \param[in] block The entity.
      *  \returns True if the entity has the property `omitted`.
      */
-    static bool block_is_omitted(Ioss::GroupingEntity *block);
+    IOSS_NODISCARD static bool block_is_omitted(Ioss::GroupingEntity *block);
 
     /** \brief Process the base element type `base` which has
      *         `nodes_per_element` nodes and a spatial dimension of `spatial`
@@ -403,28 +403,28 @@ namespace Ioss {
      *  \param[in] spatial The spatial dimension of the element.
      *  \returns The Ioss-formatted element name.
      */
-    static std::string fixup_type(const std::string &base, int nodes_per_element, int spatial);
+    IOSS_NODISCARD static std::string fixup_type(const std::string &base, int nodes_per_element, int spatial);
 
     /** \brief Uppercase the first letter of the string
      *
      *  \param[in] name The string to convert.
      *  \returns The converted string.
      */
-    static std::string capitalize(std::string name);
+    IOSS_NODISCARD static std::string capitalize(std::string name);
 
     /** \brief Convert a string to upper case.
      *
      *  \param[in] name The string to convert.
      *  \returns The converted string.
      */
-    static std::string uppercase(std::string name);
+    IOSS_NODISCARD static std::string uppercase(std::string name);
 
     /** \brief Convert a string to lower case.
      *
      *  \param[in] name The string to convert.
      *  \returns The converted string.
      */
-    static std::string lowercase(std::string name);
+    IOSS_NODISCARD static std::string lowercase(std::string name);
 
     static void check_non_null(void *ptr, const char *type, const std::string &name,
                                const std::string &func);
@@ -435,7 +435,7 @@ namespace Ioss {
      *  \param[in] s2 Second string
      *  \returns `true` if strings are equal
      */
-    static bool str_equal(const std::string &s1, const std::string &s2);
+    IOSS_NODISCARD static bool str_equal(const std::string &s1, const std::string &s2);
 
     /** \brief Case-insensitive substring comparison.
      *
@@ -443,7 +443,7 @@ namespace Ioss {
      *  \param[in] str The string which should begin with prefix
      *  \returns `true` if `str` begins with `prefix` or `prefix` is empty
      */
-    static bool substr_equal(const std::string &prefix, const std::string &str);
+    IOSS_NODISCARD static bool substr_equal(const std::string &prefix, const std::string &str);
 
     /** Check all values in `data` to make sure that if they are converted to a double and
      * back again, there will be no data loss.  This requires that the value be less than 2^53.
@@ -460,7 +460,7 @@ namespace Ioss {
      *
      *  \returns The platform information string.
      */
-    static std::string platform_information();
+    IOSS_NODISCARD static std::string platform_information();
 
     /** \brief Get a filename relative to the specified working directory (if any)
      *         of the current execution.
@@ -472,7 +472,7 @@ namespace Ioss {
      *  \param[in] working_directory the path to which the relative_filename path is appended.
      *  \returns The full path (working_directory + relative_filename)
      */
-    static std::string local_filename(const std::string &relative_filename, const std::string &type,
+    IOSS_NODISCARD static std::string local_filename(const std::string &relative_filename, const std::string &type,
                                       const std::string &working_directory);
 
     static void get_fields(int64_t entity_count, char **names, int num_names,
@@ -502,11 +502,11 @@ namespace Ioss {
      *  \param[in] sb Compute the offset for element sides in this SideBlock
      *  \returns The offset.
      */
-    static int64_t get_side_offset(const Ioss::SideBlock *sb);
+    IOSS_NODISCARD static int64_t get_side_offset(const Ioss::SideBlock *sb);
 
-    static unsigned int hash(const std::string &name);
+    IOSS_NODISCARD static unsigned int hash(const std::string &name);
 
-    static double timer();
+    IOSS_NODISCARD static double timer();
 
     /** \brief Convert an input file to a vector of strings containing one string for each line of
      * the file.
@@ -521,7 +521,7 @@ namespace Ioss {
     static void input_file(const std::string &file_name, std::vector<std::string> *lines,
                            size_t max_line_length = 0);
 
-    template <class T> static std::string to_string(const T &t) { return std::to_string(t); }
+    template <class T> IOSS_NODISCARD static std::string to_string(const T &t) { return std::to_string(t); }
 
     //! \brief Tries to shorten long variable names to an acceptable
     //! length, and converts to lowercase and spaces to `_`
@@ -541,12 +541,12 @@ namespace Ioss {
     //! characters and append a 2 character hash+separator.
     //!
     //! It also converts name to lowercase and converts spaces to `_`
-    static std::string variable_name_kluge(const std::string &name, size_t component_count,
+    IOSS_NODISCARD static std::string variable_name_kluge(const std::string &name, size_t component_count,
                                            size_t copies, size_t max_var_len);
 
-    static std::string shape_to_string(const Ioss::ElementShape &shape);
+    IOSS_NODISCARD static std::string shape_to_string(const Ioss::ElementShape &shape);
 
-    static std::string entity_type_to_string(const Ioss::EntityType &type);
+    IOSS_NODISCARD static std::string entity_type_to_string(const Ioss::EntityType &type);
 
     /** \brief Create a nominal mesh for use in history databases.
      *

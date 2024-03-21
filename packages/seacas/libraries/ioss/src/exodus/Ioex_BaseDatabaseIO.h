@@ -82,13 +82,13 @@ namespace Ioex {
 
     ~BaseDatabaseIO() override;
 
-    std::string get_format() const override { return "Exodus"; }
+    IOSS_NODISCARD std::string get_format() const override { return "Exodus"; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
     // database supports that type (e.g. return_value & Ioss::FACESET)
-    unsigned entity_field_support() const override;
+    IOSS_NODISCARD unsigned entity_field_support() const override;
 
   protected:
     // Check to see if database state is ok...
@@ -96,8 +96,8 @@ namespace Ioex {
     // If 'error_message' non-null, then put the warning message into the string and return it.
     // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
     //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
-    bool ok_nl(bool write_message = false, std::string *error_message = nullptr,
-               int *bad_count = nullptr) const override;
+    IOSS_NODISCARD bool ok_nl(bool write_message = false, std::string *error_message = nullptr,
+                              int *bad_count = nullptr) const override;
 
     bool open_group_nl(const std::string &group_name) override;
     bool create_subgroup_nl(const std::string &group_name) override;
@@ -110,7 +110,7 @@ namespace Ioex {
     bool begin_state_nl(int state, double time) override;
     bool end_state_nl(int state, double time) override;
 
-    int maximum_symbol_length() const override { return maximumNameLength; }
+    IOSS_NODISCARD int maximum_symbol_length() const override { return maximumNameLength; }
 
     // NOTE: If this is called after write_meta_data, it will have no affect.
     //       Also, it only affects output databases, not input.
@@ -128,8 +128,8 @@ namespace Ioex {
     void compute_block_membership_nl(Ioss::SideBlock          *efblock,
                                      std::vector<std::string> &block_membership) const override;
 
-    int  int_byte_size_db() const override;
-    void set_int_byte_size_api(Ioss::DataSize size) const override;
+    IOSS_NODISCARD int int_byte_size_db() const override;
+    void               set_int_byte_size_api(Ioss::DataSize size) const override;
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override             = 0;
@@ -196,7 +196,7 @@ namespace Ioex {
     virtual void write_meta_data(Ioss::IfDatabaseExistsBehavior behavior) = 0;
     void         write_results_metadata(bool gather_data, Ioss::IfDatabaseExistsBehavior behavior);
 
-    void openDatabase_nl() const override { get_file_pointer(); }
+    void openDatabase_nl() const override { (void)get_file_pointer(); }
 
     void closeDatabase_nl() const override
     {
@@ -204,7 +204,7 @@ namespace Ioex {
       close_dw();
     }
 
-    int get_file_pointer() const override = 0; // Open file and set exodusFilePtr.
+    IOSS_NODISCARD int get_file_pointer() const override = 0; // Open file and set exodusFilePtr.
 
     virtual int free_file_pointer() const; // Close file and set exodusFilePtr.
 
@@ -214,7 +214,8 @@ namespace Ioex {
                                     bool overwrite, bool abort_if_error) const = 0;
     void         finalize_file_open() const;
 
-    int  get_current_state() const; // Get current state with error checks and usage message.
+    IOSS_NODISCARD int
+         get_current_state() const; // Get current state with error checks and usage message.
     void put_qa();
     void put_info();
 
@@ -259,7 +260,7 @@ namespace Ioex {
 
     // Handle special output time requests -- primarily restart (cycle, keep, overwrite)
     // Given the global region step, return the step on the database...
-    int get_database_step(int global_step) const;
+    IOSS_NODISCARD int get_database_step(int global_step) const;
 
     void flush_database_nl() const override;
     void finalize_write(int state, double sim_time);

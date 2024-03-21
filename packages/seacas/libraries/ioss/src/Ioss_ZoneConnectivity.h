@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -73,7 +73,7 @@ namespace Ioss {
     ZoneConnectivity &operator=(const ZoneConnectivity &copy_from) = default;
 
     // Return number of nodes in the connection shared with the donor zone.
-    size_t get_shared_node_count() const
+    IOSS_NODISCARD size_t get_shared_node_count() const
     {
       size_t snc = 1;
       for (int i = 0; i < 3; i++) {
@@ -84,23 +84,23 @@ namespace Ioss {
 
     // Validate zgc -- if is_active(), then must have non-zero entries for all ranges.
     // transform must have valid entries.
-    bool is_valid() const;
-    bool has_faces() const;
-    bool retain_original() const; // True if need to retain in parallel decomp
+    IOSS_NODISCARD bool is_valid() const;
+    IOSS_NODISCARD bool has_faces() const;
+    IOSS_NODISCARD bool retain_original() const; // True if need to retain in parallel decomp
 
-    std::array<IOSS_ZC_INT, 9> transform_matrix() const;
-    Ioss::IJK_t                transform(const Ioss::IJK_t &index_1) const;
-    Ioss::IJK_t                inverse_transform(const Ioss::IJK_t &index_1) const;
+    IOSS_NODISCARD std::array<IOSS_ZC_INT, 9> transform_matrix() const;
+    IOSS_NODISCARD Ioss::IJK_t transform(const Ioss::IJK_t &index_1) const;
+    IOSS_NODISCARD Ioss::IJK_t inverse_transform(const Ioss::IJK_t &index_1) const;
 
-    std::vector<int> get_range(int ordinal) const;
+    IOSS_NODISCARD std::vector<int> get_range(int ordinal) const;
 
     /* COMPARE two ZoneConnectivity objects  */
-    bool operator==(const Ioss::ZoneConnectivity &rhs) const;
-    bool operator!=(const Ioss::ZoneConnectivity &rhs) const;
-    bool equal(const Ioss::ZoneConnectivity &rhs) const;
+    IOSS_NODISCARD bool operator==(const Ioss::ZoneConnectivity &rhs) const;
+    IOSS_NODISCARD bool operator!=(const Ioss::ZoneConnectivity &rhs) const;
+    IOSS_NODISCARD bool equal(const Ioss::ZoneConnectivity &rhs) const;
 
-    bool is_from_decomp() const { return m_fromDecomp; }
-    bool is_active() const { return m_isActive && has_faces(); }
+    IOSS_NODISCARD bool is_from_decomp() const { return m_fromDecomp; }
+    IOSS_NODISCARD bool is_active() const { return m_isActive && has_faces(); }
 
     std::string m_connectionName{}; // Name of the connection; either generated or from file
     std::string m_donorName{}; // Name of the zone (m_donorZone) to which this zone is connected via

@@ -23,32 +23,31 @@ namespace Ioss {
     static void factory();
     Pyramid19(const Pyramid19 &) = delete;
 
-    ElementShape shape() const override { return ElementShape::PYRAMID; }
-    int          spatial_dimension() const override;
-    int          parametric_dimension() const override;
-    bool         is_element() const override { return true; }
-    bool         is_shell() const override { return false; }
-    int          order() const override;
+    IOSS_NODISCARD ElementShape shape() const override { return ElementShape::PYRAMID; }
+    IOSS_NODISCARD int          spatial_dimension() const override;
+    IOSS_NODISCARD int          parametric_dimension() const override;
+    IOSS_NODISCARD bool         is_element() const override { return true; }
+    IOSS_NODISCARD bool         is_shell() const override { return false; }
+    IOSS_NODISCARD int          order() const override;
 
-    int number_corner_nodes() const override;
-    int number_nodes() const override;
-    int number_edges() const override;
-    int number_faces() const override;
+    IOSS_NODISCARD int number_corner_nodes() const override;
+    IOSS_NODISCARD int number_nodes() const override;
+    IOSS_NODISCARD int number_edges() const override;
+    IOSS_NODISCARD int number_faces() const override;
 
-    int number_nodes_edge(int edge = 0) const override;
-    int number_nodes_face(int face = 0) const override;
-    int number_edges_face(int face = 0) const override;
+    IOSS_NODISCARD int number_nodes_edge(int edge = 0) const override;
+    IOSS_NODISCARD int number_nodes_face(int face = 0) const override;
+    IOSS_NODISCARD int number_edges_face(int face = 0) const override;
 
-    bool faces_similar() const override;
+    IOSS_NODISCARD bool faces_similar() const override;
 
-    Ioss::IntVector edge_connectivity(int edge_number) const override;
-    Ioss::IntVector face_connectivity(int face_number) const override;
-    Ioss::IntVector element_connectivity() const override;
+    IOSS_NODISCARD Ioss::IntVector edge_connectivity(int edge_number) const override;
+    IOSS_NODISCARD Ioss::IntVector face_connectivity(int face_number) const override;
+    IOSS_NODISCARD Ioss::IntVector element_connectivity() const override;
+    IOSS_NODISCARD Ioss::IntVector face_edge_connectivity(int face_number) const override;
 
-    Ioss::IntVector face_edge_connectivity(int face_number) const override;
-
-    Ioss::ElementTopology *face_type(int face_number = 0) const override;
-    Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
+    IOSS_NODISCARD Ioss::ElementTopology *face_type(int face_number = 0) const override;
+    IOSS_NODISCARD Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
 
   protected:
     Pyramid19();
