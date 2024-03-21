@@ -33,15 +33,15 @@ namespace Ioss {
 
     EdgeBlock(const EdgeBlock &) = default;
 
-    std::string type_string() const override { return "EdgeBlock"; }
-    std::string short_type_string() const override { return "edgeblock"; }
-    std::string contains_string() const override { return "Edge"; }
-    EntityType  type() const override { return EDGEBLOCK; }
+    IOSS_NODISCARD std::string type_string() const override { return "EdgeBlock"; }
+    IOSS_NODISCARD std::string short_type_string() const override { return "edgeblock"; }
+    IOSS_NODISCARD std::string contains_string() const override { return "Edge"; }
+    IOSS_NODISCARD EntityType  type() const override { return EDGEBLOCK; }
 
     // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'edge_block_count' for a region.
-    Property get_implicit_property(const std::string &my_name) const override;
+    IOSS_NODISCARD Property get_implicit_property(const std::string &my_name) const override;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

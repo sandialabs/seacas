@@ -183,78 +183,78 @@ namespace Iogs {
     /**
      * Return number of nodes in the entire model.
      */
-    virtual int64_t node_count() const;
+    IOSS_NODISCARD virtual int64_t node_count() const;
 
     /**
      * Return number of nodes on this processor.
      */
-    virtual int64_t node_count_proc() const;
+    IOSS_NODISCARD virtual int64_t node_count_proc() const;
 
     /**
      * Return number of structured blocks in the entire model.
      */
-    virtual int64_t structured_block_count() const;
+    IOSS_NODISCARD virtual int64_t structured_block_count() const;
 
     /**
      * Return number of sidesets in the entire model.
      */
-    virtual int64_t sideset_count() const;
+    IOSS_NODISCARD virtual int64_t sideset_count() const;
 
     /**
      * Return number of sideset 'sides' on sideset 'id'
      */
-    int64_t sideset_side_count(int64_t id) const;
+    IOSS_NODISCARD int64_t sideset_side_count(int64_t id) const;
 
     /**
      * Return number of sideset 'sides' on sideset 'id' on the current
      * processor.
      */
-    virtual int64_t sideset_side_count_proc(int64_t id) const;
+    IOSS_NODISCARD virtual int64_t sideset_side_count_proc(int64_t id) const;
 
-    Ioss::IJK_t block_range(int64_t /* id */) const
+    IOSS_NODISCARD Ioss::IJK_t block_range(int64_t /* id */) const
     {
       return Ioss::IJK_t{{(int)numX, (int)numY, (int)numZ}};
     }
-    Ioss::IJK_t block_range_proc(int64_t id) const;
-    Ioss::IJK_t block_offset_proc(int64_t id) const;
+    IOSS_NODISCARD Ioss::IJK_t block_range_proc(int64_t id) const;
+    IOSS_NODISCARD Ioss::IJK_t block_offset_proc(int64_t id) const;
 
     /**
      * Return number of elements in all structured blocks in the model.
      */
-    virtual int64_t element_count() const;
+    IOSS_NODISCARD virtual int64_t element_count() const;
 
     /**
      * Return number of elements in all structured blocks on this processor.
      */
-    int64_t element_count_proc() const;
+    IOSS_NODISCARD int64_t element_count_proc() const;
 
-    int64_t timestep_count() const { return timestepCount; }
+    IOSS_NODISCARD int64_t timestep_count() const { return timestepCount; }
     /**
      * Return number of elements in the structured block with id
      * 'block_number'. The 'block_number' ranges from '1' to
      * 'block_count()'.
      */
-    virtual int64_t element_count(int64_t block_number) const;
+    IOSS_NODISCARD virtual int64_t element_count(int64_t block_number) const;
 
     /**
      * Return number of elements on this processor in the structured
      * block with id 'block_number'. The 'block_number' ranges from
      * '1' to 'block_count()'.
      */
-    int64_t element_count_proc(int64_t block_number) const;
+    IOSS_NODISCARD int64_t element_count_proc(int64_t block_number) const;
 
     /**
      * Returns pair containing "topology type string" and "number of
      * nodes / element". The topology type string will be "hex8" for
      * the hex element block
      */
-    virtual std::pair<std::string, int> topology_type(int64_t block_number) const;
+    IOSS_NODISCARD virtual std::pair<std::string, int> topology_type(int64_t block_number) const;
 
-    void            build_node_map(Ioss::Int64Vector &map, std::vector<int> &proc, int64_t slab,
-                                   size_t slabOffset, size_t adjacentProc, size_t index);
-    virtual int64_t communication_node_count_proc() const;
-    virtual void    node_communication_map(Ioss::Int64Vector &map, std::vector<int> &proc);
-    virtual void    owning_processor(int *owner, int64_t num_node);
+    void build_node_map(Ioss::Int64Vector &map, std::vector<int> &proc, int64_t slab,
+                        size_t slabOffset, size_t adjacentProc, size_t index);
+    IOSS_NODISCARD virtual int64_t communication_node_count_proc() const;
+    virtual void node_communication_map(Ioss::Int64Vector &map, std::vector<int> &proc);
+    virtual void owning_processor(int *owner, int64_t num_node);
 
     /**
      * Fill the passed in 'map' argument with the node map
@@ -356,13 +356,13 @@ namespace Iogs {
      */
     virtual void sideset_elem_sides(int64_t id, Ioss::Int64Vector &elem_sides) const;
 
-    virtual std::vector<std::string> sideset_touching_blocks(int64_t set_id) const;
+    IOSS_NODISCARD virtual std::vector<std::string> sideset_touching_blocks(int64_t set_id) const;
 
-    int64_t get_num_x() const { return numX; }
-    int64_t get_num_y() const { return numY; }
-    int64_t get_num_z() const { return numZ; }
+    IOSS_NODISCARD int64_t get_num_x() const { return numX; }
+    IOSS_NODISCARD int64_t get_num_y() const { return numY; }
+    IOSS_NODISCARD int64_t get_num_z() const { return numZ; }
 
-    size_t get_variable_count(Ioss::EntityType type) const
+    IOSS_NODISCARD size_t get_variable_count(Ioss::EntityType type) const
     {
       return variableCount.find(type) != variableCount.end() ? variableCount.find(type)->second : 0;
     }

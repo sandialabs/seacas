@@ -51,9 +51,10 @@ namespace Iopg {
 
   private:
     IOFactory();
-    Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
-                              Ioss_MPI_Comm                communicator,
-                              const Ioss::PropertyManager &properties) const;
+    IOSS_NODISCARD Ioss::DatabaseIO *make_IO(const std::string           &filename,
+                                             Ioss::DatabaseUsage          db_usage,
+                                             Ioss_MPI_Comm                communicator,
+                                             const Ioss::PropertyManager &properties) const;
   };
 
   class IOPG_EXPORT DatabaseIO : public Ioss::DatabaseIO
@@ -63,21 +64,21 @@ namespace Iopg {
                Ioss_MPI_Comm communicator, const Ioss::PropertyManager &properties);
     ~DatabaseIO();
 
-    std::string get_format() const override { return "PamGen"; }
+    IOSS_NODISCARD std::string get_format() const override { return "PamGen"; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
     // database supports that type (e.g. return_value & Ioss::FACESET)
-    unsigned entity_field_support() const override
+    IOSS_NODISCARD unsigned entity_field_support() const override
     {
       return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::NODESET | Ioss::SIDESET | Ioss::REGION;
     }
 
-    int int_byte_size_db() const override { return 4; }
+    IOSS_NODISCARD int int_byte_size_db() const override { return 4; }
 
-    std::string title() const { return databaseTitle; }
-    int         maximum_symbol_length() const override { return 32; }
+    IOSS_NODISCARD std::string title() const { return databaseTitle; }
+    IOSS_NODISCARD int         maximum_symbol_length() const override { return 32; }
 
     void compute_block_membership_nl(Ioss::SideBlock          *efblock,
                                      std::vector<std::string> &block_membership) const override;

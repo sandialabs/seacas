@@ -50,22 +50,22 @@ namespace Ioex {
     DecompositionDataBase(const DecompositionDataBase &)            = delete;
     DecompositionDataBase &operator=(const DecompositionDataBase &) = delete;
 
-    virtual ~DecompositionDataBase()            = default;
-    virtual int    int_size() const             = 0;
-    virtual void   decompose_model(int filePtr) = 0;
-    virtual size_t ioss_node_count() const      = 0;
-    virtual size_t ioss_elem_count() const      = 0;
+    virtual ~DecompositionDataBase()                           = default;
+    IOSS_NODISCARD virtual int    int_size() const             = 0;
+    IOSS_NODISCARD virtual void   decompose_model(int filePtr) = 0;
+    IOSS_NODISCARD virtual size_t ioss_node_count() const      = 0;
+    IOSS_NODISCARD virtual size_t ioss_elem_count() const      = 0;
 
-    virtual int    spatial_dimension() const = 0;
-    virtual size_t global_node_count() const = 0;
-    virtual size_t global_elem_count() const = 0;
+    IOSS_NODISCARD virtual int    spatial_dimension() const = 0;
+    IOSS_NODISCARD virtual size_t global_node_count() const = 0;
+    IOSS_NODISCARD virtual size_t global_elem_count() const = 0;
 
-    virtual size_t decomp_node_offset() const = 0;
-    virtual size_t decomp_node_count() const  = 0;
-    virtual size_t decomp_elem_offset() const = 0;
-    virtual size_t decomp_elem_count() const  = 0;
+    IOSS_NODISCARD virtual size_t decomp_node_offset() const = 0;
+    IOSS_NODISCARD virtual size_t decomp_node_count() const  = 0;
+    IOSS_NODISCARD virtual size_t decomp_elem_offset() const = 0;
+    IOSS_NODISCARD virtual size_t decomp_elem_count() const  = 0;
 
-    virtual std::vector<double> &centroids() = 0;
+    IOSS_NODISCARD virtual std::vector<double> &centroids() = 0;
 
     Ioss_MPI_Comm comm_;
 
@@ -76,7 +76,8 @@ namespace Ioex {
     std::vector<Ioss::SetDecompositionData>   node_sets;
     std::vector<Ioss::SetDecompositionData>   side_sets;
 
-    const Ioss::SetDecompositionData &get_decomp_set(ex_entity_type type, ex_entity_id id) const;
+    IOSS_NODISCARD const Ioss::SetDecompositionData &get_decomp_set(ex_entity_type type,
+                                                                    ex_entity_id   id) const;
 
     template <typename T>
     void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
@@ -98,7 +99,7 @@ namespace Ioex {
     int get_set_mesh_double(int filePtr, ex_entity_type type, ex_entity_id id,
                             const Ioss::Field &field, double *ioss_data) const;
 
-    virtual size_t get_commset_node_size() const = 0;
+    IOSS_NODISCARD virtual size_t get_commset_node_size() const = 0;
 
     virtual int get_node_coordinates(int filePtr, double *ioss_data,
                                      const Ioss::Field &field) const                 = 0;
@@ -117,24 +118,24 @@ namespace Ioex {
   public:
     DecompositionData(const Ioss::PropertyManager &props, Ioss_MPI_Comm communicator);
 
-    int int_size() const { return sizeof(INT); }
+    IOSS_NODISCARD int int_size() const { return sizeof(INT); }
 
     void decompose_model(int filePtr);
 
-    int spatial_dimension() const { return m_decomposition.m_spatialDimension; }
+    IOSS_NODISCARD int spatial_dimension() const { return m_decomposition.m_spatialDimension; }
 
-    size_t global_node_count() const { return m_decomposition.global_node_count(); }
-    size_t global_elem_count() const { return m_decomposition.global_elem_count(); }
+    IOSS_NODISCARD size_t global_node_count() const { return m_decomposition.global_node_count(); }
+    IOSS_NODISCARD size_t global_elem_count() const { return m_decomposition.global_elem_count(); }
 
-    size_t ioss_node_count() const { return m_decomposition.ioss_node_count(); }
-    size_t ioss_elem_count() const { return m_decomposition.ioss_elem_count(); }
+    IOSS_NODISCARD size_t ioss_node_count() const { return m_decomposition.ioss_node_count(); }
+    IOSS_NODISCARD size_t ioss_elem_count() const { return m_decomposition.ioss_elem_count(); }
 
-    size_t decomp_node_offset() const { return m_decomposition.file_node_offset(); }
-    size_t decomp_node_count() const { return m_decomposition.file_node_count(); }
-    size_t decomp_elem_offset() const { return m_decomposition.file_elem_offset(); }
-    size_t decomp_elem_count() const { return m_decomposition.file_elem_count(); }
+    IOSS_NODISCARD size_t decomp_node_offset() const { return m_decomposition.file_node_offset(); }
+    IOSS_NODISCARD size_t decomp_node_count() const { return m_decomposition.file_node_count(); }
+    IOSS_NODISCARD size_t decomp_elem_offset() const { return m_decomposition.file_elem_offset(); }
+    IOSS_NODISCARD size_t decomp_elem_count() const { return m_decomposition.file_elem_count(); }
 
-    std::vector<double> &centroids() { return m_decomposition.m_centroids; }
+    IOSS_NODISCARD std::vector<double> &centroids() { return m_decomposition.m_centroids; }
 
     template <typename T>
     void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const
@@ -158,7 +159,10 @@ namespace Ioex {
     void get_block_connectivity(int filePtr, INT *data, int64_t id, size_t blk_seq,
                                 size_t nnpe) const;
 
-    size_t get_commset_node_size() const { return m_decomposition.m_nodeCommMap.size() / 2; }
+    IOSS_NODISCARD size_t get_commset_node_size() const
+    {
+      return m_decomposition.m_nodeCommMap.size() / 2;
+    }
 
     int get_attr(int filePtr, ex_entity_type obj_type, ex_entity_id id, size_t attr_count,
                  double *attrib) const;
@@ -175,9 +179,9 @@ namespace Ioex {
     int get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
                          const Ioss::Field &field, T *ioss_data) const;
 
-    size_t get_block_seq(ex_entity_type type, ex_entity_id id) const;
-    size_t get_block_element_count(size_t blk_seq) const;
-    size_t get_block_element_offset(size_t blk_seq) const;
+    IOSS_NODISCARD size_t get_block_seq(ex_entity_type type, ex_entity_id id) const;
+    IOSS_NODISCARD size_t get_block_element_count(size_t blk_seq) const;
+    IOSS_NODISCARD size_t get_block_element_offset(size_t blk_seq) const;
 
     void create_implicit_global_map(const std::vector<int> &owning_proc,
                                     std::vector<int64_t> &global_implicit_map, Ioss::Map &node_map,
@@ -186,12 +190,12 @@ namespace Ioex {
     // global_index is 1-based index into global list of nodes [1..global_node_count]
     // return value is 1-based index into local list of nodes on this
     // processor (ioss-decomposition)
-    size_t node_global_to_local(size_t global_index) const
+    IOSS_NODISCARD size_t node_global_to_local(size_t global_index) const
     {
       return m_decomposition.node_global_to_local(global_index);
     }
 
-    size_t elem_global_to_local(size_t global_index) const
+    IOSS_NODISCARD size_t elem_global_to_local(size_t global_index) const
     {
       return m_decomposition.elem_global_to_local(global_index);
     }
@@ -242,13 +246,13 @@ namespace Ioex {
     int get_set_var(int filePtr, int step, int var_index, ex_entity_type type, ex_entity_id id,
                     int64_t num_entity, std::vector<double> &ioss_data) const;
 
-    bool i_own_node(size_t node) const
+    IOSS_NODISCARD bool i_own_node(size_t node) const
     {
       // T/F if the node with global index `node` is owned by this processors ioss-decomp.
       return m_decomposition.i_own_node(node);
     }
 
-    bool i_own_elem(size_t elem) const
+    IOSS_NODISCARD bool i_own_elem(size_t elem) const
     // T/F if the element with global index `elem` is owned by this processors ioss-decomp.
     {
       return m_decomposition.i_own_elem(elem);
@@ -291,14 +295,16 @@ namespace Ioex {
   public:
     ElementBlockBatchReader(const DecompositionDataBase *decompDB);
 
-    size_t get_connectivity_size(const std::vector<int64_t> &blocks_subset_index) const;
+    IOSS_NODISCARD size_t
+    get_connectivity_size(const std::vector<int64_t> &blocks_subset_index) const;
 
-    std::vector<size_t> get_connectivity(int                         filePtr,
-                                         const std::vector<int64_t> &blocks_subset_index,
-                                         void                       *data) const;
+    IOSS_NODISCARD std::vector<size_t>
+                   get_connectivity(int filePtr, const std::vector<int64_t> &blocks_subset_index,
+                                    void *data) const;
 
-    std::vector<size_t> get_offset(const std::vector<int64_t> &blocks_subset_index,
-                                   const std::vector<int>     &block_component_count) const;
+    IOSS_NODISCARD std::vector<size_t>
+                   get_offset(const std::vector<int64_t> &blocks_subset_index,
+                              const std::vector<int>     &block_component_count) const;
 
     void get_field_data(int filePtr, void *data, const std::vector<int64_t> &blocks_subset_index,
                         size_t step, const std::vector<BlockFieldData> &block_data) const;

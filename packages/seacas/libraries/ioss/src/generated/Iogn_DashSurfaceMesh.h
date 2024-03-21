@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Ioss_Beam2.h"
+#include "Ioss_CodeTypes.h"
 #include "Ioss_Hex8.h"
 #include "Ioss_Shell4.h"
 #include "generated/Iogn_GeneratedMesh.h" // for GeneratedMesh
@@ -32,7 +33,7 @@ namespace Iogn {
 
   enum Topology { Beam2 = 2, Shell4 = 4, Hex8 = 8 };
 
-  inline std::string getTopologyName(Topology topology)
+  IOSS_NODISCARD inline std::string getTopologyName(Topology topology)
   {
     switch (topology) {
     case Shell4: return {Ioss::Shell4::name};
@@ -140,23 +141,23 @@ namespace Iogn {
     {
     }
 
-    int64_t node_count() const override;
-    int64_t node_count_proc() const override;
+    IOSS_NODISCARD int64_t node_count() const override;
+    IOSS_NODISCARD int64_t node_count_proc() const override;
 
-    int64_t element_count() const override;
-    int64_t element_count(int64_t surfaceNumber) const override;
-    int64_t element_count_proc() const override;
-    int64_t element_count_proc(int64_t block_number) const override;
+    IOSS_NODISCARD int64_t element_count() const override;
+    IOSS_NODISCARD int64_t element_count(int64_t surfaceNumber) const override;
+    IOSS_NODISCARD int64_t element_count_proc() const override;
+    IOSS_NODISCARD int64_t element_count_proc(int64_t block_number) const override;
 
-    int block_count() const override;
+    IOSS_NODISCARD int block_count() const override;
 
-    int     nodeset_count() const override;
-    int64_t nodeset_node_count_proc(int64_t id) const override;
+    IOSS_NODISCARD int     nodeset_count() const override;
+    IOSS_NODISCARD int64_t nodeset_node_count_proc(int64_t id) const override;
 
-    int     sideset_count() const override;
-    int64_t sideset_side_count_proc(int64_t id) const override;
+    IOSS_NODISCARD int     sideset_count() const override;
+    IOSS_NODISCARD int64_t sideset_side_count_proc(int64_t id) const override;
 
-    int64_t communication_node_count_proc() const override;
+    IOSS_NODISCARD int64_t communication_node_count_proc() const override;
 
     void coordinates(double *coord) const override;
     void coordinates(std::vector<double> &coord) const override;
@@ -167,7 +168,7 @@ namespace Iogn {
 
     void connectivity(int64_t block_number, int *connect) const override;
 
-    std::pair<std::string, int> topology_type(int64_t block_number) const override;
+    IOSS_NODISCARD std::pair<std::string, int> topology_type(int64_t block_number) const override;
 
     void sideset_elem_sides(int64_t setId, std::vector<int64_t> &elem_sides) const override;
 
@@ -194,23 +195,23 @@ namespace Iogn {
   public:
     explicit ExodusMesh(const ExodusData &exodusData);
 
-    int64_t node_count() const override;
-    int64_t node_count_proc() const override;
+    IOSS_NODISCARD int64_t node_count() const override;
+    IOSS_NODISCARD int64_t node_count_proc() const override;
 
-    int64_t element_count() const override;
-    int64_t element_count(int64_t blockNumber) const override;
-    int64_t element_count_proc() const override;
-    int64_t element_count_proc(int64_t blockNumber) const override;
+    IOSS_NODISCARD int64_t element_count() const override;
+    IOSS_NODISCARD int64_t element_count(int64_t blockNumber) const override;
+    IOSS_NODISCARD int64_t element_count_proc() const override;
+    IOSS_NODISCARD int64_t element_count_proc(int64_t blockNumber) const override;
 
-    int block_count() const override;
+    IOSS_NODISCARD int block_count() const override;
 
-    int     nodeset_count() const override;
-    int64_t nodeset_node_count_proc(int64_t id) const override;
+    IOSS_NODISCARD int     nodeset_count() const override;
+    IOSS_NODISCARD int64_t nodeset_node_count_proc(int64_t id) const override;
 
-    int     sideset_count() const override;
-    int64_t sideset_side_count_proc(int64_t id) const override;
+    IOSS_NODISCARD int     sideset_count() const override;
+    IOSS_NODISCARD int64_t sideset_side_count_proc(int64_t id) const override;
 
-    int64_t communication_node_count_proc() const override;
+    IOSS_NODISCARD int64_t communication_node_count_proc() const override;
 
     void coordinates(double *coord) const override;
     void coordinates(std::vector<double> &coord) const override;
@@ -221,7 +222,7 @@ namespace Iogn {
 
     void connectivity(int64_t blockNumber, int *connectivityForBlock) const override;
 
-    std::pair<std::string, int> topology_type(int64_t blockNumber) const override;
+    IOSS_NODISCARD std::pair<std::string, int> topology_type(int64_t blockNumber) const override;
 
     void sideset_elem_sides(int64_t setId, std::vector<int64_t> &elem_sides) const override;
 

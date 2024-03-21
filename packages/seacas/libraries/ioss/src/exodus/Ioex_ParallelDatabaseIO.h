@@ -71,8 +71,8 @@ namespace Ioex {
                        const Ioss::PropertyManager &properties);
     ~ParallelDatabaseIO();
 
-    int  get_file_pointer() const override; // Open file and set exodusFilePtr.
-    bool needs_shared_node_information() const override { return true; }
+    IOSS_NODISCARD int  get_file_pointer() const override; // Open file and set exodusFilePtr.
+    IOSS_NODISCARD bool needs_shared_node_information() const override { return true; }
 
     std::vector<size_t> get_entity_field_data(const std::string                       &field_name,
                                               const std::vector<Ioss::ElementBlock *> &elem_blocks,
@@ -219,10 +219,11 @@ namespace Ioex {
     void check_valid_values() const;
 
     // ID Mapping functions.
-    const Ioss::Map &get_map(ex_entity_type type) const;
-    const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, int64_t file_offset,
-                             int64_t file_count, ex_entity_type entity_type,
-                             ex_inquiry inquiry_type) const;
+    IOSS_NODISCARD const Ioss::Map &get_map(ex_entity_type type) const;
+    IOSS_NODISCARD const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount,
+                                            int64_t file_offset, int64_t file_count,
+                                            ex_entity_type entity_type,
+                                            ex_inquiry     inquiry_type) const;
 
     // Internal data handling
     int64_t handle_node_ids(void *ids, int64_t num_to_get, size_t offset, size_t count) const;
