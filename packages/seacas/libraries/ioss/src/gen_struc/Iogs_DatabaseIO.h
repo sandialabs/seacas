@@ -59,9 +59,10 @@ namespace Iogs {
 
   private:
     IOFactory();
-    Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
-                              Ioss_MPI_Comm                communicator,
-                              const Ioss::PropertyManager &props) const override;
+    IOSS_NODISCARD Ioss::DatabaseIO *make_IO(const std::string           &filename,
+                                             Ioss::DatabaseUsage          db_usage,
+                                             Ioss_MPI_Comm                communicator,
+                                             const Ioss::PropertyManager &props) const override;
   };
 
   class IOGS_EXPORT DatabaseIO : public Ioss::DatabaseIO
@@ -72,21 +73,24 @@ namespace Iogs {
 
     ~DatabaseIO() override;
 
-    std::string get_format() const override { return "Generated_Structured"; }
+    IOSS_NODISCARD std::string get_format() const override { return "Generated_Structured"; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
     // database supports that type (e.g. return_value & Ioss::FACESET)
-    unsigned entity_field_support() const override;
+    IOSS_NODISCARD unsigned entity_field_support() const override;
 
-    int int_byte_size_db() const override { return int_byte_size_api(); }
+    IOSS_NODISCARD int int_byte_size_db() const override { return int_byte_size_api(); }
 
-    const GeneratedMesh *get_gen_struc_mesh() const { return m_generatedMesh; }
+    IOSS_NODISCARD const GeneratedMesh *get_gen_struc_mesh() const { return m_generatedMesh; }
 
     void setGeneratedMesh(Iogs::GeneratedMesh *generatedMesh) { m_generatedMesh = generatedMesh; }
 
-    const std::vector<std::string> &get_sideset_names() const { return m_sideset_names; }
+    IOSS_NODISCARD const std::vector<std::string> &get_sideset_names() const
+    {
+      return m_sideset_names;
+    }
 
   private:
     void read_meta_data_nl() override;
@@ -103,8 +107,8 @@ namespace Iogs {
     void get_sidesets();
     void get_commsets();
 
-    const Ioss::Map &get_node_map() const;
-    const Ioss::Map &get_element_map() const;
+    IOSS_NODISCARD const Ioss::Map &get_node_map() const;
+    IOSS_NODISCARD const Ioss::Map &get_element_map() const;
 
     IOSS_NOOP_GFI(Ioss::ElementBlock)
     IOSS_NOOP_GFI(Ioss::EdgeBlock)
