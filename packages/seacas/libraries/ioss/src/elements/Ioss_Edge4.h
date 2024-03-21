@@ -45,7 +45,7 @@ namespace Ioss {
     IOSS_NODISCARD Ioss::ElementTopology *face_type(int face_number = 0) const override;
     IOSS_NODISCARD Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
 
- protected:
- Edge4();
+  protected:
+    Edge4();
   };
 } // namespace Ioss
