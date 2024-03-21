@@ -3,28 +3,11 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
+#include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include "Ioss_CodeTypes.h"
-#include "Ioss_CommSet.h"      // for CommSet
-#include "Ioss_EdgeBlock.h"    // for EdgeBlock
-#include "Ioss_EdgeSet.h"      // for EdgeSet
-#include "Ioss_ElementBlock.h" // for ElementBlock
-#include "Ioss_ElementSet.h"   // for ElementSet
-#include "Ioss_FaceBlock.h"    // for FaceBlock
-#include "Ioss_FaceSet.h"      // for FaceSet
-#include "Ioss_NodeBlock.h"
-#include "Ioss_NodeSet.h" // for NodeSet
-#include "Ioss_Property.h"
-#include "Ioss_Region.h"
-#include "Ioss_SideBlock.h"
-#include "Ioss_SideSet.h"
 #include "Ioss_SubSystem.h"
-#include "Ioss_VariableType.h"
-
-#include "Ioss_DatabaseIO.h" // for DatabaseIO
-
-#include "Ioss_IOFactory.h" // for IOFactory
 #include "init/Ionit_Initializer.h"
 
 #include "adios/Ioad_Constants.h"
