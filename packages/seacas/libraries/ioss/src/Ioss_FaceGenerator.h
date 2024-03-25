@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -6,13 +6,15 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
 #include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstddef>
 #include <map>
+#include <string>
+#include <vector>
+
+#include "ioss_export.h"
 
 #define FG_USE_ROBIN
 #if defined FG_USE_STD
@@ -116,7 +118,6 @@ namespace Ioss {
   {
   public:
     explicit FaceGenerator(Ioss::Region &region);
-    ~FaceGenerator() = default;
 
     static size_t id_hash(size_t global_id);
 

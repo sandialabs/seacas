@@ -4,9 +4,9 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_ElementPermutation.h>
-#include <Ioss_StandardElementTypes.h>
+#include "Ioss_ElementPermutation.h"
+#include "Ioss_StandardElementTypes.h"
+
 #if defined IOSS_THREADSAFE
 #include <mutex>
 #endif

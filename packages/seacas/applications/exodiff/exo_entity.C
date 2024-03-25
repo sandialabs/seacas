@@ -180,7 +180,7 @@ std::string Exo_Entity::Load_Results(int t1, int t2, double proportion, int var_
 
       if (t1 != t2) {
         results2.resize(numEntity);
-        err = ex_get_var(fileId, t2, exodus_type(), var_index + 1, id_, numEntity, results2.data());
+        err = ex_get_var(fileId, t2, exodus_type(), var_index + 1, id_, numEntity, Data(results2));
 
         if (err < 0) {
           Error(fmt::format("Exo_Entity::Load_Results(): Call to exodus routine"
@@ -328,15 +328,17 @@ void Exo_Entity::internal_load_params()
   int name_size = ex_inquire_int(fileId, EX_INQ_MAX_READ_NAME_LENGTH);
   {
     std::vector<char> name(name_size + 1);
-    ex_get_name(fileId, exodus_type(), id_, name.data());
+    ex_get_name(fileId, exodus_type(), id_, Data(name));
     if (name[0] != '\0') {
-      name_ = name.data();
+      name_ = Data(name);
       to_lower(name_);
+      generatedName_ = false;
     }
     else {
       name_ = short_label();
       name_ += "_";
       name_ += std::to_string(id_);
+      generatedName_ = true;
     }
   }
   numVars = get_num_variables(fileId, exodus_type(), label());
@@ -348,44 +350,46 @@ void Exo_Entity::internal_load_params()
     }
   }
 
-  numAttr = get_num_attributes(fileId, exodus_type(), id_, label());
-  if (numAttr != 0) {
-    attributes_.resize(numAttr);
+  if (exodus_type() != EX_ASSEMBLY) {
+    numAttr = get_num_attributes(fileId, exodus_type(), id_, label());
+    if (numAttr != 0) {
+      attributes_.resize(numAttr);
 
-    char **names = get_name_array(numAttr, name_size);
-    int    err   = ex_get_attr_names(fileId, exodus_type(), id_, names);
-    if (err < 0) {
-      Error(fmt::format(
-          "ExoII_Read::Get_Init_Data(): Failed to get {} attribute names!  Aborting...\n",
-          label()));
-    }
-
-    for (int vg = 0; vg < numAttr; ++vg) {
-      SMART_ASSERT(names[vg] != nullptr);
-      if (std::strlen(names[vg]) == 0) {
-        std::string name = "attribute_" + std::to_string(vg + 1);
-        attributeNames.push_back(name);
+      char **names = get_name_array(numAttr, name_size);
+      int    err   = ex_get_attr_names(fileId, exodus_type(), id_, names);
+      if (err < 0) {
+        Error(fmt::format(
+            "ExoII_Read::Get_Init_Data(): Failed to get {} attribute names!  Aborting...\n",
+            label()));
       }
-      else if (static_cast<int>(std::strlen(names[vg])) > name_size) {
-        fmt::print(stderr, fmt::fg(fmt::color::red),
-                   "exodiff: ERROR: {} attribute names appear corrupt\n"
-                   "                A length is 0 or greater than name_size({})\n"
-                   "                Here are the names that I received from"
-                   " a call to ex_get_attr_names(...):\n",
-                   label(), name_size);
-        for (int k = 1; k <= numAttr; ++k) {
-          fmt::print(stderr, fmt::fg(fmt::color::red), "\t\t{}) \"{}\"\n", k, names[k - 1]);
+
+      for (int vg = 0; vg < numAttr; ++vg) {
+        SMART_ASSERT(names[vg] != nullptr);
+        if (std::strlen(names[vg]) == 0) {
+          std::string name = "attribute_" + std::to_string(vg + 1);
+          attributeNames.push_back(name);
         }
-        fmt::print(stderr, fmt::fg(fmt::color::red), "                 Aborting...\n");
-        exit(1);
+        else if (static_cast<int>(std::strlen(names[vg])) > name_size) {
+          fmt::print(stderr, fmt::fg(fmt::color::red),
+                     "exodiff: ERROR: {} attribute names appear corrupt\n"
+                     "                A length is 0 or greater than name_size({})\n"
+                     "                Here are the names that I received from"
+                     " a call to ex_get_attr_names(...):\n",
+                     label(), name_size);
+          for (int k = 1; k <= numAttr; ++k) {
+            fmt::print(stderr, fmt::fg(fmt::color::red), "\t\t{}) \"{}\"\n", k, names[k - 1]);
+          }
+          fmt::print(stderr, fmt::fg(fmt::color::red), "                 Aborting...\n");
+          exit(1);
+        }
+        else {
+          std::string n(names[vg]);
+          to_lower(n);
+          attributeNames.push_back(n);
+        }
       }
-      else {
-        std::string n(names[vg]);
-        to_lower(n);
-        attributeNames.push_back(n);
-      }
+      free_name_array(names, numAttr);
     }
-    free_name_array(names, numAttr);
   }
 }
 
@@ -396,7 +400,7 @@ namespace {
     size_t count = get_num_entities(file_id, exo_type);
     if ((ex_int64_status(file_id) & EX_IDS_INT64_API) != 0) {
       std::vector<int64_t> ids(count);
-      ex_get_ids(file_id, exo_type, ids.data());
+      ex_get_ids(file_id, exo_type, Data(ids));
 
       for (size_t i = 0; i < count; i++) {
         if (static_cast<size_t>(ids[i]) == id) {
@@ -406,7 +410,7 @@ namespace {
     }
     else {
       std::vector<int> ids(count);
-      ex_get_ids(file_id, exo_type, ids.data());
+      ex_get_ids(file_id, exo_type, Data(ids));
 
       for (size_t i = 0; i < count; i++) {
         if (static_cast<size_t>(ids[i]) == id) {
@@ -423,6 +427,7 @@ namespace {
   {
     ex_inquiry inquiry = EX_INQ_INVALID;
     switch (exo_type) {
+    case EX_ASSEMBLY: inquiry = EX_INQ_ASSEMBLY; break;
     case EX_ELEM_BLOCK: inquiry = EX_INQ_ELEM_BLK; break;
     case EX_NODE_SET: inquiry = EX_INQ_NODE_SETS; break;
     case EX_SIDE_SET: inquiry = EX_INQ_SIDE_SETS; break;

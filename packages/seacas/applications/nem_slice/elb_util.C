@@ -393,8 +393,10 @@ int64_t find_int(INT value1, INT value2, size_t start, size_t stop, INT *vector1
  *****************************************************************************/
 template int64_t in_list(int value, size_t count, const int *vector);
 template int64_t in_list(int64_t value, size_t count, const int64_t *vector);
+template int64_t in_list(int value, size_t count, const int64_t *vector);
+template int64_t in_list(int64_t value, size_t count, const int *vector);
 
-template <typename INT> int64_t in_list(INT value, size_t count, const INT *vector)
+template <typename INT, typename INT2> int64_t in_list(INT value, size_t count, const INT2 *vector)
 {
   for (size_t i = 0; i < count; i++) {
     if (vector[i] == value) {
@@ -406,8 +408,10 @@ template <typename INT> int64_t in_list(INT value, size_t count, const INT *vect
 
 template int64_t in_list(int value, const std::vector<int> &vector);
 template int64_t in_list(int64_t value, const std::vector<int64_t> &vector);
+template int64_t in_list(int value, const std::vector<int64_t> &vector);
+template int64_t in_list(int64_t value, const std::vector<int> &vector);
 
-template <typename INT> int64_t in_list(INT value, const std::vector<INT> &vector)
+template <typename INT, typename INT2> int64_t in_list(INT value, const std::vector<INT2> &vector)
 {
   size_t count = vector.size();
   for (size_t i = 0; i < count; i++) {

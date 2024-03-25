@@ -7,43 +7,35 @@
 // Make asserts active even in non-debug build
 #undef NDEBUG
 
-#include <Ionit_Initializer.h>
-
-#include <Ioss_CodeTypes.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_GetLongOpt.h>
-#include <Ioss_IOFactory.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
-#include <Ioss_ScopeGuard.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Utils.h>
-#include <Ioss_ZoneConnectivity.h>
-
-#include <cgns/Iocgns_StructuredZoneData.h>
-#include <cgns/Iocgns_Utils.h>
-
-#include <algorithm>
+#include "Ionit_Initializer.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_GetLongOpt.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Utils.h"
+#include "Ioss_ZoneConnectivity.h"
+#include "cgns/Iocgns_StructuredZoneData.h"
+#include "cgns/Iocgns_Utils.h"
 #include <array>
 #include <cmath>
-#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
-#include <fstream>
-#include <iomanip>
+#include <fmt/core.h>
 #include <iostream>
 #include <map>
 #include <numeric>
 #include <set>
-#include <stdexcept>
+#include <stdint.h>
 #include <string>
-#if !defined(__IOSS_WINDOWS__)
-#include <sys/ioctl.h>
-#endif
-#include <unistd.h>
-#include <utility>
 #include <vector>
+
+#include "Ioss_DBUsage.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_ScopeGuard.h"
+#include "Ioss_StructuredBlock.h"
 
 #if !defined __NVCC__
 #include <fmt/color.h>
@@ -393,9 +385,9 @@ namespace {
       auto        search = comms.find(std::make_pair(value, key));
       if (search == comms.end()) {
         valid = false;
-        fmt::print(stderr, 
+        fmt::print(stderr,
 #if !defined __NVCC__
-		   fg(fmt::color::red),
+                   fg(fmt::color::red),
 #endif
                    "ERROR: Could not find matching ZGC for {}, proc {} -> {}, proc {}\n", key.first,
                    key.second, value.first, value.second);
@@ -449,10 +441,9 @@ namespace {
             // From decomposition
             fmt::print(
 #if !defined __NVCC__
-		       fg(fmt::color::yellow), 
+                fg(fmt::color::yellow),
 #endif
-		       "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second,
-                       pw);
+                "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second, pw);
           }
           else {
             // Zone to Zone
@@ -646,18 +637,18 @@ namespace {
           if (proc_work[i] == max_work) {
             fmt::print(
 #if !defined __NVCC__
-		       fg(fmt::color::red), 
+                fg(fmt::color::red),
 #endif
-		       format, i, proc_width, fmt::group_digits(proc_work[i]),
-                       work_width, proc_work[i] / avg_work, stars);
+                format, i, proc_width, fmt::group_digits(proc_work[i]), work_width,
+                proc_work[i] / avg_work, stars);
           }
           else if (proc_work[i] == min_work) {
             fmt::print(
 #if !defined __NVCC__
-		       fg(fmt::color::green), 
+                fg(fmt::color::green),
 #endif
-		       format, i, proc_width,
-                       fmt::group_digits(proc_work[i]), work_width, proc_work[i] / avg_work, stars);
+                format, i, proc_width, fmt::group_digits(proc_work[i]), work_width,
+                proc_work[i] / avg_work, stars);
           }
           else {
             fmt::print(format, i, proc_width, fmt::group_digits(proc_work[i]), work_width,
@@ -805,9 +796,9 @@ int main(int argc, char *argv[])
 
   auto valid = validate_symmetric_communications(zones);
   if (!valid) {
-    fmt::print(stderr, 
+    fmt::print(stderr,
 #if !defined __NVCC__
-	       fg(fmt::color::red),
+               fg(fmt::color::red),
 #endif
                "\nERROR: Zone Grid Communication interfaces are not symmetric.  There is an error "
                "in the decomposition.\n");

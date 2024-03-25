@@ -1,22 +1,32 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Assembly.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_Region.h>
-#include <Ioss_SmartAssert.h>
-#include <Ioss_Utils.h>
-#include <Ioss_VariableType.h>
-#include <algorithm>
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Region.h"
+#include "Ioss_SmartAssert.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
+#include "exonull/Ioexnl_Utils.h"
 #include <cstring>
 #include <exodusII.h>
 #include <exodusII_int.h>
-#include <exonull/Ioexnl_Utils.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <iosfwd>
+#include <netcdf.h>
 #include <tokenize.h>
+
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
 
 namespace {
   size_t match(const std::string &name1, const std::string &name2)
@@ -55,8 +65,7 @@ namespace {
           coordinates[9 * i + j] = coord[j];
         }
       }
-      int ierr =
-          ex_put_coordinate_frames(exoid, nframes, ids.data(), coordinates.data(), tags.data());
+      int ierr = ex_put_coordinate_frames(exoid, nframes, Data(ids), Data(coordinates), Data(tags));
       if (ierr < 0) {
         Ioexnl::exodus_error(exoid, __LINE__, __func__, __FILE__);
       }
@@ -622,11 +631,11 @@ namespace Ioexnl {
         break;
       case Ioss::Property::BasicType::VEC_INTEGER:
         ex_put_integer_attribute(exoid, type, id, property_name.c_str(), prop.get_vec_int().size(),
-                                 prop.get_vec_int().data());
+                                 Data(prop.get_vec_int()));
         break;
       case Ioss::Property::BasicType::VEC_DOUBLE:
         ex_put_double_attribute(exoid, type, id, property_name.c_str(),
-                                prop.get_vec_double().size(), prop.get_vec_double().data());
+                                prop.get_vec_double().size(), Data(prop.get_vec_double()));
         break;
       default:; // Do nothing
       }

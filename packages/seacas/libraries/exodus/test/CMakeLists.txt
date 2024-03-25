@@ -69,6 +69,7 @@ IF ( NETCDF_NCDUMP_BINARY )
     test-field-utils
     testwt
     testwtd
+    testwtd-to-f
     testrd
     testrd1
     testrdd

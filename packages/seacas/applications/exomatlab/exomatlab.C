@@ -51,8 +51,8 @@ namespace {
 // ========================================================================
 
 namespace {
-  std::string codename;
-  std::string version = "1.2";
+  std::string       codename;
+  const std::string version = "1.2";
 } // namespace
 
 int main(int argc, char *argv[])

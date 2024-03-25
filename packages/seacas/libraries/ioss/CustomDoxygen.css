@@ -331,12 +331,11 @@ table.directory {
 	line-height: 36px;
 	background-color: #7fbdff;
 }
-/* item list on botton left */
+/* item list on bottom left */
 
 .navpath li.navelem a {
 	height: 32px;
 	display: block;
-	text-decoration: none;
 	outline: none;
 	color: #FFF;
 	font-family: 'Lucida Grande', Geneva, Helvetica, Arial, sans-serif;

@@ -210,14 +210,14 @@ namespace Ioss {
   }
 
   template <typename Ret, class Obj1, class Obj2, typename P1a, typename P1b>
-  inline ObjScopeGuardImpl1<Obj1, Ret (Obj2::*)(P1a), P1b> MakeGuard(Ret   (Obj2::*memFun)(P1a),
+  inline ObjScopeGuardImpl1<Obj1, Ret (Obj2::*)(P1a), P1b> MakeGuard(Ret (Obj2::*memFun)(P1a),
                                                                      Obj1 &obj, P1b p1)
   {
     return ObjScopeGuardImpl1<Obj1, Ret (Obj2::*)(P1a), P1b>::MakeObjGuard(obj, memFun, p1);
   }
 
   template <typename Ret, class Obj1, class Obj2, typename P1a, typename P1b>
-  inline ObjScopeGuardImpl1<Obj1, Ret (Obj2::*)(P1a), P1b> MakeGuard(Ret   (Obj2::*memFun)(P1a),
+  inline ObjScopeGuardImpl1<Obj1, Ret (Obj2::*)(P1a), P1b> MakeGuard(Ret (Obj2::*memFun)(P1a),
                                                                      Obj1 *obj, P1b p1)
   {
     return ObjScopeGuardImpl1<Obj1, Ret (Obj2::*)(P1a), P1b>::MakeObjGuard(*obj, memFun, p1);

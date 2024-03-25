@@ -52,6 +52,7 @@ extern "C" {
 
 
 #include "zz_const.h"
+#include "ha_const.h"
 
 
 int Zoltan_Divide_Machine(

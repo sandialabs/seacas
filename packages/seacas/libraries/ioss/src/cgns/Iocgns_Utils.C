@@ -1,62 +1,85 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_Assembly.h>
-#include <Ioss_Beam2.h>
-#include <Ioss_Beam3.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_FaceGenerator.h>
-#include <Ioss_Hex20.h>
-#include <Ioss_Hex27.h>
-#include <Ioss_Hex8.h>
-#include <Ioss_IOFactory.h>
-#include <Ioss_Node.h>
-#include <Ioss_Pyramid13.h>
-#include <Ioss_Pyramid14.h>
-#include <Ioss_Pyramid5.h>
-#include <Ioss_Quad4.h>
-#include <Ioss_Quad8.h>
-#include <Ioss_Quad9.h>
-#include <Ioss_Sort.h>
-#include <Ioss_Spring2.h>
-#include <Ioss_Spring3.h>
-#include <Ioss_StructuredBlock.h>
-#include <Ioss_Tet10.h>
-#include <Ioss_Tet4.h>
-#include <Ioss_Tri3.h>
-#include <Ioss_Tri4.h>
-#include <Ioss_Tri6.h>
-#include <Ioss_Unknown.h>
-#include <Ioss_Utils.h>
-#include <Ioss_Wedge15.h>
-#include <Ioss_Wedge18.h>
-#include <Ioss_Wedge6.h>
-
+#include "Ioss_Assembly.h"
+#include "Ioss_Beam2.h"
+#include "Ioss_Beam3.h"
+#include "Ioss_CodeTypes.h"
+#include "Ioss_FaceGenerator.h"
+#include "Ioss_Hex20.h"
+#include "Ioss_Hex27.h"
+#include "Ioss_Hex8.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_Node.h"
+#include "Ioss_Pyramid13.h"
+#include "Ioss_Pyramid14.h"
+#include "Ioss_Pyramid5.h"
+#include "Ioss_Quad4.h"
+#include "Ioss_Quad8.h"
+#include "Ioss_Quad9.h"
+#include "Ioss_Sort.h"
+#include "Ioss_Spring2.h"
+#include "Ioss_Spring3.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_Tet10.h"
+#include "Ioss_Tet4.h"
+#include "Ioss_Tri3.h"
+#include "Ioss_Tri6.h"
+#include "Ioss_Unknown.h"
+#include "Ioss_Utils.h"
+#include "Ioss_Wedge15.h"
+#include "Ioss_Wedge18.h"
+#include "Ioss_Wedge6.h"
+#include <assert.h>
 #include <fmt/chrono.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <stdint.h>
+#include <stdlib.h>
 #if !defined __NVCC__
 #include <fmt/color.h>
 #endif
+#include "cgns/Iocgns_StructuredZoneData.h"
+#include "cgns/Iocgns_Utils.h"
+#include <cgnstypes.h>
+#include <cmath>
+#include <cstring>
+#include <ctime>
 #include <fmt/ostream.h>
+#include <limits>
 #include <numeric>
+#include <ostream>
 #include <set>
 #include <string>
 #include <tokenize.h>
 
-#include <cgns/Iocgns_StructuredZoneData.h>
-#include <cgns/Iocgns_Utils.h>
-
-#include <cgnsconfig.h>
-#include <cgnstypes.h>
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_MeshType.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_VariableType.h"
+#include "Ioss_ZoneConnectivity.h"
+#include "robin_hash.h"
+#include "robin_set.h"
 #if CG_BUILD_PARALLEL
 #include <pcgnslib.h>
 #else
 #include <cgnslib.h>
 #endif
 
-#include <cgns/Iocgns_Defines.h>
+#include "cgns/Iocgns_Defines.h"
 
 #define CGERR(funcall)                                                                             \
   do {                                                                                             \
@@ -1393,8 +1416,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
         }
 
         CGERR(cg_1to1_write(file_ptr, base, db_zone, connect_name.c_str(), donor_name.c_str(),
-                            owner_range.data(), donor_range.data(), zgc.m_transform.data(),
-                            &zgc_idx));
+                            Data(owner_range), Data(donor_range), Data(zgc.m_transform), &zgc_idx));
 
         if (zgc.is_from_decomp()) {
           CGERR(cg_goto(file_ptr, base, "Zone_t", db_zone, "ZoneGridConnectivity", 0,
@@ -2167,7 +2189,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
   // Now write the timestep time values...
   CGCHECK(cg_goto(cgns_file_ptr, base, "BaseIterativeData_t", 1, "end"));
   cgsize_t dimtv[1] = {(cgsize_t)timesteps.size()};
-  CGCHECK(cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, dimtv, timesteps.data()));
+  CGCHECK(cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, dimtv, Data(timesteps)));
 
   // Output the ZoneIterativeData which maps a zones flow solutions to timesteps.
   // One per zone and the number of entries matches the number of timesteps...
@@ -2207,7 +2229,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
     if (has_cell_center_fields || has_nodal_fields) {
       CGCHECK(cg_ziter_write(cgns_file_ptr, base, zone, "ZoneIterativeData"));
       CGCHECK(cg_goto(cgns_file_ptr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
-      CGCHECK(cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, dim, names.data()));
+      CGCHECK(cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, dim, Data(names)));
 
       if (has_nodal_fields) {
         int index     = 1;
@@ -2218,7 +2240,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
         }
 
         CGCHECK(cg_array_write("VertexSolutionIndices", CGNS_ENUMV(Integer), 1, &dim[1],
-                               indices.data()));
+                               Data(indices)));
         CGCHECK(cg_descriptor_write("VertexPrefix", "Vertex"));
       }
       if (has_cell_center_fields) {
@@ -2230,7 +2252,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
         }
 
         CGCHECK(
-            cg_array_write("CellCenterIndices", CGNS_ENUMV(Integer), 1, &dim[1], indices.data()));
+            cg_array_write("CellCenterIndices", CGNS_ENUMV(Integer), 1, &dim[1], Data(indices)));
         CGCHECK(cg_descriptor_write("CellCenterPrefix", "CellCenter"));
       }
     }
@@ -2369,7 +2391,7 @@ int Iocgns::Utils::get_step_times(int cgns_file_ptr, std::vector<double> &timest
   // Read the timestep time values.
   CGCHECK(cg_goto(cgns_file_ptr, base, "BaseIterativeData_t", 1, "end"));
   std::vector<double> times(num_timesteps);
-  CGCHECK(cg_array_read_as(1, CGNS_ENUMV(RealDouble), times.data()));
+  CGCHECK(cg_array_read_as(1, CGNS_ENUMV(RealDouble), Data(times)));
 
   timesteps.reserve(num_timesteps);
   for (int i = 0; i < num_timesteps; i++) {
@@ -2567,10 +2589,10 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
           fmt::print(Ioss::DebugOut(), "{}",
                      fmt::format(
 #if !defined __NVCC__
-				 fg(fmt::color::red),
+                         fg(fmt::color::red),
 #endif
-                                 "\nProcessor {} work: {}, workload ratio: {} (exceeds)", i,
-                                 fmt::group_digits(work_vector[i]), workload_ratio));
+                         "\nProcessor {} work: {}, workload ratio: {} (exceeds)", i,
+                         fmt::group_digits(work_vector[i]), workload_ratio));
         }
       }
       else {
@@ -2972,7 +2994,7 @@ std::vector<Iocgns::ZoneBC> Iocgns::Utils::parse_zonebc_sideblocks(int cgns_file
     }
 
     std::array<cgsize_t, 2> point_range;
-    CGCHECK(cg_boco_read(cgns_file_ptr, base, zone, i + 1, point_range.data(), nullptr));
+    CGCHECK(cg_boco_read(cgns_file_ptr, base, zone, i + 1, Data(point_range), nullptr));
     zonebc.emplace_back(boco_name, point_range);
   }
   return zonebc;

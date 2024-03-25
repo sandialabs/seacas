@@ -1,26 +1,25 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_SubSystem.h>
-#include <Ioss_Utils.h>
-
-#include <algorithm>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_Utils.h"
 #include <cassert>
 #include <cctype>
-#include <chrono>
 #include <cstdint>
-#include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <fmt/chrono.h>
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <fstream>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <tokenize.h>
@@ -36,8 +35,23 @@
 #endif
 #include <cstdio>
 
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_State.h"
+#include "Ioss_VariableType.h"
+
 #if defined(__IOSS_WINDOWS__)
 #include <io.h>
+
 #define isatty _isatty
 #define WIN32_LEAN_AND_MEAN
 #ifndef NOMINMAX
@@ -1319,7 +1333,7 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
   if (all_dig) {
     auto tokens = Ioss::tokenize(filename, ".");
     if (tokens.size() >= 4) {
-      auto proc_count = tokens[tokens.size() - 2];
+      const auto &proc_count = tokens[tokens.size() - 2];
       if (proc_count.find_first_not_of("0123456789") == std::string::npos) {
         extension = tokens[tokens.size() - 3];
       }
@@ -1354,10 +1368,7 @@ void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::Role
     max_width = max_width > field_name.length() ? max_width : field_name.length();
   }
 
-  size_t width = Ioss::Utils::term_width();
-  if (width == 0) {
-    width = 80;
-  }
+  size_t width   = Ioss::Utils::term_width();
   size_t cur_out = 8; // Tab width...
   if (!header.empty()) {
     cur_out = header.size() + suffix.size() + 16; // Assume 2 tabs...

@@ -70,6 +70,7 @@ FAODEL_PATH=${FAODEL_PATH:-${INSTALL_PATH}}
 ADIOS2_PATH=${ADIOS2_PATH:-${INSTALL_PATH}}
 CATALYST2_PATH=${CATALYST2_PATH:-${INSTALL_PATH}}
 GTEST_PATH=${GTEST_PATH:-${INSTALL_PATH}}
+CATCH2_PATH=${CATCH2_PATH:-${INSTALL_PATH}}
 KOKKOS_PATH=${KOKKOS_PATH:-${INSTALL_PATH}}
 METIS_PATH=${METIS_PATH:-${INSTALL_PATH}}
 PARMETIS_PATH=${PARMETIS_PATH:-${INSTALL_PATH}}
@@ -160,11 +161,11 @@ then
 
   if [ "$COMPILER" == "intel" ]
   then
-      CXX=icpc
-      CC=icc
-      FC=ifort
+      CXX=icpx
+      CC=icx
+      FC=ifx
       CFLAGS="-Wall -Wunused"
-      CXXFLAGS="-Wall -Wextra  -Wunused"
+      CXXFLAGS="-Wall -Wextra  -Wunused -DFMT_HEADER_ONLY"
   fi
 
   # When building:  "scan-build make -j8"
@@ -331,6 +332,7 @@ HAVE_FAODEL=$(check_enable "${FAODEL_PATH}/include/faodel/faodelConfig.h")
 HAVE_ADIOS2=$(check_enable "${ADIOS2_PATH}/include/adios2.h")
 HAVE_CATALYST2=$(check_enable "${CATALYST2_PATH}/include/catalyst-2.0/catalyst.h")
 HAVE_GTEST=$(check_enable "${GTEST_PATH}/include/gtest/gtest.h")
+HAVE_CATCH2=$(check_enable "${CATCH2_PATH}/include/catch2/catch_all.hpp")
 HAVE_KOKKOS=$(check_enable "${KOKKOS_PATH}/include/Kokkos_Core.hpp")
 HAVE_METIS=$(check_enable "${METIS_PATH}/include/metis.h")
 HAVE_PARMETIS=$(check_enable "${METIS_PATH}/include/parmetis.h")
@@ -511,6 +513,7 @@ ${MODERN_ARG} \
 -D TPL_ENABLE_ADIOS2:BOOL=${HAVE_ADIOS2} \
 -D TPL_ENABLE_Catalyst2:BOOL=${HAVE_CATALYST2} \
 -D TPL_ENABLE_GTest:BOOL=${HAVE_GTEST} \
+-D TPL_ENABLE_Catch2:BOOL=${HAVE_CATCH2} \
 -D TPL_ENABLE_Kokkos:BOOL=${HAVE_KOKKOS} \
 -D TPL_ENABLE_METIS:BOOL=${HAVE_METIS} \
 -D TPL_ENABLE_ParMETIS:BOOL=${HAVE_PARMETIS} \
@@ -541,6 +544,7 @@ ${FAODEL_SYMBOLS} \
 -D ParMETIS_ROOT:PATH=${PARMETIS_PATH} \
 -D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
 -D fmt_ROOT:PATH=${FMT_PATH} \
+-D CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON \
 $EXTRA_ARGS \
 ${ACCESS}
 
@@ -554,6 +558,7 @@ echo "        CXX: ${CXX}"
 echo "         FC: ${FC}"
 echo "        MPI: ${MPI}"
 echo "     SHARED: ${SHARED}"
+echo "    FORTRAN: ${FORTRAN}"
 echo " BUILD_TYPE: ${BUILD_TYPE}"
 echo " THREADSAFE: ${THREADSAFE}"
 echo "       CRAY: ${CRAY}"
@@ -569,6 +574,7 @@ echo "      METIS: ${HAVE_METIS}"
 echo "   PARMETIS: ${HAVE_PARMETIS}"
 echo "     FAODEL: ${HAVE_FAODEL}"
 echo "      GTEST: ${HAVE_GTEST}"
+echo "     CATCH2: ${HAVE_CATCH2}"
 echo "    DOXYGEN: ${DOXYGEN}"
 echo ""
 

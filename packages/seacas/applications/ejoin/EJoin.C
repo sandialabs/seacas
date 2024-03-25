@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -31,7 +31,6 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_Transform.h>
-#include <transform/Iotr_Factory.h>
 
 #include "EJ_CodeTypes.h"
 #include "EJ_SystemInterface.h"
@@ -126,7 +125,7 @@ namespace {
 namespace {
   void transfer_elementblock(Ioss::Region &region, Ioss::Region &output_region,
                              bool create_assemblies, bool debug);
-  void transfer_assembly(Ioss::Region &region, Ioss::Region &output_region, bool debug);
+  void transfer_assembly(const Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_nodesets(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_sidesets(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void create_nodal_nodeset(Ioss::Region &region, Ioss::Region &output_region, bool debug);
@@ -228,7 +227,7 @@ int main(int argc, char *argv[])
       if (p > 0 && (offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0)) {
         Ioss::NodeBlock *nb        = part_mesh[p]->get_node_blocks()[0];
         Ioss::Field      coord     = nb->get_field("mesh_model_coordinates");
-        Ioss::Transform *transform = Iotr::Factory::create("offset3D");
+        auto            *transform = Ioss::Transform::create("offset3D");
         assert(transform != nullptr);
         std::vector<double> values(3);
         values[0] = offset.x * p;
@@ -418,7 +417,9 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
     if (!interFace.omit_sidesets()) {
       transfer_sidesets(*part_mesh[p], output_region, false);
     }
-    transfer_assembly(*part_mesh[p], output_region, false);
+    if (!interFace.omit_assemblies()) {
+      transfer_assembly(*part_mesh[p], output_region, false);
+    }
   }
 
   if (!interFace.information_record_parts().empty()) {
@@ -625,7 +626,7 @@ namespace {
     }
   }
 
-  void transfer_assembly(Ioss::Region &region, Ioss::Region &output_region, bool debug)
+  void transfer_assembly(const Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
     // All assemblies on the input parts will be transferred to the output mesh
     // Possibly renamed if a name conflict
@@ -749,6 +750,7 @@ namespace {
 
         std::vector<INT> nodelist;
         nb->get_field_data("ids", nodelist);
+        // This needs to make sure that the nodelist comes back as local id (1..numnodes)
         for (auto &node : nodelist) {
           size_t loc_node = part_mesh[p]->node_global_to_local(node, true) - 1;
           auto   gpos     = local_node_map[node_offset + loc_node];
@@ -756,7 +758,7 @@ namespace {
             node = gpos + 1;
           }
         }
-        ons->put_field_data("ids", nodelist);
+        ons->put_field_data("ids_raw", nodelist);
 
         // Output distribution factors -- set all to 1.0
         std::vector<double> factors(nodelist.size(), 1.0);
@@ -829,7 +831,7 @@ namespace {
                         std::vector<T> &global_values, INT *part_loc_elem_to_global)
   {
     // copy values to master element value information
-    T *local_values = values.data();
+    T *local_values = Data(values);
     for (size_t j = 0; j < entity_count; j++) {
       size_t global_block_pos         = part_loc_elem_to_global[(j + loffset)] - goffset;
       global_values[global_block_pos] = local_values[j];
@@ -841,7 +843,7 @@ namespace {
                         std::vector<T> &global_values)
   {
     // copy values to master sideset value information
-    T *local_values = values.data();
+    T *local_values = Data(values);
     for (size_t j = 0; j < entity_count; j++) {
       global_values[j + loffset] = local_values[j];
     }
@@ -985,7 +987,7 @@ namespace {
               node = gpos + 1;
             }
           }
-          ons->put_field_data("ids", nodelist);
+          ons->put_field_data("ids_raw", nodelist);
 
           std::vector<double> df;
           in->get_field_data("distribution_factors", df);

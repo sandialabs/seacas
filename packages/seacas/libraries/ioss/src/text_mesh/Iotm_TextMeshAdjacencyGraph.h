@@ -245,8 +245,8 @@ namespace Iotm {
           for (const auto &entry : iter.second.connections) {
             out << "\tConnected on side: " << entry.thisSide
                 << " to element: " << elemDataVec[entry.thatElement].identifier << " {"
-                << elemDataVec[entry.thatElement].topology << "}"
-                << " and side: " << entry.thatSide << std::endl;
+                << elemDataVec[entry.thatElement].topology << "}" << " and side: " << entry.thatSide
+                << std::endl;
           }
         }
       }
@@ -412,7 +412,7 @@ namespace Iotm {
       std::pair<bool, PermutationType> get_permutation(const Topology              &topology,
                                                        const std::vector<EntityId> &controlNodes,
                                                        const std::vector<EntityId> &permutedNodes,
-                                                       unsigned                     numPermutations)
+                                                       PermutationType              numPermutations)
       {
         PermutationType permutation = Topology::InvalidPermutation;
         bool            equivalent  = false;

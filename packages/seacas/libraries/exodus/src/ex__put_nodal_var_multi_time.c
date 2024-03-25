@@ -7,7 +7,7 @@
  */
 
 #include "exodusII.h"     // for ex_err, etc
-#include "exodusII_int.h" // for EX_WARN, ex__comp_ws, etc
+#include "exodusII_int.h" // for EX_WARN, exi_comp_ws, etc
 
 /*!
 \internal
@@ -15,7 +15,7 @@
 \note This function is called internally by ex_put_var_time() to handle
 the writing of nodal variable values.
 
-The function ex__put_nodal_var_time() writes the values of a single nodal
+The function exi_put_nodal_var_time() writes the values of a single nodal
 variable for multiple time steps. The function ex_put_variable_param()
 must be invoked before this call is made.
 
@@ -24,7 +24,7 @@ code must declare the array passed to be the appropriate type
 (float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
-\return In case of an error, ex__put_nodal_var() returns a negative number; a
+\return In case of an error, exi_put_nodal_var() returns a negative number; a
 warning will return a positive number. Possible causes of errors
 include:
   -  data file not properly opened with call to ex_create() or ex_open()
@@ -75,7 +75,7 @@ for (k=1; k <= num_nod_vars; k++) {
 
 */
 
-int ex__put_nodal_var_time(int exoid, int nodal_var_index, int64_t num_nodes, int beg_time_step,
+int exi_put_nodal_var_time(int exoid, int nodal_var_index, int64_t num_nodes, int beg_time_step,
                            int end_time_step, const void *nodal_var_vals)
 
 {
@@ -96,7 +96,7 @@ int ex__put_nodal_var_time(int exoid, int nodal_var_index, int64_t num_nodes, in
   count[0] = end_time_step - beg_time_step;
   count[1] = num_nodes;
 
-  if (ex__comp_ws(exoid) == 4) {
+  if (exi_comp_ws(exoid) == 4) {
     status = nc_put_vara_float(exoid, varid, start, count, nodal_var_vals);
   }
   else {

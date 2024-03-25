@@ -23,7 +23,7 @@ jobs:
         compiler: [ intel, mpi ]
         hdf5: [ V114 ]
         netcdf: [ 4.9.2 ]
-        cgns: [ 4.3.0 ]
+        cgns: [ 4.4.0 ]
 
     defaults:
       run:
@@ -38,7 +38,7 @@ jobs:
         remove-android: 'true'
         remove-haskell: 'true'
         remove-codeql:  'true'
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: setup repo
       run: |
         wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
@@ -64,10 +64,10 @@ jobs:
       ###
     - name: Cache TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
       id: cache-TPL
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-        key: TPL-v5intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+        key: TPL-v3intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
     - name: Build TPL-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
       if: steps.cache-TPL.outputs.cache-hit != 'true'
@@ -89,7 +89,7 @@ jobs:
         compiler: [ intel, mpi ]
         hdf5: [ V114 ]
         netcdf: [ 4.9.2 ]
-        cgns: [ 4.3.0 ]
+        cgns: [ 4.4.0 ]
     steps:
 
       - name: Maximize build space
@@ -100,7 +100,7 @@ jobs:
           remove-android: 'true'
           remove-haskell: 'true'
           remove-codeql:  'true'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup repo
         run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
@@ -123,10 +123,10 @@ jobs:
 
       - name: Fetch TPL Cache
         id: cache-TPL
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
-          key: TPL-v5intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
+          key: TPL-v3intel-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }}
 
       - name: Check Cache
         shell: bash -l {0}
@@ -149,6 +149,13 @@ jobs:
           mkdir build
           cd build
           source /opt/intel/oneapi/setvars.sh
+          echo "------------"
+          ls /opt/intel/oneapi/2024.0/
+          echo "------------"
+          ls /opt/intel/oneapi/2024.0/bin/
+          echo "------------"
+          export PATH=/opt/intel/oneapi/2024.0/bin/:$PATH
+          export LD_LIBRARY_PATH=/opt/intel/oneapi/2024.0/lib/:$LD_LIBRARY_PATH
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 

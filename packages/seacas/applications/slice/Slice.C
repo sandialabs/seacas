@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -77,7 +77,7 @@ namespace {
     }
   }
 
-  Ioss::PropertyManager set_properties(SystemInterface &interFace)
+  Ioss::PropertyManager set_properties(const SystemInterface &interFace)
   {
     Ioss::PropertyManager properties;
     if (interFace.netcdf4_) {
@@ -243,10 +243,10 @@ namespace {
     const auto &blocks = region.get_element_blocks();
     for (const auto &block : blocks) {
       block->field_add(Ioss::Field(decomp_variable_name, region.field_int_type(), IOSS_SCALAR(),
-					     Ioss::Field::TRANSIENT));
+                                   Ioss::Field::TRANSIENT));
       if (add_chain_info) {
         block->field_add(
-			 Ioss::Field("chain", region.field_int_type(), "Real[2]", Ioss::Field::TRANSIENT));
+            Ioss::Field("chain", region.field_int_type(), "Real[2]", Ioss::Field::TRANSIENT));
       }
     }
     region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
@@ -941,8 +941,8 @@ namespace {
           count = node_count - beg + 1;
         }
 
-        ex_get_partial_coord(exoid, beg, count, glob_coord_x.data(), glob_coord_y.data(),
-                             glob_coord_z.data());
+        ex_get_partial_coord(exoid, beg, count, Data(glob_coord_x), Data(glob_coord_y),
+                             Data(glob_coord_z));
         progress("\tpartial_coord: " + std::to_string(beg) + " " + std::to_string(count));
 
         for (size_t i = 0; i < count; i++) {
@@ -1039,13 +1039,13 @@ namespace {
 
           switch (comp) {
           case 0:
-            ex_get_partial_coord(exoid, beg, count, glob_coord.data(), nullptr, nullptr);
+            ex_get_partial_coord(exoid, beg, count, Data(glob_coord), nullptr, nullptr);
             break;
           case 1:
-            ex_get_partial_coord(exoid, beg, count, nullptr, glob_coord.data(), nullptr);
+            ex_get_partial_coord(exoid, beg, count, nullptr, Data(glob_coord), nullptr);
             break;
           case 2:
-            ex_get_partial_coord(exoid, beg, count, nullptr, nullptr, glob_coord.data());
+            ex_get_partial_coord(exoid, beg, count, nullptr, nullptr, Data(glob_coord));
             break;
           }
           progress("\tpartial_coord: " + std::to_string(beg) + " " + std::to_string(count));
@@ -1133,7 +1133,7 @@ namespace {
             count = element_count - beg + 1;
           }
 
-          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
+          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, Data(glob_conn), nullptr,
                               nullptr);
           progress(fmt::format("\tpartial_conn-- start: {}\tcount: {}", fmt::group_digits(beg),
                                fmt::group_digits(count)));
@@ -1270,7 +1270,7 @@ namespace {
             count = element_count - beg + 1;
           }
 
-          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
+          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, Data(glob_conn), nullptr,
                               nullptr);
           progress(fmt::format("\tpartial_conn-- start: {}\tcount: {}", fmt::group_digits(beg),
                                fmt::group_digits(count)));

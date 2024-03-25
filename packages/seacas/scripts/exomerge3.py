@@ -1,7 +1,7 @@
 """
 Exomerge is a lightweight Python interface for manipulating ExodusII files.
 
-Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
 of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 NTESS, the U.S. Government retains certain rights in this software.
 
@@ -571,10 +571,10 @@ class ExodusModel(object):
 
         """
         # for special methods, use default behavior
-        if name[:2] == "__":
+        if name.startswith("__"):
             raise AttributeError
         # get non-special function names
-        names = [x for x in dir(self.__class__) if x[:2] != "__"]
+        names = [x for x in dir(self.__class__) if not x.startswith("__")]
         # if the name appears to be singular, search for the plural version
         if not name.endswith("s"):
             trial = name + "s"
@@ -1428,7 +1428,7 @@ class ExodusModel(object):
             self._error(
                 "No %ss specified." % entity,
                 "We require at least one %s to be specified for this "
-                "opration but none were specified.\n\nThere are %d "
+                "operation but none were specified.\n\nThere are %d "
                 "defined %s: %s"
                 % (
                     entity,
@@ -4686,7 +4686,7 @@ class ExodusModel(object):
                     self._error(
                         "Unbalances parenthesis.",
                         "We cannot transform the given expression "
-                        "becuase it contains unbalanced "
+                        "because it contains unbalanced "
                         "parenthesis:\n%s" % expression,
                     )
                 # get parenthesis depth on each character

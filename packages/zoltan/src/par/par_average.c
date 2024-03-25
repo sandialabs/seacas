@@ -53,10 +53,9 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
+#include "par_average_const.h"
 #include "par_median_const.h"
 #include "zz_const.h"
-
-#define TINY   1.0e-6
 
 /* prototypes for TFLOPS_SPECIAL */
 static void Zoltan_average_cuts_reduce(int, int, int, double *, double *,

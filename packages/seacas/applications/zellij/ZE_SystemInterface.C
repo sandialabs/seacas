@@ -1,4 +1,4 @@
-// Copyright(C) 2021, 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 2021, 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -19,8 +19,6 @@
 //! \file
 
 SystemInterface::SystemInterface(int my_rank) : myRank_(my_rank) { enroll_options(); }
-
-SystemInterface::~SystemInterface() = default;
 
 namespace {
   void parse_offset(const char *tokens, vector3d &offset, int myRank);

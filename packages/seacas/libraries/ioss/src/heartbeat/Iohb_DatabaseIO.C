@@ -4,16 +4,15 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <heartbeat/Iohb_DatabaseIO.h>
-
+#include "Ioss_CodeTypes.h"
+#include "heartbeat/Iohb_DatabaseIO.h"
+#include "heartbeat/Iohb_Layout.h"
 #include <cassert>
 #include <cstddef>
 #include <ctime>
 #include <fmt/ostream.h>
 #include <fstream>
 #include <string>
-
 #include <vector>
 
 #include "Ioss_DBUsage.h"
@@ -23,25 +22,9 @@
 #include "Ioss_IOFactory.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
-#include "Ioss_Region.h"
+#include "Ioss_PropertyManager.h"
 #include "Ioss_State.h"
 #include "Ioss_Utils.h"
-#include "Ioss_VariableType.h"
-#include <heartbeat/Iohb_Layout.h>
-
-namespace Ioss {
-  class CommSet;
-  class EdgeBlock;
-  class EdgeSet;
-  class ElementBlock;
-  class ElementSet;
-  class FaceBlock;
-  class FaceSet;
-  class NodeBlock;
-  class NodeSet;
-  class SideBlock;
-  class SideSet;
-} // namespace Ioss
 
 namespace {
   std::string time_stamp(const std::string &format)
@@ -230,7 +213,7 @@ namespace Iohb {
         new_this->tsFormat = properties.get("TIME_STAMP_FORMAT").get_string();
       }
 
-      bool show_time_stamp = false;
+      bool show_time_stamp = !new_this->tsFormat.empty();
       Ioss::Utils::check_set_bool_property(properties, "SHOW_TIME_STAMP", show_time_stamp);
       if (show_time_stamp) {
         if (tsFormat.empty()) {
@@ -247,6 +230,10 @@ namespace Iohb {
 
       if (properties.exists("FIELD_WIDTH")) {
         new_this->fieldWidth_ = properties.get("FIELD_WIDTH").get_int();
+      }
+      else {
+        // +1.xxxxxxe+00 The x count is the precision the "+1.e+00" is the 7
+        new_this->fieldWidth_ = precision_ + 7;
       }
 
       Ioss::Utils::check_set_bool_property(properties, "SHOW_LABELS", new_this->showLabels);
@@ -295,11 +282,11 @@ namespace Iohb {
     }
   }
 
-  bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::begin_nl(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::end_nl(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state__(int /* state */, double time)
+  bool DatabaseIO::begin_state_nl(int /* state */, double time)
   {
     // If this is the first time, open the output stream and see if user wants a legend
     initialize();
@@ -318,14 +305,14 @@ namespace Iohb {
     return true;
   }
 
-  void DatabaseIO::flush_database__() const
+  void DatabaseIO::flush_database_nl() const
   {
     if (myProcessor == 0) {
       logStream->flush();
     }
   }
 
-  bool DatabaseIO::end_state__(int /* state */, double /* time */)
+  bool DatabaseIO::end_state_nl(int /* state */, double /* time */)
   {
     if (legend_ != nullptr) {
       if (fileFormat == Iohb::Format::SPYHIS) {

@@ -5,14 +5,14 @@
 //    strange cases
 //
 //
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <exonull/Ioexnl_ParallelDatabaseIO.h>
+#include "Ioss_CodeTypes.h"
+#include "exonull/Ioexnl_ParallelDatabaseIO.h"
 #if defined PARALLEL_AWARE_EXODUS
 #include <algorithm>
 #include <cassert>
@@ -37,44 +37,44 @@
 #include <utility>
 #include <vector>
 
+#include "exonull/Ioexnl_DecompositionData.h"
+#include "exonull/Ioexnl_Internals.h"
+#include "exonull/Ioexnl_Utils.h"
 #include <exodusII.h>
-#include <exonull/Ioexnl_DecompositionData.h>
-#include <exonull/Ioexnl_Internals.h>
-#include <exonull/Ioexnl_Utils.h>
 
-#include <Ioss_Assembly.h>
-#include <Ioss_Blob.h>
-#include <Ioss_CommSet.h>
-#include <Ioss_CoordinateFrame.h>
-#include <Ioss_DBUsage.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_EdgeBlock.h>
-#include <Ioss_EdgeSet.h>
-#include <Ioss_ElementBlock.h>
-#include <Ioss_ElementSet.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_EntityBlock.h>
-#include <Ioss_EntitySet.h>
-#include <Ioss_EntityType.h>
-#include <Ioss_FaceBlock.h>
-#include <Ioss_FaceSet.h>
-#include <Ioss_Field.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_Map.h>
-#include <Ioss_NodeBlock.h>
-#include <Ioss_NodeSet.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
-#include <Ioss_SideBlock.h>
-#include <Ioss_SideSet.h>
-#include <Ioss_State.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_EntitySet.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Map.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_State.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
 
-#include <Ioss_FileInfo.h>
+#include "Ioss_FileInfo.h"
 #undef MPICPP
 
 // ========================================================================
@@ -294,9 +294,7 @@ namespace Ioexnl {
   {
   }
 
-  ParallelDatabaseIO::~ParallelDatabaseIO() = default;
-
-  void ParallelDatabaseIO::release_memory__()
+  void ParallelDatabaseIO::release_memory_nl()
   {
     free_file_pointer();
     nodeMap.release_memory();
@@ -338,7 +336,7 @@ namespace Ioexnl {
     return Ioexnl::BaseDatabaseIO::free_file_pointer();
   }
 
-  void ParallelDatabaseIO::read_meta_data__() {}
+  void ParallelDatabaseIO::read_meta_data_nl() {}
 
   int64_t ParallelDatabaseIO::write_attribute_field(const Ioss::Field          &field,
                                                     const Ioss::GroupingEntity *ge,
@@ -725,7 +723,7 @@ namespace Ioexnl {
 
         if (int_byte_size_api() == 4) {
           int *data32 = reinterpret_cast<int *>(data);
-          int *comp32 = reinterpret_cast<int *>(component.data());
+          int *comp32 = reinterpret_cast<int *>(Data(component));
 
           int index = comp;
           for (int64_t i = 0; i < my_element_count; i++) {
@@ -735,7 +733,7 @@ namespace Ioexnl {
         }
         else {
           int64_t *data64 = reinterpret_cast<int64_t *>(data);
-          int64_t *comp64 = reinterpret_cast<int64_t *>(component.data());
+          int64_t *comp64 = reinterpret_cast<int64_t *>(Data(component));
 
           int index = comp;
           for (int64_t i = 0; i < my_element_count; i++) {
@@ -901,7 +899,7 @@ namespace Ioexnl {
      * (the nodeMap.map and nodeMap.reverse are 1-based)
      *
      * To determine which map to update on a call to this function, we
-     * use the following hueristics:
+     * use the following heuristics:
      * -- If the database state is 'STATE_MODEL:', then update the
      *    'nodeMap.reverse' and 'nodeMap.map'
      *
@@ -1048,7 +1046,7 @@ namespace Ioexnl {
         // Write the variable...
         size_t file_count = nb->get_optional_property("locally_owned_count", num_out);
         check_node_owning_processor_data(nodeOwningProcessor, file_count);
-        filter_owned_nodes(nodeOwningProcessor, myProcessor, temp.data());
+        filter_owned_nodes(nodeOwningProcessor, myProcessor, Data(temp));
       }
     }
   }
@@ -1139,7 +1137,7 @@ namespace Ioexnl {
         if (type == EX_NODE_SET) {
           std::vector<double> file_data;
           file_data.reserve(file_count);
-          map_nodeset_data(nodesetOwnedNodes[ge], temp.data(), file_data);
+          map_nodeset_data(nodesetOwnedNodes[ge], Data(temp), file_data);
         }
       }
     }
@@ -1175,7 +1173,7 @@ namespace Ioexnl {
                                 reinterpret_cast<int *>(data), num_to_get, i32data);
             assert(i32data.size() == file_count);
             // Maps local to "global_implicit"
-            map_local_to_global_implicit(i32data.data(), file_count, nodeGlobalImplicitMap);
+            map_local_to_global_implicit(Data(i32data), file_count, nodeGlobalImplicitMap);
           }
           else {
             std::vector<int64_t> i64data;
@@ -1184,7 +1182,7 @@ namespace Ioexnl {
             map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
                                 reinterpret_cast<int64_t *>(data), num_to_get, i64data);
             assert(i64data.size() == file_count);
-            map_local_to_global_implicit(i64data.data(), file_count, nodeGlobalImplicitMap);
+            map_local_to_global_implicit(Data(i64data), file_count, nodeGlobalImplicitMap);
           }
         }
       }
@@ -1322,7 +1320,7 @@ namespace Ioexnl {
             side[i]    = el_side[index++] + side_offset;
           }
 
-          map_local_to_global_implicit(element.data(), num_to_get, elemGlobalImplicitMap);
+          map_local_to_global_implicit(Data(element), num_to_get, elemGlobalImplicitMap);
         }
         else {
           Ioss::Int64Vector element(num_to_get);
@@ -1335,7 +1333,7 @@ namespace Ioexnl {
             side[i]    = el_side[index++] + side_offset;
           }
 
-          map_local_to_global_implicit(element.data(), num_to_get, elemGlobalImplicitMap);
+          map_local_to_global_implicit(Data(element), num_to_get, elemGlobalImplicitMap);
         }
       }
       else if (field.get_name() == "element_side_raw") {

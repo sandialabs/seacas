@@ -1,41 +1,48 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ionit_Initializer.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Compare.h>
-#include <Ioss_CopyDatabase.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_MemoryUtils.h>
-#include <Ioss_MeshCopyOptions.h>
-#include <Ioss_MeshType.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_ScopeGuard.h>
-#include <Ioss_SerializeIO.h>
-#include <Ioss_SubSystem.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
-#include <fmt/ostream.h>
-#include <tokenize.h>
-
-#include <algorithm>
-#include <cstddef>
+#include "Ionit_Initializer.h"
+#include "Ioss_Compare.h"
+#include "Ioss_CopyDatabase.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_MemoryUtils.h"
+#include "Ioss_MeshCopyOptions.h"
+#include "Ioss_MeshType.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_SerializeIO.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
 #include <cstdlib>
-#include <cstring>
-#include <fstream>
+#include <exception>
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <limits>
+#include <stdint.h>
+#include <stdio.h>
 #include <string>
-#include <unistd.h>
+#include <tokenize.h>
+#include <vector>
 
+#include "Ioss_DBUsage.h"
+#include "Ioss_DataSize.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_GetLongOpt.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_Property.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
+#include "Ioss_ScopeGuard.h"
+#include "Ioss_VariableType.h"
 #include "shell_interface.h"
 
 // ========================================================================
 
 namespace {
   std::string codename;
-  std::string version = "6.2 (2023/05/12)";
+  std::string version = "6.5 (2024/03/14)";
 
   bool mem_stats = false;
 
@@ -260,7 +267,7 @@ namespace {
         properties.add(Ioss::Property("MAXIMUM_NAME_LENGTH", max_name_length));
       }
 
-      // Get integer size being used on the input file and propgate
+      // Get integer size being used on the input file and propagate
       // to output file...
       int int_byte_size_api = dbi->int_byte_size_api();
       if (!properties.exists("INTEGER_SIZE_API")) {
@@ -448,7 +455,7 @@ namespace {
       // by element block, then output is much easier.
       dbi1->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
     }
-    else {
+    else if (interFace.surface_split_type != Ioss::SPLIT_INVALID) {
       dbi1->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
     }
     dbi1->set_field_separator(interFace.fieldSuffixSeparator);
@@ -510,7 +517,7 @@ namespace {
       // by element block, then output is much easier.
       dbi2->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
     }
-    else {
+    else if (interFace.surface_split_type != Ioss::SPLIT_INVALID) {
       dbi2->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_type));
     }
     dbi2->set_field_separator(interFace.fieldSuffixSeparator);
@@ -590,6 +597,13 @@ namespace {
       properties.add(Ioss::Property("MEMORY_WRITE", 1));
     }
 
+    if (interFace.delete_qa) {
+      properties.add(Ioss::Property("IGNORE_QA_RECORDS", "YES"));
+    }
+    if (interFace.delete_info) {
+      properties.add(Ioss::Property("IGNORE_INFO_RECORDS", "YES"));
+    }
+
     if (interFace.compression_level > 0 || interFace.shuffle || interFace.szip) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
       properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level));
@@ -648,6 +662,25 @@ namespace {
 
     if (interFace.memory_statistics) {
       properties.add(Ioss::Property("ENABLE_TRACING", 1));
+    }
+
+    if (interFace.outFiletype == "cgns" && interFace.inFiletype == "exodus") {
+      properties.add(Ioss::Property("IGNORE_NODE_MAP", true));
+      properties.add(Ioss::Property("IGNORE_ELEMENT_MAP", true));
+    }
+    else {
+      if (interFace.ignore_node_map) {
+        properties.add(Ioss::Property("IGNORE_NODE_MAP", true));
+      }
+      if (interFace.ignore_elem_map) {
+        properties.add(Ioss::Property("IGNORE_ELEM_MAP", true));
+      }
+    }
+    if (interFace.ignore_edge_map) {
+      properties.add(Ioss::Property("IGNORE_EDGE_MAP", true));
+    }
+    if (interFace.ignore_face_map) {
+      properties.add(Ioss::Property("IGNORE_FACE_MAP", true));
     }
 
     if (!interFace.decomp_method.empty()) {

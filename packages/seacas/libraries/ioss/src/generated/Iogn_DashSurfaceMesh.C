@@ -4,9 +4,10 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <algorithm> // for copy
-#include <generated/Iogn_DashSurfaceMesh.h>
+#include "generated/Iogn_DashSurfaceMesh.h"
 #include <vector> // for vector
+
+#include "Ioss_CodeTypes.h"
 
 namespace Iogn {
 

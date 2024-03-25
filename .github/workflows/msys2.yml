@@ -18,12 +18,12 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
-          install: git mingw-w64-x86_64-toolchain make mingw-w64-x86_64-hdf5 mingw-w64-x86_64-cgns mingw-w64-x86_64-netcdf mingw-w64-x86_64-zlib mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc-libgfortran mingw-w64-x86_64-cmake mingw-w64-x86_64-fmt
+          install: git mingw-w64-x86_64-toolchain make mingw-w64-x86_64-hdf5 mingw-w64-x86_64-cgns mingw-w64-x86_64-netcdf mingw-w64-x86_64-zlib mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc-libgfortran mingw-w64-x86_64-cmake mingw-w64-x86_64-fmt mingw-w64-x86_64-catch
       - name: CI-Build
         run: |
           echo 'Running in MSYS2!'

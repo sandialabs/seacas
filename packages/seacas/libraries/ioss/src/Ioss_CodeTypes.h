@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -30,6 +30,7 @@ inline std::string IOSS_VECTOR_3D() { return {"vector_3d"}; }
 inline std::string IOSS_SYM_TENSOR() { return {"sym_tensor_33"}; }
 
 #if defined(BUILT_IN_SIERRA)
+#define MAP_USE_SORTED_VECTOR
 #define SEACAS_HAVE_MPI
 /* #undef IOSS_THREADSAFE */
 /* #undef SEACAS_HAVE_KOKKOS */
@@ -38,7 +39,7 @@ inline std::string IOSS_SYM_TENSOR() { return {"sym_tensor_33"}; }
 /* #undef SEACAS_HAVE_FAODEL */
 #define SEACAS_HAVE_PAMGEN
 #else
-#include <SEACASIoss_config.h>
+#include "SEACASIoss_config.h"
 #endif
 
 #if defined(IOSS_THREADSAFE)
@@ -47,8 +48,10 @@ inline std::string IOSS_SYM_TENSOR() { return {"sym_tensor_33"}; }
 
 #if (__cplusplus >= 201703L)
 #define IOSS_MAYBE_UNUSED [[maybe_unused]]
+#define IOSS_NODISCARD [[nodiscard]]
 #else
 #define IOSS_MAYBE_UNUSED
+#define IOSS_NODISCARD
 #endif
 
 #if defined(SEACAS_HAVE_MPI)
@@ -95,7 +98,7 @@ using Kokkos_Complex = Kokkos::complex<double>;
 #else
 
 #if defined IOSS_TRACE
-#include <Ioss_Tracer.h>
+#include "Ioss_Tracer.h"
 #define IOSS_FUNC_ENTER(m) Ioss::Tracer m(__func__)
 #else
 #define IOSS_FUNC_ENTER(m)

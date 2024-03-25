@@ -23,7 +23,7 @@
    attributes which are currently supported in Exodus.
 */
 
-static bool ex__is_internal_attribute(const char *name, ex_entity_type obj_type)
+static bool exi_is_internal_attribute(const char *name, ex_entity_type obj_type)
 {
   if (name[0] == '_') {
     return true;
@@ -45,7 +45,62 @@ static bool ex__is_internal_attribute(const char *name, ex_entity_type obj_type)
   return false;
 }
 
-static int ex__get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id, int *varid)
+static int exi_get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
+{
+  char errmsg[MAX_ERR_LENGTH];
+  int  status = 0;
+
+  if (exi_check_valid_file_id(exoid, __func__) == EX_FATAL) {
+    return (EX_FATAL);
+  }
+
+  /* First, locate index of this objects id `obj_type` id array */
+  int id_ndx = exi_id_lkup(exoid, obj_type, id);
+  if (id_ndx <= 0) {
+    ex_get_err(NULL, NULL, &status);
+    if (status != 0) {
+      if (status == EX_NULLENTITY) { /* NULL object?    */
+        return EX_NOERR;
+      }
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to locate %s id  %" PRId64 " in id array in file id %d",
+               ex_name_of_object(obj_type), id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      return EX_FATAL;
+    }
+  }
+
+  const char *entryptr = NULL;
+  switch (obj_type) {
+  case EX_ASSEMBLY: entryptr = VAR_ENTITY_ASSEMBLY(id_ndx); break;
+  case EX_BLOB: entryptr = VAR_ENTITY_BLOB(id_ndx); break;
+  case EX_NODE_SET: entryptr = VAR_NODE_NS(id_ndx); break;
+  case EX_EDGE_SET: entryptr = VAR_EDGE_ES(id_ndx); break;
+  case EX_FACE_SET: entryptr = VAR_FACE_FS(id_ndx); break;
+  case EX_SIDE_SET: entryptr = VAR_ELEM_SS(id_ndx); break;
+  case EX_ELEM_SET: entryptr = VAR_ELEM_ELS(id_ndx); break;
+  case EX_EDGE_BLOCK: entryptr = VAR_EBCONN(id_ndx); break;
+  case EX_FACE_BLOCK: entryptr = VAR_FBCONN(id_ndx); break;
+  case EX_ELEM_BLOCK: entryptr = VAR_CONN(id_ndx); break;
+  default:
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
+    ex_err(__func__, errmsg, EX_BADPARAM);
+    return EX_FATAL;
+  }
+
+  int varid = 0;
+  if ((status = nc_inq_varid(exoid, entryptr, &varid)) != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to locate entity list array for %s %" PRId64 " in file id %d",
+             ex_name_of_object(obj_type), id, exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    return EX_FATAL;
+  }
+  return varid;
+}
+
+static int exi_get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id, int *varid)
 {
   int att_count = 0;
   int status;
@@ -62,9 +117,9 @@ static int ex__get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity
     }
   }
   else {
-    *varid = ex__get_varid(exoid, obj_type, id);
+    *varid = exi_get_varid(exoid, obj_type, id);
     if (*varid <= 0) {
-      /* Error message handled in ex__get_varid */
+      /* Error message handled in exi_get_varid */
       return 0;
     }
 
@@ -91,7 +146,7 @@ int ex_get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id)
   EX_FUNC_ENTER();
 
   int varid;
-  int att_count = ex__get_attribute_count(exoid, obj_type, id, &varid);
+  int att_count = exi_get_attribute_count(exoid, obj_type, id, &varid);
   if (att_count < 0) {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
@@ -114,7 +169,7 @@ int ex_get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id)
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
-    if (ex__is_internal_attribute(name, obj_type)) {
+    if (exi_is_internal_attribute(name, obj_type)) {
       att_count--;
     }
   }
@@ -143,7 +198,7 @@ int ex_get_attribute_param(int exoid, ex_entity_type obj_type, ex_entity_id id, 
 
   EX_FUNC_ENTER();
 
-  att_count = ex__get_attribute_count(exoid, obj_type, id, &varid);
+  att_count = exi_get_attribute_count(exoid, obj_type, id, &varid);
   if (att_count < 0) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -162,7 +217,7 @@ int ex_get_attribute_param(int exoid, ex_entity_type obj_type, ex_entity_id id, 
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
-    if (!ex__is_internal_attribute(name, obj_type)) {
+    if (!exi_is_internal_attribute(name, obj_type)) {
       nc_type type;
       size_t  val_count;
 
@@ -194,9 +249,9 @@ int ex_get_attribute(int exoid, ex_attribute *attr)
     varid = NC_GLOBAL;
   }
   else {
-    varid = ex__get_varid(exoid, attr->entity_type, attr->entity_id);
+    varid = exi_get_varid(exoid, attr->entity_type, attr->entity_id);
     if (varid <= 0) {
-      /* Error message handled in ex__get_varid */
+      /* Error message handled in exi_get_varid */
       EX_FUNC_LEAVE(varid);
     }
   }

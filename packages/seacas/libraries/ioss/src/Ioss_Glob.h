@@ -5,13 +5,15 @@
 
 #pragma once
 
-#include "ioss_export.h"
-
+#include <exception>
 #include <iostream>
 #include <memory>
+#include <stddef.h>
 #include <string>
 #include <tuple>
 #include <vector>
+
+#include "ioss_export.h"
 
 namespace Ioss::glob {
 
@@ -187,7 +189,7 @@ namespace Ioss::glob {
       return state_pos;
     }
 
-    size_t fail_state_;
+    size_t fail_state_{0};
 
   private:
     std::tuple<bool, size_t> ExecAux(const String<charT> &str, bool comp_end = true) const
@@ -205,7 +207,7 @@ namespace Ioss::glob {
       // the string
       if (comp_end) {
         if ((state_pos == match_state_) && (str_pos == str.length())) {
-          return {state_pos == match_state_, str_pos};
+          return {true, str_pos};
         }
 
         return {false, str_pos};
@@ -225,7 +227,7 @@ namespace Ioss::glob {
     std::vector<std::unique_ptr<State<charT>>> states_;
     size_t                                     match_state_;
 
-    size_t start_state_;
+    size_t start_state_{0};
   };
 
   template <class charT> class StateChar : public State<charT>
@@ -774,13 +776,6 @@ namespace Ioss::glob {
       c_ = str_[++pos_];
     }
 
-    inline bool IsSpecialChar(charT c)
-    {
-      bool b = c == '?' || c == '*' || c == '+' || c == '(' || c == ')' || c == '[' || c == ']' ||
-               c == '|' || c == '!' || c == '@' || c == '\\';
-      return b;
-    }
-
     String<charT> str_;
     size_t        pos_{0};
     charT         c_;
@@ -804,6 +799,7 @@ namespace Ioss::glob {
 // declare all classes used for nodes
 #define DECLARE_TYPE_CLASS(type) template <class charT> class type;
   GLOB_AST_NODE_LIST(DECLARE_TYPE_CLASS)
+
 #undef DECLARE_TYPE_CLASS
 
   template <class charT> class AstNode

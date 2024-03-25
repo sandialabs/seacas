@@ -5,14 +5,14 @@
 //    strange cases
 //
 //
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ioss_CodeTypes.h>
-#include <exodus/Ioex_ParallelDatabaseIO.h>
+#include "Ioss_CodeTypes.h"
+#include "exodus/Ioex_ParallelDatabaseIO.h"
 #if defined PARALLEL_AWARE_EXODUS
 #include <algorithm>
 #include <cassert>
@@ -37,44 +37,44 @@
 #include <utility>
 #include <vector>
 
-#include <exodus/Ioex_DecompositionData.h>
-#include <exodus/Ioex_Internals.h>
-#include <exodus/Ioex_Utils.h>
+#include "exodus/Ioex_DecompositionData.h"
+#include "exodus/Ioex_Internals.h"
+#include "exodus/Ioex_Utils.h"
 #include <exodusII.h>
 
-#include <Ioss_Assembly.h>
-#include <Ioss_Blob.h>
-#include <Ioss_CommSet.h>
-#include <Ioss_CoordinateFrame.h>
-#include <Ioss_DBUsage.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_EdgeBlock.h>
-#include <Ioss_EdgeSet.h>
-#include <Ioss_ElementBlock.h>
-#include <Ioss_ElementSet.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_EntityBlock.h>
-#include <Ioss_EntitySet.h>
-#include <Ioss_EntityType.h>
-#include <Ioss_FaceBlock.h>
-#include <Ioss_FaceSet.h>
-#include <Ioss_Field.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_Map.h>
-#include <Ioss_NodeBlock.h>
-#include <Ioss_NodeSet.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_Property.h>
-#include <Ioss_Region.h>
-#include <Ioss_SideBlock.h>
-#include <Ioss_SideSet.h>
-#include <Ioss_State.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
-#include <Ioss_VariableType.h>
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
+#include "Ioss_CommSet.h"
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_EntityBlock.h"
+#include "Ioss_EntitySet.h"
+#include "Ioss_EntityType.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_FileInfo.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_Map.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_State.h"
+#include "Ioss_SurfaceSplit.h"
+#include "Ioss_Utils.h"
+#include "Ioss_VariableType.h"
 
-#include <Ioss_FileInfo.h>
+#include "Ioss_FileInfo.h"
 #undef MPICPP
 
 // ========================================================================
@@ -395,7 +395,7 @@ namespace Ioex {
 
   ParallelDatabaseIO::~ParallelDatabaseIO() = default;
 
-  void ParallelDatabaseIO::release_memory__()
+  void ParallelDatabaseIO::release_memory_nl()
   {
     free_file_pointer();
     nodeMap.release_memory();
@@ -612,7 +612,7 @@ namespace Ioex {
 
     MPI_Info info        = MPI_INFO_NULL;
     int      app_opt_val = ex_opts(EX_VERBOSE);
-    Ioss::DatabaseIO::openDatabase__();
+    Ioss::DatabaseIO::openDatabase_nl();
 
     std::string filename = get_dw_name();
 
@@ -755,7 +755,7 @@ namespace Ioex {
     return Ioex::BaseDatabaseIO::free_file_pointer();
   }
 
-  void ParallelDatabaseIO::read_meta_data__()
+  void ParallelDatabaseIO::read_meta_data_nl()
   {
     int exoid = get_file_pointer(); // get_file_pointer() must be called first.
 
@@ -768,7 +768,7 @@ namespace Ioex {
     // we don't write anything since it is already there.  We do
     // need the number of steps though...
     if (open_create_behavior() == Ioss::DB_APPEND || dbUsage == Ioss::QUERY_TIMESTEPS_ONLY) {
-      get_step_times__();
+      get_step_times_nl();
       return;
     }
 
@@ -784,7 +784,7 @@ namespace Ioex {
     read_region();
     get_elemblocks();
 
-    get_step_times__();
+    get_step_times_nl();
 
     get_nodeblocks();
     get_edgeblocks();
@@ -903,7 +903,7 @@ namespace Ioex {
     }
   }
 
-  void ParallelDatabaseIO::get_step_times__()
+  void ParallelDatabaseIO::get_step_times_nl()
   {
     double              last_time      = DBL_MAX;
     int                 timestep_count = 0;
@@ -1385,7 +1385,7 @@ namespace Ioex {
                                  Ioss::Int64Vector &element, Ioss::Int64Vector &sides)
     {
       // Check whether we already populated the element/sides vectors.
-      if (element.empty() && sides.empty() && number_sides > 0) {
+      if (element.empty() && sides.empty()) {
         element.resize(number_sides);
         sides.resize(number_sides);
 
@@ -1540,6 +1540,7 @@ namespace Ioex {
 
           Ioss::Int64Vector element;
           Ioss::Int64Vector sides;
+          bool              have_element_sides_lists = false;
 
           if (!blockOmissions.empty() || !blockInclusions.empty()) {
             get_element_sides_lists(decomp, get_file_pointer(), id, int_byte_size_api(),
@@ -1547,6 +1548,13 @@ namespace Ioex {
             Ioex::filter_element_list(get_region(), element, sides, true);
             number_sides = element.size();
             assert(element.size() == sides.size());
+
+            // Determine if there are any sides left on the sideset after filtering...
+            int64_t global_sides = util().global_minmax(number_sides, Ioss::ParallelUtils::DO_SUM);
+            if (global_sides == 0) {
+              continue;
+            }
+            have_element_sides_lists = true;
           }
 
           if (split_type == Ioss::SPLIT_BY_TOPOLOGIES && sideTopology.size() == 1) {
@@ -1598,8 +1606,10 @@ namespace Ioex {
               side_map[std::make_pair(side_topo.first->name(), side_topo.second)] = 0;
             }
 
-            get_element_sides_lists(decomp, get_file_pointer(), id, int_byte_size_api(),
-                                    number_sides, element, sides);
+            if (!have_element_sides_lists) {
+              get_element_sides_lists(decomp, get_file_pointer(), id, int_byte_size_api(),
+                                      number_sides, element, sides);
+            }
             Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map,
                                                  split_type, side_set_name);
           }
@@ -1640,8 +1650,10 @@ namespace Ioex {
                 }
               }
             }
-            get_element_sides_lists(decomp, get_file_pointer(), id, int_byte_size_api(),
-                                    number_sides, element, sides);
+            if (!have_element_sides_lists) {
+              get_element_sides_lists(decomp, get_file_pointer(), id, int_byte_size_api(),
+                                      number_sides, element, sides);
+            }
             Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map,
                                                  split_type, side_set_name);
           }
@@ -2046,7 +2058,7 @@ namespace Ioex {
                                                  void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
@@ -2096,7 +2108,7 @@ namespace Ioex {
                                                  size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
@@ -3729,7 +3741,7 @@ namespace Ioex {
                                                  void *data, size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
@@ -3786,7 +3798,7 @@ namespace Ioex {
                                                  size_t data_size) const
   {
     {
-      Ioss::SerializeIO serializeIO__(this);
+      Ioss::SerializeIO serializeIO_(this);
 
       size_t num_to_get = field.verify(data_size);
       if (num_to_get > 0) {
@@ -4132,7 +4144,7 @@ namespace Ioex {
      * (the nodeMap.map and nodeMap.reverse are 1-based)
      *
      * To determine which map to update on a call to this function, we
-     * use the following hueristics:
+     * use the following heuristics:
      * -- If the database state is 'STATE_MODEL:', then update the
      *    'nodeMap.reverse' and 'nodeMap.map'
      *

@@ -1,32 +1,14 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#define DOCTEST_CONFIG_IMPLEMENT
-#include <doctest.h>
+#include <catch2/catch_session.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include "Ioss_CodeTypes.h"
-#include "Ioss_CommSet.h"      // for CommSet
-#include "Ioss_EdgeBlock.h"    // for EdgeBlock
-#include "Ioss_EdgeSet.h"      // for EdgeSet
-#include "Ioss_ElementBlock.h" // for ElementBlock
-#include "Ioss_ElementSet.h"   // for ElementSet
-#include "Ioss_FaceBlock.h"    // for FaceBlock
-#include "Ioss_FaceSet.h"      // for FaceSet
-#include "Ioss_NodeBlock.h"
-#include "Ioss_NodeSet.h" // for NodeSet
-#include "Ioss_Property.h"
-#include "Ioss_Region.h"
-#include "Ioss_SideBlock.h"
-#include "Ioss_SideSet.h"
-#include "Ioss_VariableType.h"
-#include <Ioss_SubSystem.h>
-
-#include "Ioss_DatabaseIO.h"
-
-#include "Ioss_IOFactory.h" // for IOFactory
-#include <init/Ionit_Initializer.h>
+#include "Ioss_SubSystem.h"
+#include "init/Ionit_Initializer.h"
 
 #include "adios/Ioad_Constants.h"
 #include "adios/Ioad_Helper.h"
@@ -52,7 +34,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
 #endif
-  const int result = doctest::Context().run();
+  const int result = Catch::Session().run(argc, argv);
 #ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
@@ -199,7 +181,6 @@ template <typename T> void CompareAllProperties(const T &obj1, const T &obj2)
         std::end(ignored_properties)) {
       continue;
     }
-    obj1->get_property(property_name1);
     auto property_name2 =
         std::find(std::begin(block2_property_list), std::end(block2_property_list), property_name1);
     if (property_name2 != block2_property_list.end()) {
@@ -393,9 +374,9 @@ void create_phantom(Ioss::DatabaseIO *db)
   }
   // Add coordinate frames
   std::vector<double>   coords(9, 0);
-  Ioss::CoordinateFrame cf1(0, 'a', coords.data());
+  Ioss::CoordinateFrame cf1(0, 'a', Data(coords));
   region->add(cf1);
-  Ioss::CoordinateFrame cf2(1, 'b', coords.data());
+  Ioss::CoordinateFrame cf2(1, 'b', Data(coords));
   region->add(cf2);
   // Fill up the fields with some values.
   region->end_mode(Ioss::STATE_DEFINE_MODEL);
@@ -420,7 +401,7 @@ void create_database(std::string type, std::string file_name)
   db->closeDatabase();
 }
 
-DOCTEST_TEST_CASE("Ioad")
+TEST_CASE("Ioad")
 {
 
   Ioss::Init::Initializer init_db;
@@ -466,7 +447,7 @@ template <> const std::string get_entity_type_test<Ioss::SideBlock>()
   return sideblock.type_string();
 }
 
-DOCTEST_TEST_CASE("Ioad_BlockNames")
+TEST_CASE("Ioad_BlockNames")
 {
   REQUIRE(get_entity_type_test<Ioss::SideBlock>() == Ioad::get_entity_type<Ioss::SideBlock>());
   REQUIRE(get_entity_type_test<Ioss::SideSet>() == Ioad::get_entity_type<Ioss::SideSet>());

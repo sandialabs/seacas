@@ -1,31 +1,38 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
 
-#define DOCTEST_CONFIG_IMPLEMENT
-#define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
-#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-#include <doctest.h>
+#include "Ionit_Initializer.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_Hex8.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_PropertyManager.h"
+#include "Ioss_Region.h"
+#include "Ioss_Shell4.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "exodus/Ioex_DatabaseIO.h"
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_session.hpp>
+#include <fmt/core.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <string>
+#include <vector>
 
-#include <Ionit_Initializer.h>
-#include <Ioss_DBUsage.h>
-#include <Ioss_ElementBlock.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_Hex8.h>
-#include <Ioss_NodeBlock.h>
-#include <Ioss_NodeSet.h>
-#include <Ioss_PropertyManager.h>
-#include <Ioss_Region.h>
-#include <Ioss_ScopeGuard.h>
-#include <Ioss_Shell4.h>
-#include <Ioss_SideBlock.h>
-#include <Ioss_SideSet.h>
-#include <exodus/Ioex_DatabaseIO.h>
-
-#include <fmt/format.h>
+#include "Ioss_CodeTypes.h"
+#include "Ioss_Field.h"
+#include "Ioss_ParallelUtils.h"
+#include "Ioss_Property.h"
+#include "Ioss_ScopeGuard.h"
+#include "Ioss_State.h"
+#include "Ioss_SurfaceSplit.h"
 
 namespace {
   std::string input_filename = "ADeDA.e";
@@ -64,17 +71,17 @@ namespace {
     return db_io;
   }
 
-  DOCTEST_TEST_CASE("Ioex::constructor")
+  TEST_CASE("Ioex::constructor")
   {
     Ioex::DatabaseIO *db_io = create_input_db_io(input_filename);
     db_io->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
 
     Ioss::Region region(db_io);
 
-    DOCTEST_CHECK(db_io->ok());
+    CHECK(db_io->ok());
 
     const std::vector<Ioss::ElementBlock *> &element_blocks = region.get_element_blocks();
-    DOCTEST_CHECK_EQ(2u, element_blocks.size());
+    CHECK(2u == element_blocks.size());
 
     std::vector<std::string>      gold_strings{"block_2", "block_1"};
     std::vector<std::string>      gold_top_names{Ioss::Hex8::name, Ioss::Shell4::name};
@@ -98,8 +105,8 @@ namespace {
 
     for (size_t i = 0; i < element_blocks.size(); ++i) {
       std::vector<std::string> empty = element_blocks[i]->get_block_adjacencies();
-      DOCTEST_CHECK(!empty.empty());
-      DOCTEST_CHECK_EQ(gold_strings[i], empty[0]);
+      CHECK(!empty.empty());
+      CHECK(gold_strings[i] == empty[0]);
 
       const Ioss::ElementTopology *topology = element_blocks[i]->topology();
       test_topology(topology, gold_top_names[i], parametric_dim[i], num_vertices[i],
@@ -108,26 +115,26 @@ namespace {
       std::vector<int64_t> connectivity;
       element_blocks[i]->get_field_data("connectivity_raw", connectivity);
 
-      DOCTEST_CHECK_EQ(gold_conn_size[i], connectivity.size());
+      CHECK(gold_conn_size[i] == connectivity.size());
       for (size_t j = 0; j < gold_conn_size[i]; ++j) {
-        DOCTEST_CHECK_EQ(gold_connectivity[i][j], connectivity[j]);
+        CHECK(gold_connectivity[i][j] == connectivity[j]);
       }
 
       std::vector<int64_t> ids;
       element_blocks[i]->get_field_data("ids", ids);
 
-      DOCTEST_CHECK_EQ(gold_num_elements_per_block[i], ids.size());
+      CHECK(gold_num_elements_per_block[i] == ids.size());
       for (size_t j = 0; j < ids.size(); ++j) {
-        DOCTEST_CHECK_EQ(gold_ids[i][j], ids[j]);
+        CHECK(gold_ids[i][j] == ids[j]);
       }
 
       std::vector<double> attributeValues;
-      DOCTEST_CHECK_EQ(attributes_exist[i], element_blocks[i]->field_exists("attribute"));
+      CHECK(attributes_exist[i] == element_blocks[i]->field_exists("attribute"));
       if (attributes_exist[i]) {
         int num_attr = element_blocks[i]->get_property("attribute_count").get_int();
-        DOCTEST_CHECK_EQ(1, num_attr);
+        CHECK(1 == num_attr);
         element_blocks[i]->get_field_data("attribute", attributeValues);
-        DOCTEST_CHECK_EQ(num_attributes[i], attributeValues.size());
+        CHECK(num_attributes[i] == attributeValues.size());
       }
     }
 
@@ -146,21 +153,21 @@ namespace {
 
     size_t num_coordinates = num_nodes * spatial_dim;
 
-    DOCTEST_CHECK_EQ(coordinates.size(), num_coordinates);
+    CHECK(coordinates.size() == num_coordinates);
     for (int i = 0; i < num_nodes; ++i) {
       for (int j = 0; j < spatial_dim; ++j) {
         int index_coordinate      = spatial_dim * i + j;
         int index_gold_coordinate = num_nodes * j + i;
         // gold_coordinates = { all_x, all_y, all_z };
         // coordinates = { x1, y1, z1, x2, y2, z2, ..., };
-        DOCTEST_CHECK_EQ(gold_coordinates[index_gold_coordinate], coordinates[index_coordinate]);
+        CHECK(gold_coordinates[index_gold_coordinate] == coordinates[index_coordinate]);
       }
     }
 
     // sidesets
 
     const std::vector<Ioss::SideSet *> &sidesets = region.get_sidesets();
-    DOCTEST_CHECK_EQ(2u, sidesets.size());
+    CHECK(2u == sidesets.size());
 
     // std::vector<bool> gold_df_exist{true, true};
 
@@ -184,32 +191,32 @@ namespace {
         std::vector<int64_t> side_ids_per_block;
         std::vector<int64_t> connectivity_per_block;
 
-        DOCTEST_CHECK(block->field_exists("element_side_raw"));
+        CHECK(block->field_exists("element_side_raw"));
         block->get_field_data("element_side_raw", side_ids_per_block);
         for (size_t k = 0; k < side_ids_per_block.size(); k += 2) {
           element_ids.push_back(side_ids_per_block[k]);
           side_ids.push_back(side_ids_per_block[k + 1]);
         }
 
-        DOCTEST_CHECK(block->field_exists("connectivity_raw"));
+        CHECK(block->field_exists("connectivity_raw"));
         block->get_field_data("connectivity_raw", connectivity_per_block);
-        DOCTEST_CHECK_EQ(4u, connectivity_per_block.size());
+        CHECK(4u == connectivity_per_block.size());
         connectivity.insert(connectivity.end(), connectivity_per_block.begin(),
                             connectivity_per_block.end());
       }
 
-      DOCTEST_CHECK_EQ(element_ids.size(), side_ids.size());
+      CHECK(element_ids.size() == side_ids.size());
       for (size_t j = 0; j < element_ids.size(); ++j) {
-        DOCTEST_INFO(fmt::format("Sideset Element and Side Ids check for sideset {}, element {}",
-                                 i + 1, j + 1));
-        DOCTEST_CHECK_EQ(gold_element_ids[i][j], element_ids[j]);
-        DOCTEST_CHECK_EQ(gold_side_ids[i][j], side_ids[j]);
+        INFO(fmt::format("Sideset Element and Side Ids check for sideset {}, element {}", i + 1,
+                         j + 1));
+        CHECK(gold_element_ids[i][j] == element_ids[j]);
+        CHECK(gold_side_ids[i][j] == side_ids[j]);
       }
 
-      DOCTEST_CHECK_EQ(gold_sideset_conn[i].size(), connectivity.size());
+      CHECK(gold_sideset_conn[i].size() == connectivity.size());
       for (size_t j = 0; j < connectivity.size(); ++j) {
-        DOCTEST_INFO(fmt::format("Sideset Connectivity for sideset {}, node {}", i + 1, j + 1));
-        DOCTEST_CHECK_EQ(gold_sideset_conn[i][j], connectivity[j]);
+        INFO(fmt::format("Sideset Connectivity for sideset {}, node {}", i + 1, j + 1));
+        CHECK(gold_sideset_conn[i][j] == connectivity[j]);
       }
     }
   }
@@ -220,49 +227,49 @@ namespace {
                      const int num_edges, const int num_faces, const int num_boundaries)
   {
     const std::string &name = topology->name();
-    DOCTEST_CHECK_EQ(gold_top, name);
+    CHECK(gold_top == name);
 
-    DOCTEST_CHECK(topology->is_element());
-    DOCTEST_CHECK_EQ(3, topology->spatial_dimension());
-    DOCTEST_CHECK_EQ(parameteric_dim, topology->parametric_dimension());
-    DOCTEST_CHECK_EQ(1, topology->order());
+    CHECK(topology->is_element());
+    CHECK(3 == topology->spatial_dimension());
+    CHECK(parameteric_dim == topology->parametric_dimension());
+    CHECK(1 == topology->order());
 
-    DOCTEST_CHECK(topology->edges_similar());
-    DOCTEST_CHECK(topology->faces_similar());
+    CHECK(topology->edges_similar());
+    CHECK(topology->faces_similar());
 
-    DOCTEST_CHECK_EQ(num_vertices, topology->number_corner_nodes());
-    DOCTEST_CHECK_EQ(num_nodes, topology->number_nodes());
-    DOCTEST_CHECK_EQ(num_edges, topology->number_edges());
-    DOCTEST_CHECK_EQ(num_faces, topology->number_faces());
-    DOCTEST_CHECK_EQ(num_boundaries, topology->number_boundaries());
+    CHECK(num_vertices == topology->number_corner_nodes());
+    CHECK(num_nodes == topology->number_nodes());
+    CHECK(num_edges == topology->number_edges());
+    CHECK(num_faces == topology->number_faces());
+    CHECK(num_boundaries == topology->number_boundaries());
 
     for (int i = 0; i < num_edges; ++i) {
-      DOCTEST_CHECK_EQ(2, topology->number_nodes_edge(i));
+      CHECK(2 == topology->number_nodes_edge(i));
     }
 
     for (int i = 0; i < num_faces; ++i) {
-      DOCTEST_CHECK_EQ(4, topology->number_nodes_face(i));
-      DOCTEST_CHECK_EQ(4, topology->number_edges_face(i));
+      CHECK(4 == topology->number_nodes_face(i));
+      CHECK(4 == topology->number_edges_face(i));
     }
 
     std::vector<int> element_connectivity = topology->element_connectivity();
-    DOCTEST_CHECK_EQ((size_t)num_nodes, element_connectivity.size());
+    CHECK((size_t)num_nodes == element_connectivity.size());
   }
 
   // BeginDocTest2
-  DOCTEST_TEST_CASE("Ioex::write_file")
+  TEST_CASE("Ioex::write_file")
   {
     Ioex::DatabaseIO *db_in = create_input_db_io(input_filename);
 
     Ioss::Region input_region(db_in);
 
-    DOCTEST_CHECK(db_in->ok());
+    CHECK(db_in->ok());
 
     const std::string output_filename = "ADeDA_out.e";
 
     Ioex::DatabaseIO *db_out = create_output_db_io(output_filename);
     Ioss::Region      output_region(db_out);
-    DOCTEST_CHECK(db_out->ok());
+    CHECK(db_out->ok());
 
     output_region.begin_mode(Ioss::STATE_DEFINE_MODEL);
 
@@ -404,14 +411,23 @@ int main(IOSS_MAYBE_UNUSED int argc, char **argv)
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
-  doctest::Context context;
+  Catch::Session session; // There must be exactly one instance
 
-  while (*++argv) {
-    if (std::string(*argv) == "--filename") {
-      input_filename = *++argv;
-      break;
-    }
-    printf("'%s'\n", input_filename.c_str());
-  }
-  return context.run();
+  // Build a new parser on top of Catch2's
+  using namespace Catch::Clara;
+  auto cli = session.cli()                     // Get Catch2's command line parser
+             | Opt(input_filename, "filename") // bind variable to a new option, with a hint string
+                   ["-f"]["--filename"]        // the option names it will respond to
+             ("Filename to read mesh from.");  // description string for the help output
+
+  // Now pass the new composite back to Catch2 so it uses that
+  session.cli(cli);
+
+  // Let Catch2 (using Clara) parse the command line
+  int returnCode = session.applyCommandLine(argc, argv);
+  if (returnCode != 0) // Indicates a command line error
+    return returnCode;
+
+  fmt::print("'{}'\n", input_filename);
+  return session.run();
 }

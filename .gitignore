@@ -114,6 +114,7 @@ SNTools.project
 SeacasRepoVersion.txt
 TPL/adios2/ADIOS2/
 TPL/cgns/CGNS/
+TPL/catch2/Catch2/
 TPL/data-warehouse-release
 TPL/gtest/googletest/
 TPL/hdf5/hdf5-*.tar.bz2/

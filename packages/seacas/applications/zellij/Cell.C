@@ -12,6 +12,7 @@
 #include <Ioss_SmartAssert.h>
 #include <algorithm>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <string>
 
 //! \file

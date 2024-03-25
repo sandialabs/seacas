@@ -227,7 +227,7 @@ void Zoltan_RCB_Serialize_Structure(ZZ const *zz, char **buf)
   memcpy(bufptr, (void *)(zzrcb->Box), sizeof(struct rcb_box));
   bufptr += sizeof(struct rcb_box);
 
-  memcpy(bufptr, (void *) &(zzrcb->Tran), sizeof(ZZ_Transform));
+  memcpy(bufptr, (const void *) &(zzrcb->Tran), sizeof(ZZ_Transform));
   bufptr += sizeof(ZZ_Transform);
 
   *buf = bufptr;

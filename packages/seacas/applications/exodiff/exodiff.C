@@ -56,15 +56,15 @@ struct TimeInterp
 
 std::string Date()
 {
-  time_t     calendar_time = time(nullptr);
+  time_t calendar_time = time(nullptr);
 #if defined __NVCC__
   char       tbuf[32];
-  struct tm *local_time    = localtime(&calendar_time);
+  struct tm *local_time = localtime(&calendar_time);
   strftime(tbuf, 32, "%Y/%m/%d   %H:%M:%S %Z", local_time);
   std::string time_string(tbuf);
 #else
-  auto const local_time    = fmt::localtime(calendar_time);
-  auto       time_string   = fmt::format("{:%Y/%m/%d   %H:%M:%S %Z}", local_time);
+  auto const local_time  = fmt::localtime(calendar_time);
+  auto       time_string = fmt::format("{:%Y/%m/%d   %H:%M:%S %Z}", local_time);
 #endif
   return time_string;
 }
@@ -300,7 +300,7 @@ namespace {
         "{0}   Title: {2}\n"
         "{0}          Dim = {3}, Nodes = {5}, Elements = {6}, Faces = {20}, Edges = {21}\n"
         "{0}          Element Blocks = {4}, Face Blocks = {10}, Edge Blocks = {9}, Nodesets = {7}, "
-        "Sidesets = {8}\n"
+        "Sidesets = {8}, Assemblies = {22}\n"
         "{0}    Vars: Global = {11}, Nodal = {12}, Element = {13}, Face = {17}, Edge = {18}, "
         "Nodeset = {14}, Sideset = {15}, Times = {16}\n\n",
         prefix, fi.realpath(), file.Title(), file.Dimension(), file.Num_Element_Blocks(),
@@ -308,7 +308,7 @@ namespace {
         file.Num_Edge_Blocks(), file.Num_Face_Blocks(), file.Num_Global_Vars(),
         file.Num_Nodal_Vars(), file.Num_Element_Vars(), file.Num_NS_Vars(), file.Num_SS_Vars(),
         file.Num_Times(), file.Num_FB_Vars(), file.Num_EB_Vars(), count, file.Num_Faces(),
-        file.Num_Edges());
+        file.Num_Edges(), file.Num_Assembly());
   }
 
   void initialize(std::vector<MinMaxData> &mm_entity, size_t size, const ToleranceType &ttype)
@@ -442,6 +442,9 @@ namespace {
       if (!interFace.quiet_flag) {
         output_init(file1, 1, "");
         output_init(file2, 2, "");
+        if (interFace.pedantic) {
+          fmt::print("  Pedantic Checking Enabled\n");
+        }
         if (!interFace.command_file.empty()) {
           FileInfo fi(interFace.command_file);
           fmt::print("  COMMAND FILE: {}\n\n", fi.realpath());
@@ -1521,7 +1524,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
       gvals[out_idx] = FileDiff(vals1[idx1], vals2[idx2], interFace.output_type);
     }
     ex_put_var(out_file_id, output_step, EX_GLOBAL, 1, 0, interFace.glob_var_names.size(),
-               gvals.data());
+               Data(gvals));
     return diff_flag;
   }
 
@@ -1609,7 +1612,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, cons
           nvals[n] = 0.;
         }
       } // End of node iteration...
-      ex_put_var(out_file_id, output_step, EX_NODAL, n_idx + 1, 0, file1.Num_Nodes(), nvals.data());
+      ex_put_var(out_file_id, output_step, EX_NODAL, n_idx + 1, 0, file1.Num_Nodes(), Data(nvals));
       file1.Free_Nodal_Results(idx1);
       file2.Free_Nodal_Results(idx2);
     }
@@ -1851,7 +1854,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
       if (out_file_id >= 0) {
         ex_put_var(out_file_id, output_step, EX_ELEM_BLOCK, e_idx + 1, eblock1->Id(),
-                   eblock1->Size(), evals.data());
+                   eblock1->Size(), Data(evals));
       }
 
       eblock1->Free_Results();
@@ -1955,7 +1958,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 
         if (out_file_id >= 0) {
           ex_put_var(out_file_id, output_step, EX_NODE_SET, e_idx + 1, nset1->Id(), nset1->Size(),
-                     vals.data());
+                     Data(vals));
         }
       }
       else {
@@ -2065,7 +2068,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         }
         if (out_file_id >= 0) {
           ex_put_var(out_file_id, output_step, EX_SIDE_SET, e_idx + 1, sset1->Id(), sset1->Size(),
-                     vals.data());
+                     Data(vals));
         }
       }
       else {
@@ -2320,7 +2323,7 @@ bool diff_edgeblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
         if (out_file_id >= 0) {
           ex_put_var(out_file_id, output_step, EX_EDGE_BLOCK, e_idx + 1, eblock1->Id(),
-                     eblock1->Size(), vals.data());
+                     eblock1->Size(), Data(vals));
         }
       }
       else {
@@ -2430,7 +2433,7 @@ bool diff_faceblock(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, c
         }
         if (out_file_id >= 0) {
           ex_put_var(out_file_id, output_step, EX_FACE_BLOCK, f_idx + 1, fblock1->Id(),
-                     fblock1->Size(), vals.data());
+                     fblock1->Size(), Data(vals));
         }
       }
       else {

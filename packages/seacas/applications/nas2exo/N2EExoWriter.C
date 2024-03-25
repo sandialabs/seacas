@@ -6,6 +6,7 @@
  */
 
 #include "N2EExoWriter.h"
+#include "vector_data.h"
 
 #include <algorithm>
 #include <cstring>
@@ -112,7 +113,7 @@ namespace ExoModules {
       z.push_back(crd.x[2]);
     }
 
-    int ret = ex_put_coord(this->exoFileID, x.data(), y.data(), z.data());
+    int ret = ex_put_coord(this->exoFileID, Data(x), Data(y), Data(z));
 
     if (ret != 0) {
       std::cerr << "Problem writing node coordinates in N2EExoWriter::writeFile(). punching out.\n";
@@ -187,12 +188,12 @@ namespace ExoModules {
       for (const elementType &elem : thisBlock) {
 
         const N2EModules::N2EGridPtList &pts{std::get<3>(elem)};
-        std::copy(pts.v, pts.v + nodes_per_elem, elemCon.data() + numNodesCopied);
+        std::copy(pts.v, pts.v + nodes_per_elem, Data(elemCon) + numNodesCopied);
         numNodesCopied += nodes_per_elem;
       }
 
-      retvalue = ex_put_conn(this->exoFileID, thisElType.elementType, block, elemCon.data(),
-                             nullptr, nullptr);
+      retvalue = ex_put_conn(this->exoFileID, thisElType.elementType, block, Data(elemCon), nullptr,
+                             nullptr);
 
       switch (thisElType.numNodesPerElem) {
 

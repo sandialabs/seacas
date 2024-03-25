@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -19,7 +19,6 @@ namespace Excn {
 
   public:
     ParallelDisks()                                 = default;
-    ~ParallelDisks()                                = default;
     ParallelDisks(const ParallelDisks &)            = delete;
     ParallelDisks &operator=(const ParallelDisks &) = delete;
 

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include "iohb_export.h"
-
+#include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "iohb_export.h"
 
 namespace Iohb {
   class IOHB_EXPORT Layout
@@ -20,8 +22,6 @@ namespace Iohb {
     Layout(bool show_labels, int precision, std::string separator, int field_width);
     Layout(const Layout &)            = delete;
     Layout &operator=(const Layout &) = delete;
-
-    ~Layout();
 
     const std::string layout() const { return layout_.str(); }
 
@@ -57,7 +57,7 @@ namespace Iohb {
   template <typename T> inline void Layout::add(const std::string &name, const T &value)
   {
     output_common(name);
-    if (fieldWidth_ > 0) {
+    if (!showLabels && fieldWidth_ > 0) {
       fmt::print(layout_, "{0:{1}}", value, fieldWidth_);
     }
     else {
@@ -73,7 +73,7 @@ namespace Iohb {
       // double
       fmt::print(layout_, "{}", value);
     }
-    else if (fieldWidth_ > 0) {
+    else if (!showLabels && fieldWidth_ > 0) {
       fmt::print(layout_, "{0:{1}.{2}e}", value, fieldWidth_, precision_);
     }
     else {
@@ -89,7 +89,7 @@ namespace Iohb {
     }
     else {
       output_common(name);
-      if (fieldWidth_ > 0) {
+      if (!showLabels && fieldWidth_ > 0) {
         fmt::print(layout_, "{0:{1}}", fmt::join(value, separator_), fieldWidth_);
       }
       else {
@@ -110,7 +110,7 @@ namespace Iohb {
         // double
         fmt::print(layout_, "{}", fmt::join(value, separator_));
       }
-      else if (fieldWidth_ > 0) {
+      else if (!showLabels && fieldWidth_ > 0) {
         fmt::print(layout_, "{0:{2}.{1}e}", fmt::join(value, separator_), precision_, fieldWidth_);
       }
       else {
