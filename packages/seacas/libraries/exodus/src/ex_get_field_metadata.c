@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -80,9 +80,9 @@ static int ex__get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity
     }
   }
   else {
-    *varid = ex__get_varid(exoid, obj_type, id);
+    *varid = exi_get_varid(exoid, obj_type, id);
     if (*varid <= 0) {
-      /* Error message handled in ex__get_varid */
+      /* Error message handled in exi_get_varid */
       return 0;
     }
 
@@ -269,9 +269,9 @@ int ex_get_basis_metadata(int exoid, ex_entity_type entity_type, ex_entity_id en
     varid = NC_GLOBAL;
   }
   else {
-    varid = ex__get_varid(exoid, entity_type, entity_id);
+    varid = exi_get_varid(exoid, entity_type, entity_id);
     if (varid <= 0) {
-      /* Error message handled in ex__get_varid */
+      /* Error message handled in exi_get_varid */
       return varid;
     }
   }

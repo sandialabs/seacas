@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -2291,9 +2291,9 @@ char *ex_copy_string(char *dest, char const *source, size_t elements)
 }
 
 /* Used by the entity attribute code `ex_get_attribute(s)` and `ex_put_attribute(s)` */
-int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
+int exi_get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
 {
-  if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
+  if (exi_check_valid_file_id(exoid, __func__) == EX_FATAL) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -2324,7 +2324,7 @@ int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
   /* Everything else ... */
   /* First, locate index of this objects id `obj_type` id array */
   /* First, locate index of this objects id `obj_type` id array */
-  int id_ndx = ex__id_lkup(exoid, obj_type, id);
+  int id_ndx = exi_id_lkup(exoid, obj_type, id);
   if (id_ndx <= 0) {
     ex_get_err(NULL, NULL, &status);
     if (status != 0) {
