@@ -14,7 +14,8 @@
 
 #define SIZE(X) sizeof(X) / sizeof(X[0])
 
-#if defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
+#if defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__) || defined(__INTEL_LLVM_COMPILER)
+#if !defined(strsep)
 char *strsep(char **stringp, const char *delim)
 {
   char *rv = *stringp;
@@ -27,7 +28,7 @@ char *strsep(char **stringp, const char *delim)
   }
   return rv;
 }
-
+#endif
 size_t strlcat(char *restrict dst, const char *restrict src, size_t maxlen)
 {
   const size_t srclen = strlen(src);
