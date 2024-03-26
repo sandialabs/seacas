@@ -1065,7 +1065,7 @@ void Iocgns::Utils::write_state_meta_data(int file_ptr, const Ioss::Region &regi
   }
 }
 
-size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
+size_t Iocgns::Utils::common_write_metadata(int file_ptr, const Ioss::Region &region,
                                              std::vector<size_t> &zone_offset, bool is_parallel_io)
 {
 #if !IOSS_ENABLE_HYBRID
@@ -1080,7 +1080,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   }
 #endif
 
-  region.get_database()->progress("\tEnter common_write_meta_data");
+  region.get_database()->progress("\tEnter common_write_metadata");
   int base           = 0;
   int phys_dimension = region.get_property("spatial_dimension").get_int();
   CGERR(cg_base_write(file_ptr, "Base", phys_dimension, phys_dimension, &base));
@@ -1432,7 +1432,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     }
   }
 
-  region.get_database()->progress("\tReturn from common_write_meta_data");
+  region.get_database()->progress("\tReturn from common_write_metadata");
   return element_count;
 }
 

@@ -1046,7 +1046,7 @@ namespace Ioexnl {
 
   void BaseDatabaseIO::finalize_write(int, double) {}
 
-  void BaseDatabaseIO::common_write_meta_data(Ioss::IfDatabaseExistsBehavior behavior)
+  void BaseDatabaseIO::common_write_metadata(Ioss::IfDatabaseExistsBehavior behavior)
   {
     Ioss::Region *region = get_region();
 
