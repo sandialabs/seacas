@@ -22,6 +22,7 @@
 #include "Ioss_Assembly.h"
 #include "Ioss_Blob.h"
 #include "Ioss_CodeTypes.h"
+#include "Ioss_CompositeVariableType.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_EdgeBlock.h"
@@ -1868,7 +1869,99 @@ namespace Ioex {
           output_results_names(type, m_reductionVariables[type], true);
         }
       }
+
+      // Output field metadata
+      output_field_metadata();
     }
+  }
+
+  namespace {
+    void internal_output_field_metadata(int exoid, ex_entity_type type,
+                                        Ioss::GroupingEntity *entity)
+    {
+      // Get all transient fields on this entity...
+      auto results_fields = entity->field_describe(Ioss::Field::TRANSIENT);
+      for (const auto &field_name : results_fields) {
+        const auto &field = entity->get_fieldref(field_name);
+
+        ex_field exo_field{};
+        Ioss::Utils::copy_string(exo_field.name, field_name);
+        exo_field.entity_type = type;
+        exo_field.entity_id   = entity->get_optional_property("id", 0);
+
+        auto                              *storage = field.transformed_storage();
+        const Ioss::CompositeVariableType *composite =
+            dynamic_cast<const Ioss::CompositeVariableType *>(storage);
+        if (composite != nullptr) {
+          exo_field.nesting = 2;
+          char separator    = field.get_suffix_separator();
+
+          exo_field.type[0]        = Ioex::map_ioss_field_type(composite->GetBaseType()->name());
+          exo_field.cardinality[0] = composite->GetBaseType()->component_count();
+          exo_field.component_separator[0] = separator == 1 ? '_' : separator;
+
+          exo_field.type[1]                = EX_FIELD_TYPE_SEQUENCE;
+          exo_field.cardinality[1]         = composite->GetNumCopies();
+          exo_field.component_separator[1] = separator == 1 ? '_' : separator;
+        }
+        else {
+          exo_field.nesting = 1;
+          exo_field.type[0] = Ioex::map_ioss_field_type(storage->name());
+          if (exo_field.type[0] == EX_FIELD_TYPE_SEQUENCE) {
+            exo_field.cardinality[0] = storage->component_count();
+          }
+          char separator                   = field.get_suffix_separator();
+          exo_field.component_separator[0] = separator == 1 ? '_' : separator;
+        }
+
+        ex_put_field_metadata(exoid, exo_field);
+      }
+    }
+
+    template <typename T>
+    void internal_output_field_metadata(int exoid, ex_entity_type type, std::vector<T *> entities)
+    {
+      for (const auto &entity : entities) {
+        internal_output_field_metadata(exoid, type, entity);
+      }
+    }
+  } // namespace
+
+  void BaseDatabaseIO::output_field_metadata()
+  {
+    const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
+    assert(node_blocks.size() <= 1);
+    internal_output_field_metadata(get_file_pointer(), EX_NODE_BLOCK, node_blocks);
+
+    const Ioss::EdgeBlockContainer &edge_blocks = get_region()->get_edge_blocks();
+    internal_output_field_metadata(get_file_pointer(), EX_EDGE_BLOCK, edge_blocks);
+
+    const Ioss::FaceBlockContainer &face_blocks = get_region()->get_face_blocks();
+    internal_output_field_metadata(get_file_pointer(), EX_FACE_BLOCK, face_blocks);
+
+    const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
+    internal_output_field_metadata(get_file_pointer(), EX_ELEM_BLOCK, element_blocks);
+
+    const Ioss::NodeSetContainer &nodesets = get_region()->get_nodesets();
+    internal_output_field_metadata(get_file_pointer(), EX_NODE_SET, nodesets);
+
+    const Ioss::EdgeSetContainer &edgesets = get_region()->get_edgesets();
+    internal_output_field_metadata(get_file_pointer(), EX_EDGE_SET, edgesets);
+
+    const Ioss::FaceSetContainer &facesets = get_region()->get_facesets();
+    internal_output_field_metadata(get_file_pointer(), EX_FACE_SET, facesets);
+
+    const Ioss::ElementSetContainer &elementsets = get_region()->get_elementsets();
+    internal_output_field_metadata(get_file_pointer(), EX_ELEM_SET, elementsets);
+
+    const auto &blobs = get_region()->get_blobs();
+    internal_output_field_metadata(get_file_pointer(), EX_BLOB, blobs);
+
+    const auto &assemblies = get_region()->get_assemblies();
+    internal_output_field_metadata(get_file_pointer(), EX_ASSEMBLY, assemblies);
+
+    const Ioss::SideSetContainer &sidesets = get_region()->get_sidesets();
+    internal_output_field_metadata(get_file_pointer(), EX_SIDE_SET, sidesets);
   }
 
   // common
