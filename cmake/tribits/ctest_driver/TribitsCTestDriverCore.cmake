@@ -50,7 +50,7 @@ message("*******************************")
 message("")
 
 
-cmake_minimum_required(VERSION 3.23.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22.0 FATAL_ERROR)
 
 set(THIS_CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
