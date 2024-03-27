@@ -2182,7 +2182,7 @@ namespace Ioex {
       load_field_data<INT>(filePtr, Data(fileData), blockSubsetIndex, step, blockFieldData,
                            blockComponentCount, fileConnOffset);
 
-      decompData->m_decomposition.communicate_entity_data(Data(fileData), data,
+      (void)decompData->m_decomposition.communicate_entity_data(Data(fileData), data,
                                                           decompData->el_blocks, blockSubsetIndex,
                                                           fileConnOffset, blockComponentCount);
     }
