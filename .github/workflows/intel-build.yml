@@ -149,13 +149,13 @@ jobs:
           mkdir build
           cd build
           source /opt/intel/oneapi/setvars.sh
-          echo "------------"
-          ls /opt/intel/oneapi/
-          echo "------------"
-          ls /opt/intel/oneapi/2024.1/
-          echo "------------"
-          ls /opt/intel/oneapi/2024.1/bin/
-          echo "------------"
+          # echo "------------"
+	  # ls /opt/intel/oneapi/
+          # echo "------------"
+          # ls /opt/intel/oneapi/2024.1/
+          # echo "------------"
+          # ls /opt/intel/oneapi/2024.1/bin/
+          # echo "------------"
           export PATH=/opt/intel/oneapi/2024.1/bin/:$PATH
           export LD_LIBRARY_PATH=/opt/intel/oneapi/2024.1/lib/:$LD_LIBRARY_PATH
           printenv >> $GITHUB_ENV
