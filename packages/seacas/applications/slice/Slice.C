@@ -1368,26 +1368,27 @@ namespace {
     Ioss::PropertyManager properties = set_properties(interFace);
 
     Ioss::chain_t<INT> element_chains;
-    std::vector<int> weights;
+    std::vector<int>   weights;
     if (interFace.lineDecomp_) {
       element_chains =
           Ioss::generate_element_chains(region, interFace.lineSurfaceList_, debug_level, dummy);
       progress("Ioss::generate_element_chains");
 
       if (interFace.decomposition_method() == "rcb" || interFace.decomposition_method() == "rib" ||
-           interFace.decomposition_method() == "hsfc") {
-	weights = line_decomp_weights(element_chains, region.get_property("element_count").get_int());
-	progress("generate_element_weights");
+          interFace.decomposition_method() == "hsfc") {
+        weights =
+            line_decomp_weights(element_chains, region.get_property("element_count").get_int());
+        progress("generate_element_weights");
       }
     }
 
     if (weights.empty()) {
       weights.resize(region.get_property("element_count").get_int(), 1);
     }
-    
-    double           start = seacas_timer();
-    auto elem_to_proc = decompose_elements(region, interFace, weights, dummy);
-    double end = seacas_timer();
+
+    double start        = seacas_timer();
+    auto   elem_to_proc = decompose_elements(region, interFace, weights, dummy);
+    double end          = seacas_timer();
     fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
     progress("exit decompose_elements");
 
