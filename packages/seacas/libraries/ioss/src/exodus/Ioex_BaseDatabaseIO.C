@@ -1929,6 +1929,7 @@ namespace Ioex {
 
   void BaseDatabaseIO::output_field_metadata()
   {
+    Ioss::SerializeIO               serializeIO_(this);
     const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
     assert(node_blocks.size() <= 1);
     internal_output_field_metadata(get_file_pointer(), EX_NODE_BLOCK, node_blocks);
