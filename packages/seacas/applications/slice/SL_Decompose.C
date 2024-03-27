@@ -230,8 +230,8 @@ namespace {
 
   template <typename INT>
   void decompose_zoltan(const Ioss::Region &region, int ranks, SystemInterface &interFace,
-                        std::vector<int> &elem_to_proc, const std::vector<int> &weights, 
-			IOSS_MAYBE_UNUSED INT dummy)
+                        std::vector<int> &elem_to_proc, const std::vector<int> &weights,
+                        IOSS_MAYBE_UNUSED INT dummy)
   {
     if (ranks == 1) {
       return;
@@ -248,7 +248,7 @@ namespace {
 
     // Copy mesh data and pointers into structure accessible from callback fns.
     Zoltan_Data.ndot = element_count;
-    Zoltan_Data.vwgt = const_cast<int*>(Data(weights));
+    Zoltan_Data.vwgt = const_cast<int *>(Data(weights));
 
     if (interFace.ignore_x_ && interFace.ignore_y_) {
       Zoltan_Data.x = Data(z);
@@ -558,16 +558,15 @@ namespace {
 } // namespace
 
 template std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-                                 const std::vector<int> &weights,
-				 IOSS_MAYBE_UNUSED int dummy);
+                                             const std::vector<int> &weights,
+                                             IOSS_MAYBE_UNUSED int   dummy);
 template std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-					     const std::vector<int> &weights, 
-				 IOSS_MAYBE_UNUSED int64_t dummy);
+                                             const std::vector<int>   &weights,
+                                             IOSS_MAYBE_UNUSED int64_t dummy);
 
 template <typename INT>
 std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-				    const std::vector<int> &weights,
-			IOSS_MAYBE_UNUSED INT dummy)
+                                    const std::vector<int> &weights, IOSS_MAYBE_UNUSED INT dummy)
 {
   progress(__func__);
   // Populate the 'elem_to_proc' vector with a mapping from element to processor.
@@ -808,11 +807,13 @@ std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface 
   return elem_to_proc;
 }
 
-template std::vector<int> line_decomp_weights(const Ioss::chain_t<int> &element_chains, size_t element_count);
-template std::vector<int> line_decomp_weights(const Ioss::chain_t<int64_t> &element_chains, size_t element_count);
+template std::vector<int> line_decomp_weights(const Ioss::chain_t<int> &element_chains,
+                                              size_t                    element_count);
+template std::vector<int> line_decomp_weights(const Ioss::chain_t<int64_t> &element_chains,
+                                              size_t                        element_count);
 
 template <typename INT>
-  std::vector<int> line_decomp_weights(const Ioss::chain_t<INT> &element_chains, size_t element_count)
+std::vector<int> line_decomp_weights(const Ioss::chain_t<INT> &element_chains, size_t element_count)
 {
   std::map<INT, std::vector<INT>> chains;
 
@@ -835,7 +836,7 @@ template <typename INT>
     for (const auto &element : chain_elements) {
       weights[element - 1] = 0;
     }
-    weights[chain.first-1] = static_cast<int>(chain_elements.size());
+    weights[chain.first - 1] = static_cast<int>(chain_elements.size());
   }
   return weights;
 }
@@ -888,7 +889,7 @@ void line_decomp_modify(const Ioss::chain_t<INT> &element_chains, std::vector<in
 
     // * Assign all elements in the chain to processor at chain root
     // * Update the deltas for all processors that gain/lose elements...
-    auto root_proc = elem_to_proc[chain.first-1];
+    auto root_proc = elem_to_proc[chain.first - 1];
     for (const auto &element : chain_elements) {
       if (elem_to_proc[element - 1] != root_proc) {
         auto old_proc             = elem_to_proc[element - 1];
