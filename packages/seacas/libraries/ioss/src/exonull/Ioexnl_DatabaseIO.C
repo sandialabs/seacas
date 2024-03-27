@@ -1298,7 +1298,7 @@ namespace Ioexnl {
           put_info();
         }
 
-        output_other_meta_data();
+        output_other_metadata();
       }
     }
   }

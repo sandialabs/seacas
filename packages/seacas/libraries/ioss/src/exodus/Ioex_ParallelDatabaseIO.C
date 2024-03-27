@@ -4846,7 +4846,7 @@ namespace Ioex {
 
     if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
       output_node_map();
-      output_other_meta_data();
+      output_other_metadata();
     }
   }
 
