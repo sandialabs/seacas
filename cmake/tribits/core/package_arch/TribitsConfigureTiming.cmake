@@ -37,40 +37,61 @@
 # ************************************************************************
 # @HEADER
 
-include(PrintVar)
-include(AppendSet)
 
+include(TimingUtils)
+
+
+# Optionally start CMake code configure timing
 #
-# Function that does an in-place sort of a list of items according to the
-# ordering in a master list
+function(tribits_config_code_start_timer  START_TIMER_SECONDS_VAR_OUT)
+  if (${PROJECT_NAME}_ENABLE_CONFIGURE_TIMING)
+    timer_get_raw_seconds(START_TIMER_SECONDS)
+    set(${START_TIMER_SECONDS_VAR_OUT} ${START_TIMER_SECONDS} PARENT_SCOPE)
+  endif()
+endfunction()
+
+
+# Optionally stop CMake code configure timing
 #
-# NOTE: This function has wost-case N^2 complexity as the number of packages N
-# or TPLs increases.  It actually has N * n complexity where N is the total
-# number of packages/TPLs and n is the number of passed-in packages/TPLs.
-# However, since N is not likely to ever be more than a few hundred, this is
-# likely not going to be a big performance problem.  If this does become a
-# performance problem, list(SORT ...) could be used but would require some
-# work to build up the datastructures to make this very efficient.
+function(tribits_config_code_stop_timer  START_TIMER_SECONDS_VAR_IN
+  TIMER_STR
+  )
+  if (${PROJECT_NAME}_ENABLE_CONFIGURE_TIMING)
+    timer_get_raw_seconds(TIMER_STOP_SECONDS)
+    timer_print_rel_time(${${START_TIMER_SECONDS_VAR_IN}}
+      ${TIMER_STOP_SECONDS}
+      "${TIMER_STR}")
+  endif()
+endfunction()
+
+
+# Optionally start CMake code **package** configure timing
 #
+function(tribits_package_config_code_start_timer  START_TIMER_SECONDS_VAR_OUT)
+  if (${PROJECT_NAME}_ENABLE_CONFIGURE_TIMING
+      AND
+      ( ${PROJECT_NAME}_ENABLE_PACKAGE_CONFIGURE_TIMING
+        OR ${TRIBITS_PACKAGE}_PACKAGE_CONFIGURE_TIMING )
+    )
+    timer_get_raw_seconds(START_TIMER_SECONDS)
+    set(${START_TIMER_SECONDS_VAR_OUT} ${START_TIMER_SECONDS} PARENT_SCOPE)
+  endif()
+endfunction()
 
-function(tribits_sort_list_according_to_master_list  MASTER_LIST  LIST_VAR_INOUT)
 
-  #message("TRIBITS_SORT_LIST_ACCORDING_TO_MASTER_LIST:")
-  #print_var(MASTER_LIST)
-  #print_var(LIST_VAR_INOUT)
-  #print_var(${LIST_VAR_INOUT})
-
-  set(SORTED_LIST)
-
-  foreach(ITEM ${MASTER_LIST})
-    list(FIND ${LIST_VAR_INOUT} ${ITEM} ITEM_IDX)
-     if (NOT ITEM_IDX EQUAL -1)
-      list(APPEND SORTED_LIST ${ITEM})
-    endif()
-  endforeach()
-
-  #print_var(SORTED_LIST)
-
-  set(${LIST_VAR_INOUT} ${SORTED_LIST} PARENT_SCOPE)
-
+# Optionally stop CMake code **package** configure timing
+#
+function(tribits_package_config_code_stop_timer  START_TIMER_SECONDS_VAR_IN
+  TIMER_STR
+  )
+  if (${PROJECT_NAME}_ENABLE_CONFIGURE_TIMING
+      AND
+      ( ${PROJECT_NAME}_ENABLE_PACKAGE_CONFIGURE_TIMING
+        OR ${TRIBITS_PACKAGE}_PACKAGE_CONFIGURE_TIMING )
+    )
+    timer_get_raw_seconds(TIMER_STOP_SECONDS)
+    timer_print_rel_time(${${START_TIMER_SECONDS_VAR_IN}}
+      ${TIMER_STOP_SECONDS}
+      "${TIMER_STR}")
+  endif()
 endfunction()
