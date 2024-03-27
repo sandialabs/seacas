@@ -52,7 +52,7 @@ namespace Ioex {
 
     virtual ~DecompositionDataBase()                           = default;
     IOSS_NODISCARD virtual int    int_size() const             = 0;
-    IOSS_NODISCARD virtual void   decompose_model(int filePtr) = 0;
+    virtual void                  decompose_model(int filePtr) = 0;
     IOSS_NODISCARD virtual size_t ioss_node_count() const      = 0;
     IOSS_NODISCARD virtual size_t ioss_elem_count() const      = 0;
 
