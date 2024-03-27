@@ -11,7 +11,6 @@
 #include "Ioss_VariableType.h"
 #include "exodus/Ioex_Utils.h"
 #include <cstring>
-#include <exodusII_int.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -27,6 +26,7 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "exodusII.h"
+#include "exodusII_int.h"
 
 namespace {
   size_t match(const std::string &name1, const std::string &name2)
@@ -116,6 +116,58 @@ namespace Ioex {
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
     }
+  }
+
+  ex_field_type map_ioss_field_type(const std::string &type)
+  {
+    if (type == "vector_2d")
+      return EX_VECTOR_2D;
+    if (type == "vector_3d")
+      return EX_VECTOR_3D;
+    if (type == "scalar")
+      return EX_SCALAR;
+    if (type == "vector_1d")
+      return EX_VECTOR_1D;
+    if (type == "quaternion_2d")
+      return EX_QUATERNION_2D;
+    if (type == "quaternion_3d")
+      return EX_QUATERNION_3D;
+    if (type == "full_tensor_36")
+      return EX_FULL_TENSOR_36;
+    if (type == "full_tensor_32")
+      return EX_FULL_TENSOR_32;
+    if (type == "full_tensor_22")
+      return EX_FULL_TENSOR_22;
+    if (type == "full_tensor_16")
+      return EX_FULL_TENSOR_16;
+    if (type == "full_tensor_12")
+      return EX_FULL_TENSOR_12;
+    if (type == "sym_tensor_33")
+      return EX_SYM_TENSOR_33;
+    if (type == "sym_tensor_31")
+      return EX_SYM_TENSOR_31;
+    if (type == "sym_tensor_21")
+      return EX_SYM_TENSOR_21;
+    if (type == "sym_tensor_13")
+      return EX_SYM_TENSOR_13;
+    if (type == "sym_tensor_11")
+      return EX_SYM_TENSOR_11;
+    if (type == "sym_tensor_10")
+      return EX_SYM_TENSOR_10;
+    if (type == "asym_tensor_03")
+      return EX_ASYM_TENSOR_03;
+    if (type == "asym_tensor_02")
+      return EX_ASYM_TENSOR_02;
+    if (type == "asym_tensor_01")
+      return EX_ASYM_TENSOR_01;
+    if (type == "matrix_22")
+      return EX_MATRIX_2X2;
+    if (type == "matrix_33")
+      return EX_MATRIX_3X3;
+
+    if (Ioss::Utils::substr_equal("Real", type))
+      return EX_FIELD_TYPE_SEQUENCE;
+    return EX_FIELD_TYPE_INVALID;
   }
 
   Ioss::EntityType map_exodus_type(ex_entity_type type)
