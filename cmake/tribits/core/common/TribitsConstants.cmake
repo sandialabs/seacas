@@ -39,7 +39,7 @@
 
 # Define the TriBITS minimum required CMake version
 
-set(TRIBITS_CMAKE_MINIMUM_REQUIRED 3.23.0)
+set(TRIBITS_CMAKE_MINIMUM_REQUIRED 3.22.0)
 
 macro(tribits_asesrt_minimum_cmake_version)
 
