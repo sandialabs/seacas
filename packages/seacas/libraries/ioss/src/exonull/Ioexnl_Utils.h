@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -54,7 +54,7 @@ namespace Ioexnl {
   using NameTopoKey = std::pair<std::string, const Ioss::ElementTopology *>;
   struct IOEXNL_EXPORT NameTopoKeyCompare
   {
-    bool operator()(const NameTopoKey &lhs, const NameTopoKey &rhs) const
+    IOSS_NODISCARD bool operator()(const NameTopoKey &lhs, const NameTopoKey &rhs) const
     {
       assert(lhs.second != nullptr);
       assert(rhs.second != nullptr);
@@ -65,7 +65,7 @@ namespace Ioexnl {
 
   struct IOEXNL_EXPORT NameTopoKeyHash
   {
-    size_t operator()(const NameTopoKey &name_topo) const
+    IOSS_NODISCARD size_t operator()(const NameTopoKey &name_topo) const
     {
       return std::hash<std::string>{}(name_topo.first) +
              std::hash<size_t>{}((size_t)name_topo.second);
@@ -81,18 +81,19 @@ namespace Ioexnl {
   using TopologyMap = std::map<NameTopoKey, int, NameTopoKeyCompare>;
 #endif
 
-  IOEXNL_EXPORT const char *Version();
-  IOEXNL_EXPORT bool        check_processor_info(const std::string &filename, int exodusFilePtr,
-                                                 int processor_count, int processor_id);
+  IOSS_NODISCARD IOEXNL_EXPORT const char *Version();
+  IOSS_NODISCARD IOEXNL_EXPORT bool        check_processor_info(const std::string &filename,
+                                                                int exodusFilePtr, int processor_count,
+                                                                int processor_id);
 
-  IOEXNL_EXPORT Ioss::EntityType map_exodus_type(ex_entity_type type);
-  IOEXNL_EXPORT ex_entity_type   map_exodus_type(Ioss::EntityType type);
+  IOSS_NODISCARD IOEXNL_EXPORT Ioss::EntityType map_exodus_type(ex_entity_type type);
+  IOSS_NODISCARD IOEXNL_EXPORT ex_entity_type   map_exodus_type(Ioss::EntityType type);
 
   IOEXNL_EXPORT void update_last_time_attribute(int exodusFilePtr, double value);
   IOEXNL_EXPORT bool read_last_time_attribute(int exodusFilePtr, double *value);
 
-  IOEXNL_EXPORT bool    type_match(const std::string &type, const char *substring);
-  IOEXNL_EXPORT int64_t extract_id(const std::string &name_id);
+  IOSS_NODISCARD IOEXNL_EXPORT bool    type_match(const std::string &type, const char *substring);
+  IOSS_NODISCARD IOEXNL_EXPORT int64_t extract_id(const std::string &name_id);
   IOEXNL_EXPORT bool    set_id(const Ioss::GroupingEntity *entity, Ioexnl::EntityIdSet *idset);
   IOEXNL_EXPORT int64_t get_id(const Ioss::GroupingEntity *entity, Ioexnl::EntityIdSet *idset);
   IOEXNL_EXPORT void    decode_surface_name(Ioexnl::SideSetMap &fs_map, Ioexnl::SideSetSet &fs_set,
@@ -115,9 +116,9 @@ namespace Ioexnl {
                                              const Ioss::GroupingEntity *block, int ndim,
                                              std::string *disp_name);
 
-  IOEXNL_EXPORT std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                                            const std::string &basename, int length,
-                                            bool &db_has_name);
+  IOSS_NODISCARD IOEXNL_EXPORT std::string get_entity_name(int exoid, ex_entity_type type,
+                                                           int64_t id, const std::string &basename,
+                                                           int length, bool &db_has_name);
 
   IOEXNL_EXPORT void filter_element_list(Ioss::Region *region, Ioss::Int64Vector &elements,
                                          Ioss::Int64Vector &sides, bool remove_omitted_elements);

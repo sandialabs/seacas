@@ -1107,7 +1107,7 @@ namespace Iocgns {
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-        entity_map.is_sequential(true);
+        (void)entity_map.is_sequential(true);
         entity_map.build_reverse_map();
       }
       else {

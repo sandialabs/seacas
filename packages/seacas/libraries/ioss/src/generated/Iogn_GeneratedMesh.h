@@ -259,101 +259,101 @@ namespace Iogn {
     /**
      * Return number of nodes in the entire model.
      */
-    virtual int64_t node_count() const;
+    IOSS_NODISCARD virtual int64_t node_count() const;
 
     /**
      * Return number of nodes on this processor.
      */
-    virtual int64_t node_count_proc() const;
+    IOSS_NODISCARD virtual int64_t node_count_proc() const;
 
     /**
      * Return number of element blocks in the entire model.
      */
-    virtual int block_count() const;
+    IOSS_NODISCARD virtual int block_count() const;
 
     /**
      * Return number of nodesets in the entire model.
      */
-    virtual int nodeset_count() const;
+    IOSS_NODISCARD virtual int nodeset_count() const;
 
     /**
      * Return number of nodeset nodes on nodeset `id`
      */
-    int64_t nodeset_node_count(int64_t id) const;
+    IOSS_NODISCARD int64_t nodeset_node_count(int64_t id) const;
 
     /**
      * Return number of nodeset nodes on nodeset `id` on the current processor
      */
-    virtual int64_t nodeset_node_count_proc(int64_t id) const;
+    IOSS_NODISCARD virtual int64_t nodeset_node_count_proc(int64_t id) const;
 
     /**
      * Return string (quad4 or tri3) giving face topology of sidesets in model
      */
-    virtual std::string get_sideset_topology() const;
+    IOSS_NODISCARD virtual std::string get_sideset_topology() const;
 
     /**
      * Return number of sidesets in the entire model.
      */
-    virtual int sideset_count() const;
+    IOSS_NODISCARD virtual int sideset_count() const;
 
     /**
      * Return number of sideset `sides` on sideset `id`
      */
-    int64_t sideset_side_count(int64_t id) const;
+    IOSS_NODISCARD int64_t sideset_side_count(int64_t id) const;
 
     /**
      * Return number of sideset `sides` on sideset `id` on the current
      * processor.
      */
-    virtual int64_t sideset_side_count_proc(int64_t id) const;
+    IOSS_NODISCARD virtual int64_t sideset_side_count_proc(int64_t id) const;
 
     /**
      * Return number of elements in all element blocks in the model.
      */
-    virtual int64_t element_count() const;
+    IOSS_NODISCARD virtual int64_t element_count() const;
 
     /**
      * Return number of shell elements in all element blocks in the model.
      */
-    int64_t shell_element_count(ShellLocation /*loc*/) const;
+    IOSS_NODISCARD int64_t shell_element_count(ShellLocation /*loc*/) const;
 
     /**
      * Return number of elements in all element blocks on this processor.
      */
-    virtual int64_t element_count_proc() const;
+    IOSS_NODISCARD virtual int64_t element_count_proc() const;
 
     /**
      * Return number of shell elements in all element blocks on this processor.
      */
-    int64_t shell_element_count_proc(ShellLocation /*loc*/) const;
+    IOSS_NODISCARD int64_t shell_element_count_proc(ShellLocation /*loc*/) const;
 
-    int timestep_count() const { return timestepCount; }
+    IOSS_NODISCARD int timestep_count() const { return timestepCount; }
     /**
      * Return number of elements in the element block with id
      * `block_number`. The `block_number` ranges from `1` to
      * `block_count()`.
      */
-    virtual int64_t element_count(int64_t block_number) const;
+    IOSS_NODISCARD virtual int64_t element_count(int64_t block_number) const;
 
     /**
      * Return number of elements on this processor in the element
      * block with id `block_number`. The `block_number` ranges from
      * `1` to `block_count()`.
      */
-    virtual int64_t element_count_proc(int64_t block_number) const;
+    IOSS_NODISCARD virtual int64_t element_count_proc(int64_t block_number) const;
 
     /**
      * Returns pair containing "topology type string" and "number of
      * nodes / element". The topology type string will be "hex8" for
      * the hex element block and "shell4" for the shell element blocks.
      */
-    virtual std::pair<std::string, int> topology_type(int64_t block_number) const;
+    IOSS_NODISCARD virtual std::pair<std::string, int> topology_type(int64_t block_number) const;
 
-    void            build_node_map(Ioss::Int64Vector &map, std::vector<int> &proc, int64_t slab,
-                                   size_t slabOffset, size_t adjacentProc, size_t index);
-    virtual int64_t communication_node_count_proc() const;
-    virtual void    node_communication_map(Ioss::Int64Vector &map, std::vector<int> &proc);
-    virtual void    owning_processor(int *owner, int64_t num_node);
+    void build_node_map(Ioss::Int64Vector &map, std::vector<int> &proc, int64_t slab,
+                        size_t slabOffset, size_t adjacentProc, size_t index);
+    IOSS_NODISCARD virtual int64_t communication_node_count_proc() const;
+    virtual void node_communication_map(Ioss::Int64Vector &map, std::vector<int> &proc);
+    virtual void owning_processor(int *owner, int64_t num_node);
 
     /**
      * Fill the passed in `map` argument with the node map
@@ -454,11 +454,11 @@ namespace Iogn {
 
     virtual std::vector<std::string> sideset_touching_blocks(int64_t set_id) const;
 
-    int64_t get_num_x() const { return numX; }
-    int64_t get_num_y() const { return numY; }
-    int64_t get_num_z() const { return numZ; }
+    IOSS_NODISCARD int64_t get_num_x() const { return numX; }
+    IOSS_NODISCARD int64_t get_num_y() const { return numY; }
+    IOSS_NODISCARD int64_t get_num_z() const { return numZ; }
 
-    size_t get_variable_count(Ioss::EntityType type) const
+    IOSS_NODISCARD size_t get_variable_count(Ioss::EntityType type) const
     {
       return variableCount.find(type) != variableCount.end() ? variableCount.find(type)->second : 0;
     }

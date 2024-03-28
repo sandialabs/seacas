@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -63,23 +63,23 @@ namespace Iocgns {
 
     ~ParallelDatabaseIO() override;
 
-    std::string get_format() const override { return "CGNS"; }
+    IOSS_NODISCARD std::string get_format() const override { return "CGNS"; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
     // database supports that type (e.g. return_value & Ioss::FACESET)
-    unsigned entity_field_support() const override;
+    IOSS_NODISCARD unsigned entity_field_support() const override;
 
-    int get_file_pointer() const override;
+    IOSS_NODISCARD int get_file_pointer() const override;
 
-    bool node_major() const override { return false; }
+    IOSS_NODISCARD bool node_major() const override { return false; }
 
-    bool needs_shared_node_information() const override { return false; }
+    IOSS_NODISCARD bool needs_shared_node_information() const override { return false; }
 
     // This isn't quite true since a CGNS library with cgsize_t == 64-bits can read
     // a file with 32-bit ints. However,...
-    int int_byte_size_db() const override { return CG_SIZEOF_SIZE; }
+    IOSS_NODISCARD int int_byte_size_db() const override { return CG_SIZEOF_SIZE; }
 
     // Metadata-related functions.
     void write_meta_data();
@@ -88,8 +88,8 @@ namespace Iocgns {
   private:
     void read_meta_data_nl() override;
 
-    int64_t node_global_to_local_nl(int64_t global, bool must_exist) const override;
-    int64_t element_global_to_local_nl(int64_t global) const override;
+    IOSS_NODISCARD int64_t node_global_to_local_nl(int64_t global, bool must_exist) const override;
+    IOSS_NODISCARD int64_t element_global_to_local_nl(int64_t global) const override;
 
     void release_memory_nl() override;
 

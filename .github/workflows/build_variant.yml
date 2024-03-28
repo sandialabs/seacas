@@ -366,5 +366,7 @@ jobs:
         shell: bash -l {0}
         run: |
           cd build
+          sudo sysctl vm.mmap_rnd_bits=28
           ctest -j 4 --output-on-failure --exclude-regex test_exo
         if: ${{ success() && (matrix.config.sanitizer != 'NO' ||  matrix.config.threadsafe != 'NO') }}
+

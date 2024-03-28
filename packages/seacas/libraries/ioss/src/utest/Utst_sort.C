@@ -6,7 +6,8 @@
 
 #include "Ioss_Sort.h"
 #include <cassert>
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <fmt/core.h>
 #include <iostream>
 #include <random>
@@ -70,10 +71,23 @@ namespace {
   }
 } // namespace
 
+TEST_CASE("empty")
+{
+  std::vector<int64_t> x{};
+  Ioss::sort(x);
+  REQUIRE(verify_sorted(x));
+}
+
+TEST_CASE("single-element")
+{
+  int64_t              n = GENERATE(100, 1023, 1024, 1025, (2 << 16) - 1, 2 << 16, (2 << 16) + 1);
+  std::vector<int64_t> x{n};
+  Ioss::sort(x);
+  REQUIRE(verify_sorted(x));
+}
+
 TEST_CASE("sort")
 {
-  std::string type[] = {"sawtooth", "do_rand", "stagger", "plateau", "shuffle"};
-
   auto   dist = GENERATE_COPY(sawtooth, do_rand, stagger, plateau, shuffle);
   size_t n    = GENERATE(100, 1023, 1024, 1025, (2 << 16) - 1, 2 << 16, (2 << 16) + 1);
 
@@ -81,46 +95,51 @@ TEST_CASE("sort")
   size_t m = GENERATE(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
                       65536, 131072, 262144);
 
-  CHECKED_IF(m < 2 * n)
-  {
-    fmt::print("Size: {:8}, Shape = {:8}, Type = {:12}\n", n, m, type[dist - 1]);
+  if (m < 2 * n) {
     std::vector<int64_t> x = generate_vector(dist, n, m);
     REQUIRE(x.size() == n);
 
-    SECTION("as generated")
+    SECTION("output")
+    {
+      // Just printing output; no test...
+      std::string type[] = {"sawtooth", "do_rand", "stagger", "plateau", "shuffle"};
+      fmt::print("Size: {:8}, Shape = {:8}, Type = {:12}\n", n, m, type[dist - 1]);
+    }
+
+    DYNAMIC_SECTION("as generated" << n << m << dist)
     {
       Ioss::sort(x); // Copy of x
       REQUIRE(verify_sorted(x));
     }
 
-    SECTION("reversed")
+    DYNAMIC_SECTION("reversed" << n << m << dist)
     {
       std::reverse(x.begin(), x.end()); // Reversed
       Ioss::sort(x);
       REQUIRE(verify_sorted(x));
     }
 
-    SECTION("front-half reversed")
+    DYNAMIC_SECTION("front-half reversed" << n << m << dist)
     {
       std::reverse(&x[0], &x[n / 2]); // Front half reversed
       Ioss::sort(x);
       REQUIRE(verify_sorted(x));
     }
 
-    SECTION("back-half reversed")
+    DYNAMIC_SECTION("back-half reversed" << n << m << dist)
     {
       std::reverse(&x[n / 2], &x[n]); // Back half reversed
       Ioss::sort(x);
       REQUIRE(verify_sorted(x));
-      SECTION("already sorted")
+      DYNAMIC_SECTION("already sorted" << n << m << dist)
       {
-        REQUIRE(verify_sorted(x));
+        //        REQUIRE(verify_sorted(x));
         Ioss::sort(x); // Already sorted
         REQUIRE(verify_sorted(x));
       }
     }
 
-    SECTION("dithered")
+    DYNAMIC_SECTION("dithered" << n << m << dist)
     {
       for (size_t p = 0; p < n; p++) {
         x[p] += p % 5;

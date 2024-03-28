@@ -81,6 +81,7 @@ namespace IOShell {
     bool ints_64_bit{false};
     bool ints_32_bit{false};
     bool reals_32_bit{false};
+    bool netcdf3{false};
     bool netcdf4{false};
     bool netcdf5{false};
     bool quiet{false};

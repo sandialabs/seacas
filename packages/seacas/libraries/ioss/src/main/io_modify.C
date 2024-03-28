@@ -72,7 +72,7 @@ using real = double;
 
 namespace {
   std::string codename;
-  std::string version = "2.04 (2023-12-18)";
+  std::string version = "2.05 (2024-03-25)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -1907,7 +1907,10 @@ namespace {
       times[step] = times[step] * scale + offset;
       ex_put_time(exoid, step + 1, &times[step]);
     }
-    region.get_min_time();
+    // Now update the `last_time_attribute`...
+    auto max_time = *std::max_element(times.begin(), times.end());
+    Ioex::update_last_time_attribute(exoid, max_time);
+    (void)region.get_min_time(); // Triggers reloading region stateTimes vector.
   }
 
 } // nameSpace

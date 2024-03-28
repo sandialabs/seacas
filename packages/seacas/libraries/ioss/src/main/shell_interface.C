@@ -98,6 +98,9 @@ void IOShell::Interface::enroll_options()
                   "Use 32-bit floating point values on output database; default is 64-bits",
                   nullptr);
 
+  options_.enroll("netcdf3", Ioss::GetLongOption::NoValue,
+                  "Output database will be a classical netcdf (CDF3) file.", nullptr);
+
   options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
                   "Output database will be a netcdf4 "
                   "hdf5-based file instead of the "
@@ -388,14 +391,23 @@ bool IOShell::Interface::parse_options(int argc, char **argv, int my_processor)
   ints_32_bit  = (options_.retrieve("32-bit") != nullptr);
   reals_32_bit = (options_.retrieve("float") != nullptr);
 
+  if (options_.retrieve("netcdf3") != nullptr) {
+    netcdf3     = true;
+    netcdf4     = false;
+    netcdf5     = false;
+    ints_32_bit = true;
+  }
+
   if (options_.retrieve("netcdf4") != nullptr) {
+    netcdf3 = false;
     netcdf4 = true;
     netcdf5 = false;
   }
 
   if (options_.retrieve("netcdf5") != nullptr) {
-    netcdf5 = true;
+    netcdf3 = false;
     netcdf4 = false;
+    netcdf5 = true;
   }
 
   shuffle = (options_.retrieve("shuffle") != nullptr);

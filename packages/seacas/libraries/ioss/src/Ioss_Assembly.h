@@ -35,27 +35,27 @@ namespace Ioss {
 
     Assembly(DatabaseIO *io_database, const std::string &my_name);
 
-    std::string type_string() const override { return "Assembly"; }
-    std::string short_type_string() const override { return "assembly"; }
-    std::string contains_string() const override
+    IOSS_NODISCARD std::string type_string() const override { return "Assembly"; }
+    IOSS_NODISCARD std::string short_type_string() const override { return "assembly"; }
+    IOSS_NODISCARD std::string contains_string() const override
     {
       return m_members.empty() ? "<EMPTY>" : m_members[0]->type_string();
     }
-    EntityType type() const override { return ASSEMBLY; }
+    IOSS_NODISCARD EntityType type() const override { return ASSEMBLY; }
 
-    EntityType get_member_type() const { return m_type; }
+    IOSS_NODISCARD EntityType get_member_type() const { return m_type; }
 
-    bool                   add(const GroupingEntity *member);
-    bool                   remove(const GroupingEntity *removal);
-    const EntityContainer &get_members() const;
-    const GroupingEntity  *get_member(const std::string &my_name) const;
-    void                   remove_members();
-    size_t                 member_count() const { return m_members.size(); }
+    bool                                  add(const GroupingEntity *member);
+    bool                                  remove(const GroupingEntity *removal);
+    IOSS_NODISCARD const EntityContainer &get_members() const;
+    IOSS_NODISCARD const GroupingEntity  *get_member(const std::string &my_name) const;
+    void                                  remove_members();
+    IOSS_NODISCARD size_t                 member_count() const { return m_members.size(); }
 
     // Handle implicit properties -- These are calculated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string &my_name) const override;
+    IOSS_NODISCARD Property get_implicit_property(const std::string &my_name) const override;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

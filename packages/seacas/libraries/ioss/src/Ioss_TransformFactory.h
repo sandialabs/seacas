@@ -24,10 +24,10 @@ namespace Ioss {
   {
   public:
     virtual ~TransformFactory() = default;
-    static Ioss::Transform *create(const std::string &type);
+    IOSS_NODISCARD static Ioss::Transform *create(const std::string &type);
 
-    static int            describe(Ioss::NameList *names);
-    static Ioss::NameList describe();
+    static int                           describe(Ioss::NameList *names);
+    IOSS_NODISCARD static Ioss::NameList describe();
 
   protected:
     explicit TransformFactory(const std::string &type);

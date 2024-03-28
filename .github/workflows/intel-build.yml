@@ -150,12 +150,14 @@ jobs:
           cd build
           source /opt/intel/oneapi/setvars.sh
           echo "------------"
-          ls /opt/intel/oneapi/2024.0/
+          ls /opt/intel/oneapi/
           echo "------------"
-          ls /opt/intel/oneapi/2024.0/bin/
+          ls /opt/intel/oneapi/2024.1/
           echo "------------"
-          export PATH=/opt/intel/oneapi/2024.0/bin/:$PATH
-          export LD_LIBRARY_PATH=/opt/intel/oneapi/2024.0/lib/:$LD_LIBRARY_PATH
+          ls /opt/intel/oneapi/2024.1/bin/
+          echo "------------"
+          export PATH=/opt/intel/oneapi/2024.1/bin/:$PATH
+          export LD_LIBRARY_PATH=/opt/intel/oneapi/2024.1/lib/:$LD_LIBRARY_PATH
           printenv >> $GITHUB_ENV
           NUMPROCS=2 COMPILER=${{ matrix.compiler }} INSTALL_PATH=${HOME}/environments/${{ matrix.compiler }}-${{ matrix.hdf5 }}-${{ matrix.netcdf }}-${{ matrix.cgns }} bash ../cmake-config
 

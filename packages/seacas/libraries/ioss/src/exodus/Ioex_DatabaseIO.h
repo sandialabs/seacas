@@ -65,7 +65,7 @@ namespace Ioex {
                Ioss_MPI_Comm communicator, const Ioss::PropertyManager &props);
 
     // Kluge -- a few applications need access so can directly access exodus API
-    int get_file_pointer() const override; // Open file and set exodusFilePtr.
+    IOSS_NODISCARD int get_file_pointer() const override; // Open file and set exodusFilePtr.
 
   private:
     void get_step_times_nl() override;
@@ -74,7 +74,7 @@ namespace Ioex {
                          bool abort_if_error) const override;
     bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
                             bool overwrite, bool abort_if_error) const override;
-    bool check_valid_file_ptr(bool write_message, std::string *error_msg, int *bad_count,
+    IOSS_NODISCARD bool check_valid_file_ptr(bool write_message, std::string *error_msg, int *bad_count,
                               bool abort_if_error) const;
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
@@ -205,8 +205,8 @@ namespace Ioex {
     void get_commsets();
 
     // ID Mapping functions.
-    const Ioss::Map &get_map(ex_entity_type type) const;
-    const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entity_count,
+    IOSS_NODISCARD const Ioss::Map &get_map(ex_entity_type type) const;
+    IOSS_NODISCARD const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entity_count,
                              ex_entity_type entity_type, ex_inquiry inquiry_type) const;
 
     // Internal data handling

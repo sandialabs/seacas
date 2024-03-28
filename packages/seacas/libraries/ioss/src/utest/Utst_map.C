@@ -7,7 +7,7 @@
 #include "Ioss_ConcreteVariableType.h"
 #include "Ioss_Field.h"
 #include "Ioss_Map.h"
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <cstddef>
 #include <numeric>
 #include <random>

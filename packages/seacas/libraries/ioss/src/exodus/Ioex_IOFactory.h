@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2020, 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020, 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -27,9 +27,9 @@ namespace Ioex {
 
   private:
     IOFactory();
-    Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
-                              Ioss_MPI_Comm                communicator,
-                              const Ioss::PropertyManager &properties) const override;
-    std::string       show_config() const override;
+    IOSS_NODISCARD Ioss::DatabaseIO *
+    make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage, Ioss_MPI_Comm communicator,
+            const Ioss::PropertyManager &properties) const override;
+    IOSS_NODISCARD std::string show_config() const override;
   };
 } // namespace Ioex
