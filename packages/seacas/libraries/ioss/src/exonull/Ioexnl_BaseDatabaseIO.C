@@ -1046,7 +1046,7 @@ namespace Ioexnl {
 
   void BaseDatabaseIO::finalize_write(int, double) {}
 
-  void BaseDatabaseIO::common_write_meta_data(Ioss::IfDatabaseExistsBehavior behavior)
+  void BaseDatabaseIO::common_write_metadata(Ioss::IfDatabaseExistsBehavior behavior)
   {
     Ioss::Region *region = get_region();
 
@@ -1280,7 +1280,7 @@ namespace Ioexnl {
     }
   }
 
-  void BaseDatabaseIO::output_other_meta_data()
+  void BaseDatabaseIO::output_other_metadata()
   {
     // Write attribute names (if any)...
     write_attribute_names(get_file_pointer(), EX_NODE_SET, get_region()->get_nodesets());

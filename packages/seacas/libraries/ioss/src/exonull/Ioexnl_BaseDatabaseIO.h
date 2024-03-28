@@ -216,8 +216,8 @@ namespace Ioexnl {
     void add_attribute_fields(Ioss::GroupingEntity *block, int attribute_count,
                               const std::string &type);
 
-    void common_write_meta_data(Ioss::IfDatabaseExistsBehavior behavior);
-    void output_other_meta_data();
+    void common_write_metadata(Ioss::IfDatabaseExistsBehavior behavior);
+    void output_other_metadata();
 
     int64_t internal_add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
                                         int64_t position, int64_t block_count,

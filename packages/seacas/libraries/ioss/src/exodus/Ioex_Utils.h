@@ -82,11 +82,13 @@ namespace Ioex {
 #endif
 
   IOSS_NODISCARD IOEX_EXPORT const char *Version();
-  IOEX_EXPORT bool        check_processor_info(const std::string &filename, int exodusFilePtr,
-                                               int processor_count, int processor_id);
+  IOEX_EXPORT bool check_processor_info(const std::string &filename, int exodusFilePtr,
+                                        int processor_count, int processor_id);
 
   IOSS_NODISCARD IOEX_EXPORT Ioss::EntityType map_exodus_type(ex_entity_type type);
   IOSS_NODISCARD IOEX_EXPORT ex_entity_type   map_exodus_type(Ioss::EntityType type);
+
+  IOSS_NODISCARD IOEX_EXPORT ex_field_type map_ioss_field_type(const std::string &type);
 
   IOEX_EXPORT void update_last_time_attribute(int exodusFilePtr, double value);
   IOEX_EXPORT bool read_last_time_attribute(int exodusFilePtr, double *value);
@@ -114,8 +116,8 @@ namespace Ioex {
                                            std::string *disp_name);
 
   IOSS_NODISCARD IOEX_EXPORT std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                                          const std::string &basename, int length,
-                                          bool &db_has_name);
+                                                         const std::string &basename, int length,
+                                                         bool &db_has_name);
 
   IOEX_EXPORT bool filter_node_list(Ioss::Int64Vector                &nodes,
                                     const std::vector<unsigned char> &node_connectivity_status);

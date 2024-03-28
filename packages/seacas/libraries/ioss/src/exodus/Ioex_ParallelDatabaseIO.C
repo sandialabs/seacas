@@ -4797,7 +4797,7 @@ namespace Ioex {
   void ParallelDatabaseIO::write_meta_data(Ioss::IfDatabaseExistsBehavior behavior)
   {
     Ioss::Region *region = get_region();
-    common_write_meta_data(behavior);
+    common_write_metadata(behavior);
 
     char the_title[max_line_length + 1];
 
@@ -4846,7 +4846,7 @@ namespace Ioex {
 
     if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
       output_node_map();
-      output_other_meta_data();
+      output_other_metadata();
     }
   }
 
