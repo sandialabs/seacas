@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -51,7 +51,9 @@
 #include "Ioss_SurfaceSplit.h"
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
+#if defined(SEACAS_HAVE_EXODUS)
 #include "exodusII.h"
+#endif
 #include "info_interface.h"
 #if defined(SEACAS_HAVE_CGNS)
 #include <cgnslib.h>
