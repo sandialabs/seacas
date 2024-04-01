@@ -901,6 +901,7 @@ if [ "$CATALYST2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatalyst.${LD_EXT} ]
     then
+        catalyst2_version="v2.0.0"
         echo "${txtgrn}+++ Catalyst2${txtrst}"
         cd $ACCESS || exit
         cd TPL/catalyst2 || exit
@@ -915,7 +916,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd catalyst || exit
-                  git checkout master #todo: a specific version
+            git checkout ${catalyst2_version}
             rm -rf build
             mkdir build
             cd build || exit
