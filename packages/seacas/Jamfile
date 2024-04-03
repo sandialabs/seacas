@@ -1866,7 +1866,7 @@ exe Utst_database_io
   [ glob $(seacas-root)/libraries/ioss/src/utest/Utst_IofxDatabaseIO.C ]
     ioinit
     /tpl/netcdf-c//netcdf
-    /tpl/gtest//gtest
+    /tpl/googletest//gtest
   : <tag>@utility-exec-tag
   ;
 
@@ -1876,7 +1876,7 @@ exe Utst_textmesh
     ioinit
     iotm
     /tpl/netcdf-c//netcdf
-    /tpl/gtest//gtest
+    /tpl/googletest//gtest
     /mpi//mpi
   : <tag>@sierra-exec-tag
   ;
