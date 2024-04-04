@@ -9,12 +9,10 @@
 #include "aprepro.h"        // for Aprepro, symrec, file_rec, etc
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
 #include "terminal_color.h"
-#if defined(FMT_SUPPORT)
-#include <fmt/ostream.h>
-#endif
 #include <cstdio>
-#include <cstdlib>  // for exit, EXIT_SUCCESS, etc
-#include <cstring>  // for strcmp
+#include <cstdlib> // for exit, EXIT_SUCCESS, etc
+#include <cstring> // for strcmp
+#include <fmt/ostream.h>
 #include <fstream>  // for operator<<, basic_ostream, etc
 #include <iomanip>  // for operator<<, setw, etc
 #include <iostream> // for left, cerr, cout, streampos
@@ -635,12 +633,7 @@ namespace SEAMS {
           << "            --info=file: Output INFO messages (e.g. DUMP() output) to file.\n"
           << "      --nowarning or -W: Do not print WARN messages              \n"
           << "  --comment=char or -c=char: Change comment character to 'char'  \n"
-#if defined(FMT_SUPPORT)
           << "    --full_precision -p: Floating point output uses as many digits as needed.\n"
-#else
-          << "    --full_precision -p: (Not supported in this build) Floating point output uses as "
-             "many digits as needed.\n"
-#endif
           << "      --copyright or -C: Print copyright message                 \n"
           << "   --keep_history or -k: Keep a history of aprepro substitutions.\n"
           << "                         (not for general interactive use)       \n"
@@ -813,13 +806,8 @@ namespace SEAMS {
     for (const auto &ptr : get_sorted_sym_table()) {
       if (!ptr->isInternal) {
         if (ptr->type == Parser::token::VAR || ptr->type == Parser::token::IMMVAR) {
-#if defined(FMT_SUPPORT)
           fmt::print((*infoStream), "{}{}\": {}", (first ? "\"" : ",\n\""), ptr->name,
                      ptr->value.var);
-#else
-          (*infoStream) << (first ? "\"" : ",\n\"") << ptr->name << "\": " << std::setprecision(10)
-                        << ptr->value.var;
-#endif
           first = false;
         }
         else if (ptr->type == Parser::token::UNDVAR) {
@@ -853,23 +841,12 @@ namespace SEAMS {
         if (spre.empty() || ptr->name.find(spre) != std::string::npos) {
           if (doInternal == ptr->isInternal) {
             if (ptr->type == Parser::token::VAR) {
-#if defined(FMT_SUPPORT)
               fmt::print((*infoStream), "{}  {{{:<{}}\t= {}}}\n", comment, ptr->name, width,
                          ptr->value.var);
-#else
-              (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
-                            << "\t= " << std::setprecision(10) << ptr->value.var << "}" << '\n';
-#endif
             }
             else if (ptr->type == Parser::token::IMMVAR) {
-#if defined(FMT_SUPPORT)
               fmt::print((*infoStream), "{}  {{{:<{}}\t= {}}} (immutable)\n", comment, ptr->name,
                          width, ptr->value.var);
-#else
-              (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
-                            << "\t= " << std::setprecision(10) << ptr->value.var << "} (immutable)"
-                            << '\n';
-#endif
             }
             else if (ptr->type == Parser::token::SVAR) {
               if (strchr(ptr->value.svar.c_str(), '\n') != nullptr ||
