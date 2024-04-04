@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -8,9 +8,7 @@
 #include "apr_util.h"
 #include "apr_array.h"
 
-#if defined FMT_SUPPORT
 #include <fmt/format.h>
-#endif
 #include <cerrno>
 #include <cfenv>
 #include <cmath>
@@ -133,12 +131,8 @@ line:     '\n'                  { if (echo) aprepro.lexer->LexerOutput("\n", 1);
         | LBRACE exp RBRACE     { if (echo) {
                                      SEAMS::symrec *format = aprepro.getsym("_FORMAT");
                                      if (format->value.svar.empty()) {
-#if defined FMT_SUPPORT
                                         auto tmpstr = fmt::format("{}", $2);
                                         aprepro.lexer->LexerOutput(tmpstr.c_str(), tmpstr.size());
-#else
-                                        yyerror(aprepro, "Empty _FORMAT string -- no output will be printed. Optional Lib::FMT dependency is not enabled.");
-#endif
                                      }
                                      else {
                                         static char    tmpstr[512];
