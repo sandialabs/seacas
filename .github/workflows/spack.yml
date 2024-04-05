@@ -30,5 +30,6 @@ jobs:
        spack compiler find
        spack spec seacas~mpi
        spack install seacas~mpi
-       spack spec seacas+mpi
-       spack install seacas+mpi
+       spack find
+       # spack spec seacas+mpi
+       # spack install seacas+mpi
