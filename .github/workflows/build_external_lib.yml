@@ -33,9 +33,9 @@ jobs:
       - name: Install Using linuxbrew
         shell: bash -l {0}
         run: |
-	  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-	  brew install fmt
-	   
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew install fmt
+
       - name: Run cmake
         shell: bash -l {0}
         run: |
