@@ -8,10 +8,11 @@
 #include "apr_util.h"
 #include "aprepro.h"        // for Aprepro, symrec, file_rec, etc
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
-#include "terminal_color.h"
 #include <cstdio>
 #include <cstdlib> // for exit, EXIT_SUCCESS, etc
 #include <cstring> // for strcmp
+#include <fmt/color.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fstream>  // for operator<<, basic_ostream, etc
 #include <iomanip>  // for operator<<, setw, etc
@@ -32,8 +33,8 @@
 #endif
 
 namespace {
-  const std::string version_short{"6.26"};
-  const std::string version_date{"(2024/04/03)"};
+  const std::string version_short{"6.27"};
+  const std::string version_date{"(2024/04/05)"};
   const std::string version_string = version_short + " " + version_date;
 
   void output_copyright();
@@ -221,27 +222,19 @@ namespace SEAMS {
 
   void Aprepro::error(const std::string &msg, bool line_info, bool prefix) const
   {
-    bool              colorize = (errorStream == &std::cerr) && isatty(fileno(stderr));
-    std::stringstream ss;
-    if (prefix) {
-      if (colorize) {
-        (*errorStream) << trmclr::red;
-      }
-      (*errorStream) << "Aprepro-" << short_version() << ": ERROR: ";
-    }
+    bool        colorize = (errorStream == &std::cerr) && isatty(fileno(stderr));
+    std::string message  = prefix ? fmt::format("Aprepro-{}: ERROR: {}", short_version(), msg)
+                                  : fmt::format("{}", msg);
+    std::string lines    = line_info ? fmt::format(" ({}, line {})", ap_file_list.top().name,
+                                                   ap_file_list.top().lineno)
+                                     : "";
 
-    ss << msg;
-    if (prefix && colorize) {
-      ss << trmclr::normal;
+    if (colorize) {
+      fmt::print(*errorStream, "{}{}\n", fmt::styled(message, fmt::fg(fmt::color::red)), lines);
     }
-
-    if (line_info) {
-      ss << " (" << ap_file_list.top().name << ", line " << ap_file_list.top().lineno << ")";
+    else {
+      fmt::print(*errorStream, "{}{}\n", message, lines);
     }
-    ss << "\n";
-
-    // Send it to the user defined stream
-    (*errorStream) << ss.str();
     parseErrorCount++;
   }
 
@@ -251,28 +244,20 @@ namespace SEAMS {
       return;
     }
 
-    bool              colorize = (warningStream == &std::cerr) && isatty(fileno(stderr));
-    std::stringstream ss;
-    if (prefix) {
-      if (colorize) {
-        (*warningStream) << trmclr::yellow;
-      }
-      (*warningStream) << "Aprepro: WARNING: ";
+    bool        colorize = (warningStream == &std::cerr) && isatty(fileno(stderr));
+    std::string message =
+        prefix ? fmt::format("Aprepro: WARNING: {}", msg) : fmt::format("{}", msg);
+    std::string lines = line_info ? fmt::format(" ({}, line {})", ap_file_list.top().name,
+                                                ap_file_list.top().lineno)
+                                  : "";
+
+    if (colorize) {
+      fmt::print(*warningStream, "{}{}\n", fmt::styled(message, fmt::fg(fmt::color::yellow)),
+                 lines);
     }
-
-    ss << msg;
-
-    if (prefix && colorize) {
-      ss << trmclr::normal;
+    else {
+      fmt::print(*warningStream, "{}{}\n", message, lines);
     }
-
-    if (line_info) {
-      ss << " (" << ap_file_list.top().name << ", line " << ap_file_list.top().lineno << ")";
-    }
-    ss << "\n";
-
-    // Send it to the user defined stream
-    (*warningStream) << ss.str();
     parseWarningCount++;
   }
 
@@ -282,27 +267,18 @@ namespace SEAMS {
       return;
     }
 
-    bool              colorize = (infoStream == &std::cout) && isatty(fileno(stdout));
-    std::stringstream ss;
-    if (prefix) {
-      if (colorize) {
-        (*infoStream) << trmclr::blue;
-      }
-      (*infoStream) << "Aprepro: INFO: ";
-    }
-    ss << msg;
+    bool        colorize = (infoStream == &std::cout) && isatty(fileno(stdout));
+    std::string message  = prefix ? fmt::format("Aprepro: INFO: {}", msg) : fmt::format("{}", msg);
+    std::string lines    = line_info ? fmt::format(" ({}, line {})", ap_file_list.top().name,
+                                                   ap_file_list.top().lineno)
+                                     : "";
 
-    if (prefix && colorize) {
-      ss << trmclr::normal;
+    if (colorize) {
+      fmt::print(*infoStream, "{}{}\n", fmt::styled(message, fmt::fg(fmt::color::blue)), lines);
     }
-
-    if (line_info) {
-      ss << " (" << ap_file_list.top().name << ", line " << ap_file_list.top().lineno << ")";
+    else {
+      fmt::print(*infoStream, "{}{}\n", message, lines);
     }
-    ss << "\n";
-
-    // Send it to the user defined stream
-    (*infoStream) << ss.str();
   }
 
   void Aprepro::set_error_streams(std::ostream *c_error, std::ostream *c_warning,
@@ -883,33 +859,35 @@ namespace SEAMS {
     else if (type == Parser::token::FNCT || type == Parser::token::SFNCT ||
              type == Parser::token::AFNCT) {
       int fwidth = 20; // controls spacing/padding for the function names
-      (*infoStream) << trmclr::blue << "\nFunctions returning double:" << trmclr::normal << '\n';
+      fmt::print(*infoStream, "{}",
+                 fmt::styled("\nFunctions returning double:\n", fmt::fg(fmt::color::cyan)));
       for (const auto &ptr : get_sorted_sym_table()) {
         if (spre.empty() || ptr->name.find(spre) != std::string::npos) {
           if (ptr->type == Parser::token::FNCT) {
-            (*infoStream) << std::left << trmclr::green << std::setw(fwidth) << ptr->syntax
-                          << trmclr::normal << ":  " << ptr->info << '\n';
+            fmt::print(*infoStream, "{:<{}}:  {}\n",
+                       fmt::styled(ptr->syntax, fmt::fg(fmt::color::lime)), fwidth, ptr->info);
           }
         }
       }
 
-      (*infoStream) << trmclr::blue << trmclr::blue
-                    << "\nFunctions returning string:" << trmclr::normal << '\n';
+      fmt::print(*infoStream, "{}",
+                 fmt::styled("\nFunctions returning string:\n", fmt::fg(fmt::color::cyan)));
       for (const auto &ptr : get_sorted_sym_table()) {
         if (spre.empty() || ptr->name.find(spre) != std::string::npos) {
           if (ptr->type == Parser::token::SFNCT) {
-            (*infoStream) << std::left << trmclr::green << std::setw(fwidth) << ptr->syntax
-                          << trmclr::normal << ":  " << ptr->info << '\n';
+            fmt::print(*infoStream, "{:<{}}:  {}\n",
+                       fmt::styled(ptr->syntax, fmt::fg(fmt::color::lime)), fwidth, ptr->info);
           }
         }
       }
 
-      (*infoStream) << trmclr::blue << "\nFunctions returning array:" << trmclr::normal << '\n';
+      fmt::print(*infoStream, "{}",
+                 fmt::styled("\nFunctions returning array:\n", fmt::fg(fmt::color::cyan)));
       for (const auto &ptr : get_sorted_sym_table()) {
         if (spre.empty() || ptr->name.find(spre) != std::string::npos) {
           if (ptr->type == Parser::token::AFNCT) {
-            (*infoStream) << std::left << trmclr::green << std::setw(fwidth) << ptr->syntax
-                          << trmclr::normal << ":  " << ptr->info << '\n';
+            fmt::print(*infoStream, "{:<{}}:  {}\n",
+                       fmt::styled(ptr->syntax, fmt::fg(fmt::color::lime)), fwidth, ptr->info);
           }
         }
       }
