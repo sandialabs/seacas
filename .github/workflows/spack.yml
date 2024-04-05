@@ -27,5 +27,5 @@ jobs:
         path: spack       # Where to clone Spack
     - run: |
        spack external find
-       spack compiler fine
+       spack compiler find
        spack install seacas~mpi
