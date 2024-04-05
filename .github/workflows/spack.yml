@@ -25,4 +25,7 @@ jobs:
         buildcache: true  # Configure oci://ghcr.io/spack/github-actions-buildcache
         color: true       # Force color output (SPACK_COLOR=always)
         path: spack       # Where to clone Spack
-    - run: spack install seacas~mpi
+    - run: |
+       spack external find
+       spack compiler fine
+       spack install seacas~mpi
