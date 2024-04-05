@@ -230,15 +230,25 @@ add_executable(ExodusReadFor ExodusRead.f)
 target_link_libraries(ExodusReadFor PRIVATE SEACASExodus_for::all_libs)
 ```
 
-The `cmake-use-example` directory contains this sample
-`CMakeLists.txt` file and a couple C and Fortran files which provide
-an example of how to build and link a C or Fortran program with the
-Exodus library installed as part of a build of this package.
+A similar CMakeLists.txt file for using the IOSS library would be something like:
+
+```sh
+cmake_minimum_required(VERSION 3.1...3.26)
+project(IossCMakeExample VERSION 1.0 LANGUAGES CXX)
+
+#### C++ IOSS ####
+find_package(SEACASIoss CONFIG)
+add_executable(IossExample IossExample.C)
+target_link_libraries(IossExample PRIVATE SEACASIoss::all_libs)
+```
+
+The `cmake-use-example` directory contains Exodus example files in the
+`exodus` subdirectory and Ioss example files in the `ioss` subdirectory.
+These provide short examples of how to build and link a program with the 
+Exodus and/or Ioss libraries.
 
 To use this, copy the contents of the directory to your own filespace
-and modify the contents as needed.  The example provides a C
-executable and a Fortran Executable which both are linked to the
-Exodus library.
+and modify the contents as needed.  
 
 To configure and build, you would do something like:
 
@@ -247,19 +257,10 @@ To configure and build, you would do something like:
   CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake ..
   make
 ```
-And you would then get `ExodusWriteC` and `ExodusReadFor` compiled and linked against the Exodus library.
 
-A similar CMakeLists.txt file for using the IOSS library would be something like:
-
-```sh
-cmake_minimum_required(VERSION 3.1...3.26)
-project(IOSSCMakeExample VERSION 1.0 LANGUAGES CXX)
-
-#### C++ IOSS CMake Example ####
-find_package(SEACASIoss CONFIG)
-add_executable(ioss_exe ioss_exe.C)
-target_link_libraries(ioss_exe PRIVATE SEACASIoss::all_libs)
-```
+And you would then get an executable (`ExodusWriteC` and
+`ExodusReadFor` for Exodus, `IossExample` for Ioss) compiled and linked
+against the Exodus and/or Ioss libraries.
 
 ## Required Software
 
