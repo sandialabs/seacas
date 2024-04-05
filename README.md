@@ -337,7 +337,6 @@ a separate license:
 | [adler hash](https://en.wikipedia.org/wiki/Adler-32)	| `packages/seacas/libraries/suplib_c/adler.c` | [zlib](https://opensource.org/licenses/zlib) |
 | [MurmurHash](https://github.com/aappleby/smhasher) | `packages/seacas/libraries/ioss/src/Ioss_FaceGenerator.C` | public domain |
 | [json include file](http://jsoncpp.sourceforge.net) | `packages/seacas/libraries/ioss/src/visualization/` | [MIT](https://opensource.org/licenses/MIT) |
-| [terminal_color](https://github.com/matovitch/trmclr) | `packages/seacas/libraries/aprepro_lib` | [zlib](https://opensource.org/licenses/zlib) |
 | [Tessil Hash](https://github.com/Tessil/) | `packages/seacas/libraries/ioss/src/hash` |  [MIT](https://opensource.org/licenses/MIT) |
 | [pdqsort](https://github.com/orlp/pdqsort) | `packages/seacas/libraries/ioss/src` | [Zlib License](https://github.com/orlp/pdqsort/blob/master/license.txt) |
 ## Contact information
