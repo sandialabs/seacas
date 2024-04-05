@@ -613,6 +613,7 @@ then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS || exit
             git checkout v4.4.0
+	    git am ../CGNS-Allow-more-liberal-version-matching.patch
             rm -rf build
             mkdir build
             cd build || exit
