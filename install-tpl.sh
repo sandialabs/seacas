@@ -984,7 +984,7 @@ fi
 # =================== INSTALL catch2  ===============
 if [ "$CATCH2" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatch.a ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libCatch2.a ]
     then
         echo "${txtgrn}+++ Catch2${txtrst}"
         cd $ACCESS || exit
