@@ -25,9 +25,6 @@ jobs:
         buildcache: true  # Configure oci://ghcr.io/spack/github-actions-buildcache
         color: true       # Force color output (SPACK_COLOR=always)
         path: spack       # Where to clone Spack
-
-    - name: Configure Spack externals
-        shell: bash -l {0}
         run: |
           spack external find
           spack compiler find
