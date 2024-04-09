@@ -1,4 +1,4 @@
-C Copyright(C) 1999-2020 National Technology & Engineering Solutions
+C Copyright(C) 1999-2020, 2024 National Technology & Engineering Solutions
 C of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C NTESS, the U.S. Government retains certain rights in this software.
 C
@@ -43,7 +43,7 @@ C     well when trying to reduce the size of NOLD
          end do
       end if
 
-      if (isseq .eq. .true.) then
+      if (isseq) then
          return
       end if
       
