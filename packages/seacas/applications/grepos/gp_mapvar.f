@@ -26,16 +26,30 @@ C   --   SCR  - TMP - temporary storage area
       real vars(*)
 c     real vars(nold, nvar)
       real scr(*)
+      logical isseq
 
 C ... VARS should really be a doubly-dimensioned array (NOLD, NVAR),
 C     The dimensions need to be in this order so we can read them
-C     in using exgev and exgnv.  But, this order doesn't work very
+C     in using exgnv.  But, this order doesn't work very
 C     well when trying to reduce the size of NOLD
 
-C ... TODO: Need to use the truth table to make sure variables
-C           exist for each element.
+      isseq = .false.
+      if (nold .eq. nnew) then
+         isseq = .true.
+         do i=1, nnew
+            if (map(i) .ne. i) then
+               isseq = .false.
+            end if
+         end do
+      end if
+
+      if (isseq .eq. .true.) then
+         return
+      end if
+      
       do 30 ivar = 1, nvar
         do 10 i = 1, nnew
+           write (*,*) i, map(i)
           scr(i) = vars(map(i) + nold * (ivar-1) )
  10     continue
 
