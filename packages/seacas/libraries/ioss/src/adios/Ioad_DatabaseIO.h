@@ -145,7 +145,7 @@ namespace Ioad {
 
     template <typename T> void put_data(void *data, const std::string &encoded_name) const;
     template <typename T,
-              typename = typename std::enable_if<!std::is_base_of_t<Ioss::EntitySet, T>::value, T>>
+              typename = typename std::enable_if_t<!std::is_base_of_v<Ioss::EntitySet, T>, T>>
     void put_var_type(const Ioss::Field &field, const std::string &encoded_name,
                       bool transformed_field) const;
     template <typename T>
