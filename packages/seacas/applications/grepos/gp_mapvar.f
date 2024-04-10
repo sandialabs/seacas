@@ -43,7 +43,7 @@ C     well when trying to reduce the size of NOLD
          end do
       end if
 
-      if (isseq .eq. .true.) then
+      if (isseq) then
          return
       end if
       
