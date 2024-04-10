@@ -78,6 +78,7 @@ manually as detailed in
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | FMT             | YES, NO | YES | Should Lib::FMT TPL be built. |
+| CATCH2          | YES, NO | YES | Should Catch2 be built (used for testing). |
 | H5VERSION       | V114, V110, V18 | V114 | Use HDF5-1.14.X, HDF5-1.10.X or HDF5-1.8.X |
 | H5CPP           | YES, NO | NO  | Should the HDF5 C++ library be built/installed |
 | BB              | YES, NO | NO  | Enable Burst Buffer support in PnetCDF |
@@ -230,23 +231,37 @@ add_executable(ExodusReadFor ExodusRead.f)
 target_link_libraries(ExodusReadFor PRIVATE SEACASExodus_for::all_libs)
 ```
 
-The `cmake-use-example` directory contains this sample
-`CMakeLists.txt` file and a couple C and Fortran files which provide
-an example of how to build and link a C or Fortran program with the
-Exodus library installed as part of a build of this package.
+A similar CMakeLists.txt file for using the IOSS library would be something like:
+
+```sh
+cmake_minimum_required(VERSION 3.1...3.26)
+project(IossCMakeExample VERSION 1.0 LANGUAGES CXX)
+
+#### C++ IOSS ####
+find_package(SEACASIoss CONFIG)
+add_executable(IossExample IossExample.C)
+target_link_libraries(IossExample PRIVATE SEACASIoss::all_libs)
+```
+
+The `cmake-use-example` directory contains Exodus example files in the
+`exodus` subdirectory and Ioss example files in the `ioss` subdirectory.
+These provide short examples of how to build and link a program with the 
+Exodus and/or Ioss libraries.
 
 To use this, copy the contents of the directory to your own filespace
-and modify the contents as needed.  The example provides a C
-executable and a Fortran Executable which both are linked to the
-Exodus library.
+and modify the contents as needed.  
 
 To configure and build, you would do something like:
+
 ```sh
   mkdir build; cd build
   CMAKE_PREFIX_PATH={path_to_root_of_seacas_install} cmake ..
   make
 ```
-And you would then get `ExodusWriteC` and `ExodusReadFor` compiled and linked against the Exodus library.
+
+And you would then get an executable (`ExodusWriteC` and
+`ExodusReadFor` for Exodus, `IossExample` for Ioss) compiled and linked
+against the Exodus and/or Ioss libraries.
 
 ## Required Software
 
@@ -323,7 +338,6 @@ a separate license:
 | [adler hash](https://en.wikipedia.org/wiki/Adler-32)	| `packages/seacas/libraries/suplib_c/adler.c` | [zlib](https://opensource.org/licenses/zlib) |
 | [MurmurHash](https://github.com/aappleby/smhasher) | `packages/seacas/libraries/ioss/src/Ioss_FaceGenerator.C` | public domain |
 | [json include file](http://jsoncpp.sourceforge.net) | `packages/seacas/libraries/ioss/src/visualization/` | [MIT](https://opensource.org/licenses/MIT) |
-| [terminal_color](https://github.com/matovitch/trmclr) | `packages/seacas/libraries/aprepro_lib` | [zlib](https://opensource.org/licenses/zlib) |
 | [Tessil Hash](https://github.com/Tessil/) | `packages/seacas/libraries/ioss/src/hash` |  [MIT](https://opensource.org/licenses/MIT) |
 | [pdqsort](https://github.com/orlp/pdqsort) | `packages/seacas/libraries/ioss/src` | [Zlib License](https://github.com/orlp/pdqsort/blob/master/license.txt) |
 ## Contact information

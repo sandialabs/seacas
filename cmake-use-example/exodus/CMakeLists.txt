@@ -16,7 +16,7 @@ add_executable(ExodusWriteC ExodusWrite.c)
 target_link_libraries(ExodusWriteC PRIVATE SEACASExodus::all_libs)
 
 
-#### FORTRAN #####
+#### FORTRAN ##### (Remove all below if only using Exodus C API)
 IF ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
   SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fcray-pointer -fdefault-real-8 -fdefault-integer-8 -fno-range-check")
 ELSEIF ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "XL")

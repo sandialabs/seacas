@@ -813,8 +813,8 @@ namespace Ioex {
     add_region_fields();
 
     if (!is_input() && open_create_behavior() == Ioss::DB_APPEND) {
-      get_map(EX_NODE_BLOCK);
-      get_map(EX_ELEM_BLOCK);
+      (void)get_map(EX_NODE_BLOCK);
+      (void)get_map(EX_ELEM_BLOCK);
     }
   }
 
@@ -1074,7 +1074,7 @@ namespace Ioex {
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-        entity_map.is_sequential(true);
+        (void)entity_map.is_sequential(true);
         entity_map.build_reverse_map();
       }
       else {

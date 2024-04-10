@@ -8,6 +8,7 @@
 #include "apr_symrec.h"
 #include "enumerate.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cerrno>
 #include <cfenv>
@@ -23,10 +24,8 @@
 #include <utility>
 #include <vector>
 
-#if defined FMT_SUPPORT
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
-#endif
 
 #if defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||                \
     defined(__MINGW32__) || defined(_WIN64) || defined(__MINGW64__)
@@ -953,7 +952,6 @@ namespace SEAMS {
         }
         lines << "\t";
         for (int ic = 0; ic < cols; ic++) {
-#if defined FMT_SUPPORT
           const SEAMS::symrec *format = aprepro->getsym("_FORMAT");
           if (format->value.svar.empty()) {
             fmt::print(lines, "{}", my_array_data->data[idx++]);
@@ -962,9 +960,6 @@ namespace SEAMS {
             auto tmpstr = fmt::sprintf(format->value.svar, my_array_data->data[idx++]);
             lines << tmpstr;
           }
-#else
-          lines << my_array_data->data[idx++];
-#endif
           if (ic < cols - 1) {
             lines << "\t";
           }

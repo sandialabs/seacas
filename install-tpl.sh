@@ -497,7 +497,7 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
-        pnet_version="1.12.3"
+        pnet_version="1.13.0"
         pnet_base="pnetcdf"
         cd $ACCESS || exit
         cd TPL/pnetcdf || exit
@@ -613,6 +613,7 @@ then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS || exit
             git checkout v4.4.0
+	    git am ../CGNS-Allow-more-liberal-version-matching.patch
             rm -rf build
             mkdir build
             cd build || exit
@@ -774,7 +775,7 @@ then
         echo "${txtgrn}+++ FMT${txtrst}"
         cd $ACCESS || exit
         cd TPL/fmt || exit
-        fmt_version="10.2.0"
+        fmt_version="10.2.1"
 
         if [ "$DOWNLOAD" == "YES" ]
         then
@@ -901,6 +902,7 @@ if [ "$CATALYST2" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatalyst.${LD_EXT} ]
     then
+        catalyst2_version="v2.0.0"
         echo "${txtgrn}+++ Catalyst2${txtrst}"
         cd $ACCESS || exit
         cd TPL/catalyst2 || exit
@@ -915,7 +917,7 @@ then
         then
             echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd catalyst || exit
-                  git checkout master #todo: a specific version
+            git checkout ${catalyst2_version}
             rm -rf build
             mkdir build
             cd build || exit
@@ -983,7 +985,7 @@ fi
 # =================== INSTALL catch2  ===============
 if [ "$CATCH2" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcatch.a ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libCatch2.a ]
     then
         echo "${txtgrn}+++ Catch2${txtrst}"
         cd $ACCESS || exit

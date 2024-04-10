@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -98,7 +98,7 @@ exoid = ex_open_par ("test.exo",     \co{filename path}
                      &CPU_word_size, \co{CPU word size}
                      &IO_word_size,  \co{IO word size}
                      &version,       \co{ExodusII library version
-                     MPI_COMM_WORLD,
+                     MPI_COMM_WORLD, // CHECK: ALLOW MPI_COMM_WORLD
                      MPI_INFO_NULL);}
 ~~~
  */
@@ -487,5 +487,5 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
  * Prevent warning in some versions of ranlib(1) because the object
  * file has no symbols.
  */
-const char exodus_unused_symbol_dummy_ex_open_par;
+extern const char exodus_unused_symbol_dummy_ex_open_par;
 #endif

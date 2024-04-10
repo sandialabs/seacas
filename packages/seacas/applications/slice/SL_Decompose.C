@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -230,7 +230,8 @@ namespace {
 
   template <typename INT>
   void decompose_zoltan(const Ioss::Region &region, int ranks, SystemInterface &interFace,
-                        std::vector<int> &elem_to_proc, IOSS_MAYBE_UNUSED INT dummy)
+                        std::vector<int> &elem_to_proc, const std::vector<int> &weights,
+                        IOSS_MAYBE_UNUSED INT dummy)
   {
     if (ranks == 1) {
       return;
@@ -247,7 +248,8 @@ namespace {
 
     // Copy mesh data and pointers into structure accessible from callback fns.
     Zoltan_Data.ndot = element_count;
-    Zoltan_Data.vwgt = nullptr;
+    Zoltan_Data.vwgt = const_cast<int *>(Data(weights));
+
     if (interFace.ignore_x_ && interFace.ignore_y_) {
       Zoltan_Data.x = Data(z);
     }
@@ -297,6 +299,7 @@ namespace {
     zz.Set_Param("DEBUG_LEVEL", "0");
     std::string str = fmt::format("{}", ranks);
     zz.Set_Param("NUM_GLOBAL_PARTS", str);
+    zz.Set_Param("OBJ_WEIGHT_DIM", "1");
     zz.Set_Param("LB_METHOD", interFace.decomposition_method());
     zz.Set_Param("NUM_LID_ENTRIES", "0");
     zz.Set_Param("REMAP", "0");
@@ -554,14 +557,16 @@ namespace {
   }
 } // namespace
 
-template void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-                                 std::vector<int> &elem_to_proc, IOSS_MAYBE_UNUSED int dummy);
-template void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-                                 std::vector<int> &elem_to_proc, IOSS_MAYBE_UNUSED int64_t dummy);
+template std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
+                                             const std::vector<int> &weights,
+                                             IOSS_MAYBE_UNUSED int   dummy);
+template std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
+                                             const std::vector<int>   &weights,
+                                             IOSS_MAYBE_UNUSED int64_t dummy);
 
 template <typename INT>
-void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-                        std::vector<int> &elem_to_proc, IOSS_MAYBE_UNUSED INT dummy)
+std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
+                                    const std::vector<int> &weights, IOSS_MAYBE_UNUSED INT dummy)
 {
   progress(__func__);
   // Populate the 'elem_to_proc' vector with a mapping from element to processor.
@@ -570,6 +575,7 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
   size_t elem_per_proc = element_count / interFace.processor_count();
   size_t extra         = element_count % interFace.processor_count();
 
+  std::vector<int> elem_to_proc;
   elem_to_proc.reserve(element_count);
 
   fmt::print(stderr, "\nDecomposing {} elements across {} processors using method '{}'.\n",
@@ -625,7 +631,7 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
   else if (interFace.decomposition_method() == "rcb" || interFace.decomposition_method() == "rib" ||
            interFace.decomposition_method() == "hsfc") {
 #if USE_ZOLTAN
-    decompose_zoltan(region, interFace.processor_count(), interFace, elem_to_proc, dummy);
+    decompose_zoltan(region, interFace.processor_count(), interFace, elem_to_proc, weights, dummy);
 #else
     fmt::print(stderr, "ERROR: Zoltan library not enabled in this version of slice.\n"
                        "       The 'rcb', 'rib', and 'hsfc' methods are not available.\n\n");
@@ -798,6 +804,50 @@ void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
   }
 
   assert(elem_to_proc.size() == element_count);
+  return elem_to_proc;
+}
+
+template <typename INT>
+std::map<INT, std::vector<INT>> string_chains(const Ioss::chain_t<INT> &element_chains)
+{
+  std::map<INT, std::vector<INT>> chains;
+
+  for (size_t i = 0; i < element_chains.size(); i++) {
+    auto &chain_entry = element_chains[i];
+    if (chain_entry.link >= 0) {
+      chains[chain_entry.element].push_back(i + 1);
+    }
+  }
+  return chains;
+}
+
+template std::vector<int> line_decomp_weights(const Ioss::chain_t<int> &element_chains,
+                                              size_t                    element_count);
+template std::vector<int> line_decomp_weights(const Ioss::chain_t<int64_t> &element_chains,
+                                              size_t                        element_count);
+
+template <typename INT>
+std::vector<int> line_decomp_weights(const Ioss::chain_t<INT> &element_chains, size_t element_count)
+{
+  auto chains = string_chains(element_chains);
+
+  if ((debug_level & 16) != 0) {
+    for (const auto &[chain_root, chain_elements] : chains) {
+      fmt::print("Chain Root: {} contains: {}\n", chain_root, fmt::join(chain_elements, ", "));
+    }
+  }
+
+  std::vector<int> weights(element_count, 1);
+  // Now, for each chain...
+  for (const auto &[chain_root, chain_elements] : chains) {
+    // * Set the weights of all elements in the chain...
+    // * non-root = 0, root = length of chain.
+    for (const auto &element : chain_elements) {
+      weights[element - 1] = 0;
+    }
+    weights[chain_root - 1] = static_cast<int>(chain_elements.size());
+  }
+  return weights;
 }
 
 template void line_decomp_modify(const Ioss::chain_t<int> &element_chains,
@@ -810,30 +860,18 @@ void line_decomp_modify(const Ioss::chain_t<INT> &element_chains, std::vector<in
                         int proc_count)
 {
   // Get a map of all chains and the elements in the chains.  Map key will be root.
-  std::map<INT, std::vector<INT>> chains;
-
-  for (size_t i = 0; i < element_chains.size(); i++) {
-    auto &chain_entry = element_chains[i];
-    if (chain_entry.link >= 0) {
-      chains[chain_entry.element].push_back(i + 1);
-      if ((debug_level & 16) != 0) {
-        fmt::print("[{}]: element {}, link {}, processor {}\n", i + 1, chain_entry.element,
-                   chain_entry.link, elem_to_proc[i]);
-      }
-    }
-  }
+  auto chains = string_chains(element_chains);
 
   // Delta: elements added/removed from each processor...
   std::vector<int> delta(proc_count);
 
   // Now, for each chain...
-  for (auto &chain : chains) {
+  for (const auto &[chain_root, chain_elements] : chains) {
     if ((debug_level & 16) != 0) {
-      fmt::print("Chain Root: {} contains: {}\n", chain.first, fmt::join(chain.second, ", "));
+      fmt::print("Chain Root: {} contains: {}\n", chain_root, fmt::join(chain_elements, ", "));
     }
 
     std::vector<INT> chain_proc_count(proc_count);
-    const auto      &chain_elements = chain.second;
 
     // * get processors used by elements in the chain...
     for (const auto &element : chain_elements) {
@@ -846,17 +884,14 @@ void line_decomp_modify(const Ioss::chain_t<INT> &element_chains, std::vector<in
       chain_proc_count[i] -= delta[i];
     }
 
-    // * Find the maximum value in `chain_proc_count`
-    auto max      = std::max_element(chain_proc_count.begin(), chain_proc_count.end());
-    auto max_proc = std::distance(chain_proc_count.begin(), max);
-
-    // * Assign all elements in the chain to `max_proc`.
+    // * Assign all elements in the chain to processor at chain root
     // * Update the deltas for all processors that gain/lose elements...
+    auto root_proc = elem_to_proc[chain_root - 1];
     for (const auto &element : chain_elements) {
-      if (elem_to_proc[element - 1] != max_proc) {
+      if (elem_to_proc[element - 1] != root_proc) {
         auto old_proc             = elem_to_proc[element - 1];
-        elem_to_proc[element - 1] = max_proc;
-        delta[max_proc]++;
+        elem_to_proc[element - 1] = root_proc;
+        delta[root_proc]++;
         delta[old_proc]--;
       }
     }
@@ -866,7 +901,7 @@ void line_decomp_modify(const Ioss::chain_t<INT> &element_chains, std::vector<in
   for (auto proc : elem_to_proc) {
     proc_element_count[proc]++;
   }
-  if ((debug_level & 16) != 0) {
+  if ((debug_level & 32) != 0) {
     fmt::print("\nElements/Processor: {}\n", fmt::join(proc_element_count, ", "));
     fmt::print("Delta/Processor:    {}\n", fmt::join(delta, ", "));
   }
