@@ -58,9 +58,7 @@ template <typename T> IOSS_NODISCARD constexpr T *Data(std::vector<T> &vec)
   if (vec.empty()) {
     return nullptr;
   }
-  else {
-    return vec.data();
-  }
+  return vec.data();
 }
 
 template <typename T> IOSS_NODISCARD constexpr const T *Data(const std::vector<T> &vec)
@@ -68,9 +66,7 @@ template <typename T> IOSS_NODISCARD constexpr const T *Data(const std::vector<T
   if (vec.empty()) {
     return nullptr;
   }
-  else {
-    return vec.data();
-  }
+  return vec.data();
 }
 
 template <typename T, size_t N> IOSS_NODISCARD constexpr T *Data(std::array<T, N> &arr)
@@ -88,18 +84,17 @@ namespace Ioss {
    */
   class IOSS_EXPORT Utils
   {
-  public:
-    /**
-     * \defgroup IossStreams Streams used for IOSS output
-     *@{
-     */
     static std::ostream
         *m_outputStream; ///< general informational output (very rare). Default std::cerr
     static std::ostream *m_debugStream;   ///< debug output when requested. Default std::cerr
     static std::ostream *m_warningStream; ///< IOSS warning output. Default std::cerr
     static std::string m_preWarningText;  ///< is a string that prepends all warning message output.
                                           ///< Default is "\nIOSS WARNING: "
-
+  public:
+    /**
+     * \defgroup IossStreams Streams used for IOSS output
+     *@{
+     */
     /** \brief set the stream for all streams (output, debug, and warning) to the specified
      * `out_stream`
      */
@@ -116,6 +111,8 @@ namespace Ioss {
     /** \brief get the output stream.
      */
     IOSS_NODISCARD static std::ostream &get_output_stream();
+
+    IOSS_NODISCARD static std::string &get_warning_text() { return m_preWarningText; }
 
     /** \brief set the output stream to the specified `output_stream`
      */
@@ -608,16 +605,16 @@ namespace Ioss {
     }
   };
 
-  inline std::ostream &OUTPUT() { return *Utils::m_outputStream; }
+  inline std::ostream &OUTPUT() { return Utils::get_output_stream(); }
 
-  inline std::ostream &DebugOut() { return *Utils::m_debugStream; }
+  inline std::ostream &DebugOut() { return Utils::get_debug_stream(); }
 
   inline std::ostream &WarnOut(bool output_prewarning = true)
   {
     if (output_prewarning) {
-      *Utils::m_warningStream << Utils::m_preWarningText;
+      Utils::get_warning_stream() << Utils::get_warning_text();
     }
-    return *Utils::m_warningStream;
+    return Utils::get_warning_stream();
   }
 
 } // namespace Ioss

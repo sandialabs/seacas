@@ -97,7 +97,7 @@ namespace Ioss {
     IOSS_NODISCARD bool operator!=(const Ioss::Property &rhs) const;
     IOSS_NODISCARD bool operator==(const Ioss::Property &rhs) const;
 
-    friend void swap(Ioss::Property &first, Ioss::Property &second) // nothrow
+    friend void swap(Ioss::Property &first, Ioss::Property &second) noexcept
     {
       using std::swap;
       swap(first.name_, second.name_);
