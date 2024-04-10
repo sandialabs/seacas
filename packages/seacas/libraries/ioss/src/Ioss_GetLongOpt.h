@@ -75,8 +75,7 @@ namespace Ioss {
      */
     void usage(const char *str) { ustring = str; }
 
-    template <class INT,
-              typename std::enable_if<std::is_integral<INT>::value, INT>::type * = nullptr>
+    template <class INT, typename std::enable_if_t<std::is_integral_v<INT>, INT> * = nullptr>
     INT get_option_value(const char *option_txt, INT default_value)
     {
       INT         value = default_value;
@@ -87,8 +86,7 @@ namespace Ioss {
       return value;
     }
 
-    template <class DBL,
-              typename std::enable_if<std::is_floating_point<DBL>::value, DBL>::type * = nullptr>
+    template <class DBL, typename std::enable_if_t<std::is_floating_point_v<DBL>, DBL> * = nullptr>
     DBL get_option_value(const char *option_txt, DBL default_value)
     {
       DBL         value = default_value;
