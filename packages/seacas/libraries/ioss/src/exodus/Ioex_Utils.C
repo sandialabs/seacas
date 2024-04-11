@@ -118,6 +118,59 @@ namespace Ioex {
     }
   }
 
+  std::string map_ioss_field_type(ex_field_type type)
+  {
+    if (type == EX_VECTOR_2D)
+      return "vector_2d";
+    if (type == EX_VECTOR_3D)
+      return "vector_3d";
+    if (type == EX_SCALAR)
+      return "scalar";
+    if (type == EX_VECTOR_1D)
+      return "vector_1d";
+    if (type == EX_QUATERNION_2D)
+      return "quaternion_2d";
+    if (type == EX_QUATERNION_3D)
+      return "quaternion_3d";
+    if (type == EX_FULL_TENSOR_36)
+      return "full_tensor_36";
+    if (type == EX_FULL_TENSOR_32)
+      return "full_tensor_32";
+    if (type == EX_FULL_TENSOR_22)
+      return "full_tensor_22";
+    if (type == EX_FULL_TENSOR_16)
+      return "full_tensor_16";
+    if (type == EX_FULL_TENSOR_12)
+      return "full_tensor_12";
+    if (type == EX_SYM_TENSOR_33)
+      return "sym_tensor_33";
+    if (type == EX_SYM_TENSOR_31)
+      return "sym_tensor_31";
+    if (type == EX_SYM_TENSOR_21)
+      return "sym_tensor_21";
+    if (type == EX_SYM_TENSOR_13)
+      return "sym_tensor_13";
+    if (type == EX_SYM_TENSOR_11)
+      return "sym_tensor_11";
+    if (type == EX_SYM_TENSOR_10)
+      return "sym_tensor_10";
+    if (type == EX_ASYM_TENSOR_03)
+      return "asym_tensor_03";
+    if (type == EX_ASYM_TENSOR_02)
+      return "asym_tensor_02";
+    if (type == EX_ASYM_TENSOR_01)
+      return "asym_tensor_01";
+    if (type == EX_MATRIX_2X2)
+      return "matrix_22";
+    if (type == EX_MATRIX_3X3)
+      return "matrix_33";
+    if (type == EX_FIELD_TYPE_SEQUENCE)
+      return "Real";
+    if (type == EX_BASIS)
+      return "Basis";
+    return "invalid";
+  }
+
   ex_field_type map_ioss_field_type(const std::string &type)
   {
     if (type == "vector_2d")

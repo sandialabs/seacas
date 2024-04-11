@@ -89,6 +89,7 @@ namespace Ioex {
   IOSS_NODISCARD IOEX_EXPORT ex_entity_type   map_exodus_type(Ioss::EntityType type);
 
   IOSS_NODISCARD IOEX_EXPORT ex_field_type map_ioss_field_type(const std::string &type);
+  IOSS_NODISCARD IOEX_EXPORT std::string map_ioss_field_type(ex_field_type type);
 
   IOEX_EXPORT void update_last_time_attribute(int exodusFilePtr, double value);
   IOEX_EXPORT bool read_last_time_attribute(int exodusFilePtr, double *value);
