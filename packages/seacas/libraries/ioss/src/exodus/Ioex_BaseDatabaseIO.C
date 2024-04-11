@@ -1603,6 +1603,7 @@ namespace Ioex {
     }
 
     if (nvar > 0) {
+
       if (truth_table.empty()) {
         truth_table.resize(block_count * nvar);
 
@@ -1665,8 +1666,75 @@ namespace Ioex {
           local_truth = &truth_table[offset];
         }
 
+        // See if this entity is using enhanced field attributes...
+        auto id               = entity->get_optional_property("id", 0);
+        auto enhanced_fld_cnt = ex_get_field_metadata_count(get_file_pointer(), type, id);
+
         std::vector<Ioss::Field> fields;
         int64_t                  count = entity->entity_count();
+        if (enhanced_fld_cnt > 0) {
+          std::vector<ex_field> exo_fields(enhanced_fld_cnt);
+          for (auto &field : exo_fields) {
+            field.entity_type = type;
+            field.entity_id   = id;
+          }
+          ierr = ex_get_field_metadata(get_file_pointer(), Data(exo_fields));
+
+          for (const auto &exo_field : exo_fields) {
+            std::string ios_field_type{};
+
+            auto exo_field_type = exo_field.type[0];
+            if (exo_field_type == EX_FIELD_TYPE_SEQUENCE) {
+              ios_field_type = fmt::format("Real[{}]", exo_field.cardinality[0]);
+            }
+            else if (exo_field_type == EX_FIELD_TYPE_USER_DEFINED) {
+              auto suffices = Ioss::tokenize(exo_field.suffices, ",");
+              Ioss::VariableType::create_named_suffix_field_type(exo_field.name, suffices);
+              ios_field_type = exo_field.name;
+            }
+            else if (exo_field_type == EX_BASIS) {
+              continue;
+            }
+            else {
+              ios_field_type = Ioex::map_ioss_field_type(exo_field_type);
+            }
+
+            int num_copies = 1;
+            if (exo_field.nesting == 2) {
+              // For IOSS, the nesting is basically N copies of the field at nesting level 1, so we
+              // just need to verify that the field type is "EX_FIELD_TYPE_SEQUENCE" and then get
+              // the cardinality...
+              if (exo_field.type[1] == EX_FIELD_TYPE_SEQUENCE) {
+                num_copies = exo_field.cardinality[1];
+              }
+            }
+            fields.emplace_back(exo_field.name, Ioss::Field::REAL, ios_field_type, num_copies,
+                                Ioss::Field::TRANSIENT, entity->entity_count());
+            auto &field = fields.back();
+            if (exo_field.nesting == 1) {
+              field.set_suffix_separator(exo_field.component_separator[0]);
+            }
+            else {
+              field.set_suffix_separator(exo_field.component_separator[0],
+                                         exo_field.component_separator[1]);
+            }
+            // Now remove the used field+component names from `names` to verify that we found all
+            // fields on this entity...
+            for (int i = 0; i < field.get_component_count(Ioss::Field::InOut::INPUT); i++) {
+              auto comp_name = field.get_component_name(i + 1, Ioss::Field::InOut::INPUT);
+              // Find `comp_name` in `names`...
+              for (int j = 0; j < nvar; j++) {
+                if (Ioss::Utils::str_equal(comp_name, names[j])) {
+                  names[j][0] = '\0';
+                  break;
+                }
+              }
+            }
+            fmt::print("Enhanced Field:  Adding to {} {}:\n\t{}\n", entity->type_string(),
+                       entity->name(), field);
+          }
+        }
+
         Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::TRANSIENT, this, local_truth,
                                 fields);
 
@@ -1679,7 +1747,7 @@ namespace Ioex {
 
         for (int i = 0; i < nvar; i++) {
           // Verify that all names were used for a field...
-          assert(names[i][0] == '\0' || (local_truth && local_truth[i] == 0));
+          SMART_ASSERT(names[i][0] == '\0' || (local_truth && local_truth[i] == 0))(i)(names[i]);
           delete[] names[i];
         }
         delete[] names;
