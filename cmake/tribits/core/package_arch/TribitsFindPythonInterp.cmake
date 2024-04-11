@@ -36,8 +36,6 @@
 #
 # ************************************************************************
 # @HEADER
-cmake_policy(SET CMP0148 OLD)
-
 # Find Python executable which is needed for dependency file building
 macro(tribits_find_python)
   set(PythonInterp_FIND_VERSION_MIN "2.6")
