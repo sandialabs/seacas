@@ -705,7 +705,7 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
   if (!enable_field_recognition) {
     // Create a separate field for each name.
     for (int i = 0; i < num_names; i++) {
-      if (local_truth == nullptr || local_truth[i] == 1) {
+      if (names[i][0] != '\0' && (local_truth == nullptr || local_truth[i] == 1)) {
         Ioss::Field field(names[i], Ioss::Field::REAL, IOSS_SCALAR(), fld_role, entity_count);
         field.set_index(i);
         fields.push_back(field);
@@ -740,6 +740,9 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
         while (ibeg < num_names && local_truth[ibeg] == 0) {
           ibeg++;
         }
+      }
+      while (ibeg < num_names && names[ibeg][0] == '\0') {
+        ibeg++;
       }
       for (int i = ibeg + 1; i < num_names; i++) {
         auto mat = match(names[ibeg], names[i]);
