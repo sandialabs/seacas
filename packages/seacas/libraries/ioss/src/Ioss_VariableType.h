@@ -90,7 +90,7 @@ namespace Ioss {
     IOSS_NODISCARD static std::string  numeric_label(int which, int ncomp, const std::string &name);
     IOSS_NODISCARD virtual std::string label(int which, char suffix_sep = '_') const = 0;
     IOSS_NODISCARD virtual std::string label_name(const std::string &base, int which,
-                                                  char suffix_sep         = '_',
+                                                  char suffix_sep1 = '_', char suffix_sep2 = '_',
                                                   bool suffices_uppercase = false) const;
     IOSS_NODISCARD virtual bool        match(const std::vector<Suffix> &suffices) const;
 

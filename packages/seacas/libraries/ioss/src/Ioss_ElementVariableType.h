@@ -21,7 +21,7 @@ namespace Ioss {
       return "";
     }
     IOSS_NODISCARD std::string label_name(const std::string &base, int /*which*/,
-                                          const char /*suffix_sep*/,
+                                          const char /*suffix_sep*/, const char /*suffix_sep*/,
                                           bool /* suffices_uppercase */) const override
     {
       return base;
