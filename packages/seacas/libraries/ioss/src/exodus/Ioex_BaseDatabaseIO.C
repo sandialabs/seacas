@@ -1733,6 +1733,9 @@ namespace Ioex {
           if (exo_field.type[1] == EX_FIELD_TYPE_SEQUENCE) {
             num_copies = exo_field.cardinality[1];
           }
+          else {
+            fmt::print("ERROR: Unrecognized field type for nested field.\n");
+          }
         }
         fields.emplace_back(exo_field.name, Ioss::Field::REAL, ios_field_type, num_copies,
                             Ioss::Field::TRANSIENT, entity->entity_count());
