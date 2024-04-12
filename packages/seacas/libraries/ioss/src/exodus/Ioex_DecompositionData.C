@@ -185,7 +185,7 @@ namespace Ioex {
       if (map_count > 0) {
         int max_name_length = ex_inquire_int(filePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
         max_name_length     = max_name_length < 32 ? 32 : max_name_length;
-        char **names        = Ioss::Utils::get_name_array(map_count, max_name_length);
+        char **names        = Ioex::get_name_array(map_count, max_name_length);
         ex_get_names(filePtr, EX_ELEM_MAP, names);
 
         for (int i = 0; i < map_count; i++) {
@@ -197,7 +197,7 @@ namespace Ioex {
             break;
           }
         }
-        Ioss::Utils::delete_name_array(names, map_count);
+        Ioex::delete_name_array(names, map_count);
       }
 
       if (!map_read) {
@@ -221,7 +221,7 @@ namespace Ioex {
       if (var_count > 0) {
         int max_name_length = ex_inquire_int(filePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
         max_name_length     = max_name_length < 32 ? 32 : max_name_length;
-        char **names        = Ioss::Utils::get_name_array(var_count, max_name_length);
+        char **names        = Ioex::get_name_array(var_count, max_name_length);
         ex_get_variable_names(filePtr, EX_ELEM_BLOCK, var_count, names);
 
         for (int i = 0; i < var_count; i++) {
@@ -230,7 +230,7 @@ namespace Ioex {
             break;
           }
         }
-        Ioss::Utils::delete_name_array(names, var_count);
+        Ioex::delete_name_array(names, var_count);
       }
 
       if (var_index == 0) {

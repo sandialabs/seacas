@@ -893,13 +893,13 @@ namespace Ioex {
     // Get information records from database and add to informationRecords...
     int num_info = ex_inquire_int(get_file_pointer(), EX_INQ_INFO);
     if (num_info > 0) {
-      char **info_rec = Ioss::Utils::get_name_array(
+      char **info_rec = Ioex::get_name_array(
           num_info, max_line_length); // 'total_lines' pointers to char buffers
       ex_get_info(get_file_pointer(), info_rec);
       for (int i = 0; i < num_info; i++) {
         add_information_record(info_rec[i]);
       }
-      Ioss::Utils::delete_name_array(info_rec, num_info);
+      Ioex::delete_name_array(info_rec, num_info);
     }
   }
 
@@ -1019,7 +1019,7 @@ namespace Ioex {
         bool map_read  = false;
         int  map_count = ex_inquire_int(get_file_pointer(), inquiry_type);
         if (map_count > 0) {
-          char **names = Ioss::Utils::get_name_array(map_count, maximumNameLength);
+          char **names = Ioex::get_name_array(map_count, maximumNameLength);
           int    ierr  = ex_get_names(get_file_pointer(), entity_type, names);
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
@@ -1041,7 +1041,7 @@ namespace Ioex {
               map_read = true;
             }
           }
-          Ioss::Utils::delete_name_array(names, map_count);
+          Ioex::delete_name_array(names, map_count);
         }
 
         if (!map_read) {
