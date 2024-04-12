@@ -33,10 +33,10 @@ namespace Ioss {
 namespace Ioex {
   struct IOEX_EXPORT BlockFieldData
   {
-    int64_t                  id{0};
-    size_t                   comp_count{0};
-    std::vector<std::string> var_name;
-    std::vector<size_t>      var_index;
+    int64_t             id{0};
+    size_t              comp_count{0};
+    Ioss::NameList      var_name;
+    std::vector<size_t> var_index;
 
     BlockFieldData() : id(0), comp_count(0) {}
     BlockFieldData(const int64_t id_) : id(id_), comp_count(0) {}

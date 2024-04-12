@@ -893,7 +893,7 @@ namespace {
 
     // Now clean out existing ZGC lists for all blocks and add on the consolidated instances.
     // Also create a vector for mapping from zone to sb name.
-    std::vector<std::string> sb_names(structured_blocks.size() + 1);
+    Ioss::NameList sb_names(structured_blocks.size() + 1);
     for (auto &sb : structured_blocks) {
       sb->m_zoneConnectivity.clear();
       auto zone = sb->get_property("zone").get_int();
@@ -2419,7 +2419,7 @@ void Iocgns::Utils::set_line_decomposition(int cgns_file_ptr, const std::string 
   int num_families = 0;
   CGCHECKNP(cg_nfamilies(cgns_file_ptr, base, &num_families));
 
-  std::vector<std::string> families;
+  Ioss::NameList families;
   families.reserve(num_families);
   for (int family = 1; family <= num_families; family++) {
     char name[CGNS_MAX_NAME_LENGTH + 1];

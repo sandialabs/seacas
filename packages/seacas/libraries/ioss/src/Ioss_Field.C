@@ -38,7 +38,7 @@ namespace {
 namespace Ioss {
   std::ostream &operator<<(std::ostream &os, const Field &fld)
   {
-    std::vector<std::string> components(fld.get_component_count(Field::InOut::INPUT));
+    Ioss::NameList components(fld.get_component_count(Field::InOut::INPUT));
     for (size_t i = 0; i < components.size(); i++) {
       components[i] = fld.get_component_name(i + 1, Field::InOut::INPUT, 1);
     }

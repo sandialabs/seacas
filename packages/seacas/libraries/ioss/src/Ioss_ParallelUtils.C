@@ -55,11 +55,11 @@ void Ioss::ParallelUtils::add_environment_properties(Ioss::PropertyManager &prop
   if (get_environment("IOSS_PROPERTIES", env_props, parallel_size() > 1)) {
     // env_props string should be of the form
     // "PROP1=VALUE1:PROP2=VALUE2:..."
-    std::vector<std::string> prop_val = tokenize(env_props, ":");
+    Ioss::NameList prop_val = tokenize(env_props, ":");
 
     int rank = parallel_rank();
     for (auto &elem : prop_val) {
-      std::vector<std::string> property = tokenize(elem, "=");
+      Ioss::NameList property = tokenize(elem, "=");
       if (property.size() != 2) {
         std::ostringstream errmsg;
         fmt::print(

@@ -1,4 +1,4 @@
-// Copyright(C) 2022, 2023 National Technology & Engineering Solutions
+// Copyright(C) 2022, 2023, 2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -46,15 +46,14 @@ namespace {
     return -1;
   }
 
-  std::vector<std::string> get_adjacent_blocks(Ioss::Region      &region,
-                                               const std::string &surface_list)
+  Ioss::NameList get_adjacent_blocks(Ioss::Region &region, const std::string &surface_list)
   {
-    std::vector<std::string> adjacent_blocks;
+    Ioss::NameList adjacent_blocks;
     if (surface_list == "ALL") {
       const Ioss::SideSetContainer &fss = region.get_sidesets();
       for (const auto &fs : fss) {
         // Save a list of all blocks that are adjacent to the surfaces...
-        std::vector<std::string> blocks;
+        Ioss::NameList blocks;
         fs->block_membership(blocks);
         for (const auto &block : blocks) {
           adjacent_blocks.push_back(block); // May have duplicates at this point.
@@ -67,7 +66,7 @@ namespace {
         auto *sset = region.get_sideset(surface);
         if (sset != nullptr) {
           // Save a list of all blocks that are adjacent to the surfaces...
-          std::vector<std::string> blocks;
+          Ioss::NameList blocks;
           sset->block_membership(blocks);
           for (const auto &block : blocks) {
             adjacent_blocks.push_back(block); // May have duplicates at this point.
@@ -88,7 +87,7 @@ namespace {
                       const std::string &adj_block, Ioss::chain_t<INT> &element_chains,
                       front_t<INT> &front)
   {
-    std::vector<std::string> blocks;
+    Ioss::NameList blocks;
     fs->block_membership(blocks);
     for (const auto &fs_block : blocks) {
       if (fs_block == adj_block) {
@@ -209,7 +208,7 @@ namespace Ioss {
     // Determine which element block(s) are adjacent to the faceset specifying "lines"
     // The `adjacent_blocks` contains the names of all element blocks that are adjacent to the
     // surface(s) that specify the faces at the 'root' of the lines...
-    std::vector<std::string> adjacent_blocks = get_adjacent_blocks(region, surface_list);
+    Ioss::NameList adjacent_blocks = get_adjacent_blocks(region, surface_list);
     if (adjacent_blocks.empty()) {
       fmt::print("WARNING: No surfaces in the model matched the input surface list ({}).\n\tNo "
                  "chains will be generated.\n",

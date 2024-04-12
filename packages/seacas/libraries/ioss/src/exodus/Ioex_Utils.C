@@ -280,8 +280,7 @@ namespace Ioex {
     delete[] names;
   }
 
-  std::vector<std::string> get_variable_names(int nvar, int maximumNameLength, int exoid,
-                                              ex_entity_type type)
+  Ioss::NameList get_variable_names(int nvar, int maximumNameLength, int exoid, ex_entity_type type)
   {
     char **names = get_name_array(nvar, maximumNameLength);
     int    ierr  = ex_get_variable_names(exoid, type, nvar, names);
@@ -289,7 +288,7 @@ namespace Ioex {
       Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
     }
 
-    std::vector<std::string> name_str;
+    Ioss::NameList name_str;
     name_str.reserve(nvar);
     for (int i = 0; i < nvar; i++) {
       name_str.emplace_back(names[i]);
@@ -298,8 +297,8 @@ namespace Ioex {
     return name_str;
   }
 
-  std::vector<std::string> get_reduction_variable_names(int nvar, int maximumNameLength, int exoid,
-                                                        ex_entity_type type)
+  Ioss::NameList get_reduction_variable_names(int nvar, int maximumNameLength, int exoid,
+                                              ex_entity_type type)
   {
     char **names = get_name_array(nvar, maximumNameLength);
     int    ierr  = ex_get_reduction_variable_names(exoid, type, nvar, names);
@@ -307,7 +306,7 @@ namespace Ioex {
       Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
     }
 
-    std::vector<std::string> name_str;
+    Ioss::NameList name_str;
     name_str.reserve(nvar);
     for (int i = 0; i < nvar; i++) {
       name_str.emplace_back(names[i]);

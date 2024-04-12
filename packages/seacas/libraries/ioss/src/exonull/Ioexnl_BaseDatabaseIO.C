@@ -380,8 +380,8 @@ namespace Ioexnl {
   }
 
   // common
-  void BaseDatabaseIO::compute_block_membership_nl(Ioss::SideBlock          *efblock,
-                                                   std::vector<std::string> &block_membership) const
+  void BaseDatabaseIO::compute_block_membership_nl(Ioss::SideBlock *efblock,
+                                                   Ioss::NameList  &block_membership) const
   {
     const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
@@ -1385,8 +1385,8 @@ namespace {
 
         check_attribute_index_order(ge);
 
-        std::vector<char *>      names(attribute_count);
-        std::vector<std::string> names_str(attribute_count);
+        std::vector<char *> names(attribute_count);
+        Ioss::NameList      names_str(attribute_count);
 
         // Get the attribute fields...
         Ioss::NameList results_fields = ge->field_describe(Ioss::Field::ATTRIBUTE);

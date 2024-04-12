@@ -121,8 +121,8 @@ namespace Ioexnl {
                             Ioss::Map &entity_map, void *ids, size_t num_to_get,
                             size_t offset) const;
 
-    void compute_block_membership_nl(Ioss::SideBlock          *efblock,
-                                     std::vector<std::string> &block_membership) const override;
+    void compute_block_membership_nl(Ioss::SideBlock *efblock,
+                                     Ioss::NameList  &block_membership) const override;
 
     IOSS_NODISCARD int int_byte_size_db() const override;
     void               set_int_byte_size_api(Ioss::DataSize size) const override;

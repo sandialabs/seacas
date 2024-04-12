@@ -397,7 +397,7 @@ namespace {
       Ioss::Utils::info_property(eb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
 
       if (interFace.adjacencies()) {
-        std::vector<std::string> blocks = eb->get_block_adjacencies();
+        Ioss::NameList blocks = eb->get_block_adjacencies();
         fmt::print("\n\tAdjacent to  {} element block(s):\t", blocks.size());
         for (const auto &block : blocks) {
           fmt::print("{}  ", block);
@@ -427,7 +427,7 @@ namespace {
       Ioss::Utils::info_fields(eb, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
 
 #if 0
-        std::vector<std::string> blocks = eb->get_block_adjacencies();
+        Ioss::NameList blocks = eb->get_block_adjacencies();
         fmt::print("\tAdjacent to  {} edge block(s):\t", blocks.size());
         for (auto &block : blocks) {
           fmt::print("{}  ", block);
@@ -454,7 +454,7 @@ namespace {
       Ioss::Utils::info_fields(eb, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
 
 #if 0
-        std::vector<std::string> blocks = eb->get_block_adjacencies();
+        Ioss::NameList blocks = eb->get_block_adjacencies();
         fmt::print("\tAdjacent to  {} face block(s):\t", blocks.size());
         for (auto &block : blocks) {
           fmt::print("{}  ", block);
@@ -483,7 +483,7 @@ namespace {
       Ioss::Utils::info_fields(fs, Ioss::Field::TRANSIENT, "\n\tTransient: ");
       Ioss::Utils::info_fields(fs, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ");
       if (interFace.adjacencies()) {
-        std::vector<std::string> blocks;
+        Ioss::NameList blocks;
         fs->block_membership(blocks);
         fmt::print("\n\t\tTouches {} element block(s):\t", blocks.size());
         for (const auto &block : blocks) {
@@ -590,7 +590,7 @@ namespace {
   void info_aliases(const Ioss::Region &region, const Ioss::GroupingEntity *ige, bool nl_pre,
                     bool nl_post)
   {
-    std::vector<std::string> aliases;
+    Ioss::NameList aliases;
     if (region.get_aliases(ige->name(), ige->type(), aliases) > 0) {
       if (nl_pre) {
         fmt::print("\n");

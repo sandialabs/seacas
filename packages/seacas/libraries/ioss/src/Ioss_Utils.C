@@ -103,7 +103,7 @@ namespace {
   // characters of the next token.
   // `__this___is_a_string__for_tokens` will split to 6 tokens:
   // `__this` `__is` `a` `string` `_for` `tokens`
-  std::vector<std::string> field_tokenize(const std::string &str, const char separator)
+  Ioss::NameList field_tokenize(const std::string &str, const char separator)
   {
     std::string curr_token;
     // Skip leading separators...
@@ -111,7 +111,7 @@ namespace {
     while (i < str.length() && is_separator(separator, str[i])) {
       curr_token += str[i++];
     }
-    std::vector<std::string> tokens;
+    Ioss::NameList tokens;
     for (; i < str.length(); ++i) {
       char curr_char = str[i];
 
@@ -375,9 +375,9 @@ int Ioss::Utils::field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field
 }
 
 namespace {
-  const Ioss::VariableType *match_composite_field(std::vector<std::string> &names,
-                                                  Ioss::IntVector          &which_names,
-                                                  const char                suffix_separator)
+  const Ioss::VariableType *match_composite_field(Ioss::NameList  &names,
+                                                  Ioss::IntVector &which_names,
+                                                  const char       suffix_separator)
   {
     // ASSUME: Fields are in order...
     // The field we are trying to match will be a composite field of
@@ -444,10 +444,9 @@ namespace {
     return type;
   }
 
-  const Ioss::VariableType *match_single_field(std::vector<std::string> &names,
-                                               Ioss::IntVector          &which_names,
-                                               const char                suffix_separator,
-                                               bool                      ignore_realn_fields)
+  const Ioss::VariableType *match_single_field(Ioss::NameList &names, Ioss::IntVector &which_names,
+                                               const char suffix_separator,
+                                               bool       ignore_realn_fields)
   {
     // Strip off the suffix from each name indexed in 'which_names'
     // and see if it defines a valid type...
@@ -467,9 +466,9 @@ namespace {
     return type;
   }
 
-  Ioss::Field get_next_field(std::vector<std::string> &names, size_t count,
-                             Ioss::Field::RoleType fld_role, const char suffix_separator,
-                             const int *truth_table, bool ignore_realn_fields)
+  Ioss::Field get_next_field(Ioss::NameList &names, size_t count, Ioss::Field::RoleType fld_role,
+                             const char suffix_separator, const int *truth_table,
+                             bool ignore_realn_fields)
   {
     // NOTE: 'names' are all lowercase at this point.
 
@@ -622,8 +621,8 @@ namespace {
   }
 
   // common
-  bool define_field(size_t nmatch, size_t match_length, std::vector<std::string> &names,
-                    size_t index, std::vector<Ioss::Suffix> &suffices, size_t entity_count,
+  bool define_field(size_t nmatch, size_t match_length, Ioss::NameList &names, size_t index,
+                    std::vector<Ioss::Suffix> &suffices, size_t entity_count,
                     Ioss::Field::RoleType fld_role, std::vector<Ioss::Field> &fields,
                     bool strip_trailing_, bool ignore_realn_fields, char suffix_separator)
   {
@@ -674,11 +673,11 @@ namespace {
 
 // Read scalar fields off an input database and determine whether
 // they are components of a higher order type (vector, tensor, ...).
-void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in this entity.
-                             std::vector<std::string> &names, // Raw list of field names from exodus
-                             Ioss::Field::RoleType     fld_role, // Role of field
-                             const Ioss::DatabaseIO   *db,
-                             int                      *local_truth, // Truth table for this entity;
+void Ioss::Utils::get_fields(int64_t         entity_count, // The number of objects in this entity.
+                             Ioss::NameList &names,        // Raw list of field names from exodus
+                             Ioss::Field::RoleType   fld_role, // Role of field
+                             const Ioss::DatabaseIO *db,
+                             int                    *local_truth, // Truth table for this entity;
                              // null if not applicable.
                              std::vector<Ioss::Field> &fields) // The fields that were found.
 {
@@ -1018,7 +1017,7 @@ double Ioss::Utils::timer()
   return std::chrono::duration<double>(now - initial_time).count();
 }
 
-void Ioss::Utils::input_file(const std::string &file_name, std::vector<std::string> *lines,
+void Ioss::Utils::input_file(const std::string &file_name, Ioss::NameList *lines,
                              size_t max_line_length)
 {
   // Create an ifstream for the input file. This does almost the same

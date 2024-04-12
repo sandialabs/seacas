@@ -104,8 +104,8 @@ namespace Ioss {
     return registry().customFieldTypes.insert(std::make_pair(field, type)).second;
   }
 
-  bool VariableType::create_named_suffix_field_type(const std::string              &type_name,
-                                                    const std::vector<std::string> &suffices)
+  bool VariableType::create_named_suffix_field_type(const std::string    &type_name,
+                                                    const Ioss::NameList &suffices)
   {
     size_t count = suffices.size();
     if (count < 1) {
