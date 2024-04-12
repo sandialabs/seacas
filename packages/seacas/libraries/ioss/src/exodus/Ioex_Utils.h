@@ -111,9 +111,9 @@ namespace Ioex {
 
   IOSS_NODISCARD IOEX_EXPORT char **get_name_array(size_t count, int size);
   IOEX_EXPORT void                  delete_name_array(char **names, int count);
-  IOSS_NODISCARD IOSS_EXPORT Ioss::NameList get_variable_names(int nvar, int maximumNameLength,
+  IOSS_NODISCARD IOEX_EXPORT Ioss::NameList get_variable_names(int nvar, int maximumNameLength,
                                                                int exoid, ex_entity_type type);
-  IOSS_NODISCARD IOSS_EXPORT                Ioss::NameList
+  IOSS_NODISCARD IOEX_EXPORT                Ioss::NameList
   get_reduction_variable_names(int nvar, int maximumNameLength, int exoid, ex_entity_type type);
 
   IOEX_EXPORT void add_coordinate_frames(int exoid, Ioss::Region *region);
