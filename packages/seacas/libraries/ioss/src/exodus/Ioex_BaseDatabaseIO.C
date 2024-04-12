@@ -1693,17 +1693,26 @@ namespace Ioex {
     std::vector<Ioss::Field> fields;
 
     // See if this entity is using enhanced field attributes...
-    auto id               = entity->get_optional_property("id", 0);
-    auto enhanced_fld_cnt = ex_get_field_metadata_count(get_file_pointer(), type, id);
+    auto id = entity->get_optional_property("id", 0);
+    int  enhanced_fld_cnt;
+    {
+      Ioss::SerializeIO serializeIO_(this);
+      enhanced_fld_cnt = ex_get_field_metadata_count(get_file_pointer(), type, id);
+    }
+
     if (enhanced_fld_cnt > 0) {
       std::vector<ex_field> exo_fields(enhanced_fld_cnt);
       for (auto &field : exo_fields) {
         field.entity_type = type;
         field.entity_id   = id;
       }
-      int ierr = ex_get_field_metadata(get_file_pointer(), Data(exo_fields));
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+
+      {
+        Ioss::SerializeIO serializeIO_(this);
+        int               ierr = ex_get_field_metadata(get_file_pointer(), Data(exo_fields));
+        if (ierr < 0) {
+          Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+        }
       }
 
       for (const auto &exo_field : exo_fields) {
