@@ -309,9 +309,6 @@ namespace Ioss {
 
     IOSS_NODISCARD static int log_power_2(uint64_t value);
 
-    IOSS_NODISCARD static char **get_name_array(size_t count, int size);
-    static void                  delete_name_array(char **names, int count);
-
     /** \brief Get formatted time and date strings.
      *
      *  Fill time_string and date_string with current time and date
@@ -476,7 +473,7 @@ namespace Ioss {
                                                      const std::string &type,
                                                      const std::string &working_directory);
 
-    static void get_fields(int64_t entity_count, char **names, int num_names,
+    static void get_fields(int64_t entity_count, std::vector<std::string> &names,
                            Ioss::Field::RoleType fld_role, const DatabaseIO *db, int *local_truth,
                            std::vector<Ioss::Field> &fields);
 

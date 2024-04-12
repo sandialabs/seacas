@@ -447,6 +447,7 @@ namespace {
     fmt::print("\t+{2:-^{0}}+{2:-^{1}}+\n", max_name, max_face, "");
   }
 #endif
+
 } // namespace
 
 std::pair<std::string, int> Iocgns::Utils::decompose_name(const std::string &name, bool is_parallel)
@@ -1066,7 +1067,7 @@ void Iocgns::Utils::write_state_meta_data(int file_ptr, const Ioss::Region &regi
 }
 
 size_t Iocgns::Utils::common_write_metadata(int file_ptr, const Ioss::Region &region,
-                                             std::vector<size_t> &zone_offset, bool is_parallel_io)
+                                            std::vector<size_t> &zone_offset, bool is_parallel_io)
 {
 #if !IOSS_ENABLE_HYBRID
   // Make sure mesh is not hybrid...
@@ -2301,19 +2302,20 @@ void Iocgns::Utils::add_transient_variables(int cgns_file_ptr, const std::vector
       int field_count = 0;
       CGCHECK(cg_nfields(cgns_file_ptr, b, z, sol, &field_count));
 
-      char **field_names = Ioss::Utils::get_name_array(field_count, CGNS_MAX_NAME_LENGTH);
+      Ioss::NameList field_names;
+      field_names.reserve(field_count);
       for (int field = 1; field <= field_count; field++) {
         CGNS_ENUMT(DataType_t) data_type;
         char field_name[CGNS_MAX_NAME_LENGTH + 1];
         CGCHECK(cg_field_info(cgns_file_ptr, b, z, sol, field, &data_type, field_name));
-        Ioss::Utils::copy_string(field_names[field - 1], field_name, CGNS_MAX_NAME_LENGTH + 1);
+        field_names.emplace_back(field_name);
       }
 
       // Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
       std::vector<Ioss::Field> fields;
       if (grid_loc == CGNS_ENUMV(CellCenter)) {
         size_t entity_count = block->entity_count();
-        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+        Ioss::Utils::get_fields(entity_count, field_names, Ioss::Field::TRANSIENT,
                                 region->get_database(), nullptr, fields);
         size_t index = 1;
         for (const auto &field : fields) {
@@ -2337,7 +2339,7 @@ void Iocgns::Utils::add_transient_variables(int cgns_file_ptr, const std::vector
           IOSS_ERROR(errmsg);
         }
         size_t entity_count = nb->entity_count();
-        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+        Ioss::Utils::get_fields(entity_count, field_names, Ioss::Field::TRANSIENT,
                                 region->get_database(), nullptr, fields);
         size_t index = 1;
         for (const auto &field : fields) {
@@ -2346,8 +2348,6 @@ void Iocgns::Utils::add_transient_variables(int cgns_file_ptr, const std::vector
           nb->field_add(field);
         }
       }
-
-      Ioss::Utils::delete_name_array(field_names, field_count);
     }
   };
   // ==========================================

@@ -109,6 +109,13 @@ namespace Ioex {
   IOEX_EXPORT int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
                                  size_t name_length);
 
+  IOSS_NODISCARD IOEX_EXPORT char **get_name_array(size_t count, int size);
+  IOEX_EXPORT void                  delete_name_array(char **names, int count);
+  IOSS_NODISCARD IOSS_EXPORT        std::vector<std::string>
+  get_variable_names(int nvar, int maximumNameLength, int exoid, ex_entity_type type);
+  IOSS_NODISCARD IOSS_EXPORT std::vector<std::string>
+  get_reduction_variable_names(int nvar, int maximumNameLength, int exoid, ex_entity_type type);
+
   IOEX_EXPORT void add_coordinate_frames(int exoid, Ioss::Region *region);
   IOEX_EXPORT void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames);
 

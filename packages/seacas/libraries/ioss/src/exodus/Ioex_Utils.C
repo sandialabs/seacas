@@ -97,7 +97,6 @@ namespace {
       }
     }
   }
-
 } // namespace
 
 namespace Ioex {
@@ -261,6 +260,60 @@ namespace Ioex {
     case Ioss::COMMSET: return static_cast<ex_entity_type>(0);
     default: return EX_INVALID;
     }
+  }
+
+  char **get_name_array(size_t count, int size)
+  {
+    auto *names = new char *[count];
+    for (size_t i = 0; i < count; i++) {
+      names[i] = new char[size + 1];
+      std::memset(names[i], '\0', size + 1);
+    }
+    return names;
+  }
+
+  void delete_name_array(char **names, int count)
+  {
+    for (int i = 0; i < count; i++) {
+      delete[] names[i];
+    }
+    delete[] names;
+  }
+
+  std::vector<std::string> get_variable_names(int nvar, int maximumNameLength, int exoid,
+                                              ex_entity_type type)
+  {
+    char **names = get_name_array(nvar, maximumNameLength);
+    int    ierr  = ex_get_variable_names(exoid, type, nvar, names);
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+
+    std::vector<std::string> name_str;
+    name_str.reserve(nvar);
+    for (int i = 0; i < nvar; i++) {
+      name_str.emplace_back(names[i]);
+    }
+    delete_name_array(names, nvar);
+    return name_str;
+  }
+
+  std::vector<std::string> get_reduction_variable_names(int nvar, int maximumNameLength, int exoid,
+                                                        ex_entity_type type)
+  {
+    char **names = get_name_array(nvar, maximumNameLength);
+    int    ierr  = ex_get_reduction_variable_names(exoid, type, nvar, names);
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+
+    std::vector<std::string> name_str;
+    name_str.reserve(nvar);
+    for (int i = 0; i < nvar; i++) {
+      name_str.emplace_back(names[i]);
+    }
+    delete_name_array(names, nvar);
+    return name_str;
   }
 
   bool read_last_time_attribute(int exodusFilePtr, double *value)
@@ -639,7 +692,7 @@ namespace Ioex {
     }
 
     // Get the names of the maps...
-    char **names = Ioss::Utils::get_name_array(map_count, name_length);
+    char **names = get_name_array(map_count, name_length);
     int    ierr  = ex_get_names(exoid, EX_ELEM_MAP, names);
     if (ierr < 0) {
       Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
@@ -689,7 +742,7 @@ namespace Ioex {
       i = ii - 1;
     }
 
-    Ioss::Utils::delete_name_array(names, map_count);
+    delete_name_array(names, map_count);
     return map_count;
   }
 

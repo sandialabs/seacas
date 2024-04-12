@@ -45,6 +45,24 @@ extern double seacas_timer();
 extern void   progress(const std::string &output);
 
 namespace {
+  char **get_name_array(size_t count, int size)
+  {
+    auto *names = new char *[count];
+    for (size_t i = 0; i < count; i++) {
+      names[i] = new char[size + 1];
+      std::memset(names[i], '\0', size + 1);
+    }
+    return names;
+  }
+
+  void delete_name_array(char **names, int count)
+  {
+    for (int i = 0; i < count; i++) {
+      delete[] names[i];
+    }
+    delete[] names;
+  }
+
   template <typename INT>
   void create_adjacency_list(const Ioss::Region &region, std::vector<idx_t> &pointer,
                              std::vector<idx_t> &adjacency, INT)
@@ -684,7 +702,7 @@ std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface 
     if (map_count > 0) {
       int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
       max_name_length     = max_name_length < 32 ? 32 : max_name_length;
-      char **names        = Ioss::Utils::get_name_array(map_count, max_name_length);
+      char **names        = get_name_array(map_count, max_name_length);
       int    error        = ex_get_names(exoid, EX_ELEM_MAP, names);
       if (error < 0) {
         exodus_error(__LINE__);
@@ -701,7 +719,7 @@ std::vector<int> decompose_elements(const Ioss::Region &region, SystemInterface 
           break;
         }
       }
-      Ioss::Utils::delete_name_array(names, map_count);
+      delete_name_array(names, map_count);
     }
 
     if (!map_read) {
