@@ -33,10 +33,10 @@ namespace Ioss {
 namespace Ioex {
   struct IOEX_EXPORT BlockFieldData
   {
-    int64_t                  id{0};
-    size_t                   comp_count{0};
-    std::vector<std::string> var_name;
-    std::vector<size_t>      var_index;
+    int64_t             id{0};
+    size_t              comp_count{0};
+    Ioss::NameList      var_name;
+    std::vector<size_t> var_index;
 
     BlockFieldData() : id(0), comp_count(0) {}
     BlockFieldData(const int64_t id_) : id(id_), comp_count(0) {}
@@ -52,7 +52,7 @@ namespace Ioex {
 
     virtual ~DecompositionDataBase()                           = default;
     IOSS_NODISCARD virtual int    int_size() const             = 0;
-    IOSS_NODISCARD virtual void   decompose_model(int filePtr) = 0;
+    virtual void                  decompose_model(int filePtr) = 0;
     IOSS_NODISCARD virtual size_t ioss_node_count() const      = 0;
     IOSS_NODISCARD virtual size_t ioss_elem_count() const      = 0;
 

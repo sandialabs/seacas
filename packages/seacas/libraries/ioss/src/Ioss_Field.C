@@ -35,6 +35,24 @@ namespace {
 
 } // namespace
 
+namespace Ioss {
+  std::ostream &operator<<(std::ostream &os, const Field &fld)
+  {
+    Ioss::NameList components(fld.get_component_count(Field::InOut::INPUT));
+    for (size_t i = 0; i < components.size(); i++) {
+      components[i] = fld.get_component_name(i + 1, Field::InOut::INPUT, 1);
+    }
+    fmt::print(os,
+               "\tField: {}, {}\t{}\t{} ({} x {}), Sep1: '{}', Sep2: '{}'\n"
+               "\t\tComponents: {}\n",
+               fld.get_name(), fld.type_string(), fld.role_string(), fld.raw_storage()->name(),
+               fld.get_component_count(Field::InOut::INPUT), fld.raw_count(),
+               fld.get_suffix_separator(0), fld.get_suffix_separator(1),
+               fmt::join(components, ", "));
+    return os;
+  }
+} // namespace Ioss
+
 /** \brief Create an empty field.
  */
 Ioss::Field::Field() { rawStorage_ = transStorage_ = Ioss::VariableType::factory("invalid"); }
@@ -111,12 +129,16 @@ int Ioss::Field::get_component_count(Ioss::Field::InOut in_out) const
 
 std::string Ioss::Field::get_component_name(int component_index, InOut in_out, char suffix) const
 {
-  char suffix_separator = get_suffix_separator();
-  if (suffix_separator == 1) {
-    suffix_separator = suffix != 1 ? suffix : '_';
+  char suffix_separator0 = get_suffix_separator(0);
+  if (suffix_separator0 == 1) {
+    suffix_separator0 = suffix != 1 ? suffix : '_';
+  }
+  char suffix_separator1 = get_suffix_separator(1);
+  if (suffix_separator1 == 1) {
+    suffix_separator1 = suffix != 1 ? suffix : '_';
   }
   const auto *storage = (in_out == InOut::INPUT) ? raw_storage() : transformed_storage();
-  return storage->label_name(get_name(), component_index, suffix_separator,
+  return storage->label_name(get_name(), component_index, suffix_separator0, suffix_separator1,
                              get_suffices_uppercase());
 }
 

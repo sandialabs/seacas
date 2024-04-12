@@ -11,7 +11,6 @@
 #include "Ioss_VariableType.h"
 #include "exodus/Ioex_Utils.h"
 #include <cstring>
-#include <exodusII_int.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -27,6 +26,7 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "exodusII.h"
+#include "exodusII_int.h"
 
 namespace {
   size_t match(const std::string &name1, const std::string &name2)
@@ -97,7 +97,6 @@ namespace {
       }
     }
   }
-
 } // namespace
 
 namespace Ioex {
@@ -116,6 +115,111 @@ namespace Ioex {
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       }
     }
+  }
+
+  std::string map_ioss_field_type(ex_field_type type)
+  {
+    if (type == EX_VECTOR_2D)
+      return "vector_2d";
+    if (type == EX_VECTOR_3D)
+      return "vector_3d";
+    if (type == EX_SCALAR)
+      return "scalar";
+    if (type == EX_VECTOR_1D)
+      return "vector_1d";
+    if (type == EX_QUATERNION_2D)
+      return "quaternion_2d";
+    if (type == EX_QUATERNION_3D)
+      return "quaternion_3d";
+    if (type == EX_FULL_TENSOR_36)
+      return "full_tensor_36";
+    if (type == EX_FULL_TENSOR_32)
+      return "full_tensor_32";
+    if (type == EX_FULL_TENSOR_22)
+      return "full_tensor_22";
+    if (type == EX_FULL_TENSOR_16)
+      return "full_tensor_16";
+    if (type == EX_FULL_TENSOR_12)
+      return "full_tensor_12";
+    if (type == EX_SYM_TENSOR_33)
+      return "sym_tensor_33";
+    if (type == EX_SYM_TENSOR_31)
+      return "sym_tensor_31";
+    if (type == EX_SYM_TENSOR_21)
+      return "sym_tensor_21";
+    if (type == EX_SYM_TENSOR_13)
+      return "sym_tensor_13";
+    if (type == EX_SYM_TENSOR_11)
+      return "sym_tensor_11";
+    if (type == EX_SYM_TENSOR_10)
+      return "sym_tensor_10";
+    if (type == EX_ASYM_TENSOR_03)
+      return "asym_tensor_03";
+    if (type == EX_ASYM_TENSOR_02)
+      return "asym_tensor_02";
+    if (type == EX_ASYM_TENSOR_01)
+      return "asym_tensor_01";
+    if (type == EX_MATRIX_2X2)
+      return "matrix_22";
+    if (type == EX_MATRIX_3X3)
+      return "matrix_33";
+    if (type == EX_FIELD_TYPE_SEQUENCE)
+      return "Real";
+    if (type == EX_BASIS)
+      return "Basis";
+    return "invalid";
+  }
+
+  ex_field_type map_ioss_field_type(const std::string &type)
+  {
+    if (type == "vector_2d")
+      return EX_VECTOR_2D;
+    if (type == "vector_3d")
+      return EX_VECTOR_3D;
+    if (type == "scalar")
+      return EX_SCALAR;
+    if (type == "vector_1d")
+      return EX_VECTOR_1D;
+    if (type == "quaternion_2d")
+      return EX_QUATERNION_2D;
+    if (type == "quaternion_3d")
+      return EX_QUATERNION_3D;
+    if (type == "full_tensor_36")
+      return EX_FULL_TENSOR_36;
+    if (type == "full_tensor_32")
+      return EX_FULL_TENSOR_32;
+    if (type == "full_tensor_22")
+      return EX_FULL_TENSOR_22;
+    if (type == "full_tensor_16")
+      return EX_FULL_TENSOR_16;
+    if (type == "full_tensor_12")
+      return EX_FULL_TENSOR_12;
+    if (type == "sym_tensor_33")
+      return EX_SYM_TENSOR_33;
+    if (type == "sym_tensor_31")
+      return EX_SYM_TENSOR_31;
+    if (type == "sym_tensor_21")
+      return EX_SYM_TENSOR_21;
+    if (type == "sym_tensor_13")
+      return EX_SYM_TENSOR_13;
+    if (type == "sym_tensor_11")
+      return EX_SYM_TENSOR_11;
+    if (type == "sym_tensor_10")
+      return EX_SYM_TENSOR_10;
+    if (type == "asym_tensor_03")
+      return EX_ASYM_TENSOR_03;
+    if (type == "asym_tensor_02")
+      return EX_ASYM_TENSOR_02;
+    if (type == "asym_tensor_01")
+      return EX_ASYM_TENSOR_01;
+    if (type == "matrix_22")
+      return EX_MATRIX_2X2;
+    if (type == "matrix_33")
+      return EX_MATRIX_3X3;
+
+    if (Ioss::Utils::substr_equal("Real", type))
+      return EX_FIELD_TYPE_SEQUENCE;
+    return EX_FIELD_TYPE_INVALID;
   }
 
   Ioss::EntityType map_exodus_type(ex_entity_type type)
@@ -156,6 +260,59 @@ namespace Ioex {
     case Ioss::COMMSET: return static_cast<ex_entity_type>(0);
     default: return EX_INVALID;
     }
+  }
+
+  char **get_name_array(size_t count, int size)
+  {
+    auto *names = new char *[count];
+    for (size_t i = 0; i < count; i++) {
+      names[i] = new char[size + 1];
+      std::memset(names[i], '\0', size + 1);
+    }
+    return names;
+  }
+
+  void delete_name_array(char **names, int count)
+  {
+    for (int i = 0; i < count; i++) {
+      delete[] names[i];
+    }
+    delete[] names;
+  }
+
+  Ioss::NameList get_variable_names(int nvar, int maximumNameLength, int exoid, ex_entity_type type)
+  {
+    char **names = get_name_array(nvar, maximumNameLength);
+    int    ierr  = ex_get_variable_names(exoid, type, nvar, names);
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+
+    Ioss::NameList name_str;
+    name_str.reserve(nvar);
+    for (int i = 0; i < nvar; i++) {
+      name_str.emplace_back(names[i]);
+    }
+    delete_name_array(names, nvar);
+    return name_str;
+  }
+
+  Ioss::NameList get_reduction_variable_names(int nvar, int maximumNameLength, int exoid,
+                                              ex_entity_type type)
+  {
+    char **names = get_name_array(nvar, maximumNameLength);
+    int    ierr  = ex_get_reduction_variable_names(exoid, type, nvar, names);
+    if (ierr < 0) {
+      Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
+    }
+
+    Ioss::NameList name_str;
+    name_str.reserve(nvar);
+    for (int i = 0; i < nvar; i++) {
+      name_str.emplace_back(names[i]);
+    }
+    delete_name_array(names, nvar);
+    return name_str;
   }
 
   bool read_last_time_attribute(int exodusFilePtr, double *value)
@@ -534,7 +691,7 @@ namespace Ioex {
     }
 
     // Get the names of the maps...
-    char **names = Ioss::Utils::get_name_array(map_count, name_length);
+    char **names = get_name_array(map_count, name_length);
     int    ierr  = ex_get_names(exoid, EX_ELEM_MAP, names);
     if (ierr < 0) {
       Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
@@ -584,7 +741,7 @@ namespace Ioex {
       i = ii - 1;
     }
 
-    Ioss::Utils::delete_name_array(names, map_count);
+    delete_name_array(names, map_count);
     return map_count;
   }
 

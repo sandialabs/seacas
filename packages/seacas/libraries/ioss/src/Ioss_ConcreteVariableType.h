@@ -39,8 +39,8 @@ namespace Ioss {
   public:
     Invalid_Storage(const Invalid_Storage &) = delete;
     IOSS_NODISCARD std::string label(int which, char suffix_sep = '_') const override;
-    IOSS_NODISCARD std::string label_name(const std::string &base, int /*which*/, char suffix_sep,
-                                          bool suffices_uppercase) const override;
+    IOSS_NODISCARD std::string label_name(const std::string &base, int /*which*/, char suffix_sep1,
+                                          char suffix_sep2, bool suffices_uppercase) const override;
     IOSS_NODISCARD int         suffix_count() const override { return 0; }
     static void                factory();
 
@@ -53,8 +53,8 @@ namespace Ioss {
   public:
     Scalar(const Scalar &) = delete;
     IOSS_NODISCARD std::string label(int which, char suffix_sep = '_') const override;
-    IOSS_NODISCARD std::string label_name(const std::string &base, int /*which*/, char suffix_sep,
-                                          bool suffices_uppercase) const override;
+    IOSS_NODISCARD std::string label_name(const std::string &base, int /*which*/, char suffix_sep1,
+                                          char suffix_sep2, bool suffices_uppercase) const override;
     IOSS_NODISCARD int         suffix_count() const override { return 0; }
     static void                factory();
 

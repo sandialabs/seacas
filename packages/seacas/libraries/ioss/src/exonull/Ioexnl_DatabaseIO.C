@@ -53,8 +53,7 @@
 // Static internal helper functions
 // ========================================================================
 namespace {
-  const size_t                     max_line_length = MAX_LINE_LENGTH;
-  const std::array<std::string, 2> complex_suffix{".re", ".im"};
+  const size_t max_line_length = MAX_LINE_LENGTH;
 
   template <typename T>
   void compute_internal_border_maps(T *entities, T *internal, size_t count, size_t entity_count)
@@ -1248,7 +1247,7 @@ namespace Ioexnl {
   void DatabaseIO::write_meta_data(Ioss::IfDatabaseExistsBehavior behavior)
   {
     Ioss::Region *region = get_region();
-    common_write_meta_data(behavior);
+    common_write_metadata(behavior);
 
     char the_title[max_line_length + 1];
 
@@ -1298,7 +1297,7 @@ namespace Ioexnl {
           put_info();
         }
 
-        output_other_meta_data();
+        output_other_metadata();
       }
     }
   }

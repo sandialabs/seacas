@@ -26,6 +26,8 @@ namespace Ioss {
 
   class IOSS_EXPORT Registry
   {
+    friend class VariableType;
+
   public:
     void           insert(const Ioss::VTM_ValuePair &value, bool delete_me);
     IOSS_NODISCARD VariableTypeMap::iterator begin() { return m_registry.begin(); }
@@ -36,11 +38,11 @@ namespace Ioss {
     }
 
     ~Registry();
-    std::map<std::string, std::string> customFieldTypes;
 
   private:
-    Ioss::VariableTypeMap             m_registry;
-    std::vector<Ioss::VariableType *> m_deleteThese;
+    std::map<std::string, std::string> customFieldTypes;
+    Ioss::VariableTypeMap              m_registry;
+    std::vector<Ioss::VariableType *>  m_deleteThese;
   };
 
   struct IOSS_EXPORT Suffix
@@ -68,8 +70,8 @@ namespace Ioss {
     static void                    alias(const std::string &base, const std::string &syn);
     static int                     describe(NameList *names);
     IOSS_NODISCARD static NameList describe();
-    static bool                    create_named_suffix_field_type(const std::string              &type_name,
-                                                                  const std::vector<std::string> &suffices);
+    static bool                    create_named_suffix_field_type(const std::string    &type_name,
+                                                                  const Ioss::NameList &suffices);
     static bool get_field_type_mapping(const std::string &field, std::string *type);
     static bool add_field_type_mapping(const std::string &raw_field, const std::string &raw_type);
 
@@ -88,7 +90,7 @@ namespace Ioss {
     IOSS_NODISCARD static std::string  numeric_label(int which, int ncomp, const std::string &name);
     IOSS_NODISCARD virtual std::string label(int which, char suffix_sep = '_') const = 0;
     IOSS_NODISCARD virtual std::string label_name(const std::string &base, int which,
-                                                  char suffix_sep         = '_',
+                                                  char suffix_sep1 = '_', char suffix_sep2 = '_',
                                                   bool suffices_uppercase = false) const;
     IOSS_NODISCARD virtual bool        match(const std::vector<Suffix> &suffices) const;
 

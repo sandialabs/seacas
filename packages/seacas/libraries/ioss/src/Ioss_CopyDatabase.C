@@ -736,7 +736,9 @@ namespace {
                      int istep, const Ioss::MeshCopyOptions &options, int rank)
   {
     double time  = region.get_state_time(istep);
-    int    ostep = output_region.add_state(time);
+    double otime = time * options.time_scale + options.time_offset;
+    int    ostep = output_region.add_state(otime);
+
     show_step(istep, time, options, rank);
 
     output_region.begin_state(ostep);
@@ -1433,7 +1435,7 @@ namespace {
   {
     out.add_information_records(in.get_information_records());
 
-    const std::vector<std::string> &qa = in.get_qa_records();
+    const Ioss::NameList &qa = in.get_qa_records();
     for (size_t i = 0; i < qa.size(); i += 4) {
       out.add_qa_record(qa[i + 0], qa[i + 1], qa[i + 2], qa[i + 3]);
     }

@@ -797,7 +797,7 @@ namespace Iocgns {
     m_zoneOffset.resize(num_zones + 1); // use 1-based zones...
 
     elementCount =
-        Utils::common_write_meta_data(get_file_pointer(), *get_region(), m_zoneOffset, true);
+        Utils::common_write_metadata(get_file_pointer(), *get_region(), m_zoneOffset, true);
   }
 
   void ParallelDatabaseIO::get_step_times_nl()
@@ -1107,7 +1107,7 @@ namespace Iocgns {
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-        entity_map.is_sequential(true);
+        (void)entity_map.is_sequential(true);
         entity_map.build_reverse_map();
       }
       else {

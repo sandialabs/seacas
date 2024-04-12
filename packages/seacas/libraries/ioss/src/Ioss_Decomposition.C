@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2023 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -138,29 +138,29 @@ namespace {
 
 namespace Ioss {
 
-  IOSS_EXPORT const std::vector<std::string> &valid_decomp_methods()
+  IOSS_EXPORT const Ioss::NameList &valid_decomp_methods()
   {
-    static const std::vector<std::string> valid_methods{"EXTERNAL"
+    static const Ioss::NameList valid_methods{"EXTERNAL"
 #ifdef SEACAS_HAVE_MPI
-                                                        ,
-                                                        "LINEAR",
-                                                        "MAP",
-                                                        "VARIABLE"
+                                              ,
+                                              "LINEAR",
+                                              "MAP",
+                                              "VARIABLE"
 #if !defined(NO_ZOLTAN_SUPPORT)
-                                                        ,
-                                                        "BLOCK",
-                                                        "CYCLIC",
-                                                        "RANDOM",
-                                                        "RCB",
-                                                        "RIB",
-                                                        "HSFC"
+                                              ,
+                                              "BLOCK",
+                                              "CYCLIC",
+                                              "RANDOM",
+                                              "RCB",
+                                              "RIB",
+                                              "HSFC"
 #endif
 #if !defined(NO_PARMETIS_SUPPORT)
-                                                        ,
-                                                        "KWAY",
-                                                        "KWAY_GEOM",
-                                                        "GEOM_KWAY",
-                                                        "METIS_SFC"
+                                              ,
+                                              "KWAY",
+                                              "KWAY_GEOM",
+                                              "GEOM_KWAY",
+                                              "METIS_SFC"
 #endif
 #endif
     };
@@ -360,7 +360,7 @@ namespace Ioss {
       size_t b   = Ioss::Utils::find_index_location((size_t)elem, m_fileBlockIndex);
       size_t off = std::max(m_fileBlockIndex[b], m_elementOffset);
 
-      if (!el_blocks[b].localMap.empty() && elem < el_blocks[b].localMap[0] + off) {
+      if (!el_blocks[b].localMap.empty() && (size_t)elem < el_blocks[b].localMap[0] + off) {
         el_blocks[b].localIossOffset++;
         el_blocks[b].importMap.push_back(imp_index[b]++);
       }
@@ -380,7 +380,7 @@ namespace Ioss {
       size_t b = Ioss::Utils::find_index_location((size_t)elem, m_fileBlockIndex);
 
       size_t off = std::max(m_fileBlockIndex[b], m_elementOffset);
-      el_blocks[b].exportMap.push_back(elem - off);
+      el_blocks[b].exportMap.push_back((size_t)elem - off);
       el_blocks[b].exportCount[proc]++;
     }
 

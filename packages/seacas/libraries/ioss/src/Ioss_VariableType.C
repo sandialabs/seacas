@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2023 National Technology & Engineering Solutions
+// Copyright(C) 1999-2024 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -104,8 +104,8 @@ namespace Ioss {
     return registry().customFieldTypes.insert(std::make_pair(field, type)).second;
   }
 
-  bool VariableType::create_named_suffix_field_type(const std::string              &type_name,
-                                                    const std::vector<std::string> &suffices)
+  bool VariableType::create_named_suffix_field_type(const std::string    &type_name,
+                                                    const Ioss::NameList &suffices)
   {
     size_t count = suffices.size();
     if (count < 1) {
@@ -238,14 +238,14 @@ namespace Ioss {
     return result;
   }
 
-  std::string VariableType::label_name(const std::string &base, int which, const char suffix_sep,
-                                       bool suffices_uppercase) const
+  std::string VariableType::label_name(const std::string &base, int which, const char suffix_sep1,
+                                       const char suffix_sep2, bool suffices_uppercase) const
   {
     std::string my_name = base;
-    std::string suffix  = label(which, suffix_sep);
+    std::string suffix  = label(which, suffix_sep2);
     if (!suffix.empty()) {
-      if (suffix_sep != 0) {
-        my_name += suffix_sep;
+      if (suffix_sep1 != 0) {
+        my_name += suffix_sep1;
       }
       if (suffices_uppercase) {
         my_name += Ioss::Utils::uppercase(suffix);

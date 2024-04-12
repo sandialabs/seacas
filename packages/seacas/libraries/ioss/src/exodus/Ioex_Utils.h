@@ -82,11 +82,14 @@ namespace Ioex {
 #endif
 
   IOSS_NODISCARD IOEX_EXPORT const char *Version();
-  IOEX_EXPORT bool        check_processor_info(const std::string &filename, int exodusFilePtr,
-                                               int processor_count, int processor_id);
+  IOEX_EXPORT bool check_processor_info(const std::string &filename, int exodusFilePtr,
+                                        int processor_count, int processor_id);
 
   IOSS_NODISCARD IOEX_EXPORT Ioss::EntityType map_exodus_type(ex_entity_type type);
   IOSS_NODISCARD IOEX_EXPORT ex_entity_type   map_exodus_type(Ioss::EntityType type);
+
+  IOSS_NODISCARD IOEX_EXPORT ex_field_type map_ioss_field_type(const std::string &type);
+  IOSS_NODISCARD IOEX_EXPORT std::string map_ioss_field_type(ex_field_type type);
 
   IOEX_EXPORT void update_last_time_attribute(int exodusFilePtr, double value);
   IOEX_EXPORT bool read_last_time_attribute(int exodusFilePtr, double *value);
@@ -106,6 +109,13 @@ namespace Ioex {
   IOEX_EXPORT int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
                                  size_t name_length);
 
+  IOSS_NODISCARD IOEX_EXPORT char **get_name_array(size_t count, int size);
+  IOEX_EXPORT void                  delete_name_array(char **names, int count);
+  IOSS_NODISCARD IOSS_EXPORT Ioss::NameList get_variable_names(int nvar, int maximumNameLength,
+                                                               int exoid, ex_entity_type type);
+  IOSS_NODISCARD IOSS_EXPORT                Ioss::NameList
+  get_reduction_variable_names(int nvar, int maximumNameLength, int exoid, ex_entity_type type);
+
   IOEX_EXPORT void add_coordinate_frames(int exoid, Ioss::Region *region);
   IOEX_EXPORT void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames);
 
@@ -114,8 +124,8 @@ namespace Ioex {
                                            std::string *disp_name);
 
   IOSS_NODISCARD IOEX_EXPORT std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                                          const std::string &basename, int length,
-                                          bool &db_has_name);
+                                                         const std::string &basename, int length,
+                                                         bool &db_has_name);
 
   IOEX_EXPORT bool filter_node_list(Ioss::Int64Vector                &nodes,
                                     const std::vector<unsigned char> &node_connectivity_status);

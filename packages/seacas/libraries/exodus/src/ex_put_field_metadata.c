@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2022, 2023 National Technology & Engineering Solutions
+ * Copyright(C) 2022, 2023, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -26,8 +26,10 @@ int ex_put_field_metadata(int exoid, const ex_field field)
   int  status;
   char errmsg[MAX_ERR_LENGTH];
 
-  fprintf(stderr, "Field '%s' of type '%s' with separator '%s' on block %lld\n", field.name,
-          ex_field_type_enum_to_string(field.type[0]), field.component_separator, field.entity_id);
+  fprintf(stderr,
+          "ex_put_field_metadata: Field '%s' of type '%s' with separator '%s' on block %lld\n",
+          field.name, ex_field_type_enum_to_string(field.type[0]), field.component_separator,
+          field.entity_id);
 
   for (int i = 0; i < field.nesting; i++) {
     if (field.type[i] == EX_FIELD_TYPE_USER_DEFINED) {

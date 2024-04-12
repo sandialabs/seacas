@@ -77,10 +77,10 @@ namespace Ioss {
 
     IOSS_NODISCARD State get_state() const;
 
-    IOSS_NODISCARD DatabaseIO  *get_database() const;
-    void         set_database(DatabaseIO *io_database);
-    void         reset_database(DatabaseIO *io_database);
-    virtual void delete_database();
+    IOSS_NODISCARD DatabaseIO *get_database() const;
+    void                       set_database(DatabaseIO *io_database);
+    void                       reset_database(DatabaseIO *io_database);
+    virtual void               delete_database();
 
     /** Return the GroupingEntity pointer of the "object" that this
      *  entity is contained in.  For example, a SideBlock would
@@ -128,7 +128,7 @@ namespace Ioss {
      * Entries are pushed onto the "block_members" vector, so it will be
      * appended to if it is not empty at entry to the function.
      */
-    virtual void block_membership(std::vector<std::string> & /* block_members */) {}
+    virtual void block_membership(Ioss::NameList & /* block_members */) {}
 
     IOSS_NODISCARD std::string get_filename() const;
 
@@ -161,18 +161,20 @@ namespace Ioss {
     // ========================================================================
     // Property-related information....
     // Just forward it through to the property manager...
-    inline void     property_add(const Property &new_prop);
-    inline void     property_erase(const std::string &property_name);
+    inline void                    property_add(const Property &new_prop);
+    inline void                    property_erase(const std::string &property_name);
     IOSS_NODISCARD inline bool     property_exists(const std::string &property_name) const;
     IOSS_NODISCARD inline Property get_property(const std::string &property_name) const;
-    IOSS_NODISCARD inline int64_t get_optional_property(const std::string &property, int64_t optional_value) const;
-    IOSS_NODISCARD inline std::string get_optional_property(const std::string &property_name,
-							   const std::string &optional_value) const;
-    IOSS_NODISCARD inline NameList    property_describe() const;
-    inline int         property_describe(NameList *names) const;
-    IOSS_NODISCARD inline NameList    property_describe(Ioss::Property::Origin origin) const;
-    inline int         property_describe(Ioss::Property::Origin origin, NameList *names) const;
-    IOSS_NODISCARD inline size_t      property_count() const;
+    IOSS_NODISCARD inline int64_t  get_optional_property(const std::string &property,
+                                                         int64_t            optional_value) const;
+    IOSS_NODISCARD inline std::string
+                                   get_optional_property(const std::string &property_name,
+                                                         const std::string &optional_value) const;
+    IOSS_NODISCARD inline NameList property_describe() const;
+    inline int                     property_describe(NameList *names) const;
+    IOSS_NODISCARD inline NameList property_describe(Ioss::Property::Origin origin) const;
+    inline int property_describe(Ioss::Property::Origin origin, NameList *names) const;
+    IOSS_NODISCARD inline size_t property_count() const;
     /** Add a property, or change its value if it already exists with
         a different value */
     void property_update(const std::string &property, int64_t value) const;
@@ -182,15 +184,15 @@ namespace Ioss {
     //                                FIELDS
     // ========================================================================
     // Just forward these through to the field manager...
-    void                field_add(Field new_field);
-    inline void         field_erase(const std::string &field_name);
-    inline void         field_erase(Field::RoleType role);
+    void                               field_add(Field new_field);
+    inline void                        field_erase(const std::string &field_name);
+    inline void                        field_erase(Field::RoleType role);
     IOSS_NODISCARD inline bool         field_exists(const std::string &field_name) const;
     IOSS_NODISCARD inline Field        get_field(const std::string &field_name) const;
     IOSS_NODISCARD inline const Field &get_fieldref(const std::string &field_name) const;
-    inline int          field_describe(NameList *names) const;
+    inline int                         field_describe(NameList *names) const;
     IOSS_NODISCARD inline NameList     field_describe() const;
-    inline int          field_describe(Field::RoleType role, NameList *names) const;
+    inline int                         field_describe(Field::RoleType role, NameList *names) const;
     IOSS_NODISCARD inline NameList     field_describe(Field::RoleType role) const;
     IOSS_NODISCARD inline size_t       field_count() const;
     IOSS_NODISCARD size_t              field_count(Field::RoleType role) const;
@@ -607,7 +609,7 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string          &field_n
   typename ViewType::HostMirror host_data = Kokkos::create_mirror_view(data);
 
   // Extract a pointer to the underlying allocated memory of the host view.
-  T *host_data_ptr = Data(host_data);
+  T *host_data_ptr = host_data.data();
 
   // Extract the data from disk to the underlying memory pointed to by host_data_ptr.
   auto retval = internal_get_field_data(field, host_data_ptr, data_size);
@@ -711,7 +713,7 @@ int64_t Ioss::GroupingEntity::put_field_data(const std::string          &field_n
   Kokkos::deep_copy(host_data, data);
 
   // Extract a pointer to the underlying allocated memory of the host view.
-  T *host_data_ptr = Data(host_data);
+  T *host_data_ptr = host_data.data();
 
   // Transform the field
   field.transform(host_data_ptr);

@@ -813,8 +813,8 @@ namespace Ioex {
     add_region_fields();
 
     if (!is_input() && open_create_behavior() == Ioss::DB_APPEND) {
-      get_map(EX_NODE_BLOCK);
-      get_map(EX_ELEM_BLOCK);
+      (void)get_map(EX_NODE_BLOCK);
+      (void)get_map(EX_ELEM_BLOCK);
     }
   }
 
@@ -1074,7 +1074,7 @@ namespace Ioex {
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-        entity_map.is_sequential(true);
+        (void)entity_map.is_sequential(true);
         entity_map.build_reverse_map();
       }
       else {
@@ -4797,7 +4797,7 @@ namespace Ioex {
   void ParallelDatabaseIO::write_meta_data(Ioss::IfDatabaseExistsBehavior behavior)
   {
     Ioss::Region *region = get_region();
-    common_write_meta_data(behavior);
+    common_write_metadata(behavior);
 
     char the_title[max_line_length + 1];
 
@@ -4846,7 +4846,7 @@ namespace Ioex {
 
     if (behavior != Ioss::DB_APPEND && behavior != Ioss::DB_MODIFY) {
       output_node_map();
-      output_other_meta_data();
+      output_other_metadata();
     }
   }
 

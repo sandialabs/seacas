@@ -42,6 +42,9 @@ static bool exi_is_internal_attribute(const char *name, ex_entity_type obj_type)
             (strcmp(name, ATT_LAST_WRITTEN_TIME) == 0))) {
     return true;
   }
+  else if (strncmp(name, "Field@", 6) == 0) {
+    return true;
+  }
   return false;
 }
 

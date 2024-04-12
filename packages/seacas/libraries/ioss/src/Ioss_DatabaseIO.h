@@ -82,7 +82,7 @@ namespace Ioss {
      *  \returns True if database state is OK. False if not.
      */
     IOSS_NODISCARD bool ok(bool write_message = false, std::string *error_message = nullptr,
-            int *bad_count = nullptr) const
+                           int *bad_count = nullptr) const
     {
       IOSS_FUNC_ENTER(m_);
       return ok_nl(write_message, error_message, bad_count);
@@ -172,7 +172,7 @@ namespace Ioss {
      *  \returns The database file name.
      */
     IOSS_NODISCARD std::string get_filename() const { return DBFilename; }
-    
+
     /** For the database types that support it, return an integer `handle`
      * through which a client can directly access the underlying file.
      * Please use sparingly and with discretion. Basically, a kluge
@@ -344,9 +344,12 @@ namespace Ioss {
      *
      *  \returns The informative strings.
      */
-    IOSS_NODISCARD const std::vector<std::string> &get_information_records() const { return informationRecords; }
-    void                            add_information_records(const std::vector<std::string> &info);
-    void                            add_information_record(const std::string &info);
+    IOSS_NODISCARD const Ioss::NameList &get_information_records() const
+    {
+      return informationRecords;
+    }
+    void add_information_records(const Ioss::NameList &info);
+    void add_information_record(const std::string &info);
 
     // QA Records:
 
@@ -365,14 +368,14 @@ namespace Ioss {
      *  \returns All QA records in a single vector. Every 4 consecutive elements of the
      *           vector make up a single QA record.
      */
-    IOSS_NODISCARD const std::vector<std::string> &get_qa_records() const { return qaRecords; }
+    IOSS_NODISCARD const Ioss::NameList &get_qa_records() const { return qaRecords; }
     void add_qa_record(const std::string &code, const std::string &code_qa, const std::string &date,
                        const std::string &time);
 
     IOSS_NODISCARD bool get_logging() const { return doLogging && !singleProcOnly; }
-    void set_logging(bool on_off) { doLogging = on_off; }
+    void                set_logging(bool on_off) { doLogging = on_off; }
     IOSS_NODISCARD bool get_nan_detection() const { return doNanDetection; }
-    void set_nan_detection(bool on_off) { doNanDetection = on_off; }
+    void                set_nan_detection(bool on_off) { doNanDetection = on_off; }
 
     // The get_field and put_field functions are just a wrapper around the
     // pure virtual get_field_internal and put_field_internal functions,
@@ -428,35 +431,41 @@ namespace Ioss {
      *
      */
     IOSS_NODISCARD bool is_parallel_consistent() const { return isParallelConsistent; }
-    void set_parallel_consistency(bool on_off) { isParallelConsistent = on_off; }
+    void                set_parallel_consistency(bool on_off) { isParallelConsistent = on_off; }
 
     IOSS_NODISCARD bool get_use_generic_canonical_name() const { return useGenericCanonicalName; }
     void set_use_generic_canonical_name(bool yes_no) { useGenericCanonicalName = yes_no; }
 
     IOSS_NODISCARD bool ignore_database_names() const { return ignoreDatabaseNames; }
-    void ignore_database_names(bool yes_no) { ignoreDatabaseNames = yes_no; }
+    void                ignore_database_names(bool yes_no) { ignoreDatabaseNames = yes_no; }
 
     IOSS_NODISCARD bool get_ignore_realn_fields() const { return m_ignoreRealnFields; }
-    void set_ignore_realn_fields(bool yes_no) { m_ignoreRealnFields = yes_no; }
+    void                set_ignore_realn_fields(bool yes_no) { m_ignoreRealnFields = yes_no; }
 
     /** \brief Get the length of the longest name in the database file.
      *
      *  \returns The length, or 0 for unlimited.
      */
-    IOSS_NODISCARD virtual int  maximum_symbol_length() const { return 0; } // Default is unlimited...
+    IOSS_NODISCARD virtual int maximum_symbol_length() const
+    {
+      return 0;
+    } // Default is unlimited...
     virtual void set_maximum_symbol_length(int /* requested_symbol_size */) {
     } // Default does nothing...
 
-    IOSS_NODISCARD std::string get_component_name(const Ioss::Field &field, Ioss::Field::InOut in_out,
-                                   int component) const;
+    IOSS_NODISCARD std::string get_component_name(const Ioss::Field &field,
+                                                  Ioss::Field::InOut in_out, int component) const;
     IOSS_NODISCARD char        get_field_separator() const { return fieldSeparator; }
     IOSS_NODISCARD bool        get_field_recognition() const { return enableFieldRecognition; }
     IOSS_NODISCARD bool        get_field_strip_trailing_() const { return fieldStripTrailing_; }
-    void        set_field_separator(char separator);
-    void        set_field_recognition(bool yes_no) { enableFieldRecognition = yes_no; }
-    void        set_field_strip_trailing_(bool yes_no) { fieldStripTrailing_ = yes_no; }
+    void                       set_field_separator(char separator);
+    void set_field_recognition(bool yes_no) { enableFieldRecognition = yes_no; }
+    void set_field_strip_trailing_(bool yes_no) { fieldStripTrailing_ = yes_no; }
 
-    IOSS_NODISCARD DuplicateFieldBehavior get_duplicate_field_behavior() const { return duplicateFieldBehavior; }
+    IOSS_NODISCARD DuplicateFieldBehavior get_duplicate_field_behavior() const
+    {
+      return duplicateFieldBehavior;
+    }
 
     void set_lower_case_variable_names(bool true_false) const
     {
@@ -471,19 +480,17 @@ namespace Ioss {
     void set_surface_split_type(Ioss::SurfaceSplitType split_type) { splitType = split_type; }
     IOSS_NODISCARD Ioss::SurfaceSplitType get_surface_split_type() const { return splitType; }
 
-    void set_block_omissions(const std::vector<std::string> &omissions,
-                             const std::vector<std::string> &inclusions = {});
+    void set_block_omissions(const Ioss::NameList &omissions,
+                             const Ioss::NameList &inclusions = {});
 
-    void set_assembly_omissions(const std::vector<std::string> &omissions,
-                                const std::vector<std::string> &inclusions = {});
+    void set_assembly_omissions(const Ioss::NameList &omissions,
+                                const Ioss::NameList &inclusions = {});
 
-    void get_block_adjacencies(const Ioss::ElementBlock *eb,
-                               std::vector<std::string> &block_adjacency) const
+    void get_block_adjacencies(const Ioss::ElementBlock *eb, Ioss::NameList &block_adjacency) const
     {
       return get_block_adjacencies_nl(eb, block_adjacency);
     }
-    void compute_block_membership(Ioss::SideBlock          *efblock,
-                                  std::vector<std::string> &block_membership) const
+    void compute_block_membership(Ioss::SideBlock *efblock, Ioss::NameList &block_membership) const
     {
       return compute_block_membership_nl(efblock, block_membership);
     }
@@ -492,9 +499,9 @@ namespace Ioss {
     IOSS_NODISCARD AxisAlignedBoundingBox get_bounding_box(const Ioss::ElementBlock *eb) const;
     IOSS_NODISCARD AxisAlignedBoundingBox get_bounding_box(const Ioss::StructuredBlock *sb) const;
 
-    IOSS_NODISCARD virtual int  int_byte_size_db() const = 0; //! Returns 4 or 8
-    IOSS_NODISCARD int          int_byte_size_api() const;    //! Returns 4 or 8
-    virtual void set_int_byte_size_api(Ioss::DataSize size) const;
+    IOSS_NODISCARD virtual int int_byte_size_db() const = 0; //! Returns 4 or 8
+    IOSS_NODISCARD int         int_byte_size_api() const;    //! Returns 4 or 8
+    virtual void               set_int_byte_size_api(Ioss::DataSize size) const;
 
     /*!
      * The owning region of this database.
@@ -544,16 +551,16 @@ namespace Ioss {
      *     If you only want the last step available on the database,
      *     use set_cycle_count(1)
      */
-    void set_cycle_count(int count) const { cycleCount = count; }
+    void                set_cycle_count(int count) const { cycleCount = count; }
     IOSS_NODISCARD int  get_cycle_count() const { return cycleCount; }
-    void set_overlay_count(int count) const { overlayCount = count; }
+    void                set_overlay_count(int count) const { overlayCount = count; }
     IOSS_NODISCARD int  get_overlay_count() const { return overlayCount; }
-    void set_file_per_state(bool yes_no) const { filePerState = yes_no; }
+    void                set_file_per_state(bool yes_no) const { filePerState = yes_no; }
     IOSS_NODISCARD bool get_file_per_state() const { return filePerState; }
 
     void set_time_scale_factor(double factor) { timeScaleFactor = factor; }
 
-    IOSS_NODISCARD const Ioss::ParallelUtils   &util() const { return util_; }
+    IOSS_NODISCARD const Ioss::ParallelUtils &util() const { return util_; }
     IOSS_NODISCARD const Ioss::PropertyManager &get_property_manager() const { return properties; }
     /** \brief Get the processor that this mesh database is on.
      *
@@ -616,7 +623,7 @@ namespace Ioss {
                        const std::string &type_name, const T *set_type);
     template <typename T>
     void create_group(EntityType type, const std::string &type_name,
-                      const std::vector<std::string> &group_spec, const T *set_type);
+                      const Ioss::NameList &group_spec, const T *set_type);
 
     // Create new sets as groups of existing exodus sets...
     void handle_groups();
@@ -709,13 +716,13 @@ namespace Ioss {
     // element ids and offsets are still calculated assuming that the
     // blocks exist in the model...
     // Only one of these can have values and the other must be empty.
-    std::vector<std::string> blockOmissions{};
-    std::vector<std::string> blockInclusions{};
-    std::vector<std::string> assemblyOmissions{};
-    std::vector<std::string> assemblyInclusions{};
+    Ioss::NameList blockOmissions{};
+    Ioss::NameList blockInclusions{};
+    Ioss::NameList assemblyOmissions{};
+    Ioss::NameList assemblyInclusions{};
 
-    std::vector<std::string> informationRecords{};
-    std::vector<std::string> qaRecords{};
+    Ioss::NameList informationRecords{};
+    Ioss::NameList qaRecords{};
 
     //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
     //               application side.   global = nodeMap[local]
@@ -771,11 +778,10 @@ namespace Ioss {
     virtual bool end_state_nl(int state, double time);
 
     void get_block_adjacencies_nl(const Ioss::ElementBlock *eb,
-                                  std::vector<std::string> &block_adjacency) const;
+                                  Ioss::NameList           &block_adjacency) const;
 
-    virtual void
-    compute_block_membership_nl(Ioss::SideBlock * /* efblock */,
-                                std::vector<std::string> & /* block_membership */) const
+    virtual void compute_block_membership_nl(Ioss::SideBlock * /* efblock */,
+                                             Ioss::NameList & /* block_membership */) const
     {
     }
 
