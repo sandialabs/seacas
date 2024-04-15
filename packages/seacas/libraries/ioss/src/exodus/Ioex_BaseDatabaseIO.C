@@ -39,6 +39,7 @@
 #include "Ioss_IOFactory.h"
 #include "Ioss_Map.h"
 #include "Ioss_MeshType.h"
+#include "Ioss_NamedSuffixVariableType.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_NodeSet.h"
 #include "Ioss_ParallelUtils.h"
@@ -1990,12 +1991,31 @@ namespace Ioex {
           if (exo_field.type[0] == EX_FIELD_TYPE_SEQUENCE) {
             exo_field.cardinality[0] = storage->component_count();
           }
+          if (exo_field.type[0] == EX_FIELD_TYPE_INVALID) {
+            // See if this is actuall a Ioss::NamedSuffixVariableType...
+            auto nsvt = dynamic_cast<const Ioss::NamedSuffixVariableType *>(storage);
+            if (nsvt != nullptr) {
+              exo_field.type[0]        = EX_FIELD_TYPE_USER_DEFINED;
+              exo_field.cardinality[0] = nsvt->component_count();
+              std::string suffices{};
+              for (int i = 0; i < nsvt->component_count(); i++) {
+                if (i > 0) {
+                  suffices += ",";
+                }
+                suffices += nsvt->label(i + 1, 0);
+              }
+              Ioss::Utils::copy_string(exo_field.suffices, suffices.c_str(), EX_MAX_NAME + 1);
+            }
+          }
           char separator                   = field.get_suffix_separator();
           exo_field.component_separator[0] = separator == 1 ? '_' : separator;
         }
 
         if (exo_field.type[0] != EX_SCALAR) {
           ex_put_field_metadata(exoid, exo_field);
+          if (exo_field.type[0] == EX_FIELD_TYPE_USER_DEFINED) {
+            ex_put_field_suffices(exoid, exo_field, exo_field.suffices);
+          }
         }
       }
     }
