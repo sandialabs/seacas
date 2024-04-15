@@ -1781,7 +1781,7 @@ namespace {
     }
   }
 
-  void rotate_filtered_coordinates(Ioss::NodeBlock *nb, real rotation_matrix[3][3],
+  void rotate_filtered_coordinates(Ioss::GroupingEntity *nb, real rotation_matrix[3][3],
                                    const std::vector<int> &filter)
   {
     // `filter` is of size number of nodes.  Value = 1 the rotate; value = 0 leave as is.
@@ -1822,13 +1822,12 @@ namespace {
     else if (type == "Structured") {
       const auto &sbs = region.get_structured_blocks();
       for (const auto &sb : sbs) {
-        auto &nb = sb->get_node_block();
-        rotate_filtered_coordinates(&nb, rotation_matrix, filter);
+        rotate_filtered_coordinates(sb, rotation_matrix, filter);
       }
     }
   }
 
-  void offset_filtered_coordinates(Ioss::NodeBlock *nb, real offset[3],
+  void offset_filtered_coordinates(Ioss::GroupingEntity *nb, real offset[3],
                                    const std::vector<int> &filter)
   {
     // `filter` is of size number of nodes.  Value = 1 transform; value = 0 leave as is.
@@ -1869,13 +1868,12 @@ namespace {
     else if (type == "Structured") {
       const auto &sbs = region.get_structured_blocks();
       for (const auto &sb : sbs) {
-        auto &nb = sb->get_node_block();
-        offset_filtered_coordinates(&nb, offset, filter);
+        offset_filtered_coordinates(&sb, offset, filter);
       }
     }
   }
 
-  void scale_filtered_coordinates(Ioss::NodeBlock *nb, real scale[3],
+  void scale_filtered_coordinates(Ioss::GroupingEntity *nb, real scale[3],
                                   const std::vector<int> &filter)
   {
     // Get original coordinates...
@@ -1914,8 +1912,7 @@ namespace {
     else if (type == "Structured") {
       const auto &sbs = region.get_structured_blocks();
       for (const auto &sb : sbs) {
-        auto &nb = sb->get_node_block();
-        scale_filtered_coordinates(&nb, scale, filter);
+        scale_filtered_coordinates(sb, scale, filter);
       }
     }
   }
