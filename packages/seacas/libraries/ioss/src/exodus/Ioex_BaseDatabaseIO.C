@@ -1957,6 +1957,8 @@ namespace Ioex {
     void internal_output_field_metadata(int exoid, ex_entity_type type,
                                         Ioss::GroupingEntity *entity)
     {
+      // TODO: Handle 'user-defined' fields...
+
       // Get all transient fields on this entity...
       auto results_fields = entity->field_describe(Ioss::Field::TRANSIENT);
       for (const auto &field_name : results_fields) {
@@ -1992,7 +1994,9 @@ namespace Ioex {
           exo_field.component_separator[0] = separator == 1 ? '_' : separator;
         }
 
-        ex_put_field_metadata(exoid, exo_field);
+        if (exo_field.type[0] != EX_SCALAR) {
+          ex_put_field_metadata(exoid, exo_field);
+        }
       }
     }
 
