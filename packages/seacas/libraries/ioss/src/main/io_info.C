@@ -267,7 +267,7 @@ namespace {
     Ioss::Utils::info_fields(&nb, Ioss::Field::TRANSIENT,
                              prefix + "\tTransient:  ", "\n\t\t" + prefix);
 
-    if (interFace.compute_bbox()) {
+    if (interFace.compute_bbox() && region.mesh_type() != Ioss::MeshType::STRUCTURED) {
       print_bbox(nb);
     }
   }
