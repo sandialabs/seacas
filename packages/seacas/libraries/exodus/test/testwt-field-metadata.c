@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2022, 2023 National Technology & Engineering Solutions
+ * Copyright(C) 2022, 2023, 2024 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
   {
     ex_init_params par = {.num_dim       = 3,
                           .num_nodes     = 1,
-                          .num_elem      = 7,
+                          .num_elem      = 3,
                           .num_elem_blk  = num_elem_blk,
                           .num_node_sets = 0,
                           .num_side_sets = 0,
