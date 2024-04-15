@@ -1795,7 +1795,7 @@ namespace {
   void rotate_filtered_coordinates(const Ioss::GroupingEntity *nb, real rotation_matrix[3][3],
                                    const std::vector<int> &filter)
   {
-    // `filter` is of size number of nodes.  Value = 1 the rotate; value = 0 leave as is.
+    // `filter` is of size number of nodes.  Value = 1 then rotate; value = 0 leave as is.
 
     // Get original coordinates...
     std::vector<double> coord;
@@ -1804,18 +1804,19 @@ namespace {
 
     // Do the rotation...
     for (size_t i = 0; i < node_count; i++) {
-      real value = filter.empty() ? 1.0 : filter[i];
-      real x     = coord[3 * i + 0];
-      real y     = coord[3 * i + 1];
-      real z     = coord[3 * i + 2];
+      if (filter.empty() || filter[i] == 1) {
+        real x = coord[3 * i + 0];
+        real y = coord[3 * i + 1];
+        real z = coord[3 * i + 2];
 
-      real xn = x * rotation_matrix[0][0] + y * rotation_matrix[1][0] + z * rotation_matrix[2][0];
-      real yn = x * rotation_matrix[0][1] + y * rotation_matrix[1][1] + z * rotation_matrix[2][1];
-      real zn = x * rotation_matrix[0][2] + y * rotation_matrix[1][2] + z * rotation_matrix[2][2];
+        real xn = x * rotation_matrix[0][0] + y * rotation_matrix[1][0] + z * rotation_matrix[2][0];
+        real yn = x * rotation_matrix[0][1] + y * rotation_matrix[1][1] + z * rotation_matrix[2][1];
+        real zn = x * rotation_matrix[0][2] + y * rotation_matrix[1][2] + z * rotation_matrix[2][2];
 
-      coord[3 * i + 0] = value * xn + (1 - value) * coord[3 * i + 0];
-      coord[3 * i + 1] = value * yn + (1 - value) * coord[3 * i + 1];
-      coord[3 * i + 2] = value * zn + (1 - value) * coord[3 * i + 2];
+        coord[3 * i + 0] = xn;
+        coord[3 * i + 1] = yn;
+        coord[3 * i + 2] = zn;
+      }
     }
 
     // Output updated coordinates...
@@ -1861,18 +1862,11 @@ namespace {
 
     // Do the transformation...
     for (size_t i = 0; i < node_count; i++) {
-      real value = filter.empty() ? 1.0 : filter[i];
-      real x     = coord[3 * i + 0];
-      real y     = coord[3 * i + 1];
-      real z     = coord[3 * i + 2];
-
-      real xn = x + offset[0];
-      real yn = y + offset[1];
-      real zn = z + offset[2];
-
-      coord[3 * i + 0] = value * xn + (1 - value) * coord[3 * i + 0];
-      coord[3 * i + 1] = value * yn + (1 - value) * coord[3 * i + 1];
-      coord[3 * i + 2] = value * zn + (1 - value) * coord[3 * i + 2];
+      if (filter.empty() || filter[i] == 1) {
+        coord[3 * i + 0] += offset[0];
+        coord[3 * i + 1] += offset[1];
+        coord[3 * i + 2] += offset[2];
+      }
     }
 
     // Output updated coordinates...
@@ -1916,18 +1910,11 @@ namespace {
 
     // Do the transformation...
     for (size_t i = 0; i < node_count; i++) {
-      real value = filter.empty() ? 1.0 : filter[i];
-      real x     = coord[3 * i + 0];
-      real y     = coord[3 * i + 1];
-      real z     = coord[3 * i + 2];
-
-      real xn = x * scale[0];
-      real yn = y * scale[1];
-      real zn = z * scale[2];
-
-      coord[3 * i + 0] = value * xn + (1 - value) * coord[3 * i + 0];
-      coord[3 * i + 1] = value * yn + (1 - value) * coord[3 * i + 1];
-      coord[3 * i + 2] = value * zn + (1 - value) * coord[3 * i + 2];
+      if (filter.empty() || filter[i] == 1) {
+        coord[3 * i + 0] *= scale[0];
+        coord[3 * i + 1] *= scale[1];
+        coord[3 * i + 2] *= scale[2];
+      }
     }
 
     // Output updated coordinates...
