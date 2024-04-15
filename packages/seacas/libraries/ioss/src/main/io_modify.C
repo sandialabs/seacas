@@ -133,11 +133,11 @@ namespace {
   void modify_time(Ioss::Region &region, double scale, double offset);
 
   void offset_filtered_coordinates(Ioss::Region &region, real offset[3],
-                                   const std::vector<int> &filter);
+                                   const std::vector<const Ioss::GroupingEntity *> &blocks);
   void scale_filtered_coordinates(Ioss::Region &region, real scale[3],
-                                  const std::vector<int> &filter);
+                                  const std::vector<const Ioss::GroupingEntity *> &blocks);
   void rotate_filtered_coordinates(Ioss::Region &region, real rotation_matrix[3][3],
-                                   const std::vector<int> &filter);
+                                   const std::vector<const Ioss::GroupingEntity *> &blocks);
   bool update_rotation_matrix(real rotation_matrix[3][3], const std::string &axis, double angle);
 
   void set_db_properties(const Modify::Interface &interFace, Ioss::DatabaseIO *dbi);
@@ -660,16 +660,14 @@ namespace {
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY OFFSET ");
       fmt::print("{{X|Y|Z}} {{offset}} ...\n");
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY ROTATE ");
-      fmt::print(
-          "{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{angle}} ... [Exodus only]\n");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{angle}}\n");
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY MIRROR ");
-      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} ... [Exodus only]\n");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} ...\n");
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY SCALE  ");
       fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{scale_factor}} ... "
-                 "[Exodus only]\n");
+                 "\n");
       fmt::print(fmt::emphasis::bold, "\tGEOMETRY OFFSET ");
-      fmt::print(
-          "{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{offset}} ... [Exodus only]\n");
+      fmt::print("{{ELEMENTBLOCKS|BLOCKS|ASSEMBLY}} {{names}} {{X|Y|Z}} {{offset}} ...\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "time")) {
       fmt::print(fmt::emphasis::bold, "\n\tTIME SCALE  ");
@@ -708,8 +706,7 @@ namespace {
       else if (Ioss::Utils::substr_equal(tokens[1], "region")) {
         info_entity(region, show_attribute);
       }
-      else if (Ioss::Utils::substr_equal(tokens[1], "elementblock") ||
-               Ioss::Utils::substr_equal(tokens[1], "block")) {
+      else if (Ioss::Utils::substr_equal(tokens[1], "elementblock")) {
         const auto &entities = region.get_element_blocks();
         info_entities(entities, tokens, region, "Element Blocks", show_attribute);
       }
@@ -730,6 +727,17 @@ namespace {
       else if (Ioss::Utils::substr_equal(tokens[1], "structuredblock")) {
         const auto &entities = region.get_structured_blocks();
         info_entities(entities, tokens, region, "Structured Blocks", show_attribute);
+      }
+      else if (Ioss::Utils::substr_equal(tokens[1], "blocks")) {
+        const auto type = region.mesh_type();
+        if (type == Ioss::MeshType::UNSTRUCTURED) {
+          const auto &entities = region.get_element_blocks();
+          info_entities(entities, tokens, region, "Element Blocks", show_attribute);
+        }
+        else if (type == Ioss::MeshType::STRUCTURED) {
+          const auto &entities = region.get_structured_blocks();
+          info_entities(entities, tokens, region, "Structured Blocks", show_attribute);
+        }
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "sideset") ||
                Ioss::Utils::substr_equal(tokens[1], "sset")) {
@@ -1147,13 +1155,20 @@ namespace {
   }
 
   void build_block_list(Ioss::Region &region, const Ioss::GroupingEntity *ge,
-                        std::vector<const Ioss::ElementBlock *> &blocks)
+                        std::vector<const Ioss::GroupingEntity *> &blocks)
   {
     if (ge) {
       if (ge->type() == Ioss::ELEMENTBLOCK) {
         auto *eb = dynamic_cast<const Ioss::ElementBlock *>(ge);
         if (eb != nullptr) {
           blocks.push_back(eb);
+        }
+        return;
+      }
+      else if (ge->type() == Ioss::STRUCTUREDBLOCK) {
+        auto *sb = dynamic_cast<const Ioss::StructuredBlock *>(ge);
+        if (sb != nullptr) {
+          blocks.push_back(sb);
         }
         return;
       }
@@ -1168,8 +1183,8 @@ namespace {
     }
   }
 
-  std::vector<int> get_filtered_node_list(Ioss::Region                            &region,
-                                          std::vector<const Ioss::ElementBlock *> &blocks)
+  std::vector<int> get_filtered_node_list(Ioss::Region                                    &region,
+                                          const std::vector<const Ioss::GroupingEntity *> &blocks)
   {
     const auto type = region.get_database()->get_format();
     if (type != "Exodus") {
@@ -1262,10 +1277,13 @@ namespace {
       return false;
     }
 
+    const auto type = region.mesh_type();
+
     // See if applying just selected (and connected) blocks.
-    size_t                                  idx = 2;
-    std::vector<const Ioss::ElementBlock *> blocks;
+    size_t                                    idx = 2;
+    std::vector<const Ioss::GroupingEntity *> blocks;
     if (Ioss::Utils::substr_equal(tokens[idx], "elementblocks") ||
+        Ioss::Utils::substr_equal(tokens[idx], "structuredblocks") ||
         Ioss::Utils::substr_equal(tokens[idx], "blocks") ||
         Ioss::Utils::substr_equal(tokens[idx], "assembly")) {
       // Parse list of block|assembly names...
@@ -1274,7 +1292,9 @@ namespace {
                Ioss::Utils::str_equal(tokens[idx], "y") ||
                Ioss::Utils::str_equal(tokens[idx], "z"))) {
         const auto &name = tokens[idx++];
-        auto       *ge   = region.get_entity(name, Ioss::ELEMENTBLOCK);
+        auto       *ge =
+            region.get_entity(name, type == Ioss::MeshType::UNSTRUCTURED ? Ioss::ELEMENTBLOCK
+                                                                         : Ioss::STRUCTUREDBLOCK);
         if (ge == nullptr) {
           ge = region.get_entity(name, Ioss::ASSEMBLY);
         }
@@ -1285,47 +1305,38 @@ namespace {
       Ioss::Utils::uniquify(blocks);
     }
 
-    const auto type = region.get_database()->get_format();
-
     // If blocks is non-empty, then we are applying geometry modification to a subset of the model.
     // In that case, we need to get all blocks that are connected to the user-specified blocks...
     if (!blocks.empty()) {
-      if (type == "Exodus") {
-        std::vector<const Ioss::ElementBlock *> tmp(blocks);
+      if (type == Ioss::MeshType::UNSTRUCTURED) {
+        auto tmp(blocks);
         for (const auto *block : blocks) {
-          const auto &connected = block->get_block_adjacencies();
-          for (const auto &connect : connected) {
-            auto *eb = region.get_element_block(connect);
-            tmp.push_back(eb);
+          auto *eb = dynamic_cast<const Ioss::ElementBlock *>(block);
+          if (eb != nullptr) {
+            const auto &connected = eb->get_block_adjacencies();
+            for (const auto &connect : connected) {
+              auto *elb = region.get_element_block(connect);
+              tmp.push_back(elb);
+            }
           }
         }
         Ioss::Utils::uniquify(tmp);
         blocks = tmp;
       }
-      else {
-        fmt::print(
-            stderr, fg(fmt::color::red),
-            "ERROR: Block specification in Geometry command only supported for Exodus models.\n");
-        return false;
-      }
     }
 
-    if (blocks.empty() ||
-        blocks.size() == (size_t)region.get_property("element_block_count").get_int()) {
-      fmt::print(fg(fmt::color::cyan),
-                 "\n\t*** {} transformation will be applied to ALL element blocks.\n", tokens[1]);
+    if (blocks.empty()) {
+      fmt::print(fg(fmt::color::cyan), "\n\t*** {} transformation will be applied to ALL blocks.\n",
+                 tokens[1]);
     }
     else {
-      fmt::print(fg(fmt::color::cyan),
-                 "\n\t*** {} transformation will be applied to element blocks:\n\t", tokens[1]);
+      fmt::print(fg(fmt::color::cyan), "\n\t*** {} transformation will be applied to blocks:\n\t",
+                 tokens[1]);
       for (const auto *block : blocks) {
         fmt::print(fg(fmt::color::cyan), "{}, ", block->name());
       }
       fmt::print("\n");
     }
-
-    // Now, filter the nodes to determine which nodes are connected to elements in the block list.
-    auto node_filter = get_filtered_node_list(region, blocks);
 
     if (Ioss::Utils::substr_equal(tokens[1], "rotate")) {
       real rotation_matrix[3][3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -1348,7 +1359,7 @@ namespace {
       } while (idx < tokens.size());
 
       // Do the rotation...
-      rotate_filtered_coordinates(region, rotation_matrix, node_filter);
+      rotate_filtered_coordinates(region, rotation_matrix, blocks);
       fmt::print(fg(fmt::color::cyan), "\t*** Database coordinates rotated.\n");
       return false;
     }
@@ -1379,7 +1390,7 @@ namespace {
       } while (idx < tokens.size());
 
       // Do the transformation...
-      scale_filtered_coordinates(region, scale, node_filter);
+      scale_filtered_coordinates(region, scale, blocks);
       fmt::print(fg(fmt::color::cyan), "\t*** Database coordinate(s) scaled.\n");
       return false;
     }
@@ -1409,7 +1420,7 @@ namespace {
       } while (idx < tokens.size());
 
       // Do the transformation...
-      scale_filtered_coordinates(region, scale, node_filter);
+      scale_filtered_coordinates(region, scale, blocks);
       fmt::print(fg(fmt::color::cyan), "\t*** Database coordinate(s) mirrored.\n");
       return false;
     }
@@ -1440,7 +1451,7 @@ namespace {
       } while (idx < tokens.size());
 
       // Do the transformation...
-      offset_filtered_coordinates(region, offset, node_filter);
+      offset_filtered_coordinates(region, offset, blocks);
       fmt::print(fg(fmt::color::cyan), "\t*** Database coordinate(s) offset.\n");
       return false;
     }
@@ -1781,7 +1792,7 @@ namespace {
     }
   }
 
-  void rotate_filtered_coordinates(Ioss::GroupingEntity *nb, real rotation_matrix[3][3],
+  void rotate_filtered_coordinates(const Ioss::GroupingEntity *nb, real rotation_matrix[3][3],
                                    const std::vector<int> &filter)
   {
     // `filter` is of size number of nodes.  Value = 1 the rotate; value = 0 leave as is.
@@ -1789,7 +1800,7 @@ namespace {
     // Get original coordinates...
     std::vector<double> coord;
     nb->get_field_data("mesh_model_coordinates", coord);
-    size_t node_count = nb->entity_count();
+    size_t node_count = coord.size() / 3;
 
     // Do the rotation...
     for (size_t i = 0; i < node_count; i++) {
@@ -1812,22 +1823,33 @@ namespace {
   }
 
   void rotate_filtered_coordinates(Ioss::Region &region, real rotation_matrix[3][3],
-                                   const std::vector<int> &filter)
+                                   const std::vector<const Ioss::GroupingEntity *> &blocks)
   {
-    const auto type = region.mesh_type_string();
-    if (type == "Unstructured") {
-      Ioss::NodeBlock *nb = region.get_node_block("nodeblock_1");
+    const auto type = region.mesh_type();
+    if (type == Ioss::MeshType::UNSTRUCTURED) {
+      auto             filter = get_filtered_node_list(region, blocks);
+      Ioss::NodeBlock *nb     = region.get_node_block("nodeblock_1");
       rotate_filtered_coordinates(nb, rotation_matrix, filter);
     }
-    else if (type == "Structured") {
-      const auto &sbs = region.get_structured_blocks();
-      for (const auto &sb : sbs) {
-        rotate_filtered_coordinates(sb, rotation_matrix, filter);
+    else if (type == Ioss::MeshType::STRUCTURED) {
+      if (blocks.empty()) {
+        auto sblocks = region.get_structured_blocks();
+        for (const auto &sb : sblocks) {
+          rotate_filtered_coordinates(sb, rotation_matrix, std::vector<int>());
+        }
+      }
+      else {
+        for (const auto &blk : blocks) {
+          auto *sb = dynamic_cast<const Ioss::StructuredBlock *>(blk);
+          if (sb != nullptr) {
+            rotate_filtered_coordinates(sb, rotation_matrix, std::vector<int>());
+          }
+        }
       }
     }
   }
 
-  void offset_filtered_coordinates(Ioss::GroupingEntity *nb, real offset[3],
+  void offset_filtered_coordinates(const Ioss::GroupingEntity *nb, real offset[3],
                                    const std::vector<int> &filter)
   {
     // `filter` is of size number of nodes.  Value = 1 transform; value = 0 leave as is.
@@ -1835,7 +1857,7 @@ namespace {
     // Get original coordinates...
     std::vector<double> coord;
     nb->get_field_data("mesh_model_coordinates", coord);
-    size_t node_count = nb->entity_count();
+    size_t node_count = coord.size() / 3;
 
     // Do the transformation...
     for (size_t i = 0; i < node_count; i++) {
@@ -1858,28 +1880,39 @@ namespace {
   }
 
   void offset_filtered_coordinates(Ioss::Region &region, real offset[3],
-                                   const std::vector<int> &filter)
+                                   const std::vector<const Ioss::GroupingEntity *> &blocks)
   {
-    const auto type = region.mesh_type_string();
-    if (type == "Unstructured") {
-      Ioss::NodeBlock *nb = region.get_node_block("nodeblock_1");
+    const auto type = region.mesh_type();
+    if (type == Ioss::MeshType::UNSTRUCTURED) {
+      auto             filter = get_filtered_node_list(region, blocks);
+      Ioss::NodeBlock *nb     = region.get_node_block("nodeblock_1");
       offset_filtered_coordinates(nb, offset, filter);
     }
-    else if (type == "Structured") {
-      const auto &sbs = region.get_structured_blocks();
-      for (const auto &sb : sbs) {
-        offset_filtered_coordinates(&sb, offset, filter);
+    else if (type == Ioss::MeshType::STRUCTURED) {
+      if (blocks.empty()) {
+        auto sblocks = region.get_structured_blocks();
+        for (const auto &sb : sblocks) {
+          offset_filtered_coordinates(sb, offset, std::vector<int>());
+        }
+      }
+      else {
+        for (const auto &blk : blocks) {
+          auto *sb = dynamic_cast<const Ioss::StructuredBlock *>(blk);
+          if (sb != nullptr) {
+            offset_filtered_coordinates(sb, offset, std::vector<int>());
+          }
+        }
       }
     }
   }
 
-  void scale_filtered_coordinates(Ioss::GroupingEntity *nb, real scale[3],
+  void scale_filtered_coordinates(const Ioss::GroupingEntity *nb, real scale[3],
                                   const std::vector<int> &filter)
   {
     // Get original coordinates...
     std::vector<double> coord;
     nb->get_field_data("mesh_model_coordinates", coord);
-    size_t node_count = nb->entity_count();
+    size_t node_count = coord.size() / 3;
 
     // Do the transformation...
     for (size_t i = 0; i < node_count; i++) {
@@ -1902,17 +1935,28 @@ namespace {
   }
 
   void scale_filtered_coordinates(Ioss::Region &region, real scale[3],
-                                  const std::vector<int> &filter)
+                                  const std::vector<const Ioss::GroupingEntity *> &blocks)
   {
-    const auto type = region.mesh_type_string();
-    if (type == "Unstructured") {
-      Ioss::NodeBlock *nb = region.get_node_block("nodeblock_1");
+    const auto type = region.mesh_type();
+    if (type == Ioss::MeshType::UNSTRUCTURED) {
+      auto             filter = get_filtered_node_list(region, blocks);
+      Ioss::NodeBlock *nb     = region.get_node_block("nodeblock_1");
       scale_filtered_coordinates(nb, scale, filter);
     }
-    else if (type == "Structured") {
-      const auto &sbs = region.get_structured_blocks();
-      for (const auto &sb : sbs) {
-        scale_filtered_coordinates(sb, scale, filter);
+    else if (type == Ioss::MeshType::STRUCTURED) {
+      if (blocks.empty()) {
+        auto sblocks = region.get_structured_blocks();
+        for (const auto &sb : sblocks) {
+          scale_filtered_coordinates(sb, scale, std::vector<int>());
+        }
+      }
+      else {
+        for (const auto &blk : blocks) {
+          auto *sb = dynamic_cast<const Ioss::StructuredBlock *>(blk);
+          if (sb != nullptr) {
+            scale_filtered_coordinates(sb, scale, std::vector<int>());
+          }
+        }
       }
     }
   }
