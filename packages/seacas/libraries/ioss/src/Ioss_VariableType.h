@@ -17,6 +17,7 @@
 #include "ioss_export.h"
 
 namespace Ioss {
+  struct Basis;
   class VariableType;
 } // namespace Ioss
 
@@ -72,6 +73,8 @@ namespace Ioss {
     IOSS_NODISCARD static NameList describe();
     static bool                    create_named_suffix_field_type(const std::string    &type_name,
                                                                   const Ioss::NameList &suffices);
+    static bool                    create_basis_field_type(const std::string              &type_name,
+                                                           const std::vector<Ioss::Basis> &bases);
     static bool get_field_type_mapping(const std::string &field, std::string *type);
     static bool add_field_type_mapping(const std::string &raw_field, const std::string &raw_type);
 

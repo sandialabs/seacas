@@ -4,6 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
+#include "Ioss_BasisVariableType.h"
 #include "Ioss_CompositeVariableType.h"
 #include "Ioss_ConstructedVariableType.h"
 #include "Ioss_NamedSuffixVariableType.h"
@@ -125,6 +126,28 @@ namespace Ioss {
     for (size_t i = 0; i < count; i++) {
       var_type->add_suffix(i + 1, suffices[i]);
     }
+    return true;
+  }
+
+  bool VariableType::create_basis_field_type(const std::string              &type_name,
+                                             const std::vector<Ioss::Basis> &bases)
+  {
+    size_t count = bases.size();
+    if (count < 1) {
+      return false;
+    }
+
+    std::string low_name = "basis_" + Utils::lowercase(type_name);
+    // See if the variable already exists...
+    if (registry().find(low_name) != registry().end()) {
+      return false;
+    }
+
+    // Create the variable.  Note that the 'true' argument means Ioss will delete
+    // the pointer.
+    auto *var_type = new BasisVariableType(low_name, count, true);
+    var_type->add_basis(bases);
+
     return true;
   }
 
