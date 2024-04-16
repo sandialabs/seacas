@@ -1769,8 +1769,10 @@ namespace Ioex {
             }
           }
         }
-        fmt::print("Enhanced Field:  Adding to {} {}:\n\t{}\n", entity->type_string(),
-                   entity->name(), field);
+#if IOSS_DEBUG_OUTPUT
+        fmt::print(Ioss::DebugOut(), "Enhanced Field:  Adding to {} {}:\n\t{}\n",
+                   entity->type_string(), entity->name(), field);
+#endif
       }
     }
     return fields;
