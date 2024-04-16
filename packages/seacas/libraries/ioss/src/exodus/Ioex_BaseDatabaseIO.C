@@ -20,6 +20,7 @@
 
 #include "Ioex_Utils.h"
 #include "Ioss_Assembly.h"
+#include "Ioss_BasisVariableType.h"
 #include "Ioss_Blob.h"
 #include "Ioss_CodeTypes.h"
 #include "Ioss_CompositeVariableType.h"
@@ -31,6 +32,7 @@
 #include "Ioss_ElementSet.h"
 #include "Ioss_EntityBlock.h"
 #include "Ioss_EntityType.h"
+#include "Ioss_Enumerate.h"
 #include "Ioss_FaceBlock.h"
 #include "Ioss_FaceSet.h"
 #include "Ioss_Field.h"
@@ -1716,6 +1718,7 @@ namespace Ioex {
         }
       }
 
+      bool basis_read = false;
       for (const auto &exo_field : exo_fields) {
         std::string ios_field_type{};
 
@@ -1729,7 +1732,31 @@ namespace Ioex {
           ios_field_type = exo_field.name;
         }
         else if (exo_field_type == EX_BASIS) {
-          continue;
+          // If we don't already have the basis, read and create it...
+          if (!basis_read) {
+            ex_basis exo_basis{};
+            ex_get_basis_metadata(get_file_pointer(), type, id, &exo_basis);
+
+            // allocate memory for all pointer members of `basis`
+            ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
+            ex_get_basis_metadata(get_file_pointer(), type, id, &exo_basis);
+
+            std::vector<Ioss::Basis> basies{};
+            basies.reserve(exo_basis.cardinality);
+            for (int i = 0; i < exo_basis.cardinality; i++) {
+              Ioss::Basis basis{exo_basis.subc_dim[i],
+                                exo_basis.subc_ordinal[i],
+                                exo_basis.subc_dof_ordinal[i],
+                                exo_basis.subc_num_dof[i],
+                                exo_basis.xi[i],
+                                exo_basis.eta[i],
+                                exo_basis.zeta[i]};
+              basies.push_back(basis);
+            }
+
+            // deallocate any memory allocated in the 'basis' struct.
+            ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
+          }
         }
         else {
           ios_field_type = Ioex::map_ioss_field_type(exo_field_type);
@@ -1742,6 +1769,36 @@ namespace Ioex {
           // the cardinality...
           if (exo_field.type[1] == EX_FIELD_TYPE_SEQUENCE) {
             num_copies = exo_field.cardinality[1];
+          }
+          else if (exo_field.type[1] == EX_BASIS) {
+            // If we don't already have the basis, read and create it...
+            if (!basis_read) {
+              ex_basis exo_basis{};
+              ex_get_basis_metadata(get_file_pointer(), type, id, &exo_basis);
+
+              // allocate memory for all pointer members of `basis`
+              ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
+              ex_get_basis_metadata(get_file_pointer(), type, id, &exo_basis);
+
+              std::vector<Ioss::Basis> basies{};
+              basies.reserve(exo_basis.cardinality);
+              for (int i = 0; i < exo_basis.cardinality; i++) {
+                Ioss::Basis basis{exo_basis.subc_dim[i],
+                                  exo_basis.subc_ordinal[i],
+                                  exo_basis.subc_dof_ordinal[i],
+                                  exo_basis.subc_num_dof[i],
+                                  exo_basis.xi[i],
+                                  exo_basis.eta[i],
+                                  exo_basis.zeta[i]};
+                basies.push_back(basis);
+              }
+
+              // deallocate any memory allocated in the 'basis' struct.
+              ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
+
+              Ioss::VariableType::create_basis_field_type(exo_basis.name, basies);
+              num_copies = basies.size();
+            }
           }
           else {
             fmt::print("ERROR: Unrecognized field type for nested field.\n");
@@ -1769,10 +1826,9 @@ namespace Ioex {
             }
           }
         }
-#if IOSS_DEBUG_OUTPUT
+
         fmt::print(Ioss::DebugOut(), "Enhanced Field:  Adding to {} {}:\n\t{}\n",
                    entity->type_string(), entity->name(), field);
-#endif
       }
     }
     return fields;

@@ -216,6 +216,8 @@ namespace Ioex {
       return EX_MATRIX_2X2;
     if (type == "matrix_33")
       return EX_MATRIX_3X3;
+    if (type == "basis")
+      return EX_BASIS;
 
     if (Ioss::Utils::substr_equal("Real", type))
       return EX_FIELD_TYPE_SEQUENCE;
