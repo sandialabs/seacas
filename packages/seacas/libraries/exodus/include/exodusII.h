@@ -333,13 +333,20 @@ typedef struct ex_field
 typedef struct ex_basis
 {
   /*
-   * subc_dim: dimension of the subcell associated with the specified DoF ordinal -- 0 node, 1 edge,
-   * 2 face, 3 volume [Range: 0..3] subc_ordinal: ordinal of the subcell relative to its parent cell
-   * -- 0..n for each ordinal with the same subc dim [Range: <= DoF ordinal] subc_dof_ordinal:
-   * ordinal of the DoF relative to the subcell subc_num_dof: cardinality of the DoF set associated
-   * with this subcell. xi, eta, mu (ξ, η, ζ): Parametric coordinate location of the DoF (Only first
-   * ndim values are valid)
+   clang-format off
+   *
+   * subc_dim: dimension of the subcell associated with the specified DoF ordinal 
+   *      -- 0 node, 1 edge, 2 face, 3 volume [Range: 0..3]
+   * subc_ordinal: ordinal of the subcell relative to its parent cell
+   *      -- 0..n for each ordinal with the same subc dim [Range: <= DoF ordinal] 
+   * subc_dof_ordinal: ordinal of the DoF relative to the subcell 
+   * subc_num_dof: cardinality of the DoF set associated with this subcell. 
+   * xi, eta, mu (ξ, η, ζ): Parametric coordinate location of the DoF 
+   *      -- (Only first ndim values are valid)
+   *
+   clang-format on
    */
+
   char    name[EX_MAX_NAME + 1];
   int     cardinality; /* number of `basis` points == dimension of non-null subc_*, xi, eta, mu */
   int    *subc_dim;
