@@ -33,29 +33,29 @@ INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 function check_valid()
 {
-    if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ]; then
-	echo "YES"
-	return 1
+    if [ "${!1}" == "YES" ] || [ "${!1}" == "ON" ] || [ "${!1}" == "yes" ] || [ "${!1}" == "on" ]; then
+        echo "YES"
+        return 0
     fi
-    if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ]; then
-	echo "NO"
-	return 1
+    if [ "${!1}" == "NO" ] || [ "${!1}" == "OFF" ] || [ "${!1}" == "no" ] || [ "${!1}" == "off" ]; then
+        echo "NO"
+        return 0
     fi
-    echo "Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF"
+    printf "\n${txtred}ERROR: Invalid value for $1 (${!1}) -- Must be ON, YES, NO, or OFF\n\n${txtrst}" >& 2
     exit 1
 }
 ### Possible subset of what is built ---
 APPLICATIONS=${APPLICATIONS:-YES}
-APPLICATIONS=$(check_valid APPLICATIONS)
+APPLICATIONS=$(check_valid APPLICATIONS) || exit
 
 LEGACY=${LEGACY:-YES}
-LEGACY=$(check_valid LEGACY)
+LEGACY=$(check_valid LEGACY) || exit
 
 FORTRAN=${FORTRAN:-YES}
-FORTRAN=$(check_valid FORTRAN)
+FORTRAN=$(check_valid FORTRAN) || exit
 
 ZOLTAN=${ZOLTAN:-YES}
-ZOLTAN=$(check_valid ZOLTAN)
+ZOLTAN=$(check_valid ZOLTAN) || exit
 
 ### TPLs --
 ### Make sure these point to the locations to find the libraries and includes in lib and include
@@ -94,7 +94,7 @@ then
     fi
 fi
 
-MPI=$(check_valid MPI)
+MPI=$(check_valid MPI) || exit
 echo "${txtgrn}MPI set to ${MPI}${txtrst}"
 
 if [ "${MPI}" == "NO" ]
@@ -263,7 +263,7 @@ GENERATOR=${GENERATOR:-"Unix Makefiles"}
 # -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
 
 CRAY="${CRAY:-NO}"
-CRAY=$(check_valid CRAY)
+CRAY=$(check_valid CRAY) || exit
 
 if [ "${CRAY}" == "YES" ]
 then
@@ -271,7 +271,7 @@ then
 else
     SHARED="${SHARED:-YES}"
 fi
-SHARED=$(check_valid SHARED)
+SHARED=$(check_valid SHARED) || exit
 
 if [ "${CRAY}" == "YES" ] && [ "${SHARED}" == "NO" ]
 then
@@ -291,14 +291,14 @@ BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
 
 if [ ! -z ${DEBUG+x} ]
 then
-    if [ "${DEBUG}" == "ON" ] || [ "${DEBUG}" == "YES" ]
+    if [ "${DEBUG}" == "ON" ] || [ "${DEBUG}" == "YES" ] || [ "${DEBUG}" == "on" ] || [ "${DEBUG}" == "yes" ]
     then
 	BUILD_TYPE="DEBUG"
-    elif [ "${DEBUG}" == "OFF" ] || [ "${DEBUG}" == "NO" ]
+    elif [ "${DEBUG}" == "OFF" ] || [ "${DEBUG}" == "NO" ] || [ "${DEBUG}" == "off" ] || [ "${DEBUG}" == "no" ]
     then
 	BUILD_TYPE="RELEASE"
     else
-	echo "ERROR: Invalid value for DEBUG ('$DEBUG'). Must be 'ON', 'OFF', 'YES', 'NO'."
+	echo "${txtred}\nERROR: Invalid value for DEBUG ('$DEBUG') -- Must be ON, YES, NO, or OFF\n${txtrst}" >& 2
 	exit
     fi
 fi
@@ -308,11 +308,11 @@ fi
 ### which provides X11/Xlib.h and the libX11, then change the "YES"
 ### below to "NO". It will disable blot and fastq
 HAVE_X11=${HAVE_X11:-YES}
-HAVE_X11=$(check_valid HAVE_X11)
+HAVE_X11=$(check_valid HAVE_X11) || exit
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-NO}
-THREADSAFE=$(check_valid THREADSAFE)
+THREADSAFE=$(check_valid THREADSAFE) || exit
 
 function check_enable()
 {
@@ -415,7 +415,7 @@ fi
 
 # Only run doxygen if me and on master branch...
 DOXYGEN=${DOXYGEN:-NO}
-DOXYGEN=$(check_valid DOXYGEN)
+DOXYGEN=$(check_valid DOXYGEN) || exit
 
 if [[ "$DOXYGEN" == "NO" && "$OS" == "Darwin" && "$MPI" == "NO" ]] ; then
     branch=$(git branch |grep \* |cut -c3-)
@@ -428,7 +428,7 @@ fi
 FC=${FC:-gfortran}
 
 EXTRA_WARNINGS=${EXTRA_WARNINGS:-NO}
-EXTRA_WARNINGS=$(check_valid EXTRA_WARNINGS)
+EXTRA_WARNINGS=$(check_valid EXTRA_WARNINGS) || exit
 
 SANITIZER=${SANITIZER:-NO}
 
