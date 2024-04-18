@@ -482,6 +482,7 @@ then
             fi
 	fi
 	# Create default plugin directory...
+	mkdir  ${INSTALL_PATH}/lib
 	mkdir  ${INSTALL_PATH}/lib/hdf5
 	mkdir  ${INSTALL_PATH}/lib/hdf5/lib
 	mkdir  ${INSTALL_PATH}/lib/hdf5/lib/plugin
