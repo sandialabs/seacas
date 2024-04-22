@@ -4,18 +4,19 @@
 //
 // See packages/seacas/LICENSE for details
 %{
-#include "aprepro.h"
-#include "apr_util.h"
 #include "apr_array.h"
+#include "apr_util.h"
+#include "aprepro.h"
 
-#include <fmt/format.h>
 #include <cerrno>
 #include <cfenv>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
+#include <fmt/format.h>
+#include <fmt/printf.h>
 #include <iostream>
-#include <stdlib.h>
 
 namespace {
   void reset_error()
@@ -168,12 +169,26 @@ bool:     exp LT exp            { $$ = $1 < $3;                         }
         | LPAR bool RPAR        { $$ = $2;                              }
 ;
 
-bool:     sexp LT sexp          { $$ = (strcmp($1,$3) <  0 ? 1 : 0);    }
-        | sexp GT sexp          { $$ = (strcmp($1,$3) >  0 ? 1 : 0);    }
-        | sexp LE  sexp         { $$ = (strcmp($1,$3) <= 0 ? 1 : 0);    }
-        | sexp GE  sexp         { $$ = (strcmp($1,$3) >= 0 ? 1 : 0);    }
-        | sexp EQ  sexp         { $$ = (strcmp($1,$3) == 0 ? 1 : 0);    }
-        | sexp NE  sexp         { $$ = (strcmp($1,$3) != 0 ? 1 : 0);    }
+bool:     sexp LT sexp            { $$ = (strcmp($1,$3) <  0 ? 1 : 0);    }
+        | sexp GT sexp            { $$ = (strcmp($1,$3) >  0 ? 1 : 0);    }
+        | sexp LE  sexp           { $$ = (strcmp($1,$3) <= 0 ? 1 : 0);    }
+        | sexp GE  sexp           { $$ = (strcmp($1,$3) >= 0 ? 1 : 0);    }
+        | sexp EQ  sexp           { $$ = (strcmp($1,$3) == 0 ? 1 : 0);    }
+        | sexp NE  sexp           { $$ = (strcmp($1,$3) != 0 ? 1 : 0);    }
+
+        | UNDVAR LT sexp          { $$ = (strcmp("",$3) <  0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR GT sexp          { $$ = (strcmp("",$3) >  0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR LE  sexp         { $$ = (strcmp("",$3) <= 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR GE  sexp         { $$ = (strcmp("",$3) >= 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR EQ  sexp         { $$ = (strcmp("",$3) == 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR NE  sexp         { $$ = (strcmp("",$3) != 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+
+        | sexp LT UNDVAR          { $$ = (strcmp($1,"") <  0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp GT UNDVAR          { $$ = (strcmp($1,"") >  0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp LE UNDVAR          { $$ = (strcmp($1,"") <= 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp GE UNDVAR          { $$ = (strcmp($1,"") >= 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp EQ UNDVAR          { $$ = (strcmp($1,"") == 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp NE UNDVAR          { $$ = (strcmp($1,"") != 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
 
 aexp:   AVAR                    { $$ = aprepro.make_array(*($1->value.avar)); }
         | AFNCT LPAR sexp RPAR  {
