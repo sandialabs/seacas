@@ -372,7 +372,15 @@ namespace SEAMS {
   {
     reset_error();
     double temp = exp(x);
-    SEAMS::math_error("exp");
+    // `exp` will report ERANGE error on both overflow and underflow
+    // We want no error on underflow, so see if `temp == 0` and if so,
+    // don't check math_error.
+    if (temp != 0.0) {
+      SEAMS::math_error("exp");
+    }
+    else {
+      reset_error();
+    }
     return (temp);
   }
 
