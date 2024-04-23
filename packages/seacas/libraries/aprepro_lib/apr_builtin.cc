@@ -598,18 +598,25 @@ namespace SEAMS {
 
   const char *do_tostring(double x)
   {
-    char       *tmp;
-    static char tmpstr[128];
+    char *tmp;
     if (x == 0.0) {
       new_string("0", &tmp);
       return (tmp);
     }
 
-    SEAMS::symrec *format;
-    format = aprepro->getsym("_FORMAT");
-    snprintf(tmpstr, 128, format->value.svar.c_str(), x);
-    new_string(tmpstr, &tmp);
-    return (tmp);
+    const SEAMS::symrec *format = aprepro->getsym("_FORMAT");
+    if (format->value.svar.empty()) {
+      std::ostringstream lines;
+      fmt::print(lines, "{}", x);
+      new_string(lines.str(), &tmp);
+      return tmp;
+    }
+    else {
+      static char tmpstr[128];
+      snprintf(tmpstr, 128, format->value.svar.c_str(), x);
+      new_string(tmpstr, &tmp);
+      return (tmp);
+    }
   }
 
   const char *do_output(char *filename)
