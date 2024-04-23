@@ -612,10 +612,9 @@ namespace SEAMS {
       return tmp;
     }
     else {
-      static char tmpstr[128];
-      snprintf(tmpstr, 128, format->value.svar.c_str(), x);
-      new_string(tmpstr, &tmp);
-      return (tmp);
+      auto tmpstr = fmt::sprintf(format->value.svar, x);
+      new_string(tmpstr.c_str(), &tmp);
+      return tmp;
     }
   }
 
