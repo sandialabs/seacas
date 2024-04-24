@@ -568,7 +568,7 @@ namespace SEAMS {
     static const unsigned char yydefact_[];
 
     // YYPGOTO[NTERM-NUM].
-    static const short yypgoto_[];
+    static const signed char yypgoto_[];
 
     // YYDEFGOTO[NTERM-NUM].
     static const unsigned char yydefgoto_[];
@@ -780,7 +780,7 @@ namespace SEAMS {
 
     /// Constants.
     enum {
-      yylast_  = 1538, ///< Last index in yytable_.
+      yylast_  = 1804, ///< Last index in yytable_.
       yynnts_  = 7,    ///< Number of nonterminal symbols.
       yyfinal_ = 2     ///< Termination state number.
     };

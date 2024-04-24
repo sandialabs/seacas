@@ -167,28 +167,51 @@ bool:     exp LT exp            { $$ = $1 < $3;                         }
         | exp LOR bool          { $$ = $1 || $3;                        }
         | exp LAND bool         { $$ = $1 && $3;                        }
         | LPAR bool RPAR        { $$ = $2;                              }
+
+        | UNDVAR LOR exp           { $$ = 0 || $3; undefined_error(aprepro, $1->name);   }
+        | UNDVAR LAND exp          { $$ = 0 && $3; undefined_error(aprepro, $1->name);   }
+        | exp LOR UNDVAR           { $$ = $1 || 0; undefined_error(aprepro, $3->name);   }
+        | exp LAND UNDVAR          { $$ = $1 && 0; undefined_error(aprepro, $3->name);   }
+        | bool LOR UNDVAR          { $$ = $1 || 0; undefined_error(aprepro, $3->name);   }
+        | bool LAND UNDVAR         { $$ = $1 && 0; undefined_error(aprepro, $3->name);   }
+        | UNDVAR LOR bool          { $$ = 0 || $3; undefined_error(aprepro, $1->name);   }
+        | UNDVAR LAND bool         { $$ = 0 && $3; undefined_error(aprepro, $1->name);   }
 ;
 
-bool:     sexp LT sexp            { $$ = (strcmp($1,$3) <  0 ? 1 : 0);    }
-        | sexp GT sexp            { $$ = (strcmp($1,$3) >  0 ? 1 : 0);    }
-        | sexp LE  sexp           { $$ = (strcmp($1,$3) <= 0 ? 1 : 0);    }
-        | sexp GE  sexp           { $$ = (strcmp($1,$3) >= 0 ? 1 : 0);    }
-        | sexp EQ  sexp           { $$ = (strcmp($1,$3) == 0 ? 1 : 0);    }
-        | sexp NE  sexp           { $$ = (strcmp($1,$3) != 0 ? 1 : 0);    }
+bool:     sexp LT sexp          { $$ = (strcmp($1,$3) <  0 ? 1 : 0);    }
+        | sexp GT sexp          { $$ = (strcmp($1,$3) >  0 ? 1 : 0);    }
+        | sexp LE  sexp         { $$ = (strcmp($1,$3) <= 0 ? 1 : 0);    }
+        | sexp GE  sexp         { $$ = (strcmp($1,$3) >= 0 ? 1 : 0);    }
+        | sexp EQ  sexp         { $$ = (strcmp($1,$3) == 0 ? 1 : 0);    }
+        | sexp NE  sexp         { $$ = (strcmp($1,$3) != 0 ? 1 : 0);    }
 
-        | UNDVAR LT sexp          { $$ = (strcmp("",$3) <  0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
-        | UNDVAR GT sexp          { $$ = (strcmp("",$3) >  0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
-        | UNDVAR LE  sexp         { $$ = (strcmp("",$3) <= 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
-        | UNDVAR GE  sexp         { $$ = (strcmp("",$3) >= 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
-        | UNDVAR EQ  sexp         { $$ = (strcmp("",$3) == 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
-        | UNDVAR NE  sexp         { $$ = (strcmp("",$3) != 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR LT sexp        { $$ = (strcmp("",$3) <  0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR GT sexp        { $$ = (strcmp("",$3) >  0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR LE  sexp       { $$ = (strcmp("",$3) <= 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR GE  sexp       { $$ = (strcmp("",$3) >= 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR EQ  sexp       { $$ = (strcmp("",$3) == 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
+        | UNDVAR NE  sexp       { $$ = (strcmp("",$3) != 0 ? 1 : 0); undefined_error(aprepro, $1->name);          }
 
-        | sexp LT UNDVAR          { $$ = (strcmp($1,"") <  0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
-        | sexp GT UNDVAR          { $$ = (strcmp($1,"") >  0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
-        | sexp LE UNDVAR          { $$ = (strcmp($1,"") <= 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
-        | sexp GE UNDVAR          { $$ = (strcmp($1,"") >= 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
-        | sexp EQ UNDVAR          { $$ = (strcmp($1,"") == 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
-        | sexp NE UNDVAR          { $$ = (strcmp($1,"") != 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp LT UNDVAR        { $$ = (strcmp($1,"") <  0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp GT UNDVAR        { $$ = (strcmp($1,"") >  0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp LE UNDVAR        { $$ = (strcmp($1,"") <= 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp GE UNDVAR        { $$ = (strcmp($1,"") >= 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp EQ UNDVAR        { $$ = (strcmp($1,"") == 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+        | sexp NE UNDVAR        { $$ = (strcmp($1,"") != 0 ? 1 : 0); undefined_error(aprepro, $3->name);          }
+
+        | UNDVAR LT exp         { $$ = 0  < $3; undefined_error(aprepro, $1->name);          }
+        | UNDVAR GT exp         { $$ = 0  > $3; undefined_error(aprepro, $1->name);          }
+        | UNDVAR LE  exp        { $$ = 0 <= $3; undefined_error(aprepro, $1->name);          }
+        | UNDVAR GE  exp        { $$ = 0 >= $3; undefined_error(aprepro, $1->name);          }
+        | UNDVAR EQ  exp        { $$ = 0 == $3; undefined_error(aprepro, $1->name);          }
+        | UNDVAR NE  exp        { $$ = 0 != $3; undefined_error(aprepro, $1->name);          }
+
+        | exp LT UNDVAR         { $$ = $1  < 0; undefined_error(aprepro, $3->name);          }
+        | exp GT UNDVAR         { $$ = $1  > 0; undefined_error(aprepro, $3->name);          }
+        | exp LE UNDVAR         { $$ = $1 <= 0; undefined_error(aprepro, $3->name);          }
+        | exp GE UNDVAR         { $$ = $1 >= 0; undefined_error(aprepro, $3->name);          }
+        | exp EQ UNDVAR         { $$ = $1 == 0; undefined_error(aprepro, $3->name);          }
+        | exp NE UNDVAR         { $$ = $1 != 0; undefined_error(aprepro, $3->name);          }
 
 aexp:   AVAR                    { $$ = aprepro.make_array(*($1->value.avar)); }
         | AFNCT LPAR sexp RPAR  {
@@ -367,7 +390,7 @@ exp:      NUM                   { $$ = $1;                              }
                                   redefined_warning(aprepro, $1);
                                   set_type(aprepro, $1, token::VAR);                    }
         | AVAR EQUAL exp        { $$ = $3;
-	                          aprepro.redefine_array($1->value.avar);
+                                  aprepro.redefine_array($1->value.avar);
                                   $1->value.var= $3;
                                   redefined_warning(aprepro, $1);
                                   set_type(aprepro, $1, token::VAR);           }
