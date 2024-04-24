@@ -197,6 +197,32 @@ namespace {
       delete[] assembly.name;
     }
   }
+
+  int read_exodus_basis(int exoid, ex_entity_type type, int64_t id)
+  {
+    ex_basis exo_basis{};
+    ex_get_basis_metadata(exoid, type, id, &exo_basis);
+
+    // allocate memory for all pointer members of `basis`
+    ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
+    ex_get_basis_metadata(exoid, type, id, &exo_basis);
+
+    std::vector<Ioss::Basis> basies{};
+    basies.reserve(exo_basis.cardinality);
+    for (int i = 0; i < exo_basis.cardinality; i++) {
+      Ioss::Basis basis{
+          exo_basis.subc_dim[i],     exo_basis.subc_ordinal[i], exo_basis.subc_dof_ordinal[i],
+          exo_basis.subc_num_dof[i], exo_basis.xi[i],           exo_basis.eta[i],
+          exo_basis.zeta[i]};
+      basies.push_back(basis);
+    }
+
+    // deallocate any memory allocated in the 'basis' struct.
+    ex_initialize_basis_struct(&exo_basis, -exo_basis.cardinality);
+
+    Ioss::VariableType::create_basis_field_type(exo_basis.name, basies);
+    return exo_basis.cardinality;
+  }
 } // namespace
 
 namespace Ioex {
@@ -1734,35 +1760,18 @@ namespace Ioex {
         else if (exo_field_type == EX_BASIS) {
           // If we don't already have the basis, read and create it...
           if (!basis_read) {
-            ex_basis exo_basis{};
-            ex_get_basis_metadata(get_file_pointer(), type, id, &exo_basis);
-
-            // allocate memory for all pointer members of `basis`
-            ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
-            ex_get_basis_metadata(get_file_pointer(), type, id, &exo_basis);
-
-            std::vector<Ioss::Basis> basies{};
-            basies.reserve(exo_basis.cardinality);
-            for (int i = 0; i < exo_basis.cardinality; i++) {
-              Ioss::Basis basis{exo_basis.subc_dim[i],
-                                exo_basis.subc_ordinal[i],
-                                exo_basis.subc_dof_ordinal[i],
-                                exo_basis.subc_num_dof[i],
-                                exo_basis.xi[i],
-                                exo_basis.eta[i],
-                                exo_basis.zeta[i]};
-              basies.push_back(basis);
-            }
-
-            // deallocate any memory allocated in the 'basis' struct.
-            ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
+            read_exodus_basis(get_file_pointer(), type, id);
+            basis_read = true;
           }
+          ios_field_type = "basis";
         }
         else {
           ios_field_type = Ioex::map_ioss_field_type(exo_field_type);
         }
 
-        int num_copies = 1;
+        int         num_copies = 1;
+        std::string secondary_field_type{};
+
         if (exo_field.nesting == 2) {
           // For IOSS, the nesting is basically N copies of the field at nesting level 1, so we
           // just need to verify that the field type is "EX_FIELD_TYPE_SEQUENCE" and then get
@@ -1773,40 +1782,29 @@ namespace Ioex {
           else if (exo_field.type[1] == EX_BASIS) {
             // If we don't already have the basis, read and create it...
             if (!basis_read) {
-              ex_basis exo_basis{};
-              ex_get_basis_metadata(get_file_pointer(), type, id, &exo_basis);
-
-              // allocate memory for all pointer members of `basis`
-              ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
-              ex_get_basis_metadata(get_file_pointer(), type, id, &exo_basis);
-
-              std::vector<Ioss::Basis> basies{};
-              basies.reserve(exo_basis.cardinality);
-              for (int i = 0; i < exo_basis.cardinality; i++) {
-                Ioss::Basis basis{exo_basis.subc_dim[i],
-                                  exo_basis.subc_ordinal[i],
-                                  exo_basis.subc_dof_ordinal[i],
-                                  exo_basis.subc_num_dof[i],
-                                  exo_basis.xi[i],
-                                  exo_basis.eta[i],
-                                  exo_basis.zeta[i]};
-                basies.push_back(basis);
-              }
-
-              // deallocate any memory allocated in the 'basis' struct.
-              ex_initialize_basis_struct(&exo_basis, exo_basis.cardinality);
-
-              Ioss::VariableType::create_basis_field_type(exo_basis.name, basies);
-              num_copies = basies.size();
+              // Negative copy count is currently kluge to indicate basis is the nested field type.
+              num_copies = -read_exodus_basis(get_file_pointer(), type, id);
+              basis_read = true;
             }
+            secondary_field_type = "basis";
           }
           else {
             fmt::print("ERROR: Unrecognized field type for nested field.\n");
           }
         }
-        fields.emplace_back(exo_field.name, Ioss::Field::REAL, ios_field_type, num_copies,
-                            Ioss::Field::TRANSIENT, entity->entity_count());
+        if (secondary_field_type.empty()) {
+          fields.emplace_back(exo_field.name, Ioss::Field::REAL, ios_field_type, num_copies,
+                              Ioss::Field::TRANSIENT, entity->entity_count());
+        }
+        else {
+          fields.emplace_back(exo_field.name, Ioss::Field::REAL, ios_field_type,
+                              secondary_field_type, Ioss::Field::TRANSIENT, entity->entity_count());
+        }
+
         auto &field = fields.back();
+        if (exo_field_type != EX_FIELD_TYPE_USER_DEFINED) {
+          field.set_suffices_uppercase(true);
+        }
         if (exo_field.nesting == 1) {
           field.set_suffix_separator(exo_field.component_separator[0]);
         }

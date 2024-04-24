@@ -110,6 +110,9 @@ namespace Ioss {
     Field(std::string name, BasicType type, const std::string &storage, int copies, RoleType role,
           size_t value_count = 0, size_t index = 0);
 
+    Field(std::string name, BasicType type, const std::string &storage,
+          const std::string &secondary, RoleType role, size_t value_count = 0, size_t index = 0);
+
     Field(std::string name, BasicType type, const VariableType *storage, RoleType role,
           size_t value_count = 0, size_t index = 0);
 

@@ -593,8 +593,7 @@ namespace {
             field.set_suffix_separator(suffix_separator);
           }
           // Are suffices upper or lowercase...
-          std::vector<std::string> tmp;
-          field_tokenize(names[which_names[0]], suffix_separator, tmp);
+          auto tmp = field_tokenize(names[which_names[0]], suffix_separator);
 
           // If a composite variable, then need to check the interior suffix, not the last (which
           // will be 1,2,...)

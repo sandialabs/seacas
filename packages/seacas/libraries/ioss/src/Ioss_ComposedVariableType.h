@@ -1,0 +1,37 @@
+// Copyright(C) 1999-2020, 2022, 2024 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+//
+// See packages/seacas/LICENSE for details
+
+#pragma once
+
+#include "ioss_export.h"
+
+#include "Ioss_CodeTypes.h"
+#include "Ioss_VariableType.h" // for VariableType
+#include <string>              // for string
+
+namespace Ioss {
+  class IOSS_EXPORT ComposedVariableType : public VariableType
+  {
+  public:
+    IOSS_NODISCARD static std::string   composed_name(const std::string &base,
+                                                      const std::string &secondary);
+    IOSS_NODISCARD static VariableType *composed_variable_type(const VariableType *inst,
+                                                               const VariableType *secondary);
+
+    IOSS_NODISCARD std::string label(int which, char suffix_sep = '_') const override;
+    ComposedVariableType(const std::string &my_name, const std::string &secondary, bool delete_me);
+    ComposedVariableType(const VariableType *base_type, const VariableType *secondary,
+                         bool delete_me);
+    ComposedVariableType(const ComposedVariableType &) = delete;
+
+    IOSS_NODISCARD const VariableType *GetBaseType() const;
+    IOSS_NODISCARD const VariableType *GetSecondaryType() const;
+
+  private:
+    const VariableType *baseType{nullptr};
+    const VariableType *secondaryType{nullptr};
+  };
+} // namespace Ioss

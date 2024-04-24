@@ -121,6 +121,28 @@ Ioss::Field::Field(std::string name, const Ioss::Field::BasicType type,
   size_ = internal_get_size(type_, rawCount_, rawStorage_);
 }
 
+/** \brief Create a field.
+ *
+ *  \param[in] name The name of the field
+ *  \param[in] type The basic data type of data held in the field.
+ *  \param[in] storage The storage class of the data (ConstructedVariableType,
+ * CompositeVariableType, etc)
+ *  \param[in] storage The secondary storage class of the data (typically "basis")
+ *  \param[in] role The category of information held in the field (MESH, ATTRIBUTE, TRANSIENT,
+ * REDUCTION, etc)
+ *  \param[in] value_count The number of items in the field.
+ *  \param[in] index
+ *
+ */
+Ioss::Field::Field(std::string name, BasicType type, const std::string &storage,
+                   const std::string &secondary, RoleType role, size_t value_count, size_t index)
+    : name_(std::move(name)), rawCount_(value_count), transCount_(value_count), index_(index),
+      type_(type), role_(role)
+{
+  rawStorage_ = transStorage_ = Ioss::VariableType::factory(storage, secondary);
+  size_                       = internal_get_size(type_, rawCount_, rawStorage_);
+}
+
 int Ioss::Field::get_component_count(Ioss::Field::InOut in_out) const
 {
   const auto *storage = (in_out == InOut::INPUT) ? raw_storage() : transformed_storage();

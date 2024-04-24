@@ -98,6 +98,8 @@ namespace Ioss {
     IOSS_NODISCARD virtual bool        match(const std::vector<Suffix> &suffices) const;
 
     IOSS_NODISCARD static const VariableType *factory(const std::string &raw_name, int copies = 1);
+    IOSS_NODISCARD static const VariableType *factory(const std::string &raw_name,
+                                                      const std::string &secondary);
     IOSS_NODISCARD static const VariableType *factory(const std::vector<Suffix> &suffices,
                                                       bool ignore_realn_fields = false);
 

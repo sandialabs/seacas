@@ -5,6 +5,7 @@
 // See packages/seacas/LICENSE for details
 
 #include "Ioss_BasisVariableType.h"
+#include "Ioss_ComposedVariableType.h"
 #include "Ioss_CompositeVariableType.h"
 #include "Ioss_ConstructedVariableType.h"
 #include "Ioss_NamedSuffixVariableType.h"
@@ -137,15 +138,14 @@ namespace Ioss {
       return false;
     }
 
-    std::string low_name = "basis_" + Utils::lowercase(type_name);
     // See if the variable already exists...
-    if (registry().find(low_name) != registry().end()) {
+    if (registry().find("basis") != registry().end()) {
       return false;
     }
 
     // Create the variable.  Note that the 'true' argument means Ioss will delete
     // the pointer.
-    auto *var_type = new BasisVariableType(low_name, count, true);
+    auto *var_type = new BasisVariableType(type_name, count, true);
     var_type->add_basis(bases);
 
     return true;
@@ -189,6 +189,39 @@ namespace Ioss {
 
     if (copies != 1) {
       inst = CompositeVariableType::composite_variable_type(inst, copies);
+    }
+    assert(inst != nullptr);
+    return inst;
+  }
+
+  const VariableType *VariableType::factory(const std::string &raw_name,
+                                            const std::string &secondary)
+  {
+    VariableType *inst    = nullptr;
+    std::string   lc_name = Utils::lowercase(raw_name);
+    auto          iter    = registry().find(lc_name);
+    if (iter == registry().end()) {
+      bool can_construct = build_variable_type(lc_name);
+      if (can_construct) {
+        iter = registry().find(lc_name);
+        assert(iter != registry().end());
+        inst = (*iter).second;
+      }
+      else {
+        std::ostringstream errmsg;
+        fmt::print(errmsg, "ERROR: The variable type '{}' is not supported.\n", raw_name);
+        IOSS_ERROR(errmsg);
+      }
+    }
+    else {
+      inst = (*iter).second;
+    }
+
+    if (!secondary.empty()) {
+      auto *sec_type = factory(secondary);
+      if (sec_type != nullptr) {
+        inst = ComposedVariableType::composed_variable_type(inst, sec_type);
+      }
     }
     assert(inst != nullptr);
     return inst;

@@ -40,7 +40,7 @@ namespace Ioss {
     }
 
     BasisVariableType(const std::string &my_name, int number_components, bool delete_me)
-        : Ioss::VariableType(my_name, number_components, delete_me)
+        : Ioss::VariableType("basis", number_components, delete_me), m_basis_type_(my_name)
     {
       m_basis_.resize(number_components);
     }
@@ -62,6 +62,7 @@ namespace Ioss {
     void add_basis(const std::vector<Ioss::Basis> &basis) { m_basis_ = basis; }
 
   private:
+    std::string              m_basis_type_{};
     std::vector<Ioss::Basis> m_basis_{};
   };
 } // namespace Ioss
