@@ -100,9 +100,10 @@ int main(int argc, char **argv)
       "Gradient-X$3", "Gradient-Y$3", "Gradient-Z$3", "Gradient-X$4", "Gradient-Y$4",
       "Gradient-Z$4", "Gradient-X$5", "Gradient-Y$5", "Gradient-Z$5", "Gradient-X$6",
       "Gradient-Y$6", "Gradient-Z$6", "Gradient-X$7", "Gradient-Y$7", "Gradient-Z$7",
-      "Gradient-X$8", "Gradient-Y$8", "Gradient-Z$8", "Curl@1",       "Curl@2",
-      "Curl@3",       "Curl@4",       "Curl@5",       "Curl@6",       "Curl@7",
-      "Curl@8",       "User_h2o",     "User_gas",     "User_ch4",     "User_methane"};
+      "Gradient-X$8", "Gradient-Y$8", "Gradient-Z$8", "Curl@0",       "Curl@1",
+      "Curl@2",       "Curl@3",       "Curl@4",       "Curl@5",       "Curl@6",
+      "Curl@7",       "Curl@8",       "User_h2o",     "User_gas",     "User_ch4",
+      "User_methane"};
   int num_block_vars = sizeof(var_names) / sizeof(var_names[0]);
   int num_node_vars  = 6;
 
