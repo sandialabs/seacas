@@ -599,8 +599,8 @@ namespace {
           // will be 1,2,...)
           bool is_composite = dynamic_cast<const Ioss::CompositeVariableType *>(
                                   field.transformed_storage()) != nullptr;
+          
           Ioss::Suffix suffix{tmp[tmp.size() - (is_composite ? 2 : 1)]};
-
           field.set_suffices_uppercase(suffix.is_uppercase());
           field.set_index(index);
           for (const auto &which_name : which_names) {
