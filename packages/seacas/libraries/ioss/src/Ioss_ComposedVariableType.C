@@ -24,13 +24,12 @@ namespace Ioss {
   VariableType *ComposedVariableType::composed_variable_type(const VariableType *inst,
                                                              const VariableType *secondary)
   {
-    VariableType *comp_inst = nullptr;
-
     // See if we already constructed this composed type...
     std::string composed_type =
         ComposedVariableType::composed_name(inst->name(), secondary->name());
 
-    auto iter = registry().find(composed_type);
+    VariableType *comp_inst = nullptr;
+    auto          iter      = registry().find(composed_type);
     if (iter == registry().end()) {
       // Not found, construct new type...
       comp_inst = new ComposedVariableType(inst, secondary, true);
@@ -46,12 +45,6 @@ namespace Ioss {
       : VariableType(composed_name(base_type->name(), secondary_type->name()),
                      base_type->component_count() * secondary_type->component_count(), delete_me),
         baseType(base_type), secondaryType(secondary_type)
-  {
-  }
-
-  ComposedVariableType::ComposedVariableType(const std::string &my_name,
-                                             const std::string &secondary_name, bool delete_me)
-      : VariableType(my_name, delete_me)
   {
   }
 
@@ -75,8 +68,4 @@ namespace Ioss {
     my_label += VariableType::numeric_label(which_instance, copies, name());
     return my_label;
   }
-
-  const VariableType *ComposedVariableType::GetBaseType() const { return baseType; }
-  const VariableType *ComposedVariableType::GetSecondaryType() const { return secondaryType; }
-
 } // namespace Ioss

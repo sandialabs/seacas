@@ -22,13 +22,13 @@ namespace Ioss {
                                                                const VariableType *secondary);
 
     IOSS_NODISCARD std::string label(int which, char suffix_sep = '_') const override;
-    ComposedVariableType(const std::string &my_name, const std::string &secondary, bool delete_me);
+
     ComposedVariableType(const VariableType *base_type, const VariableType *secondary,
                          bool delete_me);
     ComposedVariableType(const ComposedVariableType &) = delete;
 
-    IOSS_NODISCARD const VariableType *GetBaseType() const;
-    IOSS_NODISCARD const VariableType *GetSecondaryType() const;
+    IOSS_NODISCARD const VariableType *get_base_type() const { return baseType; }
+    IOSS_NODISCARD const VariableType *get_secondary_type() const { return secondaryType; }
 
   private:
     const VariableType *baseType{nullptr};

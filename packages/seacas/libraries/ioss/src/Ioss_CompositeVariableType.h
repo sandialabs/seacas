@@ -25,8 +25,8 @@ namespace Ioss {
     CompositeVariableType(const VariableType *base_type, int copies, bool delete_me);
     CompositeVariableType(const CompositeVariableType &) = delete;
 
-    IOSS_NODISCARD const VariableType *GetBaseType() const;
-    IOSS_NODISCARD int                 GetNumCopies() const;
+    IOSS_NODISCARD const VariableType *get_base_type() const { return baseType; }
+    IOSS_NODISCARD int                 get_num_copies() const { return copies_; }
 
   private:
     const VariableType *baseType;

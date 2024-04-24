@@ -127,10 +127,9 @@ Ioss::Field::Field(std::string name, const Ioss::Field::BasicType type,
  *  \param[in] type The basic data type of data held in the field.
  *  \param[in] storage The storage class of the data (ConstructedVariableType,
  * CompositeVariableType, etc)
- *  \param[in] storage The secondary storage class of the data (typically "basis")
- *  \param[in] role The category of information held in the field (MESH, ATTRIBUTE, TRANSIENT,
- * REDUCTION, etc)
- *  \param[in] value_count The number of items in the field.
+ *  \param[in] secondary The secondary storage class of the data (typically "basis") [For a
+ * ComposedVariableType field] \param[in] role The category of information held in the field (MESH,
+ * ATTRIBUTE, TRANSIENT, REDUCTION, etc) \param[in] value_count The number of items in the field.
  *  \param[in] index
  *
  */

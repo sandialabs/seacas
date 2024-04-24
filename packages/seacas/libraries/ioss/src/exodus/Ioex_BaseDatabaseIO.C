@@ -2032,13 +2032,13 @@ namespace Ioex {
         if (composite != nullptr) {
           exo_field.nesting = 2;
 
-          exo_field.type[0]        = Ioex::map_ioss_field_type(composite->GetBaseType()->name());
-          exo_field.cardinality[0] = composite->GetBaseType()->component_count();
+          exo_field.type[0]        = Ioex::map_ioss_field_type(composite->get_base_type()->name());
+          exo_field.cardinality[0] = composite->get_base_type()->component_count();
           char separator0          = field.get_suffix_separator();
           exo_field.component_separator[0] = separator0 == 1 ? '_' : separator0;
 
           exo_field.type[1]                = EX_FIELD_TYPE_SEQUENCE;
-          exo_field.cardinality[1]         = composite->GetNumCopies();
+          exo_field.cardinality[1]         = composite->get_num_copies();
           char separator1                  = field.get_suffix_separator(1);
           exo_field.component_separator[1] = separator1 == 1 ? '_' : separator1;
         }
