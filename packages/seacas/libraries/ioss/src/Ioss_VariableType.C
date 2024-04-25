@@ -9,6 +9,7 @@
 #include "Ioss_CompositeVariableType.h"
 #include "Ioss_ConstructedVariableType.h"
 #include "Ioss_NamedSuffixVariableType.h"
+#include "Ioss_QuadratureVariableType.h"
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 #include <cassert>
@@ -139,7 +140,8 @@ namespace Ioss {
     }
 
     // See if the variable already exists...
-    if (registry().find("basis") != registry().end()) {
+    std::string basis_name = "basis:" + Utils::lowercase(type_name);
+    if (registry().find(basis_name) != registry().end()) {
       return false;
     }
 
@@ -147,6 +149,29 @@ namespace Ioss {
     // the pointer.
     auto *var_type = new BasisVariableType(type_name, count, true);
     var_type->add_basis(bases);
+
+    return true;
+  }
+
+  bool
+  VariableType::create_quadrature_field_type(const std::string                        &type_name,
+                                             const std::vector<Ioss::QuadraturePoint> &quad_points)
+  {
+    size_t count = quad_points.size();
+    if (count < 1) {
+      return false;
+    }
+
+    // See if the variable already exists...
+    std::string quad_name = "quadrature:" + Utils::lowercase(type_name);
+    if (registry().find(quad_name) != registry().end()) {
+      return false;
+    }
+
+    // Create the variable.  Note that the 'true' argument means Ioss will delete
+    // the pointer.
+    auto *var_type = new QuadratureVariableType(type_name, count, true);
+    var_type->add_quadrature(quad_points);
 
     return true;
   }
