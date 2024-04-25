@@ -322,8 +322,13 @@ typedef struct ex_field
   ex_entity_type entity_type;
   int64_t        entity_id;
   char           name[EX_MAX_NAME + 1]; /* Name of the field */
-  char type_name[EX_MAX_NAME + 1]; /* For basis, user, quadrature -- what is name of that type */
-  int  nesting; /* Number of composite fields (vector at each quadrature point = 2) */
+  /*
+   * For basis, user, quadrature -- what is name of the subtype. This
+   * is a comma-separated list of `nesting` names Use two consecutive
+   * commas for an empty type_name. Leave empty if no type_names
+   */
+  int           nesting; /* Number of composite fields (vector at each quadrature point = 2) */
+  char          type_name[EX_MAX_NAME + 1];
   ex_field_type type[EX_MAX_FIELD_NESTING];                /* ex_field_type of each nested field */
   int           cardinality[EX_MAX_FIELD_NESTING];         /* 0 to calculate based on type */
   char          component_separator[EX_MAX_FIELD_NESTING]; /* empty defaults to '_'; */

@@ -21,27 +21,14 @@
 static void exi_field_initialize(ex_field *field)
 {
   field->name[0]      = '\0';
-  field->type_name[0] = '\0';
   field->nesting      = 0;
+  field->type_name[0] = '\0';
   for (int i = 0; i < EX_MAX_FIELD_NESTING; i++) {
     field->type[i]                = EX_FIELD_TYPE_INVALID;
     field->cardinality[i]         = 0;
     field->component_separator[i] = '_';
   }
   field->suffices[0] = '\0';
-}
-
-static void exi_basis_initialize(ex_basis *basis)
-{
-  basis->name[0]          = '\0';
-  basis->cardinality      = 0;
-  basis->subc_dim         = NULL;
-  basis->subc_ordinal     = NULL;
-  basis->subc_dof_ordinal = NULL;
-  basis->subc_num_dof     = NULL;
-  basis->xi               = NULL;
-  basis->eta              = NULL;
-  basis->zeta             = NULL;
 }
 
 static const char *exi_get_metadata_attribute(char *name, char *prefix, int pre_len)
@@ -202,7 +189,7 @@ int ex_get_field_metadata(int exoid, ex_field *field)
       }
 
       if (strcmp(fld_type, "type") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, field[count].type);
+        status = nc_get_att_int(exoid, varid, attr_name, (int *)field[count].type);
         if (field[count].nesting == 0) {
           field[count].nesting = val_count;
         }
@@ -217,22 +204,22 @@ int ex_get_field_metadata(int exoid, ex_field *field)
         }
       }
       else if (strcmp(fld_type, "separator") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, field[count].component_separator);
+        status = nc_get_att_text(exoid, varid, attr_name, field[count].component_separator);
         if (field[count].nesting == 0) {
           field[count].nesting = val_count;
         }
       }
       else if (strcmp(fld_type, "cardinality") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, field[count].cardinality);
+        status = nc_get_att_int(exoid, varid, attr_name, field[count].cardinality);
         if (field[count].nesting == 0) {
           field[count].nesting = val_count;
         }
       }
       else if (strcmp(fld_type, "type_name") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, field[count].type_name);
+        status = nc_get_att_text(exoid, varid, attr_name, field[count].type_name);
       }
       else if (strcmp(fld_type, "suffices") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, field[count].suffices);
+        status = nc_get_att_text(exoid, varid, attr_name, field[count].suffices);
       }
       else {
         char errmsg[MAX_ERR_LENGTH];
@@ -322,10 +309,10 @@ int ex_get_basis_metadata(int exoid, ex_basis *basis)
 
   /* Iterate through each Basis metadata attribute and populate `basis` */
   int count = -1;
-  for (int i = 0; i < att_count; i++) {
+  for (int att = 0; att < att_count; att++) {
     char attr_name[EX_MAX_NAME + 1];
     int  status;
-    if ((status = nc_inq_attname(exoid, varid, i, attr_name)) != NC_NOERR) {
+    if ((status = nc_inq_attname(exoid, varid, att, attr_name)) != NC_NOERR) {
       char errmsg[MAX_ERR_LENGTH];
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get attribute named %s", attr_name);
       ex_err_fn(exoid, __func__, errmsg, status);
@@ -345,166 +332,80 @@ int ex_get_basis_metadata(int exoid, ex_basis *basis)
        * the name */
       if (count < 0 || strcmp(basis[count].name, basis_name) != 0) {
         count++;
-        exi_basis_initialize(&basis[count]);
         strcpy(basis[count].name, basis_name);
       }
 
-#if 0
-      nc_type type;      /* integer, double, character, ... */
-      size_t  val_count; /* how many `type` values */
-      if ((status = nc_inq_att(exoid, varid, attr_name, &type, &val_count)) != NC_NOERR) {
-        char errmsg[MAX_ERR_LENGTH];
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to get parameters for attribute named %s on %s with id %" PRId64,
-                 attr_name, ex_name_of_object(entity_type), entity_id);
-        ex_err_fn(exoid, __func__, errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
-
-      if (strcmp(basis_type, "type") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, basis[count].type);
-        if (basis[count].nesting == 0) {
-          basis[count].nesting = val_count;
-        }
-        if (basis[count].type[0] == EX_FIELD_TYPE_USER_DEFINED && basis[count].nesting != 1) {
+      if (strcmp(basis_type, "cardinality") == 0) {
+        int cardinality = 0;
+        status          = nc_get_att_int(exoid, varid, attr_name, &cardinality);
+        if (basis[count].cardinality > 0 && basis[count].cardinality != cardinality) {
           char errmsg[MAX_ERR_LENGTH];
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: Invalid nesting for basis %s on %s with id %" PRId64
-                   ". Must be 1 for user-defined basis type.\n",
-                   basis[count].name, ex_name_of_object(entity_type), entity_id);
-          ex_err_fn(exoid, __func__, errmsg, status);
+          snprintf(
+              errmsg, MAX_ERR_LENGTH,
+              "ERROR: Basis cardinality on the database is %d, but the value passed in the basis "
+              "struct is %d.\n\tThis indicates that"
+              " not enough memory has been allocated to store the other basis fields.",
+              cardinality, basis[count].cardinality);
+          ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
           EX_FUNC_LEAVE(EX_FATAL);
         }
+        basis[count].cardinality = cardinality;
       }
-      else if (strcmp(fld_type, "separator") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, basis[count].component_separator);
-        if (basis[count].nesting == 0) {
-          basis[count].nesting = val_count;
+
+      /* Now, for each non-NULL parameter of `basis`, query the data... */
+      else if (basis[count].subc_dim != NULL && strcmp(basis_type, "subc_dim") == 0) {
+        status = nc_get_att_int(exoid, varid, attr_name, basis[count].subc_dim);
+      }
+      else if (status == NC_NOERR && basis[count].subc_ordinal != NULL &&
+               strcmp(basis_type, "subc_ordinal") == 0) {
+        status = nc_get_att_int(exoid, varid, attr_name, basis[count].subc_ordinal);
+      }
+      else if (status == NC_NOERR && basis[count].subc_dof_ordinal != NULL &&
+               strcmp(basis_type, "subc_dof_ordinal") == 0) {
+        status = nc_get_att_int(exoid, varid, attr_name, basis[count].subc_dof_ordinal);
+      }
+      else if (status == NC_NOERR && basis[count].subc_num_dof != NULL &&
+               strcmp(basis_type, "subc_num_dof") == 0) {
+        status = nc_get_att_int(exoid, varid, attr_name, basis[count].subc_num_dof);
+      }
+      else if (status == NC_NOERR && basis[count].xi != NULL && strcmp(basis_type, "xi") == 0) {
+        status = nc_get_att_double(exoid, varid, attr_name, basis[count].xi);
+        if (status == NC_ENOTATT) {
+          for (int i = 0; i < basis[count].cardinality; i++) {
+            basis[count].eta[i] = 0.0;
+          }
+          status = NC_NOERR;
         }
       }
-      else if (strcmp(fld_type, "cardinality") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, basis[count].cardinality);
-        if (basis[count].nesting == 0) {
-          basis[count].nesting = val_count;
+      else if (status == NC_NOERR && basis[count].eta != NULL && strcmp(basis_type, "eta") == 0) {
+        status = nc_get_att_double(exoid, varid, attr_name, basis[count].eta);
+        if (status == NC_ENOTATT) {
+          for (int i = 0; i < basis[count].cardinality; i++) {
+            basis[count].eta[i] = 0.0;
+          }
+          status = NC_NOERR;
         }
       }
-      else if (strcmp(fld_type, "type_name") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, basis[count].type_name);
+      else if (status == NC_NOERR && basis[count].zeta != NULL && strcmp(basis_type, "zeta") == 0) {
+        status = nc_get_att_double(exoid, varid, attr_name, basis[count].zeta);
+        if (status == NC_ENOTATT) {
+          for (int i = 0; i < basis[count].cardinality; i++) {
+            basis[count].zeta[i] = 0.0;
+          }
+          status = NC_NOERR;
+        }
       }
-      else if (strcmp(fld_type, "suffices") == 0) {
-        status = nc_get_att(exoid, varid, attr_name, basis[count].suffices);
-      }
-      else {
-        char errmsg[MAX_ERR_LENGTH];
-        snprintf(
-            errmsg, MAX_ERR_LENGTH,
-            "ERROR: Invalid basis metadata attribute type %s on basis %s",
-            fld_type, fld_name, );
-        ex_err_fn(exoid, __func__, errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
+      // NOTE: Do not put an else since will fall through if the
+      // arrays are NULL even though basis_type is valid.
+
       if (status != NC_NOERR) {
         char errmsg[MAX_ERR_LENGTH];
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to read basis metadata attribute type %s on basis %s",
-                 fld_type, fld_name);
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to read field Basis %s metadata",
+                 basis[count].name);
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
-#endif
     }
   }
   EX_FUNC_LEAVE(EX_NOERR);
-#if 0
-
-  int  status;
-  char errmsg[MAX_ERR_LENGTH];
-  int  varid;
-
-  if (entity_type == EX_GLOBAL) {
-    varid = NC_GLOBAL;
-  }
-  else {
-    varid = exi_get_varid(exoid, entity_type, entity_id);
-    if (varid <= 0) {
-      /* Error message handled in exi_get_varid */
-      return varid;
-    }
-  }
-
-  /* Get name of the basis (if it exists) */
-  if ((status = nc_get_att(exoid, varid, "Basis@name", basis->name)) != NC_NOERR) {
-    /* Basis not found... Return EX_NOTFOUND */
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to read basis name on %s with id %" PRId64,
-             ex_name_of_object(entity_type), entity_id);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return EX_NOTFOUND;
-  }
-
-  /* Get the basis cardinality... We know there is a basis and cardinality is required parameter. */
-  const char attr_name[] = "Basis@cardinality";
-  int        cardinality[1];
-  if ((status = nc_get_att(exoid, varid, attr_name, cardinality)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to get basis cardinality on %s with id %" PRId64,
-             ex_name_of_object(entity_type), entity_id);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return EX_FATAL;
-  }
-
-  if (basis->cardinality != 0 && basis->cardinality < cardinality[0]) {
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: Basis cardinality on the database is %d, but the value passed in the basis "
-             "struct is %d.\n\tThis indicates that"
-             " not enough memory has been allocated to store the other basis fields\n\ton %s with "
-             "id %" PRId64 ".",
-             cardinality[0], basis->cardinality, ex_name_of_object(entity_type), entity_id);
-    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-    return EX_FATAL;
-  }
-  basis->cardinality = cardinality[0];
-  /* Now, for each non-NULL parameter of `basis`, query the data... */
-  if (basis->subc_dim != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_dim", basis->subc_dim);
-  }
-  if (status == NC_NOERR && basis->subc_ordinal != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_ordinal", basis->subc_ordinal);
-  }
-  if (status == NC_NOERR && basis->subc_dof_ordinal != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_dof_ordinal", basis->subc_dof_ordinal);
-  }
-  if (status == NC_NOERR && basis->subc_num_dof != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@subc_num_dof", basis->subc_num_dof);
-  }
-  if (status == NC_NOERR && basis->xi != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@xi", basis->xi);
-  }
-  if (status == NC_NOERR && basis->eta != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@eta", basis->eta);
-    if (status == NC_ENOTATT) {
-      for (int i = 0; i < basis->cardinality; i++) {
-        basis->eta[i] = 0.0;
-      }
-      status = NC_NOERR;
-    }
-  }
-  if (status == NC_NOERR && basis->zeta != NULL) {
-    status = nc_get_att(exoid, varid, "Basis@zeta", basis->zeta);
-    if (status == NC_ENOTATT) {
-      for (int i = 0; i < basis->cardinality; i++) {
-        basis->zeta[i] = 0.0;
-      }
-      status = NC_NOERR;
-    }
-  }
-  if (status != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to read field Basis information on field %s on %s with id %" PRId64 ".",
-             basis->name, ex_name_of_object(entity_type), entity_id);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return EX_FATAL;
-  }
-
-  return EX_NOERR;
-#endif
 }

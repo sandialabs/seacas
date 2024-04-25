@@ -177,7 +177,7 @@ int main(int argc, char **argv)
     struct ex_field field = (ex_field){.entity_type         = EX_ELEM_BLOCK,
                                        .entity_id           = blocks[1].id,
                                        .name                = "Gradient",
-                                       .type_name           = "HGRAD_QUAD_C2_FEM",
+                                       .type_name           = {",HGRAD_QUAD_C2_FEM"},
                                        .type                = {EX_VECTOR_3D, EX_BASIS},
                                        .nesting             = 2,
                                        .component_separator = {'-', '$'}};
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
     struct ex_field field2 = (ex_field){.entity_type         = EX_ELEM_BLOCK,
                                         .entity_id           = blocks[1].id,
                                         .name                = "Curl",
-                                        .type_name           = "HGRAD_QUAD_C2_FEM",
+                                        .type_name           = {"HGRAD_QUAD_C2_FEM"},
                                         .type                = {EX_BASIS},
                                         .nesting             = 1,
                                         .component_separator = {'@'}};

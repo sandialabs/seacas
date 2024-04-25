@@ -292,12 +292,12 @@ const char *ex_field_component_suffix(ex_field *field, int nest_level, int compo
   }
 
   case EX_BASIS: {
-    // Suffices are just 1...#components.
+    // Suffices are just 0...#components-1.
     static char user_suffix[32];
     static char format[8];
     int         width = number_width(field->cardinality[nest_level]);
     sprintf(format, "%c%d%dd", '%', 0, width);
-    sprintf(user_suffix, format, component);
+    sprintf(user_suffix, format, component - 1);
     return user_suffix;
   }
   case EX_QUADRATURE:
