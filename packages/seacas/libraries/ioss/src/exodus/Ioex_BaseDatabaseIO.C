@@ -200,30 +200,34 @@ namespace {
 
   int read_exodus_basis(int exoid)
   {
-    auto bas_cnt = ex_get_basis_metadata_count(exoid);
-    assert(bas_cnt == 1);
+    auto                  bas_cnt = ex_get_basis_metadata_count(exoid);
+    std::vector<ex_basis> exo_basis(bas_cnt);
 
-    ex_basis exo_basis{};
-    ex_get_basis_metadata(exoid, &exo_basis);
+    // In this call, since the struct is initialized to all zero and NULL,
+    // only the name and cardinality will be populated.
+    ex_get_basis_metadata(exoid, Data(exo_basis));
 
     // allocate memory for all pointer members of `basis`
-    ex_initialize_basis_struct(&exo_basis, 1);
-    ex_get_basis_metadata(exoid, &exo_basis);
+    ex_initialize_basis_struct(&exo_basis[0], 1);
+    ex_get_basis_metadata(exoid, Data(exo_basis));
 
     std::vector<Ioss::Basis> basies{};
-    basies.reserve(exo_basis.cardinality);
-    for (int i = 0; i < exo_basis.cardinality; i++) {
-      Ioss::Basis basis{
-          exo_basis.subc_dim[i],     exo_basis.subc_ordinal[i], exo_basis.subc_dof_ordinal[i],
-          exo_basis.subc_num_dof[i], exo_basis.xi[i],           exo_basis.eta[i],
-          exo_basis.zeta[i]};
+    basies.reserve(exo_basis[0].cardinality);
+    for (int i = 0; i < exo_basis[0].cardinality; i++) {
+      Ioss::Basis basis{exo_basis[0].subc_dim[i],
+                        exo_basis[0].subc_ordinal[i],
+                        exo_basis[0].subc_dof_ordinal[i],
+                        exo_basis[0].subc_num_dof[i],
+                        exo_basis[0].xi[i],
+                        exo_basis[0].eta[i],
+                        exo_basis[0].zeta[i]};
       basies.push_back(basis);
     }
 
-    Ioss::VariableType::create_basis_field_type(exo_basis.name, basies);
+    Ioss::VariableType::create_basis_field_type(exo_basis[0].name, basies);
 
     // deallocate any memory allocated in the 'basis' struct.
-    ex_initialize_basis_struct(&exo_basis, -exo_basis.cardinality);
+    ex_initialize_basis_struct(&exo_basis[0], -1);
 
     return basies.size();
   }
@@ -1767,7 +1771,7 @@ namespace Ioex {
             read_exodus_basis(get_file_pointer());
             basis_read = true;
           }
-          ios_field_type = "basis:" + Ioss::Utils::lowercase(exo_field.type_name);
+          ios_field_type = Ioss::Utils::lowercase(exo_field.type_name);
         }
         else {
           ios_field_type = Ioex::map_ioss_field_type(exo_field_type);
@@ -1777,9 +1781,10 @@ namespace Ioex {
         std::string secondary_field_type{};
 
         if (exo_field.nesting == 2) {
-          // For IOSS, the nesting is basically N copies of the field at nesting level 1, so we
-          // just need to verify that the field type is "EX_FIELD_TYPE_SEQUENCE" and then get
-          // the cardinality...
+          // For IOSS, the nesting is basically N copies of the field
+          // at nesting level 1, so we just need to verify that the
+          // field type is "EX_FIELD_TYPE_SEQUENCE" or "EX_BASIS" and
+          // then get the cardinality...
           if (exo_field.type[1] == EX_FIELD_TYPE_SEQUENCE) {
             num_copies = exo_field.cardinality[1];
           }
@@ -1790,7 +1795,8 @@ namespace Ioex {
               num_copies = -read_exodus_basis(get_file_pointer());
               basis_read = true;
             }
-            secondary_field_type = "basis:" + Ioss::Utils::lowercase(exo_field.type_name);
+            auto types           = Ioss::tokenize(exo_field.type_name, ",", true);
+            secondary_field_type = Ioss::Utils::lowercase(types[1]);
           }
           else {
             fmt::print("ERROR: Unrecognized field type for nested field.\n");

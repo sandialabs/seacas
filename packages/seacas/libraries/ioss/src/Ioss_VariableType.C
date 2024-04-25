@@ -140,7 +140,7 @@ namespace Ioss {
     }
 
     // See if the variable already exists...
-    std::string basis_name = "basis:" + Utils::lowercase(type_name);
+    std::string basis_name = Utils::lowercase(type_name);
     if (registry().find(basis_name) != registry().end()) {
       return false;
     }
